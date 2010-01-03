@@ -32,8 +32,9 @@
 			<table style="font-weight:bold" cellspacing="0" border="1" bordercolor="#cccccc">
 				<tr>
 				
-					<td valign="top"><input type="radio" name="largestsize" checked value="640" id="large640" onclick="selectImage(this)"/> {$preview_width} x {$preview_height}<br/><small style="color:red">(minimum req)</small><br/>
-					<label for="large640"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}" name="large640" style="border:2px solid blue"/></label>
+					<td valign="top"><input type="radio" name="largestsize" checked value="640" id="large640" onclick="selectImage(this)"/> {$preview_width} x {$preview_height}<br/><br/>
+					<label for="large640"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}" name="large640" style="border:2px solid blue"/></label><br/><br/>
+					<small>(as shown on<br/> photo page)</small>
 					{assign var="last_width" value=$preview_width} 
 					{assign var="last_height" value=$preview_height} 
 					</td>
