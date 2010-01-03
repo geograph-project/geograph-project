@@ -32,8 +32,8 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 <div style="padding:20px">
 
-<h3>The following sizes of images are available for download:</h3>
-<p>Note: all sizes are <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licenced</a>, and any reuse needs to credit <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>.</p>
+<h2>The following sizes of images are available for download:</h2><br/>
+<div class="interestBox">Note: all sizes are <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licenced</a>, and any reuse needs to credit <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>.</div>
 
 {assign var="size" value=$image->_getFullSize()}
 
@@ -45,15 +45,17 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	{assign var="original_width" value=$image->original_width}
 	{assign var="original_height" value=$image->original_height}
 	{math equation="o/180" o=$original_width assign="ratio"}
+	<p>Click a thumbnail to download the JPEG file...</p>
 {else}
-	{assign var="ratio" value=2}
+	{assign var="ratio" value=1}
 {/if}
 
 			<table style="font-weight:bold" cellspacing="0" border="1" bordercolor="#cccccc" cellpadding="10">
 				<tr>
 				
 					<td valign="top">{$preview_width} x {$preview_height}<br/><br/>
-					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}"/></a>
+					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}"/></a><br/><br/>
+					<small>(as shown on photo page)</small>
 					{assign var="last_width" value=$preview_width} 
 					{assign var="last_height" value=$preview_height} 
 					</td>
@@ -100,13 +102,13 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 				{/if}
 				</tr>
 			</table>
-			Previews shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size - NOT representive of the final quality.		
+			<p>Preview{if $last_width > 640 || $last_height > 640}s{/if} shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size{if $ratio ne 1} - NOT representive of the final quality{/if}.</p>		
 			
 
 
 
 
-<br/><br/>
+<br/><br/><hr/><br/>
 Return to <a href="/photo/{$image->gridimage_id}">photo page</a> or find <a href="/reuse.php?id={$image->gridimage_id}">more ways to use image</a>
 </div>
 
