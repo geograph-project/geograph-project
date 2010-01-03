@@ -4,10 +4,10 @@
 
 
 </style>{/literal}
+{dynamic}
 <h2>Image Upload <sub>at {$smarty.now|date_format:"%Y-%m-%d %H:%M:%S"}</sub></h2>
 <p>Here is the results of the latest upload:</p>
 
-{dynamic}
 
 <div class="interestBox" style="background-color:lightgrey">
 <dl class="picinfo">
