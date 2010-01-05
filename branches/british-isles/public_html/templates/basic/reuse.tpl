@@ -79,7 +79,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <i>Please do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"} the fullsize image directly off our servers, this will likely be blocked.</i><br/>
 Instead download a copy, and upload it to your own webspace. <b>
 {if $image->isLandscape()}{/if}
-<a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download {$image->cached_size.0}x{$image->cached_size.1} pixels JPEG file</a>
+<a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download {if !$image->original_width}fullsize{/if} {$image->cached_size.0}x{$image->cached_size.1}px JPEG file</a>
 {if $image->original_width}
 or <a href="/more.php?id={$image->gridimage_id}">View other Sizes Available...</a>
 {/if}
