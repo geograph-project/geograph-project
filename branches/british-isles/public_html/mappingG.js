@@ -49,7 +49,7 @@
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
 			
-			if (wgs84.isIreland()) {
+			if (wgs84.isIreland2()) {
 				//convert to Irish
 				var grid=wgs84.getIrish(true);
 			
