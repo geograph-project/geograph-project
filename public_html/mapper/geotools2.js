@@ -429,6 +429,42 @@ GT_WGS84.prototype.isIreland = function()
 		this.longitude < -4.8;
 }
 
+GT_WGS84.prototype.isIreland2 = function()
+{
+
+	//rough border for ireland
+	var points = [
+		[-12.19,50.38],
+		[ -6.39,50.94],
+		[ -5.07,53.71],
+		[ -5.25,54.71],
+		[ -6.13,55.42],
+		[-10.65,56.15],
+		[-12.19,50.38] ];
+		
+// === A method for testing if a point is inside a polygon
+// === Returns true if poly contains point
+// === Algorithm shamelessly stolen from http://alienryderflex.com/polygon/ 
+	var j=0;
+	var oddNodes = false;
+	var x = this.longitude;
+	var y = this.latitude;
+	for (var i=0; i < points.length; i++) {
+		j++;
+		if (j == points.length) {j = 0;}
+		if (((points[i][1] < y) && (points[j][1] >= y))
+				|| ((points[j][1] < y) && (points[i][1] >= y))) {
+			if ( points[i][0] + (y - points[i][1])
+					/  (points[j][1]-points[i][1])
+					*  (points[j][0] - points[i][0])<x ) {
+				oddNodes = !oddNodes
+			}
+		}
+	}
+	return oddNodes;
+}
+
+
 GT_WGS84.prototype.getIrish = function(uselevel2)
 {
 	var irish=new GT_Irish();
