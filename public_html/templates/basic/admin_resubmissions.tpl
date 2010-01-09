@@ -34,7 +34,7 @@
 		</tr>
 		<tr>
 			<th>
-				New Image (<a href="{$image->pendingUrl}">View full size</a> - {$image->pendingSize|thousends} bytes!)
+				New Image (<a href="{$image->pendingUrl}" target="_preview">View full size</a> - {$image->pendingSize|thousends} bytes!)
 			</th>
 			<th>
 				Current Image
@@ -47,8 +47,10 @@
 	<input style="background-color:pink; width:200px" type="submit" name="diff" value="Different - don't allow!"/>
 	
 	
-	<input style="background-color:lightgreen; width:200px" type="submit" name="confirm" value="The Same" onclick="autoDisable(this);"/> 
+	<input style="background-color:lightgreen; width:200px" type="submit" name="confirm" value="Identical" onclick="autoDisable(this);"/> 
 
+	<input style="background-color:lightgreen; width:200px" type="submit" name="similar" value="Close enough" onclick="autoDisable(this);"/> 
+	
 	<ul>
 	<li>Note however that minor tweaking of contrast and brightness is fine, as is removing borders and overlaid text</li>	
 	</ul>
