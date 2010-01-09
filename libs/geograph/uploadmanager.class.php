@@ -702,11 +702,9 @@ class UploadManager
 
 		$src=$this->_pendingJPEG($this->upload_id);	
 
-		if ($ok = $image->storeImage($src)) {
+		//store the resized version - just for the moderator to use as a preview
+		if ($ok = $image->storeImage($src,false,'_preview')) {
 		
-			//store the resized version - just for the moderator to use as a preview
-			$ok = $image->storeImage($src,false,'_preview');
-
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
 			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > 640) {
