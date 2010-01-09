@@ -72,7 +72,7 @@ if (isset($_POST['gridimage_id']))
 
 		$smarty->assign('message', 'Verification saved - thank you');
 
-		if (!empty($_POST['confirm'])) {
+		if (!empty($_POST['confirm']) || !empty($_POST['similar'])) {
 
 			$image->originalUrl = 	$image->_getOriginalpath(true,false,'_original');
 			$image->previewUrl = 	$image->_getOriginalpath(true,false,'_preview');
@@ -104,8 +104,11 @@ if (isset($_POST['gridimage_id']))
 
 				$db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = $gridimage_id");
 
-
-				$db->Execute("UPDATE gridimage_pending gp SET status = 'accepted' WHERE gridimage_id = {$gridimage_id} ");
+				if (!empty($_POST['confirm'])) {
+					$db->Execute("UPDATE gridimage_pending gp SET status = 'confirmed' WHERE gridimage_id = {$gridimage_id} ");
+				} else {
+					$db->Execute("UPDATE gridimage_pending gp SET status = 'accepted' WHERE gridimage_id = {$gridimage_id} ");
+				}
 			} else {
 				$smarty->assign('message', 'Verification failed - please let us know!');
 			}
