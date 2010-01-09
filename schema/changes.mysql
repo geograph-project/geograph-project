@@ -947,3 +947,13 @@ ADD  `original_height` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0';
 
 #################################################
 
+
+alter table gridimage_pending add type enum('picnik','original') default 'picnik';
+
+alter table gridimage_pending add status enum('new','open','accepted','rejected') default 'new';
+
+alter table gridimage_pending add `updated` timestamp on update current_timestamp not null default current_timestamp ;
+
+
+
+#################################################
