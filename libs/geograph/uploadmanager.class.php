@@ -678,6 +678,62 @@ class UploadManager
 		
 		$this->gridimage_id = $gridimage_id;
 	}
+
+
+	/**
+	* add a high res image
+	*/
+	function addOriginal($image)
+	{
+		global $USER,$CONF,$memcache;
+		
+		if($this->validUploadId($this->upload_id))
+		{
+			$uploadfile = $this->_pendingJPEG($this->upload_id);
+			if (!file_exists($uploadfile))
+			{
+				return "Upload image not found";
+			}
+		}
+		else
+		{
+			return ("Must assign upload id");
+		}
+
+		$src=$this->_pendingJPEG($this->upload_id);	
+
+		if ($ok = $image->storeImage($src)) {
+		
+			//store the resized version - just for the moderator to use as a preview
+			$ok = $image->storeImage($orginalfile,false,'_preview')
+
+			$orginalfile = $this->_originalJPEG($this->upload_id);
+
+			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > 640) {
+
+				$this->_downsizeFile($orginalfile,$this->largestsize);
+				
+				//store the new original file
+				$ok =$image->storeImage($orginalfile,false,'_pending')
+			}
+		}
+		
+		if ($ok) {
+			
+			$sql = sprintf("insert into gridimage_pending (gridimage_id,upload_id,user_id,suggested,type) ".
+				"values (%s,%s,%s,now(),'original')",
+				$this->db->Quote($image->gridimage_id),
+				$this->db->Quote($this->upload_id),
+				$this->db->Quote($USER->user_id));
+					
+			$this->db->Query($sql);
+			
+			$this->cleanUp();
+		} else {
+			return "unable to store file";
+		}
+
+	}
 	
 	/**
 	* clean up filesystem after completed or abandoned upload

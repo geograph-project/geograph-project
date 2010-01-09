@@ -697,7 +697,7 @@ class GridImage
 	/**
 	* given a temporary file, transfer to final destination for the image
 	*/
-	function storeImage($srcfile, $movefile=false)
+	function storeImage($srcfile, $movefile=false, $suffix = '')
 	{
 		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
@@ -713,7 +713,7 @@ class GridImage
 		if (!is_dir("$base/$yz/$ab/$cd"))
 			mkdir("$base/$yz/$ab/$cd");
 
-		$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}.jpg";
+		$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		if ($movefile)
 			return @rename($srcfile, $dest);
 		else
@@ -721,32 +721,14 @@ class GridImage
 	}
 	
 	/**
-	* given a temporary file, transfer to final destination for the image
+	* Store a file as the original
 	*/
 	function storeOriginal($srcfile, $movefile=false)
 	{
-		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
-		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
-		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
-		$abcdef=sprintf("%06d", $this->gridimage_id);
-		$hash=$this->_getAntiLeechHash();
-
-		$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
-		if (!is_dir("$base/$yz"))
-			mkdir("$base/$yz");
-		if (!is_dir("$base/$yz/$ab"))
-			mkdir("$base/$yz/$ab");
-		if (!is_dir("$base/$yz/$ab/$cd"))
-			mkdir("$base/$yz/$ab/$cd");
-
-		$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}_original.jpg";
-		if ($movefile)
-			return @rename($srcfile, $dest);
-		else
-			return @copy($srcfile, $dest);
+		return $this->storeImage($srcfile,$movefile,'_original');
 	}
 	
-	function _getOriginalpath($check_exists=true,$returntotalpath = false)
+	function _getOriginalpath($check_exists=true,$returntotalpath = false, $suffix = '_original')
 	{
 		global $CONF;
 
@@ -755,10 +737,10 @@ class GridImage
 		$abcdef=sprintf("%06d", $this->gridimage_id);
 		$hash=$this->_getAntiLeechHash();
 		if ($this->gridimage_id<1000000) {
-			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}_original.jpg";
+			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		} else {
 			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
-			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_original.jpg";
+			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		}
 
 		if (empty($check_exists)) {
