@@ -177,7 +177,7 @@ if (isset($_REQUEST['id']))
 				
 				$smarty->assign_by_ref('exif',$exif2);
 			}
-;
+;			$smarty->assign('step',1);
 		}
 
 
