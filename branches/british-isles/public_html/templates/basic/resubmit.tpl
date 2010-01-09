@@ -7,7 +7,7 @@
 
 
 {if $error}
-<h2><span class="formerror">Changes not submitted - check and correct errors below...<br/>{$error}</span></h2>
+<h2><span class="formerror">check and correct errors below...<br/>{$error}</span></h2>
 {/if}
 
 {if $step eq -1}
@@ -167,7 +167,7 @@ function selectImage(that) {
 	</form>
 	
 
-{else}
+{else if $step eq 1}
 
 		<div style="position:relative; float:right; width:220px; background-color:#eeeeee; padding: 10px; text-align:center">
 			<b>Chosen Image</b>
