@@ -705,7 +705,7 @@ class UploadManager
 		if ($ok = $image->storeImage($src)) {
 		
 			//store the resized version - just for the moderator to use as a preview
-			$ok = $image->storeImage($orginalfile,false,'_preview');
+			$ok = $image->storeImage($src,false,'_preview');
 
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
