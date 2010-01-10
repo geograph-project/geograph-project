@@ -49,6 +49,8 @@ if (isset($_REQUEST['id']))
 		$template = "static_404.tpl";
 	} else {
 		
+		$image->altUrl = $image->_getOriginalpath(true,false,'_640x640');
+		
 		$style = $USER->getStyle();
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 	}

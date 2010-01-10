@@ -89,9 +89,15 @@ if (isset($_POST['gridimage_id']))
 				//save the pending as original
 				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl,true);
 			
-				//delete the preview - we dont need it
+				
 				if ($image->previewUrl != "/photos/error.jpg") {
-					unlink($_SERVER['DOCUMENT_ROOT'].$image->previewUrl);
+					if (!empty($_POST['confirm'])) {
+						//delete the preview - we dont need it
+						unlink($_SERVER['DOCUMENT_ROOT'].$image->previewUrl);
+					} else {
+						//store the preview as an alterantive fullsize
+						$image->storeImage($_SERVER['DOCUMENT_ROOT'].$image->previewUrl,true,'_640x640');
+					}
 				}
 
 
