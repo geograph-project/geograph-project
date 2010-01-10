@@ -120,6 +120,10 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 					<td valign="top">{$original_width} x {$original_height}<br/><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}"/></a>
+					
+					{if $image->originalSize}
+						<br/>Filesize: {$image->originalSize|thousends} bytes
+					{/if}
 					</td>
 				{/if}
 				</tr>
