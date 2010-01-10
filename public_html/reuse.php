@@ -47,6 +47,15 @@ if (isset($_REQUEST['id']))
 		$template = "static_404.tpl";
 	} else {
 		if (isset($_REQUEST['download']) && $_REQUEST['download'] == $image->_getAntiLeechHash()) {
+			
+			if ( (stripos($_SERVER['HTTP_REFERER'], 'seadragon.com')!==FALSE) {
+				header("HTTP/1.0 307 Temporary Redirect");
+				header("Status: 307 Temporary Redirect");
+				header("Location: /photo/".intval($_REQUEST['id']));
+				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_REQUEST['id'])."\">View image page</a>";
+				exit;
+			}
+			
 			switch($_REQUEST['size']) {
 				case 640:
 				case 800:
