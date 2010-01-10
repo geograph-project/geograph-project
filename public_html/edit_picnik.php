@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: editimage.php 3310 2007-04-26 21:41:21Z barry $
+ * $Id$
  *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -23,9 +23,13 @@
 
 
 require_once('geograph/global.inc.php');
-require_once('geograph/gridimage.class.php');
-require_once('geograph/gridsquare.class.php');
-require_once('geograph/gridimagetroubleticket.class.php');
+if (isset($_GET['preview'])) {
+	session_cache_limiter('none');
+} else {
+	require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridsquare.class.php');
+	require_once('geograph/gridimagetroubleticket.class.php');
+}
 require_once('geograph/uploadmanager.class.php');
 
 

@@ -18,6 +18,11 @@
 
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+	{if $image->original_width}
+		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">More sizes</a></div>
+	{elseif $user->user_id eq $image->user_id}
+		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
+	{/if}
   {if $thumb}
   	{if $isadmin}
   		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=0" style="font-size:0.6em">Switch to full Image</a>

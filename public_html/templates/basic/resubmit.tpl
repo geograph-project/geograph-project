@@ -118,14 +118,20 @@ function selectImage(that) {
 			document.images[q].style.border='2px solid white';
 		}
 	}
+	document.getElementById("step3").style.display = '';
 	return true;
+}
+
+function hideStep3() {
+	document.getElementById("step3").style.display = 'none';
 }
 	{/literal}
 	
+ AttachEvent(window,'load',hideStep3,false);
 
 </script>
 
-
+<div id="step3">
 <h3>Step 3 : Confirm image rights</h3>
 
 	<p>
@@ -157,7 +163,7 @@ function selectImage(that) {
 	<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);"/> 
 	
 	</p>
-	
+</div>	
 		{else}
 			<h3>Error: file not big enough, please click: 
 			<input style="background-color:pink; width:200px" type="submit" name="abandon" value="Abandon upload"/>
