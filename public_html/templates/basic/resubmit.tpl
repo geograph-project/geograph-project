@@ -97,8 +97,8 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 				
 				{if $original_width > $last_width || $original_height > $last_height}
 
-					<td valign="top"><input type="radio" name="largestsize" value="8192" id="large8192" onclick="selectImage(this)"/> {$original_width} x {$original_height}<br/><br/>
-					<label for="large8192"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}" name="large8192" style="border:2px solid white"/></label>
+					<td valign="top"><input type="radio" name="largestsize" value="65536" id="large65536" onclick="selectImage(this)"/> {$original_width} x {$original_height}<br/><br/>
+					<label for="large65536"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}" name="large65536" style="border:2px solid white"/></label>
 					</td>
 				{/if}
 				</tr>
