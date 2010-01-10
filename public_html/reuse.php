@@ -48,7 +48,7 @@ if (isset($_REQUEST['id']))
 	} else {
 		if (isset($_REQUEST['download']) && $_REQUEST['download'] == $image->_getAntiLeechHash()) {
 			
-			if ( (stripos($_SERVER['HTTP_REFERER'], 'seadragon.com')!==FALSE) {
+			if (stripos($_SERVER['HTTP_REFERER'], 'seadragon.com')!==FALSE) {
 				header("HTTP/1.0 307 Temporary Redirect");
 				header("Status: 307 Temporary Redirect");
 				header("Location: /photo/".intval($_REQUEST['id']));
