@@ -60,6 +60,24 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 					{assign var="last_height" value=$preview_height} 
 					</td>
 				
+				{if $image->altUrl != "/photos/error.jpg"}
+					{assign var="preview_url" value=$image->altUrl}
+					
+					{if $original_width>$original_height}
+						{assign var="resized_width" value=640}
+						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
+					{else}
+						{assign var="resized_height" value=640}
+						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
+					{/if}
+					
+					<td valign="top">{$resized_width} x {$resized_height}<br/><br/>
+					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
+					{assign var="last_width" value=$resized_width}
+					{assign var="last_height" value=$resized_height}
+					</td>
+				{/if}
+				
 				{if $original_width > 800 || $original_height > 800}
 					
 					{if $original_width>$original_height}
@@ -104,7 +122,15 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 			</table>
 			<p>Preview{if $last_width > 640 || $last_height > 640}s{/if} shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size{if $ratio ne 1} - NOT representive of the final quality{/if}.</p>		
 			
+		{if $image->original_width}
+			<form action="http://www.seadragon.com/create/" method="post" enctype="application/x-www-form-urlencoded"> 
 
+				<input name="url" type="hidden" value="http://{$http_host}/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original" /> 
+
+				<input type="submit" value="View largest image on seadragon.com" />  <sup style="color:red">Experimental</sup>
+
+			</form> 
+		{/if}
 
 
 

@@ -48,6 +48,7 @@ if (isset($_REQUEST['id']))
 	} else {
 		if (isset($_REQUEST['download']) && $_REQUEST['download'] == $image->_getAntiLeechHash()) {
 			switch($_REQUEST['size']) {
+				case 640:
 				case 800:
 				case 1024: 
 					$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']),intval($_REQUEST['size']));
