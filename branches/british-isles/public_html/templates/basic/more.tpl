@@ -44,7 +44,11 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 {if $image->original_width}
 	{assign var="original_width" value=$image->original_width}
 	{assign var="original_height" value=$image->original_height}
-	{math equation="o/180" o=$original_width assign="ratio"}
+	{if $image->original_width > 4000}
+		{math equation="o/320" o=$original_width assign="ratio"}
+	{else}
+		{math equation="o/180" o=$original_width assign="ratio"}
+	{/if}
 	<p>Click a thumbnail to download the JPEG file...</p>
 {else}
 	{assign var="ratio" value=1}
