@@ -43,6 +43,8 @@
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	{if $image->original_width}
 		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">More sizes</a></div>
+	{elseif $user->user_id eq $image->user_id}
+		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
