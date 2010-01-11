@@ -8,27 +8,33 @@
 	<div style="border:1px solid red; padding:10px;">{$message}</div>
 {/if}
     
-{if $saved}
-	<h3>Saved</h3>
-	{if $id}<p><a href="/admin/contact.php?id={$id}">Edit Contact</a></p>{/if}
-	<p><a href="/admin/contact.php">Return to list</a></p>
-{/if}
 
 {if $inject}
+	{if $saved}
+		<h3>Saved</h3>
+		<p><a href="/admin/contact.php">Return to list</a></p>
+		<hr/>
+	{/if}
+	
 	<form action="{$script_name}?inject" method="post">
 	
-	<p>Paste WHOLE message direct from Google Mail - automatically extracts variables</p>
+	<p>Paste WHOLE message direct including headers from the Google Mail webpage - automatically extracts variables</p>
 	
 	<textarea name="msg" rows="20" cols="80">{$value|escape:'html'}</textarea><br/>
 		
 	<input type="submit" value="Save"/>	
 			
 	</form>
+		
 
+{elseif $saved}
+	<h3>Saved</h3>
+	<p><a href="/admin/contact.php?id={$id}">Edit Contact</a></p>
+	<p><a href="/admin/contact.php">Return to list</a></p>
 {elseif $id} 
 
 
-	<form action="{$script_name}" method="post">
+	<form action="{$script_name}?id={$row.contact_id}" method="post">
 		<table cellpadding="3" cellspacing="0" style="font-size:0.8em">
 		{foreach key=name item=value from=$row name=loop}
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'">
