@@ -53,6 +53,19 @@ if (isset($_POST['msg']))
 				die("Spam, Spam, Eggs, Spam, Cheese and Spam!");
 			}
 		
+			$db = GeographDatabaseConnection(false);
+
+			$updates = array();
+
+			$updates['referring_page'] = $_POST['referring_page'];
+			$updates['from'] = $from;
+			$updates['subject'] = $subject;
+			$updates['msg'] = $msg;
+			$updates['user_id'] = $USER->user_id;
+			$updates['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+			
+			$db->Execute('INSERT INTO contactform SET created=NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+			
 			if (strlen($subject)==0)
 				$subject='Re: '.$_SERVER['HTTP_HOST'];
 			
@@ -62,11 +75,16 @@ if (isset($_POST['msg']))
 				$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
 			$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
 			
+			$token=new Token;
+			$token->setValue("id", intval($db->Insert_ID()));
+			$msg.="Admin: http://{$_SERVER['HTTP_HOST']}/admin/contact.php?t=".$token->getToken()."\n";
+
 			mail($CONF['contact_email'], 
 				'[Geograph] '.$subject,
 				$msg,
 				'From:'.$from);	
 
+		
 			$smarty->assign('message_sent', true);
 		}
 		else
