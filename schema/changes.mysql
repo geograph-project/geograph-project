@@ -957,3 +957,30 @@ alter table gridimage_pending add `updated` timestamp on update current_timestam
 
 
 #################################################
+
+
+ALTER TABLE `gridimage_pending` CHANGE `status` `status` ENUM('new','open','accepted','confirmed','rejected') NOT NULL DEFAULT 'new';
+
+
+#################################################
+
+
+CREATE TABLE IF NOT EXISTS `contactform` (
+  `contact_id` int(10) unsigned NOT NULL auto_increment,
+  `created` datetime NOT NULL,
+  `referring_page` varchar(255) NOT NULL,
+  `from` varchar(128) NOT NULL,
+  `subject` varchar(128) NOT NULL,
+  `msg` varchar(60000) NOT NULL,
+  `user_agent` varchar(255) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `status` enum('new','open','delt','spam') NOT NULL default 'new',
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `moderator_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`contact_id`), 
+  KEY (`status`)
+) ENGINE=MyISAM ;
+
+
+#################################################
+
