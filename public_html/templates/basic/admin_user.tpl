@@ -34,7 +34,7 @@
 			 	<td><textarea name="{$name}" rows="3" cols="60">{$value|escape:'html'}</textarea></td>
 			 {elseif $desc.$name.Type == 'text'}
 			 	<td><textarea name="{$name}" rows="6" cols="60">{$value|escape:'html'}</textarea></td>
-			  {elseif $name == 'password'}
+			 {elseif $name == 'password'}
 			 	<td><input type="password" name="{$name}" value="{$value|escape:'html'}" size="{$desc.$name.size}" maxlength="{$desc.$name.maxlength}"></td>
 			 {else}
 			 	<td><input type="text" name="{$name}" value="{$value|escape:'html'}" size="{$desc.$name.size}" maxlength="{$desc.$name.maxlength}"></td>
