@@ -339,6 +339,9 @@ if (isset($_POST['gridsquare']))
 						$smarty->assign('error', $uploadmanager->errormsg);
 						$uploadmanager->errormsg = '';
 					}
+					
+					$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg']['name'])));
+
 					break;
 				case UPLOAD_ERR_INI_SIZE:
 				case UPLOAD_ERR_FORM_SIZE:
@@ -442,7 +445,8 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
 				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
-				
+				$uploadmanager->setLargestSize($_POST['largestsize']);
+			
 				if ($_POST['pattrib'] == 'other') {
 					$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
 					$smarty->assign('credit_realname',$_POST['pattrib_name']);
@@ -556,6 +560,12 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
+			
+			if ($uploadmanager->initOriginalUploadSize() && $uploadmanager->hasoriginal) {
+				$smarty->assign('original_width', $uploadmanager->original_width);
+				$smarty->assign('original_height', $uploadmanager->original_height);
+			}
+			
 		} elseif ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 

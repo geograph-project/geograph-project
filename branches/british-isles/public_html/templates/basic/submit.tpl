@@ -200,7 +200,7 @@ geographing</a> first.</p>
 		<input id="jpeg" name="jpeg" type="file" />
 		
 		{/if}
-		<div><small><small style="color:gray"><i>If your image is over 640 pixels in either direction, it will be resized. If you have presized please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>
+		<div><small><small><i>If your image is over 640 pixels in either direction, <b>you will be offered chance to upload the largest version</b> <sup style="color:red">new!</sup>. <br/>If you have presized please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<br />
 		<p>You might like to check you've selected the correct square<br/> by
@@ -332,10 +332,6 @@ for {$gridref} provided they are accurately located, but may not qualify as geog
 <li>We welcome many Geograph or Supplemental images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</li>
 </ul>
 
-</div>
-
-<div style="float:right;position:relative;z-index:110">
-<img src="{$preview_url}" width="{$preview_width*0.5|string_format:"%d"}" height="{$preview_height*0.5|string_format:"%d"}" alt="low resolution reminder image"/>	
 </div>
 
 <p>If you like, you can provide more images or extra information (which
@@ -489,7 +485,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <p>
 <input type="hidden" name="upload_id" value="{$upload_id}"/>
 <input type="hidden" name="savedata" value="1"/>
-<input type="submit" name="goback" value="&lt; Back"/>
+<input type="submit" name="goback" value="&lt; Back" onclick="return confirm('Please confirm. Current details will be lost');"/>
 <input type="submit" name="next" value="Next &gt;"/></p>
 
 {if $use_autocomplete}
@@ -520,11 +516,18 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 	
-	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
+	{if $original_width}
+	
+		<h2>Submit Step 4A: Confirm image size</h2>
+		
+		{include file="_submit_sizes.tpl"}
+		
+		<h2>Submit Step 4B: Confirm image rights</h2>
+	{else}
+		<h2>Submit Step 4 of 4 : Confirm image rights</h2>
+	{/if}
 
-<div style="float:right;position:relative;">
-<img src="{$preview_url}" width="{$preview_width*0.3|string_format:"%d"}" height="{$preview_height*0.3|string_format:"%d"}" alt="low resolution reminder image" hspace="10"/>	
-</div>
+	
 	{if $user->stats.images && $user->stats.images > 100 && $last_imagetaken}
 
 	<div style="border:1px solid gray; padding:10px">I've read this already, <input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);autoDisable(this.form.finalise[1]);"/><br/> (saves scrolling to the bottom)</div>
@@ -636,8 +639,24 @@ have problems
 	</form>
 {/if}
 
+{if $preview_url}
 
+	<div style="position:fixed;left:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
+	<div id="previewInner"></div></div>
 
+<script type="text/javascript">
+{literal}
+function showPreview(url,width,height,filename) {
+	height2=Math.round((148 * height)/width);
+	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="148" height="'+height2+'" id="imgPreview" onmouseover="this.height='+height+';this.width='+width+'" onmouseout="this.height='+height2+';this.width=148" /><br/>'+filename;
+	document.getElementById('hidePreview').style.display='';
+}
+ AttachEvent(window,'load',function () {showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height},'{$filename|escape:'javascript'}'{literal}) },false);
+
+{/literal}
+</script>
+
+{/if}
 
 
 {/dynamic}

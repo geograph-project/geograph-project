@@ -54,12 +54,12 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	{assign var="ratio" value=1}
 {/if}
 
-			<table style="font-weight:bold" cellspacing="0" border="1" bordercolor="#cccccc" cellpadding="10">
+			<table style="font-weight:bold;text-align:center" cellspacing="0" border="1" bordercolor="#cccccc" cellpadding="0">
 				<tr>
 				
-					<td valign="top">{$preview_width} x {$preview_height}<br/><br/>
+					<td valign="top"><div class="interestBox">{$preview_width} x {$preview_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}"/></a><br/><br/>
-					<small>(as shown on photo page)</small>
+					<small>as shown on<br/> photo page</small>
 					{assign var="last_width" value=$preview_width} 
 					{assign var="last_height" value=$preview_height} 
 					</td>
@@ -75,7 +75,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
 					{/if}
 					
-					<td valign="top">{$resized_width} x {$resized_height}<br/><br/>
+					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
 					{assign var="last_width" value=$resized_width}
 					{assign var="last_height" value=$resized_height}
@@ -92,7 +92,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
 					{/if}
 					
-					<td valign="top">{$resized_width} x {$resized_height}<br/><br/>
+					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
 					{assign var="last_width" value=$resized_width}
 					{assign var="last_height" value=$resized_height}
@@ -109,7 +109,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
 					{/if}
 					
-					<td valign="top">{$resized_width} x {$resized_height}<br/><br/>
+					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
 					{assign var="last_width" value=$resized_width}
 					{assign var="last_height" value=$resized_height}
@@ -118,11 +118,11 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 				
 				{if $original_width > $last_width || $original_height > $last_height}
 
-					<td valign="top">{$original_width} x {$original_height}<br/><br/>
+					<td valign="top"><div class="interestBox">{$original_width} x {$original_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}"/></a>
 					
 					{if $image->originalSize}
-						<br/>Filesize: {$image->originalSize|thousends} bytes
+						<br/><br/><div class="interestBox">Filesize: {$image->originalSize|thousends} bytes</div>
 					{/if}
 					</td>
 				{/if}
