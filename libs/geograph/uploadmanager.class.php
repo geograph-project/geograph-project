@@ -445,6 +445,27 @@ class UploadManager
 		return $ok;
 	}
 
+	function initOriginalUploadSize()
+	{
+		$this->original_width=0;
+		$this->original_height=0;
+		$ok=false;
+		
+		if($this->validUploadId($this->upload_id))
+		{
+			$orginalfile = $this->_originalJPEG($this->upload_id);
+			if (@file_exists($orginalfile))
+			{
+				$this->hasoriginal = true;
+				$s=getimagesize($orginalfile);
+				$this->original_width=$s[0];
+				$this->original_height=$s[1];
+				$ok=true;
+			}
+		}
+		return $ok;
+	}
+
 	function _downsizeFile($filename,$max_dimension) {
 		global $USER,$CONF;
 		
