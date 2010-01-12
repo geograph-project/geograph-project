@@ -12,98 +12,25 @@
 	
 	{if $success}
 		{if $grid_reference}
-		<input type="hidden" name="grid_reference" value="{$grid_reference|escape:'html'}"/>
+			<input type="hidden" name="grid_reference" value="{$grid_reference|escape:'html'}"/>
 		{/if}
 		{if $photographer_gridref}
-		<input type="hidden" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}"/>
+			<input type="hidden" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}"/>
 		{/if}
 		{if $upload_id}
-		<input type="hidden" name="upload_id" value="{$upload_id|escape:'html'}"/>
+			<input type="hidden" name="upload_id" value="{$upload_id|escape:'html'}"/>
 		{/if}
 		{if $imagetaken}
-		<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
+			<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 		{/if}
 		
 		{if $original_width}
-			<div>Please choose the size you wish to upload: <sup style="color:red">New!</sup></div>
-		
-			{math equation="o/180" o=$original_width assign="ratio"}
 			
-			<table style="font-weight:bold" cellspacing="0" border="1" bordercolor="#cccccc">
-				<tr>
-				
-					<td valign="top"><input type="radio" name="largestsize" checked value="640" id="large640" onclick="selectImage(this)"/> {$preview_width} x {$preview_height}<br/><br/>
-					<label for="large640"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}" name="large640" style="border:2px solid blue"/></label><br/><br/>
-					<small>(as shown on<br/> photo page)</small>
-					{assign var="last_width" value=$preview_width} 
-					{assign var="last_height" value=$preview_height} 
-					</td>
-				
-				{if $original_width > 800 || $original_height > 800}
-					
-					{if $original_width>$original_height}
-						{assign var="resized_width" value=800}
-						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
-					{else}
-						{assign var="resized_height" value=800}
-						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
-					{/if}
-					
-					<td valign="top"><input type="radio" name="largestsize" value="800" id="large800" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
-					<label for="large800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large800" style="border:2px solid white"/></label>
-					{assign var="last_width" value=$resized_width}
-					{assign var="last_height" value=$resized_height}
-					</td>
-				{/if}
-				
-				{if $original_width > 1024 || $original_height > 1024}
-					
-					{if $original_width>$original_height}
-						{assign var="resized_width" value=1024}
-						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
-					{else}
-						{assign var="resized_height" value=1024}
-						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
-					{/if}
-					
-					<td valign="top"><input type="radio" name="largestsize" value="1024" id="large1024" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
-					<label for="large1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large1024" style="border:2px solid white"/></label>
-					{assign var="last_width" value=$resized_width}
-					{assign var="last_height" value=$resized_height}
-					</td>
-				{/if}
-				
-				{if $original_width > 1600 || $original_height > 1600}
-					
-					{if $original_width>$original_height}
-						{assign var="resized_width" value=1600}
-						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
-					{else}
-						{assign var="resized_height" value=1600}
-						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
-					{/if}
-					
-					<td valign="top"><input type="radio" name="largestsize" value="1600" id="large1600" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
-					<label for="large1600"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large1600" style="border:2px solid white"/></label>
-					{assign var="last_width" value=$resized_width}
-					{assign var="last_height" value=$resized_height}
-					</td>
-				{/if}
-				
-				{if $original_width > $last_width || $original_height > $last_height}
-
-					<td valign="top"><input type="radio" name="largestsize" value="65536" id="large65536" onclick="selectImage(this)"/> {$original_width} x {$original_height}<br/><br/>
-					<label for="large65536"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}" name="large65536" style="border:2px solid white"/></label>
-					</td>
-				{/if}
-				</tr>
-			</table>
-			Previews shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size - NOT representive of the final quality. Even if choose a larger size, we will still make the smaller sizes available too.
-			
+			{include file="_submit_sizes.tpl"}
 			
 		{elseif $preview_url}
-		<h2>Image Uploaded</h2>
-		<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
+			<h2>Image Uploaded</h2>
+			<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
 		{/if}
 		
 		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1">Upload a different image</a></p>
@@ -111,7 +38,7 @@
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
-		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - <sup style="color:red">New!</sup>)<br/>	
+		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto 8Mb filesize <sup style="color:red">New!</sup>)<br/>	
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/></div>
 		<div>
@@ -166,18 +93,6 @@
 {/if}
 	{literal}
 		AttachEvent(window,'load',function() { setTimeout("setupTheForm()",100); },false);
-
-
-function selectImage(that) {
-	for(q=0;q<document.images.length;q++) {
-		if (document.images[q].name && document.images[q].name == that.id) {
-			document.images[q].style.border='2px solid blue';
-		} else {
-			document.images[q].style.border='2px solid white';
-		}
-	}
-	return true;
-}
 	{/literal}
 	
 {/dynamic}

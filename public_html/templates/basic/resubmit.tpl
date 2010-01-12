@@ -36,100 +36,19 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 <h3>Step 2 : Confirm image size</h3>
 
 		{if $original_width}
-			<div>Please choose the size you wish to upload:</div>
-		
-			{math equation="o/180" o=$original_width assign="ratio"}
-			{assign var="last_width" value=0}
 			
-			<table style="font-weight:bold" cellspacing="0" border="1" bordercolor="#cccccc">
-				<tr>
-				
-				{if $original_width > 800 || $original_height > 800}
-					
-					{if $original_width>$original_height}
-						{assign var="resized_width" value=800}
-						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
-					{else}
-						{assign var="resized_height" value=800}
-						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
-					{/if}
-					
-					<td valign="top"><input type="radio" name="largestsize" value="800" id="large800" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
-					<label for="large800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large800" style="border:2px solid white"/></label>
-					{assign var="last_width" value=$resized_width}
-					{assign var="last_height" value=$resized_height}
-					</td>
-				{/if}
-				
-				{if $original_width > 1024 || $original_height > 1024}
-					
-					{if $original_width>$original_height}
-						{assign var="resized_width" value=1024}
-						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
-					{else}
-						{assign var="resized_height" value=1024}
-						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
-					{/if}
-					
-					<td valign="top"><input type="radio" name="largestsize" value="1024" id="large1024" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
-					<label for="large1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large1024" style="border:2px solid white"/></label>
-					{assign var="last_width" value=$resized_width}
-					{assign var="last_height" value=$resized_height}
-					</td>
-				{/if}
-				
-				{if $original_width > 1600 || $original_height > 1600}
-					
-					{if $original_width>$original_height}
-						{assign var="resized_width" value=1600}
-						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
-					{else}
-						{assign var="resized_height" value=1600}
-						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
-					{/if}
-					
-					<td valign="top"><input type="radio" name="largestsize" value="1600" id="large1600" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
-					<label for="large1600"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large1600" style="border:2px solid white"/></label>
-					{assign var="last_width" value=$resized_width}
-					{assign var="last_height" value=$resized_height}
-					</td>
-				{/if}
-				
-				{if $original_width > $last_width || $original_height > $last_height}
+			{assign var="hide640" value=1}
+			{include file="_submit_sizes.tpl"}
 
-					<td valign="top"><input type="radio" name="largestsize" value="65536" id="large65536" onclick="selectImage(this)"/> {$original_width} x {$original_height}<br/><br/>
-					<label for="large65536"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}" name="large65536" style="border:2px solid white"/></label>
-					</td>
-				{/if}
-				</tr>
-			</table>
-			Previews shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size - NOT representive of the final quality. Even if choose a larger size, we will still make the smaller sizes available too.
-			
-			
-
-<script type="text/javascript">
-	{literal}
-
-function selectImage(that) {
-	for(q=0;q<document.images.length;q++) {
-		if (document.images[q].name && document.images[q].name == that.id) {
-			document.images[q].style.border='2px solid blue';
-		} else {
-			document.images[q].style.border='2px solid white';
-		}
-	}
-	document.getElementById("step3").style.display = '';
-	return true;
-}
+<script type="text/javascript">{literal}
 
 function hideStep3() {
 	document.getElementById("step3").style.display = 'none';
 }
-	{/literal}
-	
+
  AttachEvent(window,'load',hideStep3,false);
 
-</script>
+{/literal}</script>
 
 <div id="step3">
 <h3>Step 3 : Confirm image rights</h3>
