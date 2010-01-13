@@ -82,9 +82,9 @@
  </tr> <tr><td colspan="7" style="background-color:gray;line-height:3px">.</td></tr>
  <tr>
   <td>Upload larger than 640px</td>
-  <td></td>
   <td style="background-color:lightgreen" align="center">* <sup style="color:red">new!</sup></td>
-  <td></td>
+  <td style="background-color:lightgreen" align="center">*</td>
+  <td style="background-color:lightgreen" align="center">* <sup style="color:red">new!</sup></td>
   <td></td>
   <td></td>
   <td></td>

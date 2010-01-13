@@ -81,7 +81,7 @@
 <ul>
 	<li>Previews shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size - NOT representive of the final quality.</li>
 	<li>Even if choose a larger size, we will still make the smaller sizes available too.</li>
-	<li>Only choose the maximum size you willing to release under the Creative Commons Licence.</li>
+	<li>Only choose the maximum size you are willing to release under the Creative Commons Licence.</li>
 </ul>
 
 <script type="text/javascript">{literal}
