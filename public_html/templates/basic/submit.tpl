@@ -518,11 +518,11 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	
 	{if $original_width}
 	
-		<h2>Submit Step 4A: Confirm image size</h2>
+		<h2>Submit Step 4 of 4: Confirm image size and rights</h2>
 		
 		{include file="_submit_sizes.tpl"}
 		
-		<h2>Submit Step 4B: Confirm image rights</h2>
+		<hr/>
 	{else}
 		<h2>Submit Step 4 of 4 : Confirm image rights</h2>
 	{/if}
