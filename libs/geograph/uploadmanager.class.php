@@ -578,7 +578,7 @@ class UploadManager
 	/**
 	* commit the upload process
 	*/
-	function commit()
+	function commit($method = '')
 	{
 		global $USER,$CONF,$memcache;
 		
@@ -698,6 +698,10 @@ class UploadManager
 		$this->db->Execute($sql = "UPDATE gridimage_snippet SET gridimage_id = $gridimage_id WHERE gridimage_id = ".$gid);
 		
 		$this->gridimage_id = $gridimage_id;
+		
+		if (!empty($method)) {
+			$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method'");
+		}
 	}
 
 
