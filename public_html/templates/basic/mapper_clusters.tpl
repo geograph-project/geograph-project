@@ -64,6 +64,10 @@
 		map.addControl(new GLargeMapControl());
 		map.addControl(new GMapTypeControl());
 		map.addControl(new GScaleControl());
+
+		map.enableDoubleClickZoom(); 
+		map.enableContinuousZoom();
+		map.enableScrollWheelZoom();
 	
 	//
 		var mapType = G_PHYSICAL_MAP;
@@ -94,6 +98,7 @@
 				if (argname == "t") {
 					if (value == "m") {mapType = G_NORMAL_MAP;}
 					if (value == "k") {mapType = G_SATELLITE_MAP;}
+					if (value == "c") {mapType = G_SATELLITE_MAP;} //Aerial Perspective Imagery maptypes have c??
 					if (value == "h") {mapType = G_HYBRID_MAP;}
 					if (value == "p") {mapType = G_PHYSICAL_MAP;}
 					if (value == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
