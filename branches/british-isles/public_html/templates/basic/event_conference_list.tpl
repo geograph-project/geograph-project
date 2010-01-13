@@ -27,8 +27,11 @@
 	<td>Nickname</td>
 	<td>Speaking</td>
 	<td>Confirmed</td>
+	{if $cancelled}
 	<td>Cancelled</td>
+	{/if}
 	<td>Emailed</td>
+	<td>Emailed2</td>
 	<td>Sent Call</td>
 	<td>Comments?</td>
 </tr></thead>
@@ -42,8 +45,11 @@
 		<td>{$item.Nickname|escape:'html'}</td>
 		<td>{$item.Speaking|escape:'html'}</td>
 		<td sortvalue="{$item.confirmed}" class="nowrap">{if $item.confirmed > 0}{$item.confirmed|date_format:"%a, %e %b %Y"}{else}-{/if}</td>
+		{if $cancelled}
 		<td sortvalue="{$item.cancelled}" class="nowrap">{if $item.cancelled > 0}{$item.cancelled|date_format:"%a, %e %b %Y"}{else}-{/if}</td>
+		{/if}
 		<td sortvalue="{$item.emailed}" class="nowrap">{if $item.emailed > 0}{$item.emailed|date_format:"%a, %e %b %Y"}{else}-{/if}</td>
+		<td sortvalue="{$item.emailed2}" class="nowrap">{if $item.emailed2 > 0}{$item.emailed2|date_format:"%a, %e %b %Y"}{else}-{/if}</td>
 		<td sortvalue="{$item.sentspeaker}" class="nowrap">{if $item.sentspeaker > 0}{$item.sentspeaker|date_format:"%a, %e %b %Y"}{else}-{/if}</td>
 		<td sortvalue="{$item.comments}">{if $item.comments > 0}<a href="?action=viewcomments&amp;entry_id={$item.entry_id}">{$item.comments}</a>{else}-{/if}</td>
 		
@@ -57,8 +63,11 @@
 	<td>.</td>
 	<td>{$total.Speaking}</td>
 	<td>{$total.Confirmed}</td>
+	{if $cancelled}
 	<td>{$total.Cancelled}</td>
+	{/if}
 	<td>{$total.Emailed}</td>
+	<td>{$total.Emailed2}</td>
 </tr></tfoot>
 </table>
 {else}
