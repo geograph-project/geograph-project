@@ -458,7 +458,7 @@ if (isset($_POST['gridsquare']))
 				}
 				
 				
-				$err = $uploadmanager->commit();
+				$err = $uploadmanager->commit('submit');
 				
 				if ($_POST['imagetaken'] != '0000-00-00') {
 					$_SESSION['last_imagetaken'] = $_POST['imagetaken'];

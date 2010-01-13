@@ -202,7 +202,7 @@ if (isset($_FILES['jpeg_exif']))
 			$ok = $uploadmanager->setUploadId($_POST['upload_id'][$key]);
 
 			if ($ok) {
-				$err = $uploadmanager->commit();
+				$err = $uploadmanager->commit(isset($_GET['nofrills'])?'nofrills':'submit2');
 
 				if (empty($err)) { 
 					$status[$key] = "ok:".$uploadmanager->gridimage_id;

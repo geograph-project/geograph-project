@@ -43,6 +43,8 @@
 			{/foreach}
 		</select> (no automatic selection)</div> 
 		
+		
+		
 		<div><span style="width:120px;display:block;float:left"><b>Title</b>:</span><input type="text" name="title[{$key}]" value="" size="50" maxlength="128"/></div>
 		
 		<div><span style="width:120px;display:block;float:left">Description:</span><textarea name="comment[{$key}]" cols="60" rows="5" wrap="soft"></textarea></div>  
@@ -61,7 +63,8 @@
 				<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I> box</a> ({newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"})</div>
 			</div></p>
 			
-
+		<div><span style="width:120px;display:block;float:left">Largest Size:</span><input type="text" name="largestsize[{$key}]" value="" size="4"/> pixels (default 640px)</div>
+		
 
 	</div>	
 	

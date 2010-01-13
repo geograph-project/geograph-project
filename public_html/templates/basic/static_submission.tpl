@@ -85,7 +85,7 @@
   <td style="background-color:lightgreen" align="center">* <sup style="color:red">new!</sup></td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td style="background-color:lightgreen" align="center">* <sup style="color:red">new!</sup></td>
-  <td></td>
+  <td style="background-color:lightgreen" align="center">* <sup style="color:red">new!</sup></td>
   <td></td>
   <td></td>
  </tr>

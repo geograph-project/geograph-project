@@ -98,7 +98,7 @@ if (isset($_GET['success'])) {
 			$ok = $uploadmanager->processUpload($_FILES[$files_key]['tmp_name']);
 
 			if ($ok) {
-				$err = $uploadmanager->commit();
+				$err = $uploadmanager->commit('puploader');
 
 				if (empty($err)) { 
 					$status[$key] = "ok:".$uploadmanager->gridimage_id;
