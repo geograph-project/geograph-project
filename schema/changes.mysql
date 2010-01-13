@@ -984,6 +984,15 @@ CREATE TABLE IF NOT EXISTS `contactform` (
 
 #################################################
 
+
 create table submission_method (gridimage_id int unsigned primary key,method enum('submit','submit2','nofrills','puploader','juploader') default null );
 
+
 #################################################
+
+
+ALTER TABLE  `conference_registration` ADD  `emailed2` DATETIME NOT NULL AFTER  `emailed` ;
+
+
+#################################################
+

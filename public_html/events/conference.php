@@ -39,8 +39,15 @@ if (!empty($_GET['action']))
 	switch ($_GET['action']) {
 		case 'listall':
 			$USER->mustHavePerm('admin');
-		
-			$data = $db->getAll("SELECT cr.*,sum(comment != '') as comments FROM conference_registration cr LEFT JOIN conference_comment cc USING (entry_id) WHERE cancelled = 0 GROUP BY entry_id");
+			
+			if (!empty($_GET['cancelled'])) {
+				$where = 1;
+				$smarty->assign("cancelled",1);
+			} else {
+				$where = "cancelled = 0";
+			}
+			
+			$data = $db->getAll("SELECT cr.*,sum(comment != '') as comments FROM conference_registration cr LEFT JOIN conference_comment cc USING (entry_id) WHERE $where GROUP BY entry_id");
 		
 			$smarty->assign_by_ref("data",$data);
 			
@@ -55,6 +62,8 @@ if (!empty($_GET['action']))
 					$total['Cancelled']++;
 				if ($row['emailed'] >0)
 					$total['Emailed']++;
+				if ($row['emailed2'] >0)
+					$total['Emailed2']++;
 			}
 			$smarty->assign_by_ref("total",$total);
 			
@@ -131,28 +140,48 @@ if (!empty($_GET['action']))
 			break;
 			
 		case 'sendemail':
+		case 'send2ndemail':
 			$USER->mustHavePerm('admin');
+			
 			
 			if (!empty($_GET['entry_id'])) {
 				$entry_id = intval($_GET['entry_id']);
-				$data = $db->getAll("SELECT * FROM conference_registration WHERE confirmed = 0 AND cancelled = 0 AND entry_id = $entry_id");
+				
+				$where = "confirmed = 0 AND cancelled = 0 AND entry_id = $entry_id";
+			
+			} elseif ($_GET['action'] == 'send2ndemail' ) {
+				$where = "confirmed = 0 AND cancelled = 0 AND emailed2 = 0
+					AND emailed > 0 AND emailed < DATE_SUB(NOW(),INTERVAL 7 DAY)";
+			
 			} else {
-				$data = $db->getAll("SELECT * FROM conference_registration WHERE confirmed = 0 AND cancelled = 0 AND emailed = 0 LIMIT 10");
+				$where = "confirmed = 0 AND cancelled = 0 AND emailed = 0";
 			}
+			
+			
+			$data = $db->getAll("SELECT * FROM conference_registration WHERE $where LIMIT 10");
 			
 			$from_email = "conference@barryhunter.co.uk";
 			$from_name = "Geograph Conference";
 			
+			if ($_GET['action'] == 'send2ndemail' ) {
+				$subject = "[Geograph] Conference Registration Reminder";
+			} else {
+				$subject = "[Geograph] Conference Registration Confirmation";
+			}
+			
 			foreach ($data as $idx => $row) {
 				
 				$email = $row['Email'];
-				$subject = "[Geograph] Conference Registration Confirmation";
+				
 				$body = "Dear {$row['Name']},\n\n";
 				
 				$body .= "Thank you for your interest in attending the first Geograph Conference, 17th Feb 2010 in Southampton.\n\n";
 				
-				$body .= "We are pleased to say this message confirms your place should you still be able to attend, please click the link below and confirm!\n\n";
-				
+				if ($_GET['action'] == 'send2ndemail' ) {
+					$body .= "We have previouslly sent a message to confirm your place, however please click the link below to confirm your attendance!\n\n";
+				} else {
+					$body .= "We are pleased to say this message confirms your place should you still be able to attend, please click the link below and confirm!\n\n";
+				}
 				
 				$body = wordwrap($body);
 				
@@ -163,7 +192,9 @@ if (!empty($_GET['action']))
 	
 				$body .= "http://{$_SERVER['HTTP_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
 							
-				$body2 = "Please keep this email safe, in case you need to return to the above page, to update your registration should circumstances change.\n\n";		
+				$body2 = "Even if unable to attend, please click the above link and \nclick the 'Please CANCEL my registration' button.\n\n";		
+							
+				$body2 .= "Please keep this email safe, in case you need to return to the above page, to update your registration should circumstances change.\n\n";		
 							
 				$body2.="Kind Regards,\n\n";
 				$body2.="Barry\non behalf of the Geograph Team\n\n";
@@ -172,9 +203,15 @@ if (!empty($_GET['action']))
 				
 				$body = $body.wordwrap($body2);
 				
+				#print "<pre>";
+				#print "subject: $subject<hr/>";
+				#print "$body<hr/>";
+				#exit;
+				
 				if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
 				{
-					$db->query("UPDATE conference_registration SET emailed = NOW() WHERE entry_id = {$row['entry_id']}");
+					$column = ($_GET['action'] == 'send2ndemail')?'emailed2':'emailed';
+					$db->query("UPDATE conference_registration SET $column = NOW() WHERE entry_id = {$row['entry_id']}");
 
 					print "SENT TO $email<br/>";
 				}
