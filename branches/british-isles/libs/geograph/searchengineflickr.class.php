@@ -47,7 +47,7 @@ class SearchEngineFlickr extends SearchEngineBuilder
 	{
 		$db=$this->_getDB();
 		
-		$this->criteria->getSQLParts($);
+		$this->criteria->getSQLParts();
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
 		$this->currentPage = $pg;

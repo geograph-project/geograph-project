@@ -2,7 +2,7 @@
 {include file="_basic_begin.tpl"}
 
 
-<div class="photoguide" style="margin-left:auto;margin-right:auto; ">
+<div class="photoguide" style="margin-left:auto;margin-right:auto; width:470px">
 	<div style="float:left;width:213px">
 		<a title="view full size image" href="/photo/{$image->gridimage_id}" target="_blank">
 		{$image->getThumbnail(213,160)}

@@ -93,14 +93,16 @@ if (!empty($_GET['hide'])) {
 	
 	$db = GeographDatabaseConnection(false);
 	foreach ($results as $result) {
-		$inserts = array();
-		$inserts[] = "created=NOW()";
-		$inserts[] = "include = ".$db->Quote(preg_replace('/^=/','',$result));
-		$inserts[] = "title = ".intval($_GET['title']);
+		if (strlen($result) > 1) {
+			$inserts = array();
+			$inserts[] = "created=NOW()";
+			$inserts[] = "include = ".$db->Quote(preg_replace('/^=/','',$result));
+			$inserts[] = "title = ".intval($_GET['title']);
 
-		$inserts[] = "user_id = ".$USER->user_id;
-				
-		$db->Execute('INSERT IGNORE INTO typo SET '.implode(',',$inserts));
+			$inserts[] = "user_id = ".$USER->user_id;
+			
+			$db->Execute('INSERT IGNORE INTO typo SET '.implode(',',$inserts));
+		}
 	}
 }
 
