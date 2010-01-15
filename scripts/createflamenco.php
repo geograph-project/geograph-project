@@ -112,17 +112,18 @@ fwrite($h['attrs'],"realname	Photographer Credit\n");
 fwrite($h['attrs'],"thumbnail	Thumbnail\n");
 
 $h['facets'] =	fopen("flamenco/facets.tsv",'w');
-fwrite($h['facets'],"user_id Contributor The name of the contributor (not the Photographer/Credit)\n");
+fwrite($h['facets'],"user_id	Contributor	The name of the contributor (not the Photographer/Credit)\n");
 fwrite($h['facets'],"grid_reference	Grid Reference	Subject Location Grid Reference\n");
 fwrite($h['facets'],"moderation_status	Moderation	Moderation Classification\n");
 fwrite($h['facets'],"ftf	First	One if the photo is a 'First'\n");
 fwrite($h['facets'],"imagetaken	Date Taken	The date the photo was taken\n");
 fwrite($h['facets'],"imageclass	Category	Subject Category\n");
 fwrite($h['facets'],"reference_index	Grid	The Country of the photo\n");
+fwrite($h['facets'],"cluster	Cluster	Automatically deduced label for the image\n");
 
 #####################################################
 
-foreach (explode(' ',"user_id grid_reference moderation_status ftf imagetaken imageclass reference_index") as $key) {
+foreach (explode(' ',"user_id grid_reference moderation_status ftf imagetaken imageclass reference_index cluster") as $key) {
 	$h["{$key}_terms"] = fopen("flamenco/{$key}_terms.tsv",'w');
 	$h["{$key}_map"] = fopen("flamenco/{$key}_map.tsv",'w');
 }
@@ -195,6 +196,11 @@ print "$sql\n";
 
 $image = new GridImage;
 
+$months = array(0=>'');
+foreach (range(1,12) as $month) {
+	$months[$month] = date("M",strtotime("2005-$month-04"));
+}
+
 $recordSet = &$db->Execute($sql);
 $t = 1; $c = 1;
 $imagetaken_map = $imageclass_map = array();
@@ -218,16 +224,18 @@ while (!$recordSet->EOF)
 	fwrite($h['moderation_status_map'], 	implode("\t",array($r['gridimage_id'],$r['moderation_status'])). "\n");
 
 	if ($r['ftf'])
-	fwrite($h['ftf_map'], 			implode("\t",array($r['gridimage_id'],$r['ftf'])). "\n");
+		fwrite($h['ftf_map'], 			implode("\t",array($r['gridimage_id'],$r['ftf'])). "\n");
 
-	if (empty($imagetaken_map[$r['imagetaken']])) {
-		$b = explode('-',$r['imagetaken']);
-		fwrite($h['imagetaken_terms'], 	implode("\t",array($t,$b[0],$b[1],$b[2])). "\n");
-		
-		$imagetaken_map[$r['imagetaken']] = $t;
-		$t++;
+	if (strpos($r['imagetaken'],'0000') === FALSE) {
+		if (empty($imagetaken_map[$r['imagetaken']])) {
+			$b = explode('-',$r['imagetaken']);
+			fwrite($h['imagetaken_terms'], 	trim(implode("\t",array($t,preg_replace('/\d$/','0s',$b[0]),$b[0],$months[intval($b[1])],$b[2]>0?smarty_function_ordinal($b[2]):''))). "\n");
+
+			$imagetaken_map[$r['imagetaken']] = $t;
+			$t++;
+		}
+		fwrite($h['imagetaken_map'], 		implode("\t",array($r['gridimage_id'],$imagetaken_map[$r['imagetaken']])). "\n");
 	}
-	fwrite($h['imagetaken_map'], 		implode("\t",array($r['gridimage_id'],$imagetaken_map[$r['imagetaken']])). "\n");
 
 	if (empty($imageclass_map[$r['imageclass']])) {
 		fwrite($h['imageclass_terms'], 	implode("\t",array($c,$r['imageclass'])). "\n");
@@ -248,6 +256,36 @@ while (!$recordSet->EOF)
 }
 
 $recordSet->Close();
+
+$imagetaken_map = $imageclass_map = array();
+
+#####################################################
+
+$sql = "SELECT gridimage_id,label FROM gridimage_group INNER JOIN tmpflam USING (gridimage_id)";
+
+print "$sql\n";
+
+$recordSet = &$db->Execute($sql);
+
+$cluster_map = array();
+$c = 1;
+while (!$recordSet->EOF) 
+{
+	$r =& $recordSet->fields;
+
+	if (empty($cluster_map[$r['label']])) {
+		fwrite($h['cluster_terms'], 	implode("\t",array($c,$r['label'])). "\n");
+		
+		$cluster_map[$r['label']] = $c;
+		$c++;
+	}
+	fwrite($h['cluster_map'], 		implode("\t",array($r['gridimage_id'],$cluster_map[$r['label']])). "\n");
+
+	$recordSet->MoveNext();
+}
+
+$recordSet->Close();
+
 print "done\n";
 
 
