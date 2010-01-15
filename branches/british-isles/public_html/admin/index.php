@@ -48,6 +48,8 @@ if ($USER->hasPerm("ticketmod")) {
 		
 	$smarty->assign('tickets_new', $db->GetOne("select count(*) from gridimage_ticket where moderator_id=0 and status<>'closed' and deferred < date_sub(NOW(),INTERVAL 24 HOUR)"));
 	$smarty->assign('tickets_yours', $db->GetOne("select count(*) from gridimage_ticket where moderator_id={$USER->user_id} and status<>'closed'"));
+	
+	$smarty->assign('contacts_open', $db->GetOne("select count(*) from contactform where status = 'open' and moderator_id in (0,{$USER->user_id})"));
 }
 
 if ($USER->hasPerm("moderator")) {
@@ -62,7 +64,9 @@ if ($USER->hasPerm("moderator")) {
 
 
 	$smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
-}	
+
+	$smarty->assign('originals_new', $db->getOne("select count(*) from gridimage_pending where status = 'new' and type = 'original'")+1);
+}
 
 $smarty->assign('names_pending', $db->GetOne("select count(*) from game_score where approved=0"));
 

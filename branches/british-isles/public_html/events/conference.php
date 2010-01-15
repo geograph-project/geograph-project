@@ -64,6 +64,8 @@ if (!empty($_GET['action']))
 					$total['Emailed']++;
 				if ($row['emailed2'] >0)
 					$total['Emailed2']++;
+				if ($row['sentspeaker'] >0)
+					$total['Sentspeaker']++;
 			}
 			$smarty->assign_by_ref("total",$total);
 			

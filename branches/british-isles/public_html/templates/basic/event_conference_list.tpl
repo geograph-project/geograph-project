@@ -68,6 +68,7 @@
 	{/if}
 	<td>{$total.Emailed}</td>
 	<td>{$total.Emailed2}</td>
+	<td>{$total.Sentspeaker}</td>
 </tr></tfoot>
 </table>
 {else}
