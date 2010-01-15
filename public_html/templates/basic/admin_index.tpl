@@ -2,6 +2,11 @@
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 #maincontent li { padding-bottom:10px;}
+#maincontent b {
+	background-color:#eeeeee;
+	padding:4px;
+	padding-top:0px;
+}
 </style>{/literal}
 {dynamic}
 
@@ -15,54 +20,64 @@
 
 {if $is_mod} 
 
-<li><a href="/admin/moderation.php">Moderate</a> new photo submissions (<span><a href="/admin/moderation.php?review=1" style="color:gray">Review</a>)</span><br/>
-<b>[{$images_pending.count} pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate, oldest is {$images_pending.age/3600|thousends} hours]</b></li>
+	<li><a href="/admin/moderation.php">Moderate</a> new photo submissions (<span><a href="/admin/moderation.php?review=1" style="color:gray">Review</a>)</span><br/>
+	<b>[{$images_pending.count} pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate, oldest is {$images_pending.age/3600|thousends} hours]</b></li>
 {/if}
 
 {if $is_tickmod} 
-<li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> <small>(Sidebar: <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">IE &amp; Firefox</a>, <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" rel="sidebar" title="Tickets">Opera</a>)</small> - 
-   Deal with image problems<br/> <b>[{$tickets_new} new, {$tickets_yours} <a href="/admin/tickets.php?type=open&amp;theme=tmod">open by you</a>]</b></li>
+	<li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> <small>(Sidebar: <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">IE &amp; Firefox</a>, <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" rel="sidebar" title="Tickets">Opera</a>)</small> - 
+	   Deal with image problems<br/> <b>[{$tickets_new} new, {$tickets_yours} <a href="/admin/tickets.php?type=open&amp;theme=tmod">open by you</a>]</b></li>
+
+	{if $contacts_open}
+		<li><a href="/admin/contact.php">Contact Requests</a> <br/>
+		<b>[{$contacts_open} open]</b></li>
+	{/if}
+
 {/if}
 
 
 
 {if $is_mod} 
 
-{if $articles_ready}
-<li><a href="/article/">Articles</a><br/>
-<b>[{$articles_ready} ready to be approved]</b></li>
-{/if}
+	{if $originals_new}
+		<li><a href="/admin/resubmissions.php">High Resolution Uploads</a><br/>
+		<b>[{$originals_new} ready to be verified]</b></li>
+	{/if}
 
-<li{if $gridsquares_sea_test > 0} style="color:lightgrey">
-<b>Map-fixing in Progress</b> - please come back later.<br/>
-{else}>{/if}
+	{if $articles_ready}
+		<li><a href="/article/">Articles</a><br/>
+		<b>[{$articles_ready} ready to be approved]</b></li>
+	{/if}
 
+	<li{if $gridsquares_sea_test > 0} style="color:lightgrey">
+	<b>Map-fixing in Progress</b> - please come back later.<br/>
+	{else}>{/if}
 
-<form method="get" action="/admin/mapfixer.php" style="display:inline">
+	<form method="get" action="/admin/mapfixer.php" style="display:inline">
 
-<a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a>: <label for="gridref">Grid Reference:</label>
-<input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}"/>
-<span class="formerror">{$gridref_error}</span>
-<input type="submit" name="show" value="Check"/> or <a href="/mapfixer.php">add to queue</a><br/>
-<small>allows the land percentage
-for each 1km grid squares to be updated, which allows "square is all at sea" to be 
-corrected</small><br/>
-{if $gridsquares_sea.1 || $gridsquares_sea.2}<b>[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in queue]</b>{/if}
-</form>
-</li>
+	<a title="Map Fixer" href="/admin/mapfixer.php">Map Fixer</a>: <label for="gridref">Grid Reference:</label>
+	<input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}"/>
+	<span class="formerror">{$gridref_error}</span>
+	<input type="submit" name="show" value="Check"/> or <a href="/mapfixer.php">add to queue</a><br/>
+	<small>allows the land percentage
+	for each 1km grid squares to be updated, which allows "square is all at sea" to be 
+	corrected</small><br/>
+	{if $gridsquares_sea.1 || $gridsquares_sea.2}<b>[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in queue]</b>{/if}
+	</form>
+	</li>
 
-<li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
-   request update for map tiles</li>
+	<li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
+	   request update for map tiles</li>
 
-<li><a title="Picture of the day" href="/admin/pictureoftheday.php">Picture of the Day</a> - 
-   choose daily picture selections
-   {if $pics_no_vote > 0}
-	<br/><small><b>there are {$pics_no_vote} images waiting to to be rated, please <a href="/search.php?i=5761957&amp;temp_displayclass=vote">Vote now!</a></b> <sup style="color:red">only shows unrated</sup> - don't disclose this url</small>
-   {elseif $pics_pending < 5}
-   	<br/><small><b>There are only {$pics_pending} images waiting to be displayed as picture of the day, please consider adding some!</b></small>
-   {else}
-   	(<b><a href="/search.php?i=5761957&amp;temp_displayclass=vote">Vote now!</a></b> - don't disclose this url)
-   {/if}</li>
+	<li><a title="Picture of the day" href="/admin/pictureoftheday.php">Picture of the Day</a> - 
+	   choose daily picture selections
+	   {if $pics_no_vote > 0}
+		<br/><small><b>there are {$pics_no_vote} images waiting to to be rated, please <a href="/search.php?i=5761957&amp;temp_displayclass=vote">Vote now!</a></b> <sup style="color:red">only shows unrated</sup> - don't disclose this url</small>
+	   {elseif $pics_pending < 5}
+		<br/><small><b>There are only {$pics_pending} images waiting to be displayed as picture of the day, please consider adding some!</b></small>
+	   {else}
+		(<b><a href="/search.php?i=5761957&amp;temp_displayclass=vote">Vote now!</a></b> - don't disclose this url)
+	   {/if}</li>
 {/if}
 
 <li>Stats: <br/>
