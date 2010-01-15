@@ -112,18 +112,19 @@ fwrite($h['attrs'],"realname	Photographer Credit\n");
 fwrite($h['attrs'],"thumbnail	Thumbnail\n");
 
 $h['facets'] =	fopen("flamenco/facets.tsv",'w');
-fwrite($h['facets'],"user_id	Contributor	The name of the contributor (not the Photographer/Credit)\n");
 fwrite($h['facets'],"grid_reference	Grid Reference	Subject Location Grid Reference\n");
+fwrite($h['facets'],"imagetaken	Date Taken	The date the photo was taken\n");
+fwrite($h['facets'],"user_id	Contributor	The name of the contributor (not the Photographer/Credit)\n");
+fwrite($h['facets'],"imageclass	Category	Subject Category\n");
+#fwrite($h['facets'],"reference_index	Grid	The Country of the photo\n");
+fwrite($h['facets'],"cluster	Cluster	Automatically deduced label for the image\n");
+fwrite($h['facets'],"place	Place	Grouping by place\n");
 fwrite($h['facets'],"moderation_status	Moderation	Moderation Classification\n");
 fwrite($h['facets'],"ftf	First	One if the photo is a 'First'\n");
-fwrite($h['facets'],"imagetaken	Date Taken	The date the photo was taken\n");
-fwrite($h['facets'],"imageclass	Category	Subject Category\n");
-fwrite($h['facets'],"reference_index	Grid	The Country of the photo\n");
-fwrite($h['facets'],"cluster	Cluster	Automatically deduced label for the image\n");
 
 #####################################################
 
-foreach (explode(' ',"user_id grid_reference moderation_status ftf imagetaken imageclass reference_index cluster") as $key) {
+foreach (explode(' ',"user_id grid_reference place moderation_status ftf imagetaken imageclass reference_index cluster") as $key) {
 	$h["{$key}_terms"] = fopen("flamenco/{$key}_terms.tsv",'w');
 	$h["{$key}_map"] = fopen("flamenco/{$key}_map.tsv",'w');
 }
@@ -189,7 +190,7 @@ fwrite($h['reference_index_terms'],	implode("\t",array(2,'Ireland')). "\n");
 
 $sql = "SELECT gridimage_id, gi.comment,
 gi.title, gi.realname,
-gi.user_id, gridsquare_id, gi.moderation_status+0 as moderation_status, gi.ftf, gi.imagetaken, gi.imageclass, gi.reference_index
+gi.user_id, gridsquare_id, placename_id, gi.moderation_status+0 as moderation_status, gi.ftf, gi.imagetaken, gi.imageclass, gi.reference_index
 FROM tmpflam INNER JOIN gridimage_search gi USING (gridimage_id) INNER JOIN gridimage g2 USING (gridimage_id)";
 
 print "$sql\n";
@@ -202,8 +203,9 @@ foreach (range(1,12) as $month) {
 }
 
 $recordSet = &$db->Execute($sql);
-$t = 1; $c = 1;
+$t = 1; $c = 1; $p = 1;
 $imagetaken_map = $imageclass_map = array();
+$places = array();
 while (!$recordSet->EOF) 
 {
 	$r =& $recordSet->fields;
@@ -221,10 +223,16 @@ while (!$recordSet->EOF)
 
 	fwrite($h['grid_reference_map'],	implode("\t",array($r['gridimage_id'],$r['gridsquare_id'])). "\n");
 
+	if ($r['placename_id']) {
+		fwrite($h['place_map'],		implode("\t",array($r['gridimage_id'],$r['placename_id'])). "\n");
+
+		$places[$r['reference_index']][$r['placename_id']] = 1;
+	}
+
 	fwrite($h['moderation_status_map'], 	implode("\t",array($r['gridimage_id'],$r['moderation_status'])). "\n");
 
 	if ($r['ftf'])
-		fwrite($h['ftf_map'], 			implode("\t",array($r['gridimage_id'],$r['ftf'])). "\n");
+		fwrite($h['ftf_map'], 		implode("\t",array($r['gridimage_id'],$r['ftf'])). "\n");
 
 	if (strpos($r['imagetaken'],'0000') === FALSE) {
 		if (empty($imagetaken_map[$r['imagetaken']])) {
@@ -234,7 +242,7 @@ while (!$recordSet->EOF)
 			$imagetaken_map[$r['imagetaken']] = $t;
 			$t++;
 		}
-		fwrite($h['imagetaken_map'], 		implode("\t",array($r['gridimage_id'],$imagetaken_map[$r['imagetaken']])). "\n");
+		fwrite($h['imagetaken_map'], 	implode("\t",array($r['gridimage_id'],$imagetaken_map[$r['imagetaken']])). "\n");
 	}
 
 	if (empty($imageclass_map[$r['imageclass']])) {
@@ -245,13 +253,21 @@ while (!$recordSet->EOF)
 	}
 	fwrite($h['imageclass_map'], 		implode("\t",array($r['gridimage_id'],$imageclass_map[$r['imageclass']])). "\n");
 
-	fwrite($h['reference_index_map'], 	implode("\t",array($r['gridimage_id'],$r['reference_index'])). "\n");
+	#fwrite($h['reference_index_map'], 	implode("\t",array($r['gridimage_id'],$r['reference_index'])). "\n");
 
 	$text = implode(" ",array($r['title'],$r['comment'],$r['imageclass']));
 	$text = trim(strtolower(preg_replace("/[^\w]+/",' ',$text)));
 
 	fwrite($h['text'], 	implode("\t",array($r['gridimage_id'],$text)). "\n");
 
+	//write out progress and send mysql keepalive every 500 results...
+	if (!($p%500)) {
+		print "...done $p\n";
+		$dummy = $db->getOne("SELECT COUNT(*) FROM queries");
+		sleep(1);
+	}
+	$p++;
+	
 	$recordSet->MoveNext();
 }
 
@@ -285,6 +301,73 @@ while (!$recordSet->EOF)
 }
 
 $recordSet->Close();
+
+if (!empty($places[1])) {
+	//inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
+	$ids = '';
+	foreach (array_keys($places[1]) as $pid) {
+		if ($pid)
+			$ids .= ($pid-1000000).",";
+	}
+	$ids = substr($ids,0,strlen($ids)-1);
+	
+	$sql = "select 
+			os_gaz.seq+1000000 as placename_id,
+			def_nam as Place,
+			full_county as County,
+			loc_country.name as Country
+		from os_gaz 
+			inner join os_gaz_county on (os_gaz.co_code = os_gaz_county.co_code)
+			inner join loc_country on (country = loc_country.code)
+		where os_gaz.seq IN ($ids)";
+
+	print "$sql\n";
+
+	$recordSet = &$db->Execute($sql);
+
+	while (!$recordSet->EOF) 
+	{
+		$r =& $recordSet->fields;
+
+		fwrite($h['place_terms'], 		implode("\t",array($r['placename_id'],$r['Country'],$r['County'],$r['Place'])). "\n");
+
+		$recordSet->MoveNext();
+	}
+
+	$recordSet->Close();
+
+}
+
+if (!empty($places[2])) {
+	//inner join loc_placenames on (placename_id = id)
+	$ids = implode(',',array_keys($places[2]));
+	
+	$sql = "select 
+			id as placename_id,
+			full_name as Place,
+			loc_adm1.name as County,
+			loc_country.name as Country
+		from loc_placenames
+			inner join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_adm1.country = loc_placenames.country)
+			inner join loc_country on (loc_placenames.country = loc_country.code)
+		where loc_placenames.id IN ($ids)";
+	
+	print "$sql\n";
+
+	$recordSet = &$db->Execute($sql);
+
+	while (!$recordSet->EOF) 
+	{
+		$r =& $recordSet->fields;
+
+		fwrite($h['place_terms'], 		implode("\t",array($r['placename_id'],$r['Country'],$r['County'],$r['Place'])). "\n");
+
+		$recordSet->MoveNext();
+	}
+
+	$recordSet->Close();
+}
+
 
 print "done\n";
 
