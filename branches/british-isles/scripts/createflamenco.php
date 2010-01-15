@@ -90,8 +90,7 @@ $_SERVER['HTTP_HOST'] = $param['config'];
 require_once('geograph/global.inc.php');
 
 
-$db = NewADOConnection($GLOBALS['DSN']);
-
+$db = GeographDatabaseConnection(true);
 
 $a = array();
 
@@ -315,7 +314,8 @@ if (!empty($places[1])) {
 			os_gaz.seq+1000000 as placename_id,
 			def_nam as Place,
 			full_county as County,
-			loc_country.name as Country
+			loc_country.name as Country,
+			has_dup,km_ref
 		from os_gaz 
 			inner join os_gaz_county on (os_gaz.co_code = os_gaz_county.co_code)
 			inner join loc_country on (country = loc_country.code)
@@ -329,7 +329,7 @@ if (!empty($places[1])) {
 	{
 		$r =& $recordSet->fields;
 
-		fwrite($h['place_terms'], 		implode("\t",array($r['placename_id'],$r['Country'],$r['County'],$r['Place'])). "\n");
+		fwrite($h['place_terms'], 		implode("\t",array($r['placename_id'],$r['Country'],$r['County'],$r['Place'].($r['has_dup']?"/{$r['km_ref']}":''))). "\n");
 
 		$recordSet->MoveNext();
 	}
@@ -346,7 +346,8 @@ if (!empty($places[2])) {
 			id as placename_id,
 			full_name as Place,
 			loc_adm1.name as County,
-			loc_country.name as Country
+			loc_country.name as Country,
+			has_dup,e,n
 		from loc_placenames
 			inner join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_adm1.country = loc_placenames.country)
 			inner join loc_country on (loc_placenames.country = loc_country.code)
@@ -356,11 +357,18 @@ if (!empty($places[2])) {
 
 	$recordSet = &$db->Execute($sql);
 
+	require_once('geograph/conversions.class.php');
+	$conv = new Conversions;
+
 	while (!$recordSet->EOF) 
 	{
 		$r =& $recordSet->fields;
 
-		fwrite($h['place_terms'], 		implode("\t",array($r['placename_id'],$r['Country'],$r['County'],$r['Place'])). "\n");
+		if ($r['has_dup'] && empty($r['gridref'])) {
+			list($r['gridref'],) = $conv->national_to_gridref($r['e'],$r['n'],4,2);
+		}
+
+		fwrite($h['place_terms'], 		implode("\t",array($r['placename_id'],$r['Country'],$r['County'],$r['Place'].($r['gridref']?"/{$r['gridref']}":''))). "\n");
 
 		$recordSet->MoveNext();
 	}

@@ -996,3 +996,34 @@ ALTER TABLE  `conference_registration` ADD  `emailed2` DATETIME NOT NULL AFTER  
 
 #################################################
 
+
+alter table os_gaz add has_dup tinyint unsigned default 0;
+
+
+alter table loc_placenames add has_dup tinyint unsigned default 0;
+
+
+
+CREATE TEMPORARY TABLE tmp_final AS SELECT full_name,count(*) AS c FROM loc_placenames GROUP BY full_name HAVING c > 1;
+ALTER TABLE tmp_final ADD PRIMARY KEY (`full_name`);
+
+#UPDATE `loc_placenames` SET `has_dup` = 0;
+UPDATE `loc_placenames`,tmp_final SET loc_placenames.has_dup = 1 WHERE `loc_placenames`.full_name = tmp_final.full_name;
+
+DROP TABLE tmp_final;
+
+
+
+
+CREATE TEMPORARY TABLE tmp_final AS SELECT def_nam,count(*) AS c FROM os_gaz GROUP BY def_nam HAVING c > 1;
+ALTER TABLE tmp_final ADD PRIMARY KEY (`def_nam`);
+
+#UPDATE `os_gaz` SET `has_dup` = 0;
+UPDATE `os_gaz`,tmp_final SET os_gaz.has_dup = 1 WHERE `os_gaz`.def_nam = tmp_final.def_nam;
+
+DROP TABLE tmp_final;
+
+
+#################################################
+
+
