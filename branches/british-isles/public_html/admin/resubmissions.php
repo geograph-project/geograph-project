@@ -124,16 +124,13 @@ if (isset($_POST['gridimage_id']))
 		} 
 
 
-
+		$smarty->assign("last_id", $gridimage_id);
 	}
 	else
 	{
 		echo "FAIL";
 		exit;
 	}
-	
-	
-	
 	
 
 }
@@ -149,13 +146,19 @@ gridimage gi READ
 #############################
 # define the images to moderate
 
+if (empty($_GET['review'])) {
 
 $sql = "SELECT gi.* 
 FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
 WHERE (gp.status = 'new' OR (gp.status = 'open' AND updated < DATE_SUB(NOW(),INTERVAL 1 HOUR) ) )
 AND type = 'original' AND gp.user_id != {$USER->user_id} AND gi.user_id != {$USER->user_id}
+} else {
+	$id = intval($_GET['review']);
+$sql = "SELECT gi.* 
+FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
+WHERE gridimage_id = $id
 LIMIT 1"; 
-
+}
 
 
 #############################
@@ -163,7 +166,7 @@ LIMIT 1";
 
 $data = $db->getRow($sql);
 
-if ($data) {
+if ($data && empty($_GET['review'])) {
 	$db->Execute("UPDATE gridimage_pending gp SET status = 'open' WHERE gridimage_id = {$data['gridimage_id']} ");
 }
 

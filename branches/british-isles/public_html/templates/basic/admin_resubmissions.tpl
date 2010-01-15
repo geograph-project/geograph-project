@@ -25,11 +25,11 @@
 		</tr>
 		<tr>
 			<td>
-				<div class="img-shadow" id="mainphoto"><img src="{$image->previewUrl}"></div>
+				<div class="img-shadow" id="mainphoto"><img src="{$image->previewUrl}" name="new"></div>
 				
 			</td>
 			<td>
-				<div class="img-shadow" id="mainphoto"><a href="/photo/{$image->gridimage_id}">{$image->getFull()}</a></div>
+				<div class="img-shadow" id="mainphoto"><a href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'alt=':'name="old" alt='}</a></div>
 			</td>
 		</tr>
 		<tr>
@@ -37,28 +37,85 @@
 				New Image (<a href="{$image->pendingUrl}" target="_preview">View full size</a> - {$image->pendingSize|thousends} bytes!)
 			</th>
 			<th>
-				Current Image
+				Current Image</small>
 			</th>
 		</tr>
 	</table>	
 
-<p>Please confirm the two images above are the same</p>
+<p>Please confirm the two images above represent the same base image</p>
 
 	<input style="background-color:pink; width:200px" type="submit" name="diff" value="Different - don't allow!"/>
 	
 	
-	<input style="background-color:lightgreen; width:200px" type="submit" name="confirm" value="Identical" onclick="autoDisable(this);"/> 
+	<input style="background-color:lightgreen; width:200px" type="submit" name="confirm" value="Identical" onclick="autoDisable(this);" id="identbutton"/> 
 
-	<input style="background-color:lightgreen; width:200px" type="submit" name="similar" value="Close enough" onclick="autoDisable(this);"/> 
+	<input style="background-color:lightgrey; color:green; width:200px" type="submit" name="similar" value="Close enough" onclick="autoDisable(this);" id="closebutton"/> 
 	
 	<ul>
-	<li>Note however that minor tweaking of contrast and brightness is fine, as is removing borders and overlaid text</li>	
+	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>
+	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
+	<li>Minor cropping changes is permissible, but must be marked "Close enough"</li>
+	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close Enough"<ul>
+		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of the larger panorama)</li>
+		</ul></li>
+	<li>Anything else, or when they are not the same image shouldnt be allowed</li>
 	</ul>
 	
 </form>
+
+<script type="text/javascript">
+{literal}
+
+
+
+function checkImageSizes() {
+	var one = document.images['old'];
+	var two = document.images['new'];
+	
+	var same = true;
+	if (one.width != two.width) {
+		same = false;
+	}
+	if (one.height != two.height) {
+		same = false;
+	}
+	
+	if (!same) {
+		var button = document.getElementById('identbutton');
+		button.style.color = 'lightgrey';
+		button.style.backgroundColor = 'white';
+		button.onclick = function () {
+			return confirm("Please confirm! The two images don't appear to have the same dimensions.");
+		};
+	}
+}
+
+ AttachEvent(window,'load',checkImageSizes,false);
+
+
+{/literal}
+
+{if $image->previewUrl == "/photos/error.jpg"}{literal}
+ AttachEvent(window,'load',function () {
+	var button = document.getElementById('closebutton');
+	button.style.color = 'lightgrey';
+	button.style.backgroundColor = 'white';
+	button.onclick = function () {
+		return confirm("Please confirm! The high resolution image seems to be an error.");
+	};
+ },false);
+{/literal}{/if}
+
+</script>
+
 {else}
 	<p>Nothing available currently - please come back later</p>
 {/if}
 
-{/dynamic}    
+
+{if $last_id}
+	<div class="interestBox"><a href="?review={$last_id|escape:'url'}" target="_blank">Reopen Last page</a> (opens in new window)</div>
+{/if}
+
+{/dynamic}
 {include file="_std_end.tpl"}
