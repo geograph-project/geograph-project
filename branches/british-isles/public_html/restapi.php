@@ -46,6 +46,8 @@ TODO
 - rewrite using DOM methods when we switch to php5
 */
 
+class EmptyClass {} 
+
 class RestAPI
 {
 	var $db=null;
@@ -98,21 +100,51 @@ class RestAPI
 			if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
 			{
 				$this->beginResponse();
-		
-				echo '<status state="ok"/>';
-				
-				echo '<title>'.htmlentities2($image->title).'</title>';
-				echo '<gridref>'.htmlentities($image->grid_reference).'</gridref>';
-				echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".htmlentities($image->realname).'</user>';
-				
-				echo preg_replace('/alt=".*?" /','',$image->getFull());
-				
-				$details = $image->getThumbnail(120,120,2);
-				echo '<thumbnail>'.$details['server'].$details['url'].'</thumbnail>';
-				echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
-				echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
-				echo '<category>'.htmlentities2($image->imageclass).'</category>';
-				echo '<comment><![CDATA['.htmlentities2($image->comment).']]></comment>';
+
+				if ($this->output=='json') {
+					
+					require_once '3rdparty/JSON.php';
+					$json = new Services_JSON();
+					$obj = new EmptyClass;
+					
+					$obj->title = $image->title;
+					$obj->grid_reference = $image->grid_reference;
+					$obj->profile_link = $image->profile_link;
+					$obj->realname = $image->realname;
+					
+					$details = $image->getThumbnail(120,120,2);
+					$obj->imgserver = $details['server'];
+					$obj->thumbnail = $details['url'];
+					$obj->image = $image->_getFullpath();
+					$obj->sizeinfo = $image->_getFullSize();
+					$obj->sizeinfo[3] = "0";
+					$obj->taken = $image->imagetaken;
+					$obj->submitted = strtotime($image->submitted);
+					$obj->category = $image->category;
+					$obj->comment = $image->comment;
+					
+					print $json->encode($obj);
+				} else {
+					echo '<status state="ok"/>';
+
+					echo '<title>'.utf8_encode(htmlentities2($image->title)).'</title>';
+					echo '<gridref>'.htmlentities($image->grid_reference).'</gridref>';
+					echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".htmlentities($image->realname).'</user>';
+
+					echo preg_replace('/alt=".*?" /','',$image->getFull());
+
+					$details = $image->getThumbnail(120,120,2);
+					echo '<thumbnail>'.$details['server'].$details['url'].'</thumbnail>';
+					echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
+					echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
+					echo '<category>'.utf8_encode(htmlentities2($image->imageclass)).'</category>';
+					echo '<comment><![CDATA['.utf8_encode(htmlentities2($image->comment)).']]></comment>';
+					
+					$size = $image->_getFullSize(); //uses cached_size
+					if (!empty($size[4])) {
+						echo "<original width=\"{$size[4]}\" height=\"{$size[5]}\"/>";
+					}
+				}
 				
 				$this->endResponse();
 			}
@@ -171,16 +203,16 @@ class RestAPI
 						{
 							echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
 
-							echo ' <title>'.htmlentities($image->title).'</title>';
-							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".htmlentities($image->realname).'</user>';
+							echo ' <title>'.utf8_encode(htmlentities($image->title)).'</title>';
+							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".utf8_encode(htmlentities($image->realname)).'</user>';
 
 							echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
 
 							if ($more) {
 								echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
 								echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
-								echo '<category>'.htmlentities2($image->imageclass).'</category>';
-								echo '<comment><![CDATA['.htmlentities2($image->comment).']]></comment>';
+								echo '<category>'.utf8_encode(htmlentities2($image->imageclass)).'</category>';
+								echo '<comment><![CDATA['.utf8_encode(htmlentities2($image->comment)).']]></comment>';
 							}
 
 							echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
