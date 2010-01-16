@@ -56,11 +56,11 @@
 	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
 	<li>Minor cropping changes is permissible, but must be marked "Close enough"</li>
 	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close Enough"<ul>
-		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of the larger panorama)</li>
+		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of the larger panorama - still marked "Close enough")</li>
 		</ul></li>
-	<li>Anything else, or when they are not the same image shouldnt be allowed</li>
+	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
 	</ul>
-	
+	In a nutshell, if the two images above look exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close Enough". 
 </form>
 
 <script type="text/javascript">
