@@ -32,6 +32,9 @@ $replacement[]='[[[de:\\3]]]';
 $pattern[]="/\[img(left|right)?\](http:\/\/([^<> \n]+?)\.(gif|jpg|jpeg|png))\[\/img\]/i";
 $replacement[]='<img src="\\2" border="0" align="\\1" alt="">';
 
+$pattern[]="/\[blockquote\](.+?)\[\/blockquote\]/is";
+$replacement[]='<blockquote>\\1</blockquote>';
+
 $pattern[]="/\[[bB]\](.+?)\[\/[bB]\]/s";
 $replacement[]='<b>\\1</b>';
 
@@ -67,6 +70,9 @@ $replacement[]="[url=\\1]\\4[/url]";
 
 $pattern[]="/<img src=\"(.+?)\" border=\"0\" align=\"(left|right)?\" alt=\"\">/i";
 $replacement[]="[img\\2]\\1[/img]";
+
+$pattern[]="/<blockquote>(.+?)<\/blockquote>/s";
+$replacement[]="[blockquote]\\1[/blockquote]";
 
 $pattern[]="/<[bB]>(.+?)<\/[bB]>/s";
 $replacement[]="[b]\\1[/b]";
