@@ -50,6 +50,7 @@ class RestAPI
 {
 	var $db=null;
 	var $params=array();
+	var $output='xml';
 	
 	function handleUser()
 	{
@@ -147,32 +148,10 @@ class RestAPI
 				$images=$square->getImages(false,'',"order by null");
 				$count = count($images);
 				
-				if (isset($_GET['output']) && $_GET['output']=='json') {
+				if ($this->output=='json') {
 					require_once '3rdparty/JSON.php';
 					$json = new Services_JSON();
-					$whitelist = array();
-					$whitelist['gridimage_id'] = 1;
-					$whitelist['seq_no'] = 1;
-					$whitelist['user_id'] = 1;
-					$whitelist['ftf'] = 1;
-					$whitelist['moderation_status'] = 1;
-					$whitelist['title'] = 1;
-					$whitelist['comment'] = 1;
-					$whitelist['submitted'] = 1;
-					$whitelist['realname'] = 1;
-					$whitelist['nateastings'] = 1;
-					$whitelist['natnorthings'] = 1;
-					$whitelist['natgrlen'] = 1;
-					$whitelist['imageclass'] = 1;
-					$whitelist['imagetaken'] = 1;
-					$whitelist['upd_timestamp'] = 1;
-					$whitelist['viewpoint_eastings'] = 1;
-					$whitelist['viewpoint_northings'] = 1;
-					$whitelist['viewpoint_grlen'] = 1;
-					$whitelist['view_direction'] = 1;
-					$whitelist['use6fig'] = 1;
-					$whitelist['credit_realname'] = 1;
-					$whitelist['profile_link'] = 1;
+					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1);
 					
 					foreach ($images as $i => $image) {
 						foreach ($image as $k => $v) {
@@ -212,8 +191,8 @@ class RestAPI
 			} 
 			else 
 			{
-				if (isset($_GET['output']) && $_GET['output']=='json') {
-					die("{error: '{$square->errormsg}'}");
+				if ($this->output=='json') {
+					print "{error: '0 results'}";
 				} else {
 					echo '<status state="ok" count="0"/>';
 				}
@@ -222,11 +201,7 @@ class RestAPI
 		}
 		else
 		{
-			if (isset($_GET['output']) && $_GET['output']=='json') {
-				die("{error: 'Invalid grid reference ".$this->params[0]."'}");
-			} else {
-				$this->error("Invalid grid reference ".$this->params[0]);
-			}
+			$this->error("Invalid grid reference ".$this->params[0]);
 		}
 		
 	}
@@ -270,8 +245,10 @@ class RestAPI
 	function beginResponse()
 	{
 		customExpiresHeader(360,true,true);
-		if (isset($_GET['output']) && $_GET['output']=='json') {
-		
+		if ($this->output=='json') {
+			if (!empty($this->callback)) {
+				echo "{$this->callback}(";
+			}
 		} else {
 			header("Content-Type:text/xml");
 			echo '<?xml version="1.0" encoding="UTF-8"?>';
@@ -281,8 +258,10 @@ class RestAPI
 	
 	function endResponse()
 	{
-		if (isset($_GET['output']) && $_GET['output']=='json') {
-		
+		if ($this->output=='json') {
+			if (!empty($this->callback)) {
+				echo ");";
+			}
 		} else {
 			echo '</geograph>';
 		}
@@ -294,15 +273,19 @@ class RestAPI
 	function error($msg)
 	{
 		header("HTTP/1.0 400 Bad Request");
-		
+
 		$this->beginResponse();
 		
-		echo '<status state="failed">';
-		echo '<error code="400">';
-		echo '<message>'.htmlentities($msg).'</message>';
-		echo '</error>';
-		echo '</status>';
-		
+		if ($this->output=='json') {
+			print("{error: '".addslashes($msg)."'}");
+		} else {
+			echo '<status state="failed">';
+			echo '<error code="400">';
+			echo '<message>'.htmlentities($msg).'</message>';
+			echo '</error>';
+			echo '</status>';
+		}
+
 		$this->endResponse();
 		
 	}
@@ -312,8 +295,18 @@ class RestAPI
 	*/
 	function dispatch()
 	{
+		if (isset($_GET['output']) && $_GET['output']=='json') {
+			$this->output='json';
+			if (isset($_GET['callback'])) {
+				$this->callback=preg_replace('/[^\w]+/','',$_GET['callback']);
+				if (empty($this->callback)) {
+					$this->callback = "geograph_callback";
+				}
+			}
+		}
+	
 		if ($_SERVER["PATH_INFO"]) {
-			$this->params=explode('/', $_SERVER["PATH_INFO"]);		
+			$this->params=explode('/', $_SERVER["PATH_INFO"]);
 		} else {
 			$this->params=explode('/', $_SERVER["SCRIPT_NAME"]);
 		}
