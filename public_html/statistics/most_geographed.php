@@ -27,98 +27,86 @@ init_session();
 
 $smarty = new GeographPage;
 
-$myriad = (isset($_GET['myriad']) && preg_match('/^\w+$/' , $_GET['myriad']))?$_GET['myriad']:'';
+$myriad = (isset($_GET['myriad']) && preg_match('/^[\w]{1,3}$/' , $_GET['myriad']))?$_GET['myriad']:'';
 
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $template='statistics_most_geographed.tpl';
-$cacheid='statistics|most_geographed'.$myriad;
+$cacheid='statistics|most_geographed'.$ri.$myriad;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db = GeographDatabaseConnection(true);
+	$db = GeographDatabaseConnection(false);
 
 	$mosaic=new GeographMapMosaic;
 	$mosaic->setScale(40);
 	$mosaic->setMosaicFactor(2);
 
-	
-	foreach (array(1,2) as $ri) {
-		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
-			
-		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri and origin_x > 0 order by origin_x,origin_y limit 1");
-		
-		if ($myriad) {
-			$sql_where = " and grid_reference like '$myriad%'";
-		} else {
-			$sql_where = '';
+	$sql_where = '';
+	if ($myriad) {
+		$sql_where = " and hectad like '$myriad%'";
+		if (strlen($myriad) == 2) {
+			$ri = 1;
+		} elseif (strlen($myriad) == 1) {
+			$ri = 2;
+		} 
+		$smarty->assign('myriad',$ri);
+	} 
+	if ($ri) {
+		$sql_where .= " and reference_index = $ri";
+		$smarty->assign('ri',$ri);
+	} 
+
+
+	$prev_fetch_mode = $ADODB_FETCH_MODE;
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
+	$most = $db->GetAll("SELECT 
+	reference_index,x,y,hectad,geographs,geosquares,landsquares,last_submitted,users,map_token,largemap_token,
+	(geosquares/landsquares*100) as percentage
+	FROM hectad_stat 
+	WHERE geosquares > 0 and (geosquares/landsquares) <1 $sql_where
+	ORDER BY percentage DESC,hectad LIMIT 150");
+	$ADODB_FETCH_MODE = $prev_fetch_mode;
+
+
+	$i = 1;
+	$lastgeographs = -1;
+	foreach($most as $id=>$entry) 
+	{
+		if ($lastgeographs == $most[$id]['percentage'])
+			$most[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
+		else {
+			$most[$id]['ordinal'] = smarty_function_ordinal($i);
+			$lastgeographs = $most[$id]['percentage'];
 		}
-		
-		$most = $db->GetAll("select 
-		grid_reference,x,y,
-		concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
-		sum(has_geographs) as geograph_count,
-		sum(percent_land >0) as land_count,
-		(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage
-		from gridsquare 
-		where reference_index = $ri $sql_where
-		group by tenk_square 
-		having geograph_count > 0 and percentage <100
-		order by percentage desc,tenk_square 
-		limit 50");
-		
-		$i = 1;
-		$lastgeographs = -1;
-		foreach($most as $id=>$entry) 
-		{
-			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
-			$most[$id]['y'] = ( intval(($most[$id]['y'] - $origin['origin_y'])/10)*10 ) +  $origin['origin_y'];
+		$i++;
 
-			if ($lastgeographs == $most[$id]['percentage'])
-				$most[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
-			else {
-				$most[$id]['ordinal'] = smarty_function_ordinal($i);
-				$lastgeographs = $most[$id]['percentage'];
-			}
-			$i++;
-
+		if (empty($entry['map_token'])) {
+			$x = ( intval(($entry['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
+			$y = ( intval(($entry['y'] - $CONF['origins'][$ri][1])/10)*10 ) +  $CONF['origins'][$ri][1];
 
 			//get a token to show a suroudding geograph map
-			$mosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
+			$mosaic->setOrigin($x,$y);
 
 			$most[$id]['map_token'] = $mosaic->getToken();
-		}	
-		$smarty->assign("most$ri", $most);	
-	}
 
-	if ($myriad) {
-		$onekm = array();
-		$smarty->assign("myriad", $myriad);
-	} else {
-		$onekm = $db->GetAll("select grid_reference,imagecount from gridsquare where imagecount>1 order by imagecount desc,grid_reference limit 50");
-
-		$i = 1;
-		$lastgeographs = -1;
-		foreach($onekm as $id=>$entry)
-		{
-			if ($lastgeographs == $onekm[$id]['imagecount'])
-				$onekm[$id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
-			else {
-				$onekm[$id]['ordinal'] = smarty_function_ordinal($i);
-				$lastgeographs = $onekm[$id]['imagecount'];
-			}
-			$i++;
-
+			$db->Execute(sprintf("UPDATE hectad_stat SET
+				map_token = %s
+				WHERE hectad = %s",
+				$db->Quote($most[$id]['map_token']),
+				$db->Quote($entry['hectad']) ));
 		}
+
 	}
 
-	$smarty->assign_by_ref("onekm", $onekm);		
+	$smarty->assign("most", $most);	
+
+	$smarty->assign_by_ref('references',$CONF['references_all']);
 }
 
 
 $smarty->display($template, $cacheid);
 
-	
-?>

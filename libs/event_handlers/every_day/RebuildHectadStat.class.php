@@ -37,35 +37,53 @@ class RebuildHectadStat extends EventHandler
 {
 	function processEvent(&$event)
 	{
+		global $CONF;
+		
 		//perform actions
 		
 		$db=&$this->_getDB();
 		
-		$db->Execute("DROP TABLE IF EXISTS hectad_stat_tmp");
+		$db->Execute("CREATE TABLE IF NOT EXISTS hectad_stat_tmp LIKE hectad_stat");
 		
-		//give the server a breather...
-		sleep(10);
-				
-		$db->Execute("CREATE TABLE hectad_stat_tmp
-		(UNIQUE (hectad,user_id))
-		ENGINE=MyISAM
-		SELECT 
-			reference_index,x,y,
-			CONCAT(SUBSTRING(grid_reference,1,LENGTH(grid_reference)-3),SUBSTRING(grid_reference,LENGTH(grid_reference)-1,1)) AS hectad,
-			user_id,
-			COUNT(DISTINCT gs.gridsquare_id) AS landsquares,
-			COUNT(gridimage_id) AS images,
-			SUM(moderation_status = 'geograph') AS geographs,
-			COUNT(DISTINCT gi.gridsquare_id) AS squares,
-			MIN(submitted) AS first_submitted,
-			MAX(submitted) AS last_submitted, 
+		$db->Execute("TRUNCATE hectad_stat_tmp"); //just incase we inheritied a old table.
+		
+		
+		foreach (array(1,2) as $ri) {
+			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			
-			FROM gridsquare gs
-			LEFT JOIN gridimage gi ON (gs.gridsquare_id=gi.gridsquare_id AND moderation_status IN ('geograph','accepted')) 
-			WHERE percent_land >0
-			GROUP BY CONCAT(SUBSTRING(grid_reference,1,LENGTH(grid_reference)-3),SUBSTRING(grid_reference,LENGTH(grid_reference)-1,1)),user_id WITH ROLLUP ");
+			
+			//give the server a breather...
+			sleep(10);
+		
+			$db->Execute("INSERT INTO hectad_stat_tmp
+			SELECT 
+				reference_index,x,y,
+				concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) AS hectad,
+				COUNT(DISTINCT gs.gridsquare_id) AS landsquares,
+				COUNT(gridimage_id) AS images,
+				SUM(moderation_status = 'geograph') AS geographs,
+				COUNT(DISTINCT gi.gridsquare_id) AS squares,
+				COUNT(DISTINCT IF(moderation_status='geograph',gi.gridsquare_id,NULL)) AS geosquares,
+				COUNT(IF(ftf=1,user_id,NULL)) AS users,
+				MIN(IF(ftf=1,submitted,NULL)) AS first_submitted,
+				MAX(IF(ftf=1,submitted,NULL)) AS last_submitted, 
+				'' as map_token,
+				'' as largemap_token
+				FROM gridsquare gs
+				LEFT JOIN gridimage gi ON (gs.gridsquare_id=gi.gridsquare_id AND moderation_status IN ('geograph','accepted')) 
+				WHERE reference_index = $ri AND percent_land >0
+				GROUP BY (x-{$CONF['origins'][$ri][0]}) div 10,(y-{$CONF['origins'][$ri][1]}) div 10");
+			//todo when the origin is a multiple of 10 (or =0) then can be optimised away - but mysql might do that anyway
+		}
+		
+		$db->Execute("UPDATE hectad_stat_tmp,hectad_stat 
+			SET hectad_stat_tmp.map_token = hectad_stat.map_token,
+			hectad_stat_tmp.largemap_token = hectad_stat.largemap_token
+			WHERE hectad_stat.map_token != '' OR hectad_stat.largemap_token != ''
+			AND hectad_stat_tmp.hectad = hectad_stat.hectad");
 		
 		$db->Execute("DROP TABLE IF EXISTS hectad_stat");
+		
 		$db->Execute("RENAME TABLE hectad_stat_tmp TO hectad_stat");
 		
 		//return true to signal completed processing

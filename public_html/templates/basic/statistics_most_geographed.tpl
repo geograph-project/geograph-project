@@ -3,69 +3,39 @@
 
 <h2>Most Geographed Squares{if $myriad}, for Myriad {$myriad}{/if}</h2>
 
-<p>These are the squares with the best coverage so far! See also <a href="/statistics/most_geographed_myriad.php">100km x 100km Squares</a>. <br/>Note that <a href="/statistics/fully_geographed.php">Fully covered 10km x 10km Squares</a> are now listed separately.</p>
-<p style="font-size:0.8em">The # number column is the number of squares with (at least) a geograph, and the % column is the percentage of the total 'land' based squares with coverage.</p>
+    <form method="get" action="{$script_name}">
+	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Not Geographed</a> | 
+	<b>Mostly Geographed</b> | 
+	<a href="fully_geographed.php{if $ri}?ri={$ri}{/if}">Fully Geographed</a> Hectads -
+	{if $references}In <select name="ri">
+	{html_options options=$references selected=$ri}
+	</select>{/if}
+	<input type="submit" value="Go"></div>
+    </form>
 
-{if count($most1)}
-<div style="float:left;position:relative;width:33%">
-<h3>10km x 10km Squares</h3>
-<h4>Great Britain</h4>
+<p>These are the squares with the best coverage so far! This page only counts First Geographs.</p>
+
+<p>See also <a href="/statistics/most_geographed_myriad.php">100km x 100km Squares</a>.</p>
+
+
 <table class="report"> 
-<thead><tr><td>Rank</td><td>Square</td><td>#</td><td>%</td></tr></thead>
+<thead><tr><td>Rank</td><td>Hectad</td><td colspan="3">Squares</td><td align="right" style="width:40px">%</td><td>Contributors</td><td>Last Submission</td></tr></thead>
 <tbody>
 
-{foreach from=$most1 key=id item=obj}
-<tr><td align="right">{$obj.ordinal}</td><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
-<td align="right" title="{$obj.geograph_count}/{$obj.land_count}">{$obj.geograph_count}</td>
-<td align="right">{$obj.percentage|thousends}</td></tr>
+{foreach from=$most key=id item=obj}
+{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+<tr bgcolor="{$bgcolor}">
+<td align="right">{$obj.ordinal}</td><td sortvalue="{$obj.hectad}" style="font-family:monospace;font-size:1.2em" align="right"><a title="View map for {$obj.hectad}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.hectad}</a></td>
+<td align="right">{$obj.geosquares}</td>
+<td align="right">/</td>
+<td align="right">{$obj.landsquares}</td>
+<td align="right">{$obj.percentage|thousends}</td>
+<td align="right">{$obj.users|thousends}</td>
+<td align="right" sortvalue="{$obj.last_submitted}">{$obj.last_submitted|date_format:"%A, %e %B, %Y"}</td></tr>
 {/foreach}
 
 </tbody>
 </table>
 
-</div>
-{/if}
 
-{if count($most2)}
-
-<div style="float:left;position:relative;width:30%">
-<h3><small>[See <a href="/statistics/fully_geographed.php">Full Squares</a>]</small></h3>
-<h4>Ireland</h4>
-<table class="report"> 
-<thead><tr><td>Rank</td><td>Square</td><td>#</td><td>%</td></tr></thead>
-<tbody>
-
-{foreach from=$most2 key=id item=obj}
-<tr><td align="right">{$obj.ordinal}</td><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
-<td align="right" title="{$obj.geograph_count}/{$obj.land_count}">{$obj.geograph_count}</td>
-<td align="right">{$obj.percentage|thousends}</td></tr>
-{/foreach}
-
-</tbody>
-</table>
-
-</div>
-{/if}
-
-{if count($onekm)}
-<div style="float:left;position:relative;width:35%;background-color:#dddddd; padding:10px">
-<h3>1km Grid Squares</h3>
-<table class="report"> 
-<thead><tr><td>Rank</td><td>Square</td><td>Images</td></tr></thead>
-<tbody>
-
-{foreach from=$onekm key=id item=obj}
-<tr><td align="right">{$obj.ordinal}</td><td><a title="View images for {$obj.grid_reference}" href="/gridref/{$obj.grid_reference}">{$obj.grid_reference}</a></td>
-<td align="right">{$obj.imagecount}</td>
-
-</tr>
-{/foreach}
-
-</tbody>
-</table>
-</div>
-{/if}
-<br style="clear:both"/>
-
- 		
 {include file="_std_end.tpl"}
