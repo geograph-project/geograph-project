@@ -119,6 +119,9 @@ function hideStep3() {
 		{if $exif.filename}
 			<li>Filename: <b>{$exif.filename|escape:'html'}</b></li>
 		{/if}
+		{if $exif.datetime}
+			<li>Date: <b>{$exif.datetime|escape:'html'}</b></li>
+		{/if}
 		{if $exif.model}
 			<li>Camera Model: <b>{$exif.model|escape:'html'}</b></li>
 		{/if}
