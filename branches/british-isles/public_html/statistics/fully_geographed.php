@@ -28,15 +28,18 @@ init_session();
 
 $smarty = new GeographPage;
 
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
+
 $template='statistics_fully_geographed.tpl';
-$cacheid='statistics|fully_geographed';
+$cacheid='statistics|fully_geographed'.$ri;
+
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*6; //6hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db = GeographDatabaseConnection(true); 
+	$db=GeographDatabaseConnection(false);
 
 	$mosaic=new GeographMapMosaic;
 	$mosaic->setScale(40);
@@ -47,87 +50,53 @@ if (!$smarty->is_cached($template, $cacheid))
 	$largemosaic->setMosaicFactor(2);
 	$largemosaic->setMosaicSize(800,800);
 	
-	$censquare = new GridSquare;
+	$sql_where = '';
+	if ($ri) {
+		$sql_where = " and reference_index = $ri";
+		$smarty->assign('ri',$ri);
+	} 
 	
-	function cmp($a,$b) {
-		if ($a['sort'] == $b['dateraw'])
-			return 0;
-		return ($a['dateraw'] > $b['dateraw'])?-1:1;
-	}
+	$prev_fetch_mode = $ADODB_FETCH_MODE;
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
+	$most = $db->GetAll("SELECT 
+	reference_index,x,y,hectad,geosquares,landsquares,last_submitted,users,map_token,largemap_token
+	FROM hectad_stat 
+	WHERE geosquares >= landsquares $sql_where
+	ORDER BY last_submitted DESC,hectad LIMIT 150");
+	$ADODB_FETCH_MODE = $prev_fetch_mode;
 
-	$db->Execute("TRUNCATE hectad_complete");
-
-	foreach (array(1,2) as $ri) {
-		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
-		
-		$prev_fetch_mode = $ADODB_FETCH_MODE;
-		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
-		$most = $db->GetAll("select 
-		grid_reference,x,y,
-		concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
-		sum(has_geographs) as geograph_count,
-		sum(percent_land >0) as land_count,
-		(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage
-		from gridsquare 
-		where reference_index = $ri 
-		group by tenk_square 
-		having geograph_count > 0 and percentage >=100
-		order by percentage desc,tenk_square");
-		$ADODB_FETCH_MODE = $prev_fetch_mode;
-		
-		$lastgeographs = -1;
-		foreach($most as $id=>$entry) 
-		{
-			$most[$id]['x'] = ( intval(($most[$id]['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
-			$most[$id]['y'] = ( intval(($most[$id]['y'] - $CONF['origins'][$ri][1])/10)*10 ) +  $CONF['origins'][$ri][1];
+	foreach($most as $id=>$entry) 
+	{
+		if (empty($entry['map_token']) || empty($entry['largemap_token'])) {
+			$x = ( intval(($entry['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
+			$y = ( intval(($entry['y'] - $CONF['origins'][$ri][1])/10)*10 ) +  $CONF['origins'][$ri][1];
 
 			//get a token to show a suroudding geograph map
-			$mosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
+			$mosaic->setOrigin($x,$y);
 
-			$most[$id]['map_token'] = $mosaic->getToken();
-			
+			$most[$ri]['map_token'] = $mosaic->getToken();
+
 			//get a token to show a suroudding geograph map
-			$largemosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
+			$largemosaic->setOrigin($x,$y);
 
-			$most[$id]['largemap_token'] = $largemosaic->getToken();
+			$most[$ri]['largemap_token'] = $largemosaic->getToken();
 
-			//actully we don't need the full loading of a square
-			//$ok = $censquare->loadFromPosition($most[$id]['x'],$most[$id]['y']);
-			$censquare->x = $most[$id]['x'];
-			$censquare->y = $most[$id]['y'];
+			$db->Execute(sprintf("UPDATE hectad_stat SET
+				map_token = %s,
+				largemap_token = %s
+				WHERE hectad = %s",
+				$db->Quote($most[$id]['map_token']),
+				$db->Quote($most[$id]['largemap_token']),
+				$db->Quote($entry['hectad']) ));
+		}
 
-			$crit = substr($most[$id]['tenk_square'],0,$letterlength+1).'_'.substr($most[$id]['tenk_square'],$letterlength+1,1).'_';
-
-			list($most[$id]['date'],$most[$id]['dateraw']) = $db->getRow(
-			"SELECT DATE_FORMAT(MAX(submitted),'%D %b %Y'),MAX(submitted)
-			FROM gridimage_search
-			WHERE grid_reference LIKE '$crit' AND moderation_status = 'geograph' AND ftf = 1");
-			
-			$db->Execute(sprintf("INSERT IGNORE INTO hectad_complete SET
-				hectad_ref = %s,
-				completed = %s,
-				landcount = %d,
-				reference_index = %d,
-				largemap_token = %s",
-				$db->Quote($most[$id]['tenk_square']),
-				$db->Quote($most[$id]['dateraw']),
-				intval($most[$id]['land_count']),
-				intval($ri),
-				$db->Quote($most[$id]['largemap_token']) ) );
-			
-			
-		}	
-		
-		uasort($most,"cmp");
-		
-		$smarty->assign("most$ri", $most);
 	}
 
-	$db->Execute("ALTER TABLE `hectad_complete` ORDER BY `completed` DESC");
-
+	$smarty->assign_by_ref("most", $most);
+	
+	$smarty->assign_by_ref('references',$CONF['references_all']);
 }
 
 
 $smarty->display($template, $cacheid);
 
-?>

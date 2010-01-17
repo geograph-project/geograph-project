@@ -27,58 +27,51 @@ init_session();
 
 $smarty = new GeographPage;
 
-
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $template='statistics_not_geographed.tpl';
-$cacheid='statistics|not_geographed';
+$cacheid='statistics|not_geographed'.$ri;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-        $db = GeographDatabaseConnection(true);
-
+	$db=GeographDatabaseConnection(false);
+	
 	$mosaic=new GeographMapMosaic;
 	$mosaic->setScale(40);
 	$mosaic->setMosaicFactor(2);
 
-	
-	foreach (array(1,2) as $ri) {
-		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
-			
-		$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=$ri and origin_x > 0 order by origin_x,origin_y limit 1");
-		
-			
-		$most = $db->GetAll("select 
-		grid_reference,x,y,
-		concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
-		sum(has_geographs) as geograph_count,
-		sum(percent_land >0) as land_count
-		from gridsquare 
-		where reference_index = $ri 
-		group by tenk_square 
-		having geograph_count = 0 and land_count > 0
-		order by tenk_square");
-		
-		$i = 1;
-		$lastgeographs = -1;
-		foreach($most as $id=>$entry) 
+	$sql_where = '';
+	if ($ri) {
+		$sql_where .= " and reference_index = $ri";
+		$smarty->assign('ri',$ri);
+	} 
+
+	$most = $db->GetAll("SELECT 
+	reference_index,x,y,hectad,landsquares,last_submitted,map_token
+	FROM hectad_stat 
+	WHERE geosquares =0 $sql_where
+	ORDER BY landsquares DESC,hectad LIMIT 150");
+
+	foreach($most as $id=>$entry) 
+	{
+		if (empty($entry['map_token']))
 		{
-			$most[$id]['x'] = ( intval(($most[$id]['x'] - $origin['origin_x'])/10)*10 ) +  $origin['origin_x'];
-			$most[$id]['y'] = ( intval(($most[$id]['y'] - $origin['origin_y'])/10)*10 ) +  $origin['origin_y'];
+			$x = ( intval(($entry['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
+			$y = ( intval(($entry['y'] - $CONF['origins'][$ri][1])/10)*10 ) +  $CONF['origins'][$ri][1];
 
 			//get a token to show a suroudding geograph map
-			$mosaic->setOrigin($most[$id]['x'],$most[$id]['y']);
+			$mosaic->setOrigin($x,$y);
 
-			$most[$id]['map_token'] = $mosaic->getToken();
-		}	
-		$smarty->assign("most$ri", $most);	
+			$most[$ri][$id]['map_token'] = $mosaic->getToken();
+		}
 	}
+	$smarty->assign_by_ref("most", $most);
+	
+	$smarty->assign_by_ref('references',$CONF['references_all']);
 }
-
 
 $smarty->display($template, $cacheid);
 
-	
-?>

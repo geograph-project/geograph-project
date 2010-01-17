@@ -3,40 +3,34 @@
 
 <h2>Non Geographed Hectads</h2>
 
+    <form method="get" action="{$script_name}">
+	<div class="interestBox"><b>Not Geographed</b> | 
+	<a href="most_geographed.php{if $ri}?ri={$ri}{/if}">Mostly Geographed</a> | 
+	<a href="fully_geographed.php{if $ri}?ri={$ri}{/if}">Fully Geographed</a> Hectads -
+	{if $references}In <select name="ri">
+	{html_options options=$references selected=$ri}
+	</select>{/if}
+	<input type="submit" value="Go"></div>
+    </form>
+
 <p>These are the Hectad with the least coverage so far, that is without any photos yet, go on photograph one!</p>
 
-<div style="float:left;position:relative;width:50%">
-<h4>Great Britain</h4>
+
 <table class="report"> 
 <thead><tr><td>Square</td><td>Land Squares</td></tr></thead>
 <tbody>
 
-{foreach from=$most1 key=id item=obj}
-<tr><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
-<td align="right">{$obj.land_count}</td></tr>
+{foreach from=$most key=id item=obj}
+{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+<tr bgcolor="{$bgcolor}">
+<td sortvalue="{$obj.hectad}" style="font-family:monospace" align="right"><a title="View map for {$obj.hectad}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.hectad}</a></td>
+<td align="right">{$obj.landsquares}</td></tr>
+{foreachelse}
+	<p>None, Wow!
 {/foreach}
 
 </tbody>
 </table>
-
-</div>
-
-<div style="float:left;position:relative;width:50%">
-<h4>Ireland</h4>
-<table class="report"> 
-<thead><tr><td>Square</td><td>Land Squares</td></tr></thead>
-<tbody>
-
-{foreach from=$most2 key=id item=obj}
-<tr><td><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
-<td align="right">{$obj.land_count}</td></tr>
-{/foreach}
-
-</tbody>
-</table>
-
-</div>
-
 
 
 <br style="clear:both"/>

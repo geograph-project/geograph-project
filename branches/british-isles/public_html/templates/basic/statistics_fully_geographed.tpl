@@ -4,22 +4,33 @@
 
 <h2>Fully Geographed Hectads</h2>
 
-<p>These are the 10km x 10km squares or hectads<a href="/help/squares">?</a> with full land coverage!
-<br/> See also <a href="/statistics/most_geographed.php">partially covered squares</a>.</p>
+    <form method="get" action="{$script_name}">
+	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Not Geographed</a> | 
+	<a href="most_geographed.php{if $ri}?ri={$ri}{/if}">Mostly Geographed</a> | 
+	<b>Fully Geographed</b> Hectads -
+	{if $references}In <select name="ri">
+	{html_options options=$references selected=$ri}
+	</select>{/if}
+	<input type="submit" value="Go"></div>
+    </form>
 
-<p style="font-size:0.8em">The # number column is the number of squares with (at least) a geograph, Click Mosaic for a large Map. Click a column header to change sort order.</p>
+<p>These are the 10km x 10km squares or hectads<a href="/help/squares">?</a> with full land coverage! This page only counts First Geographs.</p>
 
-<div style="float:left;position:relative;width:50%">
-<h4 style="padding-left:10px">Great Britain</h4>
+<p style="font-size:0.8em">Click Mosaic for a large Map. Click a column header to change sort order.</p>
+
+
 <table class="report sortable" id="table1"> 
-<thead><tr><td>Hectad</td><td sorted="desc">Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
+<thead><tr><td>Hectad</td><td sorted="desc">Date Completed</td><td>Squares</td><td>Mosaic</td><td>Contributors</td></tr></thead>
 <tbody>
 
-{foreach from=$most1 key=id item=obj}
-<tr><td sortvalue="{$obj.tenk_square}"><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
-<td align="right" sortvalue="{$obj.dateraw}">{$obj.date}</td>
-<td align="right" title="{$obj.geograph_count}/{$obj.land_count}">{$obj.geograph_count}</td>
-<td><a title="View Mosaic for {$obj.tenk_square}" href="/maplarge.php?t={$obj.largemap_token}">Mosaic</a></td></tr>
+{foreach from=$most key=id item=obj}
+{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
+<tr bgcolor="{$bgcolor}">
+<td sortvalue="{$obj.hectad}" style="font-family:monospace" align="right"><a title="View map for {$obj.hectad}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.hectad}</a></td>
+<td align="right" sortvalue="{$obj.last_submitted}">{$obj.last_submitted|date_format:"%A, %e %B, %Y"}</td>
+<td align="right" title="{$obj.geosquares}/{$obj.landsquares}">{$obj.geosquares}</td>
+<td><a title="View Mosaic for {$obj.hectad}" href="/maplarge.php?t={$obj.largemap_token}">Mosaic</a></td>
+<td align="right">{$obj.users}</td></tr>
 {/foreach}
 
 </tbody>
@@ -27,23 +38,6 @@
 
 </div>
 
-<div style="float:left;position:relative;width:50%">
-<h4 style="padding-left:10px">Ireland</h4>
-<table class="report sortable" id="table2"> 
-<thead><tr><td>Hectad</td><td sorted="desc">Date Completed</td><td>#</td><td>Mosaic</td></tr></thead>
-<tbody>
-
-{foreach from=$most2 key=id item=obj}
-<tr><td sortvalue="{$obj.tenk_square}"><a title="View map for {$obj.tenk_square}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.tenk_square}</a></td>
-<td align="right" sortvalue="{$obj.dateraw}">{$obj.date}</td>
-<td align="right" title="{$obj.geograph_count}/{$obj.land_count}">{$obj.geograph_count}</td>
-<td><a title="View Mosaic for {$obj.tenk_square}" href="/maplarge.php?t={$obj.largemap_token}">Mosaic</a></tr>
-{/foreach}
-
-</tbody>
-</table>
-
-</div>
 
 
 
