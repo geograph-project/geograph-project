@@ -330,10 +330,12 @@ class RestAPI
 		if (isset($_GET['output']) && $_GET['output']=='json') {
 			$this->output='json';
 			if (isset($_GET['callback'])) {
-				$this->callback=preg_replace('/[^\w]+/','',$_GET['callback']);
+				$this->callback=preg_replace('/[^\w$]+/','',$_GET['callback']);
 				if (empty($this->callback)) {
 					$this->callback = "geograph_callback";
 				}
+			} elseif (isset($_GET['_callback'])) {
+				$this->callback=preg_replace('/[^\w$]+/','',$_GET['_callback']);
 			}
 		}
 	
