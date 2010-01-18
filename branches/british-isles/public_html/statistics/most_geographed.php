@@ -35,7 +35,7 @@ $template='statistics_most_geographed.tpl';
 $cacheid='statistics|most_geographed'.$ri.$myriad;
 
 $smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+$smarty->cache_lifetime = 3600*6; //24hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {

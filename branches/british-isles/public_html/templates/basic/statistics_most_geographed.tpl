@@ -1,12 +1,13 @@
 {assign var="page_title" value="Most Geographed Squares"}
 {include file="_std_begin.tpl"}
 
-<h2>Most Geographed Squares{if $myriad}, for Myriad {$myriad}{/if}</h2>
+<h2>Most Geographed Hectads{if $myriad}, for Myriad {$myriad}{/if}</h2>
 
     <form method="get" action="{$script_name}">
 	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Not Geographed</a> | 
 	<b>Mostly Geographed</b> | 
 	<a href="fully_geographed.php{if $ri}?ri={$ri}{/if}">Fully Geographed</a> Hectads -
+	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a>  -
 	{if $references}In <select name="ri">
 	{html_options options=$references selected=$ri}
 	</select>{/if}
