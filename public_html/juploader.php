@@ -129,7 +129,7 @@ function UploadPicture() {
 		$xml['status'] = $um->error;
 	} else {
 		// so far so good... can we commit the submission?
-		$rc = $um->commit('juploader'));
+		$rc = $um->commit('juploader');
 		if ($rc == "") {
 			//clear user profile
 			$ab=floor($USER->user_id/10000);
