@@ -120,7 +120,7 @@
 		<h4>Recently completed<br/> hectads (<a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">list all ...</a>)</h4>
 		<div class="halvebox">
 			{foreach from=$hectads key=id item=obj name="hectads"}
-				<a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a><br/>
+				<a title="View Mosaic for {$obj.hectad}, completed {$obj.last_submitted}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad}</a><br/>
 				{if $smarty.foreach.hectads.iteration eq 5}
 		</div><div class="halvebox">
 				{/if}

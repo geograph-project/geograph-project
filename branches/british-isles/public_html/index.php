@@ -109,7 +109,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$hectads= $db->getAll("select * from hectad_complete limit 5");
+	$hectads= $db->getAll("SELECT * FROM hectad_stat WHERE geosquares >= landsquares ORDER BY last_submitted DESC LIMIT 5");
 	$smarty->assign_by_ref('hectads', $hectads);
 	
 	$stats= $db->GetRow("select * from user_stat where user_id = 0");

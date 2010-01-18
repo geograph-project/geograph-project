@@ -80,7 +80,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("ticket",$ticket);
 	
 	
-	$sql = "select completed as d ,count(*) as c from hectad_complete where completed > '$beginday' AND completed < '$today' $andri group by completed";
+	$sql = "select date(last_submitted) as d ,count(*) as c from hectad_stat where last_submitted > '$beginday' AND last_submitted < '$today' $andri group by date(last_submitted)";
 	$sql2 = "select count(*) from hectad_complete $whereri";
 		
 	$hectad = calc($sql,$sql2,100,'Hectads');

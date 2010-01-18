@@ -82,7 +82,7 @@ representative photographs and information for every square kilometre of <a href
 
 Recently completed hectads: 
 {foreach from=$hectads key=id item=obj}
-<a title="View Mosaic for {$obj.hectad_ref}, completed {$obj.completed}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad_ref}</a>,
+<a title="View Mosaic for {$obj.hectad}, completed {$obj.last_submitted}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad}</a>,
 {/foreach}
 <a href="/statistics/fully_geographed.php" title="Completed 10km x 10km squares">more...</a><br/>
 

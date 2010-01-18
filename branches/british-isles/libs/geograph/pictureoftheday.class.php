@@ -67,8 +67,12 @@ class PictureOfTheDay
 			if (empty($gridimage_id))
 			{
 				$ids = $db->getCol("select distinct user_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday > date_sub(now(),interval 30 day)");
-				$ids = implode(',',$ids);
-			
+				if (empty($ids)) {
+					$ids = 0;
+				} else {
+					$ids = implode(',',$ids);
+				}
+	
 				//ok, there is still no image for today, and we have a
 				//lock on the table - assign the first available image
 				//ordered by number - giving preference to geograph and highly voted images 
