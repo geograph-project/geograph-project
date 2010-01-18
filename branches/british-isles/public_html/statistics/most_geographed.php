@@ -53,7 +53,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} elseif (strlen($myriad) == 1) {
 			$ri = 2;
 		} 
-		$smarty->assign('myriad',$ri);
+		$smarty->assign('myriad',$myriad);
 	} 
 	if ($ri) {
 		$sql_where .= " and reference_index = $ri";
