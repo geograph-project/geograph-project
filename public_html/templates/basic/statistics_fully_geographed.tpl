@@ -8,6 +8,7 @@
 	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Not Geographed</a> | 
 	<a href="most_geographed.php{if $ri}?ri={$ri}{/if}">Mostly Geographed</a> | 
 	<b>Fully Geographed</b> Hectads -
+	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a>  -
 	{if $references}In <select name="ri">
 	{html_options options=$references selected=$ri}
 	</select>{/if}

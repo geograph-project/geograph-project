@@ -33,7 +33,7 @@ $template='statistics_graph.tpl';
 $cacheid='statistics|hectads'.$ri;
 
 $smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hour cache
+$smarty->cache_lifetime = 3600*6; //6hour cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -51,40 +51,23 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (count($where))
 		$where_sql = " WHERE ".join(' AND ',$where);
 
+	
+
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$hectads = $db->CacheGetAll(3600,"select 
-	concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
-	sum(has_geographs) as geograph_count,
-	(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage,
-	sum(percent_land >0) as land_count
-	from gridsquare 
+	$percents = $db->GetAll("SELECT 
+	(floor(geosquares/landsquares*100) div 5)*5 as percentage,count(*) as c
+	FROM hectad_stat 
 	$where_sql
-	group by tenk_square 
-	having land_count > 0
-	order by percentage desc,tenk_square");
-	
-	$count = array();
-	foreach ($hectads as $i => $row) {
-		if ($row['percentage'] == 0) {
-			$count[0]++;
-		} elseif ($row['percentage'] == 100) {
-			$count[101]++;
-		} else {
-			$count[min(100,intval($row['percentage']/5)*5+5)]++;
-		}
-	}
-	
-	$percents = array_keys($count);
-	natsort($percents);
+	GROUP BY FLOOR(geosquares/landsquares*100) div 5 DESC");
 	
 	$table = array();
 	$max = 0;
-	foreach (array_reverse($percents) as $p) {
+	foreach ($percents as $row) {
 		$line = array();
-		$line['title'] = ($p > 0 && $p < 101?"&lt; ":'').($p > 100?($p - 1):$p);
-		$line['value'] = $count[$p];
+		$line['title'] = (($row['percentage']<100)?"{$row['percentage']}+":$row['percentage']).'%';
+		$line['value'] = $row['c'];
 		$table[] = $line;
-		$max = max($max,$count[$p]);
+		$max = max($max,$row['c']);
 	}
 	
 	$graphs = array();
