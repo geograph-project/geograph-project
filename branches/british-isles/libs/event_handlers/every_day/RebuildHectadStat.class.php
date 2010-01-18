@@ -47,33 +47,40 @@ class RebuildHectadStat extends EventHandler
 		
 		$db->Execute("TRUNCATE hectad_stat_tmp"); //just incase we inheritied a old table.
 		
+		$db->Execute("ALTER TABLE hectad_stat_tmp DISABLE KEYS");
 		
 		foreach (array(1,2) as $ri) {
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			
+			$prefixes = $db->GetCol("select prefix from gridprefix where reference_index = $ri and landcount > 0 ");
 			
-			//give the server a breather...
-			sleep(10);
+			foreach ($prefixes as $prefix) {
+			
+				$db->Execute("INSERT INTO hectad_stat_tmp
+				SELECT 
+					reference_index,x,y,
+					CONCAT(SUBSTRING(grid_reference,1,".($letterlength+1)."),SUBSTRING(grid_reference,".($letterlength+3).",1)) AS hectad,
+					COUNT(DISTINCT gs.gridsquare_id) AS landsquares,
+					COUNT(gridimage_id) AS images,
+					SUM(moderation_status = 'geograph') AS geographs,
+					COUNT(DISTINCT gi.gridsquare_id) AS squares,
+					COUNT(DISTINCT IF(moderation_status='geograph',gi.gridsquare_id,NULL)) AS geosquares,
+					COUNT(DISTINCT IF(ftf=1,user_id,NULL)) AS users,
+					MIN(IF(ftf=1,submitted,NULL)) AS first_submitted,
+					MAX(IF(ftf=1,submitted,NULL)) AS last_submitted, 
+					'' AS map_token,
+					'' AS largemap_token
+					FROM gridsquare gs
+					LEFT JOIN gridimage gi ON (gs.gridsquare_id=gi.gridsquare_id AND moderation_status IN ('geograph','accepted')) 
+					WHERE reference_index = $ri AND grid_reference LIKE '$prefix%' AND percent_land >0
+					GROUP BY (x-{$CONF['origins'][$ri][0]}) div 10,(y-{$CONF['origins'][$ri][1]}) div 10
+					ORDER BY NULL");
+				//todo when the origin is a multiple of 10 (or =0) then can be optimised away - but mysql might do that anyway
+
+				//give the server a breather...
+				sleep(10);
 		
-			$db->Execute("INSERT INTO hectad_stat_tmp
-			SELECT 
-				reference_index,x,y,
-				concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) AS hectad,
-				COUNT(DISTINCT gs.gridsquare_id) AS landsquares,
-				COUNT(gridimage_id) AS images,
-				SUM(moderation_status = 'geograph') AS geographs,
-				COUNT(DISTINCT gi.gridsquare_id) AS squares,
-				COUNT(DISTINCT IF(moderation_status='geograph',gi.gridsquare_id,NULL)) AS geosquares,
-				COUNT(IF(ftf=1,user_id,NULL)) AS users,
-				MIN(IF(ftf=1,submitted,NULL)) AS first_submitted,
-				MAX(IF(ftf=1,submitted,NULL)) AS last_submitted, 
-				'' as map_token,
-				'' as largemap_token
-				FROM gridsquare gs
-				LEFT JOIN gridimage gi ON (gs.gridsquare_id=gi.gridsquare_id AND moderation_status IN ('geograph','accepted')) 
-				WHERE reference_index = $ri AND percent_land >0
-				GROUP BY (x-{$CONF['origins'][$ri][0]}) div 10,(y-{$CONF['origins'][$ri][1]}) div 10");
-			//todo when the origin is a multiple of 10 (or =0) then can be optimised away - but mysql might do that anyway
+			}
 		}
 		
 		$db->Execute("UPDATE hectad_stat_tmp,hectad_stat 
@@ -81,6 +88,8 @@ class RebuildHectadStat extends EventHandler
 			hectad_stat_tmp.largemap_token = hectad_stat.largemap_token
 			WHERE hectad_stat.map_token != '' OR hectad_stat.largemap_token != ''
 			AND hectad_stat_tmp.hectad = hectad_stat.hectad");
+		
+		$db->Execute("ALTER TABLE hectad_stat_tmp ENABLE KEYS");
 		
 		$db->Execute("DROP TABLE IF EXISTS hectad_stat");
 		
