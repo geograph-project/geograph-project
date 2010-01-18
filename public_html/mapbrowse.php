@@ -244,7 +244,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($mosaic->pixels_per_km == 40 && preg_match('/([A-Z]+\d)5(\d)5$/',$gridref,$m)) {
 			$smarty->assign('hectad', $hectad = $m[1].$m[2]);
 			$db = GeographDatabaseConnection(true);
-			$smarty->assign_by_ref('hectad_row',$db->getRow("select * from hectad_complete where hectad_ref = '$hectad' limit 1"));
+			$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' LIMIT 1"));
 		}
 	}
 	

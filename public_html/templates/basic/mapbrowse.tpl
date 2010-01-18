@@ -232,7 +232,7 @@ table.navtable {
    {if $hectad}</b>
    Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
    {if $hectad_row}
-   <a title="View Mosaic for {$hectad_row.hectad_ref}, completed {$hectad_row.completed}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a>
+   <a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a>
    {/if}
    {else}Grid Reference at centre
  {if $token_zoomout}

@@ -166,7 +166,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$coming_up=$db->GetAssoc("select showday,gridimage_id,1 as assigned from gridimage_daily where showday > date(now()) and showday < date(date_add(now(),interval $days day))");
 	
 	$ids = $db->getCol("select distinct user_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday > date_sub(now(),interval 30 day)");
-	$ids = implode(',',$ids);
+	if (empty($ids)) {
+		$ids = 0;
+	} else {
+		$ids = implode(',',$ids);
+	}
 	
 	//get ordered list of pool images
 	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null and (vote_baysian > 3.5) and (user_id not in ($ids)) order by  moderation_status+0 desc,(abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()>0.7,7,0) asc,crc32(gridimage_id) desc limit $days");

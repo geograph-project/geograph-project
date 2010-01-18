@@ -83,7 +83,7 @@ class RebuildVoteStats extends EventHandler
 
 		$db->Execute("UNLOCK TABLES");
 		
-		$db->Execute("UPDATE gridimage_daily,vote_stat SET vote_baysian = baysian WHERE vote_stat.id = gridimage_id AND type = 'i2136521' AND users > 3");
+		$db->Execute("UPDATE gridimage_daily,vote_stat SET vote_baysian = baysian,gridimage_daily.updated = gridimage_daily.updated WHERE vote_stat.id = gridimage_id AND type = 'i2136521' AND users > 3");
 		
 		
 		
