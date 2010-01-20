@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: mapbrowse.php 2630 2006-10-18 21:12:28Z barry $
+ * $Id: thankyou.php 2630 2006-10-18 21:12:28Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Barry Hunter (geo@barryhunter.co.uk)
@@ -20,6 +20,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+ 
+ customExpiresHeader(86400*180,true);
+ 
 ?>
 <html>
 <head>

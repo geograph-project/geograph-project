@@ -63,7 +63,7 @@
 			{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
 		{/if}
 
-		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="1600" id="large1600" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}<br/><br/>
+		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="1600" id="large1600" onclick="selectImage(this)"/> {$resized_width} x {$resized_height}</div><br/>
 		<label for="large1600"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large1600" style="border:2px solid white"/></label>
 		{assign var="last_width" value=$resized_width}
 		{assign var="last_height" value=$resized_height}

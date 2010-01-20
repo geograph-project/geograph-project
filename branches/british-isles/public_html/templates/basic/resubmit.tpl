@@ -3,6 +3,19 @@
 
 {dynamic}
 
+{if $image}
+	<div style="position:relative; float:right; width:220px; background-color:#eeeeee; padding: 10px; text-align:center">
+		<b>Chosen Image</b>
+		<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a>
+			 <div style="font-size:0.7em">
+				  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
+				  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
+				  for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <h2>Add higher resolution image to <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
 
 
@@ -93,18 +106,6 @@ function hideStep3() {
 	
 
 {else if $step eq 1}
-
-		<div style="position:relative; float:right; width:220px; background-color:#eeeeee; padding: 10px; text-align:center">
-			<b>Chosen Image</b>
-			<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a>
-				 <div style="font-size:0.7em">
-					  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-					  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
-					  for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
-				</div>
-			</div>
-		</div>
-
 
 
 <ul>

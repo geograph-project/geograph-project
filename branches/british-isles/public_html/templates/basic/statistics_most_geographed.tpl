@@ -6,7 +6,7 @@
     <form method="get" action="{$script_name}">
 	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Not Geographed</a> | 
 	<b>Mostly Geographed</b> | 
-	<a href="fully_geographed.php{if $ri}?ri={$ri}{/if}">Fully Geographed</a> Hectads -
+	<a href="fully_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Fully Geographed</a> Hectads -
 	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a>  -
 	{if $references}In <select name="ri">
 	{html_options options=$references selected=$ri}
@@ -38,5 +38,7 @@
 </tbody>
 </table>
 
+
+<br style="clear:both"/>
 
 {include file="_std_end.tpl"}

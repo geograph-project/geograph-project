@@ -23,15 +23,16 @@
 
 require_once('geograph/global.inc.php');
 require_once('geograph/mapmosaic.class.php');
-require_once('geograph/gridsquare.class.php');
 init_session();
 
 $smarty = new GeographPage;
 
+$myriad = (isset($_GET['myriad']) && preg_match('/^[\w]{1,3}$/' , $_GET['myriad']))?$_GET['myriad']:'';
+
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $template='statistics_fully_geographed.tpl';
-$cacheid='statistics|fully_geographed'.$ri;
+$cacheid='statistics|fully_geographed'.$ri.$myriad;
 
 
 $smarty->caching = 2; // lifetime is per cache
@@ -51,11 +52,21 @@ if (!$smarty->is_cached($template, $cacheid))
 	$largemosaic->setMosaicSize(800,800);
 	
 	$sql_where = '';
+	if ($myriad) {
+		$sql_where = " and hectad like '$myriad%'";
+		if (strlen($myriad) == 2) {
+			$ri = 1;
+		} elseif (strlen($myriad) == 1) {
+			$ri = 2;
+		} 
+		$smarty->assign('myriad',$myriad);
+	} 
 	if ($ri) {
-		$sql_where = " and reference_index = $ri";
+		$sql_where .= " and reference_index = $ri";
 		$smarty->assign('ri',$ri);
 	} 
 	
+
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
 	$most = $db->GetAll("SELECT 
@@ -74,12 +85,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			//get a token to show a suroudding geograph map
 			$mosaic->setOrigin($x,$y);
 
-			$most[$ri]['map_token'] = $mosaic->getToken();
+			$most[$id]['map_token'] = $mosaic->getToken();
 
 			//get a token to show a suroudding geograph map
 			$largemosaic->setOrigin($x,$y);
 
-			$most[$ri]['largemap_token'] = $largemosaic->getToken();
+			$most[$id]['largemap_token'] = $largemosaic->getToken();
 
 			$db->Execute(sprintf("UPDATE hectad_stat SET
 				map_token = %s,

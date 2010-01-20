@@ -60,6 +60,7 @@ if (isset($_REQUEST['id']))
 				case 640:
 				case 800:
 				case 1024: 
+				case 1600:
 					$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']),intval($_REQUEST['size']));
 					break;
 				case 'original': 
