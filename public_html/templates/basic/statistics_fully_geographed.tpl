@@ -2,11 +2,11 @@
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}"></script>
 
-<h2>Fully Geographed Hectads</h2>
+<h2>Fully Geographed Hectads{if $myriad}, for Myriad {$myriad}{/if}</h2>
 
     <form method="get" action="{$script_name}">
 	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Not Geographed</a> | 
-	<a href="most_geographed.php{if $ri}?ri={$ri}{/if}">Mostly Geographed</a> | 
+	<a href="most_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Mostly Geographed</a> | 
 	<b>Fully Geographed</b> Hectads -
 	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a>  -
 	{if $references}In <select name="ri">
@@ -37,11 +37,7 @@
 </tbody>
 </table>
 
-</div>
-
-
-
 
 <br style="clear:both"/>
-		
+
 {include file="_std_end.tpl"}
