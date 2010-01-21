@@ -191,7 +191,7 @@ $sql = "SELECT gridimage_id, gi.comment,
 gi.title, gi.realname,
 gi.user_id, gridsquare_id, placename_id, gi.moderation_status+0 as moderation_status, gi.ftf, gi.imagetaken, gi.imageclass, gi.reference_index
 FROM tmpflam INNER JOIN gridimage_search gi USING (gridimage_id) INNER JOIN gridimage g2 USING (gridimage_id)";
-
+//todo use coalease(g2.placename_id,gs.placename_id) - but check it works on 0 (rather than just null)
 print "$sql\n";
 
 $image = new GridImage;
@@ -215,7 +215,7 @@ while (!$recordSet->EOF)
 	
 	
 	
-	fwrite($h['items'], implode("\t",array($r['gridimage_id'],$r['title'],$r['realname'],$thumbnail)). "\n");
+	fwrite($h['items'], implode("\t",array($r['gridimage_id'],str_replace("\t",' ',$r['title']),$r['realname'],$thumbnail)). "\n");
 
 
 	fwrite($h['user_id_map'], 		implode("\t",array($r['gridimage_id'],$r['user_id'])). "\n");
@@ -276,7 +276,7 @@ $imagetaken_map = $imageclass_map = array();
 
 #####################################################
 
-$sql = "SELECT gridimage_id,label FROM gridimage_group INNER JOIN tmpflam USING (gridimage_id)";
+$sql = "SELECT gridimage_id,label FROM gridimage_group INNER JOIN tmpflam USING (gridimage_id) WHERE label NOT LIKE '%Other%'";
 
 print "$sql\n";
 
@@ -301,6 +301,8 @@ while (!$recordSet->EOF)
 
 $recordSet->Close();
 
+#####################################################
+
 if (!empty($places[1])) {
 	//inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
 	$ids = '';
@@ -317,8 +319,8 @@ if (!empty($places[1])) {
 			loc_country.name as Country,
 			has_dup,km_ref
 		from os_gaz 
-			inner join os_gaz_county on (os_gaz.co_code = os_gaz_county.co_code)
-			inner join loc_country on (country = loc_country.code)
+			left join os_gaz_county on (os_gaz.co_code = os_gaz_county.co_code)
+			left join loc_country on (country = loc_country.code)
 		where os_gaz.seq IN ($ids)";
 
 	print "$sql\n";
@@ -329,6 +331,12 @@ if (!empty($places[1])) {
 	{
 		$r =& $recordSet->fields;
 
+		if (empty($r['Country'])) {
+			$r['Country'] = 'Unknown';
+		}
+		if (empty($r['Country'])) {
+			$r['County'] = 'Unknown';
+		}
 		fwrite($h['place_terms'], 		implode("\t",array($r['placename_id'],$r['Country'],$r['County'],$r['Place'].($r['has_dup']?"/{$r['km_ref']}":''))). "\n");
 
 		$recordSet->MoveNext();
@@ -337,6 +345,8 @@ if (!empty($places[1])) {
 	$recordSet->Close();
 
 }
+
+#####################################################
 
 if (!empty($places[2])) {
 	//inner join loc_placenames on (placename_id = id)
@@ -349,8 +359,8 @@ if (!empty($places[2])) {
 			loc_country.name as Country,
 			has_dup,e,n
 		from loc_placenames
-			inner join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_adm1.country = loc_placenames.country)
-			inner join loc_country on (loc_placenames.country = loc_country.code)
+			left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_adm1.country = loc_placenames.country)
+			left join loc_country on (loc_placenames.country = loc_country.code)
 		where loc_placenames.id IN ($ids)";
 	
 	print "$sql\n";
@@ -367,7 +377,9 @@ if (!empty($places[2])) {
 		if ($r['has_dup'] && empty($r['gridref'])) {
 			list($r['gridref'],) = $conv->national_to_gridref($r['e'],$r['n'],4,2);
 		}
-
+		if (empty($r['County'])) {
+			$r['County'] = 'Unknown';
+		}
 		fwrite($h['place_terms'], 		implode("\t",array($r['placename_id'],$r['Country'],$r['County'],$r['Place'].($r['gridref']?"/{$r['gridref']}":''))). "\n");
 
 		$recordSet->MoveNext();
@@ -376,6 +388,7 @@ if (!empty($places[2])) {
 	$recordSet->Close();
 }
 
+#####################################################
 
 print "done\n";
 
