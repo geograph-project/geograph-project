@@ -29,7 +29,7 @@
 {foreach from=$most key=id item=obj}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
-<td align="right">{$obj.ordinal}</td><td sortvalue="{$obj.hectad}" style="font-family:monospace;font-size:1.2em" align="right"><a title="View map for {$obj.hectad}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.hectad}</a></td>
+<td align="right">{$obj.ordinal}</td><td sortvalue="{$obj.hectad}" style="font-family:monospace;font-size:1.2em" align="right"><a href="/gridref/{$obj.hectad}">{$obj.hectad}</a></td>
 <td align="right">{$obj.geosquares}</td>
 <td align="right">/</td>
 <td align="right">{$obj.landsquares}</td>
