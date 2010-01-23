@@ -45,7 +45,9 @@ $maximages = 100; //percentage AND number of images in a hectad
 function smarty_modifier_colerize($input) {
 	global $maximages;
 	if ($input) {
-
+		if ($input == $maximages) {
+			return 'ffcc11';
+		}
 		$hex = str_pad(dechex(255 - $input/$maximages*255), 2, '0', STR_PAD_LEFT); 
 		return "ffff$hex";
 	} 
@@ -60,23 +62,19 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	$db = GeographDatabaseConnection(true);
 	
-	$title = "Hectad Coverages";
-	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if ($u) {
-		$columns = '0 as geograph_count,0 as percentage,';
+		$columns = '0 as geosquares,0 as percentage,';
 	} else {
-		$columns = "sum(has_geographs) as geograph_count,
-			round(sum(has_geographs) * 100 / sum(percent_land >0),1) as percentage,";
+		$columns = "geosquares,
+			round(geosquares/landsquares*100,1) as percentage,";
 	}
-	$hectads = $db->CacheGetAll(3600*24,"select 
-		concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
+	$hectads = $db->getAll("select 
+		hectad,landsquares,
 		$columns
-		sum(percent_land >0) as land_count,min(x) as x,min(y) as y
-		from gridsquare 
-		group by tenk_square 
-		having land_count > 0
-		order by null");
+		landsquares,x,y
+		from hectad_stat 
+		where landsquares > 0");
 	
 	$lookup = $grid = array();
 	$x1 = 9999999;
@@ -85,27 +83,31 @@ if (!$smarty->is_cached($template, $cacheid))
 		$x = intval($h['x']/10)+10;
 		$y = intval($h['y']/10);
 		$grid[$y][$x] = $h;
-		$lookup[$h['tenk_square']] = array($y,$x);
+		$lookup[$h['hectad']] = array($y,$x);
 		$x1 = min($x,$x1);
 		$x2 = max($x,$x2);
 	}
 	
 	if ($u) {
-		$profile=new GeographUser($u);
-		$smarty->assign_by_ref('profile', $profile);
-		$title = " for ".($profile->realname);
+		if ($u == $USER->user_id) {
+			$smarty->assign_by_ref('profile', $USER);
+		} else {
+			$profile=new GeographUser($u);
+			$smarty->assign_by_ref('profile', $profile);
+		}
+		$smarty->assign_by_ref('u', $u);
 		
 		$hectads2 = $db->CacheGetAll(3600*24,"select 
-		concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
-		count(distinct x,y) as geograph_count
+		concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as hectad,
+		count(distinct x,y) as geosquares
 		from gridimage_search gs
 		where user_id = $u and moderation_status = 'geograph'
-		group by tenk_square 
+		group by hectad 
 		order by null");
 		foreach ($hectads2 as $i => $h) {
-			list($y,$x) = $lookup[$h['tenk_square']];
-			$grid[$y][$x]['geograph_count'] = $h['geograph_count'];
-			$grid[$y][$x]['percentage'] = round($h['geograph_count']/$grid[$y][$x]['land_count']*100,1);
+			list($y,$x) = $lookup[$h['hectad']];
+			$grid[$y][$x]['geosquares'] = $h['geosquares'];
+			$grid[$y][$x]['percentage'] = round($h['geosquares']/$grid[$y][$x]['landsquares']*100,1);
 		}
 	}
 	
@@ -115,9 +117,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign('which',$w);
 	switch($w) {
-		case '3': $w = "land_count"; break;
+		case '3': $w = "landsquares"; break;
 		case '2': $w = "percentage"; break;
-		default: $w = "geograph_count"; break;
+		default: $w = "geosquares"; break;
 	}
 	$smarty->assign('column',$w);
 	
@@ -128,9 +130,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('y2',$y2);
 	$smarty->assign('w',$x2-$x1+5);
 	$smarty->assign('h',$y2-$y1);
-#print_r($smarty->_tpl_vars);	
 
-} 
+} elseif ($u) {
+	if ($u == $USER->user_id) {
+		$smarty->assign_by_ref('profile', $USER);
+	} else {
+		$profile=new GeographUser($u);
+		$smarty->assign_by_ref('profile', $profile);
+	}
+	$smarty->assign_by_ref('u', $u);
+}
+
 
 $smarty->display($template, $cacheid);
 

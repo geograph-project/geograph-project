@@ -65,6 +65,8 @@
 
 	<li><a href="/mapper/">View a <b>Draggable Map</b> checksheet</a>. (use the Grid Reference box to jump to your area of interest)</li>
 
+	<li><a href="/hectadmap.php">View a <b>Hectad coverage</a> map</a></li>
+
 	<li><form method="get" action="/search.php" style="display:inline">
 	<label for="searchterm"><b>Search</b> by keyword, place, postcode or contributor</label>: <br/>
 	<input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>

@@ -61,13 +61,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	GROUP BY FLOOR(geosquares/landsquares*100) div 5 DESC");
 	
 	$table = array();
-	$max = 0;
+	$max = 0; $sum=0;
 	foreach ($percents as $row) {
 		$line = array();
 		$line['title'] = (($row['percentage']<100)?"{$row['percentage']}+":$row['percentage']).'%';
 		$line['value'] = $row['c'];
 		$table[] = $line;
 		$max = max($max,$row['c']);
+		$sum += $row['c'];
 	}
 	
 	$graphs = array();
@@ -76,6 +77,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$graph['table'] = &$table;
 	$graph['title'] = 'Percentage Coverage by Number of Hectads';
 	$graph['max'] = $max;
+	$graph['total'] = array('title'=>'Total','value'=>$sum);
 	
 	$graphs[] = &$graph;
 	

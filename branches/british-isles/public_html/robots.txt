@@ -28,6 +28,7 @@ Disallow: /reuse.php
 Disallow: /more.php
 Disallow: /editimage.php
 Disallow: /browse.php
+Disallow: /hectad.php
 Disallow: /location.php
 Disallow: /gridref/
 Disallow: /ecard.php
@@ -79,6 +80,7 @@ Disallow: /reuse.php
 Disallow: /more.php
 Disallow: /editimage.php
 Disallow: /browse.php?
+Disallow: /hectad.php?
 Disallow: /location.php
 Disallow: /gridref/
 Disallow: /ecard.php

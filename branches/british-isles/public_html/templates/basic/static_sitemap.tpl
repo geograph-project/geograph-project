@@ -54,7 +54,9 @@
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
 	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
 	<li><a title="Draggable Map" href="/mapper/">interactive <b>draggable map</b></a></li>
+	<li><a href="/hectadmap.php">Hectad coverage map</a></li>
 	<li><a href="/activities/">explore our Activities section</a></li>
+	<li><a href="/hectad.php">Random Hectad</a></li>
 	<li><a href="/help/imagine">Through The Square Window...</a></li>
 	<li><a href="/explore/places/">Explore the <b>placename gazetteer</b></a></li>
 	<li><a href="/explore/searches.php">A list of <b>featured searches</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
@@ -163,7 +165,7 @@ Refine:
 <ul>
 
    <li>Mostly Geographed: <ul>
-	   <li><a href="/statistics/most_geographed.php">Grid Squares</a></li>
+	   <li><a href="/statistics/most_geographed_gridsquare.php">Grid Squares</a></li>
 	   <li><a href="/statistics/most_geographed.php">10<small>km</small> x 10<small>km</small></a> Squares (Hectads)</li>
 	   <li><a href="/statistics/most_geographed_myriad.php">100km x 100km</a> Squares (Myriads)</li>
 	</ul>
