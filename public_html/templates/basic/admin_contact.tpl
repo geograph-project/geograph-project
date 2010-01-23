@@ -65,22 +65,23 @@
 		<a href="{$script_name}?inject">Inject a old query</a>
 	{/if}
 	<table class="report sortable" id="newtickets" >
-	<thead><tr>
-		<td>Subject</td>
-		<td>Message</td>
-		<td style="width:200px">More</td>
-	</tr></thead>
-	<tbody>
 	
 	{foreach from=$data item=item}
+
+	<thead><tr>
+		<td><a href="{$script_name}?id={$item.contact_id}">{$item.subject|escape:'html'|default:'no subject'}</a></td>
+		<td style="width:200px" valign="top">{$item.created}</td>
+	</tr></thead>
+	<tbody>
+
 	{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 	<tr bgcolor="{$bgcolor}">
-	<td><a href="{$script_name}?id={$item.contact_id}">{$item.subject|escape:'html'|default:'no subject'}</a></td>
-	<td style="font-size:8pt;" valign="top">{$item.msg|escape:'html'|nl2br}<hr/>
+	<td style="font-size:8pt;" valign="top">{$item.msg|escape:'html'|nl2br|geographlinks}<hr/>
 	{if $item.user_id}<a href="/profile/{$item.user_id}">Profile</a>{/if}
 	{if $item.referring_page}from:<a href="{$item.referring_page|escape:'html'}">{$item.referring_page|escape:'html'}</a>{/if}
+<br/><br/>
 	</td>
-	<td style="width:200px" valign="top">{$item.created}<br/>
+	<td style="width:200px" valign="top">
 	Status: {$item.status}<br/>
 	
 	<form action="{$script_name}?id={$item.contact_id}" method="post">
@@ -90,13 +91,14 @@
 	{if $item.moderator_id eq 0}
 	<input type=submit name="dealing" value="show me dealing"/>
 	{else}
+	by {$item.moderator_id}<br/>
 	<input type=submit name="close" value="close"/>
 	{/if}
 	</form>
 	</td>
 	</tr>
-	{/foreach}
 	</tbody>
+	{/foreach}
 	</table>
 {/if}	 
    

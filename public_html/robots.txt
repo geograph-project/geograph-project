@@ -50,7 +50,7 @@ Disallow: /squares.php
 User-Agent: Googlebot
 User-Agent: Slurp
 Disallow: /profile/*/map
-Disallow: /photo/*?style=*
+Disallow: /photo/*?style
 Disallow: /mapbrowse.php?
 Disallow: /map/
 Disallow: /mapper/
@@ -61,13 +61,13 @@ Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
 Disallow: /explore/wordnet.php
-Disallow: /explore/calendar.php?*Year*
+Disallow: /explore/calendar.php?*Year
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
-Disallow: /statistics/leaderboard.php?*when*
-Disallow: /statistics/moversboard.php?*when*
+Disallow: /statistics/leaderboard.php?*when
+Disallow: /statistics/moversboard.php?*when
 Disallow: /statistics/*?*csv
 Disallow: /submit.php
 Disallow: /submit_popup.php
@@ -82,7 +82,8 @@ Disallow: /editimage.php
 Disallow: /browse.php?
 Disallow: /hectad.php?
 Disallow: /location.php
-Disallow: /gridref/
+Disallow: /gridref/*/
+Disallow: /gridref/*?
 Disallow: /ecard.php
 Disallow: /show_exif.php
 Disallow: /export.

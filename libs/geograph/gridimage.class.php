@@ -380,9 +380,9 @@ class GridImage
 		if (preg_match('/^\d+$/', $gridimage_id))
 		{
 			if (!empty($CONF['use_insertionqueue'])) {
-				$check = $db->GetOne("select gridimage_id from gridimage_queue where gridimage_id={$gridimage_id} limit 1");
+				$check = $db->GetOne("select gridimage_id from gridimage_queue where gridimage_id={$gridimage_id}");
 				if ($check == $gridimage_id) {
-					$image->unavailable = true;
+					$this->unavailable = true;
 					return false;
 				}
 			}

@@ -49,6 +49,11 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	{else}
 		{math equation="o/180" o=$original_width assign="ratio"}
 	{/if}
+
+       {if $ratio > 10}
+                 {math equation="o/640" o=$original_width assign="ratio"}
+       {/if}
+
 	<p>Click a thumbnail to download the JPEG file...</p>
 {else}
 	{assign var="ratio" value=1}
@@ -135,8 +140,9 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 				<input name="url" type="hidden" value="http://{$http_host}/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original" /> 
 
-				<input type="submit" value="View largest image on seadragon.com" />  <sup style="color:red">Experimental</sup>
-
+				<input type="submit" value="View largest image on seadragon.com" />  <sup style="color:red">Experimental</sup><br/>
+				
+				Seadragon allows you to zoom and pan around any image on the web, no matter how big. 
 			</form> 
 		{/if}
 

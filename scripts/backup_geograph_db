@@ -32,8 +32,14 @@ $cmd="/usr/bin/mysqldump --no-defaults --opt ".
         "--ignore-table=geograph_live.gridimage_size ".
         "--ignore-table=geograph_live.gridimage_exif_size ".
 
+#archive tables (not certain we do want to exclude these?)
+#        "--ignore-table=geograph_live.gridimage_ticket_archive ".  
+#        "--ignore-table=geograph_live.queries_archive ".
+
+#virtual tables (union=gridimage_ticket,gridimage_ticket_archive_
+        "--ignore-table=geograph_live.gridimage_ticket_merge ".
+
 #large tables - not worth backing up
-        "--ignore-table=geograph_live.scenic_votes ".
 	"--ignore-table=geograph_live.gridimage_exif ".
 	"--ignore-table=geograph_live.gridimage_exif1 ".
         "--ignore-table=geograph_live.gridimage_exif2 ".
@@ -44,7 +50,8 @@ $cmd="/usr/bin/mysqldump --no-defaults --opt ".
         "--ignore-table=geograph_live.gridimage_group ".
         "--ignore-table=geograph_live.gridimage_scale ".
 
-#various exports
+#various imported tables
+        "--ignore-table=geograph_live.scenic_votes ".
         "--ignore-table=geograph_live.gridimage_groupby ".
         "--ignore-table=geograph_live.gridimage_search_extract ".
 
