@@ -8,11 +8,13 @@
 	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Not Geographed</a> | 
 	<a href="most_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Mostly Geographed</a> | 
 	<b>Fully Geographed</b> Hectads -
-	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a>  -
-	{if $references}In <select name="ri">
+	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a> 
+	<span class="nowrap">-
+	{if $references}<label for="ri">In</label> <select name="ri" id="ri">
 	{html_options options=$references selected=$ri}
 	</select>{/if}
-	<input type="submit" value="Go"></div>
+	or <label for="myriad">Myriad</label> <input type="text" name="myriad" id="myriad" value="{$myriad|escape:'html'}" size="2" maxlength="3"/>
+	<input type="submit" value="Go"></span></div>
     </form>
 
 <p>These are the 10km x 10km squares or hectads<a href="/help/squares">?</a> with full land coverage! This page only counts First Geographs.</p>
