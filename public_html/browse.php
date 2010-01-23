@@ -112,21 +112,20 @@ elseif (isset($_GET['setpos']))
 //set by grid ref?
 elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 {
-	if (preg_match('/^[a-z]{1,3}(\s*\d{2}|)$/i',trim($_GET['gridref']))) {
-		$gr = strtoupper(preg_replace('/^([a-z]{1,3})\s*(\d{2}|)$/i','$1$2',trim($_GET['gridref'])));
-		header("Location: /gridref/$gr");
-		print "<a href='/gridref/$gr'>Go here</a>";
-		exit;
-	}
-	
-
-
 	$grid_given=true;
 	$grid_ok=$square->setByFullGridRef($_GET['gridref'],false,true);
 	
 	//preserve inputs in smarty
 	if ($grid_ok)
 	{
+		//redirect a myriad/hectad reference to clean url (which then uses rewriterule to load the relevent page directly) 
+		if (preg_match('/^[a-z]{1,3}(\s*\d{2}|)$/i',trim($_GET['gridref']))) {
+			$gr = strtoupper(preg_replace('/^([a-z]{1,3})\s*(\d{2}|)$/i','$1$2',trim($_GET['gridref'])));
+			header("Location: /gridref/$gr");
+			print "<a href='/gridref/$gr'>Go here</a>";
+			exit;
+		}
+	
 		$smarty->assign('gridrefraw', stripslashes($_GET['gridref']));
 	}
 	else
