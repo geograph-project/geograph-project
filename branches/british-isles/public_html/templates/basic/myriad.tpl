@@ -10,7 +10,7 @@
 		<input type="hidden" name="displayclass" value="search"/>
 		<input type="hidden" name="do" value="1"/>
 	</form>
-	<iframe src="/gridref/{$gridsquare.grid_reference}?inner" height="900" width="100%" name="results">
+	<iframe src="/finder/search-service.php?q={$myriad}" height="900" width="100%" name="results">
 	
 	</iframe>
 </div>
