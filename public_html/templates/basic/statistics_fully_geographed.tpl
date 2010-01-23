@@ -40,6 +40,10 @@
 </table>
 
 
+{if $shown_rows}
+	<p>Showing {$shown_rows|thousends} out of {$total_rows|thousends} hectads. {if !$myriad && $shown_rows < $total_rows}Try using the filter at the top of the page to see alternative results.{/if}</p>
+{/if}
+
 <br style="clear:both"/>
 
 {include file="_std_end.tpl"}

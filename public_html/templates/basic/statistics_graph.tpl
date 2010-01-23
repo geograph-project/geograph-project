@@ -63,7 +63,14 @@ height:15px;
 			<td width="70" align="right">{$row.value|number_format}</td>
 			<td><div class="graphcell" style="width:{$row.value/$graph.max*99|number_format}%;"></div></td>
 		</tr>
-		{/foreach}		
+		{/foreach}
+		{if $graph.total}
+		<tr>
+			<th width="90">{$graph.total.title}</th>
+			<th width="70" align="right">{$graph.total.value|number_format}</th>
+			<th></th>
+		</tr>
+		{/if}
 
 		</tbody>
 		</table>

@@ -37,7 +37,7 @@ $smarty->cache_lifetime = 3600*24; //24hr cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db=GeographDatabaseConnection(false);
+	$db=GeographDatabaseConnection(true);
 	
 	$mosaic=new GeographMapMosaic;
 	$mosaic->setScale(40);
@@ -49,23 +49,30 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('ri',$ri);
 	} 
 
-	$most = $db->GetAll("SELECT 
+	$most = $db->GetAll("SELECT SQL_CALC_FOUND_ROWS
 	reference_index,x,y,hectad,landsquares,last_submitted,map_token
 	FROM hectad_stat 
 	WHERE geosquares =0 $sql_where
 	ORDER BY landsquares DESC,hectad LIMIT 150");
 
+	$smarty->assign("total_rows",$db->getOne("SELECT FOUND_ROWS()"));
+	$smarty->assign("shown_rows",count($most));
+
 	foreach($most as $id=>$entry) 
 	{
 		if (empty($entry['map_token']))
 		{
+			if ($db->readonly) {
+				$db = GeographDatabaseConnection(false);
+			}
+			
 			$x = ( intval(($entry['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
 			$y = ( intval(($entry['y'] - $CONF['origins'][$ri][1])/10)*10 ) +  $CONF['origins'][$ri][1];
 
 			//get a token to show a suroudding geograph map
 			$mosaic->setOrigin($x,$y);
 
-			$most[$ri][$id]['map_token'] = $mosaic->getToken();
+			$most[$id]['map_token'] = $mosaic->getToken();
 		}
 	}
 	$smarty->assign_by_ref("most", $most);
