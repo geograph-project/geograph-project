@@ -43,6 +43,16 @@
 </div>
 </form>    
 
+<div style="position:absolute;height:0;width:0">
+	<div style="position:relative;width:280px; color:brown; background-color:lightgreen;padding:10px;">
+		Scroll left/down to see the map.<br/><br/>
+		<small>Keyboard shortcuts:<br/>
+		CTRL and - (minus) to decrease text-size<br/>
+		CTRL and + (plus) to increase<br/>
+		CTRL and 0 (zero) to return to normal<br/><br/>
+		(or hold CTRL and use mouse scroll wheer)</small></div>
+</div>
+
 <table style="background-color:white;font-family:courier;font-size:0.7em" border=1 cellspacing=0 cellpadding=1 bordercolor="#f7f7f7"> <tbody>
 
 	<tr>
