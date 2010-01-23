@@ -4,7 +4,7 @@
 <h2>Hectad :: {$hectad}</h2>
  
 
-    <form method="get" action="{$script_name}">
+    <form method="get" action="/hectad.php">
 	<div class="interestBox"><label for="hectad">Hectad</label> <input type="text" name="hectad" id="hectad" value="{$hectad|escape:'html'}" size="4" maxlength="5"/>
 	<input type="submit" value="Go"> 
 	</div>
