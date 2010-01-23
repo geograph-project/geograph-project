@@ -1027,7 +1027,7 @@ DROP TABLE tmp_final;
 #################################################
 
 
-alter table gridimage_daily add `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+ALTER TABLE gridimage_daily ADD `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
 
 #################################################
@@ -1056,4 +1056,9 @@ CREATE TABLE `hectad_stat` (
 
 #################################################
 
+
+ALTER TABLE event ADD `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+
+#################################################
 
