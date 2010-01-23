@@ -85,8 +85,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			if ($db->readonly) {
 				$db = GeographDatabaseConnection(false);
 			}
-			$x = ( intval(($entry['x'] - $CONF['origins'][$ri][0])/10)*10 ) +  $CONF['origins'][$ri][0];
-			$y = ( intval(($entry['y'] - $CONF['origins'][$ri][1])/10)*10 ) +  $CONF['origins'][$ri][1];
+			$rii = $entry['reference_index'];
+			$x = ( intval(($entry['x'] - $CONF['origins'][$rii][0])/10)*10 ) +  $CONF['origins'][$rii][0];
+			$y = ( intval(($entry['y'] - $CONF['origins'][$rii][1])/10)*10 ) +  $CONF['origins'][$rii][1];
 
 			//get a token to show a suroudding geograph map
 			$mosaic->setOrigin($x,$y);

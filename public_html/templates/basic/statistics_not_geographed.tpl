@@ -23,7 +23,7 @@
 {foreach from=$most key=id item=obj}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
-<td sortvalue="{$obj.hectad}" style="font-family:monospace" align="right"><a title="View map for {$obj.hectad}" href="/mapbrowse.php?t={$obj.map_token}">{$obj.hectad}</a></td>
+<td sortvalue="{$obj.hectad}" style="font-family:monospace" align="right"><a href="/gridref/{$obj.hectad}">{$obj.hectad}</a></td>
 <td align="right">{$obj.landsquares}</td></tr>
 {foreachelse}
 	<p>None, Wow!
