@@ -84,6 +84,9 @@ function log_script_timing()
 */
 function smarty_block_dynamic($param, $content, &$smarty)
 {
+	if (!empty($param) && !empty($param['cached_user_id'])) {
+		$smarty->assign('cached_user_id',$param['cached_user_id']);
+	}
     return $content;
 }
 
