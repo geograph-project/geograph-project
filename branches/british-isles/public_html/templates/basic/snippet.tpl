@@ -1,7 +1,7 @@
 {include file="_std_begin.tpl"}
 
-{dynamic }
-{if $is_mod || $user->user_id == $user_id}
+{dynamic cached_user_id=$user_id}
+{if $is_mod || $user->user_id == $cached_user_id}
 <div style="float:right;position:relative"><a href="/snippets.php?edit[{$snippet_id}]=edit">Edit this Description</a></div>
 {/if}
 {/dynamic}

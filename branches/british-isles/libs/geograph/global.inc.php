@@ -371,7 +371,7 @@ class GeographPage extends Smarty
 		$this->caching = $CONF['smarty_caching'];
 
 		//register our "dynamic" handler for non-cached sections of templates
-		$this->register_block('dynamic', 'smarty_block_dynamic', false);
+		$this->register_block('dynamic', 'smarty_block_dynamic', false,array('cached_user_id'));
 
 		//handy function for linking to getamap
 		$this->register_function("getamap", "smarty_function_getamap");
