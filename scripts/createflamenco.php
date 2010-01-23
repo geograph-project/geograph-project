@@ -204,7 +204,6 @@ foreach (range(1,12) as $month) {
 $recordSet = &$db->Execute($sql);
 $t = 1; $c = 1; $p = 1;
 $imagetaken_map = $imageclass_map = array();
-$places = array();
 while (!$recordSet->EOF) 
 {
 	$r =& $recordSet->fields;
@@ -222,11 +221,8 @@ while (!$recordSet->EOF)
 
 	fwrite($h['grid_reference_map'],	implode("\t",array($r['gridimage_id'],$r['gridsquare_id'])). "\n");
 
-	if ($r['placename_id']) {
+	if ($r['placename_id'])
 		fwrite($h['place_map'],		implode("\t",array($r['gridimage_id'],$r['placename_id'])). "\n");
-
-		$places[$r['reference_index']][$r['placename_id']] = 1;
-	}
 
 	fwrite($h['moderation_status_map'], 	implode("\t",array($r['gridimage_id'],$r['moderation_status'])). "\n");
 
@@ -303,25 +299,32 @@ $recordSet->Close();
 
 #####################################################
 
-if (!empty($places[1])) {
+$sqls = array(
+"alter table tmpflam add placename_id int unsigned not null",
+"update tmpflam inner join gridimage gi using (gridimage_id) set tmpflam.placename_id = gi.placename_id",
+"alter table tmpflam add index `placename_id` (placename_id)"
+);
+
+foreach ($sqls as $sql) {
+	print "$sql\n";
+	$db->Execute($sql);
+}
+
+#####################################################
+
+
 	//inner join os_gaz on (placename_id-1000000 = os_gaz.seq)
-	$ids = '';
-	foreach (array_keys($places[1]) as $pid) {
-		if ($pid)
-			$ids .= ($pid-1000000).",";
-	}
-	$ids = substr($ids,0,strlen($ids)-1);
-	
-	$sql = "select 
+	$sql = "select distinct
 			os_gaz.seq+1000000 as placename_id,
 			def_nam as Place,
 			full_county as County,
 			loc_country.name as Country,
 			has_dup,km_ref
 		from os_gaz 
+			inner join tmpflam ON (os_gaz.seq+1000000 = placename_id)
 			left join os_gaz_county on (os_gaz.co_code = os_gaz_county.co_code)
 			left join loc_country on (country = loc_country.code)
-		where os_gaz.seq IN ($ids)";
+		";
 
 	print "$sql\n";
 
@@ -344,24 +347,22 @@ if (!empty($places[1])) {
 
 	$recordSet->Close();
 
-}
 
 #####################################################
 
-if (!empty($places[2])) {
-	//inner join loc_placenames on (placename_id = id)
-	$ids = implode(',',array_keys($places[2]));
+
 	
-	$sql = "select 
+	$sql = "select distinct
 			id as placename_id,
 			full_name as Place,
 			loc_adm1.name as County,
 			loc_country.name as Country,
 			has_dup,e,n
 		from loc_placenames
+			inner join tmpflam on (id=placename_id)
 			left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and loc_adm1.country = loc_placenames.country)
 			left join loc_country on (loc_placenames.country = loc_country.code)
-		where loc_placenames.id IN ($ids)";
+		";
 	
 	print "$sql\n";
 
@@ -386,7 +387,7 @@ if (!empty($places[2])) {
 	}
 
 	$recordSet->Close();
-}
+
 
 #####################################################
 
