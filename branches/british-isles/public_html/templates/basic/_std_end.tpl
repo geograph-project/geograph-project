@@ -144,9 +144,7 @@
        <span class="sep">|</span>
        <a href="/help/terms" title="Terms and Conditions">Terms of use</a>
        <span class="sep">|</span>
-       <a href="http://validator.w3.org/check/referer" title="check our xhtml standards compliance">XHTML</a>
-       <span class="sep">|</span>
-       <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$static_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
+       <a href="http://hub.geograph.org.uk/downloads.html" title="check our available downloads">Downloads</a>
     </p>
     <p style="color:#777788;">Hosting supported by 
     {external title="click to visit the Fubra website" href="http://www.fubra.com/" text="Fubra"}

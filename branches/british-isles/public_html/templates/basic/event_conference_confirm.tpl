@@ -13,6 +13,8 @@
 {if $cancelled > 0}
 	<p>Your registration has been cancelled. Please <a href="/contact.php">Contact Us</a> if you have any updates.</p>
 
+	<p>If you would like to submit a testimony - please {external href="http://spreadsheets.google.com/viewform?formkey=dGVEQVZkaEZUNXE3cERkZXk3Y2RYQ3c6MA" text="do so here"}.</p>
+
 {elseif $confirmed > 0}
 	<h3>Your place at the conference has been confirmed - thank you!</h3>
 	

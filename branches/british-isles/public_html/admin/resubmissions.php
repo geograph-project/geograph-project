@@ -151,7 +151,7 @@ if (empty($_GET['review'])) {
 $sql = "SELECT gi.* 
 FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
 WHERE (gp.status = 'new' OR (gp.status = 'open' AND updated < DATE_SUB(NOW(),INTERVAL 1 HOUR) ) )
-AND type = 'original' AND gp.user_id != {$USER->user_id} AND gi.user_id != {$USER->user_id}
+AND type = 'original' 
 LIMIT 1"; 
 } else {
 	$id = intval($_GET['review']);

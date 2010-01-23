@@ -36,9 +36,7 @@ AttachEvent(window,'load',focusBox,false);
 
 {/literal}
 
-{if $q}<div style="float:right;position:relative">Not getting the results you expect? <a href="/discuss/?action=search&amp;searchFor={$q|escape:'url'}&amp;go=Find">Try the old search engine</a></div>{/if}
-
-<h2><a href="/finder/">Finder</a> :: Discussions <sup style="color:red">beta</sup></h2>
+<h2><a href="/finder/">Finder</a> :: Discussions</h2>
 
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
@@ -108,12 +106,12 @@ AttachEvent(window,'load',focusBox,false);
 <div class="interestBox" style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
 	<ul class="explore">
-		<li>can search just the title : <tt>railway title:track</tt></li>
+		<li>search for posts in specific threads : <tt>railway title:track</tt> (where track is keyword required in the thread title)</li>
 		<li>or just the post content : <tt>railway text:track</tt></li>
 		<li>can find only posts by a user with by:&lt;nickname&gt; : <tt>railway by:fred</tt> or exclude <tt>railway -by:fred</tt></li>
 		<li>find discussions by date: <tt>day:20061225</tt>, <tt>month:200612</tt>  or <tt>year:2006</tt>  </li>
 		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example : <tt>railway -track</tt> <tt>railway -title:track</tt></li>
-		<li>prefix a keyword with = to match <b>exactly</b>; otherwise we match similar words at the same time</li>
+		<li>prefix a keyword with = to match <b>exactly</b>; otherwise we match similar words at the same time (stemming)</li>
 		<li>can use OR (case sensitive) to match <b>either/or</b> keywords; example: <tt>train OR railway</tt></li>
 	</ul>
 </div>

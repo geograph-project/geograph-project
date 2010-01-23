@@ -93,8 +93,8 @@
 		<li><big>We have 
 			{if $imagecount eq 1}just one image{else}{$imagecount|thousends} images{/if} 
 			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
-			{if $mode eq 'takenfrom'}
-				taken from <b>{$gridref}</b>
+			{if $mode eq 'takenfrom'} of other squares, 
+				taken from <b>{$gridref}</b> 
 			{elseif $mode eq 'mentioning'}
 				mentioning <b>{$gridref}</b> <sup>[Note: Currently only matches 4 Figure Grid References]</sup>
 			{else}
@@ -114,7 +114,9 @@
 		
 		{if $by}
 		<li style="margin-top:4px"><a href="{linktoself name="by" value="1"}"><b>reset filtering options</b></a></li>
-		{else}
+		{elseif $mode eq 'takenfrom' || $mode eq 'mentioning'}
+		<li style="margin-top:4px"><img src="http://{$static_host}/img/links/20/grid.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/> <a href="/gridref/{$gridref}?by=1">Access <b>more filtering options</b></a></li>
+                {else}
 		<li style="margin-top:4px"><img src="http://{$static_host}/img/links/20/grid.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/> <a href="{linktoself name="by" value="1"}">Access <b>more filtering options</b></a></li>
 		{/if}
 		
@@ -211,18 +213,17 @@
 	{/if}
 	
 	{if $mode eq 'takenfrom'}
-		taken from <b>{$gridref}</b>
+		taken from <b>{$gridref}</b> of other squares
 	{elseif $mode eq 'mentioning'}
 		mentioning <b>{$gridref}</b> <sup>[Note: Currently only matches 4 Figure Grid References]</sup>
 	{else}
 		for <b>{$gridref}</b>
 	{/if}
-	{if !$breakdown && !$breakdowns && $totalimagecount > 0}<span style="font-size:0.8em;">- click for larger version</span>{/if}</div>
+	</div>
 
 	<div style="position:relative; text-align:right; font-size:0.7em">
-	{if !$breakdown && !$breakdowns && $totalimagecount > 0 &&  $totalimagecount > 1}
+	{if !$breakdown && !$breakdowns && $totalimagecount > 0 &&  $totalimagecount > 1 && $mode ne 'takenfrom' && $mode ne 'mentioning'}
 		[ <a href="{linktoself name="by" value="1"}">View as <b>breakdown list</b></a> ] &nbsp; 
-	
 	{/if}	
 	{if $user->registered && $mode eq 'normal'}
 		[{if !$nl}

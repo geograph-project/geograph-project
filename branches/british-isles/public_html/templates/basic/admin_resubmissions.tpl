@@ -42,7 +42,12 @@
 		</tr>
 	</table>	
 
-<p>Please confirm the two images above represent the same base image</p>
+	{if $image->previewUrl == "/photos/error.jpg"}
+	<ul>
+		<li>Unable to load preview. (Note: changing this image is not currently supported - please contact us (using Give Feedback below) if need to change this image.</li>
+	</ul>
+	{else}
+	<p>Please confirm the two images above represent the same base image</p>
 
 	<input style="background-color:pink; width:200px" type="submit" name="diff" value="Different - don't allow!"/>
 	
@@ -60,6 +65,8 @@
 		</ul></li>
 	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
 	</ul>
+	{/if}
+
 	In a nutshell, if the two images above look exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close Enough". 
 </form>
 
@@ -94,17 +101,6 @@ function checkImageSizes() {
 
 
 {/literal}
-
-{if $image->previewUrl == "/photos/error.jpg"}{literal}
- AttachEvent(window,'load',function () {
-	var button = document.getElementById('closebutton');
-	button.style.color = 'lightgrey';
-	button.style.backgroundColor = 'white';
-	button.onclick = function () {
-		return confirm("Please confirm! The high resolution image seems to be an error.");
-	};
- },false);
-{/literal}{/if}
 
 </script>
 
