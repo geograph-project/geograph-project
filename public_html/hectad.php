@@ -31,7 +31,7 @@ customGZipHandlerStart();
 
 $template='hectad.tpl';
 
-$hectad = (isset($_GET['hectad']) && preg_match('/^\w{1,3}\s*\d{2}$/',$_GET['hectad']))?$_GET['hectad']:'';
+$hectad = (isset($_GET['hectad']) && preg_match('/^\w{1,3}\s*\d{2}$/',$_GET['hectad']))?strtoupper($_GET['hectad']):'';
 
 if (empty($hectad)) {
 	$db = GeographDatabaseConnection(true);
@@ -84,6 +84,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('row',$row);
 
 	$smarty->assign('hectad',$hectad);
+	$smarty->assign('myriad',preg_replace('/\d+/','',$hectad));
 }
 
 

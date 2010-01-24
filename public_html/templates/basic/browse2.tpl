@@ -181,7 +181,7 @@
 		</form>	
 	{/if}
 	
-	<p style="padding-left:20px"><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></b> </big></p>
+	<p style="padding-left:20px"><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></b> or <a href="/gridref/{$hectad}">{$hectad}</a></big></p>
 {/if}
 
 </div>

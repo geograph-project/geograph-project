@@ -80,10 +80,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	$x1 = 9999999;
 	$x2 = 0;
 	foreach ($hectads as $i => $h) {
+		$h['digits'] = substr($h['hectad'],-2);
 		$x = intval($h['x']/10)+10;
 		$y = intval($h['y']/10);
 		$grid[$y][$x] = $h;
-		$lookup[$h['hectad']] = array($y,$x);
+		if ($u)
+			$lookup[$h['hectad']] = array($y,$x);
 		$x1 = min($x,$x1);
 		$x2 = max($x,$x2);
 	}

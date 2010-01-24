@@ -133,7 +133,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 				{/if}
 				</tr>
 			</table>
-			<p>Preview{if $last_width > 640 || $last_height > 640}s{/if} shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size{if $ratio ne 1} - NOT representive of the final quality{/if}.</p>		
+			<p>Preview{if $last_width > 640 || $last_height > 640}s{/if} shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size{if $ratio ne 1} - NOT representative of the final quality{/if}.</p>		
 			
 		{if $image->original_width}
 			<form action="http://www.seadragon.com/create/" method="post" enctype="application/x-www-form-urlencoded"> 

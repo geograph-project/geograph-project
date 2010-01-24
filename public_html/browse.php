@@ -176,6 +176,7 @@ if ($grid_given)
 		$smarty->assign('gridsquare', $square->gridsquare);
 		$smarty->assign('eastings', $square->eastings);
 		$smarty->assign('northings', $square->northings);
+		$smarty->assign('hectad', $square->gridsquare.intval($square->eastings/10).intval($square->northings/10));
 		$smarty->assign('x', $square->x);
 		$smarty->assign('y', $square->y);
 		
