@@ -54,11 +54,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		header("Location: /browse.php?gridref=".urlencode($hectad));
 		exit;
 	} 
+	
+	require_once('geograph/mapmosaic.class.php');
+	$mosaic=new GeographMapMosaic;
+	$overview=new GeographMapMosaic('largeoverview');
+	$overview->setCentre($row['x'],$row['y']);
+	
+	$overview2=new GeographMapMosaic('overview');
 
 	if (empty($row['map_token'])) {
-		require_once('geograph/mapmosaic.class.php');
-
-		$mosaic=new GeographMapMosaic;
+		
 		$mosaic->setScale(40);
 		$mosaic->setMosaicFactor(2);
 
@@ -78,12 +83,21 @@ if (!$smarty->is_cached($template, $cacheid))
 			WHERE hectad = %s",
 			$db->Quote($row['map_token']),
 			$db->Quote($row['hectad']) ));
+	} else {
+		$mosaic->setToken($row['map_token']);
 	}
 
+	$overview->assignToSmarty($smarty, 'overview');
+	$smarty->assign('marker', $overview->getBoundingBox($mosaic));
+	
+	$overview2->assignToSmarty($smarty, 'overview2');
+	$smarty->assign('marker2', $overview2->getBoundingBox($mosaic));
 
+	
 	$smarty->assign_by_ref('row',$row);
 
 	$smarty->assign('hectad',$hectad);
+	$smarty->assign('map_token',$row['map_token']);
 	$smarty->assign('myriad',preg_replace('/\d+/','',$hectad));
 }
 

@@ -10,7 +10,22 @@
 	</div>
     </form>
     
-    
+ 	{if $overview}
+		<div style="float:right; text-align:center; width:{$overview_width+30}px; position:relative; margin-right:20px">
+		{include file="_overview.tpl"}
+		</div>
+	{/if}
+	
+	{if $overview2}
+		{assign var=overview value=$overview2}
+		{assign var=overview_token value=$overview_token2}
+		{assign var=marker value=$marker2}
+		
+		<div style="float:right; text-align:center; width:{$overview_width+30}px; position:relative; margin-right:20px">
+		{include file="_overview.tpl"}
+		</div>
+	{/if}
+	
 <h3>Stats</h3>
 
 <ul>
