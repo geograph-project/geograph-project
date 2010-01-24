@@ -110,9 +110,9 @@ class SearchEngine
 			$classname = "SearchCriteria_".$query['searchclass'];
 			$this->criteria = new $classname($query['q']);
 			
-			if ($query['searchclass'] == "Special")	{
-				$query['searchq'] = stripslashes($query['searchq']);
-			}
+			#if ($query['searchclass'] == "Special")	{
+			#	$query['searchq'] = stripslashes($query['searchq']);
+			#}
 
 			$this->criteria->_initFromArray($query);
 		} 
