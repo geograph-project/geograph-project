@@ -71,7 +71,8 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{if strlen($gridrefraw) < 5}
 		<li><img src="http://{$static_host}/img/links/20/hectad.png" width="20" height="20" alt="hectad icon" align="absmiddle"/> <a title="First Geographs within {$gridrefraw}" href="/search.php?first={$gridrefraw}">Find <b>first geographs for hectad</b> {$gridrefraw}</a></li>
 	{/if}
-	<li><img src="http://{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>search</b> for images near {$gridref}</a></li>
+	<li><img src="http://{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>Search</b> for images near {$gridref}</a></li>
+	<li><img src="http://{$static_host}/img/links/20/place.png" width="20" height="20" alt="places icon" align="absmiddle"/> <a href="/finder/places.php?q={$gridref}"><b>Places near {$gridref}</b></a></li>
 	<li><img src="http://{$static_host}/img/links/20/no-photos.png" width="20" height="20" alt="no photos icon" align="absmiddle"/> <a title="Empty Squares" href="/squares.php?gridref={$gridref}&amp;type=without">View list of nearby <b>squares without images</b></a> or <a title="Few Squares" href="/squares.php?gridref={$gridref}&amp;type=few">without many images</a></li>
 	<li><img src="http://{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">View a <b>printable check sheet</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a><br/><br/></li>
 	
