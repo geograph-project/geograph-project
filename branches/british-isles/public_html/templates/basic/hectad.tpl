@@ -1,4 +1,4 @@
-{assign var="page_title" value="Hectad"}
+{assign var="page_title" value="`$hectad` :: Hectad"}
 {include file="_std_begin.tpl"}
 
 <h2>Hectad :: {$hectad}</h2>
@@ -30,7 +30,7 @@
 	{if $row.largemap_token}
 	<li><a title="View Mosaic for {$obj.hectad}" href="/maplarge.php?t={$row.largemap_token}">Have a look at a <b>Large Mosaic</b>/map</a> (includes First Geograph statistics)</li>
 	{/if}
-	<li><a href="/search.php?q={$hectad}">Search <b>Images in {$hectad}</b></a></li>
+	<li><a href="/search.php?text={$hectad}">Search <b>images in {$hectad}</b></a> (<a href="/search.php?text={$hectad}+ftf:1">First Geographs only</a>)</li>
 	
 	<li style="list-style-image: url('http://{$static_host}/img/geotag_16.png');"><a href="/gridref/{$hectad}/links"><b>Location Links</b> for {$hectad}</a></a>
 	
