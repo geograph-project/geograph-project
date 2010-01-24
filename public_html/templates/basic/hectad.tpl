@@ -42,13 +42,13 @@
 <h3>Links</h3>
 <ul class="explore">
 	
-	<li><a title="View map for {$row.hectad}" href="/mapbrowse.php?t={$row.map_token}">View Geograph <b>Coverage Map</b></a></li>
+	<li style="list-style-image: url('http://{$static_host}/img/links/20/map.png');"><a title="View map for {$row.hectad}" href="/mapbrowse.php?t={$row.map_token}">View Geograph <b>Coverage Map</b></a></li>
 	
 	{if $row.largemap_token}
-	<li><a title="View Mosaic for {$obj.hectad}" href="/maplarge.php?t={$row.largemap_token}">Have a look at a <b>Large Mosaic</b>/map</a> (includes First Geograph statistics)</li>
+	<li style="list-style-image: url('http://{$static_host}/img/links/20/mosaic.png');"><a title="View Mosaic for {$obj.hectad}" href="/maplarge.php?t={$row.largemap_token}">Have a look at a <b>Large Mosaic</b>/map</a> (includes First Geograph statistics)</li>
 	{/if}
 	
-	<li><form method="get" action="/search.php">
+	<li style="list-style-image: url('http://{$static_host}/img/links/20/search.png');"><form method="get" action="/search.php">
 		<b>Search within images in this square</b>:<br/> 
 		<div class="interestBox" style="width:400px">
 		<label for="fq">Keywords</label>: <input type="text" name="searchtext[]" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/><input type="hidden" name="searchtext[]" value="{$hectad}"/>
@@ -64,10 +64,12 @@
 	
 	<li style="list-style-image: url('http://{$static_host}/img/geotag_16.png');"><a href="/gridref/{$hectad}/links"><b>Location Links for {$hectad}</b></a></a>
 
+	<li style="list-style-image: url('http://{$static_host}/img/links/20/place.png');"><a href="/finder/places.php?q={$myriad}+{$hectad}"><b>Places in {$hectad}</b></a></a>
+
 	{if $row.largemap_token}
-		<li><a href="/statistics/fully_geographed.php?myriad={$myriad}"><b>Compare</b> to other hectads in {$myriad}</a></li>
+		<li style="list-style-image: url('http://{$static_host}/img/links/20/checksheet.png');"><a href="/statistics/fully_geographed.php?myriad={$myriad}"><b>Compare</b> to other hectads in {$myriad}</a></li>
 	{else}
-		<li><a href="/statistics/most_geographed.php?myriad={$myriad}"><b>Compare</b> to other hectads in {$myriad}</a></li>
+		<li style="list-style-image: url('http://{$static_host}/img/links/20/checksheet.png');"><a href="/statistics/most_geographed.php?myriad={$myriad}"><b>Compare</b> to other hectads in {$myriad}</a></li>
 	{/if}
 	
 </ul>	
@@ -75,7 +77,7 @@
 
 	<li>{external href="http://www.nearby.org.uk/geograph/flamenco-redir.php?grid_reference=`$hectad`" text="Explore a sample of `$hectad` images in the new <b>Multi-Purpose Viewer</b>"} <sup style="color:red">Experimental</sup></li>
 
-	<li><b><a href="/sitemap/clusters/{$myriad}/{$hectad}.html">Common Clusters</a> and <a href="/sitemap/terms/{$myriad}/{$hectad}.html">Common Terms</a></b> used in {$hectad} <sup style="color:red">infrequently updated</sup></li>
+	<li style="list-style-image: url('http://{$static_host}/img/links/20/words.png');"><b><a href="/sitemap/clusters/{$myriad}/{$hectad}.html">Common Clusters</a> and <a href="/sitemap/terms/{$myriad}/{$hectad}.html">Common Terms</a></b> used in {$hectad} <sup style="color:red">infrequently updated</sup></li>
 	
 </ul>
 
