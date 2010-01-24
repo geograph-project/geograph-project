@@ -733,7 +733,7 @@ if ($grid_given)
 					if ($row[0]) {
 						list($posgr,$len) = $conv->national_to_gridref(
 							$row[0],
-							$row[3],
+							$row[2],
 							4,
 							$square->reference_index,false);
 						if ($posgr == $square->grid_reference) {
