@@ -23,7 +23,7 @@
 <p>These are the hectad<a href="/help/squares">?</a>/squares with the best coverage so far! This page only counts First Geographs.</p>
 
 <table class="report"> 
-<thead><tr><td>Rank</td><td>Hectad</td><td colspan="3">Squares</td><td align="right" style="width:40px">%</td><td>Contributors</td><td>Last Submission</td></tr></thead>
+<thead><tr><td>Rank</td><td>Hectad</td><td colspan="3">Squares</td><td align="right" style="width:40px">%</td><td>Contributors</td><td>Last Submission</td><td>Map</td></tr></thead>
 <tbody>
 
 {foreach from=$most key=id item=obj}
@@ -35,7 +35,8 @@
 <td align="right">{$obj.landsquares}</td>
 <td align="right">{$obj.percentage|thousends}</td>
 <td align="right">{$obj.users|thousends}</td>
-<td align="right" sortvalue="{$obj.last_submitted}">{$obj.last_submitted|date_format:"%A, %e %B, %Y"}</td></tr>
+<td align="right" sortvalue="{$obj.last_submitted}">{$obj.last_submitted|date_format:"%A, %e %B, %Y"}</td>
+<td><a href="/mapbrowse.php?t={$obj.map_token}">Map</a></td></tr>
 {/foreach}
 
 </tbody>
