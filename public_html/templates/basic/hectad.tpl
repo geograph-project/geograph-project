@@ -64,7 +64,7 @@
 	
 	<li style="list-style-image: url('http://{$static_host}/img/geotag_16.png');"><a href="/gridref/{$hectad}/links"><b>Location Links for {$hectad}</b></a></a>
 
-	<li style="list-style-image: url('http://{$static_host}/img/links/20/place.png');"><a href="/finder/places.php?q={$myriad}+{$hectad}"><b>Places in {$hectad}</b></a></a>
+	<li style="list-style-image: url('http://{$static_host}/img/links/20/place.png');"><a href="/finder/places.php?q={$myriad}+{$hectad}">Find <b>Places in {$hectad}</b></a> (can then find images of that place)</li>
 
 	{if $row.largemap_token}
 		<li style="list-style-image: url('http://{$static_host}/img/links/20/checksheet.png');"><a href="/statistics/fully_geographed.php?myriad={$myriad}"><b>Compare</b> to other hectads in {$myriad}</a></li>
