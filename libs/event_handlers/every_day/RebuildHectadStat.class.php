@@ -58,7 +58,7 @@ class RebuildHectadStat extends EventHandler
 			
 				$db->Execute("INSERT INTO hectad_stat_tmp
 				SELECT 
-					reference_index,x,y,
+					reference_index,min(x) as x,min(y) as y,
 					CONCAT(SUBSTRING(grid_reference,1,".($letterlength+1)."),SUBSTRING(grid_reference,".($letterlength+3).",1)) AS hectad,
 					COUNT(DISTINCT gs.gridsquare_id) AS landsquares,
 					COUNT(gridimage_id) AS images,
@@ -83,11 +83,10 @@ class RebuildHectadStat extends EventHandler
 			}
 		}
 		
-		$db->Execute("UPDATE hectad_stat_tmp,hectad_stat 
+		$db->Execute("UPDATE hectad_stat_tmp INNER JOIN hectad_stat USING (hectad) 
 			SET hectad_stat_tmp.map_token = hectad_stat.map_token,
 			hectad_stat_tmp.largemap_token = hectad_stat.largemap_token
-			WHERE hectad_stat.map_token != '' OR hectad_stat.largemap_token != ''
-			AND hectad_stat_tmp.hectad = hectad_stat.hectad");
+			WHERE hectad_stat.map_token != '' OR hectad_stat.largemap_token != ''");
 		
 		$db->Execute("ALTER TABLE hectad_stat_tmp ENABLE KEYS");
 		
