@@ -539,6 +539,13 @@ if (isset($_GET['fav']) && $i) {
 
 	$_GET['adminoverride'] = 0; //prevent overriding it
 
+	if (!empty($_GET['searchq']) && is_array($_GET['searchq'])) {
+		$_GET['searchq'] = implode(' ',$_GET['searchq']);
+	}
+	if (!empty($_GET['searchtext']) && is_array($_GET['searchtext'])) {
+		$_GET['searchtext'] = implode(' ',$_GET['searchtext']);
+	}
+	
 	$engine = new SearchEngineBuilder('#');
 	if (isset($_GET['rss'])) {
 		$engine->page = "syndicator.php";
@@ -606,6 +613,10 @@ if (isset($_GET['fav']) && $i) {
 	foreach ($_GET as $key => $value) {
 		$_GET[$key] = preg_replace('/\{\w+:\w+\?\}/','',$value);
 	}
+	
+	if (!empty($_GET['q']) && is_array($_GET['q'])) {
+		$_GET['q'] = implode(' ',$_GET['q']);
+	}
 	if (!empty($_GET['q']) && $_GET['q'] == '(anything)') {
 		$_GET['q'] = '';
 	}
@@ -613,6 +624,9 @@ if (isset($_GET['fav']) && $i) {
 		$_GET['location'] = $_GET['lat'].','.$_GET['lon'];
 	} 
 	if (!empty($_GET['text'])) {
+		if (is_array($_GET['text'])) {
+			$_GET['text'] = implode(' ',$_GET['text']);
+		}
 		$q=trim($_GET['text']).' near (anywhere)';
 	} elseif (!empty($_GET['location'])) {
 		if (!empty($_GET['q'])) {
