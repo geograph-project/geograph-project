@@ -8,7 +8,7 @@
 	<div style="background-color:lightgreen;padding:10px">
 	<h3 class="titlebar" style="margin:0">Thank you - Changes saved</h3>
 	{if $id} 
-		<a href="/snippet.php?id={$id}">View the Shared Description</a>
+		<a href="/snippet/{$id}">View the Shared Description</a>
 	{/if}
 	</div>
 {/if}

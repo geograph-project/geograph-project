@@ -101,7 +101,7 @@ while (!$recordSet->EOF)
 	$item->title = $recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/snippet.php?id={$recordSet->fields['snippet_id']}";
+	$item->link = "http://{$_SERVER['HTTP_HOST']}/snippet/{$recordSet->fields['snippet_id']}";
 	
 	$item->guid = $item->link;
 

@@ -60,21 +60,25 @@ NameVirtualHost *
 
     RewriteRule ^/photo/([0-9]+)\.xml /api/photo/$1 [qsa]
     RewriteRule ^/api/.* /restapi.php [qsa]
+    
     RewriteRule ^/photo/([0-9]+)\.rdf /rdfapi.php?id=$1 [qsa]
     RewriteRule ^/photo/([0-9]+)\.kml /kml.php?id=$1 [qsa]
     RewriteRule ^/photo/([0-9]+) /view.php?id=$1 [qsa]
-    RewriteRule ^/gridref/([A-Z]{1,2})$ /myriad.php?myriad=$1 [qsa]
+    RewriteRule ^/gridref/([A-Za-z]{1,2}[0-9]{2})$ /hectad.php?hectad=$1 [qsa]
+    RewriteRule ^/gridref/([A-Za-z]{1,2})$ /myriad.php?myriad=$1 [qsa]
     RewriteRule ^/gridref/(.*)/links /location.php?gridref=$1 [qsa]
     RewriteRule ^/gridref/(.*) /browse.php?gridref=$1 [qsa]
 
+    RewriteRule ^/snippet/([0-9]+) /snippet.php?id=$1 [qsa]
+    
     RewriteRule ^/help/([^/]*) /staticpage.php?page=$1 [qsa]
 
     RewriteRule ^/profile/([0-9]+)/feed(|/[0-9]+)/recent\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]
     RewriteRule ^/feed/userid/([0-9]+)(|/[0-9]+)\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]
     RewriteRule ^/user/([^\/]+)/map/?(.*)$ /mapbrowse.php?user=$1&t=$2
-    RewriteRule ^/user/([^\/]+)/all/?$ /profile.php?user=$1&all=1
-    RewriteRule ^/user/([^\/]+)/more/?$ /profile.php?user=$1&more=1
-    RewriteRule ^/user/([^\/]+)/?$ /profile.php?user=$1
+    RewriteRule ^/user/([^\/]+)/all/?$ /profile.php?user=$1&all=1 [qsa]
+    RewriteRule ^/user/([^\/]+)/more/?$ /profile.php?user=$1&more=1 [qsa]
+    RewriteRule ^/user/([^\/]+)/?$ /profile.php?user=$1 [qsa]
 
     RewriteRule ^/profile/(\d+)/map/?(.*)$ /mapbrowse.php?u=$1&t=$2
     RewriteRule ^/profile/(\d+)/all/?$ /profile.php?id=$1&all=1
@@ -105,7 +109,7 @@ NameVirtualHost *
     RewriteRule ^/feed/results([0-9]*)/([0-9]+)/?([^/]*)/? /syndicator.php?page=$1&i=$2&format=$3 [qsa]
 
     RewriteRule ^/results/([0-9]+)(/[0-9]+|)\.?([\w]*)$ /search.php?page=$2&i=$1&extension=$3 [qsa]
-
+    RewriteRule ^/results/$ /search.php [qsa]
 
     RewriteRule ^/discuss/topic([0-9]+) /discuss/?action=vthread&topic=$1 [qsa,r]
     RewriteRule ^/discuss/forum([0-9]+) /discuss/?action=vtopic&forum=$1 [qsa,r]
@@ -117,7 +121,7 @@ NameVirtualHost *
     RewriteRule ^/get-juppy.jnlp /get-juppy.php [qsa]
 
     RewriteRule ^/sitemap.xml$ /sitemap/root/sitemap.xml [L]
-    RewriteRule ^/sitemap(\d+).xml.gz$ /sitemap/root/sitemap$1.xml.gz [L]
+    RewriteRule ^/(sitemap[\d\w\.-]*\.xml.*)$ /sitemap/root/$1 [L]
 
     #rewrite imagemap clicks as regular urls - must do this otherwise
     #php's use_trans_sid will break the urls
@@ -126,6 +130,12 @@ NameVirtualHost *
 
 
     RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 [L]
+
+    #short urls
+    RewriteRule /g/(.*) http://%{HTTP_HOST}/gridref/$1 [qsa,L,R=permanent]
+    RewriteRule /u/(.*) http://%{HTTP_HOST}/profile/$1 [qsa,L,R=permanent]
+    RewriteRule /p/(.*) http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
+    RewriteRule /r/(.*) http://%{HTTP_HOST}/results/$1 [qsa,L,R=permanent]
 
     ErrorDocument 404 /staticpage.php?page=404
 
