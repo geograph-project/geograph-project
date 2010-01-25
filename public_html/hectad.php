@@ -94,10 +94,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('marker2', $overview2->getBoundingBox($mosaic));
 
 	
-	$smarty->assign_by_ref('row',$row);
+	$smarty->assign($row);
 
-	$smarty->assign('hectad',$hectad);
-	$smarty->assign('map_token',$row['map_token']);
 	$smarty->assign('myriad',preg_replace('/\d+/','',$hectad));
 }
 
