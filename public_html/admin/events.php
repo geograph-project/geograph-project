@@ -35,7 +35,7 @@ $db=NewADOConnection($GLOBALS['DSN']);
 if (isset($_GET['showlogs']))
 {
 	$event_id=intval($_GET['showlogs']);
-	$smarty->assign('logs', $db->GetAll("select * from event_log where event_id=$event_id order by logtime"));
+	$smarty->assign('logs', $db->GetAll("select * from event_log where event_id=$event_id order by event_log_id"));
 	$smarty->assign('handlers', $db->GetAll("select * from event_handled_by where event_id=$event_id"));
 
 	$smarty->display('admin_eventlog.tpl');
