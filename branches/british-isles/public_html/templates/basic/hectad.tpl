@@ -29,23 +29,25 @@
 <h3>Stats</h3>
 
 <ul>
-	<li>Number of land squares: <b>{$row.landsquares|thousends}</b> <small>(out of a 100 possible)</small></li>
-	<li>First Geographs: <b>{$row.geosquares|thousends}</b> (i.e. number of squares with Geographs){if $row.users}<ul>
-		<li>Contributors:  <b>{$row.users|thousends}</b></li>
-		<li>First: <b>{$row.first_submitted|date_format:"%A, %e %B, %Y"}</b></li>
-		<li>Last: <b>{$row.last_submitted|date_format:"%A, %e %B, %Y"}</b></li>
+	<li>Number of land squares: <b>{$landsquares|thousends}</b> <small>(out of a 100 possible)</small></li>
+	<li>First Geographs: <b>{$geosquares|thousends}</b> (i.e. number of squares with Geographs){if $users}<ul>
+		<li>Contributors:  <b>{$users|thousends}</b></li>
+		<li>First: <b>{$first_submitted|date_format:"%A, %e %B, %Y"}</b></li>
+		<li>Last: <b>{$last_submitted|date_format:"%A, %e %B, %Y"}</b></li>
 	</ul>{/if}</li>
-	<li>Number of geographs: <b>{$row.geographs|thousends}</b> </li>
-	<li>Number of images: <b>{$row.images|thousends}</b> </li>
+	<li>Number of geographs: <b>{$geographs|thousends}</b> </li>
+	<li>Number of images: <b>{$images|thousends}</b> </li>
 </ul>
 
 <h3>Links</h3>
 <ul class="explore">
 	
-	<li style="list-style-image: url('http://{$static_host}/img/links/20/map.png');"><a title="View map for {$row.hectad}" href="/mapbrowse.php?t={$row.map_token}">View Geograph <b>Coverage Map</b></a></li>
+	<li style="list-style-image: url('http://{$static_host}/img/links/20/map.png');"><a title="View map for {$hectad}" href="/mapbrowse.php?t={$map_token}">View Geograph <b>Coverage Map</b></a> or <img src="http://{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">View a <b>printable check sheet</b></a></li>
 	
-	{if $row.largemap_token}
-	<li style="list-style-image: url('http://{$static_host}/img/links/20/mosaic.png');"><a title="View Mosaic for {$obj.hectad}" href="/maplarge.php?t={$row.largemap_token}">Have a look at a <b>Large Mosaic</b>/map</a> (includes First Geograph statistics)</li>
+	{if $reference_index == 1}<li style="list-style-image: url('http://{$static_host}/img/links/20/mapper.png');"><a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">Open <b>OS Grid Squares Map</b></a></b> {/if}
+	
+	{if $largemap_token}
+	<li style="list-style-image: url('http://{$static_host}/img/links/20/mosaic.png');"><a title="View Mosaic for {$obj.hectad}" href="/maplarge.php?t={$largemap_token}">Have a look at a <b>Large Mosaic</b>/map</a> (includes First Geograph statistics)</li>
 	{/if}
 	
 	<li style="list-style-image: url('http://{$static_host}/img/links/20/search.png');"><form method="get" action="/search.php">
@@ -66,7 +68,7 @@
 
 	<li style="list-style-image: url('http://{$static_host}/img/links/20/place.png');"><a href="/finder/places.php?q={$myriad}+{$hectad}">Find <b>Places in {$hectad}</b></a> (can then find images of that place)</li>
 
-	{if $row.largemap_token}
+	{if $largemap_token}
 		<li style="list-style-image: url('http://{$static_host}/img/links/20/checksheet.png');"><a href="/statistics/fully_geographed.php?myriad={$myriad}"><b>Compare</b> to other hectads in {$myriad}</a></li>
 	{else}
 		<li style="list-style-image: url('http://{$static_host}/img/links/20/checksheet.png');"><a href="/statistics/most_geographed.php?myriad={$myriad}"><b>Compare</b> to other hectads in {$myriad}</a></li>
