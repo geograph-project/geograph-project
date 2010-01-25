@@ -121,8 +121,10 @@
 
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
+
     RewriteRule ^/photo/([0-9]+)\.xml /api/photo/$1 [qsa]
     RewriteRule ^/api/.* /restapi.php [qsa]
+    
     RewriteRule ^/photo/([0-9]+)\.rdf /rdfapi.php?id=$1 [qsa]
     RewriteRule ^/photo/([0-9]+)\.kml /kml.php?id=$1 [qsa]
     RewriteRule ^/photo/([0-9]+) /view.php?id=$1 [qsa]
@@ -131,6 +133,8 @@
     RewriteRule ^/gridref/(.*)/links /location.php?gridref=$1 [qsa]
     RewriteRule ^/gridref/(.*) /browse.php?gridref=$1 [qsa]
 
+    RewriteRule ^/snippet/([0-9]+) /snippet.php?id=$1 [qsa]
+    
     RewriteRule ^/help/([^/]*) /staticpage.php?page=$1 [qsa]
 
     RewriteRule ^/profile/([0-9]+)/feed(|/[0-9]+)/recent\.([\w]+) /syndicator.php?page=$2&u=$1&extension=$3 [qsa]

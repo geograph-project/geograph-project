@@ -21,7 +21,7 @@
 		<b>More nearby...</b>
 		<ul style="padding:0 0 0 1em;">
 			{foreach from=$others item=item}
-				<li><a href="/snippet.php?id={$item.snippet_id}">{$item.title|escape:'html'}</a></li>
+				<li><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></li>
 			{/foreach}
 		</ul>
 	</div>
