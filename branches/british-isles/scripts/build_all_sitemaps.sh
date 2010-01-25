@@ -18,6 +18,9 @@ GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograp
 sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_user2sitemap.php --dir=/var/www/geograph_live
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.org.uk%2Fsitemap-usermap.xml > /dev/null
 
+sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_snippetsitemap.php --dir=/var/www/geograph_live
+GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.org.uk%2Fsitemap-snippet.xml > /dev/null
+
 
 sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_sitemap.ie.php --dir=/var/www/geograph_live --config=www.geograph.ie
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.ie%2Fsitemap.ie.xml > /dev/null
