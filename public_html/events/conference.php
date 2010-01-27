@@ -56,6 +56,8 @@ if (!empty($_GET['action']))
 				$total['Name']++;
 				if ($row['Speaking'] == 'Yes')
 					$total['Speaking']++;
+				if ($row['Parking'] == 'Yes')
+					$total['Parking']++;
 				if ($row['confirmed'] >0)
 					$total['Confirmed']++;
 				if ($row['cancelled'] >0)
@@ -85,6 +87,60 @@ if (!empty($_GET['action']))
 			$smarty->assign_by_ref("data",$data);
 			
 			$template = "event_conference_comments.tpl";
+			break;
+			
+		case 'sendparkingemail':
+			$USER->mustHavePerm('admin');
+			
+			if (!empty($_GET['entry_id'])) {
+				$entry_id = intval($_GET['entry_id']);
+				$data = $db->getAll("SELECT * FROM conference_registration WHERE cancelled = 0 AND entry_id = $entry_id");
+			} else {
+				$data = $db->getAll("SELECT * FROM conference_registration WHERE confirmed > 0 AND Parking = 'Unknown' AND sentparking = 0 LIMIT 10");
+			}
+			
+			$from_email = "conference@barryhunter.co.uk";
+			$from_name = "Geograph Conference";
+			
+			foreach ($data as $idx => $row) {
+				
+				$email = $row['Email'];
+				$subject = "[Geograph] Conference - Do you need parking?";
+				$body = "Dear {$row['Name']},\n\n";
+				
+				$body .= "We are conducting a quick count on the number of parking spaces needed by attendees, please click the following link and let us know:\n\n";
+				
+				$body = wordwrap($body);
+				
+				$token=new Token;
+				$token->magic = md5($CONF['photo_hashing_secret'].$CONF['register_confirmation_secret']);
+				$token->setValue("eid", intval($row['entry_id']));
+				$token = $token->getToken();
+	
+				$body .= "http://{$_SERVER['HTTP_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
+							
+				$body2.="Kind Regards,\n\n";
+				$body2.="Barry\non behalf of the Geograph Team\n\n";
+				
+				$body = $body.wordwrap($body2);
+				
+				if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+				{
+					$db->query("UPDATE conference_registration SET sentparking = NOW() WHERE entry_id = {$row['entry_id']}");
+
+					print "SENT TO $email<br/>";
+				}
+				else 
+				{
+					print "SEND TO $email FAILED<br/>";
+					
+				}
+				
+			}
+			
+			print "<hr/>DONE";
+			exit;
+			
 			break;
 			
 		case 'sendspeakeremail':
@@ -254,7 +310,14 @@ if (!empty($_GET['action']))
 		
 				if (!empty($_POST) && $_GET['ident'] == $_POST['ident'] && $data['entry_id']) {
 		
-					if (!empty($_POST['confirm'])) {
+					if (!empty($_POST['Parking'])) {
+					
+						$Parking = preg_match('/^\w+$/',$_POST['Parking'])?$_POST['Parking']:'Unknown';
+					
+					
+						$db->query("UPDATE conference_registration SET confirmed = NOW(),Parking = '$Parking' WHERE entry_id = {$data['entry_id']}");
+
+					} elseif (!empty($_POST['confirm'])) {
 					
 						$Speaking = isset($_POST['Speaking'])?'Yes':'No';
 					

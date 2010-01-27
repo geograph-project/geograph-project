@@ -26,6 +26,7 @@
 	<td>Name</td>
 	<td>Nickname</td>
 	<td>Speaking</td>
+	<td>Parking</td>
 	<td>Confirmed</td>
 	{if $cancelled}
 	<td>Cancelled</td>
@@ -44,6 +45,7 @@
 		<td><a href="mailto:{$item.Email|escape:'html'}">{$item.Name|escape:'html'} {$item.Last|escape:'html'}</a></td>
 		<td>{$item.Nickname|escape:'html'}</td>
 		<td>{$item.Speaking|escape:'html'}</td>
+		<td>{$item.Parking|escape:'html'}</td>
 		<td sortvalue="{$item.confirmed}" class="nowrap">{if $item.confirmed > 0}{$item.confirmed|date_format:"%a, %e %b %Y"}{else}-{/if}</td>
 		{if $cancelled}
 		<td sortvalue="{$item.cancelled}" class="nowrap">{if $item.cancelled > 0}{$item.cancelled|date_format:"%a, %e %b %Y"}{else}-{/if}</td>
@@ -62,6 +64,7 @@
 	<td>{$total.Name}</td>
 	<td>.</td>
 	<td>{$total.Speaking}</td>
+	<td>{$total.Parking}</td>
 	<td>{$total.Confirmed}</td>
 	{if $cancelled}
 	<td>{$total.Cancelled}</td>
