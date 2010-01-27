@@ -1062,3 +1062,10 @@ ALTER TABLE event ADD `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON 
 
 #################################################
 
+
+ALTER TABLE  `conference_registration` ADD  `Parking` ENUM(  'Unknown',  'Yes',  'No' ) NOT NULL DEFAULT  'Unknown',
+ADD  `sentparking` DATETIME NOT NULL ;
+
+
+#################################################
+
