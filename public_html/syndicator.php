@@ -140,7 +140,7 @@ if ($CONF['template'] == 'api') {
 } else {
 	$rss->link = "http://{$_SERVER['HTTP_HOST']}/";
 }
-
+$baselink = $rss->link;
 
 /**
  * Create a query the first time round!
@@ -177,19 +177,19 @@ if (isset($sphinx)) {
 	if ($sphinx->resultCount) {
 		$rss->description .= " ({$sphinx->resultCount} in total)";
 	}
-	$rss->syndicationURL = $rss->link."syndicator.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
+	$rss->syndicationURL = $baselink."syndicator.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 
 	if ($format == 'MEDIA') {
-		$rss->link =  $rss->link."search.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'');
+		$rss->link =  $baselink."search.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
 			$prev = $pg - 1;
-			$rss->prevURL = $rss->link."syndicator.php?q=".urlencode($sphinx->q).(($prev>1)?"&amp;page=$prev":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
+			$rss->prevURL = $baselink."syndicator.php?q=".urlencode($sphinx->q).(($prev>1)?"&amp;page=$prev":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 		}
 		
 		$offset = ($pg -1)* $pgsize;
 		if ($pg < 10 && $offset < 250 && $sphinx->numberOfPages > $pg) {
 			$next = $pg + 1;
-			$rss->nextURL = $rss->link."syndicator.php?q=".urlencode($sphinx->q).(($next>1)?"&amp;page=$next":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
+			$rss->nextURL = $baselink."syndicator.php?q=".urlencode($sphinx->q).(($next>1)?"&amp;page=$next":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 		}
 		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
 	}
@@ -211,7 +211,7 @@ if (isset($sphinx)) {
 	$images = new SearchEngine($_GET['i']);
 	
 	$rss->description = "Images".$images->criteria->searchdesc; 
-	$rss->syndicationURL = $rss->link."feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".$format_extension";
+	$rss->syndicationURL = $baselink."feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".$format_extension";
 	
 	$images->Execute($pg);
 	if ($images->resultCount) {
@@ -219,10 +219,10 @@ if (isset($sphinx)) {
 	}
 	
 	if ($format == 'MEDIA') {
-		$rss->link =  $rss->link."search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
+		$rss->link =  $baselink."search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
 			$prev = $pg - 1;
-			$rss->prevURL = $rss->link."feed/results/".$_GET['i'].(($prev>1)?"/$prev":'').".$format_extension";
+			$rss->prevURL = $baselink."feed/results/".$_GET['i'].(($prev>1)?"/$prev":'').".$format_extension";
 		}
 		$pgsize = $images->criteria->resultsperpage;
 			
@@ -231,7 +231,7 @@ if (isset($sphinx)) {
 		$offset = ($pg -1)* $pgsize;
 		if ($pg < 10 && $offset < 250 && $images->numberOfPages > $pg) {
 			$next = $pg + 1;
-			$rss->nextURL = $rss->link."feed/results/".$_GET['i'].(($next>1)?"/$next":'').".$format_extension";
+			$rss->nextURL = $baselink."feed/results/".$_GET['i'].(($next>1)?"/$next":'').".$format_extension";
 		}
 		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
 	} 
@@ -244,7 +244,7 @@ if (isset($sphinx)) {
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$profile=new GeographUser($_GET['u']);
 	$rss->description = 'Latest Images by '.$profile->realname; 
-	$rss->syndicationURL = $rss->link."profile/".intval($_GET['u'])."/feed/recent.$format_extension";
+	$rss->syndicationURL = $baselink."profile/".intval($_GET['u'])."/feed/recent.$format_extension";
 
 
 	//lets find some recent photos
@@ -256,7 +256,7 @@ if (isset($sphinx)) {
  */
 } else {
 	$rss->description = 'Latest Images'; 
-	$rss->syndicationURL = $rss->link."feed/recent.$format_extension";
+	$rss->syndicationURL = $baselink."feed/recent.$format_extension";
 
 	//lets find some recent photos
 	$images=new ImageList(array('accepted', 'geograph'), 'gridimage_id desc', 15);
@@ -274,9 +274,13 @@ for ($i=0; $i<$cnt; $i++)
 	
 	$item = new FeedItem(); 
 	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title; 
-	$item->guid = $item->link = $rss->link."photo/{$images->images[$i]->gridimage_id}";
+	$item->guid = $item->link = $baselink."photo/{$images->images[$i]->gridimage_id}";
 	if (isset($images->images[$i]->dist_string) || isset($images->images[$i]->imagetakenString)) {
-		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
+		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'');
+		if ($item->description) {
+			$item->description .= "<br/>";
+		}
+		$item->description .= $images->images[$i]->comment; 
 		$item->descriptionHtmlSyndicated = true;
 	} else {
 		$item->description = $images->images[$i]->comment; 
@@ -286,7 +290,7 @@ for ($i=0; $i<$cnt; $i++)
 	}
 
 	$item->date = strtotime($images->images[$i]->submitted);
-	$item->source = $rss->link.preg_replace('/^\//','',$images->images[$i]->profile_link);
+	$item->source = $baselink.preg_replace('/^\//','',$images->images[$i]->profile_link);
 	$item->author = $images->images[$i]->realname;
 
 	if ($geoformat) {
