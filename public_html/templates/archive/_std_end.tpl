@@ -23,7 +23,7 @@
     </ul></li>
     <li>Further Info<ul>
      <li><a title="Frequently Asked Questions" href="/faq.php">FAQ</a></li>
-     <li><a title="Information documents" href="/content/?docs">Guides, Tutorials</a></li>
+     <li><a title="Information documents" href="/content/documentation.php">Guides, Tutorials</a></li>
      <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
     </ul></li>
@@ -104,9 +104,7 @@
        <span class="sep">|</span>
        <a href="/help/terms" title="Terms and Conditions">Terms of use</a>
        <span class="sep">|</span>
-       <a href="http://validator.w3.org/check/referer" title="check our xhtml standards compliance">XHTML</a>
-       <span class="sep">|</span>
-       <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$static_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
+       <a href="http://hub.geograph.org.uk/downloads.html" title="check our available downloads">Downloads</a>
     </p>
     <p style="color:#777788;">Hosting supported by 
     {external title="click to visit the Fubra website" href="http://www.fubra.com/" text="Fubra"}

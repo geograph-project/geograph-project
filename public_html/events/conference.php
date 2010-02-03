@@ -81,7 +81,7 @@ if (!empty($_GET['action']))
 				$entry_id = intval($_GET['entry_id']);
 				$data = $db->getAll("SELECT cr.*,cc.*,realname FROM conference_registration cr INNER JOIN conference_comment cc USING (entry_id) LEFT JOIN user USING (user_id) WHERE cr.entry_id = $entry_id AND comment != '' ORDER BY cr.entry_id,cc.created");
 			} else {
-				$data = $db->getAll("SELECT cr.*,cc.*,realname FROM conference_registration cr INNER JOIN conference_comment cc USING (entry_id) LEFT JOIN user USING (user_id) WHERE confirmed = 0 AND comment != '' ORDER BY cr.entry_id,cc.created");
+				$data = $db->getAll("SELECT cr.*,cc.*,realname FROM conference_registration cr INNER JOIN conference_comment cc USING (entry_id) LEFT JOIN user USING (user_id) WHERE confirmed > 0 AND comment != '' ORDER BY cr.entry_id,cc.created");
 			}
 			
 			$smarty->assign_by_ref("data",$data);

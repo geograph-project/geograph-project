@@ -213,6 +213,11 @@ if ($template=='profile.tpl')
 		$limit = 100;
 	}
 	$cacheid.="_$limit";
+	
+	if ($CONF['template']=='archive') {
+		 $_GET['expand'] = true;
+	}
+	
 	if (!empty($_GET['expand']) || $USER->expand_about == 1) {
 		$cacheid .= "E";
 	}

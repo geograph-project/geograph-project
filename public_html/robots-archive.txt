@@ -29,6 +29,7 @@ Disallow: /reuse.php
 Disallow: /more.php
 Disallow: /editimage.php
 Disallow: /browse.php
+Disallow: /hectad.php
 Disallow: /location.php
 Disallow: /gridref/
 Disallow: /ecard.php
@@ -56,20 +57,29 @@ Disallow: /sitemap/termlist/
 Disallow: /kml/
 Disallow: /stuff/
 
+#stuff not needed in a minimal export
+Disallow: /gridref/
+Disallow: /explore/
+Disallow: /statistics/
+Disallow: /stuff/
+
+
+
+
 
 
 #The following are wildcard excludes which most crawlers don't understand
-#Disallow: /profile/*/map
-#Disallow: /profile/*/feed
-#Disallow: /photo/*?style=*
-#Disallow: /photo/*.kml
-#Disallow: /explore/calendar.php?*Year*
-#Disallow: /statistics/leaderboard.php?*when*
-#Disallow: /statistics/moversboard.php?*when*
-#Disallow: /statistics/*?*csv
-#Disallow: /syndicator.php?key=
-#Disallow: /map/t*
-#Disallow: /sitemap*xml*
-#Disallow: /content/*?*order=*
+Disallow: /profile/*/map
+Disallow: /profile/*/feed
+Disallow: /photo/*?style=*
+Disallow: /photo/*.kml
+Disallow: /explore/calendar.php?*Year*
+Disallow: /statistics/leaderboard.php?*when*
+Disallow: /statistics/moversboard.php?*when*
+Disallow: /statistics/*?*csv
+Disallow: /syndicator.php?key=
+Disallow: /map/t*
+Disallow: /sitemap*xml*
+Disallow: /content/*?*order=*
 
 

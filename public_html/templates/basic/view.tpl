@@ -91,7 +91,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 -->
 
-{if $image_taken && $image->imagetaken < 2009 && $image->imagetaken > 1}
+{if $image_taken && $image->imagetaken > 1}
 <div class="keywords yeardisplay" title="year photo was taken">year taken <div class="year">{$image->imagetaken|truncate:4:''}</div></div>
 {/if}
 
