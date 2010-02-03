@@ -34,7 +34,7 @@ $template = 'gallery.tpl';
 
 $db = GeographDatabaseConnection(true);
 
-$data = $db->getRow("show table status like 'content'"); //we use content as it should only update when galleries update
+$data = $db->getRow("show table status like 'content'"); //we use content as it updates when galleries update, rather any forum post
 
 //when this table was modified
 $mtime = strtotime($data['Update_time']);
