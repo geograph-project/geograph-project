@@ -1,5 +1,7 @@
 {dynamic}
-{if $showresult}
+{if $imagecount}
+	{assign var="page_title" value="$gridref :: Browse $imagecount Images"}
+{elseif $showresult}
 	{assign var="page_title" value="$gridref :: Browse"}
 {else}
 	{assign var="page_title" value="Browse"}
@@ -106,18 +108,8 @@
 			{/if}
 		</li>
 		
-		{if $by eq 'centi' || $by eq 'viewcenti' }
-		<li style="margin-top:4px"><b>distribution of pictures</b> across the grid square.</b></li>
-		{else}
+		{if $by ne 'centi' && $by ne 'viewcenti' }
 		<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a></li>
-		{/if}
-		
-		{if $by}
-		<li style="margin-top:4px"><a href="{linktoself name="by" value="1"}"><b>reset filtering options</b></a></li>
-		{elseif $mode eq 'takenfrom' || $mode eq 'mentioning'}
-		<li style="margin-top:4px"><img src="http://{$static_host}/img/links/20/grid.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/> <a href="/gridref/{$gridref}?by=1">Access <b>more filtering options</b></a></li>
-                {else}
-		<li style="margin-top:4px"><img src="http://{$static_host}/img/links/20/grid.png" width="20" height="20" alt="centisquare icon" align="absmiddle"/> <a href="{linktoself name="by" value="1"}">Access <b>more filtering options</b></a></li>
 		{/if}
 		
 		<li style="margin-top:4px">View all images: <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap"><b>slideshow</b></a>, <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1" title="View just thumbnails" class="nowrap"><b>thumbnails</b></a></li>
@@ -158,13 +150,6 @@
 			<li style="margin-top:4px">View <a href="/gridref/{$gridref}?viewcenti={$gridref6}">image(s) <b>taken in {$gridref6}</b></b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span> <sup style="color:red">new!</sup></li>
 		{/if}
 		
-		{if $viewpoint_count}
-			<li style="margin-top:4px"><a href="/gridref/{$gridref}?takenfrom">View <b>{$viewpoint_count} images taken <i>from</i> {$gridref}</b></a></li>
-		{/if}
-		{if $mention_count}
-			<li><a href="/gridref/{$gridref}?mentioning">View <b>{$mention_count} images <i>mentioning</i> {$gridref}</b></a> <sup style="color:red">new!</sup></li>
-		{/if}
-		
 		</ul>
 		
 	{if $imagecount}
@@ -202,9 +187,52 @@
 
 {if $showresult}
 	{* We have a valid GridRef *}
+
+	{if $mode eq 'takenfrom'}
+		{assign var="tab" value="8"}
+	{elseif $mode eq 'mentioning'}
+		{assign var="tab" value="9"}
+	{elseif $sample}
+		{assign var="tab" value="1"}
+	{elseif $breakdown}
+		{assign var="tab" value="4"}
+	{elseif $breakdowns}
+		{assign var="tab" value="3"}
+	{elseif $filtered}
+		{assign var="tab" value="6"}
+	{elseif $totalimagecount > 0}
+		{assign var="tab" value="2"}
+	{/if}
+
+	<div class="tabHolder" style="margin-left:10px">
+		{if $sample}
+			<b class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1">Sample Images</b>
+		{elseif $imagecount >= 15}
+			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/gridref/{$gridref}">Sample Images</a>
+		{elseif $imagecount && $imagecount < 15} 
+			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="{linktoself name="by" value="0" delete=$bby}">All Images</a>
+		{/if}
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="/gridref/{$gridref}?by=1">Breakdown list</a>
+
+		{if $bby}
+			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="{linktoself name="by" value=$bby delete=$bby}">List of Filters</a>
+		{elseif $breakdown}
+			<b class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4">List of {$breakdown_title|default:"filters"}s</b>
+		{/if}
+
+		{if $filtered}
+			<b class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6">Filtered List</b>
+		{/if}
+		{if $viewpoint_count || $mode eq 'takenfrom'}
+			<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/gridref/{$gridref}?takenfrom">images taken <i>from</i> {$gridref}{if $viewpoint_count} [{$viewpoint_count}]{/if}</a>
+		{/if}
+		{if $mention_count || $mode eq 'mentioning'}
+			<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/gridref/{$gridref}?mentioning"><i>mentioning</i> {$gridref}{if $viewpoint_count} [{$mention_count}]{/if}</a>
+		{/if}
+	</div>
 	
 	<div class="interestBox" style="position:relative; margin-left:10px">
-	{if $sample}
+	{if $sample}<big>
 	A <b>sample</b> of {$sample|thousends} photos from <b>{$imagecount|thousends}</b>
 	{else}
 	We have 
@@ -219,12 +247,11 @@
 	{else}
 		for <b>{$gridref}</b>
 	{/if}
+	{if $sample}</big> - <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View <b>all {$imagecount} images</b> page by page &gt;&gt;&gt;</a>{/if}
 	</div>
 
 	<div style="position:relative; text-align:right; font-size:0.7em">
-	{if !$breakdown && !$breakdowns && $totalimagecount > 0 &&  $totalimagecount > 1 && $mode ne 'takenfrom' && $mode ne 'mentioning'}
-		[ <a href="{linktoself name="by" value="1"}">View as <b>breakdown list</b></a> ] &nbsp; 
-	{/if}	
+
 	{if $user->registered && $mode eq 'normal'}
 		[{if !$nl}
 			<a href="{linktoself name="nl" value="1"}">Include <b>pending and rejected</b> images</a> 
@@ -357,7 +384,7 @@
 			
 			
 			{if $filtered}
-				<blockquote><p>{$totalimagecount} Images, {$filtered_title}... (<a href="/gridref/{$gridref}{if $extra}?{$extra}{/if}">Remove Filter</a>)</p></blockquote>
+				<blockquote><p>{$totalimagecount} Images, {$filtered_title}...</p></blockquote>
 			{/if}
 
 			{foreach from=$images item=image}
@@ -404,8 +431,6 @@
 	{/if}
 	</ul>
 {/if}
-
-<p>&nbsp;&middot; <small>This is an experiment with a new style browse page, <a href="{linktoself name="old" value="1"}">revert to old style page</a>.</small></p>
 
 {include file="_std_end.tpl"}
 {/dynamic}
