@@ -260,46 +260,54 @@ if ($grid_given)
 			$custom_where .= " and gi.user_id = ".intval($_GET['user']);
 			$profile=new GeographUser($_GET['user']);
 			$filtered_title .= " by ".htmlentities2($profile->realname);
+			$smarty->assign("bby",'user');
 		}
 		if (!empty($_GET['status'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$filtered_title .= " moderated as '".htmlentities2($_GET['status'])."'";
 			$_GET['status'] = str_replace('supplemental','accepted',$_GET['status']);
 			$custom_where .= " and moderation_status = ".$db->Quote($_GET['status']);
+			$smarty->assign("bby",'status');
 		}
 		if (!empty($_GET['class'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and imageclass = ".$db->Quote($_GET['class']);
 			$filtered_title .= " categorised as '".htmlentities2($_GET['class'])."'";
+			$smarty->assign("bby",'class');
 		}
 		if (!empty($_GET['cluster'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and label = ".$db->Quote($_GET['cluster']);
 			$filtered_title .= " labeled as '".htmlentities2($_GET['cluster'])."'";
+			$smarty->assign("bby",'cluster');
 		}
 		if (!empty($_GET['taken'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['taken']."%");
 			$date = getFormattedDate($_GET['taken']);
 			$filtered_title .= " Taken in $date";
+			$smarty->assign("bby",'taken');
 		}
 		if (!empty($_GET['takenyear'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['takenyear']."%");
 			$date = getFormattedDate($_GET['takenyear']);
 			$filtered_title .= " Taken in $date";
+			$smarty->assign("bby",'takenyear');
 		}
 		if (!empty($_GET['submitted'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submitted']."%");
 			$date = getFormattedDate($_GET['submitted']);
 			$filtered_title .= " Submitted in $date";
+			$smarty->assign("bby",'submitted');
 		}
 		if (!empty($_GET['submittedyear'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submittedyear']."%");
 			$date = getFormattedDate($_GET['submittedyear']);
 			$filtered_title .= " Submitted in $date";
+			$smarty->assign("bby",'submittedyear');
 		}
 		if (isset($_GET['direction']) && strlen($_GET['direction'])) {
 			$direction = intval($_GET['direction']);
@@ -307,6 +315,7 @@ if ($grid_given)
 			
 			$view_direction = ($direction%90==0)?strtoupper(heading_string($direction)):ucwords(heading_string($direction)) ;
 			$filtered_title .= " Looking $view_direction";
+			$smarty->assign("bby",'direction');
 		}
 		if (!empty($_GET['viewpoint'])) {
 			$viewpoint_square = new GridSquare;
@@ -322,6 +331,7 @@ if ($grid_given)
 
 				$filtered_title .= " Taken in ".$viewpoint_square->grid_reference;
 			}
+			$smarty->assign("bby",'viewpoint');
 		}
 		if (!empty($_GET['centi'])) {
 			if ($_GET['centi'] == 'unspecified') {
@@ -349,6 +359,7 @@ if ($grid_given)
 				$smarty->assign('gridrefraw', stripslashes($_GET['centi']));
 			}
 			$filtered_title .= " in ".htmlentities2($_GET['centi'])." Centisquare<a href=\"/help/squares\">?</a>";
+			$smarty->assign("bby",'centi');
 		}
 		if (!empty($_GET['viewcenti'])) {
 			if ($_GET['viewcenti'] == 'unspecified') {
@@ -371,6 +382,7 @@ if ($grid_given)
 				$smarty->assign('gridrefraw', stripslashes($_GET['viewcenti']));
 			}
 			$filtered_title .= " photographer in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
+			$smarty->assign("bby",'viewcenti');
 		}
 		if ($custom_where) {
 			$smarty->assign('filtered_title', $filtered_title);

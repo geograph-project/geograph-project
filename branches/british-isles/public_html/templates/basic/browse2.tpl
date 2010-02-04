@@ -210,7 +210,7 @@
 		{elseif $imagecount >= 15}
 			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/gridref/{$gridref}">Sample Images</a>
 		{elseif $imagecount && $imagecount < 15} 
-			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="{linktoself name="by" value="0" delete=$bby}">All Images</a>
+			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="/gridref/{$gridref}">All Images</a>
 		{/if}
 		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="/gridref/{$gridref}?by=1">Breakdown list</a>
 
