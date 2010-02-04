@@ -63,7 +63,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		if ($data['images']) {
 			$imagelist = new ImageList();
 
-			$sql = "SELECT gridimage_id,gi.user_id,realname,credit_realname,gi.title,imageclass,grid_reference FROM gridimage_snippet gs INNER JOIN gridimage_search gi USING (gridimage_id) WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296 LIMIT 10";
+			$sql = "SELECT gridimage_id,gi.user_id,realname,credit_realname,gi.title,imageclass,grid_reference FROM gridimage_snippet gs INNER JOIN gridimage_search gi USING (gridimage_id) WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296 LIMIT 25";
 
 			$imagelist->_getImagesBySql($sql);
 			$smarty->assign_by_ref('results', $imagelist->images);
