@@ -227,7 +227,7 @@
 			<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/gridref/{$gridref}?takenfrom">images taken <i>from</i> {$gridref}{if $viewpoint_count} [{$viewpoint_count}]{/if}</a>
 		{/if}
 		{if $mention_count || $mode eq 'mentioning'}
-			<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/gridref/{$gridref}?mentioning"><i>mentioning</i> {$gridref}{if $viewpoint_count} [{$mention_count}]{/if}</a>
+			<a class="tab{if $tab == 9}Selected{/if} nowrap" id="tab9" href="/gridref/{$gridref}?mentioning"><i>mentioning</i> {$gridref}{if $mention_count} [{$mention_count}]{/if}</a>
 		{/if}
 	</div>
 	
