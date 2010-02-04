@@ -65,11 +65,12 @@ class RebuildHectadStat extends EventHandler
 					SUM(moderation_status = 'geograph') AS geographs,
 					COUNT(DISTINCT gi.gridsquare_id) AS squares,
 					COUNT(DISTINCT IF(moderation_status='geograph',gi.gridsquare_id,NULL)) AS geosquares,
-					COUNT(DISTINCT IF(ftf=1,user_id,NULL)) AS users,
+					COUNT(DISTINCT user_id) AS users,
 					MIN(IF(ftf=1,submitted,NULL)) AS first_submitted,
 					MAX(IF(ftf=1,submitted,NULL)) AS last_submitted, 
 					'' AS map_token,
-					'' AS largemap_token
+					'' AS largemap_token,
+					COUNT(DISTINCT IF(ftf=1,user_id,NULL)) AS ftfusers
 					FROM gridsquare gs
 					LEFT JOIN gridimage gi ON (gs.gridsquare_id=gi.gridsquare_id AND moderation_status IN ('geograph','accepted')) 
 					WHERE reference_index = $ri AND grid_reference LIKE '$prefix%' AND percent_land >0
@@ -100,3 +101,4 @@ class RebuildHectadStat extends EventHandler
 	}
 	
 }
+

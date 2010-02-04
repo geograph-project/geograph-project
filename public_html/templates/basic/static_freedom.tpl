@@ -73,12 +73,18 @@ too!
 <p>The Creative Commons licence would allow someone to take an image from the site
 and sell it or use it commercially, but they must give you credit.</p>
 
-<p>However, we only retain a screen-resolution copy 
+<p>However, <i>[by default]</i> we only retain a screen-resolution copy 
 of your photographs (up to 640x640 pixels), not your original print quality upload. 
 This screen-resolution image will always be available free of charge from the
 Geograph website, and can be found by search engines that support discovery of
 Creative Commons content. In other words, there's not much scope for trying to
 build a commercial photo archive from the images.</p>
+
+<blockquote style="border-left:3px solid silver;padding-left:5px">
+<b>Update, Jan 2010</b>: Its now <i>possible</i> to release larger versions of various sizes for downloading and re-use. <br/><br/>
+It's important to note this is entirely optional, and we are still exploring the implications of this change. But suffice to say certain images can benefit from the increased resolution.<br/><br/>
+&middot; <a href="/article/Larger-Uploads-Information">Larger Uploads Information</a>
+</blockquote> 
 
 <h3>Live Forever</h3>
 
@@ -88,6 +94,9 @@ to evolve and improve, but the one thing that can't happen is the removal of the
 freedoms.</p>
 
 <p>Your images will live forever, and will be useful for generations of site visitors!</p>
+
+<hr/>
+<div style="text-align:right"><a href="/profile/2">Paul Dixon</a>, April 2005</div>
 
 
 {include file="_std_end.tpl"}

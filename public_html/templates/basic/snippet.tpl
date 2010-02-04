@@ -28,7 +28,11 @@
 {/if}
 
 {if $images}
-	<p><b>{$images} image{if $images == 1} uses{else}s use{/if} this description{if $images > 10}. Preview shown below:{else}:{/if}</b></p>
+	{if $images > 25}
+		<p><b><a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">{$images} images</a> use this description. Preview shown below:</b></p>
+	{else}
+		<p><b>{$images} image{if $images == 1} uses{else}s use{/if} this description:</b></p>
+	{/if}
 {/if}
 
 	{foreach from=$results item=image}

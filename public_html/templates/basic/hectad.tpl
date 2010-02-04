@@ -30,14 +30,17 @@
 
 <ul>
 	<li>Number of land squares: <b>{$landsquares|thousends}</b> <small>(out of a 100 possible)</small></li>
-	<li>First Geographs: <b>{$geosquares|thousends}</b> (i.e. number of squares with Geographs){if $users}<ul>
-		<li>Contributors:  <b>{$users|thousends}</b></li>
+	<li>First Geographs: <b>{$geosquares|thousends}</b> (i.e. number of squares with Geographs){if $ftfusers}<ul>
+		<li>Contributors:  <b>{$ftfusers|thousends}</b></li>
 		<li>First: <b>{$first_submitted|date_format:"%A, %e %B, %Y"}</b></li>
 		<li>Last: <b>{$last_submitted|date_format:"%A, %e %B, %Y"}</b></li>
 	</ul>{/if}</li>
 	<li>Number of geographs: <b>{$geographs|thousends}</b> </li>
-	<li>Number of images: <b>{$images|thousends}</b> </li>
+	<li>Number of images: <b>{$images|thousends}</b> {if $users}<ul>
+                <li>Contributors:  <b>{$users|thousends}</b></li>
+        </ul>{/if}</li>
 </ul>
+<div style="font-size:0.8em; color:gray;">Last updated: {$updated|date_format:"%e %B, %H:%M"}</div>
 
 <h3>Links</h3>
 <ul class="explore">

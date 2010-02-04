@@ -2,7 +2,7 @@
 {include file="_std_begin.tpl"}
 
 {if $gridref2}
-<h2>Geograph Mosaic for {$gridref2}</h2>
+<h2>Geograph Mosaic for <a href="/gridref/{$gridref2}">{$gridref2}</a></h2>
 {else}
 <h2>Geograph Map for {$gridref}</h2>
 {/if}

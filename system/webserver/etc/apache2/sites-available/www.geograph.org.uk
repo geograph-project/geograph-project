@@ -98,6 +98,13 @@
     RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
 
+	#use new style sitemap for webarchiving
+    RewriteCond %{HTTP:X-Forwarded-For}   128.86.236.164 [NC,OR]  #webarchive.org.uk's crawler
+    RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org\.uk [NC]
+    RewriteRule ^/sitemap/(.*)   /sitemap2/$1 [qsa]
+
+
+
 	#List of valid crawling domains (but maybe specific robots.txt for some below) 
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
@@ -220,6 +227,10 @@
 <Location /sitemap/>
     DirectoryIndex index.html
     ErrorDocument 404 /sitemap/later.php?page=404
+</Location>
+<Location /sitemap2/>
+    DirectoryIndex index.html
+    ErrorDocument 404 /sitemap2/later.php?page=404
 </Location>
 
 RewriteRule ^/rss/(.*\.kmz)         http://kml.geograph.org.uk/kml/$1 [L,R=permanent]

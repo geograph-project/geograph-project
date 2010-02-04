@@ -26,6 +26,8 @@
 
 	<li><a href="/explore/searches.php"><b>Featured Searches</b></a> - hand picked example searches</li>
 
+	<li style="border:2px solid red">{external href="http://www.nearby.org.uk/geograph/flamenco.cgi/geograph4/Flamenco" text="View a selection of images in the <b>Image Explorer</b>"} <sup style="color:red">NEW!</sup></li>
+
 	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>.</li>
 
 	<li><a name="counties"></a>View Photographs at <b>Centre Points</b>: <ul>
@@ -37,7 +39,7 @@
 
 	<li><a href="/gallery/"><b>Galleries</b></a> - hand picked images on various themes</li>
 
-	<li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li>
+	<li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> (or try a <a href="/finder/places.php">search</a>)</li>
 
 </ul>
 <h3>Breakdowns...</h3>
@@ -65,7 +67,7 @@
 
 	<li><a href="/mapper/">View a <b>Draggable Map</b> checksheet</a>. (use the Grid Reference box to jump to your area of interest)</li>
 
-	<li><a href="/hectadmap.php">View a <b>Hectad coverage</a> map</a></li>
+	<li><a href="/hectadmap.php">View a <b>Hectad coverage</b> map</a></li>
 
 	<li><form method="get" action="/search.php" style="display:inline">
 	<label for="searchterm"><b>Search</b> by keyword, place, postcode or contributor</label>: <br/>
