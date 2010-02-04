@@ -108,7 +108,7 @@
 			{/if}
 		</li>
 		
-		{if $by ne 'centi' && $by ne 'viewcenti' }
+		{if $by ne 'centi' && $by ne 'viewcenti' && $mode eq 'normal'}
 		<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a></li>
 		{/if}
 		
@@ -222,6 +222,9 @@
 
 		{if $filtered}
 			<b class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6">Filtered List</b>
+			{if $by ne 'centi' && $by ne 'viewcenti' && $mode eq 'normal'}
+				<a class="tab" href="{linktoself name="by" value="centi"}">Centisquare Coverage</a>
+			{/if}
 		{/if}
 		{if $viewpoint_count || $mode eq 'takenfrom'}
 			<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/gridref/{$gridref}?takenfrom">images taken <i>from</i> {$gridref}{if $viewpoint_count} [{$viewpoint_count}]{/if}</a>
@@ -371,12 +374,15 @@
 				<li style="padding:2px"><small>by </small><a href="/gridref/{$gridref}?by={$b.type}{$extra}"><b>{$b.name}</b></a> <small>[{$b.count}]</small></li>
 			{/foreach}
 
-			<li style="margin-top:10px;">or Clustering Options:<br/>
+				<li style="margin-top:10px;">or <b>Clustering Options</b>:<br/>
 				&nbsp; &middot; <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a>, 
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Category</a>, 
-				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Contributor</a> or
-				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a></li>
-
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Contributor</a>, 
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a>{if $imagecount < 500} or
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;breakby=imagetaken_year&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Year Taken</a> <sup style="color:red">new!</sup>{/if}
+				</li>
+			
+				<li style="margin-top:10px;font-size:0.7em">{external href="http://www.nearby.org.uk/geograph/flamenco-redir.php?grid_reference=`$gridref`" text="Explore a sample of `$gridref` images in the new <b>Multi-Purpose Viewer</b>"} <sup style="color:red">Experimental</sup></li>
 			</ul>
 			<br style="clear:both"/>
 		{else}
