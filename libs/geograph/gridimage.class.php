@@ -545,9 +545,13 @@ class GridImage
 		if ($this->view_direction > -1) {
 			$smarty->assign('view_direction', ($this->view_direction%90==0)?strtoupper(heading_string($this->view_direction)):ucwords(heading_string($this->view_direction)) );
 		}
-
-		$level = ($this->grid_square->imagecount > 1)?6:5;
-		$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
+		if ($CONF['template']=='archive') {
+			$hectad = $this->grid_square->gridsquare.intval($this->grid_square->eastings/10).intval($this->grid_square->northings/10);
+			$smarty->assign('sitemap',"/sitemap/{$this->grid_square->gridsquare}/$hectad/{$this->grid_square->grid_reference}.html");
+		} else {
+			$level = ($this->grid_square->imagecount > 1)?6:5;
+			$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
+		}
 	}
 	
 	function loadSnippets($gid = 0) {
