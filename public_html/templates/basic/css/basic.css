@@ -281,6 +281,17 @@ body>#nav_block {width:128px;}
 	font-size:0.9em;
 }
 
+.content_photoblack .tab {
+	background-color:#222222;
+}
+.content_photoblack .tabSelected {
+	background-color:#333333;
+}
+
+.content_photoblack .tabHolder a {
+	color:blue;
+}
+
 .content_photoblack a 
 {
 	color:#00CCCC;
@@ -347,7 +358,7 @@ body>#nav_block {width:128px;}
 	margin-top:2px;
 	padding:2px;
 }
-
+ 
 .content_photogray .interestBox {
 	background-color:#cccccc;
 	color:#444444;
@@ -367,6 +378,15 @@ body>#nav_block {width:128px;}
 .content_photogray a:visited
 {
 	color:#00CCCC;
+}
+
+.content_photogray .tabHolder a 
+{
+	color:blue;
+}
+.content_photogray .tabHolder b 
+{
+	color:black;
 }
 
 .content_photogray  dl.picinfo dt
