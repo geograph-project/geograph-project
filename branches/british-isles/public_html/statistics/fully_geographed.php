@@ -70,7 +70,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
 	$most = $db->GetAll("SELECT SQL_CALC_FOUND_ROWS
-	reference_index,x,y,hectad,geosquares,landsquares,last_submitted,users,map_token,largemap_token
+	reference_index,x,y,hectad,geosquares,landsquares,last_submitted,ftfusers,map_token,largemap_token
 	FROM hectad_stat 
 	WHERE geosquares >= landsquares $sql_where
 	ORDER BY last_submitted DESC,hectad LIMIT 150");

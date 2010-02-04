@@ -29,7 +29,12 @@
 
 		</div>
 
-		<br/><br/><br/><br/><br/><br/><hr/><br/>
+		<br/><br/><br/><br/>
+		&middot; Looking to copy the image you where viewing? <a href="/reuse.php?id={$image->gridimage_id}">See this page</a>.
+		<br/><br/><br/>
+		<br/><br/><hr/><br/><br/>
+		If you do want to contact the <big>Developers of Geograph British Isles</big>, please scroll down.... 
+		<br/><br/><br/><br/><br/><br/><br/>
 	{/if}
 {/if}
  
@@ -37,7 +42,7 @@
   </p>Then fire away - we try to respond within 24 hours, often much quicker.</p>
   
 	{if $image}
-		<div class="interestBox">
+		<div class="interestBox" style="background-color:pink">&middot;
 		<small>Remember, we <b>can't</b> put you in contact with <b>{$image->title|escape:'html'}</b> (we just have a photo of it).</small>
 		</div>
 	{/if}
@@ -64,7 +69,7 @@
     	<br /><span class="formerror">{$msg_error}</span> 
     <br />
         <small style="font-size:0.9em">If you are writing in relation to a particular image or images, please don't forget to mention which!<br/> Ideally copy &amp; paste the page address (URL) of the photo page. <br/>
-        Example: <tt>http://{$http_host}/photo/1234</tt></small><br /><br />
+        Example: <tt>http://{$http_host}/photo/{if $image}{$image->gridimage_id}{else}1234{/if}</tt></small><br /><br />
 
 	<input type="submit" name="send" value="Send"/></p>
     </form>

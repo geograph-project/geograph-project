@@ -34,7 +34,7 @@
 <td align="right">/</td>
 <td align="right">{$obj.landsquares}</td>
 <td align="right">{$obj.percentage|thousends}</td>
-<td align="right">{$obj.users|thousends}</td>
+<td align="right">{$obj.ftfusers|thousends}</td>
 <td align="right" sortvalue="{$obj.last_submitted}">{$obj.last_submitted|date_format:"%A, %e %B, %Y"}</td>
 <td><a href="/mapbrowse.php?t={$obj.map_token}">Map</a></td></tr>
 {/foreach}

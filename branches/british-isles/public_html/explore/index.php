@@ -24,6 +24,8 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+customGZipHandlerStart();
+customExpiresHeader(360,false,true);
 
 
 
@@ -73,5 +75,4 @@ if (!$smarty->is_cached('explore.tpl'))
 
 $smarty->display('explore.tpl');
 
-	
-?>
+

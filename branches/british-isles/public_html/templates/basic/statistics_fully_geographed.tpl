@@ -33,7 +33,7 @@
 <td align="right" sortvalue="{$obj.last_submitted}">{$obj.last_submitted|date_format:"%A, %e %B, %Y"}</td>
 <td align="right" title="{$obj.geosquares}/{$obj.landsquares}">{$obj.geosquares}</td>
 <td><a href="/mapbrowse.php?t={$obj.map_token}">Map</a>/<a title="View Mosaic for {$obj.hectad}" href="/maplarge.php?t={$obj.largemap_token}">Mosaic</a></td>
-<td align="right">{$obj.users}</td></tr>
+<td align="right">{$obj.ftfusers}</td></tr>
 {/foreach}
 
 </tbody>

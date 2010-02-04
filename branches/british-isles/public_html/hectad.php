@@ -51,9 +51,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$row = $db->getRow("select * from hectad_stat where hectad = ".$db->Quote($hectad));
 	
 	if (empty($row)) {
-		header("Location: /browse.php?gridref=".urlencode($hectad));
+		#header("Location: /browse.php?gridref=".urlencode($hectad));
+		header("HTTP/1.0 404 Not Found");
+		$smarty->display("static_404.tpl");
 		exit;
 	} 
+
+	$data = $db->GetRow("SHOW TABLE STATUS LIKE 'hectad_stat'");
+	$smarty->assign('updated',$data['Update_time']);
 	
 	require_once('geograph/mapmosaic.class.php');
 	$mosaic=new GeographMapMosaic;
