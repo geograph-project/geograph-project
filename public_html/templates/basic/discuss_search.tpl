@@ -22,10 +22,10 @@
 	{html_options options=$sortorders selected=$orderby}			
 </select>
 
-</form>
+</form><br/><br/>
 </li>
 
-<li>For text based search see <a href="/discuss/index.php?action=search">Forum Search</a>.</p>
+<li>For text based search see <a href="/finder/discussions.php">Forum Search</a>.</p>
 
 <li>See also <a href="/search.php">image search</a></p>
 
