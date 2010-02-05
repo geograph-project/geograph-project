@@ -563,7 +563,9 @@ margin:10px;
 {
 	color:#99FFFF;
 }
-
+.content_photoblack .tabHolder a:visited {
+	color:purple;
+}
 .content_photoblack  dl.picinfo dt
 {
 	border-bottom:1px solid #333333;
