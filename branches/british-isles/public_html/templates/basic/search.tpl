@@ -71,7 +71,7 @@
 	<div style="position:relative; padding:10px; background-color:#eeeeee;">
 	<small>Marked Images<span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)<br/>
 	</small><small style="font-size:0.6em">TIP: Add images to your list by using the [Mark] buttons on the "full + links" and "thumbnails + links"<br/> search results display formats, and the full image page.<br/><br/>
-	<span style="color:red">Note: The Marked list is stored in a <b>temporally</b> cookie in your browser, and limited to about 500 images.<br/>
+	<span style="color:red">Note: The Marked list is stored in a <b>temporary</b> cookie in your browser, and limited to about 500 images.<br/>
 	You can use the 'View as Search Results' to save your current list to the server permanently.</small></div>
 	<br/>
 	<script>
