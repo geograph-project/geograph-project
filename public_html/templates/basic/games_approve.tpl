@@ -5,7 +5,7 @@
 <div style="float:right"><a href="/games/approve.rss.php" class="xml-rss">RSS</a></div>
 <h2><a href="/games/">Geograph Games</a> </h2>
 
-<p>This is a quick check to ensure inappropriate names don't make it to the scoreboard. Because the name doesnt show on the board until approved here it an idea to aim for a quick turn-around. Note this is probably only a temporally measure until a more robust system is divised</p>
+<p>This is a quick check to ensure inappropriate names don't make it to the scoreboard. Because the name doesnt show on the board until approved here it an idea to aim for a quick turn-around. Note this is probably only a temporary measure until a more robust system is divised</p>
 	
 <form action="{$script_name}" method="post">
 <table class="report sortable" id="namelist"> 
