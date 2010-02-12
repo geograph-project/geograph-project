@@ -17,9 +17,10 @@
 
 <div style="position:relative;width:{$mosaic_width+250}px; padding:20px;"> 
 
-<h2>Geograph Map {if substr($gridref, -1, 1) == '5' && substr(substr($gridref, -3, 3), 0, 1) == '5'}
+<h2 style="margin-bottom:0px">Geograph Map {if substr($gridref, -1, 1) == '5' && substr(substr($gridref, -3, 3), 0, 1) == '5'}
    for Hectad {$gridref|regex_replace:"/([A-Z]+\d)\d(\d)\d/":"\\1\\2"} 
    {else} centred on {$gridref}{/if}{if $realname}, for <a title="view user profile" class="nowrap" href="/profile/{$user_id}">{$realname}</a>{/if}</h2>
+{if $recent}<div style="margin-top:0px;margin-bottom:20px">&middot;&nbsp;{if $token_zoomin}'Recent' is{else}<b>Only includes{/if} images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"}</b></div>{else}<br/>{/if}
 
  
 {*begin containing div for main map*}

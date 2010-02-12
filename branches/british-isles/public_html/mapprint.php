@@ -61,6 +61,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($mosaic->type_or_user == -1) {
 		$smarty->assign('depth', 1);
 		$overview->type_or_user = -1;
+	} elseif ($mosaic->type_or_user == -6) {
+		$db = GeographDatabaseConnection(true);
+
+		//this copes with leap years etc
+		$smarty->assign('recent', $db->getOne("SELECT DATE_SUB(NOW(),INTERVAL 5 YEAR)"));
 	}
 
 	//assign overview to smarty
@@ -95,5 +100,3 @@ if (!$smarty->is_cached($template, $cacheid))
 
 $smarty->display($template, $cacheid);
 
-	
-?>
