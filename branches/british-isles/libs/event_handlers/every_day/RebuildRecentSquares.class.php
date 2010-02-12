@@ -53,10 +53,14 @@ class RebuildRecentSquares extends EventHandler
 				FROM gridimage gi 
 				WHERE imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR)) 
 				AND moderation_status IN ('geograph','accepted')
-				GROUP BY gi.gridsquare_id"); 
+				GROUP BY gi.gridsquare_id
+				ORDER BY NULL"); 
 		
 		$db->Execute("DROP TABLE IF EXISTS recent_only");
 		$db->Execute("RENAME TABLE recent_only_tmp TO recent_only");
+		
+		$db->Execute("UPDATE gridsquare SET has_recent = 0");
+		$db->Execute("UPDATE gridsquare INNER JOIN recent_only USING (gridsquare_id) SET gridsquare.has_recent = 1");
 		
 		//return true to signal completed processing
 		//return false to have another attempt later
