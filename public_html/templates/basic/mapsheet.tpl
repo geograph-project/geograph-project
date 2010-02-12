@@ -123,7 +123,7 @@ div.hl {
 </div></div>
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.2em;width:10em;height:1em;font-size:4em;border:1px solid black;background:white;">
-<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do. Squares with Geographs are marked with an number or X and number of geographs in brackets, or 6(+4) for 6 geographs and 4 supplementals. Squares with only supplemental images are marked by "sup" and the number, and "pend" is shown on squares with just unmoderated images. The taken date of the last photo in the square is also shown. <br/><div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
+<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do. Squares with Geographs are marked with an number or X and number of geographs in brackets, or 6(+4) for 6 geographs and 4 supplementals. Squares with only supplemental images are marked by "sup" and the number, and "pend" is shown on squares with just unmoderated images. The taken date of the last photo in the square is also shown. <br/><div style="float:left; font-size:0.9em"><a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div>{if $recent}<div style="text-align:center"><b>Only includes images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"}</b></div>{/if}</div>
 </div>
  
 {*begin map square divs*}

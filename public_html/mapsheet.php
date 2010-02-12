@@ -101,6 +101,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$profile=new GeographUser($map->type_or_user);
 		$smarty->assign('realname', $profile->realname);
 		$smarty->assign('user_id', $map->type_or_user);
+	} elseif ($map->type_or_user == -6) {
+		$db = GeographDatabaseConnection(true);
+
+		//this copes with leap years etc
+		$smarty->assign('recent', $db->getOne("SELECT DATE_SUB(NOW(),INTERVAL 5 YEAR)"));
 	}
 	
 	//assign main map to smarty

@@ -101,7 +101,9 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	}
 } elseif (isset($_GET['recent'])) {
 	if ($_GET['recent']) {
-		$smarty->assign('recent', 1);
+		$db = GeographDatabaseConnection(true);
+		//this copes with leap years etc
+		$smarty->assign('recent', $db->getOne("SELECT DATE_SUB(NOW(),INTERVAL 5 YEAR)"));
 		$mosaic->type_or_user = -6;
 		$overview->type_or_user = -6;
 	} else {
@@ -112,7 +114,9 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	$smarty->assign('depth', 1);
 	$overview->type_or_user = -1;
 } elseif ($mosaic->type_or_user == -6) {
-	$smarty->assign('recent', 1);
+	$db = GeographDatabaseConnection(true);
+	//this copes with leap years etc
+	$smarty->assign('recent', $db->getOne("SELECT DATE_SUB(NOW(),INTERVAL 5 YEAR)"));
 	$overview->type_or_user = -6;
 }
 

@@ -344,7 +344,8 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 </div>
 <div class="interestBox">
 
-<h2 style="margin-bottom:0">Geograph Coverage Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>{/if}</h2>
+<h2 style="margin-bottom:0">{if $recent}Recent{else}Geograph{/if} {if $depth && $token_zoomin}Depth{else}Coverage{/if} Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>{/if}</h2>
+{if $recent}<div>&middot;&nbsp;{if $token_zoomin}'Recent' is{else}<b>Only includes{/if} images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"}</b></div>{/if}
 </div>
 {if $mosaic_updated}
 	<p style="text-align:right; font-size:0.8em; margin-top:0">{$mosaic_updated}</p>
