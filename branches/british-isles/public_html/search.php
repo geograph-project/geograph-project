@@ -62,7 +62,7 @@ $displayclasses =  array(
 			'cooliris' => 'cooliris 3d wall',
 			'mooflow' => 'cover flow',
 			'text' => 'text list only',
-			'spelling' => 'spelling utility'
+			'spelling' => 'multi editor'
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
