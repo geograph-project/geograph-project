@@ -1075,4 +1075,9 @@ ADD  `sentparking` DATETIME NOT NULL ;
 
 #################################################
 
+alter table conference_registration add sendfinal datetime not null;
+
+#################################################
+
+
 
