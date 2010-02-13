@@ -28,9 +28,14 @@
 {elseif $submit2}
 	<p><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Submit another image</a></p>
 {/if}
+<ul>
+<li><a href="/submissions.php" rel="nofollow">Edit My Recent Submissions</a></li>
+</ul>
+
 <br/><br/><br/><br/>
 
 <p><i>All images assigned an ID number have been successfully uploaded. Please do not resubmit those images, only the failures.</i></p>
+
 
 {/dynamic} 
 

@@ -18,7 +18,7 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		
 		
-		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="create ticket"/>{if $is_mod || $user->user_id == $image->user_id}
+		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="continue &gt;"/>{if $is_mod || $user->user_id == $image->user_id}
 		<br/><a href="#" onclick="show_tree('share{$image->gridimage_id}'); document.getElementById('shareframe{$image->gridimage_id}').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr={$image->grid_reference}';return false;" id="hideshare{$image->gridimage_id}" style="font-size:0.7em">Shared Descriptions</a>
 		{/if}
 		</div>

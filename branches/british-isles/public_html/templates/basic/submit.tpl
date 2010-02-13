@@ -582,6 +582,11 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 
 <p><a title="submit another photo" href="/submit.php">Submit another photo...</a></p>
+
+<ul>
+<li><a href="/submissions.php" rel="nofollow">Edit My Recent Submissions</a></li>
+</ul>
+
 {/if}
 
 {if $step eq 6}

@@ -59,8 +59,8 @@ $style = $USER->getStyle();
 
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
-	$smarty->cache_lifetime = 600; //10min cache
-	customExpiresHeader(360,false,true);
+	$smarty->cache_lifetime = 300;
+	customExpiresHeader(300,false,true);
 }
 
 $smarty->assign('maincontentclass', 'content_photo'.$style);
