@@ -96,7 +96,7 @@ if (!empty($_GET['action']))
 				$entry_id = intval($_GET['entry_id']);
 				$data = $db->getAll("SELECT * FROM conference_registration WHERE cancelled = 0 AND entry_id = $entry_id");
 			} else {
-				$data = $db->getAll("SELECT * FROM conference_registration WHERE confirmed > 0 AND Parking = 'Unknown' AND sentparking = 0 LIMIT 10");
+				$data = $db->getAll("SELECT * FROM conference_registration WHERE cancelled = 0 AND confirmed > 0 AND Parking = 'Unknown' AND sentparking = 0 LIMIT 10");
 			}
 			
 			$from_email = "conference@barryhunter.co.uk";
@@ -150,7 +150,7 @@ if (!empty($_GET['action']))
 				$entry_id = intval($_GET['entry_id']);
 				$data = $db->getAll("SELECT * FROM conference_registration WHERE cancelled = 0 AND entry_id = $entry_id");
 			} else {
-				$data = $db->getAll("SELECT * FROM conference_registration WHERE confirmed > 0 AND sentfinal = 0 LIMIT 10");
+				$data = $db->getAll("SELECT * FROM conference_registration WHERE cancelled = 0 AND confirmed > 0 AND sentfinal = 0 LIMIT 10");
 			}
 			
 			$from_email = "conference@barryhunter.co.uk";
