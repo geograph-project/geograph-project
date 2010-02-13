@@ -4,10 +4,11 @@
 
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image}
-	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
-	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" target="editor" style="display:inline">
+	 <div style="border-top: 2px solid lightgrey; padding-top:3px;">
+	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="display:inline">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+		<br/><div style="font-size:0.6em;">[[[{$image->gridimage_id}]]]</div>
 	  </div>
 	  <div style="float:left; position:relative">
 		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/></a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]
@@ -18,8 +19,8 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		
 		
-		<div>{if $image->comment}<textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea>{/if}<input type="submit" name="create" value="continue &gt;"/>{if $is_mod || $user->user_id == $image->user_id}
-		<br/><a href="#" onclick="show_tree('share{$image->gridimage_id}'); document.getElementById('shareframe{$image->gridimage_id}').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr={$image->grid_reference}';return false;" id="hideshare{$image->gridimage_id}" style="font-size:0.7em">Shared Descriptions</a>
+		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="continue &gt;"/>{if $is_mod || $user->user_id == $image->user_id}
+		<br/><span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]
 		{/if}
 		</div>
 	  </div><br style="clear:both;"/>
@@ -49,6 +50,34 @@
 	{if $engine->results}
 	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 	{/if}
+
+<script type="text/javascript">
+{literal}
+function open_shared(gid,gr,extra) {
+	show_tree('share'+gid);
+	
+	if (extra == '&tab=suggestions') {
+		var thatForm = document.forms['form'+gid];
+	
+		if (thatForm.elements['title']) {
+			str = thatForm.elements['title'].value;
+		}
+		if (thatForm.elements['comment']) {
+			str = str + ' '+ thatForm.elements['comment'].value;
+		}
+		if (thatForm.elements['imageclass']) {
+			str = str + ' '+ thatForm.elements['imageclass'].value;
+		}
+		
+		extra= extra + "&corpus="+encodeURIComponent(str.replace(/[\r\n]+/,' '));
+	}
+	
+	
+	document.getElementById('shareframe'+gid).src='/submit_snippet.php?gridimage_id='+gid+'&gr='+gr+extra;
+	return false;
+}
+{/literal}
+</script>
 {else}
 	{include file="_search_noresults.tpl"}
 {/if}
