@@ -235,7 +235,7 @@
 		{if $user->user_id eq $profile->user_id}
 			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View all your image titles as a <i>Wordle</i>"}</li>
 			<li><b>Change Requests</b>: <a href="/tickets.php" rel="nofollow">View Recent Tickets</a></li>
-			<li><b>Change Requests</b>: <a href="/submissions.php" rel="nofollow">Edit My Recent Submissions</a></li>
+			<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit My Recent Submissions</a></li>
 		{/if}
 	</ul>
 	{if $user->user_id eq $profile->user_id}

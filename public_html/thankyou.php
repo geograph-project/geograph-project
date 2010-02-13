@@ -21,6 +21,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
  
+require_once('geograph/functions.inc.php');
  customExpiresHeader(86400*180,true);
  
 ?>
@@ -30,6 +31,6 @@
 </head>
 <body>
 <h2>Thank You</h2>
-<p>The result of your request has been saved</p>
+<p>The result of your request has been saved. You may <a href="javascript:window.close();">close this window/tab</a>.</p>
 </body>
 </html>
