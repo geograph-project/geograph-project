@@ -143,6 +143,76 @@ if (!empty($_GET['action']))
 			
 			break;
 			
+		case 'sendfinalemail':
+			$USER->mustHavePerm('admin');
+			
+			if (!empty($_GET['entry_id'])) {
+				$entry_id = intval($_GET['entry_id']);
+				$data = $db->getAll("SELECT * FROM conference_registration WHERE cancelled = 0 AND entry_id = $entry_id");
+			} else {
+				$data = $db->getAll("SELECT * FROM conference_registration WHERE confirmed > 0 AND sentfinal = 0 LIMIT 10");
+			}
+			
+			$from_email = "conference@barryhunter.co.uk";
+			$from_name = "Geograph Conference";
+			
+			foreach ($data as $idx => $row) {
+				
+				$email = $row['Email'];
+				$subject = "[Geograph] Conference Details";
+				$body = "Dear {$row['Name']},\n\n";
+				
+				$body .= "Just a quick message to confirm a few details. The article linked below has been updated with timing details for the day, as well as instructions on how to get there.\n\n";
+				
+				$body = wordwrap($body);
+				
+				$body .= "http://geograph.org.uk/article/First-Geograph-Conference-17th-Feb-2010-in-Southampton\n\n";
+				
+				$body .= "or via a short url: http://bit.ly/d5KEZX\n\n";
+				
+				$body .= "This forum thread also has a few updates:\n";
+				
+				$body .= "http://geograph.org.uk/discuss/?action=vthread&topic=11552\n\n";
+				
+				$body .= "This forum thread has a few more details about meeting up:\n";
+								
+				$body .= "http://geograph.org.uk/discuss/?action=vthread&topic=11462\n\n";
+								
+				$body .= "If you need to update your registration, please do so here:\n\n";
+				
+				$token=new Token;
+				$token->magic = md5($CONF['photo_hashing_secret'].$CONF['register_confirmation_secret']);
+				$token->setValue("eid", intval($row['entry_id']));
+				$token = $token->getToken();
+	
+				$body .= "http://{$_SERVER['HTTP_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
+							
+				$body2.="Look forward to seeing you there!\n\n";
+				$body2.="Kind Regards,\n\n";
+				$body2.="Barry\non behalf of the Geograph Team\n\n";
+				
+				$body = $body.wordwrap($body2);
+				
+				
+				if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+				{
+					$db->query("UPDATE conference_registration SET sentfinal = NOW() WHERE entry_id = {$row['entry_id']}");
+
+					print "SENT TO $email<br/>";
+				}
+				else 
+				{
+					print "SEND TO $email FAILED<br/>";
+					
+				}
+				
+			}
+			
+			print "<hr/>DONE";
+			exit;
+			
+			break;
+			
 		case 'sendspeakeremail':
 			$USER->mustHavePerm('admin');
 			
