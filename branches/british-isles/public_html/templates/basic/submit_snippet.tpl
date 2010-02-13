@@ -119,7 +119,7 @@ Within radius:{if $centisquare}
 			<input type="submit" name="add[{$item.snippet_id}]" value="Use this Description" style="background-color:lightgreen"/>
 		</div>
 
-		<a href="/snippet/{$item.snippet_id}" target="_blank"><b>{$item.title|escape:'html'|default:'<span style=color:gray>untitled description</span>'}</b></a> {if $item.grid_reference && $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
+		<a href="/snippet/{$item.snippet_id}" target="_blank"><b>{$item.title|escape:'html'|default:'<span style=color:gray>untitled description</span>'}</b></a> {if $item.grid_reference && $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if} (<a href="javascript:void(document.theForm.elements['add[{$item.snippet_id}]'].click())" style="color:green">use</a>)<br/>
 		<div style="font-size:0.7em">{$item.comment|escape:'html'|truncate:250:' (more...)'}</div>
 
 		<br style="clear:both"/>
@@ -129,7 +129,7 @@ Within radius:{if $centisquare}
 	{if $empty}
 	<p style="margin:4px"><i>please specify some keywords{if $grid_reference}, or choose a smaller radius{/if}</i></p><br/>
 	{else}
-	<p style="margin:4px"><i>No shared descriptions found{if $grid_reference && ($radius == 1 || !$radius)} in {$grid_reference}{/if}{if $q}, matching [{$q|escape:'html'}]{/if}, create your own!</i></p><br/>
+	<p style="margin:4px"><i>No shared descriptions found{if $grid_reference && ($radius == 1 || !$radius)} in {$grid_reference}{/if}{if $q}, matching [{$q|escape:'html'}]{/if}, <a href="#" onclick="show_tree('create');return false">create your own</a>!</i></p><br/>
 	{/if}
 {/foreach}
 {if $query_info}

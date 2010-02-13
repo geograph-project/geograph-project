@@ -159,6 +159,43 @@ class RestAPI
 		}
 	}
 	
+	function handleSnippet()
+	{
+		$ids = $this->params[0];
+		
+		if (preg_match('/^\d+(,\d+)*$/',$ids))
+		{
+			$db = GeographDatabaseConnection(true);
+
+			//the param has already been validated to be save by the regexp
+			
+			$images = $db->getAssoc("SELECT gridimage_id,COUNT(*) AS count FROM gridimage_snippet WHERE gridimage_id IN ($ids) GROUP BY gridimage_id"); 
+			
+			$this->beginResponse();
+
+			if ($this->output=='json') {
+
+				require_once '3rdparty/JSON.php';
+				$json = new Services_JSON();
+
+				print $json->encode($images);
+			} else {
+				echo '<status state="ok"/>';
+
+				foreach ($images as $id => $count) {
+					echo "<image id=\"$id\" snippets=\"$count\"/>";
+				}
+			}
+
+			$this->endResponse();
+		}
+		else
+		{
+			$this->error("Invalid Request");
+		}
+		
+	}
+	
 	function handleGridrefMore()
 	{
 		return $this->handleGridref(true);
