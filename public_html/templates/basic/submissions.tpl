@@ -22,7 +22,7 @@
 		
 		
 		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="continue &gt;"/>{if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="apply changes"/>{/if}{if $is_mod || $user->user_id == $image->user_id}
-		<br/><span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description</b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]
+		<br/><span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]
 		{/if}
 		</div>
 	  </div><br style="clear:both;"/>
@@ -30,7 +30,7 @@
 		  <div class="interestBox" id="showshare{$image->gridimage_id}" style="display:none">
 			<iframe src="about:blank" height="400" width="100%" id="shareframe{$image->gridimage_id}">
 			</iframe>
-			<div><a href="#" onclick="hide_tree('share{$image->gridimage_id}');return false">- Close <i>Shared Descriptions</I> box</a> ({newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"})</div>
+			<div><a href="#" onclick="hide_tree('share{$image->gridimage_id}');loadSnippetCount(true);return false">- Close <i>Shared Descriptions</I> box</a> ({newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"})</div>
 		  </div>
 		{/if}
 	  </form><br/>
@@ -87,6 +87,33 @@ function open_shared(gid,gr,extra) {
 	document.getElementById('shareframe'+gid).src='/submit_snippet.php?gridimage_id='+gid+'&gr='+gr+extra;
 	return false;
 }
+
+
+function loadSnippetCount(random) {
+	var ids = new Array();
+	{/literal}
+	{foreach from=$images item=image}
+		ids.push({$image->gridimage_id});
+	{/foreach}
+	{literal}
+	var script = document.createElement("script");
+	script.setAttribute("src", "/api/Snippet/"+ids.join(',')+'?output=json&callback=showSnippetCount'+(random?"&rnd="+Math.random():''));
+	script.setAttribute("type", "text/javascript");
+	document.documentElement.firstChild.appendChild(script);
+}
+function showSnippetCount(data) {
+	if (data.error) {
+		alert(data.error);
+	} else {
+
+		for(var gid in data) {
+			document.getElementById('c'+gid).innerHTML = " ["+data[gid]+"]";
+			document.getElementById('c'+gid).style.backgroundColor='pink';
+		}
+	}
+
+}
+ AttachEvent(window,'load',loadSnippetCount,false);
 {/literal}
 </script>
 
