@@ -39,6 +39,35 @@
   {if $image->comment}
   <div class="caption" style="border:1px dotted lightgrey;">{$image->current_comment|escape:'html'|geographlinks}</div>
   {/if}
+  {if $image->snippet_count}
+	{if !$image->comment && $image->snippet_count == 1}
+		{assign var="item" value=$image->snippets[0]}
+		<div class="caption640">
+		{$item.comment|escape:'html'|nl2br|geographlinks}{if $item.title}<br/><br/>
+		<small>See other images of <a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></small>{/if}
+		</div>
+	{else}
+		{foreach from=$image->snippets item=item name=used}
+			{if !$image->snippets_as_ref && !$item.comment}
+				<div class="caption640 searchresults"><br/>
+				<small>See other images of <a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></small>
+				</div>
+			{else}
+				<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
+				{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small>{/if}
+				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks}</blockquote>
+				</div>
+			{/if}
+		{/foreach}
+	{/if}
+	{literal}
+	<script type="text/javascript">
+	 AttachEvent(window,'load',function () {
+			collapseSnippets({/literal}{$image->snippet_count}{literal});
+		},false);
+	</script>
+	{/literal}
+  {/if}
   <div class="statuscaption">classification:
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
    {if $image->mod_realname}(moderator: <a href="/profile/{$image->moderator_id}">{$image->mod_realname}</a>){/if}</div>
@@ -402,9 +431,6 @@
 		<script type="text/javascript" src="{"/mapping.js"|revision}"></script>
 	{/if}
 	
- 		
-
-
 <form method="post" action="/editimage.php#form" name="theForm" onsubmit="this.imageclass.disabled=false" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0; border-top:none">
 <input type="hidden" name="id" value="{$image->gridimage_id}"/>
 

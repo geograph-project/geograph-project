@@ -375,9 +375,13 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 	$smarty->assign_by_ref('results',$results);
 } 
 
-if ($CONF['sphinx_host']) {
+if (!empty($CONF['sphinx_host'])) {
 	$smarty->assign('sphinx',1);
 }
+if (!empty($_GET['create'])) {
+	$smarty->assign('create',1);
+}
+
 
 
 

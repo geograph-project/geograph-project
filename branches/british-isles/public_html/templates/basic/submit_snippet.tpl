@@ -1,11 +1,11 @@
 {assign var="page_title" value="Snippets"}
 {include file="_basic_begin.tpl"}
 {dynamic}
-<form method="post" action="#top" style="background-color:#f0f0f0;" name="theForm">
+<form method="post" action="{$script_name}" style="background-color:#f0f0f0;" name="theForm">
 <input type="hidden" name="gridimage_id" value="{$gridimage_id}" />
 <input type="hidden" name="gr" value="{$gr|escape:'html'}" />
 
-<div id="showcreate" style="display:none">
+<div id="showcreate" {if !$create} style="display:none"{/if}>
 	<fieldset>
 
 		<div class="field">
@@ -44,14 +44,14 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 			{if $errors.grid_reference}</div>{/if}
 		</div>
 		
-		<input type="submit" name="create" value="Create Shared Description"/>
+		<input type="submit" name="create" value="Create Shared Description"/> &nbsp; <small>[ <a href="javascript:void(hide_tree('create'))">Cancel / Close</a> ]</small>
 		
 		<div class="fieldnotes" style="font-size:0.7em;color:gray">Idea: Even if you leave the description itself blank, a 'shared description' can still be used as a way to link a series of images into 'Collection'.</div>
 		
 	</fieldset>
 </div>
 
-<div class="interestBox" style="font-size:0.8em" id="hidecreate">
+<div class="interestBox" style="font-size:0.8em{if $create};display:none{/if}" id="hidecreate">
 	<div style="float:right;text-align:center;position:relative;background-color:white;padding:3px">
 		<input type="button" value="Create New Shared Description" onclick="show_tree('create')" style="background-color:lightgreen"/><br/>
 		<a href="/snippets.php?gr={$gr|escape:'html'}" target="_blank">Edit nearby Shared Descriptions</a>
@@ -64,6 +64,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	<br/>&middot; <b>{newwin href="/article/Shared-Descriptions" text="Read more about Shared Descriptions here"}</b>
 </div>
 {if $used}
+<div style="background-color:lightgreen">
 <div style="font-size:0.7em;color:green;border-top:2px solid gray;padding:2px">&nbsp;<b>Shared Descriptions attached to this image</b>:</div>
 {foreach from=$used item=item name=used}
 	
@@ -82,6 +83,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {foreachelse}
 	<p style="margin:4px;margin-bottom:10px"><i><b>None</b>. <small>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</small></i></p>
 {/foreach}
+</div>
 {/if}
 
 <div style="font-size:0.7em;color:green;border-top:2px solid gray;padding:2px">&nbsp;<b>Shared Descriptions available</b>: 
