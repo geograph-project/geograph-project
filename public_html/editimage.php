@@ -298,7 +298,70 @@ if (isset($_REQUEST['id']))
 		}
 
 		//save changes?
-		if (isset($_POST['title']) && !isset($_POST['create']))
+		if (isset($_POST['title']) && isset($_POST['apply']))
+		{
+			$ok=true;
+			$error=array();
+
+			/////////////////////////////////////////////////////////////
+			// STEP 1 - first we simply validate what'd been passed
+
+			//get and parse the form fields
+			$title=trim(stripslashes($_POST['title']));
+			$title=strip_tags($title);
+			if (strlen($title)==0)
+			{
+				$ok=false;
+				$error['title']="Please specify an image title";
+			}
+			
+			$comment=trim(stripslashes($_POST['comment']));
+			$comment=strip_tags($comment);
+			
+			/////////////////////////////////////////////////////////////
+			// STEP 2 - change control
+
+			if ($isowner && $ok)
+			{
+				//we really need this not be interupted
+				ignore_user_abort(TRUE);
+				set_time_limit(3600);
+
+				//create new change control object
+				$ticket=new GridImageTroubleTicket();
+				$ticket->setSuggester($USER->user_id,$USER->realname);
+			
+				$ticket->setImage($_REQUEST['id']);
+				$ticket->setPublic('everyone');
+				
+				
+				$ticket->setNotes("Automatic ticket - recording changes applied directly");
+
+				//attach the various field changes
+				$ticket->updateField("title", $image->title, $title, $moderated["title"]);
+				$ticket->updateField("comment", $image->comment, $comment, $moderated["comment"]);
+				
+				$status=$ticket->commit();
+				
+				//clear any caches involving this photo
+				$ab=floor($image->gridimage_id/10000);
+				$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
+
+				//clear user specific stuff like profile page
+				$ab=floor($image->user_id/10000);
+				$smarty->clear_cache(null, "user$ab|{$image->user_id}");
+				
+				header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
+					
+			}
+			
+			/////////////////////////////////////////////////////////////
+			// fall back...
+			
+			#NOTE: we used 'create' as the fallback - it handles submission of title and comment ONLY - if add other fields to apply, will need to make this cope. 
+			$_POST['create'] = true;
+		} 
+		elseif (isset($_POST['title']) && !isset($_POST['create']))
 		{
 			$ok=true;
 			$error=array();
@@ -596,6 +659,7 @@ if (isset($_REQUEST['id']))
 				$smarty->assign_by_ref('opentickets', $openTickets);
 
 			$image->lookupModerator();
+			$image->loadSnippets();
 		}
 		
 		
