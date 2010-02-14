@@ -341,18 +341,22 @@ if (isset($_REQUEST['id']))
 				$ticket->updateField("title", $image->title, $title, $moderated["title"]);
 				$ticket->updateField("comment", $image->comment, $comment, $moderated["comment"]);
 				
-				$status=$ticket->commit();
-				
-				//clear any caches involving this photo
-				$ab=floor($image->gridimage_id/10000);
-				$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
+				if (!empty($ticket->changes) && count($ticket->changes)) {
+					$status=$ticket->commit();
 
-				//clear user specific stuff like profile page
-				$ab=floor($image->user_id/10000);
-				$smarty->clear_cache(null, "user$ab|{$image->user_id}");
-				
-				header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
-					
+					//clear any caches involving this photo
+					$ab=floor($image->gridimage_id/10000);
+					$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
+
+					//clear user specific stuff like profile page
+					$ab=floor($image->user_id/10000);
+					$smarty->clear_cache(null, "user$ab|{$image->user_id}");
+
+					header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
+				} else {
+					header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#nochanges&id={$_REQUEST['id']}");
+				}
+				exit;
 			}
 			
 			/////////////////////////////////////////////////////////////
