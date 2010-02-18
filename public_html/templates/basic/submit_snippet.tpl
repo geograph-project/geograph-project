@@ -1,7 +1,7 @@
 {assign var="page_title" value="Snippets"}
 {include file="_basic_begin.tpl"}
 {dynamic}
-<form method="post" action="{$script_name}" style="background-color:#f0f0f0;" name="theForm">
+<form method="post" action="{$script_name}?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}" style="background-color:#f0f0f0;" name="theForm">
 <input type="hidden" name="gridimage_id" value="{$gridimage_id}" />
 <input type="hidden" name="gr" value="{$gr|escape:'html'}" />
 
