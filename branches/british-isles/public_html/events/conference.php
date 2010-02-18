@@ -35,7 +35,7 @@ $prev_fetch_mode = $ADODB_FETCH_MODE;
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
-if (!empty($_GET['action'])) 
+if (!empty($_GET['action'])) {
 	switch ($_GET['action']) {
 		case 'listall':
 			$USER->mustHavePerm('admin');
@@ -430,7 +430,15 @@ if (!empty($_GET['action']))
 			break;
 		
 	}
+} else {
+	$USER->mustHavePerm('basic');
 
+	$data = $db->getAll("SELECT cr.*,u.realname,u.nickname,user_id FROM conference_registration cr LEFT JOIN user u ON (cr.Email=u.email) WHERE cancelled = 0 AND confirmed > 0 AND partipation != '' ORDER BY Last");
+
+	$smarty->assign_by_ref("data",$data);
+			
+	$template = "event_conference_attendees.tpl";
+}
 
 
 

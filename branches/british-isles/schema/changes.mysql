@@ -1080,4 +1080,11 @@ alter table conference_registration add sendfinal datetime not null;
 #################################################
 
 
+alter table conference_registration add partipation varchar(64) not null default '';
+
+update conference_registration set partipation = 'Attendee' where cancelled = 0 AND confirmed > 0;
+
+
+#################################################
+
 
