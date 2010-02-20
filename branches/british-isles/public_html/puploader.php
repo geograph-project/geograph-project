@@ -114,7 +114,13 @@ if (isset($_GET['success'])) {
 		if ($_POST['imagetaken'][$key] != '0000-00-00') {
 			$_SESSION['last_imagetaken'] = $_POST['imagetaken'][$key];
 		}
-		
+		if (!empty($_POST['grid_reference']) && $square->natgrlen > 4) {
+			$_SESSION['last_grid_reference'] = $_POST['grid_reference'];
+		}
+		if (!empty($_POST['photographer_gridref'])) {
+			$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
+		}
+				
 		if ($memcache->valid) {
 			//the submit list
 			$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");

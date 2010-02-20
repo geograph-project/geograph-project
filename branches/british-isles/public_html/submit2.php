@@ -218,6 +218,14 @@ if (isset($_FILES['jpeg_exif']))
 		if ($_POST['imagetaken'][$key] != '0000-00-00') {
 			$_SESSION['last_imagetaken'] = $_POST['imagetaken'][$key];
 		}
+		if (!empty($_POST['grid_reference']) && $square->natgrlen > 4) {
+			$_SESSION['last_grid_reference'] = $_POST['grid_reference'];
+		}
+		if (!empty($_POST['photographer_gridref'])) {
+			$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
+		}
+						
+				
 		
 		$clear_cache[$square->gridsquare_id] = 1;
 	}

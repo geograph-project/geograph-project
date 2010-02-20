@@ -181,13 +181,13 @@ geographing</a> first.</p>
 		<div>
 	{/if}
 		{if $imagecount gt 0}
-			<p style="color:#440000">We currently have 
+			<div style="color:#440000">We currently have 
 			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if} 
-			uploaded for {newwin title="View Images for `$gridref`" href="/gridref/`$gridref`" text=`$gridref`}, add yours now!</p>
+			uploaded for {newwin title="View Images for `$gridref`" href="/gridref/`$gridref`" text=`$gridref`}, add yours now!</div>
 		{else}
 			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
-
+		<hr/>
 		{if $transfer_id}
 		<img src="{$preview_url}" width="{$preview_width*0.2|string_format:"%d"}" height="{$preview_height*0.2|string_format:"%d"}" alt="low resolution reminder image"/>	
 		<input name="transfer_id" type="hidden" value="{$transfer_id|escape:"html"}"/>
@@ -200,27 +200,40 @@ geographing</a> first.</p>
 		<input id="jpeg" name="jpeg" type="file" />
 		
 		{/if}
-		<div><small><small><i>If your image is over 640 pixels in either direction, <b>you will be offered chance to upload the largest version</b> <sup style="color:red">new!</sup>. <br/>If you have presized please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>
+		<div><small><small><i>If your image is over 640 pixels in either direction, <b>you will be offered chance to upload the largest version</b>. <br/>If you have presized to 640px please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
-		<br />
-		<p>You might like to check you've selected the correct square<br/> by
-		viewing the Modern {getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}</p>
-
+		<hr/>
+		
 		{if $reference_index == 2} 
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
-		<h4><b>Grid References:</b> (recommended)</h4>
+		<div style="float:right;position:relative">
+		{getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}
+		</div>
+		
+		{if $last_grid_reference || $last_photographer_gridref}
+			<div style="font-size:0.8em">
+			<a href="javascript:{if $last_photographer_gridref}void(document.theForm.photographer_gridref.value = '{$last_photographer_gridref}');void(updateMapMarker(document.theForm.photographer_gridref,false));{/if}{if $last_grid_reference}void(document.theForm.grid_reference.value = '{$last_grid_reference}');void(updateMapMarker(document.theForm.grid_reference,false));{/if}">Copy from Last Submission</a> <sup style="color:red">New</sup></div>
+		{else}
+		
+		{/if}
+		
 		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}</p>
-	
+		
+
+		
 		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
 		
-		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a> <span id="dist_message" style="padding-left:20px"></span></span>
+		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a> <span id="dist_message" style="padding-left:20px"></span>
+		</span>
 		
 		{if $rastermap->enabled}
 			<br/><br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference ({newwin href="/help/map_precision" text="Explanation"})</label>
 		{/if}
 		</p>
+	
+		<hr/>
 	
 		<p><label for="view_direction"><b>View Direction</b></label> <small>(photographer facing)</small><br/>
 		<select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
@@ -228,6 +241,8 @@ geographing</a> first.</p>
 				<option value="{$key}"{if $key%45!=0} style="color:gray"{/if}{if $key==$view_direction} selected="selected"{/if}>{$value}</option>
 			{/foreach}
 		</select></p>
+		
+		<hr/>
 	</div>
 
 	{if $rastermap->enabled}
@@ -645,8 +660,11 @@ have problems
 {/if}
 
 {if $preview_url}
-
+{if !$enable_forums}
+	<div style="position:fixed;right:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
+{else}
 	<div style="position:fixed;left:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
+{/if}
 	<div id="previewInner"></div></div>
 
 <script type="text/javascript">
