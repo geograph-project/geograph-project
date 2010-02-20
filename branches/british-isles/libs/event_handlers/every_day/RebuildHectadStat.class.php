@@ -43,6 +43,15 @@ class RebuildHectadStat extends EventHandler
 		
 		$db=&$this->_getDB();
 		
+		$data = $db->getAll("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
+		
+		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*60*3)) {
+			//if a recent table give up this time. It 
+			
+			return false;
+		} 
+		
+		
 		$db->Execute("CREATE TABLE IF NOT EXISTS hectad_stat_tmp LIKE hectad_stat");
 		
 		$db->Execute("TRUNCATE hectad_stat_tmp"); //just incase we inheritied a old table.
@@ -91,9 +100,14 @@ class RebuildHectadStat extends EventHandler
 		
 		$db->Execute("ALTER TABLE hectad_stat_tmp ENABLE KEYS");
 		
-		$db->Execute("DROP TABLE IF EXISTS hectad_stat");
 		
-		$db->Execute("RENAME TABLE hectad_stat_tmp TO hectad_stat");
+		$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+				
+		//done in one operation so there is always a hectad_stat table, even if the tmp fails 
+		$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old, hectad_stat_tmp TO hectad_stat");
+		
+		$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+		
 		
 		//return true to signal completed processing
 		//return false to have another attempt later
