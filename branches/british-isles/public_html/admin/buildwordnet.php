@@ -31,7 +31,11 @@ $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
-
+	//lets hobble this!
+	header("HTTP/1.1 503 Service Unavailable");
+	$smarty->assign('searchq',stripslashes($_GET['q']));
+	$smarty->display('function_disabled.tpl');
+	exit;
 
 
 	//this takes a long time, so we output a header first of all
