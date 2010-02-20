@@ -463,6 +463,12 @@ if (isset($_POST['gridsquare']))
 				if ($_POST['imagetaken'] != '0000-00-00') {
 					$_SESSION['last_imagetaken'] = $_POST['imagetaken'];
 				}
+				if (!empty($_POST['grid_reference']) && $square->natgrlen > 4) {
+					$_SESSION['last_grid_reference'] = $_POST['grid_reference'];
+				}
+				if (!empty($_POST['photographer_gridref'])) {
+					$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
+				}
 				
 				$clear_cache = 1;
 				
@@ -623,6 +629,12 @@ if (isset($_POST['gridsquare']))
 		}
 		if (isset($_SESSION['last_imagetaken'])) {
 			$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
+		}
+		if (isset($_SESSION['last_grid_reference'])) {
+			$smarty->assign('last_grid_reference', $_SESSION['last_grid_reference']);
+		}
+		if (isset($_SESSION['last_photographer_gridref'])) {
+			$smarty->assign('last_photographer_gridref', $_SESSION['last_photographer_gridref']);
 		}
 	}
 	else

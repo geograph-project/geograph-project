@@ -786,6 +786,7 @@ class GeographUser
 				use_autocomplete=%s,
 				message_sig=%s,
 				expand_about=%d,
+				upload_size=%d,
 				password=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
@@ -804,6 +805,7 @@ class GeographUser
 				empty($profile['use_autocomplete'])?0:1,
 				$db->Quote(stripslashes($profile['message_sig'])),
 				intval($profile['expand_about']),
+				intval($profile['upload_size']),
 				$db->Quote($password),
 				$this->user_id
 				);
@@ -840,10 +842,11 @@ class GeographUser
 				$this->use_age_group=stripslashes($profile['use_age_group']);
 				$this->grid_reference=$gs->grid_reference;	
 				$this->ticket_public=stripslashes($profile['ticket_public']);
-				$this->ticket_option=stripslashes($profile['ticket_option']);				
-				$this->use_autocomplete=stripslashes($profile['use_autocomplete']);				
+				$this->ticket_option=stripslashes($profile['ticket_option']);
+				$this->use_autocomplete=stripslashes($profile['use_autocomplete']);
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->expand_about=intval($profile['expand_about']);
+				$this->upload_size=intval($profile['upload_size']);
 				$this->_forumUpdateProfile();
 				$this->_forumLogin();
 				

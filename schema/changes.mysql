@@ -1088,3 +1088,8 @@ update conference_registration set partipation = 'Attendee' where cancelled = 0 
 #################################################
 
 
+ALTER TABLE  `user` ADD  `upload_size` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';
+
+
+#################################################
+
