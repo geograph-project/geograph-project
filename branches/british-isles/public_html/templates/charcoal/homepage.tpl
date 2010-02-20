@@ -74,11 +74,7 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 <div style="width:370px;float:left;margin-right:14px;">
 
-{box colour="333" style="margin-bottom:12px;"}
-<div class="titlebox">
-<h1>Site Guide</h1>
-</div>
-{/box}
+
 
 {box colour="f4f4f4"}
 <div class="infobox_alt">
@@ -96,11 +92,11 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 <h2>Use and re-use our images!</h2>
 <ul>
 	<li><a href="/kml.php" title="KML Exports">Geograph with <b>Google Earth</b> and <b>Google Maps</b></a></li>
-	<li><a href="/help/sitemap#software" title="Geograph Page List"><b>Other ways</b> to can use this faboulous resource</a></li>
-	<li><a href="/activities/" title="Activites">View images in our <b>Activities section</b></a><sup style="color:red">New!</sup></li>
+	<li><a href="/help/sitemap#software" title="Geograph Page List"><b>Other ways</b> to use this faboulous resource</a></li>
+	<li><a href="/activities/" title="Activites">View images in our <b>Activities section</b></a></li>
 	<li><a href="/teachers/" title="Education Area">Geograph for <b>teachers</b></a><br/><br/></li>
 	
-	<li>All photos are licenced for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a></li>
+	<li>All our photos are licenced for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a></li>
 </ul>
 
 
@@ -114,28 +110,9 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	<li><a href="/discuss/" title=""><b>Discuss</b> the project on our forums</a></li>
 	{/if}
 	<li><a href="/help/guide" title="">view our <b>submission criteria</b></a></li>
-	
-</ul>
-
-
-<h2>Statistics Junkie?</h2>
-<ul>
-
-	<li><a href="/numbers.php" title="">View a <b>summary</b></a></li>
-	<li><a href="/statistics.php" title="">More <b>in-depth Statistics</b></a></li>
-	<li><a href="/help/sitemap#stats" title="">Further Statistics</a></li>
-	<li><a href="/statistics/moversboard.php" title="">View the current <b>leaderboard</b></a></li>
-</ul>
-
-
-<h2>Need Help?</h2>
-<ul>
-
-	<li><a href="/faq.php" title="">View our Frequently Asked Questions</a></li>
-	<li><a href="/help/credits" title="">Who runs the site</a></li>
-	<li><a href="/contact.php" title="">Contact Us</a></li>
 
 </ul>
+
 </div>
 {/box}
 
@@ -143,41 +120,36 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 <div style="width:370px;float:left;">
 
-	{box colour="333" style="margin-bottom:12px;"}
-	<div class="titlebox">
-	<h1>One MILLION images!</h1>
-	</div>
-	{/box}
-	
+{box colour="333" style="margin-bottom:12px;"}
+<div class="titlebox">
+<h1>Site Guide</h1>
+</div>
+{/box}
+
 	{box colour="f4f4f4"}
 	<div class="infobox_alt">
 
-	<div style="float:right; width:150px; text-align:center">
-<a href="/photo/1006884" target="_blank" title="NN7421 : Minor road near Aberuchill by Dr Richard Murray"><img alt="NN7421 : Minor road near Aberuchill by Dr Richard Murray" 
-src="http://s0.geograph.org.uk/geophotos/01/00/68/1006884_2adf8fc7_120x120.jpg" width="120" height="83" /></a><br/>
-	<small>Minor road near Aberuchill<br/><a href="/gridref/NN7421">NN7421</a><br/> by <a href="/profile/21212">Dr Richard Murray</a></small>	
+
+
+	<h2>Statistics Junkie?</h2>
+	<ul>
+
+		<li><a href="/numbers.php" title="">View a <b>summary</b></a></li>
+		<li><a href="/statistics.php" title="">More <b>in-depth Statistics</b></a></li>
+		<li><a href="/help/sitemap#stats" title="">Further Statistics</a></li>
+		<li><a href="/statistics/moversboard.php" title="">View the current <b>leaderboard</b></a></li>
+	</ul>
+
+
+	<h2>Need Help?</h2>
+	<ul>
+
+		<li><a href="/faq.php" title="">View our Frequently Asked Questions</a></li>
+		<li><a href="/help/credits" title="">Who runs the site</a></li>
+		<li><a href="/contact.php" title="">Contact Us</a></li>
+
+	</ul>
 	</div>
-
-	<p>We have just passed 1 million images on the site!
- This is the image that took us over the 1,000,000 mark.</p>
-<p>
- Thanks to the <a href="/credits/">many contributors</a> that have made this milesone possible!</p>
-
-
-	<h2 style="clear:right">Welcome to the new look!</h2>
-	<p>We are still developing our new look which 
-	we hope will make Geograph easier and more fun
-	to use!</p>
-	
-	<p>While we make the transition, this beta site
-	may show some pages with elements a little out of
-	kilter, but we still welcome any <a href="/contact.php">feedback</a>.</p>
-	
-	<p>Kind regards</p>
-	
-	<p>The Geograph Team.</p>
-	</div>
-	
 	{/box}
 	
 	
