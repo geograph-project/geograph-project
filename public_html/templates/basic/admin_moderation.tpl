@@ -96,9 +96,16 @@
 	<br style="clear:left;"/>&nbsp;
 	
 	{if $apply} 
-		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php?apply=2">Finish my application</a> - we will contact you if a vacancy arrises. Please note that we however have a long waiting list!</div>
-	{/if}
-	{if !$moderator && !$remoderate}		
+		<div class="interestBox" style="padding-left:100px"><h2>Finish my application</h2>
+		
+		<form method="post" action="/admin/moderation.php?apply=2">
+		<b>Comments:</b> (for example why do you want to become a moderator)<br/>
+		<textarea name="comments" rows="8" cols="80"></textarea><br/>
+		<input type="submit" value="Finish my application"/>
+		</form>
+		
+		</div>
+	{elseif !$moderator && !$remoderate}
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a>
 		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
 	{elseif $remoderate}
