@@ -83,8 +83,8 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	$rss->geo = true;	
 } 
 
-$db=NewADOConnection($GLOBALS['DSN']);
-	
+$db=GeographDatabaseConnection(true);
+
 
 $sql="select snippet_id,title,comment,created,wgs84_lat,wgs84_long,realname
 from snippet
@@ -126,4 +126,4 @@ while (!$recordSet->EOF)
 
 $rss->saveFeed($format, $rssfile);
 
-?>
+
