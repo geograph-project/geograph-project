@@ -596,7 +596,7 @@ class GridImage
 		//only show on active images (non active images wont be in those tables anyway) 
 		if ($this->moderation_status != 'rejected' && $this->moderation_status != 'pending') { 
 		
-			$db=&$this->_getDB(false); 
+			$db=&$this->_getDB(30); 
 
 			//find articles
 			$this->collections = $db->CacheGetAll(3600*6,"
@@ -873,7 +873,7 @@ class GridImage
 			//fails quickly if not using memcached!
 			$size =& $memcache->name_get('is',$mkey);
 			if (!$size) {
-				$db=&$this->_getDB();
+				$db=&$this->_getDB(true);
 
 				$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
 				$size = $db->getRow("select width,height,0,0,original_width,original_height from gridimage_size where gridimage_id = {$this->gridimage_id}");
@@ -888,6 +888,9 @@ class GridImage
 					$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
 					
 					$origpath = $this->_getOriginalpath(true);
+					
+					$db=&$this->_getDB(false);
+					
 					if ($origpath!="/photos/error.jpg") {
 						$osize=getimagesize($_SERVER['DOCUMENT_ROOT'].$origpath);
 						$this->original_width = $size[4] = $osize[0];

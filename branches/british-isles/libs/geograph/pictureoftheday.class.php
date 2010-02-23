@@ -41,6 +41,15 @@ class PictureOfTheDay
 	var $gridimage_id;
 	var $width=381;
 	var $height=255;
+
+	function &_getDB($allow_readonly = false)
+	{
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		}
+		return $this->db;
+	}
 	
 	function PictureOfTheDay($w=381,$h=255)
 	{
@@ -50,12 +59,13 @@ class PictureOfTheDay
 	
 	function initToday()
 	{
-		$db=NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
+		$db=$this->_getDB(true);
 	
 		$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where showday=date(now())");
 		if (empty($gridimage_id))
 		{
+			$db=$this->_getDB(false);
+			
 			//get timestamp from db server
 			$now=$db->GetOne("select now()");
 			
