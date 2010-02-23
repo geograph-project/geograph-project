@@ -48,7 +48,7 @@ if (!empty($_REQUEST['gridimage_id'])) {
 	$smarty->assign('gridimage_id',$gid);
 }
 
-$db = GeographDatabaseConnection(false);
+$db = GeographDatabaseConnection(true);
 
 if (!empty($_REQUEST['edit'])) {
 
@@ -119,7 +119,10 @@ if (!empty($_REQUEST['edit'])) {
 		
 		if (!$errors && count($updates)) {
 		
-				
+			if (!is_object($db) || ($db->readonly) ) {
+				$db=GeographDatabaseConnection(false);
+			}
+		
 			$db->Execute("UPDATE snippet SET $point`".implode('` = ?,`',array_keys($updates)).'` = ? WHERE snippet_id = '.$snippet_id,array_values($updates));
 	
 			foreach ($updates as $key => $value) {
@@ -174,6 +177,10 @@ if (!empty($_REQUEST['edit'])) {
 	$where = '';
 	if (!$USER->hasPerm('moderator')) {
 		$where = " user_id = {$USER->user_id} AND ";
+	}
+	
+	if (!is_object($db) || ($db->readonly) ) {
+		$db=GeographDatabaseConnection(false);
 	}
 	
 	foreach ($_REQUEST['delete'] as $id => $text) {

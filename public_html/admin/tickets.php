@@ -29,7 +29,7 @@ $USER->mustHavePerm("ticketmod");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+$db = GeographDatabaseConnection(false);
 
 if (!empty($_GET['relinqush'])) {
 	$db->Execute("UPDATE user SET rights = REPLACE(rights,'ticketmod','') WHERE user_id = {$USER->user_id}");
@@ -275,7 +275,9 @@ if ($locked) {
 
 $smarty->assign('title', $title);
 
-$info = $db->getAssoc("select moderator_id>0,count(*) as c from gridimage_ticket where status in ('pending','open') and deferred < NOW() group by moderator_id=0");
+$db2 = GeographDatabaseConnection(true);
+
+$info = $db2->CacheGetAssoc(300,"select moderator_id>0,count(*) as c from gridimage_ticket where status in ('pending','open') and deferred < NOW() group by moderator_id=0");
 
 $types['pending'] .= " [~ {$info['0']}]";
 $types['open'] .= " [~ {$info['1']}]";
@@ -363,5 +365,4 @@ if (empty($_GET['locked'])) {
 $template = (!empty($_GET['sidebar']))?'admin_tickets_sidebar.tpl':'admin_tickets.tpl';
 $smarty->display($template);
 
-	
-?>
+

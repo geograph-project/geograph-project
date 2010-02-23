@@ -46,10 +46,9 @@ if (!empty($_GET['style'])) {
 	exit;
 }
 
-customGZipHandlerStart();
+#customGZipHandlerStart();
 
-$db = NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');   
+$db = GeographDatabaseConnection(false);
 
 $smarty = new GeographPage;
 
@@ -174,10 +173,10 @@ if (!empty($_GET['relinquish'])) {
 	$USER->mustHavePerm('basic');
 	
 	if ($_GET['apply'] == 2) {
-	
+		
 		$db->Execute("UPDATE user SET rights = CONCAT(rights,',traineemod') WHERE user_id = {$USER->user_id}");
 		
-		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			
+		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");
 		
 		$url = 'http://'.$_SERVER['HTTP_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
 		
@@ -218,7 +217,7 @@ Regards,
 	$USER->mustHavePerm('moderator');
 }
 
-
+	
 #############################
 
 //lock the table so nothing can happen in between! (leave others as READ so they dont get totally locked)
@@ -259,8 +258,10 @@ $recordSet->Close();
 # define the images to moderate
 
 if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remoderate'])) {
-
-	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
+	
+	$db2 = GeographDatabaseConnection(true);
+	
+	$count = $db2->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
 	if ($count['total'] == 0) {
 		$_GET['remoderate'] = 1;
 		$limit = 25;
@@ -447,7 +448,6 @@ $images->assignSmarty($smarty, 'unmoderated');
 //what style should we use?
 $style = $USER->getStyle();
 $smarty->assign('maincontentclass', 'content_photo'.$style);
-		
+
 $smarty->display('admin_moderation.tpl',$style);
-	
-?>
+

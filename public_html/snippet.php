@@ -50,7 +50,7 @@ $smarty->assign('maincontentclass', 'content_photo'.$style.'" style="padding:10p
 
 if (!$smarty->is_cached($template, $cacheid)) {
 
-	$db = GeographDatabaseConnection(false);
+	$db = GeographDatabaseConnection(true);
 
 
 	$data = $db->getRow("SELECT s.*,realname FROM snippet s LEFT JOIN user USING (user_id) WHERE snippet_id = $snippet_id AND enabled = 1");
