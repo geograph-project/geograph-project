@@ -690,6 +690,10 @@ class UploadManager
 			$this->cleanUp();
 		}
 		
+		//fire an event 
+		require_once('geograph/event.class.php');
+		new Event(EVENT_NEWPHOTO, "{$this->gridimage_id}");
+		
 		
 		//assign the snippets now we know the real id. 
 		$gid = crc32($this->upload_id)+4294967296;
