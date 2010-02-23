@@ -46,7 +46,7 @@ class RebuildHectadStat extends EventHandler
 		$data = $db->getAll("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
 		
 		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*60*3)) {
-			//if a recent table give up this time. It 
+			//if a recent table give up this time. It might still be running. 
 			
 			return false;
 		} 
