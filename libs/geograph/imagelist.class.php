@@ -186,7 +186,7 @@ class ImageList
 				
 		$i=0;
 		if ($sql) {
-			$db=&$this->_getDB();
+			$db=&$this->_getDB(true);
 	
 			$prev_fetch_mode = $ADODB_FETCH_MODE;
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;	
@@ -217,7 +217,7 @@ class ImageList
 	* @access private
 	*/
 	function _getImagesBySql($sql,$cache = 0) {
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		if ($_GET['debug'])
 			print $sql;
 		$this->images=array();
@@ -273,7 +273,7 @@ class ImageList
 		$this->images=array();
 		if ($count_only)
 		{
-			$db=&$this->_getDB();
+			$db=&$this->_getDB(true);
 			
 			$count=$db->GetOne($sql);
 		}
@@ -291,7 +291,7 @@ class ImageList
 	*/
 	function getRecordSetByArea($left,$right,$top,$bottom,$reference_index=null, $count_only=true)
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 
 		$orderby="";
 		$limit="";
@@ -345,7 +345,7 @@ class ImageList
 
 	function getRecordSetByPrefix($prefix) {
 
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 
 		$data=$db->GetRow("select * from gridprefix where prefix='".$prefix."' limit 1");
 
@@ -368,10 +368,12 @@ class ImageList
 	 * get stored db object, creating if necessary
 	 * @access private
 	 */
-	function &_getDB()
+	function &_getDB($allow_readonly = false)
 	{
-		if (!is_object($this->db))
-			$this->db = GeographDatabaseConnection(true);
+		//check we have a db object or if we need to 'upgrade' it
+		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
+			$this->db=GeographDatabaseConnection($allow_readonly);
+		}
 		return $this->db;
 	}
 
@@ -409,7 +411,7 @@ class RecentImageList extends ImageList {
 			return;
 		}
 		
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		
 		if ($reference_index == 2) {
 			$offset=rand(0,200);
