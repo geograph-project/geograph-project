@@ -458,7 +458,7 @@ if (isset($_POST['gridsquare']))
 				}
 				
 				
-				$err = $uploadmanager->commit('submit');
+				$err = $uploadmanager->commit('submit',true); //we will call cleanup later. 
 				
 				if ($_POST['imagetaken'] != '0000-00-00') {
 					$_SESSION['last_imagetaken'] = $_POST['imagetaken'];
@@ -728,7 +728,10 @@ if (!empty($clear_cache)) {
 		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
 		$memcache->name_delete('gi',$mkey);
 	}
-
-}
 	
-?>
+	if (!$err)
+		$uploadmanager->cleanUp();
+}
+
+
+

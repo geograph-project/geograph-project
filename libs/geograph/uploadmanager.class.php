@@ -578,7 +578,7 @@ class UploadManager
 	/**
 	* commit the upload process
 	*/
-	function commit($method = '')
+	function commit($method = '',$skip_cleanup = false)
 	{
 		global $USER,$CONF,$memcache;
 		
@@ -687,7 +687,8 @@ class UploadManager
 				$ok =$image->storeOriginal($orginalfile);
 			}
 		
-			$this->cleanUp();
+			if (!$skip_cleanup)
+				$this->cleanUp();
 		}
 		
 		//fire an event 
