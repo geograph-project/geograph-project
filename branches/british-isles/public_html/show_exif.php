@@ -69,10 +69,13 @@ if (isset($_REQUEST['id']))
 		
 		$exif = $db->getOne("SELECT exif FROM gridimage_exif WHERE gridimage_id = ".$image->gridimage_id);
 		if (empty($exif)) {
-			$exif = $db->getOne("SELECT exif FROM gridimage_exif1 WHERE gridimage_id = ".$image->gridimage_id);
+			$exif = $db->getOne("SELECT exif FROM gridimage_exif3 WHERE gridimage_id = ".$image->gridimage_id);
 		}
 		if (empty($exif)) {
 			$exif = $db->getOne("SELECT exif FROM gridimage_exif2 WHERE gridimage_id = ".$image->gridimage_id);
+		}
+		if (empty($exif)) {
+			$exif = $db->getOne("SELECT exif FROM gridimage_exif1 WHERE gridimage_id = ".$image->gridimage_id);
 		}
 		
 		if (!empty($exif)) {
