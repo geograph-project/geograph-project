@@ -50,34 +50,7 @@ Display:
 	
 {elseif $engine->fullText && (!$engine->criteria->sphinx.compatible || $engine->criteria->sphinx.no_legacy)}
 
-	{if $user->registered}
-	<div class="interestBox" style="border:1px solid pink;display:none; " id="show1">
-		<h4>Not seeing the results you expect?</h4>
-		This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search in text matching, e.g. similar words are automatically matched. However this index often results in quicker and more relevent results. 
-		{if !$engine->criteria->sphinx.no_legacy}
-			You can access the <a href="/search.php?i={$i}&amp;legacy=true">old search here</a>.
-		
-			{if $enable_forums}
-				If you find yourself having to use this link, please tell us about it the forum. Some features of legacy search will be phased out and it helps to know the functionality unintentionally broken in the new. 
-			{/if}
-		{/if}
-		
-		
-		<br/><br/>
 
-		{if $engine->criteria->isallsearch}
-			Note: The new query engine searches the whole entry (not just the title like before), so + has no effect, to search just in the title prefix the word with "title:"<br/><br/>
-		{/if}
-		{if $engine->criteria->changeindefault}
-			Note: The new query engine searches the whole entry (not just the title like before), to search just in the title prefix a keyword with "title:", example "title:bridge"<br/><br/>
-		{/if}
-		<a href="javascript:void(hide_tree(1));">close</a>
-	</div>
-
-	<div class="interestBox" style="border:1px solid pink; float:right; width:200px; position:relative; " id="hide1"><b>Not seeing the results you expect?</b>	<a href="javascript:void(show_tree(1));">expand...</a>
-		
-	</div>
-	{/if}
 {elseif strlen($engine->criteria->searchtext) && $engine->criteria->sphinx.impossible}
 	<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">You have dropped back into <a href="/help/search_new">legacy search mode</a>, the search options you have selected are not supported in the new search,<br/> you can try simplifing the choosen options to change mode.
 	
