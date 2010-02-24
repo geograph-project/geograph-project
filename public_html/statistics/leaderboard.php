@@ -148,7 +148,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "sum((i.moderation_status = 'geograph') + ftf + 1)";
 		} else {
 			$sql_table = "user_stat i";
-			$sql_column = "images, images/(points+1)";
+			$sql_column = "images, (geographs+points+images)";
 		}
 		$heading = "G-Points";
 		$desc = "test points";
