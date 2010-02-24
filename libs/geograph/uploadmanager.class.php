@@ -704,7 +704,16 @@ class UploadManager
 		$this->gridimage_id = $gridimage_id;
 		
 		if (!empty($method)) {
-			$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method'");
+			if (!empty($GLOBALS['STARTTIME'])) {
+				
+				list($usec, $sec) = explode(' ',microtime());
+				$endtime = ((float)$usec + (float)$sec);
+				$timetaken = $endtime - $GLOBALS['STARTTIME'];
+				
+				$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method',timetaken=$timetaken");
+			} else {
+				$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method'");
+			}
 		}
 	}
 

@@ -1093,3 +1093,8 @@ ALTER TABLE  `user` ADD  `upload_size` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';
 
 #################################################
 
+
+alter table submission_method add timetaken float not null default 0;
+
+#################################################
+
