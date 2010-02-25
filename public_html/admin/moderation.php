@@ -73,6 +73,10 @@ if (isset($_GET['gridimage_id']))
 					$status = $db->Quote($status);
 					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now(),type = 'dummy'");
 					print "classification $status recorded";
+					
+					
+					$mkey = $USER->user_id;
+					$memcache->name_delete('udm',$mkey);
 				}
 				else
 				{
@@ -224,13 +228,22 @@ Regards,
 
 if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remoderate'])) {
 	
-	if ($db->readonly) {
-		$db2 =& $db;
-	} else {
-		$db2 = GeographDatabaseConnection(true);
+	
+	$mkey = $USER->user_id;
+	$count =& $memcache->name_get('udm',$mkey);
+	
+	if (empty($count)) {
+		if ($db->readonly) {
+			$db2 =& $db;
+		} else {
+			$db2 = GeographDatabaseConnection(true);
+		}
+
+		$count = $db2->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
+
+		$memcache->name_set('udm',$mkey,$count,$memcache->compress,$memcache->period_med);
 	}
 	
-	$count = $db2->CacheGetRow(3600*24,"select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
 	if ($count['total'] == 0) {
 		$_GET['remoderate'] = 1;
 		$limit = 25;
