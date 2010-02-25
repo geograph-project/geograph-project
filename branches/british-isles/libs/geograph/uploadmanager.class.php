@@ -693,7 +693,7 @@ class UploadManager
 		
 		//fire an event 
 		require_once('geograph/event.class.php');
-		new Event(EVENT_NEWPHOTO, $gridimage_id,',',$USER->user_id);
+		new Event(EVENT_NEWPHOTO, $gridimage_id.','.$USER->user_id);
 		
 		
 		//assign the snippets now we know the real id. 
