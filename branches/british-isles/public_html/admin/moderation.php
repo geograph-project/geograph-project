@@ -168,6 +168,7 @@ if (!empty($_GET['relinquish'])) {
 	$_SESSION['user'] =& new GeographUser($USER->user_id);
 	
 	header("Location: /profile.php?edit=1");
+	exit;
 
 } elseif (!empty($_GET['apply'])) {
 	$USER->mustHavePerm('basic');
@@ -219,20 +220,25 @@ Regards,
 
 	
 #############################
+# check if needs to remoderate
 
-//lock the table so nothing can happen in between! (leave others as READ so they dont get totally locked)
-$db->Execute("LOCK TABLES 
-gridsquare_moderation_lock WRITE, 
-gridsquare_moderation_lock l WRITE,
-moderation_log WRITE,
-gridsquare READ,
-gridsquare gs READ,
-gridimage gi READ LOCAL,
-user READ LOCAL,
-gridprefix READ,
-user v READ LOCAL,
-user m READ LOCAL,
-user_stat us READ LOCAL");
+if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remoderate'])) {
+	
+	if ($db->readonly) {
+		$db2 =& $db;
+	} else {
+		$db2 = GeographDatabaseConnection(true);
+	}
+	
+	$count = $db2->CacheGetRow(3600*24,"select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
+	if ($count['total'] == 0) {
+		$_GET['remoderate'] = 1;
+		$limit = 25;
+	} elseif ($count['recent'] < 5) {
+		$_GET['remoderate'] = 1;
+		$limit = 10;
+	}
+}	
 
 #############################
 # find the list of squares with self pending images, and exclude them...
@@ -255,21 +261,24 @@ while (!$recordSet->EOF)
 $recordSet->Close(); 
 
 #############################
+#lock the table so nothing can happen in between! (leave others as READ so they dont get totally locked)
+
+$db->Execute("LOCK TABLES 
+gridsquare_moderation_lock WRITE, 
+gridsquare_moderation_lock l WRITE,
+moderation_log WRITE,
+gridsquare READ,
+gridsquare gs READ,
+gridimage gi READ LOCAL,
+user READ LOCAL,
+gridprefix READ,
+user v READ LOCAL,
+user m READ LOCAL,
+user_stat us READ LOCAL");
+
+#############################
 # define the images to moderate
 
-if (!isset($_GET['moderator']) && !isset($_GET['review']) && !isset($_GET['remoderate'])) {
-	
-	$db2 = GeographDatabaseConnection(true);
-	
-	$count = $db2->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type='dummy'");
-	if ($count['total'] == 0) {
-		$_GET['remoderate'] = 1;
-		$limit = 25;
-	} elseif ($count['recent'] < 5) {
-		$_GET['remoderate'] = 1;
-		$limit = 10;
-	}
-}
 $sql_where2 = "
 	and (l.gridsquare_id is null OR 
 			(l.user_id = {$USER->user_id} AND lock_type = 'modding') OR
