@@ -72,7 +72,7 @@ class EventProcessor
 		$this->event_handler_dir=realpath($_SERVER["DOCUMENT_ROOT"]."/../libs/event_handlers");
 		
 		$this->db=NewADOConnection($GLOBALS['DSN']);
-		$this->logdb=NewADOConnection($GLOBALS['DSN']);
+		$this->logdb=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
 	
 	}
 	
@@ -232,17 +232,17 @@ class EventProcessor
 	*/
 	function _gc()
 	{
-		if (rand(1,100) < 3) 
+		if (rand(1,100) < 2) 
 		{
 			//clear events and event log entries older than one month
 			if (rand(1,100) < 3)
 			{
 				$this->db->Execute("delete from event where status='completed' and processed < date_sub(now(),interval 30 day)");
-				$this->db->Execute("delete from event_log where logtime < date_sub(now(),interval 30 day)");
+				$this->logdb->Execute("delete from event_log where logtime < date_sub(now(),interval 30 day)");
 			}
 
 			//clear all verbose entries not associated with a event once they are 8 hours old - they are really just for debugging
-			$this->db->Execute("delete from event_log where event_id=0 and verbosity in('trace', 'verbose') and logtime < date_sub(now(),interval 8 hour)");
+			$this->logdb->Execute("delete from event_log where event_id=0 and verbosity in('trace', 'verbose') and logtime < date_sub(now(),interval 8 hour)");
 		}
 	}
 	
@@ -253,7 +253,7 @@ class EventProcessor
 	*/
 	function start()
 	{
-		$check = $this->db->GetRow("select unix_timestamp(now())-unix_timestamp(logtime) as seconds,log like 'Processing complete%' as success from event_log where event_log_id = (select max(event_log_id) from event_log)");
+		$check = $this->logdb->GetRow("select unix_timestamp(now())-unix_timestamp(logtime) as seconds,log like 'Processing complete%' as success from event_log where event_log_id = (select max(event_log_id) from event_log)");
 	
 		if ($check['seconds'] && $check['seconds'] < ($this->max_execution/2) && !$check['success']) 
 		{
