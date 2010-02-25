@@ -84,8 +84,7 @@ $cacheid = '';
 					header("Location: /article/".$page['url']);
 				}
 				exit;
-				
-			}
+			} 
 			$lockedby = $db->getOne("
 				select 
 					m.realname
@@ -96,7 +95,18 @@ $cacheid = '';
 					article_id = {$page['article_id']}
 					and m.user_id != {$USER->user_id}
 				and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR)");
-					
+			
+			if (isset($_GET['lock'])) {
+				if ($lockedby) {
+					print "ERROR: Article already locked by ".htmlentities($lockedby).", please try later";
+				} else {
+					$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
+
+					print "okaa";
+				}
+				exit;
+			}
+			
 			if ($lockedby) {
 				$smarty->assign('lockedby', $lockedby);
 				$template = 'article_locked.tpl';
@@ -105,7 +115,9 @@ $cacheid = '';
 			}
 
 			$smarty->assign($page);
-			$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
+			if ($page['approved'] != 2) {//'public' articles are locked in a seperate button.
+				$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
+			}
 		} else {
 			header("HTTP/1.0 404 Not Found");
 			header("Status: 404 Not Found");
