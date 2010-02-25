@@ -29,19 +29,20 @@ init_session();
 $smarty = new GeographPage;
 $USER->mustHavePerm("admin");
 
-$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed'); 
-	
+$db=GeographDatabaseConnection(true);
+
 if (isset($_GET['showlogs']))
 {
+	$logdb=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+
 	$event_id=intval($_GET['showlogs']);
-	$smarty->assign('logs', $db->GetAll("select * from event_log where event_id=$event_id order by event_log_id"));
+	$smarty->assign('logs', $logdb->GetAll("select * from event_log where event_id=$event_id order by event_log_id"));
 	$smarty->assign('handlers', $db->GetAll("select * from event_handled_by where event_id=$event_id"));
 
 	$smarty->display('admin_eventlog.tpl');
 	exit;
 }
-	
+
 if (isset($_POST['fire']))
 {
 	Event::fire(stripslashes($_POST['event_name']), stripslashes($_POST['event_param']), stripslashes($_POST['event_priority']));
@@ -134,4 +135,4 @@ $smarty->assign("page", $page);
 
 
 $smarty->display('admin_events.tpl');
-?>
+
