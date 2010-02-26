@@ -52,8 +52,6 @@ $USER->mustHavePerm("basic");
 $template='resubmit.tpl';
 $cacheid='';
 
-ini_set("display_errors",1);
-
 $image=new GridImage;	
 
 if (isset($_REQUEST['id']))
