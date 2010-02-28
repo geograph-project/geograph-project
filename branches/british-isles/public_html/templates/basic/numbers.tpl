@@ -67,7 +67,7 @@
 	&lt; <a href="/statistics.php">More Statistics</a> | <a href="/statistics/moversboard.php">Leaderboard</a> &gt;
 </div>
 
-<h2>Geograph British Isles</h2>
+<h2>Geograph Britain and Ireland</h2>
 
 <div class="greenbar">{* for 33-66% coverage *}
 	<div class="righttextbox">

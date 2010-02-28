@@ -66,7 +66,7 @@ var delayinsec = {$user->slideshow_delay|default:5};
 	{include file="_search_noresults.tpl"}
 {/if}
 
-<div style="font-size:0.8em;border-top:1px solid silver;margin-top:2px;padding-top:2px">| <a href="/">Geograph British Isles</a> homepage | Back to normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide">Slide Show</a> mode | {if $engine->criteria->searchclass != 'Special'}<a href="/search.php?i={$i}&amp;form=advanced">Refine this search</a> |{/if} </div>
+<div style="font-size:0.8em;border-top:1px solid silver;margin-top:2px;padding-top:2px">| <a href="/">Geograph Britain and Ireland</a> homepage | Back to normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide">Slide Show</a> mode | {if $engine->criteria->searchclass != 'Special'}<a href="/search.php?i={$i}&amp;form=advanced">Refine this search</a> |{/if} </div>
 
 
 </body>

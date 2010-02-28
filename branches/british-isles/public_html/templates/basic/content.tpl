@@ -63,14 +63,26 @@
 <input type="submit" value="Find"/>
 </div>
 <lable for="qs">Search Content:</label> <br/>
-<input type="text" name="q" id="qs" size="30" {if $q} value="{$q|escape:'html'}"{/if}/>
+<input type="text" name="q" id="qs" size="26" {if $q} value="{$q|escape:'html'}"{/if}/>
+Scope:<select name="scope">
+	<option value="">All</option>
+	<option value="article" {if $scope == 'article'} selected{/if}>Articles</option>
+	<option value="gallery" {if $scope == 'gallery'} selected{/if}>Galleries</option>
+	{dynamic}
+	  {if $enable_forums && $user->registered}
+		  <option value="themed" {if $scope == 'themed'} selected{/if}>Themed Topics</option>
+	  {/if}
+	{/dynamic}
+	<option value="help" {if $scope == 'help'} selected{/if}>Help Pages</option>
+	<option value="document" {if $scope == 'document'} selected{/if}>Information Pages</option>
+</select>
 </form><hr/>
 Shortcuts:
 <ul>
 	<li><a href="/content/?{$inner}" target="{$target}">Recently Updated</a></li>
 	<li><a href="/content/?{$inner}&amp;order=created" target="{$target}">Recently Created</a></li>
 	<li><a href="/content/?{$inner}&amp;order=views" target="{$target}">Most Viewed</a></li>
-	<li><a href="/content/?{$inner}&amp;loc" target="v">Location Specific</a></li>
+	<li><a href="/content/?{$inner}&amp;loc" target="{$target}">Location Specific</a></li>
 	<li><a href="/content/?{$inner}&amp;docs&amp;order=title" target="{$target}">Geograph Documents</a></li>
 </ul><hr/>
 Common Themes: (<a href="/content/themes.php">more...</a>)<br/>

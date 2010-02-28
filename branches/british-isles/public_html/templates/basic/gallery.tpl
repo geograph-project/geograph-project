@@ -8,7 +8,7 @@ ul.explore li {	padding:3px; }
 <div style="float:right"><a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum=11" class="xml-rss">RSS</a></div>
 
 <div class="tabHolder">
-	<a href="/content/" class="tab">Content</a>
+	<a href="/content/" class="tab">Collections</a>
 	<a href="/article/" class="tab">Articles</a>
 	<a href="/article/?table" class="tab">Article List</a>
 	<span class="tabSelected">Galleries</span>
@@ -19,8 +19,28 @@ ul.explore li {	padding:3px; }
 	{/if}	
 </div>
 <div class="interestBox">
-<h2>Galleries</h2>
+<h2 style="margin:0">Galleries</h2>
 </div>
+
+<form action="/content/" method="get">
+<div class="interestBox" style="margin-top:2px;width:420px">
+<lable for="qs">Search:</label> 
+<input type="text" name="q" id="qs" size="22" {if $q} value="{$q|escape:'html'}"{/if}/> 
+Scope: <select name="scope" style="width:80px">
+	<option value="">All</option>
+	<option value="article">Articles</option>
+	<option value="gallery" selected>Galleries</option>
+	{dynamic}
+	  {if $enable_forums && $user->registered}
+		  <option value="themed">Themed Topics</option>
+	  {/if}
+	{/dynamic}
+	<option value="help">Help Pages</option>
+	<option value="document">Information Pages</option>
+</select>
+<input type="submit" value="Find"/>
+</div>
+</form>
 
 <ul class="content">
 {foreach from=$list item=item}

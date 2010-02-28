@@ -2,7 +2,7 @@
 {assign var="meta_description" value="Geograph has many photos and images of the British Isles, find them here."}
 {include file="_std_begin.tpl"}
  
-    <h2>Geograph British Isles</h2>
+    <h2>Geograph Britain and Ireland - British Isles</h2>
 
 <p>Please choose country you wish to find images in:</p>
 

@@ -462,7 +462,7 @@ if (empty($CONF['google_maps_api_key']) || $CONF['google_maps_api_key'] == 'XXXX
 }
 
 if (empty($CONF['OS_licence']) || $CONF['OS_licence'] == 'XXXXXXXX') {
-	warn('$CONF[\'OS_licence\'] does not appear to have been configured. Only a problem if Geograph British Isles');
+	warn('$CONF[\'OS_licence\'] does not appear to have been configured. Only a problem if Geograph British Isles/Britain and Ireland');
 }
 
 if (empty($CONF['metacarta_auth']) || $CONF['metacarta_auth'] == '') {

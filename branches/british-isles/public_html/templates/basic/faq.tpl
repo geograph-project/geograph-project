@@ -43,7 +43,10 @@ div:target { background-color:orange;padding-bottom:10px; }
  <ul>
  <li><a href="/article/?cat_word=Geograph">Geograph Articles</a></li>
  <li><a href="/help/sitemap">Sitemap</a><br/><br/></li>
- </ul></div>
+ </ul>
+ 
+ <a title="Info, Guides and Tutorials" href="/content/documentation.php">More...</a> or <a href="/help/more_pages">Summary Page</a>
+ </div>
 
 
     <h2>FAQ - Frequently Asked Questions</h2>

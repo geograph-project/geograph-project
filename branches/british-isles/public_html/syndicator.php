@@ -131,7 +131,7 @@ $rss->useCached($format,$rssfile,$rss_timeout);
 if ($CONF['template'] == 'ireland') {
 	$rss->title = 'Geograph Ireland'; 
 } else {
-	$rss->title = 'Geograph British Isles'; 
+	$rss->title = 'Geograph Britain and Ireland'; 
 }
 if ($CONF['template'] == 'api') {
 	$rss->link = "http://{$CONF['CONTENT_HOST']}/";
