@@ -42,9 +42,9 @@
      <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>
     </ul></li>
-    <li>Further Info<ul>
+    <li>General<ul>
      <li><a title="Frequently Asked Questions" href="/faq.php">FAQ</a></li>
-     <li><a title="Information documents" href="/content/documentation.php">Guides, Tutorials</a></li>
+     <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Information</a></li>
      <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
     </ul></li>

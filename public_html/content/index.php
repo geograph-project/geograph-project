@@ -130,17 +130,34 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
 		}
 		
-		$smarty->assign_by_ref('q', $list);
+		$smarty->assign_by_ref('q', $sphinx->qclean);
 		$extra .= "&amp;q=".urlencode($sphinx->qclean);
 		$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 		
 		#$sphinx->processQuery();
 		
+		$sphinx->qoutput = $sphinx->q;
 		if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
-			$sphinx->qoutput = $sphinx->q;
 			$sphinx->q .= " @source -themed";
 		}
-		
+		if (!empty($_GET['scope'])) {
+			$done =0;
+			switch($_GET['scope']) {
+				case 'article':
+				case 'gallery':
+				case 'themed':
+				case 'help':
+					$sphinx->q .= " @source ".$_GET['scope'];
+					
+					break;
+				case 'info':
+				case 'document':
+					$sphinx->q .= " @type ".$_GET['scope'];
+					break;
+			}
+			$smarty->assign_by_ref('scope', $_GET['scope']);
+		}
+	
 		$ids = $sphinx->returnIds($pg,'content_stemmed');	
 		
 		$smarty->assign("query_info",$sphinx->query_info);
@@ -164,6 +181,7 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 		$pageSize = 1000;
 		$title = "Geograph Documents";
 		$extra .= "&amp;docs=1";
+		$smarty->assign("scope",'document');
 	} elseif (isset($_GET['loc'])) {
 		$where = "gridsquare_id > 0";
 		$pageSize = 100;
@@ -296,6 +314,16 @@ if (($template == 'content.tpl' || $inline)  && !$smarty->is_cached($template, $
 		} elseif (!empty($_GET['q'])) {
 			$sphinx = new sphinxwrapper(trim($_GET['q']));
 			$title = "Matching [ ".htmlentities($sphinx->qclean)." ]";
+			
+			switch($_GET['scope']) {
+				case 'article': $title .= " in Article Section"; break;
+				case 'gallery': $title .= " in Gallery Section"; break;
+				case 'themed': $title .= " in Themed Topics"; break; 
+				case 'help': $title .= " in Help Pages"; break;
+				case 'info': $title .= " in Collections"; break;
+				case 'document': $title .= " in Documentation Pages"; break;
+			}
+			
 		} elseif (isset($_GET['docs'])) {
 			$title = "Geograph Documents";
 		} elseif (isset($_GET['loc'])) {

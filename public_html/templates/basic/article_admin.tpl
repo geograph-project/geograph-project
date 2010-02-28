@@ -2,10 +2,8 @@
 {assign var="rss_url" value="/article/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 
-<div style="float:right"><a title="geoRSS Feed for Geograph Pending Articles" href="/article/syndicator.php?admin=1" class="xml-geo">geo RSS</a> (unapproved articles)</div>
-
 <div class="tabHolder">
-	<a href="/content/" class="tab">Content</a>
+	<a href="/content/" class="tab">Collections</a>
 	<span class="tabSelected">Articles</span>
 	<a href="/article/?table" class="tab">Article List</a>
 	<a href="/gallery/" class="tab">Galleries</a>
@@ -16,7 +14,7 @@
 	{/if}	
 </div>
 <div class="interestBox">
-<h2>User Contributed Articles</h2>
+<h2 style="margin:0">User Contributed Articles</h2>
 </div>
 {if $desc}
 	<div style="position:relative; float:right; background-color:silver; padding:4px">
@@ -30,6 +28,25 @@
 	{/if}{/dynamic}
 {/if}
 
+<form action="/content/" method="get">
+<div class="interestBox" style="margin-top:2px;width:420px">
+<lable for="qs">Search:</label> 
+<input type="text" name="q" id="qs" size="22" {if $q} value="{$q|escape:'html'}"{/if}/> 
+Scope: <select name="scope" style="width:80px">
+	<option value="">All</option>
+	<option value="article" selected>Articles</option>
+	<option value="gallery">Galleries</option>
+	{dynamic}
+	  {if $enable_forums && $user->registered}
+		  <option value="themed">Themed Topics</option>
+	  {/if}
+	{/dynamic}
+	<option value="help">Help Pages</option>
+	<option value="document">Information Pages</option>
+</select>
+<input type="submit" value="Find"/>
+</div>
+</form>
 
 <ul class="explore">
 {foreach from=$list item=item}
@@ -67,7 +84,11 @@
 {/foreach}
 
 </ul>
-<div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-geo">geo RSS</a></div>
+<div style="float:right">Articles: <a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-geo">geo RSS</a>
+
+Admin Feed: <a title="geoRSS Feed for Geograph Pending Articles" href="/article/syndicator.php?admin=1" class="xml-geo">geo RSS</a></div>
+
+</div>
 <br style="clear:both"/>
 
 <div class="interestBox">

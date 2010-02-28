@@ -4,9 +4,30 @@
 
 
 <div class="interestBox">
-<h2>Information, Guides and Tutorials</h2>
+<h2 style="margin:0">Information, Guides and Tutorials</h2>
 </div>
-<div style="text-align:right;margin-right:20px"><a href="/content/?docs&amp;order=updated">View by last updated</a></div>
+<div style="float:right;margin-right:20px"><a href="/content/?docs&amp;order=updated">View by last updated</a></div>
+
+
+<form action="/content/" method="get">
+<div class="interestBox" style="margin-top:2px;width:420px">
+<lable for="qs">Search:</label> 
+<input type="text" name="q" id="qs" size="20" {if $q} value="{$q|escape:'html'}"{/if}/> 
+Scope: <select name="scope" style="width:90px">
+	<option value="">All</option>
+	<option value="article">Articles</option>
+	<option value="gallery">Galleries</option>
+	{dynamic}
+	  {if $enable_forums && $user->registered}
+		  <option value="themed">Themed Topics</option>
+	  {/if}
+	{/dynamic}
+	<option value="help">Help Pages</option>
+	<option value="document" selected>Information Pages</option>
+</select>
+<input type="submit" value="Find"/>
+</div>
+</form>
 
 
 {assign var="lastid" value="0"}

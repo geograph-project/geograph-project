@@ -28,6 +28,9 @@
     <li><b>Myriads</b>: number of different myriads<a href="/help/squares">?</a> images submitted to</li>
     <li><b>Categories</b>: number of different image categories submitted</li>
     <li><b>Days</b>: number of different days images submitted</li>
+
+    <li><b>Personal Points</b>: The first image submitted by each user in a square gets a Personal Point.</li>
+
     </ul>
     
  <br/>

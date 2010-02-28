@@ -3,7 +3,7 @@
 
 {dynamic}
 {if $message_sent}
-	<h3>Thank you for contacting the Geograph British Isles team.</h3>
+	<h3>Thank you for contacting the Geograph team.</h3>
 	<p>Your message has been sent - you should hear back from us soon.</p>
 {else}
     <h2>Contact Geograph</h2>
@@ -12,7 +12,7 @@
 
 	<div class="interestBox" style="float:right;width:200px;border:3px solid silver;padding:10px;">
 		<b>About Geograph</b><br/><br/>
-		The Geograph British Isles project aims to collect geographically
+		The Geograph Britain and Ireland project aims to collect geographically
 		representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
 		<a href="/explore/places/2/">Ireland</a>.
 	</div>
@@ -33,7 +33,7 @@
 		&middot; Looking to copy the image you where viewing? <a href="/reuse.php?id={$image->gridimage_id}">See this page</a>.
 		<br/><br/><br/>
 		<br/><br/><hr/><br/><br/>
-		If you do want to contact the <big>Developers of Geograph British Isles</big>, please scroll down.... 
+		If you do want to contact the <big>Developers of Geograph Britain and Ireland</big>, please scroll down.... 
 		<br/><br/><br/><br/><br/><br/><br/>
 	{/if}
 {/if}
