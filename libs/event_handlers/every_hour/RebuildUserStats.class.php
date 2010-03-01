@@ -70,6 +70,8 @@ class RebuildUserStats extends EventHandler
 		
 		$end = ceil($users/$size)*$size;
 		
+		$db->Execute("ALTER TABLE user_stat_tmp DISABLE KEYS");
+		
 		for($q=0;$q<$end;$q+=$size) {
 			$crit = sprintf("user_id BETWEEN %d AND %d",$q,$q+$size-1);
 			
@@ -97,6 +99,9 @@ class RebuildUserStats extends EventHandler
 				
 			sleep(2);//allow held up threads a chance to run
 		}
+		
+		$db->Execute("ALTER TABLE user_stat_tmp ENABLE KEYS");
+		
 		
 		$GLOBALS['ADODB_FETCH_MODE'] = ADODB_FETCH_ASSOC;
 		
@@ -171,18 +176,29 @@ class RebuildUserStats extends EventHandler
 			WHERE user_id = $user_id");
 		}
 
-	//swap tables around		
-		$db->Execute("DROP TABLE IF EXISTS user_stat_old");
-		
-		//done in one operation so there is always a user_stat table, even if the tmp fails 
-		$db->Execute("RENAME TABLE user_stat TO user_stat_old, user_stat_tmp TO user_stat");
+		$data = $db->getAll("SHOW TABLE STATUS LIKE 'user_stat_tmp'");
+		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*5)) {
+			//make sure we have a recent table
 
-		$db->Execute("DROP TABLE IF EXISTS user_stat_old");
+			$db->Execute("DROP TABLE IF EXISTS user_stat_old");
+
+			//done in one operation so there is always a user_stat table, even if the tmp fails 
+			//... well we did until it stopped working... http://bugs.mysql.com/bug.php?id=31786
+			//$db->Execute("RENAME TABLE user_stat TO user_stat_old, user_stat_tmp TO user_stat");
+			
+	//swap tables around
+			$db->Execute("RENAME TABLE user_stat TO user_stat_old");
+			$db->Execute("RENAME TABLE user_stat_tmp TO user_stat");
+
+			$db->Execute("DROP TABLE IF EXISTS user_stat_old");
 
 		
-		//return true to signal completed processing
-		//return false to have another attempt later
-		return true;
+			//return true to signal completed processing
+			//return false to have another attempt later
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }
