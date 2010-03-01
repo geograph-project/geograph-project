@@ -69,10 +69,16 @@ function autoDisable(that) {
 
 //	-	-	-	-	-	-	-	-
 
-function record_vote(type,id,vote) {
+function record_vote(type,id,vote,div) {
+	if (typeof div == 'undefined') {
+		div = '';
+	}
 	var i=new Image();
 	i.src= "/stuff/record_vote.php?t="+type+"&id="+id+"&v="+vote;
-	document.getElementById("votediv"+id).innerHTML = "Thank you!";
+	document.getElementById("votediv"+id+div).innerHTML = "Thank you!";
+	setTimeout(function() {
+		document.getElementById("votediv"+id+div).style.display='none';
+	},3000);
 }
 
 function star_hover(id,vote,num) {

@@ -10,6 +10,11 @@
 
 
 {if $comment}
+	{dynamic}
+		{if $user->registered}
+			<div style="float:right;position:relative" id="votediv{$snippet_id}"><a href="javascript:void(record_vote('snip',{$snippet_id},5));" title="I like this description!"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20"/></a></div>
+		{/if}
+	{/dynamic}
 	<div class="caption640" style="border:1px solid silver;padding:10px;">{$comment}</div>
 {/if}
 {if $user_id}
