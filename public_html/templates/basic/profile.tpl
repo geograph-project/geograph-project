@@ -162,10 +162,10 @@
 		</ul>
 		<div style="float:right;font-size:0.8em; color:gray; margin-top:-20px">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
 	</div>
-{else}
+{elseif !$userimages}
 	<h3>My Statistics</h3>
 	<ul>
-		  <li>No photographs submitted {if $userimages}(statistics can take a few hours to appear if you have only recently begun submitting){/if}</li>
+		  <li>No photographs submitted</li>
 	</ul>
 {/if}
 
