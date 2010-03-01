@@ -48,7 +48,7 @@
 	{/if}
   {dynamic}
     {if $user->registered}
-	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image!"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20"/></a></div>
+	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this image!"/></a></div>
     {/if}
   {/dynamic}
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
@@ -58,7 +58,7 @@
   {if $image->comment}
   {dynamic}
     {if $user->registered}
-  	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description!"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20"/></a></div>
+  	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this description!"/></a></div>
     {/if}
   {/dynamic}
   <div class="caption640">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
