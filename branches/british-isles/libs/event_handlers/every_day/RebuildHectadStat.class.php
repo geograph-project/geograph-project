@@ -101,17 +101,29 @@ class RebuildHectadStat extends EventHandler
 		$db->Execute("ALTER TABLE hectad_stat_tmp ENABLE KEYS");
 		
 		
-		$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
-				
-		//done in one operation so there is always a hectad_stat table, even if the tmp fails 
-		$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old, hectad_stat_tmp TO hectad_stat");
+		$data = $db->getAll("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
 		
-		$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*5)) {
+			//make sure we have a recent table
+
+			$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+
+			//done in one operation so there is always a hectad_stat table, even if the tmp fails 
+			//... well we did until it stopped working... http://bugs.mysql.com/bug.php?id=31786
+			//$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old, hectad_stat_tmp TO hectad_stat");
+			
+			$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old");
+			$db->Execute("RENAME TABLE hectad_stat_tmp TO hectad_stat");
+
+			$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
 		
 		
-		//return true to signal completed processing
-		//return false to have another attempt later
-		return true;
+			//return true to signal completed processing
+			//return false to have another attempt later
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }
