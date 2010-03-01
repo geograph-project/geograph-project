@@ -46,11 +46,21 @@
 	{elseif $user->user_id eq $image->user_id}
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
+  {dynamic}
+    {if $user->registered}
+	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image!"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20"/></a></div>
+    {/if}
+  {/dynamic}
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
   <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title">{$image->title|escape:'html'}</div>
 
   {if $image->comment}
+  {dynamic}
+    {if $user->registered}
+  	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description!"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20"/></a></div>
+    {/if}
+  {/dynamic}
   <div class="caption640">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
   {/if}
   {if $image->snippet_count}

@@ -211,8 +211,6 @@ if ($image->isValid())
 			list($count,$when) = $info;
 			
 			$smarty->assign("search_count",$count);
-			
-			$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
 		} else {
 			$sphinx = new sphinxwrapper($mkey);
 			
@@ -245,6 +243,8 @@ if ($image->isValid())
 		
 		$image->loadSnippets();
 		$image->loadCollections();
+	} else {
+		$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
 	}
 	
 } elseif (!empty($rejected)) {
