@@ -58,10 +58,11 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 function hideStep3() {
 	document.getElementById("step3").style.display = 'none';
 }
-
+{/literal}
+{if !$user->upload_size || $user->upload_size == 640}
  AttachEvent(window,'load',hideStep3,false);
-
-{/literal}</script>
+{/if}
+</script>
 
 <div id="step3">
 <h3>Step 3 : Confirm image rights</h3>

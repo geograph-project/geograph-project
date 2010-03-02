@@ -638,7 +638,7 @@ class GridImage
 			}
 
 			$this->collections += $db->CacheGetAll(3600*6,$sql = "
-				SELECT CONCAT('/photo/',from_gridimage_id) AS url,title,'Other Photos' AS `type` 
+				SELECT CONCAT('/photo/',from_gridimage_id) AS url,title,'Other Photo' AS `type` 
 				FROM gridimage_backlink ba
 					INNER JOIN gridimage_search gi ON (from_gridimage_id = gi.gridimage_id) 
 				WHERE ba.gridimage_id = {$this->gridimage_id}");
