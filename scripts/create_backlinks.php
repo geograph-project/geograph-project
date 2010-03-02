@@ -123,12 +123,12 @@ for ($from=$start; $start<=$max; $start+=$perpage)
 		
 		if (preg_match_all('/\[\[(\d+)\]\]/',$recordSet->fields['comment'],$g_matches)) {
 			foreach ($g_matches[1] as $g_i => $g_id) {
-				$bits[] = "($gridimage_id,$g_id,NOW())";	
+				$bits[] = "($g_id,$gridimage_id,NOW())";
 			}
 		}
 		if (preg_match_all('/geograph\.(org\.uk|ie)\/photo\/(\d+)\b/',$recordSet->fields['comment'],$g_matches)) {
 			foreach ($g_matches[2] as $g_i => $g_id) {
-				$bits[] = "($gridimage_id,$g_id,NOW())";	
+				$bits[] = "($g_id,$gridimage_id,NOW())";
 			}
 		}
 		
