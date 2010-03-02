@@ -1096,5 +1096,17 @@ ALTER TABLE  `user` ADD  `upload_size` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';
 
 alter table submission_method add timetaken float not null default 0;
 
+
+#################################################
+
+
+CREATE TABLE `gridimage_backlink` (
+`gridimage_id` INT UNSIGNED NOT NULL ,
+`from_gridimage_id` INT UNSIGNED NOT NULL ,
+`created` TIMESTAMP NOT NULL ,
+INDEX (  `gridimage_id` )
+) ENGINE = MYISAM
+
+
 #################################################
 

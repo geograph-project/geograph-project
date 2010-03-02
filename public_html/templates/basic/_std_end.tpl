@@ -66,11 +66,11 @@
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
 {if $image && $image->collections}
-	<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;">Collections: <sup style="color:red">new!</sup></h3>
+	<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;margin-bottom:10px">This photo is linked from:</h3>
 	{assign var="lasttype" value="0"}
 	{foreach from=$image->collections item=item}
 		{if $lasttype != $item.type}
-			<div class="newsheader">{$item.type|regex_replace:"/y$/":'ie'}s</div>
+			<div class="newsheader" style="margin-top:5px">{$item.type|regex_replace:"/y$/":'ie'}s</div>
 		{/if}{assign var="lasttype" value=$item.type}
 		<div class="newsbody">&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a></div>
 	{/foreach}
