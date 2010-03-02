@@ -607,12 +607,12 @@ class GridImage
 				ORDER BY content_id DESC");
 
 			//find galleries (not net harmogized into gridimage_content)
-			$this->collections += $db->CacheGetAll(3600*6,"
+			$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,"
 				SELECT c.url,c.title,'Gallery' AS `type` 
 				FROM gridimage_post gp
 					INNER JOIN content c ON (c.foreign_id = topic_id AND c.source = 'gallery') 
 				WHERE gp.gridimage_id = {$this->gridimage_id} 
-				ORDER BY content_id DESC");
+				ORDER BY content_id DESC"));
 			//todo - could add themed topics (if a registered user) and gsds (if they become part of content)
 						
 			//todo -experimental and duplicate anyway!
@@ -637,11 +637,11 @@ class GridImage
 				}
 			}
 
-			$this->collections += $db->CacheGetAll(3600*6,$sql = "
-				SELECT CONCAT('/photo/',from_gridimage_id) AS url,title,'Other Photo' AS `type` 
+			$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,$sql = "
+				SELECT CONCAT('/photo/',from_gridimage_id) AS url, title, 'Other Photo' AS `type` 
 				FROM gridimage_backlink ba
 					INNER JOIN gridimage_search gi ON (from_gridimage_id = gi.gridimage_id) 
-				WHERE ba.gridimage_id = {$this->gridimage_id}");
+				WHERE ba.gridimage_id = {$this->gridimage_id}"));
 
 			$this->collections_count = count($this->collections);
 		}
