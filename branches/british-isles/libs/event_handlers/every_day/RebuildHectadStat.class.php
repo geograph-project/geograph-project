@@ -43,7 +43,7 @@ class RebuildHectadStat extends EventHandler
 		
 		$db=&$this->_getDB();
 		
-		$data = $db->getAll("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
+		$data = $db->getRow("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
 		
 		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*60*3)) {
 			//if a recent table give up this time. It might still be running. 
@@ -101,7 +101,7 @@ class RebuildHectadStat extends EventHandler
 		$db->Execute("ALTER TABLE hectad_stat_tmp ENABLE KEYS");
 		
 		
-		$data = $db->getAll("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
+		$data = $db->getRow("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
 		
 		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*5)) {
 			//make sure we have a recent table

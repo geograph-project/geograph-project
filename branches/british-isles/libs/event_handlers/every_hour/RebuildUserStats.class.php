@@ -176,7 +176,7 @@ class RebuildUserStats extends EventHandler
 			WHERE user_id = $user_id");
 		}
 
-		$data = $db->getAll("SHOW TABLE STATUS LIKE 'user_stat_tmp'");
+		$data = $db->getRow("SHOW TABLE STATUS LIKE 'user_stat_tmp'");
 		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*5)) {
 			//make sure we have a recent table
 
