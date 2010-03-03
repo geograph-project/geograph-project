@@ -187,12 +187,12 @@ if (!empty($_GET['q'])) {
 					$where = "user_id IN(".join(",",$ids).")";
 					$row = $db->getRow("select realname from user where $where");
 
-					$inners['places'] = array('title'=>'Images by '.$row['realname'],'url'=>"/search.php?user_id=".implode(',',$ids)."&amp;do=1&displayclass=search");
+					$inners['users'] = array('title'=>'Images by '.$row['realname'],'url'=>"/search.php?user_id=".implode(',',$ids)."&amp;do=1&displayclass=search");
 				} else {
-					$inners['places'] = array('title'=>'Contributors Matching '.$sphinx->qclean.' ['.$sphinx->resultCount.']','url'=>"/finder/contributors.php?q=$u2&amp;inner");
+					$inners['users'] = array('title'=>'Contributors Matching '.$sphinx->qclean.' ['.$sphinx->resultCount.']','url'=>"/finder/contributors.php?q=$u2&amp;inner");
 
 				}
-				unset($others['places']);
+				unset($others['users']);
 			}
 
 			##########################################################
