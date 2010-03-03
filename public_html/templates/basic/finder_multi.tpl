@@ -33,7 +33,13 @@
 	{/foreach}
 	<br style="clear:both"/>
 {else}
-	NOTE: Only enter one type of term, eg just a Grid Reference, or just a placename. In the future we plan to support multiple types of terms in one query. 
+	<p>NOTE: Only enter one type of term, eg just a Grid Reference, or just a placename. In the future we plan to support multiple types of terms in one query. </p>
+	
+	
+	
+	{if $q}
+		<p><i>No Results</i></p>
+	{/if}
 {/if}
 
 

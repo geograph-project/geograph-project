@@ -75,6 +75,10 @@ if (!$error) {
 	$data['adminoverride'] = 1;
 	$data['searchclass'] = 'Text';
 	
+	if (!empty($_GET['displayclass'])) {
+		$data['displayclass'] = $_GET['displayclass'];
+	}
+	
 	$engine = new SearchEngineBuilder('#');
 	$engine->page = "search.php";
 	if (isset($_GET['rss'])) {
