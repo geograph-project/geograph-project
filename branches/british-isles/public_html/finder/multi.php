@@ -82,56 +82,70 @@ if (!empty($_GET['q'])) {
 
 			if ($grid_ok) {
 				$gr = $square->grid_reference;
-
+				
+				$others['browse'] = array('title'=>'Browse Page for '.$gr,'url'=>"/gridref/$gr");
+				$others['links'] = array('title'=>'Links Page for '.$gr,'url'=>"/gridref/$gr/links");
+				
 				$old = $sphinx->qclean;
 
 				//todo check for high res - eg centisquare (brwose has a centisquare filter) 
+				
+				//todo - also have special handling myriad?
+				
+				if ($square->natgrlen == 2) { //hectad!
+					$hectad  = $square->gridsquare.intval($square->eastings/10).intval($square->northings/10);
+					$others['browse'] = array('title'=>'Hectad Page for '.$hectad,'url'=>"/gridref/".$hectad);
+					
+					$inners['browse'] = array('title'=>'In Hectad '.$hectad,'url'=>"/finder/search-service.php?q={$square->gridsquare}+$hectad&amp;inner");
+					
+				} else {
+				
+					##########################################################
 
-				##########################################################
+					$sphinx->prepareQuery("grid_reference:{$square->grid_reference}");
+					$ids = $sphinx->returnIds(1,"_images");
+					if (!empty($ids) && count($ids)) {
 
-				$sphinx->prepareQuery("grid_reference:{$square->grid_reference}");
-				$ids = $sphinx->returnIds(1,"_images");
-				if (!empty($ids) && count($ids)) {
+						if (count($ids) > 15) {
+							$inners['browse'] = array('title'=>'In '.$gr,'url'=>"/gridref/$gr?inner");
+						} else {
+							$u2 = urlencode($sphinx->qclean);
 
-					if (count($ids) > 15) {
-						$inners['browse'] = array('title'=>'In '.$gr,'url'=>"/gridref/$gr?inner");
-					} else {
-						$u2 = urlencode($sphinx->qclean);
-
-						$inners['browse'] = array('title'=>'In '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
+							$inners['browse'] = array('title'=>'In '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
+						}
 					}
+
+					##########################################################
+
+					$ids = $sphinx->returnIdsViewpoint($square->getNatEastings(),$square->getNatNorthings(),$square->reference_index,$square->grid_reference);
+					if (!empty($ids) && count($ids)) {
+
+						$u2 = urlencode($sphinx->q);
+
+						$inners['taken'] = array('title'=>'Taken From '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
+					}
+
+					##########################################################
+
+					$sphinx->prepareQuery("{$square->grid_reference} -grid_reference:{$square->grid_reference}");
+					$ids = $sphinx->returnIds(1,"_images");
+					if (!empty($ids) && count($ids)) {
+						//search-service automatically searches nearby, if first param is a gr, so swap them
+						$u2 = urlencode("-grid_reference:{$square->grid_reference} @* {$square->grid_reference}");
+
+						$inners['mentioning'] = array('title'=>'Mentioning '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
+					}
+
+					##########################################################
+
+					//search-service automatically searches nearby, but we can exclude the current square
+					$u2 = urlencode("{$square->grid_reference} -grid_reference:{$square->grid_reference}"); 
+
+					$inners['nearby'] = array('title'=>'Near '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
+
+					##########################################################
 				}
-
-				##########################################################
-
-				$ids = $sphinx->returnIdsViewpoint($square->getNatEastings(),$square->getNatNorthings(),$square->reference_index,$square->grid_reference);
-				if (!empty($ids) && count($ids)) {
-
-					$u2 = urlencode($sphinx->q);
-
-					$inners['taken'] = array('title'=>'Taken From '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
-				}
-
-				##########################################################
-
-				$sphinx->prepareQuery("{$square->grid_reference} -grid_reference:{$square->grid_reference}");
-				$ids = $sphinx->returnIds(1,"_images");
-				if (!empty($ids) && count($ids)) {
-					//search-service automatically searches nearby, if first param is a gr, so swap them
-					$u2 = urlencode("-grid_reference:{$square->grid_reference} {$square->grid_reference}");
-
-					$inners['mentioning'] = array('title'=>'Mentioning '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
-				}
-
-				##########################################################
-
-				//search-service automatically searches nearby, but we can exclude the current square
-				$u2 = urlencode("{$square->grid_reference} -grid_reference:{$square->grid_reference}"); 
-
-				$inners['nearby'] = array('title'=>'Near '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
-
-				##########################################################
-
+				
 				$sphinx->qclean = $old;
 				$try_words = false;
 			} 
@@ -199,11 +213,15 @@ if (!empty($_GET['q'])) {
 						if (empty($row['gridref'])) {
 							list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
 						}
-						$grs[] = $places[$id]['gridref'];
+						$grs[$places[$id]['gridref']]=1;
+						
+						$full_name = _utf8_decode($places[0]['full_name']);
+						
+						$others['text'] = array('title'=>'Images near '.$full_name.' in '.$places[$id]['gridref'],'url'=>"/search.php?placename=".$places[$id]['id']."&amp;do=1");
 					}
 					//hmm what can we do with THEM...
 					if (count($grs)) {
-						$inners['places'] = array('title'=>'In likely squares','url'=>"/finder/search-service.php?q=grid_reference:".implode('%7C',$grs)."&amp;inner");
+						$inners['places'] = array('title'=>'In likely squares','url'=>"/finder/search-service.php?q=grid_reference:".implode('%7C',array_keys($grs))."&amp;inner");
 					}
 				}
 			}
