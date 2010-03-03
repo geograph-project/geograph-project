@@ -2,7 +2,7 @@
 
 {include file="_basic_begin.tpl"}
 <div style="text-align:right">
-	<a href="/search.php?q={$searchq|escape:"url"}" target="_parent">Run this query in the Full Search</a>
+	<a href="/search.php?searchtext={$searchq|escape:"url"}&amp;do=1" target="_parent">Run this query in the Full Search</a>
 </div>
 
 <div id="maincontent">

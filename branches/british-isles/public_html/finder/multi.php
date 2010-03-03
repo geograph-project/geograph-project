@@ -162,7 +162,7 @@ if (!empty($_GET['q'])) {
 			$sphinx->q = $old;
 
 			##########################################################
-
+			//alternate: $places = $gaz->findPlacename($placename);
 			$ids = $sphinx->returnIds($pg,'gaz');
 			if (!empty($ids) && count($ids)) {
 				if (count($ids) == 1) {
@@ -177,6 +177,35 @@ if (!empty($_GET['q'])) {
 
 				}
 				unset($others['places']);
+			} else {
+				//last ditch attempt incase we have a single match (farms etc not in placename index) 
+				$qplacename = $db->Quote($sphinx->qclean);
+				$places = $db->GetAll("
+				(select (seq + 1000000) as id,`def_nam` as full_name,km_ref as gridref,`east` as e,`north` as n,1 as reference_index from os_gaz where def_nam=$qplacename limit 15) 
+				UNION
+				(select id,full_name,'' as gridref,e,n,reference_index from loc_placenames where full_name=$qplacename limit 15)
+				");
+				
+				if (count($places) == 1) {
+					$full_name = _utf8_decode($places[0]['full_name']);
+					
+					$inners['places'] = array('title'=>'around '.$full_name,'url'=>"/search.php?placename=".$places[0]['id']."&amp;do=1&displayclass=search");
+					unset($others['places']);
+				} elseif (count($places)) {
+					require_once('geograph/conversions.class.php');
+					$conv = new Conversions;
+					$grs = array();
+					foreach($places as $id => $row) {
+						if (empty($row['gridref'])) {
+							list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
+						}
+						$grs[] = $places[$id]['gridref'];
+					}
+					//hmm what can we do with THEM...
+					if (count($grs)) {
+						$inners['places'] = array('title'=>'In likely squares','url'=>"/finder/search-service.php?q=grid_reference:".implode('%7C',$grs)."&amp;inner");
+					}
+				}
 			}
 
 			##########################################################
