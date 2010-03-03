@@ -55,7 +55,7 @@ if (!empty($_GET['q'])) {
 		$prev_fetch_mode = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-		$others = array();
+		$others = $otherstop = array();
 		$inners = array();
 		##########################################################
 
@@ -83,18 +83,23 @@ if (!empty($_GET['q'])) {
 			if ($grid_ok) {
 				$gr = $square->grid_reference;
 				
-				$others['browse'] = array('title'=>'Browse Page for '.$gr,'url'=>"/gridref/$gr");
-				$others['links'] = array('title'=>'Links Page for '.$gr,'url'=>"/gridref/$gr/links");
+				$otherstop['browse'] = array('title'=>'Browse Page for '.$gr,'url'=>"/gridref/$gr");
+				$otherstop['links'] = array('title'=>'Links Page for '.$gr,'url'=>"/gridref/$gr/links");
 				
 				$old = $sphinx->qclean;
 
-				//todo check for high res - eg centisquare (brwose has a centisquare filter) 
-				
 				//todo - also have special handling myriad?
+				
+				if ($square->natgrlen == 6) { //centisquare
+					
+					$inners['centi'] = array('title'=>'In Centisquare '.$sphinx->qclean,'url'=>"/gridref/$gr?inner&centi=".strtoupper($sphinx->qclean));
+					
+					$otherstop['self'] = array('title'=>'Multi Search for '.$gr,'url'=>"/finder/multi.php?q=$gr");
+				}
 				
 				if ($square->natgrlen == 2) { //hectad!
 					$hectad  = $square->gridsquare.intval($square->eastings/10).intval($square->northings/10);
-					$others['browse'] = array('title'=>'Hectad Page for '.$hectad,'url'=>"/gridref/".$hectad);
+					$otherstop['browse'] = array('title'=>'Hectad Page for '.$hectad,'url'=>"/gridref/".$hectad);
 					
 					$inners['browse'] = array('title'=>'In Hectad '.$hectad,'url'=>"/finder/search-service.php?q={$square->gridsquare}+$hectad&amp;inner");
 					
@@ -107,11 +112,11 @@ if (!empty($_GET['q'])) {
 					if (!empty($ids) && count($ids)) {
 
 						if (count($ids) > 15) {
-							$inners['browse'] = array('title'=>'In '.$gr,'url'=>"/gridref/$gr?inner");
+							$inners['browse'] = array('title'=>'In '.$gr.' ['.$sphinx->resultCount.']','url'=>"/gridref/$gr?inner");
 						} else {
 							$u2 = urlencode($sphinx->qclean);
 
-							$inners['browse'] = array('title'=>'In '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
+							$inners['browse'] = array('title'=>'In '.$gr.' ['.$sphinx->resultCount.']','url'=>"/finder/search-service.php?q=$u2&amp;inner");
 						}
 					}
 
@@ -122,7 +127,7 @@ if (!empty($_GET['q'])) {
 
 						$u2 = urlencode($sphinx->q);
 
-						$inners['taken'] = array('title'=>'Taken From '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
+						$inners['taken'] = array('title'=>'Taken From '.$gr.' ['.$sphinx->resultCount.']','url'=>"/finder/search-service.php?q=$u2&amp;inner");
 					}
 
 					##########################################################
@@ -133,7 +138,7 @@ if (!empty($_GET['q'])) {
 						//search-service automatically searches nearby, if first param is a gr, so swap them
 						$u2 = urlencode("-grid_reference:{$square->grid_reference} @* {$square->grid_reference}");
 
-						$inners['mentioning'] = array('title'=>'Mentioning '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
+						$inners['mentioning'] = array('title'=>'Mentioning '.$gr.' ['.$sphinx->resultCount.']','url'=>"/finder/search-service.php?q=$u2&amp;inner");
 					}
 
 					##########################################################
@@ -217,7 +222,7 @@ if (!empty($_GET['q'])) {
 						
 						$full_name = _utf8_decode($places[0]['full_name']);
 						
-						$others['text'] = array('title'=>'Images near '.$full_name.' in '.$places[$id]['gridref'],'url'=>"/search.php?placename=".$places[$id]['id']."&amp;do=1");
+						$otherstop['place'.$id] = array('title'=>'Images near '.$full_name.' in '.$places[$id]['gridref'],'url'=>"/search.php?placename=".$places[$id]['id']."&amp;do=1");
 					}
 					//hmm what can we do with THEM...
 					if (count($grs)) {
@@ -259,7 +264,11 @@ if (!empty($_GET['q'])) {
 
 			##########################################################
 		}
-
+		
+		if (!empty($otherstop)) {
+			$others = array_merge($otherstop,$others);
+		}
+		
 		$smarty->assign_by_ref("others",$others);
 		$smarty->assign_by_ref("inners",$inners);
 	}
