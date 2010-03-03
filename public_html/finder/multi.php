@@ -172,7 +172,7 @@ if (!empty($_GET['q'])) {
 					$inners['text'] = array('title'=>'One Text Match','url'=>"/frame.php?id=".implode(',',$ids));
 				} else {
 					$u3 = urlencode($sphinx->q);
-					$inners['text'] = array('title'=>'Textual Matches','url'=>"/finder/search-service.php?q=$u3&amp;inner");
+					$inners['text'] = array('title'=>'Textual Matches ['.$sphinx->resultCount.']','url'=>"/finder/search-service.php?q=$u3&amp;inner");
 
 				}
 				unset($others['text']);
@@ -257,7 +257,8 @@ if (!empty($_GET['q'])) {
 
 					$inners['category'] = array('title'=>'Category ',$row['imageclass'],'url'=>"/search.php?imageclass=".urlencode($row['imageclass'])."&amp;do=1&displayclass=search");
 				} else {
-					$inners['category'] = array('title'=>'Images in similar categories','url'=>"/finder/search-service.php?q=category:$u2&amp;inner");
+					//todo - link to a category (or tags!) search page...
+					$inners['category'] = array('title'=>'Images in similar categories','url'=>"/finder/search-service.php?q=imageclass:$u2&amp;inner");
 
 				}
 			}
