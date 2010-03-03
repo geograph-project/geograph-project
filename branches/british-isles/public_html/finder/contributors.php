@@ -46,6 +46,11 @@ if (!empty($_GET['q'])) {
 	
 	$cacheid .=".".$pg;
 	
+	if (isset($_REQUEST['inner'])) {
+		$cacheid .= '.iframe';
+		$smarty->assign('inner',1);
+	}
+	
 	if (!$smarty->is_cached($template, $cacheid)) {
 	
 		$sphinx->processQuery();
@@ -78,7 +83,7 @@ if (!empty($_GET['q'])) {
 			$smarty->assign("query_info",$sphinx->query_info);
 
 			if ($sphinx->numberOfPages > 1) {
-				$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
+				$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).(isset($_REQUEST['inner'])?'&amp;inner':'')."&amp;page=") );
 				$smarty->assign("offset",(($pg -1)* $sphinx->pageSize)+1);
 			}
 			$ADODB_FETCH_MODE = $prev_fetch_mode;
