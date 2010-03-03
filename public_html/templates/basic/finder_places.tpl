@@ -1,5 +1,9 @@
 {assign var="page_title" value="Place Search"}
+{if $inner}
+{include file="_basic_begin.tpl"}
+{else}
 {include file="_std_begin.tpl"}
+{/if}
 {literal}
 <style type="text/css">
 	ul.explore tt {
@@ -11,8 +15,9 @@
   <script type="text/javascript">
   
   function focusBox() {
-  	el = document.getElementById('fq');
-  	el.focus();
+  	if (el = document.getElementById('fq')) {
+  		el.focus();
+  	}
   }
   AttachEvent(window,'load',focusBox,false);
   
@@ -20,22 +25,24 @@
 
 {/literal}
 
-<h2><a href="/finder/">Finder</a> :: Places</h2>
+{if !$inner}
+	<h2><a href="/finder/">Finder</a> :: Places</h2>
 
-<form action="{$script_name}" method="get" onsubmit="focusBox()">
-	<div class="interestBox">
-		<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-		<input type="submit" value="Search"/><br/>
-		<label for="fuzzy">Include 'fuzzy' matches?</label> <input type="checkbox" name="f" id="fuzzy" {if $fuzzy}checked{/if}/>
-		<!--<label for="loc">Search Localities?</label> <input type="checkbox" name="l" id="loc" {if $loc}checked{/if}/>
-		<label for="palce" style="color:lightgrey">Include other features?</label> <input type="checkbox" name="p" id="place" {if $place}checked{/if} disabled/>-->
-	</div>
-</form>
+	<form action="{$script_name}" method="get" onsubmit="focusBox()">
+		<div class="interestBox">
+			<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<input type="submit" value="Search"/><br/>
+			<label for="fuzzy">Include 'fuzzy' matches?</label> <input type="checkbox" name="f" id="fuzzy" {if $fuzzy}checked{/if}/>
+			<!--<label for="loc">Search Localities?</label> <input type="checkbox" name="l" id="loc" {if $loc}checked{/if}/>
+			<label for="palce" style="color:lightgrey">Include other features?</label> <input type="checkbox" name="p" id="place" {if $place}checked{/if} disabled/>-->
+		</div>
+	</form>
 
-{if count($results) eq 15}
-	<p>
-		<small>&middot; To refine the results simply add more keywords (view <a href="#cheatsheet">Cheatsheet</a>)</small>
-	</p>
+	{if count($results) eq 15}
+		<p>
+			<small>&middot; To refine the results simply add more keywords (view <a href="#cheatsheet">Cheatsheet</a>)</small>
+		</p>
+	{/if}
 {/if}
 
 {if $query_info}
@@ -67,6 +74,12 @@
 	<p>{$query_info}</p>
 {/if}
 
+
+
+{if $inner}
+</body>
+</html>
+{else}
 <hr/>
 <div style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
@@ -80,5 +93,5 @@
 	</ul>
 </div>
 
-
 {include file="_std_end.tpl"}
+{/if}

@@ -1,5 +1,9 @@
 {assign var="page_title" value="Contributor Search"}
+{if $inner}
+{include file="_basic_begin.tpl"}
+{else}
 {include file="_std_begin.tpl"}
+{/if}
 {literal}
 <style type="text/css">
 	ul.explore tt {
@@ -11,8 +15,9 @@
   <script type="text/javascript">
   
   function focusBox() {
-  	el = document.getElementById('fq');
-  	el.focus();
+  	if (el = document.getElementById('fq')) {
+  		el.focus();
+  	}
   }
   AttachEvent(window,'load',focusBox,false);
   
@@ -29,22 +34,24 @@
 
 {/literal}
 
-<h2><a href="/finder/">Finder</a> :: Contributors</h2>
+{if !$inner}
+	<h2><a href="/finder/">Finder</a> :: Contributors</h2>
 
-<form action="{$script_name}" method="get" onsubmit="focusBox()">
-	<p>
-		<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-		<input type="submit" value="Search"/>
-	</p>
-	{if $popup}
-		<input type="hidden" name="popup" value=""/>
+	<form action="{$script_name}" method="get" onsubmit="focusBox()">
+		<p>
+			<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<input type="submit" value="Search"/>
+		</p>
+		{if $popup}
+			<input type="hidden" name="popup" value=""/>
+		{/if}
+	</form>
+
+	{if count($results) eq 15}
+		<p>
+			<small>&middot; To refine the results simply add more keywords (view <a href="#cheatsheet">Cheatsheet</a>)</small>
+		</p>
 	{/if}
-</form>
-
-{if count($results) eq 15}
-	<p>
-		<small>&middot; To refine the results simply add more keywords (view <a href="#cheatsheet">Cheatsheet</a>)</small>
-	</p>
 {/if}
 
 <ol start="{$offset}">
@@ -77,7 +84,10 @@
 	<p>{$query_info}</p>
 {/if}
 
-
+{if $inner}
+</body>
+</html>
+{else}
 <div class="interestBox" style="margin-top:60px;">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
 	<ul class="explore">
@@ -89,3 +99,4 @@
 
 
 {include file="_std_end.tpl"}
+{/if}

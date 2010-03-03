@@ -48,6 +48,11 @@ if (!empty($_GET['q'])) {
 	
 	$cacheid .=".".$pg;
 	
+	if (isset($_REQUEST['inner'])) {
+		$cacheid .= '.iframe';
+		$smarty->assign('inner',1);
+	}
+	
 	if (!$smarty->is_cached($template, $cacheid)) {
 		
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
@@ -96,14 +101,14 @@ if (!empty($_GET['q'])) {
 				$smarty->assign("query_info",$sphinx->query_info);
 
 				if ($sphinx->numberOfPages > 1) {
-					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).($fuzzy?"&amp;f=on":'')."&amp;page=") );
+					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).($fuzzy?"&amp;f=on":'').(isset($_REQUEST['inner'])?'&amp;inner':'')."&amp;page=") );
 					$smarty->assign("offset",$offset);
 				}
 				$ADODB_FETCH_MODE = $prev_fetch_mode;
 			}
 		} else {
 			$smarty->assign("query_info","Search will only return 1000 results - please refine your search");
-			$smarty->assign('pagesString', pagesString($pg,1,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
+			$smarty->assign('pagesString', pagesString($pg,1,$_SERVER['PHP_SELF']."?q=".urlencode($q).(isset($_REQUEST['inner'])?'&amp;inner':'')."&amp;page=") );
 
 		}
 	}
