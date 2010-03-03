@@ -1,10 +1,10 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id: places.php 5068 2008-12-02 02:24:19Z barry $
+ * $Id: contributors.php 6407 2010-03-03 20:44:37Z barry $
  * 
  * GeoGraph geographic photo archive project
- * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
+ * This file copyright (C) 2008 Barry Hunter (geo@barryhunter.co.uk)
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,42 +22,42 @@
  */
 
 require_once('geograph/global.inc.php');
+init_session();
 
 
-header('Content-type: application/json');
 
 
-customExpiresHeader(3600);
+$smarty = new GeographPage;
+$template = 'finder_categories.tpl';
 
-if (!empty($_REQUEST['q'])) {
-	$q=trim($_REQUEST['q']);
-	
+if (!empty($_GET['q'])) {
+	$q=trim($_GET['q']);
+
 	$sphinx = new sphinxwrapper($q);
 
 	//gets a cleaned up verion of the query (suitable for filename etc) 
 	$cacheid = $sphinx->q;
 
-	$sphinx->pageSize = $pgsize = 60; 
+	$sphinx->pageSize = $pgsize = 60;
 
 	
-	$pg = (!empty($_REQUEST['page']))?intval(str_replace('/','',$_REQUEST['page'])):0;
+	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	if (empty($pg) || $pg < 1) {$pg = 1;}
 	
 	$cacheid .=".".$pg;
 	
-
-		
-	$offset = (($pg -1)* $sphinx->pageSize)+1;
-
-	if ($offset < (1000-$pgsize) ) { 
+	if (isset($_REQUEST['inner'])) {
+		$cacheid .= '.iframe';
+		$smarty->assign('inner',1);
+	}
+	
+	if (!$smarty->is_cached($template, $cacheid)) {
+	
 		$sphinx->processQuery();
-
-
-
-		$ids = $sphinx->returnIds($pg,'category');
 		
-		if (!empty($ids) && count($ids)) {
+		$ids = $sphinx->returnIds($pg,'category');	
 
+		if (count($ids)) {
 			$where = "category_id IN(".join(",",$ids).")";
 
 			$db = GeographDatabaseConnection(true);
@@ -66,38 +66,31 @@ if (!empty($_REQUEST['q'])) {
 
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$rows = $db->getAssoc("
-			select category_id,imageclass
+			select category_id,imageclass,c as images
 			from category_stat 
 			where $where
 			limit $limit");
 
-			$sep = "[";
 			$results = array();
 			foreach ($ids as $c => $id) {
 				$row = $rows[$id];
-				if (!preg_match('/^(Supplemental|Geograph|Accept)/i',$row['imageclass'])) {
-				
-					print $sep;
-					print '"'.trim(addslashes($row)).'"';
-
-					$sep = ",";
-				}
+				$row['category_id'] = $id;
+				$results[] = $row;
 			}
-			print "]\n";
-			
-			
-			
-		} else {
-			print "[]";
+			$smarty->assign_by_ref('results', $results);
+			$smarty->assign("query_info",$sphinx->query_info);
+
+			if ($sphinx->numberOfPages > 1) {
+				$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).(isset($_REQUEST['inner'])?'&amp;inner':'')."&amp;page=") );
+				$smarty->assign("offset",(($pg -1)* $sphinx->pageSize)+1);
+			}
+			$ADODB_FETCH_MODE = $prev_fetch_mode;
 		}
-	} else {
-		print "[]";
-
 	}
-} else {
-	print "[]";
-}
 	
+	$smarty->assign("q",$sphinx->qclean);
 
+}
 
-?>
+$smarty->display($template,$cacheid);
+

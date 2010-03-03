@@ -258,7 +258,7 @@ if (!empty($_GET['q'])) {
 					$inners['category'] = array('title'=>'Category ',$row['imageclass'],'url'=>"/search.php?imageclass=".urlencode($row['imageclass'])."&amp;do=1&displayclass=search");
 				} else {
 					//todo - link to a category (or tags!) search page...
-					$inners['category'] = array('title'=>'Images in similar categories','url'=>"/finder/search-service.php?q=imageclass:$u2&amp;inner");
+					$inners['category'] = array('title'=>'Categories Matching '.$sphinx->qclean.' ['.$sphinx->resultCount.']','url'=>"/finder/categories.php?q=$u2&amp;inner");
 
 				}
 			}
