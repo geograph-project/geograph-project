@@ -3,12 +3,12 @@
 
 <h2>My own images I've "Liked" {if $criteria}<small style="font-weight:normal">, noted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
 
-   <form method="get" action="{$script_name}" div style="padding:10px">
+   <form method="get" action="{$script_name}" style="padding:10px">
     <p>Type: <select name="type" onchange="this.form.submit()">
     	{html_options options=$types selected=$type}
     </select> 
   <noscript>
-    <input type="submit" value="Go"/></noscript</p></form>
+    <input type="submit" value="Go"/></noscript></p></form>
     
 	{foreach from=$images item=image}
 	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">

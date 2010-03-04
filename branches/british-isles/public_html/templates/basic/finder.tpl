@@ -29,7 +29,17 @@ h4.title {
 
  <h2>Find Stuff on Geograph</h2>
 
-<div style="position:relative;height:500px;">
+
+<form action="/finder/multi.php" method="get" onsubmit="focusBox()">
+	<p>
+		<label for="fq">Combined Search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+		<input type="submit" value="Search"/><sup style="color:red">Beta</sup> (Enter a placename, grid reference, word search, or persons name) 
+	</p>
+</form>
+
+<p>or run one of many searches...</p>
+
+<div style="position:relative;height:600px;">
 	<div class="tabHolder">
 	{dynamic}
 		{if $enable_forums}
