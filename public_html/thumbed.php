@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: submissions.php 6368 2010-02-13 19:45:59Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2007 Barry Hunter (geo@barryhunter.co.uk)
@@ -34,25 +34,26 @@ customGZipHandlerStart();
 $USER->mustHavePerm("basic");
 
 
-$template='submissions.tpl';
+$template='thumbed.tpl';
 
-$max_gridimage_id = 0;
+$max_vote_id = 0;
 $count = 0;
 if (!empty($_GET['next'])) {
 	$token=new Token;
 	
 	if ($token->parse($_GET['next']) && $token->hasValue("id")) {
-		$max_gridimage_id = intval($token->getValue("id"));
+		$max_vote_id = intval($token->getValue("id"));
 		$count = intval($token->getValue("c"));
 	} else {
 		die("invalid token");
 	}
 }
 
+$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'';
 
 $ab=floor($USER->user_id/10000);
 	
-$cacheid="user$ab|{$USER->user_id}|{$max_gridimage_id}";
+$cacheid="user$ab|{$USER->user_id}|{$max_gridimage_id}|$type";
 
 //what style should we use?
 $style = $USER->getStyle();
@@ -68,17 +69,26 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
-
+	$types = array(''=>'Either','img'=>'Image','desc'=>'Description');
+	$smarty->assign_by_ref('types', $types);
+	$smarty->assign_by_ref('type', $type);
+	
 	$imagelist=new ImageList;
 
+	if ($type == 'desc' || $type =='img') {
+		$where = "type = '$type'";
+	} else {
+		$where = "type in ('img','desc')";
+	}
 	
-	$sql="select gi.*,grid_reference ".
-		"from gridimage as gi ".
-		"inner join gridsquare as gs using(gridsquare_id) ".
-		"where moderation_status != 'rejected' ".
-		"and gi.user_id={$USER->user_id} ".
-		($max_gridimage_id?" and gridimage_id < $max_gridimage_id ":'').
-		"order by gridimage_id desc limit 20";
+	$sql="select gi.*,type,vote_id,ts ".
+		"from vote_log as vl ".
+		"inner join gridimage_search as gi on (vl.id = gi.gridimage_id and vl.user_id = gi.user_id) ".
+		"where $where ".
+		"and vl.user_id={$USER->user_id} ".
+		($max_vote_id?" and vote_id < $max_vote_id ":'').
+		"group by gridimage_id ".
+		"order by vote_id desc limit 20";
 			
 	$imagelist->_getImagesBySql($sql);
 	
@@ -90,23 +100,23 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$first = $imagelist->images[0];
 		
-		$smarty->assign('criteria', $first->submitted);
+		$smarty->assign('criteria', $first->ts);
 
 		$last = $imagelist->images[count($imagelist->images)-1];
 
-		$max_gridimage_id = $last->gridimage_id;
+		$max_vote_id = $last->vote_id;
 		$count++;
 
 		if ($count < 10 && count($imagelist->images) == 20) {
 			$token=new Token;
-			$token->setValue("id", intval($max_gridimage_id));
+			$token->setValue("id", intval($max_vote_id));
 			$token->setValue("c", intval($count));
 
 			$smarty->assign('next', $token->getToken());
 		}
 	}
 	
-	if ($max_gridimage_id && isset($_SERVER['HTTP_REFERER'])) {
+	if ($max_vote_id && isset($_SERVER['HTTP_REFERER'])) {
 		$ref = @parse_url($_SERVER['HTTP_REFERER']);
 		if (!empty($ref['query'])) {
 			$ref_query = array();
@@ -114,7 +124,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (!empty($ref_query['next'])) {
 				$smarty->assign('prev', $ref_query['next']);
 			}
-		} elseif ($ref['path'] == '/submissions.php') {
+		} elseif ($ref['path'] == '/thumbed.php') {
 			$smarty->assign('prev', 1);
 		}
 	}
