@@ -53,7 +53,7 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 
 $ab=floor($USER->user_id/10000);
 	
-$cacheid="user$ab|{$USER->user_id}|{$max_gridimage_id}|$type";
+$cacheid="user$ab|{$USER->user_id}|{$max_vote_id}|$type";
 
 //what style should we use?
 $style = $USER->getStyle();

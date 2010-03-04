@@ -1,4 +1,4 @@
-{assign var="page_title" value="Muli Search"}
+{assign var="page_title" value="Multi Search"}
 {include file="_std_begin.tpl"}
 {literal}
 
