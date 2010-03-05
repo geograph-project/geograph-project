@@ -107,6 +107,7 @@ END_HELP
 exit;
 
 }
+############################################################################
 
 if ($mysql)
 {
@@ -114,59 +115,61 @@ if ($mysql)
    system("sudo /etc/init.d/mysql $arg");
 }
 
+############################################################################
+
 if ($apache)
 {
    #we've got a separate command to do this, but needs to be root...
    my $fastopt=$fast?"--fast":"";
    system("sudo webservers $fastopt ".$ARGV[0]);
-
 }
+
+############################################################################
 
 if ($today)
 {
-	print "Copying log files from webservers...\n";
+   print "Copying log files from webservers...\n";
 
-	my $logdir="/var/www/stats/today";
+   my $logdir="/var/www/stats/today";
 
+   my $server;
+   my $merge="sudo -u geograph sh -c \"clfmerge ";
+   foreach $server (@servers)
+   {
+      #`sudo -u geograph rm $logdir/$server` if (-e "$logdir/$server");
+      #`sudo -u geograph scp $server-pvt:/var/www/geograph_live/logs/access_log $logdir/$server`;
+       `sudo -u geograph rsync $server-pvt:/var/www/geograph_live/logs/access_log $logdir/$server`;
 
-	my $server;
-   	my $merge="sudo -u geograph sh -c \"clfmerge ";
-	foreach $server (@servers)
-   	{
-#		`sudo -u geograph rm $logdir/$server` if (-e "$logdir/$server");
-#		`sudo -u geograph scp $server-pvt:/var/www/geograph_live/logs/access_log $logdir/$server`;
-                `sudo -u geograph rsync $server-pvt:/var/www/geograph_live/logs/access_log $logdir/$server`;
+      $merge.=" $logdir/$server";
+   }
+   foreach $server (@servers)
+   {
+      my $file = $server."static";
+      #`sudo -u geograph rm $logdir/$file` if (-e "$logdir/$file");
+      #`sudo -u geograph scp $server-pvt:/var/www/geograph_static/logs/access_log $logdir/$file`;
+       `sudo -u geograph rsync $server-pvt:/var/www/geograph_static/logs/access_log $logdir/$file`;
 
-		$merge.=" $logdir/$server";
-	}
-        foreach $server (@servers)
-        {
-		my $file = $server."static";
-#               `sudo -u geograph rm $logdir/$file` if (-e "$logdir/$file");
-#               `sudo -u geograph scp $server-pvt:/var/www/geograph_static/logs/access_log $logdir/$file`;
-                `sudo -u geograph rsync $server-pvt:/var/www/geograph_static/logs/access_log $logdir/$file`;
+      $merge.=" $logdir/$file";
+   }
 
+   print "Merging and fixing up logfiles...\n";
+   $merge.="|ipfix|toclf > $logdir/today.log\"";
+   `$merge`;
 
-                $merge.=" $logdir/$file";
-        }
-	
-	print "Merging and fixing up logfiles...\n";
-	$merge.="|ipfix|toclf > $logdir/today.log\"";
-	`$merge`;
+   if (!$filesonly) {
+      print "Running webalizer...\n";
+      `sudo -u geograph webalizer -c $logdir/today.conf`;
 
-	if (!$filesonly) {
-		print "Running webalizer...\n";
-		`sudo -u geograph webalizer -c $logdir/today.conf`;
-	
-		print "Done - view today's stats at http://stats.geograph.org.uk/today\n\n";
+      print "Done - view today's stats at http://stats.geograph.org.uk/today\n\n";
 
-        	print "Running referrers...\n";
-	        `perl $logdir/refs.pl`;
+      print "Running referrers...\n";
+      `sudo perl $logdir/refs.pl`;
 
-        	print "Done - view today's referers at http://stats.geograph.org.uk/today/refs.php\n\n";
-	}
-
+      print "Done - view today's referers at http://stats.geograph.org.uk/today/refs.php\n\n";
+   }
 }
+
+############################################################################
 
 if ($cvsupdate)
 {
@@ -175,9 +178,10 @@ if ($cvsupdate)
    my $update_out = `cd /var/www/geograph_svn && sudo -u geograph svn update --ignore-externals $rev`;
    print "$update_out\n\n";
 
-if ($update_out =~ /^C/m) {
-   print "*******************************\n\n\nWARNING: Conflicted Files!\n\n\n*******************************\n\n";
-} 
+   if ($update_out =~ /^C/m) 
+   {
+      print "*******************************\n\n\nWARNING: Conflicted Files!\n\n\n*******************************\n\n";
+   } 
 
    #now we need to rsync that to the webserver staging areas
 
@@ -196,34 +200,30 @@ if ($update_out =~ /^C/m) {
 
        print "Copying updates to $server...\n";
        `sudo -u geograph $cmd`;
-
    }
 
+   if (my @files = ($update_out =~ /([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
+     &update_revision_file('/var/www/geograph_svn',@files);
+     foreach my $server (@servers)
+       {
+          my $cmd="rsync ".
+           "/var/www/geograph_svn/libs/conf/revisions.conf.php ".
+           "$server-pvt:/var/www/geograph_svn/libs/conf/";
 
-if (my @files = ($update_out =~ /([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
-  &update_revision_file('/var/www/geograph_svn',@files);
-  foreach my $server (@servers)
-    {
-       my $cmd="rsync ".
-        "/var/www/geograph_svn/libs/conf/revisions.conf.php ".
-        "$server-pvt:/var/www/geograph_svn/libs/conf/";
+          print "Copying Revision File to $server...\n";
+          `sudo -u geograph $cmd`;
+       }
+   }
 
-       print "Copying Revision File to $server...\n";
-       `sudo -u geograph $cmd`;
-
-    }
-}
-
-#my $all = `svn status /var/www/geograph_svn/public_html -v`;
-#if (my @files = ($all =~ /\/var\/www\/geograph_svn\/([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
-#  &update_revision_file('/var/www/geograph_svn',@files);
-#}
-
+   #my $all = `svn status /var/www/geograph_svn/public_html -v`;
+   #if (my @files = ($all =~ /\/var\/www\/geograph_svn\/([^ ]+\.js|[^ ]+?\.css)'?$/mg)) {
+   #  &update_revision_file('/var/www/geograph_svn',@files);
+   #}
 
    print "\nDone.\n\n";
 }
 
-
+############################################################################
 
 if ($tracker) {
    print "Updating tracker staging area...\n";
@@ -232,123 +232,116 @@ if ($tracker) {
    print "$update_out\n\n";
 
    #sync tracker site
-    my $cmd="rsync ".
+   my $cmd="rsync ".
         "--verbose ".
         "--archive ".
         "--links ".
         "--cvs-exclude ".
         "--exclude-from=/var/www/geograph_svn/scripts/makelive-exclusion ".
-	"--exclude=torrents ".
+        "--exclude=torrents ".
         "/var/www/geograph_svn/apps/tracker/ ".
         "/var/www/rivettracker/";
 
-       print "Copying torrent tracker updates\n";
-       `sudo -u geograph $cmd`;
-
-
-
+   print "Copying torrent tracker updates\n";
+   `sudo -u geograph $cmd`;
 
    print "\nDone.\n\n";
 }
 
+############################################################################
+
 if ($makelive)
 {
 
-
-#Has the list been specified?
-if(!@filelist){
-        print "ERROR: *** You did not specify any --include options, Try geograph --help\n";
-        exit;
-}
-
-
-my $dryrun=($docopy==0)?"--dry-run":"";
-
-my $filter="";
-if (@exfilelist) {
-        my $exp;
-        foreach $exp (@exfilelist)
-        {
-                $filter.="--exclude=$exp ";
-        }
-}
-my $inc;
-foreach $inc (@filelist)
-{
-        $filter.="--include=$inc ";
-}
-
-#allow directories
-$filter.="--include '*/' ";
-
-#exclude all files that make it this far
-$filter.="--exclude '*' ";
-
-
-my $cmd="rsync ".
-        "--verbose ".
-        "--archive ".
-        "--links ".
-        "--cvs-exclude ".
-        "--exclude-from=/var/www/geograph_svn/scripts/makelive-exclusion ".
-        $filter.
-        "--stats $dryrun ".
-        "/var/www/geograph_svn/ ".
-        '/var/www/geograph_live/';
-
-print "Executing:\n$cmd\n\n";
-
-my $rsync_out=`sudo -u geograph $cmd`;
-print $rsync_out;
-print "\n\n";
-
-
-if ($docopy==0)
-{
-        print "NOTE: That was a DRY RUN - use --live for real\n\n";
-}
-else
-{
-
-   #replicate to webservers
-   my $server;
-   foreach $server (@servers)
-   {
-       my $cmd="rsync ".
-        "--verbose ".
-        "--archive ".
-        "--links ".
-        "--cvs-exclude ".
-        "--exclude-from=/var/www/geograph_svn/scripts/makelive-exclusion ".
-        $filter.
-        "/var/www/geograph_live/ ".
-        "$server-pvt:/var/www/geograph_live/";
-
-       print "Copying to $server...\n";
-       `sudo -u geograph $cmd`;
-
+   #Has the list been specified?
+   if(!@filelist){
+      print "ERROR: *** You did not specify any --include options, Try geograph --help\n";
+      exit;
    }
 
-  if (my @files = ($rsync_out =~ /([^\n\r ]+\.js|[^\n\r ]+?\.css)'?$/msg)) {
-    &update_revision_file('/var/www/geograph_live',@files);
-    foreach my $server (@servers)
-    {
-       my $cmd="rsync ".
-        "/var/www/geograph_live/libs/conf/revisions.conf.php ".
-        "$server-pvt:/var/www/geograph_live/libs/conf/";
+   my $dryrun=($docopy==0)?"--dry-run":"";
 
-       print "Copying Revision File to $server...\n";
-       `sudo -u geograph $cmd`;
+   my $filter="";
+   if (@exfilelist) {
+      my $exp;
+      foreach $exp (@exfilelist)
+      {
+         $filter.="--exclude=$exp ";
+      }
+   }
+   my $inc;
+   foreach $inc (@filelist)
+   {
+      $filter.="--include=$inc ";
+   }
 
-    }
-  }
+   #allow directories
+   $filter.="--include '*/' ";
+
+   #exclude all files that make it this far
+   $filter.="--exclude '*' ";
 
 
+   my $cmd="rsync ".
+           "--verbose ".
+           "--archive ".
+           "--links ".
+           "--cvs-exclude ".
+           "--exclude-from=/var/www/geograph_svn/scripts/makelive-exclusion ".
+           $filter.
+           "--stats $dryrun ".
+           "/var/www/geograph_svn/ ".
+           '/var/www/geograph_live/';
 
-        print "Files are now live at http://www.geograph.org.uk\n\n";
+   print "Executing:\n$cmd\n\n";
+
+   my $rsync_out=`sudo -u geograph $cmd`;
+   print $rsync_out;
+   print "\n\n";
+
+   if ($docopy==0)
+   {
+      print "NOTE: That was a DRY RUN - use --live for real\n\n";
+   }
+   else
+   {
+      #replicate to webservers
+      my $server;
+      foreach $server (@servers)
+      {
+          my $cmd="rsync ".
+              "--verbose ".
+              "--archive ".
+              "--links ".
+              "--cvs-exclude ".
+              "--exclude-from=/var/www/geograph_svn/scripts/makelive-exclusion ".
+              $filter.
+              "/var/www/geograph_live/ ".
+              "$server-pvt:/var/www/geograph_live/";
+
+          print "Copying to $server...\n";
+          `sudo -u geograph $cmd`;
+      }
+
+      if (my @files = ($rsync_out =~ /([^\n\r ]+\.js|[^\n\r ]+?\.css)'?$/msg)) {
+         &update_revision_file('/var/www/geograph_live',@files);
+         foreach my $server (@servers)
+         {
+            my $cmd="rsync ".
+            "/var/www/geograph_live/libs/conf/revisions.conf.php ".
+            "$server-pvt:/var/www/geograph_live/libs/conf/";
+
+            print "Copying Revision File to $server...\n";
+            `sudo -u geograph $cmd`;
+         }
+      }
+
+      print "Files are now live at http://www.geograph.org.uk\n\n";
+   }
 }
 
-}
+############################################################################
+############################################################################
 
 sub update_revision_file {
 	my $folder = shift;
@@ -389,6 +382,8 @@ sub update_revision_file {
 	close (OUT);
 	
 }
+
+############################################################################
 
 1;
 
