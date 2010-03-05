@@ -44,7 +44,21 @@
 	<div class="side" style="width:{$mosaic_width}px;">&nbsp;</div>
 	<div class="cnr"></div>
 	</div>
+
+
+{if $hectads}
+<p><small>Nearby completed hectads: 
+{foreach from=$hectads key=id item=obj}
+{if $obj.hectad == $gridref2} 
+<b>{$gridref2}</b>,
+{else}
+<a title="View Mosaic for {$obj.hectad}, completed {$obj.last_submitted}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad}</a>,
+{/if}
+{/foreach} <a href="/statistics/fully_geographed.php?myriad={$myriad}">More</a></small></p>
+{else}
 <br/>
+{/if}
+
 <div style="float:left; width:{$overview_width+30}px; height:{$overview_height+30}px; position:relative">
 	{include file="_overview.tpl"}
 </div>

@@ -43,6 +43,18 @@
 <div style="font-size:0.8em; color:gray;">Last updated: {$updated|date_format:"%e %B, %H:%M"}</div>
 
 <h3>Links</h3>
+
+{if $hectads}
+Nearby hectads: 
+{foreach from=$hectads key=id item=obj}
+{if $obj.hectad == $hectad} 
+<b>{$hectad}</b>,
+{else}
+<a title="View Page for {$obj.hectad}, completed {$obj.last_submitted}" href="/gridref/{$obj.hectad}">{$obj.hectad}</a>,
+{/if}
+{/foreach} <a href="/statistics/fully_geographed.php?myriad={$myriad}">More</a>
+{/if}
+
 <ul class="explore">
 	
 	<li style="list-style-image: url('http://{$static_host}/img/links/20/map.png');"><a title="View map for {$hectad}" href="/mapbrowse.php?t={$map_token}">View Geograph <b>Coverage Map</b></a> or <img src="http://{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">View a <b>printable check sheet</b></a></li>
