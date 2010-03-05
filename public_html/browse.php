@@ -927,7 +927,7 @@ if ($grid_given)
 			$square->assignDiscussionToSmarty($smarty);
 		}
 		if ($db) 
-			$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' LIMIT 1"));
+			$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' AND largemap_token != '' LIMIT 1"));
 				
 		//look for images from here...
 		$sphinx = new sphinxwrapper();

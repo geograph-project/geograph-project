@@ -173,7 +173,7 @@ if ($grid_given)
 		
 		$smarty->assign('hectad', $hectad = $square->gridsquare.intval($square->eastings/10).intval($square->northings/10));
 		$db = GeographDatabaseConnection(true);
-		$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' LIMIT 1"));
+		$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' AND largemap_token != '' LIMIT 1"));
 		
 		if (!empty($_GET['taken'])) {
 			$smarty->assign('image_taken',$_GET['taken']);
