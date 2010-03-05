@@ -101,8 +101,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
 	
 
-	preg_match("/([A-Z]+\d)5(\d)5$/",$gridref,$matches);
-	$smarty->assign('gridref2',$matches[1].$matches[2] );
+	preg_match("/([A-Z]+)(\d)5(\d)5$/",$gridref,$matches);
+	$smarty->assign('gridref2',$matches[1].$matches[2].$matches[3] );
+	$smarty->assign('myriad',$matches[1] );
 
 	if ($mosaic->pixels_per_km >= 40) {
 		$left=$mosaic->map_x;
@@ -131,6 +132,11 @@ ORDER BY count DESC,last_date DESC
 
 		$users=&$db->GetAll($sql);
 		$smarty->assign_by_ref('users', $users);
+		
+		
+		$hectads=&$db->GetAll("select hectad,largemap_token,last_submitted from hectad_stat where x between {$mosaic->map_x}-20 and {$mosaic->map_x}+20 and y between {$mosaic->map_y}-20 and {$mosaic->map_y}+20 and largemap_token != '' order by y desc,x");
+		$smarty->assign_by_ref('hectads', $hectads);
+		
 	}
 }
 

@@ -98,7 +98,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$overview2->assignToSmarty($smarty, 'overview2');
 	$smarty->assign('marker2', $overview2->getBoundingBox($mosaic));
 
-	
+			
+	$hectads=&$db->GetAll("select hectad,last_submitted from hectad_stat where x between {$row['x']}-15 and {$row['x']}+15 and y between {$row['y']}-15 and {$row['y']}+15 order by y desc,x");
+	$smarty->assign_by_ref('hectads', $hectads);
+
+
 	$smarty->assign($row);
 
 	$smarty->assign('myriad',preg_replace('/\d+/','',$hectad));
