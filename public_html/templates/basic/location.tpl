@@ -88,7 +88,19 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	<li style="list-style-type:none">Interactive Map: <img src="http://{$static_host}/img/links/20/clusters.png" width="20" height="20" alt="clusters icon" align="absmiddle"/> <a href="/mapper/clusters.php#ll={$lat},{$long}&amp;z=12&amp;t=p&amp;r=c"><b>Clusters</b></a></li>
 
 </ul>
-<hr style="margin-top:5px; margin-bottom:10px"/>
+
+<form method="get" action="/search.php">
+	<div class="interestBox" style="margin-top:5px; margin-bottom:10px">
+	<b>Search local images</b>:  
+	<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+	<input type="submit" value="Search"/>
+	<input type="hidden" name="location" value="{$gridref}"/>
+	<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
+	<input type="radio" name="distance" value="3" id="d3"/><label for="d3">inc surrounding squares</label>
+	<input type="hidden" name="do" value="1"/>
+	</div> 
+</form>	
+
 {if $overview}
 <div style="clear:both; float:right; width:{$overview_width+30}px; position:relative">
 
@@ -111,6 +123,8 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </div>
 </div>
 {/if}
+
+
 
 	{if $title}
 		{assign var="urltitle" value=$title|escape:'url'}

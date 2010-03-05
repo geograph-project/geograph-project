@@ -230,13 +230,13 @@ table.navtable {
    
    <div style="line-height:1.2em;padding-top:2px;">
    {if $hectad}</b>
-   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
+   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/gridref/{$hectad}">{$hectad}</a></b>  
    {if $hectad_row}
    <div  style="background-color:skyblue;padding:5px;margin:5px"><a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a></div>
    {/if}
    {else}Grid Reference at centre
  {if $token_zoomout}
- <a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$gridref}</a>
+ <a style="color:#000066" {if $user_id}href="/search.php?gridref={$gridref}&amp;u={$user_id}&amp;do=1" title="Search for images centered around {$gridref}"{else}href="/gridref/{$gridref}/links" title="Links page for {$gridref}"{/if}>{$gridref}</a>
  {else}
  {$gridref}
  {/if}{/if}</div>
