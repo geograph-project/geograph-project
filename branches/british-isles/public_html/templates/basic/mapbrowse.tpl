@@ -228,11 +228,11 @@ table.navtable {
   <tr><!-- row 6 -->
    <td colspan="4" class="textcell" align="center">
    
-   <div style="line-height:1em;padding-top:2px;">
+   <div style="line-height:1.2em;padding-top:2px;">
    {if $hectad}</b>
    Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/search.php?{if $user_id}gridref={$gridref}&amp;u={$user_id}&amp;do=1{else}q={$gridref}{/if}" title="Search for images centered around {$gridref}">{$hectad}</a></b>  
    {if $hectad_row}
-   <a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a>
+   <div  style="background-color:skyblue;padding:5px;margin:5px"><a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}">view large map</a></div>
    {/if}
    {else}Grid Reference at centre
  {if $token_zoomout}
@@ -315,6 +315,9 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 <div class="tabHolder" style="margin-top:3px">
 	Style: 
 	<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/map/{$mosaic_token}?depth=0">Coverage</a>
+	{if $hectad && $hectad_row}
+		<a class="tab nowrap" title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}" style="background-color:yellow">Large Map!</a>
+  	{/if}
 	{dynamic}
 	{if $realname}
 		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2">Personalised</a>
