@@ -176,7 +176,7 @@ if ($grid_given)
 		$smarty->assign('gridsquare', $square->gridsquare);
 		$smarty->assign('eastings', $square->eastings);
 		$smarty->assign('northings', $square->northings);
-		$smarty->assign('hectad', $square->gridsquare.intval($square->eastings/10).intval($square->northings/10));
+		$smarty->assign('hectad', $hectad = $square->gridsquare.intval($square->eastings/10).intval($square->northings/10));
 		$smarty->assign('x', $square->x);
 		$smarty->assign('y', $square->y);
 		
@@ -926,7 +926,9 @@ if ($grid_given)
 		if ($CONF['forums']) {
 			$square->assignDiscussionToSmarty($smarty);
 		}
-		
+		if ($db) 
+			$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' LIMIT 1"));
+				
 		//look for images from here...
 		$sphinx = new sphinxwrapper();
 		if (!isset($viewpoint_count) && $viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference)) {
