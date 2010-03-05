@@ -109,8 +109,6 @@ for ($from=$start; $start<=$max; $start+=$perpage)
 	$sql = "select gridimage_id,comment from gridimage_search where gridimage_id between $start and ".($start+$perpage-1)." and (comment like '%[[%' or comment like '%/photo/%')";
 	
 
-	print "$sql\n";
-	
 	$bits = array();
 	
 	
@@ -134,12 +132,12 @@ for ($from=$start; $start<=$max; $start+=$perpage)
 		
 		$recordSet->MoveNext();
 	}
-				
+	
 	$recordSet->Close();
 
 	if (count($bits)) {
 		$sql = "INSERT INTO gridimage_backlink VALUES ".implode(',',$bits);
-		print "$sql\n";
+		print "Inserting ".count($bits)." Rows...";
 		$db->Execute($sql);
 	}
 
