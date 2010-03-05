@@ -4,7 +4,7 @@
 {if $gridref2}
 <h2>Geograph Mosaic for <a href="/gridref/{$gridref2}">{$gridref2}</a></h2>
 {else}
-<h2>Geograph Map for {$gridref}</h2>
+<h2>Geograph Map for <a href="/gridref/{$gridref}">{$gridref}</a></h2>
 {/if}
 	<div class="map" style="height:{$mosaic_height+20}px;width:{$mosaic_width+20}px">
 	<div class="cnr"></div>
@@ -88,7 +88,7 @@
 	<p align="center" style="font-size:0.8em">{$mosaic_updated}</p>
 {/if}
 
-<p align="center"><a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a> | <a href="/mapsheet.php?t={$mosaic_token}">Printable Checksheet for this square</a></p>
+<p align="center">{if $gridref2}More links for <a href="/gridref/{$gridref2}">{$gridref2}</a> |{/if} <a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a> | <a href="/mapsheet.php?t={$mosaic_token}">Printable Checksheet for this square</a></p>
 
 <br/>
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
