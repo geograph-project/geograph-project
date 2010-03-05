@@ -99,7 +99,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('marker2', $overview2->getBoundingBox($mosaic));
 
 			
-	$hectads=&$db->GetAll("select hectad,last_submitted from hectad_stat where x between {$row['x']}-15 and {$row['x']}+15 and y between {$row['y']}-15 and {$row['y']}+15 order by y desc,x");
+	$hectads=&$db->GetAll("select hectad,last_submitted,(geosquares>=landsquares) as completed from hectad_stat where x between {$row['x']}-15 and {$row['x']}+15 and y between {$row['y']}-15 and {$row['y']}+15 order by y desc,x");
 	$smarty->assign_by_ref('hectads', $hectads);
 
 

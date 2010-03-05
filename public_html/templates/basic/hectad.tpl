@@ -50,7 +50,7 @@ Nearby hectads:
 {if $obj.hectad == $hectad} 
 <b>{$hectad}</b>,
 {else}
-<a title="View Page for {$obj.hectad}, completed {$obj.last_submitted}" href="/gridref/{$obj.hectad}">{$obj.hectad}</a>,
+<a title="View Page for {$obj.hectad}{if $obj.completed}, completed {$obj.last_submitted}{/if}" href="/gridref/{$obj.hectad}">{$obj.hectad}</a>,
 {/if}
 {/foreach} <a href="/statistics/fully_geographed.php?myriad={$myriad}">More</a>
 {/if}
