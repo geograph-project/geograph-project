@@ -1146,6 +1146,11 @@ class GeographUser
 			{
 				$smarty = new GeoGraphPage;
 				
+				//HACK for CDN - people trying to login should be redirected to the real domain. 
+				if ($_SERVER['HTTP_HOST'] == 'real.www.geograph.org.uk') {
+					$smarty->assign_by_ref('script_uri', "http://www.geograph.org.uk".$_SERVER['REQUEST_URI']);
+				}
+				
 				$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0);
 				$smarty->assign('inline', $inline);
 				$smarty->assign('email', $email);

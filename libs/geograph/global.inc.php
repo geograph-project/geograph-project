@@ -267,7 +267,7 @@ function __autoload($class_name) {
                 $con = ob_get_clean();
                 mail('geograph@barryhunter.co.uk','[Geograph Error] '.date('r'),$con);
 		header("HTTP/1.1 505 Server Error");
-                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:geograph@barryhunter.co.uk">let us know</a> what you where doing that lead up to this error');
+                die("Fatal Internal Error, the developers have been notified, if possible please <a href='mailto:geograph@barryhunter.co.uk?subject=$class_name'>let us know</a> what you where doing that lead up to this error");
         }
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
@@ -310,6 +310,25 @@ function init_session()
 
 	//tell apache our ID, handy for logs
 	@apache_note('user_id', $GLOBALS['USER']->user_id);
+	
+	//HACK for CDN - under heavy traffic this could be uncommented (or enabled via curtail_level) to shift of non logged in traffic to cdn. 
+	// could for example only enable for a % of traffic, or based on IP etc etc
+	/*
+	if (	empty($GLOBALS['USER']->user_id) 
+		&& empty($_COOKIE[session_name()])
+		&& $_SERVER['HTTP_HOST'] == 'www.geograph.virtual'
+		&& empty($_POST['password'])
+		&& (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
+		&& (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
+	   ) {
+		header("HTTP/1.0 307 Temporary Redirect");
+		header("Status: 307 Temporary Redirect");
+		header("Location: http://www2.geograph.org.uk{$_SERVER['REQUEST_URI']}");
+		print "<a href=\"http://www2.geograph.org.uk{$_SERVER['REQUEST_URI']}\">Click to continue</a>";
+		exit;
+	}
+	*/
+	
 }
 
 #################################################
