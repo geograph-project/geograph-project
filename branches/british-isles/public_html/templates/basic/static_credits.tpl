@@ -81,13 +81,14 @@
     </ul>
 
 
-    <h3>Supporting Sites</h3>
+    <h3>Supporting Functionality</h3>
     <p>The following support Geograph in various functions:</p>
     
     <ul>
      <li>Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}</li>
      <li>Online image manipulation by {external href="http://picnik.com/" text="picnik.com"}</li>
      <li>Interactive 3D image viewer by {external href="http://cooliris.com/" text="cooliris.com"}</li>
+     <li>{external href="http://www.easyalgo.com/eaflashupload.aspx" title="Upload multiple files with" text="EAFlashUpload flash file uploader"}</li>
     </ul>
     <p>NOTE: use of these features does not imply endorsement by the host organizations</p>
     

@@ -30,8 +30,6 @@ div:target {
 </style>
 <a name="top"></a>
 
-<div style="float:right; position:relative; text-align:center; width:180px; border:1px solid red; padding:10px; background-color:lightgrey">Code for pasting into a Geograph related page <input type=text size="10" value="[[[{$image->gridimage_id}]]]" readonly="readonly"/></div>
-
 <div style="float:left; position:relative; padding-right:10px;"><h2><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
 alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" align="top" /></a> <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>
 
@@ -56,26 +54,26 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	<br style="clear:both"/>
 </div>
 
+<p><b>Thank you for your interest in this photo</b>, you are more than welcome to use it as long as you <b>follow a few basic requirements:</b></p>
+
    <div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
-   	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
+   	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed" style="padding-left:20px"/></a><br/>
    	[ Click to see full Licence Deed ]
    </div>
 
-<p><i>Thank you for your interest in this photo, you are more than welcome to use it as long as you follow a few basic requirements:</i></p>
-
 <ul class="checklist">
 
-<li style="border: 3px solid pink;"><b>Under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited as specified by the contributor, an example of good wording is shown above.<small><br/>({if $image->credit_realname}The contributor <tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}The contributor of this photos is <tt style="color:red;font-size:1.3em">{$image->realname|escape:'html'}</tt>{/if})</small></b></li>
+<li>Under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited as specified by the contributor, an example of good wording is shown above.<small><br/>({if $image->credit_realname}The contributor <tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>{else}The contributor of this photos is <tt style="color:red;font-size:1.3em">{$image->realname|escape:'html'}</tt>{/if})</small></li>
 
-<li><b>You should also mention that the photo is copyrighted but also licensed for further reuse.</b> <small>If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.</small></li>
+<li>You should also mention that the photo is copyrighted but also licensed for further reuse. <small>If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.</small></li>
 
 </ul>
 
-<p><i>and if a web based project:</i></p>
+<p><b>Web based project?</b><span id="hideweb"> (<a href="javascript:void(show_tree('web'));">Expand</a>)</span></p>
 
-<ul class="checklist">
+<ul class="checklist" style="display:none" id="showweb">
 
-<li style="border: 3px solid pink;"><b>We do ask you be polite and not abuse the Geograph website resources.</b> <br/>
+<li><b>We do ask you be polite and not abuse the Geograph website resources.</b> <br/>
 <i>Please do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"} the fullsize image directly off our servers, this will likely be blocked.</i><br/>
 Instead download a copy, and upload it to your own webspace. <b>
 {if $image->isLandscape()}{/if}
@@ -87,7 +85,7 @@ or <a href="/more.php?id={$image->gridimage_id}">View other Sizes Available...</
 
 <li><small>Ideally you should link back to the main photo page, at <a href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</a>, where the latest information for the photo will be available.</small></li>
 </ul>
-
+<br style="clear:both"/>
 <p><i>For offline reproduction, wording similar to the following is recommended:</i></p>
 
 <form><textarea rows="3">Image Copyright {$image->realname|escape:'html'}. This work is licensed under the Creative Commons Attribution-Share Alike 2.0 Generic License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/2.0/ or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.</textarea></form>
@@ -96,6 +94,11 @@ or <a href="/more.php?id={$image->gridimage_id}">View other Sizes Available...</
 
 <div style="text-align:right; border-bottom:1px solid gray"><i>Thank you for your attention in this matter.</i></div>
 <br/><br/>
+<br/><br/>
+
+
+<div style="float:right; position:relative; text-align:center; width:180px; border:1px solid red; padding:10px; background-color:lightgrey">Code for pasting into a Geograph related page <input type=text size="10" value="[[[{$image->gridimage_id}]]]" readonly="readonly"/></div>
+
 
 <p>We have created some snippets of code to make using the photo easy on various websites or similar:</p>
 <br/>

@@ -4,6 +4,7 @@
     ServerAlias geograph.co.uk
     ServerAlias geograph.org.uk
     ServerAlias kml.geograph.org.uk
+    ServerAlias real.kml.geograph.org.uk
     ServerAlias www.geograph.co.uk
     ServerAlias schools.geograph.org.uk
     ServerAlias t0.www.geograph.org.uk
@@ -61,7 +62,7 @@
 	#canonical domain for .uk
 	#List of valid domains - all OTHERS are redirected back to www.
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
@@ -81,7 +82,7 @@
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
 	#List of valid urls on kml....
-    RewriteCond %{HTTP_HOST}   ^kml\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   kml\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/kml
     RewriteCond %{REQUEST_URI} !^/robots
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
@@ -107,7 +108,7 @@
 
 	#List of valid crawling domains (but maybe specific robots.txt for some below) 
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^kml\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^api\.geograph\.org\.uk [NC]

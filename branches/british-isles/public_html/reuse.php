@@ -21,8 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#if (strlen($_SERVER['HTTP_USER_AGENT']) < 4 && strlen($_SERVER['HTTP_REFERER']) < 4) {
+#	header("HTTP/1.0 401 Forbidden");
+#	print "Forbidden";
+#	exit;
+#}
+
 require_once('geograph/global.inc.php');
 
+session_cache_limiter('none');
 init_session();
 
 $smarty = new GeographPage;

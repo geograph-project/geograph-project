@@ -68,6 +68,7 @@ div:target { background-color:orange;padding-bottom:10px; }
 <b>Browsing</b> the site:
  <ul>
  <li><a href="#use">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
+ <li><a href="#thumbsup">I've seen little Thumbs Up symbols <img src="http://{$static_host}/img/thumbs.png" width="20" height="20" />, around the site, what are they?</a></li>
  <li><a href="#change">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
  <li><a href="#concern">I'm <b>concerned</b> about a photo or comment I have seen on the site.</a></li>
  <li><a href="#counties"><b>Counties</b>, I'm confused, which do you display?</a></li>
@@ -298,6 +299,19 @@ The <b>Geograph Website</b>:
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
+<div id="thumbsup">
+<a name="#thumbsup"></a>
+<h3>I've seen little Thumbs Up symbols <img src="http://{$static_host}/img/thumbs.png" width="20" height="20" />, around the site, what are they?</h3>
+<p>Simply click them if you like the image and/or description (separate icon for each). </p>
+
+<p>We don't know what use we will make of the data, but note that there are number of things we won't do. We won't disclose who is voting (all anonymous),
+ we won't be using it to produce leaderboards, and won't be disclosing which images that have few/no votes. The general idea is to simply find great content worth showcasing.</p>
+
+<p><a href="/help/voting">See this page</a> for a bit more information, and the general principles behind voting on Geograph.</p>
+
+</div>
+<div class="top"><a href="#top">back to top</a></div>
+
 <div id="use">
 <a name="use"></a>
 <h3>I would be interested in using Geograph content, is that possible?</h3>
@@ -306,14 +320,15 @@ The <b>Geograph Website</b>:
 	<p><b>All images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a></b>, see
 	licence details by viewing a full size image. Also look for the &quot;<i>Interested in reusing this image?</i>&quot; link under each image on the main photo page, which outlines easy ways to reuse the image.</p>
 
-	<blockquote>
-		<p><b>Are you a developer?</b> <br/>maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a></p>
+	<p><b>Are you a developer?</b></p>
+	<blockquote style="font-size:0.9em;margin-left:15px">
+		<p>... maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>?</p>
 	
 		<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for reusing images, 
 		beyond what's available via the RSS feeds above, in all likelihood we can provide a <a href="/help/api">feed</a> 
 		to suit your requirements.</p>
 
-		<p>The entire archive is also available for download via bittorrent - see 
+		<p>The entire archive is will be available for download via bittorrent - see 
 		{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
 		for details.</p>
 	</blockquote>

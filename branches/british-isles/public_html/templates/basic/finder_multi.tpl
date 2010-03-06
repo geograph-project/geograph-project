@@ -28,7 +28,7 @@
 	{foreach from=$inners item=item}
 		<div style="position:relative;float:left">
 			<div class="interestBox" style="margin-left:2px">{$item.title|escape:'html'|default:'Search'}</div>
-			<iframe src="{$item.url}" width="{if count($inners) eq 1}800{else}282{/if}" height="600"></iframe>
+			<iframe src="{$item.url}" width="{if count($inners) eq 1}800{elseif count($inners) eq 2}440{else}282{/if}" height="600"></iframe>
 		</div>
 	{/foreach}
 	<br style="clear:both"/>
