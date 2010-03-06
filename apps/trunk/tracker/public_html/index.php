@@ -112,6 +112,9 @@ if (file_exists("rss/rss.xml"))
 }
 ?>
 | <a href="/map.php">Peer Map</a>
+| <a href="http://www.geograph.org.uk/help/api">Live API</a>
+| <a href="http://data.geograph.org.uk/dumps/">Data Dumps</a>
+
   </div>
   
   <div id="logo">
