@@ -37,11 +37,7 @@ how much each person will climb when their pictures are moderated!{/if}</p>
 </table>
 
 
-<h2 style="margin-top:2em;margin-bottom:0"><a name="rate_graph"></a>Daily Submission Rate</h2>
-<p>Here's a graph of average daily submissions for the last few weeks...<br/>
-<img src="/img/rate.png" width="480" height="161" alt="daily submission rate graph"/>
-</p>
-
+<hr/>
 
  		
 {include file="_std_end.tpl"}
