@@ -1,11 +1,9 @@
 <VirtualHost *>
     DocumentRoot /var/www/geograph_live/public_html
     ServerName www.geograph.org.uk
-    ServerAlias geograph.co.uk
-    ServerAlias geograph.org.uk
     ServerAlias kml.geograph.org.uk
     ServerAlias real.kml.geograph.org.uk
-    ServerAlias www.geograph.co.uk
+    ServerAlias real.www.geograph.org.uk
     ServerAlias schools.geograph.org.uk
     ServerAlias t0.www.geograph.org.uk
     ServerAlias t0.geograph.org.uk
@@ -13,9 +11,8 @@
     ServerAlias api.geograph.org.uk
     ServerAlias toast.www.geograph.org.uk
 
-    ServerAlias ireland.geograph.org.uk
     ServerAlias www.geograph.ie
-    ServerAlias geograph.ie
+
 
     #create logformat like combined but with our user id and script timing
     LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%{host}i\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
@@ -54,24 +51,9 @@
 
     RewriteEngine on
 
-	#canonical domain for Ireland
-    RewriteCond %{HTTP_HOST}   ^geograph\.ie [NC,OR]
-    RewriteCond %{HTTP_HOST}   ^ireland\.geograph\.org\.uk [NC]
-    RewriteRule ^/(.*)         http://www.geograph.ie/$1 [L,R=permanent]
 
-	#canonical domain for .uk
-	#List of valid domains - all OTHERS are redirected back to www.
-    RewriteCond %{HTTP_HOST}   !^www\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !kml\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^schools\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
-    RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^toast\.www\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^api\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^$
-    RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
+
+
 
 	#List of valid urls on api...
     RewriteCond %{HTTP_HOST}   ^api\.geograph\.org\.uk [NC]
