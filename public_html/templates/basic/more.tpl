@@ -3,6 +3,9 @@
 {include file="_std_begin.tpl"}
 
 <a name="top"></a>
+{if $user->user_id == $image->user_id}
+<div style="float:right;position:relative"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a even larger version</a></div>
+{/if}
 
 <div style="float:left; position:relative; padding-right:10px;"><h2><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
 alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" align="top" /></a> <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>

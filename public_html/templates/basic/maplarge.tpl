@@ -52,7 +52,7 @@
 {if $obj.hectad == $gridref2} 
 <b>{$gridref2}</b>,
 {else}
-<a title="View Mosaic for {$obj.hectad}, completed {$obj.last_submitted}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad}</a>,
+<a title="View Photo Mosaic for {$obj.hectad}, completed {$obj.last_submitted}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad}</a>,
 {/if}
 {/foreach} <a href="/statistics/fully_geographed.php?myriad={$myriad}">More</a></small></p>
 {else}
