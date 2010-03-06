@@ -177,7 +177,7 @@ class RebuildUserStats extends EventHandler
 		}
 
 		$data = $db->getRow("SHOW TABLE STATUS LIKE 'user_stat_tmp'");
-		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*5)) {
+		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*15)) {
 			//make sure we have a recent table
 
 			$db->Execute("DROP TABLE IF EXISTS user_stat_old");
@@ -202,3 +202,4 @@ class RebuildUserStats extends EventHandler
 	}
 	
 }
+
