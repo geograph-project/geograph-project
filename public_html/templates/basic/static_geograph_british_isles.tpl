@@ -3,7 +3,8 @@
 
  <h2>Geograph British Isles</h2>
 
-<p>We are currently experimenting with calling the project "<a href="http://www.geograph.org.uk/">Geograph Britain and Ireland</a>". Uptil Feb 2010 we went by the title "Geograph British Isles", and used the following tag line:</p>
+<p>We are currently experimenting with calling the project "<a href="http://www.geograph.org.uk/">Geograph Britain and Ireland</a>". 
+Up until Feb 2010 we went by the title "Geograph British Isles", and used the following tag line:</p>
 
 
 <div class="interestBox">
