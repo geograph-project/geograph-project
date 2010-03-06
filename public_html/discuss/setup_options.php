@@ -52,7 +52,7 @@ $viewTopicsIfOnlyOneForum=0;
 $protectWholeForum=0;
 $protectWholeForumPwd='pwd';
 
-$postRange=20;
+$postRange=3;
 
 $dateFormat='j F Y H:i:s';
 

@@ -33,6 +33,6 @@ top submitters this week.</p>
 </tbody>
 </table>
 
-
+<hr/>
  		
 {include file="_std_end.tpl"}

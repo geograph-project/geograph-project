@@ -44,6 +44,9 @@ $replacement[]='<i>\\1</i>';
 $pattern[]="/\[[uU]\](.+?)\[\/[uU]\]/s";
 $replacement[]='<u>\\1</u>';
 
+$pattern[]="/\[big\](.+?)\[\/big\]/is";
+$replacement[]='<big>\\1</big>';
+
 $pattern[]="/\[code\](.+?)\[\/code\]/se";
 $replacement[]='"<pre>".str_replace("<br>","","\\1")."</pre>"'; //any real /n will become <br> later anyway
 
@@ -85,6 +88,9 @@ $replacement[]="[u]\\1[/u]";
 
 $pattern[]="/<pre>(.+?)<\/pre>/s";
 $replacement[]="[code]\\1[/code]";
+
+$pattern[]="/<big>(.+?)<\/big>/s";
+$replacement[]="[big]\\1[/big]";
 
 $pattern[]="/<font color=\"(#[A-F0-9]{6})\">(.+?)<\/font>/is";
 $replacement[]='[font\\1]\\2[/font]';

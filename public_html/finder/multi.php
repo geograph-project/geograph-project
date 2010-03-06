@@ -163,12 +163,12 @@ if (!empty($_GET['q'])) {
 			$old = $sphinx->q;
 			if (!preg_match('/@\w+/',$old)) {
 				//todo, maybe extend this to myriad etc?
-				$sphinx->q = "@(title,comment,imageclass) ".$sphinx->q;
+				$sphinx->q = "@(title,comment,imageclass,snippet,snippet_title) ".$sphinx->q;
 			}
 
 			$ids = $sphinx->returnIds($pg,'_images');
 			if (!empty($ids) && count($ids)) {
-				if (count($ids) == 1) {
+				if (0 && count($ids) == 1) {
 					$inners['text'] = array('title'=>'One Text Match','url'=>"/frame.php?id=".implode(',',$ids));
 				} else {
 					$u3 = urlencode($sphinx->q);

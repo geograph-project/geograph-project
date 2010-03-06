@@ -22,7 +22,7 @@
 		
 		
 		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="continue &gt;"/>{if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="apply changes"/>{/if}
-		<br/><span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]
+		<br/><span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]</span>
 		
 		</div>
 	  </div><br style="clear:both;"/>
