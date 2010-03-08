@@ -561,6 +561,7 @@ class sphinxwrapper {
 		
 		if ( $res===false ) {
 			$this->query_info = $cl->GetLastError();
+			$this->query_error = "Search Failed";
 			$this->resultCount = 0;
 			return 0;
 		} else {
