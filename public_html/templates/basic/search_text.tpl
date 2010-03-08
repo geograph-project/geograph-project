@@ -1,6 +1,12 @@
 {assign var="page_title" value="Advanced Search"}
 {include file="_std_begin.tpl"}
-
+<style type="text/css">
+{literal}
+#maincontent form label {
+	font-size:1em;
+}
+{/literal}
+</style>
 
 {if $errormsg}
 <p style="color:red"><b>{$errormsg}</b></p>
@@ -30,7 +36,7 @@
 {else}
 	<h2>Photograph Search</h2>
 {/if}
-<form action="/search.php?form=text" method="post" name="theForm" onsubmit="this.imageclass.disabled=false">
+<form action="/search.php?form=text" method="post" name="theForm" onsubmit="this.imageclass.disabled=false" style="background-color:#f9f9f9">
 	
 	<div class="tabHolder">
 		<a href="/search.php?form=simple" class="tab">simple search</a>
@@ -44,78 +50,97 @@
 	</div>
 	<div class="interestBox">
 		<div style="text-align:right">({newwin href="/article/Searching-on-Geograph" text="More information on the Search Engine"})</div>
-		<b>Centered Search:</b> (choose one)
+		<b>Centered Search:</b>
 	</div>
 	
 	
-		<table cellpadding="3" cellspacing="0"> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		<table cellpadding="3" cellspacing="0" width="100%"> 
+		  <tr> 
+			 <td colspan="2" style="padding-top:8px">
+				Show images within <select name="distance" id="distance" size="1" style="text-align:right"> 
+				  <option value=""> </option> 
+					{html_options options=$distances selected=$distance}
+				</select> of <select id="selector" onchange="showLocationBox()">
+				<option value="gridref"{if $gridref} selected{/if}>Grid reference</option>
+				<option value="postcode"{if $postcode} selected{/if}>Postcode</option>
+				<option value="placename"{if $placename} selected{/if}>Placename</option>
+				<option value="county_id"{if $county_id} selected{/if}>County</option>
+				</select>:</td> 
+			 <td class="nowrap">&nbsp;<input type="submit" value="Find"/></td> 
+		  </tr> 	
+		  <tr id="tr_gridref" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="gridref" id="l_gridref">grid reference</label></td> 
-			 <td><input type="text" name="gridref" id="gridref" value="{$gridref|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td><input type="text" name="gridref" id="gridref" value="{$gridref|escape:'html'}" class="searchinput"/></td> 
 			 <td>eg <tt>TQ 7050</tt> or <tt>N2343</tt></td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr id="tr_postcode" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="postcode" id="l_postcode">postcode</label></td> 
-			 <td><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput"/></td> 
 			 <td class="nowrap">eg <tt>RH13 1BU</tt> (GB &amp; NI)</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr id="tr_placename" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="placename" id="l_placename">placename</label></td> 
-			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
+			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput"/></td> 
 			 <td>eg <tt>Peterborough</tt></td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr id="tr_county_id" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="county_id" id="l_county_id">centre of county</label></td> 
 			 <td> 
-				<select name="county_id" id="county_id" size="1" class="searchinput" onchange="onlyone(this)" onblur="onlyone(this)"/> 
+				<select name="county_id" id="county_id" size="1" class="searchinput"> 
 				  <option value=""> </option> 
-					{html_options options=$countylist selected=$county_id}				  
-				  
+					{html_options options=$countylist selected=$county_id}
 				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr>
 		  <tr> 
-			 <td colspan="3"><small><small>
-			 Once you have selected one option the others will become unavailable, to choose a different search just clear your current selection. If you don't select anything you will be shown all images (matching filters below).</small></small>
-			 </td> 
-		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td><label for="distance" id="l_distance">distance to above</label></td> 
-			 <td> 
-				<select name="distance" id="distance" size="1" style="text-align:right" onchange="onlyone_part2(this.form)" onblur="onlyone_part2(this.form)"> 
-				  <option value=""> </option> 
-					{html_options options=$distances selected=$distance}
-				</select></td> 
-			 <td>&nbsp;<input type="submit" value="Find"/></td> 
-		  </tr> 
-		  <tr> 
-			 <td colspan="3">&nbsp;</td> 
+			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
 		  </tr> 
 		  <tr> 
 		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word Match search:</b>  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small>({newwin href="/article/Word-Searching-on-Geograph" text="open <b>word search help</b>"})</small></td>
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td><label for="searchtext" id="l_searchtext">keywords</label></td> 
-			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250"/>
+		  <tr> 
+			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
+		  </tr> 
+		  <tr onmouseover="this.style.background='#efefef';showHelp('keyword',true);" onmouseout="this.style.background='#ffffff';showHelp('keyword',false);"> 
+			 <td><label for="searchtext" id="l_searchtext">keywords</label>
+				<div style="position:relative; display:none" id="keyword_help">
+					<div style="position:absolute;top:17px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
+						<ul>
+							<li style="padding-bottom:5px">Separate multiple keywords with spaces</li>
+							<li style="padding-bottom:5px">Only matches whole words</li>
+							<li style="padding-bottom:5px"><b>Looking for exact match?</b><br/>&nbsp; Prefix a keyword with <tt>=</tt> (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small></li>
+							<li style="padding-bottom:5px"><b>Currently searches</b><ul>
+								<li>title, description, category, photographer name and shared description</li>
+								<li>image taken date ( <tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt> )</li>
+								<li>subject grid-reference <span class="nowrap">( <tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt> )</span></li>
+							</ul></li>
+							<li style="padding-bottom:5px">Punctuation is ignored</li>
+							<li style="padding-bottom:5px">Can match phrases [ <tt>"road bridge"</tt> ]</li>
+							<li style="padding-bottom:5px">Allows the OR keyword <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span></li>
+							<li style="padding-bottom:5px">Can exclude words [ <tt>-river</tt> ]</li>
+							<li>Not case sensitive.</small></li>
+						</ul>
+					</div>
+				</div>
+			</td> 
+			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250" onfocus="showHelp('keyword',true);" onblur="showHelp('keyword',false);"/>
 			 </td> 
 			 <td>eg <tt>bridge</tt></td> 
 		  </tr> 
-		  <tr> 
-			 <td colspan="2"><small>&middot; <b>Looking for exact match?</b> Prefix a keyword with <tt>=</tt>
-			 (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small></td> 
-			 <td>eg <tt>road =bridge</tt></td> 
-		  </tr> 
-		  <tr> 
-			 <td colspan="3"><small>&middot; Currently searches the title, description, category, photographer name and image taken date (<tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt>) fields, as well the subject grid-reference <span class="nowrap">(<tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt>)</span>, separate multiple keywords with spaces.</small></td> 
-		  </tr> 
-		  <tr> 
+		  <tr style="display:none"> 
 			 <td colspan="2"><small>
-			 &middot; Only matches whole words, punctuation is ignored, can match phrases [ <tt>"road bridge"</tt> ], allows the OR keyword <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span>, can exclude words [ <tt>-river</tt> ], and is not case sensitive.</small><br/>
+			 &middot; Separate multiple keywords with spaces; Only matches whole words; punctuation is ignored; can match phrases [ <tt>"road bridge"</tt> ]; allows the OR keyword <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span>; can exclude words [ <tt>-river</tt> ], and is not case sensitive.</small><br/>
 			 <br/></td> 
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-		 	 <td colspan="3" style="background:#dddddd;"><b>Optionally limit to results to: </b></td> 
+			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
+		  </tr> 
+		  <tr> 
+		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Limit to results to:</b></td> 
+		  </tr> 
+		  <tr> 
+			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="user_name">contributor</label></td> 
@@ -172,61 +197,57 @@
 				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr onmouseover="this.style.background='#efefef';showHelp('date',true);" onmouseout="this.style.background='#ffffff';showHelp('date',false);"> 
 			 <td><label for="submitted_startDay">submitted</label></td> 
 			 <td colspan="2"> 
-				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
-				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
+				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
 				</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td><label for="taken_startDay">taken</label></td> 
+		  <tr onmouseover="this.style.background='#efefef';showHelp('date',true);" onmouseout="this.style.background='#ffffff';showHelp('date',false);"> 
+			 <td><label for="taken_startDay">taken</label>
+			 
+				<div style="position:relative; display:none" id="date_help">
+					<div style="position:absolute;top:17px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
+						<ul>
+							<li style="padding-bottom:5px">You can just specify part of a date, for example just a year, or just month and year.</li>
+							<li>Setting both the start and end date to the same value allows you to find pictures on during that period, eg 'Jan 2001' or even just 1988</li>
+						</ul>
+					</div>
+				</div>
+			 </td> 
 			 <td> 
-				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
-				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
+				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
 				</td> 
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3"><small>
-			 You can just specify part of a date, for example just a year, or just month and year. Setting both the start and end date to the same value allows you to find pictures on during that period, eg 'Jan 2001' or even just 1988.</small>
-			 </td> 
+			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3">&nbsp;</td> 
-		  </tr> 
-		  <tr> 
-			 <td colspan="3" style="background:#dddddd;"><b>Specify how you would like the results displayed: </b></td> 
-		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td><label for="displayclass">format</label></td> 
-			 <td> 
-				<select name="displayclass" id="displayclass" size="1"> 
-					{html_options options=$displayclasses selected=$displayclass}
-				</select></td>
-			 <td>&nbsp;</td> 
-		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td><label for="breakby" id="l_breakby">group by</label></td> 
-			 <td colspan="2"> 
-				<select name="breakby" id="breakby" size="1"> 
-					{html_options options=$breakdowns selected=$breakby}
-				</select> then...</td> 
+			 <td colspan="3" style="background:#dddddd;"><b>Finally...</b></td> 
 		  </tr>
+		  <tr> 
+			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
+		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td><label for="orderby" id="l_orderby">order by</label></td> 
-			 <td colspan="2"> 
+			 <td colspan="3">I want to display a <select name="displayclass" id="displayclass" size="1"> 
+					{html_options options=$displayclasses selected=$displayclass}
+				</select> of <select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1"> 
+					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
+				</select> images per page,<br/> at most {newwin href="/help/one_result_per_group" title="Read more" text="one"} image from each <select name="groupby" id="groupby" size="1"> 
+					{html_options options=$groupbys selected=$groupby}
+				</select><sup style="color:red">new</sup>,<br/> would like a heading seperating images by <select name="breakby" id="breakby" size="1"> 
+					{html_options options=$breakdowns selected=$breakby}
+				</select>,<br/> and sorted in <span class="nowrap">(<input type="checkbox" name="reverse_order_ind"> reverse)
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);"> 
 					{html_options options=$sortorders selected=$orderby}
-				</select> <input type="checkbox" name="reverse_order_ind" id="reverse_order_ind" {$reverse_order_checked}/> <label for="reverse_order_ind" id="l_reverse_order_ind">reverse order</label></td> 
+				</select> order.</big></td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td>&nbsp;</td> 
-			 <td> {dynamic}
-				<select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1"> 
-					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
-				</select> <label for="resultsperpage">results per page</label>{/dynamic}</td>
-			 <td>&nbsp;<input type="submit" value="Find" style="font-size:1.3em"/></td>
+		  <tr> 
+			 <td colspan="2">&nbsp;</td> 
+			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 			 
 		  </tr> 
 		</table></form>
@@ -248,80 +269,21 @@ function updateBreakBy(that) {
 }
 
 
-var isvalue;
-var iscenter = false;
-
-function onlyone(that) {
-	if (that.name == 'county_id') {
-		isvalue = (that.selectedIndex > 0)?true:false;
-	} else if (that.name == 'all_ind') {
-		isvalue = that.checked;
-	} else {
-		isvalue = (that.value.length > 0)?true:false;
-	}
-	classname = (isvalue)?'disabledLabel':'';
-	f = that.form;
-	if (that.name != 'gridref') {
-		f.gridref.disabled = isvalue;
-		document.getElementById('l_gridref').className = classname;
-	}
-
-	if (that.name != 'postcode') {
-		f.postcode.disabled = isvalue;
-		document.getElementById('l_postcode').className = classname;
-	}
-	if (that.name != 'placename') {
-		f.placename.disabled = isvalue;
-		document.getElementById('l_placename').className = classname;
-	}
-	if (that.name != 'county_id') {
-		f.county_id.disabled = isvalue;
-		document.getElementById('l_county_id').className = classname;
-	}
-	iscenter = (isvalue && (that.name == 'gridref' || that.name == 'postcode' || that.name == 'placename' || that.name == 'county_id') );
+function showLocationBox() {
+	var ele = document.getElementById('selector');
 	
-	onlyone_part2(f);
-}
-	
-function onlyone_part2(f) {
-	
-	classname = (iscenter)?'disabledLabel':'';
-
-	f.distance.disabled = !iscenter;
-	document.getElementById('l_distance').className = (iscenter)?'':'disabledLabel';
-
-	if (f.distance.selectedIndex > 0) {
-		f.orderby.disabled = false;
-		document.getElementById('l_orderby').className = '';
-		f.reverse_order_ind.disabled = false;
-		document.getElementById('l_reverse_order_ind').className = '';
-				
-		f.orderby.options[1].className = '';
-	} else {
-		f.orderby.disabled = iscenter;
-		if (iscenter)
-			f.orderby.selectedIndex = 1 //todo this shouldnt be hardcoded!
-		else if (f.orderby.selectedIndex == 1)
-			f.orderby.selectedIndex = 0;
-		document.getElementById('l_orderby').className = classname;
-		
-		f.reverse_order_ind.disabled = iscenter;
-		document.getElementById('l_reverse_order_ind').className = classname;
-
-		f.orderby.options[1].className = classname;
+	for(q=0;q<ele.options.length;q++) {
+		document.getElementById('tr_'+ele.options[q].value).style.display = ele.options[q].selected?'':'none';
 	}
-	
 }
 
+ AttachEvent(window,'load',showLocationBox,false);
 
-onlyone_part2(document.theForm);
+function showHelp(which,show) {
+	document.getElementById(which+'_help').style.display=show?'':'none';
+}
 
 {/literal}
-
-{if $elementused}
-	onlyone(document.theForm.{$elementused});
-{/if}
-
 //--></script>
 
 

@@ -47,8 +47,12 @@ $smarty = new GeographPage;
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
 $imagestatuses = array('geograph' => 'geograph only','accepted' => 'supplemental only');
+
 $sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance');
-$breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted',);
+
+$breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','realname'=>'Contributor Name','user_id'=>'Contributor','imageclass'=>'Image Category',' '=>'','grid_reference'=>'Grid Reference','myriad'=>'Myriad','hectad'=>'Hectad');
+
+$groupbys = array(''=>'','takendays'=>'Day Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','auser_id'=>'Contributor','classcrc'=>'Image Category',' '=>'','agridsquare'=>'Grid Reference','amyriad'=>'Myriad','ahectad'=>'Hectad','scenti'=>'Centisquare');
 
 $displayclasses =  array(
 			'full' => 'full listing',
@@ -439,6 +443,7 @@ if (isset($_GET['fav']) && $i) {
 		} else {
 			$data['orderby'] = $query->orderby;
 		}
+		$data['groupby'] = $query->groupby;
 		$data['breakby'] = $query->breakby;
 		$data['displayclass'] = $query->displayclass;
 		$data['resultsperpage'] = $query->resultsperpage;
@@ -867,6 +872,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$smarty->assign('orderby', $query->orderby);
 		}
 		$smarty->assign('breakby', $query->breakby);
+		$smarty->assign('groupby', $query->groupby);
 		$smarty->assign('displayclass', $query->displayclass);
 		$smarty->assign('resultsperpage', $query->resultsperpage);
 		$smarty->assign('searchdesc', $query->searchdesc);
@@ -1234,7 +1240,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	}
 	
 	function advanced_form(&$smarty,&$db,$is_cachable = false) {
-		global $CONF,$imagestatuses,$sortorders,$breakdowns,$USER;
+		global $CONF,$imagestatuses,$sortorders,$breakdowns,$groupbys,$USER;
 
 		if ($_GET['form'] == 'first') {
 			$template = 'search_first.tpl';
@@ -1297,10 +1303,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			unset($sortorders['grid_reference']);
 			$sortorders['random'] = "Random";
 			
-			unset($breakdowns['imageclass']);
 			unset($breakdowns['realname']);
 			unset($breakdowns['title']);
-			unset($breakdowns['grid_reference']);
 			
 		} elseif (isset($_GET['Special'])) {
 			$USER->mustHavePerm("admin");
@@ -1374,6 +1378,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$smarty->assign_by_ref('sortorders', $sortorders);
 			$smarty->assign_by_ref('imagestatuses', $imagestatuses);
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
+			$smarty->assign_by_ref('groupbys', $groupbys);
 		}
 
 		$smarty->display($template, $is_cachable);
@@ -1444,6 +1449,20 @@ function smarty_function_searchbreak($params) {
 			$s = substr($image->submitted,0,4);
 			if ($last != $s)
 				$b = getFormattedDate($s);
+			$last = $s;
+			break;
+		case 'user_id':
+			$s = $image->realname;
+			if ($last != $s)
+				$b = $s;
+			$last = $s;
+			break;
+		case 'hectad':
+		case 'myriad':
+			preg_match('/^(\w+)(\d)\d(\d)\d$/',$image->grid_reference,$m);
+			$s = $m[1].($engine->criteria->breakby=='hectad'?$m[2].$m[3]:'');
+			if ($last != $s)
+				$b = $s;
 			$last = $s;
 			break;
 		default:
