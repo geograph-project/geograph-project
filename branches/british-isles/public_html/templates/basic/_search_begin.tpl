@@ -37,13 +37,20 @@ Display:
 <p>Your search for images<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
 {if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
 	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> images
-{else}{if $engine->islimited}
+{elseif $engine->islimited}
 	<b>{$engine->resultCount|number_format}</b> images
 {else}
 	the following
-{/if}{/if}:
+{/if}:
 
-{if $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->criteria->sphinx.compatible && $engine->criteria->sphinx.compatible_order && $engine->resultCount > $engine->maxResults}
+{if $engine->error}
+	<div style="padding:2px;border:1px solid red; text-align:center; background-color:pink;color:black;">
+		Unfortunatly it doesn't appear the search was processed,<br/>
+		this is most likly a invalid combination of search terms,<br/>
+		but could also be a temporarlly issue so you could try again in a little while.<br/>
+	</div>
+
+{elseif $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->criteria->sphinx.compatible && $engine->criteria->sphinx.compatible_order && $engine->resultCount > $engine->maxResults}
 	<div class="interestBox" style="border:1px solid pink;">
 		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However your search seems to be compatible with the legacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
 	</div>

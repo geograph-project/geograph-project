@@ -203,10 +203,11 @@ class SearchEngine
 		} elseif ($this->criteria->sphinx['no_legacy']) {
 			//oh dear, no point even trying :(
 			$this->resultCount = 0;
+			$this->error = "Impossible Search";
 			return 0; 
 		}
 	
-		if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty'])) { 
+		if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty']) && !empty($CONF['sphinx_host'])) { 
 			//this really should have been turned over to sphinx
 			header("HTTP/1.1 503 Service Unavailable");
 			$GLOBALS['smarty']->assign('searchq',stripslashes($_GET['q']));
@@ -484,9 +485,15 @@ END;
 		} 
 
 
-		if ($this->countOnly || !$this->resultCount)
+		if ($this->countOnly || !$this->resultCount) {
+			if (!empty($sphinx->query_error)) {
+				$this->error = $sphinx->query_error;
+			}
+			if (!empty($sphinx->query_info)) {
+				$this->info = $sphinx->query_info;
+			}
 			return 0;
-
+		}
 		$this->orderList = $ids;
 		
 		if ($sql_order == ' dist_sqd ') {
@@ -581,12 +588,13 @@ END;
 		} elseif ($this->criteria->sphinx['no_legacy']) {
 			//oh dear, no point even trying :(
 			$this->resultCount = 0;
+			$this->error = "Impossible Search";
 			return 0; 
 		}
 		# /run_via_sphinx
 		###################
 
-                if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty'])) {
+                if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty']) && !empty($CONF['sphinx_host'])) {
                         //this really should have been turned over to sphinx
                         header("HTTP/1.1 503 Service Unavailable");
                         $GLOBALS['smarty']->assign('searchq',stripslashes($_GET['q']));
@@ -776,6 +784,26 @@ END;
 		} else {
 			$recordSet =& $this->ExecuteCachedReturnRecordset($pg); 
 		}
+		
+		if (!empty($this->error)) {
+			ob_start();
+			print "\n\nHost: ".`hostname`."\n\n";
+			if (!empty($this->info)) {
+				print "Info: {$this->info}\n";
+			}
+			if (!empty($this->error)) {
+				print "Error: {$this->error}\n";
+			}
+			if (!empty($GLOBALS['USER']->user_id)) {
+				print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
+			}
+			unset($this->criteria->db);
+			print_r($this->criteria);
+			print_r($_SERVER);
+			$con = ob_get_clean();
+			mail('geograph@barryhunter.co.uk','[Geograph '.$this->error.'] '.$this->criteria->searchdesc,$con);
+		}
+		
 		//we dont actully want to process anything
 		if ($this->countOnly)
 			return 0;
