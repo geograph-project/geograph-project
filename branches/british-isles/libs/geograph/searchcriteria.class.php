@@ -271,10 +271,26 @@ class SearchCriteria
 							$this->sphinx['compatible_order'] = 0;
 							$this->sphinx['sort'] = 'takendays';
 							break;
+						case 'grid_reference':
+							$this->sphinx['sort'] = 'agridsquare';
+							$this->sphinx['compatible_order'] = 0;
+							break;
+						case 'hectad':
+							$this->sphinx['sort'] = 'ahectad';
+							$this->sphinx['compatible_order'] = 0;
+							$sql_order = '';
+							break;
+						case 'myriad':
+							$this->sphinx['sort'] = 'amyriad';
+							$this->sphinx['compatible_order'] = 0;
+							$sql_order = '';
+							break;
+						case 'user_id':
+							$this->sphinx['sort'] = 'auser_id';
+							break;
 						case 'realname':
 						case 'title':
 						case 'imageclass':
-						case 'grid_reference':
 						default: 
 							$this->sphinx['impossible']++;
 					}
@@ -293,6 +309,8 @@ class SearchCriteria
 			switch (str_replace(' desc','',$this->breakby)) {
 				case 'gridimage_id':
 				case 'submitted': 
+				case 'submitted_month': 
+				case 'submitted_year': 
 					$breakby = 'gridimage_id';
 					$sorder = '@id';
 					break;
@@ -329,9 +347,26 @@ class SearchCriteria
 				case 'imageclass':
 					$sorder = 'classcrc';
 					break;
+				case 'user_id':
+					$sorder = 'auser_id';
+					break;
+				case 'grid_reference':
+					$sorder = 'agridsquare';
+					break;
+				case 'hectad':
+					$sorder = 'ahectad';
+					$this->sphinx['no_legacy']=1;
+					break;
+				case 'myriad':
+					$sorder = 'amyriad';
+					$this->sphinx['no_legacy']=1;
+					break;
+				case 'centi':
+					$sorder = 'scenti';
+					$this->sphinx['no_legacy']=1;
+					break;
 				case 'realname':
 				case 'title':
-				case 'grid_reference':
 				default: 
 					$this->sphinx['impossible']++;
 			}
@@ -346,6 +381,39 @@ class SearchCriteria
 			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) {
 				$sql_order = $breakby.($sql_order?", $sql_order":'');
 				$this->sphinx['sort'] = "$sorder $sorder2".($this->sphinx['sort']?", {$this->sphinx['sort']}":'');
+			}
+		}
+		
+		if ($this->groupby) {
+			require_once ( "3rdparty/sphinxapi.php" ); //toload the sphinx constants
+
+			switch ($this->groupby) {
+				case 'submitted_month': 
+					$this->sphinx['groupby'] = array($this->groupby,SPH_GROUPBY_MONTH,$this->sphinx['sort']);
+					$this->sphinx['no_legacy']=1; 
+					break;
+				case 'submitted_year': 
+					$this->sphinx['groupby'] = array($this->groupby,SPH_GROUPBY_YEAR,$this->sphinx['sort']);
+					$this->sphinx['no_legacy']=1; 
+					break;
+				case 'submitted': 
+					$this->sphinx['groupby'] = array($this->groupby,SPH_GROUPBY_DAY,$this->sphinx['sort']);
+					$this->sphinx['no_legacy']=1; 
+					break;
+				case 'takendays': 
+				case 'classcrc': 
+				case 'clen': 
+				case 'auser_id': 
+				case 'agridsquare': 
+				case 'amyriad': 
+				case 'ahectad': 
+				case 'scenti': 
+					#function SetGroupBy ( $attribute, $func, $groupsort="@group desc" )
+					$this->sphinx['groupby'] = array($this->groupby,SPH_GROUPBY_ATTR,$this->sphinx['sort']);
+					$this->sphinx['no_legacy']=1; //todo - of course groupby could be implemented for some mysql queries!
+					break;
+				default: 
+					//$this->sphinx['impossible']++;
 			}
 		}
 		

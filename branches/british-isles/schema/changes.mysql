@@ -1110,3 +1110,10 @@ INDEX (  `gridimage_id` )
 
 #################################################
 
+
+ALTER TABLE  `queries` ADD  `groupby` VARCHAR( 32 ) NOT NULL AFTER  `breakby` ;
+ALTER TABLE  `queries_archive` ADD  `groupby` VARCHAR( 32 ) NOT NULL AFTER  `breakby` ;
+
+
+#################################################
+

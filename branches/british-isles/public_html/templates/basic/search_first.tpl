@@ -7,19 +7,22 @@
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
 
-<br/>
+	<div class="tabHolder">
+		<a href="/search.php?form=simple" class="tab">simple search</a>
+		<a href="/search.php?form=text" class="tab">Advanced Search</a> 
+		{dynamic}
+		{if $user->registered}
+		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>old advanced</small></a>
+		{/if}
+		{/dynamic}
+		<span class="tabSelected">first geographs</span>
+	</div>
+	<div class="interestBox">
+		<b>First Geograph Search</b>
+	</div>
+	<p>The old first geograph interface is now gone. But much of the functionality is now available in other ways, see below</p>
 
-<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-
-<h3 style="color:red">Sorry, this feature has been disabled</h3>
-
-<p>If you enjoyed this feature please <a title="Contact Us" href="/contact.php">Contact Us</a>{if $enable_forums}, or let us know via the <a href="/discuss/">Discussion Forum</a>{/if}, so we can work on alternatives...</p>
-
-<br/>
-
-<p>However much of the functionality is now available in other ways:</p>
-
-<div style="border:2px solid green; padding:20px; margin:20px">
+<div style="padding:20px;">
 
 <h3>First Geographs</h3>
 You can <b>now</b> search specifically for "First Geographs" in the <a href="{$script_name}?form=text">Normal Search</a></b>, just enter <tt>ftf:1</tt> as the last keyword. 

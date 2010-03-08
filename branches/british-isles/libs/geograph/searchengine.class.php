@@ -441,6 +441,9 @@ END;
 		if (!empty($this->criteria->sphinx['sort'])) {
 			$sphinx->setSort($this->criteria->sphinx['sort']);
 		}
+		if (!empty($this->criteria->sphinx['groupby'])) {
+			$sphinx->setGroupBy($this->criteria->sphinx['groupby'][0],$this->criteria->sphinx['groupby'][1],$this->criteria->sphinx['groupby'][2]);
+		}
 		if (empty($this->criteria->sphinx['sort']) || $this->criteria->sphinx['sort'] == '@relevance DESC, @id DESC') {
 			if (preg_match('/\w+/',preg_replace('/(@\w+ |\w+:)\w+/','',$this->criteria->sphinx['query']))) {
 				$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);

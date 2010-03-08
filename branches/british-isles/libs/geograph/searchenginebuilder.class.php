@@ -275,7 +275,7 @@ class SearchEngineBuilder extends SearchEngine
 	
 	function buildAdvancedQuery(&$dataarray,$autoredirect='auto')
 	{
-		global $CONF,$imagestatuses,$breakdowns,$sortorders,$USER;
+		global $CONF,$imagestatuses,$breakdowns,$groupbys,$sortorders,$USER;
 		$dataarray = array_map("strip_tags", $dataarray);
 		
 		if (empty($dataarray['distance'])) {
@@ -672,10 +672,17 @@ class SearchEngineBuilder extends SearchEngine
 					$sql .= ",orderby = ".$db->Quote($orderby);
 			}
 			
-			if (!empty($dataarray['breakby'])) {
+			if (!empty($dataarray['breakby']) && trim($dataarray['breakby'])) {
 				$sql .= ",breakby = ".$db->Quote($dataarray['breakby']);
 				if (!empty($breakdowns[$dataarray['breakby']])) {
 					$searchdesc .= ", by ".($breakdowns[$dataarray['breakby']]);
+				}
+			}
+
+			if (!empty($dataarray['groupby']) && trim($dataarray['groupby'])) {
+				$sql .= ",groupby = ".$db->Quote($dataarray['groupby']);
+				if (!empty($groupbys[$dataarray['groupby']])) {
+					$searchdesc .= ", one photo per ".($groupbys[$dataarray['groupby']]);
 				}
 			}
 

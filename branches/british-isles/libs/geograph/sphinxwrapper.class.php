@@ -59,7 +59,7 @@ class sphinxwrapper {
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 		
 			//remove unsuitable chars
-		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$-]+/',' ',trim(strtolower($q))));
+		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,-]+/',' ',trim(strtolower($q))));
 	
 			//remove any / not in quorum
 		$q = preg_replace('/(?<!")\//',' ',$q);
@@ -229,6 +229,9 @@ class sphinxwrapper {
 			}
 			
 			$this->sort = preg_replace('/@geodist \w+,?\s*/','',$this->sort);
+			$cl = $this->_getClient();
+			if (!empty($cl->_groupsort))
+				$cl->_groupsort = preg_replace('/@geodist \w+,?\s*/','',$cl->_groupsort);
 			
 		} else {
 			list($e,$n,$reference_index) = $conv->internal_to_national($data['x'],$data['y'],0);
@@ -273,6 +276,9 @@ class sphinxwrapper {
 				$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
 			} else {
 				$this->sort = preg_replace('/@geodist \w+,?\s*/','',$this->sort);
+				$cl = $this->_getClient();
+				if (!empty($cl->_groupsort))
+					$cl->_groupsort = preg_replace('/@geodist \w+,?\s*/','',$cl->_groupsort);
 			}
 		}
 	} 
