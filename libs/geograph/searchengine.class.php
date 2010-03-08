@@ -387,7 +387,6 @@ END;
 				$suggestions = $sphinx->didYouMean($sphinx->q);
 			} elseif (
 					$this->criteria->searchclass == 'Placename' 
-					&& strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE 
 					&& (empty($this->criteria->searchtext) || ($this->criteria->searchq == $this->criteria->searchtext) )
 					&& isset($GLOBALS['smarty'])
 				) {
@@ -618,7 +617,7 @@ END;
 
 	
 		//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
-		if ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
+		if ($this->criteria->searchclass == 'Placename' && isset($GLOBALS['smarty']) && (empty($this->criteria->searchtext) || ($this->criteria->searchq == $this->criteria->searchtext) )) {
 			$GLOBALS['smarty']->assign("suggestions",array(array(
 				'query'=>$this->criteria->searchq,
 				'gr'=>'(anywhere)',
