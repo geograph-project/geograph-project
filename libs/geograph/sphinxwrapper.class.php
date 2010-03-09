@@ -249,7 +249,8 @@ class sphinxwrapper {
 				for($x=$e-$d;$x<=$e+$d;$x++) {
 					for($y=$n-$d;$y<=$n+$d;$y++) {
 						list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
-						$grs[] = $gr2;
+						if (strlen($gr2) > 4)
+							$grs[] = $gr2;
 					}
 				}
 				$this->filters['grid_reference'] = "(".join(" | ",$grs).")";
@@ -259,7 +260,8 @@ class sphinxwrapper {
 				for($x=$e-$d;$x<=$e+$d;$x+=10) {
 					for($y=$n-$d;$y<=$n+$d;$y+=10) {
 						list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,2,$reference_index,false);
-						$grs[] = $gr2;
+						if (strlen($gr2) > 2)
+							$grs[] = $gr2;
 					}
 				}
 				$this->filters['hectad'] = "(".join(" | ",$grs).")";
