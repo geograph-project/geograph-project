@@ -106,19 +106,20 @@
 				<div style="position:relative; display:none" id="keyword_help">
 					<div style="position:absolute;top:17px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
 						<ul>
-							<li style="padding-bottom:5px">Separate multiple keywords with spaces</li>
-							<li style="padding-bottom:5px">Only matches whole words</li>
+							<li style="padding-bottom:5px">Separate multiple keywords with spaces, all keywords are required (ie AND)</li>
+							<li style="padding-bottom:5px">Only matches whole words, and Punctuation is ignored</li>
+							<li style="padding-bottom:5px">Not case sensitive</li>
 							<li style="padding-bottom:5px"><b>Looking for exact match?</b><br/>&nbsp; Prefix a keyword with <tt>=</tt> (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small></li>
 							<li style="padding-bottom:5px"><b>Currently searches</b><ul>
 								<li>title, description, category, photographer name and shared description</li>
 								<li>image taken date ( <tt>20071103</tt>, <tt>200711</tt>, <tt>2007</tt> or even <tt>April</tt>)</li>
 								<li>subject grid-reference <span class="nowrap">( <tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt> )</span></li>
-							</ul></li>
-							<li style="padding-bottom:5px">Punctuation is ignored</li>
+							</ul><i style="font-size:0.8em">(can optionally limit matches to a particular field, see 'word search help' above)</i></li>
 							<li style="padding-bottom:5px">Can match phrases [ <tt>"road bridge"</tt> ]</li>
 							<li style="padding-bottom:5px">Can use OR between keywords <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span></li>
-							<li style="padding-bottom:5px">Can exclude words [ <tt>-river</tt> ]</li>
-							<li>Not case sensitive.</small></li>
+							<li style="padding-bottom:5px">Can exclude words/terms [ <tt>canal -river</tt> ] or [ <tt>river -"road bridge"</tt> ]</li>
+							<li style="padding-bottom:5px">Instead run a ANY search [ <tt>~bridge road river</tt> ]</li>
+							<li><i>... plus more. See 'word search help' above.</i></li>
 						</ul>
 					</div>
 				</div>
