@@ -11,7 +11,7 @@
 		<br/><div style="font-size:0.7em;">[[[{$image->gridimage_id}]]]
 		{if $image->count}
 			<br/><br/>
-			{$image->count|thousends} images in {$image->group|default:'group'}
+			{$image->count|thousends} images in group
 		{/if}
 		</div>
 	  </div>
