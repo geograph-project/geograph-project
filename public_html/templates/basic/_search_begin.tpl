@@ -34,11 +34,11 @@ Display:
 <h2>Search Results</h2>
 
 
-<p>Your search for images<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
+<p>Your search{if !$engine->criteria->groupby} for images{/if}<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
 {if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
-	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> images
+	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> {if $engine->criteria->groupby}groups{else}images{/if}
 {elseif $engine->islimited}
-	<b>{$engine->resultCount|number_format}</b> images
+	<b>{$engine->resultCount|number_format}</b> {if $engine->criteria->groupby}groups{else}images{/if}
 {else}
 	the following
 {/if}:
