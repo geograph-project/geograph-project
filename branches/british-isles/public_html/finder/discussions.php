@@ -60,6 +60,8 @@ if (!empty($_GET['q'])) {
 			$sphinx->processQuery();
 			
 			if ($grouped) {
+				require_once ( "3rdparty/sphinxapi.php" ); //toload the sphinx constants
+			
 				$sphinx->setGroupBy('topic_id',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC");
 			}
 
