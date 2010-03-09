@@ -476,6 +476,12 @@ class sphinxwrapper {
 			print_r($this->filters);
 		}
 		$mode = SPH_MATCH_ALL;
+		
+		if (strpos($q,'=~') === 0) {
+			$q = preg_replace('/^=/','',$q);
+			$q = preg_replace('/\b(\w+)/','=$1',$q);
+		} 
+		
 		if (strpos($q,'~') === 0) {
 			$q = preg_replace('/^\~/','',$q);
 			
