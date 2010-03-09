@@ -68,22 +68,22 @@
 				</select>:</td> 
 			 <td class="nowrap">&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 	
-		  <tr id="tr_gridref" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr id="tr_gridref" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="gridref" id="l_gridref">grid reference</label></td> 
 			 <td><input type="text" name="gridref" id="gridref" value="{$gridref|escape:'html'}" class="searchinput"/></td> 
 			 <td>eg <tt>TQ 7050</tt> or <tt>N2343</tt></td> 
 		  </tr> 
-		  <tr id="tr_postcode" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr id="tr_postcode" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="postcode" id="l_postcode">postcode</label></td> 
 			 <td><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput"/></td> 
 			 <td class="nowrap">eg <tt>RH13 1BU</tt> (GB &amp; NI)</td> 
 		  </tr> 
-		  <tr id="tr_placename" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr id="tr_placename" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="placename" id="l_placename">placename</label></td> 
 			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput"/></td> 
 			 <td>eg <tt>Peterborough</tt></td> 
 		  </tr> 
-		  <tr id="tr_county_id" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr id="tr_county_id" onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="county_id" id="l_county_id">centre of county</label></td> 
 			 <td> 
 				<select name="county_id" id="county_id" size="1" class="searchinput"> 
@@ -101,7 +101,7 @@
 		  <tr> 
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef';showHelp('keyword',true);" onmouseout="this.style.background='#ffffff';showHelp('keyword',false);"> 
+		  <tr onmouseover="this.style.background='#efefef';showHelp('keyword',true);" onmouseout="this.style.background='#f9f9f9';showHelp('keyword',false);"> 
 			 <td><label for="searchtext" id="l_searchtext">keywords</label>
 				<div style="position:relative; display:none" id="keyword_help">
 					<div style="position:absolute;top:17px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
@@ -142,7 +142,7 @@
 		  <tr> 
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="user_name">contributor</label></td> 
 			 <td colspan="2"> 
 			 	<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput" style="width:200px"
@@ -155,7 +155,7 @@
 				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
 				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="moderation_status">classification</label></td> 
 			 <td> 
 				| <input type="radio" name="moderation_status" value="" checked/>either
@@ -164,7 +164,7 @@
 			 </td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
-		  <tr> 
+		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="imageclass">category</label></td> 
 			 <td>
 			 
@@ -179,15 +179,15 @@
 				</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="reference_index">country</label></td> 
 			 <td> 
-				| <input type="radio" name="reference_index" value="" checked/>Either
+				| <input type="radio" name="reference_index" value="" checked/>either
 				| {html_radios name="reference_index" options=$references selected=$reference_index separator=" | "} 
 			 </td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="gridsquare">myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
@@ -196,14 +196,14 @@
 				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef';showHelp('date',true);" onmouseout="this.style.background='#ffffff';showHelp('date',false);"> 
+		  <tr onmouseover="this.style.background='#efefef';showHelp('date',true);" onmouseout="this.style.background='#f9f9f9';showHelp('date',false);"> 
 			 <td><label for="submitted_startDay">submitted</label></td> 
 			 <td colspan="2"> 
 				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
 				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
 				</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef';showHelp('date',true);" onmouseout="this.style.background='#ffffff';showHelp('date',false);"> 
+		  <tr onmouseover="this.style.background='#efefef';showHelp('date',true);" onmouseout="this.style.background='#f9f9f9';showHelp('date',false);"> 
 			 <td><label for="taken_startDay">taken</label>
 			 
 				<div style="position:relative; display:none" id="date_help">
@@ -230,7 +230,7 @@
 		  <tr> 
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
+		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td colspan="3">I want to display a <select name="displayclass" id="displayclass" size="1"> 
 					{html_options options=$displayclasses selected=$displayclass}
 				</select> of <select name="resultsperpage" id="resultsperpage" style="text-align:right" size="1"> 
