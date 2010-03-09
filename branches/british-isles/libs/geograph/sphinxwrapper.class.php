@@ -64,8 +64,8 @@ class sphinxwrapper {
 			//remove any / not in quorum
 		$q = preg_replace('/(?<!")\//',' ',$q);
 		
-		//remove any = not at word start
-		$q = preg_replace('/(^|[\s\(]+|~)=/','$1%',$q);
+			//remove any = not at word start
+		$q = preg_replace('/(^|[\s\(~"]+)=/','$1%',$q);
 		$q = str_replace('=',' ',$q);
 		$q = trim(str_replace('%','=',$q));
 	
@@ -76,6 +76,9 @@ class sphinxwrapper {
 	
 			//remove any $ not at field end
 		$q = trim(preg_replace('/\$(?!@ |$)/',' ',$q));
+	
+			//remove any -  end
+		$q = trim(preg_replace('/-$/','',$q));
 	
 			//change it back to simple: syntax
 		$q2 = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
