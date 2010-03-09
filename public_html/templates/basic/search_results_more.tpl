@@ -7,7 +7,7 @@
 	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
 	  {if $image->count}
 	  	<div style="float:right;position:relative;width:130px;font-size:small;text-align:right">
-	  		{$image->count|thousends} images in {$image->group|default:'group'}
+	  		{$image->count|thousends} images in group
 	  	</div>
 	  {/if}
 	  <div style="float:left; position:relative; width:130px; text-align:center">

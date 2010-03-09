@@ -7,7 +7,7 @@
 	{searchbreak image=$image}
 	  <div style="float:left;position:relative; width:130px; height:130px">
 	  <div align="center">
-	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in {$image->group|default:'group'}{/if} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a></div>
+	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in group{/if} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a></div>
 	  </div>
 	{foreachelse}
 	 	{if $engine->resultCount}

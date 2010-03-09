@@ -9,7 +9,7 @@
 	  <div align="center">
 	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a></div>
 		<div style="text-align:center; width:130px; font-size:0.7em"><a href="/ecard.php?image={$image->gridimage_id}">eCard</a> <a href="/editimage.php?id={$image->gridimage_id}">Edit</a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]{if $image->count}
-		<br/>{$image->count|thousends} images in {$image->group|default:'group'}
+		<br/>{$image->count|thousends} images in group
 		{/if}</div>
 	  </div>
 
