@@ -389,15 +389,15 @@ class SearchCriteria
 
 			switch ($this->groupby) {
 				case 'submitted_month': 
-					$this->sphinx['groupby'] = array($this->groupby,SPH_GROUPBY_MONTH,$this->sphinx['sort']);
+					$this->sphinx['groupby'] = array('submitted',SPH_GROUPBY_MONTH,$this->sphinx['sort']);
 					$this->sphinx['no_legacy']=1; 
 					break;
 				case 'submitted_year': 
-					$this->sphinx['groupby'] = array($this->groupby,SPH_GROUPBY_YEAR,$this->sphinx['sort']);
+					$this->sphinx['groupby'] = array('submitted',SPH_GROUPBY_YEAR,$this->sphinx['sort']);
 					$this->sphinx['no_legacy']=1; 
 					break;
 				case 'submitted': 
-					$this->sphinx['groupby'] = array($this->groupby,SPH_GROUPBY_DAY,$this->sphinx['sort']);
+					$this->sphinx['groupby'] = array('submitted',SPH_GROUPBY_DAY,$this->sphinx['sort']);
 					$this->sphinx['no_legacy']=1; 
 					break;
 				case 'takendays': 
