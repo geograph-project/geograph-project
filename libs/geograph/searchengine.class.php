@@ -496,9 +496,11 @@ END;
 		$this->orderList = $ids;
 		
 		if ($sql_order == ' dist_sqd ') {
-			$this->sphinx_matches = $sphinx->res['matches'];
+			$this->sphinx_reply = $sphinx->res;
 			$sql_fields = ',-1 as dist_sqd' ;
-		} 
+		} else if (!empty($this->criteria->groupby)) {
+			$this->sphinx_reply = $sphinx->res;
+		}
 
 	// fetch from database
 		$id_list = implode(',',$ids);
@@ -515,9 +517,9 @@ END;
 		
 		if (!empty($_GET['debug'])) {
 			print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
-                        if ($_GET['debug'] > 5)
-                                exit;
-                }
+			if ($_GET['debug'] > 5)
+				exit;
+		}
 
 
 		list($usec, $sec) = explode(' ',microtime());
@@ -535,7 +537,7 @@ END;
 				$row = $rows[$id];
 				$docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['post_text']));
 			}
-			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmmed', $sphinx->q);	
+			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmmed', $sphinx->q);
 		}
 
 		$this->querytime = ($querytime_after - $querytime_before) + $sphinx->query_time;
@@ -825,7 +827,7 @@ END;
 					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
 					
 					if ($recordSet->fields['dist_sqd'] == -1) {
-						$d = $this->sphinx_matches[$this->results[$i]->gridimage_id]['attrs']['@geodist']/1000;
+						$d = $this->sphinx_reply['matches'][$this->results[$i]->gridimage_id]['attrs']['@geodist']/1000;
 					} else {
 						$d = sqrt($recordSet->fields['dist_sqd']);
 					}
@@ -843,7 +845,10 @@ END;
 				//if we searching on taken date then display it...
 				if ($showtaken) 
 					$this->results[$i]->imagetakenString = getFormattedDate($this->results[$i]->imagetaken);
-
+				
+				if (!empty($this->criteria->groupby)) //if we implement groupby in mysql need to update this. 
+					$this->results[$i]->count = $this->sphinx_reply['matches'][$this->results[$i]->gridimage_id]['attrs']['@count'];
+			
 				$recordSet->MoveNext();
 				$i++;
 			}
