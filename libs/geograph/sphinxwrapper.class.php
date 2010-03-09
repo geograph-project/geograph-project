@@ -65,7 +65,7 @@ class sphinxwrapper {
 		$q = preg_replace('/(?<!")\//',' ',$q);
 		
 		//remove any = not at word start
-		$q = preg_replace('/(^|[\s\(]+)=/','$1%',$q);
+		$q = preg_replace('/(^|[\s\(]+|~)=/','$1%',$q);
 		$q = str_replace('=',' ',$q);
 		$q = trim(str_replace('%','=',$q));
 	
@@ -487,7 +487,7 @@ class sphinxwrapper {
 			
 			$words = substr_count($q,' ');
 			
-			if (count($this->filters) || $words> 9 || strpos($q,'"') !== FALSE) { //(MATCH_ANY - truncates to 10 words!)
+			if (count($this->filters) || $words> 9 || strpos($q,'"') !== FALSE || strpos($q,'=') !== FALSE) { //(MATCH_ANY - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
 				$q = "(".preg_replace('/\| [\| ]+/','| ',implode(" | ",$this->explodeWithQuotes(" ",$q))).")".$this->getFilterString();
 			} elseif ($words > 0) {//at least one word
