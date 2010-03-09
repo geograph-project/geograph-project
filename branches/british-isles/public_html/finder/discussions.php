@@ -62,11 +62,18 @@ if (!empty($_GET['q'])) {
 			if ($grouped) {
 				require_once ( "3rdparty/sphinxapi.php" ); //toload the sphinx constants
 			
-				$sphinx->setGroupBy('topic_id',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC");
+				//sorts by relevence within the groups (sphinxclient default) - timesegment sorting doesn't work
+				//...then the groups are orded in date descending
+				
+				$sphinx->setGroupBy('topic_id',SPH_GROUPBY_ATTR,"@id DESC");
+				
+				$ids = $sphinx->returnIds($pg,'_posts');	
+			} else {
+				//sort in time segments then relevence
+				$ids = $sphinx->returnIds($pg,'_posts','post_time');	
 			}
 
-			$ids = $sphinx->returnIds($pg,'_posts','post_time');	
-
+			
 			if (!empty($ids) && count($ids)) {
 				$where = "post_id IN(".join(",",$ids).")";
 
