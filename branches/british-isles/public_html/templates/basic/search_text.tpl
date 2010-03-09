@@ -14,7 +14,7 @@
 {if $i}
 	{if $fullText}
 		<div class="interestBox" style="border:1px solid pink;display:none; " id="show1">
-			This search was powered by the new <a href="/help/search_new">word search index</a>, in particular this is less flexible than the old search so this page is reduced. 
+			This search was powered by the new <a href="/help/search_new">word search index</a>, which has different capabilities to the old database, so the options offered vary. 
 			{if !$engine->criteria->sphinx.no_legacy}
 				You can access the <a href="/search.php?i={$i}&amp;form=advanced&amp;legacy=true">old advanced form here</a>.
 			{/if}
@@ -111,12 +111,12 @@
 							<li style="padding-bottom:5px"><b>Looking for exact match?</b><br/>&nbsp; Prefix a keyword with <tt>=</tt> (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small></li>
 							<li style="padding-bottom:5px"><b>Currently searches</b><ul>
 								<li>title, description, category, photographer name and shared description</li>
-								<li>image taken date ( <tt>20071103</tt>, <tt>200711</tt> or just <tt>2007</tt> )</li>
+								<li>image taken date ( <tt>20071103</tt>, <tt>200711</tt>, <tt>2007</tt> or even <tt>April</tt>)</li>
 								<li>subject grid-reference <span class="nowrap">( <tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt> )</span></li>
 							</ul></li>
 							<li style="padding-bottom:5px">Punctuation is ignored</li>
 							<li style="padding-bottom:5px">Can match phrases [ <tt>"road bridge"</tt> ]</li>
-							<li style="padding-bottom:5px">Allows the OR keyword <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span></li>
+							<li style="padding-bottom:5px">Can use OR between keywords <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span></li>
 							<li style="padding-bottom:5px">Can exclude words [ <tt>-river</tt> ]</li>
 							<li>Not case sensitive.</small></li>
 						</ul>
@@ -158,10 +158,10 @@
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="moderation_status">classification</label></td> 
 			 <td> 
-				<select name="moderation_status" id="moderation_status" size="1" class="searchinput"> 
-				  <option value=""> </option> 
-					{html_options options=$imagestatuses selected=$moderation_status}				  
-				</select></td> 
+				| <input type="radio" name="moderation_status" value="" checked/>either
+				| {html_radios name="moderation_status" options=$imagestatuses selected=$moderation_status separator=" | "} 
+				  <input type="checkbox" name="first" value="1" {if $first}checked{/if}/>first only
+			 </td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
@@ -175,17 +175,16 @@
 					{if $imageclass}
 						<option value="{$imageclass}" selected="selected">{$imageclass}</option>
 					{/if}
-					<option value="Other"></option>				  
+					<option value="Other"></option>
 				</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
 			 <td><label for="reference_index">country</label></td> 
 			 <td> 
-				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
-				  <option value=""> </option> 
-					{html_options options=$references selected=$reference_index} 
-				</select></td> 
+				| <input type="radio" name="reference_index" value="" checked/>Either
+				| {html_radios name="reference_index" options=$references selected=$reference_index separator=" | "} 
+			 </td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
