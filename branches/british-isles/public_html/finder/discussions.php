@@ -35,8 +35,10 @@ if (!empty($_GET['q'])) {
 	$q = preg_replace('/(-?)\b(by):/','@name $1',$q);
 	$sphinx = new sphinxwrapper($q);
 
+	$grouped = !empty($_GET['t']);
+
 	//gets a cleaned up verion of the query (suitable for filename etc) 
-	$cacheid = $sphinx->q;
+	$cacheid = $sphinx->q.'.'.$grouped;
 
 	$sphinx->pageSize = $pgsize = 15;
 
@@ -56,10 +58,14 @@ if (!empty($_GET['q'])) {
 		
 		if ($offset < (1000-$pgsize) ) { 
 			$sphinx->processQuery();
+			
+			if ($grouped) {
+				$sphinx->setGroupBy('topic_id',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC");
+			}
 
 			$ids = $sphinx->returnIds($pg,'_posts','post_time');	
 
-			if (count($ids)) {
+			if (!empty($ids) && count($ids)) {
 				$where = "post_id IN(".join(",",$ids).")";
 
 				$db = GeographDatabaseConnection(false);
@@ -133,7 +139,7 @@ if (!empty($_GET['q'])) {
 	}
 	
 	$smarty->assign("q",$sphinx->qclean);
-
+	$smarty->assign("grouped",$grouped);
 }
 
 $smarty->display($template,$cacheid);

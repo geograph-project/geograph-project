@@ -41,7 +41,8 @@ AttachEvent(window,'load',focusBox,false);
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
 		<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-		<input type="submit" value="Search"/>
+		<input type="submit" value="Search"/><br/>
+		<label for="grouped">One result per Thread?</label> <input type="checkbox" name="t" id="grouped" {if $grouped}checked{/if}/>
 	</p>
 </form>
 
