@@ -8,7 +8,12 @@
 	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="display:inline">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
-		<br/><div style="font-size:0.6em;">[[[{$image->gridimage_id}]]]</div>
+		<br/><div style="font-size:0.7em;">[[[{$image->gridimage_id}]]]
+		{if $image->count}
+			<br/><br/>
+			{$image->count|thousends} images in {$image->group|default:'group'}
+		{/if}
+		</div>
 	  </div>
 	  <div style="float:left; position:relative">
 		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/></a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]

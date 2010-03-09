@@ -102,9 +102,15 @@
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef';showHelp('keyword',true);" onmouseout="this.style.background='#f9f9f9';showHelp('keyword',false);"> 
-			 <td><label for="searchtext" id="l_searchtext">keywords</label>
+			 <td><label for="searchtext" id="l_searchtext">keywords</label></td> 
+			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250" onfocus="showHelp('keyword',true);" onblur="showHelp('keyword',false);"/>
+			 </td> 
+			 <td>eg <tt>bridge</tt></td> 
+		  </tr> 
+		  <tr> 
+			 <td colspan="3" style="line-height:0.1em">&nbsp;
 				<div style="position:relative; display:none" id="keyword_help">
-					<div style="position:absolute;top:17px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
+					<div style="position:absolute;line-height:1.1em;top:0px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
 						<ul>
 							<li style="padding-bottom:5px">Separate multiple keywords with spaces, all keywords are required (ie AND)</li>
 							<li style="padding-bottom:5px">Only matches whole words, and Punctuation is ignored</li>
@@ -124,21 +130,9 @@
 					</div>
 				</div>
 			</td> 
-			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250" onfocus="showHelp('keyword',true);" onblur="showHelp('keyword',false);"/>
-			 </td> 
-			 <td>eg <tt>bridge</tt></td> 
-		  </tr> 
-		  <tr style="display:none"> 
-			 <td colspan="2"><small>
-			 &middot; Separate multiple keywords with spaces; Only matches whole words; punctuation is ignored; can match phrases [ <tt>"road bridge"</tt> ]; allows the OR keyword <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span>; can exclude words [ <tt>-river</tt> ], and is not case sensitive.</small><br/>
-			 <br/></td> 
-			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
-		  </tr> 
-		  <tr> 
-		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Limit to results to:</b></td> 
+		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Limit results to:</b></td> 
 		  </tr> 
 		  <tr> 
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 

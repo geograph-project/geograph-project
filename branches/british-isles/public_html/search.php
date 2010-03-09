@@ -1499,6 +1499,7 @@ function smarty_function_searchbreak($params) {
 		print "<div style=\"clear:both;margin-left:0px;padding:2px;\"><b>$b</b></div>";
 		if (isset($params['extra']))
 			print "<ul>";
+		$image->group = $b;
 	}
 	$engine->breaklast = $last;
 }
