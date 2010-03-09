@@ -216,6 +216,21 @@ if (isset($sphinx)) {
 		$rss->description .= " ({$images->resultCount} in total)";
 	}
 	
+	if (!empty($images->error)) {
+		
+		$item = new FeedItem(); 
+		$item->title = $images->error;
+		$item->description = "Unfortunatly it doesn't appear the search was processed, this is most likly a invalid combination of search terms, but could also be a temporarlly issue so you could try again in a little while."; 
+		$item->date = time();
+		$item->author = $rss->title;
+		
+		$rss->addItem($item);
+	
+		$rss->saveFeed($format, $rssfile);
+
+		exit;
+	}
+	
 	if ($format == 'MEDIA') {
 		$rss->link =  $baselink."search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
