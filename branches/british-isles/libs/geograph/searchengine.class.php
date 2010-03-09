@@ -419,10 +419,10 @@ END;
 					}
 				} else {
 					require_once("3rdparty/spellchecker.class.php");
+					$original = preg_replace('/ftf:\d/','',$this->criteria->searchtext);
+					$correction = SpellChecker::Correct($original);
 
-					$correction = SpellChecker::Correct($this->criteria->searchtext);
-
-					if (strcasecmp($correction,$this->criteria->searchtext) != 0 && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
+					if (strcasecmp($correction,$original) != 0 && levenshtein($correction,$original) < 0.25*strlen($correction)) {
 
 						$suggestions += array(array(
 							'query'=>$correction,
@@ -846,7 +846,7 @@ END;
 				if ($showtaken) 
 					$this->results[$i]->imagetakenString = getFormattedDate($this->results[$i]->imagetaken);
 				
-				if (!empty($this->criteria->groupby)) //if we implement groupby in mysql need to update this. 
+				if (!empty($this->criteria->groupby)) //TODO if we implement groupby in mysql need to update this. 
 					$this->results[$i]->count = $this->sphinx_reply['matches'][$this->results[$i]->gridimage_id]['attrs']['@count'];
 			
 				$recordSet->MoveNext();
