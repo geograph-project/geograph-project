@@ -50,9 +50,9 @@ $imagestatuses = array('geograph' => 'geograph only','accepted' => 'supplemental
 
 $sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance');
 
-$breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','realname'=>'Contributor Name','user_id'=>'Contributor','imageclass'=>'Image Category',' '=>'','grid_reference'=>'Grid Reference','myriad'=>'Myriad','hectad'=>'Hectad');
+$breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','realname'=>'Contributor Name','user_id'=>'Contributor','imageclass'=>'Image Category',' '=>'','grid_reference'=>'Grid Square','myriad'=>'Myriad','hectad'=>'Hectad');
 
-$groupbys = array(''=>'','takendays'=>'Day Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','auser_id'=>'Contributor','classcrc'=>'Image Category',' '=>'','agridsquare'=>'Grid Reference','amyriad'=>'Myriad','ahectad'=>'Hectad','scenti'=>'Centisquare');
+$groupbys = array(''=>'','takendays'=>'Day Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','auser_id'=>'Contributor','classcrc'=>'Image Category',' '=>'','agridsquare'=>'Grid Square','amyriad'=>'Myriad','ahectad'=>'Hectad','scenti'=>'Centisquare');
 
 $displayclasses =  array(
 			'full' => 'full listing',
@@ -581,6 +581,12 @@ if (isset($_GET['fav']) && $i) {
 		//we could use the selected item but then have to check for numberic placenames
 		$_POST['placename'] = $_POST['old-placename'];
 	} else {
+		if (!empty($_POST['first'])) {
+			$_POST['searchtext'] .= " ftf:1";
+			unset($_POST['first']);
+		}
+	
+	
 		$_POST['adminoverride'] = 0; //prevent overriding it
 		$engine = new SearchEngineBuilder('#');
 		if (isset($_GET['rss'])) {
@@ -823,6 +829,10 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		}
 		
 		if (!empty($query->searchtext)) {
+			if ($_GET['form'] == 'text' && preg_match('/ftf:1$/',$query->searchtext)) {
+				$query->searchtext= preg_replace('/\s*ftf:1$/','',$query->searchtext);
+				$smarty->assign('first', 1);
+			}
 			$smarty->assign('searchtext', $query->searchtext);
 		}
 				
@@ -841,7 +851,10 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		$smarty->assign('imageclass', $query->limit3);
 		$smarty->assign('reference_index', $query->limit4);
 		$smarty->assign('gridsquare', $query->limit5);
-
+		if (empty($query->limit4)) {
+			$smarty->assign('reference_index','0');
+		}
+		
 
 		if (!empty($query->limit6)) {
 			$dates = explode('^',$query->limit6);
@@ -1222,6 +1235,10 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		$smarty->reassignPostedDate("taken_end");
 
 		if (!empty($_POST['searchtext'])) {
+			if ($_GET['form'] == 'text' && preg_match('/ftf:1$/',$_POST['searchtext'])) {
+				$_POST['searchtext']= preg_replace('/\s*ftf:1$/','',$_POST['searchtext']);
+				$smarty->assign('first', 1);
+			}
 			$smarty->assign('searchtext', $_POST['searchtext']);
 		}
 
@@ -1233,6 +1250,9 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$smarty->assign('reverse_order_checked', 'checked="checked"');
 		if (empty($db)) {
 			$db = GeographDatabaseConnection(true);
+		}
+		if (empty($_POST['reference_index'])) {
+			$smarty->assign('reference_index','0');
 		}
 		advanced_form($smarty,$db);
 		
