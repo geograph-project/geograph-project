@@ -62,7 +62,7 @@
   <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title">{$image->title|escape:'html'}</div>
 
   {if $image->comment}
-  <div class="caption640">{$image->comment|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+  <div class="caption640">{$image->comment|escape:'html'|nl2br|geographlinks:$expand|hidekeywords}</div>
   {/if}
   {if $image->snippet_count}
 	{if !$image->comment && $image->snippet_count == 1}

@@ -495,6 +495,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 					}
 					if ($g_image->moderation_status == 'rejected') {
 						$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+						$posterText = str_replace("[[$prefix$g_id]]",'[image no longer available]',$posterText);
 					} elseif ($ok) {
 						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
 						if ($g_matches[1][$g_i]) {
@@ -526,7 +527,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 		}
 	}
 	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
-		$posterText = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$posterText);
+		$posterText = str_replace('//'.$CONF['CONTENT_HOST'],'//'.$_SERVER['HTTP_HOST'],$posterText);
 	}
 	
 	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);

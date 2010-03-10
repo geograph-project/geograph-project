@@ -489,7 +489,7 @@ class sphinxwrapper {
 		} 
 		
 		if (strpos($q,'~') === 0) {
-			$q = preg_replace('/^\~/','',$q);
+			$q = preg_replace('/^\~\s*/','',$q);
 			
 			$words = substr_count($q,' ');
 			
