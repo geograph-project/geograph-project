@@ -196,7 +196,7 @@ class SearchEngine
 	
 		if (empty($_GET['legacy']) && empty($_SESSION['legacy']) && !empty($CONF['sphinx_host']) && 
 			isset($this->criteria->sphinx) && 
-			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['bbox']) || !empty($this->criteria->sphinx['filters']))
+			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['groupby']) || !empty($this->criteria->sphinx['bbox']) || !empty($this->criteria->sphinx['filters']))
 			&& $this->criteria->sphinx['impossible'] == 0) {
 			$this->noCache = 1;
 			return $this->ExecuteSphinxRecordSet($pg);
@@ -582,7 +582,7 @@ END;
 		# run_via_sphinx
 		if (empty($_GET['legacy']) && empty($_SESSION['legacy']) && !empty($CONF['sphinx_host']) && 
 			isset($this->criteria->sphinx) && 
-			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['bbox']) || !empty($this->criteria->sphinx['filters']))
+			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['groupby']) || !empty($this->criteria->sphinx['bbox']) || !empty($this->criteria->sphinx['filters']))
 			&& $this->criteria->sphinx['impossible'] == 0) {
 			
 			return $this->ExecuteSphinxRecordSet($pg);
