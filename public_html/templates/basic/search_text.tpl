@@ -234,7 +234,7 @@
 					{html_options options=$groupbys selected=$groupby}
 				</select><sup style="color:red">new</sup>,<br/> would like a heading seperating images by <select name="breakby" id="breakby" size="1"> 
 					{html_options options=$breakdowns selected=$breakby}
-				</select>,<br/> and sorted in <span class="nowrap">(<input type="checkbox" name="reverse_order_ind"> reverse)
+				</select>,<br/> and sorted in <span class="nowrap">(<input type="checkbox" name="reverse_order_ind" {$reverse_order_checked}/> reverse)
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);"> 
 					{html_options options=$sortorders selected=$orderby}
 				</select> order.</big></td> 
