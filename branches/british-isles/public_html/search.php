@@ -48,7 +48,7 @@ $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
 $imagestatuses = array('geograph' => 'geograph only','accepted' => 'supplemental only');
 
-$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance');
+$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance','count'=>'Number in Group');
 
 $breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','realname'=>'Contributor Name','user_id'=>'Contributor','imageclass'=>'Image Category',' '=>'','grid_reference'=>'Grid Square','myriad'=>'Myriad','hectad'=>'Hectad');
 
@@ -400,6 +400,8 @@ if (isset($_GET['fav']) && $i) {
 			#$sphinx->processQuery();
 			
 			$data['searchtext'] = $sphinx->qclean;
+		} else {
+			$data['searchtext'] = $query->searchtext;
 		}
 		
 
@@ -417,14 +419,22 @@ if (isset($_GET['fav']) && $i) {
 		$data['gridsquare'] = $query->limit5;
 
 
-		if (!empty($query->limit6)) {
+		if (!empty($_GET['submitted_end']) && preg_match('/^\d{4}[\d-]*$/',$_GET['submitted_end'])) {
+			$data['submitted_end'] = $_GET['submitted_end'];
+		} elseif (!empty($_GET['submitted_start']) && preg_match('/^\d{4}[\d-]*$/',$_GET['submitted_start'])) {
+			$data['submitted_start'] = $_GET['submitted_start'];
+		} elseif (!empty($query->limit6)) {
 			$dates = explode('^',$query->limit6);
 			if ($dates[0])
 				$data['submitted_start'] = $dates[0];
 			if ($dates[1])
 				$data['submitted_end'] = $dates[1];
 		}
-		if (!empty($query->limit7)) {
+		if (!empty($_GET['taken_end']) && preg_match('/^\d{4}[\d-]*$/',$_GET['taken_end'])) {
+			$data['taken_end'] = $_GET['taken_end'];
+		} elseif (!empty($_GET['taken_start']) && preg_match('/^\d{4}[\d-]*$/',$_GET['taken_start'])) {
+			$data['taken_start'] = $_GET['taken_start'];
+		} elseif (!empty($query->limit7)) {
 			$dates = explode('^',$query->limit7);
 			if ($dates[0])
 				$data['taken_start'] = $dates[0];
@@ -1012,6 +1022,29 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 				$smarty->assign('singlesquare_radius', $CONF['search_prompt_radius']);
 			}
 		}
+		
+		if ($engine->fullText 
+			&& $engine->numberOfPages == $engine->currentPage 
+			&& $engine->resultCount > $engine->maxResults
+			&& count($engine->results)
+			&& preg_match('/(gridimage_id|submitted|imagetaken)( desc|)/',$engine->criteria->orderby,$m)
+			) {
+			
+			$name = ($m[1] == 'imagetaken')?'imagetaken':'submitted';
+			
+			$value= substr($engine->results[0]->{$name},0,10);
+			
+			$name = ($m[1] == 'imagetaken')?'taken':'submitted';
+			
+			if (!empty($m[2])) { //desending
+				$name .= "_end";
+			} else {
+				$name .= "_start";
+			}
+			
+			$engine->nextLink = "/search.php?i=$i&redo=1&$name=$value";
+		}
+		
 		
 		if ($display == 'reveal' && $engine->resultCount) {
 			foreach ($engine->results as $idx => $image) {

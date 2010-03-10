@@ -7,7 +7,7 @@
 	{searchbreak image=$image ul=true}
 	<li onmouseover="this.style.background='#efefef'" onmouseout="this.style.background=''" style="padding:2px">
 	  {if $image->count}
-	  	<div style="float:right;position:relative;width:130px;font-size:small;text-align:right">
+	  	<div style="float:right;position:relative;font-size:small;text-align:right">
 	  		{$image->count|thousends} images in group
 	  	</div>
 	  {/if}

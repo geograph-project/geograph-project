@@ -285,6 +285,11 @@ class SearchCriteria
 							$this->sphinx['compatible_order'] = 0;
 							$sql_order = '';
 							break;
+						case 'count':
+							$this->sphinx['sort'] = '@count';
+							$this->sphinx['compatible_order'] = 0;
+							$sql_order = '';
+							break;
 						case 'user_id':
 							$this->sphinx['sort'] = 'auser_id';
 							break;
@@ -415,6 +420,7 @@ class SearchCriteria
 				default: 
 					//$this->sphinx['impossible']++;
 			}
+			$this->sphinx['sort'] = str_replace('@count','@relevance',$this->sphinx['sort']); //cant do the first sort level with count!
 		}
 		
 		$sql_where_start = $sql_where;
