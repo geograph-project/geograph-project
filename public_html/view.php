@@ -117,6 +117,12 @@ if (isset($_GET['id']))
 
 	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}";
 
+	if (isset($_GET['expand'])) {
+		$cacheid .= "E";
+		$smarty->assign('expand',1);
+		$CONF['global_thumb_limit'] = 4;
+	}
+
 	//is the image rejected? - only the owner and administrator should see it
 	if ($image->moderation_status=='rejected')
 	{
