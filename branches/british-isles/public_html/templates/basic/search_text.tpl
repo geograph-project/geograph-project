@@ -101,9 +101,9 @@
 		  <tr> 
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef';showHelp('keyword',true);" onmouseout="this.style.background='#f9f9f9';showHelp('keyword',false);"> 
+		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('keyword',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('keyword',false);"> 
 			 <td><label for="searchtext" id="l_searchtext">keywords</label></td> 
-			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250" onfocus="showHelp('keyword',true);" onblur="showHelp('keyword',false);"/>
+			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput" size="60" style="width:400px" maxlength="250" onfocus="showMyHelpDiv('keyword',true);" onblur="showMyHelpDiv('keyword',false);"/>
 			 </td> 
 			 <td>eg <tt>bridge</tt></td> 
 		  </tr> 
@@ -191,14 +191,14 @@
 				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef';showHelp('date',true);" onmouseout="this.style.background='#f9f9f9';showHelp('date',false);"> 
+		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('date',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('date',false);"> 
 			 <td><label for="submitted_startDay">submitted</label></td> 
 			 <td colspan="2"> 
-				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
-				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
+				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
+				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
 				</td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef';showHelp('date',true);" onmouseout="this.style.background='#f9f9f9';showHelp('date',false);"> 
+		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('date',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('date',false);"> 
 			 <td><label for="taken_startDay">taken</label>
 			 
 				<div style="position:relative; display:none" id="date_help">
@@ -211,8 +211,8 @@
 				</div>
 			 </td> 
 			 <td> 
-				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
-				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showHelp('date',true);\" onblur=\"showHelp('date',false);\""}
+				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
+				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
 				</td> 
 			 <td>&nbsp;<input type="submit" value="Find"/></td> 
 		  </tr> 
@@ -273,7 +273,7 @@ function showLocationBox() {
 
  AttachEvent(window,'load',showLocationBox,false);
 
-function showHelp(which,show) {
+function showMyHelpDiv(which,show) {
 	document.getElementById(which+'_help').style.display=show?'':'none';
 }
 
