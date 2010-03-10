@@ -208,7 +208,8 @@ class sphinxwrapper {
 						if ($nn%$mod == 0) {
 							
 							list($gr2,$len) = $conv->national_to_gridref($ee,$nn,$grlen,$ri1,false);
-							$grs[] = $gr2;
+							if (strlen($gr2) > $grlen)
+								$grs[] = $gr2;
 						}
 					}
 				}
