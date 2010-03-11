@@ -50,7 +50,7 @@ if (!empty($_GET['id'])) {
 	$link = "/search.php?gridref=$gr&do=1&orderby=relevance&searchtext=";
 	
 	
-	$desc = preg_replace('/(?<!\.\s)\b([A-Z][a-z]+)\b(\s+[A-Z][a-z]+)?/e','"<a href=\"'.$link.'".urlencode("$1 $2")."\">$1 $2</a>"',$desc);
+	$desc = preg_replace('/(?<!^\.\s|^)\b([A-Z][a-z]+)\b(\s+[A-Z][a-z]+)?/e','"<a href=\"'.$link.'".urlencode("$1 $2")."\">$1 $2</a>"',$desc);
 
 
 ?>
