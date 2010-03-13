@@ -572,7 +572,7 @@ class GridImage
 			if ($this->snippets === FALSE) {
 				$db=&$this->_getDB(true); 
 				
-				$this->snippets = $db->getAll("SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
+				$this->snippets = $db->getAll("SELECT snippet.*,u.realname FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) INNER JOIN user u ON (snippet.user_id = u.user_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
 				$memcache->name_set('sd',$mkey,$this->snippets,$memcache->compress,$memcache->period_med);
 			}
 		} else {
@@ -580,7 +580,7 @@ class GridImage
 			
 			$db=&$this->_getDB(30); //need currency
 		
-			$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.* FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
+			$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.*,u.realname FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) INNER JOIN user u ON (snippet.user_id = u.user_id)  WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
 		}
 		
 		
