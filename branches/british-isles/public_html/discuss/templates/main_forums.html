@@ -3,14 +3,22 @@
 {$user_logging}
 <br>
 
+<form>
 <table class=forums>
 <tr>
 <td width="25" class=caption4><img src="{$static_url}/img/!pix.gif" width=25 height=1 alt=""></td>
-<td width="100%" class=caption4>{$l_forum}</td>
+<td width="100%" class=caption4><div style="float:right;font-weight:normal">Show in Recent Topics?</div>{$l_forum}</td>
 <td align=center width="40" class=caption4>{$l_num_topics}</td>
 <td align=center width="40" class=caption4>{$l_replies}</td>
 </tr>
 {$list_forums}
+<tr style="display:none" id="updaterow">
+<td width="25" class=caption4></td>
+<td width="100%" class=caption4><div style="float:right"><input type=submit value=Update style="font-size:0.8em"/></div></td>
+<td align=center width="40" class=caption4></td>
+<td align=center width="40" class=caption4></td>
+</tr>
 </table>
+</form>
 
 </div>
