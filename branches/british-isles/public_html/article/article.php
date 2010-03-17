@@ -85,6 +85,20 @@ function article_make_table($input) {
 	return $output."</tbody></table>";
 }
 
+function getUniqueHash($title) {
+	static $usedTitles;
+	if (empty($usedTitles)) {
+		$usedTitles = array();
+	}
+	$title = trim(preg_replace('/[^\w\-]+/','',strtolower($title)));
+	$i ='';
+	while (isset($usedTitles[$title.$i])) {
+		$i++;
+	}
+	$usedTitles[$title.$i] = 1;
+	return $title.$i;
+}
+
 function smarty_function_articletext($input) {
 	global $imageCredits,$smarty,$CONF;
 	
@@ -106,9 +120,10 @@ function smarty_function_articletext($input) {
 	if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$output,$matches)) {
 		$list = array();
 		foreach ($matches[1] as $i => $level) {
-			$list[] = "<li class=\"h$level\"><a href=\"#p$i\">{$matches[2][$i]}</a></li>";
+			$hash = getUniqueHash($matches[2][$i]);
+			$list[] = "<li class=\"h$level\"><a href=\"#$hash\">{$matches[2][$i]}</a></li>";
 			$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
-			$replacement[]='<h$1><a name="p'.$i.'"></a>$2</h$3>';
+			$replacement[]='<h$1><a name="'.$hash.'"></a><a name="p'.$i.'"></a>$2</h$3>';
 		}
 		$list = implode("\n",$list);
 		$smarty->assign("tableContents", $list);
