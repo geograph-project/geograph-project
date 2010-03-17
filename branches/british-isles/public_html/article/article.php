@@ -90,7 +90,7 @@ function getUniqueHash($title) {
 	if (empty($usedTitles)) {
 		$usedTitles = array();
 	}
-	$title = trim(preg_replace('/[^\w\-]+/','',strtolower($title)));
+	$title = str_replace(' ','-',trim(preg_replace('/[^\w \-]+/','',strtolower($title))));
 	$i ='';
 	while (isset($usedTitles[$title.$i])) {
 		$i++;
