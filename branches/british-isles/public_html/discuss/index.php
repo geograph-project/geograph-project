@@ -436,11 +436,11 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		echo load_header();
                 print "<div style=\"float:left\"><a href=\"index.php\">Reload</a></div>";
  		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">Watch</a></div>";
-		print "<div style=\"text-align:center\">Show <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
+		print "<div style=\"text-align:center\">View <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
 		
 		print "<form>";
-		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em\">";
-		print "<div style=\"float:right\"><input type=submit value=Update /></div> Show:";
+		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em;background-color:#f9f9f9\">";
+		print "<div style=\"float:right;display:none\" id=\"updatebutton\"><input type=submit value=Update /></div> Show:";
 		
 		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id','!=','11','forum_order')){
 			do {
@@ -451,7 +451,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 				
 				$checked = ((empty($showIds) && $forum != 5) || in_array($forum,$showIds))?' checked':'';
 				
-				print "<input type=checkbox name=\"show[]\" value=\"$forum\" title=\"{$forum_title}\" $checked>";
+				print "<input type=checkbox name=\"show[]\" value=\"$forum\" title=\"{$forum_title}\" $checked onclick=\"document.getElementById('updatebutton').style.display='';\">";
 				print "<img src=\"{$static_url}/img/forum_icons/{$forum_icon}\" width=16 height=16 border=0 alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
 				print "&nbsp; ";
 
