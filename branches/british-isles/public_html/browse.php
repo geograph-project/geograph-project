@@ -985,6 +985,7 @@ if (!isset($_GET['inner'])) {
 	//lets add an overview map too
 	if ($grid_ok) {
 		$overview=new GeographMapMosaic('largeoverview');
+		$overview->type_or_user = -1;
 		$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
 		$smarty->assign('marker', $overview->getSquarePoint($square));
 
