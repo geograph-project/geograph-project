@@ -166,9 +166,8 @@ if (isset($_GET['getJob'])) {
 		}
 
 		//atomic claim! - looks messy, but avoids locks
-		$pid = 99999+(getmypid()+$worker); //something reasonably unique
-		$db->Execute("UPDATE at_home_job SET at_home_worker_id = $pid WHERE `task` = '$task' AND sent = '0000-00-00 00:00:00' LIMIT 1");
-		$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_worker_id = $pid");
+		$db->Execute("UPDATE at_home_job SET at_home_worker_id = 10000000+CONNECTION_ID() WHERE `task` = '$task' AND sent < DATE_SUB(NOW(),INTERVAL 24 HOUR) AND completed = 0 LIMIT 1");
+		$row = $db->getRow("SELECT * FROM at_home_job WHERE at_home_worker_id = 10000000+CONNECTION_ID()");
 		if (count($row)) {
 			$jid = $row['at_home_job_id'];
 			$db->Execute("UPDATE at_home_job SET at_home_worker_id = $worker,`sent`=NOW() WHERE at_home_job_id = $jid LIMIT 1");
