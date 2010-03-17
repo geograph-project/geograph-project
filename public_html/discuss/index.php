@@ -412,6 +412,17 @@ if(db_simpleSelect(0,$Tf,'forum_id') and $countRes>0){
 if ($viewTopicsIfOnlyOneForum!=1) {
 	$showforums = $USER->getForumOption('forums',1);
 	
+	if (empty($_GET['show'])) {
+		$showIds = array(); //we could select all, but easier to let the query popupate it
+	} elseif (is_array($_GET['show'])) {
+		$show = trim(preg_replace('/[^\d,]+/','',implode(',',$_GET['show'])),',');
+		header("Location: /discuss/?show=$show");
+		exit;
+	} else {
+		$showIds = explode(',',trim(preg_replace('/[^\d,]+/','',$_GET['show'])));
+	}
+
+	
 	if (!$showforums) {
 		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_icon')){
 			do{
@@ -424,6 +435,31 @@ if ($viewTopicsIfOnlyOneForum!=1) {
                 print "<div style=\"float:left\"><a href=\"index.php\">Reload</a></div>";
  		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">Watch</a></div>";
 		print "<div style=\"text-align:center\">Show <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
+		
+		print "<form>";
+		print "<div class=interestBox style=\"padding:2px;margin-top:4px\">Inc: ";
+		
+		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id','!=','11','forum_order')){
+			do {
+				$forum=$cols[0];
+
+				$forum_title=$cols[1];
+				$forum_icon=$cols[2];
+				
+				$checked = ((empty($_GET['show']) && $forum != 5) || in_array($forum,$showIds))?' checked':'';
+				
+				print "<input type=checkbox name=\"show[]\" value=\"$forum\" title=\"{$forum_title}\" $checked>";
+				print "<img src=\"{$static_url}/img/forum_icons/{$forum_icon}\" width=16 height=16 border=0 alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
+				print "&nbsp; ";
+
+
+			} while($cols=db_simpleSelect(1));
+		}
+		
+		print "<input type=submit value=Update />";
+		print "</div>";
+		print "</form>";
+		
 	} else {
 		require($pathToFiles.'bb_func_vforum.php');
 	}

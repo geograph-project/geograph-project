@@ -13,13 +13,21 @@ if(isset($lastOut) and is_array($lastOut)){
     }
 }
 
+$filterCrit = " NOT IN ";
+$filterIds = "(5,11)";
+
+if (!empty($showIds)) {
+	$filterCrit = " IN ";
+	$filterIds = "(".implode(',',$showIds).")";
+}
+
 if (isset($clForumsUsers)) $closedForums=getAccess($clForums, $clForumsUsers, $user_id); else $closedForums='n';
 if ($closedForums!='n') $xtr=getClForums($closedForums,'where','','forum_id','and','!='); else $xtr='';
 
 $lPosts=array();
 if ($user_sort==1) $orderBy='topic_id DESC'; else $orderBy='topic_last_post_id DESC';
 
-if($cols=db_simpleSelect(0, $Tt, 'topic_last_post_id','forum_id','!=','5',$orderBy,$viewlastdiscussions,'forum_id','!=','11')){
+if($cols=db_simpleSelect(0, $Tt, 'topic_last_post_id','forum_id',$filterCrit,$filterIds,$orderBy,$viewlastdiscussions)){
     do $lPosts[]=$cols[0]; while($cols=db_simpleSelect(1));
 }
 
@@ -32,7 +40,7 @@ $xtr=$xtr1;
 
 $list_topics='';
 
-if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id','!=','5',$orderBy,$viewlastdiscussions,'forum_id','!=','11')){
+if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id',$filterCrit,$filterIds,$orderBy,$viewlastdiscussions)){
     
     $i=1;
     $tpl=makeUp('main_last_discuss_cell');
