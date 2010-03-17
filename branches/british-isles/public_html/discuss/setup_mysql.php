@@ -36,7 +36,7 @@ return $xtr;
 function db_simpleSelect($sus,$table='',$fields='',$uniF='',$uniC='',$uniV='',$orderby='',$limit='',$uniF2='',$uniC2='',$uniV2='',$and2=true,$groupBy=''){
 if(!$sus){
 $where='';
-if($uniF!='') $where=' where '.$uniF.$uniC."'".$uniV."'";
+if($uniF!='') $where=' where '.$uniF.$uniC."'".$uniV."'"; $where = preg_replace('/IN \'(\([\d,]+\))\'/','IN $1',$where);
 if($uniF2!='') {
 $q=(substr_count($uniV2,'.')>0?'':"'");
 $a=($and2?'AND':'where');
