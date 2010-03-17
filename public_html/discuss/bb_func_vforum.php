@@ -57,6 +57,8 @@ $keyAr++;
 
 if(isset($mod_rewrite) and $mod_rewrite) $linkToForums="{$main_url}/{$forum}_0.html"; else $linkToForums="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}";
 
+$checked = ((empty($showIds) && $forum != 5) || in_array($forum,$showIds))?' checked':'';
+
 $list_forums.=ParseTpl($tpl);
 $i=-$i;
 }
