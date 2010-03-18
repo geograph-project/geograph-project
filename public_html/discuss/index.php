@@ -322,7 +322,17 @@ elseif($action=='search') {if($reqTxt!=1)require($pathToFiles.'bb_func_txt.php')
 elseif($action=='wait') {
 	if ($user_sort==1) $orderBy='topic_id DESC'; else $orderBy='topic_last_post_id DESC';
 
-	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id','!=','5',$orderBy,1,'forum_id','!=','11')){
+	$showIds = $USER->getForumOption('show','',false);
+
+	$filterCrit = " NOT IN ";
+	$filterIds = "(5,11)";
+
+	if (!empty($showIds)) {
+		$filterCrit = " IN ";
+		$filterIds = "($showIds)";
+	}
+
+	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id',$filterCrit,$filterIds,$orderBy,1)){
 		if ($cols[9]) {
 			print "<title>Updated Since Last Visit</title>";
 			print "<b>Updated Since Last Visit</b>";
@@ -414,11 +424,6 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 	
 	if (empty($_GET['show'])) {
 		$showIds = $USER->getForumOption('show','',false);
-if ($_GET['d']) {
-	print "v=$showIds<BR>";
-	print "s={$_SESSION['show']}<BR>";
-
-}
 
 		if (empty($showIds)) {
 			$showIds = array();
