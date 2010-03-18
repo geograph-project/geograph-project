@@ -414,10 +414,21 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 	
 	if (empty($_GET['show'])) {
 		$showIds = $USER->getForumOption('show','',false);
-		$showIds = explode(',',$showIds);
+if ($_GET['d']) {
+	print "v=$showIds<BR>";
+	print "s={$_SESSION['show']}<BR>";
+
+}
+
+		if (empty($showIds)) {
+			$showIds = array();
+		} else {
+			$showIds = explode(',',$showIds);
+		}
+
 	} elseif (is_array($_GET['show'])) {
-		$show = trim(preg_replace('/[^\d,]+/','',implode(',',$_GET['show'])),',');
-		$USER->setDefaultForumOption('show',$show);
+		$_GET['show'] = $show = trim(preg_replace('/[^\d,]+/','',implode(',',$_GET['show'])),',');
+		$USER->getForumOption('show',$show,true);
 		header("Location: /discuss/?show=$show");
 		exit;
 	} else {
@@ -439,10 +450,10 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		print "<div style=\"text-align:center\">View <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
 		
 		print "<form>";
-		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em;background-color:#f9f9f9\">";
+		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em;background-color:#f9f9f9;width:100%\">";
 		print "<div style=\"float:right;display:none\" id=\"updatebutton\"><input type=submit value=Update /></div> Show:";
 		
-		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id','!=','11','forum_order')){
+		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id',' NOT IN ','(11,7)','forum_order')){
 			do {
 				$forum=$cols[0];
 
@@ -453,7 +464,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 				
 				print "<input type=checkbox name=\"show[]\" value=\"$forum\" title=\"{$forum_title}\" $checked onclick=\"document.getElementById('updatebutton').style.display='';\">";
 				print "<img src=\"{$static_url}/img/forum_icons/{$forum_icon}\" width=16 height=16 border=0 alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
-				print "&nbsp; ";
+				print "&nbsp;";
 
 
 			} while($cols=db_simpleSelect(1));
