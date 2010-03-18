@@ -454,7 +454,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
  		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">Watch</a></div>";
 		print "<div style=\"text-align:center\">View <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum=5\">Recent Grid Square Discussions</a></div>";
 		
-		print "<form>";
+		print "<form style=\"display:inline\">";
 		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em;background-color:#f9f9f9;width:100%\">";
 		print "<div style=\"float:right;display:none\" id=\"updatebutton\"><input type=submit value=Update /></div> Show:";
 		
