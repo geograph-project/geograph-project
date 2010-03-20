@@ -41,7 +41,7 @@ pre
 
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.1em;width:10em;height:0.8em;font-size:4em;border:1px solid black;background:white;">
-<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet centered on {$gridref} and take it out with you to mark off the squares that you do. Squares with Geographs are marked with an X. A square with only supplemental images is marked by "s", and "p" is shown on squares with just unmoderated images.<br/><div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div>{if $recent}<div style="text-align:center"><b>Only includes images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"}</b></div>{/if}</div>
+<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet <b>centered on {$gridref}{if $realname}, for {$realname}{/if}</b> and take it out with you to mark off the squares that you do. {if $recent}<br/><b>Squares with images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"} are marked with an X.</b> Squares with older images only are marked with +.{else}Squares with Geographs are marked with an X. Squares with only supplemental with "s".<br/>{/if}<br/><div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$generated|default:$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
 </div>
  
 <pre style="position:absolute;left:2em;top:8em;">  {section loop=100 name=x start=0}
@@ -64,7 +64,7 @@ pre
 {/if}{$startn|string_format:"%02d"}{assign var="startn" value=$startn-1}{if $startn < 0}{assign var="startn" value=$startn+100}{/if}
 {section loop=100 name=x start=0}
 {assign var="x" value=$smarty.section.x.index}
-{if $x%10 == 0} {/if}{if $grid.$x.$y}{assign var="mapcell" value=$grid.$x.$y}{if $mapcell.has_geographs}X{else}{if $mapcell.pending}p{else}{if $mapcell.accepted}s{else}-{/if}{/if}{/if}{else} {/if}
+{if $x%10 == 0} {/if}{if $grid.$x.$y}{assign var="mapcell" value=$grid.$x.$y}{if $mapcell.has_geographs}X{else}{if $mapcell.pending}p{else}{if $mapcell.accepted}{if $recent}+{else}s{/if}{else}-{/if}{/if}{/if}{else} {/if}
 {/section}
 
 {/section}</pre>

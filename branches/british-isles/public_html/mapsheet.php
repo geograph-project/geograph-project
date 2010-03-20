@@ -101,6 +101,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		$profile=new GeographUser($map->type_or_user);
 		$smarty->assign('realname', $profile->realname);
 		$smarty->assign('user_id', $map->type_or_user);
+		
+		$db = GeographDatabaseConnection(true);
+		
+		$data = $db->GetRow("SHOW TABLE STATUS LIKE 'user_gridsquare'");
+		$smarty->assign('generated',$data['Update_time']);
+		
 	} elseif ($map->type_or_user == -6) {
 		$db = GeographDatabaseConnection(true);
 
