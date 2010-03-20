@@ -1124,3 +1124,21 @@ alter table geobb_users add user_show varchar(64) not null default '' after user
 #################################################
 
 
+# done in RebuildUserSquares.class.php but needs to be done once anyway... 
+
+DROP TABLE IF EXISTS user_gridsquare_tmp;
+
+CREATE TABLE user_gridsquare_tmp
+(INDEX (user_id,`grid_reference`))
+ENGINE=MyISAM
+SELECT user_id,`grid_reference`,
+sum(moderation_status='geograph') as has_geographs,count(*) as imagecount
+FROM gridimage_search
+GROUP BY user_id,`grid_reference`;
+
+DROP TABLE IF EXISTS user_gridsquare;
+RENAME TABLE user_gridsquare_tmp TO user_gridsquare;
+
+
+#################################################
+

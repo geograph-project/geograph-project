@@ -2008,6 +2008,40 @@ END;
 				CONTAINS( GeomFromText($rectangle),	point_xy)
 				AND percent_land<>0 
 				GROUP BY gs.grid_reference ORDER BY y,x";
+		} elseif ($this->pixels_per_km == 4) {
+			if (!empty($this->type_or_user)) {
+				if ($this->type_or_user > 0) {
+					$sql="select x,y,ug.imagecount,ug.has_geographs,reference_index,
+						(ug.has_geographs=0 and ug.imagecount > 0) as accepted, 0 as pending
+						from gridsquare gs
+						left join user_gridsquare ug on (gs.grid_reference = ug.grid_reference and user_id = {$this->type_or_user})
+						where 
+						CONTAINS( GeomFromText($rectangle),	point_xy)
+						and percent_land<>0";
+						
+				} elseif ($this->type_or_user == -6) {
+					$sql="select x,y,0 as imagecount,has_recent as has_geographs,reference_index,
+						imagecount as accepted, 0 as pending
+						from gridsquare gs
+						where 
+						CONTAINS( GeomFromText($rectangle),	point_xy)
+						and percent_land<>0";
+				} elseif ($this->type_or_user == -1) {
+					$sql="select x,y,imagecount,has_geographs,reference_index,
+						(has_geographs=0 and imagecount > 0) as accepted, 0 as pending
+						from gridsquare gs
+						where 
+						CONTAINS( GeomFromText($rectangle),	point_xy)
+						and percent_land<>0";
+				}
+			} else {
+				$sql="select x,y,imagecount,has_geographs,reference_index,
+					(has_geographs=0 and imagecount > 0) as accepted, 0 as pending
+					from gridsquare gs
+					where 
+					CONTAINS( GeomFromText($rectangle),	point_xy)
+					and percent_land<>0";
+			}
 		} else {
 			if (!empty($this->type_or_user)) {
 				if ($this->type_or_user > 0) {
