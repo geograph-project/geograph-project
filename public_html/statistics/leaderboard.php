@@ -44,6 +44,11 @@ $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET[
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):150;
 
 $myriad = (isset($_GET['myriad']) && ctype_upper($_GET['myriad']))?$_GET['myriad']:'';
+if (strlen($myriad) == 2) {
+	$ri = 1;
+} elseif (strlen($myriad) == 1) {
+	$ri = 2;
+}
 
 
 $minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GET['minimum']):25;
@@ -298,16 +303,56 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Content Items";
 		$desc = "items submitted";
 
-	} else { #if ($type == 'points') {
+	} elseif ($type == 'second') {
+		if ($filtered) {
+			$sql_where = "i.ftf=2 and i.moderation_status='geograph'";
+		} else {
+			$sql_table = "user_stat i";
+			$sql_column = "points,seconds";
+		}
+		$heading = "Second Geograph<br/>Points";
+		$desc = "'Second Geograph' points awarded";
+	
+	} elseif ($type == 'third') {
+		if ($filtered) {
+			$sql_where = "i.ftf=3 and i.moderation_status='geograph'";
+		} else {
+			$sql_table = "user_stat i";
+			$sql_column = "thirds";
+		}
+		$heading = "Third Geograph<br/>Points";
+		$desc = "'Third Geograph' points awarded";
+	
+	} elseif ($type == 'fourth') {
+		if ($filtered) {
+			$sql_where = "i.ftf=4 and i.moderation_status='geograph'";
+		} else {
+			$sql_table = "user_stat i";
+			$sql_column = "images,fourths";
+		}
+		$heading = "Fourth Geograph<br/>Points";
+		$desc = "'Fourth Geograph' points awarded";
+	
+	} elseif ($type == 'allpoints') {
+		if ($filtered) {
+			$sql_where = "i.ftf between 1 and 4 and i.moderation_status='geograph'";
+		} else {
+			$sql_table = "user_stat i";
+			$sql_column = "images,(points+seconds+thirds+fourths)";
+		}
+		$heading = "Geograph<br/>Points";
+		$desc = "First/Second/Third/Fourth Geograph points awarded";
+	
+	} else { #if ($type == 'first') {
 		if ($filtered) {
 			$sql_where = "i.ftf=1 and i.moderation_status='geograph'";
 		} else {
 			$sql_table = "user_stat i";
 			$sql_column = "depth,points";
 		}
-		$heading = "Geograph<br/>Points";
+		$heading = "First Geograph<br/>Points";
 		$desc = "geograph points awarded";
-		$type = 'points';
+		$type = 'first';
 	} 
 
 	if ($when) {
@@ -350,13 +395,20 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	$limit2 = intval($limit * 1.6);
-	$topusers=$db->GetAll("select 
-	i.user_id,u.realname, $sql_column as imgcount
-	from $sql_table inner join user u using (user_id)
-	where $sql_where
-	group by user_id 
-	$sql_having_having
-	order by imgcount desc $sql_orderby,last asc limit $limit2"); 
+	$topusers=$db->GetAll("
+	select t2.*,u.realname 
+	from (
+		select i.user_id, $sql_column as imgcount
+		from $sql_table
+		where $sql_where
+		group by user_id 
+		$sql_having_having
+		order by imgcount desc $sql_orderby,last asc limit $limit2
+	) t2 inner join user u using (user_id) "); 
+	
+	
+	
+	
 	$lastimgcount = 0;
 	$toriserank = 0;
 	$points = 0;
@@ -397,7 +449,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('images', $images);
 
 
-	$smarty->assign('types', array('points','geosquares','images','depth'));
+	$smarty->assign('types', array('first','second','allpoints','geosquares','images','depth'));
 	
 	
 	$extra = array();

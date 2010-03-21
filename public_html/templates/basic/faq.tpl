@@ -128,10 +128,19 @@ The <b>Geograph Website</b>:
 <a name="points"></a>
 <h3>How do I get a geograph point for my image?</h3>
 	<p>If you're the first to submit a proper &quot;geograph&quot; for the grid square
-	you'll get a geograph point added to your profile and the warm glow that comes
+	you'll get a "First Geograph Point" added to your profile and the warm glow that comes
 	with it; because many of the easy ones have already been grabbed, getting a geograph point today is a real achievement.</p>
+
+	<p>We welcome many Geograph images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</p>
 	
-	<p>We welcome many Geograph images per square, so even if you don't get the point, you are still making a valuable contribution to the project. You can earn yourself a personal point by submitting a &quot;geograph&quot; for a square that is new to you.</p>
+	<blockquote>
+	
+		<p>In addition we now award "Second Geograph Points" (and Third and Fourth!) - which are given to the first image the <i>second contributor</i> adds to a square. The third contributor similarly gets a "Third" point for their first "Geograph" to the square. </p>
+
+		<p>So a single square can have a First, Second, Third and Fourth Point, but a contributor can only get one of those per square.</p>
+
+		<p>You can earn yourself a "Personal Point" by submitting a &quot;geograph&quot; for a square that is new to you, regardless of how many contributors have been there before.</p>
+	</blockquote>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
