@@ -7,9 +7,9 @@
 <h3>Points/Squares etc seem pretty similar... What does each mean?</h3>
     <ul>
 	<li><b>Points</b> / <b>Firsts</b>: the first geograph submitted for a square earns a <a href="/faq.php#points"><b>First Geograph Point</b></a><br/><br/><ul>
-	<li><b>Seconds</b>: the second contributor to a square gets a "<b>Second Geograph Point</b>" for the first Geograph they submit<br/><br/></li>
-	<li><b>Thirds</b>: the third contributor to a square gets a "<b>Third Geograph Point</b>" for the first Geograph they submit<br/><br/></li>
-	<li><b>Fourths</b>: the fourth contributor to a square gets a "<b>Fourth Geograph Point</b>" for the first Geograph they submit<br/><br/></li>
+	<li><b>Seconds</b>: a "<b>Second Geograph Contributor</b>" point is awarded for the second person to contribute a geograph to a square<br/><br/></li>
+	<li><b>Thirds</b>: similarlly a "<b>Third Geograph Contributor</b>" point is awarded for the third person to contribute a geograph to a square<br/><br/></li>
+	<li><b>Fourths</b>: and therefore a "<b>Fourth Geograph Contributor</b>" point is awarded for the fourth person to contribute a geograph to a square<br/><br/></li>
 	<li><b>AllPoints</b>: Any/all of First/Second/Third/Fourth Geograph Points<br/><br/></li>
 	<li><b>Personal Points</b>: The first image submitted by each user in a square gets a Personal Point.<br/><br/></li>
     </ul></li>
@@ -22,10 +22,10 @@
     <li><b>GeoSquares</b>: the number of different squares Geographed<br/><small> (on the All Time Leaderboard is the same as Personal Geograph Points, doesn't apply on the Weekly Leaderboard)</small><br/><br/>
     </ul></li>
     
-    <li><b>Depth</b>: number of Images divided by the number of Squares. Higher numbers mean a tendency to photograph a small number of squares very well. (opposite to points/coverage)<br/><br/></li>
-    <li><b>Centisquares</b>: number of different centisquares<a href="/help/squares">?</a> images submitted to<br/><br/></li>
-    <li><b>Hectads</b>: number of different hectads<a href="/help/squares">?</a> images submitted to<br/><br/></li>
-    <li><b>Myriads</b>: number of different myriads<a href="/help/squares">?</a> images submitted to<br/><br/></li>
+    <li><b>Depth</b>: number of Images divided by the number of Squares.<br/> <small>Higher numbers mean a tendency to photograph a small number of squares very well. (opposite to points/coverage)</small><br/><br/></li>
+    <li><b>Centisquares</b>: number of different centisquares<sup><a href="/help/squares">?</a></sup> images submitted to<br/><br/></li>
+    <li><b>Hectads</b>: number of different hectads<sup><a href="/help/squares">?</a></sup> images submitted to<br/><br/></li>
+    <li><b>Myriads</b>: number of different myriads<sup><a href="/help/squares">?</a></sup> images submitted to<br/><br/></li>
     <li><b>Categories</b>: number of different image categories submitted<br/><br/></li>
     <li><b>Days</b>: number of different days images submitted<br/><br/></li>
 
