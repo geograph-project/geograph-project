@@ -117,7 +117,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$desc = "'geograph' images submitted";
 
 	} elseif ($type == 'additional') {
-		$sql_where = "i.moderation_status='geograph' and ftf = 0";
+		$sql_where = "i.moderation_status='geograph' and ftf != 1";
 		$heading = "Non-First Geograph Images";
 		$desc = "non first 'geograph' images submitted";
 
@@ -145,7 +145,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	} elseif ($type == 'test_points') {
 		if ($filtered) {
-			$sql_column = "sum((i.moderation_status = 'geograph') + ftf + 1)";
+			$sql_column = "sum((i.moderation_status = 'geograph') + (ftf=1) + 1)";
 		} else {
 			$sql_table = "user_stat i";
 			$sql_column = "images, (geographs+points+images)";

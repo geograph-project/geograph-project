@@ -145,7 +145,7 @@
 		<td sortvalue="{$image->grid_reference}"><a title="view full size image" href="{if $image->gridimage_id < 1498791}javascript:void(loadimage({$image->gridimage_id}));{else}/photo/{$image->gridimage_id}{/if}">{$image->grid_reference}</a></td>
 		<td>{$image->title}</td>
 		<td sortvalue="{$image->gridimage_id}" class="nowrap">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
-		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf}(first){/if}</td>
+		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){/if}</td>
 		</tr>
 	{/foreach}
 	</tbody></table>

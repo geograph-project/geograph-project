@@ -468,7 +468,7 @@ if ($grid_given)
 
 							$table = $CONF['db_tempdb'].".tmp_".md5(uniqid());
 
-							$db->Execute("CREATE TEMPORARY TABLE $table SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, REVERSE(gridimage_id)");
+							$db->Execute("CREATE TEMPORARY TABLE $table SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, REVERSE(gridimage_id)");
 
 							$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
 
@@ -483,15 +483,15 @@ if ($grid_given)
 							break;
 						
 						case 'any':
-							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC LIMIT $limit";
+							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC LIMIT $limit";
 							break;
 						
 						case 'random':
-							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, REVERSE(gridimage_id) LIMIT $limit";
+							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, REVERSE(gridimage_id) LIMIT $limit";
 							break;
 						
 						case 'latest':
-							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf DESC, seq_no DESC LIMIT $limit";
+							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, seq_no DESC LIMIT $limit";
 							break;
 						
 						case 'few':
@@ -651,7 +651,7 @@ if ($grid_given)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY moderation_status 
-				ORDER BY ftf DESC,moderation_status+0 DESC");
+				ORDER BY moderation_status+0 DESC");
 				foreach ($all as $row) {
 					$rowname = str_replace('accepted','supplemental',$row[0]);
 					$breakdown[$i] = array('name'=>"<b>{$rowname}</b>",'count'=>$row[1]);
@@ -889,7 +889,7 @@ if ($grid_given)
 			}
 		} else {
 			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
-			$images=$square->getImages($inc_all_user,$custom_where,'order by ftf desc,gridimage_id');
+			$images=$square->getImages($inc_all_user,$custom_where,'order by ftf>0 desc,ftf,gridimage_id');
 			$square->totalimagecount = count($images);
 		
 			//otherwise, lets gether the info we need to display some thumbs

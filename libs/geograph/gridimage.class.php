@@ -1656,17 +1656,16 @@ class GridImage
 		gridimage_search WRITE");
 */
 		
-		//you only get ftf if new status is 'geograph' and there are no other 
-		//first geograph images
-		$geographs= $db->GetOne("select count(*) from gridimage ".
-					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' and ftf = 1");
+		//find out how many users have contributed to the square, and if this is the first from this user, then give it a ftf. 
+		//NOT ftf used to just mean first overall, now we mark the first from each contributor. (with the sequence in the square)
+		list($contributors,$has_image) = $db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph'");
+		
 		$this->ftf=0;
-		if (($status=='geograph') && ($geographs==0))
+		if (($status=='geograph') && ($has_image==0)) 
 		{
-			$this->ftf=1;
-			$geographs=1;
+			$this->ftf=$contributors+1;
 		}
-					
+		
 		//update image status and ftf flag
 		$sql="update gridimage set ".
 			"moderation_status='$status',".
@@ -1678,19 +1677,39 @@ class GridImage
 		$db->query($sql);
 		
 		//if we've just cleared the ftf flag, we should check to see
-		//the square contains other geographs, in which case, we award ftf to the
-		//first one submitted
+		//the square contains other geographs
 		if ($original_ftf && !$this->ftf)
 		{
-			$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
-				"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
-				"order by gridimage_id");
-			if ($next_geograph)
+			//if the user has another geograph, then it can inherit the same ftf level. 
+			if ($has_image)
 			{
-				$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
-				$db->Query("update gridimage_search set ftf=1 where gridimage_id={$next_geograph}");
+				$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
+					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' and user_id = {$this->user_id} ".
+					"and gridimage_id<>{$this->gridimage_id} ".
+					"order by seq_no");
+				if ($next_geograph)
+				{
+					$db->Query("update gridimage set ftf=$original_ftf where gridimage_id={$next_geograph}");
+					$db->Query("update gridimage_search set ftf=$original_ftf where gridimage_id={$next_geograph}");
+				}
+			} 
+			//otherwise see if we have other contributors images to shuffle
+			else 
+			{
+				$next_geographs= $db->GetCol("select gridimage_id ".
+					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
+					"and ftf > $original_ftf ".
+					"order by seq_no");
+				//if there some fft's below this one, promote them up the chain!
+				if (!empty($next_geographs) && count($next_geographs))
+				{
+					foreach ($next_geographs as $next_geograph) 
+					{
+						$db->Query("update gridimage set ftf=ftf-1 where gridimage_id={$next_geograph}");
+						$db->Query("update gridimage_search set ftf=ftf-1 where gridimage_id={$next_geograph}");
+					}
+				}
 			}
-
 		}
 		
 		//todo? should $this->grid_square->updateCounts(); be inside the lock
@@ -1772,36 +1791,54 @@ class GridImage
 					$seq_no=min($seq_no-1, -1);
 				}
 
-				//was this image ftf? 
+				//was this image a ftf? 
 				if ($this->ftf)
 				{
+					$original_ftf=$this->ftf;
+					
 					//reset the ftf flag
 					$this->ftf=0;
-
-					//need to assign ftf to another image in the square if possible
+					
 					$next_geograph= $db->GetOne("select gridimage_id from gridimage ".
-						"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
+						"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' and user_id = {$this->user_id} ".
 						"and gridimage_id<>{$this->gridimage_id} ".
-						"order by gridimage_id");
+						"order by seq_no");
+					//if the user has another geograph, then it can inherit the same ftf level. 
 					if ($next_geograph)
 					{
-						$db->Query("update gridimage set ftf=1 where gridimage_id={$next_geograph}");
-						$db->Query("update gridimage_search set ftf=1 where gridimage_id={$next_geograph}");
+						$db->Query("update gridimage set ftf=$original_ftf where gridimage_id={$next_geograph}");
+						$db->Query("update gridimage_search set ftf=$original_ftf where gridimage_id={$next_geograph}");
 					}
-
+					//otherwise see if we have other contributors images to shuffle
+					else 
+					{
+						$next_geographs= $db->GetCol("select gridimage_id from gridimage ".
+							"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
+							"and gridimage_id<>{$this->gridimage_id} ".
+							"and ftf > $original_ftf ".
+							"order by seq_no");
+						//if there some fft's below this one, promote them up the chain!
+						if (!empty($next_geographs) && count($next_geographs))
+						{
+							foreach ($next_geographs as $next_geograph) 
+							{
+								$db->Query("update gridimage set ftf=ftf-1 where gridimage_id={$next_geograph}");
+								$db->Query("update gridimage_search set ftf=ftf-1 where gridimage_id={$next_geograph}");
+							}
+						}
+					}
 				}
 
 				//does the image get ftf in the target square?
 				if ($this->moderation_status=='geograph')
 				{
-					$geographs= $db->GetOne("select count(*) from gridimage ".
-						"where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph' and ftf = 1");
-					if ($geographs==0)
-						$this->ftf=1;
+					list($contributors,$has_image) = $db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph'");
+					
+					if ($has_image==0)
+						$this->ftf=$contributors+1;
 				}
 				
-				$sql_set = "gridsquare_id='{$newsq->gridsquare_id}',".
-							"seq_no=$seq_no,ftf=$this->ftf, ";
+				$sql_set = "gridsquare_id={$newsq->gridsquare_id},seq_no=$seq_no,ftf=$this->ftf, ";
 			}
 				//if not a new square only update nateastings and natnorthings
 			

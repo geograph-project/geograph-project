@@ -725,7 +725,7 @@ if (!empty($clear_cache)) {
 		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
 		$memcache->name_delete('gi',$mkey);
 		//the browse page for the user (to show pending)
-		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
+		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by between 1 and 4 desc,ftf,gridimage_id");
 		$memcache->name_delete('gi',$mkey);
 	}
 	
