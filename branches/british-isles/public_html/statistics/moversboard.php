@@ -182,6 +182,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "sum(i.ftf between 1 and 4 and i.moderation_status='geograph')";
 		$heading = "All Geograph<br/>Points";
 		$desc = "First/Second/Third/Fourth geograph points awarded";
+	} elseif ($type == 'personal') {
+		$sql_column = "sum(i.ftf>0 and i.moderation_status='geograph')";
+		$heading = "Personal<br/>Points";
+		$desc = "Personal points awarded";
 	} else { #if ($type == 'first') {
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
 		$heading = "First Geograph<br/>Points";
@@ -236,7 +240,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
-	$smarty->assign('types', array('first','second','allpoints','geosquares','images','depth'));
+	$smarty->assign('types', array('first','second','allpoints','personal','images','depth'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);

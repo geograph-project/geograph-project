@@ -100,7 +100,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Squares<br/>Photographed";
 		$desc = "different squares photographed";
 
-	} elseif ($type == 'geosquares') {
+	} elseif ($type == 'geosquares' || $type == 'personal') {
 		if ($filtered) {
 			$sql_column = "count(distinct grid_reference)";
 			$sql_where = "i.moderation_status='geograph'";

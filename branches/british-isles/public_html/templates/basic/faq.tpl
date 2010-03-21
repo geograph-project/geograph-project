@@ -127,9 +127,9 @@ The <b>Geograph Website</b>:
 <div id="points">
 <a name="points"></a>
 <h3>How do I get a geograph point for my image?</h3>
-	<p>If you're the first to submit a proper &quot;geograph&quot; for the grid square
+	<p>If you're the first to submit a &quot;geograph&quot; for the grid square
 	you'll get a "First Geograph Point" added to your profile and the warm glow that comes
-	with it; because many of the easy ones have already been grabbed, getting a geograph point today is a real achievement.</p>
+	with it.</p>
 
 	<p>We welcome many Geograph images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</p>
 	

@@ -116,13 +116,26 @@
 		{/if}
 		<ul>
 			{if $profile->stats.points}
-				<li><b>{$profile->stats.points}</b> Geograph points <sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup>
+				<li><b>{$profile->stats.points}</b> First Geograph points <sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup>
 					{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
 						<ul style="font-size:0.8em;margin-bottom:2px">
 						<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to rise rank){/if}</li>
 						</ul>
 					{/if}
 				</li>
+			{/if}
+			{if $profile->stats.seconds || $profile->stats.thirds || $profile->stats.fourths}
+				<li style="padding-bottom:3px">
+				{if $profile->stats.seconds}
+					<b>{$profile->stats.seconds}</b> Second Geograph points,
+				{/if}
+				{if $profile->stats.thirds}
+					<b>{$profile->stats.thirds}</b> Third Geograph points,
+				{/if}
+				{if $profile->stats.fourths}
+					<b>{$profile->stats.fourths}</b> Fourth Geograph points,
+				{/if}
+			 	<sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup></li>
 			{/if}
 			{if $profile->stats.geosquares}
 				<li><b>{$profile->stats.geosquares}</b> Personal points (gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
@@ -133,16 +146,16 @@
 					{/if}
 				</li>
 			{/if}
-			{if $profile->stats.geographs}
-				<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
-				{if $profile->stats.geographs != $profile->stats.images}
-					and <b>{$profile->stats.images-$profile->stats.geographs}</b> Supplemental
-				{/if}
-				</li>
-			{/if}
 			<li><b>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if}
 				{if $profile->stats.squares gt 1}
 					<ul style="font-size:0.8em;margin-bottom:2px">
+					{if $profile->stats.geographs}
+						<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
+						{if $profile->stats.geographs != $profile->stats.images}
+							and <b>{$profile->stats.images-$profile->stats.geographs}</b> Supplemental
+						{/if}
+						</li>
+					{/if}
 					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if},
 					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
 					</li>
