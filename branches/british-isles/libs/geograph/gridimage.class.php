@@ -1658,7 +1658,7 @@ class GridImage
 		
 		//find out how many users have contributed to the square, and if this is the first from this user, then give it a ftf. 
 		//NOT ftf used to just mean first overall, now we mark the first from each contributor. (with the sequence in the square)
-		list($contributors,$has_image) = $db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph'");
+		list($contributors,$has_image) = $db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' and gridimage_id<>{$this->gridimage_id}");
 		
 		$this->ftf=0;
 		if (($status=='geograph') && ($has_image==0)) 
@@ -1696,7 +1696,7 @@ class GridImage
 			//otherwise see if we have other contributors images to shuffle
 			else 
 			{
-				$next_geographs= $db->GetCol("select gridimage_id ".
+				$next_geographs= $db->GetCol("select gridimage_id from gridimage ".
 					"where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' ".
 					"and ftf > $original_ftf ".
 					"order by seq_no");
@@ -1832,7 +1832,7 @@ class GridImage
 				//does the image get ftf in the target square?
 				if ($this->moderation_status=='geograph')
 				{
-					list($contributors,$has_image) = $db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph'");
+					list($contributors,$has_image) = $db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$newsq->gridsquare_id} and moderation_status='geograph' and gridimage_id<>{$this->gridimage_id}");
 					
 					if ($has_image==0)
 						$this->ftf=$contributors+1;

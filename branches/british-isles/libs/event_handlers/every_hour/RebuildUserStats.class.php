@@ -42,39 +42,30 @@ class RebuildUserStats extends EventHandler
 		$db=&$this->_getDB();
 		
 		$db->Execute("DROP TABLE IF EXISTS user_stat_tmp");
+
+		$data = $db->getRow("SHOW TABLE STATUS LIKE 'user_stat'");
 		
-	//create table
-		$db->Execute("CREATE TABLE user_stat_tmp (
-					`user_id` int(11) unsigned NOT NULL default '0',
-					`images` mediumint(5) unsigned NOT NULL default '0',
-					`squares` mediumint(5) unsigned NOT NULL default '0',
-					`geosquares` smallint(5) unsigned NOT NULL default '0',
-					`geo_rank` smallint(5) unsigned NOT NULL default '0',
-					`geo_rise` smallint(5) unsigned NOT NULL default '0',
-					`points` mediumint(5) unsigned NOT NULL default '0',
-					`points_rank` smallint(5) unsigned NOT NULL default '0',
-					`points_rise` smallint(5) unsigned NOT NULL default '0',
-					`geographs` mediumint(5) unsigned NOT NULL default '0',
-					`days` smallint(5) unsigned NOT NULL default '0',
-					`depth` decimal(6,2) NOT NULL default '0',
-					`myriads` tinyint(5) unsigned NOT NULL default '0',
-					`hectads` smallint(3) unsigned NOT NULL default '0',
-					`last` int(11) unsigned NOT NULL default '0',
-					`content` mediumint(5) unsigned NOT NULL default '0',
-					PRIMARY KEY  (`user_id`),
-					KEY `points` (`points`)
-				) ENGINE=MyISAM");
-				
-		$size = 5000;
-		$users = $db->getOne("SELECT MAX(user_id) FROM gridimage_search");
-		
-		$end = ceil($users/$size)*$size;
-		
-		$db->Execute("ALTER TABLE user_stat_tmp DISABLE KEYS");
-		
-		for($q=0;$q<$end;$q+=$size) {
-			$crit = sprintf("user_id BETWEEN %d AND %d",$q,$q+$size-1);
+		if (false && !empty($data['Update_time']) && strtotime($data['Update_time']) > (time() - 60*60*6)) {
+			//a recent table - so lets update that!
 			
+			$users = $db->getCol("select distinct user_id from gridimage_search where upd_timestamp > date_sub(now(),interval 3 hour)"); //use 3 hour just to be safe!
+			
+			if (empty($users)) {
+				//nothing to do then!
+				return true;
+			}
+			
+			$id_list = implode(',',$users);
+			
+		//create table
+			$db->Execute("CREATE TABLE user_stat_tmp LIKE user_stat");
+			
+		//copy over unchanged data (ranks will be recalculated anyway!)
+			$db->Execute("INSERT INTO user_stat_tmp SELECT * FROM user_stat WHERE user_id NOT IN ($id_list,0)");
+			
+			$crit = "user_id IN ($id_list)";
+			
+		//add the changed users data
 			$db->Execute("INSERT INTO user_stat_tmp
 				SELECT user_id,
 					count(*) as images,
@@ -85,6 +76,9 @@ class RebuildUserStats extends EventHandler
 					sum(ftf=1 and moderation_status = 'geograph') as points,
 					0 as points_rank,
 					0 as points_rise,
+					sum(ftf=2 and moderation_status = 'geograph') as seconds,
+					sum(ftf=3 and moderation_status = 'geograph') as thirds,
+					sum(ftf=4 and moderation_status = 'geograph') as fourths,
 					sum(moderation_status = 'geograph') as geographs,
 					count(distinct imagetaken) as days,
 					count(*)/count(distinct grid_reference) as depth,
@@ -96,12 +90,75 @@ class RebuildUserStats extends EventHandler
 				WHERE $crit
 				GROUP BY user_id
 				ORDER BY NULL");
-				
-			sleep(2);//allow held up threads a chance to run
+			
+			
+		} else {
+			
+		//create table
+			$db->Execute("CREATE TABLE user_stat_tmp (
+						`user_id` int(11) unsigned NOT NULL default '0',
+						`images` mediumint(5) unsigned NOT NULL default '0',
+						`squares` mediumint(5) unsigned NOT NULL default '0',
+						`geosquares` smallint(5) unsigned NOT NULL default '0',
+						`geo_rank` smallint(5) unsigned NOT NULL default '0',
+						`geo_rise` smallint(5) unsigned NOT NULL default '0',
+						`points` mediumint(5) unsigned NOT NULL default '0',
+						`points_rank` smallint(5) unsigned NOT NULL default '0',
+						`points_rise` smallint(5) unsigned NOT NULL default '0',
+						`seconds` mediumint(5) unsigned NOT NULL default '0',
+						`thirds` mediumint(5) unsigned NOT NULL default '0',
+						`fourths` mediumint(5) unsigned NOT NULL default '0',
+						`geographs` mediumint(5) unsigned NOT NULL default '0',
+						`days` smallint(5) unsigned NOT NULL default '0',
+						`depth` decimal(6,2) NOT NULL default '0',
+						`myriads` tinyint(5) unsigned NOT NULL default '0',
+						`hectads` smallint(3) unsigned NOT NULL default '0',
+						`last` int(11) unsigned NOT NULL default '0',
+						`content` mediumint(5) unsigned NOT NULL default '0',
+						PRIMARY KEY  (`user_id`),
+						KEY `points` (`points`)
+					) ENGINE=MyISAM");
+
+			$size = 5000;
+			$users = $db->getOne("SELECT MAX(user_id) FROM gridimage_search");
+
+			$end = ceil($users/$size)*$size;
+
+			$db->Execute("ALTER TABLE user_stat_tmp DISABLE KEYS");
+
+			for($q=0;$q<$end;$q+=$size) {
+				$crit = sprintf("user_id BETWEEN %d AND %d",$q,$q+$size-1);
+
+				$db->Execute("INSERT INTO user_stat_tmp
+					SELECT user_id,
+						count(*) as images,
+						count(distinct grid_reference) as squares,
+						count(distinct if(moderation_status = 'geograph',grid_reference,null)) as geosquares,
+						0 as geo_rank,
+						0 as geo_rise,
+						sum(ftf=1 and moderation_status = 'geograph') as points,
+						0 as points_rank,
+						0 as points_rise,
+						sum(ftf=2 and moderation_status = 'geograph') as seconds,
+						sum(ftf=3 and moderation_status = 'geograph') as thirds,
+						sum(ftf=4 and moderation_status = 'geograph') as fourths,
+						sum(moderation_status = 'geograph') as geographs,
+						count(distinct imagetaken) as days,
+						count(*)/count(distinct grid_reference) as depth,
+						count(distinct substring(grid_reference,1,3 - reference_index)) as myriads,
+						count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ) as hectads,
+						max(gridimage_id) as last,
+						0 as `content`
+					FROM gridimage_search
+					WHERE $crit
+					GROUP BY user_id
+					ORDER BY NULL");
+
+				sleep(2);//allow held up threads a chance to run
+			}
+
+			$db->Execute("ALTER TABLE user_stat_tmp ENABLE KEYS");
 		}
-		
-		$db->Execute("ALTER TABLE user_stat_tmp ENABLE KEYS");
-		
 		
 		$GLOBALS['ADODB_FETCH_MODE'] = ADODB_FETCH_ASSOC;
 		

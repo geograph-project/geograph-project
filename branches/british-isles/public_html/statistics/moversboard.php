@@ -166,11 +166,27 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_where = "and i.moderation_status='geograph' and nateastings div 1000 > 0";
 		$heading = "Centisquares";
 		$desc = "centisquares photographed";
-	} else { #if ($type == 'points') {
+	} elseif ($type == 'second') {
+		$sql_column = "sum(i.ftf=2 and i.moderation_status='geograph')";
+		$heading = "Second Geograph<br/>Points";
+		$desc = "'Second geograph' points awarded";
+	} elseif ($type == 'third') {
+		$sql_column = "sum(i.ftf=3 and i.moderation_status='geograph')";
+		$heading = "Third Geograph<br/>Points";
+		$desc = "'Third geograph' points awarded";
+	} elseif ($type == 'forth') {
+		$sql_column = "sum(i.ftf=4 and i.moderation_status='geograph')";
+		$heading = "Fourth Geograph<br/>Points";
+		$desc = "'Fourth geograph' points awarded";
+	} elseif ($type == 'allpoints') {
+		$sql_column = "sum(i.ftf between 1 and 4 and i.moderation_status='geograph')";
+		$heading = "All Geograph<br/>Points";
+		$desc = "First/Second/Third/Fourth geograph points awarded";
+	} else { #if ($type == 'first') {
 		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
-		$heading = "New<br/>Geograph<br/>Points";
-		$desc = "geograph points awarded";
-		$type = 'points';
+		$heading = "First Geograph<br/>Points";
+		$desc = "'First Geograph' points awarded";
+		$type = 'first';
 	} 
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
@@ -220,7 +236,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
-	$smarty->assign('types', array('points','geosquares','images','depth'));
+	$smarty->assign('types', array('first','second','allpoints','geosquares','images','depth'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);

@@ -8,6 +8,8 @@
 
 <h2>{if $is_admin || $is_mod}<a title="Admin home page" href="/admin/index.php">Admin</a> : {/if}Moderation</h2>
 
+	
+	
 {dynamic}
 {if $remoderate}{literal}
 <script type="text/javascript">
@@ -31,6 +33,8 @@
  
 	{if !$moderator && !$review}
 	Simply look at each image in turn and click the relevant button. The result of the action is displayed just below the button.<br/><br/>
+	
+	<div class="interestBox" style="border:4px solid red;background-color:pink;font-size:1.1em;padding:15px">Remember you absolutely MUST wait for confirmation from clicking the moderation button, before moving onto the next image. <b>This is vitally important</b>. <i>Thank you for your attention in this matter</i>.</div>
 	
 	Sometimes a button is grayed out, this is at the suggestion of the submitter themselves, and/or the system. Please moderate as you normally would, but you can take the suggestion into account. 
 	{/if}</p>

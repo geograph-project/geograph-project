@@ -1142,3 +1142,13 @@ RENAME TABLE user_gridsquare_tmp TO user_gridsquare;
 
 #################################################
 
+
+# run scripts/create_ftf.php then run...
+
+update gridimage_search gs inner join gridimage gi using (gridimage_id) set gs.ftf = gi.ftf,gs.upd_timestamp = gi.upd_timestamp where gi.ftf > 0;
+
+
+#################################################
+
+
+
