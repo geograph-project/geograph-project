@@ -50,7 +50,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 
 	$sql = "SELECT 
-	CONCAT(ELT(ftf+1, '','first ','second ','third ','fourth '),moderation_status) as `Classification`, 
+	CONCAT(IF(ftf BETWEEN 1 AND 4,ELT(ftf,'first ','second ','third ','fourth '),''),moderation_status) as `Classification`, 
 	SUM(submitted > DATE_SUB(NOW() , interval 1 HOUR)) as `In last Hour`,
 	SUM(submitted > DATE_SUB(NOW() , interval 1 DAY)) as `In last 24 Hours`,
 	SUM(submitted > DATE_SUB(NOW() , interval 7 DAY)) as `In last 7 Days`,

@@ -90,7 +90,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$mysql_fields = '';
 	if ($by == 'status') {
-		$sql_group = $sql_fieldname = "CONCAT(ELT(ftf+1, '','first ','second ','third ','fourth '),moderation_status)";
+		$sql_group = $sql_fieldname = "CONCAT(IF(ftf BETWEEN 1 AND 4,ELT(ftf,'first ','second ','third ','fourth '),''),moderation_status)";
 	} else if ($by == 'class') {
 		$sql_group = $sql_fieldname = 'imageclass';
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;imageclass=");

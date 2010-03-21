@@ -889,7 +889,7 @@ if ($grid_given)
 			}
 		} else {
 			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
-			$images=$square->getImages($inc_all_user,$custom_where,'order by ftf>0 desc,ftf,gridimage_id');
+			$images=$square->getImages($inc_all_user,$custom_where,'order by ftf between 1 and 4 desc,ftf,gridimage_id');
 			$square->totalimagecount = count($images);
 		
 			//otherwise, lets gether the info we need to display some thumbs
