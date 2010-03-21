@@ -89,7 +89,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "New<br/>Geographs";
 		$desc = "'geograph' images submitted";
 	} elseif ($type == 'additional') {
-		$sql_column = "sum(i.moderation_status='geograph' and ftf = 0)";
+		$sql_column = "sum(i.moderation_status='geograph' and ftf != 1)";
 		$heading = "Non-First<br/>Geographs";
 		$desc = "non first 'geograph' images submitted";
 	} elseif ($type == 'supps') {
@@ -102,7 +102,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "New<br/>Images";
 		$desc = "images submitted";
 	} elseif ($type == 'test_points') {
-		$sql_column = "sum((i.moderation_status = 'geograph') + ftf + 1)";
+		$sql_column = "sum((i.moderation_status = 'geograph') + (ftf=1) + 1)";
 		$sql_table = " gridimage_search i ";
 		$heading = "G-Points";
 		$desc = "test points";

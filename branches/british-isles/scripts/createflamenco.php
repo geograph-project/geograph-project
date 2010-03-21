@@ -119,7 +119,7 @@ fwrite($h['facets'],"imageclass	Category	Subject Category\n");
 fwrite($h['facets'],"cluster	Cluster	Automatically deduced label for the image\n");
 fwrite($h['facets'],"place	Place	Grouping by place\n");
 fwrite($h['facets'],"moderation_status	Moderation	Moderation Classification\n");
-fwrite($h['facets'],"ftf	First	One if the photo is a 'First'\n");
+fwrite($h['facets'],"ftf	First	One if the photo is a 'First',Two if 'Second' etc\n");
 
 #####################################################
 
@@ -180,6 +180,9 @@ fwrite($h['moderation_status_terms'],	implode("\t",array(4,'geograph')). "\n");
 #ftf_terms
 #fwrite($h['ftf_terms'],	implode("\t",array(0,'')). "\n");
 fwrite($h['ftf_terms'],	implode("\t",array(1,'first')). "\n");
+fwrite($h['ftf_terms'],	implode("\t",array(2,'second')). "\n");
+fwrite($h['ftf_terms'],	implode("\t",array(3,'third')). "\n");
+fwrite($h['ftf_terms'],	implode("\t",array(4,'fourth')). "\n");
 
 #reference_index_terms
 fwrite($h['reference_index_terms'],	implode("\t",array(1,'Great Britain')). "\n");
@@ -226,7 +229,7 @@ while (!$recordSet->EOF)
 
 	fwrite($h['moderation_status_map'], 	implode("\t",array($r['gridimage_id'],$r['moderation_status'])). "\n");
 
-	if ($r['ftf'])
+	if ($r['ftf'] > 0 && $r['ftf'] <= 4)
 		fwrite($h['ftf_map'], 		implode("\t",array($r['gridimage_id'],$r['ftf'])). "\n");
 
 	if (strpos($r['imagetaken'],'0000') === FALSE) {

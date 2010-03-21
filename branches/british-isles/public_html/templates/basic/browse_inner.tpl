@@ -134,7 +134,7 @@
 			<div class="photo33" style="float:left; margin-left:5px; width:150px; height:190px; background-color:white"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" target="_blank" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a>
 			<div class="caption"><a target="_blank" title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
 			<div class="statuscaption">classification:
-			  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}{if $image->ftf} (first){/if}</div>
+			  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}{if $image->ftf eq 1} (first){/if}</div>
 			</div>
 
 			

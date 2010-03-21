@@ -14,7 +14,7 @@
 				<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
 
 				{if $is_admin}
-					<div class="statuscaption">classification: {$image->moderation_status} {if $image->ftf}(first){/if}</div>
+					<div class="statuscaption">classification: {$image->moderation_status} {if $image->ftf eq 1}(first){/if}</div>
 				{/if}
 
 				<div style="font-size:0.7em"><br/>Insert: <a href="#" onclick="return paste_strinL('[[[{$image->gridimage_id}]]]',0)">Thumbnail</a> or <a href="#" onclick="return paste_strinL('[[{$image->gridimage_id}]]',0)">Text Link</a></div>

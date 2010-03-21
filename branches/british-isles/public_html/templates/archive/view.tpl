@@ -115,8 +115,14 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {/if}
 
 <dt>Image classification</dt>
-<dd>{if $image->ftf}
+<dd>{if $image->ftf eq 1}
 	Geograph (First for {$image->grid_reference})
+{elseif $image->ftf eq 2}
+	Geograph (Second for {$image->grid_reference})
+{elseif $image->ftf eq 3}
+	Geograph (Third for {$image->grid_reference})
+{elseif $image->ftf eq 4}
+	Geograph (Fourth for {$image->grid_reference})
 {else}
 	{if $image->moderation_status eq "rejected"}
 	Rejected

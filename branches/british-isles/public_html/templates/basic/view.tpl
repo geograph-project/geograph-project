@@ -69,17 +69,17 @@
 		{assign var="item" value=$image->snippets[0]}
 		<div class="caption640">
 		{$item.comment|escape:'html'|nl2br|geographlinks}{if $item.title}<br/><br/>
-		<small>See other images of <a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></small>{/if}
+		<small>See other images of <a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'}</a></small>{/if}
 		</div>
 	{else}
 		{foreach from=$image->snippets item=item name=used}
 			{if !$image->snippets_as_ref && !$item.comment}
 				<div class="caption640 searchresults"><br/>
-				<small>See other images of <a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}, by {$item.realname}">{$item.title|escape:'html'}</a></small>
+				<small>See other images of <a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'}</a></small>
 				</div>
 			{else}
 				<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
-				{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}, by {$item.realname}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small>{/if}
+				{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small>{/if}
 				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks|hidekeywords}</blockquote>
 				</div>
 			{/if}
@@ -186,8 +186,14 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 {/if}
 
 <dt>Image classification</dt>
-<dd>{if $image->ftf}
+<dd>{if $image->ftf eq 1}
 	Geograph (First for {$image->grid_reference})
+{elseif $image->ftf eq 2}
+	Geograph (Second for {$image->grid_reference})
+{elseif $image->ftf eq 3}
+	Geograph (Third for {$image->grid_reference})
+{elseif $image->ftf eq 4}
+	Geograph (Fourth for {$image->grid_reference})
 {else}
 	{if $image->moderation_status eq "rejected"}
 	Rejected

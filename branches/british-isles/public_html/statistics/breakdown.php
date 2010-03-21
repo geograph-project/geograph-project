@@ -90,7 +90,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$mysql_fields = '';
 	if ($by == 'status') {
-		$sql_group = $sql_fieldname = "CONCAT(moderation_status,ELT(ftf+1, '',' (ftf)'))";
+		$sql_group = $sql_fieldname = "CONCAT(ELT(ftf+1, '','first ','second ','third ','fourth '),moderation_status)";
 	} else if ($by == 'class') {
 		$sql_group = $sql_fieldname = 'imageclass';
 		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;imageclass=");
@@ -255,9 +255,8 @@ $mysql_order";
 		}
 
 		if ($by == 'status') {
-			$friendly = array('rejected' => 'Rejected', 'pending' => 'Pending', 'geograph (ftf)' => 'First Geograph', 'accepted' => 'Supplemental', 'geograph' => 'Geograph');
 			foreach($breakdown as $idx=>$entry) {
-				$breakdown[$idx]['field'] = $friendly[$entry['field']];
+				$breakdown[$idx]['field'] = ($entry['field'] == 'accepted')?'Supplemental':ucwords($entry['field']);
 			}
 		} elseif ($by == 'user') {
 			foreach($breakdown as $idx=>$entry) {
