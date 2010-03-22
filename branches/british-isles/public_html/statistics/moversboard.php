@@ -168,20 +168,20 @@ if (!$smarty->is_cached($template, $cacheid))
 		$desc = "centisquares photographed";
 	} elseif ($type == 'second') {
 		$sql_column = "sum(i.ftf=2 and i.moderation_status='geograph')";
-		$heading = "Second Geograph<br/>Points";
-		$desc = "'Second geograph' points awarded";
+		$heading = "Second Visit<br/>Points";
+		$desc = "'Second Visit' points awarded";
 	} elseif ($type == 'third') {
 		$sql_column = "sum(i.ftf=3 and i.moderation_status='geograph')";
-		$heading = "Third Geograph<br/>Points";
-		$desc = "'Third geograph' points awarded";
+		$heading = "Third Visit<br/>Points";
+		$desc = "'Third Visit' points awarded";
 	} elseif ($type == 'forth') {
 		$sql_column = "sum(i.ftf=4 and i.moderation_status='geograph')";
-		$heading = "Fourth Geograph<br/>Points";
-		$desc = "'Fourth geograph' points awarded";
+		$heading = "Fourth Visit<br/>Points";
+		$desc = "'Fourth Visit' points awarded";
 	} elseif ($type == 'allpoints') {
 		$sql_column = "sum(i.ftf between 1 and 4 and i.moderation_status='geograph')";
 		$heading = "All Geograph<br/>Points";
-		$desc = "First/Second/Third/Fourth geograph points awarded";
+		$desc = "First/Second/Third/Fourth Visit points awarded";
 	} elseif ($type == 'personal') {
 		$sql_column = "sum(i.ftf>0 and i.moderation_status='geograph')";
 		$heading = "Personal<br/>Points";

@@ -185,17 +185,15 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
-{if $image->ftf eq 2}
-	<dd>(Second Geograph Contributor for {$image->grid_reference})</dd>
-{elseif $image->ftf eq 3}
-	<dd>(Second Geograph Contributor for {$image->grid_reference})</dd>
-{elseif $image->ftf eq 4}
-	<dd>(Fourth Geograph Contributor for {$image->grid_reference})</dd>
-{/if}
-
-<dt>Image classification</dt>
+<dt>Image classification<sup><a href="/help/stats_faq">?</a></sup></dt>
 <dd>{if $image->ftf eq 1}
 	Geograph (First for {$image->grid_reference})
+{elseif $image->ftf eq 2}
+	Geograph (Second Visit for {$image->grid_reference})
+{elseif $image->ftf eq 3}
+	Geograph (Third Visit for {$image->grid_reference})
+{elseif $image->ftf eq 4}
+	Geograph (Fourth Visit for {$image->grid_reference})
 {else}
 	{if $image->moderation_status eq "rejected"}
 	Rejected
