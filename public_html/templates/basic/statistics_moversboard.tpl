@@ -1,4 +1,4 @@
-{assign var="page_title" value="Weekly Leaderboard :: $heading"}
+{assign var="page_title" value="Weekly Leaderboard :: $heading"|replace:'<br/>':' '}
 {assign var="meta_description" value="A list of all the contributors submitting images in the last week, ordered by `$heading`."}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
@@ -19,7 +19,7 @@
 	
 </div>
 <div class="interestBox">
-<h2>Weekly Leaderboard :: {$heading}</h2>
+<h2>Weekly Leaderboard :: {$heading|replace:'<br/>':' '}</h2>
 
 <p>Here is a list of contributors in the past 7 days, ordered by
 number of <br/><big>{$desc}</big> (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
