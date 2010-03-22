@@ -106,7 +106,7 @@ while (!$recordSet->EOF)
 	if (!empty($_GET['status']))
 		echo ",{$image['moderation_status']}";
 	if (!empty($_GET['level']))
-		echo ",{$image['level']}";
+		echo ",{$image['ftf']}";
 
 	echo "\n";
 	$recordSet->MoveNext();
