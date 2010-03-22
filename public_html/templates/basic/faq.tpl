@@ -128,18 +128,18 @@ The <b>Geograph Website</b>:
 <a name="points"></a>
 <h3>How do I get a geograph point for my image?</h3>
 	<p>If you're the first to submit a &quot;geograph&quot; for the grid square
-	you'll get a "First Geograph Point" added to your profile and the warm glow that comes
+	you'll get a "First Geograph" point added to your profile and the warm glow that comes
 	with it.</p>
 
 	<p>We welcome many Geograph images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</p>
 	
 	<blockquote>
 	
-		<p>In addition we now award "Second Geograph Points" (and Third and Fourth!) - which are given to the first image the <i>second contributor</i> adds to a square. The third contributor similarly gets a "Third" point for their first "Geograph" to the square. </p>
+		<p>In addition we now award "Second Visit" points (and Third and Fourth!) - which are given to the first geograph the <i>second contributor</i> adds to a square. The third contributor similarly gets a "Third" point for their first "Geograph" to the square. </p>
 
-		<p>So a single square can have a First, Second, Third and Fourth Point, but a contributor can only get one of those per square.</p>
+		<p>So a single square can have a First, Second, Third and Fourth Visit point, but a contributor can only get one of those per square.</p>
 
-		<p>You can earn yourself a "Personal Point" by submitting a &quot;geograph&quot; for a square that is new to you, regardless of how many contributors have been there before.</p>
+		<p>You can earn yourself a "Personal" point by submitting a &quot;geograph&quot; for a square that is new to you, regardless of how many contributors have been there before.</p>
 	</blockquote>
 </div>
 <div class="top"><a href="#top">back to top</a></div>

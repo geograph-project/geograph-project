@@ -310,8 +310,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_table = "user_stat i";
 			$sql_column = "points,seconds";
 		}
-		$heading = "Second Geograph<br/>Points";
-		$desc = "'Second Geograph' points awarded";
+		$heading = "Second Visit<br/>Points";
+		$desc = "'Second Visit' points awarded";
 	
 	} elseif ($type == 'third') {
 		if ($filtered) {
@@ -320,8 +320,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_table = "user_stat i";
 			$sql_column = "thirds";
 		}
-		$heading = "Third Geograph<br/>Points";
-		$desc = "'Third Geograph' points awarded";
+		$heading = "Third Visit<br/>Points";
+		$desc = "'Third Visit' points awarded";
 	
 	} elseif ($type == 'fourth') {
 		if ($filtered) {
@@ -330,8 +330,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_table = "user_stat i";
 			$sql_column = "images,fourths";
 		}
-		$heading = "Fourth Geograph<br/>Points";
-		$desc = "'Fourth Geograph' points awarded";
+		$heading = "Fourth Visit<br/>Points";
+		$desc = "'Fourth Visit' points awarded";
 	
 	} elseif ($type == 'allpoints') {
 		if ($filtered) {
@@ -341,7 +341,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "images,(points+seconds+thirds+fourths)";
 		}
 		$heading = "Geograph<br/>Points";
-		$desc = "First/Second/Third/Fourth Geograph points awarded";
+		$desc = "First/Second/Third/Fourth Visit points awarded";
 	
 	} else { #if ($type == 'first') {
 		if ($filtered) {

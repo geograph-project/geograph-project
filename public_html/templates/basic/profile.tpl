@@ -127,13 +127,13 @@
 			{if $profile->stats.seconds || $profile->stats.thirds || $profile->stats.fourths}
 				<li style="padding-bottom:3px">
 				{if $profile->stats.seconds}
-					<b>{$profile->stats.seconds}</b> Second Geograph points,
+					<b>{$profile->stats.seconds}</b> Second Visit points,
 				{/if}
 				{if $profile->stats.thirds}
-					<b>{$profile->stats.thirds}</b> Third Geograph points,
+					<b>{$profile->stats.thirds}</b> Third Visit points,
 				{/if}
 				{if $profile->stats.fourths}
-					<b>{$profile->stats.fourths}</b> Fourth Geograph points,
+					<b>{$profile->stats.fourths}</b> Fourth Visit points,
 				{/if}
 			 	<sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup></li>
 			{/if}
@@ -209,10 +209,10 @@
 	{foreach from=$userimages item=image}
 		<tr>
 		<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View discussion - last updated {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" ><img src="/templates/basic/img/discuss.gif" width="10" height="10" alt="discussion indicator"></a>{/if}</td>
-		<td sortvalue="{$image->grid_reference}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->grid_reference}</a></td>
-		<td>{$image->title}</td>
+		<td sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
+		<td sortvalue="{$image->title}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
 		<td sortvalue="{$image->gridimage_id}" class="nowrap">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
-		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){/if}</td>
+		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if}</td>
 		</tr>
 	{/foreach}
 	</tbody></table>
