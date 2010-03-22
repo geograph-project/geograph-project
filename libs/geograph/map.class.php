@@ -2042,6 +2042,16 @@ END;
 					CONTAINS( GeomFromText($rectangle),	point_xy)
 					and percent_land<>0";
 			}
+		} elseif ($this->type_or_user == -13) {
+			$sql="select gs.* $columns,
+				max(ftf) as max_ftf, sum(moderation_status='pending') as pending,
+				DATE_FORMAT(MAX(if(moderation_status!='rejected',imagetaken,null)),'%d/%m/%y') as last_date
+				from gridsquare gs
+				left join gridimage gi on(gi.gridsquare_id = gs.gridsquare_id and moderation_status='geograph' )
+				where 
+				CONTAINS( GeomFromText($rectangle),	point_xy)
+				and percent_land<>0 
+				group by gs.gridsquare_id order by y,x";
 		} else {
 			if (!empty($this->type_or_user)) {
 				if ($this->type_or_user > 0) {

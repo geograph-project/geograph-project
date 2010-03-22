@@ -124,16 +124,18 @@ while (!$recordSet->EOF)
 	} else {
 		$rank++;
 	}
-	$sql = "
-	UPDATE gridimage 
-	SET upd_timestamp = upd_timestamp, ftf = $rank
-	WHERE gridsquare_id = {$row['gridsquare_id']}
-	AND seq_no = {$row['min_seq_no']}
-	AND moderation_status='geograph' 
-	";
-	$db->Execute($sql);
+	if ($rank > 1) { //ftf=1 should already be set!
+		$sql = "
+		UPDATE gridimage 
+		SET upd_timestamp = upd_timestamp, ftf = $rank
+		WHERE gridsquare_id = {$row['gridsquare_id']}
+		AND seq_no = {$row['min_seq_no']}
+		AND moderation_status='geograph' 
+		";
+		$db->Execute($sql);
 	
-	print "."; 
+		print "."; 
+	}
 	
 	$recordSet->MoveNext();
 }

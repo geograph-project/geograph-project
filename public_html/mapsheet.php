@@ -71,10 +71,16 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	} else {
 		$map->type_or_user = 0;
 	}
-} 
+} elseif (isset($_GET['levels'])) {
+	$old_type_or_user = $map->type_or_user;
+	$map->type_or_user = -13;
+}
 
-$template=($map->pixels_per_km == 4)?(($map->type_or_user == -1)?'mapsheet100kdepth.tpl':'mapsheet100k.tpl'):'mapsheet.tpl';
-
+if ($map->pixels_per_km == 4) {
+	$template=($map->type_or_user == -1)?'mapsheet100kdepth.tpl':'mapsheet100k.tpl';
+} else {
+	$template=($map->type_or_user == -13)?'mapsheetftf.tpl':'mapsheet.tpl';
+}
 
 //get token, we'll use it as a cache id
 $token=$map->getToken();
@@ -146,6 +152,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('starte', $starte);
 		$smarty->assign('startn', $startn-1);
 	} else {
+		if (isset($_GET['levels'])) {
+			$map->type_or_user = $old_type_or_user;
+		}
+		
 		$mosaic = new GeographMapMosaic;
 		$mosaic->setToken($_GET['t'],true);	
 		$smarty->assign('mosaic_token', $mosaic->getToken());
