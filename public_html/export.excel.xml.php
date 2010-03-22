@@ -118,6 +118,10 @@ while (!$recordSet->EOF)
 		print "<Cell><Data ss:Type=\"Number\">{$image['view_direction']}</Data></Cell>\n";
 	if (!empty($_GET['hits']))
 		print "<Cell><Data ss:Type=\"Number\">{$image['hits']}</Data></Cell>\n";
+	if (!empty($_GET['status']))
+		print "<Cell><Data ss:Type=\"String\">{$image['status']}</Data></Cell>\n";
+	if (!empty($_GET['level']))
+		print "<Cell><Data ss:Type=\"Number\">{$image['level']}</Data></Cell>\n";
 	
 	echo "</Row>\n";
 	$recordSet->MoveNext();
