@@ -101,22 +101,37 @@
 <li><form action="/statistics/moversboard.php" style="display:inline">
 Refine:
 <select name="type">
-<option value="points">Points</option> 
-<option value="geosquares">GeoSquares</option>
-<option value="geographs">Geographs</option>
-<option value="squares">Squares</option>
-<option value="images">Images</option>
-<option value="depth">Depth Score</option>
-<option value="myriads">Myriads</option>
-<option value="hectads">Hectads</option>
-<option value="spread">Spread</option>
-<option value="antispread">AntiSpread</option>
-<option value="days">Days</option>
-<option value="classes">Categories</option>
-<option value="additional">Additional Geographs</option>
-<option value="supps">Supplementals</option>
-<option value="clen">Description Length</option>
-</select>
+<optgroup label="Points">
+	<option value="allpoints">AllPoints</option> 
+	<option value="first">Firsts</option> 
+	<option value="second">Seconds</option> 
+	<option value="third">Thirds</option> 
+	<option value="fourth">Fourths</option> 
+	<option value="personal">Personal Points</option>
+</optgroup>
+<optgroup label="Images">
+	<option value="images">Images</option>
+	<option value="geographs">Geographs</option>
+	<option value="additional">Additional Geographs</option>
+	<option value="supps">Supplementals</option>
+</optgroup>
+<optgroup label="Squares">
+	<option value="squares">Squares</option>
+	<option value="geosquares">GeoSquares</option>
+</optgroup>
+<optgroup label="Geographical">
+	<option value="myriads">Myriads</option>
+	<option value="hectads">Hectads</option>
+	<option value="spread">Spread</option>
+	<option value="antispread">AntiSpread</option>
+</optgroup>
+<optgroup label="Other">
+	<option value="depth">Depth Score</option>
+	<option value="days">Days</option>
+	<option value="classes">Categories</option>
+	<option value="clen">Description Length</option>
+</optgroup>
+</select><sup><a href="/help/stats_faq">?</a></sup>
  <input type="submit" value="Go"/>
 </form></li></ul></li>
 
@@ -125,22 +140,37 @@ Refine:
 <li><form action="/statistics/leaderboard.php" style="display:inline">
 Refine:
 <select name="type">
-<option value="points">Points</option> 
-<option value="geosquares">GeoSquares</option>
-<option value="geographs">Geographs</option>
-<option value="squares">Squares</option>
-<option value="images">Images</option>
-<option value="depth">Depth Score</option>
-<option value="myriads">Myriads</option>
-<option value="hectads">Hectads</option>
-<option value="spread">Spread</option>
-<option value="antispread">AntiSpread</option>
-<option value="days">Days</option>
-<option value="classes">Categories</option>
-<option value="additional">Additional Geographs</option>
-<option value="supps">Supplementals</option>
-<option value="clen">Description Length</option>
-</select>
+<optgroup label="Points">
+	<option value="allpoints">AllPoints</option> 
+	<option value="first">Firsts</option> 
+	<option value="second">Seconds</option> 
+	<option value="third">Thirds</option> 
+	<option value="fourth">Fourths</option> 
+	<option value="personal">Personal Points</option>
+</optgroup>
+<optgroup label="Images">
+	<option value="images">Images</option>
+	<option value="geographs">Geographs</option>
+	<option value="additional">Additional Geographs</option>
+	<option value="supps">Supplementals</option>
+</optgroup>
+<optgroup label="Squares">
+	<option value="squares">Squares</option>
+	<option value="geosquares">GeoSquares (Personal Points)</option>
+</optgroup>
+<optgroup label="Geographical">
+	<option value="myriads">Myriads</option>
+	<option value="hectads">Hectads</option>
+	<option value="spread">Spread</option>
+	<option value="antispread">AntiSpread</option>
+</optgroup>
+<optgroup label="Other">
+	<option value="depth">Depth Score</option>
+	<option value="days">Days</option>
+	<option value="classes">Categories</option>
+	<option value="clen">Description Length</option>
+</optgroup>
+</select><a href="/help/stats_faq">?</a>
 
 <select name="date">
 <option value="submitted">Submitted</option> 

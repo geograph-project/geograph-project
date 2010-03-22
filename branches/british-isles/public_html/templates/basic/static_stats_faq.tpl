@@ -24,8 +24,10 @@
     
     <li><b>Depth</b>: number of Images divided by the number of Squares.<br/> <small>Higher numbers mean a tendency to photograph a small number of squares very well. (opposite to points/coverage)</small><br/><br/></li>
     <li><b>Centisquares</b>: number of different centisquares<sup><a href="/help/squares">?</a></sup> images submitted to<br/><br/></li>
-    <li><b>Hectads</b>: number of different hectads<sup><a href="/help/squares">?</a></sup> images submitted to<br/><br/></li>
-    <li><b>Myriads</b>: number of different myriads<sup><a href="/help/squares">?</a></sup> images submitted to<br/><br/></li>
+    <li><b>Hectads</b>: number of different 10k hectads<sup><a href="/help/squares">?</a></sup> images submitted to<br/><br/></li>
+    <li><b>Myriads</b>: number of different 100k myriads<sup><a href="/help/squares">?</a></sup> images submitted to<br/><br/></li>
+    <li><b>Spread</b>: number of hectads divided by number of images<br><small>a higher indicates a large number of hectads, with few images</small><br/><br/></li>
+    <li><b>AntiSpread</b>: number of images images divided by hectads<br><small>equivient to depth score at hectad level</small><br/><br/></li>
     <li><b>Categories</b>: number of different image categories submitted<br/><br/></li>
     <li><b>Days</b>: number of different days images submitted<br/><br/></li>
 
