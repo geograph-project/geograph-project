@@ -103,6 +103,10 @@ while (!$recordSet->EOF)
 		echo ",{$image['view_direction']}";
 	if (!empty($_GET['hits']))
 		echo ",{$image['hits']}";
+	if (!empty($_GET['status']))
+		echo ",{$image['moderation_status']}";
+	if (!empty($_GET['level']))
+		echo ",{$image['level']}";
 
 	echo "\n";
 	$recordSet->MoveNext();

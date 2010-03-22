@@ -96,6 +96,16 @@ if (!empty($_GET['hits'])) {
 	$sql_tables .= " left join gridimage_log l on (l.gridimage_id = gi.gridimage_id)";
 }
 
+if (!empty($_GET['status'])) {
+	$csvhead .= ",Classification";
+	$sql_from .= ",moderation_status";
+}
+
+if (!empty($_GET['level'])) {
+	$csvhead .= ",Level";
+	$sql_from .= ",ftf";
+}
+
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
