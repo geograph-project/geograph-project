@@ -1151,4 +1151,10 @@ update gridimage_search gs inner join gridimage gi using (gridimage_id) set gs.f
 #################################################
 
 
+update geobb_posts set post_text = REPLACE(post_text,' ref="nofollow"',' rel="nofollow"') where post_text like '% ref="nofollow"%';
+
+
+#################################################
+
+
 
