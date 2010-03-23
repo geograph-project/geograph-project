@@ -8,7 +8,7 @@ function enCodeBB($msg,$admin) {
 $pattern=array(); $replacement=array();
 
 $pattern[]="/\[url[=]?\](.+?)\[\/url\]/i";
-$replacement[]="<a href=\"\\1\" target=\"_blank\" ref=\"nofollow\">\\1</a>";
+$replacement[]="<a href=\"\\1\" target=\"_blank\" rel=\"nofollow\">\\1</a>";
 
 $pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n]+?)\](.+?)\[\/url\]/i";
 $replacement[]="<a href=\"\\1\" target=\"_blank\">\\3</a>";
@@ -68,7 +68,7 @@ $pattern=array(); $replacement=array();
 $pattern[]="/<a href=\"mailto:(.+?)\">(.+?)<\/a>/i";
 $replacement[]="[email=\\1]\\2[/email]";
 
-$pattern[]="/<a href=\"(.+?)\" target=\"(_new|_blank)\"( ref=\"nofollow\")?>(.+?)<\/a>/i";
+$pattern[]="/<a href=\"(.+?)\" target=\"(_new|_blank)\"( re[fvl]=\"nofollow\")?>(.+?)<\/a>/i";
 $replacement[]="[url=\\1]\\4[/url]";
 
 $pattern[]="/<img src=\"(.+?)\" border=\"0\" align=\"(left|right)?\" alt=\"\">/i";
