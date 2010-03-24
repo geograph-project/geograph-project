@@ -714,6 +714,36 @@ class FeedCreator extends HtmlDescribable {
 		if ($filename=="") {
 			$filename = $this->_generateFilename();
 		}
+		//uses Geograph specific functions, get them seperatly or just comment out. 
+		if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid) {
+			$contents =& $GLOBALS['memcache']->name_get('rss',$filename);
+			if (!empty($contents) && preg_match('/^symlink:(.*)/',$contents,$m)) {
+				$contents =& $GLOBALS['memcache']->name_get('rss',$m[1]);
+			}
+			if (!empty($contents)) {
+				$mtime = $GLOBALS['memcache']->name_get('rsst',empty($m[1])?$filename:$m[1]);
+
+				customCacheControl($mtime,$mtime);		
+				$timeout = 3600;
+				if (!empty($GLOBALS['rss_timeout']))
+					$timeout = $GLOBALS['rss_timeout'];
+				customExpiresHeader($timeout-(time()-$mtime),true);
+
+				if ($encoding = getEncoding()) {
+					$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
+					header ('Content-Encoding: '.$encoding);
+					header ('Vary: Accept-Encoding');
+
+					//else ... we could still send Vary: but because a browser that doesnt will accept non gzip in all cases, doesnt matter if the cache caches the non compressed version (the otherway doesnt hold true, hence the Vary: above)
+				} 
+
+				header('Content-Length: '.strlen($contents));
+				print $contents;
+				die();
+			}
+		}
+		//end;
+		
 		if (file_exists($filename) AND (time()-filemtime($filename) < $timeout)) {
 			$this->_redirect($filename);
 		}
@@ -732,6 +762,40 @@ class FeedCreator extends HtmlDescribable {
 		if ($filename=="") {
 			$filename = $this->_generateFilename();
 		}
+		
+		//uses Geograph specific functions, get them seperatly or just comment out. 
+		if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid) {
+			$contents =& $this->createFeed();
+			
+			$mtime = time();
+				
+			$timeout = 3600;
+			if (!empty($GLOBALS['rss_timeout']))
+				$timeout = $GLOBALS['rss_timeout'];
+				
+			$GLOBALS['memcache']->name_set('rss',$filename,$contents,$GLOBALS['memcache']->compress,$timeout);
+			$GLOBALS['memcache']->name_set('rsst',$filename,$mtime,$GLOBALS['memcache']->compress,$timeout);
+			
+			if ($displayContents) {
+				customCacheControl($mtime,$mtime);		
+				customExpiresHeader($timeout-(time()-$mtime),true);
+				
+				if ($encoding = getEncoding()) {
+					$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
+					header ('Content-Encoding: '.$encoding);
+					header ('Vary: Accept-Encoding');
+					
+					//else ... we could still send Vary: but because a browser that doesnt will accept non gzip in all cases, doesnt matter if the cache caches the non compressed version (the otherway doesnt hold true, hence the Vary: above)
+				} 
+				
+				header('Content-Length: '.strlen($contents));
+				print $contents;
+			}
+			
+			return;
+		} 
+		//end;
+		
 		$feedFile = fopen($filename, "w+");
 		if ($feedFile) {
 			fputs($feedFile,$this->createFeed());
