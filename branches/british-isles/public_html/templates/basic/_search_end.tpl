@@ -15,6 +15,7 @@
 		</div>
 		
 	{elseif $engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs'}	
+	
 		<div id="hidefeed2" style="text-align:center;width:400px;border:2px solid yellow; margin-left:auto;margin-right:auto">Didn't find what you looking for? <a href="javascript:void(show_tree('feed2'));"><b>Tell Us!</b></a></div>
 		<div id="showfeed2" class="interestBox" style="display:none"><form method="post" action="/stuff/feedback.php">
 		<label for="feedback_comments"><b>Help us improve!</b> Please explain what you are looking for...</label><br/>
@@ -51,6 +52,21 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 {else}
 <p align="right" style="clear:both"><small>Subscribe to find images submitted in future:</small> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a></p>
 {/if}
+
+		{if $engine->fullText && $engine->criteria->searchclass != 'Special' && ($engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs' || $engine->criteria->displayclass=='text')}
+			<div class="interestBox">
+				<form action="{$script_name}" method="get">
+					<b>Refine this search:</b> <small style="color:gray">(images{$engine->criteria->searchdesc|escape:'html'})</small>
+					<div><label for="fq">New Keywords</label>: <input type="text" name="text" id="fq" size="30"{if $engine->criteria->searchtext} value="{$engine->criteria->searchtext|escape:'html'}"{/if}/>
+					<input type="submit" value="Search"/>
+					<input type="hidden" name="i" value="{$i}"/>
+					<input type="hidden" name="redo" value="1"/>
+					({newwin href="/article/Word-Searching-on-Geograph" text="Tips"}) - all other fields unchanged
+					
+					</div>
+				</form>
+			</div>
+		{/if}
 
 </div>
 
