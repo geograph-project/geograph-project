@@ -152,7 +152,13 @@ if (isset($q)) {
 	$engine->searchuse = "syndicator";
 	$_GET['i'] = $engine->buildSimpleQuery($q,$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
 
-	if (function_exists('symlink') && isset($cacheid) && !empty($_GET['i'])) {
+	if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid && isset($cacheid) && !empty($_GET['i'])) {
+		$target = "symlink:".$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";
+		$GLOBALS['memcache']->name_set('rss',
+			$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension",
+			$target,$GLOBALS['memcache']->compress,$rss_timeout);
+		
+	} elseif (function_exists('symlink') && isset($cacheid) && !empty($_GET['i'])) {
 		//create a link so cache can be access as original query(cacheid) or directly via its 'i' number later...
 		symlink($_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/$cacheid-{$pg}-{$format}{$opt_expand}.$extension",
 		        $_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension");
