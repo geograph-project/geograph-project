@@ -196,6 +196,81 @@ class RestAPI
 		
 	}
 	
+	function handleLatLong()
+	{
+		
+		if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$this->params[1],$ll)) {
+			$this->beginResponse();
+			
+			//todo - we could do this directly rather than via the search engine
+			require_once('geograph/searchcriteria.class.php');
+			require_once('geograph/searchengine.class.php');
+	
+			$engine = new SearchEngineBuilder('#'); 
+			$engine->searchuse = "syndicator";
+			$_GET['i'] = $engine->buildSimpleQuery($this->params[1],intval($this->params[0]),false,isset($_GET['u'])?$_GET['u']:0);
+			
+			$images = new SearchEngine($_GET['i']);
+				
+			$images->Execute($pg);
+			
+			if (!empty($images->results))
+			{
+				$images =& $images->results;
+				$count = count($images);
+				
+				if ($this->output=='json') {
+					require_once '3rdparty/JSON.php';
+					$json = new Services_JSON();
+					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1);
+					
+					foreach ($images as $i => $image) {
+						foreach ($image as $k => $v) {
+							if (empty($v) || empty($whitelist[$k])) {
+								unset($images[$i]->$k);
+							}
+						}
+						$images[$i]->image = $image->_getFullpath(true,true);
+						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
+					}
+					print $json->encode($images);
+				} else {
+			
+					echo '<status state="ok" count="'.$count.'" total="'.$images->resultCount.'"/>';
+
+					foreach ($images as $i => $image) {
+						if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
+						{
+							echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
+
+							echo ' <title>'.utf8_encode(htmlentities($image->title)).'</title>';
+							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".utf8_encode(htmlentities($image->realname)).'</user>';
+
+							echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
+
+							echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
+							echo '</image>';
+						}
+					}
+				}
+			} 
+			else 
+			{
+				if ($this->output=='json') {
+					print "{error: '0 results'}";
+				} else {
+					echo '<status state="ok" count="0"/>';
+				}
+			}
+			$this->endResponse();
+		}
+		else
+		{
+			$this->error("Invalid grid reference ".$this->params[0]);
+		}
+		
+	}
+	
 	function handleGridrefMore()
 	{
 		return $this->handleGridref(true);
