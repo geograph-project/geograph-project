@@ -174,7 +174,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "sum(i.ftf=3 and i.moderation_status='geograph')";
 		$heading = "Third Visit<br/>Points";
 		$desc = "'Third Visit' points awarded";
-	} elseif ($type == 'forth') {
+	} elseif ($type == 'forth' || $type == 'fourth') {
 		$sql_column = "sum(i.ftf=4 and i.moderation_status='geograph')";
 		$heading = "Fourth Visit<br/>Points";
 		$desc = "'Fourth Visit' points awarded";

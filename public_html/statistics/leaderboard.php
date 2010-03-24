@@ -323,7 +323,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Third Visit<br/>Points";
 		$desc = "'Third Visit' points awarded";
 	
-	} elseif ($type == 'fourth') {
+	} elseif ($type == 'fourth' || $type == 'forth') {
 		if ($filtered) {
 			$sql_where = "i.ftf=4 and i.moderation_status='geograph'";
 		} else {
