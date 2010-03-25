@@ -393,6 +393,7 @@ class RestAPI
 	function beginResponse()
 	{
 		customExpiresHeader(360,true,true);
+		customGZipHandlerStart();
 		if ($this->output=='json') {
 			if (!empty($this->callback)) {
 				echo "{$this->callback}(";
