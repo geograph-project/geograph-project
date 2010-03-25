@@ -1,4 +1,7 @@
-#Minimal configuration required to get a running site - see geograph.conf for a more complete example (if can modify httpd.conf file) 
+#Minimal configuration required to get a running site 
+# - see geograph.conf for a more complete example (if can modify httpd.conf file) 
+# only use one, either geograph.conf or .htaccess
+#place in the document root (eg public_html/.htaccess)
 
     
     #php config
@@ -16,9 +19,9 @@
 
     #redirect to canonical url
     #http://httpd.apache.org/docs/misc/rewriteguide.html
-    RewriteCond %{HTTP_HOST}   !^geograph\.elphin [NC]
+    RewriteCond %{HTTP_HOST}   !^www\.example\.com [NC]
     RewriteCond %{HTTP_HOST}   !^$
-    RewriteRule ^(.*)         http://geograph.elphin/$1 [L,R]
+    RewriteRule ^(.*)         http://www.example.com/$1 [L,R]
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
 
