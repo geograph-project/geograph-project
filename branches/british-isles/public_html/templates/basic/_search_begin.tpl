@@ -46,8 +46,11 @@ Display:
 {if $engine->error}
 	<div style="padding:2px;border:1px solid red; text-align:center; background-color:pink;color:black;">
 		Unfortunatly it doesn't appear the search was processed,<br/>
-		this is most likly a invalid combination of search terms,<br/>
-		but could also be a temporarlly issue so you could try again in a little while.<br/>
+		{if $engine->error == "Syntax Error"}
+		there is a syntax error in the text query.<br/>
+		The charactors <tt>~ | ( ) @ " / ' = &lt; ^ $ , - :</tt> all have <a href="/article/Word-Searching-on-Geograph">special meanings</a><br/> which affect the query, it appears one or more has been used incorrectly.
+		{else}this is most likly a invalid combination of search terms,<br/>
+		but could also be a temporarlly issue so you could try again in a little while.{/if}<br/>
 	</div>
 
 {elseif $engine->fullText && $engine->nextLink}

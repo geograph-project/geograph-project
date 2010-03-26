@@ -181,6 +181,7 @@ class SearchCriteria
 						$this->sphinx['bbox'] = array($e1,$n1,$ri1,$e2,$n2,$ri2);
 					} else {
 						$this->sphinx['impossible']++;
+						//todo, use a pair of setFloatRange on the lat/long columns. Maybe instead of tiles above too (depending on selectivity)
 					}
 				}
 			}

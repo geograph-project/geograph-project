@@ -57,7 +57,7 @@ class SearchEngineBuilder extends SearchEngine
 	* create a simple search object
 	*/
 	
-	function buildSimpleQuery($q = '',$distance = 100,$autoredirect='auto',$userlimit = 0)
+	function buildSimpleQuery($q = '',$distance = 10,$autoredirect='auto',$userlimit = 0)
 	{
 		global $USER,$CONF;
 		

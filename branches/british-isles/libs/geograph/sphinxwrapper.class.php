@@ -78,7 +78,7 @@ class sphinxwrapper {
 		$q = trim(str_replace('%','^',$q));
 	
 			//remove any $ not at field end
-		$q = trim(preg_replace('/\$(?!@ |$)/',' ',$q));
+		$q = trim(preg_replace('/\$(?!@ |$|")/',' ',$q));
 	
 			//remove any strange chars at end
 		$q = trim(preg_replace('/[@^=\(~-]+$/','',$q));
@@ -580,7 +580,11 @@ class sphinxwrapper {
 		
 		if ( $res===false ) {
 			$this->query_info = $cl->GetLastError();
-			$this->query_error = "Search Failed";
+			if (strpos($this->query_info,"syntax error") !== FALSE) {
+				$this->query_error = "Syntax Error";
+			} else {
+				$this->query_error = "Search Failed";
+			}
 			$this->resultCount = 0;
 			return 0;
 		} else {
