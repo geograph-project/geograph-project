@@ -365,7 +365,7 @@ $rss->saveFeed($format, $rssfile);
  */
 function getTextKey() {
 	$t = '';
-	foreach (array('text','q','location','BBOX','lat','lon','u','perpage') as $k) {
+	foreach (array('text','q','location','BBOX','lat','lon','u','perpage','distance') as $k) {
 		$t .= "|".(empty($_GET[$k])?'':$_GET[$k]);
 	}
 	return md5($t);
