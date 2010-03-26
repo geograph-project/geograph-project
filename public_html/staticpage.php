@@ -64,7 +64,7 @@ if ($mtime) {
 customGZipHandlerStart();
 customExpiresHeader(86400*3,false,true);
 
+$smarty->assign("api_host",preg_replace("/^\w+/",'api',$CONF['CONTENT_HOST']));
+
 $smarty->display($template);
 
-	
-?>
