@@ -114,6 +114,7 @@ AttachEvent(window,'load',focusBox,false);
 		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example : <tt>railway -track</tt> <tt>railway -title:track</tt></li>
 		<li>prefix a keyword with = to match <b>exactly</b>; otherwise we match similar words at the same time (stemming)</li>
 		<li>can use OR (case sensitive) to match <b>either/or</b> keywords; example: <tt>train OR railway</tt></li>
+		<li>Grid Square Discussions by location: <tt>hectad:TQ74</tt> or <tt>railway myriad:NT</tt> (<a href="/discuss/search.php">see also</a>)</li>
 	</ul>
 </div>
 
