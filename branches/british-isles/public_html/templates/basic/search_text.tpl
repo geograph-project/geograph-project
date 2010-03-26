@@ -113,7 +113,7 @@
 					<div style="position:absolute;line-height:1.1em;top:0px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
 						<ul>
 							<li style="padding-bottom:5px">Separate multiple keywords with spaces, all keywords are required (ie AND)</li>
-							<li style="padding-bottom:5px">Only matches whole words, and Punctuation is ignored</li>
+							<li style="padding-bottom:5px">Only matches whole words, punctuation is not searchable</li>
 							<li style="padding-bottom:5px">Not case sensitive</li>
 							<li style="padding-bottom:5px"><b>Looking for exact match?</b><br/>&nbsp; Prefix a keyword with <tt>=</tt> (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small></li>
 							<li style="padding-bottom:5px"><b>Currently searches</b><ul>
