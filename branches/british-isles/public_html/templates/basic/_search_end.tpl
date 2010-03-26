@@ -56,7 +56,7 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 		{if $engine->fullText && $engine->criteria->searchclass != 'Special' && ($engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs' || $engine->criteria->displayclass=='text')}
 			<div class="interestBox">
 				<form action="{$script_name}" method="get">
-					<b>Refine this search:</b> <small style="color:gray">(images{$engine->criteria->searchdesc|escape:'html'})</small>
+					<b>Quick refine this search:</b> <small style="color:gray">(images{$engine->criteria->searchdesc|escape:'html'})</small>
 					<div><label for="fq">New Keywords</label>: <input type="text" name="text" id="fq" size="30"{if $engine->criteria->searchtext} value="{$engine->criteria->searchtext|escape:'html'}"{/if}/>
 					<input type="submit" value="Search"/>
 					<input type="hidden" name="i" value="{$i}"/>
@@ -86,6 +86,7 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 
 {/if}
 
+{if $engine->resultCount}
 <div class="interestBox" style="text-align:center">
 <form action="/search.php" method="get" style="display:inline">
 <input type="hidden" name="i" value="{$i}"/>
@@ -108,5 +109,6 @@ Background Color: [
 	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photogray"} hidelink{/if}{/dynamic}">Grey</a>
  ]
 </div>
+{/if}
 
 {include file="_std_end.tpl"}
