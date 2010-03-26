@@ -150,7 +150,7 @@ if (isset($q)) {
 	
 	$engine = new SearchEngineBuilder('#'); 
 	$engine->searchuse = "syndicator";
-	$_GET['i'] = $engine->buildSimpleQuery($q,$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
+	$_GET['i'] = $engine->buildSimpleQuery($q,!empty($_GET['distance'])?min(20,intval($_GET['distance'])):$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
 
 	if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid && isset($cacheid) && !empty($_GET['i'])) {
 		$target = "symlink:".$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";

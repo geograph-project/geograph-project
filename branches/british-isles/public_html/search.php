@@ -396,6 +396,9 @@ if (isset($_GET['fav']) && $i) {
 		}
 		
 		if (!empty($_GET['text'])) {
+			if (!empty($_GET['strip'])) {
+				$_GET['text'] = trim(preg_replace('/\s+/',' ',preg_replace('/[^\w]+/',' ',$_GET['text'])));
+			}
 			$sphinx = new sphinxwrapper($_GET['text']);
 			#$sphinx->processQuery();
 			
