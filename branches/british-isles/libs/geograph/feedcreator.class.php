@@ -741,6 +741,7 @@ class FeedCreator extends HtmlDescribable {
 				print $contents;
 				die();
 			}
+			return;
 		}
 		//end;
 		
