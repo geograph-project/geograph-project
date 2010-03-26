@@ -63,14 +63,17 @@ class sphinxwrapper {
 	
 			//remove any / not in quorum
 		$q = preg_replace('/(?<!")\//',' ',$q);
-		
+	
+			//convert ="phrase" to = on all words
+		$q = preg_replace('/="(\^)?(\w[\w ]+)(\$?)"/e','"\\"$1".preg_replace("/\b(\w+)/","=\\$1","$2")."$3\\""',$q);
+	
 			//remove any = not at word start
-		$q = preg_replace('/(^|[\s\(~"]+)=/','$1%',$q);
+		$q = preg_replace('/(^|[\s\(~"^]+)=/','$1%',$q);
 		$q = str_replace('=',' ',$q);
 		$q = trim(str_replace('%','=',$q));
 	
 			//remove any ^ not at field start
-		$q = preg_replace('/(^|@[\(\)\w,]+ )\^/','$1%',$q);
+		$q = preg_replace('/(^|@[\(\)\w,]+ |")\^/','$1%',$q);
 		$q = str_replace('^',' ',$q);
 		$q = trim(str_replace('%','^',$q));
 	
@@ -86,6 +89,7 @@ class sphinxwrapper {
 		$this->qclean = trim(str_replace('  ',' ',$q2));
 	
 	
+		
 			//make hyphenated words phrases
 		$q = preg_replace('/(?<!")(\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
 		
@@ -97,7 +101,7 @@ class sphinxwrapper {
 		
 			//transform 'near gridref' to the put the GR first (thats how processQuery expects it) 
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
-		
+	
 		$this->q = $q;
 	}
 	
