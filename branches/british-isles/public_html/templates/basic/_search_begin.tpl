@@ -84,7 +84,7 @@ Display:
 	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
 {/if}
 
-	{if $engine->fullText && $engine->criteria->searchclass != 'Special'}
+	{if $engine->fullText && $engine->criteria->searchclass != 'Special' && ($engine->resultCount || !($engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs' || $engine->criteria->displayclass=='text'))}
 		[<a href="javascript:void(show_tree(101));" id="hide101">quick refine</a>]</p>
 		<div class="interestBox" style="border:1px solid pink;display:none; " id="show101">
 			<form action="{$script_name}" method="get">
