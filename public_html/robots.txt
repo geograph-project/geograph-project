@@ -101,6 +101,8 @@ Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /content/syndicator.php
 Disallow: /squares.php
+Disallow: /*?*apikey
+Disallow: /api/*apikey
 
 
 

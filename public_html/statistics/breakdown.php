@@ -104,7 +104,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_group = $sql_fieldname = "SUBSTRING(gi.grid_reference,1,3 - reference_index)";
 		}
 	} else if ($by == 'hectad') {
-		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."first=");
+		$smarty->assign('linkprefix', "/search.php?".($u?"user_id=$u&amp;":'')."&do=1&searchtext=hectad:");
 		if ($ri) {
 			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 			$ll1 = $letterlength+1;

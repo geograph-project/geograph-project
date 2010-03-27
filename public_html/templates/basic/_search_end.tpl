@@ -62,7 +62,7 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 					<input type="hidden" name="i" value="{$i}"/>
 					<input type="hidden" name="redo" value="1"/>
 					({newwin href="/article/Word-Searching-on-Geograph" text="Tips"}) - all other fields unchanged<br/>
-					<input type="checkbox" name="strip" id="strip" {if $engine->error}checked{/if}/> <label for="strip">Remove special charactors (otherwise will be used as a search syntax)</label>
+					<input type="checkbox" name="strip" id="strip" {if $engine->error}checked{/if}/> <label for="strip">Remove special characters (otherwise will be used as search syntax)</label>
 					
 					
 					</div>
