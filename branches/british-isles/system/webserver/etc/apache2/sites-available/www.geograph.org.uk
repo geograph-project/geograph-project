@@ -93,7 +93,6 @@
     RewriteCond %{HTTP_HOST}   !kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
-    RewriteCond %{HTTP_HOST}   !^api\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
 
 	#Special robots file for Ireland
