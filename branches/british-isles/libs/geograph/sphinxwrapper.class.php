@@ -89,9 +89,14 @@ class sphinxwrapper {
 		$this->qclean = trim(str_replace('  ',' ',$q2));
 	
 	
+			//make excluded hyphenated words phrases
+		$q = preg_replace('/(?<!"|\w)-(\w+)(-[-\w]*\w)/e','"-(\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2").")"',$q);
 		
 			//make hyphenated words phrases
 		$q = preg_replace('/(?<!")(\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
+		
+			//make excluded aposphies work (as a phrase) 
+		$q = preg_replace('/(?<!"|\w)-(\w+)(\'\w*[\'\w]*\w)/e','"-(\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2").")"',$q);
 		
 			//make aposphies work (as a phrase) 
 		$q = preg_replace('/(?<!")(\w+)(\'\w*[\'\w]*\w)/e','"\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2")',$q);
