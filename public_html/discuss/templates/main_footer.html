@@ -62,7 +62,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
 	<div id="searchfield"><label for="searchterm">Search Forum</label>
 	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10"/>
 	<input id="searchbutton" type="submit" value="Find"/></div>
-}{?noSphinx|
+?}{?noSphinx|
      <form method="get" action="/discuss/index.php">
         <input type="hidden" name="action" value="search"/>
         <input type="hidden" name="searchForum" value="0"/>
@@ -72,7 +72,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
         <div id="searchfield"><label for="searchterm">Search Forum</label>
         <input id="searchterm" type="text" name="searchFor" value="{$searchFor}" size="10"/>
         <input id="searchbutton" type="submit" name="go" value="Find"/></div>
-}
+?}
 	</form>
     </div>
   </div>
