@@ -42,6 +42,14 @@ $x1=isset($_POST['x1'])?$_POST['x1']:$default_x1;
 $y1=isset($_POST['y1'])?$_POST['y1']:$default_y1;
 $x2=isset($_POST['x2'])?$_POST['x2']:$default_x2;
 $y2=isset($_POST['y2'])?$_POST['y2']:$default_y2;
+$usr=(isset($_POST['user'])&&is_numeric($_POST['user']))?intval($_POST['user']):0;
+$limit=(isset($_POST['limit'])&&is_numeric($_POST['limit']))?intval($_POST['limit']):0;
+$scale=isset($_POST['scale'])?$_POST['scale']:0.35;
+$showgrid=!empty($_POST['grid']);
+$force=!empty($_POST['force']);
+$geo=!empty($_POST['geo']);
+$bw=!empty($_POST['bw']);
+$ri = (isset($_POST['ri']) && is_numeric($_POST['ri']))&& array_key_exists(intval($_POST['ri']), $CONF['references_all']) ?intval($_POST['ri']):0;
 
 //do some processing?
 if (isset($_POST['make']))
@@ -50,10 +58,10 @@ if (isset($_POST['make']))
 	$smarty->display('_std_begin.tpl');
 	echo "<h3><a href=\"mapmaker.php\">&lt;&lt;</a> Building map...</h3>";
 	flush();
-	set_time_limit(3600*24);
+	//set_time_limit(3600*24);
 	
 	$mapmaker=new MapMaker;
-	$imgfile=$mapmaker->build($x1, $y1, $x2, $y2,true,0.35);
+	$imgfile=$mapmaker->build($x1, $y1, $x2, $y2,$showgrid,$scale,$force,$ri,$usr,$bw,$limit,$geo);
 	
 	echo "<img src=\"$imgfile\">";
 	
@@ -66,6 +74,14 @@ $smarty->assign('x1', $x1);
 $smarty->assign('x2', $x2);
 $smarty->assign('y1', $y1);
 $smarty->assign('y2', $y2);
+$smarty->assign('scale', $scale);
+$smarty->assign('ri', $ri);
+$smarty->assign('limit', $limit);
+$smarty->assign('usr', $usr);
+$smarty->assign('geo', $geo);
+$smarty->assign('bw', $bw);
+$smarty->assign('force', $force);
+$smarty->assign('grid', $grid);
 $smarty->display('mapmaker.tpl');
 
 	
