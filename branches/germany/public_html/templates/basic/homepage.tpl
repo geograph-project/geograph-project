@@ -48,7 +48,7 @@ representative photographs and information for every square kilometre of <a href
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
-	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
+	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day{if $pictureoftheday.search} <small>[<a href="/results/{$pictureoftheday.search}">more...</a>]</small>{/if}</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
 	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
 
