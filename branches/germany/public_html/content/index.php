@@ -140,7 +140,8 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		$title = "Location Specific Content";
 		$extra .= "&amp;loc=1";
 	} else {
-		$where = "content.`type` = 'info'";
+		$where = "content.`type` IN ( 'info', 'document' )";
+		//$where = "content.`type` = 'info'";
 	}
 	
 	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
