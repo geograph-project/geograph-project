@@ -217,7 +217,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			'having_having' => "having images $sql_minimax",
 		),
 		'depth2' => array(
-			'column' => "round(pow(images,2)/squares",
+			'column' => "round(pow(images,2)/squares)",
 			'having_having' => "having images > $minimum",
 		),
 		'myriads' => array(
