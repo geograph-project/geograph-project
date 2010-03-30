@@ -781,4 +781,18 @@ function heading_string($deg) {
 	return $s;
 }
 
+
+/**
+ * combine texts of different languages
+ */
+function combineTexts($lang1, $lang2)
+{
+	if ($lang1 == $lang2 || $lang2 == '')
+		return $lang1;
+	elseif ($lang1 == '')
+		return $lang2;
+	else
+		return $lang1 . ' (' . $lang2 . ')';
+}
+
 ?>

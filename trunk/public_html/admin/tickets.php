@@ -357,14 +357,9 @@ if (!empty($_GET['debug']))
 #}
 foreach ($newtickets as $i => $row) {
 	#	$db->Execute("REPLACE INTO gridimage_moderation_lock SET user_id = {$USER->user_id}, gridimage_id = {$row['gridimage_id']}");
-	if (empty($row['title2']))
-		$ctitle = $row['title'];
-	elseif (empty($row['title']))
-		$ctitle = $row['title2'];
-	else
-		$ctitle = $row['title'] . ' (' . $row['title2'] . ')';
-	$newtickets[$i]['title1'] = $row['title'];
+	$ctitle = combineTexts($row['title'], $row['title2']);
 	$newtickets[$i]['title'] = $ctitle;
+	$newtickets[$i]['title1'] = $row['title'];
 }
 
 $smarty->assign_by_ref('newtickets', $newtickets);
