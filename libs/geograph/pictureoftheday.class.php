@@ -100,6 +100,7 @@ class PictureOfTheDay
 	
 	function assignToSmarty(&$smarty,$gridimage_id = 0)
 	{
+		global $CONF;
 		if (empty($gridimage_id)) {
 			$this->initToday();
 		} else {
@@ -112,6 +113,7 @@ class PictureOfTheDay
 		$pictureoftheday['height']=$this->height;
 		$pictureoftheday['image']=new GridImage($this->gridimage_id);
 		$pictureoftheday['image']->compact();
+		$pictureoftheday['search']=$CONF['searchid_potd'];
 		
 		$smarty->assign('pictureoftheday', $pictureoftheday);
 	
