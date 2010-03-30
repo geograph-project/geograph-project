@@ -1,0 +1,18 @@
+<div align=center>
+<form name=postMsg action="{$main_url}/{$indexphp}" method=post class=formStyle>
+<table class=forums>
+
+{$mainPostForm}
+
+<tr>
+<td class=caption5><INPUT TYPE=SUBMIT VALUE="{$l_sub_post_msg}" class=inputButton tabindex=5>
+<input type=button value="Preview" class=inputButton onClick="prevThis();">
+</td>
+</tr>
+</table>
+<INPUT TYPE=HIDDEN NAME=action VALUE="pthread">
+<INPUT TYPE=HIDDEN NAME=forum VALUE="{$forum}">
+<INPUT TYPE=HIDDEN NAME=topic VALUE="{$topic}">
+<INPUT TYPE=HIDDEN NAME=anchor VALUE="{$anchor}">
+</form>
+</div>

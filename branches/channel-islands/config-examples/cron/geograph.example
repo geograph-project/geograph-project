@@ -1,0 +1,34 @@
+MAILTO=""
+
+
+
+*/15 * * * * /usr/bin/php /home/geograph/scripts/recreate_maps.php 14 10 60 > /dev/null
+#first argument is the timeout time (should be one less than time the script is called)
+#second is the sleep time, used to give other processs a chance between every ten regenerations
+#is the max load average the script is create maps, if over it sleeps and chech again later. 
+
+
+#fire time based events
+1 * * * * GET "http://geograph.elphin/_scripts/fire_event.php?event=every_hour&priority=75&param="
+30 3 * * * GET "http://geograph.elphin/_scripts/fire_event.php?event=every_day&priority=80&param="
+30 4 * * 7 GET "http://geograph.elphin/_scripts/fire_event.php?event=every_week&priority=85&param="
+
+#run the event processor
+*/5 * * * * GET "http://geograph.elphin/_scripts/process_events.php?start=1&max_execution=290&max_load=0.7"
+
+
+#constantly refresh staticly rendered content
+1,16,31,46 * * * * /usr/bin/php /home/geograph/scripts/recreate_maps.php --load=1.5 --dir=/home/geograph
+8,23,38,53 * * * * /usr/bin/php /home/geograph/scripts/recreate_kml.php --load=1.5 --dir=/home/geograph
+
+
+#rebuild the submission graph ready for a new day!
+0 6 * * * /home/geograph/scripts/update_submission_graph.pl --update=0 --base=/home/geograph --db=geograph_live --user=geograph --pass=m4pp3r
+
+#rebuild rate graph every hour
+5 * * * * /home/geograph/scripts/update_rate_graph.pl --update=0 --base=/home/geograph --db=geograph_live --user=geograph --pass=m4pp3r
+
+#cpu graph
+*/7 * * * * /home/geograph/scripts/update_cpu_graph.pl --update --base=/home/geograph
+
+
