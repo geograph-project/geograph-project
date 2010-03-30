@@ -49,6 +49,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql_orderby = '';
 	$sql_table = " gridimage as i ";
 	$sql_where = '';
+	$isfloat = false;
 	if ($type == 'squares' || $type == 'geosquares') {
 		if ($type == 'geosquares') {
 			$sql_where = " and i.moderation_status='geograph'";
@@ -115,6 +116,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	} elseif ($type == 'depth') {
 		$sql_column = "count(*)/count(distinct grid_reference)";
 		$sql_table = " gridimage_search i ";
+		$isfloat = true;
 		$heading = "Depth";
 		$desc = "depth score";
 	} elseif ($type == 'myriads') {
@@ -138,12 +140,14 @@ if (!$smarty->is_cached($template, $cacheid))
                 //we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
                 $sql_column = "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
 		$sql_table = " gridimage_search i ";
+		$isfloat = true;
                 $heading = "AntiSpread Score";
                 $desc = "antispread score (images/hectads)";
         } elseif ($type == 'spread') {
                 //we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
                 $sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)";
                 $sql_table = " gridimage_search i ";
+		$isfloat = true;
                 $heading = "Spread Score";
                 $desc = "spread score (hectads/images)";
 	} elseif ($type == 'classes') {
@@ -154,16 +158,19 @@ if (!$smarty->is_cached($template, $cacheid))
 	} elseif ($type == 'clen') {
 		$sql_column = "avg(length(comment))";
 		$sql_table = " gridimage_search i ";
+		$isfloat = true;
 		$heading = "Average Description Length";
 		$desc = "average length of the description";
 	} elseif ($type == 'tlen') {
 		$sql_column = "avg(length(title))";
 		$sql_table = " gridimage_search i ";
+		$isfloat = true;
 		$heading = "Average Title Length";
 		$desc = "average length of the title";
 	} elseif ($type == 'category_depth') {
 		$sql_column = "count(*)/count(distinct imageclass)";
 		$sql_table = " gridimage_search i ";
+		$isfloat = true;
 		$heading = "Category Depth";
 		$desc = "the category depth score";
 	} elseif ($type == 'centi') {
@@ -181,6 +188,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
+	$smarty->assign('isfloat', $isfloat);
 	
 	if ($sql_column) {
 		$sqlsum="select $sql_column as geographs from $sql_table
