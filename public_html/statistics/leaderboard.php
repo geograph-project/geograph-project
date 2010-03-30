@@ -86,6 +86,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql_orderby = '';
 	$sql_column = "count(*)";
 	$sql_having_having = '';
+	$isfloat = false;
 
 	if ($type == 'squares') {
 		if ($filtered) {
@@ -151,6 +152,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 			$sql_table = "user_stat i";
 			$sql_column = "images, images/(points+1)";
+			$isfloat = true;
 		}
 		$heading = "G-Points";
 		$desc = "test points";
@@ -164,6 +166,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "images, images/(points+1)";
 			$sql_having_having = "having images > $minimum";
 		}
+		$isfloat = true;
 		$heading = "Depth";
 		$desc = "the <b>approx</b> images/points ratio, and having submitted over $minimum images";
 
@@ -188,6 +191,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				$desc = "the depth score, and having submitted over $minimum images";
 			}
 		}
+		$isfloat = true;
 		$heading = "Depth";
 
 	} elseif ($type == 'depth2') {
@@ -198,6 +202,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "round(pow(images,2)/squares)";
 			$sql_having_having = "having images > $minimum";
 		}
+		$isfloat = true;
 		$heading = "High Depth";
 		$desc = "the depth score X images, and having submitted over $minimum images";
 
@@ -218,6 +223,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_table = "user_stat i";
 			$sql_column = "images/hectads";
 		}
+		$isfloat = true;
 		$heading = "AntiSpread Score";
 		$desc = "antispread score (images/hectads)";
 
@@ -230,6 +236,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "hectads/images";
 			$sql_having_having = "having count(*) > $minimum";
 		}
+		$isfloat = true;
 		$heading = "Spread Score";
 		$desc = "spread score (hectads/images), and having submitted over $minimum images";
 
@@ -261,17 +268,20 @@ if (!$smarty->is_cached($template, $cacheid))
 	} elseif ($type == 'clen') {
 		$sql_column = "avg(length(comment))";
 		$sql_having_having = "having count(*) > $minimum";
+		$isfloat = true;
 		$heading = "Average Description Length";
 		$desc = "average length of the description, and having submitted over $minimum images";
 
 	} elseif ($type == 'tlen') {
 		$sql_column = "avg(length(title))";
 		$sql_having_having = "having count(*) > $minimum";
+		$isfloat = true;
 		$heading = "Average Title Length";
 		$desc = "average length of the title, and having submitted over $minimum images";
 
 	} elseif ($type == 'category_depth') {
 		$sql_column = "count(*)/count(distinct imageclass)";
+		$isfloat = true;
 		$heading = "Category Depth";
 		$desc = "the category depth score";
 
@@ -334,6 +344,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
+	$smarty->assign('isfloat', $isfloat);
 
 	if ($sql_table != 'user_stat i') {
 		$sql_column = "max(gridimage_id) as last,$sql_column";

@@ -21,11 +21,15 @@ top submitters this week.</p>
 
 {foreach from=$topusers item=topuser}
 <tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile/{$topuser.user_id}">{$topuser.realname}</a></td>
+{if $isfloat}
+<td align="right">{$topuser.imgcount|string_format:"%.4f"}</td>
+{else}
 <td align="right">{$topuser.imgcount}</td>
+{/if}
 {if $points}<td align="right">{$topuser.points}</td>{/if}
 {if $images}<td align="right">{$topuser.images}</td>{/if}
 {if $topuser.depth}
-<td align="right">{$topuser.depth}</td>
+<td align="right">{$topuser.depth|string_format:"%.2f"}</td>
 {/if}
 </tr>
 {/foreach}
