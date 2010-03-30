@@ -128,10 +128,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		'reverse_points' => array(
 			'column' => "count(*) as images, count(*)/(sum(ftf=1)+1)",
 			'having_having' => "having count(*) > $minimum",
+			'isfloat' => true,
 		),
 		'depth' => array(
 			'column' => "count(*)/count(distinct grid_reference)",
 			'having_having' => "having count(*) $sql_minimax",
+			'isfloat' => true,
 		),
 		'depth2' => array(
 			'column' => "round(pow(count(*),2)/count(distinct grid_reference))",
@@ -142,10 +144,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		),
 		'antispread' => array(
 			'column' => "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
+			'isfloat' => true,
 		),
 		'spread' => array(
 			'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)",
 			'having_having' => "having count(*) > $minimum",
+			'isfloat' => true,
 		),
 		'hectads' => array(
 			'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
@@ -159,13 +163,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		'clen' => array(
 			'column' => "avg(length(comment))",
 			'having_having' => "having count(*) > $minimum",
+			'isfloat' => true,
 		),
 		'tlen' => array(
 			'column' => "avg(length(title))",
 			'having_having' => "having count(*) > $minimum",
+			'isfloat' => true,
 		),
 		'category_depth' => array(
 			'column' => "count(*)/count(distinct imageclass)",
+			'isfloat' => true,
 		),
 		'centi' => array(
 		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
@@ -205,20 +212,24 @@ if (!$smarty->is_cached($template, $cacheid))
 		'test_points' => array(
 			'table' => "user_stat i",
 			'column' => "images, images/(points+1)",
+			'isfloat' => true,
 		),
 		'reverse_points' => array(
 			'table' => "user_stat i",
 			'column' => "images, images/(points+1)",
 			'having_having' => "having images > $minimum",
+			'isfloat' => true,
 		),
 		'depth' => array(
 			'table' => "user_stat i",
 			'column' => "images, depth",
 			'having_having' => "having images $sql_minimax",
+			'isfloat' => true,
 		),
 		'depth2' => array(
 			'column' => "round(pow(images,2)/squares)",
 			'having_having' => "having images > $minimum",
+			'isfloat' => true,
 		),
 		'myriads' => array(
 			'table' => "user_stat i",
@@ -227,11 +238,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		'antispread' => array(
 			'table' => "user_stat i",
 			'column' => "images/hectads",
+			'isfloat' => true,
 		),
 		'spread' => array(
 			'table' => "user_stat i",
 			'column' => "hectads/images",
 			'having_having' => "having count(*) > $minimum",
+			'isfloat' => true,
 		),
 		'hectads' => array(
 			'table' => "user_stat i",
@@ -247,13 +260,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		'clen' => array(
 			'column' => "avg(length(comment))",
 			'having_having' => "having count(*) > $minimum",
+			'isfloat' => true,
 		),
 		'tlen' => array(
 			'column' => "avg(length(title))",
 			'having_having' => "having count(*) > $minimum",
+			'isfloat' => true,
 		),
 		'category_depth' => array(
 			'column' => "count(*)/count(distinct imageclass)",
+			'isfloat' => true,
 		),
 		'centi' => array(
 		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
@@ -464,6 +480,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		$type = 'points';
 	}
 
+	$isfloat = false;
+	if (isset($sql_qtable[$type]['isfloat'])) $isfloat = $sql_qtable[$type]['isfloat'];
+
 	if (isset($sql_qtable[$type]['column'])) $sql_column = $sql_qtable[$type]['column'];
 	if (isset($sql_qtable[$type]['having_having'])) $sql_having_having = $sql_qtable[$type]['having_having'];
 	if (isset($sql_qtable[$type]['where'])) $sql_where = $sql_qtable[$type]['where'];
@@ -510,6 +529,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
+	$smarty->assign('isfloat', $isfloat);
 
 	if ($sql_table != 'user_stat i') {
 		$sql_column = "max(gridimage_id) as last,$sql_column";

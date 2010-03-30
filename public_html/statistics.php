@@ -129,7 +129,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach ($CONF['references_all'] as $ri => $rname) {
 		$sqtotal = $stats[$ri]['squares_total'];
 		$percentage = $sqtotal == 0 ? 0.0 : $stats[$ri]['squares_submitted'] / $sqtotal * 100;
-		$stats[$ri] += array('percent' => sprintf("%.3f", $percentage));
+		$stats[$ri] += array('percent' => $percentage);
 	}
 	foreach (array('images_total','images_thisweek','squares_total','squares_submitted','tenk_total','tenk_submitted','geographs_submitted','grid_submitted','grid_total','centergr', 'place', 'marker','percent') as $name) {
 		$smarty_array = array();

@@ -353,10 +353,7 @@ function smarty_function_linktoself($params) {
 */
 function smarty_function_thousends($input,$decimals=0) {
 	global $CONF;
-	if ($CONF['lang'] == 'de')
-		return number_format($input,$decimals,',','.');
-	else
-		return number_format($input,$decimals);
+	return number_format($input,$decimals,$CONF['decimal_sep'],$CONF['thousand_sep']);
 }
 
 function smarty_function_ordinal($i) {
@@ -827,6 +824,16 @@ function combineTexts($lang1, $lang2)
 		return $lang2;
 	else
 		return $lang1 . ' (' . $lang2 . ')';
+}
+
+/**
+ * convert float to string using given decimal separator, needs 'C' locale!
+ */
+
+function smarty_modifier_floatformat($val, $format='%.14G')
+{
+	global $CONF;
+	return str_replace('.',$CONF['decimal_sep'], sprintf($format,$val));
 }
 
 ?>
