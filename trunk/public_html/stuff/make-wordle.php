@@ -77,7 +77,8 @@ $wordcount = array();
 
 $recordSet = &$db->Execute($sql);
 while (!$recordSet->EOF) {
-	$words = preg_split('/[^a-zA-Z0-9]+/',trim(str_replace("'",'',$recordSet->fields['title'])));
+	$words = preg_split('/[^\w\d]+/',trim(str_replace("'",'',$recordSet->fields['title'])));
+	#$words = preg_split('/[^a-zA-Z0-9]+/',trim(str_replace("'",'',$recordSet->fields['title'])));
 
 	foreach ($words as $word) {
 		@$wordcount[$word]++;	
@@ -99,7 +100,9 @@ arsort($wordcount,SORT_NUMERIC);
 <input type=hidden name=wordcounts value="<? 
 $c = 0;
 foreach ($wordcount as $word => $count) {
-	print "$word:$count";
+	echo utf8_encode($word),":$count";
+	#echo htmlentities($word),":$count";
+	#print "$word:$count";
 	if ($c > 1000) {
 		break;
 	}
