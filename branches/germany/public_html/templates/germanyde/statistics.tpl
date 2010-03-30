@@ -41,9 +41,9 @@
 <tr>
 	<th>&nbsp;[as percentage]</th>
 	{foreach from=$references_real item=ref key=ri}
-	<td><b>{$percent[$ri]}%</b></td>
+	<td><b>{$percent[$ri]|floatformat:"%.3f"}%</b></td>
 	{/foreach}
-	<td>{$percent[0]}%</td>
+	<td>{$percent[0]|floatformat:"%.3f"}%</td>
 </tr>
 <tr>
 	<th>&nbsp;[with geograph(s)]</th>

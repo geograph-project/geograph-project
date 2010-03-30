@@ -68,7 +68,7 @@ oder per <a href="mailto:geo@hlipp.de">Mail</a> möglich.
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
-	<h3 style="margin-bottom:2px;margin-top:2px;">Bild des Tages</h3>
+	<h3 style="margin-bottom:2px;margin-top:2px;">Bild des Tages{if $pictureoftheday.search} <small>[<a href="/results/{$pictureoftheday.search}">mehr...</a>]</small>{/if}</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
 	title="zum Vergrößern anklicken">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
 
@@ -98,7 +98,7 @@ oder per <a href="mailto:geo@hlipp.de">Mail</a> möglich.
 	
 </div>
 <br style="clear:both"/>
-<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} Benutzer</b> haben <b class="nowrap">{$stats.images|thousends} Bilder</b> eingereicht, die <span  class="nowrap"><b class="nowrap">{$stats.squares|thousends} Planquadrate</b>, d.h. <b class="nowrap">{$stats.percentage|number_format:2:",":"."}%</b> aller Quadrate, abdecken</span>.<br/>
+<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} Benutzer</b> haben <b class="nowrap">{$stats.images|thousends} Bilder</b> eingereicht, die <span  class="nowrap"><b class="nowrap">{$stats.squares|thousends} Planquadrate</b>, d.h. <b class="nowrap">{$stats.percentage|floatformat:"%.2f"}%</b> aller Quadrate, abdecken</span>.<br/>
 
 {if count($hectads)}
 Zuletzt vervollständigte 10km&thinsp;x&thinsp;10&thinsp;km-Quadrate:
@@ -136,7 +136,7 @@ Zuletzt vervollständigte 10km&thinsp;x&thinsp;10&thinsp;km-Quadrate:
 
 <div style="width:300px;float:left;position:relative">
 
-<p>Die <a title="register now" href="/register.php">Registrierung</a> ist kostenlos, wir freuen uns über jeden Gast und noch mehr über alle, die zum gelingen des Projekts beitragen wollen! Die wichtigsten Informationen dazu können in der <a title="Fragen und Antworten" href="/faq.php">FAQ</a> gefunden werden.
+<p>Die <a title="register now" href="/register.php">Registrierung</a> ist kostenlos, wir freuen uns über jeden Gast und noch mehr über alle, die zum Gelingen des Projekts beitragen wollen! Die wichtigsten Informationen dazu können in der <a title="Fragen und Antworten" href="/faq.php">FAQ</a> gefunden werden.
 </p>
 
 

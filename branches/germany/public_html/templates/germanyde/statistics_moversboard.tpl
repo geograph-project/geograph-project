@@ -25,14 +25,24 @@ aufsteigen kann.{/if}</p>
 
 {foreach from=$topusers key=topuser_id item=topuser}
 <tr><td align="right">{$topuser.ordinal}</td><td><a title="Profil anzeigen" href="/profile/{$topuser_id}">{$topuser.realname}</a></td>
+{if $isfloat}
+<td align="right">{$topuser.geographs|floatformat:"%.4f"}</td>
+{else}
 <td align="right">{$topuser.geographs}</td>
+{/if}
 {if $points}<td align="right">{$topuser.points}</td>{/if}
 <td align="right">{if $topuser.pending gt 0}<span style="font-size:0.8em">({$topuser.pending} unmoderiert)</span>{/if}</td>
 </tr>
 {/foreach}
 
 
-<tr class="totalrow"><th>&nbsp;</th><th>Gesamt</th><th align="right">{$geographs|string_format:"%.5g"}</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} unmoderiert)</th>{/if}</tr></thead>
+<tr class="totalrow"><th>&nbsp;</th><th>Gesamt</th><th align="right">
+{if $isfloat}
+{$geographs|floatformat:"%.4f"}
+{else}
+{$geographs}
+{/if}
+</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} unmoderiert)</th>{/if}</tr></thead>
 </tbody>
 </table>
 

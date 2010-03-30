@@ -3,7 +3,7 @@
 	{assign var="meta_description" value="Profile page for `$credit_realname`/`$profile->realname`, listing recent images, statistics and links to further information."}
 {else}
 	{assign var="page_title" value="Profile for `$profile->realname`"}
-	{assign var="meta_description" value='Profile page for `$profile->realname`, listing recent images, statistics and links to further information.'}
+	{assign var="meta_description" value="Profile page for `$profile->realname`, listing recent images, statistics and links to further information."}
 {/if}
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}" type="text/javascript"></script>
@@ -147,7 +147,7 @@
 				{if $profile->stats.squares gt 1}
 					<ul style="font-size:0.8em;margin-bottom:2px">
 					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if},
-					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
+					giving a depth score of <b>{$profile->stats.depth|floatformat:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
 					</li>
 					{if $profile->stats.hectads > 1}
 						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> Myriads<sup><a href="/help/squares">?</a></sup>{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>

@@ -6,7 +6,7 @@
     <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
     <li>View<ul>
      <li><a title="Find images" href="/search.php">Search</a></li>
-     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a> <small style="color:red">Updated!</small></li>
+     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a></li>
      <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
      <li><a title="Submitted Content" href="/content/">Content</a></li>
     </ul></li>

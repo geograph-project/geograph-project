@@ -6,7 +6,7 @@
     <li style="font-size:1.42em"><a accesskey="1" title="Startseite" href="/">Startseite</a></li>
     <li>Ansicht<ul>
      <li><a title="Bildersuche" href="/search.php">Suche</a></li>
-     <li><a title="Karte aller Bilder anzeigen" href="/mapbrowse.php">Karte</a> <small style="color:red">Aktualisiert!</small></li>
+     <li><a title="Karte aller Bilder anzeigen" href="/mapbrowse.php">Karte</a></li>
      <li><a title="Verschieden Zusammenstellungen von Bildern" href="/explore/">Stöbern</a></li>
      <li><a title="Nutzerbeiträge" href="/content/">Beiträge</a></li>
     </ul></li>
