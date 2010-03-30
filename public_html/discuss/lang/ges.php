@@ -398,11 +398,11 @@ $l_usrInfo[11]=$l_stats_numPosts;
 $l_usrInfoActivities='Benutzeraktivitäten';
 
 /* v2.2 */
-$l_page='Page';
+$l_page='Seite';
 
 /* v2.3 */
-$l_today='<strong>Today</strong>';
-$l_yesterday='Yesterday';
+$l_today='<strong>Heute</strong>';
+$l_yesterday='Gestern';
 
 /* geograph */
 $l_forum='Forum &nbsp; (<a href="?forums=0" style="color:white;font-weight:normal" title="Nur aktuelle Diskussionen anzeigen.">Liste verbergen</a>)';
@@ -411,5 +411,14 @@ $l_unsubscribeinfo='E-Mail-Benachrichtigung für neue Postings zu diesem Thema -'
 $l_subscribe='oder E-Mail-Benachrichtigung anfordern ohne zu posten';
 $l_privateForum='Dieses Forum ist nicht zugänglich.';
 
+$l_preview='Vorschau';
+$l_messagegr='Neue Mitteilung für ';
+$l_pages='Seiten';
+$l_lastpage='letzte';
+$l_bbhelp='Hilfe - wie kann ich Postings gestalten, Bilder und Links einfügen?';
+$l_lastDiscussions2='aktuelle Themen';
+$l_show='Zeige';
+$l_next='Weiter';
+$l_prev='Zurück';
 
 ?>
