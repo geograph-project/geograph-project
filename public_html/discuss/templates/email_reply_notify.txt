@@ -1,4 +1,4 @@
-SUBJECT>>[geograph-de] - Forum topic updated: {$topicTitle}<<
+SUBJECT>>Forum topic updated: {$topicTitle}<<
 
 You requested an email update whenever anyone replies to the topic "{$topicTitle}" in our forums.
 

@@ -122,6 +122,7 @@ $useSessions=true;
 $usersEditTopicTitle=true;
 $pathToFiles='./';
 $templateDir=$CONF['forum_templates'];
+$mail_subjectprefix=$CONF['mail_subjectprefix'];
 //$includeHeader='header.php';
 //$includeFooter='footer.php';
 //$emptySubscribe=TRUE;
