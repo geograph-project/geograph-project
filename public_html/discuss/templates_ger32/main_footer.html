@@ -33,7 +33,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
     </ul></li>
     <li>Further Info<ul>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
-     <li><a title="FAQ" href="/content/?docs&amp;order=title">Documents</a> <sup style="color:red">New!</sup></li>
+     <li><a title="FAQ" href="/content/?docs&amp;order=title">Documents</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
      <li><a title="Impressum" href="http://www.hlipp.de/contact.html">Impressum</a></li>
@@ -41,17 +41,17 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
 {?isModAdmin|
     <li>Admin<ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
-}
+?}
 {?isModerator|
      	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
-}
+?}
 {?isTicketMod|
      	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a href="/admin/tickets.php?sidebar=1" target="_search" title="Open in Sidebar, IE and Firefox Only">S</a>)</li>
-}
+?}
 {?isModAdmin|
      <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
     </ul></li>
-}
+?}
 </ul>
   </div>
 </div>
@@ -63,7 +63,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
 	<div id="searchfield"><label for="searchterm">Search Forum</label>
 	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10"/>
 	<input id="searchbutton" type="submit" value="Find"/></div>
-}{?noSphinx|
+?}{?noSphinx|
      <form method="get" action="/discuss/index.php">
         <input type="hidden" name="action" value="search"/>
         <input type="hidden" name="searchForum" value="0"/>
@@ -73,7 +73,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
         <div id="searchfield"><label for="searchterm">Search Forum</label>
         <input id="searchterm" type="text" name="searchFor" value="{$searchFor}" size="10"/>
         <input id="searchbutton" type="submit" name="go" value="Find"/></div>
-}
+?}
 	</form>
     </div>
   </div>

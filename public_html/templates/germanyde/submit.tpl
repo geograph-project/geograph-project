@@ -63,7 +63,7 @@ beibehalten.</p>
 		(<u title="z.B. TPT2769 oder TPT 27 69">4</u>,
 		<u title="z.B. TPT277695 oder TPT 277 695">6</u>,
 		<u title="z.B. TPT27796951 oder TPT 2779 6951">8</u> oder 
-		<u title="z.B. TPT2779269513 oder TPT 27792 69513">10</u> figure) des Motivs</label><br /><br />
+		<u title="z.B. TPT2779269513 oder TPT 27792 69513">10</u> Ziffern) des Motivs</label><br /><br />
 		{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">löschen</a>)<br/></small></small>{/if}
 		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">O</a></small></small>
 		&nbsp;&nbsp;&nbsp;

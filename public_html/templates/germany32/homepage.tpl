@@ -59,7 +59,7 @@ Although the implementation is still incomplete, your contribution to the projec
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
-	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
+	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day{if $pictureoftheday.search} <small>[<a href="/results/{$pictureoftheday.search}">more...</a>]</small>{/if}</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
 	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
 
@@ -89,7 +89,7 @@ Although the implementation is still incomplete, your contribution to the projec
 	
 </div>
 <br style="clear:both"/>
-<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage|number_format:2}%</b> of the total</span>.<br/>
+<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage|floatformat:"%.2f"}%</b> of the total</span>.<br/>
 
 {if count($hectads)}
 Recently completed hectads: 

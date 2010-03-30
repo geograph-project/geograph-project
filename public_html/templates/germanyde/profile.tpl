@@ -3,7 +3,7 @@
 	{assign var="meta_description" value="Profil von `$credit_realname`/`$profile->realname`, Liste aktueller Bilder, Statistik, Links zu weiteren Informationen."}
 {else}
 	{assign var="page_title" value="Profil für `$profile->realname`"}
-	{assign var="meta_description" value='Profil von `$profile->realname`, Liste aktueller Bilder, Statistik, Links zu weiteren Informationen.'}
+	{assign var="meta_description" value="Profil von `$profile->realname`, Liste aktueller Bilder, Statistik, Links zu weiteren Informationen."}
 {/if}
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}" type="text/javascript"></script>
@@ -147,7 +147,7 @@
 				{if $profile->stats.squares gt 1}
 					<ul style="font-size:0.8em;margin-bottom:2px">
 					<li><b>{$profile->stats.squares}</b> Planquadrat{if $profile->stats.squares ne 1}e{/if}
-					ergeben eine Dichte von <b>{$profile->stats.depth|string_format:"%.2f"}</b> <sup>(siehe <a title="Fragen und Antworten zur Statistik" href="/help/stats_faq">FAQ</a>)</sup>
+					ergeben eine Dichte von <b>{$profile->stats.depth|floatformat:"%.2f"}</b> <sup>(siehe <a title="Fragen und Antworten zur Statistik" href="/help/stats_faq">FAQ</a>)</sup>
 					</li>
 					{if $profile->stats.hectads > 1}
 						<li>in <b>{$profile->stats.hectads}</b> verschiedenen 10km&thinsp;&times;&thinsp;10km-Quadraten und <b>{$profile->stats.myriads}</b> 100km&thinsp;&times;&thinsp;100km-Quadraten<sup><a href="/help/squares">?</a></sup>{if $profile->stats.days > 3}, aufgenommen an <b>{$profile->stats.days}</b> verschiedenen Tagen{/if}</li>
