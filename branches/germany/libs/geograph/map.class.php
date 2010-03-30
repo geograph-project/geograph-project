@@ -1544,9 +1544,11 @@ class GeographMap
 		} elseif ($this->pixels_per_km == 4) {
 			$div = 30000;
 		#	$crit = "(s = '1' OR s = '2') AND";
+			$crit = "(s IN ('1','2','3')) AND";
 			$cityfont = 3;
 		} else {
 			$div = 10000;
+			$crit = "(s IN ('1','2','3','4')) AND";
 			$cityfont = 3;
 		}
 
