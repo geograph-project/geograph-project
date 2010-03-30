@@ -34,6 +34,10 @@ if (empty($CONF['forums'])) {
 }
 
 $noSphinx=empty($CONF['sphinx_host']);
+$isModerator=$GLOBALS['USER']->hasPerm('moderator');
+$isTicketMod=$GLOBALS['USER']->hasPerm('ticketmod');
+$isAdmin=$GLOBALS['USER']->hasPerm('admin');
+$isModAdmin=$isMod||$isTicketMod||$isAdmin;
 
 $static_host = $CONF['STATIC_HOST'];
 $static_url = "http://{$CONF['STATIC_HOST']}/discuss";
