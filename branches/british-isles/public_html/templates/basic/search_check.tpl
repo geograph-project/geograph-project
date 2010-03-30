@@ -1,7 +1,7 @@
-{assign var="page_title" value="Geograph Search"}
+{assign var="page_title" value="Check Submissions Tool"}
 {include file="_std_begin.tpl"}
 
-<h2>Advanced Search Builder</h2>
+<h2>Check Submissions Tool</h2>
 <br/><br/>
 	<div style="color:red">
 	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="15" height="15" align="left" style="margin-right:10px"/>

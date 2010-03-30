@@ -67,7 +67,7 @@
 	</ul>
 	{/if}
 
-	In a nutshell, if the two images above look exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close Enough". 
+	In a nutshell, if the two images above are the same size and look exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close Enough". 
 </form>
 
 <script type="text/javascript">
