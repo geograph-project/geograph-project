@@ -485,6 +485,7 @@ if ($grid_given)
 					$breakdown_title = "Classification";
 					$substs = array('accepted'=>'supplemental');
 				}
+				$linksubsts = array('accepted'=>'supplemental');
 				$all = $db->cacheGetAll($cacheseconds,"SELECT moderation_status,count(*) as count,
 				gridimage_id,title,user_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname
 				FROM gridimage gi inner join user using(user_id)
@@ -494,6 +495,7 @@ if ($grid_given)
 				ORDER BY ftf DESC,moderation_status+0 DESC");
 				foreach ($all as $row) {
 					$rowname = isset($substs[$row[0]]) ? $substs[$row[0]] : $row[0];
+					$linkname = isset($linksubsts[$row[0]]) ? $linksubsts[$row[0]] : $row[0];
 					$breakdown[$i] = array('name'=>"<b>{$rowname}</b>",'count'=>$row[1]);
 					if (empty($_GET['ht']) && $i< 20) {
 						$breakdown[$i]['image'] = new GridImage();
@@ -509,7 +511,7 @@ if ($grid_given)
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?status=".urlencode($rowname).$extra;
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?status=".urlencode($linkname).$extra;
 					}
 					$i++;
 				}

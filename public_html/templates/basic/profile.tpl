@@ -3,7 +3,7 @@
 	{assign var="meta_description" value="Profile page for `$credit_realname`/`$profile->realname`, listing recent images, statistics and links to further information."}
 {else}
 	{assign var="page_title" value="Profile for `$profile->realname`"}
-	{assign var="meta_description" value='Profile page for `$profile->realname`, listing recent images, statistics and links to further information.'}
+	{assign var="meta_description" value="Profile page for `$profile->realname`, listing recent images, statistics and links to further information."}
 {/if}
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}" type="text/javascript"></script>
