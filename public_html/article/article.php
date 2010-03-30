@@ -314,6 +314,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	} 
 } else {
+	$smarty->assign('edit_prompt', $page['edit_prompt']);
+	$smarty->assign('approved', $page['approved']);
 	$smarty->assign('user_id', $page['user_id']);
 	$smarty->assign('url', $page['url']);
 }
