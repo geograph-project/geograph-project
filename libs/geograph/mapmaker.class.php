@@ -44,8 +44,20 @@ class MapMaker
 	
 	/**
 	* adds or updates squares
+	*
+	* $usr:  > 0 => number of images by user $usr
+	*          0 => land percentage + image count
+	*         -1 => land percentage
+	*         -2 => image count
+	*        <-2 => reserved, defaults to 0
+	* $bw:     colour / grey scale (colour only for  $usr == 0)
+	* $limit:  count == 0      => colour 0
+	*          count == $limit => colour 255
+	*          $limit <= 0 => defaults to 100 for land percentages and to 1 for image counts
+	* $geo:    number of geographs instead of images
+	*
 	*/
-	function build($x1, $y1, $x2, $y2, $showgrid=true,$scale = 1,$force = false,$reference_index = 0)
+	function build($x1, $y1, $x2, $y2, $showgrid=true,$scale = 1,$force = false,$reference_index = 0,$usr = 0,$bw = false,$limit = 0,$geo = false)
 	{
 		$this->db = NewADOConnection($GLOBALS['DSN']);
 		if (!$this->db) die('Database connection failed');   
@@ -56,9 +68,20 @@ class MapMaker
 		$right=max($x1, $x2);
 		$top=max($y1, $y2);
 		$bottom=min($y1, $y2);
+
+		if ($usr < -2)
+			$usr = 0;
+		//if ($usr == 0)
+		//	$colour = true;
+		if ($limit == 0) {
+			if ($usr == 0 || $usr == -1)
+				$limit = 100;
+			else
+				$limit = 1;
+		}
 	
 		//figure out filename
-		$filename="map_{$left}_{$top}_{$right}_{$bottom}_{$scale}.png";
+		$filename="map_{$left}_{$top}_{$right}_{$bottom}_{$scale}_{$reference_index}_{$showgrid}_{$usr}_{$bw}_{$limit}_{$geo}.png";
 	
 		#elementry caching!
 		if (!$force && file_exists($_SERVER['DOCUMENT_ROOT']."/maps/$filename")) {
@@ -66,56 +89,103 @@ class MapMaker
  		}
 	
 		//figure out dimensions
-		$width=$right-$left;
-		$height=$top-$bottom;
+		$width=$right-$left+1;
+		$height=$top-$bottom+1;
 		
 		//create new image of appropriate size
 		$img=imagecreate($width,$height);
 		
 		$gridcol=imagecolorallocate ($img, 0,0,0);
-		
-		$blue=imagecolorallocate ($img, 0,0,200);
-		imagefill($img,0,0,$blue);
+
+		if ($bw) {
+			$bg=imagecolorallocate ($img, 255,255,255);
+			$dotcolor = imagecolorallocate($img,255,255,255);
+		} else {
+			$bg=imagecolorallocate ($img, 0,0,200);
+			$dotcolor = imagecolorallocate($img,255,0,0);
+		}
+		imagefill($img,0,0,$bg);
 		
 		#get greens to use for percentages
 		$land=array();
 		for ($p=0; $p<=100; $p++)
 		{
-			//how much green?
-			$g=(200*$p)/100;
-			
-			//how much blue?
-			$b=200-$g;
-			
-			$land[$p]=imagecolorallocate($img, 0,$g,$b);
+			if ($bw) {
+				// 0   -> 255
+				// 100 -> 0
+				// grid shader: round(((255-$col)*100)/255);
+				$g = round((100-$p)/100*255);//FIXME rounding
+				$land[$p]=imagecolorallocate($img, $g,$g,$g);
+			} else {
+				//how much green?
+				$g=(200*$p)/100;
+				
+				//how much blue?
+				$b=200-$g;
+				
+				$land[$p]=imagecolorallocate($img, 0,$g,$b);
+			}
 		
 		}
-		$dotcolor = imagecolorallocate($img,255,0,0);
 		$otherlandcolor = $land[20];
-		
+
+		if ($geo||$usr > 0) {
+			$sql_cond = '(gi.moderation_status is not NULL)';
+			if ($geo)
+				$sql_cond .= " and (gi.moderation_status='geograph')";
+			if ($usr > 0)
+				$sql_cond .= " and (gi.user_id='$usr')";
+			$sql_imagecount = "sum($sql_cond) as imagecount";
+			$sql_table = 'gridsquare gs left join gridimage gi using(gridsquare_id)';
+			$sql_group = ' group by gs.gridsquare_id';
+		} else {
+			$sql_imagecount = 'imagecount';
+			$sql_table = 'gridsquare gs';
+			$sql_group = '';
+		}
+		if ($usr == 0) {
+			$sql_order = ' order by imagecount';
+		} else {
+			$sql_order = '';
+		}
+
 		//now plot all squares in the desired area
-		$sql="select x,y,percent_land,imagecount,reference_index from gridsquare where ".
+		$sql="select x,y,percent_land,$sql_imagecount,reference_index,gs.gridsquare_id from $sql_table where ".
 			"(x between $left and $right) and ".
-			"(y between $bottom and $top) order by imagecount";
+			"(y between $bottom and $top)$sql_group$sql_order";
+		trigger_error("map file: $filename", E_USER_NOTICE);
+		trigger_error("     sql: $sql", E_USER_NOTICE);
 			
 		$recordSet = &$this->db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
 			$gridy=$recordSet->fields[1];
+			$pland=$recordSet->fields[2];
+			$imag =$recordSet->fields[3];
+			$ri =  $recordSet->fields[4];
 			
 			$imgx=$gridx-$left;
-			$imgy=$height-($gridy-$bottom);
+			$imgy=$height-($gridy-$bottom)-1;
 			
-			if ($reference_index && $recordSet->fields[4] != $reference_index) {
+			if ($reference_index && $ri != $reference_index) {
 				imagesetpixel($img, $imgx, $imgy, $otherlandcolor);
-			} else if ($recordSet->fields[3] > 0) {
+			} else if ($usr == 0 && $imag > 0) {
 				if ($scale > 5) 
 					imagesetpixel($img, $imgx, $imgy, $dotcolor);
 				else 
 					imagefilledrectangle ( $img, $imgx-2, $imgy-2, $imgx+2, $imgy+2, $dotcolor);
 			} else {
-				imagesetpixel($img, $imgx, $imgy, $land[$recordSet->fields[2]]);
+				if ($usr == -2 || $usr > 0)
+					$val = $imag;
+				else
+					$val = $pland;
+				$val = round ($val * 100 / $limit);
+				if ($val > 100)
+					$val = 100;
+				else if ($val < 0)
+					$val = 0;
+				imagesetpixel($img, $imgx, $imgy, $land[$val]);
 			}
 			$recordSet->MoveNext();
 		}
