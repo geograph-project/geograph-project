@@ -69,9 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			'table' => " gridimage_search i ",
 		),
 		'depth' => array(
-			#'column' => "count(*)/count(distinct grid_reference)",
-			'column' => "count(*)",
-			'denom' => "count(distinct grid_reference)",
+			'column' => "count(*)/count(distinct grid_reference)",
 			'table' => " gridimage_search i ",
 		),
 		'myriads' => array(
@@ -90,16 +88,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		),
 		'antispread' => array(
 			//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
-			#'column' => "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
-			'column' => "count(*)",
-			'denom' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
+			'column' => "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
 			'table' => " gridimage_search i ",
 		),
 		'spread' => array(
 			//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
-			#'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)",
-			'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
-			'denom' => "count(*)",
+			'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)",
 			'table' => " gridimage_search i ",
 		),
 		'classes' => array(
@@ -107,21 +101,15 @@ if (!$smarty->is_cached($template, $cacheid))
 			'table' => " gridimage_search i ",
 		),
 		'clen' => array(
-			#'column' => "avg(length(comment))",
+			'column' => "avg(length(comment))",
 			'table' => " gridimage_search i ",
-			'denom' => "count(*)",
-			'column' => "sum(length(comment))",
 		),
 		'tlen' => array(
-			#'column' => "avg(length(title))",
+			'column' => "avg(length(title))",
 			'table' => " gridimage_search i ",
-			'denom' => "count(*)",
-			'column' => "sum(length(title))",
 		),
 		'category_depth' => array(
-			#'column' => "count(*)/count(distinct imageclass)",
-			'column' => "count(*)",
-			'denom' => "count(distinct imageclass)",
+			'column' => "count(*)/count(distinct imageclass)",
 			'table' => " gridimage_search i ",
 		),
 		'centi' => array(
@@ -319,7 +307,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		group by i.user_id 
 		order by geographs desc";
 		$topusers=$db->GetAssoc($sql);
-	
+
+		$sqlsum="select count(distinct grid_reference) as geographs
+		from gridimage_search as i 
+		where i.submitted > date_sub(now(), interval 7 day) $sql_where";
+		$sum=$db->GetRow($sqlsum);
+
 
 		//now we want to find all users with pending images and add them to this array
 		$sql="select i.user_id,u.realname,0 as geographs, count(*) as pending from gridimage as i
@@ -338,29 +331,25 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		//no need to resort the combined array as should have imlicit ordering!
 	} else {
-		#$sql_column = $sql_qtable[$type]['column'];
+		$sql_column = $sql_qtable[$type]['column'];
 		if (isset($sql_qtable[$type]['where'])) $sql_where = $sql_qtable[$type]['where'];
 		if (isset($sql_qtable[$type]['table'])) $sql_table = $sql_qtable[$type]['table'];
 		if (isset($sql_qtable[$type]['orderby'])) $sql_orderby = $sql_qtable[$type]['orderby'];
-		if (isset($sql_qtable[$type]['denom'])) {
-			#$sql_column .=  ',' . $sql_qtable[$type]['denom'] . ' as denom,geographs/denom as average';
-			$sql_column =  $sql_qtable[$type]['column'] . ' as num,' . $sql_qtable[$type]['denom'] . ' as denom,('.$sql_qtable[$type]['column'].')/('.$sql_qtable[$type]['denom'].') as geographs';
-			$sql_ordermain = 'geographs';
-		} else {
-			$sql_column = $sql_qtable[$type]['column'] . " as geographs";
-			$sql_ordermain = 'geographs';
-		}
+
+		$sqlsum="select $sql_column as geographs from $sql_table
+		where i.submitted > date_sub(now(), interval 7 day) $sql_where";
+		$sum=$db->GetRow($sqlsum);
 
 		$sql_pending = (strpos($sql_table,'_search') === FALSE)?"sum(i.moderation_status='pending')":'0';
 		//we want to find all users with geographs/pending images 
 		$sql="select i.user_id,u.realname,
-		$sql_column, 
+		$sql_column as geographs, 
 		$sql_pending as pending
 		from $sql_table left join user as u using(user_id) 
 		where i.submitted > date_sub(now(), interval 7 day) $sql_where
 		group by i.user_id 
 		having (geographs > 0 or pending > 0)
-		order by $sql_ordermain desc $sql_orderby, pending desc ";
+		order by geographs desc $sql_orderby, pending desc ";
 		if ($_GET['debug'])
 			print $sql;
 		$topusers=$db->GetAssoc($sql);
@@ -368,37 +357,27 @@ if (!$smarty->is_cached($template, $cacheid))
 	//assign an ordinal
 
 	$i=1;$lastgeographs = '?';
-	$geographs = 0;
+	#$geographs = 0;
 	$pending = 0;
-	$points = 0;
-	$denom = 0;
-	$have_denom = false;
+	#$points = 0;
 	foreach($topusers as $user_id=>$entry)
 	{
-		$curval = $entry['geographs'];
-		if ($lastgeographs == $curval)
+		if ($lastgeographs == $entry['geographs'])
 			$topusers[$user_id]['ordinal'] = '&quot;&nbsp;&nbsp;&nbsp;';
 		else {
 			$topusers[$user_id]['ordinal'] = smarty_function_ordinal($i);
-			$lastgeographs = $curval;
+			$lastgeographs = $entry['geographs'];
 		}
 		$i++;
-		if (isset($entry['denom'])) {
-			$denom += $entry['denom'];
-			$geographs += $entry['num'];
-			$have_denom = true;
-		} else {
-			$geographs += $entry['geographs'];
-		}
+		#$geographs += $entry['geographs'];
 		$pending += $entry['pending'];
-		$points += $entry['points'];
+		#$points += $entry['points'];
 		if (empty($entry['points'])) $topusers[$user_id]['points'] = '';
-	}	
-	
-	
-	if ($have_denom) {
-		$geographs /= $denom;
 	}
+	
+	
+	$geographs=$sum['geographs'];
+	$points=$sum['points'];
 	$smarty->assign('geographs', $geographs);
 	$smarty->assign('pending', $pending);
 	$smarty->assign('points', $points);
