@@ -354,7 +354,7 @@ $title=$title.$topicName;
 }//if posts
 
 $st=0; $frm=$forum;
-$l_chooseForum = 'Jump To Forum';
+#$l_chooseForum = 'Jump To Forum';
 include ($pathToFiles.'bb_func_forums.php');
 
 if(isset($mod_rewrite) and $mod_rewrite) $linkToForums="{$main_url}/{$forum}_0.html"; else $linkToForums="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}";

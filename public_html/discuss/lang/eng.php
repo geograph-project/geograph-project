@@ -14,7 +14,6 @@ $l_months='Jan:Feb:Mar:Apr:May:Jun:Jul:Aug:Sep:Oct:Nov:Dec';
 
 $l_admin='Admin';
 $l_about='About user';
-$l_forum='Forum &nbsp; (<a href="?forums=0" style="color:white;font-weight:normal" title="Just show the recent Discussions.">Hide this list</a>)';
 $l_num_topics='Topics';
 $l_topic='Topic';
 $l_replies='Replies';
@@ -24,7 +23,6 @@ $l_reply='Reply';
 $l_author='Author';
 $l_lastAuthor='Last poster';
 $l_sub_answer='Reply to this topic';
-$l_sub_answer11='Add new images to this gallery';
 $l_message='Message';
 $l_views='Views';
 
@@ -315,8 +313,6 @@ $l_warnEncoding='Before posting non-english message, check your browser`s encodi
 
 /* Language variables miniBB v1.1 */
 
-$l_unsubscribeinfo='You will receive email notifications of new posts to this topic -';
-$l_subscribe='or Subscribe without posting';
 $l_unsubscribe='Unsubscribe';
 $l_member='Member';
 
@@ -334,7 +330,6 @@ $l_days='days';
 $l_days_within='Within last';
 $l_stats_days_c='This setting affects only most popular topics and most viewed topics.';
 $l_search[11]='Match whole words';
-$l_privateForum='You don`t have access to this forum.';
 $l_moderator='Moderator';
 $l_moderatorsAre='Forums moderator(s)';
 
@@ -346,4 +341,25 @@ $l_topicUnsticked='Topic was unsticked';
 
 /* Language variables miniBB v1.7 */
 $l_search[12]='When searching for topics(!) within last XXXX days you can\'t exceed the default "days" interval(!), which is';
+
+/* (v2.2) */
+$l_page='Page';
+
+/* geograph */
+$l_forum='Forum &nbsp; (<a href="?forums=0" style="color:white;font-weight:normal" title="Just show the recent Discussions.">Hide this list</a>)';
+$l_sub_answer11='Add new images to this gallery';
+$l_unsubscribeinfo='You will receive email notifications of new posts to this topic -';
+$l_subscribe='or Subscribe without posting';
+$l_privateForum='You don`t have access to this forum.';
+
+$l_preview='Preview';
+$l_messagegr='New Message for ';
+$l_pages='Pages';
+$l_lastpage='Last';
+$l_bbhelp='Help - How to format posts including inserting images and links';
+$l_lastDiscussions2='Recent Topics';
+$l_show='Show';
+$l_next='Next';
+$l_prev='Prev';
+
 ?>
