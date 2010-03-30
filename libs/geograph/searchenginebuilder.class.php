@@ -186,13 +186,18 @@ class SearchEngineBuilder extends SearchEngine
 					} else {
 						$this->searchdesc = ", by '{$criteria2->realname}' ";
 						$this->criteria = $criteria2;
-						$this->criteria->searchq = $q;
 						$this->criteria->is_multiple = true;
 						$this->criteria->ismore = true; #so doesnt display placename prompt
-						unset($searchclass);
-						
-						if (!empty($criteria->placename)) {
-							$this->criteria->matches = $criteria->_matches;
+						if ($criteria->is_multiple) {
+							$this->criteria->searchq = $criteria->searchq;
+							$this->criteria->matches = $criteria->matches;
+						} else {
+							$this->criteria->searchq = $q;
+							unset($searchclass);
+
+							if (!empty($criteria->placename)) {
+								$this->criteria->matches = $criteria->_matches;
+							}
 						}
 					}
 				} else {
