@@ -200,7 +200,7 @@ function overlayMouseDown(e) {
 		return;
 	}
 	
-	if (IE) {
+	if (IE || e.layerX == null) {
 		tempX = event.offsetX;
 		tempY = event.offsetY;
 	} else {
@@ -241,7 +241,7 @@ function overlayMouseOut(e) {
 }
 
 function overlayMouseMove(e) {
-	if (IE) {
+	if (IE || e.layerX == null) {
 		tempX = event.offsetX;
 		tempY = event.offsetY;
 	} else {
