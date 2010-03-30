@@ -1157,4 +1157,12 @@ update geobb_posts set post_text = REPLACE(post_text,' ref="nofollow"',' rel="no
 #################################################
 
 
+alter table article add `edit_prompt` varchar(160) NOT NULL DEFAULT '';
+
+alter table article_revisions add `edit_prompt` varchar(160) NOT NULL DEFAULT '';
+
+
+#################################################
+
+
 

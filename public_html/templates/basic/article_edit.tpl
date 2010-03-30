@@ -87,7 +87,7 @@ function makeUneditable() {
 	document.forms['theForm'].elements['submit'].disabled = true;
 	document.getElementById('buttonbar').style.display = 'none';
 }
-{/literal}{if $approved == 2}
+{/literal}{if $approved == 2 && $user_id != $user->user_id}
 	AttachEvent(window,'load',makeUneditable,false);
 {/if}{literal}
 
@@ -107,7 +107,7 @@ function makeUneditable() {
 	</div>
 
 <fieldset>
-{if $approved == 2}
+{if $approved == 2 && $user_id != $user->user_id}
 <legend>Edit Public Article</legend>
 
 <div class="interestBox" id="prompt1" style="display:none;margin-bottom:20px">
@@ -124,7 +124,7 @@ function makeUneditable() {
 {if $title == 'New Article'}
 <legend>Create Article</legend>
 {else}
-<legend>Edit Article</legend>
+<legend>Edit {if $approved == 2}Public Collaboration{/if} Article</legend>
 
 <div class="field">
 	{if $errors.url}<div class="formerror"><p class="error">{$errors.url}</p>{/if}
@@ -205,6 +205,19 @@ function makeUneditable() {
 	
 	{if $errors.extract}</div>{/if}
 </div>
+
+{if $approved == 2}
+	<div class="field">
+		{if $errors.edit_prompt}<div class="formerror"><p class="error">{$errors.edit_prompt}</p>{/if}
+
+		<label for="edit_prompt">Edit prompt:</label>
+		<input type="text" name="edit_prompt" value="{$edit_prompt|escape:"html"}" maxlength="160" size="90" style="width:58em"/>
+
+		<div class="fieldnotes">For open collaboration articles, a short message to prompt users to edit the article.</div>
+
+		{if $errors.edit_prompt}</div>{/if}
+	</div>
+{/if}
 {/if}
 
 <div class="field">

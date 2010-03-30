@@ -70,6 +70,13 @@
     <br />
         <small style="font-size:0.9em">If you are writing in relation to a particular image or images, please don't forget to mention which!<br/> Ideally copy &amp; paste the page address (URL) of the photo page. <br/>
         Example: <tt>http://{$http_host}/photo/{if $image}{$image->gridimage_id}{else}1234{/if}</tt></small><br /><br />
+    <br />
+{if !$user->registered}
+    <label for="subject">Anti-Spam</label><br/>
+    	<img src="http://{$static_host}/templates/basic/img/logo.gif" align="right">
+	<input size="40" id="spam" name="spam" value="{$spam|escape:'html'}"/><br/>
+        Please type the <b>biggest word</b> from our project website logo (duplicated on the right) <br /><br />
+{/if}
 
 	<input type="submit" name="send" value="Send"/></p>
     </form>
