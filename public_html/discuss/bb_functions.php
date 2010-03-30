@@ -148,7 +148,7 @@ else return 0;
 
 //--------------->
 function pageNav($page,$numRows,$url,$viewMax,$navCell){
-$pageNav='Pages:';
+$pageNav=$GLOBALS['l_pages'].':';
 if(isset($GLOBALS['mod_rewrite']) and $GLOBALS['mod_rewrite'] and ($GLOBALS['action']=='vtopic' or $GLOBALS['action']=='vthread' or $GLOBALS['action']=='')) $mr='.html'; else $mr='';
 $page=pageChk($page,$numRows,$viewMax);
 $iVal=intval(($numRows-1)/$viewMax);
@@ -159,7 +159,7 @@ if($GLOBALS['viewpagelim']>=1) $iVal-=1;
 if($numRows>0&&$iVal>0&&$numRows<>$viewMax){
 $end=$iVal;
 if(!$navCell || true) $start=0; else $start=1;
-if($page>0&&!$navCell) $pageNav.=' <a href="'.$url.($page-1).$mr.'" class="pageNav">&lt;&lt; Prev</a>';
+if($page>0&&!$navCell) $pageNav.=' <a href="'.$url.($page-1).$mr.'" class="pageNav">&lt;&lt; '.$GLOBALS['l_prev'].'</a>';
 if($navCell&&$end>4){ $end=3;$pageNav.=' '; }
 elseif($page<9&&$end>9){ $end=9;$pageNav.=' '; }
 elseif($page>=9&&$end>9){
@@ -171,22 +171,22 @@ else $pageNav.=' ';
 for($i=$start;$i<=$end;$i++){
 if($i==$page&&!$navCell) $pageNav.=' <b class="pageNav pageNavSelected">'.($i+1).'</b> ';
 else {
-	$pageNav.=' <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">'.($i+1).'</a> ';
+	$pageNav.=' <a href="'.$url.$i.$mr.'" class="pageNav" title="'.$GLOBALS['l_page'].' '.($i+1).'">'.($i+1).'</a> ';
 	if ($i>=$end&&$i==$iVal)
-		$pageNav.=' - <a href="'.$url.$i.$mr.'" class="pageNav" title="Page '.($i+1).'">Last</a> ';
+		$pageNav.=' - <a href="'.$url.$i.$mr.'" class="pageNav" title="'.$GLOBALS['l_page'].' '.($i+1).'">'.$GLOBALS['l_lastpage'].'</a> ';
 	}
 }
 if((($navCell&&$iVal>4)||($iVal>9&&$start<=$iVal-10))){
 if($navCell&&$iVal<6); else $pageNav.='..';
 for($n=$iVal-1;$n<=$iVal;$n++){
 if($n>=$i) {
-	$pageNav.=' <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">'.($n+1).'</a> ';
+	$pageNav.=' <a href="'.$url.$n.$mr.'" class="pageNav" title="'.$GLOBALS['l_page'].' '.($n+1).'">'.($n+1).'</a> ';
 	if ($n==$iVal)
-		$pageNav.=' - <a href="'.$url.$n.$mr.'" class="pageNav" title="Page '.($n+1).'">Last</a> ';
+		$pageNav.=' - <a href="'.$url.$n.$mr.'" class="pageNav" title="'.$GLOBALS['l_page'].' '.($n+1).'">'.$GLOBALS['l_lastpage'].'</a> ';
 }
 }
 }
-if($page<$iVal&&!$navCell) $pageNav.=' <a href="'.$url.($page+1).$mr.'" class="pageNav">Next &gt;&gt;</a>';
+if($page<$iVal&&!$navCell) $pageNav.=' <a href="'.$url.($page+1).$mr.'" class="pageNav">'.$GLOBALS['l_next'].' &gt;&gt;</a>';
 return $pageNav;
 }
 }
