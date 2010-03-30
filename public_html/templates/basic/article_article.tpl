@@ -140,6 +140,12 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 
 {if $copyright}{$copyright}{/if}
 
+{dynamic}{if $user->registered && $approved == 2 && $edit_prompt}
+	<div class="no_print">
+	<b>This article is open for collaborative editing</b>. <a href="/article/edit.php?page={$url|escape:'url'}">Edit it now</a> {$edit_prompt}
+	</div>
+{/if}{/dynamic}
+
 {if $grid_reference}
 	<div class="no_print">
 	<img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$grid_reference}/links">Further Links for {$grid_reference}</a>
