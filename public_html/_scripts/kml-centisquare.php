@@ -83,12 +83,7 @@ $folder->setItem('name',"$gr :: Geograph SuperLayer");
 
 	foreach($photos as $id=>$entry) 
 	{
-		if (empty($entry['title2']))
-			$title = $entry['title'];
-		elseif (empty($entry['title']))
-			$title = $entry['title2'];
-		else
-			$title = $entry['title'] . ' (' . $entry['title2'] . ')';
+		$title = combineTexts($entry['title'], $entry['title2']);
 		if ($entry['nateastings']) {
 			if ($entry['natgrlen'] == 6) {
 				$entry['nateastings']+=50;

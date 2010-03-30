@@ -58,12 +58,7 @@ $db = NewADOConnection($GLOBALS['DSN']);
 	
 	while (!$recordSet->EOF) 
 	{
-		if (empty($recordSet->fields['title2']))
-			$title = $recordSet->fields['title'];
-		elseif (empty($recordSet->fields['title']))
-			$title = $recordSet->fields['title2'];
-		else
-			$title = $recordSet->fields['title'] . ' (' . $recordSet->fields['title2'] . ')';
+		$title = combineTexts($recordSet->fields['title'], $recordSet->fields['title2']);
 		updateWordnet($db,$title,'title',$recordSet->fields['gridimage_id']);
 		//the comments arent searched yet anyway...
 		//if ($_GET['comments']) 

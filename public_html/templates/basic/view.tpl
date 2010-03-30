@@ -48,8 +48,8 @@
   {/literal}
   
 
-  {if $image->comment1 && $image->comment2 }
-     {if ! $image->title1 }
+  {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
+     {if $image->title1 eq ''}
        <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
        <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
        <hr style="width:3em" />
@@ -58,14 +58,14 @@
        <div class="caption"><b>{$image->title1|escape:'html'}</b></div>
        <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
        <hr style="width:3em" />
-       {if $image->title2 }
+       {if $image->title2 neq ''}
        <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
        {/if}
        <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
      {/if}
   {else}
-     {if $image->title1 }
-       {if $image->title2 }
+     {if $image->title1 neq ''}
+       {if $image->title2 neq '' && $image->title2 neq $image->title1 }
        <div class="caption"><b>{$image->title1|escape:'html'} ({$image->title2|escape:'html'})</b></div>
        {else}
        <div class="caption"><b>{$image->title1|escape:'html'}</b></div>
@@ -73,10 +73,9 @@
      {else}
        <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
      {/if}
-     {if $image->comment1}
+     {if $image->comment1 neq ''}
        <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
-     {/if}
-     {if $image->comment2}
+     {elseif $image->comment2 neq ''}
        <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
      {/if}
   {/if}
