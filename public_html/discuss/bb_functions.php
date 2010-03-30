@@ -20,29 +20,12 @@ return $tpl;
 
 //--------------->
 function ParseTpl($tpl){
-$qs=array();
-$qv=array();
-$ex=explode ('{$',$tpl);
-for ($i=0; $i<=sizeof($ex); $i++){
-if (!empty($ex[$i]) and substr_count($ex[$i],'}')>0) {
-$xx=explode('}',$ex[$i]);
-if (substr_count($xx[0],'[')>0) {
-$clr=explode ('[',$xx[0]); $sp=$clr[1]+0; $clr=$clr[0];
-if (!in_array($clr,$qs)) {$qs[]=$clr; }
-if(isset($GLOBALS[$clr][$sp])) $to=$GLOBALS[$clr][$sp]; else $to='';
-}
-else { if(!in_array($xx[0], $qv)) {$qv[]=$xx[0]; }
-if(isset($GLOBALS[$xx[0]])) $to=$GLOBALS[$xx[0]]; else $to='';
-}
-$tpl=str_replace('{$'.$xx[0].'}', $to, $tpl);
-}
-}
 $qs=array();/* ugly code... */
 $qv=array();
 $ex=explode ('{?',$tpl);
 for ($i=0; $i<=sizeof($ex); $i++){
-	if (!empty($ex[$i]) and substr_count($ex[$i],'}')>0) {
-		$yy=explode('}',$ex[$i]);
+	if (!empty($ex[$i]) and substr_count($ex[$i],'?}')>0) {
+		$yy=explode('?}',$ex[$i]);
 		if (substr_count($yy[0],'|')>0) {
 			$xx=explode('|',$yy[0]);
 			if ($xx[0][0] == '!') {
@@ -62,9 +45,26 @@ for ($i=0; $i<=sizeof($ex); $i++){
 				if(isset($GLOBALS[$vn])&&$GLOBALS[$vn]) $res=!$res;
 			}
 			if (!$res) $to = '';
-			$tpl=str_replace('{?'.$yy[0].'}', $to, $tpl);
+			$tpl=str_replace('{?'.$yy[0].'?}', $to, $tpl);
 		}
 	}
+}
+$qs=array();
+$qv=array();
+$ex=explode ('{$',$tpl);
+for ($i=0; $i<=sizeof($ex); $i++){
+if (!empty($ex[$i]) and substr_count($ex[$i],'}')>0) {
+$xx=explode('}',$ex[$i]);
+if (substr_count($xx[0],'[')>0) {
+$clr=explode ('[',$xx[0]); $sp=$clr[1]+0; $clr=$clr[0];
+if (!in_array($clr,$qs)) {$qs[]=$clr; }
+if(isset($GLOBALS[$clr][$sp])) $to=$GLOBALS[$clr][$sp]; else $to='';
+}
+else { if(!in_array($xx[0], $qv)) {$qv[]=$xx[0]; }
+if(isset($GLOBALS[$xx[0]])) $to=$GLOBALS[$xx[0]]; else $to='';
+}
+$tpl=str_replace('{$'.$xx[0].'}', $to, $tpl);
+}
 }
 
 return $tpl;
