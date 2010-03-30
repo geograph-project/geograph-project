@@ -497,6 +497,11 @@ class RasterMap
 				$vleft = 13;
 				$vtop = $width+32;
 			}
+
+			$top = round($top);
+			$left = round($left);
+			$vtop = round($vtop);
+			$vleft = round($vleft);
 			
 			$this->displayMarker1 = ($this->issubmit || $this->exactPosition)?1:0;
 			$this->displayMarker2 = ($this->issubmit === true || ( $show_viewpoint && (($vleft != $left) || ($vtop != $top)) ) )?1:0;

@@ -292,11 +292,11 @@ class GeographMapMosaic
 	
 
 		$bounds = new BoundingBox;
-		$bounds->width = $mosaic->image_w * $R;
-		$bounds->height = $mosaic->image_h * $R;
+		$bounds->width = round($mosaic->image_w * $R);
+		$bounds->height = round($mosaic->image_h * $R);
 		
-		$bounds->left = ($mosaic->map_x - $this->map_x) * $this->pixels_per_km;
-		$bounds->top = ($mosaic->map_y - $this->map_y) * $this->pixels_per_km;
+		$bounds->left = round(($mosaic->map_x - $this->map_x) * $this->pixels_per_km);
+		$bounds->top = round(($mosaic->map_y - $this->map_y) * $this->pixels_per_km);
 		
 		$bounds->top =$this->image_h - $bounds->top - $bounds->height;
 		
@@ -311,8 +311,8 @@ class GeographMapMosaic
 	function getSquarePoint($square) {
 		$point = new BoundingBox;
 		
-		$point->left = ($square->x - $this->map_x) * $this->pixels_per_km;
-		$point->top = ($square->y - $this->map_y) * $this->pixels_per_km;
+		$point->left = round(($square->x - $this->map_x) * $this->pixels_per_km);
+		$point->top = round(($square->y - $this->map_y) * $this->pixels_per_km);
 		
 		$point->top =$this->image_h - $point->top;
 		
