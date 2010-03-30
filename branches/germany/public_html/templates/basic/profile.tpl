@@ -147,7 +147,7 @@
 				{if $profile->stats.squares gt 1}
 					<ul style="font-size:0.8em;margin-bottom:2px">
 					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if},
-					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
+					giving a depth score of <b>{$profile->stats.depth|floatformat:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
 					</li>
 					{if $profile->stats.hectads > 1}
 						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> Myriads<sup><a href="/help/squares">?</a></sup>{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>

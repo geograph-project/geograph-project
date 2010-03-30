@@ -71,6 +71,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		'depth' => array(
 			'column' => "count(*)/count(distinct grid_reference)",
 			'table' => " gridimage_search i ",
+			'isfloat' => true,
 		),
 		'myriads' => array(
 		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
@@ -90,11 +91,13 @@ if (!$smarty->is_cached($template, $cacheid))
 			//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
 			'column' => "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
 			'table' => " gridimage_search i ",
+			'isfloat' => true,
 		),
 		'spread' => array(
 			//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
 			'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)",
 			'table' => " gridimage_search i ",
+			'isfloat' => true,
 		),
 		'classes' => array(
 			'column' => "count(distinct imageclass)",
@@ -103,14 +106,17 @@ if (!$smarty->is_cached($template, $cacheid))
 		'clen' => array(
 			'column' => "avg(length(comment))",
 			'table' => " gridimage_search i ",
+			'isfloat' => true,
 		),
 		'tlen' => array(
 			'column' => "avg(length(title))",
 			'table' => " gridimage_search i ",
+			'isfloat' => true,
 		),
 		'category_depth' => array(
 			'column' => "count(*)/count(distinct imageclass)",
 			'table' => " gridimage_search i ",
+			'isfloat' => true,
 		),
 		'centi' => array(
 		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
@@ -285,9 +291,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		$type = 'points';
 	}
 
+	$isfloat = false;
+	if (isset($sql_qtable[$type]['isfloat'])) $isfloat = $sql_qtable[$type]['isfloat'];
+
 	$smarty->assign('heading', $text_table[$type]['heading']);
 	$smarty->assign('desc', $text_table[$type]['desc']);
 	$smarty->assign('type', $type);
+	$smarty->assign('isfloat', $isfloat);
 
 	$sql_column = '';
 	$sql_orderby = '';

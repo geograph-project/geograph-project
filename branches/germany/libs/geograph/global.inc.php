@@ -294,6 +294,7 @@ class GeographPage extends Smarty
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
+		$this->register_modifier("floatformat", "smarty_modifier_floatformat");
 
 		//assign globallly useful stuff
 		$this->assign_by_ref('user', $GLOBALS['USER']);
