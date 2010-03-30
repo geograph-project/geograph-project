@@ -1,3 +1,4 @@
 INSERT INTO `article_cat` VALUES (1,'Nichts davon passt - neue Kategorie benötigt',127);
 INSERT INTO `article_cat` VALUES (2,'Information zum Geograph-Projekt',-1);
 INSERT INTO `article_cat` VALUES (3,'Die Geograph-Webpräsenz',0);
+INSERT INTO `article_cat` VALUES (4,'Geograph Project - Information Documents',-1);
