@@ -2,67 +2,14 @@
 {include file="_std_begin.tpl"}
 
 
-<h2>Welcome to Geograph British Isles</h2>
+<h2>Welcome to Geograph Channel Islands</h2>
 
 <div style="position:relative;background-color:white;">
 
 <div style="background-color:#eeeeee;padding:2px; text-align:center">
-The Geograph British Isles project aims to collect geographically
-representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
-<a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
-
-
-<div style="width:35%;float:left;position:relative;margin-right:10px">
-
-{if $overview2}
-
-	<h3 style="margin-bottom:4px;margin-top:8px;text-align:center">Coverage Map</h3>
-	
-	<div class="map" style="margin-left:auto;margin-right:auto;border:2px solid black; height:{$overview2_height}px;width:{$overview2_width}px">
-
-	<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
-
-	{foreach from=$overview2 key=y item=maprow}
-		<div>
-		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1&amp;m={$m}"><img 
-		alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
-		{/foreach}
-		</div>
-	{/foreach}
-
-	{if $marker}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
-	{/if}
-
-	</div>
-	</div>
-	<div style="font-size:0.9em;text-align:center;position:relative">{$messages.$m}</div>
-
-{/if}
-
-
-</div>
-
-<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;">
-
-	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
-
-	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
-	<a href="/photo/{$pictureoftheday.gridimage_id}" 
-	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
-
-
-	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
-
-	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
-	&nbsp;&nbsp;
-	by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
-
-	</div>
-
-</div>
-
+The Geograph Channel Islands project aims to collect geographically
+representative photographs and information for every square kilometre of <a href="/explore/places/6/">Jersey, Guernsey, Alderney, Sark, Herm &
+Jethou</a>, and you can be part of it.</div>
 
 
 <br style="clear:both"/>

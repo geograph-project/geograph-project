@@ -90,6 +90,9 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 	$ger33 = ($lat > 47 && $lat < 56 && $long > 12 && $long < 16); #FIXME
 	$ger31 = ($lat > 47 && $lat < 56 && $long > 4 && $long < 6); #FIXME
 	
+	$channel = ($lat > 49.1 && $lat < 49.8 && $long > -2.8 && $long < -1.8); #FIXME
+	
+
 	if ($uk && $ire) {
 		//rough border for ireland
 		$ireland = array(
@@ -104,7 +107,9 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 		$uk = 1 - $ire;
 	} 
 	
-	if ($ire) {
+	if($channel) {
+		return array_merge($conv->wgs84_to_utm($lat,$long,30),array(3));
+	} else if ($ire) {
 		return array_merge($conv->wgs84_to_irish($lat,$long,$usehermert),array(2));
 	} else if ($uk) {
 		return array_merge($conv->wgs84_to_osgb36($lat,$long),array(1));
@@ -134,7 +139,10 @@ function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
 	require_once('geograph/conversionslatlong.class.php');
 	$conv = new ConversionsLatLong;
 	$latlong = array();
-	if ($reference_index == 1) {
+	if ($reference_index == 6) {
+		print ("$e,$n");
+		$latlong = $conv->utm_to_wgs84($e,$n,30);
+	} elseif ($reference_index == 1) {
 		$latlong = $conv->osgb36_to_wgs84($e,$n);
 	} else if ($reference_index == 2) {
 		$latlong = $conv->irish_to_wgs84($e,$n,$usehermert);

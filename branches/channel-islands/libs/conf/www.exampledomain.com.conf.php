@@ -315,6 +315,10 @@ $CONF['search_prompt_radius'] = 4;
 //if you have capacity problems true to false, to skip checking count on page 1 of results. 
 $CONF['search_count_first_page'] = true; //true/false
 
+//search ids
+$CONF['searchid_recent'] = 0;
+$CONF['searchid_potd'] = 0;
+
 ###################################
 
 //to use the flickr search will need to obtain a flicker api key

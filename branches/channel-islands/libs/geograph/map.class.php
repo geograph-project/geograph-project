@@ -557,7 +557,7 @@ class GeographMap
 		if ($ok) {
 			$db=&$this->_getDB();
 
-			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user);
+			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user);
 
 			$db->Execute($sql);
 		}
@@ -1946,12 +1946,7 @@ END;
 			$posy=($top-$bottom) - ($gridy-$bottom);
 			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
 			$recordSet->fields['title1'] = $recordSet->fields['title'];
-			if (empty($recordSet->fields['title2']))
-				$recordSet->fields['title'] = $recordSet->fields['title1'];
-			elseif (empty($recordSet->fields['title1']))
-				$recordSet->fields['title'] = $recordSet->fields['title2'];
-			else
-				$recordSet->fields['title'] = $recordSet->fields['title1'] . ' (' . $recordSet->fields['title2'] . ')';
+			$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
 			$grid[$posx][$posy]=$recordSet->fields;
 			
 			$recordSet->MoveNext();

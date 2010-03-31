@@ -18,7 +18,7 @@ if it doesn't already exist, and assign a land percentage to that square.</p>
 <label for"shader_image">Greyscale, 1 pixel/km PNG:</label> <input type="text" id="shader_image" name="shader_image" value="{$shader_image}"/><br />
 <label for"shader_x">Internal X coordinate of bottom left:</label> <input size="3" type="text" id="shader_x" name="shader_x" value="{$shader_x}"/><br />
 <label for"shader_y">Internal Y coordinate of bottom left:</label> <input size="3" type="text" id="shader_y" name="shader_y" value="{$shader_y}"/><br />
-<label for"reference_index">Grid Reference Index (1=GB 2=Irish):</label> <input size="1" type="text" id="reference_index" name="reference_index" value="{$reference_index}"/><br />
+<label for"reference_index">Grid Reference Index (1=GB 2=Irish, 6=Channel Islans):</label> <input size="1" type="text" id="reference_index" name="reference_index" value="{$reference_index}"/><br />
 
 <input type="checkbox" name="clearexisting" id="clearexisting" value="1" {if $clearexisting}checked{/if}>
 <label for="clearexisting">Clear existing land squares if marked as sea in this image</label><br />

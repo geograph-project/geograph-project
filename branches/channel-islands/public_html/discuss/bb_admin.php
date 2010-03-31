@@ -10,6 +10,10 @@ init_session();
 $USER->mustHavePerm("admin");
 
 $noSphinx=empty($CONF['sphinx_host']);
+$isModerator=$GLOBALS['USER']->hasPerm('moderator');
+$isTicketMod=$GLOBALS['USER']->hasPerm('ticketmod');
+$isAdmin=$GLOBALS['USER']->hasPerm('admin');
+$isModAdmin=$isMod||$isTicketMod||$isAdmin;
 
 $static_host = $CONF['STATIC_HOST']; 
 

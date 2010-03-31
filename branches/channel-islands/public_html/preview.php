@@ -54,9 +54,12 @@ if (!empty($_POST))
 	$image->realname = $USER->realname;
 	$image->profile_link = "/profile/{$image->user_id}";
 
-	$image->title = strip_tags(trim(stripslashes($_POST['title'])));
-	$image->comment = strip_tags(trim(stripslashes($_POST['comment'])));
-	# FIXME title2, comment2, title1, comment1
+	$image->title1 = strip_tags(trim(stripslashes($_POST['title'])));
+	$image->comment1 = strip_tags(trim(stripslashes($_POST['comment'])));
+	$image->title2 = strip_tags(trim(stripslashes($_POST['title2'])));
+	$image->comment2 = strip_tags(trim(stripslashes($_POST['comment2'])));
+	$image->title = combineTexts($image->title1, $image->title2);
+	$image->comment = combineTexts($image->comment1, $image->comment2);
 	
 	$image->imageclass=strip_tags(trim(stripslashes($_POST['imageclass'])));
 	
