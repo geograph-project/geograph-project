@@ -95,7 +95,7 @@
 
 <li>A <a title="Photograph Listing" href="/sitemap/geograph.html">complete listing of all photographs</a> is available.<br/><br/></li> 
 
-<li>You may prefer to browse images on a <a title="Geograph Map Browser" href="/mapbrowse.php">Map of the British Isles</a>.<br/><br/></li> 
+<li>You may prefer to browse images on a <a title="Geograph Map Browser" href="/mapbrowse.php">Map of the Channel Islands</a>.<br/><br/></li> 
 
 
 <li>Or you can browse a <a title="choose a photograph" href="browse.php">particular grid square</a>.<br/><br/></li>

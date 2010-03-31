@@ -3,7 +3,7 @@
 <Document>
 <Folder>
 <name>Geograph NetworkLink</name>
-<description>Please Zoom into British Isles to see photos.</description>
+<description>Please Zoom into Channel Islands to see photos.</description>
 <open>0</open>
 <visibility>1</visibility>
 </Folder>

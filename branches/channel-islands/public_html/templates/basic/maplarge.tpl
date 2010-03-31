@@ -77,7 +77,7 @@
 <p align="center"><a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a></p>
 
 <br/>
-<div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
+<div class="copyright">Maps on this page, &copy; Copyright Geograph Project and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div>  
  
 {include file="_std_end.tpl"}

@@ -5,7 +5,7 @@
 <title>Geograph sheet centred on {$gridref}{if $realname}, for {$realname}{/if}</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'}" />
-{else}<meta name="description" content="Geograph British Isles is a web based project to collect and reference geographically representative images of every square kilometer of the British Isles."/>{/if}
+{else}<meta name="description" content="Geograph Channel Islands is a web based project to collect and reference geographically representative images of every square kilometer of the Channel Islands."/>{/if}
 <meta name="DC.title" content="Geograph:: {$page_title|escape:'html'}">
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>

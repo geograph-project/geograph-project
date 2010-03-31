@@ -3,15 +3,14 @@
 
 {dynamic}
 {if $message_sent}
-	<h3>Thank you for contacting the Geograph British Isles team.</h3>
+	<h3>Thank you for contacting the Geograph Channel Islands team.</h3>
 	<p>Your message has been sent - you should hear back from us soon.</p>
 {else}
     <h2>Contact Us</h2>
  
  	<div style="background-color:#eeeeee;padding:2px; text-align:center">
-	The Geograph British Isles project aims to collect geographically
-	representative photographs and information for every square kilometre of Great Britain and 
-	Ireland.</div>
+	The Geograph Channel Islands project aims to collect geographically
+	representative photographs and information for every square kilometre of the Channel Islands.</div>
  
  	<p>Got something to tell us? Then fire away - we try to respond within 24 hours, often much quicker.</p>
  
