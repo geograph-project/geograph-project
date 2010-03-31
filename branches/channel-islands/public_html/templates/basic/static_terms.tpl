@@ -3,7 +3,7 @@
 
  <h2>Terms of use, the quick version</h2>
 
- <p>Lawyers, eh? Geograph Project's terms of use for the channel-islands.geographs.org website can
+ <p>Lawyers, eh? Geograph Project's terms of use for the {$http_host} website can
  be boiled down to the following</p>
  <ul>
  <li><b>We'll do no evil</b> - we'll not sell your personal details to
@@ -24,7 +24,7 @@ boilerplate...</p>
 
 
 
- <h2>Geograph Project Detailed Terms of Use Agreement for the channel-islands.geographs.org Website</h2>
+ <h2>Geograph Project Detailed Terms of Use Agreement for the {$http_host} Website</h2>
 
  <p>Last updated: 11 September 2007</p>
 
