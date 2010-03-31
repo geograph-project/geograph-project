@@ -59,6 +59,14 @@ if (!empty($_POST['submit'])) {
 		
 		$msg.="\n\n-------------------------------\n";
 		if (!empty($_POST['template'])) {
+			if (preg_match('/(search.php\?i=|results\/)(\d+)/',$_SERVER['HTTP_REFERER'],$m)) {
+				require_once('geograph/searchcriteria.class.php');
+				require_once('geograph/searchengine.class.php');
+				$engine = new SearchEngine($m[2]);
+				if ($engine->criteria && $engine->criteria->searchdesc) {
+					$msg.="Search: {$engine->criteria->searchdesc}\n";
+				}
+			}
 			$msg.="Template: {$_POST['template']}\n";
 			if (!empty($_POST['referring_page'])) {
 				$msg.="Referring page: ".$_POST['referring_page']."\n";
