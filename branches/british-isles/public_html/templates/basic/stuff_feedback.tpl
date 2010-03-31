@@ -3,7 +3,7 @@
 {dynamic}
 {if $thanks}
 	<h3>Thanks!</h3>
-	<p>Many thanks for your feedback, it's much appreciated. Watch the Discussion area where we will publish the overall results.</p>
+	<p>Many thanks for your feedback, it's much appreciated.</p>
 
 {else}
 <h2>Let us know what you think!</h2>
