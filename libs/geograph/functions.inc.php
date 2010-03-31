@@ -47,7 +47,7 @@ function log_script_timing()
 
 	list($usec, $sec) = explode(' ',microtime());
 	$endtime = ((float)$usec + (float)$sec);
-	$timetaken = sprintf('%0.4f', $endtime - $STARTTIME);
+	$timetaken = sprintf('%0.4F', $endtime - $STARTTIME);
 
 	if ($CONF['log_script_timing']=='file')
 	{
@@ -779,6 +779,20 @@ function heading_string($deg) {
 		}
 	}
 	return $s;
+}
+
+
+/**
+ * combine texts of different languages
+ */
+function combineTexts($lang1, $lang2)
+{
+	if ($lang1 == $lang2 || $lang2 == '')
+		return $lang1;
+	elseif ($lang1 == '')
+		return $lang2;
+	else
+		return $lang1 . ' (' . $lang2 . ')';
 }
 
 ?>

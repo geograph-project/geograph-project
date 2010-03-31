@@ -34,6 +34,10 @@ if (empty($CONF['forums'])) {
 }
 
 $noSphinx=empty($CONF['sphinx_host']);
+$isModerator=$GLOBALS['USER']->hasPerm('moderator');
+$isTicketMod=$GLOBALS['USER']->hasPerm('ticketmod');
+$isAdmin=$GLOBALS['USER']->hasPerm('admin');
+$isModAdmin=$isMod||$isTicketMod||$isAdmin;
 
 $static_host = $CONF['STATIC_HOST'];
 $static_url = "http://{$CONF['STATIC_HOST']}/discuss";
@@ -440,7 +444,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		require($pathToFiles.'bb_func_ldisc.php');
 		$listTopics=$list_topics;
 		if($list_topics!='') echo ParseTpl(makeUp('main_last_discussions'));
-		print "<div style=\"text-align:center\">Show: ";
+		print "<div style=\"text-align:center\">{$l_show}: ";
 		foreach (array(5,10,20,30,40,80,100) as $n) {
 			if ($viewlastdiscussions == $n) {
 				print "<b>$n</b> ";
@@ -448,7 +452,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 				print "<a href=\"index.php?latest=$n\">$n</a> ";
 			}
 		}
-		print " Recent Topics</div>";
+		print " {$l_lastDiscussions2}</div>";
 	}
 }
 else require($pathToFiles.'bb_func_vtopic.php');

@@ -67,7 +67,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		group by i.user_id 
 		order by geographs desc";
 		$topusers=$db->GetAssoc($sql);
-	
+
+		$sqlsum="select count(distinct grid_reference) as geographs
+		from gridimage_search as i 
+		where i.submitted > date_sub(now(), interval 7 day) $sql_where";
+		$sum=$db->GetRow($sqlsum);
+
 
 		//now we want to find all users with pending images and add them to this array
 		$sql="select i.user_id,u.realname,0 as geographs, count(*) as pending from gridimage as i
@@ -178,6 +183,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('type', $type);
 	
 	if ($sql_column) {
+		$sqlsum="select $sql_column as geographs from $sql_table
+		where i.submitted > date_sub(now(), interval 7 day) $sql_where";
+		$sum=$db->GetRow($sqlsum);
+
 		$sql_pending = (strpos($sql_table,'_search') === FALSE)?"sum(i.moderation_status='pending')":'0';
 		//we want to find all users with geographs/pending images 
 		$sql="select i.user_id,u.realname,
@@ -195,9 +204,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	//assign an ordinal
 
 	$i=1;$lastgeographs = '?';
-	$geographs = 0;
+	#$geographs = 0;
 	$pending = 0;
-	$points = 0;
+	#$points = 0;
 	foreach($topusers as $user_id=>$entry)
 	{
 		if ($lastgeographs == $entry['geographs'])
@@ -207,13 +216,15 @@ if (!$smarty->is_cached($template, $cacheid))
 			$lastgeographs = $entry['geographs'];
 		}
 		$i++;
-		$geographs += $entry['geographs'];
+		#$geographs += $entry['geographs'];
 		$pending += $entry['pending'];
-		$points += $entry['points'];
+		#$points += $entry['points'];
 		if (empty($entry['points'])) $topusers[$user_id]['points'] = '';
 	}	
 	
 	
+	$geographs=$sum['geographs'];
+	$points=$sum['points'];
 	$smarty->assign('geographs', $geographs);
 	$smarty->assign('pending', $pending);
 	$smarty->assign('points', $points);

@@ -360,8 +360,10 @@ class ImageList
 	 */
 	function assignSmarty(&$smarty, $basename)
 	{
+		global $CONF;
 		$smarty->assign_by_ref($basename, $this->images);		
 		$smarty->assign($basename.'count', count($this->images));
+		$smarty->assign($basename.'search', $CONF['searchid_recent']);
 	}
 	
 	/**

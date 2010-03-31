@@ -84,12 +84,7 @@ foreach($photos as $id=>$entry)
 {
 	if ($entry['imagecount'] == 1) {
 		$point = new kmlPoint($entry['wgs84_lat'],$entry['wgs84_long']);
-		if (empty($entry['title2']))
-			$title = $entry['title'];
-		elseif (empty($entry['title']))
-			$title = $entry['title2'];
-		else
-			$title = $entry['title'] . ' (' . $entry['title2'] . ')';
+		$title = combineTexts($entry['title'], $entry['title2']);
 
 		$placemark = new kmlPlacemark_Photo($entry['gridimage_id'],$entry['grid_reference'].' :: '.$title,$point);
 		

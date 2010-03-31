@@ -195,7 +195,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "round(pow(count(*),2)/count(distinct grid_reference))";
 			$sql_having_having = "having count(*) > $minimum";
 		} else {
-			$sql_column = "round(pow(images,2)/squares";
+			$sql_column = "round(pow(images,2)/squares)";
 			$sql_having_having = "having images > $minimum";
 		}
 		$heading = "High Depth";

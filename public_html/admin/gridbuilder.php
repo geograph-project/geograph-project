@@ -31,10 +31,10 @@ $smarty = new GeographPage;
 
 
 //gather inputs
-$shader_image=isset($_POST['shader_image'])?$_POST['shader_image']:'admin/gb.png';
-$shader_x=isset($_POST['shader_x'])?$_POST['shader_x']:(54 + 206);
-$shader_y=isset($_POST['shader_y'])?$_POST['shader_y']:7;
-$reference_index=isset($_POST['reference_index'])?$_POST['reference_index']:1;
+$shader_image=isset($_POST['shader_image'])?$_POST['shader_image']:'admin/channel-islands.png';
+$shader_x=isset($_POST['shader_x'])?$_POST['shader_x']:15;
+$shader_y=isset($_POST['shader_y'])?$_POST['shader_y']:40;
+$reference_index=isset($_POST['reference_index'])?$_POST['reference_index']:6;
 
 
 $clearexisting=isset($_POST['clearexisting'])?true:false;

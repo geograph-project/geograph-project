@@ -142,10 +142,10 @@ class GeographMapMosaic
 		switch ($name)
 		{
 			case 'full':
-				$this->setOrigin(-210,-15);
+				$this->setOrigin(0,25);
 				$this->setMosaicSize(400,400);
-				$this->setScale(0.3);
-				$this->setMosaicFactor(3);
+				$this->setScale(4);
+				$this->setMosaicFactor(2);
 				break;
 			case 'geograph':
 				$this->setOrigin(-10,-30);
@@ -154,9 +154,9 @@ class GeographMapMosaic
 				$this->setMosaicFactor(3);
 				break;
 			case 'overview':
-				$this->setOrigin(0,-10);
+				$this->setOrigin(0,-25);
 				$this->setMosaicSize(120,170);
-				$this->setScale(0.13);
+				$this->setScale(1);
 				$this->setMosaicFactor(1);
 				break;
 			case 'overview_large':

@@ -186,7 +186,7 @@ if (!empty($_GET['debug'])) {
 	print "<pre>$sql</pre>";
 }
 
-	if (false && !empty($_GET['q'])) {
+	if (false && !empty($_GET['q']) && !empty($CONF['sphinx_host'])) {
 		$docs = array();
 		foreach ($list as $i => $row) {
 			$docs[] = $row['title'].' '.$row['extract'].' '.$row['allwords'];
@@ -272,7 +272,7 @@ if (!empty($_GET['debug'])) {
 		if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
 			$profile=new GeographUser($_GET['user_id']);
 			$title = "By ".($profile->realname);
-		} elseif (!empty($_GET['q'])) {
+		} elseif (!empty($_GET['q']) && !empty($CONF['sphinx_host'])) {
 			$sphinx = new sphinxwrapper(trim($_GET['q']));
 			$title = "Matching [ ".htmlentities($sphinx->q)." ]";
 		} elseif (isset($_GET['docs'])) {

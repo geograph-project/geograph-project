@@ -139,7 +139,7 @@ if ($gridref) {
 		
 	}
 
-	$l_messageABC="New ".$l_message." for ".$gridref ;
+	$l_messageABC=$l_messagegr.$gridref ;
 }
 else
 	$l_messageABC=$l_message;
