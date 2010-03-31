@@ -1,9 +1,9 @@
 {if $token_zoomout}
         {assign var="page_title" value="Map Browsing :: $gridref"}
 {else}
-        {assign var="page_title" value="Map Browsing :: British Isles"}
+        {assign var="page_title" value="Map Browsing :: Channel Islands"}
 {/if}
-{assign var="meta_description" value="Geograph coverage map of the British Isles, showing where we have photos, green squares are yet to be photographed."}
+{assign var="meta_description" value="Geograph coverage map of the Channel Islands, showing where we have photos, green squares are yet to be photographed."}
 {assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\"/>"}
 {include file="_std_begin.tpl"}
  
@@ -127,7 +127,7 @@
 	{foreach from=$overview key=y item=maprow}
 		<div style="position:absolute;top:0px;left:0px;">
 		{foreach from=$maprow key=x item=mapcell}
-		<img alt="British Isles Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
+		<img alt="Channel Islands Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
 		{/foreach}
 		</div>
 	{/foreach}
@@ -332,7 +332,7 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 
 
  <hr/>
-<div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
+<div class="copyright">Maps on this page, &copy; Copyright Geograph Project and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div> 
 
  

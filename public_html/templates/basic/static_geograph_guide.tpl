@@ -21,7 +21,7 @@ a geograph.
 <h2>Our Aims</h2>
 <p> The aim of the Geograph website is to be a widely appealing web site that will 
 gradually produce a freely accessible archive of educationally useful, geographically 
-located photographs of the British Isles.</p>
+located photographs of the Channel Islands.</p>
 
 <p>The Ordnance Survey grid has been chosen as the basis for the 
 geographic referencing system. </p>

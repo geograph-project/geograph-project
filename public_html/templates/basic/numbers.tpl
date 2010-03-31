@@ -1,5 +1,5 @@
 {assign var="page_title" value="Progress So far..."}
-{assign var="meta_description" value="Short overview in numbers of the progress in photographing every grid square of the British Isles."}
+{assign var="meta_description" value="Short overview in numbers of the progress in photographing every grid square of the Channel Islands."}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
@@ -7,7 +7,7 @@
 	&lt; <a href="/statistics.php">More Statistics</a> | <a href="/statistics/moversboard.php">Leaderboard</a> &gt;
 </div>
 
-<h2>Geograph British Isles</h2>
+<h2>Geograph Channel Islands</h2>
 
 <div class="greenbar">{* for 33-66% coverage *}
 	<div class="righttextbox">

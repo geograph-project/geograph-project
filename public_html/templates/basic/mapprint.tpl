@@ -67,7 +67,7 @@
 	{foreach from=$overview key=y item=maprow}
 		<div style="position:absolute;top:0px;left:0px;">
 		{foreach from=$maprow key=x item=mapcell}
-		<img alt="British Isles Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
+		<img alt="Channel Islands Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
 		{/foreach}
 		</div>
 	{/foreach}
@@ -115,7 +115,7 @@
 
 <p style="font-size:10pt; text-align:center">Printed from <a href="http://{$http_host}/">{$http_host}</a>, {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</p>
 
-<div style="font-size:10pt; text-align:center" class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
+<div style="font-size:10pt; text-align:center" class="copyright">Maps on this page, &copy; Copyright Geograph Project and  
 licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a> (CC-BY-SA).<br>
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">http://creativecommons.org/licenses/by-sa/2.5/</a></div> 
 </div>

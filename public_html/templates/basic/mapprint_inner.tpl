@@ -34,7 +34,7 @@
 	{/if}
 	
 	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
-	&nbsp;&nbsp;&copy; Copyright Geograph Project Ltd</div>
+	&nbsp;&nbsp;&copy; Copyright Geograph Project</div>
 {*end containing div for main map*}
 </div>
 
@@ -64,7 +64,7 @@
 	{foreach from=$overview key=y item=maprow}
 		<div style="position:absolute;top:0px;left:0px;">
 		{foreach from=$maprow key=x item=mapcell}
-		<img alt="British Isles Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
+		<img alt="Channel Islands Overview Map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/>
 		{/foreach}
 		</div>
 	{/foreach}
