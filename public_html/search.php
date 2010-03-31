@@ -592,7 +592,13 @@ if (isset($_GET['fav']) && $i) {
 
 	if (!empty($_POST['refine'])) {
 		//we could use the selected item but then have to check for numberic placenames
-		$_POST['placename'] = $_POST['old-placename'];
+		if (!empty($_POST['location'])) {
+			$_POST['placename'] = $_POST['location'];
+		} else {
+			$_POST['placename'] = $_POST['old-placename'];
+		}
+		
+		$_POST['searchtext'] = $_POST['q'];
 	} else {
 		if (!empty($_POST['first'])) {
 			$_POST['searchtext'] .= " ftf:1";
