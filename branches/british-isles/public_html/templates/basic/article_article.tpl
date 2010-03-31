@@ -33,7 +33,16 @@ ul.content {padding:0 0 0 0; border-bottom: 1px solid gray}
 ul.content li {	padding:3px; border-top: 1px solid gray}
 
 </style>{/literal}
-{dynamic}{if $user->user_id == $user_id}<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]] [[<a href="/article/">article listing</a>]]</p>{/if}{/dynamic}
+{dynamic}
+	{if $user->registered && $approved == 2 && $edit_prompt}
+		<div class="no_print" style="padding-bottom:20px">
+			<div style="position:relative;float:right">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]]</div>
+			<b>This article is open for collaborative editing</b>. {$edit_prompt}
+		</div>
+	{elseif $user->user_id == $user_id}
+		<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]] [[<a href="/article/">article listing</a>]]</p>
+	{/if}
+{/dynamic}
 
 <h1>{$title|escape:'html'}</h1>
 
@@ -113,12 +122,6 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 
 {if $copyright}{$copyright}{/if}
 
-{dynamic}{if $user->registered && $approved == 2 && $edit_prompt}
-	<div class="no_print">
-	<b>This article is open for collaborative editing</b>. <a href="/article/edit.php?page={$url|escape:'url'}">Edit it now</a> {$edit_prompt}
-	</div>
-{/if}{/dynamic}
-
 <hr/><br/>
 {if $tableContents}
 	<div style="float:right; width:250px; position:relative;" id="contents_table">
@@ -139,12 +142,6 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 {/if}
 
 {if $copyright}{$copyright}{/if}
-
-{dynamic}{if $user->registered && $approved == 2 && $edit_prompt}
-	<div class="no_print">
-	<b>This article is open for collaborative editing</b>. <a href="/article/edit.php?page={$url|escape:'url'}">Edit it now</a> {$edit_prompt}
-	</div>
-{/if}{/dynamic}
 
 {if $grid_reference}
 	<div class="no_print">
