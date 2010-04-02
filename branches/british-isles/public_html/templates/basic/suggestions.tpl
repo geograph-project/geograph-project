@@ -1,24 +1,24 @@
-{assign var="page_title" value="Change Request Tickets"}
+{assign var="page_title" value="Change Request Suggestions"}
 {include file="_std_begin.tpl"}
 
 <script src="{"/sorttable.js"|revision}"></script>
 
 {dynamic}
-<h2>Change Request Tickets for {$user->realname}</h2>
+<h2>Change Request Suggestions for {$user->realname}</h2>
 
 {if $own}
-	<p><b>Own images</b> / <a href="/tickets.php?others">On others</a></p>
+	<p><b>Own images</b> / <a href="/suggestions.php?others">On others</a></p>
 {else}
-	<p><a href="/tickets.php">Own images</a> / <b>On others</b></p>
+	<p><a href="/suggestions.php">Own images</a> / <b>On others</b></p>
 {/if}	
 
 <p>Click a column header to resort a list</p>
 
-<h3>New Tickets</h3>
+<h3>New Suggestions</h3>
 
 {if $newtickets}
 
-<p>These tickets haven't seen any activity yet... </p>
+<p>These suggestions haven't seen any activity yet... </p>
 <table class="report sortable" id="newtickets" style="font-size:8pt;">
 <thead><tr>
 	<td>Title</td>
@@ -38,18 +38,18 @@
 </tbody>
 </table>
 {else}
-  <p>There are no new tickets</p>
+  <p>There are no new suggestions</p>
 {/if}
 
 
-<h3>Open Tickets</h3>
+<h3>Open Suggestions</h3>
 
 {if $opentickets}
 
-<p>These tickets have seen some activity...</p>
+<p>These suggestions have seen some activity...</p>
 
 {if !$own}
-<p><small>The 'Comments' column shows the number of replies to the ticket, will might be <s>striked</s> if those replies are not visible.</small></p>
+<p><small>The 'Comments' column shows the number of replies to the suggestion, will might be <s>striked</s> if those replies are not visible.</small></p>
 {/if}
 
 <table class="report sortable" id="opentickets" style="font-size:8pt;">
@@ -75,14 +75,14 @@
 </tbody>
 </table>
 {else}
-  <p>You have no open tickets.</p>
+  <p>You have no open suggestions.</p>
 {/if}
 
-<h3>Closed Tickets</h3>
+<h3>Closed Suggestions</h3>
 
 {if $closedtickets}
 
-<p>These tickets have been closed in the last 30 days...</p>
+<p>These suggestions have been closed in the last 30 days...</p>
 <table class="report sortable" id="opentickets" style="font-size:8pt;">
 <thead><tr>
 	<td>Moderator</td>
@@ -106,7 +106,7 @@
 </tbody>
 </table>
 {else}
-  <p>You have no closed tickets in the last 30 days.</p>
+  <p>You have no closed suggestions in the last 30 days.</p>
 {/if}
 
 

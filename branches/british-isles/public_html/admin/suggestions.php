@@ -57,7 +57,7 @@ if (isset($_GET['gridimage_ticket_id']))
 	if ($ticket->isValid())
 	{
 		$ticket->setDefer("DATE_ADD(NOW(), INTERVAL $hours HOUR)");
-		echo "Ticket Deferred for $hours hours";		
+		echo "Suggestions Deferred for $hours hours";		
 	}
 	else
 	{
@@ -72,7 +72,7 @@ if (!empty($_GET['Submit'])) {
 	
 	$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$USER->user_id}");
 	
-	header("Location: /admin/tickets.php?".str_replace('Submit='.$_GET['Submit'],'',$_SERVER['QUERY_STRING']));
+	header("Location: /admin/suggestions.php?".str_replace('Submit='.$_GET['Submit'],'',$_SERVER['QUERY_STRING']));
 	exit;
 }
 
@@ -166,9 +166,9 @@ if (!empty($_GET['q'])) {
 #################
 # available values
 
-$types = array('pending'=>'New Tickets','open'=>"Open Tickets",'closed'=>"Closed Tickets",'ongoing'=>'New or Open');
+$types = array('pending'=>'New Tickets','open'=>"Open Suggestions",'closed'=>"Closed Suggestions",'ongoing'=>'New or Open');
 $modifers = array('recent'=>'All','24'=>"over 24 hours old",'7'=>"over 7 days old");
-$themes = array('any'=>'Any','tmod'=>"on ticket I moderating/ed",'mod'=>"on images I moderated",'comment'=>"tickets I have commented on",'suggest'=>"tickets I suggested",'all'=>'any involvement');
+$themes = array('any'=>'Any','tmod'=>"on ticket I moderating/ed",'mod'=>"on images I moderated",'comment'=>"suggestions I have commented on",'suggest'=>"suggestions I suggested",'all'=>'any involvement');
 $variations = array('any'=>'Any','own'=>"suggested on own images",'comment'=>"has left comment");
 
 #################

@@ -90,7 +90,7 @@
 	<li><a href="/forgotten.php">Forgotten Password</a></li>
 	<li><a href="/contact.php">Contact Us</a></li>
 	<li><a href="/profile.php">Your Profile</a> (for registered users only)</li>
-	<li><a href="/tickets.php">Review Your Recent Change Suggestions</a></li>
+	<li><a href="/suggestions.php">Review Your Recent Change Suggestions</a></li>
 </ul>
 
 <h3><a name="users"></a>Contributors...</h3>
@@ -224,7 +224,7 @@ Refine:
 	   <li><a href="/statistics/overtime.php?date=taken">Photo Taken Activity Breakdown</a></li>
 	   <li><a href="/statistics/overtime_users.php" title="Monthly Breakdown new User Signups">User Signups</a></li>
 	   <li><a href="/statistics/overtime_forum.php">Forum Posting Breakdown</a></li>
-	   <li><a href="/statistics/overtime_tickets.php">Change Suggestions</a></li>
+	   <li><a href="/statistics/overtime_suggestions.php">Change Suggestions</a></li>
 	   <li><a href="/statistics/busyday.php">Most taken in a day</a></li>
 	   <li><a href="/statistics/busyday.php?date=submitted">Most submitted in a day</a></li>
 	</ul>

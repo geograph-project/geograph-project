@@ -261,34 +261,34 @@
 
 
 <div class="field"> 
-	<label for="ticket_public" class="nowrap">Ticket Anonymity</label>
+	<label for="ticket_public" class="nowrap">Change Suggestion Anonymity</label>
 	
 	<select name="ticket_public" id="ticket_public">
 		<option value="no">Do not disclose my name</option>
 		<option value="owner" {if $profile->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
-		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the ticket</option>
+		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the suggestion</option>
 	</select>
 	 
-	<div class="fieldnotes">Change how your name is disclosed on tickets your create from now on.</div>
+	<div class="fieldnotes">Change how your name is disclosed on suggestions your create from now on.</div>
 </div>
 
 
 <div class="field"> 
-	<label for="ticket_public_change" class="nowrap">Anonymity for previous tickets</label>
+	<label for="ticket_public_change" class="nowrap">Anonymity for previous suggestions</label>
 	<br/>
 	<select name="ticket_public_change" id="ticket_public_change" style="margin-left:10em;">
-		<option value="">- no change - leave previous tickets as is</option>
+		<option value="">- no change - leave previous suggestions as is</option>
 		<option value="no">Do not disclose my name</option>
 		<option value="owner">Show my name to the photo owner</option>
-		<option value="everyone">Show my name against the ticket</option>
+		<option value="everyone">Show my name against the suggestion</option>
 	</select>
 	 
-	<div class="fieldnotes">Optionally use this box to change all your previous tickets to a new setting.</div>
+	<div class="fieldnotes">Optionally use this box to change all your previous suggestions to a new setting.</div>
 </div>
 
 
 <div class="field"> 
-	<label for="ticket_option" class="nowrap">Trouble Ticket Emails</label>
+	<label for="ticket_option" class="nowrap">Change Suggestion Emails</label>
 	
 	<select name="ticket_option" id="ticket_option" size="1"> 
 		{html_options options=$ticket_options selected=$profile->ticket_option}
@@ -379,8 +379,8 @@
 	{if strpos($profile->rights,'ticketmod') > 0}
 	<div class="field"> 
 
-		<label for="moderator" class="nowrap">Tickets</label>
-			<input type="button" value="Relinqush ticket moderator rights" onclick="location.href = '/admin/tickets.php?relinqush=1';"/>
+		<label for="moderator" class="nowrap">Suggestions</label>
+			<input type="button" value="Relinqush suggestion moderator rights" onclick="location.href = '/admin/suggestions.php?relinqush=1';"/>
 
 	</div>
 	{/if}

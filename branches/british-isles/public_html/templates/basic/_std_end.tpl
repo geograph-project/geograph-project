@@ -1,4 +1,4 @@
-{if $smarty.server.REQUEST_METHOD == 'GET' && $smarty_template != 'view.tpl' && $smarty_template != 'editimage.tpl' && $smarty_template != 'tickets.tpl'}
+{if $smarty.server.REQUEST_METHOD == 'GET' && $smarty_template != 'view.tpl' && $smarty_template != 'editimage.tpl' && $smarty_template != 'suggestions.tpl'}
 <div id="hidefeed" style="text-align:center"><a href="javascript:void(show_tree('feed'));">&middot; Give Feedback &middot;</a></div>
 <div id="showfeed" class="interestBox" style="display:none"><form method="post" action="/stuff/feedback.php">
 <label for="feedback_comments">What do you like, dislike or otherwise want to comment on about <b>this</b> page:</label><br/>
@@ -56,7 +56,7 @@
      	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      {/if}
      {if $is_tickmod}
-     	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a href="/admin/tickets.php?sidebar=1" target="_search" title="Open in Sidebar, IE and Firefox Only">S</a>)</li>
+     	<li><a title="Trouble Tickets" href="/admin/suggestions.php">Suggestions</a></li>
      {/if}
      <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
     </ul></li>

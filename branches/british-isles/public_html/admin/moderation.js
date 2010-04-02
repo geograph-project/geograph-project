@@ -80,7 +80,7 @@ function moderateImage(gridimage_id, status)
 
 function deferTicket(gridimage_ticket_id, hours)
 {
-	var url="/admin/tickets.php?gridimage_ticket_id="+gridimage_ticket_id+"&defer=do&hours="+hours;
+	var url="/admin/suggestions.php?gridimage_ticket_id="+gridimage_ticket_id+"&defer=do&hours="+hours;
 	
 	//make the request
 	var req=getXMLRequestObject();

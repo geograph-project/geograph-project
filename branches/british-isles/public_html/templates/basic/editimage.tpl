@@ -143,31 +143,31 @@
 
 {if $show_all_tickets eq 1}
 	<h2 class="titlebar">
-	{if $isadmin}<a href="/admin/tickets.php" title="Ticket Admin Listing">&lt;&lt;&lt;</a>{/if}
-	All Change Requests
-	{if $isowner}<small>(<a href="/tickets.php" title="Ticket Listing">back to listing</a>)</small>{/if}
+	{if $isadmin}<a href="/admin/suggestions.php" title="Suggestions Admin Listing">&lt;&lt;&lt;</a>{/if}
+	All Change Suggestions
+	{if $isowner}<small>(<a href="/suggestions.php" title="Suggestions Listing">back to listing</a>)</small>{/if}
 	</h2>
 	
 	{if $opentickets}	
-	<p>All change requests for this image are listed below. 
-	<a href="/editimage.php?id={$image->gridimage_id}&amp;alltickets=0">Just show open requests.</a></p>
+	<p>All change suggestions for this image are listed below. 
+	<a href="/editimage.php?id={$image->gridimage_id}&amp;alltickets=0">Just show open suggestions.</a></p>
 	{else}
-	<p>There have been no change requests logged for this image</p>
+	<p>There have been no change suggestions logged for this image</p>
 
 	{/if}
 {else}
 	<h2 class="titlebar">
-	{if $isadmin}<a href="/admin/tickets.php" title="Ticket Admin Listing">&lt;&lt;&lt;</a>{/if}
-	Open Change Requests
-	{if $isowner}<small>(<a href="/tickets.php" title="Ticket Listing">back to listing</a>)</small>{/if}
+	{if $isadmin}<a href="/admin/suggestions.php" title="Suggestions Admin Listing">&lt;&lt;&lt;</a>{/if}
+	Open Change Suggestions
+	{if $isowner}<small>(<a href="/suggestions.php" title="Suggestions Listing">back to listing</a>)</small>{/if}
 	</h2>
 	{if $opentickets}	
-	<p>Any open change requests are listed below. 
+	<p>Any open change suggestions are listed below. 
 	{else}
 
-	<p>There are no open change requests for this image. 
+	<p>There are no open change suggestions for this image. 
 	{/if}
-	To see older, closed requests, <a href="/editimage.php?id={$image->gridimage_id}&amp;alltickets=1">view all requests</a></p>
+	To see older, closed suggestions, <a href="/editimage.php?id={$image->gridimage_id}&amp;alltickets=1">view all suggestions</a></p>
 {/if}
 
 {if $isadmin && $locked_by_moderator}
@@ -286,7 +286,7 @@
 	
 	{if ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') )}
 	<div class="ticketnotes">
-		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks|replace:'Auto-generated ticket, as a result of Moderation. Rejecting this image because:':'<span style="color:gray">Auto-generated ticket, as a result of Moderation. Rejecting this image because:</span><br/>'}</div>
+		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks|replace:'Auto-generated ticket, as a result of Moderation. Rejecting this image because:':'<span style="color:gray">Auto-generated, as a result of Moderation. Rejecting this image because:</span><br/>'}</div>
 	
 		
 		{if $ticket->comments}
@@ -297,7 +297,7 @@
 					{if $comment.user_id ne $ticket->user_id or ($isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner')) }
 						{$comment.realname} {if $ticket->public ne 'everyone' && $ticket->user_id eq $comment.user_id}(anonymously){/if}
 					{else}
-						ticket suggestor
+						suggestor
 					{/if} 
 					{if $comment.user_id == $image->user_id}
 						(Photo Owner)
@@ -328,31 +328,31 @@
 	{if ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') ) and ($ticket->status ne "closed")}
 		{assign var="ticketsforcomments" value=1}
 	<div class="ticketactions interestBox">
-		<div>&nbsp;<b>Add a reply to this ticket:</b></div>
+		<div>&nbsp;<b>Add a reply to this suggestion:</b></div>
 		<textarea name="comment" rows="4" cols="70"></textarea><br/>
 		
 		<input type="submit" name="addcomment" value="Add comment"/>
 		
 		{if $isadmin and $ticket->moderator_id > 0 and $ticket->moderator_id != $user->user_id}
-			<input type="checkbox" name="claim" value="on" id="claim" checked="checked"/> <label for="claim" title="Claim this ticket to be moderated by me">Claim Ticket</label>
+			<input type="checkbox" name="claim" value="on" id="claim" checked="checked"/> <label for="claim" title="Claim this suggestion to be moderated by me">Claim Suggestion</label>
 			&nbsp;&nbsp;&nbsp;
 		{elseif $isadmin}
 			<input type="hidden" name="claim" value="on"/>
 		{/if}
 		
 		{if ($isowner || $isadmin) && $ticket->user_id ne $user->user_id}
-			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked="checked"{/if}/> <label for="notify_suggestor">Send {if $isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner') }{$ticket->suggester_name}{else}ticket suggestor{/if} this comment.</label>
+			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked="checked"{/if}/> <label for="notify_suggestor">Send {if $isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner') }{$ticket->suggester_name}{else} suggestor{/if} this comment.</label>
 			&nbsp;&nbsp;&nbsp;
 		{/if}
 		{if $isadmin}
 		
 			{if $ticket->changes}
 		
-			<input type="submit" name="accept" value="Accept ticked changes and close ticket" onclick="autoDisable(this)"/>
+			<input type="submit" name="accept" value="Accept ticked changes and close suggestion" onclick="autoDisable(this)"/>
 
 			{else}
 
-			<input type="submit" name="close" value="Close ticket" onclick="autoDisable(this)"/>
+			<input type="submit" name="close" value="Close suggestion" onclick="autoDisable(this)"/>
 
 			{/if} {$ticket->suggester_name} is notified.
 			
@@ -388,7 +388,7 @@
 		<li>If you agree with the changes suggested, please indicate your acceptance, <b>in the reply box above</b>.</li> 
 		<li>If you disagree, please explain above why you do not accept the changes. This will be helpful to the Moderator in making a decision.</li>
 		<li>However, if you want to make the changes straight away {if $moderated.grid_reference}<span class="moderatedlabel">(except gridsquare changes)</span>{/if}, or want to make other changes, use the <b><a href="/editimage.php?id={$image->gridimage_id}&amp;form">Change Image Details</a> Form</b>.</li>
-		<li>If a ticket suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes yourself</li>
+		<li>If a suggestion suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes yourself</li>
 	</ul>
 </div>
 <br>
@@ -611,7 +611,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
 	Please provide as much detail for the moderator 
 	{if !$isowner} and photo owner{/if} about this suggestion as possible. 
-	Explaining the reasoning behind the suggestion will greatly help everyone in dealing with this ticket. 
+	Explaining the reasoning behind the suggestion will greatly help everyone dealing. 
 </div>
 
 </td></tr></table>
@@ -624,9 +624,9 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 {if $isadmin}
 	<div>
-	<input type="radio" name="mod" value="" id="mod_blank" checked="checked"/> <label for="mod_blank">Create a new ticket to be moderated by someone else.</label><br/>
-	<input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open ticket and assign to myself. (give the Contributor a chance to respond)</label><br/>
-	<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_apply">Apply the changes immediately, and close the ticket. (Contributor is notified)</label></div>
+	<input type="radio" name="mod" value="" id="mod_blank" checked="checked"/> <label for="mod_blank">Create a new suggestion to be moderated by someone else.</label><br/>
+	<input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open suggestion and assign to myself. (give the Contributor a chance to respond)</label><br/>
+	<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_apply">Apply the changes immediately, and close the suggestion. (Contributor is notified)</label></div>
 
 	<br style="clear:both"/>
 {else}
@@ -644,7 +644,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 &nbsp;	<select name="public">
 		<option value="no">Do not disclose my name</option>
 		<option value="owner" {if $user->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
-		<option value="everyone" {if $user->ticket_public eq 'everyone'} selected{/if}>Show my name against the ticket</option>
+		<option value="everyone" {if $user->ticket_public eq 'everyone'} selected{/if}>Show my name against the suggestion</option>
 	</select>
 {/if}
 </div>

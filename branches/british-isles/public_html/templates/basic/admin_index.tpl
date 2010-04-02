@@ -25,8 +25,8 @@
 {/if}
 
 {if $is_tickmod} 
-	<li><a title="Trouble Tickets" href="/admin/tickets.php">Trouble Tickets</a> <small>(Sidebar: <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" target="_search">IE &amp; Firefox</a>, <a title="Trouble Tickets" href="/admin/tickets.php?sidebar=1" rel="sidebar" title="Tickets">Opera</a>)</small> - 
-	   Deal with image problems<br/> <b>[{$tickets_new} new, {$tickets_yours} <a href="/admin/tickets.php?type=open&amp;theme=tmod">open by you</a>]</b></li>
+	<li><a title="Trouble Tickets" href="/admin/suggestions.php">Change Suggestions</a> <small>(Sidebar: <a title="Trouble Tickets" href="/admin/suggestions.php?sidebar=1" target="_search">IE &amp; Firefox</a>, <a title="Trouble Tickets" href="/admin/suggestions.php?sidebar=1" rel="sidebar" title="Tickets">Opera</a>)</small> - 
+	   Deal with image problems<br/> <b>[{$tickets_new} new, {$tickets_yours} <a href="/admin/suggestions.php?type=open&amp;theme=tmod">open by you</a>]</b></li>
 
 	{if $contacts_open}
 		<li><a href="/admin/contact.php">Contact Requests</a> <br/>

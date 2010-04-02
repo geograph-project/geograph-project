@@ -1,12 +1,12 @@
 <html>
 <head>
-<title>Touble Tickets</title>
+<title>Change Suggestion</title>
 <script src="{"/sorttable.js"|revision}"></script>
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
 
 </head>
 <body bgcolor="#ffffff">
-<h2>Trouble&nbsp;Tickets</h2>
+<h2>>Change&nbsp;Suggestion</h2>
 
 {literal}<script type="text/javascript">
 	setTimeout('window.location.href="/admin/";',1000*60*45);
@@ -64,11 +64,11 @@
 </tbody>
 </table>
 <br/>
-<div class="interestBox"><a href="/admin/tickets.php?{$query_string}" target="_self">Next page &gt;</a><br/><br/>
+<div class="interestBox"><a href="/admin/suggestions.php?{$query_string}" target="_self">Next page &gt;</a><br/><br/>
 		or <a href="/admin/moderation.php?abandon=1" onclick="alert('Please now close the sidebar.');" target="_main">Abandon</a> </div>
 <br/>
 {else}
-  <p>There are no tickets available to moderate at this time, please try again later.</p>
+  <p>There are no suggestionss available to moderate at this time, please try again later.</p>
 {/if}
 {/dynamic}    
 </body>

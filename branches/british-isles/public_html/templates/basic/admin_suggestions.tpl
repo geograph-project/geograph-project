@@ -1,4 +1,4 @@
-{assign var="page_title" value="Trouble Tickets"}
+{assign var="page_title" value="Change Suggestions"}
 {include file="_std_begin.tpl"}
 
 <script type="text/javascript" src="{"/sorttable.js"|revision}"></script>
@@ -10,7 +10,7 @@
 
 {dynamic}
 
-<h2><a title="Admin home page" href="/admin/index.php">Admin</a> :: Trouble Tickets, <small>{$title}</small></h2>
+<h2><a title="Admin home page" href="/admin/index.php">Admin</a> :: Change Suggestions, <small>{$title}</small></h2>
 
     <form method="get" action="{$script_name}" style="background-color:#f0f0f0;padding:2px;margin:0px; border:1px solid #d0d0d0;">
     <div> 
@@ -40,11 +40,11 @@
 {if $newtickets}
 
 {if $moderator}
-<p>These tickets have been recently been touched by the selected moderator</p>
+<p>These suggestions have been recently been touched by the selected moderator</p>
 {elseif $locked}
-<p>NOTE: <span style="color:red">tickets in red</span> are currently open by another moderator, it is not recommended to process these tickets</p>
+<p>NOTE: <span style="color:red">suggestions in red</span> are currently open by another moderator, it is not recommended to process these suggestions</p>
 {else}
-<p>Tickets currently open by other moderators are not shown in the list below. Click the small D button to defer the ticket for 24 hours.</p>
+<p>Suggestions currently open by other moderators are not shown in the list below. Click the small D button to defer the suggestion for 24 hours.</p>
 {/if}
 
 <table class="report sortable" id="newtickets" style="font-size:8pt;">
@@ -55,7 +55,7 @@
 	<td>Problem</td>
 	<td>Suggested by</td>
 	<td>Submitted</td>
-	<td title="Defer ticket for a day, and Age of ticket in days">&nbsp;</td>
+	<td title="Defer suggestion for a day, and Age of suggestion in days">&nbsp;</td>
 </tr></thead>
 <tbody>
 
@@ -74,19 +74,19 @@
 </tbody>
 </table>
 <br/>
-<div class="interestBox" style="padding-left:100px"><a href="/admin/tickets.php?{$query_string}">Continue &gt;</a> 
+<div class="interestBox" style="padding-left:100px"><a href="/admin/suggestions.php?{$query_string}">Continue &gt;</a> 
 		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
 
 
-<p><small>KEY: |<span style="text-decoration:line-through">User opted out of receiving initial notification</span> | <img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment"/> User has left comment on this ticket | <input class="accept" type="button" value="D" style="width:10px;"> - Defer the ticket for 24 hours - the number after the defer button is days since last update | <span style="color:red">ticket is locked</span>|</small> </p>
+<p><small>KEY: |<span style="text-decoration:line-through">User opted out of receiving initial notification</span> | <img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment"/> User has left comment on this suggestion | <input class="accept" type="button" value="D" style="width:10px;"> - Defer the suggestion for 24 hours - the number after the defer button is days since last update | <span style="color:red">suggestion is locked</span>|</small> </p>
 
 
 
 {else}
-  <p>There are no tickets available to moderate at this time, please try again later.</p>
+  <p>There are no suggestions available to moderate at this time, please try again later.</p>
 {/if}
 
-<p><small><a name="n1">Note 1: Only works on active (not closed) tickets, and is <b>not updated live</b>. Uses same basic syntax as image/forum search, including negative keywords. Searches Grid Reference (4fig, hectad and myriad), Image Title/Comment, Ticket Note, Contributor Name and Suggestor Name. (but not changes themselves or replies yet)</small> </p>
+<p><small><a name="n1">Note 1: Only works on active (not closed) suggestions, and is <b>not updated live</b>. Uses same basic syntax as image/forum search, including negative keywords. Searches Grid Reference (4fig, hectad and myriad), Image Title/Comment, Suggestion Note, Contributor Name and Suggestor Name. (but not changes themselves or replies yet)</small> </p>
 
 {/dynamic}    
 {include file="_std_end.tpl"}
