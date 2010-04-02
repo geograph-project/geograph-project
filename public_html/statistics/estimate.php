@@ -75,7 +75,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql = "select substring(suggested,1,10) as d ,count(*) as c from gridimage_ticket where suggested > '$beginday' AND suggested < '$today' group by substring(suggested,1,10)";
 	$sql2 = "select count(*) from gridimage_ticket";
 		
-	$ticket = calc($sql,$sql2,10000,'Tickets');
+	$ticket = calc($sql,$sql2,10000,'Suggestions');
 		
 	$smarty->assign("ticket",$ticket);
 	

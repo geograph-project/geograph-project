@@ -159,14 +159,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	$sql = "select count(*) from gridimage_ticket $wherewhere";
-	calc("Trouble Tickets Submitted",$sql);
+	calc("Change Suggestions Submitted",$sql);
 		
 	$sql = "select count(*) from gridimage_ticket_comment $wherewhere";
-	calc("Trouble Ticket Comments",$sql);		
+	calc("Change Suggestions Comments",$sql);		
 		
 	if ($ismod) {
 			$sql = "select count(*) from gridimage_ticket where moderator_id=".$u;
-			calc("Trouble Tickets Moderated",$sql);
+			calc("Change Suggestions Moderated",$sql);
 	}
 	
 

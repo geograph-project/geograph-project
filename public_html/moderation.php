@@ -76,9 +76,9 @@ if (isset($_POST['gridimage_id']))
 					$ticket->setSuggester($USER->user_id);
 					$ticket->setImage($gridimage_id);
 					if (!empty($_POST['comment'])) {
-						$ticket->setNotes("Auto-generated ticket, as a result of Self Moderation. Suggest rejecting this image because: ".stripslashes($_POST['comment']));
+						$ticket->setNotes("Auto-generated suggestion, as a result of Self Moderation. Suggest rejecting this image because: ".stripslashes($_POST['comment']));
 					} else {
-						$ticket->setNotes("Auto-generated ticket, as a result of Self Moderation. Please leave a comment (in the reply box just below this message) to explain the reason for suggesting '$status'.");
+						$ticket->setNotes("Auto-generated suggestion, as a result of Self Moderation. Please leave a comment (in the reply box just below this message) to explain the reason for suggesting '$status'.");
 						$thankyou = 'modreply';
 					}
 					$status=$ticket->commit('pending');

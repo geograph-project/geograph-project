@@ -96,7 +96,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table=$db->GetAll("SELECT 
 	$from_date AS `Date`, 
-	count( * ) AS `Tickets`, 
+	count( * ) AS `Suggestions`, 
 	count( distinct gi.gridimage_id ) AS `Images`,
 	sum(type='minor')/count( * )*100 AS `Percentage Minor`,
 	count( DISTINCT t.user_id ) AS `Different Suggestors`

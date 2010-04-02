@@ -25,7 +25,7 @@
 	<li>featuring <b>{$count.gridimage_post|thousends}</b> thumbnails</li>
 </ul></li>
 <li><b>{$count.gridimage_ticket|thousends}</b> Change Requests (<b>{$count.gridimage_ticket_item|thousends}</b> individual changes)<ul>
-	<li>by <b>{$count.gridimage_ticket__users|thousends}</b> different users (<b>{$count.gridimage_ticket__users_others|thousends}</b> excluding tickets on own images)</li>
+	<li>by <b>{$count.gridimage_ticket__users|thousends}</b> different users (<b>{$count.gridimage_ticket__users_others|thousends}</b> excluding suggestions on own images)</li>
 </ul></li>
 <li><b>{$count.article|thousends}</b> articles</li>
 </ul>

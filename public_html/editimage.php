@@ -214,11 +214,11 @@ if (isset($_REQUEST['id']))
 
 			//you sure this is a ticket?
 			if (!$ticket->isValid())
-				die("invalid ticket id");
+				die("invalid suggestion id");
 
 			//definitely for this image?
 			if ($ticket->gridimage_id != $image->gridimage_id)
-				die("ticket/image mismatch");
+				die("suggestion/image mismatch");
 			
 			$issuggester=($ticket->user_id==$USER->user_id)?1:0;
 	
@@ -335,7 +335,7 @@ if (isset($_REQUEST['id']))
 				$ticket->setPublic('everyone');
 				
 				
-				$ticket->setNotes("Automatic ticket - recording changes applied directly");
+				$ticket->setNotes("Automatic - recording changes applied directly");
 
 				//attach the various field changes
 				$ticket->updateField("title", $image->title, $title, $moderated["title"]);

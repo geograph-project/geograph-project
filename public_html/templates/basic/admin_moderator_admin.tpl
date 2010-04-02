@@ -32,11 +32,11 @@
 	{if $stats}
 		<td>Images Submitted</td>
 		<td>Images Moderated</td>
-		<td>Tickets Moderated</td>
+		<td>Suggestions Moderated</td>
 		<td>Forum Posts</td>
 	{/if}
 	<td>Moderator Actions (see below)</td>
-	<td>Ticket Actions (see below)</td>
+	<td>Suggestion Actions (see below)</td>
 </tr></thead>
 <tbody>
 
@@ -111,7 +111,7 @@ admin's can use these links occasionally to spot check a particular moderator.</
 <b>Stats</b> - View moderation statistics for this user.<br/>
 <b>Verify</b> - View dummy verification moderations, done before becoming a moderator<br/>
 (<b>Mis</b>) - only show mismatches.<br/>
-<b>Review</b> - View recent real moderations/tickets.<br/>
+<b>Review</b> - View recent real moderations/suggestions.<br/>
 <b>Revoke</b> - Remove moderation rights (moderations already done are not affected).<br/>
 <b>Grant</b> - Add moderation rights to this user. (requires the user to re-login)
 </div>

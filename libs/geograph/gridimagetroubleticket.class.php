@@ -792,7 +792,7 @@ class GridImageTroubleTicket
 		
 		if ($this->public != 'no') {
 			$suggestor=new GeographUser($user_id);
-			$comment.="\n\n".$suggestor->realname."\nTicket Suggestor\n";
+			$comment.="\n\n".$suggestor->realname."\nSuggestor\n";
 		}
 		
 		//email comment to moderators
@@ -830,7 +830,7 @@ class GridImageTroubleTicket
 				$dbcomment.=".";
 			$dbcomment.="\n ";
 		}
-		$dbcomment.="Ticket is now closed";
+		$dbcomment.="Suggestion is now closed";
 
 		$this->_addComment($user_id, $dbcomment);
 
@@ -874,7 +874,7 @@ class GridImageTroubleTicket
 				$suggester_msg.=" The following changes were made:\n\n";
 				$suggester_msg.=$changes;
 			}
-			if (!empty($dbcomment) && $dbcomment != "Ticket is now closed")
+			if (!empty($dbcomment) && $dbcomment != "Suggestion is now closed")
 			{
 				$suggester_msg.="\n Moderators Comment:\n\n";
 				$suggester_msg.=$dbcomment;
@@ -895,7 +895,7 @@ class GridImageTroubleTicket
 			$owner_msg.=" The following changes were made:\n\n";
 			$owner_msg.=$changes;
 		}
-		if (!empty($dbcomment) && $dbcomment != "Ticket is now closed")
+		if (!empty($dbcomment) && $dbcomment != "Suggestion is now closed")
 		{
 			$owner_msg.="\n Moderators Comment:\n\n";
 			$owner_msg.=$dbcomment;
