@@ -362,7 +362,7 @@ if (empty($_GET['locked'])) {
 }
 #############################
 
-$template = (!empty($_GET['sidebar']))?'admin_tickets_sidebar.tpl':'admin_tickets.tpl';
+$template = (!empty($_GET['sidebar']))?'admin_suggestions_sidebar.tpl':'admin_suggestions.tpl';
 $smarty->display($template);
 
 
