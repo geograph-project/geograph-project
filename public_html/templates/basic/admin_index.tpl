@@ -39,6 +39,8 @@
 
 {if $is_mod} 
 
+	<li>{external href="http://www.geograph.org.uk/support/scp/" text="Geograph Support System"}</li>
+
 	{if $originals_new}
 		<li><a href="/admin/resubmissions.php">High Resolution Uploads</a><br/>
 		<b>[{$originals_new} ready to be verified]</b></li>
