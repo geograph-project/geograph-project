@@ -541,8 +541,8 @@ class GridImageTroubleTicket
 						$comment.="\n\nComment: {$this->notes}";
 					}
 				
-					$msg =& $this->_buildEmail($comment);
 					$submitter=new GeographUser($img->user_id);
+					$msg =& $this->_buildEmail($comment,$submitter->realname);
 					if ( ($submitter->ticket_option == 'all') || 
 							( ($this->type=='normal') && $submitter->ticket_option == 'major')
 						)
@@ -570,13 +570,13 @@ class GridImageTroubleTicket
 					if (strlen($this->notes))
 						$comment.="\n\nModerator Comment: {$this->notes}";
 						
-					$msg =& $this->_buildEmail($comment);
 					$submitter=new GeographUser($img->user_id);
 					if ( ($submitter->ticket_option == 'all') || 
 							( ($this->type=='normal') && $submitter->ticket_option == 'major')
-						)
+						) {
+						$msg =& $this->_buildEmail($comment,$submitter->realname);
 						$this->_sendMail($submitter->email, $msg);
-				
+					}
 				}
 				
 			}
@@ -626,7 +626,7 @@ class GridImageTroubleTicket
 	* returns an array containing email body and subject
 	* @access private
 	*/
-	function & _buildEmail($comment)
+	function & _buildEmail($comment,$realname = '')
 	{
 		$msg=array();
 		
@@ -635,11 +635,18 @@ class GridImageTroubleTicket
 		$ttype = ($this->type == 'minor')?' Minor':'';
 		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 		
-		$msg['body']="Re: {$image->grid_reference} {$image->title}\n";
-		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
-		$msg['body'].="---------------------------------------\n";
+		if (!empty($realname)) {
+			$msg['body']="Dear {$realname},\n";
+			$msg['body'].="	This is a message about the following photo:\n";
+			$msg['body'].="	{$image->grid_reference} {$image->title}\n";
+			$msg['body'].="at: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n\n";
+		} else {
+			$msg['body']="Re: {$image->grid_reference} {$image->title}\n";
+			$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
+		}
+		$msg['body'].="---------------------------------------\n\n";
 		$msg['body'].=$comment."\n";
-		$msg['body'].="---------------------------------------\n";
+		$msg['body'].="---------------------------------------\n\n";
 		
 		$msg['body'].="To respond to this message, please visit\n";
 		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
@@ -656,7 +663,7 @@ class GridImageTroubleTicket
 	function _sendMail($to, &$msg)
 	{
 		mail($to, $msg['subject'], $msg['body'],
-				"From: Geograph - Reply Using Link <lordelph@gmail.com>");
+				"From: Geograph - Reply Using Link <noreply@geograph.org.uk>");
 		
 	}
 	
@@ -725,16 +732,17 @@ class GridImageTroubleTicket
 		$comment.="\n\n".$moderator->realname."\nGeograph Moderator\n";
 		
 		//email comment to submitter
-		$msg =& $this->_buildEmail($comment);
 		$image=& $this->_getImage();
 		$submitter=new GeographUser($image->user_id);
 		
+		$msg =& $this->_buildEmail($comment,$submitter->realname);
 		$this->_sendMail($submitter->email, $msg);
 		
 		if ($this->notify == 'suggestor' && $image->user_id != $this->user_id) {
 			//email comment to suggestor
 			$suggestor=new GeographUser($this->user_id);
 				
+			$msg =& $this->_buildEmail($comment,$suggestor->realname);
 			$this->_sendMail($suggestor->email, $msg);
 		}
 		
@@ -770,6 +778,7 @@ class GridImageTroubleTicket
 			//email comment to suggestor
 			$suggestor=new GeographUser($this->user_id);
 				
+			$msg =& $this->_buildEmail($comment,$suggestor->realname);
 			$this->_sendMail($suggestor->email, $msg);
 		}
 	}
@@ -804,8 +813,10 @@ class GridImageTroubleTicket
 		
 		if ( ($submitter->ticket_option == 'all') || 
 			( ($this->type=='normal') && $submitter->ticket_option == 'major')
-			)
+			) {
+			$msg =& $this->_buildEmail($comment,$submitter->realname);
 			$this->_sendMail($submitter->email, $msg);
+		}
 	}	
 	
 	/**
@@ -880,9 +891,9 @@ class GridImageTroubleTicket
 				$suggester_msg.=$dbcomment;
 			}
 
-			$msg =& $this->_buildEmail($suggester_msg);
 			$suggester=new GeographUser($this->user_id);
-
+			
+			$msg =& $this->_buildEmail($suggester_msg,$suggester->realname);
 			$this->_sendMail($suggester->email, $msg);
 
 
@@ -900,8 +911,8 @@ class GridImageTroubleTicket
 			$owner_msg.="\n Moderators Comment:\n\n";
 			$owner_msg.=$dbcomment;
 		}
-		$msg =& $this->_buildEmail($owner_msg);
 		$owner=new GeographUser($image->user_id);
+		$msg =& $this->_buildEmail($owner_msg,$owner->realname);
 		$this->_sendMail($owner->email, $msg);
 		
 		$db->Execute("DELETE FROM gridimage_moderation_lock WHERE user_id = {$this->moderator_id} AND gridimage_id = {$this->gridimage_id}");
