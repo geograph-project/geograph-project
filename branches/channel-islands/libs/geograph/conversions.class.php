@@ -140,7 +140,6 @@ function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
 	$conv = new ConversionsLatLong;
 	$latlong = array();
 	if ($reference_index == 6) {
-		print ("$e,$n");
 		$latlong = $conv->utm_to_wgs84($e,$n,30);
 	} elseif ($reference_index == 1) {
 		$latlong = $conv->osgb36_to_wgs84($e,$n);
