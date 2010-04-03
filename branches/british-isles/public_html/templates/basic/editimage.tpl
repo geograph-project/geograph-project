@@ -396,7 +396,7 @@
 
 {else}
 
-<h2 class="titlebar" style="margin-bottom:0px">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
+<h2 class="titlebar" style="margin-bottom:0px">{if $isowner}Change{else}Suggest a Change to{/if} Image Details <small><a href="/help/changes">[help]</a></small></h2>
 {if $error}
 <a name="form"></a>
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
@@ -438,11 +438,12 @@
 
 <div>
 	{if $all_moderated}
-		Any changes you suggest are moderated and will first be approved by
-		a moderator before going live. You will receive an email when this happens.
+		<b>Please make the required changes in the boxes below</b>.<br/>
+		&middot; Any changes you suggest are moderated and will first be approved by
+		a moderator before going live.<br/>&middot; You will receive an email when this happens.
 	{else}
-		If you change any fields labelled as "moderated" your changes will first be approved by
-		a moderator before going live. You will receive an email when this happens.
+		&middot; If you change any fields labelled as "moderated" your changes will first be approved by
+		a moderator before going live.<br/>&middot; You will receive an email when this happens.
 	{/if}
 </div>
 {/if}
@@ -600,7 +601,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <br/>
 <div class="interestBox">
 <p>
-<label for="updatenote">&nbsp;<b>Please describe what's wrong or briefly why you have made the changes above...</b></label><br/>
+<label for="updatenote">&nbsp;<b>Please describe what's wrong or briefly why you have {if $isowner}made{else}suggested{/if} the changes above...</b></label><br/>
 
 {if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
 
