@@ -127,7 +127,10 @@ if (preg_match("/photo\/(\d+)/",$referring_page,$m)) {
 	
 $smarty->assign('referring_page',$referring_page);
 	
-$smarty->display('contact.tpl');
-
 	
-?>
+if (1) {
+	$smarty->display('contact_osticket.tpl');
+} else {
+	$smarty->display('contact.tpl');
+}
+	
