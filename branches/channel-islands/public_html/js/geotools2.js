@@ -216,7 +216,7 @@ function GT_Channel()
 }
 
 GT_Channel.prefixes = new Array (
-	new Array("WA","WV"));
+	new Array("WV","WA"));
 
 GT_Channel.prototype.setGridCoordinates = function(eastings,northings)
 {
@@ -258,7 +258,7 @@ GT_Channel.prototype.getGridRef = function(precision)
 		//FIXME round _before_ modulo ...
 		var y=Math.floor(this.northings/100000);
 		var x=Math.floor(this.eastings/100000);
-		y -= 53;
+		y -= 54;
 		x -= 5;
 
 		var e=Math.round(this.eastings%100000);
@@ -307,7 +307,7 @@ GT_Channel.prototype.parseGridRef = function(landranger)
 				for(y=0; y<GT_Channel.prefixes[x].length; y++)
 					if (GT_Channel.prefixes[x][y] == gridSheet) {
 						this.eastings = ((x + 5) * 100000)+gridEast;
-						this.northings = ((y + 53) * 100000)+gridNorth;
+						this.northings = ((y + 54) * 100000)+gridNorth;
 						ok=true;
 						break search;
 					}
