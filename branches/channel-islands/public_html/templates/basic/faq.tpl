@@ -55,7 +55,6 @@
  <li><a href="#use">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
  <li><a href="#change">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
  <li><a href="#concern">I'm <b>concerned</b> about a photo or comment I have seen on the site.</a></li>
- <li><a href="#counties"><b>Counties</b>, I'm confused, which do you display?</a></li>
  <li><a href="#geographism">What do all these <b>strange words</b> mean?</a></li>
  </ul>
 The <b>Geograph Website</b>:
@@ -186,29 +185,6 @@ The <b>Geograph Website</b>:
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
-<div id="counties">
-<a name="counties"></a>
-<h3>Counties, I'm confused, which do you display?</h3>
-	<p>We use county information to aid recognition of place names on photo pages and other areas of the site, like helping to disambiguate search terms (e.g. a search for "Gillingham")</p>
-	
-	<p>For Ireland, it's simple; we just use the traditional counties. Great Britain isn't so easy, which has seen three <i>major</i> county structures;</p>
-
-	<dl class="picinfo">
-		<dt>Ceremonial Counties (sometimes known as Geographic)</dt>
-		<dd>These were introduced in 1974 primarily as a way to define areas for County Councils. Although these are possibly what most people recognize as counties, a suitable dataset to allow us to use these counties would be too costly for us to bear. So we must compromise a little...</dd>
-
-		<dt>Administrative Counties (also known as District/Unitary Authorities)</dt>
-		<dd>These are the modern 'counties' in use by the current government (since 1997). This is the best dataset we have available, so we display it prominently in the gazetteer line on photo pages. It is also useful for identifying the council responsible for the area. However for large towns/cities, for example Sheffield, which are in their own Authority (therefore the 'county' of Sheffield), we attempt to be clever and display the Historic County instead.</dd>
-
-		<dt>Historic Counties</dt>
-		<dd>These are the counties that have evolved over many hundreds of years and were in active use until 1974. We use this data as a fallback - where we've opted to display the administrative country on a photo page, you can often find the historic county by hovering over this title.</dd>
-	</dl>
-
-	<p>For a more in depth explanation, see {external href="http://www.abcounties.co.uk/" text="abcounties.org.uk"}. <span class="nowrap">(however beware that the site doesn't use the exact same terms)</span></p>
-	
-	<p>To see lists of counties in each structure see the <a href="/explore/#counties">Explore Section</a>.</p>
-</div>
-<div class="top"><a href="#top">back to top</a></div>
 
 <div id="geographism">
 <a name="geographism"></a>

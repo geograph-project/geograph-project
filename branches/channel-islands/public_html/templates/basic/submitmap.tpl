@@ -62,8 +62,8 @@
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
 				
-				var point = new GLatLng(54.55,-3.88);
-				map.setCenter(point, 5);
+				var point = new GLatLng(49.43,-2.3);
+				map.setCenter(point, 9);
 
 				map.enableDoubleClickZoom(); 
 				map.enableContinuousZoom();

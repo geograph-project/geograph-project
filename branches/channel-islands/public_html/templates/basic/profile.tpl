@@ -103,7 +103,7 @@
 {/if}
 
 {if $user->user_id eq $profile->user_id}
-	<p><a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</p> 	
+	<p>{external href="http://www.geograph.org.uk/profile.php?edit=1" text="Edit your profile at geograph.org.uk"} if there's anything you'd like to change.</p> 	
 {else}
 	<br/><br/>
 {/if}

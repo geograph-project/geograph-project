@@ -4,7 +4,7 @@
 
 	<div style="padding:5px;background:#dddddd;position:relative; float:right;"><form method="get" action="/browse.php" style="display:inline">
 	<label for="gridref1">Jump</label> to <b>Grid Reference</b>: <br/>
-	<input id="gridref1" type="text" name="gridref" value="ST8751" size="15" style="color:gray" onfocus="{literal}if (this.value=='ST8751') { this.value='';this.style.color='';}{/literal}"/>
+	<input id="gridref1" type="text" name="gridref" value="WV6448" size="15" style="color:gray" onfocus="{literal}if (this.value=='WV6448') { this.value='';this.style.color='';}{/literal}"/>
 	<input id="searchgo1" type="submit" value="Go"/>
 	</form></div>
 
@@ -15,20 +15,6 @@
 <ul class="explore">
 
 	<li><a href="/statistics/fully_geographed.php">List <b>Fully Geographed Hectads</b></a> <small>(10 x 10 Gridsquares)</small> - include Image Mosaics!</li>
-
-</ul>
-<h3>Selections...</h3>
-<ul class="explore">
-
-	<li><a href="/explore/searches.php"><b>Featured Searches</b></a> - hand picked example searches</li>
-
-	<li><a name="counties"></a>View Photographs at <b>Centre Points</b>: <ul>
-		<li><a href="/explore/cities.php">Cities and Large Towns</a></li>
-	</ul></li>
-
-	<li><a href="/gallery/"><b>Galleries</b></a> - hand picked images on varies themes</li>
-
-	<!--li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li-->
 
 </ul>
 <h3>Breakdowns...</h3>
@@ -60,14 +46,6 @@
 	<input id="searchgo" type="submit" name="go" value="Find"/> [<a href="/help/search">help</a>, <a href="/search.php?form=advanced">advanced search</a>]
 	</form></li>
 
-	<li><form method="get" action="/search.php" style="display:inline">
-	<label for="county_id">Search by centre of <b>Ceremonial County</b></label>: 
-	<input type="hidden" name="do" value="1"/>
-	<select name="county_id" id="county_id" size="1" class="searchinput" onchange="onlyone(this)" onblur="onlyone(this)"/> 
-	  <option value=""> </option> 
-		{html_options options=$countylist selected=$county_id}
-	</select> <input id="searchgo" type="submit" name="go" value="Find"/>
-	</form></li>
 
 {if $enable_forums}
 	<li><form method="get" action="/search.php" style="display:inline">

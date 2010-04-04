@@ -39,16 +39,6 @@
 			 <td>eg Peterborough</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="county_id" id="l_county_id">centre of county</label></td> 
-			 <td> 
-				<select name="county_id" id="county_id" size="1" class="searchinput" onchange="onlyone(this)" onblur="onlyone(this)"/> 
-				  <option value=""> </option> 
-					{html_options options=$countylist selected=$county_id}				  
-				  
-				</select></td> 
-			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
-		  </tr>
-		  <tr> 
 			 <td><label for="all_ind" id="l_all_ind">all images</label></td> 
 			 <td><input type="checkbox" name="all_ind" id="all_ind" {$all_checked} onclick="onlyone(this)" onblur="onlyone(this)"/></td> 
 			 <td>&nbsp;</td> 
@@ -129,15 +119,6 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 {/if}
-		  <tr> 
-			 <td><label for="reference_index">country</label></td> 
-			 <td> 
-				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
-				  <option value=""> </option> 
-					{html_options options=$references selected=$reference_index} 
-				</select></td> 
-			 <td>&nbsp;</td> 
-		  </tr> 
 		  <tr> 
 			 <td><label for="gridsquare">myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td> 
 			 <td> 
@@ -226,9 +207,7 @@ var isvalue;
 var iscenter = false;
 
 function onlyone(that) {
-	if (that.name == 'county_id') {
-		isvalue = (that.selectedIndex > 0)?true:false;
-	} else if (that.name == 'all_ind') {
+	if (that.name == 'all_ind') {
 		isvalue = that.checked;
 	} else {
 		isvalue = (that.value.length > 0)?true:false;
@@ -248,15 +227,11 @@ function onlyone(that) {
 		f.placename.disabled = isvalue;
 		document.getElementById('l_placename').className = classname;
 	}
-	if (that.name != 'county_id') {
-		f.county_id.disabled = isvalue;
-		document.getElementById('l_county_id').className = classname;
-	}
 	if (that.name != 'all_ind') {
 		f.all_ind.disabled = isvalue;
 		document.getElementById('l_all_ind').className = classname;
 	}
-	iscenter = (isvalue && (that.name == 'gridref' || that.name == 'postcode' || that.name == 'placename' || that.name == 'county_id') );
+	iscenter = (isvalue && (that.name == 'gridref' || that.name == 'postcode' || that.name == 'placename') );
 	
 	onlyone_part2(f);
 }

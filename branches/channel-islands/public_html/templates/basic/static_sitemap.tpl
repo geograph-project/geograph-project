@@ -165,8 +165,6 @@ Refine:
 	   <a href="/statistics/breakdown.php?by=status">Classification</a>,
 	   <a href="/statistics/breakdown.php?by=takenyear">Date Taken</a>,
 	   <a href="/statistics/breakdown.php?by=user">Contributor</a>,
-	   <a href="/statistics/coverage_by_county.php">County</a>,
-	   <a href="/statistics/coverage_by_country.php">Country</a>, <br/>
 	   <a href="/statistics/breakdown.php?by=gridsq">100km x 100km</a> (Myriads),
 	   <a href="/statistics/breakdown.php?by=gridsq">10km x 10km</a> (Hectads) Squares,
 	   </li>
