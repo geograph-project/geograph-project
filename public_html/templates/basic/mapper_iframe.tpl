@@ -4,7 +4,7 @@
 
 
 <script src="{"/mapper/OpenLayers.js"|revision}" type="text/javascript"></script>
-<script src="{"/mapper/geotools2.js"|revision}"></script>
+<script src="{"/js/geotools2.js"|revision}"></script>
 <script src="{"/mapper/mapper.js"|revision}"></script>
 
 <script type="text/javascript">
