@@ -16,6 +16,11 @@
 If you haven't
 registered yet, <a title="register now" href="/register.php">go and register</a>, it's quick and free!</p>
 
+<div class="interestBox" style="margin-bottom:20px">
+	<b>Geograph Channel Islands</b> shares a user/registration database with <b>Geograph Britain and Ireland</b>, and <b>Geograph Ireland</b>. So you should use your login information from those sites to login here.
+</div>
+
+
 <label for="email">Your email address or nickname</label><br/>
 <input id="email" name="email" value="{$email|escape:'html'}"/>
 <span class="formerror">{$errors.email}</span>

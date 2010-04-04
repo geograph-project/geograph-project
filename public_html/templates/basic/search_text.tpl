@@ -60,16 +60,6 @@
 			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td> 
 			 <td>eg <tt>Peterborough</tt></td> 
 		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td><label for="county_id" id="l_county_id">centre of county</label></td> 
-			 <td> 
-				<select name="county_id" id="county_id" size="1" class="searchinput" onchange="onlyone(this)" onblur="onlyone(this)"/> 
-				  <option value=""> </option> 
-					{html_options options=$countylist selected=$county_id}				  
-				  
-				</select></td> 
-			 <td>&nbsp;</td> 
-		  </tr>
 		  <tr> 
 			 <td colspan="3"><small><small>
 			 Once you have selected one option the others will become unavailable, to choose a different search just clear your current selection. If you don't select anything you will be shown all images (matching filters below).</small></small>
@@ -144,15 +134,6 @@
 					{/if}
 					<option value="Other"></option>				  
 				</select><input type="button" name="imageclass_enable_button" value="enable" onclick="prePopulateImageclass()"/></td> 
-			 <td>&nbsp;</td> 
-		  </tr> 
-		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
-			 <td><label for="reference_index">country</label></td> 
-			 <td> 
-				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
-				  <option value=""> </option> 
-					{html_options options=$references selected=$reference_index} 
-				</select></td> 
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#ffffff'"> 
@@ -244,9 +225,7 @@ var isvalue;
 var iscenter = false;
 
 function onlyone(that) {
-	if (that.name == 'county_id') {
-		isvalue = (that.selectedIndex > 0)?true:false;
-	} else if (that.name == 'all_ind') {
+	if (that.name == 'all_ind') {
 		isvalue = that.checked;
 	} else {
 		isvalue = (that.value.length > 0)?true:false;
@@ -266,11 +245,7 @@ function onlyone(that) {
 		f.placename.disabled = isvalue;
 		document.getElementById('l_placename').className = classname;
 	}
-	if (that.name != 'county_id') {
-		f.county_id.disabled = isvalue;
-		document.getElementById('l_county_id').className = classname;
-	}
-	iscenter = (isvalue && (that.name == 'gridref' || that.name == 'postcode' || that.name == 'placename' || that.name == 'county_id') );
+	iscenter = (isvalue && (that.name == 'gridref' || that.name == 'postcode' || that.name == 'placename') );
 	
 	onlyone_part2(f);
 }

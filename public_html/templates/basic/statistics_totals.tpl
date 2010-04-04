@@ -39,17 +39,6 @@
 </ul></li>
 <li><b>{$count.sessions|thousends}</b> visitors in the last 24 minutes</li>
 <li><b>{$count.apikeys}</b> sites using the Geograph API</li>
-<li><b>{$count.loc_counties_pre74}</b> historic counties</li>
-<li><b>{$count.loc_counties}</b> ceremonial counties</li>
-<li><b>{$count.os_gaz_county|thousends}</b> modern administrative areas</li>
-<li><b>{$count.loc_postcodes|thousends}</b> sector level postcodes</li>
-<li><b>{$count.loc_placenames|thousends}</b> gazetteer features (<b>{$count.loc_dsg}</b> types)<ul>
-	<li>of which <b>{$count.loc_placenames__ppl|thousends}</b> are placenames</li>
-</ul></li>
-<li><b>{$count.loc_ppl|thousends}</b> v2 gazetteer placenames (unused!)</li>
-<li><b>{$count.loc_wikipedia|thousends}</b> wikipedia placenames for map plotting</li>
-<li><b>{$count.loc_towns|thousends}</b> important towns for map plotting</li>
-<li><b>{$count.os_gaz|thousends}</b> GB gazetter features (<b>{$count.os_gaz_code}</b> types)</li>
 </ul>
 
 <p>Files Generated: (each accessed many times)</p>

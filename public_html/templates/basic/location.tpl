@@ -9,7 +9,7 @@
 
 <dl style="float:right; margin:0px; position:relative">
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$gridrefraw text=$gridrefraw} [{$square->precision}m precision]<br/>
+MGRS: {$gridrefraw} [{$square->precision}m precision]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude" 
 title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
@@ -116,14 +116,9 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 <b>Mapping Websites</b>:
 <ul style="margin-top:0px; margin-bottom:0px">
-	<li>{getamap gridref=$gridrefraw text="Get-a-Map&trade;"}</li>
-	{if $square->reference_index eq 1}
-		<li>{external href="http://www.magic.gov.uk/website/magic/opener.htm?startTopic=maggb&xygridref=`$square->nateastings`,`$square->natnorthings`&startscale=10000" text="magic.gov.uk"}{if $gridref6} ({external href="http://www.magic.gov.uk/website/magic/opener.htm?startTopic=maggb&xygridref=`$square->nateastings`,`$square->natnorthings`&startscale=5000" text="closer"}){/if}</li> 
-		<li>{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}</li> 
-		<li>{external href="http://www.multimap.com/maps/?title=[`$urltitle`]+on+geograph.org.uk#t=l&amp;map=$lat,$long|14|4&amp;dp=841&amp;loc=GB:$lat:$long:14|$gridref|$gridref" text="multimap.com"} {external href="http://www.multimap.com/map/browse.cgi?GridE=`$square->nateastings`&amp;GridN=`$square->natnorthings`&amp;scale=25000&amp;title=[`$urltitle`]+on+geograph.org.uk" text="(old)"}</li>
-	{else}
+	
 		<li>{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}</li>
-	{/if}</li>
+	
 
 
 	{if $id}
@@ -145,21 +140,11 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 		{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;MONTH=%m&amp;YEAR=%Y"}
 		<li>{external href="http://www.weatheronline.co.uk/cgi-bin/geotarget?LAT=`$lat`&amp;LON=`$long``$imagetakenurl`" text="weatheronline.co.uk" title="weather at the time this photo was taken from weatheronline.co.uk"}</li>
 	{/if}
-	{if $square->reference_index eq 1}
 			<li>{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="Geocaches" title="Geocaches from geocaching.com"}</li>
-			<li>{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$gridrefraw`" text="Trigpoints"}</li>
 			<li>{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"}<br/><br/></li>
 
-			<li>{external title="find local features and maps with wikimedia" href="http://stable.toolserver.org/geohack/geohack.php?params=`$lat_abs`_`$nl`_`$long_abs`_`$el`_region:GB_scale:25000" text="<b>more</b> from wikimedia"}<br/><br/></li>
-			<li>{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`" text="<b>more</b> from nearby.org.uk"}</li>
-	{else}
-			<li>{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="Geocaches" title="Geocaches from geocaching.com"}</li>
-			<li>{external href="http://www.trigpointing-ireland.org.uk/gridref.php?g=`$square->grid_reference`" text="trigpoints" title="Trigpoints from trigpointing-ireland.org.uk"}</li>
-			<li>{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"}<br/><br/></li>
-
-			<li>{external title="find local features and maps with wikimedia" href="http://stable.toolserver.org/geohack/geohack.php?params=`$lat_abs`_`$nl`_`$long_abs`_`$el`_region:GB_scale:25000" text="<b>more</b> from wikimedia"}<br/><br/></li>
-			<li>{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$square->nateastings`+`$square->natnorthings`+OSI" text="<b>more</b> from nearby.org.uk"}</li>
-	{/if}
+			<li>{external title="find local features and maps with wikimedia" href="http://stable.toolserver.org/geohack/geohack.php?params=`$lat_abs`_`$nl`_`$long_abs`_`$el`" text="<b>more</b> from wikimedia"}<br/><br/></li>
+			<li>{external title="find local features and maps with nearby.org.uk" href="http://www.nearby.org.uk/coord.cgi?p=`$lat`,`$long`" text="<b>more</b> from nearby.org.uk"}</li>
 </ul>
 </div>
 <br style="clear:both"/>

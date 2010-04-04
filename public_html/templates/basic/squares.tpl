@@ -12,8 +12,6 @@
 	  </div>
 	{/if}
 
-<p><small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>)</small></p>
-
 <ul>
 {foreach from=$data item=row}
 	<li><a href="/gridref/{$row.grid_reference}/links"><img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/></a> <a href="/gridref/{$row.grid_reference}">{$row.grid_reference}</a> <small>[{$row.imagecount}]</small> {if $row.place}{place place=$row.place}{/if}</li>
