@@ -47,24 +47,28 @@
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
 			if (ri == -1) {
-			if (wgs84.isIreland()) {
-				//convert to Irish
-				var grid=wgs84.getIrish(true);
-			
-			} else if (wgs84.isGreatBritain()) {
-				//convert to OSGB
-				var grid=wgs84.getOSGB();
-			} else if (wgs84.isGermany32()) {
-				//convert to German
-				var grid=wgs84.getGerman32();
-			} else if (wgs84.isGermany33()) {
-				//convert to German
-				var grid=wgs84.getGerman33();
-			} else if (wgs84.isGermany31()) {
-				//convert to German
-				var grid=wgs84.getGerman31();
+				if (wgs84.isChannelIslands()) {
+					//convert to Channel Islands
+					var grid=wgs84.getChannelIslands();
+				} else if (wgs84.isIreland()) {
+					//convert to Irish
+					var grid=wgs84.getIrish(true);
+				} else if (wgs84.isGreatBritain()) {
+					//convert to OSGB
+					var grid=wgs84.getOSGB();
+				} else if (wgs84.isGermany32()) {
+					//convert to German
+					var grid=wgs84.getGerman32();
+				} else if (wgs84.isGermany33()) {
+					//convert to German
+					var grid=wgs84.getGerman33();
+				} else if (wgs84.isGermany31()) {
+					//convert to German
+					var grid=wgs84.getGerman31();
+				}
 			}
-			}
+			else if (ri == 6)
+				var grid=wgs84.getChannelIslands();
 			else if (ri == 1)
 				var grid=wgs84.getOSGB();
 			else if (ri == 2)
@@ -221,30 +225,35 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	var ok = false;
 	
 	if (ri == -1) {
-	
-	grid=new GT_OSGB();
-	if (grid.parseGridRef(gridref)) {
-		ok = true;
-	} else {
-		grid=new GT_Irish();
+		grid=new GT_Channel();
 		if (grid.parseGridRef(gridref)) {
 			ok = true;
 		} else {
-			grid=new GT_German32();
 			if (grid.parseGridRef(gridref)) {
 				ok = true;
 			} else {
-				grid=new GT_German33();
+				grid=new GT_Irish();
 				if (grid.parseGridRef(gridref)) {
 					ok = true;
 				} else {
-					grid=new GT_German31();
-					ok = grid.parseGridRef(gridref)
+					grid=new GT_German32();
+					if (grid.parseGridRef(gridref)) {
+						ok = true;
+					} else {
+						grid=new GT_German33();
+						if (grid.parseGridRef(gridref)) {
+							ok = true;
+						} else {
+							grid=new GT_German31();
+							ok = grid.parseGridRef(gridref)
+						}
+					}
 				}
 			}
 		}
 	}
-	}
+	else if (ri == 6)
+		grid=new GT_Channel();
 	else if (ri == 1)
 		grid=new GT_OSGB();
 	else if (ri == 2)
@@ -257,7 +266,9 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		grid=new GT_German31();
 	else
 		return;
-	ok = grid.parseGridRef(gridref); // FIXME needed?
+	if (ri != -1) {
+		ok = grid.parseGridRef(gridref); 
+	}
 	
 	if (ok) {
 		//convert to a wgs84 coordinate
