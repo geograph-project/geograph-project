@@ -204,6 +204,414 @@ GT_OSGB.prototype.getWGS84 = function()
 
 /*****************************************************************************
 *
+* GT_German32 holds German grid coordinates (Zone 32)
+*
+*****************************************************************************/
+
+function GT_German32()
+{
+	this.northings=0;
+	this.eastings=0;
+	this.status="Undefined";
+}
+
+GT_German32.prefixes = new Array (
+	new Array("TKT", "UKU", "UKV", "UKA", "UKB", "UKC", "UKD", "UKE", "UKF", "UKG"),
+	new Array("TLT", "ULU", "ULV", "ULA", "ULB", "ULC", "ULD", "ULE", "ULF", "ULG"),
+	new Array("TMT", "UMU", "UMV", "UMA", "UMB", "UMC", "UMD", "UME", "UMF", "UMG"),
+	new Array("TNT", "UNU", "UNV", "UNA", "UNB", "UNC", "UND", "UNE", "UNF", "UNG"),
+	new Array("TPT", "UPU", "UPV", "UPA", "UPB", "UPC", "UPD", "UPE", "UPF", "UPG"),
+	new Array("TQT", "UQU", "UQV", "UQA", "UQB", "UQC", "UQD", "UQE", "UQF", "UQG"));
+
+GT_German32.prototype.setGridCoordinates = function(eastings,northings)
+{
+	this.northings=northings;
+	this.eastings=eastings;
+	this.status="OK";
+}
+
+GT_German32.prototype.setError = function(msg)
+{
+	this.status=msg;
+}
+
+GT_German32.prototype._zeropad = function(num, len)
+{
+	var str=new String(num);
+	while (str.length<len)
+	{
+		str='0'+str;
+	}
+	return str;
+}
+
+GT_German32.prototype.getGridRef = function(precision)
+{
+	
+	
+
+	if (precision<0)
+		precision=0;
+	if (precision>5)
+		precision=5;
+		
+	var e="";
+
+	var n="";
+	if (precision>0)
+	{
+		//FIXME round _before_ modulo ...
+		var y=Math.floor(this.northings/100000);
+		var x=Math.floor(this.eastings/100000);
+		y -= 52;
+		x -= 2;
+
+
+		var e=Math.round(this.eastings%100000);
+		var n=Math.round(this.northings%100000);
+
+
+		var div=(5-precision);
+		e=Math.round(e / Math.pow(10, div));
+		n=Math.round(n / Math.pow(10, div));
+	} //FIXME else: x, y =?
+	
+	var prefix=GT_German32.prefixes[x][y];
+	
+    return prefix+" "+this._zeropad(e, precision)+" "+this._zeropad(n, precision);
+}
+
+GT_German32.prototype.parseGridRef = function(landranger)
+{
+	var ok=false;
+
+	
+	this.northings=0;
+	this.eastings=0;
+	
+	var precision;
+
+	for (precision=5; precision>=1; precision--)
+	{
+		var pattern = new RegExp("^([A-Z]{3})\\s*(\\d{"+precision+"})\\s*(\\d{"+precision+"})$", "i")
+		var gridRef = landranger.match(pattern);
+		if (gridRef)
+		{
+			var gridSheet = gridRef[1];
+			var gridEast=0;
+			var gridNorth=0;
+			
+			//5x1 4x10 3x100 2x1000 1x10000 
+			if (precision>0)
+			{
+				var mult=Math.pow(10, 5-precision);
+				gridEast=parseInt(gridRef[2],10) * mult;
+				gridNorth=parseInt(gridRef[3],10) * mult;
+			}
+			
+			var x,y;
+			search: for(x=0; x<GT_German32.prefixes.length; x++) 
+			{
+				for(y=0; y<GT_German32.prefixes[x].length; y++)
+					if (GT_German32.prefixes[x][y] == gridSheet) {
+						this.eastings = ((x + 2) * 100000)+gridEast;
+						this.northings = ((y + 52) * 100000)+gridNorth;
+						ok=true;
+						break search;
+					}
+			
+			}
+		
+		}
+	}
+
+	
+
+	return ok;
+}
+
+
+GT_German32.prototype.getWGS84 = function(uselevel2)
+{
+	var coord = GT_Math.utm_to_wgs84(this.eastings, this.northings, 32);
+
+	var wgs84=new GT_WGS84();
+	wgs84.setDegrees(coord[0],coord[1]);
+	return wgs84;
+}
+
+/*****************************************************************************
+*
+* GT_German33 holds German grid coordinates (Zone 33)
+*
+*****************************************************************************/
+
+function GT_German33()
+{
+	this.northings=0;
+	this.eastings=0;
+	this.status="Undefined";
+}
+
+GT_German33.prefixes = new Array (
+	new Array("TTN", "UTP", "UTQ", "UTR", "UTS", "UTT", "UTU", "UTV", "UTA", "UTB"),
+	new Array("TUN", "UUP", "UUQ", "UUR", "UUS", "UUT", "UUU", "UUV", "UUA", "UUB"),
+	new Array("TVN", "UVP", "UVQ", "UVR", "UVS", "UVT", "UVU", "UVV", "UVA", "UVB"),
+	new Array("TWN", "UWP", "UWQ", "UWR", "UWS", "UWT", "UWU", "UWV", "UWA", "UWB"));
+
+GT_German33.prototype.setGridCoordinates = function(eastings,northings)
+{
+	this.northings=northings;
+	this.eastings=eastings;
+	this.status="OK";
+}
+
+GT_German33.prototype.setError = function(msg)
+{
+	this.status=msg;
+}
+
+GT_German33.prototype._zeropad = function(num, len)
+{
+	var str=new String(num);
+	while (str.length<len)
+	{
+		str='0'+str;
+	}
+	return str;
+}
+
+GT_German33.prototype.getGridRef = function(precision)
+{
+	
+	
+
+	if (precision<0)
+		precision=0;
+	if (precision>5)
+		precision=5;
+		
+	var e="";
+
+	var n="";
+	if (precision>0)
+	{
+		//FIXME round _before_ modulo ...
+		var y=Math.floor(this.northings/100000);
+		var x=Math.floor(this.eastings/100000);
+		y -= 52;
+		x -= 2;
+
+
+		var e=Math.round(this.eastings%100000);
+		var n=Math.round(this.northings%100000);
+
+
+		var div=(5-precision);
+		e=Math.round(e / Math.pow(10, div));
+		n=Math.round(n / Math.pow(10, div));
+	} //FIXME else: x, y =?
+	
+	var prefix=GT_German33.prefixes[x][y];
+	
+    return prefix+" "+this._zeropad(e, precision)+" "+this._zeropad(n, precision);
+}
+
+GT_German33.prototype.parseGridRef = function(landranger)
+{
+	var ok=false;
+
+	
+	this.northings=0;
+	this.eastings=0;
+	
+	var precision;
+
+	for (precision=5; precision>=1; precision--)
+	{
+		var pattern = new RegExp("^([A-Z]{3})\\s*(\\d{"+precision+"})\\s*(\\d{"+precision+"})$", "i")
+		var gridRef = landranger.match(pattern);
+		if (gridRef)
+		{
+			var gridSheet = gridRef[1];
+			var gridEast=0;
+			var gridNorth=0;
+			
+			//5x1 4x10 3x100 2x1000 1x10000 
+			if (precision>0)
+			{
+				var mult=Math.pow(10, 5-precision);
+				gridEast=parseInt(gridRef[2],10) * mult;
+				gridNorth=parseInt(gridRef[3],10) * mult;
+			}
+			
+			var x,y;
+			search: for(x=0; x<GT_German33.prefixes.length; x++) 
+			{
+				for(y=0; y<GT_German33.prefixes[x].length; y++)
+					if (GT_German33.prefixes[x][y] == gridSheet) {
+						this.eastings = ((x + 2) * 100000)+gridEast;
+						this.northings = ((y + 52) * 100000)+gridNorth;
+						ok=true;
+						break search;
+					}
+			
+			}
+		
+		}
+	}
+
+	
+
+	return ok;
+}
+
+
+GT_German33.prototype.getWGS84 = function(uselevel2)
+{
+	var coord = GT_Math.utm_to_wgs84(this.eastings, this.northings, 33);
+
+	var wgs84=new GT_WGS84();
+	wgs84.setDegrees(coord[0],coord[1]);
+	return wgs84;
+}
+
+/*****************************************************************************
+*
+* GT_German31 holds German grid coordinates (Zone 31)
+*
+*****************************************************************************/
+
+function GT_German31()
+{
+	this.northings=0;
+	this.eastings=0;
+	this.status="Undefined";
+}
+
+GT_German31.prefixes = new Array (
+	new Array("TFN", "UFP", "UFQ", "UFR", "UFS", "UFT", "UFU", "UFV", "UFA", "UFB"),
+	new Array("TGN", "UGP", "UGQ", "UGR", "UGS", "UGT", "UGU", "UGV", "UGA", "UGB"));
+
+GT_German31.prototype.setGridCoordinates = function(eastings,northings)
+{
+	this.northings=northings;
+	this.eastings=eastings;
+	this.status="OK";
+}
+
+GT_German31.prototype.setError = function(msg)
+{
+	this.status=msg;
+}
+
+GT_German31.prototype._zeropad = function(num, len)
+{
+	var str=new String(num);
+	while (str.length<len)
+	{
+		str='0'+str;
+	}
+	return str;
+}
+
+GT_German31.prototype.getGridRef = function(precision)
+{
+	
+	
+
+	if (precision<0)
+		precision=0;
+	if (precision>5)
+		precision=5;
+		
+	var e="";
+
+	var n="";
+	if (precision>0)
+	{
+		//FIXME round _before_ modulo ...
+		var y=Math.floor(this.northings/100000);
+		var x=Math.floor(this.eastings/100000);
+		y -= 52;
+		x -= 6;
+
+
+		var e=Math.round(this.eastings%100000);
+		var n=Math.round(this.northings%100000);
+
+
+		var div=(5-precision);
+		e=Math.round(e / Math.pow(10, div));
+		n=Math.round(n / Math.pow(10, div));
+	} //FIXME else: x, y =?
+	
+	var prefix=GT_German31.prefixes[x][y];
+	
+    return prefix+" "+this._zeropad(e, precision)+" "+this._zeropad(n, precision);
+}
+
+GT_German31.prototype.parseGridRef = function(landranger)
+{
+	var ok=false;
+
+	
+	this.northings=0;
+	this.eastings=0;
+	
+	var precision;
+
+	for (precision=5; precision>=1; precision--)
+	{
+		var pattern = new RegExp("^([A-Z]{3})\\s*(\\d{"+precision+"})\\s*(\\d{"+precision+"})$", "i")
+		var gridRef = landranger.match(pattern);
+		if (gridRef)
+		{
+			var gridSheet = gridRef[1];
+			var gridEast=0;
+			var gridNorth=0;
+			
+			//5x1 4x10 3x100 2x1000 1x10000 
+			if (precision>0)
+			{
+				var mult=Math.pow(10, 5-precision);
+				gridEast=parseInt(gridRef[2],10) * mult;
+				gridNorth=parseInt(gridRef[3],10) * mult;
+			}
+			
+			var x,y;
+			search: for(x=0; x<GT_German31.prefixes.length; x++) 
+			{
+				for(y=0; y<GT_German31.prefixes[x].length; y++)
+					if (GT_German31.prefixes[x][y] == gridSheet) {
+						this.eastings = ((x + 6) * 100000)+gridEast;
+						this.northings = ((y + 52) * 100000)+gridNorth;
+						ok=true;
+						break search;
+					}
+			
+			}
+		
+		}
+	}
+
+	
+
+	return ok;
+}
+
+
+GT_German31.prototype.getWGS84 = function(uselevel2)
+{
+	var coord = GT_Math.utm_to_wgs84(this.eastings, this.northings, 31);
+
+	var wgs84=new GT_WGS84();
+	wgs84.setDegrees(coord[0],coord[1]);
+	return wgs84;
+}
+
+/*****************************************************************************
+*
 * GT_OSGB holds Irish grid coordinates
 *
 *****************************************************************************/
@@ -421,6 +829,33 @@ GT_WGS84.prototype.isGreatBritain = function()
 		this.longitude < 2.3;
 }
 
+GT_WGS84.prototype.isGermany32 = function(sloppy)
+{
+	var delta = (sloppy == null || !sloppy) ? 0 : 1;
+	return this.latitude > 47 &&
+		this.latitude < 56 &&
+		this.longitude >= 6 - delta &&
+		this.longitude <= 12 + delta; //FIXME
+}
+
+GT_WGS84.prototype.isGermany33 = function(sloppy)
+{
+	var delta = (sloppy == null || !sloppy) ? 0 : 1;
+	return this.latitude > 47 &&
+		this.latitude < 56 &&
+		this.longitude > 12 - delta &&
+		this.longitude < 16; //FIXME
+}
+
+GT_WGS84.prototype.isGermany31 = function(sloppy)
+{
+	var delta = (sloppy == null || !sloppy) ? 0 : 1;
+	return this.latitude > 47 &&
+		this.latitude < 56 &&
+		this.longitude > 4 &&
+		this.longitude < 6 + delta; //FIXME
+}
+
 GT_WGS84.prototype.isIreland = function()
 {
 	return this.latitude > 51.2 &&
@@ -473,6 +908,54 @@ GT_WGS84.prototype.getIrish = function(uselevel2)
 	return irish;
 }
 
+GT_WGS84.prototype.getGerman32 = function(uselevel2, sloppy)
+{
+	var german=new GT_German32();
+	if (this.isGermany32(sloppy))
+	{
+		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 32);
+		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
+	}
+	else 
+	{
+		german.setError("Coordinate not within Germany (Zone 32)");
+	}
+
+	return german;
+}
+
+GT_WGS84.prototype.getGerman33 = function(uselevel2, sloppy)
+{
+	var german=new GT_German33();
+	if (this.isGermany33(sloppy))
+	{
+		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 33);
+		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
+	}
+	else 
+	{
+		german.setError("Coordinate not within Germany (Zone 33)");
+	}
+
+	return german;
+}
+
+GT_WGS84.prototype.getGerman31 = function(uselevel2, sloppy)
+{
+	var german=new GT_German31();
+	if (this.isGermany31(sloppy))
+	{
+		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 31);
+		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
+	}
+	else 
+	{
+		german.setError("Coordinate not within Germany (Zone 31)");
+	}
+
+	return german;
+}
+
 GT_WGS84.prototype.getOSGB = function(uselevel2)
 {
 	var osgb=new GT_OSGB();
@@ -516,6 +999,123 @@ GT_WGS84.prototype.getOSGB = function(uselevel2)
 //GT_Math is just namespace for all the nasty maths functions
 function GT_Math()
 {
+}
+
+GT_Math.pow2 = function(x) {
+	return x*x;
+}
+
+GT_Math.pow3 = function(x) {
+	return x*x*x;
+}
+
+GT_Math.deg2rad = function(x) {
+	return x*Math.PI/180.;
+}
+
+GT_Math.rad2deg = function(x) {
+	return x/Math.PI*180.;
+}
+
+GT_Math.sinh = function(x) {
+	return (Math.exp(x)-Math.exp(-x))*0.5;
+}
+
+GT_Math.asinh = function(x) {
+	return Math.log(Math.sqrt(x*x+1)+x);
+}
+
+GT_Math.utm_to_wgs84 = function(east,north,zone) {
+	r1=6378137.;
+	r2=6356752.31425;
+
+	re=GT_Math.pow2(r1)/r2;
+	e1=1-GT_Math.pow2(r2/r1);
+	e2=1-r2/r1;
+	e3=GT_Math.pow2(r1/r2)-1;
+
+	m0=1 + 3./4*e1 + 45./64*GT_Math.pow2(e1) + 175./256*GT_Math.pow3(e1);
+	//m1=    3./4*e1 + 15./16*GT_Math.pow2(e1) + 525./512*GT_Math.pow3(e1);
+	//m2=               15./64*GT_Math.pow2(e1) + 105./256*GT_Math.pow3(e1);
+	//m3=                                   35./512*GT_Math.pow3(e1);
+
+	b0=r1*(1-e1)*m0;
+	//b1=r1*(1-e1)*m1/2;
+	//b2=r1*(1-e1)*m2/4;
+	//b3=r1*(1-e1)*m3/6;
+
+	at=e2/(2-e2);
+	a1=3./2*(at-9./16*GT_Math.pow3(at));
+	a2=21./16*GT_Math.pow2(at);
+	a3=151./96*GT_Math.pow3(at);
+
+	//our origin: 200, 5200
+	//east=east+200000;
+	//north=north+5200000;
+
+	//trigger_error("E/N: " . east . "/" . north, E_USER_NOTICE);
+
+	y=(east-500000)/0.9996;
+	x=north/0.9996;
+
+	phi=x/b0;
+	bf=phi+a1*Math.sin(2*phi)+a2*Math.sin(4*phi)+a3*Math.sin(6*phi);
+	lmbda=y/re;
+	vf=Math.sqrt(1+e3*GT_Math.pow2(Math.cos(bf)));
+	del=Math.atan(vf/(Math.cos(bf))*GT_Math.sinh(lmbda));
+	b=Math.atan(Math.tan(bf)*Math.cos(del*vf));
+
+	lng=zone*6-183+GT_Math.rad2deg(del);
+	lat=GT_Math.rad2deg(b);
+
+	//trigger_error("->L/L: " . lat . "/" . lng, E_USER_NOTICE);
+
+	return new Array(lat,lng);
+}
+
+GT_Math.wgs84_to_utm = function(lat,lng,zone) {
+	r1=6378137.;
+	r2=6356752.31425;
+
+	re=GT_Math.pow2(r1)/r2;
+	e1=1-GT_Math.pow2(r2/r1);
+	//e2=1-r2/r1;
+	e3=GT_Math.pow2(r1/r2)-1;
+
+	m0=1 + 3./4*e1 + 45./64*GT_Math.pow2(e1) + 175./256*GT_Math.pow3(e1);
+	m1=    3./4*e1 + 15./16*GT_Math.pow2(e1) + 525./512*GT_Math.pow3(e1);
+	m2=               15./64*GT_Math.pow2(e1) + 105./256*GT_Math.pow3(e1);
+	m3=                                   35./512*GT_Math.pow3(e1);
+
+	b0=r1*(1-e1)*m0;
+	b1=r1*(1-e1)*m1/2;
+	b2=r1*(1-e1)*m2/4;
+	b3=r1*(1-e1)*m3/6;
+
+	//at=e2/(2-e2);
+	//a1=3./2*(at-9./16*GT_Math.pow3(at));
+	//a2=21./16*GT_Math.pow2(at);
+	//a3=151./96*GT_Math.pow3(at);
+
+	//zone2=Math.floor(lng/6.)+31; //FIXME: Math.floor/truncate? FIXME use calculated zone?
+
+	del=GT_Math.deg2rad(lng-zone*6+183);
+	b=GT_Math.deg2rad(lat);
+	v=Math.sqrt(1+e3*GT_Math.pow2(Math.cos(b)));
+	bf=Math.atan(Math.tan(b)/(Math.cos(del*v)));
+	vf=Math.sqrt(1+e3*GT_Math.pow2(Math.cos(bf)));
+	
+	y=re*GT_Math.asinh(Math.tan(del)/vf*Math.cos(bf));
+	x=b0*bf-b1*Math.sin(2*bf)+b2*Math.sin(4*bf)-b3*Math.sin(6*bf);
+
+	east=0.9996*y+500000;
+	north=0.9996*x; // FIXME southern hem: +10000000
+
+	//our origin: 200, 5200
+	//east=east-200000;
+	//north=north-5200000;
+
+	return new Array(east,north);
 }
 
 GT_Math.E_N_to_Lat = function(East, North, a, b, e0, n0, f0, PHI0, LAM0)
