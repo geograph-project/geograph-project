@@ -501,13 +501,13 @@ class RasterMap
 		return "&d{$l}p0lat=$lat1&d{$l}p0lon=$long1&d{$l}p1lat=$lat2&d{$l}p1lon=$long2";
 	}
 
-	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2) {
+	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
 		return "			var polyline = new GPolyline([
 				new GLatLng($lat1,$long1),
 				new GLatLng($lat2,$long2)
-			], \"#0000FF\", 1);
+			], \"#0000FF\", 1, $op);
 			map.addOverlay(polyline);\n";
 	}
 	
@@ -588,7 +588,18 @@ class RasterMap
 					map.addOverlay(createMarker(point2));\n";
 			}
 			if ($this->issubmit) {
+				$zoom=13;
+			} else {
+				$zoom=14;
+			}
+			if ($this->issubmit) {
 				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
+			}
+			if ($this->issubmit) {
+				for ($i=100; $i<=900; $i+=100) {
+					$block .= $this->getPolyLineBlock($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
+					$block .= $this->getPolyLineBlock($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25);
+				}
 			}
 			if (empty($this->lat)) {
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
@@ -609,6 +620,7 @@ class RasterMap
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					var issubmit = {$this->issubmit}+0;
+					var ri = {$this->reference_index};
 					var map = null;
 					function loadmap() {
 						if (GBrowserIsCompatible()) {
