@@ -188,7 +188,7 @@ var ACFlatData = new function(){
 
 {/literal}
 	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
-	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/geotools2.js"|revision}"></script>
 {else}
 	<p>There are no images available available in the current set.</p>
 	{if $game->score}<p>Don't forget to <a href="/games/score.php">save your score</a>!</a></p>{/if}

@@ -162,7 +162,7 @@ geographing</a> first.</p>
 	</ul>
 
 	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
-	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/geotools2.js"|revision}"></script>
 {else}
 	<input type="hidden" name="gridsquare" value="{$gridsquare|escape:'html'}">
 	<input type="hidden" name="eastings" value="{$eastings|escape:'html'}">

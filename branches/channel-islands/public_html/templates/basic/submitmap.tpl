@@ -8,7 +8,7 @@
 {include file="_std_begin.tpl"}
 {/if}
 
-<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
+<script type="text/javascript" src="{"/js/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/mappingG.js"|revision}"></script>
 {literal}
 	<script type="text/javascript">
