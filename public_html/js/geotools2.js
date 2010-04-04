@@ -204,6 +204,136 @@ GT_OSGB.prototype.getWGS84 = function()
 
 /*****************************************************************************
 *
+* GT_Channel holds Channel Islands grid coordinates (UTM Zone 30)
+*
+*****************************************************************************/
+
+function GT_Channel()
+{
+	this.northings=0;
+	this.eastings=0;
+	this.status="Undefined";
+}
+
+GT_Channel.prefixes = new Array (
+	new Array("WA","WV"));
+
+GT_Channel.prototype.setGridCoordinates = function(eastings,northings)
+{
+	this.northings=northings;
+	this.eastings=eastings;
+	this.status="OK";
+}
+
+GT_Channel.prototype.setError = function(msg)
+{
+	this.status=msg;
+}
+
+GT_Channel.prototype._zeropad = function(num, len)
+{
+	var str=new String(num);
+	while (str.length<len)
+	{
+		str='0'+str;
+	}
+	return str;
+}
+
+GT_Channel.prototype.getGridRef = function(precision)
+{
+	
+	
+
+	if (precision<0)
+		precision=0;
+	if (precision>5)
+		precision=5;
+		
+	var e="";
+
+	var n="";
+	if (precision>0)
+	{
+		//FIXME round _before_ modulo ...
+		var y=Math.floor(this.northings/100000);
+		var x=Math.floor(this.eastings/100000);
+		y -= 53;
+		x -= 5;
+
+		var e=Math.round(this.eastings%100000);
+		var n=Math.round(this.northings%100000);
+
+		var div=(5-precision);
+		e=Math.round(e / Math.pow(10, div));
+		n=Math.round(n / Math.pow(10, div));
+	} //FIXME else: x, y =?
+	
+	var prefix=GT_Channel.prefixes[x][y];
+	
+    return prefix+" "+this._zeropad(e, precision)+" "+this._zeropad(n, precision);
+}
+
+GT_Channel.prototype.parseGridRef = function(landranger)
+{
+	var ok=false;
+	
+	this.northings=0;
+	this.eastings=0;
+	
+	var precision;
+
+	for (precision=5; precision>=1; precision--)
+	{
+		var pattern = new RegExp("^([A-Z]{2})\\s*(\\d{"+precision+"})\\s*(\\d{"+precision+"})$", "i")
+		var gridRef = landranger.match(pattern);
+		if (gridRef)
+		{
+			var gridSheet = gridRef[1];
+			var gridEast=0;
+			var gridNorth=0;
+
+			//5x1 4x10 3x100 2x1000 1x10000 
+			if (precision>0)
+			{
+				var mult=Math.pow(10, 5-precision);
+				gridEast=parseInt(gridRef[2],10) * mult;
+				gridNorth=parseInt(gridRef[3],10) * mult;
+			}
+			
+			var x,y;
+			search: for(x=0; x<GT_Channel.prefixes.length; x++) 
+			{
+				for(y=0; y<GT_Channel.prefixes[x].length; y++)
+					if (GT_Channel.prefixes[x][y] == gridSheet) {
+						this.eastings = ((x + 5) * 100000)+gridEast;
+						this.northings = ((y + 53) * 100000)+gridNorth;
+						ok=true;
+						break search;
+					}
+			
+			}
+		
+		}
+	}
+
+	
+
+	return ok;
+}
+
+
+GT_Channel.prototype.getWGS84 = function(uselevel2)
+{
+	var coord = GT_Math.utm_to_wgs84(this.eastings, this.northings, 30);
+
+	var wgs84=new GT_WGS84();
+	wgs84.setDegrees(coord[0],coord[1]);
+	return wgs84;
+}
+
+/*****************************************************************************
+*
 * GT_German32 holds German grid coordinates (Zone 32)
 *
 *****************************************************************************/
@@ -829,6 +959,14 @@ GT_WGS84.prototype.isGreatBritain = function()
 		this.longitude < 2.3;
 }
 
+GT_WGS84.prototype.isChannelIslands = function()
+{
+	return this.latitude > 49.1 &&
+		this.latitude < 49.8 &&
+		this.longitude > -2.8 &&
+		this.longitude < 1.8;
+}
+
 GT_WGS84.prototype.isGermany32 = function(sloppy)
 {
 	var delta = (sloppy == null || !sloppy) ? 0 : 1;
@@ -906,6 +1044,22 @@ GT_WGS84.prototype.getIrish = function(uselevel2)
 	}
 
 	return irish;
+}
+
+GT_WGS84.prototype.getChannelIslands = function()
+{
+	var channel=new GT_Channel();
+	if (this.isChannelIslands())
+	{
+		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 30);
+		channel.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
+	}
+	else 
+	{
+		channel.setError("Coordinate not within Channel Islands");
+	}
+
+	return channel;
 }
 
 GT_WGS84.prototype.getGerman32 = function(uselevel2, sloppy)
