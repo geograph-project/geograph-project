@@ -463,16 +463,6 @@ class RasterMap
 			], \"#0000FF\", 1, $op);
 			map.addOverlay(polyline);\n";
 	}
-
-#	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2) {
-#		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
-#		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-#		return "			var polyline = new GPolyline([
-#				new GLatLng($lat1,$long1),
-#				new GLatLng($lat2,$long2)
-#			], \"#0000FF\", 1);
-#			map.addOverlay(polyline);\n";
-#	}
 	
 	function getPolySquareBlock(&$conv,$e1,$n1,$e2,$n2) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
@@ -573,7 +563,7 @@ class RasterMap
 				}
 			}
 			if ($this->issubmit) {
-				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
+				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/geotools2.js")."\"></script>";
 			} else {
 				$p1 = '';
 			}
