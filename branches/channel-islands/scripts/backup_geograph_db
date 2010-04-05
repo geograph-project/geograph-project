@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-my $path="/var/www/geograph_live/backups";
+my $path="/var/www/channel_live/backups";
 
 
 
@@ -9,7 +9,7 @@ $month++;
 $year+=1900;
 
 #now backup database
-my $file=sprintf("geograph_db_%04d-%02d-%02d_%02d%02d.mysql.gz", $year, $month, $day, $hour, $min, $sec);
+my $file=sprintf("channel_db_%04d-%02d-%02d_%02d%02d.mysql.gz", $year, $month, $day, $hour, $min, $sec);
 my $outfile="$path/$file";
 
 print "Backing up live database, please wait...\n";
@@ -20,35 +20,35 @@ $cmd="/usr/bin/mysqldump --no-defaults --opt ".
 ##SEE: http://www.geograph.org.uk/admin/tables.php
 
 #derived tables - will be rebuilt
-	"--ignore-table=geograph_live.gridimage_search ".
-	"--ignore-table=geograph_live.gridimage_kml ".
-        "--ignore-table=geograph_live.user_gridsquare ".
-        "--ignore-table=geograph_live.user_stat ".
-        "--ignore-table=geograph_live.user_quadsquare ".
+	"--ignore-table=channel_live.gridimage_search ".
+	"--ignore-table=channel_live.gridimage_kml ".
+        "--ignore-table=channel_live.user_gridsquare ".
+        "--ignore-table=channel_live.user_stat ".
+        "--ignore-table=channel_live.user_quadsquare ".
 
 #large tables - not worth backing up
-	"--ignore-table=geograph_live.gridimage_exif1 ".
-	"--ignore-table=geograph_live.gridimage_exif ".
+	"--ignore-table=channel_live.gridimage_exif1 ".
+	"--ignore-table=channel_live.gridimage_exif ".
 
 #static tables  - not worth backing up
-        "--ignore-table=geograph_live.os_gaz ".
-        "--ignore-table=geograph_live.placename_index ".
-        "--ignore-table=geograph_live.loc_placenames ".
-        "--ignore-table=geograph_live.loc_abgaz ".
-        "--ignore-table=geograph_live.loc_wikipedia ".
-        "--ignore-table=geograph_live.loc_ppl ".
-        "--ignore-table=geograph_live.loc_towns ".
+        "--ignore-table=channel_live.os_gaz ".
+        "--ignore-table=channel_live.placename_index ".
+        "--ignore-table=channel_live.loc_placenames ".
+        "--ignore-table=channel_live.loc_abgaz ".
+        "--ignore-table=channel_live.loc_wikipedia ".
+        "--ignore-table=channel_live.loc_ppl ".
+        "--ignore-table=channel_live.loc_towns ".
 
 #various tmp tables - some are big!
-        "--ignore-table=geograph_live.aagaz ".
-        "--ignore-table=geograph_live.gridimage_land ".
-        "--ignore-table=geograph_live.tmp_percentage ".
-        "--ignore-table=geograph_live.tmplook ".
-        "--ignore-table=geograph_live.user_dev ".
-        "--ignore-table=geograph_live.devuser ".
-        "--ignore-table=geograph_live.gridsquare_land ".
+        "--ignore-table=channel_live.aagaz ".
+        "--ignore-table=channel_live.gridimage_land ".
+        "--ignore-table=channel_live.tmp_percentage ".
+        "--ignore-table=channel_live.tmplook ".
+        "--ignore-table=channel_live.user_dev ".
+        "--ignore-table=channel_live.devuser ".
+        "--ignore-table=channel_live.gridsquare_land ".
 
-	"-ugeograph -pm4pp3r geograph_live | gzip > $outfile";
+	"-uchannel -pm4pp3r -hscone channel_live | gzip > $outfile";
 `$cmd`;
 
 my $size=(stat($outfile))[7];
