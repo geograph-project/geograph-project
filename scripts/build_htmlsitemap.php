@@ -26,8 +26,8 @@
 
 //these are the arguments we expect
 $param=array(
-	'dir'=>'/var/www/geograph_live/',		//base installation dir
-	'config'=>'www.geograph.org.uk', //effective config
+	'dir'=>'/var/www/channel_live/',		//base installation dir
+	'config'=>'channel-islands.geographs.org', //effective config
 	'help'=>0,		//show script help?
 );
 
@@ -86,7 +86,7 @@ $urls_per_sitemap=50000;
 
 //how many sitemap files must we write?
 printf("Counting images...\r");
-$images=$db->GetOne("select count(*) from kmlcache where rendered = 1 and filename != ''");
+$images=$db->GetOne("select count(*) from kmlcache where rendered = 1 and filename like '/kml/__/%'");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
@@ -110,7 +110,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$recordSet = &$db->Execute(
 		"select filename,date(ts) as ts_date ".
 		"from kmlcache ".
-		"where rendered = 1 and filename != ''".
+		"where rendered = 1 and filename like '/kml/__/%' ".
 		"order by level ".
 		"limit $offset,$urls_per_sitemap");
 	

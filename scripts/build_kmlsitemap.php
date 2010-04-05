@@ -26,10 +26,11 @@
 
 //these are the arguments we expect
 $param=array(
-	'dir'=>'/var/www/geograph_live/',		//base installation dir
-	'config'=>'www.geograph.org.uk', //effective config
+	'dir'=>'/var/www/channel_live/',		//base installation dir
+	'config'=>'channel-islands.geographs.org', //effective config
 	'help'=>0,		//show script help?
 );
+
 
 //very simple argument parser
 for($i=1; $i<count($_SERVER['argv']); $i++)
