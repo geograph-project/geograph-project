@@ -1,5 +1,5 @@
 <VirtualHost *>
-    DocumentRoot /var/www/channel/public_html
+    DocumentRoot /var/www/channel_live/public_html
 
     #canonical domain for site
     ServerName www.geograph.je
@@ -14,15 +14,15 @@
     SetEnvIf Request_Method "OPTIONS" dontlog
 
     #only log if we haven't tripped our dontlog switch
-    CustomLog /var/www/channel/logs/access_log geograph env=!dontlog
-    ErrorLog /var/www/channel/logs/error_log
+    CustomLog /var/www/channel_live/logs/access_log geograph env=!dontlog
+    ErrorLog /var/www/channel_live/logs/error_log
 
-    php_value include_path .:/var/www/channel/libs/:/usr/share/php:/usr/share/pear
+    php_value include_path .:/var/www/channel_live/libs/:/usr/share/php:/usr/share/pear
     php_value register_globals Off
     php_value upload_max_filesize 8M
     php_value memory_limit  32M
 
-    <Directory /var/www/channel/public_html/>
+    <Directory /var/www/channel_live/public_html/>
 	DirectoryIndex index.php
         Options -Indexes
         Options FollowSymLinks
