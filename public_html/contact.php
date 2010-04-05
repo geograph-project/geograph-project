@@ -100,8 +100,10 @@ if (isset($_POST['msg']))
 }
 else
 {
-	if ($USER->registered)
+	if ($USER->registered) {
 		$smarty->assign('from', $USER->email);
+		$smarty->assign('t', hash_hmac('md5', $USER->user_id, $CONF['token_secret']));
+	}
 }
 
 //get referring page from form if submitted, otherwise pick it up from server
@@ -122,6 +124,12 @@ if (preg_match("/photo\/(\d+)/",$referring_page,$m)) {
 	$smarty->assign_by_ref('image', $image);
 	if (!isset($_POST['msg']))
 		$smarty->assign('subject', '[Geograph] ');
+		
+		
+	$db = GeographDatabaseConnection(true);
+	$stats= $db->GetRow("select images from user_stat where user_id = 0");
+	$stats['millions'] = sprintf("%.1f",$stats['images']/1000000);
+	$smarty->assign_by_ref('stats', $stats);	
 }
 	
 	
