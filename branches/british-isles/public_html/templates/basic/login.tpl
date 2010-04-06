@@ -5,6 +5,16 @@
 
 <form action="{$script_uri}" method="post">
 
+<div class="interestBox" style="width:330px;float:right">
+	Our websites:
+	<ul>
+		<li><b>Geograph Britain and Ireland</b><br/><br/>
+		<ul><li>(includes <b>Geograph Ireland</b>)</li></ul><br/></li>
+		<li><b>Geograph Channel Islands</b></li>
+	</ul>
+	... share the same user/registration database.<br/><br/> You can use the logins from either here interchangably.
+</div>
+
 {if $inline}
    <h2>Login Required</h2>
    <p>You must log in to access this page. 
@@ -13,8 +23,7 @@
     <p>Please log in with your email address and password. 
 {/if}
 
-If you haven't
-registered yet, <a title="register now" href="/register.php">go and register</a>, it's quick and free!</p>
+If you haven't registered yet, <a title="register now" href="/register.php">go and register</a>, it's quick and free!</p>
 
 <label for="email">Your email address or nickname</label><br/>
 <input id="email" name="email" value="{$email|escape:'html'}"/>
@@ -37,6 +46,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 <br/>
 
 <input type="submit" name="login" value="Login"/>
+<br style="clear:both"/>
 
 {foreach from=$_post key=key item=value}
 	{if $key eq 'email' || $key eq 'password' || $key eq 'remember_me' || $key eq 'login'}
