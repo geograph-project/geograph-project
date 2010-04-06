@@ -5,13 +5,40 @@
 
     <h2>Credits</h2>
  
-    Here's all the people and technologies that make this site possible...
+    Perhaps the best way of expressing this is with a timeline...
     
-    <h3>Original Idea</h3>
-    <ul>
-    <li>{mailto address="rogersgm@gmail.com" text="Gary Rogers" encode="javascript"} came up with original concept.</li>
-    </ul>
-
+ 
+ <table cellpadding=10 cellspacing=0>
+ 	<tr>
+ 		<th>Feb 2005</th>
+ 		<td>{external href="http://www.geograph.org.uk/profile/1" text="Gary Rogers"} came up with original concept for Great Britain, Ireland is quickly added.</td>
+ 	</tr>
+ 	<tr>
+ 		<th>Mar 2005</th>
+ 		<td>{external href="http://www.geograph.org.uk/profile/2" text="Paul Dixon"} created the {external href="http://www.geograph.org.uk/" text="geograph.org.uk"} website, and at the same time created the {external href="http://hub.geograph.org.uk/" text="open source project"} (GPL licensed) so the concept can easily be taken further afield.</td>
+ 	</tr>
+ 	<tr>
+ 		<th>Apr 2005</th>
+ 		<td>{external href="http://www.geograph.org.uk/profile/3" text="Barry Hunter"} joins the project to further the mapping and search functionality, and continues to add statistics and other features.</td>
+ 	</tr>
+ 	<tr>
+ 		<th>Sept&nbsp;2005</th>
+ 		<td>{external href="http://www.geograph.org.uk/profile/80" text="Ian Rutson"} contributed to the Memory Map export features.</td>
+ 	</tr>
+ 	<tr>
+ 		<th>Oct 2006</th>
+ 		<td>{external href="http://www.geograph.org.uk/profile/2407" text="David Morris"} created the bulk standalone upload application - JUppy</td>
+ 	</tr>
+ 	<tr>
+ 		<th>Oct 2008</th>
+ 		<td>{external href="http://geo-en.hlipp.de/profile/1" text="Hansj&ouml;rg Lipp"} stepped up and created {external href="http://geo-en.hlipp.de/" text="Geograph Germany"}. At the same time helps clean up the codebase which has seen a few years of tending to become more and more British Isles specific.</td>
+ 	</tr>
+  	<tr>
+ 		<th><i>Apr 2010</i></th>
+ 		<td><i><a href="/profile/3">Barry Hunter</a> creates and now maintains the Geograph Channel Islands website...</i></td>
+ 	</tr>
+</table>
+    
     <h3>Photographs</h3>
     <ul>
     <li>Copyright on all photographs is retained by the original contributor, but all are 
@@ -20,62 +47,22 @@
     <li>View the <a href="/credits/">Photograph Contributor Listing</a>.</li>
     </ul>
     
-    <h3>Software</h3>
-    <ul>
-    <li>{mailto address="paul@elphin.com" text="Paul Dixon" encode="javascript"} manages the
-    software development as an open-source, GPL licensed project, and is responsible for 
-    much of the coding / design, as well as specifying and building the dedicated server farm. 
-    Paul can be contracted through his company {external href="http://www.elphin.com/" title="Elphin Limited" text="Elphin Limited"}.</li>
-    
-    <li>{mailto address="geo@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}, 
-    developer and maintainer of 
-    {external title="Nearby.org.uk Website" href="http://www.nearby.org.uk" text="www.nearby.org.uk"} lends his wide experience of working with 
-    mapping technologies and was responsible for the site search, as well as 
-    contributing many other enhancements.</li>
-    
-    <li>Ian Rutson contributed to the Memory Map export features.</li>
-    
-    <li>David Morris has helped with the profile features and a bulk standalone upload application - JUppy.</li>
-    
-    </ul>
-    
     <h3>Moderators</h3>
     <ul>
-    <li>A growing number of volunteer moderators drawn from the contributor list, donate their time and effort to help sort and maintain the image archive. View <a href="/admin/team.php">the Geograph Team</a> for the list of current and past moderators.</li>
+    <li>Currently the <a href="/team.php">the Geograph Team</a> are drawn from contributors to Geograph Britain and Ireland.</li>
     </ul>
     
     <h3>Mapping &amp; Location Data</h3>
     <ul>
-    <li>Historical Maps from the mid 20<sup>th</sup> century kindly made available by 
-    {external href="http://www.visionofbritain.org.uk/" title="a Vision of Britain" text="VisionOfBritain.org.uk"}.</li>
-    <li>GB &amp; Ireland outline reproduced from 1990 World Vector Shoreline dataset by 
-    {external href="http://www.nima.mil/" title="U.S. National Imagery and Mapping Agency" text="MIMA"}, 
-    not subject to copyright protection under 17 U.S.C. 403.</li> 
-    <li>Placename/Toponymic information is based on the Geographic Names Data Base, containing official 
-    standard names approved by the United States Board on Geographic Names and maintained by the National 
-    Geospatial-Intelligence Agency. More information is available at the Products and Services link at 
-    {external href="http://www.nga.mil/" text="www.nga.mil"}. </li>
-    <li>Low Resolution postcode data from {external href="http://sourceforge.net/projects/geocode" text="Sourceforge Geocode.Service project"}.</li>
-    <li>Administrative County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
-    <li>{external href="http://www.osni.gov.uk" text="OSNI"} generously donated a complete set of
-    1:50000 paper maps for Northern Ireland, aiding photo moderation in the absence of suitable online maps.</li>
-    <li>Historic County centre points compiled by {mailto address="trigs@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}.</li>
-    <li>National Trail routes compiled with the help of {external href="http://www.magic.gov.uk/" text="magic.gov.uk"} and contributor <a href="http://geograph.local/profile/1324">Tony Atkin</a>! (subject to Copyright, used under licence)</li>
-    <li>National Cycle routes provided by {external href="http://www.systrans.org.uk/" text="sustrans.org.uk"}. (subject to Copyright, used with permission)</li>
-    <li>Great Britain Gazetteer based upon {external href="http://www.ordnancesurvey.co.uk/" text="Ordnance Survey&reg;"} 1:50 000 Scale Gazetteer, &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<ul>
-    	<li>and enhanced with the Gazetteer of British Place Names, &copy; {external href="http://www.abcounties.co.uk/" text="Association of British Counties"}, used with permission.</li>
-    </ul>
-    </li>
-    <li>Great Britain 1:50 000 Scale Colour Raster Mapping (Same as paper based Landranger&trade; product). &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616. Provided as part of Sponsorship deal.</li>
-    <li>Maps for Ireland and also during the search using the {external href="http://www.google.com/apis/maps/" text="Google Maps API"}.</li>
+    <li>Maps via {external href="http://www.google.com/apis/maps/" text="Google Maps API"}.</li>
     </ul>
     
     <h3>Hosting</h3>
+    Geograph Channel Islands is hosted by Geograph Britain and Ireland, which in turn is supported by: 
     <ul>
-     <li>{external href="http://www.ordnancesurvey.co.uk/oswebsite/education/" text="Ordnance Survey&reg;"} Great Britain have agreed to sponsor the project, allowing us to secure reliable hosting, as well as to develop the project into an educational context.</li>
+     <li>{external href="http://www.ordnancesurvey.co.uk/oswebsite/education/" text="Ordnance Survey&reg;"} sponsor the project, allowing us to secure reliable hosting, as well as to develop the project into an educational context.</li>
      
-     <li>{external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"} provide superb co-location hosting and support, giving a home to {external href="http://blog.dixo.net/2006/07/28/geograph-servers-coming-to-life/" text="our collection of servers"}.</li> 
-     <li>During the early days of the project, we relied on a dedicated server generously donated by {external title="Visit Positive Internet website" href="http://www.positive-internet.com/" text="Positive Internet"}.</li> 
+     <li>{external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"} provide superb co-location hosting and support.</li> 
 
     </ul>
 

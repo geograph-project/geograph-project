@@ -3,6 +3,8 @@
 
 <h3>the Geograph Team</h3>
 
+This is the Team from Geograph Britain and Ireland, which for the moment also maintain Geograph Channel Islands.
+
 {if $team}
 
 <table class="report">
