@@ -4,9 +4,9 @@
         xmlns:moz="http://www.mozilla.org/2006/browser/search/"
         xmlns:opensearchgeo="http://a9.com/-/opensearch/extensions/geo/1.0/" >
   <ShortName>Geograph</ShortName>
-  <LongName>Geograph British Isles</LongName>
-  <Description>geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland</Description>
-  <Tags>geograph photos images british isles</Tags>
+  <LongName>Geograph Channel Islands</LongName>
+  <Description>geographically representative photographs and information for every square kilometre of the Channel Islands</Description>
+  <Tags>geograph photos images channel islands</Tags>
   <SyndicationRight>open</SyndicationRight>
 
   <Developer>Geograph</Developer>
@@ -15,16 +15,16 @@
   </Attribution>
   <Image height="16" width="16" type="image/vnd.microsoft.icon">http://www.geograph.org.uk/favicon.ico</Image>
 
-  <moz:SearchForm>http://www.geograph.org.uk/search.php</moz:SearchForm>
+  <moz:SearchForm>http://channel-islands.geographs.org/search.php</moz:SearchForm>
   
   <Url type="application/vnd.google-earth.kml+xml"
-       template="http://www.geograph.org.uk/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}&amp;output=kml">
+       template="http://channel-islands.geographs.org/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}&amp;output=kml">
   </Url>
   <Url type="application/rss+xml" 
-       template="http://www.geograph.org.uk/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
+       template="http://channel-islands.geographs.org/syndicator.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
   </Url>
   <Url type="text/html" 
-       template="http://www.geograph.org.uk/search.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
+       template="http://channel-islands.geographs.org/search.php?q={searchTerms}&amp;location={geo:locationString?}&amp;lat={geo:lat?}&amp;lon={geo:lon?}&amp;BBOX={geo:box?}">
   </Url>
   <Query role="example" searchTerms="Liverpool" />
 

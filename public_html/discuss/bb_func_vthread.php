@@ -239,8 +239,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)(\w{0,3}
 //no external images
 // the callback function
 $fixExternalImages= <<<FUNC
-	if ((\$matches[2] == 'www.geograph.org.uk') || (\$matches[2] == 'www.geograph.co.uk') || (\$matches[2] == 'chart.apis.google.com') || 
-	 (\$matches[2] == 'geodatastore2.appspot.com')  || (\$matches[2] == 'wordle.net') )
+	if (in_array(\$matches[2],\$GLOBALS['domainWhitelist']))
 	{
 		//this is fine
 		return \$matches[0];
@@ -249,9 +248,22 @@ $fixExternalImages= <<<FUNC
 	{
 		\$url=\$matches[1].\$matches[2].\$matches[3];
 		//no external images allowed
-		return "<a title=\"Externally hosted image - caution advised\" href=\"".htmlentities(\$url)."\">".htmlentities(\$url)."</a>";	
+		return "<a title=\"Externally hosted image - caution advised\" href=\"".htmlentities(\$url)."\">".htmlentities(\$url)."</a> (external image) ";	
 	}
 FUNC;
+
+$domainWhitelist = array(
+	'www.geograph.org.uk',
+	's0.geograph.org.uk',
+	't0.geograph.org.uk',
+	'www.nearby.org.uk',
+	'www.gravatar.com',
+	'www.geograph.co.uk',
+	'chart.apis.google.com',
+	'geodatastore2.appspot.com',
+	'wordle.net',
+	'www.wordle.net'
+);
 
 $posterText=preg_replace_callback(
              '/<img src="(http:\/\/)([^\/]*)([^"]*)".*?>/is',
