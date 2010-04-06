@@ -37,6 +37,8 @@
     
     <li>David Morris has helped with the profile features and a bulk standalone upload application - JUppy.</li>
     
+    <li>{external href="http://geo-en.hlipp.de/profile/1" text="Hansj&ouml;rg Lipp"} has fixed many a bug in the core code, during the creation of {external href="http://geo-en.hlipp.de/" text="Geograph Germany"}.</li>
+    
     </ul>
     
     <h3>Moderators</h3>

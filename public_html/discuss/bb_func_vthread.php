@@ -202,6 +202,10 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 				$server = 'geo.hlipp.de';
 				$ext = true;
 				$prefix = 'de:';
+			} elseif ($g_matches[2][$g_i] == 'ci:') {
+				$server = 'channel-islands.geographs.org';
+				$ext = true;
+				$prefix = 'ci:';
 			}
 			if (is_numeric($g_id)) {
 				if ($global_thumb_count >= $CONF['global_thumb_limit'] || $thumb_count >= $CONF['post_thumb_limit']) {
