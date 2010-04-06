@@ -19,6 +19,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_file=null, $cache_id=null, $compile_id=null, $exp_time=null) {
+	global $CONF;
+	
 	// ref to the memcache object
 	$m = $GLOBALS['memcached_res'];
 	
@@ -35,43 +37,30 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	switch ($action) {
 	case 'read':
 		// grab the key from memcached
-		$contents = $m->get($cache_file);
+		$cache_content = $m->get($CONF['template'].$cache_file);
 		
-		// use compression
+		// use compression?
 		if(!empty($smarty_obj->use_gzip) && function_exists("gzuncompress")) {
-			$cache_content = gzuncompress($contents);
-		} else {
-			$cache_content = $contents;
-		}
+			$cache_content = gzuncompress($cache_content);
+		} 
 		
 		$return = true;
 		break;
 	
 	case 'write':
-		// use compression
+		// use compression?
 		if(!empty($smarty_obj->use_gzip) && function_exists("gzcompress")) {
-			$contents = gzcompress($cache_content);
-		} else {
-			$contents = $cache_content;
-		}
-		
-		$current_time = time();
-		if (is_null($exp_time) || $exp_time < $current_time)
-			$ttl = 0;
-		else
-			$ttl = $exp_time - time(); 
-		
-		// store the metadata in mysql
-		$db=&$m->_getDB();
-		$db->Execute("REPLACE INTO smarty_cache_page VALUES(
-			'$cache_file',
-			'$tpl_file',
-			'$cache_id')"); 
+			$cache_content = gzcompress($cache_content);
+		} 
 		
 		// store the value in memcached
-		$stored = $m->set($cache_file, $contents, false, $ttl);
+		$stored = $m->set($CONF['template'].$cache_file, $cache_content, false, (int)$exp_time);
 		
-		if(!$stored) {
+		if($stored) {
+			// store the metadata in mysql
+			$db=&$m->_getDB();
+			$db->Execute("REPLACE INTO smarty_cache_page VALUES('{$CONF['template']}',".$db->Quote($cache_file).",".$db->Quote($tpl_file).",".$db->Quote($cache_id).",NOW(),".intval($exp_time).")"); 
+		} else {
 			$smarty_obj->trigger_error("cache_handler: set failed.");
 		}
 		
@@ -80,21 +69,32 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	
 	case 'clear':
 		$db=&$m->_getDB();
+		$where = '1';
+		if (!empty($smarty_obj->clear_this_template_only)){ 
+			$where = " Folder = '{$CONF['template']}'";
+		}
 		if(empty($cache_id) && empty($compile_id) && empty($tpl_file)) {
 			// get all cache ids
-			$results = memcache_cache_handler_clear_helper($db,$m,'');
 		} else {
+			if (!empty($tpl_file)) {
+				$where.=" AND TemplateFile='" .$tpl_file ."'";
+			}
 			if(strpos($cache_id, '|') !== false) {
-				if(!empty($tpl_file)) {
-					$results = memcache_cache_handler_clear_helper($db,$m,"WHERE TemplateFile='" .$tpl_file ."' AND GroupCache LIKE '$cache_id%'");
-				} else {
-					$results = memcache_cache_handler_clear_helper($db,$m,"WHERE GroupCache LIKE '$cache_id%'");
-				}
+				$where.=" AND GroupCache LIKE ".$db->Quote($cache_id.'%');
 			} else {
-				$results = memcache_cache_handler_clear_helper($db,$m,"WHERE CacheID='$cache_file'");
+				$where.=" AND CacheID=".$db->Quote($cache_file);
 			}
 		} 
-		if(!$results) {
+		$r = 1;
+		$recordSet = &$db->Execute("SELECT Folder,CacheID FROM smarty_cache_page WHERE $where");
+		while (!$recordSet->EOF) {
+			$r += $m->delete($recordSet->fields['Folder'].$recordSet->fields['CacheID']);
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+		$db->Execute("DELETE FROM smarty_cache_page WHERE $where");
+		
+		if(!$r) {
 			$smarty_obj->trigger_error("cache_handler: query failed.");
 		}
 		$return = true;
@@ -108,22 +108,6 @@ function memcache_cache_handler($action, &$smarty_obj, &$cache_content, $tpl_fil
 	}
 	
 	return $return;
-}
-
-function memcache_cache_handler_clear_helper(&$db,&$m,$where = '') {
-	$r = 1;
-	$recordSet = &$db->Execute("SELECT CacheID FROM smarty_cache_page $where");
-	while (!$recordSet->EOF) 
-	{
-		$cid = $recordSet->fields['CacheID'];
-
-		$r += $m->delete($cid);
-
-		$recordSet->MoveNext();
-	}
-	$recordSet->Close();
-	$db->Execute("DELETE FROM smarty_cache_page $where");
-	return $r;
 }
 
 ?>
