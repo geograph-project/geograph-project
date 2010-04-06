@@ -8,7 +8,7 @@
 
 {if $isadmin && $locked_by_moderator}
 	<p style="position:relative;padding:10px;border:1px solid pink; color:white; background-color:red">
-	<b>This image is currently open by {$locked_by_moderator}</b>, please come back later.
+	<b>This image is currently locked by {$locked_by_moderator}</b>, please come back later.
 	</p>
 {/if}
 
@@ -40,6 +40,14 @@
 </div>
 {if $showfull}
   	{if $isowner and $image->moderation_status eq 'pending'}
+  	  {if $thankyou eq 'mod'}
+	  	<h2 class="titlebar" style="background-color:lightgreen">Thank You</h2>
+	  	<p>Your suggestion has been recorded, it will be taken into account during moderation. <a href="/photo/{$image->gridimage_id}">return to the image page</a></p>
+	  {elseif $thankyou eq 'modreply'}
+	  	<h2 class="titlebar" style="background-color:lightgreen">Thank You</h2>
+	  	<p>Your suggestion has been recorded, it will be taken into account during moderation, however please use the comment box below to explain the reason for the suggestion.</p>
+	  {/if}
+	  
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
   	  <h2 class="titlebar">Moderation Suggestion</h2>
@@ -51,12 +59,13 @@
   	  <input class="accept" type="submit" id="accept" name="user_status" value="Supplemental"/>
   	  {/if}
   	  {if $image->user_status != 'rejected'}
-  	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject"/>
+  	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject" onclick="this.form.elements['comment'].value = prompt('Please leave a comment to explain the reason for suggesting rejection of this image.','');"/>
   	  {/if}
   	  {if $image->user_status}
 	  <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}</small>]
 	  {/if}</p>
   	  <p style="font-size:0.8em">(Click one of these buttons to leave a hint to the moderator when they moderate your image)</p>
+  	  <input type="hidden" name="comment"/>
   	  </form>
   	{elseif $isadmin and $image->user_status}
   	  <h2 class="titlebar">Moderation Suggestion</h2>
@@ -68,8 +77,12 @@
 	  <form method="post">
 	  <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
 	  <h2 class="titlebar">Moderation</h2>
-	  <p><input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
+	  <p>{if $image->moderation_status eq 'pending'}
+	  	<small>(pending images should be moderated in sequence via the moderation page)</small>
+	  {else}
+	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
 	  <input class="accept" type="button" id="accept" value="Supp" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
+	  {/if}
 	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
 	  <span class="caption" id="modinfo{$image->gridimage_id}">Current Classification: {$image->moderation_status}{if $image->mod_realname}<abbr title="Approximate date of last moderation: {$image->moderated|date_format:"%a, %e %b %Y"}"><small><small>, by <a href="/usermsg.php?to={$image->moderator_id}&amp;image={$image->gridimage_id}">{$image->mod_realname}</a></small></small></abbr>{/if}</span></p>
 	  </form>
@@ -78,7 +91,7 @@
 
 {if $thankyou eq 'pending'}
 	<a name="form"></a>
-	<h2>Thankyou!</h2>
+	<h2 class="titlebar" style="background-color:lightgreen">Thankyou!</h2>
 	<p>Thanks for suggesting changes, you will receive an email when 
 	we process your suggestion. </p>
 
@@ -87,7 +100,7 @@
 
 {if $thankyou eq 'comment'}
 	<a name="form"></a>
-	<h2>Thankyou!</h2>
+	<h2 class="titlebar" style="background-color:lightgreen">Thankyou!</h2>
 	<p>Thanks for commenting on the change request, the moderators have been notified.</p>
 
 	<p>You can review outstanding change requests below, or <a href="/photo/{$image->gridimage_id}">click here to return to the photo page</a></p>
@@ -125,7 +138,7 @@
 
 {if $isadmin && $locked_by_moderator}
 	<p style="position:relative;padding:10px;border:1px solid pink; color:white; background-color:red">
-	<b>This image is currently open by {$locked_by_moderator}</b>, please come back later.
+	<b>This image is currently locked by {$locked_by_moderator}</b>, please come back later.
 	</p>
 {/if}
 
@@ -206,11 +219,6 @@
 
 			{if $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
 
-				<!--<span{if $editable && $item.oldvalue != $image->$field} style="text-decoration: line-through"{/if}>
-					{getamap gridref=$item.oldvalue|default:'blank'}
-				</span>
-				to
-				{getamap gridref=$item.newvalue|default:'blank'}-->
 				<span{if $editable && $item.oldvalue != $image->$field} style="text-decoration: line-through"{/if}>
 					{$item.oldvalue|escape:'html'|default:'blank'}
 				</span>
@@ -253,7 +261,7 @@
 				<div class="ticketnote">
 					<div class="ticketnotehdr">
 					{if $comment.user_id ne $ticket->user_id or ($isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner')) }
-						{$comment.realname}
+						{$comment.realname} {if $ticket->public ne 'everyone' && $ticket->user_id eq $comment.user_id}(anonymously){/if}
 					{else}
 						ticket suggestor
 					{/if} 
@@ -354,7 +362,7 @@
 
 {else}
 
-<h2 class="titlebar" style="margin-bottom:0px">Report Problem / Change Image Details <small><a href="/help/changes">[help]</a></small></h2>
+<h2 class="titlebar" style="margin-bottom:0px">{if $isowner}Change{else}Suggest a Change to{/if} Image Details <small><a href="/help/changes">[help]</a></small></h2>
 {if $error}
 <a name="form"></a>
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
@@ -399,11 +407,12 @@
 
 <div>
 	{if $all_moderated}
-		Any changes you suggest are moderated and will first be approved by
-		a moderator before going live. You will receive an email when this happens.
+		<b>Please make the required changes in the boxes below</b>.<br/>
+		&middot; Any changes you suggest are moderated and will first be approved by
+		a moderator before going live.<br/>&middot; You will receive an email when this happens.
 	{else}
-		If you change any fields labelled as "moderated" your changes will first be approved by
-		a moderator before going live. You will receive an email when this happens.
+		&middot; If you change any fields labelled as "moderated" your changes will first be approved by
+		a moderator before going live.<br/>&middot; You will receive an email when this happens.
 	{/if}
 </div>
 {/if}
@@ -414,18 +423,16 @@
 <p>
 <label for="grid_reference"><b style="color:#0018F8">Subject Grid Reference</b> {if $moderated.grid_reference}<span class="moderatedlabel">(moderated{if $isowner} for gridsquare changes{/if})</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
-<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}
-<!--{getamap gridref="document.theForm.grid_reference.value" gridref2=$image->subject_gridref text="OS Get-a-map&trade;"}-->
+<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}
 
 
 <p>
 <label for="photographer_gridref"><b style="color:#002E73">Photographer Grid Reference</b> - Optional {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
-<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
-<!--{getamap gridref="document.theForm.photographer_gridref.value" gridref2=$image->photographer_gridref text="OS Get-a-map&trade;"}--><br/>
+<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
 <span style="font-size:0.6em">
 | <a href="javascript:void(copyGridRef());">Copy from Subject</a> | 
-<a href="javascript:void(resetGridRefs());">Reset to initial values</a> |<br/></span>
+<a href="javascript:void(resetGridRefs());">Reset to initial values</a> |  <span id="dist_message" style="padding-left:20px"></span><br/></span>
 
 	{literal}
 	<script type="text/javascript">
@@ -488,6 +495,38 @@ AttachEvent(window,'load',onChangeImageclass,false);
 </script>
 {/literal}
 {/if}
+
+{if $use_autocomplete}
+
+<p><label for="imageclass"><b>Image Category</b></label> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
+	{if $error.imageclass}
+	<span class="formerror">{$error.imageclass}</span><br/>
+	{/if}
+	
+	<input size="32" id="imageclass" name="imageclass" value="{$image->imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
+	</p>
+{literal}
+<script type="text/javascript">
+<!--
+
+AttachEvent(window,'load', function() {
+ 	var inputWord = $('imageclass');
+ 	
+    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
+        'postVar': 'q',
+        'minLength': 2,
+        maxChoices: 60
+    });
+    
+},false);
+
+//-->
+</script>
+{/literal}
+
+
+{else}
+
 <p><label for="imageclass"><b>Image Category</b> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />	
 	{if $error.imageclass}
 	<span class="formerror">{$error.imageclass}</span><br/>
@@ -511,6 +550,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/></p>
 	</span>
 </p>	
+{/if}
 
 {if $user->user_id eq $image->user_id || $isadmin}
 	<p><label><b>Date picture taken</b> {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
@@ -539,7 +579,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <br/>
 <div class="interestBox">
 <p>
-<label for="updatenote">&nbsp;<b>Please describe what's wrong or briefly why you have made the changes above...</b></label><br/>
+<label for="updatenote">&nbsp;<b>Please describe what's wrong or briefly why you have {if $isowner}made{else}suggested{/if} the changes above...</b></label><br/>
 
 {if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
 
@@ -589,9 +629,50 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 </div>
 </form>
 
+	<script type="text/javascript">{literal}
+	function previewImage() {
+		window.open('','_preview');//forces a new window rather than tab?
+		var f1 = document.forms['theForm'];
+		var f2 = document.forms['previewForm'];
+		for (q=0;q<f2.elements.length;q++) {
+			if (f2.elements[q].name && f1.elements[f2.elements[q].name]) {
+				f2.elements[q].value = f1.elements[f2.elements[q].name].value;
+			}
+		}
+		return true;
+	}
+	{/literal}</script>
+	<form action="/preview.php" method="post" name="previewForm" target="_preview" style="padding:10px; text-align:center">
+	<input type="hidden" name="grid_reference"/>
+	<input type="hidden" name="photographer_gridref"/>
+	<input type="hidden" name="view_direction"/>
+	<input type="hidden" name="use6fig"/>
+	<input type="hidden" name="title"/>
+	<textarea name="comment" style="display:none"/></textarea>
+	<input type="hidden" name="imageclass"/>
+	<input type="hidden" name="imageclassother"/>
+	<input type="hidden" name="imagetakenDay"/>
+	<input type="hidden" name="imagetakenMonth"/>
+	<input type="hidden" name="imagetakenYear"/>
+	<input type="hidden" name="id"/>
+	<input type="submit" value="Preview edits in a new window" onclick="previewImage()"/> 
+	
+	<input type="checkbox" name="spelling"/>Check Spelling
+	<sup style="color:red">Experimental!</sup>
+	</form>
+
 {/if}
 
+{if $use_autocomplete}
+	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" /> 
+
+	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script> 
+{else}
 <script type="text/javascript" src="/categories.js.php"></script>
+{/if}
 {if $rastermap->enabled}
 	{$rastermap->getFooterTag()}
 {/if}
