@@ -125,7 +125,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
 					
 				
-				} elseif (preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
+				} elseif (preg_match("/(_|\b)([a-zA-Z]{1,3})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
 					if (strlen($m[3]) != strlen($m[4])) {
 						if (preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
 							$_POST['gridsquare'] = $m[2];

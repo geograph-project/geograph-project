@@ -418,4 +418,3 @@ class EventProcessor
 	}
 }
 
-?>

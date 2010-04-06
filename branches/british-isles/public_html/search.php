@@ -1546,4 +1546,3 @@ function smarty_function_searchbreak($params) {
 	$engine->breaklast = $last;
 }
 
-?>
