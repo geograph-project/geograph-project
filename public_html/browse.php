@@ -120,8 +120,7 @@ $cacheid='';
 //what style should we use?
 $style = $USER->getStyle();
 
-$cacheid.=$style;
-	
+$smarty->assign('maincontentclass', 'content_photo'.$style);
 
 	#not ready for primetime yet, the user_id SHOULD to be replaced by visitor/has pending-or-rejects/mod switch 
 # when ready to go live, should change the tpl file to remove most of the dynamic tags!
@@ -130,7 +129,6 @@ $cacheid.=$style;
 #if (!$smarty->is_cached($template, $cacheid))
 #{
 
-	$smarty->assign('maincontentclass', 'content_photo'.$style);
 
 function smarty_modifier_colerize($input) {
 	global $maximages;

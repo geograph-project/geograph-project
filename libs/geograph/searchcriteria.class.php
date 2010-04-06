@@ -159,11 +159,32 @@ class SearchCriteria
 				}
 			}
 			
-			$rectangle = "'POLYGON(($west $south,$east $south,$east $north,$west $north,$west $south))'";
+			$span = max($east - $west,$north - $south); 
 			
-			$sql_where = "CONTAINS(GeomFromText($rectangle),point_ll)";
-			
-			$this->sphinx['impossible']++; //todo we might be able to transform it to a set of GR's?
+			if ($span > 8) {
+				$sql_where = ''; //outside our area, so return unfiltered
+			} else {			
+				$conv = new ConversionsLatLong;
+
+				list($e1,$n1,$ri1) = $conv->wgs84_to_national($south,$west,false);
+				list($e2,$n2,$ri2) = $conv->wgs84_to_national($north,$east,false);
+
+				if (!$ri1 || !$ri2) {
+					$sql_where = ''; //outside our area, so return unfiltered
+				} else {
+					$rectangle = "'POLYGON(($west $south,$east $south,$east $north,$west $north,$west $south))'";
+
+					$sql_where = "CONTAINS(GeomFromText($rectangle),point_ll)";
+					
+					if ($ri1 == $ri2) {
+						//now possible, but calculate it JIT
+						$this->sphinx['bbox'] = array($e1,$n1,$ri1,$e2,$n2,$ri2);
+					} else {
+						$this->sphinx['impossible']++;
+						//todo, use a pair of setFloatRange on the lat/long columns. Maybe instead of tiles above too (depending on selectivity)
+					}
+				}
+			}
 		} else {
 			$sql_where = '';
 		}
@@ -194,7 +215,7 @@ class SearchCriteria
 					}
 				}
 			}
-			if ($this->limit8 && $this->limit8 <= 20 && $this->limit8 > -20) {
+			if ($this->limit8 && $this->limit8 <= 20 && $this->limit8 > -20) { //todo - increase this? sphinx could use hectads
 				//possible, but calculate it JIT
 				$this->sphinx['x'] = $x;
 				$this->sphinx['y'] = $y;
@@ -251,10 +272,31 @@ class SearchCriteria
 							$this->sphinx['compatible_order'] = 0;
 							$this->sphinx['sort'] = 'takendays';
 							break;
+						case 'grid_reference':
+							$this->sphinx['sort'] = 'agridsquare';
+							$this->sphinx['compatible_order'] = 0;
+							break;
+						case 'hectad':
+							$this->sphinx['sort'] = 'ahectad';
+							$this->sphinx['compatible_order'] = 0;
+							$sql_order = '';
+							break;
+						case 'myriad':
+							$this->sphinx['sort'] = 'amyriad';
+							$this->sphinx['compatible_order'] = 0;
+							$sql_order = '';
+							break;
+						case 'count':
+							$this->sphinx['sort'] = '@count';
+							$this->sphinx['compatible_order'] = 0;
+							$sql_order = '';
+							break;
+						case 'user_id':
+							$this->sphinx['sort'] = 'auser_id';
+							break;
 						case 'realname':
 						case 'title':
 						case 'imageclass':
-						case 'grid_reference':
 						default: 
 							$this->sphinx['impossible']++;
 					}
@@ -270,33 +312,12 @@ class SearchCriteria
 			$this->sphinx['compatible_order']=0;
 		}
 		if ($this->breakby) {
-			if (preg_match('/imagetaken_(year|month|decade)$/',$this->breakby) && strpos($sql_order,'imagetaken') === FALSE) {
-				switch ($this->breakby) {
-					case 'imagetaken_month':
-						$breakby = "SUBSTRING(imagetaken,1,7)";
-						break;
-					case 'imagetaken_year':
-						$breakby = "SUBSTRING(imagetaken,1,4)";
-						break;
-					case 'imagetaken_decade':
-						$breakby = "SUBSTRING(imagetaken,1,3)";
-						break;
-				}
-			} else {
-				$breakby = preg_replace('/_(year|month|decade)$/','',$this->breakby);
-			}
-			$breakby = preg_replace('/^submitted/','gridimage_id',$breakby);
-			
-			if (strpos($sql_order,' desc') !== FALSE) {
-				$breakby .= ' desc';
-				$sorder2 = " DESC";
-			} else {
-				$sorder2 = " ASC";
-			}
-			
-			switch (str_replace(' desc','',$breakby)) {
+			switch (str_replace(' desc','',$this->breakby)) {
 				case 'gridimage_id':
 				case 'submitted': 
+				case 'submitted_month': 
+				case 'submitted_year': 
+					$breakby = 'gridimage_id';
 					$sorder = '@id';
 					break;
 				case 'x':
@@ -308,23 +329,99 @@ class SearchCriteria
 					$sorder = 'wgs84_lat';
 					break;
 				case 'imagetaken':
+				case 'imagetaken_month':
+				case 'imagetaken_year':
+				case 'imagetaken_decade':
+					$breakby = 'imagetaken';
+					if (strpos($sql_order,'imagetaken') === FALSE) {
+						//todo - maybe remove this section, it probably has performance issues, and it still "works" if sorted just by date directly (that what sphinx does)
+						switch ($breakby) {
+							case 'imagetaken_month':
+								$breakby = "SUBSTRING(imagetaken,1,7)";
+								break;
+							case 'imagetaken_year':
+								$breakby = "SUBSTRING(imagetaken,1,4)";
+								break;
+							case 'imagetaken_decade':
+								$breakby = "SUBSTRING(imagetaken,1,3)";
+								break;
+						}
+					}
 					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'takendays';
 					break;
 				case 'imageclass':
 					$sorder = 'classcrc';
 					break;
+				case 'user_id':
+					$sorder = 'auser_id';
+					break;
+				case 'grid_reference':
+					$sorder = 'agridsquare';
+					break;
+				case 'hectad':
+					$sorder = 'ahectad';
+					$this->sphinx['no_legacy']=1;
+					break;
+				case 'myriad':
+					$sorder = 'amyriad';
+					$this->sphinx['no_legacy']=1;
+					break;
+				case 'centi':
+					$sorder = 'scenti';
+					$this->sphinx['no_legacy']=1;
+					break;
 				case 'realname':
 				case 'title':
-				case 'grid_reference':
 				default: 
 					$this->sphinx['impossible']++;
+			}
+			
+			if (strpos($sql_order,' desc') !== FALSE) {
+				$breakby .= ' desc';
+				$sorder2 = " DESC";
+			} else {
+				$sorder2 = " ASC";
 			}
 			
 			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) {
 				$sql_order = $breakby.($sql_order?", $sql_order":'');
 				$this->sphinx['sort'] = "$sorder $sorder2".($this->sphinx['sort']?", {$this->sphinx['sort']}":'');
 			}
+		}
+		
+		if ($this->groupby) {
+			require_once ( "3rdparty/sphinxapi.php" ); //toload the sphinx constants
+
+			switch ($this->groupby) {
+				case 'submitted_month': 
+					$this->sphinx['groupby'] = array('submitted',SPH_GROUPBY_MONTH,$this->sphinx['sort']);
+					$this->sphinx['no_legacy']=1; 
+					break;
+				case 'submitted_year': 
+					$this->sphinx['groupby'] = array('submitted',SPH_GROUPBY_YEAR,$this->sphinx['sort']);
+					$this->sphinx['no_legacy']=1; 
+					break;
+				case 'submitted': 
+					$this->sphinx['groupby'] = array('submitted',SPH_GROUPBY_DAY,$this->sphinx['sort']);
+					$this->sphinx['no_legacy']=1; 
+					break;
+				case 'takendays': 
+				case 'classcrc': 
+				case 'clen': 
+				case 'auser_id': 
+				case 'agridsquare': 
+				case 'amyriad': 
+				case 'ahectad': 
+				case 'scenti': 
+					#function SetGroupBy ( $attribute, $func, $groupsort="@group desc" )
+					$this->sphinx['groupby'] = array($this->groupby,SPH_GROUPBY_ATTR,$this->sphinx['sort']);
+					$this->sphinx['no_legacy']=1; //todo - of course groupby could be implemented for some mysql queries!
+					break;
+				default: 
+					//$this->sphinx['impossible']++;
+			}
+			$this->sphinx['sort'] = str_replace('@count','@relevance',$this->sphinx['sort']); //cant do the first sort level with count!
 		}
 		
 		$sql_where_start = $sql_where;
@@ -368,7 +465,7 @@ class SearchCriteria
 			} else {
 				#$this->sphinx['filters']['imageclass'] = "\"".$this->limit3."\"";
 				$db = $this->_getDB();
-				$this->sphinx['filters']['classcrc'] = array($db->GetOne('select crc32('.$db->Quote($this->limit3).')'));
+				$this->sphinx['filters']['classcrc'] = array($db->GetOne('select crc32(lower('.$db->Quote($this->limit3).'))'));
 			}
 		} 
 		if (!empty($this->limit4)) {
@@ -487,7 +584,10 @@ class SearchCriteria
 				if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dates[0]) > 0) {
 					//month only
 					$sql_where .= "MONTH(imagetaken) = $m ";
-					$this->sphinx['impossible']++;
+					
+					$db = $this->_getDB(true);
+					$this->sphinx['filters']['month'] = $db->GetOne("SELECT MONTHNAME('2001-$m-01')");
+			
 				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
 					//day only ;)
 					$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
@@ -567,10 +667,9 @@ class SearchCriteria
 		if ($sql_where) {
 			$sql_where .= ' and ';
 		}
-		if (strpos($q,'=') === 0) {
-			$q = str_replace('=','',$q);
+		if (preg_match('/\b=\w/',$q)) {
+			// = in latest sphinx turns on exact keyword matching (no stemming) 
 			$this->sphinx['compatible'] = 0;
-			$this->sphinx['exact'] = 1;
 		}
 		if (preg_match("/\b(AND|OR|NOT)\b/",$q) || preg_match('/^\^.*\+$/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
 			$sql_where .= " (";
@@ -658,9 +757,11 @@ class SearchCriteria
 			$this->changeindefault = 1;
 		}
 		$this->sphinx['query'] = preg_replace('/\b(day|month|year):/','taken$1:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(monthname):/','month:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(gridref):/','grid_reference:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(category):/','imageclass:',$this->sphinx['query']);
 		$this->sphinx['query'] = preg_replace('/\b(description):/','comment:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(name):/','realname:',$this->sphinx['query']);
 		if (strlen($this->sphinx['query'])) {
 			//really there is little chance its going to be compatible... 
 			$this->sphinx['compatible'] = 0;
@@ -796,7 +897,7 @@ class SearchCriteria_Special extends SearchCriteria
 			$this->sphinx['impossible']++; //will never be possible?
 		}
 		
-		if (preg_match('/^(\w+)\+$/i',$this->breakby,$matches)) {
+		if (preg_match('/^(\w+)\+$/i',$this->breakby,$matches) && !in_array($matches[1],array('email','password','age_group')) ) { #todo untimately check what table it comes from
 			$sql_fields .= ", ".$matches[1];
 		}
 	}

@@ -162,7 +162,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="breakby" id="l_breakby">group by</label></td> 
+			 <td><label for="breakby" id="l_breakby">break by</label></td> 
 			 <td colspan="2"> 
 				<select name="breakby" id="breakby" size="1"> 
 					{html_options options=$breakdowns selected=$breakby}

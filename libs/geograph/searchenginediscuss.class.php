@@ -72,7 +72,7 @@ $sql = <<<END
 		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON(forum_id = {$CONF['forum_gridsquare']} AND topic_title = grid_reference)
 			 $sql_from
 		WHERE 
-			$sql_where 
+			forum_id = {$CONF['forum_gridsquare']} AND $sql_where 
 END;
 		$this->resultCount = $db->GetOne($sql);
 		$this->numberOfPages = ceil($this->resultCount/$pgsize);
@@ -86,11 +86,11 @@ END;
 $sql = <<<END
 	   SELECT distinct gi.*,x,y,nickname,realname,grid_reference,user_id,topic_time
 			$sql_fields
-		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON(gi.forum_id = {$CONF['forum_gridsquare']} AND topic_title = grid_reference)
+		FROM geobb_topics AS gi INNER JOIN gridsquare AS gs ON( topic_title = grid_reference)
 		INNER JOIN user ON(gi.topic_poster=user.user_id)
 			 $sql_from
 		WHERE 
-			$sql_where
+			forum_id = {$CONF['forum_gridsquare']} AND $sql_where
 		ORDER BY $sql_order
 		LIMIT $page,$pgsize
 END;

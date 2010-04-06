@@ -101,7 +101,7 @@ class Event
 		else
 		{
 			//increment counter of event
-			$db->Execute("update event set instances=instances+1 where event_id=$event_id");
+			$db->Execute("update event set instances=instances+1,updated=updated where event_id=$event_id");
 		}
 	}
 }

@@ -6,7 +6,7 @@
 	{/if}
 
 	{if count($images) > 0}
-	<div style="{if count($images) > 3}height:520px; overflow:auto; {/if}position:relative; background-color:{$backgroundcolor}" onscroll="return showThumbnails(this);" id="scrollDiv">
+	<div {if $maincontentclass}class="{$maincontentclass}"{/if} style="{if count($images) > 3}height:520px; overflow:auto; {/if}position:relative;margin:0" onscroll="return showThumbnails(this);" id="scrollDiv">
 		<div style="position:relative;height:250px;">
 		{foreach from=$images item=image name=i}
 
@@ -14,7 +14,7 @@
 				<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
 
 				{if $is_admin}
-					<div class="statuscaption">classification: {$image->moderation_status} {if $image->ftf}(first){/if}</div>
+					<div class="statuscaption">classification: {$image->moderation_status} {if $image->ftf eq 1}(first){/if}</div>
 				{/if}
 
 				<div style="font-size:0.7em"><br/>Insert: <a href="#" onclick="return paste_strinL('[[[{$image->gridimage_id}]]]',0)">Thumbnail</a> or <a href="#" onclick="return paste_strinL('[[{$image->gridimage_id}]]',0)">Text Link</a></div>

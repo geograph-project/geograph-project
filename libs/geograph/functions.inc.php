@@ -234,14 +234,29 @@ function smarty_function_gridimage($params)
 	$html='<div class="photoguide">';
 
 	$html.='<div style="float:left;width:213px">';
-		$html.='<a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+	
+		$title=$image->grid_reference.' : '.htmlentities2($image->title).' by '.htmlentities2($image->realname);
+	
+		$html.='<a title="'.$title.' - click to view full size image" href="/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
 		$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
-		$html.=htmlentities2($image->title).'</a></div>';
+		$html.=htmlentities2($image->title).'</a> by <a href="'.$image->profile_link.'">'.htmlentities2($image->realname).'</a></div>';
 	$html.='</div>';
 
-	if (isset($params['extra']))
-		$html.='<div style="float:left;padding-left:20px; width:400px;">'.htmlentities2($params['extra']).'</div>';
+	if (isset($params['extra'])) {
+		if ($params['extra'] == '{description}') {
+			if (!empty($image->comment)) {
+				$desc = GeographLinks(nl2br(htmlentities2($image->comment))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
+			} else {
+				$desc = '';
+			}
+		} else {
+			$desc = htmlentities2($params['extra']);
+		} 
+		if (!empty($desc)) {
+			$html.='<div style="float:left;padding-left:20px; width:400px;">'.$desc.'</div>';
+		}
+	}
 
 	$html.='<br style="clear:both"/></div>';
 
@@ -338,7 +353,10 @@ function smarty_function_linktoself($params) {
 	} else {
 		$a[$params['name']] = $params['value'];
 	}
-	return htmlentities(count($a)?("?".http_build_query($a,'', '&')):'');
+	if (!empty($params['delete'])) {
+		unset($a[$params['delete']]);
+	}
+	return htmlentities($_SERVER['SCRIPT_NAME'].count($a)?("?".http_build_query($a,'','&')):'');
 }
 
 /**
@@ -391,7 +409,7 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 			$gr = $square->grid_reference;
 		}
 	} elseif (!empty($gr)) {
-		preg_match('/^([A-Z]{1,3})([\d_]*)$/',strtoupper($gr),$m);
+		preg_match('/^([A-Z]{1,3})([\d_]*)([NS]*)([EW]*)$/',strtoupper($gr),$m);
 		$s = $m[1];
 		if ($level > 2) {
 			$numbers = $m[2];
@@ -401,6 +419,19 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
 		}
 	}
+	
+	if ($level == 5) {
+		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format) 
+		
+		//SH4(0)35  -> SH435(W) 
+		$gr = preg_replace('/^(.+)[5-9](\d)(\d)$/','$1$2$3E',$gr);
+		$gr = preg_replace('/^(.+)[0-4](\d)(\d)$/','$1$2$3W',$gr);
+		//SH43(5)E  -> SH43(N)E 
+		$gr = preg_replace('/^(.+)[5-9]([EW])$/e','$1."N".$2',$gr);
+		$gr = preg_replace('/^(.+)[0-4]([EW])$/e','$1."S".$2',$gr);
+	}
+		
+	
 	
 	$extension = 'html';
 	$prefix = "/sitemap";
@@ -435,28 +466,43 @@ function smarty_function_geographlinks($input,$thumbs = false) {
 function GeographLinks(&$posterText,$thumbs = false) {
 	global $imageCredits,$CONF,$global_thumb_count;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
-	if (preg_match_all('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
+	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		$thumb_count = 0;
-		foreach ($g_matches[2] as $i => $g_id) {
+		foreach ($g_matches[3] as $g_i => $g_id) {
+			$server = $_SERVER['HTTP_HOST'];
+			$ext = false;
+			$prefix = '';
+			if ($g_matches[2][$g_i] == 'de:') {
+				$server = 'geo.hlipp.de';
+				$ext = true;
+				$prefix = 'de:';
+			}
 			//photo id?
 			if (is_numeric($g_id)) {
 				if ($global_thumb_count > $CONF['global_thumb_limit'] || $thumb_count > $CONF['post_thumb_limit']) {
-					$posterText = preg_replace("/\[?\[\[$g_id\]\]\]?/","[[<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_id</a>]]",$posterText);
+					$posterText = preg_replace("/\[?\[\[$prefix$g_id\]\]\]?/","[[<a href=\"http://{$server}/photo/$g_id\">$prefix$g_id</a>]]",$posterText);
 				} else {
 					if (!isset($g_image)) {
 						$g_image=new GridImage;
 					}
-					$ok = $g_image->loadFromId($g_id);
+					if ($ext) {
+						$ok = $g_image->loadFromServer($server, $g_id);
+					} else {
+						$ok = $g_image->loadFromId($g_id);
+					}
 					if ($g_image->moderation_status == 'rejected') {
-						$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+						if ($thumbs) {
+							$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+						}
+						$posterText = preg_replace("/\[{2,3}$prefix$g_id\]{2,3}/",'[image no longer available]',$posterText);
 					} elseif ($ok) {
 						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
-						if ($g_matches[1][$i]) {
+						if ($g_matches[1][$g_i]) {
 							if ($thumbs) {
 								$g_title.=' by '.htmlentities($g_image->realname);
 								$g_img = $g_image->getThumbnail(120,120,false,true);
 
-								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
+								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
 								if (isset($imageCredits[$g_image->realname])) {
 									$imageCredits[$g_image->realname]++;
 								} else {
@@ -464,10 +510,10 @@ function GeographLinks(&$posterText,$thumbs = false) {
 								}
 							} else {
 								//we don't place thumbnails in non forum links
-								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\">$g_title</a>",$posterText);
 							}
 						} else {
-							$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+							$posterText = preg_replace("/(?<!\[)\[\[$prefix$g_id\]\]/","<a href=\"http://{$server}/photo/$g_id\">$g_title</a>",$posterText);
 						}
 					}
 					$global_thumb_count++;
@@ -475,12 +521,12 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				$thumb_count++;
 			} else {
 				//link to grid ref
-				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
+				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/".str_replace(' ','+',$g_id)."\">$g_id</a>",$posterText);
 			}
 		}
 	}
 	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
-		$posterText = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$posterText);
+		$posterText = str_replace('//'.$CONF['CONTENT_HOST'],'//'.$_SERVER['HTTP_HOST'],$posterText);
 	}
 	
 	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);
@@ -569,7 +615,7 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 	if ($urlHandle)	{
 		socket_set_timeout($urlHandle, $timeout);
 		if ($path) {
-			$urlString = "GET $path HTTP/1.1\r\nHost: $addr\r\nConnection: keep-alive\r\nUser-Agent: www.geograph.org.uk\r\n";
+			$urlString = "GET $path HTTP/1.0\r\nHost: $addr\r\nUser-Agent: {$_SERVER['HTTP_HOST']}\r\n";
 			if ($userpass)
 				$urlString .= "Authorization: Basic ".base64_encode("$userpass")."\r\n";
 			$urlString .= "\r\n";
@@ -655,14 +701,18 @@ function customNoCacheHeader($type = 'nocache',$disable_auto = false) {
 	}
 }
 
-function customExpiresHeader($diff,$public = false) {
+function customExpiresHeader($diff,$public = false,$overwrite = false) {
+	$private = ($public)?'':', private';
 	if ($diff > 0) {
 		$expires=gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
 		header("Expires: $expires");
-		header("Cache-Control: max-age=$diff",false);
+		header("Cache-Control: max-age=$diff$private",$overwrite);
+		if ($overwrite) {
+			header("Pragma:"); //sessions by default set this
+		}
 	} else {
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
-		header("Cache-Control: max-age=0",false);
+		header("Cache-Control: max-age=0$private",$overwrite);
 	}
 	if ($public)
 		header("Cache-Control: Public",false);

@@ -33,6 +33,7 @@ $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3',
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
 	$_GET['format'] = strtoupper($_GET['extension']);
+	$_GET['format'] = str_replace('_','.',$_GET['format']);
 	$_GET['format'] = str_replace('GEO','Geo',$_GET['format']);
 	$_GET['format'] = str_replace('PHOTO','Photo',$_GET['format']);
 }
@@ -53,6 +54,7 @@ if ($format == 'KML') {
 	$extension = 'xml';
 }
 
+$format_extension = strtolower(str_replace('.','_',$format));
 
 /**
  * We are building a text search for the first time
@@ -109,25 +111,26 @@ if (isset($_GET['q']) || !empty($_GET['location'])) {
 $opt_expand = (!empty($_GET['expand']) && $format != 'KML')?1:0;
 
 if (isset($cacheid)) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";
-	$rss_timeout = 3600;
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";
+	$rss_timeout = 3600*6;
 } elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):1;
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension";
-	$rss_timeout = 3600;
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension";
+	$rss_timeout = 3600*6;
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}{$opt_expand}.$extension";
-	$rss_timeout = 1800;
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/u{$_GET['u']}-{$format}{$opt_expand}.$extension";
+	$rss_timeout = 1800*6;
 } else {
-	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$format}{$opt_expand}.$extension";
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/{$format}{$opt_expand}.$extension";
 	$rss_timeout = 900;
 }
 
 $rss = new UniversalFeedCreator(); 
 $rss->useCached($format,$rssfile,$rss_timeout); 
-$rss->title = 'Geograph British Isles'; 
+$rss->title = 'Geograph Channel Islands'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}/";
 
+$baselink = $rss->link;
 
 /**
  * Create a query the first time round!
@@ -139,12 +142,18 @@ if (isset($q)) {
 	
 	$engine = new SearchEngineBuilder('#'); 
 	$engine->searchuse = "syndicator";
-	$_GET['i'] = $engine->buildSimpleQuery($q,$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
+	$_GET['i'] = $engine->buildSimpleQuery($q,!empty($_GET['distance'])?min(20,intval($_GET['distance'])):$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
 
-	if (function_exists('symlink') && isset($cacheid)) {
+	if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid && isset($cacheid) && !empty($_GET['i'])) {
+		$target = "symlink:".$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";
+		$GLOBALS['memcache']->name_set('rss',
+			$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension",
+			$target,$GLOBALS['memcache']->compress,$rss_timeout);
+		
+	} elseif (function_exists('symlink') && isset($cacheid) && !empty($_GET['i'])) {
 		//create a link so cache can be access as original query(cacheid) or directly via its 'i' number later...
-		symlink($_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}{$opt_expand}.$extension",
-		        $_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension");
+		symlink($_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/$cacheid-{$pg}-{$format}{$opt_expand}.$extension",
+		        $_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension");
 	}
 
 	if (!empty($engine->errormsg) && !empty($_GET['fatal'])) {
@@ -164,19 +173,19 @@ if (isset($sphinx)) {
 	if ($sphinx->resultCount) {
 		$rss->description .= " ({$sphinx->resultCount} in total)";
 	}
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
+	$rss->syndicationURL = $baselink."syndicator.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 
 	if ($format == 'MEDIA') {
-		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?q=".urlencode($sphinx->$q).(($pg>1)?"&amp;page=$pg":'');
+		$rss->link =  $baselink."search.php?q=".urlencode($sphinx->q).(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
 			$prev = $pg - 1;
-			$rss->prevURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($prev>1)?"&amp;page=$prev":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
+			$rss->prevURL = $baselink."syndicator.php?q=".urlencode($sphinx->q).(($prev>1)?"&amp;page=$prev":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 		}
 		
 		$offset = ($pg -1)* $pgsize;
 		if ($pg < 10 && $offset < 250 && $sphinx->numberOfPages > $pg) {
 			$next = $pg + 1;
-			$rss->nextURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?q=".urlencode($sphinx->q).(($next>1)?"&amp;page=$next":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
+			$rss->nextURL = $baselink."syndicator.php?q=".urlencode($sphinx->q).(($next>1)?"&amp;page=$next":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 		}
 		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
 	}
@@ -198,18 +207,33 @@ if (isset($sphinx)) {
 	$images = new SearchEngine($_GET['i']);
 	
 	$rss->description = "Images".$images->criteria->searchdesc; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".".strtolower($format);
+	$rss->syndicationURL = $baselink."feed/results/".$_GET['i'].(($pg>1)?"/$pg":'').".$format_extension";
 	
 	$images->Execute($pg);
 	if ($images->resultCount) {
 		$rss->description .= " ({$images->resultCount} in total)";
 	}
 	
+	if (!empty($images->error)) {
+		
+		$item = new FeedItem(); 
+		$item->title = $images->error;
+		$item->description = "Unfortunatly it doesn't appear the search was processed, this is most likly a invalid combination of search terms, but could also be a temporarlly issue so you could try again in a little while."; 
+		$item->date = time();
+		$item->author = $rss->title;
+		
+		$rss->addItem($item);
+	
+		$rss->saveFeed($format, $rssfile);
+
+		exit;
+	}
+	
 	if ($format == 'MEDIA') {
-		$rss->link =  "http://{$_SERVER['HTTP_HOST']}/search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
+		$rss->link =  $baselink."search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
 			$prev = $pg - 1;
-			$rss->prevURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($prev>1)?"/$prev":'').".".strtolower($format);
+			$rss->prevURL = $baselink."feed/results/".$_GET['i'].(($prev>1)?"/$prev":'').".$format_extension";
 		}
 		$pgsize = $images->criteria->resultsperpage;
 			
@@ -218,7 +242,7 @@ if (isset($sphinx)) {
 		$offset = ($pg -1)* $pgsize;
 		if ($pg < 10 && $offset < 250 && $images->numberOfPages > $pg) {
 			$next = $pg + 1;
-			$rss->nextURL = "http://{$_SERVER['HTTP_HOST']}/feed/results/".$_GET['i'].(($next>1)?"/$next":'').".".strtolower($format);
+			$rss->nextURL = $baselink."feed/results/".$_GET['i'].(($next>1)?"/$next":'').".$format_extension";
 		}
 		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
 	} 
@@ -231,7 +255,7 @@ if (isset($sphinx)) {
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$profile=new GeographUser($_GET['u']);
 	$rss->description = 'Latest Images by '.$profile->realname; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/profile/".intval($_GET['u'])."/feed/recent.".strtolower($format);
+	$rss->syndicationURL = $baselink."profile/".intval($_GET['u'])."/feed/recent.$format_extension";
 
 
 	//lets find some recent photos
@@ -243,7 +267,7 @@ if (isset($sphinx)) {
  */
 } else {
 	$rss->description = 'Latest Images'; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/recent.".strtolower($format);
+	$rss->syndicationURL = $baselink."feed/recent.$format_extension";
 
 	//lets find some recent photos
 	$images=new ImageList(array('accepted', 'geograph'), 'gridimage_id desc', 15);
@@ -261,9 +285,13 @@ for ($i=0; $i<$cnt; $i++)
 	
 	$item = new FeedItem(); 
 	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title; 
-	$item->guid = $item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$images->images[$i]->gridimage_id}";
+	$item->guid = $item->link = $baselink."photo/{$images->images[$i]->gridimage_id}";
 	if (isset($images->images[$i]->dist_string) || isset($images->images[$i]->imagetakenString)) {
-		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
+		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'');
+		if ($item->description) {
+			$item->description .= "<br/>";
+		}
+		$item->description .= $images->images[$i]->comment; 
 		$item->descriptionHtmlSyndicated = true;
 	} else {
 		$item->description = $images->images[$i]->comment; 
@@ -273,7 +301,7 @@ for ($i=0; $i<$cnt; $i++)
 	}
 
 	$item->date = strtotime($images->images[$i]->submitted);
-	$item->source = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->profile_link;
+	$item->source = $baselink.preg_replace('/^\//','',$images->images[$i]->profile_link);
 	$item->author = $images->images[$i]->realname;
 
 	if ($geoformat) {
@@ -288,7 +316,7 @@ for ($i=0; $i<$cnt; $i++)
 		if ($format == 'MEDIA') {
 			$item->content = $images->images[$i]->_getFullpath(true,true); 
 			if ($opt_expand) {
-				$title=$this->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
+				$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 				$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 				$item->descriptionHtmlSyndicated = true;
 			}
@@ -300,7 +328,7 @@ for ($i=0; $i<$cnt; $i++)
 		imagejpeg($images->images[$i]->getSquareThumb(16));
 		$item->thumbdata = ob_get_clean();
 	} elseif ($opt_expand) {
-		$title=$this->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
+		$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 		$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 		$item->descriptionHtmlSyndicated = true;
 	}
@@ -329,7 +357,7 @@ $rss->saveFeed($format, $rssfile);
  */
 function getTextKey() {
 	$t = '';
-	foreach (array('text','q','location','BBOX','lat','lon','u') as $k) {
+	foreach (array('text','q','location','BBOX','lat','lon','u','perpage','distance') as $k) {
 		$t .= "|".(empty($_GET[$k])?'':$_GET[$k]);
 	}
 	return md5($t);

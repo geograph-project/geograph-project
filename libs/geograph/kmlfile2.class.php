@@ -43,7 +43,7 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 		$this->children = array();
 		
 		//set the minimum back
-		$this->setItem('name',$subjectPlacemark->getItem('name'));
+		$this->setItem('name',$subjectPlacemark->getItem('name'),true);
 		if ($timestamp = $subjectPlacemark->getChild('TimeStamp')) {
 			$this->addChild(clone $timestamp,'','TimeStamp');
 		}
@@ -163,9 +163,11 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		if ($level > 2) {
 			$n = sprintf("%d%d",intval($square->eastings/20)*2,intval($square->northings/20)*2);
 		}
-		
+		if (empty($gr)) {
+			$gr = $square->grid_reference;
+		}
 	} elseif (!empty($gr)) {
-		preg_match('/^([A-Z]{1,3})([\d_]*)$/',strtoupper($gr),$m);
+		preg_match('/^([A-Z]{1,2})([\d_]*)([NS]*)([EW]*)$/',strtoupper($gr),$m);
 		$s = $m[1];
 		if ($level > 2) {
 			$numbers = $m[2];
@@ -175,6 +177,18 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
 		}
 	}
+	if ($level == 5) {
+		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format) 
+		//importantly doesnt affect a gr already in this format.
+		
+		//SH4(0)35  -> SH435(W) 
+		$gr = preg_replace('/^(.+)[5-9](\d)(\d)$/','$1$2$3E',$gr);
+		$gr = preg_replace('/^(.+)[0-4](\d)(\d)$/','$1$2$3W',$gr);
+		//SH43(5)E  -> SH43(N)E 
+		$gr = preg_replace('/^(.+)[5-9]([EW])$/e','$1."N".$2',$gr);
+		$gr = preg_replace('/^(.+)[0-4]([EW])$/e','$1."S".$2',$gr);
+	}
+			
 	
 	$base=$_SERVER['DOCUMENT_ROOT'].'/kml';
 	$prefix = "/kml";
@@ -233,11 +247,13 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			$file = str_replace("kmz",'html',$file);
 			
 			if (!empty($list)) {
-				$s = "Photos in ".$list." :: Geograph British Isles";
+				$s = "Photos in ".$list." :: Geograph Channel Islands";
+			} elseif (!empty($gr) && $level == 5) {
+				$s = "Photos in ".$gr." :: Geograph Channel Islands";
 			} elseif (isset($square->grid_reference)) {
-				$s = "Photos in {$square->grid_reference} :: Geograph British Isles";
+				$s = "Photos in {$square->grid_reference} :: Geograph Channel Islands";
 			} elseif (!empty($gr)) {
-				$s = "Photos near ".$gr." :: Geograph British Isles";
+				$s = "Photos near ".$gr." :: Geograph Channel Islands";
 			} else {
 				$s = "Photos in ".$CONF['references_all'][0];
 			}
@@ -246,9 +262,11 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			$file1 = str_replace("kml",'sitemap',$file1);
 			$file1 = str_replace("kmz",'html',$file1);
 			
+			$html = str_replace("http://{$_SERVER['HTTP_HOST']}/",'/',$html);
+			
 			$html = "<html><head><title>{$s}</title></head>\n".
 			"<body>".
-			"<h3>Geograph British Isles</h3>".
+			"<h3>Geograph Channel Islands</h3>".
 			"<p><a href=\"/\">Homepage</a> | <a href=\"/sitemap/\">Sitemap</a> | <a href=\"$file1\">Up one level</a> | $s</p>".
 			"<ul>\n$html</ul>".
 			"</body></html>";

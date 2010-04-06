@@ -216,7 +216,6 @@ class EventProcessor
 	
 							if ($ext1=="class" && $ext2=="php")
 							{
-								$this->verbose("($classname, $ext1, $ext2)");
 								$this->handlers[$event_name][]=$entry;
 							}
 						}
@@ -236,12 +235,14 @@ class EventProcessor
 		if (rand(1,10) < 3) 
 		{
 			//clear events and event log entries older than one month
-
-			$this->db->Execute("delete from event where status='completed' and processed < date_sub(now(),interval 30 day)");
-			$this->db->Execute("delete from event_log where logtime < date_sub(now(),interval 30 day)");
+			if (rand(1,100) < 3)
+			{
+				$this->db->Execute("delete from event where status='completed' and processed < date_sub(now(),interval 30 day)");
+				$this->logdb->Execute("delete from event_log where logtime < date_sub(now(),interval 30 day)");
+			}
 
 			//clear all verbose entries not associated with a event once they are 8 hours old - they are really just for debugging
-			$this->db->Execute("delete from event_log where event_id=0 and verbosity in('trace', 'verbose') and logtime < date_sub(now(),interval 8 hour)");
+			$this->logdb->Execute("delete from event_log where event_id=0 and verbosity in('trace', 'verbose') and logtime < date_sub(now(),interval 8 hour)");
 		}
 	}
 	
@@ -252,6 +253,14 @@ class EventProcessor
 	*/
 	function start()
 	{
+		$check = $this->logdb->GetRow("select unix_timestamp(now())-unix_timestamp(logtime) as seconds,log like 'Processing complete%' as success from event_log where event_log_id = (select max(event_log_id) from event_log)");
+	
+		if ($check['seconds'] && $check['seconds'] < ($this->max_execution/2) && !$check['success']) 
+		{
+			$this->warning("A processor seems still active - dying (last log entry {$check['seconds']} ago)");
+			return false;
+		}
+	
 		$this->_buildHandlerTable();
 		$this->_gc();
 		
@@ -274,24 +283,31 @@ class EventProcessor
 			{
 				$this->trace("load average of $load exceeds {$this->max_load} sleeping for a bit...");
 				sleep(15);
+				continue;
 			}
 			
 			$attemptfilter="";
 			if (strlen($attempted))
 				$attemptfilter=" and event_id not in($attempted)";
 									
-			$event=$this->db->GetRow("select * from event where status<>'completed' $attemptfilter order by priority, posted limit 1");
-			if (!$event)
-			{
-				//no events to process! let's sleep for a bit
-				$this->verbose("no events in queue, sleeping for a bit...");
-				sleep(30);
-			}
+			$this->db->Execute("LOCK TABLES event WRITE");
 			
-			//if we have an event and we're below the load average
-			if ($event && ($load <= $this->max_load))
+			$event=$this->db->GetRow("select * from event 
+				where (
+						status = 'pending'
+						or (status = 'in_progress' and updated < date_sub(now(),interval 1 hour))
+				      ) $attemptfilter 
+				order by priority, posted limit 1");
+			
+			if ($event)
 			{
 				$event_id=$event['event_id'];
+				
+				//lets mark the event as in progress
+				$this->db->Execute("update event set status='in_progress' where event_id=$event_id");
+				
+				$this->db->Execute("UNLOCK TABLES");
+				
 				$event_name=$event['event_name'];
 				$event_param=$event['event_param'];
 				$priority=$event['priority'];
@@ -302,9 +318,6 @@ class EventProcessor
 
 				$this->current_event_id=$event_id;
 				$this->verbose("Processing event $event_id : $event_name($event_param) : posted $posted : priority $priority load:$load");
-				
-				//lets mark the event as in progress
-				$this->db->Execute("update event set status='in_progress' where event_id=$event_id");
 				
 				//ok, we have an unprocessed event, lets build an array of handlers that
 				//have had a pop at it...
@@ -387,10 +400,17 @@ class EventProcessor
 					$this->warning("Due to processing errors, event $event_id remains in queue");
 				}
 			}
+			else
+			{
+				$this->db->Execute("UNLOCK TABLES");
+				
+				//no events to process! let's sleep for a bit
+				$this->verbose("no events in queue, sleeping for a bit...");
+				sleep(30);
+			}
+			
 		}
 		
-					
-					
 		//ok, we're going to quit, but lets post some useful diagnostics
 		$count=$this->db->GetOne("select count(*) as cnt from event where status>=0");
 		$this->trace("Processing complete - $count events remaining in queue");
@@ -398,4 +418,3 @@ class EventProcessor
 	}
 }
 
-?>

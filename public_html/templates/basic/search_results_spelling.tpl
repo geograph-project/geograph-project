@@ -4,10 +4,16 @@
 
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image}
-	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
-	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" target="editor" style="display:inline">
+	 <div style="border-top: 2px solid lightgrey; padding-top:3px;">
+	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="display:inline">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
 		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+		<br/><div style="font-size:0.7em;">[[[{$image->gridimage_id}]]]
+		{if $image->count}
+			<br/><br/>
+			{$image->count|thousends} images in group
+		{/if}
+		</div>
 	  </div>
 	  <div style="float:left; position:relative">
 		<a name="{$image->gridimage_id}">
@@ -38,7 +44,8 @@
 	
 	<div style="position:relative">
 	<br/><br/>
-	<div class="interestBox" style="font-size:0.8em">Marked Images<span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1&amp;displayclass={if $engine->temp_displayclass}{$engine->temp_displayclass}{else}{$engine->criteria->displayclass}{/if}">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)</div></div>
+	<div class="interestBox" style="font-size:0.8em"><b>Marked Images</b><span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1&amp;displayclass={if $engine->temp_displayclass}{$engine->temp_displayclass}{else}{$engine->criteria->displayclass}{/if}">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)<br/>
+	&nbsp; &nbsp; &nbsp; &nbsp; <a href="javascript:void(markAllImages('Mark'))">Mark all images on <b>this</b> page</a> (<a href="javascript:void(markAllImages('marked'))" style="color:red">Unmark all on this page</a>)</div></div>
 	<script>
 	AttachEvent(window,'load',showMarkedImages,false);
 	</script>

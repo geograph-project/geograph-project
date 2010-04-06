@@ -212,7 +212,7 @@ class UploadManager
 			$uploadfile = $this->_pendingJPEG($id);
 			if (file_exists($uploadfile))
 			{
-				customExpiresHeader(3600);
+				customExpiresHeader(3600*48);
 				header("Content-Type:image/jpeg");
 				readfile($uploadfile);
 				exit;
@@ -336,7 +336,7 @@ class UploadManager
 				return false;
 			}
 
-		if (preg_match('/^http:\/\/[\w\.]+\/[\w\.\/]+\.jpg$/',$url) || preg_match('/^http:\/\/www\.picnik\.com\/file\/\d+$/',$url)) 
+		if (preg_match('/^http:\/\/[\w\.-]+\/[\w\.\/-]+\.jpg$/',$url) || preg_match('/^http:\/\/www\.picnik\.com\/file\/\d+$/',$url)) 
 		{	
 			if (fetch_remote_file($url, $pendingfile)) 
 			{	
@@ -596,9 +596,9 @@ class UploadManager
 	/**
 	* commit the upload process
 	*/
-	function commit()
+	function commit($method = '',$skip_cleanup = false)
 	{
-		global $USER,$CONF;
+		global $USER,$CONF,$memcache;
 		
 		if($this->validUploadId($this->upload_id))
 		{
@@ -676,11 +676,27 @@ class UploadManager
 		$src=$this->_pendingJPEG($this->upload_id);
 		
 		$image=new GridImage;
-		$image->loadFromId($gridimage_id);
+		$image->gridimage_id = $gridimage_id;
+		$image->user_id = $USER->user_id;
+		
 		$image->storeImage($src);
 		
-		$this->cleanUp();
+		if (!$skip_cleanup)
+			$this->cleanUp();
 		$this->gridimage_id = $gridimage_id;
+		
+		if (!empty($method)) {
+			if (!empty($GLOBALS['STARTTIME'])) {
+				
+				list($usec, $sec) = explode(' ',microtime());
+				$endtime = ((float)$usec + (float)$sec);
+				$timetaken = $endtime - $GLOBALS['STARTTIME'];
+				
+				$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method',timetaken=$timetaken");
+			} else {
+				$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method'");
+			}
+		}
 	}
 	
 	/**
@@ -693,8 +709,6 @@ class UploadManager
 		@unlink($jpeg);
 		@unlink($exif);
 	}
-		
-	
 	
 }
 

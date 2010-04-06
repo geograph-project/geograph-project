@@ -29,14 +29,6 @@
 {else}
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
 {/if}
-{if $rastermap->service == 'Google'}
-<!-- RasterMap.getScriptTag() -->
-{literal}<style type="text/css">
-v\:* {
-	behavior:url(#default#VML);
-}
-</style>{/literal}
-{/if}
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Geograph Channel Islands search" href="/stuff/osd.xml" />
 <script type="text/javascript" src="{"/geograph.js"|revision}"></script>
@@ -48,8 +40,8 @@ title="Geograph Channel Islands search" href="/stuff/osd.xml" />
   </div>
 </div>
 {if $right_block}
-<div {if $maincontentclass}class="{$maincontentclass}"{else}class="content3"{/if} id="maincontent_block">
+{dynamic}<div {if $maincontentclass}class="{$maincontentclass}"{else}class="content3"{/if} id="maincontent_block">{/dynamic}
 {else}
-<div {if $maincontentclass}class="{$maincontentclass}"{else}class="content2"{/if} id="maincontent_block">
+{dynamic}<div {if $maincontentclass}class="{$maincontentclass}"{else}class="content2"{/if} id="maincontent_block">{/dynamic}
 {/if}
 <div id="maincontent">

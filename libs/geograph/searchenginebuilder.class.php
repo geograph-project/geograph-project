@@ -57,7 +57,7 @@ class SearchEngineBuilder extends SearchEngine
 	* create a simple search object
 	*/
 	
-	function buildSimpleQuery($q = '',$distance = 100,$autoredirect='auto',$userlimit = 0)
+	function buildSimpleQuery($q = '',$distance = 10,$autoredirect='auto',$userlimit = 0)
 	{
 		global $USER,$CONF;
 		
@@ -186,13 +186,18 @@ class SearchEngineBuilder extends SearchEngine
 					} else {
 						$this->searchdesc = ", by '{$criteria2->realname}' ";
 						$this->criteria = $criteria2;
-						$this->criteria->searchq = $q;
 						$this->criteria->is_multiple = true;
 						$this->criteria->ismore = true; #so doesnt display placename prompt
-						unset($searchclass);
-						
-						if (!empty($criteria->placename)) {
-							$this->criteria->matches = $criteria->_matches;
+						if ($criteria->is_multiple) {
+							$this->criteria->searchq = $criteria->searchq;
+							$this->criteria->matches = $criteria->matches;
+						} else {
+							$this->criteria->searchq = $q;
+							unset($searchclass);
+
+							if (!empty($criteria->placename)) {
+								$this->criteria->matches = $criteria->_matches;
+							}
 						}
 					}
 				} else {
@@ -245,6 +250,8 @@ class SearchEngineBuilder extends SearchEngine
 				$sql .= ",user_id = {$USER->user_id}";
 				if (!empty($USER->search_results))
 					$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);				
+			} elseif (!empty($_GET['perpage'])) {
+				 $sql .= ",resultsperpage = ".min(100,intval($_GET['perpage']));
 			}
 			$db->Execute($sql);
 
@@ -273,7 +280,7 @@ class SearchEngineBuilder extends SearchEngine
 	
 	function buildAdvancedQuery(&$dataarray,$autoredirect='auto')
 	{
-		global $CONF,$imagestatuses,$breakdowns,$sortorders,$USER;
+		global $CONF,$imagestatuses,$breakdowns,$groupbys,$sortorders,$USER;
 		$dataarray = array_map("strip_tags", $dataarray);
 		
 		if (empty($dataarray['distance'])) {
@@ -334,7 +341,28 @@ class SearchEngineBuilder extends SearchEngine
 			}
 		}
 		
-		if (!empty($dataarray['postcode'])) {
+		if (!empty($dataarray['latlong'])) {
+			if (preg_match("/^\s*(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\s*$/",$dataarray['latlong'],$ll)) {
+				require_once('geograph/conversions.class.php');
+				require_once('geograph/gridsquare.class.php');
+				$square=new GridSquare;
+				$conv = new Conversions;
+				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
+				$grid_ok=$square->loadFromPosition($x, $y, true);
+				if ($grid_ok) {
+					$searchclass = 'GridRef';
+					list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
+					$searchdesc = ", $nearstring $latdm, $longdm";
+					$searchx = $x;
+					$searchy = $y;			
+					$criteria->reference_index = $square->reference_index;	
+				} else {
+					$this->errormsg = "unable to parse lat/long";
+				}
+			} else {
+				$this->errormsg = "Does not appear to be a valid Lat/Long";
+			}
+		} elseif (!empty($dataarray['postcode'])) {
 			if (preg_match("/^\s*([A-Z]{1,2})([0-9]{1,2}[A-Z]?)\s*([0-9]?)([A-Z]{0,2})\s*$/",strtoupper($dataarray['postcode']),$pc)) {
 				require_once('geograph/searchcriteria.class.php');
 				$searchq = $pc[1].$pc[2].($pc[3]?" ".$pc[3]:'');
@@ -355,7 +383,24 @@ class SearchEngineBuilder extends SearchEngine
 				$this->errormsg = "Does not appear to be a valid Postcode";
 			}
 		} else if (!empty($dataarray['gridref'])) {
-			if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['gridref'],$gr)) {
+			if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$dataarray['gridref'],$ll)) {
+				require_once('geograph/conversions.class.php');
+				require_once('geograph/gridsquare.class.php');
+				$square=new GridSquare;
+				$conv = new Conversions;
+				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
+				$grid_ok=$square->loadFromPosition($x, $y, true);
+				if ($grid_ok) {
+					$searchclass = 'GridRef';
+					$searchq = $ll[0];
+					list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
+					$searchdesc = ", $nearstring $latdm, $longdm";
+					$searchx = $x;
+					$searchy = $y;
+				} else {
+					$this->errormsg = "unable to parse lat/long";
+				}
+			} elseif (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['gridref'],$gr)) {
 				require_once('geograph/gridsquare.class.php');
 				$square=new GridSquare;
 				$grid_ok=$square->setByFullGridRef($dataarray['gridref'],false,true);
@@ -428,15 +473,9 @@ class SearchEngineBuilder extends SearchEngine
 
 		if (!empty($dataarray['searchtext'])) {
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
-			if (!empty($dataarray['ind_exact']) || preg_match('/^=/',$dataarray['searchtext'])) {
-				if (preg_match('/^=?~/',$dataarray['searchtext'])) {
-					$searchdesc = ", exactly matching any of [".preg_replace('/^=?~/','',$dataarray['searchtext'])."] ".$searchdesc;
-				} else {
-					$searchdesc = ", exactly matching [".preg_replace('/^=/','',$dataarray['searchtext'])."] ".$searchdesc;
-				}
-			} elseif (preg_match('/^~/',$dataarray['searchtext'])) {
+			if (preg_match('/^~/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching any of [".preg_replace('/^~/','',$dataarray['searchtext'])."] ".$searchdesc;
-			} elseif (preg_match('/[~\+\^\$:@ -]+/',$dataarray['searchtext'])) {
+			} elseif (preg_match('/[~\+\^\$:@ =-]+/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [".$dataarray['searchtext']."] ".$searchdesc;
 			} elseif (preg_match('/^".*"$/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [\"".$dataarray['searchtext']."\"] ".$searchdesc;
@@ -448,9 +487,6 @@ class SearchEngineBuilder extends SearchEngine
 				$searchdesc = ", containing [".$dataarray['searchtext']."] ".$searchdesc;	
 			}
 		} 
-		if (!empty($dataarray['ind_exact'])) {
-			$dataarray['searchtext'] = "=".$dataarray['searchtext'];
-		}
 
 		if (isset($searchclass)) {
 			$db=NewADOConnection($GLOBALS['DSN']);
@@ -661,10 +697,17 @@ class SearchEngineBuilder extends SearchEngine
 					$sql .= ",orderby = ".$db->Quote($orderby);
 			}
 			
-			if (!empty($dataarray['breakby'])) {
+			if (!empty($dataarray['breakby']) && trim($dataarray['breakby'])) {
 				$sql .= ",breakby = ".$db->Quote($dataarray['breakby']);
 				if (!empty($breakdowns[$dataarray['breakby']])) {
 					$searchdesc .= ", by ".($breakdowns[$dataarray['breakby']]);
+				}
+			}
+
+			if (!empty($dataarray['groupby']) && trim($dataarray['groupby'])) {
+				$sql .= ",groupby = ".$db->Quote($dataarray['groupby']);
+				if (!empty($groupbys[$dataarray['groupby']])) {
+					$searchdesc .= ", one photo per ".($groupbys[$dataarray['groupby']]);
 				}
 			}
 

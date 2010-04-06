@@ -112,6 +112,9 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
        <span class="sep">|</span>
        <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$static_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
     </p>
+    <p style="color:#777788;">Hosting supported by 
+    {external title="click to visit the Fubra website" href="http://www.fubra.com/" text="Fubra"}
+    </p>
   </div>
 </div>
 </body>
