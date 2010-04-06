@@ -1,0 +1,20 @@
+#run this on each webserver
+
+sudo -u geograph ln -s /mnt/jam/channel_live/public_html/photos /var/www/channel_live/public_html/photos
+sudo -u geograph ln -s /mnt/jam/channel_live/public_html/geophotos /var/www/channel_live/public_html/geophotos
+
+sudo mkdir /var/www/channel_live/public_html/templates/basic/cache/
+sudo chown www-data:www-data /var/www/channel_live/public_html/templates/basic/cache/
+sudo mkdir /var/www/channel_live/public_html/templates/basic/compiled/
+sudo chown www-data:www-data /var/www/channel_live/public_html/templates/basic/compiled/
+
+sudo -u geograph ln -s /var/www/channel_live/public_html/templates/basic/compiled-mnt /mnt/jam/channel_live/public_html/templates/basic/compiled
+
+sudo -u geograph ln -s /mnt/jam/channel_live/public_html/sitemap /var/www/channel_live/public_html/sitemap
+sudo -u geograph ln -s /mnt/jam/channel_live/public_html/kml /var/www/channel_live/public_html/kml
+sudo -u geograph ln -s /mnt/jam/channel_live/public_html/maps /var/www/channel_live/public_html/maps
+sudo -u geograph ln -s /mnt/jam/channel_live/public_html/memorymap /var/www/channel_live/public_html/memorymap
+sudo -u geograph ln -s /mnt/jam/channel_live/public_html/rss /var/www/channel_live/public_html/rss
+sudo -u geograph ln -s /mnt/jam/channel_live/public_html/torrent /var/www/channel_live/public_html/torrent
+
+
