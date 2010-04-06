@@ -21,6 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+header("Location: http://www.geograph.org.uk/register.php");
+exit;
+
+
 require_once('geograph/global.inc.php');
 init_session();
 
