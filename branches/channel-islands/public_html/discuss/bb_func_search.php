@@ -4,6 +4,12 @@ This file is part of miniBB. miniBB is free discussion forums/message board soft
 */
 if (!defined('INCLUDED776')) die ('Fatal error.');
 
+	header("HTTP/1.1 503 Service Unavailable");
+	$smarty = new GeographPage;
+	$smarty->display('function_disabled.tpl');
+	exit;
+
+
 if(isset($_GET['searchWhere'])) $searchWhere=$_GET['searchWhere'];
 elseif(isset($_POST['searchWhere'])) $searchWhere=$_POST['searchWhere'];
 else $searchWhere=0;

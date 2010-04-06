@@ -402,3 +402,80 @@ ALTER TABLE `queries_archive` CHANGE `searchuse` `searchuse` ENUM( 'search', 'fl
 ALTER TABLE `gridimage`        ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_recent` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_search` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`, DROP INDEX `title` , ADD INDEX `title` (`title`, `title2`), DROP INDEX `title_2` , ADD INDEX `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`);
+ALTER TABLE  `user` ADD  `expand_about` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
+################################################
+
+alter table mapcache change `type_or_user` `type_or_user` int(11)  NOT NULL DEFAULT '0';
+
+################################################
+################################################
+
+ALTER TABLE  `user` ADD  `use_autocomplete` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
+
+################################################
+alter table mapcache change age age mediumint NOT NULL DEFAULT '0';
+################################################
+
+
+ALTER TABLE  `smarty_cache_page` CHANGE `TTL` `Expire` INT UNSIGNED NOT NULL ;
+
+
+ALTER TABLE  `smarty_cache_page` ADD INDEX (`GroupCache`);
+
+################################################
+
+
+REATE TABLE IF NOT EXISTS `hectad_stat` (
+  `reference_index` tinyint(4) default '1',
+  `x` int(11) NOT NULL default '0',
+  `y` int(11) NOT NULL default '0',
+  `hectad` varchar(7) NOT NULL default '',
+  `landsquares` bigint(21) NOT NULL default '0',
+  `images` bigint(21) NOT NULL default '0',
+  `geographs` decimal(23,0) default NULL,
+  `squares` bigint(21) NOT NULL default '0',
+  `geosquares` smallint(5) unsigned NOT NULL,
+  `first_submitted` datetime default NULL,
+  `last_submitted` datetime default NULL,
+  `map_token` varchar(128) default NULL,
+  `largemap_token` varchar(128) default NULL,
+  PRIMARY KEY  (`hectad`),
+  KEY `reference_index` (`reference_index`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
+
+
+#################################################
+
+
+create table submission_method (gridimage_id int unsigned primary key,method enum('submit','submit2','nofrills','puploader','juploader') default null );
+
+
+#################################################
+#################################################
+
+
+ALTER TABLE event ADD `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+
+#################################################
+
+
+alter table submission_method add timetaken float not null default 0;
+
+
+#################################################
+#################################################
+
+
+ALTER TABLE  `queries` ADD  `groupby` VARCHAR( 32 ) NOT NULL AFTER  `breakby` ;
+ALTER TABLE  `queries_archive` ADD  `groupby` VARCHAR( 32 ) NOT NULL AFTER  `breakby` ;
+
+
+#################################################
+#################################################
+
+
+update geobb_posts set post_text = REPLACE(post_text,' ref="nofollow"',' rel="nofollow"') where post_text like '% ref="nofollow"%';
+
+
+#################################################
