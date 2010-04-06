@@ -141,7 +141,7 @@ geographing</a> first.</p>
 	{if !$user->use_autocomplete && $user->stats.images gt 10}
 	(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1">profile settings page</a></label>)	
 	{/if}
-
+</div>
 	<br/><br/><br/>
 	<p>If you are unsure of the photo location there are a number of online 
 		sources available to help:</p>
