@@ -69,6 +69,7 @@ class GeographUser
 	*/
 	var $stats=array();
 
+	var $use_autocomplete=false;
 	
 	/**
 	* Constructor doesn't normally do anything, but if supplied with a user id

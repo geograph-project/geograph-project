@@ -22,14 +22,17 @@
  */
 
 require_once('geograph/global.inc.php');
-require_once('geograph/gridimage.class.php');
-require_once('geograph/gridsquare.class.php');
+
+if (isset($_GET['preview'])) {
+	session_cache_limiter('none');
+} else {
+	require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridsquare.class.php');
+}
+
 require_once('geograph/uploadmanager.class.php');
 
 init_session();
-
-list($usec, $sec) = explode(' ',microtime());
-$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
 $uploadmanager=new UploadManager;
 
@@ -40,12 +43,19 @@ if (isset($_GET['preview']))
 	exit;
 }
 
+list($usec, $sec) = explode(' ',microtime());
+$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
+
 $square=new GridSquare;
 $smarty = new GeographPage;
 
 if (!$USER->hasPerm("basic")) {
 	$smarty->display('static_submit_intro.tpl');
 	exit;
+}
+
+if (!empty($_REQUEST['use_autocomplete'])) {
+	$USER->use_autocomplete = 1;
 }
 
 if (isset($_SESSION['tab'])) {
@@ -331,6 +341,9 @@ if (isset($_POST['gridsquare']))
 						$smarty->assign('error', $uploadmanager->errormsg);
 						$uploadmanager->errormsg = '';
 					}
+					
+					$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg']['name'])));
+
 					break;
 				case UPLOAD_ERR_INI_SIZE:
 				case UPLOAD_ERR_FORM_SIZE:
@@ -452,28 +465,22 @@ if (isset($_POST['gridsquare']))
 				}
 				
 				
-				$err = $uploadmanager->commit();
+				$err = $uploadmanager->commit('submit',true); //we will call cleanup later. 
 				
 				if ($_POST['imagetaken'] != '0000-00-00') {
 					$_SESSION['last_imagetaken'] = $_POST['imagetaken'];
 				}
-				
-				//clear user profile
-				$ab=floor($USER->user_id/10000);
-				$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
-				
-				if ($memcache->valid) {
-					//the submit list
-					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
-					$memcache->name_delete('gi',$mkey);
-					//the browse page for the user (to show pending)
-					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
-					$memcache->name_delete('gi',$mkey);
+				if (!empty($_POST['grid_reference']) && $square->natgrlen > 4) {
+					$_SESSION['last_grid_reference'] = $_POST['grid_reference'];
 				}
+				if (!empty($_POST['photographer_gridref'])) {
+					$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
+				}
+				
+				$clear_cache = 1;
 				
 				if (!$err)
 					$smarty->assign('gridimage_id', $uploadmanager->gridimage_id);
-					
 			}
 			
 			$step=($err)?7:5;
@@ -533,8 +540,9 @@ if (isset($_POST['gridsquare']))
 		
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));
-			
-			
+
+			$smarty->assign('use_autocomplete', $USER->use_autocomplete);
+
 			$preview_url="/submit.php?preview=".$uploadmanager->upload_id;
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
@@ -627,6 +635,12 @@ if (isset($_POST['gridsquare']))
 		if (isset($_SESSION['last_imagetaken'])) {
 			$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
 		}
+		if (isset($_SESSION['last_grid_reference'])) {
+			$smarty->assign('last_grid_reference', $_SESSION['last_grid_reference']);
+		}
+		if (isset($_SESSION['last_photographer_gridref'])) {
+			$smarty->assign('last_photographer_gridref', $_SESSION['last_photographer_gridref']);
+		}
 	}
 	else
 	{
@@ -703,5 +717,26 @@ $smarty->assign('step', $step);
 
 $smarty->display('submit.tpl');
 
+if (!empty($clear_cache)) {
+
+	flush();
+
+	//clear user profile
+	$ab=floor($USER->user_id/10000);
+	$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
+		
+	if ($memcache->valid) {
+		//the submit list
+		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
+		$memcache->name_delete('gi',$mkey);
+		//the browse page for the user (to show pending)
+		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by if(ftf between 1 and 4,ftf,5),gridimage_id");
+		$memcache->name_delete('gi',$mkey);
+	}
 	
-?>
+	if (!$err)
+		$uploadmanager->cleanUp();
+}
+
+
+
