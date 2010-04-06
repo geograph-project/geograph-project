@@ -108,7 +108,7 @@ class ImageList
 	/**
 	* get image list for particular user
 	*/
-	function getImagesByUser($user_id, $statuses, $sort = 'submitted', $count=null,$advanced = false)
+	function getImagesByUser($user_id, $statuses, $sort = 'gridimage_id', $count=null,$advanced = false)
 	{
 		//we accept an array or a single status...
 		if (is_array($statuses))
@@ -134,8 +134,8 @@ class ImageList
 
 		if ($advanced || preg_match("/(pending|rejected)/",$statuslist)) {
 			$sql="select gi.*,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname, t.topic_id,t.forum_id,t.last_post ";
-			if ($advanced == 2)
-				$sql.=", (select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ";
+#			if ($advanced == 2)
+#				$sql.=", (select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ";
 			$sql.="from gridimage as gi ".
 				"inner join gridsquare as gs using(gridsquare_id) ".
 				"inner join user on(gi.user_id=user.user_id) ".
@@ -422,8 +422,8 @@ class RecentImageList extends ImageList {
 
 			$start = $db->getOne("select recent_id from gridimage_recent where 1 $where");
 
-			$offset=rand(1,50);
-			$ids = range($start+$offset,$start+$offset+40);
+			$offset=rand(1,200);
+			$ids = range($start+$offset,$start+$offset+50);
 			shuffle($ids);
 
 			$id_string = join(',',array_slice($ids,0,5));

@@ -85,8 +85,8 @@
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL">{$image->realname|escape:'html'}</a> and  
+licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="{$image->_getFullpath(true,true)}" title="Creative Commons Attribution-Share Alike 2.0 Licence">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
 <!--
@@ -95,7 +95,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 -->
 
-{if $image_taken}
+{if $image_taken && $image->imagetaken > 1}
 <div class="keywords" style="top:-3em;float:right;position:relative;font-size:0.8em;height:0em;z-index:-10" title="year photo was taken">year taken <div style="font-size:3em;line-height:0.5em">{$image->imagetaken|truncate:4:''}</div></div>
 {/if}
 
@@ -103,7 +103,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <table style="width:100%">
 <tr>
-	<td colspan="6" align="center" style="background-color:#c0c0c0;font-size:0.7em;"><b><a href="/reuse.php?id={$image->gridimage_id}">Find out how to reuse this Image</a></b> For example on your webpage, blog, a forum, or Wikipedia. </td>
+	<td colspan="6" align="center" style="background-color:lightgrey;"><b><a href="/reuse.php?id={$image->gridimage_id}">Find out how to reuse this Image</a></b> <span style="font-size:0.7em;">For example on your webpage, blog, a forum, or Wikipedia.</span></td>
 </tr>
 <tr>
 {if $enable_forums}
@@ -169,13 +169,13 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 {if $image->credit_realname}
 	<dt>Photographer</dt>
-	 <dd>{$image->realname|escape:'html'}</dd>
+	 <dd property="dc:creator">{$image->realname|escape:'html'}</dd>
 
 	<dt>Contributed by</dt>
 	 <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {else}
 	<dt>Photographer</dt>
-	 <dd><a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
 <dt>Image classification</dt>
@@ -203,6 +203,13 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 {/if}
 <dt>Submitted</dt>
 	<dd>{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
+
+{if $image->keywords}
+	<dt>Keywords</dt>
+	{foreach from=$image->keywords item=item}
+		<dd style="width:200px;font-size:0.9em">{$item|escape:'html'}</dd>
+	{/foreach}
+{/if}
 
 <dt>Category</dt>
 
@@ -278,7 +285,7 @@ MGRS: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" 
 {literal}
 function addStyleLinks() {
 {/literal}
-	document.getElementById('styleLinks').innerHTML = 'Background for photo viewing: {if $maincontentclass eq "content_photowhite"}<b>white</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>{/if}/{if $maincontentclass eq "content_photoblack"}<b>black</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>{/if}/{if $maincontentclass eq "content_photogray"}<b>grey</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>{/if}';
+	document.getElementById('styleLinks').innerHTML = 'Background for photo viewing: <a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photowhite"} hidelink{/if}{/dynamic}">White</a> / <a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photoblack"} hidelink{/if}{/dynamic}">Black</a> / <a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photogray"} hidelink{/if}{/dynamic}">Grey</a>';
 {literal}
 }
 {/literal}

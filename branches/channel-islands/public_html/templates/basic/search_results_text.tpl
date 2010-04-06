@@ -5,7 +5,12 @@
 	<ul>
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image ul=true}
-	<li>
+	<li onmouseover="this.style.background='#efefef'" onmouseout="this.style.background=''" style="padding:2px">
+	  {if $image->count}
+	  	<div style="float:right;position:relative;font-size:small;text-align:right">
+	  		{$image->count|thousends} images in group
+	  	</div>
+	  {/if}
 	<a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> 
 	  <a title="{$image->comment|escape:"html"}" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
 	  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>

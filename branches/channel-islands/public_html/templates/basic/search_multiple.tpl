@@ -3,11 +3,27 @@
 
 <h2>Please refine your Search</h2>
 {dynamic}
-<p>In your search for images<i>{$searchdesc|escape:"html"}</i>.</p>
-
-<p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq|escape:"html"}': {if count($criteria->matches) > 0}<small>(click a grid reference to go directly to that square)</small>{/if}</p>
-
+<p>The meaning of your search for images<i>{$searchdesc|escape:"html"}</i>, is not totally clear, please find below a few alternatives.</p>
 <form action="{$script_name}" method="post">
+
+
+{if strlen($criteria->searchq) > 20 || count($criteria->matches) > 10} 
+	<div style="float:right;position:relative">
+		 <input type="submit" value="Find &gt;" style="font-size:1.1em">
+	</div>
+	{if $post.q && $post.location}
+		<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$post.location|escape:"html"}" id="dotext1">
+		<label for="dotext1">Just word search for '{$post.q|escape:"html"} {$post.location|escape:"html"}' please</label> <br/>
+	{else}
+		<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext2">
+		<label for="dotext2">Instead perform a word search for '{$criteria->searchq|escape:"html"}'</i></label><br/>
+	{/if}
+{/if}
+	
+<h3 style="border-bottom:1px solid silver">Place search</h3>
+
+<p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq|escape:"html"}': {if count($criteria->matches) > 0}<br/><small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>, or click a grid reference to go directly to that square)</small>{/if}</p>
+
 
 {foreach key=name item=value from=$post}
 	{if $value && $name != 'placename' && $name != 'go'}
@@ -15,16 +31,10 @@
 	{/if}		
 {/foreach}
 <input type="hidden" name="old-{$multipleon}" value="{$criteria->searchq|escape:'html'}">
-
-{if strlen($criteria->searchq) > 20} 
-	<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext">
-	<label for="dotext">Perform a word search for '<tt>{$criteria->searchq|escape:"html"}</tt>'</i></label> <br/><br/>	
-{/if}
-	
 {foreach from=$criteria->matches item=match}
 	<input type="radio" name="{$multipleon}" value="{$match.id}" id="match{$match.id}">
 	<span style="width:75px;position:absolute;"><a href="/gridref/{$match.gridref}">{$match.gridref}</a></span>
-	<label style="padding-left: 75px;" for="match{$match.id}"><b>{$match.full_name}</b><small><i>{if $match.adm1_name}, {$match.adm1_name}{/if}, {$references[$match.reference_index]}</i>
+	<label style="padding-left: 75px;" for="match{$match.id}"{if $match.hist_county} title="Historic County: {$match.hist_county}"{/if}><b>{$match.full_name}</b><small><i>{if $match.adm1_name}, {$match.adm1_name}{/if}, {$references[$match.reference_index]}</i>
 	<small>[{$match.dsg_name}]</small></small></label> <br/>
 {/foreach}
 
@@ -34,30 +44,33 @@
 	<label for="domore"><b>Place looking for not listed above? Try a wider search.</b></label> <br/>		
 {/if}
 
+<h3 style="border-bottom:1px solid silver">Other alternatives</h3>
+
 {if $pos_realname}
-	<br/>
 	<input type="radio" name="{$multipleon}" value="user:{$pos_user_id}" id="douser">
-	<label for="douser"><i>Perform a search for pictures taken by '<a href="/profile/{$pos_user_id}" title="profile for {$pos_realname}">{$pos_realname}</a>' {if $pos_nickname}(nickname: '{$pos_nickname}'){/if}</i></label> <br/>		
+	<label for="douser">Perform a search for pictures taken by '<a href="/profile/{$pos_user_id}" title="profile for {$pos_realname}">{$pos_realname}</a>' {if $pos_nickname}(nickname: '{$pos_nickname}'){/if}</label> <br/>		
+	<br/>
 {/if}
 
-<br/>
 {if preg_match('/near\s+/',$post.q) && !preg_match('/near\s+\(anywhere\)/',$post.q)}
-	<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '|escape:"html"}" id="dotext">
-	<label for="dotext">Perform a word search for '<tt>{$post.q|replace:'near ':'AND '|escape:"html"}</tt>'</label> <br/>
+	<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '|escape:"html"}" id="dotext3">
+	<label for="dotext3">Perform a word search for '{$post.q|replace:'near ':'AND '|escape:"html"}'</label> <br/>
 {elseif $post.q && $post.q != $criteria->searchq && preg_match('/near\s+$/',$post.q)}
-	<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext">
-	<label for="dotext">Perform a word search for '<tt>{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}</tt>'</label> <br/>
+	<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext3">
+	<label for="dotext3">Perform a word search for '{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}'</label> <br/>
 {elseif $post.searchtext && $post.searchtext != $criteria->searchq}
-	<input type="radio" name="{$multipleon}" value="text:{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext">
-	<label for="dotext">Perform a word search for '<tt>{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}'</tt></label> <br/>
+	<input type="radio" name="{$multipleon}" value="text:{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext3">
+	<label for="dotext3">Perform a word search for '{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}'</label> <br/>
+{elseif $post.q && $post.location}
+	<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$post.location|escape:"html"}" id="dotext3">
+	<label for="dotext3">Perform a word search for '{$post.q|escape:"html"} AND {$post.location|escape:"html"}'</label> <br/>
 {/if}
 
 
-<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext">
-<label for="dotext">Perform a word search for '<tt>{$criteria->searchq|escape:"html"}</tt>'</i></label> <br/>	
+<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext4">
+<label for="dotext4">Perform a word search for '{$criteria->searchq|escape:"html"}'</i></label> <br/>	
 
-{/dynamic}
-<p><input type="submit" name="refine" value="Refine"> <input type="submit" value="Find &gt;"></p>
+<p><input type="submit" name="refine" value="Refine further"> <input type="submit" value="Find &gt;" style="font-size:1.1em"></p>
 
 </form>	
 
@@ -69,6 +82,7 @@
 	{/foreach}
 	</ul></div>
 {/if}
+{/dynamic}
 
 <div class="copyright">Great Britain locations based upon 1:50 000 Scale Gazetteer with the permission of Ordnance Survey on behalf of The Controller of Her Majesty's Stationery Office,<br/>
 &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>

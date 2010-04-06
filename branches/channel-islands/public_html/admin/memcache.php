@@ -26,6 +26,10 @@ init_session();
 
 $USER->mustHavePerm("admin");
 
+if (!empty($_GET['Folder']) && preg_match('/^[\w]+$/',$_GET['Folder'])) {
+	$CONF['template'] = $_GET['Folder'];
+}
+
 $smarty = new GeographPage;
 
 $db = NewADOConnection($GLOBALS['DSN']);
@@ -51,7 +55,11 @@ if (isset($_GET['getExtendedStats'])) {
 			print "<tr>";
 			print "<th>$column</th>";
 			foreach ($a as $name => $row) {
-				print "<td align=\"right\">{$a[$name][$column]}</td>";
+				if (is_numeric($a[$name][$column])) {
+					print "<td align=\"right\">".number_format($a[$name][$column])."</td>";
+				} else {
+					print "<td>{$a[$name][$column]}</td>";
+				}
 			}
 			print "</tr>";
 		}
@@ -77,6 +85,30 @@ if (isset($_GET['getExtendedStats'])) {
 		
 	}
 	print "</table>";
+
+} elseif (!empty($_GET['CacheID'])) {
+	$key = $_GET['Folder'].$_GET['CacheID'];
+	print "<h2>Smarty Cache</h2>";
+	print "<h3>Memcache key: <tt>$key</tt></h3>";
+	if ($_GET['action'] == 'view') {
+		$v = $memcache->get($key);
+		print "Length: ".strlen($v);
+		print "<pre style='background-color:silver;border:4px solid black;padding:10px'>";
+		print htmlentities($v);
+		print "</pre>";
+	} elseif ($_GET['action'] == 'delete') {
+		$ok = $memcache->delete($key);
+		print "<p>Delete return value: $ok</p>";
+	}
+
+} elseif (isset($_GET['clear_cache'])) {
+	print "<h2>Clear Smarty Cache</h2>";
+		
+	if (!empty($_GET['Folder'])) {
+		$smarty->clear_this_template_only=true;
+	}
+	$smarty->clear_cache($_GET['template'],$_GET['cache_id']);
+	print "<h3>done</h3>";
 } elseif (!empty($_GET['post_id'])) {
 	$namespace = 'fp';
 	$key = $memcache->prefix.$namespace.':'.intval($_GET['post_id']);
@@ -90,8 +122,13 @@ if (isset($_GET['getExtendedStats'])) {
 		print "</pre>";
 	} elseif ($_GET['action'] == 'delete') {
 		$ok = $memcache->name_delete($namespace,intval($_GET['post_id']))?1:0;
-		print "Delete return value: $ok";
+		print "<p>Delete return value: $ok</p>";
+                $ok = $memcache->name_delete($namespace,intval($_GET['post_id'])."www.geograph.org.uk")?1:0;
+                print "<p>Delete www.geograph.org.uk return value: $ok</p>";
+ 		$ok = $memcache->name_delete($namespace,intval($_GET['post_id'])."www.geograph.ie")?1:0;
+		print "<p>Delete www.geograph.ie return value: $ok</p>";
 	}
+
 } elseif (!empty($_GET['image_id'])) {
 	$namespace = 'is';
 	$size = "120x120";if (!empty($_GET['size'])) $size = $_GET['size'];
@@ -105,16 +142,12 @@ if (isset($_GET['getExtendedStats'])) {
 		print "</pre>";
 	} elseif ($_GET['action'] == 'delete') {
 		$ok = $memcache->name_delete($namespace,intval($_GET['image_id']).':'.$size);
-		print "Delete return value: $ok";
+		print "<p>Delete return value: $ok</p>";
 	}
 
 } elseif (isset($_GET['flushMemcache'])) {
 	print "<h2>Flush Memcache</h2>";
 	print $memcache->flush();
-	print "<h3>done</h3>";
-} elseif (isset($_GET['clearSmarty'])) {
-	print "<h2>Clear Whole Smarty Cache</h2>";
-	$smarty->clear_cache();
 	print "<h3>done</h3>";
 } elseif (isset($_GET['get'])) {
 	$v = $memcache->get($_GET['get']);
@@ -162,8 +195,21 @@ post_id: <input type="text" name="image_id" value="" size="7"/> <input type="sub
 
 <hr/>
 <form method="get">
-<h3>Clear Whole Smarty Cache</h3>
-<input type=submit name="clearSmarty" value="Go"> (NOT recommended)
+<h3>Smarty Cache</h3>
+Folder: <input type="text" name="Folder" value="<? echo $CONF['template']; ?>" size="7"/> <input type="submit" value="Go"><br/>
+CacheID: <input type="text" name="CacheID" value="" size="50"/> (db-key)<br/>
+
+<input type="radio" name="action" value="view" checked> View Contents<br/>
+<input type="radio" name="action" value="delete"> Delete Cache (does not delete from meta db)<br/>
+</form>
+
+<hr/>
+<form method="get">
+<h4>Clear Cache - using smarty->clear_cache</h4>
+Folder: <input type="text" name="Folder" value="" size="7"/> (leave blank to clear all folders)<br/>
+$template: <input type="text" name="template" value="homepage.tpl" size="50"/>  <input type="submit" name="clear_cache" value="Go"><br/>
+and/or $cache_id: <input type="text" name="cache_id" value="5" size="50"/>(clears all caches with this prefix if contains |) <br/>
+
 </form>
 
 <hr/>
@@ -171,7 +217,7 @@ post_id: <input type="text" name="image_id" value="" size="7"/> <input type="sub
 <h3>Flush Memcache</h3>
 <input type=submit name="flushMemcache" value="Go"> (NOT recommended)
 </form>
-<?php
+<?
 
 }
 $smarty->display('_std_end.tpl');

@@ -69,6 +69,7 @@ init_session();
 if (isset($_GET['style'])) {
 	$USER->getStyle();
 	if (isset($_GET['id'])) {
+		$_SESSION['setstyle'] = 1;
 		header("HTTP/1.0 301 Moved Permanently");
 		header("Status: 301 Moved Permanently");
 		header("Location: /photo/".intval($_GET['id']));
@@ -125,25 +126,32 @@ if ($image->isValid())
 {
 	//what style should we use?
 	$style = $USER->getStyle();
-	$cacheid.=$style;
-
-
+	
 	//when this image was modified
 	$mtime = strtotime($image->upd_timestamp);
 
 	//page is unqiue per user (the profile and links)
 	$hash = $cacheid.'.'.$USER->user_id;
 
-	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-	customCacheControl($mtime,$hash,($USER->user_id == 0));
+	//if they have just just changed the style dont allow sending a 304 :) (of course can still exploit the smarty cache)
+	if (!empty($_SESSION['setstyle'])) {
+		unset($_SESSION['setstyle']);
+	} else {
+		//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+		customCacheControl($mtime,$hash,($USER->user_id == 0));
+	}
 
 	if (!empty($CONF['sphinx_host']) 
-		&& stripos($_SERVER['HTTP_REFERER'],$CONF['CONTENT_HOST']) === FALSE 
-		&& stripos($_SERVER['HTTP_REFERER'],$_SERVER['HTTP_HOST']) === FALSE
-		&& preg_match('/\b(q|query|qry|search|su|searchfor|s|qs|p|key|buscar|w)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$_SERVER['HTTP_REFERER'],$m) 
-		&& !is_numeric($m[2])
-		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',urldecode($m[2]) )) )
+		&& count($ref_query) > 0
+		&& ( $intersect = array_intersect(array('q','query','qry','search','su','searchfor','s','qs','p','key','buscar','w'),array_keys($ref_query)) )
+		&& ( $key = @array_shift($intersect) )
+		&& !is_numeric($ref_query[$key])
+		&& ($q = trim(preg_replace('/\b(geograph|photo|image|picture|site:[\w\.-]+|inurl:[\w\.-]+)s?\b/','',$ref_query[$key] )) )
 		&& strlen($q) > 3 ) {
+		
+		if ($m[1] == 'prev' && preg_match('/\b(q|query|qry)=([\w%\+\.\(\)\"\':]+)(\&|$)/',$q,$m)) {
+			$q = trim(urldecode($m[2]));
+		}
 		
 		$smarty->assign("search_keywords",$q);
 		
@@ -154,8 +162,6 @@ if ($image->isValid())
 			list($count,$when) = $info;
 			
 			$smarty->assign("search_count",$count);
-			
-			$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
 		} else {
 			$sphinx = new sphinxwrapper($mkey);
 			
@@ -172,11 +178,14 @@ if ($image->isValid())
 		}
 	}
 
+	$smarty->assign('maincontentclass', 'content_photo'.$style);
+
 	if (!$smarty->is_cached($template, $cacheid))
 	{
-		$smarty->assign('maincontentclass', 'content_photo'.$style);
 
 		$image->assignToSmarty($smarty);
+	} else {
+		$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
@@ -192,6 +201,5 @@ function smarty_function_hidekeywords($input) {
 $smarty->register_modifier("hidekeywords", "smarty_function_hidekeywords");
 
 $smarty->display($template, $cacheid);
-
 
 ?>

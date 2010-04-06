@@ -422,7 +422,7 @@ class GeographUser
 			$db = $this->_getDB();
 			
 			
-			$arr = $db->GetRow('select * from user where user_id='.$db->Quote($user_id).' limit 1');	
+			$arr = $db->GetRow('select rights from user where user_id='.$db->Quote($user_id).' limit 1');	
 			if (strlen($arr['rights']))
 			{
 				$status="alreadycomplete";
@@ -1346,7 +1346,7 @@ class GeographUser
 	
 		
 		//do we have a forum user?
-		$existing=$db->GetRow("select * from geobb_users where user_id='{$this->user_id}' limit 1");
+		$existing=$db->GetRow("select user_id from geobb_users where user_id='{$this->user_id}' limit 1");
 		if (count($existing))
 		{
 			//update profile

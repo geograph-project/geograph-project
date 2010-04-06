@@ -41,6 +41,7 @@ $template='admin_index.tpl';
 $cacheid=$USER->user_id;
 $smarty->caching=0;
 
+customExpiresHeader(300,false,true);
 
 	//lets get some stats
 	$db=NewADOConnection($GLOBALS['DSN']);
@@ -72,5 +73,3 @@ $smarty->assign('pics_pending', $db->GetOne("select count(*) from gridimage_dail
 
 $smarty->display($template,$cacheid);
 
-	
-?>

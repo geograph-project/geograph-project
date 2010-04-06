@@ -97,14 +97,12 @@ class SearchEngine
 			$classname = "SearchCriteria_".$query['searchclass'];
 			$this->criteria = new $classname($query['q']);
 			
-			if ($query['searchclass'] == "Special")	{
-					$query['searchq'] = stripslashes($query['searchq']);
-			}
+			#if ($query['searchclass'] == "Special")	{
+			#	$query['searchq'] = stripslashes($query['searchq']);
+			#}
 
 			$this->criteria->_initFromArray($query);
 		} 
-
-  
 	} 
 	
 	/**
@@ -137,7 +135,7 @@ class SearchEngine
 			
 			} elseif (empty($row['key']) || is_null($row['key'])) {
 				$bad = 1;
-			} elseif ($row['rows'] > 20000 && !empty($row['Extra'])) {
+			} elseif ($row['rows'] > 20000 && !empty($row['Extra']) && $row['key'] != 'label') {
 				$bad = 1;
 			}
 		}
@@ -185,15 +183,38 @@ class SearchEngine
 	
 		if (empty($_GET['legacy']) && empty($_SESSION['legacy']) && !empty($CONF['sphinx_host']) && 
 			isset($this->criteria->sphinx) && 
-			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['filters']))
+			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['groupby']) || !empty($this->criteria->sphinx['bbox']) || !empty($this->criteria->sphinx['filters']))
 			&& $this->criteria->sphinx['impossible'] == 0) {
 			$this->noCache = 1;
 			return $this->ExecuteSphinxRecordSet($pg);
 		} elseif ($this->criteria->sphinx['no_legacy']) {
 			//oh dear, no point even trying :(
 			$this->resultCount = 0;
+			$this->error = "Impossible Search";
 			return 0; 
 		}
+	
+		if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty']) && !empty($CONF['sphinx_host'])) { 
+			//this really should have been turned over to sphinx
+			header("HTTP/1.1 503 Service Unavailable");
+			$GLOBALS['smarty']->assign('searchq',stripslashes($_GET['q']));
+			$GLOBALS['smarty']->assign('temp',1);
+			$GLOBALS['smarty']->display('function_disabled.tpl');
+			
+			ob_start();
+			print "\n\nHost: ".`hostname`."\n\n";
+			if (!empty($GLOBALS['USER']->user_id)) {
+				print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
+			}
+			unset($this->criteria->db);
+			print_r($this->criteria);
+			print_r($_SERVER);
+			$con = ob_get_clean();
+			mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->criteria->searchdesc,$con);
+			
+			exit;
+		}
+		
 	
 		if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\'`]+) where/i",'',$sql_where);
@@ -209,6 +230,15 @@ class SearchEngine
 				$sql_where = " moderation_status in ('accepted','geograph') and $sql_where";
 		}
 		
+		if (!empty($_GET['safe'])) {
+			$this->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
+			if ($this->upper_limit>1) {
+				if (!empty($sql_where)) {
+					$sql_where .= " AND ";
+				}
+				$sql_where .= " gi.gridimage_id < {$this->upper_limit}";
+			}
+		}
 		$sql_from = str_replace('gridimage_query using (gridimage_id)','gridimage_query on (gi.gridimage_id = gridimage_query.gridimage_id)',$sql_from);
 		
 		if ($pg > 1 || $CONF['search_count_first_page'] || $this->countOnly) {
@@ -222,9 +252,9 @@ class SearchEngine
 				// construct the count query sql
 				if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
 					$sql_where2 = preg_replace("/group by ([\w\,\(\)\/ ]+)/i",'',$sql_where);
-					$sql = "/* i{$this->query_id} */ SELECT count(DISTINCT {$matches[1]}) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where2";
+					$sql = "SELECT count(DISTINCT {$matches[1]}) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where2";
 				} else {
-					$sql = "/* i{$this->query_id} */ SELECT count(*) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where";
+					$sql = "SELECT count(*) FROM gridimage AS gi $count_from $sql_from WHERE $sql_where";
 				}
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
@@ -249,7 +279,7 @@ class SearchEngine
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
 $sql = <<<END
-/* i{$this->query_id} */ SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields $extra_fields
+SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields $extra_fields
 FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 	$sql_from
@@ -332,11 +362,14 @@ END;
 				$suggestions = $sphinx->didYouMean($sphinx->q);
 			} elseif (
 					$this->criteria->searchclass == 'Placename' 
-					&& strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE 
 					&& (empty($this->criteria->searchtext) || ($this->criteria->searchq == $this->criteria->searchtext) )
 					&& isset($GLOBALS['smarty'])
 				) {
-				$suggestions = array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) );
+				$suggestions = array(array(
+					'query'=>$this->criteria->searchq,
+					'gr'=>'(anywhere)',
+					'localities'=>'as text search'
+					));
 			}
 			if (!empty($this->criteria->searchtext)) {
 
@@ -352,16 +385,25 @@ END;
 						($image->moderation_status!='rejected' && $image->moderation_status!='pending')
 						|| $image->user_id == $GLOBALS['USER']->user_id
 					) ) {
-						$suggestions += array(array('link'=>"/photo/{$image->gridimage_id}",'gr'=>'(anywhere)','localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}",'query'=>htmlentities2($image->title)));
+						$suggestions += array(array(
+							'link'=>"/photo/{$image->gridimage_id}",
+							'query'=>htmlentities2($image->title),
+							'gr'=>'(anywhere)',
+							'localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}"
+							));
 					}
 				} else {
 					require_once("3rdparty/spellchecker.class.php");
+					$original = preg_replace('/ftf:\d/','',$this->criteria->searchtext);
+					$correction = SpellChecker::Correct($original);
 
-					$correction = SpellChecker::Correct($this->criteria->searchtext);
+					if (strcasecmp($correction,$original) != 0 && levenshtein($correction,$original) < 0.25*strlen($correction)) {
 
-					if ($correction != $this->criteria->searchtext && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
-
-						$suggestions += array(array('gr'=>'(anywhere)','localities'=>'','query'=>$correction));
+						$suggestions += array(array(
+							'query'=>$correction,
+							'gr'=>'(anywhere)',
+							'localities'=>'spelling suggestion'
+							));
 					}
 				}
 			} 
@@ -374,6 +416,9 @@ END;
 		if (!empty($this->criteria->sphinx['sort'])) {
 			$sphinx->setSort($this->criteria->sphinx['sort']);
 		}
+		if (!empty($this->criteria->sphinx['groupby'])) {
+			$sphinx->setGroupBy($this->criteria->sphinx['groupby'][0],$this->criteria->sphinx['groupby'][1],$this->criteria->sphinx['groupby'][2]);
+		}
 		if (empty($this->criteria->sphinx['sort']) || $this->criteria->sphinx['sort'] == '@relevance DESC, @id DESC') {
 			if (preg_match('/\w+/',preg_replace('/(@\w+ |\w+:)\w+/','',$this->criteria->sphinx['query']))) {
 				$this->criteria->searchdesc = str_replace('undefined','relevance',$this->criteria->searchdesc);
@@ -382,7 +427,7 @@ END;
 			}
 		}
 
-		if (!empty($this->criteria->sphinx['d'])) {
+		if (!empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['bbox'])) {
 			$sphinx->setSpatial($this->criteria->sphinx);
 		}
 
@@ -392,13 +437,16 @@ END;
 		if (!empty($CONF['fetch_on_demand'])) {
 			$sphinx->upper_limit = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 		}
+		if (!empty($_GET['safe'])) {
+			$sphinx->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id)-1 FROM gridimage WHERE moderation_status = 'pending'"));
+		}
 
 		if (is_array($this->criteria->sphinx['filters']) && count($this->criteria->sphinx['filters'])) {
 			$sphinx->addFilters($this->criteria->sphinx['filters']);
 		}
 		
 	//run the sphinx search
-		$ids = $sphinx->returnIds($pg,empty($this->criteria->sphinx['exact'])?'_images':'_images_exact');
+		$ids = $sphinx->returnIds($pg,'_images');
 
 		$this->resultCount = $sphinx->resultCount;
 		$this->numberOfPages = $sphinx->numberOfPages;
@@ -411,26 +459,35 @@ END;
 		} 
 
 
-		if ($this->countOnly || !$this->resultCount)
+		if ($this->countOnly || !$this->resultCount) {
+			if (!empty($sphinx->query_error)) {
+				$this->error = $sphinx->query_error;
+			}
+			if (!empty($sphinx->query_info)) {
+				$this->info = $sphinx->query_info;
+			}
 			return 0;
+		}
+		$this->orderList = $ids;
 		
 		if ($sql_order == ' dist_sqd ') {
-			$this->sphinx_matches = $sphinx->res['matches'];
+			$this->sphinx_reply = $sphinx->res;
 			$sql_fields = ',-1 as dist_sqd' ;
+		} else if (!empty($this->criteria->groupby)) {
+			$this->sphinx_reply = $sphinx->res;
 		} 
 
 	// fetch from database
 		$id_list = implode(',',$ids);
 		if ($this->noCache) {
 $sql = <<<END
-/* i{$this->query_id} */ SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields
+SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields
 FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 WHERE gi.gridimage_id IN ($id_list)
-ORDER BY FIELD(gi.gridimage_id,$id_list)
 END;
 		} else {
-			$sql = "/* i{$this->query_id} */ SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list) ORDER BY FIELD(gi.gridimage_id,$id_list)";
+			$sql = "SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list)";
 		}
 		
 		if (!empty($_GET['debug']))
@@ -451,7 +508,7 @@ END;
 				$row = $rows[$id];
 				$docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['post_text']));
 			}
-			$reply = $sphinx->BuildExcerpts($docs, empty($this->criteria->sphinx['exact'])?'gridimage':'gi_stemmmed', $sphinx->q);	
+			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmmed', $sphinx->q);
 		}
 
 		$this->querytime = ($querytime_after - $querytime_before) + $sphinx->query_time;
@@ -495,27 +552,71 @@ END;
 		# run_via_sphinx
 		if (empty($_GET['legacy']) && empty($_SESSION['legacy']) && !empty($CONF['sphinx_host']) && 
 			isset($this->criteria->sphinx) && 
-			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['filters']))
+			(strlen($this->criteria->sphinx['query']) || !empty($this->criteria->sphinx['d']) || !empty($this->criteria->sphinx['groupby']) || !empty($this->criteria->sphinx['bbox']) || !empty($this->criteria->sphinx['filters']))
 			&& $this->criteria->sphinx['impossible'] == 0) {
 			
 			return $this->ExecuteSphinxRecordSet($pg);
 		} elseif ($this->criteria->sphinx['no_legacy']) {
 			//oh dear, no point even trying :(
 			$this->resultCount = 0;
+			$this->error = "Impossible Search";
 			return 0; 
 		}
 		# /run_via_sphinx
 		###################
+                if (!empty($this->criteria->searchtext) && !empty($GLOBALS['smarty']) && !empty($CONF['sphinx_host'])) {
+                        //this really should have been turned over to sphinx
+                        header("HTTP/1.1 503 Service Unavailable");
+                        $GLOBALS['smarty']->assign('searchq',stripslashes($_GET['q']));
+			$GLOBALS['smarty']->assign('temp',1);
+                        $GLOBALS['smarty']->display('function_disabled.tpl');
+
+                        ob_start();
+                        print "\n\nHost: ".`hostname`."\n\n";
+                        if (!empty($GLOBALS['USER']->user_id)) {
+                                print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
+                        }
+                        unset($this->criteria->db);
+                        print_r($this->criteria);
+                        print_r($_SERVER);
+                        $con = ob_get_clean();
+                        mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->criteria->searchdesc,$con);
+
+                        exit;
+                }
 	
+		//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
+		if ($this->criteria->searchclass == 'Placename' && isset($GLOBALS['smarty']) && (empty($this->criteria->searchtext) || ($this->criteria->searchq == $this->criteria->searchtext) )) {
+			$GLOBALS['smarty']->assign("suggestions",array(array(
+				'query'=>$this->criteria->searchq,
+				'gr'=>'(anywhere)',
+				'localities'=>'as text search'
+				) ));
+		} elseif ($this->criteria->searchclass == 'Special' && preg_match('/labeled \[([\w ]+)\], in grid reference (\w+)/',$this->criteria->searchdesc,$m) && isset($GLOBALS['smarty'])) {
 		
-		if ($this->criteria->searchclass == 'Placename' && strpos($this->criteria->searchdesc,$this->criteria->searchq) == FALSE && isset($GLOBALS['smarty'])) {
-			$GLOBALS['smarty']->assign("suggestions",array(array('gr'=>'(anywhere)','localities'=>'as text search','query'=>$this->criteria->searchq) ));
+			$suggestions = array(array(
+				'link'=>"/search.php?q=".urlencode($m[1])."+near+{$m[2]}",
+				'query'=>$m[1],
+				'name'=>$m[2],
+				'localities'=>'as text search'
+				) );
+			$GLOBALS['smarty']->assign_by_ref("suggestions",$suggestions);
+
 		}
 
+		if (!empty($_GET['safe'])) {
+			$this->upper_limit = max(0,$db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'"));
+			if ($this->upper_limit>1) {
+				if (!empty($sql_where)) {
+					$sql_where .= " AND ";
+				}
+				$sql_where .= " gi.gridimage_id < {$this->upper_limit}";
+			}
+		}
 		if (!empty($sql_where)) {
 			$sql_where = "WHERE $sql_where";
 			$this->islimited = true;
-		} elseif (preg_match('/^ rand\(/',$sql_order)) {
+		} elseif (preg_match('/rand\(/',$sql_order)) {
 			//homefully temporally
 			dieUnderHighLoad(0,'search_unavailable.tpl');
 		}
@@ -536,9 +637,9 @@ END;
 					if ($matches[1] == 'gridimage_id') {
 						$matches[1] = 'gi.gridimage_id';
 					}
-					$sql = "/* i{$this->query_id} */ SELECT count(DISTINCT {$matches[1]}) FROM gridimage_search as gi $sql_from $sql_where2";
+					$sql = "SELECT count(DISTINCT {$matches[1]}) FROM gridimage_search as gi $sql_from $sql_where2";
 				} else {
-					$sql = "/* i{$this->query_id} */ SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";
+					$sql = "SELECT count(*) FROM gridimage_search as gi $sql_from $sql_where";
 				}
 				if (!empty($_GET['debug']))
 					print "<BR><BR>$sql";
@@ -563,7 +664,7 @@ END;
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
 $sql = <<<END
-/* i{$this->query_id} */ SELECT gi.* $sql_fields
+SELECT gi.* $sql_fields
 FROM gridimage_search as gi $sql_from
 $sql_where
 $sql_order
@@ -638,6 +739,26 @@ END;
 		} else {
 			$recordSet =& $this->ExecuteCachedReturnRecordset($pg); 
 		}
+		
+		if (!empty($this->error)) {
+			ob_start();
+			print "\n\nHost: ".`hostname`."\n\n";
+			if (!empty($this->info)) {
+				print "Info: {$this->info}\n";
+			}
+			if (!empty($this->error)) {
+				print "Error: {$this->error}\n";
+			}
+			if (!empty($GLOBALS['USER']->user_id)) {
+				print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
+			}
+			unset($this->criteria->db);
+			print_r($this->criteria);
+			print_r($_SERVER);
+			$con = ob_get_clean();
+			mail('geograph@barryhunter.co.uk','[Geograph '.$this->error.'] '.$this->criteria->searchdesc,$con);
+		}
+		
 		//we dont actully want to process anything
 		if ($this->countOnly)
 			return 0;
@@ -660,7 +781,7 @@ END;
 					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
 					
 					if ($recordSet->fields['dist_sqd'] == -1) {
-						$d = $this->sphinx_matches[$this->results[$i]->gridimage_id]['attrs']['@geodist']/1000;
+						$d = $this->sphinx_reply['matches'][$this->results[$i]->gridimage_id]['attrs']['@geodist']/1000;
 					} else {
 						$d = sqrt($recordSet->fields['dist_sqd']);
 					}
@@ -678,6 +799,9 @@ END;
 				//if we searching on taken date then display it...
 				if ($showtaken) 
 					$this->results[$i]->imagetakenString = getFormattedDate($this->results[$i]->imagetaken);
+				
+				if (!empty($this->criteria->groupby)) //TODO if we implement groupby in mysql need to update this. 
+					$this->results[$i]->count = $this->sphinx_reply['matches'][$this->results[$i]->gridimage_id]['attrs']['@count'];
 
 				$recordSet->MoveNext();
 				$i++;
@@ -685,6 +809,22 @@ END;
 			$recordSet->Close(); 
 			$this->numberofimages = $i;
 			
+			if (!empty($this->orderList)) {
+				if (!empty($_GET['debug']))
+					print "REORDERING";
+				
+				//well we need to reorder...
+				$lookup = array();
+				foreach ($this->results as $gridimage_id => $image) {
+					$lookup[$image->gridimage_id] = $gridimage_id;
+				}
+				$newlist = array();
+				foreach ($this->orderList as $id) {
+					if (!empty( $this->results[$lookup[$id]]))
+						$newlist[] = $this->results[$lookup[$id]];
+				}
+				$this->results = $newlist;
+			}
 			if (!$i && $this->resultCount) {
 				$pgsize = $this->criteria->resultsperpage;
 
@@ -744,6 +884,10 @@ END;
 		if (!empty($_GET['legacy'])) { //todo - technically a bodge!
 			$postfix .= "&amp;legacy=true";
 		}
+		if (!empty($_GET['safe'])) {
+			$postfix .= "&amp;safe=true";
+		}
+		
 		if ($this->currentPage > 1) 
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."$postfix\"$extrahtml>&lt; &lt; prev</a> ";
 		$start = max(1,$this->currentPage-5);

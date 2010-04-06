@@ -80,7 +80,7 @@ order by
 	imagecount desc,
 	(natgrlen != '4') desc,
 	(gi.moderation_status = 'geograph') desc,
-	rand()");
+	rand(date(now()))");
 
 # order preference:
 #  dense squares first (so they shown in the tile selection)

@@ -32,6 +32,8 @@
 	{if !$moderator && !$review}
 	Simply look at each image in turn and click the relevant button. The result of the action is displayed just below the button.<br/><br/>
 	
+	<div class="interestBox" style="border:4px solid red;background-color:pink;font-size:1.1em;padding:15px">Remember you absolutely MUST wait for confirmation from clicking the moderation button, before moving onto the next image. <b>This is vitally important</b>. <i>Thank you for your attention in this matter</i>.</div>
+	
 	Sometimes a button is grayed out, this is at the suggestion of the submitter themselves, and/or the system. Please moderate as you normally would, but you can take the suggestion into account. 
 	{/if}</p>
 	
@@ -45,10 +47,10 @@
 	  
 	  <div style="margin-left:233px"> 
 	  
-	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b style="color:blue">{$image->imageclass}</b> &nbsp;&nbsp; (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)<br/>
-	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b><br/>
+	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b><a href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}&amp;do=1">{$image->imageclass}</a></b><br/>
+	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b> ({$image->images} images)<br/>
 	  {if $image->title1}
-	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title1|escape:'html'}</a></b><br/>
+	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)<br/>
 	  {/if}
 	  {if $image->title2}
 	  Non-English title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title2|escape:'html'}</a></b><br/>
@@ -70,7 +72,7 @@
 	  {/if}
 	  {if $image->viewpoint_eastings}
 	  	| photographer: <b>{getamap gridref=$image->getPhotographerGridref(true) title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}
-	  	| <span{if $image->different_square} style="background-color:yellow"{/if}>distance: <b style="color:blue">{$image->distance}</b>km</span>
+	  	| <span{if $image->different_square} class="interestBox"{/if}>distance: <b><a>{$image->distance}</a></b>km</span>
 	  {/if}
 	  </span>
 		{if $image->reopenmaptoken}
@@ -104,11 +106,20 @@
 	<br style="clear:left;"/>&nbsp;
 	
 	{if $apply} 
-		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php?apply=2">Finish my application</a> - we will contact you if a vacancy arrises. Please note that we however have a long waiting list!</div>
-	{/if}
-	{if !$moderator && !$remoderate}		
+		<div class="interestBox" style="padding-left:100px"><h2>Finish my application</h2>
+		
+		<form method="post" action="/admin/moderation.php?apply=2">
+		<b>Comments:</b> (for example why do you want to become a moderator)<br/>
+		<textarea name="comments" rows="8" cols="80"></textarea><br/>
+		<input type="submit" value="Finish my application"/>
+		</form>
+		
+		</div>
+	{elseif !$moderator && !$remoderate}
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a>
 		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
+	{elseif $remoderate}
+		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a></div>
 	{/if}
 {else}
 

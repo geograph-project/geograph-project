@@ -33,6 +33,19 @@ if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 && strpos($_SERV
 	die("the servers are currently very busy - moderation is disabled to allow things to catch up, will be automatically re-enabled when load returns to normal");
 }
 
+if (!empty($_GET['style'])) {
+	$USER->getStyle();
+	if (!empty($_SERVER['QUERY_STRING'])) {
+		$query = preg_replace('/style=(\w+)/','',$_SERVER['QUERY_STRING']);
+		header("HTTP/1.0 301 Moved Permanently");
+		header("Status: 301 Moved Permanently");
+		header("Location: /admin/moderation.php?".$query);
+		exit;
+	}
+	header("Location: /admin/moderation.php");
+	exit;
+}
+
 customGZipHandlerStart();
 
 $db = NewADOConnection($GLOBALS['DSN']);
@@ -61,6 +74,10 @@ if (isset($_GET['gridimage_id']))
 					$status = $db->Quote($status);
 					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now(),type = 'dummy'");
 					print "classification $status recorded";
+					
+					
+					$mkey = $USER->user_id;
+					$memcache->name_delete('udm',$mkey);
 				}
 				else
 				{
@@ -78,6 +95,7 @@ if (isset($_GET['gridimage_id']))
 				
 				$info=$image->setModerationStatus($status, $USER->user_id);
 				echo $info;
+				flush;
 
 				if ($status == 'rejected')
 				{
@@ -140,6 +158,11 @@ if (!empty($_GET['abandon'])) {
 
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):15;
+if ($limit > 15) {
+	dieUnderHighLoad(0.3);
+} else {
+	dieUnderHighLoad(0.8);
+}
 
 
 if (!empty($_GET['relinquish'])) {
@@ -150,6 +173,7 @@ if (!empty($_GET['relinquish'])) {
 	$_SESSION['user'] =& new GeographUser($USER->user_id);
 	
 	header("Location: /profile.php?edit=1");
+	exit;
 
 } elseif (!empty($_GET['apply'])) {
 	$USER->mustHavePerm('basic');
@@ -165,7 +189,11 @@ if (!empty($_GET['relinquish'])) {
 		mail(implode(',',$mods), "[Geograph] Moderator Application ({$USER->user_id})", 
 "Dear Admin, 
 
-I have just completed verification,
+I have just completed verification.
+
+Comments: 
+{$_POST['comments']}
+
 click the following link to review the application:	
 
 $url
@@ -342,7 +370,7 @@ if (isset($_GET['xmas'])) {
 }
 
 
-$sql = "select gi.*,grid_reference,user.realname,imagecount $sql_columns
+$sql = "select gi.*,grid_reference,user.realname,imagecount,coalesce(images,0) as images $sql_columns
 from 
 	gridimage as gi
 	inner join gridsquare as gs
@@ -352,9 +380,12 @@ from
 		on(gi.gridsquare_id=l.gridsquare_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) )
 	inner join user
 		on(gi.user_id=user.user_id)
+	left join user_stat us
+		on(gi.user_id=us.user_id)
 where
 	$sql_where
 	$sql_where2
+	and submitted < date_sub(now(),interval 30 minute)
 group by gridimage_id
 order by
 	$sql_order
@@ -367,8 +398,9 @@ limit $limit";
 # fetch the list of images...
 
 $images=new ImageList(); 
-
+$images->_setDB($db);
 $c = $images->_getImagesBySql($sql);
+
 
 $realname = array();
 foreach ($images->images as $i => $image) {
@@ -424,6 +456,9 @@ $db->Execute("UNLOCK TABLES");
 
 $images->assignSmarty($smarty, 'unmoderated');
 		
-$smarty->display('admin_moderation.tpl');
-	
-?>
+//what style should we use?
+$style = $USER->getStyle();
+$smarty->assign('maincontentclass', 'content_photo'.$style);
+
+$smarty->display('admin_moderation.tpl',$style);
+

@@ -4,10 +4,36 @@
 	
 {if $engine->resultCount}
 
-	{if $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->criteria->sphinx.compatible && $engine->criteria->sphinx.compatible_order && $engine->resultCount > $engine->maxResults}
+	{if $engine->fullText && $engine->nextLink}
+	<div class="interestBox" style="border:1px solid pink;">
+		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However as your search is in a predictable sort order, you can <b><a href="{$engine->nextLink|escape:'html'}">Generate a new Search</a></b> that continues from this approximatly this page forward.
+	</div>
+	
+	{elseif $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->criteria->sphinx.compatible && $engine->criteria->sphinx.compatible_order && $engine->resultCount > $engine->maxResults}
 		<div class="interestBox" style="border:1px solid pink;">
 			You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However your search seems to be compatible with the lagacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
 		</div>
+		
+	{elseif $engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs'}	
+	
+		<div id="hidefeed2" style="text-align:center;width:400px;border:2px solid yellow; margin-left:auto;margin-right:auto">Didn't find what you looking for? <a href="javascript:void(show_tree('feed2'));"><b>Tell Us!</b></a></div>
+		<div id="showfeed2" class="interestBox" style="display:none"><form method="post" action="/stuff/feedback.php">
+		<label for="feedback_comments"><b>Help us improve!</b> Please explain what you are looking for...</label><br/>
+		<input type="text" name="comments" size="80" id="feedback_comments"/><input type="submit" name="submit" value="send"/>
+		{dynamic}{if $user->registered}<br/>
+		<small>(<input type="checkbox" name="nonanon"/> <i>Tick here to include your name with this comment, so we can then reply</i>)</small>
+		{else}<br/>
+		<i><small>If you want a reply please use the <a href="/contact.php">Contact Us</a> page. We are <b>unable</b> to reply to comments left here.</small></i>
+		{/if}{/dynamic}
+		<input type="hidden" name="template" value="{$smarty_template}"/>
+		<input type="hidden" name="referring_page" value="{$smarty.server.HTTP_REFERER}"/>
+		    <div style="display:none">
+		    <br /><br />
+		    <label for="name">Leave Blank!</label><br/>   
+			<input size="40" id="name" name="name" value=""/>
+		    </div>
+		</form></div>
+		<br/>
 	{/if}
 
 
@@ -23,8 +49,25 @@
 
 
 View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteria->sphinx.compatible)}<a title="Breakdown for images{$engine->criteria->searchdesc|escape:"html"}" href="/statistics/breakdown.php?i={$i}">Statistics</a> {/if}<a title="Google Earth Or Google Maps Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/kml.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}">as KML</a> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a> <a title="GPX file for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.gpx" class="xml-gpx">GPX</a></div>
-{else}
+{elseif !$engine->error}
 <p align="right" style="clear:both"><small>Subscribe to find images submitted in future:</small> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a></p>
+{/if}
+
+		{if $engine->fullText && $engine->criteria->searchclass != 'Special' && ($engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs' || $engine->criteria->displayclass=='text')}
+			<div class="interestBox">
+				<form action="{$script_name}" method="get">
+					<b>Quick refine this search:</b> <small style="color:gray">(images{$engine->criteria->searchdesc|escape:'html'})</small>
+					<div><label for="fq">New Keywords</label>: <input type="text" name="text" id="fq" size="30"{if $engine->criteria->searchtext} value="{$engine->criteria->searchtext|escape:'html'}"{/if}/>
+					<input type="submit" value="Search"/>
+					<input type="hidden" name="i" value="{$i}"/>
+					<input type="hidden" name="redo" value="1"/>
+					({newwin href="/article/Word-Searching-on-Geograph" text="Tips"}) - all other fields unchanged<br/>
+					<input type="checkbox" name="strip" id="strip" {if $engine->error}checked{/if}/> <label for="strip">Remove special characters (otherwise will be used as search syntax)</label>
+					
+					
+					</div>
+				</form>
+			</div>
 {/if}
 
 </div>
@@ -45,12 +88,8 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 
 {/if}
 
+{if $engine->resultCount}
 <div class="interestBox" style="text-align:center">
-
-<div style="border-bottom:1px solid silver; padding-bottom:5px;margin-bottom:5px;"><a href="/explore/searches.php?i={$i}">Feature this search!</a>
-&nbsp;&nbsp; | &nbsp;&nbsp;
-<span id="votediv{$i}"><b>Rate this Search Result</b>: {votestars id=$i type="q"}</span></div>
-
 <form action="/search.php" method="get" style="display:inline">
 <input type="hidden" name="i" value="{$i}"/>
 {if $engine->currentPage > 1}<input type="hidden" name="page" value="{$engine->currentPage}"/>{/if}
@@ -65,21 +104,13 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 </form> &nbsp;&nbsp; | &nbsp;&nbsp;
 
 Background Color: [
-{if $maincontentclass eq "content_photowhite"}
-	<b>white</b>
-{else}
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>
-{/if}/
-{if $maincontentclass eq "content_photoblack"}
-	<b>black</b>
-{else}
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>
-{/if}/
-{if $maincontentclass eq "content_photogray"}
-	<b>grey</b>
-{else}
-	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>
-{/if} ]
+	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=white" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photowhite"} hidelink{/if}{/dynamic}">White</a>
+/
+	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=black" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photoblack"} hidelink{/if}{/dynamic}">Black</a>
+/
+	<a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;style=gray" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photogray"} hidelink{/if}{/dynamic}">Grey</a>
+ ]
 </div>
+{/if}
 
 {include file="_std_end.tpl"}

@@ -32,12 +32,16 @@
 */
 
 
+#################################################
+
 //include domain specific configuration - if your install fails on
 //this line, copy and adapt one of the existing configuration
 //files in /libs/conf
 require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 
 @include('conf/revisions.conf.php');
+
+#################################################
 
 //adodb configuration
 require_once('adodb/adodb.inc.php');
@@ -47,13 +51,13 @@ if ($CONF['adodb_debugging'])
 $ADODB_CACHE_DIR =& $CONF['adodb_cache_dir'];
 
 
-
 //build DSN
 $DSN = $CONF['db_driver'].'://'.
 	$CONF['db_user'].':'.$CONF['db_pwd'].
 	'@'.$CONF['db_connect'].
 	'/'.$CONF['db_db'].$CONF['db_persist'];
 
+//optional second database
 if (isset($CONF['db_driver2'])) {
 	$DSN2 = $CONF['db_driver2'].'://'.
 		$CONF['db_user2'].':'.$CONF['db_pwd2'].
@@ -62,6 +66,13 @@ if (isset($CONF['db_driver2'])) {
 } else {
 	$DSN2 = $DSN;
 }
+
+if (empty($CONF['db_tempdb'])) {
+	$CONF['db_tempdb']=$CONF['db_db'];
+}
+
+
+#################################################
 
 if (!empty($CONF['memcache']['app'])) {
 	
@@ -102,6 +113,8 @@ if (!empty($CONF['memcache']['app'])) {
 require_once('geograph/security.inc.php');
 
 
+#################################################
+
 if (!empty($CONF['memcache']['adodb'])) {
 	if ($CONF['memcache']['adodb'] != $CONF['memcache']['app']) {
 		$ADODB_MEMCACHE_OBJECT = new MultiServerMemcache($CONF['memcache']['adodb']);
@@ -109,7 +122,6 @@ if (!empty($CONF['memcache']['adodb'])) {
 		$ADODB_MEMCACHE_OBJECT =& $memcache;
 	}
 }
-
 
 if (!empty($CONF['memcache']['sessions'])) {
 
@@ -122,7 +134,7 @@ if (!empty($CONF['memcache']['sessions'])) {
 	
 	$memcachesession->period = ini_get("session.gc_maxlifetime");
 } elseif (isset($CONF['db_driver2'])) {
-	//adodb session configuration - we use same database
+	//adodb session configuration - we use second database if possible
 	$ADODB_SESSION_DRIVER=$CONF['db_driver2'];
 	$ADODB_SESSION_CONNECT=$CONF['db_connect2'];
 	$ADODB_SESSION_USER =$CONF['db_user2'];
@@ -143,7 +155,7 @@ if (!empty($CONF['memcache']['sessions'])) {
 		adodb_sess_open(false,false,false);
 }
 
-
+#################################################
 
 //global routines
 require_once('geograph/functions.inc.php');
@@ -154,6 +166,7 @@ require_once('smarty/libs/Smarty.class.php');
 //and our user class
 require_once('geograph/user.class.php');
 
+#################################################
 
 //function to replace having to have loads of require_once's
 // PHP5 ONLY
@@ -167,11 +180,13 @@ function __autoload($class_name) {
                 $con = ob_get_clean();
                 mail('geograph@barryhunter.co.uk','[Geograph Error] '.date('r'),$con);
 		header("HTTP/1.1 505 Server Error");
-                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:geograph@barryhunter.co.uk">let us know</a> what you where doing that lead up to this error');
+                die("Fatal Internal Error, the developers have been notified, if possible please <a href='mailto:geograph@barryhunter.co.uk?subject=$class_name'>let us know</a> what you where doing that lead up to this error");
         }
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
 }
+
+#################################################
 
 //remember start time of script for logging
 if (isset($CONF['log_script_timing']))
@@ -181,6 +196,7 @@ if (isset($CONF['log_script_timing']))
 	register_shutdown_function('log_script_timing');
 }
 
+#################################################
 
 //global page initialisation
 function init_session()
@@ -209,7 +225,7 @@ function init_session()
 	@apache_note('user_id', $GLOBALS['USER']->user_id);
 }
 
-
+#################################################
 
 /**
 * Smarty derivation for Geograph
@@ -235,9 +251,11 @@ class GeographPage extends Smarty
 		$this->template_dir=$_SERVER['DOCUMENT_ROOT'].'/templates/'.$CONF['template'];
 		$this->compile_dir=$this->template_dir."/compiled";
 		$this->config_dir=$this->template_dir."/configs";
-
+		$this->cache_dir=$this->template_dir."/cache";
 		
 		if (!empty($CONF['memcache']['smarty'])) {
+			$this->compile_dir=$this->template_dir."/compiled-mnt"; ##this seems to fix a bug
+		
 			global $memcached_res,$memcache;
 			if ($CONF['memcache']['smarty'] != $CONF['memcache']['app']) {
 				$GLOBALS['memcached_res'] = new MultiServerMemcache($CONF['memcache']['smarty']);
@@ -250,8 +268,6 @@ class GeographPage extends Smarty
 		} else {
 			//subdirs more efficient
 			$this->use_sub_dirs=true;
-			
-			$this->cache_dir=$this->template_dir."/cache";
 		}
 
 		//if we're not using the basic template,install this default template
@@ -282,7 +298,7 @@ class GeographPage extends Smarty
 		//gridimage
 		$this->register_function("gridimage", "smarty_function_gridimage");
 
-		//gridimage
+		//gazetteer line
 		$this->register_function("place", "smarty_function_place");
 
 		//linktoself
@@ -393,6 +409,7 @@ class GeographPage extends Smarty
 		if (!empty($this->disable_caching)) {
 			$this->caching = 0;
 		}
+		parent::assign("smarty_template",$template);
 		$ret = parent::display($template, $cache_id, $compile_id);
 
 		//we finished so remove the lock file
@@ -410,6 +427,15 @@ class GeographPage extends Smarty
 	{
 		$basic=$_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$file;
 		return file_exists($this->template_dir.'/'.$file) || file_exists($basic);
+	}
+
+	function templateDate($file)
+	{
+		if (file_exists($this->template_dir.'/'.$file)) {
+			return filemtime($this->template_dir.'/'.$file);
+		} else {
+			return filemtime($_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$file);
+		}
 	}
 
 	function reassignPostedDate($which)
@@ -448,7 +474,7 @@ class GeographPage extends Smarty
 
 }
 
-
+#################################################
 
 //this is a bit cheeky - if the xhtml validator calls, turn off the automatic
 //session id insertion, as it uses & instead of &amp; in urls
@@ -459,5 +485,3 @@ if ( (strpos($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')!==FALSE) ||
 	ini_set ('url_rewriter.tags', '');
 }
 
-
-?>

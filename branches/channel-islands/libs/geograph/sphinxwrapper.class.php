@@ -51,13 +51,37 @@ class sphinxwrapper {
 		
 			//change OR to the right syntax
 		$q = str_replace(' OR ',' | ',$q);
+
+			//AND is pointless
+		$q = str_replace(' AND ',' ',$q);
 		
 			//setup field: syntax
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 		
 			//remove unsuitable chars
-		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'-]+/',' ',trim(strtolower($q))));
+		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,-]+/',' ',trim(strtolower($q))));
 	
+			//remove any / not in quorum
+		$q = preg_replace('/(?<!")\//',' ',$q);
+	
+			//convert ="phrase" to = on all words
+		$q = preg_replace('/="(\^)?(\w[\w ]+)(\$?)"/e','"\\"$1".preg_replace("/\b(\w+)/","=\\$1","$2")."$3\\""',$q);
+	
+			//remove any = not at word start
+		$q = preg_replace('/(^|[\s\(~"^-]+)=/','$1%',$q);
+		$q = str_replace('=',' ',$q);
+		$q = trim(str_replace('%','=',$q));
+	
+			//remove any ^ not at field start
+		$q = preg_replace('/(^|@[\(\)\w,]+ |")\^/','$1%',$q);
+		$q = str_replace('^',' ',$q);
+		$q = trim(str_replace('%','^',$q));
+	
+			//remove any $ not at field end
+		$q = trim(preg_replace('/\$(?!@ |$|")/',' ',$q));
+	
+			//remove any strange chars at end
+		$q = trim(preg_replace('/[@^=\(~-]+$/','',$q));
 	
 			//change it back to simple: syntax
 		$q2 = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
@@ -65,17 +89,23 @@ class sphinxwrapper {
 		$this->qclean = trim(str_replace('  ',' ',$q2));
 	
 	
+			//make excluded hyphenated words phrases
+		$q = preg_replace('/(?<!"|\w)-(=?\w+)(-[-\w]*\w)/e','"-(\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2").")"',$q);
+		
 			//make hyphenated words phrases
-		$q = preg_replace('/(\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
+		$q = preg_replace('/(?<!")(\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
+		
+			//make excluded aposphies work (as a phrase) 
+		$q = preg_replace('/(?<!"|\w)-(=?\w+)(\'\w*[\'\w]*\w)/e','"-(\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2").")"',$q);
 		
 			//make aposphies work (as a phrase) 
-		$q = preg_replace('/(\w+)(\'\w*[\'\w]*\w)/e','"\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2")',$q);
+		$q = preg_replace('/(?<!")(\w+)(\'\w*[\'\w]*\w)/e','"\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2")',$q);
 		
 			//change single quotes to double
 		$q = preg_replace('/(^|\s)\b\'([\w ]+)\'\b(\s|$)/','$1"$2"$3',$q);
 		
 			//transform 'near gridref' to the put the GR first (thats how processQuery expects it) 
-		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,3} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
+		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 		
 		$this->q = $q;
 	}
@@ -150,59 +180,197 @@ class sphinxwrapper {
 	public function setSpatial($data) {
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
-
-		list($e,$n,$reference_index) = $conv->internal_to_national($data['x'],$data['y'],0);
-
-		$e = floor($e/1000);
-		$n = floor($n/1000);
 		$grs = array();
+		
+		if (!empty($data['bbox'])) {
+			list($e1,$n1,$ri1,$e2,$n2,$ri2) = $data['bbox'];
+			
+			$span = max($e2-$e1,$n2-$n1);
+			//todo-decide-o-area?
+			if ($span > 250000) { //100k ie 1 myriad
+				$mod = 100000;
+				$grlen = -1;
+			} elseif ($span > 25000) { //10k ie 1 hectad
+				$mod = 10000;
+				$grlen = 2;
+			} else {
+				$mod = 1000;
+				$grlen = 4;
+			}
+			
+			if ($e1 == $e2 && $n1 == $n2) {
+				$e2 = $e1 = floor($e1 / 1000) * 1000;
+				$n2 = $n1 = floor($n1 / 1000) * 1000;
+			} else {
+				$e1 = floor($e1 / 1000) * 1000;
+				$e2 =  ceil($e2 / 1000) * 1000;
 
-		list($gr2,$len) = $conv->national_to_gridref($e*1000,$n*1000,4,$reference_index,false);
-
-		if ($data['d'] == 1) {
-			$this->filters['grid_reference'] = $gr2;
-		} elseif ($data['d'] < 10) {
-			#$grs[] = $gr2;
-			for($x=$e-$data['d'];$x<=$e+$data['d'];$x++) {
-				for($y=$n-$data['d'];$y<=$n+$data['d'];$y++) {
-					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
-					$grs[] = $gr2;
+				$n1 = floor($n1 / 1000) * 1000;
+				$n2 =  ceil($n2 / 1000) * 1000;
+			}
+			
+			//probably a better way to do this?
+			for ($ee = $e1;$ee <= $e2;$ee+=1000) {
+				if ($ee%$mod == 0) {
+					for ($nn = $n1;$nn <= $n2;$nn+=1000) {
+						if ($nn%$mod == 0) {
+							
+							list($gr2,$len) = $conv->national_to_gridref($ee,$nn,$grlen,$ri1,false);
+							if (strlen($gr2) > $grlen)
+								$grs[] = $gr2;
+						}
+					}
 				}
 			}
-			$this->filters['grid_reference'] = "(".join(" | ",$grs).")";
-		} else {
-			#$this->filters['grid_reference'] = $gr2;
-			$d = intval($data['d']/10)*10;
-			for($x=$e-$d;$x<=$e+$d;$x+=10) {
-				for($y=$n-$d;$y<=$n+$d;$y+=10) {
-					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,2,$reference_index,false);
-					$grs[] = $gr2;
-				}
+			
+			if (count($grs) > 100) {
+				//if we have that many it really doesnt matter if we miss a few!
+				shuffle($grs);
+				$grs = array_slice($grs,0,100);
 			}
-			$this->filters['hectad'] = "(".join(" | ",$grs).")";
-		}
-
-		if ($data['d'] > 1) {
-			list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
-			$cl = $this->_getClient();
-			$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
-			$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
-		} else {
+			
+			if (count($grs) == 0) {
+				//somethig went wrong... 
+				
+			} elseif ($span > 250000) { //100k ie 1 myriad
+				$this->filters['myriad'] = "(".join(" | ",$grs).")";
+			} elseif ($span > 25000) { //10k ie 1 hectad
+				$this->filters['hectad'] = "(".join(" | ",$grs).")";
+			} else {
+				$this->filters['grid_reference'] = "(".join(" | ",$grs).")";
+			}
+			
 			$this->sort = preg_replace('/@geodist \w+,?\s*/','',$this->sort);
+			$cl = $this->_getClient();
+			if (!empty($cl->_groupsort))
+				$cl->_groupsort = preg_replace('/@geodist \w+,?\s*/','',$cl->_groupsort);
+			
+		} else {
+			list($e,$n,$reference_index) = $conv->internal_to_national($data['x'],$data['y'],0);
+
+			$e = floor($e/1000);
+			$n = floor($n/1000);
+
+			list($gr2,$len) = $conv->national_to_gridref($e*1000,$n*1000,4,$reference_index,false);
+
+			if ($data['d'] <= 1) {
+				$this->filters['grid_reference'] = $gr2;
+			} elseif ($data['d'] < 10) {
+				#$grs[] = $gr2;
+				$d = max(1,abs($data['d']));
+				for($x=$e-$d;$x<=$e+$d;$x++) {
+					for($y=$n-$d;$y<=$n+$d;$y++) {
+						list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
+						if (strlen($gr2) > 4)
+							$grs[] = $gr2;
+					}
+				}
+				$this->filters['grid_reference'] = "(".join(" | ",$grs).")";
+			} else {
+				#$this->filters['grid_reference'] = $gr2;
+				$d = intval(abs($data['d'])/10)*10;
+				for($x=$e-$d;$x<=$e+$d;$x+=10) {
+					for($y=$n-$d;$y<=$n+$d;$y+=10) {
+						list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,2,$reference_index,false);
+						if (strlen($gr2) > 2)
+							$grs[] = $gr2;
+					}
+				}
+				$this->filters['hectad'] = "(".join(" | ",$grs).")";
+			}
+
+			if ($data['d'] != 1) {
+				$cl = $this->_getClient();
+				if (!empty($data['lat']) || !empty($data['long'])) {
+					$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($data['lat']), deg2rad($data['long']) );
+				} else {
+					list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
+					$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
+				}
+				$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
+			} else {
+				$this->sort = preg_replace('/@geodist \w+,?\s*/','',$this->sort);
+				$cl = $this->_getClient();
+				if (!empty($cl->_groupsort))
+					$cl->_groupsort = preg_replace('/@geodist \w+,?\s*/','',$cl->_groupsort);
+			}
 		}
 	} 
 	
+	public function SetSelect($clause) {
+		return $this->_getClient()->SetSelect($clause);
+	}
 	
-	public function countMatches($index_in = "user") {
-		
+	public function SetGroupBy($attribute, $func, $groupsort="@group desc") {
+		return $this->_getClient()->SetGroupBy($attribute, $func, $groupsort);
+	}
+	
+	public function SetGroupDistinct($attribute) {
+		return $this->_getClient()->SetGroupDistinct($attribute);
+	}
+	
+	public function groupByQuery($page = 1,$index_in = "_images") {
+		global $CONF;
 		$cl = $this->_getClient();
 		
 		if ($index_in == "_images") {
-			$index = "gi_stemmed,gi_delta_stemmed";
-		} elseif ($index_in == "_posts") {
-			$index = "post_stemmed,post_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}gi_groupby,{$CONF['sphinx_prefix']}gi_groupby_delta";
 		} else {
-			$index = $index_in;
+			$index = $CONF['sphinx_prefix'].$index_in;
+		}
+		
+
+		$sqlpage = ($page -1)* $this->pageSize;
+		$cl->SetLimits($sqlpage,$this->pageSize);
+		
+		if (!empty($this->upper_limit)) {
+			//todo a bodge to run on dev/staging
+			$cl->SetIDRange ( 1, $this->upper_limit+0);
+		}
+		
+
+		if (is_array($this->filters) && count($this->filters)) {
+			$this->getFilterString(); //we only support int filters which call SetFilter for us
+		}
+		
+		$cl->SetMatchMode ( SPH_MATCH_FULLSCAN );
+		
+		if (!empty($this->sort)) {
+			if ($this->sort == -1) {
+				#special token to mean will deal with it externally!
+			} else {
+				$cl->SetSortMode ( SPH_SORT_EXTENDED, $this->sort);
+			}
+		}
+		
+		$res = $cl->Query ( $this->q, $index );
+		if ( $res===false ) {
+			//lets make this non fatal
+			$this->query_info = $cl->GetLastError();
+			$this->resultCount = 0;
+			return 0;
+		} else {
+			if ( $cl->GetLastWarning() )
+				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
+
+			$this->query_info = "Query '{$q}' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
+			$this->resultCount = $res['total_found'];
+			if (!empty($this->pageSize))
+				$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
+			return $res;
+		}	
+	}	
+	
+	public function countMatches($index_in = "user") {
+		global $CONF;
+		$cl = $this->_getClient();
+		
+		if ($index_in == "_images") {
+			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
+		} elseif ($index_in == "_posts") {
+			$index = "{$CONF['sphinx_prefix']}post_stemmed,{$CONF['sphinx_prefix']}post_stemmed_delta";
+		} else {
+			$index = $CONF['sphinx_prefix'].$index_in;
 		}
 		
 		$q = $this->q;
@@ -308,6 +476,7 @@ class sphinxwrapper {
 	}
 	
 	public function returnIds($page = 1,$index_in = "user",$DateColumn = '') {
+		global $CONF;
 		$q = $this->q;
 		if (empty($this->qoutput)) {
 			$this->qoutput = $q;
@@ -321,14 +490,23 @@ class sphinxwrapper {
 			print_r($this->filters);
 		}
 		$mode = SPH_MATCH_ALL;
+		
+		if (strpos($q,'=~') === 0) {
+			$q = preg_replace('/^=/','',$q);
+			$q = preg_replace('/\b(\w+)/','=$1',$q);
+		} 
+		
 		if (strpos($q,'~') === 0) {
-			$q = preg_replace('/^\~/','',$q);
+			$q = preg_replace('/^\~\s*/','',$q);
 			
 			$words = substr_count($q,' ');
 			
-			if (count($this->filters) || $words> 9 || strpos($q,'"') !== FALSE) { //(MATCH_ANY - truncates to 10 words!)
+			if (count($this->filters) || $words> 9 || strpos($q,'"') !== FALSE || strpos($q,'=') !== FALSE) { //(MATCH_ANY - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
 				$q = "(".preg_replace('/\| [\| ]+/','| ',implode(" | ",$this->explodeWithQuotes(" ",$q))).")".$this->getFilterString();
+				
+				$q = preg_replace('/(@[\(\)\w,]+) \|/','$1',$q);
+				
 			} elseif ($words > 0) {//at least one word
 				$mode = SPH_MATCH_ANY;
 			}
@@ -379,13 +557,15 @@ class sphinxwrapper {
 		}
 		
 		if ($index_in == "_images") {
-			$index = "gi_stemmed,gi_delta_stemmed";
+			$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
+			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
 		} elseif ($index_in == "_images_exact") {
-			$index = "gridimage,gi_delta";
+			$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
+			$index = "{$CONF['sphinx_prefix']}gridimage,{$CONF['sphinx_prefix']}gi_delta";
 		} elseif ($index_in == "_posts") {
-			$index = "post_stemmed,post_delta_stemmed";
+			$index = "{$CONF['sphinx_prefix']}post_stemmed,{$CONF['sphinx_prefix']}post_stemmed_delta";
 		} else {
-			$index = $index_in;
+			$index = $CONF['sphinx_prefix'].$index_in;
 		}
 		
 		$res = $cl->Query ( $q, $index );
@@ -404,6 +584,11 @@ class sphinxwrapper {
 		
 		if ( $res===false ) {
 			$this->query_info = $cl->GetLastError();
+			if (strpos($this->query_info,"syntax error") !== FALSE) {
+				$this->query_error = "Syntax Error";
+			} else {
+				$this->query_error = "Search Failed";
+			}
 			$this->resultCount = 0;
 			return 0;
 		} else {
@@ -477,8 +662,9 @@ class sphinxwrapper {
 	}
 	
 	function BuildExcerpts($docs, $index, $words, $opts=array() ) {
+		global $CONF;
 		$cl = $this->_getClient();
-		return $cl->BuildExcerpts ( $docs, $index, $words, $opts);
+		return $cl->BuildExcerpts ( $docs, $CONF['sphinx_prefix'].$index, $words, $opts);
 	}
 	
 	function setSort($sort) {
