@@ -402,30 +402,44 @@ ALTER TABLE `queries_archive` CHANGE `searchuse` `searchuse` ENUM( 'search', 'fl
 ALTER TABLE `gridimage`        ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_recent` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_search` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`, DROP INDEX `title` , ADD INDEX `title` (`title`, `title2`), DROP INDEX `title_2` , ADD INDEX `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`);
+
+################################################
+
 ALTER TABLE  `user` ADD  `expand_about` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
+
 ################################################
 
 alter table mapcache change `type_or_user` `type_or_user` int(11)  NOT NULL DEFAULT '0';
 
 ################################################
-################################################
 
 ALTER TABLE  `user` ADD  `use_autocomplete` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
 
 ################################################
+
 alter table mapcache change age age mediumint NOT NULL DEFAULT '0';
-################################################
-
-
-ALTER TABLE  `smarty_cache_page` CHANGE `TTL` `Expire` INT UNSIGNED NOT NULL ;
-
-
-ALTER TABLE  `smarty_cache_page` ADD INDEX (`GroupCache`);
 
 ################################################
 
 
-REATE TABLE IF NOT EXISTS `hectad_stat` (
+DROP TABLE IF EXISTS `smarty_cache_page` ;
+
+
+CREATE TABLE `smarty_cache_page` (
+  `Folder` enum('basic','charcoal','ireland','archive') NOT NULL default 'basic',
+  `CacheID` varchar(255) NOT NULL,
+  `TemplateFile` varchar(255) NOT NULL,
+  `GroupCache` varchar(255) NOT NULL,
+  `TimeStamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `Expire` int(10) unsigned NOT NULL,
+  PRIMARY KEY  (`Folder`,`CacheID`),
+  KEY `GroupCache` (`GroupCache`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 
+
+################################################
+
+
+CREATE TABLE IF NOT EXISTS `hectad_stat` (
   `reference_index` tinyint(4) default '1',
   `x` int(11) NOT NULL default '0',
   `y` int(11) NOT NULL default '0',
@@ -451,7 +465,6 @@ create table submission_method (gridimage_id int unsigned primary key,method enu
 
 
 #################################################
-#################################################
 
 
 ALTER TABLE event ADD `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
@@ -464,14 +477,12 @@ alter table submission_method add timetaken float not null default 0;
 
 
 #################################################
-#################################################
 
 
 ALTER TABLE  `queries` ADD  `groupby` VARCHAR( 32 ) NOT NULL AFTER  `breakby` ;
 ALTER TABLE  `queries_archive` ADD  `groupby` VARCHAR( 32 ) NOT NULL AFTER  `breakby` ;
 
 
-#################################################
 #################################################
 
 

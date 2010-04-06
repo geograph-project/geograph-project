@@ -34,6 +34,10 @@ $profile = array();
 
 if (isset($_REQUEST['edit']))
 {
+
+header("Location: http://www.geograph.org.uk/profile.php?edit=1");
+exit;
+
 	//must be logged in to proceed with an edit
 	$USER->login();
 	
