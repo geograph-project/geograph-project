@@ -92,8 +92,8 @@
 				});
 
 				// The allowed region which the whole map must be within
-				var allowedBounds = new GLatLngBounds(new GLatLng(49.4,-11.8), new GLatLng(61.8,4.1));
-
+				var allowedBounds = new GLatLngBounds(new GLatLng(49.1,-2.8), new GLatLng(49.8,-1.8));
+	
 				// If the map position is out of range, move it back
 				function checkBounds() {
 					// Perform the check and return if OK
