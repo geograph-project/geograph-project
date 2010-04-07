@@ -374,6 +374,7 @@ it was taken or other interesting geographical information. <span id="styleguide
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
 to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
 
+</div>
 
 <h3>Further Information</h3>
 
@@ -639,11 +640,7 @@ have problems
 {/if}
 
 {if $preview_url}
-{if !$enable_forums}
-	<div style="position:fixed;right:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
-{else}
 	<div style="position:fixed;left:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
-{/if}
 	<div id="previewInner"></div></div>
 
 <script type="text/javascript">
