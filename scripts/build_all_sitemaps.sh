@@ -3,8 +3,6 @@
 
 ############
 
-sudo -u www-data rm -f /var/www/geograph_live/public_html/sitemap/root/sitemap*.xml.gz
-
 sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_sitemap.php --dir=/var/www/geograph_live --secret=imagesitemap
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.org.uk%2Fsitemap.xml > /dev/null
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.org.uk%2Fsitemap-geo.xml > /dev/null

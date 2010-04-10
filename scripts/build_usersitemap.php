@@ -155,7 +155,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	touch($filename,$unixtime);
 	
 	//gzip it
-	`gzip $filename`;
+	`gzip $filename -f`;
 }
 
 //now we write an index file pointing to our generated ones above
