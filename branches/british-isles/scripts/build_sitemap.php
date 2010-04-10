@@ -265,12 +265,16 @@ for ($s=0; $s<=$sitemaps; $s++)
 	fprintf($fh, "</sitemap>\n");
 
 	if ($s>0) {
+		fprintf($fh2, "<sitemap>");
+	
 		$fname=sprintf("sitemap-geo%04d%s.xml.gz", $s, $param['suffix']);
 
 		fprintf($fh2, "<loc>http://{$param['config']}/%s</loc>", $fname);
 		fprintf($fh2, "<lastmod>%s</lastmod>", $mtimestr);
 		fprintf($fh2, "</sitemap>\n");
 	}
+	
+	fprintf($fh3, "<sitemap>");
 	
 	$fname=($s==0)?"sitemap0000{$param['suffix']}.xml":sprintf("sitemap-%s%04d%s.xml.gz", $param['secret'], $s, $param['suffix']);
 	
