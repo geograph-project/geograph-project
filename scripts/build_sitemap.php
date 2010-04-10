@@ -92,7 +92,7 @@ $urls_per_sitemap=50000;
 
 //how many sitemap files must we write?
 printf("Counting images...\r");
-$images=$db->GetOne("select count(*) from gridimage_search".($param['ri']?" where reference_index = {$param['ri']} and gridimage_id < 1000":''));
+$images=$db->GetOne("select count(*) from gridimage_search".($param['ri']?" where reference_index = {$param['ri']}":''));
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
@@ -139,7 +139,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$recordSet = &$db->Execute(
 		"select i.gridimage_id,date(upd_timestamp) as moddate,title,user_id ".
 		"from gridimage_search as i ".
-		($param['ri']?" where reference_index = {$param['ri']} and gridimage_id < 1000 ":'').
+		($param['ri']?"where reference_index = {$param['ri']} ":'').
 		"order by i.gridimage_id ".
 		"limit $offset,$urls_per_sitemap");
 	
