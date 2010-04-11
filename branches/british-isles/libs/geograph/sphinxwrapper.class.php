@@ -55,6 +55,9 @@ class sphinxwrapper {
 			//AND is pointless
 		$q = str_replace(' AND ',' ',$q);
 		
+			//http: (urls) bombs out the field: syntax
+		$q = str_replace('http://','http ',$q);
+		
 			//setup field: syntax
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 		
