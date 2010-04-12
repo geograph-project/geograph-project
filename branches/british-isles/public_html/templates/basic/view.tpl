@@ -1,7 +1,11 @@
 {if $ireland_prompt}{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/`$image->gridimage_id`\" />"}{/if}
 {include file="_std_begin.tpl"}
-
 {if $image}
+<div class="interestBox" style="background-color:pink">
+	<b>Major server issue - many images unavailable</b>. We have recently identified an issue preventing<br/>
+	a fair number of images to be displayed. If are unable to see the image below, please accept our appologies.<br/>
+	We hope to return to normal service in a few days. 
+</div>
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
 <div style="float:right; position:relative; width:2.5em; height:1em;"></div>
 

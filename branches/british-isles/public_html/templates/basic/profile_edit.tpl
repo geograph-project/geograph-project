@@ -165,7 +165,7 @@
 	<label for="grid_reference">Home grid square:</label>
 	<input type="text" id="grid_reference" name="grid_reference" value="{$profile->grid_reference|escape:'html'}" size="6" />
 	
-	<div class="fieldnotes">If you wish, tell us the OS grid reference of your home.</div>
+	<div class="fieldnotes">If you wish, tell us the Great Britain or Ireland grid reference of your home.</div>
 
 	{if $errors.grid_reference}</div>{/if}
 </div>
@@ -181,7 +181,8 @@
 	 
 	<textarea name="about_yourself" id="about_yourself" rows="10" cols="85">{$profile->about_yourself|escape:'html'}</textarea>
 
-	<div class="fieldnotes"><span style="color:red">Note: HTML code will be removed, 
+	<div class="fieldnotes">Short introduction to be shown on the Geograph Britain and Ireland websites.<br/>
+	<span style="color:red">Note: HTML code will be removed, 
 	however basic URLs will be autolinked.</span><br/>
 	The main profile page will only show the first 300 characters, (or use <tt>[--more--]</tt> to specify the break point) with a link to show the full details.<br/>
 	TIP: use <span style="color:blue">[[TQ7506]]</span> or 
