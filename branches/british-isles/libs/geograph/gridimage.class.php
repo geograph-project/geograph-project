@@ -765,6 +765,9 @@ class GridImage
 		if (!$ok)
 			$fullpath="/photos/error.jpg";
 		
+		if ($returntotalpath)
+			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+
 		return $fullpath;
 	}
 	

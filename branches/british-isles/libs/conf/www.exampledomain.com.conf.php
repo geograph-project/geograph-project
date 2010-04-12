@@ -283,3 +283,15 @@ $CONF['picnik_method'] = 'inabox'; //'inabox'|'redirect'
 
 #$CONF['log_script_folder'] = '/var/logs/geograph';	
 
+
+###################################
+
+//Optionally, send a backup to a amazon S3 bucket. 
+
+$CONF['awsAccessKey'] = '';
+$CONF['awsSecretKey'] = '';
+$CONF['awsS3Bucket'] = 'photos.exampledomain.com'; //By using a real domain, could enable serving images from the bucket, if the need arrose
+
+
+
+
