@@ -28,7 +28,7 @@
 </tbody>
 </table>
 
-<p>The following members have also helped out in various capacities previouslly...</p>
+<p>The following members have also helped out in various capacities previously...</p>
 
 <table class="report">
 <thead><tr>
