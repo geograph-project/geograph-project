@@ -676,6 +676,7 @@ class UploadManager
 		$image->gridimage_id = $gridimage_id;
 		$image->user_id = $USER->user_id;
 		
+		$storedoriginal = false;
 		if ($ok = $image->storeImage($src)) {
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
@@ -684,7 +685,7 @@ class UploadManager
 				
 				$this->_downsizeFile($orginalfile,$this->largestsize);
 				
-				$ok =$image->storeOriginal($orginalfile);
+				$storedoriginal =$image->storeOriginal($orginalfile);
 			}
 		
 			if (!$skip_cleanup)
@@ -693,7 +694,7 @@ class UploadManager
 		
 		//fire an event 
 		require_once('geograph/event.class.php');
-		new Event(EVENT_NEWPHOTO, $gridimage_id.','.$USER->user_id);
+		new Event(EVENT_NEWPHOTO, $gridimage_id.','.$USER->user_id.','.$storedoriginal);
 		
 		
 		//assign the snippets now we know the real id. 
