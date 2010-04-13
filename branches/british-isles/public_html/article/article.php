@@ -35,12 +35,6 @@ if (empty($_GET['page']) || preg_match('/[^\w\.\,-]/',$_GET['page'])) {
 
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
-if (!empty($_GET['key'])) {
-        if ($_GET['key'] == md5($_GET['page'])) {
-                $isadmin = true;
-        }
-}
-
 $template = 'article_article.tpl';
 $cacheid = 'articles|'.$_GET['page'];
 $cacheid .= '|'.$isadmin;
