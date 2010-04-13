@@ -10,7 +10,7 @@
 </style>{/literal}
 {dynamic}
 
-<h2>Administrative Tools</h2>
+<h2>Administrative Tasks</h2>
 <ul>
 
 {if $names_pending}
@@ -38,8 +38,10 @@
 
 
 {if $is_mod} 
-
-	<li>{external href="http://www.geograph.org.uk/support/scp/" text="Geograph Support System"}</li>
+	{if $support_open}
+	<li>{external href="http://www.geograph.org.uk/support/scp/tickets.php" text="Ticket List in the Geograph Support System"}<br/>
+                <b>[{$support_open} open]</b></li>
+	{/if}
 
 	{if $originals_new}
 		<li><a href="/admin/resubmissions.php">High Resolution Uploads</a><br/>
@@ -67,7 +69,9 @@
 	{if $gridsquares_sea.1 || $gridsquares_sea.2}<b>[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in queue]</b>{/if}
 	</form>
 	</li>
-
+</ul>
+<h3>Tools</h3>
+<ul>
 	<li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
 	   request update for map tiles</li>
 
@@ -80,6 +84,10 @@
 	   {else}
 		(<b><a href="/search.php?i=5761957&amp;temp_displayclass=vote">Vote now!</a></b> - don't disclose this url)
 	   {/if}</li>
+{else}
+</ul>
+<h3>Tools</h3>
+<ul>
 {/if}
 
 <li>Stats: <br/>
@@ -90,7 +98,14 @@
 
 
 {if $is_mod} 
-<li><form method="get" action="/search.php" style="display:inline">
+<li>
+
+<div class="interestBox" style="border:1px solid red;padding:3px">
+	Please don't correct 2 'firsts' in a square with this tool (or otherwise) - we will correct them automatically shortly.
+</div> 
+
+
+<form method="get" action="/search.php" style="display:inline">
 Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <input type="text" size="6" name="gridref" id="gridref" value="{$gridref|escape:'html'}"/>
 <span class="formerror">{$gridref_error}</span>

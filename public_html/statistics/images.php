@@ -50,7 +50,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 
 	$sql = "SELECT 
-	CONCAT(IF(ftf BETWEEN 1 AND 4,ELT(ftf,'first ','second ','third ','fourth '),''),moderation_status) as `Classification`, 
+	CONCAT(IF(moderation_status = 'geograph' AND ftf BETWEEN 1 AND 4,ELT(ftf,'first ','second ','third ','fourth '),''),moderation_status) as `Classification`, 
 	SUM(submitted > DATE_SUB(NOW() , interval 1 HOUR)) as `In last Hour`,
 	SUM(submitted > DATE_SUB(NOW() , interval 1 DAY)) as `In last 24 Hours`,
 	SUM(submitted > DATE_SUB(NOW() , interval 7 DAY)) as `In last 7 Days`,
@@ -59,9 +59,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	COUNT(*) as `All Time Count`
 	FROM gridimage 
 	GROUP BY `Classification` 
-	ORDER BY BETWEEN 1 AND 4 DESC, ftf ASC, moderation_status+0 DESC";
+	ORDER BY ftf BETWEEN 1 AND 4 DESC, ftf ASC, moderation_status+0 DESC";
 	
-	$table = $db->getAll($sql);	
+	$table = $db->CacheGetAll(3000,$sql);	
 	
 	$smarty->assign_by_ref('table', $table);
 	
@@ -75,5 +75,3 @@ if (!$smarty->is_cached($template, $cacheid))
 $smarty->display($template, $cacheid);
 
 
-	
-?>

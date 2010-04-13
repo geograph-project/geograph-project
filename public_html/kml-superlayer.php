@@ -35,7 +35,7 @@ $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 if (empty($_SERVER['HTTP_USER_AGENT']) 
 			|| $_SERVER['HTTP_USER_AGENT'] == 'ArcGIS Client Using WinInet' 
 			|| $_SERVER['HTTP_USER_AGENT'] == '-' //Google Maps (Mapplet)
-			|| strpos($_SERVER['HTTP_USER_AGENT'],"Kml-Google;") === 0 ) { //Google Maps NEW 
+			|| strpos($_SERVER['HTTP_USER_AGENT'],"BROKEN-Kml-Google;") === 0 ) { //Google Maps NEW 
 	
 	$NetworkLink = $kml->addChild('NetworkLink');
 	$NetworkLink->setItem('name','Geograph NetworkLink');

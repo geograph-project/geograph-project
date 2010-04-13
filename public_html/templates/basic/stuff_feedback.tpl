@@ -2,8 +2,9 @@
 {include file="_std_begin.tpl"}
 {dynamic}
 {if $thanks}
-	<h3>Thanks!</h3>
+	<h3>Thank You!</h3>
 	<p>Many thanks for your feedback, it's much appreciated.</p>
+	<a href="javascript:history.go(-1);">Go Back</a>
 
 {else}
 <h2>Let us know what you think!</h2>

@@ -111,7 +111,7 @@ if (isset($_GET['getJob'])) {
                 }
                 $loads = explode(" ",$buffer);
                 $load=(float)$loads[0];
-		if ($load>0.6) {
+		if ($load>1.2) {
 			if (isset($_GET['output']) && $_GET['output']=='json') {
 				die("{error: 'Server Busy, try later'}");
                 	} else {

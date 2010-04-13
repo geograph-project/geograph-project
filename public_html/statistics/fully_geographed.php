@@ -88,7 +88,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			$rii = $entry['reference_index'];
 			$x = ( intval(($entry['x'] - $CONF['origins'][$rii][0])/10)*10 ) +  $CONF['origins'][$rii][0];
 			$y = ( intval(($entry['y'] - $CONF['origins'][$rii][1])/10)*10 ) +  $CONF['origins'][$rii][1];
-
+if ($x < 0) {
+	$x -= 10;
+}
 			//get a token to show a suroudding geograph map
 			$mosaic->setOrigin($x,$y);
 

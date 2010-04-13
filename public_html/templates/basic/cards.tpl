@@ -37,7 +37,7 @@
 			{if $v eq 3}
 			<div style="font-family:Georgia; text-align:center;font-size:12px;padding:5px">
 				I'm <b style="font-size:1.1em">{$user->realname|escape:'html'}</b> and I am taking photographs for an 
-				online project called <br/><span style="color:#000066; font-weight:bold">Geograph British Isles</span>. 
+				online project called <br/><span style="color:#000066; font-weight:bold">Geograph Britain and Ireland</span>. 
 				We are attempting to collect photographs for every
 				one kilometre grid square in the British Isles.<small><br style="clear:right"/></small>
 				See my page at <tt><span style="color:#000066; font-weight:bold">www.geograph.org.uk/u/{$user->user_id}</span></tt><br/>
@@ -46,7 +46,7 @@
 			{elseif $v eq 2}
 			<div style="font-family:Georgia; text-align:center;font-size:12px;padding:5px">
 				Hi, my name is <b style="font-size:1.1em">{$user->realname|escape:'html'}</b> and I am taking photographs for an 
-				online project called <br/><span style="color:#000066; font-weight:bold">Geograph British Isles</span><br/>
+				online project called <br/><span style="color:#000066; font-weight:bold">Geograph Britain and Ireland</span><br/>
 				We are attempting to collect photographs for every<br/>
 				one kilometre grid square in the British Isles.<small><br/><br style="clear:right"/></small>
 				See my page at <tt><span style="color:#000066; font-weight:bold">www.geograph.org.uk/u/{$user->user_id}</span></tt><br/>
@@ -55,7 +55,7 @@
 			{else}
 			<div style="font-family:Georgia; text-align:center;font-size:12px;padding:5px">
 				I am taking photographs for an online project called 
-				<span style="color:#000066; font-weight:bold">Geograph British Isles</span><br/>
+				<span style="color:#000066; font-weight:bold">Geograph Britain and Ireland</span><br/>
 				We are attempting to collect photographs for every<br/>
 				one kilometre grid square in the British Isles.<small><br/><br style="clear:right"/></small>
 				To find my photographs, look for images by<br/>
