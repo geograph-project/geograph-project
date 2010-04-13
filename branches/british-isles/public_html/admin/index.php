@@ -54,6 +54,8 @@ if ($USER->hasPerm("ticketmod")) {
 }
 
 if ($USER->hasPerm("moderator")) {
+	$smarty->assign('support_open', $db->GetOne("select count(*) from support.ost_ticket where status = 'open'"));
+
 	$smarty->assign('images_pending', $db->GetRow("select count(*) as `count`,(unix_timestamp(now()) - unix_timestamp(min(submitted))) as age from gridimage where moderation_status='pending'"));
 	
 	$smarty->assign('gridsquares_sea', $db->GetAssoc("select reference_index,count(*) from gridsquare where percent_land=-1 group by reference_index"));

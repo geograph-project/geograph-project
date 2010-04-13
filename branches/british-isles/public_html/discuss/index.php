@@ -468,8 +468,9 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 				$checked = ((empty($showIds) && $forum != 5) || in_array($forum,$showIds))?' checked':'';
 				
 				print "<input type=checkbox name=\"show[]\" value=\"$forum\" title=\"{$forum_title}\" $checked onclick=\"document.getElementById('updatebutton').style.display='';\">";
+				print "<a href=\"index.php?&action=vtopic&amp;forum={$forum}\">";
 				print "<img src=\"{$static_url}/img/forum_icons/{$forum_icon}\" width=16 height=16 border=0 alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
-				print "&nbsp;";
+				print "</a>&nbsp;";
 
 
 			} while($cols=db_simpleSelect(1));

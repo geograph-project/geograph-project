@@ -75,9 +75,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	//lets find some recent photos
 	if ($CONF['template']=='ireland') {
 		new RecentImageList($smarty,2);
+		 $discuss_where = ' and t.topic_id not in (11663)';
 	} else {
 		$smarty->assign('marker', $overview->getSquarePoint($potd->image->grid_square));
 		new RecentImageList($smarty);
+		$discuss_where = '';
 	}
 	
 	
@@ -86,6 +88,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($CONF['forums']) {
 		//let's find recent posts in the announcements forum made by
 		//administrators
+
+		
+
 		$sql="select u.user_id,u.realname,t.topic_title,p.post_text,t.topic_id,t.topic_time, posts_count - 1 as comments 
 			from geobb_topics as t
 			inner join geobb_posts as p on(t.topic_id=p.topic_id)
@@ -93,6 +98,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			where find_in_set('admin',u.rights)>0 and
 			abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
 			t.forum_id=1
+			$discuss_where
 			group by t.topic_id
                         order by t.topic_time desc limit 3";
 		$news=$db->GetAll($sql);

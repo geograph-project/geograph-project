@@ -44,7 +44,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("page_title", "Prime Rivers of Great Britain");
 		
 	
-	$raw = $db->GetAll("SELECT poster_id,post_text FROM geobb_posts WHERE topic_id = 11785 ORDER BY post_id");
+	$raw = $db->GetAll("SELECT poster_id,post_text FROM geobb_posts WHERE topic_id = 11785 ORDER BY post_id DESC LIMIT 40");
 	$results = $users = array();
 	foreach ($raw as $i => $row) {
 	

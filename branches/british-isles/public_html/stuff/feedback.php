@@ -68,6 +68,7 @@ if (!empty($_POST['submit'])) {
 				}
 			}
 			$msg.="Template: {$_POST['template']}\n";
+			$subject.=" ({$_POST['template']})";
 			if (!empty($_POST['referring_page'])) {
 				$msg.="Referring page: ".$_POST['referring_page']."\n";
 			}

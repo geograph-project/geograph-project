@@ -37,9 +37,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	select 
 		user.user_id,user.realname,user.nickname,user.rights,role
 	from user
+		left join user_moderation using (user_id)
 	where length(rights) > 0 AND (rights LIKE '%admin%' OR rights LIKE '%moderator%' OR role != '')
 	group by user.user_id
-	order by user.user_id");
+	order by user_moderation.user_id IS NOT NULL DESC,user_moderation.first,user_id");
 
 	$smarty->assign_by_ref('team', $team);
 }
