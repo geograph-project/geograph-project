@@ -36,9 +36,10 @@
 			<th>
 				New Image (<a href="{$image->pendingUrl}" target="_preview">View full size</a> - {$image->pendingSize|thousends} bytes!)
 			</th>
-			<th>
-				Current Image</small>
-			</th>
+			<td align="center">
+				<b>Current Image</b><br/>
+				<small>If the image fails to load, try <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'_213x160.jpg'))">213 x 160</a>, or <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'_120x120.jpg'))">120 x 120</a>	thumbnail,<br/> or back to <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'.jpg'))">original</a>.</small>
+			</td>
 		</tr>
 	</table>	
 

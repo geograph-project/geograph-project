@@ -24,7 +24,6 @@
 </form>
 
 {if $inners}
-
 	{foreach from=$inners item=item}
 		<div style="position:relative;float:left">
 			<div class="interestBox" style="margin-left:2px">{$item.title|escape:'html'|default:'Search'}</div>

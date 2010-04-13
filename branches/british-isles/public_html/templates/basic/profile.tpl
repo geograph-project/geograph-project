@@ -127,13 +127,13 @@
 			{if $profile->stats.seconds || $profile->stats.thirds || $profile->stats.fourths}
 				<li style="padding-bottom:3px">
 				{if $profile->stats.seconds}
-					<b>{$profile->stats.seconds}</b> Second Visit points,
+					<b>{$profile->stats.seconds}</b> Second Visitor points,
 				{/if}
 				{if $profile->stats.thirds}
-					<b>{$profile->stats.thirds}</b> Third Visit points,
+					<b>{$profile->stats.thirds}</b> Third Visitor points,
 				{/if}
 				{if $profile->stats.fourths}
-					<b>{$profile->stats.fourths}</b> Fourth Visit points,
+					<b>{$profile->stats.fourths}</b> Fourth Visitor points,
 				{/if}
 			 	<sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup></li>
 			{/if}

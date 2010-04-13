@@ -1,6 +1,8 @@
 public_html/maps
 public_html/admin/updates.sql
 public_html/rss
+public_html/rss-broken
+public_html/rss-oldd
 public_html/torrent
 public_html/memorymap
 public_html/photos

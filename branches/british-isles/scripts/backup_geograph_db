@@ -90,7 +90,46 @@ $cmd="/usr/bin/mysqldump --no-defaults --opt ".
         "--ignore-table=geograph_live.mapcache2old2 ".
         "--ignore-table=geograph_live.mapcache2old ".
 
-	"-ugeograph -pm4pp3r geograph_live | gzip > $outfile";
+	##bunch more tables
+        "--ignore-table=geograph_live._gridimage_ticket ".
+        "--ignore-table=geograph_live._gridimage_ticket_comment ".
+
+        "--ignore-table=geograph_live.category_stat_tmp_years ".
+
+        "--ignore-table=geograph_live.event ".
+        "--ignore-table=geograph_live.event_handled_by ".
+
+        "--ignore-table=geograph_live.explorermaps ".
+        "--ignore-table=geograph_live.exploreroutlines1 ".
+
+        "--ignore-table=geograph_live.ftf_test ".
+        "--ignore-table=geograph_live.ftf_test2 ".
+
+        "--ignore-table=geograph_live.for_tpoints ".
+
+        "--ignore-table=geograph_live.os_gaz_250 ".
+
+        "--ignore-table=geograph_live.gridimage_exif3 ".
+        "--ignore-table=geograph_live.gridimage_export ".
+        "--ignore-table=geograph_live.tmp_images ".
+        "--ignore-table=geograph_live.tmp_description_test4 ".
+        "--ignore-table=geograph_live.gridimage_log_2010_03_18 ".
+
+        "--ignore-table=geograph_live.moderation_log_archive ".
+
+        "--ignore-table=geograph_live.os_gaz_250 ".
+        "--ignore-table=geograph_live.recent_only ".
+        "--ignore-table=geograph_live.hectad_stat_tmp ".
+        "--ignore-table=geograph_live.gridimage_export10_titles ".
+        "--ignore-table=geograph_live.gridimage_export10 ".
+        "--ignore-table=geograph_live.tmp_images_with_tickets ".
+        "--ignore-table=geograph_live.tmp_description_test2 ".
+
+        "--ignore-table=geograph_live.tmp_quad1 ".
+
+
+
+	"-ugeograph -h192.168.77.36 -pm4pp3r geograph_live | gzip > $outfile";
 `$cmd`;
 
 my $size=(stat($outfile))[7];

@@ -32,6 +32,6 @@
 
 {/dynamic} 
 
-<p>Your message will become a ticket in our system, and will be answered by one of the <a href="/team.php">team</a>.</p>
+<p>Your message will become a ticket in our system, and will be answered by one of the <a href="/team.php">team</a>. If you have a personal issue, you can <a href="/usermsg.php?to=3">contact a developer directly</a>.</p>
    
 {include file="_std_end.tpl"}

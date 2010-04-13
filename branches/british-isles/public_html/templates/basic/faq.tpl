@@ -135,9 +135,9 @@ The <b>Geograph Website</b>:
 	
 	<blockquote>
 	
-		<p>In addition we now award "Second Visit" points (and Third and Fourth!) - which are given to the first geograph the <i>second contributor</i> adds to a square. The third contributor similarly gets a "Third" point for their first "Geograph" to the square. </p>
+		<p>In addition we now award "Second Visitor" points (and Third and Fourth!) - which are given to the first geograph the <i>second contributor</i> adds to a square. The third contributor similarly gets a "Third" point for their first "Geograph" to the square. </p>
 
-		<p>So a single square can have a First, Second, Third and Fourth Visit point, but a contributor can only get one of those per square.</p>
+		<p>So a single square can have a First, Second, Third and Fourth Visitor point, but a contributor can only get one of those per square.</p>
 
 		<p>You can earn yourself a "Personal" point by submitting a &quot;geograph&quot; for a square that is new to you, regardless of how many contributors have been there before.</p>
 	</blockquote>

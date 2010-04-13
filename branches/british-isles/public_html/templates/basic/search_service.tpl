@@ -1,9 +1,13 @@
 {assign var="page_title" value="Search Results"}
 
 {include file="_basic_begin.tpl"}
+{if $inner}
+	<br/>
+{else}
 <div style="text-align:right">
 	<a href="/search.php?q={$searchq|escape:"url"}" target="_parent">Run this query in the Full Search</a>
 </div>
+{/if}
 
 <div id="maincontent">
 {if $suggestions} 
@@ -33,6 +37,9 @@
 	{if $query_info}
 	<p style="clear:both">{$query_info}</p>
 	{/if}
+{if $inner}
+	<a href="/search.php?q={$searchq|escape:"url"}" target="_parent">Try this query in the Full Search</a> - Might be non functional
+{/if}
 </div>
 </body>
 </html>

@@ -154,7 +154,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		if (strlen($q) < 64 && $mode != SPH_MATCH_EXTENDED && !isset($_GET['inner']))
 			$smarty->assign("suggestions",didYouMean($q,$cl));
-		
+		if (isset($_GET['inner'])) {
+			 $smarty->assign("inner",1);
+		}		
 		// --------------
 		
 		if ( $res===false )

@@ -226,7 +226,7 @@ if (!empty($_GET['q'])) {
 					}
 					//hmm what can we do with THEM...
 					if (count($grs)) {
-						$inners['places'] = array('title'=>'In likely squares','url'=>"/finder/search-service.php?q=grid_reference:".implode('%7C',array_keys($grs))."&amp;inner");
+						$inners['places'] = array('title'=>'Images in squares with matching places','url'=>"/finder/search-service.php?q=grid_reference:".implode('%7C',array_keys($grs))."&amp;inner");
 					}
 				}
 			}
