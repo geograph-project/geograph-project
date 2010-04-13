@@ -583,12 +583,7 @@ class GridImage
 			$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.*,u.realname FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) INNER JOIN user u ON (snippet.user_id = u.user_id)  WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
 		}
 		
-		if (empty($db)) {
-			$db=&$this->_getDB(true);
-		}
-		$this->failed_crumpet = $db->getOne("SELECT gridimage_id FROM failed_crumpet WHERE gridimage_id = {$this->gridimage_id}");
-
-
+		
 		$this->snippet_count = count($this->snippets);
 		
 		if (preg_match('/[^\[]\[\d+\]/',$this->comment))
