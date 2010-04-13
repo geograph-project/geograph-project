@@ -51,7 +51,7 @@ Display:
 		The characters <tt>~ | ( ) @ " / ' = &lt; ^ $ , - :</tt> all have <a href="/article/Word-Searching-on-Geograph">special meanings</a><br/> which affect the query, it appears one or more has been used incorrectly.<br/>
 		Use the quick refine below to try the search without any such characters.
 		{else}this is most likly a invalid combination of search terms,<br/>
-		but could also be a temporarlly issue so you could try again in a little while.{/if}<br/>
+		but could also be a temporary issue so you could try again in a little while.{/if}<br/>
 	</div>
 
 {elseif $engine->fullText && $engine->nextLink}

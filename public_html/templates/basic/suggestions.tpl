@@ -4,7 +4,7 @@
 <script src="{"/sorttable.js"|revision}"></script>
 
 {dynamic}
-<h2>Change Request Suggestions for {$user->realname}</h2>
+<h2>Change Suggestions for {$user->realname}</h2>
 
 {if $own}
 	<p><b>Own images</b> / <a href="/suggestions.php?others">On others</a></p>

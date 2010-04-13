@@ -88,7 +88,7 @@ require_once('geograph/global.inc.php');
 $db = NewADOConnection($GLOBALS['DSN']);
 
 //this upper limit is set by google
-$urls_per_sitemap=30000; //lowered to 30k due to filesize of images sitemap. 
+$urls_per_sitemap=20000; //lowered to 20k due to filesize of images sitemap. 
 
 //how many sitemap files must we write?
 printf("Counting images...\r");

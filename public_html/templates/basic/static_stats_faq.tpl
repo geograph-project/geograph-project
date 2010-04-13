@@ -7,10 +7,10 @@
 <h3>Points/Squares etc seem pretty similar... What does each mean?</h3>
     <ul>
 	<li><b>Points</b> / <b>Firsts</b>: the first geograph submitted for a square earns a <a href="/faq.php#points"><b>First Geograph Point</b></a><br/><br/><ul>
-	<li><b>Seconds</b>: a "<b>Second Visit</b>" point is awarded for the second person to contribute a geograph to a square<br/><br/></li>
-	<li><b>Thirds</b>: similarlly a "<b>Third Visit</b>" point is awarded for the third person to contribute a geograph to a square<br/><br/></li>
-	<li><b>Fourths</b>: and therefore a "<b>Fourth Visit</b>" point is awarded for the fourth person to contribute a geograph to a square<br/><br/></li>
-	<li><b>AllPoints</b>: Total of First/Second/Third/Fourth Visit Points<br/><br/></li>
+	<li><b>Seconds</b>: a "<b>Second Visitor</b>" point is awarded for the second person to contribute a geograph to a square<br/><br/></li>
+	<li><b>Thirds</b>: similarlly a "<b>Third Visitor</b>" point is awarded for the third person to contribute a geograph to a square<br/><br/></li>
+	<li><b>Fourths</b>: and therefore a "<b>Fourth Visitor</b>" point is awarded for the fourth person to contribute a geograph to a square<br/><br/></li>
+	<li><b>AllPoints</b>: Total of First/Second/Third/Fourth Visitor Points<br/><br/></li>
 	<li><b>Personal Points</b>: The first image submitted by each user in a square gets a Personal Point.<br/><br/></li>
     </ul></li>
     <li><b>Images</b>: these are all images on the site, regardless if they Geograph or supplemental<br/><br/><ul>
