@@ -169,7 +169,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					$ordered = implode(' << ',$words);
 					
 					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
-					$q = "\"^$q\$\" | \"$q\" | ($ordered) | ($q) | \"$q\"/$quorum";
+					$q = "\"^$q\$\" | \"^$q\" | \"$q\" | ($ordered) | ($q) | \"$q\"/$quorum";
 				
 					if ($searchmode == 5) {
 						$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
@@ -279,8 +279,18 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	if ($sql) {
-		$db = GeographDatabaseConnection(true);
 		
+		if ($searchmode) {
+			$db = GeographDatabaseConnection(false);
+			$ins = "INSERT INTO search_ranking_results SET
+				mode = ".intval(@$searchmode).",
+				q = ".$db->Quote(@$qo).",
+				res_crc = CRC32(".$db->Quote(@$where)."),
+				total_found = ".intval(@$res['total_found']);
+			$db->Execute($ins);
+		} else {
+			$db = GeographDatabaseConnection(true);
+		}
 		
 		$result = mysql_query($sql) or die ("Couldn't select query : $sql " . mysql_error() . "\n");
 
