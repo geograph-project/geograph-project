@@ -49,8 +49,10 @@ if (empty($q)) {
 	die('no query');
 }
 
+$searchmode = (isset($_GET['mode']) && preg_match('/^\w+$/' , $_GET['mode']))?$_GET['mode']:'';
+
 $template = "search_service.tpl";
-$cacheid = md5($q);
+$cacheid = md5($q.'|'.$searchmode).(isset($_GET['inner'])+1).(isset($_GET['feedback'])+1);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -141,27 +143,106 @@ if (!$smarty->is_cached($template, $cacheid))
 			$mode = SPH_MATCH_EXTENDED;
 		} 
 		$index = "gi_stemmed,gi_stemmed_delta";
- if (strpos($q,'*') !== FALSE) {
-	$index = 'gi_star';
-}		
+		
 		$cl = new SphinxClient ();
 		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
-		$cl->SetWeights ( array ( 100, 1 ) );
-		$cl->SetSortMode ( SPH_SORT_EXTENDED2, "@relevance DESC, @id DESC" );
-		$cl->SetMatchMode ( $mode );
-		$cl->SetLimits($offset,25);
+		if ($searchmode) {
+			switch ($searchmode) {
+				case '1': //default ranking mode
+					#SPH_RANK_PROXIMITY_BM25
+					$cl->SetMatchMode(SPH_MATCH_ALL);
+					break;
+				case '2': //any mode
+					$cl->SetMatchMode(SPH_MATCH_ANY);
+					break;
+				case '3': //phrase mode
+					$cl->SetMatchMode(SPH_MATCH_PHRASE);
+					break;
+				case '4': //custom
+				case '5': //custom+wordcount
+					$words = preg_split('/\s+/',$q);
+					$quorum = max(1,count($words) - 2);
+					$ordered = implode(' << ',$words);
+					
+					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
+					$q = "\"^$q\$\" | \"$q\" | ($ordered) | ($q) | \"$q\"/$quorum";
+				
+					if ($searchmode == 5) {
+						$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
+					}
+					break;
+				case '6': //try just one mode
+					$cl->SetRankingMode(SPH_RANK_BM25);
+					break;
+				case '8': //try just one mode
+					$cl->SetRankingMode(SPH_RANK_PROXIMITY);
+					break;
+				case '7': //very simple
+					$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
+					break;
+				case '9': //wildcard!
+					$cl->SetRankingMode(SPH_RANK_NONE);
+					break;
+				case '10': //just latest
+					$cl->SetSortMode ( SPH_SORT_EXTENDED, "@id DESC" );
+					$cl->SetRankingMode(SPH_RANK_NONE); //we dont need any ranking... 
+					break;
+				case '11': //try some field weights
+					$cl->SetIndexWeights(array('title'=>100,'comment'=>30));
+					break;
+				case '12'://find some popular squares... 
+					$sphinx = new sphinxwrapper($q);
+					$sphinx->pageSize = 40;
+					$sphinx->processQuery();
+					
+					$ids = $sphinx->returnIds(1,'sqim');
+					
+					if (empty($ids)) {
+						die("unable to identify images");
+					}
+					$id_str = implode(',',$ids);
+					
+					$db = GeographDatabaseConnection(true);
+					$grs = $db->GetCol("select grid_reference from gridsquare where gridsquare_id in ($id_str)");
+					
+					$gr_str = implode('|',$grs);
+					
+					$words = preg_split('/\s+/',$q);
+					$quorum = max(1,count($words) - 1);
+					
+					$q = "\"$q\"/$quorum @grid_reference ($gr_st)";
+					
+					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
+					$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
+					break;
+			}
+			$cl->SetLimits($offset,10);
+			$smarty->assign("mode",$searchmode);
+		} else {
+			if (strpos($q,'*') !== FALSE) {
+				$index = 'gi_star';
+			}
+			$cl->SetWeights ( array ( 100, 1 ) );
+			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
+			$cl->SetMatchMode ( $mode );
+			$cl->SetLimits($offset,25);
+		}
 		$res = $cl->Query ( $q, $CONF['sphinx_prefix'].$index );
 		
-		if (strlen($q) < 64 && $mode != SPH_MATCH_EXTENDED && !isset($_GET['inner']))
+		if (strlen($q) < 64 && $mode != SPH_MATCH_EXTENDED && !isset($_GET['inner']) && !isset($_GET['feedback']))
 			$smarty->assign("suggestions",didYouMean($q,$cl));
 		if (isset($_GET['inner'])) {
 			 $smarty->assign("inner",1);
-		}		
+		}
+		if (isset($_GET['feedback'])) {
+			 $smarty->assign("feedback",1);
+			 $smarty->assign("q",$qo);
+		}
 		// --------------
 		
 		if ( $res===false )
 		{
-			print "\tQuery failed: -- please try again later.\n";
+			print "\tQuery failed: -- please try again later.\n".$cl->getLastError();
 			exit;
 		} else
 		{
