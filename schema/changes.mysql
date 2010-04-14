@@ -467,6 +467,9 @@ CREATE TABLE  `user_change` (
 ) ENGINE = MYISAM ;
 
 
+insert into user_change SELECT user_id,'realname' as field,realname as value,now() as created FROM user;
+insert into user_change SELECT user_id,'nickname' as field,nickname as value,now() as created FROM user;
+
 
 ALTER TABLE `queries` CHANGE `searchuse` `searchuse` ENUM( 'search', 'flickr', 'gazetteer', 'discuss', 'syndicator' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT 'search';
 
@@ -1164,5 +1167,21 @@ alter table article_revisions add `edit_prompt` varchar(160) NOT NULL DEFAULT ''
 
 #################################################
 
+
+CREATE TABLE IF NOT EXISTS `search_ranking_log` (
+  `vote_id` int(10) unsigned NOT NULL auto_increment,
+  `mode` tinyint(10) unsigned NOT NULL,
+  `rating` tinyint(4) NOT NULL,
+  `q` varchar(255) NOT NULL,
+  `comment` varchar(160) NOT NULL,
+  `ts` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  `user_id` int(10) unsigned NOT NULL,
+  `ipaddr` int(10) unsigned NOT NULL,
+  `final` tinyint(3) unsigned NOT NULL default '0',
+  PRIMARY KEY  (`vote_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+
+
+#################################################
 
 
