@@ -54,6 +54,10 @@ $searchmode = (isset($_GET['mode']) && preg_match('/^\w+$/' , $_GET['mode']))?$_
 $template = "search_service.tpl";
 $cacheid = md5($q.'|'.$searchmode).(isset($_GET['inner'])+1).(isset($_GET['feedback'])+1);
 
+customCacheControl(filemtime(__FILE__),$cacheid,false);
+customExpiresHeader(3600*6,true,true);
+
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 
