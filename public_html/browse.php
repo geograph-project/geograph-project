@@ -256,15 +256,18 @@ if ($grid_given)
 	} elseif ($grid_ok) {
 		$db = null;
 		$custom_where = '';
+		$extra = '';
 		if (!empty($_GET['user'])) {
 			$custom_where .= " and gi.user_id = ".intval($_GET['user']);
 			$profile=new GeographUser($_GET['user']);
 			$filtered_title .= " by ".htmlentities2($profile->realname);
 			$smarty->assign("bby",'user');
+			$extra .= "&amp;user=".intval($_GET['user']);
 		}
 		if (!empty($_GET['status'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$filtered_title .= " moderated as '".htmlentities2($_GET['status'])."'";
+			$extra .= "&amp;status=".urlencode($_GET['status']);
 			$_GET['status'] = str_replace('supplemental','accepted',$_GET['status']);
 			$custom_where .= " and moderation_status = ".$db->Quote($_GET['status']);
 			$smarty->assign("bby",'status');
@@ -274,12 +277,14 @@ if ($grid_given)
 			$custom_where .= " and imageclass = ".$db->Quote($_GET['class']);
 			$filtered_title .= " categorised as '".htmlentities2($_GET['class'])."'";
 			$smarty->assign("bby",'class');
+			$extra .= "&amp;class=".urlencode($_GET['class']);
 		}
 		if (!empty($_GET['cluster'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and label = ".$db->Quote($_GET['cluster']);
 			$filtered_title .= " labeled as '".htmlentities2($_GET['cluster'])."'";
 			$smarty->assign("bby",'cluster');
+			$extra .= "&amp;cluster=".urlencode($_GET['cluster']);
 		}
 		if (!empty($_GET['taken'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
@@ -287,6 +292,7 @@ if ($grid_given)
 			$date = getFormattedDate($_GET['taken']);
 			$filtered_title .= " Taken in $date";
 			$smarty->assign("bby",'taken');
+			$extra .= "&amp;taken=".urlencode($_GET['taken']);
 		}
 		if (!empty($_GET['takenyear'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
@@ -294,6 +300,7 @@ if ($grid_given)
 			$date = getFormattedDate($_GET['takenyear']);
 			$filtered_title .= " Taken in $date";
 			$smarty->assign("bby",'takenyear');
+			$extra .= "&amp;takenyear=".urlencode($_GET['takenyear']);
 		}
 		if (!empty($_GET['submitted'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
@@ -301,6 +308,7 @@ if ($grid_given)
 			$date = getFormattedDate($_GET['submitted']);
 			$filtered_title .= " Submitted in $date";
 			$smarty->assign("bby",'submitted');
+			$extra .= "&amp;submitted=".urlencode($_GET['submitted']);
 		}
 		if (!empty($_GET['submittedyear'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
@@ -308,6 +316,7 @@ if ($grid_given)
 			$date = getFormattedDate($_GET['submittedyear']);
 			$filtered_title .= " Submitted in $date";
 			$smarty->assign("bby",'submittedyear');
+			$extra .= "&amp;submittedyear=".urlencode($_GET['submittedyear']);
 		}
 		if (isset($_GET['direction']) && strlen($_GET['direction'])) {
 			$direction = intval($_GET['direction']);
@@ -316,6 +325,7 @@ if ($grid_given)
 			$view_direction = ($direction%90==0)?strtoupper(heading_string($direction)):ucwords(heading_string($direction)) ;
 			$filtered_title .= " Looking $view_direction";
 			$smarty->assign("bby",'direction');
+			$extra .= "&amp;direction=".intval($_GET['direction']);
 		}
 		if (!empty($_GET['viewpoint'])) {
 			$viewpoint_square = new GridSquare;
@@ -390,7 +400,7 @@ if ($grid_given)
 		}
 			
 		if ($USER->user_id && !empty($_GET['nl'])) {
-			$extra = "&amp;nl=1";
+			$extra .= "&amp;nl=1";
 			$smarty->assign('nl', 1);
 			
 			if (!empty($_GET['ht'])) {
@@ -408,7 +418,7 @@ if ($grid_given)
 			}
 		} else {
 			if (!empty($_GET['ht'])) {
-				$extra = "&amp;ht=1";
+				$extra .= "&amp;ht=1";
 				$smarty->assign('ht', 1);
 			}
 			$user_crit = "moderation_status in ('accepted', 'geograph')";
@@ -437,15 +447,25 @@ if ($grid_given)
 					$gis_where = "grid_reference = '{$square->grid_reference}'";
 					$limit = 12;
 					
-					$methods = array('category','user+category','any','random','latest','few','spaced','groups'); //groups MUST be last.
+					$methodsa = array('any'=>1,'random'=>1,'latest'=>1,'few'=>1,'groups'=>1); 
 					
-					//todo we could do this more inteligently!;
+					if ($square->imagecount > 50) {
+						$methodsa['user+category']=1;
+					}
+					if ($square->imagecount > $limit*2) {
+						$methodsa['category']=1;
+						$methodsa['spaced']=1;
+					}
+					
+					$methods = array_keys($methodsa);
+					
 					$method = $methods[rand(0,count($methods)-1)];
 					
 					if ($method == 'groups') {
 						$c = $db->getOne("SELECT c FROM gridsquare_group_stat WHERE gridsquare_id = {$square->gridsquare_id}");
 						if (!$c || $c < 4) {
-							array_pop($methods);
+							unset($methodsa['groups']);
+							$methods = array_keys($methodsa);
 							$method = $methods[rand(0,count($methods)-1)];
 						}
 					}
@@ -609,10 +629,12 @@ if ($grid_given)
 					}
 					if ($row[1] > 20) {
 						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;imageclass=".urlencode($row[0])."&amp;do=1";
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;class=".urlencode($row[0]).$extra;
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?class=".urlencode($row[0]).$extra;
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;class=".urlencode($row[0]).$extra;
 					}
 					$i++;
 				}
@@ -636,10 +658,12 @@ if ($grid_given)
 					}
 					if ($row[1] > 1) { //todo - browse.php?cluster=... doesnt currently work (square->getImages cant join on gridimage_cluster.)
 						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode($row[0])."&amp;do=1";
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;cluster=".urlencode($row[0]).$extra;
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?cluster=".urlencode($row[0]).$extra;
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;cluster=".urlencode($row[0]).$extra;
 					}
 					$i++;
 				}
@@ -665,11 +689,13 @@ if ($grid_given)
 							$breakdown[$i]['link']="/profile/{$USER->user_id}";
 						} else {
 							$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;moderation_status=".urlencode($row[0])."&amp;do=1";
+							$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;status=".urlencode($rowname).$extra;
 						}
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?status=".urlencode($rowname).$extra;
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;status=".urlencode($rowname).$extra;
 					}
 					$i++;
 				}
@@ -693,10 +719,12 @@ if ($grid_given)
 					}
 					if ($row[1] > 20) {
 						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;user_id={$row['user_id']}&amp;do=1";
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;user={$row['user_id']}".$extra;
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?user={$row['user_id']}".$extra;
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;user={$row['user_id']}".$extra;
 					}
 					$i++;
 				}
@@ -727,6 +755,7 @@ if ($grid_given)
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?direction={$row[0]}".$extra;
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;direction={$row[0]}".$extra;
 					}
 					$i++;
 				}
@@ -766,6 +795,7 @@ if ($grid_given)
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?viewpoint={$posgr}".$extra;
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;viewpoint={$posgr}".$extra;
 					}
 					$i++;
 				}
@@ -871,10 +901,12 @@ if ($grid_given)
 						$datel = $row[0].substr('-00-00',0, 10-$length);
 
 						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;orderby=submitted&amp;{$column}_start=$datel&amp;{$column}_end=$datel&amp;do=1";
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;{$_GET['by']}={$row[0]}".$extra;
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?{$_GET['by']}={$row[0]}".$extra;
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;{$_GET['by']}={$row[0]}".$extra;
 					}
 					$i++;
 				}
