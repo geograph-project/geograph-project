@@ -210,7 +210,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					$words = preg_split('/\s+/',$q);
 					$quorum = max(1,count($words) - 1);
 					
-					$q = "\"$q\"/$quorum @grid_reference ($gr_st)";
+					$q = "\"$q\"/$quorum @grid_reference ($gr_str)";
 					
 					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
 					$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
