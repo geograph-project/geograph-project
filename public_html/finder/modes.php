@@ -53,11 +53,16 @@ if (!empty($_GET['q'])) {
 	$words = preg_split('/\s+/',$q);
 	if (count($words) > 1) {
 		
-		$inners = array();
-		foreach (range(1,12) as $key) {
-			$inners[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q));
+		$inners1 = $inners2 = array();
+		foreach (range(1,5) as $key) {
+			$inners1[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q));
 		}
-		shuffle($inners);
+		foreach (range(6,12) as $key) {
+			$inners2[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q));
+		}
+		shuffle($inners1);
+		shuffle($inners2);
+		$inners=array_merge($inners1,$inners2);
 		$smarty->assign_by_ref("inners",$inners);
 		$smarty->assign("count_inners",count($inners));
 	}

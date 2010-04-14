@@ -63,6 +63,7 @@
 	</form>
 	
 	<iframe src="about:blank" width="1" height="1" name="resultsframe"></iframe>
+	<span style="color:white">{$mode|escape:'html'}</span>
 {elseif $inner}
 	<a href="/search.php?q={$searchq|escape:"url"}" target="_parent">Try this query in the Full Search</a> - Might be non functional
 {/if}

@@ -20,7 +20,7 @@
 <ul>
 	<li>So try running a search below and see how alternatives compare. Rate each using the section at the bottom of each box.</li>
 	<li>You are only rating how subjectivly good the first few results are for your choosen search.</li>
-	<li><small>There is no need to rate every single one, just the particully good or particully bad ones.</small></li>
+	<li><small>There is no need to rate every single one, just the particully good or particully bad ones. Pay particular attention to the first 5 columns.</small></li>
 </ul>
 </div>
 
