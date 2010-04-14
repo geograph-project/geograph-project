@@ -1185,3 +1185,14 @@ CREATE TABLE IF NOT EXISTS `search_ranking_log` (
 #################################################
 
 
+CREATE TABLE  `search_ranking_results` (
+`mode` TINYINT NOT NULL ,
+`q` VARCHAR( 255 ) NOT NULL ,
+`res_crc` INT UNSIGNED NOT NULL ,
+`total_found` INT UNSIGNED NOT NULL ,
+`created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE = MYISAM;
+
+
+#################################################
+
