@@ -156,13 +156,13 @@ if (!$smarty->is_cached($template, $cacheid))
 					#SPH_RANK_PROXIMITY_BM25
 					$cl->SetMatchMode(SPH_MATCH_ALL);
 					break;
-				case '2': //any mode
+				case '6': //any mode
 					$cl->SetMatchMode(SPH_MATCH_ANY);
 					break;
-				case '3': //phrase mode
+				case '7': //phrase mode
 					$cl->SetMatchMode(SPH_MATCH_PHRASE);
 					break;
-				case '4': //custom
+				case '2': //custom
 				case '5': //custom+wordcount
 					$words = preg_split('/\s+/',$q);
 					$quorum = max(1,count($words) - 2);
@@ -175,26 +175,26 @@ if (!$smarty->is_cached($template, $cacheid))
 						$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
 					}
 					break;
-				case '6': //try just one mode
+				case '8': //try just one mode
 					$cl->SetRankingMode(SPH_RANK_BM25);
 					break;
-				case '8': //try just one mode
+				case '9': //try just one mode
 					$cl->SetRankingMode(SPH_RANK_PROXIMITY);
 					break;
-				case '7': //very simple
+				case '10': //very simple
 					$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
 					break;
-				case '9': //wildcard!
+				case '11': //wildcard!
 					$cl->SetRankingMode(SPH_RANK_NONE);
 					break;
-				case '10': //just latest
+				case '12': //just latest
 					$cl->SetSortMode ( SPH_SORT_EXTENDED, "@id DESC" );
 					$cl->SetRankingMode(SPH_RANK_NONE); //we dont need any ranking... 
 					break;
-				case '11': //try some field weights
+				case '4': //try some field weights
 					$cl->SetIndexWeights(array('title'=>100,'comment'=>30));
 					break;
-				case '12'://find some popular squares... 
+				case '3'://find some popular squares... 
 					$sphinx = new sphinxwrapper($q);
 					$sphinx->pageSize = 40;
 					$sphinx->processQuery();
