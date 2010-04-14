@@ -290,7 +290,7 @@ geographing</a> first.</p>
 	<br style="clear:both"/>
 	
 	{if $imagecount gt 6 || $shownimagecount == 6}
-		<div>{newwin href="/gridref/`$gridref`" text="View `$imagecount` live image(s) for `$gridref`"}<small> plus any images you have hidden</small></div>
+		<div>{newwin href="/gridref/`$gridref`" text="View browse page for `$gridref`"}, {newwin href="/search.php?gridref=`$gridref`&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" text="View images page by page"}</div>
 	{/if}&nbsp;
 	</div>
 	{else}

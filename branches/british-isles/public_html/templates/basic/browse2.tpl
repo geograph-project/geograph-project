@@ -254,7 +254,7 @@
 	{else}
 		for <b>{$gridref}</b>
 	{/if}
-	{if $sample}</big> - <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View <b>all {$imagecount} images</b> page by page &gt;&gt;&gt;</a>{/if}
+	{if $sample}</big> - <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View {if $imagecount>1000}more{else}<b>all {$imagecount} images</b>{/if} page by page &gt;&gt;&gt;</a>{/if}
 	</div>
 
 	<div style="position:relative; text-align:right; font-size:0.7em">
