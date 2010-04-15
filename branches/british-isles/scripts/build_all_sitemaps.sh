@@ -3,7 +3,8 @@
 
 ############
 
-sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_sitemap.php --dir=/var/www/geograph_live --secret=imagesitemap
+sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_sitemap.php --dir=/var/www/geograph_live --config=www.geograph.org.uk --images=0
+sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_sitemap.php --dir=/var/www/geograph_live --config=www.geograph.org.uk --normal=0 --geo=0 --secret=imagesitemap --per=10000
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.org.uk%2Fsitemap.xml > /dev/null
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.org.uk%2Fsitemap-geo.xml > /dev/null
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.org.uk%2Fsitemap-imagesitemap.xml > /dev/null
@@ -21,7 +22,8 @@ sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_snippetsitema
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.org.uk%2Fsitemap-snippet.xml > /dev/null
 
 
-sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_sitemap.php --dir=/var/www/geograph_live --config=www.geograph.ie --ri=2 --suffix=.ie --secret=imagesitemap
+sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_sitemap.php --dir=/var/www/geograph_live --config=www.geograph.ie --ri=2 --suffix=.ie --images=0
+sudo -u www-data /usr/bin/php /var/www/geograph_live/scripts/build_sitemap.php --dir=/var/www/geograph_live --config=www.geograph.ie --ri=2 --suffix=.ie --normal=0 --geo=0 --secret=imagesitemap --per=10000
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.ie%2Fsitemap.ie.xml > /dev/null
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.ie%2Fsitemap-geo.ie.xml > /dev/null
 GET http://www.google.com/webmasters/tools/ping?sitemap=http%3A%2F%2Fwww.geograph.ie%2Fsitemap-imagesitemap.ie.xml > /dev/null
