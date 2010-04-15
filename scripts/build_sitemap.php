@@ -29,6 +29,10 @@ $param=array(
 	'secret'=>'imagesitemap',		//secret - change this 
 	'dir'=>'/var/www/geograph_live/',		//base installation dir
 	'config'=>'www.geograph.org.uk', //effective config
+	'per'=>50000, //number of lines per sitemap
+	'normal'=>'1', //which sitemaps to produce
+	'geo'=>'1', //which sitemaps to produce
+	'image'=>'1', //which sitemaps to produce
 	'ri'=>'1', //grid
 	'suffix'=>'', //eg '.ie'
 	'help'=>0,		//show script help?
@@ -87,8 +91,7 @@ require_once('geograph/global.inc.php');
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
-//this upper limit is set by google
-$urls_per_sitemap=20000; //lowered to 20k due to filesize of images sitemap. 
+$urls_per_sitemap=$param['per']; 
 
 //how many sitemap files must we write?
 printf("Counting images...\r");
@@ -102,36 +105,39 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 {
 	//prepare output file and query
 	printf("Preparing sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
-		
-	$filename=sprintf('%s/public_html/sitemap/root/sitemap%04d%s.xml', $param['dir'], $sitemap, $param['suffix']); 
-	$fh=fopen($filename, "w");
-	if (!$fh) {
-		die("unable to write $filename");
+	
+	if ($param['normal']) {
+		$filename=sprintf('%s/public_html/sitemap/root/sitemap%04d%s.xml', $param['dir'], $sitemap, $param['suffix']); 
+		$fh=fopen($filename, "w");
+		if (!$fh) {
+			die("unable to write $filename");
+		}
+
+		fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
+		fprintf($fh, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
 	}
 	
-	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-	fprintf($fh, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
-	
-	
-	$filename2=sprintf('%s/public_html/sitemap/root/sitemap-geo%04d%s.xml', $param['dir'], $sitemap, $param['suffix']); 
-	$fh2=fopen($filename2, "w");
-	if (!$fh2) {
-		die("unable to write $filename2");
+	if ($param['geo']) {
+		$filename2=sprintf('%s/public_html/sitemap/root/sitemap-geo%04d%s.xml', $param['dir'], $sitemap, $param['suffix']); 
+		$fh2=fopen($filename2, "w");
+		if (!$fh2) {
+			die("unable to write $filename2");
+		}
+
+		fprintf($fh2, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
+		fprintf($fh2, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0">'."\n");
 	}
 	
-	fprintf($fh2, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-	fprintf($fh2, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0">'."\n");
-	
-	
-	$filename3=sprintf('%s/public_html/sitemap/root/sitemap-%s%04d%s.xml', $param['dir'], $param['secret'], $sitemap, $param['suffix']); 
-	$fh3=fopen($filename3, "w");
-	if (!$fh3) {
-		die("unable to write $filename3");
+	if ($param['images']) {
+		$filename3=sprintf('%s/public_html/sitemap/root/sitemap-%s%04d%s.xml', $param['dir'], $param['secret'], $sitemap, $param['suffix']); 
+		$fh3=fopen($filename3, "w");
+		if (!$fh3) {
+			die("unable to write $filename3");
+		}
+
+		fprintf($fh3, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
+		fprintf($fh3, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">'."\n");
 	}
-	
-	fprintf($fh3, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-	fprintf($fh3, '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">'."\n");
-	
 	
 	$maxdate="";
 	
@@ -154,7 +160,8 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 		if (strcmp($date,$maxdate)>0)
 			$maxdate=$date;
 		
-		fprintf($fh,"<url>".
+		if ($param['normal']) {
+			fprintf($fh,"<url>".
 			"<loc>http://{$param['config']}/photo/%d</loc>".
 			"<lastmod>%s</lastmod>".
 			"<changefreq>yearly</changefreq><priority>0.8</priority>".
@@ -162,8 +169,9 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			$recordSet->fields['gridimage_id'],
 			$date
 			);
-			
-		fprintf($fh2,"<url>".
+		}
+		if ($param['geo']) {
+			fprintf($fh2,"<url>".
 			"<loc>http://{$param['config']}/photo/%d.kml</loc>".
 			"<lastmod>%s</lastmod>".
 			"<changefreq>yearly</changefreq><priority>0.5</priority>".
@@ -172,9 +180,10 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			$recordSet->fields['gridimage_id'],
 			$date
 			);
-			
-		$image->fastInit($recordSet->fields);
-		fprintf($fh3,"<url>".
+		}
+		if ($param['images']) {
+			$image->fastInit($recordSet->fields);
+			fprintf($fh3,"<url>".
 			"<loc>http://{$param['config']}/photo/%d</loc>".
 			"<lastmod>%s</lastmod>".
 			"<changefreq>yearly</changefreq><priority>0.8</priority>".
@@ -189,8 +198,9 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			$image->_getFullpath(false,true),
 			utf8_encode(htmlnumericentities($image->title))
 			);
-			
-		$count++;	
+		}
+		
+		$count++;
 		$percent=round(($count*100)/$images);
 		if ($percent!=$last_percent)
 		{
@@ -201,70 +211,80 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 		
 		$recordSet->MoveNext();
 	}
-			
+	
 	$recordSet->Close();
 	
 	//finalise file
-	fprintf($fh, '</urlset>');
-	fclose($fh); 
-	
-	fprintf($fh2, '</urlset>');
-	fclose($fh2); 
-	
-	fprintf($fh3, '</urlset>');
-	fclose($fh3); 
-		
-	
 	//set datestamp on file
-	$unixtime=strtotime("$maxdate 00:00:00");
-	touch($filename,$unixtime);
-	touch($filename2,$unixtime);
-	touch($filename3,$unixtime);
-	
 	//gzip it
-	`gzip $filename -f`;
-	`gzip $filename2 -f`;
-	`gzip $filename3 -f`;
+	
+	$unixtime=strtotime("$maxdate 00:00:00");
+	
+	if ($param['normal']) {
+		fprintf($fh, '</urlset>');
+		fclose($fh); 
+		touch($filename,$unixtime);
+		`gzip $filename -f`;
+	}
+	
+	if ($param['geo']) {
+		fprintf($fh2, '</urlset>');
+		fclose($fh2); 
+		touch($filename2,$unixtime);
+		`gzip $filename2 -f`;
+	}
+	
+	if ($param['images']) {
+		fprintf($fh3, '</urlset>');
+		fclose($fh3); 
+		touch($filename3,$unixtime);
+		`gzip $filename3 -f`;
+	}
 }
 
 //now we write an index file pointing to our hand edited sitemap sitemap0000.xml)
 //and our generated ones above
-$filename=sprintf('%s/public_html/sitemap/root/sitemap%s.xml', $param['dir'], $param['suffix']); 
-$fh=fopen($filename, "w");
+if ($param['normal']) {
+	$filename=sprintf('%s/public_html/sitemap/root/sitemap%s.xml', $param['dir'], $param['suffix']); 
+	$fh=fopen($filename, "w");
 
-fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-fprintf($fh, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
+	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
+	fprintf($fh, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
+}
 
+if ($param['geo']) {
+	$filename2=sprintf('%s/public_html/sitemap/root/sitemap-geo%s.xml', $param['dir'], $param['suffix']); 
+	$fh2=fopen($filename2, "w");
 
-$filename2=sprintf('%s/public_html/sitemap/root/sitemap-geo%s.xml', $param['dir'], $param['suffix']); 
-$fh2=fopen($filename2, "w");
+	fprintf($fh2, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
+	fprintf($fh2, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
+}
 
-fprintf($fh2, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-fprintf($fh2, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
+if ($param['images']) {
+	$filename3=sprintf('%s/public_html/sitemap/root/sitemap-%s%s.xml', $param['dir'], $param['secret'], $param['suffix']); 
+	$fh3=fopen($filename3, "w");
 
-
-$filename3=sprintf('%s/public_html/sitemap/root/sitemap-%s%s.xml', $param['dir'], $param['secret'], $param['suffix']); 
-$fh3=fopen($filename3, "w");
-
-fprintf($fh3, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
-fprintf($fh3, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
-
+	fprintf($fh3, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
+	fprintf($fh3, '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n");
+}
 
 for ($s=0; $s<=$sitemaps; $s++)
 {
-	fprintf($fh, "<sitemap>");
-	
 	//first file is not compressed...
 	$fname=($s==0)?"sitemap0000{$param['suffix']}.xml":sprintf("sitemap%04d%s.xml.gz", $s, $param['suffix']);
-	
+
 	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
-	
-	fprintf($fh, "<loc>http://{$param['config']}/%s</loc>", $fname);
-	fprintf($fh, "<lastmod>%s</lastmod>", $mtimestr);
-	fprintf($fh, "</sitemap>\n");
+		
+	if ($param['normal']) {
+		fprintf($fh, "<sitemap>");
 
-	if ($s>0) {
+		fprintf($fh, "<loc>http://{$param['config']}/%s</loc>", $fname);
+		fprintf($fh, "<lastmod>%s</lastmod>", $mtimestr);
+		fprintf($fh, "</sitemap>\n");
+	}
+	
+	if ($param['geo'] && $s>0) {
 		fprintf($fh2, "<sitemap>");
 	
 		$fname=sprintf("sitemap-geo%04d%s.xml.gz", $s, $param['suffix']);
@@ -274,20 +294,28 @@ for ($s=0; $s<=$sitemaps; $s++)
 		fprintf($fh2, "</sitemap>\n");
 	}
 	
-	fprintf($fh3, "<sitemap>");
-	
-	$fname=($s==0)?"sitemap0000{$param['suffix']}.xml":sprintf("sitemap-%s%04d%s.xml.gz", $param['secret'], $s, $param['suffix']);
-	
-	fprintf($fh3, "<loc>http://{$param['config']}/%s</loc>", $fname);
-	fprintf($fh3, "<lastmod>%s</lastmod>", $mtimestr);
-	fprintf($fh3, "</sitemap>\n");
+	if ($param['images']) {
+		fprintf($fh3, "<sitemap>");
+
+		$fname=($s==0)?"sitemap0000{$param['suffix']}.xml":sprintf("sitemap-%s%04d%s.xml.gz", $param['secret'], $s, $param['suffix']);
+
+		fprintf($fh3, "<loc>http://{$param['config']}/%s</loc>", $fname);
+		fprintf($fh3, "<lastmod>%s</lastmod>", $mtimestr);
+		fprintf($fh3, "</sitemap>\n");
+	}
 }
 
-fprintf($fh, '</sitemapindex>');
-fprintf($fh2, '</sitemapindex>');
-fprintf($fh3, '</sitemapindex>');
-fclose($fh); 
-fclose($fh2);
-fclose($fh3);
+if ($param['normal']) {
+	fprintf($fh, '</sitemapindex>');
+	fclose($fh); 
+}
+if ($param['geo'] && $s>0) {
+	fprintf($fh2, '</sitemapindex>');
+	fclose($fh2);
+}
+if ($param['images']) {
+	fprintf($fh3, '</sitemapindex>');
+	fclose($fh3);
+}
 
 
