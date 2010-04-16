@@ -218,27 +218,27 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	//set datestamp on file
 	//gzip it
 	
-	$unixtime=strtotime("$maxdate 00:00:00");
+	$unixtime=strtotime("$maxdate 23:59:59");
 	
 	if ($param['normal']) {
 		fprintf($fh, '</urlset>');
 		fclose($fh); 
-		touch($filename,$unixtime);
 		`gzip $filename -f`;
+		touch("$filename.gz",$unixtime);
 	}
 	
 	if ($param['geo']) {
 		fprintf($fh2, '</urlset>');
 		fclose($fh2); 
-		touch($filename2,$unixtime);
 		`gzip $filename2 -f`;
+		touch("$filename2.gz",$unixtime);
 	}
 	
 	if ($param['images']) {
 		fprintf($fh3, '</urlset>');
 		fclose($fh3); 
-		touch($filename3,$unixtime);
 		`gzip $filename3 -f`;
+		touch("$filename3.gz",$unixtime);
 	}
 }
 
@@ -270,15 +270,15 @@ if ($param['images']) {
 
 for ($s=0; $s<=$sitemaps; $s++)
 {
-	//first file is not compressed...
-	$fname=($s==0)?"sitemap0000{$param['suffix']}.xml":sprintf("sitemap%04d%s.xml.gz", $s, $param['suffix']);
-
-	$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
-	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
-		
 	if ($param['normal']) {
 		fprintf($fh, "<sitemap>");
 
+		//first file is not compressed...
+		$fname=($s==0)?"sitemap0000{$param['suffix']}.xml":sprintf("sitemap%04d%s.xml.gz", $s, $param['suffix']);
+
+		$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
+		$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
+		
 		fprintf($fh, "<loc>http://{$param['config']}/%s</loc>", $fname);
 		fprintf($fh, "<lastmod>%s</lastmod>", $mtimestr);
 		fprintf($fh, "</sitemap>\n");
