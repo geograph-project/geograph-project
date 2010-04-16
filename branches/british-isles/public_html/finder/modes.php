@@ -57,7 +57,7 @@ if (!empty($_GET['q'])) {
 		foreach (range(1,5) as $key) {
 			$inners1[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q));
 		}
-		foreach (range(6,12) as $key) {
+		foreach (array(6,7,12) as $key) {
 			$inners2[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q));
 		}
 		shuffle($inners1);
