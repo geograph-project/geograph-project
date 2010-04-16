@@ -288,7 +288,12 @@ for ($s=0; $s<=$sitemaps; $s++)
 		fprintf($fh2, "<sitemap>");
 	
 		$fname=sprintf("sitemap-geo%04d%s.xml.gz", $s, $param['suffix']);
-
+		
+		if (!$param['normal']) {
+			$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
+			$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
+		}
+		
 		fprintf($fh2, "<loc>http://{$param['config']}/%s</loc>", $fname);
 		fprintf($fh2, "<lastmod>%s</lastmod>", $mtimestr);
 		fprintf($fh2, "</sitemap>\n");
@@ -299,6 +304,11 @@ for ($s=0; $s<=$sitemaps; $s++)
 
 		$fname=($s==0)?"sitemap0000{$param['suffix']}.xml":sprintf("sitemap-%s%04d%s.xml.gz", $param['secret'], $s, $param['suffix']);
 
+		if (!$param['normal']) {
+			$mtime=filemtime($param['dir']."/public_html/sitemap/root/".$fname);
+			$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
+		}
+		
 		fprintf($fh3, "<loc>http://{$param['config']}/%s</loc>", $fname);
 		fprintf($fh3, "<lastmod>%s</lastmod>", $mtimestr);
 		fprintf($fh3, "</sitemap>\n");
