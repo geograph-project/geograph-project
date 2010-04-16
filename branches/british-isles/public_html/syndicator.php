@@ -226,7 +226,10 @@ if (isset($sphinx)) {
 		
 		$item = new FeedItem(); 
 		$item->title = $images->error;
-		$item->description = "Unfortunatly it doesn't appear the search was processed, this is most likly a invalid combination of search terms, but could also be a temporarlly issue so you could try again in a little while."; 
+		$item->description = "Unfortunatly it doesn't appear the search was processed, this is most likly a invalid combination of search terms.";
+		if ($engine->error != "Syntax Error") {
+			$item->description = " But could also be a temporarlly issue so you could try again in a little while."; 
+		}
 		$item->date = time();
 		$item->author = $rss->title;
 		
