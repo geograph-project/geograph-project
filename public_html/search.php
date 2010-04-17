@@ -59,6 +59,7 @@ $displayclasses =  array(
 			'more' => 'full listing + links',
 			'thumbs' => 'thumbnails only',
 			'thumbsmore' => 'thumbnails + links',
+			'excerpt' => 'highlighted keywords',
 			'gmap' => 'on a map',
 			'slide' => 'slideshow',
 			'slidebig' => 'slideshow - full page',

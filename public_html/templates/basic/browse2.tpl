@@ -342,7 +342,7 @@
 			{foreach from=$breakdown item=b}
 				
 				{if $b.image}
-					<tr><td>&middot; <a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b></td>
+					<tr><td>&middot; <a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b>{if $b.centi}<br/><small style="font-size:0.7em;margin-left:30px">[<a href="{$b.centi}">Centisquare Distribution</a>]<small>{/if}</td>
 					
 					
 					<td align="middle"><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} by {$b.image->realname} {$b.image->dist_string} - click to view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></td>
