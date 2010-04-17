@@ -531,15 +531,6 @@ END;
 		$querytime_after = ((float)$usec + (float)$sec);
 
 
-		if ($this->display == 'excerpt') {
-			$docs = array();
-			foreach ($ids as $c => $id) {
-				$row = $rows[$id];
-				$docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['post_text']));
-			}
-			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmmed', $sphinx->q);
-		}
-
 		$this->querytime = ($querytime_after - $querytime_before) + $sphinx->query_time;
 		
 		
