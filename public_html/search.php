@@ -1080,8 +1080,21 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 					}
 				}
 			}
-		}
-		if ($display == 'cluster' && $engine->resultCount) {
+		} elseif ($display == 'excerpt' && $engine->resultCount) {
+			
+			$sphinx = new sphinxwrapper($engine->criteria->searchtext);
+			
+			$docs = array();
+			foreach ($engine->results as $idx => $image) {
+				$docs[$idx] = strip_tags($image->comment?$image->comment:$image->title)."<br>Category: ".strip_tags($image->imageclass);
+			}
+			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $sphinx->q);
+			
+			foreach ($engine->results as $idx => $image) {
+				$engine->results[$idx]->excerpt = $reply[$idx];
+			}
+			
+		} elseif ($display == 'cluster' && $engine->resultCount) {
 			foreach ($engine->results as $idx => $image) {
 				$engine->results[$idx]->simple_title = preg_replace('/\s*\(?\s*\d+\s*\)?\s*$/','',$engine->results[$idx]->title);
 				$found = -1;
