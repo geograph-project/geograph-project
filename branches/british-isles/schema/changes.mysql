@@ -1196,3 +1196,12 @@ CREATE TABLE  `search_ranking_results` (
 
 #################################################
 
+
+alter table queries change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote','slidebig','excerpt') NOT NULL default 'full';
+
+alter table queries_archive change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote','slidebig','excerpt') NOT NULL default 'full';
+
+
+#################################################
+
+

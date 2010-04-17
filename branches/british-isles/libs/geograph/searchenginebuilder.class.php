@@ -238,10 +238,13 @@ class SearchEngineBuilder extends SearchEngine
 			$db=$this->_GetDB(false);
 
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
-			"searchtext = ".$db->Quote($searchtext).",".
 			"searchdesc = ".$db->Quote($searchdesc).",".
 			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($q);
+			if (!empty($searchtext)) {
+				$sql .=",searchtext = ".$db->Quote($searchtext).
+				",displayclass = 'excerpt'";
+			}
 			if (!empty($searchx) && !empty($searchy))
 				$sql .= ",x = $searchx,y = $searchy,limit8 = $distance";
 			if ($limit1)
@@ -496,8 +499,11 @@ class SearchEngineBuilder extends SearchEngine
 				"searchq = ".$db->Quote($searchq);
 			if (isset($dataarray['searchtext']))
 				$sql .= ",searchtext = ".$db->Quote($dataarray['searchtext']);
-			if (isset($dataarray['displayclass']))
+			if (isset($dataarray['displayclass'])) {
 				$sql .= ",displayclass = ".$db->Quote($dataarray['displayclass']);
+			} elseif (!empty($dataarray['searchtext'])) {
+				$sql .= ",displayclass = 'excerpt'";
+			}
 			if (isset($dataarray['resultsperpage'])) {
 				$sql .= ",resultsperpage = ".$db->Quote(min(100,$dataarray['resultsperpage']));
 			} elseif (isset($USER) && !empty($USER->search_results)) {
