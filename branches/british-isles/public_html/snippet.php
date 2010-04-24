@@ -123,7 +123,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			
 			$ids = $sphinx->returnIds($pg,'snippet');
 
-			if (!empty($ids) && count($ids) > 1) {
+			if (!empty($ids) && count($ids) > 0) {
 				$where = array();
 
 				$id_list = implode(',',$ids);
@@ -145,6 +145,52 @@ if (!$smarty->is_cached($template, $cacheid)) {
 						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b/i",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
 				}
 			} 
+		} elseif ($CONF['sphinx_host']) {
+			$sphinx = new sphinxwrapper();
+			$sphinx->pageSize = $pgsize = 25;
+			$pg = 1;
+			
+			$crit = '';
+			if (strlen($data['comment']) > 100) {
+			
+				preg_match_all('/\b([A-Z]\w{3,})\b/',$data['comment'],$m);
+				
+				if (count($m[1]) > 3) {
+					$words = array_unique($m[1]);
+					
+					$quorum = max(3,count($words) -3);
+					
+					$crit = ' | "'.implode(' ',$words).'"/'.$quorum;
+					
+				}
+			}
+			
+			$sphinx->prepareQuery("(@title {$data['title']}) | (@comment \"{$data['title']}\") ".$crit);
+			
+			$ids = $sphinx->returnIds($pg,'snippet');
+
+			if (!empty($ids) && count($ids) > 0) {
+				$where = array();
+
+				$id_list = implode(',',$ids);
+				$where[] = "s.snippet_id IN($id_list)";
+				$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
+
+				$where[] = "enabled = 1"; 
+				$where[] = "s.snippet_id != {$data['snippet_id']}";
+
+				$where= implode(' AND ',$where);
+
+				$related = $db->getAll($sql="SELECT s.snippet_id,title,comment,realname,COUNT(gs.snippet_id) AS images FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)  WHERE $where  GROUP BY s.snippet_id $orderby"); 
+	
+				$smarty->assign_by_ref('related',$related);
+
+				foreach ($related as $id => $row) {
+					if (strlen($row['title']) > 3)
+						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b/i",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
+				}
+			} 
+			
 		}
 
 		$smarty->assign($data);

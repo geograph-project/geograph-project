@@ -179,9 +179,12 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 	
 	$grid_given=false;
 	if (!empty($_REQUEST['gr'])) {
-		$grid_given = true;
-		if ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
-
+		if ($_REQUEST['gr'] == '-' || $_REQUEST['gr'] == 'none') {
+			$_REQUEST['gr'] = '-';
+			
+		} elseif ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
+			$grid_given = true;
+		
 			$smarty->assign('gr',$_REQUEST['gr']);
 
 			if ($square->natgrlen > 4) {
@@ -189,6 +192,7 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			}
 
 		} else {
+			$grid_given = true;
 			print "invalid GR!";
 		}
 	}
@@ -233,6 +237,9 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			if (!empty($_REQUEST['onlymine'])) {
 				$filters['user_id'] = array($USER->user_id);
 				$smarty->assign("onlymine",1);
+			}
+			if (!empty($_REQUEST['gr']) && $_REQUEST['gr'] == '-') {
+				$filters['grid_reference'] = "none";
 			}
 			if (!empty($filters)) {
 				$sphinx->addFilters($filters);
@@ -285,7 +292,7 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 				$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 			}
 
-			if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
+			if (!empty($_REQUEST['gr']) && $_REQUEST['gr'] != '-' && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
 				$data = array();
 				$data['x'] = $square->x;
 				$data['y'] = $square->y;
@@ -303,6 +310,9 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			if (!empty($_REQUEST['onlymine'])) {
 				$filters['user_id'] = array($USER->user_id);
 				$smarty->assign("onlymine",1);
+			}
+			if (!empty($_REQUEST['gr']) && $_REQUEST['gr'] == '-') {
+				$filters['grid_reference'] = "none";
 			}
 			if (!empty($filters)) {
 				$sphinx->addFilters($filters);

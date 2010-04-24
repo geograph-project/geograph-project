@@ -11,6 +11,10 @@
 
 <h2><a href="/finder/">Finder</a> :: Search by Gridsquare</h2>
 
+<p>Search all images in a square at once. So can find squares that match keywords in seperate images. For example a query of "bridge river" would match a square that has one image that matches "bridge" and a sperate image that matches "river".</p>
+
+<p>Note: Due to performance issues, currently not all squares show thumbnails of images in the square. This will be done in the future.</p>
+
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
 		<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
@@ -85,7 +89,7 @@
 	<ul class="explore">
 		<li>prefix a keyword with - to <b>exclude</b> that word from the match; example: <tt>stone wall -sheep</tt></li>
 		<li>use gridsquares, hectads or myriads as keywords <tt>stone wall sh65</tt> or <tt>stone wall tq</tt></li>
-		<li>find images in specific eastings and/or northings (in any myriad) <tt>easting:34 northing:24</tt> </li>
+		<li>find squares in specific eastings and/or northings (in any myriad) <tt>easting:34 northing:24</tt> </li>
 		<li>can use OR to match <b>either/or</b> keywords; example: <tt>bridge river OR canal</tt></li>
 	</ul>
 </div>
