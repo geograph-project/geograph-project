@@ -432,6 +432,8 @@ if ($grid_given)
 		if (($square->imagecount > 15 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
 			$square->totalimagecount = $square->imagecount;
 			
+			$square->loadCollections();
+			
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			
 			if ($template=='browse2.tpl' && $square->imagecount > 15 && $_GET['by'] !== '1') {
@@ -920,6 +922,8 @@ if ($grid_given)
 				$smarty->assign('breakdown_count', count($breakdown));
 			}
 		} else {
+			$square->loadCollections();
+		
 			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
 			$images=$square->getImages($inc_all_user,$custom_where,'order by if(ftf between 1 and 4,ftf,5),gridimage_id');
 			$square->totalimagecount = count($images);

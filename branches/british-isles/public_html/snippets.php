@@ -229,6 +229,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 		$q=trim($_REQUEST['q']);
 		$q = preg_replace('/\b(description):/','comment:',$q);
 		$q = preg_replace('/\b(name):/','realname:',$q);
+		$q = preg_replace('/\b(gr):/','grid_reference:',$q);
 		
 		$sphinx = new sphinxwrapper($q);
 		$sphinx->pageSize = $pgsize = 25;

@@ -74,6 +74,15 @@
 		{/if}{assign var="lasttype" value=$item.type}
 		<div class="newsbody">&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a></div>
 	{/foreach}
+{elseif $square && $square->collections}
+	<h3 class="newstitle" style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;margin-bottom:10px">Collections:</h3>
+	{assign var="lasttype" value="0"}
+	{foreach from=$square->collections item=item}
+		{if $lasttype != $item.type}
+			<div class="newsheader" style="margin-top:5px">{$item.type|regex_replace:"/y$/":'ie'}s</div>
+		{/if}{assign var="lasttype" value=$item.type}
+		<div class="newsbody">&middot; <a href="{$item.url}" title="{$item.type|escape:'html'}">{$item.title|escape:'html'}</a></div>
+	{/foreach}
 {/if}
 {if $discuss}
 	{foreach from=$discuss item=newsitem}
