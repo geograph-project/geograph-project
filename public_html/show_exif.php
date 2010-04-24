@@ -54,12 +54,6 @@ if (isset($_REQUEST['id']))
 		header("HTTP/1.0 410 Gone");
 		header("Status: 410 Gone");
 		$template = "static_404.tpl";
-	} elseif (!isset($_GET['kml']) && $image->user_id != $USER->user_id && !$USER->hasPerm('moderator')) {
-		//clear the image
-		$image=new GridImage;
-		header("HTTP/1.0 403 Forbidden");
-		header("Status: 403 Forbidden");
-		$template = "static_404.tpl";
 	} else {
 		
 		$smarty->assign_by_ref('image', $image);

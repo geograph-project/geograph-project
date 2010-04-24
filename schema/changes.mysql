@@ -1205,3 +1205,28 @@ alter table queries_archive change `displayclass` `displayclass` enum('full','te
 #################################################
 
 
+create table content_gridsquare (content_id int unsigned, squares text, unique (content_id) );
+
+
+INSERT INTO content_gridsquare 
+SELECT c.content_id, GROUP_CONCAT(DISTINCT grid_reference) AS squares
+FROM gridimage_content gc
+INNER JOIN content c USING (content_id)
+INNER JOIN gridimage_search gs ON (gc.gridimage_id = gs.gridimage_id)
+GROUP BY c.content_id;
+		
+		
+INSERT INTO content_gridsquare 
+SELECT content_id, GROUP_CONCAT(DISTINCT grid_reference) AS squares
+FROM gridimage_post gp
+INNER JOIN content c ON (c.foreign_id = topic_id AND c.source = 'gallery') 
+INNER JOIN gridimage_search gs ON (gp.gridimage_id = gs.gridimage_id)
+GROUP BY c.content_id;
+
+#todo - make a daily event to do this!
+
+
+#################################################
+
+
+

@@ -730,7 +730,21 @@ class GridSquare
 					AND s.grid_reference != '{$this->grid_reference}'
 					AND enabled = 1
 					ORDER BY FIELD(s.snippet_id,$id_list)"));
-			} 
+			}
+
+			$sphinx->q .= " @source -themed";
+			$ids = $sphinx->returnIds($pg,'content');
+
+			if (!empty($ids) && count($ids) > 0) {
+
+				$id_list = implode(',',$ids);
+
+				$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,"
+					SELECT c.url,c.title,'Collection' AS `type`
+					FROM content c
+					WHERE c.content_id IN($id_list)
+					ORDER BY FIELD(c.content_id,$id_list)"));
+			}
 
 		}
 
