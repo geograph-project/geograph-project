@@ -2,7 +2,7 @@
 
 {dynamic cached_user_id=$user_id}
 {if $is_mod || $user->user_id == $cached_user_id}
-<div style="float:right;position:relative"><a href="/snippets.php?edit[{$snippet_id}]=edit">Edit this Description</a></div>
+<div style="float:right;position:relative"><a href="/snippets.php?edit[{$snippet_id}]=edit&amp;onlymine=on">Edit this Description</a></div>
 {/if}
 {/dynamic}
 
@@ -18,17 +18,31 @@
 	<div class="caption640" style="border:1px solid silver;padding:10px;">{$comment}</div>
 {/if}
 {if $user_id}
-<div style="text-align:center;position:relative;">By <a href="/profile/{$user_id}">{$realname|escape:'html'}</a></div>
+<div style="text-align:center;position:relative;"><b>by <a href="/profile/{$user_id}">{$realname|escape:'html'}</a></b></div>
 {/if}
 
-{if $others} 
+{if $others || $related} 
 	<div style="float:right;position:relative;padding:8px; border-left:2px solid gray;height:300px">
+		{if $others}
 		<b>More nearby...</b>
 		<ul style="padding:0 0 0 1em;">
 			{foreach from=$others item=item}
 				<li><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></li>
 			{/foreach}
 		</ul>
+		{/if}
+		{if $related}
+		<b>Related descriptions</b>
+		<ul style="padding:0 0 0 1em;">
+			{foreach from=$related item=item}
+				<li><b><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></b>
+				<div style="font-size:0.7em;color:gray;margin-left:2px;">
+				By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
+				Used on {$item.images|thousends} images</div>
+				</li>
+			{/foreach}
+		</ul>
+		{/if}
 	</div>
 {/if}
 

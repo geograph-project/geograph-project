@@ -26,9 +26,8 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$template='snippets.tpl';	
+$template='snippets.tpl';
 
-$USER->mustHavePerm("basic");
 
 $gid = 0;
 
@@ -51,7 +50,9 @@ if (!empty($_REQUEST['gridimage_id'])) {
 $db = GeographDatabaseConnection(true);
 
 if (!empty($_REQUEST['edit'])) {
-
+	
+	$USER->mustHavePerm("basic");
+	
 	if (!empty($_POST['cancel'])) {
 		header("Location: {$_SERVER['PHP_SELF']}?".preg_replace('/edit[\[\d\]%bdBD]+=\w+/','',$_SERVER['QUERY_STRING']));
 		print "<a href=\"{$_SERVER['PHP_SELF']}\">continue</a>";
@@ -174,6 +175,8 @@ if (!empty($_REQUEST['edit'])) {
 
 } elseif (!empty($_REQUEST['delete'])) {
 	
+	$USER->mustHavePerm("basic");
+	
 	$where = '';
 	if (!$USER->hasPerm('moderator')) {
 		$where = " user_id = {$USER->user_id} AND ";
@@ -190,12 +193,14 @@ if (!empty($_REQUEST['edit'])) {
 }
 
 
-if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']))) {
+if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['onlymine']))) {
 	$square=new GridSquare;
 	
 	$grid_given=true;
 	if (!empty($_REQUEST['gr'])) {
-		if ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
+		if ($_REQUEST['gr'] == '-' || $_REQUEST['gr'] == 'none') {
+			$_REQUEST['gr'] = '-';
+		} elseif ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
 
 			$smarty->assign('gr',$_REQUEST['gr']);
 
@@ -237,7 +242,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 			$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 		}
 		
-		if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
+		if (!empty($_REQUEST['gr']) && $_REQUEST['gr'] != '-' && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
 			$data = array();
 			$data['x'] = $square->x;
 			$data['y'] = $square->y;
@@ -252,9 +257,12 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 		}
 		
 		$filters = array();
-		if (!$USER->hasPerm('moderator') || !empty($_REQUEST['onlymine'])) {
+		if (!empty($_REQUEST['onlymine'])) {
 			$filters['user_id'] = array($USER->user_id);
 			$smarty->assign("onlymine",1);
+		}
+		if (!empty($_REQUEST['gr']) && $_REQUEST['gr'] == '-') {
+			$filters['grid_reference'] = "none";
 		}
 		if (!empty($filters)) {
 			$sphinx->addFilters($filters);
@@ -289,7 +297,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 					point_en)";
 		}
 		
-		if (!$USER->hasPerm('moderator') || !empty($_REQUEST['onlymine'])) {
+		if (!empty($_REQUEST['onlymine'])) {
 			$where[] = "s.user_id = {$USER->user_id}";
 			$smarty->assign("onlymine",1);
 		}

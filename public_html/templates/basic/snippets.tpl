@@ -2,6 +2,10 @@
 {include file="_std_begin.tpl"}
 {dynamic}
 
+<div class="interestBox" style="width:250px;float:right;">
+	&middot; <a href="/article/Shared-Descriptions">Read about Shared Descriptions</a>
+</div>
+
 <h2>Shared Descriptions</h2>
 
 {if $thankyou && $thankyou == 'saved'} 
@@ -70,25 +74,26 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {else}
 
 <p>
-	Here you can manage descriptions that are common to multiple images, create new descriptions during image submission, or on the 'Change Image Details' page for your own images. For example a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.
+	<b>Here you can search and manage descriptions that are common to multiple images.</b><br/>
+	&middot; Create new descriptions during image submission, or on the 'Change Image Details' page for your own images. 
 </p>
 
 
 <form method="get" action="{$script_name}">
 
 <div class="interestBox">
-<b>Shared Description Search</b><br/>
+<b>Shared Description Search</b> {if $user->registered}&nbsp;&nbsp;<small>(<input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions)</small>{/if}<br/>
 
 {if $sphinx}
 	<label for="fq">Search keywords</label>: 
 {else}
-	<label for="fq">Search <u>keyword<</u></label>: 
+	<label for="fq">Search <u>keyword</u></label>: 
 {/if}
 <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 
 <input type="submit" value="Find"/><br/>
 <label for="gr">Grid Reference</label>: 
-<input type="text" name="gr" id="gr" value="{$gr|escape:'html'}" size="12" maxlength="12"/>{if $is_mod} &nbsp;&nbsp; (<input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions. Moderators can edit all descriptions){/if}<br/>
+<input type="text" name="gr" id="gr" value="{$gr|escape:'html'}" size="12" maxlength="12"/><br/>
 
 <label for="gr">Radius</label>: 
 {if $centisquare}
@@ -99,13 +104,16 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 <input type="radio" name="radius" value="10"{if $radius == 10} checked{/if}/> within 10km </small><br/>
 
 </div>
+<br/>
 
 {foreach from=$results item=item}
 	
 	<div style="border-top: 1px solid gray">
 		<div style="float:right;position:relative">
-			<input type="submit" name="edit[{$item.snippet_id}]" value="Edit"/>
-			<input type="submit" name="delete[{$item.snippet_id}]" value="Delete"/>
+			{if $user->user_id == $item.user_id || $is_mod}
+				<input type="submit" name="edit[{$item.snippet_id}]" value="Edit"/>
+				<input type="submit" name="delete[{$item.snippet_id}]" value="Delete"/>
+			{/if}
 		</div>
 
 		<b><a href="/snippet.php?id={$item.snippet_id}" class="text">{$item.title|escape:'html'|default:'Untitled'}</a></b> {if $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if}<br/>
