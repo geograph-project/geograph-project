@@ -200,6 +200,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 	if (!empty($_REQUEST['gr'])) {
 		if ($_REQUEST['gr'] == '-' || $_REQUEST['gr'] == 'none') {
 			$_REQUEST['gr'] = '-';
+			$smarty->assign('gr',$_REQUEST['gr']);
 		} elseif ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
 
 			$smarty->assign('gr',$_REQUEST['gr']);
