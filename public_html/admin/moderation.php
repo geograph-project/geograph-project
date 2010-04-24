@@ -233,11 +233,12 @@ gridsquare_moderation_lock l WRITE,
 moderation_log WRITE,
 gridsquare READ,
 gridsquare gs READ,
-gridimage gi READ,
-user READ,
+gridimage gi READ LOCAL,
+user READ LOCAL,
 gridprefix READ,
-user v READ,
-user m READ");
+user v READ LOCAL,
+user m READ LOCAL,
+user_stat us READ LOCAL");
 
 #############################
 # find the list of squares with self pending images, and exclude them...
