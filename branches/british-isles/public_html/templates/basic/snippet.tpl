@@ -22,7 +22,8 @@
 {/if}
 
 {if $others || $related} 
-	<div style="float:right;position:relative;padding:8px; border-left:2px solid gray;height:300px">
+	<div style="float:right;position:relative;padding:8px; border-left:2px solid gray;width:250px">
+		<div style="float:right;height:300px;"></div>
 		{if $others}
 		<b>More nearby...</b>
 		<ul style="padding:0 0 0 1em;">
