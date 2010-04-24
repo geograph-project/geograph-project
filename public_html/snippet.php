@@ -168,7 +168,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$sphinx->prepareQuery("(@title {$data['title']}) | (@comment \"{$data['title']}\") ".$crit);
 			
 			$ids = $sphinx->returnIds($pg,'snippet');
-
+			
 			if (!empty($ids) && count($ids) > 0) {
 				$where = array();
 

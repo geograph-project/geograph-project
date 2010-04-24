@@ -678,6 +678,65 @@ class GridSquare
 		return $gaz->findBySquare($this,$radius,null,$gazetteer);	
 	}
 	
+
+	function loadCollections() {
+		
+		global $CONF;
+		
+		$db=&$this->_getDB(30); 
+
+		//find articles
+		$this->collections = $db->CacheGetAll(3600*6,"
+			SELECT c.url,c.title,'Collection' AS `type`
+			FROM content c
+			WHERE c.gridsquare_id = {$this->gridsquare_id} 
+			ORDER BY content_id DESC");
+
+		$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,"
+			SELECT CONCAT('/snippet/',snippet_id) AS url,if(s.title!='',s.title,'untitled') as title,'Shared Description' AS `type`
+			FROM snippet s
+			WHERE s.grid_reference = '{$this->grid_reference}'
+			AND enabled = 1
+			ORDER BY snippet_id DESC"));
+
+
+		//todo -- other options
+		# search grid_reference in content.text (using sphinx)
+		# list content using an image in square (using gridimage_post and gridimage_content)
+		# search grid_reference in image.text (using sphinx) - duplicating 'mentioning' ;)
+
+
+		if ($CONF['sphinx_host']) {
+			# list snippet using an image in square (using gridimage_snippet or can use sphinx)
+			# find nearby shared descriptions (using sphinx - combined with above)
+			
+			$sphinx = new sphinxwrapper();
+			$sphinx->pageSize = $pgsize = 12;
+			$pg = 1;
+
+			$sphinx->prepareQuery($this->grid_reference);
+			$sphinx->processQuery(); //if the query starts with a GR it expands it to search nearby squares
+
+			$ids = $sphinx->returnIds($pg,'snippet');
+
+			if (!empty($ids) && count($ids) > 0) {
+				
+				$id_list = implode(',',$ids);
+				
+				$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,"
+					SELECT CONCAT('/snippet/',snippet_id) AS url,if(s.title!='',s.title,'untitled') as title,'Related Description' AS `type`
+					FROM snippet s
+					WHERE s.snippet_id IN($id_list)
+					AND s.grid_reference != '{$this->grid_reference}'
+					AND enabled = 1
+					ORDER BY FIELD(s.snippet_id,$id_list)"));
+			} 
+
+		}
+
+		$this->collections_count = count($this->collections);
+	}
+	
 	function &getImages($inc_all_user = false,$custom_where_sql = '',$order_and_limit = 'order by moderation_status+0 desc,seq_no')
 	{
 		global $memcache;
