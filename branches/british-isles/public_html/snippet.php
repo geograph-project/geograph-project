@@ -147,7 +147,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b/i",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
 				}
 			} 
-		} elseif ($CONF['sphinx_host']) {
+		} elseif (!empty($data['comment']) && $CONF['sphinx_host']) {
 			$sphinx = new sphinxwrapper();
 			$sphinx->pageSize = $pgsize = 25;
 			$pg = 1;
@@ -155,7 +155,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$crit = '';
 			if (strlen($data['comment']) > 100) {
 			
-				preg_match_all('/\b([A-Z]\w{3,})\b/',$data['comment'],$m);
+				preg_match_all('/\b([A-Z]\w{3,})\b/',str_replace('Link','',$data['comment']),$m);
 				
 				if (count($m[1]) > 3) {
 					$words = array_unique($m[1]);
