@@ -44,19 +44,32 @@ class RebuildCategoryStats extends EventHandler
 		$db->Execute("DROP TABLE IF EXISTS category_stat_tmp");
 		
 		
-		$db->Execute("CREATE TABLE category_stat_tmp
-				(INDEX (c))
+		$db->Execute("CREATE TABLE category_stat_tmp (
+					`category_id` int(11) UNSIGNED NOT NULL,
+					`imageclass` varchar(32) NOT NULL DEFAULT '',
+					`c` int(11) NOT NULL DEFAULT '0',
+					`gridimage_id` int(11) NOT NULL ,
+					PRIMARY KEY (`category_id`),
+					INDEX (c))
 				ENGINE=MyISAM
-				SELECT imageclass,count(*) as c,gridimage_id
+				SELECT CRC32(imageclass) AS `category_id`,imageclass,count(*) AS c,gridimage_id
 				FROM gridimage_search
 				GROUP BY imageclass");
 		
-		$db->Execute("DROP TABLE IF EXISTS category_stat");
-		$db->Execute("RENAME TABLE category_stat_tmp TO category_stat");
+		$data = $db->getRow("SHOW TABLE STATUS LIKE 'category_stat_tmp'");
+		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*15)) {
+
 		
-		//return true to signal completed processing
-		//return false to have another attempt later
-		return true;
+			$db->Execute("DROP TABLE IF EXISTS category_stat");
+			$db->Execute("RENAME TABLE category_stat_tmp TO category_stat");
+		
+		
+			//return true to signal completed processing
+			//return false to have another attempt later
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 }
