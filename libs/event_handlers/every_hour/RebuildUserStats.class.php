@@ -158,7 +158,12 @@ class RebuildUserStats extends EventHandler
 		$db->Execute("DROP TABLE IF EXISTS user_stat_old");
 		
 		//done in one operation so there is always a user_stat table, even if the tmp fails 
-		$db->Execute("RENAME TABLE user_stat TO user_stat_old, user_stat_tmp TO user_stat");
+		//... well we did until it stopped working... http://bugs.mysql.com/bug.php?id=31786
+		//$db->Execute("RENAME TABLE user_stat TO user_stat_old, user_stat_tmp TO user_stat");
+		
+	//swap tables around
+		$db->Execute("RENAME TABLE user_stat TO user_stat_old");
+		$db->Execute("RENAME TABLE user_stat_tmp TO user_stat");
 
 		$db->Execute("DROP TABLE IF EXISTS user_stat_old");
 
