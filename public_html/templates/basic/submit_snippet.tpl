@@ -70,6 +70,9 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	
 	<div style="margin-left:4px;background-color:{cycle values="#e4e4e4,#f4f4f4"}">
 		<div style="float:right;position:relative">
+			{if $user->user_id == $item.user_id || $is_mod}
+				<a href="/snippets.php?edit[{$item.snippet_id}]=edit&amp;onlymine=on" target="_blank">Edit</a>
+			{/if}
 			<input type="submit" name="remove[{$item.snippet_id}]" value="Remove" style="background-color:pink"/>
 		</div>
 
@@ -116,6 +119,9 @@ Within radius:{if $centisquare}
 	
 	<div style="margin-left:4px;background-color:{cycle values="#e4e4e4,#f4f4f4"}">
 		<div style="float:right;position:relative">
+			{if $user->user_id == $item.user_id || $is_mod}
+				<a href="/snippets.php?edit[{$item.snippet_id}]=edit&amp;onlymine=on" target="_blank">Edit</a>
+			{/if}
 			<input type="submit" name="add[{$item.snippet_id}]" value="Use this Description" style="background-color:lightgreen"/>
 		</div>
 
