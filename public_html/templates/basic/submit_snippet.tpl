@@ -127,7 +127,14 @@ Within radius:{if $centisquare}
 
 		<a href="/snippet/{$item.snippet_id}" target="_blank"><b>{$item.title|escape:'html'|default:'<span style=color:gray>untitled description</span>'}</b></a> {if $item.grid_reference && $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if} (<a href="javascript:void(document.theForm.elements['add[{$item.snippet_id}]'].click())" style="color:green">use</a>)<br/>
 		<div style="font-size:0.7em">{$item.comment|escape:'html'|truncate:250:' (more...)'}</div>
+		<div style="font-size:0.7em;color:gray;margin-left:10px;">
 
+		{if $user->user_id != $item.user_id}
+			By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
+		{/if}
+
+		Used on {$item.images|thousends} images {if $item.images != $item.yours}(of which {$item.yours|thousends} are yours){/if}
+		
 		<br style="clear:both"/>
 	</div>
 

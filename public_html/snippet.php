@@ -162,7 +162,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 					
 					$quorum = max(3,count($words) -3);
 					
-					$crit = ' | "'.implode(' ',$words).'"/'.$quorum;
+					$crit = ' | (@(title,comment) "'.implode(' ',$words).'"/'.$quorum.')';
 					
 				}
 			}
