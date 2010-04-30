@@ -373,7 +373,11 @@ class SearchEngineBuilder extends SearchEngine
 		} elseif (!empty($dataarray['postcode'])) {
 			if (preg_match("/^\s*([A-Z]{1,2})([0-9]{1,2}[A-Z]?)\s*([0-9]?)([A-Z]{0,2})\s*$/",strtoupper($dataarray['postcode']),$pc)) {
 				require_once('geograph/searchcriteria.class.php');
-				$searchq = $pc[1].$pc[2].($pc[3]?" ".$pc[3]:'');
+				if ($pc[1] != 'BT' && $pc[4]) { //GB can do full postcodes now!
+					$searchq = strtoupper($pc[1].$pc[2]." ".$pc[3].$pc[4]);
+				} else {
+					$searchq = $pc[1].$pc[2].($pc[3]?" ".$pc[3]:'');
+				}
 				$criteria = new SearchCriteria_Postcode();
 				$criteria->setByPostcode($searchq);
 				if ($criteria->y != 0) {
