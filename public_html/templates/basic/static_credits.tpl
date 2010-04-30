@@ -71,6 +71,7 @@
     <li>Great Britain 1:50 000 Scale Colour Raster Mapping (Same as paper based Landranger&trade; product). &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616. Provided as part of Sponsorship deal.</li>
     <li>Maps for Ireland and also during the search using the {external href="http://www.google.com/apis/maps/" text="Google Maps API"}.</li>
     <li>Selected map extracts are from the {external href="http://www.openstreetmap.org/" text="OpenStreetMap project"}, via the {external href="http://www.gravitystorm.co.uk/shine/cycle-info/" text="Cycle Map"} rendering.</li>
+    <li>UK Unit Postcodes, from OS OpenData : <i>Contains Royal Mail data &copy Royal mail copyright and database right 2010.</i></li>
     </ul>
     
     <h3>Hosting</h3>
@@ -104,7 +105,7 @@
     {external title="Sphinx Full Text Search" href="http://www.sphinxsearch.com/" text='<img src="/img/sphinx_silver.gif" width="88" height="31" alt="powered by Sphinx"/>'}
      </div>
    
-   <p>In addition www.geograph.org.uk uses:<br/> Linux (Debian &amp; Ubuntu), Apache, <b>{external href="http://www.danga.com/memcached/" text="memcached"}</b>, munin, nfs, haproxy and varnish.<br/> to deliver a high performance website - but are not required to run the Geograph codebase.</p/>
+   <p>In addition www.geograph.org.uk uses:<br/> Linux (Debian &amp; Ubuntu), Apache, <b>{external href="http://www.danga.com/memcached/" text="memcached"}</b>, munin, nfs, haproxy, varnish and {external href="http://mmonit.com/" text="m/monit"}.<br/> to deliver a high performance website - but are not required to run the Geograph codebase.</p/>
    
    
     <h3>Code Libaries</h3>

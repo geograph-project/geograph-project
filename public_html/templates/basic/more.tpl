@@ -40,7 +40,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 {assign var="size" value=$image->_getFullSize()}
 
-{assign var="preview_url" value=$image->_getFullpath()}
+{assign var="preview_url" value=$image->_getFullpath(true,true)}
 
 {assign var="preview_width" value=$size.0}
 {assign var="preview_height" value=$size.1}

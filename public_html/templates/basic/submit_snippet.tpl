@@ -133,7 +133,7 @@ Within radius:{if $centisquare}
 			By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
 		{/if}
 
-		Used on {$item.images|thousends} images {if $item.images != $item.yours}(of which {$item.yours|thousends} are yours){/if}
+		Used on {$item.images|thousends} images {if $item.images != $item.yours}(of which {$item.yours|thousends} are yours){/if}</div>
 		
 		<br style="clear:both"/>
 	</div>
