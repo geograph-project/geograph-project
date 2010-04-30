@@ -975,6 +975,8 @@ class SearchCriteria_Postcode extends SearchCriteria
 		if (strpos($code,' ') === FALSE) {
 			//yes know avg(reference_index) is always same as reference_index, but get round restriction in mysql
 			$postcode = $db->GetRow('select avg(e) as e,avg(n) as n,avg(reference_index) as reference_index from loc_postcodes where code like'.$db->Quote("$code _").'');			
+		} elseif (preg_match("/([0-9])([A-Z]{2})$/i",strtoupper($code)) ) { //GB can do full postcodes now!
+			$postcode = $db->GetRow('select e,n,1 as reference_index from postcode_codeopen where code='.$db->Quote(str_replace(' ','',$code)).' limit 1');	
 		} else {
 			$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');	
 		}
