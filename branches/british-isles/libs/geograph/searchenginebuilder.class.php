@@ -77,8 +77,8 @@ class SearchEngineBuilder extends SearchEngine
 			$qlocation = $q;
 		}
 		
-		if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",strtoupper($qlocation),$pc) 
-		&& !in_array($pc[1],array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
+		if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$qlocation,$pc) 
+		&& !in_array(strtoupper($pc[1]),array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 			//these prefixs are not postcodes but are valid gridsquares
 			
 			if ($pc[1] != 'BT' && $pc[4]) { //GB can do full postcodes now!
@@ -339,7 +339,7 @@ class SearchEngineBuilder extends SearchEngine
 		if (!empty($dataarray['placename'])) {
 			if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$dataarray['placename'],$pc) 
 					&& !in_array($pc[1],array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
-				$dataarray['postcode'] = $dataarray['placename'];
+				$dataarray['postcode'] = strtoupper($dataarray['placename']);
 				unset($dataarray['placename']);
 			} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['placename'],$gr)) {
 				$dataarray['gridref'] = $dataarray['placename'];
