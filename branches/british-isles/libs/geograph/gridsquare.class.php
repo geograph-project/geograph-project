@@ -733,7 +733,7 @@ class GridSquare
 			}
 
 			$sphinx->q .= " @source -themed";
-			$ids = $sphinx->returnIds($pg,'content');
+			$ids = $sphinx->returnIds($pg,'content_stemmed');
 
 			if (!empty($ids) && count($ids) > 0) {
 

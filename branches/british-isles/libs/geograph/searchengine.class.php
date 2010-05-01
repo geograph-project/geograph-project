@@ -801,7 +801,7 @@ END;
 			return 0;
 			
 		if ($recordSet)	{
-			$dist_format = ($this->criteria->searchclass == 'Postcode')?"Dist:%dkm %s":"Dist:%.1fkm %s";
+			$dist_format = ($this->criteria->searchclass == 'Postcode' && strlen($this->criteria->searchq) < 7)?"Dist:%dkm %s":"Dist:%.1fkm %s";
 
 			$this->results=array();
 			$i=0;
