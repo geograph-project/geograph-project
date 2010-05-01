@@ -192,7 +192,16 @@ class SearchCriteria
 		$x = $this->x;
 		$y = $this->y;
 		if (!empty($x) && !empty($y)) {
-			if ($this->limit8 && $this->limit8 < 2000 && $this->limit8 > -2000) {//2000 is a special value for effectivly unlimted!
+			$onekm = (floor($x) == $x && floor($y) == $y)?1:0;
+			
+			if ($onekm) {
+				$x = intval($x);$y = intval($y); //just for safety
+			} else {
+				$this->sphinx['no_legacy']=1; //ekk!
+				#... while mysql can cope with float x/y, it wont work for limit8 below 1
+			}
+			
+			if ($onekm && $this->limit8 && $this->limit8 < 2000 && $this->limit8 > -2000) {//2000 is a special value for effectivly unlimted!
 				$d = abs(intval($this->limit8));
 				if ($sql_where) {
 					$sql_where .= ' and ';
@@ -987,8 +996,8 @@ class SearchCriteria_Postcode extends SearchCriteria
 		if ($postcode['reference_index']) {
 			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
-			$this->x = intval($postcode['e']/1000) + $origin['origin_x'];
-			$this->y = intval($postcode['n']/1000) + $origin['origin_y'];
+			$this->x = ($postcode['e']/1000) + $origin['origin_x'];
+			$this->y = ($postcode['n']/1000) + $origin['origin_y'];
 			$this->reference_index = $postcode['reference_index'];
 		}
 	}

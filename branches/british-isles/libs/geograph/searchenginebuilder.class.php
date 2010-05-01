@@ -43,6 +43,8 @@ class SearchEngineBuilder extends SearchEngine
 	function getNearString($distance) {
 		if ($distance == 1) {
 			$nearstring = 'in';
+		} elseif ($distance > 0 && $distance < 1) {
+			$nearstring = sprintf("within %.1fkm of",$distance);
 		} elseif ($distance > 1) {
 			$nearstring = sprintf("within %dkm of",$distance);
 		} elseif ($distance < 0) {
@@ -103,17 +105,33 @@ class SearchEngineBuilder extends SearchEngine
 		} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$qlocation,$gr)) {
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
-			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
+			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],true,true);
 			if ($grid_ok || $square->x && $square->y) {
 				if ($square->imagecount && $autoredirect == 'simple' && strlen($q)-strlen($gr[0]) < 2) {
 					header("Location:http://{$_SERVER['HTTP_HOST']}/gridref/{$q}");
 					print "<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/{$q}\">View Pictures</a>";
-					exit;		
+					exit;
 				}
 				$searchclass = 'GridRef';
-				$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
-				$searchx = $square->x;
-				$searchy = $square->y;	
+				switch ($square->precision) {
+					case 1:
+					case 10:
+					case 100:
+						$p2 = floor($square->precision/2);
+						$conv = new Conversions;
+						list($x,$y) = $conv->national_to_internalfloat($square->nateastings+$p2,$square->natnorthings+$p2,$square->reference_index );
+						
+						$searchdesc = ", $nearstring grid reference ".$gr[0];
+						$searchx = $x;
+						$searchy = $y;
+						break;
+					case 1000:
+					default:
+						$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
+						$searchx = $square->x;
+						$searchy = $square->y;
+				}
+				
 				$criteria->reference_index = $square->reference_index;
 				$location = $gr[0];
 			} else {
@@ -415,13 +433,28 @@ class SearchEngineBuilder extends SearchEngine
 			} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['gridref'],$gr)) {
 				require_once('geograph/gridsquare.class.php');
 				$square=new GridSquare;
-				$grid_ok=$square->setByFullGridRef($dataarray['gridref'],false,true);
+				$grid_ok=$square->setByFullGridRef($dataarray['gridref'],true,true);
 				if ($grid_ok || $square->x && $square->y) {
 					$searchclass = 'GridRef';
 					$searchq = $dataarray['gridref'];
-					$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
-					$searchx = $square->x;
-					$searchy = $square->y;	
+					switch ($square->precision) {
+						case 1:
+						case 10:
+						case 100:
+							$p2 = floor($square->precision/2);
+							$conv = new Conversions;
+							list($x,$y) = $conv->national_to_internalfloat($square->nateastings+$p2,$square->natnorthings+$p2,$square->reference_index );
+
+							$searchdesc = ", $nearstring grid reference ".$gr[0];
+							$searchx = $x;
+							$searchy = $y;
+							break;
+						case 1000:
+						default:
+							$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
+							$searchx = $square->x;
+							$searchy = $square->y;
+					}
 				} else {
 					$this->errormsg =  $square->errormsg;
 				}
@@ -662,7 +695,7 @@ class SearchEngineBuilder extends SearchEngine
 			}
 			
 			if (!empty($dataarray['distance']) && isset($searchx) && $searchx > 0 && $searchy > 0) {
-				$sql .= sprintf(",limit8 = %d",$dataarray['distance']);
+				$sql .= sprintf(",limit8 = %f",$dataarray['distance']);
 			}
 			if (!empty($dataarray['topic_id'])) {
 				$sql .= ",limit9 = ".$dataarray['topic_id'];
