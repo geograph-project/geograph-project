@@ -1031,7 +1031,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			if ($engine->criteria->searchclass == 'GridRef' && $engine->criteria->issubsetlimited == false
 					&& preg_match('/^\w{1,2}\d{4}$/',$engine->criteria->searchq)
 					&& ( $engine->criteria->orderby == 'dist_sqd' || $engine->criteria->orderby == '' )
-					&& stripos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE) {
+					&& (!$engine->resultCount || stripos($engine->criteria->searchdesc,$engine->results[0]->grid_reference) === FALSE)) {
 				$smarty->assign('nofirstmatch', true);
 			}
 			if ($engine->criteria->x && $engine->criteria->y) {
