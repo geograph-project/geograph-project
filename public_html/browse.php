@@ -87,7 +87,7 @@ elseif (isset($_SESSION['ht']))
 	$_GET['ht']=intval($_SESSION['ht']);
 }
 
-//set by grid components?
+//set by encoded p param
 if (isset($_GET['p']))
 {	
 	$grid_given=true;
