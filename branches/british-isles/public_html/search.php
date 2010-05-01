@@ -565,6 +565,12 @@ if (isset($_GET['fav']) && $i) {
 	if (!empty($_GET['searchtext']) && is_array($_GET['searchtext'])) {
 		$_GET['searchtext'] = implode(' ',$_GET['searchtext']);
 	}
+	if (!empty($_GET['gridsquare']) && isset($_GET['eastings']) && isset($_GET['centin'])) {
+	
+		$_GET['gridref'] = sprintf("%s%2d%1d%2d%1d",$_GET['gridsquare'], $_GET['eastings'], $_GET['centie'], $_GET['northings'],$_GET['centin']);
+		unset($_GET['gridsquare']);
+	}
+	
 	
 	$engine = new SearchEngineBuilder('#');
 	if (isset($_GET['rss'])) {

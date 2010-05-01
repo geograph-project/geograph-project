@@ -21,6 +21,7 @@
 		map.addMapType(G_PHYSICAL_MAP);
 		map.addControl(new GSmallMapControl());
 		map.addControl(new GMapTypeControl());
+		map.addControl(new GScaleControl());
 		var mapType = G_NORMAL_MAP;
 
 		var bounds = new GLatLngBounds();

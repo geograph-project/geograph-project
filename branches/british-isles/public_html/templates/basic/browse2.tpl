@@ -302,7 +302,7 @@
 			{/if}
 				{foreach from=$tendown item=yy}
 					<tr>
-						<th height="30">{$yy}</th>
+						<th height="30"><a href="javascript:void(selOption('n','{$yy}'))">{$yy}</a></th>
 						{foreach from=$tenup item=xx}
 							{if $breakdown.$yy.$xx.link}
 								<td align="right" bgcolor="#{$breakdown.$yy.$xx.count|colerize}"><a href="{$breakdown.$yy.$xx.link}" title="{$breakdown.$yy.$xx.name}">{$breakdown.$yy.$xx.count}</a></td>
@@ -315,10 +315,13 @@
 				<tr>
 					<td width="20">&nbsp;</td>
 					{foreach from=$tenup item=xx}
-						<th width="20">{$xx}</th>
+						<th width="20"><a href="javascript:void(selOption('e','{$xx}'))">{$xx}</a></th>
 					{/foreach}
 				</tr>
 			</table>
+			
+		
+			
 			{if $rastermap->enabled && $rastermap->mapurl}
 					</div>
 				</div>
@@ -334,6 +337,49 @@
 				<li><a href="{$breakdown.50.50.link}" title="{$breakdown.50.50.name}">{$breakdown.50.50.name}</a> [{$breakdown.50.50.count}]</li>
 				</ul>
 			{/if}
+		
+			<form method="get" action="/search.php">
+				<div class="interestBox" style="width:450px">
+				<b>Search local images</b>:<br/> 
+
+				<label for="">Centisquare</label>: 
+					<select id="gridsquare" name="gridsquare">
+						{html_options options=$prefixes selected=$gridsquare}
+					</select>
+					<label for="eastings">E</label>
+					<select id="eastings" name="eastings">
+						{html_options options=$kmlist selected=$eastings}
+					</select>
+					<select id="centie" name="centie" style="font-size:1.4em">
+						{html_options options=$tenup selected=$e}
+					</select>
+					<label for="northings">N</label>
+					<select id="northings" name="northings">
+						{html_options options=$kmlist selected=$northings}
+					</select>
+					<select id="centin" name="centin" style="font-size:1.4em">
+						{html_options options=$tenup selected=$n}
+					</select>
+				<br/>
+
+				<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+				<input type="submit" value="Search"/><br/>
+				<input type="radio" name="distance" value="0.1" checked id="d1"/><label for="d1">In centisquare only</label> /
+				<input type="radio" name="distance" value="0.3" id="d3"/><label for="d3">inc surrounding centisquare</label> /
+				<input type="radio" name="distance" value="0.6" id="d6"/><label for="d6">600m</label><br/>
+				<input type="hidden" name="do" value="1"/>
+				</div> 
+			</form>	
+			<script type="text/javascript">{literal}
+				function selOption(name,value) {
+					var ele = document.getElementById("centi"+name);
+					for(q=0;q<ele.options.length;q++) {
+						if (ele.options[q].value == value) {
+							ele.selectedIndex=q;
+						}
+					}
+				}
+			{/literal}</script>
 		{else}
 			{if !$ht}
 				<p align="center" style="color:gray; font-size:0.8em">{if $breakdown_count> 20}Random 20 groupings{else}The groupings will{/if} show an example image [total number in brackets].</p>
@@ -404,6 +450,24 @@
 				</div>
 			{/foreach}
 			<br style="clear:left;"/>&nbsp;
+			
+			{if $bby == 'centi'}
+				<form method="get" action="/search.php">
+					<div class="interestBox">
+					<b>Search local images</b>:<br/> 
+					<label for="gridref">Centisquare</label>: 
+						<input type="text" name="gridref" id="gridref" size="20" value="{$gridrefraw|escape:'html'}"/><input type="submit" value="Search"/>
+					<br/>
+
+					<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/> (can be left blank to just list all images)
+					<br/>
+					<input type="radio" name="distance" value="0.1" checked id="d1"/><label for="d1">In centisquare only</label> /
+					<input type="radio" name="distance" value="0.3" id="d3"/><label for="d3">inc surrounding centisquare</label> /
+					<input type="radio" name="distance" value="0.6" id="d6"/><label for="d6">600m</label><br/>
+					<input type="hidden" name="do" value="1"/>
+					</div> 
+				</form>	
+			{/if}
 			
 			{if $mode eq 'takenfrom'}
 				<div class="interestBox">| <a href="/search.php?searchtext={$viewpoint_query}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View these photos on a Map</a> | <a href="/search.php?searchtext={$viewpoint_query}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images taken from this square</a> |</div>
