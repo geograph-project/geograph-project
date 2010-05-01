@@ -770,8 +770,8 @@ class SearchCriteria
 		global $CONF;
 		$db = $this->_getDB(true);
 		
-		$x = $this->x;
-		$y = $this->y;
+		$x = intval($this->x);
+		$y = intval($this->y);
 		
 		$left=$x-$radius;
 		$right=$x+$radius;
