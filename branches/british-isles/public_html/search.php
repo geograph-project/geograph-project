@@ -506,6 +506,7 @@ if (isset($_GET['fav']) && $i) {
 		require_once('geograph/gridsquare.class.php');
 		$square=new GridSquare;
 		if ($square->validGridRef(preg_replace('/[^\w]/','',$data['gridref']))) {
+			//todo - update this to cope with 6fig+ GRs now the engine can. 
 			$grid_ok=$square->setByFullGridRef($data['gridref'],false,true);
 			if ($grid_ok || $square->x && $square->y) {
 				$data['description'] .= ", $nearstring grid reference ".$square->grid_reference;
@@ -1147,16 +1148,24 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$conv = new Conversions();
 			
 			if ($engine->criteria->x && $engine->criteria->y) {
-				list($lat,$long) = $conv->internal_to_wgs84($engine->criteria->x,$engine->criteria->y);
+			
+				$onekm = (floor($engine->criteria->x) == $engine->criteria->x && floor($engine->criteria->y) == $engine->criteria->y)?1:0;
+				if ($onekm) {
+					list($lat,$long) = $conv->internal_to_wgs84($engine->criteria->x,$engine->criteria->y);
+				} else {
+					list ($e,$n,$reference_index) = $conv->internal_to_national($engine->criteria->x,$engine->criteria->y,0,0);
+					list($lat,$long) = $conv->national_to_wgs84($e,$n,$reference_index);
+				}
 				$markers[] = array('Center Point',$lat,$long);
 			}
 			if (preg_match_all('/\b([a-zA-Z]{1,2} ?\d{1,5}[ \.]?\d{1,5})\b/',$engine->criteria->searchdesc,$m)) {
 				$m = array_unique($m[1]);
 				foreach ($m as $gr) {
 					$sq = new GridSquare();
-					$sq->setByFullGridRef($gr,false,true);
-					list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
-					$markers[] = array($gr,$lat,$long);
+					if ($sq->setByFullGridRef($gr,false,true)) {
+						list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
+						$markers[] = array($gr,$lat,$long);
+					}
 				}
 			}
 			$smarty->assign_by_ref('markers',$markers);
