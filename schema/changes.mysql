@@ -1229,4 +1229,19 @@ GROUP BY c.content_id;
 #################################################
 
 
+ALTER TABLE  `queries` 
+CHANGE  `limit8`  `limit8` FLOAT( 5 ) NOT NULL DEFAULT  '0',
+CHANGE  `x`  `x` FLOAT( 5 ) NOT NULL DEFAULT  '0',
+CHANGE  `y`  `y` FLOAT( 5 ) NOT NULL DEFAULT  '0';
+
+
+ALTER TABLE  `queries_archive` 
+CHANGE  `limit8`  `limit8` FLOAT( 5 ) NOT NULL DEFAULT  '0',
+CHANGE  `x`  `x` FLOAT( 5 ) NOT NULL DEFAULT  '0',
+CHANGE  `y`  `y` FLOAT( 5 ) NOT NULL DEFAULT  '0';
+
+
+#################################################
+
+
 

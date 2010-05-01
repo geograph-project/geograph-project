@@ -214,10 +214,23 @@ function national_to_internal($e,$n,$reference_index ) {
 	return array($x,$y);
 }
 
+//use:    list($x,$y) = national_to_internalfloat($e,$n,$reference_index );
+
+function national_to_internalfloat($e,$n,$reference_index ) {
+	global $CONF;
+	$x = ($e / 1000);
+	$y = ($n / 1000);
+	
+	//add the internal origin
+	$x += $CONF['origins'][$reference_index][0];
+	$y += $CONF['origins'][$reference_index][1];
+	return array($x,$y);
+}
+
 
 //use:    list($e,$n,$reference_index) = internal_to_national($x,$y,$reference_index = 0);
 // note gridsquare has its own version that takes into account the userspecified easting/northing
-function internal_to_national($x,$y,$reference_index = 0) {
+function internal_to_national($x,$y,$reference_index = 0,$fudge = 500) {
 	global $CONF;
 	if (!$reference_index) {
 		$db = $this->_getDB();
@@ -244,12 +257,18 @@ function internal_to_national($x,$y,$reference_index = 0) {
 		$y -= $CONF['origins'][$reference_index][1];
 
 		//lets position the national coords in the center of the square!
-		$e = intval($x * 1000 + 500);
-		$n = intval($y * 1000 + 500);
+		$e = intval($x * 1000 + $fudge);
+		$n = intval($y * 1000 + $fudge);
 		return array($e,$n,$reference_index);
 	} else {
 		return array();
 	}
+}
+
+//use:    list($e,$n,$reference_index) = internalfloat_to_national($x,$y,$reference_index = 0);
+
+function internalfloat_to_national($x,$y,$reference_index = 0) {
+	return $this->internal_to_national($x,$y,$reference_index,0);
 }
 
 

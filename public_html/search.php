@@ -1403,10 +1403,12 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			function addkm($a) {
 				return $a."km";
 			}
-			$d = array(1,2,3,4,5,7,8,10,20);
-			$d = array_combine($d,array_map('addkm',$d));
 			if ($_GET['form'] == 'text' || $_GET['form'] == 'cluster2') {
+				$d = array(0.1,0.3,0.5,0.7,1,2,3,4,5,7,8,10,20);
+				$d = array_combine($d,array_map('addkm',$d));
 			} else {
+				$d = array(1,2,3,4,5,7,8,10,20);
+				$d = array_combine($d,array_map('addkm',$d));
 				$d += array(-5=>'5km square',-10=>'10km square');
 			
 				$topicsraw = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') as title,forum_name from gridimage_post gp

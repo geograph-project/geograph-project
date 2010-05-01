@@ -250,8 +250,15 @@ class sphinxwrapper {
 				$cl->_groupsort = preg_replace('/@geodist \w+,?\s*/','',$cl->_groupsort);
 			
 		} else {
-			list($e,$n,$reference_index) = $conv->internal_to_national($data['x'],$data['y'],0);
-
+			$onekm = (floor($data['x']) == $data['x'] && floor($data['y']) == $data['y'])?1:0;
+			
+			if ($onekm) {
+				list($e,$n,$reference_index) = $conv->internal_to_national($data['x'],$data['y'],0);
+			} else {
+				list($e,$n,$reference_index) = $conv->internalfloat_to_national($data['x'],$data['y'],0);
+				$oe = $e; $on = $n;
+			}
+			
 			$e = floor($e/1000);
 			$n = floor($n/1000);
 
@@ -288,7 +295,11 @@ class sphinxwrapper {
 				if (!empty($data['lat']) || !empty($data['long'])) {
 					$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($data['lat']), deg2rad($data['long']) );
 				} else {
-					list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
+					if ($onekm) {
+						list($lat,$long) = $conv->national_to_wgs84($e*1000+500,$n*1000+500,$reference_index);
+					} else {
+						list($lat,$long) = $conv->national_to_wgs84($oe,$on,$reference_index);
+					}
 					$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
 				}
 				$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
