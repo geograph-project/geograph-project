@@ -540,6 +540,9 @@ if ($grid_given)
 				
 				$smarty->assign_by_ref('images', $imagelist->images);
 				$smarty->assign('sample', count($imagelist->images) );
+				
+				$groupbys = array(''=>'','takendays'=>'Day Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','auser_id'=>'Contributor','classcrc'=>'Image Category',' '=>'','scenti'=>'Centisquare');
+				$smarty->assign_by_ref('groupbys', $groupbys);
 			} else {
 			
 			$row = $db->cacheGetRow($cacheseconds,"SELECT 

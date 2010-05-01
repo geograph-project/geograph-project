@@ -275,7 +275,18 @@
 		{/if}] &nbsp;
 	{/if}
 	</div>
-	
+	{if $sample && $groupbys}
+		<form method="get" action="/search.php" style="text-align:center">
+			View a sample of images by: 
+			<select name="groupby" id="groupby" size="1"> 
+				{html_options options=$groupbys selected='scenti'}
+			</select>
+			<input type="submit" value="Go"/>
+			<input type="hidden" name="location" value="{$gridref}"/>
+			<input type="hidden" name="distance" value="1"/>
+			<input type="hidden" name="do" value="1"/>
+		</form>
+	{/if}
 	{if $breakdown}
 		{* We want to display a breakdown list *}
 		<blockquote>
