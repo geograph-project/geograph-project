@@ -259,13 +259,35 @@ class sphinxwrapper {
 				$oe = $e; $on = $n;
 			}
 			
+			//convert to work in 'integer' 1km's
 			$e = floor($e/1000);
 			$n = floor($n/1000);
 
 			list($gr2,$len) = $conv->national_to_gridref($e*1000,$n*1000,4,$reference_index,false);
 
-			if ($data['d'] <= 1) {
+			if ($data['d'] > 0 && $data['d'] < 1 && !$onekm) {
+				$d = 1; //gridsquares
+				
+				//simple alogorithm to cut down on number of filters added. If the center of the search circle and gridsquare can't touch ($rad is the furthest distance where the two shapes still /just/ intersect) then there is no need to even bother with that square. 
+				// - can get slightly too many squares, but never too little! - good enough :)
+				//do things squared, as no need to take square-root of both sides, just for a comparison. 
+				$radmsqd = (pow(1*1000,2)+$data['d']*1000)*2;
+				
+				for($x=$e-$d;$x<=$e+$d;$x++) {
+					for($y=$n-$d;$y<=$n+$d;$y++) {
+						if (pow($oe-($x*1000+500),2)+pow($on-($y*1000+500),2) <= $radmsqd) {
+						
+							list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$reference_index,false);
+							if (strlen($gr2) > 4)
+								$grs[] = $gr2;
+						}
+					}
+				}
+				$this->filters['grid_reference'] = "(".join(" | ",$grs).")";
+			
+			} elseif ($data['d'] > 0 && $data['d'] <= 1) {
 				$this->filters['grid_reference'] = $gr2;
+			
 			} elseif ($data['d'] < 10) {
 				#$grs[] = $gr2;
 				$d = max(1,abs($data['d']));
@@ -277,6 +299,7 @@ class sphinxwrapper {
 					}
 				}
 				$this->filters['grid_reference'] = "(".join(" | ",$grs).")";
+			
 			} else {
 				#$this->filters['grid_reference'] = $gr2;
 				$d = intval(abs($data['d'])/10)*10;
@@ -303,7 +326,7 @@ class sphinxwrapper {
 					$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
 				}
 				$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
-				if ($data['d'] < 1) {
+				if ($data['d'] > 0 && $data['d'] < 1 && !$onekm) {
 					//exclude images without (at least) centisquare resolution.
 					$cl->setFilter('scenti',array(10000000,20000000),true); //todo we have hard-coded ri - should be primed from $CONF['references']
 				}

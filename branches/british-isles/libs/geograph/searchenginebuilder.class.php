@@ -113,6 +113,10 @@ class SearchEngineBuilder extends SearchEngine
 					exit;
 				}
 				$searchclass = 'GridRef';
+				if ($nearstring == 'in') {
+					//distance=1 is a special case. 
+					$square->precision = 1000;
+				}
 				switch ($square->precision) {
 					case 1:
 					case 10:
@@ -437,6 +441,10 @@ class SearchEngineBuilder extends SearchEngine
 				if ($grid_ok || $square->x && $square->y) {
 					$searchclass = 'GridRef';
 					$searchq = $dataarray['gridref'];
+					if ($nearstring == 'in') {
+						//distance=1 is a special case. 
+						$square->precision = 1000;
+					}
 					switch ($square->precision) {
 						case 1:
 						case 10:
