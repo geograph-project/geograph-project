@@ -567,7 +567,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 	if (!empty($_GET['gridsquare']) && isset($_GET['eastings']) && isset($_GET['centin'])) {
 	
-		$_GET['gridref'] = sprintf("%s%2d%1d%2d%1d",$_GET['gridsquare'], $_GET['eastings'], $_GET['centie'], $_GET['northings'],$_GET['centin']);
+		$_GET['gridref'] = sprintf("%s%02d%1d%02d%1d",$_GET['gridsquare'], $_GET['eastings'], $_GET['centie'], $_GET['northings'],$_GET['centin']);
 		unset($_GET['gridsquare']);
 	}
 	
