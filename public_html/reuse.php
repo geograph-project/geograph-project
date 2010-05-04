@@ -56,18 +56,12 @@ if (isset($_REQUEST['id']))
 				exit;
 			}
 			
-			switch($_REQUEST['size']) {
-				case 640:
-				case 800:
-				case 1024: 
-				case 1600:
-					$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']),intval($_REQUEST['size']));
-					break;
-				case 'original': 
-					$filepath = $image->_getOriginalpath();
-					break;
-				default: $filepath = $image->_getFullpath();
-			} 
+			if (in_array(intval($_REQUEST['size']), $CONF['show_sizes']))
+				$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']),intval($_REQUEST['size']));
+			elseif ($_REQUEST['size'] == 'original')
+				$filepath = $image->_getOriginalpath();
+			else
+				$filepath = $image->_getFullpath();
 			$filename = basename($filepath);
 			$filename = "geograph-".preg_replace('/_\w+(\.jpg)/'," by {$image->realname}\$1",$filename);
 			$filename = preg_replace('/ /','-',trim($filename));

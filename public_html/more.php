@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+require_once('geograph/uploadmanager.class.php');
 
 init_session();
 
@@ -56,6 +57,43 @@ if (isset($_REQUEST['id']))
 		
 		$style = $USER->getStyle();
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
+
+		$imagesize = $image->_getFullSize();
+
+		$sizes = array();
+		$widths = array();
+		$heights = array();
+		$showorig = false;
+		if ($image->original_width) {
+			$smarty->assign('original_width', $image->original_width);
+			$smarty->assign('original_height', $image->original_height);
+			$uploadmanager=new UploadManager;
+			list($destwidth, $destheight, $maxdim, $changedim) = $uploadmanager->_new_size($image->original_width, $image->original_height);
+			if ($changedim) {
+				$showorig = true;
+				foreach ($CONF['show_sizes'] as $cursize) {
+					list($destwidth, $destheight, $destdim, $changedim) = $uploadmanager->_new_size($image->original_width, $image->original_height, $cursize);
+					if (!$changedim)
+						break;
+					$sizes[] = $cursize;
+					$widths[] = $destwidth;
+					$heights[] = $destheight;
+					$maxdim = $destdim;
+				}
+				$maxdim = max($image->original_width, $image->original_height);
+			}
+		} else {
+			$maxdim = max($imagesize[0], $imagesize[1]);
+		}
+		$smarty->assign('sizes', $sizes);
+		$smarty->assign('widths', $widths);
+		$smarty->assign('heights', $heights);
+		$smarty->assign('stdsize', $CONF['img_max_size']);
+		$smarty->assign('showorig', $showorig);
+		$smarty->assign('ratio', $maxdim/$CONF['prev_size']);
+		$smarty->assign('preview_width', $imagesize[0]);
+		$smarty->assign('preview_height', $imagesize[1]);
+		$smarty->assign('preview_url', $image->_getFullpath());
 	}
 	$smarty->assign_by_ref('image', $image);
 } else {

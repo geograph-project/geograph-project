@@ -28,7 +28,7 @@
 			<input type="checkbox" name="clearexif" id="clearexif" {if $wantclearexif}checked{/if} value="1"/> <label for="clearexif">Clear any EXIF data from the image. Check this box to hide metadata such as exact creation time or camera type.</label><!--br/-->
 			<hr/>
 		{/if*}
-		{if $original_width}
+		{if $original_width && $largeimages}
 			
 			{include file="_submit_sizes.tpl"}
 			
