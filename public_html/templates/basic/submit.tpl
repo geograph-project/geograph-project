@@ -248,6 +248,9 @@ geographing</a> first.</p>
 		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
 		{$rastermap->getImageTag()}<br/>
 		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+		{if $rastermap->service == 'Google'}
+			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';map.checkResize();return false">Enlarge Map</a>
+		{/if}{*FIXME move to FootNote?*}
 		
 		</div>
 		
