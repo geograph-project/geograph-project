@@ -48,7 +48,7 @@ aufsteigen kann.{/if}</p>
 
 
 <h2 style="margin-top:2em;margin-bottom:0"><a name="rate_graph"></a>Einreichungen pro Tag</h2>
-<p>Schaubild der durschnittlichen Einreichungen pro Tag für die letzten Wochen:<br/>
+<p>Schaubild der durchschnittlichen Einreichungen pro Tag für die letzten Wochen:<br/>
 <img src="/img/rate.png" width="480" height="161" alt="Schaubild der Einreichungen pro Tag"/>
 </p>
 
