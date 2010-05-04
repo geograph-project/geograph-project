@@ -117,6 +117,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 					list($e,$n,$reference_index) = $conv->wgs84_to_national($lat,$long);
 
 					list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+					$_POST['photographer_gridref'] = $_POST['grid_reference'];
 					
 					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
 					
@@ -126,15 +127,18 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 						if (preg_match("/\b([a-zA-Z]{1,3})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {						
 							$_POST['gridsquare'] = $m[1];
 	                                                $_POST['grid_reference'] = $m[1].$m[2];
+							$_POST['photographer_gridref'] = $_POST['grid_reference'];
 						}
 					} else {
 						$_POST['gridsquare'] = $m[1];
 						$_POST['grid_reference'] = $m[1].$m[2].$m[3];
+						$_POST['photographer_gridref'] = $_POST['grid_reference'];
 					}
 		
 				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([a-zA-Z]{1,3})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",implode(' ',$exif['COMMENT']),$m)) {
 					$_POST['gridsquare'] = $m[1];
 					$_POST['grid_reference'] = $m[1].$m[2].$m[3];
+					$_POST['photographer_gridref'] = $_POST['grid_reference'];
 				}
 				
 				$_POST['eastings'] = '';
