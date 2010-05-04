@@ -402,3 +402,21 @@ ALTER TABLE `queries_archive` CHANGE `searchuse` `searchuse` ENUM( 'search', 'fl
 ALTER TABLE `gridimage`        ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_recent` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_search` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`, DROP INDEX `title` , ADD INDEX `title` (`title`, `title2`), DROP INDEX `title_2` , ADD INDEX `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`);
+
+ALTER TABLE  `user` ADD  `upload_size` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';
+ALTER TABLE gridimage ADD distance MEDIUMINT(8) UNSIGNED NULL default NULL;
+
+UPDATE `gridimage`
+SET `distance` = SQRT((nateastings - viewpoint_eastings) * (nateastings - viewpoint_eastings) + (natnorthings - viewpoint_northings) * (natnorthings - viewpoint_northings))
+WHERE `viewpoint_grlen` IN ('10','8','6') AND natgrlen IN ('10','8','6')
+AND nateastings > 0 AND viewpoint_eastings > 0;
+
+CREATE TABLE  `gridimage_size` (
+ `gridimage_id` INT UNSIGNED NOT NULL ,
+ `width` SMALLINT UNSIGNED NOT NULL ,
+ `height` SMALLINT UNSIGNED NOT NULL ,
+PRIMARY KEY (  `gridimage_id` )
+) ENGINE = MYISAM ;
+
+ALTER TABLE  `gridimage_size` ADD  `original_width` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0',
+ADD  `original_height` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0';
