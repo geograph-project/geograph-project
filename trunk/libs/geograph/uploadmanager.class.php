@@ -493,11 +493,11 @@ class UploadManager
 				fclose($f);
 			}
 		}
-		$max_dimension=640;
 
 		list($width, $height, $type, $attr) = getimagesize($pendingfile);
+		list($destwidth, $destheight, $destdim, $changedim) = $this->_new_size($width, $height);
 		
-		if ($width > $max_dimension || $height > $max_dimension) {
+		if ($changedim) {
 		
 			//save a copy
 			$orginalfile = $this->_originalJPEG($upload_id);
@@ -505,7 +505,7 @@ class UploadManager
 			$this->hasoriginal = true;
 		
 			//resize image to required size
-			if ($ok = $this->_downsizeFile($pendingfile,$max_dimension)) {
+			if ($ok = $this->_downsizeFile($pendingfile,$destdim)) {
 				//remember useful stuff
 				$this->upload_id=$upload_id;
 				$this->original_width=$width;
@@ -757,7 +757,7 @@ class UploadManager
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			
-			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > 640) {
+			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > $CONF['img_max_size']) {
 				
 				$this->_downsizeFile($orginalfile,$this->largestsize);
 				
@@ -824,7 +824,7 @@ class UploadManager
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
-			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > 640) {
+			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > $CONF['img_max_size']) {
 
 				$this->_downsizeFile($orginalfile,$this->largestsize);
 				
