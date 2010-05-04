@@ -303,6 +303,10 @@ class sphinxwrapper {
 					$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long', deg2rad($lat), deg2rad($long) );
 				}
 				$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
+				if ($data['d'] < 1) {
+					//exclude images without (at least) centisquare resolution.
+					$cl->setFilter('scenti',array(10000000,20000000),true); //todo we have hard-coded ri - should be primed from $CONF['references']
+				}
 			} else {
 				$this->sort = preg_replace('/@geodist \w+,?\s*/','',$this->sort);
 				$cl = $this->_getClient();
