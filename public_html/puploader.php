@@ -33,6 +33,15 @@ $USER->mustHavePerm("basic");
 $template='puploader.tpl';
 $cacheid='';
 
+if (isset($_REQUEST['submit2'])) {
+	$cacheid .= 'submit2';
+	$smarty->assign('submit2',1);
+	
+	if (isset($_REQUEST['upload_id'])) {
+		$smarty->assign('upload_id',$_REQUEST['upload_id']);
+	}
+}
+
 if (isset($_GET['success'])) {  
 	$token=new Token;
 	if ($token->parse($_GET['t'])) {
@@ -85,7 +94,7 @@ if (isset($_GET['success'])) {
 			$ok = $uploadmanager->processUpload($_FILES[$files_key]['tmp_name']);
 
 			if ($ok) {
-				$err = $uploadmanager->commit();
+				$err = $uploadmanager->commit('puploader');
 
 				if (empty($err)) { 
 					$status[$key] = "ok:".$uploadmanager->gridimage_id;
@@ -100,6 +109,12 @@ if (isset($_GET['success'])) {
 		}
 		if ($_POST['imagetaken'][$key] != '0000-00-00') {
 			$_SESSION['last_imagetaken'] = $_POST['imagetaken'][$key];
+		}
+		if (!empty($_POST['grid_reference']) && $square->natgrlen > 4) {
+			$_SESSION['last_grid_reference'] = $_POST['grid_reference'];
+		}
+		if (!empty($_POST['photographer_gridref'])) {
+			$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
 		}
 		
 		if ($memcache->valid) {
@@ -133,6 +148,11 @@ if (isset($_GET['success'])) {
 	$step = 1;
 	
 	$square=new GridSquare;
+	
+	if (!empty($_REQUEST['photographer_gridref']) && empty($_REQUEST['grid_reference'])) 
+	{
+		$_REQUEST['grid_reference'] = $_REQUEST['photographer_gridref'];
+	}
 	
 	if (!empty($_REQUEST['grid_reference'])) 
 	{
@@ -185,21 +205,6 @@ if (isset($_GET['success'])) {
 		$smarty->assign('long', $long);
 
 		$rastermap->addLatLong($lat,$long);
-
-		$images=$square->getImages($USER->user_id,'',"order by submitted desc limit 6");
-		$square->totalimagecount = count($images);
-
-		$smarty->assign('shownimagecount', $square->totalimagecount);
-
-		if ($square->totalimagecount == 6) {
-			$square->totalimagecount = $square->getImageCount($USER->user_id);
-		}			
-
-		$smarty->assign('totalimagecount', $square->totalimagecount);
-
-		if ($square->totalimagecount > 0) {
-			$smarty->assign_by_ref('images', $images);
-		}
 
 		$dirs = array (-1 => '');
 		$jump = 360/16; $jump2 = 360/32;
@@ -259,6 +264,12 @@ if (isset($_GET['success'])) {
 	
 	//which step to display?
 	$smarty->assign('step', $step);
+
+	if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+		customExpiresHeader(3600,false,true);
+	}
+
+	
 } elseif(!empty($_POST['rss'])) {
 	$xh = new xmlHandler();
 	$nodeNames = array("PHOTO:THUMBNAIL", "PHOTO:IMGSRC", "TITLE");

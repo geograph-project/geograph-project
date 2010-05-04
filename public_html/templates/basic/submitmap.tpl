@@ -15,7 +15,6 @@
 	//<![CDATA[
 		var issubmit = 1;
 		var ri = -1;
-		var themarker;
 		
 		//the google map object
 		var map;
@@ -33,20 +32,21 @@
 					if (!point) {
 						alert("Your entry '" + address + "' could not be geocoded, please try again");
 					} else {
-						if (themarker) {
-							themarker.setPoint(point);
-							GEvent.trigger(themarker,'drag');
+						if (currentelement) {
+							currentelement.setPoint(point);
+							GEvent.trigger(currentelement,'drag');
 
 						} else {
-							themarker = createMarker(point,null);
-							map.addOverlay(themarker);
+							currentelement = createMarker(point,null);
+							map.addOverlay(currentelement);
 
-							GEvent.trigger(themarker,'drag');
+							GEvent.trigger(currentelement,'drag');
 						}
 						map.setCenter(point, 12);
 					}
 				 });
 			}
+			return false;
 		}
 
 		function loadmap() {
@@ -71,15 +71,15 @@
 		
 				GEvent.addListener(map, "click", function(marker, point) {
 					if (marker) {
-					} else if (themarker) {
-						themarker.setPoint(point);
-						GEvent.trigger(themarker,'drag');
+					} else if (currentelement) {
+						currentelement.setPoint(point);
+						GEvent.trigger(currentelement,'drag');
 					
 					} else {
-						themarker = createMarker(point,null);
-						map.addOverlay(themarker);
+						currentelement = createMarker(point,null);
+						map.addOverlay(currentelement);
 						
-						GEvent.trigger(themarker,'drag');
+						GEvent.trigger(currentelement,'drag');
 					}
 				});
 
@@ -136,24 +136,25 @@
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
 
-<form {if $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+<form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 
-<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $grid_reference}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)"/>
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 
-<input type="submit" value="Step 2 &gt; &gt;"/></div>
+<input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
 
-<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div><br/>			
-
-<div style="width:600px; text-align:right;"><label for="addressInput">Enter Address: 
-	<input type="text" size="50" id="addressInput" name="address" value="" />
-	<input type="button" value="Find" onclick="showAddress(this.form.address.value)"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder)</small></small>
-</div>
+<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>		
 
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
 
+</form>
+<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
+<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address: 
+	<input type="text" size="50" id="addressInput" name="address" value="" />
+	<input type="submit" value="Find"/><small><small><br/>
+	(Powered by the Google Maps API Geocoder)</small></small>
+</div>
 </form>
 
 <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>

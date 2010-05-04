@@ -187,9 +187,9 @@ geographing</a> first.</p>
 		<div>
 	{/if}
 		{if $imagecount gt 0}
-			<p style="color:#440000">We currently have 
+			<div style="color:#440000">We currently have 
 			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if} 
-			uploaded for {newwin title="View Images for `$gridref`" href="/gridref/`$gridref`" text=`$gridref`}, add yours now!</p>
+			uploaded for {newwin title="View Images for `$gridref`" href="/gridref/`$gridref`" text=`$gridref`}, add yours now!</div>
 		{else}
 			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
@@ -216,6 +216,13 @@ geographing</a> first.</p>
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
+		{*if $last_grid_reference || $last_photographer_gridref}
+			<div style="font-size:0.8em">
+			<a href="javascript:{if $last_photographer_gridref}void(document.theForm.photographer_gridref.value = '{$last_photographer_gridref}');void(updateMapMarker(document.theForm.photographer_gridref,false));{/if}{if $last_grid_reference}void(document.theForm.grid_reference.value = '{$last_grid_reference}');void(updateMapMarker(document.theForm.grid_reference,false));{/if}">Copy from Last Submission</a> <sup style="color:red">New</sup></div>
+		{else}
+		
+		{/if*}
+
 		<h4><b>Grid References:</b> (recommended)</h4>
 		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}</p>
 	
@@ -338,10 +345,6 @@ for {$gridref} provided they are accurately located, but may not qualify as geog
 <li>We welcome many Geograph or Supplemental images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</li>
 </ul>
 
-</div>
-
-<div style="float:right;position:relative;z-index:110">
-<img src="{$preview_url}" width="{$preview_width*0.5|string_format:"%d"}" height="{$preview_height*0.5|string_format:"%d"}" alt="low resolution reminder image"/>	
 </div>
 
 <p>If you like, you can provide more images or extra information (which
@@ -485,11 +488,17 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 	
-	<h2>Submit Step 4 of 4 : Confirm image rights</h2>
+	{if $original_width}
+	
+		<h2>Submit Step 4 of 4: Confirm image size and rights</h2>
+		
+		{include file="_submit_sizes.tpl"}
+		
+		<hr/>
+	{else}
+		<h2>Submit Step 4 of 4 : Confirm image rights</h2>
+	{/if}
 
-<div style="float:right;position:relative;">
-<img src="{$preview_url}" width="{$preview_width*0.3|string_format:"%d"}" height="{$preview_height*0.3|string_format:"%d"}" alt="low resolution reminder image" hspace="10"/>	
-</div>
 	{if $user->stats.images && $user->stats.images > 100 && $last_imagetaken}
 
 	<div style="border:1px solid gray; padding:10px">I've read this already, <input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);autoDisable(this.form.finalise[1]);"/><br/> (saves scrolling to the bottom)</div>
@@ -603,8 +612,27 @@ have problems
 	</form>
 {/if}
 
+{if $preview_url}
+{if !$enable_forums}
+	<div style="position:fixed;right:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
+{else}
+	<div style="position:fixed;left:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
+{/if}
+	<div id="previewInner"></div></div>
 
+<script type="text/javascript">
+{literal}
+function showPreview(url,width,height,filename) {
+	height2=Math.round((148 * height)/width);
+	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="148" height="'+height2+'" id="imgPreview" onmouseover="this.height='+height+';this.width='+width+'" onmouseout="this.height='+height2+';this.width=148" /><br/>'+filename;
+	document.getElementById('hidePreview').style.display='';
+}
+ AttachEvent(window,'load',function () {showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height},'{$filename|escape:'javascript'}'{literal}) },false);
 
+{/literal}
+</script>
+
+{/if}
 
 
 {/dynamic}

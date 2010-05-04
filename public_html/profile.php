@@ -86,6 +86,42 @@ if (isset($_REQUEST['edit']))
 	
 	$smarty->assign_by_ref('profile', $profile);	
 }
+#elseif (isset($_REQUEST['notifications'])) #FIXME
+#{
+#	//must be logged in to proceed with an edit
+#	$USER->login();
+#
+#	$template='profile_notifications.tpl';
+#
+#	//save changes?
+#	if (isset($_POST['savechanges']))
+#	{
+#		
+#	} 
+#	else
+#	{
+#		$profile=new GeographUser($USER->user_id);
+#		
+#		$db = NewADOConnection($GLOBALS['DSN']);
+#		if (!$db) die('Database connection failed');  
+#
+#		$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		
+#		$smarty->assign_by_ref("subs",$subs);
+#		$smarty->assign("sub_count",count($subs));
+#		
+#		$arr = array('general','test');
+#		
+#		$n = array();
+#		foreach($arr as $idx => $key) {
+#			$n[$key] = 'checked="checked"';
+#		}
+#		
+#		$smarty->assign_by_ref("notification",$n);
+#		
+#	}
+#
+#}
+
 
 
 if ($template=='profile.tpl')
@@ -166,7 +202,7 @@ if ($template=='profile.tpl')
 	
 	$cacheid="user$ab|{$uid}|{$level}";
 	
-	if (isset($_GET['all'])) {
+	if (isset($_GET['all']) && $USER->registered) {
 		$limit = 5000;
 	} elseif (isset($_GET['more'])) {
 		$limit = 1000;
@@ -175,9 +211,16 @@ if ($template=='profile.tpl')
 	}
 	$cacheid.="_$limit";
 
+	if (!empty($_GET['expand']) || $USER->expand_about == 1) {
+		$cacheid .= "E";
+	}
+	if (isset($_GET['reject']) && empty($_GET['reject'])) {
+		$cacheid .= "N";
+	}
+
 	if (!$smarty->is_cached($template, $cacheid))
 	{
-		if (isset($_GET['all']) || isset($_GET['more'])) {
+		if (isset($_GET['all']) || isset($_GET['more']) || isset($_GET['expand'])) {
 			dieUnderHighLoad();
 		}
 		
@@ -227,7 +270,11 @@ if ($template=='profile.tpl')
 		$images=new ImageList;
 		
 		if ($uid==$USER->user_id || $USER->hasPerm('moderator'))
-			$statuses='';
+			if (isset($_GET['reject']) && empty($_GET['reject'])) {
+				$statuses=array('pending', 'accepted', 'geograph');
+			} else {
+				$statuses='';//all
+			} 
 		else
 			$statuses=array('accepted', 'geograph');
 		
@@ -256,6 +303,47 @@ if ($template=='profile.tpl')
 		$smarty->assign_by_ref('profile', $profile);
 	}
 }
+
+function smarty_function_TruncateWithExpand($input,$more = 'Click here to Read More...') {
+	global $USER;
+	
+	if (strlen($input) > 300 && empty($_GET['expand'])
+			&& (empty($USER->expand_about) || $USER->expand_about == 2)
+		) {
+	
+		if (strpos($input,'[--more--]') !== FALSE && $USER->expand_about != 2) {
+			$bits = explode('[--more--]',$input,2);
+			preg_match('/^(.{2000,}?)(?![\w\d\[\]\'])/s',$bits[0],$m); //still impose a hard limit of 2000 chars!
+			$input = $m[1]?$m[1]:$bits[0];
+			$after = $bits[1];
+		} else {
+			preg_match('/^(.{300,}?)(?![\w\d\[\]\'])(.*)/s',$input,$m);
+			$input = $m[1];
+			if (!preg_match("/[\.\n]+\$/",$input)) {
+				$input .= " ...";
+			}
+			$after = $m[2];
+		}
+		if (trim($after)) {
+			if (preg_match('/\(<small>(.*)<\/small>\)\s*/',$more,$m)) {
+				$more = preg_replace('/\(<small>.*<\/small>\)\s*/','',$more);
+				$before = $m[0];
+			}
+			if (!trim($input)) {
+				$before = "";
+			} 
+			
+			$input .= "<div style=\"text-align:center;border-top:1px solid silver;margin-top:10px\">$before<a href=\"?expand=1\">$more</a></div>";
+		
+		}
+	} else {
+		$input = str_replace('[--more--]',' ',$input);
+	}
+	
+	return $input;
+}
+$smarty->register_modifier("TruncateWithExpand", "smarty_function_TruncateWithExpand");
+
 
 if (!empty($_GET['a']))
 	$smarty->assign('credit_realname', $_GET['a']);
