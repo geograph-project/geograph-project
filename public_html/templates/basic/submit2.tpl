@@ -219,6 +219,10 @@ AttachEvent(window,'load',readHash,false);
 	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4)"><span id="se4">+</span> Step 4 - Confirm Licencing and Finish</a>
 	
 	<div id="sd4" class="sd" style="border:2px solid red; padding:4px;border-top:0">
+		{if $canclearexif}
+			<input type="checkbox" name="clearexif" id="clearexif" {if $wantclearexif}checked{/if} value="1"/> <label for="clearexif">Clear any EXIF data from the image. Check this box to hide metadata such as exact creation time or camera type.</label><!--br/-->
+			<hr/>
+		{/if}
 		<div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
 			<a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a><br/>
 			[ Click to see full Licence Deed ]
@@ -271,6 +275,7 @@ AttachEvent(window,'load',readHash,false);
 		{assign var="key" value="0"}
 		<div><span>Upload ID:</span><input type="text" name="upload_id[{$key}]" value="" size="60"/> </div>
 		<div><span>Largest Size:</span><input type="text" name="largestsize[{$key}]" value="" size="4"/> </div>
+		<!--div><span>Clear EXIF:</span><input type="text" name="clearexif[{$key}]" value="" size="1"/> </div-->
 		<div><span>Subject:</span><input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12"/> </div>
 		<div><span>Photographer:</span><input type="text" name="photographer_gridref[{$key}]" value="" size="12" maxlength="12"/></div>  
 		<div><span>use 6 Fig:</span><input type="text" name="use6fig[{$key}]" value="" size="1" maxlength="2"/></div> 
@@ -318,6 +323,8 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
 	<textarea name="comment" style="display:none"/></textarea>
+	<input type="hidden" name="title2"/>
+	<textarea name="comment2" style="display:none"/></textarea>
 	<input type="hidden" name="imageclass"/>
 	<input type="hidden" name="imageclassother"/>
 	<input type="hidden" name="imagetakenDay"/>

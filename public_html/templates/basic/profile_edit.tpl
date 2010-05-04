@@ -233,6 +233,16 @@
 	<div class="fieldnotes">Choose the default size you wish to preserve. You can still change it per upload, just chooses the option selected by default.</div>
 </div>
 
+{if $canclearexif}
+<div class="field"> 
+	<label for="clear_exif" class="nowrap">Clear EXIF data</label>
+	
+	<input type="checkbox" name="clear_exif" id="clear_exif" {if $profile->clear_exif}checked{/if} value="1"/><!--br/-->
+	 
+	<div class="fieldnotes">Clear any meta data from images you submit. Choose the default setting. You can still change it per upload, just chooses the option selected by default.</div>
+</div>
+{/if}
+
 
 <div class="field"> 
 	<label for="message_sig" class="nowrap">Message Signature</label>

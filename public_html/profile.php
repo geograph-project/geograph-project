@@ -75,6 +75,7 @@ if (isset($_REQUEST['edit']))
 	}
 	$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
+	$smarty->assign('canclearexif', $CONF['exiftooldir'] !== '');
 	$smarty->assign('ticket_options', array(
 	'all' => 'Notifications for all suggestions' ,
 	'major' => 'Only Major suggestions', 
