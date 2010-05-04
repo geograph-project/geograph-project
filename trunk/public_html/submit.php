@@ -454,6 +454,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
 				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
 				$uploadmanager->setLargestSize($_POST['largestsize']);
+				$uploadmanager->setClearExif($_POST['clearexif']);
 				
 				if ($_POST['pattrib'] == 'other') {
 					$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
@@ -578,6 +579,9 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('preview_url', $preview_url);
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
+
+			$smarty->assign('canclearexif', $CONF['exiftooldir'] !== '');
+			$smarty->assign('wantclearexif', $USER->clear_exif);
 		} elseif ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 
