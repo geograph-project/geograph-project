@@ -71,9 +71,14 @@ if (isset($_GET['success'])) {
 			$uploadmanager->setUse6fig(stripslashes($_POST['use6fig'][$key]));
 			$uploadmanager->setTaken($_POST['imagetaken'][$key]);
 			$uploadmanager->setTitle(utf8_decode($_POST['title'][$key]));
+			$uploadmanager->setTitle2(utf8_decode($_POST['title2'][$key]));
 			if ($_POST['comment'][$key] != "comment[$key]") {
 				//bug? in Picasa sends the name in the value if blank, useful! (but only seems to apply to textareas)
 				$uploadmanager->setComment(utf8_decode($_POST['comment'][$key]));
+			}
+			if ($_POST['comment2'][$key] != "comment2[$key]") {
+				//bug? in Picasa sends the name in the value if blank, useful! (but only seems to apply to textareas)
+				$uploadmanager->setComment2(utf8_decode($_POST['comment2'][$key]));
 			}
 			
 			if (($_POST['imageclass'][$key] == 'Other' || empty($_POST['imageclass'][$key])) && !empty($_POST['imageclassother'][$key])) {
