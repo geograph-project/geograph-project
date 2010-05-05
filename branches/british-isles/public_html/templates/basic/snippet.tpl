@@ -25,24 +25,43 @@
 	<div style="float:right;position:relative;padding:8px; border-left:2px solid gray;width:250px">
 		<div style="float:right;height:300px;"></div>
 		{if $others}
-		<b>More nearby...</b>
-		<ul style="padding:0 0 0 1em;">
-			{foreach from=$others item=item}
-				<li><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></li>
-			{/foreach}
-		</ul>
+			<b>More nearby...</b>
+			<ul style="padding:0 0 0 1em;">
+				{foreach from=$others item=item}
+					<li><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></li>
+				{/foreach}
+			</ul>
 		{/if}
 		{if $related}
-		<b>Related descriptions</b>
-		<ul style="padding:0 0 0 1em;">
-			{foreach from=$related item=item}
-				<li><b><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></b>
-				<div style="font-size:0.7em;color:gray;margin-left:2px;">
-				By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
-				Used on {$item.images|thousends} images</div>
-				</li>
-			{/foreach}
-		</ul>
+			{if $hassame}
+				<b>Others with same title</b>
+				<ul style="padding:0 0 0 1em;">
+					{foreach from=$related item=item}
+						{if $item.title == $title}
+						<li><b><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></b>
+						<div style="font-size:0.7em;color:gray;margin-left:2px;">
+						By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
+						Used on {$item.images|thousends} images</div>
+						</li>
+						{/if}
+					{/foreach}
+				</ul>
+			{/if}
+			
+			{if $hassame < count($related)}
+				<b>Related descriptions</b>
+				<ul style="padding:0 0 0 1em;">
+					{foreach from=$related item=item}
+						{if $item.title != $title}
+						<li><b><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></b>
+						<div style="font-size:0.7em;color:gray;margin-left:2px;">
+						By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
+						Used on {$item.images|thousends} images</div>
+						</li>
+						{/if}
+					{/foreach}
+				</ul>
+			{/if}
 		{/if}
 	</div>
 {/if}

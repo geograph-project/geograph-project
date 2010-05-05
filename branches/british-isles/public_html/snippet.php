@@ -189,10 +189,15 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				
 				//we only replace links, if they appears to be in bits not affected by markup - should help prevent replaces in what is already links, or titles of images etc
 				$nohtml = strip_tags(preg_replace('/<a\s.+?>.*?<\/a>/','', $data['comment']));
+				$hassame = 0;
 				foreach ($related as $id => $row) {
 					if (strlen($row['title']) > 3 && stripos($nohtml,$row['title']) !== FALSE)
 						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b/i",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
+					if ($row['title'] == $data['title']) {
+						$hassame++;
+					}
 				}
+				$smarty->assign('hassame',$hassame);
 			} 
 			
 		}
