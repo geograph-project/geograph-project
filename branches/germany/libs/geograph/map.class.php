@@ -93,6 +93,7 @@ class GeographMap
 	* bounding rectangles for labels, in an attempt to prevent collisions
 	*/
 	var $labels = array();
+	var $gridlabels = array();
 	
 	/*
 	 * palette index, see setPalette for documentation
@@ -1643,30 +1644,44 @@ END;
 		//}
 		$xy = array($x,$y);
 		if ($quad == 0) {
-			for ($quad = 1; $quad < 5; ++$quad) {
-				list($x,$y) = $xy;
-				if ($quad%2 != 1) {
-					$x = $x - $stren; //FIXME one pixel too much
-				}
-				if ($quad <= 2) {
-					$y = $y - $strhr; //FIXME one pixel too much
-				}
-				$thisrect = array($x,$y,$x + $stren,$y + $strhr); //FIXME one pixel too much
-				//$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
-				if ($x <= 0 || $y <= 0 || $x + $stren >= $this->image_w || $y + $strhr >= $this->image_h) { // "=" => one pixel more than neccessary
-					$intersect = true;
-				} else {
-					$intersect = false;
-					reset($this->labels);
-					foreach ($this->labels as $a1) {
-						if (rectinterrect($a1,$thisrect)) {
-							$intersect = true;
-							break;
+			for ($run = 0; $run < 2; ++$run) {
+				for ($quad = 1; $quad < 5; ++$quad) {
+					list($x,$y) = $xy;
+					if ($quad%2 != 1) {
+						$x = $x - $stren; //FIXME one pixel too much
+					}
+					if ($quad <= 2) {
+						$y = $y - $strhr; //FIXME one pixel too much
+					}
+					$thisrect = array($x,$y,$x + $stren,$y + $strhr); //FIXME one pixel too much
+					//$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
+					if ($x <= 0 || $y <= 0 || $x + $stren >= $this->image_w || $y + $strhr >= $this->image_h) { // "=" => one pixel more than neccessary
+						$intersect = true;
+					} else {
+						$intersect = false;
+						if ($run == 0) {
+							reset($this->gridlabels);
+							foreach ($this->gridlabels as $a1) {
+								if (rectinterrect($a1,$thisrect)) {
+									$intersect = true;
+									break;
+								}
+							}
 						}
+						reset($this->labels);
+						foreach ($this->labels as $a1) {
+							if (rectinterrect($a1,$thisrect)) {
+								$intersect = true;
+								break;
+							}
+						}
+					}
+					if (!$intersect) {
+						#trigger_error("label: " . $text . ": " . $stren . "px: " . $x . "..." . ($x + $stren - 1) . " / " . $y . "..." . ($y + $strhr - 1), E_USER_NOTICE);
+						break;
 					}
 				}
 				if (!$intersect) {
-					#trigger_error("label: " . $text . ": " . $stren . "px: " . $x . "..." . ($x + $stren - 1) . " / " . $y . "..." . ($y + $strhr - 1), E_USER_NOTICE);
 					break;
 				}
 			}
@@ -1844,7 +1859,7 @@ END;
 					imagestring ($img, $font, $txtx,$txty, $text, $text1);
 				}
 				$thisrect = array($txtx,$txty,$txtx + $txtw,$txty + $txth);
-				array_push($this->labels,$thisrect);
+				array_push($this->gridlabels,$thisrect);
 				if ($_GET['d']) {
 					print "$text";var_dump($thisrect); print "<BR>";
 				}
