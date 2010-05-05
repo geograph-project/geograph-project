@@ -288,7 +288,7 @@ for ($i=0; $i<$cnt; $i++)
 		if ($format == 'MEDIA') {
 			$item->content = $images->images[$i]->_getFullpath(true,true); 
 			if ($opt_expand) {
-				$title=$this->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
+				$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 				$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 				$item->descriptionHtmlSyndicated = true;
 			}
@@ -300,7 +300,7 @@ for ($i=0; $i<$cnt; $i++)
 		imagejpeg($images->images[$i]->getSquareThumb(16));
 		$item->thumbdata = ob_get_clean();
 	} elseif ($opt_expand) {
-		$title=$this->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
+		$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 		$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 		$item->descriptionHtmlSyndicated = true;
 	}
