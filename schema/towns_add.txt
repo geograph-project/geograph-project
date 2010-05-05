@@ -1,0 +1,8 @@
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en, x, y, point_xy) values
+('Halle (Saale)',          706170, 5707700, 2, 3, 0, GeomFromText('POINT(706170 5707700)'), 506170, 507700, GeomFromText('POINT(506170 507700)')),
+('Zyfflich',               704930, 5745530, 3, 5, 0, GeomFromText('POINT(704930 5745530)'), 4930, 545530, GeomFromText('POINT(4930 545530)')),
+('Tüddern',                703580, 5655450, 3, 5, 0, GeomFromText('POINT(703580 5655450)'), 3580, 455450, GeomFromText('POINT(3580 455450)')),
+('Orsbach',                711140, 5631660, 3, 5, 0, GeomFromText('POINT(711140 5631660)'), 11140, 431660, GeomFromText('POINT(11140 431660)')),
+('Arnsberg',               434870, 5694090, 2, 3, 0, GeomFromText('POINT(434870 5694090)'), 234870, 494090, GeomFromText('POINT(234870 494090)')),
+('Dessau',                 310270, 5746080, 2, 4, 0, GeomFromText('POINT(310270 5746080)'), 610270, 546080, GeomFromText('POINT(610270 546080)')),
+('Koblenz',                400500, 5579120, 2, 3, 0, GeomFromText('POINT(400500 5579120)'), 200500, 379120, GeomFromText('POINT(200500 379120)'));
