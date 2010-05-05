@@ -16,6 +16,8 @@ BEGIN {
 	xl["TQT"] = 700;
 	xl["UQU"] = 700;
 	xl["UQV"] = 700;
+	xl["UMD"] = 400;
+	xl["UND"] = 500;
 
 	yl["TLT"] = 5200;
 	yl["ULU"] = 5300;
@@ -32,6 +34,8 @@ BEGIN {
 	yl["TQT"] = 5200;
 	yl["UQU"] = 5300;
 	yl["UQV"] = 5400;
+	yl["UMD"] = 5800;
+	yl["UND"] = 5800;
 
 	xl["TTN"] = 200;
 	xl["UTP"] = 200;
@@ -46,6 +50,22 @@ BEGIN {
 	yl["TUN"] = 5200;
 	yl["UUP"] = 5300;
 	yl["UUQ"] = 5400;
+
+	xl["UGT"] = 700;
+	xl["UGS"] = 700;
+	xl["UUT"] = 300;
+	xl["UMA"] = 400;
+	xl["UMB"] = 400;
+	xl["UMC"] = 400;
+	xl["UQC"] = 700;
+
+	yl["UGT"] = 5700;
+	yl["UGS"] = 5600;
+	yl["UUT"] = 5700;
+	yl["UMA"] = 5500;
+	yl["UMB"] = 5600;
+	yl["UMC"] = 5700;
+	yl["UQC"] = 5700;
 
 	xl["X"] = 0;
 	yl["X"] = 0;
