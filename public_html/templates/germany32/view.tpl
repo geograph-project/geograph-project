@@ -25,27 +25,19 @@
 {dynamic}
 {if $search_keywords && $search_count}
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
-		We have a least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a>
+		We have at least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a>
 	</div>
 {/if}
 {/dynamic}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+	{if $image->original_width}
+		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">More sizes</a></div>
+	{*elseif $user->user_id eq $image->user_id}
+		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
+	*}{/if}
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
-  {literal}
-  <script type="text/javascript">
-  
-  function redrawMainImage() {
-  	el = document.getElementById('mainphoto');
-  	el.style.display = 'none';
-  	el.style.display = '';
-  }
-  AttachEvent(window,'load',redrawMainImage,false);
-  AttachEvent(window,'load',showMarkedImages,false);
-  
-  </script>
-  {/literal}
   
 
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
@@ -292,8 +284,18 @@ function addStyleLinks() {
 	document.getElementById('styleLinks').innerHTML = 'Background for photo viewing: {if $maincontentclass eq "content_photowhite"}<b>white</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">White</a>{/if}/{if $maincontentclass eq "content_photoblack"}<b>black</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">Black</a>{/if}/{if $maincontentclass eq "content_photogray"}<b>grey</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">Grey</a>{/if}';
 {literal}
 }
-{/literal}
  AttachEvent(window,'load',addStyleLinks,false);
+
+
+function redrawMainImage() {
+	el = document.getElementById('mainphoto');
+	el.style.display = 'none';
+	el.style.display = '';
+}
+ AttachEvent(window,'load',redrawMainImage,false);
+ AttachEvent(window,'load',showMarkedImages,false);
+  
+{/literal}
 /* ]]> */
 </script>
 
