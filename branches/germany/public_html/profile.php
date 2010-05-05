@@ -90,6 +90,10 @@ if (isset($_REQUEST['edit']))
 
 	$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
+	$smarty->assign('stdsize', $CONF['img_max_size']);
+	$smarty->assign('sizes', $CONF['img_sizes']);
+	$smarty->assign('showorig', $CONF['img_size_unlimited']);
+	$smarty->assign('largeimages', $CONF['img_size_unlimited'] || (count($CONF['img_sizes']) != 0));
 	$smarty->assign('canclearexif', $CONF['exiftooldir'] !== '');
 	#$smarty->assign('ticket_options', $ticket_options);
 	

@@ -581,6 +581,41 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('preview_width', $uploadmanager->upload_width);
 			$smarty->assign('preview_height', $uploadmanager->upload_height);
 
+			$sizes = array();
+			$widths = array();
+			$heights = array();
+			$showorig = false;
+			if ($uploadmanager->initOriginalUploadSize() && $uploadmanager->hasoriginal) {
+				list($destwidth, $destheight, $maxdim, $changedim) = $uploadmanager->_new_size($uploadmanager->original_width, $uploadmanager->original_height);
+				$smarty->assign('original_width', $uploadmanager->original_width);
+				$smarty->assign('original_height', $uploadmanager->original_height);
+				
+				if ($changedim) {
+					$showorig = $CONF['img_size_unlimited'];
+					foreach ($CONF['img_sizes'] as $cursize) {
+						list($destwidth, $destheight, $destdim, $changedim) = $uploadmanager->_new_size($uploadmanager->original_width, $uploadmanager->original_height, $cursize);
+						if (!$changedim && $showorig)
+							break;
+						$sizes[] = $cursize;
+						$widths[] = $destwidth;
+						$heights[] = $destheight;
+						$maxdim = $destdim;
+						if (!$changedim)
+							break;
+					}
+					if ($showorig)
+						$maxdim = max($uploadmanager->original_width, $uploadmanager->original_height);
+				}
+			} else {
+				$maxdim = max($uploadmanager->upload_width, $uploadmanager->upload_height);
+			}
+			$smarty->assign('sizes', $sizes);
+			$smarty->assign('widths', $widths);
+			$smarty->assign('heights', $heights);
+			$smarty->assign('stdsize', $CONF['img_max_size']);
+			$smarty->assign('showorig', $showorig);
+			$smarty->assign('ratio', $maxdim/$CONF['prev_size']);
+			$smarty->assign('largeimages', $CONF['img_size_unlimited'] || (count($CONF['img_sizes']) != 0));
 			$smarty->assign('canclearexif', $CONF['exiftooldir'] !== '');
 			$smarty->assign('wantclearexif', $USER->clear_exif);
 		} elseif ($step == 2) {

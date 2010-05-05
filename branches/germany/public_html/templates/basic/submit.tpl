@@ -498,7 +498,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 	
-	{if $original_width}
+	{if $original_width && $largeimages}
 	
 		<h2>Submit Step 4 of 4: Confirm image size and rights</h2>
 		

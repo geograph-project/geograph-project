@@ -199,7 +199,11 @@ class UploadManager
 	*/
 	function setLargestSize($largestsize)
 	{
-		$this->largestsize=$largestsize;
+		global $CONF;
+		if (($largestsize == 65536 && $CONF['img_size_unlimited']) || in_array($largestsize, $CONF['img_sizes']))
+			$this->largestsize=$largestsize;
+		else
+			$this->largestsize=$CONF['img_max_size'];
 	}
 	
 	/**
@@ -424,7 +428,7 @@ class UploadManager
 	}
 			
 
-	function _new_size($width, $height) {
+	function _new_size($width, $height,$limit = 0) {
 		global $CONF;
 		#$CONF['pano_upper_limit'] = .25;
 		#$CONF['pano_lower_limit'] = .5;
@@ -432,6 +436,8 @@ class UploadManager
 		$destwidth = $width;
 		$destheight = $height;
 		$changedim = false;
+		if ($limit == 0)
+			$limit = $CONF['img_max_size'];
 		if ($height == 0)
 			return array($width, $height, $width, false);//$destdim = $width;
 		elseif ($width == 0)
@@ -439,25 +445,25 @@ class UploadManager
 		else {
 			$ratio = $height/$width;
 			if ($ratio >= 1) { // portrait
-				if ($height <= $CONF['img_max_size'])
+				if ($height <= $limit)
 					return array($width, $height, $height, false);//$destdim = $height;
 				else {
-					$destheight = $CONF['img_max_size'];
+					$destheight = $limit;
 					$destwidth = round($destheight/$ratio);
 					$destdim = $destheight;
 					$changedim = true;
 				}
 			} elseif ($ratio >= $CONF['pano_upper_limit']) { // landscape
-				if ($width <= $CONF['img_max_size'])
+				if ($width <= $limit)
 					return array($width, $height, $width, false);//$destdim = $width;
 				else {
-					$destwidth = $CONF['img_max_size'];
+					$destwidth = $limit;
 					$destheight = round($destwidth*$ratio);
 					$destdim = $destwidth;
 					$changedim = true;
 				}
 			} elseif ($ratio >= $CONF['pano_lower_limit']) { // panorama: try to keep height constant for lower ratios
-				$destheight = $CONF['pano_upper_limit']*$CONF['img_max_size'];
+				$destheight = $CONF['pano_upper_limit']*$limit;
 				$destwidth = $destheight/$ratio;
 				$destheight = round($destheight);
 				$destwidth = round($destwidth);
@@ -468,7 +474,7 @@ class UploadManager
 					$changedim = true;
 				}
 			} else { // panoraaaaama: try to keep size constant
-				$destheight = $CONF['pano_upper_limit']*$CONF['img_max_size']*sqrt($ratio/$CONF['pano_lower_limit']);
+				$destheight = $CONF['pano_upper_limit']*$limit*sqrt($ratio/$CONF['pano_lower_limit']);
 				$destwidth = $destheight/$ratio;
 				$destheight = round($destheight);
 				$destwidth = round($destwidth);
