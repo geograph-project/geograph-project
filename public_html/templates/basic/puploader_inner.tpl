@@ -41,9 +41,6 @@
 		<div>
 	{/if}
 	
-		<p>You might like to check you've selected the correct square<br/> by
-		viewing the Modern {getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}</p>
-
 		{if $reference_index == 2} 
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
@@ -112,7 +109,7 @@
 	
 	{if $reopenmaptoken}
 	<div class="interestBox" style="z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> <small>(and view list of placenames)</small>
-	{getamap gridref=$square->grid_reference text="Open Get-a-Map"}, <a href="/gridref/{$square->grid_reference}" target="_blank">Open {$square->grid_reference} Page</a> <small>(in new window)</small></div>
+	<a href="/gridref/{$square->grid_reference}" target="_blank">Open {$square->grid_reference} Page</a> <small>(in new window)</small></div>
 	{/if}
 	
 	<p>Please provide a short title for the image, and any other comments about where
