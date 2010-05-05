@@ -39,6 +39,11 @@ echo $s;
 printf("%s%s%s%s",$sd,$s,$svd,$s);
 printf("%s%s",$d,$s);
 
+printf("/%g%s",$c,$s);
+printf("/%G%s",$c,$s);
+printf('*%F<br />', floatval('1,2'));
+printf('*%F<br />', floatval('1.2'));
+
 setlocale(LC_NUMERIC,'C');
 
 echo $a.$s;
@@ -51,6 +56,21 @@ echo "$a<br />";
 echo "$b<br />";
 echo "$c<br />";
 echo "$d<br />";
+printf("/%g%s",$c,$s);
+printf("/%G%s",$c,$s);
+printf('*%F<br />', floatval('1,2'));
+printf('*%F<br />', floatval('1.2'));
+
+echo '<br /><br />';
+
+for ($v=1.23e-12;$v < 1.e20; $v*=10.) {
+  printf("%.14g %f   %g   $v<br />",$v,$v,$v);
+}
+echo '<br /><br />';
+for ($v=1.23e-12;$v < 1.e20; $v*=10.) {
+  $w=$v+0.1;
+  printf("%.14g %f   %g   $w<br />",$w,$w,$w);
+}
 ?>
 </p>
 </body>
