@@ -1213,7 +1213,11 @@ class GridImage
 			$return=array();
 			$return['url']=$thumbpath;
 
-			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			if ($CONF['lang'] == 'de')
+				$by = ' von ';
+			else
+				$by = ' by ';
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
@@ -1401,7 +1405,11 @@ class GridImage
 		}
 		else
 		{
-			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			if ($CONF['lang'] == 'de')
+				$by = ' von ';
+			else
+				$by = ' by ';
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
@@ -1436,7 +1444,11 @@ class GridImage
 		if ($this->ext) {
 			# (120,120,false,true);
 			# $resized['html'];
-			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			if ($CONF['lang'] == 'de')
+				$by = ' von ';
+			else
+				$by = ' by ';
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			#$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			# width="120" height="90"
 			$html="<img alt=\"$title\" $attribname=\"{$this->ext_thumb_url}\" />";
