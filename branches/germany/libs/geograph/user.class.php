@@ -1043,6 +1043,7 @@ EOT;
 				ticket_option=%s,
 				message_sig=%s,
 				upload_size=%d,
+				clear_exif=%d,
 				password=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
@@ -1060,6 +1061,7 @@ EOT;
 				$db->Quote($profile['ticket_option']),
 				$db->Quote(stripslashes($profile['message_sig'])),
 				intval($profile['upload_size']), #FIXME check values!
+				$profile['clear_exif']?1:0,
 				$db->Quote($password),
 				$this->user_id
 				);
@@ -1102,6 +1104,7 @@ EOT;
 				$this->ticket_option=stripslashes($profile['ticket_option']);				
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->upload_size=intval($profile['upload_size']);
+				$this->clear_exif=!empty($profile['clear_exif']);
 				$this->_forumUpdateProfile();
 				$this->_forumLogin();
 				

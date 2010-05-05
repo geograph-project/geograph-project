@@ -132,6 +132,9 @@ $CONF['forum_title'] = 'Discuss';
 //path to php binary
 $CONF['phpdir']='/usr/bin/';
 
+//path to exiftool binary
+$CONF['exiftooldir']='';
+
 ###################################
 
 $CONF['lang']='en';
