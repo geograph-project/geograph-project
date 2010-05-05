@@ -420,3 +420,5 @@ PRIMARY KEY (  `gridimage_id` )
 
 ALTER TABLE  `gridimage_size` ADD  `original_width` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0',
 ADD  `original_height` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0';
+
+ALTER TABLE  `user` ADD `clear_exif` tinyint(3) unsigned NOT NULL DEFAULT '1';
