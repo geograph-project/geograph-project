@@ -1861,25 +1861,25 @@ class GridImage
 				//might be better as an event handler
 				require_once('geograph/event.class.php');
 				new Event(EVENT_MOVEDPHOTO, "{$this->gridimage_id},{$this->grid_square->grid_reference},{$newsq->grid_reference}");
-							
+				
 				//update cached data for old square and new square
 				$this->grid_square->updateCounts();
 				$newsq->updateCounts();
-
 
 				//invalidate any cached maps
 					//handled by the event above 
 			
 				//update placename cached column
 					//handled by the event above 
-			
-				//updated cached tables
-					//this isnt needed as reassignGridsquare is only called before commitChanges
-				//$this->updateCachedTables();
-				
-				//updateCachedTables needs to know the new gridref for the lat/long calc!
-				$this->newsq =& $newsq;
 			}
+			
+			//updated cached tables
+				//this isnt needed as reassignGridsquare is only called before commitChanges
+			//$this->updateCachedTables();
+
+			//updateCachedTables needs to know the new gridref for the lat/long calc!
+			$this->newsq =& $newsq;
+			
 			
 			
 			$ok=true;
@@ -1890,7 +1890,7 @@ class GridImage
 			$ok=false;
 			$error=$newsq->errormsg;
 		}
-		return $ok;			
+		return $ok;
 	}
 	
 	
@@ -1969,7 +1969,7 @@ class GridImage
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
-			$db->Execute($sql);		
+			$db->Execute($sql);
 		} else {
 			//fall back if we dont know the moduration status then lets load it and start again!
 			$this->loadFromId($this->gridimage_id);	
@@ -2005,4 +2005,4 @@ class GridImage
 	}	
 	
 }
-?>
+
