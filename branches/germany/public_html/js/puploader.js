@@ -92,6 +92,7 @@ function checkMultiFormSubmission() {
 	var warnings_count = 0;
 	var errors = new Array();
 	var errors_count = 0;
+	var title_count = 0;
 			
 	for(q=0;q<theForm.elements.length;q++) {
 		var ele=theForm.elements[q];
@@ -125,12 +126,10 @@ function checkMultiFormSubmission() {
 				warnings[name] = (warnings[name])?(warnings[name] + 1):1;
 				warnings_count = warnings_count + 1;
 			}
-		if (ele.name.indexOf('title') == 0)
-			if (ele.value == '') {
-				var name = "* Photo Title";
-				errors[name] = (errors[name])?(errors[name] + 1):1;
-				errors_count = errors_count + 1;
-			}
+		if (ele.name.indexOf('title') == 0) {
+			if (ele.value != '')
+				title_count += 1;
+		}
 		if (ele.name.indexOf('imageclass[') == 0) {
 			if (ele.value == '') {
 				var name = "* Geographical Category";
@@ -169,6 +168,12 @@ function checkMultiFormSubmission() {
 			errors[name] = (errors[name])?(errors[name] + 1):1;
 			errors_count = errors_count + 1;
 		}
+	}
+
+	if (title_count == 0) {
+		var name = "* Photo Title";
+		errors[name] = (errors[name])?(errors[name] + 1):1;
+		errors_count = errors_count + 1;
 	}
 
 	if (errors_count > 0) {

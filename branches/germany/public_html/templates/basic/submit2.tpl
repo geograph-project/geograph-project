@@ -277,6 +277,8 @@ AttachEvent(window,'load',readHash,false);
 		<div><span>View Direction:</span><input type="text" name="view_direction[{$key}]" value="" size="3" maxlength="4"/></div> 
 		<div><span>Title:</span><input type="text" name="title[{$key}]" value="" size="20" maxlength="128"/></div>  
 		<div><span>Description:</span><textarea name="comment[{$key}]" cols="30" rows="2" wrap="soft"></textarea></div>  
+		<div><span>Title2:</span><input type="text" name="title2[{$key}]" value="" size="20" maxlength="128"/></div>  
+		<div><span>Description2:</span><textarea name="comment2[{$key}]" cols="30" rows="2" wrap="soft"></textarea></div>  
 		<div><span>Category:</span><input type="text" name="imageclass[{$key}]" value="" size="12" maxlength="64"/> <input type="text" name="imageclassother[{$key}]" value="" size="12" maxlength="64"/></div>  
 		<div><span>Date:</span><input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/></div>  
 	
