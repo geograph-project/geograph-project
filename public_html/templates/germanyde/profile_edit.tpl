@@ -217,6 +217,36 @@
 <legend>Einstellungen</legend>
  
 
+{if $largeimages}
+<div class="field"> 
+	<label for="upload_size" class="nowrap">Standard-Bildgröße</label>
+	
+	<select name="upload_size" id="upload_size"> 
+		<option value="{$stdsize}" {if $profile->upload_size == $stdsize} selected="selected"{/if}>{$stdsize} x {$stdsize} (Normalgröße)</a>
+		{foreach item=cursize from=$sizes}
+		<option value="{$cursize}" {if $profile->upload_size == $cursize} selected="selected"{/if}>{$cursize} x {$cursize}</a>
+		{/foreach}
+		{if $showorig}
+		<option value="65536" {if $profile->upload_size > 65530} selected="selected"{/if}>Wie hochgeladen</a>
+		{/if}
+	</select>
+
+	 
+	<div class="fieldnotes">Hier kann die Standardgröße beim Hochladen von Bildern angegeben werden. Abweichende Größen können auch noch beim Hochladen eingestellt werden.</div>
+</div>
+{/if}
+
+{if $canclearexif}
+<div class="field"> 
+	<label for="clear_exif" class="nowrap">EXIF-Daten löschen</label>
+	
+	<input type="checkbox" name="clear_exif" id="clear_exif" {if $profile->clear_exif}checked{/if} value="1"/><!--br/-->
+	 
+	<div class="fieldnotes">Beim Einreichen Metadaten (wie Aufnahmezeit oder Kameratyp) der Bilder löschen. Hier kann die Standardeinstellung geändert werden, abweichende Einstellungen können noch beim Hochladen von Bildern vorgenommen werden..</div>
+</div>
+{/if}
+
+
 <div class="field"> 
 	<label for="message_sig">Signatur für Mitteilungen:</label>
 	

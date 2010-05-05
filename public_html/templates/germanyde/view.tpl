@@ -32,21 +32,13 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
 {/dynamic}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+	{if $image->original_width}
+		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">Andere Größen</a></div>
+	{*elseif $user->user_id eq $image->user_id}
+		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Größere Version hochladen</a></div>
+	*}{/if}
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
-  {literal}
-  <script type="text/javascript">
-  
-  function redrawMainImage() {
-  	el = document.getElementById('mainphoto');
-  	el.style.display = 'none';
-  	el.style.display = '';
-  }
-  AttachEvent(window,'load',redrawMainImage,false);
-  AttachEvent(window,'load',showMarkedImages,false);
-  
-  </script>
-  {/literal}
   
 
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
@@ -329,8 +321,18 @@ function addStyleLinks() {
 	document.getElementById('styleLinks').innerHTML = 'Hintergrundfarbe: {if $maincontentclass eq "content_photowhite"}<b>weiß</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=white" rel="nofollow" class="robots-nofollow robots-noindex">weiß</a>{/if}/{if $maincontentclass eq "content_photoblack"}<b>schwarz</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=black" rel="nofollow" class="robots-nofollow robots-noindex">schwarz</a>{/if}/{if $maincontentclass eq "content_photogray"}<b>grau</b>{else}<a hr'+'ef="/photo/{$image->gridimage_id}?style=gray" rel="nofollow" class="robots-nofollow robots-noindex">grau</a>{/if}';
 {literal}
 }
-{/literal}
  AttachEvent(window,'load',addStyleLinks,false);
+
+
+function redrawMainImage() {
+	el = document.getElementById('mainphoto');
+	el.style.display = 'none';
+	el.style.display = '';
+}
+ AttachEvent(window,'load',redrawMainImage,false);
+ AttachEvent(window,'load',showMarkedImages,false);
+  
+{/literal}
 /* ]]> */
 </script>
 

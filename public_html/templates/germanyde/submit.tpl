@@ -180,6 +180,13 @@ beibehalten.</p>
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 		
+		{*if $last_grid_reference || $last_photographer_gridref}
+			<div style="font-size:0.8em">
+			<a href="javascript:{if $last_photographer_gridref}void(document.theForm.photographer_gridref.value = '{$last_photographer_gridref}');void(updateMapMarker(document.theForm.photographer_gridref,false));{/if}{if $last_grid_reference}void(document.theForm.grid_reference.value = '{$last_grid_reference}');void(updateMapMarker(document.theForm.grid_reference,false));{/if}">Vom vorigen Bild kopieren</a> <sup style="color:red">Neu</sup></div>
+		{else}
+		
+		{/if*}
+
 		<h4><b>Koordinaten:</b> (erwünscht)</h4>
 		<p><label for="grid_reference"><b style="color:#0018F8">Hauptmotiv</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Markiert Motiv" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Markiert Motiv" width="20" height="34" align="middle"/>{/if}
 		<span style="font-size:0.8em"><br/><a href="javascript:void(mapMarkerToCenter(document.theForm.grid_reference));void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Marker zentrieren</a></span>
@@ -207,6 +214,9 @@ beibehalten.</p>
 		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
 		{$rastermap->getImageTag()}<br/>
 		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+		{if $rastermap->service == 'Google'}
+			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';map.checkResize();return false">Größere Karte</a>
+		{/if}{*FIXME move to FootNote?*}
 		{if count($square->services) > 1}
 		{*<form method="get" action="/gridref/{$gridref}">*}{*FIXME*}
 		<p>Karte:
@@ -313,10 +323,6 @@ abdecken, ... können auch als Extrabilder für
 Auch wenn es für sie keine Punkte gibt, sind sie dennoch ein wertvoller Beitrag zum Projekt.</li>
 </ul>
 
-</div>
-
-<div style="float:right;position:relative;z-index:110">
-<img src="{$preview_url}" width="{$preview_width*0.5|string_format:"%d"}" height="{$preview_height*0.5|string_format:"%d"}" alt="Verkleinertes Bild"/>	
 </div>
 
 <p>Es können weitere Informationen angegeben werden, die jederzeit geändert werden können.
@@ -460,11 +466,22 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 	
-	<h2>Einreichen: Schritt 4 von 4: Rechte bestätigen</h2>
+	{if $original_width && $largeimages}
+	
+		<h2>Einreichen: Schritt 4 von 4: Größe und Rechte bestätigen</h2>
+		
+		{include file="_submit_sizes.tpl"}
+		
+		<hr/>
+	{else}
+		<h2>Einreichen: Schritt 4 von 4: Rechte bestätigen</h2>
+	{/if}
 
-<div style="float:right;position:relative;">
-<img src="{$preview_url}" width="{$preview_width*0.3|string_format:"%d"}" height="{$preview_height*0.3|string_format:"%d"}" alt="Verkleinertes Bild" hspace="10"/>	
-</div>
+	{if $canclearexif}
+		<input type="checkbox" name="clearexif" id="clearexif" {if $wantclearexif}checked{/if} value="1"/> <label for="clearexif">Alle EXIF-Daten (z.B. Aufnahmezeitpunkt und Kameratyp) aus dem Bild entfernen.</label><!--br/-->
+		<hr/>
+	{/if}
+
 	{if $user->stats.images && $user->stats.images > 100 && $last_imagetaken}
 
 	<div style="border:1px solid gray; padding:10px">Ich habe das schon gelesen, <input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="ICH BIN EINVERSTANDEN &gt;" onclick="autoDisable(this);autoDisable(this.form.finalise[1]);"/><br/> (erspart das Herunterscrollen)</div>
@@ -576,8 +593,27 @@ fortbestehen.
 	</form>
 {/if}
 
+{if $preview_url}
+{if !$enable_forums}
+	<div style="position:fixed;right:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
+{else}
+	<div style="position:fixed;left:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
+{/if}
+	<div id="previewInner"></div></div>
 
+<script type="text/javascript">
+{literal}
+function showPreview(url,width,height,filename) {
+	height2=Math.round((148 * height)/width);
+	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="148" height="'+height2+'" id="imgPreview" onmouseover="this.height='+height+';this.width='+width+'" onmouseout="this.height='+height2+';this.width=148" /><br/>'+filename;
+	document.getElementById('hidePreview').style.display='';
+}
+ AttachEvent(window,'load',function () {showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height},'{$filename|escape:'javascript'}'{literal}) },false);
 
+{/literal}
+</script>
+
+{/if}
 
 
 {/dynamic}
