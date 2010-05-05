@@ -218,6 +218,36 @@
 <legend>Site Preferences</legend>
  
 
+{if $largeimages}
+<div class="field"> 
+	<label for="upload_size" class="nowrap">Default Upload Size</label>
+	
+	<select name="upload_size" id="upload_size"> 
+		<option value="{$stdsize}" {if $profile->upload_size == $stdsize} selected="selected"{/if}>{$stdsize} x {$stdsize} (the original size)</a>
+		{foreach item=cursize from=$sizes}
+		<option value="{$cursize}" {if $profile->upload_size == $cursize} selected="selected"{/if}>{$cursize} x {$cursize}</a>
+		{/foreach}
+		{if $showorig}
+		<option value="65536" {if $profile->upload_size > 65530} selected="selected"{/if}>As uploaded</a>
+		{/if}
+	</select>
+
+	 
+	<div class="fieldnotes">Choose the default size you wish to preserve. You can still change it per upload, just chooses the option selected by default.</div>
+</div>
+{/if}
+
+{if $canclearexif}
+<div class="field"> 
+	<label for="clear_exif" class="nowrap">Clear EXIF data</label>
+	
+	<input type="checkbox" name="clear_exif" id="clear_exif" {if $profile->clear_exif}checked{/if} value="1"/><!--br/-->
+	 
+	<div class="fieldnotes">Clear any meta data from images you submit. Choose the default setting. You can still change it per upload, just chooses the option selected by default.</div>
+</div>
+{/if}
+
+
 <div class="field"> 
 	<label for="message_sig" class="nowrap">Message Signature</label>
 	
