@@ -38,6 +38,12 @@ a Img
 	overflow:hidden;
 }
 
+a.hidelink {
+	text-transform:lowercase;
+	text-decoration:none;
+	cursor:normal;
+}
+
 /*---------------------------------------------------------------*
  * title header
  *---------------------------------------------------------------*/
@@ -474,6 +480,14 @@ div.caption
 {
 	clear:left;
 	font-size:0.8em;
+}
+div.caption640
+{
+	clear:left;
+	font-size:0.8em;
+	margin-left:auto;
+	margin-right:auto;
+	width:640px
 }
 div.statuscaption
 {

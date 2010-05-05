@@ -655,7 +655,7 @@ class GridImage
 	/**
 	* given a temporary file, transfer to final destination for the image
 	*/
-	function storeImage($srcfile, $movefile=false)
+	function storeImage($srcfile, $movefile=false, $suffix = '')
 	{
 		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
@@ -671,13 +671,52 @@ class GridImage
 		if (!is_dir("$base/$yz/$ab/$cd"))
 			mkdir("$base/$yz/$ab/$cd");
 
-		$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}.jpg";
+		$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		if ($movefile)
 			return @rename($srcfile, $dest);
 		else
 			return @copy($srcfile, $dest);
 	}
 	
+	/**
+	* Store a file as the original
+	*/
+	function storeOriginal($srcfile, $movefile=false)
+	{
+		return $this->storeImage($srcfile,$movefile,'_original');
+	}
+	
+	function _getOriginalpath($check_exists=true,$returntotalpath = false, $suffix = '_original')
+	{
+		global $CONF;
+
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
+		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
+		$abcdef=sprintf("%06d", $this->gridimage_id);
+		$hash=$this->_getAntiLeechHash();
+		if ($this->gridimage_id<1000000) {
+			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
+		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
+		}
+
+		if (empty($check_exists)) {
+			if ($returntotalpath)
+				$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+
+			return $fullpath;
+		}
+
+		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
+		
+		if (!$ok)
+			$fullpath="/photos/error.jpg";
+		
+		return $fullpath;
+	}
+
+
 	/**
 	* calculate the path to the full size photo image
 	* if you specify true for check_exists parameter (the default), the
@@ -697,7 +736,6 @@ class GridImage
 			return $this->fullpath;
 		}
 		
-		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
@@ -705,8 +743,17 @@ class GridImage
 		if ($this->gridimage_id<1000000) {
 			$fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		}
+		
+		if (empty($check_exists)) {
+			if ($returntotalpath)
+				$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+			
+			return $fullpath;
+		}
+		
 		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
 		
 		if (!$ok)
@@ -723,14 +770,21 @@ class GridImage
 					$target=$_SERVER['DOCUMENT_ROOT'].$fullpath;
 					
 					//create target dir
-					$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
-					if (!is_dir("$base/$yz"))
-						mkdir("$base/$yz");
-					if (!is_dir("$base/$yz/$ab"))
-						mkdir("$base/$yz/$ab");
-					if (!is_dir("$base/$yz/$ab/$cd"))
-						mkdir("$base/$yz/$ab/$cd");
-			
+					if ($this->gridimage_id<1000000) {
+						$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
+						if (!is_dir("$base/$ab"))
+							mkdir("$base/$ab");
+						if (!is_dir("$base/$ab/$cd"))
+							mkdir("$base/$ab/$cd");
+					} else {
+						$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
+						if (!is_dir("$base/$yz"))
+							mkdir("$base/$yz");
+						if (!is_dir("$base/$yz/$ab"))
+							mkdir("$base/$yz/$ab");
+						if (!is_dir("$base/$yz/$ab/$cd"))
+							mkdir("$base/$yz/$ab/$cd");
+					}
 					$fout=fopen($target, 'wb');
 					if ($fout)
 					{
@@ -755,19 +809,16 @@ class GridImage
 			$fullpath="/photos/error.jpg";
 
 		if ($returntotalpath)
-			$fullpath="http://".$CONF['CONTENT_HOST'].$fullpath;
+			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
 
 		return $fullpath;
 	}
 	
 	/**
-	* returns HTML img tag to display this image at full size
+	* returns the size of the image in getimagesize format. loads from cache if possible - fetching the image from remote if needbe.
 	*/
-	function getFull($returntotalpath = true)
+	function _getFullSize()
 	{
-		global $CONF;
-		$fullpath=$this->_getFullpath();
-		
 		if (isset($this->cached_size)) {
 			$size = $this->cached_size;
 		} elseif ($this->gridimage_id) {
@@ -776,23 +827,68 @@ class GridImage
 			//fails quickly if not using memcached!
 			$size =& $memcache->name_get('is',$mkey);
 			if (!$size) {
-				$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-			
+				$db=&$this->_getDB(true);
+
+				$prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
+				$size = $db->getRow("select width,height,0,0,original_width,original_height from gridimage_size where gridimage_id = {$this->gridimage_id}");
+				$db->SetFetchMode($prev_fetch_mode);
+				if ($size) {
+					$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+					$this->original_width = $size[4];
+					$this->original_height = $size[5];
+				} else {
+					$fullpath = $this->_getFullpath(true); //will fetch the file if needbe
+					
+					$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+					
+					$origpath = $this->_getOriginalpath(true);
+					
+					$db=&$this->_getDB(false);
+					
+					if ($origpath!="/photos/error.jpg") {
+						$osize=getimagesize($_SERVER['DOCUMENT_ROOT'].$origpath);
+						$this->original_width = $size[4] = $osize[0];
+						$this->original_height = $size[5] = $osize[1];
+					
+						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]},original_width={$osize[0]}, original_height={$osize[1]}");
+					} else {
+						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
+					}
+				}
 				//fails quickly if not using memcached!
-				$memcache->name_set('is',$mkey,$places,$memcache->compress,$memcache->period_long);
+				$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
 			}
 			$this->cached_size = $size;
+			$this->original_width = $size[4];
+			$this->original_height = $size[5];
 		} else {
 			$size = array();
 			$size[3] = '';
 		}
-		
+
+		if (!empty($size[1]) && empty($size[3])) {//todo - temporally while some results in memcache are broken
+			$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+		}
+		return $size;
+	}
+	
+	/**
+	* returns HTML img tag to display this image at full size
+	*/
+	function getFull($returntotalpath = true)
+	{
+		global $CONF;
+
+		$size = $this->_getFullSize();
+
+		$fullpath=$this->_getFullpath(false); //we can set $check_exists=false because _getFullSize will have called _getFullSize(true) if the size was not loaded from cache (if in cache dont need to check for file existance)
+
 		$title=htmlentities2($this->title);
 		
 		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
-			$fullpath = cachize_url("http://".$CONF['CONTENT_HOST'].$fullpath);
+			$fullpath = cachize_url("http://".$CONF['STATIC_HOST'].$fullpath);
 		} elseif ($returntotalpath)
-			$fullpath="http://".$CONF['CONTENT_HOST'].$fullpath;
+			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
 		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 		
@@ -807,23 +903,9 @@ class GridImage
 		if (!$this->gridimage_id) {
 			return 1;
 		} 
-		if (isset($this->cached_size)) {
-			$result = $this->cached_size[0]>$this->cached_size[1];
-			return $result;
-		} 
-		global $memcache;
 		
-		$mkey = "{$this->gridimage_id}:F";
-		//fails quickly if not using memcached!
-		$size =& $memcache->name_get('is',$mkey);
-		if (!$size) {
-			$fullpath=$this->_getFullpath();
-			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-			
-			//fails quickly if not using memcached!
-			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
-		}
-		$this->cached_size = $size;
+		$size = $this->_getFullSize();
+		
 		$result = $size[0]>$size[1];
 		return $result;
 	}
@@ -853,8 +935,8 @@ class GridImage
 		}
 		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
 		{
-			//get path to fullsize image, but don't fallback to error image..
-			$fullpath=$this->_getFullpath(false);
+			//get path to fullsize image, 
+			$fullpath=$this->_getFullpath();
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				//generate resized image
@@ -980,8 +1062,8 @@ class GridImage
 		}
 		if (!file_exists($base.$thumbpath))
 		{
-			//get path to fullsize image, but don't fallback to error image..
-			$fullpath=$this->_getFullpath(false);
+			//get path to fullsize image
+			$fullpath=$this->_getFullpath();
 			
 			if ($fullpath != '/photos/error.jpg' && file_exists($base.$fullpath))
 			{
@@ -1092,6 +1174,7 @@ class GridImage
 		$bestfit=isset($params['bestfit'])?$params['bestfit']:true;
 		$bevel=isset($params['bevel'])?$params['bevel']:true;
 		$unsharp=isset($params['unsharp'])?$params['unsharp']:true;
+		$source=isset($params['source'])?$params['source']:'';
 		
 		
 		
@@ -1110,6 +1193,17 @@ class GridImage
 		} else {
 			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
+		}
+
+		if (!empty($params['urlonly']) && $params['urlonly'] !== 2 && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
+			$return=array();
+			$return['url']=$thumbpath;
+			if (!empty($CONF['enable_cluster'])) {
+				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+			} else {
+				$return['server']= "http://".$CONF['CONTENT_HOST'];
+			}
+			return $return;
 		}
 
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
@@ -1140,8 +1234,12 @@ class GridImage
 
 		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))
 		{
-			//get path to fullsize image, but don't fallback to error image..
-			$fullpath=$this->_getFullpath(false);
+			if ($source == 'original') {
+				$fullpath=$this->_getOriginalpath();
+			} else {
+				//get path to fullsize image (will try to fetch it from fetch_on_demand)
+				$fullpath=$this->_getFullpath();
+			}
 			
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
@@ -1347,9 +1445,10 @@ class GridImage
 		$params['maxw']=$maxw;
 		$params['maxh']=$maxh;
 		$params['attribname']=$attribname;
+		$params['urlonly']=$urlonly;
 		$resized=$this->_getResized($params);
 		
-		if ($urlonly) {
+		if (!empty($urlonly)) {
 			if ($urlonly === 2) 
 				return $resized;
 			else 
@@ -1377,7 +1476,23 @@ class GridImage
 		
 		return $resized['html'];
 	}	
+
+	/**
+	* 
+	*/
+	function getImageFromOriginal($maxw, $maxh)
+	{
+		$params['maxw']=$maxw;
+		$params['maxh']=$maxh;
+		$params['bevel']=false;
+		$params['unsharp']=false;
+		$params['source']='original';
+		$resized=$this->_getResized($params);
+		
+		return $resized['url'];
+	}	
 	
+
 	/**
 	* Locks this image so its not shown to other moderators
 	*/
@@ -1403,7 +1518,7 @@ class GridImage
 	*/
 	function isImageLocked($mid = 0)
 	{	
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(10); //dont tollerate a lag
 
 		return $db->getOne("
 			select 
@@ -1416,13 +1531,13 @@ class GridImage
 				and m.user_id != $mid
 				and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR)");
 	}
-	
+
 	/**
 	* find the moderator for the image
 	*/
 	function lookupModerator() 
 	{
-		$db=&$this->_getDB();
+		$db=&$this->_getDB(true);
 		if (empty($this->moderator_id))
 			return;
 		return $this->mod_realname = $db->getOne("select realname from user where user_id = {$this->moderator_id}");	
@@ -1571,7 +1686,7 @@ class GridImage
 		//old one is in $this->grid_square
 		$newsq=new GridSquare;
 		if (is_object($this->db))
-			$newsq->_setDB($this->db);
+			$newsq->_setDB($this->_getDB());
 		if ($newsq->setByFullGridRef($grid_reference,false,true))
 		{
 			$db=&$this->_getDB();
@@ -1583,13 +1698,13 @@ class GridImage
 				//we use a negative sequence number
 				if ($this->moderation_status!='rejected')
 				{
-					$seq_no = $this->db->GetOne("select max(seq_no) from gridimage ".
+					$seq_no = $db->GetOne("select max(seq_no) from gridimage ".
 						"where gridsquare_id={$newsq->gridsquare_id}");
 					$seq_no=max($seq_no+1, 0);
 				}
 				else
 				{
-					$seq_no = $this->db->GetOne("select min(seq_no) from gridimage ".
+					$seq_no = $db->GetOne("select min(seq_no) from gridimage ".
 						"where gridsquare_id={$newsq->gridsquare_id}");
 					$seq_no=min($seq_no-1, -1);
 				}

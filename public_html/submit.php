@@ -22,14 +22,17 @@
  */
 
 require_once('geograph/global.inc.php');
-require_once('geograph/gridimage.class.php');
-require_once('geograph/gridsquare.class.php');
+
+if (isset($_GET['preview'])) {
+	session_cache_limiter('none');
+} else {
+	require_once('geograph/gridimage.class.php');
+	require_once('geograph/gridsquare.class.php');
+}
+
 require_once('geograph/uploadmanager.class.php');
 
 init_session();
-
-list($usec, $sec) = explode(' ',microtime());
-$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
 $uploadmanager=new UploadManager;
 
@@ -39,6 +42,9 @@ if (isset($_GET['preview']))
 	$uploadmanager->outputPreviewImage($_GET['preview']);
 	exit;
 }
+
+list($usec, $sec) = explode(' ',microtime());
+$GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 
 $square=new GridSquare;
 $smarty = new GeographPage;
@@ -336,6 +342,9 @@ if (isset($_POST['gridsquare']))
 						$smarty->assign('error', $uploadmanager->errormsg);
 						$uploadmanager->errormsg = '';
 					}
+
+					$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg']['name'])));
+
 					break;
 				case UPLOAD_ERR_INI_SIZE:
 				case UPLOAD_ERR_FORM_SIZE:
@@ -445,6 +454,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
 				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
+				$uploadmanager->setLargestSize($_POST['largestsize']);
 				
 				if ($_POST['pattrib'] == 'other') {
 					$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));
@@ -457,24 +467,19 @@ if (isset($_POST['gridsquare']))
 				}
 				
 				
-				$err = $uploadmanager->commit();
+				$err = $uploadmanager->commit('submit',true); //we will call cleanup later. 
 				
 				if ($_POST['imagetaken'] != '0000-00-00') {
 					$_SESSION['last_imagetaken'] = $_POST['imagetaken'];
 				}
-				
-				//clear user profile
-				$ab=floor($USER->user_id/10000);
-				$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
-				
-				if ($memcache->valid) {
-					//the submit list
-					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
-					$memcache->name_delete('gi',$mkey);
-					//the browse page for the user (to show pending)
-					$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
-					$memcache->name_delete('gi',$mkey);
+				if (!empty($_POST['grid_reference']) && $square->natgrlen > 4) {
+					$_SESSION['last_grid_reference'] = $_POST['grid_reference'];
 				}
+				if (!empty($_POST['photographer_gridref'])) {
+					$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
+				}
+				
+				$clear_cache = 1;
 				
 				if (!$err)
 					$smarty->assign('gridimage_id', $uploadmanager->gridimage_id);
@@ -648,6 +653,12 @@ if (isset($_POST['gridsquare']))
 		if (isset($_SESSION['last_imagetaken'])) {
 			$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
 		}
+		if (isset($_SESSION['last_grid_reference'])) {
+			$smarty->assign('last_grid_reference', $_SESSION['last_grid_reference']);
+		}
+		if (isset($_SESSION['last_photographer_gridref'])) {
+			$smarty->assign('last_photographer_gridref', $_SESSION['last_photographer_gridref']);
+		}
 	}
 	else
 	{
@@ -723,6 +734,27 @@ $_SESSION['tab'] = $selectedtab;
 $smarty->assign('step', $step);
 
 $smarty->display('submit.tpl');
+
+if (!empty($clear_cache)) {
+
+	flush();
+
+	//clear user profile
+	$ab=floor($USER->user_id/10000);
+	$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
+		
+	if ($memcache->valid) {
+		//the submit list
+		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
+		$memcache->name_delete('gi',$mkey);
+		//the browse page for the user (to show pending)
+		$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by ftf desc,gridimage_id");
+		$memcache->name_delete('gi',$mkey);
+	}
+	
+	if (!$err)
+		$uploadmanager->cleanUp();
+}
 
 	
 ?>

@@ -763,6 +763,9 @@ class RasterMap
 							map.addControl(new GSmallZoomControl());
 							map.addControl(new GMapTypeControl(true));
 							//map.disableDragging();
+							map.enableDoubleClickZoom(); 
+							map.enableContinuousZoom();
+							map.enableScrollWheelZoom();
 							var point = new GLatLng({$this->lat},{$this->long});
 							//map.setCenter(point, 13, G_PHYSICAL_MAP);
 							map.setCenter(point, $zoom, G_HYBRID_MAP);
@@ -1198,7 +1201,7 @@ class RasterMap
 		$folder = $this->folders[$service];
 		$div = $this->divisor[$service];
 		$div2 = max(10000,$div*10);
-		if ($e && $n) {
+		if ($e || $n) {
 			$e2 = floor($e /$div2);
 			$n2 = floor($n /$div2);
 			$e3 = floor($e /$div);
