@@ -51,6 +51,9 @@ $smarty->display('_std_begin.tpl');
 <br>-and/or-<br>
 <br>
 <input type="checkbox" id="update" name="update" value="1"> <label for="update">Update lat/long values in gridimage_search</label><br>
+<br>-and/or-<br>
+<br>
+<input type="checkbox" id="update" name="fix" value="1"> <label for="fix">Fix lat/long values in gridimage_search (based on tickets)</label><br>
 <br><br>
 
 Optionally, run only on the folowing gridimage_id's:<br/>
@@ -195,8 +198,61 @@ if (!empty($_POST['update']))
 	
 }
 
+if (!empty($_POST['fix']))
+{
+	echo "<hr/><h3>Updating Lat/Long</h3>";
+	flush();
+
+	$start = time();
+
+	$andwhere = '';
+	if (!empty($_POST['ids'])) {
+		$ids = trim(preg_replace('/[^\d,]+/',' ',$_POST['ids']));
+		$andwhere = " AND gi.gridimage_id IN ($ids) ";
+	}
+
+	$recordSet = &$db->Execute("SELECT gi.gridimage_id,x,y,reference_index,nateastings,natnorthings,wgs84_lat,wgs84_long
+		FROM gridimage gi
+		INNER JOIN gridimage_search AS gs USING ( gridimage_id )
+		INNER JOIN gridimage_ticket AS gt USING ( gridimage_id )
+		INNER JOIN gridimage_ticket_item AS ti USING ( gridimage_ticket_id )
+		WHERE field = 'grid_reference'
+		$andwhere
+		GROUP BY gi.gridimage_id
+		ORDER BY null");
+	$count=0;
+	while (!$recordSet->EOF) 
+	{
+		$image = $recordSet->fields;
+	
+		if ($image['nateastings']) {
+			list($lat,$long) = $conv->national_to_wgs84($image['nateastings'],$image['natnorthings'],$image['reference_index']);
+		} else {
+			list($lat,$long) = $conv->internal_to_wgs84($image['x'],$image['y'],$image['reference_index']);
+		}
+	
+		if ($image['wgs84_lat'] != $lat || $image['wgs84_long'] != $long) {
+			
+			
+			$db2->Execute("INSERT INTO tmp_fix_log SET wgs84_lat = $lat, wgs84_long = $long, old_lat = {$image['wgs84_lat']}, old_long = {$image['wgs84_long']},gridimage_id = ".$image['gridimage_id']);
+		
+			
+			$db2->Execute("UPDATE LOW_PRIORITY gridimage_search SET wgs84_lat = $lat, wgs84_long = $long,point_ll = GeomFromText('POINT($long $lat)'),upd_timestamp=upd_timestamp WHERE gridimage_id = ".$image['gridimage_id']);
+			print ". ";
+		}
+		
+		if (++$count%500==0) {
+			printf("<br/>done %d at <b>%d</b> seconds<br/>",$count,time()-$start);
+			flush();
+		}
+		$recordSet->MoveNext();
+	}
+	
+	echo "<p>Lat/Long update complete</p>";
+	
+}
+
 
 $smarty->display('_std_end.tpl');
 exit;
 
-?>
