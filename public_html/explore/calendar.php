@@ -53,7 +53,8 @@ if (isset($_GET['supp'])) {
 
 
 $smarty->caching = 2; // lifetime is per cache
-if ($month == date('n') && $year == date('Y')) {
+#if ($month == date('n') && $year == date('Y')) {
+if ($year == date('Y')) {
 	$smarty->cache_lifetime = 3600*24; //1day cache
 } else {
 	$smarty->cache_lifetime = 3600*24*7; //7day cache
