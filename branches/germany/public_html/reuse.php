@@ -37,19 +37,39 @@ if (isset($_REQUEST['id']))
 	require_once('geograph/gridimage.class.php');
 
 	$image=new GridImage();
-	$image->loadFromId($_REQUEST['id']);
+	$ok = $image->loadFromId($_REQUEST['id']);
 	
-	if ($image->moderation_status=='rejected') {
+	if (!$ok || $image->moderation_status=='rejected') {
 		//clear the image
 		$image=new GridImage;
 		header("HTTP/1.0 410 Gone");
 		header("Status: 410 Gone");
-		$template = "view.tpl";
+		$template = "static_404.tpl";
 	} else {
 		if (isset($_REQUEST['download']) && $_REQUEST['download'] == $image->_getAntiLeechHash()) {
-			$filepath = $image->_getFullpath();
+
+			if (stripos($_SERVER['HTTP_REFERER'], 'seadragon.com')!==FALSE) {
+				header("HTTP/1.0 307 Temporary Redirect");
+				header("Status: 307 Temporary Redirect");
+				header("Location: /photo/".intval($_REQUEST['id']));
+				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_REQUEST['id'])."\">View image page</a>";
+				exit;
+			}
+			
+			switch($_REQUEST['size']) {
+				case 640:
+				case 800:
+				case 1024: 
+				case 1600:
+					$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']),intval($_REQUEST['size']));
+					break;
+				case 'original': 
+					$filepath = $image->_getOriginalpath();
+					break;
+				default: $filepath = $image->_getFullpath();
+			} 
 			$filename = basename($filepath);
-			$filename = preg_replace('/(\.jpg)/'," by {$image->realname}\$1",$filename);
+			$filename = "geograph-".preg_replace('/_\w+(\.jpg)/'," by {$image->realname}\$1",$filename);
 			$filename = preg_replace('/ /','-',trim($filename));
 			$filename = preg_replace('/[^\w-\.,]+/','',$filename);
 			$lastmod = filemtime($_SERVER['DOCUMENT_ROOT'].$filepath);
@@ -88,7 +108,7 @@ if (isset($_REQUEST['id']))
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
-	$template = "view.tpl";
+	$template = "static_404.tpl";
 }
 
 
