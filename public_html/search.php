@@ -1062,8 +1062,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$engine->nextLink = "/search.php?i=$i&redo=1&$name=$value";
 		}
 		
-		
-		if ($display == 'reveal' && $engine->resultCount) {
+		if ($engine->resultCount) {
+		if ($display == 'reveal') {
 			foreach ($engine->results as $idx => $image) {
 			
 				if ($engine->results[$idx]->gridsquare_id) {
@@ -1088,7 +1088,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 					}
 				}
 			}
-		} elseif ($display == 'excerpt' && $engine->resultCount) {
+		} elseif ($display == 'excerpt' || $display == 'landing') {
 			
 			$sphinx = new sphinxwrapper($engine->criteria->searchtext);
 			
@@ -1101,8 +1101,9 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			foreach ($engine->results as $idx => $image) {
 				$engine->results[$idx]->excerpt = $reply[$idx];
 			}
-			
-		} elseif ($display == 'cluster' && $engine->resultCount) {
+		} 
+		
+		if ($display == 'cluster') {
 			foreach ($engine->results as $idx => $image) {
 				$engine->results[$idx]->simple_title = preg_replace('/\s*\(?\s*\d+\s*\)?\s*$/','',$engine->results[$idx]->title);
 				$found = -1;
@@ -1125,7 +1126,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 					unset($engine->results[$idx]);
 				}
 			}
-		} elseif ($display == 'cluster2' && $engine->resultCount) {
+		} elseif ($display == 'cluster2') {
 			$breakby = preg_replace('/_(year|month|decade)$/','',$engine->criteria->breakby);
 			if (preg_match('/^(\w+)\+$/i',$breakby,$m) ) {
 				$breakby  = $m[1];
@@ -1149,7 +1150,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 					unset($engine->results[$idx]);
 				}
 			}
-		} elseif ($display == 'gmap' && $engine->resultCount) {
+		} elseif ($display == 'gmap' || $display == 'landing') {
 			$markers = array();
 			$conv = new Conversions();
 			
@@ -1175,6 +1176,35 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 				}
 			}
 			$smarty->assign_by_ref('markers',$markers);
+		}
+		
+		if ($display == 'landing' && !empty($engine->criteria->searchtext)) {
+			$sphinx = new sphinxwrapper();
+			$sphinx->pageSize = $pgsize = 5;
+			$pg = 1;
+
+			$sphinx->prepareQuery($engine->criteria->searchtext." @source -themed");
+
+			$ids = $sphinx->returnIds($pg,'content_stemmed');
+
+			if (!empty($ids) && count($ids) > 0) {
+				if (empty($db)) {
+					$db = GeographDatabaseConnection(true);
+				}
+				
+				$id_list = implode(',',$ids);
+				
+				$related = $db->getAll("
+					SELECT c.url,c.title,'Collection' AS `type`,realname,user_id
+					FROM content c
+					LEFT JOIN user u USING (user_id)
+					WHERE c.content_id IN($id_list)
+					ORDER BY FIELD(c.content_id,$id_list)"); 
+
+				$smarty->assign_by_ref('related',$related);
+			} 
+		}
+		
 		}
 	}
 
