@@ -698,7 +698,7 @@ else
 			$smarty->assign('eastings', $square->eastings);
 			$smarty->assign('northings', $square->northings);
 			$smarty->assign('gridref', $square->grid_reference);
-			$smarty->assign('grid_reference', $square->grid_reference);
+			#$smarty->assign('grid_reference', $square->grid_reference);
 		}
 	} elseif (!empty($_SESSION['gridsquare'])) {
 		//just starting - use remembered values
