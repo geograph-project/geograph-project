@@ -1,0 +1,13 @@
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Würzburg' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Bayreuth' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Leipzig' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Chemnitz' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Trier' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Detmold' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Köln' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Darmstadt' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Gießen' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Kassel' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Braunschweig' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Lüneburg' LIMIT 1;
+UPDATE `loc_towns` SET `s`='2' WHERE `s`='3' AND `name`='Oldenburg' LIMIT 1;

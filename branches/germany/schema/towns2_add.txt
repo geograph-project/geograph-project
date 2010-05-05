@@ -1,0 +1,3 @@
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en, x, y, point_xy) values
+('Münster',                405580, 5757820, 2, 3, 0, GeomFromText('POINT(405580 5757820)'), 205580, 557820, GeomFromText('POINT(205580 557820)')),
+('Füssen',                 627810, 5269640, 4, 3, 0, GeomFromText('POINT(627810 5269640)'), 427810, 69640, GeomFromText('POINT(427810 69640)'));
