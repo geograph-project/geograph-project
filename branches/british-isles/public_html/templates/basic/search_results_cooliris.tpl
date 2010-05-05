@@ -3,7 +3,7 @@
 
 {if $engine->resultCount}
 	
-	<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="760" height="450">
+	<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="500">
 		<param name="movie" value="http://apps.cooliris.com/embed/cooliris.swf" />
 		<param name="flashvars" value="feed={$rss_url}" />
 	
