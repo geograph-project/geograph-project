@@ -46,6 +46,7 @@ class UploadManager
 	var $square=null;
 	
 	var $tmppath="";
+	var $clearexif = false;
 	
 	/**
 	* Constructor
@@ -207,6 +208,14 @@ class UploadManager
 	function setCredit($realname) 
 	{
 		$this->realname = $realname;
+	}
+	
+	/**
+	* set clearexif
+	*/
+	function setClearExif($clearexif)
+	{
+		$this->clearexif = !empty($clearexif);
 	}
 	
 	/**
@@ -552,7 +561,10 @@ class UploadManager
 				
 				//removed the unsharp as it makes some images worse - needs to be optional
 				// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
-				$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
+				if ($CONF['exiftooldir'] !== '')
+					$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
+				else
+					$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
 
 				passthru ($cmd);
 
@@ -752,6 +764,15 @@ class UploadManager
 		$image->gridimage_id = $gridimage_id;
 		$image->user_id = $USER->user_id;
 		
+		if ($this->clearexif && $CONF['exiftooldir'] !== '') {
+			$cmd = sprintf ("\"%sexiftool\" -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
+			passthru ($cmd);
+			$orginalfile = $this->_originalJPEG($this->upload_id);
+			if (file_exists($orginalfile)) {
+				$cmd = sprintf ("\"%sexiftool\" -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
+				passthru ($cmd);
+			}
+		}
 		$storedoriginal = false;
 		if ($ok = $image->storeImage($src)) {
 		

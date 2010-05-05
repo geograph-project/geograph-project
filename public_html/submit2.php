@@ -35,6 +35,9 @@ if (!empty($_REQUEST['use_autocomplete'])) {
 	$USER->use_autocomplete = 1;
 }
 
+$smarty->assign('canclearexif', $CONF['exiftooldir'] !== '');
+$smarty->assign('wantclearexif', $USER->clear_exif);
+
 $clear_cache = array();
 
 if (isset($_FILES['jpeg_exif']))
