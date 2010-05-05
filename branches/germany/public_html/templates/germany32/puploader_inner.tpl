@@ -17,10 +17,10 @@
 	<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
 
 	<p><label for="grid_reference">Enter the grid reference 
-	(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
-	<u title="e.g. TQ435646 or TQ 435 646">6</u>,
-	<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
-	<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the subject grid square</label><br /><br />
+	(<u title="e.g. TPT2769 or TPT 27 69">4</u>,
+	<u title="e.g. TPT277695 or TPT 277 695">6</u>,
+	<u title="e.g. TPT27796951 or TPT 2779 6951">8</u> or 
+	<u title="e.g. TPT2779269513 or TPT 27792 69513">10</u> figure) for the subject grid square</label><br /><br />
 	{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">clear</a>)<br/></small></small>{/if}
 	<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
 	&nbsp;&nbsp;&nbsp;
@@ -133,7 +133,7 @@
 	<textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 	<p style="clear:both"><label for="comment2"><b>English Description/Comment</b></label> <span class="formerror" style="display:none" id="comment2style">Possible style issue. See Guide above. <span id="comment2stylet"></span></span><br/>
 	<textarea id="comment2" name="comment2" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment2',true);" onkeyup="checkstyle(this,'comment2',false);">{$comment2|escape:'html'}</textarea></p>
-	<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
+	<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TPT2769]]</span> or <span style="color:blue">[[34]]</span> to link 
 	to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
 
