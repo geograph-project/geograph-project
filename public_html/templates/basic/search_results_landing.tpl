@@ -44,7 +44,7 @@ Display:
 		map = new GMap2(document.getElementById("map"));
 		map.addMapType(G_PHYSICAL_MAP);
 		map.addControl(new GSmallMapControl());
-		map.addControl(new GMapTypeControl());
+		map.addControl(new GMapTypeControl(true));
 		map.addControl(new GScaleControl());
 		var mapType = G_NORMAL_MAP;
 
@@ -150,7 +150,7 @@ Display:
 			[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]</div>{/if}
 	
 		<b><a href="/search.php?i={$i}&amp;displayclass=cooliris">View results on a 3D Wall</a></b> |
-		<a href="/search.php?i={$i}&amp;displayclass=gmaps">Larger Map</a> |
+		<a href="/search.php?i={$i}&amp;displayclass=gmap">Larger Map</a> |
 		<a href="/search.php?i={$i}&amp;displayclass=full">Full Results</a> |
 		{if $engine->numberOfPages > 1} 
 			<b><a href="/search.php?i={$i}&amp;page=2&amp;displayclass=excerpt">Next Page of results &gt; &gt;</a></b>
@@ -206,7 +206,7 @@ Display:
 		{searchbreak image=$image}
 		  <div style="float:left;position:relative; width:130px; height:130px" onmouseover="this.style.background='gray';showMyInfoDiv('image{$image->gridimage_id}',true);" onmouseout="this.style.background='';showMyInfoDiv('image{$image->gridimage_id}',false);">
 		  <div align="center">
-		  <a title="">{$image->getThumbnail(120,120,false,true)}</a></div>
+		  <a title="" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a></div>
 		  
 		  <div style="position:relative">
 		  	<div class="interestBox" style="position:absolute;top:0;left:-120px;display:none;z-index:10000;padding:4px;width:260px" id="image{$image->gridimage_id}_info">
