@@ -90,6 +90,9 @@ if (!empty($_GET['To'])) { //to lat/long
 		} else if ($reference_index == 2) {
 			$en = array($e,$n);
 			$_GET['datum'] = "irish";
+		} else if ($reference_index == 6) {
+			$en = array($e,$n);
+			$_GET['datum'] = "channel";
 		}
 	}
 	if (isset($en) && count($en)) {

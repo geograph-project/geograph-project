@@ -97,6 +97,7 @@
 		<div style="font-family:verdana, arial, sans serif;">
 		<p>[WGS84: {$latdm} {$longdm}]</p>
 		<p><b>Datum</b>: {if $datum == "osgb36"}Ordnance Survey Great Britain 1936{/if}
+			{if $datum == "channel"}Channel Islands MGRS/UTM WGS84{/if}
 			{if $datum == "irish"}Irish Grid OSNI/OSI{/if}</p>
 		<p><b>Easting/Northing:</b> {$e|string_format:"%d"},{$n|string_format:"%d"}{if $datum == "irish"} OSI{/if}
 		<!--small><br/><b>Exact: Easting</b>: {$e} <b>Northing:</b>{$n}</small--></p>
