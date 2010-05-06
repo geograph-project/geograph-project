@@ -8,7 +8,7 @@ sudo chown www-data:www-data /var/www/channel_live/public_html/templates/basic/c
 sudo mkdir /var/www/channel_live/public_html/templates/basic/compiled/
 sudo chown www-data:www-data /var/www/channel_live/public_html/templates/basic/compiled/
 
-sudo -u geograph ln -s /var/www/channel_live/public_html/templates/basic/compiled-mnt /mnt/jam/channel_live/public_html/templates/basic/compiled
+sudo -u geograph ln -s /mnt/jam/channel_live/public_html/templates/basic/compiled /var/www/channel_live/public_html/templates/basic/compiled-mnt
 
 sudo -u geograph ln -s /mnt/jam/channel_live/public_html/sitemap /var/www/channel_live/public_html/sitemap
 sudo -u geograph ln -s /mnt/jam/channel_live/public_html/kml /var/www/channel_live/public_html/kml
@@ -18,3 +18,26 @@ sudo -u geograph ln -s /mnt/jam/channel_live/public_html/rss /var/www/channel_li
 sudo -u geograph ln -s /mnt/jam/channel_live/public_html/torrent /var/www/channel_live/public_html/torrent
 
 
+
+#ON JAM
+sudo mkdir maps
+sudo chown www-data:www-data maps
+
+sudo mkdir maps/base maps/detail
+sudo chown www-data:www-data maps/base maps/detail
+
+sudo mkdir photos
+sudo chown www-data:www-data photos
+
+sudo mkdir geophotos
+sudo chown www-data:www-data geophotos
+
+sudo mkdir sitemap rss torrent memorymap kml
+sudo chown www-data:www-data sitemap rss torrent memorymap kml
+
+cd geophotos
+sudo ln -s ../photos 00
+cd ..
+
+sudo mkdir torrent
+sudo chown www-data:www-data torrent
