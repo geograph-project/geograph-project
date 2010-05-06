@@ -523,7 +523,7 @@ class GridSquare
 						
 			}
 			
-			if ($this->percent_land==0 && (!$allowzeropercent || $this->imagecount==0) )
+			if ($this->percent_land==0 && !$allowzeropercent && $this->imagecount==0)
 			{
 				$this->_error("$gridref seems to be all at sea! Please <a href=\"/mapfixer.php?gridref=$gridref\">contact us</a> if you think this is in error.");
 				$ok=false;
