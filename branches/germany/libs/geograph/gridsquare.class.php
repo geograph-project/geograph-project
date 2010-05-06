@@ -577,7 +577,7 @@ class GridSquare
 			}
 			$this->setServices($this->mapservices);
 			
-			if ($this->percent_land==0 && (!$allowzeropercent || $this->imagecount==0) )
+			if ($this->percent_land==0 && !$allowzeropercent && $this->imagecount==0)
 			{
 				if ($CONF['lang'] == 'de')
 					$this->_error("$gridref scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um <a href=\"/mapfixer.php?gridref=$gridref\">Rückmeldung</a>, falls dies nicht der Fall sein sollte.");
