@@ -108,7 +108,7 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 	} 
 	
 	if($channel) {
-		return array_merge($conv->wgs84_to_utm($lat,$long,30),array(3));
+		return array_merge($conv->wgs84_to_utm($lat,$long,30),array(6));
 	} else if ($ire) {
 		return array_merge($conv->wgs84_to_irish($lat,$long,$usehermert),array(2));
 	} else if ($uk) {
@@ -232,7 +232,7 @@ function national_to_internal($e,$n,$reference_index ) {
 	//add the internal origin
 	$x += $CONF['origins'][$reference_index][0];
 	$y += $CONF['origins'][$reference_index][1];
-	return array($x,$y);
+	return array($x,$y,$reference_index);
 }
 
 
