@@ -14,7 +14,7 @@
 
 {/literal}
 
-<h2>Full-Text Relevenence Play Area</h2>
+<h2>Full-Text Relevance Play Area</h2>
 
 <div class="interestBox">This is an experiment to try a couple of 'ranking modes', the current search uses a default and reasonable one, but there are many possiblities. 
 <ul>

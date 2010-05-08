@@ -1088,7 +1088,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 					}
 				}
 			}
-		} elseif ($display == 'excerpt' || $display == 'landing') {
+		} elseif ($display == 'excerpt' || $display == 'landing' || $display == 'human') {
 			
 			$sphinx = new sphinxwrapper($engine->criteria->searchtext);
 			
