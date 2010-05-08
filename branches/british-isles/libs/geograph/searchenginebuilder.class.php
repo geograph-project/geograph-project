@@ -268,7 +268,12 @@ class SearchEngineBuilder extends SearchEngine
 			"searchdesc = ".$db->Quote($searchdesc).",".
 			"searchuse = ".$db->Quote($this->searchuse).",".
 			"searchq = ".$db->Quote($q);
-			if (!empty($searchtext)) {
+			if (!empty($_SESSION['human_id'])) {
+				$sql .= ",displayclass = 'human'";
+				if (!empty($searchtext)) {
+					$sql .=",searchtext = ".$db->Quote($searchtext);
+				}
+			} elseif (!empty($searchtext)) {
 				$sql .=",searchtext = ".$db->Quote($searchtext).
 				",displayclass = 'excerpt'";
 			}
@@ -549,7 +554,9 @@ class SearchEngineBuilder extends SearchEngine
 				"searchq = ".$db->Quote($searchq);
 			if (isset($dataarray['searchtext']))
 				$sql .= ",searchtext = ".$db->Quote($dataarray['searchtext']);
-			if (isset($dataarray['displayclass'])) {
+			if (!empty($_SESSION['human_id'])) {
+				$sql .= ",displayclass = 'human'";
+			} elseif (isset($dataarray['displayclass'])) {
 				$sql .= ",displayclass = ".$db->Quote($dataarray['displayclass']);
 			} elseif (!empty($dataarray['searchtext'])) {
 				$sql .= ",displayclass = 'excerpt'";

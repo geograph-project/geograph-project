@@ -1250,4 +1250,51 @@ create table search_ranking_compare (`vote_id` int(10) unsigned NOT NULL auto_in
 #################################################
 
 
+alter table queries CHANGE `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote','slidebig','excerpt','human') NOT NULL default 'full';
+
+
+alter table queries_archive CHANGE `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote','slidebig','excerpt','human') NOT NULL default 'full';
+
+
+#################################################
+
+
+CREATE TABLE IF NOT EXISTS `humansearch` (
+  `search_id` int(10) unsigned NOT NULL auto_increment,
+  `title` varchar(140) NOT NULL,
+  `q` varchar(64) NOT NULL,
+  `location` varchar(64) NOT NULL,
+  `comment` varchar(255) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `ipaddr` int(10) unsigned NOT NULL,
+  `status` enum('new','answered','reviewing','deleted') NOT NULL default 'new',
+  `images` mediumint(8) unsigned NOT NULL,
+  `notify` tinyint(3) unsigned NOT NULL default '1',
+  `last_image` datetime NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default '0000-00-00 00:00:00' on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`search_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE IF NOT EXISTS `humansearch_result` (
+  `result_id` int(10) unsigned NOT NULL auto_increment,
+  `search_id` int(10) unsigned NOT NULL,
+  `query_id` int(10) unsigned NOT NULL,
+  `page` mediumint(8) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `status` enum('ok','reviewing','deleted') NOT NULL default 'ok',
+  `ipaddr` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY  (`result_id`),
+  KEY `search_id` (`search_id`,`status`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+#################################################
+
+
+
+
 
