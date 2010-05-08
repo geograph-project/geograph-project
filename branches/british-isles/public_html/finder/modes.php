@@ -42,6 +42,23 @@ if (!empty($_GET['rating'])) {
 	die("thanks!");
 }
 
+if (!empty($_GET['modes'])) {
+
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (!$db) die('Database connection failed');
+
+	$ins = "INSERT INTO search_ranking_compare SET
+		mode = ".intval(@$_GET['mode']).",
+		modes = ".$db->Quote(@$_GET['modes']).",
+		q = ".$db->Quote(@$_GET['q']).",
+		ipaddr = INET_ATON('".getRemoteIP()."'),
+		user_id = ".intval($USER->user_id);
+
+	$db->Execute($ins);
+	
+}
+
+
 
 $smarty = new GeographPage;
 if (!empty($_GET['q'])) {
@@ -52,20 +69,40 @@ if (!empty($_GET['q'])) {
 	
 	$words = preg_split('/\s+/',$q);
 	if (count($words) > 1) {
-		
-		$inners1 = $inners2 = array();
-		foreach (range(1,5) as $key) {
-			$inners1[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q));
+		if (!empty($_GET['c'])) {
+			foreach (range(1,5) as $key) {
+				$inners[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q),'mode'=>$key);
+			}
+			if (rand(0,10) > 7) {
+				//wildcard!
+				$key = rand(6,12);
+				$inners[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q),'mode'=>$key);
+			}
+			shuffle($inners);
+			array_splice($inners,2,4);//remove the last 3
+		} else {
+			$inners1 = $inners2 = array();
+			foreach (range(1,5) as $key) {
+				$inners1[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q),'mode'=>$key);
+			}
+			foreach (array(6,7,12) as $key) {
+				$inners2[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q),'mode'=>$key);
+			}
+			shuffle($inners1);
+			shuffle($inners2);
+			$inners=array_merge($inners1,$inners2);
 		}
-		foreach (array(6,7,12) as $key) {
-			$inners2[] = array('url'=>"/finder/search-service.php?feedback&mode=$key&q=".urlencode($q));
-		}
-		shuffle($inners1);
-		shuffle($inners2);
-		$inners=array_merge($inners1,$inners2);
 		$smarty->assign_by_ref("inners",$inners);
 		$smarty->assign("count_inners",count($inners));
+		$modes = array();
+		foreach ($inners as $inner) {
+			$modes[] = $inner['mode'];
+		}
+		$smarty->assign("modes",implode(',',$modes));
 	}
+}
+if (!empty($_GET['c'])) {
+	$smarty->assign("compare",1);
 }
 
 $smarty->display('finder_modes.tpl');
