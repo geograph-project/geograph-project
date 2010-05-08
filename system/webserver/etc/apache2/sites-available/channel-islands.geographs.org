@@ -177,6 +177,7 @@
 </Location>
 
 RewriteRule ^/rss/(.*\.kmz)         http://kml.channel.geographs.org/kml/$1 [L,R=permanent]
+RewriteRule ^/sitemap/geograph.*         http://channel-islands.geographs.org/list.php [L,R=permanent]
 
     RewriteRule ^/discuss.* /notreadyyet.php [L]
     RewriteRule ^/content.* /notreadyyet.php [L]

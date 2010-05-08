@@ -1244,4 +1244,10 @@ CHANGE  `y`  `y` FLOAT( 5 ) NOT NULL DEFAULT  '0';
 #################################################
 
 
+create table search_ranking_compare (`vote_id` int(10) unsigned NOT NULL auto_increment,mode tinyint(10) unsigned NOT NULL,modes varchar(10) NOT NULL,`q` varchar(255) NOT NULL,`ts` timestamp NOT NULL default CURRENT_TIMESTAMP,`user_id` int(10) unsigned NOT NULL,`ipaddr` int(10) unsigned NOT NULL,`final` tinyint(3) unsigned NOT NULL default '0',PRIMARY KEY  (`vote_id`));
+
+
+#################################################
+
+
 
