@@ -50,10 +50,11 @@ if (!empty($_GET['next'])) {
 }
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'';
+$who = (isset($_GET['who']) && preg_match('/^\w+$/' , $_GET['who']))?$_GET['who']:'mine';
 
 $ab=floor($USER->user_id/10000);
 	
-$cacheid="user$ab|{$USER->user_id}|{$max_vote_id}|$type";
+$cacheid="user$ab|{$USER->user_id}|{$max_vote_id}|$type|$who";
 
 //what style should we use?
 $style = $USER->getStyle();
@@ -69,9 +70,13 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$types = array(''=>'Either','img'=>'Image','desc'=>'Description');
+	$types = array(''=>'images or descriptions','img'=>'images','desc'=>'descriptions');
 	$smarty->assign_by_ref('types', $types);
 	$smarty->assign_by_ref('type', $type);
+	
+	$whos = array('mine'=>"I've",'others'=>'others have');
+	$smarty->assign_by_ref('whos', $whos);
+	$smarty->assign_by_ref('who', $who);
 	
 	$imagelist=new ImageList;
 
@@ -81,11 +86,17 @@ if (!$smarty->is_cached($template, $cacheid))
 		$where = "type in ('img','desc')";
 	}
 	
+	if ($who == 'others') {
+		$crit = "!=";
+	} else {
+		$crit = "=";
+	}
+	
 	$sql="select gi.*,type,vote_id,ts ".
 		"from vote_log as vl ".
-		"inner join gridimage_search as gi on (vl.id = gi.gridimage_id and vl.user_id = gi.user_id) ".
+		"inner join gridimage_search as gi on (vl.id = gi.gridimage_id and vl.user_id $crit gi.user_id) ".
 		"where $where ".
-		"and vl.user_id={$USER->user_id} ".
+		"and vl.user_id $crit {$USER->user_id} and gi.user_id={$USER->user_id} ".
 		($max_vote_id?" and vote_id < $max_vote_id ":'').
 		"group by gridimage_id ".
 		"order by vote_id desc limit 20";
@@ -100,7 +111,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		$first = $imagelist->images[0];
 		
-		$smarty->assign('criteria', $first->ts);
+		#$smarty->assign('criteria', $first->ts);
 
 		$last = $imagelist->images[count($imagelist->images)-1];
 

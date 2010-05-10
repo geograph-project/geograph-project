@@ -1,14 +1,17 @@
 {assign var="page_title" value="My Thumbed Images"}
 {include file="_std_begin.tpl"}
 
-<h2>My own images I've "Liked" {if $criteria}<small style="font-weight:normal">, noted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
+<h2>My own {$types.$type} {$whos.$who} liked{if $criteria}<small style="font-weight:normal">, from: {$criteria|escape:'html'}</small>{/if}</h2>
 
-   <form method="get" action="{$script_name}" style="padding:10px">
-    <p>Type: <select name="type" onchange="this.form.submit()">
+ <div class="interestBox" style="margin:10px">
+   <form method="get" action="{$script_name}" style="display:inline">
+    My own  <select name="type" onchange="this.form.submit()">
     	{html_options options=$types selected=$type}
-    </select> 
+    </select>  <select name="who" onchange="this.form.submit()">
+    	{html_options options=$whos selected=$who}
+    </select> liked.
   <noscript>
-    <input type="submit" value="Go"/></noscript></p></form>
+    <input type="submit" value="Update"/></noscript></form></div>
     
 	{foreach from=$images item=image}
 	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
@@ -32,17 +35,18 @@
 	  </div><br style="clear:both;"/>
 	 </div>
 	{foreachelse}
-	 	nothing to see here
+	 	<ul><li>No images match the selected options.</li></ul>
 	{/foreach}
 	
+	{if $images}
 	<div style="position:relative">
 	<br/><br/>
-	<div class="interestBox" style="font-size:0.8em"><b>Marked Images</b><span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1&amp;displayclass={if $engine->temp_displayclass}{$engine->temp_displayclass}{else}{$engine->criteria->displayclass}{/if}">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)<br/>
+	<div class="interestBox" style="font-size:0.8em"><b>Marked Images</b><span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)<br/>
 	&nbsp; &nbsp; &nbsp; &nbsp; <a href="javascript:void(markAllImages('Mark'))">Mark all images on <b>this</b> page</a> (<a href="javascript:void(markAllImages('marked'))" style="color:red">Unmark all on this page</a>)</div></div>
 	<script>
 	AttachEvent(window,'load',showMarkedImages,false);
 	</script>
-
+	{/if}
 
 <br/><br/>
 {if $prev || $next}
@@ -58,7 +62,7 @@
 	</div>
 {/if}
 <div style="padding:10px">
-<p>This page only notes your images you have noted. Such votes are excluded from public voting anyway.</p>
+<p>This page only lists your images. {if $who == 'mine'}Such votes are excluded from public voting anyway.{else}No account of the number of votes is taken, shown in date order.{/if}</p>
 
 <p><small>Note: Page generated at 10 minute intervals, please don't refresh more often than that.</small></p> 
 </div>
