@@ -41,7 +41,8 @@ $ins = "INSERT INTO vote_log SET
 	vote = ".intval(@$_GET['v']).",
 	ipaddr = INET_ATON('".getRemoteIP()."'),
 	user_id = ".intval($USER->user_id).",
-	ua = ".$db->Quote($_SERVER['HTTP_USER_AGENT']);
+	useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']).",
+	session = ".$db->Quote(session_id());
 	
 $db->Execute($ins);
 
