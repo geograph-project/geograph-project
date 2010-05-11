@@ -40,10 +40,10 @@ $ins = "INSERT INTO vote_log SET
 	id = ".intval(@$_GET['id']).",
 	vote = ".intval(@$_GET['v']).",
 	ipaddr = INET_ATON('".getRemoteIP()."'),
-	user_id = ".intval($USER->user_id);
+	user_id = ".intval($USER->user_id).",
+	ua = ".$db->Quote($_SERVER['HTTP_USER_AGENT']);
 	
 $db->Execute($ins);
 
 
 
-?>

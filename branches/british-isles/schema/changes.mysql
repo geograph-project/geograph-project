@@ -1295,6 +1295,9 @@ CREATE TABLE IF NOT EXISTS `humansearch_result` (
 #################################################
 
 
+alter table `vote_log` add `ua` varchar(128) NOT NULL;
 
+
+#################################################
 
 
