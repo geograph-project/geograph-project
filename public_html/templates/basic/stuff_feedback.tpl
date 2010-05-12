@@ -2,10 +2,19 @@
 {include file="_std_begin.tpl"}
 {dynamic}
 {if $thanks}
-	<h3>Thank You!</h3>
+	<h3>Thank You</h3>
 	<p>Many thanks for your feedback, it's much appreciated.</p>
-	<a href="javascript:history.go(-1);">Go Back</a>
+	
+	<div style="position:relative; border-left:4px solid orange; padding:20px;">
+		<h2>New feature!</h2>
 
+		<ul>
+			<li><a href="/finder/human.php?create">Enlist the help of others to find <b>photographs of what you looking for</b></a>!</li>
+		</ul>
+	</div>
+	
+	<p>or <a href="javascript:history.go(-1);">Go Back</a></p>
+	
 {else}
 <h2>Let us know what you think!</h2>
 

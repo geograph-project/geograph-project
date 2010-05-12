@@ -27,18 +27,9 @@ h4.title {
 }
 </style>{/literal}
 
- <h2>Find Stuff on Geograph</h2>
+ <h2>Geograph Search Tools</h2>
 
 
-<form action="/finder/multi.php" method="get" onsubmit="focusBox()">
-	<div class="interestBox">
-		<label for="fq">Combined <b>Image</b> Search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-		<input type="submit" value="Search"/><sup style="color:red">Experimental Beta</sup><br/>
-		(Enter a placename, grid reference, word search, or persons name) 
-	</div>
-</form>
-
-<p>or run one of many searches...</p>
 
 <div style="position:relative;height:600px;">
 	<div class="tabHolder">
@@ -294,5 +285,21 @@ h4.title {
 	</div>
 	{/if}
 </div>
+
+<h3>Experimental searches...</h3>
+
+<ul>
+	<li><form action="/finder/multi.php" method="get" onsubmit="focusBox()">
+		<div class="interestBox">
+			<label for="fq">Combined <b>Image</b> Search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<input type="submit" value="Search"/><sup style="color:red">Experimental Beta</sup><br/>
+			(Enter a placename, grid reference, word search, or persons name) 
+		</div>
+	</form><br/></li>
+	
+	<li><a href="/finder/human.php?create">Cooperative Search</a></li>
+</ul>
+
+
 {include file="_std_end.tpl"}
 

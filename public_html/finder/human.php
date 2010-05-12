@@ -33,33 +33,72 @@ if (empty($CONF['forums'])) {
 
 init_session();
 
-$USER->mustHavePerm("basic");
-
 $smarty = new GeographPage;
+
+if (isset($_GET['login'])) {
+
+	$USER->mustHavePerm("basic");
+
+}
+
+
+$template = 'finder_human.tpl';
+
+if (isset($_GET['create'])) {
+	$template = 'finder_human_create.tpl';
+}
 
 
 if (!empty($_POST['create'])) {
 
 	$USER->mustHavePerm("basic");
 
-	//create a new search
-	$db = GeographDatabaseConnection(false);
+	
+	$errors = array();
 
-	$ins = "INSERT INTO humansearch SET
-		title = ".$db->Quote(@$_POST['title']).",
-		q = ".$db->Quote(@$_POST['q']).",
-		location = ".$db->Quote(@$_POST['location']).",
-		comment = ".$db->Quote(@$_POST['comment']).",
-		notify = ".intval(@$_POST['notify']).",
-		ipaddr = INET_ATON('".getRemoteIP()."'),
-		user_id = ".intval($USER->user_id).",
-		created = NOW(),
-		updated = NOW()";
+	$square=new GridSquare();
+	if (!empty($_POST['grid_reference'])) {
+		if ($square->setByFullGridRef($_POST['grid_reference'])) {
+			$_POST['grid_reference'] = $square->grid_reference;
+		} else {
+			$ok=false;
+			$errors['grid_reference']=$square->errormsg;
+		}
+	}
 
-	$db->Execute($ins);
-	$smarty->assign("message","Thank you! Your search has been saved.");
+	if (empty($errors) && !empty($_POST['q']) && strlen($_POST['q']) > 4) {
+	
+		//create a new search
+		$db = GeographDatabaseConnection(false);
+	
+		$ins = "INSERT INTO humansearch SET
+			title = ".$db->Quote(@$_POST['title']).",
+			q = ".$db->Quote(@$_POST['q']).",
+			location = ".$db->Quote(@$_POST['location']).",
+			comment = ".$db->Quote(@$_POST['comment']).",
+			grid_reference = ".$db->Quote(@$_POST['grid_reference']).",
+			notify = ".intval(@$_POST['notify']).",
+			ipaddr = INET_ATON('".getRemoteIP()."'),
+			user_id = ".intval($USER->user_id).",
+			created = NOW(),
+			updated = NOW()";
+
+		$db->Execute($ins);
+		$smarty->assign("message","Thank you! Your search has been saved.");
+		
+		$template = 'finder_human.tpl';
+	} else {
+		$errors["q"] = "Please enter something to search for";
+		
+		$smarty->assign_by_ref("errors",$errors);
+		$smarty->assign_by_ref("item",$_POST);
+		
+		$smarty->assign("message","Error, please check below...");
+	}
 	
 } elseif (!empty($_GET['gid'])) {
+	
+	$USER->mustHavePerm("basic");
 	
 	$db = GeographDatabaseConnection(false);
 	
@@ -158,6 +197,9 @@ if (!empty($_POST['create'])) {
 				break;
 			
 			case 'answer':
+				
+				$USER->mustHavePerm("basic");
+			
 				$_SESSION['human_id'] = $id;
 				
 				$smarty->display('finder_human_frameset.tpl');
@@ -165,6 +207,8 @@ if (!empty($_POST['create'])) {
 				break;
 			
 			case 'top':
+				
+				$USER->mustHavePerm("basic");
 				
 				$row = $db->getRow("
 					select hs.*,realname
@@ -255,6 +299,8 @@ if (empty($db)) {
 
 
 
+if ($template == 'finder_human.tpl') {
+
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
@@ -279,10 +325,10 @@ if (empty($db)) {
 	}
 	$smarty->assign_by_ref('answered', $answered);
 	$smarty->assign_by_ref('pending', $pending);
+}
 
 
-
-$smarty->display('finder_human.tpl');
+$smarty->display($template);
 
 	
 
