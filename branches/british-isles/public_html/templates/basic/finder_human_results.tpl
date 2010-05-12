@@ -1,4 +1,4 @@
-{assign var="page_title" value="Human Powered Search"}
+{assign var="page_title" value="Cooperative Searching"}
 {include file="_std_begin.tpl"}
 
 
@@ -7,7 +7,7 @@
 		{if $created}<br/><small class="nowrap">[<a href="{$script_name}?id={$search_id}&amp;mode=report" onclick="return confirm('Are you sure?');" rel="nofollow" target="_top" style="color:red">Report as inappropriate</a>]</small>{/if}
 	</div>
 
-	<h2><a href="/finder/">Finder</a> :: <a href="{$script_name}">Community Powered Search</a> :: Results</h2>
+	<h2><a href="/finder/">Finder</a> :: <a href="{$script_name}">Cooperative Search</a> Results</h2>
 
 
 {if $created}
