@@ -23,14 +23,14 @@
 	</div>
 
 	{if $results}
-		<p>These are the <b>{$images|thousends}</b> images other users have found to answer this search...</p>
+		<p>These are the {if $images > 50}latest 50 of the{/if}<b>{$images|thousends}</b> images other users have found to answer this search...</p>
 		
 		
 		{foreach from=$results item=image}
 			 <div style="border-top: 1px solid lightgrey; padding-top:1px;" id="result{$image->gridimage_id}">
 			  <div style="float:right; position:relative;font-size:0.7em;text-align:right">
 			  	Suggested by <a href="/profile/{$image->finder_id|escape:'html'}" class="nowrap">{$image->finder|escape:'html'}</a><br/>
-			  	using <a href="/search.php?i={$image->query_id}&amp;page={$image->page}">this search</a><br/>
+			  	using <a href="/search.php?i={$image->query_id}&amp;page={$image->page}&amp;temp_displayclass=excerpt">this search</a><br/>
 			  	<span style="color:silver">{$image->created}</span><br/>
 			  	[<a href="{$script_name}?gid={$image->gridimage_id}&amp;id={$search_id}&amp;mode=report" onclick="{literal}if (confirm('Are you sure?')) { document.getElementById('result{/literal}{$image->gridimage_id}{literal}').style.display='none';return true;} else {return false;}{/literal}" rel="nofollow" style="color:red">Report as inappropriate</a>]
 			  </div>
@@ -54,7 +54,7 @@
 		{/foreach}
 		
 		<div class="interestBox" style="text-align:center">
-			<a href="{$script_name}?id={$search_id}&amp;mode=export">View as Search Results</a>
+			<a href="{$script_name}?id={$search_id}&amp;mode=export">View as Search Results</a> {if $images > 50}(Displays upto about 500 images){/if}
 		</div>
 	{/if}
 	

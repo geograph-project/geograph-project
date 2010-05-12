@@ -33,11 +33,15 @@ if (empty($CONF['forums'])) {
 
 init_session();
 
+$USER->mustHavePerm("basic");
 
 $smarty = new GeographPage;
 
 
 if (!empty($_POST['create'])) {
+
+	$USER->mustHavePerm("basic");
+
 	//create a new search
 	$db = GeographDatabaseConnection(false);
 

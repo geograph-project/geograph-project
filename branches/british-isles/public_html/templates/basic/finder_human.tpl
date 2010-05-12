@@ -28,18 +28,18 @@
 	<ul>
 	{foreach from=$answered item=item}
 		<li style="border-top:1px solid silver;padding-top:2px;margin-top:2px">
-		<b><a href="{$script_name}?id={$item.search_id}&amp;mode=results" title="for {$item.q|escape:'html'}{if $item.location} near '{$item.location|escape:'html'}'{/if}">
+		<a href="{$script_name}?id={$item.search_id}&amp;mode=results" title="for {$item.q|escape:'html'}{if $item.location} near '{$item.location|escape:'html'}'{/if}">
 		{if $item.title}
 			<b>{$item.title|escape:'html'}</b>
 		{else}
-			<i>for</i> <b>{$item.q|escape:'html'}</b> {if $item.location}<i>near</i> <b>{$item.location|escape:'html'}</b>{/if}
+			{if $item.location}<i>for</i>{/if} <b>{$item.q|escape:'html'}</b> {if $item.location}<i>near</i> <b>{$item.location|escape:'html'}</b>{/if}
 		{/if}
-		</a></b><br/>
+		</a><br/>
 		<small><small>
 		{if $item.images}
 			<span style="color:gray">{$item.images} images found</span>{/if}
-		[<a href="{$script_name}?id={$item.search_id}&amp;mode=report" onclick="return confirm('Are you sure?');" rel="nofollow" style="color:red">Report as inappropriate</a>]
 		[<a href="{$script_name}?id={$item.search_id}&amp;mode=answer">Add more images</a>]
+		[<a href="{$script_name}?id={$item.search_id}&amp;mode=report" onclick="return confirm('Are you sure?');" rel="nofollow" style="color:red">Report as inappropriate</a>]
 		</small></small>
 		</li>
 	{foreachelse}
@@ -51,7 +51,7 @@
 
 <div style="position:relative;float:left;width:47%;margin:5px;padding:5px;">
 	<h3>Unanswered Searches</h3>
-	<p>Click a title to begin looking...</p>
+	<p>Click a title to begin suggesting photos for the search...</p>
 	
 	<ul>
 	{foreach from=$pending item=item}
@@ -60,9 +60,9 @@
 		{if $item.title}
 			<b>{$item.title|escape:'html'}</b>
 		{else}
-			<i>for</i> <b>{$item.q|escape:'html'}</b> {if $item.location}<i>near</i> <b>{$item.location|escape:'html'}</b>{/if}
+			{if $item.location}<i>for</i>{/if} <b>{$item.q|escape:'html'}</b> {if $item.location}<i>near</i> <b>{$item.location|escape:'html'}</b>{/if}
 		{/if}
-		</a></b><br/>
+		</a><br/>
 		<small><small>	
 		[<a href="{$script_name}?id={$item.search_id}&amp;mode=report" onclick="return confirm('Are you sure?');" rel="nofollow" style="color:red">Report as inappropriate</a>]
 		{if $item.images}
