@@ -69,7 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table=$db->GetAll(" 
-	select topic_id,count(*) c,t.forum_id,topic_title 
+	select topic_id,count(*) c,t.forum_id,topic_title,poster_name,topic_time
 	from $table
 	inner join geobb_topics t using (topic_id) 
 	where $date_column > date_sub(now(),interval $h hour) 
