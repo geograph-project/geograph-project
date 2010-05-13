@@ -31,7 +31,7 @@ $template='statistics_forum_trending.tpl';
 
 $s = (isset($_GET['s']) && is_numeric($_GET['s']))?intval($_GET['s']):1;
 
-$h = (isset($_GET['h']) && is_numeric($_GET['h']))?intval($_GET['h']):0;
+$h = (isset($_GET['h']) && is_numeric($_GET['h']))?intval($_GET['h']):3;
 
 $types = array(
 	1=>"Most Viewed",
@@ -49,7 +49,7 @@ $hours = array(
 	48=>"2 Days",
 );
 if (empty($hours[$h])) {
-	$h = 600000;
+	$h = 3;
 }
 
 
@@ -68,11 +68,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	}	
 		
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$table=$db->CacheGetAll($smarty->cache_lifetime," 
+	$table=$db->GetAll(" 
 	select topic_id,count(*) c,t.forum_id,topic_title 
 	from $table
 	inner join geobb_topics t using (topic_id) 
-	where $date_column > date_sub(now(),interval 3 hour) 
+	where $date_column > date_sub(now(),interval $h hour) 
 	group by topic_id 
 	order by c desc,topic_id desc 
 	limit 40" );
