@@ -48,7 +48,8 @@
 
 					{if $errors.location}</div>{/if}
 				</div>	
-
+			<div id="hideadv" style="text-align:right"><a href="javascript:void(show_tree('adv'));">Open Advanced Options</a><br/><br/></div>
+			<div id="showadv" style="display:none">
 				<div class="field">
 					{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference|escape:"html"}</p>{/if}
 
@@ -83,7 +84,7 @@
 
 					{if $errors.comment}</div>{/if}
 				</div>	
-			
+			</div>			
 				<div class="field">
 					{if $errors.notify}<div class="formerror"><p class="error">{$errors.notify}</p>{/if}
 
