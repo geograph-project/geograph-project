@@ -2,7 +2,7 @@
 {dynamic}
 <h2>Sorry, editing this page is unavailable</h2>
 
-<p>This page is currently been worked on by <b>{$lockedby}</b>, please come back later.</p>
+<p>This page is currently being worked on by <b>{$lockedby}</b>, please come back later.</p>
 
 
 
