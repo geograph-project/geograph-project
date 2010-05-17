@@ -35,8 +35,10 @@ $w = (isset($_GET['w']) && is_numeric($_GET['w']))?intval($_GET['w']):1;
 $template='hectadmap.tpl';
 $cacheid="$u.$w";
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hour cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hour cache
+}
 
 
 $maximages = 100; //percentage AND number of images in a hectad
