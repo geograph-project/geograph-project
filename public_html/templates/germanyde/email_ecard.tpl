@@ -24,7 +24,7 @@ Image =A9 Copyright {$image->realname} and licensed for reuse under this Creativ
 http://creativecommons.org/licenses/by-sa/2.0/
 --------------------------------
 
-This message was sent to you by site visitor to Geograph British Isles,
+This message was sent to you by site visitor to Geograph Deutschland,
 forward abuse complaints to: geo@hlipp.de
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40
@@ -49,13 +49,13 @@ MARGINWIDTH=3D"0">
     <TD bgColor=3D#000066>&nbsp;</TD>
     <TD bgColor=3D#000066><A href=3D"http://{$http_host}/"><IMG =
 height=3D74=20
-      src=3D"http://{$http_host}/templates/basic/img/logo.gif" width=3D257 =
+      src=3D"http://{$http_host}/templates/germany32/img/logode3.gif" width=3D350 =
 border=3D0></A></TD>
     <TD vAlign=3Dtop align=3Dcenter bgColor=3D#000066><A=20
       href=3D"http://{$http_host}/"><FONT face=3DGeorgia =
 color=3D#ffffff=20
       size=3D+2>{$http_host}</FONT></A><BR><FONT face=3DGeorgia =
-color=3D#ffffff><I>The Geograph British Isles project aims to collect a geographically representative<BR> photograph for every square kilometre of the British Isles and you can be part of it.</I></FONT></TD>
+color=3D#ffffff><I>The Geograph Deutschland project aims to collect a geographically representative<BR> photograph for every square kilometre of Germany and you can be part of it.</I></FONT></TD>
     <TD bgColor=3D#000066>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
@@ -115,7 +115,7 @@ href=3D"http://creativecommons.org/licenses/by-sa/2.0/"=20
 </TD></TR></TBODY></TABLE>
 <P align=3Dcenter><FONT face=3DGeorgia size=3D-1>This message was sent =
 to you by site=20
-visitor to Geograph British Isles, <BR>forward abuse complaints to:=20
+visitor to Geograph Deutschland, <BR>forward abuse complaints to:=20
 geo@hlipp.de</FONT><!-- {$user->user_id} --></P></BODY></HTML>
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40--
