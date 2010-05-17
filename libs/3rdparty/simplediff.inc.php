@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 	Paul's Simple Diff Algorithm v 0.1
@@ -52,3 +52,5 @@ function htmlDiff($old, $new){
 	}
 	return $ret;
 }
+
+?>
