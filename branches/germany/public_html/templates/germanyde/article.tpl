@@ -6,7 +6,7 @@
 <div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a> {external href="http://maps.google.co.uk/maps?q=http://`$http_host`/article/feed/recent.rss" text="Map"}</div>
 
 <div class="tabHolder">
-	<a href="/content/" class="tab">Content</a>
+	<a href="/content/" class="tab">Collections</a>
 	<span class="tabSelected">Articles</span>
 	<a href="/article/?table" class="tab">Article List</a>
 	<a href="/gallery/" class="tab">Galleries</a>
@@ -17,7 +17,7 @@
 	{/if}	
 </div>
 <div class="interestBox">
-<h2>User Contributed Articles</h2>
+<h2 style="margin:0">User Contributed Articles</h2>
 </div>
 
 {if $desc}
