@@ -127,9 +127,9 @@ if ($grid_ok) {
 	{
 		$psquare=new GridSquare;
 		$pgrid_given=true;
-		$pgrid_ok=$psquare->setByFullGridRef($photographer_gridref,true);
+		$pgrid_ok=$psquare->setByFullGridRef($photographer_gridref,true,false,false,true);
 		if (!empty($psquare->nateastings)) {
-				$rastermap->addViewpoint($psquare->nateastings,$psquare->natnorthings,$psquare->natgrlen);
+			$rastermap->addViewpoint($psquare->reference_index,$psquare->nateastings,$psquare->natnorthings,$psquare->natgrlen);
 			$smarty->assign_by_ref('photographer_gridref', $photographer_gridref);
 		} 
 	}	

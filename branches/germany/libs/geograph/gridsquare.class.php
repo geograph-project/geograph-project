@@ -332,7 +332,7 @@ class GridSquare
 	/**
 	*
 	*/
-	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false,$allowinternal = false)
+	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false,$allowinternal = false,$recalc = false)
 	{
 		global $CONF;
 		$matches=array();
@@ -362,7 +362,60 @@ class GridSquare
 			$e .= $suffix;
 			$n .= $suffix;
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
-			$ok=$this->_setGridRef($gridref,$allowzeropercent,$allowinternal);
+
+			$ok = false;
+			trigger_error("----r-----", E_USER_NOTICE);
+			if ($recalc) {
+				$db=&$this->_getDB();
+				$prefix = strtoupper($prefix);
+				$sql = "select * from gridprefix where prefix='{$prefix}' limit 1";
+				$row = $db->GetRow($sql);
+				if (count($row)) {
+					require_once('geograph/conversions.class.php');
+					$conv = new Conversions;
+					$ri = $row['reference_index'];
+					trigger_error("----r--$ri---", E_USER_NOTICE);
+					#$latlong = $conv->national_to_wgs84(intval($e),intval($n),$ri);
+					$fe = intval($e) + ($row['origin_x']-$CONF['origins'][$ri][0]) * 1000;
+					$fn = intval($n) + ($row['origin_y']-$CONF['origins'][$ri][1]) * 1000;
+					trigger_error("----c1--$fe,$fn,$ri---", E_USER_NOTICE);
+					$latlong = $conv->national_to_wgs84($fe,$fn,$ri);
+					if (count($latlong)) { # FIXME error handling
+						$enr = $conv->wgs84_to_national($latlong[0],$latlong[1]);
+						if (count($enr)) { # FIXME error handling
+							$ri2 = $enr[2];
+							trigger_error("----r--$ri-$ri2--", E_USER_NOTICE);
+							$fe2=$enr[0];$fn2=$enr[1];trigger_error("----c2--$fe2,$fn2,$ri2---", E_USER_NOTICE);
+							if ($ri2 != $ri) { // we got a new ri
+								if ($length == 1)
+									$shift = 5000;
+								elseif ($length == 0)
+									$shift = 50000;
+								$e2 = round($enr[0],$length-5) + $shift;
+								$n2 = round($enr[1],$length-5) + $shift;
+								$x = floor($e2/1000) + $CONF['origins'][$ri2][0];
+								$y = floor($n2/1000) + $CONF['origins'][$ri2][1];
+								trigger_error("----x--$e2-$n2-$x-$y--", E_USER_NOTICE);
+								$ok = $this->loadFromPosition($x, $y);#FIXME: false,$allowinternal,$allowzeropercent);
+								if ($ok) {
+									$prefix = $this->gridsquare;
+									$e = sprintf("%05d", $e2%100000);
+									$n = sprintf("%05d", $n2%100000);
+									#$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
+									$gridref = $this->grid_reference;
+									#$this->natgrlen = $natgrlen;
+									#$isfour = $natgrlen == 4;
+									#$this->natspecified = $natgrlen > 4 ? 1:0;
+									trigger_error("----s--$prefix--", E_USER_NOTICE);
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (!$ok)
+				$ok=$this->_setGridRef($gridref,$allowzeropercent,$allowinternal);
 			if ($ok && (!$isfour || $setnatfor4fig))
 			{
 				//we could be reassigning the square!

@@ -81,14 +81,14 @@ function pointInside($p,&$points) {
 
 //use:	list($e,$n,$reference_index) = wgs84_to_national($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
-function wgs84_to_national($lat,$long,$usehermert = true) {
+function wgs84_to_national($lat,$long,$usehermert = true,$ri=-1) {
 	require_once('geograph/conversionslatlong.class.php');
 	$conv = new ConversionsLatLong;
-	$ire = ($lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
-	$uk = ($lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
-	$ger32 = ($lat > 47 && $lat < 56 && $long >= 6 && $long <= 12); #FIXME
-	$ger33 = ($lat > 47 && $lat < 56 && $long > 12 && $long < 16); #FIXME
-	$ger31 = ($lat > 47 && $lat < 56 && $long > 4 && $long < 6); #FIXME
+	$ire = ($ri == 2 || $ri == -1 && $lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
+	$uk = ($ri == 1 || $ri == -1 && $lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
+	$ger32 = ($ri == 3 || $ri == -1 && $lat > 47 && $lat < 56 && $long >= 6 && $long <= 12); #FIXME
+	$ger33 = ($ri == 4 || $ri == -1 && $lat > 47 && $lat < 56 && $long > 12 && $long < 16); #FIXME
+	$ger31 = ($ri == 5 || $ri == -1 && $lat > 47 && $lat < 56 && $long > 4 && $long < 6); #FIXME
 	
 	if ($uk && $ire) {
 		//rough border for ireland
@@ -115,6 +115,7 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 	} else if($ger31) {
 		return array_merge($conv->wgs84_to_utm($lat,$long,31),array(5));
 	}
+	return array();
 }
 
 
