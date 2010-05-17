@@ -19,6 +19,7 @@ function unloadDone() {
 AttachEvent(window,'unload',unloadDone,false);
 
 
+
 function cancelMess() {
 	window.onbeforeunload=null;
 }
@@ -26,6 +27,72 @@ function setupSubmitForm() {
 	AttachEvent(document.forms['theForm'],'submit',cancelMess,false);
 }
 AttachEvent(window,'load',setupSubmitForm,false);
+
+
+
+function getXMLRequestObject()
+{
+	var xmlhttp=false;
+		
+
+	 try {
+	  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+	 } catch (e) {
+	  try {
+	   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	  } catch (E) {
+	   xmlhttp = false;
+	  }
+	 }
+
+	if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+	  xmlhttp = new XMLHttpRequest();
+	}
+
+	return xmlhttp;
+}
+
+function lockArticle(form) {
+	var url = "/article/edit.php?page={/literal}{$url|escape:"url"}{literal}&lock";
+	
+	//make the request
+	var req=getXMLRequestObject();
+
+	//need to exploit function closure
+	req.onreadystatechange = function()
+	{
+		if (req.readyState==4) 
+		{
+			if (req.responseText == 'ok') {
+				form.elements['content'].disabled = false;
+				form.elements['submit'].disabled = false;
+				document.getElementById('buttonbar').style.display = '';
+				document.getElementById('lockbar').style.display = 'none';
+				document.getElementById('prompt1').style.display = '';
+			} else {
+				document.getElementById('lockbar').innerHTML=req.responseText;
+			}
+			//patch the memory leak
+			req.onreadystatechange = function() {};
+		}
+	}
+	req.open("GET", url,true);
+	req.send(null)
+	
+	
+
+}
+function makeUneditable() {
+	document.forms['theForm'].elements['content'].disabled = true;
+	document.forms['theForm'].elements['submit'].disabled = true;
+	document.getElementById('buttonbar').style.display = 'none';
+}
+{/literal}{if $approved == 2 && $user_id != $user->user_id}
+	AttachEvent(window,'load',makeUneditable,false);
+{/if}{literal}
+
+
+
 {/literal}</script>
 {if $error}
 	<div><span class="formerror">{$error}</span></div>
@@ -36,14 +103,20 @@ AttachEvent(window,'load',setupSubmitForm,false);
 <input type="hidden" name="article_id" value="{$article_id|escape:"html"}"/>
 
 	<div style="float:right;position:relative">
-		New to articles? See the {newwin href="http://www.geograph.org.uk/article/Help_on_formatting_of_articles" text="Overview Guide"}
+		New to articles? See the {newwin href="/article/Help_on_formatting_of_articles" text="Overview Guide"}
 	</div>
 
 <fieldset>
-{if $approved == 2}
+{if $approved == 2 && $user_id != $user->user_id}
 <legend>Edit Public Article</legend>
 
-<p><a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close page without saving edits</a><small> (leaving this page open prevents others from editing)</small></p>
+<div class="interestBox" id="prompt1" style="display:none;margin-bottom:20px">
+	<a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close editor without saving edits</a><small> (leaving this page open prevents others from editing)</small>
+</div>
+
+<div class="interestBox" id="lockbar" style="margin-bottom:30px">
+<input type="button" value="Lock Article so I can edit it" onclick="lockArticle(this.form);"/> <span style="color:red">Unlocks the edit box below</span>
+</div>
 
 {else}
 
@@ -51,7 +124,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 {if $title == 'New Article'}
 <legend>Create Article</legend>
 {else}
-<legend>Edit Article</legend>
+<legend>Edit {if $approved == 2}Public Collaboration{/if} Article</legend>
 
 <div class="field">
 	{if $errors.url}<div class="formerror"><p class="error">{$errors.url}</p>{/if}
@@ -132,6 +205,19 @@ AttachEvent(window,'load',setupSubmitForm,false);
 	
 	{if $errors.extract}</div>{/if}
 </div>
+
+{if $approved == 2}
+	<div class="field">
+		{if $errors.edit_prompt}<div class="formerror"><p class="error">{$errors.edit_prompt}</p>{/if}
+
+		<label for="edit_prompt">Edit prompt:</label>
+		<input type="text" name="edit_prompt" value="{$edit_prompt|escape:"html"}" maxlength="160" size="90" style="width:58em"/>
+
+		<div class="fieldnotes">For open collaboration articles, a short message to prompt users to edit the article.</div>
+
+		{if $errors.edit_prompt}</div>{/if}
+	</div>
+{/if}
 {/if}
 
 <div class="field">
@@ -145,8 +231,14 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
 </fieldset>
 
+<div id="buttonbar">
 <input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');" style="color:green"/>
 <input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em; color:green"/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved by a site moderator){/if}</p>
+
+ <br/> <br/>
+Or <a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close editor without saving edits</a><small> (leaving this page open prevents others from editing)</small>
+</div>
+
 </form>
 <br/><br/><br/>
 <div style="padding:5px; border: 1px solid gray; background-color:silver; font-size:0.9em">

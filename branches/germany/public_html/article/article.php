@@ -27,6 +27,8 @@ init_session();
 $smarty = new GeographPage;
 
 if (empty($_GET['page']) || preg_match('/[^\w\.\,-]/',$_GET['page'])) {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
 	exit;
 }
@@ -35,11 +37,8 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_article.tpl';
 $cacheid = 'articles|'.$_GET['page'];
-$cacheid .= '|'.$USER->hasPerm('moderator')?1:0;
+$cacheid .= '|'.$isadmin;
 $cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SESSION['article_urls'])?1:0);
-if (isset($_SESSION[$_GET['page']])) {
-	$cacheid .= '-'.$_SESSION[$_GET['page']];
-}
 if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
 	$cacheid .= "--".$_GET['epoch'];
 } else {
@@ -48,8 +47,15 @@ if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
 
 
 function article_make_table($input) {
-	$rows = explode("\n",$input);
-	$output = "<table class=\"report\">";
+	static $idcounter=1;
+	$rows = explode("\n",stripslashes($input));
+	
+	if (strpos($rows[0],'*') === 0) {
+		$GLOBALS['smarty']->assign("include_sorttable",1);
+		$output = '<table class="report sortable" id="table'.($idcounter++).'" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">';
+	} else {
+		$output = '<table class="report" id="table'.($idcounter++).'">';
+	}
 	$c = 1;
 	foreach ($rows as $row) {
 		$head = 0;
@@ -79,10 +85,24 @@ function article_make_table($input) {
 	return $output."</tbody></table>";
 }
 
+function getUniqueHash($title) {
+	static $usedTitles;
+	if (empty($usedTitles)) {
+		$usedTitles = array();
+	}
+	$title = str_replace(' ','-',trim(preg_replace('/[^\w \-]+/','',strtolower($title))));
+	$i ='';
+	while (isset($usedTitles[$title.$i])) {
+		$i++;
+	}
+	$usedTitles[$title.$i] = 1;
+	return $title.$i;
+}
+
 function smarty_function_articletext($input) {
 	global $imageCredits,$smarty,$CONF;
 	
-	$output = preg_replace('/\n(-{7,})\n(.*?)\n(-{7,})/es',"article_make_table('\$2')",str_replace("\r",'',$input));
+	$output = preg_replace('/(^|\n)(-{7,})\n(.*?)\n(-{7,})/es',"article_make_table('\$3')",str_replace("\r",'',$input));
 
 	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
 		$output = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$output);
@@ -100,9 +120,10 @@ function smarty_function_articletext($input) {
 	if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$output,$matches)) {
 		$list = array();
 		foreach ($matches[1] as $i => $level) {
-			$list[] = "<li class=\"h$level\"><a href=\"#p$i\">{$matches[2][$i]}</a></li>";
+			$hash = getUniqueHash($matches[2][$i]);
+			$list[] = "<li class=\"h$level\"><a href=\"#$hash\">{$matches[2][$i]}</a></li>";
 			$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
-			$replacement[]='<h$1><a name="p'.$i.'"></a>$2</h$3>';
+			$replacement[]='<h$1><a name="'.$hash.'"></a><a name="p'.$i.'"></a>$2</h$3>';
 		}
 		$list = implode("\n",$list);
 		$smarty->assign("tableContents", $list);
@@ -128,6 +149,9 @@ function smarty_function_articletext($input) {
 	$pattern[]='/\[mooflow=(\d+)\]/';
 	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=mooflow_embed" width="750" height="430"></iframe>';
 
+	$pattern[]='/\[youtube=(\w+)\]/';
+	$replacement[]='<object width="480" height="385"><param name="movie" value="http://www.youtube-nocookie.com/v/\1&hl=en_US&fs=1&rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube-nocookie.com/v/\1&hl=en_US&fs=1&rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object>';
+
 	$pattern[]='/\n\* ?([^\n]+)(\n{2})?/e';
 	$replacement[]="'<ul style=\"margin-bottom:0px;margin-top:0px\"><li>'.stripslashes('\$1').'</li></ul>'.('$2'?'\n':'')";
 	$pattern[]='/<\/ul>\n?<ul style=\"margin-bottom:0px;margin-top:0px\">/';
@@ -136,7 +160,7 @@ function smarty_function_articletext($input) {
 	//fix a bug where double spacing on a previous match would swallow the newline needed for the next
 	$pattern[]='/\n\n(<\w{1,3}>)\#/';
 	$replacement[]="\n\$1#";
-
+	
 	$pattern[]='/\n\n\#/';
 	$replacement[]="\n\r\n\$1#";
 	
@@ -162,7 +186,7 @@ function smarty_function_articletext($input) {
 	
 	$pattern=array(); $replacement=array();
 	
-	if (preg_match_all('/\[(small|)map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5}|[A-Z]{3}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$m)) {
+	if (preg_match_all('/\[(small|)map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$m)) {
 		foreach ($m[0] as $i => $full) {
 			//lets add an rastermap too
 			$square = new Gridsquare;
@@ -188,15 +212,6 @@ function smarty_function_articletext($input) {
 		}
 	}
 	
-	$output=preg_replace($pattern, $replacement, $output);
-	
-	$output=str_replace('¬','[',$output);
-	
-	if (count($m[0])) {
-		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
-	}
-	
-	
 	if (count($imageCredits)) {
 		arsort($imageCredits);
 
@@ -205,6 +220,17 @@ function smarty_function_articletext($input) {
 		$imageCreditsStr = preg_replace('/, ([^,]+)$/',' and $1',$imageCreditsStr);
 
 		$smarty->assign("imageCredits", $imageCreditsStr);
+		
+		$pattern[]="/\[imageCredits\]/i";
+		$replacement[]=$imageCreditsStr;
+	}
+	
+	$output=preg_replace($pattern, $replacement, $output);
+	
+	$output=str_replace('¬','[',$output);
+	
+	if (count($m[0])) {
+		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
 	}
 	
 	return $output;
@@ -226,11 +252,13 @@ where ( (licence != 'none' and approved > 0)
 	and url = ".$db->Quote($_GET['page']).'
 limit 1');
 if (count($page)) {
+	$cacheid .= '|'.$page['update_time'];
+	
 	if ($page['user_id'] == $USER->user_id) {
 		$cacheid .= '|'.$USER->user_id;
 	}
-	
-	if (!isset($_GET['dontcount']) && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE) {
+
+	if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE) {
 		$db->Execute("UPDATE LOW_PRIORITY article_stat SET views=views+1 WHERE article_id = ".$page['article_id']);
 	}
 	
@@ -241,6 +269,8 @@ if (count($page)) {
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 } else {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$template = 'static_404.tpl';
 }
 
@@ -269,10 +299,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		if (preg_match('/\bgeograph\b/i',$page['category_name'])) {
 			$db->Execute("set @last=0");
-			$users = $db->getAll("select realname,modifier,update_time,if(approved = @last,1,0) as same,@last := approved 
+			$users = $db->getAll("select realname,modifier,if(approved = @last,1,least(@last := approved,0)) as same 
 			from article_revisions 
 			left join user on (article_revisions.modifier = user.user_id)
-			where article_id = {$page['article_id']}");
+			where article_id = {$page['article_id']} order by article_revision_id");
 			$arr = array();
 			foreach ($users as $idx => $row) {
 				if ($row['same'] == 1 && $row['modifier'] != $page['user_id'] && !isset($arr[$row['modifier']])) {
@@ -284,6 +314,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	} 
 } else {
+	$smarty->assign('edit_prompt', $page['edit_prompt']);
+	$smarty->assign('approved', $page['approved']);
 	$smarty->assign('user_id', $page['user_id']);
 	$smarty->assign('url', $page['url']);
 }
