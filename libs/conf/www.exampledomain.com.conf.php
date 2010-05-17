@@ -330,6 +330,14 @@ $CONF['showmeridian'] = 0;
 $CONF['potd_daysperimage'] = 7;
 $CONF['potd_listlen'] = 20;
 
+// internal coordinates
+$CONF['minx'] = 0;
+$CONF['miny'] = 0;
+$CONF['maxx'] = -1;
+$CONF['maxy'] = -1;
+$CONF['xnames'] = 'ABCDEFGHIJKLMNOPQRSTUVWXY';
+$CONF['ynames'] = 'ABCDEFGHIJKLMNOPQRSTUVWXY';
+
 // picture size
 
 $CONF['pano_upper_limit'] = 0; # 0.5  : try to keep height constant for 2:1 and above

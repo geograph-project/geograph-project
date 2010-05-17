@@ -162,7 +162,7 @@ if (isset($_GET['recenter']))
 	
 }
 
-if (isset($_GET['gridref']) && preg_match('/^[a-zA-Z]{1,3}\d{4}$/',$_GET['gridref'])) {
+if (isset($_GET['gridref']) && preg_match('/^[!a-zA-Z]{1,3}\d{4}$/',$_GET['gridref'])) {
 	$gridsquare=new GridSquare;
 	$grid_ok=$gridsquare->setByFullGridRef($_GET['gridref'],false,true);
 	$gridref_param=$_GET['gridref'];
@@ -191,7 +191,7 @@ if (!empty($gridref_param) && !$gridref_ok) {
 
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
-if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,3}\d{4}$/',$_GET['gridref_from'])) {
+if (isset($_GET['gridref_from']) && preg_match('/^[!a-zA-Z]{1,3}\d{4}$/',$_GET['gridref_from'])) {
 	$smarty->assign('gridref_from', $_GET['gridref_from']);
 }
 $smarty->assign('gridref_param', $gridref_param);

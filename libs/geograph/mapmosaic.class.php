@@ -501,6 +501,7 @@ class GeographMapMosaic
 	*/
 	function getGridRef($x, $y)
 	{
+		global $CONF;
 		if ($x == -1 && $y == -1) {
 			$x = intval($this->image_w / 2);
 			$y = intval($this->image_h / 2);
@@ -568,6 +569,11 @@ class GeographMapMosaic
 				#  => prefix must not be calculated from old_centre, or use x_point/y_point instead of x_km,y_km
 				$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
 				$this->reference_index = $prefix['reference_index'];
+			} elseif ($x_km >= $CONF['minx'] && $y_km >= $CONF['miny'] && $x_km <= $CONF['maxx'] && $y_km <= $CONF['maxy']) {
+				$xofs = $x_km-$CONF['minx'];
+				$yofs = $y_km-$CONF['miny'];
+				$this->gridref = '!'.$CONF['xnames'][floor($xofs/100)].$CONF['ynames'][floor($yofs/100)].sprintf('%02d%02d',$xofs%100,$yofs%100);
+				$this->reference_index = null;
 			} else {
 				$this->gridref = "unknown";
 			}

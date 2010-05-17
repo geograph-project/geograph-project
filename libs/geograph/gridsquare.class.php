@@ -114,6 +114,11 @@ class GridSquare
 	var $services = array();
 	
 	/**
+	 * internal coordinates, square does not exist
+	 */
+	var $internal_only = false;
+	
+	/**
 	* Constructor
 	*/
 	function GridSquare()
@@ -327,39 +332,37 @@ class GridSquare
 	/**
 	*
 	*/
-	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false)
+	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false,$allowinternal = false)
 	{
 		global $CONF;
 		$matches=array();
 		$isfour=false;
-		
-		if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
+ 
+		if (preg_match("/\b([!a-zA-Z]{1,3}) ?(\d{1,5})[ \.](\d{1,5})\b/",$gridreference,$matches) and (strlen($matches[2]) == strlen($matches[3]))) {
 			list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
-			$this->natspecified = 1;
-			$natgrlen = $this->natgrlen = 10;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{4})[ \.]?(\d{4})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]0","$matches[3]0");
-			$this->natspecified = 1;
-			$natgrlen = $this->natgrlen = 8;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{3})[ \.]*(\d{3})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]00","$matches[3]00");
-			$this->natspecified = 1;
-			$natgrlen = $this->natgrlen = 6;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{2})[ \.]?(\d{2})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]000","$matches[3]000");
-			$isfour = true;
-			$natgrlen = $this->natgrlen = 4;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1})[ \.]*(\d{1})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]5000","$matches[3]5000");
-			$natgrlen = $this->natgrlen = 2;
-		} else if (preg_match("/\b([a-zA-Z]{1,3})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"50000","50000");
-			$natgrlen = $this->natgrlen = 0;
-		} 		
+			$length = strlen($matches[2]);
+			$natgrlen = $length * 2;
+		} elseif (preg_match("/\b([!a-zA-Z]{1,3}) ?(\d{0,10})\b/",$gridreference,$matches) and ((strlen($matches[2]) % 2) == 0)) {
+			$natgrlen = strlen($matches[2]);
+			$length = $natgrlen / 2;
+			list ($prefix,$e,$n) = array($matches[1], substr($matches[2], 0, $length), substr($matches[2], -$length));
+		}
+
 		if (!empty($prefix))
 		{
+			$this->natgrlen = $natgrlen;
+			$isfour = $natgrlen == 4;
+			$this->natspecified = $natgrlen > 4 ? 1:0;
+
+			if ($length <= 1)
+				$suffix = '5'.str_repeat('0', 4 - $length);
+			else
+				$suffix = str_repeat('0', 5 - $length);
+
+			$e .= $suffix;
+			$n .= $suffix;
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
-			$ok=$this->_setGridRef($gridref,$allowzeropercent);
+			$ok=$this->_setGridRef($gridref,$allowzeropercent,$allowinternal);
 			if ($ok && (!$isfour || $setnatfor4fig))
 			{
 				//we could be reassigning the square!
@@ -375,7 +378,7 @@ class GridSquare
 				$this->nateastings = $emajor.sprintf("%05d",$e);
 				$this->natnorthings = $nmajor.sprintf("%05d",$n);
 				$this->natgrlen = $natgrlen;
-				$this->precision=pow(10,6-($natgrlen/2))/10;
+				$this->precision=pow(10,5-$length);
 			} else {
 				$this->precision=1000;
 			}
@@ -397,7 +400,7 @@ class GridSquare
 	function _storeGridRef($gridref)
 	{
 		$this->grid_reference=$gridref;
-		if (preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$this->grid_reference, $matches))
+		if (preg_match('/^([!A-Z]{1,3})(\d\d)(\d\d)$/',$this->grid_reference, $matches))
 		{
 			$this->gridsquare=$matches[1];
 			$this->eastings=$matches[2];
@@ -415,7 +418,7 @@ class GridSquare
 	function validGridPos($gridsquare, $eastings, $northings)
 	{
 		$ok=true;
-		$ok=$ok && preg_match('/^[A-Z]{1,3}$/',$gridsquare);
+		$ok=$ok && preg_match('/^[!A-Z]{1,3}$/',$gridsquare);
 		$ok=$ok && preg_match('/^[0-9]{1,2}$/',$eastings);
 		$ok=$ok && preg_match('/^[0-9]{1,2}$/',$northings);
 		return $ok;
@@ -424,14 +427,14 @@ class GridSquare
 	/**
 	* set up and validate grid square selection using seperate reference components
 	*/
-	function setGridPos($gridsquare, $eastings, $northings,$allowzeropercent = false)
+	function setGridPos($gridsquare, $eastings, $northings,$allowzeropercent = false,$allowinternal = false)
 	{
 		//assume the inputs are tainted..
 		$ok=$this->validGridPos($gridsquare, $eastings, $northings);
 		if ($ok)
 		{
 			$gridref=sprintf("%s%02d%02d", $gridsquare, $eastings, $northings);
-			$ok=$this->_setGridRef($gridref,$allowzeropercent);
+			$ok=$this->_setGridRef($gridref,$allowzeropercent,$allowinternal);
 		}
 		
 		return $ok;
@@ -444,14 +447,14 @@ class GridSquare
 	*/
 	function validGridRef($gridref, $figures=4)
 	{
-		return preg_match('/^[A-Z]{1,3}[0-9]{'.$figures.'}$/',$gridref);
+		return preg_match('/^[!A-Z]{1,3}[0-9]{'.$figures.'}$/',$gridref);
 	}
 
 
 	/**
 	* set up and validate grid square selection using grid reference
 	*/
-	function setGridRef($gridref)
+	function setGridRef($gridref, $allowzeropercent = false, $allowinternal = false)
 	{
 		global $CONF;
 		$gridref = preg_replace('/[^\w]+/','',strtoupper($gridref)); #assume the worse and remove everything, also not everyone uses the shift key
@@ -459,13 +462,13 @@ class GridSquare
 		$ok=$this->validGridRef($gridref);
 		if ($ok)
 		{
-			$ok=$this->_setGridRef($gridref);
+			$ok=$this->_setGridRef($gridref, $allowzeropercent, $allowinternal);
 		}
 		else
 		{
 			//six figures?
 			$matches=array();
-			if (preg_match('/^([A-Z]{1,3})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
+			if (preg_match('/^([!A-Z]{1,3})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
 			{
 				$fixed=$matches[1].$matches[2].$matches[3];
 				if ($CONF['lang'] == 'de')
@@ -514,7 +517,7 @@ class GridSquare
 	/**
 	* load square from internal coordinates
 	*/
-	function loadFromPosition($internalx, $internaly, $findnearest = false)
+	function loadFromPosition($internalx, $internaly, $findnearest = false, $allowinternal = false)
 	{
 		global $CONF;
 		$ok=false;
@@ -523,6 +526,7 @@ class GridSquare
 		if (count($square))
 		{		
 			$ok=true;
+			$this->internal_only = false;
 			
 			//store cols as members
 			foreach($square as $name=>$value)
@@ -541,6 +545,23 @@ class GridSquare
 				//find nearest square for 100km
 				$this->findNearby($square['x'], $square['y'], 100);
 			}
+		} elseif ($allowinternal && $internalx >= $CONF['minx'] && $internaly >= $CONF['miny'] && $internalx <=  $CONF['maxx'] && $internaly <=  $CONF['maxy']) {
+			$this->gridsquare_id = null;
+			$this->x = $internalx;
+			$this->y = $internaly;
+			$this->percent_land = 0;
+			$this->imagecount = 0;
+
+			$xofs = $internalx-$CONF['minx'];
+			$yofs = $internaly-$CONF['miny'];
+			$this->grid_reference = '!'.$CONF['xnames'][floor($xofs/100)].$CONF['ynames'][floor($yofs/100)].sprintf('%02d%02d',$xofs%100,$yofs%100);
+
+			$this->has_geographs = 0;
+			$this->reference_index = null;
+			$this->placename_id = 0;
+			$this->services = array(); #array( -1 => '' );
+			$this->internal_only = true;
+			$ok=true;
 		} else {
 			if ($CONF['lang'] == 'de')
 				$this->_error("Dieser Ort scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um Rückmeldung, falls dies nicht der Fall sein sollte.");
@@ -553,7 +574,7 @@ class GridSquare
 	/**
 	* set up and validate grid square selection
 	*/
-	function _setGridRef($gridref,$allowzeropercent = false)
+	function _setGridRef($gridref,$allowzeropercent = false,$allowinternal = false)
 	{
 		global $CONF;
 		$ok=true;
@@ -593,7 +614,23 @@ class GridSquare
 				//find nearest square for 100km
 				$this->findNearby($square['x'], $square['y'], 100);
 			}
-
+			$this->internal_only = false;
+		} elseif ($allowinternal && strlen($this->gridsquare) == 3 && $this->gridsquare[0] == '!'
+			  && ($xpos = strpos($CONF['xnames'], $this->gridsquare[1])) !== false
+			  && ($ypos = strpos($CONF['ynames'], $this->gridsquare[2])) !== false) {
+			$x = $xpos * 100 + $this->eastings  + $CONF['minx'];
+			$y = $ypos * 100 + $this->northings + $CONF['miny'];
+			$this->gridsquare_id = null;
+			$this->x = $x;
+			$this->y = $y;
+			$this->percent_land = 0;
+			$this->imagecount = 0;
+			$this->has_geographs = 0;
+			$this->reference_index = null;
+			$this->placename_id = 0;
+			$this->services = array(); #array( -1 => '' );
+			$this->internal_only = true;
+			$ok=true;
 		}
 		else
 		{

@@ -289,6 +289,7 @@ class GeographMap
 	*/
 	function getGridRef($x, $y)
 	{
+		global $CONF;
 		if ($x == -1 && $y == -1) {
 			$x = intval($this->image_w / 2);
 			$y = intval($this->image_h / 2);
@@ -343,6 +344,11 @@ class GeographMap
 				$e=$x_km-$prefix['origin_x'];
 				$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
 				$this->reference_index = $prefix['reference_index'];
+			} elseif ($x_km >= $CONF['minx'] && $y_km >= $CONF['miny'] && $x_km <= $CONF['maxx'] && $y_km <= $CONF['maxy']) {
+				$xofs = $x_km-$CONF['minx'];
+				$yofs = $y_km-$CONF['miny'];
+				$this->gridref = '!'.$CONF['xnames'][floor($xofs/100)].$CONF['ynames'][floor($yofs/100)].sprintf('%02d%02d',$xofs%100,$yofs%100);
+				$this->reference_index = null;
 			} else {
 				$this->gridref = "unknown";
 			}
@@ -1872,7 +1878,7 @@ END;
 		//plot the number labels
 		if ($this->pixels_per_km >= 40) {
 			$gridref = $this->getGridRef(0, $this->image_h); //origin of image is tl, map is bl
-			if (preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$gridref, $matches))
+			if (preg_match('/^([!A-Z]{1,3})(\d\d)(\d\d)$/',$gridref, $matches))
 			{
 				$gridsquare=$matches[1];
 				$eastings=$matches[2];
