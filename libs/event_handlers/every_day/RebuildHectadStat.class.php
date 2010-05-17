@@ -58,8 +58,8 @@ class RebuildHectadStat extends EventHandler
 		
 		$db->Execute("ALTER TABLE hectad_stat_tmp DISABLE KEYS");
 		
-		foreach (array(1,2) as $ri) {
-			$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
+		foreach ($CONF['references'] as $ri => $rname) {
+			$letterlength = $CONF['gridpreflen'][$ri];
 			
 			$prefixes = $db->GetCol("select prefix from gridprefix where reference_index = $ri and landcount > 0 ");
 			
