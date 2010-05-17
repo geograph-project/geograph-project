@@ -164,9 +164,11 @@ if (!$throttle && isset($_POST['msg']))
 
 			$headers[] = "Content-Type: multipart/alternative;\n	boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
 			
-			$hostname=trim(`hostname`);
+			#$hostname=trim(`hostname`);
+			#$hostname.='.geograph.org.uk';
+			$hostname=trim(`hostname --fqdn`);
 			$received="Received: from [{$ip}]".
-				" by {$hostname}.geograph.org.uk ".
+				" by {$hostname} ".
 				"with HTTP;".
 				strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 			
