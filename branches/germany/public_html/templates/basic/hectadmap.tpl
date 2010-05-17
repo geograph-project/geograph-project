@@ -76,15 +76,15 @@
 <table id="maptable" border=1 cellspacing=0 cellpadding=1 bordercolor="#f7f7f7"> <tbody>
 
 	<tr>
-	{section name=x loop=$w start=$x1 step=1}
+	{section name=x loop=$x2 start=$x1 step=1}
 		<th width="45">&nbsp;&nbsp;</th>
 	{/section}
 	</tr>
 
-{section name=y loop=$h start=$y2 step=-1}
+{section name=y loop=$y2 max=$h step=-1}
 	{assign var="y" value=$smarty.section.y.index}
 	<tr>
-	{strip}{section name=x loop=$w start=$x1 step=1}
+	{strip}{section name=x loop=$x2 start=$x1 step=1}
 		{assign var="x" value=$smarty.section.x.index}
 		{if $grid.$y.$x}{assign var="mapcell" value=$grid.$y.$x}
 			<td bgcolor="#{$mapcell.$column|colerize}" title="{$mapcell.hectad}: {$mapcell.geosquares}/{$mapcell.landsquares}={$mapcell.percentage}%">
@@ -98,6 +98,40 @@
 {/section}
 </tbody>
 </table>
+{*extreme hectads:
+E UWS08 800
+N UMG60 900
+S TNT83  35
+W UGS05   0
+-> x: 10 90, y: 3 90
+*}
+{* smarty is great
+<p>a: <!--7 8 9-->
+{section name=x loop=10 start=-3 step=1}{assign var="x" value=$smarty.section.x.index}
+{$x}
+{/section}
+<br >b: <!--3 4 5 6 7 8 9-->
+{section name=x loop=10 start=3 step=1}{assign var="x" value=$smarty.section.x.index}
+{$x}
+{/section}
+<br >c: <!--3 2 1 0-->
+{section name=x loop=10 start=3 step=-1}{assign var="x" value=$smarty.section.x.index}
+{$x}
+{/section}
+<br >d: <!--9 8 7 6 5 4 3 2 1 0-->
+{section name=x loop=10 start=30 step=-1}{assign var="x" value=$smarty.section.x.index}
+{$x}
+{/section}
+<br >e: <!--29 28 27 26 25 24 23 22 21 20-->
+{section name=x loop=30 max=10 step=-1}{assign var="x" value=$smarty.section.x.index}
+{$x}
+{/section}
+<br >f: <!--0 1 2 3 4 5 6 7 8 9-->
+{section name=x loop=30 max=10 step=1}{assign var="x" value=$smarty.section.x.index}
+{$x}
+{/section}
+</p>
+*}
 
 <p><i>Hover over square to see statistics</i></p>
 
