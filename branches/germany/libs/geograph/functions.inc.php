@@ -457,6 +457,10 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				$server = 'www.geograph.org.uk';
 				$ext = true;
 				$prefix = 'bi:';
+			} elseif ($g_matches[2][$i] == 'ci:') {
+				$server = 'channel-islands.geographs.org';
+				$ext = true;
+				$prefix = 'ci:';
 			}
 			//photo id?
 			if (is_numeric($g_id)) {
