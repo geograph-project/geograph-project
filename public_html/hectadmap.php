@@ -81,7 +81,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$lookup = $grid = array();
 	$x1 = 9999999;
 	$x2 = 0;
-	foreach ($hectads as $i => $h) {
+	foreach ($hectads as $i => $h) { #FIXME negative values don't work with smarty...
 		$h['digits'] = substr($h['hectad'],-2);
 		$x = intval($h['x']/10)+10;
 		$y = intval($h['y']/10);
@@ -129,11 +129,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign_by_ref('grid',$grid);
 	$smarty->assign('x1',$x1);
-	$smarty->assign('x2',$x2);
+	$smarty->assign('x2',$x2+1);
 	$smarty->assign('y1',$y1);
-	$smarty->assign('y2',$y2);
-	$smarty->assign('w',$x2-$x1+5);
-	$smarty->assign('h',$y2-$y1);
+	$smarty->assign('y2',$y2+1);
+	$smarty->assign('w',$x2-$x1+1/*+5?FIXME?*/);
+	$smarty->assign('h',$y2-$y1+1);
 
 } elseif ($u) {
 	if ($u == $USER->user_id) {
