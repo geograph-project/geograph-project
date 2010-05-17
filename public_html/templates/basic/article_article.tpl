@@ -3,12 +3,15 @@
 {assign var="content_articletext" value=$content|articletext}
 
 {include file="_std_begin.tpl"}
-
+{if $include_sorttable}
+<script src="{"/sorttable.js"|revision}"></script>
+{/if}
 {literal}<style type="text/css">
 #maincontent h1 { padding: 5px; margin-top:0px; background-color: black; color:white}
 #maincontent h2 { padding: 5px; background-color: lightgrey}
 #maincontent h3 { padding: 5px; margin-top:20px; border: 1px solid lightgrey; background-color: #eeeeee}
 #maincontent h4 { padding: 5px; margin-top:20px; border: 1px dashed lightgrey; background-color: #eeeeee}
+#maincontent tt { padding: 1px; background-color: #f9f9f9}
 
 #contents_table {  border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px } 
 #contents_table .title { font-weight:bolder;  padding:3px; border-bottom:1px solid black; margin-bottom:5px; }
@@ -30,17 +33,26 @@ ul.content {padding:0 0 0 0; border-bottom: 1px solid gray}
 ul.content li {	padding:3px; border-top: 1px solid gray}
 
 </style>{/literal}
-{dynamic}{if $user->user_id == $user_id}<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url}">edit this article</a>]] [[<a href="/article/history.php?page={$url}">article history</a>]] [[<a href="/article/">article listing</a>]]</p>{/if}{/dynamic}
+{dynamic}
+	{if $user->registered && $approved == 2 && $edit_prompt}
+		<div class="no_print" style="padding-bottom:20px">
+			<div style="position:relative;float:right">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]]</div>
+			<b>This article is open for collaborative editing</b>. {$edit_prompt}
+		</div>
+	{elseif $user->user_id == $user_id}
+		<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]] [[<a href="/article/">article listing</a>]]</p>
+	{/if}
+{/dynamic}
 
 <h1>{$title|escape:'html'}</h1>
 
 <div style="text-align:right">
 {if $licence == 'copyright'}
-	Text <small>&copy;</small> Copyright <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B %Y"}
+	Text <small>&copy;</small> Copyright <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$publish_date|date_format:" %B %Y"}
 {elseif $licence == 'cc-by-sa/2.0'}
 	<!-- Creative Commons Licence -->
 		<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Text &copy; Copyright {$publish_date|date_format:" %B %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>; 
+		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Text &copy; Copyright {$publish_date|date_format:" %B %Y"}, <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>; 
 		licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 	<!-- /Creative Commons Licence -->
 
@@ -80,27 +92,27 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 
 </rdf:RDF>
 
--->	
+-->
 
 {if $moreCredits}
-	<div class="ccmessage" style="color:gray; font-size:0.8em; text-align:right">With contributions by {$moreCredits}. (<a href="/article/history.php?page={$url}">details</a>)</div>
+	<div class="ccmessage" style="color:gray; font-size:0.8em; text-align:right">With contributions by {$moreCredits}. (<a href="/article/history.php?page={$url|escape:'url'}">details</a>)</div>
 {/if}
 {if $imageCredits}
 	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images also under a similar <a href="#imlicence">Creative Commons licence</a>.</div>
 {/if}
 
 {else}
-	 <div class="ccmessage">{if $licence == 'pd'}<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">
-	<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/publicdomain/88x31.png" /></a> {/if} Text by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>, {$publish_date|date_format:" %B %Y"}
+	<div class="ccmessage">{if $licence == 'pd'}<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">
+	<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/publicdomain/88x31.png" /></a> {/if} Text by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$publish_date|date_format:" %B %Y"}
 	</a>{if $licence == 'pd'}; This work is dedicated to the 
 	<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">Public Domain</a>.{/if}</div>
 {/if}
 
 {if $imageCredits && $licence != 'cc-by-sa/2.0'}
-	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images are under a seperate <a href="#imlicence">Creative Commons licence</a>.</div>
+	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images are under a separate <a href="#imlicence">Creative Commons licence</a>.</div>
 {/if}
 
-</div> 
+</div>
 
 {if $grid_reference}
 	<div class="no_print" style="float:left; font-size:0.8em">
@@ -109,6 +121,7 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 {/if}
 
 {if $copyright}{$copyright}{/if}
+
 <hr/><br/>
 {if $tableContents}
 	<div style="float:right; width:250px; position:relative;" id="contents_table">
@@ -122,9 +135,9 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 
 {if $imageCredits}
 	<hr/>
-	<div style="float:right;position:relative"><a title="View these images in Google Earth" href="/search.php?article_id={$article_id}&amp;kml" class="xml-kml">KML</a></div>
+	<div style="float:right;position:relative"><a title="View these images in Google Earth" href="/search.php?article_id={$article_id}&amp;orderby=seq_id&amp;kml" class="xml-kml">KML</a></div>
 	<div class="ccmessage copyright"><a rel="license" name="imlicence" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; <b><a href="/search.php?article_id={$article_id}">Images used on this page</a></b>, &copy; Copyright {$imageCredits};
+		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; <b><a href="/search.php?article_id={$article_id}&amp;orderby=seq_id">Images used on this page</a></b>, &copy; Copyright {$imageCredits};
 		licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>. <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">http://creativecommons.org/licenses/by-sa/2.0/</a><br/><br/></div>
 {/if}
 

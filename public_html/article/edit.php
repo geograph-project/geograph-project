@@ -30,6 +30,8 @@ $USER->mustHavePerm('basic');
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
 if (empty($_REQUEST['article_id']) && (empty($_REQUEST['page']) || preg_match('/[^\w\.\,-]/',$_REQUEST['page']))) {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
 	exit;
 }
@@ -79,11 +81,10 @@ $cacheid = '';
 					header("Content-Length: 0");
 					flush();
 				} else {
-					header("Location: /article/");
+					header("Location: /article/".$page['url']);
 				}
 				exit;
-				
-			}
+			} 
 			$lockedby = $db->getOne("
 				select 
 					m.realname
@@ -94,7 +95,18 @@ $cacheid = '';
 					article_id = {$page['article_id']}
 					and m.user_id != {$USER->user_id}
 				and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR)");
-					
+			
+			if (isset($_GET['lock'])) {
+				if ($lockedby) {
+					print "ERROR: Article already locked by ".htmlentities($lockedby).", please try later";
+				} else {
+					$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
+
+					print "ok";
+				}
+				exit;
+			}
+			
 			if ($lockedby) {
 				$smarty->assign('lockedby', $lockedby);
 				$template = 'article_locked.tpl';
@@ -103,8 +115,12 @@ $cacheid = '';
 			}
 
 			$smarty->assign($page);
-			$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
+			if ($page['approved'] != 2) {//'public' articles are locked in a seperate button.
+				$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
+			}
 		} else {
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
 			$template = 'static_404.tpl';
 		}
 	}
@@ -114,7 +130,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$errors = array();
 	
 	$smarty->reassignPostedDate('publish_date');
-	$_POST['title'] = preg_replace('/[^\w-\., ]+/','',trim($_POST['title']));
+	$_POST['title'] = preg_replace('/[^\w\-\.,:;\' ]+/','',trim($_POST['title']));
 	if (empty($_POST['url']) && !empty($_POST['title'])) {
 		$_POST['url'] = $_POST['title'];
 	}
@@ -142,7 +158,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	
 	$updates = array();
 	
-	if ($page['approved'] == 2) {
+	if ($page['approved'] == 2 && $USER->user_id != $page['user_id']) {
 		$keys = array('content');
 	} else {
 		$keys = array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','extract');
@@ -163,6 +179,11 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		} elseif (empty($_POST[$key]) && $key != 'gridsquare_id') 
 			$errors[$key] = "missing required info";		
 	}
+	if (isset($_POST['edit_prompt'])) {
+		$key = 'edit_prompt';
+		$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
+		$smarty->assign($key, $_POST[$key]);
+	}
 	if (!count($updates)) {
 		$smarty->assign('error', "No Changes to Save");
 		$errors[1] =1;
@@ -182,7 +203,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		if ($_REQUEST['page'] == 'new' || $_REQUEST['article_id'] == 'new') {
 			$_REQUEST['article_id'] = $db->Insert_ID();
 		}
-
+		
 		require_once('geograph/event.class.php');
 		new Event("article_updated", $_REQUEST['article_id']);
 
@@ -190,14 +211,14 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		$sql = "INSERT INTO article_revisions SELECT *,NULL,{$USER->user_id} FROM article WHERE article_id = ".$db->Quote($_REQUEST['article_id']);
 		$db->Execute($sql);
 
-		$_SESSION[$_POST['url']] = $db->Insert_ID();
-
-		$smarty->clear_cache('article_article.tpl', $_POST['url']);
+		$smarty->clear_cache('', 'article|'.$_POST['url'].'|');
 		$smarty->clear_cache('article.tpl');
-
+		
+		header("Location: /article/".(empty($_POST['url'])?$page['url']:$_POST['url']));
+		flush();
+		
 		$db->Execute("DELETE FROM article_lock WHERE user_id = {$USER->user_id} AND article_id = {$_REQUEST['article_id']}");
 
-		header("Location: /article/".(empty($_POST['url'])?$page['url']:$_POST['url']));
 		exit;
 	} else {
 		if ($errors[1] != 1)

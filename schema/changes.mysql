@@ -422,3 +422,25 @@ ALTER TABLE  `gridimage_size` ADD  `original_width` MEDIUMINT UNSIGNED NOT NULL 
 ADD  `original_height` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0';
 
 ALTER TABLE  `user` ADD `clear_exif` tinyint(3) unsigned NOT NULL DEFAULT '1';
+
+DROP TABLE IF EXISTS `hectad_stat`;
+CREATE TABLE `hectad_stat` (
+  `reference_index` tinyint(4) default '1',
+  `x` int(11) NOT NULL default '0',
+  `y` int(11) NOT NULL default '0',
+  `hectad` varchar(7) NOT NULL default '',
+  `landsquares` smallint(5) unsigned  NULL default '0',
+  `images` int(11) unsigned NOT NULL default '0',
+  `geographs` mediumint(8) unsigned NULL default '0',
+  `squares` smallint(5) unsigned NOT NULL default '0',
+  `geosquares` smallint(5) unsigned NOT NULL default '0',
+  `users` mediumint(8) unsigned NOT NULL default '0',
+  `first_submitted` datetime default NULL,
+  `last_submitted` datetime default NULL,
+  `map_token` varchar(128) default NULL,
+  `largemap_token` varchar(128) default NULL,
+  PRIMARY KEY  (`hectad`),
+  KEY `reference_index` (`reference_index`),
+  KEY `geosquares` (`geosquares`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+alter table hectad_stat add ftfusers mediumint(8) unsigned NOT NULL DEFAULT '0';
