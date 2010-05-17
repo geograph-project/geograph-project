@@ -32,8 +32,10 @@ $smarty = new GeographPage;
 $template='statistics_not_geographed.tpl';
 $cacheid='statistics|not_geographed';
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hr cache
+}
 
 if (isset($_GET['refresh']) && $USER->hasPerm('admin'))
 	$smarty->clear_cache($template, $cacheid);
