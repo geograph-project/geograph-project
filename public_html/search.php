@@ -950,7 +950,7 @@ if (isset($_GET['fav']) && $i) {
 					$engine->results[$idx]->rastermap = new RasterMap($engine->results[$idx]->grid_square,false);
 
 					if (!empty($engine->results[$idx]->viewpoint_northings)) {
-						$engine->results[$idx]->rastermap->addViewpoint($engine->results[$idx]->viewpoint_eastings,$engine->results[$idx]->viewpoint_northings,$engine->results[$idx]->viewpoint_grlen,$engine->results[$idx]->view_direction);
+						$engine->results[$idx]->rastermap->addViewpoint($engine->results[$idx]->viewpoint_refindex,$engine->results[$idx]->viewpoint_eastings,$engine->results[$idx]->viewpoint_northings,$engine->results[$idx]->viewpoint_grlen,$engine->results[$idx]->view_direction);
 					} elseif (isset($engine->results[$idx]->view_direction) && strlen($engine->results[$idx]->view_direction) && $engine->results[$idx]->view_direction != -1) {
 						$engine->results[$idx]->rastermap->addViewDirection($engine->results[$idx]->view_direction);
 					}

@@ -697,7 +697,7 @@ class UploadManager
 		
 		$viewpoint = new GridSquare;
 		if ($this->viewpoint_gridreference) {
-			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference,true);
+			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference, true, true, false, true);
 		}
 		
 		
@@ -740,17 +740,18 @@ class UploadManager
 		$sql=sprintf("insert into $table (".
 			"gridsquare_id, seq_no, user_id, ftf,".
 			"moderation_status,title,comment,title2,comment2,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
-			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname) values ".
+			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname,reference_index,viewpoint_refindex) values ".
 			"(%d,%d,%d,%d,".
 			"'pending',%s,%s,%s,%s,%d,%d,'%d',%s,%s,".
-			"now(),%d,%d,'%d',%d,%d,%s,%s)",
+			"now(),%d,%d,'%d',%d,%d,%s,%s,'%d','%d')",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), 
 			$this->db->Quote($this->title2), $this->db->Quote($this->comment2), 
 			$this->square->nateastings,$this->square->natnorthings,$this->square->natgrlen,
 			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
 			$viewpoint->nateastings,$viewpoint->natnorthings,$viewpoint->natgrlen,$this->view_direction,
-			$this->use6fig,$this->db->Quote($this->user_status),$this->db->Quote($this->realname));
+			$this->use6fig,$this->db->Quote($this->user_status),$this->db->Quote($this->realname),
+			$this->square->reference_index,$viewpoint->reference_index);
 		
 		$this->db->Query($sql);
 		

@@ -28,6 +28,10 @@
  var marker2 = null;
  var eastings2 = 0;
  var northings2 = 0;
+ var lat1 = 0;
+ var lon1 = 0;
+ var lat2 = 0;
+ var lon2 = 0;
  
  var pickupbox = null;
  
@@ -46,7 +50,7 @@
 			//create a wgs84 coordinate
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
-			if (ri == -1) {
+			if (ri == -1||issubmit) {
 			if (wgs84.isIreland()) {
 				//convert to Irish
 				var grid=wgs84.getIrish(true);
@@ -70,20 +74,24 @@
 			else if (ri == 2)
 				var grid=wgs84.getIrish();
 			else if (ri == 3)
-				var grid=wgs84.getGerman32(true, true);
+				var grid=wgs84.getGerman32(true, false);
 			else if (ri == 4)
-				var grid=wgs84.getGerman33(true, true);
+				var grid=wgs84.getGerman33(true, false);
 			else if (ri == 5)
-				var grid=wgs84.getGerman31(true, true);
+				var grid=wgs84.getGerman31(true, false);
 			
 			//get a grid reference with 4 digits of precision
 			var gridref = grid.getGridRef(4);
 
 			if (picon) {
+				lon2 = wgs84.longitude*Math.PI/180.;
+				lat2 = wgs84.latitude*Math.PI/180.;
 				eastings2 = grid.eastings;
 				northings2 = grid.northings;
 				document.theForm.photographer_gridref.value = gridref;
 			} else {
+				lon1 = pp.lng()*Math.PI/180.;
+				lat1 = pp.lat()*Math.PI/180.;
 				eastings1 = grid.eastings;
 				northings1 = grid.northings;
 				document.theForm.grid_reference.value = gridref;
@@ -220,7 +228,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	var grid;
 	var ok = false;
 	
-	if (ri == -1) {
+	if (ri == -1 || issubmit) {
 	
 	grid=new GT_OSGB();
 	if (grid.parseGridRef(gridref)) {
@@ -275,9 +283,13 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		currentelement.setPoint(point);
 
 		if (that.name == 'photographer_gridref') {
+			lon2 = wgs84.longitude*Math.PI/180.;
+			lat2 = wgs84.latitude*Math.PI/180.;
 			eastings2 = grid.eastings;
 			northings2 = grid.northings;
 		} else {
+			lon1 = wgs84.longitude*Math.PI/180.;
+			lat1 = wgs84.latitude*Math.PI/180.;
 			eastings1 = grid.eastings;
 			northings1 = grid.northings;
 		}  
@@ -297,11 +309,14 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 function updateViewDirection() {
 	if (eastings1 > 0 && eastings2 > 0) {
-		
-		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
+		arc = Math.acos(Math.sin(lat1)*Math.sin(lat2) + Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1));
+		distance = arc*6378137;
+		//distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
 	
 		if (distance > 14) {
-			realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
+			//realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
+			realangle = Math.acos((Math.sin(lat1)-Math.sin(lat2)*Math.cos(arc)) / (Math.cos(lat2)*Math.sin(arc)));
+			realangle *= 180./Math.PI;
 
 			if (realangle < 0)
 				realangle = realangle + 360.0;

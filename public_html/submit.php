@@ -193,7 +193,8 @@ if (isset($_POST['gridsquare']))
 	//ensure the submitted reference is valid
 	if (!empty($_POST['grid_reference']) && empty($_POST['setpos2'])) 
 	{
-		$ok= $square->setByFullGridRef($_POST['grid_reference']);
+		#$ok= $square->setByFullGridRef($_POST['grid_reference'], false, false, false, true);
+		$ok= $square->setByFullGridRef($_POST['grid_reference'], false, false, false, empty($_POST['setpos2'])&&empty($_POST['setpos']));
 		
 		//preserve inputs in smarty
 		$smarty->assign('grid_reference', $grid_reference = $_POST['grid_reference']);
@@ -641,8 +642,8 @@ if (isset($_POST['gridsquare']))
 			
 			if (isset($_POST['photographer_gridref'])) {
 				$square2=new GridSquare;
-				$ok= $square2->setByFullGridRef($_POST['photographer_gridref']);
-				$rastermap->addViewpoint($square2->nateastings,$square2->natnorthings,$square2->natgrlen,$_POST['view_direction']);
+				$ok= $square2->setByFullGridRef($_POST['photographer_gridref'], false, true, false, true);
+				$rastermap->addViewpoint($square2->reference_index,$square2->nateastings,$square2->natnorthings,$square2->natgrlen,$_POST['view_direction']);
 			} elseif (isset($_POST['view_direction']) && strlen($_POST['view_direction']) && $_POST['view_direction'] != -1) {
 				$rastermap->addViewDirection($_POST['view_direction']);
 			}

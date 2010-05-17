@@ -444,3 +444,9 @@ CREATE TABLE `hectad_stat` (
   KEY `geosquares` (`geosquares`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 alter table hectad_stat add ftfusers mediumint(8) unsigned NOT NULL DEFAULT '0';
+
+ALTER TABLE gridimage ADD `reference_index` tinyint(1) NOT NULL DEFAULT '0' AFTER `natgrlen`;
+ALTER TABLE gridimage ADD `viewpoint_refindex` tinyint(1) NOT NULL DEFAULT '0' AFTER `viewpoint_grlen`;
+
+UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.gridsquare_id) SET gi.reference_index = gs.reference_index;
+UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.gridsquare_id) SET gi.viewpoint_refindex = gs.reference_index;

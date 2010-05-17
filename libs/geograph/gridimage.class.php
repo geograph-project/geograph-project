@@ -129,6 +129,11 @@ class GridImage
 	var $photographer_gridref_precision;
 	
 	/**
+	* photographer reference index
+	*/
+	var $viewpoint_refindex;
+	
+	/**
 	* subject grid reference
 	*/
 	var $subject_gridref;
@@ -137,6 +142,11 @@ class GridImage
 	* subject grid reference precision (in metres)
 	*/
 	var $subject_gridref_precision;
+	
+	/**
+	* subject reference index
+	*/
+	var $reference_index;
 	
 	/**
 	* external image?
@@ -230,7 +240,7 @@ class GridImage
 				$this->viewpoint_eastings,
 				$this->viewpoint_northings,
 				($this->use6fig && $spaced)?min(6,$this->viewpoint_grlen):max(2,$this->viewpoint_grlen),
-				$this->grid_square->reference_index,$spaced);
+				$this->viewpoint_refindex,$spaced);
 			
 			$this->photographer_gridref=$posgr;
 			$this->photographer_gridref_precision=pow(10,6-$len)/10;
@@ -560,7 +570,7 @@ class GridImage
 		$rastermap = new RasterMap($this->grid_square,false,true,false,'latest',$sid);
 		$rastermap->addLatLong($lat,$long);
 		if (!empty($this->viewpoint_northings)) {
-			$rastermap->addViewpoint($this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_grlen,$this->view_direction);
+			$rastermap->addViewpoint($this->viewpoint_refindex,$this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_grlen,$this->view_direction);
 		} elseif (isset($this->view_direction) && strlen($this->view_direction) && $this->view_direction != -1) {
 			$rastermap->addViewDirection($this->view_direction);
 		}
@@ -1699,7 +1709,7 @@ class GridImage
 		$newsq=new GridSquare;
 		if (is_object($this->db))
 			$newsq->_setDB($this->_getDB());
-		if ($newsq->setByFullGridRef($grid_reference,false,true))
+		if ($newsq->setByFullGridRef($grid_reference,false,true,false,true))
 		{
 			$db=&$this->_getDB();
 			
@@ -1757,10 +1767,11 @@ class GridImage
 			//we DONT use getNatEastings here because only want them if it more than 4 figure
 			$east=$newsq->nateastings+0;
 			$north=$newsq->natnorthings+0;
+			$ri=$newsq->reference_index;
 
 			//reassign image
 			$db->Execute("update gridimage set $sql_set ".
-				"nateastings=$east,natnorthings=$north,natgrlen='{$newsq->natgrlen}' ".
+				"nateastings=$east,natnorthings=$north,reference_index=$ri,natgrlen='{$newsq->natgrlen}' ".
 				"where gridimage_id='$this->gridimage_id'");
 			
 			//ensure this is a real change
@@ -1827,6 +1838,7 @@ class GridImage
 			", viewpoint_eastings=".$db->Quote($this->viewpoint_eastings).
 			", viewpoint_northings=".$db->Quote($this->viewpoint_northings).
 			", viewpoint_grlen='{$this->viewpoint_grlen}'".					
+			", viewpoint_refindex='{$this->viewpoint_refindex}'".
 			", view_direction=".$db->Quote($this->view_direction).
 			", use6fig=".$db->Quote($this->use6fig).
 			" where gridimage_id = '{$this->gridimage_id}'";
@@ -1876,11 +1888,34 @@ class GridImage
 			}
 	
 			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
+			SELECT gridimage_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
-			$db->Execute($sql);		
+			$db->Execute($sql);
+
+			$row = &$db->GetRow("select recent_id from gridimage_recent where gridimage_id={$this->gridimage_id} limit 1");
+			if ($row !== false && count($row)) {
+				$recent_id=$row['recent_id'];
+				$sql="REPLACE INTO gridimage_recent
+				SELECT gridimage_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)'),$recent_id
+				FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
+				INNER JOIN user ON(gi.user_id=user.user_id)
+				WHERE gridimage_id = '{$this->gridimage_id}'";
+				$db->Execute($sql);		
+			}
+			#$sql="update gridimage_recent set title=".$db->Quote($this->title1).
+			#	", comment=".$db->Quote($this->comment1).
+			#	", title2=".$db->Quote($this->title2).
+			#	", comment2=".$db->Quote($this->comment2).
+			#	", imageclass=".$db->Quote($this->imageclass).
+			#	", imagetaken=".$db->Quote($this->imagetaken).
+			#	", viewpoint_eastings=".$db->Quote($this->viewpoint_eastings).
+			#	", viewpoint_northings=".$db->Quote($this->viewpoint_northings).
+			#	", viewpoint_grlen='{$this->viewpoint_grlen}'".					
+			#	", view_direction=".$db->Quote($this->view_direction).
+			#	", use6fig=".$db->Quote($this->use6fig).
+			#	" where gridimage_id = '{$this->gridimage_id}'";
 		} else {
 			//fall back if we dont know the moduration status then lets load it and start again!
 			$this->loadFromId($this->gridimage_id);	
