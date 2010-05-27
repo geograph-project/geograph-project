@@ -27,7 +27,9 @@
      </ul></li>
     </ul></li>
     <li>Contribute<ul rel="open">
-     <li><b><a title="Submit" href="/submit.php">Submit</a></b></li>
+     <li><b><a title="Submit" href="/submit.php">Submit</a></b><ul>
+      <li><a title="Submit Version 2" href="/submit2.php">Submit v2</a></li>
+     </ul></li>
      <li><a title="Statistics" href="/numbers.php">Statistics</a><ul>
       <li><a title="More Stats" href="/statistics.php">More Stats</a></li>
       <li><a title="Credits" href="/credits/">Contributors</a></li>
@@ -36,7 +38,7 @@
      <li><a title="Content" href="/article/Content-on-Geograph">Content</a></li>
     </ul></li>
     <li>Interact<ul rel="open">
-     <li><a title="Discuss" href="/discuss/">Discuss</a></li>
+     <li><a title="Discuss" href="/discuss/">Discussions</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Chat" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
      <li><a title="Find out about local Events" href="/events/">Events</a> <sup style="color:red">New!</sup></li>

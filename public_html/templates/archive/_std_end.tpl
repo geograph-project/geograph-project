@@ -14,7 +14,7 @@
     <li>Interact<ul>
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
      <li><a title="Activities on the site" href="/activities/">Activities</a> </li>
-     <li><a title="Discussion Forum" href="/discuss/">Discuss</a></li>
+     <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>

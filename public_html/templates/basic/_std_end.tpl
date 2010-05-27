@@ -31,7 +31,7 @@
     <li>Interact<ul>
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
      <li><a title="Activities on the site" href="/activities/">Activities</a> </li>
-     <li><a title="Discussion Forum" href="/discuss/">Discuss</a></li>
+     <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Chat with other members" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
      <li><a title="Find out about local meetups" href="/events/">Events</a></li>
