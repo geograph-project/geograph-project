@@ -40,7 +40,9 @@
 <ul>
 	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
-	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
+	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a><ul>
+		<li><a title="Submit Version 2" href="/submit2.php">Newer Submission Method (Version 2)</a></li>
+	</ul></li>
 	<li><a title="Content" href="/content/">read <b>content</b> submitted by members</a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li>
 	<li><a title="Education Area" href="/teachers/">Geograph for <b>teachers</b></a></li>
 </ul>
