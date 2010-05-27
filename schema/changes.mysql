@@ -1304,4 +1304,11 @@ alter table `vote_log` add `useragent` varchar(128) NOT NULL, add `session` varc
 ALTER TABLE  `humansearch` ADD  `grid_reference` VARCHAR( 7 ) NOT NULL AFTER  `comment` ;
 
 
+#################################################
+
+
+alter table user add submission_method enum('submit','submit2') default 'submit';
+
+
+#################################################
 

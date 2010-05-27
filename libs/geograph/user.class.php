@@ -788,6 +788,7 @@ class GeographUser
 				message_sig=%s,
 				expand_about=%d,
 				upload_size=%d,
+				submission_method=%s,
 				password=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
@@ -807,6 +808,7 @@ class GeographUser
 				$db->Quote(stripslashes($profile['message_sig'])),
 				intval($profile['expand_about']),
 				intval($profile['upload_size']),
+				$db->Quote(stripslashes($profile['submission_method'])),
 				$db->Quote($password),
 				$this->user_id
 				);
@@ -848,6 +850,7 @@ class GeographUser
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->expand_about=intval($profile['expand_about']);
 				$this->upload_size=intval($profile['upload_size']);
+				$this->submission_method=stripslashes($profile['submission_method']);
 				$this->_forumUpdateProfile();
 				$this->_forumLogin();
 				
