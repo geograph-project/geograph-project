@@ -224,15 +224,28 @@
 	<label for="upload_size" class="nowrap">Default Upload Size</label>
 	
 	<select name="upload_size" id="upload_size"> 
-		<option value="640" {if $profile->upload_size == 640} selected="selected"{/if}>640 x 640 (the original size)</a>
-		<option value="800" {if $profile->upload_size == 800} selected="selected"{/if}>800 x 800</a>
-		<option value="1024" {if $profile->upload_size == 1024} selected="selected"{/if}>1024 x 1024</a>
-		<option value="1600" {if $profile->upload_size == 1600} selected="selected"{/if}>1600 x 1600</a>
-		<option value="65536" {if $profile->upload_size > 65530} selected="selected"{/if}>As uploaded</a>
+		<option value="640" {if $profile->upload_size == 640} selected="selected"{/if}>640 x 640 (the original size)</option>
+		<option value="800" {if $profile->upload_size == 800} selected="selected"{/if}>800 x 800</option>
+		<option value="1024" {if $profile->upload_size == 1024} selected="selected"{/if}>1024 x 1024</option>
+		<option value="1600" {if $profile->upload_size == 1600} selected="selected"{/if}>1600 x 1600</aoption>
+		<option value="65536" {if $profile->upload_size > 65530} selected="selected"{/if}>As uploaded</option>
 	</select>
 
 	 
 	<div class="fieldnotes">Choose the default size you wish to preserve. You can still change it per upload, just chooses the option selected by default.</div>
+</div>
+
+
+<div class="field"> 
+	<label for="submission_method" class="nowrap">Submission Method</label>
+	
+	<select name="submission_method" id="submission_method"> 
+		<option value="submit">Original Submission Method</option>
+		<option value="submit2" {if $profile->submission_method =='submit2'} selected="selected"{/if}>Submit Version 2</option>
+	</select>
+
+	 
+	<div class="fieldnotes">If you choose "Submit v2" then you will be taken direct to the new version, you can still choose to use version 1 temporally on a per image basis. <br/><a href="/help/submission" target="_blank">View alternative Submission Methods</a></div>
 </div>
 
 

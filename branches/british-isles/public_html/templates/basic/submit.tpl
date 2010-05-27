@@ -18,7 +18,7 @@
 
 {if $step eq 1}	
 	{if $user->stats.images gt 10} 
-	<p align="center">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</p>
+	<p align="center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
 	{/if}
 	
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
@@ -487,6 +487,8 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
 
 
+	<p align="center"><input type="button" value="Preview Submission in a new window"  onclick="document.getElementById('previewButton').click();"/> 
+
 <div style="position:relative; background-color:#dddddd; border: 1px solid red; padding-left:10px;padding-top:1px;padding-bottom:1px;">
 <h3>Image Classification</h3>
 
@@ -652,7 +654,7 @@ have problems
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
-	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()"/> 
+	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()" id="previewButton"/> 
 	
 	<input type="checkbox" name="spelling"/>Check Spelling
 	<sup style="color:red">Experimental!</sup>

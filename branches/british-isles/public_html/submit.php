@@ -675,7 +675,7 @@ else
 			$smarty->assign('eastings', $square->eastings);
 			$smarty->assign('northings', $square->northings);
 			$smarty->assign('gridref', $square->grid_reference);
-			$smarty->assign('grid_reference', $square->grid_reference);
+			$smarty->assign('grid_reference', $grid_reference = $square->grid_reference);
 		}
 	} elseif (!empty($_SESSION['gridsquare'])) {
 		//just starting - use remembered values
@@ -684,10 +684,22 @@ else
 		$smarty->assign('northings', $_SESSION['northings']);
 		$smarty->assign('auto',1);
 		$smarty->assign('gridref', $_SESSION['gridsquare'].' '.$_SESSION['eastings'].' '.$_SESSION['northings']);
-		$smarty->assign('grid_reference', $_SESSION['gridsquare'].' '.$_SESSION['eastings'].' '.$_SESSION['northings']);
+		$smarty->assign('grid_reference', $grid_reference = $_SESSION['gridsquare'].' '.$_SESSION['eastings'].' '.$_SESSION['northings']);
 	}
 	
 	if ($step == 1) {
+	
+		if (isset($USER->submission_method) && $USER->submission_method == 'submit2' && !isset($_GET['redir'])) {
+		
+			$url = "/submit2.php";
+			if (!empty($grid_reference)) {
+				$url .= "#gridref=$grid_reference";
+			}
+			header("Location: $url");
+			print "<a href=\"$url\">Continue</a>";
+			exit;
+		}
+		
 		//init smarty
 		$smarty->assign('prefixes', $square->getGridPrefixes());
 		$smarty->assign('kmlist', $square->getKMList());

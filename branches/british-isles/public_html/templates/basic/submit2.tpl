@@ -159,6 +159,8 @@ function readHash() {
 				var name = theForm.elements['selected'].value;
 				theForm.elements['grid_reference['+name+']'].value = unescape(value);
 				clicker(2,true);
+				
+				document.getElementById("oldlink").href=document.getElementById("oldlink").href+"&gridreference="+value;
 			}
 		}
 	}
@@ -167,14 +169,15 @@ AttachEvent(window,'load',readHash,false);
 </script>
 {/literal}
 
-	<div style="float:right;position:relative">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</div>
-	<h2>Submit version 2 <sup>Beta</sup></h2> 
+	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
+	
+	<h2>Submit Image <sup style="color:gray">v2 - Gamma</sup></h2> 
 	
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
 	</noscript>
 	
-	<p><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="25" height="22" align="left" style="margin-right:10px"/> This is a new experimental submission process, try it out if you like, but you might prefer to use the <a href="/submit.php">original submission method</a>.</p>
+	
 	
 	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). 
 	 A overview map is provided to help locate a square, but is optional, can directly enter a grid reference in step 2 if wish.
@@ -253,6 +256,8 @@ AttachEvent(window,'load',readHash,false);
 {/dynamic}
 		</div>
 	
+		<p align="center"><input type="button" value="Preview Submission in a new window"  onclick="document.getElementById('previewButton').click();"/> 
+	
 		<p>If you agree with these terms, click "I agree" and your image will be stored in the grid square.<br/><br/>
 		<input style="background-color:pink; width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>
 		<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="{literal}if (checkMultiFormSubmission()) {autoDisable(this); return true} else {return false;}{/literal}"/>
@@ -322,7 +327,7 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
-	<input type="submit" value="Preview Submission in a new window" onclick="return previewImage()"/> 
+	<input type="submit" value="Preview Submission in a new window" onclick="return previewImage()" id="previewButton"/> 
 	
 	<input type="checkbox" name="spelling"/>Check Spelling
 	<sup style="color:red">Experimental!</sup>
