@@ -87,7 +87,7 @@
 <thead><tr>
 	<td>Moderator</td>
 	<td>Title</td>
-	<td>Problem</td>
+	<td>Suggestion</td>
 	<td>Comments</td>
 	<td style="width:150px">Updated</td>
 </tr></thead>
