@@ -22,7 +22,7 @@
 <table class="report sortable" id="newtickets" style="font-size:8pt;">
 <thead><tr>
 	<td>Title</td>
-	<td>Problem</td>
+	<td>Suggestion</td>
 	<td style="width:150px">Submitted</td>
 </tr></thead>
 <tbody>
@@ -56,7 +56,7 @@
 <thead><tr>
 	<td>Moderator?</td>
 	<td>Title</td>
-	<td>Problem</td>
+	<td>Suggestion</td>
 	<td>Comments</td>
 	<td style="width:150px">Updated</td>
 </tr></thead>
