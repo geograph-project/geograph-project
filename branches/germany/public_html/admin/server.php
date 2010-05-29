@@ -48,7 +48,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('mapbasedir', $mapbasedir);
 
 	$mapdetaildir=`du -h --summarize {$_SERVER['DOCUMENT_ROOT']}/maps/detail/`;
-	$smarty->assign_by_ref('mapbasedir', $mapdetaildir);
+	$smarty->assign_by_ref('mapdetaildir', $mapdetaildir);
 
 
 	$cachedir=`du -h --summarize {$_SERVER['DOCUMENT_ROOT']}/templates/basic/cache`;
