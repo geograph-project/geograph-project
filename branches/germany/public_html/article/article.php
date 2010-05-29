@@ -186,7 +186,7 @@ function smarty_function_articletext($input) {
 	
 	$pattern=array(); $replacement=array();
 	
-	if (preg_match_all('/\[(small|)map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$m)) {
+	if (preg_match_all('/\[(small|)map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5}|[A-Z]{3}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$m)) {
 		foreach ($m[0] as $i => $full) {
 			//lets add an rastermap too
 			$square = new Gridsquare;
