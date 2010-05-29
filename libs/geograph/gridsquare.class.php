@@ -333,7 +333,7 @@ class GridSquare
 		global $CONF;
 		$matches=array();
 		$isfour=false;
- 
+
 		if (preg_match("/\b([!a-zA-Z]{1,3}) ?(\d{1,5})[ \.](\d{1,5})\b/",$gridreference,$matches) and (strlen($matches[2]) == strlen($matches[3]))) {
 			list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
 			$length = strlen($matches[2]);
@@ -360,7 +360,6 @@ class GridSquare
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
 
 			$ok = false;
-			trigger_error("----r-----", E_USER_NOTICE);
 			if ($recalc) {
 				$db=&$this->_getDB();
 				$prefix = strtoupper($prefix);
@@ -370,17 +369,14 @@ class GridSquare
 					require_once('geograph/conversions.class.php');
 					$conv = new Conversions;
 					$ri = $row['reference_index'];
-					trigger_error("----r--$ri---", E_USER_NOTICE);
 					#$latlong = $conv->national_to_wgs84(intval($e),intval($n),$ri);
 					$fe = intval($e) + ($row['origin_x']-$CONF['origins'][$ri][0]) * 1000;
 					$fn = intval($n) + ($row['origin_y']-$CONF['origins'][$ri][1]) * 1000;
-					trigger_error("----c1--$fe,$fn,$ri---", E_USER_NOTICE);
 					$latlong = $conv->national_to_wgs84($fe,$fn,$ri);
 					if (count($latlong)) { # FIXME error handling
 						$enr = $conv->wgs84_to_national($latlong[0],$latlong[1]);
 						if (count($enr)) { # FIXME error handling
 							$ri2 = $enr[2];
-							trigger_error("----r--$ri-$ri2--", E_USER_NOTICE);
 							$fe2=$enr[0];$fn2=$enr[1];trigger_error("----c2--$fe2,$fn2,$ri2---", E_USER_NOTICE);
 							if ($ri2 != $ri) { // we got a new ri
 								if ($length == 1)

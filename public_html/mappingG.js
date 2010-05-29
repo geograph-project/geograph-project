@@ -309,13 +309,21 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 function updateViewDirection() {
 	if (eastings1 > 0 && eastings2 > 0) {
-		arc = Math.acos(Math.sin(lat1)*Math.sin(lat2) + Math.cos(lat1)*Math.cos(lat2)*Math.cos(lon2-lon1));
-		distance = arc*6378137;
 		//distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
+		R = 6378137.0;
+		dlat = lat1-lat2;
+		dlon = lon1-lon2;
+		slat = Math.sin(0.5*dlat);
+		slon = Math.sin(0.5*dlon);
+		sinsq = slat*slat + Math.cos(lat1)*Math.cos(lat2)*slon*slon;
+		arc = 2 * Math.atan2(Math.sqrt(sinsq), Math.sqrt(1-sinsq));
+		distance = R * arc;
 	
 		if (distance > 14) {
 			//realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
-			realangle = Math.acos((Math.sin(lat1)-Math.sin(lat2)*Math.cos(arc)) / (Math.cos(lat2)*Math.sin(arc)));
+			y = Math.sin(dlon)*Math.cos(lat1);
+			x = Math.cos(lat2)*Math.sin(lat1) - Math.sin(lat2)*Math.cos(lat1)*Math.cos(dlon);
+			realangle = Math.atan2(y, x);
 			realangle *= 180./Math.PI;
 
 			if (realangle < 0)
