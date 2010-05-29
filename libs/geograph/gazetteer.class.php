@@ -342,13 +342,14 @@ class Gazetteer
 						point_en)
 				order by distance asc limit 1");
 		} else if ($gazetteer == 'towns' /*&& $reference_index == 1*/) {
+					#power((e-{$e})/1000.,2)+power((n-{$n})/1000.,2) as distance,
 			$places = $db->GetRow("select
 					name as full_name,
 					'PPL' as dsg,
 					reference_index,
 					'' as adm1_name,
 					(id + 900000) as pid,
-					power(e-{$e},2)+power(n-{$n},2) as distance,
+					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
 					'towns' as gaz
 				from 
 					loc_towns
@@ -360,6 +361,7 @@ class Gazetteer
 				order by distance asc limit 1");
 		} else {
 	//lookup a nearby settlement
+					#power((e-{$e})/1000.,2)+power((n-{$n})/1000.,2) as distance,
 			$places = $db->GetRow("select
 					full_name,
 					dsg,
@@ -380,8 +382,11 @@ class Gazetteer
 				order by distance asc limit 1");
 
 	//if found very close then lookup mutliple
+			#$d = 2.5*2.5;
 			$d = 2500*2500;	
 			if (isset($places['distance']) && $places['distance'] < $d) {
+					#power((e-{$e})/1000.,2)+power((n-{$n})/1000.,2) as distance,
+					#power((e-{$e})/1000.,2)+power((n-{$n})/1000.,2) < $d
 				$nearest = $db->GetAll("select
 					distinct full_name,
 					loc_placenames.id as pid,
