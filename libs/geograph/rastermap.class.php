@@ -594,8 +594,7 @@ class RasterMap
 			}
 			if ($this->issubmit) {
 				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
-			}
-			if ($this->issubmit) {
+				
 				for ($i=100; $i<=900; $i+=100) {
 					$block .= $this->getPolyLineBlock($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
 					$block .= $this->getPolyLineBlock($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25);
@@ -606,6 +605,7 @@ class RasterMap
 			}
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
+				$p1 .= "<script type=\"text/javascript\" src=\"http://nls.tileserver.com/api.js\"></script>";
 			} else {
 				$p1 = '';
 			}
@@ -633,13 +633,32 @@ class RasterMap
 							map.enableScrollWheelZoom();
 
 							var point = new GLatLng({$this->lat},{$this->long});
-							map.setCenter(point, 13, G_PHYSICAL_MAP);
+
+							newtype = readCookie('GMapType');
+							if (newtype) {
+								if (newtype == \"m\") {mapType = G_NORMAL_MAP;}
+								if (newtype == \"k\") {mapType = G_SATELLITE_MAP;}
+								if (newtype == \"h\") {mapType = G_HYBRID_MAP;}
+								if (newtype == \"p\") {mapType = G_PHYSICAL_MAP;}
+								if (newtype == \"e\") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
+								map.setCenter(point, 13, mapType);
+							} else {
+								map.setCenter(point, 13, G_PHYSICAL_MAP);
+							}
+
 							$block 
-							
+
+
 							AttachEvent(window,'unload',GUnload,false);
+
+							GEvent.addListener(map, \"maptypechanged\", saveMapType);
 						}
 					}
 					AttachEvent(window,'load',loadmap,false);
+					function saveMapType() {
+						var t = map.getCurrentMapType().getUrlArg();
+						createCookie('GMapType',t,10);
+					}
 					var static_host = '{$CONF['STATIC_HOST']}';
 				//]]>
 				</script>";

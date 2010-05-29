@@ -56,9 +56,7 @@ if ($token->parse($_GET['t']))
 	die("invalid");
 }
 
-
+customExpiresHeader(3600*6,false,true);
 
 $smarty->display($template,$cacheid);
 
-	
-?>

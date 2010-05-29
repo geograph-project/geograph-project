@@ -75,7 +75,44 @@
 				map.addControl(new GMapTypeControl(true));
 				
 				var point = new GLatLng(54.55,-3.88);
-				map.setCenter(point, 5);
+				var zoom = 5;
+				
+				newview = readCookie('GMapView');
+				if (newview) {
+					
+					var pairs = newview.split("&");
+					for (var i=0; i<pairs.length; i++) {
+						// break each pair at the first "=" to obtain the argname and value
+						var pos = pairs[i].indexOf("=");
+						var argname = pairs[i].substring(0,pos).toLowerCase();
+						var value = pairs[i].substring(pos+1).toLowerCase();
+
+						if (argname == "ll") {
+							var bits = value.split(',');
+							point = new GLatLng(parseFloat(bits[0]),parseFloat(bits[1]));
+						}
+						if (argname == "z") {zoom = parseInt(value,10);}
+						if (argname == "t") {
+							if (value == "m") {mapType = G_NORMAL_MAP;}
+							if (value == "k") {mapType = G_SATELLITE_MAP;}
+							if (value == "h") {mapType = G_HYBRID_MAP;}
+							if (value == "p") {mapType = G_PHYSICAL_MAP;}
+							if (value == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
+						}
+					}
+				}
+				
+				newtype = readCookie('GMapType');
+				if (newtype) {
+					if (newtype == "m") {mapType = G_NORMAL_MAP;}
+					if (newtype == "k") {mapType = G_SATELLITE_MAP;}
+					if (newtype == "h") {mapType = G_HYBRID_MAP;}
+					if (newtype == "p") {mapType = G_PHYSICAL_MAP;}
+					if (newtype == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
+					map.setCenter(point, zoom, mapType);			
+				} else {
+					map.setCenter(point, zoom);
+				}
 
 				map.enableDoubleClickZoom(); 
 				map.enableContinuousZoom();
@@ -134,13 +171,34 @@
 					// http://www.commchurch.freeserve.co.uk/   
 					// http://econym.googlepages.com/index.htm
 				}
+				GEvent.addListener(map, "moveend", saveView);
+				GEvent.addListener(map, "zoomend", saveView);
+				GEvent.addListener(map, "maptypechanged", saveMapType);
 			}
 		}
 
+		function saveView() {
+			var ll = map.getCenter().toUrlValue(6);
+			var z = map.getZoom();
+			var t = map.getCurrentMapType().getUrlArg();
+			createCookie('GMapView','ll='+ll+'&z='+z+'&t='+t,10);
+		}
+
+		function saveMapType() {
+			var t = map.getCurrentMapType().getUrlArg();
+			createCookie('GMapType',t,10);
+		}
+	
 		AttachEvent(window,'load',loadmap,false);
 
 		function updateMapMarkers() {
 			updateMapMarker(document.theForm.grid_reference,false,true);
+			
+			if (document.theForm.grid_reference.value.length > 4) {
+				point = currentelement.getLatLng();
+				map.setCenter(point,12);
+			}
+			
 		}
 		AttachEvent(window,'load',updateMapMarkers,false);
 	</script>

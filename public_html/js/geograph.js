@@ -466,10 +466,11 @@ function createCookie(name,value,days) {
 function readCookie(name) {
 	var ca = document.cookie.split(';');
 	for(var i=0;i < ca.length;i++) {
-		var pair = ca[i].split('=');
-		var c = pair[0];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c == name) return pair[1];
+		var pos = ca[i].indexOf("=");
+		var argname = ca[i].substring(0,pos);
+
+		while (argname.charAt(0)==' ') argname = argname.substring(1,argname.length);
+		if (argname == name) return ca[i].substring(pos+1);
 	}
 	return false;
 }

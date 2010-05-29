@@ -139,6 +139,23 @@ function setTakenDate(value) {
 		top.frames['iframe3'].setTakenDate(value);
 	}
 }
+
+function saveService(that) {
+	if (that.checked) {
+		createCookie("MapSrv",'G',10);
+	} else {
+		eraseCookie("MapSrv");
+	}
+}
+
+function restoreService() {
+	newservice = readCookie('MapSrv');
+	if (newservice) {
+		document.getElementById('service_google').checked = true;
+	}
+}
+AttachEvent(window,'load',restoreService,false);
+
 function readHash() {
 	if (location.hash.length) {
 		// If there are any parameters at the end of the URL, they will be in location.search
@@ -190,7 +207,7 @@ AttachEvent(window,'load',readHash,false);
 	{if !$user->use_autocomplete}
 	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 3. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> <br/>
 	{/if}
-	<input type="checkbox" name="service" id="service_google" value="Google"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
+	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this)"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
 
 {/dynamic}
 	
