@@ -402,6 +402,7 @@ ALTER TABLE `queries_archive` CHANGE `searchuse` `searchuse` ENUM( 'search', 'fl
 ALTER TABLE `gridimage`        ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_recent` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_search` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`, DROP INDEX `title` , ADD INDEX `title` (`title`, `title2`), DROP INDEX `title_2` , ADD INDEX `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`);
+ALTER TABLE `loc_towns` CHANGE `s`  `s` enum('1','2','3','4','') NOT NULL DEFAULT '1';
 
 ALTER TABLE  `user` ADD  `upload_size` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';
 ALTER TABLE gridimage ADD distance MEDIUMINT(8) UNSIGNED NULL default NULL;
