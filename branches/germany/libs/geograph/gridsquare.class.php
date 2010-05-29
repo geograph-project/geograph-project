@@ -138,20 +138,16 @@ class GridSquare
 		} else {
 			$tmpservices = array();
 		}
-		#trigger_error("sids a: " . implode(', ', array_values($tmpservices)), E_USER_NOTICE);
 		$services = explode(',',$CONF['raster_service']);
 		if (in_array('Google',$services)) {
 			//$tmpservices = $tmpservices + array(0);
 			$tmpservices = array_merge($tmpservices, array(0));
-			#trigger_error("sids x", E_USER_NOTICE);
 		}
-		#trigger_error("sids b: " . implode(', ', array_values($tmpservices)), E_USER_NOTICE);
 		$this->services = array ();
 		foreach ($tmpservices as $service) {
 			$sid = intval($service);
 			$this->services = $this->services + array($sid => $CONF['mapservices'][$sid]['menuname']); # FIXME database?
 		}
-		#trigger_error("sids c: " . implode(', ', array_keys($this->services)), E_USER_NOTICE);
 		if (count($this->services) == 0) {
 			$this->services = array( -1 => '' );
 		}
