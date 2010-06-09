@@ -623,6 +623,15 @@ class GridImage
 					}
 				}
 			}
+			
+			$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,"
+				SELECT CONCAT('/stuff/post.php?id=',post_id) AS url,topic_title AS title,'Grouping' AS `type` 
+				FROM gridimage_post gp
+					INNER JOIN gridimage_post_highlight h USING (post_id) 
+					INNER JOIN geobb_topics USING (topic_id)
+				WHERE gp.gridimage_id = {$this->gridimage_id} 
+				ORDER BY post_id DESC"));
+			
 		
 			//todo -experimental - might be removed...
 			if ($this->collections += $db->CacheGetAll(3600*30,"
@@ -637,6 +646,7 @@ class GridImage
 				}
 			}
 
+			//TODO - need a 'update' mechanism for this table.
 			$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,$sql = "
 				SELECT CONCAT('/photo/',from_gridimage_id) AS url, title, 'Other Photo' AS `type` 
 				FROM gridimage_backlink ba
