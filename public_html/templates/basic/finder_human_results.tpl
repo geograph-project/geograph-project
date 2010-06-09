@@ -62,7 +62,7 @@
 	
 
 {else}
-	<p>Unable to load this search. a href="{$script_name}" target="_top">Back to Search List</a></p>
+	<p>Unable to load this search. <a href="{$script_name}" target="_top">Back to Search List</a></p>
 {/if}
 
 
