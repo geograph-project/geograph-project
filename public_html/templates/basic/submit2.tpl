@@ -58,7 +58,7 @@
     return d >= 0 && this.lastIndexOf(pattern) === d;
   }
 
-function clicker(step,override) {
+function clicker(step,override,shiftKey) {
 	var theForm = document.forms['theForm'];
 	var name = document.forms['theForm'].elements['selected'].value;
 	
@@ -66,7 +66,7 @@ function clicker(step,override) {
 	var ele2 = document.getElementById('se'+step);
 	var showing = (ele.style.display == 'block');
 	
-	if (typeof(override) != 'undefined') {
+	if (typeof(override) != 'undefined' && override != null) {
 		showing = !override;
 	}
 	
@@ -112,6 +112,9 @@ function clicker(step,override) {
 		} else {
 			
 		}  
+		if (typeof(shiftKey) != 'undefined' && shiftKey) {
+			location.hash = "#sh"+step;
+		}
 	}
 	return false;
 }
@@ -212,31 +215,31 @@ AttachEvent(window,'load',readHash,false);
 {/dynamic}
 	
 <!-- # -->	 
-	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1)"><span id="se1">-</span> Step 1 - Upload Photo</a>
+	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1,null,event.shiftKey)"><span id="se1">-</span> Step 1 - Upload Photo</a>
 	
 	<div id="sd1" class="sd" style="display:block">
 		<iframe src="/submit2.php?inner&amp;step=1" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh9" href="#" class="sh sn" onclick="return clicker(9)" style="font-size:0.9em"><span id="se9">+</span> Find Square on Map (optional tool)</a>
+	<a id="sh9" href="#" class="sh sn" onclick="return clicker(9,null,event.shiftKey)" style="font-size:0.9em"><span id="se9">+</span> Find Square on Map (optional tool)</a>
 	
 	<div id="sd9" class="sd">
 		<iframe src="about:blank" id="iframe9" width="100%" height="700px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh2" href="#" class="sh sn" onclick="return clicker(2)"><span id="se2">+</span> Step 2 - Enter Map References</a>
+	<a id="sh2" href="#" class="sh sn" onclick="return clicker(2,null,event.shiftKey)"><span id="se2">+</span> Step 2 - Enter Map References</a>
 	
 	<div id="sd2" class="sd">
 		<iframe src="about:blank" id="iframe2" width="100%" height="500px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh3" href="#" class="sh sn" onclick="return clicker(3)"><span id="se3">+</span> Step 3 - Title/Description and Date</a>
+	<a id="sh3" href="#" class="sh sn" onclick="return clicker(3,null,event.shiftKey)"><span id="se3">+</span> Step 3 - Title/Description and Date</a>
 	
 	<div id="sd3" class="sd">
 		<iframe src="about:blank" id="iframe3" name="iframe3" width="100%" height="700px"></iframe>
 	</div>
 <!-- # -->	 
-	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4)"><span id="se4">+</span> Step 4 - Confirm Licencing and Finish</a>
+	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4,null,event.shiftKey)"><span id="se4">+</span> Step 4 - Confirm Licencing and Finish</a>
 	
 	<div id="sd4" class="sd" style="border:2px solid red; padding:4px;border-top:0">
 		<div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
@@ -284,7 +287,7 @@ AttachEvent(window,'load',readHash,false);
 <!-- # -->
 {dynamic}
 	{if $is_admin}
-	<a id="sh10" href="#" class="sh sn" onclick="return clicker(10)" style="background-color:yellow; font-size:0.9em"><span id="se10">+</span> The Scratch Pad</a>
+	<a id="sh10" href="#" class="sh sn" onclick="return clicker(10,null,event.shiftKey)" style="background-color:yellow; font-size:0.9em"><span id="se10">+</span> The Scratch Pad</a>
 	{/if}
 {/dynamic}
 	
