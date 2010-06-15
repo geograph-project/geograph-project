@@ -98,7 +98,8 @@
 	<br style="clear:both"/>
 	{if $submit2}
 		<input type="button" value="Done" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(2);} else {return false;}{/literal}"/>
-		<input type="button" value="Next Step &gt;&gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(2); window.parent.clicker(3,true);} else {return false;}{/literal}"/>
+		<input type="button" value="Next Step &gt;&gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(2); window.parent.clicker(3,true);} else {return false;}{/literal}"/><br/>
+		<a href="{$script_name}?inner&amp;submit2&amp;step=1&amp;grid_reference={$grid_reference}">&lt; Back</a>
 	{/if}
 	{if $rastermap->enabled}
 		{$rastermap->getFooterTag()}
@@ -143,7 +144,8 @@
 			</div></p>
 	{else}
 		<p><b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup><br/>
-		<span style="color:red">&nbsp; - Shared description can only be set once image has finished uploading, close and reopen this step once the image has uploaded. </span></p>
+		<span style="color:red">&nbsp; - Shared description can only be set once image has finished uploading, 
+<a href="javascript:void(window.parent.clicker(3,false));void(window.parent.clicker(3,true));">close and reopen this step</a> once the image has uploaded. </span></p>
 	{/if}
 {/if}
 
