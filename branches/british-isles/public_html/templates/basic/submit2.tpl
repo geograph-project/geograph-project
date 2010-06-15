@@ -206,11 +206,11 @@ AttachEvent(window,'load',readHash,false);
 	
 	<form action="{$script_name}?process" name="theForm" method="post">
 {dynamic}
-	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>: (close and reopen step to take effect)<br/>
+	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>:<br/>
 	{if !$user->use_autocomplete}
-	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 3. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> <br/>
+	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete" onclick="{literal}if (document.getElementById('sd'+3).style.display == 'block') { clicker(3,false); clicker(3,true); }{/literal}"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 3. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> <br/>
 	{/if}
-	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this)"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
+	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this);clicker(2,false); clicker(2,true);"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
 
 {/dynamic}
 	
