@@ -1338,7 +1338,7 @@ CREATE TABLE IF NOT EXISTS `daily_feature` (
   `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   PRIMARY KEY  (`feature_id`),
   UNIQUE KEY `feature` (`feature`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `daily_feature`
@@ -1357,6 +1357,9 @@ INSERT INTO `daily_feature` (`feature_id`, `feature`, `title`, `sql_statement`, 
 (10, 'Explore', 'Exploration Tool of the day', '', '$rows = getLinks("category_id=17&exclude=$previous",true);', 24, 'Y', '2010-05-30 01:32:16', '2010-06-15 21:27:24'),
 (11, 'Interesting', 'Interesting Image', 'SELECT * FROM (\r\nSELECT\r\ngridimage_id AS unique_id,\r\nCONCAT(''/photo/'',gridimage_id) AS url,\r\nCONCAT(title,'' by '',realname) AS title\r\nFROM gridimage_search \r\nINNER JOIN gridimage_query USING (gridimage_id)\r\nWHERE query_id = 4235581\r\nORDER BY seq_id DESC\r\nLIMIT 10\r\n) t2 WHERE unique_id NOT IN ($previous)', '', 6, 'Y', '2010-06-15 22:10:32', '2010-06-15 22:10:32');
 
+
+update daily_feature set enabled = 'Y' where feature = 'Hectad';
+update daily_feature set title = 'Article of the Day' where feature = 'Article';
 
 #################################################
 

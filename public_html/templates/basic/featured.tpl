@@ -9,9 +9,10 @@
 	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a>
 </div>
 
-<div class="interestBox" style="width:360px;float:left">
+<div class="interestBox" style="width:360px;float:left;margin-left:8px">
 	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day <small>[<a href="/results/2087426">more...</a>]</small></h3>
 	
+	<br/><br/>
 	
 	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
 
@@ -19,9 +20,10 @@
 	&nbsp;&nbsp;
 	by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
 	
+	<br/><br/>
 	<div style="color:gray">Image taken: {$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</div>
 
-	</div>
+
 </div>
 
 <br style="clear:both"/><br/>
