@@ -21,6 +21,12 @@
  **/
 
 require_once('geograph/global.inc.php');
+
+if (isset($_POST['finalise'])) {
+	//so the back button works. 	
+	 session_cache_limiter('none');
+}
+
 init_session();
 
 $smarty = new GeographPage;
@@ -303,4 +309,3 @@ if (!empty($clear_cache) && count($clear_cache)) {
 }
 
 
-?>
