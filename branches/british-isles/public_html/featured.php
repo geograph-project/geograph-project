@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		$ids = implode(',',array_values($latest_ids));
 
-		$latest = $db->getAssoc("SELECT feature_id,unique_id,url,title,validfor,created < DATE_SUB(NOW(),INTERVAL validfor HOUR) AS expired FROM daily_item WHERE daily_id IN ($ids) ORDER BY RAND()");
+		$latest = $db->getAssoc("SELECT feature_id,unique_id,url,title,validfor,created < DATE_SUB(NOW(),INTERVAL validfor HOUR) AS expired FROM daily_item WHERE daily_id IN ($ids) ORDER BY daily_id DESC");
 	
 	} else {
 		$latest = array();
@@ -152,7 +152,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					
 				case 'Interesting': 
 					
-					$sql = "SELECT * FROM gridimage_search WHERE gridimage_id = ".$db->Quote($features['unique_id'])." LIMIT 1";
+					$sql = "SELECT * FROM gridimage_search WHERE gridimage_id = ".$db->Quote($row['unique_id'])." LIMIT 1";
 					break;
 					
 				case 'Hectad': 
@@ -173,7 +173,7 @@ if (!$smarty->is_cached($template, $cacheid))
 							
 							$sql = "SELECT * FROM gridimage_search WHERE gridimage_id IN ($id_list) ORDER BY moderation_status+0 DESC,seq_no LIMIT $pgsize";
 						} else {
-							print "unable";
+							 sendNotification("Unable to load load ",$sphinx->q);
 						}
 					} else {
 						if ($features[$feature_id]['feature'] == 'Hectad') {
@@ -198,7 +198,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 			
 			if ($sql) {
-				print ($sql);
 				$images = new ImageList();
 				$images->_getImagesBySql($sql);
 
@@ -209,7 +208,6 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		//send it all to smarty...
 		$smarty->assign_by_ref("latest",$latest);
-		#print_r($latest);
 	}
 }
 
