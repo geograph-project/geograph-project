@@ -269,9 +269,10 @@ function overlayMouseMove(e) {
 		document.images['map'].alt = grstr;
 	}
 	if (currentelement != null) {
-		updateViewDirection();
-	}
-	if (typeof parentUpdateVariables != 'undefined') {
+		if (!updateViewDirection()) {
+			parentUpdateVariables();
+		}
+	} else if (typeof parentUpdateVariables != 'undefined') {
 		parentUpdateVariables();
 	}
 }
@@ -500,8 +501,14 @@ function updateViewDirection() {
 				distance = Math.round(distance/50)*50;
 			}
 			document.getElementById("dist_message").innerHTML = "range about "+distance+" metres";
+			
+			if (typeof parentUpdateVariables != 'undefined') {
+				parentUpdateVariables();
+			}
+			return true;
 		}
 	}
+	return false;
 }
 
 function updateCamIcon() {
