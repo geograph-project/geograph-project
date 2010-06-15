@@ -1312,3 +1312,55 @@ alter table user add submission_method enum('submit','submit2') default 'submit'
 
 #################################################
 
+
+CREATE TABLE IF NOT EXISTS `daily_item` (
+  `daily_id` int(10) unsigned NOT NULL auto_increment,
+  `feature_id` mediumint(8) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `unique_id` varchar(32) NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `validfor` mediumint(8) unsigned NOT NULL COMMENT 'Hours',
+  PRIMARY KEY  (`daily_id`),
+  KEY `feature` (`feature_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE IF NOT EXISTS `daily_feature` (
+  `feature_id` int(10) unsigned NOT NULL auto_increment,
+  `feature` varchar(32) NOT NULL,
+  `title` varchar(64) NOT NULL,
+  `sql_statement` text NOT NULL,
+  `custom_function` varchar(64) NOT NULL,
+  `validfor` mediumint(8) unsigned NOT NULL,
+  `enabled` enum('N','Y','R') NOT NULL default 'Y',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`feature_id`),
+  UNIQUE KEY `feature` (`feature`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=12 ;
+
+--
+-- Dumping data for table `daily_feature`
+--
+
+INSERT INTO `daily_feature` (`feature_id`, `feature`, `title`, `sql_statement`, `custom_function`, `validfor`, `enabled`, `created`, `updated`) VALUES
+(1, 'GridSquare', 'Grid Square of the Day', 'SELECT\r\ngridsquare_id AS unique_id,\r\nCONCAT(''/gridref/'',grid_reference) AS url,\r\ngrid_reference AS title\r\nFROM gridsquare\r\nWHERE percent_land > 0 AND imagecount > 3 AND has_geographs > 0 AND has_recent > 0 AND gridsquare_id NOT IN ($previous)\r\nORDER BY RAND()\r\nLIMIT 10\r\n', '', 24, 'Y', '2010-05-29 23:31:11', '2010-05-30 00:00:19'),
+(2, 'Hectad', 'Hectad of the Day', 'SELECT\r\nhectad AS unique_id,\r\nCONCAT(''/gridref/'',hectad) AS url,\r\nhectad AS title\r\nFROM hectad_stat\r\nWHERE images > 4 AND hectad NOT IN ($previous)\r\nORDER BY RAND()\r\nLIMIT 10\r\n', '', 24, 'N', '2010-05-30 00:46:24', '2010-05-30 02:26:45'),
+(3, 'Search', 'Featured Search of the Week', 'SELECT\r\nid AS unique_id,\r\nCONCAT(''/results/'',id) AS url,\r\nCONCAT(''Images'',searchdesc) AS title\r\nFROM queries_featured\r\nINNER JOIN queries USING (id)\r\nWHERE approved = 1 AND id NOT IN ($previous)\r\nORDER BY RAND()\r\nLIMIT 10\r\n', '', 168, 'N', '2010-05-30 00:46:24', '2010-05-30 02:26:57'),
+(4, 'Leaderboard', 'Leaderboard of the Day', '', '$rows = getLinks("category_id=21&exclude=$previous");', 24, 'Y', '2010-05-30 01:32:16', '2010-06-15 21:27:15'),
+(5, 'Centisquare ', 'Centisquare of the Day', '', '', 0, 'N', '0000-00-00 00:00:00', '2010-05-30 02:07:31'),
+(6, 'Article', 'Article', 'SELECT \r\narticle_id AS unique_id,\r\nCONCAT(''/article/'',url) AS url,\r\ntitle\r\nFROM article\r\nINNER JOIN article_cat USING (article_cat_id)\r\nWHERE approved > 0 AND category_name NOT REGEXP ''[[:<:]]Geograph[[:>:]]'' AND article_id NOT IN ($previous)\r\nORDER BY RAND()\r\nLIMIT 10', '', 24, 'Y', '2010-05-30 02:11:22', '2010-05-30 02:12:01'),
+(7, 'Themed Topic', 'Themed Topic of the Day', '', '', 24, 'N', '0000-00-00 00:00:00', '2010-06-15 22:04:15'),
+(8, 'Collection', 'Collection of the day', '', '', 24, 'N', '0000-00-00 00:00:00', '2010-05-30 02:34:30'),
+(9, 'Myriad', 'Myriad of the Week', 'SELECT\r\nprefix AS unique_id,\r\nCONCAT(''/gridref/'',prefix) AS url,\r\ntitle\r\nFROM gridprefix\r\nWHERE landcount > 0 AND prefix NOT IN ($previous)\r\nORDER BY RAND()\r\nLIMIT 10\r\n', '', 24, 'Y', '2010-05-30 00:46:24', '2010-05-30 02:38:07'),
+(10, 'Explore', 'Exploration Tool of the day', '', '$rows = getLinks("category_id=17&exclude=$previous",true);', 24, 'Y', '2010-05-30 01:32:16', '2010-06-15 21:27:24'),
+(11, 'Interesting', 'Interesting Image', 'SELECT * FROM (\r\nSELECT\r\ngridimage_id AS unique_id,\r\nCONCAT(''/photo/'',gridimage_id) AS url,\r\nCONCAT(title,'' by '',realname) AS title\r\nFROM gridimage_search \r\nINNER JOIN gridimage_query USING (gridimage_id)\r\nWHERE query_id = 4235581\r\nORDER BY seq_id DESC\r\nLIMIT 10\r\n) t2 WHERE unique_id NOT IN ($previous)', '', 6, 'Y', '2010-06-15 22:10:32', '2010-06-15 22:10:32');
+
+
+#################################################
+
+
+
+
+
