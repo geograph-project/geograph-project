@@ -8,6 +8,7 @@
  <b>Contributing</b> photos:
  <ul>
  <li><a href="/article/Anleitung">Guide (German)</a></li>
+ <li><a href="/article/Geograph-or-supplemental">Geograph or Supplemental?</a></li>
  <li><a href="/help/guide">Geograph Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Which-Square">Locating your Image</a></li>
@@ -53,15 +54,15 @@
  </ul>
 <b>Browsing</b> the site:
  <ul>
+ <li><a href="#coordinates">Why is Germany divided, again? What <b>coordinates</b> do you use?</a></li>
  <li><a href="#use">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
  <li><a href="#change">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
  <li><a href="#concern">I'm <b>concerned</b> about a photo or comment I have seen on the site.</a></li>
- <li><a href="#geographism">What do all these <b>strange words</b> mean?</a></li>
  </ul>
 The <b>Geograph Website</b>:
  <ul>
- <li><a href="#pages">Theres a page I once saw on geograph, and I <b>can't find</b> it again!</a></li>
- <li><a href="#rss">Do you <b>RSS</b> feeds available?</a></li>
+ <li><a href="#pages">There's a page I once saw on geograph, and I <b>can't find</b> it again!</a></li>
+ <li><a href="#rss">Do you have an <b>RSS</b> feed?</a></li>
  <li><a href="#opensource"><b>Open source? Creative Commons?</b> What's that all about?</a></li>
  <li><a href="#built"><b>Who</b> built this marvellous site?</a></li>
  </ul>
@@ -193,13 +194,6 @@ the English version, too: we'll put it at the end of the title or description, e
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
-<div id="geographism">
-<a name="geographism"></a>
-<h3>What do all these strange words mean?</h3>
-	<p>Well, if it's a 'geographism' - a term developed during use on this site, then see <a href="http://www.geograph.org.uk/article/Geographisms">this glossary article</a> we have started compiling. There is also a wide range of sites dealing with Acronyms, and Abbreviations, listed on {external href="http://www.dmoz.org/Reference/Dictionaries/By_Subject/Computers/Internet_Terms_and_Acronyms/" text="DMOZ here"}.</p>
-</div>
-<div class="top"><a href="#top">back to top</a></div>
-
 <div id="rss">
 <a name="rss"></a>
 <h3>Do you have an RSS feed?</h3>
@@ -232,7 +226,6 @@ the English version, too: we'll put it at the end of the title or description, e
 			<li>the Grid Square Discussions even supports <a class="xml-geo" title="Geograph Grid Square Discussions" href="http://{$http_host}/discuss/syndicator.php?forum={$forum_gridsquare}&amp;format=GeoRSS">GeoRSS</a>.</li>{/if}
 			<li>Get a <a class="xml-rss" href="/article/feed/recent.rss">RSS</a> feed of recently updated <a href="/article/">Articles</a>.</li>
 			<li>The newer <a href="/content/">Content</a> section has a <a class="xml-rss" href="/content/feed/recent.rss">RSS</a> Feed.</li>
-			<li>Find out about <a href="/events/">organized meets</a> by following the <a class="xml-rss" href="/events/feed.rss">RSS</a> Feed.</li>
 		</ul>
 	 (they also accept the format parameter like the main feed)</div>
 	 
@@ -245,22 +238,12 @@ the English version, too: we'll put it at the end of the title or description, e
 <div id="use">
 <a name="use"></a>
 <h3>I would be interested in using Geograph content, is that possible?</h3>
-	<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for reusing images, 
-	beyond what's available via the RSS feeds above, in all likelihood we can provide a <a href="/help/api">feed</a> 
-	to suit your requirements.</p>
-
 	<p>Images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a>, see
 	licence details by viewing a full size image. Also look for the "Interested in reusing this image?" link under each image on the main photo page, which outlines easy ways to reuse the image.</p>
 
-	<p>The entire archive is also available for download via bittorrent - see 
-	{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
-	for details.</p>
-
-	<ul>
-	<li>Are you a developer and maybe looking for <a href="http://www.geograph.org.uk/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>.</li>
-	</ul>
-	
-	<p>We also have a Google Gadget: * {external href="http://www.google.com/ig/add?moduleurl=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" target="_blank" text="Add to my iGoogle page"} * {external href="http://www.google.com/ig/creator?url=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" text="Add to any webpage"} *</p>
+	<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for reusing images, 
+	beyond what's available via the RSS feeds above, in all likelihood we can provide a <a href="/help/api">feed</a> 
+	to suit your requirements.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -286,6 +269,15 @@ the English version, too: we'll put it at the end of the title or description, e
 	taken away from the people who contributed. These licence terms ensure that the
 	site and content can never be "taken away" from you. See <a href="/help/freedom">Freedom - The Geograph Manifesto</a>
 	</p>
+</div>
+<div class="top"><a href="#top">back to top</a></div>
+
+<div id="coordinates">
+<a name="coordinates"></a>
+<h3>Why is Germany divided, again? What coordinates do you use?</h3>
+	<p>We basically use <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF coordinates</a>
+	which means that Germany is divided into the three UTM zones 31, 32, 33. More details about this topic can be
+	found in the German <a href="/article/Koordinaten">article about coordinates</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
