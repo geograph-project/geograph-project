@@ -328,8 +328,14 @@ class GridShader
 		$dir.="{$row['map_x']}/";
 		
 		$dir.="{$row['map_y']}/";
+
+		$param = "";
+		//FIXME palette?
+		if (!empty($row['force_ri'])) {
+			$param .= "_i{$row['force_ri']}";
+		}
 		
-		$file="base_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}.gd";
+		$file="base_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}$param.gd";
 		
 		
 		return $dir.$file;

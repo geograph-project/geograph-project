@@ -41,7 +41,79 @@ if (isset($_GET['map']))
 	if($map->setToken($_GET['map']))
 		$map->returnImage();
 	exit;
-
+} elseif (isset($_GET['x']) && isset($_GET['y']) || isset($_GET['i']) && isset($_GET['e']) && isset($_GET['n'])) {
+	require_once('geograph/map.class.php');
+	require_once('geograph/mapmosaic.class.php');
+	require_once('geograph/gridimage.class.php');
+	//render and return a map given by x, y, ...
+	//init_session();
+	//if (!$USER->hasPerm("basic")) {
+	//	//$smarty->display('static_submit_intro.tpl');
+	//	exit;
+	//}
+	if (isset($_GET['x']) && isset($_GET['y'])) {
+		$x = intval($_GET['x']);
+		$y = intval($_GET['y']);
+		if (isset($_GET['i']))
+			$ri = intval($_GET['i']);
+	} else {
+		$ri = intval($_GET['i']);
+		$e = floor(intval($_GET['e'])/1000);
+		$n = floor(intval($_GET['n'])/1000);
+		if (!array_key_exists($ri, $CONF['references']))
+			exit;
+		$x = $e + $CONF['origins'][$ri][0];
+		$y = $n + $CONF['origins'][$ri][1];
+	}
+	$w = 200;
+	$h = 200;
+	if ($x + $w <= $CONF['minx'] || $x  > $CONF['maxx'] || $y + $h <= $CONF['miny'] || $y  > $CONF['maxy']) {
+		exit; // ri dependend check?
+	}
+	$z = 0;
+	if (isset($_GET['z'])) {
+		$z = intval($_GET['z']);
+		if ($z < 0)
+			$z = 0;
+		elseif ($z > 3)
+			$z = 3;
+	}
+	$t = 0;
+	if (isset($_GET['t'])) {
+		$t = intval($_GET['t']);
+		if ($t < -1)
+			$t = -1;
+		elseif ($t > 0)
+			$t = 0;
+	}
+	$levels = array(
+		0 => array( 0.3, 666),
+		1 => array( 1.0, 200),
+		2 => array( 4.0,  50),
+		3 => array(40.0,   5),
+	);
+	# 400/1333 = 0.3 px/km    666km
+	# 400/ 400 =   1 px/km    200km
+	# 400/ 100 =   4 px/km     50km
+	# 400/  10 =  40 px/km      5km
+	$pixels_per_km = $levels[$z][0];
+	$width_km      = $levels[$z][1];
+	$x = floor($x/$width_km) * $width_km;
+	$y = floor($y/$width_km) * $width_km;
+	$map=new GeographMap;
+	//if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && (init_session() || true) && $USER->hasPerm('admin'))
+	//	$map->caching=false;
+	$map->setOrigin($x, $y);
+	$map->setImageSize($w,$h);
+	$map->setScale($pixels_per_km);
+	$map->type_or_user = $t;
+	//$map->caching=false; //FIXME
+	if (isset($ri)) {
+		$map->force_ri = $ri;
+		$map->reference_index = $ri;
+	}
+	$map->returnImage();
+	exit;
 /**************************
 * Raster Maps
 */	

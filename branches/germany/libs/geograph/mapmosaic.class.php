@@ -1058,8 +1058,14 @@ class GeographMapMosaic
 		$dir.="{$row['map_x']}/";
 		
 		$dir.="{$row['map_y']}/";
-		
-		$file="base_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}.gd";
+
+		$param = "";
+		//FIXME palette?
+		if (!empty($row['force_ri'])) {
+			$param .= "_i{$row['force_ri']}";
+		}
+
+		$file="base_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}$param.gd";
 		
 		return $dir.$file;
 	}
@@ -1070,10 +1076,16 @@ class GeographMapMosaic
 		$dir.="{$row['map_x']}/";
 		
 		$dir.="{$row['map_y']}/";
-		
+
+		$param = "";
+		//FIXME palette?
+		if (!empty($row['force_ri'])) {
+			$param .= "_i{$row['force_ri']}";
+		}
+
 		$extension = ($row['pixels_per_km'] > 40 || $row['type_or_user'] < -20)?'jpg':'png';
 
-		$file="detail_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}_{$row['type_or_user']}.$extension";
+		$file="detail_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}_{$row['type_or_user']}$param.$extension";
 
 		return $dir.$file;
 	}

@@ -61,6 +61,11 @@ class GeographMap
 	* y origin of map in internal coordinates
 	*/
 	var $map_y=0;
+
+	/**
+	* only given reference index
+	*/
+	var $force_ri=0;
 	
 	/**
 	* height of map in pixels
@@ -172,6 +177,8 @@ class GeographMap
 		$token->setValue("w",  $this->image_w);
 		$token->setValue("h",  $this->image_h);
 		$token->setValue("s",  $this->pixels_per_km);
+		if (!empty($this->force_ri))
+			$token->setValue("i",  $this->force_ri);
 		if (!empty($this->type_or_user))
 			$token->setValue("t",  $this->type_or_user);
 		if (isset($this->reference_index))
@@ -207,6 +214,7 @@ class GeographMap
 					$this->reference_index = $token->getValue("r");
 				if ($token->hasValue("p")) 
 					$this->setPalette($token->getValue("p"));
+				$this->force_ri = ($token->hasValue("i"))?$token->getValue("i"):0;
 			}
 			
 		}
@@ -386,6 +394,10 @@ class GeographMap
 		if (!empty($this->minimum)) {
 			$palette .= "_n{$this->minimum}";
 		}
+
+		if (!empty($this->force_ri)) {
+			$palette .= "_i{$this->force_ri}";
+		}
 		
 		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -20)?'jpg':'png';
 		
@@ -424,7 +436,11 @@ class GeographMap
 		$palette="";
 		if ($this->palette>0)
 			$palette="_".$this->palette;
-		
+
+		if (!empty($this->force_ri)) {
+			$palette .= "_i{$this->force_ri}";
+		}
+
 		$file="base_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}{$palette}.gd";
 		
 		
@@ -565,7 +581,7 @@ class GeographMap
 		if ($ok) {
 			$db=&$this->_getDB();
 
-			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user);
+			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri);
 
 			$db->Execute($sql);
 		}
@@ -626,14 +642,20 @@ class GeographMap
 
 		}
 		$land[-1]=imagecolorallocate($img, $rmin,$gmin,$bmin);
-		
+
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
+
 		//paint the land
 		$db=&$this->_getDB();
 			
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 		
 		//now plot all squares in the desired area
-		$sql="select x,y,percent_land,reference_index from gridsquare where 
+		$sql="select x,y,percent_land,reference_index from gridsquare where $riwhere
 			CONTAINS( GeomFromText($rectangle),	point_xy)";
 
 		$recordSet = &$db->Execute($sql);
@@ -815,6 +837,11 @@ class GeographMap
 		
 		$dbImg=NewADOConnection($GLOBALS['DSN']);
 		
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
 
 		$left=$this->map_x;
 		$bottom=$this->map_y;
@@ -853,13 +880,13 @@ class GeographMap
 					inner join mapfix_log using (gridsquare_id)  
 					group by gridsquare_id";
 			} else {
-				$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where 
+				$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where $riwhere
 					CONTAINS( GeomFromText($rectangle),	point_xy) and
 					user_id = {$this->type_or_user} group by grid_reference";
 			}
 		} else {
 			$number = !empty($this->minimum)?intval($this->minimum):0;
-			$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
+			$sql="select x,y,gridsquare_id,has_geographs from gridsquare where $riwhere
 				CONTAINS( GeomFromText($rectangle),	point_xy)
 				and imagecount>$number";
 		}
@@ -1054,7 +1081,13 @@ class GeographMap
 		if (!$img) {
 			return false;
 		}
-		
+
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
+
 		$db=&$this->_getDB();
 		
 		if ($this->type_or_user == -3) {
@@ -1140,11 +1173,11 @@ class GeographMap
 			from 
 			gridsquare gs 
 			inner join gridimage gi using(gridsquare_id)
-			where CONTAINS( GeomFromText($rectangle),	point_xy) and
+			where $riwhere CONTAINS( GeomFromText($rectangle),	point_xy) and
 			submitted < '{$this->mapDateStart}'
 			group by gi.gridsquare_id ";
 		} else {
-		$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
+		$sql="select x,y,gridsquare_id,imagecount from gridsquare where $riwhere
 			CONTAINS( GeomFromText($rectangle),	point_xy)
 			and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
 		}
@@ -1253,6 +1286,12 @@ class GeographMap
 		#$sql="select imagecount from gridsquare group by imagecount";
 		#$counts = $db->getCol($sql);
 
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
+
 		//figure out what we're mapping in internal coords
 		$left=$this->map_x;
 		$bottom=$this->map_y;
@@ -1284,7 +1323,7 @@ class GeographMap
 				from 
 				gridsquare gs 
 				inner join gridimage gi using(gridsquare_id)
-				where CONTAINS( GeomFromText($rectangle),	point_xy) and
+				where $riwhere CONTAINS( GeomFromText($rectangle),	point_xy) and
 				imagetaken LIKE '{$this->displayYear}%'
 				group by gi.gridsquare_id ";
 		
@@ -1293,7 +1332,7 @@ class GeographMap
 				from 
 				gridsquare gs 
 				inner join gridimage gi using(gridsquare_id)
-				where CONTAINS( GeomFromText($rectangle),	point_xy) and
+				where $riwhere CONTAINS( GeomFromText($rectangle),	point_xy) and
 				submitted < '{$this->mapDateStart}'
 				group by gi.gridsquare_id ";
 		}
@@ -1376,6 +1415,12 @@ class GeographMap
 		$db=&$this->_getDB();
 		
 		$dbImg=NewADOConnection($GLOBALS['DSN']);
+
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
 		
 
 		$left=$this->map_x;
@@ -1525,6 +1570,7 @@ class GeographMap
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 
+		if (empty($this->force_ri)) {
 			if (!$this->reference_index) {
 				$this->getGridRef(-1,-1);
 				if (!$this->reference_index) {
@@ -1533,7 +1579,12 @@ class GeographMap
 				}
 			}
 			
-		$reference_index = $this->reference_index;
+			$reference_index = $this->reference_index;
+			$riwhere = '';
+		} else {
+			$reference_index = $this->force_ri;
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
 		
 		$gridcol=imagecolorallocate ($img, 109,186,178);
 
@@ -1558,6 +1609,8 @@ class GeographMap
 			$crit = "(s IN ('1','2','3','4')) AND";
 			$cityfont = 3;
 		}
+
+		$crit = $riwhere.$crit;
 
 		$intleft=$scanleft*1000;
 		$intright=$scanright*1000;
@@ -1786,6 +1839,12 @@ END;
 		
 		$db=&$this->_getDB();
 
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
+
 		
 		//TODO  - HARD CODED VALUES!!
 		$width = 100;
@@ -1794,7 +1853,7 @@ END;
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		
 		$sql="select * from gridprefix where ".
-			"CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
+			"$riwhere CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
 			"and landcount>0";
 
 		$recordSet = &$db->Execute($sql);
