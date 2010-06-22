@@ -21,15 +21,12 @@
 	<li>All photos are licenced for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a><br/><br/></li>
 	<li><a href="/kml.php" title="">Geograph with <b>Google Earth</b> and <b>Google Maps</b></a></li>
 	<li><a href="/help/sitemap#software" title=""><b>Other ways</b> to can use this fabulous resource</a></li>
-	<li><a href="/activities/">View images in our <b>Activities section</b></a><sup style="color:red">New!</sup></li>
-	<li><a href="/teachers/" title="Education Area">Geograph for <b>teachers</b></a></li>
 </ul>
 
 
 <h3>Join In...</h3>
 <ul class="explore">
 
-	<li><a href="/games/" title="educational games">try out some <b>games</b> using our images and maps</a></li>
 	<li><a href="/submit.php" title="">Add <b>your own pictures</b></a></li>
 	<li><a href="/article/edit.php" title="">Write an <b>article</b></a></li>
 {if $enable_forums}
