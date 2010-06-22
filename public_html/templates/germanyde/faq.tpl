@@ -8,6 +8,7 @@
  <b>Einreichen</b> von Fotos:
  <ul>
  <li><a href="/article/Anleitung">Anleitung</a></li>
+ <li><a href="/article/GeobildExtrabild">Geobild oder Extrabild?</a></li>
  <li><a href="/help/guide">Geograph Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Which-Square">Locating your Image</a></li>
@@ -45,7 +46,7 @@
  <li><a href="#what">Was ist <b>Geograph</b>?</a></li>
  <li><a href="#goodgeograph">Was macht ein gutes <b>Geograph</b>-Bild aus?</a></li>
  <li><a href="#points">Wie bekomme ich <b>Punkte</b> für meine Bilder?</a></li>
- <li><a href="#supplemental">Was heißt <b>"supplemental"</b>?</a></li>
+ <li><a href="#supplemental">Was heißt <b>&bdquo;supplemental&ldquo;</b> oder <b>&bdquo;Extrabild&ldquo;</b>?</a></li>
  <li><a href="#language">Muss die Bildbeschreibung <b>deutsch</b> sein?</a></li>
  <li><a href="#multiple">Sind <b>mehrere Bilder</b> pro Quadrat erlaubt?</a></li>
  <li><a href="#resize">Muss ich die <b>Größe</b> der Bilder ändern? Gibt es Größenbeschränkungen?</a></li>
@@ -53,15 +54,15 @@
  </ul>
 <b>Betrachten</b> der Seite:
  <ul>
- <li><a href="#use">I would be interested in <b>reusing</b> Geograph content, is that possible?</a></li>
- <li><a href="#change">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
- <li><a href="#concern">I'm <b>concerned</b> about a photo or comment I have seen on the site.</a></li>
- <li><a href="#geographism">What do all these <b>strange words</b> mean?</a></li>
+ <li><a href="#coordinates">Warum ist Deutschland wieder geteilt? Welche <b>Koordinaten</b> werden benutzt?</a></li>
+ <li><a href="#use">Ich würde gerne Geograph-Inhalte <b>verwerten</b>, ist das möglich?</a></li>
+ <li><a href="#change">Ich bin mit den Positionsangaben oder der Beschreibung eines Bildes <b>nicht einverstanden</b> &ndash; was kann ich tun?</a></li>
+ <li><a href="#concern">Ich habe <b>Bedenken</b> wegen eines Fotos or Kommentars.</a></li>
  </ul>
 Die <b>Geograph Website</b>:
  <ul>
- <li><a href="#pages">Theres a page I once saw on geograph, and I <b>can't find</b> it again!</a></li>
- <li><a href="#rss">Do you <b>RSS</b> feeds available?</a></li>
+ <li><a href="#pages">Ich habe eine Seite auf Geograph gesehen, kann sie aber <b>nicht mehr finden</b>!</a></li>
+ <li><a href="#rss">Gibt es einen <b>RSS</b>-Feed?</a></li>
  <li><a href="#opensource"><b>Open source? Creative Commons?</b> Was bedeutet das alles?</a></li>
  <li><a href="#built"><b>Who</b> built this marvellous site?</a></li>
  </ul>
@@ -93,9 +94,9 @@ Die <b>Geograph Website</b>:
 	<li>Es ist ein freies <a href="#opensource">Opensource</a>-Projekt.</li>
 	</ul>
 	
-	<p>See the original <a title="guide to geographing" href="/help/guide">guide to good geographing</a>, and <a title="Geograph Quickstart Guide" href="http://www.geograph.org.uk/article/Geograph-Quickstart-Guide">contributors quickstart guide</a>.</p>
+	<p>Mehr Informationen sind in der <a href="/article/Anleitung">Anleitung</a> oder der älteren (britischen) <a title="guide to geographing" href="/help/guide">Anleitung zu Geograph</a> oder der britischen <a title="Geograph Quickstart Guide" href="http://www.geograph.org.uk/article/Geograph-Quickstart-Guide">Kurzanleitung</a> zu entnehmen.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="goodgeograph">
 <a name="goodgeograph"></a>
@@ -103,7 +104,7 @@ Die <b>Geograph Website</b>:
 	<ul>
 	<li>Das Bild muss ein wichtiges geographisches Merkmal des Planquadrats deutlich zeigen.</li>
 	<li>Es sollte eine Kurzbeschreibung erstellt werden, die das Bild mit dem Planquadrat in Beziehung setzt.</li>
-	<li>Jemand, der noch nie an der Stelle war, weiß nun: "So sieht es dort also aus."</li>
+	<li>Jemand, der noch nie an der Stelle war, weiß nun: &bdquo;So sieht es dort also aus.&ldquo;</li>
 	<li>Das Bild könnte einem Kind helfen, eine Landkarte zu interpretieren.</li>
 	<li>Es sollte auch die Umgebung des Motivs erkennbar sein.</li>
 	<li>Um Punkte fair zu vergeben:
@@ -115,10 +116,10 @@ Die <b>Geograph Website</b>:
 		ein sich im nächsten Quadrat befindendes weiteres Motiv geben (also gibt es auch für praktisch gleiche Bilder keine zwei Punkte).</li>
 		<li>Der Aufnahmestandpunkt sollte kein spezielles technisches Hilfsmittel o.ä. sein (Flugzeug, ...). Von einem Schiff aus aufgenommene Aufnahmen sind aber in Ordnung.</li>
 		</ul>
-	   Bilder die diese Kriterien nicht erfüllen, sind durchaus erwünscht, können aber keine Punkte bekommen (Klassifikation "Supplemental"). Da sich diese Kriterien erst im Laufe der Zeit konkretisiert haben, kann es sein, dass ältere Bilder noch nicht entsprechend klassifiziert sind, was aber nach und nach durch Nachmoderieren korrigiert wird.</li>
+	   Bilder die diese Kriterien nicht erfüllen, sind durchaus erwünscht, können aber keine Punkte bekommen (Klassifikation &bdquo;Extrabild&ldquo;). Da sich diese Kriterien erst im Laufe der Zeit konkretisiert haben, kann es sein, dass ältere Bilder noch nicht entsprechend klassifiziert sind, was aber nach und nach durch Nachmoderieren korrigiert wird.</li>
 	</ul>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="points">
 <a name="points"></a>
@@ -129,20 +130,20 @@ Die <b>Geograph Website</b>:
 	Die Punkte sollen als Anreiz dienen, dass auch weniger touristisch interessante, ungünstig gelegene, ... Quadrate
 	fotografiert werden.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="supplemental">	
 <a name="supplemental"></a>
-<h3>Was heißt "supplemental"?</h3>
+<h3>Was heißt &bdquo;supplemental&ldquo; oder &bdquo;Extrabild&ldquo;?</h3>
 	<p>Ein Bild, das zwar ein für das Quadrat repräsentatives bzw. informatives Motiv zeigt,
 	aber obige Kriterien nicht vollständig erfüllt, insbesondere bezüglich Aufnahmestandort und erkennbarer Umgebung,
-	bekommt die Klassifikation "supplemental". Solche Bilder sind durchaus erwünscht, man erhält aber keine Punkte
+	bekommt die Klassifikation &bdquo;Extrabild&ldquo;. Solche Bilder sind durchaus erwünscht, man erhält aber keine Punkte
 	für sie. Ein Quadrat, für das bisher nur solche Bilder eingereicht wurden, ist also noch immer ein lohnendes Ziel
 	für Punktejäger.</p>
 
 	<!--p><img src="/templates/basic/img/icon_alert.gif" alt="Note" width="25" height="22" align="absmiddle"/> Follow this link for a <a title="geograph and supplemental guide" href="http://www.geograph.org.uk/article/Geograph-or-supplemental">more in depth discussion</a> on the finer points of moderation.</p-->
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="language">
 <a name="language"></a>
@@ -150,7 +151,7 @@ Die <b>Geograph Website</b>:
 <p>Es sind auch englische Bildbeschreibungen und -titel möglich: Der Moderator wird diese nach Möglichkeit übersetzen.
 Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingeklammert nach dem deutschen Text.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="multiple">
 <a name="multiple"></a>
@@ -161,15 +162,17 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 	Jahreszeit oder eine Veränderung im Laufe vieler Jahre zeigen.
 	Einige Quadrate wurden schon
 	<a href="/statistics/most_geographed.php" title="Häufig fotografierte Quadrate">detailliert</a> fotografiert
-	und so genauer dokumentiert, also mit mehr <a href="/statistics/moversboard.php?type=depth" title="Wochenrangliste: Depth">"Tiefe"</a> versehen.</p>
+	und so genauer dokumentiert, also mit mehr <a href="/statistics/moversboard.php?type=depth" title="Wochenrangliste: Depth">&bdquo;Dichte&ldquo;</a> versehen.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="resize">
 <a name="resize"></a>
 <h3>Muss ich die <b>Größe</b> der Bilder ändern? Gibt es Größenbeschränkungen?</h3>
 	<p>Es können Bilder jeder Größe (bis zu einer sehr hohen Grenze des Servers) hochgeladen werden, sowohl im Quer- als auch im Hochformat.
-	Allerdings verkleinern wir Bilder auf 640 Pixel an der längsten Kante, das größere Originalbild wird nicht gespeichert.</p>
+	Allerdings verkleinern wir Bilder auf 640 Pixel an der längsten Kante, das größere Originalbild wird nicht gespeichert. Panoramen werden allerdings
+	nicht ganz so stark verkleinert: Bei Seitenverhältnissen zwischen 2:1 und 4:1 wird das Bild vertikal auf 320 Pixel verkleinert, ab 4:1 wird
+	die Gesamtpixelzahl auf 640&times;640 begrenzt.</p>
 
 	<p>Im Idealfall sollten Bilder entlang der längsten Kante nicht weniger als 480 Pixel haben. Ein kleineres Bild muss uns als besonders wichtig für ein Quadrat
 	erscheinen, damit wir es akzeptieren.</p>
@@ -177,40 +180,33 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 	<p>Wir speichern die EXIF-Daten des Originalbildes. Wenn darauf wert gelegt wird,
 	kann es daher sinnvoll sein, das Originalbild hochzuladen.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="change">
 <a name="change"></a>
-<h3>I disagree with the location or title of an image - what can I do?</h3>
-	<p>Our <a href="/help/changes">"Change Request Tickets"</a> allow any registered user 
-	to suggest a change of grid reference or title/comment
-	information - simply view the full size image and click the "report a problem" link.
+<h3>Ich bin mit den Positionsangaben oder der Beschreibung eines Bildes nicht einverstanden &ndash; was kann ich tun?</h3>
+	<p>Unsere <a href="/help/changes">&bdquo;Änderungs-Tickets&ldquo;</a> ermöglichen es jedem registrierten Benutzer
+	Änderungen vorzuschlagen: Einfach die Vollbild-Seite aufrufen und dem Link &bdquo;Änderung für dieses Bild vorschlagen&ldquo;
+	folgen.
 	</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="pages">
 <a name="pages"></a>
-<h3>Theres a page I once saw on geograph, and I <b>can't find</b> it again!</h3>
-	<p>Have a look at <a href="/help/more_pages">More Pages</a> and our <a href="/help/sitemap">Sitemap</a>, between them should give access to many a page</p>
+<h3>Ich habe eine Seite auf Geograph gesehen, kann sie aber nicht mehr finden!</h3>
+	<p>Viele Seiten sind in der <a href="/help/more_pages">Hilfe</a> und auf der <a href="/help/sitemap">Sitemap</a> aufgeführt.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
-
-<div id="geographism">
-<a name="geographism"></a>
-<h3>What do all these strange words mean?</h3>
-	<p>Well, if it's a 'geographism' - a term developed during use on this site, then see <a href="http://www.geograph.org.uk/article/Geographisms">this glossary article</a> we have started compiling. There is also a wide range of sites dealing with Acronyms, and Abbreviations, listed on {external href="http://www.dmoz.org/Reference/Dictionaries/By_Subject/Computers/Internet_Terms_and_Acronyms/" text="DMOZ here"}.</p>
-</div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="rss">
 <a name="rss"></a>
-<h3>Do you have an RSS feed?</h3>
-	<p>RSS, or Really Simple Syndication, allows you to obtain an up-to-date listing of
-	the latest geograph submissions for integration into another website or RSS reader. For more information,
-	try this {external href="http://en.wikipedia.org/wiki/RSS_(protocol)" text="Wikipedia article on RSS"}.</p>
+<h3>Gibt es einen RSS-Feed?</h3>
+	<p>RSS (Really Simple Syndication) erlaubt den Zugriff auf aktuelle Daten zu eingereichten Bildern
+	und kann von anderen Web-Sites oder mit einem Feedreader ausgewertet werden. Mehr Informationen sind im
+	{external href="http://de.wikipedia.org/wiki/RSS" text="Wikipedia-Artikel über RSS"} zu finden.</p>
 
-	<div style="background-color:#eeeeee; padding:10px; float:right">The feeds are also available in 
+	<div style="background-color:#eeeeee; padding:10px; float:right">Weitere Formate für die Feeds:
 	<ul>
 	<li><a title="Geograph RSS 0.91 feed" href="http://{$http_host}/syndicator.php?format=RSS0.91">RSS0.91</a></li>
 	<li><a title="Geograph RSS 1.0 feed" href="http://{$http_host}/syndicator.php?format=RSS1.0"><b>RSS1.0</b></a></li>
@@ -221,51 +217,42 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 	<li><a class="xml-kml" title="Geograph KML (Google Earth) feed" href="http://{$http_host}/feed/recent.kml">KML</a></li>
 	<li>simple <a class="xml-geo" title="Geograph GeoRSS feed" href="http://{$http_host}/feed/recent.rss">GeoRSS</a></li>
 	<li><a title="Geograph GeoRSS and PhotoRSS feed" href="http://{$http_host}/feed/recent.geophotorss">GeoPhotoRSS</a></li>
-	<li>and <a title="Geograph GPX feed" href="http://{$http_host}/feed/recent.gpx">GPX1.0</a></li>
-	</ul>formats.</div>
+	<li><a title="Geograph GPX feed" href="http://{$http_host}/feed/recent.gpx">GPX1.0</a></li>
+	</ul></div>
 
-	<p>We provide an GeoRSS (RSS1.0) feed at 
-	<a title="Geograph RSS feed" href="http://{$http_host}/feed/recent.rss">http://{$http_host}/feed/recent.rss</a>
-	which contains links to the latest 20 moderated images. </p>
+	<p>Es gibt einen GeoRSS-Feed (RSS1.0) unter 
+	<a title="Geograph RSS-Feed" href="http://{$http_host}/feed/recent.rss">http://{$http_host}/feed/recent.rss</a>,
+	der Links zu den letzten 20 moderierten Bildern enthält. </p>
 
-	<div>We have recently added RSS feeds to other parts of the site:
+	<div><p>Außerdem gibt es RSS-Feeds für andere Bereiche von Geograph:</p>
 		<ul>
-			<li>You will find an <a class="xml-rss">RSS</a> button at the bottom of <a href="/search.php" title="photograph search">search results</a>, useful to keep updated on local images.</li>
-			{if $enable_forums}<li>Registered users can access RSS feed of the latest Topics in the Discussion Forum, and even subscribe to an individual Topic, just look for the <a class="xml-rss">RSS</a> button!</li>
-			<li>the Grid Square Discussions even supports <a class="xml-geo" title="Geograph Grid Square Discussions" href="http://{$http_host}/discuss/syndicator.php?forum={$forum_gridsquare}&amp;format=GeoRSS">GeoRSS</a>.</li>{/if}
-			<li>Get a <a class="xml-rss" href="/article/feed/recent.rss">RSS</a> feed of recently updated <a href="/article/">Articles</a>.</li>
-			<li>The newer <a href="/content/">Content</a> section has a <a class="xml-rss" href="/content/feed/recent.rss">RSS</a> Feed.</li>
-			<li>Find out about <a href="/events/">organized meets</a> by following the <a class="xml-rss" href="/events/feed.rss">RSS</a> Feed.</li>
+			<li>Es gibt einen <a class="xml-rss">RSS</a>-Button unterhalb von <a href="/search.php" title="photograph search">Suchergebnissen</a>, der es beispielsweise ermöglicht, über Bilder in der Region auf dem laufenden gehalten zu werden.</li>
+			{if $enable_forums}<li>Registrierte Benutzer können sich per RSS über neue Themen im Forum informieren oder
+			Feeds zu bestimmten Themen abonnieren: Einfach den <a class="xml-rss">RSS</a>-Button anwählen!</li>
+			<li>Das Planquadrat-Forum unterstützt sogar <a class="xml-geo" title="Geograph Planquadrat-Forum" href="http://{$http_host}/discuss/syndicator.php?forum={$forum_gridsquare}&amp;format=GeoRSS">GeoRSS</a>.</li>{/if}
+			<li>Wir haben einen <a class="xml-rss" href="/article/feed/recent.rss">RSS</a>-Feed über kürzlich aktualisierte <a href="/article/">Artikel</a>.</li>
+			<li>Auch der Bereich <a href="/content/">Beiträge</a> hat einen <a class="xml-rss" href="/content/feed/recent.rss">RSS</a>-Feed.</li>
 		</ul>
-	 (they also accept the format parameter like the main feed)</div>
+	<p>Auch bei diesen Feeds kann ein Format-Parameter angegeben werden.</p></div>
 	 
-	<p>If you use the {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} web browser, 
-	you should be able use our feeds as "live bookmarks" - simply
-	click the orange button in the address bar (or in the status bar on older versions).</p>    
+	<p>Mit {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} kann man
+	die Feeds als &bdquo;live bookmarks&ldquo; nutzen &ndash; einfach den orange-farbenen
+	Knopf in der Adress- bzw. Statusleiste anwählen.</p>    
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="use">
 <a name="use"></a>
-<h3>I would be interested in using Geograph content, is that possible?</h3>
-	<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for reusing images, 
-	beyond what's available via the RSS feeds above, in all likelihood we can provide a <a href="/help/api">feed</a> 
-	to suit your requirements.</p>
+<h3>Ich würde gerne Geograph-Inhalte verwerten, ist das möglich?</h3>
+	<p>Die Bilder stehen unter einer <a href="#opensource">Creative-Commons-Lizenz</a> und dürfen entsprechend verwertet werden, siehe
+	Lizenz-Details auf der Vollbild-Seite. Der Link &bdquo;Wie kann dieses Bild verwertet werden&ldquo; unter den Bildern führt zu Beispielen,
+	wie Bilder einfach eingebettet werden können.</p>
 
-	<p>Images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a>, see
-	licence details by viewing a full size image. Also look for the "Interested in reusing this image?" link under each image on the main photo page, which outlines easy ways to reuse the image.</p>
-
-	<p>The entire archive is also available for download via bittorrent - see 
-	{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
-	for details.</p>
-
-	<ul>
-	<li>Are you a developer and maybe looking for <a href="http://www.geograph.org.uk/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>.</li>
-	</ul>
-	
-	<p>We also have a Google Gadget: * {external href="http://www.google.com/ig/add?moduleurl=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" target="_blank" text="Add to my iGoogle page"} * {external href="http://www.google.com/ig/creator?url=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" text="Add to any webpage"} *</p>
+	<p>Falls weitergehende Wünsche zum Zugriff auf die Geograph-Daten bestehen und auch die obengenannten RSS-Feeds nicht ausreichen,
+	bitten wir um <a title="Contact Us" href="/contact.php">Kontaktaufnahme</a>. Wahrscheinlich können wir einen passenden
+	<a href="/help/api">Zugang</a> bereitstellen.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="opensource">
 <a name="opensource"></a>
@@ -290,7 +277,16 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 	site and content can never be "taken away" from you. See <a href="/help/freedom">Freedom - The Geograph Manifesto</a>
 	</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
+
+<div id="coordinates">
+<a name="coordinates"></a>
+<h3>Warum ist Deutschland wieder geteilt? Welche Koordinaten werden benutzt?</h3>
+	<p>Wir verwenden im Wesentlichen <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF-Koordinaten</a>,
+	was zur Folge hat, dass Deutschland in die UTM-Zonen 31, 32 und 33 aufgeteilt ist. Näheres dazu
+	kann im <a href="/article/Koordinaten">Artikel über Koordinaten</a> nachgelesen werden.</p>
+</div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="licence">
 <a name="licence"></a>
@@ -314,7 +310,7 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 	dass wir nur eine Bildversion in Bildschirmqualität speichern und dass wegen der
 	the Creative-Commons-Lizenz der Urheber eines Fotos genannt werden muss.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="built">
 <a name="built"></a>
@@ -322,21 +318,21 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 	<p>Please see the <a href="/help/credits" title="Credits Page">Credits Page</a> for
 	information on all the <a href="/admin/team.php">people</a> who make this site possible.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="concern">
 <a name="concern"></a>
-<h3>I'm concerned about a photo or comment I have seen on the site.</h3>
-       <p>Please get in <a title="Contact Us" href="contact.php">Contact</a>, we'll do our best to deal with your concerns prompty.</p>
+<h3>Ich habe Bedenken wegen eines Fotos or Kommentars.</h3>
+       <p>Wie bitten um <a title="Contact Us" href="contact.php">Kontaktaufnahme</a>. Wir werden uns bemühen, schnell eine Lösung für das Anliegen zu finden.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="question">
 <a name="question"></a>
 <h3 style="padding-top:0px;">Ich habe eine andere Frage, was soll ich tun?</h3>
 	<p>Fragen können über das <a title="Kontakt" href="contact.php">Kontaktformular</a> gestellt werden{if $enable_forums}, oder aber im Forum zur Diskussion gestellt werden{/if}.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="aol">
 <a name="aol"></a>
@@ -349,7 +345,7 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 	&quot;Uncompressed Graphics&quot;. You will pay only a small penalty in download time to see 
 	this and other photo oriented sites the way everyone else can see them.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 <div id="missing">
 <a name="missing"></a>
@@ -358,7 +354,7 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 
 	<p>So if you use such a program you might like to try turning it off temporarily and trying again, and if that gets our images back, then have a look for the option to disable this, arguably, flawed method of security.</p>
 </div>
-<div class="top"><a href="#top">back to top</a></div>
+<div class="top"><a href="#top">nach oben</a></div>
 
 </div>
 </div>
