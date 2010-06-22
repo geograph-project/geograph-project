@@ -18,6 +18,15 @@
      <li><a title="Statistiken" href="/numbers.php">Statistik</a></li>
      <li><a title="Rangliste" href="/statistics/moversboard.php">Rangliste</a></li>
     </ul></li>
+  {dynamic}
+  {if $is_logged_in}
+    <li>Werkzeuge<ul>
+     <li><a title="Geograph-Karte" href="/gmap.php">Geograph Karte</a></li>
+     <li><a title="GoogleMaps" href="/submitmap.php">Google Karte</a></li>
+     <li><a title="Koordinatenkonverter" href="/latlong.php">Koordinaten</a></li>
+    </ul></li>
+  {/if}
+  {/dynamic}
     <li>Informationen<ul>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
      <li><a title="Projektbezogene Informationen" href="/content/?docs&amp;order=title">Dokumente</a></li>

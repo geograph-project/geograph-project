@@ -110,11 +110,6 @@ beibehalten.</p>
 		<li>Motivkoordinaten im Dateinamen (z.B. "<tt>photo-<b style="padding:1px">TPT278695</b>A.jpg</tt>")</li>
 		<li>Motivkoordinaten im EXIF-Kommentar</li>
 		</ul></div>
-		
-		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-		<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-		Dieses Feature ist noch in Arbeit. Wenn der Upload scheitert, sind wir für Rückmeldung dankbar: Am besten per Mail an <a href="mailto:geo@hlipp.de">mich</a> mit angehängtem Bild.
-		</div>
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
