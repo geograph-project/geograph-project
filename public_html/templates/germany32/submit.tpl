@@ -113,11 +113,6 @@ geographing (German)</a> first.</p>
 		<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TPT278695</b>A.jpg</tt>")</li>
 		<li>Subject grid-reference in EXIF Comment tag</li>
 		</ul></div>
-		
-		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-		<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-		 This feature is still in development. If a image fails to upload please let us know, or better still, send it as an attachment to <a href="mailto:geograph@barryhunter.co.uk">me</a> so we can try to ensure it's recognised.
-		</div>
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
