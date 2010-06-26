@@ -62,6 +62,6 @@ if (!empty($_REQUEST['grid_reference']))
 	}
 } 
 
-$smarty->display('gmap.tpl',$cacheid);
+$smarty->display('testmap.tpl',$cacheid);
 
 ?>
