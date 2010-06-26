@@ -399,7 +399,7 @@ class GeographMap
 			$palette .= "_i{$this->force_ri}";
 		}
 		
-		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -20)?'jpg':'png';
+		$extension = ($this->pixels_per_km > 64 || $this->type_or_user < -20)?'jpg':'png';
 		
 		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}{$palette}.$extension";
 		
@@ -551,7 +551,7 @@ class GeographMap
 	#DEPTH MAP (_renderDepthImage also understands date maps)
 			} elseif ($this->type_or_user == -1) {
 				//if thumbs level can just use normal render. 
-				if ($this->pixels_per_km<=4) {
+				if ($this->pixels_per_km<32) { //FIXME limit?
 					$ok = $this->_renderDepthImage();
 				} else {
 					$ok = $this->_renderImage();
@@ -927,7 +927,7 @@ class GeographMap
 				//easy!
 				imagesetpixel($img,$imgx1, $imgy1,$color);
 			}
-			elseif ($this->pixels_per_km<=4)
+			elseif ($this->pixels_per_km<32)
 			{
 				//nice large marker
 				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
@@ -994,7 +994,7 @@ class GeographMap
 				$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 			}
 
-			if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40 && isset($CONF['enable_newmap']))
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<=64 && isset($CONF['enable_newmap']))
 			{
 				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 			}				
@@ -1228,7 +1228,7 @@ class GeographMap
 		if ($img) {
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 			
-			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap'])) {
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<32 && isset($CONF['enable_newmap'])) {
 				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 			}				
 			
@@ -1367,7 +1367,7 @@ class GeographMap
 
 				imagestring($img, 5, 3, $this->image_h-30, $this->mapDateStart, $black);
 
-				if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap']))
+				if ($this->pixels_per_km>=1  && $this->pixels_per_km<32 && isset($CONF['enable_newmap']))
 					$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 			}
 			$target=$this->getImageFilename();
@@ -1595,11 +1595,11 @@ class GeographMap
 			$div = 500000; //1 per 500k square
 			$crit = "s = '1' AND";
 			$cityfont = 3;
-		} elseif ($this->pixels_per_km == 1) {
+		} elseif ($this->pixels_per_km <= 2) { //FIXME limit?
 			$div = 100000; 
 			$crit = "(s = '1' OR s = '2') AND";
 			$cityfont = 3;
-		} elseif ($this->pixels_per_km == 4) {
+		} elseif ($this->pixels_per_km <= 4) { //FIXME limit?
 			$div = 30000;
 		#	$crit = "(s = '1' OR s = '2') AND";
 			$crit = "(s IN ('1','2','3')) AND";
@@ -1671,7 +1671,7 @@ END;
 				$imgy1=($this->image_h-($y-$bottom+1)* $this->pixels_per_km);
 				
 				//trigger_error("---->city: " . ($recordSet->fields['name']) . " w/h: " . ($this->image_w) . "/" . ($this->image_h) . " x/y: " . $imgx1 . "/" . $imgy1, E_USER_NOTICE);
-				if ($this->pixels_per_km<=4) {				
+				if ($this->pixels_per_km<32) { //FIXME limit?
 					imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
 					imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
 				}
@@ -1791,7 +1791,7 @@ END;
 		static $gridcol,$gridcol2,$text1,$text2; //these are static so they can be assigned before the images are added
 		global $CONF;
 		if ($pre) {
-			if ($this->pixels_per_km >= 40) {
+			if ($this->pixels_per_km >= 32) {
 				$gridcol=imagecolorallocate ($img, 89,126,118);
 				$gridcol2=imagecolorallocate ($img, 60,205,252);
 				//$gridcol2=imagecolorallocate ($img, 102,173,166);
@@ -1828,7 +1828,7 @@ END;
 			} else {
 				$gridcol=imagecolorallocate ($img, 109,186,178);
 			}
-			if ($this->pixels_per_km < 1 || $this->pixels_per_km >= 40) {
+			if ($this->pixels_per_km < 1 || $this->pixels_per_km >= 32) {
 				$text1=imagecolorallocate ($img, 255,255,255);
 				$text2=imagecolorallocate ($img, 0,64,0);
 			} else {
@@ -1935,7 +1935,7 @@ END;
 		$recordSet->Close(); 		
 		
 		//plot the number labels
-		if ($this->pixels_per_km >= 40) {
+		if ($this->pixels_per_km >= 32) {
 			$gridref = $this->getGridRef(0, $this->image_h); //origin of image is tl, map is bl
 			if (preg_match('/^([!A-Z]{1,3})(\d\d)(\d\d)$/',$gridref, $matches))
 			{

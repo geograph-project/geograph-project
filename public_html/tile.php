@@ -54,7 +54,7 @@ if (isset($_GET['map']))
 	if (isset($_GET['x']) && isset($_GET['y'])) {
 		$x = intval($_GET['x']);
 		$y = intval($_GET['y']);
-		if (isset($_GET['i']))
+		if (isset($_GET['i']) && array_key_exists(intval($_GET['i']), $CONF['references']))
 			$ri = intval($_GET['i']);
 	} else {
 		$ri = intval($_GET['i']);
@@ -65,18 +65,41 @@ if (isset($_GET['map']))
 		$x = $e + $CONF['origins'][$ri][0];
 		$y = $n + $CONF['origins'][$ri][1];
 	}
-	$w = 200;
-	$h = 200;
-	if ($x + $w <= $CONF['minx'] || $x  > $CONF['maxx'] || $y + $h <= $CONF['miny'] || $y  > $CONF['maxy']) {
-		exit; // ri dependend check?
-	}
 	$z = 0;
 	if (isset($_GET['z'])) {
 		$z = intval($_GET['z']);
-		if ($z < 0)
-			$z = 0;
+		if ($z < -8)
+			$z = -8;
 		elseif ($z > 3)
 			$z = 3;
+	}
+	if ($z >= 0) {
+		$w = 200;
+		$h = 200;
+		$levels = array(
+			0 => array( 0.3, 666),
+			1 => array( 1.0, 200),
+			2 => array( 4.0,  50),
+			3 => array(40.0,   5),
+		);
+	} else {
+		$w = 256;
+		$h = 256;
+		$levels = array(
+			0 => array(  0.5,  512),
+			1 => array(  1.0,  256),
+			2 => array(  2.0,  128),
+			3 => array(  4.0,   64),
+			4 => array(  8.0,   32),
+			5 => array( 16.0,   16),
+			6 => array( 32.0,    8),
+			7 => array( 64.0,    4),
+			//7 => array( 64.0,    6.25),
+		);
+		$z = -$z-1;
+	}
+	if ($x + $w <= $CONF['minx'] || $x  > $CONF['maxx'] || $y + $h <= $CONF['miny'] || $y  > $CONF['maxy']) {
+		exit; // ri dependend check?
 	}
 	$t = 0;
 	if (isset($_GET['t'])) {
@@ -86,12 +109,6 @@ if (isset($_GET['map']))
 		elseif ($t > 0)
 			$t = 0;
 	}
-	$levels = array(
-		0 => array( 0.3, 666),
-		1 => array( 1.0, 200),
-		2 => array( 4.0,  50),
-		3 => array(40.0,   5),
-	);
 	# 400/1333 = 0.3 px/km    666km
 	# 400/ 400 =   1 px/km    200km
 	# 400/ 100 =   4 px/km     50km
