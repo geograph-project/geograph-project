@@ -65,8 +65,28 @@ if (!empty($_GET['To'])) { //to lat/long
 		$smarty->assign('n', $_GET['n']);
 	} 
 } elseif (!empty($_GET['From'])) { //from lat/long
+	$reE = '(?P<Edeg>[0-9]+([.,][0-9]*)?)\s*°(\s*(?P<Emin>[0-9]+([.,][0-9]*)?)\s*\')?(\s*(?P<Esec>[0-9]+([.,][0-9]*)?)\s*")?';
+	$reN = '(?P<Ndeg>[0-9]+([.,][0-9]*)?)\s*°(\s*(?P<Nmin>[0-9]+([.,][0-9]*)?)\s*\')?(\s*(?P<Nsec>[0-9]+([.,][0-9]*)?)\s*")?';
+	$reEdir = '(?P<Edir>[WOEwoe])';
+	$reNdir = '(?P<Ndir>[NSns])';
 	if (!empty($_GET['multimap']) && preg_match_all("/\(([\+\-]*\d{1,3}\.\d+)\)/",$_GET['multimap'],$matchs) == 2) {
 		list ($_GET['lat'],$_GET['long']) = $matchs[1];
+	} else if (preg_match('/^\s*'.$reEdir.'\s*'.$reE.'\s*'.$reNdir.'\s*'.$reN.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reNdir.'\s*'.$reN.'\s*'.$reEdir.'\s*'.$reE.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reE.'\s*'.$reEdir.'\s*'.$reN.'\s*'.$reNdir.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reN.'\s*'.$reNdir.'\s*'.$reE.'\s*'.$reEdir.'\s*$/' , $_GET['multimap'], $matches) == 1
+	) {
+	//if (preg_match('/^\s*'.$reEdir.'\s*'.$reE.'\s*'.$reNdir.'\s*'.$reN.'\s*$/' , $teststr, $matches) == 1) {
+		#echo "  E: {$matches['Edir']} {$matches['Edeg']} {$matches['Emin']} {$matches['Esec']}\n";
+		#echo "  N: {$matches['Ndir']} {$matches['Ndeg']} {$matches['Nmin']} {$matches['Nsec']}\n";
+		$_GET['lat']   = str_replace(',','.',$matches['Ndeg']);
+		$_GET['latm']  = str_replace(',','.',$matches['Nmin']);
+		$_GET['lats']  = str_replace(',','.',$matches['Nsec']);
+		$_GET['ns']    = (strtoupper($matches['Ndir']) == 'S') ? 'S' : 'N';
+		$_GET['long']  = str_replace(',','.',$matches['Edeg']);
+		$_GET['longm'] = str_replace(',','.',$matches['Emin']);
+		$_GET['longs'] = str_replace(',','.',$matches['Esec']);
+		$_GET['ew']    = (strtoupper($matches['Edir']) == 'W') ? 'W' : 'E';
 	}
 	
 		if (!empty($_GET['latm']))
