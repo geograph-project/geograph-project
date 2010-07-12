@@ -72,7 +72,23 @@ if (isset($_POST['gridimage_id']))
 
 		$smarty->assign('message', 'Verification saved - thank you');
 
-		if (!empty($_POST['confirm']) || !empty($_POST['similar'])) {
+		if (!empty($_POST['broken'])) {
+			
+			$row = $db->getRow("SELECT * FROM gridimage_pending WHERE gridimage_id = {$gridimage_id} ");
+			
+			//email me if we lag, but once gets big no point continuing to notify!
+			ob_start();
+			print "\n\nHost: ".`hostname`."\n\n";
+			print "\n\nView: http://{$_SERVER['HTTP_HOST']}/admin/resubmissions.php?review=$gridimage_id\n\n";
+			print_r($row);
+			print_r($_SERVER);
+			$con = ob_get_clean();
+			mail('geograph@barryhunter.co.uk','[Geograph] Resubmission failure!',$con);
+			
+			//unclog the queue!
+			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id} ");
+			
+		} elseif (!empty($_POST['confirm']) || !empty($_POST['similar'])) {
 
 			$image->originalUrl = 	$image->_getOriginalpath(true,false,'_original');
 			$image->previewUrl = 	$image->_getOriginalpath(true,false,'_preview');
