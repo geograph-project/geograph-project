@@ -1364,6 +1364,24 @@ update daily_feature set title = 'Article of the Day' where feature = 'Article';
 #################################################
 
 
+CREATE TABLE IF NOT EXISTS `fn_annotation_rows` (
+  `file` varchar(500) NOT NULL,
+  `image_id` varchar(36) default NULL,
+  `user_id` varchar(36) default NULL,
+  `username` varchar(128) default NULL,
+  `added` int(10) unsigned default NULL,
+  `modified` int(10) unsigned default NULL,
+  `annotation` text,
+  `annotation_id` varchar(255) NOT NULL default '',
+  `annotation_title` varchar(255) default NULL,
+  `annotation_author` varchar(255) default NULL,
+  `annotation_boundingbox` varchar(100) default NULL,
+  `annotation_content` text,
+  PRIMARY KEY  (`annotation_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+#################################################
 
 
 
