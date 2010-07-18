@@ -29,7 +29,7 @@
 	
 	$DATE_FORMAT			=		'm/d/Y H:i';
 	$DB_TYPE				=		'MYSQL';		// 'MYSQL', 'SQLITE' or 'NONE'
-	$FILETYPES = "jpg|png|gif|avi|mpg|mov";
+	$FILETYPES = "jpg";
 	
 /*
 	Set $ADD, $MODIFY and $DELETE to 
@@ -38,28 +38,31 @@
  	'deny' to disable an action completely
 */
 	$PERMISSIONS = array();
-	$PERMISSIONS['ADD'] = 'prompt';
+	$PERMISSIONS['ADD'] = 'allow';
 	$PERMISSIONS['MODIFY'] = 'allow';
 	$PERMISSIONS['DELETE'] = 'allow';
 	$PERMISSIONS['PASSWORD'] = 'fnpassword';
 	
 	
-	$MYSQL_SERVER			=		'localhost';
-	$MYSQL_USERNAME			=		'root';
-	$MYSQL_PASSWORD			=		'';
-	$MYSQL_DBNAME			=		'fnserver';
+	//include domain specific configuration
+	require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
+	
+	$MYSQL_SERVER			=		$CONF['db_connect'];
+	$MYSQL_USERNAME			=		$CONF['db_user'];
+	$MYSQL_PASSWORD			=		$CONF['db_pwd'];
+	$MYSQL_DBNAME			=		$CONF['db_db'];
 		
 	// INDICATE where data & annotations should be saved
-	$FNSAVESTRATEGY["FNSaveDatabaseRows"] = false;
+	$FNSAVESTRATEGY["FNSaveDatabaseRows"] = true;
 	$FNSAVESTRATEGY["FNSaveDatabaseXMLBlock"] = false;
-	$FNSAVESTRATEGY["FNSaveJPEGHeader"] = true;
+	$FNSAVESTRATEGY["FNSaveJPEGHeader"] = false;
 	$FNSAVESTRATEGY["FNSaveTextFile"] = false;
 	// INDICATE strategy for saving Feed of annotation, if at all	
 	$FNANNOTATIONFEEDSAVESTRATEGY["FNAnnotationFeedSaveXmlFile"] = false;
 
 	// INDICATE from where annotations should be retrieved (choose one)
-	$FNRETRIEVESTRATEGY["FNRetrieveDatabaseRows"] = false;
-	$FNRETRIEVESTRATEGY["FNRetrieveJPEGHeader"] = true;
+	$FNRETRIEVESTRATEGY["FNRetrieveDatabaseRows"] = true;
+	$FNRETRIEVESTRATEGY["FNRetrieveJPEGHeader"] = false;
 
 /* 
 	Do Not Edit Below Here

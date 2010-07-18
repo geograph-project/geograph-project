@@ -11,7 +11,7 @@
 
 
 // Address of fotonoter.php on the server (this auto-detect should work):
-var fnServerPath = "../";
+var fnServerPath = "/notes/";
 var fnServerFotonotesScript = "fotonotes.php";
 var fnServer = fnServerPath + fnServerFotonotesScript;
 

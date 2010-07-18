@@ -105,7 +105,7 @@ class FNSaveDatabaseRows extends FNSave {
 		WHERE annotation_id = '".$fn_annotation->param["id"]."'";
 
    		displayDebug("query addannotationdb: $query<br>", 2);
-		$FN_DB->query($query);
+		////TODO NON FUNCTIONAL - $FN_DB->query($query);
 		return true;
 	}
 	
@@ -119,7 +119,7 @@ class FNSaveDatabaseRows extends FNSave {
 		displayDebug("fn_annotation object: ", 3);
 		displayDebugParam($fn_annotation, 3);
 
-		$query = "DELETE FROM fn_annotation_rows WHERE annotation_id = '".$fn_annotation->param["id"]."'";
+		$query = "UPDATE fn_annotation_rows SET annotation_id = CONCAT(annotation_id,'+DELETED') WHERE annotation_id = '".$fn_annotation->param["id"]."'";
 
    		displayDebug("query addannotationdb: $query<br>", 2);
 		$FN_DB->query($query);		
