@@ -38,11 +38,72 @@ class FNSelect extends FNRetrieve {
 // FNRetrieveDatabaseRows - concrete class to fetch from database, annotations stored in separate rows
 class FNRetrieveDatabaseRows extends FNRetrieve {
 
-	function FNRetrieveDatabaseRows($fn_image) {
+	function FNRetrieveDatabaseRows($fn_image = null) {
 		GLOBAL $FN_DB, $FN_USER;  // database and user
 		$this->FNDB = $FN_DB;
 	}
+	
+	function getAnnotations(&$fn_image) { 
 		
+		$image = basename($fn_image->param['image']);
+		
+		// The $fn_image must be passed by reference because this functions sets parameters. 
+		$DHTML_MAXWIDTH = $fn_image->param['width'];
+		$DHTML_MAXHEIGHT = $fn_image->param['height'];
+
+		//$this->image = $fn_image->param['image'];
+		$this->image = $fn_image->param['image_path'];
+		displayDebug('FNRetrieveJPEGHeader called & image is '.$this->image,4);
+		//$imageinfo = $this->getImageInfo($imagefile);
+		//$size = getimagesize($imageinfo['image_src']);
+		$size = getimagesize($this->image);
+		displayDebugParam($size, 4);
+		$ratioWidth = $DHTML_MAXWIDTH /  $size[0];
+		$ratioHeight = $DHTML_MAXHEIGHT / $size[1];
+
+		if($ratioHeight>$ratioWidth){$ratio=$ratioWidth;}else{$ratio=$ratioHeight;}
+		if($ratio>1){$ratio=1;}
+
+		$fn_image->setFnImageParam('scalefactor', $ratio);
+		
+		$query = "SELECT * FROM fn_annotation_rows WHERE annotation_id LIKE \"%@$image\" ORDER BY modified";
+		displayDebug("\$query: $query", 1);
+		
+		$r = $this->FNDB->query($query);
+		
+		while ($row = $r->fetch()) {
+			$annotation = array();	
+			$coords = explode(",", $row['annotation_boundingbox']);
+			list(	$annotation['upperleftx'], 
+					$annotation['upperlefty'], 
+					$annotation['lowerrightx'], 
+					$annotation['lowerrighty'])  = $coords;
+			//$annotation['width'] = ($coords[2] - $coords[0])*$ratio;
+			$annotation['width'] = ($coords[2] - $coords[0])*$ratio;
+			$annotation['height'] = ($coords[3] - $coords[1])*$ratio;
+			$annotation['upperlefty'] *= $ratio;
+			$annotation['upperleftx'] *= $ratio;
+			$annotation['lowerrightx'] *= $ratio;
+			$annotation['lowerrighty'] *= $ratio;
+
+			$annotation['title'] = $row['annotation_title'];
+			
+			$annotation['content'] = $row['annotation_content'];
+			
+			$annotation['author'] = $row['annotation_author'];
+			
+			$annotation['created'] = $row['added'];
+			
+			$annotation['modified'] = $row['modified'];
+						
+			$annotation['id'] = $row['annotation_id'];
+			$annotations[] = $annotation;
+		}
+		return $annotations;
+	}
+	
+	
+	
 	function getAnnotationsV03($uuid, $sortfield, $sortorder) {
 		
 		$query = "SELECT * from fn_annotation_rows WHERE uuid = \"$uuid\" ORDER BY $sortfield $sortorder";

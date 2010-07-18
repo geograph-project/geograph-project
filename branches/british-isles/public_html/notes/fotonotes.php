@@ -93,9 +93,10 @@ if ($fni->fnImageParamExists("xml")) {
 	$fni->param["xml"] = preg_replace("#</feed>#Umsi", "", $fni->param["xml"]);
 	$fni->param["xml"] = stripslashes($fni->param["xml"]);
 
-	// Determine username by userid
-	preg_match("#<userid>(.*)</userid>#",$fni->param["xml"],$matches);
-	$userid = $matches[1];
+	//TODO hard wirded to current user!
+	$userid = $FN_USER->getCurrentUserId();
+	$fni->param["xml"] = preg_replace("#<userid>.*</userid>#Umsi", "<userid>$userid</userid>", $fni->param["xml"]);	
+	
 	$username = $FN_USER->getDisplayNameByUserID($userid);
 	$fni->setFnImageParam("username", $username);
 	$userpropername = $FN_USER->getProperNameByUserID($userid);
