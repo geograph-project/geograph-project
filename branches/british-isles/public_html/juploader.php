@@ -1,13 +1,35 @@
 <?php
-
+/**
+ * $Project: GeoGraph $
+ * $Id$
+ * 
+ * GeoGraph geographic photo archive project
+ * This file copyright (C) 2008 David Morris 
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+ 
+ 
+ 
 /**
 *
 * This routine handles all the initial comms with the uploader
 * java applet.
 *
 * Most of the returns are in XML form which makes it easy to test
-* and teh input comes in as POST methods. All posts should contain
-* the username and password to enable authentication.
+* and teh input comes in as POST methods. 
 *
 * We always return a 'status' element which will be 'OK' if everything
 * is going to plan or contains the error message if it went belly up.
@@ -23,10 +45,6 @@ require_once('geograph/gridsquare.class.php');
 init_session();
 
 $action = isset($_GET['action']) ? $_GET['action'] : "";
-$username = isset($_GET['username']) ? $_GET['username'] : "";
-$password = isset($_GET['password']) ? $_GET['password'] : "";
-
-// echo $action . " " . $username . " " . $password . "\n";
 
 $xml = "";
 $db = GeographDatabaseConnection(true);
@@ -147,8 +165,11 @@ function UploadPicture() {
 
 function AuthenticateUser() {
 	global $db, $xml;
-	global $username, $password;
 	global $CONF;
+
+	$username = isset($_GET['username']) ? $_GET['username'] : "";
+	$password = isset($_GET['password']) ? $_GET['password'] : "";
+
 
 	$dbusername = $db->Quote($username);
 	$sql = "select password,realname,rights,user_id from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
@@ -235,4 +256,4 @@ function returnXML() {
 	echo $xmlstring;
 	exit;
 }
-?>
+
