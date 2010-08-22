@@ -167,7 +167,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			foreach ($res['matches'] as $id => $row) {
 				$a = array();
 				if ($groupby == 'auser_id' && $template=='statistics_groupby.tpl') {
-					$a['User'] = "<a href=\"/profile/{$row['attrs']['user_id']}\">".htmlentities($users[$row['attrs']['user_id']]).'</a>';
+					$a['User'] = "<a href=\"/profile/{$row['attrs']['auser_id']}\">".htmlentities($users[$row['attrs']['auser_id']]).'</a>';
 				} elseif (0 && $is_date) { 
 					$a['Date'] = date('d/m/Y',strtotime($row['attrs']['@groupby']));
 				} else {
