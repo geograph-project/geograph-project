@@ -14,17 +14,22 @@
 <div style="position:relative;float:left;width:530px">
 
 {if $showresult}
+	{if $bby}
+		{assign var="byextra" value="&amp;by=$bby"}
+	{elseif $by && $by != 1}
+		{assign var="byextra" value="&amp;by=$by"}
+	{/if}
 	<div class="interestBox" style="float: right; position:relative; padding:2px; margin-right:25px">
 	<table border="0" cellspacing="0" cellpadding="2">
-	<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
-	<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
-	<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
-	<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
+	<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}{$byextra}">NW</a></td>
+	<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}{$byextra}">N</a></td>
+	<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}{$byextra}">NE</a></td></tr>
+	<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}{$byextra}">W</a></td>
 	<td><b>Go</b></td>
-	<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
-	<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
-	<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
-	<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
+	<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}{$byextra}">E</a></td></tr>
+	<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}{$byextra}">SW</a></td>
+	<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}{$byextra}">S</a></td>
+	<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}{$byextra}">SE</a></td></tr>
 	</table>
 	</div>
 {else}
