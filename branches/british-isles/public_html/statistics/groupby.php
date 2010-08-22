@@ -135,7 +135,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sphinx->SetGroupBy($groupby2,SPH_GROUPBY_MONTH,$overall_sort); 
 			$is_date = true;
 		
-		} elseif ($groupby == 'submitted') {
+		} elseif ($groupby == 'submitted') { //we dont use GROUPBY_DAY with takendays as it prevents working before 1970
 			
 			$sphinx->SetGroupBy($groupby2,SPH_GROUPBY_DAY,$overall_sort);  
 			$is_date = true;
@@ -156,7 +156,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$res = $sphinx->groupByQuery($pg,'_images');
 		
 		if ($res && $res['matches']) {
-			if ($groupby == 'user_id') {
+			if ($groupby == 'auser_id') {
 				$ids = array();
 				foreach ($res['matches'] as $id => $row) {
 					$ids[] = $row['attrs']['user_id'];
@@ -166,7 +166,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 			foreach ($res['matches'] as $id => $row) {
 				$a = array();
-				if ($groupby == 'user_id' && $template=='statistics_groupby.tpl') {
+				if ($groupby == 'auser_id' && $template=='statistics_groupby.tpl') {
 					$a['User'] = "<a href=\"/profile/{$row['attrs']['user_id']}\">".htmlentities($users[$row['attrs']['user_id']]).'</a>';
 				} elseif (0 && $is_date) { 
 					$a['Date'] = date('d/m/Y',strtotime($row['attrs']['@groupby']));
@@ -263,8 +263,7 @@ function decode_option($option,$value) {
 		case 'ahectad':
 			$value = $db->getOne("select conv('$value',10,36)"); break;
 		case 'classcrc':
-			//todo MIGHT be quicker to ask sphinx and look it up on an example image? (or use image from sphinx result directly?)
-			$value = $db->getOne("select imageclass from category_stat where crc32(lower(imageclass)) = $value"); break;
+			$value = $db->getOne("select imageclass from category_stat where category_id = $value"); break; //category_id is now the CRC32 of the imageclass
 		case 'scenti':
 			//todo - get eastings/northings out and convert to GR
 			break;
