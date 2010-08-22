@@ -9,7 +9,7 @@
 
 {include file="_std_begin.tpl"}
 
- 
+
 <div style="position:relative;margin-top:5px; margin-left:10px; width:850px;">
 <div style="position:relative;float:left;width:530px">
 
@@ -42,7 +42,7 @@
 	<input id="gridref" type="text" name="gridref" value="{$gridrefraw|escape:'html'}" size="8"/>
 	<input type="submit" name="setref" value="Show &gt;"/>
 
-	
+
 	<br/>
 	<i>or</i><br/>
 
@@ -89,14 +89,14 @@
 	{/if}
 	{if $imagecount}
 		{* There are some thumbnails to display *}
-		
+
 		<ul style="margin-top:5px;">
-		
-		<li><big>We have 
-			{if $imagecount eq 1}just one image{else}{$imagecount|thousends} images{/if} 
+
+		<li><big>We have
+			{if $imagecount eq 1}just one image{else}{$imagecount|thousends} images{/if}
 			{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
-			{if $mode eq 'takenfrom'} of other squares, 
-				taken from <b>{$gridref}</b> 
+			{if $mode eq 'takenfrom'} of other squares,
+				taken from <b>{$gridref}</b>
 			{elseif $mode eq 'mentioning'}
 				mentioning <b>{$gridref}</b> <sup>[Note: Currently only matches 4 Figure Grid References]</sup>
 			{else}
@@ -107,18 +107,18 @@
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View all images page by page</a>
 			{/if}
 		</li>
-		
+
 		{if $by ne 'centi' && $by ne 'viewcenti' && $mode eq 'normal'}
 		<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a></li>
 		{/if}
-		
+
 		<li style="margin-top:4px">View all images: <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap"><b>slideshow</b></a>, <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1" title="View just thumbnails" class="nowrap"><b>thumbnails</b></a></li>
-		
+
 	{else}
 		{* There are no images in this square (yet) *}
-		
+
 		<p>We have no images for <b>{$gridref}</b> yet,
-		
+
 		{if $nearest_distance}
 			</p>
 			<small><small><b>Sample links...</b></small></small>
@@ -135,40 +135,40 @@
 		{if $enable_forums}
 			<li style="margin-top:4px">
 			{if $discuss}
-				There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a 
+				There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
 				<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left)
 			{else}
-				{if $user->registered} 
+				{if $user->registered}
 					<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>
 				{else}
 					<a href="/discuss/index.php?gridref={$gridref}#newtopic">login</a> to start a <b>discussion</b> about {$gridref}</a>
 				{/if}
 			{/if}</li>
 		{/if}
-		
+
 		{if $gridref6}
 			<li style="margin-top:4px">View <a href="/gridref/{$gridref}?viewcenti={$gridref6}">image(s) <b>taken in {$gridref6}</b></b></a> / <span class="nowrap"><a href="/gridref/{$gridref}?centi={$gridref6}">of <b>subjects in {$gridref6}</b></a> (if any)</span> <sup style="color:red">new!</sup></li>
 		{/if}
-		
+
 		<li style="margin-top:4px"><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph Coverage <b>map</b></a>{if $hectad && $hectad_row}, <a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}" style="background-color:yellow">Photo Mosaic</a>{/if}</li>
-		
+
 		</ul>
-		
+
 	{if $imagecount}
 		<form method="get" action="/search.php">
 				<div class="interestBox" style="width:340px">
-				<b>Search local images</b>:<br/> 
+				<b>Search local images</b>:<br/>
 				<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 				<input type="submit" value="Search"/><br/>
 				<input type="hidden" name="location" value="{$gridref}"/>
 				<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
 				<input type="radio" name="distance" value="3" id="d3"/><label for="d3">inc surrounding squares</label><br/>
 				<input type="hidden" name="do" value="1"/>
-				</div> 
-		</form>	
+				</div>
+		</form>
 	{/if}
-	
-	
+
+
 	<p style="padding-left:20px"><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></b> or <a href="/gridref/{$hectad}">{$hectad}</a></big></p>
 {/if}
 
@@ -179,7 +179,7 @@
 	{if $rastermap->getFootNote()}
 	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
 	{if $square->reference_index == 1}<br/><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1">Open <b>Interactive OS Map Overlay</b></a>{/if}
-	
+
 	{/if}
 	{$rastermap->getScriptTag()}
 	</div>
@@ -212,7 +212,7 @@
 			<b class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1">Sample Images</b>
 		{elseif $imagecount >= 15}
 			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/gridref/{$gridref}">Sample Images</a>
-		{elseif $imagecount && $imagecount < 15} 
+		{elseif $imagecount && $imagecount < 15}
 			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="/gridref/{$gridref}">Images in {$gridref}</a>
 		{/if}
 		{if $totalimagecount}
@@ -237,16 +237,16 @@
 			<a class="tab{if $tab == 9}Selected{/if} nowrap" id="tab9" href="/gridref/{$gridref}?mentioning"><i>mentioning</i> {$gridref}{if $mention_count} [{$mention_count}]{/if}</a>
 		{/if}
 	</div>
-	
+
 	<div class="interestBox" style="position:relative; margin-left:10px">
 	{if $sample}<big>
 	A <b>sample</b> of {$sample|thousends} photos from <b>{$imagecount|thousends}</b>
 	{else}
-	We have 
-	{if $imagecount eq 1}just one image{else}{$imagecount} images{/if} 
+	We have
+	{if $imagecount eq 1}just one image{else}{$imagecount} images{/if}
 	{if $totalimagecount && $totalimagecount ne $imagecount && !$filtered}(and {$totalimagecount-$imagecount} hidden){/if}
 	{/if}
-	
+
 	{if $mode eq 'takenfrom'}
 		taken from <b>{$gridref}</b> of other squares
 	{elseif $mode eq 'mentioning'}
@@ -261,24 +261,24 @@
 
 	{if $user->registered && $mode eq 'normal'}
 		[{if !$nl}
-			<a href="{linktoself name="nl" value="1"}">Include <b>pending and rejected</b> images</a> 
+			<a href="{linktoself name="nl" value="1"}">Include {if !$is_mod}my {/if}<b>pending and rejected</b> images</a>
 		{else}
-			<a href="{linktoself name="nl" value="0"}">Exclude <b>pending and rejected</b> images</a> 
+			<a href="{linktoself name="nl" value="0"}">Exclude {if !$is_mod}my {/if}<b>pending and rejected</b> images</a>
 		{/if}] &nbsp;
 	{/if}
 	{if $breakdown}
 		[{if !$ht}
-			<a href="{linktoself name="ht" value="1"}">Hide <b>thumbnail</b> images</a>  
+			<a href="{linktoself name="ht" value="1"}">Hide <b>thumbnail</b> images</a>
 		{else}
-			
-			<a href="{linktoself name="ht" value="0"}">Show <b>thumbnail</b> images</a> 
+
+			<a href="{linktoself name="ht" value="0"}">Show <b>thumbnail</b> images</a>
 		{/if}] &nbsp;
 	{/if}
 	</div>
 	{if $sample && $groupbys}
 		<form method="get" action="/search.php" style="text-align:center">
-			View a sample of images by: 
-			<select name="groupby" id="groupby" size="1"> 
+			View a sample of images by:
+			<select name="groupby" id="groupby" size="1">
 				{html_options options=$groupbys selected='scenti'}
 			</select>
 			<input type="submit" value="Go"/>
@@ -294,13 +294,13 @@
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
-			
+
 	<table border="0" cellspacing="0" cellpadding="2">
 		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}&amp;by={$by}">NW</a></td>
 		<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}&amp;by={$by}">N</a></td>
 		<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}&amp;by={$by}">NE</a></td></tr>
 		<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}&amp;by={$by}">W</a></td>
-		<td>	
+		<td>
 			{if $rastermap->enabled && $rastermap->mapurl}
 				<div style="position:relative; width:330px; height:330px">
 					<div style="position:absolute; top:-150px; left:-120px; overflow:hidden; clip: rect(150px 450px 450px 150px); width:600px; height:600px;">
@@ -330,9 +330,9 @@
 					{/foreach}
 				</tr>
 			</table>
-			
-		
-			
+
+
+
 			{if $rastermap->enabled && $rastermap->mapurl}
 					</div>
 				</div>
@@ -348,12 +348,12 @@
 				<li><a href="{$breakdown.50.50.link}" title="{$breakdown.50.50.name}">{$breakdown.50.50.name}</a> [{$breakdown.50.50.count}]</li>
 				</ul>
 			{/if}
-		
+
 			<form method="get" action="/search.php">
 				<div class="interestBox" style="width:450px">
-				<b>Search local images</b>:<br/> 
+				<b>Search local images</b>:<br/>
 
-				<label for="">Centisquare</label>: 
+				<label for="">Centisquare</label>:
 					<select id="gridsquare" name="gridsquare">
 						{html_options options=$prefixes selected=$gridsquare}
 					</select>
@@ -379,8 +379,8 @@
 				<input type="radio" name="distance" value="0.3" id="d3"/><label for="d3">inc surrounding centisquare</label> /
 				<input type="radio" name="distance" value="0.6" id="d6"/><label for="d6">600m</label><br/>
 				<input type="hidden" name="do" value="1"/>
-				</div> 
-			</form>	
+				</div>
+			</form>
 			<script type="text/javascript">{literal}
 				function selOption(name,value) {
 					var ele = document.getElementById("centi"+name);
@@ -397,11 +397,11 @@
 			{/if}
 			<table>
 			{foreach from=$breakdown item=b}
-				
+
 				{if $b.image}
 					<tr><td>&middot; <a href="{$b.link}">{$b.name}</a> <b>[{$b.count}]</b>{if $b.centi}<br/><small style="font-size:0.7em;margin-left:30px">[<a href="{$b.centi}">Centisquare Distribution</a>]<small>{/if}</td>
-					
-					
+
+
 					<td align="middle"><a title="{$b.image->grid_reference} : {$b.image->title|escape:'html'} by {$b.image->realname} {$b.image->dist_string} - click to view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->getThumbnail($thumbw,$thumbh,false,true)}</a></td>
 					<td><div class="caption">{if $mode != 'normal'}<a href="/gridref/{$b.image->grid_reference}">{$b.image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$b.image->gridimage_id}">{$b.image->title|escape:'html'}</a></div>
 					<div class="statuscaption">by <a href="{$b.image->profile_link}">{$b.image->realname}</a></div></td>
@@ -410,11 +410,11 @@
 					<tr><td colspan="3">&middot; <a href="{$b.link}">{$b.name}</a> [{$b.count}]</td></tr>
 				{/if}
 			{/foreach}
-			</table>	
+			</table>
 		{/if}
 		<br style="clear:both" />
 		<p>{if $imagecount < 15}<a href="/gridref/{$gridref}?by=1{if $extra}?{$extra}{/if}">&lt;&lt; Choose a different filter method</a></p>{/if}
-		
+
 		</blockquote>
 	{else}
 		{if $breakdowns}
@@ -429,27 +429,27 @@
 			  {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}{if $image->ftf eq 1} (first){/if}</div>
 			</div>
 			{/if}
-			
+
 			<ul>
 			{foreach from=$breakdowns item=b}
 				<li style="padding:2px"><small>by </small><a href="/gridref/{$gridref}?by={$b.type}{$extra}"><b>{$b.name}</b></a> <small>[{$b.count}]</small></li>
 			{/foreach}
 
 				<li style="margin-top:10px;">or <b>Clustering Options</b>:<br/>
-				&nbsp; &middot; <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a>, 
-				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Category</a>, 
-				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Contributor</a>, 
+				&nbsp; &middot; <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a>,
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Category</a>,
+				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=realname%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Contributor</a>,
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a>{if $imagecount < 500} or
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;breakby=imagetaken_year&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Year Taken</a> <sup style="color:red">new!</sup>{/if}
 				</li>
-			
+
 				<li style="margin-top:10px;font-size:0.7em">{external href="http://www.nearby.org.uk/geograph/flamenco-redir.php?grid_reference=`$gridref`" text="Explore a sample of `$gridref` images in the new <b>Multi-Purpose Viewer</b>"} <sup style="color:red">Experimental</sup></li>
 			</ul>
 			<br style="clear:both"/>
 		{else}
 			{* Display some actual thumbnails *}
-			
-			
+
+
 			{if $filtered}
 				<blockquote><p>{$totalimagecount} Images, {$filtered_title}...</p></blockquote>
 			{/if}
@@ -461,12 +461,12 @@
 				</div>
 			{/foreach}
 			<br style="clear:left;"/>&nbsp;
-			
+
 			{if $bby == 'centi'}
 				<form method="get" action="/search.php">
 					<div class="interestBox">
-					<b>Search local images</b>:<br/> 
-					<label for="gridref">Centisquare</label>: 
+					<b>Search local images</b>:<br/>
+					<label for="gridref">Centisquare</label>:
 						<input type="text" name="gridref" id="gridref" size="20" value="{$gridrefraw|escape:'html'}"/><input type="submit" value="Search"/>
 					<br/>
 
@@ -476,10 +476,10 @@
 					<input type="radio" name="distance" value="0.3" id="d3"/><label for="d3">inc surrounding centisquare</label> /
 					<input type="radio" name="distance" value="0.6" id="d6"/><label for="d6">600m</label><br/>
 					<input type="hidden" name="do" value="1"/>
-					</div> 
-				</form>	
+					</div>
+				</form>
 			{/if}
-			
+
 			{if $mode eq 'takenfrom'}
 				<div class="interestBox">| <a href="/search.php?searchtext={$viewpoint_query}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View these photos on a Map</a> | <a href="/search.php?searchtext={$viewpoint_query}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images taken from this square</a> |</div>
 			{elseif $mode eq 'mentioning'}
@@ -493,7 +493,7 @@
 
    	{if $square->percent_land < 100 ||  $user->registered}
    		{* We on the coast so offer the option to request removal *}
-   		
+
    		<form action="/mapfixer.php" method="get">
    		<p align="right"><input type="submit" value="Request check of land status for this square" style="font-size:0.7em;"/>
    		<input type="hidden" name="gridref" value="{$gridref}"/>
@@ -505,12 +505,12 @@
 	{/if}
 {else}
 	{* All at Sea Square! *}
-	
+
 	<ul>
 	{if $nearest_distance}
 		<li>The closest occupied grid square is <a title="Jump to {$nearest_gridref}" href="/gridref/{$nearest_gridref}">{$nearest_gridref}</a> at {$nearest_distance}km away<br/><br/></li>
 	{/if}
-		
+
 	{if $map_token}
 		<li>You may still be able to view the <a href="/mapbrowse.php?t={$map_token}" title="Geograph map for {$gridref}">Map</a> for this square.</li>
 	{/if}

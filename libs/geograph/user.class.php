@@ -825,7 +825,7 @@ class GeographUser
 				//update gridimage_search too
 				if ($this->realname != stripslashes($profile['realname'])) {
 					$sql="update gridimage_search set realname=".$db->Quote(stripslashes($profile['realname'])).
-						" where user_id = {$this->user_id}";
+						" where user_id = {$this->user_id} and credit_realname = 0";
 					$db->Execute($sql);
 				}
 				

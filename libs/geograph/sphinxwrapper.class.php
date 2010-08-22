@@ -356,7 +356,7 @@ class sphinxwrapper {
 		$cl = $this->_getClient();
 		
 		if ($index_in == "_images") {
-			$index = "{$CONF['sphinx_prefix']}gi_groupby,{$CONF['sphinx_prefix']}gi_groupby_delta";
+			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
 		} else {
 			$index = $CONF['sphinx_prefix'].$index_in;
 		}
@@ -375,7 +375,11 @@ class sphinxwrapper {
 			$this->getFilterString(); //we only support int filters which call SetFilter for us
 		}
 		
-		$cl->SetMatchMode ( SPH_MATCH_FULLSCAN );
+		if (empty($this->q)) {
+			$cl->SetMatchMode ( SPH_MATCH_FULLSCAN );
+		} else {
+			$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
+		}
 		
 		if (!empty($this->sort)) {
 			if ($this->sort == -1) {
@@ -386,6 +390,16 @@ class sphinxwrapper {
 		}
 		
 		$res = $cl->Query ( $this->q, $index );
+		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
+			print "<pre>";
+			print_r($cl);	
+			print "<pre style='background-color:red'>( '$q', '$index' )</pre>";
+			print "<pre>";
+			print_r($res);	
+			if ( $cl->GetLastWarning() )
+				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
+			exit;
+		}
 		if ( $res===false ) {
 			//lets make this non fatal
 			$this->query_info = $cl->GetLastError();
@@ -421,6 +435,17 @@ class sphinxwrapper {
 		$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
 		$cl->SetLimits(0,1,0);
 		$res = $cl->Query ( $q, $index );
+		
+		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
+			print "<pre>";
+			print_r($cl);	
+			print "<pre style='background-color:red'>( '$q', '$index' )</pre>";
+			print "<pre>";
+			print_r($res);	
+			if ( $cl->GetLastWarning() )
+				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
+			exit;
+		}
 		if ( $res===false ) {
 			//lets make this non fatal
 			$this->query_info = $cl->GetLastError();

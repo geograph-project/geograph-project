@@ -47,33 +47,35 @@ class UpdateDiscussionCrossReferencesWithNewTopic extends EventHandler
 		
 		$topic=$db->GetRow("select topic_title,forum_id,topic_time from geobb_topics where topic_id='$topic_id' and forum_id = 5");
 		
-		//get title of topic
-		$title=strtoupper(trim($topic['topic_title']));
-		
-		//see if title matches a grid reference
-		$gridsquare=new GridSquare;
-		if ($gridsquare->setGridRef($title))
-		{
-		
-			$gridsquare_id=$gridsquare->gridsquare_id;
-			
-			//set up mapping
-			if ($gridsquare_id>0)
+		if (!empty($topic)) {
+			//get title of topic
+			$title=strtoupper(trim($topic['topic_title']));
+
+			//see if title matches a grid reference
+			$gridsquare=new GridSquare;
+			if ($gridsquare->setGridRef($title))
 			{
-				$this->processor->trace("Mapping $gridsquare_id to topic $topic_id ($title)");
-				
-				$db->Execute("replace into gridsquare_topic(gridsquare_id,topic_id,forum_id,last_post) ".
-					"values ($gridsquare_id, $topic_id, {$topic['forum_id']}, '{$topic['topic_time']}')");
-					
-				//delete any smarty caches for this square
-				$images = $db->getCol("select gridimage_id from gridimage where gridsquare_id = $gridsquare_id");
-				$smarty = new GeographPage;
-				foreach ($images as $gridimage_id) {
-					//clear any caches involving this photo
-					$ab=floor($gridimage_id/10000);
-					$smarty->clear_cache(null, "img$ab|{$gridimage_id}");
-				}	
-					
+
+				$gridsquare_id=$gridsquare->gridsquare_id;
+
+				//set up mapping
+				if ($gridsquare_id>0)
+				{
+					$this->processor->trace("Mapping $gridsquare_id to topic $topic_id ($title)");
+
+					$db->Execute("replace into gridsquare_topic(gridsquare_id,topic_id,forum_id,last_post) ".
+						"values ($gridsquare_id, $topic_id, {$topic['forum_id']}, '{$topic['topic_time']}')");
+
+					//delete any smarty caches for this square
+					$images = $db->getCol("select gridimage_id from gridimage where gridsquare_id = $gridsquare_id");
+					$smarty = new GeographPage;
+					foreach ($images as $gridimage_id) {
+						//clear any caches involving this photo
+						$ab=floor($gridimage_id/10000);
+						$smarty->clear_cache(null, "img$ab|{$gridimage_id}");
+					}	
+
+				}
 			}
 		}
 	
