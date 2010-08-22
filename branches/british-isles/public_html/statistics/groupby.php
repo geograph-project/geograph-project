@@ -54,20 +54,18 @@ if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 $cacheid='statistics|groupby';
 
 $options = array(
-	'submitted' 	=> array('name'=>'Day Submitted',		'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>0 && 'YYYY-MM-DD'),
-	'submitted_month' 	=> array('name'=>'Month Submitted',	'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>0 && 'YYYY-MM'),
-	'submitted_year' 	=> array('name'=>'Year Submitted',	'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>0 && 'YYYY'),
-	'imagetaken' 	=> array('name'=>'Day Taken',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>0 && 'YYYY-MM-DD'),
-	'imagetaken_month' 	=> array('name'=>'Month Taken',		'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>0 && 'YYYY-MM'),
-	'imagetaken_year' 	=> array('name'=>'Year Taken',		'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>0 && 'YYYY'),
-	'user_id' 	=> array('name'=>'Contributor',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'Example: <tt>'.($USER->user_id?$USER->user_id:rand(1,1000)).'</tt>'),
+	'submitted' 	=> array('name'=>'Day Submitted',		'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>'YYYY-MM-DD'),
+	'submitted_month' 	=> array('name'=>'Month Submitted',	'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>'YYYY-MM'),
+	'submitted_year' 	=> array('name'=>'Year Submitted',	'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>'YYYY'),
+	'takendays' 	=> array('name'=>'Day Taken',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'YYYY-MM-DD'),
+	'takendays_month' 	=> array('name'=>'Month Taken',		'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>'YYYY-MM'),
+	'takendays_year' 	=> array('name'=>'Year Taken',		'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>'YYYY'),
+	'auser_id' 	=> array('name'=>'Contributor',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'Example: <tt>'.($USER->user_id?$USER->user_id:rand(1,1000)).'</tt>'),
 	'classcrc' 	=> array('name'=>'Category',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'Example: [<tt>River</tt>] (case sensitive)'),
-	'myriad' 	=> array('name'=>'Myriad',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'XX or X'),
-	'hectad' 	=> array('name'=>'Hectad',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'XX99 or X99'),
-	'gridsquare' 	=> array('name'=>'Grid Square',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'XX9999 or X9999'),
+	'amyriad' 	=> array('name'=>'Myriad',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'XX or X'),
+	'ahectad' 	=> array('name'=>'Hectad',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'XX99 or X99'),
+	'agridsquare' 	=> array('name'=>'Grid Square',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'XX9999 or X9999'),
 	'scenti' 	=> array('name'=>'Centisquare',			'select'=>0,'groupby'=>'0','distinct'=>1,'filter'=>0 && 'XX999999 or X999999'),
-	'viewsquare' 	=> array('name'=>'Photographer Grid Square',	'select'=>0,'groupby'=>'0','distinct'=>1,'filter'=>0 && 'XX9999 or X9999'),
-	'pcenti' 	=> array('name'=>'Photographer Centisquare',	'select'=>0,'groupby'=>'0','distinct'=>1,'filter'=>0 && 'XX999999 or X999999'),
 );
 
 $smarty->assign_by_ref('options', $options);   
@@ -81,7 +79,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$filters = array();
 	
-	$title = "Geograph Group By";
+	$title = "Geograph Breakdown mk2";
 	
 	$smarty->assign('groupby', $groupby = (isset($_GET['groupby']) && preg_match('/^\w+$/' , $_GET['groupby']) && $options[$_GET['groupby']])?$_GET['groupby']:'submitted');
 	$smarty->assign('distinct', $distinct = (isset($_GET['distinct']) && preg_match('/^\w+$/' , $_GET['distinct']) && $options[$_GET['distinct']])?$_GET['distinct']:'');
@@ -90,7 +88,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		foreach ($_GET['filter'] as $key => $value) {
 			if (!empty($options[$key]) && !empty($value) && preg_match('/^[\w -]+$/' , $value)) {
 				$options[$key]['filtervalue'] = $value;
-				$filters[$key] = array(intval(encode_option($key,$value)));
+				$filters[str_replace(array('_month','_year'),'',$key)] = encode_option($key,$value);
 			}
 		}
 	}
@@ -107,10 +105,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($groupby) {
 		$table = array();
 	
-		$sphinx = new sphinxwrapper('');
+		$sphinx = new sphinxwrapper($_GET['q']);
+		if (!empty($sphinx->qclean)) {
+			$smarty->assign('q',$sphinx->qclean);
+		}
 		$client = $sphinx->_getClient();
 		
-		$sphinx->pageSize = $pgsize = 50;
+		$sphinx->pageSize = $pgsize = 100;
 		$pg = 1;
 		
 		$sphinx->sort = "@id ASC"; //this is the WITHIN GROUP ordering (which we dont care about in this case)
@@ -124,17 +125,19 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		if ($groupby != ($groupby2 = str_replace('_year','',$groupby))) {
 		
+			$groupby2 = str_replace('takendays','aimagetaken',$groupby2); //TODO aimagetaken doesnt work before 1970!!!!
 			$sphinx->SetGroupBy($groupby2,SPH_GROUPBY_YEAR,$overall_sort);
 			$is_date = true;
 		
 		} elseif ($groupby != ($groupby2 = str_replace('_month','',$groupby))) {
 			
+			$groupby2 = str_replace('takendays','aimagetaken',$groupby2);  //TODO aimagetaken doesnt work before 1970!!!!
 			$sphinx->SetGroupBy($groupby2,SPH_GROUPBY_MONTH,$overall_sort); 
 			$is_date = true;
 		
-		} elseif ($groupby == 'submitted' || $groupby == 'imagetaken') {
+		} elseif ($groupby == 'submitted') {
 			
-			$sphinx->SetGroupBy($groupby,SPH_GROUPBY_DAY,$overall_sort);  
+			$sphinx->SetGroupBy($groupby2,SPH_GROUPBY_DAY,$overall_sort);  
 			$is_date = true;
 		
 		} else {
@@ -150,7 +153,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sphinx->addFilters($filters);
 		}
 		
-		$res = $sphinx->groupByQuery($pg,'gi_groupby,gi_groupby_delta');
+		$res = $sphinx->groupByQuery($pg,'_images');
 		
 		if ($res && $res['matches']) {
 			if ($groupby == 'user_id') {
@@ -185,7 +188,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		#print_r($res);
 		#print_r($client);
 		#exit;
-		$smarty->assign("headnote",'This is just a preview, more options will be added soon. In particular it will be possible to filter by all the above columns');
+		$smarty->assign("headnote",'This is just a preview, more options will be added soon.');
 	
 		$smarty->assign('footnote',$sphinx->query_info);
 	}
@@ -198,7 +201,7 @@ if (!$smarty->is_cached($template, $cacheid))
 } 
 
 $smarty->assign("filter",1);
-$smarty->assign("nosort",1);
+#$smarty->assign("nosort",1);
 $smarty->display($template, $cacheid);
 
 	
@@ -207,21 +210,45 @@ function encode_option($option,$value) {
 	$value = trim($value);
 	switch ($option) {
 		#case 'date...':	//todo - convert to timestamp RANGE
+		case 'submitted_year':
+			$days = date('t',strtotime("$value-12-01"));
+			return array(strtotime("$value-01-01"), strtotime("$value-12-$days 23:59:59"));
+			
+		case 'submitted_month':
+			$days = date('t',strtotime("$value-01"));
+			return array(strtotime("$value-01"), strtotime("$value-$days 23:59:59"));
+			
+		case 'submitted':
+			$day = 60*60*25;
+			return array(strtotime($value),strtotime($value)+$day-1);		
+				
+		case 'takendays_year':
+			$days = date('t',strtotime("$value-12-01"));
+			return array($db->getOne("select to_days('$value-01-01')"), $db->getOne("select to_days('$value-12-$days')"));
+			
+		case 'takendays_month':
+			$days = date('t',strtotime("$value-01"));
+			return array($db->getOne("select to_days('$value-01')"), $db->getOne("select to_days('$value-$days')"));
+			
+		case 'takendays':
+			//$value = strtotime($value); (imagetaken is mapped to takendays)
+			
+			$db->getOne("select to_days('$value')"); break;
+			
+			break;
 		
-		case 'gridsquare':
-		case 'myriad':
-		case 'hectad':
+		case 'agridsquare':
+		case 'amyriad':
+		case 'ahectad':
 			$value = $db->getOne("select conv('$value',36,10)"); break;
 		case 'classcrc':
 			$value = $db->getOne("select crc32(lower('$value'))"); break;
 		case 'scenti':
-		case 'viewsquare':
-		case 'pcenti':
 			//todo - get eastings/northings out of GR then use
 			# (gi.reference_index * 10000000 + IF(natgrlen+0 <= 3,(nateastings DIV 100) * 100 + natnorthings DIV 100),0) AS scenti, \
 			break;
 	}
-	return $value;
+	return array(intval($value));
 }
 	
 function decode_option($option,$value) {
@@ -229,16 +256,16 @@ function decode_option($option,$value) {
 	switch ($option) {
 		#case 'date...': //handled externally
 		#case 'user_id': //handled externally
-		case 'gridsquare':
-		case 'myriad':
-		case 'hectad':
+		case 'takendays':
+			$value = $db->getOne("select from_days('$value')"); break;
+		case 'agridsquare':
+		case 'amyriad':
+		case 'ahectad':
 			$value = $db->getOne("select conv('$value',10,36)"); break;
 		case 'classcrc':
-			//todo MIGHT be quicker to ask sphinx and look it up on an example image? (or use image from sphinx result directly?()
+			//todo MIGHT be quicker to ask sphinx and look it up on an example image? (or use image from sphinx result directly?)
 			$value = $db->getOne("select imageclass from category_stat where crc32(lower(imageclass)) = $value"); break;
 		case 'scenti':
-		case 'viewsquare':
-		case 'pcenti':
 			//todo - get eastings/northings out and convert to GR
 			break;
 	}
@@ -246,5 +273,3 @@ function decode_option($option,$value) {
 }
 
 
-	
-?>
