@@ -248,7 +248,7 @@ function encode_option($option,$value) {
 			# (gi.reference_index * 10000000 + IF(natgrlen+0 <= 3,(nateastings DIV 100) * 100 + natnorthings DIV 100),0) AS scenti, \
 			break;
 	}
-	return array(intval($value));
+	return array(($value)+0);
 }
 	
 function decode_option($option,$value) {
