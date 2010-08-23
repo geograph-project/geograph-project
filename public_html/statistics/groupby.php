@@ -61,7 +61,7 @@ $options = array(
 	'takendays_month' 	=> array('name'=>'Month Taken',		'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>'YYYY-MM'),
 	'takendays_year' 	=> array('name'=>'Year Taken',		'select'=>0,'groupby'=>1,'distinct'=>0,'filter'=>'YYYY'),
 	'auser_id' 	=> array('name'=>'Contributor',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'Example: <tt>'.($USER->user_id?$USER->user_id:rand(1,1000)).'</tt>'),
-	'classcrc' 	=> array('name'=>'Category',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'Example: [<tt>River</tt>] (case sensitive)'),
+	'classcrc' 	=> array('name'=>'Category',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'Example: [<tt>river</tt>] (not case sensitive)'),
 	'amyriad' 	=> array('name'=>'Myriad',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'XX or X'),
 	'ahectad' 	=> array('name'=>'Hectad',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'XX99 or X99'),
 	'agridsquare' 	=> array('name'=>'Grid Square',			'select'=>0,'groupby'=>1,'distinct'=>1,'filter'=>'XX9999 or X9999'),
@@ -79,7 +79,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$filters = array();
 	
-	$title = "Geograph Breakdown mk2";
+	$title = "Geograph Breakdown <sup>mk2 - beta</sup>";
 	
 	$smarty->assign('groupby', $groupby = (isset($_GET['groupby']) && preg_match('/^\w+$/' , $_GET['groupby']) && $options[$_GET['groupby']])?$_GET['groupby']:'submitted');
 	$smarty->assign('distinct', $distinct = (isset($_GET['distinct']) && preg_match('/^\w+$/' , $_GET['distinct']) && $options[$_GET['distinct']])?$_GET['distinct']:'');
@@ -159,7 +159,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			if ($groupby == 'auser_id') {
 				$ids = array();
 				foreach ($res['matches'] as $id => $row) {
-					$ids[] = $row['attrs']['user_id'];
+					$ids[] = $row['attrs']['auser_id'];
 				}
 				$users = $db->getAssoc("SELECT user_id,realname FROM user WHERE user_id IN (".implode(',',$ids).") ORDER BY NULL");
 			
@@ -188,7 +188,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		#print_r($res);
 		#print_r($client);
 		#exit;
-		$smarty->assign("headnote",'This is just a preview, more options will be added soon.');
+		$smarty->assign("headnote",'This is still an experimental page, please treat the results with care.');
 	
 		$smarty->assign('footnote',$sphinx->query_info);
 	}
