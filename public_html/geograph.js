@@ -486,7 +486,7 @@ var marker2left = 14;
 var marker2top = 14;
 
 function overlayHideMarkers(e) {
-	if (IE) {
+	if (IE || e.layerX == null) {
 		tempX = event.offsetX;
 		tempY = event.offsetY;
 	} else {
