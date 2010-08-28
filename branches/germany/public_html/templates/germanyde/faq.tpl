@@ -57,19 +57,19 @@
  <li><a href="#coordinates">Warum ist Deutschland wieder geteilt? Welche <b>Koordinaten</b> werden benutzt?</a></li>
  <li><a href="#use">Ich würde gerne Geograph-Inhalte <b>verwerten</b>, ist das möglich?</a></li>
  <li><a href="#change">Ich bin mit den Positionsangaben oder der Beschreibung eines Bildes <b>nicht einverstanden</b> &ndash; was kann ich tun?</a></li>
- <li><a href="#concern">Ich habe <b>Bedenken</b> wegen eines Fotos or Kommentars.</a></li>
+ <li><a href="#concern">Ich habe <b>Bedenken</b> wegen eines Fotos oder Kommentars.</a></li>
  </ul>
 Die <b>Geograph Website</b>:
  <ul>
  <li><a href="#pages">Ich habe eine Seite auf Geograph gesehen, kann sie aber <b>nicht mehr finden</b>!</a></li>
  <li><a href="#rss">Gibt es einen <b>RSS</b>-Feed?</a></li>
  <li><a href="#opensource"><b>Open source? Creative Commons?</b> Was bedeutet das alles?</a></li>
- <li><a href="#built"><b>Who</b> built this marvellous site?</a></li>
+ <li><a href="#built"><b>Wer</b> hat diese Seite aufgebaut?</a></li>
  </ul>
 <b>Probleme</b> beim Benutzen der Geograph-Seite:
  <ul>
- <li><a href="#aol">I use AOL, and the images look terrible!</a></li>
- <li class="last"><a href="#missing">Many thumbnails seem to be missing, any idea of the cause?</a></li>
+ <li><a href="#aol">Ich nutze AOL und die Bilder sehen schrecklich aus!</a></li>
+ <li class="last"><a href="#missing">Viele Vorschaubilder scheinen zu fehlen, woran kann das liegen?</a></li>
  </ul>
  <hr style="clear:both"/>
  Auf hier nicht behandelte Fragen könnten die rechts aufgeführten Hilfeseiten oder Artikel der Kategorie <a href="/article/?cat_word=Geograph" style="text-decoration:underline;">Geograph Website</a> Antwort geben. Anderenfalls:
@@ -249,7 +249,7 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 	wie Bilder einfach eingebettet werden können.</p>
 
 	<p>Falls weitergehende Wünsche zum Zugriff auf die Geograph-Daten bestehen und auch die obengenannten RSS-Feeds nicht ausreichen,
-	bitten wir um <a title="Contact Us" href="/contact.php">Kontaktaufnahme</a>. Wahrscheinlich können wir einen passenden
+	bitten wir um <a title="Kontaktformular" href="/contact.php">Kontaktaufnahme</a>. Wahrscheinlich können wir einen passenden
 	<a href="/help/api">Zugang</a> bereitstellen.</p>
 </div>
 <div class="top"><a href="#top">nach oben</a></div>
@@ -257,34 +257,25 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 <div id="opensource">
 <a name="opensource"></a>
 <h3>Open source? Creative Commons? Was bedeutet das alles?</h3>
-	<p>Putting this together requires many people to donate their
-	time or resources, and we wanted to be sure that we created a resource
-	free from commercial exploitation in future. To that end, the site software
-	is available for re-use under the terms of the GNU Public Licence (GPL).</p>
+	<p>In die Erstellung dieser Seite haben viele Leute viel Zeit und Ressourcen investiert.
+	Damit der Öffentlichkeit der Zugriff auf diese Software nicht irgendwann entzogen werden kann,
+	wurde selbige unter die GNU Public Licence (GPL) gestellt, wodurch sie für jeden beliebig nutzbar ist,
+	solange die Verbreitung unter derselben offenen Lizenz erfolgt.</p>
 
 	<ul>
-	<li>If you want to get involved as a developer, <a href="http://www.geograph.org.uk/article/Geograph-for-Developers">see this article</a>.</li>
+	<li>Bei Interesse am Entwicklungsprozess sei auf <a href="http://www.geograph.org.uk/article/Geograph-for-Developers">diesen englischen Artikel</a> oder das <a title="Kontaktformular" href="/contact.php">Kontaktformular</a> verwiesen.</li>
 	</ul>
 
-	<p>In addition, we require all submitters to adopt a 
-	{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Attribution-ShareAlike"} 
-	licence on their photographic submissions (see next FAQ entry).
+	<p>Zusätzlich werden die eingereichten Bilder unter einer
+	{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative-Commons-Attribution-ShareAlike"}-Lizenz
+	veröffentlicht (siehe nächster FAQ-Eintrag).
 	</p>
 
-	<p>In a nutshell, we wanted to build a true community project that won't 
-	leave a nasty taste in the mouth by getting sold for shedloads of cash and
-	taken away from the people who contributed. These licence terms ensure that the
-	site and content can never be "taken away" from you. See <a href="/help/freedom">Freedom - The Geograph Manifesto</a>
+	<p>Kurz gesagt wollen wir ein echtes Gemeinschaftsprojekt aufbauen, dass nicht
+	irgendwann von irgendwem übernommen werden und dabei dem Zugriff der Mitwirkenden entzogen werden kann.
+	Diese Lizenzbestimmungen sollen also verhindern, dass den Beitragenden die Seite oder die Inhalte (Bilder und Texte)
+	&bdquo;weggenommen&ldquo; werden. Siehe <a href="/help/freedom">Freedom - The Geograph Manifesto</a>
 	</p>
-</div>
-<div class="top"><a href="#top">nach oben</a></div>
-
-<div id="coordinates">
-<a name="coordinates"></a>
-<h3>Warum ist Deutschland wieder geteilt? Welche Koordinaten werden benutzt?</h3>
-	<p>Wir verwenden im Wesentlichen <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF-Koordinaten</a>,
-	was zur Folge hat, dass Deutschland in die UTM-Zonen 31, 32 und 33 aufgeteilt ist. Näheres dazu
-	kann im <a href="/article/Koordinaten">Artikel über Koordinaten</a> nachgelesen werden.</p>
 </div>
 <div class="top"><a href="#top">nach oben</a></div>
 
@@ -312,18 +303,27 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 </div>
 <div class="top"><a href="#top">nach oben</a></div>
 
+<div id="coordinates">
+<a name="coordinates"></a>
+<h3>Warum ist Deutschland wieder geteilt? Welche Koordinaten werden benutzt?</h3>
+	<p>Wir verwenden im Wesentlichen <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF-Koordinaten</a>,
+	was zur Folge hat, dass Deutschland in die UTM-Zonen 31, 32 und 33 aufgeteilt ist. Näheres dazu
+	kann im <a href="/article/Koordinaten">Artikel über Koordinaten</a> nachgelesen werden.</p>
+</div>
+<div class="top"><a href="#top">nach oben</a></div>
+
 <div id="built">
 <a name="built"></a>
-<h3>Who built this marvellous site?</h3>
-	<p>Please see the <a href="/help/credits" title="Credits Page">Credits Page</a> for
-	information on all the <a href="/admin/team.php">people</a> who make this site possible.</p>
+<h3>Wer hat diese Seite aufgebaut?</h3>
+	<p>Auf der <a href="/help/credits" title="Credits-Seite">Credits-Seite</a> sind alle
+	<a href="/admin/team.php">Leute</a> aufgeführt, die dieses Projekt möglich machen.</p>
 </div>
 <div class="top"><a href="#top">nach oben</a></div>
 
 <div id="concern">
 <a name="concern"></a>
-<h3>Ich habe Bedenken wegen eines Fotos or Kommentars.</h3>
-       <p>Wie bitten um <a title="Contact Us" href="contact.php">Kontaktaufnahme</a>. Wir werden uns bemühen, schnell eine Lösung für das Anliegen zu finden.</p>
+<h3>Ich habe Bedenken wegen eines Fotos oder Kommentars.</h3>
+       <p>Wie bitten um <a title="Kontaktformular" href="contact.php">Kontaktaufnahme</a>. Wir werden uns bemühen, schnell eine Lösung für das Anliegen zu finden.</p>
 </div>
 <div class="top"><a href="#top">nach oben</a></div>
 
@@ -336,23 +336,23 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 
 <div id="aol">
 <a name="aol"></a>
-<h3>I use AOL, and the images look terrible!</h3>
-	<p>AOL's default settings for graphics is to show &quot;Compressed Graphics Only&quot;. 
-	This means AOL is selectively <i>re-compressing</i> images before you see them on your
-	screen. This loses a lot of image quality.</p>
+<h3>Ich nutze AOL und die Bilder sehen schrecklich aus!</h3>
+	<p>In der Standardeinstellung zeigt AOL nur &bdquo;komprimierte Bilder&ldquo; an.
+	Das bedeutet, dass AOL Bilder <i>erneut</i> komprimiert, bevor sie angezeigt werden,
+	was einen starken Qualitätsverlust verursacht.</p>
 
-	<p>You should reset the preferences under &quot;My AOL/Preferences/WWW&quot; to display 
-	&quot;Uncompressed Graphics&quot;. You will pay only a small penalty in download time to see 
-	this and other photo oriented sites the way everyone else can see them.</p>
+	<p>Um die Qualität zu erhöhen sollte daher in den &bdquo;WWW-Einstellungen&ldquo;
+	&bdquo;Unkomprimierte Grafik&ldquo; gewählt werden. Dadurch wird die Ladezeit ein wenig
+	erhöht, aber diese und andere grafiklastige Seiten werden dann so dargestellt wie bei allen anderen auch.</p>
 </div>
 <div class="top"><a href="#top">nach oben</a></div>
 
 <div id="missing">
 <a name="missing"></a>
-<h3>Many thumbnails seem to be missing, any idea of the cause?</h3>
-	<p>Some firewall programs, in particular Norton Internet Security, block images that are the same size as some common advertisements. Unfortunately many thumbnails and some map images happen to be this exact size.</p>
+<h3>Viele Vorschaubilder scheinen zu fehlen, woran kann das liegen?</h3>
+	<p>Manche &bdquo;Firewall&ldquo;-Programme, insbesondere Norton Internet Security, blockieren Bilder, die ähnlich groß sind wie Werbe-Banner. Leider haben einige Vorschaubilder oder Landkarten solche Größen.</p>
 
-	<p>So if you use such a program you might like to try turning it off temporarily and trying again, and if that gets our images back, then have a look for the option to disable this, arguably, flawed method of security.</p>
+	<p>Wenn ein solches Programm benutzt wird, sollte man überprüfen, ob die Bilder wieder erscheinen, wenn es vorübergehend deaktiviert wird. In diesem Falle bietet es sich an, diese möglicherweise weniger sinnvolle Einstellung zu deaktivieren.</p>
 </div>
 <div class="top"><a href="#top">nach oben</a></div>
 

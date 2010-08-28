@@ -3,39 +3,42 @@
 #maincontent li { padding-bottom:5px;}
 </style>{/literal}
 
-    <h2>Dank</h2>
+    <h2>Credits</h2>
 
     <p>
-    Die Idee für diese Seite ist entstanden, als ich im Web nach Bildern eines Küstenabschnitts Cornwalls suchte
-    und so auf <a href="http://www.geograph.org.uk/">Geograph British Isles</a> stieß. Die Philosophie hinter diesem
-    Projekt hat mich sofort begeistert, so dass ich mich immer öfter fragte, warum es ein solches Projekt nicht für meine
-    Region gibt.
+    The idea for this site was born when I searched the web for pictures of some coastal features in Cornwall
+    and found the <a href="http://www.geograph.org.uk/">Geograph British Isles</a> project. I was intrigued
+    by the project's philosophy immediately, and I was wondering more and more why there is no such project for my
+    region.
     </p>
     <p>
-    Allerdings wäre ich selbst nie in der Lage gewesen, etwas ähnliches auf die Beine zu stellen, hätten uns die
-    Betreiber von <a href="http://www.geograph.org.uk/">www.geograph.org.uk</a> nicht den Quelltext zur Verfügung gestellt.
-    Auch standen sie uns bei Problemen und Fragen mit Tat und Rat zu Seite. Herzlichen Dank dafür insbesondere an
+    However, I would have never been able to get such a project going on my own. I was lucky that the maintainers
+    of <a href="http://www.geograph.org.uk/">www.geograph.org.uk</a> provided me generously with the source code
+    and helped when I had problems and stupid questions. Thanks a lot, especially to
     Barry Hunter.
     </p>
     <p>
-    Für Anregungen und Mithilfe beim deutschen Projekt danke ich <a href="http://geo.hlipp.de/profile/2">Stephen Hocker</a> 
-    und <a href="http://geo.hlipp.de/profile/3">Christian Lipp</a>.
+    Thanks for ideas and help with the German project go to <a href="http://geo.hlipp.de/profile/2">Stephen Hocker</a>
+    and <a href="http://geo.hlipp.de/profile/3">Christian Lipp</a>. <a href="http://geo.hlipp.de/profile/325">Ulrich Meier</a>
+    has done a lot of work improving the maps (e.g. lakes in Bavaria, coast lines). He and
+    <a href="http://geo.hlipp.de/profile/32">Sebastian Ballard</a> do most of the moderation which enables me to spend a bit more
+    time on web development.
     </p>
 
-    <h3>Grenzen</h3>
+    <h3>Borders</h3>
 
     <p>
-    Die Grenzen stammen größtenteils von <a href="http://www.openstreetmap.org">OpenStreetMap</a>.
-    Vielen Dank auch an <a href=http://www.geoclub.de/>geoclub</a>-User "flopp" für seine Mithilfe.
+    Most of the borders are taken from <a href="http://www.openstreetmap.org">OpenStreetMap</a>.
+    Many thanks also to <a href=http://www.geoclub.de/>geoclub</a> user "flopp" for his help.
     </p>
 
-    <h3>Städte</h3>
+    <h3>Towns</h3>
 
     <p>
-    Ein Teil der Städtekoordinaten wurde der <a href="http://opengeodb.hoppe-media.com/">OpenGeoDB</a> entnommen.
+    The coordinates of the towns have been partially taken from <a href="http://opengeodb.hoppe-media.com/">OpenGeoDB</a>.
     </p>
 
-    <h2>Credits-Seite von <a href="http://www.geograph.org.uk/help/credits">www.geograph.org.uk</a></h2>
+    <h2>Credits page of <a href="http://www.geograph.org.uk/help/credits">www.geograph.org.uk</a></h2>
  
     Here's all the people and technologies that make this site possible...
     
