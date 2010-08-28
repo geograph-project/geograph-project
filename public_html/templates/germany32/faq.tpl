@@ -272,15 +272,6 @@ the English version, too: we'll put it at the end of the title or description, e
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
-<div id="coordinates">
-<a name="coordinates"></a>
-<h3>Why is Germany divided, again? What coordinates do you use?</h3>
-	<p>We basically use <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF coordinates</a>
-	which means that Germany is divided into the three UTM zones 31, 32, 33. More details about this topic can be
-	found in the German <a href="/article/Koordinaten">article about coordinates</a>.</p>
-</div>
-<div class="top"><a href="#top">back to top</a></div>
-
 <div id="licence">
 <a name="licence"></a>
 <h3>How can my images get reused?</h3>
@@ -302,6 +293,15 @@ the English version, too: we'll put it at the end of the title or description, e
 	from exploitation (see previous FAQ entry), but do bear in mind that we only
 	retain a screen-quality version of your image, and that under the terms of 
 	the Creative Commons licence, you must be credited for any use of your image</p>
+</div>
+<div class="top"><a href="#top">back to top</a></div>
+
+<div id="coordinates">
+<a name="coordinates"></a>
+<h3>Why is Germany divided, again? What coordinates do you use?</h3>
+	<p>We basically use <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF coordinates</a>
+	which means that Germany is divided into the three UTM zones 31, 32, 33. More details about this topic can be
+	found in the German <a href="/article/Koordinaten">article about coordinates</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
