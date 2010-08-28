@@ -812,9 +812,9 @@ EOF;
 			$osm_block=<<<EOF
     var copyright = new GCopyright(1,
         new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        '(<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)');
+        ': http://www.openstreetmap.org/');
     var copyrightCollection =
-        new GCopyrightCollection('&copy; <a href="http://www.openstreetmap.org/">OSM</a> Contributors');
+        new GCopyrightCollection('&copy; OSM Contributors');
     copyrightCollection.addCopyright(copyright);
 
     var tilelayers_mapnik = new Array();
@@ -840,12 +840,12 @@ EOF;
 
     var copyright1 = new GCopyright(1,
         new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        '<a href="http://topo.openstreetmap.de/static/licence_de.html">OSM</a>');
+        ': http://topo.openstreetmap.de/static/licence_de.html');
     var copyright2 = new GCopyright(1,
         new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        '<a href="http://topo.openstreetmap.de/static/licence_de.html">CIAT<a>');
-    var copyrightCollectionTopo = new GCopyrightCollection('&copy; ');
-    var copyrightCollectionTopoH = new GCopyrightCollection('H&ouml;hen ');
+        ': http://topo.openstreetmap.de/static/licence_de.html');
+    var copyrightCollectionTopo = new GCopyrightCollection('&copy; OSM');
+    var copyrightCollectionTopoH = new GCopyrightCollection('H&ouml;hen CIAT');
     copyrightCollectionTopo.addCopyright(copyright1);
     copyrightCollectionTopoH.addCopyright(copyright2);
 
