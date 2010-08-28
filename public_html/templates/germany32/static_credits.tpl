@@ -19,7 +19,10 @@
     </p>
     <p>
     Thanks for ideas and help with the German project go to <a href="http://geo.hlipp.de/profile/2">Stephen Hocker</a>
-    and <a href="http://geo.hlipp.de/profile/3">Christian Lipp</a>.
+    and <a href="http://geo.hlipp.de/profile/3">Christian Lipp</a>. <a href="http://geo.hlipp.de/profile/325">Ulrich Meier</a>
+    has done a lot of work improving the maps (e.g. lakes in Bavaria, coast lines). He and
+    <a href="http://geo.hlipp.de/profile/32">Sebastian Ballard</a> do most of the moderation which enables me to spend a bit more
+    time on web development.
     </p>
 
     <h3>Borders</h3>
