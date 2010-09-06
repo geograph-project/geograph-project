@@ -230,3 +230,12 @@ div.maincontent A:hover {
 color: #0083C5;
 text-decoration: none;
 }
+
+table.forums div.photoguide {
+	margin-left:0;
+	margin-right:0;
+	border-left:0;
+	border-right:0;
+	font-size:1.1em;
+}
+
