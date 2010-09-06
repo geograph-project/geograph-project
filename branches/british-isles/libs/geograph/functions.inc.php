@@ -250,8 +250,23 @@ function smarty_function_gridimage($params)
 		if ($params['extra'] == '{description}') {
 			if (!empty($image->comment)) {
 				$desc = GeographLinks(nl2br(htmlentities2($image->comment))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
+				
+				$desc = preg_replace('/\bmore sizes\b/i',"<a href=\"/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
 			} else {
 				$desc = '';
+			}
+			
+			$s = $image->loadSnippets();
+			if ($image->snippet_count) {
+				if (!function_exists('smarty_modifier_truncate')) {
+					require_once("smarty/libs/plugins/modifier.truncate.php");
+				}
+			
+				$desc .= "<div style=\"text-align:left\"><i>Shared Description".($image->snippet_count>1?'s':'')."</i>".($image->snippets_as_ref?'<ol':'<ul')." style=\"margin:0\">";
+				foreach ($image->snippets as $snippet) {
+					$desc .= "<li><a href=\"/snippet/{$snippet['snippet_id']}\" title=\"".smarty_modifier_truncate($snippet['comment'],90,"... more")."\">". ($snippet['title']?'untitled':htmlentities2($snippet['title']))."</a></li>";
+				}
+				$desc .= ($image->snippets_as_ref?'</ol>':'</ul>')."</div>";
 			}
 		} else {
 			$desc = htmlentities2($params['extra']);
