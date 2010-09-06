@@ -264,7 +264,7 @@ function smarty_function_gridimage($params)
 			
 				$desc .= "<div style=\"text-align:left\"><i>Shared Description".($image->snippet_count>1?'s':'')."</i>".($image->snippets_as_ref?'<ol':'<ul')." style=\"margin:0\">";
 				foreach ($image->snippets as $snippet) {
-					$desc .= "<li><a href=\"/snippet/{$snippet['snippet_id']}\" title=\"".smarty_modifier_truncate($snippet['comment'],90,"... more")."\">". ($snippet['title']?'untitled':htmlentities2($snippet['title']))."</a></li>";
+					$desc .= "<li><a href=\"/snippet/{$snippet['snippet_id']}\" title=\"".smarty_modifier_truncate($snippet['comment'],90,"... more")."\">". ($snippet['title']?htmlentities2($snippet['title']):'untitled')."</a></li>";
 				}
 				$desc .= ($image->snippets_as_ref?'</ol>':'</ul>')."</div>";
 			}
