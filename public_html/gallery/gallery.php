@@ -92,6 +92,24 @@ if (count($page)) {
 	$template = 'static_404.tpl';
 }
 
+function smarty_function_gallerytext($input) {
+	global $imageCredits,$smarty,$CONF;
+
+	$pattern=array(); $replacement=array();
+
+	$pattern[]='/\[image id=(\d+)\]/e';
+	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '{description}'))";
+
+	$pattern[]='/\[image id=(\d+) text=([^\]]+)\]/e';
+	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
+
+	$output=preg_replace($pattern, $replacement, $input, 5);
+
+	return $output;
+} 
+
+$smarty->register_modifier("gallerytext", "smarty_function_gallerytext");
+
 if (!$smarty->is_cached($template, $cacheid))
 {
 	if (count($page)) {
