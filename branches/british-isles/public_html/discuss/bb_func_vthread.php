@@ -89,7 +89,7 @@ if (!empty($CONF['disable_discuss_thumbs'])) {
 				$smarty->assign('maincontentclass', 'content_photo'.$style);	
 				$smarty->assign('backgroundcolor', $style);	
 				
-				$images=$square->getImages();
+				$images=$square->getImages(false,false,'order by moderation_status+0 desc,seq_no limit 100');
 				$smarty->assign_by_ref('images', $images);
 
 			}
@@ -194,6 +194,12 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 		$posterText = $memtext;
 	} elseif (empty($CONF['disable_discuss_thumbs'])) {
 		$thumb_count = 0;
+
+		if ($topic == 10596) {
+			$CONF['post_thumb_limit'] = 50;
+		}
+
+
 		foreach ($g_matches[3] as $g_i => $g_id) {
 			$server = $_SERVER['HTTP_HOST'];
 			$ext = false;
@@ -251,6 +257,8 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 		
 	}
 }
+
+$posterText = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$posterText);
 
 //no external images
 // the callback function
