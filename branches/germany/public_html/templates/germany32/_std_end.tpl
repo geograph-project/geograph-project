@@ -23,6 +23,7 @@
     <li>Tools<ul>
      <li><a title="Geograph Map" href="/gmap.php">Geograph Map</a></li>
      <li><a title="GoogleMaps" href="/submitmap.php">Google Map</a></li>
+     <li><a title="Test of Geograph Map using mercator projection" href="/gmmap.php">Mercator Map</a></li>
      <li><a title="Coordinate conversion" href="/latlong.php">Coordinates</a></li>
     </ul></li>
   {/if}
