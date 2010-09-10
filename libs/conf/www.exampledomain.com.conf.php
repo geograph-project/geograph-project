@@ -323,6 +323,17 @@ $CONF['gridrefname'] = array(1 => 'OS grid ', 2 => 'OS grid ');
 // google maps: show meridians n*$CONF['showmeridian'] degrees (0: don't show any meridian)
 $CONF['showmeridian'] = 0;
 
+// google maps: coordinate range (tile coordinates in level 13)
+$CONF['xmrange'] = array(4100, 4500);
+$CONF['ymrange'] = array(2500, 2900);
+
+// valid internal coordinates
+$CONF['xrange'] =  array(3 => array(50,549), 4 => array(550,899), 5 => array(0,49));
+$CONF['yrange'] =  array(3 => array(0,999), 4 => array(0,999), 5 => array(0,999));
+
+// valid geographical coordinates
+$CONF['latrange'] = array(3 => array(0,90), 4 => array(0,90), 5 => array(0,90));
+$CONF['lonrange'] = array(3 => array(6,12), 4 => array(12,18), 5 => array(0,6));
 ###################################
 
 // picture of the day

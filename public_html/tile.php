@@ -41,6 +41,45 @@ if (isset($_GET['map']))
 	if($map->setToken($_GET['map']))
 		$map->returnImage();
 	exit;
+} elseif (isset($_GET['x']) && isset($_GET['y']) && isset($_GET['Z'])) {
+	require_once('geograph/map.class.php');
+	require_once('geograph/mapmosaic.class.php');
+	require_once('geograph/gridimage.class.php');
+	$x = intval($_GET['x']);
+	$y = intval($_GET['y']);
+	$z = intval($_GET['Z']);
+	if ($z < 5)
+		$z = 5;
+	else if ($z > 13)
+		$z = 13;
+	$w = 256;
+	$h = 256;
+	$t = 0;
+	if (isset($_GET['t'])) {
+		$t = intval($_GET['t']);
+		//if ($t < -1)  //FIXME
+		//	$t = -1;
+		//elseif ($t > 0)
+			$t = 0;
+	}
+	$f13 = pow(2, 13-$z);
+	$x13 = $x * $f13;
+	$y13 = $y * $f13;
+	if  ($x13+$f13 < $CONF['xmrange'][0] || $x13 > $CONF['xmrange'][1]
+	  || $y13+$f13 < $CONF['ymrange'][0] || $y13 > $CONF['ymrange'][1]) {
+		exit;
+	}
+	$map=new GeographMap;
+	//if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && (init_session() || true) && $USER->hasPerm('admin'))
+	//	$map->caching=false;
+	$map->enableMercator(true);
+	$map->setOrigin($x, $y);
+	$map->setImageSize($w,$h);
+	$map->setScale($z);
+	$map->type_or_user = $t;
+	//$map->caching=false; //FIXME
+	$map->returnImage();
+	exit;
 } elseif (isset($_GET['x']) && isset($_GET['y']) || isset($_GET['i']) && isset($_GET['e']) && isset($_GET['n'])) {
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');

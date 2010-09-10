@@ -52,6 +52,27 @@ function distance ($lat1, $lon1, $lat2, $lon2) {
 	return (6371000*3.1415926*sqrt(($lat2-$lat1)*($lat2-$lat1) + cos($lat2/57.29578)*cos($lat1/57.29578)*($lon2-$lon1)*($lon2-$lon1))/180);
 }
 
+
+/*******************************
+* Spherical Mercator Functions
+********************************/
+
+function sm_to_wgs84($e,$n) {
+	$r = 6378137.;
+	$lng = rad2deg($e/$r);
+	#$lat = rad2deg(2*atan(exp(deg2rad($n/$r)))) - 90;
+	$lat = rad2deg(2*atan(exp(($n/$r)))) - 90;
+	return array($lat,$lng);
+}
+
+function wgs84_to_sm($lat,$lng) {
+	$r = 6378137.;
+	$e = $r * deg2rad($lng);
+	#$n = $r * rad2deg(log(tan(deg2rad($lat+90)/2)));
+	$n = $r * (log(tan(deg2rad($lat+90)/2)));
+	return array($e, $n);
+}
+
 /**************************
 * UTM Functions
 ***************************/

@@ -1152,6 +1152,144 @@ class GridImage
 	}
 	
 	/**
+	* returns a GD image instance for a thumbnail of the image
+	*/
+	function getPolyThumb($size, $crop, $poly, $id, $mpos = null, $mcol = null)
+	{
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
+		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
+		$abcdef=sprintf("%06d", $this->gridimage_id);
+		$hash=$this->_getAntiLeechHash();
+		$img=null;
+		
+		
+		$base=&$_SERVER['DOCUMENT_ROOT'];
+		if ($this->gridimage_id<1000000) {
+			$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}_p$id.png";
+		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}_p$id.png";
+		}
+		if (!file_exists($base.$thumbpath))
+		{
+			//get path to fullsize image
+			$fullpath=$this->_getFullpath();
+			
+			if ($fullpath != '/photos/error.jpg' && file_exists($base.$fullpath))
+			{
+				
+		
+				//generate resized image
+				$fullimg = @imagecreatefromjpeg($base.$fullpath); 
+				if ($fullimg)
+				{
+					$srcw=imagesx($fullimg);
+					$srch=imagesy($fullimg);
+					
+					if ($srcw == 0 && $srch == 0)
+					{
+						//couldn't read image!
+						$img=null;
+
+						imagedestroy($fullimg);
+					} else {
+						//crop percentage is how much of the
+						//image to keep in the thumbnail
+						#$crop=0.75;
+
+						//figure out size of image we'll keep
+						if ($srcw>$srch)
+						{
+							//landscape
+							$s=$srch*$crop;
+
+
+						}
+						else
+						{
+							//portrait
+							$s=$srcw*$crop;
+						}
+
+						$srcx = round(($srcw-$s)/2);
+						$srcy = round(($srch-$s)/2);
+						$srcw = $s;
+						$srch=$s;
+
+						$img = imagecreatetruecolor($size, $size);
+						imagecopyresampled($img, $fullimg, 0, 0, $srcx, $srcy, 
+									$size,$size, $srcw, $srch);
+						imagedestroy($fullimg);
+
+						# TODO supp marker? id in file name? assumptions: leftmost polypoint at beginning
+						require_once('geograph/image.inc.php');
+						UnsharpMask($img,200,0.5,3);
+						if (!is_null($mpos)) {
+							$mx = $mpos[0];
+							$my = $mpos[1];
+							$col = imagecolorallocate($img, $mcol[0], $mcol[1], $mcol[2]);
+							imagefilledrectangle ($img, $mx-2, $my-1, $mx+2, $my+1, $col);
+							imagefilledrectangle ($img, $mx-1, $my-2, $mx+1, $my+2, $col);
+						}
+						#$ps = '';
+						#foreach ($poly as &$p) {
+						#	$ps .= '(' . implode($p, ', ') . '), ';
+						#}
+						#trigger_error("ncph-> $ps", E_USER_NOTICE);
+						$cpoly = $poly;
+						require_once('geograph/map.class.php'); ##FIXME
+						$map = new GeographMap; ##FIXME
+						$map->_clip_polygon($cpoly, 0, $size-1, 0, $size-1);
+						#$ps = '';
+						#foreach ($cpoly as &$p) {
+						#	$ps .= '(' . implode($p, ', ') . '), ';
+						#}
+						#trigger_error("cph-> $ps", E_USER_NOTICE);
+						#trigger_error("ph->".implode($photopoly, ', '), E_USER_NOTICE);
+						if (count($cpoly)) {
+							$drawpoly=array();
+							foreach ($cpoly as &$p) {
+								$drawpoly[] = $p[0];
+								$drawpoly[] = $p[1];
+							}
+							#$drawpoly += array($cpoly[0][0], $cpoly[0][1], 0, 0,  $size-1,0, $size-1,$size-1, 0,$size-1, 0,0);
+							$drawpoly = array_merge($drawpoly, array($cpoly[0][0], $cpoly[0][1], 0, 0,  $size-1,0, $size-1,$size-1, 0,$size-1, 0,0));
+						} else {
+							$drawpoly = array($size-1,0, $size-1,$size-1, 0,$size-1, 0,0);
+						}
+						#trigger_error("dp->".implode($drawpoly, ', '), E_USER_NOTICE);
+						imagealphablending($img, false);
+						$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
+						imagefilledpolygon($img, $drawpoly, count($drawpoly)/2, $back);
+
+						//save the thumbnail
+						imagesavealpha($img, true);
+						imagepng($img, $base.$thumbpath);
+					}
+					
+				}
+				else
+				{
+					//couldn't load full jpeg
+					$img=null;
+				}
+			}
+			else
+			{
+				//no original image!
+				$img=null;
+		
+			}
+			
+		}
+		else
+		{
+			$img=imagecreatefrompng($base.$thumbpath);
+		}
+		return $img;
+	}
+	
+	/**
 	* general purpose internal method for creating resized images - accepts
 	* a variety of options. Use this to build specific methods for public
 	* consumption
