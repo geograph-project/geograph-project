@@ -24,6 +24,8 @@
 <h3>Selections...</h3>
 <ul class="explore">
 
+	<li><a href="/thumbed-weekly.php"><b>This weeks popular images</b></a> - view images being <a href="/faq.php#thumbsup">thumbed</a></li>
+
 	<li><a href="/explore/searches.php"><b>Featured Searches</b></a> - hand picked example searches</li>
 
 	<li><a href="/explore/routes.php">Follow <b>National Routes</b></a>.</li>
@@ -39,7 +41,7 @@
 
 	<li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> (or try a <a href="/finder/places.php">search</a>)</li>
 
-	<li>{external href="http://www.nearby.org.uk/geograph/flamenco.cgi/geograph4/Flamenco" text="View a selection of images in the <b>Image Explorer</b>"} <sup style="color:red">NEW!</sup></li>
+	<li>{external href="http://www.geographs.org/portals/portals.php" text="Geograph Portals"} <small>Experimental collections of Geograph Images</small></li>
 
 </ul>
 <h3>Breakdowns...</h3>

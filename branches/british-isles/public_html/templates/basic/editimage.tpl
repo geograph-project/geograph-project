@@ -19,7 +19,7 @@
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	{if $image->original_width}
-		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">More sizes</a></div>
+		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">More sizes</a> | <a href="/resubmit.php?id={$image->gridimage_id}">Upload another large version</a></div>
 	{elseif $user->user_id eq $image->user_id}
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
@@ -594,8 +594,8 @@ AttachEvent(window,'load', function() {
  <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span><br/></span>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
 <textarea id="comment" name="comment" rows="7" cols="80" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$image->comment|escape:'html'}</textarea>
-<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
-to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
+<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
+For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 </p>
 
 <br/>

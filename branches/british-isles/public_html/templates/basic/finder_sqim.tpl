@@ -34,7 +34,7 @@
 	<div class="interestBox">
 	
 	{if $item.resultCount > 3}
-		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q2|escape:'url'}&amp;do=1&amp;distance=1">View {$item.resultCount} text matches in {$item.grid_reference}</a></div>
+		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q2|escape:'url'}&amp;do=1&amp;distance=1" title="{$item.query}">View {$item.resultCount} text matches in {$item.grid_reference}</a></div>
 	{elseif $item.skipped}
 		<div style="float:right"><a href="/search.php?gridref={$item.grid_reference}&amp;searchtext={$q2|escape:'url'}&amp;do=1&amp;distance=1">Look for text matches in {$item.grid_reference}</a></div>
 	{/if}
@@ -91,6 +91,7 @@
 		<li>use gridsquares, hectads or myriads as keywords <tt>stone wall sh65</tt> or <tt>stone wall tq</tt></li>
 		<li>find squares in specific eastings and/or northings (in any myriad) <tt>easting:34 northing:24</tt> </li>
 		<li>can use OR to match <b>either/or</b> keywords; example: <tt>bridge river OR canal</tt></li>
+		<li>NOTE: keywords via this page, (only) search the title, description, category, gridsquare, hectad and/or myriad of images in the square</li>
 	</ul>
 </div>
 

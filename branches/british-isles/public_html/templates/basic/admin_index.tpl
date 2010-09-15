@@ -40,7 +40,7 @@
 {if $is_mod} 
 	{if $support_open}
 	<li>{external href="http://www.geograph.org.uk/support/scp/tickets.php" text="Ticket List in the Geograph Support System"}<br/>
-                <b>[{$support_open} open]</b></li>
+                <b>[{$support_open} open tickets]</b></li>
 	{/if}
 
 	{if $originals_new}

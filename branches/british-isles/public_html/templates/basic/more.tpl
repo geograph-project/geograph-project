@@ -139,13 +139,13 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 			<p>Preview{if $last_width > 640 || $last_height > 640}s{/if} shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size{if $ratio ne 1} - NOT representative of the final quality{/if}.</p>		
 			
 		{if $image->original_width}
-			<form action="http://www.seadragon.com/create/" method="post" enctype="application/x-www-form-urlencoded"> 
+			<form action="http://zoom.it/pages/create/" method="post" enctype="application/x-www-form-urlencoded"> 
 
 				<input name="url" type="hidden" value="http://{$http_host}/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original" /> 
 
-				<input type="submit" value="View largest image on seadragon.com" />  <sup style="color:red">Experimental</sup><br/>
+				<input type="submit" value="View largest image on zoom.it" />  <sup style="color:red">Experimental</sup><br/>
 				
-				Seadragon allows you to zoom and pan around any image on the web, no matter how big. 
+				Zoom.it (formally Seadragon) allows you to zoom and pan around any image on the web, no matter how big. 
 			</form> 
 		{/if}
 

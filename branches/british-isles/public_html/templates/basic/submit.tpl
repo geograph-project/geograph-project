@@ -383,8 +383,8 @@ it was taken or other interesting geographical information. <span id="styleguide
 	</div>
 </div>
 <br/>
-<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
-to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
+<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
+For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
 
 <sup style="color:red"><b>New</b></sup> You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
 

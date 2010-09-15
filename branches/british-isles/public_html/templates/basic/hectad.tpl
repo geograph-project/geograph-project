@@ -92,8 +92,6 @@ Nearby hectads:
 </ul>	
 <ul class="explore">
 
-	<li>{external href="http://www.nearby.org.uk/geograph/flamenco-redir.php?grid_reference=`$hectad`" text="Explore a sample of `$hectad` images in the new <b>Multi-Purpose Viewer</b>"} <sup style="color:red">Experimental</sup></li>
-
 	<li style="list-style-image: url('http://{$static_host}/img/links/20/words.png');"><b><a href="/sitemap/clusters/{$myriad}/{$hectad}.html">Common Clusters</a> and <a href="/sitemap/terms/{$myriad}/{$hectad}.html">Common Terms</a></b> used in {$hectad} <sup style="color:red">infrequently updated</sup></li>
 	
 </ul>

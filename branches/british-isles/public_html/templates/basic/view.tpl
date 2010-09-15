@@ -47,14 +47,14 @@
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
   {dynamic}
-    {if $user->registered}
+    {if $user->registered || !$is_bot}
 	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this image!"/></a></div>
     {/if}
   {/dynamic}
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
 {if $image->comment}
   {dynamic}
-    {if $user->registered}
+    {if $user->registered || !$is_bot}
   	<div style="float:right;position:relative;top:20px" id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this description!"/></a></div>
     {/if}
   {/dynamic}
@@ -120,18 +120,18 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion<br/>on {$image->grid_reference}</a> (preview on the left)
 {else}
-	<a href="/discuss/index.php?gridref={$image->grid_reference}#newtopic">Start a discussion on {$image->grid_reference}</a>
+	<a href="/discuss/index.php?gridref={$image->grid_reference}">Start a discussion on {$image->grid_reference}</a>
 {/if}
 </td>
 {/if}
 
-<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
+<td style="width:50px"><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 	{if $user->user_id eq $image->user_id}
-		<big><a href="/editimage.php?id={$image->gridimage_id}"><b>Change Image Details</b></a></big><br/>
+		<big><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}><b>Change Image Details</b></a></big><br/>
 		(or raise a query with a moderator)
 	{else}
-		<a href="/editimage.php?id={$image->gridimage_id}">Suggest an Update to this Image</a>
+		<a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}>Suggest an Update to this Image</a>
 	{/if}
 </td>
 {if $user->user_id ne $image->user_id}
@@ -185,15 +185,15 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
-<dt>Image classification<sup><a href="/help/stats_faq">?</a></sup></dt>
+<dt>Image classification<sup><a href="/faq.php#points">?</a></sup></dt>
 <dd>{if $image->ftf eq 1}
 	Geograph (First for {$image->grid_reference})
 {elseif $image->ftf eq 2}
-	Geograph (Second Visit for {$image->grid_reference})
+	Geograph (Second Visitor for {$image->grid_reference})
 {elseif $image->ftf eq 3}
-	Geograph (Third Visit for {$image->grid_reference})
+	Geograph (Third Visitor for {$image->grid_reference})
 {elseif $image->ftf eq 4}
-	Geograph (Fourth Visit for {$image->grid_reference})
+	Geograph (Fourth Visitor for {$image->grid_reference})
 {else}
 	{if $image->moderation_status eq "rejected"}
 	Rejected
@@ -266,7 +266,10 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{include file="_overview.tpl"}
 	<div style="width:inherit;margin-left:20px;"><br/>
 
-	<a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Forward to a<br/>Friend &gt; &gt;</a><br/><br/>
+	<a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Forward to a<br/>Friend by email</a><br/><br/>
+
+<a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;username=geograph"><img src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share"/></a>
+<br/><br/>
 
 	<a href="{$sitemap}">Text listing of Images in {$image->grid_reference}</a>
 
@@ -329,6 +332,8 @@ function redrawMainImage() {
 {/literal}
 /* ]]> */
 </script>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=geograph"></script>
+
 
 
 <div style="width:100%;position:absolute;top:0px;left:0px;height:0px">

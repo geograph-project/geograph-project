@@ -144,9 +144,9 @@
 				<a href="/discuss/index.php?gridref={$gridref}"><b>discussion</b> about {$gridref}</a> (preview on the left)
 			{else}
 				{if $user->registered}
-					<a href="/discuss/index.php?gridref={$gridref}#newtopic">Start a <b>discussion</b> about {$gridref}</a>
+					<a href="/discuss/index.php?gridref={$gridref}">Start a <b>discussion</b> about {$gridref}</a>
 				{else}
-					<a href="/discuss/index.php?gridref={$gridref}#newtopic">login</a> to start a <b>discussion</b> about {$gridref}</a>
+					<a href="/discuss/index.php?gridref={$gridref}">login</a> to start a <b>discussion</b> about {$gridref}</a>
 				{/if}
 			{/if}</li>
 		{/if}
@@ -447,8 +447,6 @@
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imagetaken%2B&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Date Taken</a>{if $imagecount < 500} or
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;breakby=imagetaken_year&amp;orderby=imagetaken&amp;reverse_order_ind=1&amp;do=1">Year Taken</a> <sup style="color:red">new!</sup>{/if}
 				</li>
-
-				<li style="margin-top:10px;font-size:0.7em">{external href="http://www.nearby.org.uk/geograph/flamenco-redir.php?grid_reference=`$gridref`" text="Explore a sample of `$gridref` images in the new <b>Multi-Purpose Viewer</b>"} <sup style="color:red">Experimental</sup></li>
 			</ul>
 			<br style="clear:both"/>
 		{else}

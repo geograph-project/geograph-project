@@ -21,7 +21,7 @@
 	<p>Paste WHOLE message direct including headers from the Google Mail webpage - automatically extracts variables</p>
 	
 	<textarea name="msg" rows="20" cols="80">{$value|escape:'html'}</textarea><br/>
-		
+	<input type="checkbox" name="open" value="1" checked /> Mark directly as 'open'	<br/>
 	<input type="submit" value="Save"/>	
 			
 	</form>

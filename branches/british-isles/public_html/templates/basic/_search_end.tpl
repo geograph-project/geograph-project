@@ -14,26 +14,6 @@
 			You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However your search seems to be compatible with the lagacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
 		</div>
 		
-	{elseif $engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs'}	
-	
-		<div id="hidefeed2" style="text-align:center;width:400px;border:2px solid yellow; margin-left:auto;margin-right:auto">Didn't find what you looking for? <a href="javascript:void(show_tree('feed2'));"><b>Tell Us!</b></a></div>
-		<div id="showfeed2" class="interestBox" style="display:none"><form method="post" action="/stuff/feedback.php">
-		<label for="feedback_comments"><b>Help us improve!</b> Please explain what you are looking for...</label><br/>
-		<input type="text" name="comments" size="80" id="feedback_comments"/><input type="submit" name="submit" value="send"/>
-		{dynamic}{if $user->registered}<br/>
-		<small>(<input type="checkbox" name="nonanon"/> <i>Tick here to include your name with this comment, so we can then reply</i>)</small>
-		{else}<br/>
-		<i><small>If you want a reply please use the <a href="/contact.php">Contact Us</a> page. We are <b>unable</b> to reply to comments left here.</small></i>
-		{/if}{/dynamic}
-		<input type="hidden" name="template" value="{$smarty_template}"/>
-		<input type="hidden" name="referring_page" value="{$smarty.server.HTTP_REFERER}"/>
-		    <div style="display:none">
-		    <br /><br />
-		    <label for="name">Leave Blank!</label><br/>   
-			<input size="40" id="name" name="name" value=""/>
-		    </div>
-		</form></div>
-		<br/>
 	{/if}
 
 
@@ -53,7 +33,7 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 <p align="right" style="clear:both"><small>Subscribe to find images submitted in future:</small> <a title="geoRSS Feed for images{$engine->criteria->searchdesc|escape:"html"}" href="/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.rss" class="xml-geo">geo RSS</a></p>
 {/if}
 
-		{if $engine->fullText && $engine->criteria->searchclass != 'Special' && ($engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs' || $engine->criteria->displayclass=='text')}
+		{if $engine->fullText && $engine->criteria->searchclass != 'Special' && ($engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs' || $engine->criteria->displayclass=='text' || $engine->criteria->displayclass=='excerpt')}
 			<div class="interestBox">
 				<form action="{$script_name}" method="get">
 					<b>Quick refine this search:</b> <small style="color:gray">(images{$engine->criteria->searchdesc|escape:'html'})</small>

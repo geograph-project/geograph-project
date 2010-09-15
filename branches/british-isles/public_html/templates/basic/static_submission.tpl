@@ -22,6 +22,10 @@
  
  <p>More streamlined version - all one one page. If you familiar with Geograph submission you might like this.</p>
 
+<ul>
+	<li>Also available <a href="/submit2.php?display=tabs">displayed as tabs</a>, which makes it look more similar to version 1</li>
+</ul>
+
 <hr/>
 
  <h3>{external href="http://www.nearby.org.uk/geograph/upload/" text="Multi-Upload"} <sup style="color:red">Experimental!</sup></h3>

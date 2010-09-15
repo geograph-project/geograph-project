@@ -1,7 +1,7 @@
 {assign var="page_title" value="Contact"}
 {include file="_std_begin.tpl"}
 
- <h2>Contact Geograph</h2>
+ <h2>Contact Geograph, photographic archive of Britain and Ireland</h2>
 
 <p>Geograph Britain and Ireland uses a support ticket system. Please use the form below to contact the Geograph website developers and/or Image moderators.</p> 
 

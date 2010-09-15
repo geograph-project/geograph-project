@@ -129,12 +129,14 @@ Within radius:{if $centisquare}
 		<div style="font-size:0.7em">{$item.comment|escape:'html'|truncate:250:' (more...)'}</div>
 		<div style="font-size:0.7em;color:gray;margin-left:10px;">
 
-		{if $user->user_id != $item.user_id}
+		{if $user->user_id != $item.user_id && $item.realname}
 			By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
 		{/if}
 
-		Used on {$item.images|thousends} images {if $item.images != $item.yours}(of which {$item.yours|thousends} are yours){/if}</div>
-		
+		{if $item.images}
+		Used on {$item.images|thousends} images {if $item.images != $item.yours}(of which {$item.yours|thousends} are yours){/if}
+		{/if}</div>
+
 		<br style="clear:both"/>
 	</div>
 
@@ -142,7 +144,7 @@ Within radius:{if $centisquare}
 	{if $empty}
 	<p style="margin:4px"><i>please specify some keywords{if $grid_reference}, or choose a smaller radius{/if}</i></p><br/>
 	{else}
-	<p style="margin:4px"><i>No shared descriptions found{if $grid_reference && ($radius == 1 || !$radius)} in {$grid_reference}{/if}{if $q}, matching [{$q|escape:'html'}]{/if}, <a href="#" onclick="show_tree('create');return false">create your own</a>!</i></p><br/>
+	<p style="margin:4px"><i>No {if $used}unused{/if} shared descriptions found{if $grid_reference && ($radius == 1 || !$radius)} in {$grid_reference}{/if}{if $q}, matching [{$q|escape:'html'}]{/if}, <a href="#" onclick="show_tree('create');return false">{if $used}create another{else}create your own{/if}</a>!</i></p><br/>
 	{/if}
 {/foreach}
 {if $query_info}
