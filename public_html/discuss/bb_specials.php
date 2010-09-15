@@ -25,9 +25,10 @@ if(empty($userRanks) && $cols=db_simpleSelect(0,'user','user_id,rights,role','ro
 		elseif (strpos($cols[1],'moderator') !== FALSE)
 			$userRanks[$cols[0]]='Moderator';
 	} while($cols=db_simpleSelect(1));
+
+	$memcache->set($mkey,$userRanks,$memcache->compress,$memcache->period_short);
 }
 
-$memcache->set($mkey,$userRanks,$memcache->compress,$memcache->period_short);
 
 $mods=array();
 
