@@ -177,7 +177,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	
 	//fill in blanks
-	for ($d=0; $d<$days; $d++)
+	for ($d=1; $d<$days; $d++)
 	{
 		$t=strtotime("+{$d} days");
 		$showday=strftime("%Y-%m-%d", $t);

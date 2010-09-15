@@ -109,24 +109,41 @@ if (isset($_GET['getExtendedStats'])) {
 	}
 	$smarty->clear_cache($_GET['template'],$_GET['cache_id']);
 	print "<h3>done</h3>";
+
 } elseif (!empty($_GET['post_id'])) {
+        $namespace = 'fp';
+        $key = $memcache->prefix.$namespace.':'.intval($_GET['post_id']);
+        print "<h2>Discussion Forum Post Cache</h2>";
+        print "<h3>Memcache key: <tt>$key</tt></h3>";
+        if ($_GET['action'] == 'view') {
+                $v = $memcache->name_get($namespace,intval($_GET['post_id']));
+                print "return value:";
+                print "<pre>";
+                print htmlentities(print_r($v,true));
+                print "</pre>";
+        } elseif ($_GET['action'] == 'delete') {
+                $ok = $memcache->name_delete($namespace,intval($_GET['post_id']))?1:0;
+                print "<p>Delete return value: $ok</p>";
+                $ok = $memcache->name_delete($namespace,intval($_GET['post_id'])."www.geograph.org.uk")?1:0;
+                print "<p>Delete www.geograph.org.uk return value: $ok</p>";
+                $ok = $memcache->name_delete($namespace,intval($_GET['post_id'])."www.geograph.ie")?1:0;
+                print "<p>Delete www.geograph.ie return value: $ok</p>";
+        }
+
+} elseif (!empty($_GET['key'])) {
 	$namespace = 'fp';
-	$key = $memcache->prefix.$namespace.':'.intval($_GET['post_id']);
-	print "<h2>Discussion Forum Post Cache</h2>";
+	$key = $memcache->prefix.($_GET['key']);
+	print "<h2>ANY Cache</h2>";
 	print "<h3>Memcache key: <tt>$key</tt></h3>";
 	if ($_GET['action'] == 'view') {
-		$v = $memcache->name_get($namespace,intval($_GET['post_id']));
+		$v = $memcache->get($_GET['key']);
 		print "return value:";
 		print "<pre>";
 		print htmlentities(print_r($v,true));
 		print "</pre>";
 	} elseif ($_GET['action'] == 'delete') {
-		$ok = $memcache->name_delete($namespace,intval($_GET['post_id']))?1:0;
+		$ok = $memcache->delete($_GET['key'])?1:0;
 		print "<p>Delete return value: $ok</p>";
-                $ok = $memcache->name_delete($namespace,intval($_GET['post_id'])."www.geograph.org.uk")?1:0;
-                print "<p>Delete www.geograph.org.uk return value: $ok</p>";
- 		$ok = $memcache->name_delete($namespace,intval($_GET['post_id'])."www.geograph.ie")?1:0;
-		print "<p>Delete www.geograph.ie return value: $ok</p>";
 	}
 
 } elseif (!empty($_GET['image_id'])) {
@@ -174,6 +191,14 @@ if (isset($_GET['getExtendedStats'])) {
 <form method="get">
 <h3>Discussion Forum Post Cache</h3>
 post_id: <input type="text" name="post_id" value="" size="7"/> <input type="submit" value="Go"><br/>
+
+<input type="radio" name="action" value="view" checked> View Contents<br/>
+<input type="radio" name="action" value="delete"> Delete Cache<br/>
+</form>
+<hr/>
+<form method="get">
+<h3>Any</h3>
+key <input type="text" name="key" value="" size="7"/> <input type="submit" value="Go"><br/>
 
 <input type="radio" name="action" value="view" checked> View Contents<br/>
 <input type="radio" name="action" value="delete"> Delete Cache<br/>

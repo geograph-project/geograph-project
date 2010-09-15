@@ -94,6 +94,10 @@ if (isset($_REQUEST['inject'])) {
 		$msg = preg_replace('/^-{6,}\n*$/m','',$msg);
 		
 		$updates['msg'] = $msg;
+
+		if (!empty($_POST['open'])) {
+			 $updates['status']='open';
+		}
 		
 		$db->Execute('INSERT INTO contactform SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 			

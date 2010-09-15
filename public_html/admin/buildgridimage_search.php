@@ -214,7 +214,7 @@ if (!empty($_POST['fix']))
 	$recordSet = &$db->Execute("SELECT gi.gridimage_id,x,y,reference_index,nateastings,natnorthings,wgs84_lat,wgs84_long
 		FROM gridimage gi
 		INNER JOIN gridimage_search AS gs USING ( gridimage_id )
-		INNER JOIN gridimage_ticket AS gt USING ( gridimage_id )
+		INNER JOIN gridimage_ticket_archive AS gt USING ( gridimage_id )
 		INNER JOIN gridimage_ticket_item AS ti USING ( gridimage_ticket_id )
 		WHERE field = 'grid_reference'
 		$andwhere
