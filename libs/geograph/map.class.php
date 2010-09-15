@@ -120,8 +120,23 @@ class GeographMap
 	 * Tile width (m) if spherical mercator
 	 */
 	var $map_w=0.0;
-	
-	
+
+	/**
+	 * Layers if spherical mercator
+	 *
+	 * 1: base map
+	 * 2: squares
+	 * 4: grid labels
+	 * 8: town labels
+	 */
+
+	var $layers = 15;
+
+	/**
+	 * Overlay mode if spherical mercator
+	 */
+	var $overlay = false;
+
 	/**
 	* bounding rectangles for labels, in an attempt to prevent collisions
 	*/
@@ -270,6 +285,9 @@ class GeographMap
 		else {
 			$token->setValue("s",  $this->level);
 			$token->setValue("m", 1);
+			$token->setValue("l", $this->layers);
+			if (isset($this->overlay))
+				$token->setValue("o", 1);
 		}
 		if (!empty($this->force_ri))
 			$token->setValue("i",  $this->force_ri);
@@ -310,6 +328,8 @@ class GeographMap
 				if ($token->hasValue("p")) 
 					$this->setPalette($token->getValue("p"));
 				$this->force_ri = ($token->hasValue("i"))?$token->getValue("i"):0;
+				$this->layers = ($token->hasValue("l"))?$token->getValue("l"):7;
+				$this->overlay = $token->hasValue("o") && $token->getValue("o");
 			}
 			
 		}
@@ -465,8 +485,18 @@ class GeographMap
 	* filename is from document root and includes leading slash
 	* @access public
 	*/
-	function getImageFilename()
+	function getImageFilename($layers = -1)
 	{
+		if ($layers == -1) {
+			$layers = $this->layers;
+		}
+		if ($layers == 1)
+			return $this->getBaseMapFilename();
+		elseif ($layers == 4)
+			return $this->getLabelMapFilename(false);
+		elseif ($layers == 8)
+			return $this->getLabelMapFilename(true);
+
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
 		$dir="/maps/detail/";
@@ -507,8 +537,12 @@ class GeographMap
 			$extension = ($this->pixels_per_km > 64 || $this->type_or_user < -20)?'jpg':'png';
 		} else {
 			$scale = $this->level;
-			$palette .= "_m";
 			$extension = 'png';
+			$palette .= "_m";
+			$palette .= "_l{$layers}";
+			if ($this->overlay) {
+				$palette .= "_o";
+			}
 		}
 		
 		$file="detail_{$map_x}_{$map_y}_{$this->image_w}_{$this->image_h}_{$scale}_{$this->type_or_user}{$palette}.$extension";
@@ -578,7 +612,7 @@ class GeographMap
 	* calc filename to an image which can form the labels of the map
 	* @access public
 	*/
-	function getLabelMapFilename()
+	function getLabelMapFilename($towns)
 	{
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
@@ -609,6 +643,9 @@ class GeographMap
 
 		if (!empty($this->force_ri)) {
 			$palette .= "_i{$this->force_ri}";
+		}
+		if ($towns) {
+			$palette .= "_t";
 		}
 
 		if (empty($this->mercator)) { #FIXME tilecache
@@ -725,7 +762,7 @@ class GeographMap
 				$ok = $this->_renderImageM(); #FIXME
 			} 
 			if ($ok) {
-				#FIXME mapcache
+				#FIXME mapcache, also for layer 2
 			}
 			return $ok;
 		}
@@ -1107,6 +1144,46 @@ class GeographMap
 	}
 
 	/**
+	* create tlabelmap, save as gd image and return the image resource
+	* @access private
+	*/
+	function& _createTLabelmapM($file)
+	{
+		global $CONF;
+		$destw = $this->image_w;
+		$destbdry = $this->render_margin;
+		$img=imagecreatetruecolor($destw+2*$destbdry,$destw+2*$destbdry);
+
+		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
+		imagefill($img,0,0,$back);
+
+		$widthM=$this->map_w;
+		$dM=$widthM/8;
+		$leftM=$this->map_x;
+		$bottomM=$this->map_y;
+		$rightM=$leftM+$widthM;
+		$topM=$bottomM+$widthM;
+
+		##//plot grid square?
+		#if ($this->level >= 5)
+		#{
+		#	$this->_plotGridLinesM($img,$leftM-$dM,$bottomM-$dM,$rightM+$dM,$topM+$dM);
+		#}
+
+		#if ($this->pixels_per_km>=1  && $this->pixels_per_km<=64 && isset($CONF['enable_newmap'])) {
+		if ($this->level >= 6  && $this->level <= 13 && isset($CONF['enable_newmap'])) {
+			$this->_plotPlacenamesM($img,$leftM,$bottomM,$rightM,$topM);
+		}
+
+		$this->_resizeImageM($img, $destw, $destbdry, $destw, 0);
+		imagesavealpha($img, true);
+		imagealphablending($img, false);
+		#imagegd($img, $file); # gd does not like alpha components. I really like php.
+		imagepng($img, $file);
+		return $img;
+	}
+
+	/**
 	* create labelmap, save as gd image and return the image resource
 	* @access private
 	*/
@@ -1133,10 +1210,10 @@ class GeographMap
 			$this->_plotGridLinesM($img,$leftM-$dM,$bottomM-$dM,$rightM+$dM,$topM+$dM);
 		}
 
-		#if ($this->pixels_per_km>=1  && $this->pixels_per_km<=64 && isset($CONF['enable_newmap'])) {
-		if ($this->level >= 6  && $this->level <= 13 && isset($CONF['enable_newmap'])) {
-			$this->_plotPlacenamesM($img,$leftM,$bottomM,$rightM,$topM);
-		}
+		##if ($this->pixels_per_km>=1  && $this->pixels_per_km<=64 && isset($CONF['enable_newmap'])) {
+		#if ($this->level >= 6  && $this->level <= 13 && isset($CONF['enable_newmap'])) {
+		#	$this->_plotPlacenamesM($img,$leftM,$bottomM,$rightM,$topM);
+		#}
 
 		$this->_resizeImageM($img, $destw, $destbdry, $destw, 0);
 		imagesavealpha($img, true);
@@ -1484,58 +1561,19 @@ class GeographMap
 	}
 
 	/**
-	* render the image to cached file if not already available
+	* create squaremap, save as png image and return the image resource
 	* @access private
 	*/
-	function _renderImageM()
+	function& _createSquaremapM($file)
 	{
 		global $CONF;
-		$root=&$_SERVER['DOCUMENT_ROOT'];
-		
 		$ok = true;
-		
-		//first of all, generate or pull in a cached based map
-		$basemap=$this->getBaseMapFilename();
-		if ($this->caching && @file_exists($root.$basemap))
-		{
-			//load it up!
-			$baseimg=imagecreatefrompng($root.$basemap);
-
-		}
-		else
-		{
-			//we need to generate a basemap
-			$baseimg=&$this->_createBasemapM($root.$basemap);
-		}
-		
-		if (!$baseimg) {
-			return false;
-		}
-		$labelmap=$this->getLabelMapFilename();
-		if ($this->caching && @file_exists($root.$labelmap))
-		{
-			//load it up!
-			$labelimg=imagecreatefrompng($root.$labelmap);
-		}
-		else
-		{
-			//we need to generate a basemap
-			$labelimg=&$this->_createLabelmapM($root.$labelmap);
-		}
-		
-		if (!$labelimg) {
-			imagedestroy($baseimg);
-			return false;
-		}
-
 		$bdry = $this->base_margin;
 		$imgw = $this->base_width;
 
 		$img=imagecreatetruecolor($imgw+2*$bdry,$imgw+2*$bdry);
 		if (!$img) {
-			imagedestroy($baseimg);
-			imagedestroy($labelimg);
-			return false;
+			return img; #FIXME
 		}
 		imagealphablending($img, true);
 		imagesavealpha($img, true);
@@ -1576,7 +1614,7 @@ class GeographMap
 			$has_geographs=$recordSet->fields[1];
 			$color = $has_geographs ? $colMarker : $colSuppMarker;
 
-			if ($this->level <= 11) {
+			if ($this->level <= 11 || $this->overlay) {
 				$points = $recordSet->fields[6];
 				$drawpoly = array();
 				for ($i = 0; $i < $points; ++$i) {
@@ -1680,32 +1718,152 @@ class GeographMap
 
 		$destw = $this->image_w;
 		$this->_resizeImageM($img, $imgw, $bdry, $destw, 0);
-		if ($img) {
-			//ok being false isnt fatal, as we can create a tile, however we should use it to try again later!
-			
-			$target=$this->getImageFilename();
-			imagealphablending($baseimg, true);
-			imagealphablending($img, true);
-			imagealphablending($labelimg, true);
-			imagecopy($baseimg, $img,      0, 0, 0, 0, $destw, $destw);
-			imagecopy($baseimg, $labelimg, 0, 0, 0, 0, $destw, $destw);
-			
-			if (preg_match('/jpg/',$target)) {
-				$ok = (imagejpeg($baseimg, $root.$target) && $ok);
-			} else {
-				$ok = (imagepng($baseimg, $root.$target) && $ok);
-			}
+		imagesavealpha($img, true);
+		imagealphablending($img, false);
+		imagepng($img, $file);
+		return $img; #FIXME $ok?
+	}
 
-			imagedestroy($labelimg);
-			imagedestroy($baseimg);
-			imagedestroy($img);
-			return $ok;
-		} else {
-			imagedestroy($baseimg);
-			imagedestroy($labelimg);
-			//trigger_error("->!img: pix: " . $this->pixels_per_km .", newmap: " . $CONF['enable_newmap'], E_USER_NOTICE);
+	/**
+	* render the image to cached file if not already available
+	* @access private
+	*/
+	function _renderImageM()
+	{
+		global $CONF;
+		$root=&$_SERVER['DOCUMENT_ROOT'];
+		
+		if (($this->layers & 15) == 0) {
 			return false;
 		}
+		$ok = true;
+		$baseimg = null;
+		$labelimg = null;
+		$squareimg = null;
+		$layers = array();
+
+		if ($this->layers & 1) {
+			//first of all, generate or pull in a cached based map
+			$basemap=$this->getBaseMapFilename();
+			if ($this->caching && @file_exists($root.$basemap))
+			{
+				//load it up!
+				$baseimg=imagecreatefrompng($root.$basemap);
+
+			}
+			else
+			{
+				//we need to generate a basemap
+				$baseimg=&$this->_createBasemapM($root.$basemap);
+			}
+			
+			if (!$baseimg) {
+				return false;
+			}
+			$layers[] =& $baseimg;
+		}
+		if ($this->layers & 2) {
+			$squaremap=$this->getImageFilename(2);
+			if ($this->caching && @file_exists($root.$squaremap))
+			{
+				//load it up!
+				$squareimg=imagecreatefrompng($root.$squaremap);
+			}
+			else
+			{
+				//we need to generate a squaremap
+				$squareimg=&$this->_createSquaremapM($root.$squaremap);
+				#FIXME tilecache
+			}
+			
+			if (!$squareimg) {
+				if (!is_null($baseimg)) {
+					imagedestroy($baseimg);
+				}
+				#if (!is_null($labelimg)) {
+				#	imagedestroy($labelimg);
+				#}
+				return false;
+			}
+			$layers[] =& $squareimg;
+		}
+		if ($this->layers & 4) {
+			$labelmap=$this->getLabelMapFilename(false);
+			if ($this->caching && @file_exists($root.$labelmap))
+			{
+				//load it up!
+				$labelimg=imagecreatefrompng($root.$labelmap);
+			}
+			else
+			{
+				//we need to generate a labelmap
+				$labelimg=&$this->_createLabelmapM($root.$labelmap);
+			}
+			
+			if (!$labelimg) {
+				if (!is_null($squareimg)) {
+					imagedestroy($squareimg);
+				}
+				if (!is_null($baseimg)) {
+					imagedestroy($baseimg);
+				}
+				return false;
+			}
+			$layers[] =& $labelimg;
+		}
+		if ($this->layers & 8) {
+			$tlabelmap=$this->getLabelMapFilename(true);
+			if ($this->caching && @file_exists($root.$tlabelmap))
+			{
+				//load it up!
+				$tlabelimg=imagecreatefrompng($root.$tlabelmap);
+			}
+			else
+			{
+				//we need to generate a tlabelmap
+				$tlabelimg=&$this->_createTLabelmapM($root.$tlabelmap);
+			}
+			
+			if (!$tlabelimg) {
+				if (!is_null($labelimg)) {
+					imagedestroy($labelimg);
+				}
+				if (!is_null($squareimg)) {
+					imagedestroy($squareimg);
+				}
+				if (!is_null($baseimg)) {
+					imagedestroy($baseimg);
+				}
+				return false;
+			}
+			$layers[] =& $tlabelimg;
+		}
+		if (count($layers) == 1) {
+			return $ok;
+		}
+
+		#foreach ($layers as &$layerimg) {
+		#	imagealphablending($layerimg, true);
+		#}
+		$destw = $this->image_w;
+		imagealphablending($layers[0], true);
+		for ($i = 1; $i < count($layers);++$i) {
+			imagealphablending($layers[$i], true);
+			imagecopy($layers[0], $layers[$i],      0, 0, 0, 0, $destw, $destw);
+			imagedestroy($layers[$i]);
+		}
+
+		$target=$this->getImageFilename();
+		
+		#if (preg_match('/jpg/',$target)) {
+		#	$ok = (imagejpeg($layers[0], $root.$target) && $ok); # FIXME remove?
+		#} else {
+			imagesavealpha($layers[0], true);
+			imagealphablending($layers[0], false);
+			$ok = (imagepng($layers[0], $root.$target) && $ok);
+		#}
+
+		return $ok;
 	}	
 
 	/**

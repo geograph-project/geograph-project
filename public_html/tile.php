@@ -69,6 +69,14 @@ if (isset($_GET['map']))
 	  || $y13+$f13 < $CONF['ymrange'][0] || $y13 > $CONF['ymrange'][1]) {
 		exit;
 	}
+	$overlay = isset($_GET['o']) && !empty($_GET['o']);
+	$layers = 15;
+	if (isset($_GET['l'])) {
+		$layers = intval($_GET['l']);
+		if ($layers < 1 || $layers > 15)
+			$layers = 15;
+	}
+
 	$map=new GeographMap;
 	//if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && (init_session() || true) && $USER->hasPerm('admin'))
 	//	$map->caching=false;
@@ -77,6 +85,8 @@ if (isset($_GET['map']))
 	$map->setImageSize($w,$h);
 	$map->setScale($z);
 	$map->type_or_user = $t;
+	$map->overlay = $overlay;
+	$map->layers = $layers;
 	//$map->caching=false; //FIXME
 	$map->returnImage();
 	exit;
