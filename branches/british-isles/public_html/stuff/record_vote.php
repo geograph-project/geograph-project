@@ -26,9 +26,14 @@ require_once('geograph/global.inc.php');
 
 init_session();
 
+if (isset($_GET['html'])) {
+        print "thanks - you may close this window";
+} else {
 header("HTTP/1.0 204 No Content");
 header("Status: 204 No Content");
 header("Content-Length: 0");
+}
+
 flush();
 
 

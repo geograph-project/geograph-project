@@ -41,9 +41,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$db = GeographDatabaseConnection(true);
 		
 		$row = $db->getRow("
-			select topic_titles
+			select topic_title
 			from geobb_topics
-			inner join geobb_post using (topic_id)
+			inner join geobb_posts using (topic_id)
 			inner join gridimage_post_highlight using (post_id)
 			where post_id = $post_id
 			");
