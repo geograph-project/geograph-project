@@ -488,6 +488,8 @@ class GridImage
 		$mosaic=new GeographMapMosaic;
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($this->grid_square));
 
+		$this->comment = preg_replace('/\s*NOTE.? This image has a detailed.+?To read it click on the image.?/is','',$this->comment);
+
 
 		//find a possible place within 25km
 		$place = $this->grid_square->findNearestPlace(75000);
@@ -583,7 +585,10 @@ class GridImage
 			$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.*,u.realname FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) INNER JOIN user u ON (snippet.user_id = u.user_id)  WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
 		}
 		
-		
+		if (empty($db)) {
+			$db=&$this->_getDB(true);
+		}
+
 		$this->snippet_count = count($this->snippets);
 		
 		if (preg_match('/[^\[]\[\d+\]/',$this->comment))

@@ -82,7 +82,7 @@ function isSpam($msg)
 	//no legitimate use for html or bbedit tags
 	if (strstr($msg, '[url')!==false)
 		return true;
-	if (strstr($msg, 'href')!==false)
+	if (strstr($msg, 'href=')!==false)
 		return true;
 		
 	//how many times does http appear?

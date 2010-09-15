@@ -417,7 +417,7 @@ END;
 							'localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}"
 							));
 					}
-				} else {
+				} elseif (!preg_match('/(@\w+\b|\b\w+:\s*\w+)/',$this->criteria->searchtext)) {
 					require_once("3rdparty/spellchecker.class.php");
 					$original = preg_replace('/ftf:\d/','',$this->criteria->searchtext);
 					$correction = SpellChecker::Correct($original);
@@ -780,6 +780,7 @@ END;
 		if (!empty($this->error)) {
 			ob_start();
 			print "\n\nHost: ".`hostname`."\n\n";
+			print "Link: http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}\n\n";
 			if (!empty($this->info)) {
 				print "Info: {$this->info}\n";
 			}

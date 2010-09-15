@@ -310,7 +310,7 @@ class GeographUser
 			{
 				//email address already exists in database
 				$ok=false;
-				$errors['email']='Email address is already registered';
+				$errors['email']='Email address is already registered. You can try to <a href="/login.php">Login here</a>.';
 			}
 			else
 			{
@@ -390,7 +390,10 @@ class GeographUser
 					
 					$msg.="We hope you enjoy using and contributing to the site\n\n";
 					$msg.="Kind Regards,\n\n";
-					$msg.="The Geograph.org.uk Team";
+					$msg.="The Geograph.org.uk Team\n\n";
+
+					$msg.="P.S. This may also be of interest:\n";
+					$msg.="http://www.geograph.org.uk/article/Geograph-Introductory-letter";
 					
 					
 					@mail($email, '[geograph] Confirm registration', $msg,

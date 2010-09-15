@@ -47,18 +47,25 @@ class UpdateThumbnailCrossReferencesWithEditedReply extends EventHandler
 		 
 		$post=$db->GetRow("select post_text,topic_id from geobb_posts where post_id=$post_id");
 
-		if (preg_match_all("/\[\[(\[?)(\d+)(\]?)\]\]/",$post['post_text'],$g_matches)) {
-			$db->query("delete from gridimage_post where post_id=$post_id");
-			foreach ($g_matches[2] as $i => $g_id) {
-					
-				$type = ($g_matches[1][$i])?'I':'T';
-				
-				$db->query("INSERT INTO gridimage_post SET gridimage_id = $g_id,post_id	= $post_id, topic_id = {$post['topic_id']},type = '$type'");
-					
-				
-			}
-		}
+                $db->query("delete from gridimage_post where post_id=$post_id");
 
+                if (preg_match_all("/\[\[(\[?)(\d+)(\]?)\]\]/",$post['post_text'],$g_matches)) {
+                        foreach ($g_matches[2] as $i => $g_id) {
+
+                                $type = ($g_matches[1][$i])?'I':'T';
+
+                                $db->query("INSERT INTO gridimage_post SET gridimage_id = $g_id,post_id = $post_id, topic_id = {$post['topic_id']},type = '$type'");
+                        }
+                }
+
+                if (preg_match_all('/\[image id=(\d+)/',$post['post_text'],$g_matches)) {
+                        foreach ($g_matches[1] as $i => $g_id) {
+
+                                $type = 'T';
+
+                                $db->query("INSERT INTO gridimage_post SET gridimage_id = $g_id,post_id = $post_id, topic_id = {$post['topic_id']},type = '$type'");
+                        }
+                }
 	
 		//return true to signal completed processing
 		//return false to have another attempt later
