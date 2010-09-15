@@ -75,12 +75,6 @@
 		 	 <td colspan="3" style="background:#dddddd;"><b>you can optionally limit to results to: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="searchtext" id="l_searchtext"><b>containing text</b></label></td> 
-			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
-			 <small>({newwin href="/help/search" text="open <b>text search help</b>"})</small></td> 
-			 <td>eg Bridge</td> 
-		  </tr> 
-		  <tr> 
 			 <td><label for="user_name">contributor</label></td> 
 			 <td colspan="2"> 
 			 	<input type="text" name="user_name" id="user_name" value="{dynamic}{$user_name|escape:'html'}{/dynamic}" class="searchinput" style="width:200px"
