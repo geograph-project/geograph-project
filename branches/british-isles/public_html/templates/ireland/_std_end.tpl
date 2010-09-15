@@ -164,7 +164,7 @@
        <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$static_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
     </p>
     <p style="color:#777788;">Hosting supported by 
-    {external title="click to visit the Fubra website" href="http://www.fubra.com/" text="Fubra"}
+    {external title="click to visit the CatN website - home of vCluster hosting" href="http://catn.com/" text="CatN"}
     </p>
   </div>
 </div>
