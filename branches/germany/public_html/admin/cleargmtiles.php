@@ -38,11 +38,22 @@ set_time_limit(3600*24);
 #$map->rebuildGMcache();
 $dir = $_SERVER['DOCUMENT_ROOT']."/maps";
 #system("cd $dir && rm base/*/*/base_*_m.gd* detail/*/*/detail_*_m.png* label/*/*/label_*_m.gd* base/*/*/base_*_m.png* label/*/*/label_*_m.png*");
-system("cd $dir && rm base/*/*/base_*_m.gd*");
+#system("cd $dir && rm base/*/*/base_*_m.gd*");
+system("cd $dir && rm detail/*/*/detail_*[3-9]_0_m.png");
 system("cd $dir && rm detail/*/*/detail_*_m.png");
 system("cd $dir && rm detail/*/*/detail_*_m.png*");
-system("cd $dir && rm label/*/*/label_*_m.gd*");
+#maps/detail/*/*/detail_*[3-9]_0_m.png
+#7_0_m_l2_o
+system("cd $dir && rm detail/*/*/detail_*[3-9]_0_m_l*.png");
+system("cd $dir && rm detail/*/*/detail_*_m_l*.png");
+system("cd $dir && rm detail/*/*/detail_*_m_l*.png*");
+#system("cd $dir && rm label/*/*/label_*_m.gd*");
+#7_m
+system("cd $dir && rm base/*/*/base_*[3-9]_m.png*");
+system("cd $dir && rm base/*/*/base_*[0-2]_m.png*");
 system("cd $dir && rm base/*/*/base_*_m.png*");
+system("cd $dir && rm label/*/*/label_*[3-9]_m.png*");
+system("cd $dir && rm label/*/*/label_*[0-2]_m.png*");
 system("cd $dir && rm label/*/*/label_*_m.png*");
 #system("cd $dir && rm base/*/*/base_*_m.gd* detail/*/*/detail_*_m.png");
 # rm base/*/*/base_*_m.gd* detail/*/*/detail_*_m.png* label/*/*/label_*_m.gd*

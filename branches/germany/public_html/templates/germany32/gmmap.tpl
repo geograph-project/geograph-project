@@ -53,6 +53,38 @@
 		function GetTileUrl_GeoM(txy, z) {
 			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z;
 		}
+		function GetTileUrl_GeoMO(txy, z) {
+			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=2&o=1";
+		}
+		function GetTileUrl_GeoMG(txy, z) {
+			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=4";
+		}
+
+		function GetTileUrl_Mapnik(a, z) {
+		    return "http://tile.openstreetmap.org/" +
+				z + "/" + a.x + "/" + a.y + ".png";
+		}
+
+
+		function GetTileUrl_TaH(a, z) {
+		    return "http://tah.openstreetmap.org/Tiles/tile/" +
+				z + "/" + a.x + "/" + a.y + ".png";
+		}
+
+		function GetTileUrl_TopB(a, z) {
+		    return "http://topo.openstreetmap.de/base/" +
+				z + "/" + a.x + "/" + a.y + ".png";
+		}
+
+		function GetTileUrl_TopH(a, z) {
+		    return "http://hills-nc.openstreetmap.de/" +
+				z + "/" + a.x + "/" + a.y + ".png";
+		}
+
+		function GetTileUrl_Top(a, z) {
+		    return "http://topo.openstreetmap.de/topo/" +
+				z + "/" + a.x + "/" + a.y + ".png";
+		}
 
 		function loadmap() {
 			if (GBrowserIsCompatible()) {
@@ -66,12 +98,44 @@
 				tilelayers[0].getTileUrl = GetTileUrl_GeoM;
 				tilelayers[0].isPng = function () { return true; };
 				tilelayers[0].getOpacity = function () { return 1.0; };
-				var proj = new GMercatorProjection(18);
+				var proj = new GMercatorProjection(19);
 				var geomapm = new GMapType(tilelayers, proj, "Geo", {tileSize: 256});
+
+				var copyright1 = new GCopyright(1,
+					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
+					': http://topo.openstreetmap.de/static/licence_de.html');
+				var copyright2 = new GCopyright(1,
+					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
+					': http://topo.openstreetmap.de/static/licence_de.html');
+				var copyrightCollectionTopo = new GCopyrightCollection('&copy; OSM');
+				var copyrightCollectionTopoH = new GCopyrightCollection('H&ouml;hen CIAT');
+				copyrightCollectionTopo.addCopyright(copyright1);
+				copyrightCollectionTopoH.addCopyright(copyright2);
+				var tilelayers_mapnikhg = new Array();
+				tilelayers_mapnikhg[0] = new GTileLayer(copyrightCollectionTopo, 0, 18);
+				tilelayers_mapnikhg[0].isPng = function () { return true; };
+				tilelayers_mapnikhg[0].getOpacity = function () { return 1.0; };
+				tilelayers_mapnikhg[0].getTileUrl = GetTileUrl_Mapnik;
+				tilelayers_mapnikhg[1] = new GTileLayer(copyrightCollectionTopoH, 8, 15);
+				tilelayers_mapnikhg[1].isPng = function () { return true; };
+				tilelayers_mapnikhg[1].getOpacity = function () { return 1.0; };
+				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_TopH;
+				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollection,5,13);
+				tilelayers_mapnikhg[2].getTileUrl = GetTileUrl_GeoMO;
+				tilelayers_mapnikhg[2].isPng = function () { return true; };
+				tilelayers_mapnikhg[2].getOpacity = function () { return 0.5; };
+				tilelayers_mapnikhg[3] = new GTileLayer(copyrightCollection,5,13);
+				tilelayers_mapnikhg[3].getTileUrl = GetTileUrl_GeoMG;
+				tilelayers_mapnikhg[3].isPng = function () { return true; };
+				tilelayers_mapnikhg[3].getOpacity = function () { return 1.0; };
+				var mapnikhg_map = new GMapType(tilelayers_mapnikhg,
+					proj, "OSM (Mapnik) + Profile",
+					{ urlArg: 'mapnikhg', linkColor: '#000000', shortName: 'OSM+G', alt: 'OSM: Mapnik+Profile, Geo' });
 
 				map = new GMap2(document.getElementById("map"));
 				map.addMapType(G_PHYSICAL_MAP);
 				map.addMapType(geomapm);
+				map.addMapType(mapnikhg_map);
 
 				G_PHYSICAL_MAP.getMinimumResolution = function () { return 5 };
 				G_NORMAL_MAP.getMinimumResolution = function () { return 5 };
