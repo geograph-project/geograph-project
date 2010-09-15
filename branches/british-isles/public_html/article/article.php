@@ -268,6 +268,10 @@ if (count($page)) {
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
+        if (preg_match('/\bgeograph\b/i',$page['category_name'])) {
+                $template = 'article_article2.tpl';
+        }
+
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");

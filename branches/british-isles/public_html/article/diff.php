@@ -75,10 +75,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($r1 && $r2 && $r1 != $r2) {
 			if ($r1 > $r2) {
 				$a1 = getRevisionArray($page['article_id'],intval($r2));
-				$a2 = getRevisionArray($page['article_id'],intval($r1));
+				$a2 = getRevisionArray($page['article_id'],intval($r1),true);
 			} else {
 				$a1 = getRevisionArray($page['article_id'],intval($r1));
-				$a2 = getRevisionArray($page['article_id'],intval($r2));
+				$a2 = getRevisionArray($page['article_id'],intval($r2),true);
 			}
 			$smarty->assign_by_ref('output', diff2table($a1,$a2));
 		}
@@ -99,7 +99,7 @@ $smarty->display($template, $cacheid);
 
 
 
-function getRevisionArray($aid,$revid) {
+function getRevisionArray($aid,$revid,$showwho = false) {
 	global $db,$isadmin,$USER;
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -123,7 +123,8 @@ function getRevisionArray($aid,$revid) {
 	$a[] = "Extract: {$page['extract']}";
 	$a[] = "Licence: {$page['licence']}";
 	$a[] = "Approved: {$page['approved']}";
-	$a[] = "Modifier: {$page['modifier_realname']}";
+	if ($showwho)
+		$a[] = "Modifier: {$page['modifier_realname']}";
 	$a[] = "---------------------------------";
 	$a[] = "";
 	
