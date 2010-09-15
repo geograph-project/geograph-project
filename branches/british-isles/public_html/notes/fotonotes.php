@@ -52,7 +52,7 @@ if ($LOCALPATH == 'autodetect') {
 
 /* DEBUG 
 --------------------------------------------- */
-define("DEBUGLEVEL", 4);
+define("DEBUGLEVEL", 0);
 
 
 /* PROCEDURE 

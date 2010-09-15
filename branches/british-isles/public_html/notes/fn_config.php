@@ -44,8 +44,9 @@
 	$PERMISSIONS['PASSWORD'] = 'fnpassword';
 	
 	
-	//include domain specific configuration
-	require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
+//use our own authentication first... (needs to be in global scope)
+require_once('geograph/global.inc.php');
+init_session();
 	
 	$MYSQL_SERVER			=		$CONF['db_connect'];
 	$MYSQL_USERNAME			=		$CONF['db_user'];
