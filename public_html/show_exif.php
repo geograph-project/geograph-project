@@ -48,7 +48,7 @@ if (isset($_REQUEST['id']))
 	$image=new GridImage();
 	$ok = $image->loadFromId($_REQUEST['id']);
 	
-	if (!$ok || $image->moderation_status=='rejected') {
+	if (!$ok || ($image->moderation_status=='rejected' && !$USER->hasPerm('admin'))) {
 		//clear the image
 		$image=new GridImage;
 		header("HTTP/1.0 410 Gone");

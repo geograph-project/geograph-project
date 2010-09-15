@@ -147,9 +147,10 @@ if (!$smarty->is_cached($template, $cacheid)) {
 						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b/i",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
 				}
 			} 
-		} elseif (!empty($data['comment']) && $CONF['sphinx_host']) {
+		} 
+		if (!empty($data['comment']) && $CONF['sphinx_host']) {
 			$sphinx = new sphinxwrapper();
-			$sphinx->pageSize = $pgsize = 25;
+			$sphinx->pageSize = $pgsize = 8;
 			$pg = 1;
 			
 			$crit = '';
@@ -160,7 +161,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				if (count($m[1]) > 3) {
 					$words = array_unique($m[1]);
 					
-					$quorum = max(3,count($words) -3);
+					$quorum = min(2,count($words) -2);
 					
 					$crit = ' | (@(title,comment) "'.implode(' ',$words).'"/'.$quorum.')';
 					
@@ -168,6 +169,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 			
 			$sphinx->prepareQuery("(@title {$data['title']}) | (@comment \"{$data['title']}\") ".$crit);
+##			$sphinx->setGroupBy('titlecrc',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC");
 			
 			$ids = $sphinx->returnIds($pg,'snippet');
 			

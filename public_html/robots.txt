@@ -43,6 +43,7 @@ Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
 Disallow: /stuff/conversion.php
+Disallow: /stuff/post.php
 Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /content/syndicator.php
@@ -97,6 +98,7 @@ Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
 Disallow: /stuff/conversion.php
+Disallow: /stuff/post.php
 Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /syndicator.php?key=
