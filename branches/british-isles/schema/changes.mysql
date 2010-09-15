@@ -1385,3 +1385,11 @@ CREATE TABLE IF NOT EXISTS `fn_annotation_rows` (
 
 
 
+alter table gridimage_size add original_diff enum('unknown','no','yes') default 'unknown';
+
+
+
+#################################################
+
+
+
