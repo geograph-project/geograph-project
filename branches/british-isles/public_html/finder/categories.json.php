@@ -52,7 +52,7 @@ if (!empty($_REQUEST['q'])) {
 	if ($offset < (1000-$pgsize) ) { 
 		$sphinx->processQuery();
 
-
+		$sphinx->q = "\"^{$sphinx->q}$\" | ($sphinx->q)";
 
 		$ids = $sphinx->returnIds($pg,'category');
 		
