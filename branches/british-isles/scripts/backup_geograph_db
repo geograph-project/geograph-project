@@ -65,6 +65,7 @@ $cmd="/usr/bin/mysqldump --no-defaults --opt ".
         "--ignore-table=geograph_live.loc_wikipedia ".
         "--ignore-table=geograph_live.loc_ppl ".
         "--ignore-table=geograph_live.loc_towns ".
+        "--ignore-table=geograph_live.postcode_codeopen ".
 
 #various tmp tables - some are big!
         "--ignore-table=geograph_live.aagaz ".
