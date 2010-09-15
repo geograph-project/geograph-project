@@ -2,9 +2,13 @@
     DocumentRoot /var/www/channel_live/public_html
 
     #canonical domain for site
-    ServerName www.geograph.je
+    ServerName www.geograph.org.je
     ServerAlias channel-islands.geographs.org
     ServerAlias *.channel.geographs.org
+    ServerAlias *.geograph.org.gg
+    ServerAlias *.geograph.org.je
+    ServerAlias geograph.org.gg
+    ServerAlias geograph.org.je
 
 
     #create logformat like combined but with our user id and script timing
@@ -51,21 +55,23 @@
     #redirect to canonical url
     #http://httpd.apache.org/docs/misc/rewriteguide.html
     RewriteCond %{HTTP_HOST}   !^channel-islands\.geographs\.org [NC]
-    RewriteCond %{HTTP_HOST}   !^kml\.channel\.geographs\.org [NC]
-    RewriteCond %{HTTP_HOST}   !^t0\.channel\.geographs\.org [NC]
-    RewriteCond %{HTTP_HOST}   !^s0\.channel\.geographs\.org [NC]
+    RewriteCond %{HTTP_HOST}   !^(kml|t0|s\d)\.channel\.geographs\.org [NC]
+    RewriteCond %{HTTP_HOST}   !^(www|kml|t0|s\d)\.geograph\.org\.(gg|je) [NC]
     RewriteCond %{HTTP_HOST}   !^$
-    RewriteRule ^/(.*)         http://www.channel.virtual/$1 [L,R=permanent]
+    RewriteRule ^/(.*)         http://channel-islands.geographs.org/$1 [L,R=permanent]
 
-    RewriteCond %{HTTP_HOST}   ^kml\.channel\.geographs\.org [NC]
+    RewriteCond %{HTTP_HOST}   ^kml\.channel\.geographs\.org [NC,OR]
+    RewriteCond %{HTTP_HOST}   ^kml\.geograph\.org\.(gg|je) [NC]
     RewriteCond %{REQUEST_URI} !^/kml
     RewriteRule ^/(.*)         http://channel-islands.geographs.org/$1 [L,R=permanent]
 
-    RewriteCond %{HTTP_HOST}   ^t0\.channel\.geographs\.org [NC]
+    RewriteCond %{HTTP_HOST}   ^t0\.channel\.geographs\.org [NC,OR]
+    RewriteCond %{HTTP_HOST}   ^t0\.geograph\.org\.(gg|je) [NC]
     RewriteCond %{REQUEST_URI} !^/tile
     RewriteRule ^/(.*)         http://channel-islands.geographs.org/$1 [L,R=permanent]
 
     RewriteCond %{HTTP_HOST}   !^channel-islands\.geographs\.org [NC]
+    RewriteCond %{HTTP_HOST}   !^www\.geographs\.org\.(gg|je) [NC]
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
 
 

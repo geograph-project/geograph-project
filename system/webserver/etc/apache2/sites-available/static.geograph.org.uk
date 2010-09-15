@@ -58,6 +58,8 @@
     RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
 
+    RewriteCond %{HTTP_HOST}   ^cluster3\.geograph\.org\.uk [NC]
+    RewriteRule ^/robots.txt   /robots-none.txt [qsa]
 
     ErrorDocument 404 /error.php
     ErrorDocument 403 /error.php

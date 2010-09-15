@@ -3,7 +3,7 @@
     ServerName www.geograph.org.uk
     ServerAlias kml.geograph.org.uk
     ServerAlias real.kml.geograph.org.uk
-    ServerAlias real.www.geograph.org.uk
+#    ServerAlias real.www.geograph.org.uk
     ServerAlias schools.geograph.org.uk
     ServerAlias t0.www.geograph.org.uk
     ServerAlias t0.geograph.org.uk
@@ -203,8 +203,11 @@
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?phlap\.net/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?valendale\.myby\.co\.uk/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?youtube\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} 100393082791296590616.00044b9ad76c86038d52e [NC,OR]
     RewriteCond %{HTTP_REFERER} (thread|topic|forum|blog) [NC]    
     RewriteRule /(geo|)photos/\d.*\.jpg$ http://s9.geograph.org.uk$0 [R=307,L]
+
+    RewriteRule ^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$ http://s0.geograph.org.uk$0 [R=permanent,L]
 
 <Location /sitemap/>
     DirectoryIndex index.html

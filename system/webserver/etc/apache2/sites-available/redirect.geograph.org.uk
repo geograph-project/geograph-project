@@ -4,6 +4,8 @@
     ServerAlias geograph.co.uk
     ServerAlias www.geograph.co.uk
  
+    ServerAlias real.www.geograph.org.uk
+
     ServerAlias ireland.geograph.org.uk
     ServerAlias geograph.ie
 
