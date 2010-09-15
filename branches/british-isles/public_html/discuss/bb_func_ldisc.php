@@ -40,7 +40,7 @@ $xtr=$xtr1;
 
 $list_topics='';
 
-if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id',$filterCrit,$filterIds,$orderBy,$viewlastdiscussions)){
+if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id',$filterCrit,$filterIds,$orderBy,$viewlastdiscussions,'','','',null,isset($_GET['read'])?'topic_id having (isnew > 0 or isnew is null)':'')){
     
     $i=1;
     $tpl=makeUp('main_last_discuss_cell');
