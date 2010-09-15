@@ -72,17 +72,26 @@ if (!empty($_GET['q'])) {
 				limit $limit");
 
 				$q2 = trim(preg_replace('/\b(easting|northing):([ \d\(\)OR\|]+)/',' ',$q));
+				$q2 = trim(preg_replace('/\b(land):([ \d\(\)ORland\|]+)/',' ',$q2));
+				$q2 = trim(preg_replace('/\b(place|locality):([\w ]+)/',' ',$q2));
 				$smarty->assign("q2",$q2);
 				
 				$results = array();
 				foreach ($ids as $c => $id) {
 					$row = $rows[$id];
 					
-					if (rand(1,10) < 8 && strlen($q2) > 3) {
+					if (($c < 3 || rand(1,10) < 5) && strlen($q2) > 3) {
 						$images=new ImageList();
 						$images->getImagesBySphinx($q2.' '.$row['grid_reference'],3);
 						$row['images'] = $images->images;
 						$row['resultCount'] = $images->resultCount;
+						$row['query'] = $q2.' '.$row['grid_reference'];
+					} else if (rand(1,10) < 5 &&  strlen($q2) < 1)  {
+						$images=new ImageList();
+						$images->getImagesBySphinx('grid_reference:'.$row['grid_reference'],3);
+						$row['images'] = $images->images;
+						$row['resultCount'] = $images->resultCount;
+						$row['query'] = 'grid_reference:'.$row['grid_reference'];
 					} else {
 						$row['skipped'] = 1;
 					}
