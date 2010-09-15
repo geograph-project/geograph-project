@@ -3,11 +3,6 @@
 //Class specific to Geograph Project
 
 
-//use our own authentication first... (needs to be in global scope)
-require_once('geograph/global.inc.php');
-init_session();
-
-
 	class FNUser {
 
 

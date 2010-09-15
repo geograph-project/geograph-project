@@ -386,7 +386,7 @@ EOF;
 		</div>
 
 	 	<form class="fn-editbar fn-editbar-inactive" name="fn_editbar" id="fn_editbar">
-	 				
+
         		<div class="fn-editbar-fields">
        			<p>TITLE:</p>
        			<input type="input" class="fn-editbar-title" name="title" value="default" />
@@ -396,7 +396,7 @@ EOF;
 			    <input type="hidden" class="fn-editbar-border-color" name="border_color" value="#FE0000" />
 			    
 	  		</div>
-	  
+			IMPORTANT: Notes should generally be factual information. Notes like "Pretty house!" will generally be rejected.	 				
 	  		<div class="fn-editbar-fields">
 	  			<p>CONTENT:</p>
 				<textarea class="fn-editbar-content" name="content"></textarea>

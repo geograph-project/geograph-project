@@ -53,18 +53,18 @@ class FNSaveDatabaseRows extends FNSave {
 			annotation_id, annotation_title, annotation_author, annotation_boundingbox, 
 			annotation_content)
 			VALUES
-		  	('".$fn_annotation->param["parent_link_jpg"]."',
-			'".$fn_annotation->param["parent_id"]."',
-			'".$fn_annotation->param["userid"]."',
-			'".$fn_annotation->param["name"]."',
+		  	('".mysql_real_escape_string($fn_annotation->param["parent_link_jpg"])."',
+			'".mysql_real_escape_string($fn_annotation->param["parent_id"])."',
+			'".mysql_real_escape_string($fn_annotation->param["userid"])."',
+			'".mysql_real_escape_string($fn_annotation->param["name"])."',
 			'$timestamp',
 			'$timestamp',
-			'".$fn_annotation->param["xml_entryinfo"]."',
-			'".$fn_annotation->param["id"]."',
-			'".$fn_annotation->param["title"]."',
-			'".$fn_annotation->param["name"]."',
-			'".$fn_annotation->param["boundingbox"]."',
-			'".$fn_annotation->param["content"]."' 
+			'".mysql_real_escape_string($fn_annotation->param["xml_entryinfo"])."',
+			'".mysql_real_escape_string($fn_annotation->param["id"])."',
+			'".mysql_real_escape_string($fn_annotation->param["title"])."',
+			'".mysql_real_escape_string($fn_annotation->param["name"])."',
+			'".mysql_real_escape_string($fn_annotation->param["boundingbox"])."',
+			'".mysql_real_escape_string($fn_annotation->param["content"])."' 
 			)";
 
    		displayDebug("query addannotationdb: $query<br>", 2);
@@ -88,21 +88,21 @@ class FNSaveDatabaseRows extends FNSave {
 
 		$query = "UPDATE fn_annotation_rows 
 		SET 
-			file = '".$fn_annotation->param["parent_link_jpg"]."',
-			image_id = '".$fn_annotation->param["parent_id"]."',
+			file = '".mysql_real_escape_string($fn_annotation->param["parent_link_jpg"])."',
+			image_id = '".mysql_real_escape_string($fn_annotation->param["parent_id"])."',
  
-			user_id = '".$fn_annotation->param["userid"]."', 
-			username = '".$fn_annotation->param["name"]."',
+			user_id = '".mysql_real_escape_string($fn_annotation->param["userid"])."', 
+			username = '".mysql_real_escape_string($fn_annotation->param["name"])."',
  
 			modified = '$timestamp', 
-			annotation = '".$fn_annotation->param["xml_entryinfo"]."',
-			annotation_id = '".$fn_annotation->param["id"]."',
-			annotation_title = '".$fn_annotation->param["title"]."',
-			annotation_author = '".$fn_annotation->param["name"]."',
+			annotation = '".mysql_real_escape_string($fn_annotation->param["xml_entryinfo"])."',
+			annotation_id = '".mysql_real_escape_string($fn_annotation->param["id"])."',
+			annotation_title = '".mysql_real_escape_string($fn_annotation->param["title"])."',
+			annotation_author = '".mysql_real_escape_string($fn_annotation->param["name"])."',
  
-			annotation_boundingbox = '".$fn_annotation->param["boundingbox"]."',
-			annotation_content = '".$fn_annotation->param["content"]."' 
-		WHERE annotation_id = '".$fn_annotation->param["id"]."'";
+			annotation_boundingbox = '".mysql_real_escape_string($fn_annotation->param["boundingbox"])."',
+			annotation_content = '".mysql_real_escape_string($fn_annotation->param["content"])."' 
+		WHERE annotation_id = '".mysql_real_escape_string($fn_annotation->param["id"])."'";
 
    		displayDebug("query addannotationdb: $query<br>", 2);
 		////TODO NON FUNCTIONAL - $FN_DB->query($query);
@@ -119,7 +119,7 @@ class FNSaveDatabaseRows extends FNSave {
 		displayDebug("fn_annotation object: ", 3);
 		displayDebugParam($fn_annotation, 3);
 
-		$query = "UPDATE fn_annotation_rows SET annotation_id = CONCAT(annotation_id,'+DELETED') WHERE annotation_id = '".$fn_annotation->param["id"]."'";
+		$query = "UPDATE fn_annotation_rows SET annotation_id = CONCAT(annotation_id,'+DELETED') WHERE annotation_id = '".mysql_real_escape_string($fn_annotation->param["id"])."'";
 
    		displayDebug("query addannotationdb: $query<br>", 2);
 		$FN_DB->query($query);		
