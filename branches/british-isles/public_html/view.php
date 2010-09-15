@@ -175,15 +175,17 @@ if ($image->isValid())
 
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
+        (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
 	    empty($_SESSION['photos'][$image->gridimage_id]) &&
 	    $CONF['template']!='archive')
 	{
 		$db = GeographDatabaseConnection(false);
 		
 		$db->Query("INSERT LOW_PRIORITY INTO gridimage_log VALUES({$image->gridimage_id},1,0,now()) ON duplicate KEY UPDATE hits=hits+1");
-		
+		@$_SESSION['photos'][$image->gridimage_id]++;
+	} else {
+		$smarty->assign('is_bot',true);
 	}
-	@$_SESSION['photos'][$image->gridimage_id]++;
 
 	$ref = @parse_url($_SERVER['HTTP_REFERER']);
 	if (!empty($ref['query'])) {

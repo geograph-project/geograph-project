@@ -45,8 +45,8 @@ $smarty = new GeographPage;
                         abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
                         t.forum_id=1
                         group by t.topic_id
-                        order by t.topic_time desc limit 3";
-                $news=$db->GetAll($sql);
+                        order by t.topic_id desc limit 3";
+                $news=$db->CacheGetAll(3600,$sql);
                 if ($news)
                 {
                         foreach($news as $idx=>$item)
@@ -57,10 +57,10 @@ $smarty = new GeographPage;
 
 
                 $smarty->assign_by_ref('news2', $news);
+
         }
 
 
 $smarty->display('login_success.tpl');
 
 	
-?>

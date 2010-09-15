@@ -84,3 +84,4 @@ Disallow: /sitemap*xml*
 Disallow: /content/*?*order=*
 
 
+Sitemap: http://www.geograph.org.uk/sitemap.xml

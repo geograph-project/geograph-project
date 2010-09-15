@@ -325,7 +325,8 @@ for ($i=0; $i<$cnt; $i++)
 		$item->thumbTag = $details['html'];
 		
 		if ($format == 'MEDIA') {
-			$item->content = $images->images[$i]->_getFullpath(true,true); 
+			$item->title .= " by ".$images->images[$i]->realname;
+			$item->content = str_replace('s0.','s0cdn.',$images->images[$i]->_getFullpath(true,true)); 
 			if ($opt_expand) {
 				$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 				$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;

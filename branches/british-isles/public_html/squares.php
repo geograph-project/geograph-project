@@ -54,8 +54,8 @@ switch($type) {
 	case 'with': $crit = 'imagecount>0'; break;
 	case 'few': $crit = 'imagecount<3 and (percent_land > 0 || imagecount>1)'; break;
 	case 'nogeos': $crit = 'has_geographs=0 and percent_land > 0'; break;
-	case 'recent': $crit = 'percent_land > 0 and recent_only.gridsquare_id IS NOT NULL'; break;
-	case 'norecent': $crit = 'percent_land > 0 and recent_only.gridsquare_id IS NULL'; break;
+	case 'recent': $crit = 'percent_land > 0 and has_recent=1'; break;
+	case 'norecent': $crit = 'percent_land > 0 and has_recent=0'; break;
 	default: $type = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
 }
 $typename = $types[$type];
@@ -114,22 +114,11 @@ if ($grid_ok)
 		$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 		$sql_order = ' dist_sqd ';
 		
-		if ($type=='norecent' || $type=='recent') {
-	
-			$sql = "SELECT grid_reference as id,grid_reference,x,y,images as imagecount $sql_fields
-			FROM gridsquare gs
-			LEFT JOIN recent_only USING (gridsquare_id)
-			WHERE $sql_where
-			GROUP BY gridsquare_id
-			ORDER BY $sql_order
-			LIMIT 1000"; 
-		} else {
 			$sql = "SELECT grid_reference as id,grid_reference,x,y,imagecount $sql_fields
 			FROM gridsquare gs
 			WHERE $sql_where
 			ORDER BY $sql_order
 			LIMIT 1000"; ##limt just to make sure
-		}
 		
 		$db = GeographDatabaseConnection(true);
 

@@ -21,6 +21,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
+if (!empty($_GET['q'])) {
+	header("HTTP/1.1 503 Service Unavailable");
+	print "Feature Disabled - <a href=\"http://www.geograph.org.uk/contact.php\">please contact us</a>";
+	exit;
+}
+
 require_once('geograph/global.inc.php');
 require_once('geograph/feedcreator.class.php');
 

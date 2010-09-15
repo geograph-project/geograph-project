@@ -63,7 +63,7 @@ if (empty($_GET['refresh']))
 	$rss->useCached($format,$rssfile);
 
 $rss->title = 'Geograph Events'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/article/";
+$rss->link = "http://{$_SERVER['HTTP_HOST']}/events/";
  
 	
 $rss->description = "Upcoming Geograph British Isles Events"; 

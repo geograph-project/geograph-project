@@ -59,6 +59,17 @@ if (file_exists($filename) && empty($_GET['over']))
 			group by tenk_square 
 			having land_count > 0
 			order by null");
+		} elseif ($type == 'percentage' && !$when) {
+			$most = $db->GetAll("select 
+			x,y,
+			concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
+			floor(sum(has_geographs)/sum(percent_land >0)*100) as image_count,
+			sum(percent_land >0) as land_count
+			from gridsquare 
+			where reference_index = $ri 
+			group by tenk_square 
+			having land_count > 0
+			order by null");
 		} else {
 			if ($type == 'points') {
 				$sql_column = "sum(moderation_status='geograph' and ftf=1)"; //as gridimage_search

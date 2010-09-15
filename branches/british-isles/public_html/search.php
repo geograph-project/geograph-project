@@ -1090,7 +1090,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			}
 		} elseif ($display == 'excerpt' || $display == 'landing' || $display == 'human') {
 			
-			$sphinx = new sphinxwrapper($engine->criteria->searchtext);
+			if (empty($engine->criteria->searchtext) && preg_match('/labeled \[(.*)\],/',$engine->criteria->searchdesc,$m)) {
+				$sphinx = new sphinxwrapper($m[1]);
+			} else {
+				$sphinx = new sphinxwrapper($engine->criteria->searchtext);
+			}
 			
 			$docs = array();
 			foreach ($engine->results as $idx => $image) {
