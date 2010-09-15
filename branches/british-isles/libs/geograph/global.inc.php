@@ -91,8 +91,8 @@ function GeographDatabaseConnection($allow_readonly = false) {
 			//if the application dictates it needs currency
 			if ($allow_readonly > 1) {
 				$row = $db->getRow("SHOW SLAVE STATUS");
-				
-				if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && ($row['Seconds_Behind_Master'] < 150) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
+				if (!empty($row)) { //its empty if we actully connected to master!
+				    if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && ($row['Seconds_Behind_Master'] < 150) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
 				
 				
 					//email me if we lag, but once gets big no point continuing to notify!
@@ -105,13 +105,14 @@ function GeographDatabaseConnection($allow_readonly = false) {
                				
                				
                				apc_store('lag_warning',1,500);
-				}
-				if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
+				    }
+				    if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
 					$db2=NewADOConnection($GLOBALS['DSN']);
 					if ($db2) {
 						$db2->readonly = false;
 						return $db2;
 					}
+				    }
 				}
 			}
 		

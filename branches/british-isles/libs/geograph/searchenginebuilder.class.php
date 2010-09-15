@@ -784,6 +784,8 @@ class SearchEngineBuilder extends SearchEngine
 					$extra .= '&count=1';
 				if (!empty($_GET['BBOX']))
 					$extra .= "&BBOX=".$_GET['BBOX'];
+				if (!empty($_GET['format']))
+					$extra .= "&format=".$_GET['format'];
 				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra");
 				$extra = str_replace('&','&amp;',$extra);
 				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";

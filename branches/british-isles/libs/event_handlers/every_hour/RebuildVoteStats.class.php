@@ -71,7 +71,8 @@ class RebuildVoteStats extends EventHandler
 					SUM(vote=2) AS v2,
 					SUM(vote=3) AS v3,
 					SUM(vote=4) AS v4,
-					SUM(vote=5) AS v5
+					SUM(vote=5) AS v5,
+					MAX(ts) AS last_vote
 				FROM vote_log
 				WHERE type = '$type' AND vote > 0 AND `final` = 1
 				GROUP BY id

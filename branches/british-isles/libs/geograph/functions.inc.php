@@ -251,7 +251,7 @@ function smarty_function_gridimage($params)
 			if (!empty($image->comment)) {
 				$desc = GeographLinks(nl2br(htmlentities2($image->comment))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
 				
-				$desc = preg_replace('/\bmore sizes\b/i',"<a href=\"/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
+				$desc = preg_replace('/\b(more sizes)\b/i',"<a href=\"/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
 			} else {
 				$desc = '';
 			}
@@ -568,7 +568,10 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 		$smarty->display($template);
 		exit;
 	} elseif (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
-		$threshold *= 1.5;
+
+		//fudge it a bit - our servers are generally busier
+		$threshold *= 2; 
+
 		//lets give registered users a bit more leaway!
 		if ($USER->registered) {
 			$threshold *= 2;

@@ -475,6 +475,12 @@ class SearchCriteria
 				#$this->sphinx['filters']['imageclass'] = "\"".$this->limit3."\"";
 				$db = $this->_getDB(true);
 				$this->sphinx['filters']['classcrc'] = array($db->GetOne('select crc32(lower('.$db->Quote($this->limit3).'))'));
+
+				//fix for 'single non-computable negative'
+				if (!empty($this->limit1) && strpos($this->limit1,'!') === 0) {
+					$this->sphinx['filters']['imageclass'] = preg_replace('/[^\w]+/',' ',$this->limit3);
+				}
+
 			}
 		} 
 		if (!empty($this->limit4)) {
