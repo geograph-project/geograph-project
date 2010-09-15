@@ -28,8 +28,9 @@
 			}
 			if (geocoder) {
 				//replace full uk postcodes by the sector version
-				address = address.replace(/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i,'$1$2 $3'); 
-			
+				//address = address.replace(/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i,'$1$2 $3'); 
+				//uk postcodes now work!
+
 				geocoder.getLatLng(address,function(point) {
 					if (!point) {
 						alert("Your entry '" + address + "' could not be geocoded, please try again");
@@ -224,7 +225,7 @@
 <div style="width:600px; text-align:center;"><label for="addressInput">Enter Address: 
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="submit" value="Find"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder - <b>Note: Doesn't cope with postcodes well.</b>)<br/>	
+	(Powered by the Google Maps API Geocoder)<br/>	
 	Change view: <a href="javascript:void(map.setCenter(new GLatLng(55.55,-3.88), 5));">Whole British Isles</a> &middot; <a href="javascript:void(map.returnToSavedPosition());">Initial View</a> &middot; <a href="javascript:void(map.setCenter(currentelement.getLatLng(), 12));">Center on Marker</a></small></small>
 </div>
 </form>

@@ -15,7 +15,7 @@
     
     <ul>
 	{foreach from=$table item=item}
-	 <li><a href="/discuss/index.php?&amp;action=vthread&amp;forum={$item.forum_id}&amp;topic={$item.topic_id}" title="{$item.topic_time|escape:'html'}">{$item.topic_title|escape:'html'}</a> <span style="color:gray">by {$item.poster_name|escape:'html'}</span></li>
+	 <li><a href="/discuss/index.php?&amp;action=vthread&amp;forum={$item.forum_id}&amp;topic={$item.topic_id}" title="{$item.topic_time|escape:'html'}">{$item.topic_title|escape:'html'}</a> <span style="color:gray">by {$item.topic_poster_name|escape:'html'}</span></li>
 	{foreachelse}
 	 	<li>No threads match the selected options.</li>
 	{/foreach}

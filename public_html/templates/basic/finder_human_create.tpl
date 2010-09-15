@@ -111,7 +111,7 @@
 		<div style="position:relative;" class="interestBox">
 		During this experimental phrase creating new searches is only available to <a href="/register.php" target="_blank">registered site users</a>. <br/><br/>
 		
-		Registration is quick and free! Once registered <a href="{$script_name}?create&amp;login">login</a>.<br/><br/>
+		<ul><li><a href="/register.php" target="_blank">Registration</a> is quick and free! Once registered <a href="{$script_name}?create&amp;login">login</a></li></ul>
 		
 		You can however still <a href="{$script_name}">view previous searches</a>.
 		

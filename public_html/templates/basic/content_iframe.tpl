@@ -45,7 +45,10 @@
 
 
 {foreachelse}
-	<li><i>There is no content to display at this time.</i></li>
+	<li><i>There are no matching collections to display at this time.</i></li>
+        {if $query_info}
+        <li style="padding:20px">You have searched in Collections,<br/> you might like to try searching the <a href="/search.php?searchtext={$q|escape:'url'}&amp;do=1"><b>image database</b> for <tt>{$q|escape:'html'}</tt></a></li>
+        {/if}
 {/foreach}
 
 </ul>

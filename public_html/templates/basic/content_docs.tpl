@@ -25,6 +25,7 @@ Scope: <select name="scope" style="width:90px">
 	<option value="help">Help Pages</option>
 	<option value="document" selected>Information Pages</option>
 </select>
+<input type="hidden" name="order" value="relevance"/>
 <input type="submit" value="Find"/>
 </div>
 </form>

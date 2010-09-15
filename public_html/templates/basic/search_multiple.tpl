@@ -33,8 +33,8 @@
 <input type="hidden" name="old-{$multipleon}" value="{$criteria->searchq|escape:'html'}">
 {foreach from=$criteria->matches item=match}
 	<input type="radio" name="{$multipleon}" value="{$match.id}" id="match{$match.id}">
-	<span style="width:75px;position:absolute;"><a href="/gridref/{$match.gridref}">{$match.gridref}</a></span>
-	<label style="padding-left: 75px;" for="match{$match.id}"{if $match.hist_county} title="Historic County: {$match.hist_county}"{/if}><b>{$match.full_name}</b><small><i>{if $match.adm1_name}, {$match.adm1_name}{/if}, {$references[$match.reference_index]}</i>
+	<tt><a href="/gridref/{$match.gridref}">{$match.gridref}</a></tt>
+	<label for="match{$match.id}"{if $match.hist_county} title="Historic County: {$match.hist_county}"{/if}><b>{$match.full_name}</b><small><i>{if $match.adm1_name}, {$match.adm1_name}{/if}, {$references[$match.reference_index]}</i>
 	<small>[{$match.dsg_name}]</small></small></label> <br/>
 {/foreach}
 

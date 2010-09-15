@@ -147,8 +147,8 @@
 					<input type="button" value="you!" onclick="this.form.user_name.value='{$user->user_id}:{$user->realname|escape:"html"}'">
 				{/if}
 				{/dynamic}
-				<input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
-				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td> 
+				&nbsp; <input type="checkbox" name="user_invert_ind" id="user_invert_ind" {$user_invert_checked}/> <label for="user_invert_ind">exclude this contributor</label><br/>
+				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"}) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <small>(NOTE: exclude <u>ONLY</u> works if enter something in keywords box above)</small></small></td> 
 		  </tr> 
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'"> 
 			 <td><label for="moderation_status">classification</label></td> 
@@ -232,7 +232,7 @@
 					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
 				</select> images per page,<br/> at most {newwin href="/help/one_result_per_group" title="Read more" text="one"} image from each <select name="groupby" id="groupby" size="1"> 
 					{html_options options=$groupbys selected=$groupby}
-				</select><sup style="color:red">new</sup>,<br/> would like a heading seperating images by <select name="breakby" id="breakby" size="1"> 
+				</select>,<br/> would like a heading seperating images by <select name="breakby" id="breakby" size="1"> 
 					{html_options options=$breakdowns selected=$breakby}
 				</select>,<br/> and sorted in <span class="nowrap">(<input type="checkbox" name="reverse_order_ind" {$reverse_order_checked}/> reverse)
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);"> 

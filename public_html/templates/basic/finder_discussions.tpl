@@ -36,6 +36,13 @@ AttachEvent(window,'load',focusBox,false);
 
 {/literal}
 
+{if $results && !$grouped}
+	<div class="interestBox" style="width:150px;float:right;position:relative;background-color:white">
+	<b>Image Results</b>
+	<iframe src="/finder/search-service.php?q={$q|escape:'url'}&amp;mode=1" width=150 height=600></iframe>
+	</div>
+{/if}
+
 <h2><a href="/finder/">Finder</a> :: Discussions</h2>
 
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
@@ -58,14 +65,15 @@ AttachEvent(window,'load',focusBox,false);
 		<small>&middot; To refine the results simply add more keywords (view <a href="#cheatsheet">Cheatsheet</a>)</small>
 	</p>
 {/if}
+
 {assign var="last" value=-1}
 <ol start="{$offset}" class="results">
 {foreach from=$results item=item key=key}
 	{if $item.era != $last}
 		{if $item.era}
-			<div class="interestBox" style="margin-left:-30px;text-align:right"><b>Within the last {$item.era}</b></div>
+			<div class="interestBox" style="margin-left:-30px;text-align:right;margin-right:160px"><b>Within the last {$item.era}</b></div>
 		{else}
-			<div class="interestBox" style="margin-left:-30px;text-align:right"><b>More than three months ago</b></div>
+			<div class="interestBox" style="margin-left:-30px;text-align:right;margin-right:160px"><b>More than three months ago</b></div>
 		{/if}
 	{/if}
 	<li>
@@ -104,7 +112,7 @@ AttachEvent(window,'load',focusBox,false);
 {/if}
 
 
-<div class="interestBox" style="margin-top:60px;">
+<div class="interestBox" style="margin-top:60px;clear:both">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
 	<ul class="explore">
 		<li>search for posts in specific threads : <tt>railway title:track</tt> (where track is keyword required in the thread title)</li>

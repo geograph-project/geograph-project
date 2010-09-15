@@ -127,8 +127,8 @@
 
 	<p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 	<textarea id="comment" name="comment" disabled rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
-	<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
-	to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
+	<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
+	For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
 
 <sup style="color:red"><b>New</b></sup> You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
 
@@ -247,6 +247,9 @@
 		<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
 
 	{if $submit2}
+		<div style="position:relative;width:100px;float:right">
+			<input type="button" value="Next Step &gt;&gt;" onclick="window.parent.doneStep(3); window.parent.clicker(4,true);"/>
+		</div>
 		<input type="button" value="Done" onclick="window.parent.doneStep(3);"/>
 		<input type="button" value="Next Step &gt;&gt;" onclick="window.parent.doneStep(3); window.parent.clicker(4,true);"/>
 	{/if}

@@ -1,7 +1,6 @@
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
-
 <h2>Welcome to Geograph Britain and Ireland</h2>
 
 <div style="position:relative;background-color:white;">
@@ -52,12 +51,13 @@ representative photographs and information for every square kilometre of <a href
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
 	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
 
-
 	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
 
 	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
 	&nbsp;&nbsp;
-	by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
+	<span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> for <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></span>
+	<span class="nowrap">Taken {$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</span>
+	</div>
 
 	</div>
 

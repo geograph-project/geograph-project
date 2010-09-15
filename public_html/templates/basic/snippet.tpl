@@ -53,7 +53,7 @@
 				<ul style="padding:0 0 0 1em;">
 					{foreach from=$related item=item}
 						{if $item.title != $title}
-						<li><b><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></b>
+						<li style="padding-bottom:4px"><b><a href="/snippet/{$item.snippet_id}">{$item.title|escape:'html'}</a></b>
 						<div style="font-size:0.7em;color:gray;margin-left:2px;">
 						By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
 						Used on {$item.images|thousends} images</div>
@@ -62,6 +62,7 @@
 					{/foreach}
 				</ul>
 			{/if}
+			<small>Selection is automatic and approximate, might not always select closely matching descriptions</small>
 		{/if}
 	</div>
 {/if}
@@ -87,11 +88,14 @@
 
 <ul class="explore">
 	{if $images && $title}
-		<li class="interestBox"><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1"><b>View all images</b> using this description</a>
+		<li class="interestBox"><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1"><b>View all images</b> using "{$title|escape:'html'}" shared description(s)</a>
 		{if $images < 15}
 			| <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1&displayclass=gmap">On a <b>Map</b></a>
 		{/if}
+		| (<a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">Just <i>this</i> description</a>)
 		</li>
+	{elseif $images}
+		<li class="interestBox"><b><a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">List all {$images} images</a> that this description.</b></li>
 	{/if}
 	{if $grid_reference}
 		<li class="interestBox"><a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | <a href="/gridref/{$grid_reference}"><b>Photos</b> for {$grid_reference}</a></li>
@@ -103,5 +107,7 @@
 
 <div class="interestBox" style="font-size:0.7em">These <a href="/article/Shared-Descriptions" title="read more about shared descriptions in our documentation section">shared descriptions</a> are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.</div>
 <div style="color:silver;text-align:right;font-size:0.8em">Created: {$created|date_format:"%a, %e %b %Y"}, Updated: {$updated|date_format:"%a, %e %b %Y"}</div>
+
+<p>The 'Shared Description' text on this page is Copyright {$created|date_format:"%Y"} <a href="/profile/{$user_id}">{$realname|escape:'html'}</a>, however is specifically licenced so that contributors can reuse it on their own images without restriction.</p>
 
 {include file="_std_end.tpl"}

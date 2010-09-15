@@ -58,6 +58,7 @@
 
 					<input type="submit" value="This one is best!"/>
 				</form>
+				<br/><br/>
 			{else}
 				<iframe src="{$item.url}" width="180" height="800"></iframe>
 			{/if}

@@ -48,7 +48,7 @@
 </tbody>
 </table>
  
- <p><small>'with no recent' uses an arbitrary cutoff of 5 years, and the list is only updated weekly.</small></p>
+ <p><small>'with no recent' uses an arbitrary cutoff of 5 years, and the list is only updated daily.</small></p>
  
  <br style="clear:both"/>
  

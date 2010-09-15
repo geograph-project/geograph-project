@@ -156,7 +156,7 @@
        <a href="http://hub.geograph.org.uk/downloads.html" title="check our available downloads">Downloads</a>
     </p>
     <p style="color:#777788;">Hosting supported by 
-    {external title="click to visit the Fubra website" href="http://www.fubra.com/" text="Fubra"}
+    {external title="click to visit the CatN website - home of vCluster hosting" href="http://catn.com/" text="CatN"}
     </p>
   </div>
 </div>

@@ -48,7 +48,7 @@
 	<tr bgcolor="{cycle values="#E9EFF4,#F6F9FB"}">
 		<th valign="top">{$item.post_time|date_format:"%a, %e %b %Y %H:%M"}<br/>
 		<a href="/profile/{$item.poster_id}" title="View Geograph Profile for {$item.poster_name}" style="color:#6699CC">{$item.poster_name}</a></th>
-		<td valign="top">{$item.post_text|gallerytext|GeographLinks:true}</td>
+		<td valign="top">{$item.post_text|GeographLinks:true|gallerytext}</td>
 	</tr>
 {foreachelse}
 	<li><i>There are no posts to display at this time.</i></li>

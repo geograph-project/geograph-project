@@ -185,11 +185,13 @@ The <b>Geograph Website</b>:
 <div id="resize">
 <a name="resize"></a>
 <h3>Do I need to resize my photos? Are there size limits?</h3>
-	<p>You can upload images of any dimensions, portrait or landscape, but the fizesize needs to be under 8 megabytes.
+	<p>You can upload images of any dimensions, portrait or landscape, but the filesize needs to be under 8 megabytes.
 	 We do resize them so their longest dimension is 640 pixels on the main photo page. 
 	<i>Optionally</i>, you can also release larger versions of various sizes for downloading and re-use. <a href="/article/Larger-Uploads-Information">Larger Uploads Information</a>.</p>
 
 	<p>Ideally images shouldn't have the longest dimension less than 480 pixels, while we might accept such images if they hold particular interest, we would really prefer a larger image.</p>
+
+	<p>See also <a href="/article/Larger-Uploads-Information#panorama-tip">Tip for uploading Panoramas</a></p>
 
 	<p>We do record the EXIF headers from your original image, so it is
 	advantageous to upload your original camera image or use image editing software that maintains the EXIF data if you want this information

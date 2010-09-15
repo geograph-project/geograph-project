@@ -22,7 +22,8 @@
 
 <h2>Full-Text Image Search Play Area</h2>
 
-<div class="interestBox">Use this page to play with the new querying possibilities of the <a href="/help/search_new">new search</a>. It is not intended to replace main search which will soon include full-text keyword matching as available here; this interface is deliberatly very simple to focus on the query syntax. You can find other <a href="/finder/">similar searches here</a>. <i>Thank you for your patience while we continue to improve our searching facilities.</i></div>
+<div class="interestBox">Use this page to play with the new querying possibilities of the <a href="/help/search_new">new search</a>. It is not intended to replace main search which (now) includes full-text keyword matching as available here; this interface is deliberatly very simple to focus on the query syntax. You can find other <a href="/finder/">similar searches here</a>. <i>Thank you for your patience while we continue to improve our searching facilities.</i></div>
+<div style="font-size:0.9em">TIP: the all the queries available here can now be entered in the "For" box on the <a href="/search.php">simple search</a>, or the "keywords" box on the <a href="/search.php?form=text">advanced search</a>.</div>
 
 <form action="/finder/search-service.php" method="get" target="searchwindow" onsubmit="focusBox()">
 	<p>
@@ -57,7 +58,7 @@
 </div>
 <div style="margin-top:6px; margin-bottom:60px;">
 	<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
-	<small>Notice that that is a keyword based search, and not phrase based like you might be used to with the traditional Geograph search, and such operates like most popular search engines.</small>
+	<small>Notice that that is a keyword based search, and not phrase based like you might be used to with the traditional Geograph search (from before 2008), and as such this new full text search operates like most popular search engines.</small>
 </div>
 
 

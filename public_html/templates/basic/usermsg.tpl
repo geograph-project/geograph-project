@@ -40,7 +40,7 @@
 				</div><br/>
 				<small>Alternatively just click send without entering anything above, to have another go at the Captcha. </small>
 				<br/>
-				
+				<input type="submit" name="send" value="Send">				
 			{else}
 				<div class="interestBox">
 					<b>In order to help prevent spamming our members we ask you to take a moment to fill out the following. </b>
@@ -59,8 +59,11 @@
 					<input type="text" name="verify" id="verify"/><br />
 				{/if}
 				<br/><br/>
+				<input type="submit" name="send" value="Send">
+				<br/><br/><br/><br/><br/><br/><br/><br/>
 
-				<blockquote style="border:1px solid pink; padding:10px">
+				<span id="hidemore"><a href="#" onclick="show_tree('more');return false">I'm having trouble using the Captcha above</a>.</span>
+				<blockquote style="border:1px solid pink; padding:10px; display:none" id="showmore">
 					... or if you are unable to enter the two words above, and listening to the audio version didn't work, <br/>
 					then you can instead <input type="submit" name="sendcode" value="Request confirmation code by email"/> <br/>
 
@@ -69,7 +72,6 @@
 			{/if}
 			<br />
 
-			<input type="submit" name="send" value="Send">
 		</form>	
 	{else}
 		{if $invalid_email} 

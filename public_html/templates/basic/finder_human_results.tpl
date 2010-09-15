@@ -14,7 +14,8 @@
 	<div class="interestBox">
 	<a href="/profile/{$user_id}" target="mainframe">{$realname|escape:'html'}</a>, said: I am looking 
 	
-	<span style="border:1px solid silver;padding:2px"><i>for</i> <b>{$q|escape:'html'}</b>{if $location} <i>near</i> <b>{$location|escape:'html'}</b>{/if}</span>, 
+	for photos <i>of</i> <b>{$q|escape:'html'}</b>{if $location} <i>near</i> <b>{$location|escape:'html'}</b>{/if},
+ 
 	can you help?<br/>
 	
 	{if $comment}

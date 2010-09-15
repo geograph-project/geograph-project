@@ -188,7 +188,7 @@ Display:
 			<b>Related Collections</b>
 			<ul style="padding:0 0 0 1em;">
 				{foreach from=$related item=item}
-					<li><b><a href="{$item.url}">{$item.title|escape:'html'}</a></b>
+					<li><a href="{$item.url}">{$item.title|escape:'html'|regex_replace:"/(`$engine->criteria->searchtext`)/i":'<b>$1</b>'}</a>
 					<div style="font-size:0.7em;color:gray;margin-left:2px;">
 					By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>.</div>
 					</li>

@@ -5,7 +5,7 @@
 {include file="_std_begin.tpl"}
 {if $include_sorttable}
 <script src="{"/sorttable.js"|revision}"></script>
-{/if}
+{/if}<a name="top"></a>
 {literal}<style type="text/css">
 #maincontent h1 { padding: 5px; margin-top:0px; background-color: black; color:white}
 #maincontent h2 { padding: 5px; background-color: lightgrey}

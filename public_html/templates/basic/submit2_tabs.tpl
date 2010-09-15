@@ -1,4 +1,4 @@
-{assign var="page_title" value="Submit 2"}
+{assign var="page_title" value="Submit 2 with Tabs"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 
@@ -189,7 +189,7 @@ AttachEvent(window,'load',readHash,false);
 
 	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 	
-	<h2>Submit Image <sup style="color:gray">v2 - Gamma</sup></h2> 
+	<h2>Submit Image <sup style="color:gray">v2:Tabs - Beta</sup></h2> 
 	
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
