@@ -109,8 +109,8 @@ count(*) as 'Jobs/Squares',count(distinct if(at_home_worker_id=0,null,at_home_wo
 sum(terms) as 'Clusters Found', 
 sum(images) as 'Processed Images' 
 from at_home_job 
-where task = '$task' and created > date_sub(now(),interval 30 day)
-group by (sent='0000-00-00 00:00:00'),(completed='0000-00-00 00:00:00')",'Job Breakdown - jobs created in last 30 days');
+where task = '$task' and created > date_sub(now(),interval 90 day)
+group by (sent='0000-00-00 00:00:00'),(completed='0000-00-00 00:00:00')",'Job Breakdown - jobs created in last 90 days');
 		
 	}
 }
