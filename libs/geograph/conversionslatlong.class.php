@@ -220,6 +220,55 @@ function wgs84_to_gk($lat,$long,$zone=3) {
 #     Wikipedia http://de.wikipedia.org/wiki/Helmert-Transformation
 #BRD?	-598.1	-73.7	-418.2	-6.7	0.202	0.045	-2.455
 
+function gk_to_wgs84($e,$n) {
+	$zone = floor($e/1000000);
+	#$e %= 1000000;
+
+	$height = 0;
+
+#function E_N_to_Lat($East, $North, $a, $b, $e0, $n0, $f0, $PHI0, $LAM0) {
+#function E_N_to_Long($East, $North, $a, $b, $e0, $n0, $f0, $PHI0, $LAM0) {
+	$lat1  = $this->E_N_to_Lat ($e, $n, 6377397.155,6356078.965, 500000 + $zone*1000000, 0, 1.0, 0, $zone*3);
+	$long1 = $this->E_N_to_Long($e, $n, 6377397.155,6356078.965, 500000 + $zone*1000000, 0, 1.0, 0, $zone*3);
+
+	#$x1 = $this->Lat_Long_H_to_X($lat,$long,$height,6378137.000,6356752.315);
+	$x1 = $this->Lat_Long_H_to_X($lat1,$long1,$height,6377397.155,6356078.965);
+	$y1 = $this->Lat_Long_H_to_Y($lat1,$long1,$height,6377397.155,6356078.965);
+	$z1 = $this->Lat_H_to_Z     ($lat1,       $height,6377397.155,6356078.965);
+
+	#cx (Meter) 	cy (Meter) 	cz (Meter) 	m (ppm) 	rx (Bogensekunde) 	ry (Bogensekunde) 	rz (Bogensekunde)
+	# -598,1 	-73,7 	-418,2 	-6,7 	0,202 	0,045 	-2,455
+	#function Helmert_X ($X,$Y,$Z,$DX,       $Y_Rot,$Z_Rot,$s) {
+	#function Helmert_Y ($X,$Y,$Z,$DY,$X_Rot,       $Z_Rot,$s) {
+	#function Helmert_Z ($X,$Y,$Z,$DZ,$X_Rot,$Y_Rot,       $s) {
+	#$x2 = $this->Helmert_X($x1,$y1,$z1,-598.1 ,        -0.045,+2.455,-6.7);
+	#$y2 = $this->Helmert_Y($x1,$y1,$z1, -73.7 , -0.202,       +2.455,-6.7);
+	#$z2 = $this->Helmert_Z($x1,$y1,$z1,-418.25, -0.202,-0.045,       -6.7);
+	$x2 = $this->Helmert_X($x1,$y1,$z1,+582.0,        +0.35 ,-3.08 ,+8.3);
+	$y2 = $this->Helmert_Y($x1,$y1,$z1,+105.0, +1.04 ,       -3.08 ,+8.3);
+	$z2 = $this->Helmert_Z($x1,$y1,$z1,+414.0, +1.04 ,+0.35 ,       +8.3);
+
+	#$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6377397.155,6356078.965);
+	$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6378137.000,6356752.315);
+	$long = $this->XYZ_to_Long($x2,$y2);
+
+#	$e = $this->Lat_Long_to_East ($lat,$long,6377397.155,6356078.965, 500000 + $zone*1000000,    1.0, 0, $zone*3);
+#	$n = $this->Lat_Long_to_North($lat,$long,6377397.155,6356078.965, 500000 + $zone*1000000, 0, 1.0, 0, $zone*3);
+#function Lat_Long_to_East  ($PHI, $LAM, $a, $b, $e0,      $f0, $PHI0, $LAM0) {
+#function Lat_Long_to_North ($PHI, $LAM, $a, $b, $e0, $n0, $f0, $PHI0, $LAM0) {
+#    Latitude (PHI) and Longitude (LAM) in decimal degrees; _
+#    ellipsoid axis dimensions (a & b) in meters; _
+#    eastings of false origin (e0) in meters; _
+#    central meridian scale factor (f0); _
+#    latitude (PHI0) and longitude (LAM0) of false origin in decimal degrees.
+# ellipsoid axis dimensions (a & b) in meters; _
+# eastings (e0) and northings (n0) of false origin in meters; _
+# central meridian scale factor (f0); _
+# latitude (PHI0) and longitude (LAM0) of false origin in decimal degrees.
+
+	return array($lat,$long);
+}
+
 /**************************
 * Irish Functions
 ***************************/

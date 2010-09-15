@@ -93,6 +93,19 @@ if (!empty($_GET['To'])) { //to lat/long
 		$_GET['longm'] = str_replace(',','.',$matches['Emin']);
 		$_GET['longs'] = str_replace(',','.',$matches['Esec']);
 		$_GET['ew']    = (strtoupper($matches['Edir']) == 'W') ? 'W' : 'E';
+	} else if (!empty($_GET['gke']) && !empty($_GET['gkn'])) {
+		#FIXME better checking?
+		$gke = floatval($_GET['gke']);
+		$gkn = floatval($_GET['gkn']);
+		$ll = $conv->gk_to_wgs84($gke, $gkn);
+		$_GET['lat']   = $ll[0];
+		$_GET['long']  = $ll[1];
+		$_GET['latm']  = 0;
+		$_GET['longm'] = 0;
+		$_GET['lats']  = 0;
+		$_GET['longs'] = 0;
+		$_GET['ew']    = 'E';
+		$_GET['ns']    = 'N';
 	}
 	
 		if (!empty($_GET['latm']))
