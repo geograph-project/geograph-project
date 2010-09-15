@@ -44,27 +44,35 @@ if (!$smarty->is_cached($template, $cacheid))
 	$column = "count(*)";
 
 	
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
 	if ($ri) {
 		$where[] = "reference_index = $ri";
 		$smarty->assign('ri',$ri);
 
 		$title .= " in ".$CONF['references_all'][$ri];
-	} 
 
-	if (count($where))
-		$where_sql = " WHERE ".join(' AND ',$where);
+		if (count($where))
+			$where_sql = " WHERE ".join(' AND ',$where);
+
+		$users = $db->CacheGetAll(3600,"select 
+		$column as count
+		from gridimage_search 
+		$where_sql
+		group by user_id
+		order by null");
+	} else {
+		$users = $db->GetAll("select
+        	images as count
+	        from user_stat
+        	order by null");
+	}
+
 
 	
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$hectads = $db->CacheGetAll(3600,"select 
-	$column as count
-	from gridimage_search 
-	$where_sql
-	group by user_id
-	order by null");
 	
 	$count = array();
-	foreach ($hectads as $i => $row) {
+	foreach ($users as $i => $row) {
 		if ($row['count'] == 0) {
 			$count[0]++;
 		} elseif ($row['count'] < 50) {
