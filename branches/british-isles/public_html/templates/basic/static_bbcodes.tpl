@@ -5,7 +5,7 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 .bbcode {border: 1px solid gray}
 .preview { padding:3px; background-color:white}
 .example {background-color:#eeeeee; padding:10px;}
-.tip {font-size:0.8em; border: 1px solid red; padding:3px} 
+.tip {font-size:0.8em; border: 1px solid red; padding:3px}
 .explain {color: brown; font-size:0.8em; font-style:italic;}
 .title { font-size:0.7em }
 </style>{/literal}
@@ -36,6 +36,10 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 
 <li><b class="title">Include an Image Thumbnail by ID</b><br/>
 <div class="example"><tt class="bbcode">[[[5463]]]</tt> shows as <span class="preview"><a href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir" src="/photos/00/54/005463_ea60a493_120x120.jpg" width="120" height="90"/></a></span></div><br/></li>
+
+<li><b class="title">Include an Large Thumbnail by ID</b><br/>
+<div class="example"><tt class="bbcode">[image id=5463]</tt> shows as <div class="photoguide"><div style="float:left;width:213px"><a title="TQ3328 : Ardingly Reservoir by Ben Gamble - click to view full size image" href="/photo/5463"><img alt="TQ3328 : Ardingly Reservoir by Ben Gamble" src="http://s3.geograph.org.uk/photos/00/54/005463_ea60a493_213x160.jpg" width="213" height="160" /></a><div class="caption"><a title="view full size image" href="/photo/5463">Ardingly Reservoir</a> by <a href="/profile/113">Ben Gamble</a></div></div><div style="float:left;padding-left:20px; width:400px;">Sailing club at the southern end of the reservoir<div style="text-align:right;font-size:0.8em">by Ben Gamble</a></div></div><br style="clear:both"/></div></div><br/>
+<div class="example">Can also use a custom description/comment: <tt class="bbcode">[image id=5463 text=This is an example of a custom description.]</tt></div><br/></li>
 
 <li><b class="title">Webpage/URL</b><br/>
 <div class="example"><tt class="bbcode">[url=http://www.example.com]Some text[/url]</tt> shows as <span class="preview"><a href="http://www.example.com">Some text</a></span></div><br/></li>
