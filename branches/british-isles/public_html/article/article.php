@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (empty($_GET['name']) || preg_match('/[^\w\.\,-]/',$_GET['name'])) {
+if (empty($_GET['url']) || preg_match('/[^\w\.\,-]/',$_GET['url'])) {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
@@ -36,9 +36,9 @@ if (empty($_GET['name']) || preg_match('/[^\w\.\,-]/',$_GET['name'])) {
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_article.tpl';
-$cacheid = 'articles|'.$_GET['name'].'|'.intval($_GET['page']);
+$cacheid = 'articles|'.$_GET['url'].'|'.intval($_GET['page']);
 $cacheid .= '|'.$isadmin;
-$cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['name'],$_SESSION['article_urls'])?1:0);
+$cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['url'],$_SESSION['article_urls'])?1:0);
 if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
 	$cacheid .= "--".$_GET['epoch'];
 } else {
@@ -277,7 +277,7 @@ from article
 where ( (licence != 'none' and approved > 0) 
 	or user.user_id = {$USER->user_id}
 	or $isadmin )
-	and url = ".$db->Quote($_GET['name']).'
+	and url = ".$db->Quote($_GET['url']).'
 limit 1');
 if (count($page)) {
 	$cacheid .= '|'.$page['update_time'];

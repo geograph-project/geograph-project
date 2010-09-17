@@ -86,7 +86,7 @@ NameVirtualHost *
     RewriteRule ^/profile/(\d+)/?$ /profile.php?id=$1 [qsa]
 
     RewriteRule ^/map/(.*) /mapbrowse.php?t=$1 [qsa]
-    RewriteRule ^/article/([\w-]+)/?$ /article/article.php?page=$1 [qsa]
+    RewriteRule ^/article/([\w-]+)/?([0-9]?)/?$ /article/article.php?url=$1&page=$2 [qsa]
     RewriteRule ^/gallery/([\w-]+)/?([0-9]?)/?$ /gallery/gallery.php?url=$1&page=$2 [qsa]
     RewriteRule ^/explore/places/([0-9]?)/?([\w-]*)/? /explore/places.php?ri=$1&adm1=$2 [qsa]
 
