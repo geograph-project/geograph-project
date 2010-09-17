@@ -45,6 +45,11 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 {/dynamic}
 
 <h1>{$title|escape:'html'}</h1>
+{if $pagesString}
+<div style="margin-top:0px;font-size:0.8em;">
+	( Page {$pagesString})
+</div>
+{/if}
 
 {if $tableContents}
 	<div style="float:right; width:250px; position:relative;" id="contents_table">
@@ -136,4 +141,7 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 	</div>
 {/if}
 
+{if $pagesString}
+	<hr/>	( Page {$pagesString})
+{/if}
 {include file="_std_end.tpl"}

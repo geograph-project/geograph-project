@@ -26,7 +26,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (empty($_GET['page']) || preg_match('/[^\w\.\,-]/',$_GET['page'])) {
+if (empty($_GET['name']) || preg_match('/[^\w\.\,-]/',$_GET['name'])) {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
 	$smarty->display('static_404.tpl');
@@ -36,9 +36,9 @@ if (empty($_GET['page']) || preg_match('/[^\w\.\,-]/',$_GET['page'])) {
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_article.tpl';
-$cacheid = 'articles|'.$_GET['page'];
+$cacheid = 'articles|'.$_GET['name'].'|'.intval($_GET['page']);
 $cacheid .= '|'.$isadmin;
-$cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['page'],$_SESSION['article_urls'])?1:0);
+$cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['name'],$_SESSION['article_urls'])?1:0);
 if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
 	$cacheid .= "--".$_GET['epoch'];
 } else {
@@ -117,16 +117,40 @@ function smarty_function_articletext($input) {
 
 	$pattern=array(); $replacement=array();
 	
+	if ($pages = preg_split("/\n+\s*~{7,}\s*\n+/",$output)) {
+		$thispage = empty($_GET['page'])?1:intval($_GET['page']);
+		$thispage = min(count($pages),$thispage);
+		$thispage = max(1,$thispage);
+	}
+	
 	if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$output,$matches)) {
 		$list = array();
-		foreach ($matches[1] as $i => $level) {
-			$hash = getUniqueHash($matches[2][$i]);
-			$list[] = "<li class=\"h$level\"><a href=\"#$hash\">{$matches[2][$i]}</a></li>";
-			$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
-			$replacement[]='<h$1><a name="'.$hash.'"></a><a name="p'.$i.'"></a>$2</h$3>';
+		if (count($pages) > 1) {
+			foreach ($pages as $idx => $onepage) {
+				if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$onepage,$matches)) {
+					$url = ($idx+1==$thispage)?'':"/article/{$GLOBALS['page']['url']}/".($idx+1);
+					foreach ($matches[1] as $i => $level) {
+						$hash = getUniqueHash($matches[2][$i]);
+						$list[] = "<li class=\"h$level\"><a href=\"$url#$hash\">{$matches[2][$i]}</a></li>";
+						$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
+						$replacement[]='<h$1><a name="'.$hash.'"></a><a name="p'.$i.'"></a>$2</h$3>';
+					}
+				}
+			}
+		} else {
+			foreach ($matches[1] as $i => $level) {
+				$hash = getUniqueHash($matches[2][$i]);
+				$list[] = "<li class=\"h$level\"><a href=\"#$hash\">{$matches[2][$i]}</a></li>";
+				$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
+				$replacement[]='<h$1><a name="'.$hash.'"></a><a name="p'.$i.'"></a>$2</h$3>';
+			}
 		}
 		$list = implode("\n",$list);
 		$smarty->assign("tableContents", $list);
+	}
+	
+	if (count($pages) > 1) {
+		$output = $pages[$thispage-1];
 	}
 	
 	$pattern[]='/<\/h(\d)>\n(?!\*)/';
@@ -233,6 +257,10 @@ function smarty_function_articletext($input) {
 		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
 	}
 	
+	if (count($pages) > 1) {
+		$smarty->assign('pagesString', pagesString($thispage,count($pages),"/article/{$GLOBALS['page']['url']}/"));
+	}
+	
 	return $output;
 }
 
@@ -249,7 +277,7 @@ from article
 where ( (licence != 'none' and approved > 0) 
 	or user.user_id = {$USER->user_id}
 	or $isadmin )
-	and url = ".$db->Quote($_GET['page']).'
+	and url = ".$db->Quote($_GET['name']).'
 limit 1');
 if (count($page)) {
 	$cacheid .= '|'.$page['update_time'];
