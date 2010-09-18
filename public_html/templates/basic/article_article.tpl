@@ -137,7 +137,9 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 	</div>
 {/if}
 {$content_articletext}
-
+{if $nextString}
+	<div style="text-align:right;"><i>{$nextString}</i></div>
+{/if}
 
 {if $imageCredits}
 	<hr/>

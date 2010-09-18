@@ -262,6 +262,8 @@ function smarty_function_articletext($input) {
 	
 	if (count($pages) > 1) {
 		$smarty->assign('pagesString', pagesString($thispage,count($pages),"/article/{$GLOBALS['page']['url']}/"));
+		if (count($pages) > $thispage) 
+			$smarty->assign('nextString', "<a href=\"/article/{$GLOBALS['page']['url']}/".($thispage+1)."\">Continued on next page...</a>");
 	}
 	
 	return $output;
@@ -312,8 +314,8 @@ if (count($page)) {
 if (!$smarty->is_cached($template, $cacheid))
 {
 	if (count($page)) {
-		$CONF['global_thumb_limit'] *= 2;
-		$CONF['post_thumb_limit'] *= 2;
+		#$CONF['global_thumb_limit'] *= 2;
+		#$CONF['post_thumb_limit'] *= 2;
 		
 		$smarty->assign($page);
 		if (!empty($page['extract'])) {
