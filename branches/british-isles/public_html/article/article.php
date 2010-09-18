@@ -203,6 +203,9 @@ function smarty_function_articletext($input) {
 	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n]+?)\](.+?)\[\/url\]/ie";
 	$replacement[]="smarty_function_external(array('href'=>\"\$1\",'text'=>'\$3','title'=>\"\$1\"))";
 
+	$pattern[]="/\[url=#([\w-]+)\](.+?)\[\/url\]/i";
+	$replacement[]='<a href="#\1">\2</a>';
+
 
 	$pattern[]="/\n/";
 	$replacement[]="<br/>\n";
