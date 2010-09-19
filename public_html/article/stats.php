@@ -60,8 +60,21 @@ function add_image_to_list($id,$thumb ='') {
 	}
 	return '';
 }
+
+function showmessage($count,$points,$soft,$hard) {
+	global $total;
+	$total += ($count*$points);
+	
+	if ($count > $hard) {
+		return " <span class=hard>WARNING: This number is too high - you should split this page into multiple</span>";
+	} elseif ($count > $soft) {
+		return " <span class=soft>NOTICE: This number is rather high - you should consider splitting this page into multiple pages</span>";
+	}
+}
+
 function count_section($output) {
-	global $thumbs,$links;
+	global $thumbs,$links,$total;
+	$total = 0;
 
 	print "<div>Characters: ".strlen($output)."</div>";
 	print "<div>Lines: ".count(explode("\n",$output))."</div>"; 
@@ -73,22 +86,57 @@ function count_section($output) {
 	if (preg_match_all('/\[image id=(\d+)\]/',$output,$matches)) 
 		$big += count($matches[1]);
 	if ($big) 
-		print "<div>Big Images: ".$big."</div>";
+		print "<div>Big Images: ".$big.showmessage($big,3,50,75)."</div>";
 
 	$thumbs = $links = array();
 
 	if (preg_replace('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/e',"add_image_to_list('\$2','\$1')",$output)) { 
 		if (!empty($thumbs))
-			print "<div>Thumbnails: ".count($thumbs)."</div>";
+			print "<div>Thumbnails: ".count($thumbs).showmessage(count($thumbs),1,100,200)."</div>";
 		if (!empty($links))
-			print "<div>Image Links: ".count($links)."</div>";
+			print "<div>Image Links: ".count($links).showmessage(count($links),0.3,200,400)."</div>";
 	}
 
-	if (preg_match_all('/\[h(\d)\]([^\n]+?)\[\/h(\d)\]/',$output,$matches)) {
+	if (preg_match_all('/\[map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$matches))
+		print "<div>Big Maps: ".count($matches[1]).showmessage(count($matches[1]),3,25,50)."</div>";
+
+	if (preg_match_all('/\[smallmap *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$matches))
+		print "<div>Small Maps: ".count($matches[1]).showmessage(count($matches[1]),1,50,100)."</div>";
+
+	if (preg_match_all('/\[youtube=(\w+)\]/',$output,$matches))
+		print "<div>YouTube Videos: ".count($matches[1]).showmessage(count($matches[1]),30,5,10)."</div>";
+
+	if (preg_match_all('/\[mooflow=(\w+)\]/',$output,$matches))
+		print "<div>MooFlow Embeds: ".count($matches[1]).showmessage(count($matches[1]),50,1,4)."</div>";
+
+	if (preg_match_all('/\[img=([^\] ]+)(| [^\]]+)\]/',$output,$matches))
+		print "<div>External Images: ".count($matches[1]).showmessage(count($matches[1]),2,20,40)."</div>";
+
+	if (preg_match_all('/\[h(\d)\]([^\n]+?)\[\/h(\d)\]/',$output,$matches))
 		print "<div>Headings: ".count($matches[1])."</div>";
+	
+	print "<!--div>Points: ".$total."</div-->";
+	if ($total > 400) {
+		print "<div class=hard>WARNING: The number of objects on this page is too high, you should split into multiple pages</div>";
+	} elseif ($total > 200) {
+		print "<div class=soft>NOTICE: The number of objects on this page is rather high - you should consider splitting this page into multiple pages</div>";
 	}
 }
-
+?>
+<style type="text/css">
+.hard {
+	font-weight: bold;
+	background-color:red;
+	color:white;
+	padding:2px;
+}
+.soft {
+	font-weight: bold;
+	background-color:pink;
+	padding:2px;
+}
+</style>
+<?
 if (count($page)) {
 	print "<h2>".htmlentities($page['title'])."</h2>";
 	print "<div>Last updated: {$page['update_time']}</div>";
