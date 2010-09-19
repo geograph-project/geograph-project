@@ -143,6 +143,9 @@ if (count($page)) {
 
 	$output = $page['content'];
 
+	//break counting of demos
+	$output = preg_replace('/\!(\[+)/e','str_repeat("¬",strlen("$1"))',$output);
+
 	
 	$pages = preg_split("/\n+\s*~{7,}\s*\n+/",$output);
 	
