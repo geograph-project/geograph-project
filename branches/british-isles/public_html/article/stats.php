@@ -66,9 +66,9 @@ function showmessage($count,$points,$soft,$hard) {
 	$total += ($count*$points);
 	
 	if ($count > $hard) {
-		return " <span class=hard>WARNING: This number is too high - you should split this page into multiple</span>";
+		return " <span class=hard>WARNING: This number is too high - you NEED to split this this section into multiple pages</span>";
 	} elseif ($count > $soft) {
-		return " <span class=soft>NOTICE: This number is rather high - you should consider splitting this page into multiple pages</span>";
+		return " <span class=soft>NOTICE: This number is rather high - please consider splitting this page into multiple pages</span>";
 	}
 }
 
@@ -119,7 +119,7 @@ function count_section($output) {
 	if ($total > 400) {
 		print "<div class=hard>WARNING: The number of objects on this page is too high, you should split into multiple pages</div>";
 	} elseif ($total > 200) {
-		print "<div class=soft>NOTICE: The number of objects on this page is rather high - you should consider splitting this page into multiple pages</div>";
+		print "<div class=soft>NOTICE: The number of objects on this page is rather high - please consider splitting into multiple pages</div>";
 	}
 }
 ?>
@@ -147,8 +147,9 @@ if (count($page)) {
 	$output = preg_replace('/\!(\[+)/e','str_repeat("¬",strlen("$1"))',$output);
 
 	
-	$pages = preg_split("/\n+\s*~{7,}\s*\n+/",$output);
-	
+	$pages = preg_split("/\n+\s*~{7,}\s*[\w\s\{\}\+-]*\n+/",$output);
+if ($_GET['ddd'])
+print_r($pages);	
 	print "<div>Pages: ".count($pages)."</div>";
 	if (count($pages) > 1) {
 		print "<div>Characters: ".strlen($output)."</div>"; 

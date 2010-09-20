@@ -117,7 +117,7 @@ function smarty_function_articletext($input) {
 
 	$pattern=array(); $replacement=array();
 	
-	if ($pages = preg_split("/\n+\s*~{7,}\s*\n+/",$output)) {
+	if ($pages = preg_split("/\n+\s*~{7,}\s*[\w\s\{\}\+-]*\n+/",$output)) {
 		$thispage = empty($_GET['page'])?1:intval($_GET['page']);
 		$thispage = min(count($pages),$thispage);
 		$thispage = max(1,$thispage);
