@@ -169,9 +169,9 @@ class sphinxwrapper {
 			}
 			if (strpos($q,'~') === 0) {
 				$q = preg_replace('/^\~/','',$q);
-				$q = "(".str_replace(" "," | ",$q).") (".join(" | ",$grs).")";
+				$q = "(".str_replace(" "," | ",$q).") @grid_reference (".join(" | ",$grs).")";
 			} else {
-				$q .= " (".join(" | ",$grs).")";
+				$q .= "@grid_reference (".join(" | ",$grs).")";
 			}
 			$qo .= " near $gr";
 		} 
@@ -357,6 +357,8 @@ class sphinxwrapper {
 		
 		if ($index_in == "_images") {
 			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
+		} elseif ($index_in == "_map") {
+			$index = "{$CONF['sphinx_prefix']}gi_map,{$CONF['sphinx_prefix']}gi_map_delta";
 		} else {
 			$index = $CONF['sphinx_prefix'].$index_in;
 		}
