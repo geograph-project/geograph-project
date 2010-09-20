@@ -135,8 +135,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 						WHERE gridimage_id = {$image->gridimage_id} AND label != '(Other)'
 						ORDER BY score DESC LIMIT 5");
 			if (!empty($labels)) {
+				srand($image->gridimage_id);
 				foreach ($labels as $idx => $label) {
-					if (false) {
+					if (rand(1,10) > 7) {
 						$l2 = $db->Quote($label);
 						$ids = $db->GetCol("SELECT gridimage_id
 									FROM gridimage_group gg
@@ -145,7 +146,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 						if (!empty($ids)) {
 							$res = check_images(
-								"marked with '{$label}'",
+								"Marked with '{$label}'",
 								$ids,
 								"text:$label"
 							);
@@ -154,8 +155,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 					} else {
 						$res = check_images(
 							"Marked with '{$label}'",
-							$image->grid_reference,
-							"text:{$label}"
+							'',
+							"text:{$label} grid_reference:{$image->grid_reference}"
 						);
 						if (!empty($res)) $results[] = $res;
 					}
