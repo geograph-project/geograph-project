@@ -1,7 +1,5 @@
-{assign var="page_title" value=$title}
-
 {assign var="content_articletext" value=$content|articletext}
-
+{if $pagetitle}{assign var="page_title" value="$pagetitle :: $title"}{else}{assign var="page_title" value=$title}{/if}
 {include file="_std_begin.tpl"}
 {if $include_sorttable}
 <script src="{"/sorttable.js"|revision}"></script>
@@ -12,6 +10,9 @@
 #maincontent h3 { padding: 5px; margin-top:20px; border: 1px solid lightgrey; background-color: #eeeeee}
 #maincontent h4 { padding: 5px; margin-top:20px; border: 1px dashed lightgrey; background-color: #eeeeee}
 #maincontent tt { padding: 1px; background-color: #f9f9f9}
+
+#maincontent h1.pageheading { margin-bottom:0}
+#maincontent h2.pageheading { margin-top:0; background-color:gray; font-size:0.8em; color:white}
 
 #contents_table {  border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px }
 #contents_table .title { font-weight:bolder;  padding:3px; border-bottom:1px solid black; margin-bottom:5px; }
@@ -44,7 +45,12 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 	{/if}
 {/dynamic}
 
+{if $pagetitle}
+<h1 class="pageheading"><small>{$page}.</small> {$pagetitle|escape:'html'}</h1>
+<h2 class="pageheading">{$title|escape:'html'}</h2>
+{else}
 <h1>{$title|escape:'html'}</h1>
+{/if}
 {if $pagesString}
 <div style="margin-top:0px;font-size:0.8em;">
 	( Page {$pagesString})

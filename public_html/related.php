@@ -150,11 +150,14 @@ if (!$smarty->is_cached($template, $cacheid)) {
 								$ids,
 								"text:$label"
 							);
-							if (!empty($res)) $results[] = $res;
+							if (!empty($res)) {
+								$res['link'] = "/search.php?gridref={$image->grid_reference}&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=".urlencode($label)."&amp;do=1";
+								$results[] = $res;
+							}
 						}
 					} else {
 						$res = check_images(
-							"Marked with '{$label}'",
+							"Matching '{$label}'",
 							'',
 							"text:{$label} grid_reference:{$image->grid_reference}"
 						);
