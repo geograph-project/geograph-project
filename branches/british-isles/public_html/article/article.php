@@ -117,12 +117,13 @@ function smarty_function_articletext($input) {
 
 	$pattern=array(); $replacement=array();
 	
-	if ($pages = preg_split("/\n+\s*~{7,}\s*[\w\s\{\}\+-]*\n+/",$output)) {
+	if ($pages = preg_split("/\n+\s*~{6,}(~[\w \t\{\}\+-]*)\n+/",$output,-1,PREG_SPLIT_DELIM_CAPTURE)) {
+		$numberOfPages = ceil(count($pages)/2);
 		$thispage = empty($_GET['page'])?1:intval($_GET['page']);
-		$thispage = min(count($pages),$thispage);
+		$thispage = min($numberOfPages,$thispage);
 		$thispage = max(1,$thispage);
 	}
-	
+
 	if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$output,$matches)) {
 		$list = array();
 		if (count($pages) > 1) {
@@ -150,7 +151,12 @@ function smarty_function_articletext($input) {
 	}
 	
 	if (count($pages) > 1) {
-		$output = $pages[$thispage-1];
+		$smarty->assign('page',$thispage);
+		$offset = ($thispage-1)*2;
+		if ($thispage > 1 && strlen($pages[$offset-1]) > 1) {
+			$smarty->assign('pagetitle',substr($pages[$offset-1],1));
+		}
+		$output = $pages[$offset];
 	}
 	
 	$pattern[]='/<\/h(\d)>\n(?!\*)/';
@@ -264,9 +270,14 @@ function smarty_function_articletext($input) {
 	}
 	
 	if (count($pages) > 1) {
-		$smarty->assign('pagesString', pagesString($thispage,count($pages),"/article/{$GLOBALS['page']['url']}/"));
-		if (count($pages) > $thispage) 
-			$smarty->assign('nextString', "<a href=\"/article/{$GLOBALS['page']['url']}/".($thispage+1)."\">Continued on next page...</a>");
+		$smarty->assign('pagesString', pagesString($thispage,$numberOfPages,"/article/{$GLOBALS['page']['url']}/"));
+		if ($numberOfPages > $thispage) {
+			if (strlen($pages[$offset+1]) > 1) {
+				$smarty->assign('nextString', "<a href=\"/article/{$GLOBALS['page']['url']}/".($thispage+1)."\">Next page: <b>".htmlentities2(substr($pages[$offset+1],1))."</b>...</a>");
+			} else {
+				$smarty->assign('nextString', "<a href=\"/article/{$GLOBALS['page']['url']}/".($thispage+1)."\">Continued on next page...</a>");
+			}
+		}
 	}
 	
 	return $output;
