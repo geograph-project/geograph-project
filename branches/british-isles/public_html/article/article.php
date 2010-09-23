@@ -129,7 +129,8 @@ function smarty_function_articletext($input) {
 		if (count($pages) > 1) {
 			foreach ($pages as $idx => $onepage) {
 				if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$onepage,$matches)) {
-					$url = ($idx+1==$thispage)?'':"/article/{$GLOBALS['page']['url']}/".($idx+1);
+					$offset = floor($idx/2)+1;
+					$url = ($offset==$thispage)?'':"/article/{$GLOBALS['page']['url']}/$offset";
 					foreach ($matches[1] as $i => $level) {
 						$hash = getUniqueHash($matches[2][$i]);
 						$list[] = "<li class=\"h$level\"><a href=\"$url#$hash\">{$matches[2][$i]}</a></li>";
