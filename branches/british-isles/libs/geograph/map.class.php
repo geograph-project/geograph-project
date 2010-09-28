@@ -888,14 +888,22 @@ class GeographMap
 					and imagecount>$number";
 			} else {
 				$table = $CONF['db_tempdb'].".gi".md5($rectangle);
-				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-					SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_search WHERE 
-					CONTAINS( GeomFromText($rectangle),	point_xy)
-					ORDER BY moderation_status+0 DESC,seq_no";
-				$db->Execute($sql);
+				
+				if (true) {
+					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
+						SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_persquare WHERE 
+						CONTAINS( GeomFromText($rectangle),	point_xy)";
+					$db->Execute($sql);
+				} else {
+					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
+						SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_search WHERE 
+						CONTAINS( GeomFromText($rectangle),	point_xy)
+						ORDER BY moderation_status+0 DESC,seq_no";
+					$db->Execute($sql);
 
-				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y)";
-				$db->Execute($sql);
+					$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y)";
+					$db->Execute($sql);
+				}
 				
 				if ($number) {
 					$sql="SELECT gridsquare.x,gridsquare.y,has_geographs,user_id,gridimage_id
@@ -1977,27 +1985,34 @@ END;
 				} 
 			}
 			$table = $CONF['db_tempdb'].".gi".md5($rectangle);
-			$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-				SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_search WHERE 
-				CONTAINS( GeomFromText($rectangle),	point_xy) $where_crit
-				ORDER BY moderation_status+0 DESC,seq_no";
-			$db->Execute($sql);
+			if (empty($where_crit)) {
+				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
+					SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_persquare WHERE 
+					CONTAINS( GeomFromText($rectangle),	point_xy)";
+				$db->Execute($sql);
+			} else {
+				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
+					SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_search WHERE 
+					CONTAINS( GeomFromText($rectangle),	point_xy) $where_crit
+					ORDER BY moderation_status+0 DESC,seq_no";
+				$db->Execute($sql);
 			
-			if (!empty($this->type_or_user) && ($this->type_or_user > 0 || $this->type_or_user == -6)) {
-				$table2 = $table."tmp2";
-				$sql="CREATE TEMPORARY TABLE $table2 ENGINE HEAP 
-					SELECT x,y,count(*) as imagecount 
-					FROM $table GROUP BY x,y ORDER BY null";
+				if (!empty($this->type_or_user) && ($this->type_or_user > 0 || $this->type_or_user == -6)) {
+					$table2 = $table."tmp2";
+					$sql="CREATE TEMPORARY TABLE $table2 ENGINE HEAP 
+						SELECT x,y,count(*) as imagecount 
+						FROM $table GROUP BY x,y ORDER BY null";
+					$db->Execute($sql);
+
+					$sql="UPDATE $table2,$table SET $table.imagecount = $table2.imagecount 
+						WHERE $table.x = $table2.x AND $table.y = $table2.y";
+					$db->Execute($sql);
+					$columns = ", $table.imagecount";
+				}
+
+				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
 				$db->Execute($sql);
-	
-				$sql="UPDATE $table2,$table SET $table.imagecount = $table2.imagecount 
-					WHERE $table.x = $table2.x AND $table.y = $table2.y";
-				$db->Execute($sql);
-				$columns = ", $table.imagecount";
 			}
-			
-			$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
-			$db->Execute($sql);
 			
 			$sql="SELECT gs.* $columns,gi.gridimage_id,gi.realname AS credit_realname,IF(gi.realname!='',gi.realname,user.realname) AS realname,title 
 				FROM gridsquare gs
