@@ -1391,5 +1391,10 @@ alter table gridimage_size add original_diff enum('unknown','no','yes') default 
 
 #################################################
 
+alter table article add parent_url varchar(128) NOT NULL default '' AFTER licence;
+
+alter table article_revisions add parent_url varchar(128) NOT NULL default '' AFTER licence;
+
+#################################################
 
 

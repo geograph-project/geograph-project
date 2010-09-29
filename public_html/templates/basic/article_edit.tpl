@@ -196,6 +196,17 @@ function makeUneditable() {
 </div>
 
 <div class="field">
+	{if $errors.parent_url}<div class="formerror"><p class="error">{$errors.parent_url}</p>{/if}
+	 
+	<label for="parent_url">Parent Article:</label>
+	<input type="text" name="parent_url" value="{$parent_url|escape:"html"}" maxlength="128" size="60"/>
+	
+	<div class="fieldnotes">Optional, full URL to parent article if there is one. To be used by articles that are in a group.</div>
+	
+	{if $errors.parent_url}</div>{/if}
+</div>
+
+<div class="field">
 	{if $errors.extract}<div class="formerror"><p class="error">{$errors.extract}</p>{/if}
 	 
 	<label for="extract">Short Description:</label>

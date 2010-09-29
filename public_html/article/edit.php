@@ -161,7 +161,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	if ($page['approved'] == 2 && $USER->user_id != $page['user_id']) {
 		$keys = array('content');
 	} else {
-		$keys = array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','extract');
+		$keys = array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','parent_url','extract');
 	}
 	
 	foreach ($keys as $key) {

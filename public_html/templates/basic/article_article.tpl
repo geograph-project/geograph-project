@@ -32,7 +32,13 @@
 
 ul.content {padding:0 0 0 0; border-bottom: 1px solid gray}
 ul.content li {	padding:3px; border-top: 1px solid gray}
-
+div.breadcrumb div {
+	display:inline;
+	font-size:0.8em;
+}
+div.breadcrumb a {
+	text-decoration: none;
+}
 </style>{/literal}
 {dynamic}
 	{if $user->registered && $approved == 2 && $edit_prompt}
@@ -44,6 +50,19 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 		<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]] [[<a href="/article/">article listing</a>]]</p>
 	{/if}
 {/dynamic}
+{if $parent_url && $parent_title}
+<div class="breadcrumb">
+<div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+  <a href="/article/" itemprop="url"><span itemprop="title">Articles</span></a> &gt;
+</div>
+<div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+  <a href="/article/{$parent_url}" itemprop="url"><span itemprop="title">{$parent_title|escape:'html'}</span></a> &gt;
+</div>
+<div itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+  <span itemprop="title"><b>{$title|escape:'html'}</b></span>
+</div>
+</div>
+{/if}
 {if $pagetitle}
 <h1 class="pageheading"><small>{$page}.</small> {$pagetitle|escape:'html'}</h1>
 <h2 class="pageheading">{$title|escape:'html'}</h2>
