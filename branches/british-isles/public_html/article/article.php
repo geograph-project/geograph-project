@@ -33,6 +33,14 @@ if (empty($_GET['url']) || preg_match('/[^\w\.\,-]/',$_GET['url'])) {
 	exit;
 }
 
+if ($_GET['url'] == 'Shepherd-Neame2') {
+	header("HTTP/1.0 301 Moved Permanently");
+	header("Status: 301 Moved Permanently");
+	header("Location: /article/Shepherd-Neame/2");
+	print "<a href=\"/article/Shepherd-Neame/2\">go</a>";
+	exit;
+}
+
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_article.tpl';
@@ -117,7 +125,7 @@ function smarty_function_articletext($input) {
 
 	$pattern=array(); $replacement=array();
 	
-	if ($pages = preg_split("/\n+\s*~{6,}(~[\w \t\{\}\+-]*)\n+/",$output,-1,PREG_SPLIT_DELIM_CAPTURE)) {
+	if ($pages = preg_split("/\n+\s*~{6,}(~[\w \t\{\}\+:-]*)\n+/",$output,-1,PREG_SPLIT_DELIM_CAPTURE)) {
 		$numberOfPages = ceil(count($pages)/2);
 		$thispage = empty($_GET['page'])?1:intval($_GET['page']);
 		$thispage = min($numberOfPages,$thispage);
@@ -364,6 +372,14 @@ if (!$smarty->is_cached($template, $cacheid))
 			$str = preg_replace('/, ([^\,]*?)$/',' and $1',implode(', ',$arr));
 			$smarty->assign('moreCredits',$str);
 		}
+
+		if (!empty($page['parent_url'])) {
+			$parent = $db->getRow("SELECT url AS parent_url,title AS parent_title FROM article WHERE approved > 0 AND url LIKE ".$db->Quote("%".preg_replace("/^.*\//",'',$page['parent_url'])));
+			if (!empty($parent) && $parent['parent_url'] != $page['url']) {
+				$smarty->assign($parent);
+			}
+		}
+
 	} 
 } else {
 	$smarty->assign('edit_prompt', $page['edit_prompt']);
