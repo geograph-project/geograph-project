@@ -23,25 +23,29 @@
 			
 			<p><input type="radio" name="canonical" value="asis" id="iasis" onclick="checkform()"/> <label for="iasis"><b>Use as is (<tt>{$imageclass|escape:'html'}</tt>)</b></label> - creating the canonical category if required</p>
 
-			<p><input type="radio" name="canonical" value="other" id="iother" onclick="checkform()"/> <label for="iother"><b>Use this one:</b></label> - <select name="other" onchange="checkform()"><option value=""></option>
+			<p><input type="radio" name="canonical" value="other" id="iother" onclick="checkform()"/> <label for="iother"><b>Use this one:</b></label> - <select name="other" onchange="checkform(1)"><option value=""></option>
 			{foreach from=$list item=i}<option>{$i|escape:'html'}</option>{/foreach}
 			</select> (current canonical list)</p>
 
-			<p><input type="radio" name="canonical" value="new" id="inew" onclick="checkform()"/> <label for="inew"><b>Create new:</b></label> - <input type="text" name="new" value="" maxlength="32" onkeyup="checkform()"> (<a href="javascript:void(copyit());">copy</a> current, then edit)</p>
+			<p><input type="radio" name="canonical" value="new" id="inew" onclick="checkform()"/> <label for="inew"><b>Create new:</b></label> - <input type="text" name="new" value="" maxlength="32" onkeyup="checkform(2)" onclick="checkform(2)"> (<a href="javascript:void(copyit());">copy</a> current, then edit)</p>
 
-			<p><input type="radio" name="canonical" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Nonsence category</b></label> - this should be changed. A category such as 'Geograph' is clearly non-sensical.</p>
+			<p><input type="radio" name="canonical" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Nonsense category</b></label> - this should be changed. A category such as 'Geograph' is clearly nonsensical.</p>
 		
 		</div>
 		<br/><br/>
-		<input type="submit" name="submit" value="submit suggestion" disabled id="submitButton"/>	
+		<input type="submit" name="submit" value="submit suggestion" id="submitButton"/>	
 	</form>	
 	<script type="text/javascript">{literal}
 	function copyit() {
 		var f=document.theForm;
 		f.elements['new'].value = f.elements['imageclass'].value;
 	}
-	function checkform() {
+	function checkform(autoselect) {
 		var f=document.theForm;
+		if (autoselect) {
+			f.elements['canonical'][autoselect].checked = true;
+		}
+
 		var good=false;
 		if (f.elements['canonical'][0].checked) {
 			good=true;
@@ -50,7 +54,7 @@
 				good=true;
 			}
 		} else if (f.elements['canonical'][2].checked) {
-			if (f.elements['new'].value.length>3 && f.elements['new'].value != f.elements['imageclass'].value) {
+			if (f.elements['new'].value.length>1 && f.elements['new'].value != f.elements['imageclass'].value) {
 				good=true;
 			}
 		} else if (f.elements['canonical'][3].checked) {
@@ -59,6 +63,7 @@
 		
 		f.elements['submit'].disabled = !good;
 	}
+	 AttachEvent(window,'load',function() { checkform(); },false);
 	
 	{/literal}</script>
 	<br/><br/>
