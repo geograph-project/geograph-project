@@ -6,6 +6,7 @@
 {if $done}
 	<p>Congratulations. Nothing more to do right now.</p>
 {elseif $mode}
+	<p>This is only the first pass over assigning canonical categories, don't worry too much about deciding borderline cases. Do all the easy ones, and give a good guess for the rest. We will have a second stage resolving the conflicts between suggestions.</p>
 	
 	<h3>Original Category</h3>
 	<div class="interestBox" style="padding-left:20px;">

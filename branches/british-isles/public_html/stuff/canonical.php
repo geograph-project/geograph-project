@@ -166,7 +166,7 @@ if (!empty($_GET['sample'])) {
 		$smarty->assign('mode',$_GET['mode']);
 		
 		//todo - use this from the confirmed one?
-		$list = $db->getCol("SELECT DISTINCT canonical FROM category_map");
+		$list = $db->getCol("SELECT canonical FROM category_map GROUP BY canonical");
 		$smarty->assign('list',$list);
 		
 	} else {
