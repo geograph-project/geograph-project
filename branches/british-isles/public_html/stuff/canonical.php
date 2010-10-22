@@ -32,13 +32,30 @@ $smarty = new GeographPage;
 $template='stuff_canonical.tpl';
 $cacheid='';
 
-if (!empty($_GET['sample'])) {
-	$template='stuff_canonical_list.tpl';
+if (!empty($_GET['preview'])) {
+	$template='stuff_canonical_tree.tpl';
+	$cacheid='preview';
+	if (!$smarty->is_cached($template, $cacheid)) {
+		$db = GeographDatabaseConnection(true);
+		
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_map GROUP BY imageclass ORDER BY canonical LIMIT 1000");
+		$smarty->assign('list',$list);
+	}
+	
+} elseif (!empty($_GET['sample'])) {
+	if (!empty($_GET['tree'])) {
+		$template='stuff_canonical_tree.tpl';
+		$order = "canonical";
+	} else {
+		$template='stuff_canonical_list.tpl';
+		$order = "imageclass";
+	}
+	$cacheid='sample';
 	
 	if (!$smarty->is_cached($template, $cacheid)) {
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = 3 ORDER BY imageclass LIMIT 100");
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = 3 ORDER BY $order LIMIT 100");
 		$smarty->assign('list',$list);
 	}
 	
