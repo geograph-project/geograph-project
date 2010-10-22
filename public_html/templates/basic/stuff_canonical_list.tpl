@@ -24,7 +24,7 @@
 		
 	{/foreach}
 	{else}
-		<tr><td colspan="2">- there are no registered attendees -</td></tr>
+		<tr><td colspan="2">- nothing to show -</td></tr>
 	{/if}
 
 	</tbody>
