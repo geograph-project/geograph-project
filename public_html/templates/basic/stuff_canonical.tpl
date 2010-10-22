@@ -12,6 +12,7 @@
 	<div class="interestBox" style="padding-left:20px;">
 		<h4>{$imageclass|escape:'html'}</h4>
 	</div>
+		<a href="/search.php?imageclass={$item.imageclass|escape:"url"}" class="nowrap" target="_blank" style="font-size:0.7em">View images in new window</a>
 	
 	<h3>Canonical Category</h3>
 	
@@ -104,6 +105,8 @@
 	<br/><br/>
 	
 	<a href="?sample=1">View Sample Mapping</a>
+	<a href="?preview=1">View Preview of the result</a>
+	<a href="?rename=1">Rename/Correct your recent suggestions</a>
 
 {/if}
 	<br/><br/>

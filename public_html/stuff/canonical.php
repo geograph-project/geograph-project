@@ -59,6 +59,28 @@ if (!empty($_GET['preview'])) {
 		$smarty->assign('list',$list);
 	}
 	
+} elseif (!empty($_GET['rename'])) {
+	$template='stuff_canonical_rename.tpl';
+	
+	if (!empty($_POST) && $_POST['submit'] && !empty($_POST['new'])) {
+		$db = GeographDatabaseConnection(false);
+	
+		foreach ($_POST['new'] as $old => $new) {
+			if ($old != $new) {
+				$sql = "UPDATE category_map SET canonical = ".$db->Quote($new)." WHERE user_id = {$USER->user_id} AND canonical = ".$db->Quote($old);
+				$db->Execute($sql);
+			}
+		}
+		header("Location: /stuff/canonical.php");
+		exit;
+	}
+	
+	$db = GeographDatabaseConnection(true);
+	
+	$list = $db->getAll("SELECT canonical FROM category_map WHERE user_id = {$USER->user_id} GROUP BY canonical ORDER BY category_map_id DESC LIMIT 100");
+	$smarty->assign('list',$list);
+	
+	
 } elseif (!empty($_GET['mode'])) {
 	
 	if (!empty($_POST) && $_POST['submit'] && !empty($_POST['imageclass']) && !empty($_POST['canonical'])) {
@@ -113,13 +135,16 @@ if (!empty($_GET['preview'])) {
 				break;
 			case 'random':
 				//TODO add some more randomness?
+				
+				$orders = array('category_id','imageclass desc','category_id desc','reverse(category_id)','c desc');
+				$order = $orders[date('G')%(count($orders)-1)];
 				$row = $db->GetRow("
 					SELECT * 
 					FROM category_stat cs 
 					LEFT JOIN category_map cm 
 						ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
 					WHERE cm.category_map_id IS NULL
-					ORDER BY category_id
+					ORDER BY $order
 					LIMIT 1");
 
 				break;
