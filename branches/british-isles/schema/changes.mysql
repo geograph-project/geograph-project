@@ -1398,3 +1398,17 @@ alter table article_revisions add parent_url varchar(128) NOT NULL default '' AF
 #################################################
 
 
+CREATE TABLE `category_map` (
+  `category_map_id` int(10) unsigned NOT NULL auto_increment,
+  `imageclass` varchar(32) NOT NULL,
+  `canonical` varchar(32) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`category_map_id`),
+  UNIQUE KEY `imageclass` (`imageclass`,`user_id`)
+) ENGINE=MyISAM;
+
+
+#################################################
+
+
