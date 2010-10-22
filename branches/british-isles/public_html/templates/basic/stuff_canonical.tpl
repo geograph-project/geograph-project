@@ -21,15 +21,15 @@
 		<div class="interestBox">
 			Choose one:
 			
-			<p><input type="radio" name="canonical" value="asis" id="iasis" onclick="checkform()"/> <label for="iasis"><b>Use as is (<tt>{$imageclass|escape:'html'}</tt>)</b> - creating the canonical category if required</label></p>
+			<p><input type="radio" name="canonical" value="asis" id="iasis" onclick="checkform()"/> <label for="iasis"><b>Use as is (<tt>{$imageclass|escape:'html'}</tt>)</b></label> - creating the canonical category if required</p>
 
-			<p><input type="radio" name="canonical" value="other" id="iother" onclick="checkform()"/> <label for="iother"><b>Use this one:</b> - <select name="other" onchange="checkform()"><option value=""></option>
+			<p><input type="radio" name="canonical" value="other" id="iother" onclick="checkform()"/> <label for="iother"><b>Use this one:</b></label> - <select name="other" onchange="checkform()"><option value=""></option>
 			{foreach from=$list item=i}<option>{$i|escape:'html'}</option>{/foreach}
-			</select> (current canonical list)</label></p>
+			</select> (current canonical list)</p>
 
-			<p><input type="radio" name="canonical" value="new" id="inew" onclick="checkform()"/> <label for="inew"><b>Create new:</b> - <input type="text" name="new" value="" maxlength="32" onkeyup="checkform()"></label> (<a href="javascript:void(copyit());">copy</a> current, then edit)</p>
+			<p><input type="radio" name="canonical" value="new" id="inew" onclick="checkform()"/> <label for="inew"><b>Create new:</b></label> - <input type="text" name="new" value="" maxlength="32" onkeyup="checkform()"> (<a href="javascript:void(copyit());">copy</a> current, then edit)</p>
 
-			<p><input type="radio" name="canonical" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Nonsence category</b> - this should be changed. A category such as 'Geograph' is clearly non-sensical.</label></p>
+			<p><input type="radio" name="canonical" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Nonsence category</b></label> - this should be changed. A category such as 'Geograph' is clearly non-sensical.</p>
 		
 		</div>
 		<br/><br/>
