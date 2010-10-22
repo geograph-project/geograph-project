@@ -95,6 +95,10 @@
 		<input type="submit" value="Unmapped categories"/>
 	</form>
 
+	<br/><br/>
+	
+	<a href="?sample=1">View Sample Mapping</a>
+
 {/if}
 	<br/><br/>
 
