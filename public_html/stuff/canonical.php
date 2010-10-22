@@ -38,7 +38,7 @@ if (!empty($_GET['preview'])) {
 	if (!$smarty->is_cached($template, $cacheid)) {
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT imageclass,canonical FROM category_map GROUP BY imageclass ORDER BY canonical LIMIT 1000");
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_map GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
 		$smarty->assign('list',$list);
 	}
 	
@@ -183,7 +183,7 @@ if (!empty($_GET['preview'])) {
 		$smarty->assign('mode',$_GET['mode']);
 		
 		//todo - use this from the confirmed one?
-		$list = $db->getCol("SELECT canonical FROM category_map GROUP BY canonical");
+		$list = $db->getCol("SELECT canonical FROM category_map WHERE canonical != '-bad-' GROUP BY canonical");
 		$smarty->assign('list',$list);
 		
 	} else {
