@@ -32,7 +32,17 @@ $smarty = new GeographPage;
 $template='stuff_canonical.tpl';
 $cacheid='';
 
-if (!empty($_GET['mode'])) {
+if (!empty($_GET['sample'])) {
+	$template='stuff_canonical_list.tpl';
+	
+	if (!$smarty->is_cached($template, $cacheid)) {
+		$db = GeographDatabaseConnection(true);
+		
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = 3 ORDER BY imageclass LIMIT 100");
+		$smarty->assign('list',$list);
+	}
+	
+} elseif (!empty($_GET['mode'])) {
 	
 	if (!empty($_POST) && $_POST['submit'] && !empty($_POST['imageclass']) && !empty($_POST['canonical'])) {
 		$db = GeographDatabaseConnection(false);
@@ -118,7 +128,7 @@ if (!empty($_GET['mode'])) {
 				$pg = 1;
 					
 				$offset = (($pg -1)* $sphinx->pageSize)+1;
-	print "TEST";		
+	
 				if ($offset < (1000-$pgsize) ) { 
 					$sphinx->processQuery();
 			
