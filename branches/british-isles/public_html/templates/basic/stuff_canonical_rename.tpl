@@ -1,7 +1,7 @@
 {assign var="page_title" value="Canonical Categories"}
 {include file="_std_begin.tpl"}
 
-<h2>Canonical Category Mapping</h2>
+<h2><a href="?">Canonical Category Mapping</a> :: Rename</h2>
 
 <p>Use this form to rename recent canonical categories <b>you have suggested</b>, for example to correct typos, or if you have changed your mind about the wording of the canonical category.</p>
 

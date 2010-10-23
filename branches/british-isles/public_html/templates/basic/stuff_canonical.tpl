@@ -1,7 +1,7 @@
 {assign var="page_title" value="Canonical Categories"}
 {include file="_std_begin.tpl"}
 {dynamic}
-<h2>Canonical Category Mapping</h2>
+<h2><a href="?">Canonical Category Mapping</a></h2>
 
 {if $done}
 	<p>Congratulations. Nothing more to do right now.</p>
@@ -73,21 +73,21 @@
 
 	<p>Use this section to suggest {external href="http://en.wikipedia.org/wiki/Canonical" text="canonical" title='Basic, canonic, canonical: reduced to the simplest and most significant form possible without loss of generality, e.g., "a basic story line"; "a canonical syllable pattern."'} categories for the full category list. The idea is to create a simplified short category list. By maintaining a mapping of full categories to canonical form, we can offer searching by a greatly simplified category dropdown. The full category would still be attached to the image to maintain the more specific information.</p>
 
-	Please choose: -
+	<p>Please choose: -</p>
 
 	<form method="get">
 		<input type="hidden" name="mode" value="random"/>
 		<input type="submit" value="Randomly Selected Categories"/>
 	</form>
 
-	- or -
+	<p>- or -</p>
 
 	<form method="get">
 		<input type="hidden" name="mode" value="alpha"/>
 		<input type="submit" value="In Alphabetical Order"/>
 	</form>
 
-	- or -
+	<p>- or -</p>
 
 	<form method="get">
 		Keyword Search: <input type="text" name="mode" value=""/>
@@ -95,7 +95,7 @@
 		(uses the same format as the 'Auto-complete' category selector)
 	</form>
 
-	- or -
+	<p>- or -</p>
 
 	<form method="get">
 		<input type="hidden" name="mode" value="unmapped"/>
@@ -104,10 +104,12 @@
 
 	<br/><br/>
 	
-	<a href="?sample=1">View Sample Mapping</a>
-	<a href="?preview=1">View Preview of the result</a>
-	<a href="?rename=1">Rename/Correct your recent suggestions</a>
-
+	<p>&middot; <a href="?sample=1">View Sample Mapping</a><br/>
+	&middot; <a href="?preview=1">View Preview of the result</a><br/>
+	&middot; <a href="?rename=1">Rename/Correct your recent suggestions</a><br/>
+	&middot; <a href="?review=1">Review recent suggestions</a><br/>
+	</p>
+	
 {/if}
 	<br/><br/>
 
