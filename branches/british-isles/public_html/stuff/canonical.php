@@ -77,7 +77,7 @@ if (!empty($_GET['preview'])) {
 	
 	$db = GeographDatabaseConnection(true);
 	
-	$list = $db->getAll("SELECT canonical FROM category_map WHERE user_id = {$USER->user_id} GROUP BY canonical ORDER BY category_map_id DESC LIMIT 100");
+	$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_map WHERE user_id = {$USER->user_id} GROUP BY canonical ORDER BY category_map_id DESC LIMIT 100");
 	$smarty->assign('list',$list);
 	
 	
@@ -221,7 +221,7 @@ if (!empty($_GET['preview'])) {
 		$smarty->assign('mode',$_GET['mode']);
 		
 		//todo - use this from the confirmed one?
-		$list = $db->getCol("SELECT canonical FROM category_map WHERE canonical != '-bad-' GROUP BY canonical");
+		$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_map WHERE canonical != '-bad-' GROUP BY canonical");
 		$smarty->assign('list',$list);
 		
 	} else {
