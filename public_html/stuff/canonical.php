@@ -81,6 +81,15 @@ if (!empty($_GET['preview'])) {
 	$smarty->assign('list',$list);
 	
 	
+} elseif (!empty($_GET['review'])) {
+	$template='stuff_canonical_review.tpl';
+	
+	$db = GeographDatabaseConnection(true);
+	
+	$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = {$USER->user_id} ORDER BY category_map_id DESC LIMIT 100");
+	$smarty->assign('list',$list);
+	
+	
 } elseif (!empty($_GET['mode'])) {
 	
 	if (!empty($_POST) && $_POST['submit'] && !empty($_POST['imageclass']) && !empty($_POST['canonical'])) {
@@ -115,6 +124,10 @@ if (!empty($_GET['preview'])) {
 		}
 	} else {
 		$db = GeographDatabaseConnection(true);
+		
+		if (!empty($_GET['category'])) {
+			$imageclass = $_GET['category'];
+		}
 	}
 	
 	if (!empty($imageclass)) {
@@ -136,7 +149,7 @@ if (!empty($_GET['preview'])) {
 			case 'random':
 				//TODO add some more randomness?
 				
-				$orders = array('category_id','imageclass desc','category_id desc','reverse(category_id)','c desc');
+				$orders = array('category_id','cs.imageclass desc','category_id desc','reverse(category_id)','c desc');
 				$order = $orders[date('G')%(count($orders)-1)];
 				$row = $db->GetRow("
 					SELECT * 

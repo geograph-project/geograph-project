@@ -1,14 +1,16 @@
 {assign var="page_title" value="Canonical Categories"}
 {include file="_std_begin.tpl"}
-<script src="{"/sorttable.js"|revision}"></script>
 
-<h2><a href="?">Canonical Category Mapping</a> :: List</h2>
-	
-	<p>Click a column header to resort the table</p>
+<h2><a href="?">Canonical Category Mapping</a> :: Review</h2>
+
+<p>Use this form to recent recent suggestions</p>
+
+{dynamic}
+
 	
 	<table class="report sortable" id="events">
 	<thead><tr>
-		<td sorted="asc">Main Category</td>
+		<td>Main Category</td>
 		<td>Canonical Category</td>
 
 	</tr></thead>
@@ -20,18 +22,19 @@
 		<tr>
 			<td>{$item.imageclass|escape:"html"}</td>
 			<td>{$item.canonical|escape:"html"}</td>
+			<td><a href="?mode=random&amp;category={$item.imageclass|escape:"url"}">Try again</a></td>
 		</tr>
-		
 	{/foreach}
 	{else}
 		<tr><td colspan="2">- nothing to show -</td></tr>
 	{/if}
 
 	</tbody>
-	<tfoot>
 
-	</tfoot>
 	</table>
+	
+
+{/dynamic}
 
 <br/><br/>
 
