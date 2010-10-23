@@ -13,7 +13,7 @@
 	<thead><tr>
 		<td>Old</td>
 		<td>New</td>
-
+		<td>Use Count</td>
 	</tr></thead>
 	<tbody>
 
@@ -23,6 +23,7 @@
 		<tr>
 			<td>{$item.canonical|escape:"html"}</td>
 			<td><input type="text" name="new[{$item.canonical|escape:"html"}]" value="{$item.canonical|escape:"html"}" maxlength="32"/></td>
+			<td align="right">{$item.count}</td>
 		</tr>
 	{/foreach}
 	{else}
