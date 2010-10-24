@@ -24,11 +24,15 @@
 			
 			<p><input type="radio" name="canonical" value="asis" id="iasis" onclick="checkform()"/> <label for="iasis"><b>Use as is (<tt>{$imageclass|escape:'html'}</tt>)</b></label> - creating the canonical category if required</p>
 
-			<p><input type="radio" name="canonical" value="other" id="iother" onclick="checkform()"/> <label for="iother"><b>Use this one:</b></label> - <select name="other" onchange="checkform(1)"><option value=""></option>
+			<p{if !$prev} style="display:none"{/if}><input type="radio" name="canonical" value="prev" id="iprev" onclick="checkform()"/> <label for="iprev"><b>Agree with:</b></label> - <select name="prev" onchange="checkform(1)"><option value=""></option>
+			{foreach from=$prev item=i}<option>{$i.canonical|escape:'html'}</option>{/foreach}
+			</select> (previous suggestions)</p>
+
+			<p><input type="radio" name="canonical" value="other" id="iother" onclick="checkform()"/> <label for="iother"><b>Use this one:</b></label> - <select name="other" onchange="checkform(2)"><option value=""></option>
 			{foreach from=$list item=i}<option{if $i.count < 3} style="color:gray"{/if}>{$i.canonical|escape:'html'}</option>{/foreach}
 			</select> (current canonical list)</p>
 
-			<p><input type="radio" name="canonical" value="new" id="inew" onclick="checkform()"/> <label for="inew"><b>Create new:</b></label> - <input type="text" name="new" value="" maxlength="32" onkeyup="checkform(2)" onclick="checkform(2)"> (<a href="javascript:void(copyit());">copy</a> current, then edit)</p>
+			<p><input type="radio" name="canonical" value="new" id="inew" onclick="checkform()"/> <label for="inew"><b>Create new:</b></label> - <input type="text" name="new" value="" maxlength="32" onkeyup="checkform(3)" onclick="checkform(3)"> (<a href="javascript:void(copyit());">copy</a> current, then edit)</p>
 
 			<p><input type="radio" name="canonical" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Nonsense category</b></label> - this category needs review. A category such as 'Geograph' is clearly nonsensical.</p>
 		
@@ -51,14 +55,18 @@
 		if (f.elements['canonical'][0].checked) {
 			good=true;
 		} else if (f.elements['canonical'][1].checked) {
-			if (f.elements['other'].selectedIndex>0) {
+			if (f.elements['prev'].selectedIndex>0) {
 				good=true;
 			}
 		} else if (f.elements['canonical'][2].checked) {
-			if (f.elements['new'].value.length>1 && f.elements['new'].value != f.elements['imageclass'].value) {
+			if (f.elements['other'].selectedIndex>0) {
 				good=true;
 			}
 		} else if (f.elements['canonical'][3].checked) {
+			if (f.elements['new'].value.length>1 && f.elements['new'].value != f.elements['imageclass'].value) {
+				good=true;
+			}
+		} else if (f.elements['canonical'][4].checked) {
 			good=true;
 		}
 		
@@ -106,16 +114,18 @@
 	
 	&middot; <a href="?sample=1">View Sample Mapping</a><br/>
 	
-	<h4>View Preliminary Results</h4>
-	&middot; <a href="?stats=1">Statistics</a>
-	&middot; <a href="?canonical=1">List Canonical Categories</a>
-	&middot; <a href="?preview=1">View Category Tree</a>
-	&middot; <a href="?final=1">View Confirmed results</a><br/>
-	
 	<h4>Your suggestions</h4>
 	&middot; <a href="?rename=1">Rename/Correct your recent suggestions</a>
 	&middot; <a href="?review=1">Review recent suggestions</a><br/>
-	</p>
+	
+	<h4>View Preliminary Results</h4>
+	&middot; <a href="?stats=1">Statistics</a>
+	&middot; <a href="?canonical=1">Canonical Categories List</a>
+	&middot; <a href="?preview=1">Category Tree</a>
+	
+	<h4>View Confirmed Results</h4>
+	&middot; <a href="?final=1">Category Tree</a><br/>
+	
 	
 {/if}
 	<br/><br/>

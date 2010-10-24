@@ -146,6 +146,9 @@ if (!empty($_GET['stats'])) {
 			case 'other': 
 				$canonical = $_POST['other'];
 				break;
+			case 'prev': 
+				$canonical = $_POST['prev'];
+				break;
 			case 'new': 
 				$canonical = $_POST['new'];
 				break;
@@ -286,6 +289,9 @@ if (!empty($_GET['stats'])) {
 		
 		$smarty->assign($row);
 		$smarty->assign('mode',$_GET['mode']);
+		
+		$prev = $db->getAll("SELECT canonical FROM category_map WHERE imageclass = ".$db->Quote($row['imageclass'])." GROUP BY canonical");
+		$smarty->assign_by_ref('prev',$prev);
 		
 		//todo - use this from the confirmed one?
 		$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_map WHERE canonical != '-bad-' GROUP BY canonical");

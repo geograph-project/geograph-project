@@ -5,6 +5,8 @@
 
 <p>Use this form to rename recent canonical categories <b>you have suggested</b>, for example to correct typos, or if you have changed your mind about the wording of the canonical category.</p>
 
+<p>Can also use it to merge a canonical category with another one. Enter the name of the category marging into, in the 'New' box.
+
 {dynamic}
 
 	
