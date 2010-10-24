@@ -12,7 +12,7 @@
 	<div class="interestBox" style="padding-left:20px;">
 		<h4>{$imageclass|escape:'html'}</h4>
 	</div>
-		<a href="/search.php?imageclass={$item.imageclass|escape:"url"}" class="nowrap" target="_blank" style="font-size:0.7em">View images in new window</a>
+		<a href="/search.php?imageclass={$imageclass|escape:"url"}" class="nowrap" target="_blank" style="font-size:0.7em">View images in new window</a>
 	
 	<h3>Canonical Category</h3>
 	
@@ -30,7 +30,7 @@
 
 			<p><input type="radio" name="canonical" value="new" id="inew" onclick="checkform()"/> <label for="inew"><b>Create new:</b></label> - <input type="text" name="new" value="" maxlength="32" onkeyup="checkform(2)" onclick="checkform(2)"> (<a href="javascript:void(copyit());">copy</a> current, then edit)</p>
 
-			<p><input type="radio" name="canonical" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Nonsense category</b></label> - this should be changed. A category such as 'Geograph' is clearly nonsensical.</p>
+			<p><input type="radio" name="canonical" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Nonsense category</b></label> - this category needs review. A category such as 'Geograph' is clearly nonsensical.</p>
 		
 		</div>
 		<br/><br/>
@@ -106,6 +106,7 @@
 	
 	<p>&middot; <a href="?sample=1">View Sample Mapping</a><br/>
 	&middot; <a href="?preview=1">View Preview of the result</a><br/>
+	&middot; <a href="?final=1">View preliminary comfirmed results</a><br/>
 	&middot; <a href="?rename=1">Rename/Correct your recent suggestions</a><br/>
 	&middot; <a href="?review=1">Review recent suggestions</a><br/>
 	</p>

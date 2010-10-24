@@ -38,7 +38,17 @@ if (!empty($_GET['preview'])) {
 	if (!$smarty->is_cached($template, $cacheid)) {
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT imageclass,canonical FROM category_map GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
+		$smarty->assign('list',$list);
+	}
+
+} elseif (!empty($_GET['final'])) {
+	$template='stuff_canonical_tree.tpl';
+	$cacheid='final';
+	if (!$smarty->is_cached($template, $cacheid)) {
+		$db = GeographDatabaseConnection(true);
+		
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
 		$smarty->assign('list',$list);
 	}
 	
@@ -55,7 +65,7 @@ if (!empty($_GET['preview'])) {
 	if (!$smarty->is_cached($template, $cacheid)) {
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = 3 ORDER BY $order LIMIT 100");
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = 3 AND (canonical LIKE '%path%' OR canonical LIKE '%road%' OR canonical LIKE '%water%') ORDER BY $order LIMIT 100");
 		$smarty->assign('list',$list);
 	}
 	
@@ -141,7 +151,10 @@ if (!empty($_GET['preview'])) {
 					FROM category_stat cs 
 					LEFT JOIN category_map cm 
 						ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
+					LEFT JOIN category_canonical cc
+						ON (cs.imageclass=cc.imageclass)
 					WHERE cm.category_map_id IS NULL
+						AND cc.imageclass IS NULL
 					ORDER BY cs.imageclass
 					LIMIT 1");
 
@@ -156,7 +169,10 @@ if (!empty($_GET['preview'])) {
 					FROM category_stat cs 
 					LEFT JOIN category_map cm 
 						ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
+					LEFT JOIN category_canonical cc
+                                                ON (cs.imageclass=cc.imageclass)
 					WHERE cm.category_map_id IS NULL
+                                                AND cc.imageclass IS NULL
 					ORDER BY $order
 					LIMIT 1");
 
@@ -168,7 +184,10 @@ if (!empty($_GET['preview'])) {
 					FROM category_stat cs 
 					LEFT JOIN category_map cm 
 						ON (cs.imageclass=cm.imageclass)
+                                        LEFT JOIN category_canonical cc
+                                                ON (cs.imageclass=cc.imageclass)
 					WHERE cm.category_map_id IS NULL
+                                                AND cc.imageclass IS NULL
 					ORDER BY cs.category_id
 					LIMIT 1");
 
@@ -199,8 +218,11 @@ if (!empty($_GET['preview'])) {
 							FROM category_stat cs 
 							LEFT JOIN category_map cm 
 								ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
+		                                        LEFT JOIN category_canonical cc
+                		                                ON (cs.imageclass=cc.imageclass)
 							WHERE cm.category_map_id IS NULL
-							AND $where
+		                                                AND cc.imageclass IS NULL
+								AND $where
 							ORDER BY cs.imageclass
 							LIMIT 1");
 					}
