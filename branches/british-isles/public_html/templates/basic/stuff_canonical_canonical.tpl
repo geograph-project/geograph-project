@@ -18,7 +18,7 @@
 
 	{if $list}
 	{foreach from=$list item=item}
-		<tr{if $i.users < 3} style="color:gray"{/if}>
+		<tr{if $item.users < 3} style="color:gray"{/if}>
 			<td>{$item.canonical|escape:"html"}</td>
 			<td align="right">{$item.cats|thousends}</td>
 			<td align="right">{$item.users|thousends}</td>
