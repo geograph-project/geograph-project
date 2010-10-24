@@ -104,10 +104,16 @@
 
 	<br/><br/>
 	
-	<p>&middot; <a href="?sample=1">View Sample Mapping</a><br/>
-	&middot; <a href="?preview=1">View Preview of the result</a><br/>
-	&middot; <a href="?final=1">View preliminary comfirmed results</a><br/>
-	&middot; <a href="?rename=1">Rename/Correct your recent suggestions</a><br/>
+	&middot; <a href="?sample=1">View Sample Mapping</a><br/>
+	
+	<h4>View Preliminary Results</h4>
+	&middot; <a href="?stats=1">Statistics</a>
+	&middot; <a href="?canonical=1">List Canonical Categories</a>
+	&middot; <a href="?preview=1">View Category Tree</a>
+	&middot; <a href="?final=1">View Confirmed results</a><br/>
+	
+	<h4>Your suggestions</h4>
+	&middot; <a href="?rename=1">Rename/Correct your recent suggestions</a>
 	&middot; <a href="?review=1">Review recent suggestions</a><br/>
 	</p>
 	

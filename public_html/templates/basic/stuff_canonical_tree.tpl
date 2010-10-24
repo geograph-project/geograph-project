@@ -3,7 +3,7 @@
 
 <h2><a href="?">Canonical Category Mapping</a> :: Tree</h2>
 	
-	<p><b>NOTE</b>: This is only the result of the first pass over the data. It will be slightly messy as it combines results from multiple users, <u>without any processing</u>.</p>
+	<p>{$intro}</p>
 
 	{if $list}
 		{assign var="last" value=""}

@@ -32,24 +32,55 @@ $smarty = new GeographPage;
 $template='stuff_canonical.tpl';
 $cacheid='';
 
-if (!empty($_GET['preview'])) {
-	$template='stuff_canonical_tree.tpl';
-	$cacheid='preview';
+if (!empty($_GET['stats'])) {
+	$template='stuff_canonical_stats.tpl';
+
 	if (!$smarty->is_cached($template, $cacheid)) {
 		$db = GeographDatabaseConnection(true);
 		
+		$data = $db->getRow("SELECT COUNT(*) AS normal FROM category_stat");
+		$smarty->assign($data);
+		$data = $db->getRow("SELECT COUNT(*) AS suggestions,COUNT(DISTINCT imageclass) AS cats,COUNT(DISTINCT canonical) AS canons,COUNT(DISTINCT user_id) AS users FROM category_map");
+		$smarty->assign($data);
+		$data = $db->getRow("SELECT COUNT(DISTINCT imageclass) AS final,COUNT(DISTINCT canonical) AS canons_final FROM category_canonical");
+		$smarty->assign($data);
+
+	}
+	
+} elseif (!empty($_GET['preview'])) {
+	$template='stuff_canonical_tree.tpl';
+	$cacheid='preview';
+	if (!$smarty->is_cached($template, $cacheid)) {
+		$smarty->assign('intro',"<b>NOTE</b>: This is only the result of the first pass over the data. It will be slightly messy as it combines results from multiple users, <u>without any processing</u>.");
+	
+		$db = GeographDatabaseConnection(true);
+		
 		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
-		$smarty->assign('list',$list);
+		$smarty->assign_by_ref('list',$list);
 	}
 
 } elseif (!empty($_GET['final'])) {
 	$template='stuff_canonical_tree.tpl';
 	$cacheid='final';
 	if (!$smarty->is_cached($template, $cacheid)) {
+		$smarty->assign('intro',"This is preliminary results of the mapping - showing canonical categories confirmed by at least 3 people.");
+	
 		$db = GeographDatabaseConnection(true);
 		
 		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
-		$smarty->assign('list',$list);
+		$smarty->assign_by_ref('list',$list);
+	}
+	
+} elseif (!empty($_GET['canonical'])) {
+	$template='stuff_canonical_canonical.tpl';
+	$cacheid='preview';
+	if (!$smarty->is_cached($template, $cacheid)) {
+		$smarty->assign('intro',"This is the current list of canonical categories. Categories suggested by few people are shown in gray.");
+	
+		$db = GeographDatabaseConnection(true);
+		
+		$list = $db->getAll("SELECT canonical,COUNT(DISTINCT imageclass) AS cats,COUNT(DISTINCT user_id) AS users FROM category_map WHERE canonical != '-bad-' GROUP BY LOWER(canonical)");
+		$smarty->assign_by_ref('list',$list);
 	}
 	
 } elseif (!empty($_GET['sample'])) {
@@ -63,10 +94,12 @@ if (!empty($_GET['preview'])) {
 	$cacheid='sample';
 	
 	if (!$smarty->is_cached($template, $cacheid)) {
+		$smarty->assign('intro',"This is a small sample of mappings for demonstration purposes.");
+	
 		$db = GeographDatabaseConnection(true);
 		
 		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = 3 AND (canonical LIKE '%path%' OR canonical LIKE '%road%' OR canonical LIKE '%water%') ORDER BY $order LIMIT 100");
-		$smarty->assign('list',$list);
+		$smarty->assign_by_ref('list',$list);
 	}
 	
 } elseif (!empty($_GET['rename'])) {
@@ -97,7 +130,7 @@ if (!empty($_GET['preview'])) {
 	$db = GeographDatabaseConnection(true);
 	
 	$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = {$USER->user_id} ORDER BY category_map_id DESC LIMIT 100");
-	$smarty->assign('list',$list);
+	$smarty->assign_by_ref('list',$list);
 	
 	
 } elseif (!empty($_GET['mode'])) {
@@ -147,7 +180,7 @@ if (!empty($_GET['preview'])) {
 
 			case 'alpha':
 				$row = $db->GetRow("
-					SELECT * 
+					SELECT cs.* 
 					FROM category_stat cs 
 					LEFT JOIN category_map cm 
 						ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
@@ -160,37 +193,49 @@ if (!empty($_GET['preview'])) {
 
 				break;
 			case 'random':
-				//TODO add some more randomness?
-				
 				$orders = array('category_id','cs.imageclass desc','category_id desc','reverse(category_id)','c desc');
 				$order = $orders[date('G')%(count($orders)-1)];
 				$row = $db->GetRow("
-					SELECT * 
+					SELECT cs.* 
 					FROM category_stat cs 
 					LEFT JOIN category_map cm 
 						ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
 					LEFT JOIN category_canonical cc
-                                                ON (cs.imageclass=cc.imageclass)
+						ON (cs.imageclass=cc.imageclass)
 					WHERE cm.category_map_id IS NULL
-                                                AND cc.imageclass IS NULL
+						AND cc.imageclass IS NULL
 					ORDER BY $order
 					LIMIT 1");
 
 				break;
 			case 'unmapped':
-				//TODO - this should use the final 'approved' list.
-				$row = $db->GetRow("
-					SELECT * 
-					FROM category_stat cs 
-					LEFT JOIN category_map cm 
-						ON (cs.imageclass=cm.imageclass)
-                                        LEFT JOIN category_canonical cc
-                                                ON (cs.imageclass=cc.imageclass)
-					WHERE cm.category_map_id IS NULL
-                                                AND cc.imageclass IS NULL
-					ORDER BY cs.category_id
-					LIMIT 1");
-
+				if (date('G')%2 == 0) {
+					//in category_map, but not shown to this user, but not in final
+					$row = $db->GetRow("
+						SELECT cs.* 
+						FROM category_stat cs 
+						INNER JOIN category_map cm 
+							ON (cs.imageclass=cm.imageclass)
+						LEFT JOIN category_map cm2 
+							ON (cs.imageclass=cm2.imageclass AND cm2.user_id = {$USER->user_id})
+						LEFT JOIN category_canonical cc
+							ON (cs.imageclass=cc.imageclass)
+						WHERE cm2.category_map_id IS NULL
+							AND cc.imageclass IS NULL
+						ORDER BY cs.category_id
+						LIMIT 1");
+				} else {
+					//not in category_map
+					//TODO - this should use the final 'approved' list.
+					$row = $db->GetRow("
+						SELECT cs.* 
+						FROM category_stat cs 
+						LEFT JOIN category_map cm 
+							ON (cs.imageclass=cm.imageclass)
+						WHERE cm.category_map_id IS NULL
+						ORDER BY cs.category_id
+						LIMIT 1");
+				}
 				break;
 			default:
 				$q=trim($_GET['mode']);
@@ -214,14 +259,14 @@ if (!empty($_GET['preview'])) {
 			
 						$where = "category_id IN(".join(",",$ids).")";
 						$row = $db->GetRow("
-							SELECT * 
+							SELECT cs.* 
 							FROM category_stat cs 
 							LEFT JOIN category_map cm 
 								ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
-		                                        LEFT JOIN category_canonical cc
-                		                                ON (cs.imageclass=cc.imageclass)
+							LEFT JOIN category_canonical cc
+								ON (cs.imageclass=cc.imageclass)
 							WHERE cm.category_map_id IS NULL
-		                                                AND cc.imageclass IS NULL
+								AND cc.imageclass IS NULL
 								AND $where
 							ORDER BY cs.imageclass
 							LIMIT 1");
@@ -244,7 +289,7 @@ if (!empty($_GET['preview'])) {
 		
 		//todo - use this from the confirmed one?
 		$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_map WHERE canonical != '-bad-' GROUP BY canonical");
-		$smarty->assign('list',$list);
+		$smarty->assign_by_ref('list',$list);
 		
 	} else {
 	

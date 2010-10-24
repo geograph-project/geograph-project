@@ -3,37 +3,36 @@
 <script src="{"/sorttable.js"|revision}"></script>
 
 <h2><a href="?">Canonical Category Mapping</a> :: List</h2>
-	
-	<p>{$intro}</p>
 
+	<p>{$intro}</p>
+	
 	<p>Click a column header to resort the table</p>
 	
 	<table class="report sortable" id="events">
 	<thead><tr>
-		<td sorted="asc">Main Category</td>
 		<td>Canonical Category</td>
-
+		<td>Categories</td>
+		<td>Suggestors</td>
 	</tr></thead>
 	<tbody>
 
-
 	{if $list}
 	{foreach from=$list item=item}
-		<tr>
-			<td>{$item.imageclass|escape:"html"}</td>
+		<tr{if $i.users < 3} style="color:gray"{/if}>
 			<td>{$item.canonical|escape:"html"}</td>
+			<td align="right">{$item.cats|thousends}</td>
+			<td align="right">{$item.users|thousends}</td>
 		</tr>
-		
 	{/foreach}
 	{else}
 		<tr><td colspan="2">- nothing to show -</td></tr>
 	{/if}
 
 	</tbody>
-	<tfoot>
 
-	</tfoot>
 	</table>
+	
+
 
 <br/><br/>
 
