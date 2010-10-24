@@ -3,7 +3,7 @@
 
 <h2><a href="?">Canonical Category Mapping</a> :: Review</h2>
 
-<p>Use this form to recent recent suggestions</p>
+<p>This is a list of your recent suggestions, can use the Try again link to suggest a new canonical category.</p>
 
 {dynamic}
 
