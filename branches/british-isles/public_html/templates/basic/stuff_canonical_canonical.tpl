@@ -21,7 +21,7 @@
 	{if $list}
 	{foreach from=$list item=item}
 		<tr{if $item.users < 3} style="color:gray"{/if}>
-			<td><input type="checkbox" name="list[]" value="{$item.canonical|escape:"html"}"/></td>
+			<td>{if !$item.canonical_old}<input type="checkbox" name="list[]" value="{$item.canonical|escape:"html"}"/>{/if}</td>
 			<td>{$item.canonical|escape:"html"}</td>
 			<td align="right">{$item.cats|thousends}</td>
 			<td align="right">{$item.users|thousends}</td>
@@ -34,8 +34,10 @@
 	</tbody>
 
 	</table>
-	
-	<p>Tick canonical category/ies you think could be renamed above, and click <input type="submit" name="submit" value="Continue with rename suggestion"/> </p>
+	<br/><br/>
+	<hr/>
+	<p>Tick canonical category/ies you think could be renamed above, and click <input type="submit" name="submit" value="Continue with rename suggestion"/> <br/>
+	(Items without a tickbox already have an active suggestion)</p>
 </form>
 
 
