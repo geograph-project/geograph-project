@@ -1422,6 +1422,30 @@ order by null;
 
 alter table category_canonical add index(imageclass);
 
+
+insert into category_canonical select 0 as category_map_id,canonical as imageclass,canonical,0 as users from category_canonical cc inner join category_stat cs on (canonical=cs.imageclass) where cc.imageclass!=canonical group by canonical;
+
+
 #################################################
 
+
+ALTER TABLE  `queries` ADD  `limit11` VARCHAR( 32 ) NOT NULL AFTER  `limit10` ;
+
+ALTER TABLE  `queries_archive` ADD  `limit11` VARCHAR( 32 ) NOT NULL AFTER  `limit10` ;
+
+
+#################################################
+
+
+CREATE TABLE  `category_canon_rename` (
+`rename_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`user_id` INT UNSIGNED NOT NULL ,
+`canonical_new` VARCHAR( 32 ) NOT NULL ,
+`canonical_old` VARCHAR( 32 ) NOT NULL ,
+`type` ENUM(  'unknown',  'initial',  'agree',  'disagree',  'indifferent' ) NOT NULL DEFAULT  'unknown',
+`created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE = MYISAM;
+
+
+#################################################
 
