@@ -101,7 +101,7 @@ if (!empty($_GET['stats'])) {
 	
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT canonical,COUNT(DISTINCT imageclass) AS cats,COUNT(DISTINCT user_id) AS users FROM category_map WHERE canonical != '-bad-' GROUP BY LOWER(canonical)");
+		$list = $db->getAll("SELECT canonical,COUNT(DISTINCT imageclass) AS cats,COUNT(DISTINCT cm.user_id) AS users,canonical_old FROM category_map cm LEFT JOIN category_canon_rename ON (canonical=canonical_old) WHERE canonical != '-bad-' GROUP BY LOWER(canonical)");
 		$smarty->assign_by_ref('list',$list);
 	}
 	
