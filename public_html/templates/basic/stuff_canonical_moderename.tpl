@@ -32,6 +32,13 @@
 		<br/><br/>
 			
 	</form>	
+
+	{if $others}
+		<p>Other categories to be renamed to {$canonical_new|escape:'html'}: (but you only voting on the above change)<br/>
+		{foreach from=$others item=item}
+			&middot; <i>{$item.canonical_old|escape:'html'}</i>
+		{/foreach} &middot; 
+	{/if}
 	
 	<br/><br/>
 {/if}
