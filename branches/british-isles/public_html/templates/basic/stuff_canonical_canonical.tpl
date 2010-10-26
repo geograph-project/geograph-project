@@ -4,12 +4,14 @@
 
 <h2><a href="?">Canonical Category Mapping</a> :: List</h2>
 
+<form method="post" action="{$script_name}?rename=2">
 	<p>{$intro}</p>
 	
 	<p>Click a column header to resort the table</p>
 	
 	<table class="report sortable" id="events">
 	<thead><tr>
+		<td>&nbsp;</td>
 		<td>Canonical Category</td>
 		<td>Categories</td>
 		<td>Suggestors</td>
@@ -19,6 +21,7 @@
 	{if $list}
 	{foreach from=$list item=item}
 		<tr{if $item.users < 3} style="color:gray"{/if}>
+			<td><input type="checkbox" name="list[]" value="{$item.canonical|escape:"html"}"/></td>
 			<td>{$item.canonical|escape:"html"}</td>
 			<td align="right">{$item.cats|thousends}</td>
 			<td align="right">{$item.users|thousends}</td>
@@ -32,6 +35,8 @@
 
 	</table>
 	
+	<p>Tick canonical category/ies you think could be renamed above, and click <input type="submit" name="submit" value="Continue with rename suggestion"/> </p>
+</form>
 
 
 <br/><br/>

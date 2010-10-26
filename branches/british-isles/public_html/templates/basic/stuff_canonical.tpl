@@ -79,54 +79,81 @@
 	<a href="?">Start over</a>
 {else}
 
-	<p>Use this section to suggest {external href="http://en.wikipedia.org/wiki/Canonical" text="canonical" title='Basic, canonic, canonical: reduced to the simplest and most significant form possible without loss of generality, e.g., "a basic story line"; "a canonical syllable pattern."'} categories for the full category list. The idea is to create a simplified short category list. By maintaining a mapping of full categories to canonical form, we can offer searching by a greatly simplified category dropdown. The full category would still be attached to the image to maintain the more specific information.</p>
+	<p>The idea is to create a simplified short category list. By maintaining a mapping of full categories to canonical form, we can offer searching by a greatly simplified category dropdown. The full category would still be attached to the image to maintain the more specific information.</p>
 
-	<p>Please choose: -</p>
 
-	<form method="get">
-		<input type="hidden" name="mode" value="random"/>
-		<input type="submit" value="Randomly Selected Categories"/>
-	</form>
+	<h3>First Stage - Suggesting initial canonical categories</h3>
+	<blockquote>
+	<p>Use this section to suggest {external href="http://en.wikipedia.org/wiki/Canonical" text="canonical" title='Basic, canonic, canonical: reduced to the simplest and most significant form possible without loss of generality, e.g., "a basic story line"; "a canonical syllable pattern."'} categories for the full category list.</p>
 
-	<p>- or -</p>
-
-	<form method="get">
-		<input type="hidden" name="mode" value="alpha"/>
-		<input type="submit" value="In Alphabetical Order"/>
-	</form>
-
-	<p>- or -</p>
-
-	<form method="get">
-		Keyword Search: <input type="text" name="mode" value=""/>
-		<input type="submit" value="Matching Categories"/> - works with at most 100 matching categories<br/>
-		(uses the same format as the 'Auto-complete' category selector)
-	</form>
-
-	<p>- or -</p>
-
-	<form method="get">
-		<input type="hidden" name="mode" value="unmapped"/>
-		<input type="submit" value="Unmapped categories"/>
-	</form>
-
-	<br/><br/>
+	<div class="interestBox">
 	
-	&middot; <a href="?sample=1">View Sample Mapping</a><br/>
+		<form method="get" style="display:inline">
+			<input type="hidden" name="mode" value="random"/>
+			<input type="submit" value="Randomly Selected Categories"/>
+		</form>
+
+		- or -
+
+		<form method="get" style="display:inline">
+			<input type="hidden" name="mode" value="alpha"/>
+			<input type="submit" value="In Alphabetical Order"/>
+		</form>
 	
-	<h4>Your suggestions</h4>
+		- or -
+
+		<form method="get" style="display:inline">
+			<input type="hidden" name="mode" value="unmapped"/>
+			<input type="submit" value="Unmapped categories"/>
+		</form>
+	
+		<br/><br/>	
+		<form method="get">
+			- or - Keyword Search: <input type="text" name="mode" value=""/>
+			<input type="submit" value="Matching Categories"/><br/>
+			<small>works with at most 100 matching categories 
+			- uses the same format as the 'Auto-complete' category selector</small>
+		</form>
+
+	</div><br/>
+	
+	&middot; <a href="?sample=1">View Sample Mapping</a>	
 	&middot; <a href="?rename=1">Rename/Correct your recent suggestions</a>
-	&middot; <a href="?review=1">Review recent suggestions</a><br/>
+	&middot; <a href="?review=1">Review your recent suggestions</a> &middot;<br/><br/>
 	
-	<h4>View Preliminary Results</h4>
-	&middot; <a href="?stats=1">Statistics</a>
+	<b>View Preliminary Results</b>
 	&middot; <a href="?canonical=1">Canonical Categories List</a>
-	&middot; <a href="?preview=1">Category Tree</a>
+	&middot; <a href="?preview=1">Category Tree</a> &middot;
+	</blockquote>
 	
-	<h4>View Confirmed Results</h4>
-	&middot; <a href="?final=1">Category Tree</a><br/>
+	<h3>Second Stage - Merging Duplicate categories</h3>
+	<blockquote>
+	<div class="interestBox">
+	
+		<a href="?canonical=1">Current Canonical Categories List</a>
+		
+		- or -
+
+		<form method="get" style="display:inline">
+			<input type="hidden" name="mode" value="rename"/>
+			<input type="submit" value="Vote on suggestions"/>
+		</form>
+		<br/>
+		<small>tick to select categories you think should be renamed on the first link</small>
+	</div>
 	
 	
+	</blockquote>
+	
+	<h3>Further Links</h3>
+	<blockquote>
+	&middot; <a href="?stats=1">Statistics</a> &middot;<br/><br/>
+	
+	
+	<b>View Confirmed Results</b>
+	&middot; <a href="?final=1">Category Tree</a> &middot;
+	
+	</blockquote>
 {/if}
 	<br/><br/>
 
