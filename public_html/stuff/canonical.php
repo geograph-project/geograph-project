@@ -102,7 +102,65 @@ if (!empty($_GET['stats'])) {
 		$smarty->assign_by_ref('list',$list);
 	}
 	
-} elseif (!empty($_GET['rename'])) {
+} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'rename') {
+	$template='stuff_canonical_moderename.tpl';
+
+
+	if (!empty($_POST) && $_POST['submit'] && !empty($_POST['canonical_old']) && !empty($_POST['canonical_new'])) {
+		$db = GeographDatabaseConnection(false);
+	
+		$updates = array();
+		$updates['canonical_old'] = $_POST['canonical_old'];
+		$updates['canonical_new'] = $_POST['canonical_new'];
+		$updates['type'] = strtolower($_POST['submit']);
+		$updates['user_id'] = $USER->user_id;
+
+		$db->Execute('INSERT INTO category_canon_rename SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+	} else {
+		$db = GeographDatabaseConnection(true);
+	}
+	
+	$row = $db->GetRow("
+		SELECT cr.* 
+		FROM category_canon_rename cr 
+		LEFT JOIN category_canon_rename cr2 
+			ON (cr.canonical_new = cr2.canonical_new AND cr.canonical_old = cr2.canonical_old AND cr2.user_id = {$USER->user_id})
+		WHERE cr2.rename_id IS NULL AND cr.type='initial' AND cr.type!={$USER->user_id}
+		LIMIT 1");
+	
+	$smarty->assign($row);
+	$smarty->assign('mode',$_GET['mode']);
+
+	$others = $db->getAll("SELECT * FROM category_canon_rename WHERE canonical_new = ".$db->Quote($row['canonical_new'])." GROUP BY canonical_old");
+	$smarty->assign_by_ref('others',$others);
+
+} elseif (!empty($_GET['rename']) && $_GET['rename'] == 2 ) {
+	$template='stuff_canonical_rename.tpl';
+	$smarty->assign("suggestion",1);
+	
+	if (!empty($_POST) && $_POST['submit'] && !empty($_POST['new'])) {
+		$db = GeographDatabaseConnection(false);
+
+		foreach ($_POST['new'] as $old => $new) {
+			if ($old != $new) {
+				$sql = "INSERT INTO category_canon_rename SET canonical_new = ".$db->Quote(trim($new)).", type='initial', user_id = {$USER->user_id}, canonical_old = ".$db->Quote($old);
+				$db->Execute($sql);
+			}
+		}
+		header("Location: /stuff/canonical.php");
+		exit;
+	}
+	
+	if (!empty($_POST['list'])) {
+		$db = GeographDatabaseConnection(true);
+
+		$names = implode(',',array_map(array($db, 'Quote'),$_POST['list']));
+
+		$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_map WHERE canonical IN ($names) GROUP BY canonical");
+		$smarty->assign('list',$list);
+	}
+	
+} elseif (!empty($_GET['rename']) && $_GET['rename'] == 1) {
 	$template='stuff_canonical_rename.tpl';
 	
 	if (!empty($_POST) && $_POST['submit'] && !empty($_POST['new'])) {
@@ -110,7 +168,7 @@ if (!empty($_GET['stats'])) {
 	
 		foreach ($_POST['new'] as $old => $new) {
 			if ($old != $new) {
-				$sql = "UPDATE category_map SET canonical = ".$db->Quote($new)." WHERE user_id = {$USER->user_id} AND canonical = ".$db->Quote($old);
+				$sql = "UPDATE category_map SET canonical = ".$db->Quote(trim($new))." WHERE user_id = {$USER->user_id} AND canonical = ".$db->Quote($old);
 				$db->Execute($sql);
 			}
 		}

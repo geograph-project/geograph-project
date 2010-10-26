@@ -3,14 +3,23 @@
 
 <h2><a href="?">Canonical Category Mapping</a> :: Rename</h2>
 
-<p>Use this form to rename recent canonical categories <b>you have suggested</b>, for example to correct typos, or if you have changed your mind about the wording of the canonical category.</p>
+{dynamic}
+
+{if $suggestion}
+	<p>Use this form to suggest a rename of canonical categories, for example to correct typos, or if think there is better wording for the canonical category.</p>
+{else}
+	<p>Use this form to rename recent canonical categories <b>you have suggested</b>, for example to correct typos, or if you have changed your mind about the wording of the canonical category.</p>
+{/if}
 
 <p>Can also use it to merge a canonical category with another one. Enter the name of the category marging into, in the 'New' box.
 
-{dynamic}
 
 	
-<form method="post" action="{$script_name}?rename=1">
+{if $suggestion}
+	<form method="post" action="{$script_name}?rename=2">
+{else}
+	<form method="post" action="{$script_name}?rename=1">
+{/if}
 	<table class="report sortable" id="events">
 	<thead><tr>
 		<td>Old</td>
@@ -35,7 +44,11 @@
 	</tbody>
 
 	</table>
-	<input type=submit name="submit" value="Submit changes"/>
+	{if $suggestion}
+		<input type=submit name="submit" value="Submit suggestion"/>
+	{else}
+		<input type=submit name="submit" value="Submit changes"/>
+	{/if}
 </form>
 
 {/dynamic}
