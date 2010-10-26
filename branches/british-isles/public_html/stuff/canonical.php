@@ -131,7 +131,7 @@ if (!empty($_GET['stats'])) {
 	$smarty->assign($row);
 	$smarty->assign('mode',$_GET['mode']);
 
-	$others = $db->getAll("SELECT * FROM category_canon_rename WHERE canonical_new = ".$db->Quote($row['canonical_new'])." GROUP BY canonical_old");
+	$others = $db->getAll("SELECT canonical_old FROM category_canon_rename WHERE canonical_new = ".$db->Quote($row['canonical_new'])." GROUP BY canonical_old");
 	$smarty->assign_by_ref('others',$others);
 
 } elseif (!empty($_GET['rename']) && $_GET['rename'] == 2 ) {
