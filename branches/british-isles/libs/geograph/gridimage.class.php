@@ -547,9 +547,11 @@ class GridImage
 		if ($this->view_direction > -1) {
 			$smarty->assign('view_direction', ($this->view_direction%90==0)?strtoupper(heading_string($this->view_direction)):ucwords(heading_string($this->view_direction)) );
 		}
+		
+		$this->hectad = $this->grid_square->gridsquare.intval($this->grid_square->eastings/10).intval($this->grid_square->northings/10);
+		
 		if ($CONF['template']=='archive') {
-			$hectad = $this->grid_square->gridsquare.intval($this->grid_square->eastings/10).intval($this->grid_square->northings/10);
-			$smarty->assign('sitemap',"/sitemap/{$this->grid_square->gridsquare}/$hectad/{$this->grid_square->grid_reference}.html");
+			$smarty->assign('sitemap',"/sitemap/{$this->grid_square->gridsquare}/{$this->hectad}/{$this->grid_square->grid_reference}.html");
 		} else {
 			$level = ($this->grid_square->imagecount > 1)?6:5;
 			$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
@@ -659,6 +661,8 @@ class GridImage
 				WHERE ba.gridimage_id = {$this->gridimage_id}"));
 
 			$this->collections_count = count($this->collections);
+			
+			$this->canonical = $db->getOne("SELECT canonical FROM category_canonical WHERE imageclass=".$db->Quote($this->imageclass));
 		}
 	}	
 	
@@ -2014,7 +2018,7 @@ class GridImage
 		//the required point
 		$radius = 30000;
 
-		$places['pid'] = $gaz->findBySquare($gridsquare,$radius,array('C','T'));	
+		$places = $gaz->findBySquare($gridsquare,$radius,array('C','T'));	
 		
 		$db->Execute("update gridimage set placename_id = '{$places['pid']}',upd_timestamp = '{$this->upd_timestamp}' where gridimage_id = {$this->gridimage_id}");
 	}	

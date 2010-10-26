@@ -22,6 +22,28 @@
  */
 
 require_once('geograph/global.inc.php');
+
+if (!empty($_GET['hectad']) && !empty($_GET['canonical'])) {
+	$db = GeographDatabaseConnection(true);
+	$q = $_GET['hectad'];
+	
+	$q .= " @imageclass (\"{$_GET['canonical']}\"";
+	
+	$list = $db->getCol("SELECT imageclass FROM category_canonical WHERE canonical = ".$db->Quote($_GET['canonical'])." GROUP BY imageclass");
+	foreach ($list as $c) {
+		if (strpos($c,' ') !== FALSE) {
+			$q .= "| \"$c\"";
+		} else {
+			$q .= "| $c";
+		}
+	}
+	$q .= ")";
+	
+	$q= urlencode($q);
+	header("Location: /search.php?q=$q");
+	exit;
+}
+
 init_session();
 
 $USER->mustHavePerm("basic");
