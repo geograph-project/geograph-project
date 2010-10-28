@@ -1398,7 +1398,7 @@ alter table article_revisions add parent_url varchar(128) NOT NULL default '' AF
 #################################################
 
 
-CREATE TABLE `category_map` (
+CREATE TABLE `category_canonical_log` (
   `category_map_id` int(10) unsigned NOT NULL auto_increment,
   `imageclass` varchar(32) NOT NULL,
   `canonical` varchar(32) NOT NULL,
@@ -1407,23 +1407,6 @@ CREATE TABLE `category_map` (
   PRIMARY KEY  (`category_map_id`),
   UNIQUE KEY `imageclass` (`imageclass`,`user_id`)
 ) ENGINE=MyISAM;
-
-
-#################################################
-
-drop table if exists category_canonical;
-
-create table category_canonical 
-select category_map_id,imageclass,canonical,count(distinct user_id) as users 
-from category_map 
-group by imageclass,canonical
-having users > 2 
-order by null;
-
-alter table category_canonical add index(imageclass);
-
-
-insert into category_canonical select 0 as category_map_id,canonical as imageclass,canonical,0 as users from category_canonical cc inner join category_stat cs on (canonical=cs.imageclass) where cc.imageclass!=canonical group by canonical;
 
 
 #################################################
@@ -1437,7 +1420,7 @@ ALTER TABLE  `queries_archive` ADD  `limit11` VARCHAR( 32 ) NOT NULL AFTER  `lim
 #################################################
 
 
-CREATE TABLE  `category_canon_rename` (
+CREATE TABLE  `category_canonical_rename_log` (
 `rename_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
 `user_id` INT UNSIGNED NOT NULL ,
 `canonical_new` VARCHAR( 32 ) NOT NULL ,
@@ -1449,3 +1432,10 @@ CREATE TABLE  `category_canon_rename` (
 
 #################################################
 
+
+RENAME TABLE category_canon_rename TO category_canonical_rename_log;
+
+RENAME TABLE category_map TO category_canonical_log;
+
+
+#################################################

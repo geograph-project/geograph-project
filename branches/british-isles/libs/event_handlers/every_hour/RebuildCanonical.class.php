@@ -41,22 +41,47 @@ class RebuildCanonical extends EventHandler
 		
 		$db=&$this->_getDB();
 		
+		######################
+		# create moderated rename table
+		
+		$db->Execute("DROP TABLE IF EXISTS category_canonical_rename_tmp");
+		
+		$db->Execute("CREATE TABLE category_canonical_rename_tmp  
+			SELECT canonical_old,canonical_new,COUNT(*) AS c,COUNT(DISTINCT user_id) AS users,SUM(type='initial' OR type='agree') AS agree, SUM(type='disagree') AS disagree 
+			FROM category_canonical_rename_log 
+			GROUP BY canonical_old,canonical_new 
+			HAVING agree >= 5 AND disagree = 0");
+		$db->Execute("ALTER IGNORE TABLE category_canonical_rename_tmp ADD UNIQUE(canonical_old)");
+		
+		$db->Execute("DROP TABLE IF EXISTS category_canonical_rename");
+		$db->Execute("RENAME TABLE category_canonical_rename_tmp TO category_canonical_rename");
+
+		#####################
+		# create moderated map table
+		
 		$db->Execute("DROP TABLE IF EXISTS category_canonical_tmp");
 		
 		$db->Execute("CREATE TABLE category_canonical_tmp 
 			SELECT category_map_id,imageclass,canonical,COUNT(DISTINCT user_id) AS users 
-			FROM category_map 
+			FROM category_canonical_log 
 			GROUP BY imageclass,canonical
 			HAVING users > 2 
 			ORDER BY NULL");
-		
 		$db->Execute("ALTER TABLE category_canonical_tmp ADD INDEX(imageclass), ADD INDEX(canonical)");
 		
+		#perform any required renames
+		$db->Execute("UPDATE TABLE category_canonical_tmp,category_canonical_rename
+		SET canonical = canonical_new
+		WHERE canonical = canonical_old");
+		
+		#add automatic canoncail for same name categories
 		$db->Execute("INSERT INTO category_canonical_tmp SELECT 0 AS category_map_id,canonical AS imageclass,canonical,0 AS users FROM category_canonical_tmp cc INNER JOIN category_stat cs ON (canonical=cs.imageclass) WHERE cc.imageclass!=canonical GROUP BY canonical");
 		
 		$db->Execute("DROP TABLE IF EXISTS category_canonical");
 		$db->Execute("RENAME TABLE category_canonical_tmp TO category_canonical");
 
+		######################
+		
 		
 		//return true to signal completed processing
 		//return false to have another attempt later
