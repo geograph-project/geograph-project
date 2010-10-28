@@ -62,7 +62,7 @@ if (!empty($_GET['stats'])) {
 		
 		$data = $db->getRow("SELECT COUNT(*) AS normal FROM category_stat");
 		$smarty->assign($data);
-		$data = $db->getRow("SELECT COUNT(*) AS suggestions,COUNT(DISTINCT imageclass) AS cats,COUNT(DISTINCT canonical) AS canons,COUNT(DISTINCT user_id) AS users FROM category_map");
+		$data = $db->getRow("SELECT COUNT(*) AS suggestions,COUNT(DISTINCT imageclass) AS cats,COUNT(DISTINCT canonical) AS canons,COUNT(DISTINCT user_id) AS users FROM category_canonical_log");
 		$smarty->assign($data);
 		$data = $db->getRow("SELECT COUNT(DISTINCT imageclass) AS final,COUNT(DISTINCT canonical) AS canons_final FROM category_canonical");
 		$smarty->assign($data);
@@ -77,7 +77,7 @@ if (!empty($_GET['stats'])) {
 	
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical_log WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
 		$smarty->assign_by_ref('list',$list);
 	}
 
@@ -101,7 +101,7 @@ if (!empty($_GET['stats'])) {
 	
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT canonical,COUNT(DISTINCT imageclass) AS cats,COUNT(DISTINCT cm.user_id) AS users,canonical_old FROM category_map cm LEFT JOIN category_canon_rename ON (canonical=canonical_old) WHERE canonical != '-bad-' GROUP BY LOWER(canonical)");
+		$list = $db->getAll("SELECT canonical,COUNT(DISTINCT imageclass) AS cats,COUNT(DISTINCT cm.user_id) AS users,canonical_old FROM category_canonical_log cm LEFT JOIN category_canonical_rename_log ON (canonical=canonical_old) WHERE canonical != '-bad-' GROUP BY LOWER(canonical)");
 		$smarty->assign_by_ref('list',$list);
 	}
 	
@@ -120,7 +120,7 @@ if (!empty($_GET['stats'])) {
 	
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = 3 AND (canonical LIKE '%path%' OR canonical LIKE '%road%' OR canonical LIKE '%water%') ORDER BY $order LIMIT 100");
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical_log WHERE user_id = 3 AND (canonical LIKE '%path%' OR canonical LIKE '%road%' OR canonical LIKE '%water%') ORDER BY $order LIMIT 100");
 		$smarty->assign_by_ref('list',$list);
 	}
 	
@@ -137,15 +137,15 @@ if (!empty($_GET['stats'])) {
 		$updates['type'] = strtolower($_POST['submit']);
 		$updates['user_id'] = $USER->user_id;
 
-		$db->Execute('INSERT INTO category_canon_rename SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		$db->Execute('INSERT INTO category_canonical_rename_log SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 	} else {
 		$db = GeographDatabaseConnection(true);
 	}
 	
 	$row = $db->GetRow("
 		SELECT cr.* 
-		FROM category_canon_rename cr 
-		LEFT JOIN category_canon_rename cr2 
+		FROM category_canonical_rename_log cr 
+		LEFT JOIN category_canonical_rename_log cr2 
 			ON (cr.canonical_new = cr2.canonical_new AND cr.canonical_old = cr2.canonical_old AND cr2.user_id = {$USER->user_id})
 		WHERE cr2.rename_id IS NULL AND cr.type='initial' AND cr.type!={$USER->user_id}
 		LIMIT 1");
@@ -153,7 +153,7 @@ if (!empty($_GET['stats'])) {
 	$smarty->assign($row);
 	$smarty->assign('mode',$_GET['mode']);
 
-	$others = $db->getAll("SELECT canonical_old FROM category_canon_rename WHERE canonical_new = ".$db->Quote($row['canonical_new'])." GROUP BY canonical_old");
+	$others = $db->getAll("SELECT canonical_old FROM category_canonical_rename_log WHERE canonical_new = ".$db->Quote($row['canonical_new'])." GROUP BY canonical_old");
 	$smarty->assign_by_ref('others',$others);
 
 } elseif (!empty($_GET['rename']) && $_GET['rename'] == 2 ) {
@@ -165,7 +165,7 @@ if (!empty($_GET['stats'])) {
 
 		foreach ($_POST['new'] as $old => $new) {
 			if ($old != $new) {
-				$sql = "INSERT INTO category_canon_rename SET canonical_new = ".$db->Quote(trim($new)).", type='initial', user_id = {$USER->user_id}, canonical_old = ".$db->Quote($old);
+				$sql = "INSERT INTO category_canonical_rename_log SET canonical_new = ".$db->Quote(trim($new)).", type='initial', user_id = {$USER->user_id}, canonical_old = ".$db->Quote($old);
 				$db->Execute($sql);
 			}
 		}
@@ -178,7 +178,7 @@ if (!empty($_GET['stats'])) {
 
 		$names = implode(',',array_map(array($db, 'Quote'),$_POST['list']));
 
-		$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_map WHERE canonical IN ($names) GROUP BY canonical");
+		$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_canonical_log WHERE canonical IN ($names) GROUP BY canonical");
 		$smarty->assign('list',$list);
 	}
 	
@@ -190,7 +190,7 @@ if (!empty($_GET['stats'])) {
 	
 		foreach ($_POST['new'] as $old => $new) {
 			if ($old != $new) {
-				$sql = "UPDATE category_map SET canonical = ".$db->Quote(trim($new))." WHERE user_id = {$USER->user_id} AND canonical = ".$db->Quote($old);
+				$sql = "UPDATE category_canonical_log SET canonical = ".$db->Quote(trim($new))." WHERE user_id = {$USER->user_id} AND canonical = ".$db->Quote($old);
 				$db->Execute($sql);
 			}
 		}
@@ -200,7 +200,7 @@ if (!empty($_GET['stats'])) {
 	
 	$db = GeographDatabaseConnection(true);
 	
-	$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_map WHERE user_id = {$USER->user_id} GROUP BY canonical ORDER BY category_map_id DESC LIMIT 100");
+	$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_canonical_log WHERE user_id = {$USER->user_id} GROUP BY canonical ORDER BY category_map_id DESC LIMIT 100");
 	$smarty->assign('list',$list);
 	
 	
@@ -209,7 +209,7 @@ if (!empty($_GET['stats'])) {
 	
 	$db = GeographDatabaseConnection(true);
 	
-	$list = $db->getAll("SELECT imageclass,canonical FROM category_map WHERE user_id = {$USER->user_id} ORDER BY category_map_id DESC LIMIT 100");
+	$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical_log WHERE user_id = {$USER->user_id} ORDER BY category_map_id DESC LIMIT 100");
 	$smarty->assign_by_ref('list',$list);
 	
 	
@@ -242,7 +242,7 @@ if (!empty($_GET['stats'])) {
 			$updates['canonical'] = $canonical;
 			$updates['user_id'] = $USER->user_id;
 			
-			$db->Execute('REPLACE INTO category_map SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+			$db->Execute('REPLACE INTO category_canonical_log SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 	
 		} else {
 			//try again!
@@ -265,7 +265,7 @@ if (!empty($_GET['stats'])) {
 				$row = $db->GetRow("
 					SELECT cs.* 
 					FROM category_stat cs 
-					LEFT JOIN category_map cm 
+					LEFT JOIN category_canonical_log cm 
 						ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
 					LEFT JOIN category_canonical cc
 						ON (cs.imageclass=cc.imageclass)
@@ -281,7 +281,7 @@ if (!empty($_GET['stats'])) {
 				$row = $db->GetRow("
 					SELECT cs.* 
 					FROM category_stat cs 
-					LEFT JOIN category_map cm 
+					LEFT JOIN category_canonical_log cm 
 						ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
 					LEFT JOIN category_canonical cc
 						ON (cs.imageclass=cc.imageclass)
@@ -293,13 +293,13 @@ if (!empty($_GET['stats'])) {
 				break;
 			case 'unmapped':
 				if (date('G')%2 == 0) {
-					//in category_map, but not shown to this user, but not in final
+					//in category_canonical_log, but not shown to this user, but not in final
 					$row = $db->GetRow("
 						SELECT cs.* 
 						FROM category_stat cs 
-						INNER JOIN category_map cm 
+						INNER JOIN category_canonical_log cm 
 							ON (cs.imageclass=cm.imageclass)
-						LEFT JOIN category_map cm2 
+						LEFT JOIN category_canonical_log cm2 
 							ON (cs.imageclass=cm2.imageclass AND cm2.user_id = {$USER->user_id})
 						LEFT JOIN category_canonical cc
 							ON (cs.imageclass=cc.imageclass)
@@ -308,12 +308,12 @@ if (!empty($_GET['stats'])) {
 						ORDER BY cs.category_id
 						LIMIT 1");
 				} else {
-					//not in category_map
+					//not in category_canonical_log
 					//TODO - this should use the final 'approved' list.
 					$row = $db->GetRow("
 						SELECT cs.* 
 						FROM category_stat cs 
-						LEFT JOIN category_map cm 
+						LEFT JOIN category_canonical_log cm 
 							ON (cs.imageclass=cm.imageclass)
 						WHERE cm.category_map_id IS NULL
 						ORDER BY cs.category_id
@@ -344,7 +344,7 @@ if (!empty($_GET['stats'])) {
 						$row = $db->GetRow("
 							SELECT cs.* 
 							FROM category_stat cs 
-							LEFT JOIN category_map cm 
+							LEFT JOIN category_canonical_log cm 
 								ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
 							LEFT JOIN category_canonical cc
 								ON (cs.imageclass=cc.imageclass)
@@ -370,11 +370,11 @@ if (!empty($_GET['stats'])) {
 		$smarty->assign($row);
 		$smarty->assign('mode',$_GET['mode']);
 		
-		$prev = $db->getAll("SELECT canonical FROM category_map WHERE imageclass = ".$db->Quote($row['imageclass'])." GROUP BY canonical");
+		$prev = $db->getAll("SELECT canonical FROM category_canonical_log WHERE imageclass = ".$db->Quote($row['imageclass'])." GROUP BY canonical");
 		$smarty->assign_by_ref('prev',$prev);
 		
 		//todo - use this from the confirmed one?
-		$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_map WHERE canonical != '-bad-' GROUP BY canonical");
+		$list = $db->getAll("SELECT canonical,count(*) AS count FROM category_canonical_log WHERE canonical != '-bad-' GROUP BY canonical");
 		$smarty->assign_by_ref('list',$list);
 		
 	} else {
