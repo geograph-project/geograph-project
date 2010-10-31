@@ -34,7 +34,12 @@ $smarty = new GeographPage;
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
 $template = 'js_categories.tpl';
-$cacheid = "cat|$u.".isset($_GET['full']);
+
+if (!empty($_GET['canonical'])) {
+	$cacheid = isset($_GET['more'])?'canonmore':'canon';
+} else {
+	$cacheid = "cat|$u.".isset($_GET['full']);
+}
 
 if (isset($_GET['days'])) {
 	$_GET['days']=$_SESSION['days']=min(max(intval($_GET['days']),1),30);
@@ -50,19 +55,28 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$filter = "(imageclass NOT LIKE 'Supplemental%' AND imageclass NOT LIKE 'Geograph%' AND imageclass NOT LIKE 'Accept%')";
 
-	if ($u) {
-		$where = "where submitted > date_sub(now(),interval {$_GET['days']} day) and user_id = $u";
-		$having = isset($_GET['full'])?'':"having cnt>5 and $filter";
+	if (!empty($_GET['canonical'])) {
+		
+		$smarty->assign('varname','catList');
+		
+		$table = isset($_GET['more'])?'category_canonical_log':'category_canonical';
+		
+		$arr = $db->getCol("SELECT canonical AS imageclass,COUNT(*) AS cnt FROM $table GROUP BY canonical");
+		
+	} elseif ($u) {
+		$where = "WHERE submitted > DATE_SUB(NOW(),INTERVAL {$_GET['days']} DAY) AND user_id = $u";
+		$having = isset($_GET['full'])?'':"HAVING cnt>5 AND $filter";
 		$table = 'gridimage';
 		$smarty->assign('varname','catListUser');
 		
-		$arr = $db->getCol("select imageclass,count(*) as cnt from $table $where group by imageclass $having");
+		$arr = $db->getCol("SELECT imageclass,COUNT(*) AS cnt FROM $table $where GROUP BY imageclass $having");
+		
 	} else {
-		$where = isset($_GET['full'])?'':"where c>5 and $filter";
+		$where = isset($_GET['full'])?'':"WHERE c>5 AND $filter";
 		$table = 'category_stat';
 		$smarty->assign('varname','catList');
 	
-		$arr = $db->getCol("select imageclass,c as cnt from $table $where");
+		$arr = $db->getCol("SELECT imageclass,c AS cnt FROM $table $where");
 	}
 	
 	$smarty->assign_by_ref('classes',$arr);
@@ -83,5 +97,3 @@ customGZipHandlerStart();
 $smarty->debugging=false;
 $smarty->display($template, $cacheid);
 
-	
-?>
