@@ -107,14 +107,17 @@
 
 					var optionsList = JSON.decode(response);
 					
-					if (optionsList.length == 1 && optionsList[0] == canonical) {
+					if (optionsList.length == 0 || (optionsList.length == 1 && optionsList[0] == canonical)) {
 						document.getElementById('detailblock').style.display='none';
-					}
+						return;
+					} 
 
 					//add the whole list
 					for(i=0; i < optionsList.length; i++) {
 						act = optionsList[i];
-						opt[opt.length] = new Option(act,act);
+						if (act != canonical) {
+							opt[opt.length] = new Option(act,act);
+						}
 					}
 				} 
 			}).send(); 
