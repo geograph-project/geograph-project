@@ -29,7 +29,32 @@ header('Content-type: application/json');
 
 customExpiresHeader(3600);
 
-if (!empty($_REQUEST['q'])) {
+
+if (!empty($_GET['canonical'])) {
+	
+	$db = GeographDatabaseConnection(true);
+	
+	$table = isset($_GET['more'])?'category_canonical_log':'category_canonical';
+	
+	$rows = $db->getCol("
+	SELECT imageclass
+	FROM $table
+	WHERE canonical = ".$db->Quote($_GET['canonical'])."
+	ORDER BY LOWER(imageclass)");
+
+	$sep = "[";
+	$results = array();
+	foreach ($rows as $c) {
+		
+		print $sep;
+		print '"'.trim(addslashes($c)).'"';
+
+		$sep = ",";
+	}
+	print "]\n";
+	
+
+} elseif (!empty($_REQUEST['q'])) {
 	$q=trim($_REQUEST['q']);
 	
 	$sphinx = new sphinxwrapper($q);
@@ -66,10 +91,10 @@ if (!empty($_REQUEST['q'])) {
 
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$rows = $db->getAssoc("
-			select category_id,imageclass
-			from category_stat 
-			where $where
-			limit $limit");
+			SELECT category_id,imageclass
+			FROM category_stat 
+			WHERE $where
+			LIMIT $limit");
 
 			$sep = "[";
 			$results = array();
@@ -97,7 +122,4 @@ if (!empty($_REQUEST['q'])) {
 } else {
 	print "[]";
 }
-	
 
-
-?>
