@@ -40,7 +40,7 @@ if (!empty($_GET['canonical'])) {
 	SELECT imageclass
 	FROM $table
 	WHERE canonical = ".$db->Quote($_GET['canonical'])."
-	ORDER BY LOWER(imageclass)");
+	GROUP BY LOWER(imageclass)");
 
 	$sep = "[";
 	$results = array();

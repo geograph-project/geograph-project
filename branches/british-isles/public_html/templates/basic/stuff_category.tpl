@@ -106,6 +106,10 @@
 					opt[0] = new Option('Optionally select a more detailed category...','');
 
 					var optionsList = JSON.decode(response);
+					
+					if (optionsList.length == 1 && optionsList[0] == canonical) {
+						document.getElementById('detailblock').style.display='none';
+					}
 
 					//add the whole list
 					for(i=0; i < optionsList.length; i++) {
