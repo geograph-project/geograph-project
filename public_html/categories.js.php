@@ -61,7 +61,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$table = isset($_GET['more'])?'category_canonical_log':'category_canonical';
 		
-		$arr = $db->getCol("SELECT canonical AS imageclass,COUNT(*) AS cnt FROM $table GROUP BY canonical");
+		$arr = $db->getCol("SELECT canonical AS imageclass,COUNT(*) AS cnt FROM $table GROUP BY LOWER(canonical)");
 		
 	} elseif ($u) {
 		$where = "WHERE submitted > DATE_SUB(NOW(),INTERVAL {$_GET['days']} DAY) AND user_id = $u";
