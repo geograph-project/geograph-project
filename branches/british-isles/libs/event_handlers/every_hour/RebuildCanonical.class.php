@@ -70,12 +70,15 @@ class RebuildCanonical extends EventHandler
 		$db->Execute("ALTER TABLE category_canonical_tmp ADD INDEX(imageclass), ADD INDEX(canonical)");
 		
 		#perform any required renames
-		$db->Execute("UPDATE TABLE category_canonical_tmp,category_canonical_rename
+		$db->Execute("UPDATE category_canonical_tmp,category_canonical_rename
 		SET canonical = canonical_new
 		WHERE canonical = canonical_old");
 		
 		#add automatic canoncail for same name categories
 		$db->Execute("INSERT INTO category_canonical_tmp SELECT 0 AS category_map_id,canonical AS imageclass,canonical,0 AS users FROM category_canonical_tmp cc INNER JOIN category_stat cs ON (canonical=cs.imageclass) WHERE cc.imageclass!=canonical GROUP BY canonical");
+		
+		$db->Execute("ALTER IGNORE TABLE category_canonical_tmp ADD UNIQUE dedup (imageclass,canonical)");
+		$db->Execute("ALTER TABLE category_canonical_tmp DROP INDEX dedup");
 		
 		$db->Execute("DROP TABLE IF EXISTS category_canonical");
 		$db->Execute("RENAME TABLE category_canonical_tmp TO category_canonical");

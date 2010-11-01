@@ -14,7 +14,7 @@
 					</div>
 				{/if}
 				{assign var="last" value=$item.canonical}
-				<h3>{$item.canonical|escape:"html"}</h3>
+				<h3><a href="/search.php?canonical={$item.canonical|escape:"url"}&amp;do=1">{$item.canonical|escape:"html"}</a></h3>
 				<div>&middot; 
 			{/if}
 			<a href="/search.php?imageclass={$item.imageclass|escape:"url"}" class="nowrap">{$item.imageclass|escape:"html"}</a> &middot; 
