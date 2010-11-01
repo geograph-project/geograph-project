@@ -70,7 +70,9 @@ if (!empty($_GET['stats'])) {
 	}
 	
 } elseif (!empty($_GET['renameloops'])) {
-
+	
+	$smarty->display('_std_begin.tpl');
+	
 	$db = GeographDatabaseConnection(true);
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -84,10 +86,14 @@ if (!empty($_GET['stats'])) {
 
 	print "<pre>";
 	print_r($list);
+	
+	$smarty->display('_std_end.tpl');
 	exit;
 
 } elseif (!empty($_GET['renametree'])) {
-
+	
+	$smarty->display('_std_begin.tpl');
+	
 	$db = GeographDatabaseConnection(true);
 	
 	if (!empty($_GET['preview'])) {
@@ -143,7 +149,9 @@ if (!empty($_GET['stats'])) {
 			print "</li>";
 		}
 	}
+	print "</ul>";
 	
+	$smarty->display('_std_end.tpl');
 	exit;
 	
 } elseif (!empty($_GET['preview'])) {
