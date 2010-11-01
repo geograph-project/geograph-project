@@ -69,6 +69,83 @@ if (!empty($_GET['stats'])) {
 
 	}
 	
+} elseif (!empty($_GET['renameloops'])) {
+
+	$db = GeographDatabaseConnection(true);
+
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	$list = $db->getAll("SELECT one.canonical_old, one.canonical_new, 
+	SUM( one.type IN ('agree',  'initial') ) AS forthis, SUM( two.type IN ('agree',  'initial') ) AS forother,
+	SUM( one.type IN ('disagree') ) AS againthis, SUM( two.type IN ('disagree') ) AS againother
+	FROM  `category_canonical_rename_log` one
+	INNER JOIN  `category_canonical_rename_log` two ON ( one.`canonical_new` = two.`canonical_old` AND one.`canonical_old` = two.`canonical_new` ) 
+	WHERE 1 
+	GROUP BY one.`canonical_old` , one.`canonical_new` ");
+
+	print "<pre>";
+	print_r($list);
+	exit;
+
+} elseif (!empty($_GET['renametree'])) {
+
+	$db = GeographDatabaseConnection(true);
+	
+	if (!empty($_GET['preview'])) {
+		$list = $db->getAll("SELECT canonical_old,canonical_new FROM category_canonical_rename_log GROUP BY canonical_old,canonical_new ORDER BY canonical_new,canonical_old");
+	} else {
+		$list = $db->getAll("SELECT canonical_old,canonical_new FROM category_canonical_rename GROUP BY canonical_old,canonical_new ORDER BY canonical_new,canonical_old");
+	}
+	$t = array();
+	foreach ($list as $row) {
+		$t[$row['canonical_old']]['to'][] = $row['canonical_new'];
+		$t[$row['canonical_new']]['from'][] = $row['canonical_old'];
+	}
+	
+	$done = array();
+	
+	
+	function dumplist($a,$from) {
+		global $done,$t;
+		
+		print "<ul>";
+		foreach ($a as $two) {
+			print "<li> -&gt; <b>".htmlentities($two)."</b> <a href=\"?mode=rename&old=".urlencode($from)."&new=".urlencode($two)."\">...</a>";
+			
+			$row2 = $t[$two];
+			
+			if (!empty($row2['to'])) {
+				if (!empty($done[$two])) {
+					print " <i>(Looping)</i>";
+				} else {
+					$done[$two] = 1;
+
+					dumplist($row2['to'],$two);
+				}
+			}
+			
+			print "</li>";
+		}
+		print "</ul>";
+	}
+	
+	print "<ul>";
+	foreach ($t as $one => $row1) {
+		$done = array();
+		#if (empty($row1['from'])) {
+		if (!empty($row1['to'])) {
+			print "<li>".htmlentities($one);
+
+			if (!empty($row1['to'])) {
+				$done[$one] = 1;
+				dumplist($row1['to'],$one);
+			}
+
+			print "</li>";
+		}
+	}
+	
+	exit;
+	
 } elseif (!empty($_GET['preview'])) {
 	$template='stuff_canonical_tree.tpl';
 	$cacheid='preview';
@@ -142,13 +219,17 @@ if (!empty($_GET['stats'])) {
 		$db = GeographDatabaseConnection(true);
 	}
 	
-	$row = $db->GetRow("
-		SELECT cr.* 
-		FROM category_canonical_rename_log cr 
-		LEFT JOIN category_canonical_rename_log cr2 
-			ON (cr.canonical_new = cr2.canonical_new AND cr.canonical_old = cr2.canonical_old AND cr2.user_id = {$USER->user_id})
-		WHERE cr2.rename_id IS NULL AND cr.type='initial' AND cr.type!={$USER->user_id}
-		LIMIT 1");
+	if (!empty($_GET['old']) && !empty($_GET['new'])) {
+		$row = array('canonical_old'=>$_GET['old'],'canonical_new'=>$_GET['new']);
+	} else {
+		$row = $db->GetRow("
+			SELECT cr.* 
+			FROM category_canonical_rename_log cr 
+			LEFT JOIN category_canonical_rename_log cr2 
+				ON (cr.canonical_new = cr2.canonical_new AND cr.canonical_old = cr2.canonical_old AND cr2.user_id = {$USER->user_id})
+			WHERE cr2.rename_id IS NULL AND cr.type='initial' AND cr.type!={$USER->user_id}
+			LIMIT 1");
+	}
 	
 	$smarty->assign($row);
 	$smarty->assign('mode',$_GET['mode']);
