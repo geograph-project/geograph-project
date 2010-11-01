@@ -96,11 +96,10 @@ if (!empty($_GET['stats'])) {
 	
 	$db = GeographDatabaseConnection(true);
 	
-	if (!empty($_GET['preview'])) {
-		$list = $db->getAll("SELECT canonical_old,canonical_new FROM category_canonical_rename_log GROUP BY canonical_old,canonical_new ORDER BY canonical_new,canonical_old");
-	} else {
-		$list = $db->getAll("SELECT canonical_old,canonical_new FROM category_canonical_rename GROUP BY canonical_old,canonical_new ORDER BY canonical_new,canonical_old");
-	}
+	$table = empty($_GET['preview'])?'category_canonical_rename':'category_canonical_rename_log';
+	
+	$list = $db->getAll("SELECT canonical_old,canonical_new FROM $table GROUP BY canonical_old,canonical_new ORDER BY canonical_new,canonical_old");
+	
 	$t = array();
 	foreach ($list as $row) {
 		$t[$row['canonical_old']]['to'][] = $row['canonical_new'];
@@ -156,13 +155,29 @@ if (!empty($_GET['stats'])) {
 	
 } elseif (!empty($_GET['preview'])) {
 	$template='stuff_canonical_tree.tpl';
-	$cacheid='preview';
+	$cacheid='preview'.preg_replace('/[^\w]+/','',$_GET['alpha']);
 	if (!$smarty->is_cached($template, $cacheid)) {
-		$smarty->assign('intro',"<b>NOTE</b>: This is only the result of the first pass over the data. It will be slightly messy as it combines results from multiple users, <u>without any processing</u>.");
-	
+		
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical_log WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
+		$letters = $db->getAll("SELECT canonical,COUNT(DISTINCT imageclass) AS classes FROM category_canonical_log WHERE canonical != '-bad-' GROUP BY LOWER(SUBSTRING(canonical,1,1))");
+		
+		$a = 'A';
+		$str = "";
+		foreach ($letters as $row) {
+			$al = strtoupper(substr($row['canonical'],0,1));
+			$size = log1p($row['classes'])*1.4;
+			if ($al == $_GET['alpha']) {
+				$str .= "<b style=\"font-size:{$size}em\">$al</b> ";
+				$a = $al;
+			} else {
+				$str .= "<a href=\"?preview=1&amp;alpha=$al\" style=\"font-size:{$size}em\">$al</a> ";
+			}
+		}
+		
+		$smarty->assign('intro',"<b>NOTE</b>: This is only the result of the first pass over the data. It will be slightly messy as it combines results from multiple users, <u>without any processing</u>.<p>First letter: $str</p>");
+		
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical_log WHERE canonical LIKE '$a%' GROUP BY imageclass ORDER BY LOWER(canonical)");
 		$smarty->assign_by_ref('list',$list);
 	}
 
