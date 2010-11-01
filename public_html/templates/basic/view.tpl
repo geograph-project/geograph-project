@@ -228,7 +228,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 <dd>{if $image->imageclass}
 	{if $image->canonical} 
-		<a href="/stuff/canonical.php?hectad={$image->hectad}&amp;canonical={$image->canonical|escape:'url'}">{$image->canonical|escape:'html'}</a> &gt;
+		<a href="/search.php?gridref={$image->grid_reference}&amp;canonical={$image->canonical|escape:'url'}&amp;do=1">{$image->canonical|escape:'html'}</a> &gt;
 	{/if}
 	{$image->imageclass} &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">more nearby</a>)
 {else}

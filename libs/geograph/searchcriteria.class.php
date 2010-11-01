@@ -661,6 +661,22 @@ class SearchCriteria
 			$this->sphinx['impossible']++;
 		} 
 		
+		if (!empty($this->limit11)) {
+			$this->sphinx['no_legacy']=1; //this could be implemented by a join - but not for the moment :) I'm lazy
+
+			$db = $this->_getDB(true);
+
+			$row = $db->GetCol('select crc32(lower(imageclass)) from category_canonical_log where canonical = '.$db->Quote($this->limit11).' group by imageclass');
+
+			if (empty($row)) {
+				$row = array(0);
+			} elseif (count($row) == 2) { //setFilter things that a two element array is a range query
+				$row[] = 0;
+			}
+
+			$this->sphinx['filters']['classcrc'] = $row;
+		} 
+		
 		if ($sql_where_start != $sql_where) {
 			$this->issubsetlimited = true;
 		}

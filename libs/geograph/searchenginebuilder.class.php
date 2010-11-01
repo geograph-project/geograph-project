@@ -597,6 +597,10 @@ class SearchEngineBuilder extends SearchEngine
 					$searchdesc .= ", classifed as ".$dataarray['imageclass'];
 				}
 			}
+			if (!empty($dataarray['canonical'])) {
+				$sql .= ",limit11 = ".$db->Quote($dataarray['canonical']);
+				$searchdesc .= ", in canonical category ".$dataarray['canonical'];
+			}
 			if (!empty($dataarray['reference_index'])) {
 				$sql .= ",limit4 = ".$db->Quote($dataarray['reference_index']);
 				$searchdesc .= ", in ".$CONF['references'][$dataarray['reference_index']];
@@ -802,6 +806,8 @@ class SearchEngineBuilder extends SearchEngine
 				$searchdesc .= ", showing ".$imagestatuses[$dataarray['moderation_status']]." images";
 			if (!empty($dataarray['imageclass']))
 				$searchdesc .= ", classifed as ".$dataarray['imageclass'];
+			if (!empty($dataarray['canonical']))
+				$searchdesc .= ", in canonical category ".$dataarray['canonical'];
 			if (!empty($dataarray['reference_index']))
 				$searchdesc .= ", in ".$CONF['references'][$dataarray['reference_index']];
 			if (!empty($dataarray['gridsquare'])) 
