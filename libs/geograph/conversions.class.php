@@ -315,7 +315,13 @@ function wgs84_to_friendly($lat,$long) {
 }
 
 function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
-	$el = ($long > 0)?'E':'W';
+	global $CONF;
+
+	if ($CONF['lang'] == 'de') {
+		$el = ($long > 0)?'O':'W';
+	} else {
+		$el = ($long > 0)?'E':'W';
+	}
 	$nl = ($lat > 0)?'N':'S';
 	
 	$along = abs($long);
@@ -329,17 +335,22 @@ function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
 	$ym = intval(($alat-$yd)*60);
 	$ys = ($alat*3600)-($ym*60)-($yd*3600);
 
-	$ymd = sprintf("%.4f",$ym+($ys/60));
-	$xmd = sprintf("%.4f",$xm+($xs/60));
+	$ymd = sprintf("%.4f",$ym+($ys/60)); //FIXME needs locale de_DE
+	$xmd = sprintf("%.4f",$xm+($xs/60)); //FIXME needs locale de_DE
 	
-	$xs = sprintf("%.5f",$xs);
-	$ys = sprintf("%.5f",$ys);
+	$xs = sprintf("%.5f",$xs); //FIXME needs locale de_DE
+	$ys = sprintf("%.5f",$ys); //FIXME needs locale de_DE
 	
 	foreach (array('el','nl','along','alat','xd','xm','xs','yd','ym','ys','ymd','xmd') as $name) {
 		$smarty->assign($name, $$name);
 	}
-	$smarty->assign('latdm', "$yd:$ymd$nl");
-	$smarty->assign('longdm', "$xd:$xmd$el");
+	if ($CONF['lang'] == 'de') {
+		$smarty->assign('latdm', "{$yd}°$ymd'$nl");
+		$smarty->assign('longdm', "{$xd}°$xmd'$el");
+	} else {
+		$smarty->assign('latdm', "$yd:$ymd$nl");
+		$smarty->assign('longdm', "$xd:$xmd$el");
+	}
 }
 
 //----------------------------------------------------------------

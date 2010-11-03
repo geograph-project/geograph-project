@@ -1589,6 +1589,7 @@ class GridImage
 	*/
 	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false,$attribname = 'src')
 	{
+		global $CONF;
 		if ($this->ext) {
 			# (120,120,false,true);
 			# $resized['html'];

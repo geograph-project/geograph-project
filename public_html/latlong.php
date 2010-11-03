@@ -184,7 +184,11 @@ if (!empty($_GET['To'])) { //to lat/long
 		$smarty->assign('n', $en[1]);
 		
 	} else {
-		$smarty->assign('errormgs', 'This location does not appear to be in the British Isles');
+		if ($CONF['lang'] == 'de') {
+			$smarty->assign('errormgs', 'Dieser Ort scheint außerhalb des unterstützten Gebiets zu liegen.');
+		} else {
+			$smarty->assign('errormgs', 'This location does not appear to be in the supported area.');
+		}
 	}
 	$smarty->assign('lat', $_GET['lat']);
 	$smarty->assign('long', $_GET['long']);
