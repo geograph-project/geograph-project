@@ -65,7 +65,7 @@ if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 {
 	$mosaic=new GeographMapMosaic;
 
-	$mosaic->expireAll($_GET['expireAll']?true:false);
+	$mosaic->expireAll(!empty($_GET['expireAll']),!empty($_GET['expireAll']));
 	$smarty->clear_cache(null, 'mapbrowse');
 	
 

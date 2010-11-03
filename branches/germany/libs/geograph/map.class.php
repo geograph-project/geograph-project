@@ -653,6 +653,9 @@ class GeographMap
 		} else {
 			$scale = $this->level;
 			$palette .= "_m";
+			if ($this->overlay) {
+				$palette .= "_o";
+			}
 		}
 		
 		$file="label_{$map_x}_{$map_y}_{$this->image_w}_{$this->image_h}_{$scale}{$palette}.png";
@@ -822,18 +825,164 @@ class GeographMap
 		return $ok;
 	}
 
-	function _split_polygon(&$poly, $mult)
+	function _vcut_convexpoly($poly, $xc)
+	{
+		$found = false;
+		$point = end($poly);
+		$x = $point[0];
+		$y = $point[1];
+		foreach ($poly as &$point) {
+			$xp = $x;
+			$yp = $y;
+			$x = $point[0];
+			$y = $point[1];
+			if ($x == $xp) {
+				if ($x != $xc)
+					continue;
+				$curymin = min($y, $yp);
+				$curymax = max($y, $yp);
+				$curxmin = $x;
+				$curxmax = $x;
+				if (!$found) {
+					$xmin = $curxmin;
+					$ymin = $curymin;
+					$xmax = $curxmax;
+					$ymax = $curymax;
+					$found = true;
+				} else {
+					if ($curymin < $ymin) {
+						$xmin = $curxmin;
+						$ymin = $curymin;
+					}
+					if ($curymax > $ymax) {
+						$xmax = $curxmax;
+						$ymax = $curymax;
+					}
+				}
+			}
+			if ($x < $xp) {
+				if ($xc < $x || $xc > $xp)
+					continue;
+			} else {
+				if ($xc < $xp || $xc > $x)
+					continue;
+			}
+			$yc = $yp + ($xc - $xp) * ($y - $yp) / ($x - $xp);
+			if (!$found) {
+				$xmin = $xc;
+				$ymin = $yc;
+				$xmax = $xc;
+				$ymax = $yc;
+				$found = true;
+			} else {
+				if ($yc < $ymin) {
+					$xmin = $xc;
+					$ymin = $yc;
+				}
+				if ($yc > $ymax) {
+					$xmax = $xc;
+					$ymax = $yc;
+				}
+			}
+		}
+
+		if ($found)
+			return array(array($xmin, $ymin), array($xmax, $ymax));
+		else
+			return array();
+	}
+
+	function _hcut_convexpoly($poly, $yc)
+	{
+		$found = false;
+		$point = end($poly);
+		$x = $point[0];
+		$y = $point[1];
+		foreach ($poly as &$point) {
+			$xp = $x;
+			$yp = $y;
+			$x = $point[0];
+			$y = $point[1];
+			if ($y == $yp) {
+				if ($y != $yc)
+					continue;
+				$curxmin = min($x, $xp);
+				$curxmax = max($x, $xp);
+				$curymin = $y;
+				$curymax = $y;
+				if (!$found) {
+					$xmin = $curxmin;
+					$ymin = $curymin;
+					$xmax = $curxmax;
+					$ymax = $curymax;
+					$found = true;
+				} else {
+					if ($curxmin < $xmin) {
+						$xmin = $curxmin;
+						$ymin = $curymin;
+					}
+					if ($curxmax > $xmax) {
+						$xmax = $curxmax;
+						$ymax = $curymax;
+					}
+				}
+			}
+			if ($y < $yp) {
+				if ($yc < $y || $yc > $yp)
+					continue;
+			} else {
+				if ($yc < $yp || $yc > $y)
+					continue;
+			}
+			$xc = $xp + ($yc - $yp) * ($x - $xp) / ($y - $yp);
+			if (!$found) {
+				$xmin = $xc;
+				$ymin = $yc;
+				$xmax = $xc;
+				$ymax = $yc;
+				$found = true;
+			} else {
+				if ($xc < $xmin) {
+					$xmin = $xc;
+					$ymin = $yc;
+				}
+				if ($xc > $xmax) {
+					$xmax = $xc;
+					$ymax = $yc;
+				}
+			}
+		}
+
+		if ($found)
+			return array(array($xmin, $ymin), array($xmax, $ymax));
+		else
+			return array();
+	}
+
+	function _split_polygon(&$poly, $mult, $closed = true)
 	{
 		if (count($poly)) {
 			$tmppoly = array ();
-			$point = end($poly);
-			$x = $point[0];
-			$y = $point[1];
-			foreach ($poly as &$point) {
-				$xp = $x;
-				$yp = $y;
+			if ($closed) {
+				$point = end($poly);
 				$x = $point[0];
 				$y = $point[1];
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($poly as &$point) {
+				if (!$first) {
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				if ($first) {
+					$tmppoly[] = array($x, $y);
+					$first = false;
+					continue;
+				}
 				$dx = ($x - $xp)/$mult;
 				$dy = ($y - $yp)/$mult;
 				for ($i = 1; $i < $mult; ++$i) {
@@ -846,25 +995,31 @@ class GeographMap
 			}
 			$poly = $tmppoly;
 		}
-
 	}
 
-	function _clip_polygon(&$clippoly, $xmin, $xmax, $ymin, $ymax)
+	function _clip_polygon(&$clippoly, $xmin, $xmax, $ymin, $ymax, $closed = true)
 	{
 		if (count($clippoly)) {
 			$tmppoly = array ();
-			$point = end($clippoly);
-			$x = $point[0];
-			$y = $point[1];
-			$inside = $x >= $xmin;
-			foreach ($clippoly as &$point) {
-				$insidep = $inside;
-				$xp = $x;
-				$yp = $y;
+			if ($closed) {
+				$point = end($clippoly);
 				$x = $point[0];
 				$y = $point[1];
 				$inside = $x >= $xmin;
-				if ($insidep != $inside) {
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($clippoly as &$point) {
+				if (!$first) {
+					$insidep = $inside;
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $x >= $xmin;
+				if (!$first && $insidep != $inside) {
 					$xI = $xmin;
 					$yI = $y + ($xI - $x) * ($yp - $y) / ($xp - $x);
 					$tmppoly[] = array($xI, $yI);
@@ -872,24 +1027,32 @@ class GeographMap
 				if ($inside) {
 					$tmppoly[] = $point;#array($x, $y);
 				}
+				$first = false;
 			}
 			$clippoly = $tmppoly;
 		}
 
 		if (count($clippoly)) {
 			$tmppoly = array ();
-			$point = end($clippoly);
-			$x = $point[0];
-			$y = $point[1];
-			$inside = $y >= $ymin;
-			foreach ($clippoly as &$point) {
-				$insidep = $inside;
-				$xp = $x;
-				$yp = $y;
+			if ($closed) {
+				$point = end($clippoly);
 				$x = $point[0];
 				$y = $point[1];
 				$inside = $y >= $ymin;
-				if ($insidep != $inside) {
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($clippoly as &$point) {
+				if (!$first) {
+					$insidep = $inside;
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $y >= $ymin;
+				if (!$first && $insidep != $inside) {
 					$yI = $ymin;
 					$xI = $x + ($yI - $y) * ($xp - $x) / ($yp - $y);
 					$tmppoly[] = array($xI, $yI);
@@ -897,24 +1060,32 @@ class GeographMap
 				if ($inside) {
 					$tmppoly[] = $point;#array($x, $y);
 				}
+				$first = false;
 			}
 			$clippoly = $tmppoly;
 		}
 
 		if (count($clippoly)) {
 			$tmppoly = array ();
-			$point = end($clippoly);
-			$x = $point[0];
-			$y = $point[1];
-			$inside = $x <= $xmax;
-			foreach ($clippoly as &$point) {
-				$insidep = $inside;
-				$xp = $x;
-				$yp = $y;
+			if ($closed) {
+				$point = end($clippoly);
 				$x = $point[0];
 				$y = $point[1];
 				$inside = $x <= $xmax;
-				if ($insidep != $inside) {
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($clippoly as &$point) {
+				if (!$first) {
+					$insidep = $inside;
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $x <= $xmax;
+				if (!$first && $insidep != $inside) {
 					$xI = $xmax;
 					$yI = $y + ($xI - $x) * ($yp - $y) / ($xp - $x);
 					$tmppoly[] = array($xI, $yI);
@@ -922,24 +1093,32 @@ class GeographMap
 				if ($inside) {
 					$tmppoly[] = $point;#array($x, $y);
 				}
+				$first = false;
 			}
 			$clippoly = $tmppoly;
 		}
 
 		if (count($clippoly)) {
 			$tmppoly = array ();
-			$point = end($clippoly);
-			$x = $point[0];
-			$y = $point[1];
-			$inside = $y <= $ymax;
-			foreach ($clippoly as &$point) {
-				$insidep = $inside;
-				$xp = $x;
-				$yp = $y;
+			if ($closed) {
+				$point = end($clippoly);
 				$x = $point[0];
 				$y = $point[1];
 				$inside = $y <= $ymax;
-				if ($insidep != $inside) {
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($clippoly as &$point) {
+				if (!$first) {
+					$insidep = $inside;
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $y <= $ymax;
+				if (!$first && $insidep != $inside) {
 					$yI = $ymax;
 					$xI = $x + ($yI - $y) * ($xp - $x) / ($yp - $y);
 					$tmppoly[] = array($xI, $yI);
@@ -947,6 +1126,7 @@ class GeographMap
 				if ($inside) {
 					$tmppoly[] = $point;#array($x, $y);
 				}
+				$first = false;
 			}
 			$clippoly = $tmppoly;
 		}
@@ -1144,7 +1324,7 @@ class GeographMap
 	}
 
 	/**
-	* create tlabelmap, save as gd image and return the image resource
+	* create tlabelmap, save as png image and return the image resource
 	* @access private
 	*/
 	function& _createTLabelmapM($file)
@@ -1171,7 +1351,7 @@ class GeographMap
 		#}
 
 		#if ($this->pixels_per_km>=1  && $this->pixels_per_km<=64 && isset($CONF['enable_newmap'])) {
-		if ($this->level >= 6  && $this->level <= 13 && isset($CONF['enable_newmap'])) {
+		if ($this->level >= 6  /*&& $this->level <= 13*/ && isset($CONF['enable_newmap'])) {
 			$this->_plotPlacenamesM($img,$leftM,$bottomM,$rightM,$topM);
 		}
 
@@ -1184,7 +1364,7 @@ class GeographMap
 	}
 
 	/**
-	* create labelmap, save as gd image and return the image resource
+	* create labelmap, save as png image and return the image resource
 	* @access private
 	*/
 	function& _createLabelmapM($file)
@@ -1205,7 +1385,7 @@ class GeographMap
 		$topM=$bottomM+$widthM;
 
 		#//plot grid square?
-		if ($this->level >= 5)
+		if ($this->level >= 4)
 		{
 			$this->_plotGridLinesM($img,$leftM-$dM,$bottomM-$dM,$rightM+$dM,$topM+$dM);
 		}
@@ -1432,7 +1612,7 @@ class GeographMap
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
 		
-		$dbImg=NewADOConnection($GLOBALS['DSN']);
+		//$dbImg=NewADOConnection($GLOBALS['DSN']);//FIXME?
 
 		$left=$this->map_x;
 		$bottom=$this->map_y;
@@ -3039,17 +3219,36 @@ END;
 	*/	
 	function _plotGridLinesM(&$img, $left, $bottom, $right, $top) {
 		global $CONF;
-		if ($this->level <= 11) {
-			$gridcol=imagecolorallocate ($img, 109,186,178);
-		} else {
-			$gridcol=imagecolorallocate ($img, 89,126,118);
-			$gridcol2=imagecolorallocate ($img, 60,205,252);
-		}
-		if ($this->level <= 11 && $this->level >= 6) {
-			$text1=$gridcol;
-		} else {
-			$text1=imagecolorallocate ($img, 255,255,255);
+		if ($this->overlay) {
+			if ($this->level <= 7) {
+				$gridcol=imagecolorallocate ($img, 109,186,178);
+				$text1=$gridcol;
+			} elseif ($this->level <= 8) {
+				$gridcol=imagecolorallocate ($img, 120,205,196);
+				$text1=$gridcol;
+			} else {
+				$gridcol=imagecolorallocate ($img, 89,126,118);
+				$gridcol2=imagecolorallocate ($img, 60,205,252);
+				$text1=imagecolorallocate ($img, 255,255,255);
+			}
 			$text2=imagecolorallocate ($img, 0,64,0);
+		} else {
+			if ($this->level <= 8) {
+				/*if ($this->overlay) {
+					//$gridcol=imagecolorallocate ($img, 60,224,255);
+					//$gridcol=imagecolorallocate ($img, 60,205,252);
+				} else {*/
+				$gridcol=imagecolorallocate ($img, 109,186,178);
+			} else {
+				$gridcol=imagecolorallocate ($img, 89,126,118);
+				$gridcol2=imagecolorallocate ($img, 60,205,252);
+			}
+			if ($this->level <= 8 && $this->level >= 6) {
+				$text1=$gridcol;
+			} else {
+				$text1=imagecolorallocate ($img, 255,255,255);
+				$text2=imagecolorallocate ($img, 0,64,0);
+			}
 		}
 		require_once('geograph/conversionslatlong.class.php');
 		$conv = new ConversionsLatLong;
@@ -3066,7 +3265,94 @@ END;
 		$topM=$bottomM+$widthM;
 		#imageantialias ($img, true); does not work with alpha components. I like php so much...
 		$db=&$this->_getDB();
-		if ($this->level >= 12) {
+		if ($this->level >= 9 && $this->level <= 11) { //FIXME
+			// draw hectad boundaries
+			foreach ($CONF['references'] as $ri => $rname) {
+				$x0 = $CONF['origins'][$ri][0];
+				$y0 = $CONF['origins'][$ri][1];
+				$latmin = $CONF['latrange'][$ri][0];
+				$latmax = $CONF['latrange'][$ri][1];
+				$lonmin = $CONF['lonrange'][$ri][0];
+				$lonmax = $CONF['lonrange'][$ri][1];
+				$riwhere = "(reference_index = '{$ri}')";
+				list($eTL,$nTL,$riX1) = $conv->wgs84_to_national($glatTL, $glonTL, true, $ri);
+				list($eTR,$nTR,$riX2) = $conv->wgs84_to_national($glatTR, $glonTR, true, $ri);
+				list($eBL,$nBL,$riX3) = $conv->wgs84_to_national($glatBL, $glonBL, true, $ri);
+				list($eBR,$nBR,$riX4) = $conv->wgs84_to_national($glatBR, $glonBR, true, $ri);
+				$xmin = min($eTL, $eTR, $eBL, $eBR)/1000. + $x0;
+				$xmax = max($eTL, $eTR, $eBL, $eBR)/1000. + $x0;
+				$ymin = min($nTL, $nTR, $nBL, $nBR)/1000. + $y0;
+				$ymax = max($nTL, $nTR, $nBL, $nBR)/1000. + $y0;
+				$xmin -= 100;
+				$ymin -= 100;
+				$rectangle = "'POLYGON(($xmin $ymin,$xmax $ymin,$xmax $ymax,$xmin $ymax,$xmin $ymin))'";#FIXME
+				$sql="select * from gridprefix where ".
+					"$riwhere and CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
+					"and landcount>0";
+
+				$recordSet = &$db->Execute($sql);
+				while (!$recordSet->EOF) {
+					$origin_x=$recordSet->fields['origin_x'];
+					$origin_y=$recordSet->fields['origin_y'];
+					$w=$recordSet->fields['width'];
+					$h=$recordSet->fields['height'];
+
+					//get polygon of boundary relative to corner of square
+					if (strlen($recordSet->fields['boundary'])) {
+						$polykm=explode(',', $recordSet->fields['boundary']);
+					} else {
+						$polykm=array(0,0, 0,100, 100,100, 100,0);
+					}
+					// convert to east/north
+					$enpoly=array();
+					$pts=count($polykm)/2;
+					for ($i=0; $i<$pts; $i++) {
+						$e = ($polykm[$i*2]+$origin_x-$x0)*1000;
+						$n = ($polykm[$i*2+1]+$origin_y-$y0)*1000;
+						$enpoly[] = array($e, $n);
+					}
+					for ($delta = 10; $delta <= 90; $delta += 10) {
+						for ($dir = 0; $dir <= 1; ++$dir) {
+							// intersect with horizontal/vertical lines
+							if ($dir == 0) {
+								$hectadpoly = $this->_hcut_convexpoly($enpoly, 1000 * ($delta + $origin_y-$y0));
+							} else {
+								$hectadpoly = $this->_vcut_convexpoly($enpoly, 1000 * ($delta + $origin_x-$x0));
+							}
+							//now convert km to pixels
+							//if ($this->level >= 10)
+								$this->_split_polygon($hectadpoly, 10, false);
+							$llpoly=array();
+							foreach ($hectadpoly as &$en) {
+								$llpoly[] = $conv->national_to_wgs84($en[0], $en[1], $ri);
+							}
+							$this->_clip_polygon($llpoly, $latmin, $latmax, $lonmin, $lonmax, false);
+							$poly=array();
+							foreach ($llpoly as &$ll) {
+								list($xM, $yM) = $conv->wgs84_to_sm($ll[0], $ll[1]);
+								$x=$bdry + round(($xM - $leftM)   / $widthM * $imgw);
+								$y=$bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+								$poly[] = array($x, $y);
+							}
+							if ($bdry) {
+								$this->_clip_polygon($poly, $bdry/2, $imgw+$bdry+$bdry/2, $bdry/2, $imgw+$bdry+$bdry/2, false);
+							}
+							//draw
+							if (count($poly)) {
+								$curp = array_pop($poly);
+								while(count($poly)) {
+									$prevp = $curp;
+									$curp = array_pop($poly);
+									imageline($img, $prevp[0], $prevp[1], $curp[0], $curp[1], $gridcol2);
+								}
+							}
+						}
+					}
+					$recordSet->MoveNext();
+				}
+				$recordSet->Close();
+			}
+		} elseif ($this->level >= 12) {
 			$sql="select polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
 			$recordSet = &$db->Execute($sql);
 			while (!$recordSet->EOF) {
@@ -3147,8 +3433,8 @@ END;
 				$poly=array();
 				foreach ($llpoly as &$ll) {
 					list($xM, $yM) = $conv->wgs84_to_sm($ll[0], $ll[1]);
-					$x=$bdry + (($xM - $leftM)   / $widthM * $imgw);
-					$y=$bdry + $imgw - 1 - (($yM - $bottomM) / $widthM * $imgw);
+					$x=$bdry + round(($xM - $leftM)   / $widthM * $imgw);
+					$y=$bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
 					$poly[] = array($x, $y);
 				}
 				if ($bdry) {
@@ -3169,8 +3455,8 @@ END;
 					$n = ($labelkm[1]+$origin_y-$y0)*1000;
 					$ll = $conv->national_to_wgs84($e, $n, $ri);
 					list($xM, $yM) = $conv->wgs84_to_sm($ll[0], $ll[1]);
-					$labelx =  $bdry + (($xM - $leftM)   / $widthM * $imgw);
-					$labely =  $bdry + $imgw - 1 - (($yM - $bottomM) / $widthM * $imgw);
+					$labelx =  $bdry + round(($xM - $leftM)   / $widthM * $imgw);
+					$labely =  $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
 					//font size 1= 4x6
 					//font size 2= 6x8 normal
 					//font size 3= 6x8 bold
@@ -3191,7 +3477,7 @@ END;
 
 					$txtx=round($labelx - $txtw/2);
 					$txty=round($labely - $txth/2);
-					if ($this->level <= 5) {
+					if ($this->level <= 5 || $this->overlay) {
 						imagestring ($img, $font, $txtx+1,$txty+1, $text, $text2);
 						imagestring ($img, $font, $txtx,$txty, $text, $text1);
 					} else {
@@ -3205,7 +3491,49 @@ END;
 			$recordSet->Close();
 		}
 		//imageantialias ($img, false);
-		if ($this->level >= 12) {
+		if ($this->level >= 9 && $this->level <= 11) { //FIXME
+			$font = 3;
+			$dx = floor(imagefontwidth($font)/2);
+			$dy = floor(imagefontheight($font)/2);
+			foreach ($CONF['references'] as $ri => $rname) {
+				$x0 = $CONF['origins'][$ri][0];
+				$y0 = $CONF['origins'][$ri][1];
+				$sql="select x,y,scale,rotangle,cgx,cgy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and reference_index=$ri and (((x - $x0)%100 = 5 and (y - $y0)%10 = 0) or ((y - $y0)%100 = 5 and (x - $x0)%10 = 0)) and abs(cliparea/area-1) < 0.01";
+				$recordSet = &$db->Execute($sql);
+				while (!$recordSet->EOF) {
+					$x = $recordSet->fields[0];
+					$y = $recordSet->fields[1];
+					$e = floor((($x-$x0) % 100) / 10);
+					$n = floor((($y-$y0) % 100) / 10);
+					$scale = $recordSet->fields[2];
+					$angle = $recordSet->fields[3];
+					$cosangle = cos($angle);
+					$sinangle = sin($angle);
+					$xMC = $recordSet->fields[4];
+					$yMC = $recordSet->fields[5];
+					if (($y-$y0) % 100 == 5 /*$n == 0*/) { # label on left side
+						$xM = $xMC - 500*$scale*$cosangle;
+						$yM = $yMC - 500*$scale*$sinangle;
+						$xl = $bdry + round(($xM - $leftM) / $widthM * $imgw) - $dx;
+						$yl = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw) - $dy;
+						$text = sprintf("%01d", $e);
+						imagestring($img, $font, $xl+1, $yl+1, $text, $text2);
+						imagestring($img, $font, $xl,   $yl,   $text, $text1);
+					}
+					if (($x-$x0) % 100 == 5 /*$e == 0*/) { # label on bottom
+						$xM = $xMC + 500*$scale*$sinangle;
+						$yM = $yMC - 500*$scale*$cosangle;
+						$xl = $bdry + round(($xM - $leftM) / $widthM * $imgw) - $dx;
+						$yl = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw) - $dy;
+						$text = sprintf("%01d", $n);
+						imagestring($img, $font, $xl+1, $yl+1, $text, $text2);
+						imagestring($img, $font, $xl,   $yl,   $text, $text1);
+					}
+					$recordSet->MoveNext();
+				}
+				$recordSet->Close();
+			}
+		} elseif ($this->level >= 12) {
 			$font = 3;
 			$dx = imagefontwidth($font);
 			$dy = floor(imagefontheight($font)/2);

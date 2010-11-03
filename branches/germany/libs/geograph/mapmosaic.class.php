@@ -1123,7 +1123,7 @@ class GeographMapMosaic
 	* first parameter
 	* @access public
 	*/
-	function expireAll($expire_basemaps=false)
+	function expireAll($expire_basemaps=false, $expire_labels=false)
 	{
 		$dir=$_SERVER['DOCUMENT_ROOT'].'/maps/detail';
 		
@@ -1138,6 +1138,13 @@ class GeographMapMosaic
 		if ($expire_basemaps)
 		{
 			$dir=$_SERVER['DOCUMENT_ROOT'].'/maps/base';
+			
+			//todo *nix specific
+			`rm -Rf $dir`;		
+		}
+		if ($expire_labels)
+		{
+			$dir=$_SERVER['DOCUMENT_ROOT'].'/maps/label';
 			
 			//todo *nix specific
 			`rm -Rf $dir`;		
