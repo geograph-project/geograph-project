@@ -57,7 +57,8 @@
 			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=2&o=1";
 		}
 		function GetTileUrl_GeoMG(txy, z) {
-			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=4";
+			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=4&o=1";
+			//return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=4";
 		}
 
 		function GetTileUrl_Mapnik(a, z) {
@@ -94,7 +95,7 @@
 				var copyrightCollection =
 					new GCopyrightCollection('&copy; <a href="http://geo.hlipp.de">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> Contributors');
 				copyrightCollection.addCopyright(copyright);
-				var tilelayers = [new GTileLayer(copyrightCollection,5,13)];
+				var tilelayers = [new GTileLayer(copyrightCollection,4,13)];
 				tilelayers[0].getTileUrl = GetTileUrl_GeoM;
 				tilelayers[0].isPng = function () { return true; };
 				tilelayers[0].getOpacity = function () { return 1.0; };
@@ -120,11 +121,11 @@
 				tilelayers_mapnikhg[1].isPng = function () { return true; };
 				tilelayers_mapnikhg[1].getOpacity = function () { return 1.0; };
 				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_TopH;
-				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollection,5,13);
+				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollection,4,14);
 				tilelayers_mapnikhg[2].getTileUrl = GetTileUrl_GeoMO;
 				tilelayers_mapnikhg[2].isPng = function () { return true; };
 				tilelayers_mapnikhg[2].getOpacity = function () { return 0.5; };
-				tilelayers_mapnikhg[3] = new GTileLayer(copyrightCollection,5,13);
+				tilelayers_mapnikhg[3] = new GTileLayer(copyrightCollection,4,14);
 				tilelayers_mapnikhg[3].getTileUrl = GetTileUrl_GeoMG;
 				tilelayers_mapnikhg[3].isPng = function () { return true; };
 				tilelayers_mapnikhg[3].getOpacity = function () { return 1.0; };
@@ -137,11 +138,11 @@
 				map.addMapType(geomapm);
 				map.addMapType(mapnikhg_map);
 
-				G_PHYSICAL_MAP.getMinimumResolution = function () { return 5 };
-				G_NORMAL_MAP.getMinimumResolution = function () { return 5 };
-				G_SATELLITE_MAP.getMinimumResolution = function () { return 5 };
-				G_HYBRID_MAP.getMinimumResolution = function () { return 5 };
-				geomapm.getMinimumResolution = function () { return 5 };
+				G_PHYSICAL_MAP.getMinimumResolution = function () { return 4 };
+				G_NORMAL_MAP.getMinimumResolution = function () { return 4 };
+				G_SATELLITE_MAP.getMinimumResolution = function () { return 4 };
+				G_HYBRID_MAP.getMinimumResolution = function () { return 4 };
+				geomapm.getMinimumResolution = function () { return 4 };
 
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
