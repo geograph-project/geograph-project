@@ -363,6 +363,8 @@ class ADODB_mysql extends ADOConnection {
 			$this->_connectionID = mysql_connect($argHostname,$argUsername,$argPassword);
 	
 		if ($this->_connectionID === false) return false;
+		
+		mysql_query("SET names 'latin1'",$this->_connectionID);#FIXME error handling
 		if ($argDatabasename) return $this->SelectDB($argDatabasename);
 		return true;	
 	}
@@ -377,6 +379,7 @@ class ADODB_mysql extends ADOConnection {
 		else
 			$this->_connectionID = mysql_pconnect($argHostname,$argUsername,$argPassword);
 		if ($this->_connectionID === false) return false;
+		mysql_query("SET names 'latin1'",$this->_connectionID);#FIXME error handling
 		if ($this->autoRollback) $this->RollbackTrans();
 		if ($argDatabasename) return $this->SelectDB($argDatabasename);
 		return true;	
