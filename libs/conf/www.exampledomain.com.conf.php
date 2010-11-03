@@ -323,9 +323,9 @@ $CONF['gridrefname'] = array(1 => 'OS grid ', 2 => 'OS grid ');
 // google maps: show meridians n*$CONF['showmeridian'] degrees (0: don't show any meridian)
 $CONF['showmeridian'] = 0;
 
-// google maps: coordinate range (tile coordinates in level 13)
-$CONF['xmrange'] = array(4100, 4500);
-$CONF['ymrange'] = array(2500, 2900);
+// google maps: coordinate range (tile coordinates in level 19)
+$CONF['xmrange'] = array(265000, 285000);
+$CONF['ymrange'] = array(160000, 185000);
 
 // valid internal coordinates
 $CONF['xrange'] =  array(3 => array(50,549), 4 => array(550,899), 5 => array(0,49));

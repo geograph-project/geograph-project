@@ -45,36 +45,32 @@ if (isset($_GET['map']))
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');
 	require_once('geograph/gridimage.class.php');
+	$w = 256;
+	$h = 256;
 	$x = intval($_GET['x']);
 	$y = intval($_GET['y']);
 	$z = intval($_GET['Z']);
-	if ($z < 5)
-		$z = 5;
-	else if ($z > 13)
-		$z = 13;
-	$w = 256;
-	$h = 256;
+	$overlay = isset($_GET['o']) && !empty($_GET['o']);
 	$t = 0;
 	if (isset($_GET['t'])) {
 		$t = intval($_GET['t']);
-		//if ($t < -1)  //FIXME
-		//	$t = -1;
-		//elseif ($t > 0)
-			$t = 0;
 	}
-	$f13 = pow(2, 13-$z);
-	$x13 = $x * $f13;
-	$y13 = $y * $f13;
-	if  ($x13+$f13 < $CONF['xmrange'][0] || $x13 > $CONF['xmrange'][1]
-	  || $y13+$f13 < $CONF['ymrange'][0] || $y13 > $CONF['ymrange'][1]) {
-		exit;
-	}
-	$overlay = isset($_GET['o']) && !empty($_GET['o']);
 	$layers = 15;
 	if (isset($_GET['l'])) {
 		$layers = intval($_GET['l']);
-		if ($layers < 1 || $layers > 15)
-			$layers = 15;
+	}
+	$f19 = pow(2, 19-$z);
+	$x19 = $x * $f19;
+	$y19 = $y * $f19;
+	if  (    $layers < 1 || $layers > 15
+	      || $z < 4 || $z > ($overlay||!($layers&2) ? 14 : 13 ) //FIXME 15:13 also okay?
+	      || $x19+$f19 < $CONF['xmrange'][0] || $x19 > $CONF['xmrange'][1]
+	      || $y19+$f19 < $CONF['ymrange'][0] || $y19 > $CONF['ymrange'][1]
+	      || $t != 0
+	) {
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+		exit;
 	}
 
 	$map=new GeographMap;
