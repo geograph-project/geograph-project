@@ -1439,3 +1439,129 @@ RENAME TABLE category_map TO category_canonical_log;
 
 
 #################################################
+
+
+ALTER TABLE  `content` CHANGE  `source`  `source` ENUM(  'portal',  'article',  'gallery',  'themed',  'help',  'gsd',  'snippet',  'user',  'category',  'other' ) NOT NULL DEFAULT 'other';
+
+ALTER TABLE  `content` ADD  `images` MEDIUMINT UNSIGNED NOT NULL AFTER  `extract` ,
+ADD  `wordcount` MEDIUMINT UNSIGNED NOT NULL AFTER  `images` ,
+ADD  `views` MEDIUMINT UNSIGNED NOT NULL AFTER  `wordcount`;
+
+
+INSERT INTO `content`
+SELECT 
+	NULL AS content_id, 
+	CRC32(LOWER(imageclass)) AS foreign_id, 
+	imageclass AS title, 
+	CONCAT('/search.php?imageclass=',REPLACE(imageclass,' ','+')) AS url, 
+	0 AS user_id, 
+	gridimage_id, 
+	0 AS gridsquare_id, 
+	IF(canonical IS NULL,'',CONCAT('Parent: ',canonical)) AS extract, 
+	COUNT(*) AS images, 
+	0 AS wordcount, 
+	0 AS views, 
+	0 AS titles, 
+	0 AS tags, 
+	0 AS words, 
+	'category' AS source, 
+	'info' AS type, 
+	MAX(submitted) AS updated, 
+	MIN(submitted) AS created 
+FROM gridimage_search
+LEFT JOIN category_canonical USING (imageclass)  
+GROUP BY imageclass;
+
+
+INSERT INTO `content`
+SELECT 
+	NULL AS content_id, 
+	s.snippet_id AS foreign_id, 
+	title, 
+	CONCAT('/snippet/',s.snippet_id) AS url, 
+	s.user_id, 
+	gridimage_id, 
+	0 AS gridsquare_id, 
+	'' AS extract, 
+	COUNT(gridimage_id) AS images, 
+	0 AS wordcount, 
+	0 AS views, 
+	0 AS titles, 
+	0 AS tags, 
+	comment AS words, 
+	'snippet' AS source, 
+	'info' AS type, 
+	MAX(gs.created) AS updated, 
+	s.created 
+FROM snippet s
+INNER JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)
+GROUP BY s.snippet_id;
+
+
+INSERT INTO `content`
+SELECT 
+	NULL AS content_id, 
+	u.user_id AS foreign_id, 
+	u.realname AS title, 
+	CONCAT('/profile/',u.user_id) AS url, 
+	0 AS user_id, 
+	gridimage_id, 
+	0 AS gridsquare_id, 
+	IF(nickname='','',CONCAT('Nickname: ',nickname)) AS extract, 
+	images, 
+	0 AS wordcount, 
+	0 AS views, 
+	0 AS titles, 
+	0 AS tags, 
+	'' AS words, 
+	'user' AS source, 
+	'info' AS type, 
+	submitted AS updated, 
+	DATE(signup_date) AS created 
+FROM user u
+INNER JOIN user_stat USING (user_id)
+INNER JOIN gridimage_search ON (last=gridimage_id);
+
+
+#run this on the portal server
+DROP TABLE IF EXISTS tmp_content_from_portal;
+CREATE TABLE tmp_content_from_portal
+SELECT 
+	NULL AS content_id, 
+	portal_id AS foreign_id, 
+	p.title, 
+	CONCAT('http://',domain,'.portal.geographs.org/') AS url, 
+	geo_bi_id AS `user_id`, 
+	example_id AS gridimage_id, 
+	0 AS gridsquare_id, 
+	excerpt AS extract, 
+	`count` AS images, 
+	0 AS wordcount, 
+	0 AS views, 
+	0 AS titles, 
+	0 AS tags, 
+	description AS words, 
+	'portal' AS source, 
+	'info' AS type, 
+	GREATEST(p.updated,last_submission) AS updated, 
+	p.created 
+FROM portals.portal p
+INNER JOIN user USING (user_id)
+INNER JOIN active_cache USING (portal_id)
+WHERE public = 'Y'
+AND status_id = 1
+AND geo_bi_id > 0
+GROUP BY portal_id;
+
+#transfer the table, then...
+INSERT INTO content
+SELECT * FROM tmp_content_from_portal;
+
+
+//TODO update content.images = count(*) where source=themed,gsd
+//but need to update the query in content/index.php once done. 
+
+
+#################################################
+
+
