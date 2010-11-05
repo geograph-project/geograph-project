@@ -28,28 +28,18 @@ $smarty = new GeographPage;
 
 $cacheid = $USER->registered.'.'.$CONF['forums'];
 
-if (!empty($_GET)) {
-	ksort($_GET);
-	$cacheid .= ".".md5(serialize($_GET));
-}
-
-if (empty($_GET['inline']) && !isset($_REQUEST['inner'])) {
-	$inline = 'true';
-	$smarty->assign("inner",'');
-	$smarty->assign("target",'_self');
-	
-	$template = 'content.tpl';
-} else {
-	$inline = false;
-	$smarty->assign("inner",'inner');
-	$smarty->assign("target",'content');
-
-	if (isset($_REQUEST['inner'])) {
-		$template = 'content_iframe.tpl';
+if (empty($_GET['scope'])) {
+	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+		$_GET['scope'] = 'article,gallery,help';
 	} else {
-		$template = 'content.tpl';
+		$_GET['scope'] = 'article,gallery,help,themed';
 	}
 }
+
+ksort($_GET);
+$cacheid .= md5(serialize($_GET));
+	
+$template = 'content.tpl';
 
 $db = GeographDatabaseConnection(true);
 
@@ -84,13 +74,13 @@ switch ($order) {
 		$title = "Recently Updated";
 		$order = 'updated';
 }
-$smarty->assign("order",$order);
 $orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated');
 
+$sources = array('portal'=>'Portal', 'article'=>'Article', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'other'=>'Other');
 
-if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($template, $cacheid))
-{
-	$extra = $inline?'':'inner';
+if (!$smarty->is_cached($template, $cacheid)) {
+
+	$extra = $where = array();
 	
 	if ($CONF['template']=='archive') {
 		$pageSize = 1000;
@@ -98,32 +88,63 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 		$pageSize = 25;
 	}
 	
-	#$pg = empty($_GET['page'])?1:intval($_GET['page']);
-	
-
-	$extra .= "&amp;order={$order}";
-	
-	
+	$extra['order'] = $order;
+		
 	if (!empty($_GET['page'])) {
 		$pg = intval($_GET['page']);
 	} else {
 		$pg = 1;
 	}
+		
+	if (!empty($_GET['scope'])) {
+		$filters = array();
+		if (is_array($_GET['scope'])) {
+			$s = $_GET['scope'];
+		} else {
+			$s = explode(',',$_GET['scope']);
+		}
+		foreach ($s as $scope) {
+			switch($scope) {
+				case 'article':
+				case 'gallery':
+				case 'themed':
+				case 'help':
+				case 'snippet':
+				case 'portal':
+				case 'user':
+				case 'category':
+					$filters['source'][] = $scope;
+					$smarty->assign("scope_".$scope,1);
+					break;
+				case 'info':
+				case 'document':
+					$filters['type'][] = $scope;
+					$smarty->assign("scope_".$scope,1);
+					break;
+			}
+		}
+		if (count($s) == 1 && $sources[$s[0]]) {
+			$title = $sources[$s[0]]."s ".$title;
+			$title = str_replace('ys ','ies ',$title);
+		}
+		foreach ($filters as $key => $value) {
+			if (!empty($value)) {
+				$where[] = "content.$key IN ('".implode("','",$value)."')";
+			}
+		}
+		$extra['scope'] = implode(',',$s);
+	}
 	
 	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
-		$where = "content.user_id = {$_GET['user_id']}";
-		$extra .= "&amp;user_id={$_GET['user_id']}";
+		$where[] = "content.user_id = {$_GET['user_id']}";
+		$extra['user_id'] = $_GET['user_id'];
 		$profile=new GeographUser($_GET['user_id']);
 		$title = "By ".($profile->realname);
 		
 	} elseif (!empty($_GET['q'])) {
 
-		// --------------
-		
-		$q=trim($_GET['q']);
-		
-		$sphinx = new sphinxwrapper($q);
-		$sphinx->pageSize = $pgsize = 25;
+		$sphinx = new sphinxwrapper(trim($_GET['q']));
+		$sphinx->pageSize = $pageSize;
 		
 		if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
 			$pg = intval($m[2]);
@@ -131,7 +152,7 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 		}
 		
 		$smarty->assign_by_ref('q', $sphinx->qclean);
-		$extra .= "&amp;q=".urlencode($sphinx->qclean);
+		$extra['q'] = $sphinx->qclean;
 		$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 		
 		#$sphinx->processQuery();
@@ -140,35 +161,27 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 		if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
 			$sphinx->q .= " @source -themed";
 		}
-		if (!empty($_GET['scope'])) {
-			$done =0;
-			switch($_GET['scope']) {
-				case 'article':
-				case 'gallery':
-				case 'themed':
-				case 'help':
-					$sphinx->q .= " @source ".$_GET['scope'];
-					
-					break;
-				case 'info':
-				case 'document':
-					$sphinx->q .= " @type ".$_GET['scope'];
-					break;
+
+		if (!empty($filters)) {
+			foreach ($filters as $key => $value) {
+				if (!empty($filters[$key])) {
+					$filters[$key] = "(".implode('|',$filters[$key]).")";
+				}
 			}
-			$smarty->assign_by_ref('scope', $_GET['scope']);
+			$sphinx->addFilters($filters);
 		}
 	
-		$ids = $sphinx->returnIds($pg,'content_stemmed');	
+		$ids = $sphinx->returnIds($pg,'content_stemmed');
 		
 		$smarty->assign("query_info",$sphinx->query_info);
 		
 		if (count($ids)) {
-			$where = "content_id IN(".join(",",$ids).")";
+			$where[] = "content_id IN(".join(",",$ids).")";
 			if ($order == 'relevance') {
 				$sql_order = "FIELD(content_id,".join(",",$ids).")";
 			}
 		} else {
-			$where = "0";
+			$where[] = "0";
 		}
 		$resultCount = $sphinx->resultCount;
 		$numberOfPages = $sphinx->numberOfPages;
@@ -177,23 +190,25 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 		
 		// --------------
 	} elseif (isset($_GET['docs'])) {
-		$where = "content.`type` = 'document'";
+		$where[] = "content.`type` = 'document'";
 		$pageSize = 1000;
 		$title = "Geograph Documents";
-		$extra .= "&amp;docs=1";
+		$extra['docs'] = 1;
 		$smarty->assign("scope",'document');
 	} elseif (isset($_GET['loc'])) {
-		$where = "gridsquare_id > 0";
+		$where[] = "gridsquare_id > 0";
 		$pageSize = 100;
 		$title = "Location Specific Content";
-		$extra .= "&amp;loc=1";
+		$extra['loc'] = 1;
 	} else {
-		$where = "content.`type` = 'info'";
+		$where[] = "content.`type` = 'info'";
 	}
 	
 	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
-		$where .= " AND content.`source` != 'themed'";
+		$where[] = "content.`source` != 'themed'";
 	}
+	
+	$where = implode(' AND ',$where);
 	
 	if (!isset($resultCount))
 		$resultCount = $db->getOne("SELECT COUNT(*) FROM content WHERE $where");
@@ -202,7 +217,8 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 		$numberOfPages = ceil($resultCount/$pageSize);
 
 	if ($numberOfPages > 1) {
-		$smarty->assign('pagesString', pagesString($pg,$numberOfPages,$_SERVER['PHP_SELF']."?$extra&amp;page=") );
+		$extra2 = http_build_query($extra);
+		$smarty->assign('pagesString', pagesString($pg,$numberOfPages,$_SERVER['PHP_SELF']."?$extra2&amp;page=") );
 		$smarty->assign("offset",(($pg -1)* $pageSize)+1);
 	}
 	
@@ -212,12 +228,15 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 	} else {
 		$limit = $pageSize;
 	}
+	
+	$datecolumn = ($order == 'created')?'created':'updated';
+	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll($sql = "
-	select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source,content.gridimage_id,
-		(coalesce(views,0)+coalesce(topic_views,0)) as views,
-		(coalesce(images,0)+coalesce(count(gridimage_post.seq_id),0)) as images,
+	select content.content_id,content.user_id,url,title,extract,unix_timestamp($datecolumn) as $datecolumn,realname,content.source,content.gridimage_id,
+		(content.views+coalesce(article_stat.views,0)+coalesce(topic_views,0)) as views,
+		(content.images+coalesce(article_stat.images,0)+coalesce(count(gridimage_post.seq_id),0)) as images,
 		article_stat.words,coalesce(posts_count,0) as posts_count,coalesce(count(distinct gridimage_post.post_id),0) as posts_with_images
 	from content 
 		left join user using (user_id)
@@ -233,19 +252,6 @@ if (($template == 'content_iframe.tpl' || $inline) && !$smarty->is_cached($templ
 if (!empty($_GET['debug'])) {
 	print "<pre>$sql</pre>";
 }
-
-	if (false && !empty($_GET['q'])) {
-		$docs = array();
-		foreach ($list as $i => $row) {
-			$docs[] = $row['title'].' '.$row['extract'].' '.$row['allwords'];
-		}
-		
-		$ex = $cl->BuildExcerpts ( $docs, $index, $q);
-		print "<pre>";print_r($ex);exit;
-		foreach ($ex as $i => $row) {
-			$list[$i]['extract'] = $row;
-		}
-	}
 	foreach ($list as $i => $row) {
 		if ($row['gridimage_id']) {
 			$list[$i]['image'] = new GridImage;
@@ -256,88 +262,35 @@ if (!empty($_GET['debug'])) {
 				unset($list[$i]['image']);
 			}
 		}
+		$diff = time() - $row[$datecolumn];
+		if ($diff > (3600*24*31)) {
+			$list[$i][$datecolumn] = sprintf("%d months ago",$diff/(3600*24*31));
+		} elseif ($diff > (3600*24)) {
+			$list[$i][$datecolumn] = sprintf("%d days ago",$diff/(3600*24));
+		} elseif ($diff > 3600) {
+			$list[$i][$datecolumn] = sprintf("%d hours ago",$diff/3600);
+		} else {
+			$list[$i][$datecolumn] = sprintf("%d minutes ago",$diff/60);
+		}
 	}
 	
 	$ADODB_FETCH_MODE = $prev_fetch_mode;
 	
+	$smarty->assign_by_ref('resultCount', $resultCount);
+	$smarty->assign_by_ref('shown', count($list));
 	$smarty->assign_by_ref('list', $list);
 	$smarty->assign_by_ref('title', $title);
-	$smarty->assign('extra', $extra);
+	$smarty->assign("order",$order);
 	$smarty->assign_by_ref("orders",$orders);
+	$smarty->assign_by_ref("sources",$sources);
 	
-	
-	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
-		$smarty->assign('extra_raw', "&amp;".htmlentities(preg_replace('/^&+/','',$_SERVER['QUERY_STRING'])));
-	}
-	
+	//these are handled by the page
+	unset($extra['q']);
+	unset($extra['order']);
+	unset($extra['scope']);
+	$smarty->assign_by_ref("extra",$extra);
 } 
 
-if (($template == 'content.tpl' || $inline)  && !$smarty->is_cached($template, $cacheid)) {
-	
-	$prev_fetch_mode = $ADODB_FETCH_MODE;
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	
-	$where = '';
-	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
-		$where = " WHERE `source` != 'themed'";
-	}
-	
-	$listall = $db->getAll("select title from content $where");
-
-	$a = array();
-	foreach ($listall as $i => $row) {
-		$alltext = preg_replace('/[^a-zA-Z0-9]+/',' ',str_replace("'",'',$row['title']));
-
-		$words = preg_split('/ +/',trim($alltext));
-
-		foreach ($words as $c => $w) {
-			if (preg_match('/^(geograph|amp|quot|pound|a|about|above|according|across|actually|adj|after|afterwards|again|against|all|almost|alone|along|already|also|although|always|among|amongst|an|and|another|any|anyhow|anyone|anything|anywhere|are|arent|around|as|at|b|be|became|because|become|becomes|becoming|been|before|beforehand|begin|beginning|behind|being|below|beside|besides|between|beyond|billion|both|but|by|c|can|cant|cannot|caption|co|co.|could|couldnt|d|did|didnt|do|does|doesnt|dont|down|during|e|each|eg|e.g.|eight|eighty|either|else|elsewhere|end|ending|enough|etc|etc.|even|ever|every|everyone|everything|everywhere|except|f|few|fifty|first|five|for|former|formerly|forty|found|four|from|further|g|h|had|has|hasnt|have|havent|he|hed|hell|hes|hence|her|here|heres|hereafter|hereby|herein|hereupon|hers|herself|him|himself|his|how|however|hundred|i|id|ill|im|ive|ie|if|in|inc|inc.|indeed|instead|into|is|isnt|it|its|its|itself|j|k|l|last|later|latter|latterly|least|less|let|lets|like|likely|ltd|m|made|make|makes|many|maybe|me|meantime|meanwhile|might|million|miss|more|moreover|most|mostly|mr|mrs|much|must|my|myself|n|namely|neither|never|nevertheless|next|nine|ninety|no|nobody|none|nonetheless|noone|nor|not|nothing|now|nowhere|o|of|off|often|on|once|one|ones|only|onto|or|other|others|otherwise|our|ours|ourselves|out|over|overall|own|p|per|perhaps|q|r|rather|recent|recently|s|same|seem|seemed|seeming|seems|seven|seventy|several|she|shed|shell|shes|should|shouldnt|since|six|sixty|so|some|somehow|someone|something|sometime|sometimes|somewhere|still|stop|such|t|taking|ten|than|that|thatll|thats|thatve|the|their|them|themselves|then|thence|there|thered|therell|therere|theres|thereve|thereafter|thereby|therefore|therein|thereupon|these|they|theyd|theyll|theyre|theyve|thirty|this|those|though|thousand|three|through|throughout|thru|thus|to|together|too|toward|towards|trillion|twenty|two|u|under|unless|unlike|unlikely|until|up|upon|us|used|using|v|very|via|w|was|wasnt|we|wed|well|were|weve|well|were|werent|what|whatll|whats|whatve|whatever|when|whence|whenever|where|wheres|whereafter|whereas|whereby|wherein|whereupon|wherever|whether|which|while|whither|who|whod|wholl|whos|whoever|whole|whom|whomever|whose|why|will|with|within|without|wont|would|wouldnt|x|y|yes|yet|you|youd|youll|youre|youve|your|yours|yourself|yourselves|z)$/i',$w)) {
-				//skip...
-			} elseif (preg_match('/^[A-Z]/',$w)) {
-				//give promience to uppercased words
-				$a[strtolower($w)]+=2;
-			} elseif (!ctype_digit($w)) {
-				$a[$w]++;
-			}
-		}
-	}
-	$ADODB_FETCH_MODE = $prev_fetch_mode;
-
-	arsort($a);
-	$smarty->assign('words', array_slice($a,0,50));
-
-	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
-			
-		if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
-			$profile=new GeographUser($_GET['user_id']);
-			$title = "By ".($profile->realname);
-		} elseif (!empty($_GET['q'])) {
-			$sphinx = new sphinxwrapper(trim($_GET['q']));
-			$title = "Matching [ ".htmlentities($sphinx->qclean)." ]";
-			
-			switch($_GET['scope']) {
-				case 'article': $title .= " in Article Section"; break;
-				case 'gallery': $title .= " in Gallery Section"; break;
-				case 'themed': $title .= " in Themed Topics"; break; 
-				case 'help': $title .= " in Help Pages"; break;
-				case 'info': $title .= " in Collections"; break;
-				case 'document': $title .= " in Documentation Pages"; break;
-			}
-			
-		} elseif (isset($_GET['docs'])) {
-			$title = "Geograph Documents";
-		} elseif (isset($_GET['loc'])) {
-			$title = "Location Specific Content";
-		}
-	
-		$smarty->assign('title', $title);
-		$smarty->assign('extra', "&amp;".htmlentities(preg_replace('/^&+/','',$_SERVER['QUERY_STRING'])));
-	}
-}
-if ($template == 'content.tpl' && $USER->registered) {
-	$smarty->assign('content_count', $db->GetOne("SELECT count(*) FROM content WHERE user_id = ".$USER->user_id));
-}
 
 $smarty->display($template, $cacheid);
 
-?>

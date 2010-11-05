@@ -2,18 +2,16 @@
 {assign var="rss_url" value="/content/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 
+<div class="tabHolder">
+	<a href="/content/" class="tab">List/Search</a>
+	<a href="?v=1" class="tab">Popular Title Words</a>
+	<a {if !$v}class="tabSelected"{else}href="?" class="tab"{/if}>Short Clusters</a>
+	<a {if $v eq 2}class="tabSelected"{else}href="?v=2" class="tab"{/if}>Long Clusters</a>
+	<a {if $v eq 3}class="tabSelected"{else}href="?v=3" class="tab"{/if}>Collaborative</a>
+</div>
 <div class="interestBox">
-<h2 style="margin-bottom:0">User Contributed Content</h2>
-Documents are assigned automatically to groups, this is still experimental! <small>[
-{if $v eq 2}
-<a href="?">Short</a>/<b>Long</b>/<a href="?v=3">Alternative</a>
-{elseif $v eq 3}
-<a href="?">Short</a>/<a href="?v=2">Long</a>/<b>Alternative</b>
-{else}
-<b>Short</b>/<a href="?v=2">Long</a>/<a href="?v=3">Alternative</a> 
-{/if} ]
-Version
-</small>
+	<h2 style="margin-bottom:0">User Contributed Content</h2>
+	Documents are assigned automatically to groups, this is still experimental! 
 </div>
 
 

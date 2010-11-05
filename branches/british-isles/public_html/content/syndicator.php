@@ -131,7 +131,7 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 $sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source
 	from content 
 		left join user using (user_id)
-	where source != 'themed' and $where
+	where source IN ('article', 'gallery', 'help') and $where
 	order by updated desc
 	limit $limit";
 

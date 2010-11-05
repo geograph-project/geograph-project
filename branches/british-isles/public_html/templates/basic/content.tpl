@@ -7,111 +7,117 @@
 {/if}
 {assign var="rss_url" value="/content/feed/recent.rss"}
 {include file="_std_begin.tpl"}
-{literal}<style type="text/css">
-.helpbox { padding:5px;background:#dddddd;position:relative;font-size:0.8em; }
-.helpbox UL { margin-top:2px;margin-bottom:0;padding:0 0 0 1em; }
-</style>{/literal}
-
-
 
 <div style="float:right"><a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
 
-{dynamic}
-{if $user->registered && $content_count}
-<div class="tabHolder">
-	<span class="tabSelected">All Collections</span>
-	<a href="/article/" class="tab">Articles</a>
-	<a href="/article/?table" class="tab">Article List</a>
-	<a href="/gallery/" class="tab">Galleries</a>
-	{if $enable_forums}
-		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
-		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
-	{/if}	
-</div>
-<div class="interestBox">
-<h2 style="margin-bottom:0">Collections and Articles</h2>
-</div>
-<br/>
-{else}
-	<div style="float:left">
-		<h2>Collections on Geograph &nbsp; &nbsp;</h2>
+<h2>Content and Collections <small><small>[<a href="./themes.php?v=1">Common Words</a>]</small></small></h2>
+
+<form action="/content/" method="get" name="theForm">
+
+	<div class="interestBox" style="background-color:#e3e3e3">
+		{if $resultCount}
+			{$shown} of {$resultCount|thousends} 
+		{/if}
+		<b>{$title|escape:"html"}</b>  
 	</div>
-	{if $user->registered && $enable_forums}
-		&nbsp; &middot; <a href="/article/Content-on-Geograph">Contribute your own Content...</a><br/>
+
+	<div class="interestBox" style="width:200px;font-size:0.8em;float:right">
+		Keyword Search:  <input type="submit" value="Find"/> <br/>
+		<input type="text" name="q" id="qs" size="20" {if $q} value="{$q|escape:'html'}"{/if}/>
+
+		<p>Include: <input type=button value="all" onclick="checkall(this.form.elements['scope[]'],true);" style="font-size:0.7em"> <input type=button value="none" onclick="checkall(this.form.elements['scope[]'],false);" style="font-size:0.7em"><br/>
+		<input type=checkbox name=scope[] value="article" onclick="clicked()" {if $scope_article}checked{/if}/><a href="/article/">Articles</a><br/>
+		<input type=checkbox name=scope[] value="gallery" onclick="clicked()" {if $scope_gallery}checked{/if}/><a href="/gallery/">Galleries</a><br/>
+		{if $enable_forums && $user->registered}
+			<input type=checkbox name=scope[] value="themed" onclick="clicked()" {if $scope_themed}checked{/if}/><a href="/discuss/index.php?action=vtopic&amp;forum=6">Themed Topics</a><br/>
+		{/if}	
+		<input type=checkbox name=scope[] value="help" onclick="clicked()" {if $scope_help}checked{/if}/><a href="/content/documentation.php">Help Documents</a><br/>
+		<input type=checkbox name=scope[] value="snippet" onclick="clicked()" {if $scope_snippet}checked{/if}/><a href="/snippets.php">Shared Descriptions</a><br/>
+		<input type=checkbox name=scope[] value="portal" onclick="clicked()" {if $scope_portal}checked{/if}/><a href="http://www.geographs.org/portals/">Portals</a> <small style="color:red">Experimental</small><br/>
+		<input type=checkbox name=scope[] value="user" onclick="clicked()" {if $scope_user}checked{/if}/><a href="/finder/contributors.php">User Profiles</a><br/>
+		<input type=checkbox name=scope[] value="category" onclick="clicked()" {if $scope_category}checked{/if}/><a href="/stuff/canonical.php?final=1">Categories</a>
+		<div style="position:relative;float:right;display:none;top:-20px" id="find_button">
+			<input type="submit" value="Update" style="font-size:0.8em"/>
+		</div>
+
+		<p>Order by:<br/>
+		<select name="order" onchange="this.form.submit()">
+			{foreach from=$orders item=name key=key}
+				<option value="{$key}"{if $order eq $key} selected{/if}>{$name}</option>
+			{/foreach}
+		</select></p>
+
+		<hr/>
+
+		<p><small><b>Interested in contributing to Collections?</b> See <a href="/article/Content-on-Geograph">this article</a> for where to do it</small></p>
+	</div>
+	{foreach from=$extra key=name item=value}
+		<input type="hidden" name="{$name}" value="{$value}"/>
+	{/foreach}
+</form>
+
+
+
+<ul class="content" style="border:0">
+{foreach from=$list item=item}
+
+	<li style="border:0; background-color:{cycle values="#e9e9e9,#f0f0f0"}">
+	<div style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
+		{if $item.image}
+		<a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
+		{/if}
+	</div>
+	<b><a href="{$item.url}">{$item.title}</a></b><br/>
+	{assign var="source" value=$item.source}
+	<small><small style="color:gray">{$sources.$source}{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}" style="color:#6699CC">{$item.realname}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}. 
+	{if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</small></small>
+	{if $item.extract}
+		<div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
 	{/if}
-	<br style="clear:both"/>
-{/if}
-{/dynamic}
+	<div style="clear:left"></div>
+	</li>
 
 
-<table width="100%">
-	<tbody>
-		<tr>
-			<td width="80%" valign="top" height="2000">
-{if $inline}
-{include file="content_iframe.tpl"}
-{else}
-<iframe src="/content/?{$inner}{$extra}" width="100%" height="100%" frameborder="0" name="content"></iframe>
-{/if}
-			</td>
-			<td valign="top" class="helpbox">
-<form action="/content/" method="get" target="{$target}">
-{if $inner}
-<input type="hidden" name="inner" value="1"/>
-{/if}
-<div style="float:right">
-<input type="submit" value="Find"/>
-</div>
-<lable for="qs">Search Content:</label> <br/>
-<input type="text" name="q" id="qs" size="26" {if $q} value="{$q|escape:'html'}"{/if}/>
-Scope:<select name="scope">
-	<option value="">All</option>
-	<option value="article" {if $scope == 'article'} selected{/if}>Articles</option>
-	<option value="gallery" {if $scope == 'gallery'} selected{/if}>Galleries</option>
-	{dynamic}
-	  {if $enable_forums && $user->registered}
-		  <option value="themed" {if $scope == 'themed'} selected{/if}>Themed Topics</option>
-	  {/if}
-	{/dynamic}
-	<option value="help" {if $scope == 'help'} selected{/if}>Help Pages</option>
-	<option value="document" {if $scope == 'document'} selected{/if}>Information Pages</option>
-</select>
-</form><hr/>
-Shortcuts:
-<ul>
-	<li><a href="/content/?{$inner}" target="{$target}">Recently Updated</a></li>
-	<li><a href="/content/?{$inner}&amp;order=created" target="{$target}">Recently Created</a></li>
-	<li><a href="/content/?{$inner}&amp;order=views" target="{$target}">Most Viewed</a></li>
-	<li><a href="/content/?{$inner}&amp;loc" target="{$target}">Location Specific</a></li>
-	<li><a href="/content/?{$inner}&amp;docs&amp;order=title" target="{$target}">Geograph Documents</a></li>
-</ul><hr/>
-Common Themes: (<a href="/content/themes.php">more...</a>)<br/>
-{foreach from=$words key=word item=count}
-	<span class="nowrap">&middot; <a href="/content/?{$inner}&amp;q={$word}" target="{$target}" onclick="document.getElementById('qs').value='{$word}'" style="font-size:{math equation="log(c)" c=$count}em">{$word}</a></span>
+{foreachelse}
+	<li><i>There are no matching collections to display at this time.</i></li>
+	{if $query_info}
+		<li style="padding:20px">You have searched in Collections,<br/> you might like to try searching the <a href="/search.php?searchtext={$q|escape:'url'}&amp;do=1"><b>image database</b></a>:<br/><br/>
+
+		<form action="/search.php" class="interestBox" style="width:420px">
+			<input type=hidden name=do value="1"/>
+			Keyword Search <input type=text name="searchtext" value="{$q|escape:'url'}"/>
+			<input type=submit value="Search"/>
+		</form></li>
+	{/if}
 {/foreach}
-<hr/>
 
-<b>Content Comprises:</b>
- <ul>
-  <li><a href="/article/">Articles</a></li>
-  <li><a href="/gallery/">Galleries</a></li>
-{dynamic}
-  {if $enable_forums && $user->registered}
-	  <li><a href="/discuss/?action=vtopic&amp;forum=6">Themed Topics</a></li>
-  {/if}
-{/dynamic}
-  <li><a href="/help/sitemap">Help Documents</a></li>
- </ul>
- 
- <p><b>Interested in Submitting Content?</b> See <a href="/article/Content-on-Geograph">this article</a> for where to do it</p>
+</ul>
 
+<div style="margin-top:0px">
+	{if $pagesString}
+		( Page {$pagesString})
+	{/if}
+</div>
 
-</td>
-		</tr>
-	</tbody>
-</table>
+<br style="clear:both"/>
 
-<br/><br/>
+{if $query_info}
+	<p>{$query_info}</p>
+{/if}
+
+<script type="text/javascript">{literal}
+
+function checkall(ele,result) {
+	for (q=ele.length-1;q>=0;q--) {
+		ele[q].checked = result;
+	}
+	document.getElementById("find_button").style.display='';
+}
+function clicked() {
+	document.getElementById("find_button").style.display='';
+}
+{/literal}</script>
+
 
 
 {include file="_std_end.tpl"}
