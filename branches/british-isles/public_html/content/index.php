@@ -65,6 +65,8 @@ switch ($order) {
 		$title = "Relevance"; break;
 	case 'views': $sql_order = "views desc";
 		$title = "Most Viewed"; break;
+	case 'images': $sql_order = "images desc";
+		$title = "Most Images"; break;
 	case 'created': $sql_order = "created desc";
 		$title = "Recently Created"; break;
 	case 'title': $sql_order = "title";
@@ -74,7 +76,7 @@ switch ($order) {
 		$title = "Recently Updated";
 		$order = 'updated';
 }
-$orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated');
+$orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated','images'=>'Most Images');
 
 $sources = array('portal'=>'Portal', 'article'=>'Article', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'other'=>'Other');
 
@@ -113,6 +115,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				case 'portal':
 				case 'user':
 				case 'category':
+				case 'other':
 					$filters['source'][] = $scope;
 					$smarty->assign("scope_".$scope,1);
 					break;

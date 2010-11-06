@@ -36,7 +36,8 @@
 		<input type=checkbox name=scope[] value="snippet" onclick="clicked()" {if $scope_snippet}checked{/if}/><a href="/snippets.php">Shared Descriptions</a><br/>
 		<input type=checkbox name=scope[] value="portal" onclick="clicked()" {if $scope_portal}checked{/if}/><a href="http://www.geographs.org/portals/">Portals</a> <small style="color:red">Experimental</small><br/>
 		<input type=checkbox name=scope[] value="user" onclick="clicked()" {if $scope_user}checked{/if}/><a href="/finder/contributors.php">User Profiles</a><br/>
-		<input type=checkbox name=scope[] value="category" onclick="clicked()" {if $scope_category}checked{/if}/><a href="/stuff/canonical.php?final=1">Categories</a>
+		<input type=checkbox name=scope[] value="category" onclick="clicked()" {if $scope_category}checked{/if}/><a href="/stuff/canonical.php?final=1">Categories</a><br/>
+		<input type=checkbox name=scope[] value="other" onclick="clicked()" {if $scope_other}checked{/if}/>Other
 		<div style="position:relative;float:right;display:none;top:-20px" id="find_button">
 			<input type="submit" value="Update" style="font-size:0.8em"/>
 		</div>
