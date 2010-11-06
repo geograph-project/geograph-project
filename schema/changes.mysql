@@ -1554,13 +1554,38 @@ AND geo_bi_id > 0
 GROUP BY portal_id;
 
 
-#TODO
-#select grid_reference,label,count(*) as images from gridimage_group inner join gridimage_search using (gridimage_id) group by label,grid_reference having images > 10 limit 10;
-
-
 #transfer the table, then...
 INSERT INTO content
 SELECT * FROM tmp_content_from_portal;
+
+
+
+CREATE TABLE tmp_cluster_gridsquare SELECT gridimage_id,grid_reference,label,COUNT(*) AS images,COUNT(DISTINCT user_id) AS users,user_id,MIN(submitted) AS created,MAX(submitted) AS updated FROM gridimage_group INNER JOIN gridimage_search USING (gridimage_id) GROUP BY label,grid_reference HAVING images > 10;
+
+INSERT INTO `content`
+SELECT 
+	NULL AS content_id, 
+	CRC32(LOWER(CONCAT(TRIM(label),', ',grid_reference))) AS foreign_id, 
+	CONCAT(TRIM(label),', ',grid_reference) AS title, 
+	CONCAT('/search.php?gridref=',grid_reference,'&amp;distance=1&amp;orderby=score+desc&amp;displayclass=full&amp;cluster2=1&amp;label=',REPLACE(label,' ','+'),'&amp;do=1') AS url, 
+	IF(users=1,user_id,0) AS user_id, 
+	gridimage_id, 
+	0 AS gridsquare_id, 
+	'' AS extract, 
+	images, 
+	0 AS wordcount, 
+	0 AS views, 
+	0 AS titles, 
+	0 AS tags, 
+	'' AS words, 
+	'other' AS source, 
+	'info' AS type, 
+	updated, 
+	created 
+FROM tmp_cluster_gridsquare
+WHERE label NOT LIKE '%other%';
+
+DROP TABLE tmp_cluster_gridsquare;
 
 
 #TODO update content.images = count(*) where source=themed,gsd
