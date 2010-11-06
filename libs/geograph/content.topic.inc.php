@@ -57,7 +57,7 @@ function add_topic_to_content($topic_id,& $db) {
 		
 		$content_id = $db->getOne("SELECT content_id FROM content WHERE ".implode(' AND ',$updates));
 		
-		$updates[] = "`title` = ".$db->Quote($topic['topic_title']);
+		$updates[] = "`title` = ".$db->Quote(trim($topic['topic_title']));
 
 		$url = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$topic['topic_title'])))),'_').'_'.$topic_id;
 		if ($topic['forum_id'] == 11) {
@@ -67,6 +67,7 @@ function add_topic_to_content($topic_id,& $db) {
 		}
 		$updates[] = "`user_id` = {$topic['topic_poster']}";
 
+		$db->query("SET SESSION group_concat_max_len = 32768");
 
 		$posts=$db->GetRow("select max(post_time) as post_time,group_concat(post_text ORDER BY post_id SEPARATOR ' ') as post_text from geobb_posts where topic_id='$topic_id'");
 
@@ -76,6 +77,8 @@ function add_topic_to_content($topic_id,& $db) {
 		$content = str_replace("\r",'',$content);
 
 		$content = preg_replace('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/e',"add_image_to_list('\$2','\$2')",$content);
+
+		$content = preg_replace('/\[image id=(\d+)/e',"add_image_to_list('\$1','\$1')",$content);
 
 		$content = strip_tags($content);
 

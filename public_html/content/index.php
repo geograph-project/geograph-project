@@ -151,6 +151,13 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
 		}
 		
+		if (!empty($_GET['in']) && $_GET['in'] == 'title') {
+			if (!preg_match('/^\w+:/',$sphinx->q)) {
+				$sphinx->q = "@title ".$sphinx->q;
+			}
+			$smarty->assign('in_title', 1);
+		}
+		
 		$smarty->assign_by_ref('q', $sphinx->qclean);
 		$extra['q'] = $sphinx->qclean;
 		$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";

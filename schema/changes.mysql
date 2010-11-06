@@ -1451,9 +1451,9 @@ ADD  `views` MEDIUMINT UNSIGNED NOT NULL AFTER  `wordcount`;
 INSERT INTO `content`
 SELECT 
 	NULL AS content_id, 
-	CRC32(LOWER(imageclass)) AS foreign_id, 
-	imageclass AS title, 
-	CONCAT('/search.php?imageclass=',REPLACE(imageclass,' ','+')) AS url, 
+	CRC32(LOWER(gi.imageclass)) AS foreign_id, 
+	TRIM(gi.imageclass) AS title, 
+	CONCAT('/search.php?imageclass=',REPLACE(gi.imageclass,' ','+')) AS url, 
 	0 AS user_id, 
 	gridimage_id, 
 	0 AS gridsquare_id, 
@@ -1468,16 +1468,16 @@ SELECT
 	'info' AS type, 
 	MAX(submitted) AS updated, 
 	MIN(submitted) AS created 
-FROM gridimage_search
+FROM gridimage_search gi
 LEFT JOIN category_canonical USING (imageclass)  
-GROUP BY imageclass;
+GROUP BY gi.imageclass;
 
 
 INSERT INTO `content`
 SELECT 
 	NULL AS content_id, 
 	s.snippet_id AS foreign_id, 
-	title, 
+	TRIM(title) AS title, 
 	CONCAT('/snippet/',s.snippet_id) AS url, 
 	s.user_id, 
 	gridimage_id, 
@@ -1502,7 +1502,7 @@ INSERT INTO `content`
 SELECT 
 	NULL AS content_id, 
 	u.user_id AS foreign_id, 
-	u.realname AS title, 
+	TRIM(u.realname) AS title, 
 	CONCAT('/profile/',u.user_id) AS url, 
 	0 AS user_id, 
 	gridimage_id, 
@@ -1529,7 +1529,7 @@ CREATE TABLE tmp_content_from_portal
 SELECT 
 	NULL AS content_id, 
 	portal_id AS foreign_id, 
-	p.title, 
+	TRIM(p.title) AS title, 
 	CONCAT('http://',domain,'.portal.geographs.org/') AS url, 
 	geo_bi_id AS `user_id`, 
 	example_id AS gridimage_id, 
@@ -1553,15 +1553,22 @@ AND status_id = 1
 AND geo_bi_id > 0
 GROUP BY portal_id;
 
+
+#TODO
+#select grid_reference,label,count(*) as images from gridimage_group inner join gridimage_search using (gridimage_id) group by label,grid_reference having images > 10 limit 10;
+
+
 #transfer the table, then...
 INSERT INTO content
 SELECT * FROM tmp_content_from_portal;
 
 
-//TODO update content.images = count(*) where source=themed,gsd
-//but need to update the query in content/index.php once done. 
+#TODO update content.images = count(*) where source=themed,gsd
+#but need to update the query in content/index.php once done. 
 
 
 #################################################
 
+
+UPDATE content SET title=TRIM(title),updated=updated;
 

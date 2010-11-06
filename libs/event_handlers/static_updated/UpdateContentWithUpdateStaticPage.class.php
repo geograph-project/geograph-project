@@ -109,7 +109,7 @@ class UpdateContentWithUpdateStaticPage extends EventHandler
 				$updates[] = "`extract` = ".$db->Quote(trim(preg_replace("/[\s\n]+/"," ",strip_tags($matches[2]))));
 			}
 			
-			$updates[] = "`title` = ".$db->Quote($title);
+			$updates[] = "`title` = ".$db->Quote(trim($title));
 			
 			//todo remove other smarty tags!
 			

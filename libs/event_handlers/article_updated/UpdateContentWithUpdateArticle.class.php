@@ -59,7 +59,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 		
 		if (count($page)) {
 			
-			$updates[] = "`title` = ".$db->Quote($page['title']);
+			$updates[] = "`title` = ".$db->Quote(trim($page['title']));
 			$updates[] = "`url` = ".$db->Quote("/article/".$page['url']);
 			$updates[] = "`user_id` = {$page['user_id']}";
 			
