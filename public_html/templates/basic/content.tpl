@@ -24,7 +24,7 @@
 	<div class="interestBox" style="width:200px;font-size:0.8em;float:right">
 		Keyword Search:  <input type="submit" value="Find"/> <br/>
 		<input type="text" name="q" id="qs" size="20" {if $q} value="{$q|escape:'html'}"{/if}/><br/>
-		<input type=checkbox name=in value="title" id="in_title" {if $in_title}checked{/if}/><label for="in_title">Search in title only
+		<input type=checkbox name=in value="title" id="in_title" {if $in_title}checked{/if}/><label for="in_title">Search in title only</label>
 
 		<p>Include: <input type=button value="all" onclick="checkall(this.form.elements['scope[]'],true);" style="font-size:0.7em"> <input type=button value="none" onclick="checkall(this.form.elements['scope[]'],false);" style="font-size:0.7em"><br/>
 		<input type=checkbox name=scope[] value="article" onclick="clicked()" {if $scope_article}checked{/if}/><a href="/article/">Articles</a><br/>
