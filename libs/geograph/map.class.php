@@ -808,7 +808,7 @@ class GeographMap
 				$min_x -= $dx;
 				$min_y -= $dy;
 
-				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%u,tile_y=%u,max_x=%d,max_y=%d",$min_x,$min_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay?1:0, $this->layers, $this->level, $this->tile_x, $this->tile_y,$max_x,$max_y);
+				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%d,tile_y=%d,max_x=%d,max_y=%d",$min_x,$min_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay?1:0, $this->layers, $this->level, $this->tile_x, $this->tile_y,$max_x,$max_y);
 
 				$db->Execute($sql);
 			}

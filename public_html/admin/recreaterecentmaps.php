@@ -187,8 +187,8 @@ $db->Execute("CREATE TABLE `mapcache2` (
 			  `overlay` tinyint(1) unsigned NOT NULL DEFAULT '0',
 			  `layers` tinyint(2) unsigned NOT NULL DEFAULT '0',
 			  `level` smallint(3) NOT NULL DEFAULT '0',
-			  `tile_x` mediumint(8) unsigned NOT NULL DEFAULT '0',
-			  `tile_y` mediumint(8) unsigned NOT NULL DEFAULT '0',
+			  `tile_x` mediumint(8) NOT NULL DEFAULT '0',
+			  `tile_y` mediumint(8) NOT NULL DEFAULT '0',
 			  `age` smallint(5) unsigned NOT NULL DEFAULT '0',
 			  PRIMARY KEY ( `tile_x` , `tile_y` , `image_w` , `image_h` , `level` , `type_or_user` , `force_ri`, `mercator`, `overlay`, `layers` ),
 			  KEY `xy` (`map_x`, `map_y`,  `max_x`, `max_y`)
