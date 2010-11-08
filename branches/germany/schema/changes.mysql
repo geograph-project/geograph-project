@@ -460,8 +460,8 @@ ALTER TABLE `mapcache` ADD `mercator` tinyint(1) unsigned NOT NULL DEFAULT '0' A
 ALTER TABLE `mapcache` ADD `overlay` tinyint(1) unsigned NOT NULL DEFAULT '0' AFTER `mercator`;
 ALTER TABLE `mapcache` ADD `layers` tinyint(2) unsigned NOT NULL DEFAULT '0' AFTER `overlay`;
 ALTER TABLE `mapcache` ADD `level` smallint(3) NOT NULL DEFAULT '0' AFTER `layers`;
-ALTER TABLE `mapcache` ADD `tile_x` mediumint(8) unsigned NOT NULL DEFAULT '0' AFTER `level`;
-ALTER TABLE `mapcache` ADD `tile_y` mediumint(8) unsigned NOT NULL DEFAULT '0' AFTER `tile_x`;
+ALTER TABLE `mapcache` ADD `tile_x` mediumint(8) NOT NULL DEFAULT '0' AFTER `level`;
+ALTER TABLE `mapcache` ADD `tile_y` mediumint(8) NOT NULL DEFAULT '0' AFTER `tile_x`;
 
 ALTER TABLE `mapcache` ADD `max_x` smallint(6) NOT NULL DEFAULT '0' AFTER `map_y`;
 ALTER TABLE `mapcache` ADD `max_y` smallint(6) NOT NULL DEFAULT '0' AFTER `max_x`;
