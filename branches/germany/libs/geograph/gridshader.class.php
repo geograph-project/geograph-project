@@ -278,8 +278,8 @@ class GridShader
 							$gridy=$y_offset + ($imgh-$imgy-1);
 
 							$sql="select * from mapcache 
-							where $gridx between map_x and (map_x+image_w/pixels_per_km-1) and 
-							$gridy between map_y and (map_y+image_h/pixels_per_km-1)";
+							where $gridx between map_x and max_x and 
+							$gridy between map_y and max_y";
 						
 							
 							$recordSet = &$this->db->Execute($sql);
@@ -291,14 +291,24 @@ class GridShader
 									unlink($root.$file);
 									$deleted++;
 								} 
+								$file = $this->getLabelMapFilename($recordSet->fields, false);
+								if (file_exists($root.$file)) {
+									unlink($root.$file);
+									$deleted++;
+								} 
+								$file = $this->getLabelMapFilename($recordSet->fields, true);
+								if (file_exists($root.$file)) {
+									unlink($root.$file);
+									$deleted++;
+								} 
 								$checked++;
 								$recordSet->MoveNext();
 							}
 							$recordSet->Close();
 
 							$sql="update mapcache set age=age+1 
-								where $gridx between map_x and (map_x+image_w/pixels_per_km-1) and 
-								$gridy between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
+								where $gridx between map_x and max_x and 
+								$gridy between map_y and max_y $and_crit";
 							if (!$dryrun) $this->db->Execute($sql);
 						}
 				
@@ -320,14 +330,23 @@ class GridShader
 		}
 	}
 
-	function getBaseMapFilename($row)
+	function getBaseMapFilename($row) # FIXME map.class.php?
 	{
-		
 		$dir="/maps/base/";
 		
-		$dir.="{$row['map_x']}/";
+		if (empty($row['mercator'])) {
+			$map_x = $row['map_x'];
+			$map_y = $row['map_y'];
+			$ext = 'gd';
+		} else {
+			$map_x = $row['tile_x'];
+			$map_y = $row['tile_y'];
+			$ext = 'png';
+		}
+
+		$dir.="{$map_x}/";
 		
-		$dir.="{$row['map_y']}/";
+		$dir.="{$map_y}/";
 
 		$param = "";
 		//FIXME palette?
@@ -335,8 +354,53 @@ class GridShader
 			$param .= "_i{$row['force_ri']}";
 		}
 		
-		$file="base_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}$param.gd";
+		if (empty($row['mercator'])) {
+			$scale = $row['pixels_per_km'];
+		} else {
+			$scale = $row['level'];
+			$palette .= "_m";
+		}
+
+		$file="base_{$map_x}_{$map_y}_{$row['image_w']}_{$row['image_h']}_{$scale}$param.$ext";
 		
+		return $dir.$file;
+	}
+	function getLabelMapFilename($row, $towns) # FIXME map.class.php?
+	{
+		$dir="/maps/label/";
+
+		if (empty($row['mercator'])) {
+			$map_x = $row['map_x'];
+			$map_y = $row['map_y'];
+		} else {
+			$map_x = $row['tile_x'];
+			$map_y = $row['tile_y'];
+		}
+
+		$dir.="{$map_x}/";
+		
+		$dir.="{$map_y}/";
+
+		$param = "";
+		//FIXME palette?
+		if (!empty($row['force_ri'])) {
+			$param .= "_i{$row['force_ri']}";
+		}
+		if ($towns) {
+			$param .= "_t";
+		}
+
+		if (empty($row['mercator'])) {
+			$scale = $row['pixels_per_km'];
+		} else {
+			$scale = $row['level'];
+			$palette .= "_m";
+			if (!empty($row['overlay'])) {
+				$palette .= "_o";
+			}
+		}
+
+		$file="label_{$map_x}_{$map_y}_{$row['image_w']}_{$row['image_h']}_{$scale}$param.png";
 		
 		return $dir.$file;
 	}

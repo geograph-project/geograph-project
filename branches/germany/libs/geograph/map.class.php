@@ -63,6 +63,16 @@ class GeographMap
 	var $map_y=0;
 
 	/**
+	* x origin of map in Mercator coordinates
+	*/
+	var $map_xM=0;
+	
+	/**
+	* y origin of map in Mercator coordinates
+	*/
+	var $map_yM=0;
+
+	/**
 	* only given reference index
 	*/
 	var $force_ri=0;
@@ -92,6 +102,7 @@ class GeographMap
 	* should the map be cached?
 	*/
 	var $caching=true;
+	var $caching_squaremap=true;
 
 	/**
 	 * Spherical mercator?
@@ -119,7 +130,7 @@ class GeographMap
 	/**
 	 * Tile width (m) if spherical mercator
 	 */
-	var $map_w=0.0;
+	var $map_wM=0.0;
 
 	/**
 	 * Layers if spherical mercator
@@ -171,9 +182,12 @@ class GeographMap
 	* Cache files are still written, just never used
 	* @access public
 	*/
-	function enableCaching($enable)
+	function enableCaching($enable, $enablesquaremap = null)
 	{
 		$this->caching=$enable;
+		if (is_null($enablesquaremap))
+			$enablesquaremap=$enable;
+		$this->caching_squaremap=$enablesquaremap;
 	}
 	
 	/**
@@ -194,8 +208,8 @@ class GeographMap
 		if ($this->mercator) {
 			$dx = pow(2.0,$this->level-1);
 			$dy = $dx - 1;
-			$this->map_x=($this->tile_x - $dx)*$this->map_w;
-			$this->map_y=($dy - $this->tile_y)*$this->map_w;
+			$this->map_xM=($this->tile_x - $dx)*$this->map_wM;
+			$this->map_yM=($dy - $this->tile_y)*$this->map_wM;
 		}
 		return true;
 	}
@@ -245,9 +259,9 @@ class GeographMap
 			$width = 256; #FIXME hard coded width
 			#$FIXME allow levels _and_ pixels_per_km
 			$this->level = intval($pixels_per_km);
-			$this->map_w = M_PI*2*6378137.000/pow(2,$this->level);
+			$this->map_wM = M_PI*2*6378137.000/pow(2,$this->level);
 			#$this->pixels_per_km = 128/(M_PI*6378.137)*pow(2,$this->level);
-			$this->pixels_per_km = $width/$this->map_w/1000.0; # only right at equator
+			$this->pixels_per_km = $width/$this->map_wM*1000.0; # only right at equator
 			$this->_calcXY();
 			$this->image_w=$width;
 			$this->image_h=$width;
@@ -762,10 +776,41 @@ class GeographMap
 				}
 			} elseif ($this->type_or_user > 0) {
 				//normal render image, understands type_or_user > 0!
-				$ok = $this->_renderImageM(); #FIXME
+				$ok = $this->_renderImageM();
 			} 
 			if ($ok) {
-				#FIXME mapcache, also for layer 2
+				$db=&$this->_getDB();
+				$widthM=$this->map_wM;
+				$leftM=$this->map_xM;
+				$bottomM=$this->map_yM;
+				$rightM=$leftM+$widthM;
+				$topM=$bottomM+$widthM;
+				##$sql="select min(x) as min_x, min(y) as min_y, max(x)+1 as max_x, max(y)+1 as max_y from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
+				# use db values if != NULL?
+				require_once('geograph/conversionslatlong.class.php');
+				$conv = new ConversionsLatLong;
+				list($glatTL, $glonTL) = $conv->sm_to_wgs84($leftM, $topM);
+				list($glatTR, $glonTR) = $conv->sm_to_wgs84($rightM, $topM);
+				list($glatBL, $glonBL) = $conv->sm_to_wgs84($leftM, $bottomM);
+				list($glatBR, $glonBR) = $conv->sm_to_wgs84($rightM, $bottomM);
+				list($xTL, $yTL) = $conv->wgs84_to_internal($glatTL, $glonTL);
+				list($xTR, $yTR) = $conv->wgs84_to_internal($glatTR, $glonTR);
+				list($xBL, $yBL) = $conv->wgs84_to_internal($glatBL, $glonBL);
+				list($xBR, $yBR) = $conv->wgs84_to_internal($glatBR, $glonBR);
+				$min_x = min($xTL, $xTR, $xBL, $xBR);
+				$min_y = min($yTL, $yTR, $yBL, $yBR);
+				$max_x = max($xTL, $xTR, $xBL, $xBR)+1;
+				$max_y = max($yTL, $yTR, $yBL, $yBR)+1;
+				$dx = ceil(($max_x - $min_x) * 0.125); //FIXME good value?
+				$dy = ceil(($max_y - $min_y) * 0.125); //FIXME good value?
+				$max_x += $dx;
+				$max_y += $dy;
+				$min_x -= $dx;
+				$min_y -= $dy;
+
+				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%u,tile_y=%u,max_x=%d,max_y=%d",$min_x,$min_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay?1:0, $this->layers, $this->level, $this->tile_x, $this->tile_y,$max_x,$max_y);
+
+				$db->Execute($sql);
 			}
 			return $ok;
 		}
@@ -818,7 +863,7 @@ class GeographMap
 		if ($ok) {
 			$db=&$this->_getDB();
 
-			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri);
+			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,max_x=%d,max_y=%d,level=%d,tile_x=%d,tile_y=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri,$this->map_x+ceil($this->image_w/$this->pixels_per_km)-1,$this->map_y+ceil($this->image_h/$this->pixels_per_km)-1,round($this->pixels_per_km*100),$this->map_x,$this->map_y);
 
 			$db->Execute($sql);
 		}
@@ -1337,10 +1382,10 @@ class GeographMap
 		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
 		imagefill($img,0,0,$back);
 
-		$widthM=$this->map_w;
+		$widthM=$this->map_wM;
 		$dM=$widthM/8;
-		$leftM=$this->map_x;
-		$bottomM=$this->map_y;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
 		$rightM=$leftM+$widthM;
 		$topM=$bottomM+$widthM;
 
@@ -1377,10 +1422,10 @@ class GeographMap
 		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
 		imagefill($img,0,0,$back);
 
-		$widthM=$this->map_w;
+		$widthM=$this->map_wM;
 		$dM=$widthM/8;
-		$leftM=$this->map_x;
-		$bottomM=$this->map_y;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
 		$rightM=$leftM+$widthM;
 		$topM=$bottomM+$widthM;
 
@@ -1442,9 +1487,9 @@ class GeographMap
 		}
 		$land[-1]=imagecolorallocate($img, $rmin,$gmin,$bmin);
 
-		$widthM=$this->map_w;
-		$leftM=$this->map_x;
-		$bottomM=$this->map_y;
+		$widthM=$this->map_wM;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
 		$rightM=$leftM+$widthM;
 		$topM=$bottomM+$widthM;
 		$db=&$this->_getDB();
@@ -1760,10 +1805,10 @@ class GeographMap
 		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
 		imagefill($img,0,0,$back);
 
-		$widthM=$this->map_w;
+		$widthM=$this->map_wM;
 		$dM=$widthM/8;
-		$leftM=$this->map_x;
-		$bottomM=$this->map_y;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
 		$rightM=$leftM+$widthM;
 		$topM=$bottomM+$widthM;
 		$colMarker=imagecolorallocate($img, $this->colour['marker'][0],$this->colour['marker'][1],$this->colour['marker'][2]);
@@ -1944,7 +1989,7 @@ class GeographMap
 		}
 		if ($this->layers & 2) {
 			$squaremap=$this->getImageFilename(2);
-			if ($this->caching && @file_exists($root.$squaremap))
+			if ($this->caching_squaremap && @file_exists($root.$squaremap))
 			{
 				//load it up!
 				$squareimg=imagecreatefrompng($root.$squaremap);
@@ -3112,9 +3157,9 @@ END;
 		list($glatBR, $glonBR) = $conv->sm_to_wgs84($right, $bottom);
 		$bdry = $this->render_margin;
 		$imgw = $this->image_w;
-		$widthM=$this->map_w;
-		$leftM=$this->map_x;
-		$bottomM=$this->map_y;
+		$widthM=$this->map_wM;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
 		#$rightM=$leftM+$widthM;
 		#$topM=$bottomM+$widthM;
 
@@ -3258,9 +3303,9 @@ END;
 		list($glatBR, $glonBR) = $conv->sm_to_wgs84($right, $bottom);
 		$bdry = $this->render_margin;
 		$imgw = $this->image_w;
-		$widthM=$this->map_w;
-		$leftM=$this->map_x;
-		$bottomM=$this->map_y;
+		$widthM=$this->map_wM;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
 		$rightM=$leftM+$widthM;
 		$topM=$bottomM+$widthM;
 		#imageantialias ($img, true); does not work with alpha components. I like php so much...

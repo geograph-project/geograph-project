@@ -92,7 +92,7 @@ class GeographMapMosaic
 	var $pixels_per_km=0;
 	
 	/** 
-	* list of valid scales for this modaic	
+	* list of valid scales for this mosaic	
 	*/
 	var $scales;
 	
@@ -962,8 +962,8 @@ class GeographMapMosaic
 
 		if ($memcache->valid) {
 			$sql="select * from mapcache
-				where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
-				$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
+				where $x between map_x and max_x and 
+				$y between map_y and max_y $and_crit";
 			
 			$recordSet = &$db->Execute($sql);
 			while (!$recordSet->EOF) 
@@ -979,6 +979,16 @@ class GeographMapMosaic
 						unlink($root.$file);
 						$deleted++;
 					} 
+					$file = $this->getLabelMapFilename($recordSet->fields, false);
+					if (file_exists($root.$file)) {
+						unlink($root.$file);
+						$deleted++;
+					} 
+					$file = $this->getLabelMapFilename($recordSet->fields, true);
+					if (file_exists($root.$file)) {
+						unlink($root.$file);
+						$deleted++;
+					} 
 				}
 				$recordSet->MoveNext();
 			}
@@ -986,19 +996,29 @@ class GeographMapMosaic
 		}
 		
 		$sql="update mapcache set age=age+1 
-			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
-			$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
+			where $x between map_x and max_x and 
+			$y between map_y and max_y $and_crit";
 		$db->Execute($sql);
 		
 		if ($expire_basemaps && !$memcache->valid) {
 			
 			$sql="select * from mapcache 
-			where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
-			$y between map_y and (map_y+image_h/pixels_per_km-1)";
+			where $x between map_x and max_x and 
+			$y between map_y and max_y";
 			$recordSet = &$db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
 				$file = $this->getBaseMapFilename($recordSet->fields);
+				if (file_exists($root.$file)) {
+					unlink($root.$file);
+					$deleted++;
+				} 
+				$file = $this->getLabelMapFilename($recordSet->fields, false);
+				if (file_exists($root.$file)) {
+					unlink($root.$file);
+					$deleted++;
+				} 
+				$file = $this->getLabelMapFilename($recordSet->fields, true);
 				if (file_exists($root.$file)) {
 					unlink($root.$file);
 					$deleted++;
@@ -1042,6 +1062,14 @@ class GeographMapMosaic
 				if (file_exists($root.$file)) {
 					unlink($root.$file);
 				}
+				$file = $this->getLabelMapFilename($recordSet->fields, false);
+				if (file_exists($root.$file)) {
+					unlink($root.$file);
+				}
+				$file = $this->getLabelMapFilename($recordSet->fields, true);
+				if (file_exists($root.$file)) {
+					unlink($root.$file);
+				}
 			}
 			$recordSet->MoveNext();
 		}
@@ -1051,13 +1079,23 @@ class GeographMapMosaic
 		return $deleted;
 	}
 	
-	function getBaseMapFilename($row)
+	function getBaseMapFilename($row) # FIXME map.class.php?
 	{
 		$dir="/maps/base/";
+
+		if (empty($row['mercator'])) {
+			$map_x = $row['map_x'];
+			$map_y = $row['map_y'];
+			$ext = 'gd';
+		} else {
+			$map_x = $row['tile_x'];
+			$map_y = $row['tile_y'];
+			$ext = 'png';
+		}
+
+		$dir.="{$map_x}/";
 		
-		$dir.="{$row['map_x']}/";
-		
-		$dir.="{$row['map_y']}/";
+		$dir.="{$map_y}/";
 
 		$param = "";
 		//FIXME palette?
@@ -1065,17 +1103,81 @@ class GeographMapMosaic
 			$param .= "_i{$row['force_ri']}";
 		}
 
-		$file="base_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}$param.gd";
+		if (empty($row['mercator'])) {
+			$scale = $row['pixels_per_km'];
+		} else {
+			$scale = $row['level'];
+			$palette .= "_m";
+		}
+
+		$file="base_{$map_x}_{$map_y}_{$row['image_w']}_{$row['image_h']}_{$scale}$param.$ext";
 		
 		return $dir.$file;
 	}
-	function getImageFilename($row)
+	function getLabelMapFilename($row, $towns) # FIXME map.class.php?
 	{
+		$dir="/maps/label/";
+
+		if (empty($row['mercator'])) {
+			$map_x = $row['map_x'];
+			$map_y = $row['map_y'];
+		} else {
+			$map_x = $row['tile_x'];
+			$map_y = $row['tile_y'];
+		}
+
+		$dir.="{$map_x}/";
+		
+		$dir.="{$map_y}/";
+
+		$param = "";
+		//FIXME palette?
+		if (!empty($row['force_ri'])) {
+			$param .= "_i{$row['force_ri']}";
+		}
+		if ($towns) {
+			$param .= "_t";
+		}
+
+		if (empty($row['mercator'])) {
+			$scale = $row['pixels_per_km'];
+		} else {
+			$scale = $row['level'];
+			$palette .= "_m";
+			if (!empty($row['overlay'])) {
+				$palette .= "_o";
+			}
+		}
+
+		$file="label_{$map_x}_{$map_y}_{$row['image_w']}_{$row['image_h']}_{$scale}$param.png";
+		
+		return $dir.$file;
+	}
+	function getImageFilename($row, $layers = -1) # FIXME map.class.php?
+	{
+		if ($layers == -1) {
+			$layers == $row['layers'];
+		}
+		if ($layers == 1)
+			return $this->getBaseMapFilename($row);
+		elseif ($layers == 4)
+			return $this->getLabelMapFilename($row, false);
+		elseif ($layers == 8)
+			return $this->getLabelMapFilename($row, true);
+
 		$dir="/maps/detail/";
 		
-		$dir.="{$row['map_x']}/";
+		if (empty($row['mercator'])) {
+			$map_x = $row['map_x'];
+			$map_y = $row['map_y'];
+		} else {
+			$map_x = $row['tile_x'];
+			$map_y = $row['tile_y'];
+		}
+
+		$dir.="{$map_x}/";
 		
-		$dir.="{$row['map_y']}/";
+		$dir.="{$map_y}/";
 
 		$param = "";
 		//FIXME palette?
@@ -1083,9 +1185,21 @@ class GeographMapMosaic
 			$param .= "_i{$row['force_ri']}";
 		}
 
-		$extension = ($row['pixels_per_km'] > 64 || $row['type_or_user'] < -20)?'jpg':'png';
+		if (empty($row['mercator'])) {
+			$scale = $row['pixels_per_km'];
+			$extension = ($row['pixels_per_km'] > 64 || $row['type_or_user'] < -20)?'jpg':'png';
+		} else {
+			$scale = $row['level'];
+			$extension = 'png';
+			$param .= "_m";
+			$param .= "_l{$layers}";
+			if (!empty($row['overlay'])) {
+				$param .= "_o";
+			}
+		}
 
-		$file="detail_{$row['map_x']}_{$row['map_y']}_{$row['image_w']}_{$row['image_h']}_{$row['pixels_per_km']}_{$row['type_or_user']}$param.$extension";
+
+		$file="detail_{$map_x}_{$map_y}_{$row['image_w']}_{$row['image_h']}_{$scale}_{$row['type_or_user']}$param.$extension";
 
 		return $dir.$file;
 	}
@@ -1119,8 +1233,8 @@ class GeographMapMosaic
 	
 	/**
 	* Expires all cached maps
-	* Base maps (blue/green raster) are not expired unless you pass true as the 
-	* first parameter
+	* Base maps (blue/green raster)  and label maps are not expired unless you pass true as
+	* parameter(s).
 	* @access public
 	*/
 	function expireAll($expire_basemaps=false, $expire_labels=false)

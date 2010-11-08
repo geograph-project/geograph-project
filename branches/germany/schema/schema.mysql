@@ -1099,13 +1099,23 @@ DROP TABLE IF EXISTS `mapcache`;
 CREATE TABLE `mapcache` (
   `map_x` smallint(6) NOT NULL DEFAULT '0',
   `map_y` smallint(6) NOT NULL DEFAULT '0',
+  `max_x` smallint(6) NOT NULL DEFAULT '0',
+  `max_y` smallint(6) NOT NULL DEFAULT '0',
   `image_w` smallint(6) unsigned NOT NULL DEFAULT '0',
   `image_h` smallint(6) unsigned NOT NULL DEFAULT '0',
   `pixels_per_km` float NOT NULL DEFAULT '0',
   `type_or_user` smallint(6) NOT NULL DEFAULT '0',
+  `force_ri` smallint(6) NOT NULL DEFAULT '0',
+  `mercator` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `overlay` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `layers` tinyint(2) unsigned NOT NULL DEFAULT '0',
+  `level` smallint(3) NOT NULL DEFAULT '0',
+  `tile_x` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `tile_y` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `age` smallint(5) unsigned NOT NULL DEFAULT '0',
   `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`)
+  PRIMARY KEY ( `tile_x` , `tile_y` , `image_w` , `image_h` , `level` , `type_or_user` , `force_ri`, `mercator`, `overlay`, `layers` ),
+  KEY `xy` (`map_x`, `map_y`,  `max_x`, `max_y`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
