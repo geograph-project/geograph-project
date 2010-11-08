@@ -794,17 +794,22 @@ function GetTileUrl_TaH(a, z) {
 }
 
 function GetTileUrl_TopB(a, z) {
-    return "http://topo.openstreetmap.de/base/" +
+    //return "http://topo.openstreetmap.de/base/" +
+    sd = inthash("" + a.x + a.y + z, 2) == 0 ? "base" : "base2" ;
+    return "http://" + sd + ".wanderreitkarte.de/base/" +
                 z + "/" + a.x + "/" + a.y + ".png";
 }
 
 function GetTileUrl_TopH(a, z) {
-    return "http://hills-nc.openstreetmap.de/" +
+    //return "http://hills-nc.openstreetmap.de/" +
+    return "http://wanderreitkarte.de/hills/" +
                 z + "/" + a.x + "/" + a.y + ".png";
 }
 
 function GetTileUrl_Top(a, z) {
-    return "http://topo.openstreetmap.de/topo/" +
+    //return "http://topo.openstreetmap.de/topo/" +
+    sd = inthash("" + a.x + a.y + z, 2) == 0 ? "topo" : "topo2" ;
+    return "http://" + sd + ".wanderreitkarte.de/topo/" +
                 z + "/" + a.x + "/" + a.y + ".png";
 }
 EOF;
@@ -851,7 +856,7 @@ EOF;
 
     var tilelayers_top = new Array();
     tilelayers_top[0] = new GTileLayer(copyrightCollectionTopo, 0, 17);
-    tilelayers_top[1] = new GTileLayer(copyrightCollectionTopoH, 8, 15);
+    tilelayers_top[1] = new GTileLayer(copyrightCollectionTopoH, 9, 19);
     tilelayers_top[2] = new GTileLayer(copyrightCollectionTopo, 0, 17);
     tilelayers_top[0].isPng = function () { return true; };
     tilelayers_top[1].isPng = function () { return true; };

@@ -32,7 +32,8 @@
  var lon1 = 0;
  var lat2 = 0;
  var lon2 = 0;
- 
+ var fracGold = 0.5*Math.sqrt(5.0) - 0.5;
+
  var pickupbox = null;
  
  function createMarker(point,picon) {
@@ -117,6 +118,20 @@
 		});
 	}
 	return marker;
+}
+
+function floathash(s) { /* string must not be empty! */
+	var res = 1.0;
+	var len = s.length;
+	for (var i = 0; i < len; ++i) {
+		res *= s.charCodeAt(i)*fracGold;
+		res -= Math.floor(res);
+	}
+	return res;
+}
+
+function inthash(s, n) {
+	return Math.floor(floathash(s)*n);
 }
 
 function createPMarker(ppoint) {
