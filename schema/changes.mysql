@@ -454,3 +454,18 @@ UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.grid
 
 ALTER TABLE mapcache ADD `force_ri` smallint(6) NOT NULL DEFAULT '0' AFTER `type_or_user`;
 ALTER TABLE `mapcache` DROP PRIMARY KEY , ADD PRIMARY KEY ( `map_x` , `map_y` , `image_w` , `image_h` , `pixels_per_km` , `type_or_user` , `force_ri` )
+
+
+ALTER TABLE `mapcache` ADD `mercator` tinyint(1) unsigned NOT NULL DEFAULT '0' AFTER `force_ri`;
+ALTER TABLE `mapcache` ADD `overlay` tinyint(1) unsigned NOT NULL DEFAULT '0' AFTER `mercator`;
+ALTER TABLE `mapcache` ADD `layers` tinyint(2) unsigned NOT NULL DEFAULT '0' AFTER `overlay`;
+ALTER TABLE `mapcache` ADD `level` smallint(3) NOT NULL DEFAULT '0' AFTER `layers`;
+ALTER TABLE `mapcache` ADD `tile_x` mediumint(8) unsigned NOT NULL DEFAULT '0' AFTER `level`;
+ALTER TABLE `mapcache` ADD `tile_y` mediumint(8) unsigned NOT NULL DEFAULT '0' AFTER `tile_x`;
+
+ALTER TABLE `mapcache` ADD `max_x` smallint(6) NOT NULL DEFAULT '0' AFTER `map_y`;
+ALTER TABLE `mapcache` ADD `max_y` smallint(6) NOT NULL DEFAULT '0' AFTER `max_x`;
+
+TRUNCATE TABLE `mapcache`;
+ALTER TABLE `mapcache` DROP PRIMARY KEY , ADD PRIMARY KEY ( `tile_x` , `tile_y` , `image_w` , `image_h` , `level` , `type_or_user` , `force_ri`, `mercator`, `overlay`, `layers` );
+ALTER TABLE `mapcache` ADD KEY `xy` (`map_x`, `map_y`,  `max_x`, `max_y`);

@@ -217,8 +217,8 @@ if (isset($_GET['coast_GB_40'])) {
 		print "<h3>$gridref</h3>";
 		if (count($squares) < 5) {
 			$sql="select * from mapcache 
-					where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
-					$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
+					where $x between map_x and max_x and 
+					$y between map_y and max_y $and_crit";
 			
 			$recordSet = &$db->Execute("$sql");
 			while (!$recordSet->EOF) 

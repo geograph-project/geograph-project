@@ -111,7 +111,23 @@ function recurse_maps($folder) {
 			print "done $folder $file\n";
 		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)\./",$file,$m)) {
 			array_shift($m);
-			$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m).",0)";
+			$m2=array();
+			$m2[] = $m[0];
+			$m2[] = $m[1];
+			$m2[] = $m[0]+ceil($m[2]/$m[4])+1;
+			$m2[] = $m[1]+ceil($m[3]/$m[4])+1;
+			$m2[] = $m[2];
+			$m2[] = $m[3];
+			$m2[] = $m[4];
+			$m2[] = $m[5];
+			$m2[] = 0;
+			$m2[] = 0;
+			$m2[] = 0;
+			$m2[] = 0;
+			$m2[] = round($m[4]*100);
+			$m2[] = $m[0];
+			$m2[] = $m[1];
+			$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m2).",0)";
 			$db->Execute($sql);
 		}		
 	}

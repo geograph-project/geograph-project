@@ -107,7 +107,23 @@ function recurse_maps($folder) {
 		} elseif (preg_match("/detail_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)_(\d+)\./",$file,$m)) {
 			array_shift($m);
 			if (filemtime($root.$folder.$file) > $cutoff && $m[4] == 80) {
-				$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m).",0)";
+				$m2=array();
+				$m2[] = $m[0];
+				$m2[] = $m[1];
+				$m2[] = $m[0]+ceil($m[2]/$m[4])+1;
+				$m2[] = $m[1]+ceil($m[3]/$m[4])+1;
+				$m2[] = $m[2];
+				$m2[] = $m[3];
+				$m2[] = $m[4];
+				$m2[] = $m[5];
+				$m2[] = 0;
+				$m2[] = 0;
+				$m2[] = 0;
+				$m2[] = 0;
+				$m2[] = round($m[4]*100);
+				$m2[] = $m[0];
+				$m2[] = $m[1];
+				$sql = "INSERT DELAYED IGNORE INTO mapcache2 VALUES(".join(',',$m2).",0)";
 				$db->Execute($sql);
 			}
 		}		
@@ -144,7 +160,7 @@ function recurse_maps($folder) {
 				$values[]=$value;
 															
 		}
-		$values[6] = 17; //we always want to invalidate this tile! Overkill but probably need to update this tile anyway...
+		$values[15] = 17; //we always want to invalidate this tile! Overkill but probably need to update this tile anyway...
 		$sql = "REPLACE INTO mapcache VALUES(".join(',',$values).")";
 		print "$sql";
 		$db->Execute($sql);
@@ -158,15 +174,24 @@ function recurse_maps($folder) {
 	
 } elseif (isset($_GET['setup'])) {
 $db->Execute("CREATE TABLE `mapcache2` (
-			    `map_x` smallint(6) NOT NULL default '0',
-			    `map_y` smallint(6) NOT NULL default '0',
-			    `image_w` smallint(6) unsigned NOT NULL default '0',
-			    `image_h` smallint(6) unsigned NOT NULL default '0',
-			    `pixels_per_km` float NOT NULL default '0',
-			    `type_or_user` smallint(6) NOT NULL default '0',
-			    `force_ri` smallint(6) NOT NULL default '0',
-			    `age` smallint(5) unsigned NOT NULL default '0',
-			    PRIMARY KEY  (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`,`force_ri`)
+			  `map_x` smallint(6) NOT NULL DEFAULT '0',
+			  `map_y` smallint(6) NOT NULL DEFAULT '0',
+			  `max_x` smallint(6) NOT NULL DEFAULT '0',
+			  `max_y` smallint(6) NOT NULL DEFAULT '0',
+			  `image_w` smallint(6) unsigned NOT NULL DEFAULT '0',
+			  `image_h` smallint(6) unsigned NOT NULL DEFAULT '0',
+			  `pixels_per_km` float NOT NULL DEFAULT '0',
+			  `type_or_user` smallint(6) NOT NULL DEFAULT '0',
+			  `force_ri` smallint(6) NOT NULL DEFAULT '0',
+			  `mercator` tinyint(1) unsigned NOT NULL DEFAULT '0',
+			  `overlay` tinyint(1) unsigned NOT NULL DEFAULT '0',
+			  `layers` tinyint(2) unsigned NOT NULL DEFAULT '0',
+			  `level` smallint(3) NOT NULL DEFAULT '0',
+			  `tile_x` mediumint(8) unsigned NOT NULL DEFAULT '0',
+			  `tile_y` mediumint(8) unsigned NOT NULL DEFAULT '0',
+			  `age` smallint(5) unsigned NOT NULL DEFAULT '0',
+			  PRIMARY KEY ( `tile_x` , `tile_y` , `image_w` , `image_h` , `level` , `type_or_user` , `force_ri`, `mercator`, `overlay`, `layers` ),
+			  KEY `xy` (`map_x`, `map_y`,  `max_x`, `max_y`)
 			  ) TYPE=MyISAM ");
 } elseif (isset($_GET['remove'])) {
 	$db->Execute("DROP TABLE `mapcache2`");
