@@ -39,6 +39,14 @@ $template = 'gallery_gallery.tpl';
 preg_match('/_(\d+)$/',$_GET['url'],$m);
 $topic_id = intval($m[1]);
 
+if ($topic_id == 7838) {
+        header("HTTP/1.0 301 Moved Permanently");
+        header("Status: 301 Moved Permanently");
+        header("Location: /article/Medieval-Churches-in-Norfolk");
+        print "<a href=\"/article/Medieval-Churches-in-Norfolk\">go</a>";
+        exit;
+}
+
 $cacheid = "$topic_id.$pg";
 
 $db = GeographDatabaseConnection(false);
@@ -57,7 +65,11 @@ if (count($page)) {
 	$page['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$page['topic_title'])))),'_').'_'.$page['topic_id'];
 
 	
-	if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE) {
+	if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE
+                && (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
+                && (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
+                && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE)
+		) {
 		$db->Execute("UPDATE LOW_PRIORITY geobb_topics SET topic_views=topic_views+1 WHERE topic_id = $topic_id");
 	}
 	

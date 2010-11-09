@@ -175,6 +175,7 @@ if ($image->isValid())
 
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
+	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE) && 
         (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
 	    empty($_SESSION['photos'][$image->gridimage_id]) &&
 	    $CONF['template']!='archive')
@@ -278,4 +279,4 @@ $smarty->register_modifier("hidekeywords", "smarty_function_hidekeywords");
 
 $smarty->display($template, $cacheid);
 
-?>
+

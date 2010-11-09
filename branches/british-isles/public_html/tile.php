@@ -46,6 +46,13 @@ if (isset($_GET['map']))
 * Raster Maps
 */	
 } elseif (isset($_GET['r'])) {
+
+	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE) {
+                header("HTTP/1.0 401 Forbidden");
+                header("Status: 401 Forbidden");
+		exit;
+	}
+
 	require_once('geograph/rastermap.class.php');
 	$square = false;
 	$rastermap = new RasterMap($square);
@@ -65,6 +72,12 @@ if (isset($_GET['map']))
 * Mapper Tiles
 */
 } elseif (isset($_GET['e']) && isset($_GET['n'])) {
+
+	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE) {
+                header("HTTP/1.0 401 Forbidden");
+                header("Status: 401 Forbidden");
+		exit;
+	}
 
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions();
@@ -457,4 +470,4 @@ function getColorKey(&$img) {
 	return $colour;
 }
 
-?>
+
