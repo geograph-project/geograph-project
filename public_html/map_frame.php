@@ -21,6 +21,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
+       if (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE) {
+                header("HTTP/1.0 401 Forbidden");
+                header("Status: 401 Forbidden");
+               exit;
+       }
+
+
+
+
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
