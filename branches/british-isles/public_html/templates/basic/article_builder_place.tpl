@@ -241,7 +241,7 @@ function updateQuery() {
 		q = "("+bits.join(' OR ')+")";
 	}
 
-	f.elements['search'].value = q;
+	f.elements['q'].value = q;
 
 
 	var fd = document.forms['searchform'];

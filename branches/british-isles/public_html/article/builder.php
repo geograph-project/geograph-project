@@ -205,7 +205,7 @@ if (isset($_POST) && isset($_POST['submit'])) {
 		
 		print "<p>Link: <a href=\"$url\">$url</a></p>";
 		
-		print "<b>Note: <b>The article is not yet published.</b> To publish the article you need to edit it and assign a licence to the work - you should at the same time check the article is to your satifaction.</p>";
+		print "<p>Note: <b>The article is not yet published.</b> To publish the article you need to edit it and assign a licence to the work - you should at the same time check the article is to your satifaction.</p>";
 		print "<p>Once a licence has set, the article will be reviewed by site moderators and then made public</p>";
 		
 		print "<p><a href=\"edit.php?page={$_POST['url']}\">Edit the Article now</a></p>";
