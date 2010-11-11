@@ -1,7 +1,14 @@
 {assign var="page_title" value="Articles"}
 {assign var="rss_url" value="/article/feed/recent.rss"}
 {include file="_std_begin.tpl"}
-
+<style>{literal}
+.content small a {
+	color:gray;
+}
+.content small {
+	color:silver;
+}
+{/literal}</style>
 <div class="tabHolder">
 	<a href="/content/" class="tab">Collections</a>
 	<span class="tabSelected">Articles</span>
@@ -11,17 +18,17 @@
 		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
 		<a href="/discuss/index.php?action=vtopic&amp;forum=5" class="tab">Grid Square Discussions</a>
 		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
-	{/if}	
+	{/if}
 </div>
 <div class="interestBox">
 <h2 style="margin:0">User Contributed Articles</h2>
 </div>
 {if $desc}
 	<div style="position:relative; float:right; background-color:silver; padding:4px">
-		Showing <b>articles{$desc|escape:'html'}</b> / <a href="/article/">Show all</a> 
+		Showing <b>articles{$desc|escape:'html'}</b> / <a href="/article/">Show all</a>
 	</div>
 {else}
-	{dynamic}{if $article_count}
+	{dynamic}{if $article_count && !$linktofull}
 		<div style="position:relative; float:right; background-color:silver; padding:4px">
 			<a href="/article/?user_id={$user->user_id}">show only yours [{$article_count}]</a>
 		</div>
@@ -30,8 +37,8 @@
 
 <form action="/content/" method="get">
 <div class="interestBox" style="margin-top:2px;width:420px">
-<lable for="qs">Search:</label> 
-<input type="text" name="q" id="qs" size="22" {if $q} value="{$q|escape:'html'}"{/if}/> 
+<lable for="qs">Search:</label>
+<input type="text" name="q" id="qs" size="22" {if $q} value="{$q|escape:'html'}"{/if}/>
 Scope: <select name="scope" style="width:80px">
 	<option value="">All</option>
 	<option value="article" selected>Articles</option>
@@ -48,6 +55,12 @@ Scope: <select name="scope" style="width:80px">
 </div>
 </form>
 
+{if $linktofull}
+<div class="interestBox" style="text-align:center;background-color:yellow">
+	<b>Content Summary Only</b> - <a href="?full">View Full list</a>
+</div>
+{/if}
+
 <ul class="explore">
 {foreach from=$list item=item}
 {if $lastcat != $item.category_name}
@@ -58,14 +71,14 @@ Scope: <select name="scope" style="width:80px">
 	<li><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}Not publicly visible{/if}){/if}
 	<small>by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}">{$item.realname}</a></small>
 		{if $isadmin || $item.user_id == $user->user_id}
-			<small><small><br/>&nbsp;&nbsp;&nbsp;&nbsp; 
-			{if $item.locked_user} 
+			<small><small><br/>&nbsp;&nbsp;&nbsp;&nbsp;
+			{if $item.locked_user}
 				Locked
 			{else}
 				[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>]
 			{/if}
 			[<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]
-		{/if} 
+		{/if}
 		{if $isadmin}
 			{if $item.approved > 0}
 				[<a href="/article/?page={$item.url}&amp;approve=0">Disapprove</a>]
@@ -73,7 +86,7 @@ Scope: <select name="scope" style="width:80px">
 					[<a href="/article/?page={$item.url}&amp;approve=2">Enable Collaborative Editing</a>]
 				{/if}
 			{else}
-				[<a href="/article/?page={$item.url}&amp;approve=1">Approve</a>{if $item.approved == 0 and $item.licence != 'none'} 
+				[<a href="/article/?page={$item.url}&amp;approve=1">Approve</a>{if $item.approved == 0 and $item.licence != 'none'}
 				{if $item.approved != 2}
 					[<a href="/article/?page={$item.url}&amp;approve=2">Enable Collaborative Editing</a>]
 				{/if}
@@ -98,8 +111,14 @@ Admin Feed: <a title="geoRSS Feed for Geograph Pending Articles" href="/article/
 </div>
 <br style="clear:both"/>
 
+{if $linktofull}
+<div class="interestBox" style="text-align:center;background-color:yellow">
+	<b>This is a Summary List Only</b> - <a href="?full">View Full list</a>
+</div>
+{/if}
+
 <div class="interestBox">
-{if $user->registered} 
+{if $user->registered}
 	<a href="/article/edit.php?page=new">Submit a new Article</a> (Registered Users Only)
 {else}
 	<a href="/login.php">Login</a> to Submit your own article!
