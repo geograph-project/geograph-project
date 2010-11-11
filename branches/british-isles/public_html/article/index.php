@@ -119,18 +119,39 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$list = $db->getAll("
-	select article.article_id,article.article_cat_id,category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname,l.user_id as locked_user
-	from article 
-		inner join user using (user_id)
-		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
-		left join article_lock as l
-			on(article.article_id=l.article_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) and l.user_id != {$USER->user_id})
-	where ((licence != 'none' and approved > 0) 
-		or user.user_id = {$USER->user_id}
-		or ($isadmin and approved != -1))
-		$where
-	order by sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
+	if (empty($where) && !isset($_GET['full'])) {
+		$bit = "select @counter:=@counter+1 as counter,article.article_id,'STRING' AS category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname,l.user_id as locked_user
+		from article 
+			inner join user using (user_id)
+			left join article_lock as l
+				on(article.article_id=l.article_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) and l.user_id != {$USER->user_id})
+		where ((licence != 'none' and approved > 0) 
+			or user.user_id = {$USER->user_id}
+			or ($isadmin and approved != -1))
+			$where";
+			
+		$sql = array();	
+		$sql[] = str_replace('STRING','Recently Created',$bit)." ORDER BY article_id DESC LIMIT 5";
+		$sql[] = str_replace('STRING','Recently Updated',$bit)." ORDER BY update_time DESC LIMIT 7";
+		$sql[] = str_replace('STRING','Your other Articles',$bit)." AND article.user_id = {$USER->user_id} ORDER BY article_id DESC LIMIT 50"; //group by to remove duplicates
+		$db->query("SET @counter:=0");
+		$list = $db->getAll("SELECT * FROM ((".implode(') UNION (',$sql).")) t2 GROUP BY article_id ORDER BY counter"); 
+		$smarty->assign("linktofull",1);
+	} else {
+	
+		$list = $db->getAll("
+		select article.article_id,article.article_cat_id,category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname,l.user_id as locked_user
+		from article 
+			inner join user using (user_id)
+			left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
+			left join article_lock as l
+				on(article.article_id=l.article_id and lock_obtained > date_sub(NOW(),INTERVAL 1 HOUR) and l.user_id != {$USER->user_id})
+		where ((licence != 'none' and approved > 0) 
+			or user.user_id = {$USER->user_id}
+			or ($isadmin and approved != -1))
+			$where
+		order by sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
+	}
 	
 	$urls = array();
 	foreach ($list as $i => $row) {
@@ -155,11 +176,10 @@ if (!$smarty->is_cached($template, $cacheid))
 
 }
 
-if ($USER->registered && (empty($_GET['user_id']) || $_GET['user_id'] != $USER->user_id)) {
+if ($USER->registered && isset($_GET['full']) && (empty($_GET['user_id']) || $_GET['user_id'] != $USER->user_id)) {
 	$smarty->assign('article_count', $db->CacheGetOne(3600,"SELECT count(*) FROM article WHERE user_id = ".$USER->user_id));
 }
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+

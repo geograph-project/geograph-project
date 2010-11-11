@@ -14,17 +14,17 @@
 		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>
 		<a href="/discuss/index.php?action=vtopic&amp;forum=5" class="tab">Grid Square Discussions</a>
 		<a href="/article/Content-on-Geograph" class="tab">Contribute...</a>
-	{/if}	
+	{/if}
 </div>
 <div class="interestBox">
 <h2 style="margin:0">User Contributed Articles</h2>
 </div>
 {if $desc}
 	<div style="position:relative; float:right; background-color:silver; padding:4px">
-		Showing <b>articles{$desc|escape:'html'}</b> / <a href="/article/?table">Show all</a> 
+		Showing <b>articles{$desc|escape:'html'}</b> / <a href="/article/?table">Show all</a>
 	</div>
 {else}
-	{dynamic}{if $article_count}
+	{dynamic}{if $article_count && !$linktofull}
 		<div style="position:relative; float:right; background-color:silver; padding:4px">
 			<a href="/article/?table&amp;user_id={$user->user_id}">show only yours [{$article_count}]</a>
 		</div>
@@ -33,8 +33,8 @@
 
 <form action="/content/" method="get">
 <div class="interestBox" style="margin-top:2px;width:420px">
-<lable for="qs">Search:</label> 
-<input type="text" name="q" id="qs" size="22" {if $q} value="{$q|escape:'html'}"{/if}/> 
+<lable for="qs">Search:</label>
+<input type="text" name="q" id="qs" size="22" {if $q} value="{$q|escape:'html'}"{/if}/>
 Scope: <select name="scope" style="width:80px">
 	<option value="">All</option>
 	<option value="article" selected>Articles</option>
@@ -50,6 +50,12 @@ Scope: <select name="scope" style="width:80px">
 <input type="submit" value="Find"/>
 </div>
 </form>
+
+{if $linktofull}
+<div class="interestBox" style="text-align:center;background-color:yellow">
+	<b>Content Summary Only</b> - <a href="?table&amp;full">View Full list</a>
+</div>
+{/if}
 
 <p>Click a column header to reorder, hover over a title for a brief introduction.</p>
 
@@ -72,12 +78,12 @@ Scope: <select name="scope" style="width:80px">
 		<td sortvalue="{$item.update_time}" style="font-size:0.8em">{$item.update_time|date_format:"%a, %e %b %Y"}</td>
 		<td style="font-size:0.8em">
 		{if $isadmin || $item.user_id == $user->user_id}
-			{if $item.locked_user} 
+			{if $item.locked_user}
 				Locked
 			{else}
 				[<a title="Edit {$item.title}" href="/article/edit.php?page={$item.url}">Edit</a>]
 			{/if}
-		{/if} 
+		{/if}
 		[<a title="Edit History for {$item.title}" href="/article/history.php?page={$item.url}">History</a>]
 		{if $isadmin}
 			{if $item.approved > 0}
@@ -104,8 +110,14 @@ Scope: <select name="scope" style="width:80px">
 <div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-geo">geoRSS</a></div>
 <br style="clear:both"/>
 
+{if $linktofull}
+<div class="interestBox" style="text-align:center;background-color:yellow">
+	<b>This is a Summary List Only</b> - <a href="?table&amp;full">View Full list</a>
+</div>
+{/if}
+
 <div class="interestBox">
-{if $user->registered} 
+{if $user->registered}
 	<a href="/article/edit.php?page=new">Submit a new Article</a> (Registered Users Only)
 {else}
 	<a href="/login.php">Login</a> to Submit your own article!
