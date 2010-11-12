@@ -151,7 +151,7 @@ function get_snippet($snippet,$gridimage_id = 0) {
 		}
 
 		
-		$html.='<div style="float:left;width:213px">';
+		$html.='<div style="float:left;width:213px"><br/><br/>';
 
 			$title=$image->grid_reference.' : '.htmlentities2($image->title).' by '.htmlentities2($image->realname);
 
@@ -386,7 +386,7 @@ if (count($page)) {
 	if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE
 		&& (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
         	&& (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
-	        && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE)
+	        && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE)
 		) {
 		$db->Execute("UPDATE LOW_PRIORITY article_stat SET views=views+1 WHERE article_id = ".$page['article_id']);
 	}

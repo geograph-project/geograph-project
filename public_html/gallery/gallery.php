@@ -68,7 +68,7 @@ if (count($page)) {
 	if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE
                 && (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
                 && (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
-                && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE)
+                && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE)
 		) {
 		$db->Execute("UPDATE LOW_PRIORITY geobb_topics SET topic_views=topic_views+1 WHERE topic_id = $topic_id");
 	}

@@ -132,6 +132,14 @@ if (isset($_GET['id']))
 		}
 		else
 		{
+			$db = GeographDatabaseConnection(true);			
+			if ($to = $db->getOne("SELECT destination FROM gridimage_redirect WHERE gridimage_id = ".intval($_GET['id']))) {
+		                header("HTTP/1.0 301 Moved Permanently");
+                		header("Status: 301 Moved Permanently");
+		                header("Location: /photo/".intval($to));
+                		exit;
+			}
+
 			//clear the image
 			$image=new GridImage;
 			$cacheid=0;
@@ -175,12 +183,13 @@ if ($image->isValid())
 
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&
-	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE) && 
+	    (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE) && 
         (stripos($_SERVER['HTTP_USER_AGENT'], 'Magnus')===FALSE) &&
 	    empty($_SESSION['photos'][$image->gridimage_id]) &&
 	    $CONF['template']!='archive')
 	{
-		$db = GeographDatabaseConnection(false);
+		if (empty($db) || $db->readonly) 
+			$db = GeographDatabaseConnection(false);
 		
 		$db->Query("INSERT LOW_PRIORITY INTO gridimage_log VALUES({$image->gridimage_id},1,0,now()) ON duplicate KEY UPDATE hits=hits+1");
 		@$_SESSION['photos'][$image->gridimage_id]++;
