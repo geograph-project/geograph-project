@@ -159,9 +159,9 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$updates = array();
 	
 	if ($page['approved'] == 2 && $USER->user_id != $page['user_id']) {
-		$keys = array('content');
+		$keys = array('content','complete');
 	} else {
-		$keys = array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','parent_url','extract');
+		$keys = array('url','title','licence','content','publish_date','article_cat_id','gridsquare_id','parent_url','extract','complete');
 	}
 	
 	foreach ($keys as $key) {
@@ -176,7 +176,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 				if ($db->getOne($sql)) 
 					$errors[$key] = "(".$db->Quote($_POST[$key]).') is already in use';				
 			}
-		} elseif (empty($_POST[$key]) && $key != 'gridsquare_id') 
+		} elseif (empty($_POST[$key]) && $key != 'gridsquare_id' && $key != 'parent_url' && $key != 'complete') 
 			$errors[$key] = "missing required info";		
 	}
 	if (isset($_POST['edit_prompt'])) {
@@ -229,10 +229,11 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 
 	$smarty->assign('licences', array('none' => '(Temporarily) Not Published','pd' => 'Public Domain','cc-by-sa/2.0' => 'Creative Commons BY-SA/2.0' ,'copyright' => 'Copyright'));
 	$smarty->assign('article_cat', array(0=>'')+$db->getAssoc("select article_cat_id,category_name from article_cat order by sort_order"));
+	$smarty->assign('completes', array_merge(array(0=>'',1),range(10,90,10),array(98,100)));
 
 
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+
+

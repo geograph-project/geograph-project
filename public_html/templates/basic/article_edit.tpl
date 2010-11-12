@@ -33,7 +33,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 function getXMLRequestObject()
 {
 	var xmlhttp=false;
-		
+
 
 	 try {
 	  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
@@ -54,14 +54,14 @@ function getXMLRequestObject()
 
 function lockArticle(form) {
 	var url = "/article/edit.php?page={/literal}{$url|escape:"url"}{literal}&lock";
-	
+
 	//make the request
 	var req=getXMLRequestObject();
 
 	//need to exploit function closure
 	req.onreadystatechange = function()
 	{
-		if (req.readyState==4) 
+		if (req.readyState==4)
 		{
 			if (req.responseText == 'ok') {
 				form.elements['content'].disabled = false;
@@ -78,8 +78,8 @@ function lockArticle(form) {
 	}
 	req.open("GET", url,true);
 	req.send(null)
-	
-	
+
+
 
 }
 function makeUneditable() {
@@ -128,19 +128,19 @@ function makeUneditable() {
 
 <div class="field">
 	{if $errors.url}<div class="formerror"><p class="error">{$errors.url}</p>{/if}
-	 
+
 	<label for="url">URL:</label>
 	<span class="nowrap"><small><tt>http://{$http_host}/article/</tt></small><input type="text" name="url" value="{$url|escape:"html"}" maxlength="64" size="40"/></span>
 
 	<div class="fieldnotes">Shouldn't be changed once article published.</div>
-	
+
 	{if $errors.url}</div>{/if}
 </div>
 {/if}
 
 <div class="field">
 	{if $errors.title}<div class="formerror"><p class="error">{$errors.title}</p>{/if}
-	 
+
 	<label for="title">Title:</label>
 	<input type="text" name="title" value="{$title|escape:"html"}" style="font-size:1.1em" maxlength="64" size="47"/>
 
@@ -149,36 +149,36 @@ function makeUneditable() {
 
 <div class="field">
 	{if $errors.licence}<div class="formerror"><p class="error">{$errors.licence}</p>{/if}
-	 
+
 	<label for="licence">Licence:</label>
 	<select name="licence">
 	{html_options options=$licences selected=$licence}
 	</select> by
 	<a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>
-	
+
 
 	{if $errors.licence}</div>{/if}
 </div>
 
 <div class="field">
 	{if $errors.publish_date}<div class="formerror"><p class="error">{$errors.publish_date}</p>{/if}
-	 
+
 	<label for="publish_date">Publish Date:</label>
 	{html_select_date prefix="publish_date" time=`$publish_date` start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
-	
+
 	<div class="fieldnotes">Date of copyright, when the piece was written.</div>
-	
+
 	{if $errors.publish_date}</div>{/if}
 </div>
 
 <div class="field">
 	{if $errors.article_cat_id}<div class="formerror"><p class="error">{$errors.article_cat_id}</p>{/if}
-	 
+
 	<label for="article_cat_id">Category:</label>
 	<select name="article_cat_id">
 	{html_options options=$article_cat selected=$article_cat_id}
-	</select> 
-	
+	</select>
+
 
 	{if $errors.article_cat_id}</div>{/if}
 </div>
@@ -186,34 +186,34 @@ function makeUneditable() {
 
 <div class="field">
 	{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
-	 
+
 	<label for="grid_reference">Relevant Grid Square:</label>
 	<input type="text" name="grid_reference" value="{$grid_reference|escape:"html"}" maxlength="12" size="6"/>
-	
+
 	<div class="fieldnotes">Optional, helps organise articles, such as been able to plot on map.</div>
-	
+
 	{if $errors.grid_reference}</div>{/if}
 </div>
 
 <div class="field">
 	{if $errors.parent_url}<div class="formerror"><p class="error">{$errors.parent_url}</p>{/if}
-	 
+
 	<label for="parent_url">Parent Article:</label>
 	<input type="text" name="parent_url" value="{$parent_url|escape:"html"}" maxlength="128" size="60"/>
-	
+
 	<div class="fieldnotes">Optional, full URL to parent article if there is one. To be used by articles that are in a group.</div>
-	
+
 	{if $errors.parent_url}</div>{/if}
 </div>
 
 <div class="field">
 	{if $errors.extract}<div class="formerror"><p class="error">{$errors.extract}</p>{/if}
-	 
+
 	<label for="extract">Short Description:</label>
 	<input type="text" name="extract" value="{$extract|escape:"html"}" maxlength="255" size="90" style="width:58em"/>
-	
+
 	<div class="fieldnotes">Please provide a meaningful short description for the content.</div>
-	
+
 	{if $errors.extract}</div>{/if}
 </div>
 
@@ -233,12 +233,24 @@ function makeUneditable() {
 
 <div class="field">
 	{if $errors.content}<div class="formerror"><p class="error">{$errors.content}</p>{/if}
-	 
+
 	<label for="content">Content:</label> (see markup reference at bottom of page)
 	<textarea rows="40" cols="80" name="content" style="width:58em">{$content|escape:"html"}</textarea></p>
-	
+
 	{if $errors.content}</div>{/if}
 </div>
+
+<div class="field">
+	{if $errors.complete}<div class="formerror"><p class="error">{$errors.complete}</p>{/if}
+
+	<label for="complete">Completeness:</label>
+	<select name="complete" style="text-align:right">
+	{html_options values=$completes output=$completes selected=$complete}
+	</select>% <small><small>(a rough estimate of how complete the article is compared to what it could/should be)</small></small>
+
+	{if $errors.complete}</div>{/if}
+</div>
+
 
 </fieldset>
 

@@ -98,7 +98,7 @@ function count_section($output) {
 	}
 
 	if (preg_match_all('/\[map *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$matches))
-		print "<div>Big Maps: ".count($matches[1]).showmessage(count($matches[1]),3,25,50)."</div>";
+		print "<div>Big Maps: ".count($matches[1]).showmessage(count($matches[1]),3,10,20)."</div>";
 
 	if (preg_match_all('/\[smallmap *([STNH]?[A-Z]{1}[ \.]*\d{2,5}[ \.]*\d{2,5})( \w+|)\]/',$output,$matches))
 		print "<div>Small Maps: ".count($matches[1]).showmessage(count($matches[1]),1,50,100)."</div>";
@@ -112,12 +112,15 @@ function count_section($output) {
 	if (preg_match_all('/\[img=([^\] ]+)(| [^\]]+)\]/',$output,$matches))
 		print "<div>External Images: ".count($matches[1]).showmessage(count($matches[1]),2,20,40)."</div>";
 
+	if (preg_match_all('/\[snippet id=(\d+)(?: image=(\d+))?\]/',$output,$matches))
+		print "<div>Shared Descriptions: ".count($matches[1]).showmessage(count($matches[1]),4,10,30)."</div>";
+	
 	if (preg_match_all('/\[h(\d)\]([^\n]+?)\[\/h(\d)\]/',$output,$matches))
 		print "<div>Headings: ".count($matches[1])."</div>";
 	
 	print "<!--div>Points: ".$total."</div-->";
 	if ($total > 400) {
-		print "<div class=hard>WARNING: The number of objects on this page is too high, you should split into multiple pages</div>";
+		print "<div class=hard>WARNING: The number of objects on this page is too high, you NEED to split into multiple pages</div>";
 	} elseif ($total > 200) {
 		print "<div class=soft>NOTICE: The number of objects on this page is rather high - please consider splitting into multiple pages</div>";
 	}
