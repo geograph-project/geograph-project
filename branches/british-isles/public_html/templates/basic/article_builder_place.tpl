@@ -173,7 +173,7 @@
 
 <div id="buttonbar">
 	<input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');" style="color:green"/>
-	<input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em; color:green"/></p>
+	<input type="submit" name="submit" value="Create Article" style="font-size:1.1em; color:green"/><br/> (The article will only be published and made public once you have had a chance to tweak it)</p>
 </div>
 
 

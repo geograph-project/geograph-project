@@ -107,6 +107,71 @@ function getUniqueHash($title) {
 	return $title.$i;
 }
 
+function get_snippet($snippet,$gridimage_id = 0) {
+	global $imageCredits;
+
+	$snippet = intval($snippet);
+	
+	$db = GeographDatabaseConnection(true);
+	
+	$row = $db->getRow("SELECT s.*,realname FROM snippet s INNER JOIN user u USING (user_id) WHERE snippet_id = $snippet AND enabled = 1");
+	
+	if (empty($row)) {
+		return "ERROR unable to load shared description $snippet";
+	}
+	
+	$count = $db->getOne("SELECT count(*) FROM gridimage_snippet WHERE gridimage_id < 4294967296 AND snippet_id = $snippet");
+	
+	$html='<div class="photoguide"><small style="background-color:silver;padding:3px"><i>Shared Description</i> used on <a title="view more images" href="/snippet/'.$row['snippet_id'].'">'.($count+0).' images</a></small>';
+
+	$html.='<div style="float:left;width:400px">';
+	
+		$html.='<div><b><a title="view more images" href="/snippet/'.$row['snippet_id'].'">';
+		$html.=htmlentities2($row['title']).'</a></b> by <a href="/profile/'.$row['user_id'].'">'.htmlentities2($row['realname']).'</a></div>';
+		
+		$html .= GeographLinks(nl2br(htmlentities2($row['comment'])));
+		
+	$html.='</div>';
+
+	if (empty($gridimage_id)) {
+		$gridimage_id = $db->getOne("SELECT gridimage_id FROM gridimage_snippet WHERE gridimage_id < 4294967296 AND snippet_id = $snippet");
+	}
+	$gridimage_id = intval($gridimage_id);
+
+	$image=new GridImage;
+
+	$image->loadFromId($gridimage_id);
+
+	if (!empty($image->gridimage_id) && $image->moderation_status != 'rejected') {
+		
+		if (isset($imageCredits[$image->realname])) {
+			$imageCredits[$image->realname]++;
+		} else {
+			$imageCredits[$image->realname]=1;
+		}
+
+		
+		$html.='<div style="float:left;width:213px">';
+
+			$title=$image->grid_reference.' : '.htmlentities2($image->title).' by '.htmlentities2($image->realname);
+
+			$html.='<a title="'.$title.' - click to view full size image" href="/photo/'.$image->gridimage_id.'">';
+			$html.=$image->getThumbnail(120,120);
+			$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+			$html.=htmlentities2($image->title).'</a> by <a href="'.$image->profile_link.'">'.htmlentities2($image->realname).'</a></div>';
+			
+		$html.='</div>';
+
+	} else {
+		$html .= "image=$image";
+	}
+
+	$html.='<br style="clear:both"/></div>';	
+		
+	return $html;
+}
+
+
 function smarty_function_articletext($input) {
 	global $imageCredits,$smarty,$CONF;
 	
@@ -180,6 +245,10 @@ function smarty_function_articletext($input) {
 
 	$pattern[]='/\[image id=(\d+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '{description}'))";
+
+
+	$pattern[]='/\[snippet id=(\d+)(?: image=(\d+))?\]/e';
+	$replacement[]="get_snippet('\$1','\$2')";
 
 
 	$pattern[]='/(\!)([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
