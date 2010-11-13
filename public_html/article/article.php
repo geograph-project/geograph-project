@@ -202,13 +202,15 @@ function smarty_function_articletext($input) {
 		if (count($pages) > 1) {
 			foreach ($pages as $idx => $onepage) {
 				if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$onepage,$matches)) {
+					$style = ($idx)?' style="border-top:1px solid silver"':'';
 					$offset = floor($idx/2)+1;
 					$url = ($offset==$thispage)?'':"/article/{$GLOBALS['page']['url']}/$offset";
 					foreach ($matches[1] as $i => $level) {
 						$hash = getUniqueHash($matches[2][$i]);
-						$list[] = "<li class=\"h$level\"><a href=\"$url#$hash\">{$matches[2][$i]}</a></li>";
+						$list[] = "<li class=\"h$level\"$style><a href=\"$url#$hash\">{$matches[2][$i]}</a></li>";
 						$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
 						$replacement[]='<h$1><a name="'.$hash.'"></a><a name="p'.$i.'"></a>$2</h$3>';
+						$style = '';
 					}
 				}
 			}
@@ -262,6 +264,9 @@ function smarty_function_articletext($input) {
 
 	$pattern[]='/\[youtube=(\w+)\]/';
 	$replacement[]='<object width="480" height="385"><param name="movie" value="http://www.youtube-nocookie.com/v/\1&hl=en_US&fs=1&rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube-nocookie.com/v/\1&hl=en_US&fs=1&rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object>';
+
+	$pattern[]='/\[zoomit=(\w+)\]/';
+	$replacement[]='<script src="http://zoom.it/\1.js?width=auto&height=400px"></script>';
 
 	$pattern[]='/\n\* ?([^\n]+)(\n{2})?/e';
 	$replacement[]="'<ul style=\"margin-bottom:0px;margin-top:0px\"><li>'.stripslashes('\$1').'</li></ul>'.('$2'?'\n':'')";
