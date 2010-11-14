@@ -64,6 +64,7 @@ class RebuildCanonical extends EventHandler
 		$db->Execute("CREATE TABLE category_canonical_tmp 
 			SELECT category_map_id,imageclass,canonical,COUNT(DISTINCT user_id) AS users 
 			FROM category_canonical_log 
+			WHERE canonical != '-bad-'
 			GROUP BY imageclass,canonical
 			HAVING users > 2 
 			ORDER BY NULL");
