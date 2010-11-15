@@ -135,7 +135,15 @@ class GeographUser
 		}
 	}
 	
-	
+	function randomSalt($len) {
+		$bytes = (int)(($len * 3 + 3) /4);
+		$bin = '';
+		for ($i = 0; $i < $bytes; $i++) {
+			$bin .= chr(rand(0, 255));
+		}
+		return substr(base64_encode($bin), 0, $len);
+	}
+
 	function getForumSortOrder() {
 		$db = $this->_getDB();
 	
@@ -339,11 +347,13 @@ class GeographUser
 					//user already exists, but didn't respond to email - probably trying
 					//to send a fresh one so lets just refresh the existing record
 					$user_id=$arr['user_id'];
+					$salt = $this->randomSalt(8);
 					
-					$sql = sprintf("update user set realname=%s,email=%s,password=%s,signup_date=now(),http_host=%s where user_id=%s",
+					$sql = sprintf("update user set realname=%s,email=%s,password=%s,salt=%s,signup_date=now(),http_host=%s where user_id=%s",
 						$db->Quote($name),
 						$db->Quote($email),
-						$db->Quote(md5($password1)), // no salt, because forum does not use salt
+						$db->Quote(md5($salt.$password1)),
+						$db->Quote($salt),
 						$db->Quote($_SERVER['HTTP_HOST']),
 						$db->Quote($user_id));
 						
@@ -360,11 +370,13 @@ class GeographUser
 				else
 				{
 					//ok, user doesn't exist, insert a new row
-					$sql = sprintf("insert into user (realname,email,password,signup_date,http_host) ".
-						"values (%s,%s,%s,now(),%s)",
+					$salt = $this->randomSalt(8);
+					$sql = sprintf("insert into user (realname,email,password,salt,signup_date,http_host) ".
+						"values (%s,%s,%s,%s,now(),%s)",
 						$db->Quote($name),
 						$db->Quote($email),
-						$db->Quote(md5($password1)),
+						$db->Quote(md5($salt.$password1)),
+						$db->Quote($salt),
 						$db->Quote($_SERVER['HTTP_HOST']));
 					
 					if ($db->Execute($sql) === false) 
@@ -559,10 +571,11 @@ EOT;
 			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' limit 1');	
 			if (count($arr))
 			{
+				$salt = $this->randomSalt(8);
 				$db->Execute("insert into user_emailchange ".
 					"(user_id, oldemail,newemail,requested,status)".
 					"values(?,?,?,now(), 'pending')",
-					array($arr['user_id'], $arr['password'], md5($password1)));
+					array($arr['user_id'], $arr['salt'].$arr['password'], $salt.md5($salt.$password1)));
 					
 				$id=$db->Insert_ID();
 
@@ -658,7 +671,9 @@ EOT;
 			{
 			
 				//change password
-				$sql="update user set password=".$db->Quote($arr['newemail'])." where user_id=".$db->Quote($arr['user_id']);
+				$salt = substr($arr['newemail'], 0, 8);
+				$md5pw = substr($arr['newemail'], 8);
+				$sql="update user set password=".$db->Quote($md5pw).",salt=".$db->Quote($salt)." where user_id=".$db->Quote($arr['user_id']);
 				$db->Execute($sql);
 
 				$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
@@ -889,7 +904,7 @@ EOT;
 		}
 
 		if (strlen($profile['password1'])) {
-			if (md5($profile['oldpassword']) != $this->password) {
+			if (md5($this->salt.$profile['oldpassword']) != $this->password) {
 				$ok=false;
 				if ($CONF['lang'] == 'de')
 					$errors['oldpassword']='Bitte aktuelles Passwort angeben, wenn ein Passwortwechsel gewünscht ist!';
@@ -902,10 +917,12 @@ EOT;
 				else
 					$errors['password2']='Passwords didn\'t match, please try again';
 			} else {
-				$password = md5($profile['password1']);
+				$salt = $this->randomSalt(8);
+				$password = md5($salt.$profile['password1']);
 			}
 		} else {
 			$password = $this->password;
+			$salt = $this->salt;
 		}
 
 		//attempting to change email address?
@@ -1044,6 +1061,7 @@ EOT;
 				message_sig=%s,
 				upload_size=%d,
 				clear_exif=%d,
+				salt=%s,
 				password=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
@@ -1062,6 +1080,7 @@ EOT;
 				$db->Quote(stripslashes($profile['message_sig'])),
 				intval($profile['upload_size']), #FIXME check values!
 				$profile['clear_exif']?1:0,
+				$db->Quote($salt),
 				$db->Quote($password),
 				$this->user_id
 				);
@@ -1089,6 +1108,7 @@ EOT;
 				$this->realname=$profile['realname'];
 				$this->nickname=$profile['nickname'];
 				$this->password=$password;
+				$this->salt=$salt;
 				$this->website=$profile['website'];
 				$this->public_email=isset($profile['public_email'])?1:0;
 				if (isset($profile['sortBy'])) 
@@ -1321,7 +1341,6 @@ EOT;
 				$email=stripslashes(trim($_POST['email']));
 				$password=stripslashes(trim($_POST['password']));
 				$remember_me=isset($_POST['remember_me'])?1:0;
-				$md5password=md5($password);
 				
 				
 				$db = $this->_getDB();
@@ -1339,6 +1358,7 @@ EOT;
 					$arr = $db->GetRow($sql);	
 					if (count($arr))
 					{
+						$md5password=md5($arr['salt'].$password);
 						//passwords match?
 						if ($arr['password']==$md5password)
 						{

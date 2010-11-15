@@ -452,6 +452,8 @@ ALTER TABLE gridimage ADD `viewpoint_refindex` tinyint(1) NOT NULL DEFAULT '0' A
 UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.gridsquare_id) SET gi.reference_index = gs.reference_index;
 UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.gridsquare_id) SET gi.viewpoint_refindex = gs.reference_index;
 
+ALTER TABLE `user`     ADD `salt` varchar(8) NOT NULL default '' AFTER `password`;
+
 ALTER TABLE mapcache ADD `force_ri` smallint(6) NOT NULL DEFAULT '0' AFTER `type_or_user`;
 ALTER TABLE `mapcache` DROP PRIMARY KEY , ADD PRIMARY KEY ( `map_x` , `map_y` , `image_w` , `image_h` , `pixels_per_km` , `type_or_user` , `force_ri` )
 
