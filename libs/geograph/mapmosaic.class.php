@@ -1107,7 +1107,7 @@ class GeographMapMosaic
 			$scale = $row['pixels_per_km'];
 		} else {
 			$scale = $row['level'];
-			$palette .= "_m";
+			$param .= "_m";
 		}
 
 		$file="base_{$map_x}_{$map_y}_{$row['image_w']}_{$row['image_h']}_{$scale}$param.$ext";
@@ -1143,9 +1143,9 @@ class GeographMapMosaic
 			$scale = $row['pixels_per_km'];
 		} else {
 			$scale = $row['level'];
-			$palette .= "_m";
+			$param .= "_m";
 			if (!empty($row['overlay'])) {
-				$palette .= "_o";
+				$param .= "_o";
 			}
 		}
 

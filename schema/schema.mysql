@@ -825,6 +825,47 @@ CREATE TABLE `gridsquare` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table `gridsquare`
+--
+
+DROP TABLE IF EXISTS `gridsquare_gmcache`;
+CREATE TABLE gridsquare_gmcache (
+	`gridsquare_id` int(11) NOT NULL,
+	`gxlow` int(11) NOT NULL,
+	`gylow` int(11) NOT NULL,
+	`gxhigh` int(11) NOT NULL,
+	`gyhigh` int(11) NOT NULL,
+	`area` double(9,6) NOT NULL,
+	`cliparea` double(9,6) NOT NULL,
+	`rotangle` double(8,6) NOT NULL,
+	`scale` double(8,6) NOT NULL,
+	`cgx` double(10,2) NOT NULL,
+	`cgy` double(10,2) NOT NULL,
+	`polycount` tinyint(1) NOT NULL,
+	`poly1gx` double(10,2),
+	`poly1gy` double(10,2),
+	`poly2gx` double(10,2),
+	`poly2gy` double(10,2),
+	`poly3gx` double(10,2),
+	`poly3gy` double(10,2),
+	`poly4gx` double(10,2),
+	`poly4gy` double(10,2),
+	`poly5gx` double(10,2),
+	`poly5gy` double(10,2),
+	`poly6gx` double(10,2),
+	`poly6gy` double(10,2),
+	`poly7gx` double(10,2),
+	`poly7gy` double(10,2),
+	`poly8gx` double(10,2),
+	`poly8gy` double(10,2),
+	PRIMARY KEY (`gridsquare_id`),
+	KEY `gxlow` (`gxlow`),
+	KEY `gxhigh` (`gxhigh`),
+	KEY `gylow` (`gylow`),
+	KEY `gyhigh` (`gyhigh`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table `gridsquare_moderation_lock`
 --
 

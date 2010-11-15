@@ -248,16 +248,23 @@ if (isset($_GET['coast_GB_40'])) {
 	echo "<h3><a href=\"recreatemaps.php\">&lt;&lt;</a> Re-Creating Maps...</h3>";
 	flush();
 	
-	$map=new GeographMap;
 	
 	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $limit");
 	while (!$recordSet->EOF) 
 	{
+		$map=new GeographMap;
+		## FIXME introduce $map->from_row($row);
 		foreach($recordSet->fields as $name=>$value)
 		{
 			if (!is_numeric($name))
 				$map->$name=$value;
 		}
+		$map->mercator = !empty($map->mercator);
+		$map->overlay = !empty($map->overlay);
+		if ($map->mercator) {
+			$map->setScale($map->level);
+		}
+		$map->enableCaching(true, false); # FIXME better solution: build layers=2 at the beginning?
 		
 		$map->_renderMap();
 
