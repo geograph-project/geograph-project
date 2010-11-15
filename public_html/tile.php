@@ -342,15 +342,18 @@ if (isset($_GET['map']))
 					$h = imagefontheight(5);
 					
 					$colSea=imagecolorallocate($img, 0,0,0);
-					$colGreen=imagecolorallocate($img, 117,255,101);
-					$colBack=imagecolorallocate($img, 0,0,240);
-					$colSuppBack=imagecolorallocate($img, 192,158,0);
-					
-					if ($widthdist > 4) {
-						if ($_GET['l'] == 's') { 
-							$colour = getStaticColorKey($img);
-						} else {
-							$colour = getColorKey($img);
+					if ($_GET['l'] == 'r') {
+						$colGreen = imagecolorallocate($img, 255,10,255);
+					} else {
+						$colGreen=imagecolorallocate($img, 117,255,101);
+						$colBack=imagecolorallocate($img, 0,0,240);
+						$colSuppBack=imagecolorallocate($img, 192,158,0);
+						if ($widthdist > 4) {
+							if ($_GET['l'] == 's') { 
+								$colour = getStaticColorKey($img);
+							} else {
+								$colour = getColorKey($img);
+							}
 						}
 					}
 					foreach ($arr as $i => $row) {
