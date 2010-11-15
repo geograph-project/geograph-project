@@ -275,6 +275,10 @@ if (isset($_GET['map']))
 					CONTAINS( GeomFromText($rectangle),	point_xy)
 					and moderation_status = 'geograph' and natgrlen <= 3
 					group by nateastings DIV 100, natnorthings DIV 100";
+				
+			} elseif ($_GET['l'] == 'r') {
+				$sql="select x,y,percent_land,has_recent as has_geographs from gridsquare where 
+					CONTAINS( GeomFromText($rectangle),	point_xy) and has_recent = 0";
 			} else {
 				$sql="select x,y,imagecount,percent_land,has_geographs from gridsquare where 
 					CONTAINS( GeomFromText($rectangle),	point_xy)";
