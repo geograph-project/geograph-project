@@ -94,6 +94,12 @@ if (isset($_REQUEST['scenic'])) {
 	$cacheid.='|scenic';
 } 
 
+if (isset($_REQUEST['recent'])) {
+	$smarty->assign('recent',1);
+	$smarty->assign('extra','recent');
+	$cacheid.='|recent';
+} 
+
 if (isset($_REQUEST['full'])) {
         $template = 'mapper_full.tpl';
 } elseif (isset($_REQUEST['inner'])) {
