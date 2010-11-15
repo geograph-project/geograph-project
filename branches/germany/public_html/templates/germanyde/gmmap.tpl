@@ -111,10 +111,17 @@
 				var copyright2 = new GCopyright(1,
 					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
 					': http://topo.openstreetmap.de/static/licence_de.html');
-				var copyrightCollectionTopo = new GCopyrightCollection('&copy; OSM');
+				var copyright3 = new GCopyright(1,
+					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
+					': http://creativecommons.org/licenses/by-sa/2.0/');
+				var copyrightCollectionTopo = new GCopyrightCollection('&copy; OSM (CC)');
 				var copyrightCollectionTopoH = new GCopyrightCollection('H&ouml;hen CIAT');
+				//var copyrightCollectionOG = new GCopyrightCollection();
+				var copyrightCollectionO = new GCopyrightCollection('Geograph Deutschland (CC)');
 				copyrightCollectionTopo.addCopyright(copyright1);
 				copyrightCollectionTopoH.addCopyright(copyright2);
+				//copyrightCollectionO.addCopyright(copyright);
+				copyrightCollectionO.addCopyright(copyright3);
 				var tilelayers_mapnikhg = new Array();
 				tilelayers_mapnikhg[0] = new GTileLayer(copyrightCollectionTopo, 0, 18);
 				tilelayers_mapnikhg[0].isPng = function () { return true; };
@@ -124,11 +131,11 @@
 				tilelayers_mapnikhg[1].isPng = function () { return true; };
 				tilelayers_mapnikhg[1].getOpacity = function () { return 1.0; };
 				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_TopH;
-				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollection,4,14);
+				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollectionO,4,14);
 				tilelayers_mapnikhg[2].getTileUrl = GetTileUrl_GeoMO;
 				tilelayers_mapnikhg[2].isPng = function () { return true; };
 				tilelayers_mapnikhg[2].getOpacity = function () { return 0.5; };
-				tilelayers_mapnikhg[3] = new GTileLayer(copyrightCollection,4,14);
+				tilelayers_mapnikhg[3] = new GTileLayer(copyrightCollectionO,4,14);
 				tilelayers_mapnikhg[3].getTileUrl = GetTileUrl_GeoMG;
 				tilelayers_mapnikhg[3].isPng = function () { return true; };
 				tilelayers_mapnikhg[3].getOpacity = function () { return 1.0; };
