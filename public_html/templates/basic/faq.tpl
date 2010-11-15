@@ -44,7 +44,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="/article/?cat_word=Geograph">Geograph Articles</a></li>
  <li><a href="/help/sitemap">Sitemap</a><br/><br/></li>
  </ul>
- 
+
  <a title="Info, Guides and Tutorials" href="/content/documentation.php">More...</a> or <a href="/help/more_pages">Summary Page</a>
  </div>
 
@@ -64,6 +64,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="#commercial">Why must I agree to allow <b>commercial use</b> of my image?</a></li>
  <li><a href="#legal">What are my <b>legal rights</b> when taking photographs?</a></li>
  <li><a href="#update">I made a <b>mistake</b> on my submission, how do I <b>change</b> it?</a></li>
+ <li><a href="#tpoint">What an earth is a <b>TPoint</b>?</a></li>
  </ul>
 <b>Browsing</b> the site:
  <ul>
@@ -91,7 +92,7 @@ The <b>Geograph Website</b>:
  <ul>
  <li><a href="#question"><b>I have a further question</b>, what should I do?</a></li>
  </ul>
- 
+
 </div>
 <br/><br/><br/>
 
@@ -108,7 +109,7 @@ The <b>Geograph Website</b>:
 	<li>It's a good excuse to get out more!</li>
 	<li>It's a free and <a href="#opensource">open online community</a> project for all</li>
 	</ul>
-	
+
 	<p>See the original <a title="guide to geographing" href="/help/guide">guide to good geographing</a>, <a title="Geograph Quickstart Guide" href="/article/Geograph-Quickstart-Guide"><b>contributors quickstart guide</b></a>, and the <a href="/article/Geograph-Introductory-letter">welcome letter</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
@@ -132,9 +133,9 @@ The <b>Geograph Website</b>:
 	with it.</p>
 
 	<p>We welcome many Geograph images per square, so even if you don't get the point, you are still making a valuable contribution to the project.</p>
-	
+
 	<blockquote>
-	
+
 		<p>In addition we now award "Second Visitor" points (and Third and Fourth!) - which are given to the first geograph the <i>second contributor</i> adds to a square. The third contributor similarly gets a "Third" point for their first "Geograph" to the square. </p>
 
 		<p>So a single square can have a First, Second, Third and Fourth Visitor point, but a contributor can only get one of those per square.</p>
@@ -144,7 +145,7 @@ The <b>Geograph Website</b>:
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
-<div id="supplemental">	
+<div id="supplemental">
 <a name="supplemental"></a>
 <h3>What is a supplemental image?</h3>
 	<p>If an image doesn't quite fulfill the geograph criteria above, but is still a good
@@ -159,12 +160,12 @@ The <b>Geograph Website</b>:
 <div id="multiple">
 <a name="multiple"></a>
 <h3>Do you accept multiple images per square?</h3>
-	<p>Certainly - the points system is there to encourage people to make that extra effort 
-	to capture squares we don't have photos for yet - but we welcome additional 
-	geograph or supplemental images, perhaps showing a different subject, or a different time of year. 
+	<p>Certainly - the points system is there to encourage people to make that extra effort
+	to capture squares we don't have photos for yet - but we welcome additional
+	geograph or supplemental images, perhaps showing a different subject, or a different time of year.
 	You could be gaining yourself a personal point too.</p>
-	
-	<p>Everyone sees things differently - feel free to give us your take on any square. Some squares have 
+
+	<p>Everyone sees things differently - feel free to give us your take on any square. Some squares have
 	been done in considerable <a href="/statistics/most_geographed.php" title="squares with good overage">detail</a> - helping to more fully document and add <a href="/moversboard.php?type=depth" title="Depth Weekly Leaderboard">depth</a> to a square. In particular watch out for things others may have missed - the coverage maps can help with this.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
@@ -186,7 +187,7 @@ The <b>Geograph Website</b>:
 <a name="resize"></a>
 <h3>Do I need to resize my photos? Are there size limits?</h3>
 	<p>You can upload images of any dimensions, portrait or landscape, but the filesize needs to be under 8 megabytes.
-	 We do resize them so their longest dimension is 640 pixels on the main photo page. 
+	 We do resize them so their longest dimension is 640 pixels on the main photo page.
 	<i>Optionally</i>, you can also release larger versions of various sizes for downloading and re-use. <a href="/article/Larger-Uploads-Information">Larger Uploads Information</a>.</p>
 
 	<p>Ideally images shouldn't have the longest dimension less than 480 pixels, while we might accept such images if they hold particular interest, we would really prefer a larger image.</p>
@@ -202,7 +203,7 @@ The <b>Geograph Website</b>:
 <div id="change">
 <a name="change"></a>
 <h3>I disagree with the location or title of an image - what can I do?</h3>
-	<p>Our <a href="/help/changes">"Change Suggestions"</a> allow any registered user 
+	<p>Our <a href="/help/changes">"Change Suggestions"</a> allow any registered user
 	to suggest a change of grid reference or title/comment
 	information - simply view the full size image and click the "report a problem" link.
 	</p>
@@ -214,9 +215,9 @@ The <b>Geograph Website</b>:
 <h3>What are my legal rights when taking photographs?</h3>
 	<p>Let's preface this by stating <b>We Are Not Lawyers</b>, and if you have any doubts
 	about your right to take picture, then you're probably better off not submitting it to us.
-	However, there is a 
+	However, there is a
 	{external href="http://www.sirimo.co.uk/ukpr.php" text="useful guide"}
-	available which outlines your rights in the UK fairly concisely. 
+	available which outlines your rights in the UK fairly concisely.
 	</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
@@ -224,8 +225,17 @@ The <b>Geograph Website</b>:
 <div id="update">
 <a name="update"></a>
 <h3>I made a mistake on my submission, how do I change it?</h3>
-	<p>In the gray bar near the center of the photo page, 
+	<p>In the gray bar near the center of the photo page,
 	is a link &quot;<i>Change Image Details</i>&quot; - click that and fill out the form.</p>
+</div>
+<div class="top"><a href="#top">back to top</a></div>
+
+
+<div id="tpoint">
+<a name="tpoint"></a>
+<h3>What an earth is a TPoint</h3>
+	<p>TPoint or 'Temporal Point' is a working title (subject to change) for a new kind of Points.
+	A contributor can gain a TPoint for submitting a contemporary photo to a square that hasn't had a photo for 5 years. The aim is to increase the date range of available photos per square.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -241,7 +251,7 @@ The <b>Geograph Website</b>:
 <a name="counties"></a>
 <h3>Counties, I'm confused, which do you display?</h3>
 	<p>We use county information to aid recognition of place names on photo pages and other areas of the site, like helping to disambiguate search terms (e.g. a search for "Gillingham")</p>
-	
+
 	<p>For Ireland, it's simple; we just use the traditional counties. Great Britain isn't so easy, which has seen three <i>major</i> county structures;</p>
 
 	<dl class="picinfo">
@@ -256,7 +266,7 @@ The <b>Geograph Website</b>:
 	</dl>
 
 	<p>For a more in depth explanation, see {external href="http://www.abcounties.co.uk/" text="abcounties.org.uk"}. <span class="nowrap">(however beware that the site doesn't use the exact same terms)</span></p>
-	
+
 	<p>To see lists of counties in each structure see the <a href="/explore/#counties">Explore Section</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
@@ -275,7 +285,7 @@ The <b>Geograph Website</b>:
 	the latest geograph submissions for integration into another website or RSS reader. For more information,
 	try this {external href="http://en.wikipedia.org/wiki/RSS_(protocol)" text="Wikipedia article on RSS"}.</p>
 
-	<div style="background-color:#eeeeee; padding:10px; float:right">The feeds are also available in 
+	<div style="background-color:#eeeeee; padding:10px; float:right">The feeds are also available in
 	<ul>
 	<li><a title="Geograph RSS 0.91 feed" href="http://{$http_host}/syndicator.php?format=RSS0.91">RSS0.91</a></li>
 	<li><a title="Geograph RSS 1.0 feed" href="http://{$http_host}/syndicator.php?format=RSS1.0"><b>RSS1.0</b></a></li>
@@ -289,7 +299,7 @@ The <b>Geograph Website</b>:
 	<li>and <a title="Geograph GPX feed" href="http://{$http_host}/feed/recent.gpx">GPX1.0</a></li>
 	formats.</ul></div>
 
-	<p>We provide an GeoRSS (RSS1.0) feed at 
+	<p>We provide an GeoRSS (RSS1.0) feed at
 	<a title="Geograph RSS feed" href="http://{$http_host}/feed/recent.rss">http://{$http_host}/feed/recent.rss</a>
 	which contains links to the latest 20 moderated images. </p>
 
@@ -303,10 +313,10 @@ The <b>Geograph Website</b>:
 			<li>Find out about <a href="/events/">organized meets</a> by following the <a class="xml-rss" href="/events/feed.rss">RSS</a> Feed.</li>
 		</ul>
 	 (they also accept the format parameter like the main feed)</div>
-	 
-	<p>If you use the {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} web browser, 
+
+	<p>If you use the {external title="Firefox Web Browser" href="http://www.mozilla.org/products/firefox/" text="Firefox"} web browser,
 	you should be able use our feeds as "live bookmarks" - simply
-	click the orange button in the address bar (or in the status bar on older versions).</p>    
+	click the orange button in the address bar (or in the status bar on older versions).</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -334,16 +344,16 @@ The <b>Geograph Website</b>:
 	<p><b>Are you a developer?</b></p>
 	<blockquote style="font-size:0.9em;margin-left:15px">
 		<p>... maybe looking for <a href="/article/Ways-to-view-Geograph-Images">ways to access images outside the website</a>?</p>
-	
-		<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for reusing images, 
-		beyond what's available via the RSS feeds above, in all likelihood we can provide a <a href="/help/api">feed</a> 
+
+		<p>Please get in <a title="Contact Us" href="/contact.php">contact</a> if you have an idea for reusing images,
+		beyond what's available via the RSS feeds above, in all likelihood we can provide a <a href="/help/api">feed</a>
 		to suit your requirements.</p>
 
-		<p>The entire archive is will be available for download via bittorrent - see 
+		<p>The entire archive is will be available for download via bittorrent - see
 		{external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk" text="http://torrents.geograph.org.uk"}
 		for details.</p>
 	</blockquote>
-	
+
 	<p>We also have a Google Gadget: * {external href="http://www.google.com/ig/add?moduleurl=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" target="_blank" text="Add to my iGoogle page"} * {external href="http://www.google.com/ig/creator?url=http%3A%2F%2Fwww.geograph.org.uk%2Fstuff%2Fggadget0.xml" text="Add to any webpage"} *</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
@@ -361,14 +371,14 @@ The <b>Geograph Website</b>:
 	free from commercial exploitation in future. To that end, the site software
 	is available for re-use under the terms of the GNU Public Licence (GPL).</p>
 
-	<p>In addition, we require all submitters to adopt a 
-	{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Attribution-ShareAlike"} 
+	<p>In addition, we require all submitters to adopt a
+	{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Attribution-ShareAlike"}
 	licence on their photographic submissions. While our volunteer photographers
 	keep copyright on their photos, they also grant the use of their photographs
-	in return for attribution (take a look at a <a title="View a typical photograph" href="/photo/14">typical 
+	in return for attribution (take a look at a <a title="View a typical photograph" href="/photo/14">typical
 	submission</a> for more details).</p>
 
-	<p>In a nutshell, we wanted to build a true community project that won't 
+	<p>In a nutshell, we wanted to build a true community project that won't
 	leave a nasty taste in the mouth by getting sold for shedloads of cash and
 	taken away from the people who contributed. These licence terms ensure that the
 	site and content can never be "taken away" from you. See <a href="/help/freedom">Freedom - The Geograph Manifesto</a>
@@ -380,14 +390,14 @@ The <b>Geograph Website</b>:
 <a name="commercial"></a>
 <h3>Why must I agree to allow commercial use of my image?</h3>
 
-<p>Running this site costs money, particularly over time as the storage requirements 
-are quite large. While we are confident we can meet those costs with sponsorship, granting 
-commercial use allows anyone who runs the archive in the distant future to explore 
+<p>Running this site costs money, particularly over time as the storage requirements
+are quite large. While we are confident we can meet those costs with sponsorship, granting
+commercial use allows anyone who runs the archive in the distant future to explore
 other options for generating funds, such as sales of montage posters. </p>
 
-<p>Granting everyone those same rights actually protects the site community from 
-exploitation (see previous FAQ entry), but do bear in mind that we only retain a 
-screen-quality version of your image, and that under the terms of the Creative Commons 
+<p>Granting everyone those same rights actually protects the site community from
+exploitation (see previous FAQ entry), but do bear in mind that we only retain a
+screen-quality version of your image, and that under the terms of the Creative Commons
 licence, you must be credited for any use of your image </p>
 
 </div>
@@ -418,12 +428,12 @@ licence, you must be credited for any use of your image </p>
 <div id="aol">
 <a name="aol"></a>
 <h3>I use AOL, and the images look terrible!</h3>
-	<p>AOL's default settings for graphics is to show &quot;Compressed Graphics Only&quot;. 
+	<p>AOL's default settings for graphics is to show &quot;Compressed Graphics Only&quot;.
 	This means AOL is selectively <i>re-compressing</i> images before you see them on your
 	screen. This loses a lot of image quality.</p>
 
-	<p>You should reset the preferences under &quot;My AOL/Preferences/WWW&quot; to display 
-	&quot;Uncompressed Graphics&quot;. You will pay only a small penalty in download time to see 
+	<p>You should reset the preferences under &quot;My AOL/Preferences/WWW&quot; to display
+	&quot;Uncompressed Graphics&quot;. You will pay only a small penalty in download time to see
 	this and other photo oriented sites the way everyone else can see them.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
