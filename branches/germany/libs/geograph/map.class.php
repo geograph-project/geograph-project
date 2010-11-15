@@ -1183,6 +1183,7 @@ class GeographMap
 		//php file -> set_time_limit(0)
 		global $CONF;
 		$db=&$this->_getDB();
+		$dbsq=NewADOConnection($GLOBALS['DSN']);
 		
 		$db->Execute("DROP TABLE IF EXISTS gridsquare_gmcache_tmp");
 		
@@ -1274,7 +1275,7 @@ class GeographMap
 				#foreach ($clippoly as &$ll) {
 				#	$drawpoly[] = $conv->wgs84_to_sm($ll[0], $ll[1]);
 				#}
-				if (count(clippoly)) {
+				if (count($clippoly)) {
 					$ll = end($clippoly);
 					$point = $conv->wgs84_to_sm($ll[0], $ll[1]);
 					$xM = $point[0];
@@ -1353,7 +1354,7 @@ class GeographMap
 					$db->Quote($dbpoly[7][0]),
 					$db->Quote($dbpoly[7][1])
 				);
-				$db->Execute($sql);//FIXME another db connection?
+				$dbsq->Execute($sql);//FIXME another db connection?
 
 				$recordSet->MoveNext();
 			}
@@ -1363,6 +1364,170 @@ class GeographMap
 		$db->Execute("DROP TABLE IF EXISTS gridsquare_gmcache");
 		$db->Execute("RENAME TABLE gridsquare_gmcache_tmp TO gridsquare_gmcache");
 		
+		//return true to signal completed processing
+		//return false to have another attempt later
+		return true;
+	}
+
+	function updateGMcache($addlimit = -1, $remlimit = -1)
+	{
+		global $CONF;
+		$db=&$this->_getDB();
+		$dbsq=NewADOConnection($GLOBALS['DSN']);
+		require_once('geograph/conversionslatlong.class.php');
+		require_once('geograph/mapmosaic.class.php');
+		$mosaic = new GeographMapMosaic;
+		$conv = new ConversionsLatLong;
+
+		$sqladd="select gs.x,gs.y,gs.gridsquare_id,gs.reference_index from gridsquare as gs left join gridsquare_gmcache as gc using  (gridsquare_id) where gc.gridsquare_id is null";
+		$sqlrem="select gc.gridsquare_id,gc.cgx,gc.cgy from gridsquare_gmcache as gc left join gridsquare as gs using  (gridsquare_id) where gs.gridsquare_id is null";
+		if ($addlimit >= 0)
+			$sqladd .= " limit $addlimit";
+		if ($remlimit >= 0)
+			$sqlrem .= " limit $remlimit";
+
+		$recordSet = &$db->Execute($sqlrem);
+		while (!$recordSet->EOF) {
+			$sql="DELETE FROM gridsquare_gmcache WHERE gridsquare_id = {$recordSet->fields[0]} LIMIT 1";
+			$dbsq->Execute($sql);//FIXME another db connection?
+			list($glatC, $glonC)   = $conv->sm_to_wgs84($recordSet->fields[1],$recordSet->fields[2]);
+			list($geC, $gnC, $ri) = $conv->wgs84_to_national($glatC, $glonC);
+			$x0 = $CONF['origins'][$ri][0];
+			$y0 = $CONF['origins'][$ri][1];
+			$x = round(($geC - 500) / 1000 + $x0);
+			$y = round(($gnC - 500) / 1000 + $y0);
+			$mosaic->expirePosition($x,$y,0,true);
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+
+		$recordSet = &$db->Execute($sqladd);
+		while (!$recordSet->EOF) {
+			$ri = $recordSet->fields[3];
+			$x0 = $CONF['origins'][$ri][0];
+			$y0 = $CONF['origins'][$ri][1];
+			$latmin = $CONF['latrange'][$ri][0];
+			$latmax = $CONF['latrange'][$ri][1];
+			$lonmin = $CONF['lonrange'][$ri][0];
+			$lonmax = $CONF['lonrange'][$ri][1];
+			####### see rebuildGMcache # cleanup needed #######
+				$geBL=($recordSet->fields[0] - $x0) * 1000;
+				$gnBL=($recordSet->fields[1] - $y0) * 1000;
+				$geTR=$geBL+1000;
+				$gnTR=$gnBL+1000;
+				$geC=$geBL+500;
+				$gnC=$gnBL+500;
+				list($glatTL, $glonTL) = $conv->national_to_wgs84($geBL, $gnTR, $ri);
+				list($glatBL, $glonBL) = $conv->national_to_wgs84($geBL, $gnBL, $ri);
+				list($glatTR, $glonTR) = $conv->national_to_wgs84($geTR, $gnTR, $ri);
+				list($glatBR, $glonBR) = $conv->national_to_wgs84($geTR, $gnBL, $ri);
+				list($glatC,  $glonC ) = $conv->national_to_wgs84($geC,  $gnC,  $ri);
+
+				list($xMTL,$yMTL) = $conv->wgs84_to_sm($glatTL, $glonTL);
+				list($xMBL,$yMBL) = $conv->wgs84_to_sm($glatBL, $glonBL);
+				list($xMTR,$yMTR) = $conv->wgs84_to_sm($glatTR, $glonTR);
+				list($xMBR,$yMBR) = $conv->wgs84_to_sm($glatBR, $glonBR);
+				list($xMC, $yMC ) = $conv->wgs84_to_sm($glatC,  $glonC );
+
+				$dxM = $xMBR - $xMBL;
+				$dyM = $yMBR - $yMBL;
+				$scale = hypot($dyM, $dxM) / 1000;
+				$rotangle = atan2($dyM, $dxM);
+				$area = (($yMTL-$yMBR)*($xMTR-$xMBL)+($yMBL-$yMTR)*($xMTL-$xMBR))/2E6;
+
+				$clippoly = array(array($glatTL, $glonTL), array($glatBL, $glonBL), array($glatBR, $glonBR), array($glatTR, $glonTR));
+				$this->_clip_polygon($clippoly, $latmin, $latmax, $lonmin, $lonmax);
+
+
+				#$drawpoly = array();
+				#foreach ($clippoly as &$ll) {
+				#	$drawpoly[] = $conv->wgs84_to_sm($ll[0], $ll[1]);
+				#}
+				if (count($clippoly)) {
+					$ll = end($clippoly);
+					$point = $conv->wgs84_to_sm($ll[0], $ll[1]);
+					$xM = $point[0];
+					$yM = $point[1];
+					$xMmin = $xM;
+					$yMmin = $yM;
+					$xMmax = $xM;
+					$yMmax = $yM;
+					$cliparea = 0.0;
+
+					$head = array();
+					$tail = array();
+					foreach ($clippoly as &$ll) {
+						$xMp = $xM;
+						$yMp = $yM;
+						$point = $conv->wgs84_to_sm($ll[0], $ll[1]);
+						$xM = $point[0];
+						$yM = $point[1];
+						$cliparea += $yM * $xMp - $xM * $yMp;
+						if ($xM < $xMmin) {
+							$xMmin = $xM;
+							$tail = array_merge($tail, $head);
+							$head = array();
+						}
+						if ($xM > $xMmax)
+							$xMmax = $xM;
+						if ($yM < $yMmin)
+							$yMmin = $yM;
+						if ($yM > $yMmax)
+							$yMmax = $yM;
+						$head[] = $point;
+					}
+					$drawpoly = array_merge($head, $tail);# first element: leftmost point
+					$cliparea /= 2E6;
+				} else {
+					$cliparea = 0.0;
+					$xMmin = 0;
+					$yMmin = 0;
+					$xMmax = 0;
+					$yMmax = 0;
+					$drawpoly = array();
+				}
+
+				$numpoints = count($drawpoly);
+				$dbpoly = $drawpoly;
+				for($i = $numpoints; $i < 8; ++$i) {
+					$dbpoly[] = array(0,0);
+				}
+				$sql = sprintf("INSERT INTO gridsquare_gmcache (gridsquare_id, gxlow, gylow, gxhigh, gyhigh, area, cliparea, rotangle, scale, cgx, cgy, polycount, poly1gx, poly1gy, poly2gx, poly2gy, poly3gx, poly3gy, poly4gx, poly4gy, poly5gx, poly5gy, poly6gx, poly6gy, poly7gx, poly7gy, poly8gx, poly8gy) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+					$db->Quote($recordSet->fields[2]),
+					$db->Quote(floor($xMmin)),
+					$db->Quote(floor($yMmin)),
+					$db->Quote(ceil ($xMmax)),
+					$db->Quote(ceil ($yMmax)),
+					$db->Quote($area),
+					$db->Quote($cliparea),
+					$db->Quote($rotangle),
+					$db->Quote($scale),
+					$db->Quote($xMC),
+					$db->Quote($yMC),
+					$db->Quote($numpoints),
+					$db->Quote($dbpoly[0][0]),
+					$db->Quote($dbpoly[0][1]),
+					$db->Quote($dbpoly[1][0]),
+					$db->Quote($dbpoly[1][1]),
+					$db->Quote($dbpoly[2][0]),
+					$db->Quote($dbpoly[2][1]),
+					$db->Quote($dbpoly[3][0]),
+					$db->Quote($dbpoly[3][1]),
+					$db->Quote($dbpoly[4][0]),
+					$db->Quote($dbpoly[4][1]),
+					$db->Quote($dbpoly[5][0]),
+					$db->Quote($dbpoly[5][1]),
+					$db->Quote($dbpoly[6][0]),
+					$db->Quote($dbpoly[6][1]),
+					$db->Quote($dbpoly[7][0]),
+					$db->Quote($dbpoly[7][1])
+				);
+				$dbsq->Execute($sql);//FIXME another db connection?
+			####### see rebuildGMcache # cleanup needed #######
+			$mosaic->expirePosition($recordSet->fields[0],$recordSet->fields[1],0,true);
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;

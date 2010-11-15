@@ -471,3 +471,39 @@ ALTER TABLE `mapcache` ADD `max_y` smallint(6) NOT NULL DEFAULT '0' AFTER `max_x
 TRUNCATE TABLE `mapcache`;
 ALTER TABLE `mapcache` DROP PRIMARY KEY , ADD PRIMARY KEY ( `tile_x` , `tile_y` , `image_w` , `image_h` , `level` , `type_or_user` , `force_ri`, `mercator`, `overlay`, `layers` );
 ALTER TABLE `mapcache` ADD KEY `xy` (`map_x`, `map_y`,  `max_x`, `max_y`);
+
+CREATE TABLE gridsquare_gmcache (
+	`gridsquare_id` int(11) NOT NULL,
+	`gxlow` int(11) NOT NULL,
+	`gylow` int(11) NOT NULL,
+	`gxhigh` int(11) NOT NULL,
+	`gyhigh` int(11) NOT NULL,
+	`area` double(9,6) NOT NULL,
+	`cliparea` double(9,6) NOT NULL,
+	`rotangle` double(8,6) NOT NULL,
+	`scale` double(8,6) NOT NULL,
+	`cgx` double(10,2) NOT NULL,
+	`cgy` double(10,2) NOT NULL,
+	`polycount` tinyint(1) NOT NULL,
+	`poly1gx` double(10,2),
+	`poly1gy` double(10,2),
+	`poly2gx` double(10,2),
+	`poly2gy` double(10,2),
+	`poly3gx` double(10,2),
+	`poly3gy` double(10,2),
+	`poly4gx` double(10,2),
+	`poly4gy` double(10,2),
+	`poly5gx` double(10,2),
+	`poly5gy` double(10,2),
+	`poly6gx` double(10,2),
+	`poly6gy` double(10,2),
+	`poly7gx` double(10,2),
+	`poly7gy` double(10,2),
+	`poly8gx` double(10,2),
+	`poly8gy` double(10,2),
+	PRIMARY KEY (`gridsquare_id`),
+	KEY `gxlow` (`gxlow`),
+	KEY `gxhigh` (`gxhigh`),
+	KEY `gylow` (`gylow`),
+	KEY `gyhigh` (`gyhigh`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
