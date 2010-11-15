@@ -1355,6 +1355,7 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `password` varchar(64) DEFAULT NULL,
+  `salt` varchar(8) NOT NULL default '',
   `realname` varchar(128) DEFAULT NULL,
   `credit_realname` varchar(128) NOT NULL,
   `email` varchar(128) DEFAULT NULL,
