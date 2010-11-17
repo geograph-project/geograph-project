@@ -62,6 +62,66 @@ if (!empty($_REQUEST['grid_reference']))
 	}
 } 
 
+$levels = array(0.3, 1.0, 4.0, 40.0);
+$tilesize = 200;
+$xmin = array();
+$ymin = array();
+$xmax = array();
+$ymax = array();
+$latmix = array();
+$lonmin = array();
+$latmax = array();
+$lonmax = array();
+$grids = array();
+$x0 = array();
+$y0 = array();
+$areanames = array();
+$ymax0 = null;
+foreach($CONF['gmris'] as $ri) {
+	$grids[$ri] = $CONF['gmgrid'][$ri];
+	$xmin[$ri] = $CONF['xrange'][$ri][0];
+	$ymin[$ri] = $CONF['yrange'][$ri][0];
+	$xmax[$ri] = $CONF['xrange'][$ri][1]+1;
+	$ymax[$ri] = $CONF['yrange'][$ri][1]+1;
+	$latmin[$ri] = $CONF['gmlatrange'][$ri][0];
+	$latmax[$ri] = $CONF['gmlatrange'][$ri][1];
+	$lonmin[$ri] = $CONF['gmlonrange'][$ri][0];
+	$lonmax[$ri] = $CONF['gmlonrange'][$ri][1];
+	$x0[$ri] = $CONF['origins'][$ri][0];
+	$y0[$ri] = $CONF['origins'][$ri][1];
+	$areanames[$ri] = $CONF['references'][$ri];
+	if (is_null($ymax0) || $ymax[$ri] > $ymax0)
+		$ymax0 = $ymax[$ri];
+}
+$kmpertile = array();
+$yflip = array();
+$cyflip = null;
+foreach($levels as $pixperkm) {
+	$kpt = floor($tilesize/$pixperkm);
+	$kmpertile[] = $kpt;
+	if (is_null($cyflip) || $cyflip % $kpt)
+		$cyflip = ceil($ymax0/$kpt) * $kpt;
+	$yflip[] = $cyflip;
+}
+$smarty->assign('ris', $CONF['gmris']);
+$smarty->assign('ridefault', $CONF['gmridefault']);
+$smarty->assign('latmin', $latmin);
+$smarty->assign('latmax', $latmax);
+$smarty->assign('lonmin', $lonmin);
+$smarty->assign('lonmax', $lonmax);
+$smarty->assign('xmin', $xmin);
+$smarty->assign('xmax', $xmax);
+$smarty->assign('ymin', $ymin);
+$smarty->assign('ymax', $ymax);
+$smarty->assign('grids', $grids);
+$smarty->assign('x0', $x0);
+$smarty->assign('y0', $y0);
+$smarty->assign('areanames', $areanames);
+$smarty->assign('ts', $tilesize);
+$smarty->assign('pixperkm', $levels);
+$smarty->assign('kmpertile', $kmpertile);
+$smarty->assign('yflip', $yflip);
+
 $smarty->display('gmap.tpl',$cacheid);
 
 ?>
