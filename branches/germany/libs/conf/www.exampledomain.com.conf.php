@@ -345,7 +345,7 @@ $CONF['gmridefault'] = 3;
 $CONF['gmgrid'] =  array(3 => "German32", 4 => "German33", 5 => "German31");
 
 // valid internal coordinates
-$CONF['xrange'] =  array(3 => array(50,549), 4 => array(550,899), 5 => array(0,49));
+$CONF['xrange'] =  array(3 => array(50,549), 4 => array(550,849), 5 => array(0,49));
 $CONF['yrange'] =  array(3 => array(0,999), 4 => array(0,999), 5 => array(0,999));
 
 // valid geographical coordinates
