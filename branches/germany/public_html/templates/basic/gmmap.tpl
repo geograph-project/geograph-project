@@ -81,24 +81,6 @@
 				z + "/" + a.x + "/" + a.y + ".png";
 		}
 
-		function GetTileUrl_TopB(a, z) {
-		    //return "http://topo.openstreetmap.de/base/" +
-		    return "http://base.wanderreitkarte.de/base/" +
-				z + "/" + a.x + "/" + a.y + ".png";
-		}
-
-		function GetTileUrl_TopH(a, z) {
-		    //return "http://hills-nc.openstreetmap.de/" +
-		    return "http://wanderreitkarte.de/hills/" +
-				z + "/" + a.x + "/" + a.y + ".png";
-		}
-
-		function GetTileUrl_Top(a, z) {
-		    //return "http://topo.openstreetmap.de/topo/" +
-		    return "http://topo.wanderreitkarte.de/topo/" +
-				z + "/" + a.x + "/" + a.y + ".png";
-		}
-
 		function loadmap() {
 			if (GBrowserIsCompatible()) {
 				var copyright = new GCopyright(1,
@@ -116,41 +98,30 @@
 
 				var copyright1 = new GCopyright(1,
 					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-					': http://topo.openstreetmap.de/static/licence_de.html');
+					': http://creativecommons.org/licenses/by-sa/2.0/');
 				var copyright2 = new GCopyright(1,
-					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-					': http://topo.openstreetmap.de/static/licence_de.html');
-				var copyright3 = new GCopyright(1,
 					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
 					': http://creativecommons.org/licenses/by-sa/2.0/');
 				var copyrightCollectionTopo = new GCopyrightCollection('&copy; OSM (CC)');
-				var copyrightCollectionTopoH = new GCopyrightCollection('H&ouml;hen CIAT');
-				//var copyrightCollectionOG = new GCopyrightCollection();
-				var copyrightCollectionO = new GCopyrightCollection('Geograph Deutschland (CC)');
+				var copyrightCollectionO = new GCopyrightCollection('Geograph (CC)');
 				copyrightCollectionTopo.addCopyright(copyright1);
-				copyrightCollectionTopoH.addCopyright(copyright2);
-				//copyrightCollectionO.addCopyright(copyright);
-				copyrightCollectionO.addCopyright(copyright3);
+				copyrightCollectionO.addCopyright(copyright2);
 				var tilelayers_mapnikhg = new Array();
 				tilelayers_mapnikhg[0] = new GTileLayer(copyrightCollectionTopo, 4, 14);//0 18
 				tilelayers_mapnikhg[0].isPng = function () { return true; };
 				tilelayers_mapnikhg[0].getOpacity = function () { return 1.0; };
 				tilelayers_mapnikhg[0].getTileUrl = GetTileUrl_Mapnik;
-				tilelayers_mapnikhg[1] = new GTileLayer(copyrightCollectionTopoH, 9, 14);// 9 19
+				tilelayers_mapnikhg[1] = new GTileLayer(copyrightCollectionO,4,14);
+				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_GeoMO;
 				tilelayers_mapnikhg[1].isPng = function () { return true; };
-				tilelayers_mapnikhg[1].getOpacity = function () { return 1.0; };
-				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_TopH;
+				tilelayers_mapnikhg[1].getOpacity = function () { return 0.5; };
 				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollectionO,4,14);
-				tilelayers_mapnikhg[2].getTileUrl = GetTileUrl_GeoMO;
+				tilelayers_mapnikhg[2].getTileUrl = GetTileUrl_GeoMG;
 				tilelayers_mapnikhg[2].isPng = function () { return true; };
-				tilelayers_mapnikhg[2].getOpacity = function () { return 0.5; };
-				tilelayers_mapnikhg[3] = new GTileLayer(copyrightCollectionO,4,14);
-				tilelayers_mapnikhg[3].getTileUrl = GetTileUrl_GeoMG;
-				tilelayers_mapnikhg[3].isPng = function () { return true; };
-				tilelayers_mapnikhg[3].getOpacity = function () { return 1.0; };
+				tilelayers_mapnikhg[2].getOpacity = function () { return 1.0; };
 				var mapnikhg_map = new GMapType(tilelayers_mapnikhg,
-					proj, "OSM (Mapnik) + Profile",
-					{ urlArg: 'mapnikhg', linkColor: '#000000', shortName: 'OSM+G', alt: 'OSM: Mapnik+Profile, Geo' });
+					proj, "OSM (Mapnik) + Geo",
+					{ urlArg: 'mapnikhg', linkColor: '#000000', shortName: 'OSM+G', alt: 'OSM: Mapnik, Geo' });
 
 				map = new GMap2(document.getElementById("map"));
 				map.addMapType(G_PHYSICAL_MAP);
@@ -237,16 +208,6 @@
 		AttachEvent(window,'load',updateMapMarkers,false);
 	</script>
 {/literal}
-
-<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px\"/>
-<p>
-This feature is still in development. Please use with care and try to avoid high server load.
-</p>
-<p>
-Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht übermäßig nutzen um zu hohe Serverlast zu vermeiden.
-</p>
-</div>
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
 
