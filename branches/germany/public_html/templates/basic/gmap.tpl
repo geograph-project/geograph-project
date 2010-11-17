@@ -166,9 +166,6 @@
 
 		GeoProj.prototype=new GProjection();
 		GeoProj.prototype.fromLatLngToPixel=function(ll, z) {
-			//var coord = GT_Math.wgs84_to_utm(ll.lat(), ll.lng(), this.zone);
-			//var e = coord[0];
-			//var n = coord[1];
 			this.wgs84.setDegrees(ll.lat(), ll.lng());
 			var grid = this.wgs84.getEN(true, false, true);
 			var e = grid.eastings;
@@ -182,9 +179,6 @@
 			var y = xy.y;
 			var e = (              x/     pixperkm[z] - this.x0) * 1000;
 			var n = (     yflip[z]-y/     pixperkm[z] - this.y0) * 1000;
-			//var coord = GT_Math.utm_to_wgs84(e, n, this.zone);
-			//var lat = coord[0];
-			//var lon = coord[1];
 			this.grid.setGridCoordinates(e, n);
 			var ll= this.grid.getWGS84(true);
 			var lat = ll.latitude;
@@ -323,8 +317,6 @@
 					checkBounds();
 				});
 
-				// The allowed region which the whole map must be within
-				//var allowedBounds = new GLatLngBounds(new GLatLng(45,2), new GLatLng(57,18));//(new GLatLng(49.4,-11.8), new GLatLng(61.8,4.1));
 				// If the map position is out of range, move it back
 				function checkBounds() {
 					
@@ -365,16 +357,6 @@
 		AttachEvent(window,'load',updateMapMarkers,false);
 	</script>
 {/literal}
-
-<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px\"/>
-<p>
-This feature is still in development. Please use with care and try to avoid high server load.
-</p>
-<p>
-Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht übermäßig nutzen um zu hohe Serverlast zu vermeiden.
-</p>
-</div>
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
 
