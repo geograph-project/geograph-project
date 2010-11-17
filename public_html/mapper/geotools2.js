@@ -864,10 +864,10 @@ GT_WGS84.prototype.isIreland = function()
 		this.longitude < -4.8;
 }
 
-GT_WGS84.prototype.getIrish = function(uselevel2)
+GT_WGS84.prototype.getIrish = function(uselevel2, sloppy, nocheck)
 {
 	var irish=new GT_Irish();
-	if (this.isIreland())
+	if (nocheck || this.isIreland())
 	{
 		var height = 0;
 
@@ -908,10 +908,10 @@ GT_WGS84.prototype.getIrish = function(uselevel2)
 	return irish;
 }
 
-GT_WGS84.prototype.getGerman32 = function(uselevel2, sloppy)
+GT_WGS84.prototype.getGerman32 = function(uselevel2, sloppy, nocheck)
 {
 	var german=new GT_German32();
-	if (this.isGermany32(sloppy))
+	if (nocheck || this.isGermany32(sloppy))
 	{
 		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 32);
 		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
@@ -924,10 +924,10 @@ GT_WGS84.prototype.getGerman32 = function(uselevel2, sloppy)
 	return german;
 }
 
-GT_WGS84.prototype.getGerman33 = function(uselevel2, sloppy)
+GT_WGS84.prototype.getGerman33 = function(uselevel2, sloppy, nocheck)
 {
 	var german=new GT_German33();
-	if (this.isGermany33(sloppy))
+	if (nocheck || this.isGermany33(sloppy))
 	{
 		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 33);
 		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
@@ -940,10 +940,10 @@ GT_WGS84.prototype.getGerman33 = function(uselevel2, sloppy)
 	return german;
 }
 
-GT_WGS84.prototype.getGerman31 = function(uselevel2, sloppy)
+GT_WGS84.prototype.getGerman31 = function(uselevel2, sloppy, nocheck)
 {
 	var german=new GT_German31();
-	if (this.isGermany31(sloppy))
+	if (nocheck || this.isGermany31(sloppy))
 	{
 		var coord = GT_Math.wgs84_to_utm(this.latitude, this.longitude, 31);
 		german.setGridCoordinates(Math.round(coord[0]), Math.round(coord[1]));
@@ -956,10 +956,10 @@ GT_WGS84.prototype.getGerman31 = function(uselevel2, sloppy)
 	return german;
 }
 
-GT_WGS84.prototype.getOSGB = function(uselevel2)
+GT_WGS84.prototype.getOSGB = function(uselevel2, sloppy, nocheck)
 {
 	var osgb=new GT_OSGB();
-	if (this.isGreatBritain())
+	if (nocheck || this.isGreatBritain())
 	{
 		var height = 0;
 		

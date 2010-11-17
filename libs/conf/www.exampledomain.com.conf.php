@@ -334,6 +334,16 @@ $CONF['gmlonrange'] = array(0 => array( 2.0,18.0), 3 => array(6.0,12.0), 4 => ar
 // google maps: map center (lat, lon)
 $CONF['gmcentre'] = array(51.0, 10.0);
 
+// google maps: order of ris
+$CONF['gmris'] = array(5, 3, 4);
+
+// google maps: default ri
+$CONF['gmridefault'] = 3;
+
+// google maps: coordinate conversion routines (German31, German32, German33, Irish, OSGB)
+// See also public_html/mapper/geotools2.js, GT_Xxxx() and GT_WGS84.prototype.getXxxx().
+$CONF['gmgrid'] =  array(3 => "German32", 4 => "German33", 5 => "German31");
+
 // valid internal coordinates
 $CONF['xrange'] =  array(3 => array(50,549), 4 => array(550,899), 5 => array(0,49));
 $CONF['yrange'] =  array(3 => array(0,999), 4 => array(0,999), 5 => array(0,999));
