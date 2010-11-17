@@ -1,10 +1,10 @@
 {if $inner}
-{assign var="page_title" value="Grid Ref Finder"}
+{assign var="page_title" value="Geograph Mercator-Karte"}
 
 {include file="_basic_begin.tpl"}
 {else}
 
-{assign var="page_title" value="Grid Ref Finder"}
+{assign var="page_title" value="Geograph Mercator-Karte"}
 {include file="_std_begin.tpl"}
 {/if}
 
@@ -24,6 +24,15 @@
 		var geocoder;
 		var running = false;
 
+{/literal}
+		var lat0 = {$lat0};
+		var lon0 = {$lon0};
+		var latmin = {$latmin};
+		var latmax = {$latmax};
+		var lonmin = {$lonmin};
+		var lonmax = {$lonmax};
+{literal}
+
 		function showAddress(address) {
 			if (!geocoder) {
 				 geocoder = new GClientGeocoder();
@@ -31,7 +40,7 @@
 			if (geocoder) {
 				geocoder.getLatLng(address,function(point) {
 					if (!point) {
-						alert("Your entry '" + address + "' could not be geocoded, please try again");
+						alert("Die Eingabe '" + address + "' konnte nicht bearbeitet werden, bitte nochmals versuchen");
 					} else {
 						if (currentelement) {
 							currentelement.setPoint(point);
@@ -98,7 +107,7 @@
 				var copyrightCollection =
 					new GCopyrightCollection('&copy; <a href="http://geo.hlipp.de">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> Contributors');
 				copyrightCollection.addCopyright(copyright);
-				var tilelayers = [new GTileLayer(copyrightCollection,4,13)];
+				var tilelayers = [new GTileLayer(copyrightCollection,4,13)];//FIXME 4 12?
 				tilelayers[0].getTileUrl = GetTileUrl_GeoM;
 				tilelayers[0].isPng = function () { return true; };
 				tilelayers[0].getOpacity = function () { return 1.0; };
@@ -123,11 +132,11 @@
 				//copyrightCollectionO.addCopyright(copyright);
 				copyrightCollectionO.addCopyright(copyright3);
 				var tilelayers_mapnikhg = new Array();
-				tilelayers_mapnikhg[0] = new GTileLayer(copyrightCollectionTopo, 0, 18);
+				tilelayers_mapnikhg[0] = new GTileLayer(copyrightCollectionTopo, 4, 14);//0 18
 				tilelayers_mapnikhg[0].isPng = function () { return true; };
 				tilelayers_mapnikhg[0].getOpacity = function () { return 1.0; };
 				tilelayers_mapnikhg[0].getTileUrl = GetTileUrl_Mapnik;
-				tilelayers_mapnikhg[1] = new GTileLayer(copyrightCollectionTopoH, 9, 19);
+				tilelayers_mapnikhg[1] = new GTileLayer(copyrightCollectionTopoH, 9, 14);// 9 19
 				tilelayers_mapnikhg[1].isPng = function () { return true; };
 				tilelayers_mapnikhg[1].getOpacity = function () { return 1.0; };
 				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_TopH;
@@ -157,7 +166,7 @@
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
 				
-				var point = new GLatLng(51, 10); //(54.55,-3.88);
+				var point = new GLatLng(lat0, lon0);
 				map.setCenter(point, 5, geomapm);
 
 				map.enableDoubleClickZoom(); 
@@ -187,7 +196,7 @@
 				});
 
 				// The allowed region which the whole map must be within
-				var allowedBounds = new GLatLngBounds(new GLatLng(45,2), new GLatLng(57,18));//(new GLatLng(49.4,-11.8), new GLatLng(61.8,4.1));
+				var allowedBounds = new GLatLngBounds(new GLatLng(latmin,lonmin), new GLatLng(latmax,lonmax));
 
 				// If the map position is out of range, move it back
 				function checkBounds() {
@@ -239,26 +248,26 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 </p>
 </div>
 
-<p>Click on the map to create a point, pick it up and drag to move to better location...</p>
+<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen...</p>
 
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 
-<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Aktuelle Koordinate</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 
-<input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
+<input type="submit" value="Nächster Schritt &gt; &gt;"/> <span id="dist_message"></span></div>
 
-<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>		
+<div id="map" style="width:600px; height:500px;border:1px solid blue">Karte wird geladen... (JavaScript nötig)</div><br/>
 
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
 
 </form>
 <form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
-<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address: 
+<div style="width:600px; text-align:center;"><label for="addressInput">Adresse eingeben:
 	<input type="text" size="50" id="addressInput" name="address" value="" />
-	<input type="submit" value="Find"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder)</small></small>
+	<input type="submit" value="Suchen"/><small><small><br/>
+	(über Google Maps API Geocoder)</small></small>
 </div>
 </form>
 

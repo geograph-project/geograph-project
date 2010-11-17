@@ -24,85 +24,185 @@
 		var geocoder;
 		var running = false;
 
-		function UTMProj(ri) {
-			if (ri == 4) {
-				this.zone = 33;
-				this.lonmin = 12;
-				this.lonmax = 16;
-				this.x0 = 300;
-				this.xmin = 550;
-				this.xmax = 850;
-			} else if (ri == 5) {
-				this.zone = 31;
-				this.lonmin = 4;
-				this.lonmax = 6;
-				this.x0 = -700;
-				this.xmin = 0;
-				this.xmax = 50;
-			} else {
-				this.zone = 32;
-				this.lonmin = 6;
-				this.lonmax = 12;
-				this.x0 = -200;
-				this.xmin = 50;
-				this.xmax = 550;
-				ri = 3;
-			}
-			this.ri = ri;
-			this.latmin = 47;
-			this.latmax = 56;
-			this.y0 = -5200;
-			this.pixperkm=[ 0.5, 1, 2, 4, 8, 16, 32, 64 ];
-			this.kmpertile=[ 512, 256, 128, 64, 32, 16, 8, 4 ];
-			//this.yflip = [1331, 999, 999, 999];
-			this.yflip = [1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024];
-			//this.xmin = 0;
-			//this.xmax = 900;
-			this.ymin = 0;
-			this.ymax = 1000;
+{/literal}
+		{strip}
+		var yflip = [
+		{foreach from=$yflip item=val name=fe}
+			{$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		];
+		{/strip}
+		{strip}
+		var pixperkm = [
+		{foreach from=$pixperkm item=val name=fe}
+			{$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		];
+		{/strip}
+		{strip}
+		var kmpertile = [
+		{foreach from=$kmpertile item=val name=fe}
+			{$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		];
+		{/strip}
+		var ts = {$ts};
+		{strip}
+		var ris = [
+		{foreach from=$ris item=val name=fe}
+			{$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		];
+		{/strip}
+		var ridefault = {$ridefault};
+		{strip}
+		var areanames = {ldelim}
+		{foreach from=$areanames key=ri item=val name=fe}
+			{$ri}: '{$val|escape:javascript}'{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var grids = {ldelim}
+		{foreach from=$grids key=ri item=val name=fe}
+			{$ri}: new GT_{$val}(){if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var gridconv = {ldelim}
+		{foreach from=$grids key=ri item=val name=fe}
+			{$ri}: 'get{$val}'{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var x0 = {ldelim}
+		{foreach from=$x0 key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var y0 = {ldelim}
+		{foreach from=$y0 key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var xmin = {ldelim}
+		{foreach from=$xmin key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var ymin = {ldelim}
+		{foreach from=$ymin key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var xmax = {ldelim}
+		{foreach from=$xmax key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var ymax = {ldelim}
+		{foreach from=$ymax key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var latmin = {ldelim}
+		{foreach from=$latmin key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var lonmin = {ldelim}
+		{foreach from=$lonmin key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var latmax = {ldelim}
+		{foreach from=$latmax key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+		{strip}
+		var lonmax = {ldelim}
+		{foreach from=$lonmax key=ri item=val name=fe}
+			{$ri}: {$val}{if !$smarty.foreach.fe.last},{/if}
+		{/foreach}
+		{rdelim};
+		{/strip}
+{literal}
+
+		function GeoProj(ri) {
+			this.wgs84 = new GT_WGS84();
+			this.lonmin = lonmin[ri];
+			this.lonmax = lonmax[ri];
+			this.latmin = latmin[ri];
+			this.latmax = latmax[ri];
+			this.xmin = xmin[ri];
+			this.xmax = xmax[ri];
+			this.ymin = ymin[ri];
+			this.ymax = ymax[ri];
+			this.x0 = x0[ri];
+			this.y0 = y0[ri];
+			this.wgs84.getEN = this.wgs84[gridconv[ri]]; // should belong to this.grid...
+			this.grid = grids[ri];
 		}
 
-		UTMProj.prototype=new GProjection();
-		UTMProj.prototype.fromLatLngToPixel=function(ll, z) {
-			//alert("ll: "+ll.lat()+"/"+ll.lng()+":"+z);
-			var coord = GT_Math.wgs84_to_utm(ll.lat(), ll.lng(), this.zone);
-			var e = coord[0];
-			var n = coord[1];
-			//alert("ll: "+ll.lat()+"/"+ll.lng()+":"+z+">"+e+"/"+n);
-			var y = Math.round((this.yflip[z]-(n/1000+this.y0)) * this.pixperkm[z]);
-			var x = Math.round(               (e/1000+this.x0)  * this.pixperkm[z]);
-			//alert("ll: "+ll.lat()+"/"+ll.lng()+":"+z+">"+e+"/"+n+">"+x+"/"+y);
-			//550 370
+		GeoProj.prototype=new GProjection();
+		GeoProj.prototype.fromLatLngToPixel=function(ll, z) {
+			//var coord = GT_Math.wgs84_to_utm(ll.lat(), ll.lng(), this.zone);
+			//var e = coord[0];
+			//var n = coord[1];
+			this.wgs84.setDegrees(ll.lat(), ll.lng());
+			var grid = this.wgs84.getEN(true, false, true);
+			var e = grid.eastings;
+			var n = grid.northings;
+			var y = Math.round((     yflip[z]-(n/1000+this.y0)) *      pixperkm[z]);
+			var x = Math.round(               (e/1000+this.x0)  *      pixperkm[z]);
 			return new GPoint(x,y);
 		}
-		UTMProj.prototype.fromPixelToLatLng=function(xy, z, unb) {
-			//alert("xy: "+xy.x+"/"+xy.y+":"+z);
+		GeoProj.prototype.fromPixelToLatLng=function(xy, z, unb) {
 			var x = xy.x;
 			var y = xy.y;
-			var e = (              x/this.pixperkm[z] - this.x0) * 1000;
-			var n = (this.yflip[z]-y/this.pixperkm[z] - this.y0) * 1000;
-			var coord = GT_Math.utm_to_wgs84(e, n, this.zone);
-			var lat = coord[0];
-			var lon = coord[1];
+			var e = (              x/     pixperkm[z] - this.x0) * 1000;
+			var n = (     yflip[z]-y/     pixperkm[z] - this.y0) * 1000;
+			//var coord = GT_Math.utm_to_wgs84(e, n, this.zone);
+			//var lat = coord[0];
+			//var lon = coord[1];
+			this.grid.setGridCoordinates(e, n);
+			var ll= this.grid.getWGS84(true);
+			var lat = ll.latitude;
+			var lon = ll.longitude;
 			return new GLatLng(lat,lon,unb);
 		}
-		UTMProj.prototype.tileCheckRange=function(txy,z,ts) {
-			//alert("cr: "+txy.x+"/"+txy.y+":"+z+":"+ts);
-			//FIXME ts should be 256
-			//FIXME server side check (load)
-			//FIXME zone specific check!
-			var y1 = Math.round(this.yflip[z]- txy.y * this.kmpertile[z] - this.kmpertile[z]);
-			var x1 = Math.round(               txy.x * this.kmpertile[z]);
-			//return true;//FIXME
+		GeoProj.prototype.tileCheckRange=function(txy,z,ts) {
+			var y1 = Math.round(     yflip[z]- txy.y *      kmpertile[z] -      kmpertile[z]);
+			var x1 = Math.round(               txy.x *      kmpertile[z]);
 
-			if (y1 + this.kmpertile[z] < this.ymin || y1 > this.ymax)
+			if (y1 +      kmpertile[z] < this.ymin || y1 > this.ymax)
 				return false;
-			if (x1 + this.kmpertile[z] < this.xmin || x1 > this.xmax)
+			if (x1 +      kmpertile[z] < this.xmin || x1 > this.xmax)
 				return false;
 
 			return true;
 		}
-		UTMProj.prototype.getWrapWidth=function(z) {
+		GeoProj.prototype.getWrapWidth=function(z) {
 			return 1.0e30; //FIXME
 		}
 
@@ -132,18 +232,6 @@
 
 							GEvent.trigger(currentelement,'drag');
 						}
-						//FIXME
-						// map.getCurrentMapType() 
-						// getMapTypes()
-						// mtype.getProjection() 
-						//var curmap;
-						//var lon = point.lng();
-						//if (proj5.lonmin < lon && lon <= proj5.lonmax)
-						//	curmap = geomap5;
-						//else if (proj4.lonmin < lon && lon <= proj4.lonmax)
-						//	curmap = geomap4;
-						//else
-						//	curmap = geomap3;
 						var curmap = map.getCurrentMapType();//null
 						var maptypes = map.getMapTypes();
 						var lon = point.lng();
@@ -165,24 +253,10 @@
 		}
 
 		function GetTileUrl_Geo(txy, z, ri) {
-			var pixperkm=[ 0.5, 1, 2, 4, 8, 16, 32, 64 ];
-			var kmpertile=[ 512, 256, 128, 64, 32, 16, 8, 4 ];
-			//var yflip = [1331, 999, 999, 999];
-			var yflip = [1024, 1024, 1024, 1024, 1024, 1024, 1024, 1024];
-			var ts = 256;
 			var y1 = Math.round(yflip[z]- txy.y * kmpertile[z] - kmpertile[z]);
 			var x1 = Math.round(          txy.x * kmpertile[z]);
-			//return "/test/tile.php?x="+y1+"&amp;y="+x1;
-			//return "/tile.php?x="+y1+"&y="+x1+"&z="+z;
-			//return "test/tile.php?x="+y1+"&y="+x1+"&z="+z;
-			//alert("ti: "+txy.x+"/"+txy.y+" > "+y1+"/"+x1);
 			return "/tile.php?x="+x1+"&y="+y1+"&z="+(-z-1)+"&i="+ri;
-			//return "test/tile/"+z+"/"+y1+"/"+x1+"/0.png";
 		}
-
-		function GetTileUrl_Geo3(txy, z) { return GetTileUrl_Geo(txy, z, 3); }
-		function GetTileUrl_Geo4(txy, z) { return GetTileUrl_Geo(txy, z, 4); }
-		function GetTileUrl_Geo5(txy, z) { return GetTileUrl_Geo(txy, z, 5); }
 
 		function loadmap() {
 			if (GBrowserIsCompatible()) {
@@ -192,45 +266,26 @@
 				var copyrightCollection =
 					new GCopyrightCollection('&copy; <a href="http://geo.hlipp.de">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> Contributors');
 				copyrightCollection.addCopyright(copyright);
-				var tilelayers3 = [new GTileLayer(copyrightCollection,0,7)];
-				tilelayers3[0].getTileUrl = GetTileUrl_Geo3;
-				tilelayers3[0].isPng = function () { return true; };
-				tilelayers3[0].getOpacity = function () { return 1.0; };
-				var tilelayers4 = [new GTileLayer(copyrightCollection,0,7)];
-				tilelayers4[0].getTileUrl = GetTileUrl_Geo4;
-				tilelayers4[0].isPng = function () { return true; };
-				tilelayers4[0].getOpacity = function () { return 1.0; };
-				var tilelayers5 = [new GTileLayer(copyrightCollection,0,7)];
-				tilelayers5[0].getTileUrl = GetTileUrl_Geo5;
-				tilelayers5[0].isPng = function () { return true; };
-				tilelayers5[0].getOpacity = function () { return 1.0; };
-				var proj3 = new UTMProj(3);
-				var proj4 = new UTMProj(4);
-				var proj5 = new UTMProj(5);
 
-				//var geomap3 = new GMapType(tilelayers3, new UTMProj(3), "Z32", {tileSize: 256});
-				//var geomap4 = new GMapType(tilelayers4, new UTMProj(4), "Z33", {tileSize: 256});
-				//var geomap5 = new GMapType(tilelayers5, new UTMProj(5), "Z31", {tileSize: 256});
-				var geomap3 = new GMapType(tilelayers3, proj3, "Z32", {tileSize: 256});
-				var geomap4 = new GMapType(tilelayers4, proj4, "Z33", {tileSize: 256});
-				var geomap5 = new GMapType(tilelayers5, proj5, "Z31", {tileSize: 256});
-				var curmap = geomap3;
+				var curmap;
+				var geomaps = [];
+				for (var i in ris) {
+					var curri = ris[i];
+					tilelayer = [new GTileLayer(copyrightCollection,0,7)];
+					tilelayer[0].ri = curri;
+					tilelayer[0].getTileUrl = function (txy, z) { return GetTileUrl_Geo(txy, z, this.ri)};
+					tilelayer[0].isPng = function () { return true; };
+					tilelayer[0].getOpacity = function () { return 1.0; };
+					geomaps[i] = new GMapType(tilelayer, new GeoProj(curri), areanames[curri], {tileSize: ts});
+					if (curri == ridefault)
+						curmap = geomaps[i];
+				}
 
-
-				map = new GMap2(document.getElementById("map"), {mapTypes:[geomap5, geomap3, geomap4]});
-				//map = new GMap2(document.getElementById("map"), {mapTypes:[geomap3, geomap4, geomap5]});
-				//map = new GMap2(document.getElementById("map"), {mapTypes:[geomap3/*, geomap4, geomap5*/]});
-				//map.addMapType(G_PHYSICAL_MAP);
-
-				//G_PHYSICAL_MAP.getMinimumResolution = function () { return 5 };
-				//G_NORMAL_MAP.getMinimumResolution = function () { return 5 };
-				//G_SATELLITE_MAP.getMinimumResolution = function () { return 5 };
-				//G_HYBRID_MAP.getMinimumResolution = function () { return 5 };
+				map = new GMap2(document.getElementById("map"), {mapTypes:geomaps});
 
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
 				
-				//var point = new GLatLng(51, 10); //(54.55,-3.88); //FIXME
 				var curproj = curmap.getProjection();
 				var point = new GLatLng((curproj.latmin+curproj.latmax)*.5, (curproj.lonmin+curproj.lonmax)*.5);
 				map.setCenter(point, 0, curmap);
@@ -343,6 +398,7 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 	(über Google Maps API Geocoder)</small></small>
 </div>
 </form>
+
 
 {if $inner}
 </body>
