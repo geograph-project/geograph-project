@@ -327,6 +327,13 @@ $CONF['showmeridian'] = 0;
 $CONF['xmrange'] = array(265000, 285000);
 $CONF['ymrange'] = array(160000, 185000);
 
+// google maps: valid geographical coordinates for given reference index (0: whole area)
+$CONF['gmlatrange'] = array(0 => array(45.0,57.0), 3 => array(47.0,56.0), 4 => array(47.0,56.0), 5 => array(47.0,56.0));
+$CONF['gmlonrange'] = array(0 => array( 2.0,18.0), 3 => array(6.0,12.0), 4 => array(12.0,16.0), 5 => array(4.0,6.0));
+
+// google maps: map center (lat, lon)
+$CONF['gmcentre'] = array(51.0, 10.0);
+
 // valid internal coordinates
 $CONF['xrange'] =  array(3 => array(50,549), 4 => array(550,899), 5 => array(0,49));
 $CONF['yrange'] =  array(3 => array(0,999), 4 => array(0,999), 5 => array(0,999));

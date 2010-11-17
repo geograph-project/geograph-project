@@ -23,6 +23,15 @@
 		var geocoder;
 		var running = false;
 
+{/literal}
+		var lat0 = {$lat0};
+		var lon0 = {$lon0};
+		var latmin = {$latmin};
+		var latmax = {$latmax};
+		var lonmin = {$lonmin};
+		var lonmax = {$lonmax};
+{literal}
+
 		function showAddress(address) {
 			if (!geocoder) {
 				 geocoder = new GClientGeocoder();
@@ -62,7 +71,7 @@
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
 				
-				var point = new GLatLng(51, 10); //(54.55,-3.88);
+				var point = new GLatLng(lat0, lon0);
 				map.setCenter(point, 5);
 
 				map.enableDoubleClickZoom(); 
@@ -92,7 +101,7 @@
 				});
 
 				// The allowed region which the whole map must be within
-				var allowedBounds = new GLatLngBounds(new GLatLng(45,2), new GLatLng(57,18));//(new GLatLng(49.4,-11.8), new GLatLng(61.8,4.1));
+				var allowedBounds = new GLatLngBounds(new GLatLng(latmin,lonmin), new GLatLng(latmax,lonmax));
 
 				// If the map position is out of range, move it back
 				function checkBounds() {
