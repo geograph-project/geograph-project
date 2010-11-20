@@ -3,7 +3,15 @@
 
 <h2>Ask a Question</h2>
 
-<form action="open.php" method="POST" enctype="multipart/form-data">
+{if $done}
+<div class="interestBox" style="margin-bottom:300px">
+	<b>Your question has been received</b>, thank you. A member of the team will take a look and get back to you.
+</div>
+
+{/if}
+
+
+<form action="/support/open.php" method="POST" enctype="multipart/form-data">
  <input type=hidden name="topicId" value="13">
 <table align="left" cellpadding=2 cellspacing=1 width="90%">
 {dynamic}

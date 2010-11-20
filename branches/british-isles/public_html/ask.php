@@ -34,10 +34,13 @@ if (isset($_REQUEST['referring_page']))
 	$referring_page=$_REQUEST['referring_page'];
 elseif (isset($_SERVER['HTTP_REFERER']))
 	$referring_page=$_SERVER['HTTP_REFERER'];
-
-	
 	
 $smarty->assign('referring_page',$referring_page);
+
+if (isset($_GET['done'])) {
+	$smarty->assign('done',intval($_GET['id']));
+}
+
 
 $smarty->display('ask.tpl');
 
