@@ -12,7 +12,7 @@
 <input type="hidden" name="referring_page" value="{$smarty.server.HTTP_REFERER}"/>
     <div style="display:none">
     <br /><br />
-    <label for="name">Leave Blank!</label><br/>   
+    <label for="name">Leave Blank!</label><br/>
 	<input size="40" id="name" name="name" value=""/>
     </div>
 </form></div>{/if}
@@ -62,7 +62,7 @@
     </ul></li>
   {/if}
   {/dynamic}
-  </ul> 
+  </ul>
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
 {if $image && $image->collections}
@@ -115,9 +115,9 @@
   <div id="search">
     <div id="searchform">
     <form method="get" action="/search.php">
-    <div id="searchfield"><label for="searchterm">Search</label> 
+    <div id="searchfield">
     <input type="hidden" name="form" value="simple"/>
-    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search"/>{/dynamic}
+    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search" onfocus="search_focus(this)" onblur="search_blur(this)"/>{/dynamic}
     <input id="searchbutton" type="submit" name="go" value="Find"/></div>
     </form>
     </div>
@@ -155,7 +155,7 @@
        <span class="sep">|</span>
        <a href="http://hub.geograph.org.uk/downloads.html" title="check our available downloads">Downloads</a>
     </p>
-    <p style="color:#777788;">Hosting supported by 
+    <p style="color:#777788;">Hosting supported by
     {external title="click to visit the CatN website - home of vCluster hosting" href="http://catn.com/" text="CatN"}
     </p>
   </div>

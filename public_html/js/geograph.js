@@ -1,4 +1,4 @@
-//	-	-	-	-	-	-	-	-
+
 
 var IE = document.all?true:false;
 
@@ -53,6 +53,16 @@ function tabClick(tabname,divname,num,count) {
 			document.getElementById(divname+q).style.display = (num==q)?'':'none';
 		}
 	}
+}
+
+//	-	-	-	-	-	-	-	-
+
+function search_focus(that) {
+	that.style.backgroundPosition = "100 100";
+}
+
+function search_blur(that) {
+	that.style.backgroundPosition = "0 0";
 }
 
 //	-	-	-	-	-	-	-	-
