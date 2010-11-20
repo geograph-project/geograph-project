@@ -1278,13 +1278,13 @@ body {
 #search_block #search {
 	position: absolute;
 	top: 28px;
-	left: 3em;
+	left: 1.3em;
 }
 
 #login {
 	position: absolute;
 	top: 3px;
-	left: 3em;
+	left: 0;
 }
 
 #right_block {
@@ -1337,6 +1337,5 @@ div.content3 {
 	border-style: none;
 	margin-left: 140px;
 }
-
 
 
