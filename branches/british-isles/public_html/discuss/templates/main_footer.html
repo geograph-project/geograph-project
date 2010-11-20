@@ -50,8 +50,8 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
   <div id="search">
     <div id="searchform">
     <form method="get" action="/finder/discussions.php">
-	<div id="searchfield"><label for="searchterm">Search Forum</label>
-	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10"/>
+	<div id="searchfield">
+	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10" onfocus="search_focus(this)" onblur="search_blur(this)" style="background-image: url('/templates/basic/img/searchbox-discuss.gif');"/>
 	<input id="searchbutton" type="submit" value="Find"/></div>
 	</form>
     </div>
