@@ -562,11 +562,71 @@ class GridSquare
 	/**
 	* load square from internal coordinates
 	*/
-	function loadFromPosition($internalx, $internaly, $findnearest = false, $allowinternal = false)
+	function loadFromPosition($internalx, $internaly, $findnearest = false, $allowinternal = false, $dx = 0, $dy = 0)
 	{
 		global $CONF;
 		$ok=false;
 		$db=&$this->_getDB();
+		#trigger_error("===>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+		if ($dx || $dy) {
+			if ($dx)
+				$dx = $dx > 0 ? 1: -1;
+			if ($dy)
+				$dy = $dy > 0 ? 1: -1;
+			#trigger_error("--->$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+			$pland = 'percent_land != 0';
+			/* try to go there directly */
+			$row = $db->GetRow("select 1 from gridsquare where $pland and x = $internalx+$dx and y = $internaly+$dy limit 1");
+			if (count($row)) {
+				$internalx += $dx;
+				$internaly += $dy;
+				$dx = 0;
+				$dy = 0;
+				#trigger_error(" 1=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+			} else {
+				/* try a single step */
+				if ($dx && $dy) {
+					$row = $db->GetRow("select 1 from gridsquare where $pland and x = $internalx+$dx and y = $internaly limit 1");
+					if (count($row)) {
+						$internalx += $dx;
+						$dx = 0;
+						#trigger_error(" a=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+					} else {
+						$row = $db->GetRow("select 1 from gridsquare where $pland and x = $internalx and y = $internaly+$dy limit 1");
+						if (count($row)) {
+							$internaly += $dy;
+							$dy = 0;
+							#trigger_error(" b=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+						}
+					}
+				}
+				/* jump over gap (zone boundary/sea) */
+				if (!$dx && $dy) {
+					if ($dy < 0)
+						$row = $db->GetRow("select y from gridsquare where $pland and x = $internalx and y < $internaly order by y desc limit 1");
+					else
+						$row = $db->GetRow("select y from gridsquare where $pland and x = $internalx and y > $internaly order by y limit 1");
+					if (count($row)) {
+						$dy = 0;
+						$internaly = $row['y'];
+						#trigger_error(" A=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+					}
+				} elseif (!$dy && $dx) {
+					if ($dx < 0)
+						$row = $db->GetRow("select x from gridsquare where $pland and y = $internaly and x < $internalx order by x desc limit 1");
+					else
+						$row = $db->GetRow("select x from gridsquare where $pland and y = $internaly and x > $internalx order by x limit 1");
+					if (count($row)) {
+						$dx = 0;
+						$internalx = $row['x'];
+						#trigger_error(" B=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+					}
+				}
+			}
+		}
+		$internalx += $dx;
+		$internaly += $dy;
+		#trigger_error("  ->$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
 		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) order by percent_land desc limit 1");
 		if (count($square))
 		{		

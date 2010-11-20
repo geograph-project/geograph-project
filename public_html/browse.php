@@ -78,7 +78,7 @@ if (isset($_GET['p']))
 	$grid_given=true;
 	//p=900y + (900-x);
 	$p = intval($_GET['p']);
-	$x = ($p % 900);
+	$x = ($p % 900); // only works if 0 =< x < 900
 	$y = ($p - $x) / 900;
 	$x = 900 - $x;
 	$grid_ok=$square->loadFromPosition($x, $y, true);
@@ -87,6 +87,21 @@ if (isset($_GET['p']))
 	$smarty->assign('gridref2', strlen($square->grid_reference) <= 2 + $CONF['gridpreflen'][$square->reference_index]);
 }
 
+else if (isset($_GET['x']) && isset($_GET['y'])) {
+	$x = intval($_GET['x']);
+	$y = intval($_GET['y']);
+	$dx = 0;
+	$dy = 0;
+	if (isset($_GET['dx']))
+		$dx = intval($_GET['dx']);
+	if (isset($_GET['dy']))
+		$dy = intval($_GET['dy']);
+	$grid_ok=$square->loadFromPosition($x, $y, true, false, $dx, $dy);
+	$grid_given=true;
+	$smarty->assign('gridrefraw', $square->grid_reference);
+	$smarty->assign('gridref2', strlen($square->grid_reference) <= 2 + $CONF['gridpreflen'][$square->reference_index]);
+
+}
 //set by grid components?
 elseif (isset($_GET['setpos']))
 {	
