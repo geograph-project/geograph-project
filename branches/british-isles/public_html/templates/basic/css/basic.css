@@ -1289,6 +1289,7 @@ body {
 
 #right_block {
 	border: 0;
+	right:0px;
 }
 
 #nav_block {
@@ -1323,7 +1324,7 @@ body {
 
 .content_photoblack, .content_photogray, .content_photowhite, .content3, .content2, .content1, .maincontent {
 	border: 0;
-	margin-left: 146px;
+	margin-left: 142px;
 }
 
 div.no_print {
@@ -1334,5 +1335,11 @@ div.no_print {
 	background-color: #e4e4fc;
 }
 
+.newsbody, .newstitle, .newsfooter {
+	padding-left:4px;
+}
 
+.content3 {
+	margin:4px 196px 0px 142px;
+}
 
