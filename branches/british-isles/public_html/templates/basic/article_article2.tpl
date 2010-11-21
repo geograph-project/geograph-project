@@ -16,11 +16,15 @@
 
 #contents_table {  border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px }
 #contents_table .title { font-weight:bolder;  padding:3px; border-bottom:1px solid black; margin-bottom:5px; }
-#contents_table ul { margin-top:0;padding:0 0 0 1em; border-bottom:1px solid black; padding-bottom: 8px; margin-bottom:5px; }
-#contents_table .h2 { font-weight:bold; }
-#contents_table .h3 { padding-left: 3px; }
-#contents_table .h4 { padding-left: 10px; font-size: 0.7em}
+#contents_table ul { margin-top:0;padding:0; border-bottom:1px solid black; padding-bottom: 8px; margin-bottom:5px; }
+#contents_table .h2 { margin-left:0; font-weight:bold; list-style-type:none }
+#contents_table .h3 { margin-left:16px;}
+#contents_table .h4 { margin-left:26px; font-size:0.7em; }
 #contents_table .h2 small, #contents_table .h3 small, #contents_table .h4 small { font-size:0.6em; color:gray }
+#contents_table li { color:silver }
+#contents_table a { text-decoration:none; }
+#contents_table a:hover { text-decoration:underline; }
+
 @media print {
 	.no_print {
 		display: none;

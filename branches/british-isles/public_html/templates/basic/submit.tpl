@@ -16,40 +16,40 @@
 
     <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" {if $step ne 1}style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;"{/if}>
 
-{if $step eq 1}	
-	{if $user->stats.images gt 10} 
+{if $step eq 1}
+	{if $user->stats.images gt 10}
 	<p align="center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
 	{/if}
-	
+
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
-{if $user->stats.images eq 0} 
-	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"><b>First time here?</b> - if so you might like to have a look at our <a href="/faq.php">FAQ</a>.</div>
+{if $user->stats.images eq 0}
+	<div style="background-color:pink; color:black; border:2px solid red; padding:10px; margin-bottom:20px"><b>First time here?</b> - if so you might like to have a look at our <a href="/faq.php">FAQ</a>, or <a href="/ask.php">ask a question</a>.</div>
 
 {/if}
 
-{if $user->stats.images < 20} 
+{if $user->stats.images < 20}
 <div style="width:180px;margin-left:10px;margin-bottom:100px;float:right;font-size:0.8em;padding:10px;background:#dddddd;position:relative; border:1px solid gray; z-index:100">
 <h3 style="margin-bottom:0;margin-top:0">Need Help?</h3>
 
-<p>If you enter the exact location, e.g. <b>TL 246329</b> we'll figure 
-out that it's in the <b>TL 2432</b> 1km square, but we'll also retain 
-the more precise coordinate for accurately mapping the location of the 
+<p>If you enter the exact location, e.g. <b>TL 246329</b> we'll figure
+out that it's in the <b>TL 2432</b> 1km square, but we'll also retain
+the more precise coordinate for accurately mapping the location of the
 photograph.</p>
 
-<p>When you press Next, we'll find out if there are any existing photographs 
+<p>When you press Next, we'll find out if there are any existing photographs
 for that square</p>
 
-<p>If you're new, you may like to check our <a href="/help/guide">guide to 
+<p>If you're new, you may like to check our <a href="/help/guide">guide to
 geographing</a> first.</p>
 
 </div>
-{/if} 
+{/if}
 
 	{if $errormsg}
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 	{/if}
-	
+
 <div style="position:relative;">
 	<div class="tabHolder">
 		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>&nbsp;
@@ -63,20 +63,20 @@ geographing</a> first.</p>
 
 		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, specify the photographer location in the next step.</p>
 
-		<p><label for="grid_reference">Enter the grid reference 
+		<p><label for="grid_reference">Enter the grid reference
 		(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
 		<u title="e.g. TQ435646 or TQ 435 646">6</u>,
-		<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
+		<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or
 		<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the subject grid square</label><br /><br />
 		{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">clear</a>)<br/></small></small>{/if}
 		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or enter location above and <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>
 		</p>
-		
+
 		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>
 		{/if}</p>
-	</div>		
+	</div>
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
 		<p>Begin by choosing the grid square you wish to submit.</p>
@@ -100,57 +100,57 @@ geographing</a> first.</p>
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="setpos2" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or select location above and <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>
 		</p>
-		
+
 		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>{/if}
 		</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
 		<p><label for="jpeg_exif"><b>Upload an image with Locational information attached</b></label> <br/>
-		
+
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
-		
+
 		<input type="submit" name="setpos" value="Next &gt;"/> <br/>
-		
+
 		<div>Currently understands:<ul>
 		<li>GPS-EXIF tags based on WGS84 Lat/Long</li>
 		<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TQ435646</b>A.jpg</tt>")</li>
 		<li>Subject grid-reference in EXIF Comment tag</li>
 		</ul></div>
-			
+
 		<p><sup style=color:red>New!</sup> the {external href="http://www.nearby.org.uk/geograph/upload/" text="experimental Multi-Upload tool"}, now understands tagged images like this upload box does.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
 		<iframe {if $tab == 4}src="/submitmap.php?inner"{/if} id="innerFrame4" width="613" height="660" frameborder="0"><a href="/submitmap.php">Click here to open a Draggable Interactive Google Map</a></iframe>
 	</div>
-	
+
 </div>
 	{if !$user->use_autocomplete && $user->stats.images gt 10}
-	(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1">profile settings page</a></label>)	
+	(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1">profile settings page</a></label>)
 	{/if}
 
 	<br/><br/><br/>
-	<p>If you are unsure of the photo location there are a number of online 
+	<p>If you are unsure of the photo location there are a number of online
 		sources available to help:</p>
-		
+
 	<ul>
-		<li><b>{getamap} provides a search by 
-		Placename or Postcode.</b><br/> Once you have centred the map on the picture location, 
-		return here and enter the <i>Grid reference at centre</i> value shown into the box 
+		<li><b>{getamap} provides a search by
+		Placename or Postcode.</b><br/> Once you have centred the map on the picture location,
+		return here and enter the <i>Grid reference at centre</i> value shown into the box
 		above.<br/><br/></li>
 		<li>{external href="http://www.multimap.com/map/browse.cgi?lat=54.5445&lon=-6.8228&scale=1000000" text="multimap.com"} now displays 1:50,000 <b>Mapping for Northern Ireland</b>. Use our handy <a href="/latlong.php">Lat/Long Convertor</a> to get the correct Grid Square for a picture.<br/><br/>
-		
+
 		Furthermore {external href="http://www.osni.gov.uk/mapstore" text="OSNI"} and {external href="http://www.osi.ie/" text="OSI"} now offer online mapping from their own websites. Coordinate conversion may not be easy - its probably best to rely on visual estimation using the national grid projected on the map.
 		<br/><br/></li>
-		
+
 		<li><b>If you have a WGS84 latitude &amp; longitude coordinate</b>
-		(e.g. from a GPS receiver, or from multimap site), then see our 
+		(e.g. from a GPS receiver, or from multimap site), then see our
 		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
-		<li><b>For information on {external href="http://en.wikipedia.org/wiki/Grid_reference" text="Grid References"}</b> <br/>see 
+		<li><b>For information on {external href="http://en.wikipedia.org/wiki/Grid_reference" text="Grid References"}</b> <br/>see
 		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html"}.
-		The {external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish National Grid"} is very similar, but using a single letter prefix, 
+		The {external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish National Grid"} is very similar, but using a single letter prefix,
 		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
 		</li>
 	</ul>
@@ -169,27 +169,27 @@ geographing</a> first.</p>
 {if $step eq 2}
 
 	<h2>Submit Step 2 of 4 : Upload photo for {$gridref}</h2>
-	
+
 	{if !$user->stats.images || $user->stats.images < 100 || !$last_imagetaken}
 	<div style="color:black; background-color:yellow; font-size:0.7em; padding:3px; border: 1px solid orange">Please avoid submitting images with overlaid text or borders; they should be cropped before submission. Thank you for your attention to this matter.<br/><br/>
 	You should only submit photos you have taken yourself, or where you can specifically act as a Licensor on behalf of the original author.</div><br/>
 	{/if}
-	
+
 	{if $rastermap->enabled}
 		<div style="float:left;width:50%;position:relative">
 	{else}
 		<div>
 	{/if}
 		{if $imagecount gt 0}
-			<div style="color:#440000">We currently have 
-			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if} 
+			<div style="color:#440000">We currently have
+			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if}
 			uploaded for {newwin title="View Images for `$gridref`" href="/gridref/`$gridref`" text=`$gridref`}, add yours now!</div>
 		{else}
 			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
 		<hr/>
 		{if $transfer_id}
-		<img src="{$preview_url}" width="{$preview_width*0.2|string_format:"%d"}" height="{$preview_height*0.2|string_format:"%d"}" alt="low resolution reminder image"/>	
+		<img src="{$preview_url}" width="{$preview_width*0.2|string_format:"%d"}" height="{$preview_height*0.2|string_format:"%d"}" alt="low resolution reminder image"/>
 		<input name="transfer_id" type="hidden" value="{$transfer_id|escape:"html"}"/>
 		{elseif $jpeg_url}
 		<label for="jpeg_url"><b>JPEG Image URL</b></label>
@@ -198,50 +198,50 @@ geographing</a> first.</p>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 		<label for="jpeg"><b>JPEG Image File</b></label>
 		<input id="jpeg" name="jpeg" type="file" />
-		
+
 		{/if}
 		<div><small><small><i>If your image is over 640 pixels in either direction, <b>you will be offered chance to upload the largest version</b>. <br/>If you have presized to 640px please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<hr/>
-		
-		{if $reference_index == 2} 
+
+		{if $reference_index == 2}
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
-		
+
 		<div style="float:right;position:relative">
 		{getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}
 		</div>
-		
+
 		{if $last_grid_reference || $last_photographer_gridref}
 			<div style="font-size:0.8em">
 			<a href="javascript:{if $last_photographer_gridref}void(document.theForm.photographer_gridref.value = '{$last_photographer_gridref}');void(updateMapMarker(document.theForm.photographer_gridref,false));{/if}{if $last_grid_reference}void(document.theForm.grid_reference.value = '{$last_grid_reference}');void(updateMapMarker(document.theForm.grid_reference,false));{/if}">Copy from Last Submission</a> <sup style="color:red">New</sup></div>
 		{else}
-		
-		{/if}
-		
-		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}</p>
-		
 
-		
+		{/if}
+
+		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}</p>
+
+
+
 		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
-		
+
 		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a> <span id="dist_message" style="padding-left:20px"></span>
 		</span>
-		
+
 		{if $rastermap->enabled}
 			<br/><br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference ({newwin href="/help/map_precision" text="Explanation"})</label>
 		{/if}
 		</p>
-	
+
 		<hr/>
-	
+
 		<p><label for="view_direction"><b>View Direction</b></label> <small>(photographer facing)</small><br/>
 		<select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
 			{foreach from=$dirs key=key item=value}
 				<option value="{$key}"{if $key%45!=0} style="color:gray"{/if}{if $key==$view_direction} selected="selected"{/if}>{$value}</option>
 			{/foreach}
 		</select></p>
-		
+
 		<hr/>
 	</div>
 
@@ -250,9 +250,9 @@ geographing</a> first.</p>
 		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
 		{$rastermap->getImageTag()}<br/>
 		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
-		
+
 		</div>
-		
+
 		{$rastermap->getScriptTag()}
 			{literal}
 			<script type="text/javascript">
@@ -266,8 +266,8 @@ geographing</a> first.</p>
 				AttachEvent(window,'load',updateMapMarkers,false);
 			</script>
 			{/literal}
-		
-	{else} 
+
+	{else}
 		<script type="text/javascript" src="{"/mapping.js"|revision}"></script>
 	{/if}
 
@@ -288,7 +288,7 @@ geographing</a> first.</p>
 
 	{/foreach}
 	<br style="clear:both"/>
-	
+
 	{if $imagecount gt 6 || $shownimagecount == 6}
 		<div>{newwin href="/gridref/`$gridref`" text="View browse page for `$gridref`"}, {newwin href="/search.php?gridref=`$gridref`&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" text="View images page by page"}</div>
 	{/if}&nbsp;
@@ -319,7 +319,7 @@ geographing</a> first.</p>
   {/if}
 
 <p>
-Below is a full-size preview of the image we will store for grid reference 
+Below is a full-size preview of the image we will store for grid reference
 {$gridref}.<br/><br/>
 
 <img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
@@ -333,14 +333,14 @@ you'll get a geograph point added to your profile and the warm glow that comes
 with it.</p>
 <p>So what makes an image a genuine geograph?</p>
 <ul>
-<li>The image subject must be within grid square {$gridref}, and ideally the photographer should be too.</li>
+<li>The image subject must be within grid square {$gridref}, and the photographer must be too.</li>
 <li>You must clearly show at close range one of the main geographical features within the square</li>
 <li>You should include a short description relating the image to the map square</li>
 <li>The image should be a natural image as a human would see it, please avoid digitally altering the image to add dates, texts etc, or creating montages, similarly turn off date stamping performed by a camera. A little tweaking of brightness/contrast and/or cropping is fine and encouraged. </li>
 </ul>
 
 <p>Good quality, visually appealing and historically relevant pictures (eg wide area views
-covering many square kilometres) may also be accepted as supplemental images 
+covering many square kilometres) may also be accepted as supplemental images
 for {$gridref} provided they are accurately located, but may not qualify as geographs.</p>
 
 <ul>
@@ -403,13 +403,13 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 AttachEvent(window,'load', function() {
  	var inputWord = $('imageclass');
- 	
+
     new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
         'postVar': 'q',
         'minLength': 2,
         maxChoices: 60
     });
-    
+
 },false);
 
 //-->
@@ -449,7 +449,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 <p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
 	<br/><span class="formerror">{$error.imageclass}</span>
-	{/if}<br />	
+	{/if}<br />
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
 		<option value="">--please select feature--</option>
 		{if $imageclass}
@@ -459,13 +459,13 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	</select>
 
 	<span id="otherblock">
-	<label for="imageclassother">Please specify </label> 
+	<label for="imageclassother">Please specify </label>
 	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
 	</span></p>
-	
-{/if}	
-	
-	
+
+{/if}
+
+
 <p><label><b>Date photo taken</b></label> {if $error.imagetaken}
 	<br/><span class="formerror">{$error.imagetaken}</span>
 	{/if}<br/>
@@ -473,8 +473,8 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	{if $imagetakenmessage}
 	    {$imagetakenmessage}
 	{/if}
-	
-	[ Use 
+
+	[ Use
 	<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);" class="accept"/>
 	{if $last_imagetaken}
 		<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);" class="accept"/>
@@ -483,11 +483,11 @@ AttachEvent(window,'load',onChangeImageclass,false);
 		<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);" class="accept"/>
 	{/if}
 	Date ]
-	
+
 	<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
 
 
-	<p align="center"><input type="button" value="Preview Submission in a new window"  onclick="document.getElementById('previewButton').click();"/> 
+	<p align="center"><input type="button" value="Preview Submission in a new window"  onclick="document.getElementById('previewButton').click();"/>
 
 <div style="position:relative; background-color:#dddddd; border: 1px solid red; padding-left:10px;padding-top:1px;padding-bottom:1px;">
 <h3>Image Classification</h3>
@@ -506,12 +506,12 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <input type="submit" name="next" value="Next &gt;"/></p>
 
 {if $use_autocomplete}
-	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" /> 
+	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" />
 
-	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script>
 {else}
 <script type="text/javascript" src="/categories.js.php"></script>
 <script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
@@ -532,52 +532,52 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
-	
+
 	{if $original_width}
-	
+
 		<h2>Submit Step 4 of 4: Confirm image size and rights</h2>
-		
+
 		{include file="_submit_sizes.tpl"}
-		
+
 		<hr/>
 	{else}
 		<h2>Submit Step 4 of 4 : Confirm image rights</h2>
 	{/if}
 
-	
+
 	{if $user->stats.images && $user->stats.images > 100 && $last_imagetaken}
 
 	<div style="border:1px solid gray; padding:10px">I've read this already, <input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);autoDisable(this.form.finalise[1]);"/><br/> (saves scrolling to the bottom)</div>
 	{/if}
-	
+
 	<p>
 	Because we are an open project we want to ensure our content is licensed
 	as openly as possible and so we ask that all images are released under a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
 	licence, including accompanying metadata.</p>
-	
-	<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
+
+	<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows
 	people to copy and distribute the work provided they <b>give credit</b>.</p>
-	
+
 	<p>Since we want to ensure we can use your work to fund the running costs of
 	this site, and allow us to create montages of grid images, we ask that you
 	allow the following</p>
-	
+
 	<ul>
 	<li>The right to use the work commercially</li>
 	<li>The right to modify the work to create derivative works</li>
 	</ul>
-	
+
 	<p>{external title="View licence" href="http://creativecommons.org/licenses/by-sa/2.0/" text="Here is the Commons Deed outlining the licence terms" target="_blank"}</p>
-	
+
 	{assign var="credit" value=$user->credit_realname}
 	{assign var="credit_default" value=0}
 	{include file="_submit_licence.tpl"}
-	
+
 	<p>If you do
 	not agree with these terms, click "I do not agree" and your upload will
 	be abandoned.<br />
 	<input style="background-color:pink; width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>
-	
+
 	</p>
 
 
@@ -586,14 +586,14 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="submit" name="goback3" value="&lt; Back"/>
 	<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="autoDisable(this);{if $user->stats.images && $user->stats.images > 100 && $last_imagetaken}autoDisable(this.form.finalise[0]);{/if}"/>
 	</p>
-	
+
 
 
 {/if}
 
 {if $step eq 5}
 <h2>Submission Complete!</h2>
-<p>Thank you very much - your photo has now been added to grid square 
+<p>Thank you very much - your photo has now been added to grid square
 <a title="Grid Reference {$gridref}" href="/gridref/{$gridref}">{$gridref}</a>.</p>
 <p>Your photo has identification number [<a href="/photo/{$gridimage_id}">{$gridimage_id}</a>]</p>
 
@@ -609,7 +609,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 {if $step eq 6}
 <h2>Submission Abandoned</h2>
 <p>Your upload has been aborted - if you have any
-concerns or feedback regarding our licence terms, 
+concerns or feedback regarding our licence terms,
 please <a title="contact us" href="/contact.php">contact us</a></p>
 {/if}
 
@@ -624,7 +624,7 @@ have problems
 {/if}
 
 
-	</form> 
+	</form>
 
 {if $step eq 3}
 
@@ -654,8 +654,8 @@ have problems
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
-	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()" id="previewButton"/> 
-	
+	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()" id="previewButton"/>
+
 	<input type="checkbox" name="spelling"/>Check Spelling
 	<sup style="color:red">Experimental!</sup>
 	</form>
