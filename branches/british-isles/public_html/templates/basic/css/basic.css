@@ -1248,7 +1248,7 @@ input.imageselect {
   
 
 body {
-	background: #ffffff;
+	background: #e4e4fc;
 }
 
 #search_block {
@@ -1293,6 +1293,8 @@ body {
 
 #nav_block {
 	border: 0;
+	padding:0;
+	padding-right:6px;
 	left: 0;
 }
 
@@ -1319,10 +1321,9 @@ body {
 	margin-top: 0;
 }
 
-.content_photoblack, .content_photogray, .content_photowhite, .content3, .content2, .content1 {
+.content_photoblack, .content_photogray, .content_photowhite, .content3, .content2, .content1, .maincontent {
 	border: 0;
-	margin-left: 150px;
-	border-bottom: 1px solid silver;
+	margin-left: 146px;
 }
 
 div.no_print {
@@ -1330,12 +1331,8 @@ div.no_print {
 }
 
 #geograph body {
-	background-color: #f5f0f5;
+	background-color: #e4e4fc;
 }
 
-div.content3 {
-	border-style: none;
-	margin-left: 140px;
-}
 
 
