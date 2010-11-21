@@ -45,7 +45,12 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="/help/sitemap">Sitemap</a><br/><br/></li>
  </ul>
 
- <a title="Info, Guides and Tutorials" href="/content/documentation.php">More...</a> or <a href="/help/more_pages">Summary Page</a>
+ <a title="Info, Guides and Tutorials" href="/content/documentation.php">More...</a> or <a href="/help/more_pages">Summary Page</a><br/><br/>
+
+ <ul>
+ <li><a href="/ask.php">Ask us a question!</a><br/><br/></li>
+ </ul>
+
  </div>
 
 

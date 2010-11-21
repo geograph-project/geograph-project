@@ -11,8 +11,8 @@
 
 <form action="/content/" method="get">
 <div class="interestBox" style="margin-top:2px;width:420px">
-<lable for="qs">Search:</label> 
-<input type="text" name="q" id="qs" size="20" {if $q} value="{$q|escape:'html'}"{/if}/> 
+<lable for="qs">Search:</label>
+<input type="text" name="q" id="qs" size="20" {if $q} value="{$q|escape:'html'}"{/if}/>
 Scope: <select name="scope" style="width:90px">
 	<option value="">All</option>
 	<option value="article">Articles</option>
@@ -46,8 +46,8 @@ Scope: <select name="scope" style="width:90px">
 {/if}
 	<li><b><a title="{$item.extract|default:'View Article'}" href="{$item.url}">{$item.title}</a></b><br/>
 	<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>
-		
-		
+
+
 		</small></small>
 
 	</li>
@@ -65,5 +65,6 @@ Scope: <select name="scope" style="width:90px">
 </div>
 <br style="clear:both"/>
 
+	<div class="interestBox" style="font-size:1.3em;margin-bottom:20px">Can't find what you looking for? <a href="/ask.php">Ask Us</a>!</div>
 
 {include file="_std_end.tpl"}
