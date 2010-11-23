@@ -1265,6 +1265,7 @@ body {
 	width: 200px;
 	font-size: 1.3em;
 	background-image: url('/templates/basic/img/searchbox.gif');
+	background-color: white;
 }
 
 #searchbutton {
