@@ -24,9 +24,23 @@
  */
 
 function FractionToDecimal($fraction) {
-	$result = 0;
-	eval ("\$result = 1.0*$fraction;");
-	return $result;
+	$parts = explode("/", $fraction, 2);
+	if (count($parts) == 1)
+		$parts[] = 1;
+	else {
+		$parts[1] = floatval($parts[1]);
+		if ($parts[1] == 0)
+			return 0.0;
+	}
+	$parts[0] = floatval($parts[0]);
+
+	/* exif_read_data bug */
+	if ($parts[1] < 0)
+		$parts[1] += 4294967296.0;
+	if ($parts[0] < 0)
+		$parts[0] += 4294967296.0;
+
+	return $parts[0]/$parts[1];
 }
 
 function ExifConvertDegMinSecToDD($deg, $min, $sec) {
