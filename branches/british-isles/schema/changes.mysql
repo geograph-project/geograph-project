@@ -1597,3 +1597,32 @@ DROP TABLE tmp_cluster_gridsquare;
 
 UPDATE content SET title=TRIM(title),updated=updated;
 
+
+
+ alter table article add `complete` tinyint after article_sort_order;
+
+ alter table article_revisions add `complete` tinyint after article_sort_order;
+
+
+#################################################
+
+
+CREATE TABLE IF NOT EXISTS `blog` (
+  `blog_id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `content` text NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL default '0',
+  `gridsquare_id` int(10) unsigned NOT NULL,
+  `tags` varchar(255) NOT NULL,
+  `published` datetime NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `approved` tinyint(4) NOT NULL,
+  PRIMARY KEY  (`blog_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM;
+
+
+
+#################################################
