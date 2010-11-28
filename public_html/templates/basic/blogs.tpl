@@ -1,4 +1,4 @@
-{assign var="page_title" value="Blog Entry"}
+{assign var="page_title" value="Blog"}
 {assign var="rss_url" value="/blog/feed.rss"}
 {include file="_std_begin.tpl"}
 

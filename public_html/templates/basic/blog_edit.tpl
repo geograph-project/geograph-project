@@ -48,7 +48,7 @@
 	<label for="grid_reference">Grid Square:</label>
 	<input type="text" name="grid_reference" value="{$grid_reference|escape:"html"}" maxlength="12" size="6"/>
 
-	<div class="fieldnotes">Optional, Relevent Square for the entry </div>
+	<div class="fieldnotes">Optional, enter a 4-figure grid reference for the entry </div>
 
 	{if $errors.grid_reference}</div>{/if}
 </div>
@@ -67,10 +67,8 @@
 <div class="field">
 	{if $errors.content}<div class="formerror"><p class="error">{$errors.content}</p>{/if}
 
-	<label for="description">Content:</label>
+	<label for="description">Blog Entry:</label>
 	<textarea rows="10" cols="80" name="content" style="width:58em">{$content|escape:"html"}</textarea></p>
-
-	<div class="fieldnotes">Blog entry text </div>
 
 	{if $errors.extract}</div>{/if}
 </div>
@@ -78,10 +76,12 @@
 <div class="field">
 	{if $errors.tags}<div class="formerror"><p class="error">{$errors.tags}</p>{/if}
 
-	<label for="title">Tags:</label>
-	<input type="text" name="tags" value="{$tags|escape:"html"}" style="font-size:1.1em" maxlength="255" size="47"/>
+	<label for="tags">Tags:</label>
+	<input type="text" name="tags" value="{$tags|escape:"html"}" id="tags" maxlength="255" size="60"/>
 
-	<div class="fieldnotes">Optional tags for this entry. Seperate multiple tags with commas</div>
+	<div class="fieldnotes">Optional tag(s) for this entry, describing what it about. Seperate multiple tags with commas.<br/><br/>
+
+	Suggestions (click to use): <i>But feel free to use your own!</i><br/><a href="javascript:void()" onclick="return useit(this.innerText)">Introducing Myself</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Geographing Trip Report</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Interesting Image</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Off-Topic Ramblings</a>.</div>
 
 	{if $errors.title}</div>{/if}
 </div>
@@ -92,7 +92,16 @@
 <input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em"/> {if $title == 'New Entry'}<br/>(Entries will only show on the site once they have been approved by a site moderator){/if}</p>
 </form>
 
-
+<script type="text/javascript">{literal}
+function useit(text) {
+	var ele = document.getElementById('tags');
+	if (ele.value.length>0) {
+		ele.value = ele.value + ", ";
+	}
+	ele.value = ele.value + text;
+	return false;
+}
+{/literal}</script>
 
 {include file="_std_end.tpl"}
 {/dynamic}
