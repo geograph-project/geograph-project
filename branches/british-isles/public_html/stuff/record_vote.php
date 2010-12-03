@@ -29,9 +29,9 @@ init_session();
 if (isset($_GET['html'])) {
         print "thanks - you may close this window";
 } else {
-header("HTTP/1.0 204 No Content");
-header("Status: 204 No Content");
-header("Content-Length: 0");
+	header("HTTP/1.0 204 No Content");
+	header("Status: 204 No Content");
+	header("Content-Length: 0");
 }
 
 flush();
@@ -39,6 +39,18 @@ flush();
 
 $db=NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');
+
+if (!is_numeric($_GET['id'])) {
+	$id = $db->getOne("SELECT id FROM vote_string WHERE value = ".$db->Quote(@$_GET['id']));
+	if (empty($id)) {
+		$ins = "INSERT INTO vote_string SET value = ".$db->Quote(@$_GET['id']).", user_id = ".intval($USER->user_id);
+		$db->Execute($ins);
+		$_GET['id'] = mysql_insert_id();
+	} else {
+		$_GET['id'] = intval($id);
+	}
+}
+
 
 $ins = "INSERT INTO vote_log SET
 	type = ".$db->Quote(@$_GET['t']).",

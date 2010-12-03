@@ -1626,3 +1626,16 @@ CREATE TABLE IF NOT EXISTS `blog` (
 
 
 #################################################
+
+
+CREATE TABLE `vote_string` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+	`value` VARCHAR( 128 ) NOT NULL ,
+	`user_id` INT UNSIGNED NOT NULL ,
+	`created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+	UNIQUE (`value`)
+) ENGINE = MYISAM;
+
+#################################################
+
+

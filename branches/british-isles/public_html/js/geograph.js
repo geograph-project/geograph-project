@@ -84,10 +84,11 @@ function record_vote(type,id,vote,div) {
 		div = '';
 	}
 	var i=new Image();
+	id = encodeURIComponent(id);
 	i.src= "/stuff/record_vote.php?t="+type+"&id="+id+"&v="+vote;
-	document.getElementById("votediv"+id+div).innerHTML = "Thank you!";
+	document.getElementById("votediv"+id.replace(/%/g,'_')+div).innerHTML = "Thank you!";
 	setTimeout(function() {
-		document.getElementById("votediv"+id+div).style.display='none';
+		document.getElementById("votediv"+id.replace(/%/g,'_')+div).style.display='none';
 	},3000);
 }
 
