@@ -126,33 +126,42 @@
 
 	<script type="text/javascript">{literal}
 
+	function setSlider(value) {
+		for(q=5;q<=50;q++) {
+			if (value < q) {
+					$('.score'+q).show();
+			} else {
+					$('.score'+q).hide();
+			}
+		}
+
+		$("#menudiv").find("li").each(function(index) {
+			var shown = 0;
+			$(this).find('A:visible').each(function(index) {
+				shown=shown+1;
+			});
+			if(shown == 0) {
+				$(this).hide();
+			} else {
+				$(this).show();
+			}
+	});
+	}
+
 	$(document).ready(function() {
 		$("#slider").slider({min:15,max:50,value:15,
 			slide: function(event,ui) {
-
-				for(q=5;q<=50;q++) {
-						if (ui.value < q) {
-								$('.score'+q).show();
-						} else {
-								$('.score'+q).hide();
-						}
-				}
-
-				$("#menudiv").find("li").each(function(index) {
-					var shown = 0;
-					$(this).find('A:visible').each(function(index) {
-						shown=shown+1;
-					});
-					if(shown == 0) {
-						$(this).hide();
-					} else {
-						$(this).show();
-					}
-				});
-
+				location.hash = ui.value;
+				setSlider(ui.value);
 			}
 		});
 
+		if (location.hash) {
+			var value = parseInt(location.hash.substr(1),10);
+
+			$("#slider").slider("option", "value", value);
+			setSlider(value);
+		}
 	});
 
 
