@@ -39,13 +39,21 @@ $db=NewADOConnection($GLOBALS['DSN']);
 if (!$db) die('Database connection failed');
 
 
-$data = $db->getAll("select round(avg(vote)*10) as score,value,count(distinct l.user_id) c from vote_log l inner join vote_string using (id) where type = 'menu' group by id having c > 0 order by null");
+$data = $db->getAll("select round(avg(vote)*10) as score,value,count(distinct l.user_id) c from vote_log l inner join vote_string using (id) where type = 'menu' group by id having c > 3 order by null");
 
 
 foreach ($data as $idx => $row) {
 	$link = htmlentities($row['value']);
 	$html = str_replace('href="'.$link.'"','href="'.$link.'" class="score'.$row['score'].'"',$html);
 }
+
+$score = $db->getOne("select round(avg(vote)*10) as score from vote_log inner join vote_string using (id) where type = 'menu' and value like '/profile/%/map' group by '1'");
+$html = preg_replace('/href="(\/profile\/\d+\/map)"/','href="$1" class="score'.$score.'"',$html);
+
+$score = $db->getOne("select round(avg(vote)*10) as score from vote_log inner join vote_string using (id) where type = 'menu' and value like '/export.csv.%' group by '1'");
+$html = preg_replace('/href="(\/export.csv.php.*?)"/','href="$1" class="score'.$score.'"',$html);
+
+$html = preg_replace('/ class="score\d+">GeoGraph/','>GeoGraph',$html);
 
 print $html;
 
