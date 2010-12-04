@@ -1639,3 +1639,35 @@ CREATE TABLE `vote_string` (
 #################################################
 
 
+ alter table content change  `source`  `source` enum('portal','article','gallery','themed','help','gsd','snippet','user','category','blog','other') NOT NULL default 'other';
+
+
+INSERT INTO `content`
+SELECT 
+	NULL AS content_id, 
+	blog_id AS foreign_id, 
+	TRIM(title) AS title, 
+	CONCAT('/blog/entry.php?id=',blog_id) AS url, 
+	user_id AS user_id, 
+	gridimage_id, 
+	gridsquare_id, 
+	'' AS extract, 
+	0 AS images, 
+	0 AS wordcount, 
+	0 AS views, 
+	0 AS titles, 
+	0 AS tags, 
+	content AS words, 
+	'blog' AS source, 
+	'info' AS type, 
+	submitted AS updated, 
+	DATE(signup_date) AS created 
+FROM blog
+WHERE approved = 1 AND user_id != 3;
+
+
+#################################################
+
+
+
+

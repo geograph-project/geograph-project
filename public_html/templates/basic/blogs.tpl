@@ -9,7 +9,7 @@
 </div>
 {/if}
 
-<h2>Geograph Blog</h2>
+<h2>Blog Entries by Geograph Users</h2>
 
 <div style="float:right; padding-right:30px;"><a title="geoRSS Feed for Geograph Blog Entries" href="/blog/feed.rss" class="xml-rss">RSS</a> {if $geo}<a title="KML Feed for Geograph Blog Entries" href="/blog/kml-nl.php" class="xml-kml">KML</a>{/if}</div>
 
@@ -28,6 +28,18 @@
 
 <br style="clear:both"/>
 
+{if $tags}
+	<p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center">
+	TAGS: {foreach from=$tags key=tag item=count}
+		{if $tag eq $thetag}
+			<span class="nowrap">&nbsp;<b>{$tag|escape:'html'|ucwords|replace:' ':'&middot;'}</b> [<a href="/blog/">remove filter</a>] &nbsp;</span>
+		{else}
+			&nbsp;<a title="{$count} entries" {if $count > 10} style="font-weight:bold"{/if} href="/blog/?tag={$tag|escape:'url'}">{$tag|escape:'html'|ucwords|replace:' ':'&middot;'}</a> &nbsp;
+		{/if}
+	{/foreach}
+	</p>
+{/if}
+
 
 {if $list}
 
@@ -39,13 +51,27 @@
 			{$item.published}
 		</div>
 		<a href="/blog/entry.php?id={$item.blog_id}"><b>{$item.title|escape:'html'}</b></a>,
-		<small>by <a title="View profile" href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a></small>
+		<small>by <a title="View profile" href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>
+			 {$item.created}</small>
+	</div>
+	<div style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
+		{if $item.image}
+		<a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
+		{/if}
 	</div>
 	<blockquote>
 		<p>{$item.content|truncate:200|escape:'html'}</p>
 		<a href="/blog/entry.php?id={$item.blog_id}"><i>Read more...</i></a>
 		{if $user->user_id == $item.user_id || $isadmin}
-				<a href="/blog/edit.php?id={$item.blog_id}">edit</a>
+				[<a href="/blog/edit.php?id={$item.blog_id}">edit</a>]
+		{/if}
+		{if $isadmin}
+			{if $item.approved eq 1}
+				[<a href="/blog/?id={$item.blog_id}&amp;approve=0">disapprove</a>]
+			{else}
+				[<a href="/blog/?id={$item.blog_id}&amp;approve=1">approve</a>]
+				[<a href="/blog/?id={$item.blog_id}&amp;approve=-1">delete</a>]
+			{/if}
 		{/if}
 	</blockquote>
 
