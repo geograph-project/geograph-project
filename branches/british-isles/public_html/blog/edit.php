@@ -89,6 +89,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 			$errors['grid_reference'] = $gs->errormsg;
 	}
 	
+	$_POST['content'] = strip_tags($_POST['content']);
 	
 	$updates = array();
 	foreach (array('title','content','tags','published','gridsquare_id','gridimage_id') as $key) {

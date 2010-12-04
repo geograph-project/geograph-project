@@ -7,19 +7,24 @@
 </style>{/literal}
 <script src="{"/sorttable.js"|revision}"></script>
 
-<h2><a href="/blog/">Blog</a> :: {$title|escape:"html"}</h2>
+
+<div style="float:left; position:relative; padding-right:10px;height:40px"><h3 style="margin-top:0px"><a href="/blog/">Geograph Blog</a> ::</h3></div>
+
+<h2 style="margin-bottom:0px" class="nowrap">{$title|escape:"html"}</h2>
+<div>By <a title="View profile" href="/profile/{$user_id}">{$realname|escape:'html'}</a></div>
+
+
+<p style="margin-left:auto;margin-right:auto;width:600px">{$content|nl2br|GeographLinks:true}</p>
+
+<hr/>
 
 {if $gridsquare_id}
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
-	<div style="width:500px; height:450px;" id="mapCanvas">Loading map...</div>
+	<div style="width:300px; height:250px;" id="mapCanvas">Loading map...</div>
 	<div style="color:red; background-color:white">Marker only shows gridsquare</div><br/>
 </div>
 {/if}
-<p>By <a title="View profile" href="/profile/{$user_id}">{$realname|escape:'html'}</a></p>
 
-<p style="font-size:1.2em">{$content|escape:"html"}</p>
-
-<hr/>
 <dl class="picinfo">
 
 

@@ -42,7 +42,7 @@
 		<small>by <a title="View profile" href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a></small>
 	</div>
 	<blockquote>
-		<p>{$item.content|truncate:80|escape:'html'}</p>
+		<p>{$item.content|truncate:200|escape:'html'}</p>
 		<a href="/blog/entry.php?id={$item.blog_id}"><i>Read more...</i></a>
 		{if $user->user_id == $item.user_id || $isadmin}
 				<a href="/blog/edit.php?id={$item.blog_id}">edit</a>
