@@ -121,7 +121,8 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		}
 	;
 		
-		$smarty->clear_cache('blog.tpl');
+		$smarty->clear_cache('blogs.tpl');
+		$smarty->clear_cache('blogs.tpl',$USER->user_id);
 		$smarty->clear_cache('blog_entry.tpl',$_REQUEST['id']);
 		$smarty->clear_cache('blog_entry.tpl',$_REQUEST['id']."|".$USER->user_id);
 		
