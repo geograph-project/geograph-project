@@ -126,20 +126,34 @@
 
 	<script type="text/javascript">{literal}
 
-  $(document).ready(function() {
-    $("#slider").slider({min:15,max:50,value:34,
-    	slide: function(event,ui) {
+	$(document).ready(function() {
+		$("#slider").slider({min:15,max:50,value:15,
+			slide: function(event,ui) {
 
-    		for(q=15;q<=50;q++) {
-    			if (ui.value > q) {
-    				$('.score'+q).show();
-    			} else {
-    				$('.score'+q).hide();
-    			}
-    		}
-    	}
-    });
-  });
+				for(q=5;q<=50;q++) {
+						if (ui.value < q) {
+								$('.score'+q).show();
+						} else {
+								$('.score'+q).hide();
+						}
+				}
+
+				$("#menudiv").find("li").each(function(index) {
+					var shown = 0;
+					$(this).find('A:visible').each(function(index) {
+						shown=shown+1;
+					});
+					if(shown == 0) {
+						$(this).hide();
+					} else {
+						$(this).show();
+					}
+				});
+
+			}
+		});
+
+	});
 
 
 	{/literal}</script>
