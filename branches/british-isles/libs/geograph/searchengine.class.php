@@ -417,7 +417,7 @@ END;
 							'localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}"
 							));
 					}
-				} elseif (!preg_match('/(@\w+\b|\b\w+:\s*\w+)/',$this->criteria->searchtext)) {
+				} elseif (empty($CONF['disable_spelling']) && !preg_match('/(@\w+\b|\b\w+:\s*\w+)/',$this->criteria->searchtext)) {
 					require_once("3rdparty/spellchecker.class.php");
 					$original = preg_replace('/ftf:\d/','',$this->criteria->searchtext);
 					$correction = SpellChecker::Correct($original);
@@ -495,7 +495,7 @@ END;
 		}
 		$this->orderList = $ids;
 		
-		if ($sql_order == ' dist_sqd ') {
+		if (!empty($this->criteria->sphinx['d']) && $this->criteria->sphinx['d'] !== '1') {
 			$this->sphinx_reply = $sphinx->res;
 			$sql_fields = ',-1 as dist_sqd' ;
 		} else if (!empty($this->criteria->groupby)) {
@@ -802,7 +802,7 @@ END;
 			return 0;
 			
 		if ($recordSet)	{
-			$dist_format = ($this->criteria->searchclass == 'Postcode' && strlen($this->criteria->searchq) < 7)?"Dist:%dkm %s":"Dist:%.1fkm %s";
+			$dist_format = ($this->criteria->searchclass == 'Postcode' && strlen($this->criteria->searchq) < 7)?"Dist:%dkm":"Dist:%.1fkm";
 
 			$this->results=array();
 			$i=0;
@@ -816,7 +816,6 @@ END;
 
 				$this->results[$i]->dist_string = '';
 				if (!empty($recordSet->fields['dist_sqd'])) {
-					$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
 					
 					if ($recordSet->fields['dist_sqd'] == -1) {
 						$d = $this->sphinx_reply['matches'][$this->results[$i]->gridimage_id]['attrs']['@geodist']/1000;
@@ -824,8 +823,12 @@ END;
 						$d = sqrt($recordSet->fields['dist_sqd']);
 					}
 					if ($d >= 0.1) {
-						$this->results[$i]->dist_string = sprintf($dist_format,$d,heading_string($angle));
+						$this->results[$i]->dist_string = sprintf($dist_format,$d);
 					} 
+					if ($recordSet->fields['dist_sqd'] > -1 || $d > 1) {
+						$angle = rad2deg(atan2( $recordSet->fields['x']-$this->criteria->x, $recordSet->fields['y']-$this->criteria->y ));
+						$this->results[$i]->dist_string .= " ".heading_string($angle);
+					}
 				}
 				if (empty($this->results[$i]->title))
 					$this->results[$i]->title="Untitled";
