@@ -123,15 +123,17 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 		$rss->title .= " ($resultCount results)";
 		
 		// --------------
+	} elseif ($format == 'KML') {
+		$where = "gridsquare_id > 0";
 	} else {
 		$where = 1;
 	}
 	
 	
-$sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source
+$sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source,gridsquare_id
 	from content 
 		left join user using (user_id)
-	where source IN ('article', 'gallery', 'help') and $where
+	where source IN ('article', 'gallery', 'help', 'blog') and $where
 	order by updated desc
 	limit $limit";
 
@@ -152,17 +154,16 @@ while (!$recordSet->EOF)
 	$item->date = strtotime($recordSet->fields['created']);
 	$item->author = $recordSet->fields['realname'];
 	
-	if (($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') && $recordSet->fields['gridsquare_id']) {
+	if (!empty($rss->geo) && $recordSet->fields['gridsquare_id']) {
 		$gridsquare = new GridSquare;
 		$grid_ok=$gridsquare->loadFromId($recordSet->fields['gridsquare_id']);
 
 		if ($grid_ok)
 			list($item->lat,$item->long) = $conv->gridsquare_to_wgs84($gridsquare);
 	
-		$rss->addItem($item);
-	} elseif ($format != 'KML') {
-		$rss->addItem($item);
 	}
+
+	$rss->addItem($item);
 
 	$recordSet->MoveNext();
 }
@@ -180,4 +181,4 @@ header("Pragma: no-cache");
 
 $rss->saveFeed($format, $rssfile);
 
-?>
+
