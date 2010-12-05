@@ -533,7 +533,7 @@ class SearchEngineBuilder extends SearchEngine
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
 			if (preg_match('/^~/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching any of [".preg_replace('/^~/','',$dataarray['searchtext'])."] ".$searchdesc;
-			} elseif (preg_match('/[~\+\^\$:@ =-]+/',$dataarray['searchtext'])) {
+			} elseif (preg_match('/[~\+\^\$:@ =\(-]+/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [".$dataarray['searchtext']."] ".$searchdesc;
 			} elseif (preg_match('/^".*"$/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [\"".$dataarray['searchtext']."\"] ".$searchdesc;

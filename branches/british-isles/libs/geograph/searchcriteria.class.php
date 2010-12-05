@@ -666,7 +666,7 @@ class SearchCriteria
 
 			$db = $this->_getDB(true);
 
-			$row = $db->GetCol('select crc32(lower(imageclass)) from category_canonical_log where canonical = '.$db->Quote($this->limit11).' group by imageclass');
+			$row = $db->GetCol('select crc32(lower(imageclass)) from category_canonical_log where canonical = '.$db->Quote($this->limit11).' group by imageclass limit 4000');
 
 			if (empty($row)) {
 				$row = array(0);
@@ -702,6 +702,24 @@ class SearchCriteria
 			// = in latest sphinx turns on exact keyword matching (no stemming) 
 			$this->sphinx['compatible'] = 0;
 		}
+
+		if (preg_match('/centi\(([A-Z]{1,2}\d{6,})\)/i',$q,$m)) {
+			#(gi.reference_index * 10000000 + IF(g2.natgrlen+0 <= 3,((g2.nateastings DIV 100) mod 100) * 100 + ((g2.natnorthings DIV 100) mod 100),0)) AS scenti \
+			
+			$square = new GridSquare;
+			
+			if ($square->setByFullGridRef($m[1]) && $square->natgrlen >= 6) {
+				
+				$centi = ($square->reference_index * 10000000)+ ((intval($square->nateastings/100)%100)*100) + (intval($square->natnorthings/100)%100);
+			
+				$this->sphinx['filters']['scenti'] = array($centi);
+				$this->sphinx['no_legacy']++;
+				
+				//we inject the gridsuare back - because scenti repeats per myriad, so need to ensure its the right square too
+				$q = str_replace($m[0],$square->grid_reference,$q);
+			}
+		}
+
 		if (preg_match("/\b(AND|OR|NOT)\b/",$q) || preg_match('/^\^.*\+$/',$q) || preg_match('/(^|\s+)-([\w^]+)/',$q)) {
 			$sql_where .= " (";
 			$terms = $prefix = $postfix = '';

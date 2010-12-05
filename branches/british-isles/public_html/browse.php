@@ -830,7 +830,7 @@ if ($grid_given)
 					$maximages = max($row[1],$maximages);
 					$breakdown[$y][$x] = array('name'=>"in $centi centisquare",'count'=>$row[1]);
 					if ($row[1] > 20) {
-						$breakdown[$y][$x]['link']="/search.php?gridref=$centi&amp;distance=0.1&amp;orderby=submitted&amp;do=1";
+						$breakdown[$y][$x]['link']="/search.php?searchtext=centi($centi)&amp;orderby=submitted&amp;do=1";
 					} elseif ($row[1] == 1) {
 						$breakdown[$y][$x]['link']="/photo/{$row[2]}";
 					} else {
