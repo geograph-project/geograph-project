@@ -226,12 +226,36 @@ class GeographUser
 	{
 		$db = $this->_getDB(true);
 		
-		$this->stats=$db->GetRow("select * from user_stat where user_id='{$this->user_id}'");
+		$this->stats=$db->GetRow("select * from user_stat where user_id={$this->user_id}");
 
 		$data = $db->GetRow("SHOW TABLE STATUS LIKE 'user_stat'");
 		$this->stats['updated'] = $data['Update_time'];
-
 	}
+	
+	
+	/**
+	* get latest blog entry
+	*/
+	function getLatestBlogEntry()
+	{
+		$db = $this->_getDB(true);
+		
+		$this->blog=$db->GetRow("SELECT blog_id,title,UNIX_TIMESTAMP(created) AS created FROM blog WHERE user_id={$this->user_id} AND created > DATE_SUB(NOW(),INTERVAL 90 DAY) ORDER BY blog_id DESC");
+
+		if ($this->blog) {
+			$diff = time() - $this->blog['created'];
+			if ($diff > (3600*24*31)) {
+				$this->blog['created'] = sprintf("%d months ago",$diff/(3600*24*31));
+			} elseif ($diff > (3600*24)) {
+				$this->blog['created'] = sprintf("%d days ago",$diff/(3600*24));
+			} elseif ($diff > 3600) {
+				$this->blog['created'] = sprintf("%d hours ago",$diff/3600);
+			} else {
+				$this->blog['created'] = sprintf("%d minutes ago",$diff/60);
+			}
+		}
+	}
+		
 	
 	/**
 	* count the number of tickets this user has
