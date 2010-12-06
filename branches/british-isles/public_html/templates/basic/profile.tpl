@@ -69,7 +69,7 @@
 			<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li>
 		{/if}
 		<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message to {$profile->realname|escape:'html'}</a></li>
-	{else}
+	{elseif $simplified}
 		<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}
 		{if $profile->public_email ne 1} <em>(not displayed to other users)</em>{/if}
 		</li>
@@ -89,6 +89,14 @@
 	{/if}
 </ul>
 
+{if $simplified}
+	<p><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/> This is a simplified view of own profile, you can also view your <a href="/profile/{$user->user_id}">full public profile</a>.</p>
+{else}
+
+{if $profile->blog.blog_id}
+	<p>&middot; My latest blog entry: <a href="/blog/entry.php?id={$profile->blog.blog_id}">{$profile->blog.title|escape:'html'}</a> <small>({$profile->blog.created})</small></p>
+{/if}
+
 {if $profile->about_yourself && $profile->public_about}
 	<div class="caption" style="background-color:#dddddd; padding:10px;clear:both">
 	{if !$profile->deceased_date}
@@ -96,8 +104,9 @@
 	{/if}
 	{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}</div>
 {/if}
+{/if}
 
-{if $user->user_id eq $profile->user_id}
+{if $user->user_id eq $profile->user_id && $simplified}
 	<p><a href="/profile.php?edit=1">Edit your profile</a> if there's anything you'd like to change.</p>
 {else}
 	<br/><br/>

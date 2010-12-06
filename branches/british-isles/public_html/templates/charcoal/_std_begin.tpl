@@ -52,7 +52,7 @@ function bodyOnLoad()
 		  {if $user->registered}
 		  	  Logged in as {$user->realname|escape:'html'}
 		  	  <span class="sep">|</span>
-		  	  <a title="Profile" href="/profile/{$user->user_id}">profile</a>
+		  	  <a title="Profile" href="/profile.php">profile</a>
 		  	  <span class="sep">|</span>
 		  	  <a title="Log out" href="/logout.php">logout</a>
 		  {else}

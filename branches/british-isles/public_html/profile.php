@@ -224,6 +224,9 @@ if ($template=='profile.tpl')
 	if (isset($_GET['reject']) && empty($_GET['reject'])) {
 		$cacheid .= "N";
 	}
+	if (empty($_GET['id'])) {
+		$cacheid .= "S";
+	}
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
@@ -255,13 +258,20 @@ if ($template=='profile.tpl')
 		}
 		
 		$profile->getStats();
-		if ($uid==$USER->user_id) {
+		
+		if ($uid==$USER->user_id && empty($_GET['id'])) {
 			$profile->countTickets();
 			$USER->tickets = $profile->tickets;
 			$USER->last_ticket_time = $profile->last_ticket_time;
 			if (!empty($_SESSION['last_ticket_time']) && $profile->last_ticket_time <= $_SESSION['last_ticket_time']) {
 				$profile->tickets = 0;
 			}
+		}
+		
+		if (empty($_GET['id'])) {
+			$smarty->assign('simplified',1);
+		} elseif ($CONF['forums']) {
+			$profile->getLatestBlogEntry();
 		}
 
 		if (!empty($_GET['a'])) {

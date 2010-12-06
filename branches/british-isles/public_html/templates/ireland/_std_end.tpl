@@ -57,7 +57,7 @@
      <li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>
       <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
      </ul></li>
-     
+
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a><ul>
       <li><a title="The Geograph Team" href="/admin/team.php">The Team</a></li>
       <li><a href="/help/credits" title="Who built this and how?">Credits</a></li>
@@ -77,7 +77,7 @@
     </ul></li>
   {/if}
   {/dynamic}
-  </ul> 
+  </ul>
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
 <a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
 {if $image && $image->collections}
@@ -133,7 +133,7 @@
   {if $user->registered}
   	  Logged in as {$user->realname|escape:'html'}
   	  <span class="sep">|</span>
-  	  <a title="Profile" href="/profile/{$user->user_id}">profile</a>
+  	  <a title="Profile" href="/profile.php">profile</a>
   	  <span class="sep">|</span>
   	  <a title="Log out" href="/logout.php">logout</a>
   {else}
@@ -163,7 +163,7 @@
        <span class="sep">|</span>
        <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$static_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
     </p>
-    <p style="color:#777788;">Hosting supported by 
+    <p style="color:#777788;">Hosting supported by
     {external title="click to visit the CatN website - home of vCluster hosting" href="http://catn.com/" text="CatN"}
     </p>
   </div>
