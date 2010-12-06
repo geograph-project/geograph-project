@@ -1154,7 +1154,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 					unset($engine->results[$idx]);
 				}
 			}
-		} elseif ($display == 'gmap' || $display == 'landing') {
+		} elseif ($display == 'gmap' || $display == 'gmap_embed' || $display == 'landing') {
 			$markers = array();
 			$conv = new Conversions();
 			
