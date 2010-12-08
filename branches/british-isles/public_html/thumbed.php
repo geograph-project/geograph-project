@@ -80,14 +80,17 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$imagelist=new ImageList;
 
+	$extra = '';
 	if ($type == 'desc' || $type =='img') {
 		$where = "type = '$type'";
+		$extra .= "&type=$type";
 	} else {
 		$where = "type in ('img','desc')";
 	}
 	
 	if ($who == 'others') {
 		$crit = "!=";
+		$extra .= "&who=others";
 	} else {
 		$crit = "=";
 	}
@@ -139,6 +142,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('prev', 1);
 		}
 	}
+	$smarty->assign('extra', $extra);
 }
 
 
