@@ -52,12 +52,12 @@
 {if $prev || $next}
 	<div class="interestBox">Navigation: <b>|
 	{if $prev == 1}
-		<a href="{$script_name}">Previous</a> |
+		<a href="{$script_name}{if $extra}?{$extra|escape:'html'}{/if}">Previous</a> |
 	{elseif $prev}
-		<a href="{$script_name}?next={$prev|escape:'url'}">Previous</a> |
+		<a href="{$script_name}?next={$prev|escape:'url'}{$extra|escape:'html'}">Previous</a> |
 	{/if}
 	{if $next}
-		<a href="{$script_name}?next={$next|escape:'url'}">Next</a> |
+		<a href="{$script_name}?next={$next|escape:'url'}{$extra|escape:'html'}">Next</a> |
 	{/if}</b>
 	</div>
 {/if}
