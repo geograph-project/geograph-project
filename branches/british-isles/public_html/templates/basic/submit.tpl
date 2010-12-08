@@ -18,7 +18,7 @@
 
 {if $step eq 1}
 	{if $user->stats.images gt 10}
-	<p align="center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
+	<p align="center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot; <a href="/article/Content-on-Geograph">Submit a Collection</a> &middot;</p>
 	{/if}
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>

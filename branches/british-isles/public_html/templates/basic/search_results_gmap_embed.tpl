@@ -3,7 +3,7 @@
 <title>Search Results</title>
 <script type="text/javascript" src="{"/js/geograph.js"|revision}"></script>
 </head>
-<body style="background-color:black" text="#FFFFFF" style="margin:0">
+<body style="margin:0;padding:0">
 
 {if !$google_maps_api_key}
 	<div class="interestBox">

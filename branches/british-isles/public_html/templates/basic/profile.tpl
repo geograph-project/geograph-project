@@ -1,4 +1,8 @@
+{if $userimages}
 {assign var="extra_meta" value="<link rel=\"canonical\" href=\"/profile/`$profile->user_id`\" />"}
+{else}
+{assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\" />"}
+{/if}
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}"></script>
 
@@ -55,11 +59,15 @@
 	<li><b>Name</b>: {$profile->realname|escape:'html'}</li>
 
 	{if $profile->nickname}
-		<li><b>Nickname</b>:{$profile->nickname|escape:'html'}</li>
+		<li><b>Nickname</b>: {$profile->nickname|escape:'html'}</li>
 	{/if}
 
 	{if $profile->website}
-		<li><b>Website</b>:{external href=$profile->website}</li>
+		{if $userimages}
+			<li><b>Website</b>: {external href=$profile->website}</li>
+		{else}
+			<li><b>Website</b>: {$profile->website|escape:'html'|replace:'http://':''|replace:'.':' [dot] '}</li>
+		{/if}
 	{/if}
 
  	{if $profile->hasPerm('dormant',true)}
@@ -97,7 +105,7 @@
 	<p>&middot; My latest blog entry: <a href="/blog/entry.php?id={$profile->blog.blog_id}">{$profile->blog.title|escape:'html'}</a> <small>({$profile->blog.created})</small></p>
 {/if}
 
-{if $profile->about_yourself && $profile->public_about}
+{if $profile->about_yourself && $profile->public_about && ($userimages || $user->user_id eq $profile->user_id)}
 	<div class="caption" style="background-color:#dddddd; padding:10px;clear:both">
 	{if !$profile->deceased_date}
 	<h2 style="margin-top:0px;margin-bottom:0px">About Me</h2>
