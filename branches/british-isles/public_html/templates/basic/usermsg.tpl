@@ -9,7 +9,7 @@
 {else}
 
 {if $recipient->registered}
-	<h2>Send Message to {$recipient->realname|escape:'html'}</h2>
+	<h2>Send message to {$recipient->realname|escape:'html'}</h2>
 
 	{if $error}
 		<h2>Sorry</h2>
@@ -17,7 +17,7 @@
 	{/if}
 	
 	{if $sent}
-		<p>Thankyou - your message has been sent</p>
+		<p>Thank you - your message has been sent</p>
 	{elseif $verification}
 		<form method="post" action="/usermsg.php">
 		
@@ -47,7 +47,7 @@
 				</div>
 
 				{if $recaptcha}
-					<p>Please enter the two words contained in the big white box, alternativly click the speaker icon to listen to a audio version. 
+					<p>Please enter the two words contained in the big white box, alternatively click the speaker icon to listen to a audio version. 
 					{$recaptcha}
 				{else}
 					<p>So please take a moment to fill out the below to help prevent spamming of our members.</p>
@@ -65,7 +65,7 @@
 				<span id="hidemore"><a href="#" onclick="show_tree('more');return false">I'm having trouble using the Captcha above</a>.</span>
 				<blockquote style="border:1px solid pink; padding:10px; display:none" id="showmore">
 					... or if you are unable to enter the two words above, and listening to the audio version didn't work, <br/>
-					then you can instead <input type="submit" name="sendcode" value="Request confirmation code by email"/> <br/>
+					then you can instead <input type="submit" name="sendcode" value="request confirmation code by email"/> <br/>
 
 					<small>We will email a code to <tt>{$from_email|escape:'html'}</tt> which <b>you must enter on the next page</b>.</small> 
 				</blockquote>
@@ -78,7 +78,7 @@
 		<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Warning" width="50" height="44" align="left" style="margin-right:10px"/>
 			We don't have valid contact details on record for this user, you can fill out the form below,
-			it will be sent to the Geograph Team, who might or might not be able to help with your query.
+			it will be sent to the Geograph team, who might or might not be able to help with your query.
 		</div>
 		<br/><br/><br/>
 		{/if}
@@ -107,8 +107,8 @@
 			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
 			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="30" height="24" align="left" style="margin-right:10px"/>
 			If you are sending this message in relation to a particular photo or location, please
-			make sure you clearly state which. The contributor may have photographed
-			many locations and may not know immediately to where you are referring.</div>
+			make sure you clearly state which one. The contributor may have photographed
+			many locations and may not know immediately to what you are referring.</div>
 			<br/>
 		</div>
 		

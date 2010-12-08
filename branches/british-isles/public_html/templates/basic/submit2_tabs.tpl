@@ -197,8 +197,8 @@ AttachEvent(window,'load',readHash,false);
 	
 	
 	
-	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!). 
-	 A overview map is provided to help locate a square, but is optional, can directly enter a grid reference in step 2 if wish.
+	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!). 
+	 A overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.
 	 If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
 
 	
@@ -349,7 +349,7 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
-	<input type="submit" value="Preview Submission in a new window" onclick="return previewImage()" id="previewButton"/> 
+	<input type="submit" value="Preview submission in a new window" onclick="return previewImage()" id="previewButton"/> 
 	
 	<input type="checkbox" name="spelling"/>Check Spelling
 	<sup style="color:red">Experimental!</sup>
