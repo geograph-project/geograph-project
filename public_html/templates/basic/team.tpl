@@ -1,7 +1,7 @@
 {assign var="page_title" value="the Geograph Team"}
 {include file="_std_begin.tpl"}
 
-<h3>the Geograph Team</h3>
+<h3>The Geograph team</h3>
 
 {if $team}
 
@@ -60,7 +60,7 @@
 
 {dynamic}
 {if $user->registered && ($user->stats.squares gt 20)}
-	<p>If you are interested in helping out with moderation then please visit your <a href="/profile.php?edit=1">profile update page</a>, there you will find a button to get a feel for the moderation process. Please note that we however have a long waiting list!</p>
+	<p>If you are interested in helping out with moderation then please visit your <a href="/profile.php?edit=1">profile update page</a>, at the bottom of which there is a button to apply and get a feel for the moderation process. Please note, however, that we have a long waiting list!</p>
 {/if}
 {/dynamic}
  

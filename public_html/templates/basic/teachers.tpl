@@ -18,9 +18,9 @@
 
 <h2>Geograph for Teachers</h2>
  
-<p>This page is intended as a quick start guide for using Geograph in the Classroom, please get in <a href="/contact.php">contact</a> if you have an idea for something to add here.</p>
+<p>This page is intended as a quick start guide for using Geograph in the classroom. Please get in <a href="/contact.php">touch</a> if you have an idea for something to add here.</p>
 
-<p>Probably mostly of interest for Geography and maybe History lessens, but also finds plenty of other uses such as inspiration for creative writing.</p>
+<p>Probably mostly of relevance to Geography and maybe History lessons, but there are also plenty of other uses such as inspiration for creative writing.</p>
  
 
 <h3>Understanding the Map</h3>

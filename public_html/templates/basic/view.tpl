@@ -18,7 +18,7 @@
 
 <p>This photograph has been rejected by the site moderators, and is only viewable by you.</p>
 
-<p>You can find any messages related to this image on the <a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">edit page</a>, where you can reply or raise new concerns in the "Please tell us what is wrong..." box, which will be communicated with site moderators. You may also like to read this general article on common <a href="/article/Reasons-for-rejection">Reasons for rejection</a>.
+<p>You can find any messages related to this image on the <a title="Edit title and comments" href="/editimage.php?id={$image->gridimage_id}">edit page</a>, where you can reply or raise new concerns in the "Please tell us what is wrong..." box. These will be communicated to site moderators. You may also like to read this general article on common <a href="/article/Reasons-for-rejection">reasons for rejection</a>.
 
 </div>
 <br/>
@@ -131,7 +131,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 		<big><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}><b>Change Image Details</b></a></big><br/>
 		(or raise a query with a moderator)
 	{else}
-		<a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}>Suggest an Update to this Image</a>
+		<a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}>Suggest an update to this image</a>
 	{/if}
 </td>
 {if $user->user_id ne $image->user_id}
@@ -161,7 +161,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	{$rastermap->getScriptTag()}
 {else}
 	<div class="rastermap" style="width:{$rastermap->width}px;height:{$rastermap->width}px;position:relative">
-		Map Coming Soon...
+		Map coming soon...
 	
 	</div>
 {/if}
@@ -269,12 +269,12 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{include file="_overview.tpl"}
 	<div style="width:inherit;margin-left:20px;"><br/>
 
-	<a title="Send an Electronic Card" href="/ecard.php?image={$image->gridimage_id}">Forward to a<br/>Friend by email</a><br/><br/>
+	<a title="Send an electronic card" href="/ecard.php?image={$image->gridimage_id}">Forward to a<br/>friend by email</a><br/><br/>
 
 <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;username=geograph"><img src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share"/></a>
 <br/><br/>
 
-	<a href="{$sitemap}">Text listing of Images in {$image->grid_reference}</a>
+	<a href="{$sitemap}">Text listing of images in {$image->grid_reference}</a>
 
 
 	</div>
@@ -364,7 +364,7 @@ function redrawMainImage() {
 {/if}
 {else}
 <h2>Sorry, image not available</h2>
-<p>The image you requested is not available. This maybe due to software error, or possibly because
+<p>The image you requested is not available. This maybe due to software error, or because
 the image was rejected after submission - please <a title="Contact Us" href="/contact.php">contact us</a>
 if you have queries</p>
 {/if}
