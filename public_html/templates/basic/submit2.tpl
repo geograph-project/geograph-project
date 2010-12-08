@@ -199,8 +199,8 @@ AttachEvent(window,'load',readHash,false);
 
 
 
-	<p>Complete the following steps in any order (and continue onto the following steps while the photo is still uploading!).
-	 A overview map is provided to help locate a square, but is optional, can directly enter a grid reference in step 2 if wish.
+	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
+	 A overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.
 	 If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
 
 
@@ -233,13 +233,13 @@ AttachEvent(window,'load',readHash,false);
 		<iframe src="about:blank" id="iframe2" width="100%" height="500px"></iframe>
 	</div>
 <!-- # -->
-	<a id="sh3" href="#" class="sh sn" onclick="return clicker(3,null,event.shiftKey)"><span id="se3">+</span> Step 3 - Title/Description and Date</a>
+	<a id="sh3" href="#" class="sh sn" onclick="return clicker(3,null,event.shiftKey)"><span id="se3">+</span> Step 3 - Add Title/Description and Date</a>
 
 	<div id="sd3" class="sd">
 		<iframe src="about:blank" id="iframe3" name="iframe3" width="100%" height="700px"></iframe>
 	</div>
 <!-- # -->
-	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4,null,event.shiftKey)"><span id="se4">+</span> Step 4 - Confirm Licencing and Finish</a>
+	<a id="sh4" href="#" class="sh sn" onclick="return clicker(4,null,event.shiftKey)"><span id="se4">+</span> Step 4 - Confirm Licensing and Finish</a>
 
 	<div id="sd4" class="sd" style="border:2px solid red; padding:4px;border-top:0">
 		<div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
@@ -347,7 +347,7 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
-	<input type="submit" value="Preview Submission in a new window" onclick="return previewImage()" id="previewButton"/>
+	<input type="submit" value="Preview submission in a new window" onclick="return previewImage()" id="previewButton"/>
 
 	<input type="checkbox" name="spelling"/>Check Spelling
 	<sup style="color:red">Experimental!</sup>
