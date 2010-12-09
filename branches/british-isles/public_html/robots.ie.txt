@@ -2,11 +2,13 @@
 # * $Id$
 
 User-agent: *
+Disallow: /stuff/canonical.php
 Disallow: /mapbrowse.php
 Disallow: /map/
 Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
+Disallow: /mapfixer.php
 Disallow: /admin/
 Disallow: /search.php
 Disallow: /full-text.php
@@ -59,6 +61,7 @@ Disallow: /feed/
 
 User-Agent: Googlebot
 User-Agent: Slurp
+Disallow: /stuff/canonical.php
 Disallow: /profile/*/map
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
@@ -66,6 +69,7 @@ Disallow: /map/
 Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
+Disallow: /mapfixer.php
 Disallow: /admin/
 Disallow: /search.php?
 Disallow: /full-text.php?

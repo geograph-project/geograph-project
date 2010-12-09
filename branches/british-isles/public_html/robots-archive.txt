@@ -3,11 +3,13 @@
 
 User-agent: *
 Crawl-Delay: 7
+Disallow: /stuff/canonical.php
 Disallow: /mapbrowse.php
 Disallow: /map/t
 Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
+Disallow: /mapfixer.php
 Disallow: /admin/
 Disallow: /search.php
 Disallow: /full-text.php
