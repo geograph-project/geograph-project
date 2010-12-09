@@ -22,6 +22,13 @@
  */
 
 require_once('geograph/global.inc.php');
+
+if (empty($CONF['forums'])) {
+	$smarty = new GeographPage;
+        $smarty->display('static_404.tpl');
+        exit;	
+}
+
 init_session();
 
 $smarty = new GeographPage;

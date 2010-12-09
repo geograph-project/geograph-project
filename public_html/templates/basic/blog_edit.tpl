@@ -81,7 +81,7 @@
 
 	<div class="fieldnotes">Optional tag(s) for this entry, describing what it about. Seperate multiple tags with commas.<br/><br/>
 
-	Suggestions (click to use): <i>But feel free to use your own!</i><br/><a href="javascript:void()" onclick="return useit(this.innerText)">Introducing Myself</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Geographing Trip Report</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Interesting Image</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Off-Topic Ramblings</a>.</div>
+	Suggestions (click to use): <i>But feel free to use your own!</i><br/><a href="javascript:void()" onclick="return useit(this.innerText)">Introducing Myself</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Geographing Trip Report</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Interesting Image</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Completing a Hectad</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Off-Topic Ramblings</a>.</div>
 
 	{if $errors.title}</div>{/if}
 </div>
