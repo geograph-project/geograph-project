@@ -18,23 +18,27 @@
 
 {if $step eq 1}
 	{if $user->stats.images gt 10}
+<<<<<<< .mine
+	<p align="center">&middot; <a href="/help/submission">View alternative submission methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
+=======
 	<p align="center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot; <a href="/article/Content-on-Geograph">Submit a Collection</a> &middot;</p>
+>>>>>>> .r6967
 	{/if}
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
 {if $user->stats.images eq 0}
-	<div style="background-color:pink; color:black; border:2px solid red; padding:10px; margin-bottom:20px"><b>First time here?</b> - if so you might like to have a look at our <a href="/faq.php">FAQ</a>, or <a href="/ask.php">ask a question</a>.</div>
+	<div style="background-color:pink; color:black; border:2px solid red; padding:10px; margin-bottom:20px"><b>First time here?</b> If so you might like to have a look at our <a href="/faq.php">FAQs</a>, or <a href="/ask.php">ask a question</a>.</div>
 
 {/if}
 
 {if $user->stats.images < 20}
 <div style="width:180px;margin-left:10px;margin-bottom:100px;float:right;font-size:0.8em;padding:10px;background:#dddddd;position:relative; border:1px solid gray; z-index:100">
-<h3 style="margin-bottom:0;margin-top:0">Need Help?</h3>
+<h3 style="margin-bottom:0;margin-top:0">Need help?</h3>
 
 <p>If you enter the exact location, e.g. <b>TL 246329</b> we'll figure
 out that it's in the <b>TL 2432</b> 1km square, but we'll also retain
-the more precise coordinate for accurately mapping the location of the
+the more precise coordinates for accurately mapping the location of the
 photograph.</p>
 
 <p>When you press Next, we'll find out if there are any existing photographs
@@ -59,9 +63,9 @@ geographing</a> first.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
-		<p>Begin by choosing the grid square you wish to submit.</p>
+		<p>Begin by choosing the grid square for which you wish to submit.</p>
 
-		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, specify the photographer location in the next step.</p>
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; specify the photographer location in the next step.</p>
 
 		<p><label for="grid_reference">Enter the grid reference
 		(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
@@ -79,9 +83,9 @@ geographing</a> first.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
-		<p>Begin by choosing the grid square you wish to submit.</p>
+		<p>Begin by choosing the grid square for which you wish to submit.</p>
 
-		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; if you wish you can specify a photographer location in the next step.</p>
 
 		<p><label for="gridsquare">Select the 1km grid square below...</label><br/><br/>
 		<select id="gridsquare" name="gridsquare">
@@ -106,7 +110,7 @@ geographing</a> first.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
-		<p><label for="jpeg_exif"><b>Upload an image with Locational information attached</b></label> <br/>
+		<p><label for="jpeg_exif"><b>Upload an image with locational information attached</b></label> <br/>
 
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
@@ -172,7 +176,7 @@ geographing</a> first.</p>
 
 	{if !$user->stats.images || $user->stats.images < 100 || !$last_imagetaken}
 	<div style="color:black; background-color:yellow; font-size:0.7em; padding:3px; border: 1px solid orange">Please avoid submitting images with overlaid text or borders; they should be cropped before submission. Thank you for your attention to this matter.<br/><br/>
-	You should only submit photos you have taken yourself, or where you can specifically act as a Licensor on behalf of the original author.</div><br/>
+	You should only submit photos you have taken yourself, or those for which you have been licensed to act by the original author.</div><br/>
 	{/if}
 
 	{if $rastermap->enabled}
@@ -183,7 +187,7 @@ geographing</a> first.</p>
 		{if $imagecount gt 0}
 			<div style="color:#440000">We currently have
 			{if $imagecount eq 1}an image{else}{$imagecount} images{/if} {if $totalimagecount && $totalimagecount > $imagecount} ({$totalimagecount} including hidden){/if}
-			uploaded for {newwin title="View Images for `$gridref`" href="/gridref/`$gridref`" text=`$gridref`}, add yours now!</div>
+			uploaded for {newwin title="View images for `$gridref`" href="/gridref/`$gridref`" text=`$gridref`}, add yours now!</div>
 		{else}
 			<p style="color:#004400">Fantastic! We don't yet have an image for {$gridref}! {if $totalimagecount && $totalimagecount ne $imagecount} (but you have {$totalimagecount} hidden){/if}</p>
 		{/if}
@@ -200,7 +204,7 @@ geographing</a> first.</p>
 		<input id="jpeg" name="jpeg" type="file" />
 
 		{/if}
-		<div><small><small><i>If your image is over 640 pixels in either direction, <b>you will be offered chance to upload the largest version</b>. <br/>If you have presized to 640px please aim to have the filesize under 100kb and in anycase under 200kb, thanks!</i></small></small></div>
+		<div><small><small><i>If your image is over 640 pixels in either direction, <b>you will be offered the chance to upload the largest version</b>. <br/>If you have pre-sized to 640px please aim to have the filesize preferably under 100kb and in any case under 200kb, thanks!</i></small></small></div>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<hr/>
 
@@ -333,9 +337,9 @@ you'll get a geograph point added to your profile and the warm glow that comes
 with it.</p>
 <p>So what makes an image a genuine geograph?</p>
 <ul>
-<li>The image subject must be within grid square {$gridref}, and the photographer must be too.</li>
-<li>You must clearly show at close range one of the main geographical features within the square</li>
-<li>You should include a short description relating the image to the map square</li>
+<li>The image subject and the photographer must both be within the grid square {$gridref}.</li>
+<li>You must clearly show at close range one of the main geographical features within the square.</li>
+<li>You should include a short description relating the image to the map square.</li>
 <li>The image should be a natural image as a human would see it, please avoid digitally altering the image to add dates, texts etc, or creating montages, similarly turn off date stamping performed by a camera. A little tweaking of brightness/contrast and/or cropping is fine and encouraged. </li>
 </ul>
 
@@ -484,17 +488,17 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	{/if}
 	Date ]
 
-	<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month then that's fine)</span></p>
+	<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month that's fine)</span></p>
 
 
-	<p align="center"><input type="button" value="Preview Submission in a new window"  onclick="document.getElementById('previewButton').click();"/>
+	<p align="center"><input type="button" value="Preview submission in a new window"  onclick="document.getElementById('previewButton').click();"/>
 
 <div style="position:relative; background-color:#dddddd; border: 1px solid red; padding-left:10px;padding-top:1px;padding-bottom:1px;">
 <h3>Image Classification</h3>
 
 <p><label for="user_status">I wish to suggest supplemental classification:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
 
-<p>Tick this box only if you believe your photograph is not a 'geograph'. The moderator will just use the box as a suggestion, so if you are not sure, leave it unticked. Note: There can be many geograph images per square.</p>
+<p>Tick this box only if you believe your photograph is not a 'geograph'. The moderator will just use the box as a suggestion, so if you are not sure, leave it unticked. Note: there can be many geograph images per square.</p>
 
 <p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this {newwin href="/article/Geograph-or-supplemental" text="article on how images are moderated"}.</span></p>
 </div>
