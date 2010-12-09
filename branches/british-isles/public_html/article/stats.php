@@ -150,7 +150,7 @@ if (count($page)) {
 	$output = preg_replace('/\!(\[+)/e','str_repeat("¬",strlen("$1"))',$output);
 
 	
-	$pages = preg_split("/\n+\s*~{7,}\s*[\w\s\{\}\+-]*\n+/",$output);
+	$pages = preg_split("/\n+\s*~{7,}\s*[\w\s\{\}\+:-]*\n+/",$output);
 if ($_GET['ddd'])
 print_r($pages);	
 	print "<div>Pages: ".count($pages)."</div>";

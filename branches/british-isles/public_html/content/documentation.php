@@ -49,10 +49,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	select content.url,content.title,content.user_id,coalesce(category_name,'Help Document') as category_name,realname
 	from content 
 		inner join user using (user_id)
-		left join article on (foreign_id = article_id)
+		left join article on (foreign_id = article_id and source = 'article')
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 
-	where category_name like '%Geograph %' or source = 'help'
+	where (category_name like '%Geograph %' or source = 'help')
 
 	order by sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
 	
@@ -65,5 +65,5 @@ if (!$smarty->is_cached($template, $cacheid))
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+
+

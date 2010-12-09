@@ -28,11 +28,14 @@ $smarty = new GeographPage;
 
 $cacheid = $USER->registered.'.'.$CONF['forums'];
 
+if (empty($_GET['scope']) && !empty( $_SESSION['content_scope'])) {
+	$_GET['scope'] = $_SESSION['content_scope'];
+} 
 if (empty($_GET['scope'])) {
 	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
 		$_GET['scope'] = 'article,gallery,help';
 	} else {
-		$_GET['scope'] = 'article,gallery,help,themed';
+		$_GET['scope'] = 'article,gallery,help,blog';
 	}
 }
 
@@ -69,6 +72,8 @@ switch ($order) {
 		$title = "Most Images"; break;
 	case 'created': $sql_order = "created desc";
 		$title = "Recently Created"; break;
+	case 'rand': $sql_order = "rand()";
+		$title = "Random Order"; break;
 	case 'title': $sql_order = "title";
 		$title = "By Collection Title";break;
 	case 'updated':
@@ -76,9 +81,16 @@ switch ($order) {
 		$title = "Recently Updated";
 		$order = 'updated';
 }
-$orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated','images'=>'Most Images');
+$orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated','images'=>'Most Images','rand'=>'Random Order');
 
-$sources = array('portal'=>'Portal', 'article'=>'Article', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'other'=>'Other');
+$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'other'=>'Other');
+
+if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+	unset($sources['themed']);
+}
+if (!empty($_GET['scope']) && $_GET['scope'] == 'all') {
+	$_GET['scope'] = array_keys($sources);
+}
 
 if (!$smarty->is_cached($template, $cacheid)) {
 
@@ -107,6 +119,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 		foreach ($s as $scope) {
 			switch($scope) {
+				case 'blog':
 				case 'article':
 				case 'gallery':
 				case 'themed':
@@ -136,6 +149,11 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 		}
 		$extra['scope'] = implode(',',$s);
+
+		if ($USER->registered) {
+			$_SESSION['content_scope'] = implode(',',$filters['source']);
+		}
+
 	}
 	
 	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
@@ -180,7 +198,10 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			}
 			$sphinx->addFilters($filters);
 		}
-	
+
+		$cl = $sphinx->_getClient();		
+		$cl->SetFieldWeights(array('title'=>100));	
+
 		$ids = $sphinx->returnIds($pg,'content_stemmed');
 		
 		$smarty->assign("query_info",$sphinx->query_info);

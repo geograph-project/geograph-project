@@ -241,6 +241,7 @@ The <b>Geograph Website</b>:
 <h3>What an earth is a TPoint</h3>
 	<p>TPoint or 'Temporal Point' is a working title (subject to change) for a new kind of Points.
 	A contributor can gain a TPoint for submitting a contemporary photo to a square that hasn't had a photo for 5 years. The aim is to increase the date range of available photos per square.</p>
+	<p>Squares available for a recent photo are shown in Orange on the <a href="/map/?recent=1">Recent Only coverage map</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 

@@ -108,6 +108,8 @@ function termExtraction(id,context,query) {
 				results['results['+id+']'] = data.ResultSet.Result.join('|');
 				
 				document.forms['progressForm'].elements['terms'].value = data.ResultSet.Result.join('|');
+			} else {
+				 document.forms['progressForm'].elements['terms'].value = "**none**";
 			}
 			
 			c=c+1;

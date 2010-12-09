@@ -1098,7 +1098,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			
 			$docs = array();
 			foreach ($engine->results as $idx => $image) {
-				$docs[$idx] = strip_tags($image->comment?$image->comment:$image->title)."<br>Category: ".strip_tags($image->imageclass);
+				$docs[$idx] = strip_tags($image->comment?$image->comment:$image->title)." Category: ".strip_tags($image->imageclass);
 			}
 			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $sphinx->q);
 			
@@ -1188,6 +1188,9 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$pg = 1;
 
 			$sphinx->prepareQuery($engine->criteria->searchtext." @source -themed");
+			
+	                $cl = $sphinx->_getClient();
+        	        $cl->SetFieldWeights(array('title'=>20));
 
 			$ids = $sphinx->returnIds($pg,'content_stemmed');
 
@@ -1199,7 +1202,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 				$id_list = implode(',',$ids);
 				
 				$related = $db->getAll("
-					SELECT c.url,c.title,'Collection' AS `type`,realname,user_id
+					SELECT c.url,c.title,'Collection' AS `type`,realname,user_id,images
 					FROM content c
 					LEFT JOIN user u USING (user_id)
 					WHERE c.content_id IN($id_list)

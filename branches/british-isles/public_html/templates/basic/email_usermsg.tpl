@@ -5,7 +5,7 @@
 
 
 ------------------------------------------------------------
-Forward abuse complaints to: rogersgm@gmail.com
+Forward abuse complaints to: support@geograph.org.uk
 {/dynamic}
  	
 

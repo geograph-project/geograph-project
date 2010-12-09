@@ -231,6 +231,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			$cl->SetMatchMode ( $mode );
 			$cl->SetLimits($offset,25);
 		}
+
+		$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
+		$q = preg_replace('/@notshared\b/','@!(snippet,snippet_title,snippet_id)',$q);
+		$q = preg_replace('/@shared\b/','@(snippet,snippet_title,snippet_id)',$q);
+		$q = preg_replace('/@not(\w+)\b/','@!($1)',$q);
+
 		$res = $cl->Query ( $q, $CONF['sphinx_prefix'].$index );
 		
 		if (strlen($q) < 64 && $mode != SPH_MATCH_EXTENDED && !isset($_GET['inner']) && !isset($_GET['feedback']))

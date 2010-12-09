@@ -131,7 +131,7 @@ if (isset($_POST) && isset($_POST['submit'])) {
 		if (!empty($_POST['q'])) {
 			$gr2 = preg_replace('/([A-Z])/e', '"%".bin2hex(\'\\1\')', $gs->grid_reference);
 
-			$link = "http://{$_SERVER['HTTP_HOST']}/search.php?grid_reference={$gr2}&searchtext=".urlencode($_POST['q'])."&distance=2&do=1";
+			$link = "http://{$_SERVER['HTTP_HOST']}/search.php?gridref={$gr2}&searchtext=".urlencode($_POST['q'])."&distance=2&do=1";
 			$name = "Auto-updating Search for related images";
 			$links[] = "* [url=$link]{$name}[/url]";
 		}

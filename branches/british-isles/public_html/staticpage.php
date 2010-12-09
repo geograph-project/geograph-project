@@ -66,5 +66,26 @@ customExpiresHeader(86400*3,false,true);
 
 $smarty->assign("api_host",preg_replace("/^\w+/",'api',$CONF['CONTENT_HOST']));
 
+if ($template == 'static_sitemap.tpl' && !$smarty->is_cached($template)) {
+
+	$remote = file_get_contents("http://www.geographs.org/links/sitemap2.php?ajax&experimental=N&internal=Y&site=www.geograph.org.uk");
+
+	if (empty($remote) || strlen($remote) < 512) {
+		if ($memcache->valid) {
+			$mkey = $_SERVER['HTTP_HOST'];
+			$remote =& $memcache->name_get('links',$mkey);
+		}
+	}
+
+	if ($memcache->valid) {
+		$mkey = $_SERVER['HTTP_HOST'];
+		$memcache->name_set('links',$mkey,$remote,$memcache->compress,$memcache->period_long*2);
+	}
+
+	$remote = str_replace('"?ajax=&amp;','"http://www.geographs.org/links/sitemap.php?',$remote);
+
+	$smarty->assign('content',$remote);
+}
+
 $smarty->display($template);
 

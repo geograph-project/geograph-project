@@ -101,10 +101,10 @@
 <div class="field">
 	{if $errors.ids1}<div class="formerror"><p class="error">{$ids1.content}</p>{/if}
 
-	<label for="ids1"><b>Image IDs 1</b>:</label> (Recommemnded maximum 10 images, if Large)
+	<label for="ids1"><b>Image IDs 1</b>:</label> (Recommended maximum 10 images, if Large)
 	<textarea rows="10" cols="80" name="ids1" style="width:38em">{$ids1|escape:"html"}</textarea></p>
 
-	<div class="fieldnotes">Just a list of images in any format (anything other than a number is a sperator). So can copy from the Marked list, or even just list links to the photo pages. TIP: run a search on the right, and the drag the thumbnail into this box, (<b>don't</b> worry about adding spaces between links)</div>
+	<div class="fieldnotes">Just a list of images in any format (anything other than a number is a separator). So can copy from the Marked list, or even just list links to the photo pages. TIP: run a search on the right, and the drag the thumbnail into this box, (<b>don't</b> worry about adding spaces between links)</div>
 
 	{if $errors.content}</div>{/if}
 </div>
@@ -137,7 +137,7 @@
 <div class="field">
 	{if $errors.ids2}<div class="formerror"><p class="error">{$ids2.content}</p>{/if}
 
-	<label for="ids2">Image IDs 2:</label> (Recommemnded maximum 50 images)
+	<label for="ids2">Image IDs 2:</label> (Recommended maximum 50 images)
 	<textarea rows="10" cols="80" name="ids2" style="width:38em">{$ids2|escape:"html"}</textarea></p>
 
 	{if $errors.content}</div>{/if}
@@ -164,7 +164,7 @@
 	<label for="searchqq">Search Query:</label>
 	<input type="text" name="q" id="searchqq" value="" maxlength="60" size="40"/>
 
-	<div class="fieldnotes">Used to fine more images eg for a Article about "St Cuthbert's Church" could enter "church OR Cuthbert". (Adds a link to the article for images near the supplied grid reference)</div>
+	<div class="fieldnotes">Used to find more images eg for a Article about "St Cuthbert's Church" could enter "church OR Cuthbert". (Adds a link to the article for images near the supplied grid reference)</div>
 
 	{if $errors.q}</div>{/if}
 </div>

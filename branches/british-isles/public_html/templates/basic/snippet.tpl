@@ -69,7 +69,7 @@
 
 {if $images}
 	{if $images > 25}
-		<p><b><a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">{$images} images</a> use this description. Preview shown below:</b></p>
+		<p><b><a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">{$images} images</a> use this description. Preview sample shown below:</b></p>
 	{else}
 		<p><b>{$images} image{if $images == 1} uses{else}s use{/if} this description:</b></p>
 	{/if}
