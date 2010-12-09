@@ -134,7 +134,7 @@ Within radius:{if $centisquare}
 		{/if}
 
 		{if $item.images}
-		Used on {$item.images|thousands} images {if $item.images != $item.yours}(of which {$item.yours|thousands} are yours){/if}
+		Used on {$item.images|thousends} images {if $item.images != $item.yours}(of which {$item.yours|thousends} are yours){/if}
 		{/if}</div>
 
 		<br style="clear:both"/>
