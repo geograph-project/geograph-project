@@ -380,7 +380,7 @@ END;
 		}
 
 	//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
-		if (isset($GLOBALS['smarty']) && !preg_match('/@viewsquare/',$sphinx->q)) {
+		if (isset($GLOBALS['smarty']) && !preg_match('/@viewsquare/',$sphinx->q) && strpos($_SERVER['HTTP_REFERER'],'?i=') === FALSE) {
 		
 			$suggestions = array();
 			if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && empty($this->criteria->sphinx['x']) ) {
@@ -417,7 +417,7 @@ END;
 							'localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}"
 							));
 					}
-				} elseif (empty($CONF['disable_spelling']) && !preg_match('/(@\w+\b|\b\w+:\s*\w+)/',$this->criteria->searchtext)) {
+				} elseif (empty($CONF['disable_spelling']) && !preg_match('/(@\w+\b|\b\w+:\s*\w+|\/\d|"\^|^\^|centi\()/',$this->criteria->searchtext)) {
 					require_once("3rdparty/spellchecker.class.php");
 					$original = preg_replace('/ftf:\d/','',$this->criteria->searchtext);
 					$correction = SpellChecker::Correct($original);
