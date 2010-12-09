@@ -32,10 +32,12 @@ $USER->login(false);
 
 $smarty = new GeographPage;
 
-        $db=NewADOConnection($GLOBALS['DSN']);
+if (!$smarty->is_cached($template, $cacheid)) {
 
         if ($CONF['forums']) {
-                //let's find recent posts in the announcements forum made by
+	        $db=NewADOConnection($GLOBALS['DSN']);
+        
+	        //let's find recent posts in the announcements forum made by
                 //administrators
                 $sql="select u.user_id,u.realname,t.topic_title,p.post_text,t.topic_id,t.topic_time, posts_count - 1 as comments
                         from geobb_topics as t
@@ -46,7 +48,7 @@ $smarty = new GeographPage;
                         t.forum_id=1
                         group by t.topic_id
                         order by t.topic_id desc limit 3";
-                $news=$db->CacheGetAll(3600,$sql);
+                $news=$db->GetAll($sql);
                 if ($news)
                 {
                         foreach($news as $idx=>$item)
@@ -59,7 +61,7 @@ $smarty = new GeographPage;
                 $smarty->assign_by_ref('news2', $news);
 
         }
-
+}
 
 $smarty->display('login_success.tpl');
 
