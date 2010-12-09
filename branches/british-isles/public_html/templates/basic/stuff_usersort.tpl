@@ -21,7 +21,7 @@
 	
 	<p>Below you will be shown pairs of images, you are asked to simply click on the image that, in your opinion, {$v_info.that}. Yes this is very subjective, this is simply an experiment to see how images can be classified by {$v_info.name}.</p>
 	
-	<p>Please treat this as a bit of fun, and don't get spend too long deciding, just go with your gut instinct!</p>
+	<p>Please treat this as a bit of fun, and don't spend too long deciding, just go with your gut instinct!</p>
 	
 	
 	{foreach from=$pairs key=i item=row name="rows"}

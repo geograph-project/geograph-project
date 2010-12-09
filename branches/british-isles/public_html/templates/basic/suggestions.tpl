@@ -12,7 +12,7 @@
 	<p><a href="/suggestions.php">Own images</a> / <b>On others</b></p>
 {/if}	
 
-<p>Click a column header to resort a list</p>
+<p>Click a column header to re-sort a list</p>
 
 <h3>New Suggestions</h3>
 

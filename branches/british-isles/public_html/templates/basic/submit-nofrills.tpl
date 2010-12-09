@@ -10,9 +10,9 @@
 	
 	<p>This submission process is designed to be very quick - and <b>very little validation of input is done - be careful</b>.</p>
 	
-	<p>In particular, there is no maps, no calculation of view direction, and category entry is a plain text box. The subject grid reference isnt even checked to see if a valid square - only fails after image submission.</p>
+	<p>In particular, there are no maps, no calculation of view direction, and category entry is a plain text box. The subject grid reference isn't even checked to see if it's a valid square - it only fails after image submission.</p>
 	
-	<p>Please only use this process, if you double check your grid-references, category, and dates, as its very easy to input invalid data!</p>
+	<p>Please only use this process if you double-check your grid references, categories, and dates, as it's very easy to input invalid data!</p>
 	
 <form action="/submit2.php?nofrills" name="theForm" method="post">
 
@@ -68,7 +68,7 @@
 
 	</div>	
 	
-	<h3>Step 3 - Confirm Licencing and Finish</h3>
+	<h3>Step 3 - Confirm Licensing and Finish</h3>
 	
 		<div class="termsbox" style="margin:0">
 {dynamic}
