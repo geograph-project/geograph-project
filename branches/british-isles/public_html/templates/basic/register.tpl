@@ -35,6 +35,26 @@
 
 	<form action="register.php" method="post">
 
+{if $empty_referer}
+<div  class="interestBox" id="msgg">
+	<h1>Important Notice</h1>
+	<p>We do not tolerate spam - images are moderated, and all forum posts (particully from new users) are subject to moderation.</p>
+	<p>Also note that we have instigated a new policy that new users are don't get functional links on their profile page (making the page invisble to search engines).</p>
+<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+	<p style="color:red">This makes geograph a useless target for spammers attempting to use Geograph profile pages to get links to their site.</p>
+</div>
+<script type="text/javascript">
+{literal}
+function hide_message() {
+	hide_tree(101);
+	document.getElementById('msgg').style.width='350px';
+	document.getElementById('msgg').style.float='right';
+}
+{/literal}
+</script>
+<a href="javascript:void(hide_message());" id="show101">close message</a>
+<div id="hide101" style="display:none">
+{else}
 <div class="interestBox" style="width:350px;float:right">
 	The websites:
 	<ul>
@@ -44,6 +64,7 @@
 	</ul>
 	... share the same user/registration database. An account created here can be used right away on either site.
 </div>
+{/if}
 
 	<p>You must register before you can upload photos, but it's quick
 	and painless and free. </p>
@@ -73,11 +94,11 @@
 	<br/>
 
 	<input type="submit" name="register" value="Register"/>
+</div>
 	</form>  
 
 	<p>We won't sell or distribute your
 	email address, we hate spam, we really do.</p>
-
 {/if}
 
 {/dynamic}
