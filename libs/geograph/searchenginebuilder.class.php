@@ -619,7 +619,7 @@ class SearchEngineBuilder extends SearchEngine
 						//month only
 						$searchdesc .= ", submitted during ".$dataarray['submitted_startString'];
 						$dataarray['submitted_end'] = "";
-					} elseif (preg_match("/0{4}-0{2}-([0-3]?[1-9]+|10|20|30)/",$dataarray['submitted_start']) > 0) {
+					} elseif (preg_match('/0{4}-0{2}-([0-3]?[1-9]+|10|20|30)$/',$dataarray['submitted_start']) > 0) {
 						//day only
 						$searchdesc .= ", submitted in the last ".$dataarray['submitted_startDay']." days";
 						$dataarray['submitted_end'] = "";

@@ -606,7 +606,7 @@ class GridImage
 			$db=&$this->_getDB(30); 
 
 			//find articles
-			$this->collections = $db->CacheGetAll(3600*6,"
+			$this->collections = $db->CacheGetAll(3600*3,"
 				SELECT c.url,c.title,'Article' AS `type`
 				FROM gridimage_content gc
 					INNER JOIN content c USING (content_id) 
@@ -1983,7 +1983,10 @@ class GridImage
 				list($lat,$long) = $conv->internal_to_wgs84($square->x,$square->y,$square->reference_index);
 			}
 	
-			$sql="REPLACE INTO gridimage_search
+			$sql="DELETE FROM gridimage_search WHERE gridimage_id = '{$this->gridimage_id}'";
+			$db->Execute($sql);
+
+			$sql="INSERT INTO gridimage_search
 			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)

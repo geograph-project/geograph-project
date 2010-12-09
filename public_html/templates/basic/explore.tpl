@@ -24,7 +24,7 @@
 <h3>Selections...</h3>
 <ul class="explore">
 
-	<li><a href="/thumbed-weekly.php"><b>This weeks popular images</b></a> - view images being <a href="/faq.php#thumbsup">thumbed</a></li>
+	<li><a href="/thumbed-weekly.php"><b>This week's popular images</b></a> - view images being <a href="/faq.php#thumbsup">thumbed</a></li>
 
 	<li><a href="/explore/searches.php"><b>Featured Searches</b></a> - hand picked example searches</li>
 

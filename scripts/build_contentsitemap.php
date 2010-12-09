@@ -86,7 +86,7 @@ $urls_per_sitemap=1000;
 
 //how many sitemap files must we write?
 printf("Counting users...\r");
-$images=$db->GetOne("select count(*) from content where source != 'themed'");
+$images=$db->GetOne("select count(*) from content where source IN('article','gallery','help','blog')");
 $sitemaps=ceil($images / $urls_per_sitemap);
 
 //go through each sitemap file...
@@ -109,7 +109,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$offset=($sitemap-1)*$urls_per_sitemap;
 	$recordSet = &$db->Execute(
 		"select url,date(updated) as updated ".
-		"from content where source != 'themed' ".
+		"from content where source IN('article','gallery','help','blog') ".
 		"limit $offset,$urls_per_sitemap");
 	
 	//write one <url> line per result...

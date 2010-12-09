@@ -1,5 +1,8 @@
 {assign var="page_title" value="Canonical Categories"}
 {include file="_std_begin.tpl"}
+<div class="interestBox" style="background-color:pink">
+	The Canonical Category project is an highly experimental attempt to create a simplified category listing. The project is ongoing. <a href="?">Read more about it here</a>
+</div>
 
 <h2><a href="?">Canonical Category Mapping</a> :: Tree</h2>
 	
@@ -9,11 +12,11 @@
 		{assign var="last" value=""}
 
 		{foreach from=$list item=item}
-			{if $last != $item.canonical}
+			{if $last != $item.canonical|lower}
 				{if $last}
 					</div>
 				{/if}
-				{assign var="last" value=$item.canonical}
+				{assign var="last" value=$item.canonical|lower}
 				<h3><a href="/search.php?canonical={$item.canonical|escape:"url"}&amp;do=1">{$item.canonical|escape:"html"}</a></h3>
 				<div>&middot; 
 			{/if}

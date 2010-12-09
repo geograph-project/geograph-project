@@ -128,7 +128,7 @@
 				</select></label></td> 
 		  </tr> 
 		</table> 
-		{if !$engine->fullText}
+
 		<br/> -or - <br/><br/>
 		 For a large result set covering a wide area, this option allows the application
 		 to just show the photos within the area of view. As you scroll around, will
@@ -151,7 +151,6 @@
 		<ul><li> (if you have GE4+ it is recommended to use the <a href="/kml.php">superlayer</a>, however you will not get the filtering of the results, and will see all images)</li></ul>
 		
 		<input type="hidden" name="simple" value="1"/>
-		{/if}
 		
 		
 		<br style="clear:both"/>
