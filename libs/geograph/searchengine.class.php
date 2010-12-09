@@ -417,7 +417,7 @@ END;
 							'localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}"
 							));
 					}
-				} elseif (empty($CONF['disable_spelling']) && !preg_match('/(@\w+\b|\b\w+:\s*\w+|\/\d|"\^|^\^|centi\()/',$this->criteria->searchtext)) {
+				} elseif (empty($CONF['disable_spelling']) && !preg_match('/(@\w+\b|\b\w+:\s*\w+|\/\d|"\^|^\^|centi\()/',$this->criteria->searchtext) && !isset($_GET['extension']) ) {
 					require_once("3rdparty/spellchecker.class.php");
 					$original = preg_replace('/ftf:\d/','',$this->criteria->searchtext);
 					$correction = SpellChecker::Correct($original);
