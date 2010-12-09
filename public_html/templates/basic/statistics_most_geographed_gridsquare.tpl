@@ -6,8 +6,8 @@
     <form method="get" action="{$script_name}">
 	<div class="interestBox"> 
 	<b>Grid Squares</b> |
-	<a href="/statistics/most_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Hectads :: 10km x 10km Squares</a> |
-	<a href="/statistics/most_geographed_myriad.php">Myriads :: 100km x 100km Squares</a> |
+	<a href="/statistics/most_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Hectads :: 10km x 10km squares</a> |
+	<a href="/statistics/most_geographed_myriad.php">Myriads :: 100km x 100km squares</a> |
 	<span class="nowrap">-
 	{if $references}<label for="ri">In</label> <select name="ri" id="ri">
 	{html_options options=$references selected=$ri}

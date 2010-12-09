@@ -10,8 +10,8 @@
 	
 	<table class="report sortable" id="events">
 	<thead><tr>
-		<td>Main Category</td>
-		<td>Canonical Category</td>
+		<td>Main category</td>
+		<td>Canonical category</td>
 
 	</tr></thead>
 	<tbody>

@@ -1,10 +1,10 @@
 {assign var="page_title" value="Non Geographed Hectad"}
 {include file="_std_begin.tpl"}
 
-<h2>Non Geographed Hectads</h2>
+<h2>Non-Geographed Hectads</h2>
 
     <form method="get" action="{$script_name}">
-	<div class="interestBox"><b>Not Geographed</b> | 
+	<div class="interestBox"><b>Non Geographed</b> | 
 	<a href="most_geographed.php{if $ri}?ri={$ri}{/if}">Mostly Geographed</a> | 
 	<a href="fully_geographed.php{if $ri}?ri={$ri}{/if}">Fully Geographed</a> Hectads -
 	{if $references}In <select name="ri">
@@ -13,11 +13,11 @@
 	<input type="submit" value="Go"></div>
     </form>
 
-<p>These are the Hectad with the least coverage so far, that is without any photos yet, go on photograph one!</p>
+<p>These are the hectads without any photos so far, go on photograph one!</p>
 
 
 <table class="report"> 
-<thead><tr><td>Square</td><td>Land Squares</td></tr></thead>
+<thead><tr><td>Square</td><td>Land squares</td></tr></thead>
 <tbody>
 
 {foreach from=$most key=id item=obj}

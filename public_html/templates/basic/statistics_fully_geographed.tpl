@@ -5,7 +5,7 @@
 <h2>Fully Geographed Hectads{if $myriad}, for Myriad {$myriad}{/if}</h2>
 
     <form method="get" action="{$script_name}">
-	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Not Geographed</a> | 
+	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Non Geographed</a> | 
 	<a href="most_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Mostly Geographed</a> | 
 	<b>Fully Geographed</b> Hectads -
 	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a> 
@@ -19,7 +19,7 @@
 
 <p>These are the 10km x 10km squares or hectads<a href="/help/squares">?</a> with full land coverage! This page only counts First Geographs.</p>
 
-<p style="font-size:0.8em">Click Mosaic for a large Map. Click a column header to change sort order.</p>
+<p style="font-size:0.8em">Click Mosaic for a large map. Click a column header to change sort order.</p>
 
 
 <table class="report sortable" id="table1"> 

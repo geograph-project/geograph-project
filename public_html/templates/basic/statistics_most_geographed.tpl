@@ -4,7 +4,7 @@
 <h2>Most Geographed Hectads{if $myriad}, for Myriad {$myriad}{/if}</h2>
 
     <form method="get" action="{$script_name}">
-	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Not Geographed</a> | 
+	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Non Geographed</a> | 
 	<b>Mostly Geographed</b> | 
 	<a href="fully_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Fully Geographed</a> Hectads -
 	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a> 
@@ -16,7 +16,7 @@
 	<input type="submit" value="Go"></span><br/>
 	
 	See also | <a href="/statistics/most_geographed_gridsquare.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Grid Squares{if $myriad} in {$myriad}{/if}</a> |
-	<a href="/statistics/most_geographed_myriad.php">Myriads :: 100km x 100km Squares</a> | 
+	<a href="/statistics/most_geographed_myriad.php">Myriads :: 100km x 100km squares</a> | 
 	</div>
     </form>
 

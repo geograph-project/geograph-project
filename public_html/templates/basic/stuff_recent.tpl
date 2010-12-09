@@ -3,7 +3,7 @@
 
 	<h2>Recently Viewed Photos <small><a href="{$script_name}">Reload</a></small></h2>
 
-	<div class="interestBox">An image is only registered when viewing the photo page. This page will show upto 30 images.</div>
+	<div class="interestBox">An image is only registered when viewing the photo page. This page will show up to 30 images.</div>
 	<br/>
 	{dynamic}
 		{if $results}
@@ -29,7 +29,7 @@
 				</div>
 			
 			<br/>
-			<div class="interestBox" style="font-size:0.8em">Note: This list is optimistic by nature, sometimes images aren't shown here, and/or the list may be periodically cleared. Just provided in the hope that it might be useful. Your browser history function should provide a more comprensive list.</div>
+			<div class="interestBox" style="font-size:0.8em">Note: This list is optimistic by nature, sometimes images aren't shown here, and/or the list may be periodically cleared. Just provided in the hope that it might be useful. Your browser history function should provide a more comprehensive list.</div>
 		{else}
 			<p>Nothing to see here.</p>
 		{/if}

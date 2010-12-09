@@ -22,7 +22,7 @@
 <h2>Weekly Leaderboard :: {$heading|replace:'<br/>':' '}</h2>
 
 <p>Here is a list of contributors in the past 7 days, ordered by
-number of <br/><big>{$desc}</big> (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
+number of <big>{$desc}</big> (see <a title="Frequently Asked Questions" href="/help/stats_faq">FAQ</a> 
 for details). {if $pending}The "pending" column gives some idea of 
 how much each person will climb when their pictures are moderated!{/if}</p>
 

@@ -4,9 +4,9 @@
     <h2>Overview Statistics for Geograph Britain and Ireland</h2>
 
 <ul>
-<li><b>{$users_submitted}</b> Users have Submitted Images</li>
-<li><b>{$users_thisweek}</b> new Users in past 7 days</li>
-<li>A total of <b>{$images_ftf}</b> Geograph Points have been awarded</li>
+<li><b>{$users_submitted}</b> Users have submitted images</li>
+<li><b>{$users_thisweek}</b> new users in past 7 days</li>
+<li>A total of <b>{$images_ftf}</b> Geograph points have been awarded</li>
 </ul>
 
 <table border="1" cellpadding="4" cellspacing="0" class="statstable">
@@ -17,7 +17,7 @@
 	<th><i>Total</i></th>
 </tr></thead>
 <tbody><tr>
-	<th>Images Submitted</th>
+	<th>Images submitted</th>
 	<td><b>{$images_total_1|thousends}</b></td>
 	<td><b>{$images_total_2|thousends}</b></td>
 	<td>{$images_total_both|thousends}</td>
@@ -29,7 +29,7 @@
 	<td>{$images_thisweek_both|thousends}</td>
 </tr>
 <tr>
-	<th>1km<sup>2</sup> Grid Squares</th>
+	<th>1km<sup>2</sup> grid squares</th>
 	<td><b>{$squares_submitted_1|thousends}</b><br/>/{$squares_total_1|thousends}</td>
 	<td><b>{$squares_submitted_2|thousends}</b><br/>/{$squares_total_2|thousends}</td>
 	<td valign="top">{$squares_submitted_both|thousends}<br/>/{$squares_total_both|thousends}</td>
@@ -41,19 +41,19 @@
 	<td>{$percent_both}%</td>
 </tr>
 <tr>
-	<th>&nbsp;[with geograph(s)]</th>
+	<th>&nbsp;[with Geograph(s)]</th>
 	<td><b>{$geographs_submitted_1|thousends}</b></td>
 	<td><b>{$geographs_submitted_2|thousends}</b></td>
 	<td>{$geographs_submitted_both|thousends}</td>
 </tr>
 <tr>
-	<th>Hectads<a href="/help/squares">?</a><br/>10km x 10km Squares</th>
+	<th>Hectads<a href="/help/squares">?</a><br/>10km x 10km squares</th>
 	<td><b>{$tenk_submitted_1|thousends}</b><br/>/{$tenk_total_1|thousends}</td>
 	<td><b>{$tenk_submitted_2|thousends}</b><br/>/{$tenk_total_2|thousends}</td>
 	<td valign="top">{$tenk_submitted_both|thousends}<br/>/{$tenk_total_both|thousends}</td>
 </tr>
 <tr>
-	<th>Myriads<a href="/help/squares">?</a><br/>100km x 100km Squares</th>
+	<th>Myriads<a href="/help/squares">?</a><br/>100km x 100km squares</th>
 	<td><b>{$grid_submitted_1}</b><br/>/{$grid_total_1}</td>
 	<td><b>{$grid_submitted_2}</b><br/>/{$grid_total_2}</td>
 	<td>{$grid_submitted_1+$grid_submitted_2}<br/>/{$grid_total_1+$grid_total_2}</td>
@@ -87,11 +87,11 @@
 </div>
 {/if}
 
-<p>The <acronym title="the Centre of 'gravity' for all images submitted so far" style="text-decoration:underline">Geograph Centre</acronym> for images in the {$references.1} is <a href="/gridref/{$centergr_1}" title="view square {$centergr_1}">{$centergr_1}</a>, {place place=$place_1}.
+<p>The <acronym title="the centre of 'gravity' for all images submitted so far" style="text-decoration:underline">Geograph centre</acronym> for images in the {$references.1} is <a href="/gridref/{$centergr_1}" title="view square {$centergr_1}">{$centergr_1}</a>, {place place=$place_1}.
 
 And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {$centergr_2}">{$centergr_2}</a>, {place place=$place_2}.</p>
     
-    <h3><a name="more"></a>More Statistics</h3>
+    <h3><a name="more"></a>More statistics</h3>
 
    <p>User leaderboards: <a href="/statistics/moversboard.php">Weekly</a>, <a href="/statistics/leaderboard.php">All Time</a>, <a href="/statistics/monthlyleader.php">By Month</a>, <a href="/statistics/leaderhectad.php">First Hectads</a>,  <a href="/statistics/leaderallhectad.php">Hectads</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a></p>
 
@@ -101,13 +101,13 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
    <b>Fully: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b><br/><br/>
    Graph: <a href="/statistics/photos_per_square.php">Gridsquares</a>, <a href="/statistics/hectads.php">Hectad</a>, <a href="/statistics/coverage_by_county.php">County</a> and <a href="/statistics/coverage_by_country.php">Country</a> Coverage</p>
 
-   <p><b>Past Activity:</b><br/><br/>
+   <p><b>Past activity:</b><br/><br/>
    Graphs: <a href="/statistics/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/statistics/leaderboard.php#submission_graph">Overall Submissions</a>, <a href="/statistics/contributors.php">Contributor Graphs</a>.<br/><br/>
-   Monthly Breakdown: <a href="/statistics/overtime.php" title="Monthly Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/overtime.php?date=taken" title="Monthly Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/overtime_users.php" title="Monthly Breakdown new User Signups">User Signups</a>, <a href="/statistics/overtime_forum.php" title="Monthly Breakdown for Forum Posts">Forum Posts</a> and <a href="/statistics/overtime_tickets.php">Change Suggestions</a>.<br/><br/>
-   Hourly and Weekday Breakdown: <a href="/statistics/date_graphs.php" title="Hourly and Weekday Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/date_graphs.php?date=taken" title="Hourly and Weekday Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/date_users_graphs.php" title="Hourly and Weekday Breakdown of User Signups">User Signups</a> and <a href="/statistics/date_forum_graphs.php" title="Hourly and Weekday Breakdown for Forum Posts">Forum Posts</a>.<br/><br/>
+   Monthly breakdown: <a href="/statistics/overtime.php" title="Monthly Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/overtime.php?date=taken" title="Monthly Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/overtime_users.php" title="Monthly Breakdown new User Signups">User Signups</a>, <a href="/statistics/overtime_forum.php" title="Monthly Breakdown for Forum Posts">Forum Posts</a> and <a href="/statistics/overtime_tickets.php">Change Suggestions</a>.<br/><br/>
+   Hourly and weekday breakdown: <a href="/statistics/date_graphs.php" title="Hourly and Weekday Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/date_graphs.php?date=taken" title="Hourly and Weekday Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/date_users_graphs.php" title="Hourly and Weekday Breakdown of User Signups">User Signups</a> and <a href="/statistics/date_forum_graphs.php" title="Hourly and Weekday Breakdown for Forum Posts">Forum Posts</a>.<br/><br/>
    Most in a day: <a href="/statistics/busyday.php?date=submitted">Submissions</a>, <a href="/statistics/busyday.php">Images Taken</a>, <a href="/statistics/busyday_users.php">Users</a> and <a href="/statistics/busyday_forum.php">Forum Posts</a> (<a href="/statistics/busyday_forum.php?users=1" title="Most in a day by user">Users</a>,<a href="/statistics/busyday_forum.php?threads=1" title="Most in a day by topic">Topics</a>).<br/><br/>
-   Yearly Saturation: <a href="/statistics/years.php?date=submitted">Submissions</a>, <a href="/statistics/years.php">Images Taken</a> and <a href="/statistics/years_forum.php">Forum Posts</a>.<br/><br/>
-   Forum Topic Leaderboards: <a href="/statistics/leaderthread_forum.php">Most Popular Threads</a> and
+   Yearly saturation: <a href="/statistics/years.php?date=submitted">Submissions</a>, <a href="/statistics/years.php">Images Taken</a> and <a href="/statistics/years_forum.php">Forum Posts</a>.<br/><br/>
+   Forum topic leaderboards: <a href="/statistics/leaderthread_forum.php">Most Popular Threads</a> and
    <a href="/statistics/forum_image_breakdown.php">By Thumbnails Used</a><br/><br/></p>
 
     <form method="get" action="/statistics/breakdown.php">
@@ -125,13 +125,13 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
 			<option value="{$u}">Just for {$profile->realname}</option>
 		{/if}
 		<option value="{$user->user_id}">Just for {$user->realname}</option>
-		<option value="" {if !$u} selected{/if}>For Everyone</option>
+		<option value="" {if !$u} selected{/if}>For everyone</option>
 	</select>
     {else}
 	{if $u}
 	<select name="u">
 		<option value="{$u}" selected>Just for {$profile->realname}</option>
-		<option value="">For Everyone</option>
+		<option value="">For everyone</option>
 	</select>
 	{/if}
     {/if}

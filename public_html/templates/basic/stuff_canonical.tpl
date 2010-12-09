@@ -9,13 +9,13 @@
 	<div style="float:right;width:200px;font-size:0.7em;position:relative;padding:8px;background-color:white">
 	This is only the first pass over assigning canonical categories, don't worry too much about deciding borderline cases. Do all the easy ones, and give a good guess for the rest. We will have a second stage resolving the conflicts between suggestions.</div>
 	
-	<h3>Original Category</h3>
+	<h3>Original category</h3>
 	<div class="interestBox" style="padding-left:20px;">
 		<h4>{$imageclass|escape:'html'}</h4>
 	</div>
 		<a href="/search.php?imageclass={$imageclass|escape:"url"}" class="nowrap" target="_blank" style="font-size:0.7em">View images in new window</a>
 	
-	<h3>Canonical Category</h3>
+	<h3>Canonical category</h3>
 	
 	<form method="post" action="{$script_name}?mode={$mode}" name="theForm">
 		<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
@@ -87,7 +87,7 @@
 	<p>The idea is to create a simplified short category list. By maintaining a mapping of full categories to canonical form, we can offer searching by a greatly simplified category dropdown. The full category would still be attached to the image to maintain the more specific information.</p>
 
 
-	<h3>First Stage - Suggesting initial canonical categories</h3>
+	<h3>First stage - suggesting initial canonical categories</h3>
 	<blockquote>
 	<p>Use this section to suggest {external href="http://en.wikipedia.org/wiki/Canonical" text="canonical" title='Basic, canonic, canonical: reduced to the simplest and most significant form possible without loss of generality, e.g., "a basic story line"; "a canonical syllable pattern."'} categories for the full category list.</p>
 
@@ -95,14 +95,14 @@
 	
 		<form method="get" style="display:inline">
 			<input type="hidden" name="mode" value="random"/>
-			<input type="submit" value="Randomly Selected Categories"/>
+			<input type="submit" value="Randomly selected categories"/>
 		</form>
 
 		- or -
 
 		<form method="get" style="display:inline">
 			<input type="hidden" name="mode" value="alpha"/>
-			<input type="submit" value="In Alphabetical Order"/>
+			<input type="submit" value="In alphabetical order"/>
 		</form>
 	
 		- or -
@@ -115,23 +115,23 @@
 		<br/><br/>	
 		<form method="get">
 			- or - Keyword Search: <input type="text" name="mode" value=""/>
-			<input type="submit" value="Matching Categories"/><br/>
+			<input type="submit" value="Matching categories"/><br/>
 			<small>works with at most 100 matching categories 
 			- uses the same format as the 'Auto-complete' category selector</small>
 		</form>
 
 	</div><br/>
 	
-	&middot; <a href="?sample=1">View Sample Mapping</a>	
-	&middot; <a href="?rename=1">Rename/Correct your recent suggestions</a>
+	&middot; <a href="?sample=1">View sample mapping</a>	
+	&middot; <a href="?rename=1">Rename/correct your recent suggestions</a>
 	&middot; <a href="?review=1">Review your recent suggestions</a> &middot;<br/><br/>
 	
-	<b>View Preliminary Results</b>
-	&middot; <a href="?canonical=1">Canonical Categories List</a>
-	&middot; <a href="?preview=1">Category Tree</a> &middot;
+	<b>View preliminary results</b>
+	&middot; <a href="?canonical=1">Canonical categories list</a>
+	&middot; <a href="?preview=1">Category tree</a> &middot;
 	</blockquote>
 	
-	<h3>Second Stage - Merging Duplicate categories</h3>
+	<h3>Second stage - merging duplicate categories</h3>
 	<blockquote>
 	<div class="interestBox">
 	
@@ -150,13 +150,13 @@
 	
 	</blockquote>
 	
-	<h3>Further Links</h3>
+	<h3>Further links</h3>
 	<blockquote>
 	&middot; <a href="?stats=1">Statistics</a> &middot;<br/><br/>
 	
 	
-	<b>View Confirmed Results</b>
-	&middot; <a href="?final=1">Category Tree</a> &middot;
+	<b>View confirmed results</b>
+	&middot; <a href="?final=1">Category tree</a> &middot;
 
 	<b>Demo</b>
 	 &middot; <a href="/stuff/category.php?type=canonicalplus">Example of a category selector using canonical</a> &middot;

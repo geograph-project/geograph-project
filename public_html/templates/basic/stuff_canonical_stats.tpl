@@ -14,13 +14,13 @@
 
 <h3>Suggestions</h3>
 
-<blockquote><p><b>{$suggestions|thousends}</b> suggestions, made by <b>{$users}</b> users, have produced <b>{$canons|thousends}</b> preliminary Canonical categories.</p></blockquote>
+<blockquote><p><b>{$suggestions|thousends}</b> suggestions, made by <b>{$users}</b> users, have produced <b>{$canons|thousends}</b> preliminary canonical categories.</p></blockquote>
 
 <h3>Canonical Categories</h3>
 
 <p><small>A canonical category is counted as confirmed when suggested by at least three different users.</small></p>
 
-<blockquote><p><b>{$final|thousends}</b> categories have confirmed canonical category, producing <b>{$canons_final|thousends}</b> different Canonical categories.</p></blockquote>
+<blockquote><p><b>{$final|thousends}</b> categories have confirmed canonical category, producing <b>{$canons_final|thousends}</b> different canonical categories.</p></blockquote>
 
 
 
