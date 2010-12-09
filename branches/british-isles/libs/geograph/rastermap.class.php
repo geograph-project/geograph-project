@@ -82,7 +82,7 @@ class RasterMap
 			'OS50k-mapper2'=>250,
 			'OS50k-mapper3'=>250,
 			'OS50k-small'=>125,
-			'VoB'=>250,
+			'NPE'=>250,
 			'Google'=>250,
 			'OSM-Static-Dev'=>250,
 			'OS250k-m10k'=>250,
@@ -125,12 +125,12 @@ class RasterMap
 					$this->enabled = true;
 					$this->service = 'OS50k';
 					
-					if (($this->issubmit === true || $includeSecondService) && in_array('VoB',$services)) {
-						$this->service2 = 'VoB';
+					if (($this->issubmit === true || $includeSecondService) && in_array('NPE',$services)) {
+						$this->service2 = 'NPE';
 					}
-				} elseif($this->issubmit && in_array('VoB',$services)) {
+				} elseif($this->issubmit && in_array('NPE',$services)) {
 					$this->enabled = true;
-					$this->service = 'VoB';
+					$this->service = 'NPE';
 				} 
 			} elseif($CONF['template'] == 'archive') {
 				$this->service = 'OSM-Static-Dev';
@@ -315,23 +315,23 @@ class RasterMap
 			#$this->mapurl = $mapurl;
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
 		}
-		if ($this->service == 'VoB' || $this->service2 == 'VoB' ) {
+		if ($this->service == 'NPE' || $this->service2 == 'NPE' ) {
 			$e1 = $east - 500;
 			$e2 = $e1 + 2000;
 
 			$n1 = $nort - 500;
 			$n2 = $n1 + 2000;
 
-			//Use of this URL is not permitted outside of geograph.org.uk
-			$mapurl2 = "http://vision.edina.ac.uk/cgi-bin/wms-vision?version=1.1.0&request=getMap&layers=newpop%2Csmall_1920%2Cmed_1904&styles=&SRS=EPSG:27700&Format=image/png&width=$width&height=$width&bgcolor=cfd6e5&bbox=$e1,$n1,$e2,$n2&exception=application/vnd.ogc.se_inimage";
+			$mapurl2 = "http://www.getmapping.com/iedirectimage/getmappingwms.aspx?LAYERS=npeoocmap&VERSION=1.1.0&UNITS=meters&SERVICE=WMS&REQUEST=GetMap&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&FORMAT=image%2Fjpeg&SRS=EPSG%3A27700&BBOX=$e1,$n1,$e2,$n2&WIDTH=256&HEIGHT=256";
 
-			$title2 = "1940s OS New Popular Edition Historical Map &copy; VisionOfBritain.org.uk";
+			$title2 = "1940s OS New Popular Edition Historical Map &copy; npemap.org.uk";
 
-			if ($this->service == 'VoB') {
+			if ($this->service == 'NPE') {
 				$title = $title2;
 				$mapurl = $mapurl2;
 			}
 		}
+
 
 		if (isset($title)) {
 			$extra = ($this->issubmit === true)?44:(($this->issubmit)?22:0);
@@ -455,19 +455,19 @@ class RasterMap
 			if ($this->service2) {
 				return "$str
 				<br/>
-				<div class=\"interestBox\" style=\"font-size:0.8em\">Switch to <a href=\"javascript:switchTo(2);\"  id=\"mapSwitcherOS50k\">Historic Map</a><a href=\"javascript:switchTo(1);\" id=\"mapSwitcherVoB\" style=\"display:none\">Modern Map</a>.</div>
+				<div class=\"interestBox\" style=\"font-size:0.8em\">Switch to <a href=\"javascript:switchTo(2);\"  id=\"mapSwitcherOS50k\">Historic Map</a><a href=\"javascript:switchTo(1);\" id=\"mapSwitcherNPE\" style=\"display:none\">Modern Map</a><sup style=color:red>fixed!</sup>.</div>
 				<script type=\"text/javascript\">
 				function switchTo(too) {
 					showOS50k = (too == 1)?'':'none';
-					showVoB = (too == 2)?'':'none';
+					showNPE = (too == 2)?'':'none';
 					
 					document.getElementById('mapSwitcherOS50k').style.display = showOS50k;
 					document.getElementById('mapTitleOS50k').style.display = showOS50k;
 					document.getElementById('mapFootNoteOS50k').style.display = showOS50k;
 					
-					document.getElementById('mapSwitcherVoB').style.display = showVoB;
-					document.getElementById('mapTitleVoB').style.display = showVoB;
-					document.getElementById('mapFootNoteVoB').style.display = showVoB;
+					document.getElementById('mapSwitcherNPE').style.display = showNPE;
+					document.getElementById('mapTitleNPE').style.display = showNPE;
+					document.getElementById('mapFootNoteNPE').style.display = showNPE;
 					
 					if (too == 1) {
 						document.images['tile'].src = '$mapurl';
@@ -701,7 +701,7 @@ class RasterMap
 			return '';
 		} 
 		return "<span id=\"mapTitleOS50k\"".($this->service == 'OS50k'?'':' style="display:none"').">1:50,000 Modern Day Landranger&trade; Map</span>".
-		"<span id=\"mapTitleVoB\"".($this->service == 'VoB'?'':' style="display:none"').">1940s OS New Popular Edition".(($this->issubmit)?"<span style=\"font-size:0.8em;color:red\"><br/><b>Please confirm positions on the modern map, as accuracy may be limited.</b></span>":'')."</span>";
+		"<span id=\"mapTitleNPE\"".($this->service == 'NPE'?'':' style="display:none"').">1940s OS New Popular Edition".(($this->issubmit)?"<span style=\"font-size:0.8em;color:red\"><br/><b>Please confirm positions on the modern map, as accuracy may be limited.</b></span>":'')."</span>";
 	}
 
 	function getFootNote() 
@@ -714,7 +714,7 @@ class RasterMap
 			return '';
 		} elseif ($this->issubmit) {
 			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> The red arrow will then show view direction.</span>".
-			"<span id=\"mapFootNoteVoB\"".($this->service == 'VoB'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.visionofbritain.org.uk/\" title=\"Vision of Britain\">VisionOfBritain.org.uk</a></span>";
+			"<span id=\"mapFootNoteNPE\"".($this->service == 'NPE'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.npemap.org.uk/tileLicence.html\">npemap.org.uk</a> and <a href=\"http://www.getmapping.com/\">getmapping.com</a></span>";
 		} elseif ($this->service == 'OS50k' && $CONF['template']!='archive') {
 			$str = '';
 			if (empty($this->service2)) {
@@ -735,9 +735,9 @@ class RasterMap
 			}
 		
 			if (!empty($this->clickable)) {
-				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map to open OS Get-a-Map$str</span><span id=\"mapFootNoteVoB\"></span>";
+				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map to open OS Get-a-Map$str</span><span id=\"mapFootNoteNPE\"></span>";
 			} else {
-				return "<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide$str</span><span id=\"mapFootNoteVoB\"></span>";
+				return "<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide$str</span><span id=\"mapFootNoteNPE\"></span>";
 			}
 		} else {
 			return '';

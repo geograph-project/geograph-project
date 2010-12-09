@@ -54,6 +54,7 @@ class RebuildUserStats extends EventHandler
 				//nothing to do then!
 				return true;
 			}
+$users[] = 9857; //TEST!
 			
 			$id_list = implode(',',$users);
 			
@@ -224,7 +225,7 @@ class RebuildUserStats extends EventHandler
 	//add content data
 		$topusers=$db->GetAssoc("SELECT user_id,count(*) as content
 			FROM content 
-			WHERE source != 'themed'
+			WHERE source IN('article','gallery','help','blog')
 			GROUP BY user_id 
 			ORDER BY NULL"); 
 		foreach ($topusers as $user_id => $count) {

@@ -401,7 +401,7 @@ class GeographUser
 						$_SERVER['HTTP_HOST'].'/reg/'.$user_id.
 						'/'.substr(md5($user_id.$CONF['register_confirmation_secret']),0,16);
 					
-					$msg="Thankyou for registering at http://".$_SERVER['HTTP_HOST']."\n\n";
+					$msg="Thank you for registering at http://".$_SERVER['HTTP_HOST']."\n\n";
 					
 					$msg="Before you can log in, you must first confirm your registration ".
 						"by following the link below:\n\n";
@@ -417,7 +417,10 @@ class GeographUser
 					$msg.="The Geograph.org.uk Team\n\n";
 
 					$msg.="P.S. This may also be of interest:\n";
-					$msg.="http://www.geograph.org.uk/article/Geograph-Introductory-letter";
+					$msg.="http://www.geograph.org.uk/article/Geograph-Introductory-letter\n\n";
+
+					$msg.="P.P.S. If you have any question, please:\n";
+					$msg.="http://www.geograph.org.uk/ask.php\n";
 					
 					
 					@mail($email, '[geograph] Confirm registration', $msg,

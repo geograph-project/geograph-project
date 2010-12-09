@@ -8,9 +8,9 @@
 {assign var="rss_url" value="/content/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 
-<div style="float:right"><a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
+<div style="float:right"><a href="./themes.php?v=1">Common Words</a> {external href="http://maps.google.co.uk/maps?q=http:%2F%2Fwww.geograph.org.uk%2Fcontent%2Ffeed%2Frecent.kml&amp;t=p" text="Map"} <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
 
-<h2>Content and Collections <small><small>[<a href="./themes.php?v=1">Common Words</a>]</small></small></h2>
+<h2>Photo Collections</h2>
 
 <form action="/content/" method="get" name="theForm">
 
@@ -32,6 +32,7 @@
 		{if $enable_forums && $user->registered}
 			<input type=checkbox name=scope[] value="themed" onclick="clicked()" {if $scope_themed}checked{/if}/><a href="/discuss/index.php?action=vtopic&amp;forum=6">Themed Topics</a><br/>
 		{/if}	
+		<input type=checkbox name=scope[] value="blog" onclick="clicked()" {if $scope_blog}checked{/if}/><a href="/blog/">Blog Entries</a><br/>
 		<input type=checkbox name=scope[] value="help" onclick="clicked()" {if $scope_help}checked{/if}/><a href="/content/documentation.php">Help Documents</a><br/>
 		<input type=checkbox name=scope[] value="snippet" onclick="clicked()" {if $scope_snippet}checked{/if}/><a href="/snippets.php">Shared Descriptions</a><br/>
 		<input type=checkbox name=scope[] value="portal" onclick="clicked()" {if $scope_portal}checked{/if}/><a href="http://www.geographs.org/portals/">Portals</a> <small style="color:red">Experimental</small><br/>

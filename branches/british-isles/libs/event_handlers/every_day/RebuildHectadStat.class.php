@@ -103,7 +103,7 @@ class RebuildHectadStat extends EventHandler
 		
 		$data = $db->getRow("SHOW TABLE STATUS LIKE 'hectad_stat_tmp'");
 		
-		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*15)) {
+		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*30)) {
 			//make sure we have a recent table
 
 			$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");

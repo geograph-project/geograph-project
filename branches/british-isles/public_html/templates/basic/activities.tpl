@@ -4,7 +4,7 @@
 
 <h2>Activities on Geograph</h2>
  
-<p>Welcome to Geographs new Activities section, there's not much here at the moment, we hope to add more as we can. However please do <a href="/contact.php">let us know</a> of any ideas you have for new activities that we could enable.</p>
+<p>Welcome to Geograph's new Activities section, there's not much here at the moment, we hope to add more as we can. However please do <a href="/contact.php">let us know</a> of any ideas you have for new activities that we could enable.</p>
 
 
 <div style="float:right; padding-right:20px"><img src="http://{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" alt="Perdita the Geograph hamster"/></div>

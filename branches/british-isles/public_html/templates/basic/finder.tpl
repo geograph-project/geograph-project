@@ -45,7 +45,7 @@ h4.title {
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,{$tabs})">Content</a>
 		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,{$tabs})">Contributors</a>
 		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" onclick="tabClick('tab','div',6,{$tabs})">Locations</a>
-		<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" onclick="tabClick('tab','div',7,{$tabs})">Descriptions <sup style="color:red">new<sup></a>
+		<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" onclick="tabClick('tab','div',7,{$tabs})">Descriptions <sup style="color:red">new</sup></a>
 		{if $enable_forums}
 			<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" onclick="tabClick('tab','div',8,{$tabs})">Discussions</a>
 		{/if}
