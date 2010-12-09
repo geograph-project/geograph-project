@@ -21,7 +21,7 @@ for details of the various measures. Will be more accurate when limited to one c
 
 
 <h3>Geographs</h3>
-<p>We currently have {$geograph.count|thousends} geographs, therefore at the current rate of {$geograph.average_r} geographs a day, we will reach {$geograph.next|thousends} in about {$geograph.days_r} days time!</p>
+<p>We currently have {$geograph.count|thousends} Geographs, therefore at the current rate of {$geograph.average_r} geographs a day, we will reach {$geograph.next|thousends} in about {$geograph.days_r} days time!</p>
 
 
 <h3>Images</h3>

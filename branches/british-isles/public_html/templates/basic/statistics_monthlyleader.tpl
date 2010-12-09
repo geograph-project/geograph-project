@@ -4,7 +4,7 @@
 
 <h2>Geograph Monthly Leaderboard</h2>
 
-<p>Listed below are the top contributors, by the number of photographs submited per month.</p>
+<p>Listed below are the top contributors, by the number of photographs submitted per month.</p>
 
 <p>See also <a href="/statistics/leaderboard.php">all-time top 150 leaderboard</a> and <a href="/statistics/moversboard.php">weekly leaderboard</a>.</p>
 

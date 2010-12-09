@@ -9,9 +9,9 @@
 {/foreach}</p>
 
 <p>Listed below are the top 200 contributors based on number of
-{$desc}. This page only counts First Geograph Images.</p>
+{$desc}. This page only counts First Geograph images.</p>
 
-<p><small>Number in Brackets is the the number of land squares making up the Hectad. Double click a list of hectads to expand (also displays as tooltip).</small></p>
+<p><small>Number in brackets is the the number of land squares making up the hectad. Double click a list of hectads to expand (also displays as tooltip).</small></p>
 
 <table class="report">
 <thead><tr><td>Position</td><td>Contributor</td><td>{$heading}</td><td>List</td></tr></thead>

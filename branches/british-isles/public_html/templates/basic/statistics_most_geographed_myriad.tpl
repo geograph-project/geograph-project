@@ -5,11 +5,11 @@
 <h2>Most Geographed 100km x 100km Squares (Myriads)</h2>
 
 <div class="interestBox">
-See also | <a href="/statistics/most_geographed_gridsquare.php">1km x 1km Grid Squares</a> | <a href="/statistics/most_geographed.php">Hectads :: 10km x 10km Squares</a> |
+See also | <a href="/statistics/most_geographed_gridsquare.php">1km x 1km grid Squares</a> | <a href="/statistics/most_geographed.php">Hectads :: 10km x 10km squares</a> |
 </div>
 
-<p>These are the squares with the best geograph coverage so far! Similar <a href="/statistics/breakdown.php?by=gridsq&ri=1&order=c2">Breakdown by total coverage</a></p>
-<p style="font-size:0.8em">The # number column is the number of squares with (at least) a geograph, and the % column is the percentage of the total 'land' based squares with coverage. Click a column header to change sort order.</p>
+<p>These are the squares with the best Geograph coverage so far! Similar <a href="/statistics/breakdown.php?by=gridsq&ri=1&order=c2">breakdown by total coverage</a></p>
+<p style="font-size:0.8em">The # number column is the number of squares with (at least) one Geograph, and the % column is the percentage of the total 'land'-based squares with coverage. Click a column header to change sort order.</p>
 
 <div style="float:left;position:relative;width:50%">
 <h4>Great Britain</h4>

@@ -6,12 +6,12 @@
 {dynamic}
 
 {if $suggestion}
-	<p>Use this form to suggest a rename of canonical categories, for example to correct typos, or if think there is better wording for the canonical category.</p>
+	<p>Use this form to suggest a renaming of canonical categories, for example to correct typos, or if think there is better wording for the canonical category.</p>
 {else}
 	<p>Use this form to rename recent canonical categories <b>you have suggested</b>, for example to correct typos, or if you have changed your mind about the wording of the canonical category.</p>
 {/if}
 
-<p>Can also use it to merge a canonical category with another one. Enter the name of the category marging into, in the 'New' box.
+<p>Can also use it to merge a canonical category with another one. Enter the name of the category merging into, in the 'New' box.
 
 
 	

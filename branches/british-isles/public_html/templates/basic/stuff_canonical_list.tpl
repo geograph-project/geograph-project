@@ -6,7 +6,7 @@
 	
 	<p>{$intro}</p>
 
-	<p>Click a column header to resort the table</p>
+	<p>Click a column header to re-sort the table</p>
 	
 	<table class="report sortable" id="events">
 	<thead><tr>

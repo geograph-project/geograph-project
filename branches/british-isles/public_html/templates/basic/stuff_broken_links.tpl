@@ -18,13 +18,13 @@
 			<option value="{$u}">Just for {$profile->realname}</option>
 		{/if}
 		<option value="{$user->user_id}">Just for {$user->realname}</option>
-		<option value="" {if !$u} selected{/if}>For Everyone</option>
+		<option value="" {if !$u} selected{/if}>For everyone</option>
 	</select>
     {else}
 	{if $u}
 	<select name="u">
 		<option value="{$u}" selected>Just for {$profile->realname}</option>
-		<option value="">For Everyone</option>
+		<option value="">For everyone</option>
 	</select>
 	{/if}
     {/if}
@@ -40,7 +40,7 @@
 <thead>
 	<tr>
 		<td>Image</td>
-		<td>Link &amp; Reported Error</td>
+		<td>Link &amp; Reported error</td>
 		<td>Code</td>
 		<td>Checked</td>
 		<td>Retry</td>
@@ -83,8 +83,8 @@
 </table>
 
 <p>
-If you have checked some links and beleive them to be ok despite the result of our recent automatic check, please tick the relevent links above and click the following button: <input type="submit" name="Submit" value="Schedule a Recheck"/><br/>
-(Note even after submitting this form it may take some time for your rescheduled checks to be processed and disappear from this page)</p>
+If you have checked some links and believe them to be ok despite the result of our recent automatic check, please tick the relevant links above and click the following button: <input type="submit" name="Submit" value="Schedule a recheck"/><br/>
+(Note: even after submitting this form it may take some time for your rescheduled checks to be processed and disappear from this page)</p>
 
 </form>
     

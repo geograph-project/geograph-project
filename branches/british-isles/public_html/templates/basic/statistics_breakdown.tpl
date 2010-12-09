@@ -19,13 +19,13 @@
 			<option value="{$u}">Just for {$profile->realname}</option>
 		{/if}
 		<option value="{$user->user_id}">Just for {$user->realname}</option>
-		<option value="" {if !$u} selected{/if}>For Everyone</option>
+		<option value="" {if !$u} selected{/if}>For everyone</option>
 	</select>
     {else}
 	{if $u}
 	<select name="u">
 		<option value="{$u}" selected>Just for {$profile->realname}</option>
-		<option value="">For Everyone</option>
+		<option value="">For everyone</option>
 	</select>
 	{/if}
     {/if}

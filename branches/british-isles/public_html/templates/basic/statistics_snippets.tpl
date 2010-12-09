@@ -1,7 +1,7 @@
 {assign var="page_title" value="Shared Description Statistics"}
 {include file="_std_begin.tpl"}
 
-<h2>Basic Statistics for Shared Descriptions</h2>
+<h2>Basic statistics for shared descriptions</h2>
 
 <h3>Overview</h3>
  

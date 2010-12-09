@@ -164,7 +164,7 @@
 		<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
 		
 		{if $type eq 'canonical' || $type eq 'canonicalplus' || $type eq 'canonicalmore'}
-			<br/>Note: This doesn't automatically create a new Canonical Category, rather just adds it as a normal category, it will be assigned a canonical category via collabortive review. 
+			<br/>Note: This doesn't automatically create a new Canonical Category, rather just adds it as a normal category, it will be assigned to a canonical category via a collaborative review. 
 		{/if}
 		
 		</span></p>
