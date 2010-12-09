@@ -794,12 +794,12 @@ class SearchCriteria
 			$this->sphinx['query'] .= " ".$q; //todo this is defaulting to searching all 
 			$this->changeindefault = 1;
 		}
-		$this->sphinx['query'] = preg_replace('/\b(day|month|year):/','taken$1:',$this->sphinx['query']);
-		$this->sphinx['query'] = preg_replace('/\b(monthname):/','month:',$this->sphinx['query']);
-		$this->sphinx['query'] = preg_replace('/\b(gridref):/','grid_reference:',$this->sphinx['query']);
-		$this->sphinx['query'] = preg_replace('/\b(category):/','imageclass:',$this->sphinx['query']);
-		$this->sphinx['query'] = preg_replace('/\b(description):/','comment:',$this->sphinx['query']);
-		$this->sphinx['query'] = preg_replace('/\b(name):/','realname:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(not)?(day|month|year):/','\1taken\2:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(not)?(monthname):/','\1month:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(not)?(gridref):/','\1grid_reference:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(not)?(category):/','\1imageclass:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(not)?(description):/','\1comment:',$this->sphinx['query']);
+		$this->sphinx['query'] = preg_replace('/\b(not)?(name):/','\1realname:',$this->sphinx['query']);
 		if (strlen($this->sphinx['query'])) {
 			//really there is little chance its going to be compatible... 
 			$this->sphinx['compatible'] = 0;
