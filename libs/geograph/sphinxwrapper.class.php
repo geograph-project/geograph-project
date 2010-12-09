@@ -636,6 +636,9 @@ class sphinxwrapper {
 		} else {
 			$index = $CONF['sphinx_prefix'].$index_in;
 		}
+		$q = preg_replace('/@notshared\b/','@!(snippet,snippet_title,snippet_id)',$q);
+		$q = preg_replace('/@shared\b/','@(snippet,snippet_title,snippet_id)',$q);
+		$q = preg_replace('/@not(\w+)\b/','@!($1)',$q);
 		
 		$res = $cl->Query ( $q, $index );
 		
