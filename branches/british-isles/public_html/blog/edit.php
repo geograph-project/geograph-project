@@ -85,6 +85,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	if (!empty($_POST['grid_reference'])) {
 		if ($gs->setByFullGridRef($_POST['grid_reference'])) {
 			$_POST['gridsquare_id'] = $gs->gridsquare_id;
+			$smarty->assign('grid_reference', $_POST['grid_reference']);
 		} else 
 			$errors['grid_reference'] = $gs->errormsg;
 	}
@@ -100,7 +101,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 			$errors[$key] = "missing required info";		
 	}
 
-	if (!count($updates)) {
+	if (isset($_POST['initial'])) {
+		$smarty->assign('error', "Please review your new entry and press Save below to post the Entry");
+		$errors[1] =1;
+	} elseif (!count($updates)) {
 		$smarty->assign('error', "No Changes to Save");
 		$errors[1] =1;
 	}
