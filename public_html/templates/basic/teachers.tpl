@@ -37,7 +37,7 @@
 	<li><a href="/games/">Geograph Games</a> - fun games involving images and maps</li>
 	<li><a href="/help/imagine">Imagine Slideshow</a> - imagine the landscape behind the map</li>
 	<li><a href="/activities/compare.php">Compare-a-Pair</a> - compare and contrast two similar pictures</li>
-	<li><a href="/content/">Compiliations</a> - user contributed collections of images on various themes</li>
+	<li><a href="/content/">Compilations</a> - user contributed collections of images on various themes</li>
 </ul>
 
 

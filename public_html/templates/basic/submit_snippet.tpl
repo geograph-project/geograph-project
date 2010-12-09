@@ -28,7 +28,7 @@
 			<div class="fieldnotes" style="font-size:0.7em;color:gray">Remember this shared description may be used on multiple images - so keep it generic.<br/>
 			
 			TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
-to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
+to a grid square or another image.<br/>For a web link just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
 			</div>
 		</div>
 		
@@ -39,14 +39,14 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 			<input type="text" id="grid_reference" name="grid_reference" size="10" maxlength="12"/> {if $gr}<small><a href="javascript:void(document.theForm.grid_reference.value='{$gr|escape:'url'}');">Use {$gr}</a></small>{/if}
 			| or <input type="checkbox" name="nogr" value="1" id="nogr"/><label for="nogr">Don't attach a location to this description</label>
 
-			<div class="fieldnotes" style="font-size:0.7em;color:gray">Optional Grid Reference for the feature/location, great if this description describes a specific location. Ideally 6 figure plus.</div>
+			<div class="fieldnotes" style="font-size:0.7em;color:gray">Optional grid reference for the feature/location, great if this description describes a specific location. Ideally at least 6 figures.</div>
 
 			{if $errors.grid_reference}</div>{/if}
 		</div>
 		
 		<input type="submit" name="create" value="Create Shared Description"/> &nbsp; <small>[ <a href="javascript:void(hide_tree('create'))">Cancel / Close</a> ]</small>
 		
-		<div class="fieldnotes" style="font-size:0.7em;color:gray">Idea: Even if you leave the description itself blank, a 'shared description' can still be used as a way to link a series of images into 'Collection'.</div>
+		<div class="fieldnotes" style="font-size:0.7em;color:gray">Idea: Even if you leave the description itself blank, a 'shared description' can still be used as a way to link a series of images into a 'Collection'.</div>
 		
 	</fieldset>
 </div>
@@ -56,7 +56,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 		<input type="button" value="Create New Shared Description" onclick="show_tree('create')" style="background-color:lightgreen"/><br/>
 		<a href="/snippets.php?gr={$gr|escape:'html'}&amp;onlymine=on" target="_blank">Edit nearby Shared Descriptions</a>
 	</div>
-	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; These shared descriptions can operate in addition <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
+	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; These shared descriptions can operate in addition to <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
 	
 	{if $gridimage_id < 4294967296}
 		<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
@@ -84,7 +84,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 	</div>
 
 {foreachelse}
-	<p style="margin:4px;margin-bottom:10px"><i><b>None</b>. <small>Click 'Create New Shared Description'{if $results}, or a 'Use this Description' button below,{/if} to add a description to this image.</small></i></p>
+	<p style="margin:4px;margin-bottom:10px"><i><b>None</b>. <small>Click 'Create new Shared Description'{if $results}, or a 'Use this description' button below,{/if} to add a description to this image.</small></i></p>
 {/foreach}
 </div>
 {/if}
@@ -93,9 +93,9 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 {if $tab eq 'recent'}
 	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <b>My Recently used</b> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 {elseif $tab eq 'suggestions'}
-	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My Recently used</a> / <b>Suggestions</b> )</div>
+	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My recently used</a> / <b>Suggestions</b> )</div>
 {else}	
-	( <b>Search/Local Filter</b> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My Recently used</a> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
+	( <b>Search/Local Filter</b> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My recently used</a> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 
 <div class="interestBox" style="margin:4px;margin-left:24px">
 Within radius:{if $centisquare}
@@ -122,7 +122,7 @@ Within radius:{if $centisquare}
 			{if $user->user_id == $item.user_id || $is_mod}
 				<a href="/snippets.php?edit[{$item.snippet_id}]=edit&amp;onlymine=on" target="_blank">Edit</a>
 			{/if}
-			<input type="submit" name="add[{$item.snippet_id}]" value="Use this Description" style="background-color:lightgreen"/>
+			<input type="submit" name="add[{$item.snippet_id}]" value="Use this description" style="background-color:lightgreen"/>
 		</div>
 
 		<a href="/snippet/{$item.snippet_id}" target="_blank"><b>{$item.title|escape:'html'|default:'<span style=color:gray>untitled description</span>'}</b></a> {if $item.grid_reference && $item.grid_reference != $grid_reference} :: {$item.grid_reference} {/if}{if $item.distance}(Distance {$item.distance}km){/if} (<a href="javascript:void(document.theForm.elements['add[{$item.snippet_id}]'].click())" style="color:green">use</a>)<br/>
@@ -134,7 +134,7 @@ Within radius:{if $centisquare}
 		{/if}
 
 		{if $item.images}
-		Used on {$item.images|thousends} images {if $item.images != $item.yours}(of which {$item.yours|thousends} are yours){/if}
+		Used on {$item.images|thousands} images {if $item.images != $item.yours}(of which {$item.yours|thousands} are yours){/if}
 		{/if}</div>
 
 		<br style="clear:both"/>
@@ -155,7 +155,7 @@ Within radius:{if $centisquare}
 
 {/dynamic}
 
-<div class="interestBox" style="background-color:pink; font-size:0.7em; border-top:2px solid gray"><i>For clarification, you are submitting these shared descriptions to Geograph Project directly. Geograph Project then grants any contributor the right to reuse any shared description within their Creative Commons licensed submission. From a practical point of view this allows the contributor the use the description without attribution (as its not Creative Commons licensed).</i></div>
+<div class="interestBox" style="background-color:pink; font-size:0.7em; border-top:2px solid gray"><i>For clarification, you are submitting these shared descriptions to Geograph Project directly. Geograph Project then grants any contributor the right to re-use any shared description within their Creative Commons licensed submission. From a practical point of view this allows the contributor to use the description without attribution (as it's not Creative Commons licensed).</i></div>
 
 <script type="text/javascript">{literal}
 
