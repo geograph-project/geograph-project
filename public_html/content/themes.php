@@ -59,7 +59,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$where .= " AND content.`source` != 'themed'";
 	}
 	if ($source == 'words') {
-		$listall = $db->getAll("select title from content WHERE `source` != 'user' AND `source` != 'category' $where");
+		$listall = $db->getAll("select title from content WHERE `source` NOT IN ('user','category','snippet') $where");
 	
 		$a = array();
 		foreach ($listall as $i => $row) {

@@ -236,7 +236,7 @@ if (isset($_FILES['jpeg_exif']))
 			$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
 		}
 
-
+                $smarty->assign('uploadmanager',$uploadmanager);
 
 		$clear_cache[$square->gridsquare_id] = 1;
 	}

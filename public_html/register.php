@@ -75,7 +75,12 @@ elseif (isset($_POST['name']))
 	}
 }
 
+if (empty($_SERVER['HTTP_REFERER'])) {
+	$smarty->assign('empty_referer',1);
+}
+
 
 $smarty->display($template);
 
-?>
+
+

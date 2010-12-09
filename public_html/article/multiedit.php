@@ -42,7 +42,6 @@ if (!empty($_POST)) {
 		$updates['parent_url'] = $_POST['parent_url'][$id];
 		
 		$db->Execute($sql = "UPDATE article SET update_time=update_time,`".implode('` = ?,`',array_keys($updates)).'` = ? WHERE article_id = '.$id.' AND user_id = '.$USER->user_id,array_values($updates));
-		print "$sql<hr/>";
 	}
 }
 
@@ -87,9 +86,12 @@ $apps = array(-1=>'deleted',0=>'draft',1=>'Published',2=>'Collaborative');
 		print "<td><input type=text name=\"edit_prompt[$id]\" value=\"".htmlentities($row['edit_prompt'])."\"></td>";
 		print "<td><input type=text name=\"parent_url[$id]\" value=\"".htmlentities($row['parent_url'])."\"></td>";
 		print "<td>{$row['licence']}</td>";
-		print "<td>{$apps[$row['approved']]}</td>";
-
-
+		if ($row['licence'] == 'none' && $row['approved']) {
+			print "<td>Approved but hidden</td>";
+		} else {
+			print "<td>{$apps[$row['approved']]}</td>";
+		}
+		print "</tr>";
 	} ?>
 
 </table><input type=submit value="Save Changes"/></form>

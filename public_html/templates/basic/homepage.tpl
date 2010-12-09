@@ -15,9 +15,9 @@ representative photographs and information for every square kilometre of <a href
 
 {if $overview2}
 
-	<h3 style="margin-bottom:4px;margin-top:8px;text-align:center">Coverage Map</h3>
+	<h3 style="margin-bottom:4px;margin-top:12px;text-align:center">Coverage Map</h3>
 	
-	<div class="map" style="margin-left:auto;margin-right:auto;border:2px solid black; height:{$overview2_height}px;width:{$overview2_width}px">
+	<div class="map" style="margin-left:auto;margin-right:auto; height:{$overview2_height}px;width:{$overview2_width}px">
 
 	<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
 

@@ -85,6 +85,11 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 
+	$sql = "SELECT COUNT(*) FROM category_canonical";
+	calc("Categories mapped to canonical",$sql,3600);
+
+$table[] = array("Parameter"=>'',"Value"=>'');
+
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 7 DAY)";
 	calc("Images Submitted in last 7 days",$sql,3600*3);
 

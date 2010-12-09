@@ -57,14 +57,14 @@
 		<li>Contribute<ul rel="open">
 			<li><a title="Submit" href="/submit.php">Submit Photos</a><ul>
 				<li><a title="Submit Version 2" href="/submit2.php">Submit v2</a></li>
-				<li><a title="Submit More" href="/help/submissions">Other</a></li>
+				<li><a title="Submit More" href="/help/submission">Others</a></li>
 			</ul></li>
 			<li><a title="Content" href="/article/Content-on-Geograph">Collections</a></li>
 		</ul></li>
 		{dynamic}{if $user->registered}
 		<li>My Photos<ul rel="open">
 			<li><a title="Profile" href="/profile.php">My Profile</a></li>
-			<li><a title="Submissions" href="/submissions">My Submissions</a></li>
+			<li><a title="Submissions" href="/submissions.php">My Submissions</a></li>
 			<li><a title="Submissions" href="/thumbed.php">My Thumbed Images</a></li>
 			<li><a href="/profile/{$user->user_id}/map" rel="nofollow">Personal Map</a></li>
 			<li><a title="Advanced image search" href="/search.php?form=check">Check Submissions</a></li>
@@ -102,7 +102,7 @@
 			<li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Information</a></li>
 			<li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>
 				<li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
-				<li><a title="View All Pages" href="http://www.geographs.org/links/sitemap.php?experimental=Y&amp;internal=Y&amp;site=www.geograph.org.uk">Experimental Featured</a></li>
+				<li><a title="View All Pages" href="http://www.geographs.org/links/sitemap.php?experimental=Y&amp;internal=Y&amp;site=www.geograph.org.uk">Experimental Features</a></li>
 			</ul></li>
 
 			<li><a title="Contact Us" href="/contact.php">Contact Us</a><ul>

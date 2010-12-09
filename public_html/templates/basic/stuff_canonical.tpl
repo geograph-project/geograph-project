@@ -6,7 +6,8 @@
 {if $done}
 	<p>Congratulations. Nothing more to do right now.</p>
 {elseif $mode}
-	<p>This is only the first pass over assigning canonical categories, don't worry too much about deciding borderline cases. Do all the easy ones, and give a good guess for the rest. We will have a second stage resolving the conflicts between suggestions.</p>
+	<div style="float:right;width:200px;font-size:0.7em;position:relative;padding:8px;background-color:white">
+	This is only the first pass over assigning canonical categories, don't worry too much about deciding borderline cases. Do all the easy ones, and give a good guess for the rest. We will have a second stage resolving the conflicts between suggestions.</div>
 	
 	<h3>Original Category</h3>
 	<div class="interestBox" style="padding-left:20px;">
@@ -78,6 +79,10 @@
 	<br/><br/>
 	<a href="?">Start over</a>
 {else}
+<div class="interestBox" style="background-color:pink">
+        The Canonical Category project is an highly experimental attempt to create a simplified category listing. The project is ongoing.
+</div>
+
 
 	<p>The idea is to create a simplified short category list. By maintaining a mapping of full categories to canonical form, we can offer searching by a greatly simplified category dropdown. The full category would still be attached to the image to maintain the more specific information.</p>
 
@@ -152,6 +157,10 @@
 	
 	<b>View Confirmed Results</b>
 	&middot; <a href="?final=1">Category Tree</a> &middot;
+
+	<b>Demo</b>
+	 &middot; <a href="/stuff/category.php?type=canonicalplus">Example of a category selector using canonical</a> &middot;
+
 	
 	</blockquote>
 {/if}

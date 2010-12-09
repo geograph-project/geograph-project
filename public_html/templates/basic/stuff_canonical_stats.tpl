@@ -1,6 +1,11 @@
 {assign var="page_title" value="Canonical Categories"}
 {include file="_std_begin.tpl"}
 
+<div class="interestBox" style="background-color:pink">
+        The Canonical Category project is an highly experimental attempt to create a simplified category listing. The project is ongoing.
+</div>
+
+
 <h2><a href="?">Canonical Category Mapping</a> :: Statistics</h2>
 
 <h3>Categories</h3>

@@ -29,7 +29,7 @@ if (!empty($_GET['hectad']) && !empty($_GET['canonical'])) {
 	
 	$q .= " @imageclass (\"{$_GET['canonical']}\"";
 	
-	$list = $db->getCol("SELECT imageclass FROM category_canonical WHERE canonical = ".$db->Quote($_GET['canonical'])." GROUP BY imageclass");
+	$list = $db->getCol("SELECT imageclass FROM category_canonical WHERE canonical = ".$db->Quote($_GET['canonical'])." GROUP BY imageclass LIMIT 10");
 	foreach ($list as $c) {
 		if (strpos($c,' ') !== FALSE) {
 			$q .= "| \"$c\"";
@@ -166,7 +166,7 @@ if (!empty($_GET['stats'])) {
 		$str = "";
 		foreach ($letters as $row) {
 			$al = strtoupper(substr($row['canonical'],0,1));
-			$size = log1p($row['classes'])*1.4;
+			$size = max(1,log1p($row['classes'])*0.4);
 			if ($al == $_GET['alpha']) {
 				$str .= "<b style=\"font-size:{$size}em\">$al</b> ";
 				$a = $al;
@@ -185,11 +185,11 @@ if (!empty($_GET['stats'])) {
 	$template='stuff_canonical_tree.tpl';
 	$cacheid='final';
 	if (!$smarty->is_cached($template, $cacheid)) {
-		$smarty->assign('intro',"This is preliminary results of the mapping - showing canonical categories confirmed by at least 3 people.");
+		$smarty->assign('intro',"This is preliminary results of the mapping - showing canonical categories confirmed by at least 3 people in stage 1. Also takes into account confirmed renames as per stage 2.");
 	
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical) LIMIT 1000");
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical),LOWER(imageclass) LIMIT 1000");
 		$smarty->assign_by_ref('list',$list);
 	}
 	
@@ -208,7 +208,7 @@ if (!empty($_GET['stats'])) {
 } elseif (!empty($_GET['sample'])) {
 	if (!empty($_GET['tree'])) {
 		$template='stuff_canonical_tree.tpl';
-		$order = "canonical";
+		$order = "canonical,imageclass";
 	} else {
 		$template='stuff_canonical_list.tpl';
 		$order = "imageclass";
