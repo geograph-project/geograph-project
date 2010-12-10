@@ -27,7 +27,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 
 <ol class="spaced">
 	<li><b>Define the square</b> for your image - by entering or selecting the Grid Reference, searching by Placename or dragging on Map.</li>
-	<li><b>Select the image</b> to upload, and pinpointing its <b>location on a 1:50,000 map</b> (or Road Map in Ireland)</li>
+	<li><b>Select the image</b> to upload, and pinpoint its <b>location on a 1:50,000 map</b> (or Road Map in Ireland)</li>
 	<li>Enter the <b>title, description, category, and date</b> (which can be read direct from EXIF in the photo)</li>
 	<li><b>Confirm the Licence Terms</b>, and attribution options</li>
 </ol>
