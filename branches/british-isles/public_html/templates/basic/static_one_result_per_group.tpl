@@ -9,7 +9,7 @@
 <p>Hopefully the technology to return multiple (for example the top three) will soon become available.</p>
 
 <ul>
-	<li>We also hope to have more control over which image(s) are actully shown from each group or cluster, at the moment its pretty much choosen at random.</li>
+	<li>We also hope to have more control over which image(s) are actually shown from each group or cluster, at the moment it's pretty much chosen at random.</li>
 </ul>
 
  

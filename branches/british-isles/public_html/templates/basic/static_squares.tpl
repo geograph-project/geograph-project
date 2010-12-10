@@ -3,12 +3,12 @@
 
 <h2>Names for Different Sized Squares</h2>
 
-<p>This page is born out of the confusion of what to call different sized squares. The proposal is to refer to the squares as referenced in the top line of the table below; included in the table are various other names it could be called by.</p>
+<p>This page is born out of the confusion of what to call different sized squares. The proposal is to refer to the squares as referenced in the top line of the table below; included in the table are various other names they could be called.</p>
 
  <table width="100%" border="1" cellpadding="5" cellspacing="0" class="report"> 
 	<thead>
 		<tr> 
-		  <td>Geograph Name</td> 
+		  <td>Geograph name</td> 
 		  <td>Centisquare</td> 
 		  <td>Gridsquare</td> 
 		  <td>Hectad</td> 
@@ -38,21 +38,21 @@
 		  <td>10,000,000,000m&sup2;</td> 
 		</tr> 
 		<tr> 
-		  <td>Length of Side in km</td> 
+		  <td>Length of side in km</td> 
 		  <td>0.1km</td> 
 		  <td>1km</td> 
 		  <td>10km</td> 
 		  <td>100km</td> 
 		</tr> 
 		<tr> 
-		  <td>Length of Side in m</td> 
+		  <td>Length of side in m</td> 
 		  <td>100m</td> 
 		  <td>1,000m</td> 
 		  <td>10,000m</td> 
 		  <td>100,000m</td> 
 		</tr> 
 		<tr> 
-		  <td>Modern Landranger Maps</td> 
+		  <td>Modern Landranger maps</td> 
 		  <td>&nbsp;</td> 
 		  <td>&nbsp;</td> 
 		  <td>&nbsp;</td> 
@@ -61,21 +61,21 @@
 		<tr> 
 		  <td><a
 			href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html">Interactive
-			 Guide</a> <br/> &amp; One-Inch Maps</td> 
+			 guide</a> <br/> &amp; One-inch maps</td> 
 		  <td>&nbsp;</td> 
 		  <td>1km squares</td> 
 		  <td>10km squares </td> 
 		  <td>100km squares </td> 
 		</tr>
 		<tr>
-		  <td>Example Grid Reference</td>
+		  <td>Example grid reference</td>
 		  <td>TQ56<b>2</b>58<b>3</b></td>
 		  <td>TQ5<b>6</b>5<b>8</b></td>
 		  <td>TQ<b>55</b></td>
 		  <td><b>TQ</b></td>
 		</tr> 
 		<tr> 
-		  <td>Common Name</td> 
+		  <td>Common name</td> 
 		  <td>&nbsp;</td> 
 		  <td>&nbsp;</td> 
 		  <td>Tile<br/> <small>(OS sell digital data in Tiles)</small></td> 
@@ -83,7 +83,7 @@
 			 <a href="http://www.agarss.com.au/Data/Prices.htm">here</a>)</small></td> 
 		</tr> 
 		<tr> 
-		  <td>Official Name</td> 
+		  <td>Official name</td> 
 		  <td>&nbsp;</td> 
 		  <td>&nbsp;</td> 
 		  <td>Hectad<br/><small>( from
@@ -93,7 +93,7 @@
 		  <td>&nbsp;</td> 
 		</tr>
 		<tr>
-		  <td>Other Possible Names</td>
+		  <td>Other possible sames</td>
 		  <td>(suggestions?)</td> 
 		  <td>Monad</td>
 		  <td>Hundred, Wapentake</td>

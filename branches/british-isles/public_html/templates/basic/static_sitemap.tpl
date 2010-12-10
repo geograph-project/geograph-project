@@ -36,7 +36,7 @@
 
  <h2>Geograph Sitemap</h2>
   
- <p>Powered by the {external href="http://www.geographs.org/links/" text="Geograph Links Directory"} - wiki-style editable database of all Geograph related Links.</p>   
+ <p>Powered by the {external href="http://www.geographs.org/links/" text="Geograph Links Directory"} - wiki-style editable database of all Geograph-related links.</p>   
 
 	<div class="rightbox"> 
 		<ul> 
