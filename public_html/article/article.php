@@ -44,13 +44,19 @@ if ($_GET['url'] == 'Shepherd-Neame2') {
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
 $template = 'article_article.tpl';
-$cacheid = 'articles|'.$_GET['url'].'|'.intval($_GET['page']);
-$cacheid .= '|'.$isadmin;
-$cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['url'],$_SESSION['article_urls'])?1:0);
-if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
-	$cacheid .= "--".$_GET['epoch'];
+
+if ($_GET['url'] == 'preview') {
+	$cacheid = time().md5($_POST['title']);
 } else {
-	$_GET['epoch'] = '';
+
+	$cacheid = 'articles|'.$_GET['url'].'|'.intval($_GET['page']);
+	$cacheid .= '|'.$isadmin;
+	$cacheid .= '-'.(isset($_SESSION['article_urls']) && in_array($_GET['url'],$_SESSION['article_urls'])?1:0);
+	if (!empty($_GET['epoch']) && preg_match('/^[\w]+$/',$_GET['epoch'])) {
+		$cacheid .= "--".$_GET['epoch'];
+	} else {
+		$_GET['epoch'] = '';
+	}
 }
 
 
@@ -371,48 +377,81 @@ function smarty_function_articletext($input) {
 
 $smarty->register_modifier("articletext", "smarty_function_articletext");
 
-$db = GeographDatabaseConnection(false);
+if ($_GET['url'] == 'preview') {
 
-$page = $db->getRow("
-select article.*,realname,gs.grid_reference,category_name
-from article 
-	left join user using (user_id)
-	left join article_cat c on (article.article_cat_id = c.article_cat_id)
-	left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
-where ( (licence != 'none' and approved > 0) 
-	or user.user_id = {$USER->user_id}
-	or $isadmin )
-	and url = ".$db->Quote($_GET['url']).'
-limit 1');
-if (count($page)) {
-	$cacheid .= '|'.$page['update_time'];
-	
-	if ($page['user_id'] == $USER->user_id) {
-		$cacheid .= '|'.$USER->user_id;
+	$smarty->reassignPostedDate('publish_date');
+	$_POST['title'] = preg_replace('/[^\w\-\.,:;\' ]+/','',trim($_POST['title']));
+	if (empty($_POST['url']) && !empty($_POST['title'])) {
+		$_POST['url'] = $_POST['title'];
 	}
-
-	if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE
-		&& (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
-        	&& (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
-	        && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE)
-		) {
-		$db->Execute("UPDATE LOW_PRIORITY article_stat SET views=views+1 WHERE article_id = ".$page['article_id']);
+	$_POST['url'] = preg_replace('/ /','-',trim($_POST['url']));
+	$_POST['url'] = preg_replace('/[^\w-]+/','',$_POST['url']);
+	
+	$gs=new GridSquare();
+	if (!empty($_POST['grid_reference'])) {
+		if ($gs->setByFullGridRef($_POST['grid_reference'])) {
+			$_POST['gridsquare_id'] = $gs->gridsquare_id;
+		} else 
+			$errors['grid_reference'] = $gs->errormsg;
 	}
 	
-	//when this page was modified
-	$mtime = strtotime($page['update_time']);
+	$_POST['content'] = strip_tags($_POST['content']);
+	$_POST['content'] = preg_replace('/[“”]/','',$_POST['content']);
+
+	$_POST['extract'] = strip_tags($_POST['extract']);
+	$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
 	
-	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
-
-        if (preg_match('/\bgeograph\b/i',$page['category_name'])) {
-                $template = 'article_article2.tpl';
-        }
-
+	if (!empty($_POST['page'])) {
+		$_GET['page'] = intval($_POST['page']);
+	}
+	
+	$_POST['title'] = "Preview of: {$_POST['title']} -- NOT SAVED";
+	
+	$page = $_POST;
+	
 } else {
-	header("HTTP/1.0 404 Not Found");
-	header("Status: 404 Not Found");
-	$template = 'static_404.tpl';
+	$db = GeographDatabaseConnection(false);
+
+	$page = $db->getRow("
+	select article.*,realname,gs.grid_reference,category_name
+	from article 
+		left join user using (user_id)
+		left join article_cat c on (article.article_cat_id = c.article_cat_id)
+		left join gridsquare gs on (article.gridsquare_id = gs.gridsquare_id)
+	where ( (licence != 'none' and approved > 0) 
+		or user.user_id = {$USER->user_id}
+		or $isadmin )
+		and url = ".$db->Quote($_GET['url']).'
+	limit 1');
+	if (count($page)) {
+		$cacheid .= '|'.$page['update_time'];
+
+		if ($page['user_id'] == $USER->user_id) {
+			$cacheid .= '|'.$USER->user_id;
+		}
+
+		if (!isset($_GET['dontcount']) && $CONF['template']!='archive' && @strpos($_SERVER['HTTP_REFERER'],$page['url']) === FALSE
+			&& (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
+			&& (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
+			&& (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE)
+			) {
+			$db->Execute("UPDATE LOW_PRIORITY article_stat SET views=views+1 WHERE article_id = ".$page['article_id']);
+		}
+
+		//when this page was modified
+		$mtime = strtotime($page['update_time']);
+
+		//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+		customCacheControl($mtime,$cacheid,($USER->user_id == 0));
+
+		if (preg_match('/\bgeograph\b/i',$page['category_name'])) {
+			$template = 'article_article2.tpl';
+		}
+	} else {
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+		$template = 'static_404.tpl';
+	}
 }
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -474,5 +513,3 @@ if (!$smarty->is_cached($template, $cacheid))
 
 $smarty->display($template, $cacheid);
 
-	
-?>

@@ -258,11 +258,49 @@ function makeUneditable() {
 <input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');" style="color:green"/>
 <input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em; color:green"/> {if $title == 'New Article'}<br/>(Articles will only show on the site once they have been approved by a site moderator){/if}</p>
 
- <br/> <br/>
-Or <a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close editor without saving edits</a><small> (leaving this page open prevents others from editing)</small>
 </div>
 
 </form>
+
+<script type="text/javascript">{literal}
+function previewArticle() {
+	var f1 = document.forms['theForm'];
+	var f2 = document.forms['previewForm'];
+
+	for (q=0;q<f2.elements.length;q++) {
+		if (f2.elements[q].name && f1.elements[f2.elements[q].name]) {
+			f2.elements[q].value = f1.elements[f2.elements[q].name].value;
+		}
+	}
+
+	window.open('','_preview');//forces a new window rather than tab?
+
+	return true;
+}
+{/literal}</script>
+<form action="/article/article.php?url=preview" method="post" name="previewForm" target="_preview" style="padding:10px; margin-top:10px; text-align:center; border:2px solid black;">
+	<input type="hidden" name="url"/>
+	<input type="hidden" name="title"/>
+	<input type="hidden" name="licence"/>
+	<input type="hidden" name="publish_date"/>
+	<input type="hidden" name="article_cat_id"/>
+	<input type="hidden" name="grid_reference"/>
+	<input type="hidden" name="parent_url"/>
+	<input type="hidden" name="extract"/>
+	<input type="hidden" name="edit_prompt"/>
+	<textarea name="content" style="display:none"/></textarea>
+	<input type="hidden" name="complete"/>
+
+	<input type="submit" value="Preview Article in a new window" onclick="return previewArticle()" id="previewButton"/>
+	<label for="pagenum">Page:</label>
+	<input type="text" name="page" id="pagenum" value="1" size="2" maxlength="2"/> - if multiple, Note: page links WON'T work in the preview<br/>
+</form>
+
+
+ <br/> <br/>
+Or <a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close editor without saving edits</a><small> (leaving this page open prevents others from editing)</small>
+
+
 <br/><br/><br/>
 <div style="padding:5px; border: 1px solid gray; background-color:silver; font-size:0.9em">
 | <b>Quick Reference</b> | {newwin href="/article/Help_on_formatting_of_articles" text="Full Reference"} |
