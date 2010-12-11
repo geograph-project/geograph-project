@@ -154,7 +154,7 @@ function makeUneditable() {
 	<select name="licence">
 	{html_options options=$licences selected=$licence}
 	</select> by
-	<a href="/profile/{$user_id}" title="View Geograph Profile for {$realname}">{$realname}</a>
+	<a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>
 
 
 	{if $errors.licence}</div>{/if}
@@ -281,6 +281,8 @@ function previewArticle() {
 <form action="/article/article.php?url=preview" method="post" name="previewForm" target="_preview" style="padding:10px; margin-top:10px; text-align:center; border:2px solid black;">
 	<input type="hidden" name="url"/>
 	<input type="hidden" name="title"/>
+	<input type="hidden" name="user_id" value="{$user_id}"/>
+	<input type="hidden" name="realname" value="{$realname|escape:'html'}"/>
 	<input type="hidden" name="licence"/>
 	<input type="hidden" name="publish_date"/>
 	<input type="hidden" name="article_cat_id"/>

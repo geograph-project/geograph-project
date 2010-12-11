@@ -50,7 +50,33 @@ class RebuildContentDup extends EventHandler
 		//we dont want the auto_increment, otherwise it will populate on the temp table, and mess up 'ON DUPLICATE KEY'
 		$db->Execute("ALTER TABLE `content_tmp` CHANGE `content_id` `content_id` INT(10) UNSIGNED NULL, DROP PRIMARY KEY");
 
-/*		
+		$db->Execute("
+		
+INSERT INTO `content_tmp`
+SELECT 
+	NULL AS content_id, 
+	blog_id AS foreign_id, 
+	TRIM(title) AS title, 
+	CONCAT('/blog/entry.php?id=',blog_id) AS url, 
+	user_id AS user_id, 
+	gridimage_id, 
+	gridsquare_id, 
+	'' AS extract, 
+	0 AS images, 
+	0 AS wordcount, 
+	0 AS views, 
+	0 AS titles, 
+	0 AS tags, 
+	content AS words, 
+	'blog' AS source, 
+	'info' AS type, 
+	submitted AS updated, 
+	DATE(signup_date) AS created 
+FROM blog
+WHERE approved = 1
+
+		");
+		
 		$db->Execute("
 
 INSERT INTO `content_tmp`
@@ -134,7 +160,7 @@ INNER JOIN user_stat USING (user_id)
 INNER JOIN gridimage_search ON (last=gridimage_id);
 
 		");
-*/
+
 #  UNIQUE KEY `foreign_id` (`foreign_id`,`source`)
 
 #####################################
