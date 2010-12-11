@@ -22,7 +22,7 @@
  */
 
 
-if (!empty($_GET['q']) && empty($_GET['scope'])) {
+if (!empty($_GET['q']) && empty($_GET['scope']) && empty($_GET['auth'])) {
 	header("HTTP/1.1 503 Service Unavailable");
 	print "Feature Disabled - <a href=\"http://www.geograph.org.uk/contact.php\">please contact us</a>";
 	exit;
@@ -65,6 +65,10 @@ $rss->link = "http://{$_SERVER['HTTP_HOST']}/content/";
  
 	
 $rss->description = "Recently updated content on Geograph British Isles"; 
+
+if ($format == 'KML') {
+	$rss->description .= ". <a href=\"{$rss->link}\">View Collections Homepage</a> or <a href=\"http://{$_SERVER['HTTP_HOST']}/\">Geograph Homepage</a>";
+}
 
 
 $rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/content/feed/recent.$format_extension";
@@ -190,7 +194,11 @@ while (!$recordSet->EOF)
 	$item->title = $recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->link = "http://{$_SERVER['HTTP_HOST']}{$recordSet->fields['url']}";
+	if (strpos($recordSet->fields['url'],'/')===0) {
+		$item->link = "http://{$_SERVER['HTTP_HOST']}{$recordSet->fields['url']}";
+	} else {
+		$item->link = $recordSet->fields['url'];
+	}
 	
 	$description = $recordSet->fields['extract'];
 	if (strlen($description) > 160)
@@ -198,7 +206,9 @@ while (!$recordSet->EOF)
 	$item->description = $description;
 	$item->date = strtotime($recordSet->fields['created']);
 	$item->author = $recordSet->fields['realname'];
-	
+	if ($format == 'KML') {
+		$item->description .= " by ".$recordSet->fields['realname'];
+	}	
 	if (!empty($rss->geo) && $recordSet->fields['gridsquare_id']) {
 		$gridsquare = new GridSquare;
 		$grid_ok=$gridsquare->loadFromId($recordSet->fields['gridsquare_id']);
