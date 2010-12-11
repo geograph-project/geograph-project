@@ -193,7 +193,7 @@ ffetcing our local traffic after nearly a week of snow and sub-zero temperatures
 					$engine->criteria->resultsperpage = 1; //override it
 					$engine->Execute($pg);
 					if ($engine->resultCount && $engine->results) {
-						$images = $engine->results[0];
+						$images = $engine->resultCount;
 
 						$memcache->name_set('fse',$mkey,$images,$memcache->compress,3600*6*rand(3,10));
 					}
