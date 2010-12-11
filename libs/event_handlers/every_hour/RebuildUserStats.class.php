@@ -225,7 +225,7 @@ $users[] = 9857; //TEST!
 	//add content data
 		$topusers=$db->GetAssoc("SELECT user_id,count(*) as content
 			FROM content 
-			WHERE source IN('article','gallery','help','blog')
+			WHERE source IN('article','gallery','help','blog','trip')
 			GROUP BY user_id 
 			ORDER BY NULL"); 
 		foreach ($topusers as $user_id => $count) {
