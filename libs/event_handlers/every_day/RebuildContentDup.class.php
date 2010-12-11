@@ -70,8 +70,8 @@ SELECT
 	content AS words, 
 	'blog' AS source, 
 	'info' AS type, 
-	submitted AS updated, 
-	DATE(signup_date) AS created 
+	updated, 
+	created 
 FROM blog
 WHERE approved = 1
 
