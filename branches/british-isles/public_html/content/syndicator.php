@@ -22,7 +22,7 @@
  */
 
 
-if (!empty($_GET['q'])) {
+if (!empty($_GET['q']) && empty($_GET['scope'])) {
 	header("HTTP/1.1 503 Service Unavailable");
 	print "Feature Disabled - <a href=\"http://www.geograph.org.uk/contact.php\">please contact us</a>";
 	exit;
@@ -84,7 +84,9 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 
 
 // --------------
-		
+	
+	$where = array();
+	
 	if (!empty($_GET['q'])) {
 		$q=trim($_GET['q']);
 		
@@ -114,9 +116,9 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 		$ids = $sphinx->returnIds($pg,'content_stemmed');
 		
 		if (count($ids)) {
-			$where = "content_id IN(".join(",",$ids).")";
+			$where[] = "content_id IN(".join(",",$ids).")";
 		} else {
-			$where = "0";
+			$where[] = "0";
 		}
 		$resultCount = $sphinx->resultCount;
 		
@@ -124,16 +126,59 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 		
 		// --------------
 	} elseif ($format == 'KML') {
-		$where = "gridsquare_id > 0";
-	} else {
-		$where = 1;
+		$where[] = "gridsquare_id > 0";
 	}
 	
+	
+	if (!empty($_GET['scope'])) {
+		$filters = array();
+		if (is_array($_GET['scope'])) {
+			$s = $_GET['scope'];
+		} else {
+			$s = explode(',',$_GET['scope']);
+		}
+		foreach ($s as $scope) {
+			switch($scope) {
+				case 'blog':
+				case 'trip':
+				case 'article':
+				case 'gallery':
+				case 'themed':
+				case 'help':
+				case 'snippet':
+				case 'portal':
+				case 'user':
+				case 'category':
+				case 'other':
+					$filters['source'][] = $scope;
+					break;
+				case 'info':
+				case 'document':
+					$filters['type'][] = $scope;
+					break;
+			}
+		}
+		foreach ($filters as $key => $value) {
+			if (!empty($value)) {
+				$where[] = "content.$key IN ('".implode("','",$value)."')";
+			}
+		}
+	} else {
+		$where[] = "source IN ('article', 'gallery', 'help', 'blog')";
+	}
+	
+	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
+		$where[] = "content.user_id = {$_GET['user_id']}";
+		$profile=new GeographUser($_GET['user_id']);
+		$rss->title = "By ".($profile->realname);	
+	}
+	
+	$where = implode(' AND ',$where);
 	
 $sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source,gridsquare_id
 	from content 
 		left join user using (user_id)
-	where source IN ('article', 'gallery', 'help', 'blog') and $where
+	where $where
 	order by updated desc
 	limit $limit";
 
