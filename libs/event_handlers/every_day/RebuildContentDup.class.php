@@ -263,7 +263,7 @@ ON DUPLICATE KEY UPDATE
 DELETE `content`.* 
 FROM `content` 
 	LEFT JOIN `content_tmp` USING (`foreign_id`,`source`) 
-WHERE `content`.source IN ('category','snippet','user')
+WHERE `content`.source IN ('category','snippet','user','trip','blog')
 	AND `content_tmp`.`foreign_id` IS NULL;
 	
 		");
