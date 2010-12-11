@@ -1669,5 +1669,10 @@ WHERE approved = 1 AND user_id != 3;
 #################################################
 
 
+ALTER TABLE  `content` CHANGE  `source`  `source` ENUM(  'trip', 'blog', 'portal',  'article',  'gallery',  'themed',  'help',  'gsd',  'snippet',  'user',  'category', 'other' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL DEFAULT  'other'
+
+
+#################################################
+
 
 

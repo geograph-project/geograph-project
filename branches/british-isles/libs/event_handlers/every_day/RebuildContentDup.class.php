@@ -31,22 +31,26 @@
 */
 
 require_once("geograph/eventhandler.class.php");
+require_once('geograph/searchcriteria.class.php');
+require_once('geograph/searchengine.class.php');
 
 //filename of class file should correspond to class name, e.g.  myhandler.class.php
 class RebuildContentDup extends EventHandler
 {
 	function processEvent(&$event)
 	{
+		global $memcache;
 		//perform actions
 		
 		$db=&$this->_getDB();
 		
+		$db->Execute("DROP TABLE IF EXISTS `content_tmp`");
 		$db->Execute("CREATE TABLE `content_tmp` LIKE `content`");
 		
 		//we dont want the auto_increment, otherwise it will populate on the temp table, and mess up 'ON DUPLICATE KEY'
 		$db->Execute("ALTER TABLE `content_tmp` CHANGE `content_id` `content_id` INT(10) UNSIGNED NULL, DROP PRIMARY KEY");
 
-		
+/*		
 		$db->Execute("
 
 INSERT INTO `content_tmp`
@@ -130,8 +134,85 @@ INNER JOIN user_stat USING (user_id)
 INNER JOIN gridimage_search ON (last=gridimage_id);
 
 		");
-
+*/
 #  UNIQUE KEY `foreign_id` (`foreign_id`,`source`)
+
+#####################################
+
+if ($h = fopen('http://users.aber.ac.uk/ruw/misc/geotrip_csv.php', 'r')) {
+	$c = 0;
+	while (($data = fgetcsv($h, 65536, ',', '"' )) !== FALSE) {
+		if (!$c) {
+			$headings = $data;
+		} else {
+			$row = array_combine($headings,$data);
+/*    [1] => Array
+        (
+            [TripID] => 47
+            [Title] => A walk around the block
+            [SubTitle] => Hardly an epic walk - just experimenting with the new facility. A need to get out and to record how the weather was
+affetcing our local traffic after nearly a week of snow and sub-zero temperatures.
+            [UserID] => 322
+            [GridimageID] => 2187811
+            [GridReference] => SG4729
+            [TripDate] => 2005-08-03
+            [Updated] => 1292095230
+            [Content] => Hardly an epic walk - just experimenting with the new facility. A need to get out and to record how the weather was a
+ffetcing our local traffic after nearly a week of snow and sub-zero temperatures.
+            [SearchID] => 2187811
+        )
+*/
+			$updates = array();
+			$updates['foreign_id'] = $row['TripID'];
+			$updates['title'] = $row['Title'];
+			$updates['url'] = "http://users.aber.ac.uk/ruw/misc/geotrip_show.php?osos&trip=".$row['TripID'];
+			$updates['user_id'] = $row['UserID'];
+			$updates['gridimage_id'] = $row['GridimageID'];
+			
+			$gs=new GridSquare();
+			if (!empty($row['GridReference']) && $gs->setByFullGridRef($row['GridReference'])) {
+				$updates['gridsquare_id'] = $gs->gridsquare_id;
+			}
+			
+			$updates['created'] = $row['TripDate'];
+			$updates['updated'] = date('Y-m-d H:i:s',$row['Updated']);
+			
+			if (!empty($row['SubTitle'])) {
+				$lines = explode("\n",wordwrap($row['SubTitle'],250,"\n")); 
+
+				$updates['extract'] = $lines[0].(count($lines)>1?'...':'');
+			}
+			$updates['words'] = $row['Content'];
+			
+			$mkey = $row['SearchID'];
+			$images =& $memcache->name_get('fse',$mkey);
+			if (empty($images)) {
+
+				$engine = new SearchEngine($row['SearchID']);
+				if ($engine->criteria) {
+					$engine->criteria->resultsperpage = 1; //override it
+					$engine->Execute($pg);
+					if ($engine->resultCount && $engine->results) {
+						$images = $engine->results[0];
+
+						$memcache->name_set('fse',$mkey,$images,$memcache->compress,3600*6*rand(3,10));
+					}
+				}
+			}
+			if (!empty($images)) {
+				$updates['images'] = $images;
+			}
+			$updates['source'] = 'trip';
+			$updates['type'] = 'info';
+			
+			$db->Execute('INSERT INTO content_tmp SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+		}
+		$c++;
+	}
+
+}
+
+#####################################
 
 		$db->Execute("
 		

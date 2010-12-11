@@ -83,7 +83,7 @@ switch ($order) {
 }
 $orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated','images'=>'Most Images','rand'=>'Random Order');
 
-$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'other'=>'Other');
+$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trips', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'other'=>'Other');
 
 if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
 	unset($sources['themed']);
