@@ -97,9 +97,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 					$plus = $plus + array_keys($g2t[trim($id)]);
 				}
 			}
-			if (!empty($plus)) {
-				$bits = $bits + $plus;
-			}
+			#if (!empty($plus)) {
+			#	$bits = $bits + $plus;
+			#}
 		}
 		if (!empty($_GET['l'])) {
 			$less = explode(',',$_GET['l']);
@@ -110,9 +110,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 					$minus = $minus + array_keys($row);
 				}
 			}
-			if (!empty($minus)) {
-				$bits = $bits + $minus;
-			}
+			#if (!empty($minus)) {
+			#	$bits = $bits + $minus;
+			#}
 		}
 			
 		if (!empty($sphinx->q)) {
@@ -120,13 +120,16 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		} else {
 			$sphinx->qoutput = $sphinx->q = "@grid_reference {$square->grid_reference}";
 		}
-		if (!empty($bits)) {
-		print_r($bits);
-			$sphinx->q = "({$sphinx->q}) ( {$sphinx->q} | (".implode(') | (',$bits)."))";
+		if (!empty($plus)) {
+			$sphinx->q = "({$sphinx->q}) ( {$sphinx->q} | (".implode(') | (',$plus)."))";
+		}
+		if (!empty($minus)) {
+			$sphinx->qminus = "({$sphinx->q}) ( {$sphinx->q} | (".implode(') | (',$minus)."))";
+			$sphinx->pageSize = 500;
 		}
 		
 		//TODO -remove - for debuging only!
-		$sphinx->qoutput = $sphinx->q;
+		#$sphinx->qoutput = $sphinx->q;
 		
 		#####################################################
 		
@@ -135,11 +138,44 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		if ($offset < (1000-$pgsize) ) { 
 			##$sphinx->processQuery();
 			
-			if (!empty($bits) || !empty($_GET['q'])) {
+			if (!empty($plus) || !empty($minus) || !empty($_GET['q'])) {
 				$cl = $sphinx->_getClient();
-				$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
+				if (!empty($plus)) {
+					$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
+				}
 				
 				$ids = $sphinx->returnIds($pg,'_images');
+				
+				if (!empty($ids) && count($ids) && !empty($minus)) {
+					$sorted = array();
+					foreach ($ids as $id) {
+						$sorted[$id] = $sphinx->res['matches'][$id]['weight'];
+					}
+					#print_r($sphinx->q);
+					#print_r($sorted);
+					#print_r($sphinx->qminus);
+					$sphinx->q = $sphinx->qminus;
+					$cl->SetRankingMode(SPH_RANK_MATCHANY);
+					if ($sphinx->returnIds($pg,'_images')) {
+						#print count($sphinx->res['matches'])." demots ";
+						reset($sorted);
+						list(, $first) = each($sorted);
+						$step = $first/(count($sphinx->res['matches'])-10);
+						$delta = $step*10;
+						foreach ($sphinx->res['matches'] as $id => $row) {
+							if (isset($sorted[$id])) {
+								$sorted[$id] -= $delta;
+							}
+						#	print "demoting $id ";
+							$delta += $step; 
+						}
+						
+						arsort($sorted);
+						#print_r($sorted);
+						$ids = array_slice(array_keys($sorted),0, $pgsize);
+					}
+				}
+				
 			} else {
 				
 				if (count($g2t) > 20) {
