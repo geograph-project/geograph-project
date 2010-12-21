@@ -1,5 +1,5 @@
 	{if $nofirstmatch}
-	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq|escape:"html"}, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"html"}">Submit Yours Now</a>]</p>
+	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq|escape:"html"}, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"html"}">Submit yours now</a>]</p>
 	{/if}
 	{if $engine->criteria->searchclass == 'Text'}
 	<form method="get" action="http://images.google.co.uk/images">

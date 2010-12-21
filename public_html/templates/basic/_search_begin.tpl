@@ -45,34 +45,34 @@ Display:
 
 {if $engine->error}
 	<div style="padding:2px;border:1px solid red; text-align:center; background-color:pink;color:black;">
-		Unfortunatly it doesn't appear the search was processed,<br/>
+		Unfortunately it doesn't appear the search was processed,<br/>
 		{if $engine->error == "Syntax Error"}
 		there is a syntax error in the text query.<br/><br/>
 		The characters <tt>~ | ( ) @ " / ' = &lt; ^ $ , - :</tt> all have <a href="/article/Word-Searching-on-Geograph">special meanings</a><br/> which affect the query, it appears one or more has been used incorrectly.<br/>
 		Use the quick refine below to try the search without any such characters.
-		{else}this is most likly a invalid combination of search terms,<br/>
+		{else}this is most likely an invalid combination of search terms,<br/>
 		but could also be a temporary issue so you could try again in a little while.{/if}<br/>
 	</div>
 
 {elseif $engine->fullText && $engine->nextLink}
 	<div class="interestBox" style="border:1px solid pink;">
-		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However as your search is in a predictable sort order, you can <b><a href="{$engine->nextLink|escape:'html'}">Generate a new Search</a></b> that continues from this approximatly this page forward.
+		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However, as your search is in a predictable sort order, you can <b><a href="{$engine->nextLink|escape:'html'}">Generate a new Search</a></b> that continues from approximately this page.
 	</div>
 	
 {elseif $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->criteria->sphinx.compatible && $engine->criteria->sphinx.compatible_order && $engine->resultCount > $engine->maxResults}
 	<div class="interestBox" style="border:1px solid pink;">
-		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However your search seems to be compatible with the legacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
+		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However, your search seems to be compatible with the legacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
 	</div>
 	
 {elseif $engine->fullText && (!$engine->criteria->sphinx.compatible || $engine->criteria->sphinx.no_legacy)}
 
 
 {elseif strlen($engine->criteria->searchtext) && $engine->criteria->sphinx.impossible}
-	<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">You have dropped back into <a href="/help/search_new">legacy search mode</a>, the search options you have selected are not supported in the new search,<br/> you can try simplifing the choosen options to change mode.
+	<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">You have dropped back into <a href="/help/search_new">legacy search mode</a>, the search options you have selected are not supported in the new search,<br/> you can try simplifing the chosen options to change mode.
 	
 	{if $engine->criteria->sphinx.no_legacy}
 	<br/><br/>
-		<b>However legacy is not able to support this query</b> - please <a href="/contact.php">let us know</a>.
+		<b>However, legacy is not able to support this query</b> - please <a href="/contact.php">let us know</a>.
 	{elseif strpos($engine->criteria->searchtext,' ')}
 	<br/><br/>
 		Note: <b>The <a href="/help/search_new">text matching method</a> is different</b>. So the results might not be what you expect.

@@ -41,7 +41,7 @@ function reveal() {
 
 <div style="float:right; position:relative; background-color:yellow; padding:10px;"><b><a href="{$script_name}?t={$token}">Link to this Pair</a></b></div>
 
-<p>What's similar, or different and how long separates the photos, in the two shots below of the same location, discuss!</p>
+<p>What's similar, or different, and how long separates the two photos below of the same location? Discuss!</p>
 
 <table>
 	<tbody>
@@ -218,7 +218,7 @@ function reveal() {
 	{$rastermap2->getFooterTag()}
 {/if}
 {else}
-	<p>No Pairs left, please try again later</p>
+	<p>No pairs left, please try again later</p>
 	
 	<p>Or you can <a href="{$script_name}?again">start again</a>
 {/if}

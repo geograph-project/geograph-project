@@ -26,12 +26,12 @@
      <li><a title="Find and locate images" href="/search.php">Search</a></li>
      <li><a title="View map of all submissions" href="/mapbrowse.php">Maps</a></li>
      <li><a title="Explore images by theme" href="/explore/">Explore</a></li>
-     <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li>
+     <li><a title="Submitted pages, galleries and articles" href="/content/">Collections</a></li>
     </ul></li>
     <li>Interact<ul>
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
      <li><a title="Activities on the site" href="/activities/">Activities</a> </li>
-     <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
+     <li><a title="Discussion forum" href="/discuss/">Discussions</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Chat with other members" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
      <li><a title="Find out about local meetups" href="/events/">Events</a></li>
@@ -43,10 +43,10 @@
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>
     </ul></li>
     <li>General<ul>
-     <li><a title="Frequently Asked Questions" href="/faq.php">FAQ</a></li>
-     <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Information</a></li>
+     <li><a title="Frequently asked questions" href="/faq.php">FAQ</a></li>
+     <li><a title="Info, guides and tutorials" href="/content/documentation.php">Information</a></li>
      <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li>
-     <li><a accesskey="9" title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
+     <li><a accesskey="9" title="Contact the Geograph team" href="/contact.php">Contact Us</a></li>
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
@@ -58,7 +58,7 @@
      {if $is_tickmod}
      	<li><a title="Trouble Tickets" href="/admin/suggestions.php">Suggestions</a></li>
      {/if}
-     <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
+     <li><a title="Finish moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
     </ul></li>
   {/if}
   {/dynamic}
@@ -117,7 +117,7 @@
     <form method="get" action="/search.php">
     <div id="searchfield">
     <input type="hidden" name="form" value="simple"/>
-    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a Postcode, Grid Reference, Placename or a text search" onfocus="search_focus(this)" onblur="search_blur(this)"/>{/dynamic}
+    {dynamic}<input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="10" title="Enter a postcode, grid reference, placename or a text search" onfocus="search_focus(this)" onblur="search_blur(this)"/>{/dynamic}
     <input id="searchbutton" type="submit" name="go" value="Find"/></div>
     </form>
     </div>
@@ -151,7 +151,7 @@
        <span class="sep">|</span>
        <a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>
-       <a href="/help/terms" title="Terms and Conditions">Terms of use</a>
+       <a href="/help/terms" title="Terms and conditions">Terms of use</a>
        <span class="sep">|</span>
        <a href="http://hub.geograph.org.uk/downloads.html" title="check our available downloads">Downloads</a>
     </p>
