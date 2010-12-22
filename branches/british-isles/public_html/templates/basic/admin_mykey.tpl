@@ -22,7 +22,7 @@
 	<ol>
 		<li><b>User visits your Application</b></li>
 		<li><i>You generate a link to Geograph so user can login</i> (encoded to prove your identity - php code below)</li>
-		<li><b>User clicks link, and Logs into Geograph</b></li>
+		<li><b>User clicks link, and logs into Geograph</b></li>
 		<li>Geograph generates a link back to your App with the users identity (encoded to prove our identity)</li>
 		<li><b>If user agrees they click the link and return</b></li>
 		<li><i>Your script decodes the data returned to retrieve the user identity</i> (php code below)</li>

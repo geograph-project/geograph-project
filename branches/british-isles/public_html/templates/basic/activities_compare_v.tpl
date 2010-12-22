@@ -30,7 +30,7 @@ function reveal() {
 
 <div style="float:right; position:relative; background-color:yellow; padding:10px;"><b><a href="{$script_name}?v&amp;t={$token}">Link to this Pair</a></b></div>
 
-<p>What's similar, or different and how long separates the photos, in the two shots below of the same location, discuss! <small>(Click the photo to swap to the <i>other</i>)</small></p>
+<p>What's similar, or different, and how long separates the two photos below of the same location? Discuss!<small>(Click the photo to swap to the <i>other</i>)</small></p>
 
 <table id="compare_table" cellspacing=0 cellpadding=0>
 	<tbody>
@@ -40,7 +40,7 @@ function reveal() {
 				<!-- Creative Commons Licence -->
 				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
 				alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image1->profile_link}">{$image1->realname|escape:'html'}</a> and  
-				licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+				licensed for re-use under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 				<!-- /Creative Commons Licence -->
 				<hr/>
 				<div class="{if $image1->isLandscape()}photolandscape{else}photoportrait{/if}">
@@ -129,7 +129,7 @@ function reveal() {
 				<!-- Creative Commons Licence -->
 				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
 				alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image2->profile_link}">{$image2->realname|escape:'html'}</a> and  
-				licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+				licensed for re-use under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 				<!-- /Creative Commons Licence -->
 			</td>
 			<td id="cell22" style="display:none;" width="250px">
@@ -203,7 +203,7 @@ function reveal() {
 	{$rastermap2->getFooterTag()}
 {/if}
 {else}
-	<p>No Pairs left, please try again later</p>
+	<p>No pairs left, please try again later</p>
 	
 	<p>Or you can <a href="{$script_name}?v&amp;again">start again</a>
 {/if}

@@ -37,7 +37,7 @@
 
 <ul>
 	<li><b>Hide</b> : Hides the search from the list for a few days (useful if you have checked the list of results)</li>
-	<li><b>Delete</b> : Deletes the search (only use this if its not a useful typo search)</li>
+	<li><b>Delete</b> : Deletes the search (only use this if it's not a useful typo search)</li>
 </ul>
 
 {else}

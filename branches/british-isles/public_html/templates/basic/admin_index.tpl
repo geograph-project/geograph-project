@@ -94,7 +94,7 @@
    <a href="/statistics/admin_turnaround.php">Turn Around</a> {dynamic}(<a href="/statistics/admin_turnaround.php?u={$user->user_id}">You</a>){/dynamic} - 
    rough estimate at moderation times <br/>
    <a title="Web Stats" href="/statistics/pulse.php">Geograph Pulse</a> - 
-   upto the minute general site status</li>
+   up to the minute general site status</li>
 
 
 {if $is_mod} 
@@ -130,7 +130,7 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
    setup who has access to the API</li>
 
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
-   Organise the user submitted categories</li>
+   organise the user submitted categories</li>
 
 </ul>
 <h3>Statistics</h3>
@@ -147,7 +147,7 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 
 
    
-<li><a title="Search Stats" href="/admin/viewsearches.php">Search Statistics</a> - See the recent Search Activity (very slow)</li>
+<li><a title="Search Stats" href="/admin/viewsearches.php">Search Statistics</a> - see the recent Search Activity (very slow)</li>
 
 <li><a title="Events" href="events.php">Event Diagnostics</a> - see what the event system is doing</li>
 

@@ -29,7 +29,7 @@
 
 {elseif $saved}
 	<h3>Saved</h3>
-	<p><a href="/admin/contact.php?id={$id}">Edit Contact</a></p>
+	<p><a href="/admin/contact.php?id={$id}">Edit contact</a></p>
 	<p><a href="/admin/contact.php">Return to list</a></p>
 {elseif $id} 
 
@@ -62,7 +62,7 @@
 
 {else}
 	{if $is_admin}
-		<a href="{$script_name}?inject">Inject a old query</a>
+		<a href="{$script_name}?inject">Inject an old query</a>
 	{/if}
 	<table class="report sortable" id="newtickets" >
 	
