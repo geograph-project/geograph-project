@@ -68,7 +68,7 @@
 		or <a href="/admin/moderation.php?abandon=1" onclick="alert('Please now close the sidebar.');" target="_main">Abandon</a> </div>
 <br/>
 {else}
-  <p>There are no suggestionss available to moderate at this time, please try again later.</p>
+  <p>There are no suggestions available to moderate at this time, please try again later.</p>
 {/if}
 {/dynamic}    
 </body>

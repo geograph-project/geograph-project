@@ -21,7 +21,7 @@
 	</ul>
 </div>
 
-<p>Use the form below to nominate an image for <i>Picture of the Day</i>, displayed predominatly on the homepage. If you do not specify a day it will be added to a pool, which will use the images as needed. The pool should be kept well stocked.</p>
+<p>Use the form below to nominate an image for <i>Picture of the Day</i>, displayed predominantly on the homepage. If you do not specify a day it will be added to a pool, which will use the images as needed. The pool should be kept well stocked.</p>
 
 
 <form method="post" action="pictureoftheday.php">
@@ -55,7 +55,7 @@
 
 <h3>Upcoming Pool</h3>
 
-<p>You can <a href="/search.php?i=2136521">Preview</a>(don't disclose this url) the images currently in the emergency kitty. You can also <a href="/search.php?i=5761957&amp;temp_displayclass=vote">review the newly added images</a> (again don't disclose this url), please visit this page regularly and rate images. The highest rated photos will be added to the allocation list below. </p>
+<p>You can <a href="/search.php?i=2136521">Preview</a>(don't disclose this url) the images currently in the emergency kitty. You can also <a href="/search.php?i=5761957&amp;temp_displayclass=vote">review the newly-added images</a> (again don't disclose this url), please visit this page regularly and rate images. The highest rated photos will be added to the allocation list below. </p>
 
 
 <h3>Preliminary Allocations</h3>
@@ -81,7 +81,7 @@
 {/foreach}
 </table>
 
-<p><i>Note: The exact date a Pool image will be used is subject to change. If the pool runs dry lower rated images may be used.</i></p>     
+<p><i>Note: the exact date a pool image will be used is subject to change. If the pool runs dry lower rated images may be used.</i></p>     
 
 {include file="_std_end.tpl"}
 

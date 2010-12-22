@@ -9,7 +9,7 @@
 
 <div>This instant map updater requires no screen refresh to work - simply
 check the Map and suggest the land percentage{if $tofix} and a new square will
-be opened up for processing{/if}. Note: When the square is substantial Mud-flats, please halve the estimate.</div>
+be opened up for processing{/if}. Note: When the square is substantial mud-flats, please halve the estimate.</div>
 
 <div id="landvote" style="margin-top:10px;display:none">
 Land percent for <span id="voteref" style="font-weight:bold"></span>&nbsp; is 

@@ -37,9 +37,9 @@
 		{/if}
 		<ul>
 			<li>Only searches the <b>most recent and moderated</b> images<br/><br/></li>
-			<li>Include/Exclude boxes accept a <b>single exact search string</b>, including special charactors; matches part words. (but not case sensitive)<br/><br/></li>
-			<li>By default looks for in the description <b>only</b>, as that is the most useful for typo hunting. But can also search the title, but please only do that when needed<br/><br/></li>
-			<li>Searches are automatically recorded so can be rerun easily. <a href="/admin/typolist.php">View results here</a><br/><br/></li>
+			<li>Include/Exclude boxes accept a <b>single exact search string</b>, including special charactors; matches part words (but not case sensitive)<br/><br/></li>
+			<li>By default looks in the description <b>only</b>, as that is the most useful for typo hunting. Can also search the title, but please only do that when needed<br/><br/></li>
+			<li>Searches are automatically recorded so can be re-run easily. <a href="/admin/typolist.php">View results here</a><br/><br/></li>
 		</ul>
 	{/foreach}
 	

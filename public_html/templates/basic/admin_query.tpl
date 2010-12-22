@@ -19,7 +19,7 @@
 {if $user->user_id != $row.user_id}
 	<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-	<b>This is not your search</b>, as a administrator you can edit the search, but please only use this facility with good reason.<br/>
+	<b>This is not your search</b>, as an administrator you can edit the search, but please only use this facility with good reason.<br/>
 	</div>
 <br/>
 

@@ -86,7 +86,7 @@
   <p>There are no suggestions available to moderate at this time, please try again later.</p>
 {/if}
 
-<p><small><a name="n1">Note 1: Only works on active (not closed) suggestions, and is <b>not updated live</b>. Uses same basic syntax as image/forum search, including negative keywords. Searches Grid Reference (4fig, hectad and myriad), Image Title/Comment, Suggestion Note, Contributor Name and Suggestor Name. (but not changes themselves or replies yet)</small> </p>
+<p><small><a name="n1">Note 1: Only works on active (not closed) suggestions, and is <b>not updated live</b>. Uses same basic syntax as image/forum search, including negative keywords. Searches grid reference (4 fig, hectad and myriad), image title/comment, suggestion note, contributor name and suggestor name (but not changes themselves or replies yet).</small> </p>
 
 {/dynamic}    
 {include file="_std_end.tpl"}

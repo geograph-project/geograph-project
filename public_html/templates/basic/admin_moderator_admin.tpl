@@ -105,12 +105,12 @@ function assignRole(user_id,role) {
 
 <div class="interestBox">
 <div>As soon as a user is marked as a moderator, they can make real moderations, 
-admin's can use these links occasionally to spot check a particular moderator.</div><br/>
+admins can use these links occasionally to spot check a particular moderator.</div><br/>
 
 <i>Key:</i><br/>
 <b>Stats</b> - View moderation statistics for this user.<br/>
 <b>Verify</b> - View dummy verification moderations, done before becoming a moderator<br/>
-(<b>Mis</b>) - only show mismatches.<br/>
+(<b>Mis</b>) - Only show mismatches.<br/>
 <b>Review</b> - View recent real moderations/suggestions.<br/>
 <b>Revoke</b> - Remove moderation rights (moderations already done are not affected).<br/>
 <b>Grant</b> - Add moderation rights to this user. (requires the user to re-login)

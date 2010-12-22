@@ -20,11 +20,11 @@
 {if $unmoderatedcount}
 
 	<p>{if $apply}
-		To get a feel for the moderation process, please make your suggestion for the images below. This is a dummy run, no actual moderations are taking place. Any change requests are created as normal. Make sure you click the 'Finish my application' when finished!<br/><br/>
+		To get a feel for the moderation process, please make your suggestions for the images below. This is a dummy run, no actual moderations are taking place. Any change requests are created as normal. Make sure you click the 'Finish my application' when finished!<br/><br/>
 	{elseif $review}
-		The following images have been recently moderated to be different to the status you previouslly selected, there is no need to change anything.
+		The following images have been recently moderated to be different to the status you previously selected, there is no need to change anything.
 	{elseif $moderator}
-		The following images have been recently moderated by the selected moderator. There is no need to do anything, but if you beleive the original moderation was wrong just use the moderation buttons as normal. 
+		The following images have been recently moderated by the selected moderator. There is no need to do anything, but if you believe the original moderation was wrong just use the moderation buttons as normal. 
 	{elseif $remoderate}
 		<div class="interestBox" style="font-size:1.3em">As a quick spotcheck you are asked to make a suggestion for these recently moderated images.</div><br/><br/>
 	{else}
@@ -34,7 +34,7 @@
 	{if !$moderator && !$review}
 	Simply look at each image in turn and click the relevant button. The result of the action is displayed just below the button.<br/><br/>
 	
-	<div class="interestBox" style="border:4px solid red;background-color:pink;font-size:1.1em;padding:15px">Remember you absolutely MUST wait for confirmation from clicking the moderation button, before moving onto the next image. <b>This is vitally important</b>. <i>Thank you for your attention in this matter</i>.</div>
+	<div class="interestBox" style="border:4px solid red;background-color:pink;font-size:1.1em;padding:15px">Remember you absolutely MUST wait for confirmation after clicking the moderation button, before moving onto the next image. <b>This is vitally important</b>. <i>Thank you for your attention in this matter</i>.</div>
 	
 	Sometimes a button is grayed out, this is at the suggestion of the submitter themselves, and/or the system. Please moderate as you normally would, but you can take the suggestion into account. 
 	{/if}</p>

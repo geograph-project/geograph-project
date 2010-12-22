@@ -25,7 +25,7 @@ Number of Maps to Process: <input type="text" name="limit" value="10" size="12"/
 
 <form method="post" action="recreatemaps.php">
 
-<p>You can use the following form to immediately invalidate the maps for a particular gridsquare and optionally a user.</p>
+<p>You can use the following form to immediately invalidate the maps for a particular grid square and optionally a user.</p>
 
 <p>{$errormsg}</p>
 

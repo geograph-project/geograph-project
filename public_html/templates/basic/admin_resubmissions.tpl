@@ -52,6 +52,7 @@
 	<input style="background-color:pink; width:200px" type="submit" name="diff" value="Different - don't allow!"/>
 
 
+
 	<input style="background-color:lightgreen; width:200px" type="submit" name="confirm" value="Identical" onclick="autoDisable(this);" id="identbutton"/>
 
 	<input style="background-color:lightgrey; color:green; width:200px" type="submit" name="similar" value="Close enough" onclick="autoDisable(this);" id="closebutton"/>
@@ -60,14 +61,14 @@
 	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>
 	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
 	<li>Minor cropping changes is permissible, but must be marked "Close enough"</li>
-	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close Enough"<ul>
+	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close enough"<ul>
 		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of the larger panorama - still marked "Close enough")</li>
 		</ul></li>
 	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
 	</ul>
 	{/if}
 
-	In a nutshell, if the two images above are the same size and look exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close Enough".
+	In a nutshell, if the two images above are the same size and look exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close enough".
 </form>
 
 <script type="text/javascript">
@@ -100,6 +101,7 @@ function checkImageSizes() {
  AttachEvent(window,'load',checkImageSizes,false);
 
 
+
 {/literal}
 
 </script>
@@ -107,6 +109,7 @@ function checkImageSizes() {
 {else}
 	<p>Nothing available currently - please come back later</p>
 {/if}
+
 
 
 {if $last_id}
