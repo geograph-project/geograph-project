@@ -51,7 +51,7 @@
 	<!-- /Creative Commons Licence -->
 
 {if $imageCredits}
-	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images also under a similar <a href="#imlicence">Creative Commons licence</a>.</div>
+	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images also under a similar <a href="#imlicence">Creative Commons Licence</a>.</div>
 {/if}
 
 {else}
