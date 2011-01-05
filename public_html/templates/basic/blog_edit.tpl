@@ -12,6 +12,7 @@
 <input type="hidden" name="id" value="{$id|escape:"html"}"/>
 
 
+
 <fieldset>
 <legend>Create/Edit Blog Entry</legend>
 
@@ -27,6 +28,7 @@
 
 	{if $errors.title}</div>{/if}
 </div>
+
 
 
 
@@ -79,7 +81,7 @@
 	<label for="tags">Tags:</label>
 	<input type="text" name="tags" value="{$tags|escape:"html"}" id="tags" maxlength="255" size="60"/>
 
-	<div class="fieldnotes">Optional tag(s) for this entry, describing what it about. Seperate multiple tags with commas.<br/><br/>
+	<div class="fieldnotes">Optional tag(s) for this entry, describing what it's about. Separate multiple tags with commas.<br/><br/>
 
 	Suggestions (click to use): <i>But feel free to use your own!</i><br/><a href="javascript:void()" onclick="return useit(this.innerText)">Introducing Myself</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Geographing Trip Report</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Interesting Image</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Completing a Hectad</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Off-Topic Ramblings</a>.</div>
 

@@ -35,6 +35,7 @@ function getXMLRequestObject()
 	var xmlhttp=false;
 
 
+
 	 try {
 	  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
 	 } catch (e) {
@@ -103,7 +104,7 @@ function makeUneditable() {
 <input type="hidden" name="article_id" value="{$article_id|escape:"html"}"/>
 
 	<div style="float:right;position:relative">
-		New to articles? See the {newwin href="/article/Help_on_formatting_of_articles" text="Overview Guide"}
+		New to Articles? See the {newwin href="/article/Help_on_formatting_of_articles" text="Overview Guide"}
 	</div>
 
 <fieldset>
@@ -119,6 +120,7 @@ function makeUneditable() {
 </div>
 
 {else}
+
 
 
 {if $title == 'New Article'}
@@ -157,6 +159,7 @@ function makeUneditable() {
 	<a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>
 
 
+
 	{if $errors.licence}</div>{/if}
 </div>
 
@@ -180,8 +183,10 @@ function makeUneditable() {
 	</select>
 
 
+
 	{if $errors.article_cat_id}</div>{/if}
 </div>
+
 
 
 <div class="field">
@@ -190,7 +195,7 @@ function makeUneditable() {
 	<label for="grid_reference">Relevant Grid Square:</label>
 	<input type="text" name="grid_reference" value="{$grid_reference|escape:"html"}" maxlength="12" size="6"/>
 
-	<div class="fieldnotes">Optional, helps organise articles, such as been able to plot on map.</div>
+	<div class="fieldnotes">Optional, helps organise Articles, such as enabling plotting on a map.</div>
 
 	{if $errors.grid_reference}</div>{/if}
 </div>
@@ -201,7 +206,7 @@ function makeUneditable() {
 	<label for="parent_url">Parent Article:</label>
 	<input type="text" name="parent_url" value="{$parent_url|escape:"html"}" maxlength="128" size="60"/>
 
-	<div class="fieldnotes">Optional, full URL to parent article if there is one. To be used by articles that are in a group.</div>
+	<div class="fieldnotes">Optional, full url to parent article if there is one. To be used by Articles that are in a group.</div>
 
 	{if $errors.parent_url}</div>{/if}
 </div>
@@ -212,7 +217,7 @@ function makeUneditable() {
 	<label for="extract">Short Description:</label>
 	<input type="text" name="extract" value="{$extract|escape:"html"}" maxlength="255" size="90" style="width:58em"/>
 
-	<div class="fieldnotes">Please provide a meaningful short description for the content.</div>
+	<div class="fieldnotes">Please provide a meaningful short description of the content.</div>
 
 	{if $errors.extract}</div>{/if}
 </div>
@@ -250,6 +255,7 @@ function makeUneditable() {
 
 	{if $errors.complete}</div>{/if}
 </div>
+
 
 
 </fieldset>
@@ -299,8 +305,10 @@ function previewArticle() {
 </form>
 
 
+
  <br/> <br/>
 Or <a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close editor without saving edits</a><small> (leaving this page open prevents others from editing)</small>
+
 
 
 <br/><br/><br/>
@@ -318,6 +326,7 @@ Or <a href="/article/edit.php?page={$url|escape:"url"}&amp;release=1">Close edit
 * Item Two</tt></p>
 
 <p><tt>[[[123434]]]</tt> <small>&middot; inserts the thumbnail of a geograph image - get the id number from the image url</small></p>
+
 
 
 <p>Link: <tt>[url=http://www.example.com]Goto this site[/url]</tt></p>

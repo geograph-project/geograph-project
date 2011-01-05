@@ -28,7 +28,7 @@
 {else}
 	   <h2>Browse</h2>
 	<p>You can view a particular grid square below - if the square hasn't been filled yet,
-	we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Get-a-map&trade;'} to help locate your grid square)</p>
+	we'll tell you how far away the nearest one is (use {getamap gridref='' text='Get-a-map&trade;'} to help locate your grid square)</p>
 {/if}
 
 
@@ -132,7 +132,7 @@
 		{/if}
 		
 		</ul>
-	<p><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">More Links for {$gridrefraw}</a></b> </big></p>
+	<p><big><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b><a href="/gridref/{$gridrefraw}/links">More links for {$gridrefraw}</a></b> </big></p>
 {/if}
 
 </div>
@@ -159,7 +159,7 @@
 	{if $mode eq 'takenfrom'}
 		taken from <b>{$gridref}</b>
 	{elseif $mode eq 'mentioning'}
-		mentioning <b>{$gridref}</b> <sup>[Note: Currently only matches 4 Figure Grid References]</sup>
+		mentioning <b>{$gridref}</b> <sup>[Note: currently only matches 4 figure grid references]</sup>
 	{else}
 		for <b>{$gridref}</b>
 	{/if}
@@ -193,7 +193,7 @@
 		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if $filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
-			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
+			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6 figure grid reference.</small></p>
 	<table border="0" cellspacing="0" cellpadding="2">
 		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}&amp;by={$by}">NW</a></td>
 		<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}&amp;by={$by}">N</a></td>
@@ -328,7 +328,7 @@
 			<br style="clear:left;"/>&nbsp;
 			
 			{if $mode eq 'takenfrom'}
-				<div class="interestBox">| <a href="/search.php?searchtext={$viewpoint_query}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View these photos on a Map</a> |</div>
+				<div class="interestBox">| <a href="/search.php?searchtext={$viewpoint_query}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View these photos on a map</a> |</div>
 			{elseif $mode eq 'mentioning'}
 				<div class="interestBox">| <a href="/search.php?searchtext={$gridref}+-gridref:{$gridref}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1&amp;resultsperpage=50">View these photos on a Map</a> | <a href="/search.php?searchtext={$gridref}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images about this square</a> |</div>
 			{/if}

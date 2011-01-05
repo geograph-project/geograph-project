@@ -13,7 +13,7 @@
 		Please note this does not give the application access to your profile, or any private settings such as email or password. This encoded negotiation process only serves to prove you are a Geograph Account Holder, and just passes back your user id, and name.
 	</div>
 
-	<p><b><a href="{$final_url}">Continue to Application</a></b> or press <a href="javascript:history.go(-1)">back</a> to not provide these details.</p>
+	<p><b><a href="{$final_url}">Continue to application</a></b> or press <a href="javascript:history.go(-1)">back</a> to not provide these details.</p>
 
 
 {else}

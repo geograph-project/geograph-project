@@ -19,7 +19,7 @@
 	<!-- /Creative Commons Licence -->
 
 {if $imageCredits}
-	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images also under a similar <a href="#imlicence">Creative Commons licence</a>.</div>
+	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images also under a similar <a href="#imlicence">Creative Commons Licence</a>.</div>
 {/if}
 
 {else}
@@ -74,7 +74,7 @@
 </table>
 
 <input type="submit" value="Compare Selected Revisions"/>
-<p>Select two revisions in the list and click the above button to review the individual changes</p>
+<p>Select two revisions in the list and click the button above to review the individual changes</p>
 </form>
 
 

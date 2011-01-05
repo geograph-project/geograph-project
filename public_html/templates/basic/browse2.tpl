@@ -35,7 +35,7 @@
 {else}
 	   <h2>Browse</h2>
 	<p>You can view a particular grid square below - if the square hasn't been filled yet,
-	we'll tell you how far away the nearest one is (Use {getamap gridref='' text='Get-a-map&trade;'} to help locate your grid square)</p>
+	we'll tell you how far away the nearest one is (use {getamap gridref='' text='Get-a-map&trade;'} to help locate your grid square)</p>
 {/if}
 
 
@@ -103,7 +103,7 @@
 			{if $mode eq 'takenfrom'} of other squares,
 				taken from <b>{$gridref}</b>
 			{elseif $mode eq 'mentioning'}
-				mentioning <b>{$gridref}</b> <sup>[Note: Currently only matches 4 Figure Grid References]</sup>
+				mentioning <b>{$gridref}</b> <sup>[Note: currently only matches 4 figure grid references]</sup>
 			{else}
 				for <b>{$gridref}</b>
 			{/if}</big>
@@ -155,7 +155,7 @@
 			<li style="margin-top:4px">View image(s) <a href="/gridref/{$gridref}?viewcenti={$gridref6}"><b>taken in {$gridref6}</b></b></a> or <span class="nowrap">of <a href="/gridref/{$gridref}?centi={$gridref6}"><b>subjects in {$gridref6}</b></a> (if any)</span> </li>
 		{/if}
 
-		<li style="margin-top:4px"><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph Coverage <b>map</b></a>{if $hectad && $hectad_row}, <a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}" style="background-color:yellow">Photo Mosaic</a>{/if}</li>
+		<li style="margin-top:4px"><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph Coverage <b>Map</b></a>{if $hectad && $hectad_row}, <a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}" style="background-color:yellow">Photo Mosaic</a>{/if}</li>
 
 		</ul>
 
@@ -214,9 +214,9 @@
 
 	<div class="tabHolder" style="margin-left:10px">
 		{if $sample}
-			<b class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1">Sample Images</b>
+			<b class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1">Sample images</b>
 		{elseif $imagecount >= 15}
-			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/gridref/{$gridref}">Sample Images</a>
+			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/gridref/{$gridref}">Sample images</a>
 		{elseif $imagecount && $imagecount < 15}
 			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="/gridref/{$gridref}">Images in {$gridref}</a>
 		{/if}
@@ -224,7 +224,7 @@
 			<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="/gridref/{$gridref}?by=1">Breakdown list</a>
 		{/if}
 		{if $bby}
-			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="{linktoself name="by" value=$bby delete=$bby}">List of Filters</a>
+			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="{linktoself name="by" value=$bby delete=$bby}">List of filters</a>
 		{elseif $breakdown}
 			<b class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4">List of {$breakdown_title|default:"filters"}s</b>
 		{/if}
@@ -255,7 +255,7 @@
 	{if $mode eq 'takenfrom'}
 		taken from <b>{$gridref}</b> of other squares
 	{elseif $mode eq 'mentioning'}
-		mentioning <b>{$gridref}</b> <sup>[Note: Currently only matches 4 Figure Grid References]</sup>
+		mentioning <b>{$gridref}</b> <sup>[Note: currently only matches 4 figure grid references]</sup>
 	{else}
 		for <b>{$gridref}</b>
 	{/if}
@@ -298,7 +298,7 @@
 		<p>{if $imagecount > 15}Because there are so many images for this square, please{else}Please{/if} select images <b>{if $filtered_title}{$filtered_title},{/if} by {$breakdown_title}</b>:</p>
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
-			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6figure grid reference.</small></p>
+			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6 figure grid reference.</small></p>
 
 	<table border="0" cellspacing="0" cellpadding="2">
 		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}&amp;by={$by}">NW</a></td>
@@ -380,8 +380,8 @@
 
 				<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 				<input type="submit" value="Search"/><br/>
-				<input type="radio" name="distance" value="0.1" checked id="d1"/><label for="d1">In centisquare only</label> /
-				<input type="radio" name="distance" value="0.3" id="d3"/><label for="d3">inc surrounding centisquare</label> /
+				<input type="radio" name="distance" value="0.1" checked id="d1"/><label for="d1">in centisquare only</label> /
+				<input type="radio" name="distance" value="0.3" id="d3"/><label for="d3">incl. surrounding centisquare</label> /
 				<input type="radio" name="distance" value="0.6" id="d6"/><label for="d6">600m</label><br/>
 				<input type="hidden" name="do" value="1"/>
 				</div>
@@ -484,9 +484,9 @@
 			{/if}
 
 			{if $mode eq 'takenfrom'}
-				<div class="interestBox">| <a href="/search.php?searchtext={$viewpoint_query}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View these photos on a Map</a> | <a href="/search.php?searchtext={$viewpoint_query}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images taken from this square</a> |</div>
+				<div class="interestBox">| <a href="/search.php?searchtext={$viewpoint_query}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View these photos on a map</a> | <a href="/search.php?searchtext={$viewpoint_query}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images taken from this square</a> |</div>
 			{elseif $mode eq 'mentioning'}
-				<div class="interestBox">| <a href="/search.php?searchtext={$gridref}+-gridref:{$gridref}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1&amp;resultsperpage=50">View these photos on a Map</a> | <a href="/search.php?searchtext={$gridref}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images about this square</a> |</div>
+				<div class="interestBox">| <a href="/search.php?searchtext={$gridref}+-gridref:{$gridref}&amp;displayclass=gmap&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1&amp;resultsperpage=50">View these photos on a map</a> | <a href="/search.php?searchtext={$gridref}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images about this square</a> |</div>
 			{/if}
 			{if $sample}
 				<div class="interestBox"> Explore more images in this square: | <a href="{linktoself name="by" value="1"}">View <b>Filtering options</b></a> | <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View <b>all {$imagecount} images</b> page by page &gt;&gt;&gt;</a> |</div><br/>

@@ -53,7 +53,7 @@ Scope: <select name="scope" style="width:80px">
 
 {if $linktofull}
 <div class="interestBox" style="text-align:center;background-color:yellow">
-	<b>Content Summary Only</b> - <a href="?table&amp;full">View Full list</a>
+	<b>Content summary only</b> - <a href="?table&amp;full">View full list</a>
 </div>
 {/if}
 
@@ -112,15 +112,15 @@ Scope: <select name="scope" style="width:80px">
 
 {if $linktofull}
 <div class="interestBox" style="text-align:center;background-color:yellow">
-	<b>This is a Summary List Only</b> - <a href="?table&amp;full">View Full list</a>
+	<b>This is a summary list only</b> - <a href="?table&amp;full">View full list</a>
 </div>
 {/if}
 
 <div class="interestBox">
 {if $user->registered}
-	<a href="/article/edit.php?page=new">Submit a new Article</a> (Registered Users Only)
+	<a href="/article/edit.php?page=new">Submit a new Article</a> (registered users only)
 {else}
-	<a href="/login.php">Login</a> to Submit your own article!
+	<a href="/login.php">Login</a> to submit your own Article!
 {/if}
 </div>
 
