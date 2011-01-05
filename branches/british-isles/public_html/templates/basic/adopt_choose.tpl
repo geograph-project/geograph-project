@@ -15,7 +15,7 @@
 	<div class="interestBox">
 	<form action="{$script_name}" method="post">
 	
-	<p><b>Hectad List</b>, <small>one Hectad Reference (eg TQ45) per line, in rough order of priority - with the ones you most interested in towards the top.</small><br/>
+	<p><b>Hectad List</b>, <small>one hectad reference (eg TQ45) per line, in rough order of priority - with the ones you are most interested in towards the top.</small><br/>
 <textarea name="hectads" rows="20" cols="10">
 {foreach from=$hectads item=item}
 {$item.hectad}

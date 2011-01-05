@@ -138,7 +138,7 @@ As well as choosing a photo that is represetative of the square, the photo shoul
 {if $stats}
 	<p>&nbsp;</p>
 	<div class="interestBox">
-		<p>To help prevent contributor bias here is some statistics of the contributors on last page load (<a href="?hectad={$hectad}">reload</a>)</p>
+		<p>To help prevent contributor bias here are some statistics of the contributors on last page load (<a href="?hectad={$hectad}">reload</a>)</p>
 		<ol>
 		{foreach from=$stats name=x key=n item=c}
 			<li value="{$c}">{$n|escape:'html'}</li>

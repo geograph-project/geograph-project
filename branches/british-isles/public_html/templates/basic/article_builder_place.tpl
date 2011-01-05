@@ -4,17 +4,21 @@
 {dynamic}
 
 
+
 <h2>Create Article - "Place" Template</h2>
 
-<p>Create an article somewhat like <a href="/article/St-Cuthberts-Church-Great-Salkeld" title="_blank">St Cuthbert's Church, Great Salkeld</a> in minutes! This creates an article based on a template, once created can tweak with the normal Article editor.</p>
+<p>Create an Article somewhat like <a href="/article/St-Cuthberts-Church-Great-Salkeld" title="_blank">St Cuthbert's Church, Great Salkeld</a> in minutes! This creates an Article based on a template, once it has been created it can be tweaked with the normal Article editor.</p>
 
 <div style="position:relative;width:600px;float:left">
+
 
 
 <form class="simpleform" action="{$script_name}" method="post" name="theForm">
 
 
+
 <fieldset>
+
 
 
 <div class="field">
@@ -45,10 +49,11 @@
 	<label for="grid_reference"><b>Grid Reference: </b></label>
 	<input type="text" name="grid_reference" value="{$grid_reference|escape:"html"}" maxlength="12" size="6"/>
 
-	<div class="fieldnotes">Ideally 6 figure+, but 4 figure OK</div>
+	<div class="fieldnotes">Ideally 6 figures+, but 4 figures is OK</div>
 
 	{if $errors.grid_reference}</div>{/if}
 </div>
+
 
 
 	<div class="field">
@@ -57,10 +62,11 @@
 		<label for="edit_prompt">Edit prompt:</label>
 		<input type="text" name="edit_prompt" value="Help us improve, please edit!" maxlength="160" size="40"/>
 
-		<div class="fieldnotes">If want to allow anyone to edit (open collaboration), a short message to prompt users to edit the article.</div>
+		<div class="fieldnotes">If you want to allow anyone to edit (open collaboration), a short message to prompt users to edit the article.</div>
 
 		{if $errors.edit_prompt}</div>{/if}
 	</div>
+
 
 
 <div class="field">
@@ -98,16 +104,18 @@
 </div>
 
 
+
 <div class="field">
 	{if $errors.ids1}<div class="formerror"><p class="error">{$ids1.content}</p>{/if}
 
 	<label for="ids1"><b>Image IDs 1</b>:</label> (Recommended maximum 10 images, if Large)
 	<textarea rows="10" cols="80" name="ids1" style="width:38em">{$ids1|escape:"html"}</textarea></p>
 
-	<div class="fieldnotes">Just a list of images in any format (anything other than a number is a separator). So can copy from the Marked list, or even just list links to the photo pages. TIP: run a search on the right, and the drag the thumbnail into this box, (<b>don't</b> worry about adding spaces between links)</div>
+	<div class="fieldnotes">Just a list of images in any format (anything other than a number is a separator). So, you can copy from the marked list, or even just list links to the photo pages. TIP: run a search on the right, and then drag the thumbnails into this box, (<b>don't</b> worry about adding spaces between links)</div>
 
 	{if $errors.content}</div>{/if}
 </div>
+
 
 
 <hr/>
@@ -132,6 +140,7 @@
 
 	{if $errors.thumbs2}</div>{/if}
 </div>
+
 
 
 <div class="field">
@@ -164,7 +173,7 @@
 	<label for="searchqq">Search Query:</label>
 	<input type="text" name="q" id="searchqq" value="" maxlength="60" size="40"/>
 
-	<div class="fieldnotes">Used to find more images eg for a Article about "St Cuthbert's Church" could enter "church OR Cuthbert". (Adds a link to the article for images near the supplied grid reference)</div>
+	<div class="fieldnotes">Used to find more images eg for a Article about "St Cuthbert's Church" could enter "church OR Cuthbert". (Adds a link to the Article for images near the supplied grid reference.)</div>
 
 	{if $errors.q}</div>{/if}
 </div>
@@ -173,8 +182,9 @@
 
 <div id="buttonbar">
 	<input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');" style="color:green"/>
-	<input type="submit" name="submit" value="Create Article" style="font-size:1.1em; color:green"/><br/> (The article will only be published and made public once you have had a chance to tweak it)</p>
+	<input type="submit" name="submit" value="Create Article" style="font-size:1.1em; color:green"/><br/> (The article will only be published and made public once you have had a chance to tweak it.)</p>
 </div>
+
 
 
 </form>
@@ -222,6 +232,7 @@ function checkGridReference(that,showmessage) {
 }
 
 
+
 function updateQuery() {
 	if (edited)
 		return;
@@ -231,6 +242,7 @@ function updateQuery() {
 	if (!checkGridReference(f.elements['grid_reference'],false)) {
 		return;
 	}
+
 
 
 	var q = f.elements['title'].value;
@@ -244,10 +256,12 @@ function updateQuery() {
 	f.elements['q'].value = q;
 
 
+
 	var fd = document.forms['searchform'];
 
 	fd.elements['q'].value = gridref4 + ' ' + q;
 }
+
 
 
 function markUp() {
@@ -273,6 +287,7 @@ function markUp() {
  AttachEvent(window,'load',markUp,false);
 
 {/literal}</script>
+
 
 
 {/dynamic}
