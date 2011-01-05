@@ -23,7 +23,7 @@
 {if $gridsquare_id}
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
 	<div style="width:300px; height:250px;" id="mapCanvas">Loading map...</div>
-	<div style="color:red; background-color:white">Marker only shows gridsquare</div><br/>
+	<div style="color:red; background-color:white">Marker only shows grid square</div><br/>
 </div>
 {/if}
 

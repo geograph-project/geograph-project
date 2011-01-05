@@ -4,7 +4,7 @@
 
 {if $geo}
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
-	<small style="color:red">Marker only shows gridsquare, see description for exact location<small><br/><br/></small></small>
+	<small style="color:red">Marker only shows grid square, see description for exact location<small><br/><br/></small></small>
 	<div style="width:400px; height:320px;" id="mapCanvas"></div>
 </div>
 {/if}
