@@ -88,7 +88,7 @@
 (H) <img src="/chat/img/cool.gif"/>&nbsp;&nbsp;
 :@ <img src="/chat/img/enerve2.gif"/>&nbsp;&nbsp;
 :s <img src="/chat/img/roll-eyes.gif" style="border-right:none"/>
-</span> <small><small><br/>Just type the charactors and it will be turned into the image</small><br/><br/></small></li>
+</span> <small><small><br/>Just type the characters and it will be turned into the image</small><br/><br/></small></li>
 
 <li><tt style="background-color:lightgreen; border:1px solid black; padding: 2px"><b>/me</b> rolls eyes in bewilderment</tt>
 shows as <tt style="color:purple; border: 1px solid gray; padding:2px">*{$nickname} rolls eyes in bewilderment</tt><br/><br/></li>
@@ -117,13 +117,13 @@ allows you to leave gracefully with the message, helping to show users you inten
 
 <h2>Geograph Chat (beta)</h2>
 
-<p>We've set up an IRC chat channel for you to hang out on and 
-natter to your fellow geographers.</p>
+<p>We've set up an IRC chat channel where you can hang out and 
+natter to your fellow Geographers.</p>
 
 <p>There are two ways to connect</p>
 
 <h3>1. Use your browser</h3>
-<p>We've setup a Java applet which makes joining the channel fairly straightforward
+<p>We've set up a Java applet which makes joining the channel fairly straightforward
 for anyone unfamiliar with IRC. To use the applet, simply enter your desired 
 nickname below and press "Join".</p>
 

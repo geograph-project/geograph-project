@@ -58,13 +58,13 @@ Scope: <select name="scope" style="width:90px">
 	{assign var="lastcat" value=$item.category_name}
 	{assign var="lastid" value=$lastid+1}
 {foreachelse}
-	<li><i>There are no articles to display at this time.</i></li>
+	<li><i>There are no Articles to display at this time.</i></li>
 {/foreach}
 
 </ul>
 </div>
 <br style="clear:both"/>
 
-	<div class="interestBox" style="font-size:1.3em;margin-bottom:20px">Can't find what you looking for? <a href="/ask.php">Ask Us</a>!</div>
+	<div class="interestBox" style="font-size:1.3em;margin-bottom:20px">Can't find what you looking for? <a href="/ask.php">Ask us</a>!</div>
 
 {include file="_std_end.tpl"}

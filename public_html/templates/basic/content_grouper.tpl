@@ -32,7 +32,7 @@
 	
 	
 {else}
-	<a href="/content/grouper.php?start" target="_search" rel="nofollow">Click to Start</a>
+	<a href="/content/grouper.php?start" target="_search" rel="nofollow">Click to start</a>
 {/if}
 
 {/dynamic}
