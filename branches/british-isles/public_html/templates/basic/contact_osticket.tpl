@@ -3,7 +3,7 @@
 
  <h2>Contact Geograph, photographic archive of Britain and Ireland</h2>
 
-<p>Geograph Britain and Ireland uses a support ticket system. Please use the form below to contact the Geograph website developers and/or Image moderators.</p> 
+<p>Geograph Britain and Ireland uses a support ticket system. Please use the form below to contact the Geograph website developers and/or image moderators.</p> 
 
 {dynamic}
 
@@ -11,14 +11,14 @@
 		<div class="interestBox" style="background-color:yellow; text-align:center; width:500px; float:left; margin-right:20px">
 		<h1 style="color:red;border-bottom:2px solid red;padding-bottom:10px">Stop!</h1>
 		Trying to contact <b>{$image->title|escape:'html'}</b>?<br/><br/>
-		Geograph is a photo sharing website, and only has a <i>photo</i> by that title, <u>not</u> the means to contact the location photographed. <br/><br/>
+		Geograph is a photo-sharing website, and only has a <i>photo</i> by that title, <u>not</u> the means to contact the location photographed. <br/><br/>
 
 		<p><small>| <a href="javascript:history.go(-1)">Back to photo page</a> | <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a> |</small></p>
 		</div>
 
 		<div style="">
 			<br/>
-			&middot; or <b>Looking to copy/reuse the image you where viewing?</b> <a href="/reuse.php?id={$image->gridimage_id}">See this page</a>.
+			&middot; or <b>Looking to copy/reuse the image you were viewing?</b> <a href="/reuse.php?id={$image->gridimage_id}">See this page</a>.
 			<br/><br/><hr/><br/>
 			
 			<span style="color:darkgreen">The Geograph Britain and Ireland project aims to collect geographically representative photographs and information for every square kilometre of Great Britain and Ireland.</span><br/><br/>

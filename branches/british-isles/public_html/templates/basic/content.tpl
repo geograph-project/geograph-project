@@ -1,9 +1,9 @@
 {if $title}
 {assign var="page_title" value="$title :: Collections"}
-{assign var="meta_description" value="User contributed images collections, `$title`. "}
+{assign var="meta_description" value="User contributed image collections, `$title`. "}
 {else}
 {assign var="page_title" value="Collections"}
-{assign var="meta_description" value="User contributed images collections. Showcasing a wide range of subject areas, from map symbols to lighthouses!"}
+{assign var="meta_description" value="User contributed image collections. Showcasing a wide range of subject areas, from map symbols to lighthouses!"}
 {/if}
 {assign var="rss_url" value="/content/feed/recent.rss"}
 {include file="_std_begin.tpl"}
@@ -53,7 +53,7 @@
 
 		<hr/>
 
-		<p><small><b>Interested in contributing to Collections?</b> See <a href="/article/Content-on-Geograph">this article</a> for where to do it</small></p>
+		<p><small><b>Interested in contributing to Collections?</b> See <a href="/article/Content-on-Geograph">this Article</a> for where to do it</small></p>
 	</div>
 	{foreach from=$extra key=name item=value}
 		<input type="hidden" name="{$name}" value="{$value}"/>
@@ -83,7 +83,7 @@
 
 
 {foreachelse}
-	<li><i>There are no matching collections to display at this time.</i></li>
+	<li><i>There are no matching Collections to display at this time.</i></li>
 	{if $query_info}
 		<li style="padding:20px">You have searched in Collections,<br/> you might like to try searching the <a href="/search.php?searchtext={$q|escape:'url'}&amp;do=1"><b>image database</b></a>:<br/><br/>
 

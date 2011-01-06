@@ -39,7 +39,7 @@ Version
 	{assign var="lastcat" value=$item.label}
 	{assign var="lastid" value=$lastid+1}
 {foreachelse}
-	<li><i>There are no articles to display at this time.</i>
+	<li><i>There are no Articles to display at this time.</i>
 {/foreach}
 {if $lastcat}
 </li></ul>

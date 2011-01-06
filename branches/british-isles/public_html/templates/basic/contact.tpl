@@ -23,14 +23,14 @@
 		<div class="interestBox" style="background-color:yellow; text-align:center; width:500px">
 		<h1 style="color:red;border-bottom:2px solid red;padding-bottom:10px">Stop!</h1>
 		Trying to contact <b>{$image->title|escape:'html'}</b>?<br/><br/>
-		Geograph is a photo sharing website, and only has a <i>photo</i> by that title, <u>not</u> the means to contact the location photographed. <br/><br/>
+		Geograph is a photo-sharing website, and only has a <i>photo</i> by that title, <u>not</u> the means to contact the location photographed. <br/><br/>
 
 		<p><small>| <a href="javascript:history.go(-1)">Back to photo page</a> | <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the photographer</a> |</small></p>
 
 		</div>
 
 		<br/><br/><br/><br/>
-		&middot; Looking to copy the image you where viewing? <a href="/reuse.php?id={$image->gridimage_id}">See this page</a>.
+		&middot; Looking to copy the image you were viewing? <a href="/reuse.php?id={$image->gridimage_id}">See this page</a>.
 		<br/><br/><br/>
 		<br/><br/><hr/><br/><br/>
 		If you do want to contact the <big>Developers of Geograph Britain and Ireland</big>, please scroll down.... 
