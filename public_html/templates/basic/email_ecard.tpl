@@ -55,7 +55,7 @@ border=3D0></A></TD>
       href=3D"http://{$http_host}/"><FONT face=3DGeorgia =
 color=3D#ffffff=20
       size=3D+2>{$http_host}</FONT></A><BR><FONT face=3DGeorgia =
-color=3D#ffffff><I>The Geograph Britain and Ireland project aims to collect a geographically representative<BR> photograph for every square kilometre of the British Isles and you can be part of it.</I></FONT></TD>
+color=3D#ffffff><I>The Geograph Britain and Ireland project aims to collect geographically representative<BR> photographs of every square kilometre of the British Isles and you can be part of it.</I></FONT></TD>
     <TD bgColor=3D#000066>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>

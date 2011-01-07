@@ -15,7 +15,7 @@
 <input id="searchterm" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
 <input id="searchbutton" type="submit" name="go" value="Find"/> 
 <br/>
-<small>Enter a Placename, Postcode, Grid Reference</small></div>
+<small>Enter a placename, postcode or grid reference</small></div>
 <br/>
 <label for="orderby">Order By</label>
 <select name="orderby" id="orderby">
@@ -25,7 +25,7 @@
 </form><br/><br/>
 </li>
 
-<li>For text based search see <a href="/finder/discussions.php">Forum Search</a>.</p>
+<li>For text-based search see <a href="/finder/discussions.php">forum search</a>.</p>
 
 <li>See also <a href="/search.php">image search</a></p>
 
