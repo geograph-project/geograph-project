@@ -19,7 +19,7 @@
 </td><td>
 
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
-	Please provide a brief note why you have updated this image.
+	Please provide a brief note explaining why you have updated this image.
 </div>
 
 </td></tr></table>
@@ -38,7 +38,7 @@
  <script type="text/javascript" src="http://www.picnik.com/js/picnikbox.js"></script>
 <h2>Edit with Picnik</h2>
 	
-		<p>If picnik does not open automatically then <a class="pbox" href="{$picnik_url}" id="plink">click here</a></p>
+		<p>If Picnik does not open automatically then <a class="pbox" href="{$picnik_url}" id="plink">click here</a></p>
 	
 	{literal}
 	<script language="JavaScript" type="text/javascript">

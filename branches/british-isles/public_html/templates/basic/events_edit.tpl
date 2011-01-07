@@ -34,7 +34,7 @@
 	<label for="url">URL:</label>
 	<input type="text" name="url" value="{$url|escape:"html"}" maxlength="255" size="40"/></span>
 
-	<div class="fieldnotes">Link to more information (eg discussion forum)</div>
+	<div class="fieldnotes">Link to more information (e.g. discussion forum)</div>
 	
 	{if $errors.url}</div>{/if}
 </div>
@@ -56,7 +56,7 @@
 	<label for="grid_reference">Relevant Grid Square:</label>
 	<input type="text" name="grid_reference" value="{$grid_reference|escape:"html"}" maxlength="12" size="6"/>
 	
-	<div class="fieldnotes">Square where this event is located</div>
+	<div class="fieldnotes">Square in which this event is located</div>
 	
 	{if $errors.grid_reference}</div>{/if}
 </div>
@@ -67,7 +67,7 @@
 	<label for="gridimage_id">Relevant Image ID:</label>
 	<input type="text" name="gridimage_id" value="{$gridimage_id|escape:"html"}" maxlength="12" size="6"/>
 	
-	<div class="fieldnotes">Optional, enter a image id to illustrate this event</div>
+	<div class="fieldnotes">Optional, enter a image ID to illustrate this event</div>
 	
 	{if $errors.gridimage_id}</div>{/if}
 </div>

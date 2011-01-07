@@ -6,7 +6,7 @@
 
 
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
-	<small style="color:red">Marker only shows gridsquare, see description for exact location<small><br/><br/></small></small>
+	<small style="color:red">Marker only shows grid square, see description for exact location<small><br/><br/></small></small>
 	<div style="width:400px; height:320px;" id="mapCanvas"></div>
 </div>
 
@@ -18,7 +18,7 @@
 {if $user->registered}
 	
 <div class="interestBox" style="width:300px">
-	<ul style="margin:0px;"><li><a href="/events/edit.php?id=new">Announce your own Event</a></li></ul>
+	<ul style="margin:0px;"><li><a href="/events/edit.php?id=new">Announce your own event</a></li></ul>
 
 </div>
 
@@ -29,7 +29,7 @@
 
 <p>Use the RSS <small>({external href="http://en.wikipedia.org/wiki/RSS_(protocol)" text="Wikipedia article"})</small> or KML <small class="nowrap">(for {external href="http://earth.google.com/" text="Google Earth"} amongst others)</small> links above to keep track of new events in your favorite program.</p>
 
-<p><small>If you are thinking of organising your own event (or want to attend a meetup) then you may be interested in this {external href="http://www.nearby.org.uk/google/meet-me-at.php?group=1" text="meet-me-at map"} for finding possible areas of interest. (this map also shows previous gatherings)</small></p>
+<p><small>If you are thinking of organising your own event (or want to attend a meet-up) then you may be interested in this {external href="http://www.nearby.org.uk/google/meet-me-at.php?group=1" text="meet-me-at map"} for finding possible areas of interest (this map also shows previous gatherings).</small></p>
 
 
 
@@ -42,9 +42,9 @@
 <thead><tr>
 	<td>Title &amp; more info</td>
 	<td style="width:150px" sorted="asc">Date/Time</td>
-	<td>Where</td>
+	<td>Location</td>
 	<td>Attendees</td>
-	<td>by</td>
+	<td>Organiser</td>
 </tr></thead>
 <tbody>
 
@@ -83,7 +83,7 @@
 {if $user->registered}
 <br/><br/>	
 <div class="interestBox">
-	<ul style="margin:0px;"><li><a href="/events/edit.php?id=new">Announce your own Event</a></li></ul>
+	<ul style="margin:0px;"><li><a href="/events/edit.php?id=new">Announce your own event</a></li></ul>
 
 </div>
 

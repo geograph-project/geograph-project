@@ -1,14 +1,14 @@
 {dynamic}
 Dear {$realname},
 
-Thank you for registering your interest in {$hectad}, we would now like to invite your to adopt this square. 
+Thank you for registering your interest in {$hectad}, we would now like to invite you to adopt this square. 
 
 Click the following link to continue to the adoption page, 
 http://{$http_host}/adopt/?accept={$hectad}
 
-If this has already been offered to someone already, they may adopt the square in the meantime. However if you are the first to receive an invite for {$hectad}, then you now have 7 days from this email to accept this invitation, if at that time you have not accepted, it may be offered to someone else. 
+If this has been offered to someone already, they may adopt the square in the meantime. However, if you are the first to receive an invitation for {$hectad}, then you have 7 days from this email in which to accept. If after 7 days you have not accepted, it may be offered to someone else. 
 
-Upon accepting this invite you informally agree to: 
+Upon accepting this invitation you informally agree to: 
 
  * Create and maintain a representative mosaic, this includes:
    * Choose a representative photo for each square in the hectad
@@ -31,7 +31,7 @@ Regards,
 
 Geograph Team
 
-P.S. To avoid spamming we will only send out emails for the first few offers, the Adoption page will allow you to accept others:
+P.S. To avoid spamming we will only send out emails for the first few offers, the adoption page will allow you to accept others:
 http://{$http_host}/adopt/
 
 {/dynamic}

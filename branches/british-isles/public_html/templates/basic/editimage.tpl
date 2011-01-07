@@ -25,12 +25,12 @@
 	{/if}
   {if $thumb}
   	{if $isadmin}
-  		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=0" style="font-size:0.6em">Switch to full Image</a>
+  		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=0" style="font-size:0.6em">Switch to full image</a>
   	{/if}
   	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a></div>
   {else}
   	{if $isadmin}
-  		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" style="font-size:0.6em">Switch to thumbnail Image</a>
+  		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" style="font-size:0.6em">Switch to thumbnail image</a>
   	{/if}
   	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
   {/if}
@@ -75,8 +75,8 @@
 {if $showfull}
   	{if $isowner and $image->moderation_status eq 'pending'}
   	  {if $thankyou eq 'mod'}
-	  	<h2 class="titlebar" style="background-color:lightgreen">Thank You</h2>
-	  	<p>Your suggestion has been recorded, it will be taken into account during moderation. <a href="/photo/{$image->gridimage_id}">return to the image page</a></p>
+	  	<h2 class="titlebar" style="background-color:lightgreen">Thank you</h2>
+	  	<p>Your suggestion has been recorded, it will be taken into account during moderation. <a href="/photo/{$image->gridimage_id}">Return to the image page</a></p>
 	  {elseif $thankyou eq 'modreply'}
 	  	<h2 class="titlebar" style="background-color:lightgreen">Thank You</h2>
 	  	<p>Your suggestion has been recorded, it will be taken into account during moderation, however please use the comment box below to explain the reason for the suggestion.</p>
@@ -96,14 +96,14 @@
   	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject" onclick="this.form.elements['comment'].value = prompt('Please leave a comment to explain the reason for suggesting rejection of this image.','');"/>
   	  {/if}
   	  {if $image->user_status}
-	  <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}</small>]
+	  <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}Supplemental{else}{$image->user_status}{/if}</small>]
 	  {/if}</p>
   	  <p style="font-size:0.8em">(Click one of these buttons to leave a hint to the moderator when they moderate your image)</p>
   	  <input type="hidden" name="comment"/>
   	  </form>
   	{elseif $isadmin and $image->user_status}
   	  <h2 class="titlebar">Moderation Suggestion</h2>
-  	   Suggestion: {if $image->user_status eq "accepted"}supplemental{else}{$image->user_status}{/if}
+  	   Suggestion: {if $image->user_status eq "accepted"}Supplemental{else}{$image->user_status}{/if}
 	{/if}
 <br/>
 <br/>
@@ -129,7 +129,7 @@
 	<p>Thanks for suggesting changes, you will receive an email when 
 	we process your suggestion. </p>
 
-	<p>You can review your requested changes below, or <a href="/photo/{$image->gridimage_id}">click here to return to the photo page</a></p>
+	<p>You can review your requested changes below, or <a href="/photo/{$image->gridimage_id}">click here to return to the image page</a></p>
 {/if}
 
 {if $thankyou eq 'comment'}
@@ -137,7 +137,7 @@
 	<h2 class="titlebar" style="background-color:lightgreen">Thankyou!</h2>
 	<p>Thanks for commenting on the change request, the moderators have been notified.</p>
 
-	<p>You can review outstanding change requests below, or <a href="/photo/{$image->gridimage_id}">click here to return to the photo page</a></p>
+	<p>You can review outstanding change requests below, or <a href="/photo/{$image->gridimage_id}">click here to return to the image page</a></p>
 {/if}
 
 
@@ -279,14 +279,14 @@
 			</div>
 		{/foreach}
 		{if $ticket->reopenmaptoken}
-			<div style="text-align:right"><a href="/submit_popup.php?t={$ticket->reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Open Map for these <i>new</i> values</a>&nbsp;&nbsp;&nbsp;</div>
+			<div style="text-align:right"><a href="/submit_popup.php?t={$ticket->reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Open map for these <i>new</i> values</a>&nbsp;&nbsp;&nbsp;</div>
 		{/if}
 		</div>
 	{/if}
 	
 	{if ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') )}
 	<div class="ticketnotes">
-		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks|replace:'Auto-generated ticket, as a result of Moderation. Rejecting this image because:':'<span style="color:gray">Auto-generated, as a result of Moderation. Rejecting this image because:</span><br/>'}</div>
+		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks|replace:'Auto-generated ticket, as a result of Moderation. Rejecting this image because:':'<span style="color:gray">Auto-generated, as a result of moderation. Rejecting this image because:</span><br/>'}</div>
 	
 		
 		{if $ticket->comments}
@@ -386,8 +386,8 @@
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	<ul>
 		<li>If you agree with the changes suggested, please indicate your acceptance, <b>in the reply box above</b>.</li> 
-		<li>If you disagree, please explain above why you do not accept the changes. This will be helpful to the Moderator in making a decision.</li>
-		<li>However, if you want to make the changes straight away {if $moderated.grid_reference}<span class="moderatedlabel">(except gridsquare changes)</span>{/if}, or want to make other changes, use the <b><a href="/editimage.php?id={$image->gridimage_id}&amp;form">Change Image Details</a> Form</b>.</li>
+		<li>If you disagree, please explain above why you do not accept the changes. This will be helpful to the moderator in making a decision.</li>
+		<li>However, if you want to make the changes straight away {if $moderated.grid_reference}<span class="moderatedlabel">(except grid square changes)</span>{/if}, or want to make other changes, use the <b><a href="/editimage.php?id={$image->gridimage_id}&amp;form">Change Image Details</a> Form</b>.</li>
 		<li>If a suggestion suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes yourself</li>
 	</ul>
 </div>
@@ -581,11 +581,11 @@ AttachEvent(window,'load', function() {
 {/if}
 
 {if $user->user_id eq $image->user_id || $isadmin}
-	<p><label><b>Date picture taken</b> {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
+	<p><label><b>Date Picture Taken</b> {if $moderated.imagetaken}<span class="moderatedlabel">(moderated)</span>{/if}</label> <br/>
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m"}
 	<br/><small>(please provide as much detail as possible, if you only know the year or month then that's fine)</small></p>
 {else}
-	<p><label><b>Date picture taken</b></label> <span class="moderatedlabel">(only changeable by owner)</span><br/>
+	<p><label><b>Date Picture Taken</b></label> <span class="moderatedlabel">(only changeable by owner)</span><br/>
 	{html_select_date prefix="imagetaken" time=`$image->imagetaken` reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" day_value_format="%02d" month_value_format="%m" all_extra="disabled"}</p>
 {/if}
 
@@ -594,7 +594,7 @@ AttachEvent(window,'load', function() {
  <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span><br/></span>
 {if $error.comment}<span class="formerror">{$error.comment}</span><br/>{/if}
 <textarea id="comment" name="comment" rows="7" cols="80" title="Original: {$image->current_comment|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$image->comment|escape:'html'}</textarea>
-<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
+<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a grid square or <span style="color:blue">[[54631]]</span> to link to another image.<br/>
 For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 </p>
 
@@ -612,7 +612,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
 	Please provide as much detail for the moderator 
 	{if !$isowner} and photo owner{/if} about this suggestion as possible. 
-	Explaining the reasoning behind the suggestion will greatly help everyone dealing. 
+	Explaining the reasoning behind the suggestion will greatly help everyone. 
 </div>
 
 </td></tr></table>
@@ -626,8 +626,8 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 {if $isadmin}
 	<div>
 	<input type="radio" name="mod" value="" id="mod_blank" checked="checked"/> <label for="mod_blank">Create a new suggestion to be moderated by someone else.</label><br/>
-	<input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open suggestion and assign to myself. (give the Contributor a chance to respond)</label><br/>
-	<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_apply">Apply the changes immediately, and close the suggestion. (Contributor is notified)</label></div>
+	<input type="radio" name="mod" value="assign" id="mod_assign"/> <label for="mod_assign">Create an open suggestion and assign to myself. (Give the contributor a chance to respond.)</label><br/>
+	<input type="radio" name="mod" value="apply" id="mod_apply"/> <label for="mod_apply">Apply the changes immediately, and close the suggestion. (Contributor is notified.)</label></div>
 
 	<br style="clear:both"/>
 {else}
@@ -688,17 +688,17 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 <h2 class="titlebar">Shared Descriptions/References (Optional) <input type="button" value="expand" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';" id="hideshare"/></h2>
 <div id="showshare" style="display:none">
 	<ul>
-		<li>Currently 'Shared Descriptions' are not tracked though the 'Change Suggestion' system, and updates apply immediately. (but all changes are monitored)</li>
-		<li>There is no need to click 'Submit Changes' above to apply changes to shared descriptions.<ul>
-			<li><b>In fact don't click the button if you are only changing the shared description(s).</b></li>
+		<li>Currently 'Shared Descriptions' are not tracked though the 'Change Suggestion' system, and updates apply immediately (but all changes are monitored).</li>
+		<li>There is no need to click 'Submit Changes' above to apply changes to Shared Descriptions.<ul>
+			<li><b>In fact don't click the button if you are only changing the Shared Description(s).</b></li>
 			</ul></li>
-		<li>Only you (and the moderators) can edit your shared description, although anyone can use your descriptions on their own images.</li>
+		<li>Only you (and the moderators) can edit your Shared Description, although anyone can use your descriptions on their own images.</li>
 		<li>... read more in {newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"}</li>
 	</ul>
 	<iframe src="about:blank" height="400" width="100%" id="shareframe">
 	</iframe>
 	
-	<p><a href="/photo/{$image->gridimage_id}">return to photo page</a> <small>- changes made inside the Shared Description box apply immediately</small></p>
+	<p><a href="/photo/{$image->gridimage_id}">return to image page</a> <small>- changes made inside the Shared Description box apply immediately</small></p>
 </div>
 {/if}
 

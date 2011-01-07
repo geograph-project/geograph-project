@@ -10,7 +10,7 @@
 <h2><a href="/events/">Events</a> :: {$title|escape:"html"}</h2>
 
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
-	<div style="color:red; background-color:white">Marker only shows gridsquare, see description for exact location</div><br/>
+	<div style="color:red; background-color:white">Marker only shows grid square, see description for exact location</div><br/>
 	<div style="width:500px; height:450px;" id="mapCanvas">Loading map...</div>
 </div>
 
