@@ -26,7 +26,7 @@ init_session();
 
 
 
-if ($USER->hasPerm("basic") && substr($_GET['u'],0,1)!='m') {
+if ($USER->hasPerm("basic") && substr($_GET['u'],0,1)!='m' && substr($_GET['u'],0,1)!='p') {
 	header("Location: /login.php");
 	exit;
 }
@@ -42,6 +42,18 @@ if (isset($_GET['confirm']))
 				
 		//we are confirming an email address change...
 		$confirmation_status = $USER->verifyEmailChange($_GET['u'], $_GET['confirm']);
+		if ($confirmation_status=="ok")
+			$smarty->assign("user", $GLOBALS['USER']);
+			
+		$smarty->assign('confirmation_status', $confirmation_status);
+		
+	}
+	elseif (substr($_GET['u'],0,1)=='p')
+	{
+		$template='profile_passwordupdate.tpl';
+				
+		//we are confirming an password change...
+		$confirmation_status = $USER->verifyPasswordChange($_GET['u'], $_GET['confirm']);
 		if ($confirmation_status=="ok")
 			$smarty->assign("user", $GLOBALS['USER']);
 			

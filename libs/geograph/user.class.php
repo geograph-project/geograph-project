@@ -136,7 +136,15 @@ class GeographUser
 		}
 	}
 	
-	
+	function randomSalt($len) {
+		$bytes = (int)(($len * 3 + 3) /4);
+		$bin = '';
+		for ($i = 0; $i < $bytes; $i++) {
+			$bin .= chr(rand(0, 255));
+		}
+		return substr(base64_encode($bin), 0, $len);
+	}
+
 	function getForumSortOrder() {
 		$db = $this->_getDB(true);
 	
@@ -346,11 +354,13 @@ class GeographUser
 					//user already exists, but didn't respond to email - probably trying
 					//to send a fresh one so lets just refresh the existing record
 					$user_id=$arr['user_id'];
+					$salt = $this->randomSalt(8);
 					
-					$sql = sprintf("update user set realname=%s,email=%s,password=%s,signup_date=now(),http_host=%s where user_id=%s",
+					$sql = sprintf("update user set realname=%s,email=%s,password=%s,salt=%s,signup_date=now(),http_host=%s where user_id=%s",
 						$db->Quote($name),
 						$db->Quote($email),
-						$db->Quote($password1),
+						$db->Quote(md5($salt.$password1)),
+						$db->Quote($salt),
 						$db->Quote($_SERVER['HTTP_HOST']),
 						$db->Quote($user_id));
 						
@@ -364,11 +374,13 @@ class GeographUser
 				else
 				{
 					//ok, user doesn't exist, insert a new row
-					$sql = sprintf("insert into user (realname,email,password,signup_date,http_host) ".
-						"values (%s,%s,%s,now(),%s)",
+					$salt = $this->randomSalt(8);
+					$sql = sprintf("insert into user (realname,email,password,salt,signup_date,http_host) ".
+						"values (%s,%s,%s,%s,now(),%s)",
 						$db->Quote($name),
 						$db->Quote($email),
-						$db->Quote($password1),
+						$db->Quote(md5($salt.$password1)),
+						$db->Quote($salt),
 						$db->Quote($_SERVER['HTTP_HOST']));
 					
 					if ($db->Execute($sql) === false) 
@@ -504,21 +516,45 @@ class GeographUser
 	/**
 	* send password reminder to email address
 	*/
-	function sendReminder($email, &$errors)
+	function sendReminder($email, $password1, $password2, &$errors)
 	{
+		global $CONF;
 		$errors=array();
 		$ok=false;
-		
-		if (isValidEmailAddress($email))
-		{
+
+		if (!isValidEmailAddress($email)) {
+			$errors['email']='This isn\'t a valid email address';
+		} else if (strlen($password1)==0) {
+			$errors['password1']='You must specify a password';
+		} elseif ($password1!=$password2) {
+			$errors['password2']='Passwords didn\'t match, please try again';
+		} else {
 			$db = $this->_getDB();
 
 			//user registered?
 			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' limit 1');	
 			if (count($arr))
 			{
-				$msg="Someone, probably you, requested a password reminder for ".$_SERVER['HTTP_HOST']."\n\n";
-				$msg.="Your password is: ".$arr['password']."\n\n";
+				$salt = $this->randomSalt(8);
+				$db->Execute("insert into user_emailchange ".
+					"(user_id, oldemail,newemail,requested,status)".
+					"values(?,?,?,now(), 'pending')",
+					array($arr['user_id'], $arr['salt'].$arr['password'], $salt.md5($salt.$password1)));
+					
+				$id=$db->Insert_ID();
+
+				$url="http://".
+					$_SERVER['HTTP_HOST'].'/reg/p'.$id.
+					'/'.substr(md5('p'.$id.$CONF['register_confirmation_secret']),0,16);
+						
+				$msg="You recently requested the password ".
+				"for your account at ".$_SERVER['HTTP_HOST']." be changed.\n\n".
+
+				"To confirm, please click this link:\n\n".
+
+				"$url\n\n".
+
+				"If you do not wish to change your password, simply disregard this message";
 
 				@mail($email, 'Password Reminder for '.$_SERVER['HTTP_HOST'], $msg,
 				"From: Geograph Website <noreply@geograph.org.uk>");
@@ -530,11 +566,82 @@ class GeographUser
 				$errors['email']="This email address isn't registered";
 			}
 		}
-		else
-		{
-			$errors['email']='This isn\'t a valid email address';
-		}
+
+		return $ok;
+	}
+
+	/**
+	* verify password from given hash
+	* can only do this once, returns ok, fail or alreadycomplete
+	*/
+	function verifyPasswordChange($change_id, $hash)
+	{
+		global $CONF;
+		$ok=true;
+		$status="ok";
 		
+		//validate inputs, they came from outside
+		$ok=$ok && preg_match('/p\d+/', $change_id);
+		$ok=$ok && preg_match('/[0-9a-f]+/', $hash);
+		
+		//validate hash
+		$ok=$ok && ($hash==substr(md5($change_id.$CONF['register_confirmation_secret']),0,16));
+		if ($ok)
+		{
+			$db = $this->_getDB();
+			
+			$user_emailchange_id=substr($change_id,1);
+			
+			$arr = $db->GetRow('select * from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));	
+			if ($arr['status']=='completed')
+			{
+				$status="alreadycomplete";
+			}
+			elseif(isset($arr['user_emailchange_id']))
+			{
+			
+				//change password
+				$salt = substr($arr['newemail'], 0, 8);
+				$md5pw = substr($arr['newemail'], 8);
+				$sql="update user set password=".$db->Quote($md5pw).",salt=".$db->Quote($salt)." where user_id=".$db->Quote($arr['user_id']);
+				$db->Execute($sql);
+
+				$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
+				$db->Execute($sql);
+
+
+				$this->user_id=$arr['user_id'];
+				$this->registered=true;
+
+				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');	
+				foreach($arr as $name=>$value)
+				{
+					if (!is_numeric($name))
+						$this->$name=$value;
+
+				}
+
+				//temporary nickname fix for beta accounts
+				if (strlen($this->nickname)==0)
+					$this->nickname=str_replace(" ", "", $this->realname);
+
+
+				//setup forum user
+				$this->_forumUpdateProfile();
+
+				//log into forum too
+				$this->_forumLogin();
+				
+				$status="ok";
+			}
+			else
+			{
+				//deleted change request?
+				$status="fail";
+			}
+				
+		}
+
 		return $ok;
 	}
 	
@@ -706,17 +813,19 @@ class GeographUser
 		}
 
 		if (strlen($profile['password1'])) {
-			if ($profile['oldpassword'] != $this->password) {
+			if (md5($this->salt.$profile['oldpassword']) != $this->password) {
 				$ok=false;
 				$errors['oldpassword']='Please enter your current password if you wish to change it';
 			} elseif ($profile['password1'] != $profile['password2']) {
 				$ok=false;
 				$errors['password2']='Passwords didn\'t match, please try again';
 			} else {
-				$password = $profile['password1'];
+				$salt = $this->randomSalt(8);
+				$password = md5($salt.$profile['password1']);
 			}
 		} else {
 			$password = $this->password;
+			$salt = $this->salt;
 		}
 
 		//attempting to change email address?
@@ -819,6 +928,7 @@ class GeographUser
 				expand_about=%d,
 				upload_size=%d,
 				submission_method=%s,
+				salt=%s,
 				password=%s
 				where user_id=%d",
 				$db->Quote($profile['realname']),
@@ -839,6 +949,7 @@ class GeographUser
 				intval($profile['expand_about']),
 				intval($profile['upload_size']),
 				$db->Quote(stripslashes($profile['submission_method'])),
+				$db->Quote($salt),
 				$db->Quote($password),
 				$this->user_id
 				);
@@ -863,6 +974,7 @@ class GeographUser
 				$this->realname=$profile['realname'];
 				$this->nickname=$profile['nickname'];
 				$this->password=$password;
+				$this->salt=$salt;
 				$this->website=$profile['website'];
 				$this->public_email=isset($profile['public_email'])?1:0;
 				if (isset($profile['sortBy'])) 
@@ -999,7 +1111,6 @@ class GeographUser
 		if (isset($_SERVER['PHP_AUTH_USER']))
 		{
 			$email=stripslashes(trim($_SERVER['PHP_AUTH_USER']));
-			$password=stripslashes(trim($_SERVER['PHP_AUTH_PW']));
 			
 			$db = $this->_getDB(true);
 
@@ -1016,8 +1127,10 @@ class GeographUser
 				$arr = $db->GetRow($sql);	
 				if (count($arr))
 				{
+					$md5password=md5($arr['salt'].stripslashes(trim($_SERVER['PHP_AUTH_PW'])));
+
 					//passwords match?
-					if ($arr['password']==$password)
+					if ($arr['password']==$md5password)
 					{
 						//final test = if they have no rights, they haven't confirmed
 						//their registration
@@ -1109,8 +1222,9 @@ class GeographUser
 					$arr = $db->GetRow($sql);	
 					if (count($arr))
 					{
+						$md5password=md5($arr['salt'].$password);
 						//passwords match?
-						if ($arr['password']==$password)
+						if ($arr['password']==$md5password)
 						{
 							//final test = if they have no rights, they haven't confirmed
 							//their registration
@@ -1303,7 +1417,7 @@ class GeographUser
 			//update profile
 			$sql="update geobb_users set username=".$db->Quote($this->nickname).
 				", user_email=".$db->Quote($this->email).
-				", user_password=md5(".$db->Quote($this->password).")".
+				", user_password=".$db->Quote($this->password).
 				", user_website=".$db->Quote($this->website).
 				", user_viewemail=".$this->public_email.
 				(isset($this->sortBy)?', user_sorttopics = '.$this->sortBy:'').
@@ -1318,7 +1432,7 @@ class GeographUser
 				$this->user_id.",".
 				$db->Quote($this->nickname).",".
 				"now(),".
-				"md5(".$db->Quote($this->password)."),".
+				$db->Quote($this->password).",".
 				$db->Quote($this->email).",".
 				$db->Quote($this->website).",".
 				$this->public_email.")";
@@ -1339,7 +1453,7 @@ class GeographUser
 	{
 		$this->_forumUpdateProfile();
 		
-		$passmd5=md5($this->password);
+		$passmd5=$this->password;
 		$expiry=time()+108000;
 		
 		//we don't need a permanent cookie
