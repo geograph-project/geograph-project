@@ -1679,6 +1679,8 @@ CREATE TABLE user_backup LIKE user;
 
 INSERT INTO user_backup SELECT * FROM user;
 
+## DONT FORGET TO NUKE THE BACKUP PRETTY SOON!
+
 
 ALTER TABLE `user` ADD `salt` varchar(8) NOT NULL default '' AFTER `password`;
 
