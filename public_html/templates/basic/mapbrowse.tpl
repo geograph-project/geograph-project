@@ -314,35 +314,35 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
 <div class="tabHolder" style="margin-top:3px">
 	Style: 
-	<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/map/{$mosaic_token}?depth=0">Coverage</a>
+	<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/map/{$mosaic_token}?depth=0" title="Map showing squares with/without photos so far">Coverage</a>
 	{if $hectad && $hectad_row}
-		<a class="tab nowrap" title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}" style="background-color:yellow">Photo Mosaic</a>
+		<a class="tab nowrap" title="View Large Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}" style="background-color:yellow">Photo Mosaic</a>
   	{/if}
 	{dynamic}
 	{if $realname}
-		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2">Personalised</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" title="coverage map of just your photos">Personalised</a>
 	{elseif $user->registered}
-		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="/map/{$mosaic_token}?mine"> Personalised</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="/map/{$mosaic_token}?mine" title="coverage map of just your photos"> Personalised</a>
 	{/if}{/dynamic}
 	{if $token_zoomin}
-	<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="/map/{$mosaic_token}?depth=1">Depth</a>
+	<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="/map/{$mosaic_token}?depth=1" title="visualizes how many photos we have in each square">Depth</a>
 	{/if}
 	{if ($mapwidth == 100 || !$token_zoomin) && $mosaic_ri == 1}
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">Draggable OS
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="interactive coverage map overlaid over OS raster maps">Draggable OS
 		{if $mapwidth == 100}<sup style="color:red">New!</sup>{/if}</a>
 	{elseif $mosaic_ri == 1}
 		<a class="tab" id="tab4">Draggable OS <sup style="font-size:0.7em;color:blue">[Zoom in to enable]</sup></a>
 	{/if}
 	{if !$token_zoomin && $mosaic_ri == 1}
-	<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}&amp;centi=1">Centisquares Coverage</a>
+	<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}&amp;centi=1" title="shows the coverage at centisquare level - overlaid on OS raster maps">Centisquares Coverage</a>
 	{/if}
 	{if $mapwidth == 10 || $mapwidth == 100}
 		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field">{if $realname}Personalised {elseif $recent}Recent Only {elseif $depth}Depth {/if}Check Sheet</a>
 	{/if}
-	<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" href="/mapprint.php?t={$mosaic_token}">Printable</a>
-	<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/map/{$mosaic_token}?recent=1">Recent Only</a>
+	<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" href="/mapprint.php?t={$mosaic_token}" title="A version of this map optimized for printing">Printable</a>
+	<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/map/{$mosaic_token}?recent=1" title="shows squares with recent squares - so can find squares without recent photos">Recent Only</a>
 	{if !$token_zoomout}
-	 <a class="tab{if $tab == 9}Selected{/if} nowrap" id="tab9" href="/mapper/clusters.php#r=c">Interactive Clusters</a>
+	 <a class="tab{if $tab == 9}Selected{/if} nowrap" id="tab9" href="/mapper/clusters.php#r=c" title="draggable interactive map visualizing coverage into clusters">Interactive Clusters</a>
 	{/if}
 </div>
 <div class="interestBox">
