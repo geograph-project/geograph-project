@@ -390,11 +390,11 @@ END;
 					&& (empty($this->criteria->searchtext) || ($this->criteria->searchq == $this->criteria->searchtext) )
 					&& isset($GLOBALS['smarty'])
 				) {
-				$suggestions = array(array(
+				$suggestions[] = array(
 					'query'=>$this->criteria->searchq,
 					'gr'=>'(anywhere)',
 					'localities'=>'as text search'
-					));
+					);
 			}
 			if (!empty($this->criteria->searchtext)) {
 
@@ -410,12 +410,12 @@ END;
 						($image->moderation_status!='rejected' && $image->moderation_status!='pending')
 						|| $image->user_id == $GLOBALS['USER']->user_id
 					) ) {
-						$suggestions += array(array(
+						$suggestions[] = array(
 							'link'=>"/photo/{$image->gridimage_id}",
 							'query'=>htmlentities2($image->title),
 							'gr'=>'(anywhere)',
 							'localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}"
-							));
+							);
 					}
 				} elseif (empty($CONF['disable_spelling']) && !preg_match('/(@\w+\b|\b\w+:\s*\w+|\/\d|"\^|^\^|centi\()/',$this->criteria->searchtext) && !isset($_GET['extension']) ) {
 					require_once("3rdparty/spellchecker.class.php");
@@ -424,11 +424,52 @@ END;
 
 					if (strcasecmp($correction,$original) != 0 && levenshtein($correction,$original) < 0.25*strlen($correction)) {
 
-						$suggestions += array(array(
+						$suggestions[] = array(
 							'query'=>$correction,
 							'gr'=>'(anywhere)',
 							'localities'=>'spelling suggestion'
-							));
+							);
+					}
+				}
+				
+				if ($pg == 1) {
+					$sphinx2 = new sphinxwrapper();
+					$sphinx2->pageSize = $pgsize = 3;
+					
+					$sphinx2->prepareQuery("@title ".$this->criteria->searchtext." @source -themed");
+
+					$ids = $sphinx2->returnIds(1,'content_stemmed');
+
+					if (!empty($ids) && count($ids) > 0) {
+						if (empty($db)) {
+							$db = GeographDatabaseConnection(true);
+						}
+
+						$id_list = implode(',',$ids);
+
+						$related = $db->getAll("
+							SELECT c.url,c.title,`source`,realname,user_id,images
+							FROM content c
+							LEFT JOIN user u USING (user_id)
+							WHERE c.content_id IN($id_list)
+						ORDER BY FIELD(c.content_id,$id_list)"); 
+						
+						$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'other'=>'Other');
+
+						foreach ($related as $row) {
+							$suggestions[] = array(
+								'link'=>$row['url'],
+								'query'=>$row['title'],
+								'localities'=>$sources[$row['source']].($row['images']?" with {$row['images']} images":'')
+							);
+						}
+						
+						if ($sphinx2->resultCount > 0) {
+							$suggestions[] = array(
+								'link'=>"/content/?q=".urlencode($this->criteria->searchtext)."&amp;in=title&amp;scope=all",
+								'query'=>"&middot; View all {$sphinx2->resultCount} matching collections..."
+							);
+						}
 					}
 				}
 			} 
