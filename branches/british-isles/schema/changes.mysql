@@ -1675,4 +1675,16 @@ ALTER TABLE  `content` CHANGE  `source`  `source` ENUM(  'trip', 'blog', 'portal
 #################################################
 
 
+CREATE TABLE user_backup LIKE user;
+
+INSERT INTO user_backup SELECT * FROM user;
+
+
+ALTER TABLE `user` ADD `salt` varchar(8) NOT NULL default '' AFTER `password`;
+
+UPDATE `user` SET salt=SUBSTRING(MD5(signup_date),1,8),password=MD5(CONCAT(SUBSTRING(MD5(signup_date),1,8),password));
+
+
+#################################################
+
 
