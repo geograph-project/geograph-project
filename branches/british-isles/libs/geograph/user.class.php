@@ -556,7 +556,7 @@ class GeographUser
 
 				"If you do not wish to change your password, simply disregard this message";
 
-				@mail($email, 'Password Reminder for '.$_SERVER['HTTP_HOST'], $msg,
+				@mail($email, 'Password Change Confirmation for '.$_SERVER['HTTP_HOST'], $msg,
 				"From: Geograph Website <noreply@geograph.org.uk>");
 
 				$ok=true;
