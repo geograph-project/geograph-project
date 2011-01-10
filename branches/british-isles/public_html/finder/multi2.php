@@ -66,7 +66,7 @@ if (!empty($_GET['q'])) {
 		$others['places'] = array('title'=>'Placenames','url'=>"/finder/places.php?q=$u2");
 		$others['users'] = array('title'=>'Contributors','url'=>"/finder/contributors.php?q=$u2");
 		$others['sqim'] = array('title'=>'Images by Square','url'=>"/finder/sqim.php?q=$u2");
-		$others['text'] = array('title'=>'Simple Text Search','url'=>"/fulltext.php?q=$u2");
+		$others['text'] = array('title'=>'Simple Text Search','url'=>"/full-text.php?q=$u2");
 		if ($CONF['forums']) {
 			$others['discuss'] = array('title'=>'Discussions','url'=>"/finder/discussions.php?q=$u2");
 		}
@@ -108,7 +108,7 @@ if (!empty($_GET['q'])) {
 			if ($grid_ok) {
 				$gr = $square->grid_reference;
 				
-				if ($square->imagecount && 0) {
+				if ($square->imagecount) {
 					$where = "grid_reference = '{$gr}'";
 											
 					$sql = "SELECT gridimage_id,title,realname,user_id
@@ -149,12 +149,14 @@ if (!empty($_GET['q'])) {
 							$row['link'] = '/photo/'.$row['gridimage_id'];
 							$result['results'][] = $row;
 						}
-						$result['count'] = $sphinx->resultCount." images";
+						$result['count'] = $sphinx->resultCount." images within 2km";
 						$result['link'] = "/search.php?gridref=$gr&do=1";
 						$results[] = $result;
 
 						unset($others['search']);
 					}
+					
+					$sphinx->q = $old;
 				}
 				
 				if ($square->natgrlen == 6) { //centisquare

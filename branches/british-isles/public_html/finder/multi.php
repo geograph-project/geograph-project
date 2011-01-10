@@ -66,7 +66,7 @@ if (!empty($_GET['q'])) {
 		$others['places'] = array('title'=>'Placenames','url'=>"/finder/places.php?q=$u2");
 		$others['users'] = array('title'=>'Contributors','url'=>"/finder/contributors.php?q=$u2");
 		$others['sqim'] = array('title'=>'Images by Square','url'=>"/finder/sqim.php?q=$u2");
-		$others['text'] = array('title'=>'Simple Text Search','url'=>"/fulltext.php?q=$u2");
+		$others['text'] = array('title'=>'Simple Text Search','url'=>"/full-text.php?q=$u2");
 		if ($CONF['forums']) {
 			$others['discuss'] = array('title'=>'Discussions','url'=>"/finder/discussions.php?q=$u2");
 		}
