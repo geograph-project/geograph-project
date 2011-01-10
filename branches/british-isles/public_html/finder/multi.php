@@ -103,6 +103,13 @@ if (!empty($_GET['q'])) {
 					
 					$inners['browse'] = array('title'=>'In Hectad '.$hectad,'url'=>"/finder/search-service.php?q={$square->gridsquare}+$hectad&amp;inner");
 					
+					##########################################################
+					
+					//todo search content by hectad - might need a new iframe creating for content. 
+					
+					##########################################################
+					
+					
 				} else {
 				
 					##########################################################
@@ -148,6 +155,14 @@ if (!empty($_GET['q'])) {
 
 					$inners['nearby'] = array('title'=>'Near '.$gr,'url'=>"/finder/search-service.php?q=$u2&amp;inner");
 
+					##########################################################
+				
+					//todo search content by gridsquare/hectad - might need a new iframe creating for content. 
+					
+					##########################################################
+				
+					//todo search snippets by gridsquare/hectad - might need a new iframe creating for snippets. 
+				
 					##########################################################
 				}
 				
@@ -228,6 +243,7 @@ if (!empty($_GET['q'])) {
 					if (count($grs)) {
 						$inners['places'] = array('title'=>'Images in squares with matching places','url'=>"/finder/search-service.php?q=grid_reference:".implode('%7C',array_keys($grs))."&amp;inner");
 					}
+					//todo, if only 2/3 maybe run seperate iframe searches in each square
 				}
 			}
 
