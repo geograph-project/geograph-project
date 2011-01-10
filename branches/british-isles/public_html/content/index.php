@@ -266,7 +266,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll($sql = "
-	select content.content_id,content.user_id,url,title,extract,unix_timestamp($datecolumn) as $datecolumn,realname,content.source,content.gridimage_id,
+	select content.content_id,content.user_id,url,title,extract,unix_timestamp(content.$datecolumn) as $datecolumn,realname,content.source,content.gridimage_id,
 		(content.views+coalesce(article_stat.views,0)+coalesce(topic_views,0)) as views,
 		(content.images+coalesce(article_stat.images,0)+coalesce(count(gridimage_post.seq_id),0)) as images,
 		article_stat.words,coalesce(posts_count,0) as posts_count,coalesce(count(distinct gridimage_post.post_id),0) as posts_with_images

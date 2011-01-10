@@ -74,17 +74,101 @@ if (!empty($_GET['q'])) {
 		$others['google'] = array('title'=>'Google Search','url'=>"http://www.google.co.uk/search?q=$u2&sitesearch=".$_SERVER['HTTP_HOST']);
 		$others['gimages'] = array('title'=>'Google Images','url'=>"http://images.google.com/images?q=$u2+site:".$_SERVER['HTTP_HOST']);
 
+		$old = $sphinx->q;
 		$try_words = true;
 
+		if (is_numeric($q)) {
+				
+			$where = "gridimage_id = $q";
+
+			$sql = "SELECT gridimage_id,grid_reference,title,realname,user_id
+			FROM gridimage_search
+			WHERE $where
+			LIMIT 60";
+			
+			$list = $db->getAll($sql);
+			if ($list) {
+				$result = array();
+				$result['title'] = "Image ID $q";
+				$result['results'] = array();
+
+				foreach ($list as $row) {
+					$row['link'] = '/photo/'.$row['gridimage_id'];
+					$result['results'][] = $row;
+				}
+				$results[] = $result;
+			}
+		}
+
+
 		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$sphinx->qclean,$gr)) {
-			//todo - see multi.php
+			$square=new GridSquare;
+			$grid_ok=$square->setByFullGridRef($sphinx->qclean,true);
+
+			if ($grid_ok) {
+				$gr = $square->grid_reference;
+				
+				if ($square->imagecount && 0) {
+					$where = "grid_reference = '{$gr}'";
+											
+					$sql = "SELECT gridimage_id,title,realname,user_id
+					FROM gridimage_search
+					WHERE $where
+					LIMIT 5";
+
+					$result = array();
+					$result['title'] = "Images in {$gr}";
+					$result['results'] = array();
+
+					$list = $db->getAll($sql);
+					foreach ($list as $row) {
+						$row['link'] = '/photo/'.$row['gridimage_id'];
+						$result['results'][] = $row;
+					}
+					$result['count'] = $square->imagecount." images";
+					$result['link'] = "/gridref/".urlencode($sphinx->qclean);
+					$results[] = $result;
+				} else {
+					$sphinx->processQuery();
+					$ids = $sphinx->returnIds($pg,'_images');
+					if (!empty($ids) && count($ids)) {
+
+						$where = "gridimage_id IN(".join(",",$ids).")";
+
+						$sql = "SELECT gridimage_id,grid_reference,title,realname,user_id
+						FROM gridimage_search
+						WHERE $where
+						LIMIT 60";
+
+						$result = array();
+						$result['title'] = "Images near {$gr}";
+						$result['results'] = array();
+
+						$list = $db->getAll($sql);
+						foreach ($list as $row) {
+							$row['link'] = '/photo/'.$row['gridimage_id'];
+							$result['results'][] = $row;
+						}
+						$result['count'] = $sphinx->resultCount." images";
+						$result['link'] = "/search.php?gridref=$gr&do=1";
+						$results[] = $result;
+
+						unset($others['search']);
+					}
+				}
+				
+				if ($square->natgrlen == 6) { //centisquare
+									
+					//todo - sphinx can do this...
+				}
+			}
 		}
 
 		if ($try_words) {
 			##########################################################
 
 			//specifically exclude contributor column!
-			$old = $sphinx->q;
+			
 			if (!preg_match('/@\w+/',$old)) {
 				//todo, maybe extend this to myriad etc?
 				$sphinx->q = "@(title,comment,imageclass,snippet,snippet_title) ".$sphinx->q;
@@ -161,7 +245,7 @@ if (!empty($_GET['q'])) {
 				
 				$where = "user_id IN(".join(",",$ids).")";
 														
-				$sql = "SELECT realname as title,user_id
+				$sql = "SELECT realname as title,nickname as type,user_id
 				FROM user
 				WHERE $where
 				LIMIT 60";
@@ -172,7 +256,7 @@ if (!empty($_GET['q'])) {
 
 				$list = $db->getAll($sql);
 				foreach ($list as $row) {
-					$row['link'] = '/profile/'.$row['id'];
+					$row['link'] = '/profile/'.$row['user_id'];
 					$result['results'][] = $row;
 				}
 				$result['count'] = $sphinx->resultCount." contributors";
