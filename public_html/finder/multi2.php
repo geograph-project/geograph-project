@@ -128,6 +128,9 @@ if (!empty($_GET['q'])) {
 					$result['count'] = $square->imagecount." images";
 					$result['link'] = "/gridref/".urlencode($sphinx->qclean);
 					$results[] = $result;
+					
+					$others['search2'] = array('title'=>'Images Near '.$gr,'url'=>"/search.php?gridref=$u2&do=1");
+		
 				} else {
 					$sphinx->processQuery();
 					$ids = $sphinx->returnIds($pg,'_images');
@@ -162,6 +165,16 @@ if (!empty($_GET['q'])) {
 				if ($square->natgrlen == 6) { //centisquare
 									
 					//todo - sphinx can do this...
+					
+					require_once('geograph/conversions.class.php');
+					$conv = new Conversions;
+					list($centi,$len) = $conv->national_to_gridref(
+					$square->getNatEastings()-$correction,
+					$square->getNatNorthings()-$correction,
+					6,
+					$square->reference_index,false);
+					
+					$others['search3'] = array('title'=>'Images in centisquare '.$sphinx->qclean,'url'=>"/gridref/$gr?centi=$centi");
 				}
 			}
 		}
@@ -270,7 +283,9 @@ if (!empty($_GET['q'])) {
 
 			##########################################################
 
-			$sphinx->q = "@title ".$sphinx->q." @source -themed";
+//todo - worth striping out any of the other collections to dedicated searchs (or maybe if collections count is over 20 say?) 
+
+			$sphinx->q = "@title ".$sphinx->q." @source -themed -user -category"; //we look at user above, and category below
 
 			$ids = $sphinx->returnIds($pg,'content_stemmed');
 			if (!empty($ids) && count($ids)) {
@@ -302,7 +317,7 @@ if (!empty($_GET['q'])) {
 				
 				unset($others['content']);
 			} else {
-				$sphinx->q = $old." @source -themed";
+				$sphinx->q = $old." @source -themed -user -category";
 				
 				$ids = $sphinx->returnIds($pg,'content_stemmed');
 				if (!empty($ids) && count($ids)) {
@@ -360,7 +375,7 @@ if (!empty($_GET['q'])) {
 					$result['results'][] = $row;
 				}
 				$result['count'] = $sphinx->resultCount." categories";
-				$result['link'] = "/content/?q=$q2&scope=category";
+				$result['link'] = "/content/?q=$u2&scope=category";
 				$results[] = $result;
 			
 			}
@@ -368,7 +383,15 @@ if (!empty($_GET['q'])) {
 			##########################################################
 		}
 		
+/*
+todo...?
 
+if (count($results) == 1 && strpos($results[0]['link'],'/search.php') === 0) 
+	header("Location: {$results[0]['link']}");
+	exit;
+}
+
+*/
 		
 		$smarty->assign_by_ref("results",$results);
 		$smarty->assign_by_ref("others",$others);
