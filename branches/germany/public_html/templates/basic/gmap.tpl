@@ -207,6 +207,25 @@
 			allowedBounds = new GLatLngBounds(new GLatLng(proj.latmin,proj.lonmin), new GLatLng(proj.latmax,proj.lonmax));
 		}
 
+		function openGeoWindow(prec, url) {
+			var curgridref = document.theForm.grid_reference.value.replace(/ /g,'');
+			if (curgridref.search(/^[A-Za-z]+(\d\d)+$/) != 0)
+				return;
+			var preflen = curgridref.search(/\d/);
+			var curprec = (curgridref.length-preflen)/2;
+			prec = Math.min(prec, curprec);
+			var gridref = curgridref.substr(0, preflen) + curgridref.substr(preflen, prec) + curgridref.substr(preflen+curprec, prec);
+			window.open(url+gridref,'_blank');
+		}
+
+		function clearMarker() {
+			if (currentelement) {
+				map.removeOverlay(currentelement);
+				currentelement = null;
+				document.theForm.grid_reference.value = '';
+			}
+		}
+
 		function showAddress(address) {
 			if (!geocoder) {
 				 geocoder = new GClientGeocoder();
@@ -360,14 +379,25 @@
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
 
-<form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+<form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{elseif $ext}action="javascript:void()"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
-
+{if !$ext}
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 
 <input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
+{/if}
 
 <div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>		
+
+{if $ext}
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />
+
+<input type="button" value="Show gridsquare"   onclick="openGeoWindow(5, '/gridref/');" />
+<input type="button" value="Submit image"      onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
+<input type="button" value="Search for images" onclick="openGeoWindow(5, '/search.php?q=');" />
+<input type="button" value="Clear marker"      onclick="clearMarker();" />
+</div>
+{/if}
 
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
@@ -380,7 +410,6 @@
 	(Powered by the Google Maps API Geocoder)</small></small>
 </div>
 </form>
-
 
 {if $inner}
 </body>
