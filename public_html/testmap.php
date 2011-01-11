@@ -46,6 +46,10 @@ if (isset($_REQUEST['picasa'])) {
 } elseif (isset($_REQUEST['submit2'])) {
 	$cacheid .= 'submit2';
 	$smarty->assign('submit2',1);
+} elseif (isset($_REQUEST['submit'])) {
+} else {
+	$cacheid .= 'ext';
+	$smarty->assign('ext',1);
 }
 
 if (!empty($_REQUEST['grid_reference'])) 
