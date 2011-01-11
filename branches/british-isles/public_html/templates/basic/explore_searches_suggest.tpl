@@ -6,12 +6,12 @@
 
 {if $saved}
 	{if $ok}
-		<p>Thank You for suggesting <a href="/search.php?i={$i}">this search</a>!</p>
+		<p>Thank you for suggesting <a href="/search.php?i={$i}">this search</a>!</p>
 	{else}
 		<p style="color:#990000;font-weight:bold;">Unknown error, suggestion NOT saved. Please contact us.</p>
 	{/if}
 {elseif $query.created}
-	<h3>Thank You for the suggestion</h3>
+	<h3>Thank you for the suggestion</h3>
 	<p>This search has already been suggested.</p>
 {elseif $errormsg}
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
@@ -38,7 +38,7 @@
 	<label for="url">Comment:</label>
 	<input type="text" name="comment" value="{$query.comment|escape:"html"}" maxlength="100" size="40"/></span>
 
-	<div class="fieldnotes">Optional, upto 100 chars describing why this search should be featured</div>
+	<div class="fieldnotes">Optional, up to 100 chars describing why this search should be featured</div>
 	
 	{if $errors.comment}</div>{/if}
 </div>
