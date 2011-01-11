@@ -9,7 +9,7 @@
 <h2>Featured Searches</h2>
 
 
-<p>click a column header to quickly re sort the table</p>
+<p>click a column header to quickly re-sort the table</p>
 	
 <table class="report sortable" id="reportlist" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">
 <thead><tr>
@@ -49,7 +49,7 @@
 	
 <p>Suggest a new search for this page using the link on the search results page.</p>
 
-<p>Note: Searches without a link in the RSS column, are not sorted in descending order which is required for RSS feeds to work well.</p>
+<p>Note: searches without a link in the RSS column are not sorted in descending order, which is required for RSS feeds to work well.</p>
 
 {if $footnote}
 	{$footnote}

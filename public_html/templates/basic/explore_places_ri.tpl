@@ -1,10 +1,10 @@
 {assign var="page_title" value="`$references.$ri` :: Geograph Gazetteer"}
-{assign var="meta_description" value="Geograph page for finding creative commons licenced images of `$references.$ri`"}
+{assign var="meta_description" value="Geograph page for finding Creative Commons licensed images of `$references.$ri`"}
 {include file="_std_begin.tpl"}
  
 <h2><a href="/explore/places/">Places Directory</a> &gt; {$references.$ri}</h2>
 
-<p>{if $ri == 2}At this point we dont have data to be able to offer a breakdown for Northern Ireland, so it appears as one entry. {/if}If there is only one place in the division you will be taken direct to an image search, otherwise click to view a list of places</p>
+<p>{if $ri == 2}At this point we don't have data to be able to offer a breakdown for Northern Ireland, so it appears as one entry. {/if}If there is only one place in the division you will be taken direct to an image search, otherwise click to view a list of places</p>
 
 {if $ri == 1}<h4>Local Authorities of {$references.$ri} in alphabetical order:</h4>{/if}
 

@@ -4,7 +4,7 @@
  
     <h2>Geograph Britain and Ireland - British Isles</h2>
 
-<p>Please choose country you wish to find images in:</p>
+<p>Please choose the country in which you wish to find images:</p>
 
 <ul>
 {foreach from=$counts key=ri item=count}
