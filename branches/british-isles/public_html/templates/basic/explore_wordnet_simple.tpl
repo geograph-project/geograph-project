@@ -18,7 +18,7 @@
 {/if}
 
 <ul style="font-size:0.7em">
-<li>Phrases get lighter the more common the words are, eg 'and the' will be light grey, but 'romney marsh' will be darker because not using common english words.</li>
+<li>Phrases get lighter the more common the words are, eg 'and the' will be light grey, but 'Romney Marsh' will be darker because it isn't using common English words.</li>
 <li>You can also click a phrase to see common phrases from images using the selected phrase, and/or perform a search for all relevant images.</li>
 <li>Switch to <a href="{$script_name}?{if $words}words={$words|escape:url}{/if}{$extra_link}">cloud style</a>.</li></ul>
 
