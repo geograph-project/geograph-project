@@ -10,7 +10,7 @@
 </div>
 
 <div class="interestBox" style="width:360px;float:left;margin-left:8px">
-	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day <small>[<a href="/results/2087426">more...</a>]</small></h3>
+	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the Day <small>[<a href="/results/2087426">more...</a>]</small></h3>
 	
 	<br/><br/>
 	
