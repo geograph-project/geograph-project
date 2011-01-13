@@ -198,7 +198,21 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 		if ($topic == 10596) {
 			$CONF['post_thumb_limit'] = 50;
 		}
-
+		
+		$g_image=new GridImage;
+		$ids = array();
+		foreach ($g_matches[3] as $g_i => $g_id) {
+			if ($g_matches[2][$g_i] != 'de:') {
+				$ids[] = $g_id;
+			}
+		}
+		if (count($ids) > 0) {
+			$db = $g_image->_getDB(true);
+			$prev_fetch_mode = $ADODB_FETCH_MODE; 
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			$data = $db->CacheGetAssoc(3600,"SELECT gridimage_id,moderation_status,title,grid_reference,user_id,realname,credit_realname FROM gridimage_search WHERE gridimage_id IN (".implode(',',$ids).") LIMIT {$CONF['post_thumb_limit']}");
+			$ADODB_FETCH_MODE = $prev_fetch_mode;
+		}
 
 		foreach ($g_matches[3] as $g_i => $g_id) {
 			$server = $_SERVER['HTTP_HOST'];
@@ -224,6 +238,10 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 					}
 					if ($ext) {
 						$g_ok = $g_image->loadFromServer($server, $g_id);
+					} elseif (isset($data[$g_id])) {
+						$data[$g_id]['gridimage_id'] = $g_id;
+						$g_image->fastInit($data[$g_id]);
+						$ok = 1;
 					} else {
 						$g_ok = $g_image->loadFromId($g_id);
 					}

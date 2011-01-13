@@ -9,6 +9,22 @@ $postText2=stripslashes(textFilter($_POST['postText'],$post_text_maxlength,$post
 
 if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$postText2,$g_matches)) {
 	$thumb_count = 0;
+	
+	$g_image=new GridImage;
+	$ids = array();
+	foreach ($g_matches[3] as $g_i => $g_id) {
+		if ($g_matches[2][$g_i] != 'de:') {
+			$ids[] = $g_id;
+		}
+	}
+	if (count($ids) > 0) {
+		$db = $g_image->_getDB(true);
+		$prev_fetch_mode = $ADODB_FETCH_MODE; 
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		$data = $db->CacheGetAssoc(3600,"SELECT gridimage_id,moderation_status,title,grid_reference,user_id,realname,credit_realname FROM gridimage_search WHERE gridimage_id IN (".implode(',',$ids).") LIMIT {$CONF['post_thumb_limit']}");
+		$ADODB_FETCH_MODE = $prev_fetch_mode;
+	}
+
 	foreach ($g_matches[3] as $g_i => $g_id) {
 		$server = $_SERVER['HTTP_HOST'];
 		$ext = false;
@@ -29,6 +45,10 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:
 				}
 				if ($ext) {
 					$ok = $g_image->loadFromServer($server, $g_id);
+				} elseif (isset($data[$g_id])) {
+					$data[$g_id]['gridimage_id'] = $g_id;
+					$g_image->fastInit($data[$g_id]);
+					$ok = 1;
 				} else {
 					$ok = $g_image->loadFromId($g_id);
 				}

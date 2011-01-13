@@ -209,7 +209,7 @@ function smarty_function_external($params)
 
   	if ($params['target'] == '_blank') {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>";
   	} else {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
   			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
@@ -486,10 +486,26 @@ function smarty_function_geographlinks($input,$thumbs = false) {
 
 //replace geograph links
 function GeographLinks(&$posterText,$thumbs = false) {
-	global $imageCredits,$CONF,$global_thumb_count;
+	global $imageCredits,$CONF,$global_thumb_count,$ADODB_FETCH_MODE;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		$thumb_count = 0;
+		
+		$g_image=new GridImage;
+		$ids = array();
+		foreach ($g_matches[3] as $g_i => $g_id) {
+			if ($g_matches[2][$g_i] != 'de:') {
+				$ids[] = $g_id;
+			}
+		}
+		if (count($ids) > 0) {
+			$db = $g_image->_getDB(true);
+			$prev_fetch_mode = $ADODB_FETCH_MODE; 
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			$data = $db->CacheGetAssoc(3600,"SELECT gridimage_id,moderation_status,title,grid_reference,user_id,realname,credit_realname FROM gridimage_search WHERE gridimage_id IN (".implode(',',$ids).") LIMIT {$CONF['post_thumb_limit']}");
+			$ADODB_FETCH_MODE = $prev_fetch_mode;
+		}
+		
 		foreach ($g_matches[3] as $g_i => $g_id) {
 			$server = $_SERVER['HTTP_HOST'];
 			$ext = false;
@@ -509,6 +525,10 @@ function GeographLinks(&$posterText,$thumbs = false) {
 					}
 					if ($ext) {
 						$ok = $g_image->loadFromServer($server, $g_id);
+					} elseif (isset($data[$g_id])) {
+						$data[$g_id]['gridimage_id'] = $g_id;
+						$g_image->fastInit($data[$g_id]);
+						$ok = 1;
 					} else {
 						$ok = $g_image->loadFromId($g_id);
 					}
