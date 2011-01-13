@@ -202,7 +202,7 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 		$g_image=new GridImage;
 		$ids = array();
 		foreach ($g_matches[3] as $g_i => $g_id) {
-			if ($g_matches[2][$g_i] != 'de:') {
+			if ($g_matches[2][$g_i] != 'de:' && is_numeric($g_id)) {
 				$ids[] = $g_id;
 			}
 		}
