@@ -1397,3 +1397,7 @@ ul.content li {
 	border-top: 1px solid lightgrey
 }
  
+a.about {
+  font: bold 12px Verdana, sans-serif; padding: 0.2em 0.5em; border: 1px solid;
+  background:#C3FDB8; color: #254117; border-color: #CAEABA #356020 #1B3010 #9CD77F;	
+}
