@@ -34,6 +34,10 @@ if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
 
 	$fuzzy = !empty($_GET['f']);
+	
+	$q = str_replace("(anything) near",'',$q);
+	$q = str_replace("near (anywhere)",'',$q);
+	$q = preg_replace('/(\s+)\bnear\b\s+/','$1',$q);
 
 	$sphinx = new sphinxwrapper($q);
 
@@ -201,6 +205,9 @@ if (!empty($_GET['q'])) {
 				
 				$result = array();
 				$result['title'] = "Image keyword matches";
+				if ($q != trim($_GET['q'])) {
+					$result['title'] .= " for [ $q ]";
+				}
 				$result['results'] = array();
 				
 				$list = $db->getAll($sql);
@@ -247,12 +254,50 @@ if (!empty($_GET['q'])) {
 				$results[] = $result;
 			
 				unset($others['places']);
+				
+			} elseif (strpos($sphinx->q,' ') !== FALSE) {
+				$sphinx->q = "@name (^".implode('$|^',preg_split('/ +/',$sphinx->q)).'$)';
+				$ids = $sphinx->returnIds($pg,'gaz_stemmed'); //used stemmed because it has enable_star
+				if (!empty($ids) && count($ids)) {
+				
+					$where = "id IN(".join(",",$ids).")";
+														
+					$sql = "SELECT name,gr as grid_reference,id,localities as type
+					FROM placename_index
+					WHERE $where
+					LIMIT 60";
+
+					$result = array();
+					$result['title'] = "Placename partial matches";
+					$result['results'] = array();
+
+					$list = $db->getAll($sql);
+					foreach ($list as $row) {
+						$left = trim(preg_replace('/ +/',' ',str_ireplace($row['name'],'',$old)));
+						
+						$row['link'] = '/search.php?searchtext='.urlencode($left).'&placename='.$row['id']."&do=1";
+						$row['title'] = "Search for '$left' near ".$row['name'];
+						
+						$bits = explode(', ',$row['type']);
+						if (count($bits) > 2) {
+							$row['type'] = ", ".implode(", ",array_slice($bits,0,2));
+						}
+						$result['results'][] = $row;
+					}
+					$result['count'] = $sphinx->resultCount." places";
+					$result['link'] = "/finder/places.php?q=".urlencode($sphinx->q);
+					$results[] = $result;
+				
+				}
+				
+				$sphinx->q = $old;
+				
 			} else {
 				//last ditch attempt incase we have a single match (farms etc not in placename index) 
-				
+
 				//todo - see multi.php
 			}
-
+			
 			##########################################################
 
 			$ids = $sphinx->returnIds($pg,'user');
@@ -260,8 +305,9 @@ if (!empty($_GET['q'])) {
 				
 				$where = "user_id IN(".join(",",$ids).")";
 														
-				$sql = "SELECT realname as title,nickname as type,user_id
+				$sql = "SELECT realname as title,nickname as type,user.user_id,images
 				FROM user
+				INNER JOIN user_stat USING (user_id)
 				WHERE $where
 				LIMIT 60";
 
