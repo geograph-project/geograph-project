@@ -45,7 +45,7 @@ h4.title {
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,{$tabs})">Content</a>
 		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,{$tabs})">Contributors</a>
 		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" onclick="tabClick('tab','div',6,{$tabs})">Locations</a>
-		<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" onclick="tabClick('tab','div',7,{$tabs})">Descriptions <sup style="color:red">new</sup></a>
+		<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" onclick="tabClick('tab','div',7,{$tabs})">Shared Descriptions</a>
 		{if $enable_forums}
 			<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" onclick="tabClick('tab','div',8,{$tabs})">Discussions</a>
 		{/if}
@@ -54,7 +54,7 @@ h4.title {
 
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
 		<h3 class="title">Image Searches</h3>
-		
+
 		<h4 class="title">Geograph standard search</h4>
 		<form method="get" action="/search.php">
 		<div style="position:relative;" class="interestBox">
@@ -69,16 +69,16 @@ h4.title {
 			</div>
 		</div>
 		</form>
-		
+
 		<p>&middot; <a href="/search.php?form=text">More options...</a></p>
-		
+
 		<h4 class="title">Quick search</h4>
 		<form method="get" action="/full-text.php">
 			<label for="fq">Keywords </label> <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/>
 			<p>&middot; Currently searches the title, description, category and photographer name fields as well as various forms of the subject grid reference</p>
 		</form>
-		
+
 		<h4 class="title">Google Images</h4>
 		<form method="get" action="http://images.google.co.uk/images">
 		<div>
@@ -87,7 +87,7 @@ h4.title {
 			<input type="hidden" name="as_q" value="site:geograph.org.uk"/>
 			<input type="submit" name="btnG" value="Search"/></div>
 		</form>
-		
+
 		<p>see also <a href="/search.php?form=advanced">Advanced search</a>, and <a href="/search.php">more</a>
 	</div>
 
@@ -98,17 +98,17 @@ h4.title {
 			<label for="fcq">Keywords </label> <input type="text" name="q" id="fcq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/>
 		</form>
-	
-	
+
+
 	<p>Search all images in a square at once. So can find squares that match keywords in separate images. For example a query of "bridge river" would match a square that has one image that matches "bridge" and a separate image that matches "river".</p>
 
-	
+
 		<p>&nbsp;</p>
 	</div>
-	
+
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
 		<h3 class="title">Combined searches</h3>
-		
+
 		<h4 class="title">Google search (~75% coverage July 2008)</h4>
 		<!-- Google CSE Search Box Begins -->
 			<form id="searchbox_012385187440385394957:bpr_ubkvuy4" action="http://www.google.com/cse" STYLE="display:inline;">
@@ -119,7 +119,7 @@ h4.title {
 			</form>
 			<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_012385187440385394957%3Abpr_ubkvuy4"></script>
 		<!-- Google CSE Search Box Ends -->
-	
+
 		<h4 class="title">Yahoo search</sup></h4>
 		<form id="searchBoxForm_U0RWYBqs6@OUcAAT3rzik" action="http://builder.search.yahoo.com/a/bouncer" style="padding:0;">
 			<input name="mobid" value="U0RWYBqs6@OUcAAT3rzik" type="hidden">
@@ -136,15 +136,21 @@ h4.title {
 		</form>
 
 		<h4 class="title">Geograph</h4>
-			<p><i>coming soon...</i></p>
+		<form action="/finder/multi.php" method="get" onsubmit="focusBox()">
+				<div class="interestBox">
+					<label for="fq">Combined search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+					<input type="submit" value="Search"/><sup style="color:red">Experimental beta</sup><br/>
+					(Enter a placename, grid reference, word search, or person's name)
+				</div>
+		</form>
 	</div>
-	
+
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
 		<h3 class="title">Content search</h3>
-		<br/>		
+		<br/>
 		<form method="get" action="/content/">
 			<label for="fq">Keywords</label> <input type="text" name="q" id="cfq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/> <input type="submit" value="Search"/> <br/>
-			
+
 			Scope:<select name="scope">
 				<option value="">All</option>
 				<option value="article" {if $scope == 'article'} selected{/if}>Articles</option>
@@ -157,8 +163,8 @@ h4.title {
 				<option value="help" {if $scope == 'help'} selected{/if}>Help Pages</option>
 				<option value="document" {if $scope == 'document'} selected{/if}>Information Pages</option>
 			</select>
-			
-			
+
+
 		</form>
 		<p><b>Content comprises:</b></p>
 		 <ul>
@@ -169,19 +175,19 @@ h4.title {
 		  {/if}
 		  <li><a href="/help/sitemap">Help documents</a></li>
  		</ul>
-	
+
 	<p>&middot; <a href="/article/Content-on-Geograph">Read more about contributing content</a></p>
 	</div>
-	
+
 	<div style="position:relative;{if $tab != 5}display:none{/if}" class="interestBox" id="div5">
 		<h3 class="title">Contributor search</h3>
-		
+
 		<h4 class="title">Geograph</h4>
 		<form method="get" action="/finder/contributors.php">
 			<label for="fcq">Keywords</label> <input type="text" name="q" id="fcq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/>
 		</form>
-		
+
 		<h4 class="title">Google</h4>
 		<form method="get" action="http://www.google.co.uk/search">
 		<div>
@@ -190,10 +196,10 @@ h4.title {
 			<input type="hidden" name="as_q" value="site:geograph.org.uk inurl:/profile/"/>
 			<input type="submit" name="btnG" value="Search Geograph profiles"/></div>
 		</form>
-		
+
 		<p>&nbsp;</p>
 	</div>
-	
+
 	<div style="position:relative;{if $tab != 6}display:none{/if}" class="interestBox" id="div6">
 		<h3 class="title">Place search</h3>
 		<br/>
@@ -201,29 +207,29 @@ h4.title {
 			<label for="fcq">Keywords</label> <input type="text" name="q" id="fcq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/>
 		</form>
-	
+
 		<p>&nbsp;</p>
 	</div>
-	
+
 	<div style="position:relative;{if $tab != 7}display:none{/if}" class="interestBox" id="div7">
-		<h3 class="title">Shared Description search</h3>
+		<h3 class="title">Shared Description <a href="/article/Shared-Descriptions" class="about" title="Read more about Shared Descriptions">About</a> search</h3>
 		<br/>
 		<form method="get" action="/snippets.php">
-		
-		
-			<label for="fq">Keywords</label> 
+
+
+			<label for="fq">Keywords</label>
 			<input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 
 			<input type="submit" value="Find"/><br/>
-			<label for="gr">Grid reference</label> 
+			<label for="gr">Grid reference</label>
 			<input type="text" name="gr" id="gr" value="{$gr|escape:'html'}" size="12" maxlength="12"/><br/>
 
-			<label for="gr">Radius</label>: 
+			<label for="gr">Radius</label>:
 			{if $centisquare}
-			<small><input type="radio" name="radius" value="0.1"{if $radius == 0.1} checked{/if}/> Centisquare / 
+			<small><input type="radio" name="radius" value="0.1"{if $radius == 0.1} checked{/if}/> Centisquare /
 			{/if}
-			<input type="radio" name="radius" value="1" {if $radius == 1 || !$radius} checked{/if}/> Gridsquare  / 
-			<input type="radio" name="radius" value="2" {if $radius == 2} checked{/if}/> including surrounding gridsquares / 
+			<input type="radio" name="radius" value="1" {if $radius == 1 || !$radius} checked{/if}/> Gridsquare  /
+			<input type="radio" name="radius" value="2" {if $radius == 2} checked{/if}/> including surrounding gridsquares /
 			<input type="radio" name="radius" value="10"{if $radius == 10} checked{/if}/> within 10km </small><br/>
 
 			{dynamic}
@@ -231,12 +237,10 @@ h4.title {
 					<small><input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions</small><br/>
 				{/if}
 			{/dynamic}
-			
+
 		</form>
-	
-		<p>&middot; <a href="/article/Shared-Descriptions">Read more about Shared Descriptions</a></p>
 	</div>
-	
+
 	{if $enable_forums}
 	<div style="position:relative;{if $tab != 8}display:none{/if}" class="interestBox" id="div8">
 		<h3 class="title">Discussion search - NEW</h3>
@@ -258,13 +262,13 @@ h4.title {
 			<input id="searchterm" type="text" name="searchFor" value="{$searchFor}" size="30"/>
 			<input id="searchbutton" type="submit" name="go" value="Find"/></div>
 		</form>-->
-		
+
 		<h4 class="title">Grid Square Discussions</h3>
 		<form method="get" action="/discuss/search.php">
-		
-			<div id="searchfield"><label for="searchterm">Search</label> 
+
+			<div id="searchfield"><label for="searchterm">Search</label>
 			<input id="searchterm" type="text" name="q" value="" size="30"/>
-			<input id="searchbutton" type="submit" name="go" value="Find"/> 
+			<input id="searchbutton" type="submit" name="go" value="Find"/>
 			<br/>
 			<small>Enter a placename, postcode, grid reference</small></div>
 			<br/>
@@ -278,7 +282,7 @@ h4.title {
 				<option label="West-&gt;East" value="x">West-&gt;East</option>
 				<option label="South-&gt;North" value="y">South-&gt;North</option>
 			</select>
-		
+
 		</form>
 
 		<p>&nbsp;</p>
@@ -293,10 +297,10 @@ h4.title {
 		<div class="interestBox">
 			<label for="fq">Combined <b>image</b> search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/><sup style="color:red">Experimental beta</sup><br/>
-			(Enter a placename, grid reference, word search, or person's name) 
+			(Enter a placename, grid reference, word search, or person's name)
 		</div>
 	</form><br/></li>
-	
+
 	<li><a href="/finder/human.php?create">Cooperative search</a></li>
 </ul>
 

@@ -9,7 +9,7 @@
 
 	<div class="tabHolder">
 		<a href="/search.php?form=simple" class="tab">simple search</a>
-		<a href="/search.php?form=text" class="tab">Advanced Search</a> 
+		<a href="/search.php?form=text" class="tab">Advanced Search</a>
 		{dynamic}
 		{if $user->registered}
 		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>old advanced</small></a>
@@ -25,7 +25,7 @@
 <div style="padding:20px;">
 
 <h3>First Geographs</h3>
-You can <b>now</b> search specifically for "First Geographs" in the <a href="{$script_name}?form=text">Normal Search</a></b>, just enter <tt>ftf:1</tt> as the last keyword. 
+You can <b>now</b> search specifically for "First Geographs" in the <a href="{$script_name}?form=text">Normal Search</a></b>, just enter <tt>ftf:1</tt> as the last keyword.
 <form method="get" action="{$script_name}" class="interestBox">
 Keywords: <input type="text" name="q" value="river ftf:1"/> <input type="submit" value="Find"/>
 </form>
@@ -33,7 +33,7 @@ Keywords: <input type="text" name="q" value="river ftf:1"/> <input type="submit"
 <br/>
 <h3>Hectad / Myriad references</h3>
 
-also a reminder that the new search can search hectad and myriad references directly: 
+also a reminder that the new search can search hectad and myriad references directly:
 <form method="get" action="{$script_name}" class="interestBox">
 Example: <input type="text" name="q" value="TQ74 ftf:1"/> <input type="submit" value="Find"/>
 </form>
@@ -43,7 +43,7 @@ Example: <input type="text" name="q" value="hectad:TQ74 ftf:1"/> <input type="su
 </form>
 
 <br/>
-... and as they are keywords can combine them, <a href="/article/Word-Searching-on-Geograph">read more</a> 
+... and as they are keywords can combine them. <a href="/article/Word-Searching-on-Geograph" class="about">About</a>
 <form method="get" action="{$script_name}" class="interestBox">
 Example: <input type="text" name="q" value="tq74 OR tq73 OR tq64 OR tq64 ftf:1" size="40"/> <input type="submit" value="Find"/> <br/>
 </form>

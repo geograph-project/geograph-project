@@ -9,7 +9,7 @@
 	<script type="text/javascript" 	src="http://lite.piclens.com/current/piclens.js"></script>
 
 	<p align="center"><a href="javascript:PicLensLite.start();">Start PicLens Slide Show <img src="http://lite.piclens.com/images/PicLensButton.png" alt="PicLens" width="16" height="12" border="0" align="absmiddle"></a></p>
-	
+
 	<div>
 	{foreach from=$engine->results item=image}
 	{searchbreak image=$image}
@@ -26,12 +26,14 @@
 	{/foreach}
 	<div style="position:relative;clear:both"/>
 	<br/><br/>
-	<div class="interestBox" style="font-size:0.8em">Marked Images<span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1&amp;displayclass={$engine->criteria->displayclass}">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)</div></div>
+	<div class="interestBox" style="font-size:0.8em">
+	<div style="float:right"><a href="/article/The-Mark-facility" class="about">About</a></div>
+	Marked Images<span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1&amp;displayclass={$engine->criteria->displayclass}">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)</div></div>
 	<script>
 	AttachEvent(window,'load',showMarkedImages,false);
 	</script>
 	</div>
-	
+
 	{if $engine->results}
 	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 	{/if}

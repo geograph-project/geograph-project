@@ -108,5 +108,5 @@ Display:
 	<p style="font-size:0.8em">[We have no images for <a href="/gridref/{$engine->criteria->searchq|escape:"html"}">{$engine->criteria->searchq|escape:"html"}</a>, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"url"}">Submit Yours Now</a>!]</p>
 	{/if}
 	{if $singlesquares}
-	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*(y-1)+900-(x+1)" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
+	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*y+900-x" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
 	{/if}

@@ -8,8 +8,8 @@
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 	{/if}
 
-{if $step eq 1}	
-	
+{if $step eq 1}
+
 	{if $success}
 		{if $grid_reference}
 			<input type="hidden" name="grid_reference" value="{$grid_reference|escape:'html'}"/>
@@ -23,22 +23,22 @@
 		{if $imagetaken}
 			<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 		{/if}
-		
+
 		{if $original_width}
-			
+
 			{include file="_submit_sizes.tpl"}
-			
+
 		{elseif $preview_url}
 			<h2>Image Uploaded</h2>
 			<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
 		{/if}
-		
+
 		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1">Upload a different image</a></p>
 	{else}
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
-		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto 8Mb filesize <sup style="color:red">New!</sup>)<br/>	
+		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/></div>
 		<div>
@@ -46,7 +46,7 @@
 		</div>
 
 		<br/>
-		<div><i>Optionally</i> upload an image with Locational information attached<br/>
+		<div><i>Optionally</i> upload an image with Locational information attached <a href="/article/Uploading-Tagged-Images" class="about" target="_blank">About</a><br/>
 		<ul>
 			<li>GPS-EXIF tags based on WGS84 Lat/Long (used for the Photographer Position)</li>
 			<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TQ435646</b>A.jpg</tt>")</li>
@@ -70,7 +70,7 @@
 		AttachEvent(window,'load',parentUpdateVariables,false);
 		AttachEvent(window,'load',function() { window.parent.doneStep({/literal}{$step},{if $original_width}true{else}false{/if}{literal}) },false);
 	{/literal}
-	{if $grid_reference} 
+	{if $grid_reference}
 		{literal}
 			AttachEvent(window,'load',function() { window.parent.doneStep(9) },false);
 			AttachEvent(window,'load',function() { window.parent.clicker(2,1) },false);
@@ -83,7 +83,7 @@
 	{if $imagetaken}
 		{literal}
 		AttachEvent(window,'load',function() { window.parent.setTakenDate({/literal}'{$imagetaken}'{literal}) },false);
-		{/literal}	
+		{/literal}
 	{/if}
 	{if $preview_url}
 		{literal}
@@ -94,7 +94,7 @@
 	{literal}
 		AttachEvent(window,'load',function() { setTimeout("setupTheForm()",100); },false);
 	{/literal}
-	
+
 {/dynamic}
 </script>
 

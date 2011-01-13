@@ -1,19 +1,19 @@
 
 {if $engine->criteria->searchclass != 'Special'}
 [<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}</p>
-	
+
 {if $engine->resultCount}
 
 	{if $engine->fullText && $engine->nextLink}
 	<div class="interestBox" style="border:1px solid pink;">
 		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However, as your search is in a predictable sort order, you can <b><a href="{$engine->nextLink|escape:'html'}">Generate a new Search</a></b> that continues from approximately this page.
 	</div>
-	
+
 	{elseif $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->criteria->sphinx.compatible && $engine->criteria->sphinx.compatible_order && $engine->resultCount > $engine->maxResults}
 		<div class="interestBox" style="border:1px solid pink;">
 			You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However your search seems to be compatible with the legacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
 		</div>
-		
+
 	{/if}
 
 
@@ -43,8 +43,8 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 					<input type="hidden" name="redo" value="1"/>
 					({newwin href="/article/Word-Searching-on-Geograph" text="Tips"}) - all other fields unchanged<br/>
 					<input type="checkbox" name="strip" id="strip" {if $engine->error}checked{/if}/> <label for="strip">Remove special characters (otherwise will be used as search syntax)</label>
-					
-					
+
+
 					</div>
 				</form>
 			</div>
@@ -54,7 +54,7 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 
 <br style="clear:both"/>
 
-{if $statistics} 
+{if $statistics}
 	<a href="javascript:void(show_tree(2));" id="hide2">Expand Word Statistics</a>
 	<div style="font-size:0.8em; display:none; margin-left:20px" id="show2"><b>Word Match statistics</b>
 	<ul>
@@ -62,11 +62,14 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 		<li><b>{$word}</b> <small>{$row.docs} images, {$row.hits} hits</small></li>
 	{/foreach}
 	</ul>
-	
+
 	<p>Note, these are the raw words sent to the query engine, which are used to form the base query. There is post-filtering to make the results match your query as closely as possible which is why these terms can seem very broad.</p>
 	<a href="javascript:void(hide_tree(2));">close</a></div>
 
 {/if}
+
+<p align="center"><a href="/article/The-Search-Results-page" class="about">More information about this Search Results page</a></p>
+
 
 {if $engine->resultCount}
 <div class="interestBox" style="text-align:center">
@@ -74,7 +77,7 @@ View/Download: {if $engine->islimited && (!$engine->fullText || $engine->criteri
 <input type="hidden" name="i" value="{$i}"/>
 {if $engine->currentPage > 1}<input type="hidden" name="page" value="{$engine->currentPage}"/>{/if}
 <label for="displayclass">Display Format:</label>
-<select name="displayclass" id="displayclass" size="1" onchange="this.form.submit()"> 
+<select name="displayclass" id="displayclass" size="1" onchange="this.form.submit()">
 	{html_options options=$displayclasses selected=$engine->criteria->displayclass}
 </select>
 {if $legacy}<input type="hidden" name="legacy" value="1"/>{/if}

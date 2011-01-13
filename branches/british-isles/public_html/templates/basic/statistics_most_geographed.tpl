@@ -4,25 +4,25 @@
 <h2>Most Geographed Hectads{if $myriad}, for Myriad {$myriad}{/if}</h2>
 
     <form method="get" action="{$script_name}">
-	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Non Geographed</a> | 
-	<b>Mostly Geographed</b> | 
+	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Non Geographed</a> |
+	<b>Mostly Geographed</b> |
 	<a href="fully_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Fully Geographed</a> Hectads -
-	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a> 
+	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a>
 	<span class="nowrap">-
 	{if $references}<label for="ri">In</label> <select name="ri" id="ri">
 	{html_options options=$references selected=$ri}
 	</select>{/if}
 	or <label for="myriad">Myriad</label> <input type="text" name="myriad" id="myriad" value="{$myriad|escape:'html'}" size="2" maxlength="3"/>
 	<input type="submit" value="Go"></span><br/>
-	
+
 	See also | <a href="/statistics/most_geographed_gridsquare.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Grid Squares{if $myriad} in {$myriad}{/if}</a> |
-	<a href="/statistics/most_geographed_myriad.php">Myriads :: 100km x 100km squares</a> | 
+	<a href="/statistics/most_geographed_myriad.php">Myriads :: 100km x 100km squares</a> |
 	</div>
     </form>
 
-<p>These are the hectad<a href="/help/squares">?</a>/squares with the best coverage so far! This page only counts First Geographs.</p>
+<p>These are the hectad<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup>/squares with the best coverage so far! This page only counts First Geographs.</p>
 
-<table class="report"> 
+<table class="report">
 <thead><tr><td>Rank</td><td>Hectad</td><td colspan="3">Squares</td><td align="right" style="width:40px">%</td><td>Contributors</td><td>Last Submission</td><td>Map</td></tr></thead>
 <tbody>
 
