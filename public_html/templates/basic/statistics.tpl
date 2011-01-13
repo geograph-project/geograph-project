@@ -1,6 +1,6 @@
 {assign var="page_title" value="Statistics"}
 {include file="_std_begin.tpl"}
- 
+
     <h2>Overview Statistics for Geograph Britain and Ireland</h2>
 
 <ul>
@@ -47,13 +47,13 @@
 	<td>{$geographs_submitted_both|thousends}</td>
 </tr>
 <tr>
-	<th>Hectads<a href="/help/squares">?</a><br/>10km x 10km squares</th>
+	<th>Hectads<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup><br/>10km x 10km squares</th>
 	<td><b>{$tenk_submitted_1|thousends}</b><br/>/{$tenk_total_1|thousends}</td>
 	<td><b>{$tenk_submitted_2|thousends}</b><br/>/{$tenk_total_2|thousends}</td>
 	<td valign="top">{$tenk_submitted_both|thousends}<br/>/{$tenk_total_both|thousends}</td>
 </tr>
 <tr>
-	<th>Myriads<a href="/help/squares">?</a><br/>100km x 100km squares</th>
+	<th>Myriads<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup><br/>100km x 100km squares</th>
 	<td><b>{$grid_submitted_1}</b><br/>/{$grid_total_1}</td>
 	<td><b>{$grid_submitted_2}</b><br/>/{$grid_total_2}</td>
 	<td>{$grid_submitted_1+$grid_submitted_2}<br/>/{$grid_total_1+$grid_total_2}</td>
@@ -90,12 +90,12 @@
 <p>The <acronym title="the centre of 'gravity' for all images submitted so far" style="text-decoration:underline">Geograph centre</acronym> for images in the {$references.1} is <a href="/gridref/{$centergr_1}" title="view square {$centergr_1}">{$centergr_1}</a>, {place place=$place_1}.
 
 And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {$centergr_2}">{$centergr_2}</a>, {place place=$place_2}.</p>
-    
+
     <h3><a name="more"></a>More statistics</h3>
 
    <p>User leaderboards: <a href="/statistics/moversboard.php">Weekly</a>, <a href="/statistics/leaderboard.php">All Time</a>, <a href="/statistics/monthlyleader.php">By Month</a>, <a href="/statistics/leaderhectad.php">First Hectads</a>,  <a href="/statistics/leaderallhectad.php">Hectads</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a></p>
 
-   <p><b>Covering the squares</b><a href="/help/squares">?</a>:<br/><br/>
+   <p><b>Covering the squares</b><sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup>:<br/><br/>
    None: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!<br/><br/>
    Mostly: <a href="/statistics/most_geographed_gridsquare.php">Grid Squares</a>, <a href="/statistics/most_geographed.php">Hectads</a> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.<br/><br/>
    <b>Fully: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b><br/><br/>
@@ -111,13 +111,13 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
    <a href="/statistics/forum_image_breakdown.php">By Thumbnails Used</a><br/><br/></p>
 
     <form method="get" action="/statistics/breakdown.php">
-    <p>View breakdown of images by 
+    <p>View breakdown of images by
     <select name="by">
     	{html_options options=$bys selected=$by}
     </select> in <select name="ri">
     	{html_options options=$references selected=$ri}
-    </select> 
-    
+    </select>
+
     {dynamic}
     {if $user->registered}
 	<select name="u">
@@ -140,10 +140,10 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
 
    <p><b>More Technical Database Stats:</b><br/>
    <a href="/statistics/pulse.php">Geograph Pulse</a>,
-   <a href="/statistics/totals.php">Current Totals</a>, 
+   <a href="/statistics/totals.php">Current Totals</a>,
    {dynamic}
     {if $user->registered}
-     <a href="/statistics/contributor.php?u={$user->user_id}">Your Totals</a>, 
+     <a href="/statistics/contributor.php?u={$user->user_id}">Your Totals</a>,
     {/if}
    {/dynamic}
    <a href="/statistics/images.php">Classification Breakdown</a> and

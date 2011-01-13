@@ -11,8 +11,8 @@
 {/if}
 {/dynamic}
 	<form method="post" action="{$script_name}">
-		<p><label for="gridsquare">Myriad</label><a href="/help/squares">?</a>
-		<select name="gridsquare" id="gridsquare" size="1"> 
+		<p><label for="gridsquare">Myriad</label><sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup>
+		<select name="gridsquare" id="gridsquare" size="1">
 			<option value="">Choose...</option>
 			{html_options options=$prefixes selected=$gridsquare}
 		</select> <input type="submit" value="Download CSV file..."/></p>

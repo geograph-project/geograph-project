@@ -5,10 +5,10 @@
 <h2>Fully Geographed Hectads{if $myriad}, for Myriad {$myriad}{/if}</h2>
 
     <form method="get" action="{$script_name}">
-	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Non Geographed</a> | 
-	<a href="most_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Mostly Geographed</a> | 
+	<div class="interestBox"><a href="not_geographed.php{if $ri}?ri={$ri}{/if}">Non Geographed</a> |
+	<a href="most_geographed.php{if $ri}?ri={$ri}{if $myriad}&amp;myriad={$myriad}{/if}{/if}">Mostly Geographed</a> |
 	<b>Fully Geographed</b> Hectads -
-	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a> 
+	<a href="hectads.php{if $ri}?ri={$ri}{/if}">Completion Progress</a>
 	<span class="nowrap">-
 	{if $references}<label for="ri">In</label> <select name="ri" id="ri">
 	{html_options options=$references selected=$ri}
@@ -17,12 +17,12 @@
 	<input type="submit" value="Go"></span></div>
     </form>
 
-<p>These are the 10km x 10km squares or hectads<a href="/help/squares">?</a> with full land coverage! This page only counts First Geographs.</p>
+<p>These are the 10km x 10km squares or hectads<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup> with full land coverage! This page only counts First Geographs.</p>
 
 <p style="font-size:0.8em">Click Mosaic for a large map. Click a column header to change sort order.</p>
 
 
-<table class="report sortable" id="table1"> 
+<table class="report sortable" id="table1">
 <thead><tr><td>Hectad</td><td sorted="desc">Date Completed</td><td>Squares</td><td>Mosaic</td><td>Contributors</td></tr></thead>
 <tbody>
 

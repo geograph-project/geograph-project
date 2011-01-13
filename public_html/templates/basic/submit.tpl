@@ -17,6 +17,11 @@
     <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" {if $step ne 1}style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;"{/if}>
 
 {if $step eq 1}
+	<div class="interestBox">
+		<span style="color:red">New!</span> - Have a photo to upload by unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
+	</div>
+
+
 	{if $user->stats.images gt 10}
 	<p align="center">&middot; <a href="/help/submission">View alternative submission methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot; <a href="/article/Content-on-Geograph">Submit a Collection</a> &middot;</p>
 	{/if}
@@ -113,7 +118,9 @@ geographing</a> first.</p>
 
 		<input type="submit" name="setpos" value="Next &gt;"/> <br/>
 
-		<div>Currently understands:<ul>
+		 - (upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
+
+		<div>Currently understands: <a href="/article/Uploading-Tagged-Images" class="about">About</a><ul>
 		<li>GPS-EXIF tags based on WGS84 Lat/Long</li>
 		<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TQ435646</b>A.jpg</tt>")</li>
 		<li>Subject grid-reference in EXIF Comment tag</li>
@@ -200,7 +207,7 @@ geographing</a> first.</p>
 		<input id="jpeg" name="jpeg" type="file" />
 
 		{/if}
-		<div><small><small><i>If your image is over 640 pixels in either direction, <b>you will be offered the chance to upload the largest version</b>. <br/>If you have pre-sized to 640px please aim to have the filesize preferably under 100kb and in any case under 200kb, thanks!</i></small></small></div>
+		<div>(upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)</div>
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<hr/>
 
@@ -229,7 +236,7 @@ geographing</a> first.</p>
 		</span>
 
 		{if $rastermap->enabled}
-			<br/><br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference ({newwin href="/help/map_precision" text="Explanation"})</label>
+			<br/><br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1"/> <label for="use6fig">Only display 6 figure grid reference</label> <a href="/help/map_precision" title="Explanation" class="about" target="_blank" style="font-size:0.6em">About</a>
 		{/if}
 		</p>
 
@@ -373,13 +380,13 @@ it was taken or other interesting geographical information. <span id="styleguide
 
 
 <div class="interestBox">
+	<div style="float:right"><a href="/article/Shared-Descriptions" text="Article about Shared Descriptions" class="about" target="_blank">About</a></div>
 	<b>Shared Descriptions/References (Optional)</b>
-	<span id="hideshare"><a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;">+ [ Expand ]</a><br/>
-	<small>read more {newwin href="/article/Shared-Descriptions" text="about Shared Descriptions"} <sup style="color:red">- <b>New</b>!</sup></small></span>
+	<span id="hideshare"><a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;">+ [ Expand ]</a> </span>
 	<div id="showshare" style="display:none">
 		<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
 		</iframe>
-		<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I></a>  (<b>{newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"}</b>)</div>
+		<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I></a></div>
 	</div>
 </div>
 <br/>

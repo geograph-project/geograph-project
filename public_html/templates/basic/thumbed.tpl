@@ -12,7 +12,7 @@
     </select> liked.
   <noscript>
     <input type="submit" value="Update"/></noscript></form></div>
-    
+
 	{foreach from=$images item=image}
 	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
@@ -25,23 +25,25 @@
 		<i>{$image->dist_string}</i><br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
-		
+
 		{if $image->comment}
 		<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:90:"... (<u>more</u>)"|geographlinks}</div>
 		{/if}
-		
+
 		<div class="interestBox" style="font-size:0.7em;margin-top:7px;width:500px;padding:2px">Links: <a href="/kml.php?id={$image->gridimage_id}">Google Earth</a> <a href="/ecard.php?image={$image->gridimage_id}">eCard</a> {if $enable_forums}<a href="/discuss/index.php?gridref={$image->grid_reference}">Discuss Square</a>{/if} <a href="/editimage.php?id={$image->gridimage_id}">Edit</a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]</div>
-		
+
 	  </div><br style="clear:both;"/>
 	 </div>
 	{foreachelse}
 	 	<ul><li>No images match the selected options.</li></ul>
 	{/foreach}
-	
+
 	{if $images}
 	<div style="position:relative">
 	<br/><br/>
-	<div class="interestBox" style="font-size:0.8em"><b>Marked Images</b><span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)<br/>
+	<div class="interestBox" style="font-size:0.8em">
+	<div style="float:right"><a href="/article/The-Mark-facility" class="about">About</a></div>
+	<b>Marked Images</b><span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)<br/>
 	&nbsp; &nbsp; &nbsp; &nbsp; <a href="javascript:void(markAllImages('Mark'))">Mark all images on <b>this</b> page</a> (<a href="javascript:void(markAllImages('marked'))" style="color:red">Unmark all on this page</a>)</div></div>
 	<script>
 	AttachEvent(window,'load',showMarkedImages,false);
@@ -64,7 +66,7 @@
 <div style="padding:10px">
 <p>This page only lists your images. {if $who == 'mine'}Such votes are excluded from public voting anyway.{else}No account of the number of votes is taken, shown in date order.{/if}</p>
 
-<p><small>Note: Page generated at 10 minute intervals, please don't refresh more often than that.</small></p> 
+<p><small>Note: Page generated at 10 minute intervals, please don't refresh more often than that.</small></p>
 </div>
 
 {include file="_std_end.tpl"}

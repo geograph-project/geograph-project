@@ -8,7 +8,7 @@
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 	{/if}
 
-{if $step eq 1}	
+{if $step eq 1}
 	{if !$submit2}
 	<script type="text/javascript">window.parent.tabClick('tab','',1,4);</script>
 	{/if}
@@ -16,10 +16,10 @@
 
 	<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
 
-	<p><label for="grid_reference">Enter the grid reference 
+	<p><label for="grid_reference">Enter the grid reference
 	(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
 	<u title="e.g. TQ435646 or TQ 435 646">6</u>,
-	<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or 
+	<u title="e.g. TQ43526467 or TQ 4352 6467">8</u> or
 	<u title="e.g. TQ4352364673 or TQ 43523 64673">10</u> figure) for the subject grid square</label><br /><br />
 	{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">clear</a>)<br/></small></small>{/if}
 	<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
@@ -40,10 +40,10 @@
 	{else}
 		<div>
 	{/if}
-	
+
 		<p>Open the subject location on {getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}</p>
 
-		{if $reference_index == 2} 
+		{if $reference_index == 2}
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
 
@@ -91,8 +91,8 @@
 			</script>
 			{/literal}
 		{$rastermap->getScriptTag()}
-		
-	{else} 
+
+	{else}
 		<script type="text/javascript" src="{"/mapping.js"|revision}"></script>
 	{/if}
 	<br style="clear:both"/>
@@ -108,12 +108,12 @@
 	{if !$submit2}
 	<script type="text/javascript">window.parent.tabClick('tab','',4,4);</script>
 	{/if}
-	
+
 	{if $reopenmaptoken}
 	<div class="interestBox" style="z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> <small>(and view list of placenames)</small>
 	{getamap gridref=$square->grid_reference text="Open Get-a-Map"}, <a href="/gridref/{$square->grid_reference}" target="_blank">Open {$square->grid_reference} Page</a> <small>(in new window)</small></div>
 	{/if}
-	
+
 	<p>Please provide a short title for the image, and any other comments about where
 	it was taken or other interesting geographical information. (Open <a href="/help/style" target="_blank" id="styleguidelink">Style Guide</a>)</p>
 
@@ -135,16 +135,16 @@
 
 {if $submit2}
 	{if $upload_id}
-		<p><b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup>
+		<div style="float:right"><a href="/article/Shared-Descriptions" text="Article about Shared Descriptions" class="about" target="_blank">About</a></div>
+		<p><b>Shared Descriptions/References (Optional)</b>
 			<a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" id="hideshare">++ Expand <i>Shared Descriptions</I> box ++</a>
 			<div id="showshare" style="display:none">
 				<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
 				</iframe>
-				<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I> box</a> (<b>{newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"}</b>)</div>
 			</div></p>
 	{else}
-		<p><b>Shared Descriptions/References (Optional)</b> <sup style="color:red">- <b>New</b>!</sup><br/>
-		<span style="color:red">&nbsp; - Shared description can only be set once image has finished uploading, 
+		<p><b>Shared Descriptions/References (Optional)</b><br/>
+		<span style="color:red">&nbsp; - Shared description can only be set once image has finished uploading,
 <a href="javascript:void(window.parent.clicker(3,false));void(window.parent.clicker(3,true));">close and reopen this step</a> once the image has uploaded. </span></p>
 	{/if}
 {/if}
@@ -162,7 +162,7 @@
 
 	AttachEvent(window,'load', function() {
 	 	var inputWord = $('imageclass');
-	 	
+
 	    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
 	        'postVar': 'q',
 	        'minLength': 2,
@@ -171,7 +171,7 @@
 	        	parentUpdateVariables();
 	        }
 	    });
-	    
+
 	},false);
 
 	//-->
@@ -210,7 +210,7 @@
 
 	<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
 		<br/><span class="formerror">{$error.imageclass}</span>
-		{/if}<br />	
+		{/if}<br />
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
 			<option value="">--please select feature--</option>
 			{if $imageclass}
@@ -220,7 +220,7 @@
 		</select>
 
 		<span id="otherblock">
-		<label for="imageclassother">Please specify </label> 
+		<label for="imageclassother">Please specify </label>
 		<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
 		</span></p>
 
@@ -234,7 +234,7 @@
 		    {$imagetakenmessage}
 		{/if}
 
-		[ Use 
+		[ Use
 		<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
 		{if $last_imagetaken}
 			<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
@@ -255,12 +255,12 @@
 	{/if}
 
 {if $use_autocomplete}
-	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" /> 
+	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" />
 
-	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script>
 {else}
 	<script type="text/javascript" src="/categories.js.php"></script>
 	<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
@@ -273,13 +273,13 @@
 <script type="text/javascript" src="{"/js/puploader.js"|revision}"></script>
 {literal}
 <script type="text/javascript">
-	AttachEvent(window,'load',function() { 
-		setupTheForm(); 
-		if (typeof updateMapMarkers == 'function') { 
-			updateMapMarkers(); 
+	AttachEvent(window,'load',function() {
+		setupTheForm();
+		if (typeof updateMapMarkers == 'function') {
+			updateMapMarkers();
 		}
 	},false);
-	
+
 	function setTakenDate(value) {
 		setdate('imagetaken',value,document.forms['theForm']);
 	}

@@ -20,9 +20,9 @@ table.navtable {
 	display: inline;
 }
 </style>{/literal}
- 
-    
- 
+
+
+
 {*begin containing div for main map*}
 <div style="position:relative;float:left;width:{$mosaic_width+20}px">
 {if $token_zoomout}
@@ -39,7 +39,7 @@ table.navtable {
 	{foreach from=$mosaic key=y item=maprow}
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
+		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img
 		alt="Clickable map" ismap="ismap" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
@@ -50,7 +50,7 @@ table.navtable {
 		{foreach from=$maprow key=x item=mapcell}
 			{assign var="mapmap" value=$mapcell->getGridArray(true)}
 			{if $mapmap}
-			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
+			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img
 			alt="Clickable map" ismap="ismap" usemap="#map_{$x}_{$y}" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 			<map name="map_{$x}_{$y}" id="map_{$x}_{$y}">
 			{foreach from=$mapmap key=gx item=gridrow}
@@ -60,7 +60,7 @@ table.navtable {
 			{/foreach}
 			</map>
 			{else}
-			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
+			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img
 			alt="Clickable map" ismap="ismap" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 			{/if}
 		{/foreach}
@@ -87,7 +87,7 @@ table.navtable {
 	{foreach from=$mosaic key=y item=maprow}
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
+		<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img
 		alt="Clickable map" ismap="ismap" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
@@ -111,13 +111,13 @@ table.navtable {
 	</div>
 {elseif $recent}
 	<div style="background-color:#000066;text-align:center;font-size:0.7em;color:white;border-top:1px solid silver">Key
-	| <span style="color:#FF0000">Recent photos</span> 
+	| <span style="color:#FF0000">Recent photos</span>
 	| <span style="color:#ECCE40">Any photos</span>
 	| <span style="color:#75FF65">No photos</span> |
 	</div>
 {else}
 	<div style="background-color:#000066;text-align:center;font-size:0.7em;color:white;border-top:1px solid silver">Key
-	| <span style="color:#FF0000">Geograph(s)</span> 
+	| <span style="color:#FF0000">Geograph(s)</span>
 	| <span style="color:#ECCE40">Supplemental only</span>
 	| <span style="color:#75FF65">No photos</span> |
 	</div>
@@ -142,7 +142,7 @@ table.navtable {
 	{foreach from=$overview key=y item=maprow}
 		<div style="position:absolute;top:0px;left:0px;">
 		{foreach from=$maprow key=x item=mapcell}
-		<a href="/mapbrowse.php?t={$mosaic_token}&amp;{if !$token_zoomin}o={$overview_token}&amp;{/if}i={$x}&amp;j={$y}&amp;recenter=1"><img 
+		<a href="/mapbrowse.php?t={$mosaic_token}&amp;{if !$token_zoomin}o={$overview_token}&amp;{/if}i={$x}&amp;j={$y}&amp;recenter=1"><img
 		ismap="ismap" alt="Clickable map" title="Click to pan main map" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{/foreach}
 		</div>
@@ -163,8 +163,8 @@ table.navtable {
 		</div>
 	{/foreach}
 {/if}
-		
-		
+
+
 </div>
 
 <div class="side" style="height:{$overview_height}px;">&nbsp;</div>
@@ -227,10 +227,10 @@ table.navtable {
 
   <tr><!-- row 6 -->
    <td colspan="4" class="textcell" align="center">
-   
+
    <div style="line-height:1.2em;padding-top:2px;">
    {if $hectad}</b>
-   Hectad<a href="/help/squares">?</a> <b><a style="color:#000066" href="/gridref/{$hectad}">{$hectad}</a></b>  
+   Hectad<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup> <b><a style="color:#000066" href="/gridref/{$hectad}">{$hectad}</a></b>
    {if $hectad_row}
    <div  style="background-color:skyblue;padding:5px;margin:5px"><a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}">View Photo Mosaic</a></div>
    {/if}
@@ -240,16 +240,16 @@ table.navtable {
  {else}
  {$gridref}
  {/if}{/if}</div>
- 
+
   <div style="line-height:1em;padding-top:6px;">Map width <b>{$mapwidth}&nbsp;<small>km</small></b></div>
- 
+
 
  {if $token_big}
   <div style="line-height:1em;padding-top:6px;"><a href="/maplarge.php?t={$token_big}" style="color:#000066">bigger map</a></div>
  {/if}
- 
 
- 
+
+
  <br/>
    </td>
    <td><img alt="" src="http://{$static_host}/templates/basic/mapnav/shim.gif" width="1" height="103"/></td>
@@ -264,7 +264,7 @@ table.navtable {
 
 {literal}
 <script type="text/javascript">
-<!-- 
+<!--
 if (document.images) {
 zoomin_F2 = new Image(30,29); zoomin_F2.src = "/templates/basic/mapnav/zoomin_F2.gif";
 north_F2 = new Image(30,29); north_F2.src = "/templates/basic/mapnav/north_F2.gif";
@@ -281,8 +281,8 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
  {*end containing div for overview map*}
  </div>
- 
- 
+
+
 
 
 
@@ -292,7 +292,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 
 
 
- 
+
 {if $token_zoomout || $realname}
 <div style="position:relative;">
 	<div style="position:absolute;left:445px;top:5px;">
@@ -313,7 +313,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 {/if}
 
 <div class="tabHolder" style="margin-top:3px">
-	Style: 
+	Style:
 	<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="/map/{$mosaic_token}?depth=0" title="Map showing squares with/without photos so far">Coverage</a>
 	{if $hectad && $hectad_row}
 		<a class="tab nowrap" title="View Large Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}" style="background-color:yellow">Photo Mosaic</a>
@@ -344,6 +344,9 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 	{if !$token_zoomout}
 	 <a class="tab{if $tab == 9}Selected{/if} nowrap" id="tab9" href="/mapper/clusters.php#r=c" title="draggable interactive map visualizing coverage into clusters">Interactive Clusters</a>
 	{/if}
+
+	<a href="/article/Mapping-on-Geograph" title="More information about the various map types" class="about">About</a>
+
 </div>
 <div class="interestBox">
 
@@ -373,8 +376,8 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 
 
  <hr/>
-<div class="copyright">Maps on this page, &copy; Copyright Geograph Project and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div> 
+<div class="copyright">Maps on this page, &copy; Copyright Geograph Project and
+licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div>
 
- 
+
 {include file="_std_end.tpl"}
