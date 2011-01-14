@@ -241,7 +241,7 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 					} elseif (isset($data[$g_id])) {
 						$data[$g_id]['gridimage_id'] = $g_id;
 						$g_image->fastInit($data[$g_id]);
-						$ok = 1;
+						$g_ok = 1;
 					} else {
 						$g_ok = $g_image->loadFromId($g_id);
 					}
