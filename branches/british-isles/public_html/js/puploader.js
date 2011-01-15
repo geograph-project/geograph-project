@@ -2,6 +2,14 @@
 /////////////////////////////
 // for puploader_inner.tpl and submit2_inner.tpl
 
+	function pad(number, length) {
+		var str = '' + number;
+			while (str.length < length) {
+			str = '0' + str;
+		}
+		return str;
+	}
+
 	function parentUpdateVariables() {
 		var thatForm = window.parent.document.forms['theForm'];
 		var name = thatForm.elements['selected'].value;
@@ -21,7 +29,7 @@
 				}
 			}
 			if (theForm.elements['imagetakenDay'] && thatForm.elements['imagetaken['+name+']']) {
-				thatForm.elements['imagetaken['+name+']'].value = theForm.elements['imagetakenYear'].value + '-' + theForm.elements['imagetakenMonth'].value + '-' + theForm.elements['imagetakenDay'].value
+				thatForm.elements['imagetaken['+name+']'].value = pad(theForm.elements['imagetakenYear'].value,4) + '-' + pad(theForm.elements['imagetakenMonth'].value,2) + '-' + pad(theForm.elements['imagetakenDay'].value,2);
 			}
 		
 		}
