@@ -38,7 +38,8 @@
  
  function createMarker(point,picon) {
  	if (picon) {
- 		marker2 = new GMarker(point,{draggable: true, icon:picon});
+ 		marker2 = new GMarker(point,{draggable: !iscmap, icon:picon});
+ 		//marker2 = new GMarker(point,{draggable: true, icon:picon});
  		var marker = marker2;
 	} else {
 		marker1 = new GMarker(point, {draggable: true});
@@ -106,7 +107,9 @@
 				pickupbox = null;
 			}
 			
-			updateViewDirection();
+			if (!iscmap) {
+				updateViewDirection();
+			}
 			
 			if (typeof parentUpdateVariables != 'undefined') {
 				parentUpdateVariables();

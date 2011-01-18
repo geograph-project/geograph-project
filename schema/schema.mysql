@@ -1112,6 +1112,7 @@ CREATE TABLE `loc_towns` (
   `quad` tinyint(4) NOT NULL DEFAULT '0',
   `point_en` point NOT NULL DEFAULT '',
   `point_xy` point NOT NULL DEFAULT '',
+  `community_id` int(9) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `gis` (`e`,`n`,`reference_index`),
   SPATIAL KEY `point_en` (`point_en`),
