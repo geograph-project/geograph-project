@@ -507,3 +507,5 @@ CREATE TABLE gridsquare_gmcache (
 	KEY `gylow` (`gylow`),
 	KEY `gyhigh` (`gyhigh`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `loc_towns` ADD `community_id` int(9) unsigned NOT NULL DEFAULT '0' AFTER `point_xy`;

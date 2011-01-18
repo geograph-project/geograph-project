@@ -101,7 +101,7 @@ class RasterMap
 	/**
 	* setup the values
 	*/
-	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest',$serviceid = -1)
+	function RasterMap(&$square,$issubmit = false, $useExact = true,$includeSecondService = false,$epoch = 'latest',$serviceid = -1,$iscmap=false)
 	{
 		global $CONF;
 		$this->enabled = false;
@@ -116,7 +116,8 @@ class RasterMap
 			$this->natgrlen = $square->natgrlen;
 			$this->reference_index = $square->reference_index;
 			
-			$this->issubmit = $issubmit;
+			$this->issubmit = $issubmit||$iscmap;
+			$this->iscmap = $iscmap;
 			$this->serviceid = '';
 			$this->maplink = true;
 			$this->grid = false;
@@ -686,10 +687,12 @@ class RasterMap
 				
 			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
 				
-				$block = $this->getPolyLineBlock($conv,$e-1000,$n,$e+2000,$n);
-				$block .= $this->getPolyLineBlock($conv,$e-1000,$n+1000,$e+2000,$n+1000);
-				$block .= $this->getPolyLineBlock($conv,$e,$n-1000,$e,$n+2000);
-				$block .= $this->getPolyLineBlock($conv,$e+1000,$n-1000,$e+1000,$n+2000);
+				if (!$this->iscmap) {
+					$block = $this->getPolyLineBlock($conv,$e-1000,$n,$e+2000,$n);
+					$block .= $this->getPolyLineBlock($conv,$e-1000,$n+1000,$e+2000,$n+1000);
+					$block .= $this->getPolyLineBlock($conv,$e,$n-1000,$e,$n+2000);
+					$block .= $this->getPolyLineBlock($conv,$e+1000,$n-1000,$e+1000,$n+2000);
+				}
 				
 				if (!empty($this->viewpoint_northings)) {
 					if ($this->viewpoint_ri == $this->reference_index) {
@@ -749,10 +752,10 @@ class RasterMap
 			} else {
 				$zoom=14;
 			}
-			if ($this->issubmit) {
+			if ($this->issubmit && !$this->iscmap) {
 				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
 			}
-			if ($this->issubmit) {
+			if ($this->issubmit && !$this->iscmap) {
 				for ($i=100; $i<=900; $i+=100) {
 					$block .= $this->getPolyLineBlock($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
 					$block .= $this->getPolyLineBlock($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25);
@@ -761,7 +764,7 @@ class RasterMap
 			if (empty($this->lat)) {
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
 			}
-			if ($CONF['showmeridian'] != 0) {
+			if ($CONF['showmeridian'] != 0 && !$this->iscmap) {
 				list($centlat,$centlong) = $conv->national_to_wgs84($e+500,$n+500,$this->reference_index);
 				$merilong = round($centlong/$CONF['showmeridian']) * $CONF['showmeridian'];
 				$meridist = deg2rad(abs($centlong-$merilong)) * cos(deg2rad($centlat)) * 6371;
@@ -817,10 +820,17 @@ EOF;
 			$osm_block=<<<EOF
     var copyright = new GCopyright(1,
         new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        ': http://www.openstreetmap.org/');
+        ': http://www.openstreetmap.org/copyright');
     var copyrightCollection =
-        new GCopyrightCollection('&copy; OSM Contributors');
+        new GCopyrightCollection('(c) OSM Contributors');
     copyrightCollection.addCopyright(copyright);
+
+    var copyrightOSMs = new GCopyright(1,
+        new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
+        ': http://www.openstreetmap.org/copyright');
+    var copyrightCollectionOSMs =
+        new GCopyrightCollection('(c) OSM');
+    copyrightCollectionOSMs.addCopyright(copyrightOSMs);
 
     var tilelayers_mapnik = new Array();
     tilelayers_mapnik[0] = new GTileLayer(copyrightCollection, 0, 18);
@@ -845,12 +855,12 @@ EOF;
 
     var copyright1 = new GCopyright(1,
         new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        ': http://topo.openstreetmap.de/static/licence_de.html');
+        ': http://www.wanderreitkarte.de/licence_de.php');
     var copyright2 = new GCopyright(1,
         new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        ': http://topo.openstreetmap.de/static/licence_de.html');
-    var copyrightCollectionTopo = new GCopyrightCollection('&copy; OSM');
-    var copyrightCollectionTopoH = new GCopyrightCollection('H&ouml;hen CIAT');
+        ': http://www.wanderreitkarte.de/licence_de.php');
+    var copyrightCollectionTopo = new GCopyrightCollection("Nops RWK");
+    var copyrightCollectionTopoH = new GCopyrightCollection("DEM CIAT");
     copyrightCollectionTopo.addCopyright(copyright1);
     copyrightCollectionTopoH.addCopyright(copyright2);
 
@@ -869,12 +879,12 @@ EOF;
     tilelayers_top[2].getTileUrl = GetTileUrl_Top;
 
     var topo_map = new GMapType(tilelayers_top,
-        new GMercatorProjection(19), "OSM (Topo)",
-        { urlArg: 'topo', linkColor: '#000000', shortName: 'Topo', alt: 'OSM: Topo' });
+        new GMercatorProjection(19), "Nops RWK",
+        { urlArg: 'topo', linkColor: '#000000', shortName: "Nop-RWK", alt: "Nop: Reit- und Wanderkarte" });
     map.addMapType(topo_map);
 
     var tilelayers_mapnikh = new Array();
-    tilelayers_mapnikh[0] = new GTileLayer(copyrightCollectionTopo, 0, 18);
+    tilelayers_mapnikh[0] = new GTileLayer(copyrightCollectionOSMs, 0, 18);
     tilelayers_mapnikh[1] = new GTileLayer(copyrightCollectionTopoH, 8, 15);
     tilelayers_mapnikh[0].isPng = function () { return true; };
     tilelayers_mapnikh[1].isPng = function () { return true; };
@@ -897,6 +907,7 @@ EOF;
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					var issubmit = {$this->issubmit}+0;
+					var iscmap = {$this->iscmap}+0;
 					var ri = {$this->reference_index};
 					var map = null;
 					$osm_func

@@ -47,6 +47,8 @@ $CONF['db_pwd']='banjo';
 $CONF['db_db']='geograph';
 $CONF['db_persist']=''; #'?persist';
 
+$CONF['ogdb_db']=''; # database for OpenGeoDB if available, '' otherwise
+
 //optional second database, used for sessions and gazetteer tables (need to contain a copy) 
 #$CONF['db_driver2']='mysql';
 #$CONF['db_connect2']='second.server';
