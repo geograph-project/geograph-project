@@ -96,6 +96,8 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    Organise the user submitted categories</li>
 
+<li><a title="Town editor" href="/admin/towns.php">Town editor</a> - 
+   Add, edit or remove towns</li>
 </ul>
 <h3>Statistics</h3>
 <ul>  
