@@ -296,7 +296,28 @@ function smarty_function_place($params) {
 		}
 	} elseif ($place['hist_county'])
 		$t .= ", {$place['hist_county']}";
-	$t .= ", {$place['reference_name']}</i></small>";
+	if (count($place['hier'])) {
+		$showlevels = $CONF['hier_levels']; #array(7, 6, 5, 4); # configurable?
+		$prefixes   = $CONF['hier_prefix']; #array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
+		$prev = $place['full_name'];
+		#foreach($place['hier'] as $k=>$v) {
+		#	trigger_error(" --   $k : $v", E_USER_NOTICE);
+		#}
+		foreach($showlevels as $level) {
+			if (!isset($place['hier'][$level]))
+				continue;
+			if ($prev == $place['hier'][$level])
+				continue;
+			$prev = $place['hier'][$level];
+			$t .= ', ';
+			if (isset($prefixes[$level]))
+				$t .= $prefixes[$level].' ';
+			$t .= $place['hier'][$level];
+		}
+	} else {
+		$t .= ", {$place['reference_name']}";
+	}
+	$t .= "</i></small>";
 	
 	$tag = (isset($params['h3']))?'h3':'span';
 	$t2 = "<$tag";

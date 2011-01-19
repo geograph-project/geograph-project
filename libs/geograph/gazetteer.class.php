@@ -350,7 +350,8 @@ class Gazetteer
 					'' as adm1_name,
 					(id + 900000) as pid,
 					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
-					'towns' as gaz
+					'towns' as gaz,
+					community_id
 				from 
 					loc_towns
 				where
@@ -359,6 +360,9 @@ class Gazetteer
 						point_en) AND
 					reference_index = {$reference_index}
 				order by distance asc limit 1");
+			if (!empty($places['community_id'])) {
+				$places['hier'] = $db->GetAssoc("select level,name from loc_hier where {$places['community_id']} between contains_cid_min and contains_cid_max order by level");
+			}
 		} else {
 	//lookup a nearby settlement
 					#power((e-{$e})/1000.,2)+power((n-{$n})/1000.,2) as distance,
