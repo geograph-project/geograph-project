@@ -218,7 +218,8 @@ if (!$db) die('Database connection failed');
 #  AND (gi2.text_type IS NULL OR gi2.text_type=500600000)
 #  ORDER BY gt2.text_val,gt.text_val
 		#
-		$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'].$CONF['db_persist'];# allow other user/passwd?
+		#$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'].$CONF['db_persist'];# allow other user/passwd?
+		$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'];# allow other user/passwd?
 		$ogdb = NewADOConnection($ogdbDSN);
 		if (!$ogdb) die('Database connection failed');
 		if (isset($_POST['findlarge'])) {
