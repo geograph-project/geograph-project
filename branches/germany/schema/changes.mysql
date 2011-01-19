@@ -509,3 +509,34 @@ CREATE TABLE gridsquare_gmcache (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ALTER TABLE `loc_towns` ADD `community_id` int(9) unsigned NOT NULL DEFAULT '0' AFTER `point_xy`;
+
+CREATE TABLE `loc_hier` (
+  `level` tinyint(1) unsigned NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `contains_cid_min` int(9) unsigned NOT NULL,
+  `contains_cid_max` int(9) unsigned NOT NULL,
+  `capital_cid` int(9) unsigned NOT NULL,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`level`,`community_id`),
+  KEY `contains` (`contains_cid_min`,`contains_cid_max`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+INSERT INTO `loc_hier` (`level`, `community_id`, `contains_cid_min`, `contains_cid_max`, `capital_cid`, `name`) VALUES
+(4,  1000000,  1000000,  1999999,  1002000, 'Schleswig-Holstein'),
+(4,  2000000,  2000000,  2999999,  2000000, 'Hamburg'),
+(4,  3000000,  3000000,  3999999,  3241001, 'Niedersachsen'),
+(4,  4000000,  4000000,  4999999,  4011000, 'Bremen'),
+(4,  5000000,  5000000,  5999999,  5111000, 'Nordrhein-Westfalen'),
+(4,  6000000,  6000000,  6999999,  6414000, 'Hessen'),
+(4,  7000000,  7000000,  7999999,  7315000, 'Rheinland-Pfalz'),
+(4,  8000000,  8000000,  8999999,  8111000, 'Baden-Württemberg'),
+(4,  9000000,  9000000,  9999999,  9162000, 'Bayern'),
+(4, 10000000, 10000000, 10999999, 10041100, 'Saarland'),
+(4, 11000000, 11000000, 11999999, 11000000, 'Berlin'),
+(4, 12000000, 12000000, 12999999, 12054000, 'Brandenburg'),
+(4, 13000000, 13000000, 13999999, 13004000, 'Mecklenburg-Vorpommern'),
+(4, 14000000, 14000000, 14999999, 14262000, 'Sachsen'),
+(4, 15000000, 15000000, 15999999, 15003000, 'Sachsen-Anhalt'),
+(4, 16000000, 16000000, 16999999, 16051000, 'Thüringen');
+

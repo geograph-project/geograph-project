@@ -300,6 +300,10 @@ $CONF['enable_newmap'] = 1;
 $CONF['use_gazetteer'] = 'towns'; //OS250/OS/hist/towns/default
 //NOTE: for GB, OS, OS250 and hist are (c)'ed datasets and are not available under the GPL licence
 
+//configure administrative areas shown if $CONF['use_gazetteer'] == 'towns'
+$CONF['hier_levels'] = array(); # array(7, 6, 5, 4);
+$CONF['hier_prefix'] = array(); # array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
+
 //optionally get a key for sending your data to geocubes. 
 $CONF['GEOCUBES_API_KEY'] = "";
 $CONF['GEOCUBES_API_TOKEN'] = "";

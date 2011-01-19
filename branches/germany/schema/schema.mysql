@@ -1036,6 +1036,22 @@ CREATE TABLE `loc_dsg` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table `loc_hier`
+--
+
+DROP TABLE IF EXISTS `loc_hier`;
+CREATE TABLE `loc_hier` (
+  `level` tinyint(1) unsigned NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `contains_cid_min` int(9) unsigned NOT NULL,
+  `contains_cid_max` int(9) unsigned NOT NULL,
+  `capital_cid` int(9) unsigned NOT NULL,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`level`,`community_id`),
+  KEY `contains` (`contains_cid_min`,`contains_cid_max`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table `loc_placenames`
 --
 
