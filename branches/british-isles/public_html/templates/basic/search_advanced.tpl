@@ -2,7 +2,7 @@
 {include file="_std_begin.tpl"}
 
 {dynamic}{if $user->registered}
-<div class="interestBox" style="float:right;width:300px"><small style="font-size:0.7em"><b>If you don't know what 'Legacy Engine' means, can ignore this statement.</b><br/>Note: Searches via this page will for the most part still be run via the new engine, however it does include a few features that will specificlly trigger the legacy engine</small></div>
+<div class="interestBox" style="float:right;width:300px"><small style="font-size:0.7em"><b>If you don't know what 'Legacy Engine' means, can ignore this statement.</b><br/>Note: Searches via this page will for the most part still be run via the new engine, however it does include a few features that will specifically trigger the legacy engine</small></div>
 {/if}{/dynamic}
 
 <h2>Photograph Search</h2>
