@@ -306,12 +306,17 @@ function smarty_function_place($params) {
 		foreach($showlevels as $level) {
 			if (!isset($place['hier'][$level]))
 				continue;
-			if ($prev == $place['hier'][$level])
+			$shortname = $place['hier'][$level];
+			if (isset($prefixes[$level])) {
+				$curpref = $prefixes[$level].' ';
+				$preflen = strlen($curpref);
+				if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+					$shortname = substr($shortname, $preflen);
+			}
+			if ($prev == $shortname)
 				continue;
-			$prev = $place['hier'][$level];
+			$prev = $shortname;
 			$t .= ', ';
-			if (isset($prefixes[$level]))
-				$t .= $prefixes[$level].' ';
 			$t .= $place['hier'][$level];
 		}
 	} else {
