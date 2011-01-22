@@ -693,7 +693,7 @@ split_timer('gazetteer','findPlacename',$mkey); //logs the wall time
 	function &_getDB()
 	{
 		if (!is_object($this->db))
-			$this->db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+			$this->db=GeographDatabaseConnection(true);
 		if (!$this->db) die('Database connection failed');  
 		return $this->db;
 	}

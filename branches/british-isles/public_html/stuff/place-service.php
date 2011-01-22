@@ -142,7 +142,7 @@ if (!@is_dir($CONF['sphinx_cache']."place/$q1")) {
 	}
 	
 	if ($sql) {
-		$db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+		$db=GeographDatabaseConnection(true);
 		
 		
 		$result = mysql_query($sql) or die ("Couldn't select query : $sql " . mysql_error() . "\n");

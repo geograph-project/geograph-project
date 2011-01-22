@@ -744,7 +744,7 @@ split_timer('sphinx'); //starts the timer
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+			$db=GeographDatabaseConnection(true);
 
 			$ids = array_keys($res["matches"]);
 
