@@ -112,7 +112,7 @@ function split_timer($profile,$key='',$id='') {
 		$profile, //example 'sphinx'
 		$key, //example 'lookupids'
 		$id, //example 'query_id=123456'
-		round($microtime - $starts[$profile],6), //the WALL time.
+		sprintf("%.6f",$microtime - $starts[$profile]), //the WALL time.
 	));
 
 
@@ -534,7 +534,9 @@ function GeographLinks(&$posterText,$thumbs = false) {
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		$thumb_count = 0;
-		
+
+	split_timer('app'); //starts the timer
+
 		$g_image=new GridImage;
 		$ids = array();
 		foreach ($g_matches[3] as $g_i => $g_id) {
@@ -610,6 +612,10 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/".str_replace(' ','+',$g_id)."\">$g_id</a>",$posterText);
 			}
 		}
+		
+	split_timer('app','GeographLinks'.$thumb_count,strlen($posterText)); //logs the wall time
+
+	
 	}
 	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
 		$posterText = str_replace('//'.$CONF['CONTENT_HOST'],'//'.$_SERVER['HTTP_HOST'],$posterText);

@@ -602,7 +602,7 @@ split_timer('gridsquare'); //starts the timer
 
 		}
 
-split_timer('gridsquare','_setGridRef'.(isset(gridsquare_id)?'-create':''),$gridref); //logs the wall time
+split_timer('gridsquare','_setGridRef'.(isset($gridsquare_id)?'-create':''),$gridref); //logs the wall time
 		
 		return $ok;
 	}
