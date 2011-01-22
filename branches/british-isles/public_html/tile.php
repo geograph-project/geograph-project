@@ -191,6 +191,9 @@ if (isset($_GET['map']))
 		* Coverage Tiles
 		*/
 		} else {
+		
+	split_timer('tile'); //starts the timer
+
 			preg_match('/-(\d+)k-/',$rastermap->folders[$rastermap->service],$m);
 			$stepdist = ($m[1]-1);
 			$widthdist = ($m[1]);
@@ -225,6 +228,9 @@ if (isset($_GET['map']))
 			if ($memcache->valid && $mkey && !$mustgenerate) {
 				$data =& $memcache->name_get('td',$mkey);
 				if ($data) {
+				
+					split_timer('tile','cached',strlen($data)); //logs the wall time
+
 					if ($data == 'blank') {
 						header("HTTP/1.0 302 Found");
 						header("Status: 302 Found");
@@ -396,6 +402,9 @@ if (isset($_GET['map']))
 				if ($memcache->valid) {
 					ob_start();
 					imagepng($img);
+					
+					split_timer('tile','generated'.substr($_GET['l'],0,1),"$e,$n"); //logs the wall time
+					
 					$memcache->name_set('td',$mkey,ob_get_flush(),$memcache->compress,$memcache->period_med*2);
 					$memcache->name_set('tl',$mkey,$lastmod,$memcache->compress,$memcache->period_med*2);
 				} else {
@@ -404,6 +413,9 @@ if (isset($_GET['map']))
 
 			} else {
 				$blank = 'blank';
+				
+				split_timer('tile','generated-blank'.substr($_GET['l'],0,1),"$e,$n"); //logs the wall time
+				
 				$memcache->name_set('td',$mkey,$blank,false,$memcache->period_med*2);
 				$memcache->name_set('tl',$mkey,$lastmod,$memcache->compress,$memcache->period_med*2);
 				header("HTTP/1.0 302 Found");
