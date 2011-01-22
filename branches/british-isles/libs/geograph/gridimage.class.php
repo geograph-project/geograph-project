@@ -465,7 +465,9 @@ class GridImage
 	
 	function assignToSmarty($smarty) {
 		global $CONF;
-		
+	
+split_timer('gridimage'); //starts the timer
+
 		$taken=$this->getFormattedTakenDate();
 
 		//get the grid references
@@ -556,10 +558,15 @@ class GridImage
 			$level = ($this->grid_square->imagecount > 1)?6:5;
 			$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
 		}
+
+split_timer('gridimage','assignToSmarty',$this->gridimage_id); //logs the wall time
+
 	}
 	
 	function loadSnippets($gid = 0) {
 		global $memcache;
+
+split_timer('gridimage'); //starts the timer
 		
 		if (empty($gid)) {
 			$gid = $this->gridimage_id;
@@ -587,23 +594,29 @@ class GridImage
 			$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.*,u.realname FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) INNER JOIN user u ON (snippet.user_id = u.user_id)  WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
 		}
 		
-		if (empty($db)) {
-			$db=&$this->_getDB(true);
-		}
+		#if (empty($db)) {
+		#	$db=&$this->_getDB(true);
+		#}
 
 		$this->snippet_count = count($this->snippets);
 		
 		if (preg_match('/[^\[]\[\d+\]/',$this->comment))
 			$this->snippets_as_ref =1;
+
+split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
+
 	}
 	
 	
 	function loadCollections() {
-		
+	
+
 		//only show on active images (non active images wont be in those tables anyway) 
 		if ($this->moderation_status != 'rejected' && $this->moderation_status != 'pending') { 
 		
 			$db=&$this->_getDB(30); 
+
+split_timer('gridimage'); //starts the timer
 
 			//find articles
 			$this->collections = $db->CacheGetAll(3600*3,"
@@ -663,6 +676,9 @@ class GridImage
 			$this->collections_count = count($this->collections);
 			
 			$this->canonical = $db->getOne("SELECT canonical FROM category_canonical WHERE imageclass=".$db->Quote($this->imageclass));
+			
+split_timer('gridimage','loadCollections',$this->gridimage_id); //logs the wall time
+
 		}
 	}	
 	
@@ -677,6 +693,8 @@ class GridImage
 			die("GridImage::getTroubleTickets expects array param");
 			
 		$db=&$this->_getDB(5); //need currency
+
+split_timer('gridimage'); //starts the timer
 		
 		$statuses="'".implode("','", $aStatus)."'";
 	
@@ -717,7 +735,8 @@ class GridImage
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close(); 
-	
+		
+split_timer('gridimage','getTroubleTickets',$statuses); //logs the wall time
 	
 		return $tickets;
 	}
@@ -728,6 +747,9 @@ class GridImage
 	*/
 	function storeImage($srcfile, $movefile=false, $suffix = '')
 	{
+	
+split_timer('gridimage'); //starts the timer
+
 		$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -744,9 +766,13 @@ class GridImage
 
 		$dest="$base/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		if ($movefile)
-			return @rename($srcfile, $dest);
+			$ret = @rename($srcfile, $dest);
 		else
-			return @copy($srcfile, $dest);
+			$ret = @copy($srcfile, $dest);
+			
+split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wall time
+
+		return $ret;
 	}
 	
 	/**
@@ -810,6 +836,8 @@ class GridImage
 			return $this->fullpath;
 		}
 		
+split_timer('gridimage'); //starts the timer
+		
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
@@ -824,7 +852,7 @@ class GridImage
 		if (empty($check_exists)) {
 			if ($returntotalpath)
 				$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
-			
+
 			return $fullpath;
 		}
 		
@@ -884,6 +912,8 @@ class GridImage
 
 		if ($returntotalpath)
 			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+			
+split_timer('gridimage','_getFullpath',$this->gridimage_id); //logs the wall time
 
 		return $fullpath;
 	}
@@ -893,13 +923,18 @@ class GridImage
 	*/
 	function _getFullSize()
 	{
+	
+split_timer('gridimage'); //starts the timer
+
 		if (isset($this->cached_size)) {
 			$size = $this->cached_size;
+			$src = 'cached';
 		} elseif ($this->gridimage_id) {
 			global $memcache;
 			$mkey = "{$this->gridimage_id}:F";
 			//fails quickly if not using memcached!
 			$size =& $memcache->name_get('is',$mkey);
+			$src = 'memcache';
 			if (!$size) {
 				$db=&$this->_getDB(true);
 
@@ -910,6 +945,7 @@ class GridImage
 					$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
 					$this->original_width = $size[4];
 					$this->original_height = $size[5];
+					$src = 'db';
 				} else {
 					$fullpath = $this->_getFullpath(true); //will fetch the file if needbe
 					
@@ -928,6 +964,7 @@ class GridImage
 					} else {
 						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
 					}
+					$src = 'file';
 				}
 				//fails quickly if not using memcached!
 				$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
@@ -943,6 +980,9 @@ class GridImage
 		if (!empty($size[1]) && empty($size[3])) {//todo - temporally while some results in memcache are broken
 			$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
 		}
+
+split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wall time
+
 		return $size;
 	}
 	
@@ -994,6 +1034,9 @@ class GridImage
 	{
 		
 		global $CONF;
+		
+split_timer('gridimage'); //starts the timer
+
 		//establish whether we have a cached thumbnail
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -1109,7 +1152,7 @@ class GridImage
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
 		
-		
+split_timer('gridimage','getSquareThumbnail'.(isset($srcw)?'-create':''),$thumbpath); //logs the wall time
 		
 		return $html;
 	}
@@ -1120,6 +1163,9 @@ class GridImage
 	*/
 	function getSquareThumb($size)
 	{
+
+split_timer('gridimage'); //starts the timer
+
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
 		$abcdef=sprintf("%06d", $this->gridimage_id);
@@ -1206,11 +1252,14 @@ class GridImage
 				$img=null;
 		
 			}
-			
+split_timer('gridimage','getSquareThumb-create',$thumbpath); //logs the wall time
+
 		}
 		else
 		{
 			$img=imagecreatefromgd($base.$thumbpath);
+
+			split_timer('gridimage','getSquareThumb-load',$thumbpath); //logs the wall time
 		}
 		return $img;
 	}
@@ -1235,6 +1284,9 @@ class GridImage
 	function _getResized($params)
 	{
 		global $memcache,$CONF;
+
+split_timer('gridimage'); //starts the timer
+
 		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
 		//fails quickly if not using memcached!
 		$result =& $memcache->name_get('ir',$mkey);
@@ -1303,7 +1355,9 @@ class GridImage
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
 			$return['html']=$html;
-					
+		
+split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
+
 			return $return;
 		}
 
@@ -1490,6 +1544,8 @@ class GridImage
 			
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
+			split_timer('gridimage','_getResized'.(isset($srcw)?'-create':''),$thumbpath); //logs the wall time
+			
 			//fails quickly if not using memcached!
 			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*10);
 		}
@@ -1666,6 +1722,7 @@ class GridImage
 		//to get this far, the image is valid, the status
 		//is valid, and it is a definite change of status
 		
+split_timer('gridimage'); //starts the timer
 		
 		//we want to detect changes in ftf status...a pending image is always ftf 0
 		$original_ftf=$this->ftf;
@@ -1734,6 +1791,8 @@ class GridImage
 			}
 		}
 		
+split_timer('gridimage','setModerationStatus',"{$this->gridimage_id},$status,$moderator_id"); //logs the wall time
+		
 		//todo? should $this->grid_square->updateCounts(); be inside the lock
 
 /*		
@@ -1753,6 +1812,8 @@ class GridImage
 		
 		//invalidate any cached maps (on anything except rejecting a pending image)
 		$updatemaps = ( !($status == 'rejected' && $this->moderation_status == 'pending') );
+
+
 	
 		//fire an event (a lot of the stuff that follows should 
 		//really be done asynchronously by an event handler
@@ -1794,6 +1855,8 @@ class GridImage
 		if ($newsq->setByFullGridRef($grid_reference,false,true))
 		{
 			$db=&$this->_getDB();
+			
+split_timer('gridimage'); //starts the timer
 			
 			//ensure this is a real change
 			if ($newsq->gridsquare_id != $this->gridsquare_id) {
@@ -1872,7 +1935,10 @@ class GridImage
 			$db->Execute("update gridimage set $sql_set ".
 				"nateastings=$east,natnorthings=$north,natgrlen='{$newsq->natgrlen}' ".
 				"where gridimage_id='$this->gridimage_id'");
-			
+		
+		split_timer('gridimage','reassignGridsquare',"{$this->gridimage_id},$grid_reference"); //logs the wall time
+
+		
 			//ensure this is a real change
 			if ($newsq->gridsquare_id != $this->gridsquare_id) 
 			{
@@ -1927,6 +1993,8 @@ class GridImage
 	function commitChanges()
 	{
 		$db=&$this->_getDB();
+
+split_timer('gridimage'); //starts the timer
 		
 		$sql="update gridimage set title=".$db->Quote($this->title).
 			", comment=".$db->Quote($this->comment).
@@ -1939,6 +2007,8 @@ class GridImage
 			", use6fig=".$db->Quote($this->use6fig).
 			" where gridimage_id = '{$this->gridimage_id}'";
 		$db->Execute($sql);
+
+split_timer('gridimage','commitChanges',"{$this->gridimage_id}"); //logs the wall time
 		
 		//fire an event 
 		require_once('geograph/event.class.php');
@@ -1958,6 +2028,8 @@ class GridImage
 		//quick sanity check
 		if (!$this->gridimage_id) 
 			die("no gridimage_id supplied to updateCachedTables");	
+
+split_timer('gridimage'); //starts the timer
 	
 		if ($this->moderation_status == 'rejected' || $this->moderation_status == 'pending') {
 			$sql="DELETE FROM gridimage_search WHERE gridimage_id = '{$this->gridimage_id}'";
@@ -1998,6 +2070,7 @@ class GridImage
 			return $this->updateCachedTables();
 		}
 		
+split_timer('gridimage','updateCachedTables',"{$this->gridimage_id}"); //logs the wall time
 		
 	}
 	
@@ -2008,6 +2081,8 @@ class GridImage
 	{
 		global $CONF;
 		$db=&$this->_getDB();
+
+split_timer('gridimage'); //starts the timer
 		
 		if (!$gridsquare) 
 			$gridsquare = $this->grid_square;
@@ -2024,6 +2099,9 @@ class GridImage
 		$places = $gaz->findBySquare($gridsquare,$radius,array('C','T'));	
 		
 		$db->Execute("update gridimage set placename_id = '{$places['pid']}',upd_timestamp = '{$this->upd_timestamp}' where gridimage_id = {$this->gridimage_id}");
+		
+split_timer('gridimage','updatePlaceNameId',"{$this->gridimage_id}"); //logs the wall time
+
 	}	
 	
 }

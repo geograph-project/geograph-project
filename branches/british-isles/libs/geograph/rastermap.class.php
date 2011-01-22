@@ -745,22 +745,32 @@ class RasterMap
 	}
 
 	function createTile($service,$path = null) {
+		$ret = false;
+		
+		//no start split_timer becase getMapPath will have called it. 
+		
 		if ($service == 'OS50k') {
-			return $this->combineTiles($this->square,$path);
+			$ret = $this->combineTiles($this->square,$path);
 		} elseif (preg_match('/OS50k-mapper\d?/',$service)) {
-			return $this->combineTilesMapper($this->square,$path);
+			$ret = $this->combineTilesMapper($this->square,$path);
 		} elseif ($service == 'OS50k-small') {
 			if ($sourcepath = $this->getMapPath('OS50k',true)) {
-				return $this->createSmallExtract($sourcepath,$path);
+				$ret = $this->createSmallExtract($sourcepath,$path);
 			} 
 		} elseif ($service == 'OS250k-m40k') {
-			return $this->combineTilesMapper($this->square,$path);
+			$ret = $this->combineTilesMapper($this->square,$path);
 		} 
-		return false;
+		
+		split_timer('rastermap','created',$path); //logs the wall time
+		
+		return $ret;
 	}
 	
-	function getMapPath($service,$create = true) {
+	function getMapPath($service,$create = true) {	
 		$path = $this->getOSGBStorePath($service);
+		
+		split_timer('rastermap','foundpath',$path); //logs the wall time
+		
 		if (($this->caching && file_exists($path)) || ($create && $this->createTile($service,$path)) ) {
 			return $path;
 		} else {
@@ -992,6 +1002,8 @@ class RasterMap
 	*/
 	function returnImage()
 	{
+		split_timer('rastermap'); //starts the timer
+
 		$mappath = $this->getMapPath($this->service);
 
 		if (!$mappath || !file_exists($mappath)) {
@@ -1017,6 +1029,8 @@ class RasterMap
 		$size=filesize($mappath);
 		header("Content-Size: $size");
 		header("Content-Length: $size");
+
+		split_timer('rastermap','sending',$mappath); //logs the wall time
 
 		readfile($mappath);
 	}

@@ -116,6 +116,8 @@ class sphinxwrapper {
 	public function processQuery() {
 		$q = $this->q;
 
+	split_timer('sphinx'); //starts the timer
+
 		if (preg_match('/^([a-zA-Z]{1,2}) +(\d{1,5})(\.\d*|) +(\d{1,5})(\.*\d*|)/',$q,$matches) && $matches[1] != 'tp') {
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($matches[0],true);
@@ -175,7 +177,10 @@ class sphinxwrapper {
 			}
 			$qo .= " near $gr";
 		} 
-		
+	
+	split_timer('sphinx','processQuery',$qo); //logs the wall time
+
+	
 		$this->q = $q;
 		$this->qoutput = $qo;
 	}
@@ -185,7 +190,9 @@ class sphinxwrapper {
 		$conv = new Conversions;
 		
 		$grs = array();
-		
+	
+	split_timer('sphinx'); //starts the timer
+	
 		if (!empty($data['bbox'])) {
 			list($e1,$n1,$ri1,$e2,$n2,$ri2) = $data['bbox'];
 			
@@ -248,6 +255,8 @@ class sphinxwrapper {
 			$cl = $this->_getClient();
 			if (!empty($cl->_groupsort))
 				$cl->_groupsort = preg_replace('/@geodist \w+,?\s*/','',$cl->_groupsort);
+			
+			split_timer('sphinx','setSpatial-bbox',serialize($data)); //logs the wall time
 			
 		} else {
 			$onekm = (floor($data['x']) == $data['x'] && floor($data['y']) == $data['y'])?1:0;
@@ -336,6 +345,9 @@ class sphinxwrapper {
 				if (!empty($cl->_groupsort))
 					$cl->_groupsort = preg_replace('/@geodist \w+,?\s*/','',$cl->_groupsort);
 			}
+			
+			split_timer('sphinx','setSpatial',serialize($data)); //logs the wall time
+
 		}
 	} 
 	
@@ -354,7 +366,9 @@ class sphinxwrapper {
 	public function groupByQuery($page = 1,$index_in = "_images") {
 		global $CONF;
 		$cl = $this->_getClient();
-		
+	
+	split_timer('sphinx'); //starts the timer
+
 		if ($index_in == "_images") {
 			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
 		} elseif ($index_in == "_map") {
@@ -406,6 +420,9 @@ class sphinxwrapper {
 			//lets make this non fatal
 			$this->query_info = $cl->GetLastError();
 			$this->resultCount = 0;
+			
+			split_timer('sphinx','groupByQuery-error',$this->query_info); //logs the wall time
+			
 			return 0;
 		} else {
 			if ( $cl->GetLastWarning() )
@@ -415,6 +432,9 @@ class sphinxwrapper {
 			$this->resultCount = $res['total_found'];
 			if (!empty($this->pageSize))
 				$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
+				
+			split_timer('sphinx','groupByQuery',$this->query_info); //logs the wall time
+
 			return $res;
 		}	
 	}	
@@ -422,6 +442,8 @@ class sphinxwrapper {
 	public function countMatches($index_in = "user") {
 		global $CONF;
 		$cl = $this->_getClient();
+
+split_timer('sphinx'); //starts the timer
 		
 		if ($index_in == "_images") {
 			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
@@ -452,6 +474,9 @@ class sphinxwrapper {
 			//lets make this non fatal
 			$this->query_info = $cl->GetLastError();
 			$this->resultCount = 0;
+			
+			split_timer('sphinx','countMatches-error',$this->query_info); //logs the wall time
+			
 			return 0;
 		} else {
 			if ( $cl->GetLastWarning() )
@@ -461,6 +486,9 @@ class sphinxwrapper {
 			$this->resultCount = $res['total_found'];
 			if (!empty($this->pageSize))
 				$this->numberOfPages = ceil($this->resultCount/$this->pageSize);
+				
+			split_timer('sphinx','countMatches',$this->query_info); //logs the wall time
+			
 			return $this->resultCount;
 		}
 	}
@@ -551,6 +579,9 @@ class sphinxwrapper {
 			$this->qoutput = $q;
 		}
 		$cl = $this->_getClient();
+		
+	split_timer('sphinx'); //starts the timer
+
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
 			print "<pre style='background-color:red'>";
 			var_dump($q);
@@ -662,6 +693,9 @@ class sphinxwrapper {
 				$this->query_error = "Search Failed";
 			}
 			$this->resultCount = 0;
+			
+			split_timer('sphinx','returnIds-error',$this->query_info); //logs the wall time
+
 			return 0;
 		} else {
 			#if ( $cl->GetLastWarning() )
@@ -676,9 +710,13 @@ class sphinxwrapper {
 
 			if (is_array($res["matches"]) ) {
 				$this->ids = array_keys($res["matches"]);
-
+				
+				split_timer('sphinx','returnIds',$this->query_info); //logs the wall time
+				
 				return $this->ids;
 			}
+			
+			split_timer('sphinx','returnIds-zero',$this->query_info); //logs the wall time
 		}
 	}
 	function didYouMean($q = '') {
@@ -692,6 +730,9 @@ class sphinxwrapper {
 		$q = preg_replace('/([a-z_]+):/','',$q);
 		$q = preg_replace('/[\|"\']+/','',$q);
 		$cl = $this->_getClient();
+
+	split_timer('sphinx'); //starts the timer
+
 		$cl->SetMatchMode ( SPH_MATCH_ANY );
 		$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 		$cl->SetLimits(0,100);
@@ -728,6 +769,11 @@ class sphinxwrapper {
 					}
 				}
 			}
+			
+			split_timer('sphinx','didYouMean',$this->query_info); //logs the wall time
+
+		} else {
+			split_timer('sphinx','didYouMean-zero',$this->query_info); //logs the wall time
 		}
 		//todo maybe check users too? ( then skip setByUsername when building search!) 
 		return $arr;
@@ -736,7 +782,14 @@ class sphinxwrapper {
 	function BuildExcerpts($docs, $index, $words, $opts=array() ) {
 		global $CONF;
 		$cl = $this->_getClient();
-		return $cl->BuildExcerpts ( $docs, $CONF['sphinx_prefix'].$index, $words, $opts);
+		
+	split_timer('sphinx'); //starts the timer
+
+		$res &= $cl->BuildExcerpts ( $docs, $CONF['sphinx_prefix'].$index, $words, $opts);
+		
+	split_timer('sphinx','BuildExcerpts'.count($docs)); //logs the wall time
+	
+		return $res;
 	}
 	
 	function setSort($sort) {
@@ -763,13 +816,17 @@ class sphinxwrapper {
 		
 		global $CONF;
 		
+		split_timer('sphinx'); //starts the timer
+		
 		require_once ( "3rdparty/sphinxapi.php" );
 		
 		$this->client = new SphinxClient ();
 		$this->client->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
 		
+		split_timer('sphinx','connect'); //logs the wall time
+		
 		return $this->client;
-	}}
+	}
+	
+}
 
-
-?>

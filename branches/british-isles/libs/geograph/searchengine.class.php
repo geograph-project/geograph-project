@@ -83,6 +83,7 @@ class SearchEngine
 		if (is_numeric($query_id)) {
 	
 			$db=$this->_getDB(10);
+split_timer('search'); //starts the timer
 			
 			$tries = 0;
 			$query = array();
@@ -100,6 +101,9 @@ class SearchEngine
 						sleep(2); //give time for replication to catch up
 						$tries++;
 					} else {
+					
+split_timer('search','startup-failed',$query_id); //logs the wall time
+					
 						return false;
 					}
 				}
@@ -115,6 +119,9 @@ class SearchEngine
 			#}
 
 			$this->criteria->_initFromArray($query);
+
+split_timer('search','startup',$query_id); //logs the wall time
+
 		} 
 	} 
 	
@@ -136,6 +143,8 @@ class SearchEngine
 			return;
 		}
 
+split_timer('search'); //starts the timer
+
 		$db=$this->_getDB(true);
 		global $ADODB_FETCH_MODE;
 		$oldmode = $ADODB_FETCH_MODE;
@@ -152,6 +161,8 @@ class SearchEngine
 				$bad = 1;
 			}
 		}
+
+split_timer('search','checkExplain',$sql); //logs the wall time
 		
 		if ($bad) {
 			unset($this->criteria->db);
@@ -180,6 +191,8 @@ class SearchEngine
 	{
 		global $CONF;
 		$db=$this->_getDB(true);
+
+split_timer('search'); //starts the timer
 		
 		$this->criteria->getSQLParts();
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
@@ -294,9 +307,12 @@ class SearchEngine
 		if ($this->countOnly
 			|| ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount)
 			|| ( ($this->numberOfPages) && ($pg > $this->numberOfPages) ) 
-			)
+			) {
+
+split_timer('search','ERR-count',"$this->query_id/$pg"); //logs the wall time
+
 			return 0;
-		
+		}
 		if ($sql_order)
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
@@ -352,6 +368,8 @@ END;
 			}
 		}
 
+split_timer('search','ERR',"$this->query_id/$pg"); //logs the wall time
+
 		return $recordSet;
 	}
 
@@ -363,6 +381,8 @@ END;
 	function ExecuteSphinxRecordSet($pg) {
 		global $CONF;
 		$db=$this->_getDB(true);
+
+split_timer('search'); //starts the timer
 		
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
@@ -464,7 +484,7 @@ END;
 							);
 						}
 						
-						if ($sphinx2->resultCount > 0) {
+						if ($sphinx2->resultCount > 3) {
 							$suggestions[] = array(
 								'link'=>"/content/?q=".urlencode($this->criteria->searchtext)."&amp;in=title&amp;scope=all",
 								'query'=>"&middot; View all {$sphinx2->resultCount} matching collections..."
@@ -532,6 +552,9 @@ END;
 			if (!empty($sphinx->query_info)) {
 				$this->info = $sphinx->query_info;
 			}
+
+split_timer('search','ESR-count',$this->query_id); //logs the wall time
+
 			return 0;
 		}
 		$this->orderList = $ids;
@@ -592,6 +615,8 @@ END;
 			$db=$this->_getDB(false); //'upgrade' to a read/write connection
 			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 		}
+		
+split_timer('search','ESR',$this->query_id); //logs the wall time
 
 		return $recordSet;
 	}
@@ -604,6 +629,8 @@ END;
 	{
 		global $CONF;
 		$db=$this->_getDB(true);
+
+split_timer('search'); //starts the timer
 		
 		$this->criteria->getSQLParts();
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
@@ -743,9 +770,12 @@ END;
 		if ($this->countOnly
 			|| ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount)
 			|| ( ($this->numberOfPages) && ($pg > $this->numberOfPages) ) 
-			)
-			return 0;
+			) {
 			
+split_timer('search','ECR-count',$this->query_id); //logs the wall time
+
+			return 0;
+		}
 		if ($sql_order)
 			$sql_order = "ORDER BY $sql_order";
 	// construct the query sql
@@ -800,6 +830,8 @@ END;
 			}
 		}
 		
+split_timer('search','ECR',"$this->query_id/$pg"); //logs the wall time
+
 		return $recordSet;
 	}
 	
@@ -855,6 +887,9 @@ END;
 			return 0;
 			
 		if ($recordSet)	{
+		
+		split_timer('search'); //starts the timer
+
 			$dist_format = ($this->criteria->searchclass == 'Postcode' && strlen($this->criteria->searchq) < 7)?"Dist:%dkm":"Dist:%.1fkm";
 
 			$this->results=array();
@@ -935,6 +970,9 @@ END;
 					$this->resultCount = 0;
 				}
 			}
+			
+split_timer('search','Execute',$this->query_id); //logs the wall time
+
 		} else 
 			return 0;
 			

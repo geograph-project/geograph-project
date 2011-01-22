@@ -321,7 +321,9 @@ class UploadManager
 	{
 		global $USER,$CONF;
 		$ok=false;
-		
+	
+	split_timer('upload'); //starts the timer
+
 		//generate a unique "upload id" - we use this to hold the image until
 		//they've confirmed they want to submit
 		$upload_id=md5(uniqid('upload'));
@@ -361,7 +363,9 @@ class UploadManager
 			//playing silly buggers?
 			$this->error("We where unable to fetch that image - please contact us");
 		}
-								
+		
+	split_timer('upload','processURL',$url); //logs the wall time
+
 		return $ok;
 	}
 
@@ -371,7 +375,9 @@ class UploadManager
 	{
 		global $USER,$CONF;
 		$ok=false;
-		
+	
+	split_timer('upload'); //starts the timer
+
 		if ($this->_isJpeg($upload_file))
 		{
 			//generate a unique "upload id" - we use this to hold the image until
@@ -394,7 +400,9 @@ class UploadManager
 		{
 			$this->error("We only accept JPEG images - your upload did not appear to be a valid JPEG file");
 		}
-				
+		
+	split_timer('upload','processUpload',$upload_file); //logs the wall time
+			
 		return $ok;
 	}
 			
@@ -468,7 +476,9 @@ class UploadManager
 
 	function _downsizeFile($filename,$max_dimension) {
 		global $USER,$CONF;
-		
+	
+	split_timer('upload'); //starts the timer
+	
 		if (strlen($CONF['imagemagick_path'])) {
 			//try imagemagick first
 			list($width, $height, $type, $attr) = getimagesize($filename);
@@ -553,11 +563,17 @@ class UploadManager
 				$this->error("Unable to load image - we can only accept valid JPEG images");
 			}
 		}
+		
+		split_timer('upload','_downsizeFile',"{$this->upload_width},{$max_dimension}"); //logs the wall time
+
+		
 		return $ok;
 	}
 	
 	function reReadExifFile() 
 	{
+		split_timer('upload');
+		
 		//get the exif data
 		$exiffile=$this->_pendingEXIF($this->upload_id);
 		$exif="";
@@ -573,6 +589,9 @@ class UploadManager
 				$this->rawExifData = $strExif;
 			}
 		}
+		
+		split_timer('upload','reReadExifFile',$this->upload_id); //logs the wall time
+
 	}
 	
 	/**
@@ -609,7 +628,8 @@ class UploadManager
 		
 		
 		//get sequence number
-		
+	split_timer('upload'); //starts the timer
+
 		$mkey = $this->square->gridsquare_id;
 		$seq_no =& $memcache->name_get('sid',$mkey);
 		
@@ -622,7 +642,10 @@ class UploadManager
 		$seq_no=max($seq_no+1, 0);
 		
 		$memcache->name_set('sid',$mkey,$seq_no,false,$memcache->period_long);
-		
+	
+	split_timer('upload','startup',"$mkey"); //logs the wall time
+
+	
 		//ftf is zero under image is moderated
 		$ftf=0;
 		
@@ -641,6 +664,8 @@ class UploadManager
 		} else {
 			$table = "gridimage";
 		}
+
+	split_timer('upload'); //starts the timer
 		
 		//create record
 		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
@@ -668,24 +693,35 @@ class UploadManager
 			"gridimage_id,exif) values ".
 			"(%d,%s)",$gridimage_id,$this->db->Quote($exif));
 		$this->db->Query($sql);
-		
+	
+	split_timer('upload','insert',"$gridimage_id"); //logs the wall time
+	
 		//copy image to correct area
 		$src=$this->_pendingJPEG($this->upload_id);		
 		
 		$image=new GridImage;
 		$image->gridimage_id = $gridimage_id;
 		$image->user_id = $USER->user_id;
-		
+	
+	split_timer('upload'); //starts the timer
+
 		$storedoriginal = false;
 		if ($ok = $image->storeImage($src)) {
-		
+			
+			split_timer('upload','store',"$gridimage_id"); //logs the wall time
+			
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			
 			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > 640) {
 				
 				$this->_downsizeFile($orginalfile,$this->largestsize);
 				
+		split_timer('upload'); //starts the timer
+				
 				$storedoriginal =$image->storeOriginal($orginalfile);
+				
+		split_timer('upload','storeOriginal',"$gridimage_id"); //logs the wall time
+
 			}
 		
 			if (!$skip_cleanup)
@@ -696,7 +732,8 @@ class UploadManager
 		require_once('geograph/event.class.php');
 		new Event(EVENT_NEWPHOTO, $gridimage_id.','.$USER->user_id.','.$storedoriginal);
 		
-		
+	split_timer('upload'); //starts the timer
+	
 		//assign the snippets now we know the real id. 
 		$gid = crc32($this->upload_id)+4294967296;
 		$gid += $USER->user_id * 4294967296;
@@ -717,6 +754,9 @@ class UploadManager
 				$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method'");
 			}
 		}
+		
+	split_timer('upload','update_snippet',"$gridimage_id"); //logs the wall time
+
 	}
 
 
@@ -727,6 +767,8 @@ class UploadManager
 	{
 		global $USER,$CONF,$memcache;
 		
+		split_timer('upload'); //starts the timer
+
 		if($this->validUploadId($this->upload_id))
 		{
 			$uploadfile = $this->_pendingJPEG($this->upload_id);
@@ -767,6 +809,9 @@ class UploadManager
 			$this->db->Query($sql);
 			
 			$this->cleanUp();
+			
+			split_timer('upload','addOriginal',"{$image->gridimage_id}"); //logs the wall time
+
 		} else {
 			return "unable to store file";
 		}
@@ -785,5 +830,3 @@ class UploadManager
 	
 }
 
-
-?>

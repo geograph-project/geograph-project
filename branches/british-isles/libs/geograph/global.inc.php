@@ -31,6 +31,8 @@
 * @version $Revision$
 */
 
+//global routines
+require_once('geograph/functions.inc.php');
 
 #################################################
 
@@ -85,7 +87,10 @@ function GeographDatabaseConnection($allow_readonly = false) {
 
 	//see if we can use a read only slave connection
 	if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
+	
+		split_timer('db'); //starts the timer
 		$db=NewADOConnection($GLOBALS['DSN_READ']);
+		split_timer('db','connect','readonly'); //logs the wall time
 		
 		if ($db) {
 			//if the application dictates it needs currency
@@ -107,7 +112,9 @@ function GeographDatabaseConnection($allow_readonly = false) {
                				apc_store('lag_warning',1,500);
 				    }
 				    if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
+					split_timer('db'); //starts the timer
 					$db2=NewADOConnection($GLOBALS['DSN']);
+					split_timer('db','connect','master-muchlag'); //logs the wall time
 					if ($db2) {
 						$db2->readonly = false;
 						return $db2;
@@ -120,15 +127,20 @@ function GeographDatabaseConnection($allow_readonly = false) {
 			return $db;
 		} else {
 			//try and fallback and get a master connection
+			split_timer('db'); //starts the timer
 			$db=NewADOConnection($GLOBALS['DSN']);
+			split_timer('db','connect','master-fallback'); //logs the wall time
 		}
 	} else {
 		//otherwise just get a standard connection
 		
 		//todo - we could add a 'curtail' feature here, to disable any page that needs write access - allowing some pages to still work without master online!
+		split_timer('db'); //starts the timer
 		$db=NewADOConnection($GLOBALS['DSN']);
+		split_timer('db','connect','master'); //logs the wall time
 	} 
 	if (!$db) {
+		split_timer('db','connect','failed'); //just to log the failure!
 		//todo - show a 'smart' smarty error here... (probably check for existance of a global $smarty var) 
 		header("HTTP/1.0 503 Service Unavailable");
 		die("Database connection failed");
@@ -245,8 +257,6 @@ if (!empty($CONF['memcache']['sessions'])) {
 
 #################################################
 
-//global routines
-require_once('geograph/functions.inc.php');
 
 //smarty needed everywhere too
 require_once('smarty/libs/Smarty.class.php');
@@ -259,6 +269,9 @@ require_once('geograph/user.class.php');
 //function to replace having to have loads of require_once's
 // PHP5 ONLY
 function __autoload($class_name) {
+
+split_timer('autoload'); //starts the timer
+
         if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/../libs/geograph/'.strtolower($class_name).'.class.php')) {
                 ob_start();
                 debug_print_backtrace();
@@ -272,6 +285,9 @@ function __autoload($class_name) {
         }
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
+	
+split_timer('autoload','include',$class_name); //logs the wall time
+
 }
 
 #################################################
@@ -289,6 +305,9 @@ if (isset($CONF['log_script_timing']))
 //global page initialisation
 function init_session()
 {
+
+	split_timer('app'); //starts the timer
+
 	session_start();
 
 	//do we have a user object?
@@ -330,6 +349,8 @@ function init_session()
 	}
 	*/
 	
+	split_timer('app','init_session',$GLOBALS['USER']->user_id); //logs the wall time
+
 }
 
 #################################################
@@ -350,6 +371,9 @@ class GeographPage extends Smarty
 	function GeographPage()
 	{
 		global $CONF;
+
+	split_timer('smarty'); //starts the timer
+
 
 		//base constructor
 		$this->Smarty();
@@ -479,11 +503,16 @@ class GeographPage extends Smarty
 			}
 		}
 
+	split_timer('smarty','setup'); //logs the wall time
+
 	}
 
 	function is_cached($template, $cache_id = null, $compile_id = null)
 	{
 		global $USER,$CONF;
+		
+	split_timer('smarty'); //starts the timer
+
 		if (!empty($this->disable_caching)) {
 			$this->caching = 0;
 		}
@@ -526,12 +555,18 @@ class GeographPage extends Smarty
 			}
 			$this->wroteLock = $filename;
 		}
+
+	split_timer('smarty','is_cached',$template.'.'.$cache_id); //logs the wall time
+
 		return $isCached;
 	}
 
 	function display($template, $cache_id = null, $compile_id = null)
 	{
 		global $CONF;
+		
+	split_timer('smarty'); //starts the timer
+	
 		if (!empty($this->disable_caching)) {
 			$this->caching = 0;
 		}
@@ -546,6 +581,9 @@ class GeographPage extends Smarty
 				unlink($this->wroteLock);
 			}
 		}
+		
+	split_timer('smarty','display',$template.'.'.$cache_id); //logs the wall time
+	
 		return $ret;
 	}
 
@@ -576,6 +614,8 @@ class GeographPage extends Smarty
 	 */
 	static function basicTemplateLoader($resource_type, $resource_name, &$template_source, &$template_timestamp,&$smarty_obj)
 	{
+		split_timer('smarty'); //starts the timer
+
 		if($resource_type == 'file')
 		{
 			$basic=$_SERVER['DOCUMENT_ROOT'].'/templates/basic/'.$resource_name;
@@ -583,6 +623,9 @@ class GeographPage extends Smarty
 			{
 				 $template_source=file_get_contents($basic);
 				 $template_timestamp=filemtime($basic);
+				 
+				 split_timer('smarty','loader',$resource_name); //logs the wall time
+				 
 				 return true;
 			}
 			else
@@ -612,4 +655,3 @@ if ( (strpos($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')!==FALSE) || $CONF['te
 }
 
 
-?>

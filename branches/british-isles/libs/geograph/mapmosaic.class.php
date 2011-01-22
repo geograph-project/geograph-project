@@ -924,6 +924,8 @@ class GeographMapMosaic
 		global $memcache;
 		
 		$db=&$this->_getDB(false);
+
+split_timer('map'); //starts the timer
 		
 		$and_crit = " and type_or_user IN (-1,0";
 		if ($user_id > 0) {
@@ -981,6 +983,9 @@ class GeographMapMosaic
 			}
 			$recordSet->Close();
 		}
+
+split_timer('map','expirePosition',"($x,$y,$user_id,$expire_basemaps)=$deleted"); //logs the wall time
+
 		return $deleted;
 	}
 	
@@ -1143,4 +1148,4 @@ class GeographMapMosaic
 	}
 	
 }
-?>
+

@@ -55,6 +55,9 @@ class Gazetteer
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
+
+split_timer('gazetteer'); //starts the timer
+
 		
 		$db=&$this->_getDB();
 		
@@ -117,6 +120,8 @@ class Gazetteer
         		        $places[$i]['full_name'] = _utf8_decode($place['full_name']);
         		}
 
+split_timer('gazetteer','findListByNational',$mkey); //logs the wall time
+
 		//fails quickly if not using memcached!
 		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
 		
@@ -135,6 +140,8 @@ class Gazetteer
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
+
+split_timer('gazetteer'); //starts the timer
 		
 		$db=&$this->_getDB();
 		
@@ -410,7 +417,10 @@ class Gazetteer
 		if (isset($places['distance']))
 			$places['distance'] = round(sqrt($places['distance'])/1000)+0.01;
 		$places['reference_name'] = $CONF['references'][$places['reference_index']];
-		
+
+split_timer('gazetteer','findByNational',$mkey); //logs the wall time
+
+	
 		//fails quickly if not using memcached!
 		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
 		
@@ -428,6 +438,8 @@ class Gazetteer
 		$places =& $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
+
+split_timer('gazetteer'); //starts the timer
 		
 		$db = $this->_getDB();
 
@@ -664,6 +676,8 @@ class Gazetteer
 				}
 			}
 		}
+
+split_timer('gazetteer','findPlacename',$mkey); //logs the wall time
 		
 		//fails quickly if not using memcached!
 		$memcache->name_set('g',$mkey,$places,$memcache->compress,$memcache->period_long);
@@ -716,5 +730,3 @@ class Gazetteer
 }
 
 
-
-?>

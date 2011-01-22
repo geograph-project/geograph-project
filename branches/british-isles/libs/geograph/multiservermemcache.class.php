@@ -48,6 +48,9 @@ class MultiServerMemcache extends Memcache {
 		//parent::__construct();
 		if (empty($conf['host']) && empty($conf['host1']))
 			return;
+			
+		split_timer('memcache'); //starts the timer	
+			
 		$valid = false;
 		if (!empty($conf['host'])) {
 			if (@$this->connect($conf['host'], $conf['port']))
@@ -86,6 +89,8 @@ class MultiServerMemcache extends Memcache {
 		if ($this->valid = $valid) {
 			$this->prefix = isset($conf['p'])?($conf['p'].'~'):'';
 		}
+		
+		split_timer('memcache','connect'); //logs the wall time	
 	}
 
 	//extended to allow quick exit if memcache not in use
@@ -129,18 +134,26 @@ class MultiServerMemcache extends Memcache {
 	//http://lists.danga.com/pipermail/memcached/2006-July/002545.html
 	function name_set($namespace, $key, &$val, $flag = false, $expire = 0) {
 		if (!$this->valid) return false;
-		return parent::set($this->prefix.$namespace.':'.$key, $val, $flag, $expire);
+		split_timer('memcache'); //starts the timer
+		$tmp =& parent::set($this->prefix.$namespace.':'.$key, $val, $flag, $expire);
+		split_timer('memcache','set',$namespace.':'.$key); //logs the wall time	
+		return $tmp;
 	}
 
 	function name_get($namespace, $key) {
 		if (!$this->valid) return false;
+		split_timer('memcache'); //starts the timer
 		$tmp =& parent::get($this->prefix.$namespace.':'.$key);
+		split_timer('memcache','get',$namespace.':'.$key); //logs the wall time	
 		return $tmp;
 	}
 
 	function name_delete($namespace, $key, $timeout = 0) {
 		if (!$this->valid) return false;
-		return parent::delete($this->prefix.$namespace.':'.$key, $timeout);
+		split_timer('memcache'); //starts the timer
+		$tmp = parent::delete($this->prefix.$namespace.':'.$key, $timeout);
+		split_timer('memcache','delete',$namespace.':'.$key); //logs the wall time	
+		return $tmp;
 	}
 
 	function name_increment($namespace, $key, $value = 1,$create = false) {
