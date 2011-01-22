@@ -60,6 +60,10 @@ $db = GeographDatabaseConnection(false);
 
 if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comment'])) ) {
 
+
+split_timer('snippet'); //starts the timer
+
+
 	$updates = array();
 	$updates['user_id'] = $USER->user_id;
 	$updates['title'] = $_POST['title'];
@@ -115,9 +119,13 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		
 		$memcache->name_delete('sd', $gid);
 	}
+
+split_timer('snippet','create',$gid); //logs the wall time
 	
 } elseif ($gid && !empty($_POST['remove'])) {
 	
+split_timer('snippet'); //starts the timer
+
 	$criteria = array();
 	$criteria['gridimage_id'] = $gid;
 	
@@ -138,8 +146,13 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		$memcache->name_delete('sd', $gid);
 	}
 
+split_timer('snippet','remove',$gid); //logs the wall time
+
+
 } elseif ($gid && !empty($_POST['add'])) {
 	
+split_timer('add'); //starts the timer
+
 	$updates = array();
 	$updates['gridimage_id'] = $gid;
 	$updates['user_id'] = $USER->user_id;
@@ -160,15 +173,23 @@ if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comme
 		
 		$memcache->name_delete('sd', $gid);
 	}
+
+split_timer('snippet','remove',$gid); //logs the wall time
+
 	
 }
 
 
 
 if ($gid) {
+	split_timer('snippet'); //starts the timer
+
 	$used = $db->getAll("SELECT * FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) WHERE gridimage_id = $gid ORDER BY gridimage_snippet.created");
 
 	$smarty->assign_by_ref('used',$used);
+	
+	split_timer('snippet','single',$gid); //logs the wall time
+
 }
 if (empty($_GET['gr']) && !empty($_GET['gr2'])) {
 	$_GET['gr'] = $_GET['gr2'];
@@ -204,10 +225,15 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 
 	if (!empty($_REQUEST['tab']) && $_REQUEST['tab'] == 'recent') {  
 		
+		split_timer('snippet'); //starts the timer
+
 		$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) WHERE gs.user_id = {$USER->user_id} AND gridimage_id != $gid GROUP BY s.snippet_id ORDER BY gs.created DESC LIMIT 50"); 
 		
 		
 		$smarty->assign('tab',$_REQUEST['tab']);
+		
+		split_timer('snippet','recent',$USER->user_id); //logs the wall time
+
 		
 	} else {
 		$where = array();
@@ -215,6 +241,8 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 	
 		if (!empty($_REQUEST['tab']) && $_REQUEST['tab'] == 'suggestions') {  
 		
+			split_timer('snippet'); //starts the timer
+			
 			$pg = 1;
 			
 			$q=preg_replace("/[^\w ]+/",' ',$_REQUEST['corpus']);
@@ -256,8 +284,12 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			}			
 			$smarty->assign('tab',$_REQUEST['tab']);
 			
+			split_timer('snippet','suggestions',$USER->user_id); //logs the wall time
+			
 		} elseif (!empty($_REQUEST['q']) && is_numeric($_REQUEST['q'])) {  
 
+			split_timer('snippet'); //starts the timer
+			
 			$ids = $db->getCol("SELECT snippet_id FROM gridimage_snippet WHERE gridimage_id = ".intval($_REQUEST['q']));
 
 			$ids[] = intval($_REQUEST['q']); //incase it's a snippet ID
@@ -265,9 +297,14 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			$where[] = "s.snippet_id IN (".implode(',',$ids).")";
 
 			$_POST['radius'] = 1000; //it ignored anyway. 
+			
+			split_timer('snippet','nemeric',intval($_REQUEST['q'])); //logs the wall time
 
+			
 		} elseif ($CONF['sphinx_host'] && !empty($_REQUEST['q'])) {  //todo - for the moment we only use sphinx for full text searches- because of the indexing delay 
-
+			
+			split_timer('snippet'); //starts the timer
+			
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 
@@ -329,10 +366,17 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 				$id_list = implode(',',$ids);
 				$where[] = "s.snippet_id IN($id_list)";
 				$orderby = "ORDER BY FIELD(s.snippet_id,$id_list)";
+				
+				split_timer('snippet','q',$sphinx->qo); //logs the wall time
+				
 			} else {
 				$where[] = '0';
+				
+				split_timer('snippet','q-zero',$sphinx->qo); //logs the wall time
 			}
 		} else {
+			split_timer('snippet'); //starts the timer
+			
 			if (!empty($_REQUEST['gr']) && (empty($_REQUEST['radius']) || $_REQUEST['radius'] <= 20) ) {
 				$radius = !empty($_REQUEST['radius'])?intval($_REQUEST['radius']*1000):1000;
 
@@ -366,15 +410,21 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			}
 
 			$where[] = "enabled = 1"; 
+			
+			split_timer('snippet','general'); //logs the wall time
 		}
 
 		$smarty->assign_by_ref('radius',$_POST['radius']);
-
+		
+		split_timer('snippet'); //starts the timer
+		
 		$where[] = 'ge.gridimage_id IS NULL';
 		$where= implode(' AND ',$where);
 
 		$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours $fields FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gs.gridimage_id < 4294967296) LEFT JOIN gridimage_snippet ge ON (s.snippet_id = ge.snippet_id AND ge.gridimage_id = $gid) WHERE $where GROUP BY s.snippet_id $orderby LIMIT 200"); 
 		#print $sql;
+		
+		split_timer('snippet','query',$where); //logs the wall time
 	}
 	
 	if ($fields) {
@@ -402,4 +452,4 @@ if (!empty($_GET['create'])) {
 
 $smarty->display($template);
 
-?>
+
