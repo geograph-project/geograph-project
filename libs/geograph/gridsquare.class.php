@@ -161,6 +161,8 @@ class GridSquare
 		}
 	
 		$db=&$this->_getDB(true);
+
+split_timer('gridsquare'); //starts the timer
 		
 		$sql='select t.topic_id,posts_count-1 as comments,CONCAT(\'Discussion on \',t.topic_title) as topic_title '.
 			'from gridsquare_topic as gt '.
@@ -193,6 +195,9 @@ class GridSquare
 			//fails quickly if not using memcached!
 			$memcache->name_set('gsd',$mkey,$result,$memcache->compress,$memcache->period_short);
 		}
+
+split_timer('gridsquare','assignDiscussionToSmarty',$mkey); //logs the wall time
+
 	}
 	
 	
@@ -510,7 +515,9 @@ class GridSquare
 		
 		//store the reference 
 		$this->_storeGridRef($gridref);
-			
+	
+split_timer('gridsquare'); //starts the timer
+
 		//check the square exists in database
 		$count=0;
 		$square = $db->GetRow('select * from gridsquare where grid_reference='.$db->Quote($gridref).' limit 1');	
@@ -575,10 +582,10 @@ class GridSquare
 					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy) 
 						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)') )";
 					$db->Execute($sql);
-					$gridimage_id=$db->Insert_ID();
+					$gridsquare_id=$db->Insert_ID();
 					
 					//ensure we initialise ourselves properly
-					$this->loadFromId($gridimage_id);
+					$this->loadFromId($gridsquare_id);
 				} else {
 					//as we calculated it might as well return it in case useful...
 					$this->x = $x;
@@ -595,6 +602,7 @@ class GridSquare
 
 		}
 
+split_timer('gridsquare','_setGridRef'.(isset(gridsquare_id)?'-create':''),$gridref); //logs the wall time
 		
 		return $ok;
 	}
@@ -617,6 +625,8 @@ class GridSquare
 		}
 		
 		$db=&$this->_getDB(true);
+
+split_timer('gridsquare'); //starts the timer
 
 		//to optimise the query, we scan a square centred on the
 		//the required point
@@ -655,6 +665,8 @@ class GridSquare
 				if (!is_numeric($name))
 					$this->nearest->$name=$value;
 			}
+
+split_timer('gridsquare','findNearby',"$x,$y"); //logs the wall time
 			
 			//fails quickly if not using memcached!
 			$memcache->name_set('gn',$mkey,$this->nearest,$memcache->compress,$memcache->period_med);
@@ -663,6 +675,9 @@ class GridSquare
 		}
 		else
 		{
+		
+split_timer('gridsquare','findNearby-failed',"$x,$y"); //logs the wall time
+
 			return false;
 		}
 	}
@@ -684,6 +699,8 @@ class GridSquare
 		global $CONF;
 		
 		$db=&$this->_getDB(30); 
+
+split_timer('gridsquare'); //starts the timer
 
 		//find articles
 		$this->collections = $db->CacheGetAll(3600*6,"
@@ -749,6 +766,9 @@ class GridSquare
 		}
 
 		$this->collections_count = count($this->collections);
+
+split_timer('gridsquare','loadCollections'.$this->collections_count,"{$this->grid_reference}"); //logs the wall time
+
 	}
 	
 	function &getImages($inc_all_user = false,$custom_where_sql = '',$order_and_limit = 'order by moderation_status+0 desc,seq_no')
@@ -763,6 +783,9 @@ class GridSquare
 		}
 		
 		$db=&$this->_getDB(true);
+
+split_timer('gridsquare'); //starts the timer
+
 		$images=array();
 		if ($inc_all_user && ctype_digit($inc_all_user)) {
 			$inc_all_user = "=$inc_all_user";
@@ -783,6 +806,9 @@ class GridSquare
 			$i++;
 		}
 		$recordSet->Close(); 
+
+split_timer('gridsquare','getImages'.$i,"$inc_all_user,$custom_where_sql"); //logs the wall time
+
 		
 		//fails quickly if not using memcached!
 		$memcache->name_set('gi',$mkey,$images,$memcache->compress,$memcache->period_short);
@@ -810,6 +836,8 @@ class GridSquare
 	{
 		$db=&$this->_getDB();
 		
+split_timer('gridsquare'); //starts the timer
+		
 		//see if we have any geographs
 			//we can use a limit, implied by GetOne (rather than count) beucase we only interested if *any* not now many, 'limit 1' will stop searching once found 1
 		$geographs= $db->GetOne("select gridsquare_id from gridimage ".
@@ -824,10 +852,11 @@ class GridSquare
 		//update the has_geographs flag
 		$db->Query("update gridsquare set has_geographs=$has_geographs,imagecount=$imagecount ".
 			"where gridsquare_id={$this->gridsquare_id}");
-			
+	
+split_timer('gridsquare','updateCounts',"{$this->grid_reference},$imagecount"); //logs the wall time
+
 		//todo - update the has_recent flag. 
 	}
 }
 
 
-?>

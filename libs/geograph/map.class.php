@@ -295,7 +295,9 @@ class GeographMap
 			$y=$this->image_h-$y;
 		}
 		$db=&$this->_getDB(true);
-		
+
+split_timer('map'); //starts the timer
+	
 		//convert pixel pos to internal coordinates
 		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
 		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
@@ -343,6 +345,8 @@ class GeographMap
 			}
 		}
 		
+split_timer('map','getGridRef',"$x, $y"); //logs the wall time
+		
 		return $this->gridref;
 	}
 
@@ -353,7 +357,10 @@ class GeographMap
 	*/
 	function getImageFilename()
 	{
+
 		$root=&$_SERVER['DOCUMENT_ROOT'];
+
+split_timer('map'); //starts the timer
 		
 		$dir="/maps/detail/";
 		if (!is_dir($root.$dir))
@@ -386,6 +393,10 @@ class GeographMap
 		if (!empty($this->displayYear)) {
 			$file=preg_replace('/\./',"-y{$this->displayYear}.",$file);
 		}
+
+
+split_timer('map','getImageFilename',"$file"); //logs the wall time
+
 		return $dir.$file;
 	}
 
@@ -396,7 +407,9 @@ class GeographMap
 	function getBaseMapFilename()
 	{
 		$root=&$_SERVER['DOCUMENT_ROOT'];
-		
+	
+split_timer('map'); //starts the timer
+
 		$dir="/maps/base/";
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
@@ -416,6 +429,7 @@ class GeographMap
 		
 		$file="base_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}{$palette}.gd";
 		
+split_timer('map','getBaseMapFilename',"$file"); //logs the wall time
 		
 		return $dir.$file;
 	}
@@ -456,11 +470,15 @@ class GeographMap
 	*/
 	function returnImage()
 	{
+
+
 		//if thumbs level on depeth map, can just use normal render.
 		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
 			$this->type_or_user = 0;
 		}
 		$file=$this->getImageFilename();
+
+split_timer('map'); //starts the timer
 		
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
 		if (!$this->caching || !@file_exists($full))
@@ -494,6 +512,8 @@ class GeographMap
 		//header("Cache-Control: no-store, no-cache, must-revalidate");  // HTTP/1.1 
 		//header("Cache-Control: post-check=0, pre-check=0", false); 
 		//header("Pragma: no-cache");         
+
+split_timer('map','returnImage',$file); //logs the wall time
 		
 		readfile($full);
 		
@@ -580,6 +600,9 @@ class GeographMap
 	*/
 	function& _createBasemap($file)
 	{
+	
+split_timer('map'); //starts the timer
+
 		//figure out what we're mapping in internal coords
 		$left=$this->map_x;
 		$bottom=$this->map_y;
@@ -674,6 +697,8 @@ class GeographMap
 			imagegd($resized, $file);
 			
 			imagedestroy($img);
+
+split_timer('map','_createBasemap-sized',$file); //logs the wall time
 			
 			return $resized;
 		}
@@ -681,6 +706,9 @@ class GeographMap
 		{
 			//image is correct size, save it and return
 			imagegd($img, $file);
+
+split_timer('map','_createBasemap',$file); //logs the wall time
+
 			return $img;
 			
 		}
@@ -697,6 +725,8 @@ class GeographMap
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB(true);
 		
+split_timer('map'); //starts the timer
+
 		$left=$this->map_x;
 		$bottom=$this->map_y;
 		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
@@ -724,6 +754,9 @@ class GeographMap
 				CONTAINS( GeomFromText($rectangle),	point_xy) and
 				user_id = $user_id";
 		$id = $db->getOne($sql);
+
+split_timer('map','needUserTile',$user_id); //logs the wall time
+
 		
 		return !empty($id);
 	}
@@ -743,8 +776,12 @@ class GeographMap
 		$basemap=$this->getBaseMapFilename();
 		if ($this->caching && @file_exists($root.$basemap))
 		{
+			split_timer('map'); //starts the timer
+
 			//load it up!
 			$img=imagecreatefromgd($root.$basemap);
+
+			split_timer('map','loadbasemap',$basemap); //logs the wall time
 
 		}
 		else
@@ -756,6 +793,8 @@ class GeographMap
 		if (!$img) {
 			return false;
 		}
+		
+		split_timer('map'); //starts the timer
 		
 		$colMarker=imagecolorallocate($img, $this->colour['marker'][0],$this->colour['marker'][1],$this->colour['marker'][2]);
 		$colSuppMarker=imagecolorallocate($img, $this->colour['suppmarker'][0],$this->colour['suppmarker'][1],$this->colour['suppmarker'][2]);
@@ -1015,6 +1054,10 @@ class GeographMap
 			}
 
 			imagedestroy($img);
+			
+			split_timer('map','_renderImage',$target); //logs the wall time
+
+			
 			return $ok;
 		} else {
 			return false;
@@ -1077,7 +1120,12 @@ class GeographMap
 		
 		$basemap=$this->getBaseMapFilename();
 		if ($this->caching && @file_exists($root.$basemap)) {
+			
+			split_timer('map'); //starts the timer
+			
 			$img=imagecreatefromgd($root.$basemap);
+			
+			split_timer('map','loadbasemap',$basemap); //logs the wall time
 		} else {
 			$img=&$this->_createBasemap($root.$basemap);
 		}
@@ -1087,7 +1135,9 @@ class GeographMap
 		}
 		
 		$db=&$this->_getDB(true);
-		
+
+split_timer('map'); //starts the timer
+
 		if ($this->type_or_user == -7 || $this->type_or_user == -8) {
 			$counts = range(0,130);
 		} else {
@@ -1280,6 +1330,9 @@ class GeographMap
 			}
 
 			imagedestroy($img);
+			
+split_timer('map','_renderDepthImage',$target); //logs the wall time
+
 			return $ok;
 		} else {
 			return false;
@@ -1302,7 +1355,12 @@ class GeographMap
 			$colBackground=imagecolorallocate($img, 255,255,255);
 			imagecolortransparent($img,$colBackground);
 		} elseif ($this->caching && @file_exists($root.$basemap)) {
+		
+			split_timer('map'); //starts the timer
+			
 			$img=imagecreatefromgd($root.$basemap);
+			
+			split_timer('map','loadbasemap',$basemap); //logs the wall time
 		} else {
 			$img=&$this->_createBasemap($root.$basemap);
 		}
@@ -1316,6 +1374,8 @@ class GeographMap
 		$black = imagecolorallocate ($img, 70, 70, 0);
 
 		$db=&$this->_getDB(true);
+
+split_timer('map'); //starts the timer
 
 		#$sql="select imagecount from gridsquare group by imagecount";
 		#$counts = $db->getCol($sql);
@@ -1408,6 +1468,9 @@ class GeographMap
 			}
 
 			imagedestroy($img);
+			
+split_timer('map','_renderDateImage',$target); //logs the wall time
+	
 			return $ok;
 		} else {
 			return false;
@@ -1582,6 +1645,8 @@ class GeographMap
 	function _plotPlacenames(&$img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left) {			
 		$db=&$this->_getDB(true);
 
+split_timer('map'); //starts the timer
+
 		$black=imagecolorallocate ($img, 0,64,0);
 
 		require_once('geograph/conversions.class.php');
@@ -1680,6 +1745,9 @@ END;
 			exit;
 		if (!empty($recordSet))
 			$recordSet->Close(); 
+	
+split_timer('map','_plotPlacenames'); //logs the wall time
+
 	}
 	
 	/*********************************************
@@ -1803,7 +1871,8 @@ END;
 		
 		$db=&$this->_getDB(true);
 
-		
+	split_timer('map'); //starts the timer
+	
 		//TODO  - HARD CODED VALUES!!
 		$width = 100;
 		$scanleft -= $width;
@@ -1927,6 +1996,9 @@ END;
 				}
 			}
 		}
+		
+		split_timer('map','_plotGridLines'); //logs the wall time
+
 	}
 
 
@@ -1957,6 +2029,8 @@ END;
 
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB(true);
+
+split_timer('map'); //starts the timer
 		
 		$grid=array();
 
@@ -2104,6 +2178,9 @@ END;
 		if (!empty($recordSet))
 			$recordSet->Close();
 
+split_timer('map','getGridArray'.$isimgmap,$mkey); //logs the wall time
+
+
 		if ($memcache->valid)
 			$memcache->name_set($mnamespace,$mkey,$grid,$memcache->compress,$mperiod);
 		
@@ -2197,4 +2274,3 @@ function rectinterrect($a1,$a2) {
 	         $a1[1] > $a2[3] || $a1[3] < $a2[1]);
 }
 
-?>

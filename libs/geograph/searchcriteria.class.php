@@ -958,6 +958,9 @@ class SearchCriteria_All extends SearchCriteria
 	*/
 	function setByUsername($username) {
 		$db = $this->_getDB(true);
+		
+split_timer('search'); //starts the timer
+
 		if (preg_match('/^(\d+):/',$username,$m)) {
 			$users = $db->GetAll("select user_id,realname,nickname from user where user_id={$m[1]} limit 2");
 		} elseif (!preg_match('/\bnear\b/',$username)) {
@@ -975,6 +978,9 @@ class SearchCriteria_All extends SearchCriteria
 				$this->nickname = $users[0]['nickname'];
 			}
 		}
+		
+split_timer('search','setByUsername',$username); //logs the wall time
+
 	}
 	
 }
@@ -992,6 +998,10 @@ class SearchCriteria_Placename extends SearchCriteria
 	}
 	
 	function setByPlacename($placename) {
+
+#we dont time this because gaz has its own split timer!
+#split_timer('search'); //starts the timer
+
 		$gaz = new Gazetteer();
 		
 		$this->ismore = (strpos($placename,'?') !== FALSE);
@@ -1021,6 +1031,9 @@ class SearchCriteria_Postcode extends SearchCriteria
 {
 	function setByPostcode($code) {
 		$db = $this->_getDB(true);
+		
+split_timer('search'); //starts the timer
+
 		if (strpos($code,' ') === FALSE) {
 			//yes know avg(reference_index) is always same as reference_index, but get round restriction in mysql
 			$postcode = $db->GetRow('select avg(e) as e,avg(n) as n,avg(reference_index) as reference_index from loc_postcodes where code like'.$db->Quote("$code _").'');			
@@ -1040,6 +1053,9 @@ class SearchCriteria_Postcode extends SearchCriteria
 			$this->y = ($postcode['n']/1000) + $origin['origin_y'];
 			$this->reference_index = $postcode['reference_index'];
 		}
+		
+split_timer('search','setByPostcode',$code); //logs the wall time
+
 	}
 }
 
@@ -1055,6 +1071,8 @@ class SearchCriteria_County extends SearchCriteria
 	
 	function setByCounty($county_id) {
 		$db = $this->_getDB(true);
+
+split_timer('search'); //starts the timer
 		
 		$county = $db->GetRow('select e,n,name,reference_index from loc_counties where county_id='.$db->Quote($county_id).' limit 1');	
 	
@@ -1068,7 +1086,9 @@ class SearchCriteria_County extends SearchCriteria
 		$this->y = intval($county['n']/1000) + $origin['origin_y'];
 		$this->county_name = $county['name'];
 		$this->reference_index = $county['reference_index'];
+
+split_timer('search','setByCounty',$county_id); //logs the wall time
+
 	}
 }
 
-?>

@@ -63,6 +63,8 @@ class SearchEngineBuilder extends SearchEngine
 	{
 		global $USER,$CONF;
 		
+split_timer('search'); //starts the timer
+
 		$nearstring = $this->getNearString($distance);
 		
 		$has_location = preg_match('/\bnear\b/',$q);
@@ -291,6 +293,9 @@ class SearchEngineBuilder extends SearchEngine
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
+			
+split_timer('search','create1',$searchdesc); //logs the wall time
+
 			if ($autoredirect != false) {
 				$extra = '';
 				if (isset($_GET['page']))
@@ -305,6 +310,9 @@ class SearchEngineBuilder extends SearchEngine
 				return $i;
 			}
 		} 
+		
+split_timer('search','mulitple1',$searchdesc); //logs the wall time
+		
 		$this->searchdesc = $searchdesc;
 	}
 
@@ -317,6 +325,8 @@ class SearchEngineBuilder extends SearchEngine
 	{
 		global $CONF,$imagestatuses,$breakdowns,$groupbys,$sortorders,$USER;
 		$dataarray = array_map("strip_tags", $dataarray);
+
+split_timer('search'); //starts the timer
 		
 		if (empty($dataarray['distance'])) {
 			$dataarray['distance'] = $CONF['default_search_distance'];
@@ -780,6 +790,9 @@ class SearchEngineBuilder extends SearchEngine
 			$db->Execute($sql);
 
 			$i = $db->Insert_ID();
+			
+split_timer('search','create2',$searchdesc); //logs the wall time
+
 			if ($autoredirect != false) {
 				$extra = '';
 				if (isset($_GET['page']))
@@ -834,6 +847,9 @@ class SearchEngineBuilder extends SearchEngine
 			$this->criteria = $criteria;
 	
 		}
+		
+split_timer('search','mulitple2',$searchdesc); //logs the wall time
+
 	}
 	
 	function builddate(&$dataarray,$which) {

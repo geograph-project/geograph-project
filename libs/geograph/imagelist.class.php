@@ -68,6 +68,9 @@ class ImageList
 	*/
 	function getImages($statuses, $sort=null, $count=null,$advanced = false)
 	{
+
+split_timer('imagelist'); //starts the timer
+
 		//we accept an array or a single status...
 		if (is_array($statuses))
 			$statuslist="where moderation_status in ('".implode("','", $statuses)."') ";
@@ -102,7 +105,11 @@ class ImageList
 				"$orderby $limit";
 		}
 		
-		return $this->_getImagesBySql($sql);
+		$c = $this->_getImagesBySql($sql);
+		
+split_timer('imagelist','getImages',$statuslist); //logs the wall time
+
+		return $c;
 	}
 
 	/**
@@ -110,6 +117,9 @@ class ImageList
 	*/
 	function getImagesByUser($user_id, $statuses, $sort = 'gridimage_id', $count=null,$advanced = false)
 	{
+	
+split_timer('imagelist'); //starts the timer
+
 		//we accept an array or a single status...
 		if (is_array($statuses))
 			$statuslist=" moderation_status in ('".implode("','", $statuses)."') and ";
@@ -153,14 +163,21 @@ class ImageList
 				"gi.user_id='$user_id' ".
 				"$orderby $limit";
 		}
+		
+		$c = $this->_getImagesBySql($sql);
 
-		return $this->_getImagesBySql($sql);
+split_timer('imagelist','getImagesByUser',"$user_id,$statuses,$sort,$count,$advanced"); //logs the wall time
+
+		return $c;
 	}
 	
 	/**
 	* get image list for particular query
 	*/
 	function getImagesBySphinx($q,$pgsize=15,$pg = 1) {
+
+split_timer('imagelist'); //starts the timer
+
 		$sphinx = new sphinxwrapper($q);
 
 		$sphinx->pageSize = $pgsize;
@@ -171,8 +188,12 @@ class ImageList
 		
 		if (count($ids)) {
 			$this->resultCount = $sphinx->resultCount;
-		
-			return $this->getImagesByIdList($ids);
+			
+			$c = $this->getImagesByIdList($ids);
+			
+split_timer('imagelist','getImagesBySphinx',"$q"); //logs the wall time
+
+			return $c;
 		} else {
 			return 0;
 		}
@@ -182,6 +203,9 @@ class ImageList
 	* get image list for particular list
 	*/
 	function getImagesByIdList($ids) {
+	
+split_timer('imagelist'); //starts the timer
+
 		$sql = "SELECT * FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);
 				
 		$i=0;
@@ -208,6 +232,9 @@ class ImageList
 				}
 			}
 		}
+
+split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
+
 		return $i;
 	}
 
@@ -246,6 +273,8 @@ class ImageList
 	function _getImagesByArea($left,$right,$top,$bottom,$reference_index=null, $count_only=true)
 	{
 		$limit="";
+
+split_timer('imagelist'); //starts the timer
 		
 		//ensure correct order
 		$l=min($left,$right);
@@ -282,6 +311,8 @@ class ImageList
 			$count= $this->_getImagesBySql($sql);
 		}
 		
+split_timer('imagelist','_getImagesByArea',"$left,$right,$top,$bottom,$reference_index"); //logs the wall time
+		
 		return $count;
 	}
 
@@ -292,6 +323,8 @@ class ImageList
 	function getRecordSetByArea($left,$right,$top,$bottom,$reference_index=null, $count_only=true)
 	{
 		$db=&$this->_getDB(true);
+
+split_timer('imagelist'); //starts the timer
 
 		$orderby="";
 		$limit="";
@@ -320,6 +353,8 @@ class ImageList
 			$orderby $limit";
 
 		$recordSet = &$db->Execute($sql);
+
+split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$reference_index"); //logs the wall time
 
 		return $recordSet;
 	}
@@ -413,7 +448,11 @@ class RecentImageList extends ImageList {
 		
 		$db=&$this->_getDB(true);
 		
-		if ($reference_index == 2) {
+split_timer('imagelist'); //starts the timer
+
+		if (false) {
+			$recordSet = &$db->Execute("select * from gridimage_search order by gridimage_id desc limit 5");
+		} elseif ($reference_index == 2) {
 			$offset=rand(0,200);
 			$recordSet = &$db->Execute("select * from gridimage_search where reference_index=$reference_index order by gridimage_id desc limit $offset,5");
 		} else {
@@ -441,6 +480,9 @@ class RecentImageList extends ImageList {
 			$i++;
 		}
 		$recordSet->Close(); 
+
+split_timer('imagelist','RecentImageList',$reference_index); //logs the wall time
+
 		$this->assignSmarty($smarty, 'recent');
 		
 		//fails quickly if not using memcached!
@@ -450,5 +492,3 @@ class RecentImageList extends ImageList {
 	}
 
 }
-
-?>

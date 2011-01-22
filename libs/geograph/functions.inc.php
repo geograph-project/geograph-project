@@ -76,6 +76,50 @@ function log_script_timing()
 	}
 }
 
+function split_timer($profile,$key='',$id='') {
+	static $filehandle;
+	static $request;
+	static $unique;
+	static $starts;
+	
+	list($usec, $sec) = explode(' ',microtime());
+	$microtime = ((float)$usec + (float)$sec);
+	
+	if (empty($key)) {
+		if (empty($starts))
+			$starts = array();
+		$starts[$profile] = $microtime;
+		return;
+	} elseif (empty($starts[$profile])) {
+		//wtf?
+		return;
+	}
+	
+	if (empty($filehandle)) {
+		$logfile='/tmp/split.'.date('Ymd-H').'.log';
+		$filehandle = @fopen($logfile,'a');
+		
+		$request = $_SERVER['REQUEST_URI'];
+		$unique = uniqid();
+	}
+
+
+	fputcsv($filehandle,array(
+		$_SERVER['REQUEST_TIME'], //timestamp of request start
+		$unique, //helps idenity unique reqests
+		$request, //example "/search.php"
+		time(), //curent timestamp
+		$profile, //example 'sphinx'
+		$key, //example 'lookupids'
+		$id, //example 'query_id=123456'
+		round($microtime - $starts[$profile],6), //the WALL time.
+	));
+
+
+}
+
+
+
 /**
 * Smarty block handler
 * Although it doesn't appear to do much, this is registered as a
