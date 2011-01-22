@@ -1547,7 +1547,7 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 			split_timer('gridimage','_getResized'.(isset($srcw)?'-create':''),$thumbpath); //logs the wall time
 			
 			//fails quickly if not using memcached!
-			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*10);
+			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*4);
 		}
 		
 		$return['html']=$html;
