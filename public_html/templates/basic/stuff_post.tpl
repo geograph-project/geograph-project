@@ -36,6 +36,19 @@
 	{/if}
 	
 	
+
+	{if count($results) eq 2} 
+		<br/><br/>
+		<div class="interestBox" id="hide155">
+			<span style="color:red">New!</span> - <a href="javascript:void(show_tree(155));" onclick="document.getElementById('frame155').src = '/stuff/fade.php?1={$results.0->gridimage_id}&2={$results.1->gridimage_id}';">Show as draggable slider/fader</a>
+		</div>
+
+		<div id="show155" style="display:none">
+			Drag the slider below to fade between the two images mentioned above:<br/>
+			<iframe src="about:blank" height="700" width="700" id="frame155">
+			</iframe>
+		</div>
+	{/if}
 	
 
 {else}

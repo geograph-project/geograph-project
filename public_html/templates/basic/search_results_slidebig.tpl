@@ -7,7 +7,7 @@
 <body {if $maincontentclass}class="{$maincontentclass}" style="margin:2;border:0"{/if}>
 {/dynamic}
 
-<div style="float:right;position:relative">To normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide">Slide Show</a> mode &nbsp;&nbsp;</div>
+<div style="float:right;position:relative">To normal <a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slide" target="_top">Slide Show</a> mode &nbsp;&nbsp;</div>
 
 
 {if $engine->resultCount}

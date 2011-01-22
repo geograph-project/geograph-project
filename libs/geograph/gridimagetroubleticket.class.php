@@ -635,15 +635,19 @@ class GridImageTroubleTicket
 		$ttype = ($this->type == 'minor')?' Minor':'';
 		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 		
+		$msg['body']="To respond to this message, please visit\n";
+                $msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
+       	        $msg['body'].="Please, do NOT reply by email\n";
+		$msg['body'].="---------------------------------------\n\n";
+
 		if (!empty($realname)) {
-			$msg['body']="Dear {$realname},\n";
+			$msg['body'].="Dear {$realname},\n";
 			$msg['body'].="	This is a message about the following photo:\n";
 			$msg['body'].="	{$image->grid_reference} {$image->title}\n";
-			$msg['body'].="at: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n\n";
 		} else {
-			$msg['body']="Re: {$image->grid_reference} {$image->title}\n";
-			$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
+			$msg['body'].="Re: {$image->grid_reference} {$image->title}\n";
 		}
+
 		$msg['body'].="---------------------------------------\n\n";
 		$msg['body'].=$comment."\n";
 		$msg['body'].="---------------------------------------\n\n";

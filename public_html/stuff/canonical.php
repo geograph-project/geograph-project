@@ -192,6 +192,18 @@ if (!empty($_GET['stats'])) {
 		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical WHERE canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical),LOWER(imageclass) LIMIT 1000");
 		$smarty->assign_by_ref('list',$list);
 	}
+
+} elseif (!empty($_GET['single'])) {
+	$template='stuff_canonical_tree.tpl';
+	$cacheid='single';
+	if (!$smarty->is_cached($template, $cacheid)) {
+		$smarty->assign('intro',"This is preliminary results of the mapping - showing just one persons suggestions. Only includes results of stage 1, no renames/merges.");
+	
+		$db = GeographDatabaseConnection(true);
+		
+		$list = $db->getAll("SELECT imageclass,canonical FROM category_canonical_log WHERE user_id = 10354 AND canonical != '-bad-' GROUP BY imageclass ORDER BY LOWER(canonical),LOWER(imageclass)");
+		$smarty->assign_by_ref('list',$list);
+	}
 	
 } elseif (!empty($_GET['canonical'])) {
 	$template='stuff_canonical_canonical.tpl';

@@ -39,6 +39,8 @@ if (!empty($_GET['id'])) {
 	}
 
 	list($desc,$gr) = $db->getRow("select comment,grid_reference from gridimage_search where gridimage_id= $gid");
+
+	$desc = preg_replace('/(^|[\n\r\s]+)Keywords?[\s:][^\n\r>]+$/i','',$desc);
 	$desc1 = $desc;
 	
 	if (empty($desc)) {
@@ -50,7 +52,7 @@ if (!empty($_GET['id'])) {
 	$link = "/search.php?gridref=$gr&do=1&orderby=relevance&searchtext=";
 	
 	
-	$desc = preg_replace('/(?<!^\.\s|^)\b([A-Z][a-z]+)\b(\s+[A-Z][a-z]+)?/e','"<a href=\"'.$link.'".urlencode("$1 $2")."\">$1 $2</a>"',$desc);
+	$desc = preg_replace('/(?<!\.\s)(?<!^)\b([A-Z][a-z]+\b)(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?(\s+[A-Z][a-z]+\b)?/e','"<a href=\"'.$link.'".urlencode("$1 $2")."\">".trim("$1 $2 $3 $4")."</a>"',$desc);
 
 
 ?>

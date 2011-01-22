@@ -28,7 +28,9 @@
 
 <br style="clear:both"/>
 
-{if $tags}
+{if $user_id && $realname}
+	<p><b>Recent Posts by <a href="/profile/{$user_id}">{$realname|escape:'html'}</a></b></p>
+{elseif $tags}
 	<p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center">
 	TAGS: {foreach from=$tags key=tag item=count}
 		{if $tag eq $thetag}

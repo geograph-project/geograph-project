@@ -144,7 +144,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			
 			switch ($features[$feature_id]['feature']) {
 				case 'GridSquare': 
-					$latest[$feature_id]['thread_id'] = 9224;
+					//$latest[$feature_id]['thread_id'] = 9224;
 					//TODO - find the right post, so can direct to the end of the thread..
 					
 					$sql = "SELECT * FROM gridimage_search WHERE grid_reference = '{$row['title']}' ORDER BY moderation_status+0 DESC,seq_no LIMIT $pgsize";
