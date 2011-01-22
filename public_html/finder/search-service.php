@@ -348,7 +348,7 @@ function didYouMean($q,$cl) {
 
 		$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 
-		$db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
+		$db=GeographDatabaseConnection(true);
 
 		$ids = array_keys($res["matches"]);
 
