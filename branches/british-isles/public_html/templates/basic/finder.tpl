@@ -293,7 +293,7 @@ h4.title {
 <h3>Experimental searches...</h3>
 
 <ul>
-	<li><form action="/finder/multi.php" method="get" onsubmit="focusBox()">
+	<li><form action="/finder/multi2.php" method="get" onsubmit="focusBox()">
 		<div class="interestBox">
 			<label for="fq">Combined <b>image</b> search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/><sup style="color:red">Experimental beta</sup><br/>

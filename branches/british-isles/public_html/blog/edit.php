@@ -46,6 +46,13 @@ $cacheid = '';
 		$smarty->assign('realname', $USER->realname);
 		$smarty->assign('user_id', $USER->user_id);
 		$page = array();
+
+		$USER->getStats();	
+	        if ($USER->stats['images'] < 5) {
+			die("Due to spam - this feature is only available to photo contributors. If you would still like to contribute, please <a href=\"/contact.php\">Contact Us</a>, otherwise <a href=\"javascript:history.go(-1)\">Go back</a>");
+		}
+
+
 	} else {
 		$sql_where = " blog_id = ".$db->Quote($_REQUEST['id']);
 		 
@@ -76,7 +83,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	
 
 	$_POST['published']=sprintf("%04d-%02d-%02d %02d:%02d:%02d",$_POST['publishedYear'],$_POST['publishedMonth'],$_POST['publishedDay'],$_POST['publishedHour'],$_POST['publishedMinute'],$_POST['publishedSecond']);
-	$_POST['title'] = preg_replace('/[^\w-\., ]+/','',trim($_POST['title']));
+	$_POST['title'] = preg_replace('/[^\w-\.,\' ]+/','',trim($_POST['title']));
 	
 	if ($_POST['title'] == "New Entry")
 		$errors['title'] = "Please give a meaningful title";

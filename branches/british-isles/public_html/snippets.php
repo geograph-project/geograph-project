@@ -266,6 +266,12 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 		if (!empty($_REQUEST['gr']) && $_REQUEST['gr'] == '-') {
 			$filters['grid_reference'] = "none";
 		}
+		if (!empty($_REQUEST['max']) || !empty($_REQUEST['min'])) {
+			if (empty($_REQUEST['max'])) {
+				$_REQUEST['max'] = 10000000;
+			}
+			$filters['aimages'] = array(intval($_REQUEST['min']),intval($_REQUEST['max']));
+		}
 		if (!empty($filters)) {
 			$sphinx->addFilters($filters);
 		}
@@ -352,4 +358,4 @@ if ($CONF['sphinx_host']) {
 
 $smarty->display($template);
 
-?>
+

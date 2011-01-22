@@ -197,6 +197,14 @@ if (!$smarty->is_cached($template, $cacheid)) {
 					$filters[$key] = "(".implode('|',$filters[$key]).")";
 				}
 			}
+
+                if (!empty($_REQUEST['max']) || !empty($_REQUEST['min'])) {
+                        if (empty($_REQUEST['max'])) {
+                                $_REQUEST['max'] = 10000000;
+                        }
+                        $filters['aimages'] = array(intval($_REQUEST['min']),intval($_REQUEST['max']));
+                }
+
 			$sphinx->addFilters($filters);
 		}
 

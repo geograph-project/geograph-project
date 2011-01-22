@@ -33,6 +33,9 @@ $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
 
 $cacheid = empty($_GET['id'])?0:intval($_GET['id']);
+if (!empty($_GET['method']) && preg_match('/^\w+$/',$_GET['method']) && $_GET['method'] == 'combined') {
+	$cacheid .= ".".$_GET['method'];
+}
 
 if (!$smarty->is_cached($template, $cacheid)) {
 
@@ -47,29 +50,102 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			header("HTTP/1.0 410 Gone");
 			header("Status: 410 Gone");
 			$template = "static_404.tpl";
+		} elseif (!empty($_GET['method']) && $_GET['method'] == 'combined') {
+			$results = array();
+
+			$t2 = preg_replace('/\b\d+\b/',' ',$image->title);
+
+                        $db = GeographDatabaseConnection(true);
+
+			$bit = array();
+
+			$bits[] = "(\"^$t2\")";
+
+			if (preg_match('/(^|[\n\r\s]+)Keywords?[\s:]([^\n\r>]+)$/i',$image->comment,$m)) {
+				$p = preg_split('/[\n;,:\.]+/',$m[2]);
+				if (count($p) == 1) {
+					$p = preg_split('/\s+/',$m[2]);
+				}
+				foreach ($p as $line) {
+					$bits[] = "( $line )";
+				}
+			}
+
+			$p = preg_split('/[\s;,\.]+/',$t2);
+			foreach ($p as $line) {
+				if (preg_match('/^[A-Z]/',trim($line))) {
+					$bits[] = "( $line )";
+				}
+			}
+
+			$labels = $db->getCol("SELECT label 
+				FROM gridimage_group 
+				WHERE gridimage_id = {$image->gridimage_id} AND label != '(Other)'
+				ORDER BY score DESC LIMIT 5");
+			if (!empty($labels)) {
+				foreach ($labels as $idx => $label) {
+					$bits[] = "( {$label} )";
+				}
+			}
+
+			$bits[] = "( imageclass:{$image->imageclass} )";
+
+			$bits[] = "( comment:{$image->gridimage_id} )";
+
+			$image->loadSnippets();
+			if ($image->snippet_count) {
+				foreach ($image->snippets as $idx => $row) {
+					$bits[] = "( snippet_id:{$row['snippet_id']} )";
+				}
+			}
+
+			$bits[] = "( title:$t2 )";
+
+			if (!preg_match('/(0000|-00)/',$image->imagetaken)) {
+				$bits[] = "( takenday:".str_replace('-','',$image->imagetaken)." )";
+
+				$bits[] = "( takenyear:".substr($image->imagetaken,0,4)." )";
+			}
+
+#			$bits[] = "( user_id:{$image->user_id} )";
+
+#			$bits[] = "( grid_reference:{$image->grid_reference} )";
+
+
+                        $res = check_images(
+                                "Combined results near {$image->grid_reference}",
+                                $image->grid_reference,
+                                "( ".implode(' | ',$bits).") ",
+				25
+                        );
+                        if (!empty($res)) $results[] = $res;
+
+			$smarty->assign_by_ref('results', $results);
+			$smarty->assign('method','combined');
 		} else {
 
 			$results = array();
 
 			###########################
 
+			$t2 = preg_replace('/\b\d+\b/',' ',$image->title);
 			$res = check_images(
-				"Similar Title",
+				"Similar Title near {$image->grid_reference}",
 				$image->grid_reference,
-				"title:".preg_replace('/\b\d+\b/',' ',$image->title)
+				"title:($t2) | (\"^$t2\") | \"$t2\"/2"
 			);
 			if (!empty($res)) $results[] = $res;
 
 			###########################
 
 			if (!preg_match('/(0000|-00)/',$image->imagetaken)) {
-				$res = check_images(
+/*				$res = check_images(
 					"Taken by same Contributor on the same Day near {$image->grid_reference}",
 					$image->grid_reference,
 					"user_id:{$image->user_id} takenday:".str_replace('-','',$image->imagetaken)
 				);
 				if (!empty($res)) $results[] = $res;
-
+*/
 				###########################
 
 				$res = check_images(
@@ -85,7 +161,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$res = check_images(
 				"In similar category near {$image->grid_reference}",
 				$image->grid_reference,
-				"category:{$image->imageclass}"
+				"\"{$image->title} {$image->imageclass} {$image->grid_reference}\"/1 imageclass:(\"^{$image->imageclass}\" | ({$image->imageclass}))" //(the quorum is just to push more similar images to the top)
 			);
 			if (!empty($res)) $results[] = $res;
 
@@ -146,7 +222,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 						if (!empty($ids)) {
 							$res = check_images(
-								"Marked with '{$label}'",
+								"Marked with '{$label}' (automatic label) in {$image->grid_reference}",
 								$ids,
 								"text:$label"
 							);
@@ -157,7 +233,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 						}
 					} else {
 						$res = check_images(
-							"Matching '{$label}'",
+							"Matching '{$label}' (automatic label) in {$image->grid_reference}",
 							'',
 							"text:{$label} grid_reference:{$image->grid_reference}"
 						);
@@ -179,10 +255,13 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 
 			$smarty->assign_by_ref('results', $results);
-
+			$smarty->assign('method','split');
 		}
 		$image->image_taken=$image->getFormattedTakenDate();
 		$smarty->assign_by_ref('image', $image);
+
+		$methods = array('split'=>'Breakdown','combined'=>'Combined Results');
+		$smarty->assign_by_ref('methods', $methods);
 	} else {
 		header("HTTP/1.0 404 Not Found");
 		header("Status: 404 Not Found");
@@ -195,7 +274,7 @@ $smarty->display($template,$cacheid);
 
 ####################
 
-	function check_images($title,$gridref,$q) {
+	function check_images($title,$gridref,$q,$number = 4) {
 		static $used;
 		global $image;
 
@@ -221,14 +300,18 @@ $smarty->display($template,$cacheid);
 				if (!empty($used[$id])) {
 					$zap[$id] = $c;
 				}
-				$used[$id]++;
+				//$used[$id]++; //moved below - so that it only marks the four shown as used. 
 			}
 			foreach ($zap as $id => $c) {
-				if (count($ids) > 4) 
+				if (count($ids) > $number) 
 					unset($ids[$c]);
 			}
-
-			if ($ids) $ids = array_slice($ids,0,4);
+			if ($ids) {
+				$ids = array_slice($ids,0,$number);
+				foreach ($ids as $c => $id) {
+					$used[$id]++;
+				}
+			}
 			if ($ids) {
 				$row = array();
 				$images=new ImageList();

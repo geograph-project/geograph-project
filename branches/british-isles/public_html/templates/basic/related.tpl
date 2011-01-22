@@ -29,15 +29,30 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	<br style="clear:both"/>
 </div>
 
-<h2>Related Images</h2>
+
+<div class="tabHolder" style="margin-top:3px">
+	{foreach from=$methods key=i item=m}
+	{if $i == $method}
+	<span class="tabSelected">{$m}</span>
+	{else}
+	<a class="tab nowrap" href="/related.php?id={$image->gridimage_id}&amp;method={$i}">{$m}</a>
+	{/if}
+	{/foreach}
+</div>
+<div class="interestBox">
+<h2 style=margin:0>Related Images</h2>
+</div>
+<br/>
+
 
 <ol start="{$offset}">
 {foreach from=$results item=item}
+{if count($results) > 1}
 	<li>
 	<div class="interestBox">
 
 	{if $item.resultCount > 3 && $item.query}
-		<div style="float:right"><a href="/search.php?gridref={$image->grid_reference}&amp;searchtext={$item.query|escape:'url'}&amp;do=1&amp;distance=3" title="{$item.query}">View {$item.resultCount} matches</a></div>
+		<div style="float:right"><a href="/search.php?gridref={$image->grid_reference}&amp;searchtext={$item.query|escape:'url'}&amp;do=1&amp;distance=3" title="{$item.query|escape:'html'}">View {$item.resultCount} matches</a></div>
 	{/if}
 
 	<b><a href="{if $item.link}{$item.link|escape:'html'}{else}/search.php?gridref={$image->grid_reference}&amp;searchtext={$item.query|escape:'url'}&amp;do=1&amp;distance=3{/if}">{$item.title|escape:'html'}</a></b>
@@ -47,9 +62,10 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	{/if}
 
 	</div>
+{/if}
 
 	{foreach from=$item.images item=image}
-		<div style="float:left;width:160px" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+		<div style="float:left;width:160px;height:160px" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
 		<div class="caption"><div class="minheightprop" style="height:2.5em"></div><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
 		<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
 		</div>
@@ -62,7 +78,11 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	{/foreach}
 	<br style="clear:left;"/>
 
+{if count($results) > 1}
 	</li>
+{elseif $item.resultCount}
+	1..25 of about <a href="/related.php?id={$image->gridimage_id}">{$item.resultCount|thousends} images</a>.
+{/if}
 {foreachelse}
 
 		<li><i>There is no content to display at this time.</i></li>
@@ -70,6 +90,26 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 {/foreach}
 
 </ol>
+
+<script type="text/javascript">
+{literal}
+function show_portals() {
+	show_tree(101);
+	var ele = document.getElementById('iframe');
+	ele.src = ele.title;
+	return false;
+}
+if (Math.random() * 10 > 9) {
+	 AttachEvent(window,'load',function () { setTimeout('show_portals()',4000) },false);
+}
+{/literal}
+</script>
+
+<p id="hide101">&middot; <a href="javascript:void(show_portals())">Show portals for this image</a> <sup style=color:red>Experimental</sup></p>
+<div id="show101" style="display:none" class="interestBox">
+	<iframe src="about:blank" title="http://www.geographs.org/portals/tester.php?id={$image->gridimage_id}&amp;t={$image->title|escape:'url'}&amp;u={$image->user_id}&amp;g={$image->grid_reference}&amp;c={$image->comment|escape:'url'}&amp;i={$image->imageclass|escape:'url'}" width="100%" height="500" id="iframe"></iframe>
+</div>
+
 
 <br/><br/>
 <div class="top"><a href="#top">back to top</a> | <a href="/photo/{$image->gridimage_id}">Return to photo page</a></div>

@@ -37,6 +37,9 @@ $cacheid = $USER->hasPerm('basic')?$USER->user_id:0;
 if (!empty($_GET['tag'])) {
 	$cacheid .= '.'.md5($_GET['tag']);
 }
+if (!empty($_GET['u'])) {
+	$cacheid .= '.'.intval($_GET['u']);
+}
 $isadmin=$USER->hasPerm('moderator')?1:0;
 $smarty->assign_by_ref('isadmin', $isadmin);
 
@@ -71,6 +74,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$where = '';
 	
+	if (!empty($_GET['u'])) {
+		$profile=new GeographUser(intval($_GET['u']));
+		if ($profile->registered) {
+                	$where = " AND blog.user_id = ".intval($_GET['u']);
+	                $smarty->assign('user_id',intval($_GET['u']));
+			$smarty->assign('realname',$profile->realname);
+		}
+        }
+
 	if (!empty($_GET['tag'])) {
 		$where = " AND tags LIKE ".$db->Quote("%{$_GET['tag']}%");
 		$smarty->assign('thetag',$_GET['tag']);

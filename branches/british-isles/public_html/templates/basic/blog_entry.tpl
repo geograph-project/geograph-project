@@ -13,7 +13,7 @@
 <div style="float:left; position:relative; padding-right:10px;height:40px"><h3 style="margin-top:0px"><a href="/blog/">Geograph Blog</a> ::</h3></div>
 
 <h2 style="margin-bottom:0px" class="nowrap">{$title|escape:"html"}</h2>
-<div>By <a title="View profile" href="/profile/{$user_id}">{$realname|escape:'html'}</a></div>
+<div>By <a title="View profile" href="/blog/?u={$user_id}">{$realname|escape:'html'}</a></div>
 
 
 <p style="margin-left:auto;margin-right:auto;width:600px">{$content|nl2br|GeographLinks:true}</p>
@@ -57,7 +57,7 @@
 </dl>
 
 {if $user->user_id == $user_id || $isadmin}
-	<p style="clear:both"><a href="/blog/edit.php?id={$blog_id}">edit</a></p>
+	<p style="clear:both"><a href="/blog/edit.php?id={$blog_id}">Edit this entry</a></p>
 {/if}
 
 <br style="clear:both"/>

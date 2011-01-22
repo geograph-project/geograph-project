@@ -573,6 +573,18 @@ END;
 
 
 		$this->querytime = ($querytime_after - $querytime_before) + $sphinx->query_time;
+
+                $logfile='/tmp/sphinx.'.date('Ymd-H').'.log';
+                $h = @fopen($logfile,'a');
+                if ($h)
+                {
+                        $time = date("i:s");
+                        $logline = sprintf("%04.3f,%04.3f,%04.3f",$this->querytime,($querytime_after - $querytime_before),$sphinx->query_time).",$time,{$this->query_id},{$this->resultCount}\n";
+
+                        fwrite($h,$logline);
+
+                        fclose($h);
+                }
 		
 		
 	//finish off

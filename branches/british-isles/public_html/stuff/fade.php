@@ -28,12 +28,17 @@ require_once('geograph/gridsquare.class.php');
 customCacheControl(filemtime(__FILE__),$_SERVER['QUERY_STRING']);
 customExpiresHeader(86400*3,true);
 
+if (is_numeric($_REQUEST['1'])) {
+	$image1=new GridImage();
+	$ok1 = $image1->loadFromId($_REQUEST['1']);
 
-$image1=new GridImage();
-$ok1 = $image1->loadFromId($_REQUEST['1']);
-
-if (!$ok1 || $image1->moderation_status=='rejected') {
-	die("image 1 not available");
+	if (!$ok1 || $image1->moderation_status=='rejected') {
+		die("image 1 not available");
+	}
+	$filepath1 = $image1->_getFullpath(true,true);
+	$size = $image1->_getFullSize();
+} else {
+	$filepath1 = htmlentities($_REQUEST['1']);
 }
 
 $image2=new GridImage();
@@ -43,25 +48,28 @@ if (!$ok2 || $image2->moderation_status=='rejected') {
 	die("image 2 not available");
 }
 
-$filepath1 = $image1->_getFullpath(true,true);
-$size1 = $image1->_getFullSize();
 $filepath2 = $image2->_getFullpath(true,true);
-##$size2 = $image2->_getFullSize();
+
+if (!is_numeric($_REQUEST['1'])) {
+	$size = $image2->_getFullSize();
+}
 
 ?>
+
+<body bgcolor=#cccccc>
 
 <div id="slider" style="margin:20px"></div>
 
-<div style="position:relative;width:<? echo $size1[0]; ?>px;width:<? echo $size1[1]; ?>px">
+<div style="position:relative;width:<? echo $size[0]; ?>px;width:<? echo $size[1]; ?>px">
 
-<div style="position:absolute;top:0;left:0;width:<? echo $size1[0]; ?>px;width:<? echo $size1[1]; ?>px">
+<div style="position:absolute;top:0;left:0;width:<? echo $size[0]; ?>px;width:<? echo $size[1]; ?>px">
 <?
-	echo "<img src=\"$filepath1\" {$size1[3]}/>";
+	echo "<img src=\"$filepath1\" {$size[3]}/>";
 ?>
 </div>
-<div style="position:absolute;top:0;left:0;width:<? echo $size1[0]; ?>px;width:<? echo $size1[1]; ?>px">
+<div style="position:absolute;top:0;left:0;width:<? echo $size[0]; ?>px;width:<? echo $size[1]; ?>px">
 <?
-	echo "<img id=\"fade\" src=\"$filepath2\" {$size1[3]}/>";
+	echo "<img id=\"fade\" src=\"$filepath2\" {$size[3]}/>";
 ?>
 </div>
 </div>

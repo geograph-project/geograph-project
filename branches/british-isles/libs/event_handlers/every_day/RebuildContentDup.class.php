@@ -190,7 +190,7 @@ ffetcing our local traffic after nearly a week of snow and sub-zero temperatures
 */
 			$updates = array();
 			$updates['foreign_id'] = $row['TripID'];
-			$updates['title'] = $row['Title'];
+			$updates['title'] = stripslashes($row['Title']);
 			$updates['url'] = "http://users.aber.ac.uk/ruw/misc/geotrip_show.php?osos&trip=".$row['TripID'];
 			$updates['user_id'] = $row['UserID'];
 			$updates['gridimage_id'] = $row['GridimageID'];
@@ -206,9 +206,9 @@ ffetcing our local traffic after nearly a week of snow and sub-zero temperatures
 			if (!empty($row['SubTitle'])) {
 				$lines = explode("\n",wordwrap($row['SubTitle'],250,"\n")); 
 
-				$updates['extract'] = $lines[0].(count($lines)>1?'...':'');
+				$updates['extract'] = stripslashes($lines[0]).(count($lines)>1?'...':'');
 			}
-			$updates['words'] = $row['Content'];
+			$updates['words'] = stripslashes($row['Content']);
 			
 			$mkey = $row['SearchID'];
 			$images =& $memcache->name_get('fse',$mkey);

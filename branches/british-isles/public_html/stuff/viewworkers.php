@@ -99,7 +99,7 @@ from at_home_job
 where task = '$task'
 group by (sent='0000-00-00 00:00:00'),(completed='0000-00-00 00:00:00')",'Job Breakdown');
 
-print "<p>Note: not all jobs are of equal size. Mostly 5000 images, but some are bigger for use by the more powerful clients. Also some clients can work on multiple jobs at once.</p>";
+#print "<p>Note: not all jobs are of equal size. Mostly 5000 images, but some are bigger for use by the more powerful clients. Also some clients can work on multiple jobs at once.</p>";
 
 	} else {
 

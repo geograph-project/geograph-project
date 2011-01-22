@@ -88,7 +88,7 @@ if (isset($_GET['fav']) && $i) {
 	$db->query("UPDATE queries SET favorite = '$fav' WHERE id = $i AND user_id = {$USER->user_id}");
 	
 	sleep(2);//fake delay to allow replication to catch up - ekk!
-	header("Location:/search.php");
+	header("Location:/search.php?d=".time());
 	exit;
 
 } else if (!empty($_GET['first']) || !empty($_GET['blank']) || !empty($_GET['glue']) || (!empty($_GET['my_squares']) &&  intval($_GET['user_id'])) ) {
@@ -1288,7 +1288,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$nlimit = "limit 12";
 		}
 		#group by searchdesc,searchq,displayclass,resultsperpage
-		$recentsearchs = $db->cacheGetAssoc(30,"
+		$recentsearchs = $db->CacheGetAssoc(isset($_GET['d'])?0:60,"
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries
 			left join queries_count using (id)
 			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'

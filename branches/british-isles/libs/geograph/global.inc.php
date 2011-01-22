@@ -92,7 +92,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
 			if ($allow_readonly > 1) {
 				$row = $db->getRow("SHOW SLAVE STATUS");
 				if (!empty($row)) { //its empty if we actully connected to master!
-				    if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && ($row['Seconds_Behind_Master'] < 150) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
+				    if (false && (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && ($row['Seconds_Behind_Master'] < 150) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
 				
 				
 					//email me if we lag, but once gets big no point continuing to notify!
@@ -444,7 +444,7 @@ class GeographPage extends Smarty
 					
 					apc_delete($_SERVER['REQUEST_URI']);
 				}
-
+/*
 				if (($value = apc_fetch('irc.seen')) === FALSE) {
 					if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
 						$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
@@ -461,6 +461,9 @@ class GeographPage extends Smarty
 				}
 			}
 			$this->assign('irc_seen',$value);
+*/
+			}
+
 
 			if ($GLOBALS['USER']->hasPerm('admin'))
 			{

@@ -337,7 +337,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 	<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}&amp;centi=1" title="shows the coverage at centisquare level - overlaid on OS raster maps">Centisquares Coverage</a>
 	{/if}
 	{if $mapwidth == 10 || $mapwidth == 100}
-		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field">{if $realname}Personalised {elseif $recent}Recent Only {elseif $depth}Depth {/if}Check Sheet</a>
+		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field">{if $realname}Personalised {elseif $recent}Recent Only {elseif $depth && $token_zoomin}Depth {/if}Check Sheet</a>
 	{/if}
 	<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" href="/mapprint.php?t={$mosaic_token}" title="A version of this map optimized for printing">Printable</a>
 	<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/map/{$mosaic_token}?recent=1" title="shows squares with recent squares - so can find squares without recent photos">Recent Only</a>
