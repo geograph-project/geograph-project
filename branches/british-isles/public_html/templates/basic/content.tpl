@@ -12,6 +12,17 @@
 
 <h2>Photo Collections</h2>
 
+{dynamic}
+{if $pending}
+	<p>Your non published articles:
+	{foreach from=$pending item=row}
+		<a href="/article/{$row.url|escape:'url'}">{$row.title|escape:'html'}</a>,
+	{/foreach}
+	click a title to view.</p>
+{/if}
+{/dynamic}
+
+
 <form action="/content/" method="get" name="theForm">
 
 	<div class="interestBox" style="background-color:#e3e3e3">
