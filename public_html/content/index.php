@@ -331,6 +331,16 @@ if (!empty($_GET['debug'])) {
 	$smarty->assign_by_ref("extra",$extra);
 } 
 
+if ($USER->registered && empty($_SERVER['QUERY_STRING']) && !empty($db)) {
+	$pending = $db->getAll("
+		select title,url
+		from article 
+		where approved = 0 and user_id = {$USER->user_id}
+		order by article_id desc");
+	if (!empty($pending)) {
+		$smarty->assign_by_ref("pending",$pending);
+	}
+}
 
 $smarty->display($template, $cacheid);
 

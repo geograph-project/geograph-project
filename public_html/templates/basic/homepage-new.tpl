@@ -84,7 +84,7 @@ representative photographs and information for every square kilometre of <a href
 		  <div>
 		  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
 		  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
-		  for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
+		  for <span class="nowrap">square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
 
 		  </div>
 
@@ -103,7 +103,7 @@ representative photographs and information for every square kilometre of <a href
 				<h4 style="margin-top: 0px;">{$newsitem.topic_title}</h4>
 				<div style="font-size:0.8em">{$newsitem.post_text}</div>
 				<div style="margin-top:8px;border-top:1px solid gray">
-				Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
+				Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> <span class="nowrap">on {$newsitem.topic_time|date_format:"%a, %e %b"}</span>
 				<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
 				</div>
 			</div>
