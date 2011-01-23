@@ -521,6 +521,8 @@ class ADODB_Session {
 			return true;
 		}
 
+split_timer('session'); //starts the timer
+
 		$database	= ADODB_Session::database();
 		$debug		= ADODB_Session::debug();
 		$driver		= ADODB_Session::driver();
@@ -562,6 +564,8 @@ class ADODB_Session {
 			ADOConnection::outp('<p>Session: connection failed</p>', false);
 		
 
+split_timer('session','connect'); //logs the wall time
+
 		return $ok;
 	}
 
@@ -590,6 +594,8 @@ class ADODB_Session {
 		if (!$conn) {
 			return '';
 		}
+
+split_timer('session'); //starts the timer
 
 		//assert('$table');
 
@@ -621,6 +627,8 @@ class ADODB_Session {
 			}
 
 			$rs->Close();
+
+split_timer('session','read',$key); //logs the wall time
 
 			ADODB_Session::_crc(strlen($v) . crc32($v));
 			return $v;
@@ -654,6 +662,9 @@ class ADODB_Session {
 		if (!$conn) {
 			return false;
 		}
+		
+split_timer('session'); //starts the timer
+
 		$qkey = $conn->qstr($key);
 	
 		//assert('$table');
@@ -681,6 +692,9 @@ class ADODB_Session {
 			
 			$sql = "UPDATE $table SET expiry = ".$conn->Param('0').",expireref=".$conn->Param('1')." WHERE $binary sesskey = ".$conn->Param('2')." AND expiry >= ".$conn->Param('3');
 			$rs = $conn->Execute($sql,array($expiry,$expirevar,$key,time()));
+
+split_timer('session','write',$key); //logs the wall time
+
 			return true;
 		}
 		$val = rawurlencode($val);
@@ -765,6 +779,9 @@ class ADODB_Session {
 		if (ADODB_Session::Lock()) {
 			$conn->CommitTrans();
 		}*/
+
+split_timer('session','write',$key); //logs the wall time
+
 		return $rs ? true : false;
 	}
 
@@ -778,6 +795,8 @@ class ADODB_Session {
 		if (!$conn) {
 			return false;
 		}
+
+split_timer('session'); //starts the timer
 
 		//assert('$table');
 
@@ -809,6 +828,8 @@ class ADODB_Session {
 		$rs = $conn->Execute($sql);
 		ADODB_Session::_dumprs($rs);
 
+split_timer('session','destroy',$key); //logs the wall time
+
 		return $rs ? true : false;
 	}
 
@@ -827,6 +848,7 @@ class ADODB_Session {
 			return false;
 		}
 
+split_timer('session'); //starts the timer
 
 		$time			= time();
 		$binary = $conn->dataProvider === 'mysql' ? '/*! BINARY */' : '';
@@ -915,6 +937,8 @@ class ADODB_Session {
 				}
 			}
 		}
+		
+split_timer('session','gc',$key); //logs the wall time
 
 		return true;
 	}
