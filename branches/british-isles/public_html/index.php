@@ -39,6 +39,10 @@ if (isset($_GET['potd'])) {
 	$smarty->caching = 0;
 }
 
+if (isset($_GET['preview'])) {
+	$template='homepage-new.tpl';
+}
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -53,6 +57,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		case 'charcoal': $preset = 'overview_charcoal'; break;
 		case 'ireland': $preset = 'overview_ireland'; break;
 		default: $preset = 'overview_large'; break;
+	}
+	if (isset($_GET['preview'])) {
+		 $preset = 'overview_charcoal';
 	}
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = -1;
@@ -110,8 +117,11 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		}
 	
-
-		$smarty->assign_by_ref('news', $news);
+		if (isset($_GET['preview'])) {
+			$smarty->assign_by_ref('news2', $news);
+		} else {
+			$smarty->assign_by_ref('news', $news);
+		}
 	}
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
