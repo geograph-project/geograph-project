@@ -14,7 +14,7 @@ representative photographs and information for every square kilometre of <a href
 
 <div style="position:relative;margin-left:auto;margin-right:auto;width:740px">
 
-	<div class="interestBox" style="height:389px;background-color:#333333; width:550px;color:white; float:left;padding:5px">
+	<div class="interestBox" style="height:389px;background-color:#333333; width:550px;color:white; float:left;padding:5px;overflow:hidden">
 		<div style="position:relative;float:left; width:400px">
 			<h3 style="margin-top:0">Photograph of the day <small>[<a href="/results/2087426" style="color:cyan">previous</a>]</small></h3>
 
@@ -51,7 +51,7 @@ representative photographs and information for every square kilometre of <a href
 		</div>
 	</div>
 
-	<div class="interestBox" style="height:389px; width:150px; float:left; font-size:0.8em;margin-left:20px;padding:5px">
+	<div class="interestBox" style="height:389px; width:150px; float:left; font-size:0.8em;margin-left:20px;padding:5px; overflow:auto">
 		<h3 style="margin-top:0;">What is Geographing?</h3>
 
 		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
