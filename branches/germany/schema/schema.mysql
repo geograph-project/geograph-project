@@ -880,6 +880,21 @@ CREATE TABLE `gridsquare_moderation_lock` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table `gridsquare_percentage`
+--
+
+DROP TABLE IF EXISTS `gridsquare_percentage`;
+CREATE TABLE `gridsquare_percentage` (
+  `gridsquare_id` int(11) NOT NULL,
+  `level` tinyint(2) NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `percent` tinyint(4) NOT NULL,
+  PRIMARY KEY (`gridsquare_id`, `level`,`community_id`),
+  KEY `gridsquare_id` (`gridsquare_id`),
+  KEY `subject` (`level`,`community_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table `gridsquare_topic`
 --
 

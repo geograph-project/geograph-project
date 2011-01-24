@@ -42,6 +42,24 @@ $skipupdategridprefix=isset($_POST['skipupdategridprefix'])?true:false;
 $redrawmaps=isset($_POST['redrawmaps'])?true:false;
 $ignore100=isset($_POST['ignore100'])?true:false;
 $dryrun=isset($_POST['dryrun'])?true:false;
+$minx=isset($_POST['minx'])?intval($_POST['minx']):0;
+$maxx=isset($_POST['maxx'])?intval($_POST['maxx']):100000;
+$miny=isset($_POST['miny'])?intval($_POST['miny']):0;
+$maxy=isset($_POST['maxy'])?intval($_POST['maxy']):100000;
+
+if (isset($_POST['level']) && isset($_POST['cid'])) {
+	$level = intval($_POST['level']);
+	$cid = intval($_POST['cid']);
+	$limpland = !empty($_POST['limpland']);
+	$createsquares = !empty($_POST['createsquares']);
+	$setpercland = false;
+} else {
+	$setpercland = true;
+	$cid = '';
+	$limpland = '';
+	$createsquares = '';
+	$level = '';
+}
 
 /*
 ireland image is 
@@ -72,7 +90,7 @@ if (isset($_POST['shader']))
 	$imgfile=$_SERVER['DOCUMENT_ROOT'].'/'.$shader_image;
 	$shader=new GridShader;
 
-	$shader->process($imgfile, $shader_x, $shader_y, $reference_index, $clearexisting, !$skipupdategridprefix,$redrawmaps,$ignore100,$dryrun);
+	$shader->process($imgfile, $shader_x, $shader_y, $reference_index, $clearexisting, !$skipupdategridprefix,$redrawmaps,$ignore100,$dryrun,$minx,$maxx,$miny,$maxy,$setpercland,$level,$cid,$limpland,$createsquares);
 	
 
 	//close output and exit (we don't want to output a page twice)
@@ -91,6 +109,15 @@ $smarty->assign('redrawmaps', $redrawmaps);
 $smarty->assign('ignore100', $ignore100);
 $smarty->assign('reference_index', $reference_index);
 $smarty->assign('dryrun', $dryrun);
+$smarty->assign('setpercland', $setpercland);
+$smarty->assign('level', $level);
+$smarty->assign('cid', $cid);
+$smarty->assign('limpland', $limpland);
+$smarty->assign('createsquares', $createsquares);
+$smarty->assign('minx', $minx);
+$smarty->assign('maxx', $maxx);
+$smarty->assign('miny', $miny);
+$smarty->assign('maxy', $maxy);
 
 $smarty->display('gridbuilder.tpl');
 
