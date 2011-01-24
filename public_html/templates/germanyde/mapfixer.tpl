@@ -54,6 +54,12 @@
 
 {if $isadmin}
 
+<p>Other percentages:
+{foreach key=name item=percent from=$hier}
+<br />{$name}: {$percent}%
+{/foreach}
+</p>
+
 <form action="/mapfixer.php" method="get" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 <p>or <b>Set the Percentage Directly</b>: (skips the moderation queue)<br/> <br/>
 
