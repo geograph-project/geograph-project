@@ -540,3 +540,14 @@ INSERT INTO `loc_hier` (`level`, `community_id`, `contains_cid_min`, `contains_c
 (4, 15000000, 15000000, 15999999, 15003000, 'Sachsen-Anhalt'),
 (4, 16000000, 16000000, 16999999, 16051000, 'Thüringen');
 
+CREATE TABLE `gridsquare_percentage` (
+  `gridsquare_id` int(11) NOT NULL,
+  `level` tinyint(2) NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `percent` tinyint(4) NOT NULL,
+  PRIMARY KEY (`gridsquare_id`, `level`,`community_id`),
+  KEY `gridsquare_id` (`gridsquare_id`),
+  KEY `subject` (`level`,`community_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE  gridsquare_backup SELECT * FROM  gridsquare

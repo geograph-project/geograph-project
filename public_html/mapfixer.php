@@ -52,6 +52,8 @@ if (isset($_GET['gridref']))
 		if (count($sq))
 		{
 			$smarty->assign('percent_land', $sq['percent_land']);
+			$hier= $db->GetAssoc("select lh.name,gp.percent from gridsquare_percentage gp inner join loc_hier lh on (gp.level=lh.level and gp.community_id=lh.community_id) where gp.gridsquare_id={$sq['gridsquare_id']} order by lh.level");
+			$smarty->assign('hier', $hier);
 			
 			if ($count= $db->GetOne("select count(*) from mapfix_log where gridsquare_id='{$sq['gridsquare_id']}'"))
 			{

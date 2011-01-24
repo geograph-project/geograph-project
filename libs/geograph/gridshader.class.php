@@ -73,7 +73,9 @@ class GridShader
 	/**
 	* adds or updates squares
 	*/
-	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting,$updategridprefix = true,$expiremaps=true,$ignore100=false,$dryrun=false)
+	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting,$updategridprefix = true,$expiremaps=true,$ignore100=false,$dryrun=false,
+	                 $minx=0,$maxx=10000,$miny=0,$maxy=10000,
+	                 $setpercland=true,$level=0,$cid=0,$limpland=false,$createsquares=false)
 	{
 		if (file_exists($imgfile))
 		{
@@ -86,11 +88,16 @@ class GridShader
 				
 				$imgw=imagesx($img);
 				$imgh=imagesy($img);
-				
+				$startx = max(0,$minx);
+				$endx   = min($imgw-1,$maxx);
+				$starty = ($imgh-1)-min($imgh-1,$maxy);
+				$endy   = ($imgh-1)-max(0,$miny);
 
 				$this->_trace("Image is {$imgw}km x {$imgh}km");
 				if ($dryrun) $this->_trace("DRY RUN!");
 
+				require_once('geograph/gridsquare.class.php');
+				$gsquare=new GridSquare;
 				$valid=0;
 				$invalid=0;
 				$vminx=0;
@@ -105,12 +112,13 @@ class GridShader
 				$skipped=0;
 				$zeroed=0;
 				$skipped100=0;
+				$createdsquares=0;
 				
 				$lastpercent=-1;
-				for ($imgy=0; $imgy<$imgh; $imgy++)
+				for ($imgy=$starty; $imgy<=$endy; $imgy++)
 				{
 					//output some progress
-					$percent=round(($imgy*100)/$imgh);
+					$percent=round(100*($imgy-$starty)/($endy-$starty));
 					$percent=round($percent/5)*5;
 					if ($percent!=$lastpercent)
 					{
@@ -118,7 +126,7 @@ class GridShader
 						$lastpercent=$percent;
 					}
 					
-					for ($imgx=0; $imgx<$imgw; $imgx++)
+					for ($imgx=$startx; $imgx<=$endx; $imgx++)
 					{
 						//get colour of pixel 
 						//255=white, 0% land
@@ -138,8 +146,31 @@ class GridShader
 						$gridy=$y_offset + ($imgh-$imgy-1);
 						
 						$gridref=$this->_getGridRef($gridx,$gridy,$reference_index);
+						$ok = !empty($gridref);
+						if ($ok && !$setpercland) {
+							#$ok = $gsquare->loadFromPosition($gridx,$gridy);
+							#$ok = $gsquare->setGridRef($gridref,true);
+							$gsquare = $this->db->GetRow("select gridsquare_id,percent_land from gridsquare where x='$gridx' and y='$gridy'");
+							$ok = is_array($gsquare) && count($gsquare);
+							if (!$ok && $createsquares && $percent_land != 0) {
+								if (!$dryrun) {
+									$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land,point_xy) ".
+										"values('{$gridref}','{$reference_index}',$gridx,$gridy,0,GeomFromText('POINT($gridx $gridy)'))";
+									$this->db->Execute($sql);
+									$gsquare = $this->db->GetRow("select gridsquare_id,percent_land from gridsquare where x='$gridx' and y='$gridy'");
+								} else {
+									$gsquare = array('percent_land'=>0,'gridsquare_id'=>null);
+								}
+								$ok = is_array($gsquare) && count($gsquare);
+								$createdsquares++;
+							}
+							#if ($ok && $limpland && $percent_land > $gsquare->percent_land)
+							#	$percent_land = $gsquare->percent_land;
+							if ($ok && $limpland && $percent_land > $gsquare['percent_land'])
+								$percent_land = $gsquare['percent_land'];
+						}
 
-						if (empty($gridref)) {
+						if (!$ok) {
 							if ($clearexisting || ($percent_land!=0)) {
 								if ($invalid == 0) {
 									$invalx = $gridx;
@@ -157,7 +188,17 @@ class GridShader
 							//$this->_trace("img($imgx,$imgy) = grid($gridx,$gridy) $percent_land%");
 							
 							//ok, that's everything we need - can we obtain an existing grid square
-							$square = $this->db->GetRow("select gridsquare_id,percent_land from gridsquare where x='$gridx' and y='$gridy'");	
+							if ($setpercland)
+								$square = $this->db->GetRow("select gridsquare_id,percent_land from gridsquare where x='$gridx' and y='$gridy'");	
+							else
+								$square = $this->db->GetRow("select gridsquare_id,percent as percent_land from gridsquare_percentage ".
+								                            "where gridsquare_id='{$gsquare['gridsquare_id']}' ".
+								                            #"where gridsquare_id='{$gsquare->gridsquare_id}' ".
+								                            "and level='$level' and community_id='$cid'");
+								#$square = $this->db->GetRow("select gridsquare_id,percent as percent_land from gridsquare ".
+								#                            "inner join gridsquare_percentage using gridsquare_id ".
+								#                            "where x='$gridx' and y='$gridy' ".
+								#                            "and level='$level' and community_id='$cid'");
 						##no need to check this as this is the first import (and its rather expensive!)	
 							
 							if (is_array($square) && count($square))
@@ -165,11 +206,16 @@ class GridShader
 								if (($square['percent_land']!=$percent_land) &&
 								    ($clearexisting || ($percent_land!=0)))
 								{
-									
-									$sql="update gridsquare set grid_reference='{$gridref}', ".
-										"reference_index='$reference_index', ".
-										"percent_land='$percent_land' ".
-										"where gridsquare_id={$square['gridsquare_id']}";
+									if ($setpercland)
+										$sql="update gridsquare set grid_reference='{$gridref}', ".
+											"reference_index='$reference_index', ".
+											"percent_land='$percent_land' ".
+											"where gridsquare_id={$square['gridsquare_id']}";
+									else
+										$sql="update gridsquare_percentage set percent='$percent_land' ".
+										     "where gridsquare_id='{$gsquare['gridsquare_id']}' ".
+										     #"where gridsquare_id='{$gsquare->gridsquare_id}' ".
+										     "and level='$level' and community_id='$cid'";
 									if (!$dryrun) $this->db->Execute($sql);
 									if ($percent_land==0)
 										$zeroed++;
@@ -186,8 +232,13 @@ class GridShader
 								//we only create squares for land
 								if ($percent_land>0)
 								{
-									$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land,point_xy) ".
-										"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land,GeomFromText('POINT($gridx $gridy)'))";
+									if ($setpercland)
+										$sql="insert into gridsquare (grid_reference,reference_index,x,y,percent_land,point_xy) ".
+											"values('{$gridref}','{$reference_index}',$gridx,$gridy,$percent_land,GeomFromText('POINT($gridx $gridy)'))";
+									else
+										$sql="insert into gridsquare_percentage (gridsquare_id,level,community_id,percent) ".
+											"values('{$gsquare['gridsquare_id']}','$level','$cid','$percent_land')";
+											#"values('{$gsquare->gridsquare_id}','$level','$cid','$percent_land'))";
 									if (!$dryrun) $this->db->Execute($sql);
 
 									$created++;
@@ -205,7 +256,7 @@ class GridShader
 				}
 				imagedestroy($img);
 				
-				if ($updategridprefix) {
+				if ($updategridprefix && $setpercland) {
 					$this->_trace("Setting land flags for gridprefixes");
 					$prefixes = $this->db->GetAll("select * from gridprefix");	
 					foreach($prefixes as $idx=>$prefix)
@@ -234,6 +285,9 @@ class GridShader
 				$this->_trace("$created new squares created");
 				$this->_trace("$updated squares updated with new land percentage");
 				$this->_trace("$zeroed squares set to zero");
+
+				if (!$setpercland && $createsquares)
+					$this->_trace("$createdsquares new gridsquares created");
 				
 				if ($ignore100)
 					$this->_trace("$skipped100 squares ignored because at 100% in source");
