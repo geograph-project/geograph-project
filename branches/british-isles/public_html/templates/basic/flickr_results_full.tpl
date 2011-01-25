@@ -15,10 +15,10 @@
 	  <div style="clear:both">
 		<div style="float:left; position: relative; width:130px">
 		<div align="center">
-		<a title="{$image.title|escape:'html'} - click to view full size image" href="http://www.flickr.com/photo.gne?id={$image->id}"><img src="http://photos{$image.server}.flickr.com/{$image.id}_{$image.secret}_t.jpg" alt="{$image.title|escape:'html'}" border="0"></a>
+		<a title="{$image.title|escape:'html'} - click to view full-size image" href="http://www.flickr.com/photo.gne?id={$image->id}"><img src="http://photos{$image.server}.flickr.com/{$image.id}_{$image.secret}_t.jpg" alt="{$image.title|escape:'html'}" border="0"></a>
 		</div>
 		</div>
-	  <a title="view full size image" href="http://www.flickr.com/photo.gne?id={$image.id}">{$image.title|escape:'html'}</a>
+	  <a title="view full-size image" href="http://www.flickr.com/photo.gne?id={$image.id}">{$image.title|escape:'html'}</a>
 	  by <a title="view user profile" href="http://www.flickr.com/photos/{$image.owner}/">{$image.realname|default:'-<i>unknown</i>-'}</a> <br/>
 	  {if $image.isgeograph}geograph{/if} for square <a title="view page for {$image.grid_reference}" href="/gridref/{$image.grid_reference}">{$image.grid_reference}</a>
 
