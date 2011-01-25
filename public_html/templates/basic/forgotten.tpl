@@ -3,7 +3,7 @@
 {if $sent}
 
 <h2>Confirmation sent to {$email}</h2>
-<p>You should receive your a confirmation message shortly, once you have clicked the link in the message, your password will be changed.
+<p>You should receive your confirmation message shortly. Once you have clicked the link in the message, your password will be changed.
 If you have any problems, please <a title="Contact Us" href="contact.php">contact us</a></p>
 
 {else}
@@ -14,7 +14,7 @@ If you have any problems, please <a title="Contact Us" href="contact.php">contac
 
 <form action="/forgotten.php" method="post">
 
-<p>Enter your email address and your new password below and we'll email you a confirmation mail...</p>
+<p>Enter your email address and your new password below and we'll email you a confirmation message.</p>
 
 <label for="reminder">Your email address</label><br/>
 <input id="reminder" name="reminder" value="{$email|escape:'html'}"/>
