@@ -303,6 +303,8 @@ $CONF['use_gazetteer'] = 'towns'; //OS250/OS/hist/towns/default
 //configure administrative areas shown if $CONF['use_gazetteer'] == 'towns'
 $CONF['hier_levels'] = array(); # array(7, 6, 5, 4);
 $CONF['hier_prefix'] = array(); # array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
+//configure administrative areas shown on the statistics pages
+$CONF['hier_statlevels'] = array(); # array(4);
 
 //optionally get a key for sending your data to geocubes. 
 $CONF['GEOCUBES_API_KEY'] = "";
