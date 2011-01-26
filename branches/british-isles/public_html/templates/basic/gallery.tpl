@@ -68,7 +68,7 @@ Scope: <select name="scope" style="width:80px">
 	{if $user->registered} 
 		<a href="/discuss/?action=vtopic&forum=11">Submit a new Gallery</a> (Registered Users Only)
 	{else}
-		<a href="/login.php">Login</a> to Submit your own gallery!
+		<a href="/login.php">Login</a> to submit your own gallery!
 	{/if}
 	</div>
 {/if}

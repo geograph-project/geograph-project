@@ -25,7 +25,7 @@ function showHide(id,show) {
 		<h3 style="background-color:black;color:white;margin-top:0px; padding:10px;"><div style="float:right"><input type="submit" value="Go &gt; &gt;" style="font-size:1.2em"/></div> Mark It</h3>
 		
 		</form>
-		<p>As you play please add an approximate level of difficultly for the image, if a image is not suitable please label it as such. Please rate assumeing no local knowledge, and user of medium ability.</p>
+		<p>As you play please add an approximate level of difficultly for the image. If an image is not suitable please label it as such. Please rate assuming no local knowledge, and user of medium ability.</p>
 		
 		<a href="/games/moversboard.php?g=1&l=0">Rater Weekly Scoreboard</a>
 		<br style="clear:both"/>
@@ -35,9 +35,9 @@ function showHide(id,show) {
 
 
 <div class="interestBox" style="background-color:lightgreen; color:black; border:2px solid red; padding:10px; width:260px; float:right; text-align:center">
-Help us Locate new <br/>images for the games.<br/>
+Help us locate new <br/>images for the games.<br/>
 
-<a href="javascript:showHide('helpout1',true);">Read More &gt;&gt;</a>
+<a href="javascript:showHide('helpout1',true);">Read more &gt;&gt;</a>
 </div>
 
 
@@ -49,7 +49,7 @@ Help us Locate new <br/>images for the games.<br/>
 
 
 <div style="float:left; margin-top:60px; width:300px;height:85px; background-image:url('http://{$static_host}/templates/basic/img/callout2.gif');padding-left:90px;padding-top:15px; padding-right:10px; text-align:center;color:#0000FF">
-Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h2></div>
+Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>games section</h2></div>
 
 <br style="clear:both"/>
 
@@ -59,7 +59,7 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 <img src="http://{$static_host}/games/markit.gif" align="right" width="115" height="125"/>
 <h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Mark It</h3>
 
-<p>Earn Hamster Tokens by locating Photos on the Map! A single round consists of playing 10 images.</p>
+<p>Earn hamster tokens by locating photos on the map! A single round consists of playing 10 images.</p>
 
 <form action="/games/markit.php">
 
@@ -71,7 +71,7 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 <input type="radio" name="l" value="5"/>5 
 <br/><tt>&lt;-- Easy | Harder --&gt;</tt><br/><br/>
 
-<input type="submit" value="Play Now &gt; &gt;" style="font-size:1.3em"/> or view the <a href="/games/moversboard.php?g=1">Scoreboard</a> 
+<input type="submit" value="Play Now &gt; &gt;" style="font-size:1.3em"/> or view the <a href="/games/moversboard.php?g=1">scoreboard</a> 
 
 </form><br/>
 
@@ -83,12 +83,12 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 <div  class="interestBox" style="width:45%; float:left; height:350px; ">
 <h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Place Memory (beta) <sup style="color:pink">New!</sup></h3>
 
-<p>Earn Hamster Tokens by locating the Grid Square of a photo. A single round consists of playing 10 images.</p>
+<p>Earn hamster tokens by locating the grid Square of a photo. A single round consists of playing 10 images.</p>
 
 <form action="/games/place-memory.php">
 
 <b>Level:</b><br/>
-<input type="radio" name="l" value="1"/>1 :: Within 3km of &nbsp;&nbsp;&nbsp; <div style="position:absolute; display:inline;"><div style="position:relative; top: 8px"><label for="grid_reference">Grid Reference:</label> <input type="text" size="6" name="grid_reference" id="grid_reference"/></div></div><br/>
+<input type="radio" name="l" value="1"/>1 :: Within 3km of &nbsp;&nbsp;&nbsp; <div style="position:absolute; display:inline;"><div style="position:relative; top: 8px"><label for="grid_reference">Grid reference:</label> <input type="text" size="6" name="grid_reference" id="grid_reference"/></div></div><br/>
 <input type="radio" name="l" value="2" checked/>2 :: Within 10km of  <br/>
 
 {if !$user->registered || $user->stats.images > 10}<span style="color:gray">
@@ -104,7 +104,7 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 <input type="radio" name="l" value="5"/>5 :: Anywhere in Great Britain<br/>
 <br/>
 
-<input type="submit" value="Play Now &gt; &gt;" style="font-size:1.3em"/> or view the <a href="/games/moversboard.php?g=2">Scoreboard</a> 
+<input type="submit" value="Play Now &gt; &gt;" style="font-size:1.3em"/> or view the <a href="/games/moversboard.php?g=2">scoreboard</a> 
 
 </form><br/>
 
@@ -116,7 +116,7 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>Games Section</h
 
 <div class="interestBox" style="margin: 20px; padding:10px; width:260px; float:right; text-align:center">
 
-more games coming soon...
+More games coming soon...
 </div>
 
 <p>Just for fun, <a href="/games/statistics.php">some overview statistics</a>.</p>
