@@ -80,7 +80,7 @@
 	 {$game->image->comment|escape:'html'}
 	</div>
 	<div id="anticaption">
-		<input type="button" value="show caption" onclick="return showCaption(this.form)"/> (cost: one token)
+		<input type="button" value="Show caption" onclick="return showCaption(this.form)"/> (costs one token)
 	</div>
 	
 	
@@ -88,13 +88,13 @@
 		<p>
 		Please rate this<br/> particular image:<br/>
 		<select name="rate" size="7" onchange="rateUpdate(this)">
-			<option value="1">1 - Very Easy</option>
+			<option value="1">1 - Very easy</option>
 			<option value="2">2 - Easy</option>
 			<option value="3">3 - Medium</option>
 			<option value="4">4 - Hard</option>
-			<option value="5">5 - Very Hard</option>
-			<option value="-1">Not Suitable</option>
-			<option value="-2">Doubt Position Specified</option>
+			<option value="5">5 - Very hard</option>
+			<option value="-1">Not suitable</option>
+			<option value="-2">Doubt position specified</option>
 		</select></p>
 		<input type="hidden" name="rater" value="1"/>
 	{/if}
@@ -115,7 +115,7 @@
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Image used on this page, &copy; Copyright <a title="View profile" href="{$game->image->profile_link}">{$game->image->realname|escape:'html'}</a> and  
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; Image used on this page, &copy; copyright <a title="View profile" href="{$game->image->profile_link}">{$game->image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 

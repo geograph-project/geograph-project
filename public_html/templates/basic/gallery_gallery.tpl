@@ -65,7 +65,7 @@
 {dynamic}
 {if $user->registered && $enable_forums}
 	<div class="interestBox">
-		<a href="/discuss/?action=vthread&amp;forum=11&amp;topic={$topic_id}">Switch to Edit mode</a> (Registered Users Only)
+		<a href="/discuss/?action=vthread&amp;forum=11&amp;topic={$topic_id}">Switch to edit mode</a> (registered users only)
 	</div>
 {/if}
 {/dynamic}

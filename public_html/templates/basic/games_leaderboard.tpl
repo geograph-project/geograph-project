@@ -2,7 +2,7 @@
 
 {include file="_std_begin.tpl"}
 
-<h2><a href="/games/">Geograph Games</a> - All Time Leaderboard</h2>
+<h2><a href="/games/">Geograph Games</a> - All-Time Leaderboard</h2>
 
 <form method="get" action="{$script_name}">
 <p> <label for="g">Game</label>: <select name="g" id="g">
