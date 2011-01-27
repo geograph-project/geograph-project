@@ -6,9 +6,9 @@
 
 <div style="position:relative;background-color:white;">
 
-<div style="position:relative;margin-left:auto;margin-right:auto;width:740px">
+<div style="position:relative;margin-left:auto;margin-right:auto;width:750px">
 
-<div style="background-color:#eeeeee;padding:2px; text-align:center">
+<div  class="interestBox" style="padding:2px; text-align:center;border-radius: 6px;">
 The Geograph Britain and Ireland project aims to collect geographically
 representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
@@ -17,7 +17,7 @@ representative photographs and information for every square kilometre of <a href
 <div style="font-size:0.8em; text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
 
 
-	<div class="interestBox" style="height:389px;background-color:#333333; width:550px;color:white; float:left;padding:5px;overflow:hidden;border-radius: 6px;">
+	<div class="interestBox" style="height:389px;background-color:#333333; width:550px;color:white; float:left;padding:8px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<h3 style="margin-top:0">Photograph of the day <small>[<a href="/results/2087426" style="color:cyan">previous</a>]</small></h3>
 
@@ -53,8 +53,8 @@ representative photographs and information for every square kilometre of <a href
 			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:cyan">{$pictureoftheday.image->title}</a> by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:cyan">{$pictureoftheday.image->realname}</a>, <span class="nowrap">taken {$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</span>
 		</div>
 	</div>
-   
-	<div class="interestBox" style="height:389px;background-color:#333333; width:150px;color:white; float:left; font-size:0.8em;margin-left:20px;padding:5px; overflow:auto;border-radius: 6px;">
+
+	<div class="interestBox" style="height:389px;width:150px; float:left; font-size:0.8em;margin-left:18px;padding:8px; overflow:auto;border-radius: 10px;">
 		<h3 style="margin-top:0;">What is Geographing?</h3>
 
 		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
@@ -62,11 +62,10 @@ representative photographs and information for every square kilometre of <a href
 			<li style="padding-bottom:8px">It's a geography project for the people</li>
 			<li style="padding-bottom:8px">It's a national photography project</li>
 			<li style="padding-bottom:8px">It's a good excuse to get out more!</li>
-			<li style="padding-bottom:8px">It's a free and <a href="/faq.php#opensource" style="color:cyan">open online community</a> project for all</li>
+			<li style="padding-bottom:8px">It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
 		</ul>
 
-
-		<p><a title="register now" href="/register.php" style="color:cyan">Registration</a> is free so come and join us and see how
+		<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how
 		many grid squares you submit!</p>
 
 	</div>
@@ -75,24 +74,25 @@ representative photographs and information for every square kilometre of <a href
 
 <br style="clear:both"/>
 {if $recentcount}
-    <div style="position:relative;margin-left:auto;margin-right:auto;width:750px; font-size:0.9em">
+	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; font-size:0.9em">
 
 		<h3>Recent Photos <small>[<a href="/search.php?i=1522" title="Show the most recent submissions">see more</a>]</small></h3>
 
 		{foreach from=$recent item=image}
 
-		  <div style="text-align:center;padding-bottom:1em;width:150px;float:left">
-		  <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+		  <div style="text-align:center;padding-bottom:1em;width:150px;float:left;">
+		  <div style="height:126px">
+		    <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+		  </div>
 
 		  <div>
 		  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-		  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
-		  for <span class="nowrap">square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
+		  <span class="nowrap">by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
+		  <span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
 
 		  </div>
 
 		  </div>
-
 
 		{/foreach}
 	</div>
