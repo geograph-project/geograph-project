@@ -1291,6 +1291,10 @@ body {
 #right_block {
 	border: 0;
 	right:0px;
+	margin-top:0;
+	top:74px;
+	border-bottom:1px solid silver;
+	border-left:1px solid silver;
 }
 
 #nav_block {
@@ -1298,6 +1302,8 @@ body {
 	padding:0;
 	padding-right:6px;
 	left: 0;
+	top:74px;
+	border-bottom:1px solid silver;
 }
 
 .nav ul li {
@@ -1325,7 +1331,12 @@ body {
 
 .content_photoblack, .content_photogray, .content_photowhite, .content3, .content2, .content1, .maincontent {
 	border: 0;
-	margin-left: 142px;
+	margin-top:0;
+	margin-left: 134px;
+	margin-right:0;
+	padding-right:10px;
+	border-left:1px solid silver;
+	border-bottom:1px solid silver;
 }
 
 div.no_print {
@@ -1341,7 +1352,7 @@ div.no_print {
 }
 
 .content3 {
-	margin:4px 196px 0px 142px;
+	margin:0px 190px 0px 134px;
 }
 
 a.about {
