@@ -77,12 +77,12 @@ representative photographs and information for every square kilometre of <a href
 
 <br style="clear:both"/>
 {if $recentcount}
-	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; font-size:0.8em;margin-top:10px;">
-		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px;">
+	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; font-size:0.8em;margin-top:10px;background-color:#666666;margin-bottom:10px; border-radius: 6px; color:white">
+		<div class="interestBox" style="background-color:#333333;color:white; border-radius: 6px;margin-bottom:8px;">
 			<div style="position:relative;float:right">
-				<a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
-				<a href="/thumbed-weekly.php" title="Popular images">popular images &gt;</a> &nbsp;&nbsp;&nbsp;
-				<a href="/search.php?i=1522" title="Show the most recent submissions"><b>see more</b> &gt;</a>
+				<a href="/explore/searches.php" title="Featured Selections" style="color:cyan">other selections &gt;</a>&nbsp;&nbsp;
+				<a href="/thumbed-weekly.php" title="Popular images" style="color:cyan">popular images &gt;</a> &nbsp;&nbsp;&nbsp;
+				<a href="/search.php?i=1522" title="Show the most recent submissions" style="color:cyan"><b>see more</b> &gt;</a>
 			</div>
 			<h3 style="margin:0">Recent Photos</h3>
 		</div>
@@ -94,13 +94,14 @@ representative photographs and information for every square kilometre of <a href
 				<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 			</div>
 
-			<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-			<span class="nowrap">by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
-			<span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
+			<a title="view full size image" href="/photo/{$image->gridimage_id}" style="color:cyan">{$image->title|escape:'html'}</a>
+			<span class="nowrap">by <a title="view user profile" href="{$image->profile_link}" style="color:cyan">{$image->realname}</a></span>
+			<span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}" style="color:cyan">{$image->grid_reference}</a></span>
 
 		</div>
 
 		{/foreach}
+		<br style="clear:both"/>
 	</div>
 {/if}
 
@@ -114,7 +115,7 @@ representative photographs and information for every square kilometre of <a href
 		</div>
 
 		{foreach from=$news2 item=newsitem}
-			<div style="position:relative;width:233px;float:left; border-left: 2px solid #333333; padding-left:5px;margin-left:5px">
+			<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px">
 				<h4 style="margin-top: 0px;">{$newsitem.topic_title}</h4>
 				<div style="font-size:0.8em">{$newsitem.post_text}</div>
 				<div style="margin-top:8px;border-top:1px solid gray">
