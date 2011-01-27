@@ -29,13 +29,13 @@
 <h3>Stats</h3>
 
 <ul>
-	<li>Number of land squares: <b>{$landsquares|thousends}</b> <small>(out of a 100 possible)</small></li>
+	<li>Number of land squares: <b>{$landsquares|thousends}</b> <small>(out of a possible 100)</small></li>
 	<li>First Geographs: <b>{$geosquares|thousends}</b> (i.e. number of squares with Geographs){if $ftfusers}<ul>
 		<li>Contributors:  <b>{$ftfusers|thousends}</b></li>
 		<li>First: <b>{$first_submitted|date_format:"%A, %e %B, %Y"}</b></li>
 		<li>Last: <b>{$last_submitted|date_format:"%A, %e %B, %Y"}</b></li>
 	</ul>{/if}</li>
-	<li>Number of geographs: <b>{$geographs|thousends}</b> </li>
+	<li>Number of Geographs: <b>{$geographs|thousends}</b> </li>
 	<li>Number of images: <b>{$images|thousends}</b> {if $users}<ul>
                 <li>Contributors:  <b>{$users|thousends}</b></li>
         </ul>{/if}</li>
@@ -79,14 +79,14 @@ Nearby hectads:
 			
 	<li><a href="/search.php?text=hectad:{$hectad}">View <b>images in {$hectad}</b></a> (<a href="/search.php?text=hectad:{$hectad}+ftf:1">First Geographs only</a>)</li>
 	
-	<li style="list-style-image: url('http://{$static_host}/img/geotag_16.png');"><a href="/gridref/{$hectad}/links"><b>Location Links for {$hectad}</b></a></a>
+	<li style="list-style-image: url('http://{$static_host}/img/geotag_16.png');"><a href="/gridref/{$hectad}/links"><b>Location links for {$hectad}</b></a></a>
 
-	<li style="list-style-image: url('http://{$static_host}/img/links/20/place.png');"><a href="/finder/places.php?q={$myriad}+{$hectad}">Find <b>Places in {$hectad}</b></a> (can then find images of that place)</li>
+	<li style="list-style-image: url('http://{$static_host}/img/links/20/place.png');"><a href="/finder/places.php?q={$myriad}+{$hectad}">Find <b>places in {$hectad}</b></a> (can then find images of that place)</li>
 
 	{if $largemap_token}
-		<li style="list-style-image: url('http://{$static_host}/img/links/20/checksheet.png');"><a href="/statistics/fully_geographed.php?myriad={$myriad}"><b>Compare</b> to other hectads in {$myriad}</a></li>
+		<li style="list-style-image: url('http://{$static_host}/img/links/20/checksheet.png');"><a href="/statistics/fully_geographed.php?myriad={$myriad}"><b>Compare</b> with other hectads in {$myriad}</a></li>
 	{else}
-		<li style="list-style-image: url('http://{$static_host}/img/links/20/checksheet.png');"><a href="/statistics/most_geographed.php?myriad={$myriad}"><b>Compare</b> to other hectads in {$myriad}</a></li>
+		<li style="list-style-image: url('http://{$static_host}/img/links/20/checksheet.png');"><a href="/statistics/most_geographed.php?myriad={$myriad}"><b>Compare</b> with other hectads in {$myriad}</a></li>
 	{/if}
 	
 </ul>	

@@ -47,14 +47,14 @@
 			<option value="{$u}">Just for {$profile->realname|escape:'html'}</option>
 		{/if}
 		<option value="{$user->user_id}">Just for {$user->realname|escape:'html'}</option>
-		<option value="" {if !$u} selected{/if}>For Everyone</option>
+		<option value="" {if !$u} selected{/if}>For everyone</option>
 	</select>
 	<input type="submit" value="Go">
     {else}
 	{if $u}
 	- <select name="u">
 		<option value="{$u}" selected>Just for {$profile->realname|escape:'html'}</option>
-		<option value="">For Everyone</option>
+		<option value="">For everyone</option>
 	</select>
 	<input type="submit" value="Go">
 	{/if}
@@ -70,7 +70,7 @@
 		CTRL and - (minus) to decrease text-size<br/>
 		CTRL and + (plus) to increase<br/>
 		CTRL and 0 (zero) to return to normal<br/><br/>
-		(or hold CTRL and use mouse scroll wheer)</small></div>
+		(or hold CTRL and use mouse wheel)</small></div>
 </div>
 
 <table id="maptable" border=1 cellspacing=0 cellpadding=1 bordercolor="#f7f7f7"> <tbody>

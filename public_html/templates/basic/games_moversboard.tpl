@@ -12,7 +12,7 @@
 </select>
 <input type="submit" value="Go">
 	
-&nbsp;&nbsp;&nbsp;&nbsp; See also <a href="/games/leaderboard.php?l={$l}&amp;g={$g}">all time leaderboard</a></p>
+&nbsp;&nbsp;&nbsp;&nbsp; See also <a href="/games/leaderboard.php?l={$l}&amp;g={$g}">all-time leaderboard</a></p>
 </form>
 <hr/>
 
