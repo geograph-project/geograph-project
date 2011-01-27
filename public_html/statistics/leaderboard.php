@@ -29,6 +29,8 @@ $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['t
 
 $date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
 
+$timerel = (isset($_GET['timerel']) && in_array($_GET['timerel'], array('during','dbefore','dafter','between'))) ? $_GET['timerel'] : 'during';
+
 if (!empty($_GET['whenYear'])) {
 	if (!empty($_GET['whenMonth'])) {
 		$_GET['when'] = sprintf("%04d-%02d",$_GET['whenYear'],$_GET['whenMonth']);
@@ -37,9 +39,127 @@ if (!empty($_GET['whenYear'])) {
 	}
 }
 
-$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
+if (!empty($_GET['when2Year'])) {
+	if (!empty($_GET['when2Month'])) {
+		$_GET['when2'] = sprintf("%04d-%02d",$_GET['when2Year'],$_GET['when2Month']);
+	} else {
+		$_GET['when2'] = sprintf("%04d",$_GET['when2Year']);
+	}
+}
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
+$when2 = (isset($_GET['when2']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when2']))?$_GET['when2']:'';
+
+if ($timerel == 'during' || $timerel == 'dbefore') {
+	$_GET['when2Year'] = $_GET['whenYear'];
+	$_GET['when2Month'] = $_GET['whenMonth'];
+	$when2 = $when;
+}
+if ($timerel == 'dbefore') {
+	$_GET['whenYear'] = '';
+	$_GET['whenMonth'] = '';
+	$when = '';
+} elseif ($timerel == 'dafter') {
+	$_GET['when2Year'] = '';
+	$_GET['when2Month'] = '';
+	$when2 = '';
+}
+
+if (!empty($_GET['whenYear'])) {
+	$year = intval($_GET['whenYear']);
+	if (!empty($_GET['whenMonth'])) {
+		$month = intval($_GET['whenMonth']);
+	} else {
+		$month = 1;
+	}
+	$whenlow = sprintf("%04d-%02d-01",$year,$month);
+}
+
+if (!empty($_GET['when2Year'])) {
+	$year = intval($_GET['when2Year']);
+	if (!empty($_GET['when2Month'])) {
+		$month = intval($_GET['when2Month']);
+		if ($month != 12) {
+			$month += 1;
+		} else {
+			$month = 1;
+			$year += 1;
+		}
+	} else {
+		$month = 1;
+		$year += 1;
+	}
+	$whenhigh = sprintf("%04d-%02d-01",$year,$month);
+}
+
+if (isset($_GET['region']) &&  preg_match('/^\d+_\d+$/',$_GET['region'])) {
+	list($level,$cid) = explode('_',$_GET['region']);
+	$level = intval($level);
+	$cid = intval($cid);
+	$has_region = in_array($level, $CONF['hier_statlevels']);
+} else {
+	$has_region = false;
+}
+
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
+
+#trigger_error("$timerel, {$_GET['whenYear']}-{$_GET['whenMonth']} ... {$_GET['when2Year']}-{$_GET['when2Month']} : {$_GET['when']} ... {$_GET['when2']} : $whenlow ... $whenhigh : $when ... $when2", E_USER_NOTICE);
+
+$timedesc = '';
+$timesql = '';
+$timesqlrel = '';
+if ($timerel == 'between') {
+	if (!empty($when) && !empty($when2)) {
+		$timesqlrel = "BETWEEN TO_DAYS('$whenlow') AND TO_DAYS('$whenhigh')-1";
+		if ($CONF['lang'] == 'de')
+			$timedescrel = "zwischen ".getFormattedDate($when)." und ".getFormattedDate($when2);
+		else
+			$timedescrel = "between ".getFormattedDate($when)." and ".getFormattedDate($when2);
+	}
+} else if ($timerel == 'during') {
+	if (!empty($when) && !empty($when2)) {
+		$timesqlrel = "BETWEEN TO_DAYS('$whenlow') AND TO_DAYS('$whenhigh')-1";
+		if ($CONF['lang'] == 'de')
+			$timedescrel = getFormattedDate($when);
+		else
+			$timedescrel = "during ".getFormattedDate($when);
+	}
+} else if ($timerel == 'dbefore') {
+	if (!empty($when2)) {
+		$timesqlrel = "< TO_DAYS('$whenhigh')";
+		if ($CONF['lang'] == 'de')
+			$timedescrel = "bis ".getFormattedDate($when2);
+		else
+			$timedescrel = "until ".getFormattedDate($when2);
+	}
+} else if ($timerel == 'dafter') {
+	if (!empty($when)) {
+		$timesqlrel = ">= TO_DAYS('$whenlow')";
+		if ($CONF['lang'] == 'de')
+			$timedescrel = "ab ".getFormattedDate($when);
+		else
+			$timedescrel = "from ".getFormattedDate($when);
+	}
+}
+if ($timesqlrel !== '') {
+	if ($date == 'both') {
+		$timesql = " and to_days(imagetaken) $timesqlrel and to_days(submitted) $timesqlrel";
+		if ($CONF['lang'] == 'de')
+			$timedesc = " <b>für Bilder mit Aufnahme- und Einreichdatum ".$timedescrel."</b>";
+		else
+			$timedesc = ", <b>for images taken and submitted ".$timedescrel."</b>";
+	} else {
+		$column = ($date == 'taken')?'imagetaken':'submitted';
+		$timesql = " and to_days($column) $timesqlrel";
+		if ($CONF['lang'] == 'de') {
+			$title = ($date == 'taken')?'Aufnahmedatum':'Einreichdatum'; 
+			$timedesc = " <b>für Bilder mit $title ".$timedescrel."</b>";
+		} else {
+			$title = ($date == 'taken')?'taken':'submitted'; 
+			$timedesc = ", <b>for images $title ".$timedescrel."</b>";
+		}
+	}
+}
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):150;
 
@@ -64,7 +184,7 @@ if (isset($_GET['inner'])) {
 } else {
 	$template='statistics_leaderboard.tpl';
 }
-$cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad;
+$cacheid=$minimum.'-'.$maximum.$type.$date.$when.'/'.$when2.$timerel.$limit.'.'.$ri.'.'.$u.$myriad.':'.($has_region?($level.'_'.$cid):'').':';
 
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
@@ -77,12 +197,18 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
-	$filtered = ($when || $ri || $myriad);
+	$filtered = ($when || $when2 || $ri || $myriad || $has_region);
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
-	$sql_table = "gridimage_search i";
-	$sql_where = "1";
+	if (!$db) die('Database connection failed');
+	if ($has_region) {
+		$region_name = $db->GetOne("select name from loc_hier where level=$level and community_id=$cid");
+		$sql_table = "gridimage_search i inner join gridsquare_percentage using (gridsquare_id)";
+		$sql_where = "level=$level and community_id=$cid and percent>0";
+	} else {
+		$sql_table = "gridimage_search i";
+		$sql_where = "1";
+	}
 	$sql_orderby = '';
 	$sql_column = "count(*)";
 	$sql_having_having = '';
@@ -485,31 +611,20 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	if (isset($sql_qtable[$type]['column'])) $sql_column = $sql_qtable[$type]['column'];
 	if (isset($sql_qtable[$type]['having_having'])) $sql_having_having = $sql_qtable[$type]['having_having'];
-	if (isset($sql_qtable[$type]['where'])) $sql_where = $sql_qtable[$type]['where'];
+	if (isset($sql_qtable[$type]['where'])) $sql_where .= ' and '. $sql_qtable[$type]['where'];
 	if (isset($sql_qtable[$type]['table'])) $sql_table = $sql_qtable[$type]['table'];
 	if (isset($sql_qtable[$type]['orderby'])) $sql_orderby = $sql_qtable[$type]['orderby'];
 
 	$heading = $text_table[$type]['heading'];
 	$desc = $text_table[$type]['desc'];
 
-	if ($when) {
-		if ($date == 'both') {
-			$sql_where .= " and imagetaken LIKE '$when%' and submitted LIKE '$when%'";
-			if ($CONF['lang'] == 'de')
-				$desc .= " <b>für Bilder mit Aufnahme- und Einreichdatum ".getFormattedDate($when)."</b>";
-			else
-				$desc .= ", <b>for images taken and submitted during ".getFormattedDate($when)."</b>";
-		} else {
-			$column = ($date == 'taken')?'imagetaken':'submitted';
-			$sql_where .= " and $column LIKE '$when%'";
-			if ($CONF['lang'] == 'de') {
-				$title = ($date == 'taken')?'Aufnahmedatum':'Einreichdatum'; 
-				$desc .= " <b>für Bilder mit $title ".getFormattedDate($when)."</b>";
-			} else {
-				$title = ($date == 'taken')?'taken':'submitted'; 
-				$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
-			}
-		}
+	$sql_where .= $timesql;
+	$desc .= $timedesc;
+	if ($has_region) {
+		if ($CONF['lang'] == 'de')
+			$desc .= " in ".$region_name;
+		else
+			$desc .= " in ".$region_name;
 	}
 	if ($myriad) {
 		$sql_where .= " and grid_reference LIKE '{$myriad}____'";
@@ -592,7 +707,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$extra = array();
 	$extralink = '';
 	
-	foreach (array('when','date','ri','myriad') as $key) {
+	foreach (array('when','when2','timerel','date','ri','myriad','region') as $key) {
 		if (isset($_GET[$key])) {
 			$extra[$key] = $_GET[$key];
 			$extralink .= "&amp;$key={$_GET[$key]}";
