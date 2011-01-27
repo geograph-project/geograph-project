@@ -551,3 +551,11 @@ CREATE TABLE `gridsquare_percentage` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 CREATE TABLE  gridsquare_backup SELECT * FROM  gridsquare
+
+ALTER TABLE `gridimage_search` ADD `gridsquare_id` int(11) NOT NULL DEFAULT '0' AFTER `gridimage_id`;
+ALTER TABLE `gridimage_recent` ADD `gridsquare_id` int(11) NOT NULL DEFAULT '0' AFTER `gridimage_id`;
+UPDATE gridimage_search gs SET gridsquare_id = (select gridsquare_id from gridimage gi where gi.gridimage_id = gs.gridimage_id);
+ALTER TABLE `gridimage_search` ADD KEY `gridsquare_id` (`gridsquare_id`);
+ALTER TABLE `gridimage` ADD  KEY `gridsquare_id_2` (`gridsquare_id`);
+
+

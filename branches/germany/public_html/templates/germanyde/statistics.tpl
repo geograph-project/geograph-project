@@ -109,7 +109,7 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="view square {$centergr[$ri]
 <tr><th>Region</th><th>Images (last week)</th><th>Squares</th><th>With geographs</th><th>Hectads</th>{*<th>Myriads</th><th>Area (km<sup>2</sup>, land)</th><th>Geograph Centre</th>*}</tr>
 </thead><tbody>
 {foreach from=$hstats item=row}
-<tr><td>{$row.name}</td><td>{$row.images_total|thousends} ({$row.images_thisweek|thousends})</td><td>{$row.squares_submitted|thousends} / {$row.squares_total|thousends} ({$row.percent|floatformat:"%.3f"}%)</td><td>{$row.geographs_submitted|thousends}</td><td>{$row.tenk_submitted|thousends} / {$row.tenk_total|thousends}</td>{*<td>{$row.grid_submitted}/{$row.grid_total}</td><td>{$row.area|floatformat:"%.0f"}</td><td>{if $row.centergr == "unknown"}-{else}<a href="/gridref/{$row.centergr}" title="view square {$row.centergr}">{$row.centergr}</a>, {place place=$row.place}{/if}</td>*}</tr>
+<tr><td>{$row.name|escape:'html'}</td><td>{$row.images_total|thousends} ({$row.images_thisweek|thousends})</td><td>{$row.squares_submitted|thousends} / {$row.squares_total|thousends} ({$row.percent|floatformat:"%.3f"}%)</td><td>{$row.geographs_submitted|thousends}</td><td>{$row.tenk_submitted|thousends} / {$row.tenk_total|thousends}</td>{*<td>{$row.grid_submitted}/{$row.grid_total}</td><td>{$row.area|floatformat:"%.0f"}</td><td>{if $row.centergr == "unknown"}-{else}<a href="/gridref/{$row.centergr}" title="view square {$row.centergr}">{$row.centergr}</a>, {place place=$row.place}{/if}</td>*}</tr>
 {/foreach}
 </tbody>
 </table>

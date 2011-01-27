@@ -558,6 +558,7 @@ CREATE TABLE `gridimage` (
   KEY `placename_id` (`placename_id`),
   KEY `moderation_status` (`moderation_status`),
   KEY `submitted` (`submitted`)
+  KEY `gridsquare_id_2` (`gridsquare_id`),
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -648,6 +649,7 @@ CREATE TABLE `gridimage_query` (
 DROP TABLE IF EXISTS `gridimage_recent`;
 CREATE TABLE `gridimage_recent` (
   `gridimage_id` int(11) NOT NULL DEFAULT '0',
+  `gridsquare_id` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
   `moderation_status` enum('rejected','pending','accepted','geograph') DEFAULT NULL,
   `title` varchar(128) DEFAULT NULL,
@@ -682,6 +684,7 @@ CREATE TABLE `gridimage_recent` (
 DROP TABLE IF EXISTS `gridimage_search`;
 CREATE TABLE `gridimage_search` (
   `gridimage_id` int(11) NOT NULL DEFAULT '0',
+  `gridsquare_id` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
   `moderation_status` enum('rejected','pending','accepted','geograph') DEFAULT NULL,
   `title` varchar(128) DEFAULT NULL,
@@ -717,6 +720,7 @@ CREATE TABLE `gridimage_search` (
   SPATIAL KEY `point_xy` (`point_xy`),
   SPATIAL KEY `point_ll` (`point_ll`),
   KEY `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`)
+  KEY `gridsquare_id` (`gridsquare_id`),
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --

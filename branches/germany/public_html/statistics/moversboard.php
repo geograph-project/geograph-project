@@ -27,11 +27,19 @@ init_session();
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'images';
 
+if (isset($_GET['region']) &&  preg_match('/^\d+_\d+$/',$_GET['region'])) {
+	list($level,$cid) = explode('_',$_GET['region']);
+	$level = intval($level);
+	$cid = intval($cid);
+	$has_region = in_array($level, $CONF['hier_statlevels']);
+} else {
+	$has_region = false;
+}
 
 $smarty = new GeographPage;
 
 $template='statistics_moversboard.tpl';
-$cacheid=$type;
+$cacheid=$type.':'.($has_region?($level.'_'.$cid):'').':';
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -294,8 +302,23 @@ if (!$smarty->is_cached($template, $cacheid))
 	$isfloat = false;
 	if (isset($sql_qtable[$type]['isfloat'])) $isfloat = $sql_qtable[$type]['isfloat'];
 
+	$desc = $text_table[$type]['desc'];
+
+	if ($has_region) {
+		$region_name = $db->GetOne("select name from loc_hier where level=$level and community_id=$cid");
+		$region_table = "inner join gridsquare_percentage using (gridsquare_id)";
+		$region_where = "level=$level and community_id=$cid and percent>0 and ";
+		if ($CONF['lang'] == 'de')
+			$desc .= " in ".$region_name;
+		else
+			$desc .= " in ".$region_name;
+	} else {
+		$region_table = '';
+		$region_where = '';
+	}
+
 	$smarty->assign('heading', $text_table[$type]['heading']);
-	$smarty->assign('desc', $text_table[$type]['desc']);
+	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
 	$smarty->assign('isfloat', $isfloat);
 
@@ -311,23 +334,23 @@ if (!$smarty->is_cached($template, $cacheid))
 		//squares has to use a count(distinct ...) meaning cant have pending in same query... possibly could do with a funky subquery but probably would lower performance...
 		$sql="select i.user_id,u.realname,
 		count(distinct grid_reference) as geographs
-		from gridimage_search as i 
+		from gridimage_search as i $region_table
 		inner join user as u using(user_id)  
-		where i.submitted > date_sub(now(), interval 7 day) $sql_where
+		where $region_where i.submitted > date_sub(now(), interval 7 day) $sql_where
 		group by i.user_id 
 		order by geographs desc";
 		$topusers=$db->GetAssoc($sql);
 
 		$sqlsum="select count(distinct grid_reference) as geographs
-		from gridimage_search as i 
-		where i.submitted > date_sub(now(), interval 7 day) $sql_where";
+		from gridimage_search as i $region_table
+		where $region_where i.submitted > date_sub(now(), interval 7 day) $sql_where";
 		$sum=$db->GetRow($sqlsum);
 
 
 		//now we want to find all users with pending images and add them to this array
-		$sql="select i.user_id,u.realname,0 as geographs, count(*) as pending from gridimage as i
+		$sql="select i.user_id,u.realname,0 as geographs, count(*) as pending from gridimage as i $region_table
 		inner join user as u using(user_id)  
-		where i.submitted > date_sub(now(), interval 7 day) and
+		where $region_where i.submitted > date_sub(now(), interval 7 day) and
 		i.moderation_status='pending'
 		group by i.user_id
 		order by pending desc";
@@ -346,8 +369,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (isset($sql_qtable[$type]['table'])) $sql_table = $sql_qtable[$type]['table'];
 		if (isset($sql_qtable[$type]['orderby'])) $sql_orderby = $sql_qtable[$type]['orderby'];
 
-		$sqlsum="select $sql_column as geographs from $sql_table
-		where i.submitted > date_sub(now(), interval 7 day) $sql_where";
+		$sqlsum="select $sql_column as geographs from $sql_table $region_table
+		where $region_where i.submitted > date_sub(now(), interval 7 day) $sql_where";
 		$sum=$db->GetRow($sqlsum);
 
 		$sql_pending = (strpos($sql_table,'_search') === FALSE)?"sum(i.moderation_status='pending')":'0';
@@ -355,8 +378,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql="select i.user_id,u.realname,
 		$sql_column as geographs, 
 		$sql_pending as pending
-		from $sql_table left join user as u using(user_id) 
-		where i.submitted > date_sub(now(), interval 7 day) $sql_where
+		from $sql_table $region_table left join user as u using(user_id) 
+		where $region_where i.submitted > date_sub(now(), interval 7 day) $sql_where
 		group by i.user_id 
 		having (geographs > 0 or pending > 0)
 		order by geographs desc $sql_orderby, pending desc ";

@@ -74,7 +74,7 @@ class GridShader
 	* adds or updates squares
 	*/
 	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting,$updategridprefix = true,$expiremaps=true,$ignore100=false,$dryrun=false,
-	                 $minx=0,$maxx=10000,$miny=0,$maxy=10000,
+	                 $minx=0,$maxx=100000,$miny=0,$maxy=100000,
 	                 $setpercland=true,$level=0,$cid=0,$limpland=false,$createsquares=false)
 	{
 		if (file_exists($imgfile))
