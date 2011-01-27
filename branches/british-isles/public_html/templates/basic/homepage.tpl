@@ -1,6 +1,8 @@
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
+<div style="text-align:center;font-size:0.9em;padding-bottom:3px;border-bottom:1px solid silver;margin-bottom:8px"><a href="?preview=1">Preview our new Homepage layout</a>!</div>
+
 <h2>Welcome to Geograph Britain and Ireland</h2>
 
 <div style="position:relative;background-color:white;">
@@ -136,6 +138,13 @@ and <a href="/article/Ways-to-view-Geograph-Images">even more ways to view image
 </div>
 
 <br style="clear:both"/>
+
+<p align="center">
+	This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948/source/geograph">UK Web Archive</a> project.
+</div>
+
+<p align="center"><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 26 Cloister Road, Acton, London W3 0DE.</i></small></p>
+
 &nbsp;
 
 </div>
