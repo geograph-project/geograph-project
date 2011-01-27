@@ -30,7 +30,7 @@ if it doesn't already exist, and assign a land percentage to that square.</p>
 <label for="redrawmaps">Redraw maps (base and detail)</label><br />
 
 <input type="checkbox" name="ignore100" id="ignore100" value="1" {if $ignore100}checked{/if}>
-<label for="ignore100">Ignore 100% squares, useful for makeing lakes where the map doesnt include sea</label><br />
+<label for="ignore100">Ignore 100% squares, useful for making lakes where the map doesn't include sea</label><br />
 
 <input type="submit" name="shader" value="Build Grid">
 

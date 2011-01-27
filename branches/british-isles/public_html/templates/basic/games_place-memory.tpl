@@ -79,7 +79,7 @@
   <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 	
-	<p>Enter the Grid Reference of the square that contains the photo. You can also use the placename box to search for a grid reference. </p> 
+	<p>Enter the grid reference of the square that contains the photo. You can also use the placename box to search for a grid reference. </p> 
 	
 	{if $message}
 		<p style="color:#990000;font-weight:bold;">{$message}</p>
@@ -97,7 +97,7 @@
 		
 		<input type="hidden" name="token" value="{$gameToken}"/>
 		<fieldset>
-			<legend>Hamster Tokens Available <input type="text" name="points" value="{$game->points}" size="1" readonly="readonly"/></legend>
+			<legend>Hamster tokens available <input type="text" name="points" value="{$game->points}" size="1" readonly="readonly"/></legend>
 			{section loop=$game->points name="point"}
 				<img src="http://{$static_host}/templates/basic/img/hamster-icon.gif" name="pointimg{$smarty.section.point.index}"/>
 			{/section}
@@ -107,7 +107,7 @@
 
 
 <div class="yui-skin-sam" style="position:relative">
-	<label for="ysearchinput1"><b style="color:#0018F8">Placename/Map Feature/Gazetteer Search</b></label><br/>
+	<label for="ysearchinput1"><b style="color:#0018F8">Placename/map feature/gazetteer search</b></label><br/>
 	<div id="example1" class="autocomplete">
 		<input id="ysearchinput1" name="placename" type="text"/>
 		<div id="ysearchcontainer1"></div>

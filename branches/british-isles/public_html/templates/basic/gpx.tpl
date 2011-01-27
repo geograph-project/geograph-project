@@ -4,7 +4,7 @@
 
 	<h2>GPX Export</h2>
 
-	<p>Use this page to download a {external href="http://www.topografix.com/gpx.asp" text="GPX"} file to load into your mapping program and/or GPS receiver. This is ideal for creating a high tech version of the Printable Check sheet for when you go paperless.</p>
+	<p>Use this page to download a {external href="http://www.topografix.com/gpx.asp" text="GPX"} file to load into your mapping program and/or GPS receiver. This is ideal for creating a high tech version of the printable Check Sheet for when you go paperless.</p>
 {dynamic}
 {if $errormsg}
 <p><b>{$errormsg}</b></p>
@@ -36,7 +36,7 @@
 
 <p style="background-color:yellow;padding:10px;">If you use Memory Map you may prefer <a href="/memorymap.php">this page</a> instead.</p>
 
-<p style="background-color:lightgreen;padding:10px;">Loading these GPX files into Google Earth will produce coverage maps. You can also load in actual images into Google Earth, using <a href="/kml.php">KML files</a>.</p>
+<p style="background-color:lightgreen;padding:10px;">Loading these GPX files into Google Earth will produce coverage maps. You can also load actual images into Google Earth, using <a href="/kml.php">KML files</a>.</p>
 
 <p style="background-color:lightblue;padding:10px;">You can also download the images from a set of search results and/or the <a title="Latest Images in GPX format" href="/feed/recent.gpx">latest uploads</a> in GPX format. </p>
 
