@@ -12,14 +12,17 @@
 The Geograph Britain and Ireland project aims to collect geographically
 representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
-<div style="text-align:right;font-size:0.7em">Looking for <a href="/help/geograph_british_isles">Geograph British Isles</a>?</div>
+<div style="text-align:right;font-size:0.7em;margin-right:10px">Looking for <a href="/help/geograph_british_isles">Geograph British Isles</a>?</div>
 
 <div style="font-size:0.8em; text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
 
 
 	<div class="interestBox" style="height:389px;background-color:#333333; width:550px;color:white; float:left;padding:8px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
-			<h3 style="margin-top:0">Photograph of the day <small>[<a href="/results/2087426" style="color:cyan">previous</a>]</small></h3>
+			<div style="position:relative;float:right;margin-right:10px">
+				<a href="/results/2087426" style="color:cyan">view previous &gt;</a>
+			</div>
+			<h3 style="margin-top:0">Photograph of the day</h3>
 
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
@@ -74,25 +77,28 @@ representative photographs and information for every square kilometre of <a href
 
 <br style="clear:both"/>
 {if $recentcount}
-	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; font-size:0.9em">
-
-		<h3>Recent Photos <small>[<a href="/search.php?i=1522" title="Show the most recent submissions">see more</a>]</small></h3>
+	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; font-size:0.8em;margin-top:10px;">
+		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px;">
+			<div style="position:relative;float:right">
+				<a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
+				<a href="/thumbed-weekly.php" title="Popular images">popular images &gt;</a> &nbsp;&nbsp;&nbsp;
+				<a href="/search.php?i=1522" title="Show the most recent submissions"><b>see more</b> &gt;</a>
+			</div>
+			<h3 style="margin:0">Recent Photos</h3>
+		</div>
 
 		{foreach from=$recent item=image}
 
-		  <div style="text-align:center;padding-bottom:1em;width:150px;float:left;">
-		  <div style="height:126px">
-		    <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
-		  </div>
+		<div style="text-align:center;padding-bottom:1em;width:150px;float:left;">
+			<div style="height:126px">
+				<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+			</div>
 
-		  <div>
-		  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
-		  <span class="nowrap">by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
-		  <span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
+			<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
+			<span class="nowrap">by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
+			<span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
 
-		  </div>
-
-		  </div>
+		</div>
 
 		{/foreach}
 	</div>
@@ -100,9 +106,15 @@ representative photographs and information for every square kilometre of <a href
 
 {if $news2}
 	<div style="clear:both; position:relative;margin-left:auto;margin-right:auto;width:750px;font-size:0.9em">
-		<h3>Latest News {if $rss_url}<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a> <small>[<a href="/discuss/index.php?&amp;action=vtopic&amp;forum=1&amp;sortBy=1">see more</a>]</small>{/if}</h3>
+		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px;">
+			<div style="position:relative;float:right">
+				<a href="/discuss/index.php?&amp;action=vtopic&amp;forum=1&amp;sortBy=1"><b>read more</b> &gt;</a>
+			</div>
+			<h3 style="margin:0">Latest News {if $rss_url}&nbsp;&nbsp;&nbsp;<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a>{/if}</h3>
+		</div>
+
 		{foreach from=$news2 item=newsitem}
-			<div style="position:relative;width:233px;float:left; border-left: 2px solid black; padding-left:5px;margin-left:5px">
+			<div style="position:relative;width:233px;float:left; border-left: 2px solid #333333; padding-left:5px;margin-left:5px">
 				<h4 style="margin-top: 0px;">{$newsitem.topic_title}</h4>
 				<div style="font-size:0.8em">{$newsitem.post_text}</div>
 				<div style="margin-top:8px;border-top:1px solid gray">
@@ -118,7 +130,7 @@ representative photographs and information for every square kilometre of <a href
 <br style="clear:both"/>
 
 
-<div class="interestBox" style="text-align:center;margin:30px"><b>Looking for more? Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">More pages</a>.</b></div>
+<div class="interestBox" style="text-align:center;margin:30px; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;"><b>Looking for more?</b> Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">More pages</a>.</div>
 
 
 <p align="center">
