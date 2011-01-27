@@ -1,8 +1,12 @@
 {include file="_std_begin.tpl"}
 
+<div style="text-align:center;font-size:0.9em;padding-bottom:3px;border-bottom:1px solid silver;margin-bottom:8px">Don't like the new layout? <a href="/">Switch Back</a>. Please also consider <a href="https://spreadsheets.google.com/viewform?formkey=dE16ckhUQ0Fjd2ZvMlVyUVNFc1l0UWc6MQ">giving us feedback</a> - <b>Thank You</b>!</div>
+
 <h2 style="text-align:center">Welcome to Geograph Britain and Ireland</h2>
 
 <div style="position:relative;background-color:white;">
+
+<div style="position:relative;margin-left:auto;margin-right:auto;width:740px">
 
 <div style="background-color:#eeeeee;padding:2px; text-align:center">
 The Geograph Britain and Ireland project aims to collect geographically
@@ -12,9 +16,8 @@ representative photographs and information for every square kilometre of <a href
 
 <div style="font-size:0.8em; text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
 
-<div style="position:relative;margin-left:auto;margin-right:auto;width:740px">
 
-	<div class="interestBox" style="height:389px;background-color:#333333; width:550px;color:white; float:left;padding:5px;overflow:hidden">
+	<div class="interestBox" style="height:389px;background-color:#333333; width:550px;color:white; float:left;padding:5px;overflow:hidden;border-radius: 6px;">
 		<div style="position:relative;float:left; width:400px">
 			<h3 style="margin-top:0">Photograph of the day <small>[<a href="/results/2087426" style="color:cyan">previous</a>]</small></h3>
 
@@ -50,8 +53,8 @@ representative photographs and information for every square kilometre of <a href
 			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:cyan">{$pictureoftheday.image->title}</a> by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:cyan">{$pictureoftheday.image->realname}</a>, <span class="nowrap">taken {$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</span>
 		</div>
 	</div>
-
-	<div class="interestBox" style="height:389px; width:150px; float:left; font-size:0.8em;margin-left:20px;padding:5px; overflow:auto">
+   
+	<div class="interestBox" style="height:389px;background-color:#333333; width:150px;color:white; float:left; font-size:0.8em;margin-left:20px;padding:5px; overflow:auto;border-radius: 6px;">
 		<h3 style="margin-top:0;">What is Geographing?</h3>
 
 		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
@@ -59,11 +62,11 @@ representative photographs and information for every square kilometre of <a href
 			<li style="padding-bottom:8px">It's a geography project for the people</li>
 			<li style="padding-bottom:8px">It's a national photography project</li>
 			<li style="padding-bottom:8px">It's a good excuse to get out more!</li>
-			<li style="padding-bottom:8px">It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
+			<li style="padding-bottom:8px">It's a free and <a href="/faq.php#opensource" style="color:cyan">open online community</a> project for all</li>
 		</ul>
 
 
-		<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how
+		<p><a title="register now" href="/register.php" style="color:cyan">Registration</a> is free so come and join us and see how
 		many grid squares you submit!</p>
 
 	</div>
@@ -72,9 +75,9 @@ representative photographs and information for every square kilometre of <a href
 
 <br style="clear:both"/>
 {if $recentcount}
-    <div style="position:relative;margin-left:auto;margin-right:auto;width:750px">
+    <div style="position:relative;margin-left:auto;margin-right:auto;width:750px; font-size:0.9em">
 
-		<h3>Recent Photos <small>[<a href="/search.php?i=1522" title="Show the most recent submissions">View more recent submissions</a>]</small></h3>
+		<h3>Recent Photos <small>[<a href="/search.php?i=1522" title="Show the most recent submissions">see more</a>]</small></h3>
 
 		{foreach from=$recent item=image}
 
@@ -97,7 +100,7 @@ representative photographs and information for every square kilometre of <a href
 
 {if $news2}
 	<div style="clear:both; position:relative;margin-left:auto;margin-right:auto;width:750px;font-size:0.9em">
-		<h3>Latest News {if $rss_url}<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a> <small>[<a href="/discuss/index.php?&amp;action=vtopic&amp;forum=1&amp;sortBy=1">View more news</a>]</small>{/if}</h3>
+		<h3>Latest News {if $rss_url}<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a> <small>[<a href="/discuss/index.php?&amp;action=vtopic&amp;forum=1&amp;sortBy=1">see more</a>]</small>{/if}</h3>
 		{foreach from=$news2 item=newsitem}
 			<div style="position:relative;width:233px;float:left; border-left: 2px solid black; padding-left:5px;margin-left:5px">
 				<h4 style="margin-top: 0px;">{$newsitem.topic_title}</h4>
@@ -115,7 +118,7 @@ representative photographs and information for every square kilometre of <a href
 <br style="clear:both"/>
 
 
-<div class="interestBox" style="text-align:center;margin-top:10px"><b>Looking for more? Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">More pages</a>.</b></div>
+<div class="interestBox" style="text-align:center;margin:30px"><b>Looking for more? Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">More pages</a>.</b></div>
 
 
 <p align="center">
