@@ -49,6 +49,8 @@ if (!empty($_GET['when2Year'])) {
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 $when2 = (isset($_GET['when2']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when2']))?$_GET['when2']:'';
+if ($_GET['when']  != '' && !isset($_GET['whenYear']))  list($_GET['whenYear'], $_GET['whenMonth'], $_GET['whenDay'])  = explode('-', $_GET['when']);
+if ($_GET['when2'] != '' && !isset($_GET['when2Year'])) list($_GET['when2Year'],$_GET['when2Month'],$_GET['when2Day']) = explode('-', $_GET['when2']);
 
 if ($timerel == 'during' || $timerel == 'dbefore') {
 	$_GET['when2Year'] = $_GET['whenYear'];
@@ -103,14 +105,14 @@ if (isset($_GET['region']) &&  preg_match('/^\d+_\d+$/',$_GET['region'])) {
 
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
-#trigger_error("$timerel, {$_GET['whenYear']}-{$_GET['whenMonth']} ... {$_GET['when2Year']}-{$_GET['when2Month']} : {$_GET['when']} ... {$_GET['when2']} : $whenlow ... $whenhigh : $when ... $when2", E_USER_NOTICE);
+trigger_error("$timerel, {$_GET['whenYear']}-{$_GET['whenMonth']} ... {$_GET['when2Year']}-{$_GET['when2Month']} : {$_GET['when']} ... {$_GET['when2']} : $whenlow ... $whenhigh : $when ... $when2", E_USER_NOTICE);
 
 $timedesc = '';
 $timesql = '';
 $timesqlrel = '';
 if ($timerel == 'between') {
 	if (!empty($when) && !empty($when2)) {
-		$timesqlrel = "BETWEEN TO_DAYS('$whenlow') AND TO_DAYS('$whenhigh')-1";
+		$timesqlrel = "BETWEEN YEAR('$whenlow')*12+MONTH('$whenlow') AND YEAR('$whenhigh')*12+MONTH('$whenhigh')-1";
 		if ($CONF['lang'] == 'de')
 			$timedescrel = "zwischen ".getFormattedDate($when)." und ".getFormattedDate($when2);
 		else
@@ -118,7 +120,7 @@ if ($timerel == 'between') {
 	}
 } else if ($timerel == 'during') {
 	if (!empty($when) && !empty($when2)) {
-		$timesqlrel = "BETWEEN TO_DAYS('$whenlow') AND TO_DAYS('$whenhigh')-1";
+		$timesqlrel = "BETWEEN YEAR('$whenlow')*12+MONTH('$whenlow') AND YEAR('$whenhigh')*12+MONTH('$whenhigh')-1";
 		if ($CONF['lang'] == 'de')
 			$timedescrel = getFormattedDate($when);
 		else
@@ -126,7 +128,7 @@ if ($timerel == 'between') {
 	}
 } else if ($timerel == 'dbefore') {
 	if (!empty($when2)) {
-		$timesqlrel = "< TO_DAYS('$whenhigh')";
+		$timesqlrel = "< YEAR('$whenhigh')*12+MONTH('$whenhigh')";
 		if ($CONF['lang'] == 'de')
 			$timedescrel = "bis ".getFormattedDate($when2);
 		else
@@ -134,7 +136,7 @@ if ($timerel == 'between') {
 	}
 } else if ($timerel == 'dafter') {
 	if (!empty($when)) {
-		$timesqlrel = ">= TO_DAYS('$whenlow')";
+		$timesqlrel = ">= YEAR('$whenlow')*12+MONTH('$whenlow')";
 		if ($CONF['lang'] == 'de')
 			$timedescrel = "ab ".getFormattedDate($when);
 		else
@@ -143,14 +145,14 @@ if ($timerel == 'between') {
 }
 if ($timesqlrel !== '') {
 	if ($date == 'both') {
-		$timesql = " and to_days(imagetaken) $timesqlrel and to_days(submitted) $timesqlrel";
+		$timesql = " and year(imagetaken) != 0 and year(submitted) != 0 and month(imagetaken) != 0 and month(submitted) != 0 and year(imagetaken)*12+month(imagetaken) $timesqlrel and year(submitted)*12+month(submitted) $timesqlrel";
 		if ($CONF['lang'] == 'de')
 			$timedesc = " <b>für Bilder mit Aufnahme- und Einreichdatum ".$timedescrel."</b>";
 		else
 			$timedesc = ", <b>for images taken and submitted ".$timedescrel."</b>";
 	} else {
 		$column = ($date == 'taken')?'imagetaken':'submitted';
-		$timesql = " and to_days($column) $timesqlrel";
+		$timesql = " and year($column) != 0 and month($column) != 0 and year($column)*12+month($column) $timesqlrel";
 		if ($CONF['lang'] == 'de') {
 			$title = ($date == 'taken')?'Aufnahmedatum':'Einreichdatum'; 
 			$timedesc = " <b>für Bilder mit $title ".$timedescrel."</b>";
@@ -184,8 +186,9 @@ if (isset($_GET['inner'])) {
 } else {
 	$template='statistics_leaderboard.tpl';
 }
-$cacheid=$minimum.'-'.$maximum.$type.$date.$when.'/'.$when2.$timerel.$limit.'.'.$ri.'.'.$u.$myriad.':'.($has_region?($level.'_'.$cid):'').':';
+$cacheid=$minimum.'-'.$maximum.$type.$date.$when.':'.$when2.$timerel.$limit.'.'.$ri.'.'.$u.$myriad.':'.($has_region?($level.'_'.$cid):'').':';
 
+#$smarty->caching = 0;
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
 	$smarty->cache_lifetime = 3600*3; //3hour cache
@@ -650,13 +653,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "max(gridimage_id) as last,$sql_column";
 	}
 	$limit2 = intval($limit * 1.6);
-	$topusers=$db->GetAll("select 
+	$sql="select 
 	i.user_id,u.realname, $sql_column as imgcount
 	from $sql_table inner join user u using (user_id)
 	where $sql_where
 	group by user_id 
 	$sql_having_having
-	order by imgcount desc $sql_orderby,last asc limit $limit2"); 
+	order by imgcount desc $sql_orderby,last asc limit $limit2";
+	trigger_error("-----$sql", E_USER_NOTICE);
+	$topusers=$db->GetAll($sql);
 	$lastimgcount = 0;
 	$toriserank = 0;
 	$points = 0;
