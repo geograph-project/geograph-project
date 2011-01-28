@@ -1,5 +1,6 @@
 {include file="_std_begin.tpl"}
 
+
 <div style="text-align:center;font-size:0.9em;padding-bottom:3px;border-bottom:1px solid silver;margin-bottom:8px">Don't like the new layout? <a href="/">Switch Back</a>. Please also consider <a href="https://spreadsheets.google.com/viewform?formkey=dE16ckhUQ0Fjd2ZvMlVyUVNFc1l0UWc6MQ">giving us feedback</a> - <b>Thank You</b>!</div>
 
 <h2 style="text-align:center">Welcome to Geograph Britain and Ireland</h2>
@@ -14,7 +15,7 @@ representative photographs and information for every square kilometre of <a href
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
 <div style="text-align:right;font-size:0.7em;margin-right:10px">Looking for <a href="/help/geograph_british_isles">Geograph British Isles</a>?</div>
 
-<div style="font-size:0.8em; text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} users</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
+<div style="font-size:0.8em; text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} members</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
 
 
 	<div class="interestBox" style="height:389px;background-color:#333333; width:550px;color:white; float:left;padding:8px;overflow:hidden;border-radius: 10px;">
@@ -77,32 +78,36 @@ representative photographs and information for every square kilometre of <a href
 
 <br style="clear:both"/>
 {if $recentcount}
-	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; font-size:0.8em;margin-top:10px;background-color:#666666;margin-bottom:10px; border-radius: 6px; color:white">
-		<div class="interestBox" style="background-color:#333333;color:white; border-radius: 6px;margin-bottom:8px;">
+	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px;margin-bottom:10px">
+		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px">
 			<div style="position:relative;float:right">
-				<a href="/explore/searches.php" title="Featured Selections" style="color:cyan">other selections &gt;</a>&nbsp;&nbsp;
-				<a href="/thumbed-weekly.php" title="Popular images" style="color:cyan">popular images &gt;</a> &nbsp;&nbsp;&nbsp;
-				<a href="/search.php?i=1522" title="Show the most recent submissions" style="color:cyan"><b>see more</b> &gt;</a>
+				<a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
+				<a href="/thumbed-weekly.php" title="Popular images">popular images &gt;</a> &nbsp;&nbsp;&nbsp;
+				<a href="/search.php?i=1522" title="Show the most recent submissions"><b>see more</b> &gt;</a>
 			</div>
 			<h3 style="margin:0">Recent Photos</h3>
 		</div>
 
 		{foreach from=$recent item=image}
 
-		<div style="text-align:center;padding-bottom:1em;width:150px;float:left;">
+		<div style="text-align:center;padding-bottom:1em;width:150px;float:left;font-size:0.8em;">
 			<div style="height:126px">
 				<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 			</div>
 
-			<a title="view full size image" href="/photo/{$image->gridimage_id}" style="color:cyan">{$image->title|escape:'html'}</a>
-			<span class="nowrap">by <a title="view user profile" href="{$image->profile_link}" style="color:cyan">{$image->realname}</a></span>
-			<span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}" style="color:cyan">{$image->grid_reference}</a></span>
+			<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
+			<span class="nowrap">by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></span>
+			<span class="nowrap">for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></span>
 
 		</div>
 
 		{/foreach}
 		<br style="clear:both"/>
 	</div>
+<div style="text-align:center;clear:both;font-size:0.7em;">
+	<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, add yours now!
+</div>
+
 {/if}
 
 {if $news2}
@@ -116,7 +121,7 @@ representative photographs and information for every square kilometre of <a href
 
 		{foreach from=$news2 item=newsitem}
 			<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px">
-				<h4 style="margin-top: 0px;">{$newsitem.topic_title}</h4>
+				<h4 style="margin-top: 0px;font-size:1.2em">{$newsitem.topic_title}</h4>
 				<div style="font-size:0.8em">{$newsitem.post_text}</div>
 				<div style="margin-top:8px;border-top:1px solid gray">
 				Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> <span class="nowrap">on {$newsitem.topic_time|date_format:"%a, %e %b"}</span>
@@ -132,7 +137,6 @@ representative photographs and information for every square kilometre of <a href
 
 
 <div class="interestBox" style="text-align:center;margin:30px; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;"><b>Looking for more?</b> Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">More pages</a>.</div>
-
 
 <p align="center">
         This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948/source/geograph">UK Web Archive</a> project.
