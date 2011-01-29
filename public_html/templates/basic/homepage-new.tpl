@@ -30,7 +30,7 @@ representative photographs and information for every square kilometre of <a href
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
 		<div style="position:relative;float:left; width:150px">
-			<p style="margin-top:0">Click the map to start browsing photos of the British Isles</p>
+			<p style="margin-top:15px;text-align:center;font-size:0.8em">Click the map to start browsing photos of the <span class="nowrap">British Isles</span></p>
 
 			<div class="map" style="height:{$overview_height}px;width:{$overview_width}px">
 				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
@@ -56,7 +56,7 @@ representative photographs and information for every square kilometre of <a href
 			<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
 		</div>
 		<div>
-			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:cyan">{$pictureoftheday.image->title}</a> by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:cyan">{$pictureoftheday.image->realname}</a>, <span class="nowrap">taken {$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</span>
+			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:cyan">{$pictureoftheday.image->title}</a> <span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:cyan">{$pictureoftheday.image->realname}</a></span>, <span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:cyan">{$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</a></span>
 		</div>
 	</div>
 
