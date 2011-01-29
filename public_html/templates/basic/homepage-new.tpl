@@ -1,3 +1,4 @@
+{assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
 
@@ -33,7 +34,7 @@ representative photographs and information for every square kilometre of <a href
 			<div class="map" style="height:{$overview_height}px;width:{$overview_width}px">
 				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
 
-					{foreach from=$overview key=y item=maprow}
+					{foreach from=$overview2 key=y item=maprow}
 						<div>
 						{foreach from=$maprow key=x item=mapcell}
 						<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
@@ -78,7 +79,7 @@ representative photographs and information for every square kilometre of <a href
 
 <br style="clear:both"/>
 {if $recentcount}
-	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px;margin-bottom:10px">
+	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px; display:none" id="photo_block">
 		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px">
 			<div style="position:relative;float:right">
 				<a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
@@ -104,12 +105,11 @@ representative photographs and information for every square kilometre of <a href
 		{/foreach}
 		<br style="clear:both"/>
 	</div>
-<div style="text-align:center;clear:both;font-size:0.7em;">
-	<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, add yours now!
-</div>
-
 {/if}
 
+<div style="text-align:center;clear:both;font-size:0.8em;padding:10px;">
+	<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, <a href="/submit.php">add yours now</a>!
+</div>
 {if $news2}
 	<div style="clear:both; position:relative;margin-left:auto;margin-right:auto;width:750px;font-size:0.9em">
 		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px;">
@@ -145,6 +145,51 @@ representative photographs and information for every square kilometre of <a href
 <p align="center"><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 26 Cloister Road, Acton, London W3 0DE.</i></small></p>
 
 
+<script>
+{literal}
+
+function thiswindowresize() {
+  var main=document.getElementById("maincontent_block");
+  var width = (main.className=="content3")?782:970;
+
+  if (main.offsetWidth >width) {
+  	document.getElementById("right_block").style.display = '';
+  	document.getElementById("photo_block").style.display = 'none';
+  	main.className="content3";
+  } else {
+   	document.getElementById("right_block").style.display = 'none';
+  	document.getElementById("photo_block").style.display = '';
+  	main.className="content2";
+  }
+}
+
+//sillyness for IE6!
+function thiswindowresize_wrapper() {
+	if (typeof document.readyState == "undefined") {
+		thiswindowresize();
+	}
+	else {
+		if (document.readyState == "complete") {
+			thiswindowresize();
+		}
+		else {
+			document.onreadystatechange = function() {
+				if (document.readyState == "complete") {
+					document.onreadystatechange = null;
+					thiswindowresize();
+				}
+			}
+		}
+	}
+}
+
+
+ AttachEvent(window,'load',thiswindowresize_wrapper,false);
+ AttachEvent(window,'resize',thiswindowresize,false);
+ AttachEvent(window,'documentready',thiswindowresize,false);
+
+{/literal}
+</script>
 
 
 {include file="_std_end.tpl"}
