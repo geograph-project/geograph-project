@@ -1,4 +1,4 @@
-<div id="right_block">
+<div id="right_block"{if $maincontentclass == "content2"} style="display:none"{/if}>
 <div class="nav">
 {if $overview}
 
@@ -10,7 +10,7 @@
 {foreach from=$overview key=y item=maprow}
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
-	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img 
+	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
 	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 	</div>
@@ -22,30 +22,30 @@
 {/dynamic}
 </div>
 </div>
-{/if}	
+{/if}
 
  {if $recentcount}
-  
+
   	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Recent Photos <small>[<a href="/search.php?i=1522" title="Show the most recent submissions">more...</a>]</small></h3>
-  	
+
   	{foreach from=$recent item=image}
-  
+
   	  <div style="text-align:center;padding-bottom:1em;">
   	  <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
-  	  
+
   	  <div>
   	  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>
   	  by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a>
 	  for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
-	  
+
 	  </div>
-  	  
+
   	  </div>
-  	  
-  
+
+
   	{/foreach}
-  
+
   {/if}
-  
-</div> 
+
+</div>
 </div>
