@@ -1,3 +1,4 @@
+{assign var="maincontentclass" value="content2"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
@@ -79,7 +80,7 @@ representative photographs and information for every square kilometre of <a href
 
 <br style="clear:both"/>
 {if $recentcount}
-	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px; display:none" id="photo_block">
+	<div style="position:relative;margin-left:auto;margin-right:auto;width:750px; margin-top:10px" id="photo_block">
 		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px">
 			<div style="position:relative;float:right">
 				<a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
@@ -148,7 +149,13 @@ representative photographs and information for every square kilometre of <a href
 <script>
 {literal}
 
+//sillyness for IE6!
+var locked = false;
+
 function thiswindowresize() {
+	if (locked) {
+		return;
+	}
   var main=document.getElementById("maincontent_block");
   var width = (main.className=="content3")?782:970;
 
@@ -161,6 +168,9 @@ function thiswindowresize() {
   	document.getElementById("photo_block").style.display = '';
   	main.className="content2";
   }
+
+	locked = true;
+	setTimeout(function() { locked = false; }, 150);
 }
 
 //sillyness for IE6!
