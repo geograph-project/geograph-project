@@ -3,8 +3,6 @@
 {include file="_std_begin.tpl"}
 
 
-<div style="text-align:center;font-size:0.9em;padding-bottom:3px;border-bottom:1px solid silver;margin-bottom:8px">Don't like the new layout? <a href="/">Switch Back</a>. Please also consider <a href="https://spreadsheets.google.com/viewform?formkey=dE16ckhUQ0Fjd2ZvMlVyUVNFc1l0UWc6MQ">giving us feedback</a> - <b>Thank You</b>!</div>
-
 <h2 style="text-align:center">Welcome to Geograph Britain and Ireland</h2>
 
 <div style="position:relative;background-color:white;">
@@ -15,22 +13,21 @@
 The Geograph Britain and Ireland project aims to collect geographically
 representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
-<div style="text-align:right;font-size:0.7em;margin-right:10px">Looking for <a href="/help/geograph_british_isles">Geograph British Isles</a>?</div>
 
 <div style="font-size:0.8em; text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} members</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
 
 
-	<div class="interestBox" style="height:372px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
+	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">
 				<a href="/results/2087426" style="color:cyan">view previous &gt;</a>
 			</div>
-			<h3 style="margin:0">Photograph of the day</h3>
+			<h3 style="margin-top:0;margin-bottom:5px">Photograph of the day</h3>
 
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
 		<div style="position:relative;float:left; width:150px">
-			<p style="margin-top:15px;text-align:center;font-size:0.8em">Click the map to start browsing photos of the <span class="nowrap">British Isles</span></p>
+			<p style="margin-top:30px;text-align:center;font-size:0.8em">Click the map to start browsing photos of the <span class="nowrap">British Isles</span></p>
 
 			<div class="map" style="height:{$overview_height}px;width:{$overview_width}px">
 				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
@@ -60,7 +57,7 @@ representative photographs and information for every square kilometre of <a href
 		</div>
 	</div>
 
-	<div class="interestBox" style="height:372px;width:150px; float:left; font-size:0.8em;margin-left:13px;padding:8px; overflow:auto;border-radius: 10px;">
+	<div class="interestBox" style="height:370px;width:150px; float:left; font-size:0.8em;margin-left:10px;padding:10px; overflow:auto;border-radius: 10px;">
 		<h3 style="margin-top:0;">What is Geographing?</h3>
 
 		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
@@ -136,11 +133,14 @@ representative photographs and information for every square kilometre of <a href
 
 <br style="clear:both"/>
 
+<div style="text-align:center;font-size:0.9em;padding:5px;margin:10px;background-color:yellow">Don't like the new layout? <a href="/">Switch Back</a>. Please also consider <a href="https://spreadsheets.google.com/viewform?formkey=dE16ckhUQ0Fjd2ZvMlVyUVNFc1l0UWc6MQ">giving us feedback</a> - <b>Thank You</b>!</div>
+
 
 <div class="interestBox" style="text-align:center;margin:30px; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;"><b>Looking for more?</b> Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">More pages</a>.</div>
+<div style="text-align:center">Looking for <a href="/help/geograph_british_isles">Geograph British Isles</a>?</div>
 
 <p align="center">
-        This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948/source/geograph">UK Web Archive</a> project.
+	This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948/source/geograph">UK Web Archive</a> project.
 </div>
 
 <p align="center"><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 26 Cloister Road, Acton, London W3 0DE.</i></small></p>
