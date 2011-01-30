@@ -20,12 +20,12 @@ representative photographs and information for every square kilometre of <a href
 <div style="font-size:0.8em; text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} members</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
 
 
-	<div class="interestBox" style="height:389px;background-color:#333333; width:550px;color:white; float:left;padding:8px;overflow:hidden;border-radius: 10px;">
+	<div class="interestBox" style="height:372px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">
 				<a href="/results/2087426" style="color:cyan">view previous &gt;</a>
 			</div>
-			<h3 style="margin-top:0">Photograph of the day</h3>
+			<h3 style="margin:0">Photograph of the day</h3>
 
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
@@ -60,7 +60,7 @@ representative photographs and information for every square kilometre of <a href
 		</div>
 	</div>
 
-	<div class="interestBox" style="height:389px;width:150px; float:left; font-size:0.8em;margin-left:18px;padding:8px; overflow:auto;border-radius: 10px;">
+	<div class="interestBox" style="height:372px;width:150px; float:left; font-size:0.8em;margin-left:13px;padding:8px; overflow:auto;border-radius: 10px;">
 		<h3 style="margin-top:0;">What is Geographing?</h3>
 
 		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
@@ -153,7 +153,7 @@ representative photographs and information for every square kilometre of <a href
 var locked = false;
 
 function thiswindowresize() {
-	if (locked) {
+	if (locked || !document.getElementById("right_block")) {
 		return;
 	}
   var main=document.getElementById("maincontent_block");
