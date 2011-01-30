@@ -1341,7 +1341,19 @@ split_timer('gridimage'); //starts the timer
 			$return['url']=$thumbpath;
 
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.htmlentities2($this->realname);
-			if (!empty($CONF['enable_cluster'])) {
+			
+			$usecount = $memcache->name_get('iscount',$mkey);
+			
+			if (!$usecount) {
+				$v = 1;
+				$memcache->name_set('iscount',$mkey,$v,$memcache->compress,$memcache->period_med);
+			} else {
+				$memcache->name_increment('iscount',$mkey);
+			}
+		
+			if ($usecount > 2) {
+				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster'])."cdn","http://{$CONF['STATIC_HOST']}");
+			} elseif (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
