@@ -744,6 +744,22 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 		return 0;
 }
 
+function get_no_content($url) {
+	$parts=parse_url($url);
+
+	$fp = fsockopen($parts['host'], isset($parts['port'])?$parts['port']:80, $errno, $errstr, 1);
+
+	if ($fp!=0)
+		return "Couldn't open a socket to ".$url." (".$errstr.")";
+
+	$out = "GET ".$parts['path']." HTTP/1.1\r\n";
+	$out.= "Host: ".$parts['host']."\r\n";
+	$out.= "Connection: Close\r\n\r\n";
+
+	fwrite($fp, $out);
+	fclose($fp); //don't wait for reply!
+}
+
 function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 	global $encoding;
 	if (isset($encoding) && $encoding != 'none' && $encoding != '') {
