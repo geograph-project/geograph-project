@@ -25,6 +25,38 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
+if (!empty($_GET['build'])) {
+	
+	$db = GeographDatabaseConnection(false);
+
+	function rebuild_article_tree($parent = 0, $left = 1) { 
+		global $db;
+		// the right value of this node is the left value + 1 
+		$right = $left+1; 
+
+		// get all children of this node 
+		$results = $db->getCol("SELECT article_cat_id FROM article_cat WHERE parent_id=$parent order by sort_order, article_cat_id"); 
+		foreach($results as $result) { 
+			// recursive execution of this function for each 
+			// child of this node 
+			// $right is the current right value, which is 
+			// incremented by the rebuild_tree function 
+			$right = rebuild_article_tree($result, $right); 
+		} 
+
+		// we've got the left value, and now that we've processed 
+		// the children of this node we also know the right value 
+		$db->query("UPDATE article_cat SET lft$w=$left, rgt$w=$right WHERE article_cat_id=$parent;");
+
+		// return the right value of this node + 1 
+		return $right+1; 
+	}
+
+	rebuild_article_tree();
+	print "done";
+	
+	exit;
+}
 
 $db = GeographDatabaseConnection(true);
 
@@ -51,6 +83,56 @@ $db = GeographDatabaseConnection(true);
 		$where = "AND category_name not like '%Geograph %'";
 	}
 	
+	$t = $link = array();
+	
+	if (true) {//setup the category tree?
+	
+		
+		function build_article_tree($parent = 0,$name) { 
+			global $db,$t,$link;
+			
+			$t2 = array();
+			
+			$c = '<b><big>'.htmlentities($name).'</big></b>';
+			$r =  array('title'=>$c,'children'=>array());
+				
+			$results = $db->getAssoc("SELECT article_cat_id,category_name FROM article_cat WHERE parent_id=$parent order by sort_order, article_cat_id"); 
+			if ($results)
+				foreach($results as $id => $name) { 
+
+					$c = '<b><big>'.htmlentities($name).'</big></b>';
+					$r =  array('title'=>$c,'children'=>array());
+
+					$r['children'] = build_article_tree($id,$name); 
+
+					$t2[$c] = $r;
+					$link[$c] =& $t2[$c];
+				} 
+				
+			return $t2;
+		}
+		
+		$results = $db->getAssoc("SELECT article_cat_id,category_name FROM article_cat WHERE parent_id=0 order by sort_order, article_cat_id"); 
+		if ($results)
+			foreach($results as $id => $name) { 
+				
+				$c = '<b><big>'.htmlentities($name).'</big></b>';
+				$r =  array('title'=>$c,'children'=>array());
+			
+				$r['children'] = build_article_tree($id,$name); 
+				
+				$t[$c] = $r;
+				$link[$c] =& $t[$c];
+			} 
+		
+
+	}
+
+#print "<pre>";
+#print_r($t);
+#print_r($link);
+#exit;
+	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
@@ -61,9 +143,10 @@ $db = GeographDatabaseConnection(true);
 	where (licence != 'none' and approved > 0) $where
 	 and category_name not like 'Redirect Only'
 	order by (parent_url = '') DESC,sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
-
 	
-	$t = array();
+	
+	
+	
 	$linker = array();
 	foreach ($list as $idx => $row) {
 		if (!empty($row['parent_url'])) {
@@ -77,21 +160,22 @@ $db = GeographDatabaseConnection(true);
 		$linker[$row['url']] = $row;
 		$c = '<b><big>'.htmlentities($row['category_name']).'</big></b>';
 		$b = '<small><a href="?user_id='.$row['user_id'].'">by <i>'.htmlentities($row['realname']).'</i></a></small>';
-		if (empty($t[$c])) {
-			$t[$c] = array('title'=>$c,'children'=>array());
-		} 
-		if (empty($t[$c]['children'][$b])) {
-			$t[$c]['children'][$b] =  array('title'=>$b,'children'=>array());
+	#	if (empty($link[$c])) {
+	#		$t[$c] = array('title'=>$c,'children'=>array());
+	#		$link[$c] =& $t[$c];
+	#	} 
+		if (empty($link[$c]['children'][$b])) {
+			$link[$c]['children'][$b] =  array('title'=>$b,'children'=>array());
 		}
 
-		$t[$c]['children'][$b]['children'][] =& $linker[$row['url']];
+		$link[$c]['children'][$b]['children'][] =& $linker[$row['url']];
 
 	}
 
 
 
 
-print "<a href=\"/article/\">Articles</a>";
+print "<a href=\"/article/\">Back to Article List</a>";
 print "<ul>";
 foreach ($t as $idx => $row) {
 	dump_list($row);
@@ -99,7 +183,7 @@ foreach ($t as $idx => $row) {
 print "</ul>";
 
 function dump_list($in) {
-	if (is_array($in)) {
+	if (is_array($in) && (!empty($in['children']) || !empty($in['url']))) {
 		print "<li>";
 		if (!empty($in['url'])) {
 			print "<a href=\"".htmlentities($in['url'])."\" title=\"".htmlentities($in['extract']?$in['extract']:$in['title'])." - by - ".htmlentities($in['realname'])."\">".htmlentities($in['title'])."</a>";
@@ -121,4 +205,3 @@ function dump_list($in) {
 		print "</li>";
 	}
 }
-

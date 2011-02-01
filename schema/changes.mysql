@@ -1690,3 +1690,12 @@ UPDATE `user` SET salt=SUBSTRING(MD5(signup_date),1,8),password=MD5(CONCAT(SUBST
 #################################################
 
 
+ALTER TABLE article_cat
+  ADD `parent_id` smallint(8) unsigned NOT NULL,
+  ADD `lft` mediumint(8) unsigned NOT NULL,
+  ADD `rgt` mediumint(8) unsigned NOT NULL;
+
+
+#################################################
+
+
