@@ -127,9 +127,9 @@ class RestAPI
 				} else {
 					echo '<status state="ok"/>';
 
-					echo '<title>'.utf8_encode(htmlentities2($image->title)).'</title>';
+					echo '<title>'.xmlentities($image->title).'</title>';
 					echo '<gridref>'.htmlentities($image->grid_reference).'</gridref>';
-					echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".htmlentities($image->realname).'</user>';
+					echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".xmlentities($image->realname).'</user>';
 
 					echo preg_replace('/alt=".*?" /','',$image->getFull());
 
@@ -137,8 +137,8 @@ class RestAPI
 					echo '<thumbnail>'.$details['server'].$details['url'].'</thumbnail>';
 					echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
 					echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
-					echo '<category>'.utf8_encode(htmlentities2($image->imageclass)).'</category>';
-					echo '<comment><![CDATA['.utf8_encode(htmlentities2($image->comment)).']]></comment>';
+					echo '<category>'.xmlentities($image->imageclass).'</category>';
+					echo '<comment><![CDATA['.xmlentities($image->comment).']]></comment>';
 					
 					$size = $image->_getFullSize(); //uses cached_size
 					if (!empty($size[4])) {

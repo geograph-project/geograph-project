@@ -899,6 +899,12 @@ function htmlnumericentities($myXML){
   return str_replace('&#38;amp;','&#38;',preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars($myXML)));
 }
 
+function xmlentities($s) {
+	$trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+	foreach ($trans as $k=>$v) $trans[$k]= "&#".ord($k).";"; // encoding?
+	return strtr($s, $trans);
+}
+
 
 function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtml = '',$showLastPage = false) {
 	static $r;
