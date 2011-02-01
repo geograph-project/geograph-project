@@ -172,7 +172,7 @@ class GeographMapMosaic
 				$this->setMosaicFactor(1);
 				break;
 			case 'overview_charcoal':
-				$this->setOrigin(0,-10);
+				$this->setOrigin(10,-10);
 				$this->setMosaicSize(144,210);
 				$this->setScale(0.16);
 				$this->setMosaicFactor(1);
