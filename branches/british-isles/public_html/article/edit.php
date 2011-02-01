@@ -227,8 +227,36 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	}
 } 
 
+$cats = array(0=>'');
+
+
+// now, retrieve all descendants of the $root node 
+$results = $db->getAssoc('SELECT article_cat_id, category_name, rgt FROM article_cat ORDER BY lft ASC'); 
+
+// start with an empty $right stack 
+$right = array();
+
+// display each row
+foreach ($results as $id => $row) {
+	// only check stack if there is one
+	if (count($right)>0) {
+		// check if we should remove a node from the stack
+		while ($right[count($right)-1]<$row['rgt'] && count($right)) {
+			array_pop($right);
+		}
+	}
+
+	// display indented node title 
+	$cats[$id] = str_repeat('&middot;&nbsp;&nbsp;',count($right)).$row['category_name'];
+
+	// add this node to the stack
+	$right[] = $row['rgt'];
+}
+
+
+
 	$smarty->assign('licences', array('none' => '(Temporarily) Not Published','pd' => 'Public Domain','cc-by-sa/2.0' => 'Creative Commons BY-SA/2.0' ,'copyright' => 'Copyright'));
-	$smarty->assign('article_cat', array(0=>'')+$db->getAssoc("select article_cat_id,category_name from article_cat order by sort_order"));
+	$smarty->assign('article_cat', $cats);
 	$smarty->assign('completes', array_merge(array(0=>'',1),range(10,90,10),array(98,100)));
 
 

@@ -38,9 +38,12 @@ if (!empty($_POST)) {
 		
 		$updates= array();
 		$updates['complete'] = $complete;
-		$updates['edit_prompt'] = $_POST['edit_prompt'][$id];
-		$updates['parent_url'] = $_POST['parent_url'][$id];
-		
+		foreach (array('article_cat_id','edit_prompt','parent_url') as $key) {
+			if (isset($_POST[$key])) {
+				$updates[$key] = $_POST[$key][$id];
+			}
+		} 
+	
 		$db->Execute($sql = "UPDATE article SET update_time=update_time,`".implode('` = ?,`',array_keys($updates)).'` = ? WHERE article_id = '.$id.' AND user_id = '.$USER->user_id,array_values($updates));
 	}
 }
@@ -48,13 +51,41 @@ if (!empty($_POST)) {
 
 
 
-$data = $db->getAll("SELECT article_id,url,title,licence,complete,edit_prompt,parent_url,approved FROM article WHERE user_id = {$USER->user_id} ORDER BY article_id");
+$data = $db->getAll("SELECT article_id,url,title,article_cat_id,licence,complete,edit_prompt,parent_url,approved FROM article WHERE user_id = {$USER->user_id} ORDER BY article_id");
 
 $completes = array_merge(array(0=>'',1),range(10,90,10),array(98,100));
 
 $apps = array(-1=>'deleted',0=>'draft',1=>'Published',2=>'Collaborative');
 
+if (!empty($_GET['cat'])) {
+	#$cats = $db->getAssoc("SELECT article_cat_id, category_name FROM article_cat ORDER BY sort_order,article_cat_id");
+
+	// now, retrieve all descendants of the $root node 
+	$results = $db->getAssoc('SELECT article_cat_id, category_name, rgt FROM article_cat ORDER BY lft ASC'); 
+
+	// start with an empty $right stack 
+	$cats = $right = array();
+
+	// display each row
+	foreach ($results as $id => $row) {
+		// only check stack if there is one
+		if (count($right)>0) {
+			// check if we should remove a node from the stack
+			while ($right[count($right)-1]<$row['rgt'] && count($right)) {
+				array_pop($right);
+			}
+		}
+
+		// display indented node title 
+		$cats[$id] = str_repeat('&middot;&nbsp;&nbsp;',count($right)).$row['category_name'];
+
+		// add this node to the stack
+		$right[] = $row['rgt'];
+	}
+}
+
 ?>
+<script src="/sorttable.js"></script>
 
 <h2>Article Multi-Editor</h2>
 
@@ -65,26 +96,41 @@ $apps = array(-1=>'deleted',0=>'draft',1=>'Published',2=>'Collaborative');
 <li><b>Parent URL</b> - Optional, full URL to parent article if there is one. To be used by articles that are in a group.</li>
 </ul>
 
-<form method=post><table border=1 cellspacing=0 cellpadding=3>
+<form method=post><table border=1 cellspacing=0 cellpadding=3 id="table" class="report sortable">
+	<thead>
 	<tr>
 	<th>Article</th>
-	<th>Completeness</th>
-	<th>Edit Prompt</th>
-	<th>Parent URL</th>
+	<th>Complete?</th>
+	<? if (!empty($_GET['cat'])) { ?>
+		<th>Category</th>
+	<? } else { ?>
+		<th>Edit Prompt</th>
+		<th>Parent URL</th>
+	<? } ?>
 	<th>Licence</th>
 	<th>Status</th>
 	</tr>
+	</thead>
+	<tbody>
 	<? foreach($data as $row) {
 		$id = $row['article_id'];
 		print "<tr>";
 		print "<td><a href=\"./{$row['url']}\" target=preview>{$row['title']}</a></td>";
-		print "<td><select name=\"complete[$id]\" style=text-align:right>";
+		print "<td id=\"com$id\" sortvalue=\"{$row['complete']}\"><select name=\"complete[$id]\" style=text-align:right onchange=\"document.getElementById('com$id').setAttribute('sortvalue',this.value);\">";
 		foreach ($completes as $value) {
 			printf("<option value=\"%s\"%s>%s</option>",$value,($row['complete']==$value)?' selected':'',$value);
 		}
 		print "</select>%</td>";
-		print "<td><input type=text name=\"edit_prompt[$id]\" value=\"".htmlentities($row['edit_prompt'])."\"></td>";
-		print "<td><input type=text name=\"parent_url[$id]\" value=\"".htmlentities($row['parent_url'])."\"></td>";
+		if (!empty($_GET['cat'])) {
+			print "<td id=\"cat$id\" sortvalue=\"{$row['article_cat_id']}\"><select name=\"article_cat_id[$id]\"  onchange=\"document.getElementById('cat$id').setAttribute('sortvalue',this.value);\"><option></option>";
+			foreach ($cats as $id => $value) {
+				printf("<option value=\"%s\"%s>%s</option>",$id,($row['article_cat_id']==$id)?' selected':'',$value);
+			}
+			print "</select></td>";
+		} else {
+			print "<td><input type=text name=\"edit_prompt[$id]\" value=\"".htmlentities($row['edit_prompt'])."\"></td>";
+			print "<td><input type=text name=\"parent_url[$id]\" value=\"".htmlentities($row['parent_url'])."\"></td>";
+		}
 		print "<td>{$row['licence']}</td>";
 		if ($row['licence'] == 'none' && $row['approved']) {
 			print "<td>Approved but hidden</td>";
@@ -93,7 +139,7 @@ $apps = array(-1=>'deleted',0=>'draft',1=>'Published',2=>'Collaborative');
 		}
 		print "</tr>";
 	} ?>
-
+	</tbody>
 </table><input type=submit value="Save Changes"/></form>
 
 
