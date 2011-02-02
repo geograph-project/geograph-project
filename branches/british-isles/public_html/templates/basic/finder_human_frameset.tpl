@@ -5,7 +5,7 @@
 	</head>
 	<frameset rows="100, *">
 		{dynamic}
-		<frame src="{$script_name}?id={$search_id}&amp;mode=top" name="top" noresize="noresize"  frameborder="0">
+		<frame src="{$script_name}?id={$search_id}&amp;mode=top{if $geo}&amp;geo{/if}" name="top" noresize="noresize"  frameborder="0">
 		<frame src="/search.php" name="mainframe">
 		{/dynamic}
 		<noframes>
