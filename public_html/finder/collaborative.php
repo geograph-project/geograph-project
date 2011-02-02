@@ -44,7 +44,10 @@ if (isset($_GET['login'])) {
 
 $template = 'finder_human.tpl';
 
-if (isset($_GET['create'])) {
+if (isset($_GET['geo'])) {
+	$template = 'finder_human_geo.tpl';
+	$smarty->assign('geo',1);
+} elseif (isset($_GET['create'])) {
 	$template = 'finder_human_create.tpl';
 }
 
@@ -66,6 +69,11 @@ if (!empty($_POST['create'])) {
 		}
 	}
 
+	if (isset($_GET['geo']) && empty($_POST['q'])) {
+		$sphinx = new sphinxwrapper($_POST['title']);
+		$_POST['q'] = $sphinx->qclean;
+	}
+
 	if (empty($errors) && !empty($_POST['q']) && strlen($_POST['q']) > 4) {
 	
 		//create a new search
@@ -80,13 +88,16 @@ if (!empty($_POST['create'])) {
 			notify = ".intval(@$_POST['notify']).",
 			ipaddr = INET_ATON('".getRemoteIP()."'),
 			user_id = ".intval($USER->user_id).",
+			type = '".(isset($_GET['geo'])?'geo':'standard')."',
 			created = NOW(),
 			updated = NOW()";
 
 		$db->Execute($ins);
 		$smarty->assign("message","Thank you! Your search has been saved.");
 		
-		$template = 'finder_human.tpl';
+		if (!isset($_GET['geo'])) {
+			$template = 'finder_human.tpl';
+		}
 	} else {
 		$errors["q"] = "Please enter something to search for";
 		
@@ -299,8 +310,14 @@ if (empty($db)) {
 
 
 
-if ($template == 'finder_human.tpl') {
-
+if ($template == 'finder_human.tpl' || $template == 'finder_human_geo.tpl') {
+	
+	if ($template == 'finder_human_geo.tpl') {
+		$crit = " and type='geo' order by title asc";
+	} else {
+		$crit = " and type='standard' order by updated desc";
+	}
+	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
@@ -309,8 +326,8 @@ if ($template == 'finder_human.tpl') {
 	left join user using(user_id)
 
 	where status in ('new','answered')
-
-	order by updated desc");
+	$crit
+	");
 	
 	$ADODB_FETCH_MODE = $prev_fetch_mode;
 
@@ -323,6 +340,7 @@ if ($template == 'finder_human.tpl') {
 			$answered[] = $row;
 		}
 	}
+	$smarty->assign_by_ref('list', $list);
 	$smarty->assign_by_ref('answered', $answered);
 	$smarty->assign_by_ref('pending', $pending);
 }

@@ -1699,3 +1699,10 @@ ALTER TABLE article_cat
 #################################################
 
 
+ALTER TABLE `humansearch`
+  ADD `type` enum('standard','geo') NOT NULL default 'standard';
+  
+  
+#################################################
+
+
