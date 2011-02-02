@@ -43,6 +43,9 @@ customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	// retrieve the left and right value of the $root node 
+	$row = $db->GetRow("SELECT lft, rgt FROM article_cat WHERE category_name = 'Geograph Project'"); 
+	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
@@ -52,9 +55,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		left join article on (foreign_id = article_id and source = 'article')
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 
-	where (category_name like '%Geograph %' or source = 'help')
+	where (lft between {$row['lft']} and {$row['rgt']} or source = 'help')
 
-	order by sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
+	order by lft,sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
 	
 	$ADODB_FETCH_MODE = $prev_fetch_mode;
 
