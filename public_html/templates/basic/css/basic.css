@@ -1243,6 +1243,43 @@ input.imageselect {
 } 
 
 /*---------------------------------------------------------------*
+ * Tags
+ *---------------------------------------------------------------*/
+
+
+#tags {
+	line-height:1.5em;
+}
+.tag span,.tag a.taglink {
+	font-family:monospace;
+	border:1px solid silver;
+	padding:1px;
+	color:brown;
+	background-color:white;
+}
+.tag a.delete {
+	color:red;
+	border-bottom:none;
+	font-family:monospace;
+}
+
+.tag a.delete:hover {
+	color:red;
+	font-weight:bold;
+}
+
+.tagPublic, .tagPublic span {
+	background-color:lightgreen;
+}
+
+.tagPrivate, .tagPrivate span {
+	background-color:pink;
+}
+
+.tagGeneral, .tagGeneral span {
+	background-color:yellow;
+}
+/*---------------------------------------------------------------*
  * Style Patch!
  *---------------------------------------------------------------*/
   

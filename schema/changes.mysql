@@ -1706,3 +1706,31 @@ ALTER TABLE `humansearch`
 #################################################
 
 
+CREATE TABLE `tag` (
+  `tag_id` int(10) unsigned NOT NULL auto_increment,
+  `status` tinyint(3) unsigned NOT NULL default '1',
+  `prefix` varchar(32) NOT NULL,
+  `tag` varchar(32) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`tag_id`),
+  UNIQUE KEY `tag` (`tag`,`prefix`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+CREATE TABLE `gridimage_tag` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `tag_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `status` tinyint(3) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`gridimage_id`,`tag_id`,`user_id`),
+  KEY `tag_id` (`tag_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+#################################################
+
+
+
