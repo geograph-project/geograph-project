@@ -35,7 +35,7 @@
   	<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getFull()}</a></div>
   {/if}
   <div class="caption"><b>{$image->current_title|escape:'html'}</b> by <a href="{$image->profile_link}">{$image->realname}</a>{if $isowner} (<a href="/licence.php?id={$image->gridimage_id}">change credit</a>){/if}</div>
-  
+
   {if $image->comment}
   <div class="caption" style="border:1px dotted lightgrey;">{$image->current_comment|escape:'html'|geographlinks}</div>
   {/if}
@@ -81,7 +81,7 @@
 	  	<h2 class="titlebar" style="background-color:lightgreen">Thank You</h2>
 	  	<p>Your suggestion has been recorded, it will be taken into account during moderation, however please use the comment box below to explain the reason for the suggestion.</p>
 	  {/if}
-	  
+
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
   	  <h2 class="titlebar">Moderation Suggestion</h2>
@@ -126,7 +126,7 @@
 {if $thankyou eq 'pending'}
 	<a name="form"></a>
 	<h2 class="titlebar" style="background-color:lightgreen">Thankyou!</h2>
-	<p>Thanks for suggesting changes, you will receive an email when 
+	<p>Thanks for suggesting changes, you will receive an email when
 	we process your suggestion. </p>
 
 	<p>You can review your requested changes below, or <a href="/photo/{$image->gridimage_id}">click here to return to the image page</a></p>
@@ -147,9 +147,9 @@
 	All Change Suggestions
 	{if $isowner}<small>(<a href="/suggestions.php" title="Suggestions Listing">back to listing</a>)</small>{/if}
 	</h2>
-	
-	{if $opentickets}	
-	<p>All change suggestions for this image are listed below. 
+
+	{if $opentickets}
+	<p>All change suggestions for this image are listed below.
 	<a href="/editimage.php?id={$image->gridimage_id}&amp;alltickets=0">Just show open suggestions.</a></p>
 	{else}
 	<p>There have been no change suggestions logged for this image</p>
@@ -161,11 +161,11 @@
 	Open Change Suggestions
 	{if $isowner}<small>(<a href="/suggestions.php" title="Suggestions Listing">back to listing</a>)</small>{/if}
 	</h2>
-	{if $opentickets}	
-	<p>Any open change suggestions are listed below. 
+	{if $opentickets}
+	<p>Any open change suggestions are listed below.
 	{else}
 
-	<p>There are no open change suggestions for this image. 
+	<p>There are no open change suggestions for this image.
 	{/if}
 	To see older, closed suggestions, <a href="/editimage.php?id={$image->gridimage_id}&amp;alltickets=1">view all suggestions</a></p>
 {/if}
@@ -186,17 +186,17 @@
 {if $lastdays ne $ticket->days}
 <b>-updated {$ticket->days} ago-</b>
 {/if}
-{assign var="lastdays" value=$ticket->days} 
+{assign var="lastdays" value=$ticket->days}
 <div class="ticket">
-	
+
 
 	<div class="ticketbasics">
 	{if $ticket->type == 'minor'}
-		<u>Minor Changes</u>, 
+		<u>Minor Changes</u>,
 	{/if}
 	{if $isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner') }
-		<b>Submitted</b> {if $ticket->public ne 'everyone'}anonymously{/if}{if $ticket->public eq 'owner'}(to everyone else){/if} by {$ticket->suggester_name} 
-		
+		<b>Submitted</b> {if $ticket->public ne 'everyone'}anonymously{/if}{if $ticket->public eq 'owner'}(to everyone else){/if} by {$ticket->suggester_name}
+
 		{if $ticket->user_id eq $image->user_id}
 		  <b>(photo owner)</b>
 		{/if}
@@ -205,27 +205,27 @@
 	{elseif $ticket->user_id eq $user->user_id}
 		<b>You</b> Submitted
 	{else}
-		<b>Submitted</b> by anonymous site visitor 
-	{/if} 
+		<b>Submitted</b> by anonymous site visitor
+	{/if}
 	<b>on</b> {$ticket->suggested|date_format:"%a, %e %b %Y at %H:%M"} |
 
 	{if $ticket->suggested ne $ticket->updated}
 
-	<b>Updated</b> {$ticket->updated|date_format:"%a, %e %b %Y at %H:%M"} | 
+	<b>Updated</b> {$ticket->updated|date_format:"%a, %e %b %Y at %H:%M"} |
 	{/if}
 
-	
+
 	<i>({$ticket->status})</i>
-	
+
 	{if $ticket->status ne "closed" && $isadmin && $ticket->moderator_id == $user->user_id}
 
 		<input type="submit" name="disown" id="disown" value="Disown"/>
 
 	{/if}
 	</div>
-	
 
-	
+
+
 
 	{if $ticket->changes}
 
@@ -235,7 +235,7 @@
 			{assign var="editable" value=0}
 			{if ($ticket->status eq "closed") or ($item.status eq 'immediate')}
 				<input disabled="disabled" type="checkbox" {if ($item.status eq 'immediate') or ($item.status eq 'approved')}checked="checked"{/if}/>
-				
+
 			{else}
 				{if $isadmin}
 				<input type="checkbox" value="1" id="accept{$item.gridimage_ticket_item_id}" name="accepted[{$item.gridimage_ticket_item_id}]"/>
@@ -266,7 +266,7 @@
 			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{else}
 			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span>
-			  to 
+			  to
 			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
 			{/if}
 
@@ -275,7 +275,7 @@
 			{/if}
 
 			</label>
-			
+
 			</div>
 		{/foreach}
 		{if $ticket->reopenmaptoken}
@@ -283,12 +283,12 @@
 		{/if}
 		</div>
 	{/if}
-	
+
 	{if ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') )}
 	<div class="ticketnotes">
 		<div class="ticketnote">{$ticket->notes|escape:'html'|geographlinks|replace:'Auto-generated ticket, as a result of Moderation. Rejecting this image because:':'<span style="color:gray">Auto-generated, as a result of moderation. Rejecting this image because:</span><br/>'}</div>
-	
-		
+
+
 		{if $ticket->comments}
 			{if $isadmin or $isowner or ($user->user_id eq $ticket->user_id && $ticket->notify eq 'suggestor')}
 				{foreach from=$ticket->comments item=comment}
@@ -298,7 +298,7 @@
 						{$comment.realname} {if $ticket->public ne 'everyone' && $ticket->user_id eq $comment.user_id}(anonymously){/if}
 					{else}
 						suggestor
-					{/if} 
+					{/if}
 					{if $comment.user_id == $image->user_id}
 						(Photo Owner)
 					{elseif $comment.moderator}
@@ -319,35 +319,35 @@
 				{/if}
 			{/if}
 		{/if}
-		
-	
+
+
 
 	</div>
 	{/if}
-	
+
 	{if ($isadmin or $isowner or ($ticket->user_id eq $user->user_id and $ticket->notify=='suggestor') ) and ($ticket->status ne "closed")}
 		{assign var="ticketsforcomments" value=1}
 	<div class="ticketactions interestBox">
 		<div>&nbsp;<b>Add a reply to this suggestion:</b></div>
 		<textarea name="comment" rows="4" cols="70"></textarea><br/>
-		
+
 		<input type="submit" name="addcomment" value="Add comment"/>
-		
+
 		{if $isadmin and $ticket->moderator_id > 0 and $ticket->moderator_id != $user->user_id}
 			<input type="checkbox" name="claim" value="on" id="claim" checked="checked"/> <label for="claim" title="Claim this suggestion to be moderated by me">Claim Suggestion</label>
 			&nbsp;&nbsp;&nbsp;
 		{elseif $isadmin}
 			<input type="hidden" name="claim" value="on"/>
 		{/if}
-		
+
 		{if ($isowner || $isadmin) && $ticket->user_id ne $user->user_id}
 			<input type="checkbox" name="notify" value="suggestor" id="notify_suggestor" {if $ticket->notify=='suggestor'}checked="checked"{/if}/> <label for="notify_suggestor">Send {if $isadmin || $ticket->public eq 'everyone' || ($isowner && $ticket->public eq 'owner') }{$ticket->suggester_name}{else} suggestor{/if} this comment.</label>
 			&nbsp;&nbsp;&nbsp;
 		{/if}
 		{if $isadmin}
-		
+
 			{if $ticket->changes}
-		
+
 			<input type="submit" name="accept" value="Accept ticked changes and close suggestion" onclick="autoDisable(this)"/>
 
 			{else}
@@ -355,15 +355,15 @@
 			<input type="submit" name="close" value="Close suggestion" onclick="autoDisable(this)"/>
 
 			{/if} {$ticket->suggester_name} is notified.
-			
+
 			<input class="accept" type="button" id="defer" value="Defer 24 hours" onclick="deferTicket({$ticket->gridimage_ticket_id},24)"/>
 	 		<input class="accept" type="button" id="defer" value="Defer 7 days" onclick="deferTicket({$ticket->gridimage_ticket_id},168)"/>
 	 		<span class="caption" id="modinfo{$ticket->gridimage_ticket_id}"></span>
 		{/if}
-		
+
 	</div>
 	{/if}
-	
+
 
 </div>
 </form>
@@ -385,7 +385,7 @@
 {if $opentickets && !$error && $isowner && $ticketsforcomments && $showfull}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	<ul>
-		<li>If you agree with the changes suggested, please indicate your acceptance, <b>in the reply box above</b>.</li> 
+		<li>If you agree with the changes suggested, please indicate your acceptance, <b>in the reply box above</b>.</li>
 		<li>If you disagree, please explain above why you do not accept the changes. This will be helpful to the moderator in making a decision.</li>
 		<li>However, if you want to make the changes straight away {if $moderated.grid_reference}<span class="moderatedlabel">(except grid square changes)</span>{/if}, or want to make other changes, use the <b><a href="/editimage.php?id={$image->gridimage_id}&amp;form">Change Image Details</a> Form</b>.</li>
 		<li>If a suggestion suggests an issue but doesn't actually list the changes then it would help us if you were to make the changes yourself</li>
@@ -404,13 +404,13 @@
 
 	{if $rastermap->enabled}
 		<div class="rastermap" style="float:right;  width:350px;position:relative">
-		
+
 		<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
 		{$rastermap->getImageTag()}<br/>
 		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
-		 
+
 		</div>
-		
+
 		{$rastermap->getScriptTag()}
 			{literal}
 			<script type="text/javascript">
@@ -426,11 +426,11 @@
 				AttachEvent(window,'load',onChangeImageclass,false);
 			</script>
 			{/literal}
-		
-	{else} 
+
+	{else}
 		<script type="text/javascript" src="{"/mapping.js"|revision}"></script>
 	{/if}
-	
+
 <form method="post" action="/editimage.php#form" name="theForm" onsubmit="this.imageclass.disabled=false" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0; border-top:none">
 <input type="hidden" name="id" value="{$image->gridimage_id}"/>
 
@@ -464,7 +464,7 @@
 <input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
 {getamap gridref="document.theForm.photographer_gridref.value" gridref2=$image->photographer_gridref text="OS Get-a-map&trade;"}<br/>
 <span style="font-size:0.6em">
-| <a href="javascript:void(copyGridRef());">Copy from Subject</a> | 
+| <a href="javascript:void(copyGridRef());">Copy from Subject</a> |
 <a href="javascript:void(resetGridRefs());">Reset to initial values</a> |  <span id="dist_message" style="padding-left:20px"></span><br/></span>
 
 	{literal}
@@ -530,7 +530,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	{if $error.imageclass}
 	<span class="formerror">{$error.imageclass}</span><br/>
 	{/if}
-	
+
 	<input size="32" id="imageclass" name="imageclass" value="{$image->imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
 	</p>
 {literal}
@@ -539,13 +539,13 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 AttachEvent(window,'load', function() {
  	var inputWord = $('imageclass');
- 	
+
     new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
         'postVar': 'q',
         'minLength': 2,
         maxChoices: 60
     });
-    
+
 },false);
 
 //-->
@@ -555,7 +555,7 @@ AttachEvent(window,'load', function() {
 
 {else}
 
-	<p><label for="imageclass"><b>Image Category</b> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />	
+	<p><label for="imageclass"><b>Image Category</b> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
 		{if $error.imageclass}
 		<span class="formerror">{$error.imageclass}</span><br/>
 		{/if}
@@ -574,10 +574,10 @@ AttachEvent(window,'load', function() {
 
 
 		<span id="otherblock"><br/>
-		<label for="imageclassother">Please specify </label> 
+		<label for="imageclassother">Please specify </label>
 		<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/></p>
 		</span>
-	</p>	
+	</p>
 {/if}
 
 {if $user->user_id eq $image->user_id || $isadmin}
@@ -610,9 +610,9 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 </td><td>
 
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
-	Please provide as much detail for the moderator 
-	{if !$isowner} and photo owner{/if} about this suggestion as possible. 
-	Explaining the reasoning behind the suggestion will greatly help everyone. 
+	Please provide as much detail for the moderator
+	{if !$isowner} and photo owner{/if} about this suggestion as possible.
+	Explaining the reasoning behind the suggestion will greatly help everyone.
 </div>
 
 </td></tr></table>
@@ -631,7 +631,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 	<br style="clear:both"/>
 {else}
-	{if $isowner} 
+	{if $isowner}
 	<div>
 		<input type="checkbox" name="mod" value="pending" id="mod_pending"{if $mod_pending} checked="checked"{/if}/> <label for="mod_pending">Bring this issue to the attention of a moderator (regardless of changes made).</label><br/><br/>
 	</div>
@@ -677,13 +677,13 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="id"/>
-	<input type="submit" value="Preview edits in a new window" onclick="previewImage()"/> 
-	
+	<input type="submit" value="Preview edits in a new window" onclick="previewImage()"/>
+
 	<input type="checkbox" name="spelling"/>Check Spelling
 	<sup style="color:red">Experimental!</sup>
 	</form>
 
-{if $isadmin || $isowner} 
+{if $isadmin || $isowner}
 <br/><br/>
 <h2 class="titlebar">Shared Descriptions/References (Optional) <input type="button" value="expand" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';" id="hideshare"/></h2>
 <div id="showshare" style="display:none">
@@ -697,22 +697,33 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	</ul>
 	<iframe src="about:blank" height="400" width="100%" id="shareframe">
 	</iframe>
-	
+
 	<p><a href="/photo/{$image->gridimage_id}">return to image page</a> <small>- changes made inside the Shared Description box apply immediately</small></p>
 </div>
 {/if}
+<br/><br/>
+<h2 class="titlebar">Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';" id="hidetag"/></h2>
+<div id="showtag" style="display:none">
+	<ul>
+		<li>Tags are a new feature on Geograph - they are still under heavy development - not fully working yet!</li>
+		<li>Read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
+	</ul>
+	<iframe src="about:blank" height="200" width="100%" id="tagframe">
+	</iframe>
 
+	<p>NOTE: changes made inside the Tags box apply as soon as press "Save Changes"</p>
+</div>
 
 
 {/if}
 
 {if $use_autocomplete}
-	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" /> 
+	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" />
 
-	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script> 
-	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script> 
+	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script>
+	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script>
 {else}
 <script type="text/javascript" src="/categories.js.php"></script>
 {/if}
@@ -721,7 +732,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 {/if}
 {literal}
 	<script type="text/javascript">
-	
+
 	function releaseLock() {
 		var myImage = new Image();
 		myImage.src = "/editimage.php?id={/literal}{$image->gridimage_id}{literal}&unlock";
@@ -734,7 +745,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 	<p>{$error}</p>
 
-	<p>Please <a title="Contact Us" href="/contact.php">contact us</a> 
+	<p>Please <a title="Contact Us" href="/contact.php">contact us</a>
 	if you have queries</p>
 {/if}
 

@@ -36,6 +36,16 @@
 			<div><a href="#" onclick="hide_tree('share{$image->gridimage_id}');return false">- Close <i>Shared Descriptions</I> box</a> ({newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"})</div>
 		  </div>
 		{/if}
+
+		<span id="hidetag{$image->gridimage_id}" style="font-size:0.8em">Tags: <span id="tags{$image->gridimage_id}"></span> &middot; <a href="#" onclick="return open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Tagging</b> Box</a></span>
+
+		  <div class="interestBox" id="showtag{$image->gridimage_id}" style="display:none">
+				<iframe src="about:blank" height="200" width="100%" id="tagframe{$image->gridimage_id}">
+				</iframe>
+				<div><a href="#" onclick="hide_tree('tag{$image->gridimage_id}');return false">- Close <i>Tagging</I> box</a> ({newwin href="/article/Tags" text="Article about Tags"})</div>
+		  </div>
+
+
 	  </form><br/>
 	 </div>
 	{foreachelse}
@@ -81,6 +91,13 @@ function open_shared(gid,gr,extra) {
 
 
 	document.getElementById('shareframe'+gid).src='/submit_snippet.php?gridimage_id='+gid+'&gr='+gr+extra;
+	return false;
+}
+function open_tagging(gid,gr,extra) {
+	show_tree('tag'+gid);
+
+
+	document.getElementById('tagframe'+gid).src='/tags/tagger.php?gridimage_id='+gid+'&gr='+gr+extra;
 	return false;
 }
 {/literal}
