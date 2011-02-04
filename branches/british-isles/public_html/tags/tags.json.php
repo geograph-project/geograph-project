@@ -45,7 +45,7 @@ if (!empty($_GET['q'])) {
 	$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
 
         $sql['wheres'] = array("`tag` LIKE ".$db->Quote($_GET['q'].'%'));
-	$sql['wheres'][] = "gt.status_id = 2";
+	$sql['wheres'][] = "gt.status = 2";
 
         $sql['group'] = 'tag_id';
 
@@ -79,7 +79,6 @@ if (!empty($_GET['q'])) {
 }
 
 $query = "SELECT {$sql['columns']}";
-
 if (isset($sql['tables']) && count($sql['tables'])) {
 	$query .= " FROM ".join(' ',$sql['tables']);
 }
