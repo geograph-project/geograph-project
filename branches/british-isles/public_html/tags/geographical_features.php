@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: index.php 7069 2011-02-04 00:06:46Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2011 Barry Hunter (geo@barryhunter.co.uk)
@@ -31,7 +31,7 @@ $smarty = new GeographPage;
 
 
 $template = 'tags.tpl';
-$cacheid = md5(serialize($_GET));
+$cacheid = "geog".md5(serialize($_GET));
 
 
 
@@ -44,14 +44,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	if (!empty($_GET['tag'])) {
 		
-		$row= $db->getRow("SELECT * FROM tag WHERE tag=".$db->Quote($_GET['tag']));
+		$row= $db->getRow("SELECT * FROM tag WHERE prefix = 'geographical feature' AND tag=".$db->Quote($_GET['tag']));
 		
 		
 		if (!empty($row)) {
 			$sql = "select gi.*
 				from gridimage_tag gt
 					inner join gridimage_search gi using(gridimage_id)
-				where status =2
+				where status > 0
 				and tag_id = {$row['tag_id']}
 				order by created desc 
 				limit 50";
@@ -69,7 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-	$tags = $db->getAll("SELECT LOWER(tag) AS tag,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING(tag_id) WHERE gt.status = 2 GROUP BY tag ORDER BY tag LIMIT 1000");
+	$tags = $db->getAll("SELECT t.tag,COUNT(*) AS images FROM tag t INNER JOIN gridimage_tag gt USING(tag_id) WHERE prefix = 'geographical feature' AND gt.status > 0 GROUP BY t.tag ORDER BY t.tag LIMIT 1000");
 	
 	$smarty->assign_by_ref('tags', $tags);
 }

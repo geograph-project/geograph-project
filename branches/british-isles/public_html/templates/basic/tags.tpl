@@ -13,9 +13,9 @@
 	<p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center">
 	TAGS: {foreach from=$tags item=item}
 		{if $item.tag eq $thetag}
-			<span class="nowrap">&nbsp;<b>{$item.tag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="/tags/">remove filter</a>] &nbsp;</span>
+			<span class="nowrap">&nbsp;<b>{$item.tag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}">remove filter</a>] &nbsp;</span>
 		{else}
-			&nbsp;<a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="/tags/?tag={$item.tag|escape:'url'}">{$item.tag|escape:'html'|replace:' ':'&middot;'}</a> &nbsp;
+			&nbsp;<a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="{$script_name}?tag={$item.tag|escape:'url'}">{$item.tag|escape:'html'|replace:' ':'&middot;'}</a> &nbsp;
 		{/if}
 	{/foreach}
 	</p>
