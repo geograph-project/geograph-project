@@ -40,15 +40,20 @@ $sql['columns'] = 'tag.tag,tag.prefix';
 if (!empty($_GET['q'])) {
         //TODO invoke sphinx...
 
-        $sql['tables'] = array('tag');
+        $sql['tables'] = array();
+	$sql['tables']['t'] = 'tag';
+	$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
 
         $sql['wheres'] = array("`tag` LIKE ".$db->Quote($_GET['q'].'%'));
+	$sql['wheres'][] = "gt.status_id = 2";
+
+        $sql['group'] = 'tag_id';
 
         $sql['order'] = '`tag`';
                 
         $sql['limit'] = 100;
 
-        //todo only show tags actully in use? (and/or sort by popularity)
+        //todo sort by popularity?
 } else {
 	die("todo");
 	
@@ -80,6 +85,9 @@ if (isset($sql['tables']) && count($sql['tables'])) {
 }
 if (isset($sql['wheres']) && count($sql['wheres'])) {
 	$query .= " WHERE ".join(' AND ',$sql['wheres']);
+}
+if (isset($sql['group'])) {
+	$query .= " GROUP BY {$sql['group']}";
 }
 if (isset($sql['order'])) {
 	$query .= " ORDER BY {$sql['order']}";
