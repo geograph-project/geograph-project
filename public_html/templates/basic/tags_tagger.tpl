@@ -60,9 +60,14 @@ function addTag(text,suggestion) {
 	text = text.replace(/['"]+/ig, " ");
 	//todo - split on comma so can enter multiple tags at once.
 
-	str = "<span class=\"tag tagPrivate\" id=\"tag"+text+"\"{/literal}{dynamic}{if $is_owner} onclick=\"toggleTag('"+text+"');\"{/if}{/dynamic}{literal}>";
+{/literal}{dynamic}{if $is_owner}
+	str = "<span class=\"tag tagPublic\" id=\"tag"+text+"\" onclick=\"toggleTag('"+text+"');\">";
+	str += "<input type=\"hidden\" name=\"mode[]\" id=\"tagm"+text+"\" value=\"Public\"/>";
+{else}
+	str = "<span class=\"tag tagPrivate\" id=\"tag"+text+"\">";
+	str += "<input type=\"hidden\" name=\"mode[]\" id=\"tagm"+text+"\" value=\"Private\"/>";
+{/if}{/dynamic}{literal}
 	str += "<input type=\"hidden\" name=\"tag_id[]\" id=\"tagi"+text+"\" value=\""+text+"\"/>";
-	str += "<input type=\"hidden\" name=\"mode[]\" id=\"tagm"+text+"\" value=\""+text+"\"/>";
 	str += "<span>"+text+"</span>";
 	str += "<a href=\"javascript:removeTag('"+text+"')\" class=\"delete\">X</a>";
 	str += "</span>&nbsp; ";
@@ -92,7 +97,7 @@ function toggleTag(text) {
 		var newClass= (ele.className.indexOf('Public') > 1)?'Private':'Public';
 
 		ele.className = "tag tag"+newClass;
-		 document.getElementById("tagm"+text).value = newClass;
+		document.getElementById("tagm"+text).value = newClass;
 	}
 	document.getElementById("savebutton").style.display='';
 }
