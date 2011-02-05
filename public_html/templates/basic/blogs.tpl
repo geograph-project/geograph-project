@@ -31,7 +31,7 @@
 {if $user_id && $realname}
 	<p><b>Recent Posts by <a href="/profile/{$user_id}">{$realname|escape:'html'}</a></b></p>
 {elseif $tags}
-	<p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center">
+	<div class="interestBox wordnet" style="font-size:0.8em;line-height:1.4em;">
 	TAGS: {foreach from=$tags key=tag item=count}
 		{if $tag eq $thetag}
 			<span class="nowrap">&nbsp;<b>{$tag|escape:'html'|ucwords|replace:' ':'&middot;'}</b> [<a href="/blog/">remove filter</a>] &nbsp;</span>
@@ -39,7 +39,7 @@
 			&nbsp;<a title="{$count} entries" {if $count > 10} style="font-weight:bold"{/if} href="/blog/?tag={$tag|escape:'url'}">{$tag|escape:'html'|ucwords|replace:' ':'&middot;'}</a> &nbsp;
 		{/if}
 	{/foreach}
-	</p>
+	</div><br/><br/>
 {/if}
 
 
@@ -48,41 +48,35 @@
 
 {foreach from=$list item=item}
 
-	<div class="interestBox">
-		<div style="float:right;position:relative">
-			{$item.published}
-		</div>
-		<a href="/blog/entry.php?id={$item.blog_id}"><b>{$item.title|escape:'html'}</b></a>,
-		<small>by <a title="View profile" href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>
-			 {$item.created}</small>
-	</div>
-	<div style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
+	<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px; padding-top:3px; border-top:1px solid gray; margin-bottom:20px;">
+		<h4 style="margin-top: 0px;font-size:1.2em; margin-bottom:0"><a href="/blog/entry.php?id={$item.blog_id}">{$item.title|escape:'html'}</a></h4>
+		<div style="text-align:right;margin-bottom:3px;color:gray">{$item.created}</div>
 		{if $item.image}
-		<a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
+			<div style="float:left"><a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a></div>
 		{/if}
-	</div>
-	<blockquote>
-		<p>{$item.content|truncate:200|escape:'html'}</p>
-		<a href="/blog/entry.php?id={$item.blog_id}"><i>Read more...</i></a>
-		{if $user->user_id == $item.user_id || $isadmin}
-				[<a href="/blog/edit.php?id={$item.blog_id}">edit</a>]
-		{/if}
-		{if $isadmin}
-			{if $item.approved eq 1}
-				[<a href="/blog/?id={$item.blog_id}&amp;approve=0">disapprove</a>]
-			{else}
-				[<a href="/blog/?id={$item.blog_id}&amp;approve=1">approve</a>]
-				[<a href="/blog/?id={$item.blog_id}&amp;approve=-1">delete</a>]
+
+		<div style="font-size:0.8em;text-align:justify">{$item.content|truncate:500|escape:'html'}</div>
+		<div style="margin-top:8px;border-top:1px solid gray">
+		Posted by <a title="View profile" href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a> <span class="nowrap">on {$item.published|date_format:"%a, %e %b"}</span>
+		<a href="/blog/entry.php?id={$item.blog_id}"><b>Read More...</b></a>
+
+			{if $user->user_id == $item.user_id || $isadmin}<br/><br/>
+					[<a href="/blog/edit.php?id={$item.blog_id}">edit</a>]
 			{/if}
-		{/if}
-	</blockquote>
+			{if $isadmin}
+				{if $item.approved eq 1}
+					[<a href="/blog/?id={$item.blog_id}&amp;approve=0">disapprove</a>]
+				{else}
+					[<a href="/blog/?id={$item.blog_id}&amp;approve=1">approve</a>]
+					[<a href="/blog/?id={$item.blog_id}&amp;approve=-1">delete</a>]
+				{/if}
+			{/if}
 
-
-
-
-
+		</div>
+	</div>
 
 {/foreach}
+<br style="clear:both"/>
 
 {else}
   <p>There are no listed entries.</p>
