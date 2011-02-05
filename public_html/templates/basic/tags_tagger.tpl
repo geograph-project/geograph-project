@@ -21,9 +21,11 @@ Current Tags: <span id="tags">{foreach from=$used item=item name=used}
 {foreachelse}
 <i>none</i>
 {/foreach}</span><br/>
+</form>
 <hr/>
+<form>
 
-Add new Tag: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions('q='+escape(this.value));}{/literal}"/> <input type="button" value="Add" onclick="addTag(this.form.elements['__newtag'].value);this.form.elements['__newtag'].value='';this.form.elements['__newtag'].focus();"/> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})<br/>
+Add new Tag: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);}{/literal}"/> <input type="button" value="Add" onclick="useTag(this.form.elements['__newtag'])"/> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})<br/>
 
 
 <div id="suggestions">{if $suggestions}Suggestions: {/if}{foreach from=$suggestions item=item name=used}
@@ -43,11 +45,25 @@ Add new Tag: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup
 
 {literal}<script type="text/javascript">
 
+function useTag(ele) {
+	addTag(ele.value);
+	ele.value='';
+	ele.focus();
+}
+
 function addTag(text,suggestion) {
 
 	if (!text || text.length == 0) {
 		alert('No tag specified');
 		return;
+	}
+
+	if (text.indexOf(';') > -1 || text.indexOf(',') > -1) {
+		var arr = text.split(/\s*[,;]+\s*/);
+		for(q=0;q<arr.length;q++)
+			if (arr[q].length>1)
+				addTag(arr[q],suggestion);
+		return void('');
 	}
 
 	var div = document.getElementById('tags');
@@ -106,7 +122,16 @@ function toggleTag(text) {
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
 <script>
 
-	function loadTagSuggestions(param) {
+	function loadTagSuggestions(that,event) {
+
+		var unicode=event.keyCode? event.keyCode : event.charCode;
+		if (unicode == 13) {
+			useTag(that);
+			return;
+		}
+
+		param = 'q='+escape(that.value);
+
 		$.getJSON("/tags/tags.json.php?"+param+"&callback=?",
 
 		// on search completion, process the results
