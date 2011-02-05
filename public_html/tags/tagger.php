@@ -60,7 +60,7 @@ if (!empty($_GET['upload_id'])) {
 
 $db = GeographDatabaseConnection(false);
 
-if (!empty($_POST['submit']) && $gid) {
+if (!empty($_POST['save']) && $gid) {
 
 	//tags precheck
 	if (!empty($_POST['tag_id'])) {
