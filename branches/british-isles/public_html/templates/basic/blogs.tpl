@@ -48,8 +48,8 @@
 
 {foreach from=$list item=item}
 
-	<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px; padding-top:3px; border-top:1px solid gray; margin-bottom:20px;">
-		<h4 style="margin-top: 0px;font-size:1.2em; margin-bottom:0"><a href="/blog/entry.php?id={$item.blog_id}">{$item.title|escape:'html'}</a></h4>
+	<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px; margin-bottom:20px; height:430px">
+		<h4 style="margin-top: 0px;font-size:1.2em; margin-bottom:0"><a href="/blog/entry.php?id={$item.blog_id}" style="text-decoration:none">{$item.title|escape:'html'}</a></h4>
 		<div style="text-align:right;margin-bottom:3px;color:gray">{$item.created}</div>
 		{if $item.image}
 			<div style="float:left;padding-right:6px;padding-bottom:2px;"><a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a></div>
