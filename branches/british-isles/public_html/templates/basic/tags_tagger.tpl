@@ -3,7 +3,8 @@
 {dynamic}
 <form method="post" action="{$script_name}?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}" style="background-color:#f0f0f0;" name="theForm">
 <div id="savebutton" style="float:right;display:none">
-	<input type="submit" name="submit" value="Save Changes" style="font-size:1.2em"/>
+	<input type="submit" name="save" value="Save Changes" style="font-size:1.2em"/>
+	<div id="autoSave" style="font-size:0.7em"></div>
 </div>
 
 <input type="hidden" name="gridimage_id" value="{$gridimage_id}" />
@@ -25,7 +26,7 @@ Current Tags: <span id="tags">{foreach from=$used item=item name=used}
 <hr/>
 <form>
 
-Add new Tag: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);}{/literal}"/> <input type="button" value="Add" onclick="useTag(this.form.elements['__newtag'])"/> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})<br/>
+Add new Tag: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} clearAutoSave(); {/literal}"/> <input type="button" value="Add" onclick="useTag(this.form.elements['__newtag'])"/> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})<br/>
 
 
 <div id="suggestions">{if $suggestions}Suggestions: {/if}{foreach from=$suggestions item=item name=used}
@@ -44,6 +45,10 @@ Add new Tag: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup
 <div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag</span> <span class="tag tagPrivate">Private Tag</span> <span class="tag tagGeneral">General Tag</span></span></div>
 
 {literal}<script type="text/javascript">
+
+var autoSaveTimer = null;
+var autoSaveCounter = 0;
+var autoSaveCounterTimer = null;
 
 function useTag(ele) {
 	addTag(ele.value);
@@ -92,7 +97,7 @@ function addTag(text,suggestion) {
 	if (suggestion) {
 		document.getElementById('suggestion'+suggestion).style.display='none';
 	}
-	document.getElementById("savebutton").style.display='';
+	showSaveButton();
 	return void('');
 }
 function removeTag(text) {
@@ -103,7 +108,7 @@ function removeTag(text) {
 	if (document.getElementById("tagi"+text)) {
 		document.getElementById("tagi"+text).value="-deleted-";
 	}
-	document.getElementById("savebutton").style.display='';
+	showSaveButton();
 }
 
 function toggleTag(text) {
@@ -115,7 +120,36 @@ function toggleTag(text) {
 		ele.className = "tag tag"+newClass;
 		document.getElementById("tagm"+text).value = newClass;
 	}
+	showSaveButton();
+}
+
+function showSaveButton() {
 	document.getElementById("savebutton").style.display='';
+	if (autoSaveTimer) {
+		clearTimeout(autoSaveTimer);
+	}
+	if (autoSaveCounterTimer) {
+		clearInterval(autoSaveCounterTimer);
+	}
+	autoSaveTimer = setTimeout("document.forms['theForm'].elements['save'].click()", 10000);
+
+	autoSaveCounter = 10;
+	autoSaveCounterTimer = setInterval("autoSaveCountdown()", 1000);
+	document.getElementById("autoSave").innerHTML = "Auto save in "+autoSaveCounter+" seconds";
+}
+function autoSaveCountdown() {
+	autoSaveCounter = autoSaveCounter - 1;
+	document.getElementById("autoSave").innerHTML = "Auto save in "+autoSaveCounter+" seconds";
+}
+function clearAutoSave() {
+	if (autoSaveTimer) {
+		clearTimeout(autoSaveTimer);
+	}
+	if (autoSaveCounterTimer) {
+		clearInterval(autoSaveCounterTimer);
+	}
+	autoSaveTimer = autoSaveCounterTimer = null;
+	document.getElementById("autoSave").innerHTML = '';
 }
 
 </script>
