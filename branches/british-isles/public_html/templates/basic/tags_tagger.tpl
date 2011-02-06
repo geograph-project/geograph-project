@@ -1,14 +1,20 @@
 {assign var="page_title" value="Tags"}
 {include file="_basic_begin.tpl"}
+<div style="padding:6px">
 {dynamic}
+	{if $message}
+		<p style="color:red">{$message|escape:"html"}</p>
+	{/if}
+
 <form method="post" action="{$script_name}?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}" style="background-color:#f0f0f0;" name="theForm">
 <div id="savebutton" style="float:right;display:none">
 	<input type="submit" name="save" value="Save Changes" style="font-size:1.2em"/>
 	<div id="autoSave" style="font-size:0.7em"></div>
 </div>
 
-<input type="hidden" name="gridimage_id" value="{$gridimage_id}" />
-<input type="hidden" name="gr" value="{$gr|escape:'html'}" />
+{if $gridimage_id}<input type="hidden" name="gridimage_id" value="{$gridimage_id}" />{/if}
+{if $ids}<input type="hidden" name="ids" value="{$ids|escape:'html'}" />{/if}
+{if $gr}<input type="hidden" name="gr" value="{$gr|escape:'html'}" />{/if}
 
 Current Tags: <span id="tags">{foreach from=$used item=item name=used}
 	<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tag{$item.tag_id}"{if $is_owner} onclick="toggleTag('{$item.tag_id}');"{/if}>
@@ -20,7 +26,7 @@ Current Tags: <span id="tags">{foreach from=$used item=item name=used}
 	{/if}
 	</span>&nbsp;
 {foreachelse}
-<i>none</i>
+{if $gridimage_id}<i>none</i>{else}<i>unknown</i>{/if}
 {/foreach}</span><br/>
 </form>
 <hr/>
@@ -73,7 +79,7 @@ function addTag(text,suggestion) {
 
 	var div = document.getElementById('tags');
 
-	if (div.innerHTML.indexOf('<i>none') == 0) {
+	if (div.innerHTML.indexOf('<i>') == 0) {
 		div.innerHTML = '';
 	}
 
@@ -131,7 +137,7 @@ function showSaveButton() {
 	if (autoSaveCounterTimer) {
 		clearInterval(autoSaveCounterTimer);
 	}
-	autoSaveTimer = setTimeout("document.forms['theForm'].elements['save'].click()", 10000);
+	autoSaveTimer = setTimeout("autoSaveTimer = null;document.forms['theForm'].elements['save'].click()", 10000);
 
 	autoSaveCounter = 10;
 	autoSaveCounterTimer = setInterval("autoSaveCountdown()", 1000);
@@ -151,6 +157,17 @@ function clearAutoSave() {
 	autoSaveTimer = autoSaveCounterTimer = null;
 	document.getElementById("autoSave").innerHTML = '';
 }
+
+
+function unloadMess() {
+	if (!autoSaveTimer) {
+		return;
+	}
+	return "**************************\n\nYou have unsaved changes in the Tagging box.\n\n**************************\n";
+}
+//this is unreliable with AttachEvent
+window.onbeforeunload=unloadMess;
+
 
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
@@ -195,6 +212,6 @@ function clearAutoSave() {
 </script>
 {/literal}
 
-
+</div>
 </body>
 </html>
