@@ -148,6 +148,15 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
+			 <td><label for="region">region</label></td> 
+			 <td> 
+				<select name="region" id="region" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$regionlist selected=$region}
+				</select></td> 
+			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
+		  </tr> 
+		  <tr> 
 			 <td><label for="submitted_startDay">submitted</label></td> 
 			 <td colspan="2"> 
 				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
