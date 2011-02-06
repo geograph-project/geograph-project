@@ -82,6 +82,7 @@ if (isset($_POST['submit'])) {
 		'limit8' => 'distance',
 		'limit9' => 'gridimage_post',
 		'limit10' => 'route_id',
+		'limit11' => 'region',
 	);
 	$smarty->assign_by_ref("map",$map);	
 	

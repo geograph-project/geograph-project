@@ -545,6 +545,16 @@ class SearchCriteria
 			$sql_from .= " INNER JOIN route_item r ON(grid_reference=r.gridref) ";
 			$this->sphinx['impossible']++;
 		} 
+		if (!empty($this->limit11)) {
+			list($level,$cid) = explode('_',$this->limit11);
+			$level = intval($level);
+			$cid = intval($cid);
+			if ($sql_where)
+				$sql_where .= ' and ';
+			$sql_where .= "gp.percent>0 and gp.level=$level and gp.community_id=$cid ";
+			$sql_from .= " inner join gridsquare_percentage gp on (gi.gridsquare_id=gp.gridsquare_id) ";
+			$this->sphinx['impossible']++;
+		} 
 		
 		if ($sql_where_start != $sql_where) {
 			$this->issubsetlimited = true;
