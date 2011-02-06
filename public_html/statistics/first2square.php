@@ -62,7 +62,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	function cmp($a, $b) 
 	{
-	   global $topusers;
+	   #global $topusers;
 	   if ($a['imgcount'] == $b['imgcount']) {
 	       return 0;
 	   }
