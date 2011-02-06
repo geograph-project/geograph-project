@@ -431,6 +431,7 @@ if (isset($_GET['fav']) && $i) {
 		
 
 		$data['topic_id'] = $query->limit9;
+		$data['region'] = $query->limit11;
 
 		$query->orderby = preg_replace('/^submitted/','gridimage_id',$query->orderby);
 
@@ -520,7 +521,7 @@ if (isset($_GET['fav']) && $i) {
 
 	fallBackForm($_GET);
 		
-} else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
+} else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare']) || !empty($_GET['region'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.
@@ -814,6 +815,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('distance', $query->limit8);
 
 		$smarty->assign('topic_id', $query->limit9);
+		$smarty->assign('region', $query->limit11);
 
 		$query->orderby = preg_replace('/^submitted/','gridimage_id',$query->orderby);
 
@@ -1300,6 +1302,17 @@ if (isset($_GET['fav']) && $i) {
 			}
 			$recordSet->Close();
 			$smarty->assign_by_ref('countylist', $countylist);
+
+			$regionlist = array();
+			if (count($CONF['hier_searchlevels'])) {
+				$recordSet = &$db->Execute("SELECT name,level,community_id FROM loc_hier WHERE level in (".implode(",",$CONF['hier_searchlevels']).") ORDER BY level,name");
+				while (!$recordSet->EOF) {
+					$regionlist[$recordSet->fields[1]."_".$recordSet->fields[2]] = $recordSet->fields[0];
+					$recordSet->MoveNext();
+				}
+				$recordSet->Close();
+			}
+			$smarty->assign_by_ref('regionlist', $regionlist);
 
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;

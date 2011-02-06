@@ -630,6 +630,14 @@ class SearchEngineBuilder extends SearchEngine
 				$topic_name=$db->getOne("SELECT name FROM route WHERE route_id = ".$dataarray['route_id']);
 				$searchdesc .= ", on route ".$topic_name;
 			}
+			if (!empty($dataarray['region']) && preg_match('/^\d+_\d+$/',$dataarray['region'])) {
+				$sql .= ",limit11 = '{$dataarray['region']}'";
+				list($level,$cid) = explode('_',$dataarray['region']);
+				$level = intval($level);
+				$cid = intval($cid);
+				$region_name=$db->getOne("SELECT name FROM loc_hier WHERE level=$level AND community_id=$cid");
+				$searchdesc .= ", in region ".$region_name;
+			}
 			
 			if (!isset($dataarray['orderby']))
 				$dataarray['orderby'] = '';

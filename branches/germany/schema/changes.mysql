@@ -558,4 +558,5 @@ UPDATE gridimage_search gs SET gridsquare_id = (select gridsquare_id from gridim
 ALTER TABLE `gridimage_search` ADD KEY `gridsquare_id` (`gridsquare_id`);
 ALTER TABLE `gridimage` ADD  KEY `gridsquare_id_2` (`gridsquare_id`);
 
-
+ALTER TABLE `queries` ADD `limit11` varchar(32) NOT NULL DEFAULT '' AFTER `limit10`;
+ALTER TABLE `queries_archive` ADD `limit11` varchar(32) NOT NULL DEFAULT '' AFTER `limit10`;

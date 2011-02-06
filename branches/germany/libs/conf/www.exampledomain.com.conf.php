@@ -305,6 +305,8 @@ $CONF['hier_levels'] = array(); # array(7, 6, 5, 4);
 $CONF['hier_prefix'] = array(); # array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
 //configure administrative areas shown on the statistics pages
 $CONF['hier_statlevels'] = array(); # array(4, 7);
+//configure administrative areas which can be uesed as search criteria
+$CONF['hier_searchlevels'] = array(); # array(4, 5, 6, 7);
 
 //optionally get a key for sending your data to geocubes. 
 $CONF['GEOCUBES_API_KEY'] = "";

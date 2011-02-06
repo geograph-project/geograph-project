@@ -47,7 +47,7 @@ $maxx=isset($_POST['maxx'])?intval($_POST['maxx']):100000;
 $miny=isset($_POST['miny'])?intval($_POST['miny']):0;
 $maxy=isset($_POST['maxy'])?intval($_POST['maxy']):100000;
 
-if (isset($_POST['level']) && isset($_POST['cid'])) {
+if (isset($_POST['level']) && isset($_POST['cid']) && trim($_POST['level']) !== '' && trim($_POST['cid']) !== '') {
 	$level = intval($_POST['level']);
 	$cid = intval($_POST['cid']);
 	$limpland = !empty($_POST['limpland']);
