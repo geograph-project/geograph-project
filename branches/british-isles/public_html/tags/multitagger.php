@@ -30,6 +30,9 @@ init_session();
 $smarty = new GeographPage;
 $template = 'tags_multitagger.tpl';
 
+$USER->mustHavePerm("basic");
+
+
 if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
 
@@ -56,13 +59,13 @@ if (!empty($_GET['q'])) {
 		
 		$filters = array(); 
 		if (!empty($_REQUEST['onlymine'])) { 
-			$filters['user_id'] = array($USER->user_id); 
+			$filters['auser_id'] = array($USER->user_id); 
 			$smarty->assign("onlymine",1); 
 		} 
 		if (!empty($filters)) { 
 			$sphinx->addFilters($filters); 
 		} 
-		print_r($filters);
+		
 		$ids = $sphinx->returnIds($pg,'_images');
 		if (!empty($ids) && count($ids)) {
 			$smarty->assign('idlist', implode(',',$ids)); 
