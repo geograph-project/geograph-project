@@ -167,6 +167,13 @@ function unloadMess() {
 }
 //this is unreliable with AttachEvent
 window.onbeforeunload=unloadMess;
+function cancelMess() {
+	window.onbeforeunload=null;
+}
+function setupSubmitForm() {
+	AttachEvent(document.forms['theForm'],'submit',cancelMess,false);
+}
+AttachEvent(window,'load',setupSubmitForm,false);
 
 
 </script>
