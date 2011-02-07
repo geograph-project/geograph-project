@@ -797,7 +797,7 @@ if ($grid_given)
 						$breakdown[$i]['image']->fastInit($row);
 					}
 					if ($row[1] == 1) {
-						$breakdown[$i]['link']="/photo/{$row[2]}";
+						$breakdown[$i]['link']="/photo/{$row['gridimage_id']}";
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?viewpoint={$posgr}".$extra;
 						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;viewpoint={$posgr}".$extra;
