@@ -30,7 +30,7 @@
 $(function() {
 	$("#uploader").plupload({
 		// General settings
-		runtimes : 'flash,html5,browserplus,silverlight,gears,html4',
+		runtimes : 'html5,browserplus,silverlight,gears,html4',
 		url : '{/literal}{$script_name}{literal}',
 		max_file_size : '8mb',
 		max_file_count: 20, // user can add no more then 20 files at a time

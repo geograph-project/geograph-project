@@ -28,7 +28,7 @@ init_session();
 $USER->mustHavePerm("basic");
 
 
-if (!empty($_POST) && empty($_GET['tab'])) {
+if (!empty($_POST) && !empty($_POST['name'])) {
 	// HTTP headers for no cache etc
 	header('Content-type: text/plain; charset=UTF-8');
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
