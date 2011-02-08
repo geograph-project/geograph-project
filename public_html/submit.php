@@ -288,15 +288,19 @@ if (isset($_POST['gridsquare']))
 			//preserve the upload id
 			if($uploadmanager->validUploadId($_POST['transfer_id'])) {
 				$smarty->assign('upload_id', $_POST['transfer_id']);
+				$smarty->assign('transfer_id', $_POST['transfer_id']);
 				$uploadmanager->setUploadId($_POST['transfer_id']);
 				$uploadmanager->reReadExifFile();
-				
+				$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
+				$smarty->assign('preview_width', $uploadmanager->upload_width);
+				$smarty->assign('preview_height', $uploadmanager->upload_height);
 				//we ok to continue
 				if (isset($_POST['photographer_gridref'])) {
 					$step=3;
 				} else {
 					$step=2;
 				}
+			
 			} else {
 				$step=1;
 			}

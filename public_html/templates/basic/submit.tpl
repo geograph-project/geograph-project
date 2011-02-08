@@ -206,8 +206,8 @@ geographing</a> first.</p>
 		<label for="jpeg"><b>JPEG Image File</b></label>
 		<input id="jpeg" name="jpeg" type="file" />
 
-		{/if}
 		<div>(upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)</div>
+		{/if}
 		{if $error}<br /><p style="color:#990000;font-weight:bold;">{$error}</p>{/if}
 		<hr/>
 
