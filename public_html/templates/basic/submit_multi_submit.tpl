@@ -1,4 +1,5 @@
 {include file="_std_begin.tpl"}
+<script src="{"/sorttable.js"|revision}"></script>
 
 <div style="float:right;position:relative">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</div>
 
@@ -52,7 +53,7 @@
 						<input type="submit" value="continue &gt;">
 
 					</form></td>
-					<td>{$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"}</td>
+					<td sortvalue="{$item.uploaded}">{$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"}</td>
 					<td><input type="checkbox"/></td>
 
 				</tr>
