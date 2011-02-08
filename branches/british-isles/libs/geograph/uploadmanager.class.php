@@ -371,7 +371,7 @@ class UploadManager
 
 
 	
-	function processUpload($upload_file)
+	function processUpload($upload_file,$all_non_upload = false)
 	{
 		global $USER,$CONF;
 		$ok=false;
@@ -386,7 +386,11 @@ class UploadManager
 
 			$pendingfile = $this->_pendingJPEG($upload_id);
 			
-			if (move_uploaded_file($upload_file, $pendingfile)) 
+			if ($all_non_upload && rename($upload_file, $pendingfile)) 
+			{
+				$ok = $this->_processFile($upload_id,$pendingfile);
+			}
+			elseif (move_uploaded_file($upload_file, $pendingfile)) 
 			{
 				$ok = $this->_processFile($upload_id,$pendingfile);
 			}
