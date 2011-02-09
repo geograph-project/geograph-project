@@ -108,7 +108,7 @@ function ts_resortTable(lnk) {
     if (table.rows[1].cells[column].getAttribute && 
     table.rows[1].cells[column].getAttribute('sortvalue')!=null) {
     	itm = table.rows[1].cells[column].getAttribute('sortvalue');
-    	if (itm.match(/^[\d]+$/)) {
+    	if (itm.match(/^[\d\.]+$/)) {
     		parsefn=ts_parse_hidden_numeric;	
     	} else {
     		parsefn=ts_parse_hidden;
@@ -219,7 +219,8 @@ function ts_parse_hidden(a,b) {
 }
 
 function ts_parse_hidden_numeric(a,b) {
-    aa = parseInt(a.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue'));
+    aa = parseFloat(a.cells[SORT_COLUMN_INDEX].getAttribute('sortvalue'));
+    if (isNaN(aa)) aa = 0;
     return aa;
 }
 
