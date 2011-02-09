@@ -114,6 +114,20 @@ if (!$smarty->is_cached($template, $cacheid))
 
 
 	foreach ($hstats as &$row) {
+		$level=$row['level'];
+		$shortname = $row['name'];
+		$prefix = '';
+		$prefixes = $CONF['hier_prefix']; #array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
+		if (isset($prefixes[$level])) {
+			$curpref = $prefixes[$level].' ';
+			$preflen = strlen($curpref);
+			if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref) {
+				$prefix = $prefixes[$level];
+				$shortname = substr($shortname, $preflen);
+			}
+		}
+		$row += array('prefix' => $prefix);
+		$row += array('shortname' => $shortname);
 			#sum(min(percent,percent_land)/100.0) as area,
 			#sum(if(percent<percent_land,percent,percent_land)/100.0) as area,
 			#count(distinct substring(grid_reference,1,length(grid_reference)-4)) as grid_total
@@ -144,6 +158,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sqtotal = $row['squares_total'];
 		$percentage = $sqtotal == 0 ? 0.0 : $row['squares_submitted'] / $sqtotal * 100;
 		$row += array('percent' => $percentage);
+		$percentage = $sqtotal == 0 ? 0.0 : $row['geographs_submitted'] / $sqtotal * 100;
+		$row += array('geopercent' => $percentage);
 		#$stats[$ri] += array("grid_total" => $db->CacheGetOne(24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
 
 		#$censquare = new GridSquare;
@@ -160,6 +176,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		#}
 
 	}
+
+	function compare_shortname($a, $b)
+	{
+		return strnatcmp($a['shortname'], $b['shortname']);
+	}
+	usort($hstats, 'compare_shortname');
 	$smarty->assign("hstats", $hstats);
 	$smarty->assign("linkify", $linkify);
 	$smarty->assign("regionname", $regionname);
