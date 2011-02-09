@@ -131,10 +131,15 @@ if (!$smarty->is_cached($template, $cacheid))
 			#sum(min(percent,percent_land)/100.0) as area,
 			#sum(if(percent<percent_land,percent,percent_land)/100.0) as area,
 			#count(distinct substring(grid_reference,1,length(grid_reference)-4)) as grid_total
+		#SUM(COALESCE(Column,0)) => 0 instead of null
+		#	sum(imagecount) as images_total,
+		#	sum(imagecount > 0) as squares_submitted,
+		#	sum(coalesce(imagecount,0)) as images_total,
+		#	sum(coalesce(imagecount,0) > 0) as squares_submitted,
 		$newstats = $db->CacheGetRow(3*3600,"select 
 			count(*) as squares_total,
-			sum(imagecount) as images_total,
-			sum(imagecount > 0) as squares_submitted,
+			coalesce(sum(imagecount),0) as images_total,
+			coalesce(sum(imagecount > 0),0) as squares_submitted,
 			count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,-2,1))) as tenk_total
 		from gridsquare gs inner join gridsquare_percentage gp on (gs.gridsquare_id=gp.gridsquare_id)
 		where percent > 0 and level={$row['level']} and community_id={$row['community_id']} and percent_land > 0");
