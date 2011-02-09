@@ -127,11 +127,16 @@ if ($template == "submit_multi_submit.tpl") {
 
 	chdir($CONF['photo_upload_dir']);
 	
-	$files = glob("newpic_u{$USER->user_id}_*.exif");
+	if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) {
+		$files = glob("newpic_u{$USER->user_id}_*.exif");
+	} else {
+		//in theory using shell expansion should be faster than glob
+		$files = explode(" ",trim(`echo newpic_u{$USER->user_id}_*.exif`,"\n"));
+	}
 	$data = array();
 	
 	foreach ($files as $file) {
-		if (preg_match('/^newpic_u(\d)_(\w+).exif$/',$file,$m)) {
+		if (preg_match('/^newpic_u(\d+)_(\w+).exif$/',$file,$m)) {
 			if ($m[1] != $USER->user_id)
 				continue;
 			$data[] = array('transfer_id'=>$m[2],'uploaded'=>filemtime($file));
@@ -139,6 +144,8 @@ if ($template == "submit_multi_submit.tpl") {
 		}
 	}
 	$smarty->assign_by_ref('data',$data);
+} else {
+	customExpiresHeader(3600,false,true);
 }
 
 
