@@ -1738,6 +1738,11 @@ ADD `licence` enum('cc-by-sa/2.0','cc-by-sa/3.0') NOT NULL default 'cc-by-sa/2.0
 ADD `points` set('','tpoint') NOT NULL;
 
 
+ALTER TABLE gridimage_queue 
+ADD `licence` enum('cc-by-sa/2.0','cc-by-sa/3.0') NOT NULL default 'cc-by-sa/2.0',
+ADD `points` set('','tpoint') NOT NULL;
+
+
 CREATE TABLE IF NOT EXISTS `gridimage_search_new` (
   `gridimage_id` int(11) NOT NULL default '0',
   `user_id` int(11) NOT NULL default '0',
@@ -1785,18 +1790,6 @@ SELECT *,'' AS tags, 'cc-by-sa/2.0' AS licence, '' AS points FROM gridimage_sear
 
 RENAME TABLE gridimage_search TO gridimage_search_old;
 RENAME TABLE gridimage_search_new TO gridimage_search;
-
-
-
-REPLACE INTO gridimage_search_new
-SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)'),'' as tags,licence,points
-FROM gridimage AS gi
-INNER JOIN gridsquare AS gs
-USING ( gridsquare_id )
-INNER JOIN user ON ( gi.user_id = user.user_id )
-WHERE moderation_status in ('accepted','geograph') 
-LIMIT 100;
-TRUNCATE gridimage_search_new;
 
 
 #################################################
