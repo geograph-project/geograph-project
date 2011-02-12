@@ -377,25 +377,25 @@ class GridImage
 		$db=&$this->_getDB(30); //we dont tollerate much delay
 		
 		$this->_clear();
-		if (preg_match('/^\d+$/', $gridimage_id))
+		if (preg_match('/^\d+$/', $gridimage_id)) 
 		{
-			if (!empty($CONF['use_insertionqueue'])) {
-				$check = $db->GetOne("select gridimage_id from gridimage_queue where gridimage_id={$gridimage_id}");
-				if ($check == $gridimage_id) {
-					$this->unavailable = true;
-					return false;
-				}
-			}
-		
-		
+			
 			if ($usesearch) {
 				$row = &$db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
 			} else {
 				$row = &$db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
 			}
-			if (is_array($row))
+			if (is_array($row)) 
 			{
 				$this->_initFromArray($row);
+			} 
+			elseif (!empty($CONF['use_insertionqueue'])) 
+			{
+				$check = $db->GetOne("select gridimage_id from gridimage_queue where gridimage_id={$gridimage_id}");
+				if ($check == $gridimage_id) {
+					$this->unavailable = true;
+					return false;
+				}
 			}
 		}
 		//todo memcache (probably make sure dont serialise the dbs!) 
