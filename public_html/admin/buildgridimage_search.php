@@ -78,7 +78,7 @@ if (isset($_POST['recreate']))
 	if ($_POST['use_new']) {
 	
 		echo "<p>Creating gridimage copy...</p>";flush();
-		$db->Execute("create table tmpimg select gridimage_id,moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp,comment,ftf,seq_no,user_id,realname,gridsquare_id from gridimage where moderation_status in ('accepted','geograph');");
+		$db->Execute("create table tmpimg select gridimage_id,moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp,comment,ftf,seq_no,user_id,realname,gridsquare_id,licence,points from gridimage where moderation_status in ('accepted','geograph');");
 
 		echo "<p>Creating gridsquare copy...</p>";flush();
 		$db->Execute("create table tmpsq select gridsquare_id,grid_reference,x, y,reference_index,point_xy from gridsquare;");
@@ -99,7 +99,7 @@ if (isset($_POST['recreate']))
 
 		echo "<p>Rebuilding gridimage_search...</p>";flush();
 		$db->Execute("INSERT INTO gridimage_search
-			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)')
+			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)'),'' as tags,licence,points
 			FROM tmpimg AS gi
 			INNER JOIN tmpsq AS gs
 			USING ( gridsquare_id )
@@ -121,7 +121,7 @@ if (isset($_POST['recreate']))
 
 
 		$db->Execute("INSERT INTO gridimage_search
-			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)')
+			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)'),'' as tags,licence,points
 			FROM gridimage AS gi
 			INNER JOIN gridsquare AS gs
 			USING ( gridsquare_id )
@@ -145,7 +145,7 @@ if (!empty($_POST['replace']) && !empty($_POST['ids']))
 	}
 
 	$db->Execute("REPLACE INTO gridimage_search
-			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)')
+			SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)'),'' as tags,licence,points
 			FROM gridimage AS gi
 			INNER JOIN gridsquare AS gs
 			USING ( gridsquare_id )

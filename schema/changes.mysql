@@ -1733,4 +1733,72 @@ CREATE TABLE `gridimage_tag` (
 #################################################
 
 
+ALTER TABLE gridimage 
+ADD `licence` enum('cc-by-sa/2.0','cc-by-sa/3.0') NOT NULL default 'cc-by-sa/2.0',
+ADD `points` set('','tpoint') NOT NULL;
+
+
+CREATE TABLE IF NOT EXISTS `gridimage_search_new` (
+  `gridimage_id` int(11) NOT NULL default '0',
+  `user_id` int(11) NOT NULL default '0',
+  `moderation_status` enum('rejected','pending','accepted','geograph') NOT NULL default 'pending',
+  `title` varchar(128) NOT NULL,
+  `submitted` datetime NOT NULL default '0000-00-00 00:00:00',
+  `imageclass` varchar(32) NOT NULL default '',
+  `imagetaken` date NOT NULL default '0000-00-00',
+  `upd_timestamp` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `x` smallint(3) NOT NULL default '0',
+  `y` smallint(4) NOT NULL default '0',
+  `grid_reference` varchar(6) NOT NULL default '',
+  `credit_realname` tinyint(4) NOT NULL default '0',
+  `realname` varchar(128) NOT NULL default '',
+  `reference_index` tinyint(1) NOT NULL default '0',
+  `comment` text NOT NULL,
+  `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',
+  `ftf` tinyint(3) unsigned NOT NULL default '0',
+  `seq_no` smallint(5) unsigned NOT NULL default '0',
+  `point_xy` point NOT NULL,
+  `point_ll` point NOT NULL,
+  `tags` text NOT NULL,
+  `licence` enum('cc-by-sa/2.0','cc-by-sa/3.0') NOT NULL default 'cc-by-sa/2.0',
+  `points` set('','tpoint') NOT NULL,
+  PRIMARY KEY  (`gridimage_id`),
+  KEY `user_id` (`user_id`),
+  KEY `imageclass` (`imageclass`),
+  KEY `imagetaken` (`imagetaken`),
+  KEY `submitted` (`submitted`),
+  KEY `x` (`x`,`y`),
+  KEY `moderation_status` (`moderation_status`),
+  KEY `title` (`title`),
+  KEY `wgs84_lat` (`wgs84_lat`,`wgs84_long`),
+  KEY `grid_reference` (`grid_reference`),
+  SPATIAL KEY `point_xy` (`point_xy`),
+  SPATIAL KEY `point_ll` (`point_ll`),
+  KEY `upd_timestamp` (`upd_timestamp`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+INSERT INTO gridimage_search_new 
+SELECT *,'' AS tags, 'cc-by-sa/2.0' AS licence, '' AS points FROM gridimage_search;
+
+
+RENAME TABLE gridimage_search TO gridimage_search_old;
+RENAME TABLE gridimage_search_new TO gridimage_search;
+
+
+
+REPLACE INTO gridimage_search_new
+SELECT gridimage_id, gi.user_id, moderation_status, title, submitted, imageclass, imagetaken, upd_timestamp, x, y, gs.grid_reference, gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,0,0,ftf,seq_no,point_xy,GeomFromText('POINT(0 0)'),'' as tags,licence,points
+FROM gridimage AS gi
+INNER JOIN gridsquare AS gs
+USING ( gridsquare_id )
+INNER JOIN user ON ( gi.user_id = user.user_id )
+WHERE moderation_status in ('accepted','geograph') 
+LIMIT 100;
+TRUNCATE gridimage_search_new;
+
+
+#################################################
+
 
