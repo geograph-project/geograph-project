@@ -50,6 +50,9 @@ $force=!empty($_POST['force']);
 $geo=!empty($_POST['geo']);
 $bw=!empty($_POST['bw']);
 $ri = (isset($_POST['ri']) && is_numeric($_POST['ri']))&& array_key_exists(intval($_POST['ri']), $CONF['references_all']) ?intval($_POST['ri']):0;
+$level1=isset($_POST['level1'])&&is_numeric($_POST['level1'])?intval($_POST['level1']):-2;
+$level2=isset($_POST['level2'])&&is_numeric($_POST['level2'])?intval($_POST['level2']):-2;
+$cid=isset($_POST['cid'])&&is_numeric($_POST['cid'])?intval($_POST['cid']):-1;
 
 //do some processing?
 if (isset($_POST['make']))
@@ -61,7 +64,7 @@ if (isset($_POST['make']))
 	//set_time_limit(3600*24);
 	
 	$mapmaker=new MapMaker;
-	$imgfile=$mapmaker->build($x1, $y1, $x2, $y2,$showgrid,$scale,$force,$ri,$usr,$bw,$limit,$geo);
+	$imgfile=$mapmaker->build($x1, $y1, $x2, $y2,$showgrid,$scale,$force,$ri,$usr,$bw,$limit,$geo,$level1,$level2,$cid);
 	
 	echo "<img src=\"$imgfile\">";
 	
@@ -82,6 +85,9 @@ $smarty->assign('geo', $geo);
 $smarty->assign('bw', $bw);
 $smarty->assign('force', $force);
 $smarty->assign('grid', $grid);
+$smarty->assign('cid', $cid);
+$smarty->assign('level1', $level1);
+$smarty->assign('level2', $level2);
 $smarty->display('mapmaker.tpl');
 
 	
