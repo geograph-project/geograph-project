@@ -74,6 +74,12 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 
 <div style="width:370px;float:left;margin-right:14px;">
 
+{box colour="333" style="margin-bottom:12px;"}
+<div class="titlebox">
+<b>Are you a teacher/student?</b> <small><a href="/help/education_feedback" style="color:white">We value your opinion</a></small>.
+</div>
+{/box}
+
 
 
 {box colour="f4f4f4"}

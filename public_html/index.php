@@ -39,8 +39,14 @@ if (isset($_GET['potd'])) {
 	$smarty->caching = 0;
 }
 
+#if (empty($_SERVER['HTTP_REFERER']) && $USER->registered && $CONF['template']=='basic') {
+if ($CONF['template'] == 'basic') {
+	$_GET['preview'] = 1;
+}
+
 if (isset($_GET['preview'])) {
 	$template='homepage-new.tpl';
+	$smarty->assign('maincontentclass', 'content2'); //we need this because it in a dynamic block in _std_begin
 }
 
 //regenerate?

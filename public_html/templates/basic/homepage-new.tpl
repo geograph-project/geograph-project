@@ -20,7 +20,7 @@ representative photographs and information for every square kilometre of <a href
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">
-				<a href="/results/2087426" style="color:cyan">view previous &gt;</a>
+				<a href="/results/2087426" style="color:white">view previous &gt;</a>
 			</div>
 			<h3 style="margin-top:0;margin-bottom:5px">Photograph of the day</h3>
 
@@ -53,7 +53,7 @@ representative photographs and information for every square kilometre of <a href
 			<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
 		</div>
 		<div>
-			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:cyan">{$pictureoftheday.image->title}</a> <span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:cyan">{$pictureoftheday.image->realname}</a></span>, <span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:cyan">{$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</a></span>
+			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white">{$pictureoftheday.image->title}</a> <span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white">{$pictureoftheday.image->realname}</a></span>, <span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white">{$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</a></span>
 		</div>
 	</div>
 
@@ -61,11 +61,11 @@ representative photographs and information for every square kilometre of <a href
 		<h3 style="margin-top:0;">What is Geographing?</h3>
 
 		<ul style="margin-top:2px;margin-bottom:0;padding:0 0 0 1em;">
-			<li style="padding-bottom:8px">It's a game - how many grid squares will you contribute?</li>
-			<li style="padding-bottom:8px">It's a geography project for the people</li>
-			<li style="padding-bottom:8px">It's a national photography project</li>
-			<li style="padding-bottom:8px">It's a good excuse to get out more!</li>
-			<li style="padding-bottom:8px">It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
+			<li style="padding-bottom:4px">It's a game - how many grid squares will you contribute?</li>
+			<li style="padding-bottom:4px">It's a geography project for the people</li>
+			<li style="padding-bottom:4px">It's a national photography project</li>
+			<li style="padding-bottom:4px">It's a good excuse to get out more!</li>
+			<li style="padding-bottom:4px">It's a free and <a href="/faq.php#opensource">open online community</a> project for all</li>
 		</ul>
 
 		<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how
@@ -120,7 +120,7 @@ representative photographs and information for every square kilometre of <a href
 		{foreach from=$news2 item=newsitem}
 			<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px">
 				<h4 style="margin-top: 0px;font-size:1.2em">{$newsitem.topic_title}</h4>
-				<div style="font-size:0.8em">{$newsitem.post_text}</div>
+				<div style="font-size:0.8em;text-align:justify">{$newsitem.post_text}</div>
 				<div style="margin-top:8px;border-top:1px solid gray">
 				Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> <span class="nowrap">on {$newsitem.topic_time|date_format:"%a, %e %b"}</span>
 				<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
@@ -132,9 +132,6 @@ representative photographs and information for every square kilometre of <a href
 {/if}
 
 <br style="clear:both"/>
-
-<div style="text-align:center;font-size:0.9em;padding:5px;margin:10px;background-color:yellow">Don't like the new layout? <a href="/">Switch Back</a>. Please also consider <a href="https://spreadsheets.google.com/viewform?formkey=dE16ckhUQ0Fjd2ZvMlVyUVNFc1l0UWc6MQ">giving us feedback</a> - <b>Thank You</b>!</div>
-
 
 <div class="interestBox" style="text-align:center;margin:30px; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;"><b>Looking for more?</b> Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">More pages</a>.</div>
 <div style="text-align:center">Looking for <a href="/help/geograph_british_isles">Geograph British Isles</a>?</div>
