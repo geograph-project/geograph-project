@@ -385,11 +385,11 @@ class GridImage
 			} else {
 				$row = &$db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
 			}
-			if (is_array($row)) 
+			if (is_array($row))
 			{
 				$this->_initFromArray($row);
 			} 
-			elseif (!empty($CONF['use_insertionqueue'])) 
+			if (empty($row) && !empty($CONF['use_insertionqueue'])) 
 			{
 				$check = $db->GetOne("select gridimage_id from gridimage_queue where gridimage_id={$gridimage_id}");
 				if ($check == $gridimage_id) {
