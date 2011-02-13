@@ -670,7 +670,8 @@ class Gazetteer
 					reference_index,
 					'' as adm1_name,
 					'' as hist_county,
-					'' as gridref
+					'' as gridref,
+					community_id
 				from 
 					loc_towns
 				where
@@ -707,6 +708,31 @@ class Gazetteer
 				foreach($places as $id => $row) {
 					if (empty($row['gridref'])) {
 						list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
+					}
+					if (empty($row['adm1_name']) && !empty($row['community_id'])){
+						$hier = $db->GetAssoc("select level,name from loc_hier where {$row['community_id']} between contains_cid_min and contains_cid_max order by level");
+						$showhier = array();
+						if (count($hier)) {
+							$showlevels = $CONF['hier_levels']; #array(7, 6, 5, 4); # configurable?
+							$prefixes   = $CONF['hier_prefix']; #array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
+							$prev = $row['full_name'];
+							foreach($showlevels as $level) {
+								if (!isset($hier[$level]))
+									continue;
+								$shortname = $hier[$level];
+								if (isset($prefixes[$level])) {
+									$curpref = $prefixes[$level].' ';
+									$preflen = strlen($curpref);
+									if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+										$shortname = substr($shortname, $preflen);
+								}
+								if ($prev == $shortname)
+									continue;
+								$prev = $shortname;
+								$showhier[] = $hier[$level];
+							}
+						}
+						$places[$id]['adm1_name'] = implode(', ', $showhier);
 					}
 			                $places[$id]['full_name'] = _utf8_decode($row['full_name']);
 				}
