@@ -862,6 +862,7 @@ class SearchCriteria_Placename extends SearchCriteria
 	}
 	
 	function setByPlacename($placename) {
+		global $CONF;
 		$gaz = new Gazetteer();
 		
 		$this->ismore = (strpos($placename,'?') !== FALSE);
@@ -869,11 +870,13 @@ class SearchCriteria_Placename extends SearchCriteria
 		$places = $gaz->findPlacename($placename);
 		
 		if (count($places) == 1) {
-			$db = $this->_getDB();
-			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." and origin_x > 0 order by origin_x,origin_y limit 1");	
+			#$db = $this->_getDB();
+			#$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." and origin_x > 0 order by origin_x,origin_y limit 1");	
 
-			$this->x = intval($places[0]['e']/1000) + $origin['origin_x'];
-			$this->y = intval($places[0]['n']/1000) + $origin['origin_y'];
+			#$this->x = intval($places[0]['e']/1000) + $origin['origin_x'];
+			#$this->y = intval($places[0]['n']/1000) + $origin['origin_y'];
+			$this->x = intval($places[0]['e']/1000) + $CONF['origins'][$places[0]['reference_index']][0];
+			$this->y = intval($places[0]['n']/1000) + $CONF['origins'][$places[0]['reference_index']][1];
 			$this->placename = $places[0]['full_name'].($places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
 			$this->searchq = $placename;
 			$this->full_name = $places[0]['full_name'];
@@ -890,6 +893,7 @@ class SearchCriteria_Placename extends SearchCriteria
 class SearchCriteria_Postcode extends SearchCriteria
 {
 	function setByPostcode($code) {
+		global $CONF;
 		$db = $this->_getDB();
 		if (strpos($code,' ') === FALSE) {
 			//yes know avg(reference_index) is always same as reference_index, but get round restriction in mysql
@@ -898,10 +902,10 @@ class SearchCriteria_Postcode extends SearchCriteria
 			$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');	
 		}
 		if ($postcode['reference_index']) {
-			$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
+			#$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
-			$this->x = intval($postcode['e']/1000) + $origin['origin_x'];
-			$this->y = intval($postcode['n']/1000) + $origin['origin_y'];
+			$this->x = intval($postcode['e']/1000) + $CONF['origins'][$postcode['reference_index']][0];
+			$this->y = intval($postcode['n']/1000) + $CONF['origins'][$postcode['reference_index']][1];
 			$this->reference_index = $postcode['reference_index'];
 		}
 	}
@@ -918,6 +922,7 @@ class SearchCriteria_County extends SearchCriteria
 	}
 	
 	function setByCounty($county_id) {
+		global $CONF;
 		$db = $this->_getDB();
 		
 		$county = $db->GetRow('select e,n,name,reference_index from loc_counties where county_id='.$db->Quote($county_id).' limit 1');	
@@ -926,10 +931,10 @@ class SearchCriteria_County extends SearchCriteria
 		//after ordering by x,y - you'll get the bottom
 		//left gridprefix, and hence the origin
 
-		$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$county['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
+		#$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$county['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
-		$this->x = intval($county['e']/1000) + $origin['origin_x'];
-		$this->y = intval($county['n']/1000) + $origin['origin_y'];
+		$this->x = intval($county['e']/1000) + $CONF['origins'][$county['reference_index']][0];
+		$this->y = intval($county['n']/1000) + $CONF['origins'][$county['reference_index']][1];
 		$this->county_name = $county['name'];
 		$this->reference_index = $county['reference_index'];
 	}
