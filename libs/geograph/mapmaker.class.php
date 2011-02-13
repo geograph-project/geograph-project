@@ -55,9 +55,15 @@ class MapMaker
 	*          count == $limit => colour 255
 	*          $limit <= 0 => defaults to 100 for land percentages and to 1 for image counts
 	* $geo:    number of geographs instead of images
+	* $cid/$level1/$level2:
+	*          $level < -1 => ignore
+	*          $cid  < 0   => ignore
 	*
+	*          valid $cid and $level1    => show corresponding percentage (gridsquare_percentage)
+	*          valid $level1 and $level2 => show (sum($level1) - sum($level2)) * 10 + 50  [ compare hierarchie levels ]
+	*          valid $level1             => show sum($level1)
 	*/
-	function build($x1, $y1, $x2, $y2, $showgrid=true,$scale = 1,$force = false,$reference_index = 0,$usr = 0,$bw = false,$limit = 0,$geo = false)
+	function build($x1, $y1, $x2, $y2, $showgrid=true,$scale = 1,$force = false,$reference_index = 0,$usr = 0,$bw = false,$limit = 0,$geo = false, $level1 = -2, $level2 = -2, $cid = -1)
 	{
 		$this->db = NewADOConnection($GLOBALS['DSN']);
 		if (!$this->db) die('Database connection failed');   
@@ -79,9 +85,20 @@ class MapMaker
 			else
 				$limit = 1;
 		}
+		if ($geo||$usr > 0||$level1 < -1) {
+			$level1 = -2;
+			$level2 = -2;
+			$cid = -1;
+		} elseif ($cid >= 0) {
+			$level2 = -2;
+		} else {
+			$cid = -1;
+			if ($level2 < -1 || $level1 == $level2)
+				$level2 = -2;
+		}
 	
 		//figure out filename
-		$filename="map_{$left}_{$top}_{$right}_{$bottom}_{$scale}_{$reference_index}_{$showgrid}_{$usr}_{$bw}_{$limit}_{$geo}.png";
+		$filename="map_{$left}_{$top}_{$right}_{$bottom}_{$scale}_{$reference_index}_{$showgrid}_{$usr}_{$bw}_{$limit}_{$geo}_{$level1}_{$level2}_{$cid}.png";
 	
 		#elementry caching!
 		if (!$force && file_exists($_SERVER['DOCUMENT_ROOT']."/maps/$filename")) {
@@ -148,11 +165,30 @@ class MapMaker
 		} else {
 			$sql_order = '';
 		}
+		$sql_percent = '';
+		$sql_where = '';
+		if ($level1 >= -1) {
+			if ($cid >= 0) {
+				$sql_table .= ' inner join gridsquare_percentage gp using(gridsquare_id)';
+				$sql_where = " and gp.level='$level1' and gp.community_id='$cid'";
+				$sql_percent = 'gp.percent as ';
+			} elseif ($level2 >= -1) {
+				$sql_table .= ' inner join gridsquare_percentage gp using(gridsquare_id)';
+				$sql_where = " and gp.level in ('$level1','$level2')";
+				$sql_percent = "10*sum(if(gp.level='$level1',gp.percent,-gp.percent))+50 as ";
+				$sql_group = ' group by gs.gridsquare_id';
+			} else {
+				$sql_table .= ' inner join gridsquare_percentage gp using(gridsquare_id)';
+				$sql_where = " and gp.level='$level1'";
+				$sql_percent = 'sum(gp.percent) as ';
+				$sql_group = ' group by gs.gridsquare_id';
+			}
+		}
 
 		//now plot all squares in the desired area
-		$sql="select x,y,percent_land,$sql_imagecount,gs.reference_index,gs.gridsquare_id from $sql_table where ".
+		$sql="select x,y,$sql_percent percent_land,$sql_imagecount,gs.reference_index,gs.gridsquare_id from $sql_table where ".
 			"(x between $left and $right) and ".
-			"(y between $bottom and $top)$sql_group$sql_order";
+			"(y between $bottom and $top)$sql_where$sql_group$sql_order";
 		trigger_error("map file: $filename", E_USER_NOTICE);
 		trigger_error("     sql: $sql", E_USER_NOTICE);
 			
@@ -161,7 +197,7 @@ class MapMaker
 		{
 			$gridx=$recordSet->fields[0];
 			$gridy=$recordSet->fields[1];
-			$pland=$recordSet->fields[2];
+			$pland=min(100,max(0,$recordSet->fields[2]));
 			$imag =$recordSet->fields[3];
 			$ri =  $recordSet->fields[4];
 			
