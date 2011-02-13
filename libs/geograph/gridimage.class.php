@@ -1355,7 +1355,6 @@ split_timer('gridimage'); //starts the timer
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster'])."cdn","http://{$CONF['STATIC_HOST']}");
 				if ($usecount == 3) { //the first time! - lets prime the cache
 					get_no_content($return['server'].$thumbpath);
-					exit;
 				}
 			} elseif (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
