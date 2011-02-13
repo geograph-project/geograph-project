@@ -18,7 +18,7 @@
 
 <hr/>
 
- <h3><a href="/submit2.php">Submit v2</a> <sup style="color:red">New!</sup></h3>
+ <h3><a href="/submit2.php">Submit v2</a></h3>
  
  <p>More streamlined version - all one one page. If you familiar with Geograph submission you might like this.</p>
 
@@ -28,13 +28,13 @@
 
 <hr/>
 
- <h3>{external href="http://www.nearby.org.uk/geograph/upload/" text="Multi-Upload"} <sup style="color:red">Experimental!</sup></h3>
+ <h3><a href="/submit-multi.php">Multi-Submit</a> <sup style="color:red">Experimental!</sup></h3>
  
  <p>Upload multiple images at once, then progress though the normal submission process one by one.</p>
 
 <hr/>
 
- <h3><a href="/submit-nofrills.php">No-Frills Submit</a> <sup style="color:red">New!</sup></h3>
+ <h3><a href="/submit-nofrills.php">No-Frills Submit</a></h3>
  
  <p>The bare minimum required to submit a image - recommended for seasoned contributors only!</p>
 
