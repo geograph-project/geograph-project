@@ -91,36 +91,11 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 				if (!empty($exif['GPS'])) {
 					$conv = new Conversions;
 					
-					if (is_array($exif['GPS']['GPSLatitude'])) {
-						$deg = FractionToDecimal($exif['GPS']['GPSLatitude'][0]);
-						$min = FractionToDecimal($exif['GPS']['GPSLatitude'][1]);
-						$sec = FractionToDecimal($exif['GPS']['GPSLatitude'][2]);
-						$lat = ExifConvertDegMinSecToDD($deg, $min, $sec);
-					} else {
-						//not sure if this will ever happen but it could?
-						$lat = $exif['GPS']['GPSLatitude'];
-					}
+					list($e,$n,$reference_index) = ExifToNational($exif);
 
-					if ($exif['GPS']['GPSLatitudeRef'] == 'S') 
-						$lat *= -1;
+					list ($_POST['photographer_gridref'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
 
-					if (is_array($exif['GPS']['GPSLongitude'])) {
-						$deg = FractionToDecimal($exif['GPS']['GPSLongitude'][0]);
-						$min = FractionToDecimal($exif['GPS']['GPSLongitude'][1]);
-						$sec = FractionToDecimal($exif['GPS']['GPSLongitude'][2]);
-						$long = ExifConvertDegMinSecToDD($deg, $min, $sec);
-					} else {
-						//not sure if this will ever happen but it could?
-						$long = $exif['GPS']['GPSLongitude'];
-					}
-
-					if ($exif['GPS']['GPSLongitudeRef'] == 'W') 
-						$long *= -1;
-
-
-					list($e,$n,$reference_index) = $conv->wgs84_to_national($lat,$long);
-
-					list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+					list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
 					
 					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
 					
@@ -295,7 +270,7 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('preview_width', $uploadmanager->upload_width);
 				$smarty->assign('preview_height', $uploadmanager->upload_height);
 				//we ok to continue
-				if (isset($_POST['photographer_gridref'])) {
+				if (isset($_POST['photographer_gridref']) && isset($_POST['view_direction'])) {
 					$step=3;
 				} else {
 					$step=2;

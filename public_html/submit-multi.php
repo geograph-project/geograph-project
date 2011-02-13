@@ -118,12 +118,29 @@ if (empty($_GET['tab'])) {
 	
 	$template = "submit_multi_upload.tpl";
 	
+} elseif ($_GET['tab'] == "nofrills") {
+	
+	$template = "submit_multi_nofrills.tpl";
+	
+	$dirs = array (-1 => '');
+	$jump = 360/16; $jump2 = 360/32;
+	for($q = 0; $q< 360; $q+=$jump) {
+		$s = ($q%90==0)?strtoupper(heading_string($q)):ucwords(heading_string($q));
+		$dirs[$q] = sprintf('%s : %03d deg (%03d > %03d)',
+			str_pad($s,16,' '),
+			$q,
+			($q == 0?$q+360-$jump2:$q-$jump2),
+			$q+$jump2);
+	}
+	$dirs['00'] = $dirs[0];
+	$smarty->assign_by_ref('dirs', $dirs);
+	
 } else {
 	$template = "submit_multi_submit.tpl";
 }
 	
 
-if ($template == "submit_multi_submit.tpl") {
+if ($template == "submit_multi_submit.tpl" || $template == "submit_multi_nofrills.tpl") {
 
 	chdir($CONF['photo_upload_dir']);
 	
@@ -135,12 +152,36 @@ if ($template == "submit_multi_submit.tpl") {
 	}
 	$data = array();
 	
+	$conv = new Conversions;
+	
 	foreach ($files as $file) {
 		if (preg_match('/^newpic_u(\d+)_(\w+).exif$/',$file,$m)) {
 			if ($m[1] != $USER->user_id)
 				continue;
-			$data[] = array('transfer_id'=>$m[2],'uploaded'=>filemtime($file));
-			//TODO check for tagged image!
+			$row = array('transfer_id'=>$m[2],'uploaded'=>filemtime($file));
+			
+			if ($exif = file_get_contents($file)) {
+				$exif=unserialize($exif);
+
+				if (!empty($exif['GPS'])) {
+				
+					list($e,$n,$reference_index) = ExifToNational($exif);
+
+					list ($row['photographer_gridref'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+
+					list ($row['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
+
+					$row['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$row['grid_reference']);
+				}
+			
+				if (!empty($exif['COMMENT']) && preg_match("/\b([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
+					if (strlen($m[2]) == strlen($m[3]) || (strlen($m[2])+strlen($m[3]))%2==0) {
+						$row['grid_reference'] = $m[1].$m[2].$m[3];
+					}
+				}
+			
+			}
+			$data[] = $row;
 		}
 	}
 	$smarty->assign_by_ref('data',$data);
