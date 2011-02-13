@@ -13,12 +13,12 @@
 	<td>Images</td>
 	<td>(last week)</td>
 	<td>Squares</td>
+	<td>With images</td>
 	<td>(percent)</td>
 	<td>With geographs</td>
 	<td>(percent)</td>
-	<td>Squares (total)</td>
 	<td>Hectads</td>
-	<td>Hectads (total)</td>
+	<td>With images</td>
 	<td sorted="none">Links</td>
 {*<td>Myriads</td>
 <td>Area (km<sup>2</sup>, land)</td>
@@ -30,13 +30,13 @@
 	<td sortvalue="{$row.shortname|escape:'html'}">{if $row.prefix}<i>{$row.prefix}</i> {/if}{if $linkify}<a href="?region={$row.level}_{$row.community_id}">{else}<b>{/if}{$row.shortname|escape:'html'}{if $linkify}</a>{else}</b>{/if}</td>
 	<td sortvalue="{$row.images_total}">{$row.images_total|thousends}</td>
 	<td sortvalue="{$row.images_thisweek}">{$row.images_thisweek|thousends}</td>
+	<td sortvalue="{$row.squares_total}">{$row.squares_total|thousends}</td>
 	<td sortvalue="{$row.squares_submitted}">{$row.squares_submitted|thousends}</td>
 	<td sortvalue="{$row.percent}">{$row.percent|floatformat:"%.3f"}%</td>
 	<td sortvalue="{$row.geographs_submitted}">{$row.geographs_submitted|thousends}</td>
 	<td sortvalue="{$row.geopercent}">{$row.geopercent|floatformat:"%.3f"}%</td>
-	<td sortvalue="{$row.squares_total}">{$row.squares_total|thousends}</td>
-	<td sortvalue="{$row.tenk_submitted}">{$row.tenk_submitted|thousends}</td>
 	<td sortvalue="{$row.tenk_total}">{$row.tenk_total|thousends}</td>
+	<td sortvalue="{$row.tenk_submitted}">{$row.tenk_submitted|thousends}</td>
 	<td><a href="/search.php?region={$row.level}_{$row.community_id}&amp;orderby=submitted&amp;reverse_order_ind=1">image search</a>, <a href="/statistics/leaderboard.php?type=images&amp;region={$row.level}_{$row.community_id}">leaderboard</a></td>
 {*<td>{$row.grid_submitted}/{$row.grid_total}</td>
 <td>{$row.area|floatformat:"%.0f"}</td>
