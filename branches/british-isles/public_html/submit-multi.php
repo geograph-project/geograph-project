@@ -179,7 +179,17 @@ if ($template == "submit_multi_submit.tpl" || $template == "submit_multi_nofrill
 						$row['grid_reference'] = $m[1].$m[2].$m[3];
 					}
 				}
-			
+				//dont know yet which of these is best but they all seem to be the same on my test images
+				if (($date = $exif['EXIF']['DateTimeOriginal']) ||
+				    ($date = $exif['EXIF']['DateTimeDigitized']) ||
+				    ($date = $exif['IFD0']['DateTime']) ) 
+				{
+					//Example: ["DateTimeOriginal"]=> string(19) "2004:07:09 14:05:19"
+					 list($date,$time) = explode(' ',$date);
+					 $dates = explode(':',$date);
+					 $times = explode(':',$time);
+					 $row['imagetaken'] = implode('-',$dates).' '.implode('-',$times);
+				}
 			}
 			$data[] = $row;
 		}
