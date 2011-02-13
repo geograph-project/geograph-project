@@ -34,6 +34,37 @@ function ExifConvertDegMinSecToDD($deg, $min, $sec) {
 	return ($deg*60.0 + $dec_min)/60.0;
 }
 
+function ExifToNational($exif) {
+	$conv = new Conversions;
+					
+	if (is_array($exif['GPS']['GPSLatitude'])) {
+		$deg = FractionToDecimal($exif['GPS']['GPSLatitude'][0]);
+		$min = FractionToDecimal($exif['GPS']['GPSLatitude'][1]);
+		$sec = FractionToDecimal($exif['GPS']['GPSLatitude'][2]);
+		$lat = ExifConvertDegMinSecToDD($deg, $min, $sec);
+	} else {
+		//not sure if this will ever happen but it could?
+		$lat = $exif['GPS']['GPSLatitude'];
+	}
+
+	if ($exif['GPS']['GPSLatitudeRef'] == 'S') 
+		$lat *= -1;
+
+	if (is_array($exif['GPS']['GPSLongitude'])) {
+		$deg = FractionToDecimal($exif['GPS']['GPSLongitude'][0]);
+		$min = FractionToDecimal($exif['GPS']['GPSLongitude'][1]);
+		$sec = FractionToDecimal($exif['GPS']['GPSLongitude'][2]);
+		$long = ExifConvertDegMinSecToDD($deg, $min, $sec);
+	} else {
+		//not sure if this will ever happen but it could?
+		$long = $exif['GPS']['GPSLongitude'];
+	}
+
+	if ($exif['GPS']['GPSLongitudeRef'] == 'W') 
+		$long *= -1;
+
+	return $conv->wgs84_to_national($lat,$long);
+}
 
 /**
 * Perform coordinate conversion for use within Geograph
