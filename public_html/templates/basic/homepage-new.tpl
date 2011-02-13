@@ -20,11 +20,11 @@ representative photographs and information for every square kilometre of <a href
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">
-				<a href="/results/2087426" style="color:white">view previous &gt;</a>
+				<a href="/results/2087426" style="color:white;font-size:0.9em;text-decoration:none;border-bottom:1px solid gray">view previous &gt;</a>
 			</div>
-			<h3 style="margin-top:0;margin-bottom:5px">Photograph of the day</h3>
+			<h3 style="margin-top:0;margin-bottom:8px;font-size:0.95em">Photograph of the day</h3>
 
-			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
+			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)|replace:'/>':' style="border:1px solid black"/>'}</a>
 		</div>
 		<div style="position:relative;float:left; width:150px">
 			<p style="margin-top:30px;text-align:center;font-size:0.8em">Click the map to start browsing photos of the <span class="nowrap">British Isles</span></p>
@@ -49,11 +49,11 @@ representative photographs and information for every square kilometre of <a href
 			</div>
 		</div>
 		<br style="clear:both"/>
-		<div style="float:left">
+		<div style="float:right">
 			<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
 		</div>
-		<div>
-			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white">{$pictureoftheday.image->title}</a> <span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white">{$pictureoftheday.image->realname}</a></span>, <span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white">{$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</a></span>
+		<div style="font-size:0.9em;margin-top:8px">
+			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->title}</a> <span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->realname}</a></span>, <span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</a></span>
 		</div>
 	</div>
 
