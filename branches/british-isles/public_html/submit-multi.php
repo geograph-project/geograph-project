@@ -187,8 +187,7 @@ if ($template == "submit_multi_submit.tpl" || $template == "submit_multi_nofrill
 					//Example: ["DateTimeOriginal"]=> string(19) "2004:07:09 14:05:19"
 					 list($date,$time) = explode(' ',$date);
 					 $dates = explode(':',$date);
-					 $times = explode(':',$time);
-					 $row['imagetaken'] = implode('-',$dates).' '.implode('-',$times);
+					 $row['imagetaken'] = implode('-',$dates).' '.$time;
 				}
 			}
 			$data[] = $row;

@@ -189,6 +189,10 @@ AttachEvent(window,'load',readHash,false);
 </script>
 {/literal}
 
+        <div class="interestBox">
+                <span style="color:red">New!</span> - Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
+        </div>
+
 	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}<br/>&middot; <a href="/article/Content-on-Geograph">Submit a Collection</a> &middot;</div>
 
 	<h2>Submit Image <sup style="color:gray">v2 - Gamma</sup></h2>

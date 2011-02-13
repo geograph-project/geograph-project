@@ -2,7 +2,7 @@
 
 <div style="float:right;position:relative">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</div>
 
-	<h2>Multiple Image Submission <sup>ALPHA</sup></h2>
+	<h2>Multiple Image Submission <sup>Experimental</sup></h2>
 
 <div style="position:relative;">
 	<div class="tabHolder">

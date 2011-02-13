@@ -18,7 +18,7 @@
 
 {if $step eq 1}
 	<div class="interestBox">
-		<span style="color:red">New!</span> - Have a photo to upload by unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
+		<span style="color:red">New!</span> - Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
 	</div>
 
 
@@ -126,7 +126,7 @@ geographing</a> first.</p>
 		<li>Subject grid-reference in EXIF Comment tag</li>
 		</ul></div>
 
-		<p><sup style=color:red>New!</sup> the {external href="http://www.nearby.org.uk/geograph/upload/" text="experimental Multi-Upload tool"}, now understands tagged images like this upload box does.</p>
+		<p><sup style=color:red>New!</sup> the <a href="/submit-multi.php">Multi-Submit</a>, now understands tagged images like this upload box does.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
