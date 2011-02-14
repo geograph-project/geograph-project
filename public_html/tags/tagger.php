@@ -41,6 +41,8 @@ if (!empty($_GET['upload_id'])) {
 	$smarty->assign('upload_id',$_GET['upload_id']);
 	$smarty->assign('gridimage_id',$gid);
 	
+	$smarty->assign('is_owner',$is_owner = 1);
+	
 	$linktable = "gridimage_tag"; //this will be needed for multiple types
 	$linkid = "gridimage_id"; //this will be needed for multiple types
 	
@@ -56,7 +58,7 @@ if (!empty($_GET['upload_id'])) {
 	}
 	
 	if ($image->user_id == $USER->user_id) {
-		$smarty->assign('is_owner',1);
+		$smarty->assign('is_owner',$is_owner = 1);
 	}
 	
 	$smarty->assign('gridimage_id',$gid);
@@ -70,7 +72,7 @@ if (!empty($_GET['upload_id'])) {
 	
 	$ids = explode(',',$ids);
 	
-	$smarty->assign('is_owner',1); //we allow them to set public tags just that we verify it at write time!
+	$smarty->assign('is_owner',$is_owner = 1); //we allow them to set public tags just that we verify it at write time!
 	
 	$linktable = "gridimage_tag"; //this will be needed for multiple types
 	$linkid = "gridimage_id"; //this will be needed for multiple types
@@ -321,6 +323,7 @@ if ($gid) {
 	}
 	$smarty->assign_by_ref('suggestions',$suggestions);
 	
+	if (!empty($is_owner)) {
 $DATA = <<<DATA
 Topography
 Mountain; Upland; Lowland; Coast; Geological feature; Geophysical process
@@ -334,17 +337,17 @@ Extractive industry; Ag, hort & forestry; Manufacturing; Leisure; Commerce; Degr
 Human habitat
 Uninhabited; Hamlet/dispersed settlement/temporary settlement; Village; Suburb; City/town centre; Fort/citadel
 DATA;
-	
-	$tree = array(); $top ='';
-	foreach(explode("\n",str_replace("\r",'',$DATA)) as $line) {
-		if (preg_match('/^[\w ]+$/',$line)) {
-			$top = $line;
-		} elseif ($line && $top) {
-			$tree[$top] = explode('; ',trim($line,'; '));
+
+		$tree = array(); $top ='';
+		foreach(explode("\n",str_replace("\r",'',$DATA)) as $line) {
+			if (preg_match('/^[\w ]+$/',$line)) {
+				$top = $line;
+			} elseif ($line && $top) {
+				$tree[$top] = explode('; ',trim($line,'; '));
+			}
 		}
+		$smarty->assign_by_ref('tree',$tree);
 	}
-	$smarty->assign_by_ref('tree',$tree);
-	
 } elseif ($ids) {
 	//TODO -- look though the images, and compile popular terns/clusters...
 }
