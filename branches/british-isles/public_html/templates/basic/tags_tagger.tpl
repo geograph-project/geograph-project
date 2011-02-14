@@ -7,71 +7,82 @@
 	{/if}
 
 <form method="post" action="{$script_name}?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}" style="background-color:#f0f0f0;" name="theForm">
-<div id="savebutton" style="float:right;display:none">
-	<input type="submit" name="save" value="Save Changes" style="font-size:1.2em"/>
-	<div id="autoSave" style="font-size:0.7em"></div>
-</div>
+	<div id="savebutton" style="float:right;display:none">
+		<input type="submit" name="save" value="Save Changes" style="font-size:1.2em"/>
+		<div id="autoSave" style="font-size:0.7em"></div>
+	</div>
 
-{if $gridimage_id}<input type="hidden" name="gridimage_id" value="{$gridimage_id}" />{/if}
-{if $ids}<input type="hidden" name="ids" value="{$ids|escape:'html'}" />{/if}
-{if $gr}<input type="hidden" name="gr" value="{$gr|escape:'html'}" />{/if}
+	{if $gridimage_id}<input type="hidden" name="gridimage_id" value="{$gridimage_id}" />{/if}
+	{if $ids}<input type="hidden" name="ids" value="{$ids|escape:'html'}" />{/if}
+	{if $gr}<input type="hidden" name="gr" value="{$gr|escape:'html'}" />{/if}
 
-Current Tags: <span id="tags">{foreach from=$used item=item name=used}
-	<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tag{$item.tag_id}"{if $is_owner} onclick="toggleTag('{$item.tag_id}');"{/if}>
-	<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
-	{if $item.is_owner}
-		<input type="hidden" name="tag_id[]" id="tagi{$item.tag_id}" value="id:{$item.tag_id}"/>
-		<input type="hidden" name="mode[]" id="tagm{$item.tag_id}" value="{$item.status}"/>
-		<a href="javascript:removeTag({$item.tag_id})" class="delete">X</a>
-	{/if}
-	</span>&nbsp;
-{foreachelse}
-{if $gridimage_id}<i>none</i>{else}<i>unknown</i>{/if}
-{/foreach}</span><br/>
+	<div style="float:left;width:40%;font-size:0.9em">
+
+			<b>New</b>: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} clearAutoSave(); {/literal}"/> <input type="button" value="Add" onclick="useTag(this.form.elements['__newtag'])"/><br/>
+
+			<b>Current Tags</b>:<br/>
+			<span id="tags">{foreach from=$used item=item name=used}
+			<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tag{$item.tag_id}"{if $is_owner} onclick="toggleTag('{$item.tag_id}');"{/if}>
+			<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
+			{if $item.is_owner}
+				<input type="hidden" name="tag_id[]" id="tagi{$item.tag_id}" value="id:{$item.tag_id}"/>
+				<input type="hidden" name="mode[]" id="tagm{$item.tag_id}" value="{$item.status}"/>
+				<a href="javascript:removeTag({$item.tag_id})" class="delete">X</a>
+			{/if}
+			</span>&nbsp;
+		{foreachelse}
+			{if $gridimage_id}<i>none</i>{else}<i>unknown</i>{/if}
+		{/foreach}</span>
+
+	</div>
+
 </form>
-<hr/>
-<form>
-
-Add new Tag: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} clearAutoSave(); {/literal}"/> <input type="button" value="Add" onclick="useTag(this.form.elements['__newtag'])"/> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})<br/>
 
 
-<div id="suggestions">{if $suggestions}Suggestions: {/if}{foreach from=$suggestions item=item name=used}
-	<span class="tag" id="suggestion{$item.tag|escape:'html'}">
-	<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
-	<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="use">Use</a>
-	</span>&nbsp;
-{/foreach}</div>
 
 
-<input type="text" value="" style="display:none"/>
-</form>
+	<div style="float:left;width:59%;font-size:0.9em">
+		{assign var="tab" value="1"}
+		<div class="tabHolder">
+			{if $tree}
+				<div style="margin-left:7em"><b>Top Level categories</b>: <small>(pick at <B>least one</b>)</small></div>
+			{/if}
+			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,5)">Suggestions</a>&nbsp;
+			{foreach from=$tree key=key item=item name=tree}
+				<a class="tab{if $tab == $smarty.foreach.tree.iteration+1}Selected{/if} nowrap" id="tab{$smarty.foreach.tree.iteration+1}" onclick="tabClick('tab','div',{$smarty.foreach.tree.iteration+1},5)">{$key}</a>&nbsp;
+			{/foreach}
+		</div>
+
+		<div id="div1" class="interestBox">
+			{foreach from=$suggestions item=item name=used}
+				<span class="tag" id="suggestion{$item.tag|escape:'html'}">
+				<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
+				<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="use">Use</a>
+				</span>&nbsp;
+			{foreachelse}
+				<i>none</i>
+			{/foreach}
+		</div>
+
+		{if $tree}
+			{foreach from=$tree key=key item=item name=tree}
+				<div style="position:relative;{if $tab != $smarty.foreach.tree.iteration+1}display:none{/if}"  class="interestBox" id="div{$smarty.foreach.tree.iteration+1}">
+					{foreach from=$item item=value}
+						<span class="tag" id="suggestion{$value|escape:'html'}">
+						<span>{$value|escape:'html'}</span>
+						<a href="javascript:addTag('top:{$value|escape:'html'}','{$value|escape:'html'}');" class="use">Use</a>
+						</span>&nbsp;
+					{/foreach}
+				</div>
+			{/foreach}
+		{/if}
+
+	</div>
 
 {/dynamic}
 
-{assign var="tab" value="1"}
-<div class="tabHolder" style="margin-top:4px">
-	<b>Top Level categories</b>:
-	{foreach from=$tree key=key item=item name=tree}
-		<a class="tab{if $tab == $smarty.foreach.tree.iteration}Selected{/if} nowrap" id="tab{$smarty.foreach.tree.iteration}" onclick="tabClick('tab','div',{$smarty.foreach.tree.iteration},4)">{$key}</a>&nbsp;
-	{/foreach}
-
-	 (You should pick at <B>least one</b> of these for the image)<br/>
-</div>
-
-{foreach from=$tree key=key item=item name=tree}
-	<div style="position:relative;{if $tab != $smarty.foreach.tree.iteration}display:none{/if}" class="interestBox" id="div{$smarty.foreach.tree.iteration}">
-		{foreach from=$item item=value}
-			<span class="tag" id="suggestion{$value|escape:'html'}">
-			<span>{$value|escape:'html'}</span>
-			<a href="javascript:addTag('top:{$value|escape:'html'}','{$value|escape:'html'}');" class="use">Use</a>
-			</span>&nbsp;
-		{/foreach}
-	</div>
-{/foreach}
-
-</div>
-
-<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag</span> <span class="tag tagPrivate">Private Tag</span> <span class="tag tagGeneral">General Tag</span></span></div>
+<br style="clear:both"/>
+<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag</span> <span class="tag tagPrivate">Private Tag</span> <span class="tag tagGeneral">General Tag</span></span> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})</div>
 
 {literal}<script type="text/javascript">
 
@@ -218,7 +229,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 		// on search completion, process the results
 		function (data) {
 			if (data) {
-				var div = document.getElementById('suggestions');
+				var div = document.getElementById('tab1');
 
 				str = 'Suggestions: ';
 				for(var tag_id in data) {
