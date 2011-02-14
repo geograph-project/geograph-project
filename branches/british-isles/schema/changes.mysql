@@ -1795,3 +1795,13 @@ RENAME TABLE gridimage_search_new TO gridimage_search;
 #################################################
 
 
+alter table gridimage_tag change  `gridimage_id`  `gridimage_id`  bigint(20) unsigned NOT NULL;
+
+
+alter table tag change `tag` `tag` varchar(64) NOT NULL;
+
+
+#################################################
+
+
+
