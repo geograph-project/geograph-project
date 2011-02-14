@@ -348,6 +348,22 @@ DATA;
 		}
 		$smarty->assign_by_ref('tree',$tree);
 	}
+	
+	$buckets = array('Closeup',
+	'Arty',
+	'Informative',
+	'Aerial',
+	'Telephoto',
+	'View from',
+	'Indoor',
+	'Historic',
+	'People',
+	'Temporary',
+	'Life',
+	'Subterranean', 
+	'Transport');
+	$smarty->assign_by_ref('buckets',$buckets);
+	
 } elseif ($ids) {
 	//TODO -- look though the images, and compile popular terns/clusters...
 }

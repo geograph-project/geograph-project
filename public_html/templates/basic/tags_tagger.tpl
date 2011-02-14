@@ -47,10 +47,12 @@
 			{if $tree}
 				<div style="margin-left:7em"><b>Top Level categories</b>: <small>(pick at <B>least one</b>)</small></div>
 			{/if}
-			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,5)">Suggestions</a>&nbsp;
+			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,6)">Suggestions</a>&nbsp;
 			{foreach from=$tree key=key item=item name=tree}
-				<a class="tab{if $tab == $smarty.foreach.tree.iteration+1}Selected{/if} nowrap" id="tab{$smarty.foreach.tree.iteration+1}" onclick="tabClick('tab','div',{$smarty.foreach.tree.iteration+1},5)">{$key}</a>&nbsp;
+				<a class="tab{if $tab == $smarty.foreach.tree.iteration+1}Selected{/if} nowrap" id="tab{$smarty.foreach.tree.iteration+1}" onclick="tabClick('tab','div',{$smarty.foreach.tree.iteration+1},6)">{$key}</a>&nbsp;
 			{/foreach}
+			<a class="tab{if $tab == $smarty.foreach.tree.iteration+2}Selected{/if} nowrap" id="tab{$smarty.foreach.tree.iteration+2}" onclick="tabClick('tab','div',{$smarty.foreach.tree.iteration+2},6)">Buckets</a>&nbsp;
+
 		</div>
 
 		<div id="div1" class="interestBox">
@@ -77,6 +79,19 @@
 			{/foreach}
 		{/if}
 
+		<div id="div{$smarty.foreach.tree.iteration+2}" class="interestBox" style="display:none">
+			<br/><small>IMPORTANT: Please read the {newwin href="/article/Image-Buckets" title="Article about Buckets" text="Buckets Article"} before picking from this list</small><br/><br/>
+			{foreach from=$buckets item=item}
+				<span class="tag" id="suggestion{$item|escape:'html'}">
+				<span>{$item|escape:'html'}</span>
+				<a href="javascript:addTag('{$item|escape:'html'}','{$item|escape:'html'}');" class="use">Use</a>
+				</span>&nbsp;
+			{foreachelse}
+				<i>none</i>
+			{/foreach}
+		</div>
+
+		<br/><br/>
 	</div>
 
 {/dynamic}
@@ -229,7 +244,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 		// on search completion, process the results
 		function (data) {
 			if (data) {
-				var div = document.getElementById('tab1');
+				var div = document.getElementById('div1');
 
 				str = 'Suggestions: ';
 				for(var tag_id in data) {
