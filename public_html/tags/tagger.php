@@ -320,6 +320,31 @@ if ($gid) {
 		}
 	}
 	$smarty->assign_by_ref('suggestions',$suggestions);
+	
+$DATA = <<<DATA
+Topography
+Mountain; Upland; Lowland; Coast; Geological feature; Geophysical process
+
+Environment
+Woodland; Water; Wetland; Shrubland; Scrub; Herbaceous; Unvegetated
+
+Human activity
+Extractive industry; Ag, hort & forestry; Manufacturing; Leisure; Commerce; Degradation/dereliction; Construction; Transport infrastructure; Energy infrastructure; Environmental management/modification; Disposal; Public services; Defence; Community life
+
+Human habitat
+Uninhabited; Hamlet/dispersed settlement/temporary settlement; Village; Suburb; City/town centre; Fort/citadel
+DATA;
+	
+	$tree = array(); $top ='';
+	foreach(explode("\n",str_replace("\r",'',$DATA)) as $line) {
+		if (preg_match('/^[\w ]+$/',$line)) {
+			$top = $line;
+		} elseif ($line && $top) {
+			$tree[$top] = explode('; ',trim($line,'; '));
+		}
+	}
+	$smarty->assign_by_ref('tree',$tree);
+	
 } elseif ($ids) {
 	//TODO -- look though the images, and compile popular terns/clusters...
 }

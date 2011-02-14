@@ -48,6 +48,29 @@ Add new Tag: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup
 
 {/dynamic}
 
+{assign var="tab" value="1"}
+<div class="tabHolder" style="margin-top:4px">
+	<b>Top Level categories</b>:
+	{foreach from=$tree key=key item=item name=tree}
+		<a class="tab{if $tab == $smarty.foreach.tree.iteration}Selected{/if} nowrap" id="tab{$smarty.foreach.tree.iteration}" onclick="tabClick('tab','div',{$smarty.foreach.tree.iteration},4)">{$key}</a>&nbsp;
+	{/foreach}
+
+	 (You should pick at <B>least one</b> of these for the image)<br/>
+</div>
+
+{foreach from=$tree key=key item=item name=tree}
+	<div style="position:relative;{if $tab != $smarty.foreach.tree.iteration}display:none{/if}" class="interestBox" id="div{$smarty.foreach.tree.iteration}">
+		{foreach from=$item item=value}
+			<span class="tag" id="suggestion{$value|escape:'html'}">
+			<span>{$value|escape:'html'}</span>
+			<a href="javascript:addTag('top:{$value|escape:'html'}','{$value|escape:'html'}');" class="use">Use</a>
+			</span>&nbsp;
+		{/foreach}
+	</div>
+{/foreach}
+
+</div>
+
 <div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag</span> <span class="tag tagPrivate">Private Tag</span> <span class="tag tagGeneral">General Tag</span></span></div>
 
 {literal}<script type="text/javascript">
