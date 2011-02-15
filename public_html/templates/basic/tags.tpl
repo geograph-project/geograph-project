@@ -3,6 +3,11 @@
 
 {if $geographical}
 	<h2>images for the "Geographical Features" project</h2>
+
+{elseif $bucket}
+	<h2>images assigned to buckets</h2>
+	<p>This is only a prototype, to get the ball rolling, more features will be added soon. <a href="/article/Image-Buckets">Read more about buckets here</a></p>
+	
 {else}
 	<h2>Public Tags</h2>
 
@@ -24,6 +29,8 @@
 
 	{if $theprefix == 'geographical feature'}
 		<p>There is a dedicated page for viewing images in the <b>geographical feature</b> prefix, <a href="/tags/geographical_features.php">here</a>.</p>
+	{elseif $theprefix == 'bucket'}
+		<p>There is a dedicated page for viewing images in the <b>buckets</b> prefix, <a href="/tags/buckets.php">here</a>.</p>
 	{/if}
 
 {/if}
@@ -63,6 +70,16 @@
 				{if $image->comment}
 				<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:90:"... (<u>more</u>)"|geographlinks}</div>
 				{/if}
+				{if $image->tags}
+				<div class="caption">Tags: 
+				{foreach from=$image->tags item=item name=used}
+					<span class="tag">
+					<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
+					</span>&nbsp; 
+				{/foreach}
+				</div>
+				{/if}
+
 			  </div><br style="clear:both;"/>
 			 </div>
 		{/foreach}

@@ -84,7 +84,7 @@
 			{foreach from=$buckets item=item}
 				<span class="tag" id="suggestion{$item|escape:'html'}">
 				<span>{$item|escape:'html'}</span>
-				<a href="javascript:addTag('{$item|escape:'html'}','{$item|escape:'html'}');" class="use">Use</a>
+				<a href="javascript:addTag('bucket:{$item|escape:'html'}','{$item|escape:'html'}');" class="use">Use</a>
 				</span>&nbsp;
 			{foreachelse}
 				<i>none</i>
