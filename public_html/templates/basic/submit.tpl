@@ -509,7 +509,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <p>
 <input type="hidden" name="upload_id" value="{$upload_id}"/>
 <input type="hidden" name="savedata" value="1"/>
-<input type="submit" name="goback" value="&lt; Back" onclick="return confirm('Please confirm. Current details will be lost');"/>
+<input type="submit" name="goback" value="&lt; Back" onclick="return confirm('Please confirm. All details entered on this page - will be lost.');"/>
 <input type="submit" name="next" value="Next &gt;"/></p>
 
 {if $use_autocomplete}
