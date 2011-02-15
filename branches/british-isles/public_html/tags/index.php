@@ -23,7 +23,7 @@
 
 require_once('geograph/global.inc.php');
 
-ini_set("display_errors",1);
+
 
 init_session();
 
@@ -43,18 +43,35 @@ if (!$smarty->is_cached($template, $cacheid))
 	$where = '';
 	
 	if (!empty($_GET['tag'])) {
+		//TODO - this will be rewritten using sphinx... 
 		
 		$row= $db->getRow("SELECT * FROM tag WHERE tag=".$db->Quote($_GET['tag']));
 		
 		
 		if (!empty($row)) {
-			$sql = "select gi.*
-				from gridimage_tag gt
-					inner join gridimage_search gi using(gridimage_id)
-				where status =2
-				and tag_id = {$row['tag_id']}
-				order by created desc 
-				limit 50";
+		
+			if (!empty($_GET['exclude'])) {
+				$exclude= $db->getRow("SELECT * FROM tag WHERE tag=".$db->Quote($_GET['exclude']));
+			}
+		
+			if (!empty($exclude)) {
+				$sql = "select gi.*
+					from gridimage_tag gt
+						inner join gridimage_search gi using(gridimage_id)
+					where status =2
+					and gt.tag_id = {$row['tag_id']}
+					and gt.gridimage_id NOT IN (SELECT gridimage_id FROM gridimage_tag gt2 WHERE gt2.tag_id = {$exclude['tag_id']})
+					order by created desc 
+					limit 50";
+			} else {
+				$sql = "select gi.*
+					from gridimage_tag gt
+						inner join gridimage_search gi using(gridimage_id)
+					where status =2
+					and tag_id = {$row['tag_id']}
+					order by created desc 
+					limit 50";
+			}
 
 			$imagelist = new ImageList();
 
@@ -67,14 +84,15 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 			$db = $imagelist->_getDB(true); //to reuse the same connection
 
-			$idlist = implode(',',array_keys($ids));
-			$sql = "SELECT gridimage_id,tag,prefix FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 AND gridimage_id IN ($idlist) ORDER BY tag";			
-			
-			$tags = $db->getAll($sql);
-			if ($tags) {
-				foreach ($tags as $row) {
-					$idx = $ids[$row['gridimage_id']];
-					$imagelist->images[$idx]->tags[] = $row;
+			if ($idlist = implode(',',array_keys($ids))) {
+				$sql = "SELECT gridimage_id,tag,prefix FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 AND gridimage_id IN ($idlist) ORDER BY tag";			
+
+				$tags = $db->getAll($sql);
+				if ($tags) {
+					foreach ($tags as $row) {
+						$idx = $ids[$row['gridimage_id']];
+						$imagelist->images[$idx]->tags[] = $row;
+					}
 				}
 			}
 

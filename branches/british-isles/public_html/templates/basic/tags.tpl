@@ -7,7 +7,7 @@
 {elseif $bucket}
 	<h2>images assigned to buckets</h2>
 	<p>This is only a prototype, to get the ball rolling, more features will be added soon. <a href="/article/Image-Buckets">Read more about buckets here</a></p>
-	
+
 {else}
 	<h2>Public Tags</h2>
 
@@ -17,7 +17,7 @@
 <br style="clear:both"/>
 
 {if $prefixes}
-	<p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center">
+	<div class="interestBox" style="font-size:0.8em;line-height:1.4em; text-align:center;margin:20px;">
 	PREFIXES: {foreach from=$prefixes item=item}
 		{if isset($theprefix) && $item.prefix eq $theprefix}
 			<span class="nowrap">&nbsp;<b>{$item.prefix|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}">remove filter</a>] &nbsp;</span>
@@ -25,7 +25,7 @@
 			&nbsp;<a title="{$item.tags} tags" {if $item.tags > 10} style="font-weight:bold"{/if} href="{$script_name}?prefix={$item.prefix|escape:'url'}">{$item.prefix|escape:'html'|replace:' ':'&middot;'|default:'<i>none</i>'}</a> &nbsp;
 		{/if}
 	{/foreach}
-	</p>
+	</div>
 
 	{if $theprefix == 'geographical feature'}
 		<p>There is a dedicated page for viewing images in the <b>geographical feature</b> prefix, <a href="/tags/geographical_features.php">here</a>.</p>
@@ -36,7 +36,7 @@
 {/if}
 
 {if $tags}
-	<p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center">
+	<div class="interestBox" style="font-size:0.8em;line-height:1.4em; text-align:center;margin:20px;{if count($tags) > 100} height:150px;overflow:auto{/if}">
 	TAGS: {foreach from=$tags item=item}
 		{if $item.tag eq $thetag}
 			<span class="nowrap">&nbsp;<b>{$item.tag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}{if isset($theprefix)}?prefix={$theprefix|escape:'url'}{/if}">remove filter</a>] &nbsp;</span>
@@ -44,7 +44,7 @@
 			&nbsp;<a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="{$script_name}?tag={$item.tag|escape:'url'}{if isset($theprefix)}&amp;prefix={$theprefix|escape:'url'}{/if}">{$item.tag|escape:'html'|replace:' ':'&middot;'}</a> &nbsp;
 		{/if}
 	{/foreach}
-	</p>
+	</div>
 {/if}
 
 
@@ -71,11 +71,11 @@
 				<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:90:"... (<u>more</u>)"|geographlinks}</div>
 				{/if}
 				{if $image->tags}
-				<div class="caption">Tags: 
+				<div class="caption">Tags:
 				{foreach from=$image->tags item=item name=used}
 					<span class="tag">
-					<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
-					</span>&nbsp; 
+					<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>{if $item.tag != $thetag}<a href="{$script_name}?tag={$thetag|escape:'url'}&amp;exclude={$item.tag|escape:'url'}" class="delete" title="Exclude this tag">X</a>{/if}
+					</span>&nbsp;
 				{/foreach}
 				</div>
 				{/if}
