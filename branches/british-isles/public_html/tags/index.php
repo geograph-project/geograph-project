@@ -23,7 +23,7 @@
 
 require_once('geograph/global.inc.php');
 
-
+ini_set("display_errors",1);
 
 init_session();
 
@@ -59,6 +59,25 @@ if (!$smarty->is_cached($template, $cacheid))
 			$imagelist = new ImageList();
 
 			$imagelist->_getImagesBySql($sql);
+
+			$ids = array();
+			foreach ($imagelist->images as $idx => $image) {
+				$ids[$image->gridimage_id]=$idx;
+				$imagelist->images[$idx]->tags = array();
+			}
+			$db = $imagelist->_getDB(true); //to reuse the same connection
+
+			$idlist = implode(',',array_keys($ids));
+			$sql = "SELECT gridimage_id,tag,prefix FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 AND gridimage_id IN ($idlist) ORDER BY tag";			
+			
+			$tags = $db->getAll($sql);
+			if ($tags) {
+				foreach ($tags as $row) {
+					$idx = $ids[$row['gridimage_id']];
+					$imagelist->images[$idx]->tags[] = $row;
+				}
+			}
+
 			$smarty->assign_by_ref('results', $imagelist->images);
 			
 			$smarty->assign('thetag', $_GET['tag']);
