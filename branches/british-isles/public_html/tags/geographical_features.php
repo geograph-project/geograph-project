@@ -72,6 +72,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$tags = $db->getAll("SELECT t.tag,COUNT(*) AS images FROM tag t INNER JOIN gridimage_tag gt USING(tag_id) WHERE prefix = 'geographical feature' AND gt.status > 0 GROUP BY t.tag ORDER BY t.tag LIMIT 1000");
 	
 	$smarty->assign_by_ref('tags', $tags);
+	$smarty->assign('geographical',1);
 }
 
 $smarty->display($template, $cacheid);

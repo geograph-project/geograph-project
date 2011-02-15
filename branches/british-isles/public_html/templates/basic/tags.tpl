@@ -1,21 +1,40 @@
 {assign var="page_title" value="Tags"}
 {include file="_std_begin.tpl"}
 
+{if $geographical}
+	<h2>images for the "Geographical Features" project</h2>
+{else}
+	<h2>Public Tags</h2>
 
-<h2>Public Tags</h2>
-
-<p>This is only a prototype, to get the ball rolling, more features will be added soon. <a href="/article/Tags">Read more about tags here</a></p>
-
+	<p>This is only a prototype, to get the ball rolling, more features will be added soon. <a href="/article/Tags">Read more about tags here</a></p>
+{/if}
 
 <br style="clear:both"/>
+
+{if $prefixes}
+	<p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center">
+	PREFIXES: {foreach from=$prefixes item=item}
+		{if isset($theprefix) && $item.prefix eq $theprefix}
+			<span class="nowrap">&nbsp;<b>{$item.prefix|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}">remove filter</a>] &nbsp;</span>
+		{else}
+			&nbsp;<a title="{$item.tags} tags" {if $item.tags > 10} style="font-weight:bold"{/if} href="{$script_name}?prefix={$item.prefix|escape:'url'}">{$item.prefix|escape:'html'|replace:' ':'&middot;'|default:'<i>none</i>'}</a> &nbsp;
+		{/if}
+	{/foreach}
+	</p>
+
+	{if $theprefix == 'geographical feature'}
+		<p>There is a dedicated page for viewing images in the <b>geographical feature</b> prefix, <a href="/tags/geographical_features.php">here</a>.</p>
+	{/if}
+
+{/if}
 
 {if $tags}
 	<p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center">
 	TAGS: {foreach from=$tags item=item}
 		{if $item.tag eq $thetag}
-			<span class="nowrap">&nbsp;<b>{$item.tag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}">remove filter</a>] &nbsp;</span>
+			<span class="nowrap">&nbsp;<b>{$item.tag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}{if isset($theprefix)}?prefix={$theprefix|escape:'url'}{/if}">remove filter</a>] &nbsp;</span>
 		{else}
-			&nbsp;<a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="{$script_name}?tag={$item.tag|escape:'url'}">{$item.tag|escape:'html'|replace:' ':'&middot;'}</a> &nbsp;
+			&nbsp;<a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="{$script_name}?tag={$item.tag|escape:'url'}{if isset($theprefix)}&amp;prefix={$theprefix|escape:'url'}{/if}">{$item.tag|escape:'html'|replace:' ':'&middot;'}</a> &nbsp;
 		{/if}
 	{/foreach}
 	</p>
