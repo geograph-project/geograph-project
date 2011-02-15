@@ -68,9 +68,20 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	$andwhere = '';
 
-	$tags = $db->getAll("SELECT LOWER(tag) AS tag,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING(tag_id) WHERE gt.status = 2 GROUP BY tag ORDER BY tag LIMIT 1000");
+	$prefixes = $db->getAll("SELECT LOWER(prefix) AS prefix,COUNT(*) AS tags FROM tag GROUP BY prefix");
+
+	if (isset($_GET['prefix'])) {
 	
+		$andwhere = " AND prefix = ".$db->Quote($_GET['prefix']);
+		$smarty->assign('theprefix', $_GET['prefix']);
+	}
+
+
+	$tags = $db->getAll("SELECT LOWER(tag) AS tag,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING(tag_id) WHERE gt.status = 2 $andwhere GROUP BY tag ORDER BY tag LIMIT 1000");
+	
+	$smarty->assign_by_ref('prefixes', $prefixes);
 	$smarty->assign_by_ref('tags', $tags);
 }
 
