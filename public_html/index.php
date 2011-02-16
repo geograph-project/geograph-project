@@ -128,6 +128,35 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 			$smarty->assign_by_ref('news', $news);
 		}
+		
+		if ($rss = file_get_contents("http://twitter.com/statuses/user_timeline/251137848.rss")) {
+			
+			preg_match_all('/<title>(.*?)<\/title>/',$rss,$m);
+			preg_match_all('/<pubDate>(.*?)<\/pubDate>/',$rss,$m2);
+			
+			array_shift($m[1]);
+			$feed = array();
+			foreach ($m[1] as $idx => $text) {
+				
+				$text = str_replace('geograph_bi: ','',$text);
+				$text = preg_replace('/^([\w ]+):/','<b>$1</b>:',$text);
+				$text = preg_replace('/\. ([\w \.,;]+\.\.\.)\s*$/','. <span style="color:gray">$1</span>...',$text);
+				$text = str_replace('/geograph.org.uk/','/www.geograph.org.uk/',$text);
+				$text = str_replace('org.uk/p/','org.uk/photo/',$text);
+				$text = preg_replace("/(http:\/\/[\w\.\/]+)/",'<a href="$1">Link</a>',$text);
+				
+				$item = array();
+				$item['text'] = $text;
+				$item['time'] = strtotime($m2[1][$idx]);
+				
+				$feed[] = $item;
+				if (count($feed) == 6) 
+					break;
+			}
+			$smarty->assign_by_ref('feed', $feed);
+			array_pop($news);
+		}
+
 	}
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
