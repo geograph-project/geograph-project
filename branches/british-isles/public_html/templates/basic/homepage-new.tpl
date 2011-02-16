@@ -114,8 +114,18 @@ representative photographs and information for every square kilometre of <a href
 			<div style="position:relative;float:right">
 				<a href="/discuss/index.php?&amp;action=vtopic&amp;forum=1&amp;sortBy=1"><b>read more</b> &gt;</a>
 			</div>
-			<h3 style="margin:0">Latest News {if $rss_url}&nbsp;&nbsp;&nbsp;<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a>{/if}</h3>
+			<h3 style="margin:0">Latest News {if $rss_url}&nbsp;&nbsp;&nbsp;<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a>{/if} <a rel="alternate" type="application/rss+xml" title="Twitter Feed" href="http://twitter.com/statuses/user_timeline/251137848.rss" class="xml-rss">Twitter RSS Feed</a></h3>
 		</div>
+
+		{if $feed}
+			<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px">
+				{foreach from=$feed item=item}
+					<div style="font-size:0.8em;text-align:justify">{$item.text}</div>
+					<div style="margin-bottom:8px;border-bottom:1px solid gray;color:silver;text-align:right">{$item.time|date_format:"%a, %e %b"}</div>
+				{/foreach}
+				More at {external href="http://twitter.com/geograph_bi" text="twitter.com/geograph_bi"}
+			</div>
+		{/if}
 
 		{foreach from=$news2 item=newsitem}
 			<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px">
