@@ -1804,4 +1804,75 @@ alter table tag change `tag` `tag` varchar(64) NOT NULL;
 #################################################
 
 
+CREATE TABLE IF NOT EXISTS `category_top` (
+  `category_map_id` int(10) unsigned NOT NULL default '0',
+  `imageclass` varchar(32) NOT NULL,
+  `top` varchar(32) NOT NULL,
+  `users` bigint(21) NOT NULL default '0',
+  KEY `imageclass` (`imageclass`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `category_top_log` (
+  `category_map_id` int(10) unsigned NOT NULL auto_increment,
+  `imageclass` varchar(32) NOT NULL,
+  `top` varchar(32) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`category_map_id`),
+  UNIQUE KEY `imageclass` (`imageclass`,`user_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+INSERT INTO `category_top_log` (`category_map_id`, `imageclass`, `top`, `user_id`, `created`) VALUES
+(1, '', 'Hill & Mountain', 99999991, '2011-02-23 21:59:05'),
+(2, '', 'Valley', 99999992, '2011-02-23 21:59:05'),
+(3, '', 'Plateau', 99999993, '2011-02-23 21:59:05'),
+(4, '', 'Slope', 99999994, '2011-02-23 21:59:05'),
+(5, '', 'Glacial', 99999995, '2011-02-23 21:59:05'),
+(6, '', 'Undulating', 99999996, '2011-02-23 21:59:05'),
+(7, '', 'Flat', 99999997, '2011-02-23 21:59:05'),
+(8, '', 'Coast & estuary', 99999998, '2011-02-23 21:59:05'),
+(9, '', 'Environment', 99999999, '2011-02-23 21:59:05'),
+(10, '', 'Woodland', 999999910, '2011-02-23 21:59:05'),
+(11, '', 'Rough ground', 999999911, '2011-02-23 21:59:05'),
+(12, '', 'Grassland', 999999912, '2011-02-23 21:59:05'),
+(13, '', 'Lakes & wetland', 999999913, '2011-02-23 21:59:05'),
+(14, '', 'Rivers & streams', 999999914, '2011-02-23 21:59:05'),
+(15, '', 'Tidal', 999999915, '2011-02-23 21:59:05'),
+(16, '', 'Air, Sky & Weather', 999999916, '2011-02-23 21:59:05'),
+(17, '', 'Mining & Quarrying', 999999917, '2011-02-23 21:59:05'),
+(18, '', 'Crops', 999999918, '2011-02-23 21:59:05'),
+(19, '', 'Grazing', 999999919, '2011-02-23 21:59:05'),
+(20, '', 'Forestry', 999999920, '2011-02-23 21:59:05'),
+(21, '', 'Manufacturing & Construction', 999999921, '2011-02-23 21:59:05'),
+(22, '', 'Commerce/Retail/Services', 999999922, '2011-02-23 21:59:05'),
+(23, '', 'Energy production', 999999923, '2011-02-23 21:59:05'),
+(24, '', 'Water supply', 999999924, '2011-02-23 21:59:05'),
+(25, '', 'Drainage', 999999925, '2011-02-23 21:59:05'),
+(26, '', 'Defence', 999999926, '2011-02-23 21:59:05'),
+(27, '', 'Sport/Leisure/Entertainment', 999999927, '2011-02-23 21:59:05'),
+(28, '', 'Mixed uses', 999999928, '2011-02-23 21:59:05'),
+(29, '', 'Disposal & Degradation', 999999929, '2011-02-23 21:59:05'),
+(30, '', 'Lowland countryside', 999999930, '2011-02-23 21:59:05'),
+(31, '', 'Scattered', 999999931, '2011-02-23 21:59:05'),
+(32, '', 'Country estate', 999999932, '2011-02-23 21:59:05'),
+(33, '', 'Village', 999999933, '2011-02-23 21:59:05'),
+(34, '', 'Suburb & fringe', 999999934, '2011-02-23 21:59:05'),
+(35, '', 'Town & city', 999999935, '2011-02-23 21:59:05'),
+(36, '', 'Open space', 999999936, '2011-02-23 21:59:05'),
+(37, '', 'Social Customs & Events', 999999937, '2011-02-23 21:59:05'),
+(38, '', 'Closed communities', 999999938, '2011-02-23 21:59:05'),
+(39, '', 'Barriers & boundaries', 999999939, '2011-02-23 21:59:05'),
+(40, '', 'Roads & road transport', 999999940, '2011-02-23 21:59:05'),
+(41, '', 'Tracks and paths', 999999941, '2011-02-23 21:59:05'),
+(42, '', 'Railways', 999999942, '2011-02-23 21:59:05'),
+(43, '', 'Waterways', 999999943, '2011-02-23 21:59:05'),
+(44, '', 'Docks & harbours', 999999944, '2011-02-23 21:59:05'),
+(45, '', 'Air transport', 999999945, '2011-02-23 21:59:05'),
+(46, '', 'Energy infrastructure', 999999946, '2011-02-23 21:59:05'),
+(47, '', 'Telecommunications', 999999947, '2011-02-23 21:59:05'),
+
+
+#################################################
+
+
 
