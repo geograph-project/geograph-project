@@ -10,7 +10,7 @@ just so you know what you're letting yourself in for...</p>
 prepare image submissions off-line, editing the text and image grid references as many times as you 
 like before sending the completed works to the Geograph servers. Because all the information is prepared off-line 
 and sent to us in a big chunk, you may find it much quicker when submitting multiple images compared with using 
-the web interface. One of our beta testers managed to submit 10 images in 84 seconds! Juppy will also take care of 
+the web interface. One of our beta testers managed to submit 10 images in 84 seconds! JUppy will also take care of 
 resizing images to acceptable Geograph sizes. Alternatively, JUppy's quite happy to let you take care of the resizing.</p>
 
 <p>You can also save a partially completed submission batch and come back later to add more images - great
@@ -36,6 +36,7 @@ window appear. We like to think you know us well enough to tell your system to a
 will ask you every time you start JUppy.</p>
 
 <h2>Before you use JUppy in anger</h2>
+
 <p>Before you can use JUppy, you will need to log in to the Geograph project once. This sets up the category list for JUppy. Once you've performed this first login, you don't need to connect again until you're ready to send us your images.</p>
 
 <h2>Updating JUppy</h2>
