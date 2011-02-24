@@ -43,7 +43,7 @@
 	 <div class="interestBox" style="width:550px;background-color:yellow;padding:10px;margin-left: 15px; border:1px solid orange">
 	 <img src="/kml/images/cam1-small.gif" width="24" height="24" style="vertical-align: middle"/> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
 	{if $i}<br/><i><b>- displays all images - not the selection as per requested search</b></i>{/if}
-	<small><br/><br/>This SuperLayer allows full access to the thousends of images contributed to Geograph, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible. (Broadband Recommended)
+	<small><br/><br/>This SuperLayer allows full access to the thousands of images contributed to Geograph, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible (broadband recommended).
 	 <br/><small><i>Last updated: {$superlayer_updated}</i></small>
 	 <a href="/help/superlayer">View Icon Key</a></small>
 	 </div>
@@ -76,7 +76,7 @@
 		{if $engine->fullText && !$engine->criteria->sphinx.compatible}
 			<br/><br/>
 			<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">
-			This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search, but often results in quicker and more relevent results. However at this time its not fully compatible with all KML exports, such options are curretly hidden.</div>
+			This search is powered by the new <a href="/help/search_new">experimental Full-Text search index</a>, which in some ways is less precise than the legacy search, but often results in quicker and more relevant results. However at this time it's not fully compatible with all KML exports, such options are currently hidden.</div>
 			<br/><br/>
 		{/if}
 	{else}
@@ -103,12 +103,12 @@
 		  <tr>
 			 <td><input type="radio" name="type" value="live" id="type_live"/></td>
 			 <td><b><label for="type_live"><big><acronym title="Open on maps.live.com">maps.live.com</acronym></big></label></b><br/>
-			 Open search results on the <b>maps.live.com</b> website. (will automatically update)</td>
+			 Open search results on the <b>maps.live.com</b> website (will automatically update).</td>
 		  </tr>
 		  <tr>
 			 <td><input type="radio" name="type" value="maps" id="type_maps"/></td>
 			 <td><b><label for="type_maps"><big><acronym title="Open in Google Maps">Google Maps</acronym></big></label></b><br/>
-			 Open search results in the <b>Google Maps UK</b> website. (will automatically update)</td>
+			 Open search results in the <b>Google Maps UK</b> website (will automatically update).</td>
 		  </tr>
 		  <tr>
 			 <td><input type="radio" name="type" value="static" id="type_static"
@@ -121,17 +121,17 @@
 			 <td><b><label for="type_time"><big><acronym title="Time-Based Refresh Network Link">Automatic Updates for Google Earth</acronym></big></label></b> <br/>
 			 Like 'Simple', but <b>Google Earth</b> will refresh the results <label>once every
 				<select name="refresh" size="1">
-				  <option value="3600">Hour</option>
-				  <option value="21600">6 Hours</option>
-				  <option value="86400" selected="selected">24 Hours</option>
-				  <option value="604800">7 Days</option>
+				  <option value="3600">hour</option>
+				  <option value="21600">6 hours</option>
+				  <option value="86400" selected="selected">24 hours</option>
+				  <option value="604800">7 days</option>
 				</select></label></td>
 		  </tr>
 		</table>
 
 		<br/> -or - <br/><br/>
 		 For a large result set covering a wide area, this option allows the application
-		 to just show the photos within the area of view. As you scroll around, will
+		 to just show the photos within the area of view. As you scroll around, it will
 		 automatically fetch other photos from the result set. Please note that you'll normally only see
 		{if $i && $engine->resultCount}{$engine->criteria->resultsperpage}{else}around 15{/if} photos at a time with this option.
 
@@ -201,9 +201,9 @@
 <br style="clear:both"/>
 
 {if !$i}
-<p style="background-color:lightgreen;padding:10px;">Alternatively you can load the <a href="/gpx.php">GPX</a> files into Google Earth, to produce coverage maps. (rather than loading the individual images).</p>
+<p style="background-color:lightgreen;padding:10px;">Alternatively you can load the <a href="/gpx.php">GPX</a> files into Google Earth, to produce coverage maps (rather than loading the individual images).</p>
 {/if}
 
-<div class="copyright">{external href="http://www.opengeospatial.org/standards/kml/" text="KML"} is now owned and controled by Open Geospatial Consortium Inc.<br/>Google Earth and Google Maps are registered trademarks of Google Inc. Geograph is not affiliated with Google.</div>
+<div class="copyright">{external href="http://www.opengeospatial.org/standards/kml/" text="KML"} is now owned and controlled by Open Geospatial Consortium Inc.<br/>Google Earth and Google Maps are registered trademarks of Google Inc. Geograph is not affiliated with Google.</div>
 
 {include file="_std_end.tpl"}

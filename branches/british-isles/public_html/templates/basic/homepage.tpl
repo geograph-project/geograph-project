@@ -95,7 +95,7 @@ Recently completed hectads:
 
 <div style="width:350px;float:left;position:relative">
 
-<h3>Quick Links...</h3>
+<h3>Quick links...</h3>
 <ul>
 	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
@@ -106,7 +106,7 @@ Recently completed hectads:
 <h3>Exploring in more depth...</h3>
 <ul>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
-	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
+	<li><a title="Explore Images" href="/explore/"><b>explore</b> Geograph images</a></li>
 	<li><a title="Submitted Content" href="/content/">view <b>content and articles</b></a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li>
 	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
 	<li><a title="Features Searches" href="/explore/searches.php">browse <b>featured collections</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
@@ -124,7 +124,7 @@ we hope you'll enjoy being a part of this great project
 </p>
 
 
-<h3>View Images elsewhere...</h3>
+<h3>View images elsewhere...</h3>
 
 <a title="Recent Images in Google Earth" href="/feed/recent.kml" class="xml-kml">KML</a> (for <a title="Google Earth Export" href="/kml.php"><b>Google Earth</b> and <b>Maps</b></a>)<br/>
 
