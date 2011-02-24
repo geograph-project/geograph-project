@@ -38,8 +38,85 @@ if (!empty($_GET['type']) && preg_match('/^(\w+)$/',$_GET['type'])) {
 	$cacheid = $_GET['type'];
 }
 
-$types = array('dropdown' => 'Dropdown','autocomplete' => 'Auto Complete Text Box','canonical' => 'Canonical Dropdown','canonicalplus' => 'Canonical Dropdown + Optional Detail','canonicalmore' => 'Canonical Dropdown (full unmoderated list)');
+$types = array('dropdown' => 'Dropdown','autocomplete' => 'Auto Complete Text Box','canonical' => 'Canonical Dropdown','canonicalplus' => 'Canonical Dropdown + Optional Detail','canonicalmore' => 'Canonical Dropdown (full unmoderated list)','top'=>'Top Level Category + Tags');
 $smarty->assign_by_ref('types',$types);
+
+if ($cacheid == 'top') {
+$data = "
+Landform
+Mountain
+Hill
+Valley
+Plateau
+Slope
+Glacial
+Undulating
+Flat
+Coast & estuary
+Geology
+
+Environment
+Woodland
+Rough ground
+Grassland
+Lakes & wetland
+Rivers & streams
+Tidal
+Air, Sky & Weather
+
+Human use
+Mining & Quarrying
+Crops
+Grazing
+Forestry
+Manufacturing & Construction
+Commerce/Retail/Services
+Energy production
+Water supply
+Drainage
+Defence
+Sport/Leisure/Entertainment
+Mixed uses
+Disposal & Degradation
+
+Human habitat
+Lowland countryside
+Scattered
+Country estate
+Village
+Suburb & fringe
+Town & city
+Transient
+Open space
+Social Customs & Events
+Closed communities
+Small-scale
+Barriers & boundaries
+
+Communications
+Roads & road transport
+Tracks and paths
+Railways
+Waterways
+Docks & harbours
+Air transport
+Energy infrastructure
+Telecommunications";
+	$next = false;$group = '';
+	$tops = array();
+	foreach (explode("\n",str_replace("\r",'',$data)) as $line) {
+		if (!$line) {
+			$next = true;
+		} elseif($next) {
+			$group = $line;
+			$next = false;
+		} else {
+			$tops[$group][] = $line;	
+		}
+
+	}
+	$smarty->assign_by_ref('tops',$tops);
+}
 
 $smarty->display($template, $cacheid);
 
