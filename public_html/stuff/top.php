@@ -54,7 +54,47 @@ $smarty = new GeographPage;
 $template='stuff_top.tpl';
 $cacheid='';
 
-if (!empty($_GET['stats'])) {
+if (!empty($_GET['import'])) {
+	$template='stuff_top_import.tpl';
+
+	if (!empty($_POST['text'])) {
+		$db = GeographDatabaseConnection(false);
+		
+		$text = strip_tags(str_replace("\r",'',$_POST['text']));
+		$skipped = 0;$rows = 0;
+		foreach (explode("\n",$text) as $line) {
+			if (empty($line)) {
+				$skipped++;
+				continue;
+			}
+			
+			list($category,$top) = preg_split('/[;\t]+/',$line,2);
+			$top = trim($top);
+			if (empty($top)) {
+				$skipped++;
+				continue;
+			}
+			
+			if ($top == 'Unallocated') {
+				$top = '-bad-';
+			}
+			
+			$updates = array();
+			$updates['imageclass'] = trim($category);
+			$updates['top'] = $top;
+			$updates['user_id'] = $USER->user_id;
+						
+			$db->Execute('REPLACE INTO category_top_log SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+			$affected= mysql_affected_rows();
+			
+			$rows++;
+		}
+		$smarty->assign("rows",$rows);
+		$smarty->assign("affected",$affected);
+		$smarty->assign("skipped",$skipped);
+	}
+	
+} elseif (!empty($_GET['stats'])) {
 	$template='stuff_top_stats.tpl';
 
 	if (!$smarty->is_cached($template, $cacheid)) {
