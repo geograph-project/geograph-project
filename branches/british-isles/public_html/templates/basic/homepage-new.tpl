@@ -180,30 +180,57 @@ function thiswindowresize() {
 	setTimeout(function() { locked = false; }, 150);
 }
 
-//sillyness for IE6!
-function thiswindowresize_wrapper() {
-	if (typeof document.readyState == "undefined") {
-		thiswindowresize();
-	}
-	else {
-		if (document.readyState == "complete") {
-			thiswindowresize();
-		}
-		else {
-			document.onreadystatechange = function() {
-				if (document.readyState == "complete") {
-					document.onreadystatechange = null;
-					thiswindowresize();
-				}
-			}
-		}
-	}
+//Stolen from JQuery!
+var readyBound;
+var isReady = false;
+function bindReady(the_function){
+    if ( readyBound ) return;
+    readyBound = true;
+
+    // Mozilla, Opera and webkit nightlies currently support this event
+    if ( document.addEventListener ) {
+        // Use the handy event callback
+        document.addEventListener( "DOMContentLoaded", function(){
+                document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
+                the_function();
+        }, false );
+
+    // If IE event model is used
+    } else if ( document.attachEvent ) {
+        // ensure firing before onload,
+        // maybe late but safe also for iframes
+        document.attachEvent("onreadystatechange", function(){
+                if ( document.readyState === "complete" ) {
+                        document.detachEvent( "onreadystatechange", arguments.callee );
+                        the_function();
+                }
+        });
+
+        // If IE and not an iframe
+        // continually check to see if the document is ready
+        if ( document.documentElement.doScroll && window == window.top ) (function(){
+                if ( isReady ) return;
+
+                try {
+                        // If IE is used, use the trick by Diego Perini
+                        // http://javascript.nwbox.com/IEContentLoaded/
+                        document.documentElement.doScroll("left");
+                } catch( error ) {
+                        AttachEvent(window,'load',the_function,false);
+                        return;
+                }
+				isReady = true;
+                // and execute any waiting functions
+                the_function();
+        })();
+    }
+
+    // A fallback to window.onload, that will always work
+    AttachEvent(window,'load',the_function,false);
 }
+bindReady(thiswindowresize);
 
-
- AttachEvent(window,'load',thiswindowresize_wrapper,false);
- AttachEvent(window,'resize',thiswindowresize,false);
- AttachEvent(window,'documentready',thiswindowresize,false);
+AttachEvent(window,'resize',thiswindowresize,false);
 
 {/literal}
 </script>
