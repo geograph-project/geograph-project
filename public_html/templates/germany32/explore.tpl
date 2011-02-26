@@ -67,7 +67,7 @@
 	<li><a href="/hectadmap.php">View a <b>Hectad coverage</b> map</a></li>
 
 	<li><form method="get" action="/search.php" style="display:inline">
-	<label for="searchterm"><b>Search</b> by keyword, place, postcode or contributor</label>: <br/>
+	<label for="searchterm"><b>Search</b> by keyword, place  or contributor</label>: <br/>
 	<input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
 	<input id="searchgo" type="submit" name="go" value="Find"/> [<a href="/help/search">help</a>, <a href="/search.php?form=advanced">advanced search</a>]
 	</form></li>
