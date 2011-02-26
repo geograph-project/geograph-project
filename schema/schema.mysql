@@ -1071,6 +1071,23 @@ CREATE TABLE `loc_hier` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table `loc_hier_stat`
+--
+
+CREATE TABLE `loc_hier_stat` (
+  `level` tinyint(2) NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `squares_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `images_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `squares_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `tenk_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `geographs_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `tenk_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `images_thisweek` int(8) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`level`,`community_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table `loc_placenames`
 --
 
