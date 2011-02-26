@@ -20,7 +20,8 @@
     <p>
     Für Anregungen und Mithilfe beim deutschen Projekt danke ich <a href="http://geo.hlipp.de/profile/2">Stephen Hocker</a> 
     und <a href="http://geo.hlipp.de/profile/3">Christian Lipp</a>. <a href="http://geo.hlipp.de/profile/325">Ulrich Meier</a>
-    hat sich unter anderem viel Arbeit mit den Karten (Seen in Bayern, Küsten) gemacht. Ohne seinen und
+    hat sich unter anderem viel Arbeit mit den Karten (Seen in Bayern, Küsten) gemacht. Auch beim Erfassen der Städte und
+    insbesondere der Landkreise hat er einen großen Teil der Arbeit geleistet. Ohne seinen und
     <a href="http://geo.hlipp.de/profile/32">Sebastian Ballards</a> Einsatz bei der Moderation hätte ich noch weniger Zeit
     für die Weiterentwicklung der Seite.
     </p>
