@@ -560,3 +560,17 @@ ALTER TABLE `gridimage` ADD  KEY `gridsquare_id_2` (`gridsquare_id`);
 
 ALTER TABLE `queries` ADD `limit11` varchar(32) NOT NULL DEFAULT '' AFTER `limit10`;
 ALTER TABLE `queries_archive` ADD `limit11` varchar(32) NOT NULL DEFAULT '' AFTER `limit10`;
+
+CREATE TABLE `loc_hier_stat` (
+  `level` tinyint(2) NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `squares_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `images_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `squares_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `tenk_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `geographs_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `tenk_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `images_thisweek` int(8) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`level`,`community_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
