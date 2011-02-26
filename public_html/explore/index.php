@@ -69,6 +69,12 @@ if (!$smarty->is_cached('explore.tpl'))
 	$topics[$last] = $options;
 	
 	$smarty->assign_by_ref('topiclist',$topics);	
+
+	$smarty->assign('histsearch',$CONF['searchid_historical']);
+	if (count($CONF['hier_statlevels'])) {
+		$smarty->assign('hasregions',true);
+		$smarty->assign('regionlistlevel',$CONF['hier_listlevel']);
+	}
 }
 
 

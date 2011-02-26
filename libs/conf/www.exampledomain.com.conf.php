@@ -307,6 +307,8 @@ $CONF['hier_prefix'] = array(); # array(5=>"Regierungsbezirk", 6=>"Region", 7=>"
 $CONF['hier_statlevels'] = array(); # array(4, 7);
 //configure administrative areas which can be uesed as search criteria
 $CONF['hier_searchlevels'] = array(); # array(4, 5, 6, 7);
+//configure administrative areas to show as "large list" (link on explore page)
+$CONF['hier_listlevel'] = -1; #7
 
 //optionally get a key for sending your data to geocubes. 
 $CONF['GEOCUBES_API_KEY'] = "";
@@ -414,6 +416,7 @@ $CONF['search_count_first_page'] = true; //true/false
 //search ids
 $CONF['searchid_recent'] = 0;
 $CONF['searchid_potd'] = 0;
+$CONF['searchid_historical'] = 0;
 
 ###################################
 

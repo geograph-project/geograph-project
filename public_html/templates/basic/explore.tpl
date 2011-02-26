@@ -30,6 +30,10 @@
 
 	<!--li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li-->
 
+	{if $histsearch}<li>Search for <a href="/results/{$histsearch}"><b>historical images</b></a> (<a href="/statistics/leaderboard.php?type=images&amp;when=1989&amp;timerel=dbefore&amp;date=taken"><b>Leaderboard</b></a> for historical images)</li>{/if}
+	{if $hasregions}
+	<li><a href="/statistics/regions.php">Regional statistics</a>{if $regionlistlevel > -1} (<a href="/statistics/regions.php?level={$regionlistlevel}">large list</a>){/if}</li>
+	{/if}
 </ul>
 <h3>Breakdowns...</h3>
 <ul class="explore">
@@ -54,12 +58,21 @@
 
 	<li><a href="/mapbrowse.php">Explore a Zoomable <b>Map</b></a>.</li>
 
+  {dynamic}
+  {if $is_logged_in}
+	<li><a href="/gmmap.php">View a <b>Draggable map</b></a>.</li>
+  {/if}
+  {/dynamic}
+
+	<li><a href="/hectadmap.php">View a <b>Hectad coverage</b> map</a></li>
+
 	<li><form method="get" action="/search.php" style="display:inline">
 	<label for="searchterm"><b>Search</b> by keyword, place, postcode or contributor</label>: <br/>
 	<input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
 	<input id="searchgo" type="submit" name="go" value="Find"/> [<a href="/help/search">help</a>, <a href="/search.php?form=advanced">advanced search</a>]
 	</form></li>
 
+{if $countylist}
 	<li><form method="get" action="/search.php" style="display:inline">
 	<label for="county_id">Search by centre of <b>Ceremonial County</b></label>: 
 	<input type="hidden" name="do" value="1"/>
@@ -68,6 +81,7 @@
 		{html_options options=$countylist selected=$county_id}
 	</select> <input id="searchgo" type="submit" name="go" value="Find"/>
 	</form></li>
+{/if}
 
 {if $enable_forums}
 	<li><form method="get" action="/search.php" style="display:inline">
