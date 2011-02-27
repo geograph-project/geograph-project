@@ -35,7 +35,7 @@ if (!empty($_GET['build'])) {
 		$right = $left+1; 
 
 		// get all children of this node 
-		$results = $db->getCol("SELECT article_cat_id FROM article_cat WHERE parent_id=$parent order by sort_order, article_cat_id"); 
+		$results = $db->getCol("SELECT article_cat_id FROM article_cat WHERE parent_id=$parent AND category_name != 'Redirect Only' ORDER BY sort_order, article_cat_id"); 
 		foreach($results as $result) { 
 			// recursive execution of this function for each 
 			// child of this node 

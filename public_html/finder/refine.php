@@ -80,7 +80,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		
 		$bits = $more = $less = array();
 		
-		$sphinx->qoutput = $sphinx->q = $bits[0];
+		$sphinx->qoutput = $sphinx->q;
 		
 		$terms = $db->CacheGetAll(3600*24,"SELECT gridimage_id,result FROM gridimage_search INNER JOIN at_home_result t USING (gridimage_id) WHERE grid_reference = '{$square->grid_reference}'");
 		

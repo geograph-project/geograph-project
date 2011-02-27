@@ -271,7 +271,10 @@ function smarty_function_articletext($input) {
 	$pattern[]='/\[gmap=(\d+)\]/';
 	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=gmap_embed" width="750" height="430"></iframe>';
 
-	$pattern[]='/\[fade=(\d+)=(\d+)\]/';
+	$pattern[]='/\[slidebig=(\d+)\]/';
+	$replacement[]='<iframe src="/search.php?i=\1&amp;temp_displayclass=slidebig" width="750" height="750"></iframe>';
+
+	$pattern[]='/\[fade=([\w\/:\.]+)=(\d+)\]/';
 	$replacement[]='<iframe src="/stuff/fade.php?1=\1&amp;2=\2" width="670" height="700"></iframe>';
 
 	$pattern[]='/\[youtube=(\w+)\]/';
