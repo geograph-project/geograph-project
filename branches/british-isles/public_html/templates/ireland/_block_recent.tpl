@@ -44,6 +44,13 @@
   	  
   
   	{/foreach}
+	<br/>
+	<hr/>
+	<br/>
+        &middot; <a href="/search.php?i=5165" title="Show the most recent submissions"><b>More recent images</b> &gt;</a><br/>
+        &middot; <a href="/explore/searches.php" title="Featured Selections">Other selections &gt;</a><br/>
+        &middot; <a href="/thumbed-weekly.php" title="Popular images">Popular images &gt;</a><br/>
+	<br/>
   
   {/if}
   
