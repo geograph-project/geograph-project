@@ -150,7 +150,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			or user.user_id = {$USER->user_id}
 			or ($isadmin and approved != -1))
 			$where
-		order by sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
+		order by lft,sort_order,article.article_cat_id,article_sort_order desc,create_time desc");
 	}
 	
 	$urls = array();

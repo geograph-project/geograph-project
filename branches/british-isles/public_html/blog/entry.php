@@ -29,6 +29,15 @@ if (empty($CONF['forums'])) {
         exit;	
 }
 
+if ((!preg_match('/\/blog\/\d+/',$_SERVER["REQUEST_URI"]) && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
+        //keep urls nice and clean - esp. for search engines!
+        header("HTTP/1.0 301 Moved Permanently");
+        header("Status: 301 Moved Permanently");
+        header("Location: /blog/".intval($_GET['id']));
+        print "<a href=\"http://{$_SERVER['HTTP_HOST']}/blog/".intval($_GET['id'])."\">View blog entry</a>";
+        exit;
+}
+
 init_session();
 
 $smarty = new GeographPage;

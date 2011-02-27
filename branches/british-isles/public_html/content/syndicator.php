@@ -179,7 +179,7 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 	
 	$where = implode(' AND ',$where);
 	
-$sql="select content.content_id,content.user_id,url,title,extract,updated,created,realname,content.source,gridsquare_id
+$sql="select content.content_id,content.user_id,url,title,extract,content.updated,content.created,realname,content.source,gridsquare_id
 	from content 
 		left join user using (user_id)
 	where $where

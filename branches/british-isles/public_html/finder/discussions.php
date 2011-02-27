@@ -31,6 +31,9 @@ $smarty = new GeographPage;
 $template = 'finder_discussions.tpl';
 
 if (!empty($_GET['q'])) {
+
+	 $USER->mustHavePerm("basic");
+
 	$q=trim($_GET['q']);
 	$q = preg_replace('/(-?)\b(by):/','@name $1',$q);
 	$sphinx = new sphinxwrapper($q);
