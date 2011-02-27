@@ -57,7 +57,7 @@ SELECT
 	NULL AS content_id, 
 	blog_id AS foreign_id, 
 	TRIM(title) AS title, 
-	CONCAT('/blog/entry.php?id=',blog_id) AS url, 
+	CONCAT('/blog/',blog_id) AS url, 
 	user_id AS user_id, 
 	gridimage_id, 
 	gridsquare_id, 
