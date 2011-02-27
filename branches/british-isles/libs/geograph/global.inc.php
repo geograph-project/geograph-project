@@ -88,9 +88,9 @@ function GeographDatabaseConnection($allow_readonly = false) {
 	//see if we can use a read only slave connection
 	if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
 	
-		split_timer('db'); //starts the timer
+#		split_timer('db'); //starts the timer
 		$db=NewADOConnection($GLOBALS['DSN_READ']);
-		split_timer('db','connect','readonly'); //logs the wall time
+#		split_timer('db','connect','readonly'); //logs the wall time
 		
 		if ($db) {
 			//if the application dictates it needs currency
@@ -135,14 +135,28 @@ function GeographDatabaseConnection($allow_readonly = false) {
 		//otherwise just get a standard connection
 		
 		//todo - we could add a 'curtail' feature here, to disable any page that needs write access - allowing some pages to still work without master online!
-		split_timer('db'); //starts the timer
+#		split_timer('db'); //starts the timer
 		$db=NewADOConnection($GLOBALS['DSN']);
-		split_timer('db','connect','master'); //logs the wall time
+#		split_timer('db','connect','master'); //logs the wall time
 	} 
+	if (!$db && mysql_error() == 'MySQL server has gone away') {
+		//one last try! forcing a new connection via nconnect. 
+		$db=NewADOConnection($GLOBALS['DSN'].(empty($CONF['db_persist'])?'?':'&')."new");
+	}
 	if (!$db) {
 		split_timer('db','connect','failed'); //just to log the failure!
 		//todo - show a 'smart' smarty error here... (probably check for existance of a global $smarty var) 
 		header("HTTP/1.0 503 Service Unavailable");
+
+					//email me if we lag, but once gets big no point continuing to notify!
+					ob_start();
+					print "\n\nHost: ".`hostname`."\n";
+					print "Time: ".time()." (".(time()-$_SERVER['REQUEST_TIME'])." seconds)\n\n";
+					print_r($_SERVER);
+					debug_print_backtrace();
+					$con = ob_get_clean();
+               				mail('geograph@barryhunter.co.uk','[Geograph Database] Connection failed: '.mysql_error(),$con);
+             		
 		die("Database connection failed");
 	}
 	$db->readonly = false;

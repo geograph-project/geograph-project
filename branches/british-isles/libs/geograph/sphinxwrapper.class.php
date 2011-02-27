@@ -785,7 +785,7 @@ split_timer('sphinx'); //starts the timer
 		
 	split_timer('sphinx'); //starts the timer
 
-		$res &= $cl->BuildExcerpts ( $docs, $CONF['sphinx_prefix'].$index, $words, $opts);
+		$res = $cl->BuildExcerpts ( $docs, $CONF['sphinx_prefix'].$index, $words, $opts);
 		
 	split_timer('sphinx','BuildExcerpts'.count($docs)); //logs the wall time
 	

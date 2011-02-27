@@ -130,7 +130,7 @@ $cmd="/usr/bin/mysqldump --no-defaults --opt ".
 
 
 
-	"-ugeograph -h192.168.77.36 -pm4pp3r geograph_live | gzip > $outfile";
+	"-ugeograph -h192.168.77.51 -pm4pp3r geograph_live | gzip > $outfile";
 `$cmd`;
 
 my $size=(stat($outfile))[7];
