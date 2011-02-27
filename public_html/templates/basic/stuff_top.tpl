@@ -37,7 +37,7 @@
 			</select> (current top list)</p>
 
 
-			<p><input type="radio" name="top" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Nonsense category</b></label> - there isnt really a Top-Level category for this</p>
+			<p><input type="radio" name="top" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Unallocated category</b></label> - there isnt really a Top-Level category for this</p>
 
 		</div>
 		<br/><br/>

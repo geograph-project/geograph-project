@@ -49,7 +49,7 @@
 {foreach from=$list item=item}
 
 	<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px; margin-bottom:20px; height:430px">
-		<h4 style="margin-top: 0px;font-size:1.2em; margin-bottom:0"><a href="/blog/entry.php?id={$item.blog_id}" style="text-decoration:none">{$item.title|escape:'html'}</a></h4>
+		<h4 style="margin-top: 0px;font-size:1.2em; margin-bottom:0"><a href="/blog/{$item.blog_id}" style="text-decoration:none">{$item.title|escape:'html'}</a></h4>
 		<div style="text-align:right;margin-bottom:3px;color:gray">{$item.created}</div>
 		{if $item.image}
 			<div style="float:left;padding-right:6px;padding-bottom:2px;"><a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a></div>
@@ -58,7 +58,7 @@
 		<div style="font-size:0.8em;text-align:justify">{$item.content|truncate:500|escape:'html'|regex_replace:'/\[\[\[(\d+)\]\]\]/':'<a href="/photo/\1">Photo</a>'}</div>
 		<div style="margin-top:8px;border-top:1px solid gray">
 		Posted by <a title="View profile" href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a> <span class="nowrap">on {$item.published|date_format:"%a, %e %b"}</span>
-		<a href="/blog/entry.php?id={$item.blog_id}"><b>Read More...</b></a>
+		<a href="/blog/{$item.blog_id}"><b>Read More...</b></a>
 
 			{if $user->user_id == $item.user_id || $isadmin}<br/><br/>
 					[<a href="/blog/edit.php?id={$item.blog_id}">edit</a>]

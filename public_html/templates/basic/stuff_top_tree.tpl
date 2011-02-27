@@ -17,7 +17,7 @@
 					</div>
 				{/if}
 				{assign var="last" value=$item.top|lower}
-				<h3><a href="/search.php?top={$item.top|escape:"url"}&amp;do=1">{$item.top|escape:"html"}</a></h3>
+				<h3>{$item.top|escape:"html"}</h3>
 				<div>&middot;
 			{/if}
 			<a href="/search.php?imageclass={$item.imageclass|escape:"url"}" class="nowrap">{$item.imageclass|escape:"html"}</a> &middot;

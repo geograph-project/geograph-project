@@ -8,9 +8,8 @@
 <div class="interestBox" style="width:330px;float:right">
 	Our websites:
 	<ul>
-		<li><b>Geograph Britain and Ireland</b><br/><br/>
-		<ul><li>(includes <b>Geograph Ireland</b>)</li></ul><br/></li>
-		<li><b>Geograph Channel Islands</b></li>
+		<li><b>Geograph Britain and Ireland</b><br/><br/></li>
+		<li><b>Geograph Ireland</b><br/><br/></li>
 	</ul>
 	... share the same user/registration database.<br/><br/> You can use the logins from either here interchangably.
 </div>

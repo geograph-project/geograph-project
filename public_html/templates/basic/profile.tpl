@@ -102,7 +102,7 @@
 {else}
 
 {if $profile->blog.blog_id}
-	<p>&middot; My latest blog entry: <a href="/blog/entry.php?id={$profile->blog.blog_id}">{$profile->blog.title|escape:'html'}</a> <small>({$profile->blog.created})</small></p>
+	<p>&middot; My latest blog entry: <a href="/blog/{$profile->blog.blog_id}">{$profile->blog.title|escape:'html'}</a> <small>({$profile->blog.created})</small></p>
 {/if}
 
 {if $profile->about_yourself && $profile->public_about && ($userimages || $user->user_id eq $profile->user_id)}
