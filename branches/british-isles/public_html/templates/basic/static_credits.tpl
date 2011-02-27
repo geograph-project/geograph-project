@@ -78,7 +78,7 @@
     <ul>
      <li>{external href="http://www.ordnancesurvey.co.uk/oswebsite/education/" text="Ordnance Survey&reg;"} Great Britain have agreed to sponsor the project, allowing us to secure reliable hosting, as well as to develop the project into an educational context.</li>
      
-     <li>{external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"} provide superb co-location hosting and support, giving a home to {external href="http://blog.dixo.net/2006/07/28/geograph-servers-coming-to-life/" text="our collection of servers"}.</li> 
+     <li>{external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"}/{external title="Visit Fubra website" href="http://catn.com/" text="CatN"} provide superb co-location hosting and support, giving a home to {external href="http://blog.dixo.net/2006/07/28/geograph-servers-coming-to-life/" text="our collection of servers"}.</li> 
      <li>During the early days of the project, we relied on a dedicated server generously donated by {external title="Visit Positive Internet website" href="http://www.positive-internet.com/" text="Positive Internet"}.</li> 
 
     </ul>

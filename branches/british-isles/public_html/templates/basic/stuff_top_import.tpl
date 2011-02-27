@@ -4,6 +4,11 @@
 
 <h2><a href="?">Top-Level Category Mapping</a> :: Import</h2>
 
+<div class="interestBox" style="border:4px solid red">
+	&middot; Before using this page you should <a href="/article/Assigning-the-current-Categories-to-Top-Level-Categories-Project">read this article</a>
+</div>
+
+
 	<p>Import a list of suggestions in bulk, using the form below. This is designed to be used in conjunction with the Spreadsheet mentioned in the forum.</p>
 
 	<form action="/stuff/category-list.php" method="post">

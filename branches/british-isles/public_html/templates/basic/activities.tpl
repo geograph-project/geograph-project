@@ -3,6 +3,8 @@
 {include file="_std_begin.tpl"}
 
 <h2>Activities on Geograph</h2>
+
+<div class="interestBox" style="margin:20px"><b>Are you involved in education?</b> We have a new <a href="/help/education_feedback">feedback form</a>, please take a moment to fill it out.</div>
  
 <p>Welcome to Geograph's new Activities section, there's not much here at the moment, we hope to add more as we can. However please do <a href="/contact.php">let us know</a> of any ideas you have for new activities that we could enable.</p>
 

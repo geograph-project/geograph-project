@@ -19,10 +19,7 @@
 	<p>Congratulations - your registration is complete. We 
 	hope you'll enjoy contributing!</p>
 	
-	<p>You should now <a title="view your profile" href="/profile.php">view your profile</a>
-	to configure your site preferences.
-
-	</p>
+	<p>You may be interested in reading our <a href="/article/Geograph-Introductory-letter">Geograph Introductory letter</a>.</p>
 
 {elseif $confirmation_status eq "alreadycomplete"}
 	<p>You have already completed the registration confirmation - please
@@ -58,9 +55,8 @@ function hide_message() {
 <div class="interestBox" style="width:350px;float:right">
 	The websites:
 	<ul>
-		<li><b>Geograph Britain and Ireland</b><br/><br/>
-		<ul><li>(includes <b>Geograph Ireland</b>)</li></ul><br/></li>
-		<li><b>Geograph Channel Islands</b></li>
+		<li><b>Geograph Britain and Ireland</b><br/><br/></li>
+		<li><b>Geograph Ireland</b><br/><br/></li>
 	</ul>
 	... share the same user/registration database. An account created here can be used right away on either site.
 </div>

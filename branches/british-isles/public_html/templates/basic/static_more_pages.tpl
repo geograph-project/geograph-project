@@ -59,8 +59,9 @@
 
 </ul>
 
-<br style="clear:both">
 
+{if $enable_forums}
+<br style="clear:both">
 
 <div style="width:350px;float:left;position:relative">
 
@@ -102,9 +103,9 @@ we hope you'll enjoy being a part of this great project
 <a title="GPX File of Recent Images" href="/feed/recent.gpx" rel="RSS" class="xml-gpx">GPX</a> (<a title="GPX File Export" href="/gpx.php">more GPX options</a>)<br/>
 
 or <a title="Memory Map Export" href="/memorymap.php">in <b>Memory Map</b></a><br/><br/>
-
 and <a href="/article/Ways-to-view-Geograph-Images">even more ways to view images</a>
 </div>
+{/if}
 
 
 <br style="clear:both"/>

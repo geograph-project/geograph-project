@@ -17,6 +17,11 @@
 	
 	<br style="clear:both"/>
 </div>
+{if $external}
+	<div style="font-size:0.7em;width:470px;text-align:right;margin-left:auto;margin-right:auto;color:silver;margin-top:-4px">
+		Image provided by <a href="http://{$http_host}" target="_blank" style="color:gray;">{$http_host}</a>
+	</div>
+{/if}
 
 </body>
 </html>

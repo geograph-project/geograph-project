@@ -91,17 +91,109 @@
 
 And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {$centergr_2}">{$centergr_2}</a>, {place place=$place_2}.</p>
 
-    <h3><a name="more"></a>More statistics</h3>
+<div class="interestBox" style="width:300px">
+    <b><a name="more"></a>LeaderBoards</b>
+</div>
 
-   <p>User leaderboards: <a href="/statistics/moversboard.php">Weekly</a>, <a href="/statistics/leaderboard.php">All Time</a>, <a href="/statistics/monthlyleader.php">By Month</a>, <a href="/statistics/leaderhectad.php">First Hectads</a>,  <a href="/statistics/leaderallhectad.php">Hectads</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a></p>
+   <p>User leaderboards: <a href="/statistics/monthlyleader.php">By Month</a>, <a href="/statistics/leaderhectad.php">First Hectads</a>,  <a href="/statistics/leaderallhectad.php">Hectads</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a></p>
 
-   <p><b>Covering the squares</b><sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup>:<br/><br/>
+<a href="/statistics/moversboard.php"><b>Weekly</b> Leaderboard</a><ul>
+
+<li><form action="/statistics/moversboard.php" style="display:inline">
+Refine:
+<select name="type">
+<optgroup label="Points">
+        <option value="allpoints">AllPoints</option>
+        <option value="first">Firsts</option>
+        <option value="second">Seconds</option>
+        <option value="third">Thirds</option>
+        <option value="fourth">Fourths</option>
+        <option value="personal">Personal Points</option>
+</optgroup>
+<optgroup label="Images">
+        <option value="images">Images</option>
+        <option value="geographs">Geographs</option>
+        <option value="additional">Additional Geographs</option>
+        <option value="supps">Supplementals</option>
+</optgroup>
+<optgroup label="Squares">
+        <option value="squares">Squares</option>
+        <option value="geosquares">GeoSquares</option>
+</optgroup>
+<optgroup label="Geographical">
+        <option value="myriads">Myriads</option>
+        <option value="hectads">Hectads</option>
+        <option value="spread">Spread</option>
+        <option value="antispread">AntiSpread</option>
+</optgroup>
+<optgroup label="Other">
+        <option value="depth">Depth Score</option>
+        <option value="days">Days</option>
+        <option value="classes">Categories</option>
+        <option value="clen">Description Length</option>
+</optgroup>
+</select><sup><a href="/help/stats_faq">?</a></sup>
+ <input type="submit" value="Go"/>
+</form></li></ul>
+
+<a href="/statistics/leaderboard.php"><b>All Time</b> Leaderboard</a><ul>
+
+<li><form action="/statistics/leaderboard.php" style="display:inline">
+Refine:
+<select name="type">
+<optgroup label="Points">
+        <option value="allpoints">AllPoints</option>
+        <option value="first">Firsts</option>
+        <option value="second">Seconds</option>
+        <option value="third">Thirds</option>
+        <option value="fourth">Fourths</option>
+        <option value="personal">Personal Points</option>
+</optgroup>
+<optgroup label="Images">
+        <option value="images">Images</option>
+        <option value="geographs">Geographs</option>
+        <option value="additional">Additional Geographs</option>
+        <option value="supps">Supplementals</option>
+</optgroup>
+<optgroup label="Squares">
+        <option value="squares">Squares</option>
+        <option value="geosquares">GeoSquares (Personal Points)</option>
+</optgroup>
+<optgroup label="Geographical">
+        <option value="myriads">Myriads</option>
+        <option value="hectads">Hectads</option>
+        <option value="spread">Spread</option>
+        <option value="antispread">AntiSpread</option>
+</optgroup>
+<optgroup label="Other">
+        <option value="depth">Depth Score</option>
+        <option value="days">Days</option>
+        <option value="classes">Categories</option>
+        <option value="clen">Description Length</option>
+</optgroup>
+</select><a href="/help/stats_faq">?</a>
+
+<select name="date">
+<option value="submitted">Submitted</option>
+<option value="taken">Taken</option>
+</select> during
+
+ {html_select_date display_days=false prefix="when" time="0000-00-00" start_year="-100" reverse_years=true  month_empty="" year_empty=""} <input type="submit" value="Go"/>
+</form></li></ul>
+
+<div class="interestBox" style="width:300px">
+	<b>Covering the squares</b><sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup>
+</div>
+
    None: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!<br/><br/>
    Mostly: <a href="/statistics/most_geographed_gridsquare.php">Grid Squares</a>, <a href="/statistics/most_geographed.php">Hectads</a> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.<br/><br/>
    <b>Fully: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b><br/><br/>
    Graph: <a href="/statistics/photos_per_square.php">Gridsquares</a>, <a href="/statistics/hectads.php">Hectad</a>, <a href="/statistics/coverage_by_county.php">County</a> and <a href="/statistics/coverage_by_country.php">Country</a> Coverage</p>
 
-   <p><b>Past activity:</b><br/><br/>
+<div class="interestBox" style="width:300px">
+	<b>Past activity</b>
+</div>
+
    Graphs: <a href="/statistics/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/statistics/leaderboard.php#submission_graph">Overall Submissions</a>, <a href="/statistics/contributors.php">Contributor Graphs</a>.<br/><br/>
    Monthly breakdown: <a href="/statistics/overtime.php" title="Monthly Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/overtime.php?date=taken" title="Monthly Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/overtime_users.php" title="Monthly Breakdown new User Signups">User Signups</a>, <a href="/statistics/overtime_forum.php" title="Monthly Breakdown for Forum Posts">Forum Posts</a> and <a href="/statistics/overtime_tickets.php">Change Suggestions</a>.<br/><br/>
    Hourly and weekday breakdown: <a href="/statistics/date_graphs.php" title="Hourly and Weekday Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/date_graphs.php?date=taken" title="Hourly and Weekday Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/date_users_graphs.php" title="Hourly and Weekday Breakdown of User Signups">User Signups</a> and <a href="/statistics/date_forum_graphs.php" title="Hourly and Weekday Breakdown for Forum Posts">Forum Posts</a>.<br/><br/>
@@ -138,7 +230,10 @@ And for {$references.2} is <a href="/gridref/{$centergr_2}" title="view square {
     {/dynamic}
     <input type="submit" value="Go"/></p></form>
 
-   <p><b>More Technical Database Stats:</b><br/>
+<div class="interestBox" style="width:300px">
+   	<b>More Technical Database Stats</b>
+</div>
+
    <a href="/statistics/pulse.php">Geograph Pulse</a>,
    <a href="/statistics/totals.php">Current Totals</a>,
    {dynamic}

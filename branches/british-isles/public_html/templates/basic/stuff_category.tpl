@@ -29,7 +29,7 @@
 		</select> (To select additional, or to add free-from tags, open the tagging box below...)
 		</p>
 
-<h4 class="titlebar">Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';" id="hidetag"/></h4>
+<h4 class="titlebar">Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?ids=1,2';" id="hidetag"/></h4>
 <div id="showtag" style="display:none">
 	<ul>
 		<li>Tags are a new feature on Geograph - they are still under heavy development - not fully working yet!</li>

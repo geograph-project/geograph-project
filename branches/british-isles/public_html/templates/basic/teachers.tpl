@@ -17,6 +17,8 @@
 </style>{/literal}
 
 <h2>Geograph for Teachers</h2>
+
+<div class="interestBox" style="margin:20px"><b>Are you involved in education?</b> We have a new <a href="/help/education_feedback">feedback form</a>, please take a moment to fill it out.</div>
  
 <p>This page is intended as a quick start guide for using Geograph in the classroom. Please get in <a href="/contact.php">touch</a> if you have an idea for something to add here.</p>
 

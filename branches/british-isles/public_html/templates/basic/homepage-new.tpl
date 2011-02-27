@@ -24,7 +24,7 @@ representative photographs and information for every square kilometre of <a href
 			</div>
 			<h3 style="margin-top:0;margin-bottom:8px;font-size:0.95em">Photograph of the day</h3>
 
-			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)|replace:'/>':' style="border:1px solid black"/>'}</a>
+			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
 		<div style="position:relative;float:left; width:150px">
 			<p style="margin-top:30px;text-align:center;font-size:0.8em">Click the map to start browsing photos of the <span class="nowrap">British Isles</span></p>
@@ -53,7 +53,10 @@ representative photographs and information for every square kilometre of <a href
 			<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
 		</div>
 		<div style="font-size:0.9em;margin-top:8px">
-			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->title}</a> <span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->realname}</a></span>, <span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</a></span>
+			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->title}</a> 
+			<span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->realname}</a></span> 
+			<span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->grid_reference}</a></span>, 
+			<span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</a></span>
 		</div>
 	</div>
 
@@ -110,20 +113,26 @@ representative photographs and information for every square kilometre of <a href
 </div>
 {if $news2}
 	<div style="clear:both; position:relative;margin-left:auto;margin-right:auto;width:750px;font-size:0.9em">
-		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px;">
+		{if $feed}
+			<div class="interestBox" style="border-radius: 6px;margin-bottom:8px;float:left;width:233px;margin-right:7px">
+				<h3 style="margin:0">Updates</h3>
+			</div>
+		{/if}
+		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px;float:left;width:480px">
 			<div style="position:relative;float:right">
 				<a href="/discuss/index.php?&amp;action=vtopic&amp;forum=1&amp;sortBy=1"><b>read more</b> &gt;</a>
 			</div>
-			<h3 style="margin:0">Latest News {if $rss_url}&nbsp;&nbsp;&nbsp;<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a>{/if} <a rel="alternate" type="application/rss+xml" title="Twitter Feed" href="http://twitter.com/statuses/user_timeline/251137848.rss" class="xml-rss">Twitter RSS Feed</a></h3>
+			<h3 style="margin:0">Latest News {if $rss_url}&nbsp;&nbsp;&nbsp;<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a>{/if}</h3>
 		</div>
 
 		{if $feed}
-			<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px">
+			<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px;clear:both;">
 				{foreach from=$feed item=item}
 					<div style="font-size:0.8em;text-align:justify">{$item.text}</div>
 					<div style="margin-bottom:8px;border-bottom:1px solid gray;color:silver;text-align:right">{$item.time|date_format:"%a, %e %b"}</div>
 				{/foreach}
-				More at {external href="http://twitter.com/geograph_bi" text="twitter.com/geograph_bi"}
+				More: {external href="http://twitter.com/geograph_bi" text="twitter.com/geograph_bi"}
+				<a rel="alternate" type="application/rss+xml" title="Twitter Feed" href="http://twitter.com/statuses/user_timeline/251137848.rss" class="xml-rss">RSS</a>
 			</div>
 		{/if}
 

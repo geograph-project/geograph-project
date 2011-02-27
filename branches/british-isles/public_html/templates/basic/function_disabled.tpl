@@ -9,10 +9,10 @@
 {/if}
 {/dynamic}
 
-<p>If you enjoyed this feature please <a title="Contact Us" href="/contact.php">contact us</a>{if $enable_forums}, or let us know via the <a href="/discuss/">Discussion Forum</a>{/if}, or simply with the 'Give Feedback' form below.
+<p>If you used to enjoy this feature, and would be intererested a similar feature, please <a title="Contact Us" href="/contact.php">contact us</a>{if $enable_forums}, or let us know via the <a href="/discuss/">Discussion Forum</a>{/if}, or simply with the 'Give Feedback' form below.
 
 		<div id="showfeed2" class="interestBox"><form method="post" action="/stuff/feedback.php">
-		<label for="feedback_comments"><b>Tell us why you enjoyed this feature</b>:</label><br/>
+		<label for="feedback_comments"><b>Tell us what you enjoyed most about this previous feature</b>:</label><br/>
 		<input type="text" name="comments" size="80" id="feedback_comments"/><input type="submit" name="submit" value="send"/>
 		{dynamic}{if $user->registered}<br/>
 		<small>(<input type="checkbox" name="nonanon" checked/> <i>Tick here to include your name with this comment, so we can then reply</i>)</small>
@@ -31,11 +31,11 @@
 
 
 <ul>
-	<li style="padding:20px">Mostly these features are removed due to resource constraints - generating these pages cause strain on the server</li>
+	<li style="padding:10px">Mostly these features are removed due to resource constraints - generating these pages cause strain on the server</li>
 	
-	<li style="padding:20px">Therefore, to continue to offer this feature we need to work on an alternative implementation</li>
+	<li style="padding:10px">Therefore, to continue to offer this feature we need to work on an alternative implementation</li>
 
-	<li style="padding:20px">But we need to know if it's worth the investment, so get in contact if you like this feature. If you don't it probably won't return.</li>
+	<li style="padding:10px">...But we need to know if it's worth the investment, so get in contact if you like this feature. <b>If you don't it probably won't return.</b></li>
 </ul>
 
 {include file="_std_end.tpl"}
