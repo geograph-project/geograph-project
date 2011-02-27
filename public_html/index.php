@@ -137,7 +137,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			array_shift($m[1]);
 			$feed = array();
 			foreach ($m[1] as $idx => $text) {
-				
+				if (strpos($text,'Picture of the Day: http://geograph') !== FALSE) {
+					continue;
+				}				
 				$text = str_replace('geograph_bi: ','',$text);
 				$text = preg_replace('/^([\w ]+):/','<b>$1</b>:',$text);
 				$text = preg_replace('/\. ([\w \.,;]+\.\.\.)\s*$/','. <span style="color:gray">$1</span>...',$text);

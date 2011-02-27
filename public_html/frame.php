@@ -56,6 +56,9 @@ if (isset($_REQUEST['id'])) {
 }
 
 
+if (strpos($_SERVER['HTTP_REFERER'],$_SERVER['HTTP_HOST']) === FALSE) {
+        $smarty->assign("external",true);
+}
+
 $smarty->display($template, $cacheid);
 
-?>
