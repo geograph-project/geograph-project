@@ -979,12 +979,17 @@ class GeographMapMosaic
 						unlink($root.$file);
 						$deleted++;
 					} 
-					$file = $this->getLabelMapFilename($recordSet->fields, false);
+					$file = $this->getLabelMapFilename($recordSet->fields, false, true);
 					if (file_exists($root.$file)) {
 						unlink($root.$file);
 						$deleted++;
 					} 
-					$file = $this->getLabelMapFilename($recordSet->fields, true);
+					$file = $this->getLabelMapFilename($recordSet->fields, false, false);
+					if (file_exists($root.$file)) {
+						unlink($root.$file);
+						$deleted++;
+					} 
+					$file = $this->getLabelMapFilename($recordSet->fields, true, false);
 					if (file_exists($root.$file)) {
 						unlink($root.$file);
 						$deleted++;
@@ -1013,12 +1018,17 @@ class GeographMapMosaic
 					unlink($root.$file);
 					$deleted++;
 				} 
-				$file = $this->getLabelMapFilename($recordSet->fields, false);
+				$file = $this->getLabelMapFilename($recordSet->fields, false, true);
 				if (file_exists($root.$file)) {
 					unlink($root.$file);
 					$deleted++;
 				} 
-				$file = $this->getLabelMapFilename($recordSet->fields, true);
+				$file = $this->getLabelMapFilename($recordSet->fields, false, false);
+				if (file_exists($root.$file)) {
+					unlink($root.$file);
+					$deleted++;
+				} 
+				$file = $this->getLabelMapFilename($recordSet->fields, true, false);
 				if (file_exists($root.$file)) {
 					unlink($root.$file);
 					$deleted++;
@@ -1062,11 +1072,15 @@ class GeographMapMosaic
 				if (file_exists($root.$file)) {
 					unlink($root.$file);
 				}
-				$file = $this->getLabelMapFilename($recordSet->fields, false);
+				$file = $this->getLabelMapFilename($recordSet->fields, false, true);
 				if (file_exists($root.$file)) {
 					unlink($root.$file);
 				}
-				$file = $this->getLabelMapFilename($recordSet->fields, true);
+				$file = $this->getLabelMapFilename($recordSet->fields, false, false);
+				if (file_exists($root.$file)) {
+					unlink($root.$file);
+				}
+				$file = $this->getLabelMapFilename($recordSet->fields, true, false);
 				if (file_exists($root.$file)) {
 					unlink($root.$file);
 				}
@@ -1114,7 +1128,7 @@ class GeographMapMosaic
 		
 		return $dir.$file;
 	}
-	function getLabelMapFilename($row, $towns) # FIXME map.class.php?
+	function getLabelMapFilename($row, $towns, $regions) # FIXME map.class.php?
 	{
 		$dir="/maps/label/";
 
@@ -1137,6 +1151,9 @@ class GeographMapMosaic
 		}
 		if ($towns) {
 			$param .= "_t";
+		}
+		if ($regions) {
+			$param .= "_r";
 		}
 
 		if (empty($row['mercator'])) {
@@ -1161,9 +1178,11 @@ class GeographMapMosaic
 		if ($layers == 1)
 			return $this->getBaseMapFilename($row);
 		elseif ($layers == 4)
-			return $this->getLabelMapFilename($row, false);
+			return $this->getLabelMapFilename($row, false, true);
 		elseif ($layers == 8)
-			return $this->getLabelMapFilename($row, true);
+			return $this->getLabelMapFilename($row, false, false);
+		elseif ($layers == 16)
+			return $this->getLabelMapFilename($row, true, false);
 
 		$dir="/maps/detail/";
 		

@@ -118,6 +118,17 @@
 				</select></td> 
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
+{if $regionlist}
+		  <tr> 
+			 <td><label for="region">region</label></td> 
+			 <td> 
+				<select name="region" id="region" size="1" class="searchinput"> 
+				  <option value=""> </option> 
+					{html_options options=$regionlist selected=$region}
+				</select></td> 
+			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
+		  </tr> 
+{/if}
 		  <tr> 
 			 <td><label for="submitted_startDay">submitted</label></td> 
 			 <td colspan="2"> 

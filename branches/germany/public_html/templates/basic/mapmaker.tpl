@@ -19,6 +19,9 @@ ri: <input size="3" type="text" name="ri" value="{$ri}"/><br />
 scale: <input size="5" type="text" name="scale" value="{$scale}"/><br />
 limit: <input size="5" type="text" name="limit" value="{$limit}"/><br />
 user: <input size="5" type="text" name="user" value="{$usr}"/><br />
+level1: <input size="5" type="text" name="level1" value="{$level1}"/><br />
+level2: <input size="5" type="text" name="level2" value="{$level2}"/><br />
+cid: <input size="5" type="text" name="cid" value="{$cid}"/><br />
 force: <input type="checkbox" name="force" value="1"{if $force} checked{/if}>
 geo: <input type="checkbox" name="geo" value="1"{if $geo} checked{/if}>
 grid: <input type="checkbox" name="grid" value="1"{if $grid} checked{/if}><br />

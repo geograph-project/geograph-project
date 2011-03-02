@@ -27,6 +27,8 @@ init_session();
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
 
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
+
 $date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
 
 $timerel = (isset($_GET['timerel']) && in_array($_GET['timerel'], array('during','dbefore','dafter','between'))) ? $_GET['timerel'] : 'during';
@@ -94,17 +96,6 @@ if (!empty($_GET['when2Year'])) {
 	$whenhigh = sprintf("%04d-%02d-01",$year,$month);
 }
 
-if (isset($_GET['region']) &&  preg_match('/^\d+_\d+$/',$_GET['region'])) {
-	list($level,$cid) = explode('_',$_GET['region']);
-	$level = intval($level);
-	$cid = intval($cid);
-	$has_region = in_array($level, $CONF['hier_statlevels']);
-} else {
-	$has_region = false;
-}
-
-$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
-
 trigger_error("$timerel, {$_GET['whenYear']}-{$_GET['whenMonth']} ... {$_GET['when2Year']}-{$_GET['when2Month']} : {$_GET['when']} ... {$_GET['when2']} : $whenlow ... $whenhigh : $when ... $when2", E_USER_NOTICE);
 
 $timedesc = '';
@@ -161,6 +152,15 @@ if ($timesqlrel !== '') {
 			$timedesc = ", <b>for images $title ".$timedescrel."</b>";
 		}
 	}
+}
+
+if (isset($_GET['region']) &&  preg_match('/^\d+_\d+$/',$_GET['region'])) {
+	list($level,$cid) = explode('_',$_GET['region']);
+	$level = intval($level);
+	$cid = intval($cid);
+	$has_region = in_array($level, $CONF['hier_statlevels']);
+} else {
+	$has_region = false;
 }
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):150;

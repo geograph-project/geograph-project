@@ -60,7 +60,6 @@ $cacheid="statistics|regionsi|$level|$cid";
 
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
-	#$smarty->cache_lifetime = 3600*3; //3hr cache
 	$smarty->cache_lifetime = 3600/4; //15min cache
 }
 
@@ -74,15 +73,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 
 
-	//lets add an overview map too
-	#$overview=new GeographMapMosaic('overview');
-	#$overview->assignToSmarty($smarty, 'overview');
-
 	$regionname = '';
 	$linkify = false;
 	if (count($CONF['hier_statlevels'])) {
 		if ($cid == -1) { // every region of the given level
-			#$sql = "select name,level,community_id from loc_hier where level=$level order by name";
 			$sql = "select name,level,community_id,squares_total,images_total,squares_submitted,tenk_total,geographs_submitted,tenk_submitted,images_thisweek from loc_hier left join loc_hier_stat using (level,community_id) where level=$level order by name";
 			$hstats = $db->GetAll($sql);
 			if ($hstats === false)
@@ -97,7 +91,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 			$regioninfo = $db->getRow("select name,contains_cid_min,contains_cid_max from loc_hier where level=$level and community_id=$cid");
 			if ($regioninfo !== false and count($regioninfo)) {
-				#$sql = "select name,level,community_id from loc_hier where level=$nextlevel and community_id between {$regioninfo['contains_cid_min']} and {$regioninfo['contains_cid_max']} order by name";
 				$sql = "select name,level,community_id,squares_total,images_total,squares_submitted,tenk_total,geographs_submitted,tenk_submitted,images_thisweek from loc_hier left join loc_hier_stat using (level,community_id) where level=$nextlevel and community_id between {$regioninfo['contains_cid_min']} and {$regioninfo['contains_cid_max']} order by name";
 				$hstats = $db->GetAll($sql);
 				if ($hstats === false)
@@ -131,58 +124,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		$row += array('prefix' => $prefix);
 		$row += array('shortname' => $shortname);
-		#	#sum(min(percent,percent_land)/100.0) as area,
-		#	#sum(if(percent<percent_land,percent,percent_land)/100.0) as area,
-		#	#count(distinct substring(grid_reference,1,length(grid_reference)-4)) as grid_total
-		##SUM(COALESCE(Column,0)) => 0 instead of null
-		##	sum(imagecount) as images_total,
-		##	sum(imagecount > 0) as squares_submitted,
-		##	sum(coalesce(imagecount,0)) as images_total,
-		##	sum(coalesce(imagecount,0) > 0) as squares_submitted,
-		#$newstats = $db->CacheGetRow(3*3600,"select 
-		#	count(*) as squares_total,
-		#	coalesce(sum(imagecount),0) as images_total,
-		#	coalesce(sum(imagecount > 0),0) as squares_submitted,
-		#	count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,-2,1))) as tenk_total
-		#from gridsquare gs inner join gridsquare_percentage gp on (gs.gridsquare_id=gp.gridsquare_id)
-		#where percent > 0 and level={$row['level']} and community_id={$row['community_id']} and percent_land > 0");
-		##$stats[$ri] = array_merge($stats[$ri], $newstats);
-		#$row += $newstats;
-
-		#	#avg( x ) as x,
-		#	#avg( y ) as y
-		#	#count(distinct substring(grid_reference,1,length(grid_reference)-4)) as grid_submitted,
-		#$newstats = $db->CacheGetRow(3*3600,"select 
-		#	count(*) as geographs_submitted,
-		#	count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,-2,1))) as tenk_submitted
-		#from gridsquare gs inner join gridsquare_percentage gp on (gs.gridsquare_id=gp.gridsquare_id)
-		#where percent > 0 and level={$row['level']} and community_id={$row['community_id']} and percent_land > 0 and has_geographs > 0");
-		##$stats[$ri] = array_merge($stats[$ri], $newstats);
-		#$row += $newstats;
-
-		##$stats[$ri] += array('images_thisweek' => $db->CacheGetOne(3*3600,"select count(*) from gridimage_search where reference_index = $ri and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
-		#$row += array('images_thisweek' => $db->CacheGetOne(3*3600,"select count(*) from gridimage gi inner join gridsquare_percentage gp on (gi.gridsquare_id=gp.gridsquare_id) where percent > 0 and level={$row['level']} and community_id={$row['community_id']} and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
 
 		$sqtotal = $row['squares_total'];
 		$percentage = $sqtotal == 0 ? 0.0 : $row['squares_submitted'] / $sqtotal * 100;
 		$row += array('percent' => $percentage);
 		$percentage = $sqtotal == 0 ? 0.0 : $row['geographs_submitted'] / $sqtotal * 100;
 		$row += array('geopercent' => $percentage);
-		#$stats[$ri] += array("grid_total" => $db->CacheGetOne(24*3600,"select count(*) from gridprefix where reference_index = $ri and landcount > 0"));
-
-		#$censquare = new GridSquare;
-		#$ok = $censquare->loadFromPosition(intval($row['x']),intval($row['y']));
-
-		#if ($ok) {
-		#	$row += array("centergr" => $censquare->grid_reference);
-
-		#	//find a possible place within 35km
-		#	$row += array("place" => $censquare->findNearestPlace(35000));
-		#	$row += array("marker" => $overview->getSquarePoint($censquare));
-		#} else {
-		#	$row += array("centergr" => 'unknown');
-		#}
-
 	}
 
 	function compare_shortname($a, $b)
@@ -198,5 +145,4 @@ if (!$smarty->is_cached($template, $cacheid))
 
 $smarty->display($template, $cacheid);
 
-	
 ?>

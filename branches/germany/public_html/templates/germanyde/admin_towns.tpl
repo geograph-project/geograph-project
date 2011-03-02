@@ -95,13 +95,16 @@ works as expected on your browser before doing real changes!</b>
 <div>
 <form method="post" action="javascript:void()" name="editline" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0; border-top:none">
 	<table>
-	<tr><th></th><th>Name</th><th>Size</th><th>Align</th><th>Grid</th><th>East</th><th>North</th><th>Comm. Id</th><th></th></tr>
+	<tr><th></th><th>Name</th><th>Short name</th><th>Size</th><th>Align</th><th>Grid</th><th>East</th><th>North</th><th>Comm. Id</th><th></th></tr>
 		<tr>
 		<td>
 			Edit
 		</td>
 		<td>
 			<input type=text name="newna0" size=30 value="">
+		</td>
+		<td>
+			<input type=text name="newsn0" size=30 value="">
 		</td>
 		<td>
 			<select name="news0" id="news0">
@@ -162,7 +165,7 @@ works as expected on your browser before doing real changes!</b>
 
 <div style="height:{if $dbarr}20{else}40{/if}em;overflow:scroll;">
 	<table>
-	<tr><th>Id</th><th>Name</th><th>Size</th><th>Align</th><th>Grid</th><th>East</th><th>North</th><th>Comm. Id</th><th></th></tr>
+	<tr><th>Id</th><th>Name</th><th>Short name</th><th>Size</th><th>Align</th><th>Grid</th><th>East</th><th>North</th><th>Comm. Id</th><th></th></tr>
 	{foreach key=key item=row from=$arr name=loop}
 		<tr>
 		<td>
@@ -176,6 +179,15 @@ works as expected on your browser before doing real changes!</b>
 			{if $dbarr}
 			<input type=button value="G" onclick="getval(this,{$smarty.foreach.loop.iteration},'na')">
 			<input type=button value="P" onclick="putval(this,{$smarty.foreach.loop.iteration},'na')">
+			{/if}
+		</td>
+		<td>
+			<input type=hidden name="oldsn{$smarty.foreach.loop.iteration}" value="{$row.short_name}">
+			<input type=text name="newsn{$smarty.foreach.loop.iteration}" size=30 value="{$row.short_name}" onfocus="onf(this)" onblur="onb(this,{$smarty.foreach.loop.iteration},'sn')">
+			<input type=button value="R" onclick="oncl(this,{$smarty.foreach.loop.iteration},'sn')">
+			{if $dbarr}
+			<input type=button value="G" onclick="getval(this,{$smarty.foreach.loop.iteration},'sn')">
+			<input type=button value="P" onclick="putval(this,{$smarty.foreach.loop.iteration},'sn')">
 			{/if}
 		</td>
 		<td>
@@ -349,6 +361,7 @@ function dbtoedit(that,num) {
 	document.editline.newc0.value = that.form['dbc'+num].value;
 	document.editline.newr0.value = that.form['dbr'+num].value;
 	document.editline.newna0.value = that.form['dbna'+num].value;
+	document.editline.newsn0.value = that.form['dbna'+num].value;
 }
 
 function putval(that,num,suf) {
@@ -361,7 +374,7 @@ function getval(that,num,suf) {
 }
 
 function putall(that,num,suf) {
-	var slist = [ 'na','s','q','r','e','n','c' ];
+	var slist = [ 'na','sn','s','q','r','e','n','c' ];
 	//for each (var suf in slist)
 	//	putval(that,num,suf);
 	for (var idx in slist)
@@ -369,7 +382,7 @@ function putall(that,num,suf) {
 }
 
 function getall(that,num,suf) {
-	var slist = [ 'na','s','q','r','e','n','c' ];
+	var slist = [ 'na','sn','s','q','r','e','n','c' ];
 	//for each (var suf in slist)
 	//	getval(that,num,suf);
 	for (var idx in slist)

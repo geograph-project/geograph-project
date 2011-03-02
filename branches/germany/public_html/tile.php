@@ -55,14 +55,14 @@ if (isset($_GET['map']))
 	if (isset($_GET['t'])) {
 		$t = intval($_GET['t']);
 	}
-	$layers = 15;
+	$layers = 31;
 	if (isset($_GET['l'])) {
 		$layers = intval($_GET['l']);
 	}
 	$f19 = pow(2, 19-$z);
 	$x19 = $x * $f19;
 	$y19 = $y * $f19;
-	if  (    $layers < 1 || $layers > 15
+	if  (    $layers < 1 || $layers > 31
 	      || $z < 4 || $z > ($overlay||!($layers&2) ? 14 : 13 ) //FIXME 15:13 also okay?
 	      || $x19+$f19 < $CONF['xmrange'][0] || $x19 > $CONF['xmrange'][1]
 	      || $y19+$f19 < $CONF['ymrange'][0] || $y19 > $CONF['ymrange'][1]

@@ -91,7 +91,7 @@
 			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=2&o=1";
 		}
 		function GetTileUrl_GeoMG(txy, z) {
-			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=4&o=1";
+			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=8&o=1";
 			//return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=4";
 		}
 

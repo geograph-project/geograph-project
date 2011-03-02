@@ -60,7 +60,7 @@ class RebuildRegionStat extends EventHandler
 		
 		$db->Execute("
 insert into loc_hier_stat_tmp (level,community_id,squares_total,images_total,squares_submitted,tenk_total,geographs_submitted,tenk_submitted,images_thisweek) select * from (
-	select level,community_id,count(*) as squares_total,sum(imagecount) as images_total,sum(imagecount > 0) as squares_submitted, count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,-2,1))) as tenk_total from gridsquare gs inner join gridsquare_percentage gp on (gs.gridsquare_id=gp.gridsquare_id) where percent > 0 and percent_land > 0 group by level,community_id
+	select level,community_id,count(*) as squares_total,sum(imagecount) as images_total,sum(imagecount > 0) as squares_submitted, count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,-2,1))) as tenk_total from gridsquare gs inner join gridsquare_percentage gp on (gs.gridsquare_id=gp.gridsquare_id) where level >= 0 and percent > 0 and percent_land > 0 group by level,community_id
 ) as da left join (
 	select level,community_id,count(*) as geographs_submitted,count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,-2,1))) as tenk_submitted from gridsquare gs inner join gridsquare_percentage gp on (gs.gridsquare_id=gp.gridsquare_id) where percent > 0 and percent_land > 0 and has_geographs > 0 group by level,community_id
  ) as db using (level,community_id) left join (

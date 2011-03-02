@@ -870,6 +870,19 @@ CREATE TABLE gridsquare_gmcache (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table `gridsquare_mappal`
+--
+
+DROP TABLE IF EXISTS `gridsquare_mappal`;
+CREATE TABLE `gridsquare_mappal` (
+	`gridsquare_id` int(11) NOT NULL,
+	`level` tinyint(2) NOT NULL,
+	`mappal` float(10,4) NOT NULL DEFAULT '0',
+	`norm` float(10,4) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`gridsquare_id`,`level`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table `gridsquare_moderation_lock`
 --
 
@@ -1066,6 +1079,7 @@ CREATE TABLE `loc_hier` (
   `contains_cid_max` int(9) unsigned NOT NULL,
   `capital_cid` int(9) unsigned NOT NULL,
   `name` varchar(50) NOT NULL,
+  `mappal` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`level`,`community_id`),
   KEY `contains` (`contains_cid_min`,`contains_cid_max`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -1155,20 +1169,26 @@ DROP TABLE IF EXISTS `loc_towns`;
 CREATE TABLE `loc_towns` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL DEFAULT '',
+  `short_name` varchar(50) NOT NULL DEFAULT '',
   `e` mediumint(6) unsigned NOT NULL DEFAULT '0',
   `n` mediumint(7) unsigned NOT NULL DEFAULT '0',
   `x` int(11) NOT NULL DEFAULT '0',
   `y` int(11) NOT NULL DEFAULT '0',
+  `cx` int(11) NOT NULL DEFAULT '0',
+  `cy` int(11) NOT NULL DEFAULT '0',
   `s` enum('1','2','3','') NOT NULL DEFAULT '1',
   `reference_index` tinyint(4) NOT NULL DEFAULT '0',
   `quad` tinyint(4) NOT NULL DEFAULT '0',
   `point_en` point NOT NULL DEFAULT '',
   `point_xy` point NOT NULL DEFAULT '',
+  `point_cxy` point NOT NULL DEFAULT '',
   `community_id` int(9) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `gis` (`e`,`n`,`reference_index`),
   SPATIAL KEY `point_en` (`point_en`),
-  SPATIAL KEY `point_xy` (`point_xy`)
+  SPATIAL KEY `point_xy` (`point_xy`),
+  KEY `cxy` (`cx`,`cy`),
+  SPATIAL KEY `point_cxy` (`point_cxy`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --

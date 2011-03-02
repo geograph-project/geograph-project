@@ -61,7 +61,17 @@
 </p>
 
 <form action="/mapfixer.php" method="get" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
-<p>or <b>Set the Percentage Directly</b>: (skips the moderation queue)<br/> <br/>
+<p>or <b>Set the Percentage Directly</b>: (skips the moderation queue)<br/>
+{if $regionlist}
+<br/>
+	<label for="region">Region (FUNKTIONIERT NOCH NICHT):</label>
+	<select name="region" id="region" size="1">
+		<option value=""> </option> 
+		{html_options options=$regionlist selected=$region}
+	</select>
+<br/>
+{/if}
+<br/>
 
 <label for="percent_land">To</label>: <input type="text" size="3" name="percent_land" id="percent_land" value="{$percent_land}">%
 (Set to: 

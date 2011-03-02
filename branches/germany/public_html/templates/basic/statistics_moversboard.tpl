@@ -42,7 +42,7 @@ how much each person will climb when their pictures are moderated!{/if}</p>
 {else}
 {$geographs}
 {/if}
-</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} pending)</th>{/if}</tr></thead>
+</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} pending)</th>{/if}</tr>
 </tbody>
 </table>
 
