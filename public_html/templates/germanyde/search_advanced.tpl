@@ -147,6 +147,7 @@
 				</select></td> 
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
+{if $regionlist}
 		  <tr> 
 			 <td><label for="region">region</label></td> 
 			 <td> 
@@ -156,6 +157,7 @@
 				</select></td> 
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
+{/if}
 		  <tr> 
 			 <td><label for="submitted_startDay">submitted</label></td> 
 			 <td colspan="2"> 

@@ -574,3 +574,28 @@ CREATE TABLE `loc_hier_stat` (
   PRIMARY KEY (`level`,`community_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+ALTER TABLE `loc_towns` ADD `short_name` varchar(50) NOT NULL DEFAULT '' AFTER `name`;
+UPDATE loc_towns SET short_name=name;
+
+ALTER TABLE `loc_towns` ADD `cx` int(11) NOT NULL DEFAULT '0' AFTER `y`;
+ALTER TABLE `loc_towns` ADD `cy` int(11) NOT NULL DEFAULT '0' AFTER `cx`;
+ALTER TABLE `loc_towns` ADD `point_cxy` point NOT NULL DEFAULT '' AFTER `point_xy`;
+ALTER TABLE `loc_towns` ADD KEY `cxy` (`cx`,`cy`);
+UPDATE loc_towns SET point_cxy=point_xy; # update by script!
+ALTER TABLE `loc_towns` ADD SPATIAL KEY `point_cxy` (`point_cxy`);
+
+ALTER TABLE `loc_hier` ADD `mappal` tinyint(1) unsigned NOT NULL DEFAULT '0' AFTER `name`;
+#ALTER TABLE `gridsquare` ADD `mappal` float(10,4) NOT NULL DEFAULT '0' AFTER `mapservices`;
+CREATE TABLE gridsquare_mappal (
+	`gridsquare_id` int(11) NOT NULL,
+	`level` tinyint(2) NOT NULL,
+	`mappal` float(10,4) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`gridsquare_id`,`level`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+ALTER TABLE `gridsquare_mappal` ADD `norm` float(10,4) NOT NULL DEFAULT '0' AFTER `mappal`;
+
+#DELETE FROM gridsquare_mappal WHERE level=4
+#INSERT INTO gridsquare_mappal (gridsquare_id, level, mappal)
+#SELECT gs.gridsquare_id, gp.level,COALESCE(SUM(gp.percent*lh.mappal)/100.,0)
+#FROM gridsquare gs LEFT JOIN gridsquare_percentage gp USING(gridsquare_id) LEFT JOIN loc_hier lh USING(level,community_id)
+#WHERE level=4 GROUP BY gridsquare_id;

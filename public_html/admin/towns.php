@@ -41,6 +41,8 @@ if (!$db) die('Database connection failed');
 
 
 	if (isset($_POST['submit'])) {
+		require_once('geograph/conversions.class.php');
+		$conv = new Conversions;
 		$dryrun = !empty($_POST['dryrun']);
 		if ($dryrun)
 			$message = "<p>Testing the following changes:</p>";
@@ -58,6 +60,7 @@ if (!$db) die('Database connection failed');
 			if ($_POST['newd'.$c] == '1')
 				continue;
 			if (   $_POST['newna'.$c] === $_POST['oldna'.$c]
+			    && $_POST['newsn'.$c] === $_POST['oldsn'.$c]
 			    && $_POST['newq'.$c]  === $_POST['oldq'.$c]
 			    && $_POST['newc'.$c]  === $_POST['oldc'.$c]
 			    && $_POST['news'.$c]  === $_POST['olds'.$c]
@@ -74,6 +77,11 @@ if (!$db) die('Database connection failed');
 				$message .= "<p><b>Invalid town name</b>: {$_POST['oldi'.$c]}/<i>{$_POST['oldna'.$c]}</i>: <b>{$_POST['newna'.$c]}</b></p>";
 				continue;
 			}
+			$_POST['newsn'.$c] = trim($_POST['newsn'.$c]);
+			if ($_POST['newsn'.$c] === '') {
+				$message .= "<p><b>Invalid town name</b>: {$_POST['oldi'.$c]}/<i>{$_POST['oldsn'.$c]}</i>: <b>{$_POST['newsn'.$c]}</b></p>";
+				continue;
+			}
 			if (!preg_match('/^\s*\d+\s*$/',$_POST['newe'.$c]) || !preg_match('/^\s*\d+\s*$/',$_POST['newn'.$c])) {
 				$message .= "<p><b>Invalid town position</b>: {$_POST['oldi'.$c]}/<i>{$_POST['oldna'.$c]}</i>: <b>{$_POST['newe'.$c]}, {$_POST['newn'.$c]}</b></p>";
 				continue;
@@ -83,6 +91,12 @@ if (!$db) die('Database connection failed');
 				$changesto[]   = "name: '{$_POST['newna'.$c]}'";
 				$sqlvalues[]   = $db->Quote($_POST['newna'.$c]);
 				$sqlcolumns[]  = "name";
+			}
+			if ($_POST['oldsn'.$c] !== $_POST['newsn'.$c] || $_POST['oldi'.$c] === '') {
+				$changesfrom[] = "short name: '{$_POST['oldsn'.$c]}'";
+				$changesto[]   = "short name: '{$_POST['newsn'.$c]}'";
+				$sqlvalues[]   = $db->Quote($_POST['newsn'.$c]);
+				$sqlcolumns[]  = "short_name";
 			}
 			if ($_POST['olds'.$c] !== $_POST['news'.$c] || $_POST['oldi'.$c] === '') {
 				$_POST['news'.$c] = intval($_POST['news'.$c]);
@@ -127,6 +141,15 @@ if (!$db) die('Database connection failed');
 				$_POST['newn'.$c] = intval($_POST['newn'.$c]);
 				$x = $_POST['newe'.$c]+$CONF['origins'][$_POST['newr'.$c]][0]*1000;
 				$y = $_POST['newn'.$c]+$CONF['origins'][$_POST['newr'.$c]][1]*1000;
+				if ($CONF['commongrid']) {
+					list($lat,$long) = $conv->national_to_wgs84($_POST['newe'.$c],$_POST['newn'.$c],$_POST['newr'.$c]);
+					list($cx,$cy,$ri) = $conv->wgs84_to_national($lat, $long, true, $CONF['commongrid']);
+					$cx = round($cx);
+					$cy = round($cy);
+				} else {
+					$cx = $x;
+					$cy = $y;
+				}
 				$changesfrom[] = "grid,e,n: {$_POST['oldr'.$c]},{$_POST['olde'.$c]},{$_POST['oldn'.$c]}";
 				$changesto[]   = "grid,e,n: {$_POST['newr'.$c]},{$_POST['newe'.$c]},{$_POST['newn'.$c]}'";
 				$sqlvalues[]   = $db->Quote($_POST['newr'.$c]);
@@ -139,10 +162,16 @@ if (!$db) die('Database connection failed');
 				$sqlcolumns[]  = "x";
 				$sqlvalues[]   = $db->Quote($y);
 				$sqlcolumns[]  = "y";
+				$sqlvalues[]   = $db->Quote($cx);
+				$sqlcolumns[]  = "cx";
+				$sqlvalues[]   = $db->Quote($cy);
+				$sqlcolumns[]  = "cy";
 				$sqlvalues[]   = "GeomFromText('POINT({$_POST['newe'.$c]} {$_POST['newn'.$c]})')";
 				$sqlcolumns[]  = "point_en";
 				$sqlvalues[]   = "GeomFromText('POINT({$x} {$y})')";
 				$sqlcolumns[]  = "point_xy";
+				$sqlvalues[]   = "GeomFromText('POINT({$cx} {$cy})')";
+				$sqlcolumns[]  = "point_cxy";
 			}
 			if ($_POST['oldi'.$c] !== '') {
 				$sqlas = array();
@@ -174,7 +203,7 @@ if (!$db) die('Database connection failed');
 	$rilist = array_keys($CONF['references']);
 	#$arr = $db->GetArray("select id,name,e,n,s,reference_index,quad from loc_towns where 1 $where order by s,name LIMIT 20");
 	#$arr = $db->GetArray("select id,name,e,n,s,reference_index,quad,community_id from loc_towns where 1 $where order by s,name");
-	$arr = $db->GetArray("select id,name,e,n,s,reference_index,quad,community_id from loc_towns where 1 $where order by name");
+	$arr = $db->GetArray("select id,name,short_name,e,n,s,reference_index,quad,community_id from loc_towns where 1 $where order by name");
 	if (count($arr)) {
 		$e = $arr[0]['e'];
 		$n = $arr[0]['n'];
@@ -319,7 +348,7 @@ WHERE gl.loc_type = 100600000
 	}
 	
 	for ($i = 0; $i < 10; ++$i)
-		$arr[] = array('id' => '', 'name' => '', 'e' => '', 'n' => '', 's' => '4', 'reference_index' => $rilist[0], 'quad' => 0, 'community_id' => 0);
+		$arr[] = array('id' => '', 'name' => '', 'short_name' => '', 'e' => '', 'n' => '', 's' => '4', 'reference_index' => $rilist[0], 'quad' => 0, 'community_id' => 0);
 	
 	$smarty->assign('arr',  $arr);
 	$smarty->assign('dbarr',$dbarr);

@@ -118,16 +118,16 @@
 
 				var copyright1 = new GCopyright(1,
 					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-					': http://creativecommons.org/licenses/by-sa/2.0/');
+					': http://www.openstreetmap.org/copyright');
 				var copyright2 = new GCopyright(1,
 					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
 					': http://creativecommons.org/licenses/by-sa/2.0/');
-				var copyrightCollectionTopo = new GCopyrightCollection('&copy; OSM (CC)');
-				var copyrightCollectionO = new GCopyrightCollection('Geograph (CC)');
-				copyrightCollectionTopo.addCopyright(copyright1);
+				var copyrightCollectionOSMm = new GCopyrightCollection('(c) OSM (CC)');
+				var copyrightCollectionO = new GCopyrightCollection('Geograph Deutschland (CC)');
+				copyrightCollectionOSMm.addCopyright(copyright1);
 				copyrightCollectionO.addCopyright(copyright2);
 				var tilelayers_mapnikhg = new Array();
-				tilelayers_mapnikhg[0] = new GTileLayer(copyrightCollectionTopo, 4, 14);//0 18
+				tilelayers_mapnikhg[0] = new GTileLayer(copyrightCollectionOSMm, 4, 14);//0 18
 				tilelayers_mapnikhg[0].isPng = function () { return true; };
 				tilelayers_mapnikhg[0].getOpacity = function () { return 1.0; };
 				tilelayers_mapnikhg[0].getTileUrl = GetTileUrl_Mapnik;

@@ -64,14 +64,31 @@ if (isset($_GET['gridref']))
 				$smarty->assign('check_count', 0);
 			}
 		}
-		
+
+		$recordSet = &$db->Execute("SELECT name,level,community_id FROM loc_hier ORDER BY level,name");
+		while (!$recordSet->EOF) {
+			$regionlist[$recordSet->fields[1]."_".$recordSet->fields[2]] = $recordSet->fields[0];
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+		$smarty->assign_by_ref('regionlist', $regionlist);
+
 		//update?
 		if (isset($_GET['save']))
 		{
 			if ($isadmin) {
 				$percent=intval($_GET['percent_land']);
+				if (isset($_GET['region']) &&  preg_match('/^\d+_\d+$/',$_GET['region'])) {
+					list($level,$cid) = explode('_',$_GET['region']);
+					$level = intval($level);
+					$cid = intval($cid);
+					$smarty->assign('region', $_GET['region']);
+				} else {
+					$level=-2;
+				}
 			} else {
 				$percent=-1;
+				$level=-2;
 			}
 			if (count($sq))
 			{

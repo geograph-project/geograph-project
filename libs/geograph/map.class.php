@@ -137,11 +137,12 @@ class GeographMap
 	 *
 	 * 1: base map
 	 * 2: squares
-	 * 4: grid labels
-	 * 8: town labels
+	 * 4: regions
+	 * 8: grid labels
+	 * 16: town labels
 	 */
 
-	var $layers = 15;
+	var $layers = 31;
 
 	/**
 	 * Overlay mode if spherical mercator
@@ -158,6 +159,14 @@ class GeographMap
 	 * palette index, see setPalette for documentation
 	 */
 	var $palette=0;
+
+	/*
+	 * clipping
+	 */
+	var $cliptop = 0;
+	var $clipbottom = 0;
+	var $clipright = 0;
+	var $clipleft = 0;
 	
 	/*
 	 * array of colour values, initialised by setPalette
@@ -276,6 +285,18 @@ class GeographMap
 			$this->pixels_per_km=floatval($pixels_per_km);
 		}
 		return true;
+	}
+
+	/**
+	* Set clipping parameters
+	* @access public
+	*/
+	function setClip($clipleft, $clipright, $clipbottom, $cliptop)
+	{
+		$this->cliptop = $cliptop;
+		$this->clipbottom = $clipbottom;
+		$this->clipright = $clipright;
+		$this->clipleft = $clipleft;
 	}
 
 	/**
@@ -507,9 +528,11 @@ class GeographMap
 		if ($layers == 1)
 			return $this->getBaseMapFilename();
 		elseif ($layers == 4)
-			return $this->getLabelMapFilename(false);
+			return $this->getLabelMapFilename(false,true);
 		elseif ($layers == 8)
-			return $this->getLabelMapFilename(true);
+			return $this->getLabelMapFilename(false,false);
+		elseif ($layers == 16)
+			return $this->getLabelMapFilename(true,false);
 
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
@@ -626,7 +649,7 @@ class GeographMap
 	* calc filename to an image which can form the labels of the map
 	* @access public
 	*/
-	function getLabelMapFilename($towns)
+	function getLabelMapFilename($towns, $regions)
 	{
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
@@ -660,6 +683,9 @@ class GeographMap
 		}
 		if ($towns) {
 			$palette .= "_t";
+		}
+		if ($regions) {
+			$palette .= "_r";
 		}
 
 		if (empty($this->mercator)) { #FIXME tilecache
@@ -1614,6 +1640,80 @@ class GeographMap
 	}
 
 	/**
+	* create regionmap, save as png image and return the image resource
+	* @access private
+	*/
+	function& _createRegionmapM($file)
+	{
+		global $CONF;
+		$bdry = $this->base_margin;
+		$imgw = $this->base_width;
+		$destw = $this->image_w;
+
+		$img=imagecreatetruecolor($imgw+2*$bdry,$imgw+2*$bdry);
+		imagealphablending($img, false);
+		
+		//fill in with sea
+		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
+		imagefill($img,0,0,$back);
+		if (isset($CONF['gmhierlevels'][$this->level])) {
+			$hierlevel = $CONF['gmhierlevels'][$this->level];
+		
+			//set greens to use for percentages
+			$land=array( 0 => $back );
+			for ($p=1; $p<=127; $p++)
+			{
+				$land[$p]=imagecolorallocatealpha($img, 0, 0, 0, 127-$p);
+			}
+
+			$widthM=$this->map_wM;
+			$leftM=$this->map_xM;
+			$bottomM=$this->map_yM;
+			$rightM=$leftM+$widthM;
+			$topM=$bottomM+$widthM;
+			$db=&$this->_getDB();
+			$sql="select percent_land,mappal,norm,cliparea,area,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) inner join gridsquare_mappal using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and level = $hierlevel";
+			$recordSet = &$db->Execute($sql);
+			while (!$recordSet->EOF) {
+				$percent_land = $recordSet->fields[0];
+				$land_part = $percent_land < 0 ? 0. : $percent_land/100.;
+				$zone_part = $recordSet->fields[3]/$recordSet->fields[4];
+				$pal = $recordSet->fields[1];
+				$pal_norm = $recordSet->fields[2];
+				if ($pal_norm < .00001) {
+					$pal = 0;
+				} elseif ($land_part < $pal_norm) {
+					$pal *= $land_part/$pal_norm;
+				}
+				if ($zone_part > 0) {
+					$pal /= $zone_part;
+				}
+				$pal = max(0, min(127, round($pal*8)));
+
+				$points = $recordSet->fields[5];
+				$drawpoly = array();
+				for ($i = 0; $i < $points; ++$i) {
+					$xM = $recordSet->fields[6+$i*2];
+					$yM = $recordSet->fields[7+$i*2];
+					$drawpoly[] = $bdry + round(($xM - $leftM)   / $widthM * $imgw);
+					$drawpoly[] = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+				}
+
+				imagefilledpolygon($img, $drawpoly, $points, $land[$pal]);
+
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+		}
+
+		$this->_resizeImageM($img, $imgw, $bdry, $destw, 0);
+		imagesavealpha($img, true);
+		imagealphablending($img, false);
+		imagepng($img, $file);
+		return $img;
+	}
+
+	/**
 	* create basemap, save as gd image and return the image resource
 	* @access private
 	*/
@@ -2123,13 +2223,14 @@ class GeographMap
 		global $CONF;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
-		if (($this->layers & 15) == 0) {
+		if (($this->layers & 31) == 0) {
 			return false;
 		}
 		$ok = true;
 		$baseimg = null;
 		$labelimg = null;
 		$squareimg = null;
+		$regionimg = null;
 		$layers = array();
 
 		if ($this->layers & 1) {
@@ -2178,7 +2279,31 @@ class GeographMap
 			$layers[] =& $squareimg;
 		}
 		if ($this->layers & 4) {
-			$labelmap=$this->getLabelMapFilename(false);
+			$regionmap=$this->getLabelMapFilename(false,true);
+			if ($this->caching && @file_exists($root.$regionmap))
+			{
+				//load it up!
+				$regionimg=imagecreatefrompng($root.$regionmap);
+			}
+			else
+			{
+				//we need to generate a regionmap
+				$regionimg=&$this->_createRegionmapM($root.$regionmap);
+			}
+			
+			if (!$regionimg) {
+				if (!is_null($squareimg)) {
+					imagedestroy($squareimg);
+				}
+				if (!is_null($baseimg)) {
+					imagedestroy($baseimg);
+				}
+				return false;
+			}
+			$layers[] =& $regionimg;
+		}
+		if ($this->layers & 8) {
+			$labelmap=$this->getLabelMapFilename(false,false);
 			if ($this->caching && @file_exists($root.$labelmap))
 			{
 				//load it up!
@@ -2191,6 +2316,9 @@ class GeographMap
 			}
 			
 			if (!$labelimg) {
+				if (!is_null($regionimg)) {
+					imagedestroy($regionimg);
+				}
 				if (!is_null($squareimg)) {
 					imagedestroy($squareimg);
 				}
@@ -2201,8 +2329,8 @@ class GeographMap
 			}
 			$layers[] =& $labelimg;
 		}
-		if ($this->layers & 8) {
-			$tlabelmap=$this->getLabelMapFilename(true);
+		if ($this->layers & 16) {
+			$tlabelmap=$this->getLabelMapFilename(true,false);
 			if ($this->caching && @file_exists($root.$tlabelmap))
 			{
 				//load it up!
@@ -2217,6 +2345,9 @@ class GeographMap
 			if (!$tlabelimg) {
 				if (!is_null($labelimg)) {
 					imagedestroy($labelimg);
+				}
+				if (!is_null($regionimg)) {
+					imagedestroy($regionimg);
 				}
 				if (!is_null($squareimg)) {
 					imagedestroy($squareimg);
@@ -3138,7 +3269,7 @@ if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1
 #CONTAINS( GeomFromText($rectangle),	point_en) 
 #AND reference_index = $reference_index
 $sql = <<<END
-SELECT name,e,n,s,quad,reference_index
+SELECT short_name as name,e,n,s,quad,reference_index
 FROM loc_towns
 WHERE 
  $crit
@@ -3365,7 +3496,7 @@ if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1
 #CONTAINS( GeomFromText($rectangle),	point_en) 
 #AND reference_index = $reference_index
 $sql = <<<END
-SELECT name,e,n,s,quad
+SELECT short_name as name,e,n,s,quad
 FROM loc_towns
 WHERE 
  $crit

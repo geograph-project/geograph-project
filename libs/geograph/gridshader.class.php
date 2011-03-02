@@ -345,12 +345,17 @@ class GridShader
 									unlink($root.$file);
 									$deleted++;
 								} 
-								$file = $this->getLabelMapFilename($recordSet->fields, false);
+								$file = $this->getLabelMapFilename($recordSet->fields, false, true);
 								if (file_exists($root.$file)) {
 									unlink($root.$file);
 									$deleted++;
 								} 
-								$file = $this->getLabelMapFilename($recordSet->fields, true);
+								$file = $this->getLabelMapFilename($recordSet->fields, false, false);
+								if (file_exists($root.$file)) {
+									unlink($root.$file);
+									$deleted++;
+								} 
+								$file = $this->getLabelMapFilename($recordSet->fields, true, false);
 								if (file_exists($root.$file)) {
 									unlink($root.$file);
 									$deleted++;
@@ -419,7 +424,7 @@ class GridShader
 		
 		return $dir.$file;
 	}
-	function getLabelMapFilename($row, $towns) # FIXME map.class.php?
+	function getLabelMapFilename($row, $towns, $regions) # FIXME map.class.php?
 	{
 		$dir="/maps/label/";
 
@@ -442,6 +447,9 @@ class GridShader
 		}
 		if ($towns) {
 			$param .= "_t";
+		}
+		if ($regions) {
+			$param .= "_r";
 		}
 
 		if (empty($row['mercator'])) {

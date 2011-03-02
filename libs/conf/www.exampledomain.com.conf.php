@@ -326,6 +326,9 @@ $CONF['references_all'] = array(0=>'British Isles')+$CONF['references'];
 //false origins for the internal grid
 $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
 
+// grid reference of common grid (used for calculating distances, etc)
+$CONF['commongrid'] = 0; # 0: internal
+
 //number of characters in the grid prefix
 $CONF['gridpreflen'] = array(1 => 2, 2 => 1);
 
@@ -355,6 +358,9 @@ $CONF['gmridefault'] = 3;
 // google maps: coordinate conversion routines (German31, German32, German33, Irish, OSGB)
 // See also public_html/mapper/geotools2.js, GT_Xxxx() and GT_WGS84.prototype.getXxxx().
 $CONF['gmgrid'] =  array(3 => "German32", 4 => "German33", 5 => "German31");
+
+// google maps: array of (zoom level => region hierarchy level) pairs
+$CONF['gmhierlevels'] = array(); # array(5 => 4, 6 => 4, 7 => 4, 8 => 7, 9 => 7, 10 => 7, 11 => 7);
 
 // valid internal coordinates
 $CONF['xrange'] =  array(3 => array(50,549), 4 => array(550,849), 5 => array(0,49));

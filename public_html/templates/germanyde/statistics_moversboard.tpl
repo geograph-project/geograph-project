@@ -42,7 +42,7 @@ aufsteigen kann.{/if}</p>
 {else}
 {$geographs}
 {/if}
-</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} unmoderiert)</th>{/if}</tr></thead>
+</th>{if $points}<th align="right">{$points}</th>{/if}{if $pending}<th align="right" style="font-size:0.8em">({$pending} unmoderiert)</th>{/if}</tr>
 </tbody>
 </table>
 
