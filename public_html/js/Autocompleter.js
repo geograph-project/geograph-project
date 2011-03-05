@@ -293,6 +293,7 @@ var Autocompleter = new Class({
 	},
 
 	choiceOver: function(choice, selection) {
+		if ($type(choice) == 'array') choice = choice[0]; //Google Chrome fix for mouse selecting.
 		if (!choice || choice == this.selected) return;
 		if (this.selected) this.selected.removeClass('autocompleter-selected');
 		this.selected = choice.addClass('autocompleter-selected');
