@@ -11,7 +11,7 @@
 	<li><b>Thirds</b>: similarlly a "<b>Third Visitor</b>" point is awarded for the third person to contribute a Geograph to a square<br/><br/></li>
 	<li><b>Fourths</b>: and therefore a "<b>Fourth Visitor</b>" point is awarded for the fourth person to contribute a Geograph to a square<br/><br/></li>
 	<li><b>AllPoints</b>: Total of First/Second/Third/Fourth Visitor Points<br/><br/></li>
-	<li><b>Personal Points</b>: The first image submitted by each user in a square gets a Personal Point.<br/><br/></li>
+	<li><b>Personal Points</b>: The first Geograph image submitted by each user in a square gets a Personal Point.<br/><br/></li>
     </ul></li>
     <li><b>Images</b>: these are all images on the site, regardless if they Geograph or supplemental<br/><br/><ul>
     <li><b>Geographs</b>: these are all Geograph images, even if multiple for the same grid square<br/><br/></li>
