@@ -40,7 +40,7 @@ if (isset($_GET['potd'])) {
 }
 
 #if (empty($_SERVER['HTTP_REFERER']) && $USER->registered && $CONF['template']=='basic') {
-if ($CONF['template'] == 'basic') {
+if ($CONF['template'] == 'basic' || $CONF['template'] == 'archive') {
 	$_GET['preview'] = 1;
 }
 
@@ -145,7 +145,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				$text = preg_replace('/\. ([\w \.,;]+\.\.\.)\s*$/','. <span style="color:gray">$1</span>...',$text);
 				$text = str_replace('/geograph.org.uk/','/www.geograph.org.uk/',$text);
 				$text = str_replace('org.uk/p/','org.uk/photo/',$text);
-				$text = preg_replace("/(http:\/\/[\w\.\/]+)/",'<a href="$1">Link</a>',$text);
+				$text = preg_replace("/(http:\/\/[\w\.\/\?=\&-]+)/",'<a href="$1">Link</a>',$text);
 				
 				$item = array();
 				$item['text'] = $text;
