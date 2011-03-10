@@ -210,7 +210,7 @@ require_once('geograph/security.inc.php');
 // a 'Hack' so that webarchive.org.uk can come crawling... (but lets do the same for 
 
 $ip = getRemoteIP();
-if ($ip == '128.86.236.164' || (strpos($_SERVER['HTTP_USER_AGENT'], 'ia_archiver')!==FALSE) || (strpos($_SERVER['HTTP_USER_AGENT'], 'heritrix')!==FALSE) ) {
+if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || (strpos($_SERVER['HTTP_USER_AGENT'], 'ia_archiver')!==FALSE) || (strpos($_SERVER['HTTP_USER_AGENT'], 'heritrix')!==FALSE) ) {
 
 	if ($CONF['curtail_level'] > 3) {
 		  //heritrix doesn't understand 503 errors - so lets cause it to timeout.... (uses a socket timeout of 20000ms)

@@ -77,6 +77,7 @@ function log_script_timing()
 }
 
 function split_timer($profile,$key='',$id='') {
+return false;
 	static $filehandle;
 	static $request;
 	static $unique;
@@ -451,7 +452,8 @@ function smarty_function_ordinal($i) {
 function smarty_modifier_revision($filename) {
 	global $REVISIONS,$CONF;
 	if (isset($REVISIONS[$filename])) {
-		$url = "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+		#$url = "http://".str_replace('s0','s0cdn',$CONF['STATIC_HOST']).preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+		$url = "http://".$CONF['STATIC_HOST'].preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 		
 		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 && strpos($filename,'css') === FALSE && empty($GLOBALS['USER']->user_id)) {
 			$url = cachize_url($url);

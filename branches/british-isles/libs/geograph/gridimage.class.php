@@ -594,15 +594,12 @@ split_timer('gridimage'); //starts the timer
 			$this->snippets = $db->CacheGetAll($cachetime,"SELECT snippet.*,u.realname FROM gridimage_snippet INNER JOIN snippet USING (snippet_id) INNER JOIN user u ON (snippet.user_id = u.user_id)  WHERE gridimage_id = $gid AND enabled = 1 ORDER BY (comment != ''),gridimage_snippet.created");
 		}
 		
-		#if (empty($db)) {
-		#	$db=&$this->_getDB(true);
-		#}
-
-		$this->snippet_count = count($this->snippets);
+		if (!empty($this->snippets)) {
+			$this->snippet_count = count($this->snippets);
 		
-		if (preg_match('/[^\[]\[\d+\]/',$this->comment))
-			$this->snippets_as_ref =1;
-
+			if (preg_match('/[^\[]\[\d+\]/',$this->comment))
+				$this->snippets_as_ref =1;
+		}
 split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
 
 	}
@@ -1341,7 +1338,8 @@ split_timer('gridimage'); //starts the timer
 			$return['url']=$thumbpath;
 
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.htmlentities2($this->realname);
-			
+		
+		/*	
 			$usecount = $memcache->name_get('iscount',$mkey);
 			
 			if (!$usecount) {
@@ -1356,7 +1354,9 @@ split_timer('gridimage'); //starts the timer
 				if ($usecount == 3) { //the first time! - lets prime the cache
 					get_no_content($return['server'].$thumbpath);
 				}
-			} elseif (!empty($CONF['enable_cluster'])) {
+			} else
+		*/
+			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
