@@ -311,7 +311,10 @@ if ($gid) {
 	$smarty->assign_by_ref('used',$used);
 	
 	$db2 = GeographDatabaseConnection(true);	
-	$suggestions = $db2->getAll("(SELECT label AS tag,'cluster' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid ORDER BY score DESC,sort_order) UNION (SELECT result AS tag,'term' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id) UNION  (SELECT result AS tag,'term' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id)");
+	$suggestions = $db2->getAll("(SELECT label AS tag,'cluster' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid ORDER BY score DESC,sort_order) 
+	UNION (SELECT result AS tag,'term' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id)
+	UNION (SELECT result AS tag,'term' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id)
+	UNION (SELECT tag,'wiki' AS `prefix` FROM gridimage_wiki WHERE gridimage_id = $gid ORDER BY seq)");
 	if (count($used) && count($suggestions)) {
 		$list = array();
 		foreach ($used as $row) $list[$row['tag']]=1;
@@ -322,6 +325,10 @@ if ($gid) {
 		}
 	}
 	$smarty->assign_by_ref('suggestions',$suggestions);
+	
+} elseif ($ids) {
+	//TODO -- look though the images, and compile popular terns/clusters...
+}
 	
 	if (!empty($is_owner)) {
 $DATA = <<<DATA
@@ -363,10 +370,6 @@ DATA;
 	'Subterranean', 
 	'Transport');
 	$smarty->assign_by_ref('buckets',$buckets);
-	
-} elseif ($ids) {
-	//TODO -- look though the images, and compile popular terns/clusters...
-}
 
 
 if (!empty($CONF['sphinx_host'])) {
