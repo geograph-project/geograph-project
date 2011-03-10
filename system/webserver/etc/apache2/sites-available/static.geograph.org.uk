@@ -41,6 +41,9 @@
 
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?myspace\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?facebook\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?twitter\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?friendfeed\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?topsy\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]

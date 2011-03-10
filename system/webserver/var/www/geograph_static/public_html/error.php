@@ -20,14 +20,14 @@ if (preg_match('/^\/photos\/(\d{2,3})\/(\d{2})\/\d{6,7}_(\w+)\.jpg$/',$p,$m)
 #http://s1.www.geograph.org.uk/geophotos/01/50/64/506453_c5b9915b_120x120.jpg
 	|| preg_match('/^\/geophotos\/(\d{2})\/(\d{2})\/(\d{2})\/\d{6,}_(\w+)\.jpg$/',$p,$m) ) {
 
-#################################
-# NOW its a symlink so dont want to copy
-	header("HTTP/1.0 404 Not Found");
-	header("Status: 404 Not Found");
-	print 'Not Found. <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
-	exit;
-#################################
-
+	if (is_link($_SERVER['DOCUMENT_ROOT'].'/photos')) {
+		# NOW its a symlink so dont want to copy (only copy if have a local storage folder)
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+		print 'Not Found. <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
+		exit;
+	}
+	
 	if (!empty($m[4])) {
 		$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
 		if (!is_dir("$base/{$m[1]}"))
