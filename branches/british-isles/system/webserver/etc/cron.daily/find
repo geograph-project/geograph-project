@@ -1,0 +1,22 @@
+#! /bin/sh
+
+exit
+
+#
+# cron script to update the `locatedb' database.
+#
+# Written by Ian A. Murdock <imurdock@debian.org> and 
+#            Kevin Dalley <kevin@aimnet.com>
+
+LOCALUSER="nobody"
+export LOCALUSER
+if [ -f /etc/updatedb.conf ]; then
+  . /etc/updatedb.conf
+fi
+
+if getent passwd $LOCALUSER > /dev/null ; then
+  cd / && nice -n ${NICE:-10} updatedb 2>/dev/null
+else
+  echo "User $LOCALUSER does not exist."
+  exit 1
+fi
