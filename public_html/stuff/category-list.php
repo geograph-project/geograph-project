@@ -33,10 +33,10 @@ header("Content-Type: text/plain");
 $db = GeographDatabaseConnection(true);
 
 
-if (!empty($_GET['mine'])) {
+if (isset($_GET['mine'])) {
         $col = $db->getCol("SELECT imageclass FROM gridimage_search WHERE user_id = {$USER->user_id} GROUP BY imageclass");
 } else {
-        if (!empty($_GET['full'])) {
+        if (isset($_GET['full'])) {
                 $count = 10000;
                 $offset = 0;
         }  else {

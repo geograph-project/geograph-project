@@ -70,7 +70,7 @@ if (!empty($_GET['import'])) {
 			
 			list($category,$top) = preg_split('/[;\t]+/',$line,2);
 			$top = trim($top);
-			if (empty($top)) {
+			if (empty($top) || $top == '#N/A') {
 				$skipped++;
 				continue;
 			}
@@ -109,6 +109,19 @@ if (!empty($_GET['import'])) {
 
 	}
 	
+} elseif (!empty($_GET['preview'])) {
+	$template='stuff_top_tree.tpl';
+	$cacheid='preview'.preg_replace('/[^\w]+/','',$_GET['alpha']);
+	if (!$smarty->is_cached($template, $cacheid)) {
+		
+		$db = GeographDatabaseConnection(true);
+		
+		$smarty->assign('intro',"<b>NOTE</b>: This is only the result of the first pass over the data. It will be slightly messy as it combines results from multiple users, <u>without any processing</u>.");
+		
+		$list = $db->getAll("SELECT imageclass,top FROM category_top_log WHERE imageclass != '' GROUP BY imageclass ORDER BY LOWER(top)");
+		$smarty->assign_by_ref('list',$list);
+	}
+
 } elseif (!empty($_GET['preview'])) {
 	$template='stuff_top_tree.tpl';
 	$cacheid='preview'.preg_replace('/[^\w]+/','',$_GET['alpha']);
@@ -157,7 +170,7 @@ if (!empty($_GET['import'])) {
 	
 		$db = GeographDatabaseConnection(true);
 		
-		$list = $db->getAll("SELECT top,COUNT(DISTINCT imageclass)-1 AS cats,COUNT(DISTINCT cm.user_id)-1 AS users FROM category_top_log cm WHERE top != '-bad-' GROUP BY LOWER(top)");
+		$list = $db->getAll("SELECT top,COUNT(DISTINCT imageclass)-1 AS cats,COUNT(DISTINCT cm.user_id) AS users FROM category_top_log cm WHERE top != '-bad-' GROUP BY LOWER(top)");
 		$smarty->assign_by_ref('list',$list);
 	}
 	

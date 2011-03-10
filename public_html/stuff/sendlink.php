@@ -14,7 +14,7 @@ if (!empty($_POST['email'])) {
 		
 		$msg = "Hi,\n\nSomeone, hopefully you, requested to be sent a link to our Feedback form:\n\n";
 
-		$msg .= "http://{$_SERVER['HTTP_HOST']}/help/teaching_feedback\n\n";
+		$msg .= "http://{$_SERVER['HTTP_HOST']}/help/education_feedback\n\n";
 
 		$msg .= "Please consider filling it out when you have a moment.\n\n";
 
