@@ -1,0 +1,20 @@
+######################
+
+#remove symlink
+rm /mnt/jam/geograph_$1/public_html/templates/$2/compiled
+
+#Move compiled
+mv /var/www/geograph_$1/public_html/templates/$2/compiled-local /var/www/geograph_$1/public_html/templates/$2/compiled
+
+
+######################
+
+#remove new folder
+rm -Rf /var/www/geograph_$1/public_html/templates/$2/cache
+
+#Move cache back
+mv /var/www/geograph_$1/public_html/templates/$2/cache-local /var/www/geograph_$1/public_html/templates/$2/cache
+
+######################
+
+ls -ld /var/www/geograph_$1/public_html/templates/$2/c*

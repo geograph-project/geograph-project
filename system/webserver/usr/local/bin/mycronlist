@@ -1,0 +1,23 @@
+echo "************************************************************************"
+
+echo /etc/crontab
+cat /etc/crontab
+
+echo ""
+echo "************************************************************************"
+
+find /etc/ -name "cron.??*" -type d -exec echo "" \; -exec echo "********" \; -print -exec echo "" \; -exec ls -l \{\} \;
+
+echo ""
+echo "************************************************************************"
+
+find /etc/cron.d/ -name ".*" -prune -o -type f  -exec echo "" \; -exec echo "********" \; -print -exec echo "" \; -exec cat \{\} \;
+
+echo ""
+echo "************************************************************************"
+
+find /var/spool/cron/crontabs/ -type f -size +0 -exec echo "" \; -exec echo "********" \; -print -exec echo "" \;  -exec cat \{\} \;
+
+echo ""
+echo "************************************************************************"
+

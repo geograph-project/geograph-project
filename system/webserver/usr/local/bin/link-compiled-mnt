@@ -1,0 +1,4 @@
+######################
+
+ln -s /mnt/jam/geograph_$1/public_html/templates/$2/compiled /var/www/geograph_$1/public_html/templates/$2/compiled-mnt
+
