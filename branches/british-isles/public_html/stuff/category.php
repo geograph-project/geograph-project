@@ -38,10 +38,17 @@ if (!empty($_GET['type']) && preg_match('/^(\w+)$/',$_GET['type'])) {
 	$cacheid = $_GET['type'];
 }
 
+if (!empty($_GET['v']) && preg_match('/^(\w+)$/',$_GET['v'])) {
+	
+	$smarty->assign('v',$_GET['v']);
+	
+	$cacheid .= ".".$_GET['v'];
+}
+
 $types = array('dropdown' => 'Dropdown','autocomplete' => 'Auto Complete Text Box','canonical' => 'Canonical Dropdown','canonicalplus' => 'Canonical Dropdown + Optional Detail','canonicalmore' => 'Canonical Dropdown (full unmoderated list)','top'=>'Top Level Category + Tags');
 $smarty->assign_by_ref('types',$types);
 
-if ($cacheid == 'top') {
+if ($_GET['type'] == 'top') {
 $data = "
 Landform
 Mountain
