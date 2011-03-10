@@ -9,6 +9,7 @@
     ServerAlias t0.geograph.org.uk
     ServerAlias archive.geograph.org.uk
     ServerAlias api.geograph.org.uk
+    ServerAlias api.www.geograph.org.uk
     ServerAlias toast.www.geograph.org.uk
 
     ServerAlias www.geograph.ie
@@ -56,6 +57,7 @@
 
 
 	#List of valid urls on api...
+    RewriteCond %{HTTP_HOST}   ^api\.www\.geograph\.org\.uk [NC,OR]
     RewriteCond %{HTTP_HOST}   ^api\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/api
     RewriteCond %{REQUEST_URI} !^/syndicator
@@ -77,12 +79,17 @@
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
 	#Special robots file for archiveable - served on ALL domains except archive which should see none
-    RewriteCond %{HTTP:X-Forwarded-For}   128.86.236.164 [NC]  #webarchive.org.uk's crawler
+    RewriteCond %{HTTP:X-Forwarded-For}   128.86.236.164 [NC,OR]  #webarchive.org.uk's crawler
+    RewriteCond %{HTTP:X-Forwarded-For}   87.106.144.40 [NC,OR]
+    RewriteCond %{HTTP:X-Forwarded-For}   194.66.232.85 [NC]  #webarchive.org.uk's crawler
     RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^api\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^api\.www\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-archive.txt [qsa]
 
 	#use new style sitemap for webarchiving
     RewriteCond %{HTTP:X-Forwarded-For}   128.86.236.164 [NC,OR]  #webarchive.org.uk's crawler
+    RewriteCond %{HTTP:X-Forwarded-For}   194.66.232.85 [NC,OR]  #webarchive.org.uk's crawler
     RewriteCond %{HTTP_HOST}   ^archive\.geograph\.org\.uk [NC]
     RewriteRule ^/sitemap/(.*)   /sitemap2/$1 [qsa]
 
@@ -140,8 +147,8 @@
     RewriteRule ^/profile/(\d+)/?$ /profile.php?id=$1 [qsa]
 
     RewriteRule ^/map/(.*) /mapbrowse.php?t=$1 [qsa]
-    RewriteRule ^/article/([\w-]+)/?([0-9]?)/?$ /article/article.php?url=$1&page=$2 [qsa]
-    RewriteRule ^/gallery/([\w-]+)/?([0-9]?)/?$ /gallery/gallery.php?url=$1&page=$2 [qsa]
+    RewriteRule ^/article/([\w-]+)/?([0-9]*)/?$ /article/article.php?url=$1&page=$2 [qsa]
+    RewriteRule ^/gallery/([\w-]+)/?([0-9]*)/?$ /gallery/gallery.php?url=$1&page=$2 [qsa]
     RewriteRule ^/explore/places/([0-9]?)/?([\w-]*)/? /explore/places.php?ri=$1&adm1=$2 [qsa]
 
     RewriteRule ^/reg/([^/]+)/(.*) /register.php?u=$1&confirm=$2 [qsa]
@@ -153,6 +160,7 @@
     RewriteRule ^/content/feed/recent\.([\w]+) /content/syndicator.php?extension=$1 [qsa]
     RewriteRule ^/article/feed/recent\.([\w]+) /article/syndicator.php?extension=$1 [qsa]
     RewriteRule ^/events/feed\.([\w]+) /events/syndicator.php?extension=$1 [qsa]
+    RewriteRule ^/blog/feed\.([\w]+) /blog/syndicator.php?extension=$1 [qsa]
 
     RewriteRule ^/feed/recent\.([\w]+) /syndicator.php?extension=$1 [qsa]
     RewriteRule ^/feed/recent/?([^/]*)/? /syndicator.php?format=$1 [qsa]
@@ -195,6 +203,9 @@
     #list of known sites that 'hotlink'
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?myspace\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?facebook\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?twitter\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?friendfeed\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?topsy\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]

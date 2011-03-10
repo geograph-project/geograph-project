@@ -29,7 +29,7 @@
     RewriteRule /g/(.*) /gridref/$1 [qsa]
     RewriteRule /u/(.*) /profile/$1 [qsa]
     RewriteRule /p/(.*) /photo/$1 [qsa]
-    RewriteRule /r/(.*) /results/$1 [qsa,L]
+    RewriteRule /r/(.*) /results/$1 [qsa,R]
 
     RewriteRule ^/(feed|profile)/(.*)\.georss$   /$1/$2.rss 
 
