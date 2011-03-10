@@ -37,7 +37,7 @@ it was taken or other interesting geographical information. <span id="styleguide
 
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
 For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/></div>
- 
+
 <div>
 	<div style="float:right"><a href="/article/Shared-Descriptions" text="Article about Shared Descriptions" class="about" target="_blank">About</a></div>
 	<b>Shared Descriptions/References (Optional)</b>
@@ -54,11 +54,25 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">About</a></div>
 
 	<p><label for="top"><b>Primary geographical category</b></label><br />
+		{if $v == 2}
+			{foreach from=$tops key=key item=item}
+				<b>{$key}</b><br/>
+				&nbsp;&nbsp;&nbsp;{html_checkboxes options=$item selected=$top}<br/>
+				<br/>
+			{/foreach}
+		{elseif $v == 1}
+		<select id="top" name="top" multiple="multiple" size="20">
+			<option value="">--please select feature--</option>
+			{html_options options=$tops selected=$top}
+
+		</select> (To select multiple - hold down control, and select)
+		{else}
 		<select id="top" name="top">
 			<option value="">--please select feature--</option>
 			{html_options options=$tops selected=$top}
 
 		</select> (To select additional, or to add free-from tags, open the tagging box below...)
+		{/if}
 	</p>
 
 <h4 class="titlebar">Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?ids=1,2';" id="hidetag"/></h4>
