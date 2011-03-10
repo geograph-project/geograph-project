@@ -304,6 +304,7 @@ $domainWhitelist = array(
 	't0cdn.geograph.org.uk',
 	'www.nearby.org.uk',
 	'www.gravatar.com',
+	'www.ie6countdown.com',
 	'www.geograph.co.uk',
 	'www.pledgebank.com',
 	'www.google.com',

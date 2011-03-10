@@ -122,6 +122,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	count( * ) AS `Images`, 
 	sum( moderation_status = 'geograph' ) AS `Geographs`, 
 	sum( ftf =1 ) AS `Points Awarded`, 
+	sum( ftf >0 ) AS `Personal Points`, 
 	count( * ) / count( DISTINCT grid_reference ) AS `Depth`,
 	count( DISTINCT grid_reference ) AS `Different Gridsquares`
 	$columns_sql
@@ -144,8 +145,10 @@ GROUP BY $group_date" );
 	$smarty->assign("total",count($table));
 	$smarty->assign_by_ref('references',$CONF['references_all']);	
 	
-	if ($date == 'submitted') {
+	if ($date == 'submitted' && !$u && !$ri && !$myriad) {
 		$smarty->assign("footnote","<p><a href=\"http://www.swivel.com/data_sets/show/1009608\" target=\"_blank\">Graphs compiled from this data</a></p>");
+		$smarty->assign("footnote","<p><a href=\"http://www.google.com/fusiontables/DataSource?dsrcid=487623\" target=\"_blank\">Google Fusion Table for this data</a> - use the Visualise menu, and select Line, Bar or Scatter to plot graphs.</p>");
+
 	}
 	
 	$extra = array();
