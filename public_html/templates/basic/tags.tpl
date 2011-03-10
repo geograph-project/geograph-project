@@ -4,6 +4,9 @@
 {if $geographical}
 	<h2>images for the "Geographical Features" project</h2>
 
+{elseif $example}
+	<h2>Example tagged imags</h2>
+
 {elseif $bucket}
 	<h2>images assigned to buckets</h2>
 	<p>This is only a prototype, to get the ball rolling, more features will be added soon. <a href="/article/Image-Buckets">Read more about buckets here</a></p>
@@ -49,8 +52,9 @@
 
 
 {if $results}
-	<p>These are the {if $images > 50}latest 50 of the{/if} images using {$thetag|escape:'html'} tag.</p>
-
+	{if !$example}
+		<p>These are the {if $images > 50}latest 50 of the{/if} images using {$thetag|escape:'html'} tag.</p>
+	{/if}
 
 		{foreach from=$results item=image}
 			 <div style="border-top: 1px solid lightgrey; padding-top:1px;" id="result{$image->gridimage_id}">

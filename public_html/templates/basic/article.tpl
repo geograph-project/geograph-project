@@ -16,6 +16,7 @@
 	<a href="/content/" class="tab">Collections</a>
 	<span class="tabSelected">Articles</span>
 	<a href="/article/?table" class="tab">Article List</a>
+	<a href="/article/tree.php" class="tab">Tree</a>
 	<a href="/gallery/" class="tab">Galleries</a>
 	{if $enable_forums}
 		<a href="/discuss/index.php?action=vtopic&amp;forum=6" class="tab">Themed Topics</a>

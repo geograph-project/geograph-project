@@ -20,14 +20,46 @@
 
 
 {if $type eq 'top'}
+<h3>Title and Comments</h3>
+<p>Please provide a short title for the image, and any other comments about where
+it was taken or other interesting geographical information. <span id="styleguidelink">({newwin href="/help/style" text="Open Style Guide"})</span></p>
 
-	<p><label for="top"><b>Primary geographical category/ies</b></label><br />
+<p><label for="title"><b>Title</b></label> {if $error.title}
+	<br/><span class="formerror">{$error.title}</span>
+	{/if}<br/>
+<input size="50" maxlength="128" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
+ {if $place.distance}
+ <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{place place=$place}</span></p>
+ {/if}
+
+<p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
+<textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
+
+<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
+For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/></div>
+ 
+<div>
+	<div style="float:right"><a href="/article/Shared-Descriptions" text="Article about Shared Descriptions" class="about" target="_blank">About</a></div>
+	<b>Shared Descriptions/References (Optional)</b>
+	<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
+	<div id="showshare" style="display:none">
+		<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
+		</iframe>
+		<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I></a></div>
+	</div>
+</div>
+<br/>
+
+<h3>Further Information</h3>
+	<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">About</a></div>
+
+	<p><label for="top"><b>Primary geographical category</b></label><br />
 		<select id="top" name="top">
 			<option value="">--please select feature--</option>
 			{html_options options=$tops selected=$top}
 
 		</select> (To select additional, or to add free-from tags, open the tagging box below...)
-		</p>
+	</p>
 
 <h4 class="titlebar">Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?ids=1,2';" id="hidetag"/></h4>
 <div id="showtag" style="display:none">
@@ -39,6 +71,27 @@
 	</iframe>
 
 </div>
+
+
+<p><label><b>Date photo taken</b></label> {if $error.imagetaken}
+	<br/><span class="formerror">{$error.imagetaken}</span>
+	{/if}<br/>
+	{html_select_date prefix="imagetaken" time=$imagetaken start_year="-200" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
+	{if $imagetakenmessage}
+	    {$imagetakenmessage}
+	{/if}
+
+	[ Use
+	<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);" class="accept"/>
+	{if $last_imagetaken}
+		<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);" class="accept"/>
+	{/if}
+	{if $imagetaken != '--' && $imagetaken != '0000-00-00'}
+		<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);" class="accept"/>
+	{/if}
+	Date ]
+
+	<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month that's fine)</span></p>
 
 
 {elseif $type eq 'autocomplete'}

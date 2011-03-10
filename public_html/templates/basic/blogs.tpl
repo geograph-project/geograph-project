@@ -36,7 +36,7 @@
 		{if $tag eq $thetag}
 			<span class="nowrap">&nbsp;<b>{$tag|escape:'html'|ucwords|replace:' ':'&middot;'}</b> [<a href="/blog/">remove filter</a>] &nbsp;</span>
 		{else}
-			&nbsp;<a title="{$count} entries" {if $count > 10} style="font-weight:bold"{/if} href="/blog/?tag={$tag|escape:'url'}">{$tag|escape:'html'|ucwords|replace:' ':'&middot;'}</a> &nbsp;
+			&nbsp;<a title="{$count} entries" {if $count > 10} style="font-weight:bold"{/if} href="/blog/?tag={$tag|escape:'url'}" rel="nofollow">{$tag|escape:'html'|ucwords|replace:' ':'&middot;'}</a> &nbsp;
 		{/if}
 	{/foreach}
 	</div><br/><br/>
