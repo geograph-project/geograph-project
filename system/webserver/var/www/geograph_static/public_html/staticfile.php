@@ -164,7 +164,6 @@ function customExpiresHeader($diff,$public = false) {
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
 	}
 	if ($public)
-		header("Cache-Control: Public",true);
+		header("Cache-Control: public",true);
 }
 
-?>

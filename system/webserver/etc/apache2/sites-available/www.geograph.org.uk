@@ -123,6 +123,7 @@
     RewriteRule ^/gridref/(.*) /browse.php?gridref=$1 [qsa]
 
     RewriteRule ^/snippet/([0-9]+) /snippet.php?id=$1 [qsa]
+    RewriteRule ^/blog/([0-9]+) /blog/entry.php?id=$1 [qsa]
     
     RewriteRule ^/help/([^/]*) /staticpage.php?page=$1 [qsa]
 
