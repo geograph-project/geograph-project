@@ -16,21 +16,30 @@
 
     <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" {if $step ne 1}style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;"{/if}>
 
-<h3>Dummy submission</h3>
 
 
 {if $type eq 'top'}
-<h3>Title and Comments</h3>
-<p>Please provide a short title for the image, and any other comments about where
-it was taken or other interesting geographical information. <span id="styleguidelink">({newwin href="/help/style" text="Open Style Guide"})</span></p>
 
-<p><label for="title"><b>Title</b></label> {if $error.title}
-	<br/><span class="formerror">{$error.title}</span>
-	{/if}<br/>
-<input size="50" maxlength="128" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
- {if $place.distance}
- <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{place place=$place}</span></p>
- {/if}
+{assign var="tab" value=$v+1}
+	<div class="tabHolder" style="margin-left:10px">
+		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="?type=top&amp;v=0">Variation A</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="?type=top&amp;v=1">Variation B</a>
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="?type=top&amp;v=2">Variation C</a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="?type=top&amp;v=3">Variation D</a>
+		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" href="?type=top&amp;v=4">Variation E</a>
+		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="?type=top&amp;v=5">Variation F</a>
+	</div>
+	<div class="interestBox">
+		<h3>Dummy submission</h3>
+	</div>
+
+
+
+
+
+
+
+....
 
 <p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
@@ -40,7 +49,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 <div>
 	<div style="float:right"><a href="/article/Shared-Descriptions" text="Article about Shared Descriptions" class="about" target="_blank">About</a></div>
-	<b>Shared Descriptions/References (Optional)</b>
+	<label><b>Shared Descriptions/References (Optional)</b></label>
 	<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
 	<div id="showshare" style="display:none">
 		<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
@@ -50,11 +59,43 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 </div>
 <br/>
 
-<h3>Further Information</h3>
-	<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">About</a></div>
+	<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
 
-	<p><label for="top"><b>Primary geographical category</b></label><br />
-		{if $v == 2}
+	<p><label for="top"><b>Primary geographical categor{if $v}ies{else}y{/if}</b></label><br />
+		{if $v == 5}
+			{foreach from=$tops key=key item=item}
+				<div style="position:relative;float:left;">
+					<b>{$key}</b><br/>
+					<select id="top" name="top" multiple="multiple" size="13">
+						{html_options options=$item selected=$top}
+					</select>
+				</div>
+			{/foreach}
+			<br style="clear:both"/> (To select multiple - hold down control, and select)
+		{elseif $v == 4}
+			{assign var="tab" value="1"}
+			<div class="tabHolder" style="margin-left:10px">
+				{foreach from=$tops key=key item=item name=tree}
+						<a class="tab{if $tab == $smarty.foreach.tree.iteration}Selected{/if} nowrap" id="tab{$smarty.foreach.tree.iteration}" onclick="tabClick('tab','div',{$smarty.foreach.tree.iteration},6)">{$key}</a>&nbsp;
+				{/foreach}
+			</div>
+			{foreach from=$tops key=key item=item name=tree}
+				<div style="position:relative;{if $tab != $smarty.foreach.tree.iteration}display:none{/if}"  class="interestBox" id="div{$smarty.foreach.tree.iteration}">
+
+					{html_checkboxes options=$item selected=$top separator=" | "}
+				</div>
+			{/foreach}
+			<br style="clear:both"/>(tick as many as required)
+		{elseif $v == 3}
+			{foreach from=$tops key=key item=item}
+				<div style="position:relative;float:left;width:180px;border-left:1px solid silver;padding-left:2px">
+					<b>{$key}</b><br/>
+					{html_checkboxes options=$item selected=$top separator="<br>"}
+				</div>
+			{/foreach}
+			<br style="clear:both"/>(tick as many as required)
+		{elseif $v == 2}
+			(tick as many as required)
 			{foreach from=$tops key=key item=item}
 				<b>{$key}</b><br/>
 				&nbsp;&nbsp;&nbsp;{html_checkboxes options=$item selected=$top}<br/>
@@ -62,7 +103,6 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			{/foreach}
 		{elseif $v == 1}
 		<select id="top" name="top" multiple="multiple" size="20">
-			<option value="">--please select feature--</option>
 			{html_options options=$tops selected=$top}
 
 		</select> (To select multiple - hold down control, and select)
@@ -75,7 +115,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 		{/if}
 	</p>
 
-<h4 class="titlebar">Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?ids=1,2';" id="hidetag"/></h4>
+<p><label><b>Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?ids=1,2&amp;v={$v}';" id="hidetag"/></p>
 <div id="showtag" style="display:none">
 	<ul>
 		<li>Tags are a new feature on Geograph - they are still under heavy development - not fully working yet!</li>
@@ -105,7 +145,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	{/if}
 	Date ]
 
-	<br/><br/><span style="font-size:0.7em">(please provide as much detail as possible, if you only know the year or month that's fine)</span></p>
+	<br/><br/>....
 
 
 {elseif $type eq 'autocomplete'}
