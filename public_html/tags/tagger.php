@@ -330,7 +330,7 @@ if ($gid) {
 	//TODO -- look though the images, and compile popular terns/clusters...
 }
 	
-	if (!empty($is_owner)) {
+	if (!empty($is_owner) && empty($_GET['v'])) {
 $DATA = <<<DATA
 Topography
 Mountain; Upland; Lowland; Coast; Geological feature; Geophysical process
