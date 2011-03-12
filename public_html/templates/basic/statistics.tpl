@@ -109,6 +109,7 @@ Refine:
         <option value="third">Thirds</option>
         <option value="fourth">Fourths</option>
         <option value="personal">Personal Points</option>
+	<option value="tpoints">TPoints</option>
 </optgroup>
 <optgroup label="Images">
         <option value="images">Images</option>
@@ -148,6 +149,7 @@ Refine:
         <option value="third">Thirds</option>
         <option value="fourth">Fourths</option>
         <option value="personal">Personal Points</option>
+	<option value="tpoints">TPoints</option>
 </optgroup>
 <optgroup label="Images">
         <option value="images">Images</option>
