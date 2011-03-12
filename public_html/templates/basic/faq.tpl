@@ -70,6 +70,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <li><a href="#legal">What are my <b>legal rights</b> when taking photographs?</a></li>
  <li><a href="#update">I made a <b>mistake</b> on my submission, how do I <b>change</b> it?</a></li>
  <li><a href="#tpoint">What an earth is a <b>TPoint</b>?</a></li>
+ <li><a href="/help/stats_faq"><b>More about statistics we track</b></a></li>
  </ul>
 <b>Browsing</b> the site:
  <ul>
