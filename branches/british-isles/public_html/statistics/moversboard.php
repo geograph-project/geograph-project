@@ -84,6 +84,11 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		}
 		//no need to resort the combined array as should have imlicit ordering!
+	} elseif ($type == 'tpoints') {
+		$sql_column = "sum(i.points='tpoint')";
+                $sql_table = " gridimage_search i ";
+		$heading = "TPoints";
+		$desc = "TPoints";
 	} elseif ($type == 'geographs') {
 		$sql_column = "sum(i.moderation_status='geograph')";
 		$heading = "New<br/>Geographs";
