@@ -106,7 +106,8 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	print "$sql\n";
 	
 	$buckets = array();
-	$count = $last = 0;
+	$count = 0
+	$last = '';
 	
 	$five_years_in_days = 365*5; 
 	
@@ -115,7 +116,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	while (!$recordSet->EOF) 
 	{
 		$days =  $recordSet->fields['days'];
-		$square =  $recordSet->fields['gridsquare_id'];
+		$square =  $recordSet->fields['grid_reference'];
 		
 		if ($square != $last) {
 			//start fresh for a new square
