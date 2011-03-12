@@ -54,7 +54,6 @@ class RebuildUserStats extends EventHandler
 				//nothing to do then!
 				return true;
 			}
-$users[] = 9857; //TEST!
 			
 			$id_list = implode(',',$users);
 			

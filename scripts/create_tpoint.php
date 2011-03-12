@@ -102,7 +102,7 @@ $a = array();
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
-	$sql = "SELECT gridimage_id,grid_reference,TO_DAYS(REPLACE(imagetaken,'-00','-01')) AS days FROM gridimage_search WHERE imagetaken NOT LIKE '0000%' ORDER BY grid_reference,gridimage_id"; //gridimage_id is the same sort order as submitted. 
+	$sql = "SELECT gridimage_id,grid_reference,TO_DAYS(REPLACE(imagetaken,'-00','-01')) AS days FROM gridimage_search WHERE imagetaken NOT LIKE '0000%' AND moderation_status = 'geograph' ORDER BY grid_reference,gridimage_id"; //gridimage_id is the same sort order as submitted. 
 	print "$sql\n";
 	
 	$buckets = array();

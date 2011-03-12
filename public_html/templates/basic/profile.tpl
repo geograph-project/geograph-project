@@ -129,11 +129,11 @@
 		{if $profile->deceased_date}
 		<h3 style="margin-top:0px;margin-bottom:0px">Statistics</h3>
 		{else}
-		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics</h3>
+		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics <a href="/help/stats_faq" class="about" style="font-size:0.7em">About</a></h3>
 		{/if}
 		<ul>
 			{if $profile->stats.points}
-				<li><b>{$profile->stats.points}</b> First Geograph points <sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup>
+				<li><b>{$profile->stats.points}</b> First Geograph points
 					{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
 						<ul style="font-size:0.8em;margin-bottom:2px">
 						<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to rise rank){/if}</li>
@@ -152,7 +152,7 @@
 				{if $profile->stats.fourths}
 					<b>{$profile->stats.fourths}</b> Fourth Visitor points,
 				{/if}
-			 	<sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup></li>
+				</li>
 			{/if}
 			{if $profile->stats.geosquares}
 				<li><b>{$profile->stats.geosquares}</b> Personal points (gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
@@ -177,10 +177,10 @@
 						</li>
 					{/if}
 					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if},
-					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
+					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b>
 					</li>
 					{if $profile->stats.hectads > 1}
-						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> Myriads<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup>{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
+						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> Myriads{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
 					{/if}
 					</ul>
 				{/if}
