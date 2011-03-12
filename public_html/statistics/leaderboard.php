@@ -111,6 +111,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Squares<br/>Geographed";
 		$desc = "different squares geographed (aka Personal Points)";
 
+	} elseif ($type == 'tpoints') {
+		if ($filtered) {
+			$sql_where = "i.points='tpoint'";
+		} else {
+			$sql_table = "user_stat i";
+			$sql_column = "tpoints";
+		}
+		$heading = "TPoints";
+		$desc = "'TPoints' awarded";
+
 	} elseif ($type == 'geographs') {
 		if ($filtered) {
 			$sql_where = "i.moderation_status='geograph'";
