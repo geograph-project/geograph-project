@@ -85,6 +85,7 @@ $users[] = 9857; //TEST!
 					count(*)/count(distinct grid_reference) as depth,
 					count(distinct substring(grid_reference,1,3 - reference_index)) as myriads,
 					count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ) as hectads,
+					sum(points = 'tpoint') as tpoints,
 					max(gridimage_id) as last,
 					0 as `content`
 				FROM gridimage_search
@@ -114,6 +115,7 @@ $users[] = 9857; //TEST!
 						`depth` decimal(6,2) NOT NULL default '0',
 						`myriads` tinyint(5) unsigned NOT NULL default '0',
 						`hectads` smallint(3) unsigned NOT NULL default '0',
+						`tpoints` mediumint(5) unsigned NOT NULL default '0',
 						`last` int(11) unsigned NOT NULL default '0',
 						`content` mediumint(5) unsigned NOT NULL default '0',
 						PRIMARY KEY  (`user_id`),
@@ -148,6 +150,7 @@ $users[] = 9857; //TEST!
 						count(*)/count(distinct grid_reference) as depth,
 						count(distinct substring(grid_reference,1,3 - reference_index)) as myriads,
 						count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ) as hectads,
+						sum(points = 'tpoint') as tpoints,
 						max(gridimage_id) as last,
 						0 as `content`
 					FROM gridimage_search
