@@ -106,11 +106,18 @@
 {/if}
 
 {if $profile->about_yourself && $profile->public_about && ($userimages || $user->user_id eq $profile->user_id)}
-	<div class="caption" style="background-color:#dddddd; padding:10px;clear:both">
+	<div class="caption" style="clear:both">
 	{if !$profile->deceased_date}
-	<h2 style="margin-top:0px;margin-bottom:0px">About Me</h2>
+		<div class="interestBox" style="border-radius: 10px;">
+			<h2 style="margin-top:0px;margin-bottom:0px">About Me</h2>
+		</div>
+		<div style="padding-left:10px">
+			{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}
+		</div>
+	{else}
+		{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}
 	{/if}
-	{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}</div>
+	</div>
 {/if}
 {/if}
 
@@ -120,18 +127,20 @@
 	<br/><br/>
 {/if}
 
-
 {if $profile->stats.images gt 0}
- 	<div style="background-color:#dddddd; padding:10px;">
+ 	<div class="interestBox" style="border-radius: 10px;">
  		{if $profile->stats.images > 2}
-		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a><sup><a href="/help/squares" title="What is a Myriad?">?</a></sup>.</div>
+		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a><sup><a href="/help/squares" title="What is a Myriad?" class="about" style="font-size:0.7em">?</a></sup>.</div>
 		{/if}
 		{if $profile->deceased_date}
 		<h3 style="margin-top:0px;margin-bottom:0px">Statistics</h3>
 		{else}
 		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics <a href="/help/stats_faq" class="about" style="font-size:0.7em">About</a></h3>
 		{/if}
-		<ul>
+	</div>
+	<div style="float:right;font-size:0.8em; color:gray;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
+	<div>
+ 		<ul>
 			{if $profile->stats.points}
 				<li><b>{$profile->stats.points}</b> First Geograph points
 					{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
@@ -150,7 +159,7 @@
 					<b>{$profile->stats.thirds}</b> Third Visitor points,
 				{/if}
 				{if $profile->stats.fourths}
-					<b>{$profile->stats.fourths}</b> Fourth Visitor points,
+					<b>{$profile->stats.fourths}</b> Fourth Visitor points
 				{/if}
 				</li>
 			{/if}
@@ -193,7 +202,6 @@
 				</li>
 			{/if}
 		</ul>
-		<div style="float:right;font-size:0.8em; color:gray; margin-top:-20px">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
 	</div>
 {elseif !$userimages}
 	<h3>My Statistics</h3>
@@ -203,13 +211,15 @@
 {/if}
 
 {if $userimages}
-	<div style="float:right; position:relative; font-size:0.7em; padding:10px"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)<br/>
-	<form action="/search.php" style="display:inline">
+	<div class="interestBox" style="border-radius: 10px;">
+	<div style="float:right; position:relative; font-size:0.7em;"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)</div>
+	<h3 style="margin-top:0px;margin-bottom:0px">Photographs</h3>
+	</div>
+	<form action="/search.php" style="display:inline;float:right">
 	<label for="fq">Search</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 	<input type="hidden" name="user_id" value="{$profile->user_id}"/>
 	<input type="submit" value="Find"/>
-	</form></div>
-	<h3 style="margin-bottom:0px">Photographs</h3>
+	</form>
 
 	<p style="font-size:0.7em">Click column headers to sort in a different order</p>
 
