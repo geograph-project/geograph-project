@@ -163,6 +163,9 @@
 					{/if}
 				</li>
 			{/if}
+			{if $profile->stats.tpoints}
+				<li><b>{$profile->stats.tpoints}</b> TPoints (temporally aware points)</li>
+			{/if}
 			<li><b>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if}
 				{if $profile->stats.squares gt 1}
 					<ul style="font-size:0.8em;margin-bottom:2px">
