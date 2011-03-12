@@ -139,7 +139,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$buckets[] = $days;
 	
 		if ($point) {
-			$db_write->Execute("UPDATE gridimage_search SET points = 1,upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
+			$db_write->Execute("UPDATE gridimage_search SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
 			print ". ";
 			$count++;
 		}
