@@ -143,7 +143,7 @@ if (!empty($_POST['save']) && !empty($ids)) {
 		
 	}
 	$stats['images'] = count($ids);
-	$smarty->assign("message","{$stats['tags']} different tags added to {$stats['images']} images. A total of {$stats['total']} individual tags, of which {$stats['public']} where public.");
+	$smarty->assign("message","{$stats['tags']} different tags added to {$stats['images']} images. A total of {$stats['total']} individual tags, of which {$stats['public']} were public.");
 	
 } elseif (!empty($_POST['save']) && $gid) {
 
@@ -331,27 +331,14 @@ if ($gid) {
 }
 	
 	if (!empty($is_owner) && empty($_GET['v'])) {
-$DATA = <<<DATA
-Topography
-Mountain; Upland; Lowland; Coast; Geological feature; Geophysical process
 
-Environment
-Woodland; Water; Wetland; Shrubland; Scrub; Herbaceous; Unvegetated
+		if (empty($db2))
+			$db2 = GeographDatabaseConnection(true);
+		
+		$list = $db2->getAssoc("SELECT `top`,`grouping` FROM category_primary ORDER BY `grouping`,`sort_order`");
+		foreach ($list as $top => $grouping) {
 
-Human activity
-Extractive industry; Ag, hort & forestry; Manufacturing; Leisure; Commerce; Degradation/dereliction; Construction; Transport infrastructure; Energy infrastructure; Environmental management/modification; Disposal; Public services; Defence; Community life
-
-Human habitat
-Uninhabited; Hamlet/dispersed settlement/temporary settlement; Village; Suburb; City/town centre; Fort/citadel
-DATA;
-
-		$tree = array(); $top ='';
-		foreach(explode("\n",str_replace("\r",'',$DATA)) as $line) {
-			if (preg_match('/^[\w ]+$/',$line)) {
-				$top = $line;
-			} elseif ($line && $top) {
-				$tree[$top] = explode('; ',trim($line,'; '));
-			}
+			$tree[$grouping][] = $top;
 		}
 		$smarty->assign_by_ref('tree',$tree);
 	}
