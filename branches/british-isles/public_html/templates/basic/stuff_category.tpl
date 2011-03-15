@@ -22,12 +22,12 @@
 
 {assign var="tab" value=$v+1}
 	<div class="tabHolder" style="margin-left:10px">
-		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" href="?type=top&amp;v=0">Variation A</a>
-		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" href="?type=top&amp;v=1">Variation B</a>
-		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="?type=top&amp;v=2">Variation C</a>
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="?type=top&amp;v=3">Variation D</a>
-		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" href="?type=top&amp;v=4">Variation E</a>
-		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="?type=top&amp;v=5">Variation F</a>
+		<a class="tab{if $tab == 1}Selected{/if} nowrap" href="?type=top&amp;v=0">Variation A</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" href="?type=top&amp;v=1">Variation B</a>
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" href="?type=top&amp;v=2">Variation C</a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" href="?type=top&amp;v=3">Variation D</a>
+		<a class="tab{if $tab == 5}Selected{/if} nowrap" href="?type=top&amp;v=4">Variation E</a>
+		<a class="tab{if $tab == 6}Selected{/if} nowrap" href="?type=top&amp;v=5">Variation F</a>
 	</div>
 	<div class="interestBox">
 		<h3>Dummy submission</h3>
@@ -61,7 +61,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 	<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
 
-	<p><label for="top"><b>Primary geographical categor{if $v}ies{else}y{/if}</b></label><br />
+	<p><label for="top"><b>Primary geographical categor{if $v}ies{else}y{/if}</b></label>{if $v == 3} <small style="font-size:0.7em">(tick as many as required, hover over name for a description){/if}</small><br />
 		{if $v == 5}
 			{foreach from=$tops key=key item=item}
 				<div style="position:relative;float:left;">
@@ -90,10 +90,16 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			{foreach from=$tops key=key item=item}
 				<div style="position:relative;float:left;width:180px;border-left:1px solid silver;padding-left:2px">
 					<b>{$key}</b><br/>
-					{html_checkboxes options=$item selected=$top separator="<br>"}
+					{foreach from=$item item=row}
+						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}">
+							<input type="checkbox" name="checkbox[]" name="{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}"/>
+							{$row.top|escape:'html'}
+						</label><br/>
+					{/foreach}
+
 				</div>
 			{/foreach}
-			<br style="clear:both"/>(tick as many as required)
+			<br style="clear:both"/>
 		{elseif $v == 2}
 			(tick as many as required)
 			{foreach from=$tops key=key item=item}

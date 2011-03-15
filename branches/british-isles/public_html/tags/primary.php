@@ -42,11 +42,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$tags = $db->getAssoc("SELECT tag,GROUP_CONCAT(gridimage_id) AS ids,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE prefix = 'top' AND gt.status = 2 GROUP BY tag_id ORDER BY tag LIMIT 50");
 
+	$list = $db->getAssoc("SELECT top,description FROM category_primary");
 
 	$ids = array();
 	foreach ($tags as $tag => $row) {
 		$i = explode(',',$row['ids']);
-		$ids += array_slice($i,0,4);
+		$ids = array_merge($ids,array_slice($i,0,4));
 	}
 	
 		$ids = implode(',',$ids);
@@ -66,6 +67,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$results = array();
 	foreach ($tags as $tag => $row) {
 		$result = array('tag'=>$tag,'resultCount'=>$row['images']);
+		if (!empty($list[$tag])) {
+			$result['description'] = $list[$tag];
+		}
 		$i = explode(',',$row['ids']);
 		$ids = array_slice($i,0,4);
 		foreach ($ids as $id) {

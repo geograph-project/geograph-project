@@ -49,79 +49,23 @@ $types = array('dropdown' => 'Dropdown','autocomplete' => 'Auto Complete Text Bo
 $smarty->assign_by_ref('types',$types);
 
 if ($_GET['type'] == 'top') {
-$data = "
-Landform
-Mountain
-Hill
-Valley
-Plateau
-Slope
-Glacial
-Undulating
-Flat
-Coast & estuary
-Geology
-
-Environment
-Woodland
-Rough ground
-Grassland
-Lakes & wetland
-Rivers & streams
-Tidal
-Air, Sky & Weather
-
-Human use
-Mining & Quarrying
-Crops
-Grazing
-Forestry
-Manufacturing & Construction
-Commerce/Retail/Services
-Energy production
-Water supply
-Drainage
-Defence
-Sport/Leisure/Entertainment
-Mixed uses
-Disposal & Degradation
-
-Human habitat
-Lowland countryside
-Scattered
-Country estate
-Village
-Suburb & fringe
-Town & city
-Transient
-Open space
-Social Customs & Events
-Closed communities
-Small-scale
-Barriers & boundaries
-
-Communications
-Roads & road transport
-Tracks and paths
-Railways
-Waterways
-Docks & harbours
-Air transport
-Energy infrastructure
-Telecommunications";
-	$next = false;$group = '';
+	$db = GeographDatabaseConnection(true);
+	
 	$tops = array();
-	foreach (explode("\n",str_replace("\r",'',$data)) as $line) {
-		if (!$line) {
-			$next = true;
-		} elseif($next) {
-			$group = $line;
-			$next = false;
-		} else {
-			$tops[$group][] = $line;	
-		}
+	if ($_GET['v'] == 3) {
+		$list = $db->getAll("SELECT * FROM category_primary ORDER BY `grouping`,`sort_order`");
+		foreach ($list as $line) {
 
+			$tops[$line['grouping']][] = $line;
+		}
+	} else {
+		$list = $db->getAssoc("SELECT `top`,`grouping` FROM category_primary ORDER BY `grouping`,`sort_order`");
+		foreach ($list as $top => $grouping) {
+
+			$tops[$grouping][$top] = $top;
+		}
 	}
+
 	$smarty->assign_by_ref('tops',$tops);
 }
 

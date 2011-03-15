@@ -20,7 +20,7 @@
 
 <p><small>A Top-Level category is counted as confirmed when suggested by at least three different users.</small></p>
 
-<blockquote><p><b>{$final|thousends}</b> categories have confirmed Top-Level category, producing <b>{$topsfinal|thousends}</b> different Top-Level categories.</p></blockquote>
+<blockquote><p><b>{$final|thousends}</b> categories have confirmed Top-Level category, producing <b>{$tops_final|thousends}</b> different Top-Level categories.</p></blockquote>
 
 
 
