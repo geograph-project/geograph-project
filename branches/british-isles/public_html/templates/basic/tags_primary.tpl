@@ -2,7 +2,26 @@
 {include file="_std_begin.tpl"}
 
 
-<h2>Primary Categories</h2>
+<h2><a name="top"></a>Primary Categories</h2>
+
+{assign var="lastcat" value=""}
+{foreach from=$results item=item}
+
+	{if $lastcat != $item.grouping}
+		{if $lastcat}
+			</div>
+		{/if}
+		<div style="float:left;width:180px;border-left:1px solid silver;padding-left:20px;text-indent: -10px ;">
+		&middot; <b>{$item.grouping}</b><br/>
+		{assign var="lastcat" value=$item.grouping}
+	{/if}
+	<div><a href="#{$item.tag|replace:' ':'_'|escape:'url'}">{$item.tag|escape:'html'}</a></div>
+{/foreach}
+{if $lastcat}
+	</div>
+	<br style="clear:both"/>
+{/if}
+
 
 {assign var="lastcat" value=""}
 {foreach from=$results item=item}
@@ -17,7 +36,7 @@
 	{/if}
 	<li>
 	<div class="interestBox">
-
+	<a name="{$item.tag|replace:' ':'_'|escape:'url'}"></a>
 	{if $item.resultCount > 3}
 		<div style="float:right"><a href="/tags/?tag={$item.tag|escape:'url'}">View {$item.resultCount} images</a></div>
 	{/if}
@@ -41,7 +60,7 @@
 			<div><small><i>no images found</i></small></div>
 		{/if}
 	{/foreach}
-	<br style="clear:left;"/>
+	<div style="clear:left;text-align:right"><a href="#top">back to top</a></div>
 
 	</li>
 {foreachelse}
