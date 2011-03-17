@@ -73,6 +73,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$results = array();
 	foreach ($tags as $tag => $row) {
+		$row['description']= str_replace("|",'',$row['description']);
+		
 		$result = array('tag'=>$tag,'resultCount'=>$row['images'],'description'=>$row['description'],'grouping'=>$row['grouping']);
 
 		$i = explode(',',$row['ids']);

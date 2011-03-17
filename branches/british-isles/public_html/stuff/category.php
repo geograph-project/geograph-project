@@ -55,7 +55,8 @@ if ($_GET['type'] == 'top') {
 	if ($_GET['v'] == 3) {
 		$list = $db->getAll("SELECT * FROM category_primary ORDER BY `grouping`,`sort_order`");
 		foreach ($list as $line) {
-
+			$line['description'] = preg_replace('/\|.*/','',$line['description']);
+			
 			$tops[$line['grouping']][] = $line;
 		}
 	} else {
