@@ -40,14 +40,21 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$db = GeographDatabaseConnection(true);
 	
-	$tags = $db->getAssoc("SELECT tag,GROUP_CONCAT(gridimage_id) AS ids,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE prefix = 'top' AND gt.status = 2 GROUP BY tag_id ORDER BY tag LIMIT 50");
-
-	$list = $db->getAssoc("SELECT top,description FROM category_primary");
+	$tags = $db->getAssoc("
+		SELECT top,GROUP_CONCAT(gridimage_id) AS ids,COUNT(*) AS images,description,grouping
+		FROM category_primary 
+		LEFT JOIN tag t ON (top = tag AND prefix = 'top') 
+		LEFT JOIN gridimage_tag gt ON (t.tag_id = gt.tag_id AND gt.status = 2) 
+		GROUP BY top
+		ORDER BY sort_order
+		LIMIT 75");
 
 	$ids = array();
 	foreach ($tags as $tag => $row) {
-		$i = explode(',',$row['ids']);
-		$ids = array_merge($ids,array_slice($i,0,4));
+		if ($row['ids']) {
+			$i = explode(',',$row['ids']);
+			$ids = array_merge($ids,array_slice($i,0,4));
+		}
 	}
 	
 		$ids = implode(',',$ids);
@@ -66,10 +73,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$results = array();
 	foreach ($tags as $tag => $row) {
-		$result = array('tag'=>$tag,'resultCount'=>$row['images']);
-		if (!empty($list[$tag])) {
-			$result['description'] = $list[$tag];
-		}
+		$result = array('tag'=>$tag,'resultCount'=>$row['images'],'description'=>$row['description'],'grouping'=>$row['grouping']);
+
 		$i = explode(',',$row['ids']);
 		$ids = array_slice($i,0,4);
 		foreach ($ids as $id) {
