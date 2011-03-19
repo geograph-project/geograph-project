@@ -1225,6 +1225,20 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		}
 	}
 
+	if (!empty($engine->error)) {
+		if (preg_match('/no field (.+) found in schema/',$engine->info,$m)) {
+			$engine->error = "Error: Field {$m[1]} not found";
+		} elseif (preg_match('/query is non-computable \((node )?(.* NOT operato.*)\)/',$engine->info,$m)) {
+			$engine->error = "Error: Impossible Query ({$m[2]})";
+		} elseif (preg_match('/offset out of bounds/',$engine->info,$m)) {
+			$engine->error = "Error: Geograph Search can only access the first 1000 results of a given query";
+		} elseif (preg_match('/unexpected \$end/',$engine->info,$m)) {
+			$engine->error = "Error: Mismatched quotes/brackets";
+		} elseif (preg_match('/unexpected (\'.*?\')/',$engine->info,$m)) {
+			$engine->error = "Error: Unexpected {$m[1]}";
+		}
+	}
+
 	customExpiresHeader(3600,false,true);
 	$smarty->display($template, $cacheid);
 

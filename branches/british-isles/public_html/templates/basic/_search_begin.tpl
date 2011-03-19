@@ -44,9 +44,12 @@ Display:
 {/if}:
 
 {if $engine->error}
-	<div style="padding:2px;border:1px solid red; text-align:center; background-color:pink;color:black;">
+	<div class="interestBox" style="padding:2px;border:1px solid red; text-align:center; background-color:pink;color:black;">
 		Unfortunately it doesn't appear the search was processed,<br/>
-		{if $engine->error == "Syntax Error"}
+		{if strpos($engine->error,'Error:') === 0}
+		<br/><b>{$engine->error|escape:'html'}</b><br/><br/>
+		Read more: <a href="/article/Word-Searching-on-Geograph">Word Searching on Geograph</a>
+		{elseif $engine->error == "Syntax Error"}
 		there is a syntax error in the text query.<br/><br/>
 		The characters <tt>~ | ( ) @ " / ' = &lt; ^ $ , - :</tt> all have <a href="/article/Word-Searching-on-Geograph">special meanings</a><br/> which affect the query, it appears one or more has been used incorrectly.<br/>
 		Use the quick refine below to try the search without any such characters.
