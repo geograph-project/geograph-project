@@ -47,7 +47,7 @@ $smarty = new GeographPage;
 			$db->Execute($sql);
 		}
 		
-		print "Your category list has been saved - please note it can take 24 hours for the tags to be created";
+		print "Your category request has been saved - please note we wont be createing the tags until Thurs 24th Mar";
 		
 	} else {
 	
@@ -86,7 +86,14 @@ $smarty = new GeographPage;
 			GROUP BY imageclass
 			");
 
-
+			if ($list) {
+				
+				
+				print "<p>For example, using this list, will add the <span class=\"tag\">
+					<a class=\"taglink\">canonical:".htmlentities($list[0]['canonical'])."</a>
+				</span> tag, to your ".htmlentities($list[0]['images'])." images in the <b>".htmlentities($list[0]['imageclass'])."</b> category.</p>";
+					
+			
 
 			print "<form method=post><table cellspacing=0 cellpadding=3 border=1 bordercolor=#dddddd>";
 				print "<tr>";
@@ -107,6 +114,10 @@ $smarty = new GeographPage;
 			print "<p><input type=submit value=\"add these tags\"> NOTE: This button can ONLY BE PRESSED ONCE - double check you want to apply the selected canonicals above.</p>";
 
 			print "</form>";
+
+			} else {
+				print "No categories found";
+			}
 		}
 	}
 	$smarty->display('_std_end.tpl');
