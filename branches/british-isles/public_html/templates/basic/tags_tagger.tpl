@@ -18,7 +18,7 @@
 
 	<div style="float:left;width:40%;font-size:0.9em">
 
-			<b>New</b>: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} clearAutoSave(); {/literal}"/> <input type="button" value="Add" onclick="useTag(this.form.elements['__newtag'])"/><br/>
+			<b>New</b>: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} clearAutoSave(); {/literal}"/> <input type="button" value="Add" onclick="useTags(this.form.elements['__newtag'])"/><br/>
 
 			<b>Current Tags</b>:<br/>
 			<span id="tags">{foreach from=$used item=item name=used}
@@ -105,8 +105,17 @@ var autoSaveTimer = null;
 var autoSaveCounter = 0;
 var autoSaveCounterTimer = null;
 
-function useTag(ele) {
-	addTag(ele.value);
+function useTags(ele) {
+
+	if (ele.value.indexOf(';') > -1 || ele.value.indexOf(',') > -1) {
+		var arr = ele.value.split(/\s*[,;]+\s*/);
+		for(q=0;q<arr.length;q++)
+			if (arr[q].length>1)
+				addTag(arr[q],suggestion);
+	} else {
+		addTag(ele.value);
+	}
+
 	ele.value='';
 	ele.focus();
 }
@@ -116,14 +125,6 @@ function addTag(text,suggestion) {
 	if (!text || text.length == 0) {
 		alert('No tag specified');
 		return;
-	}
-
-	if (text.indexOf(';') > -1 || text.indexOf(',') > -1) {
-		var arr = text.split(/\s*[,;]+\s*/);
-		for(q=0;q<arr.length;q++)
-			if (arr[q].length>1)
-				addTag(arr[q],suggestion);
-		return void('');
 	}
 
 	var div = document.getElementById('tags');
@@ -233,7 +234,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
 		var unicode=event.keyCode? event.keyCode : event.charCode;
 		if (unicode == 13) {
-			useTag(that);
+			useTags(that);
 			return;
 		}
 
