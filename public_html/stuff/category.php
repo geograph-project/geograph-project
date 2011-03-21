@@ -29,7 +29,7 @@ init_session();
 $smarty = new GeographPage;
 
 $template='stuff_category.tpl';
-$cacheid='';
+$cacheid='1';
 
 if (!empty($_GET['type']) && preg_match('/^(\w+)$/',$_GET['type'])) {
 	
@@ -53,7 +53,7 @@ if ($_GET['type'] == 'top') {
 	
 	$tops = array();
 	if ($_GET['v'] == 3) {
-		$list = $db->getAll("SELECT * FROM category_primary ORDER BY `grouping`,`sort_order`");
+		$list = $db->getAll("SELECT * FROM category_primary ORDER BY `sort_order`");
 		foreach ($list as $line) {
 			$line['description'] = preg_replace('/\|.*/','',$line['description']);
 			
