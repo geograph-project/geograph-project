@@ -706,6 +706,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 <div id="showtag" style="display:none">
 	<ul>
 		<li>Tags are a new feature on Geograph - they are still under heavy development - not fully working yet!</li>
+		<li>There is no need to click 'Submit Changes' above to apply changes to Tags.</li>
 		<li>Read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
 	</ul>
 	<iframe src="about:blank" height="200" width="100%" id="tagframe">

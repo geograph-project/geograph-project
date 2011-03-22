@@ -45,7 +45,7 @@
 		{assign var="tab" value="1"}
 		<div class="tabHolder">
 			{if $tree}
-				<div style="margin-left:7em"><b>Top Level categories</b>: <small>(pick at <B>least one</b>)</small></div>
+				<div style="margin-left:7em"><b>Geographical Context</b>: <small>(pick at <B>least one</b>)</small></div>
 			{/if}
 			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,6)">Suggestions</a>&nbsp;
 			{foreach from=$tree key=key item=item name=tree}
@@ -111,7 +111,7 @@ function useTags(ele) {
 		var arr = ele.value.split(/\s*[,;]+\s*/);
 		for(q=0;q<arr.length;q++)
 			if (arr[q].length>1)
-				addTag(arr[q],suggestion);
+				addTag(arr[q]);
 	} else {
 		addTag(ele.value);
 	}
