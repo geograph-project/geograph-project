@@ -61,7 +61,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 	<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
 
-	<p><label for="top"><b>Primary geographical categor{if $v}ies{else}y{/if}</b></label>{if $v == 3} <small style="font-size:0.7em">(tick as many as required, hover over name for a description){/if}</small><br />
+	<p><label for="top"><b>Geographical Context</b></label>{if $v == 3} <small style="font-size:0.7em">(tick as many as required, hover over name for a description){/if}</small><br />
 		{if $v == 5}
 			{foreach from=$tops key=key item=item}
 				<div style="position:relative;float:left;">
@@ -87,16 +87,26 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			{/foreach}
 			<br style="clear:both"/>(tick as many as required)
 		{elseif $v == 3}
+			<style type="text/css">{literal}
+.plist {
+	position:relative;float:left;width:190px;border-left:1px solid silver;padding-left:2px
+}
+.plist label {
+    padding-left: 32px ;
+    text-indent: -32px ;
+	display:block;
+}
+			{/literal}</style>
+
 			{foreach from=$tops key=key item=item}
-				<div style="position:relative;float:left;width:180px;border-left:1px solid silver;padding-left:2px">
+				<div class="plist">
 					<b>{$key}</b><br/>
 					{foreach from=$item item=row}
 						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}">
 							<input type="checkbox" name="checkbox[]" name="{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}"/>
 							{$row.top|escape:'html'}
-						</label><br/>
+						</label>
 					{/foreach}
-
 				</div>
 			{/foreach}
 			<br style="clear:both"/>
@@ -108,7 +118,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 				<br/>
 			{/foreach}
 		{elseif $v == 1}
-		<select id="top" name="top" multiple="multiple" size="20">
+		<select id="top" name="top" multiple="multiple" size="15">
 			{html_options options=$tops selected=$top}
 
 		</select> (To select multiple - hold down control, and select)
@@ -117,15 +127,19 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			<option value="">--please select feature--</option>
 			{html_options options=$tops selected=$top}
 
-		</select> (To select additional, or to add free-from tags, open the tagging box below...)
+		</select> (To select additional, or to add free-form tags, open the tagging box below...)
 		{/if}
 	</p>
 
-<p><label><b>Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?ids=1,2&amp;v={$v}';" id="hidetag"/></p>
+<p><label><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?ids=1,2&amp;v={$v}';" id="hidetag"/></p>
 <div id="showtag" style="display:none">
 	<ul>
-		<li>Tags are a new feature on Geograph - they are still under heavy development - not fully working yet!</li>
-		<li>Read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
+		<li>Tags are simple free-form keywords/short phrases, used to descripe the image.</li>
+		<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
+		<li>It is not compulsory to add any Tags.</li>
+		<li>Note: Tags should be singular, ie a image of a Church should have the tag "Church", not "Churches" - its a specific tag, not a category.<br/> <small>(however if photo is of muliple fence posts, then the tag "Fence Posts" should be used)</small></li>
+		<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croyden" - similarlly could use "near:Tring".</li>
+		<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
 	</ul>
 	<iframe src="about:blank" height="200" width="100%" id="tagframe">
 	</iframe>
