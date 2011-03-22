@@ -175,6 +175,15 @@ if (isset($_FILES['jpeg_exif']))
 				$imageclass =  stripslashes($_POST['imageclass'][$key]);
 			}
 			$uploadmanager->setClass($imageclass);
+			
+			if (!empty($_POST['tags'][$key])) {
+				if (is_array($_POST['tags'][$key])) {
+					$uploadmanager->setTags($_POST['tags'][$key]);
+				} else {
+					$uploadmanager->setTags(explode('|',$_POST['tags'][$key]));
+				}
+			}
+			
 
 			if ($_POST['pattrib'] == 'other') {
 				$uploadmanager->setCredit(stripslashes($_POST['pattrib_name']));

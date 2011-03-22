@@ -1,6 +1,6 @@
 {include file="_basic_begin.tpl"}
-{dynamic}
 
+{dynamic}
 <form enctype="multipart/form-data" action="{$script_name}{if $submit2}?submit2=1{/if}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 	<input type="hidden" name="inner" value="1"/>
 
@@ -128,103 +128,61 @@
 	<p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 	<textarea id="comment" name="comment" disabled rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 	<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
-	For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
-
-<sup style="color:red"><b>New</b></sup> You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
+	For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
 
 {if $submit2}
 	{if $upload_id}
-		<div style="float:right"><a href="/article/Shared-Descriptions" text="Article about Shared Descriptions" class="about" target="_blank">About</a></div>
+
 		<p><b>Shared Descriptions/References (Optional)</b>
-			<a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" id="hideshare">++ Expand <i>Shared Descriptions</I> box ++</a>
+			<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
 			<div id="showshare" style="display:none">
 				<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
 				</iframe>
+				<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I></a></div>
 			</div></p>
+
+		<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
+
+		<p><label for="top"><b>Geographical Context</b></label> <small style="font-size:0.7em">(tick as many as required, hover over name for a description, <a href="/tags/primary.php" text="More examples" class="about" target="_blank" style="font-size:0.85em">more</a>)</small><br />
+
+			{foreach from=$tops key=key item=item}
+				<div class="plist">
+					<div>{$key}</div>
+					{foreach from=$item item=row}
+						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}">
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}"/>
+							{$row.top|escape:'html'}
+						</label>
+					{/foreach}
+					<br/>
+				</div>
+			{/foreach}
+			<br style="clear:both"/>
+
+		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}&v=3';" id="hidetag"/></p>
+
+		<div class="interestBox" id="showtag" style="display:none">
+			<ul>
+				<li>Tags are simple free-form keywords/short phrases, used to describe the image.</li>
+				<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
+				<li>It is not compulsory to add any Tags.</li>
+				<li>Note: Tags should be singular, ie a image of a Church should have the tag "Church", not "Churches" - it's a specific tag, not a category.<br/> <small>(however if photo is of multiple fence posts, then the tag "Fence Posts" should be used)</small></li>
+				<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croydon" - similarlly could use "near:Tring".</li>
+				<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
+			</ul>
+			<iframe src="about:blank" height="200" width="100%" id="tagframe">
+			</iframe>
+			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
+		</div></p>
+
 	{else}
-		<p><b>Shared Descriptions/References (Optional)</b><br/>
-		<span style="color:red">&nbsp; - Shared description can only be set once image has finished uploading,
-<a href="javascript:void(window.parent.clicker(3,false));void(window.parent.clicker(3,true));">close and reopen this step</a> once the image has uploaded. </span></p>
+		<p style="color:red">&middot; Further details can only be set once image has finished uploading,
+		<a href="javascript:void(window.parent.clicker(3,false));void(window.parent.clicker(3,true));">close and reopen this step</a> once the image has uploaded.</p>
 	{/if}
 {/if}
 
-{if $use_autocomplete}
 
-	<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-		<br/><span class="formerror">{$error.imageclass}</span>
-		{/if}<br />
-		<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
-		</p>
-	{literal}
-	<script type="text/javascript">
-	<!--
-
-	AttachEvent(window,'load', function() {
-	 	var inputWord = $('imageclass');
-
-	    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
-	        'postVar': 'q',
-	        'minLength': 2,
-	        maxChoices: 60,
-	        onSelection: function() {
-	        	parentUpdateVariables();
-	        }
-	    });
-
-	},false);
-
-	//-->
-	</script>
-	{/literal}
-
-{else}
-	{literal}
-	<script type="text/javascript">
-	<!--
-	//rest loaded in geograph.js
-	function mouseOverImageClass() {
-		if (!hasloaded) {
-			setTimeout("prePopulateImageclass2()",100);
-		}
-		hasloaded = true;
-	}
-
-	function prePopulateImageclass2() {
-		var sel=document.getElementById('imageclass');
-		sel.disabled = false;
-		var oldText = sel.options[0].text;
-		sel.options[0].text = "please wait...";
-
-		populateImageclass();
-
-		hasloaded = true;
-		sel.options[0].text = oldText;
-		if (document.getElementById('imageclass_enable_button'))
-			document.getElementById('imageclass_enable_button').disabled = true;
-	}
-	AttachEvent(window,'load',onChangeImageclass,false);
-	//-->
-	</script>
-	{/literal}
-
-	<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-		<br/><span class="formerror">{$error.imageclass}</span>
-		{/if}<br />
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
-			<option value="">--please select feature--</option>
-			{if $imageclass}
-				<option value="{$imageclass}" selected="selected">{$imageclass}</option>
-			{/if}
-			<option value="Other">Other...</option>
-		</select>
-
-		<span id="otherblock">
-		<label for="imageclassother">Please specify </label>
-		<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
-		</span></p>
-
-{/if}
 
 	<p><label><b>Date photo taken</b></label> {if $error.imagetaken}
 		<br/><span class="formerror">{$error.imagetaken}</span>
@@ -235,12 +193,12 @@
 		{/if}
 
 		[ Use
-		<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
+		<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);parentUpdateVariables()"/>
 		{if $last_imagetaken}
-			<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
+			<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);parentUpdateVariables()"/>
 		{/if}
 		{if $imagetaken != '--' && $imagetaken != '0000-00-00'}
-			<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
+			<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);parentUpdateVariables()"/>
 		{/if}
 		Date ]
 
@@ -254,17 +212,6 @@
 		<input type="button" value="Next Step &gt;&gt;" onclick="window.parent.doneStep(3); window.parent.clicker(4,true);"/>
 	{/if}
 
-{if $use_autocomplete}
-	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" />
-
-	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script>
-{else}
-	<script type="text/javascript" src="/categories.js.php"></script>
-	<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
-{/if}
 
 {/if}
 
@@ -283,6 +230,7 @@
 	function setTakenDate(value) {
 		setdate('imagetaken',value,document.forms['theForm']);
 	}
+
 </script>
 {/literal}
 

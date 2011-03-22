@@ -1401,3 +1401,24 @@ a.about {
   font: bold 12px Verdana, sans-serif; padding: 0.2em 0.5em; border: 1px solid;
   background:#C3FDB8; color: #254117; border-color: #CAEABA #356020 #1B3010 #9CD77F;	
 }
+
+
+
+.plist {
+	position:relative;
+	float:left;
+	width:190px;
+	border-left:1px solid silver;
+	padding:2px
+}
+.plist label {
+	padding-left: 32px ;
+	text-indent: -32px ;
+	display:block;
+}
+.plist div {
+	text-align:center;
+	font-weight:bold;
+	color:gray;
+	border-bottom:1px solid silver
+}

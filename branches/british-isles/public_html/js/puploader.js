@@ -1,3 +1,17 @@
+if (!Array.prototype.indexOf) {
+  Array.prototype.indexOf = function (obj, fromIndex) {
+    if (fromIndex == null) {
+        fromIndex = 0;
+    } else if (fromIndex < 0) {
+        fromIndex = Math.max(0, this.length + fromIndex);
+    }
+    for (var i = fromIndex, j = this.length; i < j; i++) {
+        if (this[i] === obj)
+            return i;
+    }
+    return -1;
+  };
+}
 
 /////////////////////////////
 // for puploader_inner.tpl and submit2_inner.tpl
@@ -15,6 +29,7 @@
 		var name = thatForm.elements['selected'].value;
 		var theForm = document.forms['theForm'];
 		if (name != '') {
+			var tags = new Array();
 			for(q=0;q<theForm.elements.length;q++) {
 				var ele = theForm.elements[q];
 				if (thatForm.elements[ele.name+'['+name+']']) {
@@ -26,12 +41,16 @@
 					} else {
 						thatForm.elements[ele.name+'['+name+']'].value = ele.value;
 					}
+				} else if (ele.name.indexOf('tags[]') == 0 && ele.checked) {
+					tags.push(ele.value);
 				}
 			}
 			if (theForm.elements['imagetakenDay'] && thatForm.elements['imagetaken['+name+']']) {
 				thatForm.elements['imagetaken['+name+']'].value = pad(theForm.elements['imagetakenYear'].value,4) + '-' + pad(theForm.elements['imagetakenMonth'].value,2) + '-' + pad(theForm.elements['imagetakenDay'].value,2);
 			}
-		
+			if (tags.length > 0 && thatForm.elements['tags['+name+']']) {
+				thatForm.elements['tags['+name+']'].value = tags.join('|');
+			}
 		}
 	}
 	function updateUse6fig(ele) {
@@ -45,10 +64,15 @@
 		var thatForm = window.parent.document.forms['theForm'];
 		var name = thatForm.elements['selected'].value;
 		var theForm = document.forms['theForm'];
+		
+		if (thatForm.elements['tags['+name+']']) {
+			var tags = thatForm.elements['tags['+name+']'].value.split('|');
+		}
 		for(q=0;q<theForm.elements.length;q++) {
 			var ele = theForm.elements[q];
 			if (thatForm.elements[ele.name+'['+name+']']) {
-				if (ele.tagName.toLowerCase() == 'select') {
+				var tagname = ele.tagName.toLowerCase()
+				if (tagname == 'select') {
 					for(w=0;w<ele.options.length;w++)
 						if (ele.options[w].value == thatForm.elements[ele.name+'['+name+']'].value)
 							ele.selectedIndex = w;
@@ -59,26 +83,33 @@
 						onChangeImageclass();
 					}
 					
-				} else if (ele.tagName.toLowerCase() == 'input' && ele.type.toLowerCase() == 'radio') {
-					if (thatForm.elements[ele.name+'['+name+']'].value == ele.value)
-						ele.checked = true;
-					AttachEvent(ele,'click',parentUpdateVariables,false);
-				} else if (ele.tagName.toLowerCase() == 'input' && ele.type.toLowerCase() == 'checkbox') {
-					if (thatForm.elements[ele.name+'['+name+']'].value != '')
-						ele.checked = true;
-					AttachEvent(ele,'click',parentUpdateVariables,false);
-				} else if (ele.tagName.toLowerCase() == 'input' && ele.type.toLowerCase() == 'input') {
-					AttachEvent(ele,'click',parentUpdateVariables,false);
 				} else {
-					ele.value = thatForm.elements[ele.name+'['+name+']'].value;
-					AttachEvent(ele,'mouseup',parentUpdateVariables,false);
-					AttachEvent(ele,'keyup',parentUpdateVariables,false);
-					AttachEvent(ele,'paste',parentUpdateVariables,false);
-					AttachEvent(ele,'input',parentUpdateVariables,false);
-					if (ele.disabled) {
-						ele.disabled = false;
+					var type = ele.type.toLowerCase();
+					if (tagname == 'input' && type == 'radio') {
+						if (thatForm.elements[ele.name+'['+name+']'].value == ele.value)
+							ele.checked = true;
+						AttachEvent(ele,'click',parentUpdateVariables,false);
+					} else if (tagname == 'input' && type == 'checkbox') {
+						if (thatForm.elements[ele.name+'['+name+']'].value != '')
+							ele.checked = true;
+						AttachEvent(ele,'click',parentUpdateVariables,false);
+					} else if (tagname == 'input' && type == 'input') {
+						AttachEvent(ele,'click',parentUpdateVariables,false);
+					} else {
+						ele.value = thatForm.elements[ele.name+'['+name+']'].value;
+						AttachEvent(ele,'mouseup',parentUpdateVariables,false);
+						AttachEvent(ele,'keyup',parentUpdateVariables,false);
+						AttachEvent(ele,'paste',parentUpdateVariables,false);
+						AttachEvent(ele,'input',parentUpdateVariables,false);
+						if (ele.disabled) {
+							ele.disabled = false;
+						}
 					}
 				}
+			} else if (ele.name.indexOf('tags[]') == 0) {
+				AttachEvent(ele,'click',parentUpdateVariables,false);
+				if (tags.indexOf(ele.value) > -1)
+					ele.checked = true;
 			}
 		}
 		if (theForm.elements['imagetakenDay'] && thatForm.elements['imagetaken['+name+']']) {
@@ -139,6 +170,13 @@ function checkMultiFormSubmission() {
 				errors[name] = (errors[name])?(errors[name] + 1):1;
 				errors_count = errors_count + 1;
 			}
+		if (ele.name.indexOf('tags[') == 0)
+			if (ele.value == '') {
+				var name = "* Geographical Content";
+				errors[name] = (errors[name])?(errors[name] + 1):1;
+				errors_count = errors_count + 1;
+			}
+		
 		if (ele.name.indexOf('imageclass[') == 0) {
 			if (ele.value == '') {
 				var name = "* Geographical Category";
