@@ -335,7 +335,7 @@ if ($gid) {
 		if (empty($db2))
 			$db2 = GeographDatabaseConnection(true);
 		
-		$list = $db2->getAssoc("SELECT `top`,`grouping` FROM category_primary ORDER BY `grouping`,`sort_order`");
+		$list = $db2->getAssoc("SELECT `top`,`grouping` FROM category_primary ORDER BY `sort_order`");
 		foreach ($list as $top => $grouping) {
 
 			$tree[$grouping][] = $top;

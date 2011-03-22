@@ -113,7 +113,7 @@ geographing</a> first.</p>
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
 		<p><label for="jpeg_exif"><b>Upload an image with locational information attached</b></label> <br/>
 
-		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/>
+		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" accept="image/jpeg"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 
 		<input type="submit" name="setpos" value="Next &gt;"/> <br/>
@@ -134,9 +134,6 @@ geographing</a> first.</p>
 	</div>
 
 </div>
-	{if !$user->use_autocomplete && $user->stats.images gt 10}
-	(<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete"/> <label for="use_autocomplete">Tick this box, to try a new auto-complete text entry for image category selection, rather than dropdown. Change permanently on your <a href="/profile.php?edit=1">profile settings page</a></label>)
-	{/if}
 
 	<br/><br/><br/>
 	<p>If you are unsure of the photo location there are a number of online
@@ -204,7 +201,7 @@ geographing</a> first.</p>
 		{else}
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 		<label for="jpeg"><b>JPEG Image File</b></label>
-		<input id="jpeg" name="jpeg" type="file" />
+		<input id="jpeg" name="jpeg" type="file" accept="image/jpeg"/>
 
 		<div>(upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)</div>
 		{/if}
@@ -379,10 +376,10 @@ it was taken or other interesting geographical information. <span id="styleguide
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 
 
-<div class="interestBox">
-	<div style="float:right"><a href="/article/Shared-Descriptions" text="Article about Shared Descriptions" class="about" target="_blank">About</a></div>
+<div>
 	<b>Shared Descriptions/References (Optional)</b>
-	<span id="hideshare"><a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;">+ [ Expand ]</a> </span>
+	<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
+
 	<div id="showshare" style="display:none">
 		<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
 		</iframe>
@@ -391,86 +388,43 @@ it was taken or other interesting geographical information. <span id="styleguide
 </div>
 <br/>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
-For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
-
-<sup style="color:red"><b>New</b></sup> You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
+For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
 <h3>Further Information</h3>
 
-{if $use_autocomplete}
+		<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
 
-<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-	<br/><span class="formerror">{$error.imageclass}</span>
-	{/if}<br />
-	<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
-	</p>
-{literal}
-<script type="text/javascript">
-<!--
+		<p><label for="top"><b>Geographical Context</b></label> <small style="font-size:0.7em">(tick as many as required, hover over name for a description, <a href="/tags/primary.php" text="More examples" class="about" target="_blank" style="font-size:0.85em">more</a>)</small><br />
 
-AttachEvent(window,'load', function() {
- 	var inputWord = $('imageclass');
+			{foreach from=$tops key=key item=item}
+				<div class="plist">
+					<div>{$key}</div>
+					{foreach from=$item item=row}
+						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}">
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}"/>
+							{$row.top|escape:'html'}
+						</label>
+					{/foreach}
+					<br/>
+				</div>
+			{/foreach}
+			<br style="clear:both"/>
 
-    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
-        'postVar': 'q',
-        'minLength': 2,
-        maxChoices: 60
-    });
+		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}&v=3';" id="hidetag"/></p>
 
-},false);
-
-//-->
-</script>
-{/literal}
-
-{else}
-
-{literal}
-<script type="text/javascript">
-<!--
-//rest loaded in geograph.js
-function mouseOverImageClass() {
-	if (!hasloaded) {
-		setTimeout("prePopulateImageclass2()",100);
-	}
-	hasloaded = true;
-}
-
-function prePopulateImageclass2() {
-	var sel=document.getElementById('imageclass');
-	sel.disabled = false;
-	var oldText = sel.options[0].text;
-	sel.options[0].text = "please wait...";
-
-	populateImageclass();
-
-	hasloaded = true;
-	sel.options[0].text = oldText;
-	if (document.getElementById('imageclass_enable_button'))
-		document.getElementById('imageclass_enable_button').disabled = true;
-}
-AttachEvent(window,'load',onChangeImageclass,false);
-//-->
-</script>
-{/literal}
-
-<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-	<br/><span class="formerror">{$error.imageclass}</span>
-	{/if}<br />
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
-		<option value="">--please select feature--</option>
-		{if $imageclass}
-			<option value="{$imageclass}" selected="selected">{$imageclass}</option>
-		{/if}
-		<option value="Other">Other...</option>
-	</select>
-
-	<span id="otherblock">
-	<label for="imageclassother">Please specify </label>
-	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
-	</span></p>
-
-{/if}
+		<div class="interestBox" id="showtag" style="display:none">
+			<ul>
+				<li>Tags are simple free-form keywords/short phrases, used to describe the image.</li>
+				<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
+				<li>It is not compulsory to add any Tags.</li>
+				<li>Note: Tags should be singular, ie a image of a Church should have the tag "Church", not "Churches" - it's a specific tag, not a category.<br/> <small>(however if photo is of multiple fence posts, then the tag "Fence Posts" should be used)</small></li>
+				<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croydon" - similarlly could use "near:Tring".</li>
+				<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
+			</ul>
+			<iframe src="about:blank" height="200" width="100%" id="tagframe">
+			</iframe>
+			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
+		</div></p>
 
 
 <p><label><b>Date photo taken</b></label> {if $error.imagetaken}
@@ -482,12 +436,12 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	{/if}
 
 	[ Use
-	<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);" class="accept"/>
+	<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);"/>
 	{if $last_imagetaken}
-		<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);" class="accept"/>
+		<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);"/>
 	{/if}
 	{if $imagetaken != '--' && $imagetaken != '0000-00-00'}
-		<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);" class="accept"/>
+		<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);"/>
 	{/if}
 	Date ]
 
@@ -496,37 +450,17 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 	<p align="center"><input type="button" value="Preview submission in a new window"  onclick="document.getElementById('previewButton').click();"/>
 
-<div style="position:relative; background-color:#dddddd; border: 1px solid red; padding-left:10px;padding-top:1px;padding-bottom:1px;">
-<h3>Image Classification</h3>
-
-<p><label for="user_status">I wish to suggest supplemental classification:</label> <input type="checkbox" name="user_status" id="user_status" value="accepted" {if $user_status == "accepted"}checked="checked"{/if}/> (tick to apply)</p>
-
-<p>Tick this box only if you believe your photograph is not a 'geograph'. The moderator will just use the box as a suggestion, so if you are not sure, leave it unticked. Note: there can be many geograph images per square.</p>
-
-<p>Remembering the points <a href="#geograph">above</a> about what makes a 'geograph', <span class="nowrap">more information can be found in this {newwin href="/article/Geograph-or-supplemental" text="article on how images are moderated"}.</span></p>
-</div>
-
 <p>
 <input type="hidden" name="upload_id" value="{$upload_id}"/>
 <input type="hidden" name="savedata" value="1"/>
-<input type="submit" name="goback" value="&lt; Back" onclick="return confirm('Please confirm. All details entered on this page - will be lost.');"/>
+<input type="submit" name="goback" value="&lt; Back" onclick="return confirm('Please confirm you wish to go back. All details entered on this page - will be lost.');"/>
 <input type="submit" name="next" value="Next &gt;"/></p>
 
-{if $use_autocomplete}
-	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" />
-
-	<script type="text/javascript" src="{"/js/mootools-1.2-core.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Observer.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Autocompleter.js"|revision}"></script>
-	<script type="text/javascript" src="{"/js/Autocompleter.Request.js"|revision}"></script>
-{else}
-<script type="text/javascript" src="/categories.js.php"></script>
-<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
-{/if}
 
 {else}
 	<input type="hidden" name="title" value="{$title|escape:'html'}"/>
 	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
+	<input type="hidden" name="tags" value="{$tags|escape:'html'}"/>
 	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
@@ -534,11 +468,6 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 {if $step eq 4}
 	<input type="hidden" name="upload_id" value="{$upload_id}"/>
-	<input type="hidden" name="title" value="{$title|escape:'html'}"/>
-	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
-	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
-	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
-	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
 
 	{if $original_width}
 

@@ -102,9 +102,7 @@ function clicker(step,override,shiftKey) {
 			if (theForm.elements['photographer_gridref['+name+']'] && theForm.elements['photographer_gridref['+name+']'].value != '') {
 				loc = loc + "&photographer_gridref="+escape(theForm.elements['photographer_gridref['+name+']'].value);
 			}
-			if (theForm.elements['use_autocomplete'] && theForm.elements['use_autocomplete'].checked) {
-				loc = loc + "&use_autocomplete=1";
-			}
+
 			loc = loc + '&upload_id='+escape(theForm.elements['upload_id['+name+']'].value);
 
 			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?'+loc) == false)
@@ -211,9 +209,7 @@ AttachEvent(window,'load',readHash,false);
 	<form action="{$script_name}?process" name="theForm" method="post">
 {dynamic}
 	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>:<br/>
-	{if !$user->use_autocomplete}
-	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete" onclick="{literal}if (document.getElementById('sd'+3).style.display == 'block') { clicker(3,false); clicker(3,true); }{/literal}"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 3. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> <br/>
-	{/if}
+
 	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this);clicker(2,false); clicker(2,true);"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
 
 {/dynamic}
@@ -306,7 +302,7 @@ AttachEvent(window,'load',readHash,false);
 		<div><span>View Direction:</span><input type="text" name="view_direction[{$key}]" value="" size="3" maxlength="4"/></div>
 		<div><span>Title:</span><input type="text" name="title[{$key}]" value="" size="20" maxlength="128"/></div>
 		<div><span>Description:</span><textarea name="comment[{$key}]" cols="30" rows="2" wrap="soft"></textarea></div>
-		<div><span>Category:</span><input type="text" name="imageclass[{$key}]" value="" size="12" maxlength="64"/> <input type="text" name="imageclassother[{$key}]" value="" size="12" maxlength="64"/></div>
+		<div><span>Tags:</span><input type="text" name="tags[{$key}]" value="" size="80"/></div>
 		<div><span>Date:</span><input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/></div>
 
 		<input type="hidden" name="selected" value="0"/>
@@ -345,8 +341,7 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
 	<textarea name="comment" style="display:none"/></textarea>
-	<input type="hidden" name="imageclass"/>
-	<input type="hidden" name="imageclassother"/>
+	<input type="hidden" name="tags"/>
 	<input type="hidden" name="imagetakenDay"/>
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>

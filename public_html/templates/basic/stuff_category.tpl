@@ -134,11 +134,11 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 <p><label><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?ids=1,2&amp;v={$v}';" id="hidetag"/></p>
 <div id="showtag" style="display:none">
 	<ul>
-		<li>Tags are simple free-form keywords/short phrases, used to descripe the image.</li>
+		<li>Tags are simple free-form keywords/short phrases, used to describe the image.</li>
 		<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
 		<li>It is not compulsory to add any Tags.</li>
-		<li>Note: Tags should be singular, ie a image of a Church should have the tag "Church", not "Churches" - its a specific tag, not a category.<br/> <small>(however if photo is of muliple fence posts, then the tag "Fence Posts" should be used)</small></li>
-		<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croyden" - similarlly could use "near:Tring".</li>
+		<li>Note: Tags should be singular, ie a image of a Church should have the tag "Church", not "Churches" - it's a specific tag, not a category.<br/> <small>(however if photo is of multiple fence posts, then the tag "Fence Posts" should be used)</small></li>
+		<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croydon" - similarlly could use "near:Tring".</li>
 		<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
 	</ul>
 	<iframe src="about:blank" height="200" width="100%" id="tagframe">

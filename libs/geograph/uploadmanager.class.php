@@ -139,6 +139,15 @@ class UploadManager
 	}
 	
 	/**
+	* set tags
+	*/
+	function setTags($tags,$prefix='')
+	{
+		$this->tags=$tags;
+		$this->tagsPrefix=$prefix;
+	}
+	
+	/**
 	* set image taken date
 	*/
 	function setTaken($taken)
@@ -697,7 +706,7 @@ class UploadManager
 			"gridimage_id,exif) values ".
 			"(%d,%s)",$gridimage_id,$this->db->Quote($exif));
 		$this->db->Query($sql);
-	
+		
 	split_timer('upload','insert',"$gridimage_id"); //logs the wall time
 	
 		//copy image to correct area
@@ -743,6 +752,19 @@ class UploadManager
 		$gid += $USER->user_id * 4294967296;
 		
 		$this->db->Execute($sql = "UPDATE gridimage_snippet SET gridimage_id = $gridimage_id WHERE gridimage_id = ".$gid);
+		
+		
+		//assign the tags now we know the real id.
+		require_once('geograph/tags.class.php');
+		$tags = new Tags;
+		$tags->promoteUploadTags($gridimage_id,$this->upload_id,$USER->user_id);
+		
+		//make sure any tags we have are added too
+		if (!empty($this->tags)) {
+			$tags->addTags($this->tags,$this->tagsPrefix);
+			$tags->commit($gridimage_id,true);
+		}
+		
 		
 		$this->gridimage_id = $gridimage_id;
 		

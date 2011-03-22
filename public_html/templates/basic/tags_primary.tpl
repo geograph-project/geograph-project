@@ -1,8 +1,7 @@
 {assign var="page_title" value="Primary Categories"}
 {include file="_std_begin.tpl"}
 
-
-<h2><a name="top"></a>Primary Categories</h2>
+<h2><a name="top"></a>Primary Categories / Geographical Context</h2>
 
 {assign var="lastcat" value=""}
 {foreach from=$results item=item}
@@ -11,11 +10,11 @@
 		{if $lastcat}
 			</div>
 		{/if}
-		<div style="float:left;width:180px;border-left:1px solid silver;padding-left:20px;text-indent: -20px ;">
-		<b>{$item.grouping}</b><br/>
+		<div class="plist">
+		<div class="title">{$item.grouping}</div>
 		{assign var="lastcat" value=$item.grouping}
 	{/if}
-	<div>&middot; <a href="#{$item.tag|replace:' ':'_'|escape:'url'}">{$item.tag|escape:'html'}</a></div>
+	<label class="item">&middot; <a href="#{$item.tag|replace:' ':'_'|escape:'url'}">{$item.tag|escape:'html'}</a></label>
 {/foreach}
 {if $lastcat}
 	</div>

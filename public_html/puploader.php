@@ -86,7 +86,16 @@ if (isset($_GET['success'])) {
 				$imageclass =  stripslashes($_POST['imageclass'][$key]);
 			}			
 			$uploadmanager->setClass(utf8_decode($imageclass));
-
+			
+			if (!empty($_POST['tags'][$key])) {
+				if (is_array($_POST['tags'][$key])) {
+					$uploadmanager->setTags($_POST['tags'][$key]);
+				} else {
+					$uploadmanager->setTags(explode('|',utf8_decode($_POST['tags'][$key])));
+				}
+			}
+			
+			
 			if ($_POST['pattrib'] == 'other') {
 				$uploadmanager->setCredit(stripslashes(utf8_decode($_POST['pattrib_name'])));
 				$smarty->assign('credit_realname',utf8_decode($_POST['pattrib_name']));
@@ -247,6 +256,9 @@ if (isset($_GET['success'])) {
 		$smarty->assign('place', $square->findNearestPlace(25000));
 		
 		$smarty->assign('use_autocomplete', $USER->use_autocomplete);
+		
+		$tags = new Tags;
+		$tags->assignPrimarySmarty($smarty);		
 		
 		if (!empty($_REQUEST['grid_reference'])) {
 			$token=new Token;

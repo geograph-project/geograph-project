@@ -249,6 +249,7 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('title', stripslashes($_POST['title']));
 				$smarty->assign('comment', stripslashes($_POST['comment']));
 				$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
+				$smarty->assign('tags', stripslashes($_POST['tags']));
 				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 				$smarty->assign('user_status', stripslashes($_POST['user_status']));
 			}
@@ -377,14 +378,25 @@ if (isset($_POST['gridsquare']))
 					$error['imagetaken']="Time machines are not allowed on Planet Geograph";
 				}
 				
+				if (!empty($_POST['tags'])) {
+					if (is_array($_POST['tags'])) {
+						$tags = stripslashes(implode('|',$_POST['tags']));
+					} else {
+						$tags = stripslashes($_POST['tags']);
+					}
+					$smarty->assign_by_ref('tags', $tags);
+				}
+				
 				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
 					$imageclass = stripslashes($_POST['imageclassother']);
 				} else if ($_POST['imageclass'] != 'Other') {
 					$imageclass =  stripslashes($_POST['imageclass']);
 				}
 				if (strlen($imageclass)==0) {
-					$ok=false;
-					$error['imageclass']="Please choose a geographical feature";	
+					if (empty($_POST['tags'])) {
+						$ok=false;
+						$error['imageclass']="Please choose a geographical feature";	
+					}
 				} else {
 					$smarty->assign_by_ref('imageclass', $imageclass);
 				}
@@ -419,7 +431,10 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setTitle(stripslashes(trim($_POST['title'])));
 				$uploadmanager->setComment(stripslashes(trim($_POST['comment'])));
 				$uploadmanager->setTaken(stripslashes($_POST['imagetaken']));
-				$uploadmanager->setClass(stripslashes(trim($_POST['imageclass'])));
+				if (!empty($_POST['tags']))
+					$uploadmanager->setTags(explode('|',stripslashes(trim($_POST['tags']))));
+				if (!empty($_POST['imageclass']))
+					$uploadmanager->setClass(stripslashes(trim($_POST['imageclass'])));
 				$uploadmanager->setViewpoint(stripslashes($_POST['photographer_gridref']));
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
@@ -471,13 +486,8 @@ if (isset($_POST['gridsquare']))
 		{
 			$uploadmanager->setUploadId($_POST['upload_id']);
 			
-			//preserve stuff
 			$smarty->assign('upload_id', $_POST['upload_id']);
-			$smarty->assign('title', stripslashes($_POST['title']));
-			$smarty->assign('comment', stripslashes($_POST['comment']));
-			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
-			$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
-			$smarty->assign('user_status', stripslashes($_POST['user_status']));
+			
 			$step = 3;
 		}
 		
@@ -492,7 +502,15 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('title', stripslashes($_POST['title']));
 			$smarty->assign('comment', stripslashes($_POST['comment']));
 			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
-			$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
+			if (!empty($_POST['tags'])) {
+				$tags = array();
+				foreach (explode('|',stripslashes($_POST['tags'])) as $tag) {
+					$tags[$tag]=1;
+				}
+				$smarty->assign_by_ref('tags',$tags);
+			}
+			if (!empty($_POST['imageclass']))
+				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 			$smarty->assign('user_status', stripslashes($_POST['user_status']));
 			
 			list($usec, $sec) = explode(' ',microtime());
@@ -505,7 +523,10 @@ if (isset($_POST['gridsquare']))
 				//so get a new one...
 				$square->_getDB();
 			}
-		
+			
+			$tags = new Tags;
+			$tags->assignPrimarySmarty($smarty);	
+			
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));
 
