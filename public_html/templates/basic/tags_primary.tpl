@@ -11,11 +11,11 @@
 		{if $lastcat}
 			</div>
 		{/if}
-		<div style="float:left;width:180px;border-left:1px solid silver;padding-left:20px;text-indent: -10px ;">
-		&middot; <b>{$item.grouping}</b><br/>
+		<div style="float:left;width:180px;border-left:1px solid silver;padding-left:20px;text-indent: -20px ;">
+		<b>{$item.grouping}</b><br/>
 		{assign var="lastcat" value=$item.grouping}
 	{/if}
-	<div><a href="#{$item.tag|replace:' ':'_'|escape:'url'}">{$item.tag|escape:'html'}</a></div>
+	<div>&middot; <a href="#{$item.tag|replace:' ':'_'|escape:'url'}">{$item.tag|escape:'html'}</a></div>
 {/foreach}
 {if $lastcat}
 	</div>
