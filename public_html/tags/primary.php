@@ -41,7 +41,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db = GeographDatabaseConnection(true);
 	
 	$tags = $db->getAssoc("
-		SELECT top,GROUP_CONCAT(gridimage_id) AS ids,COUNT(*) AS images,description,grouping
+		SELECT top,CONCAT(ids,IF(ids != '',',',''),COALESCE(GROUP_CONCAT(gridimage_id),'')) AS ids,COUNT(*) AS images,description,grouping
 		FROM category_primary 
 		LEFT JOIN tag t ON (top = tag AND prefix = 'top') 
 		LEFT JOIN gridimage_tag gt ON (t.tag_id = gt.tag_id AND gt.status = 2) 
@@ -52,7 +52,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$ids = array();
 	foreach ($tags as $tag => $row) {
 		if ($row['ids']) {
-			$i = explode(',',$row['ids']);
+			$i = explode(',',str_replace(' ','',$row['ids']));
 			$ids = array_merge($ids,array_slice($i,0,4));
 		}
 	}
@@ -77,7 +77,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$result = array('tag'=>$tag,'resultCount'=>$row['images'],'description'=>$row['description'],'grouping'=>$row['grouping']);
 
-		$i = explode(',',$row['ids']);
+		$i = explode(',',str_replace(' ','',$row['ids']));
 		$ids = array_slice($i,0,4);
 		foreach ($ids as $id) {
 			if ($imagelist->images[$ids2[$id]])
