@@ -98,14 +98,20 @@ if (!empty($_GET['import'])) {
 	$template='stuff_top_stats.tpl';
 
 	if (!$smarty->is_cached($template, $cacheid)) {
-		$db = GeographDatabaseConnection(true);
+		$db = GeographDatabaseConnection(false);
 		
+		$db->Execute("truncate category_top");
+		$db->Execute("insert into category_top select null as category_map_id,imageclass,top,users from (select imageclass,top,count(distinct user_id) as users,count(distinct top) as tops from category_top_log where imageclass != '' group by imageclass order by null) t2 where users > 1 and tops = 1");
+
 		$data = $db->getRow("SELECT COUNT(*) AS normal FROM category_stat");
 		$smarty->assign($data);
 		$data = $db->getRow("SELECT COUNT(*) AS suggestions,COUNT(DISTINCT imageclass) AS cats,COUNT(DISTINCT top) AS tops,COUNT(DISTINCT user_id) AS users FROM category_top_log WHERE imageclass != ''");
 		$smarty->assign($data);
-		$data = $db->getRow("SELECT COUNT(DISTINCT imageclass) AS final,COUNT(DISTINCT top) AS tops_final FROM category_top");
+		$data = $db->getRow("SELECT COUNT(DISTINCT imageclass) AS final,COUNT(DISTINCT top) AS tops_final FROM category_top WHERE top != '-bad-'");
 		$smarty->assign($data);
+
+		$users = $db->getAll("select user_id,realname,count(*) tops ,round(ln(count(*))) as sortter from category_top_log inner join user using (user_id) group by user_id order by sortter desc,user_id");
+		$smarty->assign_by_ref('userlist',$users);
 
 	}
 	
@@ -259,6 +265,7 @@ if (!empty($_GET['import'])) {
 					LEFT JOIN category_top cc
 						ON (cs.imageclass=cc.imageclass)
 					WHERE cm.category_map_id IS NULL
+                                                AND cs.imageclass != ''
 						AND cc.imageclass IS NULL
 					ORDER BY cs.imageclass
 					LIMIT 1");
@@ -275,6 +282,7 @@ if (!empty($_GET['import'])) {
 					LEFT JOIN category_top cc
 						ON (cs.imageclass=cc.imageclass)
 					WHERE cm.category_map_id IS NULL
+                                                AND cs.imageclass != ''
 						AND cc.imageclass IS NULL
 					ORDER BY $order
 					LIMIT 1");
@@ -293,6 +301,7 @@ if (!empty($_GET['import'])) {
 						LEFT JOIN category_top cc
 							ON (cs.imageclass=cc.imageclass)
 						WHERE cm2.category_map_id IS NULL
+                                                        AND cs.imageclass != ''
 							AND cc.imageclass IS NULL
 						ORDER BY cs.category_id
 						LIMIT 1");
@@ -305,6 +314,7 @@ if (!empty($_GET['import'])) {
 						LEFT JOIN category_top_log cm 
 							ON (cs.imageclass=cm.imageclass)
 						WHERE cm.category_map_id IS NULL
+                                                        AND cs.imageclass != ''
 						ORDER BY cs.category_id
 						LIMIT 1");
 				}
@@ -338,6 +348,7 @@ if (!empty($_GET['import'])) {
 							LEFT JOIN category_top cc
 								ON (cs.imageclass=cc.imageclass)
 							WHERE cm.category_map_id IS NULL
+								AND cs.imageclass != ''
 								AND cc.imageclass IS NULL
 								AND $where
 							ORDER BY cs.imageclass

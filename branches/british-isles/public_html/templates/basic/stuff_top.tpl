@@ -1,26 +1,19 @@
-{assign var="page_title" value="Top-Level Categories"}
+{assign var="page_title" value="Geographical Context Project"}
 {include file="_std_begin.tpl"}
 {dynamic}
-<h2><a href="?">Top-Level Category Mapping</a></h2>
+<h2><a href="?">Geographical Context Mapping</a></h2>
 
 {if $done}
 	<p>Congratulations. Nothing more to do right now.</p>
 {elseif $mode}
-	<div class="interestBox" style="background-color:yellow;padding:20px;border:2px solid pink">
-		<h2>WARNING - currently in Test mode</h2>
-			This page is only for testing. While you can make suggestions below, <b>only do one or two to check it works</b>. The list of Top Level Categories hasnt been finalised yet. <u>So any suggestions made in the testing phase may well end up being deleted.</u>
-	</div>
-
-	<div style="float:right;width:200px;font-size:0.7em;position:relative;padding:8px;background-color:white">
-	This is only the first pass over assigning top categories, don't worry too much about deciding borderline cases. Do all the easy ones, and give a good guess for the rest. We will have a second stage resolving the conflicts between suggestions.</div>
 
 	<h3>Original category</h3>
-	<div class="interestBox" style="padding-left:20px;">
+	<div class="interestBox" style="padding-left:20px">
 		<h4>{$imageclass|escape:'html'}</h4>
 	</div>
 		<a href="/search.php?imageclass={$imageclass|escape:"url"}" class="nowrap" target="_blank" style="font-size:0.7em">View images in new window</a>
 
-	<h3>Top-Level category</h3>
+	<h3>Geographical Context</h3>
 
 	<form method="post" action="{$script_name}?mode={$mode}" name="theForm">
 		<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
@@ -34,10 +27,10 @@
 
 			<p><input type="radio" name="top" value="other" id="iother" onclick="checkform()"/> <label for="iother"><b>Use this one:</b></label> - <select name="other" onchange="checkform(2)"><option value=""></option>
 			{foreach from=$list item=i}<option{if $i.count < 3} style="color:gray"{/if}>{$i.top|escape:'html'}</option>{/foreach}
-			</select> (current top list)</p>
+			</select> (if unsure, please refer to <a href="/tags/primary.php" target="_blank">Geographical Context category list</a>)</p>
 
 
-			<p><input type="radio" name="top" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Unallocated category</b></label> - there isnt really a Top-Level category for this</p>
+			<p><input type="radio" name="top" value="bad" id="ibad" onclick="checkform()"/> <label for="ibad"><b>Unallocated category</b></label> - there isnt really a Geographical Context for this</p>
 
 		</div>
 		<br/><br/>
@@ -78,10 +71,13 @@
 
 
 
-	<p>The general idea is to assign a Top-Level-Category to each current Category</p>
+	<p>The general idea is to assign a "Geographical Context" to each current Category</p>
 
+<ul>
+<il><b><a href="/tags/primary.php">Page listing the Geographical Context Category list</a></b></li>
+</ul>
 
-	<h3>First stage - suggesting initial top-level-category</h3>
+	<h3>First stage - suggesting initial Geographical Context</h3>
 	<blockquote>
 
 	<div class="interestBox">
@@ -134,7 +130,7 @@
 	&middot; <a href="?final=1">Category tree</a> &middot;
 
 	<!--b>Demo</b>
-	 &middot; <a href="/stuff/category.php?type=top">Example of a category selector using top-level</a> &middot;-->
+	 &middot; <a href="/stuff/category.php?type=top">Example of a category selector using Geographical Context</a> &middot;-->
 
 
 	</blockquote>

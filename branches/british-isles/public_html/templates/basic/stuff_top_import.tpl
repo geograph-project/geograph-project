@@ -1,8 +1,8 @@
-{assign var="page_title" value="Top-Level Categories"}
+{assign var="page_title" value="Geographical Context Categories"}
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}"></script>
 
-<h2><a href="?">Top-Level Category Mapping</a> :: Import</h2>
+<h2><a href="?">Geographical Context Category Mapping</a> :: Import</h2>
 
 <div class="interestBox" style="border:4px solid red">
 	&middot; Before using this page you should <a href="/article/Assigning-the-current-Categories-to-Top-Level-Categories-Project">read this article</a>
@@ -25,9 +25,9 @@
 
 
 	<form action="{$script_name}?import=1" method="post" class="interestBox">
-		<b>Import suggestions:</b> (one per line, category, then top-level-category. Seperated by tabs, or semicolons)<br/>
+		<b>Import suggestions:</b> (one per line, Category, then Geographical Context. Seperated by tabs, or semicolons)<br/>
 		<textarea name="text" rows="10" cols="80" wrap="off"></textarea><br/>
-		&middot; It's your responsiblity to make sure you only submitting suggestions from the latest Top-Level-Category List!<br/>
+		&middot; It's your responsiblity to make sure you only submitting suggestions from the latest Geographical Context List!<br/>
 		<input type="submit" name="import" value="Import list"/>
 
 		<hr/>

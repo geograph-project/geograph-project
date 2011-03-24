@@ -32,8 +32,20 @@ header("Content-Type: text/plain");
 
 $db = GeographDatabaseConnection(true);
 
+if (empty($_GET) && rand(1,10) > 6) {
+	$_GET['unused'] = 1;
+}
 
-if (isset($_GET['mine'])) {
+
+if (isset($_GET['unused'])) {
+        if (isset($_GET['full'])) {
+		$count = 10000;
+	} else {
+		$count = 100;
+	}
+	$col = $db->getCol("SELECT imageclass FROM category_stat LEFT JOIN category_top_log USING (imageclass) WHERE category_map_id IS NULL LIMIT $count");
+
+} elseif (isset($_GET['mine'])) {
         $col = $db->getCol("SELECT imageclass FROM gridimage_search WHERE user_id = {$USER->user_id} GROUP BY imageclass");
 } else {
         if (isset($_GET['full'])) {
