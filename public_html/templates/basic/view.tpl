@@ -210,8 +210,8 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 
 {if $image_taken}
-<dt>Date Taken</dt>
- <dd>{$image_taken} &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
+	<dt>Date Taken</dt>
+	<dd>{$image_taken} &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
 {/if}
 <dt>Submitted</dt>
 	<dd>{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
@@ -223,16 +223,15 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	{/foreach}
 {/if}
 
-<dt>Category</dt>
+{if $image->imageclass}
+	<dt>Category</dt>
 
-<dd>{if $image->imageclass}
-	{if $image->canonical}
+	<dd>{if $image->canonical}
 		<a href="/search.php?gridref={$image->grid_reference}&amp;canonical={$image->canonical|escape:'url'}&amp;do=1">{$image->canonical|escape:'html'}</a> &gt;
 	{/if}
 	{$image->imageclass} &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">more nearby</a>)
-{else}
-	<i>n/a</i>
-{/if}</dd>
+	</dd>
+{/if}
 
 <dt>Subject Location</dt>
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">

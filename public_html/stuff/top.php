@@ -206,8 +206,75 @@ if (!empty($_GET['import'])) {
 	
 	$list = $db->getAll("SELECT imageclass,top FROM category_top_log WHERE user_id = {$USER->user_id} ORDER BY category_map_id DESC LIMIT 100");
 	$smarty->assign_by_ref('list',$list);
+
 	
+} elseif (!empty($_GET['bulk'])) {
+
+	if (!empty($_POST['top']) && !empty($_POST['imageclass'])) {
+		print "<pre>";
+		print_r($_POST);
 	
+		$db = GeographDatabaseConnection(false);
+	
+		$updates = array();
+		$updates['top'] = $_POST['top'];
+		$updates['user_id'] = $USER->user_id;
+		
+		foreach ($_POST['imageclass'] as $category) {
+			$updates['imageclass'] = trim($category);
+
+			$db->Execute('REPLACE INTO category_top_log SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+			$affected += mysql_affected_rows();
+		}
+		
+		print "Thank you, {$affected} records recorded. <a href=\"?\">Continue...</a>";
+		exit;
+	} 
+
+	$template='stuff_top_bulk.tpl';
+	
+	$sphinx = new sphinxwrapper($_GET['bulk']);
+				
+	$sphinx->pageSize = $pgsize = 500; 
+
+	$pg = 1;
+
+	$offset = (($pg -1)* $sphinx->pageSize)+1;
+
+	if ($offset < (1000-$pgsize) ) { 
+		$sphinx->processQuery();
+
+		$sphinx->q = "\"^{$sphinx->q}$\" | ($sphinx->q)";
+
+		$ids = $sphinx->returnIds($pg,'category');
+
+		if (!empty($ids) && count($ids)) {
+			
+			$db = GeographDatabaseConnection(true);
+			
+			$where = "category_id IN(".join(",",$ids).")";
+			$rows = $db->GetAll("
+				SELECT cs.* 
+				FROM category_stat cs 
+				LEFT JOIN category_top_log cm 
+					ON (cs.imageclass=cm.imageclass AND user_id = {$USER->user_id})
+				LEFT JOIN category_top cc
+					ON (cs.imageclass=cc.imageclass)
+				WHERE cm.category_map_id IS NULL
+					AND cc.imageclass IS NULL
+					AND $where
+				ORDER BY cs.imageclass
+				LIMIT 250");
+			$smarty->assign_by_ref('rows',$rows);
+		}
+	}
+	
+	if (empty($db)) {
+		die("no matching categories found. <a href=\"?\">Continue...</a>");
+	} else {
+		$list = $db->getAll("SELECT top,count(*) AS count FROM category_top_log WHERE top != '-bad-' GROUP BY top");
+		$smarty->assign_by_ref('list',$list);
+	}
 } elseif (!empty($_GET['mode'])) {
 	
 	if (!empty($_POST) && $_POST['submit'] && !empty($_POST['imageclass']) && !empty($_POST['top'])) {

@@ -80,8 +80,10 @@
 	<h3>First stage - suggesting initial Geographical Context</h3>
 	<blockquote>
 
+	<b>One By One</b>
 	<div class="interestBox">
 
+		Choose one:
 		<form method="get" style="display:inline">
 			<input type="hidden" name="mode" value="random"/>
 			<input type="submit" value="Randomly selected categories"/>
@@ -105,16 +107,31 @@
 		<form method="get">
 			- or - Keyword Search: <input type="text" name="mode" value=""/>
 			<input type="submit" value="Matching categories"/><br/>
-			<small>works with at most 100 matching categories
-			- uses the same format as the 'Auto-complete' category selector</small>
+			<small>works with at most 100 matching categories</small>
 		</form>
 
+	</div><br/>
+
+	<b>Bulk Form</b>
+	<div class="interestBox">
+
+		<form method="get">
+			Keyword Search: <input type="text" name="bulk" value=""/>
+			<input type="submit" value="Matching categories"/><br/>
+			<small>works with at most 250 matching categories</small>
+		</form>
+
+	</div><br/>
+
+	<b>Bulk SpreadSheet</b>
+	<div class="interestBox">
+		<a href="/article/Assigning-the-current-Categories-to-Top-Level-Categories-Project#bulk-spreadsheet">read more...</a>
 	</div><br/>
 
 	&middot; <a href="?sample=1">View sample mapping</a>
 	&middot; <a href="?review=1">Review your recent suggestions</a> &middot;<br/><br/>
 
-	<b>View preliminary results</b>
+	<b>View preliminary results</b><br/>
 	&middot; <a href="?top=1">Canonical categories list</a>
 	&middot; <a href="?preview=1">Category tree</a> &middot;
 	</blockquote>
@@ -126,7 +143,7 @@
 	&middot; <a href="?stats=1">Statistics</a> &middot;<br/><br/>
 
 
-	<b>View confirmed results</b>
+	<b>View confirmed results</b><br/>
 	&middot; <a href="?final=1">Category tree</a> &middot;
 
 	<!--b>Demo</b>
