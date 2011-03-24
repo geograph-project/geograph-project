@@ -118,7 +118,7 @@
 		<form method="get">
 			Keyword Search: <input type="text" name="bulk" value=""/>
 			<input type="submit" value="Matching categories"/><br/>
-			<small>works with at most 250 matching categories</small>
+			<small>works with at most 250 matching categories (<a href="/stuff/category-list.php?unused&full">Full category list</a> for ideas :)</small>
 		</form>
 
 	</div><br/>
