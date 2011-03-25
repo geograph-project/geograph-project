@@ -172,10 +172,13 @@ function AuthenticateUser() {
 
 
 	$dbusername = $db->Quote($username);
-	$sql = "select password,realname,rights,user_id from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
+	$sql = "select password,realname,rights,user_id,salt from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
 	
 	if ($rs = &$db->Execute($sql)) {
-		if ($password != $rs->fields[0]) {
+	
+		$md5password=md5($rs->fields[4].$password);
+	
+		if ($md5password != $rs->fields[0]) {
 
 			// oops - user specified invlaid password
 
