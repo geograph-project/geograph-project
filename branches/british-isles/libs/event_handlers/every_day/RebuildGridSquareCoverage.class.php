@@ -44,7 +44,7 @@ class RebuildGridSquareCoverage extends EventHandler
 		$db->Execute("DROP TABLE IF EXISTS gridsquare_coverage_tmp");
 		
 		$db->Execute("
-			create table gridsquare_coverage 
+			create table gridsquare_coverage_tmp 
 			select 
 				grid_reference,
 				concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as hectad,
