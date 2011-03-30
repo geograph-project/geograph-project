@@ -446,6 +446,11 @@ CREATE TABLE `hectad_stat` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 alter table hectad_stat add ftfusers mediumint(8) unsigned NOT NULL DEFAULT '0';
 
+alter table gridimage_pending add type enum('picnik','original') default 'picnik';
+alter table gridimage_pending add status enum('new','open','accepted','rejected') default 'new';
+alter table gridimage_pending add `updated` timestamp on update current_timestamp not null default current_timestamp ;
+ALTER TABLE `gridimage_pending` CHANGE `status` `status` ENUM('new','open','accepted','confirmed','rejected') NOT NULL DEFAULT 'new';
+
 ALTER TABLE gridimage ADD `reference_index` tinyint(1) NOT NULL DEFAULT '0' AFTER `natgrlen`;
 ALTER TABLE gridimage ADD `viewpoint_refindex` tinyint(1) NOT NULL DEFAULT '0' AFTER `viewpoint_grlen`;
 
