@@ -144,6 +144,8 @@ if ($image->isValid())
 		$sid = -1;
 		#trigger_error("sid: x: " . $sid, E_USER_NOTICE);
 	}
+	$cacheid.="|s:$sid";
+
 	#if ($image->gridimage_id == 2 && $USER->user_id == 1)
 	#	$sid = 21;/*1;*/
 	#elseif (($image->gridimage_id == 29 /*|| $image->gridimage_id == 34*/ /*34*/ /*25*/) && $USER->user_id == 1)
