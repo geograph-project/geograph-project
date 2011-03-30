@@ -660,7 +660,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	group by user_id 
 	$sql_having_having
 	order by imgcount desc $sql_orderby,last asc limit $limit2";
-	trigger_error("-----$sql", E_USER_NOTICE);
+	#trigger_error("-----$sql", E_USER_NOTICE);
 	$topusers=$db->GetAll($sql);
 	$lastimgcount = 0;
 	$toriserank = 0;
