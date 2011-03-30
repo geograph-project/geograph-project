@@ -1,24 +1,25 @@
-{assign var="page_title" value="Regional Statistics"}
+{assign var="page_title" value="Regionalstatistik"}
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}" type="text/javascript"></script>
 
-<h2>Regional Statistics{if $regionname} of {$regionname|escape:'html'}{/if}</h2>
+<h2>Regionalstatistik{if $regionname} von {$regionname|escape:'html'}{/if}</h2>
 
 {if $hstats}
+<p>Die Sortierung kann durch Anklicken der Spaltentitel geändert werden.</p>
 <!--table border="1" cellpadding="4" cellspacing="0" class="statstable"-->
 <table class="report sortable" id="regionstat" style="font-size:8pt;">
 <thead>
 <tr>
-	<td sorted="asc">Region</td>
-	<td>Images</td>
-	<td>(last week)</td>
-	<td>Squares</td>
-	<td>With images</td>
-	<td>(percent)</td>
-	<td>With geographs</td>
-	<td>(percent)</td>
-	<td>Hectads</td>
-	<td>With images</td>
+	<td sorted="asc">Gebiet</td>
+	<td>Bilder</td>
+	<td>(letzte<br />Woche)</td>
+	<td>Quadrate</td>
+	<td>mit<br />Bildern</td>
+	<td>(%)</td>
+	<td>mit<br />Geobildern</td>
+	<td>(%)</td>
+	<td>Hectads<br />(10km&times;10km)</td>
+	<td>mit<br />Bildern</td>
 	<td sorted="none">Links</td>
 {*<td>Myriads</td>
 <td>Area (km<sup>2</sup>, land)</td>
@@ -37,7 +38,7 @@
 	<td sortvalue="{$row.geopercent}">{$row.geopercent|floatformat:"%.3f"}%</td>
 	<td sortvalue="{$row.tenk_total}">{$row.tenk_total|thousends}</td>
 	<td sortvalue="{$row.tenk_submitted}">{$row.tenk_submitted|thousends}</td>
-	<td><a href="/search.php?region={$row.level}_{$row.community_id}&amp;orderby=submitted&amp;reverse_order_ind=1">image search</a>, <a href="/statistics/leaderboard.php?type=images&amp;region={$row.level}_{$row.community_id}">leaderboard</a></td>
+	<td><a href="/search.php?region={$row.level}_{$row.community_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Bildersuche</a>, <a href="/statistics/leaderboard.php?type=images&amp;region={$row.level}_{$row.community_id}">Rangliste</a></td>
 {*<td>{$row.grid_submitted}/{$row.grid_total}</td>
 <td>{$row.area|floatformat:"%.0f"}</td>
 <td>{if $row.centergr == "unknown"}-{else}<a href="/gridref/{$row.centergr}" title="view square {$row.centergr}">{$row.centergr}</a>, {place place=$row.place}{/if}</td>*}
