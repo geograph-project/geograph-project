@@ -32,6 +32,7 @@
 		var latmax = {$latmax};
 		var lonmin = {$lonmin};
 		var lonmax = {$lonmax};
+{dynamic}
 		var iniz = {$iniz};
 		var initype = '{$initype}';
 		var inio = {$inio};
@@ -40,6 +41,7 @@
 		var inilon = {$inilon};
 		var inimlat = {$inimlat};
 		var inimlon = {$inimlon};
+{/dynamic}
 {literal}
 
 		function openGeoWindow(prec, url) {
