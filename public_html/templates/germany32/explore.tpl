@@ -58,11 +58,7 @@
 
 	<li><a href="/mapbrowse.php">Explore a Zoomable <b>Map</b></a>.</li>
 
-  {dynamic}
-  {if $is_logged_in}
 	<li><a href="/gmmap.php">View a <b>Draggable map</b></a>.</li>
-  {/if}
-  {/dynamic}
 
 	<li><a href="/hectadmap.php">View a <b>Hectad coverage</b> map</a></li>
 
