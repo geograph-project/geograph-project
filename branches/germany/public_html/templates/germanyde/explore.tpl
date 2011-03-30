@@ -38,11 +38,11 @@
 <h3>Aufgliederungen...</h3>
 <ul class="explore">
 
-	<li><a href="/explore/calendar.php">Geograph-<b>Kalender</b></a>: Bilder nach Aufnahmedatum betrachten.</li>
+	<li><a href="/explore/calendar.php">Geograph-<b>Kalender</b></a>: Bilder nach Aufnahmedatum betrachten</li>
 
-	<li><a href="/statistics/breakdown.php?by=class">Nach <b>Kategorie</b> aufschlüsseln</a>.</li>
+	<li><a href="/statistics/breakdown.php?by=class">Nach <b>Kategorie</b> aufschlüsseln</a></li>
 
-	<li><a href="/help/sitemap#users"><b>Teilnehmer</b>-Listen</a>.</li>
+	<li><a href="/help/sitemap#users"><b>Teilnehmer</b>-Listen</a></li>
 
 </ul>
 <h3>Querbeet...</h3>
@@ -54,15 +54,11 @@
 	<input id="searchgo" type="submit" value="Los"/>
 	</form></li>
 
-	<li><a href="/stuff/browse-random.php">Zu <b>zufälligem</b> Planquadrat springen</a>.</li>
+	<li><a href="/stuff/browse-random.php">Zu <b>zufälligem</b> Planquadrat springen</a></li>
 
-	<li><a href="/mapbrowse.php"><b>Landkarte</b> betrachten</a>.</li>
+	<li><a href="/mapbrowse.php"><b>Landkarte</b> betrachten</a></li>
 
-  {dynamic}
-  {if $is_logged_in}
-	<li><a href="/gmmap.php"><b>Verschiebbare Karte</b> ohne Zonen betrachten</a>.</li>
-  {/if}
-  {/dynamic}
+	<li><a href="/gmmap.php"><b>Verschiebbare Karte</b> ohne Zonen betrachten</a></li>
 
 	<li><a href="/hectadmap.php">Karte der <b>Hectad-Abdeckung</b></a> (10km&times;10km-Quadrate)</li>
 
@@ -96,6 +92,6 @@
 
 </ul>
 
-<p style="background-color:#cccccc;padding:10px;">Bilder mit <a href="/help/sitemap#software">externer <b>Software</b></a> betrachten.</p>
+<p style="background-color:#cccccc;padding:10px;">Bilder mit <a href="/help/sitemap#software">externer <b>Software</b></a> betrachten</p>
 
 {include file="_std_end.tpl"}
