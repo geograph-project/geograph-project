@@ -5,6 +5,7 @@
 <h2>Regional Statistics{if $regionname} of {$regionname|escape:'html'}{/if}</h2>
 
 {if $hstats}
+<p>You can change the sort order by clicking a column header.</p>
 <!--table border="1" cellpadding="4" cellspacing="0" class="statstable"-->
 <table class="report sortable" id="regionstat" style="font-size:8pt;">
 <thead>

@@ -15,19 +15,21 @@
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit" href="/submit.php">Submit</a></li>
+     {dynamic}{if $is_logged_in}
+     <li><a title="Your most recent submissions" href="/submissions.php">Submissions</a></li>
+     {/if}{/dynamic}
      <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
      <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
     </ul></li>
+    <li>Tools<ul>
+     <li><a title="Geograph Map using mercator projection" href="/gmmap.php">Mercator Map</a></li>
   {dynamic}
   {if $is_logged_in}
-    <li>Tools<ul>
      <li><a title="Geograph Map" href="/gmap.php">Geograph Map</a></li>
-     <li><a title="GoogleMaps" href="/submitmap.php">Google Map</a></li>
-     <li><a title="Test of Geograph Map using mercator projection" href="/gmmap.php">Mercator Map</a></li>
-     <li><a title="Coordinate conversion" href="/latlong.php">Coordinates</a></li>
-    </ul></li>
   {/if}
   {/dynamic}
+     <li><a title="Coordinate conversion" href="/latlong.php">Coordinates</a></li>
+    </ul></li>
     <li>Further Info<ul>
      <li><a title="FAQ" href="/faq.php">FAQ</a></li>
      <li><a title="Geograph Information Documents" href="/content/?docs&amp;order=title">Documents</a></li>

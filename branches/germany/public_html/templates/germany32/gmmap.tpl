@@ -32,12 +32,15 @@
 		var latmax = {$latmax};
 		var lonmin = {$lonmin};
 		var lonmax = {$lonmax};
+		var iniz = {$iniz};
+		var initype = '{$initype}';
+		var inio = {$inio};
+		var inior = {$inior};
+		var inilat = {$inilat};
+		var inilon = {$inilon};
+		var inimlat = {$inimlat};
+		var inimlon = {$inimlon};
 {literal}
-
-		function radioVal(obj) {
-			for (var i = 0; i < obj.length; i++) if (obj[i].checked) return obj[i].value;
-			return false;
-		}
 
 		function openGeoWindow(prec, url) {
 			var curgridref = document.theForm.grid_reference.value.replace(/ /g,'');
@@ -55,6 +58,7 @@
 				map.removeOverlay(currentelement);
 				currentelement = null;
 				document.theForm.grid_reference.value = '';
+				GEvent.trigger(map, "markergone");
 			}
 		}
 
@@ -83,6 +87,116 @@
 			}
 			return false;
 		}
+
+/*
+ * Based on Opacity GControl by Klokan Petr Pridal (based on XSlider of Mike Williams)
+ */
+ 
+function OpacityControl( layer, maptype, title ) {
+  this.layer = layer;
+  this.maptype = maptype;
+  this.title = title;
+}
+OpacityControl.prototype = new GControl();
+
+// This function positions the slider to match the specified opacity
+OpacityControl.prototype.setSlider = function(pos) {
+  var left = Math.round((58*pos));
+  this.slide.left = left;
+  this.knob.style.left = left+"px";
+  this.knob.style.top = "0px"; // correction001
+}
+
+// This function reads the slider and sets the overlay opacity level
+OpacityControl.prototype.setOpacity = function() {
+  this.layer.opacity = this.slide.left/58;
+  if (this.map.getCurrentMapType() != this.maptype)
+    return;
+  //is there a less ugly way to repaint the map?
+  //map.removeMapType(this.maptype);
+  //map.addMapType(this.maptype);
+  map.setMapType(G_NORMAL_MAP);
+  map.setMapType(this.maptype);
+  GEvent.trigger(this.layer, "opacitychanged");
+}
+
+// This gets called by the API when addControl(new OpacityControl())
+OpacityControl.prototype.initialize = function(map) {
+  var that=this;
+  this.map = map;
+  //this.layer = layer;
+
+  // Is this MSIE, if so we need to use AlphaImageLoader
+  var agent = navigator.userAgent.toLowerCase();
+  if ((agent.indexOf("msie") > -1) && (agent.indexOf("opera") < 1)){this.ie = true} else {this.ie = false}
+
+  // create the background graphic as a <div> containing an image
+  var container = document.createElement("div");
+  container.style.width="70px";
+  container.style.height="21px";
+
+  // Handle transparent PNG files in MSIE
+  if (this.ie) {
+    var loader = "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/opacity-slider.png', sizingMethod='crop');";
+    container.innerHTML = '<div style="height:21px; width:70px; ' +loader+ '" ></div>';
+  } else {
+    container.innerHTML = '<div style="height:21px; width:70px; background-image:url(/img/opacity-slider.png)" ></div>';
+  }
+
+  // create the knob as a GDraggableObject
+  // Handle transparent PNG files in MSIE
+  if (this.ie) {
+    var loader = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/opacity-slider.png', sizingMethod='crop');";
+    this.knob = document.createElement("div"); 
+    this.knob.title = this.title;
+    this.knob.style.height="21px";
+    this.knob.style.width="13px";
+    this.knob.style.overflow="hidden";
+    this.knob_img = document.createElement("div"); 
+    this.knob_img.style.height="21px";
+    this.knob_img.style.width="83px";
+    this.knob_img.style.filter=loader;
+    this.knob_img.style.position="relative";
+    this.knob_img.style.left="-70px";
+    this.knob.appendChild(this.knob_img);
+  } else {
+    this.knob = document.createElement("div"); 
+    this.knob.title = this.title;
+    this.knob.style.height="21px";
+    this.knob.style.width="13px";
+    this.knob.style.backgroundImage="url(/img/opacity-slider.png)";
+    this.knob.style.backgroundPosition="-70px 0px";
+  }
+  container.appendChild(this.knob);
+  this.slide=new GDraggableObject(this.knob, {container:container});
+  this.slide.setDraggableCursor('pointer');
+  this.slide.setDraggingCursor('pointer');
+  this.container = container;
+
+  // attach the control to the map
+  map.getContainer().appendChild(container);
+
+  // init slider
+  this.setSlider( this.layer.opacity );
+
+  // Listen for the slider being moved and set the opacity
+  GEvent.addListener(this.slide, "dragend", function() {that.setOpacity()});
+  GEvent.addListener(this.map, "maptypechanged", function() {
+    if (that.map.getCurrentMapType() != that.maptype) {
+      that.container.style.display="none";
+    } else {
+      that.container.style.display="block";
+      that.setSlider( that.layer.opacity );
+    }
+  } );
+
+  return container;
+}
+
+// Set the default position for the control
+OpacityControl.prototype.getDefaultPosition = function() {
+  return new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(7, 47));
+}
 
 		function GetTileUrl_GeoM(txy, z) {
 			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z;
@@ -126,6 +240,13 @@
 
 		function loadmap() {
 			if (GBrowserIsCompatible()) {
+				var op = 0.5;
+				if (inio >= 0)
+					op = inio;
+				var opr = 1.0;
+				if (inior >= 0)
+					opr = inior;
+
 				var copyright = new GCopyright(1,
 					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
 					'(<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)');
@@ -162,13 +283,15 @@
 				tilelayers_mapnikhg[0].getOpacity = function () { return 1.0; };
 				tilelayers_mapnikhg[0].getTileUrl = GetTileUrl_Mapnik;
 				tilelayers_mapnikhg[1] = new GTileLayer(copyrightCollectionTopoH, 9, 14);// 9 19
+				tilelayers_mapnikhg[1].opacity = opr;
 				tilelayers_mapnikhg[1].isPng = function () { return true; };
-				tilelayers_mapnikhg[1].getOpacity = function () { return 1.0; };
+				tilelayers_mapnikhg[1].getOpacity = function () { return this.opacity; };
 				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_TopH;
 				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollectionO,4,14);
+				tilelayers_mapnikhg[2].opacity = op;
 				tilelayers_mapnikhg[2].getTileUrl = GetTileUrl_GeoMO;
 				tilelayers_mapnikhg[2].isPng = function () { return true; };
-				tilelayers_mapnikhg[2].getOpacity = function () { return 0.5; };
+				tilelayers_mapnikhg[2].getOpacity = function () { return this.opacity; };
 				tilelayers_mapnikhg[3] = new GTileLayer(copyrightCollectionO,4,14);
 				tilelayers_mapnikhg[3].getTileUrl = GetTileUrl_GeoMG;
 				tilelayers_mapnikhg[3].isPng = function () { return true; };
@@ -182,6 +305,30 @@
 				map.addMapType(geomapm);
 				map.addMapType(mapnikhg_map);
 
+				map.geolayer = tilelayers_mapnikhg[2];
+				map.relieflayer = tilelayers_mapnikhg[1];
+
+				G_NORMAL_MAP.gurlid = 'm';
+				G_SATELLITE_MAP.gurlid = 'k';
+				G_HYBRID_MAP.gurlid = 'h';
+				G_PHYSICAL_MAP.gurlid = 'p';
+				geomapm.gurlid = 'g';
+				mapnikhg_map.gurlid = 'og';
+				G_NORMAL_MAP.gmaxz = 21; // FIXME
+				G_SATELLITE_MAP.gmaxz = 19;
+				G_HYBRID_MAP.gmaxz = 21;
+				G_PHYSICAL_MAP.gmaxz = 15;
+				geomapm.gmaxz = 13;
+				mapnikhg_map.gmaxz = 14;
+				var maptypes = {
+					'm' : G_NORMAL_MAP,
+					'k' : G_SATELLITE_MAP,
+					'h' : G_HYBRID_MAP,
+					'p' : G_PHYSICAL_MAP,
+					'g' : geomapm,
+					'og': mapnikhg_map
+				}
+
 				G_PHYSICAL_MAP.getMinimumResolution = function () { return 4 };
 				G_NORMAL_MAP.getMinimumResolution = function () { return 4 };
 				G_SATELLITE_MAP.getMinimumResolution = function () { return 4 };
@@ -190,84 +337,67 @@
 
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
-				
+				map.addControl(new OpacityControl( tilelayers_mapnikhg[2], mapnikhg_map, 'Coverage: change opacity'));
+				map.addControl(new OpacityControl( tilelayers_mapnikhg[1], mapnikhg_map, 'Relief: change opacity'),
+				               new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(7,67)));
+
 				var point = new GLatLng(lat0, lon0);
-				map.setCenter(point, 5, geomapm);
+				var zoom = 5;
+				var mt = geomapm;
+				if (inilat < 90)
+					point = new GLatLng(inilat, inilon);
+				if (initype != '')
+					mt = maptypes[initype];
+				if (iniz >= 4 && iniz <= mt.gmaxz)
+					zoom = iniz;
+				map.setCenter(point, zoom, mt);
 
 				map.enableDoubleClickZoom(); 
 				map.enableContinuousZoom();
 				map.enableScrollWheelZoom();
-		
+
+				if (inimlat < 90) {
+					currentelement = createMarker(new GLatLng(inimlat, inimlon),null);
+					map.addOverlay(currentelement);
+					GEvent.trigger(currentelement,'drag');
+				}
+				function updateMapLink() {
+					var ll = map.getCenter();
+					var url = '?z=' + map.getZoom()
+						+ '&t=' + map.getCurrentMapType().gurlid
+						+ '&ll=' + ll.lat() + ',' + ll.lng();
+					if (map.geolayer.opacity != 0.5) {
+						url += '&o=' + map.geolayer.opacity;
+					}
+					if (map.relieflayer.opacity != 1) {
+						url += '&or=' + map.relieflayer.opacity;
+					}
+					if (currentelement) {
+						ll = currentelement.getPoint();
+						url += '&mll=' + ll.lat() + ',' + ll.lng();
+					}
+					var curlink = document.getElementById("maplink");
+					curlink.setAttribute("href", url);
+				}
+				updateMapLink();
+				GEvent.addListener(map, "maptypechanged", updateMapLink);
+				GEvent.addListener(map, "moveend", updateMapLink);
+				GEvent.addListener(map, "zoomend", updateMapLink);
+				GEvent.addListener(tilelayers_mapnikhg[2], "opacitychanged", updateMapLink);
+				GEvent.addListener(tilelayers_mapnikhg[1], "opacitychanged", updateMapLink);
+				GEvent.addListener(map, "markergone", updateMapLink);
+
 				GEvent.addListener(map, "click", function(marker, point) {
 					if (marker) {
-						return; /* FIXME? */
-					}
-					curSelection = "marker";//radioVal(document.settings.on_click);
-					if (curSelection == "marker") {
-						if (currentelement) {
-							currentelement.setPoint(point);
-							GEvent.trigger(currentelement,'drag');
-						
-						} else {
-							currentelement = createMarker(point,null);
-							map.addOverlay(currentelement);
-							
-							GEvent.trigger(currentelement,'drag');
-						}
-						return;
-					}
-
-					//FIXME -> function in mappingG.js, see also createMarker in that file
-					var wgs84=new GT_WGS84();
-					wgs84.setDegrees(point.lat(), point.lng());
-					if (ri == -1||issubmit) {
-						if (wgs84.isIreland()) {
-							//convert to Irish
-							var grid=wgs84.getIrish(true);
-						
-						} else if (wgs84.isGreatBritain()) {
-							//convert to OSGB
-							var grid=wgs84.getOSGB();
-						} else if (wgs84.isGermany32()) {
-							//convert to German
-							var grid=wgs84.getGerman32();
-						} else if (wgs84.isGermany33()) {
-							//convert to German
-							var grid=wgs84.getGerman33();
-						} else if (wgs84.isGermany31()) {
-							//convert to German
-							var grid=wgs84.getGerman31();
-						} else {
-							//FIXME?
-							return;
-						}
-					}
-					else if (ri == 1)
-						var grid=wgs84.getOSGB();
-					else if (ri == 2)
-						var grid=wgs84.getIrish();
-					else if (ri == 3)
-						var grid=wgs84.getGerman32(true, false);
-					else if (ri == 4)
-						var grid=wgs84.getGerman33(true, false);
-					else if (ri == 5)
-						var grid=wgs84.getGerman31(true, false);
-					
-					if (curSelection == "search") {
-						var gridref = grid.getGridRef(5);
-						var url = "/search.php?q=";
-					} else if (curSelection == "submit") {
-						var gridref = grid.getGridRef(5);
-						var url = "/submit.php?gridreference=";
-					} else if (curSelection == "square") {
-						var gridref = grid.getGridRef(5/*2*/);
-						var url = "/gridref/";
+					} else if (currentelement) {
+						currentelement.setPoint(point);
+						GEvent.trigger(currentelement,'drag');
 					} else {
-						//FIXME?
-						return;
+						currentelement = createMarker(point,null);
+						map.addOverlay(currentelement);
+						GEvent.trigger(currentelement,'drag');
 					}
-					url += gridref.replace(/ /g,'');
-					window.open(url,'_blank'/*,'width=650,height=500,scrollbars=yes'*/);
+					updateMapLink();
 				});
 
 
@@ -350,6 +480,7 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="button" value="Submit image"      onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
 <input type="button" value="Search for images" onclick="openGeoWindow(5, '/search.php?q=');" />
 <input type="button" value="Clear marker"      onclick="clearMarker();" />
+<a id="maplink" href="#">Link to this map</a>
 </div>
 {/if}
 
@@ -364,20 +495,7 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 	(Powered by the Google Maps API Geocoder)</small></small>
 </div>
 </form>
-{*
-<form name="settings" action="javascript:void()">
-<!--div style="width:600px; text-align:center;"-->
-<div>
-<fieldset>
-<legend>On Click:</legend>
-<input checked type="radio" name="on_click" id="on_click_marker" value="marker"><label for="on_click_marker">Place marker</label><br/ >
-<input         type="radio" name="on_click" id="on_click_square" value="square"><label for="on_click_square">Show gridsquare</label><br/ >
-<input         type="radio" name="on_click" id="on_click_submit" value="submit"><label for="on_click_submit">Submit image</label><br/ >
-<input         type="radio" name="on_click" id="on_click_search" value="search"><label for="on_click_search">Search for images nearby</label>
-</fieldset>
-</div>
-</form>
-*}
+
 {if $inner}
 </body>
 </html>
