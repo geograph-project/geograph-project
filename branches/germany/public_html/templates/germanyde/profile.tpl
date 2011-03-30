@@ -206,6 +206,7 @@
 		<td>Titel</td>
 		<td sorted="desc">Eingereicht</td>
 		<td>Klassifizierung</td>
+		<td>Aufgenommen</td>
 	</tr></thead>
 	<tbody>
 	{foreach from=$userimages item=image}
@@ -213,8 +214,9 @@
 		<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="Zur Diskussion - zuletzt aktualisiert am {$image->last_post|date_format:"%a, %e. %b %Y um %H:%M"}" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" ><img src="/templates/basic/img/discuss.gif" width="10" height="10" alt="discussion indicator"></a>{/if}</td>
 		<td sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
 		<td sortvalue="{$image->title}"><a title="Bild betrachten" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
-		<td sortvalue="{$image->gridimage_id}" class="nowrap">{$image->submitted|date_format:"%a, %e. %b %Y"}</td>
+		<td sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e. %b %Y"}</td>
 		<td class="nowrap">{if $image->moderation_status eq "accepted"}Extrabild{elseif $image->moderation_status eq "geograph"}Geobild{elseif $image->moderation_status eq "rejected"}Abgelehnt{elseif $image->moderation_status eq "pending"}Unmoderiert{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(erstes){elseif $image->ftf eq 2}(zweites){elseif $image->ftf eq 3}(drittes){elseif $image->ftf eq 4}(viertes){/if}</td>
+		<td sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e. %b %Y"}{/if}</td>
 		</tr>
 	{/foreach}
 	</tbody></table>
@@ -250,6 +252,7 @@
 		{if $user->user_id eq $profile->user_id}
 			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="Alle Bildtitel als &bdquo;Wordle&ldquo; anzeigen."}</li>
 			<li><b>Änderungsvorschläge</b>: <a href="/tickets.php" rel="nofollow">Aktuelle Tickets zeigen.</a></li>
+			<li><b>Bilder</b>: <a href="/submissions.php" rel="nofollow">Zuletzt eingereichte Bilder bearbeiten.</a></li>
 		{/if}
 	</ul>
 	{if $user->user_id eq $profile->user_id}
