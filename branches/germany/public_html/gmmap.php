@@ -26,10 +26,10 @@ init_session();
 
 $smarty = new GeographPage;
 
-if (!$USER->hasPerm("basic")) {
-	$smarty->display('static_submit_intro.tpl');
-	exit;
-}
+#if (!$USER->hasPerm("basic")) {
+#	$smarty->display('static_submit_intro.tpl');
+#	exit;
+#}
 
 $smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
 
@@ -51,6 +51,55 @@ if (isset($_REQUEST['picasa'])) {
 	$cacheid .= 'ext';
 	$smarty->assign('ext',1);
 }
+
+$zoom = -1;
+$op = -1;
+$opr = -1;
+$lat = 90; $lon = 0;
+$mlat = 90; $mlon = 0;
+$type = '';# "m" map, "k" satellite, "h" hybrid, "p" terrain, "g" geograph, "og" osm+g
+if (isset($_GET['ll']) && preg_match('/^[\d.]+,[\d.]+$/', $_GET['ll'])) {
+	$cacheid .= ':l'.$_GET['ll'];
+	list($lat,$lon) = explode(',',$_GET['ll']);
+	$lat = floatval($lat);
+	$lon = floatval($lon);
+}
+if (isset($_GET['mll']) && preg_match('/^[\d.]+,[\d.]+$/', $_GET['mll'])) {
+	$cacheid .= ':m'.$_GET['mll'];
+	list($mlat,$mlon) = explode(',',$_GET['mll']);
+	$mlat = floatval($mlat);
+	$mlon = floatval($mlon);
+}
+if (isset($_GET['z']) && is_numeric($_GET['z'])) {
+	$cacheid .= ':z'.$_GET['z'];
+	$zoom = intval($_GET['z']);
+}
+if (isset($_GET['o']) && is_numeric($_GET['o'])) {
+	$op = floatval($_GET['o']);
+	if ($op >= 0 && $op <= 1)
+		$cacheid .= ':o'.$_GET['o'];
+	else
+		$op = -1;
+}
+if (isset($_GET['or']) && is_numeric($_GET['or'])) {
+	$opr = floatval($_GET['or']);
+	if ($opr >= 0 && $opr <= 1)
+		$cacheid .= ':or'.$_GET['or'];
+	else
+		$opr = -1;
+}
+if (isset($_GET['t']) && in_array($_GET['t'], array('m', 'k', 'h', 'p', 'g', 'og'))) {
+	$cacheid .= ':t'.$_GET['t'];
+	$type = $_GET['t'];
+}
+$smarty->assign('iniz',    $zoom);
+$smarty->assign('initype', $type);
+$smarty->assign('inio',    $op);
+$smarty->assign('inior',   $opr);
+$smarty->assign('inilat',  $lat);
+$smarty->assign('inilon',  $lon);
+$smarty->assign('inimlat', $mlat);
+$smarty->assign('inimlon', $mlon);
 
 if (!empty($_REQUEST['grid_reference'])) 
 {
