@@ -214,11 +214,6 @@
 			allowedBounds = new GLatLngBounds(new GLatLng(proj.latmin,proj.lonmin), new GLatLng(proj.latmax,proj.lonmax));
 		}
 
-		function radioVal(obj) {
-			for (var i = 0; i < obj.length; i++) if (obj[i].checked) return obj[i].value;
-			return false;
-		}
-
 		function openGeoWindow(prec, url) {
 			var curgridref = document.theForm.grid_reference.value.replace(/ /g,'');
 			if (curgridref.search(/^[A-Za-z]+(\d\d)+$/) != 0)
@@ -322,74 +317,16 @@
 		
 				GEvent.addListener(map, "click", function(marker, point) {
 					if (marker) {
-						return; /* FIXME? */
-					}
-					curSelection = "marker";//radioVal(document.settings.on_click);
-					if (curSelection == "marker") {
-						if (currentelement) {
-							currentelement.setPoint(point);
-							GEvent.trigger(currentelement,'drag');
-						
-						} else {
-							currentelement = createMarker(point,null);
-							map.addOverlay(currentelement);
-							
-							GEvent.trigger(currentelement,'drag');
-						}
-						return;
-					}
-
-					//FIXME -> function in mappingG.js, see also createMarker in that file
-					var wgs84=new GT_WGS84();
-					wgs84.setDegrees(point.lat(), point.lng());
-					if (ri == -1||issubmit) {
-						if (wgs84.isIreland()) {
-							//convert to Irish
-							var grid=wgs84.getIrish(true);
-						
-						} else if (wgs84.isGreatBritain()) {
-							//convert to OSGB
-							var grid=wgs84.getOSGB();
-						} else if (wgs84.isGermany32()) {
-							//convert to German
-							var grid=wgs84.getGerman32();
-						} else if (wgs84.isGermany33()) {
-							//convert to German
-							var grid=wgs84.getGerman33();
-						} else if (wgs84.isGermany31()) {
-							//convert to German
-							var grid=wgs84.getGerman31();
-						} else {
-							//FIXME?
-							return;
-						}
-					}
-					else if (ri == 1)
-						var grid=wgs84.getOSGB();
-					else if (ri == 2)
-						var grid=wgs84.getIrish();
-					else if (ri == 3)
-						var grid=wgs84.getGerman32(true, false);
-					else if (ri == 4)
-						var grid=wgs84.getGerman33(true, false);
-					else if (ri == 5)
-						var grid=wgs84.getGerman31(true, false);
+					} else if (currentelement) {
+						currentelement.setPoint(point);
+						GEvent.trigger(currentelement,'drag');
 					
-					if (curSelection == "search") {
-						var gridref = grid.getGridRef(5);
-						var url = "/search.php?q=";
-					} else if (curSelection == "submit") {
-						var gridref = grid.getGridRef(5);
-						var url = "/submit.php?gridreference=";
-					} else if (curSelection == "square") {
-						var gridref = grid.getGridRef(5/*2*/);
-						var url = "/gridref/";
 					} else {
-						//FIXME?
-						return;
+						currentelement = createMarker(point,null);
+						map.addOverlay(currentelement);
+						
+						GEvent.trigger(currentelement,'drag');
 					}
-					url += gridref.replace(/ /g,'');
-					window.open(url,'_blank'/*,'width=650,height=500,scrollbars=yes'*/);
 				});
 
 
@@ -492,20 +429,7 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 	(über Google Maps API Geocoder)</small></small>
 </div>
 </form>
-{*
-<form name="settings" action="javascript:void()">
-<!--div style="width:600px; text-align:center;"-->
-<div>
-<fieldset>
-<legend>On Click:</legend>
-<input checked type="radio" name="on_click" id="on_click_marker" value="marker"><label for="on_click_marker">Place marker</label><br/ >
-<input         type="radio" name="on_click" id="on_click_square" value="square"><label for="on_click_square">Show gridsquare</label><br/ >
-<input         type="radio" name="on_click" id="on_click_submit" value="submit"><label for="on_click_submit">Submit image</label><br/ >
-<input         type="radio" name="on_click" id="on_click_search" value="search"><label for="on_click_search">Search for images nearby</label>
-</fieldset>
-</div>
-</form>
-*}
+
 {if $inner}
 </body>
 </html>
