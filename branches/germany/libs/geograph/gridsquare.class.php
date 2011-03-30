@@ -377,8 +377,9 @@ class GridSquare
 						$enr = $conv->wgs84_to_national($latlong[0],$latlong[1]);
 						if (count($enr)) { # FIXME error handling
 							$ri2 = $enr[2];
-							$fe2=$enr[0];$fn2=$enr[1];trigger_error("----c2--$fe2,$fn2,$ri2---", E_USER_NOTICE);
+							$fe2=$enr[0];$fn2=$enr[1];
 							if ($ri2 != $ri) { // we got a new ri
+								trigger_error("----c2--$fe2,$fn2,$ri2---", E_USER_NOTICE);
 								if ($length == 1)
 									$shift = 5000;
 								elseif ($length == 0)
