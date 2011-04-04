@@ -20,7 +20,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <ul>
  <li><a href="#points">How do I get a Geograph <b>point</b> for my image?</a></li>
  <li><a href="#tpoints">How do <b>TPoints</b> work?</a></li>
- <li><a href="#squares">Whats a 'Myriad'? A 'hectad'?</a></li>
+ <li><a href="#squares">What's a 'myriad'? A 'hectad'?</a></li>
  <li><a href="#differ">What statistics do you track?</a></li>
  </ul>
 </div>
@@ -53,9 +53,9 @@ div:target { background-color:orange;padding-bottom:10px; }
 <h3>How do TPoints work?</h3>
 
 	<p>TPoint or 'Temporal Point' is a working title (subject to change) for a new kind of point.
-	A contributor can gain a TPoint by submitting a contemporary photo to a square that hasn't had a photo for 5 years. But can also submit historic photos, and as long as there isn't a geograph taken with 5 years (before OR after) then it gains a TPoint.
+	A contributor can gain a TPoint by submitting a contemporary photo to a square that hasn't had a photo for 5 years. But you can also submit historic photos, and as long as there isn't a geograph taken with 5 years (before OR after) then it gains a TPoint.
 
-	<p>In essence: <b>If there isn't a Geograph taken within 5 years of a Geograph you submit, you get a TPoint.</b></p>
+	<p>In essence: <b>if there isn't a Geograph taken within 5 years of a Geograph you submit, you get a TPoint.</b></p>
 
 	<p>The aim is to increase the date range of available photos per square. Squares that can get a TPoint for <b>a recent photo</b> are shown in orange on the <a href="/map/?recent=1">Recent Only coverage map</a>.</p>
 
@@ -63,13 +63,13 @@ div:target { background-color:orange;padding-bottom:10px; }
 
 <div id="squares">
 <a name="squares"></a>
-<h3>Whats a 'Myriad'? A 'hectad'?</h3>
+<h3>What's a 'myriad'? A 'hectad'?</h3>
 
-<p>We couldn't find unabigious names for larger units of area, so we made our own! A Hectad is 10km x 10km. Whereas a myriad is 100km x 100km.</p>
+<p>We couldn't find unambiguous names for larger units of area, so we made our own! A hectad is 10km x 10km, whereas a myriad is 100km x 100km.</p>
 
 <ul>
 	<li>Read more: <a href="/help/squares">Names for Different Sized Squares</a></li>
-	<li>Also: <a href="/article/Geographisms">Geographisms</a> - geograph website terminonlogy</li>
+	<li>Also: <a href="/article/Geographisms">Geographisms</a> - Geograph website terminology</li>
 </div>
 
 <div id="differ">
@@ -78,27 +78,27 @@ div:target { background-color:orange;padding-bottom:10px; }
 	<ul>
 	<li><b>Points</b> / <b>Firsts</b>: the first Geograph submitted for a square earns a <a href="#points"><b>First Geograph Point</b></a><br/><br/><ul>
 		<li><b>Seconds</b>: a "<b>Second Visitor</b>" point is awarded for the second person to contribute a Geograph to a square</li>
-		<li><b>Thirds</b>: similarlly a "<b>Third Visitor</b>" point is awarded for the third person to contribute a Geograph to a square</li>
+		<li><b>Thirds</b>: similarly a "<b>Third Visitor</b>" point is awarded for the third person to contribute a Geograph to a square</li>
 		<li><b>Fourths</b>: and therefore a "<b>Fourth Visitor</b>" point is awarded for the fourth person to contribute a Geograph to a square</li>
 		<li><b>AllPoints</b>: Total of First/Second/Third/Fourth Visitor Points</li>
-		<li><b>Personal Points</b>: The first Geograph image submitted by each user in a square gets a Personal Point</li>
-		<li><b>TPoints</b>: Awarded for a geograph submitted to a square, that doesn't already have a photo taken within a 5 year window<br/><small> (short for "temporally aware" - see also seperate question above),</small></li>
+		<li><b>Personal Points</b>: The first Geograph image submitted by each user in a square gets a Personal point</li>
+		<li><b>TPoints</b>: Awarded for a Geograph submitted to a square that doesn't already have a photo taken over the previous 5 years<br/><small> (short for "temporally aware" - see also separate question above),</small></li>
 		</ul></li>
 
-		<li><b>Images</b>: these are all images on the site, regardless if they Geograph or supplemental<br/><br/><ul>
-			<li><b>Geographs</b>: these are all Geograph images, even if multiple for the same grid square</li>
+		<li><b>Images</b>: these are all images on the site, regardless if they are Geographs or supplementals<br/><br/><ul>
+			<li><b>Geographs</b>: these are all Geograph images, even if multiples for the same grid square</li>
 			<li><b>Additional Geographs</b>: these are Geograph images, excluding the First Geographs</li>
 			<li><b>Supplementals</b>: the number of Supplemental images submitted</li>
 		</ul></li>
 
-		<li><b>Squares</b>: the number of different squares photographed (Geograph or supplemental)<br/><br/><ul>
+		<li><b>Squares</b>: the number of different squares photographed (Geographs or Supplementals)<br/><br/><ul>
 			<li><b>GeoSquares</b>: the number of different squares Geographed<br/><small> (on the All Time Leaderboard is the same as Personal Geograph Points, doesn't apply on the Weekly Leaderboard)</small></li>
-			<li><b>Depth</b>: number of images divided by the number of squares.<br/> <small>Higher numbers indicate a tendency to photograph a small number of squares very well. (opposite to points/coverage)</small></li>
+			<li><b>Depth</b>: number of images divided by the number of squares.<br/> <small>Higher numbers indicate a tendency to photograph a small number of squares a lot (the opposite of points/coverage)</small></li>
 			<li><b>Centisquares</b>: number of different centisquares<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup> for which images have been submitted</li>
 			<li><b>Hectads</b>: number of different 10k hectads<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup> for which images have been submitted</li>
 			<li><b>Myriads</b>: number of different 100k myriads<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup> for which images have been submitted</li>
-			<li><b>Spread</b>: number of hectads divided by number of images<br><small>Higher numbers indicate a large number of hectads, with few images</small></li>
-			<li><b>AntiSpread</b>: number of images images divided by hectads<br><small>Equivalent to depth score at hectad level</small></li>
+			<li><b>Spread</b>: number of hectads divided by number of images.<br><small>Higher numbers indicate a large number of hectads with few images</small></li>
+			<li><b>AntiSpread</b>: number of images images divided by hectads.<br><small>Equivalent to depth score at hectad level</small></li>
 			<li><b>Categories</b>: number of different image categories used in submissions</li>
 			<li><b>Days</b>: number of different days over which images submitted</li>
 		</ul></li>
