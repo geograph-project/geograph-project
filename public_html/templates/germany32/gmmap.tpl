@@ -103,7 +103,7 @@ OpacityControl.prototype = new GControl();
 
 // This function positions the slider to match the specified opacity
 OpacityControl.prototype.setSlider = function(pos) {
-  var left = Math.round((58*pos));
+  var left = Math.round((56*pos));
   this.slide.left = left;
   this.knob.style.left = left+"px";
   this.knob.style.top = "0px"; // correction001
@@ -111,7 +111,7 @@ OpacityControl.prototype.setSlider = function(pos) {
 
 // This function reads the slider and sets the overlay opacity level
 OpacityControl.prototype.setOpacity = function() {
-  this.layer.opacity = this.slide.left/58;
+  this.layer.opacity = this.slide.left/56;
   if (this.map.getCurrentMapType() != this.maptype)
     return;
   //is there a less ugly way to repaint the map?
@@ -134,21 +134,21 @@ OpacityControl.prototype.initialize = function(map) {
 
   // create the background graphic as a <div> containing an image
   var container = document.createElement("div");
-  container.style.width="70px";
+  container.style.width="69px";
   container.style.height="21px";
 
   // Handle transparent PNG files in MSIE
   if (this.ie) {
-    var loader = "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/opacity-slider.png', sizingMethod='crop');";
-    container.innerHTML = '<div style="height:21px; width:70px; ' +loader+ '" ></div>';
+    var loader = "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/opacity-slider3.png', sizingMethod='crop');";
+    container.innerHTML = '<div style="height:21px; width:69px; ' +loader+ '" ></div>';
   } else {
-    container.innerHTML = '<div style="height:21px; width:70px; background-image:url(/img/opacity-slider.png)" ></div>';
+    container.innerHTML = '<div style="height:21px; width:69px; background-image:url(/img/opacity-slider3.png)" ></div>';
   }
 
   // create the knob as a GDraggableObject
   // Handle transparent PNG files in MSIE
   if (this.ie) {
-    var loader = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/opacity-slider.png', sizingMethod='crop');";
+    var loader = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/opacity-slider3.png', sizingMethod='crop');";
     this.knob = document.createElement("div"); 
     this.knob.title = this.title;
     this.knob.style.height="21px";
@@ -156,18 +156,18 @@ OpacityControl.prototype.initialize = function(map) {
     this.knob.style.overflow="hidden";
     this.knob_img = document.createElement("div"); 
     this.knob_img.style.height="21px";
-    this.knob_img.style.width="83px";
+    this.knob_img.style.width="82px";
     this.knob_img.style.filter=loader;
     this.knob_img.style.position="relative";
-    this.knob_img.style.left="-70px";
+    this.knob_img.style.left="-69px";
     this.knob.appendChild(this.knob_img);
   } else {
     this.knob = document.createElement("div"); 
     this.knob.title = this.title;
     this.knob.style.height="21px";
     this.knob.style.width="13px";
-    this.knob.style.backgroundImage="url(/img/opacity-slider.png)";
-    this.knob.style.backgroundPosition="-70px 0px";
+    this.knob.style.backgroundImage="url(/img/opacity-slider3.png)";
+    this.knob.style.backgroundPosition="-69px 0px";
   }
   container.appendChild(this.knob);
   this.slide=new GDraggableObject(this.knob, {container:container});
