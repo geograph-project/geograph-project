@@ -4,7 +4,7 @@
 	 <h3>WGS84 Lat/Long to Grid Reference Conversion</h3> 
 	 
 {if !$e && !$n}
-	<p>This page will convert Latitude and Longitude (assuming WGS84 datum) into Rectlinear coordinates as suitable for use on this site. (Handles Both Great Britain and Irish Grids)</p> 
+	<p>This page will convert latitude and longitude (assuming WGS84 datum) into rectilinear coordinates suitable for use on this site (handles both Great Britain and Irish grids).</p> 
 {/if}
 
 	<div style="float:left;position:relative;width:200px;height:200px;margin-left:10px;margin-right:10px;text-align:center;background:#dddddd;">
@@ -110,13 +110,13 @@
 		<p>Where to next?</p>
 		<ul>
 		<li><a href="/gridref/{$gridref4}"><b>Browse</b> Pictures of {$gridref4}</a></li>
-		<li><a href="/search.php?q={$gridref}"><b>Search</b> for Pictures around this location</a></li>
+		<li><a href="/search.php?q={$gridref}"><b>Search</b> for pictures around this location</a></li>
 		<li>{if $map_token}<a href="/mapbrowse.php?t={$map_token}">Geograph <b>Map</b> around this location</a>{/if}<ul>
 		{if $datum == "osgb36"}<li><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}">Open the <span style="color:red">New!</span> <b>Draggable Map</b></a></li>{/if}
 			<li>{getamap gridref=$gridref text="Get-a-map&trade;"}</li>
 			<li>{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}</li>
 		</ul></li>
-		<li><a href="/submit.php?gridreference={$gridref}"><b>Submit</b> a Picture for {$gridref4} (using {$gridref} as the picture location)</a></li>
+		<li><a href="/submit.php?gridreference={$gridref}"><b>Submit</b> a picture for {$gridref4} (using {$gridref} as the picture location)</a></li>
 		<li><a href="/gpx.php?gridref={$gridref}">download <b>GPX</b> for this area</a><br/><br/></li>
 		
 		<li>{external href="http://www.nearby.org.uk/coord.cgi?p=`$e`,`$n` `$datum`" title="More info from nearby.org.uk" text="More information about this location from nearby.org.uk"}</li>

@@ -11,7 +11,7 @@
 		<li><b>Geograph Britain and Ireland</b><br/><br/></li>
 		<li><b>Geograph Ireland</b><br/><br/></li>
 	</ul>
-	... share the same user/registration database.<br/><br/> You can use the logins from either here interchangably.
+	... share the same user/registration database.<br/><br/> You can use either login here.
 </div>
 
 {if $inline}
@@ -57,8 +57,8 @@ If you haven't registered yet, <a title="register now" href="/register.php">go a
 {/foreach}
 {if count($_post) && !$_post.login}
 	<br/><br/>
-	<div class="interestBox"><sup style="color:red">new!</sup> Entering your details above should allow you to continue without loss of data. The exception is actully uploading an image, for example on Step 2 of the submission process, which will need to be resent. <br/><br/>
-	It's highly recommended to use the 'Remember me' function to reduce the likelyhood of seeing this message, even on public computers; using the Logout function will also clear the 'Remember me' cookie.</div>
+	<div class="interestBox"><sup style="color:red">new!</sup> Entering your details above should allow you to continue without loss of data. The exception is actually uploading an image, for example on Step 2 of the submission process, which will need to be re-sent. <br/><br/>
+	It's highly recommended to use the 'Remember me' function to reduce the likelihood of seeing this message, even on public computers; using the logout function will also clear the 'Remember me' cookie.</div>
 {/if}
 
 </form>
