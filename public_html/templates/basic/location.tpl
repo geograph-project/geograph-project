@@ -40,7 +40,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	</table>
 </div>
 
-<small><b>Links within Geograph for gridsquare {$gridref}:</b></small>
+<small><b>Links within Geograph for grid square {$gridref}:</b></small>
 
 <ul style="list-style-type:none; padding-left:5px">
 	<li><img src="http://{$static_host}/img/links/20/submit.png" width="20" height="20" alt="submit icon" align="absmiddle"/> <a href="{if $user->submission_method == 'submit2'}/submit2.php#gridref={$gridrefraw}{else}/submit.php?gridreference={$gridrefraw}{/if}"><b>Submit your own picture</b></a></li>
@@ -69,7 +69,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{/if}
 	<li><img src="http://{$static_host}/img/links/20/gpx.png" width="20" height="20" alt="gpx icon" align="absmiddle"/> <a title="Download GPX" href="/gpx.php?gridref={$gridref}">Download a <b>GPX coverage</b> file around this area</a></li>
 	{if strlen($gridrefraw) < 5}
-		<li><img src="http://{$static_host}/img/links/20/hectad.png" width="20" height="20" alt="hectad icon" align="absmiddle"/> <a title="First Geographs within {$gridrefraw}" href="/search.php?first={$gridrefraw}">Find <b>first geographs for hectad</b> {$gridrefraw}</a></li>
+		<li><img src="http://{$static_host}/img/links/20/hectad.png" width="20" height="20" alt="hectad icon" align="absmiddle"/> <a title="First Geographs within {$gridrefraw}" href="/search.php?first={$gridrefraw}">Find <b>First Geographs for hectad</b> {$gridrefraw}</a></li>
 	{/if}
 	<li><img src="http://{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>Search</b> for images near {$gridref}</a></li>
 	<li><img src="http://{$static_host}/img/links/20/place.png" width="20" height="20" alt="places icon" align="absmiddle"/> <a href="/finder/places.php?q={$gridref}"><b>Places near {$gridref}</b></a></li>
@@ -96,7 +96,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	<input type="submit" value="Search"/>
 	<input type="hidden" name="location" value="{$gridref}"/>
 	<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">In {$gridref} only</label> /
-	<input type="radio" name="distance" value="3" id="d3"/><label for="d3">inc surrounding squares</label>
+	<input type="radio" name="distance" value="3" id="d3"/><label for="d3">inc. surrounding squares</label>
 	<input type="hidden" name="do" value="1"/>
 	</div> 
 </form>	

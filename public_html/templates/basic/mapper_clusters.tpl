@@ -39,7 +39,7 @@
 				<label for="addressInput" style="font-size:1.3em">Jump to Location:</label>
 				<input type="text" size="50" id="addressInput" name="address" value="" />
 				<input type="submit" value="Find"/><br/>
-				(Powered by the Google Maps API Geocoder - <b>Note: Doesn't cope with postcodes well.</b>)
+				(Powered by the Google Maps API Geocoder - <b>Note: doesn't cope with postcodes well.</b>)
 			
 			</form>
 		</div>

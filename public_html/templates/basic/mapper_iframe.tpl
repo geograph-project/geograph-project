@@ -133,7 +133,7 @@ AttachEvent(window,'load',loadMap,false);
 <div style="width:660px; text-align:right; font-size:0.9em;">Jump to Grid Reference: <input type="text" size="8" id="coordin" /><input type="button" onclick="parseLocation()" value="Go" /></div>
 
 <div style="width:660px; border-top:1px solid lightgrey; text-align:center; padding-top:3px;margin-top:3px">
-	Click map to view photo(s) in <input type="radio" name="clickto" {if !$centi}checked{/if} id="clickto"/>GridSquare / <input type="radio" {if $centi}checked{/if} name="clickto"/>CentiSquare
+	Click map to view photo(s) in <input type="radio" name="clickto" {if !$centi}checked{/if} id="clickto"/>Grid Square / <input type="radio" {if $centi}checked{/if} name="clickto"/>CentiSquare
 </div>
 
 <div class="interestBox" style="padding:0px; margin-top:6px">
@@ -141,7 +141,7 @@ AttachEvent(window,'load',loadMap,false);
 </div>
 
 <div class="copyright">&middot; Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey.<br/> All Rights Reserved. Educational licence 100045616 &middot;<br/>
-&middot; Photographs and coverages are available under a seperate <a href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a> &middot;<br/>
+&middot; Photographs and coverages are available under a separate <a href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a> &middot;<br/>
 &middot; {external href="http://scenic.mysociety.org/faq" text="ScenicOrNot"} dataset &copy; mySociety and licenced for reuse under this <a href="http://creativecommons.org/licenses/by-nc/3.0/" class="nowrap">Creative Commons Licence</a> &middot;<br/><br/>
 For the purposes of the Creative Commons Licence this page should be considered a "Collective Work", and as such is not available in its entirety for reuse.
 </div>
