@@ -141,6 +141,7 @@
 			updateMapMarker(document.theForm.grid_reference,false,true);
 		}
 		AttachEvent(window,'load',updateMapMarkers,false);
+	// ]]>
 	</script>
 {/literal}
 
@@ -160,7 +161,7 @@
 
 </form>
 <form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
-<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address: 
+<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:</label>
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="submit" value="Find"/><small><small><br/>
 	(Powered by the Google Maps API Geocoder)</small></small>
