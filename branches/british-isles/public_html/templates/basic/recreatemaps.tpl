@@ -2,7 +2,7 @@
 {dynamic}
 
 <h2>Update Maps</h2>
-<p>Use this page to let the system know that a map doesn't appear to be updating. You should normally wait at least 3 hours after image has been moderated before visiting this page...</p>
+<p>Use this page to let the system know that a map doesn't appear to be updating. You should normally wait at least 3 hours after an image has been moderated before visiting this page.</p>
 
 {if $invalid_maps > 0}
 	<p>There are currently <b>{$invalid_maps}</b> tiles in the process queue.</p>

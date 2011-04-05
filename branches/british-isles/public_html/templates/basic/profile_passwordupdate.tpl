@@ -6,14 +6,14 @@
 {dynamic}
 
 {if $confirmation_status eq "ok"}
-	<p>Thankyou, your profile will now use your new password.</p>
+	<p>Thank you, your profile will now use your new password.</p>
 	
 
 {elseif $confirmation_status eq "alreadycomplete"}
 	<p>You have already confirmed this password change.</p>
 
 {else}
-	<p>Sorry, there was a problem confirming your password changes.
+	<p>Sorry, there was a problem confirming your password change.
 	Please <a href="contact.php">contact us</a> if the problem persists.</p>
 {/if}
 

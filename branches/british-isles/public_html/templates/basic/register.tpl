@@ -35,10 +35,10 @@
 {if $empty_referer}
 <div  class="interestBox" id="msgg">
 	<h1>Important Notice</h1>
-	<p>We do not tolerate spam - images are moderated, and all forum posts (particully from new users) are subject to moderation.</p>
-	<p>Also note that we have instigated a new policy that new users are don't get functional links on their profile page (making the page invisble to search engines).</p>
+	<p>We do not tolerate spam - images are moderated, and all forum posts (particularly from new users) are subject to moderation.</p>
+	<p>Also note that we have instigated a new policy that new users don't get functional links on their profile page (making the page invisible to search engines).</p>
 <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-	<p style="color:red">This makes geograph a useless target for spammers attempting to use Geograph profile pages to get links to their site.</p>
+	<p style="color:red">This makes Geograph a useless target for spammers attempting to use Geograph profile pages to get links to their site.</p>
 </div>
 <script type="text/javascript">
 {literal}

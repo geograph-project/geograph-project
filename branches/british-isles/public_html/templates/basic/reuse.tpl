@@ -74,12 +74,12 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <ul class="checklist" style="display:none" id="showweb">
 
 <li><b>We do ask you be polite and not abuse the Geograph website resources.</b> <br/>
-<i>Please do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"} the fullsize image directly off our servers, this will likely be blocked.</i><br/>
+<i>Please do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"} the fullsize image directly off our servers, this is likely to be blocked.</i><br/>
 Instead download a copy, and upload it to your own webspace. <b>
 {if $image->isLandscape()}{/if}
 <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download {if !$image->original_width}fullsize{/if} {$image->cached_size.0}x{$image->cached_size.1}px JPEG file</a>
 {if $image->original_width}
-or <a href="/more.php?id={$image->gridimage_id}">View other Sizes Available...</a>
+or <a href="/more.php?id={$image->gridimage_id}">View other sizes zvailable...</a>
 {/if}
 </b></li>
 
@@ -88,7 +88,7 @@ or <a href="/more.php?id={$image->gridimage_id}">View other Sizes Available...</
 <br style="clear:both"/>
 <p><i>For offline reproduction, wording similar to the following is recommended:</i></p>
 
-<form><textarea rows="3">Image Copyright {$image->realname|escape:'html'}. This work is licensed under the Creative Commons Attribution-Share Alike 2.0 Generic License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/2.0/ or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.</textarea></form>
+<form><textarea rows="3">Image Copyright {$image->realname|escape:'html'}. This work is licensed under the Creative Commons Attribution-Share Alike 2.0 Generic Licence. To view a copy of this licence, visit http://creativecommons.org/licenses/by-sa/2.0/ or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.</textarea></form>
 
 <br/><br/>
 

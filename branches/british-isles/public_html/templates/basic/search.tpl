@@ -9,11 +9,11 @@
 
 <form method="get" action="/search.php">
 	<div class="tabHolder" style="text-align:right">
-		<span class="tabSelected">Simple Search</span>
-		<a href="/search.php?form=text" class="tab">advanced search</a>
-		<a href="/search.php?form=first" class="tab">first geographs</a>
+		<span class="tabSelected">Simple search</span>
+		<a href="/search.php?form=text" class="tab">Advanced search</a>
+		<a href="/search.php?form=first" class="tab">First Geographs</a>
 		{if $user->registered}
-			<a href="/search.php?form=check" class="tab">check submissions</a>
+			<a href="/search.php?form=check" class="tab">Check submissions</a>
 		{/if}
 		<a href="/finder/" class="tab">more...</a>
 
@@ -95,7 +95,7 @@
 
 <li>A <a title="Photograph Listing" href="/sitemap/geograph.html">complete listing of all photographs</a> is available.<br/><br/></li>
 
-<li>You may prefer to browse images on a <a title="Geograph Map Browser" href="/mapbrowse.php">Map of the British Isles</a>.<br/><br/></li>
+<li>You may prefer to browse images on a <a title="Geograph Map Browser" href="/mapbrowse.php">map of the British Isles</a>.<br/><br/></li>
 
 
 <li>Or you can browse a <a title="choose a photograph" href="browse.php">particular grid square</a>.<br/><br/></li>

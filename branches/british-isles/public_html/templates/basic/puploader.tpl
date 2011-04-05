@@ -134,12 +134,12 @@ it.</i></td>
 		<h2>Picasa --&gt; Geograph Uploader v0.68</h2>
 
 		<div style="color:black; background-color:yellow; font-size:0.7em; padding:3px; border: 1px solid orange">Please avoid submitting images with overlaid text or borders; they should be cropped before submission. Thank you for your attention to this matter.<br/><br/>
-		You should only submit photos you have taken yourself, or where you can specifically act as a Licensor on behalf of the original author.</div><br/>
+		You should only submit photos you have taken yourself, or where you can specifically act as a licensor on behalf of the original author.</div><br/>
 
 		<ol>
 			<li>Select each photo in turn, the selected image is shown in yellow</li>
-			<li>Fill out the relevent details in available tabs</li>
-			<li>Once you have filled out all the details check the terms, and the photos will be sent to Geograph</li>
+			<li>Fill out the relevant details in available tabs</li>
+			<li>Once you have filled out all the details, check the terms and the photos will be sent to Geograph</li>
 		</ol>
 		<div class="scrollbox">
 		{assign var="thumbnail" value="photo:thumbnail"}
@@ -181,9 +181,9 @@ it.</i></td>
 			<p>
 			Because we are an open project we want to ensure our content is licensed
 			as openly as possible and so we ask that all images are released under a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
-			licence, including accompanying metadata.</p>
+			Licence, including accompanying metadata.</p>
 
-			<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
+			<p>With a Creative Commons Licence, the photographer <b>keeps the copyright</b> but allows 
 			people to copy and distribute the work provided they <b>give credit</b>.</p>
 
 			<p>Since we want to ensure we can use your work to fund the running costs of
@@ -201,7 +201,7 @@ it.</i></td>
 			{assign var="credit_default" value=0}
 			{include file="_submit_licence.tpl"}
 
-			<p>If you agree with these terms, click "I agree" and your images submitted to Geograph.<br />
+			<p>If you agree with these terms, click "I agree" and your images will be submitted to Geograph.<br />
 			<input type="button" value="Close Window" onclick="location.href='minibrowser:close'"/>
 			<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="{literal}if (checkMultiFormSubmission()) {autoDisable(this); return true} else {return false;}{/literal}"/>
 			</p>
