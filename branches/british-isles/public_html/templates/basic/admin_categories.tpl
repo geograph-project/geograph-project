@@ -15,10 +15,10 @@ Changed values are highlighted in grey. </p>
    
 
 	<form action="{$script_name}" method="post">
-	<p>Filter: <input type=text name=q value="{$q}"> (seperate words with spaces) </p>
+	<p>Filter: <input type=text name=q value="{$q}"> (separate words with spaces) </p>
 	<hr/>
 	
-	<p align=center>Change selected Box to <select name="list" onchange="onc(this)">
+	<p align=center>Change selected box to <select name="list" onchange="onc(this)">
 	<option></option>
 	
 	{foreach key=val item=count from=$arr}

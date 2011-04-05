@@ -9,23 +9,23 @@
 <form action="/search.php" method="get" name="theForm">
 	<input type="hidden" name="cluster2" value="1"/>
 
-	<p>This special form allows you to search the 511,750 images that have have been assigned a 'theme' label, 
-	only images from busy squares are included as the system needs a reasonable corpus to be able to assign a label. 
+	<p>This special form allows you to search the 511,750 images that have have been assigned a 'theme' label. 
+	Only images from busy squares are included as the system needs a reasonable corpus to be able to assign a label. 
 	The results pages shows the theme next to each result, and also groups image into the same theme. 
 	This whole process is highly experimental and almost guaranteed to produce unexpected results, 
 	please treat with caution, but please do have fun exploring images in a new way.</p>
 
 	<table cellpadding="3" cellspacing="0"> 
 		  <tr> 
-		 	 <td colspan="3" style="background:#dddddd;"><b>Limit to results to: </b></td> 
+		 	 <td colspan="3" style="background:#dddddd;"><b>Limit results to: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="gridref">GridRef</label></td> 
+			 <td><label for="gridref">Grid reference</label></td> 
 			 <td><input type="text" name="gridref" id="gridref" value="" class="searchinput" size="6"/></td> 
 			 <td></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="user_name">contributor</label></td> 
+			 <td><label for="user_name">Contributor</label></td> 
 			 <td colspan="2"> 
 			 	<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput" style="width:200px"
 			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"/>
@@ -38,7 +38,7 @@
 				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="moderation_status">classification</label></td> 
+			 <td><label for="moderation_status">Classification</label></td> 
 			 <td> 
 				<select name="moderation_status" id="moderation_status" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -47,7 +47,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="imageclass">category</label></td> 
+			 <td><label for="imageclass">Category</label></td> 
 			 <td>
 			 
 <script type="text/javascript" src="/categories.js.php?full=1"></script>
@@ -62,7 +62,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="reference_index">country</label></td> 
+			 <td><label for="reference_index">Country</label></td> 
 			 <td> 
 				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -71,7 +71,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="gridsquare">myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td> 
+			 <td><label for="gridsquare">Myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -80,14 +80,14 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="submitted_startDay">submitted</label></td> 
+			 <td><label for="submitted_startDay">Date submitted</label></td> 
 			 <td colspan="2"> 
 				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="taken_startDay">taken</label></td> 
+			 <td><label for="taken_startDay">Date taken</label></td> 
 			 <td colspan="2"> 
 				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
@@ -97,10 +97,10 @@
 			 <td colspan="3">&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3" style="background:#dddddd;"><b>and specify how you would like the results displayed: </b></td> 
+			 <td colspan="3" style="background:#dddddd;"><b>And specify how you would like the results displayed: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="orderby" id="l_orderby">order by</label></td> 
+			 <td><label for="orderby" id="l_orderby">Order by</label></td> 
 			 <td colspan="2"> 
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);"> 
 					<option value="">none</option>

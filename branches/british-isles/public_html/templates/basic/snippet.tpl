@@ -81,7 +81,7 @@
 	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a></div>
 	  </div>
 	{foreachelse}
-		<p><i>no images to display{if $images}, this could be because still pending and/or recently rejected{/if}</i></p>
+		<p><i>no images to display{if $images}, this could be because they are still pending and/or recently rejected{/if}</i></p>
 	{/foreach}
 	<br style="clear:both"/>
 
@@ -105,9 +105,9 @@
 
 <br/>
 
-<div class="interestBox" style="font-size:0.7em">These <a href="/article/Shared-Descriptions" title="read more about shared descriptions in our documentation section">shared descriptions</a> are common to multiple images. For example can create a generic description for a object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.</div>
+<div class="interestBox" style="font-size:0.7em">These <a href="/article/Shared-Descriptions" title="read more about shared descriptions in our documentation section">Shared Descriptions</a> are common to multiple images. For example, you can create a generic description for an object shown in a photo, and reuse the description on all photos of the object. All descriptions are public and shared between contributors, i.e. you can reuse a description created by others, just as they can use yours.</div>
 <div style="color:silver;text-align:right;font-size:0.8em">Created: {$created|date_format:"%a, %e %b %Y"}, Updated: {$updated|date_format:"%a, %e %b %Y"}</div>
 
-<p>The 'Shared Description' text on this page is Copyright {$created|date_format:"%Y"} <a href="/profile/{$user_id}">{$realname|escape:'html'}</a>, however is specifically licenced so that contributors can reuse it on their own images without restriction.</p>
+<p>The 'Shared Description' text on this page is Copyright {$created|date_format:"%Y"} <a href="/profile/{$user_id}">{$realname|escape:'html'}</a>, however it is specifically licensed so that contributors can reuse it on their own images without restriction.</p>
 
 {include file="_std_end.tpl"}

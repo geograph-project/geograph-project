@@ -10,10 +10,10 @@
 	<p><b>Use the following options to customise your search</b>.<br/> </p>
 		<table cellpadding="3" cellspacing="0"> 
 		  <tr> 
-			 <td colspan="3" style="background:#dddddd;"><b>search details:</b></td> 
+			 <td colspan="3" style="background:#dddddd;"><b>Search details:</b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="description">description</label></td> 
+			 <td><label for="description">Description</label></td> 
 			 <td>images, <input type="text" name="description" id="description" value="{$description|escape:'html'}" class="searchinput"/></td> 
 			 <td></td> 
 		  </tr> 
@@ -23,7 +23,7 @@
 			 <td></td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3" style="background:#dddddd;"><b>optionally centre results on:</b></td> 
+			 <td colspan="3" style="background:#dddddd;"><b>Optionally centre results on:</b></td> 
 		  </tr> 
 		  <tr> 
 			 <td><label for="x">internal</label></td> 
@@ -35,10 +35,10 @@
 			 <td colspan="3">&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-		 	 <td colspan="3" style="background:#dddddd;"><b>you can optionally limit to results to: </b></td> 
+		 	 <td colspan="3" style="background:#dddddd;"><b>You can optionally limit to results to: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="distance" id="l_distance">distance to above</label></td> 
+			 <td><label for="distance" id="l_distance">Distance to above</label></td> 
 			 <td> 
 				<select name="distance" id="distance" size="1" style="text-align:right" onchange="onlyone_part2(this.form)" onblur="onlyone_part2(this.form)"> 
 				  <option value=""> </option> 
@@ -53,7 +53,7 @@
 			 <td>eg Bridge</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="user_name">contributor</label></td> 
+			 <td><label for="user_name">Contributor</label></td> 
 			 <td colspan="2"> 
 			 	<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput" style="width:200px"
 			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"/>
@@ -66,7 +66,7 @@
 				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="moderation_status">classification</label></td> 
+			 <td><label for="moderation_status">Classification</label></td> 
 			 <td> 
 				<select name="moderation_status" id="moderation_status" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -75,7 +75,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="imageclass">category</label></td> 
+			 <td><label for="imageclass">Category</label></td> 
 			 <td>
 			 
 <script type="text/javascript" src="/categories.js.php?full=1"></script>
@@ -91,7 +91,7 @@
 		  </tr> 
 {if $enable_forums}
 		  <tr> 
-			 <td><label for="topic_id">discuss topic</label></td> 
+			 <td><label for="topic_id">Discuss topic</label></td> 
 			 <td> 
 				<select name="topic_id" id="topic_id" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -101,7 +101,7 @@
 		  </tr> 
 {/if}
 		  <tr> 
-			 <td><label for="reference_index">country</label></td> 
+			 <td><label for="reference_index">Country</label></td> 
 			 <td> 
 				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -110,7 +110,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="gridsquare">myriad (<a href="/help/squares" title="What is a Myriad? (opens in new window)" target="_blank">?</a>)</label></td> 
+			 <td><label for="gridsquare">Myriad (<a href="/help/squares" title="What is a Myriad? (opens in new window)" target="_blank">?</a>)</label></td> 
 			 <td> 
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -119,14 +119,14 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="submitted_startDay">submitted</label></td> 
+			 <td><label for="submitted_startDay">Date submitted</label></td> 
 			 <td colspan="2"> 
 				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="taken_startDay">taken</label></td> 
+			 <td><label for="taken_startDay">Date taken</label></td> 
 			 <td colspan="2"> 
 				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
@@ -134,7 +134,7 @@
 		  </tr> 
 		  <tr> 
 			 <td colspan="3"><small>
-			 You can just specify part of a date, for example just a year, or just month and year. Setting both the start and end date to the same value allows you to find pictures on during that period, eg 'Jan 2001' or even just 1988. If you select just a month, then we will find just images taken during that month.</small>
+			 You can just specify part of a date, for example just a year, or just month and year. Setting both the start and end date to the same value allows you to find pictures during that period, eg 'Jan 2001' or even just 1988. If you select just a month, then we will find just images taken during that month.</small>
 			 </td> 
 		  </tr> 
 		  <tr> 
@@ -144,7 +144,7 @@
 			 <td colspan="3" style="background:#dddddd;"><b>and specify how you would like the results displayed: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="displayclass">format</label></td> 
+			 <td><label for="displayclass">Format</label></td> 
 			 <td> 
 				<select name="displayclass" id="displayclass" size="1"> 
 					{html_options options=$displayclasses selected=$displayclass}
@@ -152,14 +152,14 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="orderby" id="l_breakby">break by</label></td> 
+			 <td><label for="orderby" id="l_breakby">Break by</label></td> 
 			 <td colspan="2"> 
 				<select name="breakby" id="breakby" size="1"> 
 					{html_options options=$breakdowns selected=$breakby}
 				</select></td> 
 		  </tr>
 		  <tr> 
-			 <td><label for="orderby" id="l_orderby">order</label></td> 
+			 <td><label for="orderby" id="l_orderby">Order</label></td> 
 			 <td colspan="2"> 
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);"> 
 					{html_options options=$sortorders selected=$orderby}

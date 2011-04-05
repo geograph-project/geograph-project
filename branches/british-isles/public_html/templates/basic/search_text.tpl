@@ -39,17 +39,17 @@
 <form action="/search.php?form=text" method="post" name="theForm" onsubmit="this.imageclass.disabled=false" style="background-color:#f9f9f9">
 
 	<div class="tabHolder">
-		<a href="/search.php?form=simple" class="tab">simple search</a>
-		<span class="tabSelected">Advanced Search</span>
+		<a href="/search.php?form=simple" class="tab">Simple search</a>
+		<span class="tabSelected">Advanced search</span>
 		{dynamic}
 		{if $user->registered}
-		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>old advanced</small></a>
+		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>Old advanced</small></a>
 		{/if}
 		{/dynamic}
-		<a href="/search.php?form=first" class="tab">first geographs</a>
+		<a href="/search.php?form=first" class="tab">First Geographs</a>
 	</div>
 	<div class="interestBox">
-		<b>Centered Search:</b>
+		<b>Centered search:</b>
 	</div>
 
 
@@ -95,7 +95,7 @@
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td>
 		  </tr>
 		  <tr>
-		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word Match search:</b>  &nbsp;&nbsp;&nbsp; <a href="/article/Word-Searching-on-Geograph" title="open word search help" class="about">About</a></td>
+		 	 <td colspan="3" style="background:#dddddd;">and/or <b>Word match search:</b>  &nbsp;&nbsp;&nbsp; <a href="/article/Word-Searching-on-Geograph" title="open word search help" class="about">About</a></td>
 		  </tr>
 		  <tr>
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td>
@@ -116,14 +116,14 @@
 							<li style="padding-bottom:5px">Not case sensitive</li>
 							<li style="padding-bottom:5px"><b>Looking for exact match?</b><br/>&nbsp; Prefix a keyword with <tt>=</tt> (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small></li>
 							<li style="padding-bottom:5px"><b>Currently searches</b><ul>
-								<li>title, description, category, photographer name and shared description</li>
+								<li>title, description, category, photographer name and Shared Description</li>
 								<li>image taken date ( <tt>20071103</tt>, <tt>200711</tt>, <tt>2007</tt> or even <tt>April</tt>)</li>
 								<li>subject grid-reference <span class="nowrap">( <tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt> )</span></li>
 							</ul><i style="font-size:0.8em">(can optionally limit matches to a particular field, see 'word search help' above)</i></li>
 							<li style="padding-bottom:5px">Can match phrases [ <tt>"road bridge"</tt> ]</li>
 							<li style="padding-bottom:5px">Can use OR between keywords <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span></li>
 							<li style="padding-bottom:5px">Can exclude words/terms [ <tt>canal -river</tt> ] or [ <tt>river -"road bridge"</tt> ]</li>
-							<li style="padding-bottom:5px">Instead run a ANY search [ <tt>~bridge road river</tt> ]</li>
+							<li style="padding-bottom:5px">Instead run an ANY search [ <tt>~bridge road river</tt> ]</li>
 							<li><i>... plus more. See 'word search help' above.</i></li>
 						</ul>
 					</div>
@@ -137,7 +137,7 @@
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td>
 		  </tr>
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="user_name">contributor</label></td>
+			 <td><label for="user_name">Contributor</label></td>
 			 <td colspan="2">
 			 	<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput" style="width:200px"
 			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"/>
@@ -150,7 +150,7 @@
 				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"}) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <small>(NOTE: exclude <u>ONLY</u> works if enter something in keywords box above)</small></small></td>
 		  </tr>
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="moderation_status">classification</label></td>
+			 <td><label for="moderation_status">Classification</label></td>
 			 <td>
 				| <input type="radio" name="moderation_status" value="" checked/>either
 				| {html_radios name="moderation_status" options=$imagestatuses selected=$moderation_status separator=" | "}
@@ -159,7 +159,7 @@
 			 <td>&nbsp;</td>
 		  </tr>
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="imageclass">category</label></td>
+			 <td><label for="imageclass">Category</label></td>
 			 <td>
 
 <script type="text/javascript" src="/categories.js.php?full=1"></script>
@@ -174,7 +174,7 @@
 			 <td>&nbsp;</td>
 		  </tr>
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="reference_index">country</label></td>
+			 <td><label for="reference_index">Country</label></td>
 			 <td>
 				| <input type="radio" name="reference_index" value="" checked/>either
 				| {html_radios name="reference_index" options=$references selected=$reference_index separator=" | "}
@@ -182,7 +182,7 @@
 			 <td>&nbsp;</td>
 		  </tr>
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
-			 <td><label for="gridsquare">myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td>
+			 <td><label for="gridsquare">Myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td>
 			 <td>
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput">
 				  <option value=""> </option>
@@ -191,20 +191,20 @@
 			 <td>&nbsp;</td>
 		  </tr>
 		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('date',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('date',false);">
-			 <td><label for="submitted_startDay">submitted</label></td>
+			 <td><label for="submitted_startDay">Date submitted</label></td>
 			 <td colspan="2">
 				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
 				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY" all_extra=" onfocus=\"showMyHelpDiv('date',true);\" onblur=\"showMyHelpDiv('date',false);\""}
 				</td>
 		  </tr>
 		  <tr onmouseover="this.style.background='#efefef';showMyHelpDiv('date',true);" onmouseout="this.style.background='#f9f9f9';showMyHelpDiv('date',false);">
-			 <td><label for="taken_startDay">taken</label>
+			 <td><label for="taken_startDay">Date taken</label>
 
 				<div style="position:relative; display:none" id="date_help">
 					<div style="position:absolute;top:17px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
 						<ul>
 							<li style="padding-bottom:5px">You can just specify part of a date, for example just a year, or just month and year.</li>
-							<li>Setting both the start and end date to the same value allows you to find pictures on during that period, eg 'Jan 2001' or even just 1988</li>
+							<li>Setting both the start and end date to the same value allows you to find pictures during that period, eg 'Jan 2001' or even just 1988</li>
 						</ul>
 					</div>
 				</div>
@@ -231,7 +231,7 @@
 					{html_options values=$pagesizes output=$pagesizes selected=$resultsperpage}
 				</select> images per page,<br/> at most {newwin href="/help/one_result_per_group" title="Read more" text="one"} image from each <select name="groupby" id="groupby" size="1">
 					{html_options options=$groupbys selected=$groupby}
-				</select>,<br/> would like a heading seperating images by <select name="breakby" id="breakby" size="1">
+				</select>,<br/> would like a heading separating images by <select name="breakby" id="breakby" size="1">
 					{html_options options=$breakdowns selected=$breakby}
 				</select>,<br/> and sorted in <span class="nowrap">(<input type="checkbox" name="reverse_order_ind" {$reverse_order_checked}/> reverse)
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);">

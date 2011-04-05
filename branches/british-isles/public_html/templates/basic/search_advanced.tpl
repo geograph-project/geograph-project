@@ -2,7 +2,7 @@
 {include file="_std_begin.tpl"}
 
 {dynamic}{if $user->registered}
-<div class="interestBox" style="float:right;width:300px"><small style="font-size:0.7em"><b>If you don't know what 'Legacy Engine' means, can ignore this statement.</b><br/>Note: Searches via this page will for the most part still be run via the new engine, however it does include a few features that will specifically trigger the legacy engine</small></div>
+<div class="interestBox" style="float:right;width:300px"><small style="font-size:0.7em"><b>If you don't know what 'Legacy Engine' means, you can ignore this statement.</b><br/>Note: searches via this page will for the most part still be run via the new engine, however it does include a few features that will specifically trigger the legacy engine</small></div>
 {/if}{/dynamic}
 
 <h2>Photograph Search</h2>
@@ -17,9 +17,9 @@
 <form action="/search.php" method="post" name="theForm" onsubmit="this.imageclass.disabled=false">
 
 	<div class="tabHolder">
-		<a href="/search.php?form=simple" class="tab">simple search</a>
+		<a href="/search.php?form=simple" class="tab">Simple search</a>
 		<span class="tabSelected">Advanced Search</span>
-		<a href="/search.php?form=first" class="tab">first geographs</a>
+		<a href="/search.php?form=first" class="tab">First Geographs</a>
 	</div>
 	<div class="interestBox">
 		<div style="text-align:right"><a href="/article/Searching-on-Geograph" title="More information on the Search Engine" class="about">About</a></div>
@@ -29,22 +29,22 @@
 
 		<table cellpadding="3" cellspacing="0">
 		  <tr>
-			 <td><label for="gridref" id="l_gridref">grid reference</label></td>
+			 <td><label for="gridref" id="l_gridref">Grid reference</label></td>
 			 <td><input type="text" name="gridref" id="gridref" value="{$gridref|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td>
 			 <td>eg TQ 7050 or N2343</td>
 		  </tr>
 		  <tr>
-			 <td><label for="postcode" id="l_postcode">postcode</label></td>
+			 <td><label for="postcode" id="l_postcode">Postcode</label></td>
 			 <td><input type="text" name="postcode" id="postcode" value="{$postcode|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td>
 			 <td>eg RH13 1BU (GB &amp; NI)</td>
 		  </tr>
 		  <tr>
-			 <td><label for="placename" id="l_placename">placename</label></td>
+			 <td><label for="placename" id="l_placename">Placename</label></td>
 			 <td><input type="text" name="placename" id="placename" value="{$placename|escape:'html'}" class="searchinput" onkeyup="onlyone(this)" onblur="onlyone(this)"/></td>
 			 <td>eg Peterborough</td>
 		  </tr>
 		  <tr>
-			 <td><label for="county_id" id="l_county_id">centre of county</label></td>
+			 <td><label for="county_id" id="l_county_id">Centre of county</label></td>
 			 <td>
 				<select name="county_id" id="county_id" size="1" class="searchinput" onchange="onlyone(this)" onblur="onlyone(this)"/>
 				  <option value=""> </option>
@@ -54,20 +54,20 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td>
 		  </tr>
 		  <tr>
-			 <td><label for="all_ind" id="l_all_ind">all images</label></td>
+			 <td><label for="all_ind" id="l_all_ind">All images</label></td>
 			 <td><input type="checkbox" name="all_ind" id="all_ind" {$all_checked} onclick="onlyone(this)" onblur="onlyone(this)"/></td>
 			 <td>&nbsp;</td>
 		  </tr>
 		  <tr>
 			 <td colspan="3"><small><small>
-			 Once you have selected one option the others will become unavailable, to choose a different search just clear your current selection. If you don't select anything you will be shown all images (matching filters below).</small></small>
+			 Once you have selected one option the others will become unavailable. To choose a different search just clear your current selection. If you don't select anything you will be shown all images (matching filters below).</small></small>
 			 </td>
 		  </tr>
 		  <tr>
-		 	 <td colspan="3" style="background:#dddddd;"><b>you can optionally limit to results to: </b></td>
+		 	 <td colspan="3" style="background:#dddddd;"><b>You can optionally limit to results to: </b></td>
 		  </tr>
 		  <tr>
-			 <td><label for="distance" id="l_distance">distance to above</label></td>
+			 <td><label for="distance" id="l_distance">Distance to above</label></td>
 			 <td>
 				<select name="distance" id="distance" size="1" style="text-align:right" onchange="onlyone_part2(this.form)" onblur="onlyone_part2(this.form)">
 				  <option value=""> </option>
@@ -76,13 +76,13 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td>
 		  </tr>
 		  <tr>
-			 <td><label for="searchtext" id="l_searchtext"><b>containing keywords</b></label></td>
+			 <td><label for="searchtext" id="l_searchtext"><b>Containing keywords</b></label></td>
 			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
 			 <small>({newwin href="/help/search_new" text="open <b>text search help</b>"})</small></td>
 			<td>eg Bridge</td>
 		  </tr>
 		  <tr>
-			 <td><label for="user_name">contributor</label></td>
+			 <td><label for="user_name">Contributor</label></td>
 			 <td colspan="2">
 			 	<input type="text" name="user_name" id="user_name" value="{$user_name|escape:'html'}" class="searchinput" style="width:200px"
 			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"/>
@@ -95,7 +95,7 @@
 				<small>({newwin href="/finder/contributors.php?popup" onclick="window.open(this.href,this.target); return false;" text="open Contributor Search screen"})</small></td>
 		  </tr>
 		  <tr>
-			 <td><label for="moderation_status">classification</label></td>
+			 <td><label for="moderation_status">Classification</label></td>
 			 <td>
 				<select name="moderation_status" id="moderation_status" size="1" class="searchinput">
 				  <option value=""> </option>
@@ -104,7 +104,7 @@
 			 <td>&nbsp;</td>
 		  </tr>
 		  <tr>
-			 <td><label for="imageclass">category</label></td>
+			 <td><label for="imageclass">Category</label></td>
 			 <td>
 
 <script type="text/javascript" src="/categories.js.php?full=1"></script>
@@ -120,7 +120,7 @@
 		  </tr>
 {if $enable_forums}
 		  <tr>
-			 <td><label for="topic_id">discuss topic</label></td>
+			 <td><label for="topic_id">Discuss topic</label></td>
 			 <td>
 				<select name="topic_id" id="topic_id" size="1" class="searchinput">
 				  <option value=""> </option>
@@ -130,7 +130,7 @@
 		  </tr>
 {/if}
 		  <tr>
-			 <td><label for="reference_index">country</label></td>
+			 <td><label for="reference_index">Country</label></td>
 			 <td>
 				<select name="reference_index" id="reference_index" size="1" class="searchinput">
 				  <option value=""> </option>
@@ -139,7 +139,7 @@
 			 <td>&nbsp;</td>
 		  </tr>
 		  <tr>
-			 <td><label for="gridsquare">myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td>
+			 <td><label for="gridsquare">Myriad ({newwin href="/help/squares" title="What is a Myriad?" text="?"})</label></td>
 			 <td>
 				<select name="gridsquare" id="gridsquare" size="1" class="searchinput">
 				  <option value=""> </option>
@@ -148,14 +148,14 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td>
 		  </tr>
 		  <tr>
-			 <td><label for="submitted_startDay">submitted</label></td>
+			 <td><label for="submitted_startDay">Date submitted</label></td>
 			 <td colspan="2">
 				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				</td>
 		  </tr>
 		  <tr>
-			 <td><label for="taken_startDay">taken</label></td>
+			 <td><label for="taken_startDay">Date taken</label></td>
 			 <td colspan="2">
 				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
@@ -163,17 +163,17 @@
 		  </tr>
 		  <tr>
 			 <td colspan="3"><small>
-			 You can just specify part of a date, for example just a year, or just month and year. Setting both the start and end date to the same value allows you to find pictures on during that period, eg 'Jan 2001' or even just 1988. If you select just a month, then we will find just images taken during that month.</small>
+			 You can just specify part of a date, for example just a year, or just month and year. Setting both the start and end date to the same value allows you to find pictures during that period, eg 'Jan 2001' or even just 1988. If you select just a month, then we will find just images taken during that month.</small>
 			 </td>
 		  </tr>
 		  <tr>
 			 <td colspan="3">&nbsp;</td>
 		  </tr>
 		  <tr>
-			 <td colspan="3" style="background:#dddddd;"><b>and specify how you would like the results displayed: </b></td>
+			 <td colspan="3" style="background:#dddddd;"><b>And specify how you would like the results displayed: </b></td>
 		  </tr>
 		  <tr>
-			 <td><label for="displayclass">format</label></td>
+			 <td><label for="displayclass">Format</label></td>
 			 <td>
 				<select name="displayclass" id="displayclass" size="1">
 					{html_options options=$displayclasses selected=$displayclass}
@@ -181,14 +181,14 @@
 			 <td>&nbsp;</td>
 		  </tr>
 		  <tr>
-			 <td><label for="breakby" id="l_breakby">break by</label></td>
+			 <td><label for="breakby" id="l_breakby">Break by</label></td>
 			 <td colspan="2">
 				<select name="breakby" id="breakby" size="1">
 					{html_options options=$breakdowns selected=$breakby}
 				</select> then...</td>
 		  </tr>
 		  <tr>
-			 <td><label for="orderby" id="l_orderby">order by</label></td>
+			 <td><label for="orderby" id="l_orderby">Order by</label></td>
 			 <td colspan="2">
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);">
 					{html_options options=$sortorders selected=$orderby}
