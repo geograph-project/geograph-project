@@ -70,9 +70,9 @@ function hideStep3() {
 	<p>
 	Because we are an open project we want to ensure our content is licensed
 	as openly as possible and so we ask that all images are released under a {external title="Learn more about Creative Commons" href="http://creativecommons.org" text="Creative Commons" target="_blank"}
-	licence, including accompanying metadata.</p>
+	Licence, including accompanying metadata.</p>
 	
-	<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
+	<p>With a Creative Commons Licence, the photographer <b>keeps the copyright</b> but allows 
 	people to copy and distribute the work provided they <b>give credit</b>.</p>
 	
 	<p>Since we want to ensure we can use your work to fund the running costs of
@@ -149,7 +149,7 @@ function hideStep3() {
 <label for="jpeg"><b>JPEG Image File</b></label>
 <input id="jpeg" name="jpeg" type="file" /><br/>
 
-<p>(There is no resolution limit, but the file must be under 8 Megabytes)</p>
+<p>(There is no resolution limit, but the file must be under 8 megabytes)</p>
 
 
 <input type="submit" name="next" value="Next &gt;" onclick="autoDisable(this);"/>
