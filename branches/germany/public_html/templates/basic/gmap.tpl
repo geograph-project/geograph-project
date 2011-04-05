@@ -375,6 +375,7 @@
 			updateMapMarker(document.theForm.grid_reference,false,true);
 		}
 		AttachEvent(window,'load',updateMapMarkers,false);
+	// ]]>
 	</script>
 {/literal}
 
@@ -386,6 +387,8 @@
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 
 <input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
+<input type="hidden" name="gridsquare" value=""/>
+<input type="hidden" name="setpos" value=""/>
 {/if}
 
 <div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>		
@@ -397,15 +400,15 @@
 <input type="button" value="Submit image"      onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
 <input type="button" value="Search for images" onclick="openGeoWindow(5, '/search.php?q=');" />
 <input type="button" value="Clear marker"      onclick="clearMarker();" />
+<input type="hidden" name="gridsquare" value=""/>
+<input type="hidden" name="setpos" value=""/>
 </div>
 {/if}
 
-<input type="hidden" name="gridsquare" value=""/>
-<input type="hidden" name="setpos" value=""/>
 
 </form>
 <form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
-<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address: 
+<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:</label>
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="submit" value="Find"/><small><small><br/>
 	(Powered by the Google Maps API Geocoder)</small></small>

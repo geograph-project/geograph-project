@@ -383,6 +383,7 @@
 			updateMapMarker(document.theForm.grid_reference,false,true);
 		}
 		AttachEvent(window,'load',updateMapMarkers,false);
+	// ]]>
 	</script>
 {/literal}
 
@@ -404,6 +405,8 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Aktuelle Koordinate</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 
 <input type="submit" value="Nächster Schritt &gt; &gt;"/> <span id="dist_message"></span></div>
+<input type="hidden" name="gridsquare" value=""/>
+<input type="hidden" name="setpos" value=""/>
 {/if}
 
 <div id="map" style="width:600px; height:500px;border:1px solid blue">Karte wird geladen... (JavaScript nötig)</div>
@@ -415,15 +418,15 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="button" value="Bild einreichen"    onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
 <input type="button" value="Bilder suchen"      onclick="openGeoWindow(5, '/search.php?q=');" />
 <input type="button" value="Marker löschen"     onclick="clearMarker();" />
+<input type="hidden" name="gridsquare" value=""/>
+<input type="hidden" name="setpos" value=""/>
 </div>
 {/if}
 
-<input type="hidden" name="gridsquare" value=""/>
-<input type="hidden" name="setpos" value=""/>
 
 </form>
 <form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
-<div style="width:600px; text-align:center;"><label for="addressInput">Adresse eingeben:
+<div style="width:600px; text-align:center;"><label for="addressInput">Adresse eingeben:</label>
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="submit" value="Suchen"/><small><small><br/>
 	(über Google Maps API Geocoder)</small></small>
