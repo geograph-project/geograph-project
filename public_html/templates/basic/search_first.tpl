@@ -8,19 +8,19 @@
 {/if}
 
 	<div class="tabHolder">
-		<a href="/search.php?form=simple" class="tab">simple search</a>
+		<a href="/search.php?form=simple" class="tab">Simple search</a>
 		<a href="/search.php?form=text" class="tab">Advanced Search</a>
 		{dynamic}
 		{if $user->registered}
-		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>old advanced</small></a>
+		<a href="/search.php?form=advanced&amp;legacy=true" class="tab"><small>Old advanced</small></a>
 		{/if}
 		{/dynamic}
-		<span class="tabSelected">first geographs</span>
+		<span class="tabSelected">First Geographs</span>
 	</div>
 	<div class="interestBox">
 		<b>First Geograph Search</b>
 	</div>
-	<p>The old first geograph interface is now gone. But much of the functionality is now available in other ways, see below</p>
+	<p>The old First Geograph interface is now gone, but much of the functionality is now available in other ways, see below</p>
 
 <div style="padding:20px;">
 
@@ -47,7 +47,7 @@ Example: <input type="text" name="q" value="hectad:TQ74 ftf:1"/> <input type="su
 <form method="get" action="{$script_name}" class="interestBox">
 Example: <input type="text" name="q" value="tq74 OR tq73 OR tq64 OR tq64 ftf:1" size="40"/> <input type="submit" value="Find"/> <br/>
 </form>
-<small>(finds 'first geographs' in all four hectads)</small>
+<small>(finds 'First Geographs' in all four hectads)</small>
 <br/><br/>
 Another:
 <form method="get" action="{$script_name}" class="interestBox">

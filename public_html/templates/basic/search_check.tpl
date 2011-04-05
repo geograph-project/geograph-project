@@ -14,9 +14,9 @@
 {/if}
 <form action="/search.php" method="get" name="theForm">
 	<div class="tabHolder">
-		<a href="/search.php?form=text" class="tab">advanced search</a>
-		<a href="/search.php?form=simple" class="tab">simple search</a>
-		<a href="/search.php?form=first" class="tab">first geographs</a>
+		<a href="/search.php?form=text" class="tab">Advanced search</a>
+		<a href="/search.php?form=simple" class="tab">Simple search</a>
+		<a href="/search.php?form=first" class="tab">First Geographs</a>
 		<span class="tabSelected">Check Submissions</span>
 	</div>
 	<table cellpadding="3" cellspacing="0"> 
@@ -39,24 +39,24 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td colspan="3" style="background:#dddddd;"><b>and specify how you would like the results displayed: </b></td> 
+			 <td colspan="3" style="background:#dddddd;"><b>And specify how you would like the results displayed: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="displayclass">format</label></td> 
+			 <td><label for="displayclass">Format</label></td> 
 			 <td> 
 				{html_radios name=displayclass options=$displayclasses selected=$displayclass separator="<br/>"}
 			 </td>
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="orderby" id="l_breakby">break by</label></td> 
+			 <td><label for="orderby" id="l_breakby">Break by</label></td> 
 			 <td colspan="2"> 
 				<select name="breakby" id="breakby" size="1"> 
 					{html_options options=$breakdowns selected=$breakby}
 				</select></td> 
 		  </tr>
 		  <tr> 
-			 <td><label for="orderby" id="l_orderby">order</label></td> 
+			 <td><label for="orderby" id="l_orderby">Order</label></td> 
 			 <td colspan="2"> 
 				<select name="orderby" id="orderby" size="1" onchange="updateBreakBy(this);"> 
 					{html_options options=$sortorders selected=$orderby}
@@ -72,10 +72,10 @@
 			 
 		  </tr> 
 		  <tr> 
-		 	 <td colspan="3" style="background:#dddddd;"><b>you can optionally limit to results to: </b></td> 
+		 	 <td colspan="3" style="background:#dddddd;"><b>You can optionally limit to results to: </b></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="user_name">contributor</label></td> 
+			 <td><label for="user_name">Contributor</label></td> 
 			 <td colspan="2"> 
 			 	<input type="text" name="user_name" id="user_name" value="{dynamic}{$user_name|escape:'html'}{/dynamic}" class="searchinput" style="width:200px"
 			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"
@@ -86,7 +86,7 @@
 
 		  </tr> 
 		  <tr> 
-			 <td><label for="moderation_status">classification</label></td> 
+			 <td><label for="moderation_status">Classification</label></td> 
 			 <td> 
 				<select name="moderation_status" id="moderation_status" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -95,7 +95,7 @@
 			 <td>&nbsp;</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="imageclass">category</label></td> 
+			 <td><label for="imageclass">Category</label></td> 
 			 <td>
 			 
 <script type="text/javascript" src="/categories.js.php?full=1"></script>
@@ -111,7 +111,7 @@
 		  </tr> 
 {if $enable_forums}
 		  <tr> 
-			 <td><label for="topic_id">discuss topic</label></td> 
+			 <td><label for="topic_id">Discuss topic</label></td> 
 			 <td> 
 				<select name="topic_id" id="topic_id" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -121,7 +121,7 @@
 		  </tr> 
 {/if}
 		  <tr> 
-			 <td><label for="reference_index">country</label></td> 
+			 <td><label for="reference_index">Country</label></td> 
 			 <td> 
 				<select name="reference_index" id="reference_index" size="1" class="searchinput"> 
 				  <option value=""> </option> 
@@ -130,14 +130,14 @@
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="submitted_startDay">submitted</label></td> 
+			 <td><label for="submitted_startDay">Date submitted</label></td> 
 			 <td colspan="2"> 
 				between {html_select_date prefix="submitted_start" time=$submitted_start start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				and {html_select_date prefix="submitted_end" time=$submitted_end start_year="2005" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				</td> 
 		  </tr> 
 		  <tr> 
-			 <td><label for="taken_startDay">taken</label></td> 
+			 <td><label for="taken_startDay">Date taken</label></td> 
 			 <td colspan="2"> 
 				between {html_select_date prefix="taken_start" time=$taken_start start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
 				and {html_select_date prefix="taken_end" time=$taken_end start_year="-100" reverse_years=true day_empty="" month_empty="" year_empty="" field_order="DMY"}
@@ -145,7 +145,7 @@
 		  </tr> 
 		  <tr> 
 			 <td colspan="3"><small>
-			 You can just specify part of a date, for example just a year, or just month and year. Setting both the start and end date to the same value allows you to find pictures on during that period, eg 'Jan 2001' or even just 1988. If you select just a month, then we will find just images taken during that month.</small>
+			 You can just specify part of a date, for example just a year, or just month and year. Setting both the start and end date to the same value allows you to find pictures during that period, eg 'Jan 2001' or even just 1988. If you select just a month, then we will find just images taken during that month.</small>
 			 </td> 
 		  </tr> 
 		</table></form>

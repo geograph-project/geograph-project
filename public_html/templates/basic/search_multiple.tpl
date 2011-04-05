@@ -1,7 +1,7 @@
 
 {include file="_std_begin.tpl"}
 
-<h2>Please refine your Search</h2>
+<h2>Please refine your search</h2>
 {dynamic}
 <p>The meaning of your search for images<i>{$searchdesc|escape:"html"}</i>, is not totally clear, please find below a few alternatives.</p>
 <form action="{$script_name}" method="post">
