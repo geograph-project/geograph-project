@@ -19,12 +19,12 @@
 	<div id="ticket_message">
 		{if $profile->last_ticket_time}
 			<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px; font-size:0.9em">
-			You have <b>{$profile->tickets}</b> ongoing suggestions on your images, please goto <a href="/suggestions.php">your suggestions page</a> to review them.
+			You have <b>{$profile->tickets}</b> ongoing suggestions on your images, please go to <a href="/suggestions.php">your suggestions page</a> to review them.
 			<small><br/><br/><a href="javascript:void(hide_message())">I've read this, please hide</a> </small>
 			</div>
 			<br/><br/>
 		{else}
-			<div style="text-align:center;color:gray">You have <b>{$profile->tickets}</b> ongoing suggestions on your images, please goto <a href="/suggestions.php">your suggestions page</a> to review them. <a href="javascript:void(hide_message())">hide this</a></div>
+			<div style="text-align:center;color:gray">You have <b>{$profile->tickets}</b> ongoing suggestions on your images, please go to <a href="/suggestions.php">your suggestions page</a> to review them. <a href="javascript:void(hide_message())">hide this</a></div>
 		{/if}
 	</div>
 	<script type="text/javascript">{literal}
@@ -98,7 +98,7 @@
 </ul>
 
 {if $simplified}
-	<p><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/> This is a simplified view of own profile, you can also view your <a href="/profile/{$user->user_id}">full public profile</a>.</p>
+	<p><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/> This is a simplified view of your own profile, you can also view your <a href="/profile/{$user->user_id}">full public profile</a>.</p>
 {else}
 
 {if $profile->blog.blog_id}
@@ -164,7 +164,7 @@
 				</li>
 			{/if}
 			{if $profile->stats.geosquares}
-				<li><b>{$profile->stats.geosquares}</b> Personal points (gridsquare{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
+				<li><b>{$profile->stats.geosquares}</b> Personal points (grid square{if $profile->stats.geosquares ne 1}s{/if} <i>geographed</i>)
 					{if $user->user_id eq $profile->user_id && $profile->stats.geo_rank > 0}
 						<ul style="font-size:0.8em;margin-bottom:2px">
 						<li>Overall Rank: <b>{$profile->stats.geo_rank|ordinal}</b> {if $profile->stats.geo_rank > 1}({$profile->stats.geo_rise} more needed to rise rank){/if}</li>
@@ -181,15 +181,15 @@
 					{if $profile->stats.geographs}
 						<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
 						{if $profile->stats.geographs != $profile->stats.images}
-							and <b>{$profile->stats.images-$profile->stats.geographs}</b> Supplemental
+							and <b>{$profile->stats.images-$profile->stats.geographs}</b> Supplementals
 						{/if}
 						</li>
 					{/if}
-					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if},
+					<li><b>{$profile->stats.squares}</b> grid square{if $profile->stats.squares ne 1}s{/if},
 					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b>
 					</li>
 					{if $profile->stats.hectads > 1}
-						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> Myriads{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
+						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> myriads{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
 					{/if}
 					</ul>
 				{/if}
@@ -197,7 +197,7 @@
 			{if $profile->stats.content}
 				<li style="margin-top:10px"><b>{$profile->stats.content}</b> items of <a href="/content/?user_id={$profile->user_id}" title="view content submitted by {$profile->realname|escape:'html'}">Collections submitted</a>
 					{if $user->user_id eq $profile->user_id}
-						[<a href="/article/?user_id={$profile->user_id}">Article List</a>]
+						[<a href="/article/?user_id={$profile->user_id}">Article list</a>]
 					{/if}
 				</li>
 			{/if}
@@ -212,7 +212,7 @@
 
 {if $userimages}
 	<div class="interestBox" style="border-radius: 10px;">
-	<div style="float:right; position:relative; font-size:0.7em;"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)</div>
+	<div style="float:right; position:relative; font-size:0.7em;"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slideshow mode</a>)</div>
 	<h3 style="margin-top:0px;margin-bottom:0px">Photographs</h3>
 	</div>
 	<form action="/search.php" style="display:inline;float:right">
@@ -265,7 +265,7 @@
 	{/if}
 	<ul>
 
-		<li><b>Maps</b>: {if $profile->stats.images gt 10}<a href="/profile/{$profile->user_id}/map" rel="nofollow">Personalised Geograph Map</a> or {/if} Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&ie=UTF8&om=1">Google Maps</a></li>
+		<li><b>Maps</b>: {if $profile->stats.images gt 10}<a href="/profile/{$profile->user_id}/map" rel="nofollow">Personalised Geograph map</a> or {/if} recent photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&ie=UTF8&om=1">Google Maps</a></li>
 
 		<li><b>Recent Images</b>: <a title="View images by {$profile->realname} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml">as KML</a> or <a title="RSS Feed for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
 		{if $profile->stats.images gt 10}
@@ -279,13 +279,13 @@
 		{/if}
 		{if $user->user_id eq $profile->user_id}
 			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View all your image titles as a <i>Wordle</i>"}</li>
-			<li><b>Change Requests</b>: <a href="/suggestions.php" rel="nofollow">View Recent Suggestions</a></li>
-			<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit My Recent Submissions</a></li>
+			<li><b>Change Requests</b>: <a href="/suggestions.php" rel="nofollow">View recent suggestions</a></li>
+			<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit my recent submissions</a></li>
 		{/if}
 	</ul>
 	{if $user->user_id eq $profile->user_id}
 		<ul>
-		<li><a href="/search.php?my_squares=1&amp;user_id={$profile->user_id}&amp;user_invert_ind=1&amp;submitted_startDay=30&amp;submitted_startYear">Search for Submissions in last 30 days in squares I photographed</a></li>
+		<li><a href="/search.php?my_squares=1&amp;user_id={$profile->user_id}&amp;user_invert_ind=1&amp;submitted_startDay=30&amp;submitted_startYear">Search for submissions in last 30 days in squares I have photographed</a></li>
 		</ul>
 	{/if}
 {/if}

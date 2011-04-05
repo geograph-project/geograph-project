@@ -4,7 +4,7 @@
 
 	<h2>Memory Map Export</h2>
 
-	<p>Use this page to download a CSV file to import into Memory Map, to show squares currently with Geograph Images by downloading a list of 'First Geographs'.</p>
+	<p>Use this page to download a CSV file to import into Memory Map, to show squares currently with Geograph images by downloading a list of 'First Geographs'.</p>
 {dynamic}
 {if $errormsg}
 <p><b>{$errormsg}</b></p>
@@ -18,9 +18,9 @@
 		</select> <input type="submit" value="Download CSV file..."/></p>
 	</form>
 
-	<p>You will also need the Geograph Icon: <a href="{$script_name}?getbmp=1">geograph.bmp</a></p>
+	<p>You will also need the Geograph icon: <a href="{$script_name}?getbmp=1">geograph.bmp</a></p>
 
-<p style="background-color:yellow;padding:10px;">Alternatively you can load the <a href="/gpx.php">GPX</a> files, which you can download smaller site centered files.</p>
+<p style="background-color:yellow;padding:10px;">Alternatively you can load the <a href="/gpx.php">GPX</a> files, which you can download smaller site centred files.</p>
 
 
 

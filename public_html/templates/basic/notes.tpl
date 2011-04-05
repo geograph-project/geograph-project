@@ -16,7 +16,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <br style="clear:both;"/>
 
 <div class="interestBox">
-'Edit Note' DOESN'T actully save changes permanently, it should be possible to fix later. So for now delete, then re-add the note.<br>
+'Edit Note' DOESN'T actually save changes permanently, it should be possible to fix later. So for now delete, then re-add the note.<br>
 <b><u>For the moment</u>, it's a free for all, anyone can add and delete notes against <u>anyones images</u>!</b>
 </div>
 

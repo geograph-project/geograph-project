@@ -73,7 +73,7 @@
 	  keep you notified about any changes requested or made to your
 	  submissions. It also allows anyone who is interested in your photos
 	  to contact you, but you can control whether you make your address
-	  public or not...</div>
+	  public or not.</div>
 	
 	{if $errors.email}</div>{/if}
 	
@@ -104,7 +104,7 @@
 	<label for="gravatar">Gravatar:</label>
 	<img src="http://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" align="left" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>
 	
-	<div class="fieldnotes">To setup or change your Avatar image, goto {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address set above.</div>
+	<div class="fieldnotes">To set up or change your Avatar image, go to {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address as above.</div>
 
 </div>
 
@@ -186,7 +186,7 @@
 	however basic URLs will be autolinked.</span><br/>
 	The main profile page will only show the first 300 characters, (or use <tt>[--more--]</tt> to specify the break point) with a link to show the full details.<br/>
 	TIP: use <span style="color:blue">[[TQ7506]]</span> or 
-	<span style="color:blue">[[5463]]</span> to link to a Grid Square or another Image.
+	<span style="color:blue">[[5463]]</span> to link to a grid square or another image.
 	</div>
 
 
@@ -232,7 +232,7 @@
 	</select>
 
 	 
-	<div class="fieldnotes">Choose the default size you wish to preserve. You can still change it per upload, just chooses the option selected by default.</div>
+	<div class="fieldnotes">Choose the default size you wish to preserve. You can still change it per upload, the site just chooses the option selected by default.</div>
 </div>
 
 
@@ -245,7 +245,7 @@
 	</select>
 
 	 
-	<div class="fieldnotes">If you choose "Submit v2" then you will be taken direct to the new version, you can still choose to use version 1 temporally on a per image basis. <br/><a href="/help/submission" target="_blank">View alternative Submission Methods</a></div>
+	<div class="fieldnotes">If you choose "Submit v2" then you will be taken direct to the new version, but you can still choose to use version 1 on a per image basis. <br/><a href="/help/submission" target="_blank">View alternative submission methods</a></div>
 </div>
 
 
@@ -266,7 +266,7 @@
 	
 	<select name="expand_about" id="expand_about"> 
 	<option value="0" {if $profile->expand_about == 0} selected="selected"{/if}>Show variable length preview</option>
-	<option value="1" {if $profile->expand_about == 1} selected="selected"{/if}>Always show full Expanded version</option>
+	<option value="1" {if $profile->expand_about == 1} selected="selected"{/if}>Always show full expanded version</option>
 	<option value="2" {if $profile->expand_about == 2} selected="selected"{/if}>Always show short preview, with click to expand</option>
 	</select>
 	
@@ -291,7 +291,7 @@
 	<label for="ticket_public_change" class="nowrap">Anonymity for previous suggestions</label>
 	<br/>
 	<select name="ticket_public_change" id="ticket_public_change" style="margin-left:10em;">
-		<option value="">- no change - leave previous suggestions as is</option>
+		<option value="">No change - leave previous suggestions as is</option>
 		<option value="no">Do not disclose my name</option>
 		<option value="owner">Show my name to the photo owner</option>
 		<option value="everyone">Show my name against the suggestion</option>
@@ -308,7 +308,7 @@
 		{html_options options=$ticket_options selected=$profile->ticket_option}
 	</select>
 	 
-	<div class="fieldnotes">Allows opting out of receiving initial notification of certain suggestions. Note you however receive follow up comments and notification of the closure - in-case there is information needed by a moderator.</div>
+	<div class="fieldnotes">Allows opting out of receiving initial notification of certain suggestions. You will, however, receive follow-up comments and notification of the closure in case there is information needed by a moderator.</div>
 </div>
 
 
@@ -351,7 +351,7 @@
 	
 	<input {if $profile->use_autocomplete eq 1}checked{/if} type="checkbox" name="use_autocomplete" id="use_autocomplete" value="1">
 	
-	<div class="fieldnotes">Changes the category dropdown to a autocomplete text-field - EXPERIMENTAL</div>  
+	<div class="fieldnotes">Changes the category dropdown to an autocomplete text field - EXPERIMENTAL</div>  
 </div>
 
 </fieldset>
@@ -373,7 +373,7 @@
 		{if strpos($profile->rights,'moderator') > 0}
 			<input type="button" value="Relinquish moderator rights" onclick="location.href = '/admin/moderation.php?relinquish=1';"/>
 
-			<div class="fieldnotes">If you are no longer able to help out with moderation then click the button above. (you will have to reapply)</div>  
+			<div class="fieldnotes">If you are no longer able to help with moderation then click the button above (you will have to re-apply).</div>  
 		{else}
 			{if strpos($profile->rights,'traineemod') > 0}
 				<input type="button" value="Visit Demo Moderation Page" onclick="location.href = '/admin/moderation.php?apply=1';"/>
