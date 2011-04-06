@@ -65,6 +65,8 @@ print $q;
 $limit = 100000;
 
 if ($q) {
+	$q2 = preg_replace('/\b(the|and)\b/','',$q); //a more basic one for snippets
+
 	//use cursors to loop, rather than traditional paging. Using SetIDRange so need to order by doc_id
 	$more = true;
 	$min_id = 1;
@@ -111,7 +113,7 @@ if ($q) {
 				foreach ($ids as $idx => $id) {
 					$docs[$idx] = ($imgs[$id]['title']).' '.strip_tags($imgs[$id]['comment']).' '.($imgs[$id]['imageclass']);
 				}
-				$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $q, array('around'=>0,'limit'=>10,'before_match'=>'','after_match'=>''));
+				$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $q2, array('around'=>0,'limit'=>10,'before_match'=>'','after_match'=>''));
 				
 				
 				foreach ($ids as $idx => $id) {
