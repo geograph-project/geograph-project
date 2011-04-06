@@ -44,17 +44,28 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $words = $db->getCol("SELECT include FROM typo WHERE exclude='' AND enabled = 1");
 $list = array();
 
-if (file_exists('../../profanity-list.txt')) {
-	$words += explode(',',file_get_contents('../../profanity-list.txt'));
-}
-
 foreach ($words as $word) {
 	if (preg_match('/^[\w \']+$/',$word)) {
 		$word = str_replace("'",' ',$word);
 		if (strpos($word,' ') !== FALSE) {
-			$list[] = '"'.$word.'"';			
+			$list[] = '"'.preg_replace('/\b(\w)/','=$1',$word).'"';
 		} else {
-			$list[] = $word;
+			$list[] = '='.$word;
+		}
+	}
+}
+
+if (file_exists('../../profanity-list.txt')) {
+	$words = explode(',',file_get_contents('../../profanity-list.txt'));
+
+	foreach ($words as $word) {
+		if (preg_match('/^[\w \']+$/',$word)) {
+			$word = str_replace("'",' ',$word);
+			if (strpos($word,' ') !== FALSE) {
+				$list[] = '"'.$word.'"';
+			} else {
+				$list[] = $word;
+			}
 		}
 	}
 }
