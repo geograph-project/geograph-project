@@ -46,15 +46,24 @@ $list = array();
 
 foreach ($words as $word => $profile) {
 	if (preg_match('/^[\w \']+$/',$word)) {
-		$word = str_replace("'",' ',$word);
-		if (strpos($word,' ') !== FALSE) {
+		$count = 0;
+		$word = str_replace("'",' ',$word,$count);
+		if (strpos($word,' ') !== FALSE && !$count) {
 			if ($profile == 'keywords') {
 				$list[] = '('.$word.')';
 			} else {
 				$list[] = '"'.preg_replace('/\b(\w)/','=$1',$word).'"';
 			}
 		} else {
-			$list[] = $word;
+			if ($profile == 'keywords') {
+				if ($count > 0) {
+					$list[] = '('.str_replace(" ",'',$word).') | ('.$word.')';
+				} else {
+					$list[] = $word;
+				}
+			} else {
+				$list[] = $word;
+			}
 		}
 	}
 }
@@ -78,7 +87,7 @@ $q = strtolower(implode(' | ',$list));
 
 print $q;
 $limit = 100000;
-exit;
+
 if ($q) {
 	$q2 = preg_replace('/\b(the|and)\b/','',$q); //a more basic one for snippets
 
