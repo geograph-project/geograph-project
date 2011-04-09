@@ -46,24 +46,24 @@ $list = array();
 
 foreach ($words as $word => $profile) {
 	if (preg_match('/^[\w \']+$/',$word)) {
-		$count = 0;
-		$word = str_replace("'",' ',$word,$count);
-		if (strpos($word,' ') !== FALSE && !$count) {
+		$quotes = 0;
+		$spaces = (strpos($word,' ') !== FALSE);
+		$word = str_replace("'",' ',$word,$quotes);
+		
+		if ($spaces) {
 			if ($profile == 'keywords') {
-				$list[] = '('.$word.')';
+				if ($quotes) {
+					$list[] = '"'.$word.'"';
+				} else {
+					$list[] = '('.$word.')';
+				}
 			} else {
 				$list[] = '"'.preg_replace('/\b(\w)/','=$1',$word).'"';
 			}
+		} elseif ($quotes) {
+			$list[] = '('.str_replace(" ",'',$word).') | ('.$word.')';
 		} else {
-			if ($profile == 'keywords') {
-				if ($count > 0) {
-					$list[] = '('.str_replace(" ",'',$word).') | ('.$word.')';
-				} else {
-					$list[] = $word;
-				}
-			} else {
-				$list[] = $word;
-			}
+			$list[] = $word;
 		}
 	}
 }
