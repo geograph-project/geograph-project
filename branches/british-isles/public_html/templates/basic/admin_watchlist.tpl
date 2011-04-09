@@ -1,7 +1,7 @@
 {assign var="page_title" value="Watch List"}
 {include file="_std_begin.tpl"}
 
-<h2>Watch List</h2>
+<h2><a href="/admin/typolist.php">Typos</a> :: Watch List</h2>
 
 <p>These are images, have have been flagged against the watches words. Once muted a image wont reappear until its edited - and the watch word is still present. You should make any alterations to the image required before pressing the mute button.</p>
 
@@ -27,7 +27,7 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
 		{if $image->comment}
-		<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;padding-bottom:7px">{$image->comment|escape:'html'|geographlinks}</div>
+		<div class="caption" style="font-size:0.7em;padding-bottom:7px">{$image->comment|escape:'html'|geographlinks}</div>
 		{/if}
 
 	  </div><br style="clear:both;"/>

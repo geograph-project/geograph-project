@@ -77,52 +77,83 @@ $smarty->assign('size',$size);
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid) && strlen($include))
 {
-	$where = array();
 	
 	$imagelist=new ImageList;
 
 	$db = $imagelist->_getDB();
 	
-	if (!empty($_GET['title'])) {
-		if (!empty($_GET['include'])) {
-			$where[] = '(title LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['include']).'%').
-				' OR comment LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['include']).'%').')';
-			$smarty->assign('include',$_GET['include']);
-		} 
-		if (!empty($_GET['exclude'])) {
-			$where[] = 'title NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
-			$where[] = 'comment NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
-			$smarty->assign('exclude',$_GET['exclude']);
-		} 		
-		$smarty->assign('title',1);
-	} else {
-		if (!empty($_GET['include'])) {
-			$where[] = 'comment LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['include']).'%');
-			$smarty->assign('include',$_GET['include']);
-		} 
-		if (!empty($_GET['exclude'])) {
-			$where[] = 'comment NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
-			$smarty->assign('exclude',$_GET['exclude']);
-		} 
-	}
-	if (count($where)) {
-		$last_id = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+	$last_id = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
 	
-		$where[] = 'gridimage_id > '.($last_id-$size);
+	if (!empty($_GET['profile']) && $_GET['profile'] == 'keywords') {
 		
-		$where= implode(' AND ',$where);
+		$pgsize = 50;
+					
+		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
+		if (empty($pg) || $pg < 1) {$pg = 1;}
+
+		$q = '';
+		if (!empty($_GET['include'])) {
+			$q = trim($_GET['include']);
+			$smarty->assign('include',$_GET['include']);
+		}
+		if (!empty($_GET['exclude'])) {
+			$q .= " -(".trim($_GET['exclude']).")";
+			$smarty->assign('exclude',$_GET['exclude']);
+		}
+		
+		if ($imagelist->getImagesBySphinx($q,$pgsize,$pg = 1)) {
+			$total_results = $imagelist->resultCount;
+		}
+		
+		$smarty->assign('profile',$_GET['profile']);
 	} else {
-		die("umm?");
+		$where = array();
+		
+		if (!empty($_GET['title'])) {
+			if (!empty($_GET['include'])) {
+				$where[] = '(title LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['include']).'%').
+					' OR comment LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['include']).'%').')';
+				$smarty->assign('include',$_GET['include']);
+			} 
+			if (!empty($_GET['exclude'])) {
+				$where[] = 'title NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
+				$where[] = 'comment NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
+				$smarty->assign('exclude',$_GET['exclude']);
+			} 		
+			$smarty->assign('title',1);
+		} else {
+			if (!empty($_GET['include'])) {
+				$where[] = 'comment LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['include']).'%');
+				$smarty->assign('include',$_GET['include']);
+			} 
+			if (!empty($_GET['exclude'])) {
+				$where[] = 'comment NOT LIKE '.$db->Quote('%'.preg_replace('/[\+~]$/','',$_GET['exclude']).'%');
+				$smarty->assign('exclude',$_GET['exclude']);
+			} 
+		}
+		if (count($where)) {
+			
+			$where[] = 'gridimage_id > '.($last_id-$size);
+
+			$where= implode(' AND ',$where);
+		} else {
+			die("umm?");
+		}
+
+
+		$sql="select gridimage_id,user_id,realname,title,comment,grid_reference ".
+			"from gridimage_search ".
+			"where $where ".
+			($max_gridimage_id?" and gridimage_id < $max_gridimage_id ":'').
+			"order by gridimage_id desc limit 50";
+	#print "<pre>$sql</pre>";
+	#exit;
+		$imagelist->_getImagesBySql($sql);
+		
+		if (count($imagelist->images)) {
+			$total_results = count($imagelist->images);
+		}
 	}
-	
-	$sql="select gridimage_id,user_id,realname,title,comment,grid_reference ".
-		"from gridimage_search ".
-		"where $where ".
-		($max_gridimage_id?" and gridimage_id < $max_gridimage_id ":'').
-		"order by gridimage_id desc limit 50";
-#print "<pre>$sql</pre>";
-#exit;
-	$imagelist->_getImagesBySql($sql);
 	
 	if ($db->readonly) {
 		$db = GeographDatabaseConnection(false);
@@ -131,7 +162,7 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include))
 	if (count($imagelist->images)) {
 		
 		$smarty->assign_by_ref('images', $imagelist->images);
-		$smarty->assign_by_ref('image_count', count($imagelist->images));
+		$smarty->assign_by_ref('image_count', $total_results);
 
 		/*
 		$last = $imagelist->images[count($imagelist->images)-1];
@@ -152,13 +183,15 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include))
 		$inserts[] = "include = ".$db->Quote($_GET['include']);
 		$inserts[] = "exclude = ".$db->Quote($_GET['exclude']);
 		$inserts[] = "title = ".intval($_GET['title']);
+		$inserts[] = "profile = ".$db->Quote($_GET['profile']);
+
 		
-		$inserts[] = "last_results = ".count($imagelist->images);
+		$inserts[] = "last_results = ".$total_results;
 		$inserts[] = "last_time=NOW()";
 		$inserts[] = "last_size=$size";
 		$inserts[] = "last_gridimage_id=$last_id";
 		
-		$inserts[] = "total_results = ".count($imagelist->images);
+		$inserts[] = "total_results = ".$total_results;
 		$inserts[] = "total_runs = 1";
 		
 		$inserts[] = "user_id = ".$USER->user_id;
@@ -166,11 +199,11 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include))
 		
 		
 		$updates = array();
-		$updates[] = "last_results = ".count($imagelist->images);
+		$updates[] = "last_results = ".$total_results;
 		$updates[] = "last_time=NOW()";
 		$updates[] = "last_size=$size";
 		$updates[] = "last_gridimage_id=$last_id";
-		$updates[] = "total_results = total_results + ".count($imagelist->images);
+		$updates[] = "total_results = total_results + ".$total_results;
 		$updates[] = "total_runs = total_runs + 1";
 		$updates[] = "last_user_id = ".$USER->user_id;
 		
@@ -182,6 +215,8 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include))
 		$where = array();
 		$where[] = "include = ".$db->Quote($_GET['include']);
 		$where[] = "exclude = ".$db->Quote($_GET['exclude']);
+		$where[] = "profile = ".$db->Quote($_GET['profile']);
+
 		$where[] = "title = ".intval($_GET['title']);
 		
 		$updates = array();
@@ -200,5 +235,3 @@ if (!$smarty->is_cached($template, $cacheid) && strlen($include))
 
 $smarty->display($template, $cacheid);
 
-	
-?>

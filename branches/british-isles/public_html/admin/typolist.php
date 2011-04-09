@@ -36,11 +36,37 @@ $USER->mustHavePerm("basic");
 
 if (!empty($_GET['hide'])) {
 	$db = GeographDatabaseConnection(false);
-	$db->Execute("update typo set quieted = NOW() where typo_id = ".intval($_GET['hide']));
+	$db->Execute("UPDATE typo SET quieted = NOW() WHERE typo_id = ".intval($_GET['hide']));
 
 } elseif (!empty($_GET['delete'])) {
 	$db = GeographDatabaseConnection(false);
-	$db->Execute("update typo set enabled = 0 where typo_id = ".intval($_GET['delete']));
+	$db->Execute("UPDATE typo SET enabled = 0 WHERE typo_id = ".intval($_GET['delete']));
+
+	if (!empty($_GET['watch'])) {
+		$word = $db->getOne("SELECT include FROM typo WHERE typo_id = ".intval($_GET['delete']));
+		
+		$sql = "UPDATE gridimage_typo SET
+			muted = NOW(),
+			moderator = ".intval($USER->user_id)."
+			WHERE word = ".$db->Quote($word);
+		$db->Execute($sql);
+		
+		print "Images updated = ".mysql_affected_rows();
+		
+	} elseif (!empty($_GET['profile']) && $_GET['profile'] != 'keywords') {
+		$word = htmlentities($db->getOne("SELECT include FROM typo WHERE typo_id = ".intval($_GET['delete'])));
+		print "<tt><b>$word</b></tt> Typo entry deleted.";
+
+		print "<p>Do you also want to remove any photos from the watchlist that match this rule <tt><b>$word</b></tt>? <a href=\"?delete=".intval($_GET['delete'])."&amp;watch=1\">Yes</a> (Useful if this rule added many false positives to the list)</p>";
+		
+		print "<a href=\"?\">No</a> (return to list)";
+		
+		exit;
+	}
+	
+} elseif (!empty($_GET['toggle'])) {
+	$db = GeographDatabaseConnection(false);
+	$db->Execute("UPDATE typo SET profile = (profile MOD 4)+1,updated=updated WHERE typo_id = ".intval($_GET['toggle']));
 
 } elseif (!empty($_POST['rows'])) {
 	$rows = str_replace("\r",'',$_POST['rows']);
@@ -98,6 +124,7 @@ if (!empty($_GET['hide'])) {
 			$inserts[] = "created=NOW()";
 			$inserts[] = "include = ".$db->Quote(preg_replace('/^=/','',$result));
 			$inserts[] = "title = ".intval($_GET['title']);
+			$inserts[] = "profile = ".$db->Quote($_GET['profile']);
 
 			$inserts[] = "user_id = ".$USER->user_id;
 			
@@ -133,5 +160,3 @@ if (!$smarty->is_cached($template, $cacheid) )
 
 $smarty->display($template, $cacheid);
 
-	
-?>
