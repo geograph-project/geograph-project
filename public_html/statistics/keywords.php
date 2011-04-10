@@ -36,9 +36,6 @@ if (empty($_GET['q'])) {
 $template='statistics_graph.tpl';
 $cacheid='statistics|keywords'.md5($_GET['q']);
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*6; //6hour cache
-
 if (!$smarty->is_cached($template, $cacheid))
 {
 	
@@ -51,6 +48,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		<div class=\"interestBox\">
 			Keywords: <input type=\"text\" name=\"q\" value=\"".htmlentities($_GET['q'])."\" size=\"80\"/> <input type=submit value=\"Update\"/>
 		</div>
+		Seperate multiple keywords by spaces. Only works with single words, not phrases. Words are subject to stemming, unless prefix a word by a = symbol.
 	</form>");
 	
 	
@@ -80,7 +78,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$graph = array();
 
 		$graph['table'] = $table;
-		$graph['title'] = (preg_match('/_delta/',$index)?'Recent Images (last 48 hours)':'Everything Else');
+		$graph['title'] = (preg_match('/_delta/',$index)?'Recent Images (last 48 hours-ish)':'Everything Else');
 		$graph['max'] = $max;
 		#$graph['total'] = array('title'=>'Total','value'=>$sum);
 
