@@ -16,7 +16,7 @@ height:15px;
     	{html_options options=$references selected=$ri}
     </select>{/if}
     {if $i}
-    	<input type="checkbox" name="i" value="{$i}" checked="checked" 
+    	<input type="checkbox" name="i" value="{$i}" checked="checked"
     	id="i"/><label for="i">Limited to <a href="/search.php?i={$i}">Search</a></label>
     {else}
     {dynamic}
@@ -44,9 +44,13 @@ height:15px;
     	<input type="hidden" name="{$name}" value="{$value}"/>
     {/foreach}
     <input type="submit" value="Go"/></p></form>
- {/if} 
+ {/if}
 
 <h2>{$h2title}</h2>
+
+{if $prefix}
+	{$prefix}
+{/if}
 
 {foreach from=$graphs item=graph}
 
