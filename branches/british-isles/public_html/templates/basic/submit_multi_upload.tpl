@@ -12,17 +12,16 @@
 
 	<div class="interestBox">
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
-<link rel="stylesheet" href="/plupload/examples/css/jquery.ui.plupload.css" type="text/css" />
+<link rel="stylesheet" href="/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js" type="text/javascript"></script>
 
 <!-- Thirdparty intialization scripts, needed for the Google Gears and BrowserPlus runtimes -->
-<script type="text/javascript" src="/plupload/js/gears_init.js"></script>
 <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
 
-<script type="text/javascript" src="/plupload/js/plupload.full.min.js"></script>
-<script type="text/javascript" src="/plupload/js/jquery.ui.plupload.min.js"></script>
+<script type="text/javascript" src="/plupload/js/plupload.full.js"></script>
+<script type="text/javascript" src="/plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"></script>
 
 {literal}
 <script type="text/javascript">
