@@ -1,5 +1,4 @@
 {assign var="page_title" value="Search Results"}
-
 {include file="_basic_begin.tpl"}
 {if $inner || $feedback}
 	<br/>
@@ -10,7 +9,7 @@
 {/if}
 
 <div id="maincontent">
-{if $suggestions} 
+{if $suggestions}
 	<b>Did you mean:</b>
 	<ul>
 	{foreach from=$suggestions item=row}
@@ -37,7 +36,7 @@
 	{if $query_info}
 	<p style="clear:both">{$query_info}</p>
 	{/if}
-{if $feedback} 
+{if $feedback}
 	<hr/>
 	<b>Rate this set of results!</b><br/>
 	<form method="get" action="/finder/modes.php?sdf=sdf" target="resultsframe" onsubmit="{literal}that=this;setTimeout(function() {that.innerHTML='Thanks!'},1000);return true;{/literal}">
@@ -58,10 +57,10 @@
 		<input type="hidden" name="q" value="{$q|escape:'html'}"/>
 		<label for="comment"><i>Optional</i> comment</label><br/>
 		<input type="text" name="comment" value="" id="comment" maxlength="160"/><br/><br/>
-		
+
 		<input type="submit" name="test" value="submit feedback"/>
 	</form>
-	
+
 	<iframe src="about:blank" width="1" height="1" name="resultsframe"></iframe>
 	<span style="color:white">{$mode|escape:'html'}</span>
 {elseif $inner}

@@ -22,7 +22,9 @@
  */
 
 require_once('geograph/global.inc.php');
-
+if (!empty($_GET['refresh'])) {
+	init_session();
+}
 
 
 #customGZipHandlerStart();
@@ -50,9 +52,15 @@ if (empty($q)) {
 }
 
 $searchmode = (isset($_GET['mode']) && preg_match('/^\w+$/' , $_GET['mode']))?$_GET['mode']:'';
-
+		
 $template = "search_service.tpl";
 $cacheid = md5($q.'|'.$searchmode).(isset($_GET['inner'])+1).(isset($_GET['feedback'])+1);
+
+if (!empty($_GET['before']) && preg_match('/^\d{4}(-\d{2})*/',$_GET['before'])) {
+	$cacheid .= "b".$_GET['before'];	
+} elseif (!empty($_GET['after']) && preg_match('/^\d{4}(-\d{2})*/',$_GET['after'])) {
+	$cacheid .= "a".$_GET['after'];	
+}
 
 customCacheControl(filemtime(__FILE__),$cacheid,false);
 customExpiresHeader(3600*6,true,true);
@@ -230,6 +238,26 @@ if (!$smarty->is_cached($template, $cacheid))
 			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 			$cl->SetMatchMode ( $mode );
 			$cl->SetLimits($offset,25);
+		}
+
+		if (!empty($_GET['before']) && preg_match('/^\d{4}(-\d{2})*/',$_GET['before'])) {
+			while (strlen($_GET['before'])<10) {
+				$_GET['before'] .= "-01";
+			}
+			$crit = new SearchCriteria();
+			$days = $crit->toDays($_GET['before']);
+			
+			$cl->SetFilterRange('takendays',1,$days);
+			
+		} elseif (!empty($_GET['after']) && preg_match('/^\d{4}(-\d{2})*/',$_GET['after'])) {
+			while (strlen($_GET['after'])<10) {
+				$_GET['after'] .= "-01";
+			}
+			$crit = new SearchCriteria();
+			$days = $crit->toDays($_GET['after']);
+			$now = $crit->toDays('NOW()');
+					
+			$cl->SetFilterRange('takendays',$days,$now);
 		}
 
 		$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
