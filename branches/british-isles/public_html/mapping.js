@@ -374,7 +374,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 				cenXhun = cenXhun.substr(0, 5);
 				cenYhun = cenYhun.substr(0, 5);
 
-				var cenXblock = 0;
+				var cenXblock = -1;
 				letters = letters.toUpperCase();
 				for(x=0;x<10;x++)
 					for(y=0;y<15;y++)
@@ -383,7 +383,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 							cenYblock = y*100000;
 						}
 
-				if (cenXblock > 0) {
+				if (cenXblock > -1) {
 					//we use parseFloat to avoid issues with 0 prefixed numbers!
 					easting = parseInt(cenXblock) + parseFloat(cenXhun);
 					northing = parseInt(cenYblock) + parseFloat(cenYhun);
