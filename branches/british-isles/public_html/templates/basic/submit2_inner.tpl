@@ -95,6 +95,18 @@
 		AttachEvent(window,'load',function() { setTimeout("setupTheForm()",100); },false);
 	{/literal}
 
+{if $container}
+	{literal}
+
+	function resizeContainer() {
+		var FramePageHeight =  document.body.offsetHeight + 10;
+		window.parent.document.getElementById('{/literal}{$container|escape:'javascript'}{literal}').style.height=FramePageHeight+'px';
+	}
+
+	AttachEvent(window,'load',resizeContainer,false);
+	{/literal}
+{/if}
+
 {/dynamic}
 </script>
 

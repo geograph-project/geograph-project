@@ -78,7 +78,7 @@ function clicker(step,override,shiftKey) {
 		ele2.innerHTML = '-';
 
 
-		var loc = 'inner&submit2&step='+step;
+		var loc = 'inner&submit2&step='+step+'&container=iframe'+step;
 
 		if (theForm.elements['grid_reference['+name+']'] && theForm.elements['grid_reference['+name+']'].value != '') {
 			loc = loc + "&grid_reference="+escape(theForm.elements['grid_reference['+name+']'].value);
@@ -207,18 +207,17 @@ AttachEvent(window,'load',readHash,false);
 
 
 	<form action="{$script_name}?process" name="theForm" method="post">
-{dynamic}
+
 	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>:<br/>
 
 	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this);clicker(2,false); clicker(2,true);"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
 
-{/dynamic}
 
 <!-- # -->
 	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1,null,event.shiftKey)"><span id="se1">-</span> Step 1 - Upload Photo</a>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="/submit2.php?inner&amp;step=1" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step=1&amp;container=iframe1" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
 	</div>
 <!-- # -->
 	<a id="sh9" href="#" class="sh sn" onclick="return clicker(9,null,event.shiftKey)" style="font-size:0.9em"><span id="se9">+</span> Find Square on Map (optional tool)</a>

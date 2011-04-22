@@ -76,7 +76,7 @@ function clicker(step,override,shiftKey) {
 		ele.style.display = 'block';
 
 
-		var loc = 'inner&submit2&step='+step;
+		var loc = 'inner&submit2&step='+step+'&container=iframe'+step;
 
 		if (theForm.elements['grid_reference['+name+']'] && theForm.elements['grid_reference['+name+']'].value != '') {
 			loc = loc + "&grid_reference="+escape(theForm.elements['grid_reference['+name+']'].value);
@@ -187,7 +187,7 @@ AttachEvent(window,'load',readHash,false);
 
 	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
-	<h2>Submit Image <sup style="color:gray">v2:Tabs - Beta</sup></h2>
+	<h2>Submit Image <sup style="color:gray">v2:Tabs - Gamma</sup></h2>
 
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
@@ -201,26 +201,26 @@ AttachEvent(window,'load',readHash,false);
 
 
 	<form action="{$script_name}?process" name="theForm" method="post">
-{dynamic}
-	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>: (close and reopen step to take effect)<br/>
 
-	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this)"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
+	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>:<br/>
 
-{/dynamic}
+	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this);clicker(2,false); clicker(2,true);"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
+
+
 	{if !$tab}
 		{assign var="tab" value="1"}
 	{/if}
 <!-- # -->
 	<div class="tabHolder">
-		<a id="sh1" href="#" class="tab{if $tab == 1}Selected{/if} sh sn" onclick="return clicker(1,null,event.shiftKey)">1. Upload</a>
-		<a id="sh9" href="#" class="tab{if $tab == 9}Selected{/if} sh sn" onclick="return clicker(9,null,event.shiftKey)" style="font-size:0.9em">Overview Map</a>
-		<a id="sh2" href="#" class="tab{if $tab == 2}Selected{/if} sh sn" onclick="return clicker(2,null,event.shiftKey)">2. Detail Map</a>
-		<a id="sh3" href="#" class="tab{if $tab == 3}Selected{/if} sh sn" onclick="return clicker(3,null,event.shiftKey)">3. Description</a>
-		<a id="sh4" href="#" class="tab{if $tab == 4}Selected{/if} sh sn" onclick="return clicker(4,null,event.shiftKey)">4. Confirm and Finish</a>
+		<a id="sh1" href="#" class="tab{if $tab == 1}Selected{/if} sh sn" onclick="return clicker(1,true,event.shiftKey)">1. Upload</a>
+		<a id="sh9" href="#" class="tab{if $tab == 9}Selected{/if} sh sn" onclick="return clicker(9,true,event.shiftKey)" style="font-size:0.9em">Overview Map</a>
+		<a id="sh2" href="#" class="tab{if $tab == 2}Selected{/if} sh sn" onclick="return clicker(2,true,event.shiftKey)">2. Detail Map</a>
+		<a id="sh3" href="#" class="tab{if $tab == 3}Selected{/if} sh sn" onclick="return clicker(3,true,event.shiftKey)">3. Description</a>
+		<a id="sh4" href="#" class="tab{if $tab == 4}Selected{/if} sh sn" onclick="return clicker(4,true,event.shiftKey)">4. Confirm and Finish</a>
 	</div>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="/submit2.php?inner&amp;step=1" id="iframe1" width="100%" height="520px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step=1&amp;container=iframe1" id="iframe1" width="100%" height="520px" style="border:0"></iframe>
 	</div>
 <!-- # -->
 

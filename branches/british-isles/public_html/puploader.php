@@ -291,6 +291,11 @@ if (isset($_GET['success'])) {
 	//which step to display?
 	$smarty->assign('step', $step);
 	
+	if (!empty($_REQUEST['container'])) {
+		$smarty->assign('container', $_REQUEST['container']);
+	}
+	
+	
 	if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 		customExpiresHeader(3600,false,true);
 	}
@@ -314,4 +319,3 @@ if (isset($_GET['success'])) {
 
 $smarty->display($template, $cacheid);
 
-?>

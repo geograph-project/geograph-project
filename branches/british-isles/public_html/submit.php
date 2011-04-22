@@ -98,7 +98,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 					list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
 					
 					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
-					
+
 				
 				} elseif (preg_match("/(_|\b)([a-zA-Z]{1,3})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
 					if (strlen($m[3]) != strlen($m[4])) {
@@ -576,7 +576,9 @@ if (isset($_POST['gridsquare']))
 			require_once('geograph/rastermap.class.php');
 
 			$rastermap = new RasterMap($square,true);
-			
+			if (isset($_REQUEST['service']) && $_REQUEST['service'] == 'Google') {
+				$rastermap->service = 'Google';
+			}
 			if (isset($_POST['photographer_gridref'])) {
 				$square2=new GridSquare;
 				$ok= $square2->setByFullGridRef($_POST['photographer_gridref']);
