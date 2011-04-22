@@ -254,6 +254,10 @@ if (isset($_REQUEST['inner'])) {
 	}
 
 	$smarty->assign('step', $step);
+	
+	if (!empty($_REQUEST['container'])) {
+		$smarty->assign('container', $_REQUEST['container']);
+	}
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {

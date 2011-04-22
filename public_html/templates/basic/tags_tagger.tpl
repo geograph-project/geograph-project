@@ -18,16 +18,16 @@
 
 	<div style="float:left;width:40%;font-size:0.9em">
 
-			<b>New</b>: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} clearAutoSave(); {/literal}"/> <input type="button" value="Add" onclick="useTags(this.form.elements['__newtag'])"/><br/>
+			<b>New</b>: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}"/> <input type="button" value="Add" onclick="useTags(this.form.elements['__newtag'])"/><br/>
 
 			<b>Current Tags</b>:<br/>
 			<span id="tags">{foreach from=$used item=item name=used}
-			<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tag{$item.tag_id}"{if $is_owner} onclick="toggleTag('{$item.tag_id}');"{/if}>
+			<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tagid:{$item.tag_id}"{if $is_owner} onclick="toggleTag('id:{$item.tag_id}');"{/if}>
 			<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
 			{if $item.is_owner}
-				<input type="hidden" name="tag_id[]" id="tagi{$item.tag_id}" value="id:{$item.tag_id}"/>
-				<input type="hidden" name="mode[]" id="tagm{$item.tag_id}" value="{$item.status}"/>
-				<a href="javascript:removeTag({$item.tag_id})" class="delete">X</a>
+				<input type="hidden" name="tag_id[]" id="tagiid:{$item.tag_id}" value="id:{$item.tag_id}"/>
+				<input type="hidden" name="mode[]" id="tagmid:{$item.tag_id}" value="{$item.status}"/>
+				<a href="javascript:removeTag('id:{$item.tag_id}')" class="delete">X</a>
 			{/if}
 			</span>&nbsp;
 		{foreachelse}
@@ -43,19 +43,33 @@
 
 	<div style="float:left;width:59%;font-size:0.9em">
 		{assign var="tab" value="1"}
+		{if $topics && !$suggestions}
+			{assign var="tab" value="2"}
+		{/if}
+		{assign var="ctab" value="1"}
 		<div class="tabHolder">
 			{if $tree}
 				<div style="margin-left:7em"><b>Geographical Context</b>: <small>(pick at <B>least one</b>)</small></div>
 			{/if}
-			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,6)">Suggestions</a>&nbsp;
+			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,10)">Suggestions</a>&nbsp;
+			{if $topics}
+				{assign var="ctab" value=$ctab+1}
+				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Topics</a>&nbsp;
+			{/if}
+			{if $recent}
+				{assign var="ctab" value=$ctab+1}
+				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Recent</a>&nbsp;
+			{/if}
 			{foreach from=$tree key=key item=item name=tree}
-				<a class="tab{if $tab == $smarty.foreach.tree.iteration+1}Selected{/if} nowrap" id="tab{$smarty.foreach.tree.iteration+1}" onclick="tabClick('tab','div',{$smarty.foreach.tree.iteration+1},6)">{$key}</a>&nbsp;
+				{assign var="ctab" value=$ctab+1}
+				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">{$key}</a>&nbsp;
 			{/foreach}
-			<a class="tab{if $tab == $smarty.foreach.tree.iteration+2}Selected{/if} nowrap" id="tab{$smarty.foreach.tree.iteration+2}" onclick="tabClick('tab','div',{$smarty.foreach.tree.iteration+2},6)">Buckets</a>&nbsp;
+			{assign var="ctab" value=$ctab+1}
+			<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Buckets</a>&nbsp;
 
 		</div>
-
-		<div id="div1" class="interestBox">
+		{assign var="ctab" value="1"}
+		<div id="div1" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
 			{foreach from=$suggestions item=item name=used}
 				<span class="tag" id="suggestion{$item.tag|escape:'html'}">
 				<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
@@ -66,9 +80,38 @@
 			{/foreach}
 		</div>
 
+		{if $topics}
+			{assign var="ctab" value=$ctab+1}
+			<div id="div{$ctab}" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
+				{foreach from=$topics item=item name=used}
+					<span class="tag" id="suggestion{$item.tag|escape:'html'}">
+					<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
+					<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="use">Use</a>
+					</span>&nbsp;
+				{foreachelse}
+					<i>none</i>
+				{/foreach}
+			</div>
+		{/if}
+
+		{if $recent}
+			{assign var="ctab" value=$ctab+1}
+			<div id="div{$ctab}" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
+				{foreach from=$recent item=item name=used}
+					<span class="tag" id="suggestion{$item.tag|escape:'html'}">
+					<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
+					<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="use">Use</a>
+					</span>&nbsp;
+				{foreachelse}
+					<i>none</i>
+				{/foreach}
+			</div>
+		{/if}
+
 		{if $tree}
 			{foreach from=$tree key=key item=item name=tree}
-				<div style="position:relative;{if $tab != $smarty.foreach.tree.iteration+1}display:none{/if}"  class="interestBox" id="div{$smarty.foreach.tree.iteration+1}">
+				{assign var="ctab" value=$ctab+1}
+				<div style="position:relative;{if $tab != $ctab}display:none{/if}"  class="interestBox" id="div{$ctab}">
 					{foreach from=$item item=value}
 						<span class="tag" id="suggestion{$value|escape:'html'}">
 						<span>{$value|escape:'html'}</span>
@@ -79,7 +122,8 @@
 			{/foreach}
 		{/if}
 
-		<div id="div{$smarty.foreach.tree.iteration+2}" class="interestBox" style="display:none">
+		{assign var="ctab" value=$ctab+1}
+		<div id="div{$ctab}" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
 			<br/><small>IMPORTANT: Please read the {newwin href="/article/Image-Buckets" title="Article about Buckets" text="Buckets Article"} before picking from this list</small><br/><br/>
 			{foreach from=$buckets item=item}
 				<span class="tag" id="suggestion{$item|escape:'html'}">
@@ -99,11 +143,9 @@
 <br style="clear:both"/>
 <div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag</span> <span class="tag tagPrivate">Private Tag</span> <span class="tag tagGeneral">General Tag</span></span> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})</div>
 
-{literal}<script type="text/javascript">
+<i>&middot; NOTE: There is no longer any need to press 'Save Changes', tags are now automatically saved in the background.</i>
 
-var autoSaveTimer = null;
-var autoSaveCounter = 0;
-var autoSaveCounterTimer = null;
+{literal}<script type="text/javascript">
 
 function useTags(ele) {
 
@@ -153,7 +195,7 @@ function addTag(text,suggestion) {
 	if (suggestion) {
 		document.getElementById('suggestion'+suggestion).style.display='none';
 	}
-	showSaveButton();
+	submitTag(text,{/literal}{dynamic}{if $is_owner}2{else}1{/if}{/dynamic}{literal});
 	return void('');
 }
 function removeTag(text) {
@@ -164,7 +206,7 @@ function removeTag(text) {
 	if (document.getElementById("tagi"+text)) {
 		document.getElementById("tagi"+text).value="-deleted-";
 	}
-	showSaveButton();
+	submitTag(text,0);
 }
 
 function toggleTag(text) {
@@ -175,60 +217,32 @@ function toggleTag(text) {
 
 		ele.className = "tag tag"+newClass;
 		document.getElementById("tagm"+text).value = newClass;
-	}
-	showSaveButton();
-}
 
-function showSaveButton() {
-	document.getElementById("savebutton").style.display='';
-	if (autoSaveTimer) {
-		clearTimeout(autoSaveTimer);
+		submitTag(text,(newClass == 'Private')?1:2);
 	}
-	if (autoSaveCounterTimer) {
-		clearInterval(autoSaveCounterTimer);
-	}
-	autoSaveTimer = setTimeout("autoSaveTimer = null;document.forms['theForm'].elements['save'].click()", 10000);
-
-	autoSaveCounter = 10;
-	autoSaveCounterTimer = setInterval("autoSaveCountdown()", 1000);
-	document.getElementById("autoSave").innerHTML = "Auto save in "+autoSaveCounter+" seconds";
 }
-function autoSaveCountdown() {
-	autoSaveCounter = autoSaveCounter - 1;
-	document.getElementById("autoSave").innerHTML = "Auto save in "+autoSaveCounter+" seconds";
-}
-function clearAutoSave() {
-	if (autoSaveTimer) {
-		clearTimeout(autoSaveTimer);
-	}
-	if (autoSaveCounterTimer) {
-		clearInterval(autoSaveCounterTimer);
-	}
-	autoSaveTimer = autoSaveCounterTimer = null;
-	document.getElementById("autoSave").innerHTML = '';
-}
-
-
-function unloadMess() {
-	if (!autoSaveTimer) {
-		return;
-	}
-	return "**************************\n\nYou have unsaved changes in the Tagging box.\n\n**************************\n";
-}
-//this is unreliable with AttachEvent
-window.onbeforeunload=unloadMess;
-function cancelMess() {
-	window.onbeforeunload=null;
-}
-function setupSubmitForm() {
-	AttachEvent(document.forms['theForm'],'submit',cancelMess,false);
-}
-AttachEvent(window,'load',setupSubmitForm,false);
-
 
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
 <script>
+
+
+	function submitTag(tag,status) {
+		var data = new Object;
+		data['tag'] = tag;
+		data['status'] = status;
+
+		var form= document.forms['theForm'];
+		if (form.gridimage_id)
+			data['gridimage_id'] = form.gridimage_id.value;
+		if (form.ids)
+			data['ids'] = form.ids.value;
+
+		$.ajax({
+			url: "/tags/tagger.json.php",
+			data: data
+		});
+	}
 
 	function loadTagSuggestions(that,event) {
 
@@ -238,7 +252,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 			return;
 		}
 
-		param = 'q='+escape(that.value);
+		param = 'q='+encodeURIComponent(that.value);
 
 		$.getJSON("/tags/tags.json.php?"+param+"&callback=?",
 

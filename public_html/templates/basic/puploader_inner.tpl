@@ -1,7 +1,7 @@
 {include file="_basic_begin.tpl"}
 
 {dynamic}
-<form enctype="multipart/form-data" action="{$script_name}{if $submit2}?submit2=1{/if}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
+<form enctype="multipart/form-data" action="{$script_name}?{if $submit2}submit2=1{/if}{if $container}&amp;container={$container|escape:'url'}{/if}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 	<input type="hidden" name="inner" value="1"/>
 
 	{if $errormsg}
@@ -160,7 +160,7 @@
 			{/foreach}
 			<br style="clear:both"/>
 
-		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}&v=3';" id="hidetag"/></p>
+		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tagging(this.form)" id="hidetag"/> <small>(suggest opening after entering description and selecting Context above)</small></p>
 
 		<div class="interestBox" id="showtag" style="display:none">
 			<ul>
@@ -175,6 +175,22 @@
 			</iframe>
 			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
 		</div></p>
+
+{literal}
+<script type="text/javascript">
+function show_tagging(form) {
+	show_tree('tag');
+	var query = 'upload_id={/literal}{$upload_id}&gr={$grid_reference|escape:'html'}{literal}&v=3';
+	if (form.elements['title'].value.length> 0 )
+		query=query+'&title='+encodeURIComponent(form.elements['title'].value);
+	for(q=0;q<form.elements['tags[]'].length;q++)
+		if (form.elements['tags[]'][q].checked)
+			query=query+'&tags[]='+encodeURIComponent(form.elements['tags[]'][q].value);
+	if (form.elements['comment'].value.length> 0 )
+		query=query+'&comment='+encodeURIComponent(form.elements['comment'].value.substr(0,1500).replace(/[\n\r]/,' '));
+	document.getElementById('tagframe').src='/tags/tagger.php?'+query;
+}
+</script>{/literal}
 
 	{else}
 		<p style="color:red">&middot; Further details can only be set once image has finished uploading,
@@ -230,9 +246,21 @@
 	function setTakenDate(value) {
 		setdate('imagetaken',value,document.forms['theForm']);
 	}
-
-</script>
 {/literal}
+
+{if $container}
+	{literal}
+
+	function resizeContainer() {
+		var FramePageHeight =  document.body.offsetHeight + 10;
+		window.parent.document.getElementById('{/literal}{$container|escape:'javascript'}{literal}').style.height=FramePageHeight+'px';
+	}
+
+	AttachEvent(window,'load',resizeContainer,false);
+	{/literal}
+{/if}
+</script>
+
 
 </form>
 </body>
