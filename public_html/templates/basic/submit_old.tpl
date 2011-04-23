@@ -28,6 +28,14 @@
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
+
+<div style="background-color:pink; color:black; border:2px solid red; padding:20px; margin-bottom:30px;">
+	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+
+	You are using the old Category based submission process. Please consider switching to the new <a href="/switch.php">Tagging based interface</a>.
+</div>
+
+
 {if $user->stats.images eq 0}
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px; margin-bottom:20px"><b>First time here?</b> If so you might like to have a look at our <a href="/faq.php">FAQs</a>, or <a href="/ask.php">ask a question</a>.</div>
 

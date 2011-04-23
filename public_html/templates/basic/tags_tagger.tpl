@@ -171,7 +171,7 @@ function addTag(text,suggestion) {
 
 	var div = document.getElementById('tags');
 
-	if (div.innerHTML.indexOf('<i>') == 0) {
+	if (div.innerHTML.indexOf('<i>') > -1) {
 		div.innerHTML = '';
 	}
 

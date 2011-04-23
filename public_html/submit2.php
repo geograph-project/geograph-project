@@ -34,10 +34,18 @@ $smarty = new GeographPage;
 //you must be logged in to submit images
 $USER->mustHavePerm("basic");
 
-$template='submit2.tpl';
+if (!empty($_SESSION['submit_new'])) {
+	$template = 'submit2.tpl';
+} else {
+	$template = 'submit2_old.tpl';
+}
 
 if (!empty($_GET['display']) && $_GET['display'] == 'tabs') {
-	$template='submit2_tabs.tpl';
+	if (!empty($_SESSION['submit_new'])) {
+		$template = 'submit2_tabs.tpl';
+	} else {
+		$template = 'submit2_tabs_old.tpl';
+	}
 }
 
 $cacheid='';
