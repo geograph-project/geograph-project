@@ -600,6 +600,16 @@ split_timer('gridimage'); //starts the timer
 			if (preg_match('/[^\[]\[\d+\]/',$this->comment))
 				$this->snippets_as_ref =1;
 		}
+		
+		//find tags
+		if (empty($db)) $db=&$this->_getDB(true); 
+		$this->tags = $db->getAll("
+			SELECT prefix,tag
+			FROM gridimage_tag gt
+				INNER JOIN tag t USING (tag_id) 
+			WHERE gt.gridimage_id = {$this->gridimage_id} AND gt.status = 2 AND t.status = 1
+			ORDER BY gt.created");
+	
 split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
 
 	}
@@ -1354,6 +1364,7 @@ split_timer('gridimage'); //starts the timer
 				if ($usecount == 3) { //the first time! - lets prime the cache
 					get_no_content($return['server'].$thumbpath);
 				}
+
 			} else
 		*/
 			if (!empty($CONF['enable_cluster'])) {
