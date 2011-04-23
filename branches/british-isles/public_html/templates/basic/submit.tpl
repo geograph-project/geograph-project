@@ -21,12 +21,18 @@
 		<span style="color:red">New!</span> - Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
 	</div>
 
-
 	{if $user->stats.images gt 10}
 	<p align="center">&middot; <a href="/help/submission">View alternative submission methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot; <a href="/article/Content-on-Geograph">Submit a Collection</a> &middot;</p>
 	{/if}
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
+
+
+<div style="color:black; border:2px solid red; padding:10px; margin-bottom:10px">
+	You are using the new Tagging based submission process. <br/><small>
+	For a short while can revert to the old Category based submission method, <a href="/switch.php">here</a>.</small>
+</div>
+
 
 {if $user->stats.images eq 0}
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px; margin-bottom:20px"><b>First time here?</b> If so you might like to have a look at our <a href="/faq.php">FAQs</a>, or <a href="/ask.php">ask a question</a>.</div>

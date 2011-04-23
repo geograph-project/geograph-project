@@ -1,4 +1,4 @@
-fg<?php
+<?php
 /**
  * $Project: GeoGraph $
  * $Id: tags.json.php 7071 2011-02-04 00:39:05Z barry $

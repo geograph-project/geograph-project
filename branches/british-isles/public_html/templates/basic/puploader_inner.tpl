@@ -248,6 +248,7 @@ function show_tagging(form) {
 	}
 {/literal}
 
+{dynamic}
 {if $container}
 	{literal}
 
@@ -259,6 +260,7 @@ function show_tagging(form) {
 	AttachEvent(window,'load',resizeContainer,false);
 	{/literal}
 {/if}
+{/dynamic}
 </script>
 
 

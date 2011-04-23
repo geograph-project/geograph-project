@@ -202,6 +202,11 @@ AttachEvent(window,'load',readHash,false);
 	</noscript>
 
 
+<div style="background-color:pink; color:black; border:2px solid red; padding:20px; margin-bottom:30px;">
+	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+
+	You are using the old Category based submission process. Please consider switching to the new <a href="/switch.php">Tagging based interface</a>.
+</div>
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
 	 A overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.

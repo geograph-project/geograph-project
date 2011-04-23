@@ -156,8 +156,11 @@ if (isset($_GET['success'])) {
 	print "http://{$_SERVER['HTTP_HOST']}/puploader.php?success&t=$t";
 	exit;
 } elseif (isset($_REQUEST['inner'])) {
-	#print_r($_REQUEST);
-	$template='puploader_inner.tpl';
+	if (!empty($_SESSION['submit_new'])) {
+		$template = 'puploader_inner.tpl';
+	} else {
+		$template = 'puploader_inner_old.tpl';
+	}
 	$step = 1;
 	
 	$square=new GridSquare;

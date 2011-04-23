@@ -200,6 +200,12 @@ AttachEvent(window,'load',readHash,false);
 	</noscript>
 
 
+<div style="color:black; border:2px solid red; padding:10px;">
+	You are using the new Tagging based submission process. <br/><small>
+	For a short while can revert to the old Category based submission method, <a href="/switch.php">here</a>.</small>
+</div>
+
+
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
 	 A overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.
