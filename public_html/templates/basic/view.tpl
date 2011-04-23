@@ -145,7 +145,13 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 </div>
 
-
+{if $image->tags}
+	<div style="text-align:center;font-size:0.9em">Tags: {foreach from=$image->tags item=item name=used}
+		<span class="tag">
+		<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
+		</span>&nbsp;
+	{/foreach}</div>
+{/if}
 
 
 <div class="picinfo">
