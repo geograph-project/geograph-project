@@ -167,6 +167,13 @@ if (!empty($_POST['save']) && !empty($ids)) {
 						if ($row['status'] != $status) {
 							$sql = "UPDATE gridimage_tag SET status = $status WHERE gridimage_id = $gid AND tag_id = $tid AND user_id = {$USER->user_id}";
 							$db->Execute($sql);
+							
+							if ($gid < 4294967296 && empty($cleared)) {
+								//clear any caches involving this photo
+								$ab=floor($gid/10000);
+								$smarty->clear_cache(null, "img$ab|{$gid}");
+								$cleared = true;
+							}
 						}
 					}
 				}
@@ -190,6 +197,13 @@ if (!empty($_POST['save']) && !empty($ids)) {
 				} else {
 					$sql = "DELETE FROM gridimage_tag WHERE gridimage_id = $gid AND tag_id = $tid AND user_id = {$USER->user_id}";
 					$db->Execute($sql);
+					
+					if ($u['status'] == 2 && $gid < 4294967296 && empty($cleared)) {
+						//clear any caches involving this photo
+						$ab=floor($gid/10000);
+						$smarty->clear_cache(null, "img$ab|{$gid}");
+						$cleared = true;
+					}
 				}
 			}
 		}
@@ -240,6 +254,14 @@ if (!empty($_POST['save']) && !empty($ids)) {
 				}
 				
 				$db->Execute('INSERT IGNORE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+				
+				if ($u['status'] == 2 && $gid < 4294967296 && empty($cleared)) {
+					//clear any caches involving this photo
+					$ab=floor($gid/10000);
+					$smarty->clear_cache(null, "img$ab|{$gid}");
+					$cleared = true;
+				}
+				
 			}
 		}
 	
@@ -263,10 +285,7 @@ split_timer('tags'); //starts the timer
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
-		
-		$smarty->clear_cache("tags.tpl", $criteria['tag_id']);
-		
-		$memcache->name_delete('sd', $gid);
+
 	}
 
 split_timer('tags','remove',$gid); //logs the wall time
@@ -291,15 +310,10 @@ split_timer('add'); //starts the timer
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);
 		$smarty->clear_cache(null, "img$ab|{$gid}");
-		
-		$smarty->clear_cache("tag.tpl", $updates['tag_id']);
-		
-		$memcache->name_delete('sd', $gid);
 	}
 
 split_timer('tags','remove',$gid); //logs the wall time
 
-	
 }
 
 
