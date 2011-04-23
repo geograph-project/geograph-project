@@ -95,6 +95,17 @@ if (!empty($USER->user_id) && !empty($_GET['tag']) && !empty($_GET['gridimage_id
 			}
 	
 			$db->Execute('REPLACE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+			
+			if ($u['status'] == 2 && $gid < 4294967296) {
+				$smarty = new GeographPage;
+
+				//clear any caches involving this photo
+				$ab=floor($gid/10000);
+				$smarty->clear_cache(null, "img$ab|{$gid}");
+
+			}
+			
+			
 		}
 	}
 	
