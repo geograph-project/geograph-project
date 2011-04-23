@@ -106,7 +106,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	print "$sql\n";
 	
 	$buckets = array();
-	$count = 0
+	$count = 0;
 	$last = '';
 	
 	$five_years_in_days = 365*5; 
@@ -140,6 +140,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		$buckets[] = $days;
 	
 		if ($point) {
+			$db_write->Execute("UPDATE gridimage SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
 			$db_write->Execute("UPDATE gridimage_search SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
 			print ". ";
 			$count++;
