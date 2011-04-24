@@ -37,6 +37,7 @@ if (!empty($_GET['upload_id'])) {
 
 	$gid = crc32($_GET['upload_id'])+4294967296;
 	$gid += $USER->user_id * 4294967296;
+	$gid = sprintf('%0.0f',$gid);
 
 	$smarty->assign('upload_id',$_GET['upload_id']);
 	$smarty->assign('gridimage_id',$gid);

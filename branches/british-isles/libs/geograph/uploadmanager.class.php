@@ -750,6 +750,7 @@ class UploadManager
 		//assign the snippets now we know the real id. 
 		$gid = crc32($this->upload_id)+4294967296;
 		$gid += $USER->user_id * 4294967296;
+		$gid = sprintf('%0.0f',$gid);
 		
 		$this->db->Execute($sql = "UPDATE gridimage_snippet SET gridimage_id = $gridimage_id WHERE gridimage_id = ".$gid);
 		
