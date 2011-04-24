@@ -724,6 +724,9 @@ $_SESSION['tab'] = $selectedtab;
 //which step to display?
 $smarty->assign('step', $step);
 
+if (isset($USER->submission_new)) {
+	$_SESSION['submit_new'] = intval($USER->submission_new);
+}
 if (!empty($_SESSION['submit_new'])) {
 	$smarty->display('submit.tpl');
 } else {

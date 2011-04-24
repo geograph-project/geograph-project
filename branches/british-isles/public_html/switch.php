@@ -32,6 +32,19 @@ $smarty = new GeographPage;
 
 if (isset($_GET['new'])) {
 	$_SESSION['submit_new'] = intval($_GET['new']);	
+} elseif (isset($USER->submission_new)) {
+	$_SESSION['submit_new'] = intval($USER->submission_new);
+}
+
+if (!isset($USER->submit_new) || isset($_GET['new'])) {
+
+	$submit_new = empty($_SESSION['submit_new'])?0:1;
+	
+	$db = GeographDatabaseConnection(false);
+
+	$db->Execute("UPDATE user SET submission_new = {$submit_new}, updated = updated WHERE user_id = {$USER->user_id}");
+	$USER->submission_new = $submit_new;
+	$_SESSION['submit_new'] = $submit_new;
 }
 
 if (!empty($_SESSION['submit_new'])) {
@@ -39,6 +52,6 @@ if (!empty($_SESSION['submit_new'])) {
 } else {
 	$smarty->assign('new',0);
 }
-	
+
 $smarty->display($template);
 
