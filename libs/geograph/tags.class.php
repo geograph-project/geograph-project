@@ -81,6 +81,7 @@ class Tags
 	function addUploadImage($upload_id,$user_id) {
 		$gid = crc32($upload_id)+4294967296;
 		$gid += $user_id * 4294967296;
+		$gid = sprintf('%0.0f',$gid);
 	
 		$this->images[$gid]++;
 	}
@@ -199,6 +200,7 @@ class Tags
 		//assign the tags now we know the real id. 
 		$gid = crc32($upload_id)+4294967296;
 		$gid += $user_id * 4294967296;
+		$gid = sprintf('%0.0f',$gid);
 		
 		$this->db->Execute($sql = "UPDATE gridimage_tag SET gridimage_id = $gridimage_id WHERE gridimage_id = ".$gid);
 	}

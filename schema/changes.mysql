@@ -1959,6 +1959,8 @@ ALTER TABLE  `typo` ADD INDEX (  `profile` ) ;
 
 ALTER TABLE  `user` ADD  `submission_new` TINYINT UNSIGNED NOT NULL DEFAULT  '1' AFTER  `submission_method` ;
 
+UPDATE user,user_stat SET submission_new = 0,user.updated = user.updated WHERE user_stat.user_id = user.user_id;
+
 
 #################################################
 

@@ -219,6 +219,7 @@ if (!empty($_POST['spelling'])) {
 		if (!empty($_POST['upload_id'])) {
 			$gid = crc32($_POST['upload_id'])+4294967296;
 			$gid += $USER->user_id * 4294967296;
+			$gid = sprintf('%0.0f',$gid);
 			
 			$image->loadSnippets($gid);
 		} else {
