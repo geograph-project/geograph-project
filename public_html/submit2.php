@@ -34,6 +34,9 @@ $smarty = new GeographPage;
 //you must be logged in to submit images
 $USER->mustHavePerm("basic");
 
+if (isset($USER->submission_new)) {
+	$_SESSION['submit_new'] = intval($USER->submission_new);
+}
 if (!empty($_SESSION['submit_new'])) {
 	$template = 'submit2.tpl';
 } else {
