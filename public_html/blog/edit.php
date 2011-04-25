@@ -100,7 +100,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$_POST['content'] = strip_tags($_POST['content']);
 	
 	$updates = array();
-	foreach (array('title','content','tags','published','gridsquare_id','gridimage_id') as $key) {
+	foreach (array('title','content','tags','published','gridsquare_id','gridimage_id','template') as $key) {
 		if ($page[$key] != $_POST[$key]) {
 			$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
 			$smarty->assign($key, $_POST[$key]);
@@ -146,7 +146,13 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	}
 } 
 
-
+$templates = array(
+ 1 => 'Directly Inline (Original format)',
+ 2 => 'Tiny thumbs, with hover',
+ 3 => 'Tiny thumbs inline, larger ones left/right of text',
+ 4 => 'Tiny thumbs inline, larger ones at end of each paragraph'
+);
+$smarty->assign_by_ref('templates',$templates);
 
 $smarty->display($template, $cacheid);
 

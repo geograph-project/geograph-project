@@ -109,6 +109,20 @@ AttachEvent(window,'load',setupSubmitForm,false);
 	{if $errors.title}</div>{/if}
 </div>
 
+
+<div class="field">
+	{if $errors.template}<div class="formerror"><p class="error">{$errors.template}</p>{/if}
+
+	<label for="template">Template:</label>
+	<select name="template">
+	{html_options options=$templates selected=$template}
+	</select> (Experimental!)
+
+	<div class="fieldnotes">Choose a different template (Displays thumbnails differently)</div>
+
+	{if $errors.licence}</div>{/if}
+</div>
+
 </fieldset>
 
 <input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');"/>

@@ -59,13 +59,7 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 $template = 'blog_entry.tpl';
 $cacheid = $blog_id;
 
-if (!empty($_GET['t']) && $_GET['t'] == 2) {
-	$template = 'blog_entry2.tpl';
-} else if (!empty($_GET['t']) && $_GET['t'] == 3) {
-	$template = 'blog_entry3.tpl';
-} else if (!empty($_GET['t']) && $_GET['t'] == 4) {
-	$template = 'blog_entry4.tpl';
-}
+
 
 $sql_where = " blog_id = ".$db->Quote($blog_id);
 
@@ -96,6 +90,20 @@ if (count($page)) {
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
+	if ($page['template'] != 1) {
+		$template = 'blog_entry'.intval($page['template']).'.tpl';
+	}
+	if (!empty($_GET['t'])) {
+		if ($_GET['t'] == 2) {
+			$template = 'blog_entry2.tpl';
+		} elseif ($_GET['t'] == 3) {
+			$template = 'blog_entry3.tpl';
+		} elseif ($_GET['t'] == 4) {
+			$template = 'blog_entry4.tpl';
+		} elseif ($_GET['t'] == 1) {
+			$template = 'blog_entry.tpl';
+		} 
+	}
 }
 
 if (!$smarty->is_cached($template, $cacheid))
