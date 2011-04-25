@@ -63,6 +63,8 @@ if (!empty($_GET['t']) && $_GET['t'] == 2) {
 	$template = 'blog_entry2.tpl';
 } else if (!empty($_GET['t']) && $_GET['t'] == 3) {
 	$template = 'blog_entry3.tpl';
+} else if (!empty($_GET['t']) && $_GET['t'] == 4) {
+	$template = 'blog_entry4.tpl';
 }
 
 $sql_where = " blog_id = ".$db->Quote($blog_id);

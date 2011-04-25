@@ -16,7 +16,7 @@
 <div>By <a title="View profile" href="/blog/?u={$user_id}">{$realname|escape:'html'}</a></div>
 
 
-<p style="margin-left:auto;margin-right:auto;width:600px;position:relative;margin-bottom:100px;line-height:2.2em" id="blogcontent">{$content|nl2br|GeographLinks:true|regex_replace:'/(height|width)="\d+"/':'$1="14"'}</p>
+<div style="margin-left:auto;margin-right:auto;width:600px;position:relative;margin-bottom:100px;line-height:1.2em" id="blogcontent"><p>{$content|regex_replace:"/\n\s*\n/":'</p><p style="clear:both">'|nl2br|GeographLinks:true|regex_replace:'/(height|width)="\d+"/':'$1="16"'}</p></div>
 
 <hr/>
 
@@ -122,24 +122,21 @@
 		$('#blogcontent img[src$=".jpg"]').each(function (i) {
 			var bigimage = $(this).attr("src");
 			var position = $(this).position();
-			$(this).after("<div class='zoomdiv"+i+"'><img class='bigimg' src='"+bigimage+"'/></div>");
-			if (i%2 == 0) {
-				$("div.zoomdiv"+i).css({ position:'absolute', left: '630px', top: position.top-30 });
+			$(this).parent().parent().after("<div class='zoomdiv"+i+"'><img class='bigimg' src='"+bigimage+"'/></div>");
+			$("div.zoomdiv"+i).css({ float:'left',marginBottom:'20px', border:'1px solid white'});
 
-				$(this).after("<div class='linkdiv"+i+"'></div>");
-				$("div.linkdiv"+i).css({ position:'absolute', left: position.left, top: position.top+16, width: (630-position.left)+'px', height:'1px', borderBottom:'1px solid silver' });
+			var image = $(this);
+			image.css({border:'1px solid white'});
 
-			} else {
-				$("div.zoomdiv"+i).css({ position:'absolute', left: '-150px', top: position.top-60 });
-
-				$(this).after("<div class='linkdiv"+i+"'></div>");
-				$("div.linkdiv"+i).css({ position:'absolute', left: '-30px', top: position.top-4, width: (44+position.left)+'px', height:'1px', borderBottom:'1px solid silver' });
-			}
-			$("div.zoomdiv"+i).mouseenter(function () {
-				$(this).topZIndex( { increment: 10 } );
+			$("div.zoomdiv"+i).hover(function () {
+				image.css({border:'1px solid red'});
+			},function () {
+				image.css({border:'1px solid white'});
 			});
-			$(this).mouseenter(function () {
-				$("div.zoomdiv"+i).topZIndex( { increment: 10 } );
+			$(this).hover(function () {
+				$("div.zoomdiv"+i).css({border:'1px solid red'});
+			},function () {
+				$("div.zoomdiv"+i).css({border:'1px solid white'});
 			});
 		});
 	});
