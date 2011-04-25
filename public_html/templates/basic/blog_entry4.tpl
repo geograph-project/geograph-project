@@ -18,7 +18,7 @@
 
 <div style="margin-left:auto;margin-right:auto;width:600px;position:relative;margin-bottom:100px;line-height:1.2em" id="blogcontent"><p>{$content|regex_replace:"/\n\s*\n/":'</p><p style="clear:both">'|nl2br|GeographLinks:true|regex_replace:'/(height|width)="\d+"/':'$1="16"'}</p></div>
 
-<hr/>
+<hr style="clear:both"/>
 
 {if $gridsquare_id}
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
@@ -121,20 +121,21 @@
 	$(function() {
 		$('#blogcontent img[src$=".jpg"]').each(function (i) {
 			var bigimage = $(this).attr("src");
+			var link = $(this).parent().attr("href");
 			var position = $(this).position();
-			$(this).parent().parent().after("<div class='zoomdiv"+i+"'><img class='bigimg' src='"+bigimage+"'/></div>");
-			$("div.zoomdiv"+i).css({ float:'left',marginBottom:'20px', border:'1px solid white'});
+			$(this).parent().parent().after("<div class='zoomdiv"+i+"'><a href='"+link+"'><img class='bigimg' src='"+bigimage+"'/></a></div>");
+			$("div.zoomdiv"+i).css({ float:'right',marginBottom:'20px', border:'1px solid white', height:'120px'});
 
 			var image = $(this);
 			image.css({border:'1px solid white'});
 
 			$("div.zoomdiv"+i).hover(function () {
-				image.css({border:'1px solid red'});
+				image.css({border:'1px solid blue'});
 			},function () {
 				image.css({border:'1px solid white'});
 			});
 			$(this).hover(function () {
-				$("div.zoomdiv"+i).css({border:'1px solid red'});
+				$("div.zoomdiv"+i).css({border:'1px solid blue'});
 			},function () {
 				$("div.zoomdiv"+i).css({border:'1px solid white'});
 			});
