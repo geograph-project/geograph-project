@@ -59,6 +59,11 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 $template = 'blog_entry.tpl';
 $cacheid = $blog_id;
 
+if (!empty($_GET['t']) && $_GET['t'] == 2) {
+	$template = 'blog_entry2.tpl';
+} else if (!empty($_GET['t']) && $_GET['t'] == 3) {
+	$template = 'blog_entry3.tpl';
+}
 
 $sql_where = " blog_id = ".$db->Quote($blog_id);
 
