@@ -1965,3 +1965,10 @@ UPDATE user,user_stat SET submission_new = 0,user.updated = user.updated WHERE u
 #################################################
 
 
+ALTER TABLE  `blog` ADD  `template` TINYINT UNSIGNED NOT NULL DEFAULT  '1' AFTER  `tags` ;
+
+
+#################################################
+
+
+
