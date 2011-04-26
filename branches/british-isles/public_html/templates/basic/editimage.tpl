@@ -524,6 +524,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 {/literal}
 {/if}
 
+{if $image->imageclass}
 {if $use_autocomplete}
 
 <p><label for="imageclass"><b>Image Category</b></label> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
@@ -578,6 +579,7 @@ AttachEvent(window,'load', function() {
 		<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/></p>
 		</span>
 	</p>
+{/if}
 {/if}
 
 {if $user->user_id eq $image->user_id || $isadmin}
@@ -711,8 +713,6 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	</ul>
 	<iframe src="about:blank" height="200" width="100%" id="tagframe">
 	</iframe>
-
-	<p>NOTE: changes made inside the Tags box apply as soon as press "Save Changes"</p>
 </div>
 
 

@@ -402,12 +402,6 @@ if (isset($_REQUEST['id']))
 			$imageclassother=strip_tags($imageclassother);
 
 			$tmp_class = $imageclass;
-			if (strlen($imageclass)==0)
-			{
-				$ok=false;
-				$error['imageclass']="Please choose a geographical feature";
-			}
-
 			if ($imageclass=="Other")
 			{
 				$tmp_class = $imageclassother;
