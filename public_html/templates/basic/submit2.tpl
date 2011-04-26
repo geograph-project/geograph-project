@@ -182,8 +182,46 @@ function readHash() {
 			}
 		}
 	}
+	AttachEvent(document.forms['theForm'],'submit',openInNewWindow,false);
+
 }
 AttachEvent(window,'load',readHash,false);
+
+function openInNewWindow() {
+	var form = document.forms['theForm'];
+
+	if (form.elements['newwindow'].checked) {
+		form.target = "submission";
+
+		window.open('','submission');//forces a new window rather than tab?
+
+		setTimeout(clearSubmission,200);
+
+	} else {
+		form.target = "_self";
+	}
+
+}
+
+function clearSubmission() {
+	document.getElementById('iframe'+1).src = '/submit2.php?inner&step=1';
+	for(q=1;q<=3;q++)
+		document.getElementById('sh'+q).className = "sh sn";
+	clicker(1,true);
+	clicker(4,false);
+
+	var form = document.forms['theForm'];
+	var name = form.elements['selected'].value;
+
+	form.elements['upload_id['+name+']'].value = '';
+
+	document.getElementById('previewInner').innerHTML = '';
+	document.getElementById('hidePreview').style.display='none';
+
+	form.elements['finalise'].disabled = false;
+ 	form.elements['finalise'].value="I AGREE >";
+}
+
 </script>
 {/literal}
 
@@ -287,6 +325,10 @@ AttachEvent(window,'load',readHash,false);
 		<input style="background-color:pink; width:200px" type="submit" name="abandon" value="I DO NOT AGREE" onclick="return confirm('Are you sure? The current upload will be discarded!');"/>
 		<input style="background-color:lightgreen; width:200px" type="submit" name="finalise" value="I AGREE &gt;" onclick="{literal}if (checkMultiFormSubmission()) {autoDisable(this); return true} else {return false;}{/literal}"/>
 		</p>
+		<br/><br/>
+
+		<input type="checkbox" name="newwindow"/> Send submission in new window. Allows this window to be reused for a new submission - most values remembered. (Note: Will need to read Shared Descriptions and Tags)
+
 		<br/><br/>
 	</div>
 <!-- # -->
