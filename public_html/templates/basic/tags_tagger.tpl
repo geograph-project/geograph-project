@@ -18,7 +18,7 @@
 
 	<div style="float:left;width:40%;font-size:0.9em">
 
-			<b>New</b>: <input type="text" name="__newtag" size="20" maxlength="32" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}"/> <input type="button" value="Add" onclick="useTags(this.form.elements['__newtag'])"/><br/>
+			<b>New</b>: <input type="text" name="__newtag" size="22" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}"/> <input type="button" value="Add" onclick="useTags(this.form.elements['__newtag'])"/><br/>
 
 			<b>Current Tags</b>:<br/>
 			<span id="tags">{foreach from=$used item=item name=used}
