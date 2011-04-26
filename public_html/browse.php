@@ -286,6 +286,13 @@ if ($grid_given)
 			$smarty->assign("bby",'cluster');
 			$extra .= "&amp;cluster=".urlencode($_GET['cluster']);
 		}
+		if (!empty($_GET['tag'])) {
+			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			$custom_where .= " and tag = ".$db->Quote($_GET['tag']);
+			$filtered_title .= " tagged as '".htmlentities2($_GET['tag'])."'";
+			$smarty->assign("bby",'tag');
+			$extra .= "&amp;tag=".urlencode($_GET['tag']);
+		}
 		if (!empty($_GET['taken'])) {
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['taken']."%");
@@ -669,6 +676,37 @@ if ($grid_given)
 					} else {
 						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?cluster=".urlencode($row[0]).$extra;
 						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;cluster=".urlencode($row[0]).$extra;
+					}
+					$i++;
+				}
+			} elseif ($_GET['by'] == 'tag') {
+				$breakdown_title = "Tag";
+				$all = $db->cacheGetAll($cacheseconds,"SELECT tag,COUNT(*) AS count,
+				gi.gridimage_id $columns
+				FROM gridimage gi $gridimage_join
+				INNER JOIN gridimage_tag gt ON (gi.gridimage_id = gt.gridimage_id)
+				INNER JOIN tag t USING (tag_id)
+				WHERE gridsquare_id = '{$square->gridsquare_id}'
+				AND gt.status = 2
+				AND $user_crit $custom_where
+				GROUP BY tag_id");
+				$start = rand(0,max(0,count($all)-20));
+				$end = $start + 20;
+				foreach ($all as $row) {
+					$breakdown[$i] = array('name'=>"tagged with <b>".htmlentities($row[0])."</b>",'count'=>$row[1]);
+					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
+						$row['grid_reference'] = $square->grid_reference;
+						$breakdown[$i]['image'] = new GridImage();
+						$breakdown[$i]['image']->fastInit($row);
+					}
+					if ($row[1] > 1) {
+						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;displayclass=full&amp;q=".urlencode($row[0])."&amp;do=1";
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;tag=".urlencode($row[0]).$extra;
+					} elseif ($row[1] == 1) {
+						$breakdown[$i]['link']="/photo/{$row[2]}";
+					} else {
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?cluster=".urlencode($row[0]).$extra;
+						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;tag=".urlencode($row[0]).$extra;
 					}
 					$i++;
 				}
