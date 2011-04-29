@@ -1,4 +1,4 @@
-{assign var="page_title" value="Contributor Search"}
+{assign var="page_title" value="Category Search"}
 {if $inner}
 {include file="_basic_begin.tpl"}
 {else}
@@ -13,14 +13,14 @@
 </style>
 
   <script type="text/javascript">
-  
+
   function focusBox() {
   	if (el = document.getElementById('fq')) {
   		el.focus();
   	}
   }
   AttachEvent(window,'load',focusBox,false);
-    
+
   </script>
 
 {/literal}
@@ -42,11 +42,22 @@
 	{/if}
 {/if}
 
+		<div style="float:right;width:200px">
+			Geographical Context suggestion
+		</div>
+
 <ol start="{$offset}" style="margin:-8px">
 {foreach from=$results item=item}
 	<li>
+	{if $item.top}
+		<div style="float:right;width:200px">
+			top:{$item.top|escape:'html'}
+		</div>
+	{/if}
+
+
 	<b><a href="/search.php?imageclass={$item.imageclass|escape:'url'}&amp;do=1" target="_top">{$item.imageclass|escape:'html'|default:'unknown'}</a></b>
-	
+
 	{if $item.images}
 	<small><small style="color:gray">{$item.images} images</small></small>{/if}
 	</li>
@@ -58,11 +69,11 @@
 
 </ol>
 
-<div style="margin-top:0px"> 
+<div style="margin-top:0px">
 {if $pagesString}
 	( Page {$pagesString})
 {/if}
-</div>	
+</div>
 
 {if $query_info}
 	<p>{$query_info}</p>
