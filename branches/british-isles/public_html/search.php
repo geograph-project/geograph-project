@@ -42,6 +42,20 @@ if (!empty($_GET['style'])) {
 	exit;
 }
 
+
+if (count($_GET) === 1) {
+	if (!empty($_GET['tag'])) {
+		if (strpos($_GET['tag'],' ') !== false) {
+			$_GET['text'] = 'tags:"'.trim($_GET['tag']).'"';
+		} else {
+			$_GET['text'] = 'tags:'.trim($_GET['tag']);
+		}
+	} elseif (!empty($_GET['top'])) {
+		$_GET['text'] = 'tags:"top '.trim($_GET['top']).'"';
+	}
+}
+
+
 $smarty = new GeographPage;
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
@@ -1098,7 +1112,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			
 			$docs = array();
 			foreach ($engine->results as $idx => $image) {
-				$docs[$idx] = strip_tags($image->comment?$image->comment:$image->title)." Category: ".strip_tags($image->imageclass);
+				$docs[$idx] = strip_tags($image->comment?$image->comment:$image->title).(empty($image->imageclass)?'':(" Category: ".strip_tags($image->imageclass)));
 			}
 			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $sphinx->q);
 			

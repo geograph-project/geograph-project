@@ -81,7 +81,7 @@ split_timer('search'); //starts the timer
 			$qlocation = $q;
 		}
 		
-		if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$qlocation,$pc) 
+		if (preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$qlocation,$pc) 
 		&& !in_array(strtoupper($pc[1]),array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 			//these prefixs are not postcodes but are valid gridsquares
 			
@@ -104,7 +104,7 @@ split_timer('search'); //starts the timer
 					$this->errormsg .= ", or use just the outcode [ {$pc[1]}{$pc[2]} ]";
 				}
 			}
-		} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$qlocation,$gr)) {
+		} elseif (preg_match("/^[^:]*\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$qlocation,$gr)) {
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],true,true);
