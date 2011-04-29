@@ -50,6 +50,8 @@ class RebuildContentDup extends EventHandler
 		//we dont want the auto_increment, otherwise it will populate on the temp table, and mess up 'ON DUPLICATE KEY'
 		$db->Execute("ALTER TABLE `content_tmp` CHANGE `content_id` `content_id` INT(10) UNSIGNED NULL, DROP PRIMARY KEY");
 
+#######################
+#BLOG
 		$db->Execute("
 		
 INSERT INTO `content_tmp`
@@ -76,7 +78,9 @@ FROM blog
 WHERE approved = 1
 
 		");
-		
+
+#######################
+#Category		
 		$db->Execute("
 
 INSERT INTO `content_tmp`
@@ -105,6 +109,41 @@ GROUP BY gi.imageclass;
 
 		");
 
+#######################
+#CONTEXT (NOT ALL TAGS!)
+
+		$db->Execute("
+
+INSERT INTO `content_tmp`
+SELECT 
+	NULL AS content_id, 
+	gt.tag_id AS foreign_id, 
+	TRIM(tag) AS title, 
+	CONCAT('/search.php?tag=',REPLACE(IF(prefix!='',CONCAT(prefix,':',tag),tag),' ','+')) AS url, 
+	0 AS user_id, 
+	gi.gridimage_id, 
+	0 AS gridsquare_id, 
+	'' AS extract, 
+	COUNT(*) AS images, 
+	0 AS wordcount, 
+	0 AS views, 
+	0 AS titles, 
+	0 AS tags, 
+	0 AS words, 
+	'context' AS source, 
+	'info' AS type, 
+	MAX(gt.created) AS updated, 
+	t.created AS created 
+FROM gridimage_search gi
+INNER JOIN gridimage_tag gt USING (gridimage_id)
+INNER JOIN tag t USING (tag_id)
+WHERE gt.status = 2 AND t.status = 1 AND prefix = 'top'
+GROUP BY gt.tag_id;
+		
+		");
+
+#######################
+#SNIPPET
 		$db->Execute("
 
 INSERT INTO `content_tmp`
@@ -133,6 +172,8 @@ GROUP BY s.snippet_id;
 
 		");
 
+#######################
+#USER
 		$db->Execute("
 		
 INSERT INTO `content_tmp`
@@ -164,6 +205,7 @@ INNER JOIN gridimage_search ON (last=gridimage_id);
 #  UNIQUE KEY `foreign_id` (`foreign_id`,`source`)
 
 #####################################
+# GEO-TRIPS
 
 if ($h = fopen('http://users.aber.ac.uk/ruw/misc/geotrip_csv.php', 'r')) {
 	$c = 0;
@@ -240,6 +282,8 @@ ffetcing our local traffic after nearly a week of snow and sub-zero temperatures
 
 #####################################
 
+#Tidy up....
+
 		$db->Execute("
 		
 INSERT INTO `content`
@@ -263,7 +307,7 @@ ON DUPLICATE KEY UPDATE
 DELETE `content`.* 
 FROM `content` 
 	LEFT JOIN `content_tmp` USING (`foreign_id`,`source`) 
-WHERE `content`.source IN ('category','snippet','user','trip','blog')
+WHERE `content`.source IN ('category','context','snippet','user','trip','blog')
 	AND `content_tmp`.`foreign_id` IS NULL;
 	
 		");

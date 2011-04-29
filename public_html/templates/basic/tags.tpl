@@ -54,6 +54,9 @@
 {if $results}
 	{if !$example}
 		<p>These are the {if $images > 50}latest 50 of the{/if} images using {$thetag|escape:'html'} tag.</p>
+		<div style="text-align:right">
+			<a href="/search.php?tag={$thetag|escape:'url'}">View more in the Image Search</a>
+		</div>
 	{/if}
 
 		{foreach from=$results item=image}
