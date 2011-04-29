@@ -1971,4 +1971,38 @@ ALTER TABLE  `blog` ADD  `template` TINYINT UNSIGNED NOT NULL DEFAULT  '1' AFTER
 #################################################
 
 
+# Would be ideal: (but doesnt work!)
+#update article_cat set  type = 'document' where lft between (select lft from article_cat where category_name='Geograph Project') and (select rgt from article_cat where category_name='Geograph Project') order by lft;
+
+# this works:
+select * from article_cat where lft between (select lft from article_cat where category_name='Geograph Project') and (select rgt from article_cat where category_name='Geograph Project') order by lft;
+
+#so lookup left and right:
+select lft,rgt from article_cat where category_name='Geograph Project';
++-----+-----+
+| lft | rgt |
++-----+-----+
+|  42 |  65 |
++-----+-----+
+ 
+#plug into this to check:
+select * from article_cat where lft between 42 and 65 order by lft;
+ 
+#add the column:
+alter table article_cat add `type` enum('info','document') NOT NULL default 'info';
+
+#make the update: (plugging in the right values!) 
+update article_cat set type = 'document' where lft between 42 and 65 order by lft;
+
+
+#sync to content:
+update content inner join article on (foreign_id = article_id) inner join article_cat using (article_cat_id) set content.type = article_cat.type, content.updated = content.updated where source = 'article';
+
+
+#################################################
+
+
+
+#################################################
+
 

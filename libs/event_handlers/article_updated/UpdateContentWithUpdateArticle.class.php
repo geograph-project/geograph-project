@@ -46,7 +46,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 		$db=&$this->_getDB();
 		
 		$page = $db->getRow("
-		select article.*,category_name
+		select article.*,category_name,type
 		from article 
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 		where (licence != 'none' and approved > 0) and article_id = $article_id");
@@ -99,7 +99,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			}
 			
 			
-			$updates[] = "`type` = '".(preg_match('/\bGeograph\b/',$page['category_name'])?'document':'info')."'";
+			$updates[] = "`type` = '{$page['type']}'"; //comes from article_cat
 			
 			$updates[] = "`updated` = '{$page['update_time']}'";
 			$updates[] = "`created` = '{$page['create_time']}'";
