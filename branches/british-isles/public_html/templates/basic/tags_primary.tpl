@@ -37,7 +37,7 @@
 	<div class="interestBox">
 	<a name="{$item.tag|replace:' ':'_'|escape:'url'}"></a>
 	{if $item.resultCount > 3}
-		<div style="float:right"><a href="/tags/?tag={$item.tag|escape:'url'}">View {$item.resultCount} images</a></div>
+		<div style="float:right"><a href="/tags/?tag=top:{$item.tag|escape:'url'}">View {$item.resultCount} images</a></div>
 	{/if}
 
 	<big><b>{$item.tag|escape:'html'}</b></big>

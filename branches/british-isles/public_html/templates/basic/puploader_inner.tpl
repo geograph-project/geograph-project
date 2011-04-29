@@ -142,9 +142,9 @@
 				<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I></a></div>
 			</div></p>
 
-		<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
+		<div style="float:right"><i>Categories have changed!</i> <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
 
-		<p><label for="top"><b>Geographical Context</b></label> <small style="font-size:0.7em">(tick as many as required, hover over name for a description, <a href="/tags/primary.php" text="More examples" class="about" target="_blank" style="font-size:0.85em">more</a>)</small><br />
+		<p><label for="top"><b>Geographical Context</b></label> <small style="font-size:0.8em">(<u>tick as many as required</u>, hover over name for a description)</small><br />
 
 			{foreach from=$tops key=key item=item}
 				<div class="plist">
@@ -159,6 +159,10 @@
 				</div>
 			{/foreach}
 			<br style="clear:both"/>
+
+			<p>&middot; <a href="/tags/primary.php" text="More examples" class="about" target="_blank" style="font-size:0.7em">Detailed Description and examples for each Context</a><br/>
+			If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat. As we have been adding Context to the previuous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.</p>
+
 
 		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tagging(this.form)" id="hidetag"/> <small>(suggest opening after entering description and selecting Context above)</small></p>
 

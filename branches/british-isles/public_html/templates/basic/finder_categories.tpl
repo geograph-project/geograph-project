@@ -45,21 +45,25 @@
 		<div style="float:right;width:200px">
 			Geographical Context suggestion
 		</div>
+		<br style="clear:both"/>
+
 
 <ol start="{$offset}" style="margin:-8px">
 {foreach from=$results item=item}
 	<li>
 	{if $item.top}
 		<div style="float:right;width:200px">
-			top:{$item.top|escape:'html'}
+			top:<a href="/tags/?tag=top:{$item.top|escape:'url'}">{$item.top|escape:'html'}</a>
 		</div>
 	{/if}
-
 
 	<b><a href="/search.php?imageclass={$item.imageclass|escape:'url'}&amp;do=1" target="_top">{$item.imageclass|escape:'html'|default:'unknown'}</a></b>
 
 	{if $item.images}
 	<small><small style="color:gray">{$item.images} images</small></small>{/if}
+	{if $item.top}
+		<br style="clear:both"/>
+	{/if}
 	</li>
 {foreachelse}
 	{if $q}

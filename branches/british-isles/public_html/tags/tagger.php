@@ -458,7 +458,7 @@ if (!empty($_GET['title']) || !empty($_GET['comment'])) {
 
 if ($db2 && $USER->user_id) {
 		
-	$recent = $db2->getAll("SELECT tag,prefix FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} GROUP BY gt.tag_id ORDER BY gt.created DESC LIMIT 20");
+	$recent = $db2->getAll("SELECT tag,prefix,max(gt.created) as last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 20");
 	if (count($used) && count($recent)) {
 		$list = array();
 		foreach ($used as $row) $list[$row['tag']]=1;
