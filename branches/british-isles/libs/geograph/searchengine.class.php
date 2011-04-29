@@ -474,7 +474,7 @@ split_timer('search'); //starts the timer
 							WHERE c.content_id IN($id_list)
 						ORDER BY FIELD(c.content_id,$id_list)"); 
 						
-						$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'other'=>'Other');
+						$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'context'=>'Geographical Context', 'other'=>'Other');
 
 						foreach ($related as $row) {
 							$suggestions[] = array(
@@ -566,34 +566,35 @@ split_timer('search','ESR-count',$this->query_id); //logs the wall time
 			$this->sphinx_reply = $sphinx->res;
 		}
 
+		if (!empty($ids)) {
 	// fetch from database
-		$id_list = implode(',',$ids);
-		if ($this->noCache) {
+			$id_list = implode(',',$ids);
+			if ($this->noCache) {
 $sql = <<<END
 SELECT gi.*,x,y,gs.grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname $sql_fields
 FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 	INNER JOIN user ON(gi.user_id=user.user_id)
 WHERE gi.gridimage_id IN ($id_list)
 END;
-		} else {
-			$sql = "SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list)";
+			} else {
+				$sql = "SELECT gi.* $sql_fields FROM gridimage_search as gi WHERE gridimage_id IN ($id_list)";
+			}
+
+			if (!empty($_GET['debug'])) {
+				print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
+				if ($_GET['debug'] > 5)
+					exit;
+			}
+
+
+			list($usec, $sec) = explode(' ',microtime());
+			$querytime_before = ((float)$usec + (float)$sec);
+
+			$recordSet = &$db->Execute($sql);
+
+			list($usec, $sec) = explode(' ',microtime());
+			$querytime_after = ((float)$usec + (float)$sec);
 		}
-		
-		if (!empty($_GET['debug'])) {
-			print "<BR><BR>{$sphinx->q}<BR><BR>$sql";
-			if ($_GET['debug'] > 5)
-				exit;
-		}
-
-
-		list($usec, $sec) = explode(' ',microtime());
-		$querytime_before = ((float)$usec + (float)$sec);
-
-		$recordSet = &$db->Execute($sql);
-
-		list($usec, $sec) = explode(' ',microtime());
-		$querytime_after = ((float)$usec + (float)$sec);
-
 
 		$this->querytime = ($querytime_after - $querytime_before) + $sphinx->query_time;
 

@@ -2002,6 +2002,8 @@ update content inner join article on (foreign_id = article_id) inner join articl
 #################################################
 
 
+alter table content change `source` `source` enum('trip','blog','portal','article','gallery','themed','help','gsd','snippet','user','category','context','other') NOT NULL default 'other';
+
 
 #################################################
 
