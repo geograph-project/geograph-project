@@ -66,8 +66,9 @@ if (!empty($_GET['q'])) {
 
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$rows = $db->getAssoc("
-			select category_id,imageclass,c as images
+			select category_id,imageclass,c as images,top
 			from category_stat 
+			left join category_top using(imageclass)
 			where $where
 			limit $limit");
 
