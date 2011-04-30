@@ -67,7 +67,7 @@ if (!empty($_GET['q'])) {
 		$tagids = array();
 		if (!empty($res['matches'])) {
 			foreach ($res['matches'] as $idx => $row) {
-				$imageids[$row['id']] = $idx;
+				$imageids[$idx] = $row['id'];
 				$tagids[] = $row['attrs']['@groupby'];
 			}
 		}
@@ -86,13 +86,17 @@ if (!empty($_GET['q'])) {
 			limit $pgsize");
 
 			$imagelist = new ImageList();
-			$imagelist->getImagesByIdList(array_keys($imageids),"gridimage_id,title,realname,user_id,grid_reference,credit_realname");
+			$imagelist->getImagesByIdList($imageids,"gridimage_id,title,realname,user_id,grid_reference,credit_realname");
 	
-			foreach ($imagelist->images as $i => $image) {
-				$idx = $imageids[$image->gridimage_id];
-				$tag_id = $res['matches'][$idx]['attrs']['@groupby'];
-				$imagelist->images[$i]->count = $res['matches'][$idx]['attrs']['@count'];
-				$imagelist->images[$i]->tag = $rows[$tag_id];
+			//imagelist profiles all images, including duplicates, but in rare cases wont contain all images in imageids (rejections) - so we have to do things carefully. 
+			foreach ($imagelist->images as $idx => $image) {
+				
+				$res_id = array_search($image->gridimage_id,$imageids);	
+				unset($imageids[$res_id]); //array_search finds them in order, so remove them once used to move down the list
+				
+				$tag_id = $res['matches'][$res_id]['attrs']['@groupby'];
+				$imagelist->images[$idx]->count = $res['matches'][$res_id]['attrs']['@count'];
+				$imagelist->images[$idx]->tag = $rows[$tag_id];
 			}
 						
 		
