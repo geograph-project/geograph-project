@@ -24,8 +24,11 @@
 require_once('geograph/global.inc.php');
 
 
-header('Content-type: application/json');
-
+if (!empty($_GET['callback'])) {
+	header('Content-type: text/javascript');
+} else {
+	header('Content-type: application/json');
+}
 
 customExpiresHeader(3600);
 
