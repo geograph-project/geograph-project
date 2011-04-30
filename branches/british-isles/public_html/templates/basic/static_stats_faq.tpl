@@ -52,12 +52,12 @@ div:target { background-color:orange;padding-bottom:10px; }
 <a name="tpoints"></a>
 <h3>How do TPoints work?</h3>
 
-	<p>TPoint or 'Temporal Point' is a working title (subject to change) for a new kind of point.
+	<p>TPoint or 'Time-gap Point' (formally 'Temporal Point' or 'Temporally aware Points') a new kind of point that takes into account when photos where taken.
 	A contributor can gain a TPoint by submitting a contemporary photo to a square that hasn't had a photo for 5 years. But you can also submit historic photos, and as long as there isn't a geograph taken with 5 years (before OR after) then it gains a TPoint.
 
-	<p>In essence: <b>if there isn't a Geograph taken within 5 years of a Geograph you submit, you get a TPoint.</b></p>
+	<p>In essence: <b>if there isn't a Geograph taken within 5 years of a Geograph you submit, you get a TPoint</b>.</p>
 
-	<p>The aim is to increase the date range of available photos per square. Squares that can get a TPoint for <b>a recent photo</b> are shown in orange on the <a href="/map/?recent=1">Recent Only coverage map</a>.</p>
+	<p>&middot; Squares that can get a TPoint for <b>a recent photo</b> are shown in orange on the <a href="/map/?recent=1">Recent Only coverage map</a>, or purple dots on the 'TPoint Availability' layer on the <a href="/mapper/">Draggable OS</a> map.</p>
 
 </div>
 
