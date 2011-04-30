@@ -173,7 +173,7 @@
 				</li>
 			{/if}
 			{if $profile->stats.tpoints}
-				<li><b>{$profile->stats.tpoints}</b> TPoints (temporally aware points)</li>
+				<li><b>{$profile->stats.tpoints}</b> TPoints (Time-gap points <sup><a href="/help/stats_faq#tpoints" class="about" style="font-size:0.6em">About</a></sup>)</li>
 			{/if}
 			<li><b>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if}
 				{if $profile->stats.squares gt 1}
