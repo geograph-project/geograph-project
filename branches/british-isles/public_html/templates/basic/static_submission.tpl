@@ -10,7 +10,7 @@
 
 <hr/>
 
- <h3><a href="/submit.php">Submit</a></h3>
+ <h3><a href="/submit.php?redir=false">Submit</a></h3>
 
  <p>The original submission process - the most complete and tested version. <b>Recommended for first time users.</b></p>
 

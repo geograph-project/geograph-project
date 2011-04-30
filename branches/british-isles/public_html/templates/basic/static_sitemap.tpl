@@ -50,7 +50,7 @@
 
 <div class="links">{$content}</div>
 
-<p>&middot; If a link is missing or incorrect, then help us improve by editing the directory</p>
+<p>&middot; If a link is missing or incorrect, then help us improve by editing the {external href="http://www.geographs.org/links/" text="directory"}. {external href="http://www.geographs.org/links/edit.php?sites[]=`$http_host`" text="Add a Link"}.</p>
     
 {include file="_std_end.tpl"}
 
