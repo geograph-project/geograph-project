@@ -151,6 +151,14 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 		{if $item.prefix}{$item.prefix|escape:'html'}:{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a>
 		</span>&nbsp;
 	{/foreach}</div>
+{elseif $user->user_id eq $image->user_id}
+	<div style="text-align:right;font-size:0.8em" id="hidetag"><a href="#" onclick="document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';show_tree('tag');return false;">Open <b>Tagging</b> Box</a></div>
+
+	<div class="interestBox" id="showtag" style="display:none">
+		<iframe src="about:blank" height="200" width="100%" id="tagframe">
+		</iframe>
+		<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> ({newwin href="/article/Tags" text="Article about Tags"})</div>
+	</div>
 {/if}
 
 
