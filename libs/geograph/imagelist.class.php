@@ -202,11 +202,11 @@ split_timer('imagelist','getImagesBySphinx',"$q"); //logs the wall time
 	/**
 	* get image list for particular list
 	*/
-	function getImagesByIdList($ids) {
+	function getImagesByIdList($ids,$columnlist = "*") {
 	
 split_timer('imagelist'); //starts the timer
 
-		$sql = "SELECT * FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);
+		$sql = "SELECT $columnlist FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);
 				
 		$i=0;
 		if ($sql) {
