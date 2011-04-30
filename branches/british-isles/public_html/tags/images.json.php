@@ -23,9 +23,11 @@
 
 require_once('geograph/global.inc.php');
 
-
-header('Content-type: application/json');
-
+if (!empty($_GET['callback'])) {
+	header('Content-type: text/javascript');
+} else {
+	header('Content-type: application/json');
+}
 
 customExpiresHeader(3600);
 
@@ -87,6 +89,9 @@ if (!empty($_GET['tag'])) {
 		foreach ($imagelist->images as $idx => $image) {
 			$id2idx[$image->gridimage_id]=$idx;
 			$imagelist->images[$idx]->tags = array();
+			$details = $imagelist->images[$idx]->getThumbnail(120,120,2);
+			$imagelist->images[$idx]->imgserver = $details['server'];
+			$imagelist->images[$idx]->thumbnail = $details['url'];
 		}
 
 		//add the tags to images list!
