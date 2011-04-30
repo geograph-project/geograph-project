@@ -53,7 +53,7 @@
 
 {if $results}
 	{if !$example}
-		<p>These are the {if $images > 50}latest 50 of the{/if} images using {$thetag|escape:'html'} tag.</p>
+		<p>These are the {if $images > 50}latest 50 of the{/if} images tagged with <span class="tag"><a class="taglink">{$thetag|escape:'html'}</a></span> tag.</p>
 		<div style="text-align:right">
 			<a href="/search.php?tag={$thetag|escape:'url'}">View more in the Image Search</a>
 		</div>
@@ -81,7 +81,7 @@
 				<div class="caption">Tags:
 				{foreach from=$image->tags item=item name=used}
 					<span class="tag">
-					<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>{if $item.tag != $thetag}<a href="{$script_name}?tag={$thetag|escape:'url'}&amp;exclude={$item.tag|escape:'url'}" class="delete" title="Exclude this tag">X</a>{/if}
+					{if $item.prefix}{$item.prefix|escape:'html'}:{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a>{if $item.tag != $thetag}<a href="{$script_name}?tag={$thetag|escape:'url'}&amp;exclude={$item.tag|escape:'url'}" class="delete" title="Exclude this tag">X</a>{/if}
 					</span>&nbsp;
 				{/foreach}
 				</div>

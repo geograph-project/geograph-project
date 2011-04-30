@@ -1248,14 +1248,18 @@ input.imageselect {
 
 
 #tags {
-	line-height:1.5em;
+	line-height:1.8em;
 }
 .tag span,.tag a.taglink {
-	font-family:monospace;
 	border:1px solid silver;
 	padding:1px;
+	line-height:1.8em;
 	color:brown;
 	background-color:white;
+	text-decoration:none;
+}
+a.taglink:hover {
+	text-decoration:hover;
 }
 .tag a.delete {
 	color:red;
@@ -1403,8 +1407,7 @@ a.about {
 	position:relative;
 	float:left;
 	width:190px;
-	border-left:1px solid silver;
-	padding:2px
+	padding:1px
 }
 .plist label {
 	padding-left: 32px ;
