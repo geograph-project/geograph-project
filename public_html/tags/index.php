@@ -44,6 +44,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	if (!empty($_GET['tag'])) {
 		//TODO - this will be rewritten using sphinx... 
+
+		list($prefix,$_GET['tag']) = explode(':',$_GET['tag'],2);
 		
 		$row= $db->getRow("SELECT * FROM tag WHERE tag=".$db->Quote($_GET['tag']));
 		
