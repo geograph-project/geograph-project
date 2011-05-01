@@ -129,6 +129,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				case 'portal':
 				case 'user':
 				case 'category':
+				case 'context':
 				case 'other':
 					$filters['source'][] = $scope;
 					$smarty->assign("scope_".$scope,1);
