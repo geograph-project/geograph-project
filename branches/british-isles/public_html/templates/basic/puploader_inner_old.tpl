@@ -226,6 +226,39 @@
 
 {/if}
 
+{if $submit2 && $upload_id}
+		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tagging(this.form)" id="hidetag"/> <small>(suggest opening after entering description above)</small></p>
+
+		<div class="interestBox" id="showtag" style="display:none">
+			<ul>
+				<li>Tags are simple free-form keywords/short phrases used to describe the image.</li>
+				<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
+				<li>It is not compulsory to add any Tags.</li>
+				<li>Note: Tags should be singular, ie an image of a church should have the Tag "Church", not "Churches" - it's a specific Tag, not a category<br/> <small>(however if a photo is of multiple fence posts, then the Tag "Fence Posts" should be used).</small></li>
+				<li>To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".</li>
+				<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
+			</ul>
+			<iframe src="about:blank" height="200" width="100%" id="tagframe">
+			</iframe>
+			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
+		</div></p>
+
+{literal}
+<script type="text/javascript">
+function show_tagging(form) {
+	show_tree('tag');
+	var query = 'upload_id={/literal}{$upload_id}&gr={$grid_reference|escape:'html'}{literal}&v=3';
+	if (form.elements['title'].value.length> 0 )
+		query=query+'&title='+encodeURIComponent(form.elements['title'].value);
+	if (form.elements['comment'].value.length> 0 )
+		query=query+'&comment='+encodeURIComponent(form.elements['comment'].value.substr(0,1500).replace(/[\n\r]/,' '));
+	document.getElementById('tagframe').src='/tags/tagger.php?'+query;
+}
+</script>{/literal}
+
+{/if}
+
+
 	<p><label><b>Date photo taken</b></label> {if $error.imagetaken}
 		<br/><span class="formerror">{$error.imagetaken}</span>
 		{/if}<br/>

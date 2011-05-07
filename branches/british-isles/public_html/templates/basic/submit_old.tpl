@@ -387,10 +387,10 @@ it was taken or other interesting geographical information. <span id="styleguide
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 
 
-<div class="interestBox">
-	<div style="float:right"><a href="/article/Shared-Descriptions" text="Article about Shared Descriptions" class="about" target="_blank">About</a></div>
+<div>
 	<b>Shared Descriptions/References (Optional)</b>
-	<span id="hideshare"><a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;">+ [ Expand ]</a> </span>
+	<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
+
 	<div id="showshare" style="display:none">
 		<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
 		</iframe>
@@ -399,9 +399,7 @@ it was taken or other interesting geographical information. <span id="styleguide
 </div>
 <br/>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
-For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
-
-<sup style="color:red"><b>New</b></sup> You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
+For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
 <h3>Further Information</h3>
 
@@ -479,6 +477,22 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	</span></p>
 
 {/if}
+
+		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}&v=3';" id="hidetag"/></p>
+
+		<div class="interestBox" id="showtag" style="display:none">
+			<ul>
+				<li>Tags are simple free-form keywords/short phrases, used to describe the image.</li>
+				<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
+				<li>It is not compulsory to add any Tags.</li>
+				<li>Note: Tags should be singular, ie a image of a Church should have the tag "Church", not "Churches" - it's a specific tag, not a category.<br/> <small>(however if photo is of multiple fence posts, then the tag "Fence Posts" should be used)</small></li>
+				<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croydon" - similarlly could use "near:Tring".</li>
+				<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
+			</ul>
+			<iframe src="about:blank" height="200" width="100%" id="tagframe">
+			</iframe>
+			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
+		</div></p>
 
 
 <p><label><b>Date photo taken</b></label> {if $error.imagetaken}
