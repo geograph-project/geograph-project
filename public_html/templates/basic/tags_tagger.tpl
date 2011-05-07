@@ -153,9 +153,9 @@ function useTags(ele) {
 		var arr = ele.value.split(/\s*[,;]+\s*/);
 		for(q=0;q<arr.length;q++)
 			if (arr[q].length>1)
-				addTag(arr[q].replace(/^\s*top:/,''));
+				addTag(arr[q].replace(/^\s*(top|bucket):/i,''));
 	} else {
-		addTag(ele.value.replace(/^\s*top:/,''));
+		addTag(ele.value.replace(/^\s*(top|bucket):/i,''));
 	}
 
 	ele.value='';
