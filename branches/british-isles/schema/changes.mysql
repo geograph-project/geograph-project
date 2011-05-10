@@ -2008,3 +2008,26 @@ alter table content change `source` `source` enum('trip','blog','portal','articl
 #################################################
 
 
+##create table then run event
+
+DROP TABLE hectad_user_stat_tmp;
+CREATE TABLE `hectad_user_stat_tmp` (
+  `reference_index` tinyint(4) default '1',
+  `hectad` varchar(4) NOT NULL default '',
+  `user_id` int(11) NOT NULL default '0',
+  `images` bigint(21) NOT NULL default '0',
+  `geographs` decimal(23,0) default NULL,
+  `squares` bigint(21) NOT NULL default '0',
+  `geosquares` bigint(21) NOT NULL default '0',
+  `firsts` tinyint NOT NULL default '0',
+  `first_submitted` datetime default NULL,
+  `last_submitted` datetime default NULL,
+  `first_first_submitted` datetime default NULL,
+  `last_first_submitted` datetime default NULL,
+  PRIMARY KEY  (`hectad`,`user_id`)
+) ENGINE=MyISAM
+
+
+#################################################
+
+

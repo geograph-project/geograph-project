@@ -46,7 +46,7 @@ if (!$smarty->is_cached($template, $cacheid))
         $db = GeographDatabaseConnection(true);
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$hectads = $db->CacheGetAll(3600,"select 
+	$hectads = $db->getAll("select 
 	hectad,
 	geosquares,
 	landsquares,
@@ -177,5 +177,3 @@ if (!$smarty->is_cached($template, $cacheid))
 
 $smarty->display($template, $cacheid);
 
-	
-?>

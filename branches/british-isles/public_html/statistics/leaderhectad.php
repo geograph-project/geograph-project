@@ -55,12 +55,13 @@ if (!$smarty->is_cached($template, $cacheid))
 	where geosquares > 0 and geosquares >= landsquares
 	order by percentage desc,landsquares desc,hectad");
 	
+	
 	foreach ($hectads as $i => $hectad) {
 		
 		$users = $db->getAll("SELECT user_id,u.realname,
-		images,
-		first_submitted,
-		last_submitted
+		firsts,
+		first_first_submitted,
+		last_first_submitted
 		FROM 
 			hectad_user_stat
 			INNER JOIN user u USING (user_id)
@@ -72,7 +73,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($type == 'first') {
 			$min = 999999999999999999999;
 			foreach ($users as $i => $user) {
-				if ($user['first_submitted'] < $min) {
+				if ($user['first_first_submitted'] < $min) {
 					$min = $user['first_submitted'];
 					$best_user = $user;
 				}
@@ -80,16 +81,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		} elseif ($type == 'most') {
 			$max = 0;
 			foreach ($users as $i => $user) {
-				if ($user['images'] > $max) {
-					$max = $user['images'];
+				if ($user['firsts'] > $max) {
+					$max = $user['firsts'];
 					$best_user = $user;
 				}
 			}
 		} elseif ($type == 'last') {
 			$max = 0;
 			foreach ($users as $i => $user) {
-				if ($user['last_submitted'] > $max) {
-					$max = $user['last_submitted'];
+				if ($user['last_first_submitted'] > $max) {
+					$max = $user['last_first_submitted'];
 					$best_user = $user;
 				}
 			}
@@ -99,10 +100,10 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		} elseif ($type == 'all') {
 			foreach ($users as $i => $user) {
-				if ($user['count'] == $hectad['landsquares']) {
+				if ($user['firsts'] == $hectad['landsquares']) {
 					$landsquares = $hectad['landsquares'];
 				} else {
-					$landsquares = $user['count'].'/'.$hectad['landsquares'];
+					$landsquares = $user['firsts'].'/'.$hectad['landsquares'];
 				}
 				if (isset($topusers[$user['user_id']])) {
 					$topusers[$user['user_id']]['imgcount']++;
@@ -118,10 +119,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		
 		if (count($best_user)) {
-			if ($best_user['count'] == $hectad['landsquares']) {
+			if ($best_user['firsts'] == $hectad['landsquares']) {
 				$landsquares = $hectad['landsquares'];
 			} else {
-				$landsquares = $best_user['count'].'/'.$hectad['landsquares'];
+				$landsquares = $best_user['firsts'].'/'.$hectad['landsquares'];
 			}
 			if (isset($topusers[$best_user['user_id']])) {
 				$topusers[$best_user['user_id']]['imgcount']++;
@@ -134,6 +135,8 @@ if (!$smarty->is_cached($template, $cacheid))
 				$topusers[$best_user['user_id']]['squares'] = array($hectad['hectad']."[".$landsquares."]");
 			}
 		}
+		
+	
 	}
 	
 	function cmp(&$a, &$b) 
@@ -162,6 +165,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	} elseif ($type == 'all') {
 		$desc = "completed hectads contributed to";
 	} 
+	
 	
 	$lastimgcount = 0;
 	$i = 1;
