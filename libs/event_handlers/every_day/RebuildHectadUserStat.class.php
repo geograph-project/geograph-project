@@ -55,7 +55,7 @@ class RebuildHectadUserStat extends EventHandler
 				  `geographs` decimal(23,0) default NULL,
 				  `squares` bigint(21) NOT NULL default '0',
 				  `geosquares` bigint(21) NOT NULL default '0',
-				  `firsts` tinyint NOT NULL default '0',
+				  `firsts` tinyint(4) NOT NULL default '0',
 				  `first_submitted` datetime default NULL,
 				  `last_submitted` datetime default NULL,
 				  `first_first_submitted` datetime default NULL,
@@ -90,8 +90,8 @@ class RebuildHectadUserStat extends EventHandler
 				SUM(moderation_status = 'geograph' AND ftf = 1) AS firsts,
 				MIN(submitted) AS first_submitted,
 				MAX(submitted) AS last_submitted,
-				MIN(IF(moderation_status='geograph' AND ftf = 1,submitted,NULL) AS first_first_submitted,
-				MAX(IF(moderation_status='geograph' AND ftf = 1,submitted,NULL) AS last_first_submitted
+				MIN(IF(moderation_status='geograph' AND ftf = 1,submitted,NULL)) AS first_first_submitted,
+				MAX(IF(moderation_status='geograph' AND ftf = 1,submitted,NULL)) AS last_first_submitted
 				FROM gridsquare gs
 				INNER JOIN gridimage gi ON (gs.gridsquare_id=gi.gridsquare_id) 
 				WHERE reference_index = $ri AND percent_land >0 AND moderation_status IN ('geograph','accepted')
@@ -113,3 +113,5 @@ class RebuildHectadUserStat extends EventHandler
 	}
 	
 }
+
+

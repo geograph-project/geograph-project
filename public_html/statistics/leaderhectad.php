@@ -67,7 +67,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			INNER JOIN user u USING (user_id)
 		WHERE 
 			hectad LIKE '{$hectad['hectad']}'
-		ORDER BY last_submitted DESC");
+			AND firsts > 0
+		ORDER BY last_first_submitted DESC");
 		
 		$best_user = array();
 		if ($type == 'first') {
