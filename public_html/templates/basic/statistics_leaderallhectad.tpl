@@ -9,7 +9,7 @@
 {/foreach}</p>
 
 <p>Listed below are the top 200 contributors based on number of
-{$desc}..</p>
+{$desc}. (This page counts all images, but still only lists completed hectads)</p>
 
 <p><small>Number in brackets is the the number of land squares making up the hectad. Double click a list of hectads to expand (also displays as tooltip).</small></p>
 
