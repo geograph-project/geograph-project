@@ -97,8 +97,8 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 
 			$grs = array();
 
-			for($x=$e;$x<=$e+4;$x++) {
-				for($y=$n;$y<=$n+3;$y++) {
+			for($x=$e;$x<$e+4;$x++) {
+				for($y=$n;$y<$n+3;$y++) {
 					list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$square->reference_index,false);
 					if (strlen($gr2) > 4)
 						$grs[] = $gr2;
