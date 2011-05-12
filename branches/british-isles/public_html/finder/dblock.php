@@ -50,26 +50,25 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 		$y = ($p - $x) / 900;
 		$x = 900 - $x;
 		$grid_ok=$square->loadFromPosition($x, $y, true);
-		$smarty->assign('gridrefraw', $square->grid_reference);
+		$smarty->assign('gridref', $square->grid_reference);
 	}
 
 	//set by grid components?
 	elseif (isset($_GET['setpos']))
 	{	
 		$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings']);
-		$smarty->assign('gridrefraw', $square->grid_reference);
+		$smarty->assign('gridref', $square->grid_reference);
 	}
 
 	//set by grid ref?
 	elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	{
 		$grid_ok=$square->setByFullGridRef($_GET['gridref']);
+		$smarty->assign('gridref', stripslashes($_GET['gridref']));
 	}
 	
 	if ($grid_ok && $square->reference_index == 1)
 	{
-		$smarty->assign('gridref', stripslashes($_GET['gridref']));
-
 		$square->rememberInSession();
 
 		$cacheid .= "|".$square->grid_reference;
