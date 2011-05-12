@@ -52,7 +52,7 @@
 
 	<ul>
 		<li>{external href="http://www.bbc.co.uk/history/domesday/dblock/`$dblock`" text="View D-Block <b>`$dblock`</b> on Domesday Reloaded" title="view on Domesday Reloaded provided by BBC History"}
-		<li>Go: <a href="{$script_name}?p={math equation="900*(y+3)+900-(x)" x=$x y=$y}">North</a> | <a href="{$script_name}?p={math equation="900*(y)+900-(x-4)" x=$x y=$y}">West</a> | <a href="{$script_name}?p={math equation="900*(y-3)+900-(x)" x=$x y=$y}">South</a> | <a href="{$script_name}?p={math equation="900*(y)+900-(x+4)" x=$x y=$y}">East</a></li>
+		<li>Go: <a href="{$script_name}?p={math equation="900*(y+3)+900-(x)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">North</a> | <a href="{$script_name}?p={math equation="900*(y)+900-(x-4)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">West</a> | <a href="{$script_name}?p={math equation="900*(y-3)+900-(x)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">South</a> | <a href="{$script_name}?p={math equation="900*(y)+900-(x+4)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">East</a></li>
 	</ul>
 {/if}
 
