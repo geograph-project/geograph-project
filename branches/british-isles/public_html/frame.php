@@ -28,6 +28,63 @@ $template='frame.tpl';
 
 customExpiresHeader(3600*6,true,true);
 
+if (!empty($_REQUEST['q'])) {
+	$q=trim($_REQUEST['q']);
+	
+	$sphinx = new sphinxwrapper($q);
+
+	$sphinx->pageSize = $pgsize = 1; 
+	$pg = 1;
+	
+	$sphinx->processQuery();
+
+	if (!empty($_REQUEST['random'])) {
+		$client = $sphinx->_getClient();
+		$client->SetRankingMode(SPH_RANK_NONE);
+		
+		
+		if ($_REQUEST['random'] == 2) {
+			
+			$date = date('Y-m-d');
+			if (!empty($_REQUEST['date']) && preg_match('/(\d{4})-(\d{2})-(\d{2})/',$_REQUEST['date'],$m)) {
+				if ($m[0] > $date) {
+					die("unable to predict the future");
+				}
+				$date = $m[0];
+			}
+	
+			//create the filter
+			$filters = array('submitted' => array(strtotime("2005-01-01"),strtotime($date." 00:00:01"))); 
+			//add the filters
+			$sphinx->addFilters($filters);
+			//apply the filters
+			$sphinx->getFilterString();
+	
+			//remove them (otherwise returnIds will just add them again) 
+			$sphinx->filters = array();
+			
+			$images = min(1000,$sphinx->countMatches('_images'));
+			
+			if ($images) {
+				$md = md5($CONF['register_confirmation_secret'].$date);
+
+				$int = hexdec(substr($md,2,2).substr($md,12,2).substr($md,22,2));
+
+				$pg = $int % $images;
+			}
+		} 
+		
+		$sphinx->sort = "@random ASC";
+	}
+	
+	$ids = $sphinx->returnIds($pg,'_images');
+
+	if (!empty($ids) && count($ids)) {
+
+		$_REQUEST['id'] = $ids[0];
+	}
+}
+
 if (isset($_REQUEST['id'])) {
 	$cacheid = intval($_REQUEST['id']);
 	
@@ -53,6 +110,7 @@ if (isset($_REQUEST['id'])) {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");
 	$template = "static_404.tpl";
+	die("Sorry, unable to load image. <a href=\"/\" target=\"_top\">Open Geograph Homepage</a>");
 }
 
 
