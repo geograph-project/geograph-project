@@ -2025,7 +2025,22 @@ CREATE TABLE `hectad_user_stat_tmp` (
   `first_first_submitted` datetime default NULL,
   `last_first_submitted` datetime default NULL,
   PRIMARY KEY  (`hectad`,`user_id`)
-) ENGINE=MyISAM
+) ENGINE=MyISAM;
+
+
+#################################################
+
+
+ALTER TABLE gridsquare ADD hectad VARCHAR(4) NOT NULL, ADD myriad VARCHAR(2) NOT NULL;
+
+UPDATE gridsquare SET hectad = CONCAT(SUBSTRING(grid_reference,1,LENGTH(grid_reference)-3),SUBSTRING(grid_reference,LENGTH(grid_reference)-1,1)), 
+myriad = SUBSTRING(gi.grid_reference,1,3 - reference_index);
+
+
+#################################################
+
+
+CREATE VIEW tag_public AS SELECT tag_id,prefix,tag,gridimage_id,gridimage_tag.user_id,gridimage_tag.created FROM tag INNER JOIN gridimage_tag USING (tag_id) WHERE tag.status = 1 AND gridimage_tag.status = 2;
 
 
 #################################################
