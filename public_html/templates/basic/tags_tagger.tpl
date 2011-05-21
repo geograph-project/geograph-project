@@ -72,12 +72,12 @@
 		<div id="div1" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
 			{foreach from=$suggestions item=item name=used}
 				<span class="tag" id="suggestion{$item.tag|escape:'html'}">
-				<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
-				<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="use">Use</a>
-				</span>&nbsp;
+				<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
+				</span>
 			{foreachelse}
 				<i>none</i>
 			{/foreach}
+			{if $suggestions}<br/><small>Click a tag to add it to this image</small>{/if}
 		</div>
 
 		{if $topics}
@@ -85,12 +85,10 @@
 			<div id="div{$ctab}" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
 				{foreach from=$topics item=item name=used}
 					<span class="tag" id="suggestion{$item.tag|escape:'html'}">
-					<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
-					<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="use">Use</a>
-					</span>&nbsp;
-				{foreachelse}
-					<i>none</i>
+					<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
+					</span>
 				{/foreach}
+				<br/><small>Click a suggested tag to add it to this image</small>
 			</div>
 		{/if}
 
@@ -99,12 +97,10 @@
 			<div id="div{$ctab}" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
 				{foreach from=$recent item=item name=used}
 					<span class="tag" id="suggestion{$item.tag|escape:'html'}">
-					<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
-					<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="use">Use</a>
-					</span>&nbsp;
-				{foreachelse}
-					<i>none</i>
+					<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
+					</span>
 				{/foreach}
+				<br/><small>Click a recent tag to add it to this image</small>
 			</div>
 		{/if}
 
@@ -114,10 +110,10 @@
 				<div style="position:relative;{if $tab != $ctab}display:none{/if}"  class="interestBox" id="div{$ctab}">
 					{foreach from=$item item=value}
 						<span class="tag" id="suggestion{$value|escape:'html'}">
-						<span>{$value|escape:'html'}</span>
-						<a href="javascript:addTag('top:{$value|escape:'html'}','{$value|escape:'html'}');" class="use">Use</a>
-						</span>&nbsp;
+						<a href="javascript:addTag('top:{$value|escape:'html'}','{$value|escape:'html'}');" class="taglink">{$value|escape:'html'}</a>
+						</span>
 					{/foreach}
+					<br/><small>Click a Geographical Context tag to add it to this image</small>
 				</div>
 			{/foreach}
 		{/if}
@@ -127,12 +123,12 @@
 			<br/><small>IMPORTANT: Please read the {newwin href="/article/Image-Buckets" title="Article about Buckets" text="Buckets Article"} before picking from this list</small><br/><br/>
 			{foreach from=$buckets item=item}
 				<span class="tag" id="suggestion{$item|escape:'html'}">
-				<span>{$item|escape:'html'}</span>
-				<a href="javascript:addTag('bucket:{$item|escape:'html'}','{$item|escape:'html'}');" class="use">Use</a>
-				</span>&nbsp;
+				<a href="javascript:addTag('bucket:{$item|escape:'html'}','{$item|escape:'html'}');" class="taglink">{$item|escape:'html'}</a>
+				</span>
 			{foreachelse}
 				<i>none</i>
 			{/foreach}
+			<br/><small>Click a bucket to add it to this image</small>
 		</div>
 
 		<br/><br/>
@@ -143,9 +139,11 @@
 <br style="clear:both"/>
 <div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag</span> <span class="tag tagPrivate">Private Tag</span> <span class="tag tagGeneral">General Tag</span></span> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})</div>
 
-<i>&middot; NOTE: There is no longer any need to press 'Save Changes', tags are now automatically saved in the background.</i>
-
-{literal}<script type="text/javascript">
+{literal}<style type="text/css">
+.interestBox .tag {
+	margin-left:5px;
+}
+</style><script type="text/javascript">
 
 function useTags(ele) {
 
@@ -162,11 +160,17 @@ function useTags(ele) {
 	ele.focus();
 }
 
-function addTag(text,suggestion) {
+function addTag(text,suggestion,clearText) {
 
 	if (!text || text.length == 0) {
 		alert('No tag specified');
 		return;
+	}
+
+	if (clearText) {
+		var ele = document.forms['theForm'].elements['__newtag'];
+		ele.value='';
+		ele.focus();
 	}
 
 	var div = document.getElementById('tags');
@@ -259,9 +263,11 @@ function toggleTag(text) {
 		// on search completion, process the results
 		function (data) {
 			if (data) {
+				tabClick('tab','div',1,10);
+
 				var div = document.getElementById('div1');
 
-				str = 'Suggestions: ';
+				str = '';
 				for(var tag_id in data) {
 					var text = data[tag_id].tag;
 					if (data[tag_id].prefix) {
@@ -270,12 +276,11 @@ function toggleTag(text) {
 					text = text.replace(/<[^>]*>/ig, "");
 					text = text.replace(/['"]+/ig, " ");
 
-					str += "<span class=\"tag\" id=\"suggestion"+tag_id+"\">";
-					str += "<span>"+text+"</span>";
-					str += "<a href=\"javascript:addTag('"+text+"',"+tag_id+");\" class=\"use\">Use</a>";
-					str += "</span>&nbsp; ";
+					str += "<span class=\"tag\" id=\"suggestiond"+tag_id+"\">";
+					str += "<a href=\"javascript:addTag('"+text+"','d"+tag_id+"',true);\" class=\"taglink\">"+text+"</a>";
+					str += "</span> ";
 				}
-
+				str = str + "<br/><small>Click a tag to add it to this image</small>";
 				div.innerHTML = str;
 			}
 		});

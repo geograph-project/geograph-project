@@ -208,6 +208,7 @@ function clearSubmission() {
 	for(q=1;q<=3;q++)
 		document.getElementById('sh'+q).className = "sh sn";
 	clicker(1,true);
+	clicker(3,false);
 	clicker(4,false);
 
 	var form = document.forms['theForm'];

@@ -37,35 +37,65 @@ $db = GeographDatabaseConnection(true);
 
 $sql = array();
 
+$sql['tables'] = array();
+$sql['tables']['t'] = 'tag';
 
 $sql['columns'] = 'tag.tag,tag.prefix';
 
 if (!empty($_GET['q'])) {
-        //TODO invoke sphinx...
+	if (!empty($CONF['sphinx_host'])) {
 
-        $sql['tables'] = array();
-	$sql['tables']['t'] = 'tag';
-	$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
+		$q=trim($_REQUEST['q']);
+		
+		$sphinx = new sphinxwrapper($q);
+		
+		$sphinx->pageSize = $pgsize = 60; 
+		
+		$pg = (!empty($_REQUEST['page']))?intval(str_replace('/','',$_REQUEST['page'])):0;
+		if (empty($pg) || $pg < 1) {$pg = 1;}
+		
+		$offset = (($pg -1)* $sphinx->pageSize)+1;
+	
+		if ($offset < (1000-$pgsize) ) { 
+			$sphinx->processQuery();
+	
+			$sphinx->q = "\"^{$sphinx->q}$\" | (^$sphinx->q) | ($sphinx->q)";
+	
+			$ids = $sphinx->returnIds($pg,'tags');
+			
+			if (!empty($ids) && count($ids)) {
+				$idstr = join(",",$ids);
+				$where = "tag_id IN(".join(",",$ids).")";
+	
+				$sql['wheres'] = array("`tag_id` IN ($idstr)");
+				$sql['order'] = "FIELD(`tag_id`,$idstr)";
+				$sql['limit'] = count($ids);
+			} else {
+				$sql['wheres'] = array(0);
+			}
+		} else {
+			$sql['wheres'] = array(0);
+		}
+	} else {
+		$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
 
-        $sql['wheres'] = array("`tag` LIKE ".$db->Quote($_GET['q'].'%'));
-	$sql['wheres'][] = "gt.status = 2";
+		$sql['wheres'] = array("`tag` LIKE ".$db->Quote($_GET['q'].'%'));
+		$sql['wheres'][] = "t.status = 1";
+		$sql['wheres'][] = "gt.status = 2";
 
-        $sql['group'] = 'tag_id';
+		$sql['group'] = 'tag_id';
 
-        $sql['order'] = '`tag`';
-                
-        $sql['limit'] = 100;
+		$sql['order'] = '`tag`';
 
-        //todo sort by popularity?
+		$sql['limit'] = 100;
+	}
+	//todo sort by popularity?
 } else {
 	die("todo");
 	
-        $sql['tables'] = array();
-        $sql['tables']['t'] = "`tag`";
-	$sql['tables']['gt'] = "INNER JOIN `gridimage_tag` USING (tag_id)";
-       
-        $sql['wheres'] = array('status = 1');
+        $sql['tables']['gt'] = "INNER JOIN `gridimage_tag` USING (tag_id)";
 
+        $sql['wheres'] = array('status = 1');
 
         if (!empty($_GET['user_id'])) {
                 $sql['wheres'][] = "t user_id = ".intval($_GET['user_id']);
@@ -76,7 +106,6 @@ if (!empty($_GET['q'])) {
                         $sql['wheres'][] = "l2.tag_id = ".$row2['tag_id'];
                 }
         }
-
 
         $sql['group'] = 'tag.tag_id';
 }
