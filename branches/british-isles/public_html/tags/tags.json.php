@@ -40,7 +40,7 @@ $sql = array();
 $sql['tables'] = array();
 $sql['tables']['t'] = 'tag';
 
-$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='cluster','',tag.prefix) as prefix";
+$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
 
 if (!empty($_GET['q'])) {
 	if (!empty($CONF['sphinx_host'])) {
@@ -57,8 +57,11 @@ if (!empty($_GET['q'])) {
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
 	
 		if ($offset < (1000-$pgsize) ) { 
-			$sphinx->processQuery();
-	
+			$client = $sphinx->_getClient();
+			
+			$sphinx->sort = "prefered DESC"; //within group order
+			$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC"); //overall sort order
+			
 			$sphinx->q = "\"^{$sphinx->q}$\" | (^$sphinx->q) | ($sphinx->q)";
 	
 			$ids = $sphinx->returnIds($pg,'tags');
