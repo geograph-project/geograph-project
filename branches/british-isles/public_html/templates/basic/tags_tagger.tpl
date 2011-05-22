@@ -2,6 +2,7 @@
 {include file="_basic_begin.tpl"}
 <div style="padding:6px">
 {dynamic}
+
 	{if $message}
 		<p style="color:red">{$message|escape:"html"}</p>
 	{/if}
@@ -137,7 +138,7 @@
 {/dynamic}
 
 <br style="clear:both"/>
-<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag</span> <span class="tag tagPrivate">Private Tag</span> <span class="tag tagGeneral">General Tag</span></span> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})</div>
+<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag (Your own)</span> <span class="tag tagPrivate">Private (your own)</span> <span class="tag tagGeneral">Public (by others)</span></span> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})</div>
 
 {literal}<style type="text/css">
 .interestBox .tag {

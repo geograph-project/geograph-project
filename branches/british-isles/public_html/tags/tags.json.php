@@ -40,12 +40,12 @@ $sql = array();
 $sql['tables'] = array();
 $sql['tables']['t'] = 'tag';
 
-$sql['columns'] = 'tag.tag,tag.prefix';
+$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='cluster','',tag.prefix) as prefix";
 
 if (!empty($_GET['q'])) {
 	if (!empty($CONF['sphinx_host'])) {
 
-		$q=trim($_REQUEST['q']);
+                $q = trim(preg_replace('/[^\w]+/',' ',str_replace("'",'',$_REQUEST['q'])));
 		
 		$sphinx = new sphinxwrapper($q);
 		
@@ -110,7 +110,7 @@ if (!empty($_GET['q'])) {
         $sql['group'] = 'tag.tag_id';
 }
 
-$query = "SELECT {$sql['columns']}";
+$query = "SELECT DISTINCT {$sql['columns']}";
 if (isset($sql['tables']) && count($sql['tables'])) {
 	$query .= " FROM ".join(' ',$sql['tables']);
 }
