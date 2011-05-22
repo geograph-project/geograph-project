@@ -271,7 +271,7 @@ function toggleTag(text) {
 				str = '';
 				for(var tag_id in data) {
 					var text = data[tag_id].tag;
-					if (data[tag_id].prefix) {
+					if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
 						text = data[tag_id].prefix+':'+text;
 					}
 					text = text.replace(/<[^>]*>/ig, "");

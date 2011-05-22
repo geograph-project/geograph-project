@@ -2046,3 +2046,13 @@ CREATE VIEW tag_public AS SELECT tag_id,prefix,tag,gridimage_id,gridimage_tag.us
 #################################################
 
 
+ALTER TABLE tag ADD canonical INT UNSIGNED NULL DEFAULT NULL;
+
+DROP VIEW tag_public;
+
+CREATE VIEW tag_public AS SELECT tag_id,prefix,tag,gridimage_id,gridimage_tag.user_id,gridimage_tag.created,canonical FROM tag INNER JOIN gridimage_tag USING (tag_id) WHERE tag.status = 1 AND gridimage_tag.status = 2;
+
+
+#################################################
+
+
