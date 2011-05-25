@@ -1069,6 +1069,7 @@ div.map div.inner img
 	border-left: 1px solid gray;
 	border-right: 1px solid gray;
 	padding:3px;
+	cursor:pointer;
 }
 
 .interestBox {
