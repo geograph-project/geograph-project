@@ -133,22 +133,27 @@
 
 {if $submit2}
 	{if $upload_id}
+		<br/>
 
-		<p><b>Shared Descriptions/References (Optional)</b>
-			<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
-			<div id="showshare" style="display:none">
-				<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
-				</iframe>
-				<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I></a></div>
-			</div></p>
+		<div class="tabHolder" style="font-size:1em">
 
-		<div style="float:right"><i>Categories have changed!</i> <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
+			<a class="tabSelected nowrap" id="tab1" onclick="tabClick('tab','div',1,3)">Geographical Context</a>&nbsp;
+			<a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,3);show_tagging(document.forms['theForm'])">Tags <small>(Optional)</small></a>&nbsp;
+			<a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,3); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions <small>(Optional)</small></a>
+		</div>
 
-		<p><label for="top"><b>Geographical Context</b></label> <small style="font-size:0.8em">(<u>tick as many as required</u>, hover over name for a description)</small><br />
+		<div id="div3" class="interestBox" style="display:none">
+			<iframe src="about:blank" height="400" width="100%" id="shareframe" style="border:0">
+			</iframe>
+		</div>
+
+		<div id="div1" class="interestBox" style="">
+			<div style="float:right"></div>
+
 
 			{foreach from=$tops key=key item=item}
 				<div class="plist">
-					<div>{$key}</div>
+					<div style="color:black">{$key}</div>
 					{foreach from=$item item=row}
 						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}">
 							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}"/>
@@ -159,31 +164,26 @@
 				</div>
 			{/foreach}
 			<br style="clear:both"/>
+			&middot; Tick as many Geogaphical Contexts as required.<br/>
+			&middot; Hover over name for a description, see also <a href="/tags/primary.php" text="More examples" target="_blank">further details and examples</a><br/>
+			&middot; If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat.<br/>
+			&middot; As we have been adding Context to the previuous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.<br/>
+		<a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More about the new Context/Tags</a>
+		</div>
 
-			<p>&middot; <a href="/tags/primary.php" text="More examples" class="about" target="_blank" style="font-size:0.7em">Detailed Description and examples for each Context</a><br/>
-			If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat. As we have been adding Context to the previuous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.</p>
-
-
-		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tagging(this.form)" id="hidetag"/> <small>(suggest opening after entering description and selecting Context above)</small></p>
-
-		<div class="interestBox" id="showtag" style="display:none">
-			<ul>
-				<li>Tags are simple free-form keywords/short phrases used to describe the image.</li>
-				<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
-				<li>It is not compulsory to add any Tags.</li>
-				<li>Note: Tags should be singular, ie an image of a church should have the Tag "Church", not "Churches" - it's a specific Tag, not a category<br/> <small>(however if a photo is of multiple fence posts, then the Tag "Fence Posts" should be used).</small></li>
-				<li>To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".</li>
-				<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
-			</ul>
-			<iframe src="about:blank" height="200" width="100%" id="tagframe">
+		<div id="div2" class="interestBox" style="display:none">
+			<div style="float:right">More: <a href="/article/Tags" title="Article about Tags" class="about" target="_blank">Article about Tags</a></div>
+			&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/>
+			&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/>
+			&middot; Note: Tags should be singular, ie an image of a church should have the Tag "Church", not "Churches" - it's a specific Tag, not a category<br/> <small>(however if a photo is of multiple fence posts, then the Tag "Fence Posts" should be used).</small><br/>
+			&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".<br/>
+			<iframe src="about:blank" height="200" width="100%" id="tagframe" style="border:0">
 			</iframe>
-			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
-		</div></p>
+		</div>
 
 {literal}
 <script type="text/javascript">
 function show_tagging(form) {
-	show_tree('tag');
 	var query = 'upload_id={/literal}{$upload_id}&gr={$grid_reference|escape:'html'}{literal}&v=3';
 	if (form.elements['title'].value.length> 0 )
 		query=query+'&title='+encodeURIComponent(form.elements['title'].value);
