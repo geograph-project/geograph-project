@@ -547,6 +547,8 @@ split_timer('map','returnImage',$file); //logs the wall time
 				|| $this->type_or_user == -7
 	#PHOTO AGE MAP
 				|| $this->type_or_user == -8
+	#USER DEPTH MAP
+				|| $this->type_or_user == -13
 	#QUADS DEPTH MAP
 				|| $this->type_or_user == -9) {
 				
@@ -1138,7 +1140,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 
 split_timer('map'); //starts the timer
 
-		if ($this->type_or_user == -7 || $this->type_or_user == -8) {
+		if ($this->type_or_user == -7 || $this->type_or_user == -8 || $this->type_or_user == -13) {
 			$counts = range(0,130);
 		} else {
 			if ($this->type_or_user == -3) {
@@ -1206,7 +1208,16 @@ split_timer('map'); //starts the timer
 
 		$number = !empty($this->minimum)?intval($this->minimum):0;
 	
-		if ($this->type_or_user == -9) {
+		if ($this->type_or_user == -13) {
+			$sql="select x,y,gs.gridsquare_id,max(ftf) as imagecount
+				from 
+				gridsquare gs 
+				inner join gridimage gi using(gridsquare_id)
+				where CONTAINS( GeomFromText($rectangle),	point_xy)
+				and moderation_status in ('geograph')
+				group by gi.gridsquare_id ";
+
+		} elseif ($this->type_or_user == -9) {
 			$sql="select x,y,gs.gridsquare_id,(count(distinct nateastings DIV 500, natnorthings DIV 500) - (sum(nateastings = 0) > 0) )  as imagecount
 				from 
 				gridsquare gs 
