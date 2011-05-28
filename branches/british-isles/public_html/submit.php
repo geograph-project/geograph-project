@@ -694,6 +694,13 @@ else
 		if (isset($USER->submission_method) && $USER->submission_method == 'submit2' && !isset($_GET['redir'])) {
 		
 			$url = "/submit2.php";
+			if (isset($USER->submission_new)) {
+			        $_SESSION['submit_new'] = intval($USER->submission_new);
+			}
+			if (isset($_SESSION['submit_new'])) {
+				$url .= "?new=".intval($_SESSION['submit_new']);
+			}
+			
 			if (!empty($grid_reference)) {
 				$url .= "#gridref=$grid_reference";
 			}

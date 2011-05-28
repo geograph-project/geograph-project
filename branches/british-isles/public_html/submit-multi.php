@@ -142,6 +142,13 @@ if (empty($_GET['tab'])) {
 
 if ($template == "submit_multi_submit.tpl" || $template == "submit_multi_nofrills.tpl") {
 
+	if (isset($USER->submission_new)) {
+	        $_SESSION['submit_new'] = intval($USER->submission_new);
+	}
+	if (empty($_SESSION['submit_new'])) {
+        	$template = "submit_multi_submit_old.tpl";
+	}
+
 	chdir($CONF['photo_upload_dir']);
 	
 	if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) {

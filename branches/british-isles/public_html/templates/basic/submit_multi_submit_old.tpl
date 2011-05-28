@@ -5,9 +5,10 @@
 
 	<h2>Multiple Image Submission <sup>Experimental</sup></h2>
 
-<div style="color:black; border:2px solid red; padding:10px; margin-bottom:10px">
-	You are using the new Tagging based submission process. <br/><small>
-	For a short while can revert to the old Category based submission method, <a href="/switch.php">here</a>.</small>
+<div style="background-color:pink; color:black; border:2px solid red; padding:20px; margin-bottom:30px;">
+	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+
+	You are using the old Category based submission process. Please consider switching to the new <a href="/switch.php">Tagging based interface</a>.
 </div>
 
 
