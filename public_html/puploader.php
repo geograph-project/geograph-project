@@ -156,6 +156,9 @@ if (isset($_GET['success'])) {
 	print "http://{$_SERVER['HTTP_HOST']}/puploader.php?success&t=$t";
 	exit;
 } elseif (isset($_REQUEST['inner'])) {
+	if (isset($USER->submission_new)) {
+	        $_SESSION['submit_new'] = intval($USER->submission_new);
+	}
 	if (!empty($_SESSION['submit_new'])) {
 		$template = 'puploader_inner.tpl';
 	} else {
