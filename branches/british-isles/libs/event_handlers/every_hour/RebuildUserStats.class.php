@@ -45,7 +45,7 @@ class RebuildUserStats extends EventHandler
 
 		$data = $db->getRow("SHOW TABLE STATUS LIKE 'user_stat'");
 		
-		if (!empty($data['Update_time']) && strtotime($data['Update_time']) > (time() - 60*60*6)) {
+		if (!empty($data['Update_time']) && strtotime($data['Update_time']) > (time() - 60*60*6) && $data['Comment'] != 'rebuild') {
 			//a recent table - so lets update that!
 			
 			$users = $db->getCol("select distinct user_id from gridimage_search where upd_timestamp > date_sub(now(),interval 3 hour)"); //use 3 hour just to be safe!
