@@ -108,8 +108,12 @@ if (!Array.prototype.indexOf) {
 				}
 			} else if (ele.name.indexOf('tags[]') == 0) {
 				AttachEvent(ele,'click',parentUpdateVariables,false);
-				if (tags.indexOf(ele.value) > -1)
+				if (tags.indexOf(ele.value) > -1) {
 					ele.checked = true;
+					var id = ele.id.replace(/c-/,'l-');
+					document.getElementById(id).style.fontWeight=ele.checked?'bold':'normal';
+					document.getElementById(id).style.backgroundColor=ele.checked?'white':'';
+				}
 			}
 		}
 		if (theForm.elements['imagetakenDay'] && thatForm.elements['imagetaken['+name+']']) {
