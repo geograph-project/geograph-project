@@ -33,73 +33,82 @@
  
  var distance;
  
- function createMarker(point,picon) {
- 	if (picon) {
- 		marker2 = new GMarker(point,{draggable: true, icon:picon});
- 		var marker = marker2;
+ var markersLayer = null;
+ var dragControl;
+ 
+ function markerOnDrag(themarker) {
+	var pp = themarker.lonlat;
+
+	var grid= new GT_OSGB();
+	grid.setGridCoordinates(pp.lon,pp.lat);
+
+	//get a grid reference with 4 digits of precision
+	var gridref = grid.getGridRef(4);
+
+	if (themarker.ispicon) {
+		eastings2 = grid.eastings;
+		northings2 = grid.northings;
+		document.theForm.photographer_gridref.value = gridref;
 	} else {
-		marker1 = new GMarker(point, {draggable: true});
+		eastings1 = grid.eastings;
+		northings1 = grid.northings;
+		document.theForm.grid_reference.value = gridref;
+	}  
+
+	if (map.getZoom() <= 8 && document.theForm.use6fig)
+		document.theForm.use6fig.checked = true;
+
+	if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
+		map.removeLayer(pickupbox);
+		pickupbox = null;
+	}
+
+	updateViewDirection();
+
+	if (typeof parentUpdateVariables != 'undefined') {
+		parentUpdateVariables();
+	} 
+ }
+ function markerOnComplete() {
+ 
+ }
+
+ function createMarker(point,picon) {
+ 	
+ 	if (issubmit && markersLayer == null) {
+ 		markersLayer = map.getMarkerLayer();
+		
+		var options = {onDrag: markerOnDrag, onComplete: markerOnComplete};
+
+		dragControl = new OpenSpace.Control.DragMarkers(markersLayer, options);
+		map.addControl(dragControl);
+				
+		dragControl.activate();
+		markersLayer.setDragMode(true);
+	}
+ 	
+ 	if (picon) {
+ 		marker2 = map.createMarker(point,picon);
+ 		marker2.ispicon = true;
+ 		var marker = marker2;
+ 	} else {
+		var size = new OpenLayers.Size(29, 29);
+		var offset = new OpenLayers.Pixel(-14, -15);
+		var icon = new OpenSpace.Icon("http://"+static_host+"/img/icons/circle.png", size, offset);
+	
+		marker1 = map.createMarker(point,icon);
 		var marker = marker1;
 	}
-	if (issubmit) {
-		GEvent.addListener(marker, "drag", function() {
-			var pp = marker.getPoint();
-			
-			//create a wgs84 coordinate
-			wgs84=new GT_WGS84();
-			wgs84.setDegrees(pp.lat(), pp.lng());
-			
-			if (wgs84.isIreland2()) {
-				//convert to Irish
-				var grid=wgs84.getIrish(true);
-			
-			} else if (wgs84.isGreatBritain()) {
-				//convert to OSGB
-				var grid=wgs84.getOSGB();
-			}  
-			
-			//get a grid reference with 4 digits of precision
-			var gridref = grid.getGridRef(4);
-
-			if (picon) {
-				eastings2 = grid.eastings;
-				northings2 = grid.northings;
-				document.theForm.photographer_gridref.value = gridref;
-			} else {
-				eastings1 = grid.eastings;
-				northings1 = grid.northings;
-				document.theForm.grid_reference.value = gridref;
-			}  
-			
-			if (document.theForm.use6fig)
-				document.theForm.use6fig.checked = true;
-			
-			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
-				map.removeOverlay(pickupbox);
-				pickupbox = null;
-			}
-			
-			updateViewDirection();
-			
-			if (typeof parentUpdateVariables != 'undefined') {
-				parentUpdateVariables();
-			}
-		});
-	} else {
-		GEvent.addListener(marker, "dragend", function() {
-			marker.setPoint(point);
-		});
-	}
+	
 	return marker;
 }
-
+var picon;
 function createPMarker(ppoint) {
-	var picon = new GIcon();
-	picon.image = "http://"+static_host+"/img/icons/camicon.png";
-	picon.shadow = "http://"+static_host+"/img/icons/cam-s.png";
-	picon.iconSize = new GSize(12, 20);
-	picon.shadowSize = new GSize(22, 20);
-	picon.iconAnchor = new GPoint(6, 20);
+	
+	var size = new OpenLayers.Size(29, 29);
+	var offset = new OpenLayers.Pixel(-14, -15);
+	picon = new OpenSpace.Icon("http://"+static_host+"/img/icons/viewc--1.png", size, offset);
+
 	return createMarker(ppoint,picon)
 }
 
@@ -201,19 +210,15 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	}
 	
 	if (ok && gridref.replace(/ /g,'').length > 6) {
-		//convert to a wgs84 coordinate
-		wgs84 = grid.getWGS84(true);
-
-		//now work with wgs84.latitude and wgs84.longitude
-		var point = new GLatLng(wgs84.latitude,wgs84.longitude);
+		var point = new OpenSpace.MapPoint(grid.eastings, grid.northings)
 
 		if ((currentelement == null) && map) {
 			currentelement = createMarker(point,null);
-			map.addOverlay(currentelement);
-
-			GEvent.trigger(currentelement,'drag');
+			
+			//GEvent.trigger(currentelement,'drag');
 		} else {
-			currentelement.setPoint(point);
+			map.removeMarker(currentelement);
+			currentelement = createMarker(point,that.name == 'photographer_gridref'?picon:null);
 		}
 
 		if (that.name == 'photographer_gridref') {
@@ -228,13 +233,14 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 			updateViewDirection();
 		
 		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
-			setTimeout(" if (pickupbox != null) {map.removeOverlay(pickupbox);pickupbox = null;}",1000);
+			setTimeout(" if (pickupbox != null) {map.removeLayer(pickupbox);pickupbox = null;}",1000);
 		}
 		
 		if (typeof parentUpdateVariables != 'undefined') {
 			parentUpdateVariables();
 		}
 	}
+	window.event.cancelBubble = true;
 }
 
 function relocateMapToMarkers() {
