@@ -226,7 +226,8 @@ class RasterMap
 
 			
 		} elseif ($this->service == 'OSOS') {
-			return "Drag the circles from the green box!<br/><div id=\"map\" style=\"width:{$width}px; height:{$width}px\"></div>";
+			$s = $this->exactPosition?'':"Drag the circles from the green box!<br/>";
+			return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px\"></div>";
 		} elseif ($this->service == 'Google') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
 				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map... (JavaScript required)</div>";
@@ -572,7 +573,6 @@ class RasterMap
 			}
 			
 			if ($this->exactPosition) {
-			print_r($this);
 				$block.= "map.addOverlay(createMarker(new OpenSpace.MapPoint({$this->nateastings}, {$this->natnorthings})));";
 			} elseif ($this->issubmit) {
 				$block .= "map.addOverlay(createMarker(new OpenSpace.MapPoint($e-50, $n+150)));\n";
