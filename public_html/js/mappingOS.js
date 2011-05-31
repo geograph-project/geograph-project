@@ -301,3 +301,9 @@ function updateViewDirection() {
 function updateCamIcon() {
 
 }
+
+function enlargeMap() {
+	ele = document.getElementById('map');
+	ele.style.width = "100%";
+	ele.style.height = "450px";
+}
