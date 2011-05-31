@@ -84,6 +84,7 @@ class RasterMap
 			'OS50k-small'=>125,
 			'NPE'=>250,
 			'Google'=>250,
+			'OSOS'=>350,
 			'OSM-Static-Dev'=>250,
 			'OS250k-m10k'=>250,
 			'OS250k-m40k'=>250
@@ -121,7 +122,11 @@ class RasterMap
 			$services = explode(',',$CONF['raster_service']);
 
 			if ($square->reference_index == 1) {
-				if (in_array('OS50k',$services)) {
+				if ($this->issubmit && in_array('OSOS',$services)) {
+					$this->enabled = true;
+					$this->service = 'OSOS';
+					
+				} elseif (in_array('OS50k',$services)) {
 					$this->enabled = true;
 					$this->service = 'OS50k';
 					
@@ -220,6 +225,8 @@ class RasterMap
 			return "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img name=\"tile\" src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" alt=\"$title\"/></div>";
 
 			
+		} elseif ($this->service == 'OSOS') {
+			return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\"></div>";
 		} elseif ($this->service == 'Google') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
 				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map... (JavaScript required)</div>";
@@ -492,6 +499,12 @@ class RasterMap
 		//defer the tag to the last minute, to help prevent the page pausing mid load
 		if ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Google') {
 			return "<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+		} elseif ($this->service == 'OSOS') {
+			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {
+				return "<script src=\"http://openspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
+			} else {
+				return "<script src=\"http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
+			}
 		}
 	}
 
@@ -524,11 +537,87 @@ class RasterMap
 			map.addOverlay(pickupbox);\n";
 	}
 	
+	function getPolySquareBlockOS($e1,$n1,$e2,$n2) {
+		return "var points = [];
+			points.push(new OpenLayers.Geometry.Point($e1, $n1)); 
+			points.push(new OpenLayers.Geometry.Point($e1, $n2)); 
+			points.push(new OpenLayers.Geometry.Point($e2, $n2)); 
+			points.push(new OpenLayers.Geometry.Point($e2, $n1)); 
+			points.push(new OpenLayers.Geometry.Point($e1, $n1)); 
+
+		pickupbox = new OpenLayers.Layer.Vector(\"Vector Layer\"); 
+		var style_green = {strokeColor: \"#00FF00\", strokeOpacity: 1, strokeWidth: 6}; 
+
+		var lineString = new OpenLayers.Geometry.LineString(points); 
+		var lineFeature = new OpenLayers.Feature.Vector(lineString, null, style_green); 
+		pickupbox.addFeatures([lineFeature]); 
+		//add it to the map 
+		map.addLayer(pickupbox);
+		";
+	}
+	
 	function getScriptTag()
 	{
 		global $CONF;
 		if ($this->service == 'OSM-Static-Dev') {
 		
+		} elseif ($this->service == 'OSOS') {
+			$block = $p1 = '';
+			$e = floor($this->nateastings/1000) * 1000;
+			$n = floor($this->natnorthings/1000) * 1000;
+			
+			
+			if ($this->issubmit) {
+				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
+			}
+			
+			if ($this->exactPosition) {
+			print_r($this);
+				$block.= "map.addOverlay(createMarker(new OpenSpace.MapPoint({$this->nateastings}, {$this->natnorthings})));";
+			} elseif ($this->issubmit) {
+				$block .= "map.addOverlay(createMarker(new OpenSpace.MapPoint($e-50, $n+150)));\n";
+			}
+			
+			if (empty($lat) && $this->issubmit) {
+				$block .= "map.addOverlay(createPMarker(new OpenSpace.MapPoint($e-50, $n+50)));\n";
+			}
+			
+			if ($this->issubmit) {
+				$block .= $this->getPolySquareBlockOS($e-100,$n+200,$e,$n);
+				
+			}
+			
+			$e+=375;
+			$n+=450;
+			
+			return "
+			$p1
+			<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/mappingOS.js")."\"></script>
+			<script type=\"text/javascript\"> 
+			
+			var issubmit = {$this->issubmit}+0;
+			var map;
+			var static_host = '{$CONF['STATIC_HOST']}';
+			
+			function loadmap() {
+				var options = {controls: [], products: [\"OV0\", \"OV1\", \"OV2\", \"MSR\", \"MS\", \"250KR\", \"250K\", \"50KR\", \"50K\", \"25KR\", \"25K\", \"VMLR\", \"VML\"]};
+				map = new OpenSpace.Map('map',options);  
+
+				map.addControl(new OpenSpace.Control.PoweredBy());
+				map.addControl(new OpenSpace.Control.CopyrightCollection());
+				map.addControl(new OpenLayers.Control.Navigation()); // not keyboard 
+				map.addControl(new OpenSpace.Control.LargeMapControl()); 
+
+				map.setCenter(new OpenSpace.MapPoint($e, $n), 9);
+				
+				$block
+			}
+			
+			AttachEvent(window,'load',loadmap,false);
+			
+			</script> 
+			";
+			
 		} elseif ($this->service == 'Google') {
 			if (empty($this->inline) && empty($this->issubmit)) {
 				//its now handled by the 'childmap'
@@ -610,11 +699,7 @@ class RasterMap
 				$p1 = '';
 			}
 			return "
-				<style type=\"text/css\">
-				v\:* {
-					behavior:url(#default#VML);
-				}
-				</style>
+				
 				$p1
 				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mappingG.js")."\"></script>
 				<script type=\"text/javascript\">
