@@ -269,7 +269,7 @@ function updateViewDirection() {
 		
 		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
 	
-		if (distance > 14) {
+		if (distance > 14 || (distance > 0 && grlen1 == 5 && grlen2 == 5) ) {
 			realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
 
 			if (realangle < 0)
@@ -286,6 +286,12 @@ function updateViewDirection() {
 				if (ele.options[q].value == newangle)
 					ele.selectedIndex = q;
 
+			replaceIcon('camicon',"http://"+static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png");
+			if (document.theForm.photographer_gridref.value == '')
+				replaceIcon('subicon',"http://"+static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png");
+			else 
+				replaceIcon('subicon',"http://"+static_host+"/img/icons/circle.png");
+				
 			if (distance < 100) {
 				distance = Math.round(distance);
 			} else if (distance < 1000) {
@@ -294,16 +300,54 @@ function updateViewDirection() {
 				distance = Math.round(distance/50)*50;
 			}
 			document.getElementById("dist_message").innerHTML = "range about "+distance+" metres";
+			
+			if (typeof parentUpdateVariables != 'undefined') {
+				parentUpdateVariables();
+			}
+			return true;
 		}
 	}
+	return false;
+}
+
+//there is no 'setIcon' for markers, so we search the DOM!
+function replaceIcon(name,newSrc) {
+	if (name == 'camicon') {
+		var re = new RegExp("icons\/viewc");
+	} else {
+		var re = new RegExp("icons\/(subc|circle)");
+	}
+	for(var q=0;q<document.images.length;q++)
+		if (document.images[q].src.match(re))
+			document.images[q].src = newSrc;
 }
 
 function updateCamIcon() {
-
+	if (!document.getElementById('map')) {
+		//we have no map!
+		return;
+	}
+	ele = document.theForm.view_direction;
+	realangle = ele.options[ele.selectedIndex].value;
+	if (realangle == -1) {
+		replaceIcon('camicon',"http://"+static_host+"/img/icons/viewc--1.png");
+		replaceIcon('subicon',"http://"+static_host+"/img/icons/subc--1.png");
+	} else {
+		jump = 360.0/16.0;
+		newangle = Math.floor(Math.round(realangle/jump)*jump);
+		if (newangle == 360)
+			newangle = 0;
+		replaceIcon('camicon',"http://"+static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png");
+		if (document.theForm.photographer_gridref.value == '')
+			replaceIcon('subicon',"http://"+static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png");
+		else 
+			replaceIcon('subicon',"http://"+static_host+"/img/icons/circle.png");
+	}
 }
 
 function enlargeMap() {
 	ele = document.getElementById('map');
 	ele.style.width = "100%";
 	ele.style.height = "450px";
+	map.updateSize();
 }
