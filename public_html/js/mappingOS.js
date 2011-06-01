@@ -269,7 +269,7 @@ function updateViewDirection() {
 		
 		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
 	
-		if (distance > 14 || (distance > 0 && grlen1 == 5 && grlen2 == 5) ) {
+		if (distance > 14) {
 			realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
 
 			if (realangle < 0)
