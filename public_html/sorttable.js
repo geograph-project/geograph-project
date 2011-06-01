@@ -174,12 +174,12 @@ function ts_resortTable(lnk) {
     if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d\d\d$/)) parsefn = ts_parse_date;
     if (itm.match(/^\d\d[\/-]\d\d[\/-]\d\d$/)) parsefn = ts_parse_date;
     if (itm.match(/^[£$]/)) parsefn = ts_parse_currency;
-    if (itm.match(/^[\d\.]+$/)) parsefn = ts_parse_numeric;
+    if (itm.match(/^\d[\d\.,]*$/)) parsefn = ts_parse_numeric;
     
     if (table.rows[1].cells[column].getAttribute && 
     table.rows[1].cells[column].getAttribute('sortvalue')!=null) {
     	itm = table.rows[1].cells[column].getAttribute('sortvalue');
-    	if (itm.match(/^[\d\.,]+$/)) {
+    	if (itm.match(/^\d[\d\.,]*$/)) {
     		parsefn=ts_parse_hidden_numeric;	
     	} else {
     		parsefn=ts_parse_hidden;
