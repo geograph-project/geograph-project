@@ -198,7 +198,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		currentelement = marker1;
 	}
 	
-	gridref = that.value.trim().toUpperCase();
+	gridref = that.value.trim().toUpperCase().replace(/ /g,'');
 	
 	var grid=new GT_OSGB();
 	var ok = false;
@@ -209,7 +209,12 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		ok = grid.parseGridRef(gridref)
 	}
 	
-	if (ok && gridref.replace(/ /g,'').length > 6) {
+	if (ok && gridref.length > 6) {
+		if (gridref.length <= 8 && grid.easting%100 == 0 && grid.northing%100 == 0) {
+			grid.easting = grid.easting + 50;
+			grid.northing = grid.northing + 50;
+		}
+		
 		var point = new OpenSpace.MapPoint(grid.eastings, grid.northings)
 
 		if ((currentelement == null) && map) {
