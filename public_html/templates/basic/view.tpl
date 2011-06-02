@@ -4,7 +4,7 @@
 {if $image}
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
 <div style="float:right; position:relative; width:2.5em; height:1em;"></div>
-
+<div itemscope itemtype="schema.org/ImageObject">
 <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 {if $place.distance}
  {place place=$place h3=true}
@@ -51,7 +51,7 @@
 	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this image!"/></a></div>
     {/if}
   {/dynamic}
-  <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
+  <div class="img-shadow" id="mainphoto">{$image->getFull()|replace:'/>':' itemprop="contentURL"/>'}</div>
 {if $image->comment}
   {dynamic}
     {if $user->registered || !$is_bot}
@@ -59,15 +59,15 @@
     {/if}
   {/dynamic}
 {/if}
-  <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title">{$image->title|escape:'html'}</div>
+  <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title" itemprop="name">{$image->title|escape:'html'}</div>
 
   {if $image->comment}
-  <div class="caption640">{$image->comment|escape:'html'|nl2br|geographlinks:$expand|hidekeywords}</div>
+  <div class="caption640" itemprop="description">{$image->comment|escape:'html'|nl2br|geographlinks:$expand|hidekeywords}</div>
   {/if}
   {if $image->snippet_count}
 	{if !$image->comment && $image->snippet_count == 1}
 		{assign var="item" value=$image->snippets[0]}
-		<div class="caption640">
+		<div class="caption640" itemprop="description">
 		{$item.comment|escape:'html'|nl2br|geographlinks}{if $item.title}<br/><br/>
 		<small>See other images of <a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'}</a></small>{/if}
 		</div>
@@ -146,7 +146,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 </div>
 
 {if $image->tags}
-	<div style="text-align:center;font-size:0.8em">Tags: {foreach from=$image->tags item=item name=used}
+	<div style="text-align:center;font-size:0.8em" itemprop="keywords">Tags: {foreach from=$image->tags item=item name=used}
 		<span class="tag">
 		{if $item.prefix}{$item.prefix|escape:'html'}:{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a>
 		</span>&nbsp;
@@ -189,13 +189,13 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 {if $image->credit_realname}
 	<dt>Photographer</dt>
-	 <dd property="dc:creator">{$image->realname|escape:'html'}</dd>
+	 <dd property="dc:creator" itemprop="author">{$image->realname|escape:'html'}</dd>
 
 	<dt>Contributed by</dt>
-	 <dd><a title="View profile" href="/profile/{$image->user_id}">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd><a title="View profile" href="/profile/{$image->user_id}" itemprop="publisher">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {else}
 	<dt>Photographer</dt>
-	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="author">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
 <dt>Image classification<sup><a href="/faq.php#points" class="about" style="font-size:0.7em">?</a></sup></dt>
@@ -225,15 +225,15 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 {if $image_taken}
 	<dt>Date Taken</dt>
-	<dd>{$image_taken} &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
+	<dd><span itemprop="exifData">{$image_taken}</span> &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
 {/if}
 <dt>Submitted</dt>
-	<dd>{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
+	<dd itemprop="uploadDate" datetime="{$image->submitted|replace:' ':'T'}Z">{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
 
 {if $image->keywords}
 	<dt>Keywords</dt>
 	{foreach from=$image->keywords item=item}
-		<dd style="width:200px;font-size:0.9em">{$item|escape:'html'}</dd>
+		<dd style="width:200px;font-size:0.9em" itemprop="keywords">{$item|escape:'html'}</dd>
 	{/foreach}
 {/if}
 
@@ -243,7 +243,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	<dd>{if $image->canonical}
 		<a href="/search.php?gridref={$image->grid_reference}&amp;canonical={$image->canonical|escape:'url'}&amp;do=1">{$image->canonical|escape:'html'}</a> &gt;
 	{/if}
-	{$image->imageclass} &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">more nearby</a>)
+	<span itemprop="keywords">{$image->imageclass}</span> &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">more nearby</a>)
 	</dd>
 {/if}
 
@@ -252,6 +252,12 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 {if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude"
 title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
+  <div itemprop="contentLocation">
+  <div itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+    <meta itemprop="latitude" content="{$lat|string_format:"%.5f"}" />
+    <meta itemprop="latitude" content="{$long|string_format:"%.5f"}" />
+  </div>
+  </div>
 </dd>
 
 {if $image->photographer_gridref}
@@ -317,7 +323,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&amp;id={$image->gridimage_id}"><b>More Links for this image</b></a></span>
 </div>
 
-
+</div>
 <div style="text-align:center;margin-top:3px" class="interestBox" id="styleLinks"></div>
 <script type="text/javascript">
 /* <![CDATA[ */
