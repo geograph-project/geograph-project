@@ -152,6 +152,25 @@ class RasterMap
 		}
 	} 
 	
+	function setService($service) {
+		global $CONF;
+		$services = explode(',',$CONF['raster_service']);
+		if ($this->reference_index == 1 && $service == 'OS50k' && in_array('OS50k',$services)) {
+			$this->service = 'OS50k';
+
+			if ($this->issubmit === true && in_array('NPE',$services)) {
+				$this->service2 = 'NPE';
+			}
+		} elseif($this->reference_index == 1 && $service == 'OSOS' && in_array('OSOS',$services)) {
+			$this->service = 'OSOS';
+		} elseif($service == 'Google' && in_array('Google',$services)) {
+			$this->service = 'Google';
+		} 
+		if (isset($this->tilewidth[$this->service])) {
+			$this->width = $this->tilewidth[$this->service];
+		}
+	}
+	
 	function addLatLong($lat,$long) {
 		if ($this->service == 'Google' || $this->service == 'OSM-Static-Dev') {
 			$this->enabled = true;
