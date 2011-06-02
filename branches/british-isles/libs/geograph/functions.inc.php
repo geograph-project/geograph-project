@@ -385,7 +385,7 @@ function smarty_function_place($params) {
 			$t2 .= ", modern Administrative Area - {$place['adm1_name']}";
 		$t2 .= "\"";
 	}
-	$t = $t2.">".$t."</$tag>";
+	$t = $t2." itemprop=\"contentLocation\">".$t."</$tag>";
 
 	return $t;
 }
