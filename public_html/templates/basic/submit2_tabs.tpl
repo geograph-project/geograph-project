@@ -90,8 +90,8 @@ function clicker(step,override,shiftKey) {
 			if (document.getElementById('iframe'+step).src.endsWith('/submitmap.php?'+loc) == false)
 				   document.getElementById('iframe'+step).src = '/submitmap.php?'+loc;
 		} else if (step == 2) {
-			if (theForm.elements['service'] && theForm.elements['service'].checked) {
-				loc = loc + "&service="+escape(theForm.elements['service'].value);
+			if (theForm.elements['service']) {
+				loc = loc + "&service="+escape(theForm.elements['service'].options[theForm.elements['service'].selectedIndex].value);
 			}
 			//todo - this only NEEDS a 4fig subject GR - the rest is loaded with javascript anyway
 			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?'+loc) == false)
@@ -140,17 +140,16 @@ function setTakenDate(value) {
 }
 
 function saveService(that) {
-	if (that.checked) {
-		createCookie("MapSrv",'G',10);
-	} else {
-		eraseCookie("MapSrv");
-	}
+	createCookie("MapSrv",that.options[that.selectedIndex].value,10);
 }
 
 function restoreService() {
-	newservice = readCookie('MapSrv');
+	var newservice = readCookie('MapSrv');
 	if (newservice) {
-		document.getElementById('service_google').checked = true;
+		var ele = document.getElementById('service');
+		for(var q=0;ele.options.length;q++)
+			if (ele.options[q].value == newservice)
+				ele.options[q].selected = true;
 	}
 }
 AttachEvent(window,'load',restoreService,false);
@@ -223,7 +222,11 @@ function clearSubmission() {
 </script>
 {/literal}
 
-	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
+        <div class="interestBox">
+                <span style="color:red">New!</span> - Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
+        </div>
+
+	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}<br/>&middot; <a href="/article/Content-on-Geograph">Submit a Collection</a> &middot;</div>
 
 	<h2>Submit Image <sup style="color:gray">v2:Tabs - Gamma</sup></h2>
 
@@ -245,7 +248,11 @@ function clearSubmission() {
 
 	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>:<br/>
 
-	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this);clicker(2,false); clicker(2,true);"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
+	&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
+		<option value="OSOS">Zoomable OS Mapping</option>
+		<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
+		<option value="Google">Zoomable Google Mapping</option>
+	</select> <small>(OS Maps not available for Ireland)</small></p>
 
 
 	{if !$tab}
