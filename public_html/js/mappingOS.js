@@ -245,7 +245,6 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 			parentUpdateVariables();
 		}
 	}
-	window.event.cancelBubble = true;
 }
 
 function relocateMapToMarkers() {
