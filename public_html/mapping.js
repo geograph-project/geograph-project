@@ -388,12 +388,6 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 					easting = parseInt(cenXblock) + parseFloat(cenXhun);
 					northing = parseInt(cenYblock) + parseFloat(cenYhun);
 					
-					if (halve == 3) {
-					//	easting = easting + 50;
-					//	northing = northing + 50;
-					}
-					
-					
 					tempX = (easting - cene) / ratw;
 					tempY = (cenn - northing) / rath;
 
@@ -417,6 +411,10 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 								eastings1 = easting + 50;
 								northings1 = northing + 50;
 								grlen1 = halve;
+							} else if (numbers.length == 8 && easting%10 == 0 && northing%10 == 0) {
+								eastings1 = easting + 5;
+								northings1 = northing + 5;
+								grlen1 = halve;
 							} else {
 								eastings1 = easting;
 								northings1 = northing;
@@ -435,6 +433,10 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 								tempY = tempY - (maph /40);
 								eastings2 = easting + 50;
 								northings2 = northing + 50;
+								grlen2 = halve;
+							} else if (numbers.length == 8 && easting%10 == 0 && northing%10 == 0) {
+								eastings2 = easting + 5;
+								northings2 = northing + 5;
 								grlen2 = halve;
 							} else {
 								eastings2 = easting;
