@@ -213,6 +213,9 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		if (gridref.length <= 8 && grid.eastings%100 == 0 && grid.northings%100 == 0) {
 			grid.eastings = grid.eastings + 50;
 			grid.northings = grid.northings + 50;
+		} else if (gridref.length <= 10 && grid.eastings%10 == 0 && grid.northings%10 == 0) {
+			grid.eastings = grid.eastings + 5;
+			grid.northings = grid.northings + 5;
 		}
 		
 		var point = new OpenSpace.MapPoint(grid.eastings, grid.northings)

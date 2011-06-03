@@ -201,9 +201,12 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	}
 	
 	if (ok && gridref.length > 6) {
-		if (gridref.length <= 8 && grid.easting%100 == 0 && grid.northing%100 == 0) {
-			grid.easting = grid.easting + 50;
-			grid.northing = grid.northing + 50;
+		if (gridref.length <= 8 && grid.eastings%100 == 0 && grid.northings%100 == 0) {
+			grid.eastings = grid.eastings + 50;
+			grid.northings = grid.northings + 50;
+		} else if (gridref.length <= 10 && grid.eastings%10 == 0 && grid.northings%10 == 0) {
+			grid.eastings = grid.eastings + 5;
+			grid.northings = grid.northings + 5;
 		}
 		
 		//convert to a wgs84 coordinate
