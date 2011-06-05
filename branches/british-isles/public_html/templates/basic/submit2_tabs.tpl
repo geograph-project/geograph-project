@@ -268,7 +268,7 @@ function clearSubmission() {
 	</div>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="/submit2.php?inner&amp;step=1&amp;container=iframe1" id="iframe1" width="100%" height="520px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1" id="iframe1" width="100%" height="520px" style="border:0"></iframe>
 	</div>
 <!-- # -->
 

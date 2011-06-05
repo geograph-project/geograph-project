@@ -8,7 +8,34 @@
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
 	{/if}
 
-{if $step eq 1}
+{if $step eq 0}
+	<div class="interestBox" style="float:right;width:160px;">&middot; <a href="/submit-multi.php" target="_top">Upload a batch of images</a></div>
+
+		<table id="upload" class="report sortable">
+			<thead>
+			<tr style="color:yellow">
+				<th>Preview</th>
+				<th>Continue</th>
+				<th>Uploaded</th>
+				<th>Taken</th>
+			</tr>
+			</thead>
+			<tbody>
+
+			{foreach from=$data item=item}
+				<tr>
+					<td><a href="/submit.php?preview={$item.transfer_id}" target="_blank"><img src="/submit.php?preview={$item.transfer_id}" width="160"/></a></td>
+					<td><a href="/submit2.php?inner&amp;step=1&amp;transfer_id={$item.transfer_id}">continue &gt;</a></td>
+					<td sortvalue="{$item.uploaded}">{$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"}</td>
+					<td sortvalue="{$item.imagetaken}">{if $item.imagetaken}{$item.imagetaken|date_format:"%a, %e %b %Y at %H:%M"}{/if}</td>
+				</tr>
+			{foreachelse}
+				<tr><td colspan="4">No images yet. <a href="/submit-multi.php" target="_top">Upload some now!</a></td></tr>
+			{/foreach}
+			</tbody>
+		</table>
+
+{elseif $step eq 1}
 
 	{if $success}
 		{if $grid_reference}
@@ -33,8 +60,9 @@
 			<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
 		{/if}
 
-		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1">Upload a different image</a></p>
+		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1">Upload a new image</a> or <a href="/submit2.php?inner&amp;step=0">Select an different uploaded image</a></p>
 	{else}
+		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>&middot;  <a href="/submit2.php?inner&amp;step=0">Select an uploaded image</a> <span style="color:red">New!</span></div>
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}

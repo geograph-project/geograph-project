@@ -137,69 +137,29 @@ if (empty($_GET['tab'])) {
 	
 } else {
 	$template = "submit_multi_submit.tpl";
+	$uploadmanager=new UploadManager;
+
+	if (!empty($_GET['delete']) && $uploadmanager->validUploadId($_GET['delete']) ) {
+		
+		$uploadmanager->setUploadId($_GET['delete'],false);
+
+		$uploadmanager->cleanUp();
+	}
 }
-	
 
 if ($template == "submit_multi_submit.tpl" || $template == "submit_multi_nofrills.tpl") {
-
+	
 	if (isset($USER->submission_new)) {
-	        $_SESSION['submit_new'] = intval($USER->submission_new);
+		$_SESSION['submit_new'] = intval($USER->submission_new);
 	}
 	if (empty($_SESSION['submit_new'])) {
-        	$template = "submit_multi_submit_old.tpl";
+		$template = "submit_multi_submit_old.tpl";
 	}
-
-	chdir($CONF['photo_upload_dir']);
 	
-	if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) {
-		$files = glob("newpic_u{$USER->user_id}_*.exif");
-	} else {
-		//in theory using shell expansion should be faster than glob
-		$files = explode(" ",trim(`echo newpic_u{$USER->user_id}_*.exif`,"\n"));
-	}
-	$data = array();
+	$uploadmanager=new UploadManager;
+
+	$data = $uploadmanager->getUploadedFiles();
 	
-	$conv = new Conversions;
-	
-	foreach ($files as $file) {
-		if (preg_match('/^newpic_u(\d+)_(\w+).exif$/',$file,$m)) {
-			if ($m[1] != $USER->user_id)
-				continue;
-			$row = array('transfer_id'=>$m[2],'uploaded'=>filemtime($file));
-			
-			if ($exif = file_get_contents($file)) {
-				$exif=unserialize($exif);
-
-				if (!empty($exif['GPS'])) {
-				
-					list($e,$n,$reference_index) = ExifToNational($exif);
-
-					list ($row['photographer_gridref'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
-
-					list ($row['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
-
-					$row['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$row['grid_reference']);
-				}
-			
-				if (!empty($exif['COMMENT']) && preg_match("/\b([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
-					if (strlen($m[2]) == strlen($m[3]) || (strlen($m[2])+strlen($m[3]))%2==0) {
-						$row['grid_reference'] = $m[1].$m[2].$m[3];
-					}
-				}
-				//dont know yet which of these is best but they all seem to be the same on my test images
-				if (($date = $exif['EXIF']['DateTimeOriginal']) ||
-				    ($date = $exif['EXIF']['DateTimeDigitized']) ||
-				    ($date = $exif['IFD0']['DateTime']) ) 
-				{
-					//Example: ["DateTimeOriginal"]=> string(19) "2004:07:09 14:05:19"
-					 list($date,$time) = explode(' ',$date);
-					 $dates = explode(':',$date);
-					 $row['imagetaken'] = implode('-',$dates).' '.$time;
-				}
-			}
-			$data[] = $row;
-		}
-	}
 	$smarty->assign_by_ref('data',$data);
 } else {
 	customExpiresHeader(3600,false,true);
