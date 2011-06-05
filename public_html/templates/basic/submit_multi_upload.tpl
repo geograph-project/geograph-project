@@ -7,7 +7,8 @@
 <div style="position:relative;">
 	<div class="tabHolder">
 		<a class="tabSelected nowrap" id="tab1">A) Add/Upload Images</a>&nbsp;
-		<a class="tab nowrap" id="tab2" href="{$script_name}?tab=submit">B) Submit Images</a>
+		<a class="tab nowrap" id="tab2" href="{$script_name}?tab=submit">B) Submit Images (v1)</a>
+		<a class="tab nowrap" id="tab3" href="/submit2.php?multi=true">B) Submit Images (v2) <sup style="color:red">New!</sup></a>
 	</div>
 
 	<div class="interestBox">

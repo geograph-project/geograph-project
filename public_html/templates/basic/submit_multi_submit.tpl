@@ -14,7 +14,8 @@
 <div style="position:relative;">
 	<div class="tabHolder">
 		<a class="tab nowrap" id="tab1" href="{$script_name}">A) Add/Upload Images</a>&nbsp;
-		<a class="tabSelected nowrap" id="tab2">B) Submit Images</a>
+		<a class="tabSelected nowrap" id="tab2">B) Submit Images (v1)</a>
+		<a class="tab nowrap" id="tab3" href="/submit2.php?multi=true">B) Submit Images (v2) <sup style="color:red">New!</sup></a>
 	</div>
 
 	<div class="interestBox">
@@ -65,7 +66,7 @@
 					</form></td>
 					<td sortvalue="{$item.uploaded}">{$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"}</td>
 					<td sortvalue="{$item.imagetaken}">{if $item.imagetaken}{$item.imagetaken|date_format:"%a, %e %b %Y at %H:%M"}{/if}</td>
-					<td><input type="checkbox"/></td>
+					<td><input type="checkbox"/><br/><br/><a href="{$script_name}?tab=submit&amp;delete={$item.transfer_id}" onclick="return confirm('Are you sure?');" style="color:red">Delete</a></td>
 
 				</tr>
 			{foreachelse}

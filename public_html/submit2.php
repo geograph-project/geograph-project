@@ -72,54 +72,9 @@ if (isset($_FILES['jpeg_exif']))
 			}
 			elseif ($uploadmanager->processUpload($_FILES['jpeg_exif']['tmp_name']))
 			{
-				$smarty->assign('upload_id', $uploadmanager->upload_id);
-				$smarty->assign('transfer_id', $uploadmanager->upload_id);
-				if ($uploadmanager->hasoriginal) {
-					$smarty->assign('original_width', $uploadmanager->original_width);
-					$smarty->assign('original_height', $uploadmanager->original_height);
-				}
-
-				$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
-				$smarty->assign('preview_width', $uploadmanager->upload_width);
-				$smarty->assign('preview_height', $uploadmanager->upload_height);
-
-				$exif = $uploadmanager->rawExifData;
-
-				if (!empty($exif['GPS'])) {
-					$conv = new Conversions;
-					
-					list($e,$n,$reference_index) = ExifToNational($exif);
-
-					list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
-
-					$smarty->assign('photographer_gridref',$grid_reference);
-
-					list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
-
-					$smarty->assign('grid_reference', $grid_reference);
-				}
-
-				if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
-					if (strlen($m[3]) != strlen($m[4])) {
-						if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
-							if (strlen($m[3])%2==0) {
-								$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3]);
-							}
-						}
-					} else {
-						$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3].$m[4]);
-					}
-
-				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
-					if (strlen($m[2]) == strlen($m[3]) || (strlen($m[2])+strlen($m[3]))%2==0) {
-						$smarty->assign('grid_reference', $grid_reference = $m[1].$m[2].$m[3]);
-					}
-				}
-
-				if (isset($uploadmanager->exifdate)) {
-					$smarty->assign('imagetaken', $uploadmanager->exifdate);
-				}
-
+				$upload_to_process=true;
+				
+				
 				$smarty->assign('filename',basename(str_replace("\\",'/',$_FILES['jpeg_exif']['name'])));
 
 
@@ -229,7 +184,7 @@ if (isset($_FILES['jpeg_exif']))
 			$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
 		}
 
-                $smarty->assign('uploadmanager',$uploadmanager);
+                $smarty->assign_by_ref('uploadmanager',$uploadmanager);
 
 		$clear_cache[$square->gridsquare_id] = 1;
 	}
@@ -242,11 +197,76 @@ if (isset($_FILES['jpeg_exif']))
 	$smarty->assign('filenames', $filenames);
 	$smarty->assign('grid_reference', $grid_reference);
 
+} elseif (isset($_GET['transfer_id'])) {
+	$uploadmanager=new UploadManager;
+		
+	if($uploadmanager->validUploadId($_GET['transfer_id'])) {
+		
+		$uploadmanager->setUploadId($_GET['transfer_id']);
+		$uploadmanager->reReadExifFile();
+		
+		$upload_to_process=true;
+		
+		$smarty->assign('success', 1);
+	} else {
+		die("invalid id");
+	}
+}
+
+if ($upload_to_process && !empty($uploadmanager) && $uploadmanager->upload_id) {
+
+	$smarty->assign('upload_id', $uploadmanager->upload_id);
+	$smarty->assign('transfer_id', $uploadmanager->upload_id);
+	if ($uploadmanager->hasoriginal) {
+		$smarty->assign('original_width', $uploadmanager->original_width);
+		$smarty->assign('original_height', $uploadmanager->original_height);
+	}
+
+	$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
+	$smarty->assign('preview_width', $uploadmanager->upload_width);
+	$smarty->assign('preview_height', $uploadmanager->upload_height);
+
+	$exif = $uploadmanager->rawExifData;
+
+	if (!empty($exif['GPS'])) {
+		$conv = new Conversions;
+
+		list($e,$n,$reference_index) = ExifToNational($exif);
+
+		list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+
+		$smarty->assign('photographer_gridref',$grid_reference);
+
+		list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
+
+		$smarty->assign('grid_reference', $grid_reference);
+	}
+
+	if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
+		if (strlen($m[3]) != strlen($m[4])) {
+			if (preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{4,10})(\b|[A-Za-z_])/i",$_FILES['jpeg_exif']['name'],$m)) {
+				if (strlen($m[3])%2==0) {
+					$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3]);
+				}
+			}
+		} else {
+			$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3].$m[4]);
+		}
+
+	} elseif (!empty($exif['COMMENT']) && preg_match("/\b([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
+		if (strlen($m[2]) == strlen($m[3]) || (strlen($m[2])+strlen($m[3]))%2==0) {
+			$smarty->assign('grid_reference', $grid_reference = $m[1].$m[2].$m[3]);
+		}
+	}
+
+	if (isset($uploadmanager->exifdate)) {
+		$smarty->assign('imagetaken', $uploadmanager->exifdate);
+	}
 }
 
 if (isset($_REQUEST['inner'])) {
 	$template='submit2_inner.tpl';
-	$step = 1;
+	
 
 	if (!empty($_REQUEST['grid_reference']))
 	{
@@ -262,6 +282,16 @@ if (isset($_REQUEST['inner'])) {
 		} else {
 			$smarty->assign('errormsg', $square->errormsg);
 		}
+	} elseif (isset($_GET['step']) && $_GET['step'] == 0) {
+		$step = 0;
+		
+		$uploadmanager=new UploadManager;
+
+		$data = $uploadmanager->getUploadedFiles();
+
+		$smarty->assign_by_ref('data',$data);		
+	} else {
+		$step = 1;
 	}
 
 	$smarty->assign('step', $step);
@@ -271,10 +301,14 @@ if (isset($_REQUEST['inner'])) {
 	}
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+if ($_SERVER['REQUEST_METHOD'] == 'GET' && $step !== 0) {
 	customExpiresHeader(3600,false,true);
 }
 
+if (!empty($_REQUEST['multi'])) {
+	$smarty->assign('multi', 1);
+}
+	
 $smarty->display($template, $cacheid);
 
 flush();
