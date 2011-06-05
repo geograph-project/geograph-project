@@ -4,7 +4,7 @@
 {if $image}
 <div style="float:right; position:relative; width:5em; height:4em;"></div>
 <div style="float:right; position:relative; width:2.5em; height:1em;"></div>
-<div itemscope itemtype="schema.org/ImageObject">
+<div itemscope itemtype="schema.org/Photograph"><meta itemprop="isFamilyFriendly" content="true"/>
 <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 {if $place.distance}
  {place place=$place h3=true}
@@ -46,12 +46,15 @@
 	{elseif $user->user_id eq $image->user_id}
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
+
   {dynamic}
     {if $user->registered || !$is_bot}
 	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this image!"/></a></div>
     {/if}
   {/dynamic}
-  <div class="img-shadow" id="mainphoto">{$image->getFull()|replace:'/>':' itemprop="contentURL"/>'}</div>
+
+  <div class="img-shadow" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull()|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
+
 {if $image->comment}
   {dynamic}
     {if $user->registered || !$is_bot}
@@ -59,6 +62,7 @@
     {/if}
   {/dynamic}
 {/if}
+
   <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title" itemprop="name">{$image->title|escape:'html'}</div>
 
   {if $image->comment}
