@@ -3,6 +3,9 @@
 <form enctype="multipart/form-data" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 	<input type="hidden" name="inner" value="1"/>
 {dynamic}
+{if $container}
+	<input type="hidden" name="container" value="{$container|escape:'html'}"/>
+{/if}
 
 	{if $errormsg}
 	<p style="color:#990000;font-weight:bold;">{$errormsg}</p>
@@ -25,7 +28,7 @@
 			{foreach from=$data item=item}
 				<tr>
 					<td><a href="/submit.php?preview={$item.transfer_id}" target="_blank"><img src="/submit.php?preview={$item.transfer_id}" width="160"/></a></td>
-					<td><a href="/submit2.php?inner&amp;step=1&amp;transfer_id={$item.transfer_id}">continue &gt;</a></td>
+					<td><a href="/submit2.php?inner&amp;step=1&amp;transfer_id={$item.transfer_id}{if $container}&amp;container={$container|escape:'url'}{/if}">continue &gt;</a></td>
 					<td sortvalue="{$item.uploaded}">{$item.uploaded|date_format:"%a, %e %b %Y at %H:%M"}</td>
 					<td sortvalue="{$item.imagetaken}">{if $item.imagetaken}{$item.imagetaken|date_format:"%a, %e %b %Y at %H:%M"}{/if}</td>
 				</tr>
@@ -60,9 +63,9 @@
 			<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
 		{/if}
 
-		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1">Upload a new image</a> or <a href="/submit2.php?inner&amp;step=0">Select an different uploaded image</a></p>
+		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1{if $container}&amp;container={$container|escape:'url'}{/if}">Upload a new image</a> or <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}">Select an different uploaded image</a></p>
 	{else}
-		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>&middot;  <a href="/submit2.php?inner&amp;step=0">Select an uploaded image</a> <span style="color:red">New!</span></div>
+		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>&middot;  <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}">Select an uploaded image</a> <span style="color:red">New!</span></div>
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
