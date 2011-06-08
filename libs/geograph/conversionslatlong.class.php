@@ -11,6 +11,7 @@
  *    by Ian Harris 2004 (ian@teasel.org)
  *     added Irish Grid References by Barry Hunter (2005)
  *     added ITM by Barry Hunter (May 2009)
+ *     corrected Irish Grid conversions by Rob Burke (June 2011)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -74,6 +75,7 @@ function itm_to_wgs84($e,$n) {
 ***************************/
 
 #source http://www.osni.gov.uk/downloads/Making%20maps%20GPS%20compatible.pdf 
+#Ireland 1975 to ETRF89 (left-hand-rule!)
 #Translations Rotations
 #?X (m) +482.530 ?x (”) +1.042
 #?Y (m) -130.596 ?y (”) +0.214
@@ -92,21 +94,25 @@ function wgs84_to_irish($lat,$long,$uselevel2 = true) {
 		$y1 = $this->Lat_Long_H_to_Y($lat,$long,$height,6378137.00,6356752.313);
 		$z1 = $this->Lat_H_to_Z     ($lat,      $height,6378137.00,6356752.313);
 
-		$x2 = $this->Helmert_X($x1,$y1,$z1,-482.53 ,-0.214,-0.631,-8.15);
-		$y2 = $this->Helmert_Y($x1,$y1,$z1, 130.596,-1.042,-0.631,-8.15);
-		$z2 = $this->Helmert_Z($x1,$y1,$z1,-564.557,-1.042,-0.214,-8.15);
+		$x2 = $this->Helmert_X($x1,$y1,$z1,-482.53 ,+0.214,+0.631,-8.15);
+		$y2 = $this->Helmert_Y($x1,$y1,$z1,+130.596,+1.042,+0.631,-8.15);
+		$z2 = $this->Helmert_Z($x1,$y1,$z1,-564.557,+1.042,+0.214,-8.15);
 
 		$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6377340.189,6356034.447);
 		$long = $this->XYZ_to_Long($x2,$y2);
+
+		$e = $this->Lat_Long_to_East ($lat,$long,6377340.189,6356034.447, 200000,1.000035,53.50000,-8.00000);
+		$n = $this->Lat_Long_to_North($lat,$long,6377340.189,6356034.447, 200000,250000,1.000035,53.50000,-8.00000);
+
 	} 
-
-    $e = $this->Lat_Long_to_East ($lat,$long,6377340.189,6356034.447, 200000,1.000035,53.50000,-8.00000);
-    $n = $this->Lat_Long_to_North($lat,$long,6377340.189,6356034.447, 200000,250000,1.000035,53.50000,-8.00000);
-
-	if (!$uselevel2) {
+	else {
 		//Level 1 Transformation - 95% of points within 2 metres
-		#fixed datum shift correction (instead of fancy hermert translation above!)
 		##source http://www.osni.gov.uk/downloads/Making%20maps%20GPS%20compatible.pdf
+		# ETRF89 Geodetic Ellipsoidal Co-ordinates projected to GPS (Irish Grid)
+		$e = $this->Lat_Long_to_East ($lat,$long,6378137.00,6356752.313, 200000,1.000035,53.50000,-8.00000);
+		$n = $this->Lat_Long_to_North($lat,$long,6378137.00,6356752.313, 200000,250000,1.000035,53.50000,-8.00000);
+
+		#fixed datum shift correction (instead of fancy hermert translation above!)
 		$e=$e+49;
 		$n=$n-23.4;
 	}
@@ -134,9 +140,9 @@ function irish_to_wgs84($e,$n,$uselevel2 = true) {
 		$y1 = $this->Lat_Long_H_to_Y($lat,$lon,$height,6377340.189,6356034.447);
 		$z1 = $this->Lat_H_to_Z     ($lat,     $height,6377340.189,6356034.447);
 
-		$x2 = $this->Helmert_X($x1,$y1,$z1, 482.53 ,0.214,0.631,8.15);
-		$y2 = $this->Helmert_Y($x1,$y1,$z1,-130.596,1.042,0.631,8.15);
-		$z2 = $this->Helmert_Z($x1,$y1,$z1, 564.557,1.042,0.214,8.15);
+		$x2 = $this->Helmert_X($x1,$y1,$z1, 482.53 ,-0.214,-0.631,8.15);
+		$y2 = $this->Helmert_Y($x1,$y1,$z1,-130.596,-1.042,-0.631,8.15);
+		$z2 = $this->Helmert_Z($x1,$y1,$z1, 564.557,-1.042,-0.214,8.15);
 
 		$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6378137.000,6356752.313);
 		$lon  = $this->XYZ_to_Long($x2,$y2);
@@ -392,6 +398,8 @@ function Lat_H_to_Z ($PHI, $H, $a, $b) {
     return (($V * (1 - $e2)) + $H) * (sin($RadPHI));
 }
 
+# The following use the OSGB "right-hand-rule" convention. Beware that Irish Grid parameters
+# may be quoted for the opposite convention, or for conversion in the opposite direction. 
 
 function Helmert_X ($X,$Y,$Z,$DX,$Y_Rot,$Z_Rot,$s) {
 
@@ -429,7 +437,6 @@ $RadZ_Rot = ($Z_Rot / 3600) * ($Pi / 180);
     
 # Compute transformed Y coord
 return ($X * $RadZ_Rot) + $Y + ($Y * $sfactor) - ($Z * $RadX_Rot) + $DY;
-
 }
 
 
@@ -448,8 +455,8 @@ $RadX_Rot = ($X_Rot / 3600) * ($Pi / 180);
 $RadY_Rot = ($Y_Rot / 3600) * ($Pi / 180);
     
 # Compute transformed Z coord
-return (-1 * $X * $RadY_Rot) + ($Y * $RadX_Rot) + $Z + ($Z * $sfactor) + $DZ;
-} 
+return (-1.0 * $X * $RadY_Rot) * ($Y * $RadX_Rot) + $Z + ($Z * $sfactor) + $DZ;
+}
 
 
 
