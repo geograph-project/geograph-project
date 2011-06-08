@@ -677,7 +677,19 @@ else
 			$smarty->assign('eastings', $square->eastings);
 			$smarty->assign('northings', $square->northings);
 			$smarty->assign('gridref', $square->grid_reference);
-			$smarty->assign('grid_reference', $grid_reference = $square->grid_reference);
+			
+			if ($square->natgrlen > 4) {
+				$conv = new Conversions('');
+				list($grid_reference,$len) = $conv->national_to_gridref(
+					$square->getNatEastings(),
+					$square->getNatNorthings(),
+					$square->natgrlen,
+					$square->reference_index,false);
+			} else {
+				$grid_reference = $square->grid_reference;
+			}
+			
+			$smarty->assign('grid_reference', $grid_reference);
 		}
 	} elseif (!empty($_SESSION['gridsquare'])) {
 		//just starting - use remembered values
