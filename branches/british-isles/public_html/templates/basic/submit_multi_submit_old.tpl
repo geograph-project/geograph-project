@@ -9,6 +9,8 @@
 	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 
 	You are using the old Category based submission process. Please consider switching to the new <a href="/switch.php">Tagging based interface</a>.
+
+	<br/><br/>Please <a href="https://spreadsheets.google.com/spreadsheet/viewform?formkey=dFpiTjJsTEZRRXVwZ2pxWXdXczY2ZGc6MQ" target="_blank">tell us why</a> you havent switched yet - Thanks!
 </div>
 
 

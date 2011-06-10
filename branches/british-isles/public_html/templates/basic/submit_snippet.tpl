@@ -53,7 +53,7 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 
 <div class="interestBox" style="font-size:0.8em{if $create};display:none{/if}" id="hidecreate">
 	<div style="float:right;text-align:center;position:relative;background-color:white;padding:3px">
-		<input type="button" value="Create New Shared Description" onclick="show_tree('create')" style="background-color:lightgreen"/><br/>
+		<input type="button" value="Create New Shared Description" onclick="show_tree('create')"/><br/>
 		<a href="/snippets.php?gr={$gr|escape:'html'}&amp;onlymine=on" target="_blank">Edit nearby Shared Descriptions</a>
 	</div>
 	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; These shared descriptions can operate in addition to <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}

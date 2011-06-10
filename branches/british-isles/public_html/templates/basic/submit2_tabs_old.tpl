@@ -187,9 +187,11 @@ AttachEvent(window,'load',readHash,false);
 </script>
 {/literal}
 
-	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
+	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">Other Submission Options</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
 	<h2>Submit Image <sup style="color:gray">v2:Tabs - Beta</sup></h2>
+
+{$status_message}
 
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
@@ -199,6 +201,8 @@ AttachEvent(window,'load',readHash,false);
 	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 
 	You are using the old Category based submission process. Please consider switching to the new <a href="/switch.php">Tagging based interface</a>.
+
+	<br/><br/>Please <a href="https://spreadsheets.google.com/spreadsheet/viewform?formkey=dFpiTjJsTEZRRXVwZ2pxWXdXczY2ZGc6MQ" target="_blank">tell us why</a> you havent switched yet - Thanks!
 </div>
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).

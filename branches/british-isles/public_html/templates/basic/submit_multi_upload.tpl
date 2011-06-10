@@ -108,7 +108,7 @@ function setResize(that) {
 				<input type="radio" name="size" value="65536" checked onclick="setResize(this)"/> No Resize |
 				<input type="radio" name="size" value="1600" onclick="setResize(this)"/> 1600 pixels |
 				<input type="radio" name="size" value="1024" onclick="setResize(this)"/> 1024 pixels |
-				<input type="radio" name="size" value="800" onclick="setResize(this)"/> 1024 pixels |
+				<input type="radio" name="size" value="800" onclick="setResize(this)"/> 800 pixels |
 				<input type="radio" name="size" value="640" onclick="setResize(this)"/> 640 pixels<br/>
 				(images are resized in your browser before being sent to Geograph - EXIF data will be stripped)
 			</fieldset>
@@ -124,8 +124,6 @@ function setResize(that) {
 				<li>Once you have selected all files (can repeat step 1. to select upto 20 files) - click "<b>Start Upload</b>"</li>
 				<li>When all files are uploaded, click "<b>Submit Images</b>" to continue to next stage</li>
 			</ol>
-
-			Note: While can uploaded geotagged images with this process, coordinates will not <i>currently</i> be extracted.
 		</form>
 
 	</div>
