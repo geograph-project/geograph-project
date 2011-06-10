@@ -225,25 +225,19 @@ function clearSubmission() {
 </script>
 {/literal}
 
-        <div class="interestBox">
-                <span style="color:red">New!</span> - Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
-        </div>
-
-	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}<br/>&middot; <a href="/article/Content-on-Geograph">Submit a Collection</a> &middot;</div>
+	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submit">Other Submission Options</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
 	<h2>Submit Image <sup style="color:gray">v2 - Gamma</sup></h2>
+
+{$status_message}
 
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
 	</noscript>
 
-
-<div style="color:black; border:2px solid red; padding:10px;">
-	You are using the new Tagging based submission process. <br/><small>
-	For a short while can revert to the old Category based submission method, <a href="/switch.php">here</a>.</small>
-</div>
-
-
+<ul>
+        <li>You are using the new Tagging based submission process, thank you. <small><a href="/switch.php">change</a>.</small</li>
+</ul>
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
 	 A overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.
@@ -331,7 +325,7 @@ function clearSubmission() {
 		</p>
 		<br/><br/>
 
-		<input type="checkbox" name="newwindow"/> Send submission in new window. Allows this window to be reused for a new submission - most values remembered. (Note: Will need to read Shared Descriptions and Tags)
+		<input type="checkbox" name="newwindow"/> Send submission in new window. Allows this window to be reused for a new submission - most values remembered. (Note: Will need to re-add Shared Descriptions and Tags)
 
 		<br/><br/>
 	</div>

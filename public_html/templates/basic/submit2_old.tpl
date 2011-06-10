@@ -189,13 +189,11 @@ AttachEvent(window,'load',readHash,false);
 </script>
 {/literal}
 
-        <div class="interestBox">
-                <span style="color:red">New!</span> - Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
-        </div>
-
-	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">View alternative Submission Methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}<br/>&middot; <a href="/article/Content-on-Geograph">Submit a Collection</a> &middot;</div>
+	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submit">Other Submission Options</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
 	<h2>Submit Image <sup style="color:gray">v2 - Gamma</sup></h2>
+
+{$status_message}
 
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
@@ -206,6 +204,8 @@ AttachEvent(window,'load',readHash,false);
 	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 
 	You are using the old Category based submission process. Please consider switching to the new <a href="/switch.php">Tagging based interface</a>.
+
+	<br/><br/>Please <a href="https://spreadsheets.google.com/spreadsheet/viewform?formkey=dFpiTjJsTEZRRXVwZ2pxWXdXczY2ZGc6MQ" target="_blank">tell us why</a> you havent switched yet - Thanks!
 </div>
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
@@ -227,7 +227,7 @@ AttachEvent(window,'load',readHash,false);
 	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1,null,event.shiftKey)"><span id="se1">-</span> Step 1 - Upload Photo</a>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="/submit2.php?inner&amp;step=1" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
 	</div>
 <!-- # -->
 	<a id="sh9" href="#" class="sh sn" onclick="return clicker(9,null,event.shiftKey)" style="font-size:0.9em"><span id="se9">+</span> Find Square on Map (optional tool)</a>

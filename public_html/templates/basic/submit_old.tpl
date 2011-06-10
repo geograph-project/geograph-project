@@ -16,6 +16,8 @@
 
     <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" {if $step ne 1}style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;"{/if}>
 
+{$status_message}
+
 {if $step eq 1}
 	<div class="interestBox">
 		<span style="color:red">New!</span> - Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
@@ -23,7 +25,7 @@
 
 
 	{if $user->stats.images gt 10}
-	<p align="center">&middot; <a href="/help/submission">View alternative submission methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot; <a href="/article/Content-on-Geograph">Submit a Collection</a> &middot;</p>
+	<p align="center">&middot; <a href="/help/submit">Other Submission Options</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
 	{/if}
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
@@ -32,7 +34,10 @@
 <div style="background-color:pink; color:black; border:2px solid red; padding:20px; margin-bottom:30px;">
 	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 
-	You are using the old Category based submission process. Please consider switching to the new <a href="/switch.php">Tagging based interface</a>.
+	You are using the old Category based submission process. <br/>
+	We have a new submisssion method available, <a href="/switch.php"><b>Read more</b> (and switch methods)</a>.
+
+	<br/><br/>Otherwise please <a href="https://spreadsheets.google.com/spreadsheet/viewform?formkey=dFpiTjJsTEZRRXVwZ2pxWXdXczY2ZGc6MQ" target="_blank">tell us why</a> you haven't switched yet - Thanks!
 </div>
 
 
@@ -151,7 +156,7 @@ geographing</a> first.</p>
 		sources available to help:</p>
 
 	<ul>
-		<li><b>{getamap} provides a search by
+		<li><b>{external href="http://www.getamap.ordnancesurveyleisure.co.uk/" text="OS getamap"} provides a search by
 		Placename or Postcode.</b><br/> Once you have centred the map on the picture location,
 		return here and enter the <i>Grid reference at centre</i> value shown into the box
 		above.<br/><br/></li>
@@ -222,10 +227,6 @@ geographing</a> first.</p>
 		{if $reference_index == 2}
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
-
-		<div style="float:right;position:relative">
-		{getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}
-		</div>
 
 		{if $last_grid_reference || $last_photographer_gridref}
 			<div style="font-size:0.8em">
@@ -369,7 +370,7 @@ can be edited at any time) but to activate a square you need to be first to meet
 criteria above!</p>
 
 <div class="interestBox" style="width:30em;z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> (and view list of placenames)<br/>
-{getamap gridref=$gridref text="Open Get-a-Map"}, {newwin href="/gridref/`$gridref`" text="Open `$gridref` Page"}</div>
+{newwin href="/gridref/`$gridref`" text="Open `$gridref` Page"}</div>
 
 <h3>Title and Comments</h3>
 <p>Please provide a short title for the image, and any other comments about where
@@ -402,6 +403,8 @@ it was taken or other interesting geographical information. <span id="styleguide
 For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
 <h3>Further Information</h3>
+
+<div style="float:right">Categories are changing. <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
 
 {if $use_autocomplete}
 
@@ -478,14 +481,14 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 {/if}
 
-		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}&v=3';" id="hidetag"/></p>
+		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';" id="hidetag"/></p>
 
 		<div class="interestBox" id="showtag" style="display:none">
 			<ul>
 				<li>Tags are simple free-form keywords/short phrases, used to describe the image.</li>
 				<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
 				<li>It is not compulsory to add any Tags.</li>
-				<li>Note: Tags should be singular, ie a image of a Church should have the tag "Church", not "Churches" - it's a specific tag, not a category.<br/> <small>(however if photo is of multiple fence posts, then the tag "Fence Posts" should be used)</small></li>
+				<li>Note: Tags should be singular, ie a image of a church should have the tag "church", not "churches" - it's a specific tag, not a category.<br/> <small>(however if photo is of multiple fence posts, then the tag "fence posts" should be used)</small></li>
 				<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croydon" - similarlly could use "near:Tring".</li>
 				<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
 			</ul>

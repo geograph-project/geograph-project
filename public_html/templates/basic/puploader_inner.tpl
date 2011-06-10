@@ -41,8 +41,6 @@
 		<div>
 	{/if}
 
-		<p>Open the subject location on {getamap gridref="document.theForm.grid_reference.value" gridref2=$gridref text="OS Get-a-map&trade;"}</p>
-
 		{if $reference_index == 2}
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
 		{/if}
@@ -105,13 +103,16 @@
 		{$rastermap->getFooterTag()}
 	{/if}
 {elseif $step eq 3}
+
+{$status_message}
+
 	{if !$submit2}
 	<script type="text/javascript">window.parent.tabClick('tab','',4,4);</script>
 	{/if}
 
 	{if $reopenmaptoken}
-	<div class="interestBox" style="z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> <small>(and view list of placenames)</small>
-	{getamap gridref=$square->grid_reference text="Open Get-a-Map"}, <a href="/gridref/{$square->grid_reference}" target="_blank">Open {$square->grid_reference} Page</a> <small>(in new window)</small></div>
+	<div class="interestBox" style="z-index:0"><a href="/submit_popup.php?t={$reopenmaptoken|escape:'html'}" target="gmappreview" onclick="window.open(this.href,this.target,'width=650,height=500,scrollbars=yes'); return false;">Reopen Map in a popup</a> <small>(and view list of placenames)</small>,
+	<a href="/gridref/{$square->grid_reference}" target="_blank">Open {$square->grid_reference} Page</a> <small>(in new window)</small></div>
 	{/if}
 
 	<p>Please provide a short title for the image, and any other comments about where
@@ -155,8 +156,8 @@
 				<div class="plist">
 					<div style="color:black">{$key}</div>
 					{foreach from=$item item=row}
-						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}">
-							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}"/>
+						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}" id="l-{$row.top|escape:'url'}">
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this)"/>
 							{$row.top|escape:'html'}
 						</label>
 					{/foreach}
@@ -175,7 +176,7 @@
 			<div style="float:right">More: <a href="/article/Tags" title="Article about Tags" class="about" target="_blank">Article about Tags</a></div>
 			&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/>
 			&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/>
-			&middot; Note: Tags should be singular, ie an image of a church should have the Tag "Church", not "Churches" - it's a specific Tag, not a category<br/> <small>(however if a photo is of multiple fence posts, then the Tag "Fence Posts" should be used).</small><br/>
+			&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/>
 			&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".<br/>
 			<iframe src="about:blank" height="200" width="100%" id="tagframe" style="border:0">
 			</iframe>
@@ -193,6 +194,11 @@ function show_tagging(form) {
 	if (form.elements['comment'].value.length> 0 )
 		query=query+'&comment='+encodeURIComponent(form.elements['comment'].value.substr(0,1500).replace(/[\n\r]/,' '));
 	document.getElementById('tagframe').src='/tags/tagger.php?'+query;
+}
+function rehighlight(that) {
+	var id = that.id.replace(/c-/,'l-');
+	document.getElementById(id).style.fontWeight=that.checked?'bold':'normal';
+	document.getElementById(id).style.backgroundColor=that.checked?'white':'';
 }
 </script>{/literal}
 
