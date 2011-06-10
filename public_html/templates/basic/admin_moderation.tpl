@@ -19,25 +19,33 @@
 
 {if $unmoderatedcount}
 
-	<p>{if $apply}
-		To get a feel for the moderation process, please make your suggestions for the images below. This is a dummy run, no actual moderations are taking place. Any change requests are created as normal. Make sure you click the 'Finish my application' when finished!<br/><br/>
+	<ul>
+
+	{if $apply}
+		<li>To get a feel for the moderation process, please make your suggestions for the images below. This is a dummy run, no actual moderations are taking place. Any change requests are created as normal. Make sure you click the 'Finish my application' when finished!</li>
 	{elseif $review}
-		The following images have been recently moderated to be different to the status you previously selected, there is no need to change anything.
+		<li>The following images have been recently moderated to be different to the status you previously selected, there is no need to change anything.</li>
 	{elseif $moderator}
-		The following images have been recently moderated by the selected moderator. There is no need to do anything, but if you believe the original moderation was wrong just use the moderation buttons as normal. 
+		<li>The following images have been recently moderated by the selected moderator. There is no need to do anything, but if you believe the original moderation was wrong just use the moderation buttons as normal.</li>
 	{elseif $remoderate}
-		<div class="interestBox" style="font-size:1.3em">As a quick spotcheck you are asked to make a suggestion for these recently moderated images.</div><br/><br/>
+		<li><b>As a quick spotcheck you are asked to make a suggestion for these recently moderated images.</b></li>
 	{else}
-		The following images have been submitted recently. 
+		<li>The following images have been submitted recently.</li>
 	{/if}
  
 	{if !$moderator && !$review}
-	Simply look at each image in turn and click the relevant button. The result of the action is displayed just below the button.<br/><br/>
+		<li>Simply look at each image in turn and click the relevant button. The result of the action is displayed just below the button.</li>
 	
-	<div class="interestBox" style="border:4px solid red;background-color:pink;font-size:1.1em;padding:15px">Remember you absolutely MUST wait for confirmation after clicking the moderation button, before moving onto the next image. <b>This is vitally important</b>. <i>Thank you for your attention in this matter</i>.</div>
+		<li><b>Remember you absolutely MUST wait for confirmation after clicking the moderation button, before moving onto the next image.</b></li> 
 	
-	Sometimes a button is grayed out, this is at the suggestion of the submitter themselves, and/or the system. Please moderate as you normally would, but you can take the suggestion into account. 
-	{/if}</p>
+		<li>Sometimes a button is grayed out, this is at the suggestion of the submitter themselves, and/or the system. Please moderate as you normally would, but you can take the suggestion into account. </li>
+	
+		{if !$apply}
+			<li><span style="color:red">New!</span> Can now rate images at during moderation. '3' stars is average, and is the same as no vote.</li>
+		{/if}
+	{/if}
+
+	</ul><br/>
 	
 	{foreach from=$unmoderated item=image}
 
@@ -82,6 +90,11 @@
 	  <input class="accept" type="button" id="geograph{$image->gridimage_id}" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey;"{else}{if $image->different_square} style="color:lightgrey;"{/if}{/if}/>
 	  <input class="accept" type="button" id="accept{$image->gridimage_id}" value="Supp" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey;"{/if}/>
 	  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
+
+{if !$apply}
+<span id="votediv{$image->gridimage_id}"> : {votestars id=$image->gridimage_id type="mod"}</span>
+{/if}
+
 	  {if (!$remoderate && $image->user_status && $image->moderation_status != 'pending') || $moderator || $review}
 	  	<br/>Current Classification: {$image->moderation_status} {if $image->mod_realname}, by {$image->mod_realname}{/if}
 	  {/if}
@@ -117,7 +130,7 @@
 	{/if}
 {else}
 
-	<p>There are no images available to moderate at this time, please try again later.</p>
+	<p>There are no images available to moderate at this time!</p>
 
 {/if}
 	
