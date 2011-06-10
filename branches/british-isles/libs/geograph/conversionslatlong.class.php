@@ -47,6 +47,86 @@ function distance ($lat1, $lon1, $lat2, $lon2) {
 }
 
 /**************************
+* Built-in tests
+***************************/
+
+function self_test() {
+	# worked example from "Making Maps Compatible with GPS"
+	$test0[0]['<b>Test</b>'] = '<b>wgs84_to_irish, level 1</b>';
+
+	$t = microtime();
+	$grid = $this->wgs84_to_irish_2(53+29/60+6.96840/3600,-(6+55/60+13.92478/3600),'1');
+	$t = microtime() - $t;
+
+	$this->self_test_check($test0,$grid, array(271707.4,248879.6), 0.2, $t);
+
+	# as above, using level 2
+	$test1[0]['<b>Test</b>'] = '<b>wgs84_to_irish, level 2</b>';
+
+	$t = microtime();
+	$grid = $this->wgs84_to_irish_2(53.485266877778,-6.920534986111,'2');
+	$t = microtime() - $t;
+
+	$this->self_test_check($test1,$grid, array(271707.425,248879.640), 0.002, $t);
+
+	# as above, using the polynomial
+	$test2[0]['<b>Test</b>'] = '<b>wgs84_to_irish, polynomial</b>';
+
+	$t = microtime();
+	$grid = $this->wgs84_to_irish_2(53.485266877778,-6.920534986111,'p');
+	$t = microtime() - $t;
+
+	$this->self_test_check($test2,$grid, array(271707.425,248879.640), 0.4, $t);
+
+	# Tralee IG from http://www.osi.ie/en/geodeticservices/active-stations-co-ordinates.aspx
+	$test3[0]['<b>Test</b>'] = '<b>wgs84_to_irish, polynomial - Tralee</b>';
+
+	$t = microtime();
+	$grid = $this->wgs84_to_irish_2(52+17.0/60+12.413/3600,-(9+40/60+23.292/3600),'p');
+	$t = microtime() - $t;
+
+	$this->self_test_check($test3,$grid, array(85877.532,116277.96), 0.04, $t);
+
+	# Tralee ITM from http://www.osi.ie/en/geodeticservices/active-stations-co-ordinates.aspx
+	$test4[0]['<b>Test</b>'] = '<b>wgs84_to_itm - Tralee</b>';
+
+	$t = microtime();
+	$grid = $this->wgs84_to_itm(52+17.0/60+12.413/3600,-(9+40/60+23.292/3600));
+	$t = microtime() - $t;
+
+	$this->self_test_check($test4,$grid, array(485852.637, 616330.815), 0.04, $t);
+
+	# NEWC from OSTN02_OSGM02files.zip
+	$test5[0]['<b>Test</b>'] = '<b>wgs84_to_osgb36 - NEWC</b>';
+
+	$t = microtime();
+	$grid = $this->wgs84_to_osgb36(54+58/60+44.841864/3600,-1*(1+36/60+59.676644/3600));
+	$t = microtime() - $t;
+
+	$this->self_test_check($test5,$grid, array(424639.343, 565012.7), 1, $t);
+
+	# Foula from OSTN02_OSGM02files.zip
+	$test6[0]['<b>Test</b>'] = '<b>wgs84_to_osgb36 - Foula</b>';
+
+	$t = microtime();
+	$grid = $this->wgs84_to_osgb36(60+7/60+59.091315/3600,-1*(2+4/60+25.781605/3600));
+	$t = microtime() - $t;
+
+	$this->self_test_check($test6,$grid, array(395999.656, 1138728.948), 1, $t);
+
+	return array_merge($test0, $test1, $test2, $test3, $test4, $test5, $test6);
+}
+
+function self_test_check(&$test, $result, $expected, $allowed, $t) {
+	$de = abs($result[0] - $expected[0]);
+	$dn = abs($result[1] - $expected[1]);
+	if (($de > $allowed) || ($dn > $allowed))
+		$test[count($test)]['** ERROR '] = "$de, $dn";
+	else
+		$test[count($test)]['OK'] = $t;
+}
+
+/**************************
 * ITM Functions
 ***************************/
 
@@ -84,11 +164,25 @@ function itm_to_wgs84($e,$n) {
 
 #source of ellipsoid axis dimensions a,b : http://www.osni.gov.uk/technical/grid.doc
 
+# source of OSi/OSNI Polynomial : "Transformations and OSGM02 User Guide",
+# http://www.ordnancesurvey.co.uk/oswebsite/gps/docs/OSTNO2_OSGM02files.zip
 
 function wgs84_to_irish($lat,$long,$uselevel2 = true) {
-    $height = 0;
+	return $this->wgs84_to_irish_2($lat,$long,$uselevel2 ? '2' : '1');
+}
 
-	if ($uselevel2) {
+function wgs84_to_irish_2($lat,$long,$level) {
+    	$height = 0;
+
+	if ($level=='p') {
+		// OSi/OSNI Polynomial - 95% of points should fall within 40 cm
+		$airy = $this->Transform_To_AiryModified($lat, $long);
+
+		$e = $this->Lat_Long_to_East ($airy[0],$airy[1],6377340.189,6356034.447, 200000,1.000035,53.50000,-8.00000);
+		$n = $this->Lat_Long_to_North($airy[0],$airy[1],6377340.189,6356034.447, 200000,250000,1.000035,53.50000,-8.00000);
+	}
+
+	else if ($level=='2') {
 		//Level 2 Transformation - 95% of points should fall within 40 cm
 		$x1 = $this->Lat_Long_H_to_X($lat,$long,$height,6378137.00,6356752.313);
 		$y1 = $this->Lat_Long_H_to_Y($lat,$long,$height,6378137.00,6356752.313);
@@ -120,9 +214,6 @@ function wgs84_to_irish($lat,$long,$uselevel2 = true) {
     return array($e,$n);
 }
 
-
-
-
 function irish_to_wgs84($e,$n,$uselevel2 = true) {
     $height = 0;
 
@@ -149,6 +240,80 @@ function irish_to_wgs84($e,$n,$uselevel2 = true) {
 	} 
 
     return array($lat,$lon);
+}
+
+function Transform_To_AiryModified($lat, $long) {
+
+	$precision = 1.0 / 3600 / 10000;  # 0.0001 of an arc second - perhaps greater than we need?
+
+	# inital estimate of position
+	$phi = $lat;
+	$lam = $long;
+
+	$n = 0;  # limit iterations
+	while ($n++ < 10) {
+        	$delta = $this->Polynomial_OSi_OSNI($phi, $lam);
+
+		# error in estimate
+		$errPhi = $phi + $delta[0] - $lat;
+		$errLam = $lam + $delta[1] - $long;
+
+		if (abs($errPhi) + abs($errLam) < $precision)
+			break;
+
+		# new estimate
+		$phi -= $errPhi;
+		$lam -= $errLam;
+	}
+
+	return array($phi,$lam);
+}
+
+function Polynomial_OSi_OSNI($phi, $lam) {
+
+	# DATA COPYRIGHT
+	# Ordnance Survey Northern Ireland and Ordnance Survey Ireland permit users to
+	# copy or incorporate copyrighted material from the OSi/OSNI polynomial transformation.
+	# However, this is dependant on the appropriate copyright notice being
+	# displayed in the software. The appropriate notices are:
+	#	'© Ordnance Survey Ireland, 2002' and
+	#	'© Crown copyright 2002. All rights reserved.' 
+
+	$PA = array(
+		array(0.763, 0.123, 0.183, -0.374),
+		array(-4.487, -0.515, 0.414, 13.110),
+		array(0.215, -0.570, 5.703, 113.743),
+ 		array(-0.265, 2.852, -61.678, -265.898));
+
+	$PB = array(
+		array(-2.810, -4.680, 0.170, 2.163),
+		array(-0.341, -0.119, 3.913,  18.867),
+ 		array(1.196, 4.877, -27.795, -284.294),
+		array(-0.887, -46.666, -95.377, -853.950));
+
+	# normalised coordinates
+	$U = 0.1 * ($phi - 53.5);
+	$V = 0.1 * ($lam + 7.7);
+
+	$U2 = $U * $U;
+	$U3 = $U2 * $U;
+	$V2 = $V * $V;
+	$V3 = $V2 * $V;
+
+	# polynomial
+	$deltaPhi =
+		($PA[0][0] + $PA[1][0]*$U + $PA[0][1]*$V + $PA[1][1]*$U*$V
+		+ $PA[2][0]*$U2 + $PA[0][2]*$V2 + $PA[2][1]*$U2*$V + $PA[1][2]*$U*$V2
+		+ $PA[2][2]*$U2*$V2 + $PA[3][0]*$U3 + $PA[0][3]*$V3 + $PA[3][1]*$U3*$V
+		+ $PA[1][3]*$U*$V3 + $PA[3][2]*$U3*$V2 + $PA[2][3]*$U2*$V3 + $PA[3][3]*$U3*$V3) / 3600;
+
+	$deltaLamda =
+		($PB[0][0] + $PB[1][0]*$U + $PB[0][1]*$V + $PB[1][1]*$U*$V
+		+ $PB[2][0]*$U2 + $PB[0][2]*$V2 + $PB[2][1]*$U2*$V + $PB[1][2]*$U*$V2
+		+ $PB[2][2]*$U2*$V2+ $PA[3][0]*$U3 + $PB[0][3]*$V3 + $PB[3][1]*$U3*$V
+		+ $PB[1][3]*$U*$V3 + $PB[3][2]*$U3*$V2 + $PB[2][3]*$U2*$V3 + $PB[3][3]*$U3*$V3) / 3600;
+
+	return array($deltaPhi, $deltaLamda);
 }
 
 /**************************
@@ -455,7 +620,7 @@ $RadX_Rot = ($X_Rot / 3600) * ($Pi / 180);
 $RadY_Rot = ($Y_Rot / 3600) * ($Pi / 180);
     
 # Compute transformed Z coord
-return (-1.0 * $X * $RadY_Rot) * ($Y * $RadX_Rot) + $Z + ($Z * $sfactor) + $DZ;
+return (-1.0 * $X * $RadY_Rot) + ($Y * $RadX_Rot) + $Z + ($Z * $sfactor) + $DZ;
 }
 
 
