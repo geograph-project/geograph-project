@@ -1258,9 +1258,10 @@ input.imageselect {
 	color:brown;
 	background-color:white;
 	text-decoration:none;
+	white-space:nowrap;
 }
 a.taglink:hover {
-	text-decoration:hover;
+	text-decoration:underline;
 }
 .tag a.delete {
 	color:red;
