@@ -236,7 +236,7 @@ function clearSubmission() {
 	</noscript>
 
 <ul>
-        <li>You are using the new Tagging based submission process, thank you. <small><a href="/switch.php">change</a>.</small</li>
+        <li>You are using the new Tagging based submission process, thank you. <small><a href="/switch.php">change</a>.</small></li>
 </ul>
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
