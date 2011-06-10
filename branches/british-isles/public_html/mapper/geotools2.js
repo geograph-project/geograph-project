@@ -482,7 +482,7 @@ GT_WGS84.prototype.getIrish = function(uselevel2)
 			var z1 = GT_Math.Lat_H_to_Z     (this.latitude,height,6378137.00,6356752.313);
 
 			var x2 = GT_Math.Helmert_X(x1,y1,z1,-482.53 ,0.214,0.631,-8.15);
-			var y2 = GT_Math.Helmert_Y(x1,y1,z1,-130.596,1.042,0.631,-8.15);
+			var y2 = GT_Math.Helmert_Y(x1,y1,z1, 130.596,1.042,0.631,-8.15);
 			var z2 = GT_Math.Helmert_Z(x1,y1,z1,-564.557,1.042,0.214,-8.15);
 
 			var latitude2  = GT_Math.XYZ_to_Lat (x2,y2,z2,6377340.189,6356034.447);
