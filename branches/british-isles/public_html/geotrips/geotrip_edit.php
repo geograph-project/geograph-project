@@ -1,35 +1,53 @@
 <?php
-  $lastmod='101212';
-  session_cache_limiter('none');
-  session_start();
-  include('geotrip_func.php');
+/**
+ * $Project: GeoGraph $
+ * $Id$
+ * 
+ * GeoGraph geographic photo archive project
+ * This file copyright (C) 2011 Rudi Winter (http://www.geograph.org.uk/profile/2520)
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+ 
+ini_set("display_errors",1);
+
+require_once('geograph/global.inc.php');
+
+init_session();
+
+$smarty = new GeographPage;
+
+//you must be logged in to request changes
+$USER->mustHavePerm("basic");
+
+include('./geotrip_func.php');
+
   // get track from database
   $db=sqlite_open('../db/geotrips.db');
-  if ($_GET['trip']) $trip=sqlite_fetch_array(sqlite_query($db,"select * from geotrips where id='{$_GET['trip']}'"));
-  elseif ($_SESSION['uid']) $trip=sqlite_fetch_all(sqlite_query($db,"select * from geotrips where uid={$_SESSION['uid']}"));
+  if (!empty($_GET['trip'])) $trip=sqlite_fetch_array(sqlite_query($db,"select * from geotrips where id='{$_GET['trip']}'"));
+  else $trip=sqlite_fetch_all(sqlite_query($db,"select * from geotrips where uid={$USER->user_id}"));
   sqlite_close($db);
-  $hdr1='Geo-Trips';
-  $hdr2='Geo-Trip editor';
-  $descr='';
-  $prev='';
-  $next='';
-  $lect=0;     // whether lecture style sheet is available
-  $cym=0;      // 0- English only, 1- English selected, 2- Welsh selected
-  $cyfiethwyd='';
-  $noidx=1;    // don't allow indexing by search engines if TRUE
-  $dir=dirname($_SERVER['SCRIPT_NAME']);
-  if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
-    $docroot=$_SERVER['DOCUMENT_ROOT'].'/ruw';
-  } else {     // include() can't cope with the symlinks on the AU server - not even using realpath()
-    $docroot='/ceri/staff1/base/r/ruw/public_html';
-  }
-  include($docroot.'/templates/head.php');
-  include($docroot.'/templates/top.php');
-?>
 
-<?php
-  if (isset($_SESSION['uid'])||$_SERVER['SERVER_ADDR']=='127.0.0.1') {          // logged in?
-    if ($trip['uid']==$_SESSION['uid']||$_SERVER['SERVER_ADDR']=='127.0.0.1') {  // editing your own trip?
+$smarty->assign('page_title', 'Geo-Trip editor :: Geo-Trips');
+
+
+$smarty->display('_std_begin.tpl');
+
+
+    if (!empty($trip['uid']) && $trip['uid']==$USER->user_id) {  // editing your own trip?
+    
       if (!isset($_POST['submit2'])) {  // input form
 ?>
         <div class="panel maxi">
@@ -230,13 +248,10 @@ work as expected.
 ?>
       <div class="panel maxi">
         <p>
-Geo-Trips thinks you are <?php print("{$_SESSION['uname']} ({$_SESSION['uid']})."); ?>
-        </p>
-        <p>
 You can only edit your own trips.  Choose one from the list below:
         </p>
 <?php
-        for ($i=0;$i<count($trip);$i++) if ($trip[$i]['uid']==$_SESSION['uid']) {
+        for ($i=0;$i<count($trip);$i++) if ($trip[$i]['uid']==$USER->user_id) {
           if ($trip[$i]['title']) $title=$trip[$i]['title'];
           else $title=$trip[$i]['location'].' from '.$trip[$i]['start'];
           $descr=preg_replace('/\n/','</p><p>',$trip[$i]['descr']);
@@ -263,23 +278,8 @@ You can only edit your own trips.  Choose one from the list below:
       </div>
 <?php
     }
-  } else {  // not logged in
-    // authentication stuff from Geograph
-    require_once('token.class.php');
-    $login_url='http://www.geograph.org.uk/auth.php?a=WohlJL5405owauhVbuZ4VZbbZh4';
-    $token=new Token;
-    $token->magic='79438906cb765eea3670da00c96328ee';
-    $token->setValue("action",'authenticate');
-    $token->setValue("callback","http://users.aber.ac.uk/ruw/misc/geograph_callback_edit.php");
-    $login_url.='&amp;t='.$token->getToken();
-?>
-    <div class="panel maxi">
-      <p>
-Please <a href="<?php print($login_url);?>">log in via Geograph</a> to edit your trips.
-      </p>
-    </div>
-<?php
-  }
-?>
+    
+    
+$smarty->display('_std_end.tpl');
+exit;
 
-<?php include($docroot.'/templates/bottom.php'); ?>
