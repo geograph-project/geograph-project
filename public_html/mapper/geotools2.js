@@ -32,6 +32,8 @@
  * accuracy is in the order of 7m for 90% of Great Britain, and should be 
  * be similar to the conversion made by a typical GPSr
  *
+ *     corrected Irish Grid conversions by Rob Burke (June 2011)
+
 
  * See accompanying documentation for more information
  * http://www.nearby.org.uk/tests/GeoTools2.html
@@ -350,9 +352,9 @@ GT_Irish.prototype.getWGS84 = function(uselevel2)
 		var y1 = GT_Math.Lat_Long_H_to_Y(lat1,lon1,height,6377340.189,6356034.447);
 		var z1 = GT_Math.Lat_H_to_Z     (lat1,     height,6377340.189,6356034.447);
 
-		var x2 = GT_Math.Helmert_X(x1,y1,z1, 482.53 ,0.214,0.631,8.15);
-		var y2 = GT_Math.Helmert_Y(x1,y1,z1,-130.596,1.042,0.631,8.15);
-		var z2 = GT_Math.Helmert_Z(x1,y1,z1, 564.557,1.042,0.214,8.15);
+		var x2 = GT_Math.Helmert_X(x1,y1,z1, 482.53 ,-0.214,-0.631,8.15);
+		var y2 = GT_Math.Helmert_Y(x1,y1,z1,-130.596,-1.042,-0.631,8.15);
+		var z2 = GT_Math.Helmert_Z(x1,y1,z1, 564.557,-1.042,-0.214,8.15);
 
 		var latitude = GT_Math.XYZ_to_Lat(x2,y2,z2,6378137.000,6356752.313);
 		var longitude = GT_Math.XYZ_to_Long(x2,y2);
@@ -473,25 +475,29 @@ GT_WGS84.prototype.getIrish = function(uselevel2)
 		var height = 0;
 
 		if (uselevel2) {
+			//Level 2 Transformation - 95% of points should fall within 40 cm
+	
 			var x1 = GT_Math.Lat_Long_H_to_X(this.latitude,this.longitude,height,6378137.00,6356752.313);
 			var y1 = GT_Math.Lat_Long_H_to_Y(this.latitude,this.longitude,height,6378137.00,6356752.313);
 			var z1 = GT_Math.Lat_H_to_Z     (this.latitude,height,6378137.00,6356752.313);
 
-			var x2 = GT_Math.Helmert_X(x1,y1,z1,-482.53 ,-0.214,-0.631,-8.15);
-			var y2 = GT_Math.Helmert_Y(x1,y1,z1, 130.596,-1.042,-0.631,-8.15);
-			var z2 = GT_Math.Helmert_Z(x1,y1,z1,-564.557,-1.042,-0.214,-8.15);
+			var x2 = GT_Math.Helmert_X(x1,y1,z1,-482.53 ,0.214,0.631,-8.15);
+			var y2 = GT_Math.Helmert_Y(x1,y1,z1,-130.596,1.042,0.631,-8.15);
+			var z2 = GT_Math.Helmert_Z(x1,y1,z1,-564.557,1.042,0.214,-8.15);
 
 			var latitude2  = GT_Math.XYZ_to_Lat (x2,y2,z2,6377340.189,6356034.447);
 			var longitude2 = GT_Math.XYZ_to_Long(x2,y2);
+			
+			
+			var e = GT_Math.Lat_Long_to_East (latitude2,longitude2,6377340.189,6356034.447, 200000,1.000035,53.50000,-8.00000);
+			var n = GT_Math.Lat_Long_to_North(latitude2,longitude2,6377340.189,6356034.447, 200000,250000,1.000035,53.50000,-8.00000);
+
 		} else {
-			var latitude2  = this.latitude;
-			var longitude2 = this.longitude;
-		}
+			
+			var e = GT_Math.Lat_Long_to_East (this.latitude,this.longitude,6378137.00,6356752.313, 200000,1.000035,53.50000,-8.00000);
+			var n = GT_Math.Lat_Long_to_North(this.latitude,this.longitude,6378137.00,6356752.313, 200000,250000,1.000035,53.50000,-8.00000);
 
-		var e = GT_Math.Lat_Long_to_East (latitude2,longitude2,6377340.189,6356034.447, 200000,1.000035,53.50000,-8.00000);
-		var n = GT_Math.Lat_Long_to_North(latitude2,longitude2,6377340.189,6356034.447, 200000,250000,1.000035,53.50000,-8.00000);
-
-		if (!uselevel2) {
+		
 			//Level 1 Transformation - 95% of points within 2 metres
 			//fixed datum shift correction (instead of fancy hermert translation above!)
 			//source http://www.osni.gov.uk/downloads/Making%20maps%20GPS%20compatible.pdf
@@ -792,7 +798,7 @@ GT_Math.Helmert_Z =function(X, Y, Z, DZ, X_Rot, Y_Rot, s)
 	var RadY_Rot = (Y_Rot / 3600) * (Pi / 180);
 
 	// Compute transformed Z coord
-	return (-1 * X * RadY_Rot) + (Y * RadX_Rot) + Z + (Z * sfactor) + DZ;
+	return (-1.0 * X * RadY_Rot) + (Y * RadX_Rot) + Z + (Z * sfactor) + DZ;
 } 
 
 
