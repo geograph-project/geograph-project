@@ -1,6 +1,11 @@
 <?php
+
 function fetch_url($url) {  // returns the path to the cached version of the requested url; if not cached, fetches it first
-  $cachepath="../cache/file".md5($url).".cache";
+  if (file_exists("../rss/cache/")) {
+    $cachepath="../rss/cache/file".md5($url).".cache";
+  } else {
+    $cachepath="../cache/file".md5($url).".cache";
+  }
   if (!empty($_GET['refresh'])||!file_exists($cachepath)||@filemtime($cachepath)<time()-604800) {
     $file=file_get_contents($url);
     if ($file) file_put_contents($cachepath,$file);

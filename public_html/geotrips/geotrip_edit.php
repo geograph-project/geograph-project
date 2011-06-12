@@ -23,8 +23,11 @@
  
 ini_set("display_errors",1);
 
-require_once('geograph/global.inc.php');
-
+if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
+	require_once('./geograph_snub.inc.php');
+} else {
+	require_once('geograph/global.inc.php');
+}
 init_session();
 
 $smarty = new GeographPage;
@@ -34,11 +37,15 @@ $USER->mustHavePerm("basic");
 
 include('./geotrip_func.php');
 
+
+$db = GeographDatabaseConnection(false);
+// can now use mysql_query($sql); directly, or mysql_query($sql,$db->_connectionID);
+
+
   // get track from database
-  $db=sqlite_open('../db/geotrips.db');
-  if (!empty($_GET['trip'])) $trip=sqlite_fetch_array(sqlite_query($db,"select * from geotrips where id='{$_GET['trip']}'"));
-  else $trip=sqlite_fetch_all(sqlite_query($db,"select * from geotrips where uid={$USER->user_id}"));
-  sqlite_close($db);
+  if (!empty($_GET['trip'])) $trip=mysql_fetch_array(mysql_query("select * from geotrips where id='{$_GET['trip']}'"));
+  else $trip=mysql_fetch_all(mysql_query("select * from geotrips where uid={$USER->user_id}"));
+
 
 $smarty->assign('page_title', 'Geo-Trip editor :: Geo-Trips');
 
