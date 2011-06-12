@@ -69,7 +69,6 @@ function init_session() {
 * After calling this function, can just use mysql_query etc in your code
 */
 function GeographDatabaseConnection($allow_readonly = false) {
-	$class = new GeographDatabase($link);
 	
 	$link = mysql_connect('example.com:3307', 'mysql_user', 'mysql_password');
 	if (!$link) {
@@ -79,6 +78,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
 	if (!$db_selected) {
 	    die ('Can\'t use foo : ' . mysql_error());
 	}
+	$class = new GeographDatabase($link);
 	$class->readonly = false;
 	return $class;
 }
