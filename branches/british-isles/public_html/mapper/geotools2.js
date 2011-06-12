@@ -367,6 +367,7 @@ GT_Irish.prototype.getWGS84 = function(uselevel2)
 
 		wgs84.setDegrees(lat1,lon1);
 	}
+	return wgs84;
 }
 
 /*****************************************************************************
