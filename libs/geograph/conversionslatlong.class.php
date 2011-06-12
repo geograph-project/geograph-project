@@ -55,7 +55,7 @@ function self_test() {
 	$test0[0]['<b>Test</b>'] = '<b>wgs84_to_irish, level 1</b>';
 
 	$t = microtime();
-	$grid = $this->wgs84_to_irish_2(53+29/60+6.96840/3600,-(6+55/60+13.92478/3600),'1');
+	$grid = $this->wgs84_to_irish_2($this->DMS(53,29,6.96840),$this->DMS(-6,55,13.92478),'1');
 	$t = microtime() - $t;
 
 	$this->self_test_check($test0,$grid, array(271707.4,248879.6), 0.2, $t);
@@ -82,7 +82,7 @@ function self_test() {
 	$test3[0]['<b>Test</b>'] = '<b>wgs84_to_irish, polynomial - Tralee</b>';
 
 	$t = microtime();
-	$grid = $this->wgs84_to_irish_2(52+17.0/60+12.413/3600,-(9+40/60+23.292/3600),'p');
+	$grid = $this->wgs84_to_irish_2($this->DMS(52,17.0,12.413),$this->DMS(-9,40,23.292),'p');
 	$t = microtime() - $t;
 
 	$this->self_test_check($test3,$grid, array(85877.532,116277.96), 0.04, $t);
@@ -91,31 +91,64 @@ function self_test() {
 	$test4[0]['<b>Test</b>'] = '<b>wgs84_to_itm - Tralee</b>';
 
 	$t = microtime();
-	$grid = $this->wgs84_to_itm(52+17.0/60+12.413/3600,-(9+40/60+23.292/3600));
+	$grid = $this->wgs84_to_itm($this->DMS(52,17.0,12.413),$this->DMS(-9,40,23.292));
 	$t = microtime() - $t;
 
 	$this->self_test_check($test4,$grid, array(485852.637, 616330.815), 0.04, $t);
 
 	# NEWC from OSTN02_OSGM02files.zip
+	# (expect 5m accuracy, but seem to get better)
 	$test5[0]['<b>Test</b>'] = '<b>wgs84_to_osgb36 - NEWC</b>';
 
 	$t = microtime();
-	$grid = $this->wgs84_to_osgb36(54+58/60+44.841864/3600,-1*(1+36/60+59.676644/3600));
+	$grid = $this->wgs84_to_osgb36($this->DMS(54,58,44.841864),$this->DMS(-1,36,59.676644));
 	$t = microtime() - $t;
 
 	$this->self_test_check($test5,$grid, array(424639.343, 565012.7), 1, $t);
 
 	# Foula from OSTN02_OSGM02files.zip
+	# (expect 5m accuracy, but seem to get better)
 	$test6[0]['<b>Test</b>'] = '<b>wgs84_to_osgb36 - Foula</b>';
 
 	$t = microtime();
-	$grid = $this->wgs84_to_osgb36(60+7/60+59.091315/3600,-1*(2+4/60+25.781605/3600));
+	$grid = $this->wgs84_to_osgb36($this->DMS(60,7,59.091315),$this->DMS(-2,4,25.781605));
 	$t = microtime() - $t;
 
 	$this->self_test_check($test6,$grid, array(395999.656, 1138728.948), 1, $t);
 
-	return array_merge($test0, $test1, $test2, $test3, $test4, $test5, $test6);
+	# irish grid to wgs84, worked example, level 1
+	$test7[0]['<b>Test</b>'] = '<b>irish_to_wgs84, level 1</b>';
+
+	$t = microtime();
+	$grid = $this->irish_to_wgs84(271707.4,248879.6,false);
+	$t = microtime() - $t;
+
+	$this->self_test_check($test7,$grid, array($this->DMS(53, 29, 6.96840), $this->DMS(-6, 55, 13.92478)), 0.000000004, $t);
+
+	# irish grid to wgs84, worked example, level 2
+	$test8[0]['<b>Test</b>'] = '<b>irish_to_wgs84, level 2</b>';
+
+	$t = microtime();
+	$grid = $this->irish_to_wgs84(271707.427,248879.641,true);
+	$t = microtime() - $t;
+
+	$this->self_test_check($test8,$grid, array($this->DMS(53, 29, 6.96076), $this->DMS(-6, 55, 13.92595)), 0.000000004, $t);
+
+	# NEWC from OSTN02_OSGM02files.zip
+	# (0.00002 deg = ~1m east. ~2m north)
+	$test9[0]['<b>Test</b>'] = '<b>osgb36_to_wgs84 - NEWC</b>';
+
+	$t = microtime();
+	$grid = $this->osgb36_to_wgs84(424639.343, 565012.7);
+	$t = microtime() - $t;
+
+	$this->self_test_check($test9,$grid, array($this->DMS(54,58,44.841864),$this->DMS(-1,36,59.676644)), 0.00002, $t);
+
+	return array_merge($test0, $test1, $test2, $test3, $test4, $test5, $test6, $test7, $test9);
 }
+
+# Check results of test. Note that max. allowed error ($allowed) should be set to the accuracy of the
+# OSGB/OSi worked example (where available), not the accuracy of the method (which may be much lower).
 
 function self_test_check(&$test, $result, $expected, $allowed, $t) {
 	$de = abs($result[0] - $expected[0]);
@@ -124,6 +157,12 @@ function self_test_check(&$test, $result, $expected, $allowed, $t) {
 		$test[count($test)]['** ERROR '] = "$de, $dn";
 	else
 		$test[count($test)]['OK'] = $t;
+}
+
+# convert deg, min, sec to decimal degrees
+
+function DMS($d, $m, $s) {
+	return (($d < 0) ? -1 : 1) * (abs($d) + $m/60 + $s/3600);
 }
 
 /**************************
@@ -221,12 +260,15 @@ function irish_to_wgs84($e,$n,$uselevel2 = true) {
 		#fixed datum shift correction (instead of fancy hermert translation below!)
 		$e = $e-49;
 		$n = $n+23.4;
+
+		# GPS (Irish Grid) to ERTF89 lat/long
+ 		$lat = $this->E_N_to_Lat ($e,$n,6378137.00,6356752.313,200000,250000,1.000035,53.50000,-8.00000);
+		$lon = $this->E_N_to_Long($e,$n,6378137.00,6356752.313,200000,250000,1.000035,53.50000,-8.00000);
 	}
 
-    $lat = $this->E_N_to_Lat ($e,$n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
-    $lon = $this->E_N_to_Long($e,$n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
-
 	if ($uselevel2) {
+		$lat = $this->E_N_to_Lat ($e,$n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
+		$lon = $this->E_N_to_Long($e,$n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
 		$x1 = $this->Lat_Long_H_to_X($lat,$lon,$height,6377340.189,6356034.447);
 		$y1 = $this->Lat_Long_H_to_Y($lat,$lon,$height,6377340.189,6356034.447);
 		$z1 = $this->Lat_H_to_Z     ($lat,     $height,6377340.189,6356034.447);

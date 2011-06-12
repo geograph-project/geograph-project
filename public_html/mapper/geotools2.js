@@ -332,22 +332,17 @@ GT_Irish.prototype.parseGridRef = function(landranger)
 GT_Irish.prototype.getWGS84 = function(uselevel2)
 {
 
+
 	var height = 0;
+	var wgs84=new GT_WGS84();
 
 	if (uselevel2) {
+
 		e = this.eastings;
 		n = this.northings;
-	} else {
-		//fixed datum shift correction (instead of fancy hermert translation below!)
-		e = this.eastings-49;
-		n = this.northings+23.4;
-	}
+		var lat1 = GT_Math.E_N_to_Lat (e,n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
+		var lon1 = GT_Math.E_N_to_Long(e,n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
 
-	var lat1 = GT_Math.E_N_to_Lat (e,n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
-	var lon1 = GT_Math.E_N_to_Long(e,n,6377340.189,6356034.447,200000,250000,1.000035,53.50000,-8.00000);
-
-	var wgs84=new GT_WGS84();
-	if (uselevel2) {
 		var x1 = GT_Math.Lat_Long_H_to_X(lat1,lon1,height,6377340.189,6356034.447);
 		var y1 = GT_Math.Lat_Long_H_to_Y(lat1,lon1,height,6377340.189,6356034.447);
 		var z1 = GT_Math.Lat_H_to_Z     (lat1,     height,6377340.189,6356034.447);
@@ -358,11 +353,20 @@ GT_Irish.prototype.getWGS84 = function(uselevel2)
 
 		var latitude = GT_Math.XYZ_to_Lat(x2,y2,z2,6378137.000,6356752.313);
 		var longitude = GT_Math.XYZ_to_Long(x2,y2);
+
 		wgs84.setDegrees(latitude, longitude);
+
 	} else {
+		//fixed datum shift correction (instead of fancy hermert translation below!)
+		//converts to GPS (Irish Grid)
+		e = this.eastings-49;
+		n = this.northings+23.4;
+
+		var lat1 = GT_Math.E_N_to_Lat (e,n,6378137.00,6356752.313,200000,250000,1.000035,53.50000,-8.00000);
+		var lon1 = GT_Math.E_N_to_Long(e,n,6378137.00,6356752.313,200000,250000,1.000035,53.50000,-8.00000);
+
 		wgs84.setDegrees(lat1,lon1);
 	}
-	return wgs84;
 }
 
 /*****************************************************************************
