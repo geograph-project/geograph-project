@@ -177,6 +177,8 @@ class GeographMap
 			$token->setValue("r",  $this->reference_index);
 		if ($this->palette)
 			$token->setValue("p",  $this->palette);
+		if (!empty($this->topicId))
+			$token->setValue("f",  $this->topicId);
 		return $token->getToken();
 	}
 
@@ -206,6 +208,10 @@ class GeographMap
 					$this->reference_index = $token->getValue("r");
 				if ($token->hasValue("p")) 
 					$this->setPalette($token->getValue("p"));
+				if ($token->hasValue("f")) {
+					$this->transparent = true; //TODO - this should be better!
+					$this->topicId = $token->getValue("f");
+				}
 			}
 			
 		}
@@ -383,6 +389,10 @@ split_timer('map'); //starts the timer
 			$palette .= "_n{$this->minimum}";
 		}
 		
+		if (!empty($this->topicId)) {
+			$palette .= "_t{$this->topicId}";
+		}
+		
 		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -20)?'jpg':'png';
 		
 		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}{$palette}.$extension";
@@ -534,6 +544,8 @@ split_timer('map','returnImage',$file); //logs the wall time
 		} else if ($this->type_or_user < 0) {
 	#MAP FIXING ACTIVITY  (via mapfix_log) 
 			if ($this->type_or_user == -4
+	#ROUTE MAP
+				|| $this->type_or_user == -12
 	#RECENT ONLY MAP
 				|| $this->type_or_user == -6) {
 
@@ -776,7 +788,13 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 		
 		//first of all, generate or pull in a cached based map
 		$basemap=$this->getBaseMapFilename();
-		if ($this->caching && @file_exists($root.$basemap))
+		if (!empty($this->transparent)) 
+		{
+			$img=imagecreate($this->image_w,$this->image_h);
+			$colBackground=imagecolorallocate($img, 255,255,255);
+			imagecolortransparent($img,$colBackground);
+		} 
+		elseif ($this->caching && @file_exists($root.$basemap))
 		{
 			split_timer('map'); //starts the timer
 
@@ -874,9 +892,10 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
 		
-		//setup ready to plot squares
-		$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
-		
+		if (empty($this->transparent)) {
+			//setup ready to plot squares
+			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
+		}
 		
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 				
@@ -891,7 +910,11 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					group by gridsquare_id";
 			} else {
 				if ($this->pixels_per_km<40) {
-					if ($this->type_or_user == -6) {
+					
+					if ($this->type_or_user == -12) {
+						//todo doesnt use the where clause!
+						$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) where topic_id = {$this->topicId} group by x,y order by null";					
+					} elseif ($this->type_or_user == -6) {
 						$sql="select x,y,gridsquare_id,has_recent as has_geographs from gridsquare where 
 							CONTAINS( GeomFromText($rectangle),	point_xy)
 							and imagecount>0";					
@@ -1361,7 +1384,7 @@ split_timer('map','_renderDepthImage',$target); //logs the wall time
 		$ok = true;
 
 		$basemap=$this->getBaseMapFilename();
-		if (!empty($this->displayYear)) {
+		if (!empty($this->transparent)) {
 			$img=imagecreate($this->image_w,$this->image_h);
 			$colBackground=imagecolorallocate($img, 255,255,255);
 			imagecolortransparent($img,$colBackground);
@@ -1412,7 +1435,7 @@ split_timer('map'); //starts the timer
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
 
-		if (empty($this->displayYear)) {
+		if (empty($this->transparent)) {
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
 		}
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
@@ -1462,7 +1485,7 @@ split_timer('map'); //starts the timer
 			$recordSet->Close(); 
 
 		if ($img) {
-			if (empty($this->displayYear)) {
+			if (empty($this->transparent)) {
 				$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 
 				imagestring($img, 5, 3, $this->image_h-30, $this->mapDateStart, $black);
@@ -1494,6 +1517,7 @@ split_timer('map','_renderDateImage',$target); //logs the wall time
 	*/
 	function _renderRandomGeographMap()
 	{
+		global $CONF;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
 		//first of all, generate or pull in a cached based map
@@ -1686,7 +1710,7 @@ split_timer('map'); //starts the timer
 			$div = 100000; 
 			$crit = "(s = '1' OR s = '2') AND";
 			$cityfont = 3;
-		} elseif ($this->pixels_per_km == 4) {
+		} elseif ($this->pixels_per_km == 4 || $this->pixels_per_km == 2) {
 			$div = 30000;
 		#	$crit = "(s = '1' OR s = '2') AND";
 			$cityfont = 3;
