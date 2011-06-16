@@ -42,7 +42,7 @@ $map->setScale(1);
 
 $map->type_or_user = -10;
 
-$blanktoken=$map->getToken();
+$blankurl=$map->getImageUrl();
 
 
 
@@ -52,7 +52,15 @@ $map->setPalette(3);
 $map->type_or_user = -12;
 
 
-$token=$map->getToken();
+
+if (!empty($_GET['refresh']) && $USER->hasPerm("admin")) {
+	$target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
+	unlink($target);
+	$map->_renderMap();
+}
+
+
+$overlayurl=$map->getImageUrl();
 
 
 $smarty->display('_std_begin.tpl');
@@ -62,10 +70,10 @@ print "<h2>Route map for Thread #$route</h2>";
 ?>
 <div style="position:relative; height:1300px;width:900px">
 	<div style="position:absolute;top:0;left:0"> 
-		<img src="/tile.php?map=<? echo $blanktoken; ?>"/>
+		<img src="<? echo $blankurl; ?>"/>
 	</div>
 	<div style="position:absolute;top:0;left:0"> 
-		<img src="/tile.php?map=<? echo $token; ?>"/>
+		<img src="<? echo $overlayurl; ?>"/>
 	</div>
 </div>
 

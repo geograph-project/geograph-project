@@ -1066,7 +1066,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 				$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 			}
 
-			if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40 && isset($CONF['enable_newmap']))
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40 && isset($CONF['enable_newmap']) && empty($this->transparent))
 			{
 				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 			}				
@@ -1346,7 +1346,7 @@ split_timer('map'); //starts the timer
 		if ($img) {
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 			
-			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap'])) {
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap']) && empty($this->transparent)) {
 				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 			}				
 			
