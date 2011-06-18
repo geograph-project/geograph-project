@@ -603,12 +603,7 @@ split_timer('gridimage'); //starts the timer
 		
 		//find tags
 		if (empty($db)) $db=&$this->_getDB(true); 
-		$this->tags = $db->getAll("
-			SELECT prefix,tag
-			FROM gridimage_tag gt
-				INNER JOIN tag t USING (tag_id) 
-			WHERE gt.gridimage_id = {$this->gridimage_id} AND gt.status = 2 AND t.status = 1
-			ORDER BY gt.created");
+		$this->tags = $db->getAll("SELECT prefix,tag FROM tag_public WHERE gridimage_id = {$this->gridimage_id} ORDER BY created");
 	
 split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
 
