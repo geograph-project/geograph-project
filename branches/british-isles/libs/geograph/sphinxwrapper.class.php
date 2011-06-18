@@ -603,7 +603,7 @@ split_timer('sphinx'); //starts the timer
 			
 			if (count($this->filters) || $words> 9 || strpos($q,'"') !== FALSE || strpos($q,'=') !== FALSE) { //(MATCH_ANY - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
-				$q = "(".preg_replace('/\| [\| ]+/','| ',implode(" | ",$this->explodeWithQuotes(" ",$q))).")".$this->getFilterString();
+				$q = "(".preg_replace('/\| [\| ]+/','| ',implode(" | ",$this->explodeWithQuotes(" ",$q))).") ".$this->getFilterString();
 				
 				$q = preg_replace('/(@[\(\)\w,]+) \|/','$1',$q);
 				
@@ -614,7 +614,7 @@ split_timer('sphinx'); //starts the timer
 			$words = substr_count($q,' ');
 			if (count($this->filters) || $words> 9) { //(MATCH_PHRASE - truncates to 10 words!)
 				$mode = SPH_MATCH_EXTENDED2;
-				$q .= $this->getFilterString();
+				$q .= " ".$this->getFilterString();
 			} else {
 				$mode = SPH_MATCH_PHRASE;
 			}
@@ -623,11 +623,11 @@ split_timer('sphinx'); //starts the timer
 		#	//todo if we enable this need to deal with filters
 		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			if (count($this->filters)) {
-				$q .= $this->getFilterString();
+				$q .= " ".$this->getFilterString();
 			} 
 			$mode = SPH_MATCH_EXTENDED2;
 		} elseif (count($this->filters)) {
-			$q .= $this->getFilterString();
+			$q .= " ".$this->getFilterString();
 			$mode = SPH_MATCH_EXTENDED2;
 		}
 		$cl->SetMatchMode ( $mode );
