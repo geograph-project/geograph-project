@@ -46,15 +46,11 @@
 		{/if}
 
 		<h4><b>Grid References:</b> (recommended)</h4>
-		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}</p>
+		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service == 'OSOS'}<a href="javascript:void(nudgeMarker(document.theForm.grid_reference))"><img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/></a>{elseif $rastermap->service == 'Google'}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{else}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{/if}</p>
 
-		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
+		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service == 'OSOS'}<a href="javascript:void(nudgeMarker(document.theForm.photographer_gridref))"><img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{elseif $rastermap->service == 'Google'}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{else}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{/if}
 
-		<span style="font-size:0.8em"><br/>
-		{if $rastermap->service == 'OSOS'}
-			<a href="javascript:void(nudgeMarker(document.theForm.grid_reference))" style="font-size:0.8em">Nudge Subject Marker</a>
-		{/if}
-		<a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));void(parentUpdateVariables());" style="font-size:0.8em">Copy from Subject</a> {if $rastermap->service == 'Google'}<a href="javascript:void(relocateMapToMarkers());" style="font-size:0.8em">Re-Centre Map</a>{/if} <span id="dist_message" style="padding-left:20px"></span></span>
+		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));void(parentUpdateVariables());" style="font-size:0.8em">Copy from Subject</a> {if $rastermap->service == 'Google'}<a href="javascript:void(relocateMapToMarkers());" style="font-size:0.8em">Re-Centre Map</a>{/if} <span id="dist_message" style="padding-left:20px"></span></span>
 
 		{if $rastermap->enabled}
 			<br/><br/><input type="checkbox" name="use6fig" id="use6fig" {if $use6fig} checked{/if} value="1" onclick="updateUse6fig(this)"/> <label for="use6fig">Only display 6 figure grid reference</label> <a href="/help/map_precision" title="Explanation" class="about" target="_blank" style="font-size:0.6em">About</a>
@@ -93,31 +89,23 @@
 
 
 				function nudgeMarker(that) {
-					
-	if (that.name == 'photographer_gridref') {
-		currentelement = marker2;
-	} else {
-		currentelement = marker1;
-	}
-		if (that.name == 'photographer_gridref') {
-			grideastings = eastings2;
-			gridnorthings = northings2;
-		} else {
-			grideastings = eastings1;
-			gridnorthings = northings1;
-		}  
 
-		var point = new OpenSpace.MapPoint(grideastings-3, gridnorthings);
+					if (that.name == 'photographer_gridref') {
+						currentelement = marker2;
+						var point = new OpenSpace.MapPoint(eastings2, northings2-3);
+					} else {
+						currentelement = marker1;
+						var point = new OpenSpace.MapPoint(eastings1, northings1-3);
+					}
 
-		if ((currentelement == null) && map) {
-			currentelement = createMarker(point,null);
-			
-			//GEvent.trigger(currentelement,'drag');
-		} else {
-			map.removeMarker(currentelement);
-			currentelement = createMarker(point,that.name == 'photographer_gridref'?picon:null);
-		}
+					if ((currentelement == null) && map) {
+						currentelement = createMarker(point,null);
 
+						//GEvent.trigger(currentelement,'drag');
+					} else {
+						map.removeMarker(currentelement);
+						currentelement = createMarker(point,that.name == 'photographer_gridref'?picon:null);
+					}
 				}
 			</script>
 			{/literal}
@@ -182,8 +170,12 @@
 		</div>
 
 		<div id="div1" class="interestBox" style="">
-			<div style="float:right"></div>
-
+			<div style="float:right"><a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">About Context/Tags</a></div>
+			&middot; Tick as many Geogaphical Contexts as required.<br/>
+			&middot; Hover over name for a description, see also <a href="/tags/primary.php" text="More examples" target="_blank">further details and examples</a><br/>
+			&middot; If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat.<br/>
+			&middot; As we have been adding Context to the previuous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.<br/>
+			<br/>
 
 			{foreach from=$tops key=key item=item}
 				<div class="plist">
@@ -198,15 +190,12 @@
 				</div>
 			{/foreach}
 			<br style="clear:both"/>
-			&middot; Tick as many Geogaphical Contexts as required.<br/>
-			&middot; Hover over name for a description, see also <a href="/tags/primary.php" text="More examples" target="_blank">further details and examples</a><br/>
-			&middot; If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat.<br/>
-			&middot; As we have been adding Context to the previuous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.<br/>
-		<a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More about the new Context/Tags</a>
+			<small>(<a href="javascript:void(untick_all())">Untick All</a>)</small>
+
 		</div>
 
 		<div id="div2" class="interestBox" style="display:none">
-			<div style="float:right">More: <a href="/article/Tags" title="Article about Tags" class="about" target="_blank">Article about Tags</a></div>
+			<div style="float:right"><a href="/article/Tags" title="Article about Tags" class="about" target="_blank">More about Tags</a></div>
 			&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/>
 			&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/>
 			&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/>
