@@ -46,9 +46,9 @@
 		{/if}
 
 		<h4><b>Grid References:</b> (recommended)</h4>
-		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}</p>
+		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service == 'OSOS'}<a href="javascript:void(nudgeMarker(document.theForm.grid_reference))"><img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/></a>{elseif $rastermap->service == 'Google'}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{else}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{/if}</p>
 
-		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
+		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service == 'OSOS'}<a href="javascript:void(nudgeMarker(document.theForm.photographer_gridref))"><img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{elseif $rastermap->service == 'Google'}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{else}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{/if}
 
 		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));void(parentUpdateVariables());" style="font-size:0.8em">Copy from Subject</a> {if $rastermap->service == 'Google'}<a href="javascript:void(relocateMapToMarkers());" style="font-size:0.8em">Re-Centre Map</a>{/if} <span id="dist_message" style="padding-left:20px"></span></span>
 
@@ -86,6 +86,27 @@
 				}
 				//deferred till after setupTheForm
 				//AttachEvent(window,'load',updateMapMarkers,false);
+
+
+				function nudgeMarker(that) {
+
+					if (that.name == 'photographer_gridref') {
+						currentelement = marker2;
+						var point = new OpenSpace.MapPoint(eastings2, northings2-3);
+					} else {
+						currentelement = marker1;
+						var point = new OpenSpace.MapPoint(eastings1, northings1-3);
+					}
+
+					if ((currentelement == null) && map) {
+						currentelement = createMarker(point,null);
+
+						//GEvent.trigger(currentelement,'drag');
+					} else {
+						map.removeMarker(currentelement);
+						currentelement = createMarker(point,that.name == 'photographer_gridref'?picon:null);
+					}
+				}
 			</script>
 			{/literal}
 		{$rastermap->getScriptTag()}
@@ -103,6 +124,9 @@
 		{$rastermap->getFooterTag()}
 	{/if}
 {elseif $step eq 3}
+
+{$status_message}
+
 	{if !$submit2}
 	<script type="text/javascript">window.parent.tabClick('tab','',4,4);</script>
 	{/if}
