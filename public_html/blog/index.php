@@ -95,7 +95,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	from blog 
 		left join user using (user_id)
 		left join gridsquare gs on (blog.gridsquare_id = gs.gridsquare_id)
-	where ((approved = 1) 
+	where ((approved = 1 and published < now()) 
 		or blog.user_id = {$USER->user_id}
 		or ($isadmin and approved != -1)
 		) $where
@@ -132,7 +132,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	#$smarty->assign_by_ref('geo', $geo);
 	$smarty->assign_by_ref('list', $list);
 
-	$rows = $db->getCol("SELECT tags FROM blog WHERE approved = 1");
+	$rows = $db->getCol("SELECT tags FROM blog WHERE approved = 1 AND published < NOW()");
 	$tags = array();
 	foreach ($rows as $row) {
 		$bits = explode(',',$row);

@@ -75,7 +75,7 @@ SELECT
 	updated, 
 	created 
 FROM blog
-WHERE approved = 1
+WHERE approved = 1 AND published < NOW()
 
 		");
 

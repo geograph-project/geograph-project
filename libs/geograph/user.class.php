@@ -248,7 +248,7 @@ class GeographUser
 	{
 		$db = $this->_getDB(true);
 		
-		$this->blog=$db->GetRow("SELECT blog_id,title,UNIX_TIMESTAMP(created) AS created FROM blog WHERE user_id={$this->user_id} AND approved = 1 AND created > DATE_SUB(NOW(),INTERVAL 90 DAY) ORDER BY blog_id DESC");
+		$this->blog=$db->GetRow("SELECT blog_id,title,UNIX_TIMESTAMP(created) AS created FROM blog WHERE user_id={$this->user_id} AND approved = 1 AND published < NOW() AND created > DATE_SUB(NOW(),INTERVAL 90 DAY) ORDER BY blog_id DESC");
 
 		if ($this->blog) {
 			$diff = time() - $this->blog['created'];
