@@ -99,7 +99,7 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 $sql="select blog_id,blog.user_id,title,content,blog.updated,blog.created,realname,gridsquare_id
 	from blog
 		left join user using (user_id)
-	where approved = 1 and $where
+	where approved = 1 and published < now() and $where
 	order by updated desc
 	limit $limit";
 
