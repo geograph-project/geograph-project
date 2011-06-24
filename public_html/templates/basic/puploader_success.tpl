@@ -1,4 +1,4 @@
-{assign var="page_title" value="Upload Results"}
+]{assign var="page_title" value="Upload Results"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 
@@ -26,7 +26,11 @@
 {if $nofrills}
 	<p><a href="/submit-nofrills.php?letmein=1{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Submit another image</a></p>
 {elseif $submit2}
-	<p><a href="/submit2.php{if $new}?new={$new}{/if}{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Submit another image</a></p>
+	<p><a href="/submit2.php{if $new}?new={$new}{/if}{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Submit another image</a>
+
+	(<a href="/submit2.php?display=tabs{if $new}&amp;new={$new}{/if}{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Tabs based submission)
+
+	(<a href="/submit2.php?multi=true{if $new}&amp;new={$new}{/if}{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Continue via Multi-Upload</a>)</p>
 {/if}
 <ul>
 <li><a href="/submissions.php" rel="nofollow">Edit My Recent Submissions</a></li>
