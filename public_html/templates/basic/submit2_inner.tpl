@@ -38,6 +38,8 @@
 			</tbody>
 		</table>
 
+		<script src="{"/sorttable.js"|revision}"></script>
+
 {elseif $step eq 1}
 
 	{if $success}
