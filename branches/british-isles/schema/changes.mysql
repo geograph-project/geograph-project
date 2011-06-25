@@ -1875,6 +1875,13 @@ INSERT INTO `category_top_log` (`category_map_id`, `imageclass`, `top`, `user_id
 #################################################
 
 
+alter table gridimage_link add index(`url`),drop key `gridimage_id`;
+alter table gridimage_link add last_found datetime NOT NULL;
+
+
+#################################################
+
+
 CREATE TABLE `category_primary` (
   `grouping` varchar(32) NOT NULL,
   `sort_order` tinyint(3) unsigned NOT NULL,
@@ -1883,6 +1890,9 @@ CREATE TABLE `category_primary` (
   `ids` varchar(255) NOT NULL default '',
   KEY `grouping` (`grouping`,`sort_order`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+#################################################
 
 
 INSERT INTO category_primary VALUES ("Topography","1","Coastal","This refers to the landforms that occur where the land meets the sea, and closely related subjects. Other categories may be more appropriate, depending on the emphasis of your photo, such as Geological interest. Subjects in the sea, except islands, and views from the sea could be classed as Marine (and may be classified as supplemental). For the many activities that take place at the coast, other categories should be chosen.","");
@@ -2060,4 +2070,12 @@ alter table _tables add `backedup` datetime NOT NULL;
 
 
 #################################################
+
+
+alter table queries_archive change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote','slidebig','excerpt','human','bigger') NOT NULL default 'full'     ;
+
+alter table queries change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote','slidebig','excerpt','human','bigger') NOT NULL default 'full'     ;
+
+#################################################
+
 
