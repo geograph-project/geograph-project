@@ -43,9 +43,11 @@ if (!empty($_GET['style'])) {
 }
 
 
-if (count($_GET) === 1) {
+#if (count($_GET) === 1) {
 	if (!empty($_GET['tag'])) {
-		if (strpos($_GET['tag'],' ') !== false) {
+		if (strpos($_GET['tag'],':') !== false) {
+			$_GET['text'] = 'tags:"'.str_replace(':',' ',trim($_GET['tag'])).'"';
+		} elseif (strpos($_GET['tag'],' ') !== false) {
 			$_GET['text'] = 'tags:"'.trim($_GET['tag']).'"';
 		} else {
 			$_GET['text'] = 'tags:'.trim($_GET['tag']);
@@ -53,7 +55,7 @@ if (count($_GET) === 1) {
 	} elseif (!empty($_GET['top'])) {
 		$_GET['text'] = 'tags:"top '.trim($_GET['top']).'"';
 	}
-}
+#}
 
 
 $smarty = new GeographPage;
@@ -74,6 +76,7 @@ $displayclasses =  array(
 			'thumbs' => 'thumbnails only',
 			'thumbsmore' => 'thumbnails + links',
 			'excerpt' => 'highlighted keywords',
+			'bigger' => 'bigger thumbnails',
 			'gmap' => 'on a map',
 			'slide' => 'slideshow',
 			'slidebig' => 'slideshow - full page',
@@ -954,6 +957,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
+		if ($pg > 1000)
+			$pg = 1000;
 
 	$engine = new SearchEngine($i);
 
@@ -1548,7 +1553,7 @@ function smarty_function_votestars($params) {
 	
 	$type = $params['type'];
 	$id = $params['id'];
-	$names = array('','Hmm','Below average','So So','Reasonable','Excellent');
+	$names = array('','Hmm','Below average','So So','Good','Excellent');
 	foreach (range(1,5) as $i) {
 		print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"http://{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
 	}
