@@ -53,6 +53,11 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 			{assign var="hide640" value=1}
 			{include file="_submit_sizes.tpl"}
 
+	{if $canclearexif}
+		<hr/>
+		<input type="checkbox" name="clearexif" id="clearexif" {if $wantclearexif}checked{/if} value="1"/> <label for="clearexif">Alle EXIF-Daten (z.B. Aufnahmezeitpunkt und Kameratyp) aus dem Bild entfernen.</label><!--br/-->
+	{/if}
+
 <script type="text/javascript">{literal}
 
 function hideStep3() {

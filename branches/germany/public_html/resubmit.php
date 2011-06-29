@@ -79,6 +79,7 @@ if (isset($_REQUEST['id']))
 			if($uploadmanager->setUploadId($_POST['upload_id']))
 			{
 				$uploadmanager->setLargestSize($_POST['largestsize']);
+				$uploadmanager->setClearExif($_POST['clearexif']);
 				
 				$uploadmanager->addOriginal($image);
 			
@@ -152,8 +153,8 @@ if (isset($_REQUEST['id']))
 				$smarty->assign('showorig', $showorig);
 				$smarty->assign('ratio', $maxdim/$CONF['prev_size']);
 				$smarty->assign('largeimages', $CONF['img_size_unlimited'] || (count($CONF['img_sizes']) != 0));
-				#$smarty->assign('canclearexif', $CONF['exiftooldir'] !== '');
-				#$smarty->assign('wantclearexif', $USER->clear_exif);#FIXME
+				$smarty->assign('canclearexif', $CONF['exiftooldir'] !== '');
+				$smarty->assign('wantclearexif', $USER->clear_exif);#FIXME
 			} else {
 				$smarty->assign('error', $uploadmanager->errormsg);
 			

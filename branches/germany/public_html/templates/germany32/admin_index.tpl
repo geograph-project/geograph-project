@@ -8,9 +8,11 @@
 <h2>Administrative Tools</h2>
 <ul>
 
+{if $is_tickmod || $is_mod || $is_admin}
 {if $names_pending}
 	<li><a href="/games/approve.php">Game Usernames</a> (<a href="/games/approve.rss.php" class="xml-rss">RSS</a>)<br/>
 	<b>[{$names_pending} pending]</b></li>
+{/if}
 {/if}
 
 {if $is_mod} 
@@ -37,7 +39,9 @@
 <li><a href="/article/">Articles</a><br/>
 <b>[{$articles_ready} ready to be approved]</b></li>
 {/if}
+{/if}
 
+{if $is_mapmod || $is_mod || $is_admin}
 <li{if $gridsquares_sea_test > 0} style="color:lightgrey">
 <b>Map-fixing in Progress</b> - please come back later.<br/>
 {else}>{/if}
@@ -59,6 +63,8 @@ corrected</small><br/>
 <li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
    request update for map tiles</li>
 
+{/if}
+{if $is_mod}
 <li><a title="Picture of the day" href="/admin/pictureoftheday.php">Picture of the Day</a> - 
    choose daily picture selections
    {if $pics_pending < 5}
@@ -67,8 +73,10 @@ corrected</small><br/>
 {/if}
 
 <li>Stats: <br/>
+{if $is_tickmod || $is_mod || $is_admin}
    <a href="/statistics/admin_turnaround.php">Turn Around</a> {dynamic}(<a href="/statistics/admin_turnaround.php?u={$user->user_id}">You</a>){/dynamic} - 
    rough estimate at moderation times <br/>
+{/if}
    <a title="Web Stats" href="/statistics/pulse.php">Geograph Pulse</a> - 
    upto the minute general site status</li>
 
@@ -87,11 +95,12 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 {/if}
 </ul>
 
-{if $is_admin}
+{if $is_admin || $is_mapmod}
 <br/><br/>
 <h2>Admin Tools - use with care</h2>
 <ul>
 
+{if $is_admin}
 <li><a title="Moderators" href="/admin/moderator_admin.php?show_role=-none-">Moderator Admin</a> - 
    grant/revoke moderator rights to users</li>
 
@@ -100,10 +109,12 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    Organise the user submitted categories</li>
+{/if}
 
 <li><a title="Town editor" href="/admin/towns.php">Town editor</a> - 
    Add, edit or remove towns</li>
 </ul>
+{if $is_admin}
 <h3>Statistics</h3>
 <ul>  
 
@@ -127,24 +138,29 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 
 
 </ul>
+{/if}
 <h3>Database Update/Repair</h3>
 <ul>
 
 <li><a title="Recreate Maps" href="/admin/recreatemaps.php">Recreate Maps</a> - 
    force recreation of the most urgent maps</li>
 
+{if $is_admin}
 <li><a title="DB Check" href="/admin/dbcheck.php">Database Check</a> analyse database for
 database or application problems</li>
 
 <li>Rebuild <a title="Rebuild wordnet" href="/admin/buildwordnet.php">WordNet</a>/<a 
 title="Rebuild gridimage_search" href="/admin/buildgridimage_search.php">Search Cache</a> - use if
 tables become corrupted</li>
+{/if}
 
 </ul>
 <h3>Developer Tools</h3>
 <ul>
 
+{if $is_admin}
 <li><a title="Custom Search" href="/search.php?form=advanced&Special=1">Create Custom Search</a> - create a one off special search (sql required)</li>
+{/if}
 
 <li><a title="Map Maker" href="/admin/mapmaker.php">Map Maker</a> is a simple tool for checking
 the internal land/sea map</li>

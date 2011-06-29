@@ -170,7 +170,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 </dd>
 
 {if $image->credit_realname}
-	<dt>Photographer</dt>
+	<dt>Fotograf</dt>
 	 <dd>{$image->realname|escape:'html'}</dd>
 
 	<dt>Eingereicht von</dt>

@@ -4,6 +4,8 @@
 User-agent: *
 Disallow: /mapbrowse.php
 Disallow: /map/
+##
+##
 Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
@@ -18,6 +20,7 @@ Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
+Disallow: /statistics/regions.php
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
@@ -64,7 +67,10 @@ Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?*when*
 Disallow: /statistics/moversboard.php?*when*
+Disallow: /statistics/leaderboard.php?*region*
+Disallow: /statistics/moversboard.php?*region*
 Disallow: /statistics/*?*csv
+Disallow: /statistics/regions.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
@@ -92,6 +98,7 @@ Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 
 User-Agent: Slurp
+Crawl-delay: 5
 Disallow: /profile/*/map
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
@@ -100,7 +107,7 @@ Disallow: /mapper/
 Disallow: /maplarge.php
 Disallow: /mapprint.php
 Disallow: /admin/
-Allow: /admin/team.php
+#Allow: /admin/team.php
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
@@ -112,7 +119,10 @@ Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?*when*
 Disallow: /statistics/moversboard.php?*when*
+Disallow: /statistics/leaderboard.php?*region*
+Disallow: /statistics/moversboard.php?*region*
 Disallow: /statistics/*?*csv
+Disallow: /statistics/regions.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
@@ -139,7 +149,99 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 
+#??
+User-agent: Mozilla/2.0 (compatible; Ask Jeeves/Teoma)
+Crawl-Delay: 60
+Disallow: /mapbrowse.php
+Disallow: /map/
+Disallow: /mapper/
+Disallow: /maplarge.php
+Disallow: /mapprint.php
+Disallow: /admin/
+Disallow: /search.php
+Disallow: /full-text.php
+Disallow: /finder/
+Disallow: /explore/wordnet.php
+Disallow: /places.php
+Disallow: /explore/places.php
+Disallow: /usermsg.php
+Disallow: /statistics/breakdown.php
+Disallow: /statistics/regions.php
+Disallow: /submit.php
+Disallow: /submit_popup.php
+Disallow: /map_frame.php
+Disallow: /discuss/
+Disallow: /mapsheet.php
+Disallow: /kml.php
+Disallow: /gpx.php
+Disallow: /reuse.php
+Disallow: /editimage.php
+Disallow: /browse.php
+Disallow: /location.php
+Disallow: /gridref/
+Disallow: /ecard.php
+Disallow: /export.
+Disallow: /tile.php
+Disallow: /feed/userid/
+Disallow: /feed/results
+Disallow: /export.excel.xml.php
+Disallow: /export.csv.php
+Disallow: /_scripts/
+Disallow: /stuff/conversion.php
+Disallow: /article/edit.php
+Disallow: /article/history.php
 
+User-Agent: MSNBot
+Crawl-Delay: 10
+Disallow: /profile/*/map
+Disallow: /photo/*?style=*
+Disallow: /mapbrowse.php?
+Disallow: /map/
+Disallow: /mapper/
+Disallow: /maplarge.php
+Disallow: /mapprint.php
+Disallow: /admin/
+Allow: /admin/team.php
+Disallow: /search.php?
+Disallow: /full-text.php?
+Disallow: /finder/
+Disallow: /explore/wordnet.php
+Disallow: /explore/calendar.php?*Year*
+Disallow: /places.php
+Disallow: /explore/places.php
+Disallow: /usermsg.php
+Disallow: /statistics/breakdown.php
+Disallow: /statistics/leaderboard.php?*when*
+Disallow: /statistics/moversboard.php?*when*
+Disallow: /statistics/leaderboard.php?*region*
+Disallow: /statistics/moversboard.php?*region*
+Disallow: /statistics/*?*csv
+Disallow: /statistics/regions.php?*region*
+Disallow: /submit.php
+Disallow: /submit_popup.php
+Disallow: /map_frame.php
+Disallow: /discuss/
+Disallow: /mapsheet.php
+Disallow: /kml.php?
+Disallow: /gpx.php?
+Disallow: /reuse.php
+Disallow: /editimage.php
+Disallow: /browse.php?
+Disallow: /location.php
+Disallow: /gridref/
+Disallow: /ecard.php
+Disallow: /export.
+Disallow: /tile.php
+Disallow: /feed/userid/
+Disallow: /feed/results
+Disallow: /export.excel.xml.php
+Disallow: /export.csv.php
+Disallow: /_scripts/
+Disallow: /stuff/conversion.php
+Disallow: /article/edit.php
+Disallow: /article/history.php
+Disallow: /syndicator.php?key=
+Disallow: /stuff/kmltest
 
 User-agent: Fasterfox
 Disallow: /

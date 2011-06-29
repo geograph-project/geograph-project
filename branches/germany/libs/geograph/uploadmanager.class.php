@@ -567,6 +567,7 @@ class UploadManager
 				
 				//removed the unsharp as it makes some images worse - needs to be optional
 				// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
+				// FIXME: "\"%smogrify\" -auto-orient -resize ...
 				if ($CONF['exiftooldir'] !== '')
 					$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
 				else
@@ -772,11 +773,11 @@ class UploadManager
 		$image->user_id = $USER->user_id;
 		
 		if ($this->clearexif && $CONF['exiftooldir'] !== '') {
-			$cmd = sprintf ("\"%sexiftool\" -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
+			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
 			passthru ($cmd);
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			if (file_exists($orginalfile)) {
-				$cmd = sprintf ("\"%sexiftool\" -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
 				passthru ($cmd);
 			}
 		}
@@ -786,8 +787,10 @@ class UploadManager
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			
 			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > $CONF['img_max_size']) {
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($orginalfile);
+				list($destwidth, $destheight, $destdim, $changedim) = $this->_new_size($owidth, $oheight, $this->largestsize);
 				
-				$this->_downsizeFile($orginalfile,$this->largestsize);
+				$this->_downsizeFile($orginalfile,$destdim);
 				
 				$storedoriginal =$image->storeOriginal($orginalfile);
 			}
@@ -847,14 +850,26 @@ class UploadManager
 
 		$src=$this->_pendingJPEG($this->upload_id);	
 
+		if ($this->clearexif && $CONF['exiftooldir'] !== '') {
+			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
+			passthru ($cmd);
+			$orginalfile = $this->_originalJPEG($this->upload_id);
+			if (file_exists($orginalfile)) {
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
+				passthru ($cmd);
+			}
+		}
+
 		//store the resized version - just for the moderator to use as a preview
 		if ($ok = $image->storeImage($src,false,'_preview')) {
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
 			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > $CONF['img_max_size']) {
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($orginalfile);
+				list($destwidth, $destheight, $destdim, $changedim) = $this->_new_size($owidth, $oheight, $this->largestsize);
 
-				$this->_downsizeFile($orginalfile,$this->largestsize);
+				$this->_downsizeFile($orginalfile,$destdim);
 				
 				//store the new original file
 				$ok =$image->storeImage($orginalfile,false,'_pending');
@@ -883,6 +898,8 @@ class UploadManager
 	*/
 	function cleanUp()
 	{
+		#@unlink($this->_pendingJPEG($this->upload_id).'_original');
+		#@unlink($this->_originalJPEG($this->upload_id).'_original');
 		@unlink($this->_pendingJPEG($this->upload_id));
 		@unlink($this->_pendingEXIF($this->upload_id));
 		@unlink($this->_originalJPEG($this->upload_id));

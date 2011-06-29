@@ -103,21 +103,12 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="view square {$centergr[$ri]
 {/foreach}
 </p>
 
-{*if $hstats}
-<table border="1" cellpadding="4" cellspacing="0" class="statstable">
-<thead>
-<tr><th>Region</th><th>Images (last week)</th><th>Squares</th><th>With geographs</th><th>Hectads</th>*}{*<th>Myriads</th><th>Area (km<sup>2</sup>, land)</th><th>Geograph Centre</th>*}{*</tr>
-</thead><tbody>
-{foreach from=$hstats item=row}
-<tr><td>{$row.name|escape:'html'}</td><td>{$row.images_total|thousends} ({$row.images_thisweek|thousends})</td><td>{$row.squares_submitted|thousends} / {$row.squares_total|thousends} ({$row.percent|floatformat:"%.3f"}%)</td><td>{$row.geographs_submitted|thousends}</td><td>{$row.tenk_submitted|thousends} / {$row.tenk_total|thousends}</td>*}{*<td>{$row.grid_submitted}/{$row.grid_total}</td><td>{$row.area|floatformat:"%.0f"}</td><td>{if $row.centergr == "unknown"}-{else}<a href="/gridref/{$row.centergr}" title="view square {$row.centergr}">{$row.centergr}</a>, {place place=$row.place}{/if}</td>*}{*</tr>
-{/foreach}
-</tbody>
-</table>
-{/if*}
     
     <h3><a name="more"></a>More Statistics</h3>
 
-   <p><b><a href="/statistics/regions.php">Regions</a></b></p>
+	{if $hasregions}
+	<p><b><a href="/statistics/regions.php">Regional statistics</a>{if $regionlistlevel > -1} (<a href="/statistics/regions.php?level={$regionlistlevel}">large list</a>){/if}</b></p>
+	{/if}
 
    <p>User <b>leaderboards</b>: <a href="/statistics/moversboard.php">Weekly</a>, <a href="/statistics/leaderboard.php">All Time</a>, <a href="/statistics/monthlyleader.php">By Month</a>, <a href="/statistics/leaderhectad.php">First Hectads</a>,  <a href="/statistics/leaderallhectad.php">Hectads</a>, <a href="/statistics/leaderboard.php?type=images&when=1989&timerel=dbefore&date=taken">Historical</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a></p>
 

@@ -116,9 +116,43 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 
 					list($e,$n,$reference_index) = $conv->wgs84_to_national($lat,$long);
 
-					list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
-					$_POST['photographer_gridref'] = $_POST['grid_reference'];
-					
+					list ($_POST['photographer_gridref'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+
+					if (isset($exif['GPS']['GPSDestLatitude'])) {
+						if (is_array($exif['GPS']['GPSDestLatitude'])) {
+							$deg = FractionToDecimal($exif['GPS']['GPSDestLatitude'][0]);
+							$min = FractionToDecimal($exif['GPS']['GPSDestLatitude'][1]);
+							$sec = FractionToDecimal($exif['GPS']['GPSDestLatitude'][2]);
+							$lat = ExifConvertDegMinSecToDD($deg, $min, $sec);
+						} else {
+							//not sure if this will ever happen but it could?
+							$lat = $exif['GPS']['GPSDestLatitude'];
+						}
+
+						if ($exif['GPS']['GPSDestLatitudeRef'] == 'S') 
+							$lat *= -1;
+
+						if (is_array($exif['GPS']['GPSDestLongitude'])) {
+							$deg = FractionToDecimal($exif['GPS']['GPSDestLongitude'][0]);
+							$min = FractionToDecimal($exif['GPS']['GPSDestLongitude'][1]);
+							$sec = FractionToDecimal($exif['GPS']['GPSDestLongitude'][2]);
+							$long = ExifConvertDegMinSecToDD($deg, $min, $sec);
+						} else {
+							//not sure if this will ever happen but it could?
+							$long = $exif['GPS']['GPSDestLongitude'];
+						}
+
+						if ($exif['GPS']['GPSDestLongitudeRef'] == 'W') 
+							$long *= -1;
+
+
+						list($e,$n,$reference_index) = $conv->wgs84_to_national($lat,$long);
+
+						list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+					} else {
+						$_POST['grid_reference'] = $_POST['photographer_gridref'];
+					}
+
 					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
 					
 				

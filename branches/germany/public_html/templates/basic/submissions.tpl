@@ -23,7 +23,7 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
 
-		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment1|escape:'html'}</textarea><br/><textarea name="comment2" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment2|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;"/>{if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="Apply changes"/>{/if}
+		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment1|escape:'html'}</textarea><br/><textarea name="comment2" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment2|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;"/>{*if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="Apply changes"/>{/if*}
 		</div>
 	  </div><br style="clear:both;"/>
 

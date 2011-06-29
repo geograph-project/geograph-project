@@ -38,7 +38,7 @@
      <li><a title="Impressum" href="http://www.hlipp.de/contact.html">Impressum</a></li>
     </ul></li>
   {dynamic}
-  {if $is_mod || $is_admin || $is_tickmod}
+  {if $is_mod || $is_admin || $is_tickmod || $is_mapmod}
     <li>Admin<ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      {if $is_mod}
@@ -47,7 +47,9 @@
      {if $is_tickmod}
      	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a href="/admin/tickets.php?sidebar=1" target="_search" title="Open in Sidebar, IE and Firefox Only">S</a>)</li>
      {/if}
-     <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
+     {if $is_tickmod||$is_mod}
+     	<li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
+     {/if}
     </ul></li>
   {/if}
   {/dynamic}
