@@ -25,7 +25,7 @@ require_once('geograph/global.inc.php');
 require_once('geograph/mapmaker.class.php');
 init_session();
 
-$USER->mustHavePerm("admin");
+$USER->hasPerm("mapmod") || $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 

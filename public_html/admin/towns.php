@@ -24,7 +24,7 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-$USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->mustHavePerm("moderator");
+$USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->hasPerm("mapmod") || $USER->mustHavePerm("moderator");
 
 $smarty = new GeographPage;
 
@@ -33,16 +33,18 @@ if (!$db) die('Database connection failed');
 #$db->debug = true;
 	#TODO:
 	#  * recreate affected map?
+	#      require_once('geograph/mapmosaic.class.php');
+	#      $mosaic = new GeographMapMosaic;
+	#      $mosaic->expirePosition($x,$y,0,true);
 	#  * geocoder line?
 	#  * level 5 towns and button to create level 5 towns from towns close to zone boundaries?
-	#  * town id (test!)
-	#  * opengeodb: take values from db
-	#  * execute sql requests
 
 
 	if (isset($_POST['submit'])) {
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
+		require_once('geograph/mapmosaic.class.php');
+		$mosaic = new GeographMapMosaic;
 		$dryrun = !empty($_POST['dryrun']);
 		if ($dryrun)
 			$message = "<p>Testing the following changes:</p>";
@@ -50,10 +52,17 @@ if (!$db) die('Database connection failed');
 			$message = "<p>Making the following changes:</p>";
 		for ($c = 1; $c <= $_POST['highc']; $c++) {
 			if ($_POST['newd'.$c] == '1' && $_POST['oldi'.$c] !== '') {
+				$_POST['oldr'.$c] = intval($_POST['oldr'.$c]);
+				$_POST['olde'.$c] = intval($_POST['olde'.$c]);
+				$_POST['oldn'.$c] = intval($_POST['oldn'.$c]);
+				$oldx = $_POST['olde'.$c]+$CONF['origins'][$_POST['oldr'.$c]][0]*1000;
+				$oldy = $_POST['oldn'.$c]+$CONF['origins'][$_POST['oldr'.$c]][1]*1000;
 				$message .= "<p>Deleting {$_POST['oldi'.$c]}/{$_POST['oldna'.$c]}</p>";
 				$sql = "DELETE FROM loc_towns WHERE id=".$db->Quote($_POST['oldi'.$c])." LIMIT 1";
 				$message .= "<p><small>$sql</small></p>";
 				if (!$dryrun) $db->Execute($sql);
+				$message .= "<p>Expiring ".floor($oldx/1000)."/".floor($oldy/1000)."</p>";
+				if (!$dryrun) $mosaic->expirePosition(floor($oldx/1000),floor($oldy/1000),0,true);
 			}
 		}
 		for ($c = 1; $c <= $_POST['highc']; $c++) {
@@ -141,6 +150,13 @@ if (!$db) die('Database connection failed');
 				$_POST['newn'.$c] = intval($_POST['newn'.$c]);
 				$x = $_POST['newe'.$c]+$CONF['origins'][$_POST['newr'.$c]][0]*1000;
 				$y = $_POST['newn'.$c]+$CONF['origins'][$_POST['newr'.$c]][1]*1000;
+				if ($_POST['oldi'.$c] !== '') {
+					$_POST['oldr'.$c] = intval($_POST['oldr'.$c]);
+					$_POST['olde'.$c] = intval($_POST['olde'.$c]);
+					$_POST['oldn'.$c] = intval($_POST['oldn'.$c]);
+					$oldx = $_POST['olde'.$c]+$CONF['origins'][$_POST['oldr'.$c]][0]*1000;
+					$oldy = $_POST['oldn'.$c]+$CONF['origins'][$_POST['oldr'.$c]][1]*1000;
+				}
 				if ($CONF['commongrid']) {
 					list($lat,$long) = $conv->national_to_wgs84($_POST['newe'.$c],$_POST['newn'.$c],$_POST['newr'.$c]);
 					list($cx,$cy,$ri) = $conv->wgs84_to_national($lat, $long, true, $CONF['commongrid']);
@@ -181,13 +197,17 @@ if (!$db) die('Database connection failed');
 				$message .= "<p>Updating '#{$_POST['oldi'.$c]} from <i>".implode('; ',$changesfrom)."</i> to <b>".implode('; ',$changesto)."</b>.</p>";
 				$sql = 'UPDATE loc_towns SET '.implode(',',$sqlas)." WHERE id=".$db->Quote($_POST['oldi'.$c])." LIMIT 1";
 				$message .= "<p><small>$sql</small></p>";
+				$message .= "<p>Expiring ".floor($oldx/1000)."/".floor($oldy/1000)."</p>";
 				if (!$dryrun) $db->Execute($sql);
+				if (!$dryrun) $mosaic->expirePosition(floor($oldx/1000),floor($oldy/1000),0,true);
 			} else {
 				$message .= "<p>Creating <b>".implode('; ',$changesto)."</b>.</p>";
 				$sql = 'INSERT INTO loc_towns ('.implode(',',$sqlcolumns).') VALUES ('.implode(',',$sqlvalues).')';
 				$message .= "<p><small>$sql</small></p>";
 				if (!$dryrun) $db->Execute($sql);
 			}
+			if (!$dryrun) $mosaic->expirePosition(floor($x/1000),floor($y/1000),0,true);
+			$message .= "<p>Expiring ".floor($x/1000)."/".floor($y/1000)."</p>";
 		}
 		$message .= "<p>All values updated</p>";
 		$smarty->assign('message',  $message);
@@ -208,14 +228,14 @@ if (!$db) die('Database connection failed');
 		$e = $arr[0]['e'];
 		$n = $arr[0]['n'];
 		$ri = $arr[0]['reference_index'];
-		$x = $e/1000 + $CONF['origins'][$ri][0];
-		$y = $n/1000 + $CONF['origins'][$ri][1];
+		$x = floor($e/1000 + $CONF['origins'][$ri][0]);
+		$y = floor($n/1000 + $CONF['origins'][$ri][1]);
 	} else {
 		$ri= $rilist[0];
 		$xr = $CONF['xrange'][$ri];
 		$yr = $CONF['yrange'][$ri];
-		$x = ($xr[0] + $xr[1])*.5;
-		$y = ($yr[0] + $yr[1])*.5;
+		$x = floor(($xr[0] + $xr[1])*.5);
+		$y = floor(($yr[0] + $yr[1])*.5);
 		#$e = ($x-$CONF['origins'][$ri][0])*1000;
 		#$n = ($y-$CONF['origins'][$ri][1])*1000;
 	}

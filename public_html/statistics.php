@@ -64,6 +64,10 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	require_once('geograph/gridsquare.class.php');
 
+	if (count($CONF['hier_statlevels'])) {
+		$smarty->assign('hasregions',true);
+		$smarty->assign('regionlistlevel',$CONF['hier_listlevel']);
+	}
 
 	$smarty->assign('users_submitted',  $db->GetOne("select count(*)-1 from user_stat"));
 	

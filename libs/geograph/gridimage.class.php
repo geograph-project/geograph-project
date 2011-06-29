@@ -227,10 +227,10 @@ class GridImage
 	function getPhotographerGridref($spaced = false)
 	{
 		//already calculated?
-		if (strlen($this->photographer_gridref))	
+		if (!$spaced && strlen($this->photographer_gridref))
 			return $this->photographer_gridref;
 
-		$this->photographer_gridref='';
+		$posgr='';
 		if ($this->viewpoint_northings) 
 		{
 			require_once('geograph/conversions.class.php');
@@ -242,17 +242,20 @@ class GridImage
 				($this->use6fig && $spaced)?min(6,$this->viewpoint_grlen):max(2,$this->viewpoint_grlen),
 				$this->viewpoint_refindex,$spaced);
 			
+			if (!$spaced)
+				$this->photographer_gridref_precision=pow(10,6-$len)/10;
+		}
+
+		if (!$spaced)
 			$this->photographer_gridref=$posgr;
-			$this->photographer_gridref_precision=pow(10,6-$len)/10;
-		}	
-		
-		return $this->photographer_gridref;
+		return $posgr;
 	}
 	
+	// FIXME should only store when !$spaced
 	function getSubjectGridref($spaced = false)
 	{
 		//already calculated?
-		if (strlen($this->subject_gridref))	
+		if (!$spaced && strlen($this->subject_gridref))	
 			return $this->subject_gridref;
 
 		require_once('geograph/conversions.class.php');
@@ -284,10 +287,12 @@ class GridImage
 			($this->use6fig && $spaced)?min(6,$this->natgrlen):max(4,$this->natgrlen),
 			$this->grid_square->reference_index,$spaced);
 		
-		$this->subject_gridref=$gr;
-		$this->subject_gridref_precision=pow(10,6-$len)/10;
+		if (!$spaced) {
+			$this->subject_gridref=$gr;
+			$this->subject_gridref_precision=pow(10,6-$len)/10;
+		}
 		
-		return $this->subject_gridref;
+		return $gr;
 	}
 	
 	/**
@@ -1302,6 +1307,7 @@ class GridImage
 	* attribname : attribute name of img tag which holds url (default 'src')
 	* bevel : give image a raised edge (default true)
 	* unsharp : do an unsharp mask on the image
+	* pano : do not crop, even if w:h > 2:1 (default false)
 	* 
 	* returns an association array containing 'html' element, which contains
 	* a fragment to load the image, and 'path' containg relative url to image
@@ -1322,6 +1328,7 @@ class GridImage
 		$bestfit=isset($params['bestfit'])?$params['bestfit']:true;
 		$bevel=isset($params['bevel'])?$params['bevel']:true;
 		$unsharp=isset($params['unsharp'])?$params['unsharp']:true;
+		$pano=isset($params['pano'])?$params['pano']:false;
 		$source=isset($params['source'])?$params['source']:'';
 		
 		
@@ -1392,7 +1399,15 @@ class GridImage
 				//get path to fullsize image (will try to fetch it from fetch_on_demand)
 				$fullpath=$this->_getFullpath();
 			}
-			
+			if ($pano && $fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath)) {
+				require_once("geograph/uploadmanager.class.php");
+				$uploadmanager = new UploadManager();
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+				list($destwidth, $destheight, $destdim, $changedim) = $uploadmanager->_new_size($owidth, $oheight, $maxw);
+				$maxw = $destdim;
+				$maxh = $destdim;
+				$bestfit = true;
+			}
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				if (strlen($CONF['imagemagick_path'])) {
@@ -1413,7 +1428,7 @@ class GridImage
 							$aspect_src=$width/$height;
 							$aspect_dest=$maxw/$maxh;
 
-							if ($bestfit && $aspect_src > 2 && $aspect_dest < 2) {
+							if (!$pano && $bestfit && $aspect_src > 2 && $aspect_dest < 2) {
 								$bestfit = false;
 								$maxh = round($maxw/2);
 								$aspect_dest= 2;
@@ -1641,12 +1656,13 @@ class GridImage
 	/**
 	* 
 	*/
-	function getImageFromOriginal($maxw, $maxh)
+	function getImageFromOriginal($maxw, $maxh, $pano = false)
 	{
 		$params['maxw']=$maxw;
 		$params['maxh']=$maxh;
 		$params['bevel']=false;
 		$params['unsharp']=false;
+		$params['pano']=$pano;
 		$params['source']='original';
 		$resized=$this->_getResized($params);
 		

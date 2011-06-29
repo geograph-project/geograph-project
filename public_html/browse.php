@@ -195,6 +195,18 @@ if ($grid_given)
 			$smarty->assign('nearest_distance', $square->nearest->distance);
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
 		}
+
+		if ($square->percent_land > 0) {
+			//find a possible place within 25km
+			$smarty->assign('place', $place = $square->findNearestPlace(75000));
+			
+			$place_name = strip_tags(smarty_function_place(array('place'=>$place)));
+			
+			$smarty->assign('meta_description', "Geograph currently has {$square->imagecount} photos in {$square->grid_reference}, $place_name");
+
+			
+		}
+
 	}
 	$smarty->assign('mode','normal');
 	if ($grid_ok && !empty($CONF['sphinx_host']) && (isset($_GET['takenfrom']) || isset($_GET['mentioning'])) ) {

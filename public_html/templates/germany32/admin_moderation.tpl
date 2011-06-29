@@ -64,12 +64,12 @@
 	  <br/>
 	  <span style="font-family:verdana, arial, sans serif; font-size:0.9em">
 	  {if $image->nateastings}
-	  	subject: <b>{getamap gridref=$image->getSubjectGridref(true) title="(`$image->subject_gridref_precision`m precision)"}</b>
+	  	subject: <b><a href="/gridref/{$image->getSubjectGridref()}" title="({$image->subject_gridref_precision}m precision)">{$image->getSubjectGridref(true)}</a></b>
 	  {else}
-	  	map: <b>{getamap gridref=$image->grid_reference title="(1000m precision)"}</b>
+	  	map: <b><a href="/gridref/{$image->grid_reference}" title="(1000m precision)">{$image->grid_reference}</a></b>
 	  {/if}
 	  {if $image->viewpoint_eastings}
-	  	| photographer: <b>{getamap gridref=$image->getPhotographerGridref(true) title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}
+	  	| photographer: <b><a href="/gridref/{$image->getPhotographerGridref(false)}" title="({$image->photographer_gridref_precision}m precision)">{$image->getPhotographerGridref(true)}</a></b>{if $image->different_square_true}(diff){/if}
 	  	| <span{if $image->different_square} style="background-color:yellow"{/if}>distance: <b style="color:blue">{$image->distance}</b>km</span>
 	  {/if}
 	  </span>

@@ -26,7 +26,13 @@
 <p style="font-size:0.8em">Note: for the purposes of Geograph, the Mean LOW Water* (MLW) line  is used in classifying squares. For Great Britain 1:25,000 mapping is used, however for Ireland such mapping isn't as available, so satellite imagery or where possible 1:50,000 maps will be consulted.<br/><br/>
 <small>* might be Mean Low Water Springs (MLWS) in Scotland.</small></p>
 
+{if $isadmin}
+<p style="font-size:0.8em">
+{$status}
+<p>
+{else}
 <!-- {$status} -->
+{/if}
 
 {if $percent_land == -1} 
 	<div class="interestBox"><b><a href="/gridref/{$gridref|escape:html}">{$gridref|escape:html}</a></b> is in the queue for checking, it will be checked in due course.</div>
@@ -41,6 +47,7 @@
 	{/if}
 {/if}
 
+{if !$isadmin}
 <form action="/mapfixer.php" method="get" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 <p><b>{if $gridref_error}Try again:{else}{if $status}Repeat for another square:{else}Submit the form below to confirm the notification:{/if}{/if}</b> <br/> <br/>
 <label for="gridref">4-fig Grid Reference</label>: <input type="text" size=8"" name="gridref" id="gridref" value="{$gridref|escape:html}"/>
@@ -52,11 +59,13 @@
 
 </form>
 
-{if $isadmin}
+{else}
 
 <p>Other percentages:
 {foreach key=name item=percent from=$hier}
 <br />{$name}: {$percent}%
+{foreachelse}
+<i>none</i>
 {/foreach}
 </p>
 
@@ -64,7 +73,7 @@
 <p>or <b>Set the Percentage Directly</b>: (skips the moderation queue)<br/>
 {if $regionlist}
 <br/>
-	<label for="region">Region (FUNKTIONIERT NOCH NICHT):</label>
+	<label for="region">Region:</label>
 	<select name="region" id="region" size="1">
 		<option value=""> </option> 
 		{html_options options=$regionlist selected=$region}
@@ -89,6 +98,7 @@
 
 <label for="comment">Optional Comment:</label> <input type="text" name="comment" id="comment" maxlength="128" size="60"/><br/>
 
+<p>If no region is selected and the given percentage is -2, the land percentage will be calculated from land mass and lake percentages.</p>
 
 </form>
 <script>{literal}

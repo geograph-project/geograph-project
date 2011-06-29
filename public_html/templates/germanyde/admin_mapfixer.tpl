@@ -170,12 +170,27 @@ function setland(percent)
 <input type="submit" name="show" value="Check">
 
 {if $gridref_ok}
-<br/>{getamap gridref=$gridref text="Check OS Map for $gridref"}<br/><br/>
+<p>Percentages:
+{foreach key=name item=percent from=$hier}
+<br />{$name}: {$percent}%
+{foreachelse}
+<i>none</i>
+{/foreach}
+</p>
 
+{if $regionlist}
+	<label for="region">Region:</label>
+	<select name="region" id="region" size="1">
+		<option value=""> </option> 
+		{html_options options=$regionlist selected=$region}
+	</select>
+<br/>
+{/if}
 Land percentage for {$gridref} is
 <input type="text" size="3" name="percent_land" value="{$percent_land}">
 <input type="submit" name="save" value="Save">
 <br/>{$status}
+<p>If no region is selected and the given percentage is -2, the land percentage will be calculated from land mass and lake percentages.</p>
 {/if}
 
 

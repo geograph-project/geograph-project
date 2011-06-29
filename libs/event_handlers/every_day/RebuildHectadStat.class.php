@@ -82,7 +82,7 @@ class RebuildHectadStat extends EventHandler
 					COUNT(DISTINCT IF(ftf=1,user_id,NULL)) AS ftfusers
 					FROM gridsquare gs
 					LEFT JOIN gridimage gi ON (gs.gridsquare_id=gi.gridsquare_id AND moderation_status IN ('geograph','accepted')) 
-					WHERE gs.reference_index = $ri AND grid_reference LIKE '$prefix%' AND percent_land >0
+					WHERE gs.reference_index = $ri AND grid_reference LIKE '$prefix%' AND permit_geographs >0
 					GROUP BY (x-{$CONF['origins'][$ri][0]}) div 10,(y-{$CONF['origins'][$ri][1]}) div 10
 					ORDER BY NULL");
 				//todo when the origin is a multiple of 10 (or =0) then can be optimised away - but mysql might do that anyway

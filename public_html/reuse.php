@@ -57,7 +57,7 @@ if (isset($_REQUEST['id']))
 			}
 			
 			if (in_array(intval($_REQUEST['size']), $CONF['show_sizes']))
-				$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']),intval($_REQUEST['size']));
+				$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']), intval($_REQUEST['size']), true);
 			elseif ($_REQUEST['size'] == 'original')
 				$filepath = $image->_getOriginalpath();
 			else

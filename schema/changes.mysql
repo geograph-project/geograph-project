@@ -555,7 +555,7 @@ CREATE TABLE `gridsquare_percentage` (
   KEY `subject` (`level`,`community_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
-CREATE TABLE  gridsquare_backup SELECT * FROM  gridsquare
+#CREATE TABLE  gridsquare_backup SELECT * FROM  gridsquare
 
 ALTER TABLE `gridimage_search` ADD `gridsquare_id` int(11) NOT NULL DEFAULT '0' AFTER `gridimage_id`;
 ALTER TABLE `gridimage_recent` ADD `gridsquare_id` int(11) NOT NULL DEFAULT '0' AFTER `gridimage_id`;
@@ -604,3 +604,42 @@ ALTER TABLE `gridsquare_mappal` ADD `norm` float(10,4) NOT NULL DEFAULT '0' AFTE
 #SELECT gs.gridsquare_id, gp.level,COALESCE(SUM(gp.percent*lh.mappal)/100.,0)
 #FROM gridsquare gs LEFT JOIN gridsquare_percentage gp USING(gridsquare_id) LEFT JOIN loc_hier lh USING(level,community_id)
 #WHERE level=4 GROUP BY gridsquare_id;
+
+
+ALTER TABLE `gridsquare` ADD `permit_photographs` tinyint(1) NOT NULL DEFAULT '1' AFTER `has_geographs`;
+ALTER TABLE `gridsquare` ADD `permit_geographs` tinyint(1) NOT NULL DEFAULT '1' AFTER `permit_photographs`;
+
+
+ALTER TABLE `loc_hier` CHANGE  `level` `level` tinyint(2)  NOT NULL;
+INSERT INTO `loc_hier` (`level`, `community_id`, `contains_cid_min`, `contains_cid_max`, `capital_cid`, `name`) VALUES
+(-1,  1,  0,  0,  0, 'land mass (low water)'),
+(-1,  2,  0,  0,  0, 'land mass (high water)'),
+(-1,  3,  0,  0,  0, 'lakes (low water)'),
+(-1,  4,  0,  0,  0, 'lakes (high water)');
+
+ALTER TABLE `mapfix_log` ADD `level` tinyint(2) NOT NULL DEFAULT '-2' AFTER `gridsquare_id`;
+ALTER TABLE `mapfix_log` ADD `community_id` int(9) unsigned NOT NULL DEFAULT '0' AFTER `level`;
+
+#CREATE TABLE  gridsquare_backup2 SELECT * FROM  gridsquare
+
+## create grey scale image with map maker (scale 1 limit 100 user -2, black/white)
+## edit out lakes, separate utm zones
+## /admin/gridbuilder.php: Level -1, Id 1, Skip Updating GridPrefix Table,Create squares if needed
+
+##copy landmass (low water = high water)
+REPLACE INTO gridsquare_percentage (gridsquare_id,level,community_id,percent) SELECT gridsquare_id,-1,2,percent FROM gridsquare_percentage where level=-1 and community_id=1 and percent > 0
+
+##lakes = landmass-percentland
+REPLACE INTO gridsquare_percentage (gridsquare_id,level,community_id,percent) SELECT gridsquare_id,-1,3,percent-percent_land FROM gridsquare_percentage INNER JOIN gridsquare USING (gridsquare_id) WHERE level=-1 AND community_id=1 AND percent_land>=0 AND percent>percent_land
+##copy lakes (low water = high water)
+REPLACE INTO gridsquare_percentage (gridsquare_id,level,community_id,percent) SELECT gridsquare_id,-1,4,percent FROM gridsquare_percentage where level=-1 and community_id=3 and percent > 0
+
+#update gs
+UPDATE gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp3 on (gs.gridsquare_id=gp3.gridsquare_id and gp3.level = -1 and gp3.community_id = 3)  SET gs.permit_geographs=coalesce(gp1.percent,0)-coalesce(gp3.percent,0)>0,gs.permit_photographs=coalesce(gp1.percent,0)>0
+#test gs
+select gs.*,gp1.percent as lp1,gp2.percent as lp2,gp4.percent as lp4,greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) as perc_calc from gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp2 on (gs.gridsquare_id=gp2.gridsquare_id and gp2.level = -1 and gp2.community_id = 2) left join gridsquare_percentage gp4 on (gs.gridsquare_id=gp4.gridsquare_id and gp4.level = -1 and gp4.community_id = 4) where greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != percent_land
+# don't show transition 0->1 [ supplemental images allowed on lakes ]
+select gs.*,gp1.percent as lp1,gp2.percent as lp2,gp4.percent as lp4,greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) as perc_calc from gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp2 on (gs.gridsquare_id=gp2.gridsquare_id and gp2.level = -1 and gp2.community_id = 2) left join gridsquare_percentage gp4 on (gs.gridsquare_id=gp4.gridsquare_id and gp4.level = -1 and gp4.community_id = 4) where greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != percent_land and (percent_land != 0 or greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != 1)
+
+ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant', 'mapmod') NULL DEFAULT NULL;
+

@@ -110,8 +110,8 @@ works as expected on your browser before doing real changes!</b>
 			<select name="news0" id="news0">
 			<option value="1" >1: state level</option>
 			<option value="2" >2</option>
-			<option value="3" selected>3: county level</option>
-			<option value="4" >4</option>
+			<option value="3" >3: county level</option>
+			<option value="4" selected>4</option>
 			</select>
 		</td>
 		<td>
