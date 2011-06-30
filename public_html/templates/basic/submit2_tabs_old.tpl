@@ -76,7 +76,7 @@ function clicker(step,override,shiftKey) {
 		ele.style.display = 'block';
 
 
-		var loc = 'inner&submit2&step='+step;
+		var loc = 'inner&submit2&step='+step+'&container=iframe'+step;
 
 		if (theForm.elements['grid_reference['+name+']'] && theForm.elements['grid_reference['+name+']'].value != '') {
 			loc = loc + "&grid_reference="+escape(theForm.elements['grid_reference['+name+']'].value);
@@ -187,9 +187,9 @@ AttachEvent(window,'load',readHash,false);
 </script>
 {/literal}
 
-	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submission">Other Submission Options</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
+	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submit">Other Submission Options</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
-	<h2>Submit Image <sup style="color:gray">v2:Tabs - Beta</sup></h2>
+	<h2>Submit Image <sup style="color:gray">v2:Tabs - Gamma</sup></h2>
 
 {$status_message}
 
@@ -313,6 +313,7 @@ AttachEvent(window,'load',readHash,false);
 		<div><span>Title:</span><input type="text" name="title[{$key}]" value="" size="20" maxlength="128"/></div>
 		<div><span>Description:</span><textarea name="comment[{$key}]" cols="30" rows="2" wrap="soft"></textarea></div>
 		<div><span>Category:</span><input type="text" name="imageclass[{$key}]" value="" size="12" maxlength="64"/> <input type="text" name="imageclassother[{$key}]" value="" size="12" maxlength="64"/></div>
+		<div><span>Tags:</span><input type="text" name="tags[{$key}]" value="" size="80"/></div>
 		<div><span>Date:</span><input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/></div>
 
 		<input type="hidden" name="selected" value="0"/>
@@ -351,6 +352,7 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
 	<textarea name="comment" style="display:none"/></textarea>
+	<input type="hidden" name="tags"/>
 	<input type="hidden" name="imageclass"/>
 	<input type="hidden" name="imageclassother"/>
 	<input type="hidden" name="imagetakenDay"/>
