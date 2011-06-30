@@ -136,6 +136,7 @@ function checkMultiFormSubmission() {
 	var errors = new Array();
 	var errors_count = 0;
 	var category = false;
+	var tags = false;
 	
 	for(q=0;q<theForm.elements.length;q++) {
 		var ele=theForm.elements[q];
@@ -175,14 +176,16 @@ function checkMultiFormSubmission() {
 				errors[name] = (errors[name])?(errors[name] + 1):1;
 				errors_count = errors_count + 1;
 			}
-		if (ele.name.indexOf('tags[') == 0)
+		if (ele.name.indexOf('tags[') == 0) {
 			if (ele.value == '' && category == false) {
 				var name = "* Geographical Context";
 				errors[name] = (errors[name])?(errors[name] + 1):1;
 				errors_count = errors_count + 1;
+			} else {
+				tags = true;
 			}
-		
-		if (ele.name.indexOf('imageclass[') == 0) {
+		}
+		if (ele.name.indexOf('imageclass[') == 0 && tags == false) {
 			if (ele.value == '') {
 				var name = "* Geographical Category";
 				errors[name] = (errors[name])?(errors[name] + 1):1;
