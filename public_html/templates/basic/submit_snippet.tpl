@@ -18,7 +18,7 @@
 
 			{if $errors.title}</div>{/if}
 		</div>
-		
+
 		<div class="field">
 
 			<label for="comment"><b>Description</b>:</label>
@@ -26,12 +26,12 @@
 			<textarea name="comment" id="comment" rows="10" cols="60"></textarea>
 
 			<div class="fieldnotes" style="font-size:0.7em;color:gray">Remember this shared description may be used on multiple images - so keep it generic.<br/>
-			
-			TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
+
+			TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link
 to a grid square or another image.<br/>For a web link just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
 			</div>
 		</div>
-		
+
 		<div class="field">
 			{if $errors.grid_reference}<div class="formerror"><p class="error">{$errors.grid_reference}</p>{/if}
 
@@ -43,31 +43,36 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 
 			{if $errors.grid_reference}</div>{/if}
 		</div>
-		
+		<!--br/>
+
+		<input type=checkbox> Show my name when this shared description is used (but not on my own images)<br/>
+		<input type=checkbox> Show just the title, not the full description on the photo page.<br/><br/-->
+
 		<input type="submit" name="create" value="Create Shared Description"/> &nbsp; <small>[ <a href="javascript:void(hide_tree('create'))">Cancel / Close</a> ]</small>
-		
+
 		<div class="fieldnotes" style="font-size:0.7em;color:gray">Idea: Even if you leave the description itself blank, a 'shared description' can still be used as a way to link a series of images into a 'Collection'.</div>
-		
+
 	</fieldset>
 </div>
 
 <div class="interestBox" style="font-size:0.8em{if $create};display:none{/if}" id="hidecreate">
-	<div style="float:right;text-align:center;position:relative;background-color:white;padding:3px">
-		<input type="button" value="Create New Shared Description" onclick="show_tree('create')"/><br/>
-		<a href="/snippets.php?gr={$gr|escape:'html'}&amp;onlymine=on" target="_blank">Edit nearby Shared Descriptions</a>
-	</div>
-	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; These shared descriptions can operate in addition to <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
-	
+
+	<div style="float:right">
+		<a href="/article/Shared-Descriptions" title="Read more about Shared Descriptions here" class="about" target="_blank">About Shared Descriptions</a></div>
+	<div style="margin-bottom:6px">
+	<b><a href="#" onclick="show_tree('create');return false">Create New Shared Description</a></b>
+		&middot; <a href="/snippets.php?gr={$gr|escape:'html'}&amp;onlymine=on" target="_blank">Edit nearby Shared Descriptions</a> &middot;</div>
+	&middot; Here you can create descriptions that are common to multiple images.<br/>&middot; These Shared Descriptions can operate in addition to <i>or</i> instead of the main description.{if $used}<br/> &middot; Optional: Reference a shared description by its number eg [1] in the main description.{/if}
+
 	{if $gridimage_id < 4294967296}
 		<br/>&middot; <b>Changes made here apply immediately and don't go though the change request system.</b>
 	{/if}
-	<br/>&middot; <b>{newwin href="/article/Shared-Descriptions" text="Read more about Shared Descriptions here"}</b>
 </div>
 {if $used}
 <div style="background-color:lightgreen">
 <div style="font-size:0.7em;color:green;border-top:2px solid gray;padding:2px">&nbsp;<b>Shared Descriptions attached to this image</b>:</div>
 {foreach from=$used item=item name=used}
-	
+
 	<div style="margin-left:4px;background-color:{cycle values="#e4e4e4,#f4f4f4"}">
 		<div style="float:right;position:relative">
 			{if $user->user_id == $item.user_id || $is_mod}
@@ -76,7 +81,7 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 			<input type="submit" name="remove[{$item.snippet_id}]" value="Remove" style="background-color:pink"/>
 		</div>
 
-		{$smarty.foreach.used.iteration}. 
+		{$smarty.foreach.used.iteration}.
 		<a href="/snippet/{$item.snippet_id}" target="_blank"><b>{$item.title|escape:'html'|default:'untitled description'}</b></a><br/>
 		<div style="font-size:0.7em">{$item.comment|escape:'html'|truncate:250:' (more...)'}</div>
 
@@ -89,34 +94,34 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 </div>
 {/if}
 
-<div style="font-size:0.7em;color:green;border-top:2px solid gray;padding:2px">&nbsp;<b>Shared Descriptions available</b>: 
+<div style="font-size:0.7em;color:green;border-top:2px solid gray;padding:2px">&nbsp;<b>Shared Descriptions available</b>:
 {if $tab eq 'recent'}
 	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <b>My Recently used</b> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 {elseif $tab eq 'suggestions'}
 	( <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}">Search/Local Filter</a> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My recently used</a> / <b>Suggestions</b> )</div>
-{else}	
+{else}
 	( <b>Search/Local Filter</b> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My recently used</a> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 
 <div class="interestBox" style="margin:4px;margin-left:24px">
 Within radius:{if $centisquare}
-<label for="rad01" class="nowrap"><input type="radio" name="radius" id="rad01" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare</label> / 
+<label for="rad01" class="nowrap"><input type="radio" name="radius" id="rad01" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare</label> /
 {/if}
-<label for="rad1" class="nowrap"><input type="radio" name="radius" id="rad1" value="1" {if $radius == 1 || !$radius} checked{/if}/> {$grid_reference|default:'gridsquare'}</label> / 
-<label for="rad2" class="nowrap"><input type="radio" name="radius" id="rad2" value="2" {if $radius == 2} checked{/if}/> surrounding gridsquares</label> / 
+<label for="rad1" class="nowrap"><input type="radio" name="radius" id="rad1" value="1" {if $radius == 1 || !$radius} checked{/if}/> {$grid_reference|default:'gridsquare'}</label> /
+<label for="rad2" class="nowrap"><input type="radio" name="radius" id="rad2" value="2" {if $radius == 2} checked{/if}/> surrounding gridsquares</label> /
 <label for="rad10" class="nowrap"><input type="radio" name="radius" id="rad10" value="10"{if $radius == 10} checked{/if}/> within 10km</label> /
 <label for="rad1000" class="nowrap"><input type="radio" name="radius" id="rad1000" value="1000"{if $radius == 1000} checked{/if}/> anywhere <sub>(keyword needed below!)</sub></label>  <br/>
 <label for="fq">Search{if $sphinx} keywords{/if}</label>: <input type="text" name="q" id="fq" size="20"{if $q} value="{$q|escape:'html'}"{/if}/>
 {if !$sphinx}
 	(single keyword only)
 {/if}
- <input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions. 
- 
+ <input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions.
+
  <input type="submit" value="Update"/>
 </div>
 {/if}
 
 {foreach from=$results item=item}
-	
+
 	<div style="margin-left:4px;background-color:{cycle values="#e4e4e4,#f4f4f4"}">
 		<div style="float:right;position:relative">
 			{if $user->user_id == $item.user_id || $is_mod}
@@ -130,7 +135,7 @@ Within radius:{if $centisquare}
 		<div style="font-size:0.7em;color:gray;margin-left:10px;">
 
 		{if $user->user_id != $item.user_id && $item.realname}
-			By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>. 
+			By <a href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a>.
 		{/if}
 
 		{if $item.images}
@@ -172,11 +177,11 @@ function suggestionsClicker(that) {
 	if (thatForm.elements['imageclass']) {
 		str = str + ' '+ thatForm.elements['imageclass'].value;
 	}
-	
+
 	window.location.href = that.href + "&corpus="+encodeURIComponent(str.replace(/[\r\n]+/,' '));
 	return false;
 }
-		
+
 {/literal}</script>
 
 </body>

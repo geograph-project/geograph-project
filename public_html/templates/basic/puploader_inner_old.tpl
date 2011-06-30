@@ -154,131 +154,175 @@
 
 <sup style="color:red"><b>New</b></sup> You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
 
+{if $submit2}
+	{if $upload_id}
+		<br/>
+
+		<div class="tabHolder" style="font-size:1em">
+			<a class="tabSelected nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Primary Category</a>&nbsp;
+			<a class="tab nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
+			<a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags <small>(Optional)</small></a>&nbsp;
+			<a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions <small>(Optional)</small></a>
+		</div>
+
+		<div id="div4" class="interestBox">
+	{/if}
+{else}
+	<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
+		<br/><span class="formerror">{$error.imageclass}</span>
+	{/if}<br />
+{/if}
+			{if $use_autocomplete}
+
+					<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
+					</p>
+				{literal}
+				<script type="text/javascript">
+				<!--
+
+				AttachEvent(window,'load', function() {
+					var inputWord = $('imageclass');
+
+					new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
+						'postVar': 'q',
+						'minLength': 2,
+						maxChoices: 60,
+						onSelection: function() {
+							parentUpdateVariables();
+						}
+					});
+
+				},false);
+
+				//-->
+				</script>
+				{/literal}
+
+			{else}
+				{literal}
+				<script type="text/javascript">
+				<!--
+				//rest loaded in geograph.js
+				function mouseOverImageClass() {
+					if (!hasloaded) {
+						setTimeout("prePopulateImageclass2()",100);
+					}
+					hasloaded = true;
+				}
+
+				function prePopulateImageclass2() {
+					var sel=document.getElementById('imageclass');
+					sel.disabled = false;
+					var oldText = sel.options[0].text;
+					sel.options[0].text = "please wait...";
+
+					populateImageclass();
+
+					hasloaded = true;
+					sel.options[0].text = oldText;
+					if (document.getElementById('imageclass_enable_button'))
+						document.getElementById('imageclass_enable_button').disabled = true;
+				}
+				AttachEvent(window,'load',onChangeImageclass,false);
+				//-->
+				</script>
+				{/literal}
+
+				<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
+						<option value="">--please select feature--</option>
+						{if $imageclass}
+							<option value="{$imageclass}" selected="selected">{$imageclass}</option>
+						{/if}
+						<option value="Other">Other...</option>
+					</select>
+
+					<span id="otherblock">
+					<label for="imageclassother">Please specify </label>
+					<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
+					</span></p>
+
+			{/if}
+
 
 {if $submit2}
 	{if $upload_id}
-		<div style="float:right"><a href="/article/Shared-Descriptions" text="Article about Shared Descriptions" class="about" target="_blank">About</a></div>
-		<p><b>Shared Descriptions/References (Optional)</b>
-			<a href="#" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" id="hideshare">++ Expand <i>Shared Descriptions</I> box ++</a>
-			<div id="showshare" style="display:none">
-				<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
-				</iframe>
-			</div></p>
-	{else}
-		<p><b>Shared Descriptions/References (Optional)</b><br/>
-		<span style="color:red">&nbsp; - Shared description can only be set once image has finished uploading,
-<a href="javascript:void(window.parent.clicker(3,false));void(window.parent.clicker(3,true));">close and reopen this step</a> once the image has uploaded. </span></p>
-	{/if}
-{/if}
+			<div style="font-size:0.8em;padding-bottom:5px;">
+			Note: Instead of selecting a Category, you can select one or more items from the "<a href="#" onclick="tabClick('tab','div',1,4);return false;">Geographical Context</a>" tab.<br/>
+			Adding additional Tags is entirely optional.
+			</div>
 
-{if $use_autocomplete}
+		</div>
 
-	<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-		<br/><span class="formerror">{$error.imageclass}</span>
-		{/if}<br />
-		<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
-		</p>
-	{literal}
-	<script type="text/javascript">
-	<!--
 
-	AttachEvent(window,'load', function() {
-	 	var inputWord = $('imageclass');
-
-	    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
-	        'postVar': 'q',
-	        'minLength': 2,
-	        maxChoices: 60,
-	        onSelection: function() {
-	        	parentUpdateVariables();
-	        }
-	    });
-
-	},false);
-
-	//-->
-	</script>
-	{/literal}
-
-{else}
-	{literal}
-	<script type="text/javascript">
-	<!--
-	//rest loaded in geograph.js
-	function mouseOverImageClass() {
-		if (!hasloaded) {
-			setTimeout("prePopulateImageclass2()",100);
-		}
-		hasloaded = true;
-	}
-
-	function prePopulateImageclass2() {
-		var sel=document.getElementById('imageclass');
-		sel.disabled = false;
-		var oldText = sel.options[0].text;
-		sel.options[0].text = "please wait...";
-
-		populateImageclass();
-
-		hasloaded = true;
-		sel.options[0].text = oldText;
-		if (document.getElementById('imageclass_enable_button'))
-			document.getElementById('imageclass_enable_button').disabled = true;
-	}
-	AttachEvent(window,'load',onChangeImageclass,false);
-	//-->
-	</script>
-	{/literal}
-
-	<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-		<br/><span class="formerror">{$error.imageclass}</span>
-		{/if}<br />
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
-			<option value="">--please select feature--</option>
-			{if $imageclass}
-				<option value="{$imageclass}" selected="selected">{$imageclass}</option>
-			{/if}
-			<option value="Other">Other...</option>
-		</select>
-
-		<span id="otherblock">
-		<label for="imageclassother">Please specify </label>
-		<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
-		</span></p>
-
-{/if}
-
-{if $submit2 && $upload_id}
-		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tagging(this.form)" id="hidetag"/> <small>(suggest opening after entering description above)</small></p>
-
-		<div class="interestBox" id="showtag" style="display:none">
-			<ul>
-				<li>Tags are simple free-form keywords/short phrases used to describe the image.</li>
-				<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
-				<li>It is not compulsory to add any Tags.</li>
-				<li>Note: Tags should be singular, ie an image of a church should have the Tag "Church", not "Churches" - it's a specific Tag, not a category<br/> <small>(however if a photo is of multiple fence posts, then the Tag "Fence Posts" should be used).</small></li>
-				<li>To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".</li>
-				<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
-			</ul>
-			<iframe src="about:blank" height="200" width="100%" id="tagframe">
+		<div id="div3" class="interestBox" style="display:none">
+			<iframe src="about:blank" height="400" width="100%" id="shareframe" style="border:0">
 			</iframe>
-			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
-		</div></p>
+		</div>
+
+		<div id="div1" class="interestBox" style="display:none">
+			<div style="float:right"><a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">About Context/Tags</a></div>
+			<div style="font-size:0.8em;padding-bottom:5px;">
+			&middot; Tick as many Geogaphical Contexts as required.<br/>
+			&middot; Hover over name for a description, see also <a href="/tags/primary.php" text="More examples" target="_blank">further details and examples</a><br/>
+			&middot; If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat.<br/>
+			&middot; As we have been adding Context to the previuous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.<br/>
+			</div>
+
+			{foreach from=$tops key=key item=item}
+				<div class="plist">
+					<div style="color:black">{$key}</div>
+					{foreach from=$item item=row}
+						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}" id="l-{$row.top|escape:'url'}">
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this)"/>
+							{$row.top|escape:'html'}
+						</label>
+					{/foreach}
+					<br/>
+				</div>
+			{/foreach}
+			<br style="clear:both"/>
+
+		</div>
+
+		<div id="div2" class="interestBox" style="display:none">
+			<div style="float:right"><a href="/article/Tags" title="Article about Tags" class="about" target="_blank">More about Tags</a></div>
+			<div style="font-size:0.8em;padding-bottom:5px;">
+			&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/>
+			&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/>
+			&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/>
+			&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".
+			</div>
+
+			<iframe src="about:blank" height="200" width="100%" id="tagframe" style="border:0">
+			</iframe>
+		</div>
 
 {literal}
 <script type="text/javascript">
 function show_tagging(form) {
-	show_tree('tag');
 	var query = 'upload_id={/literal}{$upload_id}&gr={$grid_reference|escape:'html'}{literal}&v=3';
 	if (form.elements['title'].value.length> 0 )
 		query=query+'&title='+encodeURIComponent(form.elements['title'].value);
+	for(q=0;q<form.elements['tags[]'].length;q++)
+		if (form.elements['tags[]'][q].checked)
+			query=query+'&tags[]='+encodeURIComponent(form.elements['tags[]'][q].value);
 	if (form.elements['comment'].value.length> 0 )
 		query=query+'&comment='+encodeURIComponent(form.elements['comment'].value.substr(0,1500).replace(/[\n\r]/,' '));
 	document.getElementById('tagframe').src='/tags/tagger.php?'+query;
 }
+function rehighlight(that) {
+	var id = that.id.replace(/c-/,'l-');
+	document.getElementById(id).style.fontWeight=that.checked?'bold':'normal';
+	document.getElementById(id).style.backgroundColor=that.checked?'white':'';
+}
 </script>{/literal}
 
+	{else}
+		<p style="color:red">&middot; Further details can only be set once image has finished uploading,
+		<a href="javascript:void(window.parent.clicker(3,false));void(window.parent.clicker(3,true));">close and re-open this step</a> once the image has uploaded.</p>
+	{/if}
 {/if}
+
 
 
 	<p><label><b>Date photo taken</b></label> {if $error.imagetaken}
@@ -290,12 +334,12 @@ function show_tagging(form) {
 		{/if}
 
 		[ Use
-		<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
+		<input type="button" value="Today's" onclick="setdate('imagetaken','{$today_imagetaken}',this.form);parentUpdateVariables()"/>
 		{if $last_imagetaken}
-			<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
+			<input type="button" value="Last Submitted" onclick="setdate('imagetaken','{$last_imagetaken}',this.form);parentUpdateVariables()"/>
 		{/if}
 		{if $imagetaken != '--' && $imagetaken != '0000-00-00'}
-			<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);parentUpdateVariables()" class="accept"/>
+			<input type="button" value="Current" onclick="setdate('imagetaken','{$imagetaken}',this.form);parentUpdateVariables()"/>
 		{/if}
 		Date ]
 
@@ -338,8 +382,23 @@ function show_tagging(form) {
 	function setTakenDate(value) {
 		setdate('imagetaken',value,document.forms['theForm']);
 	}
-</script>
 {/literal}
+
+{dynamic}
+{if $container}
+	{literal}
+
+	function resizeContainer() {
+		var FramePageHeight =  document.body.offsetHeight + 10;
+		window.parent.document.getElementById('{/literal}{$container|escape:'javascript'}{literal}').style.height=FramePageHeight+'px';
+	}
+
+	AttachEvent(window,'load',resizeContainer,false);
+	{/literal}
+{/if}
+{/dynamic}
+</script>
+
 
 </form>
 </body>
