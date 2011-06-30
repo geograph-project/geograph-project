@@ -150,9 +150,7 @@
 	<p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 	<textarea id="comment" name="comment" disabled rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 	<div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
-	For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
-
-<sup style="color:red"><b>New</b></sup> You can add a list of keywords as well as (or instead of) a description. On a separate line at the end of the description just type 'Keywords:' followed by your list. Keywords are useful to add words to aid people searching for images, without including the words in the description itself.</div>
+	For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
 {if $submit2}
 	{if $upload_id}
@@ -160,9 +158,9 @@
 
 		<div class="tabHolder" style="font-size:1em">
 			<a class="tabSelected nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Primary Category</a>&nbsp;
-			<a class="tab nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
-			<a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags <small>(Optional)</small></a>&nbsp;
-			<a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions <small>(Optional)</small></a>
+			<a class="tab nowrap" id="tab1" style="font-size:0.9em" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
+			<a class="tab nowrap" id="tab2" style="font-size:0.9em" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags <small>(Optional)</small></a>&nbsp;
+			<a class="tab nowrap" id="tab3" style="font-size:0.9em" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions <small>(Optional)</small></a>
 		</div>
 
 		<div id="div4" class="interestBox">
