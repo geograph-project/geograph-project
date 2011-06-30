@@ -135,7 +135,8 @@ function checkMultiFormSubmission() {
 	var warnings_count = 0;
 	var errors = new Array();
 	var errors_count = 0;
-			
+	var category = false;
+	
 	for(q=0;q<theForm.elements.length;q++) {
 		var ele=theForm.elements[q];
 		
@@ -175,8 +176,8 @@ function checkMultiFormSubmission() {
 				errors_count = errors_count + 1;
 			}
 		if (ele.name.indexOf('tags[') == 0)
-			if (ele.value == '') {
-				var name = "* Geographical Content";
+			if (ele.value == '' && category == false) {
+				var name = "* Geographical Context";
 				errors[name] = (errors[name])?(errors[name] + 1):1;
 				errors_count = errors_count + 1;
 			}
@@ -191,7 +192,11 @@ function checkMultiFormSubmission() {
 					var name = "* Geographical Category Other";
 					errors[name] = (errors[name])?(errors[name] + 1):1;
 					errors_count = errors_count + 1;
-				} 
+				} else {
+					category = true;
+				}
+			} else {
+				category = true;
 			}
 		}
 		if (ele.name.indexOf('imagetaken') == 0)
@@ -225,13 +230,13 @@ function checkMultiFormSubmission() {
 		message = "We notice that the following fields have been left blank:\n\n";
 		
 		for(q in errors) {
-			message = message + q + " x " + errors[q] + " times\n";
+			message = message + q + (errors[q] > 1?(" x " + errors[q] + " times"):'') +"\n";
 		} 
 		if (warnings_count > 0) {
 			message = message + "\nAdditionally the following fields are left blank, which while not required it would be appreciated:\n\n";
 
 			for(q in warnings) {
-				message = message + q + " x " + warnings[q] + " times\n";
+				message = message + q + (warnings[q] > 1?(" x " + warnings[q] + " times"):'') +"\n";
 			}
 		}
 		message = message + "\nPlease provide the missing information\n\n";
@@ -241,7 +246,7 @@ function checkMultiFormSubmission() {
 		message = "We notice that the following fields have been left blank:\n\n";
 		
 		for(q in warnings) {
-			message = message + q + " x " + warnings[q] + " times\n";
+			message = message + q + (warnings[q] > 1?(" x " + warnings[q] + " times"):'') +"\n";
 		} 
 		message = message + "\nWhile you can continue without providing this information we would appreciate including as much detail as possible as it will make plotting the photo on a map much easier.\n\n";
 		message = message + "Adding the missing information should be very quick by dragging the icons on the map.\n\n";
