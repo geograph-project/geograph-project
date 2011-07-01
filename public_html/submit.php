@@ -576,8 +576,15 @@ if (isset($_POST['gridsquare']))
 			require_once('geograph/rastermap.class.php');
 
 			$rastermap = new RasterMap($square,true);
-			if (isset($_REQUEST['service']) && $_REQUEST['service'] == 'Google') {
-				$rastermap->service = 'Google';
+			if (empty($_REQUEST['service']) && !empty($_COOKIE['MapSrv'])) { 
+				$_REQUEST['service'] = $_COOKIE['MapSrv'];
+			}
+			if (isset($_REQUEST['service'])) {
+				if ($_REQUEST['service'] == 'Google') {
+					$rastermap->setService('Google');
+				} elseif ($_REQUEST['service'] == 'OS50k' && $rastermap->service == 'OSOS') {
+					$rastermap->setService('OS50k');
+				}
 			}
 			if (isset($_POST['photographer_gridref'])) {
 				$square2=new GridSquare;
