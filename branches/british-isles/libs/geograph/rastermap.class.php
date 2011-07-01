@@ -713,7 +713,27 @@ class RasterMap
 			}
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
-###############				$p1 .= "<script type=\"text/javascript\" src=\"http://nls.tileserver.com/api.js\"></script>";
+				
+				if ($this->reference_index == 1) {
+					$p1 .= "<script type=\"text/javascript\" src=\"http://nls.tileserver.com/api.js\"></script>";
+
+					$block .= '
+					// -- copy&paste block start
+					var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90, -180),new GLatLng(90, 180)), 1,
+						"Historical maps from <a href=\"http://geo.nls.uk/maps/api/\">NLS Maps API<\/a>");
+					var copyrightCollection = new GCopyrightCollection();
+					copyrightCollection.addCopyright(copyright);
+					var tilelayer = new GTileLayer(copyrightCollection, 1, NLSTileUrlOS("MAXZOOM"));
+					tilelayer.getTileUrl = NLSTileUrlOS;
+					var nlsmap = new GMapType([tilelayer], G_NORMAL_MAP.getProjection(), "His");
+					// -- copy&paste block end
+
+					// -- remember to add the new map layer to your mashup!!
+					map.addMapType(nlsmap);
+
+					//map.setMapType(nlsmap);
+					';
+				}
 			} else {
 				$p1 = '';
 			}
@@ -731,7 +751,7 @@ class RasterMap
 							map = new GMap2(document.getElementById(\"map\"));
 							map.addMapType(G_PHYSICAL_MAP);
 							map.addControl(new GSmallZoomControl());
-							map.addControl(new GMapTypeControl(true));
+							map.addControl(new GHierarchicalMapTypeControl(true));
 							map.enableDoubleClickZoom(); 
 							map.enableContinuousZoom();
 							map.enableScrollWheelZoom();
