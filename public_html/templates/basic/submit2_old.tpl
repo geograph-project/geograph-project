@@ -219,7 +219,7 @@ AttachEvent(window,'load',readHash,false);
 	{if !$user->use_autocomplete}
 	<input type="checkbox" name="use_autocomplete" {if $user->use_autocomplete} checked{/if} id="use_autocomplete" onclick="{literal}if (document.getElementById('sd'+3).style.display == 'block') { clicker(3,false); clicker(3,true); }{/literal}"/> <label for="use_autocomplete">Use auto-complete text entry for image category selection in Step 3. <a href="/profile.php?edit=1" target="_blank">Change permanently</a></label> <br/>
 	{/if}
-	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this);clicker(2,false); clicker(2,true);"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain</label></p>
+	<input type="checkbox" name="service" id="service_google" value="Google" onclick="saveService(this);clicker(2,false); clicker(2,true);"/> <label for="service_google">Use Google Mapping in Step 2 - even for Great Britain (includes 1920s to 1940s OS maps!)</label></p>
 
 {/dynamic}
 
