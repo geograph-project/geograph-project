@@ -45,7 +45,7 @@ function redis_session_open($save_path, $session_name)
 function redis_session_close()
 {
 	global $redis_handler;
-	#$redis_handler = NULL;
+	$redis_handler = NULL;
 }
 
 function redis_session_read($id)
@@ -60,7 +60,7 @@ function redis_session_read($id)
 	}
 	$session_stat[$key] = md5($sess_data);
 	
-	return unserialize($sess_data);
+	return $sess_data;
 }
 
 function redis_session_write($id, $sess_data)
@@ -68,9 +68,6 @@ function redis_session_write($id, $sess_data)
 	global $redis_handler,$session_stat;
 	$key = session_name().":".$id;
 	$lifetime = ini_get("session.gc_maxlifetime");
-	
-	$sess_data = serialize($sess_data);
-	
 	
 	//check if anything changed in the session, only send if has changed
 	if (!empty($session_stat[$key]) && $session_stat[$key] == md5($sess_data)) {
