@@ -138,7 +138,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
 #		split_timer('db'); //starts the timer
 		$db=NewADOConnection($GLOBALS['DSN']);
 #		split_timer('db','connect','master'); //logs the wall time
-	} 
+	}
 	if (!$db && mysql_error() == 'MySQL server has gone away') {
 		//one last try! forcing a new connection via nconnect. 
 		$db=NewADOConnection($GLOBALS['DSN'].(empty($CONF['db_persist'])?'?':'&')."new");
@@ -237,7 +237,12 @@ if (!empty($CONF['memcache']['adodb'])) {
 	}
 }
 
-if (!empty($CONF['memcache']['sessions'])) {
+if (!empty($CONF['redis_host'])) {
+	require "3rdparty/RedisSessions.php";
+	
+	redis_session_install();
+	
+} elseif (!empty($CONF['memcache']['sessions'])) {
 
 	if ($CONF['memcache']['sessions'] != $CONF['memcache']['app']) {
 		$memcachesession = new MultiServerMemcache($CONF['memcache']['sessions']);
@@ -334,10 +339,12 @@ function init_session()
 
 		//create new user object - initially anonymous
 		$_SESSION['user'] =& new GeographUser;
-
+	
 		//give object a chance to auto-login via cookie
 		$_SESSION['user']->autoLogin();
 	}
+	if (isset($_SESSION['user']->about_yourself))
+		unset($_SESSION['user']->about_yourself);
 
 	//put user object into global scope
 	$GLOBALS['USER'] =& $_SESSION['user'];
