@@ -63,11 +63,12 @@ function tabClick(tabname,divname,num,count) {
 //	-	-	-	-	-	-	-	-
 
 function search_focus(that) {
-	that.style.backgroundPosition = "100 100";
+	that.style.backgroundPosition = "100px 100px";
 }
 
 function search_blur(that) {
-	that.style.backgroundPosition = "0 0";
+	if (that.value.length == 0)
+		that.style.backgroundPosition = "0 0";
 }
 
 //	-	-	-	-	-	-	-	-
