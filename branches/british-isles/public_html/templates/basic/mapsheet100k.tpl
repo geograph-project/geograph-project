@@ -23,14 +23,14 @@ pre
 	cursor:hand;
 }
 
-.zx 
+.zx
 {
 
 }
 
-.zy 
+.zy
 {
-	
+
 }
 
 {/literal}
@@ -41,9 +41,11 @@ pre
 
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.1em;width:10em;height:0.8em;font-size:4em;border:1px solid black;background:white;">
-<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet <b>centered on {$gridref}{if $realname}, for {$realname}{/if}</b> and take it out with you to mark off the squares that you do. {if $recent}<br/><b>Squares with images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"} are marked with an X.</b> Squares with older images only are marked with +.{else}Squares with Geographs are marked with an 'X'. Squares with only Supplemental are marked with an 's'.<br/>{/if}<br/><div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$generated|default:$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
+<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet <b>centered on {$gridref}{if $realname}, for {$realname}{/if}</b> and take it out with you to mark off the squares that you do. {if $recent}<br/><b>Squares with images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"} are marked with an X.</b> Squares with older images only are marked with +.{else}Squares with Geographs are marked with an 'X'. Squares with only Supplemental are marked with an 's'.<br/>{/if}
+{if !$recent}<div class="no_print" style="text-align:center">Switch to <a href="/mapsheet.php?t={$mosaic_token}&amp;levels=1{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">contributor depth version</a></div>{/if}
+<div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$generated|default:$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
 </div>
- 
+
 <pre style="position:absolute;left:2em;top:8em;">  {section loop=100 name=x start=0}
 {assign var="x" value=$smarty.section.x.index}
 {if $x%10 == 0} {/if}
