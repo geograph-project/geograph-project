@@ -2157,7 +2157,16 @@ split_timer('map'); //starts the timer
 						where 
 						CONTAINS( GeomFromText($rectangle),	point_xy)
 						and percent_land<>0";
-				}
+				}elseif ($this->type_or_user == -13) {
+					$sql="select x,y,imagecount,max(ftf) as max_ftf,reference_index
+						from gridsquare gs
+						left join gridimage gi on(gi.gridsquare_id = gs.gridsquare_id and moderation_status='geograph' )
+						where 
+						CONTAINS( GeomFromText($rectangle),	point_xy)
+						and percent_land<>0
+						group by gs.gridsquare_id
+						order by null";
+				} 
 			} else {
 				$sql="select x,y,imagecount,has_geographs,reference_index,
 					(has_geographs=0 and imagecount > 0) as accepted, 0 as pending
@@ -2196,6 +2205,7 @@ split_timer('map'); //starts the timer
 				and percent_land<>0 
 				group by gs.gridsquare_id order by y,x";
 		}
+		
 		
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) 
