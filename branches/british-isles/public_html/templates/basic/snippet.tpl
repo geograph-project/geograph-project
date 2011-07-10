@@ -62,7 +62,7 @@
 					{/foreach}
 				</ul>
 			{/if}
-			<small>Selection is automatic and approximate, might not always select closely matching descriptions</small>
+			<small>Selection is automatic and approximate, it might not always select closely matching descriptions</small>
 		{/if}
 	</div>
 {/if}
@@ -78,17 +78,17 @@
 	{foreach from=$results item=image}
 	  <div style="float:left;position:relative; width:130px; height:130px">
 	  <div align="center">
-	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a></div>
+	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full-size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,true)}</a></div>
 	  </div>
 	{foreachelse}
-		<p><i>no images to display{if $images}, this could be because they are still pending and/or recently rejected{/if}</i></p>
+		<p><i>No images to display{if $images}, this could be because they are still pending and/or recently rejected{/if}</i></p>
 	{/foreach}
 	<br style="clear:both"/>
 
 
 <ul class="explore">
 	{if $images && $title}
-		<li class="interestBox"><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1"><b>View all images</b> using "{$title|escape:'html'}" shared description(s)</a>
+		<li class="interestBox"><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1"><b>View all images</b> using "{$title|escape:'html'}" Shared Description(s)</a>
 		{if $images < 15}
 			| <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1&displayclass=gmap">On a <b>Map</b></a>
 		{/if}
