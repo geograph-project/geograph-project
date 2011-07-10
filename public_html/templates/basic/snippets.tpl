@@ -10,7 +10,7 @@
 
 {if $thankyou && $thankyou == 'saved'} 
 	<div style="background-color:lightgreen;padding:10px">
-	<h3 class="titlebar" style="margin:0">Thank you - Changes saved</h3>
+	<h3 class="titlebar" style="margin:0">Thank you - changes saved</h3>
 	{if $id} 
 		<a href="/snippet/{$id}">View the Shared Description</a>
 	{/if}
@@ -44,10 +44,10 @@
 
 			<textarea name="comment" id="comment" rows="10" cols="60">{$comment|escape:'html'}</textarea>
 
-			<div class="fieldnotes" style="font-size:0.7em;color:gray">Remember this shared description may be used on multiple images - so keep it generic.<br/>
+			<div class="fieldnotes" style="font-size:0.7em;color:gray">Remember this Shared Description may be used on multiple images - so keep it generic.<br/>
 			
 			TIP: use <span style="color:blue">[[TQ7506]]</span> or <span style="color:blue">[[5463]]</span> to link 
-to a Grid Square or another Image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
+to a grid square or another image.<br/>For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span><br/><br/>
 			</div>
 		</div>
 		
@@ -58,14 +58,14 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 			<input type="text" id="grid_reference" name="grid_reference" value="{$grid_reference|escape:'html'}" size="10" maxlength="12"/>
 			 or <input type="checkbox" name="nogr" value="1" id="nogr" {if $wgs84_lat == 0 && $wgs84_long == 0} checked{/if}/><label for="nogr">Don't attach a location to this description</label>
 			
-			<div class="fieldnotes" style="font-size:0.7em;color:gray">Optional Grid Reference for the feature/location, great if this description describes a specific location. Ideally 6 figure plus.</div>
+			<div class="fieldnotes" style="font-size:0.7em;color:gray">Optional grid reference for the feature/location, great if this description describes a specific location. Ideally 6 figure plus.</div>
 
 			{if $errors.grid_reference}</div>{/if}
 		</div>
 		
 		<input type="submit" name="save" value="Save"/> <input type="submit" name="cancel" value="Cancel"/>
 		
-		<div class="fieldnotes" style="font-size:0.7em;color:gray">Idea: Even if you leave the description itself blank, a 'shared description' can still be used as a way to link a series of images into 'Collection'.</div>
+		<div class="fieldnotes" style="font-size:0.7em;color:gray">Idea: even if you leave the description itself blank, a Shared Description can still be used as a way to link a series of images into a Collection.</div>
 		
 	</fieldset>
 </div>
@@ -131,7 +131,7 @@ to a Grid Square or another Image.<br/>For a weblink just enter directly like: <
 
 {foreachelse}
 	{if $gr || $q}
-		<p><i>no shared descriptions found (NOTE: it can take 10 minutes for new descriptions to be found)</i></p>
+		<p><i>No Shared Descriptions found (NOTE: it can take 10 minutes for new descriptions to be found)</i></p>
 	{/if}
 {/foreach}
 {if $query_info}

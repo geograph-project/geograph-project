@@ -31,9 +31,9 @@
 		party developers to create applications using data sourced from Geograph,
 		in a friendly and polite way.</p> 
 	 <p>Chances are you have come to this page because you are a developer
-		looking to get access to some of the data, well you've come to the right place,
+		looking to get access to some of the data. Well, you've come to the right place,
 		below you will find brief details of what's available and how to get it...</p>
-	 <p>Please note that the API is still in its early stages, these are the possiblities that 
+	 <p>Please note that the API is still in its early stages, these are the possibilities that 
 		the developers needed, or felt would be useful, if you have any special requests then
 		don't be shy, just <a href="/contact.php">let us know</a>.</p>
 
@@ -54,7 +54,7 @@
 			</tr>
 			<tr>
 				<td colspan="2">
-					<i>Recommended, API updates will be posted here.<small><br/> Low traffic, membership list is not disclosed.</small></i>
+					<i>Recommended API updates will be posted here.<small><br/> Low traffic membership list is not disclosed.</small></i>
 				</td>
 			</tr>
 			
@@ -64,7 +64,7 @@
 
 	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
-	 <b>All exports includes the photographer credit/name, which under the CC licence MUST be displayed along any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]" rel="nofollow">http://{$http_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
+	 <b>All exports include the photographer credit/name, which under the CC licence MUST be displayed alongside any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]" rel="nofollow">http://{$http_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
 	 </div>
 
 	 <h3 style="border:1px solid #cccccc;background-color:lightgreen; padding:10px; clear:both;margin-top:30px;"><a name="dumps"></a>Database Dumps - Bulk Data download</h3> 
@@ -86,18 +86,18 @@
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>RSS-feeds <a href="/faq.php#rss" class="xml-rss">RSS</a></h3> 
 	 <p>Really Simple Syndication allows you to obtain a details for a number of
 		images, (usually) in XML format, this makes it really easy for you to reuse
-		small section of information on your website or project. The feed lives at<br/><br/>
+		small sections of information on your website or project. The feed lives at<br/><br/>
 	 <a title="Geograph RSS feed"
 		href="http://{$api_host}/syndicator.php?key=[apikey]" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]</a><br/><br/>
 	 and by default returns obtains an up-to-date listing of the 15 latest
-		geograph submissions, you can however return different results as below</p> 
+		Geograph submissions, you can however return different results as below</p> 
 	 <h4><a name="rss_param"></a>Feed Type</h4> 
 	 <p>You should supply <b>one</b> of the following parameters to specify the type of
 		results you would like...</p> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
 		  <th rowspan="2"><i>-none-</i></th> 
-		  <td>15 latest geograph submissions</td> 
+		  <td>15 latest Geograph submissions</td> 
 		</tr> 
 		<tr> 
 		  <td>
@@ -107,7 +107,7 @@
 		  <th rowspan="2">i=[searchid]</th> 
 		  <td>runs a predefined search, see <a href="#building">Building a Search
 			 Query</a> for more information on how to obtain a valid i number. 
-			 accepts additonal paramater:</span>
+			 Accepts additional parameter:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>page=[number]</th> 
@@ -121,7 +121,7 @@
 		</tr> 
 		<tr> 
 		  <th rowspan="2">u=[user_id]</th> 
-		  <td>limit results to particular user</td> 
+		  <td>Limit results to particular user</td> 
 		</tr> 
 		<tr> 
 		  <td>
@@ -129,11 +129,11 @@
 		</tr> 
 		<tr> 
 		  <th rowspan="2">q=[query]</th> 
-		  <td>Tries deduce the type of search, either a text or a location search. can use the format {literal}q={what}+near+{where}{/literal} to be sure (or use seperate params as below) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+		  <td>Tries to deduce the type of search, either a text or a location search. Can use the format {literal}q={what}+near+{where}{/literal} to be sure (or use separate params as below) - Will in fact create an i query on the fly, so you can use that to get page 2 etc of the results. Accepts additional parameter:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>u=[user_id]</th> 
-				  <td>limit results to particular user</td> 
+				  <td>Limit results to particular user</td> 
 				</tr> 
 				<tr> 
 				  <th>distance=[number]</th> 
@@ -151,15 +151,15 @@
 		</tr> 
 		<tr> 
 		  <th rowspan="2">location=[location]</th> 
-		  <td>Returns 15 or all within 10km (which ever is less) of the specified location (Grid Reference, Postcode or Decimal Lat/Long) (see also <a href="#building">Building a query</a> for pitfals of the q paramater) - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+		  <td>Returns 15 or all within 10km (which ever is less) of the specified location (grid reference, postcode or decimal lat/long) (see also <a href="#building">Building a query</a> for pitfalls of the q paramater) - will in fact create an i query on the fly, so you can use that to get page 2 etc of the results. Accepts additional parameter:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>text=[text string]</th> 
-				  <td>returns only images matching this text search</td> 
+				  <td>Returns only images matching this text search</td> 
 				</tr> 
 				<tr> 
 				  <th>u=[user_id]</th> 
-				  <td>limit results to particular user</td> 
+				  <td>Limit results to particular user</td> 
 				</tr> 
 				<tr> 
 				  <th>distance=[number]</th> 
@@ -177,11 +177,11 @@
 		</tr> 
 		<tr> 
 		  <th rowspan="2">text=[text string]</th> 
-		  <td>Returns 15 results matching the <a href="/help/search_new">word search</a> - Will in fact create a i query on the fly, so you can use that to get page 2 etc of the results. Accepts additonal paramater:</span>
+		  <td>Returns 15 results matching the <a href="/help/search_new">word search</a> - will in fact create an i query on the fly, so you can use that to get page 2 etc of the results. Accepts additional parameter:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>u=[user_id]</th> 
-				  <td>limit results to particular user</td> 
+				  <td>Limit results to particular user</td> 
 				</tr> 
 				<tr> 
 				  <th>perpage=[number]</th> 
@@ -200,7 +200,7 @@
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
 		  <th rowspan="2">expand=1</th> 
-		  <td>If present includes the thumbnail of the image in the description as html. (non applicable to KML format) </td> 
+		  <td>If present includes the thumbnail of the image in the description as html (not applicable to KML format). </td> 
 		</tr> 
 		<tr> 
 		  <td>
@@ -209,7 +209,7 @@
 		</tr> 
 	 </table>  
 	 <h4><a name="rss_format"></a>Formats</h4> 
-	 <p>There is a number of standard formats the feed is available in</p> 
+	 <p>The feed is available in a number of standard formats:</p> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
 		  <td>format=<b>RSS0.91</b></td> 
@@ -270,12 +270,12 @@
 		<tr> 
 		  <td>format=<b>PHP</b></td> 
 		  <td><a title="Geograph PHP feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=PHP" rel="nofollow">PHP</a> - returns a valid php page, that builds a data-structure for use via include. (includes the thumbnail url)</td> 
+			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=PHP" rel="nofollow">PHP</a> - returns a valid php page, that builds a data-structure for use via include (includes the thumbnail url).</td> 
 		</tr> 
 		<tr> 
 		  <td>format=<b>KML</b></td> 
 		  <td><a title="Geograph Google Earth feed"
-			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=KML" rel="nofollow">KML</a> - suitable for use directly in Google Earth (XML based - includes the thumb url and lat/long!)<br/>accepts additonal paramaters:</span>
+			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=KML" rel="nofollow">KML</a> - suitable for use directly in Google Earth (XML based - includes the thumb url and lat/long!)<br/>accepts additional parameters:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>simple=1</th> 
@@ -360,7 +360,7 @@ Note:the distance should be 10km or below.
 	 </table>
 
 	 <h4><a name="rest_format"></a>Formats</h4> 
-	 <p>There is a number of standard formats the feed is available in</p> 
+	 <p>The feed is available in a number of standard formats:</p> 
 	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
 		  <td>output=<b>xml</b></td> 
@@ -388,7 +388,7 @@ Note:the distance should be 10km or below.
 	 
 	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
-	 <b>Note, that these CSV exports have become very inefficient, and so will only return 1000 records without prior arrangement.</b><br/><br/>
+	 <b>Note, these CSV exports have become very inefficient, and so will only return 1000 records without prior arrangement.</b><br/><br/>
 	 
 	 Please consider {external text="Database Dumps" href="http://data.geograph.org.uk/dumps/"} instead.
 	 </div>
@@ -478,11 +478,11 @@ Note:the distance should be 10km or below.
 		  <td>runs a predefined search, see
 			 <a href="#building">Building a Search Query</a> for more information on how to
 			 obtain a valid i number.<br/>
-			<span style="color:#990000;">NOTE: can't be combined with any of the above paramaters, but accepts additonal paramaters:</span>
+			<span style="color:#990000;">NOTE: can't be combined with any of the above parameters, but accepts additional parameters:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>count=[number]</th> 
-				  <td>overrides the pagesize specified in the query,<br/> or -1 for unlimited</td> 
+				  <td>overrides the page size specified in the query,<br/> or -1 for unlimited</td> 
 				</tr> 
 				<tr> 
 				  <th>page=[number]</th> 
@@ -497,10 +497,10 @@ Note:the distance should be 10km or below.
 		</tr> 
 	 </table> 
 	 <p>* because these results also return images modified within the period
-		its possible you will receive updates to images you already have. You can
-		safely use the ID column to check for duplicates. the modified date is changed
-		when anything about the image changes, for example of the title or comment, its
-		possible you will get a row that nothing has apparentlly changed, but these
+		it's possible you will receive updates to images you already have. You can
+		safely use the ID column to check for duplicates. The modified date is changed
+		when anything about the image changes, for example of the title or comment, it's
+		possible you will get a row that nothing has apparently changed, but these
 		should be very few.</p> 
 	 <h4><a name="columns"></a>Columns</h4> 
 	 <table border="1" cellpadding="3" cellspacing="0"> 
@@ -556,7 +556,7 @@ Note:the distance should be 10km or below.
 		  <td rowspan="3">Absolute position for the image in m from the Grid
 			 False origin. Use the <i>Grid Ref</i> column to deduce with Grid the location
 			 refers to.<b> These columns will be 0 when the image isn't positioned with more
-			 than a 4 figure Grid Reference. <span style="color:red">include <tt>&coords=1</tt> to get eastings/northings even for 4fig References</span></b></td> 
+			 than a 4 figure grid reference. <span style="color:red">include <tt>&coords=1</tt> to get eastings/northings even for 4 figure references</span></b></td> 
 		  <td>545667</td> 
 		</tr> 
 		<tr style="font-size:0.8em"> 
@@ -577,7 +577,7 @@ Note:the distance should be 10km or below.
 		  <th rowspan="2" &nbsp;</th> 
 		  <th>Lat</th> 
 		  <td rowspan="2">Position for the image in decimal degrees lat/long,
-			 negative Longitude is West, specified to as high as accuracy as possible.</td> 
+			 negative longitude is west, specified to as high as accuracy as possible.</td> 
 		  <td>53.5564</td> 
 		</tr> 
 		<tr style="font-size:0.8em"> 
@@ -623,7 +623,7 @@ Note:the distance should be 10km or below.
 		  <th>Easting</th> 
 		  <td rowspan="3">Absolute position for the photographer in m from the Grid
 			 False origin. Use the <i>Grid Ref</i> column to deduce with Grid the location
-			 refers to.<b> These columns will be 0 when the image doesnt include a Photographer Grid Reference</b></td> 
+			 refers to.<b> These columns will be 0 when the image doesn't include a Photographer Grid Reference</b></td> 
 		  <td>545667</td> 
 		</tr> 
 		<tr style="font-size:0.8em"> 
@@ -664,27 +664,27 @@ Note:the distance should be 10km or below.
 				<tr> 
 				  <td><a
 					 href="/search.php?i=25654">25654</a></td> 
-				  <td>15 Random images, by users joined in the last week </td> 
+				  <td>15 random images, by users joined in the last week </td> 
 				</tr> 
 				<tr> 
 				  <td><a
 					 href="/search.php?i=29439">29439</a></td> 
-				  <td>50 Recently submitted images</td> 
+				  <td>50 recently submitted images</td> 
 				</tr> 
 				<tr> 
 				  <td><a
 					 href="/search.php?i=25678">25678</a></td> 
-				  <td>15 Random images from 15 categories</td> 
+				  <td>15 random images from 15 categories</td> 
 				</tr> 
 				<tr> 
 				  <td><a
 					 href="/search.php?i=26586">26586</a></td> 
-				  <td>15 Random first geographs for 15 squares</td> 
+				  <td>15 random First Geographs for 15 squares</td> 
 				</tr>
 				<tr>
 				  <td><a
 					 href="/search.php?i=25666">25666</a></td>
-				  <td>15 Random images specified to a 10 figure grid reference</td>
+				  <td>15 random images specified to a 10 figure grid reference</td>
 				</tr> 
 			 </table>{dynamic}{if $user->registered}or even run one of your <a href="/search.php?more=1">recent searches</a>{/if}{/dynamic} </td> 
 		</tr> 
@@ -708,14 +708,14 @@ Note:the distance should be 10km or below.
 			 Technically
 			 this can also accept place-names or free text search, however due to there
 			 being no guarantee that it will only match one place-name (or none and run a
-			 text search), if its not sure the it returns a page asking the user to confirm
-			 their meaning. <br/><br/><i>However its possible to pass a numeric place-name id,
+			 text search), if it's not sure it returns a page asking the user to confirm
+			 their meaning. <br/><br/><i>However it's possible to pass a numeric place-name id,
 			 please <a href="/contact.php">contact us</a> if you would be interested in a
 			 copy of the dataset that we use.</i></td> 
 		</tr> 
 		<tr> 
 		  <td>Advanced</td> 
-		  <td>Its also possible to build more complicated searches using the
+		  <td>It's also possible to build more complicated searches using the
 			 <a href="/search.php?form=advanced">advanced search</a> form. Either build a
 			 search using the form and make note of the resultant i number, or have a look
 			 at the source code to see the parameters possible. <br/><br/><i>Due to fact that
@@ -725,7 +725,7 @@ Note:the distance should be 10km or below.
 		</tr> 
 	 </table> 
 	 <h4><a name="places"></a>Places to use an i number</h4> 
-	 <p>Each one accepts the <i>Page</i> paramater, to get the next page of results.</p>
+	 <p>Each one accepts the <i>Page</i> parameter, to get the next page of results.</p>
 	 <table border="1" cellpadding="3" cellspacing="0"> 
 		<tr> 
 		  <td>Results Webpage</td> 
@@ -767,12 +767,12 @@ Note:the distance should be 10km or below.
 	 <ul>
 		<li><a href="/memorymap.php">MemoryMap Exports</a></li>
 		<li><a href="/gpx.php">GPX Exports</a></li>
-		<li>100x100km CheckSheets (<a href="http://{$http_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX" rel="nofollow">example</a>) <small>- nice easy parseable listing, could be used for creating coverage maps</small></li>
+		<li>100x100km CheckSheets (<a href="http://{$http_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX" rel="nofollow">example</a>) <small>- nice easy parsable listing, could be used for creating coverage maps</small></li>
 		<li>sitemap.xml - see {external href="http://www.sitemaps.org"}</li>
 		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
-		<li>We can also create coverage csv's on demand, (listing squares currently with images)</li>
+		<li>We can also create coverage csvs on demand, (listing squares currently with images)</li>
 		<li>{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"} &amp; {external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk/" text="torrents.geograph.org.uk"}<br/><br/></li>
-		<li>Please DON'T use the <tt>/list/</tt> and/or <tt>/sitemap/</tt> namespace as they are to help Search Engines crewlers.</li>
+		<li>Please DON'T use the <tt>/list/</tt> and/or <tt>/sitemap/</tt> namespace as they are to help Search Engines crawlers.</li>
 	 </ul>
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
 	 <p>We wish you luck in you project and look forward to seeing the results! If you have any 
