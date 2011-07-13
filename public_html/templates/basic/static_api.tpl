@@ -54,7 +54,7 @@
 			</tr>
 			<tr>
 				<td colspan="2">
-					<i>Recommended API updates will be posted here.<small><br/> Low traffic membership list is not disclosed.</small></i>
+					<i>Recommended; API updates will be posted here.<small><br/> Low traffic membership list is not disclosed.</small></i>
 				</td>
 			</tr>
 			
@@ -770,7 +770,7 @@ Note:the distance should be 10km or below.
 		<li>100x100km CheckSheets (<a href="http://{$http_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX" rel="nofollow">example</a>) <small>- nice easy parsable listing, could be used for creating coverage maps</small></li>
 		<li>sitemap.xml - see {external href="http://www.sitemaps.org"}</li>
 		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
-		<li>We can also create coverage csvs on demand, (listing squares currently with images)</li>
+		<li>We can also create coverage CSVs on demand, (listing squares currently with images)</li>
 		<li>{external title="Geograph Archive Database Dump" href="http://data.geograph.org.uk/dumps/" text="data.geograph.org.uk/dumps"} &amp; {external title="Geograph Archive Torrents" href="http://torrents.geograph.org.uk/" text="torrents.geograph.org.uk"}<br/><br/></li>
 		<li>Please DON'T use the <tt>/list/</tt> and/or <tt>/sitemap/</tt> namespace as they are to help Search Engines crawlers.</li>
 	 </ul>
