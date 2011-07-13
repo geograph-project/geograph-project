@@ -2076,6 +2076,32 @@ alter table queries_archive change `displayclass` `displayclass` enum('full','te
 
 alter table queries change `displayclass` `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote','slidebig','excerpt','human','bigger') NOT NULL default 'full'     ;
 
+
 #################################################
 
+
+alter table gridimage_link add rnd FLOAT NOT NULL;
+
+update gridimage_link SET rnd = RAND();
+
+
+#################################################
+
+
+CREATE TABLE IF NOT EXISTS `exchange` (
+  `exchange_id` int(10) unsigned NOT NULL auto_increment,
+  `user_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `topic` varchar(64) NOT NULL,
+  `reply_id` int(10) unsigned NOT NULL default '0',
+  `email` enum('N','Y') NOT NULL default 'N',
+  `open` enum('N','Y') NOT NULL default 'Y',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`exchange_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+#################################################
 
