@@ -3,16 +3,16 @@
 
 <h2>Geographing Guide</h2>
 
-<p>A good Geograph presents images and information on the main human and 
+<p>Good Geographs present images and information on the main human and 
 physical geographical feature(s) present in any given ordnance survey 1km 
 grid square.
 </p>
 
-<p>Photos need not be master works of art, the important thing is the human 
+<p>Photos need not be works of art, the important thing is the human 
 and physical geographical information they contain.</p>
 
 <p>You can plan your Geograph using a hardcopy map or by visiting the 
-{external title="Get-a-map&trade;" href="http://www.ordnancesurvey.co.uk/oswebsite/getamap/" text="Get-a-map&trade;"} website or for really high tech geographing, you could use a 
+{external title="Get-a-map&trade;" href="http://www.ordnancesurvey.co.uk/oswebsite/getamap/" text="Get-a-map&trade;"} website or for really high tech Geographing, you could use a 
 Pocket PC or GPS equipped with mapping software (for example Memory Map).</p>
 
 <h3>Example</h3>
@@ -43,10 +43,10 @@ and look at its main features.</p>
 <p>Our selected map square is primarily a residential area with a staggered cross 
 road at the junction of the A571 and B5207. There is a church at the crossroads at 
 533007 and a school close to the centre of the square in the heart of the residential 
-area. From local knowledge, open farmland dominates the Eastern third of the grid 
+area. From local knowledge, open farmland dominates the eastern third of the grid 
 square.</p>
 
-<h3>Sample photographs for  SD5300</h3>
+<h3>Sample photographs for SD5300</h3>
 
 <p>Examples of representative photographs for the above location:</p>
 
@@ -70,8 +70,8 @@ square.</p>
 <div style="text-align:right"><a href="/profile/1">Gary Rogers</a>, Feb 2005</div>
 
 <ul>
-<li>See <a title="geograph and supplemental guide" href="/article/Geograph-or-supplemental">What is a geograph?</a> 
-    for more examples of images submitted to geograph and how they are moderated.</ul>
+<li>See <a title="geograph and supplemental guide" href="/article/Geograph-or-supplemental">What is a Geograph?</a> 
+    for more examples of images submitted to Geograph and how they are moderated.</ul>
 </ul>
 
 {include file="_std_end.tpl"}

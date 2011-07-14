@@ -4,7 +4,7 @@
  <h2>Geograph British Isles</h2>
 
 <p>We are currently experimenting with calling the project "<a href="http://www.geograph.org.uk/">Geograph Britain and Ireland</a>". 
-Up until Feb 2010 we went by the title "Geograph British Isles", and used the following tag line:</p>
+Until February 2010 we went by the title "Geograph British Isles", and used the following tag line:</p>
 
 
 <div class="interestBox">
@@ -14,7 +14,7 @@ Up until Feb 2010 we went by the title "Geograph British Isles", and used the fo
 </div>
 <br/>And the simpler version:<br/>
 <div class="interestBox">
-	Geograph British Isles is a web based project to collect and reference geographically representative images of every square kilometre of the British Isles.
+	Geograph British Isles is a web-based project to collect and reference geographically representative images of every square kilometre of the British Isles.
 </div>
 
 

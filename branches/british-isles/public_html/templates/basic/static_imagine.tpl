@@ -4,7 +4,7 @@
 <h2>Through The Square Window..... <sup style="color:red">New!</sup></h2>
 
 <p>We have created a new page specially designed for use in the classroom. 
-Here a map is shown, ask the class to imagine what the landscape looks like at the spot highlighted, then click a button to reveal the photo to see how it matches up.</p>
+Here a map is shown, the class can be asked to imagine what the landscape looks like at the spot highlighted, and then a button can be clicked to reveal the photo to see how it matches up.</p>
 
 
 <h3>Example</h3>
@@ -21,13 +21,13 @@ or
 <ul><li>on any search results page, select <i>display format</i> 'map imagine slideshow' at the bottom of the page</li></ul>
 
 
-<h3>TIP: Hand Picking Images</h3>
+<h3>TIP: Hand picking images</h3>
 
-<p>You can hand craft images using the 'Marked Images' feature. When browsing search results, if you select the "+ links" display format, then you can mark individual images, also find the button top right on any full size photo page.</p>
+<p>You can do this using the 'Marked Images' feature. When browsing search results, if you select the "+ links" display format, then you can mark individual images. The button can also be found at the top right on any full size photo page.</p>
 
 <p>Note: images are replayed in the order marked</p>
 
-<p>Once you have some images in your list, return to the <a href="/search.php">main search page</a>, and in the 'Marked Images' section, select 'View as Search Results' - you now have a set of results just showing your images, which you can turn into a map imagine slideshow as above.</p>
+<p>Once you have some images in your list, return to the <a href="/search.php">main search page</a>, and in the 'Marked Images' section, select 'View as Search Results' - you now have a set of results just showing your images, which you can turn into a 'map imagine slideshow' as above.</p>
 
 <div class="interestBox">Let us know how you get on!</div>
 

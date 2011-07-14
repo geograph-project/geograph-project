@@ -30,17 +30,17 @@ can also suggest a further moderation, in which case a moderator will revisit yo
 <hr/>
 
 <h3>Changing other images</h3>
-<p>You can suggest a change to someone elses image too - 
+<p>You can suggest a change to someone else's image too - 
 all such changes are moderated.</p>
 
 <p>When you submit a change request, the owner of the photo receives
 a notification that a change has been suggested, and a moderator is alerted too.</p>
 
-<p>At this stage, the photo owner and moderators may add replies to clarify the request, however its possible that 
-this proess will continue in private, in which case you'll get a notification of the suggestion been closed 
+<p>At this stage, the photo owner and moderators may add replies to clarify the request, although it's possible that 
+this process will continue in private, in which case you'll get a notification that the suggestion has been closed 
 and a list of changes made, including the closing comments of the moderator. </p>
 
-<p><i>NOTE: It's possible to specify that you wish to make the suggestion anonymously, however this is 
+<p><i>NOTE: It's possible to specify that you wish to make the suggestion anonymously, but this is 
 not recommended as it can cause animosity with the photo owner. </i></p>
 
 <hr/>
@@ -66,7 +66,7 @@ for example.</p>
 and the closure notifications, (and optionally only on minor suggestions). In this way you can
 cut down on the volume of emails, and just let a moderator deal with the suggestion.
 
-<p><b>Note that at in all cases as the Contributor, you can always revert any change 
+<p><b>Note that at in all cases as the contributor, you can always reject any changes 
 you don't agree with.</b></p>
 
 <hr/>

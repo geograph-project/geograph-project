@@ -14,12 +14,12 @@ and free (as in speech) forever.</p>
 who help create it or use it. To bring that about:</p>
 <ul>
 <li>The source code for the website is open source and
-licenced under the GNU General Public Licence (GPL).</li>
+licensed under the GNU General Public Licence (GPL).</li>
 <li>All photographic submissions are licensed by the original submitter under
 a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">
 Creative Commons Attribution-ShareAlike licence</a> 
 granting everyone the rights to use the image
-for any purpose (including commercial uses), as long as credit is given 
+for any purpose (including commercial use), as long as credit is given 
 to the copyright holder and that derivative works use the same licence.</li>
 </ul>
 
@@ -36,13 +36,13 @@ image. Bob, a long time contributor, is furious.
 
 <p>
 Bob remembers that the site software is open source and licenced under the GPL. He
-obtains the source the code, and with the help of a friendly developer, sets up a free
+obtains the source code, and with the help of a friendly developer, sets up a free
 alternative.
 </p>
 
 <p>
 But what use is the site without content? Fortunately, all of the photographs are also
-licenced by the original submitters under a Creative Commons licence allowing them to
+licensed by the original submitters under a Creative Commons licence allowing them to
 be used by anyone as long as a credit is given. This means Bob will able to obtain the
 images and associated metadata for integration into the new site (we have several ways
 of providing such data feeds - please contact us for details)
@@ -50,7 +50,7 @@ of providing such data feeds - please contact us for details)
 
 <p>
 This demonstrates how we're ensuring the future freedom and longevity of the
-resource, but doesn't answer why we insist on licencing the images for commercial purposes... 
+resource, but doesn't answer why we insist on licensing the images for commercial purposes... 
 </p>
 
 <h3>Why reserve commercial rights?</h3>
@@ -81,7 +81,7 @@ Creative Commons content. In other words, there's not much scope for trying to
 build a commercial photo archive from the images.</p>
 
 <blockquote style="border-left:3px solid silver;padding-left:5px">
-<b>Update, Jan 2010</b>: Its now <i>possible</i> to release larger versions of various sizes for downloading and re-use. <br/><br/>
+<b>Update, Jan 2010</b>: It's now <i>possible</i> to release larger versions of various sizes for downloading and re-use. <br/><br/>
 It's important to note this is entirely optional, and we are still exploring the implications of this change. But suffice to say certain images can benefit from the increased resolution.<br/><br/>
 &middot; <a href="/article/Larger-Uploads-Information">Larger Uploads Information</a>
 </blockquote> 
