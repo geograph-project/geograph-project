@@ -5,7 +5,7 @@
 
     <h2>Credits</h2>
  
-    Here's all the people and technologies that make this site possible...
+    Here are all the people and technologies that make this site possible...
     
     <h3>Original Idea</h3>
     <ul>
@@ -14,7 +14,7 @@
 
     <h3>Photographs</h3>
     <ul>
-    <li>Copyright on all photographs is retained by the original contributor, but all are 
+    <li>Copyright on all photographs is retained by the original contributors, but all are 
     published under a {external title="Creative Commons website" href="http://creativecommons.org" text="Creative Commons"} licence -
     each individual photograph on the site details the original photographer and their precise licence terms.</li>
     <li>View the <a href="/credits/">Photograph Contributor Listing</a>.</li>

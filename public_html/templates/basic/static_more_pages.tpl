@@ -18,7 +18,7 @@
 <h3>Use and re-use our images!</h3>
 <ul class="explore">
 
-	<li>All photos are licenced for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a><br/><br/></li>
+	<li>All photos are licensed for re-use under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a><br/><br/></li>
 	<li><a href="/kml.php" title="">Geograph with <b>Google Earth</b> and <b>Google Maps</b></a></li>
 	<li><a href="/help/sitemap#software" title=""><b>Other ways</b> to can use this fabulous resource</a></li>
 	<li><a href="/activities/">View images in our <b>Activities section</b></a><sup style="color:red">New!</sup></li>
@@ -30,10 +30,10 @@
 <ul class="explore">
 
 	<li><a href="/games/" title="educational games">try out some <b>games</b> using our images and maps</a></li>
-	<li><a href="/submit.php" title="">Add <b>your own pictures</b></a></li>
-	<li><a href="/article/edit.php" title="">Write an <b>article</b></a></li>
+	<li><a href="/submit.php" title="">add <b>your own pictures</b></a></li>
+	<li><a href="/article/edit.php" title="">write an <b>Article</b></a></li>
 {if $enable_forums}
-	<li><a href="/discuss/" title=""><b>Discuss</b> the project on our forums</a></li>
+	<li><a href="/discuss/" title=""><b>discuss</b> the project on our forums</a></li>
 {/if}
 	<li><a href="/help/guide" title="">view our <b>submission criteria</b></a></li>
 
@@ -44,18 +44,18 @@
 <ul class="explore">
 
 	<li><a href="/numbers.php" title="">View a <b>summary</b></a></li>
-	<li><a href="/statistics.php" title="">More <b>in-depth Statistics</b></a></li>
-	<li><a href="/help/sitemap#stats" title="">Further Statistics</a></li>
-	<li><a href="/statistics/moversboard.php" title="">View the current <b>leader-board</b></a></li>
+	<li><a href="/statistics.php" title="">More <b>in-depth statistics</b></a></li>
+	<li><a href="/help/sitemap#stats" title="">Further statistics</a></li>
+	<li><a href="/statistics/moversboard.php" title="">View the current <b>leaderboard</b></a></li>
 </ul>
 
 
 <h3>Need Help?</h3>
 <ul class="explore">
 
-	<li><a href="/faq.php" title="">View our Frequently Asked Questions</a></li>
+	<li><a href="/faq.php" title="">View our frequently asked questions</a></li>
 	<li><a href="/help/credits" title="">Who runs the site</a></li>
-	<li><a href="/contact.php" title="">Contact Us</a></li>
+	<li><a href="/contact.php" title="">Contact us</a></li>
 
 </ul>
 
@@ -76,10 +76,10 @@
 <h3>Exploring in more depth...</h3>
 <ul>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a></li>
-	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
+	<li><a title="Explore Images" href="/explore/"><b>explore</b> Geograph images</a></li>
 	<li><a title="Submitted Content" href="/content/">view <b>content and articles</b></a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li>
 	<li><a title="List of all pages" href="/help/sitemap">view the <b>full list</b> of pages</a></li>
-	<li><a title="Features Searches" href="/explore/searches.php">browse <b>featured collections</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
+	<li><a title="Features Searches" href="/explore/searches.php">browse <b>featured Collections</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
 </ul>
 
 </div>
