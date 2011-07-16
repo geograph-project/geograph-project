@@ -28,8 +28,11 @@ $smarty = new GeographPage;
 
 
 
-
-$template = 'content_docs.tpl';
+if (isset($_GET['1'])) {
+	$template = 'content_docs_tiles.tpl';
+} else {
+	$template = 'content_docs.tpl';
+}
 
 $db = GeographDatabaseConnection(true);
 
@@ -49,7 +52,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
-	select content.url,content.title,content.user_id,coalesce(category_name,'Help Document') as category_name,realname
+	select content.url,content.title,content.user_id,coalesce(category_name,'Help Document') as category_name,realname,words,created,content.extract
 	from content 
 		inner join user using (user_id)
 		left join article on (foreign_id = article_id and source = 'article')
@@ -61,9 +64,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$ADODB_FETCH_MODE = $prev_fetch_mode;
 
-	
-	$smarty->assign_by_ref('list', $list);
+	$halve = ceil(count($list)/2);
+	$smarty->assign('splitcat', $list[$halve]['category_name']);
 
+	$smarty->assign_by_ref('list', $list);
 }
 
 $smarty->display($template, $cacheid);
