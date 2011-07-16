@@ -204,6 +204,7 @@ if (isset($_FILES['jpeg_exif']))
 		
 		$uploadmanager->setUploadId($_GET['transfer_id']);
 		$uploadmanager->reReadExifFile();
+		$uploadmanager->initOriginalUploadSize();
 		
 		$upload_to_process=true;
 		
