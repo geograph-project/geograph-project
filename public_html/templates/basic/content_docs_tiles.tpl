@@ -35,37 +35,30 @@ Scope: <select name="scope" style="width:90px">
 {foreach from=$list item=item}
 	{if $lastcat != $item.category_name}
 		{if $lastcat}
-			</ul>
-		{/if}
-
-		{if !$lastid || $item.category_name eq $splitcat}
-			{if $lastcat}
-				</div>
-			{/if}
-			<div style="float:left;width:46%;position:relative; padding:5px;">
+			<br style="clear:both"/>
 		{/if}
 		<h3>{$item.category_name}</h3>
-		<ul class="content">
-		{assign var="lastname" value=""}
 	{/if}
-	<li><b><a title="{$item.extract|default:'View Article'}" href="{$item.url}">{$item.title}</a></b><br/>
-	<small id="att{$lastid+1}"><small style="color:lightgrey">by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}"  style="color:#6699CC">{$item.realname}</a>
 
-		</small></small>
+	<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px; margin-bottom:20px; height:230px">
+		<h4 style="margin-top: 0px;font-size:1.2em; margin-bottom:4px"><a href="{$item.url}" title="{$item.extract|default:'View Article'}" style="text-decoration:none">{$item.title|escape:'html'}</a></h4>
+		{if $item.image}
+			<div style="float:left;padding-right:6px;padding-bottom:2px;"><a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a></div>
+		{/if}
 
-	</li>
-	{if $lastname == $item.realname && $user->realname != $lastname}
-		<script>document.getElementById('att{$lastid}').style.display='none'</script>
-	{/if}
-	{assign var="lastname" value=$item.realname}
+		<div style="font-size:0.8em;text-align:justify">{if $item.extract}{$item.extract|escape:'html'}{else}{$item.words|truncate:200|escape:'html'|regex_replace:'/\[\[\[(\d+)\]\]\]/':'<a href="/photo/\1">Photo</a>'}{/if}</div>
+		<div style="margin-top:8px;border-top:1px solid gray">
+		Posted by <a title="View profile" href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a> <span class="nowrap">on {$item.created|date_format:"%a, %e %b"}</span>
+		<a href="{$item.url}"><b>Read More...</b></a>
+
+		</div>
+	</div>
+
 	{assign var="lastcat" value=$item.category_name}
-	{assign var="lastid" value=$lastid+1}
 {foreachelse}
 	<li><i>There are no Articles to display at this time.</i></li>
 {/foreach}
 
-</ul>
-</div>
 <br style="clear:both"/>
 
 	<div class="interestBox" style="font-size:1.3em;margin-bottom:20px">Can't find what you looking for? <a href="/ask.php">Ask us</a>!</div>
