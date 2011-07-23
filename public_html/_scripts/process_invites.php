@@ -49,34 +49,50 @@ $count = $done = array();
 
 foreach ($all as $id => $row) {
 	if (empty($done[$row['hectad']]) && $row['status'] == 'new') {
-		print "sending {$row['hectad']} to {$row['user_id']}/{$row['realname']}";
+		print "{$row['created']} sending {$row['hectad']} to {$row['user_id']}/{$row['realname']}";
 		
 		if (!empty($_GET['run'])) {
 			$sql = "UPDATE hectad_assignment SET status = 'offered',expiry = DATE_ADD(NOW(),INTERVAL 7 DAY) WHERE hectad_assignment_id = {$row['hectad_assignment_id']}";
 			$db->Execute($sql);
+
+			print " +activated";
 		}
 		if (!empty($_GET['email']) && (empty($count[$row['user_id']]) || $count[$row['user_id']] < intval($_GET['email']))) {
-			$smarty->assign($row);
+			if (preg_match('/^2011/',$row['updated'])) {
+				$smarty->assign($row);
 
-			$subject = "[Geograph] Your interest in {$row['hectad']}";
-			$body=$smarty->fetch('email_hectad_invite.tpl');
+				$subject = "[Geograph] Your interest in {$row['hectad']}";
+				$body=$smarty->fetch('email_hectad_invite.tpl');
 
-			$headers = array();
-			$headers[] = "From: Geograph <noreply@geograph.org.uk>";
+				$headers = array();
+				$headers[] = "From: Geograph <noreply@geograph.org.uk>";
 
-			print " email sent";
+				print " +email sent";
 
-			@mail("{$row['realname']} <{$row['email']}>", $subject, str_replace("\r",'',$body), implode("\n",$headers));
+				@mail("{$row['realname']} <{$row['email']}>", $subject, str_replace("\r",'',$body), implode("\n",$headers));
+			} else {
+				print " (no email)";
+			}
 
-			@$count[$row['user_id']]++;
+		} elseif (empty($count[$row['user_id']]) || $count[$row['user_id']] < intval($_GET['email'])) {
+			if (preg_match('/^2011/',$row['updated'])) {
+				print " +would send";
+			} else {
+				print " (no email)";
+			}
+		} else {
+			print " (enough)";
 		}
+
+		@$count[$row['user_id']]++;
+
 		print "<BR>";
 
 	} elseif ($row['status'] == 'new') {
 		print "{$row['hectad']} to {$row['user_id']}/{$row['realname']} has already gone";
 		$d = $done[$row['hectad']];
 		if ($d['realname']) {
-			print " to {$d['realname']}";
+			print " to {$d['realname']} ({$d['status']})";
 		}
 		print "<BR>";
 	}
