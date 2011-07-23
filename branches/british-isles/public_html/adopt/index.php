@@ -42,6 +42,12 @@ if ($USER->user_id) {
 			AND hectad = '$hectad'")) {
 				
 			$smarty->assign('message','Offer Accepted for '.$hectad);
+			
+			//invalidate any other offers!
+			$db->Execute("UPDATE hectad_assignment
+			SET status = 'new',expiry = 0
+			WHERE user_id != {$USER->user_id} AND status IN ('offered')
+			AND hectad = '$hectad'");
 		}
 		
 	}
