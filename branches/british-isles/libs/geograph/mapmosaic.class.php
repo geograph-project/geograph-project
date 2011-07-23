@@ -399,6 +399,12 @@ class GeographMapMosaic
 	{
 		$images=array();
 		
+		if ($this->type_or_user == -20 && empty($this->adopt)) {
+			$this->type_or_user = 0;
+			$real = -20;
+		}
+		
+		
 		//to calc the origin we need to know
 		//how many internal units in each image
 		$img_w_km=($this->image_w / $this->pixels_per_km) / $this->mosaic_factor;
@@ -442,6 +448,10 @@ class GeographMapMosaic
 		
 		}
 		$this->imagearray =& $images;
+		
+		if (!empty($real))
+			$this->type_or_user = $real;
+		
 		return $images;
 	}
 
@@ -927,7 +937,7 @@ class GeographMapMosaic
 
 split_timer('map'); //starts the timer
 		
-		$and_crit = " and type_or_user IN (-1,0";
+		$and_crit = " and type_or_user IN (-20,-1,0";
 		if ($user_id > 0) {
 			$and_crit .= ",$user_id";
 		}

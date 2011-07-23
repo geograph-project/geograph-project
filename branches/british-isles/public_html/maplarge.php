@@ -102,7 +102,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 
 	preg_match("/([A-Z]+)(\d)5(\d)5$/",$gridref,$matches);
-	$smarty->assign('gridref2',$matches[1].$matches[2].$matches[3] );
+	$smarty->assign('hectad',$matches[1].$matches[2].$matches[3] );
 	$smarty->assign('myriad',$matches[1] );
 
 	if ($mosaic->pixels_per_km >= 40) {
@@ -143,5 +143,5 @@ ORDER BY count DESC,last_date DESC
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+
+
