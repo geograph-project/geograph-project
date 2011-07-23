@@ -14,7 +14,7 @@
 
 
 <div class="interestBox"><form style="display:inline" onsubmit="return formsubmit(this)">
-Select an image from the {$square->imagecount} Images or enter Image ID: <input type="text" name="iid" value="" size="6"/> 
+Select an image from the {$square->imagecount} Images or enter Image ID: <input type="text" name="iid" value="" size="6"/>
 <input type="submit" name="submit" value="Set"/>
 </form><small><br/>Click thumbnail to select image, or click title to open full photo page<br/></small>
 {if $square->imagecount > 100}
@@ -26,6 +26,13 @@ Select an image from the {$square->imagecount} Images or enter Image ID: <input 
 
 </div>
 
+{if $rastermap->enabled}
+	<div class="rastermap" style="width:{$rastermap->width}px;position:relative;font-size:0.8em; float:left; z-index:10;padding:0">
+	{$rastermap->getImageTag($gridrefraw)}
+	<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+	{$rastermap->getScriptTag()}
+	</div>
+{/if}
 
 {foreach from=$images item=image}
 	<div class="photo33" style="float:left; margin-left:5px; width:150px; border:0; padding:0; padding-left:5px; background-color:white"><a title="{$image->title|escape:'html'} - click to use this image" href="#" onclick="return useimage({$image->gridimage_id})" target="_blank">{$image->getThumbnail(120,120,false,true)}</a>
@@ -34,7 +41,9 @@ Select an image from the {$square->imagecount} Images or enter Image ID: <input 
 {/foreach}
 
 <br style="clear:left;"/>&nbsp;
-	
+	{if $rastermap->enabled}
+		{$rastermap->getFooterTag()}
+	{/if}
 {/dynamic}
 </body>
 </html>

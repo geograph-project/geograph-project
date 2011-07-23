@@ -35,7 +35,7 @@
 function getXMLRequestObject()
 {
 	var xmlhttp=false;
-		
+
 	/*@cc_on @*/
 	/*@if (@_jscript_version >= 5)
 	// JScript gives us Conditional compilation, we can cope with old IE versions.
@@ -83,14 +83,14 @@ function useimage(id) {
 	//need to exploit function closure
 	req.onreadystatechange = function()
 	{
-		if (req.readyState==4) 
+		if (req.readyState==4)
 		{
 			var divInfo=document.getElementById('cell_'+gy+'_'+gx);
 			divInfo.innerHTML=req.responseText;
 
 			//patch the memory leak
 			req.onreadystatechange = function() {};
-			
+
 			document.getElementById('light').style.display='none';
 			document.getElementById('fade').style.display='none';
 		}
@@ -108,7 +108,7 @@ function useimage(id) {
 
 
 <h2><a href="/adopt/">Hectad Adoptions</a> - Editing {$hectad}</h2>
- 
+
 <div id="light" class="white_content">
 <iframe src="about:blank" id="iframe" width="100%" height="95%"></iframe>
 <div style="text-align:right;"><a href="javascript:void(0)" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">Close</a></div>
@@ -135,6 +135,12 @@ As well as choosing a photo that is represetative of the square, the photo shoul
 {/foreach}
 </tbody>
 </table>
+
+{if $hectad_assignment_id}
+<ul>
+	<li><a href="/mapadopt.php?id={$hectad_assignment_id}&amp;hectad={$hectad}" onclick="return confirm('Warning: Once you view this mosaic, it will be cached, and you wont be able to see any updates for 6-12 hours. Click OK to continue, or Cancel');">View as Mosaic</a> (Experimental!)</li>
+</ul>
+{/if}
 
 {if $stats}
 	<p>&nbsp;</p>
