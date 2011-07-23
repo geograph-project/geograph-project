@@ -67,6 +67,10 @@ if (isset($_GET['gsid'])) {
 			SET hectad_assignment_id = {$row['hectad_assignment_id']}, gridsquare_id = {$square->gridsquare_id}, gridimage_id = {$image->gridimage_id}
 			ON DUPLICATE KEY UPDATE gridimage_id = {$image->gridimage_id}");
 			
+			require_once('geograph/mapmosaic.class.php');
+			$mosaic = new GeographMapMosaic;
+			$mosaic->expirePosition(intval($_GET['gx']),intval($_GET['gy']));
+			
 		} else {
 			die("invalid assignment");
 		}
@@ -83,6 +87,9 @@ if (isset($_GET['gsid'])) {
 
 		$smarty->assign_by_ref('square',$square);
 		$smarty->assign_by_ref('images',$images);
+		
+		$rastermap = new RasterMap($square,false,$square->natspecified);
+		$smarty->assign_by_ref('rastermap', $rastermap);
 	}
 	
 } elseif (isset($_GET['hectad'])) {
@@ -101,6 +108,8 @@ if (isset($_GET['gsid'])) {
 		exit;
 	}
 	$smarty->assign_by_ref('assignment',$row);
+	$smarty->assign_by_ref('hectad_assignment_id',$row['hectad_assignment_id']);
+	print_r($row);
 	$square = new GridSquare();
 	$grid_ok=$square->setByFullGridRef($hectad,false,true);
 
