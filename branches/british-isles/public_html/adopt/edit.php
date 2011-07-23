@@ -32,7 +32,7 @@ $USER->mustHavePerm("basic");
 
 $template='adopt_edit.tpl';
 
-$cacheid='';
+$cacheid='22';
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
@@ -79,7 +79,7 @@ if (isset($_GET['gsid'])) {
 	} else {
 		$template='adopt_edit_inner.tpl';
 		
-		$images=$square->getImages($USER->user_id,'',"order by submitted desc limit 20");
+		$images=$square->getImages($USER->user_id,'',"order by submitted desc limit 100");
 
 		$smarty->assign_by_ref('square',$square);
 		$smarty->assign_by_ref('images',$images);
@@ -138,7 +138,7 @@ if (isset($_GET['gsid'])) {
 	#print_r($squares);
 	foreach ($squares as $i => $row) {
 		#print_r($row);print "<br>";
-		if (is_null($row['gridimage_id']) && $row['imagecount']) {
+		if (empty($row['title']) && $row['imagecount']) {
 			$sql="select *,1 as `auto` from gridimage_search where grid_reference='{$row['grid_reference']}'
 				and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
 			$row2=$db->GetRow($sql);
@@ -181,7 +181,9 @@ if (isset($_GET['gsid'])) {
 
 }
 
-
+if (isset($_GET['refresh']) && $USER->hasPerm('admin')) {
+	$smarty->clear_cache($template, $cacheid);
+}
 $smarty->display($template,$cacheid);
 
-?>
+

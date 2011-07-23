@@ -44,7 +44,7 @@ if (isset($_POST['submit']) && !empty($_POST['hectads'])) {
 
 
 	$list = explode("\n",str_replace("\r",'',$_POST['hectads']));
-	$sort_order = 1;
+	$sort_order = 2;
 	foreach ($list as $hectad) {
 		$hectad = strtoupper(preg_replace('/[^\w]/','',$hectad));
 		if ($hectad) {
