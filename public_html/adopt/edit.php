@@ -124,7 +124,7 @@ if (isset($_GET['gsid'])) {
 	$sql="select gi.*,gs.gridsquare_id,imagecount,percent_land,has_geographs,gs.grid_reference,ga.gridimage_id
 		from gridsquare gs
 		left join gridsquare_assignment ga on (gs.gridsquare_id = ga.gridsquare_id and hectad_assignment_id = {$row['hectad_assignment_id']})
-		left join gridimage_search gi on (gi.gridimage_id = ga.gridimage_id)
+		left join gridimage_search gi on (gi.gridimage_id = ga.gridimage_id and gi.grid_reference = gs.grid_reference)
 		where CONTAINS( GeomFromText($rectangle),	gs.point_xy)
 		group by gs.gridsquare_id";
 	
@@ -139,7 +139,7 @@ if (isset($_GET['gsid'])) {
 	foreach ($squares as $i => $row) {
 		#print_r($row);print "<br>";
 		if (is_null($row['gridimage_id']) && $row['imagecount']) {
-			$sql="select * from gridimage_search where grid_reference='{$row['grid_reference']}'
+			$sql="select *,1 as `auto` from gridimage_search where grid_reference='{$row['grid_reference']}'
 				and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
 			$row2=$db->GetRow($sql);
 			foreach($row2 as $k=>$v) {
