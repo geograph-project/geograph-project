@@ -456,7 +456,7 @@ split_timer('map','getBaseMapFilename',"$file"); //logs the wall time
 		
 		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
 			$this->type_or_user =0;
-			$real = -1;			
+			$real = -1;
 		}
 		//always given dynamic url, that way cached HTML can 
 		//always get an image
@@ -471,7 +471,6 @@ split_timer('map','getBaseMapFilename',"$file"); //logs the wall time
 			 $this->type_or_user = $real;
 
 		return $file;
-		
 	}
 	
 	/**
@@ -544,6 +543,8 @@ split_timer('map','returnImage',$file); //logs the wall time
 		} else if ($this->type_or_user < 0) {
 	#MAP FIXING ACTIVITY  (via mapfix_log) 
 			if ($this->type_or_user == -4
+	#ADOPTION MAP
+				|| $this->type_or_user == -20
 	#ROUTE MAP
 				|| $this->type_or_user == -12
 	#RECENT ONLY MAP
@@ -923,6 +924,35 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 							CONTAINS( GeomFromText($rectangle),	point_xy) and
 							user_id = {$this->type_or_user} group by x,y";
 					}
+				} elseif ($this->type_or_user == -20) {
+				
+					#$hectad_assignment_id = $db->getOne("SELECT * FROM hectad_assignment WHERE status = 'accepted' AND hectad = '$hectad'");
+				
+					$table = $CONF['db_tempdb'].".gi".md5($rectangle.$crit);
+					
+					//TODO - doesnt cope with multiple assignments for a given hectad!
+					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
+						SELECT gi.gridimage_id,x,y,user_id,1 AS has_geographs 
+						FROM gridimage_search gi
+						INNER JOIN gridsquare_assignment ga ON (gi.gridimage_id = ga.gridimage_id)
+						WHERE CONTAINS( GeomFromText($rectangle),	point_xy)";
+					$db->Execute($sql);
+
+					$sql="INSERT INTO $table 
+						SELECT gridimage_id,x,y,user_id,(moderation_status = 'geograph') AS has_geographs
+						FROM gridimage_search WHERE 
+						CONTAINS( GeomFromText($rectangle),	point_xy)
+						AND ftf <= 1
+						ORDER BY moderation_status+0 DESC,seq_no";
+					$db->Execute($sql);
+				
+				
+					$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y)";
+					$db->Execute($sql);
+					
+					$sql="SELECT x,y,has_geographs,user_id,gridimage_id
+						FROM $table";
+				
 				} else {
 					if ($this->type_or_user == -6) {
 						$crit = "imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))";
@@ -931,7 +961,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					}
 					$table = $CONF['db_tempdb'].".gi".md5($rectangle.$crit);
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
-						SELECT gridimage_id,grid_reference,x,y,user_id,moderation_status FROM gridimage_search WHERE 
+						SELECT gridimage_id,x,y,user_id,moderation_status FROM gridimage_search WHERE 
 						CONTAINS( GeomFromText($rectangle),	point_xy) AND $crit
 						ORDER BY moderation_status+0 DESC,seq_no";
 					$db->Execute($sql);
@@ -962,6 +992,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 						SELECT gridimage_id,grid_reference,moderation_status,user_id,x,y FROM gridimage_search WHERE 
 						CONTAINS( GeomFromText($rectangle),	point_xy)
+						AND ftf <= 1
 						ORDER BY moderation_status+0 DESC,seq_no";
 					$db->Execute($sql);
 
@@ -2094,12 +2125,37 @@ split_timer('map'); //starts the timer
 				} 
 			}
 			$table = $CONF['db_tempdb'].".gi".md5($rectangle);
-			if (empty($where_crit)) {
+			
+			if ($this->type_or_user == -20) {
+				//TODO - doesnt cope with multiple assignments for a given hectad!
+				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
+					SELECT gi.gridimage_id,x,y 
+					FROM gridimage_search gi
+					INNER JOIN gridsquare_assignment ga ON (gi.gridimage_id = ga.gridimage_id)
+					WHERE CONTAINS( GeomFromText($rectangle),	point_xy)";
+				$db->Execute($sql);
+
+				$sql="INSERT INTO $table 
+					SELECT gridimage_id,x,y
+					FROM gridimage_search WHERE 
+					CONTAINS( GeomFromText($rectangle),	point_xy)
+					AND ftf <= 1
+					ORDER BY moderation_status+0 DESC,seq_no";
+				$db->Execute($sql);
+					
+				$sql="ALTER IGNORE TABLE $table ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id)";
+				$db->Execute($sql);
+				
+			} elseif (true && empty($where_crit)) {
 				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 					SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_persquare WHERE 
 					CONTAINS( GeomFromText($rectangle),	point_xy)";
 				$db->Execute($sql);
+				
 			} else {
+				if (empty($where_crit)) {
+					$where_crit = "AND ftf <= 1";
+				}
 				$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 					SELECT gridimage_id,grid_reference,x,y $columns FROM gridimage_search WHERE 
 					CONTAINS( GeomFromText($rectangle),	point_xy) $where_crit

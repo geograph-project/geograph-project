@@ -1,11 +1,16 @@
 {assign var="page_title" value="Map Viewer :: $gridref"}
 {include file="_std_begin.tpl"}
 
-{if $gridref2}
-<h2>Geograph Mosaic for <a href="/gridref/{$gridref2}">{$gridref2}</a></h2>
+{if $hectad}
+<h2>Geograph Mosaic for <a href="/gridref/{$hectad}">{$hectad}</a></h2>
 {else}
 <h2>Geograph Map for <a href="/gridref/{$gridref}">{$gridref}</a></h2>
 {/if}
+
+{if $realname && $user_id}
+	<p>This is a special mosaic curated by <a href="/profile/{$user_id}">{$realname|escape:'html'}</a>, the images have been hand selected to be representative.</p>
+{/if}
+
 	<div class="map" style="height:{$mosaic_height+20}px;width:{$mosaic_width+20}px">
 	<div class="cnr"></div>
 	<div class="side" style="width:{$mosaic_width}px;">&nbsp;</div>
@@ -20,7 +25,7 @@
 		{foreach from=$maprow key=x item=mapcell}
 			{assign var="mapmap" value=$mapcell->getGridArray(true)}
 			{if $mapmap}
-			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
+			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img
 			alt="Clickable map" ismap="ismap" usemap="#map_{$x}_{$y}" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 			<map name="map_{$x}_{$y}">
 			{foreach from=$mapmap key=gx item=gridrow}
@@ -30,7 +35,7 @@
 			{/foreach}
 			</map>
 			{else}
-			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img 
+			<a href="/mapbrowse.php?t={$mosaic_token}&amp;i={$x}&amp;j={$y}&amp;zoomin=1"><img
 			alt="Clickable map" ismap="ismap" title="Click to zoom in or view image" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 			{/if}
 		{/foreach}
@@ -47,10 +52,10 @@
 
 
 {if $hectads}
-<p><small>Nearby completed hectads: 
+<p><small>Nearby completed hectads:
 {foreach from=$hectads key=id item=obj}
-{if $obj.hectad == $gridref2} 
-<b>{$gridref2}</b>,
+{if $obj.hectad == $hectad}
+<b>{$hectad}</b>,
 {else}
 <a title="View Photo Mosaic for {$obj.hectad}, completed {$obj.last_submitted}" href="/maplarge.php?t={$obj.largemap_token}">{$obj.hectad}</a>,
 {/if}
@@ -64,7 +69,7 @@
 </div>
 
 {if $users}
-<table class="report"> 
+<table class="report">
 <thead><tr><td>Photographer</td><td>Last Submission</td><td>First Geographs</td><td>Days</td><td>Categories</td></tr></thead>
 <tbody>
 
@@ -77,8 +82,8 @@
 </table>
 <br/>
 <small><small>* there is a known problem with this list, it might not add up to the correct total, apologies but we hope to resume normal service shortly...</small></small>
-{if $mosaic->pixels_per_km > 40} 
-<p style="clear:both"/>View <a href="/search.php?first={$gridref2}">First Geographs for {$gridref2} in reverse Date Submitted order</a>.</p>
+{if $mosaic->pixels_per_km > 40}
+<p style="clear:both"/>View <a href="/search.php?first={$hectad}">First Geographs for {$hectad} in reverse Date Submitted order</a>.</p>
 {else}
 <br style="clear:both"/>
 {/if}
@@ -88,10 +93,10 @@
 	<p align="center" style="font-size:0.8em">{$mosaic_updated}</p>
 {/if}
 
-<p align="center">{if $gridref2}More links for <a href="/gridref/{$gridref2}">{$gridref2}</a> |{/if} <a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a> | <a href="/mapsheet.php?t={$mosaic_token}">Printable Checksheet for this square</a></p>
+<p align="center">{if $hectad}<img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b>More links for <a href="/gridref/{$hectad}">{$hectad}</a></b> {/if} {if $mosaic_token}| <a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a> | <a href="/mapsheet.php?t={$mosaic_token}">Printable Checksheet for this square</a>{/if}</p>
 
-<br/>
-<div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div>  
- 
+<br style="clear:both"/>
+<div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and
+licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/" class="nowrap">Creative Commons Licence</a>.</div>
+
 {include file="_std_end.tpl"}
