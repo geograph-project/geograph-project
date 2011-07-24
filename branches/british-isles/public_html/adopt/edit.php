@@ -83,7 +83,7 @@ if (isset($_GET['gsid'])) {
 	} else {
 		$template='adopt_edit_inner.tpl';
 		
-		$images=$square->getImages($USER->user_id,'',"order by submitted desc limit 100");
+		$images=$square->getImages(false,'',"order by submitted desc limit 100");
 
 		$smarty->assign_by_ref('square',$square);
 		$smarty->assign_by_ref('images',$images);
