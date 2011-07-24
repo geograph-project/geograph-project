@@ -623,9 +623,9 @@ function GeographLinks(&$posterText,$thumbs = false) {
 		$posterText = str_replace('//'.$CONF['CONTENT_HOST'],'//'.$_SERVER['HTTP_HOST'],$posterText);
 	}
 	
-	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);
+	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
 
-	$posterText = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);
+	$posterText = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'http://\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
 
 	return $posterText;
 }
