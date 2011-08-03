@@ -174,7 +174,8 @@ function smarty_function_getamap($params)
 			$title=$params['title'];
 		else
 			$title="Ordnance Survey Get-a-Map for $gridref4";
-
+#return "<a href=\"/gridref/$gridref6/links?getamap\" target=\"gam\">$text</a>";
+#return "<a href=\"http://www.getamap.ordnancesurveyleisure.co.uk/\" target=\"gam\">$text</a>";
 		return "<a title=\"$title\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm?mapAction=gaz&amp;gazName=g&amp;gazString=$gridref6\" onclick=\"popupOSMap('$gridref6',''); return false;\">$text</a>$icon";
 	}
 	else if (empty($gridref4))
@@ -183,6 +184,7 @@ function smarty_function_getamap($params)
 			$text=$params['text'];
 		else
 			$text='OS Get-a-Map';
+return "<a href=\"http://www.getamap.ordnancesurveyleisure.co.uk/\" target=\"gam\">$text</a>";
 		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm\" onclick=\"popupOSMap('',''); return false;\">$text</a>$icon";
 	}
 	else
@@ -562,7 +564,12 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				$server = 'geo.hlipp.de';
 				$ext = true;
 				$prefix = 'de:';
-			}
+			} elseif ($g_matches[2][$g_i] == 'ci:') {
+                                $server = 'channel-islands.geographs.org';
+                                $ext = true;
+                                $prefix = 'ci:';
+                        }
+
 			//photo id?
 			if (is_numeric($g_id)) {
 				if ($global_thumb_count > $CONF['global_thumb_limit'] || $thumb_count > $CONF['post_thumb_limit']) {
@@ -693,7 +700,10 @@ function getFormattedDate($input) {
 	if ($d>0) {
 		if ($y>1970) {
 			//we can use strftime
-			$t=strtotime($input." 0:0:0");//stop a warning
+			if (strlen($input) > 10) 
+				$t=strtotime($input);
+			else
+				$t=strtotime($input." 0:0:0");//stop a warning
 			$date=strftime("%A, %e %B, %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
 		} else {
 			//oh my!
@@ -836,7 +846,7 @@ function customExpiresHeader($diff,$public = false,$overwrite = false) {
 		header("Cache-Control: max-age=0$private",$overwrite);
 	}
 	if ($public)
-		header("Cache-Control: Public",false);
+		header("Cache-Control: public",false);
 }
 
 function getEncoding() {
