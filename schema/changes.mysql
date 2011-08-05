@@ -636,6 +636,8 @@ REPLACE INTO gridsquare_percentage (gridsquare_id,level,community_id,percent) SE
 
 #update gs
 UPDATE gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp3 on (gs.gridsquare_id=gp3.gridsquare_id and gp3.level = -1 and gp3.community_id = 3)  SET gs.permit_geographs=coalesce(gp1.percent,0)-coalesce(gp3.percent,0)>0,gs.permit_photographs=coalesce(gp1.percent,0)>0
+# set new percentages
+#UPDATE gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp2 on (gs.gridsquare_id=gp2.gridsquare_id and gp2.level = -1 and gp2.community_id = 2) left join gridsquare_percentage gp4 on (gs.gridsquare_id=gp4.gridsquare_id and gp4.level = -1 and gp4.community_id = 4) SET percent_land=greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) where greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != percent_land
 #test gs
 select gs.*,gp1.percent as lp1,gp2.percent as lp2,gp4.percent as lp4,greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) as perc_calc from gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp2 on (gs.gridsquare_id=gp2.gridsquare_id and gp2.level = -1 and gp2.community_id = 2) left join gridsquare_percentage gp4 on (gs.gridsquare_id=gp4.gridsquare_id and gp4.level = -1 and gp4.community_id = 4) where greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != percent_land
 # don't show transition 0->1 [ supplemental images allowed on lakes ]
@@ -643,3 +645,17 @@ select gs.*,gp1.percent as lp1,gp2.percent as lp2,gp4.percent as lp4,greatest(ro
 
 ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant', 'mapmod') NULL DEFAULT NULL;
 
+# new "mapcache coordinates" for mercator maps:
+# coordinate lines = borders of "level 19 tiles" => 32 bits sufficient
+# => with tile width = 2 pi R / 2 ^ level, we have x_mapcache = x_gmaps  * 2^18 / ( pi R)
+# currently, we have zoom levels 4..13 (14 for OSM+G) with tile width (mapcache) 32768...64(32)
+#TRUNCATE TABLE `mapcache`;
+DELETE FROM `mapcache` WHERE `mercator` != 0;
+ALTER TABLE `mapcache` CHANGE `map_x` `map_x` int(8) NOT NULL DEFAULT '0';
+ALTER TABLE `mapcache` CHANGE `map_y` `map_y` int(8) NOT NULL DEFAULT '0';
+#ALTER TABLE `mapcache` DROP KEY `xy`,DROP `max_x`, DROP `max_y`,ADD KEY `xy` (`mercator`, `map_x`, `map_y`);
+ALTER TABLE `mapcache` CHANGE `max_x` `max_x` int(8) NOT NULL DEFAULT '0';
+ALTER TABLE `mapcache` CHANGE `max_y` `max_y` int(8) NOT NULL DEFAULT '0';
+ALTER TABLE `mapcache` DROP KEY `xy`,ADD KEY `xy` (`mercator`, `map_x`, `map_y`,  `max_x`, `max_y`);
+#apply code changes
+DELETE FROM `mapcache` WHERE `mercator` != 0;

@@ -85,6 +85,16 @@
 	{if $place}
 		<div style="font-size:0.8em;border-bottom:1px solid silver;margin-bottom:2px">{place place=$place}</div>
 	{/if}
+	{if $hier}
+		<div style="font-size:0.8em;border-bottom:1px solid silver;margin-bottom:2px">
+		{foreach item=row from=$hier name=fehier}
+		{if !$row.hide}
+		<b>{$row.name}</b>{if $row.hier}<small><i>, {$row.hier}</i></small>{/if}{if $row.percent} [{$row.percent}%]{/if}
+		{if !$smarty.foreach.fehier.last}<br />{/if}
+		{/if}
+		{/foreach}
+		</div>
+	{/if}
 	{if $imagecount}
 		{* There are some thumbnails to display *}
 		<small><small><b>Link-Auswahl für dieses Quadrat...</b></small></small>
@@ -203,7 +213,7 @@
 		<p>{if $imagecount > 15}Wegen der großen Zahl von Bildern, bitte{else}Bitte{/if} Bilder <b>{if $filtered_title}{$filtered_title},{/if} nach {$breakdown_title}</b> wählen:</p>
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
-			<p><small>Das folgende Gitter zeigt die 100 &bdquo;centisquares&rdquo; in {$gridref}, von denen {$allcount} Bilder enthalten. Um die sechsziffrigen Koordinaten zu sehen, bitte mit der Maus über das betreffende Quadrat fahren.</small></p>
+			<p><small>Das folgende Gitter zeigt die 100 &bdquo;centisquares&ldquo; in {$gridref}, von denen {$allcount} Bilder enthalten. Um die sechsziffrigen Koordinaten zu sehen, bitte mit der Maus über das betreffende Quadrat fahren.</small></p>
 	<table border="0" cellspacing="0" cellpadding="2">
 		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=-1&amp;by={$by}">NW</a></td>
 		<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=0&amp;by={$by}">N</a></td>

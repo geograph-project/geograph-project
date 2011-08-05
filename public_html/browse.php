@@ -207,6 +207,10 @@ if ($grid_given)
 			
 		}
 
+		#if (isset($_GET['showhier'])) {
+		#	$smarty->assign('hier', $square->getRegionList(!empty($_GET['showhier'])));
+		#}
+		$smarty->assign('hier', $square->getRegionList(isset($_GET['showhier'])?!empty($_GET['showhier']):$USER->hasPerm("admin")||$USER->hasPerm("moderator")||$USER->hasPerm("mapmod")||$USER->hasPerm("ticketmod")));
 	}
 	$smarty->assign('mode','normal');
 	if ($grid_ok && !empty($CONF['sphinx_host']) && (isset($_GET['takenfrom']) || isset($_GET['mentioning'])) ) {

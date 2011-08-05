@@ -85,6 +85,16 @@
 	{if $place}
 		<div style="font-size:0.8em;border-bottom:1px solid silver;margin-bottom:2px">{place place=$place}</div>
 	{/if}
+	{if $hier}
+		<div style="font-size:0.8em;border-bottom:1px solid silver;margin-bottom:2px">
+		{foreach item=row from=$hier name=fehier}
+		{if !$row.hide}
+		<b>{$row.name}</b>{if $row.hier}<small><i>, {$row.hier}</i></small>{/if}{if $row.percent} [{$row.percent}%]{/if}
+		{if !$smarty.foreach.fehier.last}<br />{/if}
+		{/if}
+		{/foreach}
+		</div>
+	{/if}
 	{if $imagecount}
 		{* There are some thumbnails to display *}
 		<small><small><b>Sample links for this square...</b></small></small>

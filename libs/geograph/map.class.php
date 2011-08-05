@@ -413,7 +413,7 @@ class GeographMap
 	* @param ydir = amount of up/down panning, e.g. 1 to pan up
 	* @access public
 	*/
-	function getPanToken($xdir,$ydir)
+	function getPanToken($xdir,$ydir) // FIXME mercator
 	{
 		$out=new GeographMap;
 		
@@ -445,7 +445,7 @@ class GeographMap
 	* get grid reference for pixel position on image
 	* @access public
 	*/
-	function getGridRef($x, $y)
+	function getGridRef($x, $y) // FIXME mercator
 	{
 		global $CONF;
 		if ($x == -1 && $y == -1) {
@@ -806,35 +806,40 @@ class GeographMap
 			} 
 			if ($ok) {
 				$db=&$this->_getDB();
-				$widthM=$this->map_wM;
-				$leftM=$this->map_xM;
-				$bottomM=$this->map_yM;
-				$rightM=$leftM+$widthM;
-				$topM=$bottomM+$widthM;
+				$widthMC  = pow(2, 19-$this->level);
+				$leftMC   = +$widthMC*$this->tile_x - 262144;
+				$topMC    = -$widthMC*$this->tile_y + 262144;
+				$rightMC  = $leftMC   + $widthMC;
+				$bottomMC = $topMC    - $widthMC;
+				#$widthM=$this->map_wM;
+				#$leftM=$this->map_xM;
+				#$bottomM=$this->map_yM;
+				#$rightM=$leftM+$widthM;
+				#$topM=$bottomM+$widthM;
 				##$sql="select min(x) as min_x, min(y) as min_y, max(x)+1 as max_x, max(y)+1 as max_y from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
 				# use db values if != NULL?
-				require_once('geograph/conversionslatlong.class.php');
-				$conv = new ConversionsLatLong;
-				list($glatTL, $glonTL) = $conv->sm_to_wgs84($leftM, $topM);
-				list($glatTR, $glonTR) = $conv->sm_to_wgs84($rightM, $topM);
-				list($glatBL, $glonBL) = $conv->sm_to_wgs84($leftM, $bottomM);
-				list($glatBR, $glonBR) = $conv->sm_to_wgs84($rightM, $bottomM);
-				list($xTL, $yTL) = $conv->wgs84_to_internal($glatTL, $glonTL);
-				list($xTR, $yTR) = $conv->wgs84_to_internal($glatTR, $glonTR);
-				list($xBL, $yBL) = $conv->wgs84_to_internal($glatBL, $glonBL);
-				list($xBR, $yBR) = $conv->wgs84_to_internal($glatBR, $glonBR);
-				$min_x = min($xTL, $xTR, $xBL, $xBR);
-				$min_y = min($yTL, $yTR, $yBL, $yBR);
-				$max_x = max($xTL, $xTR, $xBL, $xBR)+1;
-				$max_y = max($yTL, $yTR, $yBL, $yBR)+1;
-				$dx = ceil(($max_x - $min_x) * 0.125); //FIXME good value?
-				$dy = ceil(($max_y - $min_y) * 0.125); //FIXME good value?
-				$max_x += $dx;
-				$max_y += $dy;
-				$min_x -= $dx;
-				$min_y -= $dy;
+				#require_once('geograph/conversionslatlong.class.php');
+				#$conv = new ConversionsLatLong;
+				#list($glatTL, $glonTL) = $conv->sm_to_wgs84($leftM, $topM);
+				#list($glatTR, $glonTR) = $conv->sm_to_wgs84($rightM, $topM);
+				#list($glatBL, $glonBL) = $conv->sm_to_wgs84($leftM, $bottomM);
+				#list($glatBR, $glonBR) = $conv->sm_to_wgs84($rightM, $bottomM);
+				#list($xTL, $yTL) = $conv->wgs84_to_internal($glatTL, $glonTL);
+				#list($xTR, $yTR) = $conv->wgs84_to_internal($glatTR, $glonTR);
+				#list($xBL, $yBL) = $conv->wgs84_to_internal($glatBL, $glonBL);
+				#list($xBR, $yBR) = $conv->wgs84_to_internal($glatBR, $glonBR);
+				#$min_x = min($xTL, $xTR, $xBL, $xBR);
+				#$min_y = min($yTL, $yTR, $yBL, $yBR);
+				#$max_x = max($xTL, $xTR, $xBL, $xBR)+1;
+				#$max_y = max($yTL, $yTR, $yBL, $yBR)+1;
+				#$dx = ceil(($max_x - $min_x) * 0.125); //FIXME good value?
+				#$dy = ceil(($max_y - $min_y) * 0.125); //FIXME good value?
+				#$max_x += $dx;
+				#$max_y += $dy;
+				#$min_x -= $dx;
+				#$min_y -= $dy;
 
-				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%d,tile_y=%d,max_x=%d,max_y=%d",$min_x,$min_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay?1:0, $this->layers, $this->level, $this->tile_x, $this->tile_y,$max_x,$max_y);
+				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%d,tile_y=%d,max_x=%d,max_y=%d",$leftMC,$bottomMC,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay?1:0, $this->layers, $this->level, $this->tile_x, $this->tile_y,$rightMC,$topMC);
 
 				$db->Execute($sql);
 			}
@@ -2133,8 +2138,8 @@ class GeographMap
 				if (count($rec)) {
 					$gridimage=new GridImage;
 					$gridimage->fastInit($rec);
-					$crop = 1.0; #FIXME
-					$thumbsize = 64 * pow(2,$this->level-12);#FIXME
+					$crop = 1.0;
+					$thumbsize = $CONF['gmthumbsize12'] * pow(2,$this->level-12);
 					#######################################################FIXME
 					#$ri = $recordSet->fields[21]; #FIXME
 					#$x0 = $CONF['origins'][$ri][0];

@@ -64,7 +64,7 @@ pre
 {/if}{$startn|string_format:"%02d"}{assign var="startn" value=$startn-1}{if $startn < 0}{assign var="startn" value=$startn+100}{/if}
 {section loop=100 name=x start=0}
 {assign var="x" value=$smarty.section.x.index}
-{if $x%10 == 0} {/if}{if $grid.$x.$y}{assign var="mapcell" value=$grid.$x.$y}{if $mapcell.has_geographs}X{else}{if $mapcell.pending}p{else}{if $mapcell.accepted}s{else}-{/if}{/if}{/if}{else} {/if}
+{if $x%10 == 0} {/if}{if $grid.$x.$y}{assign var="mapcell" value=$grid.$x.$y}{if $mapcell.has_geographs}X{else}{if $mapcell.pending}{if $mapcell.permit_geographs}P{else}p{/if}{else}{if $mapcell.accepted}{if $mapcell.permit_geographs}S{else}s{/if}{else}{if $mapcell.permit_geographs}-{else}&middot;{/if}{/if}{/if}{/if}{else} {/if}
 {/section}
 
 {/section}</pre>

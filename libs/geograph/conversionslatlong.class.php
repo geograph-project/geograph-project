@@ -57,6 +57,29 @@ function distance ($lat1, $lon1, $lat2, $lon2) {
 * Spherical Mercator Functions
 ********************************/
 
+# google map tiles (R==6378137):
+# zoom level    tile width
+# 0             2*pi*R ~ 40000km = circumference of the earth (i.e. one tile for whole earth; |lat| < ~85 deg)
+# 1             2*pi*R / 2 (i.e. 2*2 tiles for earth)
+# ...
+# n             2*pi*R * 2^-n
+
+# position of tiles: 0,0: "upper left corner", e_merc~-20000,n_merc~+20000 (i.e. wrong direction for y)
+# => e_merc = 2 pi R (  e_gm * 2^-n - 1/2)
+#    n_merc = 2 pi R ( -n_gm * 2^-n + 1/2)
+
+# new "mapcache coordinates" for mercator maps:
+# coordinate lines = borders of "level 19 tiles"
+# => with tile width = 2 pi R / 2 ^ level, we have en_mapcache = en_merc  * 2^19 / (2 pi R) (i.e. our origin: lat=lon=0)
+# currently, we have zoom levels 4..13 (14 for OSM+G) with tile width (mapcache) 32768...64(32)
+
+# in map cache coordinates, a google map tile (upper left corner e_gm, n_gm) covers
+# an e_mc range of  2^18 [  2^(-n+1) [ e_gm   ] - 1 ] ... 2^18 [  2^(-n+1) [ e_gm   ] - 1 ] + 2^(19-n)   <-- short: e_mc1...e_mc1+D_mc
+# an n_mc range of  2^18 [ -2^(-n+1) [ n_gm+1 ] + 1 ] ... 2^18 [ -2^(-n+1) [ n_gm+1 ] + 1 ] + 2^(19-n)   <-- short: n_mc1...n_mc1+D_mc
+# => if square with e_mc_min=floor(e_merc_min*2^19/(2 pi R) - eps), e_mc_max=ceil(e_merc_max*2^19/(2 pi R) + eps), ... changes,
+# render tiles with e_mc_min<=e_mc1+D_mc and e_mc_max>=e_mc1 and ...
+# which is equivalent to e_mc_min-D_mc <= e_mc1 <= e_mc_max and n_mc_min-D_mc <= n_mc1 <= n_mc_max
+
 function sm_to_wgs84($e,$n) {
 	$r = 6378137.;
 	$lng = rad2deg($e/$r);
