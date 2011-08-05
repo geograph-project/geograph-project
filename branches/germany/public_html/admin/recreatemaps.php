@@ -160,7 +160,8 @@ if (isset($_GET['coast_GB_40'])) {
 		$maxy=$prefix['origin_y']+$prefix['height']-1;
 
 		
-		$crit = "map_x between $minx and $maxx and ".
+		$crit = "mercator='0' and ".
+			"map_x between $minx and $maxx and ".
 			"map_y between $miny and $maxy and ".
 			"pixels_per_km >= 40 and ".
 			"((map_x-{$prefix['origin_x']}) mod 5) != 0 and ".
@@ -216,9 +217,19 @@ if (isset($_GET['coast_GB_40'])) {
 
 		print "<h3>$gridref</h3>";
 		if (count($squares) < 5) {
-			$sql="select * from mapcache 
-					where $x between map_x and max_x and 
-					$y between map_y and max_y $and_crit";
+			$xycrit = "mercator='0' and '$x' between map_x and max_x and '$y' between map_y and max_y";
+			$sql = "select gxlow,gylow,gxhigh,gyhigh from gridsquare gs inner join gridsquare_gmcache gm using (gridsquare_id) where x='$x' and y='$y' limit 1";
+			$mercator = $db->GetRow($sql);
+			$havemercator = $mercator !== false && count($mercator);
+			if ($havemercator) {
+				$MCscale = 524288/(2*6378137.*M_PI);
+				$xMC_min = floor($mercator['gxlow'] * $MCscale);
+				$yMC_min = floor($mercator['gylow'] * $MCscale);
+				$xMC_max = ceil ($mercator['gxhigh'] * $MCscale);
+				$yMC_max = ceil ($mercator['gyhigh'] * $MCscale);
+				$xycrit .= " or mercator='1' and '$xMC_min'<=max_x and '$xMC_max'>=map_x and '$yMC_min'<=max_y and '$yMC_max'>=map_y";
+			}
+			$sql="select * from mapcache where ($xycrit) $and_crit";
 			
 			$recordSet = &$db->Execute("$sql");
 			while (!$recordSet->EOF) 

@@ -278,7 +278,7 @@ function smarty_function_place($params) {
 
 	$place['full_name'] = _utf8_decode($place['full_name']);
 
-	if (!ctype_lower($place['full_name'])) {
+	if ($CONF['place_recaps'] && !ctype_lower($place['full_name'])) {
 		$t .= "<b>".recaps($place['full_name'])."</b><small><i>";
 	} else {
 		$t .= "<b>{$place['full_name']}</b><small><i>";
@@ -286,7 +286,7 @@ function smarty_function_place($params) {
 	$t = str_replace(' And ','</b> and <b>',$t);
 	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
 		$parts = explode('/',$place['adm1_name']);
-		if (!ctype_lower($parts[0])) {
+		if ($CONF['place_recaps'] && !ctype_lower($parts[0])) {
 			if (isset($parts[1]) && $parts[0] == $parts[1]) {
 				unset($parts[1]);
 			}

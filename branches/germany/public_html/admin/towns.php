@@ -95,6 +95,28 @@ if (!$db) die('Database connection failed');
 				$message .= "<p><b>Invalid town position</b>: {$_POST['oldi'.$c]}/<i>{$_POST['oldna'.$c]}</i>: <b>{$_POST['newe'.$c]}, {$_POST['newn'.$c]}</b></p>";
 				continue;
 			}
+			$newr = intval($_POST['newr'.$c]);
+			$newe = intval($_POST['newe'.$c]);
+			$newn = intval($_POST['newn'.$c]);
+			if (!array_key_exists($newr, $CONF['references'])) {
+				$message .= "<p><b>Invalid grid</b>: {$_POST['oldi'.$c]}/<i>{$_POST['oldna'.$c]}</i>: <b>{$_POST['newr'.$c]}</b></p>";
+				continue;
+			}
+			$x = $newe+$CONF['origins'][$newr][0]*1000;
+			$y = $newn+$CONF['origins'][$newr][1]*1000;
+			if ($_POST['oldi'.$c] !== '') {
+				$oldr = intval($_POST['oldr'.$c]);
+				$olde = intval($_POST['olde'.$c]);
+				$oldn = intval($_POST['oldn'.$c]);
+				#if (!array_key_exists($oldr, $CONF['references'])) {
+				#	$oldx = $x;
+				#	$oldy = $y;
+				#} else {
+					$oldx = $olde+$CONF['origins'][$oldr][0]*1000;
+					$oldy = $oldn+$CONF['origins'][$oldr][1]*1000;
+				#}
+			}
+
 			if ($_POST['oldna'.$c] !== $_POST['newna'.$c] || $_POST['oldi'.$c] === '') {
 				$changesfrom[] = "name: '{$_POST['oldna'.$c]}'";
 				$changesto[]   = "name: '{$_POST['newna'.$c]}'";
@@ -141,24 +163,8 @@ if (!$db) die('Database connection failed');
 				$sqlcolumns[]  = "quad";
 			}
 			if ($_POST['oldr'.$c] !== $_POST['newr'.$c] || $_POST['newe'.$c]  !== $_POST['olde'.$c] || $_POST['newn'.$c]  !== $_POST['oldn'.$c] || $_POST['oldi'.$c] === '') {
-				$_POST['newr'.$c] = intval($_POST['newr'.$c]);
-				if (!array_key_exists($_POST['newr'.$c], $CONF['references'])) {
-					$message .= "<p><b>Invalid grid</b>: {$_POST['oldi'.$c]}/<i>{$_POST['oldna'.$c]}</i>: <b>{$_POST['newr'.$c]}</b></p>";
-					continue;
-				}
-				$_POST['newe'.$c] = intval($_POST['newe'.$c]);
-				$_POST['newn'.$c] = intval($_POST['newn'.$c]);
-				$x = $_POST['newe'.$c]+$CONF['origins'][$_POST['newr'.$c]][0]*1000;
-				$y = $_POST['newn'.$c]+$CONF['origins'][$_POST['newr'.$c]][1]*1000;
-				if ($_POST['oldi'.$c] !== '') {
-					$_POST['oldr'.$c] = intval($_POST['oldr'.$c]);
-					$_POST['olde'.$c] = intval($_POST['olde'.$c]);
-					$_POST['oldn'.$c] = intval($_POST['oldn'.$c]);
-					$oldx = $_POST['olde'.$c]+$CONF['origins'][$_POST['oldr'.$c]][0]*1000;
-					$oldy = $_POST['oldn'.$c]+$CONF['origins'][$_POST['oldr'.$c]][1]*1000;
-				}
 				if ($CONF['commongrid']) {
-					list($lat,$long) = $conv->national_to_wgs84($_POST['newe'.$c],$_POST['newn'.$c],$_POST['newr'.$c]);
+					list($lat,$long) = $conv->national_to_wgs84($newe,$newn,$newr);
 					list($cx,$cy,$ri) = $conv->wgs84_to_national($lat, $long, true, $CONF['commongrid']);
 					$cx = round($cx);
 					$cy = round($cy);
@@ -166,13 +172,13 @@ if (!$db) die('Database connection failed');
 					$cx = $x;
 					$cy = $y;
 				}
-				$changesfrom[] = "grid,e,n: {$_POST['oldr'.$c]},{$_POST['olde'.$c]},{$_POST['oldn'.$c]}";
-				$changesto[]   = "grid,e,n: {$_POST['newr'.$c]},{$_POST['newe'.$c]},{$_POST['newn'.$c]}'";
-				$sqlvalues[]   = $db->Quote($_POST['newr'.$c]);
+				$changesfrom[] = "grid,e,n: {$oldr},{$olde},{$oldn}";
+				$changesto[]   = "grid,e,n: {$newr},{$newe},{$newn}'";
+				$sqlvalues[]   = $db->Quote($newr);
 				$sqlcolumns[]  = "reference_index";
-				$sqlvalues[]   = $db->Quote($_POST['newe'.$c]);
+				$sqlvalues[]   = $db->Quote($newe);
 				$sqlcolumns[]  = "e";
-				$sqlvalues[]   = $db->Quote($_POST['newn'.$c]);
+				$sqlvalues[]   = $db->Quote($newn);
 				$sqlcolumns[]  = "n";
 				$sqlvalues[]   = $db->Quote($x);
 				$sqlcolumns[]  = "x";
@@ -182,7 +188,7 @@ if (!$db) die('Database connection failed');
 				$sqlcolumns[]  = "cx";
 				$sqlvalues[]   = $db->Quote($cy);
 				$sqlcolumns[]  = "cy";
-				$sqlvalues[]   = "GeomFromText('POINT({$_POST['newe'.$c]} {$_POST['newn'.$c]})')";
+				$sqlvalues[]   = "GeomFromText('POINT({$newe} {$newn})')";
 				$sqlcolumns[]  = "point_en";
 				$sqlvalues[]   = "GeomFromText('POINT({$x} {$y})')";
 				$sqlcolumns[]  = "point_xy";

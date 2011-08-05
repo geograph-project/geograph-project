@@ -298,6 +298,90 @@ class GridSquare
 	}
 	
 	/**
+	* Get an array of regions
+	*/
+
+	function getRegionList($details = false)
+	{
+		global $CONF;
+		$reglist = array();
+		if ($this->gridsquare_id && count($CONF['hier_levels'])) {
+			$hierlevels = implode(',', $CONF['hier_levels']);
+			$levellist = array();
+			$db=&$this->_getDB();
+			if ($details)
+				$recordSet = &$db->Execute("select gp.level,gp.community_id,gp.percent,coalesce(lh.name,concat(gp.level,'_',gp.community_id)) as name from gridsquare_percentage gp left join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0");
+			else
+				$recordSet = &$db->Execute("select gp.level,gp.community_id,gp.percent,lh.name from gridsquare_percentage gp inner join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0");
+
+			#$recordSet = &$db->Execute("select gp.level,gp.community_id,gp.percent,lh.name from gridsquare_percentage gp inner join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0 order by gp.level desc,lh.name");
+			
+			while (!$recordSet->EOF) {
+				$level = $recordSet->fields['level'];
+				$cid = $recordSet->fields['community_id'];
+				if (!isset($levellist[$level]))
+					$levellist[$level] = array();
+				if ($details)
+					$percent = $recordSet->fields['percent'];
+				else
+					$percent = 0;
+				$levellist[$level][$cid] = array('name' => $recordSet->fields['name'], 'percent' => $percent, 'done' => false);
+				#trigger_error("------$level,$cid,$percent,{$levellist[$level][$cid]['name']}---", E_USER_NOTICE);
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+			foreach($CONF['hier_levels'] as $level) {
+				if (isset($levellist[$level])) foreach($levellist[$level] as $cid => &$row) {
+					$hier = $db->GetAssoc("select level,name,community_id from loc_hier where {$cid} between contains_cid_min and contains_cid_max and level < {$level} order by level");
+					$showhier = array();
+					if (count($hier)) {
+						$showlevels = $CONF['hier_levels'];
+						$prefixes   = $CONF['hier_prefix'];
+						$shortname = $row['name'];
+						if (isset($prefixes[$level])) {
+							$curpref = $prefixes[$level].' ';
+							$preflen = strlen($curpref);
+							if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+								$shortname = substr($shortname, $preflen);
+						}
+						$prev = $shortname;
+						foreach($showlevels as $level2) {
+							if (!isset($hier[$level2]))
+								continue;
+							$cid2 = $hier[$level2]['community_id'];
+							if (isset($levellist[$level2]) && isset($levellist[$level2][$cid2]))
+								$levellist[$level2][$cid2]['done'] = true;
+							$shortname = $hier[$level2]['name'];
+							if (isset($prefixes[$level2])) {
+								$curpref = $prefixes[$level2].' ';
+								$preflen = strlen($curpref);
+								if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+									$shortname = substr($shortname, $preflen);
+							}
+							if ($prev == $shortname)
+								continue;
+							$prev = $shortname;
+							$showhier[] = $hier[$level2]['name'];
+						}
+					}
+					$levellist[$level][$cid]['hier'] = implode(', ', $showhier);
+					$levellist[$level][$cid]['hide'] = !$details && $levellist[$level][$cid]['done'];
+					#trigger_error("------$level,$cid,$percent,{$levellist[$level][$cid]['name']}:{$levellist[$level][$cid]['hier']}---", E_USER_NOTICE);
+					$reglist[] = array(
+						'level'  =>$level,
+						'cid'    =>$cid,
+						'name'   =>$row['name'],
+						'hier'   =>$row['hier'],
+						'hide'   =>$row['hide'],
+						'percent'=>$row['percent']
+					);
+				}
+			}
+		}
+		return $reglist;
+	}
+
+	/**
 	* Get an array of valid kilometer indexes
 	*/
 	function getKMList()

@@ -38,7 +38,7 @@
      <li><a title="Impressum" href="http://www.hlipp.de/contact.html">Impressum</a></li>
     </ul></li>
   {dynamic}
-  {if $is_mod || $is_admin || $is_tickmod}
+  {if $is_mod || $is_admin || $is_tickmod || $is_mapmod}
     <li>Admin<ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      {if $is_mod}

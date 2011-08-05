@@ -139,6 +139,7 @@ $CONF['exiftooldir']='';
 
 ###################################
 
+$CONF['place_recaps'] = false;
 $CONF['lang']='en';
 $CONF['decimal_sep'] = '.';
 $CONF['thousand_sep'] = ',';
@@ -358,6 +359,20 @@ $CONF['gmridefault'] = 3;
 // google maps: coordinate conversion routines (German31, German32, German33, Irish, OSGB)
 // See also public_html/mapper/geotools2.js, GT_Xxxx() and GT_WGS84.prototype.getXxxx().
 $CONF['gmgrid'] =  array(3 => "German32", 4 => "German33", 5 => "German31");
+
+/* Mercator tiles: Width of thumbnails used for rendering level 12 tiles _before_ calculating the grid square polygon.
+ * This must be at least as large as xmax(spherical_mercator)-xmin(spherical_mercator) for any square kilometer!
+ *
+ * Estimated minimal value: pow(2,12)*256/40000. * sqrt(2) / cos(lat*pi/180.) * sin ((45 + dlon *sin (lat*pi/180.))*pi/180.),
+ * with dlon = abs(lon - lon(central meridian of transverse mercator)) [have a close look at squares in the north and far away from the central meridian].
+ * This value might need to be increased by the factor squares are scaled close to the zone boundary.
+ *
+ * If your gmcache is already built, you can have a look at
+ * SELECT grid_reference, (gxhigh-gxlow)*256/4.0e7*POW(2,12) AS dx FROM `gridsquare_gmcache` INNER JOIN gridsquare USING ( gridsquare_id ) ORDER BY gxhigh - gxlow DESC LIMIT 30
+ *
+ * Add some 10% for some cropping and round up. It might be a goog idea to use multiples of 2 or 4.
+ */
+$CONF['gmthumbsize12'] = 64;
 
 // google maps: array of (zoom level => region hierarchy level) pairs
 $CONF['gmhierlevels'] = array(); # array(5 => 4, 6 => 4, 7 => 4, 8 => 7, 9 => 7, 10 => 7, 11 => 7);

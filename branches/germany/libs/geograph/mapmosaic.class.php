@@ -956,14 +956,25 @@ class GeographMapMosaic
 			$and_crit .= ",$user_id";
 		}
 		$and_crit .= ")";
-		
+
+		$xycrit = "mercator='0' and '$x' between map_x and max_x and '$y' between map_y and max_y";
+		$sql = "select gxlow,gylow,gxhigh,gyhigh from gridsquare gs inner join gridsquare_gmcache gm using (gridsquare_id) where x='$x' and y='$y' limit 1";
+		$mercator = $db->GetRow($sql);
+		$havemercator = $mercator !== false && count($mercator);
+		if ($havemercator) {
+			$MCscale = 524288/(2*6378137.*M_PI);
+			$xMC_min = floor($mercator['gxlow'] * $MCscale);
+			$yMC_min = floor($mercator['gylow'] * $MCscale);
+			$xMC_max = ceil ($mercator['gxhigh'] * $MCscale);
+			$yMC_max = ceil ($mercator['gyhigh'] * $MCscale);
+			$xycrit .= " or mercator='1' and '$xMC_min'<=max_x and '$xMC_max'>=map_x and '$yMC_min'<=max_y and '$yMC_max'>=map_y";
+		}
+
 		$deleted = 0;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 
 		if ($memcache->valid) {
-			$sql="select * from mapcache
-				where $x between map_x and max_x and 
-				$y between map_y and max_y $and_crit";
+			$sql="select * from mapcache where ($xycrit) $and_crit";
 			
 			$recordSet = &$db->Execute($sql);
 			while (!$recordSet->EOF) 
@@ -1000,16 +1011,12 @@ class GeographMapMosaic
 			$recordSet->Close();
 		}
 		
-		$sql="update mapcache set age=age+1 
-			where $x between map_x and max_x and 
-			$y between map_y and max_y $and_crit";
+		$sql="update mapcache set age=age+1 where ($xycrit) $and_crit";
 		$db->Execute($sql);
 		
 		if ($expire_basemaps && !$memcache->valid) {
 			
-			$sql="select * from mapcache 
-			where $x between map_x and max_x and 
-			$y between map_y and max_y";
+			$sql="select * from mapcache where ($xycrit)";
 			$recordSet = &$db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
