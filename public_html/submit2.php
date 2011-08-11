@@ -31,6 +31,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+#$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:2px solid red;padding:20px;margin:20px;font-size:1.1em;">There will be a brief interuption of service at 11pm tonight. It is not recommended to have any submissions in progress at that time. When this message disappears it will be safe to continue. Sorry for the inconvenience.</div>');
+
 //you must be logged in to submit images
 $USER->mustHavePerm("basic");
 
@@ -197,6 +199,12 @@ if (isset($_FILES['jpeg_exif']))
 	$smarty->assign('filenames', $filenames);
 	$smarty->assign('grid_reference', $grid_reference);
 
+	if (!empty($_SESSION['submit_new'])) {
+	        $smarty->assign('new',1);
+	} else {
+	        $smarty->assign('new',0);
+	}
+
 } elseif (isset($_GET['transfer_id'])) {
 	$uploadmanager=new UploadManager;
 		
@@ -303,7 +311,7 @@ if (isset($_REQUEST['inner'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && $step !== 0) {
-	customExpiresHeader(3600,false,true);
+	customExpiresHeader(900,false,true);
 }
 
 if (!empty($_REQUEST['multi'])) {

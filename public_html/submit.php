@@ -49,6 +49,9 @@ $GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 $square=new GridSquare;
 $smarty = new GeographPage;
 
+#$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:2px solid red;padding:20px;margin:20px;font-size:1.1em;">There will be a brief interuption of service at 11pm tonight. It is not recommended to have any submissions in progress at that time. When this message disappears it will be safe to continue. Sorry for the inconvenience.</div>');
+
+
 if (!$USER->hasPerm("basic")) {
 	$smarty->display('static_submit_intro.tpl');
 	exit;
@@ -726,6 +729,22 @@ else
 			header("Location: $url");
 			print "<a href=\"$url\">Continue</a>";
 			exit;
+
+		} elseif (isset($USER->submission_method) && $USER->submission_method == 'multi' && !isset($_GET['redir'])) {
+			$url = "/submit-multi.php";
+			if (isset($USER->submission_new)) {
+			        $_SESSION['submit_new'] = intval($USER->submission_new);
+			}
+			if (isset($_SESSION['submit_new'])) {
+				$url .= "?new=".intval($_SESSION['submit_new']);
+			}
+			
+			if (!empty($grid_reference)) {
+				$url .= "#gridref=$grid_reference";
+			}
+			header("Location: $url");
+			print "<a href=\"$url\">Continue</a>";
+			exit;
 		}
 		
 		//init smarty
@@ -743,6 +762,7 @@ if (strlen($uploadmanager->errormsg))
 	$smarty->assign('errormsg', $uploadmanager->errormsg);
 	$step=7;
 }
+
 
 $smarty->assign('tab', $selectedtab);
 $_SESSION['tab'] = $selectedtab;

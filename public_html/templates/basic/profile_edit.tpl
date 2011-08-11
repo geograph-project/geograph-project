@@ -242,10 +242,23 @@
 	<select name="submission_method" id="submission_method"> 
 		<option value="submit">Original Submission Method</option>
 		<option value="submit2" {if $profile->submission_method =='submit2'} selected="selected"{/if}>Submit Version 2</option>
+		<option value="multi" {if $profile->submission_method =='multi'} selected="selected"{/if}>Multi Submit</option>
 	</select>
 
 	 
 	<div class="fieldnotes">If you choose "Submit v2" then you will be taken direct to the new version, but you can still choose to use version 1 on a per image basis. <br/><a href="/help/submission" target="_blank">View alternative submission methods</a></div>
+</div>
+
+<div class="field"> 
+	<label for="submission_new" class="nowrap">Submission Style</label>
+	
+	<select name="submission_new" id="submission_new"> 
+		<option value="{if $profile->submission_new ==2}2{else}1{/if}">Geographical Context (Recommended)</option>
+		<option value="0"{if $profile->submission_new ==0} selected="selected"{/if}>Category (Soon to be removed)</option>
+	</select>
+
+	 
+	<div class="fieldnotes">We are migrating to using Geographical Context, rather than the old Category method. <a href="/article/Transitioning-Categories-to-Tags" target="_blank">Read More</a></div>
 </div>
 
 
@@ -345,7 +358,7 @@
 </div>
 
 
-<div class="field"> 
+<div class="field" {if $profile->submission_new} style="display:none"{/if}> 
   
 	<label for="use_autocomplete" class="nowrap">Use Auto Complete</label>
 	
