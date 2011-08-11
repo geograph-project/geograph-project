@@ -1,5 +1,4 @@
-<?php
-/**
+<?php /**
  * $Project: GeoGraph $
  * $Id$
  * 
@@ -59,14 +58,14 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('theprefix', $prefix);
 		}
 		
-		$col= $db->getCol($sql = "SELECT tag_id FROM tag WHERE tag=".$db->Quote($_GET['tag']).$andwhere);
+		$col= $db->getCol("SELECT tag_id FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 		
 		if (!empty($col)) {
 		
 			$ids = implode(',',$col);
 			
 			if (!empty($_GET['exclude'])) {
-				$exclude= $db->getRow("SELECT * FROM tag WHERE tag=".$db->Quote($_GET['exclude']));
+				$exclude= $db->getRow("SELECT * FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['exclude']));
 			}
 			
 			if (!empty($exclude)) {
@@ -76,6 +75,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					where status =2
 					and gt.tag_id IN ($ids)
 					and gt.gridimage_id NOT IN (SELECT gridimage_id FROM gridimage_tag gt2 WHERE gt2.tag_id = {$exclude['tag_id']})
+					group by gt.gridimage_id
 					order by created desc 
 					limit 50";
 			} else {
@@ -84,6 +84,7 @@ if (!$smarty->is_cached($template, $cacheid))
 						inner join gridimage_search gi using(gridimage_id)
 					where status =2
 					and tag_id IN ($ids)
+					group by gt.gridimage_id
 					order by created desc 
 					limit 50";
 			}
@@ -114,6 +115,10 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign_by_ref('results', $imagelist->images);
 			
 			$smarty->assign('thetag', $_GET['tag']);
+
+			if (!empty($_GET['photo']) && !empty($db)) {
+				$smarty->assign('gridref',$db->getOne("SELECT grid_reference FROM gridimage_search WHERE gridimage_id = ".intval($_GET['photo'])));
+			}
 		}
 		
 	}
@@ -122,13 +127,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	$prefixes = $db->getAll("SELECT LOWER(prefix) AS prefix,COUNT(*) AS tags FROM tag GROUP BY prefix");
-
-
-
-	$tags = $db->getAll("SELECT LOWER(tag) AS tag,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING(tag_id) WHERE gt.status = 2 $andwhere GROUP BY tag ORDER BY tag LIMIT 1000");
-	
 	$smarty->assign_by_ref('prefixes', $prefixes);
-	$smarty->assign_by_ref('tags', $tags);
+
+
+	if (empty($_GET['tag'])) {
+		$tags = $db->getAll("SELECT LOWER(tag) AS tag,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING(tag_id) WHERE gt.status = 2 $andwhere GROUP BY tag ORDER BY tag LIMIT 1000");
+	
+		$smarty->assign_by_ref('tags', $tags);
+	}
 }
 
 $smarty->display($template, $cacheid);

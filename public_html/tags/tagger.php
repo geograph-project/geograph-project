@@ -363,7 +363,8 @@ if ($gid) {
 	'Informative',
 	'Aerial',
 	'Telephoto',
-	'View from',
+	'Landscape',
+	'Wideangle',
 	'Indoor',
 	'Historic',
 	'People',
@@ -374,6 +375,11 @@ if ($gid) {
 	$smarty->assign_by_ref('buckets',$buckets);
 
 if (!empty($_GET['title']) || !empty($_GET['comment'])) {
+        $string = $_GET['title'].' '.$_GET['comment'];
+
+        $smarty->assign('topicstring',$string);
+
+} elseif (!empty($_GET['title']) || !empty($_GET['comment'])) {
 	$topics = array();
 	
 	
@@ -414,9 +420,10 @@ if (!empty($_GET['title']) || !empty($_GET['comment'])) {
 	if (empty($value)) { 
 		ini_set('user_agent', 'Geograph Britain and Ireland - Tagging Interface (+http://www.geograph.org.uk)'); 
 
-		$value = $json->decode(file_get_contents($url)); 
+		$value = $json->decode(@file_get_contents($url)); 
 		
-		$memcache->name_set('rpc',$mkey,$value,$memcache->compress,$memcache->period_med); 
+		if ($value)
+			$memcache->name_set('rpc',$mkey,$value,$memcache->compress,$memcache->period_med); 
 	}
 	if (!empty($value) && !empty($value->memes)) {
 		foreach ($value->memes as $meme) {
@@ -458,7 +465,7 @@ if (!empty($_GET['title']) || !empty($_GET['comment'])) {
 
 if ($db2 && $USER->user_id) {
 		
-	$recent = $db2->getAll("SELECT tag,prefix,max(gt.created) as last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 20");
+	$recent = $db2->getAll("SELECT tag,prefix,MAX(gt.created) AS last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 20");
 	if (count($used) && count($recent)) {
 		$list = array();
 		foreach ($used as $row) $list[$row['tag']]=1;

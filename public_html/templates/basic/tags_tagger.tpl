@@ -23,7 +23,7 @@
 
 			<b>Current Tags</b>:<br/>
 			<span id="tags">{foreach from=$used item=item name=used}
-			<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tagid:{$item.tag_id}"{if $is_owner} onclick="toggleTag('id:{$item.tag_id}');"{/if}>
+			<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tagid:{$item.tag_id}"{if $is_owner} onclick="toggleTag('id:{$item.tag_id}');" ondblclick="editTag('id:{$item.tag_id}','{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'quotes'}');"{/if}>
 			<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
 			{if $item.is_owner}
 				<input type="hidden" name="tag_id[]" id="tagiid:{$item.tag_id}" value="id:{$item.tag_id}"/>
@@ -31,9 +31,9 @@
 				<a href="javascript:removeTag('id:{$item.tag_id}')" class="delete">X</a>
 			{/if}
 			</span>&nbsp;
-		{foreachelse}
-			{if $gridimage_id}<i>none</i>{else}<i>unknown</i>{/if}
-		{/foreach}</span>
+			{foreachelse}
+				{if $gridimage_id}<i>none</i>{else}<i>unknown</i>{/if}
+			{/foreach}</span>
 
 	</div>
 
@@ -53,7 +53,7 @@
 				<div style="margin-left:7em"><b>Geographical Context</b>: <small>(pick at <B>least one</b>)</small></div>
 			{/if}
 			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,10)">Suggestions</a>&nbsp;
-			{if $topics}
+			{if $topics || $topicstring}
 				{assign var="ctab" value=$ctab+1}
 				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Topics</a>&nbsp;
 			{/if}
@@ -81,7 +81,18 @@
 			{if $suggestions}<br/><small>Click a tag to add it to this image</small>{/if}
 		</div>
 
-		{if $topics}
+		{if $topicstring}
+                        {assign var="ctab" value=$ctab+1}
+                        <div id="div{$ctab}" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
+				<div id="topics">Loading...</div>
+                                <small>Click a suggested tag to add it to this image</small>
+                        </div>
+			<script>{literal}
+			AttachEvent(window,'load',function() {
+				loadTagTopics({/literal}'{$topicstring|escape:'quotes'}'{literal});
+			},false);
+			{/literal}</script>
+		{elseif $topics}
 			{assign var="ctab" value=$ctab+1}
 			<div id="div{$ctab}" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
 				{foreach from=$topics item=item name=used}
@@ -138,11 +149,14 @@
 {/dynamic}
 
 <br style="clear:both"/>
-<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag (Your own)</span> <span class="tag tagPrivate">Private (your own)</span> <span class="tag tagGeneral">Public (by others)</span></span> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})</div>
+<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag (Your own)</span> <span class="tag tagPrivate">Private (your own)</span> <span class="tag tagGeneral">Public (by others)</span></span> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})<br/>
+New! Double click the tag, to return it to Add box; useful for editing a tag.
+</div>
 
 {literal}<style type="text/css">
 .interestBox .tag {
 	margin-left:5px;
+	white-space:nowrap;
 }
 </style><script type="text/javascript">
 
@@ -185,7 +199,7 @@ function addTag(text,suggestion,clearText) {
 	//todo - split on comma so can enter multiple tags at once.
 
 {/literal}{dynamic}{if $is_owner}
-	str = "<span class=\"tag tagPublic\" id=\"tag"+text+"\" onclick=\"toggleTag('"+text+"');\">";
+	str = "<span class=\"tag tagPublic\" id=\"tag"+text+"\" onclick=\"toggleTag('"+text+"');\" ondblclick=\"editTag('"+text+"');\">";
 	str += "<input type=\"hidden\" name=\"mode[]\" id=\"tagm"+text+"\" value=\"Public\"/>";
 {else}
 	str = "<span class=\"tag tagPrivate\" id=\"tag"+text+"\">";
@@ -212,6 +226,12 @@ function removeTag(text) {
 		document.getElementById("tagi"+text).value="-deleted-";
 	}
 	submitTag(text,0);
+}
+
+function editTag(name,text) {
+	removeTag(name);
+ 	var ele = document.forms['theForm'].elements['__newtag'];
+        ele.value=text?text:name;
 }
 
 function toggleTag(text) {
@@ -282,6 +302,35 @@ function toggleTag(text) {
 					str += "</span> ";
 				}
 				str = str + "<br/><small>Click a tag to add it to this image</small>";
+				div.innerHTML = str;
+			}
+		});
+	}
+
+	function loadTagTopics(value) {
+
+		param = 'string='+encodeURIComponent(value);
+
+		$.getJSON("/tags/topics.json.php?"+param+"&callback=?",
+
+		// on search completion, process the results
+		function (data) {
+			if (data) {
+				var div = document.getElementById('topics');
+
+				str = '';
+				for(var tag_id in data) {
+					var text = data[tag_id].tag;
+					if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
+						text = data[tag_id].prefix+':'+text;
+					}
+					text = text.replace(/<[^>]*>/ig, "");
+					text = text.replace(/['"]+/ig, " ");
+
+					str += "<span class=\"tag\" id=\"suggestiontt"+tag_id+"\">";
+					str += "<a href=\"javascript:addTag('"+text+"','tt"+tag_id+"',true);\" class=\"taglink\">"+text+"</a>";
+					str += "</span> ";
+				}
 				div.innerHTML = str;
 			}
 		});

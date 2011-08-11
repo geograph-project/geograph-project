@@ -1,4 +1,10 @@
+{if $thetag}
+{assign var="page_title" value="Images tagged with '`$thetag`'"|escape:'html'}
+{assign var="tag2" value=$thetag|escape:'url'}
+{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://`$http_host`/tags/?tag=`$tag2`\" />"}
+{else}
 {assign var="page_title" value="Tags"}
+{/if}
 {include file="_std_begin.tpl"}
 
 {if $geographical}
@@ -16,8 +22,6 @@
 
 	<p>This is only a prototype, to get the ball rolling, more features will be added soon. <a href="/article/Tags">Read more about tags here</a></p>
 {/if}
-
-<br style="clear:both"/>
 
 {if $prefixes}
 	<div class="interestBox" style="font-size:0.8em;line-height:1.4em; text-align:center;margin:20px;">
@@ -48,14 +52,22 @@
 		{/if}
 	{/foreach}
 	</div>
+{elseif $thetag}
+	<div class="interestBox">Tag: 
+		<span class="nowrap">&nbsp;<b>{$thetag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}{if isset($theprefix)}?prefix={$theprefix|escape:'url'}{/if}">remove filter</a>] &nbsp;</span>
+	</div>
 {/if}
 
 
 {if $results}
 	{if !$example}
-		<p>These are the {if $images > 50}latest 50 of the{/if} images tagged with <span class="tag"><a class="taglink">{$thetag|escape:'html'}</a></span> tag.</p>
+		<p>These are the {if $images > 50}latest 50 of the{/if} images tagged with <span class="tag">{if $theprefix}{$theprefix|escape:'html'}:{/if}<a class="taglink">{$thetag|escape:'html'}</a></span> tag.</p>
 		<div style="text-align:right">
-			<a href="/search.php?tag={$thetag|escape:'url'}">View more in the Image Search</a>
+			{if $gridref}
+			<a href="/search.php?q=tags:%22{if $theprefix}{$theprefix|escape:'url'}+{/if}{$thetag|escape:'url'}%22&amp;location={$gridref|escape:'url'}">All images using this tag near {$gridref}</a>
+			{else}
+			<a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View more in the Image Search</a>
+			{/if}
 		</div>
 	{/if}
 
@@ -90,6 +102,12 @@
 			  </div><br style="clear:both;"/>
 			 </div>
 		{/foreach}
+
+	{if !$example}
+		<div style="text-align:right">
+			<a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View more in the Image Search</a>
+		</div>
+	{/if}
 
 
 {/if}
