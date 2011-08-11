@@ -17,6 +17,7 @@ Disallow: /finder/
 Disallow: /explore/wordnet.php
 Disallow: /explore/calendar.php
 Disallow: /places.php
+Disallow: /showmap.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
@@ -66,9 +67,10 @@ Disallow: /explore/
 Disallow: /statistics/
 Disallow: /stuff/
 
-
-
-
+#Not available by crawling
+Disallow: /photo/
+Disallow: /sitemap/
+Disallow: /tags/
 
 
 #The following are wildcard excludes which most crawlers don't understand

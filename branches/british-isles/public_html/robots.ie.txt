@@ -15,6 +15,7 @@ Disallow: /full-text.php
 Disallow: /finder/
 Disallow: /explore/wordnet.php
 Disallow: /explore/calendar.php
+Disallow: /showmap.php
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
@@ -64,6 +65,7 @@ User-Agent: Slurp
 Disallow: /stuff/canonical.php
 Disallow: /profile/*/map
 Disallow: /photo/*?style=*
+Disallow: /photo/*.kml
 Disallow: /mapbrowse.php?
 Disallow: /map/
 Disallow: /mapper/
@@ -76,6 +78,7 @@ Disallow: /full-text.php?
 Disallow: /finder/
 Disallow: /explore/wordnet.php
 Disallow: /explore/calendar.php?*Year*
+Disallow: /showmap.php
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
