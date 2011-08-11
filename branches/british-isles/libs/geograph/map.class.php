@@ -914,7 +914,11 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					
 					if ($this->type_or_user == -12) {
 						//todo doesnt use the where clause!
-						$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) where topic_id = {$this->topicId} group by x,y order by null";					
+						if ($this->topicId == -1) {
+							$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) group by x,y order by null";					
+						} else {
+							$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) where topic_id = {$this->topicId} group by x,y order by null";					
+						}
 					} elseif ($this->type_or_user == -6) {
 						$sql="select x,y,gridsquare_id,has_recent as has_geographs from gridsquare where 
 							CONTAINS( GeomFromText($rectangle),	point_xy)
@@ -1195,6 +1199,9 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 split_timer('map'); //starts the timer
 
 		if ($this->type_or_user == -7 || $this->type_or_user == -8 || $this->type_or_user == -13) {
+
+			set_time_limit(600);
+
 			$counts = range(0,130);
 		} else {
 			if ($this->type_or_user == -3) {
@@ -1263,13 +1270,11 @@ split_timer('map'); //starts the timer
 		$number = !empty($this->minimum)?intval($this->minimum):0;
 	
 		if ($this->type_or_user == -13) {
-			$sql="select x,y,gs.gridsquare_id,max(ftf) as imagecount
-				from 
-				gridsquare gs 
-				inner join gridimage gi using(gridsquare_id)
-				where CONTAINS( GeomFromText($rectangle),	point_xy)
-				and moderation_status in ('geograph')
-				group by gi.gridsquare_id ";
+			$sql="select x,y,0,max(ftf) as imagecount
+				from gridimage_search
+				group by x,y
+				 having imagecount>0
+				 order by null";
 
 		} elseif ($this->type_or_user == -9) {
 			$sql="select x,y,gs.gridsquare_id,(count(distinct nateastings DIV 500, natnorthings DIV 500) - (sum(nateastings = 0) > 0) )  as imagecount
@@ -1733,6 +1738,7 @@ split_timer('map'); //starts the timer
 		list($natleft,$natbottom) = $conv->internal_to_national($scanleft,$scanbottom,$reference_index);
 		list($natright,$nattop) = $conv->internal_to_national($scanright,$scantop,$reference_index);
 
+		$crit = '';
 		if ($this->pixels_per_km < 1) {
 			$div = 500000; //1 per 500k square
 			$crit = "s = '1' AND";
@@ -1807,7 +1813,7 @@ END;
 			
 			$recordSet->MoveNext();
 		}
-		if ($_GET['d'])
+		if (!empty($_GET['d']))
 			exit;
 		if (!empty($recordSet))
 			$recordSet->Close(); 
@@ -2017,7 +2023,7 @@ split_timer('map','_plotPlacenames'); //logs the wall time
 				}
 				$thisrect = array($txtx,$txty,$txtx + $txtw,$txty + $txth);
 				array_push($this->labels,$thisrect);
-				if ($_GET['d']) {
+				if (!empty($_GET['d'])) {
 					print "$text";var_dump($thisrect); print "<BR>";
 				}
 			}
@@ -2346,7 +2352,7 @@ function imageGlowString($img, $font, $xx, $yy, $text, $color) {
 
             for ($k = $x - 1; $k <= $x + 1; ++$k)
                 for ($l = $y - 1; $l <= $y + 1; ++$l) {
-                    $colour = imagecolorat($text_image, $k, $l);
+                    $colour = @imagecolorat($text_image, $k, $l);
                     
                     $newr += ($colour >> 16) & 0xFF;
                     $newg += ($colour >> 8) & 0xFF;
