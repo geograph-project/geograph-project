@@ -149,13 +149,6 @@ if (empty($_GET['tab'])) {
 
 if ($template == "submit_multi_submit.tpl" || $template == "submit_multi_nofrills.tpl") {
 	
-	if (isset($USER->submission_new)) {
-		$_SESSION['submit_new'] = intval($USER->submission_new);
-	}
-	if (empty($_SESSION['submit_new'])) {
-		$template = "submit_multi_submit_old.tpl";
-	}
-	
 	$uploadmanager=new UploadManager;
 
 	$data = $uploadmanager->getUploadedFiles();
