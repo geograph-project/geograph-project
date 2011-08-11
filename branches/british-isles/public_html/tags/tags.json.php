@@ -58,11 +58,13 @@ if (!empty($_GET['q'])) {
 	
 		if ($offset < (1000-$pgsize) ) { 
 			$client = $sphinx->_getClient();
+
+                        $client->SetRankingMode(SPH_RANK_SPH04);
 			
 			$sphinx->sort = "prefered DESC"; //within group order
 			$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC"); //overall sort order
 			
-			$sphinx->q = "\"^{$sphinx->q}$\" | (^$sphinx->q) | ($sphinx->q)";
+			$sphinx->q = "\"^{$sphinx->q}$\" | (^$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$\"";
 	
 			$ids = $sphinx->returnIds($pg,'tags');
 			
