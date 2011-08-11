@@ -25,7 +25,7 @@
 
 
 	{if $user->stats.images gt 10}
-	<p align="center">&middot; <a href="/help/submit">Other Submission Options</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
+	<p align="center">&middot; <a href="/help/submit">Other submission methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
 	{/if}
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>

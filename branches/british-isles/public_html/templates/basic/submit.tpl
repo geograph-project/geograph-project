@@ -19,13 +19,9 @@
 {$status_message}
 
 {if $step eq 1}
-	<p align="center">&middot; <a href="/help/submit">Other Submission options</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
+	<p align="center">&middot; <a href="/help/submit">Other submission methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
-
-<ul>
-	<li>You are using the new Tagging based submission process, thank you. <small><a href="/switch.php">change</a>.</small></li>
-</ul>
 
 
 {if $user->stats.images eq 0}
@@ -49,6 +45,10 @@ for that square</p>
 geographing</a> first.</p>
 
 </div>
+{else}
+<ul>
+	<li>You are using the new Tagging based submission process, thank you. <small><a href="/switch.php">change</a>.</small></li>
+</ul>
 {/if}
 
 	{if $errormsg}
