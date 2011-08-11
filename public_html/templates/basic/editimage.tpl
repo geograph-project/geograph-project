@@ -455,14 +455,13 @@
 <label for="grid_reference"><b style="color:#0018F8">Subject Grid Reference</b> {if $moderated.grid_reference}<span class="moderatedlabel">(moderated{if $isowner} for gridsquare changes{/if})</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
 <input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}
-{getamap gridref="document.theForm.grid_reference.value" gridref2=$image->subject_gridref text="OS Get-a-map&trade;"}
 
 
 <p>
 <label for="photographer_gridref"><b style="color:#002E73">Photographer Grid Reference</b> - Optional {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
 <input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
-{getamap gridref="document.theForm.photographer_gridref.value" gridref2=$image->photographer_gridref text="OS Get-a-map&trade;"}<br/>
+<br/>
 <span style="font-size:0.6em">
 | <a href="javascript:void(copyGridRef());">Copy from Subject</a> |
 <a href="javascript:void(resetGridRefs());">Reset to initial values</a> |  <span id="dist_message" style="padding-left:20px"></span><br/></span>
@@ -527,7 +526,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 {if $image->imageclass}
 {if $use_autocomplete}
 
-<p><label for="imageclass"><b>Image Category</b></label> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
+<p><label for="imageclass"><b>Image Category</b> (Optional, if supply Tags at bottom of page)</label> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
 	{if $error.imageclass}
 	<span class="formerror">{$error.imageclass}</span><br/>
 	{/if}
@@ -556,7 +555,7 @@ AttachEvent(window,'load', function() {
 
 {else}
 
-	<p><label for="imageclass"><b>Image Category</b> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
+	<p><label for="imageclass"><b>Image Category</b> (Optional, if supply Tags at bottom of page) {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
 		{if $error.imageclass}
 		<span class="formerror">{$error.imageclass}</span><br/>
 		{/if}
@@ -704,7 +703,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 </div>
 {/if}
 <br/><br/>
-<h2 class="titlebar">Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';" id="hidetag"/></h2>
+<h2 class="titlebar">Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';" id="hidetag"/>   - includes 'Geographical Context'</h2>
 <div id="showtag" style="display:none">
 	<ul>
 		<li>Tags are a new feature on Geograph - they are still under heavy development - not fully working yet!</li>
@@ -718,6 +717,8 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 {/if}
 
+
+{if $image->imageclass}
 {if $use_autocomplete}
 	<link rel="stylesheet" type="text/css" href="{"/js/Autocompleter.css"|revision}" />
 
@@ -728,6 +729,8 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 {else}
 <script type="text/javascript" src="/categories.js.php"></script>
 {/if}
+{/if}
+
 {if $rastermap->enabled}
 	{$rastermap->getFooterTag()}
 {/if}
