@@ -152,7 +152,7 @@ function smarty_function_getamap($params)
 	{
 		if (!empty($params['gridref2']))
 			$gridref4 .= ",'{$params['gridref2']}'";
-		return "<a title=\"Ordnance Survey Get-a-Map\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
+		return "<a title=\"1:25,000 OS Maps\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
 	}
 	else if (preg_match('/^([A-Z]{1,3})(\d{4,10})$/i', $gridref4, $matches))
 	{
@@ -173,10 +173,10 @@ function smarty_function_getamap($params)
 		if (isset($params['title']))
 			$title=$params['title'];
 		else
-			$title="Ordnance Survey Get-a-Map for $gridref4";
+			$title="1:25,000 OS Maps for $gridref4";
 #return "<a href=\"/gridref/$gridref6/links?getamap\" target=\"gam\">$text</a>";
 #return "<a href=\"http://www.getamap.ordnancesurveyleisure.co.uk/\" target=\"gam\">$text</a>";
-		return "<a title=\"$title\" href=\"http://getamap.ordnancesurvey.co.uk/getamap/frames.htm?mapAction=gaz&amp;gazName=g&amp;gazString=$gridref6\" onclick=\"popupOSMap('$gridref6',''); return false;\">$text</a>$icon";
+		return "<a title=\"$title\" href=\"/showmap.php?gridref=$gridref4\" onclick=\"popupOSMap('$gridref4',''); return false;\">$text</a>$icon";
 	}
 	else if (empty($gridref4))
 	{

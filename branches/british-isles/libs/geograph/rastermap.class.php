@@ -122,7 +122,7 @@ class RasterMap
 			$services = explode(',',$CONF['raster_service']);
 
 			if ($square->reference_index == 1) {
-				if ($this->issubmit && in_array('OSOS',$services)) {
+				if ($this->issubmit === true && in_array('OSOS',$services)) {
 					$this->enabled = true;
 					$this->service = 'OSOS';
 					
@@ -245,7 +245,7 @@ class RasterMap
 
 			
 		} elseif ($this->service == 'OSOS') {
-			$s = $this->exactPosition?'':"Drag the circles from the green box!<br/>";
+			$s = ($this->exactPosition || !$this->issubmit)?'':"Drag the circles from the green box!<br/>";
 			return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px\"></div>";
 		} elseif ($this->service == 'Google') {
 			if (!empty($this->inline) || !empty($this->issubmit)) {
@@ -592,6 +592,10 @@ class RasterMap
 			}
 			
 			if ($this->exactPosition) {
+				if (!empty($this->natgrlen) && $this->natgrlen == '6') {
+					$this->nateastings +=50;
+					$this->natnorthings += 50;
+				}
 				$block.= "map.addOverlay(createMarker(new OpenSpace.MapPoint({$this->nateastings}, {$this->natnorthings})));";
 			} elseif ($this->issubmit) {
 				$block .= "map.addOverlay(createMarker(new OpenSpace.MapPoint($e-50, $n+150)));\n";
@@ -835,7 +839,10 @@ class RasterMap
 			return 'Subject Location: <img src="http://data.geograph.org.uk/symbols/27710.png" width="12" height="12"/>, Photographer Location: <img src="http://data.geograph.org.uk/symbols/8513.png" width="12" height="12"/><br/>
 			&copy; OpenStreetMap and contributors, <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="">CC-BY-SA</a>';
 		} elseif ($this->service == 'OSOS') {
-			return '<br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> <a href="javascript:void(enlargeMap());">Enlarge Map</a>';
+			if ($this->issubmit) {
+				return '<br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> <a href="javascript:void(enlargeMap());">Enlarge Map</a>';
+			} else
+				return '';
 		} elseif ($this->service == 'Google') {
 			return '';
 		} elseif ($this->issubmit) {
@@ -861,7 +868,7 @@ class RasterMap
 			}
 		
 			if (!empty($this->clickable)) {
-				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map to open OS Get-a-Map$str</span><span id=\"mapFootNoteNPE\"></span>";
+				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map for Large scale mapping$str</span><span id=\"mapFootNoteNPE\"></span>";
 			} else {
 				return "<span id=\"mapFootNoteOS50k\"".(($this->displayMarker1 || $this->displayMarker2)?'':' style="display:none"').">TIP: Hover over the icons to hide$str</span><span id=\"mapFootNoteNPE\"></span>";
 			}
@@ -1148,7 +1155,7 @@ class RasterMap
 		#//can use if-last-mod as file is not unique per user
 		#customCacheControl($t,$mappath,true);
 
-		customExpiresHeader(604800,true);
+		customExpiresHeader(15552000,true);
 		
 		header("Content-Type: image/png");
 		
