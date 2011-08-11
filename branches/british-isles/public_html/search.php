@@ -1068,7 +1068,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			
 			$name = ($m[1] == 'imagetaken')?'imagetaken':'submitted';
 			
-			$value= substr($engine->results[0]->{$name},0,10);
+			$value= substr((string)$engine->results[0]->{$name},0,10);
 			
 			$name = ($m[1] == 'imagetaken')?'taken':'submitted';
 			

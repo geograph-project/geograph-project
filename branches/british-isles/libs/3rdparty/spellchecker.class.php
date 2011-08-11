@@ -67,8 +67,8 @@ class SpellChecker
     foreach($xml->c as $correction) 
     { 
       $suggestions = explode("\t", (string)$correction); 
-      $offset = $correction['o']; 
-      $length = $correction['l']; 
+      $offset = intval($correction['o']); 
+      $length = intval($correction['l']); 
 
       $replacement[mb_substr($result, $offset, $length)] = $suggestions[0]; 
     } 
@@ -152,4 +152,4 @@ class SpellChecker
   } 
 } 
 
-?>
+
