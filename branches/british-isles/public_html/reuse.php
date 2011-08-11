@@ -75,19 +75,37 @@ if (isset($_REQUEST['id']))
 					break;
 				default: $filepath = $image->_getFullpath();
 			} 
+
 			$filename = basename($filepath);
 			$filename = "geograph-".preg_replace('/_\w+(\.jpg)/'," by {$image->realname}\$1",$filename);
 			$filename = preg_replace('/ /','-',trim($filename));
 			$filename = preg_replace('/[^\w-\.,]+/','',$filename);
 			$lastmod = filemtime($_SERVER['DOCUMENT_ROOT'].$filepath);
-			
+	
 			header("Content-Type: image/jpeg");
 			header("Content-Disposition: attachment; filename=\"$filename\"");
+
+			if (function_exists('apache_get_modules') && ($m = apache_get_modules()) && in_array('mod_xsendfile',$m)) {
+				$filepath = preg_replace('/^\//','',$filepath);
+				header("X-Sendfile: $filepath");
+				
+			} elseif (1) {
 			
-			customExpiresHeader(86400*180,true);
-			customCacheControl($lastmod,$image->gridimage_id);
-			
-			readfile($_SERVER['DOCUMENT_ROOT'].$filepath);
+				customExpiresHeader(86400*180,true);
+				customCacheControl($lastmod,$image->gridimage_id);
+				
+				header("Content-Length: ".filesize($_SERVER['DOCUMENT_ROOT'].$filepath));
+				
+				readfile($_SERVER['DOCUMENT_ROOT'].$filepath);
+
+			} else {
+
+				customNoCacheHeader();
+                                header("HTTP/1.0 307 Temporary Redirect");
+                                header("Status: 307 Temporary Redirect");
+                                header("Location: $filepath");
+
+			}
 			exit;
 		}
 
@@ -121,4 +139,3 @@ if (isset($_REQUEST['id']))
 
 $smarty->display($template);
 
-?>
