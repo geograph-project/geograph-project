@@ -5,12 +5,6 @@
 
 	<h2>Multiple Image Submission <sup>Experimental</sup></h2>
 
-<div style="color:black; border:2px solid red; padding:10px; margin-bottom:10px">
-	You are using the new Tagging based submission process. <br/><small>
-	For a short while can revert to the old Category based submission method, <a href="/switch.php">here</a>.</small>
-</div>
-
-
 <div style="position:relative;">
 	<div class="tabHolder">
 		<a class="tab nowrap" id="tab1" href="{$script_name}">A) Add/Upload Images</a>&nbsp;
