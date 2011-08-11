@@ -232,12 +232,6 @@ function clearSubmission() {
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
 	</noscript>
 
-<ul>
-        <li>You are using the new Tagging based submission process, thank you. <small><a href="/switch.php">change</a>.</small></li>
-</ul>
-
-
-
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
 	 A overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.
 	 If possible, the date, and grid-reference(s) are automatically extracted from the submitted image.</p>
