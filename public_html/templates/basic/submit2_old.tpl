@@ -189,7 +189,7 @@ AttachEvent(window,'load',readHash,false);
 </script>
 {/literal}
 
-	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submit">Other Submission Options</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
+	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submit">Other submission methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
 	<h2>Submit Image <sup style="color:gray">v2 - Gamma</sup></h2>
 
@@ -203,7 +203,8 @@ AttachEvent(window,'load',readHash,false);
 <div style="background-color:pink; color:black; border:2px solid red; padding:20px; margin-bottom:30px;">
 	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 
-	You are using the old Category based submission process. Please consider switching to the new <a href="/switch.php">Tagging based interface</a>.
+	You are using the old Category based submission process. 
+	Find out about removing categories <a href="/switch.php">here</a>, and fully changing to Geographical Context.
 
 	<br/><br/>Please <a href="https://spreadsheets.google.com/spreadsheet/viewform?formkey=dFpiTjJsTEZRRXVwZ2pxWXdXczY2ZGc6MQ" target="_blank">tell us why</a> you havent switched yet - Thanks!
 </div>

@@ -201,7 +201,7 @@ function openInNewWindow() {
 }
 
 function clearSubmission() {
-	document.getElementById('iframe'+1).src = '/submit2.php?inner&step=1';
+	document.getElementById('iframe'+1).src = '/submit2.php?inner&step={/literal}{dynamic}{if $multi}0{else}1{/if}{/dynamic}{literal}&container=iframe1';
 	for(q=1;q<=3;q++)
 		document.getElementById('sh'+q).className = "tab sh sn";
 	clicker(1,true);
@@ -222,7 +222,7 @@ function clearSubmission() {
 </script>
 {/literal}
 
-	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submit">Other Submission Options</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
+	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submit">Other submission methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
 	<h2>Submit Image <sup style="color:gray">v2:Tabs - Gamma</sup></h2>
 

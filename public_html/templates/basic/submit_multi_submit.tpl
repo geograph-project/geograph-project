@@ -20,14 +20,7 @@
 
 	<div class="interestBox">
 
-			<fieldset style="width:300px;float:left">
-				<legend>Submission Method</legend>
-				<input type="radio" name="meth" value="/submit.php" checked /> Submit v1<br/>
-				<span style="color:gray"><input type="radio" name="meth" value="/submit2.php" disabled/> Submit v2 (coming soon)<br/>
-				<input type="radio" name="meth" value="/submit2.php?display=tabs" disabled/> Submit v2 Tabs (coming soon)</span>
-			</fieldset>
-
-			<fieldset style="width:300px;float:left">
+			<fieldset>
 				<legend>Set Location</legend>
 
 				<form action="#" onsubmit="return copytoall(this)">
