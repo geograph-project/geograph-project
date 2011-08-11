@@ -45,10 +45,6 @@ for that square</p>
 geographing</a> first.</p>
 
 </div>
-{else}
-<ul>
-	<li>You are using the new Tagging based submission process, thank you. <small><a href="/switch.php">change</a>.</small></li>
-</ul>
 {/if}
 
 	{if $errormsg}
