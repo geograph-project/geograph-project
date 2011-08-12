@@ -64,6 +64,13 @@ while (!$recordSet->EOF)
 			echo ',"'.str_replace('"', '""', $image['comment']).'"';
 		}
 	}
+	if (!empty($_GET['tags'])) {
+		if (empty($image['tags'])) {
+			echo ',';
+		} else {
+			echo ',"'.str_replace('"', '""', $image['tags']).'"';
+		}
+	}
 	if (!empty($_GET['thumb'])) {
 		$gridimage->fastInit($image);
 		echo ','.$gridimage->getThumbnail(120,120,true);
@@ -99,6 +106,8 @@ while (!$recordSet->EOF)
 		echo ",{$image['wgs84_lat']},{$image['wgs84_long']}";
 	if (!empty($_GET['taken']))
 		echo ",{$image['imagetaken']}";
+	if (!empty($_GET['submitted']))
+		echo ",{$image['submitted']}";
 	if (!empty($_GET['dir']))
 		echo ",{$image['view_direction']}";
 	if (!empty($_GET['hits']))

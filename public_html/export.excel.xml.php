@@ -73,7 +73,10 @@ while (!$recordSet->EOF)
 	print "<Cell><Data ss:Type=\"String\">{$image['grid_reference']}</Data></Cell>";
 	print "<Cell><Data ss:Type=\"String\">{$image['realname']}</Data></Cell>";
 	print "<Cell><Data ss:Type=\"String\">{$image['imageclass']}</Data></Cell>";
-
+	if (!empty($_GET['desc']))
+		print "<Cell><Data ss:Type=\"String\">{$image['comment']}</Data></Cell>";
+	if (!empty($_GET['tags']))
+		print "<Cell><Data ss:Type=\"String\">{$image['tags']}</Data></Cell>";
 	if (!empty($_GET['thumb'])) {
 		$gridimage->fastInit($image);
 		print "<Cell><Data ss:Type=\"String\">".$gridimage->getThumbnail(120,120,true)."</Data></Cell>";
@@ -114,6 +117,8 @@ while (!$recordSet->EOF)
 		else 
 			print "<Cell><Data ss:Type=\"String\">{$image['imagetaken']}</Data></Cell>\n";
 	}
+	if (!empty($_GET['submitted']))
+		print "<Cell ss:StyleID=\"sDt\"><Data ss:Type=\"DateTime\">".str_replace(' ','T',$image['submitted']).".000</Data></Cell>\n";
 	if (!empty($_GET['dir']))
 		print "<Cell><Data ss:Type=\"Number\">{$image['view_direction']}</Data></Cell>\n";
 	if (!empty($_GET['hits']))
