@@ -387,29 +387,26 @@ it was taken or other interesting geographical information. <span id="styleguide
 <p style="clear:both"><label for="comment"><b>Description/Comment</b></label> <span class="formerror" style="display:none" id="commentstyle">Possible style issue. See Guide above. <span id="commentstylet"></span></span><br/>
 <textarea id="comment" name="comment" rows="7" cols="80" spellcheck="true" onblur="checkstyle(this,'comment',true);" onkeyup="checkstyle(this,'comment',false);">{$comment|escape:'html'}</textarea></p>
 
-
-<div>
-	<b>Shared Descriptions/References (Optional)</b>
-	<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
-
-	<div id="showshare" style="display:none">
-		<iframe src="about:blank" height="400" width="98%" id="shareframe" style="border:2px solid gray">
-		</iframe>
-		<div><a href="#" onclick="hide_tree('share');return false">- Close <i>Shared Descriptions</I></a></div>
-	</div>
-</div>
-<br/>
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
 For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
 <h3>Further Information</h3>
+
+<div class="tabHolder" style="font-size:1em">
+	<a class="tab{if !$tagarray}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Primary Category</a>&nbsp;
+	<a class="tab{if $tagarray}Selected{/if} nowrap" id="tab1" style="font-size:0.9em" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
+	<a class="tab nowrap" id="tab2" style="font-size:0.9em" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags <small>(Optional)</small></a>&nbsp;
+	<a class="tab nowrap" id="tab3" style="font-size:0.9em" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions <small>(Optional)</small></a>
+</div>
+
+<div id="div4" class="interestBox" {if $tagarray}style="display:none"{/if}>
 
 <div style="float:right">Categories are changing. <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
 
 {if $use_autocomplete}
 
 <p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-	<br/><span class="formerror">{$error.imageclass}</span>
+	<br/><span class="formerror">{$error.imageclass} or select some Geographical Context</span>
 	{/if}<br />
 	<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
 	</p>
@@ -464,7 +461,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 {/literal}
 
 <p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-	<br/><span class="formerror">{$error.imageclass}</span>
+	<br/><span class="formerror">{$error.imageclass} or select some Geographical Context</span>
 	{/if}<br />
 	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
 		<option value="">--please select feature--</option>
@@ -481,21 +478,83 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 {/if}
 
-		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';" id="hidetag"/></p>
+			<div style="font-size:0.8em;padding-bottom:5px;">
+			Note: Instead of selecting a Category, please considering selecting one or more items from the "<a href="#" onclick="tabClick('tab','div',1,4);return false;">Geographical Context</a>" tab.<br/><br/>
+			Adding additional Tags is entirely optional. However tags are useful to include the detail you may of included in the category.
+			</div>
 
-		<div class="interestBox" id="showtag" style="display:none">
-			<ul>
-				<li>Tags are simple free-form keywords/short phrases, used to describe the image.</li>
-				<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
-				<li>It is not compulsory to add any Tags.</li>
-				<li>Note: Tags should be singular, ie a image of a church should have the tag "church", not "churches" - it's a specific tag, not a category.<br/> <small>(however if photo is of multiple fence posts, then the tag "fence posts" should be used)</small></li>
-				<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croydon" - similarlly could use "near:Tring".</li>
-				<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
-			</ul>
-			<iframe src="about:blank" height="200" width="100%" id="tagframe">
+</div>
+
+		<div id="div3" class="interestBox" style="display:none">
+			<iframe src="about:blank" height="400" width="100%" id="shareframe" style="border:0">
 			</iframe>
-			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
-		</div></p>
+		</div>
+
+		<div id="div1" class="interestBox" {if !$tagarray}style="display:none"{/if}>
+			<div style="float:right"><a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">About Context/Tags</a></div>
+			<div style="font-size:0.8em;padding-bottom:5px;">
+			&middot; Tick as many Geogaphical Contexts as required.<br/>
+			&middot; Hover over name for a description, see also <a href="/tags/primary.php" text="More examples" target="_blank">further details and examples</a><br/>
+			&middot; If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat.<br/>
+			&middot; As we have been adding Context to the previous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.<br/>
+			</div>
+
+			{foreach from=$tops key=key item=item}
+				<div class="plist">
+					<div style="color:black">{$key}</div>
+					{foreach from=$item item=row}{assign var="tagtop" value=$row.top}
+						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}" id="l-{$row.top|escape:'url'}">
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this)" {if $tagarray.$tagtop} checked{/if}/>
+							{$row.top|escape:'html'}
+						</label>
+					{/foreach}
+					<br/>
+				</div>
+			{/foreach}
+			<br style="clear:both"/>
+
+		</div>
+
+		<div id="div2" class="interestBox" style="display:none">
+			<div style="float:right"><a href="/article/Tags" title="Article about Tags" class="about" target="_blank">More about Tags</a></div>
+			<div style="font-size:0.8em;padding-bottom:5px;">
+			&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/>
+			&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/>
+			&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/>
+			&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".
+			</div>
+
+			<iframe src="about:blank" height="200" width="100%" id="tagframe" style="border:0">
+			</iframe>
+		</div>
+
+{literal}
+<script type="text/javascript">
+function show_tagging(form) {
+	var query = 'upload_id={/literal}{$upload_id}&gr={$grid_reference|escape:'html'}{literal}&v=3';
+	if (form.elements['title'].value.length> 0 )
+		query=query+'&title='+encodeURIComponent(form.elements['title'].value);
+	for(q=0;q<form.elements['tags[]'].length;q++)
+		if (form.elements['tags[]'][q].checked)
+			query=query+'&tags[]='+encodeURIComponent(form.elements['tags[]'][q].value);
+	if (form.elements['comment'].value.length> 0 )
+		query=query+'&comment='+encodeURIComponent(form.elements['comment'].value.substr(0,1500).replace(/[\n\r]/,' '));
+	document.getElementById('tagframe').src='/tags/tagger.php?'+query;
+}
+function rehighlight(that) {
+	var id = that.id.replace(/c-/,'l-');
+	document.getElementById(id).style.fontWeight=that.checked?'bold':'normal';
+	document.getElementById(id).style.backgroundColor=that.checked?'white':'';
+}
+{/literal}
+
+{if $tagarray}
+	{foreach from=$tagarray key=key item=row}
+		rehighlight(document.getElementById("c-{$key|escape:'url'}"));
+	{/foreach}
+{/if}
+
+</script>
 
 
 <p><label><b>Date photo taken</b></label> {if $error.imagetaken}
@@ -552,6 +611,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 {else}
 	<input type="hidden" name="title" value="{$title|escape:'html'}"/>
 	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
+	<input type="hidden" name="tags" value="{$tags|escape:'html'}"/>
 	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
@@ -561,6 +621,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 	<input type="hidden" name="upload_id" value="{$upload_id}"/>
 	<input type="hidden" name="title" value="{$title|escape:'html'}"/>
 	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
+	<input type="hidden" name="tags" value="{$tags|escape:'html'}"/>
 	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>

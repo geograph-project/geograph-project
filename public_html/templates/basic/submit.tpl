@@ -413,10 +413,10 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 			{foreach from=$tops key=key item=item}
 				<div class="plist">
-					<div>{$key}</div>
-					{foreach from=$item item=row}
-						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}">
-							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}"/>
+					<div style="color:black">{$key}</div>
+					{foreach from=$item item=row}{assign name="tagtop" var=$row.top}
+						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}" id="l-{$row.top|escape:'url'}">
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this)" {if $tagarray.tagtop} checked{/if}/>[[{$tagarray.tagtop}]] [[{$tagtop}]]
 							{$row.top|escape:'html'}
 						</label>
 					{/foreach}
@@ -440,6 +440,14 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			</iframe>
 			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
 		</div></p>
+{literal}
+<script type="text/javascript">
+function rehighlight(that) {
+	var id = that.id.replace(/c-/,'l-');
+	document.getElementById(id).style.fontWeight=that.checked?'bold':'normal';
+	document.getElementById(id).style.backgroundColor=that.checked?'white':'';
+}
+</script>{/literal}
 
 
 <p><label><b>Date photo taken</b></label> {if $error.imagetaken}

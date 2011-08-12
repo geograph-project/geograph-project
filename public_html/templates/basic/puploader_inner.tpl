@@ -175,7 +175,7 @@
 			&middot; Tick as many Geogaphical Contexts as required.<br/>
 			&middot; Hover over name for a description, see also <a href="/tags/primary.php" text="More examples" target="_blank">further details and examples</a><br/>
 			&middot; If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat.<br/>
-			&middot; As we have been adding Context to the previuous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.<br/>
+			&middot; As we have been adding Context to the previous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.<br/>
 			</div>
 
 			{foreach from=$tops key=key item=item}
