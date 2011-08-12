@@ -448,15 +448,29 @@ class UploadManager
 		
 			//save a copy
 			$orginalfile = $this->_originalJPEG($upload_id);
-			copy($pendingfile,$orginalfile);
-			$this->hasoriginal = true;
-		
-			//resize image to required size
-			if ($ok = $this->_downsizeFile($pendingfile,$max_dimension)) {
-				//remember useful stuff
-				$this->upload_id=$upload_id;
-				$this->original_width=$width;
-				$this->original_height=$height;
+			
+			if (false) {
+				copy($pendingfile,$orginalfile);
+				$this->hasoriginal = true;
+
+				//resize image to required size
+				if ($ok = $this->_downsizeFile($pendingfile,$max_dimension)) {
+					//remember useful stuff
+					$this->upload_id=$upload_id;
+					$this->original_width=$width;
+					$this->original_height=$height;
+				}
+			} else {
+				rename($pendingfile,$orginalfile);
+				$this->hasoriginal = true;
+
+				//created required image size
+				if ($ok = $this->_downsizeFile($pendingfile,$max_dimension,$orginalfile)) {
+					//remember useful stuff
+					$this->upload_id=$upload_id;
+					$this->original_width=$width;
+					$this->original_height=$height;
+				}
 			}
 		} else {
 			$ok = true;
@@ -488,21 +502,25 @@ class UploadManager
 		return $ok;
 	}
 
-	function _downsizeFile($filename,$max_dimension) {
+	function _downsizeFile($filename,$max_dimension,$source = '') {
 		global $USER,$CONF;
 	
 	split_timer('upload'); //starts the timer
 	
 		if (strlen($CONF['imagemagick_path'])) {
 			//try imagemagick first
-			list($width, $height, $type, $attr) = getimagesize($filename);
+			list($width, $height, $type, $attr) = getimagesize($source?$source:$filename);
 
 			if ($width > $max_dimension || $height > $max_dimension) {
 				
 				//removed the unsharp as it makes some images worse - needs to be optional
 				// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
-				$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
-
+				
+				if ($source) {
+					$cmd = sprintf ("\"%sconvert\" -resize %ldx%ld -quality 87 -strip jpg:%s jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $source, $filename);
+				} else {
+					$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 -strip jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
+				}
 				passthru ($cmd);
 
 				list($width, $height, $type, $attr) = getimagesize($filename);
@@ -519,7 +537,7 @@ class UploadManager
 
 		if (!$ok) {
 			//generate a resized image
-			$uploadimg = @imagecreatefromjpeg ($filename); 
+			$uploadimg = @imagecreatefromjpeg ($source?$source:$filename); 
 			if ($uploadimg)
 			{
 				$srcw=imagesx($uploadimg);
