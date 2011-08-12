@@ -414,9 +414,9 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			{foreach from=$tops key=key item=item}
 				<div class="plist">
 					<div style="color:black">{$key}</div>
-					{foreach from=$item item=row}{assign name="tagtop" var=$row.top}
+					{foreach from=$item item=row}{assign var="tagtop" value=$row.top}
 						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}" id="l-{$row.top|escape:'url'}">
-							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this)" {if $tagarray.tagtop} checked{/if}/>[[{$tagarray.tagtop}]] [[{$tagtop}]]
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this)" {if $tagarray.$tagtop} checked{/if}/>
 							{$row.top|escape:'html'}
 						</label>
 					{/foreach}
@@ -447,7 +447,15 @@ function rehighlight(that) {
 	document.getElementById(id).style.fontWeight=that.checked?'bold':'normal';
 	document.getElementById(id).style.backgroundColor=that.checked?'white':'';
 }
-</script>{/literal}
+{/literal}
+
+{if $tagarray}
+	{foreach from=$tagarray key=key item=row}
+		rehighlight(document.getElementById("c-{$key|escape:'url'}"));
+	{/foreach}
+{/if}
+
+</script>
 
 
 <p><label><b>Date photo taken</b></label> {if $error.imagetaken}
