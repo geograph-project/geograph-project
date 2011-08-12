@@ -152,7 +152,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 {if $image->tags}
 	<div style="text-align:center;font-size:0.8em" itemprop="keywords">Tags: {foreach from=$image->tags item=item name=used}
 		<span class="tag">
-		{if $item.prefix}{$item.prefix|escape:'html'}:{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a>
+		{if $item.prefix}{$item.prefix|lower|escape:'html'}:{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|lower|escape:'html'}</a>
 		</span>&nbsp;
 	{/foreach}</div>
 {elseif $user->user_id eq $image->user_id}
@@ -188,7 +188,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 
 <dt>Grid Square</dt>
- <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->grid_reference}" rel="nofollow">more nearby</a>)
+ <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->subject_gridref|escape:'url'}" rel="nofollow">more nearby</a>)
 </dd>
 
 {if $image->credit_realname}
@@ -199,7 +199,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	 <dd><a title="View profile" href="/profile/{$image->user_id}" itemprop="publisher">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {else}
 	<dt>Photographer</dt>
-	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="author">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="author" rel="author">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
 <dt>Image classification<sup><a href="/faq.php#points" class="about" style="font-size:0.7em">?</a></sup></dt>
@@ -309,16 +309,14 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 {if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
 
-<small><a title="Open in Google Earth" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small>,
-{external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://`$http_host`/photo/`$image->gridimage_id`.kml&amp;z=13" text="Google Maps"},
+<small style="font-size:0.8em"><a title="Open in Google Earth" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small> &middot;
+{external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://`$http_host`/photo/`$image->gridimage_id`.kml&amp;z=13" text="Google Maps"} &middot;
 
 {/if}
 
-{getamap gridref=$image->subject_gridref text="OS Get-a-map&trade;"},
+{if $rastermap->reference_index == 1}<a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a> &middot; {/if}
 
-{if $rastermap->reference_index == 1}<a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a>, {/if}
-
-<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a>,
+<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a> &middot;
 
 {if $image_taken}
 	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}
