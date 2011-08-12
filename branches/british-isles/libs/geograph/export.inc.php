@@ -53,6 +53,10 @@ if (!empty($_GET['desc'])) {
 	$csvhead .= ",Description";
 	$sql_from .= ',comment';
 }
+if (!empty($_GET['tags'])) {
+	$csvhead .= ",Tags";
+	$sql_from .= ',tags';
+}
 if (!empty($_GET['thumb'])) {
 	require_once('geograph/gridimage.class.php');
 	$gridimage = new GridImage;
@@ -83,6 +87,11 @@ if (!empty($_GET['gr'])) {
 if (!empty($_GET['taken'])) {
 	$csvhead .= ",Date Taken";
 	$sql_from .= ",imagetaken";
+}
+
+if (!empty($_GET['submitted'])) {
+	$csvhead .= ",Submitted";
+	$sql_from .= ",submitted";
 }
 
 if (!empty($_GET['dir'])) {
