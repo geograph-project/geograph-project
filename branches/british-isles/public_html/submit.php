@@ -388,6 +388,12 @@ if (isset($_POST['gridsquare']))
 						$tags = stripslashes($_POST['tags']);
 					}
 					$smarty->assign_by_ref('tags', $tags);
+					$tagarray = array();
+					foreach (explode('|',$tags) as $tag) {
+						$tagarray[str_replace('top:','',$tag)] = 1;
+					}
+					$smarty->assign_by_ref('tagarray', $tagarray);
+					print_r($tagarray);
 				}
 				
 				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
