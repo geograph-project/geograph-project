@@ -96,8 +96,6 @@ function UploadPicture() {
 
 	}
 	
-	$tmpfile = $_FILES['uploadfile']['tmp_name'];
-
 	$um = new UploadManager();
 	$gs = new GridSquare();
 
@@ -138,7 +136,7 @@ function UploadPicture() {
 	$um->setClass($_POST['feature']);
 	$um->setUserStatus($_POST['supplemental']);
 
-	$um->processUpload($tmpfile);
+	$um->processUpload($_FILES['uploadfile']['tmp_name']);
 
 	// where there any errors back from the image processing?
 	// if so, JUppy needs to know...

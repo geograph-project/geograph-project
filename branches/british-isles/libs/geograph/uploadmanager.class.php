@@ -337,8 +337,8 @@ class UploadManager
 		//generate a unique "upload id" - we use this to hold the image until
 		//they've confirmed they want to submit
 		$upload_id=md5(uniqid('upload'));
-			
-		$pendingfile = $this->_pendingJPEG($upload_id);
+		
+		$temp_file = tmpfile();
 	
 			function fetch_remote_file($url,$filename) {
 				$data = file_get_contents($url);
@@ -351,11 +351,11 @@ class UploadManager
 
 		if (preg_match('/^http:\/\/[\w\.-]+\/[\w\.\/-]+\.jpg$/',$url) || preg_match('/^http:\/\/www\.picnik\.com\/file\/\d+$/',$url)) 
 		{	
-			if (fetch_remote_file($url, $pendingfile)) 
+			if (fetch_remote_file($url, $temp_file)) 
 			{	
-				if ($this->_isJpeg($pendingfile))
+				if ($this->_isJpeg($temp_file))
 				{
-					$ok = $this->_processFile($upload_id,$pendingfile);
+					$ok = $this->_processFile($upload_id,$temp_file,false);
 				}
 				else
 				{
@@ -394,15 +394,13 @@ class UploadManager
 			//they've confirmed they want to submit
 			$upload_id=md5(uniqid('upload'));
 
-			$pendingfile = $this->_pendingJPEG($upload_id);
-			
-			if ($all_non_upload && rename($upload_file, $pendingfile)) 
+			if ($all_non_upload) 
 			{
-				$ok = $this->_processFile($upload_id,$pendingfile);
+				$ok = $this->_processFile($upload_id,$upload_file,false);
 			}
-			elseif (move_uploaded_file($upload_file, $pendingfile)) 
+			elseif (is_uploaded_file($upload_file)) 
 			{
-				$ok = $this->_processFile($upload_id,$pendingfile);
+				$ok = $this->_processFile($upload_id,$upload_file,true);
 			}
 			else
 			{
@@ -419,13 +417,12 @@ class UploadManager
 			
 		return $ok;
 	}
-			
 
-	function _processFile($upload_id,$pendingfile) {
+	function _processFile($upload_id,$upload_file,$is_upload = true) {
 		global $USER,$CONF;
 		$ok = false;
 		//save the exif data for the loaded image
-		$exif = @exif_read_data($pendingfile,0,true); 
+		$exif = @exif_read_data($upload_file,0,true); 
 
 		if ($exif!==false)
 		{
@@ -442,37 +439,39 @@ class UploadManager
 		}
 		$max_dimension=640;
 
-		list($width, $height, $type, $attr) = getimagesize($pendingfile);
+		$pendingfile = $this->_pendingJPEG($upload_id);
+
+		list($width, $height, $type, $attr) = getimagesize($upload_file);
 		
 		if ($width > $max_dimension || $height > $max_dimension) {
+			
+			//create the 'main' photo
+			if ($ok = $this->_downsizeFile($pendingfile,$max_dimension,$upload_file)) {
+				//remember useful stuff
+				$this->upload_id=$upload_id;
+				$this->original_width=$width;
+				$this->original_height=$height;
+			}
 		
-			//save a copy
+			//save as 'original'
 			$orginalfile = $this->_originalJPEG($upload_id);
 			
-			if (false) {
-				copy($pendingfile,$orginalfile);
-				$this->hasoriginal = true;
-
-				//resize image to required size
-				if ($ok = $this->_downsizeFile($pendingfile,$max_dimension)) {
-					//remember useful stuff
-					$this->upload_id=$upload_id;
-					$this->original_width=$width;
-					$this->original_height=$height;
-				}
+			if ($is_upload) {
+				move_uploaded_file($upload_file,$orginalfile);
 			} else {
-				rename($pendingfile,$orginalfile);
-				$this->hasoriginal = true;
-
-				//created required image size
-				if ($ok = $this->_downsizeFile($pendingfile,$max_dimension,$orginalfile)) {
-					//remember useful stuff
-					$this->upload_id=$upload_id;
-					$this->original_width=$width;
-					$this->original_height=$height;
-				}
+				rename($upload_file,$orginalfile);
 			}
+			
+			$this->hasoriginal = true;
+
 		} else {
+			//put the file in the right place... 
+			if ($is_upload == 'upload') {
+				move_uploaded_file($upload_file,$pendingfile);
+			} else {
+				rename($upload_file,$pendingfile);
+			}
+			
 			$ok = true;
 			$this->upload_id=$upload_id;
 			$this->upload_width=$width;
@@ -597,7 +596,6 @@ class UploadManager
 		}
 		
 		split_timer('upload','_downsizeFile',"{$this->upload_width},{$max_dimension}"); //logs the wall time
-
 		
 		return $ok;
 	}

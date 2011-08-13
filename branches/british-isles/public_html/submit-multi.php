@@ -37,17 +37,13 @@ if (!empty($_POST) && !empty($_POST['name'])) {
 	header("Cache-Control: post-check=0, pre-check=0", false);
 	header("Pragma: no-cache");
 
-	// Settings
-	$targetDir = $CONF['photo_upload_dir'];
-
 
 	// Get parameters
 	$chunk = isset($_REQUEST["chunk"]) ? $_REQUEST["chunk"] : 0;
 	$chunks = isset($_REQUEST["chunks"]) ? $_REQUEST["chunks"] : 0;
-	$fileName = isset($_REQUEST["name"]) ? $_REQUEST["name"] : '';
+	#$fileName = isset($_REQUEST["name"]) ? $_REQUEST["name"] : '';
 
-	// Clean the fileName for security reasons
-	$fileName = preg_replace('/[^\w\._]+/', '', $fileName);
+	$fileName = tmpfile();
 
 	// Look for the content type header
 	if (isset($_SERVER["HTTP_CONTENT_TYPE"]))
@@ -60,7 +56,7 @@ if (!empty($_POST) && !empty($_POST['name'])) {
 	if (strpos($contentType, "multipart") !== false) {
 		if (isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
 			// Open temp file
-			$out = fopen($targetDir . DIRECTORY_SEPARATOR . $fileName, $chunk == 0 ? "wb" : "ab");
+			$out = fopen($fileName, $chunk == 0 ? "wb" : "ab");
 			if ($out) {
 				// Read binary input stream and append it to temp file
 				$in = fopen($_FILES['file']['tmp_name'], "rb");
@@ -79,7 +75,7 @@ if (!empty($_POST) && !empty($_POST['name'])) {
 			die('{"jsonrpc" : "2.0", "error" : {"code": 103, "message": "Failed to move uploaded file."}, "id" : "id"}');
 	} else {
 		// Open temp file
-		$out = fopen($targetDir . DIRECTORY_SEPARATOR . $fileName, $chunk == 0 ? "wb" : "ab");
+		$out = fopen($fileName, $chunk == 0 ? "wb" : "ab");
 		if ($out) {
 			// Read binary input stream and append it to temp file
 			$in = fopen("php://input", "rb");
@@ -99,7 +95,7 @@ if (!empty($_POST) && !empty($_POST['name'])) {
 	
 	$uploadmanager=new UploadManager;
 
-	if (!$uploadmanager->processUpload($targetDir.DIRECTORY_SEPARATOR.$fileName, true)) {
+	if (!$uploadmanager->processUpload($fileName, true)) {
 		die('{"jsonrpc" : "2.0", "error" : {"code": 105, "message": "'.$uploadmanager->errormsg.'"}, "id" : "id"}');
 	}
 
