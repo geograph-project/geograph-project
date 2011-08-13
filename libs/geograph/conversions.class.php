@@ -201,12 +201,19 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 	}
 	list($x,$y) = $this->national_to_internal($e,$n,$reference_index );
 
-	$db = $this->_getDB();
+	static $lookup = array();
+	
+	$key = "$x,$y";
+	if (empty($lookup[$key])) {
+		$db = $this->_getDB();
 
-	$sql="select prefix from gridprefix ".
-		"where $x between origin_x and (origin_x+width-1) and ".
-		"$y between origin_y and (origin_y+height-1) and reference_index=$reference_index";
-	$prefix=$db->GetOne($sql);
+		$sql="select prefix from gridprefix ".
+			"where $x between origin_x and (origin_x+width-1) and ".
+			"$y between origin_y and (origin_y+height-1) and reference_index=$reference_index";
+		$prefix=$lookup[$key]=$db->GetOne($sql);
+	} else {
+		$prefix=$lookup[$key];
+	}
 
 	$eastings = sprintf("%05d",($e+ 500000) % 100000); //cope with negative! (for Rockall...)
 	$northings = sprintf("%05d",$n % 100000);

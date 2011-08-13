@@ -513,6 +513,7 @@ split_timer('gridimage'); //starts the timer
 
 		//lets add an overview map too
 		$overview=new GeographMapMosaic('largeoverview');
+		$overview->reference_index = $this->grid_square->reference_index;
 		$overview->setCentre($this->grid_square->x,$this->grid_square->y); //does call setAlignedOrigin
 		$overview->assignToSmarty($smarty, 'overview');
 		$smarty->assign('marker', $overview->getSquarePoint($this->grid_square));
