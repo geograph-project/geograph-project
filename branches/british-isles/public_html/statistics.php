@@ -62,7 +62,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$smarty->assign('users_submitted',  $db->GetOne("select count(*)-1 from user_stat"));
 	
-	$smarty->assign('users_thisweek',  $db->GetOne("select count(*) from user where rights>0 and (unix_timestamp(now())-unix_timestamp(signup_date))<604800"));
+	$smarty->assign('users_thisweek',  $db->GetOne("select count(*) from user where rights>0 and signup_date > date_sub(now(),interval 7 day)"));
 
 	$smarty->assign("images_ftf",  $db->GetOne("select points from user_stat where user_id = 0"));
 
@@ -75,7 +75,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?
 
 
-		$smarty->assign("images_thisweek_$ri",  $db->CacheGetOne(3*3600,"select count(*) from gridimage_search where reference_index = $ri and (unix_timestamp(now())-unix_timestamp(submitted))<604800"));
+		$smarty->assign("images_thisweek_$ri",  $db->CacheGetOne(3*3600,"select count(*) from gridimage_search where reference_index = $ri and  submitted > date_sub(now(),interval 7 day)"));
 
 		$stats= $db->CacheGetRow(3*3600,"select 
 			count(*) as squares_total,
