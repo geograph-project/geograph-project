@@ -87,18 +87,20 @@ split_timer('search'); //starts the timer
 			
 			$tries = 0;
 			$query = array();
-			while (!count($query) && $tries < 10) {
+			$sleep = 500000;
+			while (empty($query) && $tries < 10) {
 				$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries WHERE id = $query_id LIMIT 1");
-				if (!count($query)) {
+				if (empty($query)) {
 					$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries_archive WHERE id = $query_id LIMIT 1");
 				}
-				if (!count($query)) {
+				if (empty($query)) {
 					if ($db->readonly && $tries < 9) {
 						if ($tries == 8) {
 							//try swapping back to the master connection
 							$db=$this->_getDB(false);
 						}
-						sleep(2); //give time for replication to catch up
+						usleep($sleep); //give time for replication to catch up
+						$sleep*=2;
 						$tries++;
 					} else {
 					
