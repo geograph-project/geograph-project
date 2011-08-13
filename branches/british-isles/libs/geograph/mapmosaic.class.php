@@ -756,6 +756,7 @@ class GeographMapMosaic
 		if (!empty($this->type_or_user)) {
 			$out->type_or_user = $this->type_or_user;
 		}
+		$out->reference_index = $gridsquare->reference_index;
 		$out->setCentre($gridsquare->x,$gridsquare->y,true); //true to align to 10x10 map
 	
 		return $out->getToken();		
