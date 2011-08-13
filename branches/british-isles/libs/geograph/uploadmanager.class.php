@@ -338,7 +338,7 @@ class UploadManager
 		//they've confirmed they want to submit
 		$upload_id=md5(uniqid('upload'));
 		
-		$temp_file = tmpfile();
+		$temp_file = tempnam("/tmp",'upload');
 	
 			function fetch_remote_file($url,$filename) {
 				$data = file_get_contents($url);
