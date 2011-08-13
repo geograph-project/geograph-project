@@ -414,15 +414,17 @@ class GridImage
 			global $memcache;
 			$mkey = "$server:$gridimage_id";
 			//fails quickly if not using memcached!
-			$xml =& $memcache->name_get('e',$mkey);
+			$string =& $memcache->name_get('e2',$mkey);
 			
-			if (empty($xml)) {
+			if (empty($string)) {
 				$url = "http://$server/restapi.php/api/Photo/$gridimage_id";
-				$xml = simplexml_load_file($url);
+				$string = file_get_contents($url);
 				
 				//fails quickly if not using memcached!
-				$memcache->name_set('e',$mkey,$xml,$memcache->compress,$memcache->period_long);
+				$memcache->name_set('e2',$mkey,$string,$memcache->compress,$memcache->period_long);
 			}
+			$xml = simplexml_load_string($string);
+			
 			if ($xml !== false && $xml->status['state'] == 'ok') {
 				$this->grid_reference    = (string)$xml->gridref;
 				$this->title             = (string)$xml->title;
