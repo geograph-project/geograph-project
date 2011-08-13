@@ -160,5 +160,6 @@
     </p>
   </div>
 </div>
+{dynamic}{pagefooter}{/dynamic}
 </body>
 </html>

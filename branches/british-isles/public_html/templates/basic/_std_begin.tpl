@@ -2,6 +2,7 @@
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if} xml:lang="en" id="geograph">
 <head>
+	{pageheader}
 	{if $page_title}<title>{$page_title|escape:'html'} :: Geograph Britain and Ireland - photograph every grid square!</title>
 	{else}<title>Geograph Britain and Ireland - photograph every grid square!</title>{/if}
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
