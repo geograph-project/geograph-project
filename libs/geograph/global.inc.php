@@ -376,6 +376,17 @@ function init_session()
 
 #################################################
 
+function smarty_function_pageheader() {
+	if(extension_loaded('newrelic')) {
+		return newrelic_get_browser_timing_header();
+	}
+}
+function smarty_function_pagefooter() {
+	if(extension_loaded('newrelic')) {
+		return newrelic_get_browser_timing_footer();
+	}
+}
+
 /**
 * Smarty derivation for Geograph
 *
@@ -453,6 +464,9 @@ class GeographPage extends Smarty
 		//gazetteer line
 		$this->register_function("place", "smarty_function_place");
 
+		$this->register_function("pageheader", "smarty_function_pageheader");
+		$this->register_function("pagefooter", "smarty_function_pagefooter");
+
 		//linktoself
 		$this->register_function("linktoself", "smarty_function_linktoself");
 
@@ -462,7 +476,8 @@ class GeographPage extends Smarty
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
-
+		
+		
 		//assign globallly useful stuff
 		$this->assign_by_ref('user', $GLOBALS['USER']);
 		$this->assign_by_ref('http_host', $_SERVER['HTTP_HOST']);
