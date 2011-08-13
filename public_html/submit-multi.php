@@ -43,7 +43,7 @@ if (!empty($_POST) && !empty($_POST['name'])) {
 	$chunks = isset($_REQUEST["chunks"]) ? $_REQUEST["chunks"] : 0;
 	#$fileName = isset($_REQUEST["name"]) ? $_REQUEST["name"] : '';
 
-	$fileName = tmpfile();
+	$fileName = tempnam("/tmp",'upload');
 
 	// Look for the content type header
 	if (isset($_SERVER["HTTP_CONTENT_TYPE"]))
