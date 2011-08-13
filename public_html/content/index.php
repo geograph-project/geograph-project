@@ -152,7 +152,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 		$extra['scope'] = implode(',',$s);
 
-		if ($USER->registered) {
+		if ($USER->registered && !empty($filters['source'])) {
 			$_SESSION['content_scope'] = implode(',',$filters['source']);
 		}
 
