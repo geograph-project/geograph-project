@@ -140,8 +140,8 @@ if (!empty($_POST['spelling'])) {
 	$replacements = array(); 
 	foreach($xml->c as $correction) { 
 		$suggestions = explode("\t", (string)$correction); 
-		$offset = $correction['o']; 
-		$length = $correction['l']; 
+		$offset = intval($correction['o']); 
+		$length = intval($correction['l']); 
 
 		$replacements[mb_substr($query, $offset, $length)] = $suggestions; 
 	} 
