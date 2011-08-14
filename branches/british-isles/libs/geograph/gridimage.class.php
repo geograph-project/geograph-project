@@ -680,7 +680,8 @@ split_timer('gridimage'); //starts the timer
 
 			$this->collections_count = count($this->collections);
 			
-			$this->canonical = $db->getOne("SELECT canonical FROM category_canonical WHERE imageclass=".$db->Quote($this->imageclass));
+			if (!empty($this->imageclass))
+				$this->canonical = $db->getOne("SELECT canonical FROM category_canonical WHERE imageclass=".$db->Quote($this->imageclass));
 			
 split_timer('gridimage','loadCollections',$this->gridimage_id); //logs the wall time
 
