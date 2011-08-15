@@ -30,7 +30,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+if ($USER->registered)
+	$USER->getStats();
 	
 $smarty->display('games.tpl');
 
-?>
