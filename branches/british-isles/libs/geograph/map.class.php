@@ -314,7 +314,7 @@ split_timer('map'); //starts the timer
 			$this->gridref = $row['grid_reference'];
 			$this->reference_index = $row['reference_index'];
 		} else {
-			if ($this->reference_index) {
+			if (!empty($this->reference_index)) {
 				//so it can be set from above (mapmosaic!)
 				
 				$order_by = "(reference_index = {$this->reference_index}) desc, landcount desc, reference_index";
