@@ -783,6 +783,8 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 	function _renderImage()
 	{
 		global $CONF;
+		static $counter = 0;
+		
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
 		$ok = true;
@@ -932,7 +934,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 				
 					#$hectad_assignment_id = $db->getOne("SELECT * FROM hectad_assignment WHERE status = 'accepted' AND hectad = '$hectad'");
 				
-					$table = $CONF['db_tempdb'].".gi".md5($rectangle.$crit);
+					$table = $CONF['db_tempdb'].".gi_render$counter"; $counter++;
 					
 					//TODO - doesnt cope with multiple assignments for a given hectad!
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
@@ -963,7 +965,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					} else {//type_or_user > 0
 						$crit = "user_id = {$this->type_or_user}";
 					}
-					$table = $CONF['db_tempdb'].".gi".md5($rectangle.$crit);
+					$table = $CONF['db_tempdb'].".gi_render$counter"; $counter++;
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
 						SELECT gridimage_id,x,y,user_id,moderation_status FROM gridimage_search WHERE 
 						CONTAINS( GeomFromText($rectangle),	point_xy) AND $crit
@@ -985,7 +987,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					CONTAINS( GeomFromText($rectangle),	point_xy)
 					and imagecount>$number";
 			} else {
-				$table = $CONF['db_tempdb'].".gi".md5($rectangle);
+				$table = $CONF['db_tempdb'].".gi_render$counter"; $counter++;
 				
 				if (true) {
 					$sql="CREATE TEMPORARY TABLE $table ENGINE HEAP
@@ -2081,6 +2083,7 @@ split_timer('map','_plotPlacenames'); //logs the wall time
 	function& getGridArray($isimgmap = false)
 	{
 		global $memcache,$CONF;
+		static $counter = 0;
 
 		if ($this->type_or_user == -10) {
 			//we want a blank map!
@@ -2130,7 +2133,7 @@ split_timer('map'); //starts the timer
 					$columns = ',0 as imagecount';
 				} 
 			}
-			$table = $CONF['db_tempdb'].".gi".md5($rectangle);
+			$table = $CONF['db_tempdb'].".gi_grid$counter"; $counter++;
 			
 			if ($this->type_or_user == -20) {
 				//TODO - doesnt cope with multiple assignments for a given hectad!
