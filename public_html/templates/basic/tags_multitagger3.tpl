@@ -113,13 +113,13 @@
 
 
 
-	<script src="/draggable/jqueryui.com/jquery-1.5.1.js"></script>
-	<script src="/draggable/jqueryui.com/ui/jquery.ui.core.js"></script>
-	<script src="/draggable/jqueryui.com/ui/jquery.ui.widget.js"></script>
-	<script src="/draggable/jqueryui.com/ui/jquery.ui.mouse.js"></script>
-	<!--script src="/draggable/jqueryui.com/ui/jquery.ui.draggable.js"></script>
-	<script src="/draggable/jqueryui.com/ui/jquery.ui.droppable.js"></script-->
-	<script src="/draggable/jqueryui.com/ui/jquery.ui.sortable.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+	<script src="{"/js/ui/jquery.ui.core.js"|revision}"></script>
+	<script src="{"/js/ui/jquery.ui.widget.js"|revision}"></script>
+	<script src="{"/js/ui/jquery.ui.mouse.js"|revision}"></script>
+	<!--script src="{"/js/ui/jquery.ui.draggable.js"|revision}"></script>
+	<script src="{"/js/ui/jquery.ui.droppable.js"|revision}"></script-->
+	<script src="{"/js/ui/jquery.ui.sortable.js"|revision}"></script>
 
 
 {literal}
@@ -153,7 +153,7 @@
 		$.ajax({
 			url: url+'&callback=?',
 			dataType: 'jsonp',
-			//jsonpCallback: 'serveCallback', //prevents cache busting varying callback name
+			jsonpCallback: 'serveCallback', //prevents cache busting varying callback name
 			success: function(data) {
 				serveCallback(data);
 			}
