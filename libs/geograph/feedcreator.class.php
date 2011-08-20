@@ -27,6 +27,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 Changelog:
 
+v1.7.10(BH)	20-08-11
+	added JSON  (Barry Hunter)
+
 v1.7.9(BH)	16-11-08
 	added ATOM10  (Barry Hunter)
 
@@ -188,8 +191,9 @@ define("TIME_ZONE","GMT");
 /**
  * Version string.
  **/
-define("FEEDCREATOR_VERSION", "FeedCreator 1.7.8(BH)");
+define("FEEDCREATOR_VERSION", "FeedCreator 1.7.10(BH)");
 
+class EmptyClass {} 
 
 
 /**
@@ -377,6 +381,12 @@ class UniversalFeedCreator extends FeedCreator {
 				// fall through
 			case "RSS1.0":
 				$this->_feed = new RSSCreator10();
+				break;
+			
+			case "JSON":
+				// fall through
+			case "JSONP":
+				$this->_feed = new JSONCreator();
 				break;
 			
 			case "0.91":
@@ -913,6 +923,70 @@ class FeedDate {
 	 */
 	function unix() {
 		return $this->unix;
+	}
+}
+
+
+
+/**
+ * JSONCreator is a FeedCreator that implements JSON.
+ *
+ * @see http://www.purl.org/rss/1.0/
+ * @since XX
+ * @author barry hunter <geo@barryhunter.co.uk>
+ */
+class JSONCreator extends FeedCreator {
+
+	/**
+	 * Builds the feed's text. The feed will be compliant to JSON
+	 * The feed will contain all items previously added in the same order.
+	 * @return    string    the feed's complete text 
+	 */
+	function createFeed() {    
+	
+		$data = new EmptyClass;
+		
+		$data->generator = FEEDCREATOR_VERSION;
+		foreach (explode(' ','title description link syndicationURL prevURL nextURL icon additionalElements') as $key) {
+			if (!empty($this->$key)) 
+				$data->$key = $this->$key;
+		}
+		if ($this->image!=null) {
+			$data->image_url = $this->image->url;
+			$data->image_title = $this->image->title;
+			$data->image_link = $this->image->link;
+		}
+		$now = new FeedDate();
+		$data->date = $now->iso8601();
+
+		$data->items = $this->items;
+		for ($i=0;$i<count($this->items);$i++) {
+			unset($data->items[$i]->descriptionHtmlSyndicated);
+			unset($data->items[$i]->descriptionTruncSize);
+			foreach ($data->items[$i] as $key => $value) {
+				if (empty($value))
+					unset($data->items[$i]->$key);
+			}
+			//TODO geograph specific!
+			$data->items[$i]->guid = basename($data->items[$i]->guid);
+		}
+		
+		require_once '3rdparty/JSON.php';
+		$json = new Services_JSON();
+		
+		if (isset($_GET['callback'])) {
+			$this->callback=preg_replace('/[^\w$]+/','',$_GET['callback']);
+			if (empty($this->callback)) {
+				$this->callback = "geograph_callback";
+			}
+		} elseif (isset($_GET['_callback'])) {
+			$this->callback=preg_replace('/[^\w$]+/','',$_GET['_callback']);
+		}
+		
+		if (!empty($this->callback)) {
+			return "{$this->callback}(".$json->encode($data).")";
+		} else 
+			return $json->encode($data);
 	}
 }
 

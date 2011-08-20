@@ -30,11 +30,29 @@ if (!empty($_GET['callback'])) {
 	header('Content-type: application/json');
 }
 
-customExpiresHeader(360000);
 
 $topics = array();
 
+if (!empty($_GET['gridimage_id'])) {
+	customExpiresHeader(3600);
+
+	$gid = intval($_GET['gridimage_id']);
+	
+	$db = GeographDatabaseConnection(true);
+	
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+	$topics = $db->getAll("(SELECT label AS tag,'cluster' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid ORDER BY score DESC,sort_order) 
+		UNION (SELECT result AS tag,'term' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id)
+		UNION (SELECT result AS tag,'term' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id)
+		UNION (SELECT tag,'wiki' AS `prefix` FROM gridimage_wiki WHERE gridimage_id = $gid ORDER BY seq)");
+	
+	//todo - if none found, perhaps load a string, and do it on the fly?
+} 
+
 if (!empty($_GET['string'])) {
+	customExpiresHeader(360000);
+
 	$string = $_GET['string'];
 
         ###################
