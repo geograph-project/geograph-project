@@ -10,6 +10,11 @@
 {if $geographical}
 	<h2>images for the "Geographical Features" project</h2>
 
+{elseif $private}
+	<h2>Private Tags</h2>
+
+	<p>These are images you have tagged with "Private Tags", these lists are only visible to you.</p>
+
 {elseif $example}
 	<h2>Example tagged imags</h2>
 
@@ -53,14 +58,14 @@
 	{/foreach}
 	</div>
 {elseif $thetag}
-	<div class="interestBox">Tag: 
+	<div class="interestBox">Tag:
 		<span class="nowrap">&nbsp;<b>{$thetag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}{if isset($theprefix)}?prefix={$theprefix|escape:'url'}{/if}">remove filter</a>] &nbsp;</span>
 	</div>
 {/if}
 
 
 {if $results}
-	{if !$example}
+	{if !$example && !$private}
 		<p>These are the {if $images > 50}latest 50 of the{/if} images tagged with <span class="tag">{if $theprefix}{$theprefix|escape:'html'}:{/if}<a class="taglink">{$thetag|escape:'html'}</a></span> tag.</p>
 		<div style="text-align:right">
 			{if $gridref}
@@ -103,7 +108,7 @@
 			 </div>
 		{/foreach}
 
-	{if !$example}
+	{if !$example && !$private}
 		<div style="text-align:right">
 			<a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View more in the Image Search</a>
 		</div>
