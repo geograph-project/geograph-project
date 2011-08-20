@@ -54,7 +54,7 @@
 		<div class="interestBox">
 			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<sup><a href="/article/Word-Searching-on-Geograph" class="about" title="More details about Keyword Searching">About</a></sup>
-			<input type="submit" value="Search"/> <input type="button" value="Clear" onclick="clearThumbs()"/><br/>
+			<input type="submit" value="Search"/> <br/>
 
 			<label for="onlymine">Only your images?</label> <input type="checkbox" name="onlymine" id="onlymine" {if $onlymine}checked{/if} {dynamic}value="{$user->user_id|escape:'html'}"{/dynamic}/> -
 			<label for="onlynull">Only images without any tags?</label> <input type="checkbox" name="onlynull" id="onlynull" {if $onlynull}checked{/if}/>
@@ -96,8 +96,6 @@
 
 		<h3>Current Limitations</h3>
 		<ul>
-			<li>Creates Public tags on your own images, Private on other peoples images. <b>Can not</b> currently create private tags on your own.</li>
-
 			<li>The 'search' for images, is based on the main search engine, can only load the first 1000 images of any given search.</li>
 
 			<li>The 'Only images without any tags?' filter is not realtime - so if tags recently added, might still show in results.</li>
@@ -109,6 +107,11 @@
 	</div>
 
 	<br style="clear:both"/>
+
+	<form style="display:block" onsubmit="return false()">
+		<input type="button" value="Clear Thumbnails" id="clearThumb" onclick="clearThumbs()" disabled/>
+		Create Public Tags? <input type="checkbox" id="createPublic" checked/> <small>(tags on other peoples images will always be private anyway)</small>
+	</form>
 </div>
 
 
@@ -183,6 +186,8 @@
 		if (count > 0) {
 		  $("#message").html('Loaded '+count+' of "'+data.description+'" images');
 		}
+
+		$('#clearThumb').attr('disabled',false);
 	}
 
 	var gridimage_id = null;
@@ -247,6 +252,8 @@
 
 	function clearThumbs() {
 		$('#thumbar').empty();
+		$('#clearThumb').attr('disabled',true);
+		$('#nextButton').remove();
 	}
 
 /////////////////////////////////////
@@ -271,7 +278,7 @@
 							text = text.replace(/<[^>]*>/ig, "");
 							text = text.replace(/['"]+/ig, " ");
 
-							createTag(text);
+							createTag(text,false);
 						}
 					}
 				});
@@ -279,7 +286,7 @@
 			$('#mainlist li input').each(function(index) {
 				if ($(this).attr('checked')) {
 					$(this).attr('checked',false);
-					toggleTag($(this).get(0));
+					toggleTag($(this).get(0),false);
 				}
 			});
 		} else {
@@ -339,16 +346,24 @@ function removeTag(id) {
 	$('#li-'+id).remove();
 }
 
-function toggleTag(that) {
+function toggleTag(that,sendToServer) {
+	if (typeof sendToServer == 'undefined' ) sendToServer = 'true';
+
 	var id = that.id;
 	if (that.checked) {
 		$('#li-'+id).addClass('highlight');
+		if (sendToServer)
+			submitTag(that.value,2)
 	} else {
 		$('#li-'+id).removeClass('highlight');
+		if (sendToServer)
+			submitTag(that.value,0)
 	}
 }
 
-function addTag(that) {
+function addTag(that,sendToServer) {
+	if (typeof sendToServer == 'undefined' ) sendToServer = 'true';
+
 	var id = that.id;
 	var label = $('#li-'+id+' label').text();
 	var value = that.value;
@@ -364,10 +379,11 @@ function addTag(that) {
 		'<label for="'+id+'">'+label+'</label>',
 		'</li>'].join('')
 	);
-	toggleTag(document.getElementById(id));
+	toggleTag(document.getElementById(id),sendToServer);
 }
 
-function createTag(text) {
+function createTag(text,sendToServer) {
+	if (typeof sendToServer == 'undefined' ) sendToServer = 'true';
 
 	if ($('#mainlist').text().indexOf('will appear here') > -1) {
 		$('#mainlist').empty();
@@ -382,15 +398,16 @@ function createTag(text) {
 		if (ele.attr('title') == 'enable/disable this tag') { //todo - have a more robust method!
 			//its in the main list, so make sure its ticked
 
-			if (ele.attr('checked')) {
+			if (ele.attr('checked') == true) {
 				//do nothing
 			} else {
+				//tick it
 				ele.attr('checked',true);
-				toggleTag(document.getElementById(id));
+				toggleTag(document.getElementById(id),sendToServer);
 			}
 		} else {
 			//its somewhere in the suggestions already, so lets 'promote' it :)
-			addTag(document.getElementById(id));
+			addTag(document.getElementById(id),sendToServer);
 		}
 	} else {
 		//need to create it
@@ -402,9 +419,27 @@ function createTag(text) {
 				'<label for="'+id+'">'+text.replace(/^top:/,'')+'</label>',
 				'</li>'].join('')
 		);
-		toggleTag(document.getElementById(id));
+		toggleTag(document.getElementById(id),sendToServer);
 	}
 }
+
+	function submitTag(tag,status) {
+		if (gridimage_id) {
+			var data = new Object;
+			data['tag'] = tag;
+			if (status == 2 && !$('#createPublic').attr('checked'))
+				data['status'] = 1;
+			else
+				data['status'] = status;
+
+			data['gridimage_id'] = gridimage_id;
+
+			$.ajax({
+				url: "/tags/tagger.json.php",
+				data: data
+			});
+		}
+	}
 
 /////////////////////////////////////
 
