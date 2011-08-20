@@ -197,8 +197,20 @@
 		if (typeof item != 'object') {
 			item = saved[item];
 		}
+
+		if ($('.thumb'+item.guid).length > 0) {
+			var ele = $('.thumb'+item.guid+' img').first();
+			if (ele.width() > ele.height()) {
+				size = ' style="width:460px"';
+			} else {
+				size = ' style="height:460px"';
+			}
+		} else {
+			size = '';
+		}
+
 		gridimage_id = item.guid;
-		$("#mainimage").html('<a href="'+item.link+'" title="'+item.title+'" target="_blank"><img src="'+_fullsize(item.thumb)+'" style="width:400px"/></a>');
+		$("#mainimage").html('<a href="'+item.link+'" title="'+item.title+'" target="_blank"><img src="'+_fullsize(item.thumb)+'" '+size+'/></a>');
 
 		$("#mainimage").append('<br/><b>'+item.title+'</b>');
 		$("#mainimage").append(' by <a href="'+item.source+'">'+item.author+'</a>');
@@ -375,7 +387,7 @@ function addTag(that,sendToServer) {
 	}
 	$('#mainlist').append(
 		['<li id="li-'+id+'">',
-		'<a href="javascript:void(removeTag(\''+id+'\'))" title="remove tag from list">X</a>',
+		'<a href="javascript:void(removeTag(\''+id+'\'))" title="remove tag from list (does not delete the tag from this image)">X</a>',
 		'<input type="checkbox" title="enable/disable this tag" id="'+id+'" onclick="toggleTag(this)" value="'+value+'" checked/>',
 		'<label for="'+id+'">'+label+'</label>',
 		'</li>'].join('')
@@ -415,7 +427,7 @@ function createTag(text,sendToServer) {
 
 		$('#mainlist').append(
 				['<li id="li-'+id+'">',
-				'<a href="javascript:void(removeTag(\''+id+'\'))" title="remove tag from list">X</a>',
+				'<a href="javascript:void(removeTag(\''+id+'\'))" title="remove tag from list (does not delete the tag from this image)">X</a>',
 				'<input type="checkbox" title="enable/disable this tag" id="'+id+'" onclick="toggleTag(this)" value="'+text+'" checked/>',
 				'<label for="'+id+'">'+text.replace(/^top:/,'')+'</label>',
 				'</li>'].join('')
