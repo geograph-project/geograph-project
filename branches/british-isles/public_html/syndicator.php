@@ -126,6 +126,11 @@ if (isset($cacheid)) {
 	$rss_timeout = 900;
 }
 
+if (isset($_GET['callback'])) {
+	$callback=preg_replace('/[^\w$]+/','',$_GET['callback']);
+	$rssfile=preg_replace('/\.(\w+)/',".$callback.\1",$rssfile);
+}
+
 $rss = new UniversalFeedCreator(); 
 $rss->useCached($format,$rssfile,$rss_timeout); 
 if ($CONF['template'] == 'ireland') {
