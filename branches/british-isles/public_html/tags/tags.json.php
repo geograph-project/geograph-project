@@ -30,7 +30,6 @@ if (!empty($_GET['callback'])) {
 	header('Content-type: application/json');
 }
 
-customExpiresHeader(3600);
 
 
 $db = GeographDatabaseConnection(true);
@@ -42,7 +41,24 @@ $sql['tables']['t'] = 'tag';
 
 $sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
 
-if (!empty($_GET['q'])) {
+if (!empty($_GET['gridimage_id'])) {
+	init_session();
+	if (!$USER->registered) {
+		die("{error: 'not logged in'}");
+	}
+
+	$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
+
+	$sql['wheres'] = array();
+	$sql['wheres'][] = "tag.status = 1";
+	$sql['wheres'][] = "gt.user_id = ".$USER->user_id;
+	$sql['wheres'][] = "gt.gridimage_id = ".intval($_GET['gridimage_id']);
+
+	$sql['order'] = 'gt.created';
+
+} elseif (!empty($_GET['q'])) {
+	customExpiresHeader(3600);
+
 	if (!empty($CONF['sphinx_host'])) {
 
                 $q = trim(preg_replace('/[^\w]+/',' ',str_replace("'",'',$_REQUEST['q'])));

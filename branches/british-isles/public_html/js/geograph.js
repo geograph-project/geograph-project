@@ -47,7 +47,7 @@ function tabClick(tabname,divname,num,count) {
 	for (var q=1;q<=count;q++) {
 		if (document.getElementById(tabname+q)) {
 			document.getElementById(tabname+q).className = (num==q)?'tabSelected':'tab';
-			if (divname != '') {
+			if (divname != '' && document.getElementById(divname+q)) {
 				document.getElementById(divname+q).style.display = (num==q)?'':'none';
 			}
 		}

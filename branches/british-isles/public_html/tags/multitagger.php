@@ -28,7 +28,7 @@ init_session();
 
 
 $smarty = new GeographPage;
-$template = 'tags_multitagger.tpl';
+$template = 'tags_multitagger3.tpl';
 
 $USER->mustHavePerm("basic");
 
@@ -45,7 +45,7 @@ if (!empty($_GET['q'])) {
 	$sphinx = new sphinxwrapper($q);
 
 	//gets a cleaned up verion of the query (suitable for filename etc) 
-	$cacheid = $sphinx->q.'.'.$mine;
+	$cacheid = $sphinx->q.'.'.($mine?($USER->user_id):0);
 
 	$sphinx->pageSize = $pgsize = 50;
 
@@ -89,7 +89,21 @@ if (!empty($_GET['q'])) {
 	} 
 	
 	$smarty->assign('q', $sphinx->q); 
+} elseif (!empty($_GET['onlymine'])) {
+	$cacheid = $USER->user_id;
+	$smarty->assign("onlymine",1); 
+	
+	if (!$smarty->is_cached($template, $cacheid)) {
+		$images=new ImageList(); 
+		$images->getImagesByUser($USER->user_id, '', 'gridimage_id desc', 50,true);
 
+		$smarty->assign_by_ref('images', $images->images); 
+
+		$smarty->assign('imagecount', count($images->images)); 
+		$smarty->assign('totalcount', '?'); 
+	
+	}
+	
 }
 
 $smarty->display($template,$cacheid);

@@ -29,7 +29,7 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 	
 	
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX','TOOLBAR','MEDIA');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX','TOOLBAR','MEDIA','JSON');
 
 if (isset($_GET['extension']) && !isset($_GET['format']))
 {
@@ -240,7 +240,7 @@ if (isset($sphinx)) {
 		exit;
 	}
 	
-	if ($format == 'MEDIA') {
+	if ($format == 'MEDIA' || $format == 'JSON') {
 		$rss->link =  $baselink."search.php?i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
 		if ($pg>1) {
 			$prev = $pg - 1;
@@ -288,7 +288,7 @@ if (isset($sphinx)) {
 $cnt=count($images->images);
 
 $geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX' || $format == 'MEDIA');
-$photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE' || $format == 'MEDIA');
+$photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE' || $format == 'MEDIA' || $format == 'JSON');
 
 //create some feed items
 for ($i=0; $i<$cnt; $i++)
