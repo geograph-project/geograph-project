@@ -71,15 +71,16 @@
 		</ul>
 	</div>
 
-	<div id="" class="tagbar" style="margin-top:2px">
-		{assign var=tab value="3"}
-		<div class="tabHolder">
-			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,3);loadTagSuggestions('/tags/primary.json.php?')">C'text</a>
-			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,3);loadTopics(gridimage_id);">Topics</a>
-			<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,3)">Add</a>
+	<div id="" class="tagbar" style="margin-top:4px">
+		{assign var=tab value="4"}
+		<div class="tabHolder" style="font-size:0.8em">
+			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4);loadTagSuggestions('/tags/primary.json.php?')">Context</a>
+			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4);loadTopics(gridimage_id);">Topics</a>
+			<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4);loadTagSuggestions('/tags/recent.json.php?');">Recent</a>
+			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Add</a>
 		</div>
-		<form class="interestBox" id="div3" style="display:block" onsubmit="return false()">
-			<input type="text" name="__newtag" size="16" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions('/tags/tags.json.php?q='+encodeURIComponent(this.value)); tabClick('tab','',3,3)} {/literal}"/> <input type="button" value="Add" onclick="createTag(this.form.elements['__newtag'].value)"/><br/>
+		<form class="interestBox" id="div4" style="display:block" onsubmit="return false()">
+			<input type="text" name="__newtag" size="16" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions('/tags/tags.json.php?q='+encodeURIComponent(this.value));} {/literal}"/> <input type="button" value="Add" onclick="createTag(this.form.elements['__newtag'].value)"/><br/>
 		</form>
 		<ul id="suggestlist" class="interestBox">
 			Tag Suggestions will appear here
