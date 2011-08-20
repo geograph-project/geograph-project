@@ -53,8 +53,8 @@
 	<form action="javascript:void()" method="get" onsubmit="return updateImages()" style="clear:both">
 		<div class="interestBox">
 			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-			<sup><a href="/article/Searching-on-Geograph" class="about" title="More details about Keyword Searching">About</a></sup>
-			<input type="submit" value="Search"/><br/>
+			<sup><a href="/article/Word-Searching-on-Geograph" class="about" title="More details about Keyword Searching">About</a></sup>
+			<input type="submit" value="Search"/> <input type="button" value="Clear" onclick="clearThumbs()"/><br/>
 
 			<label for="onlymine">Only your images?</label> <input type="checkbox" name="onlymine" id="onlymine" {if $onlymine}checked{/if} {dynamic}value="{$user->user_id|escape:'html'}"{/dynamic}/> -
 			<label for="onlynull">Only images without any tags?</label> <input type="checkbox" name="onlynull" id="onlynull" {if $onlynull}checked{/if}/>
@@ -153,7 +153,7 @@
 		$.ajax({
 			url: url+'&callback=?',
 			dataType: 'jsonp',
-			jsonpCallback: 'serveCallback', //prevents cache busting varying callback name
+			//jsonpCallback: 'serveCallback', //prevents cache busting varying callback name
 			success: function(data) {
 				serveCallback(data);
 			}
@@ -243,6 +243,10 @@
 				}
 			}
 		}
+	}
+
+	function clearThumbs() {
+		$('#thumbar').empty();
 	}
 
 /////////////////////////////////////
