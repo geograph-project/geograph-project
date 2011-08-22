@@ -65,26 +65,41 @@
 
 	<div id="" class="tagbar" style="background-color:yellow">
 		<ul id="mainlist" class="Sortable">
-			List of tags will appear here. This list will persist as you switch between images. <br/><br/>
+			List of tags will appear here.<br/><br/> This list will persist as you switch between images for quick reuse. <br/><br/>
 
-			TIP: Drag and drop the tags in the list, to organise them for ease of use!
+			TIP: Drag and drop the tags in the list, to organise them for ease of use!<br/><br/>
+
+			<b>Key:</b></br>
+
+			<li><a href="javascript:void()" title="remove tag from list (does not delete the tag from this image)">X</a><input type=checkbox disabled> <label>Inactive tag</label></li>
+			<li class="highlight"><a href="javascript:void()" title="remove tag from list (does not delete the tag from this image)">X</a><input type=checkbox checked onclick="this.checked=true"> <label>Active tag</label></li>
+
+			Only 'active' tags are currently applied to the current image.<br/><br/> To enable a tag click the checkbox <input type=checkbox>
 		</ul>
 	</div>
 
 	<div id="" class="tagbar" style="margin-top:4px">
 		{assign var=tab value="4"}
+		<table style="height:100%;width:100%" cellspacing="0" cellpadding="0" border="0"><tr><td height="1.1em" width="100%">
 		<div class="tabHolder" style="font-size:0.8em">
 			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4);loadTagSuggestions('/tags/primary.json.php?')">Context</a>
 			<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4);loadTopics(gridimage_id);">Topics</a>
 			<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4);loadTagSuggestions('/tags/recent.json.php?');">Recent</a>
 			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Add</a>
 		</div>
-		<form class="interestBox" id="div4" style="display:block" onsubmit="return false()">
+		</td></tr><tr id="div4" style="display:block"><td height="1.2em" width="100%">
+		<form class="interestBox" onsubmit="return false()">
 			<input type="text" name="__newtag" size="16" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions('/tags/tags.json.php?q='+encodeURIComponent(this.value));} {/literal}"/> <input type="button" value="Add" onclick="createTag(this.form.elements['__newtag'].value)"/><br/>
 		</form>
+		</td></tr><tr><td height="96%" width="100%">
 		<ul id="suggestlist" class="interestBox">
-			Tag Suggestions will appear here
+			Tag Suggestions will appear here.<br/><br/>
+
+			<li><input type=checkbox disabled> <label>Inactive tag</label></li>
+
+			To enable a tag click the checkbox <input type=checkbox>, it will jump to right hand list.
 		</ul>
+		</td></tr></table>
 	</div>
 
 	<div id="mainimage" style="">
@@ -93,7 +108,9 @@
 
 		<p>Works best if work in batchs by subject. So for example if you submitted a lot of churches, then search for "Church" and add tags. Repeat for other subjects.</p>
 
+		<p>To use a 'tag' from the left list, tick the checkbox. It just jump to the right hand list (and become active).</p>
 
+		<p style="background-color:pink;padding:4px">NOTE: Only tags with a 'tick' <input type=checkbox checked> are 'active' on the current image. Tags stay in the right hand list between image for quick reuse, but to apply a tag to the image, must enable the tag by ticking.</p>
 
 		<h3>Current Limitations</h3>
 		<ul>
@@ -203,7 +220,7 @@
 			if (ele.width() > ele.height()) {
 				size = ' style="width:460px"';
 			} else {
-				size = ' style="height:460px"';
+				size = ' style="height:400px"';
 			}
 		} else {
 			size = '';
@@ -216,6 +233,8 @@
 		$("#mainimage").append(' by <a href="'+item.source+'">'+item.author+'</a>');
 		if (item.description)
 			$("#mainimage").append('<br/><small>'+item.description+'</small>');
+		if (item.category)
+			$("#mainimage").append('<br/>Category: <b>'+item.category+'</b> <small><small><br/><br/><a href="'+item.link+'" target="_blank">View full photo page in new window</a></small></small>');
 
 		if ($('#tab1').hasClass('tabSelected')) {
 			loadTagSuggestions('/tags/primary.json.php?');

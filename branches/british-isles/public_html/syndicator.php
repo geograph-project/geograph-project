@@ -328,6 +328,7 @@ for ($i=0; $i<$cnt; $i++)
 		$details = $images->images[$i]->getThumbnail(120,120,2);
 		$item->thumb = $details['server'].$details['url']; 
 		$item->thumbTag = $details['html'];
+		$item->category = $images->images[$i]->imageclass;
 		
 		if ($format == 'MEDIA') {
 			$item->title .= " by ".$images->images[$i]->realname;
