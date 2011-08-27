@@ -1285,6 +1285,19 @@ a.taglink:hover {
 .tagGeneral {
 	background-color:yellow;
 }
+
+.content_photoblack .tag span, .content_photoblack .tag a.taglink {
+	background-color:#333333;
+	color:pink;
+	border:0;
+}
+
+.content_photogray .tag span, .content_photogray .tag a.taglink {
+	background-color: gray;
+	color:cyan;
+	border:1px solid #999999;
+}
+
 /*---------------------------------------------------------------*
  * Style Patch!
  *---------------------------------------------------------------*/
