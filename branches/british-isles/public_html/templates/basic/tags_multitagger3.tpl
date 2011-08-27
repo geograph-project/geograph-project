@@ -357,7 +357,7 @@
 							ele.append(
 									['<li id="li-'+id+'">',
 									'<input type="checkbox" title="use this tag" id="'+id+'" onclick="addTag(this)" value="'+text+'"/>',
-									'<label for="'+id+'">'+text.+'</label>',
+									'<label for="'+id+'">'+text+'</label>',
 									'</li>'].join('')
 							);
 
