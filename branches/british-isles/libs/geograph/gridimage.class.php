@@ -607,6 +607,11 @@ split_timer('gridimage'); //starts the timer
 		//find tags
 		if (empty($db)) $db=&$this->_getDB(true); 
 		$this->tags = $db->getAll("SELECT prefix,tag FROM tag_public WHERE gridimage_id = {$this->gridimage_id} ORDER BY created");
+		if (!empty($this->tags)) {
+			$this->tag_prefix_stat = array();
+			foreach ($this->tags as $row)
+				@$this->tag_prefix_stat[$row['prefix']]++;
+		}
 	
 split_timer('gridimage','loadSnippets',$this->gridimage_id); //logs the wall time
 

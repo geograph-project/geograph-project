@@ -149,13 +149,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 </div>
 
-{if $image->tags}
-	<div style="text-align:center;font-size:0.8em" itemprop="keywords">Tags: {foreach from=$image->tags item=item name=used}
-		<span class="tag">
-		{if $item.prefix}{$item.prefix|lower|escape:'html'}:{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|lower|escape:'html'}</a>
-		</span>&nbsp;
-	{/foreach}</div>
-{elseif $user->user_id eq $image->user_id}
+{if !$image->tags && $user->user_id eq $image->user_id}
 	<div style="text-align:right;font-size:0.8em" id="hidetag"><a href="#" onclick="document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';show_tree('tag');return false;">Open <b>Tagging</b> Box</a></div>
 
 	<div class="interestBox" id="showtag" style="display:none">
@@ -237,7 +231,33 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 {if $image->keywords}
 	<dt>Keywords</dt>
 	{foreach from=$image->keywords item=item}
-		<dd style="width:200px;font-size:0.9em" itemprop="keywords">{$item|escape:'html'}</dd>
+		<dd style="width:200px;font-size:0.9em;line-height:0.8em" itemprop="keywords">{$item|escape:'html'}</dd>
+	{/foreach}
+{/if}
+
+{if $image->tags}
+	{if $image->tag_prefix_stat.top}
+		<dt>Geographical Context</dt>
+		<dd style="width:256px;ont-size:0.9em" class="tags" itemprop="keywords">
+			{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'top'}
+			<span class="tag">
+			<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a></span>&nbsp;
+		{/if}{/foreach}</dd>
+	{/if}
+
+	{foreach from=$image->tag_prefix_stat key=prefix item=count}
+		{if $prefix ne 'top' && $prefix ne '' && $prefix ne 'term' && $prefix ne 'cluster' && $prefix ne 'wiki'}
+			{if $prefix == 'bucket'}
+				<dt>Image Buckets <sup><a href="/article/Image-Buckets" class="about" style="font-size:0.7em">about</a></sup></dt>
+			{else}
+				<dt>{$prefix|capitalize|escape:'html'} (from Tags)</dt>
+			{/if}
+			<dd style="width:256px;font-size:0.9em" class="tags" itemprop="keywords">
+			{foreach from=$image->tags item=item name=used}{if $item.prefix == $prefix}
+				<span class="tag">
+				<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a></span>&nbsp;
+			{/if}{/foreach}</dd>
+		{/if}
 	{/foreach}
 {/if}
 
@@ -295,6 +315,17 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;username=geograph"><img src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share"/></a>
 <br/><br/>
+
+{if $image->tags && ($image->tag_prefix_stat.$blank || $image->tag_prefix_stat.term || $image->tag_prefix_stat.cluster || $image->tag_prefix_stat.wiki)}
+	<p style="margin-top:0px;text-align:left">
+	<b>Other Tags</b><br/><span class="tags" itemprop="keywords">
+	{foreach from=$image->tags item=item name=used}{if $item.prefix eq '' || $item.prefix eq 'term' || $item.prefix eq 'cluster' || $item.prefix eq 'wiki'}
+		<span class="tag"><a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|lower|escape:'html'}</a></span>&nbsp;
+	{/if}{/foreach}</span>
+	</p>
+{/if}
+
+
 
 	</div>
   </div>
