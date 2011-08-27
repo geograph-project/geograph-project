@@ -49,76 +49,114 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 
 	if (!empty($_GET['tag'])) {
-		//TODO - this will be rewritten using sphinx... 
 		
 		if (strpos($_GET['tag'],':') !== FALSE) {
 			list($prefix,$_GET['tag']) = explode(':',$_GET['tag'],2);
 			
 			$andwhere = " AND prefix = ".$db->Quote($prefix);
 			$smarty->assign('theprefix', $prefix);
+			$sphinxq = "tags:\"$prefix {$_GET['tag']}\"";
+		} elseif (isset($_GET['prefix'])) {
+			$sphinxq = "tags:\"{$_GET['prefix']} {$_GET['tag']}\"";
+		} else {
+			$sphinxq = "tags:\"{$_GET['tag']}\"";
 		}
 		
 		$col= $db->getCol("SELECT tag_id FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 		
 		if (!empty($col)) {
+
+	
+			if (!empty($_GET['photo']) && !empty($db)) {
+				$imagerow = $db->getRow("SELECT grid_reference,x,y,wgs84_lat,wgs84_long FROM gridimage_search WHERE gridimage_id = ".intval($_GET['photo']));
+				$smarty->assign('gridref',$imagerow['grid_reference']);
+			}
 		
 			$ids = implode(',',$col);
 			
 			if (!empty($_GET['exclude'])) {
 				$exclude= $db->getRow("SELECT * FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['exclude']));
+				if (!empty($exclude))
+					$sphinxq .= " -\"{$exclude['tag']}\"";
 			}
 			
-			if (!empty($exclude)) {
-				$sql = "select gi.*
-					from gridimage_tag gt
-						inner join gridimage_search gi using(gridimage_id)
-					where status =2
-					and gt.tag_id IN ($ids)
-					and gt.gridimage_id NOT IN (SELECT gridimage_id FROM gridimage_tag gt2 WHERE gt2.tag_id = {$exclude['tag_id']})
-					group by gt.gridimage_id
-					order by created desc 
-					limit 50";
-			} else {
-				$sql = "select gi.*
-					from gridimage_tag gt
-						inner join gridimage_search gi using(gridimage_id)
-					where status =2
-					and tag_id IN ($ids)
-					group by gt.gridimage_id
-					order by created desc 
-					limit 50";
-			}
-
 			$imagelist = new ImageList();
 
-			$imagelist->_getImagesBySql($sql);
+			if ($sphinxq && !empty($CONF['sphinx_host'])) {
+				
+				$sphinx = new sphinxwrapper($sphinxq); 
 
-			$ids = array();
-			foreach ($imagelist->images as $idx => $image) {
-				$ids[$image->gridimage_id]=$idx;
-				$imagelist->images[$idx]->tags = array();
+				$sphinx->pageSize = $pgsize = 50; 
+				$pg = 1;
+				
+				if (!empty($imagerow)) {
+					$cl = $sphinx->_getClient();
+
+					$cl->SetGeoAnchor('wgs84_lat', 'wgs84_long',  deg2rad($imagerow['wgs84_lat']), deg2rad($imagerow['wgs84_long']) );
+
+					#$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
+
+					$sphinx->sort = "@geodist ASC, @relevance DESC, @id DESC";
+				}
+				
+				$ids = $sphinx->returnIds($pg,'_images');
+				
+				if (!empty($ids))
+					$imagelist->getImagesByIdList($ids);
+				
+			} else {
+				if (!empty($exclude)) {
+					$sql = "select gi.*
+						from gridimage_tag gt
+							inner join gridimage_search gi using(gridimage_id)
+						where status =2
+						and gt.tag_id IN ($ids)
+						and gt.gridimage_id NOT IN (SELECT gridimage_id FROM gridimage_tag gt2 WHERE gt2.tag_id = {$exclude['tag_id']})
+						group by gt.gridimage_id
+						order by created desc 
+						limit 50";
+				} else {
+					$sql = "select gi.*
+						from gridimage_tag gt
+							inner join gridimage_search gi using(gridimage_id)
+						where status =2
+						and tag_id IN ($ids)
+						group by gt.gridimage_id
+						order by created desc 
+						limit 50";
+				}
+
+				$imagelist->_getImagesBySql($sql);
 			}
-			$db = $imagelist->_getDB(true); //to reuse the same connection
+	
+			if (!empty($imagelist->images)) {
+				$ids = array();
+				foreach ($imagelist->images as $idx => $image) {
+					$ids[$image->gridimage_id]=$idx;
+					$imagelist->images[$idx]->tags = array();
+				}
 
-			if ($idlist = implode(',',array_keys($ids))) {
-				$sql = "SELECT gridimage_id,tag,prefix FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 AND gridimage_id IN ($idlist) ORDER BY tag";			
 
-				$tags = $db->getAll($sql);
-				if ($tags) {
-					foreach ($tags as $row) {
-						$idx = $ids[$row['gridimage_id']];
-						$imagelist->images[$idx]->tags[] = $row;
+				$db = $imagelist->_getDB(true); //to reuse the same connection
+
+				//TODO, gridimage_search now has tags row. But cant just blindly explode(',' as context have comma in too doh!
+				if ($idlist = implode(',',array_keys($ids))) {
+					$sql = "SELECT gridimage_id,tag,prefix FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 AND gridimage_id IN ($idlist) ORDER BY tag";			
+
+					$tags = $db->getAll($sql);
+					if ($tags) {
+						foreach ($tags as $row) {
+							$idx = $ids[$row['gridimage_id']];
+							$imagelist->images[$idx]->tags[] = $row;
+						}
 					}
 				}
-			}
 
-			$smarty->assign_by_ref('results', $imagelist->images);
+				$smarty->assign_by_ref('results', $imagelist->images);
+			}
 			
 			$smarty->assign('thetag', $_GET['tag']);
 
-			if (!empty($_GET['photo']) && !empty($db)) {
-				$smarty->assign('gridref',$db->getOne("SELECT grid_reference FROM gridimage_search WHERE gridimage_id = ".intval($_GET['photo'])));
-			}
 		}
 		
 	}
