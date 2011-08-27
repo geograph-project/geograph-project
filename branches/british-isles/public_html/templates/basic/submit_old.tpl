@@ -390,107 +390,24 @@ it was taken or other interesting geographical information. <span id="styleguide
 <div style="font-size:0.7em">TIP: use <span style="color:blue">[[TQ7506]]</span> to link to a Grid Square or <span style="color:blue">[[54631]]</span> to link to another Image.<br/>
 For a weblink just enter directly like: <span style="color:blue">http://www.example.com</span></div>
 
-<h3>Further Information</h3>
+<h3 style="margin-bottom:3px">Further Information</h3>
+
+<div style="font-size:0.7em;margin-top:0;margin-bottom:4px">Note, must add at least one Tag or Context item. Note: can now use the old category list to create a tag.</div>
 
 <div class="tabHolder" style="font-size:1em">
-	<a class="tab{if !$tagarray}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Primary Category</a>&nbsp;
-	<a class="tab{if $tagarray}Selected{/if} nowrap" id="tab1" style="font-size:0.9em" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
-	<a class="tab nowrap" id="tab2" style="font-size:0.9em" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags <small>(Optional)</small></a>&nbsp;
+	<a class="tab nowrap" id="tab2" style="font-size:0.9em" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags</a>&nbsp;
+	<a class="tabSelected nowrap" id="tab1" style="font-size:0.9em" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
 	<a class="tab nowrap" id="tab3" style="font-size:0.9em" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions <small>(Optional)</small></a>
 </div>
 
-<div id="div4" class="interestBox" {if $tagarray}style="display:none"{/if}>
 
-<div style="float:right">Categories are changing. <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
-
-{if $use_autocomplete}
-
-<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-	<br/><span class="formerror">{$error.imageclass} or select some Geographical Context</span>
-	{/if}<br />
-	<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
-	</p>
-{literal}
-<script type="text/javascript">
-<!--
-
-AttachEvent(window,'load', function() {
- 	var inputWord = $('imageclass');
-
-    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
-        'postVar': 'q',
-        'minLength': 2,
-        maxChoices: 60
-    });
-
-},false);
-
-//-->
-</script>
-{/literal}
-
-{else}
-
-{literal}
-<script type="text/javascript">
-<!--
-//rest loaded in geograph.js
-function mouseOverImageClass() {
-	if (!hasloaded) {
-		setTimeout("prePopulateImageclass2()",100);
-	}
-	hasloaded = true;
-}
-
-function prePopulateImageclass2() {
-	var sel=document.getElementById('imageclass');
-	sel.disabled = false;
-	var oldText = sel.options[0].text;
-	sel.options[0].text = "please wait...";
-
-	populateImageclass();
-
-	hasloaded = true;
-	sel.options[0].text = oldText;
-	if (document.getElementById('imageclass_enable_button'))
-		document.getElementById('imageclass_enable_button').disabled = true;
-}
-AttachEvent(window,'load',onChangeImageclass,false);
-//-->
-</script>
-{/literal}
-
-<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
-	<br/><span class="formerror">{$error.imageclass} or select some Geographical Context</span>
-	{/if}<br />
-	<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
-		<option value="">--please select feature--</option>
-		{if $imageclass}
-			<option value="{$imageclass}" selected="selected">{$imageclass}</option>
-		{/if}
-		<option value="Other">Other...</option>
-	</select>
-
-	<span id="otherblock">
-	<label for="imageclassother">Please specify </label>
-	<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
-	</span></p>
-
-{/if}
-
-			<div style="font-size:0.8em;padding-bottom:5px;">
-			Note: Instead of selecting a Category, please considering selecting one or more items from the "<a href="#" onclick="tabClick('tab','div',1,4);return false;">Geographical Context</a>" tab.<br/><br/>
-			Adding additional Tags is entirely optional. However tags are useful to include the detail you may of included in the category.
-			</div>
-
-</div>
 
 		<div id="div3" class="interestBox" style="display:none">
 			<iframe src="about:blank" height="400" width="100%" id="shareframe" style="border:0">
 			</iframe>
 		</div>
 
-		<div id="div1" class="interestBox" {if !$tagarray}style="display:none"{/if}>
+		<div id="div1" class="interestBox">
 			<div style="float:right"><a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">About Context/Tags</a></div>
 			<div style="font-size:0.8em;padding-bottom:5px;">
 			&middot; Tick as many Geogaphical Contexts as required.<br/>
@@ -504,7 +421,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 					<div style="color:black">{$key}</div>
 					{foreach from=$item item=row}{assign var="tagtop" value=$row.top}
 						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}" id="l-{$row.top|escape:'url'}">
-							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this)" {if $tagarray.$tagtop} checked{/if}/>
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this,true)" {if $tagarray.$tagtop} checked{/if}/>
 							{$row.top|escape:'html'}
 						</label>
 					{/foreach}
@@ -526,6 +443,85 @@ AttachEvent(window,'load',onChangeImageclass,false);
 
 			<iframe src="about:blank" height="200" width="100%" id="tagframe" style="border:0">
 			</iframe>
+
+			{if $use_autocomplete}
+
+			<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
+				<br/><span class="formerror">{$error.imageclass} or select some Geographical Context</span>
+				{/if}<br />
+				<input size="32" id="imageclass" name="imageclass" value="{$imageclass|escape:'html'}" maxlength="32" spellcheck="true"/>
+				</p>
+			{literal}
+			<script type="text/javascript">
+			<!--
+
+			AttachEvent(window,'load', function() {
+			 	var inputWord = $('imageclass');
+
+			    new Autocompleter.Request.JSON(inputWord, '/finder/categories.json.php', {
+			        'postVar': 'q',
+			        'minLength': 2,
+			        maxChoices: 60
+			    });
+
+			},false);
+
+			//-->
+			</script>
+			{/literal}
+
+			{else}
+
+			{literal}
+			<script type="text/javascript">
+			<!--
+			//rest loaded in geograph.js
+			function mouseOverImageClass() {
+				if (!hasloaded) {
+					setTimeout("prePopulateImageclass2()",100);
+				}
+				hasloaded = true;
+			}
+
+			function prePopulateImageclass2() {
+				var sel=document.getElementById('imageclass');
+				sel.disabled = false;
+				var oldText = sel.options[0].text;
+				sel.options[0].text = "please wait...";
+
+				populateImageclass();
+
+				hasloaded = true;
+				sel.options[0].text = oldText;
+				if (document.getElementById('imageclass_enable_button'))
+					document.getElementById('imageclass_enable_button').disabled = true;
+			}
+			AttachEvent(window,'load',onChangeImageclass,false);
+			//-->
+			</script>
+			{/literal}
+
+			Alternatively add a tag by selecting from the (old) category list:<br/>
+				<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
+					<option value="">--please select feature--</option>
+					{if $imageclass}
+						<option value="{$imageclass}" selected="selected">{$imageclass}</option>
+					{/if}
+					<option value="Other">Other...</option>
+				</select>
+
+				<span id="otherblock">
+				<label for="imageclassother">Please specify </label>
+				<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
+				</span>
+
+
+				<input type=button value="Add"/></p>
+
+			{/if}
+
+
+
 		</div>
 
 {literal}
@@ -541,7 +537,21 @@ function show_tagging(form) {
 		query=query+'&comment='+encodeURIComponent(form.elements['comment'].value.substr(0,1500).replace(/[\n\r]/,' '));
 	document.getElementById('tagframe').src='/tags/tagger.php?'+query;
 }
-function rehighlight(that) {
+function rehighlight(that,check) {
+	if (check) {
+		var name=that.name;
+		var ele = that.form.elements[name];
+		count=-1; //the current one will already be checked
+		for(q=0;q<ele.length;q++)
+			if (ele[q].checked)
+				count++;
+		if (count > 5) {
+			if (!confirm("Are you sure you wish to enable '"+that.value.replace(/top:/,'')+"'?\n\n You already have "+count+" ticked items, which is probably plenty!")) {
+				that.checked = false;
+			}
+		}
+
+	}
 	var id = that.id.replace(/c-/,'l-');
 	document.getElementById(id).style.fontWeight=that.checked?'bold':'normal';
 	document.getElementById(id).style.backgroundColor=that.checked?'white':'';
