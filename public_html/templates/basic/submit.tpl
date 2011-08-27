@@ -416,7 +416,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 					<div style="color:black">{$key}</div>
 					{foreach from=$item item=row}{assign var="tagtop" value=$row.top}
 						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}" id="l-{$row.top|escape:'url'}">
-							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this)" {if $tagarray.$tagtop} checked{/if}/>
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this,true)" {if $tagarray.$tagtop} checked{/if}/>
 							{$row.top|escape:'html'}
 						</label>
 					{/foreach}
@@ -442,10 +442,25 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 		</div></p>
 {literal}
 <script type="text/javascript">
-function rehighlight(that) {
+function rehighlight(that,check) {
+	if (check) {
+		var name=that.name;
+		var ele = that.form.elements[name];
+		count=-1; //the current one will already be checked
+		for(q=0;q<ele.length;q++)
+			if (ele[q].checked)
+				count++;
+		if (count > 5) {
+			if (!confirm("Are you sure you wish to enable '"+that.value.replace(/top:/,'')+"'?\n\n You already have "+count+" ticked items, which is probably plenty!")) {
+				that.checked = false;
+			}
+		}
+
+	}
 	var id = that.id.replace(/c-/,'l-');
 	document.getElementById(id).style.fontWeight=that.checked?'bold':'normal';
 	document.getElementById(id).style.backgroundColor=that.checked?'white':'';
+
 }
 {/literal}
 

@@ -271,7 +271,7 @@
 					<div style="color:black">{$key}</div>
 					{foreach from=$item item=row}
 						<label for="c-{$row.top|escape:'url'}" title="{$row.description|escape:'html'}" id="l-{$row.top|escape:'url'}">
-							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this)"/>
+							<input type="checkbox" name="tags[]" value="top:{$row.top|escape:'html'}" id="c-{$row.top|escape:'url'}" onclick="rehighlight(this,true)"/>
 							{$row.top|escape:'html'}
 						</label>
 					{/foreach}
@@ -308,7 +308,21 @@ function show_tagging(form) {
 		query=query+'&comment='+encodeURIComponent(form.elements['comment'].value.substr(0,1500).replace(/[\n\r]/,' '));
 	document.getElementById('tagframe').src='/tags/tagger.php?'+query;
 }
-function rehighlight(that) {
+function rehighlight(that,check) {
+	if (check) {
+		var name=that.name;
+		var ele = that.form.elements[name];
+		count=-1; //the current one will already be checked
+		for(q=0;q<ele.length;q++)
+			if (ele[q].checked)
+				count++;
+		if (count > 5) {
+			if (!confirm("Are you sure you wish to enable '"+that.value.replace(/top:/,'')+"'?\n\n You already have "+count+" ticked items, which is probably plenty!")) {
+				that.checked = false;
+			}
+		}
+
+	}
 	var id = that.id.replace(/c-/,'l-');
 	document.getElementById(id).style.fontWeight=that.checked?'bold':'normal';
 	document.getElementById(id).style.backgroundColor=that.checked?'white':'';
