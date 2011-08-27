@@ -32,6 +32,10 @@
 	background-color:yellow;
 	height:120px;
 }
+
+#message b {
+	background-color:pink;
+}
 </style>
 <h2 style="float:left;margin:0;margin-right:20px">Multi Tagger</h2>
 
@@ -174,9 +178,9 @@
 		$.ajax({
 			url: url+'&callback=?',
 			dataType: 'jsonp',
-			//jsonpCallback: 'serveCallback', //prevents cache busting varying callback name
+			jsonpCallback: 'serveCallback', //prevents cache busting varying callback name
 			success: function(data) {
-				serveCallback(data);
+				displayImages(data);
 			}
 		});
 		$("#message").html('Loading...');
@@ -184,7 +188,7 @@
 
 	var saved = new Object;
 
-	function serveCallback(data) {
+	function displayImages(data) {
 		if (!data || data.length < 1 || data.items.length < 1) {
 			alert("no images found");
 		}
@@ -353,7 +357,7 @@
 							ele.append(
 									['<li id="li-'+id+'">',
 									'<input type="checkbox" title="use this tag" id="'+id+'" onclick="addTag(this)" value="'+text+'"/>',
-									'<label for="'+id+'">'+text.replace(/^top:/,'')+'</label>',
+									'<label for="'+id+'">'+text.+'</label>',
 									'</li>'].join('')
 							);
 
@@ -391,6 +395,17 @@ function toggleTag(that,sendToServer) {
 		if (sendToServer)
 			submitTag(that.value,0)
 	}
+
+	var ccount = 0;
+	var tcount = 0;
+	$('#mainlist input').each(function(i) {
+		if ($(this).attr('checked'))
+			($(this).attr('value').indexOf('top:') == 0)?ccount++:tcount++;
+	});
+	if (ccount == 0) ccount = "<b>"+ccount;
+	if (tcount == 0) tcount = "<b>"+tcount;
+
+	$('#message').html("Current image: "+ccount+" context</b> and "+tcount+" tags</b>");
 }
 
 function addTag(that,sendToServer) {
@@ -448,7 +463,7 @@ function createTag(text,sendToServer) {
 				['<li id="li-'+id+'">',
 				'<a href="javascript:void(removeTag(\''+id+'\'))" title="remove tag from list (does not delete the tag from this image)">X</a>',
 				'<input type="checkbox" title="enable/disable this tag" id="'+id+'" onclick="toggleTag(this)" value="'+text+'" checked/>',
-				'<label for="'+id+'">'+text.replace(/^top:/,'')+'</label>',
+				'<label for="'+id+'">'+text+'</label>',
 				'</li>'].join('')
 		);
 		toggleTag(document.getElementById(id),sendToServer);

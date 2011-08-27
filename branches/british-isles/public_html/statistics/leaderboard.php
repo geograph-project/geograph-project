@@ -41,8 +41,6 @@ $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 
-$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):150;
-
 $myriad = (isset($_GET['myriad']) && ctype_upper($_GET['myriad']))?$_GET['myriad']:'';
 if (strlen($myriad) == 2) {
 	$ri = 1;
@@ -50,10 +48,14 @@ if (strlen($myriad) == 2) {
 	$ri = 2;
 }
 
-
 $minimum = (isset($_GET['minimum']) && is_numeric($_GET['minimum']))?intval($_GET['minimum']):25;
 $maximum = (isset($_GET['maximum']) && is_numeric($_GET['maximum']))?intval($_GET['maximum']):0;
 
+
+$filtered = ($when || $ri || $myriad);
+
+
+$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min($filtered?250:1000,intval($_GET['limit'])):150;
 
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
@@ -79,8 +81,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
-
-	$filtered = ($when || $ri || $myriad);
 	
 	$db = GeographDatabaseConnection(true);
 	

@@ -26,13 +26,13 @@
 			<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tagid:{$item.tag_id}"{if $is_owner} onclick="toggleTag('id:{$item.tag_id}');" ondblclick="editTag('id:{$item.tag_id}','{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'quotes'}');"{/if}>
 			<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
 			{if $item.is_owner}
-				<input type="hidden" name="tag_id[]" id="tagiid:{$item.tag_id}" value="id:{$item.tag_id}"/>
+				<input type="hidden" name="tag_id[]" id="tagiid:{$item.tag_id}" class="tagi" value="id:{$item.tag_id}"/>
 				<input type="hidden" name="mode[]" id="tagmid:{$item.tag_id}" value="{$item.status}"/>
 				<a href="javascript:removeTag('id:{$item.tag_id}')" class="delete">X</a>
 			{/if}
 			</span>&nbsp;
 			{foreachelse}
-				{if $gridimage_id}<i>none</i>{else}<i>unknown</i>{/if}
+				{if $gridimage_id}{if $is_owner}<i><big>No tags for this image yet</big> - <b>Please add at least one</b></i>{else}<i>none</i>{/if}{else}<i>unknown</i>{/if}
 			{/foreach}</span>
 
 	</div>
@@ -191,7 +191,7 @@ function addTag(text,suggestion,clearText) {
 	var div = document.getElementById('tags');
 
 	if (div.innerHTML.indexOf('<i>') > -1) {
-		div.innerHTML = '';
+		$('#tags i').remove();
 	}
 
 	text = text.replace(/<[^>]*>/ig, "");
@@ -205,7 +205,7 @@ function addTag(text,suggestion,clearText) {
 	str = "<span class=\"tag tagPrivate\" id=\"tag"+text+"\">";
 	str += "<input type=\"hidden\" name=\"mode[]\" id=\"tagm"+text+"\" value=\"Private\"/>";
 {/if}{/dynamic}{literal}
-	str += "<input type=\"hidden\" name=\"tag_id[]\" id=\"tagi"+text+"\" value=\""+text+"\"/>";
+	str += "<input type=\"hidden\" name=\"tag_id[]\" id=\"tagi"+text+"\" class=\"tagi\" value=\""+text+"\"/>";
 	str += "<span>"+text+"</span>";
 	str += "<a href=\"javascript:removeTag('"+text+"')\" class=\"delete\">X</a>";
 	str += "</span>&nbsp; ";
@@ -226,6 +226,16 @@ function removeTag(text) {
 		document.getElementById("tagi"+text).value="-deleted-";
 	}
 	submitTag(text,0);
+
+	count = 0;
+	$('#tags .tagi').each(function(i) {
+		if ($(this).attr('value') != '-deleted-')
+			count++;
+	});
+
+	if (count == 0) {
+		$('#tags').prepend('<i><big>No tags for this image</big> - <b>Please add at least one</b><br/></i>');
+	}
 }
 
 function editTag(name,text) {
