@@ -114,7 +114,7 @@ function getRemoteIP()
 	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 	{
 		$ips=explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-		$ip=trim($ips[count($ips)-1]);
+		$ip=trim($ips[0]);
 	}
 	else
 	{
