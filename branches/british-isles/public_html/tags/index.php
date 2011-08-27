@@ -76,8 +76,10 @@ if (!$smarty->is_cached($template, $cacheid))
 			
 			if (!empty($_GET['exclude'])) {
 				$exclude= $db->getRow("SELECT * FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['exclude']));
-				if (!empty($exclude))
+				if (!empty($exclude)) {
 					$sphinxq .= " -\"{$exclude['tag']}\"";
+					$smarty->assign('exclude',$exclude['tag']);
+				}
 			}
 			
 			$imagelist = new ImageList();
@@ -101,8 +103,10 @@ if (!$smarty->is_cached($template, $cacheid))
 				
 				$ids = $sphinx->returnIds($pg,'_images');
 				
-				if (!empty($ids))
+				if (!empty($ids)) {
 					$imagelist->getImagesByIdList($ids);
+					$smarty->assign('images',$sphinx->resultCount);
+				}
 				
 			} else {
 				if (!empty($exclude)) {

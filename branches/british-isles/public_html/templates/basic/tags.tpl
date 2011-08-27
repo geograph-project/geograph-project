@@ -1,5 +1,7 @@
 {if $thetag}
-{assign var="page_title" value="Images tagged with '`$thetag`'"|escape:'html'}
+{if $images && $images > 1}{assign var="title" value="`$images` images"}{else}{assign var="title" value="Images"}{/if}
+{if $gridref}{assign var="page_title" value="`$title` tagged with '`$thetag`' near `$gridref`"|escape:'html'}
+{else}{assign var="page_title" value="`$title` tagged with '`$thetag`'"|escape:'html'}{/if}
 {assign var="tag2" value=$thetag|escape:'url'}
 {assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://`$http_host`/tags/?tag=`$tag2`\" />"}
 {else}
@@ -66,13 +68,12 @@
 
 {if $results}
 	{if !$example && !$private}
-		<p>These are the {if $images > 50}latest 50 of the{/if} images tagged with <span class="tag">{if $theprefix}{$theprefix|escape:'html'}:{/if}<a class="taglink">{$thetag|escape:'html'}</a></span> tag.</p>
+		<p>Showing {if $images > 50}{if $gridref}nearest{else}latest{/if} 50 of {$images|thousends}{/if} images tagged with <span class="tag">{if $theprefix}{$theprefix|escape:'html'}:{/if}<a class="taglink">{$thetag|escape:'html'}</a></span> tag{if $gridref}near <a href="/gridref/{$gridref}">{$gridref}</a>{/if}{if $exclude} but excluding images with <span class="tag"><a class="taglink">{$exclude|escape:'html'}</a></span> tag{/if}.</p>
 		<div style="text-align:right">
 			{if $gridref}
-			<a href="/search.php?q=tags:%22{if $theprefix}{$theprefix|escape:'url'}+{/if}{$thetag|escape:'url'}%22&amp;location={$gridref|escape:'url'}">All images using this tag near {$gridref}</a>
-			{else}
-			<a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View more in the Image Search</a>
+			<a href="/search.php?q=tags:%22{if $theprefix}{$theprefix|escape:'url'}+{/if}{$thetag|escape:'url'}%22&amp;location={$gridref|escape:'url'}">Images using this tag near {$gridref}</a><br/>
 			{/if}
+			<b><a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View all tagged images</a></b>
 		</div>
 	{/if}
 
@@ -82,7 +83,7 @@
 			  <div style="float:left; position:relative; width:130px; text-align:center">
 				<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
 			  </div>
-			  <div style="float:left; position:relative; ">
+
 				<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
 				by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
 				{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
@@ -92,10 +93,10 @@
 				{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
 				{if $image->comment}
-				<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:90:"... (<u>more</u>)"|geographlinks}</div>
+				<div class="caption" style="clear:none" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:90:"... (<u>more</u>)"|geographlinks}</div>
 				{/if}
 				{if $image->tags}
-				<div class="caption">Tags:
+				<div class="caption" style="clear:none">Tags:
 				{foreach from=$image->tags item=item name=used}
 					<span class="tag">
 					{if $item.prefix}{$item.prefix|escape:'html'}:{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a>{if $item.tag != $thetag}<a href="{$script_name}?tag={$thetag|escape:'url'}&amp;exclude={$item.tag|escape:'url'}" class="delete" title="Exclude this tag">X</a>{/if}
@@ -104,7 +105,7 @@
 				</div>
 				{/if}
 
-			  </div><br style="clear:both;"/>
+			  <br style="clear:both;"/>
 			 </div>
 		{/foreach}
 
