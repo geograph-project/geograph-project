@@ -33,6 +33,12 @@ init_session();
 
 #header('Content-type: application/json');
 
+if (!empty($_GET['upload_id'])) {
+
+	$gid = crc32($_GET['upload_id'])+4294967296;
+	$gid += $USER->user_id * 4294967296;
+	$_GET['gridimage_id'] = sprintf('%0.0f',$gid);
+}
 
 if (!empty($USER->user_id) && !empty($_GET['tag']) && !empty($_GET['gridimage_id']) && preg_match('/^\d+$/',$_GET['gridimage_id'])) {
 
