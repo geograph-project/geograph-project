@@ -392,7 +392,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 <h3 style="margin-bottom:3px">Further Information</h3>
 
-<div style="font-size:0.7em;margin-top:0;margin-bottom:4px">Note, must add at least one Tag or Context item. Note: can now use the old category list to create a tag.</div>
+<div style="font-size:0.7em;margin-top:0;margin-bottom:4px">Please add at least one Tag or Context item. Note: <b>Can use the old Category list to create a Tag</b>, click the Tags tab.</div>
 
 <div class="tabHolder" style="font-size:1em">
 	<a class="tab nowrap" id="tab2" style="font-size:0.9em" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags</a>&nbsp;
@@ -501,7 +501,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			</script>
 			{/literal}
 
-			Alternatively add a tag by selecting from the (old) category list:<br/>
+			Alternatively add a Tag by selecting from the (old) Category list:<br/>
 				<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
 					<option value="">--please select feature--</option>
 					{if $imageclass}
@@ -516,7 +516,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 				</span>
 
 
-				<input type=button value="Add"/></p>
+				<input type=button value="Add" onclick="addCategoryTag(this.form)"/></p>
 
 			{/if}
 
@@ -526,6 +526,24 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 {literal}
 <script type="text/javascript">
+
+function addCategoryTag(form) {
+	var catother = form.elements['imageclassother'].value;
+
+	var ele = form.elements['imageclass'];
+	var value = ele.options[ele.selectedIndex].value;
+	if (value == 'Other' && catother.length > 0) {
+		value = catother;
+	}
+
+	var loader = new Image();
+	loader.src = "/tags/tagger.json.php?upload_id={/literal}{$upload_id}{literal}&status=2&tag="+encodeURIComponent("category:"+value);
+
+	document.getElementById('tagframe').src='about:blank';
+
+	setTimeout(function(){ show_tagging(form); }, 250);
+}
+
 function show_tagging(form) {
 	var query = 'upload_id={/literal}{$upload_id}&gr={$grid_reference|escape:'html'}{literal}&v=3';
 	if (form.elements['title'].value.length> 0 )
