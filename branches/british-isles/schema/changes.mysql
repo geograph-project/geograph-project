@@ -2105,3 +2105,22 @@ CREATE TABLE IF NOT EXISTS `exchange` (
 
 #################################################
 
+
+alter table content add index(`gridsquare_id`);
+
+
+#################################################
+
+
+alter table user change `submission_method`  `submission_method` enum('submit','submit2','multi') default 'submit';
+
+
+#################################################
+
+
+alter table mapcache change `ts` `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP, add created datetime not null;
+
+
+#################################################
+
+
