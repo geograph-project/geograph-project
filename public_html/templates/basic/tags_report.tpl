@@ -79,7 +79,7 @@
 			return;
 		}
 
-		param = 'q='+encodeURIComponent(that.value);
+		param = 'q='+encodeURIComponent(that.value+((that.name == 'tag')?'%':''));
 
 		$.getJSON("/tags/tag.json.php?"+param+"&callback=?",
 
@@ -97,19 +97,19 @@
 				text = text.replace(/<[^>]*>/ig, "");
 				text = text.replace(/['"]+/ig, " ");
 
-				if (that.name == 'tag' || that.value.toLowerCase() == text.toLowerCase()) {
-					str = "Found '<b>"+text+"</b>'";
 
-					if (data.images) {
-						str = str + " used by "+data.images+" images";
-					}
+				str = "Found '<b>"+text+"</b>'";
 
-					if (data.users) {
-						str = str + ", by "+data.users+" users";
-					}
-
-					that.form.elements[that.name+'_id'].value = data.tag_id;
+				if (data.images) {
+					str = str + " used by "+data.images+" images";
 				}
+
+				if (data.users) {
+					str = str + ", by "+data.users+" users";
+				}
+
+				that.form.elements[that.name+'_id'].value = data.tag_id;
+
 				if (that.name == 'tag') {
 					that.form.elements['submit'].disabled = false;
 				}
