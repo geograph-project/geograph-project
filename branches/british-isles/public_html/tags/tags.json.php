@@ -60,7 +60,10 @@ if (!empty($_GET['gridimage_id'])) {
 	customExpiresHeader(3600);
 
 	if (!empty($CONF['sphinx_host'])) {
-
+		if (strpos($_REQUEST['q'],':') !== FALSE) {
+			list($prefix,$_REQUEST['q']) = explode(':',$_REQUEST['q'],2);
+		}
+		
                 $q = trim(preg_replace('/[^\w]+/',' ',str_replace("'",'',$_REQUEST['q'])));
 		
 		$sphinx = new sphinxwrapper($q);
@@ -80,7 +83,14 @@ if (!empty($_GET['gridimage_id'])) {
 			$sphinx->sort = "prefered DESC"; //within group order
 			$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC"); //overall sort order
 			
-			$sphinx->q = "\"^{$sphinx->q}$\" | (^$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$\"";
+			if ($sphinx->q) {
+				$sphinx->q = "\"^{$sphinx->q}$\" | (^$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$\"";
+				if (!empty($prefix)) {
+					$sphinx->q = "({$sphinx->q}) @prefix $prefix";
+				}
+			} elseif (!empty($prefix)) {
+				$sphinx->q = "\"^{$prefix}$\" | (^$prefix) | ($prefix) | @tag (^$prefix) | @tag \"^{$prefix}$\"";
+			}
 	
 			$ids = $sphinx->returnIds($pg,'tags');
 			
@@ -131,22 +141,7 @@ if (!empty($_GET['gridimage_id'])) {
         $sql['group'] = 'tag.tag_id';
 }
 
-$query = "SELECT DISTINCT {$sql['columns']}";
-if (isset($sql['tables']) && count($sql['tables'])) {
-	$query .= " FROM ".join(' ',$sql['tables']);
-}
-if (isset($sql['wheres']) && count($sql['wheres'])) {
-	$query .= " WHERE ".join(' AND ',$sql['wheres']);
-}
-if (isset($sql['group'])) {
-	$query .= " GROUP BY {$sql['group']}";
-}
-if (isset($sql['order'])) {
-	$query .= " ORDER BY {$sql['order']}";
-}
-if (isset($sql['limit'])) {
-	$query .= " LIMIT {$sql['limit']}";
-}
+$query = sqlBitsToSelect($sql);
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $data = $db->getAll($query);

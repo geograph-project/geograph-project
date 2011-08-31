@@ -968,3 +968,44 @@ function heading_string($deg) {
 	return $s;
 }
 
+function sqlBitsToCount(&$sql) {
+	if (isset($sql['group'])) {
+		if (isset($sql['having'])) {
+			$query = "SELECT COUNT(DISTINCT IF({$sql['having']},{$sql['group']},NULL))";
+		} else {
+			$query = "SELECT COUNT(DISTINCT {$sql['group']})";
+		}
+	} else {
+		$query = "SELECT COUNT(*)";
+	}
+	if (isset($sql['tables']) && count($sql['tables'])) {
+		$query .= " FROM ".join(' ',$sql['tables']);
+	}
+	if (isset($sql['wheres']) && count($sql['wheres'])) {
+		$query .= " WHERE ".join(' AND ',$sql['wheres']);
+	}
+	return $query;
+}
+
+function sqlBitsToSelect($sql) {
+	$query = "SELECT {$sql['columns']}";
+	if (isset($sql['tables']) && count($sql['tables'])) {
+		$query .= " FROM ".join(' ',$sql['tables']);
+	}
+	if (isset($sql['wheres']) && count($sql['wheres'])) {
+		$query .= " WHERE ".join(' AND ',$sql['wheres']);
+	}
+	if (isset($sql['group'])) {
+		$query .= " GROUP BY {$sql['group']}";
+	}
+	if (isset($sql['having'])) {
+		$query .= " HAVING {$sql['having']}";
+	}
+	if (isset($sql['order'])) {
+		$query .= " ORDER BY {$sql['order']}";
+	}
+	if (isset($sql['limit'])) {
+		$query .= " LIMIT {$sql['limit']}";
+	}
+	return $query;
+}

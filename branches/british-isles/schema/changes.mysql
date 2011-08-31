@@ -2124,3 +2124,45 @@ alter table mapcache change `ts` `updated` timestamp NOT NULL default CURRENT_TI
 #################################################
 
 
+alter table gridsquare_assignment add unique key (`gridimage_id`);
+
+
+#################################################
+
+
+CREATE TABLE `tag_report` (
+`report_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`tag_id` INT UNSIGNED NOT NULL ,
+`tag` VARCHAR( 128 ) NOT NULL ,
+`tag2_id` INT UNSIGNED NOT NULL ,
+`tag2` VARCHAR( 128 ) NOT NULL ,
+`type` VARCHAR( 30 ) NOT NULL ,
+`user_id` INT UNSIGNED NOT NULL ,
+`created` DATETIME NOT NULL ,
+`updated` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+INDEX (  `tag_id` )
+) ENGINE = MYISAM;
+
+
+#################################################
+
+
+CREATE TABLE IF NOT EXISTS `discuss_report` (
+  `report_id` int(10) unsigned NOT NULL auto_increment,
+  `topic_id` int(10) unsigned NOT NULL,
+  `post_id` int(10) unsigned NOT NULL,
+  `comment` text NOT NULL,
+  `type` varchar(30) NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  `moderator` int(10) unsigned NOT NULL,
+  `resolution` enum('new','open','rejected','delt') NOT NULL default 'new',
+  PRIMARY KEY  (`report_id`),
+  KEY `topic_id` (`topic_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+#################################################
+
+
