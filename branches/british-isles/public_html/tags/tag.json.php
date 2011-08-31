@@ -46,10 +46,10 @@ $sql['wheres'] = array();
 
 $bits = explode(':',$_GET['q']);
 if (count($bits) > 1) {
-	$sql['wheres'][] = "`prefix` LIKE ".$db->Quote(trim($bits[0]).'%');
+	$sql['wheres'][] = "`prefix` LIKE ".$db->Quote(trim($bits[0]));
 	$_GET['q'] = $bits[1];
 }
-$sql['wheres'][] = "`tag` LIKE ".$db->Quote(trim($_GET['q']).'%');
+$sql['wheres'][] = "`tag` LIKE ".$db->Quote(trim($_GET['q']));
 
 
 $sql['group'] = 'tag_id';
