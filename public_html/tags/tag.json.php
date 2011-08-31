@@ -61,22 +61,7 @@ $sql['limit'] = 2;
 
 
 
-$query = "SELECT DISTINCT {$sql['columns']}";
-if (isset($sql['tables']) && count($sql['tables'])) {
-	$query .= " FROM ".join(' ',$sql['tables']);
-}
-if (isset($sql['wheres']) && count($sql['wheres'])) {
-	$query .= " WHERE ".join(' AND ',$sql['wheres']);
-}
-if (isset($sql['group'])) {
-	$query .= " GROUP BY {$sql['group']}";
-}
-if (isset($sql['order'])) {
-	$query .= " ORDER BY {$sql['order']}";
-}
-if (isset($sql['limit'])) {
-	$query .= " LIMIT {$sql['limit']}";
-}
+$query = sqlBitsToSelect($sql);
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $data = $db->getAll($query);
