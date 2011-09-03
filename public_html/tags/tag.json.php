@@ -48,7 +48,10 @@ $bits = explode(':',$_GET['q']);
 if (count($bits) > 1) {
 	$sql['wheres'][] = "`prefix` LIKE ".$db->Quote(trim($bits[0]));
 	$_GET['q'] = $bits[1];
+} else { #if (empty($_GET['expand'])) {
+	$sql['wheres'][] = "`prefix` = ''";
 }
+
 $sql['wheres'][] = "`tag` LIKE ".$db->Quote(trim($_GET['q']));
 
 
