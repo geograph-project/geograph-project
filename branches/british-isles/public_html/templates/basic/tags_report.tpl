@@ -19,7 +19,7 @@
 	{if $errors.tag}<div class="formerror"><p class="error">{$errors.tag}</p>{/if}
 
 	<label for="tag">Tag:</label>
-	<input type="text" name="tag" value="{$tag|escape:"html"}" size="20" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}"/>
+	<input type="text" name="tag" value="{$tag|escape:"html"}" size="20" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}" onpaste="loadTagSuggestions(this,event);" onmouseup="loadTagSuggestions(this,event);" oninput="loadTagSuggestions(this,event);"/>
 	<input type="hidden" name="tag_id"/>
 
 	<div id="tag-message" style="float:right"></div>
@@ -34,7 +34,8 @@
 	{if $errors.tag2}<div class="formerror"><p class="error">{$errors.tag2}</p>{/if}
 
 	<label for="tag2">New:</label>
-	<input type="text" name="tag2" value="{$tag2|escape:"html"}" size="20" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}"/>
+	<input type="text" name="tag2" value="{$tag2|escape:"html"}" size="20" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}" onpaste="loadTagSuggestions(this,event);" onmouseup="loadTagSuggestions(this,event);" oninput="loadTagSuggestions(this,event);"/>
+
 	<input type="hidden" name="tag2_id"/>
 
 	<div id="tag2-message" style="float:right"></div>
@@ -67,6 +68,14 @@
 
 <p>Note: your identity is saved with the report, which we may use to contact you if questions.</p>
 
+<p>We have reports for the following tags already: (no need to resubmit)</p>
+<ul>
+{foreach from=$reports item=row}
+	<li>{$row.tag|escape:'html'}</li>
+{/foreach}
+</ul>
+
+
 {/dynamic}
 {literal}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
@@ -79,9 +88,9 @@
 			return;
 		}
 
-		param = 'q='+encodeURIComponent(that.value+((that.name == 'tag')?'%':''));
+		param = 'q='+encodeURIComponent(that.value);
 
-		$.getJSON("/tags/tag.json.php?"+param+"&callback=?",
+		$.getJSON("/tags/tag.json.php?"+param+"&callback=?"+((that.name == 'tag')?'&expand=1':''),
 
 		// on search completion, process the results
 		function (data) {

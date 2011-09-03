@@ -58,11 +58,19 @@ $types = array(
 	'grammer'=>'Grammer',
 	'punctuation'=>'Punctuation',
 	'caps'=>'Capitalization',
+	'prefix'=>'Change the prefix/namespace used',
 	'bad'=>'Bad Term (abusive/foul language etc)',
 	'unknown'=>'Unknown term - its not clear what this tag refers to',
 	'split'=>'Needs splitting - refers to multiple distinct topics',
 	'other'=>'Other... (anything else not covered above)');
 
 $smarty->assign_by_ref('types',$types);
+
+if (empty($db))
+        $db = GeographDatabaseConnection(true);
+
+$reports = $db->getAll("SELECT tag FROM tag_report WHERE 1 GROUP BY tag_id");
+
+$smarty->assign_by_ref('reports',$reports);
 
 $smarty->display($template,$cacheid);
