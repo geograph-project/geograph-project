@@ -126,7 +126,8 @@ if (!empty($_GET['deal'])) {
 						
 						//and then promote private keys. so the wrong public is deleted, right private replaces it
 						//  - kind of like the public tag was fixed, then the now duplicate private tag deleted. 
-						$s[] = "UPDATE gridimage_tag SET status = 2 WHERE tag_id = {$row['tag2_id']} AND status = 1 AND gridimage_id IN (".implode(',',$images).")";
+						//BUT we MUST only do it on the owners private tags.... 
+						$s[] = "UPDATE gridimage_tag INNER JOIN gridimage_search USING (gridimage_id,user_id) SET status = 2 WHERE tag_id = {$row['tag2_id']} AND status = 1 AND gridimage_id IN (".implode(',',$images).")";
 					}
 					
 					if ($_POST['canon'][$report_id]) {
