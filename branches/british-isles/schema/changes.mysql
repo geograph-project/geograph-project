@@ -2166,3 +2166,9 @@ CREATE TABLE IF NOT EXISTS `discuss_report` (
 #################################################
 
 
+ALTER TABLE  `tag_report` ADD  `status` ENUM(  'new',  'rejected',  'moved',  'renamed' ) NOT NULL DEFAULT  'new';
+
+
+#################################################
+
+
