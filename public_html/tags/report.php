@@ -53,7 +53,7 @@ if (!empty($_GET['deal'])) {
 						t2.canonical
 					FROM tag_report r 
 						INNER JOIN tag t1 USING (tag_id) 
-						LEFT JOIN tag t2 ON (r.tag2_id = t2.tag_id OR IF(t2.prefix='',t2.tag,CONCAT(t2.prefix,':',t2.tag)) = r.tag2 )
+						LEFT JOIN tag t2 ON ( t2.tag = SUBSTRING_INDEX(r.tag2,':',-1) AND t2.prefix = IF(r.tag2 LIKE '%:%',SUBSTRING_INDEX(r.tag2,':',1),'') )
 					WHERE r.status = 'new' ");
 		
 		$s = array();
@@ -177,7 +177,7 @@ if (!empty($_GET['deal'])) {
 				FROM tag_report r 
 					INNER JOIN tag t1 USING (tag_id) 
 					LEFT JOIN gridimage_tag gt USING (tag_id)
-					LEFT JOIN tag t2 ON (r.tag2_id = t2.tag_id OR IF(t2.prefix='',t2.tag,CONCAT(t2.prefix,':',t2.tag)) = r.tag2 )
+					LEFT JOIN tag t2 ON ( t2.tag = SUBSTRING_INDEX(r.tag2,':',-1) AND t2.prefix = IF(r.tag2 LIKE '%:%',SUBSTRING_INDEX(r.tag2,':',1),'') )
 				WHERE r.status = 'new' 
 				GROUP BY tag_id,tag2");
 
