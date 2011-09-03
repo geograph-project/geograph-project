@@ -119,7 +119,14 @@ if (!empty($_GET['deal'])) {
 								status = 'immediate'";
 						}
 
-						$s[] = "UPDATE gridimage_tag SET tag_id = {$row['tag2_id']} WHERE tag_id = {$row['tag_id']} AND status = 2";
+						$s[] = "UPDATE IGNORE gridimage_tag SET tag_id = {$row['tag2_id']} WHERE tag_id = {$row['tag_id']} AND status = 2";
+						
+						//this is trickly. Any of the above that failed (due to duplicate key), means the 'new' tag is already on the image, and so the old one can be zapped. 
+						$s[] = "DELETE FROM gridimage_tag WHERE tag_id = {$row['tag_id']} AND status = 2";
+						
+						//and then promote private keys. so the wrong public is deleted, right private replaces it
+						//  - kind of like the public tag was fixed, then the now duplicate private tag deleted. 
+						$s[] = "UPDATE gridimage_tag SET status = 2 WHERE tag_id = {$row['tag2_id']} AND status = 1 AND gridimage_id IN (".implode(',',$images).")";
 					}
 					
 					if ($_POST['canon'][$report_id]) {
@@ -161,8 +168,10 @@ if (!empty($_GET['deal'])) {
 			
 		if (!empty($s)) {
 			foreach ($s as $q) {
-				print htmlentities($q).";<hr/>";
+				print htmlentities($q).";";
 				$db->Execute($q);
+				
+				print " #Rows = ".$db->Affected_Rows()."<hr/>";
 			}
 		}
 	}
