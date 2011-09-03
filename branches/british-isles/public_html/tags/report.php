@@ -53,9 +53,8 @@ if (!empty($_GET['deal'])) {
 						t2.canonical
 					FROM tag_report r 
 						INNER JOIN tag t1 USING (tag_id) 
-						LEFT JOIN tag t2 ON (r.tag2_id = t2.tag_id OR IF(t2.prefix='',t2.tag,CONCAT(t2.prefix,':',t2.tag)) = binary r.tag2 )
-					WHERE r.status = 'new' 
-					GROUP BY tag_id,tag2");
+						LEFT JOIN tag t2 ON (r.tag2_id = t2.tag_id OR IF(t2.prefix='',t2.tag,CONCAT(t2.prefix,':',t2.tag)) = r.tag2 )
+					WHERE r.status = 'new' ");
 		
 		$s = array();
 		
@@ -220,10 +219,12 @@ if (!empty($_GET['deal'])) {
 	if (empty($db))
 		$db = GeographDatabaseConnection(true);
 
-	$reports = $db->getAll("SELECT tag FROM tag_report WHERE 1 GROUP BY tag_id");
-
+	$reports = $db->getAll("SELECT tag FROM tag_report WHERE status='new' GROUP BY tag_id ORDER BY tag");
 	$smarty->assign_by_ref('reports',$reports);
 	
+	$recent = $db->getAll("SELECT tag FROM tag_report WHERE status!='new' GROUP BY tag_id ORDER BY updated DESC LIMIT 50");
+	$smarty->assign_by_ref('recent',$recent);
+
 	if (!empty($_GET['tag'])) {
 		$smarty->assign_by_ref('tag',$_GET['tag']);
 	}

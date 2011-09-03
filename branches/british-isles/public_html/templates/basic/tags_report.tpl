@@ -67,13 +67,24 @@
 </form>
 
 <p>Note: your identity is saved with the report, which we may use to contact you if questions.</p>
+.
+{if $reports}
+	<p>We have reports for the following tags already: (no need to resubmit)</p>
+	<ul>
+	{foreach from=$reports item=row}
+		<li>{$row.tag|escape:'html'}</li>
+	{/foreach}
+	</ul>
+{/if}
 
-<p>We have reports for the following tags already: (no need to resubmit)</p>
-<ul>
-{foreach from=$reports item=row}
-	<li>{$row.tag|escape:'html'}</li>
-{/foreach}
-</ul>
+{if $recent}
+	<p>And these have recently been dealt with:</p>
+	<ul>
+	{foreach from=$recent item=row}
+		<li>{$row.tag|escape:'html'}</li>
+	{/foreach}
+	</ul>
+{/if}
 
 
 {/dynamic}
