@@ -60,11 +60,12 @@ if (!empty($_GET['deal'])) {
 		
 		foreach ($_POST['res'] as $report_id => $resolution) {
 			if (!($row = $reports[$report_id]))
-				die("unable to findl $report_id");
+				die("unable to find $report_id");
 				
 			switch ($resolution) {
 				case 'reject':   
-					$s[] = "UPDATE tag_report SET status = 'rejected' WHERE report_id = $report_id";
+					#$s[] = "UPDATE tag_report SET status = 'rejected' WHERE report_id = $report_id";
+					$s[] = "UPDATE tag_report SET status = 'rejected' WHERE tag_id = {$row['tag_id']} AND tag2 = ".$db->Quote($row['tag2']);
 					
 					break;
 					
@@ -125,7 +126,8 @@ if (!empty($_GET['deal'])) {
 						$s[] = "UPDATE tag SET canonical = {$row['tag2_id']} WHERE tag_id = {$row['tag_id']}";
 					}
 
-					$s[] = "UPDATE tag_report SET status = 'moved' WHERE report_id = $report_id";
+					#$s[] = "UPDATE tag_report SET status = 'moved' WHERE report_id = $report_id";
+					$s[] = "UPDATE tag_report SET status = 'moved' WHERE tag_id = {$row['tag_id']} AND tag2 = ".$db->Quote($row['tag2']);
 					
 					break;
 					
@@ -147,7 +149,8 @@ if (!empty($_GET['deal'])) {
 					
 					$s[] = "UPDATE tag SET ".implode(', ',$values)." WHERE tag_id = {$row['tag_id']}";
 					
-					$s[] = "UPDATE tag_report SET status = 'renamed' WHERE report_id = $report_id";
+					#$s[] = "UPDATE tag_report SET status = 'renamed' WHERE report_id = $report_id";
+					$s[] = "UPDATE tag_report SET status = 'renamed' WHERE tag_id = {$row['tag_id']} AND tag2 = ".$db->Quote($row['tag2']);
 					
 					break;
 			
