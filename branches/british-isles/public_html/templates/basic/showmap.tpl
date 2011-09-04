@@ -34,6 +34,16 @@
 				var marker = null;
 				var pt;
 
+				var nicon;
+				function createNMarker(npoint) {
+
+					var size = new OpenLayers.Size(29, 29);
+					var offset = new OpenLayers.Pixel(-14, -15);
+					nicon = new OpenSpace.Icon("http://"+static_host+"/img/icons/marker.png", size, offset);
+
+					return createMarker(npoint,nicon);
+				}
+
 				function loadmap2() {
 					map.events.register("mousemove", map, function(e) {
 						if (enabled || !e) {
@@ -54,7 +64,12 @@
 					map.events.register("click", map, function(e) {
 						if (enabled) {
 							var pt = map.getLonLatFromViewPortPx(e.xy);
-							marker = createPMarker(pt);
+							marker = createNMarker(pt);
+
+							var img = "http://"+static_host+"/img/icons/marker.png";
+
+							document.getElementById('mapTitleOS50k').innerHTML = "<img src=\""+img+"\"/> " + document.getElementById('mapTitleOS50k').innerHTML;
+
 						} else {
 							if (marker)
 								map.removeMarker(marker);
