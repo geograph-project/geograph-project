@@ -3,7 +3,7 @@
 <h2>Geograph Superlayer</h2>
 
 <div style="position:relative; width:300px;float:left">
-<h4>Icon approximatly positioned</h4>
+<h4>Icon approximately positioned</h4>
 
 <p><img src="/kml/images/cam1r.png" width="32" height="32"/> Single Image</p>
 

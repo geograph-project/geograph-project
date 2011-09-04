@@ -10,7 +10,7 @@
 		<tr> 
 		  <td>Geograph name</td> 
 		  <td>Centisquare</td> 
-		  <td>Gridsquare</td> 
+		  <td>Grid square</td> 
 		  <td>Hectad</td> 
 		  <td>Myriad</td> 
 		</tr> 
@@ -78,7 +78,7 @@
 		  <td>Common name</td> 
 		  <td>&nbsp;</td> 
 		  <td>&nbsp;</td> 
-		  <td>Tile<br/> <small>(OS sell digital data in Tiles)</small></td> 
+		  <td>Tile<br/> <small>(OS sell digital data in tiles)</small></td> 
 		  <td>Scene<br/> <small>(from
 			 <a href="http://www.agarss.com.au/Data/Prices.htm">here</a>)</small></td> 
 		</tr> 

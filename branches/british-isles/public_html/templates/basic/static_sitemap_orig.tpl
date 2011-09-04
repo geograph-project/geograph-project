@@ -4,7 +4,7 @@
 
  <h2>Geograph Sitemap</h2>
  
- <p>Quick links to nearly all Geograph Webpages</p>
+ <p>Quick links to nearly all Geograph web pages</p>
  
  <div style="float:right;padding:5px;background:pink;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
  <b>Press Releases</b> 
@@ -51,27 +51,27 @@
 <ul>
 	<li><a title="Browse by Grid Reference" href="/browse.php">browse by <b>grid square</b></a></li>
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a> (<a href="#stats">more below</a>)</li>
-	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
-	<li><a title="Photo Gallery" href="/gallery/">view some <b>themed galleries</b></a></li>
+	<li><a title="Explore Images" href="/explore/"><b>explore</b> Geograph images</a></li>
+	<li><a title="Photo Gallery" href="/gallery/">view some <b>themed Galleries</b></a></li>
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
-	<li><a title="Games" href="/games/"><b>play</b> with geograph images</a></li>
+	<li><a title="Games" href="/games/"><b>play</b> with Geograph images</a></li>
 	<li><a title="Draggable Map" href="/mapper/">interactive <b>draggable map</b></a></li>
-	<li><a href="/hectadmap.php">Hectad coverage map</a></li>
+	<li><a href="/hectadmap.php">hectad coverage map</a></li>
 	<li><a href="/activities/">explore our Activities section</a></li>
-	<li><a href="/hectad.php">Random Hectad</a></li>
-	<li><a href="/help/imagine">Through The Square Window...</a></li>
-	<li><a href="/explore/places/">Explore the <b>placename gazetteer</b></a></li>
-	<li><a href="/explore/searches.php">A list of <b>featured searches</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
+	<li><a href="/hectad.php">random hectad</a></li>
+	<li><a href="/help/imagine">through the square window...</a></li>
+	<li><a href="/explore/places/">explore the <b>placename gazetteer</b></a></li>
+	<li><a href="/explore/searches.php">a list of <b>featured searches</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
 </ul>
 
 {if $enable_forums}
 <h3><a name="social"></a>Interacting with other members...</h3>
 <ul>
 	<li><a title="Discussion forums" href="/discuss/"><b>discuss the site</b> on our forums</a></li>
-	<li><a title="IRC Chat" href="/chat/"><b>realtime chat</b> with other members</a></li>
+	<li><a title="IRC Chat" href="/chat/"><b>real-time chat</b> with other members</a></li>
 	<li><a title="Geograph Events" href="/events/"><b>meet other members</b> at local events</a> <a title="geoRSS Feed for Geograph Events" href="/events/feed.rss" class="xml-rss">RSS</a></li>
-	<li><a title="Articles" href="/article/">submit your own <b>article</b></a> <a title="RSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></li>
-	<li><a title="Galleries" href="/discuss/?action=vtopic&forum=11">create <b>submitted galleries</b></a> <a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum=11" class="xml-rss">RSS</a></li>
+	<li><a title="Articles" href="/article/">submit your own <b>Article</b></a> <a title="RSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></li>
+	<li><a title="Galleries" href="/discuss/?action=vtopic&forum=11">create <b>submitted Galleries</b></a> <a title="RSS Feed for Geograph Galleries" href="/discuss/syndicator.php?forum=11" class="xml-rss">RSS</a></li>
 </ul>
 {/if}
  
@@ -283,7 +283,7 @@ Refine:
 <ul>
 	<li>Paul Dixon's {external href="http://blog.dixo.net/category/geograph/" text="Blog" title="read Geograph related posts on Paul's blog"}</li>
 	<li>Barry Hunters {external href="http://www.nearby.org.uk/blog/category/geograph/" text="Blog" title="read Geograph related posts on Barry's blog"}, and <i>unofficial</i> {external href="http://www.nearby.org.uk/geograph/" text="GeographTools"} extensions</li>
-	<li>David Morris's {external href="http://www.brassedoff.net/wp/index.php?s=geograph" text="Blog" title="read Geograph related posts on Davids blog"}</li>
+	<li>David Morris's {external href="http://www.brassedoff.net/wp/index.php?s=geograph" text="Blog" title="read Geograph related posts on David's blog"}</li>
 	
 	
 </ul>

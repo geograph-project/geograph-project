@@ -23,16 +23,16 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 {/if}
 {/dynamic}
 
-<p>Submitting photos via Geograph is a 4 step process:</p>
+<p>Submitting photos via Geograph is a 4-step process:</p>
 
 <ol class="spaced">
-	<li><b>Define the square</b> for your image - by entering or selecting the Grid Reference, searching by Placename or dragging on Map.</li>
+	<li><b>Define the square</b> for your image - by entering or selecting the grid reference, searching by placename or dragging on map.</li>
 	<li><b>Select the image</b> to upload, and pinpoint its <b>location on a 1:50,000 map</b> (or Road Map in Ireland)</li>
 	<li>Enter the <b>title, description, category, and date</b> (which can be read direct from EXIF in the photo)</li>
-	<li><b>Confirm the Licence Terms</b>, and attribution options</li>
+	<li><b>Confirm the licence terms</b>, and attribution options</li>
 </ol>
  
-<p>There may be an optional 5th step if choose to enter the photograph in any competitions that happen to be running at the time.</p> 
+<p>There may be an optional fifth step if choose to enter the photograph in any competitions that happen to be running at the time.</p> 
 
 {if $user->registered}
  <p>Goto to the <a href="/submit.php">submit page</a> to send in your photo now!</p>
@@ -49,7 +49,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 	
 	<li>Preprocess the image with <b>{external href="http://www.picnik.com/" text="Picnik"} online image manipulation</b> service, transferring the image automatically to continue the above process</li>
 	
- 	<li>Bulk upload photos using an on <b>offline Java application</b>, locate and describe your images offline, and then upload when ready to connect to the Internet. (note does not include the draggable icons on map)</li>
+ 	<li>Bulk upload photos using an on <b>offline Java application</b>, locate and describe your images offline, and then upload when ready to connect to the Internet (note does not include the draggable icons on map).</li>
  	
  	<li>Upload <b>multiple</b> photos via <b>{external href="http://picasa.google.com/" text="Picasa"} image management</b> program, fully integrates the submission process into Picasa, <b>optimized for multiple images at once</b>.</li>
 </ul>	
