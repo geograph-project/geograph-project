@@ -3,7 +3,7 @@
 
 <h2>Geograph Submission Processes</h2>
 
-<div style="background-color:pink; color:black; border:2px solid red; padding:10px; width:200px; float:right"><b>First time here?</b><br/> please checkout the following resources: <br/>
+<div style="background-color:pink; color:black; border:2px solid red; padding:10px; width:200px; float:right"><b>First time here?</b><br/> Please check the following resources: <br/>
 <a href="/faq.php">FAQ</a>,<br/> <a href="/article/Geograph-Introductory-letter">Introduction</a> and<br/> <a href="/article/Geograph-Quickstart-Guide">Quickstart Guide</a>.</div>
 
  <p>We have a number of ways to submit images to Geograph, a summary:</p>
@@ -12,7 +12,7 @@
 
  <h3><a href="/submit.php?redir=false">Submit</a></h3>
 
- <p>The original submission process - the most complete and tested version. <b>Recommended for first time users.</b></p>
+ <p>The original submission process - the most complete and tested version. <b>Recommended for first-time users.</b></p>
 
  <ul><li>Includes submission via {external href="http://www.picnik.com/" text="Picnik"} - an online photo manipulation service</li></ul>
 
@@ -20,7 +20,7 @@
 
  <h3><a href="/submit2.php">Submit v2</a></h3>
 
- <p>More streamlined version - all one one page. If you familiar with Geograph submission you might like this.</p>
+ <p>More streamlined version - all one one page. If you are familiar with Geograph submission you might like this.</p>
 
 <ul>
 	<li>Also available <a href="/submit2.php?display=tabs">displayed as tabs</a>, which makes it look more similar to version 1</li>
@@ -52,7 +52,7 @@
 
  <p>Plugin for the popular {external href="http://picasa.google.com/" text="Picasa"} image mananagement program.</p>
 
- <p style="font-size:0.7em">With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved however its only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file. <br/>
+ <p style="font-size:0.7em">With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved, however it's only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file. <br/>
  <b><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>.<br/> (You will be asked to confirm this action, <b>only works if have Picasa installed!)</b></p>
  <p style="font-size:0.7em">Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
 
@@ -270,7 +270,7 @@
 <ol>
 	<li>'resized' - EXIF perserved if image is resized to 640px before upload. If left to application, EXIF data lost from image file itself.<br/>
 	However with all methods we still store the EXIF data for future use.</li>
-	<li>The new multi-submit process, allows automatic resizing of the image. Unfortunatly this strips all EXIF data from the image (so its not even sent to the server). To perserve the data, need to resize the image in a program that perserves it.</li>
+	<li>The new multi-submit process, allows automatic resizing of the image. Unfortunately this strips all EXIF data from the image (so it's not even sent to the server). To preserve the data, you need to resize the image in a program that preserves it.</li>
 </ol>
 
 <br/><br/><br/>

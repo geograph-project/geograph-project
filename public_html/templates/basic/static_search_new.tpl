@@ -3,7 +3,7 @@
 
 <h2>The Geograph <a href="/search.php">Search Engine</a> - now <i>keyword</i> powered</h2>
 
-<p>We have recently introduced a new search system to Geograph. This is powered by a indexing system designed specially for text searching. This is a drastic change compared to the old search, which though it could do text searches was kinda clunky.</p>
+<p>We have recently introduced a new search system to Geograph. This is powered by an indexing system designed especially for text searching. This is a drastic change compared to the old search, which, though it could do text searches, was kinda clunky.</p>
 
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 <img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="25" height="22" align="left" style="margin-right:10px"/>
@@ -12,7 +12,7 @@ There is a better introduction to the new search here: <a href="/article/Searchi
 <br/>
 
 <div class="interestBox" style="padding:10px;border:1px solid yellow; font-size:0.8em; width:300px; float:right">
-	However the legacy search engine was powerful in the options offered on the advanced search form, allowing you to refine the query quite a bit. For this reason the legacy search is still available, but where your search can be fulfilled by the new index you will be automatically redirected to the new search. <br/><br/>
+	However, the legacy search engine was powerful in the options offered on the advanced search form, allowing you to refine the query quite a bit. For this reason the legacy search is still available, but where your search can be fulfilled by the new index you will be automatically redirected to the new search. <br/><br/>
 
 	Hopefully new users finding our search for the first time, should just find the new search works as is, and shouldn't have to worry about the clunky old system. If you are a returning user please take a moment to forget the old search system.<br/><br/>
 
@@ -53,7 +53,7 @@ There is a better introduction to the new search here: <a href="/article/Searchi
     	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">road bridge -"suspension bridge"</tt></li>
 </ul>  	
 
-<p>Also boolean queries are supported: (includes partial support for phrases and fields)</p> 
+<p>Also boolean queries are supported (includes partial support for phrases and fields):</p> 
 <ul>
 	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px"> dog | ( cat mouse)</tt></li>
 	<li style="padding:10px;"><tt style="border:1px solid gray;padding:10px">(river OR road) AND tree</tt></li>

@@ -20,7 +20,7 @@ div:target { background-color:orange;padding-bottom:10px; }
  <ul>
  <li><a href="#points">How do I get a Geograph <b>point</b> for my image?</a></li>
  <li><a href="#tpoints">How do <b>TPoints</b> work?</a></li>
- <li><a href="#squares">What's a 'myriad'? A 'hectad'?</a></li>
+ <li><a href="#squares">What's a 'myriad' or a 'hectad'?</a></li>
  <li><a href="#differ">What statistics do you track?</a></li>
  </ul>
 </div>
@@ -52,18 +52,18 @@ div:target { background-color:orange;padding-bottom:10px; }
 <a name="tpoints"></a>
 <h3>How do TPoints work?</h3>
 
-	<p>TPoint or 'Time-gap Point' (formally 'Temporal Point' or 'Temporally aware Points') a new kind of point that takes into account when photos where taken.
-	A contributor can gain a TPoint by submitting a contemporary photo to a square that hasn't had a photo for 5 years. But you can also submit historic photos, and as long as there isn't a geograph taken with 5 years (before OR after) then it gains a TPoint.
+	<p>TPoint or 'Time-gap Point' (formally 'Temporal Point' or 'Temporally aware Point') is a new kind of point that takes into account when photos where taken.
+	A contributor can gain a TPoint by submitting a contemporary photo to a square that hasn't had a photo for 5 years. But you can also submit historic photos, and as long as there isn't a Geograph taken with 5 years (before OR after) then it gains a TPoint.
 
 	<p>In essence: <b>if there isn't a Geograph taken within 5 years of a Geograph you submit, you get a TPoint</b>.</p>
 
-	<p>&middot; Squares that can get a TPoint for <b>a recent photo</b> are shown in orange on the <a href="/map/?recent=1">Recent Only coverage map</a>, or purple dots on the 'TPoint Availability' layer on the <a href="/mapper/">Draggable OS</a> map.</p>
+	<p>&middot; Squares that can get a TPoint for <b>a recent photo</b> are shown in orange on the <a href="/map/?recent=1">Recent Only coverage map</a>, or in purple on the 'TPoint Availability' layer on the <a href="/mapper/">Draggable OS</a> map.</p>
 
 </div>
 
 <div id="squares">
 <a name="squares"></a>
-<h3>What's a 'myriad'? A 'hectad'?</h3>
+<h3>What's a 'myriad' or a 'hectad'?</h3>
 
 <p>We couldn't find unambiguous names for larger units of area, so we made our own! A hectad is 10km x 10km, whereas a myriad is 100km x 100km.</p>
 
@@ -77,15 +77,15 @@ div:target { background-color:orange;padding-bottom:10px; }
 <h3>What statistics do you track?</h3>
 	<ul>
 	<li><b>Points</b> / <b>Firsts</b>: the first Geograph submitted for a square earns a <a href="#points"><b>First Geograph Point</b></a><br/><br/><ul>
-		<li><b>Seconds</b>: a "<b>Second Visitor</b>" point is awarded for the second person to contribute a Geograph to a square</li>
-		<li><b>Thirds</b>: similarly a "<b>Third Visitor</b>" point is awarded for the third person to contribute a Geograph to a square</li>
-		<li><b>Fourths</b>: and therefore a "<b>Fourth Visitor</b>" point is awarded for the fourth person to contribute a Geograph to a square</li>
+		<li><b>Seconds</b>: a "<b>Second Visitor</b>" point is awarded to the second person to contribute a Geograph to a square</li>
+		<li><b>Thirds</b>: similarly a "<b>Third Visitor</b>" point is awarded to the third person to contribute a Geograph to a square</li>
+		<li><b>Fourths</b>: and therefore a "<b>Fourth Visitor</b>" point is awarded to the fourth person to contribute a Geograph to a square</li>
 		<li><b>AllPoints</b>: Total of First/Second/Third/Fourth Visitor Points</li>
 		<li><b>Personal Points</b>: The first Geograph image submitted by each user in a square gets a Personal point</li>
 		<li><b>TPoints</b>: Awarded for a Geograph submitted to a square that doesn't already have a photo taken over the previous 5 years<br/><small> (short for "temporally aware" - see also separate question above),</small></li>
 		</ul></li>
 
-		<li><b>Images</b>: these are all images on the site, regardless if they are Geographs or supplementals<br/><br/><ul>
+		<li><b>Images</b>: these are all images on the site, regardless if they are Geographs or Supplementals<br/><br/><ul>
 			<li><b>Geographs</b>: these are all Geograph images, even if multiples for the same grid square</li>
 			<li><b>Additional Geographs</b>: these are Geograph images, excluding the First Geographs</li>
 			<li><b>Supplementals</b>: the number of Supplemental images submitted</li>
