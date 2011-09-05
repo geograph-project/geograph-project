@@ -122,7 +122,7 @@ class RasterMap
 			$services = explode(',',$CONF['raster_service']);
 
 			if ($square->reference_index == 1) {
-				if ($this->issubmit === true && in_array('OSOS',$services)) {
+				if ($this->issubmit === true && in_array('OSOS',$services) && $square->x > 0) {
 					$this->enabled = true;
 					$this->service = 'OSOS';
 					
@@ -245,6 +245,9 @@ class RasterMap
 
 			
 		} elseif ($this->service == 'OSOS') {
+			if ($this->nateastings < 0) {
+				return "Unable to display a map for this location";
+			}
 			$s = ($this->exactPosition || !$this->issubmit)?'':"Drag the circles from the green box!<br/>";
 			return "$s<div id=\"map\" style=\"width:{$width}px; height:{$width}px\"></div>";
 		} elseif ($this->service == 'Google') {
@@ -468,7 +471,7 @@ class RasterMap
 	//overlay (for dragging)
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;z-index:3\">";
 			$imagestr = "<img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/>";
-			if (!empty($gridref)) {
+			if (!empty($gridref) && $this->nateastings > 0) {
 				$this->clickable = true;
 				$str .= smarty_function_getamap(array('text'=>$imagestr,'gridref'=>$gridref,'title'=>$title,'icon'=>'no'));
 			} else {
