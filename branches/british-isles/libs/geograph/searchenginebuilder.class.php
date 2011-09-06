@@ -81,6 +81,23 @@ split_timer('search'); //starts the timer
 			$qlocation = $q;
 		}
 		
+		if (preg_match("/^([a-zA-Z]{1,2})\s*(\d{2,5})$/",$q,$gr)) {
+			$db=$this->_GetDB(false);
+			
+			$hectad = strtoupper($gr[1].$gr[2]);
+			
+			if ($db->getOne("SELECT hectad FROM hectat_stat WHERE hectad = '$hectad'")) {
+				if ( $autoredirect == 'simple') {
+					header("Location: /gridref/$hectad");
+					print "<a href='/gridref/$hectad'>Go here</a>";
+					exit;
+				} else {
+					$q = "hectad:$hectad";
+					$qlocation = '';
+				}
+			}
+		} 
+		
 		if (preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$qlocation,$pc) 
 		&& !in_array(strtoupper($pc[1]),array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 			//these prefixs are not postcodes but are valid gridsquares
@@ -432,24 +449,7 @@ split_timer('search'); //starts the timer
 				$this->errormsg = "Does not appear to be a valid Postcode";
 			}
 		} else if (!empty($dataarray['gridref'])) {
-			if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$dataarray['gridref'],$ll)) {
-				require_once('geograph/conversions.class.php');
-				require_once('geograph/gridsquare.class.php');
-				$square=new GridSquare;
-				$conv = new Conversions;
-				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
-				$grid_ok=$square->loadFromPosition($x, $y, true);
-				if ($grid_ok) {
-					$searchclass = 'GridRef';
-					$searchq = $ll[0];
-					list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
-					$searchdesc = ", $nearstring $latdm, $longdm";
-					$searchx = $x;
-					$searchy = $y;
-				} else {
-					$this->errormsg = "unable to parse lat/long";
-				}
-			} elseif (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['gridref'],$gr)) {
+			if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$dataarray['gridref'],$gr)) {
 				require_once('geograph/gridsquare.class.php');
 				$square=new GridSquare;
 				$grid_ok=$square->setByFullGridRef($dataarray['gridref'],true,true);
@@ -480,6 +480,23 @@ split_timer('search'); //starts the timer
 					}
 				} else {
 					$this->errormsg =  $square->errormsg;
+				}
+			} elseif (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$dataarray['gridref'],$ll)) {
+				require_once('geograph/conversions.class.php');
+				require_once('geograph/gridsquare.class.php');
+				$square=new GridSquare;
+				$conv = new Conversions;
+				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
+				$grid_ok=$square->loadFromPosition($x, $y, true);
+				if ($grid_ok) {
+					$searchclass = 'GridRef';
+					$searchq = $ll[0];
+					list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
+					$searchdesc = ", $nearstring $latdm, $longdm";
+					$searchx = $x;
+					$searchy = $y;
+				} else {
+					$this->errormsg = "unable to parse lat/long";
 				}
 			} else {
 				$this->errormsg = "Does not appear to be a valid Grid Reference";
