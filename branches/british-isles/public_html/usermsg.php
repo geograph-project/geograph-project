@@ -97,7 +97,9 @@ if (isset($_POST['msg']))
 	$smarty->assign_by_ref('errors', $errors);
 
 	$smarty->assign_by_ref('msg', $msg);
-
+	
+	if (!empty($_POST['mention']))
+		$smarty->assign_by_ref('mention', $_POST['mention']);
 
 	if (isSpam($msg))
 	{
@@ -203,6 +205,19 @@ if (isset($_POST['msg']))
 	if ($ok)
 	{
 		//build message and send it...
+		
+		if (!empty($_POST['mention'])) {
+			$ids = implode(',',$_POST['mention']);
+			
+			$db = GeographDatabaseConnection(true);
+			
+			$images = $db->getAll("SELECT gridimage_id,title,grid_reference,realname FROM gridimage_search WHERE gridimage_id IN ($ids) AND user_id = {$recipient->user_id} ORDER BY FIELD(gridimage_id,$ids) DESC LIMIT 4");
+			
+			if (!empty($images)) {
+				$smarty->assign_by_ref('images', $images);
+			}
+			
+		}
 		
 		$body=$smarty->fetch('email_usermsg.tpl');
 		$subject="[Geograph] $from_name contacting you via {$_SERVER['HTTP_HOST']}";

@@ -23,12 +23,18 @@
 
 			<input type="hidden" name="to" value="{$recipient->user_id|escape:'html'}">
 
+
+
 			<input type="hidden" name="from_name" value="{$from_name|escape:'html'}"/>
 			<input type="hidden" name="from_email"  value="{$from_email|escape:'html'}"/>
 			<input type="hidden" name="sendcopy" value="{if $sendcopy}on{/if}"/>
 			<input type="hidden" name="verification" value="{$verification|escape:'html'}"/>
 			<textarea name="msg" style="display:none">{$msg|escape:'html'}</textarea>
-
+			{if $mention}
+				{foreach from=$mention item=image}
+						<input type="hidden" name="mention[]" value="{$image|escape:'html'}" value="1"/>
+				{/foreach}
+			{/if}
 			{if $encoded}
 				<h4 style="text-align:center;color:red">Do not close this window!</h4>
 				<div class="interestBox">
@@ -111,7 +117,11 @@
 			many locations and may not know immediately to what you are referring.</div>
 			<br/>
 
-			{if $images}
+			{if $mention}
+				{foreach from=$mention item=image}
+						<input type="hidden" name="mention[]" value="{$image|escape:'html'}" value="1"/>
+				{/foreach}
+			{elseif $images}
 				Automatically include a link to the following image(s) in your message:<br/>
 				{foreach from=$images item=image}
 					<div id="g{$image.gridimage_id}" style="background-color:white;padding:2px">
