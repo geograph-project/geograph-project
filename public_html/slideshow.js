@@ -3,6 +3,7 @@ var timer = false;
 var marker = false;
 
 function slide_go(delta) {
+	
 	document.getElementById("result"+cs).style.display = 'none';
 	if (document.getElementById("mapA"+cs)) {
 		document.getElementById("mapA"+cs).style.display = 'none';
@@ -32,6 +33,11 @@ function slide_go(delta) {
 			}
 		}
 	} else {
+		if (csnext > resultcount && hasnextpage) {
+			for(q=0;q<document.links.length;q++)
+				if (document.links[q].text.indexOf("next ") == 0)
+					window.location.href = document.links[q].href+((timer != false)?"#autonext":'');
+		}
 		marker = (delta > 0)?'marker_end':'marker_start';
 		if (document.getElementById(marker))
 			document.getElementById(marker).style.display = '';
@@ -42,7 +48,7 @@ function slide_go(delta) {
 	}
 	if (timer == false) {
 		document.getElementById("prevbutton").disabled = (cs <= 1);
-		document.getElementById("nextbutton").disabled = (cs >= resultcount);
+		document.getElementById("nextbutton").disabled = (cs >= resultcount && !hasnextpage);
 		document.getElementById("prevautobutton").disabled = (cs <= 1);
 		document.getElementById("nextautobutton").disabled = (cs >= resultcount);
 	}

@@ -16,7 +16,7 @@
 
 	<script src="{"/slideshow.js"|revision}"></script>
 
-	<form><p align="center"><input type="button" id="prevautobutton" value="&lt; Auto" disabled="disabled" onclick="auto_slide_go(-1)"/><input type="button" id="prevbutton" value="&lt; Prev" disabled="disabled" onclick="slide_go(-1)"/> 
+	<form><p align="center"><input type="button" id="prevautobutton" value="&lt; Auto" disabled="disabled" onclick="auto_slide_go(-1)"/><input type="button" id="prevbutton" value="&lt; Prev" disabled="disabled" onclick="slide_go(-1)"/>
 	<input type="button" id="stopbutton" value="stop" onclick="slide_stop()" disabled="disabled"/>
 	<input type="button" id="nextbutton" value="Next &gt;" onclick="slide_go(1)"/><input type="button" id="nextautobutton" value="Auto &gt;" onclick="auto_slide_go(1)"/></p></form>
 
@@ -40,7 +40,7 @@
 	 	{/if}
 	{/foreach}
 	{if $engine->results}
-	
+
 		<div id="marker_start" style="display:none; text-align:center; background-color:#dddddd; padding:10px;">
 		You have reached the beginning of this page of results.
 		{if $engine->currentPage > 1}<br/><br/>
@@ -53,11 +53,17 @@
 		{/if}</div>
 <script>//<![CDATA[
 var resultcount = {$engine->numberofimages};
+var hasnextpage = {if $engine->numberOfPages > $engine->currentPage}1{else}0{/if};
 setTimeout("document.images['image1'].src = document.images['image1'].lowsrc",300);
 setTimeout("document.images['image2'].src = document.images['image2'].lowsrc",600);
 {dynamic}
 var delayinsec = {$user->slideshow_delay|default:5};
 {/dynamic}
+{literal}
+if (window.location.hash == '#autonext') {
+	setTimeout("auto_slide_go(1)",500);
+}
+{/literal}
  //]]></script>
  	<br style="clear:both"/>
 	<div style="font-size:0.9em">&nbsp;Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})</div>

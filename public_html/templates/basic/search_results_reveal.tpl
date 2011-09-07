@@ -3,7 +3,7 @@
 {if $engine->resultCount}
 	<script src="{"/slideshow.js"|revision}"></script>
 
-	<form><p align="center"><input type="button" id="prevautobutton" value="&lt; Auto" disabled="disabled" onclick="auto_slide_go(-1)"/><input type="button" id="prevbutton" value="&lt; Prev" disabled="disabled" onclick="slide_go(-1)"/> 
+	<form><p align="center"><input type="button" id="prevautobutton" value="&lt; Auto" disabled="disabled" onclick="auto_slide_go(-1)"/><input type="button" id="prevbutton" value="&lt; Prev" disabled="disabled" onclick="slide_go(-1)"/>
 	<input type="button" id="stopbutton" value="stop" onclick="slide_stop()" disabled="disabled"/>
 	<input type="button" id="nextbutton" value="Next &gt;" onclick="slide_go(1)"/><input type="button" id="nextautobutton" value="Auto &gt;" onclick="auto_slide_go(1)"/></p></form>
 
@@ -61,6 +61,7 @@
 		{/if}</div>
 <script>//<![CDATA[
 var resultcount = {$engine->numberofimages};
+var hasnextpage = {if $engine->numberOfPages > $engine->currentPage}1{else}0{/if};
 {literal}
  AttachEvent(window,'load',function() {
  document.images['image1'].src = document.images['image1'].lowsrc;
@@ -70,6 +71,9 @@ var resultcount = {$engine->numberofimages};
  setTimeout("document.images['mapC2'].src = document.images['mapC2'].lowsrc",300);
  setTimeout("document.images['mapD2'].src = document.images['mapD2'].lowsrc",300);
  },false);
+if (window.location.hash == '#autonext') {
+	setTimeout("auto_slide_go(1)",500);
+}
 {/literal}
 {dynamic}
 var mapdelayinsec = 7;
