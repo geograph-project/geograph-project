@@ -289,6 +289,15 @@ elseif (isset($_GET['image']))
 	$smarty->assign_by_ref('msg', $msg);
 	
 	customExpiresHeader(360,false,true);
+
+} elseif (!empty($_SESSION['photos'])) {
+	$ids = implode(',',array_keys($_SESSION['photos']));
+	
+	$db = GeographDatabaseConnection(true);
+
+	$images = $db->getAll("SELECT gridimage_id,title,grid_reference,realname FROM gridimage_search WHERE gridimage_id IN ($ids) AND user_id = {$recipient->user_id} ORDER BY FIELD(gridimage_id,$ids) DESC LIMIT 4");
+	
+	$smarty->assign_by_ref('images', $images);
 }
 
 if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) {
