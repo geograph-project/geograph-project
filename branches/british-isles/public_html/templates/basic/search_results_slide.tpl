@@ -33,7 +33,7 @@
 	 	{/if}
 	{/foreach}
 	{if $engine->results}
-	
+
 		<div id="marker_start" style="display:none; text-align:center; background-color:#dddddd; padding:10px;">
 		You have reached the beginning of this page of results.
 		{if $engine->currentPage > 1}<br/><br/>
@@ -46,13 +46,19 @@
 		{/if}</div>
 <script>//<![CDATA[
 var resultcount = {$engine->numberofimages};
+var hasnextpage = {if $engine->numberOfPages > $engine->currentPage}1{else}0{/if};
 setTimeout("document.images['image1'].src = document.images['image1'].lowsrc",300);
 setTimeout("document.images['image2'].src = document.images['image2'].lowsrc",600);
 {dynamic}
 var delayinsec = {$user->slideshow_delay|default:5};
 {/dynamic}
+{literal}
+if (window.location.hash == '#autonext') {
+	setTimeout("auto_slide_go(1)",500);
+}
+{/literal}
  //]]></script>
- 
+
  		<div style="text-align:center;padding-top:40px"><a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slidebig">Full Page Slide-Show</a> <sup style="color:red">new!</sup></div>
  	<br style="clear:both"/>
 	<p>Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
