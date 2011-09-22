@@ -30,7 +30,9 @@ if (!empty($_GET['callback'])) {
 	header('Content-type: application/json');
 }
 
-
+if (!empty($_GET['term'])) {
+	$_GET['q'] = $_GET['term'];	
+}
 
 $db = GeographDatabaseConnection(true);
 
@@ -39,7 +41,12 @@ $sql = array();
 $sql['tables'] = array();
 $sql['tables']['t'] = 'tag';
 
-$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
+if (!empty($_GET['term'])) {
+	$_GET['q'] = $_GET['term'];	
+	$sql['columns'] = "if (tag.prefix and not (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki'),concat(tag.prefix,':',tag.tag),tag.tag) as tag";
+} else {
+	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
+}
 
 if (!empty($_GET['gridimage_id'])) {
 	init_session();
@@ -144,7 +151,11 @@ if (!empty($_GET['gridimage_id'])) {
 $query = sqlBitsToSelect($sql);
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-$data = $db->getAll($query);
+if (!empty($_GET['term'])) {
+	$data = $db->getCol($query);
+} else {
+	$data = $db->getAll($query);
+}
 
 if (!empty($_GET['callback'])) {
         $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
