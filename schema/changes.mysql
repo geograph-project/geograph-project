@@ -2172,3 +2172,10 @@ ALTER TABLE  `tag_report` ADD  `status` ENUM(  'new',  'rejected',  'moved',  'r
 #################################################
 
 
+alter table content modify `source` enum('trip','blog','portal','article','gallery','themed','help','gsd','snippet','user','category','context','faq','other') NOT NULL default 'other';
+
+
+#################################################
+
+
+

@@ -56,19 +56,20 @@ class RebuildVoteStats extends EventHandler
 
 
 		$db->Execute("TRUNCATE vote_stat");
-		$db->Execute("LOCK TABLE vote_stat WRITE, vote_log READ");
+		$db->Execute("LOCK TABLE vote_stat WRITE, vote_log READ, gridimage_search READ");
 
 		$types = $db->getAssoc("SELECT type,avg(vote) FROM vote_log WHERE vote > 0 AND `final` = 1 GROUP BY type ORDER BY NULL");
 
 		$db->Execute("ALTER TABLE vote_stat DISABLE KEYS");
 
 		foreach ($types as $type => $avg) {
+			$tables = ($type == 'img' || $type == 'desc')?' INNER JOIN gridimage_search ON (id = gridimage_id AND vote_log.user_id != gridimage_search.user_id)':'';
 			$db->Execute("INSERT INTO vote_stat
 				SELECT 
 					type,
 					id,
 					COUNT(*) AS num,
-					COUNT(DISTINCT user_id,ipaddr) AS users,
+					COUNT(DISTINCT vote_log.user_id,ipaddr) AS users,
 					AVG(vote) AS `avg`,
 					STD(vote) AS `std`,
 					(COUNT(*) / (COUNT(*)+$wm)) * AVG(vote) + ($wm / (COUNT(*)+$wm)) * $avg AS `baysian`, 
@@ -78,7 +79,7 @@ class RebuildVoteStats extends EventHandler
 					SUM(vote=4) AS v4,
 					SUM(vote=5) AS v5,
 					MAX(ts) AS last_vote
-				FROM vote_log
+				FROM vote_log $tables
 				WHERE type = '$type' AND vote > 0 AND `final` = 1
 				GROUP BY id
 				ORDER BY NULL");

@@ -297,6 +297,7 @@ ON DUPLICATE KEY UPDATE
 	extract = ct.extract,
 	images = ct.images,
 	words = ct.words,
+	type = ct.type,
 	updated = ct.updated,
 	created = ct.created;
 	
