@@ -295,7 +295,7 @@ split_timer('search'); //starts the timer
 				$doneexplain = 1;
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
-				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+				if (empty($_GET['BBOX']) && $this->getDisplayclass() != 'reveal') {
 					if ($db->readonly) {
 						$db2=$this->_getDB(false); //get a read/write connection
 					} else {
@@ -358,7 +358,7 @@ END;
 					$this->pageOneOnly = 1;
 				} else {
 					$this->numberOfPages = ceil($this->resultCount/$pgsize);
-					if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+					if (empty($_GET['BBOX']) && $this->getDisplayclass() != 'reveal') {
 						$db=$this->_getDB(false); //'upgrade' to a read/write connection
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
@@ -614,7 +614,7 @@ END;
 		
 		
 	//finish off
-		if (!empty($recordSet) && empty($_GET['BBOX']) && $this->display != 'reveal') {
+		if (!empty($recordSet) && empty($_GET['BBOX']) && $this->getDisplayclass() != 'reveal') {
 			$db=$this->_getDB(false); //'upgrade' to a read/write connection
 			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 		}
@@ -759,7 +759,7 @@ split_timer('search'); //starts the timer
                                 $doneexplain = 1;
 
 				$this->resultCount = $db->CacheGetOne(3600,$sql);
-				if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+				if (empty($_GET['BBOX']) && $this->getDisplayclass() != 'reveal') {
 					if ($db->readonly) {
 						$db2=$this->_getDB(false); //get a read/write connection
 					} else {
@@ -821,7 +821,7 @@ END;
 					$this->pageOneOnly = 1;
 				} else {
 					$this->numberOfPages = ceil($this->resultCount/$pgsize);
-					if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+					if (empty($_GET['BBOX']) && $this->getDisplayclass() != 'reveal') {
 						$db=$this->_getDB(false); //'upgrade' to a read/write connection
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
 					}
@@ -966,7 +966,7 @@ split_timer('search','ECR',"$this->query_id/$pg"); //logs the wall time
 				$lastPage = ($this->resultCount -1)* $pgsize;
 			
 				if ($this->currentPage < $lastPage) {
-					if (empty($_GET['BBOX']) && $this->display != 'reveal') {
+					if (empty($_GET['BBOX']) && $this->getDisplayclass() != 'reveal') {
 						$db=$this->_getDB(false); //'upgrade' to a read/write connection
 						$db->Execute("replace into queries_count set id = {$this->query_id},`count` = 0");
 					}
