@@ -59,13 +59,13 @@ if (!empty($_GET['q'])) {
 	
 		if ($offset < (1000-$pgsize) ) { 
 			
-			$ids = $sphinx->returnIds($pg,'document');
+			$ids = $sphinx->returnIds($pg,'document_stemmed');
 			
 			if (!empty($ids) && count($ids)) {
 				$idstr = join(",",$ids);
 				$where = "content_id IN(".join(",",$ids).")";
 	
-				$sql['wheres'] = array("`id` IN ($idstr)");
+				$sql['wheres'] = array("`content_id` IN ($idstr)");
 				$sql['order'] = "FIELD(`content_id`,$idstr)";
 
 				$sql['limit'] = count($ids);
