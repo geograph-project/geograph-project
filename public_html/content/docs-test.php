@@ -2,11 +2,30 @@
 
 ?>
   <style>
-
+body {
+	font-family: georgia;
+}
     ul li {list-style: none; cursor: pointer;}
     li.smart_autocomplete_highlight {background-color: #C1CE84;}
     ul { margin: 10px 0; padding: 5px; background-color: #E3EBBC; }
     
+	#results a {
+		font-weight:bold;
+	}
+	#results div.text {
+		font-size:0.8em;
+		margin-left:20px;
+		border-left:1px solid silver;
+		padding-left:2px;
+		margin-bottom:4px;
+	}
+
+	.results_preview {
+		margin-left:200px;
+		margin-top:-35px;
+	}
+	.results_full {
+	}
   </style>
 
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
@@ -21,35 +40,41 @@
         $("#type_ahead_autocomplete_field").bind({
 	
 	           itemFocus: function(ev, selected_item){ 
-	             $('#results').html('Loading Results for '+$(selected_item).text()+'...');
-	            loadSearchResults($(selected_item).text());
+	            loadSearchResults($(selected_item).text(),false);
 	           },
 	
 	           itemSelect: function(ev, selected_item){ 
 	            
-	            loadSearchResults($(selected_item).text());
+	            loadSearchResults($(selected_item).text(),true);
 	          },
 	
         });
         
     });
 
-var loaded = null;
+var loadedquery = null;
     
-    function loadSearchResults(value) {
+    function loadSearchResults(value,highlight) {
     
-		if (value == loaded) {
-			return;
-		}
 
     		param = 'q='+encodeURIComponent(value);
+		if (highlight) {
+			param = param + "&h=1";
+		}
+
+		if (param == loadedquery) {
+			return;
+		}
+		
+	        $('#results').html('Loading Results for <b>'+value+'</b>...');
     
     		$.getJSON("/content/docs.json.php?"+param+"&callback=?",
     
     		// on search completion, process the results
     		function (data) {
     			if (data) {
-				loaded = value;
+				$('#results').attr('class',highlight?'results_full':'results_preview');
+				loadedquery = param;
     				$('#results').html('Results for <b>'+value+'</b>.<br/>');
     				
     				str = '';
@@ -60,7 +85,12 @@ var loaded = null;
 						var text = data[idx].title;
 
 
-						str += "<a href=\""+data[idx].url+"\">"+text+"</a> "+data[idx].source+"<br/>";
+						str += "&middot; <a href=\""+data[idx].url+"\">"+text+"</a> "+data[idx].source+"<br/>";
+						if (data[idx].words) {
+							str += "<div class=\"text\">"+data[idx].words+"</div>";
+						} else {
+							
+						}
 					}
     				}
     				$('#results').append(str);
@@ -69,17 +99,19 @@ var loaded = null;
 	}
     
    </script>
-   
+   <form onsubmit="return false">
             <fieldset id="example_3">
               <legend>Example 3</legend>
 
               <p>With <em>typeAhead</em> option enabled</p>
 
               <div>
-                <label for="type_ahead_autocomplete_field">Search</label>
-                <input type="text" autocomplete="off" id="type_ahead_autocomplete_field"/>
+                <label for="type_ahead_autocomplete_field">Search</label><br/>
+                <input type="text" name="q" autocomplete="off" id="type_ahead_autocomplete_field"/><br/>
+		<input type="button" value="Search" onclick="loadSearchResults(this.form.q.value,true)">
               </div>
 
-		<div id="results" style="margin-top:150px"></div>
+		<div id="results"></div>
 
             </fieldset>
+	</form>
