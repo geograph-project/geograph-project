@@ -5,9 +5,9 @@
 body {
 	font-family: georgia;
 }
-    ul li {list-style: none; cursor: pointer;}
+    ul.smart_autocomplete_container { margin: 10px 0; padding: 5px; background-color: #E3EBBC; }
+    ul.smart_autocomplete_container li {list-style: none; cursor: pointer;}
     li.smart_autocomplete_highlight {background-color: #C1CE84;}
-    ul { margin: 10px 0; padding: 5px; background-color: #E3EBBC; }
     
 	#results a {
 		font-weight:bold;
