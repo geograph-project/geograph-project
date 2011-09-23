@@ -16,7 +16,7 @@
     $(function(){
     
         //example 3
-        $("#type_ahead_autocomplete_field").smartAutoComplete({source: 'docs.json.php', typeAhead: true });
+        $("#type_ahead_autocomplete_field").smartAutoComplete({source: 'docs-suggest.json.php', typeAhead: true });
         
         $("#type_ahead_autocomplete_field").bind({
 	
@@ -33,9 +33,15 @@
         });
         
     });
+
+var loaded = null;
     
     function loadSearchResults(value) {
     
+		if (value == loaded) {
+			return;
+		}
+
     		param = 'q='+encodeURIComponent(value);
     
     		$.getJSON("/content/docs.json.php?"+param+"&callback=?",
@@ -43,6 +49,7 @@
     		// on search completion, process the results
     		function (data) {
     			if (data) {
+				loaded = value;
     				$('#results').html('Results for <b>'+value+'</b>.<br/>');
     				
     				str = '';
