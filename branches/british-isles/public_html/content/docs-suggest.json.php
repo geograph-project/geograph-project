@@ -73,10 +73,12 @@ if (!empty($_GET['q']) || !empty($_GET['term'])) {
 			$client = $sphinx->_getClient();
 
                         $client->SetRankingMode(SPH_RANK_NONE);
+
 			
-			$sphinx->sort = "uses DESC"; 
-			
-	
+			$sphinx->sort = "uses DESC"; //within group order
+			$client->SetGroupBy('stemcrc',SPH_GROUPBY_ATTR,"uses DESC, @id DESC"); //overall sort order
+
+				
 			$ids = $sphinx->returnIds($pg,'document_words');
 			
 			if (!empty($ids) && count($ids)) {
