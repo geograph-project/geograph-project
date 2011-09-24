@@ -36,7 +36,9 @@ $sql = array();
 $sql['tables'] = array();
 $sql['tables']['t'] = 'tag';
 
-$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
+$sql['columns'] = "tag_id,tag.tag,if (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
+
+$sql['wheres'] = array();
 
 if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
@@ -70,7 +72,7 @@ if (!empty($_GET['q'])) {
 	
 		if (!empty($tagids)) {
 			$idstr = join(",",$tagids);
-			$sql['where'] = "tag_id IN($idstr)";
+			$sql['wheres'][] = "tag_id IN($idstr)";
 			$sql['order'] = "FIELD(`tag_id`,$idstr)";
 			$sql['limit'] = count($tagids);
 		} else {
@@ -92,6 +94,11 @@ if (!empty($_GET['term'])) {
 	$data = $db->getCol($query);
 } else {
 	$data = $db->getAll($query);
+
+	foreach ($data as $idx => $row) {
+		$data[$idx]['count'] = $count[$row['tag_id']];
+		unset($data[$idx]['tag_id']);
+	}
 }
 
 if (!empty($_GET['callback'])) {
