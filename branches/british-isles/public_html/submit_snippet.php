@@ -363,6 +363,16 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 
 			$smarty->assign("query_info",$sphinx->query_info);
 
+			if (empty($ids) && !empty($_REQUEST['gr']) && !empty($_REQUEST['q'])) {
+
+				$smarty->assign("query_info","No results, so tried again just searching for [ ".htmlentities($sphinx->qclean)." ] (ignoring location)");
+
+				$sphinx = new sphinxwrapper($sphinx->qclean);
+				$sphinx->pageSize = $pgsize = 25;
+
+				$ids = $sphinx->returnIds($pg,'snippet');
+			}
+
 			if (!empty($ids) && count($ids)) {
 				$id_list = implode(',',$ids);
 				$where[] = "s.snippet_id IN($id_list)";
@@ -388,9 +398,14 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
+				$sphinx = new sphinxwrapper('image_square:'.$square->grid_reference);
+				$sphinx->pageSize = $pgsize = 100; $pg = 1;
+
+				$ids = $sphinx->returnIds($pg,'snippet');
+
 				$where[] = "CONTAINS(
 						GeomFromText($rectangle),
-						point_en)";
+						point_en)".(empty($ids)?'':(' OR s.snippet_id IN ('.implode(',',$ids).')'));
 			}
 
 			if (!empty($_REQUEST['onlymine'])) {

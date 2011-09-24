@@ -103,20 +103,23 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 	( <b>Search/Local Filter</b> / <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=recent">My recently used</a> {if $sphinx}/ <a href="?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}&amp;tab=suggestions" onclick="return suggestionsClicker(this);">Suggestions</a>{/if} )</div>
 
 <div class="interestBox" style="margin:4px;margin-left:24px">
-Within radius:{if $centisquare}
-<label for="rad01" class="nowrap"><input type="radio" name="radius" id="rad01" value="0.1"{if $radius == 0.1} checked{/if}/> centisquare</label> /
+
+<select name="radius">
+{if $centisquare}
+<option value="0.1"{if $radius == 0.1} selected{/if}>in this centisquare</option>
 {/if}
-<label for="rad1" class="nowrap"><input type="radio" name="radius" id="rad1" value="1" {if $radius == 1 || !$radius} checked{/if}/> {$grid_reference|default:'gridsquare'}</label> /
-<label for="rad2" class="nowrap"><input type="radio" name="radius" id="rad2" value="2" {if $radius == 2} checked{/if}/> surrounding gridsquares</label> /
-<label for="rad10" class="nowrap"><input type="radio" name="radius" id="rad10" value="10"{if $radius == 10} checked{/if}/> within 10km</label> /
-<label for="rad1000" class="nowrap"><input type="radio" name="radius" id="rad1000" value="1000"{if $radius == 1000} checked{/if}/> anywhere <sub>(keyword needed below!)</sub></label>  <br/>
-<label for="fq">Search{if $sphinx} keywords{/if}</label>: <input type="text" name="q" id="fq" size="20"{if $q} value="{$q|escape:'html'}"{/if}/>
+<option value="1"{if $radius == 1 || !$radius} selected{/if}>In/used in {$grid_reference|default:'gridsquare'}</option>
+<option value="2"{if $radius == 2} selected{/if}>inc. surrounding gridsquares</option>
+<option value="10"{if $radius == 10} selected{/if}>within 10km</option>
+<option value="1000"{if $radius == 1000} selected{/if}>anywhere - keyword(s) needed on right!</option>
+</select>
+<label for="fq">{if $sphinx} keywords{else}Search{/if}</label>: <input type="text" name="q" id="fq" size="20"{if $q} value="{$q|escape:'html'}"{/if}/>
 {if !$sphinx}
 	(single keyword only)
 {/if}
- <input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> Only show my descriptions.
+ (<input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> show mine)
 
- <input type="submit" value="Update"/>
+ <input type="submit" value="Find"/>
 </div>
 {/if}
 
