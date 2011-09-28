@@ -7,22 +7,22 @@
 <div style="position:relative;">
 	<div class="tabHolder">
 		<a class="tabSelected nowrap" id="tab1">A) Add/Upload Images</a>&nbsp;
-		<a class="tab nowrap" id="tab2" href="{$script_name}?tab=submit">B) Submit Images (v1)</a>
+		<a class="tab nowrap" id="tab2" href="{$script_name}?tab=submit#sort=Uploaded%A0%A0%u2193">B) Submit Images (v1)</a>
 		<a class="tab nowrap" id="tab3" href="/submit2.php?multi=true">B) Submit Images (v2) <sup style="color:red">New!</sup></a>
 	</div>
 
 	<div class="interestBox">
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
-<link rel="stylesheet" href="/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css" type="text/css" />
+<link rel="stylesheet" href="{"/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css"|revision}" type="text/css" />
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js" type="text/javascript"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js" type="text/javascript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js" type="text/javascript"></script>
 
 <!-- Thirdparty intialization scripts, needed for the Google Gears and BrowserPlus runtimes -->
 <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
 
-<script type="text/javascript" src="/plupload/js/plupload.full.js"></script>
-<script type="text/javascript" src="/plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"></script>
+<script type="text/javascript" src="{"/plupload/js/plupload.full.js"|revision}"></script>
+<script type="text/javascript" src="{"/plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"|revision}"></script>
 
 {literal}
 <script type="text/javascript">
@@ -110,7 +110,7 @@ function setResize(that) {
 				<input type="radio" name="size" value="1024" onclick="setResize(this)"/> 1024 pixels |
 				<input type="radio" name="size" value="800" onclick="setResize(this)"/> 800 pixels |
 				<input type="radio" name="size" value="640" onclick="setResize(this)"/> 640 pixels<br/>
-				(images are resized in your browser before being sent to Geograph - EXIF data will be stripped)
+				(images are resized in your browser before being sent to Geograph - EXIF data may be stripped)
 			</fieldset>
 
 			<div id="uploader">
