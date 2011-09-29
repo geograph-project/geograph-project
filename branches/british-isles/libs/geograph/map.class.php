@@ -179,6 +179,8 @@ class GeographMap
 			$token->setValue("p",  $this->palette);
 		if (!empty($this->topicId))
 			$token->setValue("f",  $this->topicId);
+		if (!empty($this->searchId))
+			$token->setValue("i",  $this->searchId);
 		return $token->getToken();
 	}
 
@@ -211,6 +213,10 @@ class GeographMap
 				if ($token->hasValue("f")) {
 					$this->transparent = true; //TODO - this should be better!
 					$this->topicId = $token->getValue("f");
+				}
+				if ($token->hasValue("i")) {
+					$this->transparent = true; //TODO - this should be better!
+					$this->searchId = $token->getValue("i");
 				}
 			}
 			
@@ -391,6 +397,9 @@ split_timer('map'); //starts the timer
 		
 		if (!empty($this->topicId)) {
 			$palette .= "_t{$this->topicId}";
+		}
+		if (!empty($this->searchId)) {
+			$palette .= "_i{$this->searchId}";
 		}
 		
 		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -20)?'jpg':'png';
@@ -916,10 +925,56 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 					
 					if ($this->type_or_user == -12) {
 						//todo doesnt use the where clause!
-						if ($this->topicId == -1) {
-							$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) group by x,y order by null";					
+						if (!empty($this->searchId)) {
+							
+							require_once('geograph/searchcriteria.class.php');
+							require_once('geograph/searchengine.class.php');
+
+							$engine = new SearchEngine($this->searchId);
+							if (empty($engine->criteria)) {
+								print "Invalid search";
+								exit;
+							}
+							$engine->criteria->getSQLParts();
+							if (!empty($engine->criteria->sphinx['no_legacy']) || empty($engine->criteria->sphinx['compatible'])) {
+								print "Unable to run this search (no sphinx)";
+								exit;
+							}
+							extract($engine->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
+
+							if (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=]+) where/i",$sql_where,$matches)) {
+								$sql_where = preg_replace("/(left |inner |)join ([\w\,\(\) \.!=\']+) where/i",'',$sql_where);
+								$sql_from .= " {$matches[1]} join {$matches[2]}";
+							}
+
+							if (preg_match("/group by ([\w\,\(\) ]+)/i",$sql_where)) {
+								print "Unable to run on this search (special search)";
+								exit;
+							}
+
+							if (!empty($sql_where)) {
+								$sql_where = "AND $sql_where";
+								$engine->islimited = true;
+							} else {
+								print "Unable to run on this search (no filter)";
+								exit;
+							}
+
+							if (strpos($sql_where,'gs') !== FALSE) {
+								$sql_where = str_replace('gs.','gi.',$sql_where);
+							}
+							if (strpos($sql_from,'gs') !== FALSE) {
+								$sql_from = str_replace('gs.','gi.',$sql_from);
+							}
+		
+							$sql = "select x,y,1 as has_geographs from gridimage_search as gi $sql_from where 1 $sql_where group by x,y order by null";
+							print_r($sql);
+							exit;
+							
+						} elseif ($this->topicId == -1) {
+							$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) group by x,y order by null";
 						} else {
-							$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) where topic_id = {$this->topicId} group by x,y order by null";					
+							$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) where topic_id = {$this->topicId} group by x,y order by null";
 						}
 					} elseif ($this->type_or_user == -6) {
 						$sql="select x,y,gridsquare_id,has_recent as has_geographs from gridsquare where 
