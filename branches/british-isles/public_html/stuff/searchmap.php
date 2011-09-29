@@ -56,7 +56,9 @@ $i = !empty($_GET['i'])?intval($_GET['i']):822;
 		print "Unable to run on this search (no filter)";
 		exit;
 	}
-
+	
+	$engine->criteria->searchdesc = preg_replace("/, in [\w ]* order/",'',$engine->criteria->searchdesc);
+	$title = "<i>".htmlentities2($engine->criteria->searchdesc)."</i>";
 
 $map=new GeographMap;
 //standard 1px national map
@@ -89,7 +91,10 @@ $overlayurl=$map->getImageUrl();
 
 $smarty->display('_std_begin.tpl');
 
-print "<h2>Coverage map for Search #$i</h2>";
+print "<h2>Coverage map for Search";
+if (!empty($title))
+	print "<small><a href=\"/search.php?i=$i\">$title</a></small>";
+print "</h2>";
 
 ?>
 <div style="position:relative; height:1300px;width:900px">

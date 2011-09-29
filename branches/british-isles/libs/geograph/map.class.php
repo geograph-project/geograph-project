@@ -968,8 +968,6 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 							}
 		
 							$sql = "select x,y,1 as has_geographs from gridimage_search as gi $sql_from where 1 $sql_where group by x,y order by null";
-							print_r($sql);
-							exit;
 							
 						} elseif ($this->topicId == -1) {
 							$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) group by x,y order by null";
