@@ -179,6 +179,8 @@ class GeographMap
 			$token->setValue("p",  $this->palette);
 		if (!empty($this->topicId))
 			$token->setValue("f",  $this->topicId);
+		if (!empty($this->tagId))
+			$token->setValue("a",  $this->tagId);
 		if (!empty($this->searchId))
 			$token->setValue("i",  $this->searchId);
 		return $token->getToken();
@@ -213,6 +215,10 @@ class GeographMap
 				if ($token->hasValue("f")) {
 					$this->transparent = true; //TODO - this should be better!
 					$this->topicId = $token->getValue("f");
+				}
+				if ($token->hasValue("a")) {
+					$this->transparent = true; //TODO - this should be better!
+					$this->tagId = $token->getValue("a");
 				}
 				if ($token->hasValue("i")) {
 					$this->transparent = true; //TODO - this should be better!
@@ -397,6 +403,9 @@ split_timer('map'); //starts the timer
 		
 		if (!empty($this->topicId)) {
 			$palette .= "_t{$this->topicId}";
+		}
+		if (!empty($this->tagId)) {
+			$palette .= "_a{$this->tagId}";
 		}
 		if (!empty($this->searchId)) {
 			$palette .= "_i{$this->searchId}";
@@ -969,6 +978,8 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 		
 							$sql = "select x,y,1 as has_geographs from gridimage_search as gi $sql_from where 1 $sql_where group by x,y order by null";
 							
+						} elseif (!empty($this->tagId)) {
+							$sql="select x,y,1 as has_geographs from gridimage_tag inner join gridimage_search using (gridimage_id) where status = 2 and tag_id = {$this->tagId} group by x,y order by null";
 						} elseif ($this->topicId == -1) {
 							$sql="select x,y,1 as has_geographs from gridimage_post inner join gridimage_search using (gridimage_id) group by x,y order by null";
 						} else {
