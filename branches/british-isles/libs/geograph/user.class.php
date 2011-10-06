@@ -928,6 +928,7 @@ class GeographUser
 				expand_about=%d,
 				upload_size=%d,
 				submission_method=%s,
+				submission_new=%s,
 				salt=%s,
 				password=%s
 				where user_id=%d",
@@ -949,6 +950,7 @@ class GeographUser
 				intval($profile['expand_about']),
 				intval($profile['upload_size']),
 				$db->Quote(stripslashes($profile['submission_method'])),
+				$db->Quote(stripslashes($profile['submission_new'])),
 				$db->Quote($salt),
 				$db->Quote($password),
 				$this->user_id
@@ -993,6 +995,7 @@ class GeographUser
 				$this->expand_about=intval($profile['expand_about']);
 				$this->upload_size=intval($profile['upload_size']);
 				$this->submission_method=stripslashes($profile['submission_method']);
+				$this->submission_new=stripslashes($profile['submission_new']);
 				$this->_forumUpdateProfile();
 				$this->_forumLogin();
 				
@@ -1298,6 +1301,9 @@ class GeographUser
 				if ($_SERVER['HTTP_HOST'] == 'real.www.geograph.org.uk') {
 					$smarty->assign('script_uri', "http://www.geograph.org.uk".$_SERVER['REQUEST_URI']);
 				}
+                                if (!empty($_GET['email']) && empty($email)) {
+                                        $email = $_GET['email'];
+                                }
 				
 				$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0);
 				$smarty->assign('inline', $inline);
