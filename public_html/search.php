@@ -731,6 +731,12 @@ if (isset($_GET['fav']) && $i) {
  	
  	if (isset($_GET['form']) && $_GET['form'] == 'simple') {
  		$autoredirect = 'simple';
+
+		if (preg_match('/^[\w\.-]+@[\w+\.-]+\.\w+$/',$q) && $USER->user_id == 0) {
+			header("Location: /login.php?email=$q");
+			exit;
+		}
+
  	} elseif ($_SERVER['SCRIPT_NAME'] == '/results/') {
  		$autoredirect = false;
  	} else {
