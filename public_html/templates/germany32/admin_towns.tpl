@@ -17,6 +17,20 @@ works as expected on your browser before doing real changes!</b>
 {/if}
     
    
+<div style="background-color:#e0e0e0">
+<h3>Towns to display</h3>
+<p>This settings are valid for the whole session.<p>
+<form method="post">
+<label for="townlim">Minimal size: </label>
+<input type="text" id="townlim" name="townlim" size="1" value="{$townlim}" />
+<br />
+<label for="towncids">Community id starting with: </label>
+<input type="text" id="towncids" name="towncids" size="10" value="{$towncids}" />
+<small>(leading zeroes may be required for some areas; empty string for reset)</small>
+<br />
+<input type="submit" name="listsettings" value="Set"><br />
+</form>
+</div>
 <div>
 	{if $rastermap->enabled}
 		<div class="rastermap" style="float:right;  width:350px;position:relative">

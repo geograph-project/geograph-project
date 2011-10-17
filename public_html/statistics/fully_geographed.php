@@ -48,10 +48,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	$mosaic->setScale(40);
 	$mosaic->setMosaicFactor(2);
 
-	$largemosaic=new GeographMapMosaic;
-	$largemosaic->setScale(80);
-	$largemosaic->setMosaicFactor(2);
-	$largemosaic->setMosaicSize(800,800);
+	$largemosaic=new GeographMapMosaic('largemap');
+	#$largemosaic->setScale(80);
+	#$largemosaic->setMosaicFactor(2);
+	#$largemosaic->setMosaicSize(800,800);
 	
 	$censquare = new GridSquare;
 	

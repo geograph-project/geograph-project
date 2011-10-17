@@ -49,14 +49,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');
 
-	switch($CONF['template']) {
+	switch($CONF['template']) { #FIXME better solution needed
 		case 'charcoal': $preset = 'overview_charcoal'; break;
 		case 'ireland': $preset = 'overview_ireland'; break;
-		default: $preset = 'overview_large'; break;
+		case 'germanyde': $preset = 'overview_large'; break;#FIXME
+		default: $preset = 'homepage_tm'; break;
+		#default: $preset = 'overview_large'; break;
 	}
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = 0;
-	if ($preset == 'overview_large') {
+	if ($preset == 'overview_large' || $preset == 'homepage_tm') {
 		$overview->assignToSmarty($smarty, 'overview2');
 	} else {
 		$overview->assignToSmarty($smarty, 'overview');

@@ -111,8 +111,8 @@ if (isset($_GET['zoomin']))
 {
 	//get click coordinate, or use centre point if not supplied
 
-	$x=isset($_GET['x'])?intval($_GET['x']):round(($mosaic->image_w/$mosaic->mosaic_factor)/2);
-	$y=isset($_GET['y'])?intval($_GET['y']):round(($mosaic->image_h/$mosaic->mosaic_factor)/2);
+	$x=isset($_GET['x'])?intval($_GET['x']):round(($mosaic->image_w/$mosaic->mosaic_factor_x)/2);
+	$y=isset($_GET['y'])?intval($_GET['y']):round(($mosaic->image_h/$mosaic->mosaic_factor_y)/2);
 
 	
 	//get the image index
@@ -126,8 +126,8 @@ if (isset($_GET['zoomin']))
 if (isset($_GET['center']))
 {
 	//extract x and y click coordinate from imagemap
-	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor)/2);
-	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor)/2);
+	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor_x)/2);
+	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor_y)/2);
 	
 
 	//get the image index
@@ -136,9 +136,20 @@ if (isset($_GET['center']))
 	
 	//get click coordinate on overview, use it to centre the main map
 	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);	
-	
-	$zoomindex = array_search($overview->pixels_per_km,$overview->scales);
-	$scale = $overview->scales[$zoomindex+1];
+
+	#$zoomindex = array_search($overview->pixels_per_km,$overview->scales);
+	#if ($zoomindex === false)
+	#	$zoomindex = 0;
+	#$zoomindex = $overview->level;
+	#$scale = $mosaic->scales[$zoomindex+1];
+	$zoomindex = 1;
+	foreach($mosaic->scales as $level => $pixperkm) {
+		if ($pixperkm > $overview->pixels_per_km && $pixperkm > 1-.0001) {
+			$zoomindex = $level;
+			break;
+		}
+	}
+	$scale = $mosaic->scales[$zoomindex];
 	$mosaic->setScale($scale);
 	$mosaic->setMosaicFactor(2);
 	$mosaic->setCentre($intx, $inty);	
@@ -148,8 +159,8 @@ if (isset($_GET['center']))
 if (isset($_GET['recenter']))
 {
 	//extract x and y click coordinate from imagemap
-	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor)/2);
-	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor)/2);
+	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor_x)/2);
+	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor_y)/2);
 	
 	
 	//get the image index
@@ -167,7 +178,8 @@ if (isset($_GET['gridref']) && preg_match('/^[!a-zA-Z]{1,3}\d{4}$/',$_GET['gridr
 	$grid_ok=$gridsquare->setByFullGridRef($_GET['gridref'],false,true);
 	$gridref_param=$_GET['gridref'];
 	if ($grid_ok)
-		$mosaic->setCentre($gridsquare->x,$gridsquare->y,/*true*/false, true);
+		$mosaic->setCentre($gridsquare->x,$gridsquare->y,/*true*/false, false); // not needed any more: use mabrowse2 for that
+		//$mosaic->setCentre($gridsquare->x,$gridsquare->y,/*true*/false, true);
 } else {
 	$gridref_param='';
 	$grid_ok=false;
@@ -230,7 +242,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		#$mosaic->fillGridMap(true); //true = for imagemap
 		
-	} else {
+	} else { #FIXME
 		//set it back incase we come from a largeoverview
 		$overview->setScale(0.13);
 		$overview->setOrigin(0,-10);		

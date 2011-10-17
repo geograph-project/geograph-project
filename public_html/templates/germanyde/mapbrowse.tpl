@@ -14,7 +14,7 @@
 {if $token_zoomout}
 	<div class="map" style="height:{$mosaic_height+20}px;width:{$mosaic_width+20}px">
 	<div class="cnr"></div>
-	<div class="side" style="width:{$mosaic_width}px;"><a accesskey="W" title="Nach Norden (Alt+W)" href="/map/{$token_north}"><img src="http://{$static_host}/templates/basic/img/arrow_n.gif" alt="North" width="13" height="8"/></a></div>
+	<div class="side" style="width:{$mosaic_width}px;"><a accesskey="W" title="Nach Norden (Alt+W)" href="/map/{$token_north}"><img src="http://{$static_host}/templates/basic/img/arrow_n.gif" alt="Nord" width="13" height="8"/></a></div>
 	<div class="cnr"></div>
 
 
@@ -54,10 +54,10 @@
 	{/foreach}
 	{/if}</div>
 
-	<div class="side" style="height:{$mosaic_height}px;"><a accesskey="D" title="Nach Osten (Alt+D)" href="/map/{$token_east}"><img style="padding-top:{$mosaic_height/2 - 4}px" src="http://{$static_host}/templates/basic/img/arrow_e.gif" alt="East" width="8" height="13"/></a></div>
+	<div class="side" style="height:{$mosaic_height}px;"><a accesskey="D" title="Nach Osten (Alt+D)" href="/map/{$token_east}"><img style="padding-top:{$mosaic_height/2 - 4}px" src="http://{$static_host}/templates/basic/img/arrow_e.gif" alt="Ost" width="8" height="13"/></a></div>
 
 	<div class="cnr"></div>
-	<div class="side" style="width:{$mosaic_width}px;"><a accesskey="X" title="Nach Süden (Alt+X)" href="/map/{$token_south}"><img src="http://{$static_host}/templates/basic/img/arrow_s.gif" alt="South" width="13" height="8"/></a></div>
+	<div class="side" style="width:{$mosaic_width}px;"><a accesskey="X" title="Nach Süden (Alt+X)" href="/map/{$token_south}"><img src="http://{$static_host}/templates/basic/img/arrow_s.gif" alt="Süd" width="13" height="8"/></a></div>
 	<div class="cnr"></div>
 	</div>
 {else}

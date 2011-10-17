@@ -220,11 +220,43 @@ if (!$db) die('Database connection failed');
 	}
 	
 	$where = '';
-	#if (!empty($_REQUEST['q'])) {
-	#	$a = explode(' ',preg_replace("/[^ \w'\(\)]+/",'',$_REQUEST['q']));
-	#	$where = " AND (imageclass LIKE '%".implode("%' OR imageclass LIKE '%",$a)."%' )";
-	#	$smarty->assign('q', implode(" ",$a));
-	#}
+	if (!isset($_POST['towncids']) && isset($_SESSION['townedit_towncids']))
+		$_POST['towncids'] = $_SESSION['townedit_towncids'];
+	if (!isset($_POST['townlim']) && isset($_SESSION['townedit_townlim']))
+		$_POST['townlim'] = $_SESSION['townedit_townlim'];
+	$townlim = 3;
+	if (isset($_POST['townlim']) && preg_match('/^\s*\d+\s*$/', $_POST['townlim'])) {
+		$townlim = intval($_POST['townlim']);
+		if ($townlim < 1)
+			$townlim = 1;
+	}
+	$_SESSION['townedit_townlim'] = strval($townlim);
+	$sarray = array();
+	for ($i=1;  $i <= $townlim; ++$i) {
+		$sarray[] = "'$i'";
+	}
+	$where .= " and s in (".implode(",",$sarray).")";
+	$towncids = '';
+	if (isset($_POST['towncids'])) {
+		if (preg_match('/^\s*\d+\s*$/', $_POST['towncids'])) {
+			$towncids = trim($_POST['towncids']);
+			$_SESSION['townedit_towncids'] = $towncids;
+			if (strlen($towncids) < $CONF['hier_cidlen']) {
+				$filllen = $CONF['hier_cidlen']-strlen($towncids);
+				$ttowncids = ltrim($towncids, '0');
+				$tcmin = $ttowncids.str_repeat('0',$filllen);
+				$tcmax = $ttowncids.str_repeat('9',$filllen);
+				$where .= " and community_id between $tcmin and $tcmax";
+			} else {
+				$ttowncids = ltrim($towncids, '0');
+				$where .= " and community_id=$ttowncids";
+			}
+		} elseif (preg_match('/^\s*$/', $_POST['towncids'])) {
+			$_SESSION['townedit_towncids'] = '';
+		}
+	}
+	$smarty->assign('towncids',  $towncids);
+	$smarty->assign('townlim',  $townlim);
 	
 	$rilist = array_keys($CONF['references']);
 	#$arr = $db->GetArray("select id,name,e,n,s,reference_index,quad from loc_towns where 1 $where order by s,name LIMIT 20");

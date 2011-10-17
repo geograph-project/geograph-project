@@ -77,6 +77,16 @@ class GeographMapMosaic
 	var $map_y=0;
 	
 	/**
+	* x origin of map tile in internal coordinates
+	*/
+	var $tile_x=0;
+	
+	/**
+	* y origin of map tiles in internal coordinates
+	*/
+	var $tile_y=0;
+	
+	/**
 	* height of map in pixels
 	*/
 	var $image_w=0;
@@ -87,10 +97,11 @@ class GeographMapMosaic
 	var $image_h=0;
 	
 	/**
-	* scale in pixels per kilometre
+	* scale in pixels per kilometre or mercator zoom level
 	*/
+	# FIXME get rid of that or rename to $scale
 	var $pixels_per_km=0;
-	
+
 	/** 
 	* list of valid scales for this mosaic	
 	*/
@@ -99,7 +110,21 @@ class GeographMapMosaic
 	/**
 	* width/height of mosaic
 	*/
-	var $mosaic_factor=0;
+	var $mosaic_factor_x=0;
+	var $mosaic_factor_y=0;
+	//FIXME token,...
+	var $dx=0;
+	var $dy=0;
+	var $dx2=0;
+	var $dy2=0;
+	var $tilesize=0;
+	var $mercator=false;
+	var $level=0;
+	var $mosaictype=0; // 1: overview 2: full 0: one custom level
+	var $pixels_per_unit=0; // pixels per kilometre or pixels per level 19 tile
+	var $units_per_tile=0; // km or l19 tiles per tile
+	var $shift_x=0;
+	var $shift_y=0;
 	
 	/**
 	* enable caching?
@@ -125,53 +150,109 @@ class GeographMapMosaic
 	* Constructor - pass true to get a small overview map, otherwise you get a full map
 	* @access public
 	*/
+	# presets:
+	#  ./public_html/index.php:  overview_large/overview_ireland/overview_charcoal depending on template. should be replaced with conf variable
+	#  ./public_html/juppy.php:  overview_charcoal/overview depending on template. should be replaced with conf variable
+	#  different places: overview, largeoverview
+	#setPreset():
+	# ./public_html/mapbrowse.php:    $overview->setPreset('overview');
+	#setScale():
+	# ./public_html/maplarge.php
+	# ./public_html/mapprint.php
 	function GeographMapMosaic($preset='full')
 	{
 		global $CONF;
 		$this->enableCaching($CONF['smarty_caching']);
 		$this->setPreset($preset);
-		$this->scales = array(1 => 1, 2 => 4, 3 => 40);
 	}
 
 	/**
 	* configure map to use a hard coded configuration accessed by name
 	* @access public
 	*/
-	function setPreset($name)
+	function setPreset($name) # FIXME better solution needed (configurable?)
 	{
+		global $CONF;
+		$this->tilesize=0;
+		$this->mercator=false;
 		switch ($name)
 		{
+			case 'full_t':
+				$this->mosaictype = 2;
+				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+				$this->initTiles(200,-210,-15,400,400,0.3);
+				break;
+			case 'full_tm':
+				$this->mosaictype = 2;
+				$this->scales = array(0 => 5, 1 => 7, 2 => 9, 3 => 12);
+				#$this->initTiles(256,265000-262144,262143-185000,400,400,5,true);#FIXME
+				#$this->initTiles(256,270000-262144,262143-184500,400,400,5,true);#FIXME
+				$this->initTiles(256,$CONF['xmrange'][0]-262144,262143-$CONF['ymrange'][1],400,400,5,true);#FIXME
+				#$this->initTiles(256,-210,-15,400,400,0.3,true);#FIXME
+				//$CONF['xmrange'] = array(265000, 285000);
+				//$CONF['ymrange'] = array(160000, 185000);
+				//level 19
+				break;
 			case 'full':
+				$this->mosaictype = 2;
+				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
 				$this->setOrigin(-210,-15);
 				$this->setMosaicSize(400,400);
 				$this->setScale(0.3);
 				$this->setMosaicFactor(3);
 				break;
-			case 'geograph':
-				$this->setOrigin(-10,-30);
-				$this->setMosaicSize(4615,6538);
-				$this->setScale(5);
-				$this->setMosaicFactor(3);
+			case 'overview_t':
+				$this->mosaictype = 1;
+				$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
+				$this->initTiles(200,0,-10,120,170,0.13);
+				break;
+			case 'overview_tm':
+				$this->mosaictype = 1;
+				$this->scales = array(0 => 4, 1 => 4, 2 => 4, 3 => 7);
+				#$this->initTiles(256,265000-262144,262143-185000,120,170,4,true);#FIXME
+				$this->initTiles(256,$CONF['xmrange'][0]-262144,262143-$CONF['ymrange'][1],120,170,4,true);#FIXME
 				break;
 			case 'overview':
+				$this->mosaictype = 1;
+				$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
 				$this->setOrigin(0,-10);
 				$this->setMosaicSize(120,170);
 				$this->setScale(0.13);
 				$this->setMosaicFactor(1);
 				break;
+			case 'geograph':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 5); #FIXME?
+				$this->setOrigin(-10,-30);
+				$this->setMosaicSize(4615,6538);
+				$this->setScale(5);
+				$this->setMosaicFactor(3);
+				break;
 			case 'overview_large':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 0.2); #FIXME?
 				$this->setOrigin(0,-10);
 				$this->setMosaicSize(183,263);
 				$this->setScale(0.20);
 				$this->setMosaicFactor(1);
 				break;
+			case 'homepage_tm':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 5);
+				#$this->initTiles(256,$CONF['xmrange'][0]-262144,262143-$CONF['ymrange'][1],183,263,5,true);#FIXME
+				$this->initTiles(256,$CONF['xmrange'][0]-262144,262143-$CONF['ymrange'][1],218,293,5,true);#FIXME y:+30 x:+35
+				break;
 			case 'overview_ireland':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 0.3); #FIXME?
 				$this->setOrigin(-5,110);
 				$this->setMosaicSize(120,170);
 				$this->setScale(0.3);
 				$this->setMosaicFactor(1);
 				break;
 			case 'overview_charcoal':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 0.16);
 				$this->setOrigin(0,-10);
 				$this->setMosaicSize(144,210);
 				$this->setScale(0.16);
@@ -179,10 +260,20 @@ class GeographMapMosaic
 				$this->setPalette(1);
 				break;
 			case 'largeoverview':
+				$this->mosaictype = 0;
+				#$this->scales = array(1 => 1); #FIXME?
+				$this->scales = array(0 => 1); #FIXME?
 				$this->setOrigin(0,-10);//will get recented
 				$this->setMosaicSize(120,170);
 				$this->setScale(1);
 				$this->setMosaicFactor(1);
+				break;
+			case 'largemap':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 80);
+				$this->setScale(80);
+				$this->setMosaicFactor(2);
+				$this->setMosaicSize(800,800);
 				break;
 			default:
 				trigger_error("GeographMapMosaic::setPreset unknown preset $name", E_USER_ERROR);
@@ -235,7 +326,7 @@ class GeographMapMosaic
 		$smarty->assign($basename.'_ri', $this->reference_index);
 		$smarty->assign($basename.'_token', $this->getToken());
 		$smarty->assign($basename.'_updated', $this->getUpdateDateString());
-	
+		$smarty->assign($basename.'_clip', $this->tilesize?1:0);
 	}
 
 
@@ -249,6 +340,8 @@ class GeographMapMosaic
 	{
 		$this->map_x=intval($x);
 		$this->map_y=intval($y);
+		$this->tile_x=$this->map_x;
+		$this->tile_y=$this->map_y;
 		return true;
 	}
 	
@@ -269,17 +362,93 @@ class GeographMapMosaic
 	*/
 	function setScale($pixels_per_km)
 	{
-		$this->pixels_per_km=floatval($pixels_per_km);
-		return true;
+		$pixels_per_km = floatval($pixels_per_km); # FIXME rename to $scale
+		#$level = array_search($pixels_per_km,$this->scales);
+		#for ($level = 0; $level < count($this->scales); ++$level) {
+		foreach ($this->scales as $level=>$pixperkm) {
+			if (abs($pixperkm-$pixels_per_km) < .0001) {
+				$this->level = $level;
+				$this->pixels_per_km = $pixels_per_km; # FIXME get rid of that or rename to $scale
+				if ($this->mercator) { # unit: level 19 tiles (origin: lat,lon = 0), we save the actual zoom level in $pixels_per_km
+					$this->pixels_per_unit = $this->tilesize / pow(2, 19-$pixels_per_km);
+					$this->units_per_tile = pow(2, 19-$pixels_per_km); # level 19 tiles per tile
+					$this->shift_x = pow(2, $pixels_per_km-1);
+					$this->shift_y = pow(2, $pixels_per_km-1)-1;
+				} else { #unit: 1km
+					$this->pixels_per_unit = $pixels_per_km;
+					$this->units_per_tile = $this->tilesize/$pixels_per_km; # km per tile
+					$this->shift_x = 0;
+					$this->shift_y = 0;
+				}
+				return true;
+			}
+		}
+		trigger_error("GeographMapMosaic::setScale invalid scale $pixels_per_km", E_USER_WARNING);
+		$level = 0;
+		$this->scales[$level] = $pixels_per_km; #FIXME
+		#FIXME $this->pixels_per_km,$this->pixels_per_unit,$this->level,$this->shift_x,$this->shift_y
+		return false;
+		#$this->pixels_per_km = $pixels_per_km;
+		#$this->level = -1;# $level;
 	}
 
 	/**
 	* How many images across/down will the mosaic be?
 	* @access public
 	*/
-	function setMosaicFactor($factor)
+	function setMosaicFactor($factor_x, $factor_y=0)
 	{
-		$this->mosaic_factor=intval($factor);
+		if ($this->tilesize)
+			return false;
+		if (!$factor_y)
+			$factor_y = $factor_x;
+		$this->mosaic_factor_x=intval($factor_x);
+		$this->mosaic_factor_y=intval($factor_y);
+		$this->dx=0;
+		$this->dy=0;
+		$this->dx2=0;
+		$this->dy2=0;
+		#$this->tilesize=0;
+		return true;
+	}
+
+	/**
+	 * Use square tiles.
+	 * @access public
+	 */
+	function initTiles($tilesize,$x,$y,$w,$h,$pixels_per_km,$mercator=false,$exact=false,$ispantoken=false)
+	{
+		#trigger_error("<$tilesize,$x,$y,$w,$h,$pixels_per_km <{$this->mercator}>", E_USER_NOTICE);
+		$this->mercator = !empty($mercator);
+		$this->tilesize=intval($tilesize);
+		$this->image_w=intval($w);
+		$this->image_h=intval($h);
+		if ($this->mercator)
+			$pixels_per_km=intval($pixels_per_km);
+		else
+			$pixels_per_km=floatval($pixels_per_km);
+		if (!$this->setScale($pixels_per_km))#FIXME
+			return false;
+		#trigger_error("$x,$y ---", E_USER_NOTICE);
+		$orig = $this->getAlignedOrigin(intval($x), intval($y), $ispantoken, $exact);
+		#trigger_error("$x,$y --- {$orig[0]},{$orig[1]}", E_USER_NOTICE);
+		$this->map_x=$orig[0];
+		$this->map_y=$orig[1];
+		$origx = floor($this->map_x/$this->units_per_tile)*$this->units_per_tile;
+		$origy = floor($this->map_y/$this->units_per_tile)*$this->units_per_tile;
+		/* shift in pixels */
+		$this->dx=round(($this->map_x-$origx)*$this->pixels_per_unit);
+		$this->dy=round(($this->map_y-$origy)*$this->pixels_per_unit);
+		/* map count */
+		$this->mosaic_factor_x = ceil(($this->map_x+$this->image_w/$this->pixels_per_unit-$origx)/$this->units_per_tile);
+		$this->mosaic_factor_y = ceil(($this->map_y+$this->image_h/$this->pixels_per_unit-$origy)/$this->units_per_tile);
+		/* map origin (km) */
+		$this->tile_x = $origx;
+		$this->tile_y = $origy;
+		/* shift in pixels, other side */
+		$this->dx2 = $this->mosaic_factor_x*$this->tilesize-$this->dx-$this->image_w;
+		$this->dy2 = $this->mosaic_factor_y*$this->tilesize-$this->dy-$this->image_h;
+		#trigger_error(">$tilesize,$x,$y,$w,$h,$pixels_per_km/{$this->pixels_per_unit} <{$this->mercator}> => t(km) {$this->units_per_tile} => $origx,$origy  {$this->mosaic_factor_x},{$this->mosaic_factor_y} {$this->dx},{$this->dy} {$this->dx2},{$this->dy2}", E_USER_NOTICE);
 		return true;
 	}
 
@@ -288,15 +457,18 @@ class GeographMapMosaic
 	* @access public
 	*/
 	function getBoundingBox($mosaic) {
-		$R = $this->pixels_per_km / $mosaic->pixels_per_km;
-	
+		if ($this->mercator) {
+			$R = pow(2.0, $this->pixels_per_km - $mosaic->pixels_per_km);
+		} else {
+			$R = $this->pixels_per_km / $mosaic->pixels_per_km;
+		}
 
 		$bounds = new BoundingBox;
 		$bounds->width = round($mosaic->image_w * $R);
 		$bounds->height = round($mosaic->image_h * $R);
 		
-		$bounds->left = round(($mosaic->map_x - $this->map_x) * $this->pixels_per_km);
-		$bounds->top = round(($mosaic->map_y - $this->map_y) * $this->pixels_per_km);
+		$bounds->left = round(($mosaic->map_x - $this->map_x) * $this->pixels_per_unit);
+		$bounds->top = round(($mosaic->map_y - $this->map_y) * $this->pixels_per_unit);
 		
 		$bounds->top =$this->image_h - $bounds->top - $bounds->height;
 		
@@ -310,9 +482,21 @@ class GeographMapMosaic
 	*/
 	function getSquarePoint($square) {
 		$point = new BoundingBox;
-		
-		$point->left = round(($square->x - $this->map_x) * $this->pixels_per_km);
-		$point->top = round(($square->y - $this->map_y) * $this->pixels_per_km);
+
+		$x = $square->x;
+		$y = $square->y;
+
+		if ($this->mercator) {
+			require_once('geograph/conversionslatlong.class.php');
+			$conv = new ConversionsLatLong;
+			#trigger_error("sp $lat $lon  <- $x $y", E_USER_NOTICE);
+			list($lat, $lon) = $conv->internal_to_wgs84($x,$y);
+			list($x, $y) = $conv->wgs84_to_lev19($lat, $lon);
+			#trigger_error("sp $lat $lon  -> $x $y", E_USER_NOTICE);
+		}
+
+		$point->left = round(($x - $this->map_x) * $this->pixels_per_unit);
+		$point->top = round(($y - $this->map_y) * $this->pixels_per_unit);
 		
 		$point->top =$this->image_h - $point->top;
 		
@@ -333,8 +517,18 @@ class GeographMapMosaic
 		$token->setValue("w",  $this->image_w);
 		$token->setValue("h",  $this->image_h);
 		$token->setValue("s",  $this->pixels_per_km);
-		$token->setValue("f",  $this->mosaic_factor);
-		
+		if (!$this->tilesize) {
+			$token->setValue("f",  $this->mosaic_factor_x);
+			$token->setValue("g",  $this->mosaic_factor_y);
+		}
+		if ($this->mosaictype) {
+			$token->setValue("M", $this->mosaictype);
+		}
+		if ($this->mercator) {
+			$token->setValue("m", 1);
+		}
+		$token->setValue("z",  $this->tilesize);
+
 		if ($this->palette)
 			$token->setValue("p",  $this->palette);
 		
@@ -354,18 +548,58 @@ class GeographMapMosaic
 		$token=new Token;
 		if ($token->parse($tokenstr))
 		{
-			$ok=$token->hasValue("x") &&
+			$ok1=$token->hasValue("x") &&
 				$token->hasValue("y") &&
 				$token->hasValue("w") &&
 				$token->hasValue("h") &&
 				$token->hasValue("s") &&
 				($allowWithoutMosaic || $token->hasValue("f") );
-			if ($ok)
+			$ok2=$token->hasValue("x") &&
+				$token->hasValue("y") &&
+				$token->hasValue("w") &&
+				$token->hasValue("h") &&
+				$token->hasValue("s") &&
+				$token->hasValue("z") &&
+				$token->getValue("z");
+			$this->mosaictype = $token->hasValue("M") ? $token->getValue("M") : 0;
+			$ok = $ok1||$ok2;
+			if ($ok2) {
+				$this->mercator = $token->hasValue("m") && $token->getValue("m");
+				if (!$this->mercator) {
+					if ($this->mosaictype == 1) #FIXME conf
+						$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
+					elseif ($this->mosaictype == 2)
+						$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+					else
+						$this->scales = array(0 => $token->getValue("s"));
+				} else {
+					if ($this->mosaictype == 1) #FIXME conf
+						$this->scales = array(0 => 4, 1 => 4, 2 => 4, 3 => 7);
+					elseif ($this->mosaictype == 2)
+						$this->scales =  array(0 => 5, 1 => 7, 2 => 9, 3 => 12);
+					else
+						$this->scales = array(0 => $token->getValue("s"));
+				}
+				$this->initTiles($token->getValue("z"),
+				                 $token->getValue("x"), $token->getValue("y"),
+				                 $token->getValue("w"), $token->getValue("h"),
+				                 $token->getValue("s"),
+				                 $this->mercator);
+				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
+				$this->palette = ($token->hasValue("p"))?$token->getValue("p"):0;
+			}
+			elseif ($ok1)
 			{
+				if ($this->mosaictype == 1) #FIXME conf
+					$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
+				elseif ($this->mosaictype == 2)
+					$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+				else
+					$this->scales = array($token->getValue("s"));
 				$this->setOrigin($token->getValue("x"), $token->getValue("y"));
 				$this->setMosaicSize($token->getValue("w"), $token->getValue("h"));
 				$this->setScale($token->getValue("s"));
-				$this->setMosaicFactor(($token->hasValue("f"))?$token->getValue("f"):2);
+				$this->setMosaicFactor(($token->hasValue("f"))?$token->getValue("f"):2,$token->hasValue("g")?$token->getValue("g"):0);
 				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
 				$this->palette = ($token->hasValue("p"))?$token->getValue("p"):0;
 			}
@@ -399,33 +633,60 @@ class GeographMapMosaic
 		
 		//to calc the origin we need to know
 		//how many internal units in each image
-		$img_w_km=($this->image_w / $this->pixels_per_km) / $this->mosaic_factor;
-		$img_h_km=($this->image_h / $this->pixels_per_km) / $this->mosaic_factor;
+		$img_w = $this->tilesize ? $this->tilesize : $this->image_w / $this->mosaic_factor_x;
+		$img_h = $this->tilesize ? $this->tilesize : $this->image_h / $this->mosaic_factor_y;
+		$img_w_unit = $img_w/$this->pixels_per_unit;
+		$img_h_unit = $img_h/$this->pixels_per_unit;
+
+		#trigger_error("{$this->tilesize}/[{$this->mercator}]: {$this->tile_x},{$this->tile_y} ({$this->pixels_per_km}) {$img_w}x{$img_h}  {$img_w_unit}x{$img_h_unit}  {$this->mosaic_factor_x}x{$this->mosaic_factor_y} {$this->dx},{$this->dy} {$this->dx2},{$this->dy2}   {$this->units_per_tile}  {$this->shift_x},{$this->shift_y}", E_USER_NOTICE);
 
 		//top to bottom
-		for ($j=0; $j<$this->mosaic_factor; $j++)
+		for ($j=0; $j<$this->mosaic_factor_y; $j++)
 		{
 			$images[$j]=array();
 			
 			//left to right
-			for ($i=0; $i<$this->mosaic_factor; $i++)
+			for ($i=0; $i<$this->mosaic_factor_x; $i++)
 			{
 				$images[$j][$i]=new GeographMap;
 				
 				$images[$j][$i]->enableCaching($this->caching);
-				
-				$images[$j][$i]->setOrigin(
-					$this->map_x + $i*$img_w_km,
-					$this->map_y + ($this->mosaic_factor-$j-1)*$img_h_km);
-					
-				$images[$j][$i]->setImageSize(
-					$this->image_w/$this->mosaic_factor,
-					$this->image_h/$this->mosaic_factor);
-				
+				$images[$j][$i]->enableMercator($this->mercator);
+
+				$map_x = $this->tile_x + $i*$img_w_unit;
+				$map_y = $this->tile_y + ($this->mosaic_factor_y-$j-1)*$img_h_unit;
+				if ($this->mercator) {
+					$map_x = floor($map_x / $this->units_per_tile) + $this->shift_x;
+					$map_y = $this->shift_y - floor($map_y / $this->units_per_tile);
+
+					$images[$j][$i]->overlay = 0;
+					$images[$j][$i]->layers = 31;
+				}
+	
 				$images[$j][$i]->setScale($this->pixels_per_km);
 		
+				$images[$j][$i]->setOrigin($map_x, $map_y);
+
+				$images[$j][$i]->setImageSize($img_w, $img_h);
+				
 				$images[$j][$i]->setPalette($this->palette);
-		
+
+				if ($this->tilesize) {
+					$dx1 = 0;
+					$dx2 = 0;
+					$dy1 = 0;
+					$dy2 = 0;
+					if ($i == 0)
+						$dx1 = $this->dx;
+					if ($i == $this->mosaic_factor_x-1)
+						$dx2 = $this->dx2;
+					if ($j == 0)
+						$dy2 = $this->dy2;
+					if ($j == $this->mosaic_factor_y-1)
+						$dy1 = $this->dy;
+					$images[$j][$i]->setClip($dx1, $dx2, $dy1, $dy2);
+					#trigger_error("$i/$j: {$images[$j][$i]->tile_x}/{$images[$j][$i]->tile_y}: $dx1, $dx2, $dy1, $dy2", E_USER_NOTICE);
+				}
 		
 				if (isset($this->reference_index))
 					$images[$j][$i]->reference_index = $this->reference_index;
@@ -499,7 +760,7 @@ class GeographMapMosaic
 	* get grid reference for pixel position on mosaic
 	* @access public
 	*/
-	function getGridRef($x, $y)
+	function getGridRef($x, $y, $map_x=null, $map_y=null)
 	{
 		global $CONF;
 		if ($x == -1 && $y == -1) {
@@ -509,11 +770,21 @@ class GeographMapMosaic
 			//invert the y coordinate
 			$y=$this->image_h-$y;
 		}
+		if (is_null($map_y)) {
+			$map_x = $this->map_x;
+			$map_y = $this->map_y;
+		}
 		$db=&$this->_getDB();
 		
 		//convert pixel pos to internal coordinates
-		$x_km=$this->map_x + floor($x/$this->pixels_per_km);
-		$y_km=$this->map_y + floor($y/$this->pixels_per_km);
+		$x_km=$map_x + floor($x/$this->pixels_per_unit);
+		$y_km=$map_y + floor($y/$this->pixels_per_unit);
+		if ($this->mercator) {
+			require_once('geograph/conversionslatlong.class.php');
+			$conv = new ConversionsLatLong;
+			list($lat, $lon) = $conv->lev19_to_wgs84($x_km,$y_km);
+			list($x_km, $y_km) = $conv->wgs84_to_internal($lat, $lon);
+		}
 		
 		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where CONTAINS( GeomFromText('POINT($x_km $y_km)'),point_xy )");
 			
@@ -593,26 +864,36 @@ class GeographMapMosaic
 		$out=new GeographMapMosaic;
 		
 		//no panning unless you are zoomed in
-		if ($this->pixels_per_km >=1)
+		if ($this->level > 0)
 		{
-			//start with same params
-			$out->setScale($this->pixels_per_km);
-			$out->setMosaicFactor($this->mosaic_factor);
-			$out->setMosaicSize($this->image_w, $this->image_h);
-			$out->type_or_user = $this->type_or_user;
-
-			//pan half a map
+			//pan half a map # FIXME only true if mosaic_factor==2
 			//figure out image size in km
-			$mapw=$out->image_w/$out->pixels_per_km;
-			$maph=$out->image_h/$out->pixels_per_km;
+			$mapw=$this->image_w/$this->pixels_per_unit;
+			$maph=$this->image_h/$this->pixels_per_unit;
 
 			//figure out how many pixels to pan by
-			$panx=round($mapw/$out->mosaic_factor);
-			$pany=round($maph/$out->mosaic_factor);
+			if ($this->tilesize) {
+				$panx=round($mapw/2);
+				$pany=round($maph/2);
+			} else {
+				$panx=round($mapw/$this->mosaic_factor_x);
+				$pany=round($maph/$this->mosaic_factor_y);
+			}
 
-			$out->setAlignedOrigin(
-				$this->map_x + $panx*$xdir,
-				$this->map_y + $pany*$ydir,true);
+			$out->mosaictype = $this->mosaictype;
+			$out->scales = $this->scales;
+			if ($this->tilesize) {
+				$out->initTiles($this->tilesize, $this->map_x + $panx*$xdir, $this->map_y + $pany*$ydir, $this->image_w, $this->image_h, $this->pixels_per_km, $this->mercator, true);#FIXME
+				$out->type_or_user = $this->type_or_user;
+			} else {
+				$out->setScale($this->pixels_per_km);
+				$out->setMosaicFactor($this->mosaic_factor_x,$this->mosaic_factor_y);
+				$out->setMosaicSize($this->image_w, $this->image_h);
+				$out->setAlignedOrigin(
+					$this->map_x + $panx*$xdir,
+					$this->map_y + $pany*$ydir,true);
+				$out->type_or_user = $this->type_or_user;
+			}
 		}
 		return $out->getToken();
 	}
@@ -626,24 +907,31 @@ class GeographMapMosaic
 	{
 		$out=new GeographMapMosaic;
 
-		
-		//start with same params
-		$out->setScale($this->pixels_per_km);
-		$out->setMosaicFactor($this->mosaic_factor*2);
-		$out->setMosaicSize($this->image_w*2, $this->image_h*2);
-		$out->type_or_user = $this->type_or_user;
-
 		//figure out image size in km
 		$mapw=$this->image_w/$this->pixels_per_km;
 		$maph=$this->image_h/$this->pixels_per_km;
 
 		//figure out how many pixels to pan by
-		$panx=round($mapw/$this->mosaic_factor);
-		$pany=round($maph/$this->mosaic_factor);
+		if ($this->tilesize) {
+			$panx=round($mapw/2);
+			$pany=round($maph/2);
+		} else {
+			$panx=round($mapw/$this->mosaic_factor_x);
+			$pany=round($maph/$this->mosaic_factor_y);
+		}
 
-		$out->setAlignedOrigin(
-			$this->map_x - $panx,
-			$this->map_y - $pany,true);
+		if ($this->tilesize) {
+			$out->initTiles($this->tilesize, $this->map_x - $panx, $this->map_y - $pany, $this->image_w*2, $this->image_h*2, $this->pixels_per_km);#FIXME
+			$out->type_or_user = $this->type_or_user;
+		} else {
+			$out->setScale($this->pixels_per_km);
+			$out->setMosaicFactor($this->mosaic_factor_x*2,$this->mosaic_factor_y*2);
+			$out->setMosaicSize($this->image_w*2, $this->image_h*2);
+			$out->type_or_user = $this->type_or_user;
+			$out->setAlignedOrigin(
+				$this->map_x - $panx,
+				$this->map_y - $pany,true);
+		}
 		
 		return $out->getToken();
 	}
@@ -657,53 +945,66 @@ class GeographMapMosaic
 	*/
 	function getZoomOutToken()
 	{
-		$out=new GeographMapMosaic;
-			
 		//if at full extent then dont want a zoom out token
-		if ($this->pixels_per_km ==  0.3) {
+		if ($this->mosaictype != 2 || $this->level <=  0) {
 			return FALSE;
 		} 
-		else
-		
+
+		$out=new GeographMapMosaic;
+
 		//if we're zoomed out 1 pixel per km, then we only need
 		//zoom out to a default map, otherwise, we need to zoom
 		//out keeping vaguely centred on current position
-		if ($this->pixels_per_km > 1)
+		if ($this->tilesize || $this->level > 1) # FIXME move here
 		{
-			$zoomindex = array_search($this->pixels_per_km,$this->scales);
-			$zoomindex--;
+			#$zoomindex = array_search($this->pixels_per_km,$this->scales);
+			#$zoomindex--;
+			$level = $this->level - 1;
 			
-			if ($zoomindex >=1)
-			{
+			#if ($zoomindex >=1)
+			#{
 				//figure out central point
-				$centrex=$this->map_x + ($this->image_w / $this->pixels_per_km)/2;
-				$centrey=$this->map_y + ($this->image_h / $this->pixels_per_km)/2;
+				$centrex=$this->map_x + ($this->image_w / $this->pixels_per_unit)/2;
+				$centrey=$this->map_y + ($this->image_h / $this->pixels_per_unit)/2;
 				
 				//store the current center xy - as can be useful figuring out the the ri 
 				$out->old_centrex = $centrex;
 				$out->old_centrey = $centrey;
 				
-				$scale = $this->scales[$zoomindex];
+				$scale = $this->scales[$level];
+				#trigger_error("--------------$level $scale <{$this->mercator}> {$this->tilesize}", E_USER_NOTICE);
 			
-				$out->setScale($scale);
-
-				//stick with current mosaic factor
-				$out->setMosaicFactor($this->mosaic_factor);
-				$out->type_or_user = $this->type_or_user;
+				$pixels_per_unit = $this->mercator ? $this->tilesize / pow(2, 19-$scale) : $scale;
 
 				//figure out what the perfect origin would be
-				$mapw=$this->image_w/$scale;
-				$maph=$this->image_h/$scale;
+				$mapw=$this->image_w/$pixels_per_unit;
+				$maph=$this->image_h/$pixels_per_unit;
 
 				$bestoriginx=$centrex - $mapw/2;
 				$bestoriginy=$centrey - $maph/2;
 
-				$out->setAlignedOrigin($bestoriginx, $bestoriginy);
-			}
+				$out->mosaictype = $this->mosaictype;
+				$out->scales = $this->scales;
+				if ($this->tilesize) {
+					$out->initTiles($this->tilesize, round($bestoriginx), round($bestoriginy), $this->image_w, $this->image_h, $scale, $this->mercator);#FIXME
+					$out->type_or_user = $this->type_or_user;
+				} else {
+					$out->setScale($scale);
+					#FIXME $out->setMosaicSize($this->image_w, $this->image_h);
+					$out->setMosaicSize($this->image_w, $this->image_h);
+
+					//stick with current mosaic factor
+					$out->setMosaicFactor($this->mosaic_factor_x,$this->mosaic_factor_y);
+					$out->type_or_user = $this->type_or_user;
+
+					$out->setAlignedOrigin($bestoriginx, $bestoriginy);
+				}
+			#}
 		} else {
 			$out->setMosaicFactor(3);
 			$out->type_or_user = $this->type_or_user;
 		}
+		#trigger_error("==== <{$out->mercator}> {$out->tilesize} {$out->level} {$out->pixels_per_km} {$out->type_or_user} {$out->image_w}x{$out->image_h} {$out->map_x}/{$out->map_y}", E_USER_NOTICE);
 		return $out->getToken();
 	}
 
@@ -715,32 +1016,44 @@ class GeographMapMosaic
 	{
 		$out=new GeographMapMosaic;
 			
-		$zoomindex = array_search($this->pixels_per_km,$this->scales);
-		if ($zoomindex === FALSE) 
-			$zoomindex = 0;
-		$zoomindex++;
+		#$zoomindex = array_search($this->pixels_per_km,$this->scales);
+		#if ($zoomindex === FALSE) 
+		#	$zoomindex = 0;
+		#$zoomindex++;
+		$level = $this->level + 1;
 
-		if ($zoomindex <= count($this->scales))
+		if ($level < count($this->scales))
 		{
 			//figure out central point
-			$centrex=$this->map_x + ($this->image_w / $this->pixels_per_km)/2;
-			$centrey=$this->map_y + ($this->image_h / $this->pixels_per_km)/2;
+			$centrex=$this->map_x + ($this->image_w / $this->pixels_per_unit)/2;
+			$centrey=$this->map_y + ($this->image_h / $this->pixels_per_unit)/2;
 
-			$scale = $this->scales[$zoomindex];
+			$scale = $this->scales[$level];
 
-			$out->setScale($scale);
-
-			$out->setMosaicFactor(2);
-			$out->type_or_user = $this->type_or_user;
+			$pixels_per_unit = $this->mercator ? $this->tilesize / pow(2, 19-$scale) : $scale;
 
 			//figure out what the perfect origin would be
-			$mapw=$this->image_w/$scale;
-			$maph=$this->image_h/$scale;
+			$mapw=$this->image_w/$pixels_per_unit;
+			$maph=$this->image_h/$pixels_per_unit;
 
 			$bestoriginx=$centrex - $mapw/2;
 			$bestoriginy=$centrey - $maph/2;
 			
-			$out->setAlignedOrigin($bestoriginx, $bestoriginy);
+			$out->mosaictype = $this->mosaictype;
+			$out->scales = $this->scales;
+			if ($this->tilesize) {
+				$out->initTiles($this->tilesize, round($bestoriginx), round($bestoriginy), $this->image_w, $this->image_h, $scale, $this->mercator);#FIXME
+				$out->type_or_user = $this->type_or_user;
+			} else {
+				$out->setScale($scale);
+				#FIXME $out->setMosaicSize($this->image_w, $this->image_h);
+				$out->setMosaicSize($this->image_w, $this->image_h);
+
+				$out->setMosaicFactor(2);
+				$out->type_or_user = $this->type_or_user;
+
+				$out->setAlignedOrigin($bestoriginx, $bestoriginy);
+			}
 			return $out->getToken();
 		}
 		else 
@@ -773,77 +1086,155 @@ class GeographMapMosaic
 	}
 
 	/**
+	* Calculates new origin, aligning it on particular boundaries to
+	* reduce the number of image tiles that get generated
+	*/
+	function getAlignedOrigin($bestoriginx, $bestoriginy, $ispantoken = false, $exact = false)
+	{
+		global $CONF;
+		//figure out image size in map units
+		$mapw=$this->image_w/$this->pixels_per_unit;
+		$maph=$this->image_h/$this->pixels_per_unit;
+
+		if ($this->mercator) {
+			$x1 = $CONF['xmrange'][0]-262144;
+			$x2 = $CONF['xmrange'][1]-262144;
+			$dx = $x2 - $x1;
+
+			$y1 = 262143-$CONF['ymrange'][1];
+			$y2 = 262143-$CONF['ymrange'][0];
+			$dy = $y2 - $y1;
+
+			if ($mapw >= $dx) {
+				$originx = round(0.5 * ($x2 + $x1 - $mapw));
+			} elseif ($bestoriginx < $x1) {
+				$originx = $x1;
+			} elseif ($bestoriginx + $mapw > $x2) {
+				$originx = ceil($x2 - $mapw);
+			} else {
+				$originx = $bestoriginx;
+			}
+
+			if ($maph >= $dy) {
+				$originy = round(0.5 * ($y2 + $y1 - $maph));
+			} elseif ($bestoriginy < $y1) {
+				$originy = $y1;
+			} elseif ($bestoriginy + $maph > $y2) {
+				$originy = ceil($y2 - $maph);
+			} else {
+				$originy = $bestoriginy;
+			}
+
+			return array(intval($originx), intval($originy));
+		}
+
+		//figure out an alignment factor - here we align on tile
+		//boundaries so that panning the image allows reuse of tiles
+		if ($this->tilesize) {
+			if ($this->mosaictype==2) {
+				$walign=$mapw/2;
+				$halign=$maph/2;
+				if ($ispantoken) {
+						//dividing by 2 DIDNT WORK as rounded 2.5 to 3!
+					$walign=round($walign);
+					$halign=round($halign);
+				} else {
+						//dividing by 2 makes for more accurate clicking
+					$walign=round($walign/2);
+					$halign=round($halign/2);
+				}
+			} else {
+				$walign=1;
+				$halign=1;
+			}
+			#FIXME
+			trigger_error("al A: $bestoriginx $bestoriginy", E_USER_NOTICE);
+			$bestoriginx=min($bestoriginx, $CONF['maxx']-$mapw);
+			trigger_error("al B: $bestoriginx $bestoriginy", E_USER_NOTICE);
+			$bestoriginx=max($bestoriginx, $CONF['minx']);
+			trigger_error("al C: $bestoriginx $bestoriginy", E_USER_NOTICE);
+			$bestoriginy=min($bestoriginy, $CONF['maxy']-$maph);
+			trigger_error("al D: $bestoriginx $bestoriginy", E_USER_NOTICE);
+			$bestoriginy=max($bestoriginy, $CONF['miny']);
+			trigger_error("al E: $bestoriginx $bestoriginy", E_USER_NOTICE);
+
+		} else {
+			$walign=$mapw/$this->mosaic_factor_x;
+			$halign=$maph/$this->mosaic_factor_y;
+			if ($ispantoken) {
+					//dividing by 2 DIDNT WORK as rounded 2.5 to 3!
+				$walign=round($walign);
+				$halign=round($halign);
+			} else {
+					//dividing by 2 makes for more accurate clicking
+				$walign=round($walign/2);
+				$halign=round($halign/2);
+			}
+			//range check the bestorigin - we've got some hard coded //todo
+			//values here
+			$bestoriginx=max($bestoriginx, ($bestoriginy > 700 && $bestoriginy < 950)?-100:0);
+			$bestoriginx=min($bestoriginx, 860);
+			$bestoriginy=max($bestoriginy, 0);
+			$bestoriginy=min($bestoriginy, 1220);
+
+		}
+		
+		if ($exact) {
+			return array($bestoriginx, $bestoriginy); //FIXME skip range check?
+		}
+
+		if (!$this->reference_index) {
+			//this sets the most likly reference_index for the center of the map
+			$this->getGridRef(-1,-1,$bestoriginx, $bestoriginy);
+		}
+
+		if ($this->reference_index) {
+			//find closest aligned origin 
+			$bestoriginx=floor(($bestoriginx-$CONF['origins'][$this->reference_index][0])/$walign)*$walign+$CONF['origins'][$this->reference_index][0];
+			$bestoriginy=floor(($bestoriginy-$CONF['origins'][$this->reference_index][1])/$halign)*$halign+$CONF['origins'][$this->reference_index][1];
+		#trigger_error("al F: $bestoriginx $bestoriginy : {$this->reference_index} {$CONF['origins'][$this->reference_index][0]},{$CONF['origins'][$this->reference_index][1]}", E_USER_NOTICE);
+		}
+
+		return array($bestoriginx, $bestoriginy);
+	}
+
+	/**
 	* Sets the origin, but aligns the origin on particular boundaries to
 	* reduce the number of image tiles that get generated
 	*/
 	function setAlignedOrigin($bestoriginx, $bestoriginy, $ispantoken = false, $exact = false )
 	{
-		global $CONF;
-		//figure out image size in km
-		$mapw=$this->image_w/$this->pixels_per_km;
-		$maph=$this->image_h/$this->pixels_per_km;
-		
-		//figure out an alignment factor - here we align on tile
-		//boundaries so that panning the image allows reuse of tiles
-		$walign=$mapw/$this->mosaic_factor;
-		$halign=$maph/$this->mosaic_factor;
-		
-		if ($ispantoken) {
-				//dividing by 2 DIDNT WORK as rounded 2.5 to 3!
-			$walign=round($walign);
-			$halign=round($halign);
-		} else {
-				//dividing by 2 makes for more accurate clicking
-			$walign=round($walign/2);
-			$halign=round($halign/2);
-		}
-		
-		//range check the bestorigin - we've got some hard coded //todo
-		//values here
-		$bestoriginx=max($bestoriginx, ($bestoriginy > 700 && $bestoriginy < 950)?-100:0);
-		$bestoriginx=min($bestoriginx, 860);
-		$bestoriginy=max($bestoriginy, 0);
-		$bestoriginy=min($bestoriginy, 1220);
-
-		if ($exact) {
-			$this->setOrigin($bestoriginx, $bestoriginy);//FIXME skip range check?
-			$this->getGridRef(-1,-1);
-			return;
-		}
-		
-		//this sets the most likly reference_index for the center of the map
-		if (!$this->reference_index) {
-			$this->setOrigin($bestoriginx, $bestoriginy);
-			$this->getGridRef(-1,-1);
-		} // FIXME return?
-		
-		//find closest aligned origin 
-		$originx=round(($bestoriginx-$CONF['origins'][$this->reference_index][0])/$walign)*$walign+$CONF['origins'][$this->reference_index][0];
-		$originy=round(($bestoriginy-$CONF['origins'][$this->reference_index][1])/$halign)*$halign+$CONF['origins'][$this->reference_index][1];
-
-		$this->setOrigin($originx, $originy);
+		$orig = $this->getAlignedOrigin($bestoriginx, $bestoriginy, $ispantoken, $exact);
+		$this->setOrigin($orig[0],$orig[1]);
 	}
 
 
 	/**
-	* get internal coordinates of a mosaic click
+	* get internal/level 19 coordinates of a mosaic click
 	* @access public
 	*/
-	function getClickCoordinates($i, $j, $x, $y)
+	function getClickCoordinates($i, $j, $x, $y, $calcinternal=false)
 	{
 		//we got the click coords x,y on mosaic i,j
-		$imgw=$this->image_w / $this->mosaic_factor;
-		$imgh=$this->image_h / $this->mosaic_factor;
+		$imgw = $this->tilesize ? $this->tilesize : $this->image_w / $this->mosaic_factor_x;
+		$imgh = $this->tilesize ? $this->tilesize : $this->image_h / $this->mosaic_factor_y;
 		$x+=$i*$imgw;
 		$y+=$j*$imgh;
 		
 		//remap origin from top left to bottom left
-		$y=$this->image_h-$y;
+		$y = $this->tilesize ? $this->mosaic_factor_y*$this->tilesize-1-$y : $this->image_h-$y;
 		
 		//lets figure out internal coords
 		$coord=array();
-		$coord[0]=floor($this->map_x + $x/$this->pixels_per_km);
-		$coord[1]=floor($this->map_y + $y/$this->pixels_per_km);
+		$coord[0]=floor($this->tile_x + $x/$this->pixels_per_unit);
+		$coord[1]=floor($this->tile_y + $y/$this->pixels_per_unit);
+
+		if ($calcinternal && $this->mercator) {
+			require_once('geograph/conversionslatlong.class.php');
+			$conv = new ConversionsLatLong;
+			list($lat, $lon) = $conv->lev19_to_wgs84($coord[0],$coord[1]);
+			$coord = $conv->wgs84_to_internal($lat, $lon);
+		}
 
 		return $coord;
 	}
@@ -860,18 +1251,74 @@ class GeographMapMosaic
 	}
 	
 	/**
-	* Get center of map in internal coordinates
+	* Get center of map in internal/level 19 coordinates
 	* @access public
 	*/
-	function getCentre()
+	function getCentre($calcinternal=false)
 	{
-		return array($this->map_x + intval(($this->image_w / 2) / $this->pixels_per_km),
-					 $this->map_y + intval(($this->image_h / 2) / $this->pixels_per_km));
+		$x = $this->map_x + intval(($this->image_w / 2) / $this->pixels_per_unit);
+		$y = $this->map_y + intval(($this->image_h / 2) / $this->pixels_per_unit);
+
+		if ($calcinternal && $this->mercator) {
+			require_once('geograph/conversionslatlong.class.php');
+			$conv = new ConversionsLatLong;
+			list($lat, $lon) = $conv->lev19_to_wgs84($x,$y);
+			list($x, $y) = $conv->wgs84_to_internal($lat, $lon);
+		}
+		return array($x, $y);
 	}
-		
-	
-		
-	
+
+	/**
+	* Get center of map tile in pixels
+	* @access public
+	*/
+	function getTileCentre($i, $j)
+	{
+		if ($this->tilesize) {
+			$x=round(($this->tilesize+(i==0?$this->dx :0)-(i==$this->mosaic_factor_x-1?$this->dx2:0))/2);
+			$y=round(($this->tilesize+(j==0?$this->dy2:0)-(j==$this->mosaic_factor_y-1?$this->dy :0))/2);
+		} else {
+			$x=round(($this->image_w/$this->mosaic_factor_x)/2);
+			$y=round(($this->image_h/$this->mosaic_factor_y)/2);
+		}
+		return array($x,$y);
+	}
+
+	/**
+	* Recenter map
+	* @access public
+	*/
+	function recenter($x, $y, $scale = null, $mosaicfactor = null, $exact = false, $kilometres = false)
+	{
+		#FIXME Align!
+		if ($this->mercator && $kilometres) {
+			require_once('geograph/conversionslatlong.class.php');
+			$conv = new ConversionsLatLong;
+			trigger_error("sp $lat $lon  <- $x $y", E_USER_NOTICE);
+			list($lat, $lon) = $conv->internal_to_wgs84($x,$y);
+			list($x, $y) = $conv->wgs84_to_lev19($lat, $lon);
+			trigger_error("sp $lat $lon  -> $x $y", E_USER_NOTICE);
+		}
+		if ($this->tilesize) {
+			if (is_null($scale))
+				$scale = $this->pixels_per_km;
+			$pixels_per_unit = $this->mercator ? $this->tilesize / pow(2, 19-$scale) : $scale;
+			#trigger_error("$x,$y ($scale) <--  {$this->map_x},{$this->map_y} {$this->image_w}x{$this->image_h}, {$this->pixels_per_unit} : $pixels_per_unit", E_USER_NOTICE);
+
+			$this->initTiles($this->tilesize,
+					   round($x-$this->image_w/$pixels_per_unit/2),
+					   round($y-$this->image_h/$pixels_per_unit/2),
+					   $this->image_w,$this->image_h,$scale,$this->mercator,$exact);#FIXME max xy
+			#trigger_error("                    {$this->map_x},{$this->map_y} {$this->image_w}x{$this->image_h}, {$this->pixels_per_unit}", E_USER_NOTICE);
+		} else {
+			if (!is_null($mosaicfactor))
+				$this->setMosaicFactor($mosaicfactor);
+			if (!is_null($scale))
+				$this->setScale($scale);
+			$this->setCentre($x, $y, false, $exact);
+		}
+	}
+
 	/**
 	* Given index of a mosaic image, and a pixel position on that image handle a zoom
 	* If the zoom level is 2, this needs to perform a redirect to the gridsquare page
@@ -880,15 +1327,12 @@ class GeographMapMosaic
 	*/
 	function zoomIn($i, $j, $x, $y)
 	{
-		//so where did we click?
-		list($clickx, $clicky)=$this->getClickCoordinates($i, $j, $x, $y);
 		
-		$zoomindex = array_search($this->pixels_per_km,$this->scales);
-		if ($zoomindex === FALSE)
-			$zoomindex = 0;
-		$zoomindex++;
-		if ($zoomindex > count($this->scales) || $this->pixels_per_km > 40)
+		$level = $this->level + 1;
+		if ($level >= count($this->scales) || !$this->mercator && $this->pixels_per_km > 40 || $this->mercator && $this->pixels_per_km > 13)#FIXME
 		{
+			//so where did we click?
+			list($clickx, $clicky)=$this->getClickCoordinates($i, $j, $x, $y, true);
 			
 			//we're going to zoom into a grid square
 			$square=new GridSquare;
@@ -920,25 +1364,39 @@ class GeographMapMosaic
 			header("Location:$url");
 			exit;
 		} else {
-			$scale = $this->scales[$zoomindex];
+			$scale = $this->scales[$level];
 		}
+		//so where did we click?
+		#trigger_error("<- $i, $j, $x, $y / {$this->map_x} {$this->map_y}", E_USER_NOTICE);
+		list($clickx, $clicky)=$this->getClickCoordinates($i, $j, $x, $y);
+		#trigger_error("-> $clickx, $clicky     $scale", E_USER_NOTICE);
 
 		//store the clicked position to make a better estimate at the required grid
 		$this->old_centrex = $clickx;
 		$this->old_centrey = $clicky;
-		
-		//size of new map in km
-		$mapw=$this->image_w/$scale;
-		$maph=$this->image_h/$scale;
-			
+
+		$pixels_per_unit = $this->mercator ? $this->tilesize / pow(2, 19-$scale) : $scale;
+
+		//size of new map in map units
+
+		$mapw=$this->image_w/$pixels_per_unit;
+		$maph=$this->image_h/$pixels_per_unit;
+
 		//here's the perfect origin
 		$bestoriginx=$clickx-$mapw/2;
 		$bestoriginy=$clicky-$maph/2;
 
-		$this->setScale($scale);
-		$this->setMosaicFactor(2);
-		$this->setAlignedOrigin($bestoriginx, $bestoriginy);
+		if ($this->tilesize) {
+			$this->initTiles($this->tilesize, $bestoriginx, $bestoriginy, $this->image_w, $this->image_h, $scale, $this->mercator);
+		} else {
+			$this->setScale($scale);
+			$this->setMosaicFactor(2);
+			$this->setAlignedOrigin($bestoriginx, $bestoriginy);
+		}
 	}
+
+	## FIXME All expirePosition/.../getXxxFilename/... functions should go to map.class.php.
+	##       We should get rid of any getXxxFilename function outside map.class.php to avoid inconsistent file names.
 
 	/**
 	* Given a coordinate, this ensures that any cached map images are expired
