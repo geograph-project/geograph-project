@@ -321,7 +321,7 @@ class GeographMap
 			$token->setValue("s",  $this->level);
 			$token->setValue("m", 1);
 			$token->setValue("l", $this->layers);
-			if (isset($this->overlay))
+			if (!empty($this->overlay))
 				$token->setValue("o", 1);
 		}
 		if (!empty($this->force_ri))
@@ -540,12 +540,24 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 
+		$emptyimage = false;
 		if (empty($this->mercator)) {
 			$map_x = $this->map_x;
 			$map_y = $this->map_y;
+			$scale = $this->pixels_per_km;
+			$extension = ($this->pixels_per_km > 64 || $this->type_or_user < -20)?'jpg':'png';
 		} else {
-			$map_x = $this->tile_x;
-			$map_y = $this->tile_y;
+			if ($layers == 2 && $this->type_or_user == -10) { # only one empty tile needed...
+				$map_x = 0;
+				$map_y = 0;
+				$scale = 0;
+				$emptyimage = true;
+			} else {
+				$map_x = $this->tile_x;
+				$map_y = $this->tile_y;
+				$scale = $this->level;
+			}
+			$extension = 'png';
 		}
 		
 		$dir.="{$map_x}/";
@@ -556,28 +568,25 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
-		//for palette 0 we use the older, palette free filename
 		$palette="";
-		if ($this->palette>0)
-			$palette="_".$this->palette;
-		
-		if (!empty($this->minimum)) {
-			$palette .= "_n{$this->minimum}";
+		if (!$emptyimage) {
+			//for palette 0 we use the older, palette free filename
+			if ($this->palette>0)
+				$palette="_".$this->palette;
+			
+			if (!empty($this->minimum)) {
+				$palette .= "_n{$this->minimum}";
+			}
+
+			if (!empty($this->force_ri)) {
+				$palette .= "_i{$this->force_ri}";
+			}
 		}
 
-		if (!empty($this->force_ri)) {
-			$palette .= "_i{$this->force_ri}";
-		}
-
-		if (empty($this->mercator)) {
-			$scale = $this->pixels_per_km;
-			$extension = ($this->pixels_per_km > 64 || $this->type_or_user < -20)?'jpg':'png';
-		} else {
-			$scale = $this->level;
-			$extension = 'png';
+		if ($this->mercator) {
 			$palette .= "_m";
 			$palette .= "_l{$layers}";
-			if ($this->overlay) {
+			if ($this->overlay && !$emptyimage) {
 				$palette .= "_o";
 			}
 		}
@@ -704,6 +713,25 @@ class GeographMap
 		return $dir.$file;
 	}
 
+
+	/**
+	* Try to unset type_or_user, overlay, ...
+	* @access private
+	*/
+	function _simplifyParameters()
+	{
+		if ($this->mercator) {
+			if ($this->level > 11 && $this->type_or_user == -1 && !$this->overlay) $this->type_or_user = 0;
+			if ($this->type_or_user > 0 && !$this->needUserTile($this->type_or_user)) $this->type_or_user = -10;
+			# FIXME have a look at  _plotGridLinesM, whether we can set $this->overlay = false for this zoom level!
+		} else {
+			//if thumbs level on depeth map, can just use normal render.
+			if ($this->type_or_user == -1 && $this->pixels_per_km >= 32) {
+				$this->type_or_user = 0;
+			}
+		}
+	}
+
 	/**
 	* if a cached image is available, this could return a direct url
 	* otherwise it can return a url which will generate the required
@@ -713,11 +741,10 @@ class GeographMap
 	function getImageUrl()
 	{
 		global $CONF;
-		
-		if ($this->type_or_user == -1 && $this->pixels_per_km >4) { # FIXME mercator: level >= 11 ; gmaps: pixels_per_km>=32
-			$this->type_or_user =0;
-			$real = -1;			
-		}
+
+		$realtype = $this->type_or_user;
+		$realov = $this->overlay;
+		$this->_simplifyParameters();
 		//always given dynamic url, that way cached HTML can 
 		//always get an image
 		$token=$this->getToken();
@@ -727,8 +754,8 @@ class GeographMap
 			$file = cachize_url($file);
 		}
 
-		if (isset($real)) 
-			 $this->type_or_user = $real;
+		$this->type_or_user = $realtype;
+		$this->overlay = $realov;
 
 		return $file;
 		
@@ -740,10 +767,7 @@ class GeographMap
 	*/
 	function returnImage()
 	{
-		//if thumbs level on depeth map, can just use normal render.
-		if ($this->type_or_user == -1 && $this->pixels_per_km >4) { # FIXME mercator: level >= 11 ; gmaps: pixels_per_km>=32
-			$this->type_or_user = 0;
-		}
+		$this->_simplifyParameters();
 		$file=$this->getImageFilename();
 		
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
@@ -791,19 +815,20 @@ class GeographMap
 	function& _renderMap() {
 		if ($this->mercator) {
 			//trigger_error("-> {$this->map_x} {$this->map_y} {$this->level} {$this->image_h} {$this->image_w}", E_USER_NOTICE);
-			if ($this->type_or_user == 0) {
-				$ok = $this->_renderImageM();
-			} elseif ($this->type_or_user == -1) {
-				//if thumbs level can just use normal render. 
-				if ($this->level <= 11) {
-					$ok = $this->_renderDepthImageM(); #FIXME
-				} else {
-					$ok = $this->_renderImageM();
-				}
-			} elseif ($this->type_or_user > 0) {
-				//normal render image, understands type_or_user > 0!
-				$ok = $this->_renderImageM();
-			} 
+			#if ($this->type_or_user == 0) {
+			#	$ok = $this->_renderImageM();
+			#} elseif ($this->type_or_user == -1) {
+			#	//if thumbs level can just use normal render. 
+			#	if ($this->level <= 11) {
+			#		$ok = $this->_renderDepthImageM(); #FIXME
+			#	} else {
+			#		$ok = $this->_renderImageM();
+			#	}
+			#} elseif ($this->type_or_user > 0) {
+			#	//normal render image, understands type_or_user > 0!
+			#	$ok = $this->_renderImageM();
+			#} 
+			$ok = $this->_renderImageM();
 			if ($ok) {
 				$db=&$this->_getDB();
 				$widthMC  = pow(2, 19-$this->level);
@@ -1927,98 +1952,46 @@ class GeographMap
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
 		
-		//$dbImg=NewADOConnection($GLOBALS['DSN']);//FIXME?
+		if ($this->mercator) {
+			$widthM=$this->map_wM;
+			$leftM=$this->map_xM;
+			$bottomM=$this->map_yM;
+			$rightM=$leftM+$widthM;
+			$topM=$bottomM+$widthM;
+			$sql="select gridimage_id from gridimage_search inner join gridsquare_gmcache using(gridsquare_id) where user_id = $user_id and gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
+		} else {
+			//$dbImg=NewADOConnection($GLOBALS['DSN']);//FIXME?
 
-		$left=$this->map_x;
-		$bottom=$this->map_y;
-		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
-		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+			$left=$this->map_x;
+			$bottom=$this->map_y;
+			$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+			$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
 
-		//size of a marker in pixels
-		$markerpixels=$this->pixels_per_km;
-		
-		//size of marker in km
-		$markerkm=ceil($markerpixels/$this->pixels_per_km);
-		
-		//we scan for images a little over the edges so that if
-		//an image lies on a mosaic edge, we still plot the point
-		//on both mosaics
-		$overscan=$markerkm;
-		$scanleft=$left-$overscan;
-		$scanright=$right+$overscan;
-		$scanbottom=$bottom-$overscan;
-		$scantop=$top+$overscan;
+			//size of a marker in pixels
+			$markerpixels=$this->pixels_per_km;
+			
+			//size of marker in km
+			$markerkm=ceil($markerpixels/$this->pixels_per_km);
+			
+			//we scan for images a little over the edges so that if
+			//an image lies on a mosaic edge, we still plot the point
+			//on both mosaics
+			$overscan=$markerkm;
+			$scanleft=$left-$overscan;
+			$scanright=$right+$overscan;
+			$scanbottom=$bottom-$overscan;
+			$scantop=$top+$overscan;
 
-		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 
-		//because we are only interested if any photos on tile, use limit 1 (added by getOne) rather than a count(*)
-		$sql="select gridimage_id from gridimage_search where 
-				CONTAINS( GeomFromText($rectangle),	point_xy) and
-				user_id = $user_id";
+			//because we are only interested if any photos on tile, use limit 1 (added by getOne) rather than a count(*)
+			$sql="select gridimage_id from gridimage_search where 
+					CONTAINS( GeomFromText($rectangle),	point_xy) and
+					user_id = $user_id";
+		}
 		$id = $db->getOne($sql);
 		
 		return !empty($id);
-	}
-
-	/**
-	* render the image to cached file if not already available
-	* @access private
-	*/
-	function _renderDepthImageM()
-	{
-		global $CONF;
-		$root=&$_SERVER['DOCUMENT_ROOT'];
-		
-		$ok = true;
-		
-		//first of all, generate or pull in a cached based map
-		$basemap=$this->getBaseMapFilename();
-		if ($this->caching && @file_exists($root.$basemap))
-		{
-			//load it up!
-			$img=imagecreatefrompng($root.$basemap);
-
-		}
-		else
-		{
-			//we need to generate a basemap
-			$img=&$this->_createBasemapM($root.$basemap);
-		}
-		
-		if (!$img) {
-			return false;
-		}
-		//FIXME
-
-		if ($img) {
-			//trigger_error("->img: pix: " . $this->pixels_per_km .", newmap: " . $CONF['enable_newmap'], E_USER_NOTICE);
-
-			//ok being false isnt fatal, as we can create a tile, however we should use it to try again later!
-			
-			#//plot grid square?
-			#if ($this->pixels_per_km>=0)
-			#{
-			#	$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
-			#}
-
-			#if ($this->pixels_per_km>=1  && $this->pixels_per_km<=64 && isset($CONF['enable_newmap']))
-			#{
-			#	$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
-			#}				
-			
-			$target=$this->getImageFilename();
-			if (preg_match('/jpg/',$target)) {
-				$ok = (imagejpeg($img, $root.$target) && $ok);
-			} else {
-				$ok = (imagepng($img, $root.$target) && $ok);
-			}
-
-			imagedestroy($img);
-			return $ok;
-		} else {
-			//trigger_error("->!img: pix: " . $this->pixels_per_km .", newmap: " . $CONF['enable_newmap'], E_USER_NOTICE);
-			return false;
-		}
 	}
 
 	/**
@@ -2063,9 +2036,24 @@ class GeographMap
 	{
 		global $CONF;
 		$ok = true;
+
+		if ($this->type_or_user == -10) {
+			$imgw = $this->image_w;
+			$img = imagecreatetruecolor($imgw, $imgw);
+			if (!$img) {
+				return img; #FIXME
+			}
+			imagealphablending($img, true);
+			imagesavealpha($img, true);
+			$back = imagecolorallocatealpha ($img, 0, 0, 0, 127);
+			imagefill($img, 0, 0, $back);
+			imagealphablending($img, false);
+			imagepng($img, $file);
+			return $img; #FIXME $ok?
+		}
+
 		$bdry = $this->base_margin;
 		$imgw = $this->base_width;
-
 		$img=imagecreatetruecolor($imgw+2*$bdry,$imgw+2*$bdry);
 		if (!$img) {
 			return img; #FIXME
@@ -2084,6 +2072,37 @@ class GeographMap
 		$colMarker=imagecolorallocate($img, $this->colour['marker'][0],$this->colour['marker'][1],$this->colour['marker'][2]);
 		$colSuppMarker=imagecolorallocate($img, $this->colour['suppmarker'][0],$this->colour['suppmarker'][1],$this->colour['suppmarker'][2]);
 		$colBorder=imagecolorallocate($img, $this->colour['border'][0],$this->colour['border'][1],$this->colour['border'][2]);
+		if ($this->type_or_user == -1) {
+			$maxcount = 80;
+			$colours=array();
+			$last=$lastcolour=null;
+			for ($o = 0; $o <= $maxcount; $o++) {
+				//standard green, yellow => red
+				switch (true) {
+					case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
+					//case $o == 1: $r=255; $g=255; $b=0; break; 
+					//case $o == 2: $r=255; $g=196; $b=0; break; 
+					//case $o == 3: $r=255; $g=132; $b=0; break; 
+					case $o == 1: $r=255; $g=196; $b=0; break; 
+					case $o == 2: $r=255; $g=154; $b=0; break; 
+					case $o == 3: $r=255; $g=110; $b=0; break; 
+					case $o == 4: $r=255; $g=64; $b=0; break; 
+					case $o <  7: $r=225; $g=0; $b=0; break; #5-6
+					case $o < 10: $r=200; $g=0; $b=0; break; #7-9
+					case $o < 20: $r=168; $g=0; $b=0; break; #10-19
+					case $o < 40: $r=136; $g=0; $b=0; break; #20-39
+					case $o < 80: $r=112; $g=0; $b=0; break; #40-79
+					default: $r=80; $g=0; $b=0; break;
+				}
+				$key = "$r,$g,$b";
+				if ($key == $last) {
+					$colours[$o] = $lastcolour;
+				} else {
+					$lastcolour = $colours[$o] = imagecolorallocate($img, $r,$g,$b);
+				}
+				$last = $key;
+			}
+		}
 
 		$db=&$this->_getDB();
 		if ($this->level >= 12) {
@@ -2092,24 +2111,42 @@ class GeographMap
 			#$gridcol2=imagecolorallocate ($img, 60,205,252);
 		}
 
-		#if ($this->type_or_user == 0) {
+		if ($this->type_or_user == 0) {
+			# coverage map
 			$number = !empty($this->minimum)?intval($this->minimum):0;
 			#$sql="select x,y,gridsquare_id,has_geographs from gridsquare where $riwhere
 			#	CONTAINS( GeomFromText($rectangle),	point_xy)
 			#	and imagecount>$number";
 			#FIXME remove reference_index,x,y
+			$whereuser = '';
 			$sql="select gridsquare_id,has_geographs,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and imagecount > $number";
-		#} else { #FIXME
-		#	$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where $riwhere
-		#		CONTAINS( GeomFromText($rectangle),	point_xy) and
-		#		user_id = {$this->type_or_user} group by grid_reference";
-		#}
+		} else if ($this->type_or_user > 0) {
+			# personal map
+			#$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where $riwhere
+			#	CONTAINS( GeomFromText($rectangle),	point_xy) and
+			#	user_id = {$this->type_or_user} group by grid_reference";
+			$whereuser = "and user_id = {$this->type_or_user}";
+			$sql="select gridsquare_id,sum(moderation_status = 'geograph') as has_geographs,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridimage_search using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM $whereuser group by gridsquare_id";
+		} else if ($this->type_or_user == -1) {
+			# depth map
+			$number = !empty($this->minimum)?intval($this->minimum):0;
+			#$sql="select x,y,gridsquare_id,imagecount from gridsquare where $riwhere
+			#	CONTAINS( GeomFromText($rectangle),	point_xy)
+			#	and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
+			$whereuser = '';
+			$sql="select gridsquare_id,imagecount,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and imagecount > $number";
+		}
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) {
-			$has_geographs=$recordSet->fields[1];
-			$color = $has_geographs ? $colMarker : $colSuppMarker;
+			if ($this->type_or_user < 0) {
+				$imgcount = $recordSet->fields[1];
+				$color = $colours[$imgcount <= $maxcount ? $imgcount : $maxcount];
+			} else {
+				$has_geographs = $recordSet->fields[1];
+				$color = $has_geographs ? $colMarker : $colSuppMarker;
+			}
 
-			if ($this->level <= 11 || $this->overlay) {
+			if ($this->level <= 11 || $this->overlay || $this->type_or_user < 0) {
 				$points = $recordSet->fields[6];
 				$drawpoly = array();
 				for ($i = 0; $i < $points; ++$i) {
@@ -2129,7 +2166,7 @@ class GeographMap
 					$gridsquare_id=$recordSet->fields[0];
 			
 					$sql="select * from gridimage where gridsquare_id=$gridsquare_id 
-					and moderation_status in ('accepted','geograph') order by moderation_status+0 desc,seq_no limit 1";
+					and moderation_status in ('accepted','geograph') $whereuser order by moderation_status+0 desc,seq_no limit 1";
 				
 				#}
 
@@ -2258,7 +2295,7 @@ class GeographMap
 			}
 			$layers[] =& $baseimg;
 		}
-		if ($this->layers & 2) {
+		if (($this->layers & 2) && ($this->type_or_user != -10 || $this->layers == 2)) {
 			$squaremap=$this->getImageFilename(2);
 			if ($this->caching_squaremap && @file_exists($root.$squaremap))
 			{
@@ -4114,12 +4151,157 @@ END;
 
 
 	/**
+	* return a sparse array for every grid on the map
+	* @access private
+	*/
+	function& getGridInfo()
+	{
+		global $memcache;
+
+		if ($this->type_or_user == -10) {
+			//we want a blank map!
+			return array();
+		} 
+
+		if ($memcache->valid) {
+			//we only use cache imagemap as they invalidate correctly - and checksheets get smarty cached anyways
+
+			$mkey = $this->getImageFilename();
+			$mnamespace = 'mI';
+			$grid =& $memcache->name_get($mnamespace,$mkey);
+			if ($grid) {
+				return $grid;
+			}
+			$mperiod = $memcache->period_long*4;
+		}
+
+		//figure out what we're mapping in internal coords
+		$db=&$this->_getDB();
+		
+		$grid=array();
+
+		$imgw = $this->image_w;
+		$imgh = $this->image_h;
+		if ($this->mercator) {
+			$widthM=$this->map_wM;
+			$leftM=$this->map_xM;
+			$bottomM=$this->map_yM;
+			$rightM=$leftM+$widthM;
+			$topM=$bottomM+$widthM;
+
+			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
+				$where_crit = " and gi2.user_id = {$this->type_or_user}";
+				$where_crit2 = " and gi.user_id = {$this->type_or_user}";
+			} else {
+				$where_crit = '';
+				$where_crit2 = '';
+			}
+			$sql="select polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy, "
+				."gs.*,gridimage_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,title,title2 "
+				."from gridsquare_gmcache inner join gridsquare gs using(gridsquare_id) left join gridimage gi ON "
+					."(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id $where_crit2 AND imagecount > 0 AND gridimage_id = 
+						(select gridimage_id from gridimage_search gi2 where gi2.grid_reference=gs.grid_reference 
+						 $where_crit order by moderation_status+0 desc,seq_no limit 1)
+					) 
+					left join user using(user_id) "
+				."where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM "
+				."and percent_land<>0 group by gs.grid_reference order by y,x";
+		} else {
+			$left=$this->map_x;
+			$bottom=$this->map_y;
+			$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+			$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+
+			$overscan=0;
+			$scanleft=$left-$overscan;
+			$scanright=$right+$overscan;
+			$scanbottom=$bottom-$overscan;
+			$scantop=$top+$overscan;
+			
+			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
+				$where_crit = " and gi2.user_id = {$this->type_or_user}";
+				$where_crit2 = " and gi.user_id = {$this->type_or_user}";
+				$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";
+			} else {
+				$where_crit = '';
+				$where_crit2 = '';
+				$columns = '';
+			}
+			//yes I know the imagecount is possibly strange in the join, but does speeds it up, having it twice speeds it up even more! (by preference have the second one, speed wise!), also keeping the join on gridsquare_id really does help too for some reason! 
+			$sql="select gs.*,gridimage_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,title,title2 
+				from gridsquare gs
+				left join gridimage gi ON 
+				(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id $where_crit2 AND imagecount > 0 AND gridimage_id = 
+					(select gridimage_id from gridimage_search gi2 where gi2.grid_reference=gs.grid_reference 
+					 $where_crit order by moderation_status+0 desc,seq_no limit 1)
+				) 
+				left join user using(user_id)
+				where 
+				CONTAINS( GeomFromText($rectangle),	point_xy)
+				and percent_land<>0 
+				group by gs.grid_reference order by y,x";
+		}
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
+			$recordSet->fields['title1'] = $recordSet->fields['title'];
+			$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
+			$poly = array();
+			if ($this->mercator) {
+				$points = $recordSet->fields[0];
+				for ($i = 0; $i < $points; ++$i) {
+					$xM = $recordSet->fields[1+$i*2];
+					$yM = $recordSet->fields[2+$i*2];
+					$poly[] = round(($xM - $leftM)   / $widthM * $imgw);
+					$poly[] = $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+				}
+			} else {
+				$gridx=$recordSet->fields['x'];
+				$gridy=$recordSet->fields['y'];
+
+				$posx=$gridx-$left;
+				$posy=$top-$gridy;
+
+				$x1 = $posx * $this->pixels_per_km;
+				$x2 = $x1   + $this->pixels_per_km;
+				$y1 = $posy * $this->pixels_per_km;
+				$y2 = $y1   + $this->pixels_per_km;
+
+				$poly[] = $x1;
+				$poly[] = $y1;
+				$poly[] = $x2;
+				$poly[] = $y1;
+				$poly[] = $x2;
+				$poly[] = $y2;
+				$poly[] = $x1;
+				$poly[] = $y2;
+			}
+			#FIXME intersection w. rectangle 0,0...$imgw-1,$imgh-1? seems to work without that...
+			$recordSet->fields['poly'] = $poly;
+			$grid[]=$recordSet->fields;
+			
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+
+		if ($memcache->valid)
+			$memcache->name_set($mnamespace,$mkey,$grid,$memcache->compress,$mperiod);
+		
+		return $grid;
+	}
+
+	/**
 	* return a sparse 2d array for every grid on the map
 	* @access private
 	*/
 	function& getGridArray($isimgmap = false)
 	{
 		global $memcache;
+
+		if ($this->mercator) # use getGridInfo() instead of getGridArray(true), e.g. in mapbrowse2.tpl!
+			return array();
 
 		if ($this->type_or_user == -10) {
 			//we want a blank map!

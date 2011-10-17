@@ -84,7 +84,7 @@ function sm_to_wgs84($e,$n) {
 	$r = 6378137.;
 	$lng = rad2deg($e/$r);
 	#$lat = rad2deg(2*atan(exp(deg2rad($n/$r)))) - 90;
-	$lat = rad2deg(2*atan(exp(($n/$r)))) - 90;
+	$lat = rad2deg(2*atan(exp($n/$r))) - 90;
 	return array($lat,$lng);
 }
 
@@ -93,6 +93,29 @@ function wgs84_to_sm($lat,$lng) {
 	$e = $r * deg2rad($lng);
 	#$n = $r * rad2deg(log(tan(deg2rad($lat+90)/2)));
 	$n = $r * (log(tan(deg2rad($lat+90)/2)));
+	return array($e, $n);
+}
+
+function lev19_to_wgs84($e,$n) {
+	#$r = 6378137.;
+	#$emerc = $e / 262144. *  M_PI *$r;
+	#$nmerc = $n / 262144. *  M_PI *$r;
+	#return sm_to_wgs84($emerc,$nmerc);
+	$fac = M_PI / 262144.;
+	$lng = rad2deg($e*$fac);
+	$lat = rad2deg(2*atan(exp($n*$fac))) - 90;
+	return array($lat,$lng);
+}
+
+function wgs84_to_lev19($lat,$lng) {
+	#$r = 6378137.;
+	#$emerc = $r * deg2rad($lng);
+	#$nmerc = $r * (log(tan(deg2rad($lat+90)/2)));
+	#$e = $emerc * 262144. /  M_PI /$r;
+	#$n = $nmerc * 262144. /  M_PI /$r;
+	$fac = 262144. / M_PI;
+	$e = deg2rad($lng) * $fac;
+	$n = log(tan(deg2rad($lat+90)/2)) * $fac;
 	return array($e, $n);
 }
 

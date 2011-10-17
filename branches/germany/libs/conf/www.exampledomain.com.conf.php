@@ -310,6 +310,8 @@ $CONF['hier_statlevels'] = array(); # array(4, 7);
 $CONF['hier_searchlevels'] = array(); # array(4, 5, 6, 7);
 //configure administrative areas to show as "large list" (link on explore page)
 $CONF['hier_listlevel'] = -1; #7
+//number of digits of your communiy ids
+$CONF['hier_cidlen'] = 8;
 
 //optionally get a key for sending your data to geocubes. 
 $CONF['GEOCUBES_API_KEY'] = "";

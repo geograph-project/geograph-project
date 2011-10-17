@@ -659,3 +659,18 @@ ALTER TABLE `mapcache` CHANGE `max_y` `max_y` int(8) NOT NULL DEFAULT '0';
 ALTER TABLE `mapcache` DROP KEY `xy`,ADD KEY `xy` (`mercator`, `map_x`, `map_y`,  `max_x`, `max_y`);
 #apply code changes
 DELETE FROM `mapcache` WHERE `mercator` != 0;
+
+CREATE TABLE loc_hier_old LIKE loc_hier;
+CREATE TABLE gridsquare_percentage_old LIKE gridsquare_percentage;
+
+#INSERT INTO `loc_hier_old` VALUES (SELECT * FROM `loc_hier`)
+INSERT INTO `loc_hier_old` SELECT * FROM `loc_hier` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+INSERT INTO `gridsquare_percentage_old` SELECT * FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+DELETE FROM `loc_hier` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+
+#DELETE FROM `loc_hier` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000;#  Betroffene Datensätze:  16
+#DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+
+
+

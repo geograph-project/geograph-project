@@ -66,7 +66,7 @@ if (isset($_GET['map']))
 	      || $z < 4 || $z > ($overlay||!($layers&2) ? 14 : 13 ) //FIXME 15:13 also okay?
 	      || $x19+$f19 < $CONF['xmrange'][0] || $x19 > $CONF['xmrange'][1]
 	      || $y19+$f19 < $CONF['ymrange'][0] || $y19 > $CONF['ymrange'][1]
-	      || $t != 0
+	      || $t < -1
 	) {
 		header("HTTP/1.0 404 Not Found");
 		header("Status: 404 Not Found");

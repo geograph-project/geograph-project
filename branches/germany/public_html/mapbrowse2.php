@@ -44,32 +44,76 @@ if (isset($_GET['map']))
 
 
 init_session();
-$template='mapbrowse.tpl';
+$template='mapbrowse2.tpl';
 
 $smarty = new GeographPage;
 
 customGZipHandlerStart();
 
 //initialise mosaic
-$mosaic=new GeographMapMosaic;
-$overview=new GeographMapMosaic('overview');
+if (!isset($_GET['mt']))
+	$_GET['mt'] = 't';
+
+#trigger_error("XXX", E_USER_NOTICE);
+$mosaic=new GeographMapMosaic; // 'full'
+#trigger_error("YYY", E_USER_NOTICE);
+$overview=new GeographMapMosaic;
+#trigger_error("ZZZ", E_USER_NOTICE);
 
 if (isset($_GET['o']))
 	$overview->setToken($_GET['o']);
 	
-if (isset($_GET['t'])) {
+if (isset($_GET['t']))
 	$mosaic->setToken($_GET['t']);
-} else {
-	if ($overview->type_or_user) {
-		$mosaic->type_or_user = $overview->type_or_user;
+
+if (isset($_GET['t'])) {
+	if (!$mosaic->tilesize) {
+		$_GET['mt'] = '';
+	} elseif (!$mosaic->mercator) {
+		$_GET['mt'] = 't';
+	} else {
+		$_GET['mt'] = 'tm';
+	}
+} elseif (isset($_GET['o'])) {
+	$mosaic->type_or_user = $overview->type_or_user;
+	if (!$overview->tilesize) {
+		$_GET['mt'] = '';
+	} elseif (!$overview->mercator) {
+		$_GET['mt'] = 't';
+	} else {
+		$_GET['mt'] = 'tm';
 	}
 }
+if (!isset($_GET['t'])) {
+	if ($_GET['mt'] == 'tm') {
+		$mosaic->setPreset('full_tm');
+		#trigger_error("aaa", E_USER_NOTICE);
+	} elseif($_GET['mt'] == 't') {
+		$mosaic->setPreset('full_t');
+		#trigger_error("AAA", E_USER_NOTICE);
+	} else {
+		$mosaic->setPreset('full');
+		#trigger_error("AaA", E_USER_NOTICE);
+	}
+}
+if (!isset($_GET['o'])) {
+	if ($_GET['mt'] == 'tm') {
+		$overview->setPreset('overview_tm');
+		#trigger_error("bbb", E_USER_NOTICE);
+	} elseif($_GET['mt'] == 't') {
+		$overview->setPreset('overview_t');
+		#trigger_error("BBB", E_USER_NOTICE);
+	} else {
+		$overview->setPreset('overview');
+		#trigger_error("BbB", E_USER_NOTICE);
+	}
+}
+
 
 if (preg_match('/\?([0-9]+),([0-9]+)$/',$_SERVER['QUERY_STRING'],$matchs)) {
 	$_GET['x']=$matchs[1];
 	$_GET['y']=$matchs[2];
 }
-
 if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	$mosaic->type_or_user = $USER->user_id;
 } elseif (isset($_GET['user']) && isValidRealName($_GET['user'])) {
@@ -103,100 +147,104 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	$overview->type_or_user = -1;
 }
 
-
 //are we zooming in on an image map? we'll have a url like this
 //i and j give the index of the mosaic image
 //http://geograph.elphin/mapbrowse.php?t=token&i=0&j=0&zoomin=?275,199
 if (isset($_GET['zoomin']))
 {
-	//get click coordinate, or use centre point if not supplied
-
-	$x=isset($_GET['x'])?intval($_GET['x']):round(($mosaic->image_w/$mosaic->mosaic_factor_x)/2);
-	$y=isset($_GET['y'])?intval($_GET['y']):round(($mosaic->image_h/$mosaic->mosaic_factor_y)/2);
-
-	
 	//get the image index
 	$i=intval($_GET['i']);
 	$j=intval($_GET['j']);
-	
+
+	//get click coordinate, or use centre point if not supplied
+	if (isset($_GET['x']) && isset($_GET['y'])) {
+		$x = intval($_GET['x']);
+		$y = intval($_GET['y']);
+	} else {
+		list($x, $y) = $mosaic->getTileCentre($i, $j);
+	}
+
 	//handle the zoom
 	$mosaic->zoomIn($i, $j, $x, $y);	
 }
 
 if (isset($_GET['center']))
 {
-	//extract x and y click coordinate from imagemap
-	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor_x)/2);
-	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor_y)/2);
-	
-
 	//get the image index
 	$i=intval($_GET['i']);
 	$j=intval($_GET['j']);
-	
+
+	//extract x and y click coordinate from imagemap
+	if (isset($_GET['x']) && isset($_GET['y'])) {
+		$x = intval($_GET['x']);
+		$y = intval($_GET['y']);
+	} else {
+		list($x, $y) = $overview->getTileCentre($i, $j);
+	}
+
 	//get click coordinate on overview, use it to centre the main map
 	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);	
-
-	#$zoomindex = array_search($overview->pixels_per_km,$overview->scales);
-	#if ($zoomindex === false)
-	#	$zoomindex = 0;
-	#$zoomindex = $overview->level;
-	#$scale = $mosaic->scales[$zoomindex+1];
-	$zoomindex = 1;
-	foreach($mosaic->scales as $level => $pixperkm) {
-		if ($pixperkm > $overview->pixels_per_km && $pixperkm > 1-.0001) {
-			$zoomindex = $level;
-			break;
-		}
-	}
-	$scale = $mosaic->scales[$zoomindex];
-	$mosaic->setScale($scale);
-	$mosaic->setMosaicFactor(2);
-	$mosaic->setCentre($intx, $inty);	
 	
+	if ($overview->mercator) {
+		$level = min($overview->level + 1, count($mosaic->scales) - 1); #FIXME
+		$scale = $mosaic->scales[$level];
+	} else {
+		$zoomindex = 1;
+		foreach($mosaic->scales as $level => $pixperkm) {
+			if ($pixperkm > $overview->pixels_per_km && $pixperkm > 1-.0001) {
+				$zoomindex = $level;
+				break;
+			}
+		}
+		$scale = $mosaic->scales[$zoomindex];
+	}
+	$mosaic->recenter($intx, $inty, $scale, 2);
 }
 
 if (isset($_GET['recenter']))
 {
-	//extract x and y click coordinate from imagemap
-	$x=isset($_GET['x'])?intval($_GET['x']):round(($overview->image_w/$mosaic->mosaic_factor_x)/2);
-	$y=isset($_GET['y'])?intval($_GET['y']):round(($overview->image_h/$mosaic->mosaic_factor_y)/2);
-	
-	
 	//get the image index
 	$i=intval($_GET['i']);
 	$j=intval($_GET['j']);
-	
+
+	//extract x and y click coordinate from imagemap
+	if (isset($_GET['x']) && isset($_GET['y'])) {
+		$x = intval($_GET['x']);
+		$y = intval($_GET['y']);
+	} else {
+		list($x, $y) = $overview->getTileCentre($i, $j);
+	}
+
 	//get click coordinate on overview, use it to centre the main map
-	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);	
-	$mosaic->setCentre($intx, $inty);	
-	
+	list($intx, $inty)=$overview->getClickCoordinates($i, $j, $x, $y);
+	#trigger_error("_____$intx $inty    $i,$j $x,$y", E_USER_NOTICE);
+	$mosaic->recenter($intx, $inty);
 }
 
 if (isset($_GET['gridref']) && preg_match('/^[!a-zA-Z]{1,3}\d{4}$/',$_GET['gridref'])) {
 	$gridsquare=new GridSquare;
 	$grid_ok=$gridsquare->setByFullGridRef($_GET['gridref'],false,true);
 	$gridref_param=$_GET['gridref'];
-	if ($grid_ok)
-		$mosaic->setCentre($gridsquare->x,$gridsquare->y,/*true*/false, false); // not needed any more: use mabrowse2 for that
-		//$mosaic->setCentre($gridsquare->x,$gridsquare->y,/*true*/false, true);
+	if ($grid_ok) {
+		$mosaic->recenter($gridsquare->x, $gridsquare->y, null, null, true, true);
+	}
 } else {
 	$gridref_param='';
 	$grid_ok=false;
 }
 
-if ($mosaic->pixels_per_km > 40) {
-	$mosaic->pixels_per_km = 40;
-	$mosaic->image_w /= 2;
-	$mosaic->image_h /= 2;
-}
+#if ($mosaic->pixels_per_km > 40) {#FIXME?
+#	$mosaic->pixels_per_km = 40;
+#	$mosaic->image_w /= 2;
+#	$mosaic->image_h /= 2;
+#}
 
 //get token, we'll use it as a cache id
 $token=$mosaic->getToken();
 
 
 //regenerate html?
-$cacheid='mapbrowse|'.$token;
+$cacheid='mapbrowse2|'.$token;
 if (!empty($gridref_param) && !$gridref_ok) {
 	$cacheid.='|'.$gridref_param;
 }
@@ -212,7 +260,16 @@ $smarty->assign('gridref_ok', $grid_ok);
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$overview->setPreset('overview');
+	if ($_GET['mt'] == 'tm') {
+		$overview->setPreset('overview_tm');
+		#trigger_error("ccc", E_USER_NOTICE);
+	} elseif($_GET['mt'] == 't') {
+		$overview->setPreset('overview_t');
+		#trigger_error("CCC", E_USER_NOTICE);
+	} else {
+		$overview->setPreset('overview');
+		#trigger_error("CcC", E_USER_NOTICE);
+	}
 	
 	//assign overview to smarty
 	if ($mosaic->type_or_user > 0) {
@@ -234,19 +291,23 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	}
 	
-	if ($mosaic->pixels_per_km == 40) { 
+	list ($x,$y) = $mosaic->getCentre();
+	$overview->recenter($x, $y, $overview->scales[$mosaic->level]);
+	if (/*$overview->mercator && $mosaic->pixels_per_km >= 12 ||*/ !$overview->mercator && $mosaic->pixels_per_km == 40) { #FIXME
 		//largeoverview
-		$overview->setScale(1);
-		list ($x,$y) = $mosaic->getCentre();
-		$overview->setCentre($x,$y); //does call setAlignedOrigin
-		
-		#$mosaic->fillGridMap(true); //true = for imagemap
-		
-	} else { #FIXME
-		//set it back incase we come from a largeoverview
-		$overview->setScale(0.13);
-		$overview->setOrigin(0,-10);		
+		$mosaic->fillGridMap(true); //true = for imagemap FIXME
 	}
+	#{
+	#	//set it back incase we come from a largeoverview
+	#	#FIXME ?
+	#	if ($overview->tilesize) {
+	#		$overview->initTiles($overview->tilesize,0,-10,$overview->image_w,$overview->image_h,0.13);
+	#		#$overview->initTiles($overview->tilesize,0,-10,$overview->image_w,$overview->image_h,0);
+	#	} else {
+	#		$overview->setScale(0.13);
+	#		$overview->setOrigin(0,-10);		
+	#	}
+	#}
 	
 	
 	$overview->assignToSmarty($smarty, 'overview');
@@ -266,11 +327,21 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	//assign main map to smarty
 	
+#trigger_error("xxx", E_USER_NOTICE);
 	$mosaic->assignToSmarty($smarty, 'mosaic');
-	
-	
-	$smarty->assign('mapwidth', round($mosaic->image_w /$mosaic->pixels_per_km ) );
-	
+#trigger_error("yyy", E_USER_NOTICE);
+
+	if ($mosaic->mercator) {
+		$centrey = $mosaic->map_y + ($mosaic->image_h / $mosaic->pixels_per_unit)/2;
+		$fac = M_PI / 262144.;
+		$lat_rad = 2*atan(exp($centrey*$fac)) - M_PI/2; // see lev19_to_wgs84() [ConversionsLatLong]
+		$r_km = 6378.137;
+		$circ = 2*M_PI*$r_km*cos($lat_rad); # circumference of circle of latitude == 2^level tiles == tilesize*2^level pixels
+		$smarty->assign('mapwidth', round($circ/$mosaic->tilesize/pow(2,$mosaic->pixels_per_km)*$mosaic->image_w));
+	} else {
+		$smarty->assign('mapwidth', round($mosaic->image_w / $mosaic->pixels_per_km));
+	}
+
 	$smarty->assign('token_zoomin', $mosaic->getZoomInToken());
 	$smarty->assign('token_zoomout', $mosaic->getZoomOutToken());
 	$smarty->assign('token_north', $mosaic->getPanToken(0, 1));

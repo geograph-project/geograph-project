@@ -7,6 +7,7 @@
     <li>View<ul>
      <li><a title="Find images" href="/search.php">Search</a></li>
      <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a></li>
+     <li><a title="Test: Map without zones" href="/map2/2olJ5oOXXJToNJ0oMJFoOXXJfolVXbJqohMXOVJ1olMbJL5405oNwj4ljh4uNZwub4j">New Map</a></li>
      <li><a title="Explore Images by Theme" href="/explore/">Explore</a></li>
      <li><a title="Submitted Content" href="/content/">Content</a></li>
     </ul></li>
