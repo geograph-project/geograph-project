@@ -58,6 +58,7 @@ $opr = -1;
 $lat = 90; $lon = 0;
 $mlat = 90; $mlon = 0;
 $type = '';# "m" map, "k" satellite, "h" hybrid, "p" terrain, "g" geograph, "og" osm+g
+$user = 0;
 if (isset($_GET['ll']) && preg_match('/^[\d.]+,[\d.]+$/', $_GET['ll'])) {
 	list($lat,$lon) = explode(',',$_GET['ll']);
 	$lat = floatval($lat);
@@ -67,6 +68,11 @@ if (isset($_GET['mll']) && preg_match('/^[\d.]+,[\d.]+$/', $_GET['mll'])) {
 	list($mlat,$mlon) = explode(',',$_GET['mll']);
 	$mlat = floatval($mlat);
 	$mlon = floatval($mlon);
+}
+if (isset($_GET['u']) && is_numeric($_GET['u'])) {
+	$user = intval($_GET['u']);
+	if ($user < -1)
+		$user = 0;
 }
 if (isset($_GET['z']) && is_numeric($_GET['z'])) {
 	$zoom = intval($_GET['z']);
@@ -92,6 +98,9 @@ $smarty->assign('inilat',  $lat);
 $smarty->assign('inilon',  $lon);
 $smarty->assign('inimlat', $mlat);
 $smarty->assign('inimlon', $mlon);
+$smarty->assign('iniuser', $user);
+
+$smarty->assign('userid', $USER->hasPerm("basic") ? $USER->user_id : 0);
 
 if (!empty($_REQUEST['grid_reference'])) 
 {

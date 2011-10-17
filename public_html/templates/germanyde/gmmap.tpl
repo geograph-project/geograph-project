@@ -41,6 +41,7 @@
 		var inilon = {$inilon};
 		var inimlat = {$inimlat};
 		var inimlon = {$inimlon};
+		var iniuser = {$iniuser};
 {/dynamic}
 {literal}
 
@@ -200,12 +201,12 @@ OpacityControl.prototype.getDefaultPosition = function() {
   return new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(7, 47));
 }
 
-		function GetTileUrl_GeoM(txy, z) {
+		/*function GetTileUrl_GeoM(txy, z) {
 			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z;
 		}
 		function GetTileUrl_GeoMO(txy, z) {
 			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=2&o=1";
-		}
+		}*/
 		function GetTileUrl_GeoMG(txy, z) {
 			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=8&o=1";
 			//return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=4";
@@ -248,6 +249,9 @@ OpacityControl.prototype.getDefaultPosition = function() {
 				var opr = 1.0;
 				if (inior >= 0)
 					opr = inior;
+				var user = 0;
+				if (iniuser >= -1)
+					user = iniuser;
 
 				var copyright = new GCopyright(1,
 					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
@@ -256,7 +260,11 @@ OpacityControl.prototype.getDefaultPosition = function() {
 					new GCopyrightCollection('&copy; <a href="http://geo.hlipp.de">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> Contributors');
 				copyrightCollection.addCopyright(copyright);
 				var tilelayers = [new GTileLayer(copyrightCollection,4,13)];//FIXME 4 12?
-				tilelayers[0].getTileUrl = GetTileUrl_GeoM;
+				tilelayers[0].user = user;
+				//tilelayers[0].getTileUrl = GetTileUrl_GeoM;
+				tilelayers[0].getTileUrl = function(txy, z) {
+					return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&t="+map.user;
+				}
 				tilelayers[0].isPng = function () { return true; };
 				tilelayers[0].getOpacity = function () { return 1.0; };
 				var proj = new GMercatorProjection(19);
@@ -291,7 +299,11 @@ OpacityControl.prototype.getDefaultPosition = function() {
 				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_TopH;
 				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollectionO,4,14);
 				tilelayers_mapnikhg[2].opacity = op;
-				tilelayers_mapnikhg[2].getTileUrl = GetTileUrl_GeoMO;
+				tilelayers_mapnikhg[2].user = user;
+				//tilelayers_mapnikhg[2].getTileUrl = GetTileUrl_GeoMO;
+				tilelayers_mapnikhg[2].getTileUrl = function(txy, z) {
+					return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=2&o=1&t="+map.user;
+				}
 				tilelayers_mapnikhg[2].isPng = function () { return true; };
 				tilelayers_mapnikhg[2].getOpacity = function () { return this.opacity; };
 				tilelayers_mapnikhg[3] = new GTileLayer(copyrightCollectionO,4,14);
@@ -307,8 +319,10 @@ OpacityControl.prototype.getDefaultPosition = function() {
 				map.addMapType(geomapm);
 				map.addMapType(mapnikhg_map);
 
+				map.user = user;
 				map.geolayer = tilelayers_mapnikhg[2];
 				map.relieflayer = tilelayers_mapnikhg[1];
+				map.geomaplayer = tilelayers[0];
 
 				G_NORMAL_MAP.gurlid = 'm';
 				G_SATELLITE_MAP.gurlid = 'k';
@@ -363,11 +377,35 @@ OpacityControl.prototype.getDefaultPosition = function() {
 					map.addOverlay(currentelement);
 					GEvent.trigger(currentelement,'drag');
 				}
+				map.setUser = function(u) {
+					if (u < -1 || u == map.user)
+						return;
+					map.user = u;
+					map.geolayer.user = u;
+					map.geomaplayer.user = u;
+					cmt = map.getCurrentMapType();
+					if (cmt == geomapm || cmt == mapnikhg_map) {
+						map.setMapType(G_NORMAL_MAP);
+						map.setMapType(cmt);
+					}
+					GEvent.trigger(map, "userchanged");
+				}
+				map.trySetUserId = function(s) {
+					u = parseInt(s, 10);
+					if (u > 0) {
+						map.setUser(u);
+						return true;
+					}
+					return false;
+				}
 				function updateMapLink() {
 					var ll = map.getCenter();
 					var url = '?z=' + map.getZoom()
 						+ '&t=' + map.getCurrentMapType().gurlid
 						+ '&ll=' + ll.lat() + ',' + ll.lng();
+					if (map.user != 0) {
+						url += '&u=' + map.user;
+					}
 					if (map.geolayer.opacity != 0.5) {
 						url += '&o=' + map.geolayer.opacity;
 					}
@@ -383,6 +421,7 @@ OpacityControl.prototype.getDefaultPosition = function() {
 				}
 				updateMapLink();
 				GEvent.addListener(map, "maptypechanged", updateMapLink);
+				GEvent.addListener(map, "userchanged", updateMapLink);
 				GEvent.addListener(map, "moveend", updateMapLink);
 				GEvent.addListener(map, "zoomend", updateMapLink);
 				GEvent.addListener(tilelayers_mapnikhg[2], "opacitychanged", updateMapLink);
@@ -488,6 +527,15 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <a id="maplink" href="#">Link zur Karte</a>
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
+<br />
+{dynamic}
+<input type="radio" name="mtradio" value="coverage" onclick="map.setUser(0);" {if $iniuser == 0}checked{/if} />Abdeckung |
+<input type="radio" name="mtradio" value="depth" onclick="map.setUser(-1);" {if $iniuser == -1}checked{/if} />Dichte |
+{if $userid}<input type="radio" name="mtradio" value="personal" onclick="map.setUser({$userid});" {if $iniuser == $userid}checked{/if} />Persönlich |{/if}
+<input type="radio" name="mtradio" value="user" onclick="if(!map.trySetUserId(document.theForm.mtuser.value)){ldelim}document.theForm.mtradio[{if $userid}3{else}2{/if}].checked=false;document.theForm.mtradio[0].checked=true;map.setUser(0);{rdelim};"
+{if $iniuser > 0 and $iniuser != $userid}checked{/if} />Nutzer:
+<input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
+{/dynamic}
 </div>
 {/if}
 
