@@ -52,6 +52,7 @@ Disallow: /article/history.php
 User-Agent: Googlebot
 Crawl-delay: 8
 Disallow: /profile/*/map
+Disallow: /profile/*/mmap
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
 Disallow: /mapbrowse2.php?
@@ -107,6 +108,7 @@ Disallow: /stuff/kmltest
 User-Agent: Speedy
 Crawl-delay: 50
 Disallow: /profile/*/map
+Disallow: /profile/*/mmap
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
 Disallow: /mapbrowse2.php?
@@ -162,6 +164,7 @@ Disallow: /stuff/kmltest
 User-Agent: AhrefsBot
 Crawl-delay: 50
 Disallow: /profile/*/map
+Disallow: /profile/*/mmap
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
 Disallow: /mapbrowse2.php?
@@ -217,6 +220,7 @@ Disallow: /stuff/kmltest
 User-Agent: Slurp
 Crawl-delay: 50
 Disallow: /profile/*/map
+Disallow: /profile/*/mmap
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
 Disallow: /mapbrowse2.php?
@@ -317,6 +321,7 @@ Disallow: /article/history.php
 User-Agent: MSNBot
 Crawl-Delay: 10
 Disallow: /profile/*/map
+Disallow: /profile/*/mmap
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
 Disallow: /mapbrowse2.php?
@@ -372,6 +377,7 @@ Disallow: /stuff/kmltest
 User-Agent: sitebot
 Crawl-Delay: 60
 Disallow: /profile/*/map
+Disallow: /profile/*/mmap
 Disallow: /photo/*?style=*
 Disallow: /mapbrowse.php?
 Disallow: /mapbrowse2.php?
