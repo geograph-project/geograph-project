@@ -61,10 +61,12 @@ $overview=new GeographMapMosaic;
 #trigger_error("ZZZ", E_USER_NOTICE);
 
 if (isset($_GET['o']))
-	$overview->setToken($_GET['o']);
+	if (!$overview->setToken($_GET['o']))
+		unset($_GET['o']);
 	
 if (isset($_GET['t']))
-	$mosaic->setToken($_GET['t']);
+	if (!$mosaic->setToken($_GET['t']))
+		unset($_GET['t']);
 
 if (isset($_GET['t'])) {
 	if (!$mosaic->tilesize) {

@@ -4166,7 +4166,7 @@ END;
 		if ($memcache->valid) {
 			//we only use cache imagemap as they invalidate correctly - and checksheets get smarty cached anyways
 
-			$mkey = $this->getImageFilename();
+			$mkey = $this->getImageFilename()."..{$this->cliptop}.{$this->clipbottom}.{$this->clipright}.{$this->clipleft}";
 			$mnamespace = 'mI';
 			$grid =& $memcache->name_get($mnamespace,$mkey);
 			if ($grid) {
@@ -4188,6 +4188,10 @@ END;
 			$bottomM=$this->map_yM;
 			$rightM=$leftM+$widthM;
 			$topM=$bottomM+$widthM;
+			$clipleftM =   floor($leftM   + $this->clipleft   * $widthM / $imgw);
+			$cliprightM =  ceil ($rightM  - $this->clipright  * $widthM / $imgw);
+			$cliptopM =    ceil ($topM    - $this->cliptop    * $widthM / $imgw);
+			$clipbottomM = floor($bottomM + $this->clipbottom * $widthM / $imgw);
 
 			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
 				$where_crit = " and gi2.user_id = {$this->type_or_user}";
@@ -4204,7 +4208,7 @@ END;
 						 $where_crit order by moderation_status+0 desc,seq_no limit 1)
 					) 
 					left join user using(user_id) "
-				."where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM "
+				."where gxlow <= $cliprightM and gxhigh >= $clipleftM and gylow <= $cliptopM and gyhigh >= $clipbottomM "
 				."and percent_land<>0 group by gs.grid_reference order by y,x";
 		} else {
 			$left=$this->map_x;
@@ -4250,14 +4254,25 @@ END;
 			$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
 			$poly = array();
 			if ($this->mercator) {
+				#$hasvalidpoint = false;
 				$points = $recordSet->fields[0];
 				for ($i = 0; $i < $points; ++$i) {
 					$xM = $recordSet->fields[1+$i*2];
 					$yM = $recordSet->fields[2+$i*2];
+					#$x = round(($xM - $leftM)   / $widthM * $imgw);
+					#$y = $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+					#$poly[] = $x;
+					#$poly[] = $y;
+					#FIXME move clipping area to db query?
+					#if ($x >= $this->clipleft && $y >= $this->cliptop && $x < $imgw-$this->clipright && $y < $imgh-$this->clipbottom)
+					#	$hasvalidpoint = true;
 					$poly[] = round(($xM - $leftM)   / $widthM * $imgw);
 					$poly[] = $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
 				}
+				#if (!$hasvalidpoint )
+				#	$poly = array();
 			} else {
+				#FIXME clipping?
 				$gridx=$recordSet->fields['x'];
 				$gridy=$recordSet->fields['y'];
 
@@ -4279,8 +4294,10 @@ END;
 				$poly[] = $y2;
 			}
 			#FIXME intersection w. rectangle 0,0...$imgw-1,$imgh-1? seems to work without that...
-			$recordSet->fields['poly'] = $poly;
-			$grid[]=$recordSet->fields;
+			#if (count($poly)) {
+				$recordSet->fields['poly'] = $poly;
+				$grid[]=$recordSet->fields;
+			#}
 			
 			$recordSet->MoveNext();
 		}
