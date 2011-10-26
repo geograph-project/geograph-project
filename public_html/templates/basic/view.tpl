@@ -238,7 +238,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 {if $image->tags}
 	{if $image->tag_prefix_stat.top}
 		<dt>Geographical Context</dt>
-		<dd style="width:256px;ont-size:0.9em" class="tags" itemprop="keywords">
+		<dd style="width:256px" class="tags" itemprop="keywords">
 			{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'top'}
 			<span class="tag">
 			<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a></span>&nbsp;
