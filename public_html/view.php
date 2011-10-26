@@ -264,7 +264,23 @@ if ($image->isValid())
 	} else {
 		$smarty->assign_by_ref("image",$image); //we dont need the full assignToSmarty
 	}
-	
+
+	$buckets = array('Closeup',
+	'Arty',
+	'Informative',
+	'Aerial',
+	'Telephoto',
+	'Landscape',
+	'Wideangle',
+	'Indoor',
+	'Historic',
+	'People',
+	'Temporary',
+	'Life',
+	'Subterranean', 
+	'Transport');
+	$smarty->assign_by_ref('buckets',$buckets);
+
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
 	header("Status: 410 Gone");
