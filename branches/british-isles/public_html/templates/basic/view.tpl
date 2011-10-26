@@ -49,19 +49,84 @@
 
   {dynamic}
     {if $user->registered || !$is_bot}
-	<div style="float:right;position:relative" id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this image!"/></a></div>
+
+	<div class="interestBox" style="float:right;position:relative;width:20px"><span  id="hideside"></span>
+		<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side');refreshMainList();"/>
+	</div>
+
+	<div style="float:right;position:relative">
+	<div style="position:absolute;left:-210px;top:-20px;width:220px;padding:10px;display:none;text-align:left" id="showside" onmouseout="hide_tree('side')">
+		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
+			<div id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree">I like this image!</a></div>
+			{if $image->comment}
+				<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree">I like this description!</a></div>
+			{/if}
+			<br/>
+			<b>Buckets</b><br/>
+			{foreach from=$buckets item=item}
+					<label id="label{$item|escape:'html'}" for="check{$item|escape:'html'}" style="color:gray">
+					<input type=checkbox id="check{$item|escape:'html'}" onclick="submitBucket('{$item|escape:'html'}',this.checked?1:0);"> {$item|escape:'html'}
+					</label><br/>
+
+			{/foreach}<br/>
+			<small>IMPORTANT: Please read the {newwin href="/article/Image-Buckets" title="Article about Buckets" text="Buckets Article"} before picking from this list</small>
+
+			<script>
+				var gridimage_id = {$image->gridimage_id};
+				{literal}
+
+				function submitBucket(bucket,status) {
+					var data = new Object;
+					data['tag'] = "bucket:"+bucket;
+					data['status'] = status;
+					data['gridimage_id'] = gridimage_id;
+
+					$.ajax({
+						url: "/tags/tagger.json.php",
+						data: data
+					});
+
+					if (document.getElementById('label'+bucket)) {
+						document.getElementById('label'+bucket).style.color = status>0?'':'gray';
+						document.getElementById('label'+bucket).style.fontWeight = status>0?'bold':'';
+					}
+				}
+				var loadedBuckets = false;
+
+				function refreshMainList() {
+					if (gridimage_id && !loadedBuckets) {
+						jQl.loadjQ('http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js',function() {
+
+							var url = '/tags/tags.json.php?gridimage_id='+encodeURIComponent(gridimage_id);
+
+							$.getJSON(url+"&callback=?",
+								// on completion, process the results
+								function (data) {
+									if (data) {
+										for(var tag_id in data) {
+											if (data[tag_id].prefix == 'bucket' && document.getElementById('label'+data[tag_id].tag)) {
+												document.getElementById('check'+data[tag_id].tag).checked = true;
+												document.getElementById('label'+data[tag_id].tag).style.color = '';
+												document.getElementById('label'+data[tag_id].tag).style.fontWeight = 'bold';
+											}
+										}
+									}
+								});
+						});
+						loadedBuckets = true;
+					}
+				}
+
+			{/literal}</script>
+
+		</div>
+	</div>
+	</div>
+
     {/if}
   {/dynamic}
 
   <div class="img-shadow" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull()|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
-
-{if $image->comment}
-  {dynamic}
-    {if $user->registered || !$is_bot}
-  	<div style="float:right;position:relative;top:20px" id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this description!"/></a></div>
-    {/if}
-  {/dynamic}
-{/if}
 
   <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title" itemprop="name">{$image->title|escape:'html'}</div>
 
