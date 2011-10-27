@@ -454,13 +454,13 @@
 <p>
 <label for="grid_reference"><b style="color:#0018F8">Subject Grid Reference</b> {if $moderated.grid_reference}<span class="moderatedlabel">(moderated{if $isowner} for gridsquare changes{/if})</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
-<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}
+<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}
 
 
 <p>
 <label for="photographer_gridref"><b style="color:#002E73">Photographer Grid Reference</b> - Optional {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
-<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
+<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
 <br/>
 <span style="font-size:0.6em">
 | <a href="javascript:void(copyGridRef());">Copy from Subject</a> |
@@ -607,7 +607,11 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 {if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
 
 <table><tr><td>
-<textarea id="updatenote" name="updatenote" rows="5" cols="60"{if $user->message_sig} onfocus="if (this.value=='') {literal}{{/literal}this.value='{$user->message_sig|escape:'javascript'}';setCaretTo(this,0); {literal}}{/literal}"{/if}>{$updatenote|escape:'html'}</textarea>
+<textarea id="updatenote" name="updatenote" rows="5" cols="60"{if $user->message_sig} onfocus="if (this.value=='') {literal}{{/literal}this.value='{$user->message_sig|escape:'javascript'}';setCaretTo(this,0); {literal}}{/literal}"{/if}>{$updatenote|escape:'html'}Dear {$image->realname},
+
+
+Regards,
+{$user->realname}</textarea>
 </td><td>
 
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
@@ -619,7 +623,12 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 </td></tr></table>
 
 <div>
-<input type="checkbox" name="type" value="minor" id="type_minor"/> <label for="type_minor">I certify that this change is minor, e.g. only spelling and grammar.</label>
+<label for="type_minor">Suggestion Type</label>:
+<select name="type">
+<option></option>
+<option>Typos and minor grammer issues</option>
+<option>Moderation query</option>
+</select> (REQUIRED)
 </div>
 
 <br style="clear:both"/>
@@ -639,13 +648,22 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	{/if}
 {/if}
 
+{if !$isowner && !$isadmin && $user->ticket_public ne 'everyone'}
+<div class="interestBox" style="background-color:pink;border:2px solid yellow;margin:10px">
+	Note: <b>It is no longer possible to specifiy that you wish to remain anonymous when making suggestions</b>.<br/>
+	This is driven by a desire to more transparent on the suggestion process, and also reduce tensions.
+	The contributor <b>and</b> moderators will always be able see who made this suggestion.<br/><br/>
+	Can avoid this message by <a href="/profile.php?edit=1">editing your profile</a> - and changing suggestion anonymity option.
+</div>
+{/if}
+
 <input type="submit" name="save" value="Submit Changes" onclick="autoDisable(this)"/>
 <input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
 
 {if !$isowner && !$isadmin}
 &nbsp;	<select name="public">
-		<option value="no">Do not disclose my name</option>
-		<option value="owner" {if $user->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
+		<!--option value="no">Do not disclose my name</option-->
+		<option value="owner" {if $user->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner only</option>
 		<option value="everyone" {if $user->ticket_public eq 'everyone'} selected{/if}>Show my name against the suggestion</option>
 	</select>
 {/if}

@@ -14,7 +14,7 @@
 	<script type="text/javascript">
 	//<![CDATA[
 		var issubmit = 1;
-		
+
 		//the google map object
 		var map;
 
@@ -28,7 +28,7 @@
 			}
 			if (geocoder) {
 				//replace full uk postcodes by the sector version
-				//address = address.replace(/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i,'$1$2 $3'); 
+				//address = address.replace(/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i,'$1$2 $3');
 				//uk postcodes now work!
 
 				geocoder.getLatLng(address,function(point) {
@@ -39,12 +39,12 @@
 						lng = point.lng();
 						ire = (lat > 51.2 && lat < 55.73 && lng > -12.2 && lng < -4.8);
 						uk = (lat > 49 && lat < 62 && lng > -9.5 && lng < 2.3);
-						
+
 						if (!uk && !ire) {
 							alert("Address could not be resolved to a British Isles location, please try again");
 							return;
 						}
-						
+
 						if (currentelement) {
 							currentelement.setPoint(point);
 							GEvent.trigger(currentelement,'drag');
@@ -74,13 +74,13 @@
 
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
-				
+
 				var point = new GLatLng(54.55,-3.88);
 				var zoom = 5;
-				
+
 				newview = readCookie('GMapView');
 				if (newview) {
-					
+
 					var pairs = newview.split("&");
 					for (var i=0; i<pairs.length; i++) {
 						// break each pair at the first "=" to obtain the argname and value
@@ -102,7 +102,7 @@
 						}
 					}
 				}
-				
+
 				newtype = readCookie('GMapType');
 				if (newtype) {
 					if (newtype == "m") {mapType = G_NORMAL_MAP;}
@@ -110,25 +110,25 @@
 					if (newtype == "h") {mapType = G_HYBRID_MAP;}
 					if (newtype == "p") {mapType = G_PHYSICAL_MAP;}
 					if (newtype == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
-					map.setCenter(point, zoom, mapType);			
+					map.setCenter(point, zoom, mapType);
 				} else {
 					map.setCenter(point, zoom);
 				}
 
-				map.enableDoubleClickZoom(); 
+				map.enableDoubleClickZoom();
 				map.enableContinuousZoom();
 				map.enableScrollWheelZoom();
-		
+
 				GEvent.addListener(map, "click", function(marker, point) {
 					if (marker) {
 					} else if (currentelement) {
 						currentelement.setPoint(point);
 						GEvent.trigger(currentelement,'drag');
-					
+
 					} else {
 						currentelement = createMarker(point,null);
 						map.addOverlay(currentelement);
-						
+
 						GEvent.trigger(currentelement,'drag');
 					}
 				});
@@ -169,7 +169,7 @@
 
 					// This Javascript Function is based on code provided by the
 					// Blackpool Community Church Javascript Team
-					// http://www.commchurch.freeserve.co.uk/   
+					// http://www.commchurch.freeserve.co.uk/
 					// http://econym.googlepages.com/index.htm
 				}
 				GEvent.addListener(map, "moveend", saveView);
@@ -190,17 +190,17 @@
 			var t = map.getCurrentMapType().getUrlArg();
 			createCookie('GMapType',t,10);
 		}
-	
+
 		AttachEvent(window,'load',loadmap,false);
 
 		function updateMapMarkers() {
 			updateMapMarker(document.theForm.grid_reference,false,true);
-			
+
 			if (document.theForm.grid_reference.value.length > 4) {
 				point = currentelement.getLatLng();
 				map.setCenter(point,12);
 			}
-			
+
 		}
 		AttachEvent(window,'load',updateMapMarkers,false);
 	</script>
@@ -211,21 +211,21 @@
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 
-<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 
 <input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
 
-<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>		
+<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>
 
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
 
 </form>
 <form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
-<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address: 
+<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="submit" value="Find"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder)<br/>	
+	(Powered by the Google Maps API Geocoder)<br/>
 	Change view: <a href="javascript:void(map.setCenter(new GLatLng(55.55,-3.88), 5));">Whole British Isles</a> &middot; <a href="javascript:void(map.returnToSavedPosition());">Initial View</a> &middot; <a href="javascript:void(map.setCenter(currentelement.getLatLng(), 12));">Center on Marker</a></small></small>
 </div>
 </form>

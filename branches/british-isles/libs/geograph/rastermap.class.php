@@ -637,6 +637,10 @@ class RasterMap
 				map.setCenter(new OpenSpace.MapPoint($e, $n), 9);
 				
 				$block
+				
+				if (typeof updateMapMarkers == 'function') {
+					updateMapMarkers();
+				}
 			}
 			
 			AttachEvent(window,'load',loadmap,false);
@@ -784,6 +788,9 @@ class RasterMap
 
 							GEvent.addListener(map, \"maptypechanged\", saveMapType);
 						}
+						if (typeof updateMapMarkers == 'function') {
+							updateMapMarkers();
+						}
 					}
 					AttachEvent(window,'load',loadmap,false);
 					function saveMapType() {
@@ -814,6 +821,13 @@ class RasterMap
 				document.images['map'].onmouseout = overlayMouseOut;
 				document.images['map'].onmouseup = overlayMouseUp;
 				document.images['map'].onmousedown = overlayMouseDown;
+				
+				function loadmap() {
+					if (typeof updateMapMarkers == 'function') {
+						updateMapMarkers();
+					}
+				}
+				AttachEvent(window,'load',loadmap,false);
 			</script>";
 			} else {
 				return "$str
