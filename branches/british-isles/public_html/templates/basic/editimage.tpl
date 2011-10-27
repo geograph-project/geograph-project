@@ -607,11 +607,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 {if $error.updatenote}<br/><span class="formerror">{$error.updatenote}</span><br/>{/if}
 
 <table><tr><td>
-<textarea id="updatenote" name="updatenote" rows="5" cols="60"{if $user->message_sig} onfocus="if (this.value=='') {literal}{{/literal}this.value='{$user->message_sig|escape:'javascript'}';setCaretTo(this,0); {literal}}{/literal}"{/if}>{$updatenote|escape:'html'}Dear {$image->realname},
-
-
-Regards,
-{$user->realname}</textarea>
+<textarea id="updatenote" name="updatenote" rows="5" cols="60"{if $user->message_sig} onfocus="if (this.value=='') {literal}{{/literal}this.value='{$user->message_sig|escape:'javascript'}';setCaretTo(this,0); {literal}}{/literal}"{/if}>{$updatenote|escape:'html'}</textarea>
 </td><td>
 
 <div style="float:left;font-size:0.7em;padding-left:5px;width:250px;">
@@ -623,12 +619,7 @@ Regards,
 </td></tr></table>
 
 <div>
-<label for="type_minor">Suggestion Type</label>:
-<select name="type">
-<option></option>
-<option>Typos and minor grammer issues</option>
-<option>Moderation query</option>
-</select> (REQUIRED)
+<input type="checkbox" name="type" value="minor" id="type_minor"/> <label for="type_minor">I certify that this change is minor, e.g. only spelling and grammar.</label>
 </div>
 
 <br style="clear:both"/>
@@ -648,22 +639,13 @@ Regards,
 	{/if}
 {/if}
 
-{if !$isowner && !$isadmin && $user->ticket_public ne 'everyone'}
-<div class="interestBox" style="background-color:pink;border:2px solid yellow;margin:10px">
-	Note: <b>It is no longer possible to specifiy that you wish to remain anonymous when making suggestions</b>.<br/>
-	This is driven by a desire to more transparent on the suggestion process, and also reduce tensions.
-	The contributor <b>and</b> moderators will always be able see who made this suggestion.<br/><br/>
-	Can avoid this message by <a href="/profile.php?edit=1">editing your profile</a> - and changing suggestion anonymity option.
-</div>
-{/if}
-
 <input type="submit" name="save" value="Submit Changes" onclick="autoDisable(this)"/>
 <input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
 
 {if !$isowner && !$isadmin}
 &nbsp;	<select name="public">
-		<!--option value="no">Do not disclose my name</option-->
-		<option value="owner" {if $user->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner only</option>
+		<option value="no">Do not disclose my name</option>
+		<option value="owner" {if $user->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
 		<option value="everyone" {if $user->ticket_public eq 'everyone'} selected{/if}>Show my name against the suggestion</option>
 	</select>
 {/if}
