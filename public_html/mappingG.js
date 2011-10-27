@@ -178,7 +178,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	if (!checkGridReference(that,showmessage)) {
 		return false;
 	}
-	if (!document.getElementById('map')) {
+	if (!document.getElementById('map') || !map) {
 		//we have no map! so we only wanted to check the GR
 		return;
 	}
