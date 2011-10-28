@@ -65,7 +65,7 @@ if (!empty($_GET['tag_id'])) {
 		$db->Execute("UPDATE tagornot SET user_ids = CONCAT(user_ids,'|{$w['user_id']}|'),done=done+1 WHERE tag_id = {$w['tag_id']} AND gridimage_id = {$w['gridimage_id']}");
 	}
 
-	$sql['columns'] = "tagornot_id,gridimage_id,tag_id,title,user_id,realname,grid_reference";
+	$sql['columns'] = "tagornot_id,gridimage_id,tag_id,title,user_id,realname,grid_reference,comment,imageclass";
 	
         $sql['tables'] = array();
 	$sql['tables']['tn'] = 'tagornot';
@@ -74,7 +74,8 @@ if (!empty($_GET['tag_id'])) {
         $sql['wheres'] = array();
         $sql['wheres'][] = "tag_id = ".intval($_GET['tag_id']);
         $sql['wheres'][] = "done=0";
-        $sql['wheres'][] = "user_id NOT LIKE '%|{$USER->user_id}|%'";
+#        $sql['wheres'][] = "user_ids NOT LIKE '%|{$USER->user_id}|%'";
+        $sql['wheres'][] = "user_ids = ''";
         
         $sql['limit'] = '1';
 }
