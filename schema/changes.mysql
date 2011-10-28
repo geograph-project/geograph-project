@@ -2178,4 +2178,21 @@ alter table content modify `source` enum('trip','blog','portal','article','galle
 #################################################
 
 
+CREATE TABLE IF NOT EXISTS `tagornot` (
+  `tagornot_id` int(10) unsigned NOT NULL auto_increment,
+  `tag_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `user_ids` varchar(100) NOT NULL,
+  `done` tinyint(3) unsigned NOT NULL default '0',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`tagornot_id`),
+  KEY `tag_id` (`tag_id`,`done`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+ALTER TABLE  `tag` ADD  `description` TEXT NOT NULL ;
+
+
+#################################################
+
 
