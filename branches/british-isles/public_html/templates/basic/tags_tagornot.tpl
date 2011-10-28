@@ -63,6 +63,8 @@
 			if (data && data.tag_id) {
 				$('#output').html('<img src="'+data.image+'"/><br/><b>'+data.title+'</b>');
 				$('#output').append('<br/>in '+data.grid_reference+' by '+data.realname);
+				$('#output').append('<br/><small>'+data.comment+'</small>');
+				$('#output').append('<br/><small>Category:'+data.imageclass+'</small>');
 				$('#output').append('<br/><a href="/photo/'+data.gridimage_id+'" target="_blank">open in new window</a>');
 
 				gridimage_id = data.gridimage_id;
