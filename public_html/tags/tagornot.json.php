@@ -43,7 +43,7 @@ if (!empty($_GET['tag_id'])) {
 
 	if (!empty($_GET['gridimage_id'])) {
 
-		if (!empty($_GET['doit'])) {
+		if (!empty($_GET['doit']) && $_GET['doit'] == 1) {
 			$u = array();
 
 			$u['tag_id'] = intval($_GET['tag_id']);
@@ -55,14 +55,17 @@ if (!empty($_GET['tag_id'])) {
 			$db->Execute('REPLACE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
 		}
 		
-		
 		$w = array();
-
+		
 		$w['user_id'] = $USER->user_id;
 		$w['tag_id'] = intval($_GET['tag_id']);
 		$w['gridimage_id'] = intval($_GET['gridimage_id']);
-		
-		$db->Execute("UPDATE tagornot SET user_ids = CONCAT(user_ids,'|{$w['user_id']}|'),done=done+1 WHERE tag_id = {$w['tag_id']} AND gridimage_id = {$w['gridimage_id']}");
+			
+		if (!empty($_GET['doit']) && $_GET['doit'] == -1) {
+			##$db->Execute("UPDATE tagornot SET user_ids = REPLACE(user_ids,'|{$w['user_id']}|','') WHERE tag_id = {$w['tag_id']} AND gridimage_id = {$w['gridimage_id']}");
+		} else {
+			$db->Execute("UPDATE tagornot SET user_ids = CONCAT(user_ids,'|{$w['user_id']}|'),done=done+1 WHERE tag_id = {$w['tag_id']} AND gridimage_id = {$w['gridimage_id']}");
+		}
 	}
 
 	$sql['columns'] = "tagornot_id,gridimage_id,tag_id,title,user_id,realname,grid_reference,comment,imageclass";
