@@ -23,7 +23,9 @@
 
 <div class="interestBox" style="width:200px;float:left;text-align:center">
 	<input type="button" class="nextButton" onclick="loadNextImage(null,1)" value="Tag with '{$tag.tag|escape:'html'}'" style="background-color:lightgreen;font-size:1.2em"/><br/>
-	<input type="button" class="nextButton" onclick="loadNextImage(null,0)" value="Don't Tag" style="background-color:pink;font-size:1.2em"/>
+	<input type="button" class="nextButton" onclick="loadNextImage(null,0)" value="Don't Tag" style="background-color:pink;font-size:1.2em" title="this image does not match the tag description"/><br/><br/>
+
+	<input type="button" class="nextButton" onclick="loadNextImage(null,-1)" value="Skip" style="" title="let someone else decide..."/>
 </div>
 
 
