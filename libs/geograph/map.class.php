@@ -4254,23 +4254,15 @@ END;
 			$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
 			$poly = array();
 			if ($this->mercator) {
-				#$hasvalidpoint = false;
 				$points = $recordSet->fields[0];
+				$factor = $imgw / $widthM;
+				$dx = $leftM;
+				#$dy = $bottomM + ($imgw - 1) * $widthM / $imgw;
+				$dy = $bottomM + $widthM - 1./$factor;
 				for ($i = 0; $i < $points; ++$i) {
-					$xM = $recordSet->fields[1+$i*2];
-					$yM = $recordSet->fields[2+$i*2];
-					#$x = round(($xM - $leftM)   / $widthM * $imgw);
-					#$y = $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
-					#$poly[] = $x;
-					#$poly[] = $y;
-					#FIXME move clipping area to db query?
-					#if ($x >= $this->clipleft && $y >= $this->cliptop && $x < $imgw-$this->clipright && $y < $imgh-$this->clipbottom)
-					#	$hasvalidpoint = true;
-					$poly[] = round(($xM - $leftM)   / $widthM * $imgw);
-					$poly[] = $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+					$poly[] = round(($recordSet->fields[1+$i*2] - $dx)*$factor);
+					$poly[] = round(($dy - $recordSet->fields[2+$i*2])*$factor);
 				}
-				#if (!$hasvalidpoint )
-				#	$poly = array();
 			} else {
 				#FIXME clipping?
 				$gridx=$recordSet->fields['x'];

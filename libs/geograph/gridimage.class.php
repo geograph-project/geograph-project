@@ -569,8 +569,9 @@ class GridImage
 		$smarty->assign('square_count', $this->grid_square->imagecount);
 
 		//lets add an overview map too
-		$overview=new GeographMapMosaic('largeoverview');
-		$overview->setCentre($this->grid_square->x,$this->grid_square->y); //does call setAlignedOrigin
+		#$overview=new GeographMapMosaic('largeoverview');
+		#$overview->setCentre($this->grid_square->x,$this->grid_square->y); //does call setAlignedOrigin
+		$overview=new GeographMapMosaic('largeoverview'.$CONF['map_suffix'], $this->grid_square->x,$this->grid_square->y);
 		$overview->assignToSmarty($smarty, 'overview');
 		$smarty->assign('marker', $overview->getSquarePoint($this->grid_square));
 

@@ -159,22 +159,34 @@ class GeographMapMosaic
 	#setScale():
 	# ./public_html/maplarge.php
 	# ./public_html/mapprint.php
-	function GeographMapMosaic($preset='full')
+	function GeographMapMosaic($preset='full', $xcenter=null, $ycenter=null)
 	{
 		global $CONF;
 		$this->enableCaching($CONF['smarty_caching']);
-		$this->setPreset($preset);
+		$this->setPreset($preset, $xcenter, $ycenter);
 	}
 
 	/**
 	* configure map to use a hard coded configuration accessed by name
 	* @access public
 	*/
-	function setPreset($name) # FIXME better solution needed (configurable?)
+	function setPreset($name, $xcenter=null, $ycenter=null) # FIXME better solution needed (configurable?)
 	{
 		global $CONF;
 		$this->tilesize=0;
 		$this->mercator=false;
+		if (is_null($ycenter)) {
+			$xm = $CONF['xmrange'][0]-262144;
+			$ym = 262143-$CONF['ymrange'][1];
+			$xo = 0;
+			$yo = -10;
+		} else {
+			$xm = $xcenter;
+			$ym = $ycenter;
+			$xo = $xcenter;
+			$yo = $ycenter;
+		}
+		#FIXME configurable non mercator origin
 		switch ($name)
 		{
 			case 'full_t':
@@ -185,13 +197,7 @@ class GeographMapMosaic
 			case 'full_tm':
 				$this->mosaictype = 2;
 				$this->scales = array(0 => 5, 1 => 7, 2 => 9, 3 => 12);
-				#$this->initTiles(256,265000-262144,262143-185000,400,400,5,true);#FIXME
-				#$this->initTiles(256,270000-262144,262143-184500,400,400,5,true);#FIXME
-				$this->initTiles(256,$CONF['xmrange'][0]-262144,262143-$CONF['ymrange'][1],400,400,5,true);#FIXME
-				#$this->initTiles(256,-210,-15,400,400,0.3,true);#FIXME
-				//$CONF['xmrange'] = array(265000, 285000);
-				//$CONF['ymrange'] = array(160000, 185000);
-				//level 19
+				$this->initTiles(256,$xm,$ym,400,400,5,true,false,false,!is_null($ycenter));#FIXME
 				break;
 			case 'full':
 				$this->mosaictype = 2;
@@ -209,8 +215,7 @@ class GeographMapMosaic
 			case 'overview_tm':
 				$this->mosaictype = 1;
 				$this->scales = array(0 => 4, 1 => 4, 2 => 4, 3 => 7);
-				#$this->initTiles(256,265000-262144,262143-185000,120,170,4,true);#FIXME
-				$this->initTiles(256,$CONF['xmrange'][0]-262144,262143-$CONF['ymrange'][1],120,170,4,true);#FIXME
+				$this->initTiles(256,$xm,$ym,120,170,4,true,false,false,!is_null($ycenter));#FIXME
 				break;
 			case 'overview':
 				$this->mosaictype = 1;
@@ -239,8 +244,8 @@ class GeographMapMosaic
 			case 'homepage_tm':
 				$this->mosaictype = 0;
 				$this->scales = array(0 => 5);
-				#$this->initTiles(256,$CONF['xmrange'][0]-262144,262143-$CONF['ymrange'][1],183,263,5,true);#FIXME
-				$this->initTiles(256,$CONF['xmrange'][0]-262144,262143-$CONF['ymrange'][1],218,293,5,true);#FIXME y:+30 x:+35
+				#$this->initTiles(256,$xm,$ym,183,263,5,true,false,false,!is_null($ycenter));#FIXME
+				$this->initTiles(256,$xm,$ym,218,293,5,true,false,false,!is_null($ycenter));#FIXME y:+30 x:+35
 				break;
 			case 'overview_ireland':
 				$this->mosaictype = 0;
@@ -267,6 +272,20 @@ class GeographMapMosaic
 				$this->setMosaicSize(120,170);
 				$this->setScale(1);
 				$this->setMosaicFactor(1);
+				if (is_null($ycenter))
+					$this->setOrigin(0,-10);
+				else
+					$this->setCentre($xcenter, $ycenter);
+				break;
+			case 'largeoverview_t':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 1);
+				$this->initTiles(200,$xo,$yo,120,170,1,false,false,false,!is_null($ycenter));
+				break;
+			case 'largeoverview_tm':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 7);
+				$this->initTiles(256,$xm,$ym,120,170,7,true,false,false,!is_null($ycenter));#FIXME
 				break;
 			case 'largemap':
 				$this->mosaictype = 0;
@@ -416,7 +435,7 @@ class GeographMapMosaic
 	 * Use square tiles.
 	 * @access public
 	 */
-	function initTiles($tilesize,$x,$y,$w,$h,$pixels_per_km,$mercator=false,$exact=false,$ispantoken=false)
+	function initTiles($tilesize,$x,$y,$w,$h,$pixels_per_km,$mercator=false,$exact=false,$ispantoken=false,$center=false)
 	{
 		#trigger_error("<$tilesize,$x,$y,$w,$h,$pixels_per_km <{$this->mercator}>", E_USER_NOTICE);
 		$this->mercator = !empty($mercator);
@@ -430,7 +449,21 @@ class GeographMapMosaic
 		if (!$this->setScale($pixels_per_km))#FIXME
 			return false;
 		#trigger_error("$x,$y ---", E_USER_NOTICE);
-		$orig = $this->getAlignedOrigin(intval($x), intval($y), $ispantoken, $exact);
+		$x = intval($x);
+		$y = intval($y);
+		if ($center) {
+			if ($this->mercator) {
+				require_once('geograph/conversionslatlong.class.php');
+				$conv = new ConversionsLatLong;
+				list($lat, $lon) = $conv->internal_to_wgs84($x,$y,false);
+				list($x, $y) = $conv->wgs84_to_lev19($lat, $lon);
+			}
+			$x -= $this->image_w / $this->pixels_per_unit / 2;
+			$y -= $this->image_h / $this->pixels_per_unit / 2;
+			$x = round($x);
+			$y = round($y);
+		}
+		$orig = $this->getAlignedOrigin($x, $y, $ispantoken, $exact);
 		#trigger_error("$x,$y --- {$orig[0]},{$orig[1]}", E_USER_NOTICE);
 		$this->map_x=$orig[0];
 		$this->map_y=$orig[1];
@@ -584,7 +617,8 @@ class GeographMapMosaic
 				                 $token->getValue("x"), $token->getValue("y"),
 				                 $token->getValue("w"), $token->getValue("h"),
 				                 $token->getValue("s"),
-				                 $this->mercator);
+				                 $this->mercator,
+				                 true);
 				$this->type_or_user = ($token->hasValue("t"))?$token->getValue("t"):0;
 				$this->palette = ($token->hasValue("p"))?$token->getValue("p"):0;
 			}
@@ -768,7 +802,7 @@ class GeographMapMosaic
 			$y = intval($this->image_h / 2);
 		} else {
 			//invert the y coordinate
-			$y=$this->image_h-$y;
+			$y=$this->image_h-$y; # FIXME off by one?
 		}
 		if (is_null($map_y)) {
 			$map_x = $this->map_x;
@@ -777,13 +811,18 @@ class GeographMapMosaic
 		$db=&$this->_getDB();
 		
 		//convert pixel pos to internal coordinates
-		$x_km=$map_x + floor($x/$this->pixels_per_unit);
-		$y_km=$map_y + floor($y/$this->pixels_per_unit);
 		if ($this->mercator) {
 			require_once('geograph/conversionslatlong.class.php');
 			$conv = new ConversionsLatLong;
-			list($lat, $lon) = $conv->lev19_to_wgs84($x_km,$y_km);
-			list($x_km, $y_km) = $conv->wgs84_to_internal($lat, $lon);
+			list($lat, $lon) = $conv->lev19_to_wgs84($map_x + $x/$this->pixels_per_unit,$map_y + $y/$this->pixels_per_unit);
+			list($x_km, $y_km) = $conv->wgs84_to_internal($lat, $lon, false);
+			$x_km = round($x_km);
+			$y_km = round($y_km);
+		} else {
+			#$x_km=$map_x + floor($x/$this->pixels_per_unit);
+			#$y_km=$map_y + floor($y/$this->pixels_per_unit);
+			$x_km=$map_x + round($x/$this->pixels_per_unit);
+			$y_km=$map_y + round($y/$this->pixels_per_unit);
 		}
 		
 		$row=$db->GetRow("select reference_index,grid_reference from gridsquare where CONTAINS( GeomFromText('POINT($x_km $y_km)'),point_xy )");
@@ -872,12 +911,15 @@ class GeographMapMosaic
 			$maph=$this->image_h/$this->pixels_per_unit;
 
 			//figure out how many pixels to pan by
-			if ($this->tilesize) {
-				$panx=round($mapw/2);
-				$pany=round($maph/2);
-			} else {
+			if (!$this->tilesize) {
 				$panx=round($mapw/$this->mosaic_factor_x);
 				$pany=round($maph/$this->mosaic_factor_y);
+			} elseif ($this->mercator) {
+				$panx=$mapw/2;
+				$pany=$maph/2;
+			} else {
+				$panx=round($mapw/2);
+				$pany=round($maph/2);
 			}
 
 			$out->mosaictype = $this->mosaictype;
@@ -912,12 +954,15 @@ class GeographMapMosaic
 		$maph=$this->image_h/$this->pixels_per_km;
 
 		//figure out how many pixels to pan by
-		if ($this->tilesize) {
-			$panx=round($mapw/2);
-			$pany=round($maph/2);
-		} else {
+		if (!$this->tilesize) {
 			$panx=round($mapw/$this->mosaic_factor_x);
 			$pany=round($maph/$this->mosaic_factor_y);
+		} elseif ($this->mercator) {
+			$panx=$mapw/2;
+			$pany=$maph/2;
+		} else {
+			$panx=round($mapw/2);
+			$pany=round($maph/2);
 		}
 
 		if ($this->tilesize) {
@@ -1104,6 +1149,16 @@ class GeographMapMosaic
 			$y1 = 262143-$CONF['ymrange'][1];
 			$y2 = 262143-$CONF['ymrange'][0];
 			$dy = $y2 - $y1;
+
+			if (!$exact) {
+				# this way, we have the chance to find a cached version of the map
+				# we'd need to put a lot of things (clipping, imagemap, ...) in
+				# {dynamic} tags otherwise and we couldn't use the tokens as cache id then.
+				$walign = $mapw / 4;
+				$halign = $maph / 4;
+				$bestoriginx = floor($bestoriginx / $walign) * $walign;
+				$bestoriginy = floor($bestoriginy / $halign) * $halign;
+			}
 
 			if ($mapw >= $dx) {
 				$originx = round(0.5 * ($x2 + $x1 - $mapw));
@@ -1295,7 +1350,7 @@ class GeographMapMosaic
 			require_once('geograph/conversionslatlong.class.php');
 			$conv = new ConversionsLatLong;
 			trigger_error("sp $lat $lon  <- $x $y", E_USER_NOTICE);
-			list($lat, $lon) = $conv->internal_to_wgs84($x,$y);
+			list($lat, $lon) = $conv->internal_to_wgs84($x,$y,0,false);
 			list($x, $y) = $conv->wgs84_to_lev19($lat, $lon);
 			trigger_error("sp $lat $lon  -> $x $y", E_USER_NOTICE);
 		}

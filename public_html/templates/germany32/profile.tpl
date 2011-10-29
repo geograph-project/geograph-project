@@ -41,7 +41,7 @@
 
 {if $overview}
   <div style="float:right; width:{$overview_width+30}px; position:relative">
-  {include file="_overview2.tpl"}
+  {include file="_overview.tpl"}
   </div>
 {/if}
 

@@ -65,9 +65,9 @@ class Conversions
 //use:	list($x,$y,$reference_index) = wgs84_to_internal($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
 
-function wgs84_to_internal($lat,$long) {
+function wgs84_to_internal($lat,$long,$doround=true) {
 	list($e,$n,$reference_index) = $this->wgs84_to_national($lat,$long);
-	return $this->national_to_internal($e,$n,$reference_index);
+	return $this->national_to_internal($e,$n,$reference_index,$doround);
 }
 
 
@@ -137,8 +137,8 @@ function wgs84_to_national($lat,$long,$usehermert = true,$ri=-1) {
 		//reference_index is optional as we can duduce this (but if known then can pass it in to save having to recaluate)
 			//will probably just call national_to_wgs84 once converted
 
-function internal_to_wgs84($x,$y,$reference_index = 0) {
-	list ($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index);
+function internal_to_wgs84($x,$y,$reference_index = 0,$doshift = true) {
+	list ($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index,$doshift);
 	return $this->national_to_wgs84($e,$n,$reference_index);
 }
 
@@ -232,10 +232,16 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 
 //use:    list($x,$y) = national_to_internal($e,$n,$reference_index );
 
-function national_to_internal($e,$n,$reference_index ) {
+function national_to_internal($e,$n,$reference_index,$doround=true) {
 	global $CONF;
-	$x = intval($e / 1000);
-	$y = intval($n / 1000);
+
+	$x = $e / 1000;
+	$y = $n / 1000;
+
+	if ($doround) {
+		$x = intval($x); # FIXME floor?
+		$y = intval($y); # FIXME floor?
+	}
 	
 	//add the internal origin
 	$x += $CONF['origins'][$reference_index][0];
@@ -246,7 +252,7 @@ function national_to_internal($e,$n,$reference_index ) {
 
 //use:    list($e,$n,$reference_index) = internal_to_national($x,$y,$reference_index = 0);
 // note gridsquare has its own version that takes into account the userspecified easting/northing
-function internal_to_national($x,$y,$reference_index = 0) {
+function internal_to_national($x,$y,$reference_index = 0,$doshift = true) {
 	global $CONF;
 	if (!$reference_index) {
 		$db = $this->_getDB();
@@ -277,9 +283,13 @@ function internal_to_national($x,$y,$reference_index = 0) {
 		$x -= $CONF['origins'][$reference_index][0];
 		$y -= $CONF['origins'][$reference_index][1];
 
-		//lets position the national coords in the center of the square!
-		$e = intval($x * 1000 + 500);
-		$n = intval($y * 1000 + 500);
+		$e = intval($x * 1000);
+		$n = intval($y * 1000);
+		if ($doshift) {
+			//lets position the national coords in the center of the square!
+			$e += 500;
+			$n += 500;
+		}
 		return array($e,$n,$reference_index);
 	} else {
 		return array();
