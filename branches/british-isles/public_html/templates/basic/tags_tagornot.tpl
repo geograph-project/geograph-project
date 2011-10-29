@@ -26,7 +26,7 @@
 </script>
 
 
-<div class="interestBox" style="width:200px;height:800px;float:left;text-align:center">
+<div class="interestBox draggable" style="width:200px;float:left;text-align:center;background-color:#888888;">
 	<input type="button" class="nextButton" onclick="loadNextImage(null,1)" value="Tag with '{$tag.tag|escape:'html'}'" style="background-color:lightgreen;font-size:1.2em"/><br/>
 	<input type="button" class="nextButton" onclick="loadNextImage(null,0)" value="Don't Tag" style="background-color:pink;font-size:1.2em" title="this image does not match the tag description"/><br/><br/>
 
@@ -34,25 +34,25 @@
 </div>
 
 
-<div class="interestBox" style="width:700px;height:800px;float:left;background-color:gray;text-align:center;color:white" id="output">
+<div class="interestBox draggable" style="width:700px;height:800px;float:left;background-color:gray;text-align:center;color:white" id="output">
 	Loading....
 </div>
 
-<div class="interestBox" style="width:200px;height:200px;padding-top:600px;float:left;text-align:center">
-	<input type="button" class="nextButton" onclick="loadNextImage(null,1)" value="Tag with '{$tag.tag|escape:'html'}'" style="background-color:lightgreen;font-size:1.2em"/><br/>
-	<input type="button" class="nextButton" onclick="loadNextImage(null,0)" value="Don't Tag" style="background-color:pink;font-size:1.2em" title="this image does not match the tag description"/><br/><br/>
 
-	<input type="button" class="nextButton" onclick="loadNextImage(null,-1)" value="Skip" style="" title="let someone else decide..."/>
-</div>
 
 {/dynamic}
 
 
 <br style="clear:both"/>
-
+Tip: Drag either of the dark gray boxes, to get a confortable layout.
 
 {literal}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+	<script src="/draggable/jqueryui.com/ui/jquery.ui.core.js"></script>
+	<script src="/draggable/jqueryui.com/ui/jquery.ui.widget.js"></script>
+	<script src="/draggable/jqueryui.com/ui/jquery.ui.mouse.js"></script>
+	<script src="/draggable/jqueryui.com/ui/jquery.ui.draggable.js"></script>
+
 <script>
 	var gridimage_id;
 
@@ -92,6 +92,10 @@
 	}
 
 	AttachEvent(window,'load',loadNextImage,false);
+
+	$(function() {
+		$(".draggable").draggable();
+	});
 
 
 </script>
