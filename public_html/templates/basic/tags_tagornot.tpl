@@ -48,10 +48,11 @@ Tip: Drag either of the dark gray boxes, to get a confortable layout.
 
 {literal}
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
-	<script src="/draggable/jqueryui.com/ui/jquery.ui.core.js"></script>
-	<script src="/draggable/jqueryui.com/ui/jquery.ui.widget.js"></script>
-	<script src="/draggable/jqueryui.com/ui/jquery.ui.mouse.js"></script>
-	<script src="/draggable/jqueryui.com/ui/jquery.ui.draggable.js"></script>
+	<script src="/js/ui/jquery.ui.core.js"></script>
+	<script src="/js/ui/jquery.ui.widget.js"></script>
+	<script src="/js/ui/jquery.ui.mouse.js"></script>
+	<script src="/js/ui/jquery.ui.draggable.js"></script>
+	<script src="/js/touch.js"></script>
 
 <script>
 	var gridimage_id;
@@ -94,7 +95,7 @@ Tip: Drag either of the dark gray boxes, to get a confortable layout.
 	AttachEvent(window,'load',loadNextImage,false);
 
 	$(function() {
-		$(".draggable").draggable();
+		$(".draggable").draggable().touch({ animate: false, sticky: false, dragx: true, dragy: true, rotate: false, resort: true, scale: false });
 	});
 
 
