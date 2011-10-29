@@ -302,7 +302,7 @@ if ($template=='profile.tpl')
 		}	
 		
 		if (count($images->images)) {
-			$overview=new GeographMapMosaic('overview');
+			$overview=new GeographMapMosaic('overview'.$CONF['map_suffix']);
 			$overview->type_or_user = $uid;
 			$overview->assignToSmarty($smarty, 'overview');
 		}

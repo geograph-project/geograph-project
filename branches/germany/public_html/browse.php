@@ -942,8 +942,9 @@ if (!isset($_GET['inner'])) {
 
 	//lets add an overview map too
 	if ($grid_ok) {
-		$overview=new GeographMapMosaic('largeoverview');
-		$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
+		#$overview=new GeographMapMosaic('largeoverview');
+		#$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
+		$overview=new GeographMapMosaic('largeoverview'.$CONF['map_suffix'],$square->x,$square->y);
 		$smarty->assign('marker', $overview->getSquarePoint($square));
 
 
@@ -970,7 +971,7 @@ if (!isset($_GET['inner'])) {
 		$smarty->assign_by_ref('rastermap', $rastermap);
 
 	} else {
-		$overview=new GeographMapMosaic('overview');	
+		$overview=new GeographMapMosaic('overview'.$CONF['map_suffix']);
 	}
 	$overview->assignToSmarty($smarty, 'overview');
 }

@@ -297,6 +297,14 @@ $CONF['metacarta_auth'] = '';
 //does the map draw the more demanding placenames
 $CONF['enable_newmap'] = 1;
 
+/**
+ * default map type (suffix for preset, see mapmosaic.class.php)
+ * '':    old map
+ * '_t':  new map
+ * '_mt': new map, mercator tiles
+ */
+$CONF['map_suffix'] = '';
+
 //use the smaller towns database for the 'near...' lines rather than placenames
 $CONF['use_gazetteer'] = 'towns'; //OS250/OS/hist/towns/default
 //NOTE: for GB, OS, OS250 and hist are (c)'ed datasets and are not available under the GPL licence
