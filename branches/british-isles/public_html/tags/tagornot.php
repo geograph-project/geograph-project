@@ -33,6 +33,37 @@ $cacheid = ''; #md5($_GET['tag']);
 
 $USER->mustHavePerm("basic");
 
+if (empty($_GET['tag'])) {
+	$smarty->display('_std_begin.tpl');
+	
+	print "<h2>Tag or Not</h2>";
+	
+	$db = GeographDatabaseConnection(true);
+	
+	$data = $db->getAll("SELECT prefix,tag,COUNT(*) AS c FROM tagornot INNER JOIN tag USING (tag_id) WHERE done=0 GROUP BY tagornot.tag_id");
+
+	if (!empty($data)) {
+		print "<p>Please pick a tag you wish to work with</p>";
+		
+		print "<ol>";
+
+		foreach ($data as $row) {
+			if (!empty($row['prefix']))
+				$row['tag'] = $row['prefix'].":".$row['tag'];
+			print "<li value=\"{$row['c']}\"><a href=\"?tag=".urlencode($row['tag'])."\">".htmlentities($row['tag'])."</a></li>";
+		}
+		print "</ol>";
+	} else {
+		print "<p>No outstanding tags right now</p>";
+	}
+	
+	$smarty->display('_std_end.tpl');
+
+	exit;
+}
+
+
+
 #if (!$smarty->is_cached($template, $cacheid)) {
 	$db = GeographDatabaseConnection(true);
 
