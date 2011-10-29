@@ -33,6 +33,20 @@ $cacheid = ''; #md5($_GET['tag']);
 
 $USER->mustHavePerm("basic");
 
+if (!empty($_GET['recent'])) {
+	
+	$db = GeographDatabaseConnection(false);
+
+	$ids = $db->getCol("SELECT gridimage_id FROM tagornot WHERE user_ids LIKE '%|{$USER->user_id}|%' ORDER BY updated DESC LIMIT 50");
+	
+	if (empty($ids)) 
+		die("no images");
+		
+	header("Location: /search.php?displayclass=spelling&markedImages=".implode(',',$ids));
+	exit;
+}
+
+
 if (empty($_GET['tag'])) {
 	$smarty->display('_std_begin.tpl');
 	
