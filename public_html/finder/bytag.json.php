@@ -29,6 +29,9 @@ if (!empty($_GET['callback'])) {
 	header('Content-type: application/json');
 }
 
+customExpiresHeader(3600);
+
+
 $db = GeographDatabaseConnection(true);
 
 $sql = array();
