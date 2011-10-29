@@ -1,5 +1,10 @@
 {include file="_std_begin.tpl"}
 
+
+<div style="position:relative;float:right">
+	<a href="?recent=1">View your recent images</a>
+</div>
+
 <h2>tag or not</h2>
 
 {dynamic}
