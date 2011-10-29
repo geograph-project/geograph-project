@@ -90,7 +90,7 @@ jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',fu
 		<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->excerpt}</div>
 		{elseif $image->imageclass}<small>Category: {$image->imageclass}</small>
 		{/if}
-	  </div><br style="clear:both;"/>
+	  </div><br style="clear:left;"/>
 	 </div>
 	{foreachelse}
 	 	{if $engine->resultCount}
