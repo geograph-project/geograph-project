@@ -77,7 +77,7 @@
 
 			{literal}
 			<script type="text/javascript">
-				function updateMapMarkers() {
+				function updateMapMarkersP() {
 					updateMapMarker(document.theForm.grid_reference,false,true);
 					updateMapMarker(document.theForm.photographer_gridref,false,true);
 					if (document.theForm.view_direction) {
@@ -85,7 +85,7 @@
 					}
 				}
 				//deferred till after setupTheForm
-				//AttachEvent(window,'load',updateMapMarkers,false);
+				//AttachEvent(window,'load',updateMapMarkersP,false);
 
 
 				function nudgeMarker(that) {
@@ -386,8 +386,8 @@ function rehighlight(that,check) {
 <script type="text/javascript">
 	AttachEvent(window,'load',function() {
 		setupTheForm();
-		if (typeof updateMapMarkers == 'function') {
-			updateMapMarkers();
+		if (typeof updateMapMarkersP == 'function') {
+			updateMapMarkersP();
 		}
 	},false);
 
