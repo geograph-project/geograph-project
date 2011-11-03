@@ -32,8 +32,6 @@ Although the implementation is still incomplete, your contribution to the projec
 
 	<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
 
-	{*germany: overview2: 183,263->218,293 ( +35/40 )
-	           potd: 360 x 263 => 395 x 293 *}
 	{foreach from=$overview2 key=y item=maprow}
 		<div>
 		{foreach from=$maprow key=x item=mapcell}
@@ -41,7 +39,7 @@ Although the implementation is still incomplete, your contribution to the projec
 		<div style="float:left;position:relative;height:{$mapcell->image_h-$mapcell->cliptop-$mapcell->clipbottom}px;width:{$mapcell->image_w-$mapcell->clipleft-$mapcell->clipright}px;overflow:hidden">
 		<div style="position:absolute;clip:rect({$mapcell->cliptop}px,{$mapcell->image_w-$mapcell->clipright}px,{$mapcell->image_h-$mapcell->clipbottom}px,{$mapcell->clipleft}px);top:-{$mapcell->cliptop}px;left:-{$mapcell->clipleft}px">
 		{/if}
-		<a href="/mapbrowse2.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1&amp;m={$m}"><img 
+		<a href="/mapbrowse{if $overview2_clip}2{/if}.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1&amp;m={$m}"><img 
 		alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 		{if $overview2_clip}</div></div>{/if}
 		{/foreach}
@@ -67,8 +65,7 @@ Although the implementation is still incomplete, your contribution to the projec
 
 	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day{if $pictureoftheday.search} <small>[<a href="/results/{$pictureoftheday.search}">more...</a>]</small>{/if}</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
-	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(395,293)}</a><br/>
-	{*title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>*}
+	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail($potd_width,$potd_height)}</a><br/>
 
 
 	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>

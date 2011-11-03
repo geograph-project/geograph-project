@@ -305,6 +305,13 @@ $CONF['enable_newmap'] = 1;
  */
 $CONF['map_suffix'] = '';
 
+// configure map and picture of the day on home page
+$CONF['home_potd_width'] = 395;
+$CONF['home_potd_height'] = 293;
+$CONF['home_map_large'] = true;
+$CONF['home_map_width'] = 218;
+$CONF['home_map_height'] = 293;
+
 //use the smaller towns database for the 'near...' lines rather than placenames
 $CONF['use_gazetteer'] = 'towns'; //OS250/OS/hist/towns/default
 //NOTE: for GB, OS, OS250 and hist are (c)'ed datasets and are not available under the GPL licence

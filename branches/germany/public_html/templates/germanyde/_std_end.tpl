@@ -6,8 +6,8 @@
     <li style="font-size:1.42em"><a accesskey="1" title="Startseite" href="/">Startseite</a></li>
     <li>Ansicht<ul>
      <li><a title="Bildersuche" href="/search.php">Suche</a></li>
-     <li><a title="Karte aller Bilder anzeigen" href="/mapbrowse.php">Karte</a></li>
-     <li><a title="Test: Karte ohne Zonen" href="/map2/2olJ5oOXXJToNJ0oMJFoOXXJfolVXbJqohMXOVJ1olMbJL5405oNwj4ljh4uNZwub4j">Neue Karte</a></li>
+     <li><a title="Karte aller Bilder anzeigen" href="/mapbrowse.php">Karte</a>
+        (<a title="Test: Karte ohne Zonen" href="/map2/2olJ5oOXXJToNJ0oMJFoOXXJfolVXbJqohMXOVJ1olMbJL5405oNwj4ljh4uNZwub4j">zonenlos</a>)</li>
      <li><a title="Verschieden Zusammenstellungen von Bildern" href="/explore/">Stöbern</a></li>
      <li><a title="Nutzerbeiträge" href="/content/">Beiträge</a></li>
     </ul></li>

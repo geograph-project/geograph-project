@@ -547,7 +547,8 @@ class GridImage
 
 		//get a token to show a suroudding geograph map
 		$mosaic=new GeographMapMosaic;
-		$smarty->assign('map_token', $mosaic->getGridSquareToken($this->grid_square));
+		$smarty->assign('map_token', $mosaic->getGridSquareToken($this->grid_square, false));
+		$smarty->assign('map_token2', $mosaic->getGridSquareToken($this->grid_square, true));
 
 
 		//find a possible place within 25km

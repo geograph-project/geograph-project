@@ -302,7 +302,8 @@ Ostsüdost
 
 {if $rastermap->reference_index == 1}<a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a>, {/if}
 
-<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a>, 
+<a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$image->grid_reference}">Geograph Map</a>
+(<a href="/mapbrowse2.php?t={$map_token2}&amp;gridref_from={$image->grid_reference}">zonenlos</a>), 
 
 {if $image_taken}
 	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}

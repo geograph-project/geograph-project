@@ -180,11 +180,15 @@ class GeographMapMosaic
 			$ym = 262143-$CONF['ymrange'][1];
 			$xo = 0;
 			$yo = -10;
+			$xl = -210;
+			$yl = -15;
 		} else {
 			$xm = $xcenter;
 			$ym = $ycenter;
 			$xo = $xcenter;
 			$yo = $ycenter;
+			$xl = $xcenter;
+			$yl = $ycenter;
 		}
 		#FIXME configurable non mercator origin
 		switch ($name)
@@ -192,7 +196,7 @@ class GeographMapMosaic
 			case 'full_t':
 				$this->mosaictype = 2;
 				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
-				$this->initTiles(200,-210,-15,400,400,0.3);
+				$this->initTiles(200,$xl,$yl,400,400,0.3,false,false,false,!is_null($ycenter));
 				break;
 			case 'full_tm':
 				$this->mosaictype = 2;
@@ -202,15 +206,18 @@ class GeographMapMosaic
 			case 'full':
 				$this->mosaictype = 2;
 				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
-				$this->setOrigin(-210,-15);
 				$this->setMosaicSize(400,400);
 				$this->setScale(0.3);
 				$this->setMosaicFactor(3);
+				if (is_null($ycenter))
+					$this->setOrigin($xl,$yl);
+				else
+					$this->setCentre($xcenter, $ycenter);
 				break;
 			case 'overview_t':
 				$this->mosaictype = 1;
 				$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
-				$this->initTiles(200,0,-10,120,170,0.13);
+				$this->initTiles(200,$xo,$yo,120,170,0.13,false,false,false,!is_null($ycenter));
 				break;
 			case 'overview_tm':
 				$this->mosaictype = 1;
@@ -220,10 +227,34 @@ class GeographMapMosaic
 			case 'overview':
 				$this->mosaictype = 1;
 				$this->scales = array(0 => 0.13, 1 => 0.13, 2 => 0.13, 3 => 1);
-				$this->setOrigin(0,-10);
 				$this->setMosaicSize(120,170);
 				$this->setScale(0.13);
 				$this->setMosaicFactor(1);
+				if (is_null($ycenter))
+					$this->setOrigin($xo,$yo);
+				else
+					$this->setCentre($xcenter, $ycenter);
+				break;
+			case 'zoomedin_t':
+				$this->mosaictype = 2;
+				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+				$this->initTiles(200,$xl,$yl,400,400,40,false,false,!is_null($ycenter),!is_null($ycenter));
+				break;
+			case 'zoomedin_tm':
+				$this->mosaictype = 2;
+				$this->scales = array(0 => 5, 1 => 7, 2 => 9, 3 => 12);
+				$this->initTiles(256,$xm,$ym,400,400,12,true,false,!is_null($ycenter),!is_null($ycenter));#FIXME
+				break;
+			case 'zoomedin':
+				$this->mosaictype = 2;
+				$this->scales = array(0 => 0.3, 1 => 1, 2 => 4, 3 => 40);
+				$this->setMosaicSize(400,400);
+				$this->setScale(40);
+				$this->setMosaicFactor(2);
+				if (is_null($ycenter))
+					$this->setOrigin($xl,$yl);
+				else
+					$this->setCentre($xcenter, $ycenter, true); //true to align to 10x10 map
 				break;
 			case 'geograph':
 				$this->mosaictype = 0;
@@ -241,11 +272,30 @@ class GeographMapMosaic
 				$this->setScale(0.20);
 				$this->setMosaicFactor(1);
 				break;
+			case 'homepage':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 0.2); #FIXME?
+				$this->setMosaicSize($CONF['home_map_width'],$CONF['home_map_height']);
+				$this->setScale(0.2);
+				$this->setMosaicFactor(1);
+				if (is_null($ycenter))
+					$this->setOrigin($xo,$yo);
+				else
+					$this->setCentre($xcenter, $ycenter);
+				break;
+			case 'homepage_t':
+				$this->mosaictype = 0;
+				$this->scales = array(0 => 0.2);
+				$this->initTiles(200,$xo,$yo,$CONF['home_map_width'],$CONF['home_map_height'],0.2,false,false,false,!is_null($ycenter));
+				break;
 			case 'homepage_tm':
 				$this->mosaictype = 0;
 				$this->scales = array(0 => 5);
-				#$this->initTiles(256,$xm,$ym,183,263,5,true,false,false,!is_null($ycenter));#FIXME
-				$this->initTiles(256,$xm,$ym,218,293,5,true,false,false,!is_null($ycenter));#FIXME y:+30 x:+35
+				$this->initTiles(256,$xm,$ym,$CONF['home_map_width'],$CONF['home_map_height'],5,true,false,false,!is_null($ycenter));
+				# FIXME overlay -> overlay_type
+				#       false   -> 0             == normal map
+				#       true    -> 1             == as used as googlemaps tile overlays
+				#                  2             == as used on homepage? [ no myriad names on map? ]
 				break;
 			case 'overview_ireland':
 				$this->mosaictype = 0;
@@ -1111,22 +1161,14 @@ class GeographMapMosaic
 	* get a url that will zoom us out one level from this gridsquare
 	* @access public
 	*/
-	function getGridSquareToken($gridsquare) 
+	function getGridSquareToken($gridsquare, $mmap=false)
 	{
 		if (is_numeric($gridsquare)) {
 			$id = $gridsquare;
 			$gridsquare = new GridSquare;
 			$gridsquare->loadFromId($id);
 		}
-		
-		$out=new GeographMapMosaic;	
-		
-		//start with same params
-		$out->setScale(40);
-		$out->setMosaicFactor(2);
-
-		$out->setCentre($gridsquare->x,$gridsquare->y,true); //true to align to 10x10 map
-	
+		$out=new GeographMapMosaic($mmap?'zoomedin_tm':'zoomedin', $gridsquare->x,$gridsquare->y);
 		return $out->getToken();		
 	}
 

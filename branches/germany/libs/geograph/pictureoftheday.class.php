@@ -39,10 +39,10 @@ class PictureOfTheDay
 	 * today's image, as selected by initToday
 	 */
 	var $gridimage_id;
-	var $width=381;
+	var $width=381; #FIXME width/height not used?
 	var $height=255;
 	
-	function PictureOfTheDay($w=381,$h=255)
+	function PictureOfTheDay($w=381,$h=255) #FIXME width/height not used?
 	{
 		$this->width=$w;
 		$this->height=$h;

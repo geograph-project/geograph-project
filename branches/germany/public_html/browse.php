@@ -879,7 +879,8 @@ if ($grid_given)
 		
 		//get a token to show a suroudding geograph map
 		$mosaic=new GeographMapMosaic;
-		$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
+		$smarty->assign('map_token', $mosaic->getGridSquareToken($square, false));
+		$smarty->assign('map_token2', $mosaic->getGridSquareToken($square, true));
 	
 		if ($CONF['forums']) {
 			$square->assignDiscussionToSmarty($smarty);
@@ -922,7 +923,8 @@ if ($grid_given)
 				//we where still able to work out the location, so
 				//get a token to show a suroudding geograph map
 				$mosaic=new GeographMapMosaic;
-				$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
+				$smarty->assign('map_token', $mosaic->getGridSquareToken($square, false));
+				$smarty->assign('map_token2', $mosaic->getGridSquareToken($square, true));
 			}
 		}
 	}

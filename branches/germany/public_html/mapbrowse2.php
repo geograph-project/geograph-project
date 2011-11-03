@@ -295,10 +295,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	list ($x,$y) = $mosaic->getCentre();
 	$overview->recenter($x, $y, $overview->scales[$mosaic->level]);
-	if (/*$overview->mercator && $mosaic->pixels_per_km >= 12 ||*/ !$overview->mercator && $mosaic->pixels_per_km == 40) { #FIXME
-		//largeoverview
-		$mosaic->fillGridMap(true); //true = for imagemap FIXME
-	}
+	#if (/*$overview->mercator && $mosaic->pixels_per_km >= 12 ||*/ !$overview->mercator && $mosaic->pixels_per_km == 40) { #FIXME
+	#	//largeoverview
+	#	$mosaic->fillGridMap(true); //true = for imagemap FIXME
+	#}
 	#{
 	#	//set it back incase we come from a largeoverview
 	#	#FIXME ?
