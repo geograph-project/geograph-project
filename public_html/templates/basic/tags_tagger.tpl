@@ -1,6 +1,18 @@
 {assign var="page_title" value="Tags"}
 {include file="_basic_begin.tpl"}
 <div style="padding:6px">
+<style>{literal}
+.tagPublic span,.tagPublic a.taglink {
+	background-color:lightgreen !important;
+}
+
+.tagPrivate span,.tagPrivate a.taglink {
+	background-color:pink !important;
+}
+.tagGeneral span,.tagGeneral a.taglink {
+	background-color:yellow !important;
+}
+{/literal}</style>
 {dynamic}
 
 	{if $message}
@@ -61,6 +73,10 @@
 				{assign var="ctab" value=$ctab+1}
 				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Recent</a>&nbsp;
 			{/if}
+			{if $gr}
+				{assign var="ctab" value=$ctab+1}
+				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Nearby</a>&nbsp;
+			{/if}
 			{foreach from=$tree key=key item=item name=tree}
 				{assign var="ctab" value=$ctab+1}
 				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">{$key}</a>&nbsp;
@@ -74,18 +90,18 @@
 			{foreach from=$suggestions item=item name=used}
 				<span class="tag" id="suggestion{$item.tag|escape:'html'}">
 				<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
-				</span>
+				</span> &nbsp;
 			{foreachelse}
 				<i>none</i>
 			{/foreach}
-			{if $suggestions}<br/><small>Click a tag to add it to this image</small>{/if}
+			{if $suggestions}<br/><small>These are guessed tags based on words in title/description</small>{/if}
 		</div>
 
 		{if $topicstring}
                         {assign var="ctab" value=$ctab+1}
                         <div id="div{$ctab}" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
 				<div id="topics">Loading...</div>
-                                <small>Click a suggested tag to add it to this image</small>
+                                <small>These are guessed tags based on words in title/description</small>
                         </div>
 			<script>{literal}
 			AttachEvent(window,'load',function() {
@@ -100,7 +116,7 @@
 					<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
 					</span>
 				{/foreach}
-				<br/><small>Click a suggested tag to add it to this image</small>
+				<br/><small>These are guessed tags based on words in title/description</small>
 			</div>
 		{/if}
 
@@ -110,10 +126,23 @@
 				{foreach from=$recent item=item name=used}
 					<span class="tag" id="suggestion{$item.tag|escape:'html'}">
 					<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
-					</span>
+					</span> &nbsp;
 				{/foreach}
-				<br/><small>Click a recent tag to add it to this image</small>
+				<br/><small>These are your recently used tags</small>
 			</div>
+		{/if}
+
+		{if $gr}
+			{assign var="ctab" value=$ctab+1}
+			<div id="div{$ctab}" class="interestBox" style="{if $tab != $ctab}display:none{/if}">
+				<div id="topics">Loading...</div>
+				<br/><small>These are tags from surrounding images</small>
+			</div>
+			<script>{literal}
+						AttachEvent(window,'load',function() {
+							loadNearbyTags({/literal}'{$topicstring|escape:'quotes'}'{literal});
+						},false);
+			{/literal}</script>
 		{/if}
 
 		{if $tree}
@@ -136,7 +165,7 @@
 			{foreach from=$buckets item=item}
 				<span class="tag" id="suggestion{$item|escape:'html'}">
 				<a href="javascript:addTag('bucket:{$item|escape:'html'}','{$item|escape:'html'}');" class="taglink">{$item|escape:'html'}</a>
-				</span>
+				</span> &nbsp;
 			{foreachelse}
 				<i>none</i>
 			{/foreach}
@@ -149,8 +178,8 @@
 {/dynamic}
 
 <br style="clear:both"/>
-<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag (Your own)</span> <span class="tag tagPrivate">Private (your own)</span> <span class="tag tagGeneral">Public (by others)</span></span> (click X to remove tag{if $is_owner}, click tag to toggle public/private{/if})<br/>
-New! Double click the tag, to return it to Add box; useful for editing a tag.
+<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag (Your own)</span> <span class="tag tagPrivate">Private (your own)</span> <span class="tag tagGeneral">Public (by others)</span></span> (click X to remove tag)<br/>
+{if $is_owner}<b>Single click</b> tag to toggle public/private. {/if}<b>Double click</b> the tag, to return it to Add box; useful for editing a tag.
 </div>
 
 {literal}<style type="text/css">
@@ -202,7 +231,7 @@ function addTag(text,suggestion,clearText) {
 	str = "<span class=\"tag tagPublic\" id=\"tag"+text+"\" onclick=\"toggleTag('"+text+"');\" ondblclick=\"editTag('"+text+"');\">";
 	str += "<input type=\"hidden\" name=\"mode[]\" id=\"tagm"+text+"\" value=\"Public\"/>";
 {else}
-	str = "<span class=\"tag tagPrivate\" id=\"tag"+text+"\">";
+	str = "<span class=\"tag tagPrivate\" id=\"tag"+text+"\" ondblclick=\"editTag('"+text+"');\">";
 	str += "<input type=\"hidden\" name=\"mode[]\" id=\"tagm"+text+"\" value=\"Private\"/>";
 {/if}{/dynamic}{literal}
 	str += "<input type=\"hidden\" name=\"tag_id[]\" id=\"tagi"+text+"\" class=\"tagi\" value=\""+text+"\"/>";
@@ -293,7 +322,7 @@ function toggleTag(text) {
 
 		// on search completion, process the results
 		function (data) {
-			if (data) {
+			if (data && data.length > 0) {
 				tabClick('tab','div',1,10);
 
 				var div = document.getElementById('div1');
@@ -311,9 +340,12 @@ function toggleTag(text) {
 					str += "<a href=\"javascript:addTag('"+text+"','d"+tag_id+"',true);\" class=\"taglink\">"+text+"</a>";
 					str += "</span> ";
 				}
-				str = str + "<br/><small>Click a tag to add it to this image</small>";
-				div.innerHTML = str;
+				str = str + "<br/><small>These are suggestions based on what you typed so far. Click one to use</small>";
+
+			} else {
+				str = '<i>no suggestions</i>';
 			}
+			div.innerHTML = str;
 		});
 	}
 
