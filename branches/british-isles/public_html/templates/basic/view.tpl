@@ -95,7 +95,7 @@
 
 				function refreshMainList() {
 					if (gridimage_id && !loadedBuckets) {
-						jQl.loadjQ('http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js',function() {
+						jQl.loadjQ('http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',function() {
 
 							var url = '/tags/tags.json.php?gridimage_id='+encodeURIComponent(gridimage_id);
 

@@ -17,13 +17,35 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		</div>
 
-			<div style="float:right;position:relative" id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this image!"/></a></div>
+	<div class="interestBox" style="float:right;position:relative;width:20px"><span  id="hideside{$image->gridimage_id}"></span>
+		<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side{$image->gridimage_id}');refreshMainList({$image->gridimage_id});"/>
+	</div>
+
+	<div style="float:right;position:relative">
+	<div style="position:absolute;left:-210px;top:-20px;width:220px;padding:10px;display:none;text-align:left;z-index:1000" id="showside{$image->gridimage_id}" onmouseout="hide_tree('side{$image->gridimage_id}')">
+		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
+			<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" style="float:left;padding:4px"/>
+			<div id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree">I like this image!</a></div>
+			{if $image->comment}
+				<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree">I like this description!</a></div>
+			{/if}
+			<br style="clear:both"/>
+			<b>Buckets</b><br/>
+			{foreach from=$buckets item=item}
+					<label id="{$image->gridimage_id}label{$item|escape:'html'}" for="{$image->gridimage_id}check{$item|escape:'html'}" style="color:gray">
+					<input type=checkbox id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0);"> {$item|escape:'html'}
+					</label><br/>
+
+			{/foreach}<br/>
+			<small>IMPORTANT: Please read the {newwin href="/article/Image-Buckets" title="Article about Buckets" text="Buckets Article"} before picking from this list</small>
+
+
+		</div>
+	</div>
+	</div>
 
 		<div class="img-shadow" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` lowsrc="}</a></div>
 		{if $image->comment}
-
-			<div style="float:right;position:relative;top:20px" id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree"><img src="http://{$static_host}/img/thumbs.png" width="20" height="20" alt="I like this description!"/></a></div>
-
 		  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
   		{/if}
 	 </div>
@@ -56,8 +78,53 @@ var delayinsec = {$user->slideshow_delay|default:5};
 if (window.location.hash == '#autonext') {
 	setTimeout("auto_slide_go(1)",500);
 }
+
+	function submitBucket(gridimage_id,bucket,status) {
+		var data = new Object;
+		data['tag'] = "bucket:"+bucket;
+		data['status'] = status;
+		data['gridimage_id'] = gridimage_id;
+
+		$.ajax({
+			url: "/tags/tagger.json.php",
+			data: data
+		});
+
+		if (document.getElementById(gridimage_id+'label'+bucket)) {
+			document.getElementById(gridimage_id+'label'+bucket).style.color = status>0?'':'gray';
+			document.getElementById(gridimage_id+'label'+bucket).style.fontWeight = status>0?'bold':'';
+		}
+	}
+	var loadedBuckets = new Array();
+
+	function refreshMainList(gridimage_id) {
+		if (gridimage_id && !loadedBuckets[gridimage_id]) {
+
+			var url = '/tags/tags.json.php?gridimage_id='+encodeURIComponent(gridimage_id);
+
+			$.getJSON(url+"&callback=?",
+				// on completion, process the results
+				function (data) {
+					if (data) {
+						for(var tag_id in data) {
+							if (data[tag_id].prefix == 'bucket' && document.getElementById(gridimage_id+'label'+data[tag_id].tag)) {
+								document.getElementById(gridimage_id+'check'+data[tag_id].tag).checked = true;
+								document.getElementById(gridimage_id+'label'+data[tag_id].tag).style.color = '';
+								document.getElementById(gridimage_id+'label'+data[tag_id].tag).style.fontWeight = 'bold';
+							}
+						}
+					}
+				});
+
+			loadedBuckets[gridimage_id] = true;
+		}
+	}
+
+
+
 {/literal}
  //]]></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
  		<div style="text-align:center;padding-top:40px"><a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slidebig">Full Page Slide-Show</a> <sup style="color:red">new!</sup></div>
  	<br style="clear:both"/>
