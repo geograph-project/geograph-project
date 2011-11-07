@@ -41,7 +41,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db = GeographDatabaseConnection(true);
 	
 	$tags = $db->getAssoc("
-		SELECT top,CONCAT(ids,IF(ids != '',',',''),COALESCE(GROUP_CONCAT(gridimage_id),'')) AS ids,COUNT(*) AS images,description,grouping
+		SELECT top,CONCAT(ids,IF(ids != '',',',''),COALESCE(GROUP_CONCAT(gridimage_id),'')) AS ids,COUNT(*) AS images,category_primary.description,grouping
 		FROM category_primary 
 		LEFT JOIN tag t ON (top = tag AND prefix = 'top') 
 		LEFT JOIN gridimage_tag gt ON (t.tag_id = gt.tag_id AND gt.status = 2) 

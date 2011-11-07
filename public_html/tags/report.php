@@ -151,7 +151,7 @@ if (!empty($_GET['deal'])) {
 						$values = array("tag = ".$db->Quote($row['tag2']));
 					}
 
-					if ($db->getOne("SELECT tag_id FROM tag WHERE ".implode(' AND ',$values))) {
+					if ($db->getOne("SELECT tag_id FROM tag WHERE ".implode(' AND ',$values)." AND tag_id != {$row['tag_id']}")) {
 						die("THERE IS ALREADY A TAG {$row['tag2']}!!!");
 					}
 					

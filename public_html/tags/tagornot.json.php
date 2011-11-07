@@ -76,9 +76,12 @@ if (!empty($_GET['tag_id'])) {
 
         $sql['wheres'] = array();
         $sql['wheres'][] = "tag_id = ".intval($_GET['tag_id']);
-        $sql['wheres'][] = "done=0";
-#        $sql['wheres'][] = "user_ids NOT LIKE '%|{$USER->user_id}|%'";
-        $sql['wheres'][] = "user_ids = ''";
+	if (!empty($_GET['done'])) {
+	        $sql['wheres'][] = "done IN (0,".intval($_GET['done']).")";
+	} else
+	        $sql['wheres'][] = "done=0";
+        $sql['wheres'][] = "user_ids NOT LIKE '%|{$USER->user_id}|%'";
+#        $sql['wheres'][] = "user_ids = ''";
         
         $sql['limit'] = '1';
 }

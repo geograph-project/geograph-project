@@ -90,7 +90,7 @@ if (!empty($_GET['string'])) {
         if (empty($value)) {
                 ini_set('user_agent', 'Geograph Britain and Ireland - Tagging Interface (+http://www.geograph.org.uk)');
 
-                $value = $json->decode(@file_get_contents($url));
+                $value = $json->decode(file_get_contents($url));
 
                 if ($value)
                         $memcache->name_set('rpc',$mkey,$value,$memcache->compress,$memcache->period_med);

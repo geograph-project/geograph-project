@@ -109,6 +109,11 @@ if (empty($_GET['tag'])) {
 		if (!empty($row)) {
 			$smarty->assign('tag', $row);
 		}
+		if (!empty($_GET['done'])) {
+			 $smarty->assign('done', intval($_GET['done']));
+		} elseif (rand(0,10) > 7) {
+			$smarty->assign('done', rand(1,3));
+		}
 	}
 #}
 
