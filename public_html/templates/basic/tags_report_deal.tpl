@@ -35,7 +35,7 @@
 			<td>{if $row.tag2}
 				<input type="radio" name="res[{$row.report_id}]" value="move">
 			{/if}</td>
-			<td>{if !$row.tag2_id && $row.tag2}
+			<td>{if (!$row.tag2_id && $row.tag2) || $row.tag2_id eq $row.tag_id}
 				<input type="radio" name="res[{$row.report_id}]" value="rename">
 			{/if}</td>
 			<td>{if $row.tag2_id && !$row.canonical}

@@ -1,7 +1,14 @@
 {assign var="page_title" value="Primary Categories"}
 {include file="_std_begin.tpl"}
 
-<h2><a name="top"></a>Primary Categories / Geographical Context</h2>
+        <div class="tabHolder">
+                <span class="tabSelected">Geographical Context</span>
+                <a href="/article/Image-Buckets" class="tab">Buckets</a>
+                <a href="/tags/" class="tab">Tags</a>
+        </div>
+        <div style="position:relative;margin-bottom:10px" class="interestBox">
+		<h2 style="margin:0"><a name="top"></a>Geographical Context <small>(Primary Categories)</small></h2>
+	</div>
 
 {assign var="lastcat" value=""}
 {foreach from=$results item=item}
@@ -37,7 +44,7 @@
 	<div class="interestBox">
 	<a name="{$item.tag|replace:' ':'_'|escape:'url'}"></a>
 	{if $item.resultCount > 3}
-		<div style="float:right"><a href="/tags/?tag=top:{$item.tag|escape:'url'}">View {$item.resultCount} images</a></div>
+		<div style="float:right"><a href="/stuff/tagmap.php?tag=top:{$item.tag|escape:'url'}">Coverage Map</a> | <a href="/tags/?tag=top:{$item.tag|escape:'url'}">View <b>{$item.resultCount|thousends}</b> images</a></div>
 	{/if}
 
 	<big><b>{$item.tag|escape:'html'}</b></big>

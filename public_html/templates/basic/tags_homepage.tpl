@@ -7,7 +7,7 @@
 		<span class="tabSelected">Tags</span>
 </div>
 <div style="position:relative;" class="interestBox">
-	<h2 style="margin:0">Tagged Images</h2>
+	<h2 style="margin:0">Tagged Images <sup><a href="/article/Tags" class="about" style="font-size:0.7em">About tags on Geograph</a></sup></h2>
 </div>
 
 <br/><br/>
@@ -37,8 +37,11 @@
 
 	</form>
 </div>
+<div style="text-align:right">
+	<a href="?prefixes">View list of tag prefixes</a>
+</div>
 
-<br/><br/>
+<br/>
 
 {foreach from=$taglist item="data"}
 

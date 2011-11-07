@@ -39,7 +39,7 @@
 </style>
 <h2 style="float:left;margin:0;margin-right:20px">Multi Tagger</h2>
 
-<p id="message">This page allows you to run a keyword search to find images, and then add tags to in bulk.</p>
+<p id="message">This page allows you to run a keyword search to find images, and then add tags to each in quick succession.</p>
 
   <script type="text/javascript">
 
@@ -67,7 +67,7 @@
 
 <div style="width:940px">
 
-	<div id="" class="tagbar" style="background-color:yellow">
+	<div id="" class="tagbar" style="background-color:#cccccc">
 		<ul id="mainlist" class="Sortable">
 			List of tags will appear here.<br/><br/> This list will persist as you switch between images for quick reuse. <br/><br/>
 
@@ -108,7 +108,7 @@
 
 	<div id="mainimage" style="">
 		<br/>
-		<p>This is an experimental new method to bulk add tags. Run a search above to find images. </p>
+		<p>This is an experimental new method to make adding tags to successive images easier. Run a search above to find images. </p>
 
 		<p>Works best if work in batchs by subject. So for example if you submitted a lot of churches, then search for "Church" and add tags. Repeat for other subjects.</p>
 
@@ -118,7 +118,7 @@
 
 		<h3>Current Limitations</h3>
 		<ul>
-			<li>The 'search' for images, is based on the main search engine, can only load the first 1000 images of any given search.</li>
+			<li>The 'search' for images, is based on the main search engine, can only load the first 1000 images of any given search.<br/><br/></li>
 
 			<li>The 'Only images without any tags?' filter is not realtime - so if tags recently added, might still show in results.</li>
 		</ul>
