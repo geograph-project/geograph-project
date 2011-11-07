@@ -306,11 +306,17 @@ $CONF['enable_newmap'] = 1;
 $CONF['map_suffix'] = '';
 
 // configure map and picture of the day on home page
-$CONF['home_potd_width'] = 395;
-$CONF['home_potd_height'] = 293;
+$CONF['home_potd_width'] = 360;
+$CONF['home_potd_height'] = 263;
+$CONF['home_potd_width_tm'] = 395;
+$CONF['home_potd_height_tm'] = 293;
+
 $CONF['home_map_large'] = true;
-$CONF['home_map_width'] = 218;
-$CONF['home_map_height'] = 293;
+
+$CONF['home_map_width'] = 183;
+$CONF['home_map_height'] = 263;
+$CONF['home_map_width_tm'] = 218;
+$CONF['home_map_height_tm'] = 293;
 
 //use the smaller towns database for the 'near...' lines rather than placenames
 $CONF['use_gazetteer'] = 'towns'; //OS250/OS/hist/towns/default

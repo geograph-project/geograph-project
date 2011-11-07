@@ -18,6 +18,11 @@
 
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
+	{if $image->original_width}
+		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">Andere Größen</a> | <a href="/resubmit.php?id={$image->gridimage_id}">Größere Version hochladen</a></div>
+	{elseif $user->user_id eq $image->user_id}
+		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Größere Version hochladen</a></div>
+	{/if}
   {if $thumb}
   	{if $isadmin}
   		<a href="/editimage.php?id={$image->gridimage_id}&amp;thumb=0" style="font-size:0.6em">In voller Größe zeigen</a>
@@ -40,6 +45,14 @@
 </div>
 {if $showfull}
   	{if $isowner and $image->moderation_status eq 'pending'}
+  	  {* FIXME if $thankyou eq 'mod'}
+	  	<h2 class="titlebar" style="background-color:lightgreen">Thank you</h2>
+	  	<p>Your suggestion has been recorded, it will be taken into account during moderation. <a href="/photo/{$image->gridimage_id}">Return to the image page</a></p>
+	  {elseif $thankyou eq 'modreply'}
+	  	<h2 class="titlebar" style="background-color:lightgreen">Thank You</h2>
+	  	<p>Your suggestion has been recorded, it will be taken into account during moderation, however please use the comment box below to explain the reason for the suggestion.</p>
+	  {/if*}
+
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
   	  <h2 class="titlebar">Moderationsvorschlag</h2>

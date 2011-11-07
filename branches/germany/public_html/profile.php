@@ -217,7 +217,7 @@ if ($template=='profile.tpl')
 	$ab=floor($uid/10000);
 	
 	$cacheid="user$ab|{$uid}|{$level}";
-	
+
 	if (isset($_GET['all']) && $USER->registered) {
 		$limit = 5000;
 	} elseif (isset($_GET['more'])) {
@@ -227,6 +227,9 @@ if ($template=='profile.tpl')
 	}
 	$cacheid.="_$limit";
 
+	$map_suffix = get_map_suffix();
+	$cacheid .= $map_suffix;
+	
 	if (!empty($_GET['expand']) || $USER->expand_about == 1) {
 		$cacheid .= "E";
 	}
@@ -302,7 +305,7 @@ if ($template=='profile.tpl')
 		}	
 		
 		if (count($images->images)) {
-			$overview=new GeographMapMosaic('overview'.$CONF['map_suffix']);
+			$overview=new GeographMapMosaic('overview'.$map_suffix);
 			$overview->type_or_user = $uid;
 			$overview->assignToSmarty($smarty, 'overview');
 		}

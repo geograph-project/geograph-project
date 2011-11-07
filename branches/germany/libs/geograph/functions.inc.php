@@ -746,6 +746,16 @@ function getEncoding() {
 	return $encoding;
 }
 
+function get_map_suffix()
+{
+	global $CONF;
+	$map_suffix = $CONF['map_suffix'];
+	if ($map_suffix !== '' && preg_match('#Dillo/#',$_SERVER['HTTP_USER_AGENT'])) {
+		$map_suffix = ''; # can't handle 'clip'
+	}
+	return $map_suffix;
+}
+
 function customGZipHandlerStart() {
 	global $encoding;
 	if ($encoding = getEncoding()) {

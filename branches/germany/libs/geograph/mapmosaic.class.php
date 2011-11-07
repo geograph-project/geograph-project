@@ -286,12 +286,12 @@ class GeographMapMosaic
 			case 'homepage_t':
 				$this->mosaictype = 0;
 				$this->scales = array(0 => 0.2);
-				$this->initTiles(200,$xo,$yo,$CONF['home_map_width'],$CONF['home_map_height'],0.2,false,false,false,!is_null($ycenter));
+				$this->initTiles(200,$xo,$yo,$CONF['home_map_width'],$CONF['home_map_height'],0.2,false,false,false,!is_null($ycenter)); # we assume '_t' and '' to have the same layout
 				break;
 			case 'homepage_tm':
 				$this->mosaictype = 0;
 				$this->scales = array(0 => 5);
-				$this->initTiles(256,$xm,$ym,$CONF['home_map_width'],$CONF['home_map_height'],5,true,false,false,!is_null($ycenter));
+				$this->initTiles(256,$xm,$ym,$CONF['home_map_width_tm'],$CONF['home_map_height_tm'],5,true,false,false,!is_null($ycenter));
 				# FIXME overlay -> overlay_type
 				#       false   -> 0             == normal map
 				#       true    -> 1             == as used as googlemaps tile overlays

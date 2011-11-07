@@ -198,12 +198,15 @@ if ($image->isValid())
 		}
 	}
 
+	$map_suffix = get_map_suffix();
+	$cacheid .= $map_suffix;
+
 	if (!$smarty->is_cached($template, $cacheid))
 	{
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 		$smarty->assign("sid",$sid);
 
-		$image->assignToSmarty($smarty, $sid);
+		$image->assignToSmarty($smarty, $sid, $map_suffix);
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
