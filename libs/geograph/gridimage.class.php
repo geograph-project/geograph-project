@@ -522,7 +522,7 @@ class GridImage
 		return substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8);
 	}
 	
-	function assignToSmarty($smarty, $sid=-1) {
+	function assignToSmarty($smarty, $sid=-1, $map_suffix='') {
 		global $CONF;
 		
 		$taken=$this->getFormattedTakenDate();
@@ -572,7 +572,9 @@ class GridImage
 		//lets add an overview map too
 		#$overview=new GeographMapMosaic('largeoverview');
 		#$overview->setCentre($this->grid_square->x,$this->grid_square->y); //does call setAlignedOrigin
-		$overview=new GeographMapMosaic('largeoverview'.$CONF['map_suffix'], $this->grid_square->x,$this->grid_square->y);
+		#$overview=new GeographMapMosaic('largeoverview'.$CONF['map_suffix'], $this->grid_square->x,$this->grid_square->y);
+		#$overview=new GeographMapMosaic('largeoverview'.get_map_suffix(), $this->grid_square->x,$this->grid_square->y);
+		$overview=new GeographMapMosaic('largeoverview'.$map_suffix, $this->grid_square->x,$this->grid_square->y);
 		$overview->assignToSmarty($smarty, 'overview');
 		$smarty->assign('marker', $overview->getSquarePoint($this->grid_square));
 

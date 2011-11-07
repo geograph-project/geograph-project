@@ -39,6 +39,10 @@ if (isset($_GET['potd'])) {
 	$smarty->caching = 0;
 }
 
+$map_suffix = get_map_suffix();
+$map_suffix_reduced = $map_suffix === '_tm' ? '_tm' : ''; # we assume '_t' and '' to have the same layout
+$cacheid .= $map_suffix;
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -52,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	switch($CONF['template']) { #FIXME better solution needed
 		case 'charcoal': $preset = 'overview_charcoal'; break;
 		case 'ireland': $preset = 'overview_ireland'; break;
-		default: $preset = 'homepage'.$CONF['map_suffix']; break;
+		default: $preset = 'homepage'.$map_suffix; break;
 	}
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = 0;
@@ -132,8 +136,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 	$smarty->assign('m',rand(0,6));	
 
-	$smarty->assign('potd_width', $CONF['home_potd_width']);
-	$smarty->assign('potd_height', $CONF['home_potd_height']);
+	$smarty->assign('potd_width', $CONF['home_potd_width'.$map_suffix_reduced]);
+	$smarty->assign('potd_height', $CONF['home_potd_height'.$map_suffix_reduced]);
 }
 
 

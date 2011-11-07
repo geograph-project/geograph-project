@@ -146,6 +146,9 @@ $style = $USER->getStyle();
 $cacheid.=$style;
 	
 
+$map_suffix = get_map_suffix();
+$cacheid .= $map_suffix;
+
 	#not ready for primetime yet, the user_id SHOULD to be replaced by visitor/has pending-or-rejects/mod switch 
 # when ready to go live, should change the tpl file to remove most of the dynamic tags!
 #$cacheid=($square->gridsquare_id).'.'.md5($_SERVER['QUERY_STRING']).'.'.($USER->user_id);
@@ -946,7 +949,7 @@ if (!isset($_GET['inner'])) {
 	if ($grid_ok) {
 		#$overview=new GeographMapMosaic('largeoverview');
 		#$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
-		$overview=new GeographMapMosaic('largeoverview'.$CONF['map_suffix'],$square->x,$square->y);
+		$overview=new GeographMapMosaic('largeoverview'.$map_suffix,$square->x,$square->y);
 		$smarty->assign('marker', $overview->getSquarePoint($square));
 
 
@@ -973,7 +976,7 @@ if (!isset($_GET['inner'])) {
 		$smarty->assign_by_ref('rastermap', $rastermap);
 
 	} else {
-		$overview=new GeographMapMosaic('overview'.$CONF['map_suffix']);
+		$overview=new GeographMapMosaic('overview'.$map_suffix);
 	}
 	$overview->assignToSmarty($smarty, 'overview');
 }
