@@ -60,6 +60,17 @@ $format_extension = strtolower(str_replace('.','_',$format));
 /**
  * We are building a text search for the first time
  */
+if (!empty($_GET['tag'])) {
+	if (strpos($_GET['tag'],':') !== false) {
+		$_GET['text'] = 'tags:"'.str_replace(':',' ',trim($_GET['tag'])).'"';
+	} elseif (strpos($_GET['tag'],' ') !== false) {
+		$_GET['text'] = 'tags:"'.trim($_GET['tag']).'"';
+	} else {
+		$_GET['text'] = 'tags:'.trim($_GET['tag']);
+	}
+} elseif (!empty($_GET['top'])) {
+	$_GET['text'] = 'tags:"top '.trim($_GET['top']).'"';
+}
 if (isset($_GET['q']) || !empty($_GET['location'])) {
 	if (!empty($_GET['lat']) && !empty($_GET['lon'])) {
 		$_GET['location'] = $_GET['lat'].','.$_GET['lon'];
@@ -319,7 +330,9 @@ for ($i=0; $i<$cnt; $i++)
 	$item->date = strtotime($images->images[$i]->submitted);
 	$item->source = $baselink.preg_replace('/^\//','',$images->images[$i]->profile_link);
 	$item->author = $images->images[$i]->realname;
-
+	if (!empty($images->images[$i]->tags))
+		$item->tags = $images->images[$i]->tags;
+	
 	if ($geoformat) {
 		$item->lat = $images->images[$i]->wgs84_lat;
 		$item->long = $images->images[$i]->wgs84_long;
