@@ -10,7 +10,7 @@
 {include file="_std_begin.tpl"}
 
 {if $geographical}
-	<h2>images for the "Geographical Features" project</h2>
+	<h2>Images for the "Geographical Features" project</h2>
 
 {elseif $private}
 	<h2>Private Tags</h2>
@@ -18,16 +18,33 @@
 	<p>These are images you have tagged with "Private Tags", these lists are only visible to you.</p>
 
 {elseif $example}
-	<h2>Example tagged imags</h2>
+	<h2>Example tagged Images</h2>
 
 {elseif $bucket}
-	<h2>images assigned to buckets</h2>
-	<p>This is only a prototype, to get the ball rolling, more features will be added soon. <a href="/article/Image-Buckets">Read more about buckets here</a></p>
+        <div class="tabHolder">
+                <a href="/tags/primary.php" class="tab">Geographical Context</a>
+                <span class="tabSelected">Buckets</span>
+                <a href="/tags/" class="tab">Tags</a>
+        </div>
+        <div style="position:relative;" class="interestBox">
+		<h2>Image Buckets</h2>
+        </div>
+
+	<p>This is only a prototype, to get the ball rolling; more features will be added soon. <a href="/article/Image-Buckets">Read more about buckets here</a></p>
 
 {else}
-	<h2>Public Tags</h2>
-
-	<p>This is only a prototype, to get the ball rolling, more features will be added soon. <a href="/article/Tags">Read more about tags here</a></p>
+        <div class="tabHolder">
+                <a href="/tags/primary.php" class="tab">Geographical Context</a>
+                <a href="/article/Image-Buckets" class="tab">Buckets</a>
+		{if $thetag || $theprefix || $prefixes}
+                <a href="/tags/" class="tabSelected">Tags</a>
+		{else}
+                <span class="tabSelected">Tags</span>
+		{/if}
+        </div>
+        <div style="position:relative;padding-bottom:3px" class="interestBox">
+		<h2 style="margin:0">Public Tags <sup><a href="/article/Tags" class="about" style="font-size:0.7em">About tags on Geograph</a></sup></h2>
+        </div>
 {/if}
 
 {if $prefixes}
@@ -47,10 +64,12 @@
 		<p>There is a dedicated page for viewing images in the <b>buckets</b> prefix, <a href="/tags/buckets.php">here</a>.</p>
 	{/if}
 
+{elseif $theprefix}
+	<p>Prefix: <b>{$theprefix|escape:'html'}</b></p>
 {/if}
 
 {if $tags}
-	<div class="interestBox" style="font-size:0.8em;line-height:1.4em; text-align:center;margin:20px;{if count($tags) > 100} height:150px;overflow:auto{/if}">
+	<div class="interestBox" style="font-size:0.8em;line-height:1.4em; text-align:center;margin:20px;{if count($tags) > 100 && $results} height:150px;overflow:auto{/if}">
 	TAGS: {foreach from=$tags item=item}
 		{if $item.tag eq $thetag}
 			<span class="nowrap">&nbsp;<b>{$item.tag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}{if isset($theprefix)}?prefix={$theprefix|escape:'url'}{/if}">remove filter</a>] &nbsp;</span>
@@ -60,30 +79,39 @@
 	{/foreach}
 	</div>
 {elseif $thetag}
-	<div class="interestBox">Tag:
-		<span class="nowrap">&nbsp;<b>{$thetag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}{if isset($theprefix)}?prefix={$theprefix|escape:'url'}{/if}">remove filter</a>] &nbsp;</span>
+	<div class="interestBox">
+		 <div style="float:right"><a href="/stuff/tagmap.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Coverage Map</a> <sup style="color:red">new!</sup></div>
+		Tag: <span class="nowrap">&nbsp;<b>{$thetag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}{if isset($theprefix)}?prefix={$theprefix|escape:'url'}{/if}">remove filter</a>] &nbsp;</span>
 	</div>
 {/if}
 
 
 {if $results}
 	{if !$example && !$private}
-		<p>Showing {if $images > 50}{if $gridref}nearest{else}latest{/if} 50 of {$images|thousends}{/if} images tagged with <span class="tag">{if $theprefix}{$theprefix|escape:'html'}:{/if}<a class="taglink">{$thetag|escape:'html'}</a></span> tag{if $gridref}near <a href="/gridref/{$gridref}">{$gridref}</a>{/if}{if $exclude} but excluding images with <span class="tag"><a class="taglink">{$exclude|escape:'html'}</a></span> tag{/if}.</p>
+		<p>Showing {if $images > 50}{if $gridref}nearest{else}latest{/if} 50 of {$images|thousends}{/if} images tagged with <span class="tag">{if $theprefix}{$theprefix|escape:'html'}:{/if}<a class="taglink">{$thetag|escape:'html'}</a></span> tag{if $gridref} near <a href="/gridref/{$gridref}">{$gridref}</a>{/if}{if $exclude} but excluding images with <span class="tag"><a class="taglink">{$exclude|escape:'html'}</a></span> tag{/if}.</p>
 		<div style="text-align:right">
+			{if $images > 15}
+		        <form action="/search.php">
+		        <label for="fq">Search within these images</label>: <input type="text" name="searchtext[]" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+		        <input type="hidden" name="searchtext[]" value="tags:&quot;{if isset($theprefix)}{$theprefix|escape:'html'} {/if}{$thetag|escape:'html'}&quot;"/>
+		        <input type="hidden" name="do" value="1"/>
+		        <input type="submit" value="Find"/>
+		        </form>
+			{/if}
+
 			{if $gridref}
 			<a href="/search.php?q=tags:%22{if $theprefix}{$theprefix|escape:'url'}+{/if}{$thetag|escape:'url'}%22&amp;location={$gridref|escape:'url'}">Images using this tag near {$gridref}</a><br/>
 			{/if}
 			<b><a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View all tagged images</a></b>
 		</div>
 	{/if}
-
+		<table cellspacing="0" cellpadding="2" border="0"> 
 		{foreach from=$results item=image}
-			 <div style="border-top: 1px solid lightgrey; padding-top:1px;" id="result{$image->gridimage_id}">
-
-			  <div style="float:left; position:relative; width:130px; text-align:center">
-				<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
-			  </div>
-
+			<tr bgcolor="#{cycle values="e1e1e1,f3f3f3"}">
+				<td align="center">
+					<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+				</td>
+				<td>
 				<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
 				by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
 				{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
@@ -104,10 +132,10 @@
 				{/foreach}
 				</div>
 				{/if}
-
-			  <br style="clear:both;"/>
-			 </div>
+				</td>
+			</tr>
 		{/foreach}
+		</table>
 
 	{if !$example && !$private}
 		<div style="text-align:right">
@@ -115,7 +143,8 @@
 		</div>
 	{/if}
 
-
+{elseif $thetag}
+	<p><i>No images found - perhaps they haven't been moderated yet</i></p>
 {/if}
 
 

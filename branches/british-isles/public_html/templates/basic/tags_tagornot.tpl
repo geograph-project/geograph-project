@@ -23,6 +23,11 @@
 
 <script>
 	var tag_id='{$tag.tag_id|escape:'javascript'}';
+	{if $done}
+		var doneval = {$done};
+	{else}
+		var doneval = null;
+	{/if}
 </script>
 
 
@@ -66,6 +71,9 @@ Tip: Drag either of the dark gray boxes, to get a confortable layout.
 		}
 		if (doit) {
 			param = param + '&doit='+encodeURIComponent(doit);
+		}
+		if (doneval) {
+			param = param + '&done='+encodeURIComponent(doneval);
 		}
 
 		$('.nextButton').attr('disabled',true);

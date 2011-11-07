@@ -32,11 +32,12 @@
 	<div style="float:left;width:40%;font-size:0.9em">
 
 			<b>New</b>: <input type="text" name="__newtag" size="22" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}"/> <input type="button" value="Add" onclick="useTags(this.form.elements['__newtag'])"/><br/>
+			<input type=checkbox id="mine_checkbox" onclick="loadTagSuggestions(this.form.elements['__newtag'],event);"/> <label for="mine_checkbox">Only suggest tags I have already used</label><br/><br/>
 
 			<b>Current Tags</b>:<br/>
 			<span id="tags">{foreach from=$used item=item name=used}
 			<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tagid:{$item.tag_id}"{if $is_owner} onclick="toggleTag('id:{$item.tag_id}');" ondblclick="editTag('id:{$item.tag_id}','{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'quotes'}');"{/if}>
-			<span>{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
+			<span>{if $item.prefix && $item.prefix!='term' && $item.prefix != 'wiki' && $item.prefix != 'cluster'}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
 			{if $item.is_owner}
 				<input type="hidden" name="tag_id[]" id="tagiid:{$item.tag_id}" class="tagi" value="id:{$item.tag_id}"/>
 				<input type="hidden" name="mode[]" id="tagmid:{$item.tag_id}" value="{$item.status}"/>
@@ -114,7 +115,7 @@
 				{foreach from=$topics item=item name=used}
 					<span class="tag" id="suggestion{$item.tag|escape:'html'}">
 					<a href="javascript:addTag('{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}','{$item.tag|escape:'html'}');" class="taglink">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</a>
-					</span>
+					</span> &nbsp;
 				{/foreach}
 				<br/><small>These are guessed tags based on words in title/description</small>
 			</div>
@@ -152,7 +153,7 @@
 					{foreach from=$item item=value}
 						<span class="tag" id="suggestion{$value|escape:'html'}">
 						<a href="javascript:addTag('top:{$value|escape:'html'}','{$value|escape:'html'}');" class="taglink">{$value|escape:'html'}</a>
-						</span>
+						</span> &nbsp;
 					{/foreach}
 					<br/><small>Click a Geographical Context tag to add it to this image</small>
 				</div>
@@ -262,9 +263,11 @@ function removeTag(text) {
 			count++;
 	});
 
-	if (count == 0) {
+{/literal}{dynamic}{if $is_owner}
+	if (count == 0)
 		$('#tags').prepend('<i><big>No tags for this image</big> - <b>Please add at least one</b><br/></i>');
-	}
+{/if}{/dynamic}{literal}
+
 }
 
 function editTag(name,text) {
@@ -317,6 +320,11 @@ function toggleTag(text) {
 		}
 
 		param = 'q='+encodeURIComponent(that.value);
+		
+		if (document.getElementById('mine_checkbox') && document.getElementById('mine_checkbox').checked == true) {
+			param = param + '&mine=1';
+		}
+
 
 		$.getJSON("/tags/tags.json.php?"+param+"&callback=?",
 
