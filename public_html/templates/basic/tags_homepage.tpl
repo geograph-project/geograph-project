@@ -1,5 +1,23 @@
 {assign var="page_title" value="Publicly tagged images"}
 {include file="_std_begin.tpl"}
+{literal}<style>
+	#taglist li {
+		padding:2px
+	}
+	#taglist li a {
+		text-decoration:none
+	}
+	#taglist li a:hover {
+		text-decoration:underline
+	}
+	#dispThumbs {
+		position:absolute;
+		border:4px solid black;
+		background-color:silver;
+		padding:3px;
+		z-index:1000;
+	}
+</style>{/literal}
 
 <div class="tabHolder">
 		<a href="/tags/primary.php" class="tab">Geographical Context</a>
@@ -23,18 +41,6 @@
 				</ul>
 			</div>
 		</div>
-<style>{literal}
-	#taglist li {
-		padding:2px;
-	}
-	#taglist li a {
-		text-decoration:none;
-	}
-	#taglist li a:hover {
-		text-decoration:underline;
-	}
-</style>{/literal}
-
 	</form>
 </div>
 <div style="text-align:right">
@@ -103,6 +109,39 @@
 
 	$(function() {
 		$('#tagParent').hide();
+
+		var xOffset = 20;
+		var yOffset = 20;
+
+		$('a.taglink').hover(
+			function(e) {
+				$("body").append("<div id='dispThumbs'></div>").css('backgroundColor','red');
+				$("#dispThumbs")
+					.css("top",(e.pageY + xOffset) + "px")
+					.css("left",(e.pageX + yOffset) + "px");
+
+				// on search completion, process the results
+				$.ajax({
+					url: "/syndicator.php"+this.search+"&format=JSON&perpage=3",
+					dataType: 'json',
+					cache: true,
+					success: function (data) {
+						$.each(data.items, function(i,item){
+							$("#dispThumbs").append('<a href="http://www.geograph.org.uk/photo/'+item.guid+'" title="'+item.title+' by '+item.author+'" class="i">'+item.thumbTag+'</a>');
+						});
+					}
+				});
+
+			},
+			function() {
+				$("body").css('backgroundColor','blue');
+				$("#dispThumbs").remove();
+			}
+		).mousemove(function(e){
+			$("#dispThumbs")
+				.css("top",(e.pageY + xOffset) + "px")
+				.css("left",(e.pageX + yOffset) + "px");
+		});
 	});
 
 </script>
