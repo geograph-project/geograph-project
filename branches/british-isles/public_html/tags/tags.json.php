@@ -31,7 +31,7 @@ if (!empty($_GET['callback'])) {
 }
 
 if (!empty($_GET['term'])) {
-	$_GET['q'] = $_GET['term'];	
+	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];	
 }
 
 $db = GeographDatabaseConnection(true);
@@ -71,7 +71,7 @@ if (!empty($_GET['gridimage_id'])) {
 			list($prefix,$_REQUEST['q']) = explode(':',$_REQUEST['q'],2);
 		}
 		
-                $q = trim(preg_replace('/[^\w]+/',' ',str_replace("'",'',$_REQUEST['q'])));
+                $q = trim(preg_replace('/[^\w@]+/',' ',str_replace("'",'',$_REQUEST['q'])));
 		
 		$sphinx = new sphinxwrapper($q);
 		
@@ -90,13 +90,21 @@ if (!empty($_GET['gridimage_id'])) {
 			$sphinx->sort = "prefered DESC"; //within group order
 			$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC"); //overall sort order
 			
-			if ($sphinx->q) {
+			if ($sphinx->q && strpos($sphinx->q,'@') === false) {
 				$sphinx->q = "\"^{$sphinx->q}$\" | (^$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$\"";
 				if (!empty($prefix)) {
 					$sphinx->q = "({$sphinx->q}) @prefix $prefix";
 				}
 			} elseif (!empty($prefix)) {
 				$sphinx->q = "\"^{$prefix}$\" | (^$prefix) | ($prefix) | @tag (^$prefix) | @tag \"^{$prefix}$\"";
+			}
+
+			if (isset($_GET['mine'])) {
+			        init_session();
+			        if (!$USER->registered) {
+			                die("{error: 'not logged in'}");
+			        }
+				$sphinx->addFilters(array('user_id'=>array($USER->user_id)));
 			}
 	
 			$ids = $sphinx->returnIds($pg,'tags');

@@ -50,7 +50,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			'title' => 'Recent Tags',
 			'tags' => $db->CacheGetAll(3600,"SELECT prefix,tag,COUNT(*) `count` FROM tag_public GROUP BY tag_id ORDER BY created DESC LIMIT 50")
 		);
-		if (0) {
 		$taglist[] = array(
 			'title' => 'Popular Tags',
 			'tags' => $db->CacheGetAll(3600*6,"SELECT prefix,tag,COUNT(*) `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY count DESC LIMIT 50")
@@ -67,7 +66,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			'title' => 'Random Tags',
 			'tags' => $db->getAll("SELECT prefix,tag,COUNT(*) `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY RAND() LIMIT 50")
 		);
-		}	
 		$smarty->assign_by_ref('taglist', $taglist);
 	
 	} else {
@@ -75,16 +73,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		$andwhere = '';
 
 		if (isset($_GET['prefix'])) {
-
+	
 			$andwhere = " AND prefix = ".$db->Quote($_GET['prefix']);
 			$smarty->assign('theprefix', $_GET['prefix']);
 		}
 
 		if (!empty($_GET['tag'])) {
-
+		
 			if (strpos($_GET['tag'],':') !== FALSE) {
 				list($prefix,$_GET['tag']) = explode(':',$_GET['tag'],2);
-
+			
 				$andwhere = " AND prefix = ".$db->Quote($prefix);
 				$smarty->assign('theprefix', $prefix);
 				$sphinxq = "tags:\"$prefix {$_GET['tag']}\"";
@@ -93,18 +91,42 @@ if (!$smarty->is_cached($template, $cacheid))
 			} else {
 				$sphinxq = "tags:\"{$_GET['tag']}\"";
 			}
+			$sphinxq = preg_replace('/[^\w:"]+/',' ',$sphinxq);
+		
+			$tags= $db->getAssoc("SELECT tag_id,canonical FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
+		
+			if (!empty($tags)) {
+				$bits = array();
 
-			$col= $db->getCol("SELECT tag_id FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
+				foreach ($tags as $tag_id => $canonical) {
+					if (!empty($canonical)) {
+						$bits[] = "tag_id = $canonical OR canonical = $canonical";
+					} else {
+						$bits[] = "canonical = $tag_id";
+					}
+				}
+				if (!empty($bits)) {
+					$more = $db->getAll("SELECT tag_id,prefix,tag FROM tag WHERE (".implode(") OR (",$bits).")");
+					if ($more) {
+						$sphinxq = array($sphinxq);
+						foreach($more as $tag_id => $row) {
+							$sphinxq[]= "tags:".($row['prefix']?"{$row['prefix']} ":'').preg_replace('/[^\w]+/',' ',$row['tag']);
+							$tags[$tag_id] = 1;
+						}
+						if (count($sphinxq) > 1) {
+							$sphinxq = '('.implode(' ) | (',$sphinxq).' )';
+						} else {
+							$sphinxq = implode('',$sphinxq);
+						}
+					}
+				}
 
-			if (!empty($col)) {
-
+	
 				if (!empty($_GET['photo']) && !empty($db)) {
 					$imagerow = $db->getRow("SELECT grid_reference,x,y,wgs84_lat,wgs84_long FROM gridimage_search WHERE gridimage_id = ".intval($_GET['photo']));
 					$smarty->assign('gridref',$imagerow['grid_reference']);
 				}
-
-				$ids = implode(',',$col);
-
+		
 				if (!empty($_GET['exclude'])) {
 					$exclude= $db->getRow("SELECT * FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['exclude']));
 					if (!empty($exclude)) {
@@ -112,16 +134,16 @@ if (!$smarty->is_cached($template, $cacheid))
 						$smarty->assign('exclude',$exclude['tag']);
 					}
 				}
-
+			
 				$imagelist = new ImageList();
 
 				if ($sphinxq && !empty($CONF['sphinx_host'])) {
-
+				
 					$sphinx = new sphinxwrapper($sphinxq); 
 
 					$sphinx->pageSize = $pgsize = 50; 
 					$pg = 1;
-
+				
 					if (!empty($imagerow)) {
 						$cl = $sphinx->_getClient();
 
@@ -130,16 +152,21 @@ if (!$smarty->is_cached($template, $cacheid))
 						#$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
 
 						$sphinx->sort = "@geodist ASC, @relevance DESC, @id DESC";
+					} elseif ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
+						$cl = $sphinx->_getClient();
+						$cl->SetFilterRange('scenti',20000000,30000000);
 					}
-
+				
 					$ids = $sphinx->returnIds($pg,'_images');
-
+				
 					if (!empty($ids)) {
 						$imagelist->getImagesByIdList($ids);
 						$smarty->assign('images',$sphinx->resultCount);
 					}
-
+				
 				} else {
+					$ids = implode(',',array_keys($tags));
+			
 					if (!empty($exclude)) {
 						$sql = "select gi.*
 							from gridimage_tag gt
@@ -163,7 +190,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 					$imagelist->_getImagesBySql($sql);
 				}
-
+	
 				if (!empty($imagelist->images)) {
 					$ids = array();
 					foreach ($imagelist->images as $idx => $image) {
@@ -189,37 +216,28 @@ if (!$smarty->is_cached($template, $cacheid))
 
 					$smarty->assign_by_ref('results', $imagelist->images);
 				}
-
+			
 				$smarty->assign('thetag', $_GET['tag']);
 
 			}
-
+		
 		}
-
+	
 		$prev_fetch_mode = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-		$prefixes = $db->cacheGetAll(6000,"SELECT LOWER(prefix) AS prefix,COUNT(DISTINCT tag_id) AS tags FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 GROUP BY prefix");
-		$smarty->assign_by_ref('prefixes', $prefixes);
+		if (isset($_GET['prefixes'])) {	
+			$prefixes = $db->cacheGetAll(6000,"SELECT LOWER(prefix) AS prefix,COUNT(DISTINCT tag_id) AS tags FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 GROUP BY prefix");
+			$smarty->assign_by_ref('prefixes', $prefixes);
 
-
-		if (empty($_GET['tag'])) {
-
-			if (empty($andwhere)) {
-				$div = 25;
-				if (!empty($_GET['tag']) && !empty($col)) {
-					$andwhere = " and tag_id mod $div = {$col[0]} mod $div";
-				} else {
-					$andwhere = " and tag_id mod $div = ".rand(0,$div-1);
-				}
-			}
-
-			$tags = $db->getAll($sql = "SELECT LOWER(tag) AS tag,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING(tag_id) WHERE gt.status = 2 $andwhere GROUP BY tag ORDER BY tag LIMIT 1000");
-
+		} elseif (empty($_GET['tag'])) {
+			$tags = $db->cacheGetAll(3600,"SELECT LOWER(tag) AS tag,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING(tag_id) WHERE gt.status = 2 $andwhere GROUP BY tag ORDER BY tag LIMIT 1000");
+	
 			$smarty->assign_by_ref('tags', $tags);
 		}
 	}
 }
 
 $smarty->display($template, $cacheid);
+
 
