@@ -51,6 +51,8 @@ Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /content/syndicator.php
 Disallow: /squares.php
+Disallow: /tags/description.php
+
 
 User-Agent: Googlebot
 User-Agent: Slurp
@@ -111,9 +113,11 @@ Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /content/syndicator.php
 Disallow: /squares.php
+Disallow: /tags/description.php
 Disallow: /*?*apikey
 Disallow: /api/*apikey
 Disallow: /sitemap/
+
 
 
 User-agent: Fasterfox

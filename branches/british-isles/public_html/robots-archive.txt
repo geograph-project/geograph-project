@@ -52,6 +52,7 @@ Disallow: /content/syndicator.php
 Disallow: /content/feed
 Disallow: /article/feed
 Disallow: /squares.php
+Disallow: /tags/description.php
 Disallow: /explore/places/1/
 Disallow: /explore/places/2/
 Disallow: /sitemap/terms/

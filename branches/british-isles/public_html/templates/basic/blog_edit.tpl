@@ -93,7 +93,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 	<label for="description">Blog Entry:</label>
 	<textarea rows="10" cols="80" name="content" style="width:58em">{$content|escape:"html"}</textarea></p>
 
-	{if $errors.extract}</div>{/if}
+	{if $errors.content}</div>{/if}
 </div>
 
 <div class="field">
@@ -106,7 +106,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
 	Suggestions (click to use): <i>But feel free to use your own!</i><br/><a href="javascript:void()" onclick="return useit(this.innerText)">Introducing Myself</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Geographing Trip Report</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Interesting Image</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Completing a Hectad</a>, <a href="javascript:void()" onclick="return useit(this.innerText)">Off-Topic Ramblings</a>.</div>
 
-	{if $errors.title}</div>{/if}
+	{if $errors.tags}</div>{/if}
 </div>
 
 
@@ -120,7 +120,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
 	<div class="fieldnotes">Choose a different template (Displays thumbnails differently)</div>
 
-	{if $errors.licence}</div>{/if}
+	{if $errors.template}</div>{/if}
 </div>
 
 </fieldset>

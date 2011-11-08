@@ -36,11 +36,35 @@ if (empty($_GET))
 	$template = 'tags_homepage.tpl';
 
 
+$where = '';
+$andwhere = '';
 
+if (isset($_GET['prefix'])) {
+
+	$andwhere = " AND prefix = ".$db->Quote($_GET['prefix']);
+	$smarty->assign('theprefix', $_GET['prefix']);
+}
+
+
+
+if (!empty($_GET['tag'])) {
+	$db = GeographDatabaseConnection(true);
+	if (strpos($_GET['tag'],':') !== FALSE) {
+		list($prefix,$_GET['tag']) = explode(':',$_GET['tag'],2);
+		
+		$andwhere = " AND prefix = ".$db->Quote($prefix);
+		$smarty->assign('theprefix', $prefix);
+		$sphinxq = "tags:\"$prefix {$_GET['tag']}\"";
+	} elseif (isset($_GET['prefix'])) {
+		$sphinxq = "tags:\"{$_GET['prefix']} {$_GET['tag']}\"";
+	} else {
+		$sphinxq = "tags:\"{$_GET['tag']}\"";
+	}
+	$smarty->assign('thetag', $_GET['tag']);
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	
 	$db = GeographDatabaseConnection(true);
 	
 	if ($template == 'tags_homepage.tpl') {
@@ -69,38 +93,17 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign_by_ref('taglist', $taglist);
 	
 	} else {
-		$where = '';
-		$andwhere = '';
-
-		if (isset($_GET['prefix'])) {
-	
-			$andwhere = " AND prefix = ".$db->Quote($_GET['prefix']);
-			$smarty->assign('theprefix', $_GET['prefix']);
-		}
-
+		
 		if (!empty($_GET['tag'])) {
 		
-			if (strpos($_GET['tag'],':') !== FALSE) {
-				list($prefix,$_GET['tag']) = explode(':',$_GET['tag'],2);
-			
-				$andwhere = " AND prefix = ".$db->Quote($prefix);
-				$smarty->assign('theprefix', $prefix);
-				$sphinxq = "tags:\"$prefix {$_GET['tag']}\"";
-			} elseif (isset($_GET['prefix'])) {
-				$sphinxq = "tags:\"{$_GET['prefix']} {$_GET['tag']}\"";
-			} else {
-				$sphinxq = "tags:\"{$_GET['tag']}\"";
-			}
-			$sphinxq = preg_replace('/[^\w:"]+/',' ',$sphinxq);
-		
-			$tags= $db->getAssoc("SELECT tag_id,canonical FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
+			$tags= $db->getAssoc("SELECT tag_id,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 		
 			if (!empty($tags)) {
 				$bits = array();
-
-				foreach ($tags as $tag_id => $canonical) {
-					if (!empty($canonical)) {
-						$bits[] = "tag_id = $canonical OR canonical = $canonical";
+				
+				foreach ($tags as $tag_id => $row) {
+					if (!empty($row['canonical'])) {
+						$bits[] = "tag_id = {$row['canonical']} OR canonical = {$row['canonical']}";
 					} else {
 						$bits[] = "canonical = $tag_id";
 					}
@@ -119,6 +122,12 @@ if (!$smarty->is_cached($template, $cacheid))
 							$sphinxq = implode('',$sphinxq);
 						}
 					}
+				}
+				
+				if (count($tags) == 1) {
+					reset($tags);
+					$smarty->assign('onetag',1);
+					$smarty->assign('description',$tags[key($tags)]['description']);
 				}
 
 	
@@ -217,8 +226,10 @@ if (!$smarty->is_cached($template, $cacheid))
 					$smarty->assign_by_ref('results', $imagelist->images);
 				}
 			
-				$smarty->assign('thetag', $_GET['tag']);
+				
 
+			} else {
+				$smarty->assign('thetag', '');
 			}
 		
 		}
@@ -235,6 +246,32 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 			$smarty->assign_by_ref('tags', $tags);
 		}
+	}
+} elseif (!empty($_GET['tag'])) {
+	$tags= $db->getAssoc("SELECT tag_id,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
+	
+	$bits = array();
+
+	foreach ($tags as $tag_id => $row) {
+		if (!empty($row['canonical'])) {
+			$bits[] = "tag_id = {$row['canonical']} OR canonical = {$row['canonical']}";
+		} else {
+			$bits[] = "canonical = $tag_id";
+		}
+	}
+	if (!empty($bits)) {
+		$more = $db->getAll("SELECT tag_id,prefix,tag FROM tag WHERE (".implode(") OR (",$bits).")");
+		if ($more) {
+			foreach($more as $tag_id => $row) {
+				$tags[$tag_id] = 1;
+			}
+		}
+	}
+
+	if (count($tags) == 1) {
+		reset($tags);
+		$smarty->assign('onetag',1);
+		$smarty->assign('description',$tags[key($tags)]['description']);
 	}
 }
 

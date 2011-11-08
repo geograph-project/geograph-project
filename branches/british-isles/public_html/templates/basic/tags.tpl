@@ -78,10 +78,25 @@
 		{/if}
 	{/foreach}
 	</div>
-{elseif $thetag}
+{/if}
+{if $thetag}
 	<div class="interestBox">
 		 <div style="float:right"><a href="/stuff/tagmap.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Coverage Map</a> <sup style="color:red">new!</sup></div>
-		Tag: <span class="nowrap">&nbsp;<b>{$thetag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}{if isset($theprefix)}?prefix={$theprefix|escape:'url'}{/if}">remove filter</a>] &nbsp;</span>
+		Tag: <span class="nowrap">&nbsp;<b>{$thetag|escape:'html'|replace:' ':'&middot;'}</b> &nbsp;</span>
+
+		{if $onetag}
+			{dynamic}{if $user->registered}
+			{if $description}
+				<div style="background-color:white;padding:10px">
+				<b>{$description|escape:'html'}</b>
+				</div>
+				<a href="/tags/description.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Improve description</a>
+			{else}
+				<a href="/tags/description.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Provide a description for this tag!</a>
+			{/if} | {/if}{/dynamic}
+			<a href="/finder/bytag.php?q=tags:{$thetag|escape:'url'}">Related Tags</a>
+		{/if}
+
 	</div>
 {/if}
 
@@ -105,7 +120,7 @@
 			<b><a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View all tagged images</a></b>
 		</div>
 	{/if}
-		<table cellspacing="0" cellpadding="2" border="0"> 
+		<table cellspacing="0" cellpadding="2" border="0">
 		{foreach from=$results item=image}
 			<tr bgcolor="#{cycle values="e1e1e1,f3f3f3"}">
 				<td align="center">
