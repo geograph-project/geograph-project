@@ -5,10 +5,10 @@
 {if $engine->fullText && $engine->criteria->sphinx.query && !$engine->criteria->sphinx.filters && !$engine->criteria->sphinx.impossible && !$engine->criteria->sphinx.x && !$engine->criteria->sphinx.bbox}
 
 <div class="interestBox" style="width:200px;float:right">
-	<div id="results">
+	<div id="results" style="border-bottom:1px solid silver">
 		Loading tags for {$engine->criteria->sphinx.query|escape:'html'} ...
-	</div><br/><br/>
-	Tags are still a work in progress on the site, and many images still don't have tags, so the results here are only approximate.
+	</div><br/>
+	Tags are still a work in progress on the site, and many images still don't have tags, so the results here are <b>only approximate</b>.
 </div>
 
 <script>
@@ -39,13 +39,13 @@ function startIt(query) {
 		cache: true,
 		success: function(data) {
 			if (data && data.length > 0) {
-				str = "Click a Plus button to only show the images with that tag. Click the Minus to exclude.<br/><br/>";
+				str = "Click a Plus button to only show the images with that tag. Click the Minus to exclude. Hover over tag to see buttons.<br/><br/>";
 				for(var tag_id in data) {
 					text = data[tag_id].tag;
 					if (data[tag_id].prefix)
 						text = data[tag_id].prefix+':'+text;
 
-					str = str + '<input type="button" value="-" onclick="redo(\'-'+text+'\')" style="background-color:pink;font-size:0.6em"/><input type="button" value="+" onclick="redo(\''+text+'\')" style="background-color:lightgreen;font-size:0.6em"/> <span>'+text+"</span>"+((data[tag_id].count && data[tag_id].count > 1)?(" ["+data[tag_id].count+"]"):'')+"<br/>";
+					str = str + '<div style="position:relative;padding-left:2px;border-top:1px solid silver" onmouseover="showBtn('+tag_id+')" onmouseout="hideBtn('+tag_id+')"><div style="position:absolute;display:none;top:-2px;left:-40px" id="div'+tag_id+'"><input type="button" value="-" onclick="redo(\'-'+text+'\')" style="background-color:pink;font-size:0.6em"/><input type="button" value="+" onclick="redo(\''+text+'\')" style="background-color:lightgreen;font-size:0.6em"/></div> <span>'+text+"</span>"+((data[tag_id].count && data[tag_id].count > 1)?(" ["+data[tag_id].count+"]"):'')+"</div>";
 				}
 				str = str + "</ol>";
 				$('#results').html(str);
@@ -54,6 +54,13 @@ function startIt(query) {
 			}
 		}
 	});
+}
+
+function showBtn(tag_id) {
+	$('#div'+tag_id).show().parent().css('backgroundColor','white');
+}
+function hideBtn(tag_id) {
+	$('#div'+tag_id).hide().parent().css('backgroundColor','inherit');
 }
 
 jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',function() {
@@ -65,8 +72,8 @@ jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',fu
 
 {else}
 <div class="interestBox" style="width:200px;float:right">
-	Unfortunatly this search is not compatible with the tag browser right now. It works best with plain keyword searches. 
-</div>	
+	Unfortunatly this search is not compatible with the tag browser right now. It works best with plain keyword searches.
+</div>
 {/if}
 
 
@@ -90,7 +97,7 @@ jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',fu
 		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 		<i>{$image->dist_string}</i><br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
-		
+
 		{if $image->excerpt}
 		<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->excerpt}</div>
 		{elseif $image->imageclass}<small>Category: {$image->imageclass}</small>
