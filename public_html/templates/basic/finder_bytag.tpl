@@ -46,17 +46,25 @@
 		<p>Tags on images matching your term, with one example image per tag; Click a tag to find other images with that tag.</p>
 	{/if}
 
+	<table cellspacing="0" cellpadding="2" border="0">
 	{foreach from=$results item=image}
-		<div class="photo33" style="float:left;padding:5px">
-		<div class="interestBox" style="margin-bottom:4px"><span class="tag">{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}:{/if}<a{if $image->count > 1} href="/search.php?searchtext={$q|escape:'url'}+tags:%22{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}+{/if}{$image->tag.tag|escape:'html'}%22"{/if} class="taglink">{$image->tag.tag|escape:'html'}</a></span> <small>x</small><b>{$image->count}</b></div>
-		<div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-		<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
-		<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
-		</div>
+		<tr>
+			<td valign="top" align="center">
+				<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
+			</td>
+			<td valign="top">
+				<div class="interestBox" style="font-weight:bold">
+				<span class="tag">{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}:{/if}<a{if $image->count > 1} href="/search.php?searchtext={$q|escape:'url'}+tags:%22{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}+{/if}{$image->tag.tag|escape:'html'}%22"{/if} class="taglink">{$image->tag.tag|escape:'html'}</a></span> <small>x</small><b>{$image->count}</b></div>
+
+
+				<div class="caption" style="margin-top:10px;">{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
+				<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+			</td>
+		</tr>
 	{foreachelse}
 		<i>No results</i>
 	{/foreach}
-	<br style="clear:both"/>
+	</table>
 
 <div style="margin-top:0px">
 {if $pagesString}
