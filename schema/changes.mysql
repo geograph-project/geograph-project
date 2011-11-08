@@ -2192,7 +2192,62 @@ CREATE TABLE IF NOT EXISTS `tagornot` (
 
 ALTER TABLE  `tag` ADD  `description` TEXT NOT NULL ;
 
+update tag set description = 'Images not taken from the ground. Such as from a plane, helicopter, balloon etc. Does not include images taken from fixed structures like a mast or hill.' where tag_id = 1204;
+
+INSERT INTO `tagornot` 
+SELECT NULL, 1204 AS tag_id, gridimage_id, '' AS user_ids, 0 AS done, NOW() AS created, 0 AS updated FROM gridimage_search LEFT JOIN gridimage_tag gt USING (gridimage_id) WHERE  (title LIKE  '%Aerial%' OR `comment` LIKE  '%Aerial%' OR imageclass LIKE  '%Aerial%') AND gt.gridimage_id IS NULL AND imageclass!='Aerial photo';
+
+delete tagornot.* from gridimage_search inner join tagornot using (gridimage_id) where imageclass='Aerial photo';
+
+
+
+update tag set description = 'Photos taken underground' where tag_id = 5324;
+
+INSERT INTO `tagornot` 
+SELECT NULL, 5324 AS tag_id, gridimage_id, '' AS user_ids, 0 AS done, NOW() AS created, 0 AS updated FROM gridimage_search LEFT JOIN gridimage_tag gt USING (gridimage_id) WHERE  (title LIKE  '%underground%' OR `comment` LIKE  '%underground%' OR imageclass LIKE  '%underground%') AND gt.gridimage_id IS NULL;
+
+INSERT IGNORE INTO `tagornot` 
+SELECT NULL, 5324 AS tag_id, gridimage_id, '' AS user_ids, 0 AS done, NOW() AS created, 0 AS updated FROM gridimage_search LEFT JOIN gridimage_tag gt USING (gridimage_id) WHERE  (title LIKE  '%subterranean%' OR `comment` LIKE  '%subterranean%' OR imageclass LIKE  '%subterranean%') AND gt.gridimage_id IS NULL;
+
+ 
+#################################################
+
+
+ALTER TABLE `queries` MODIFY  `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote','slidebig','excerpt','human','bigger','bytag') NOT NULL default 'full';
+
+ALTER TABLE `queries_archive` MODIFY  `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote','slidebig','excerpt','human','bigger','bytag') NOT NULL default 'full';
+
 
 #################################################
+
+
+CREATE TABLE `tagornot_seed` (
+`query` VARCHAR( 255 ) NOT NULL ,
+`tag_id` INT UNSIGNED NOT NULL ,
+`user_id` INT UNSIGNED NOT NULL ,
+`created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE = MYISAM
+
+#################################################
+
+
+CREATE TABLE `tag_description_log` (
+`log_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`tag_id` INT UNSIGNED NOT NULL ,
+`user_id` INT UNSIGNED NOT NULL ,
+`description` TEXT NOT NULL ,
+`created` DATETIME NOT NULL
+) ENGINE = MYISAM
+
+
+#################################################
+
+
+UPDATE category_primary INNER JOIN tag ON (top = tag.tag AND prefix = 'top') SET tag.description = TRIM(SUBSTRING_INDEX(category_primary.description,'|',1));
+
+
+#################################################
+
+
 
 

@@ -51,6 +51,7 @@ Disallow: /article/edit.php
 Disallow: /article/history.php
 Disallow: /content/syndicator.php
 Disallow: /squares.php
+Disallow: /tags/description.php
 Disallow: /explore/places/1/
 Disallow: /content/
 Disallow: /article/
@@ -119,6 +120,7 @@ Disallow: /syndicator.php?key=
 Disallow: /stuff/kmltest
 Disallow: /content/syndicator.php
 Disallow: /squares.php
+Disallow: /tags/description.php
 Disallow: /sitemap/??.html
 Disallow: /sitemap/??/
 Disallow: /explore/places/1/
