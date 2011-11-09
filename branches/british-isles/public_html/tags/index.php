@@ -103,13 +103,14 @@ if (!$smarty->is_cached($template, $cacheid))
 				
 				foreach ($tags as $tag_id => $row) {
 					if (!empty($row['canonical'])) {
-						$bits[] = "tag_id = {$row['canonical']} OR canonical = {$row['canonical']}";
+						$bits[] = "tag_id = {$row['canonical']}";
+						$bits[] = "canonical = {$row['canonical']}";
 					} else {
 						$bits[] = "canonical = $tag_id";
 					}
 				}
 				if (!empty($bits)) {
-					$more = $db->getAll("SELECT tag_id,prefix,tag FROM tag WHERE (".implode(") OR (",$bits).")");
+					$more = $db->getAll("SELECT tag_id,prefix,tag FROM tag WHERE status = 1 AND (".implode(" OR ",$bits).")");
 					if ($more) {
 						$sphinxq = array($sphinxq);
 						foreach($more as $tag_id => $row) {

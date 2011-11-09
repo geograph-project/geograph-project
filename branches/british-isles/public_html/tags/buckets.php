@@ -49,7 +49,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		
 		if (!empty($row)) {
-		
+			$smarty->assign('theprefix','bucket');
+			
+			$smarty->assign('onetag',1);
+			$smarty->assign('description',$row['description']);
+			
+
 			if (!empty($_GET['exclude'])) {
 				$exclude= $db->getRow("SELECT * FROM tag WHERE tag=".$db->Quote($_GET['exclude']));
 			}
