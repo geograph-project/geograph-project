@@ -35,6 +35,7 @@ $cacheid = md5(serialize($_GET));
 if (empty($_GET))
 	$template = 'tags_homepage.tpl';
 
+$db = GeographDatabaseConnection(true);
 
 $where = '';
 $andwhere = '';
@@ -48,7 +49,6 @@ if (isset($_GET['prefix'])) {
 
 
 if (!empty($_GET['tag'])) {
-	$db = GeographDatabaseConnection(true);
 	if (strpos($_GET['tag'],':') !== FALSE) {
 		list($prefix,$_GET['tag']) = explode(':',$_GET['tag'],2);
 		
@@ -65,30 +65,35 @@ if (!empty($_GET['tag'])) {
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	$db = GeographDatabaseConnection(true);
-	
 	if ($template == 'tags_homepage.tpl') {
 	
 		$taglist = array();
+		if (1) {
+		$taglist[] = array(
+			'title' => 'Recent Descriptions',
+			'tags' => $db->CacheGetAll(3600,"SELECT prefix,tag,description,COUNT(*) `count` FROM tag INNER JOIN gridimage_tag USING (tag_id) WHERE description != '' GROUP BY tag_id ORDER BY tag.updated DESC LIMIT 50")
+		);
+		} else {
 		$taglist[] = array(
 			'title' => 'Recent Tags',
-			'tags' => $db->CacheGetAll(3600,"SELECT prefix,tag,COUNT(*) `count` FROM tag_public GROUP BY tag_id ORDER BY created DESC LIMIT 50")
+			'tags' => $db->CacheGetAll(3600,"SELECT prefix,tag,description,COUNT(*) `count` FROM tag_public GROUP BY tag_id ORDER BY created DESC LIMIT 50")
 		);
+		}
 		$taglist[] = array(
 			'title' => 'Popular Tags',
-			'tags' => $db->CacheGetAll(3600*6,"SELECT prefix,tag,COUNT(*) `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY count DESC LIMIT 50")
+			'tags' => $db->CacheGetAll(3600*6,"SELECT prefix,tag,description,COUNT(*) `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY count DESC LIMIT 50")
 		);
 		$taglist[] = array(
 			'title' => 'Geographical Context',
-			'tags' => $db->CacheGetAll(3600*6,"SELECT prefix,tag,COUNT(*) `count` FROM category_primary INNER JOIN tag_public t ON (top = tag AND prefix = 'top')  WHERE prefix = 'top' GROUP BY tag_id ORDER BY tag")
+			'tags' => $db->CacheGetAll(3600*6,"SELECT prefix,tag,t.description,COUNT(*) `count` FROM category_primary INNER JOIN tag_public t ON (top = tag AND prefix = 'top')  WHERE prefix = 'top' GROUP BY tag_id ORDER BY tag")
 		);
 		$taglist[] = array(
 			'title' => 'Image Buckets',
-			'tags' => $db->CacheGetAll(3600*6,"SELECT prefix,tag,COUNT(*) `count` FROM tag INNER JOIN gridimage_tag USING (tag_id) WHERE tag.status = 1 AND prefix = 'bucket' GROUP BY tag_id ORDER BY tag LIMIT 30")
+			'tags' => $db->CacheGetAll(3600*6,"SELECT prefix,tag,description,COUNT(*) `count` FROM tag INNER JOIN gridimage_tag USING (tag_id) WHERE tag.status = 1 AND prefix = 'bucket' GROUP BY tag_id ORDER BY tag LIMIT 30")
 		);
 		$taglist[] = array(
 			'title' => 'Random Tags',
-			'tags' => $db->getAll("SELECT prefix,tag,COUNT(*) `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY RAND() LIMIT 50")
+			'tags' => $db->getAll("SELECT prefix,tag,description,COUNT(*) `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY RAND() LIMIT 30")
 		);
 		$smarty->assign_by_ref('taglist', $taglist);
 	
@@ -147,7 +152,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			
 				$imagelist = new ImageList();
 
-				if ($sphinxq && !empty($CONF['sphinx_host'])) {
+				if ($sphinxq && !empty($CONF['sphinx_host']) && (empty($_GET['legacy']) || !empty($imagerow)) ) {
 				
 					$sphinx = new sphinxwrapper($sphinxq); 
 

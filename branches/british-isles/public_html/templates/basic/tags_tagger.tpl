@@ -37,7 +37,7 @@
 			<b>Current Tags</b>:<br/>
 			<span id="tags">{foreach from=$used item=item name=used}
 			<span class="tag {if !$item.is_owner}tagGeneral{elseif $item.status eq 2}tagPublic{else}tagPrivate{/if}" id="tagid:{$item.tag_id}"{if $is_owner} onclick="toggleTag('id:{$item.tag_id}');" ondblclick="editTag('id:{$item.tag_id}','{if $item.prefix}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'quotes'}');"{/if}>
-			<span>{if $item.prefix && $item.prefix!='term' && $item.prefix != 'wiki' && $item.prefix != 'cluster'}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
+			<span>{if $item.prefix && $item.prefix!='term' && $item.prefix!='category' && $item.prefix != 'wiki' && $item.prefix != 'cluster'}{$item.prefix|escape:'html'}:{/if}{$item.tag|escape:'html'}</span>
 			{if $item.is_owner}
 				<input type="hidden" name="tag_id[]" id="tagiid:{$item.tag_id}" class="tagi" value="id:{$item.tag_id}"/>
 				<input type="hidden" name="mode[]" id="tagmid:{$item.tag_id}" value="{$item.status}"/>
@@ -338,7 +338,7 @@ function toggleTag(text) {
 				str = '';
 				for(var tag_id in data) {
 					var text = data[tag_id].tag;
-					if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
+					if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='category' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
 						text = data[tag_id].prefix+':'+text;
 					}
 					text = text.replace(/<[^>]*>/ig, "");
@@ -371,7 +371,7 @@ function toggleTag(text) {
 				str = '';
 				for(var tag_id in data) {
 					var text = data[tag_id].tag;
-					if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
+					if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='category' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
 						text = data[tag_id].prefix+':'+text;
 					}
 					text = text.replace(/<[^>]*>/ig, "");

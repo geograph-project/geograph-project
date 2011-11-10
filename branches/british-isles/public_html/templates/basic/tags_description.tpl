@@ -26,7 +26,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
         <div class="tabHolder">
                 <a href="/tags/primary.php" class="tab">Geographical Context</a>
-                <a href="/article/Image-Buckets" class="tab">Buckets</a>
+                <a href="/article/Image-Buckets" class="tab">Image Buckets</a>
 		{if $thetag || $theprefix || $prefixes}
                 <a href="/tags/" class="tabSelected">Tags</a>
 		{else}

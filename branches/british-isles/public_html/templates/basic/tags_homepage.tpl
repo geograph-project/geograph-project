@@ -12,16 +12,21 @@
 	}
 	#dispThumbs {
 		position:absolute;
-		border:4px solid black;
-		background-color:silver;
-		padding:3px;
+		background-color:black;
+		color:white;
+		padding:4px;
 		z-index:1000;
+	} 
+	#dispThumbs div {
+		background-color:silver;
+		margin-top:4px;
+		padding:4px;
 	}
 </style>{/literal}
 
 <div class="tabHolder">
 		<a href="/tags/primary.php" class="tab">Geographical Context</a>
-		<a href="/article/Image-Buckets" class="tab">Buckets</a>
+		<a href="/article/Image-Buckets" class="tab">Image Buckets</a>
 		<span class="tabSelected">Tags</span>
 </div>
 <div style="position:relative;" class="interestBox">
@@ -57,7 +62,7 @@
 		<ol>
 			{foreach from=$data.tags item=item}
 				<li{if $item.count} value="{$item.count}"{/if}><span class="tag">
-						{if $item.prefix && $item.prefix != 'bucket' && $item.prefix != 'top'}<small>{$item.prefix|escape:'html'}:<br/></small>{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}" class="taglink">{$item.tag|escape:'html'}</a>
+						{if $item.prefix && $item.prefix != 'bucket' && $item.prefix != 'top'}<small>{$item.prefix|escape:'html'}:<br/></small>{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}" class="taglink"{if $item.description} title="{$item.description|escape:'html'}"{/if}>{$item.tag|escape:'html'}</a>
 					</span></li>
 			{/foreach}
 		</ol>
@@ -115,7 +120,12 @@
 
 		$('a.taglink').hover(
 			function(e) {
-				$("body").append("<div id='dispThumbs'></div>").css('backgroundColor','red');
+				$("body").append("<div id='dispThumbs'>"+$(this).text()+"<div></div></div>");
+				if (this.title && this.title.length > 1) {
+					this.t = this.title;
+					this.title = '';
+					$("#dispThumbs").html(this.t+"<div></div>");
+				}
 				$("#dispThumbs")
 					.css("top",(e.pageY + xOffset) + "px")
 					.css("left",(e.pageX + yOffset) + "px");
@@ -127,14 +137,16 @@
 					cache: true,
 					success: function (data) {
 						$.each(data.items, function(i,item){
-							$("#dispThumbs").append('<a href="http://www.geograph.org.uk/photo/'+item.guid+'" title="'+item.title+' by '+item.author+'" class="i">'+item.thumbTag+'</a>');
+							$("#dispThumbs div").append('<a href="http://www.geograph.org.uk/photo/'+item.guid+'" title="'+item.title+' by '+item.author+'" class="i">'+item.thumbTag+'</a>');
 						});
 					}
 				});
 
 			},
 			function() {
-				$("body").css('backgroundColor','blue');
+				if (this.t && this.t.length > 1)
+					this.title = this.t;
+				
 				$("#dispThumbs").remove();
 			}
 		).mousemove(function(e){

@@ -84,7 +84,8 @@ $displayclasses =  array(
 			'cooliris' => 'cooliris 3d wall',
 			'mooflow' => 'cover flow',
 			'text' => 'text list only',
-			'spelling' => 'multi editor'
+			'spelling' => 'multi editor',
+			'bytag' => 'tags (experimental)'
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
@@ -1113,7 +1114,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 					}
 				}
 			}
-		} elseif ($display == 'excerpt' || $display == 'landing' || $display == 'human') {
+		} elseif ($display == 'excerpt' || $display == 'bytag' || $display == 'landing' || $display == 'human') {
 			
 			if (empty($engine->criteria->searchtext) && preg_match('/labeled \[(.*)\],/',$engine->criteria->searchdesc,$m)) {
 				$sphinx = new sphinxwrapper($m[1]);
@@ -1130,6 +1131,22 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			foreach ($engine->results as $idx => $image) {
 				$engine->results[$idx]->excerpt = $reply[$idx];
 			}
+		} elseif (strpos($display,'slide') === 0 || $display == 'more') { 
+			$buckets = array('Closeup',
+				'Arty',
+				'Informative',
+				'Aerial',
+				'Telephoto',
+				'Landscape',
+				'Wideangle',
+				'Indoor',
+				'Gone',
+				'People',
+				'Temporary',
+				'Life',
+				'Subterranean', 
+				'Transport');
+			$smarty->assign_by_ref('buckets',$buckets);
 		} 
 		
 		if ($display == 'cluster') {
@@ -1645,9 +1662,13 @@ function smarty_function_searchbreak($params) {
 	if ($b) {
 		if (isset($params['extra']))
 			print "</ul>";
+		if (isset($params['table']))
+			print "<tr><td colspan=2>";
 		print "<div style=\"clear:both;margin-left:0px;padding:2px;\"><b>$b</b></div>";
 		if (isset($params['extra']))
 			print "<ul>";
+		if (isset($params['table']))
+			print "</td></tr>";
 		$image->breakby = $b;
 	}
 	$engine->breaklast = $last;

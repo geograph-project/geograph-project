@@ -3,7 +3,7 @@
 
         <div class="tabHolder">
                 <span class="tabSelected">Geographical Context</span>
-                <a href="/article/Image-Buckets" class="tab">Buckets</a>
+                <a href="/article/Image-Buckets" class="tab">Image Buckets</a>
                 <a href="/tags/" class="tab">Tags</a>
         </div>
         <div style="position:relative;margin-bottom:10px" class="interestBox">
