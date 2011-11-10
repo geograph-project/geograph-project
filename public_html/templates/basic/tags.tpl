@@ -1,4 +1,5 @@
 {if $thetag}
+{if $description}{assign var="meta_description" value=$description}{/if}
 {if $images && $images > 1}{assign var="title" value="`$images` images"}{else}{assign var="title" value="Images"}{/if}
 {if $gridref}{assign var="page_title" value="`$title` tagged with '`$thetag`' near `$gridref`"|escape:'html'}
 {else}{assign var="page_title" value="`$title` tagged with '`$thetag`'"|escape:'html'}{/if}
@@ -23,7 +24,7 @@
 {elseif $bucket}
         <div class="tabHolder">
                 <a href="/tags/primary.php" class="tab">Geographical Context</a>
-                <span class="tabSelected">Buckets</span>
+                <span class="tabSelected">Image Buckets</span>
                 <a href="/tags/" class="tab">Tags</a>
         </div>
         <div style="position:relative;" class="interestBox">
@@ -35,7 +36,7 @@
 {else}
         <div class="tabHolder">
                 <a href="/tags/primary.php" class="tab">Geographical Context</a>
-                <a href="/article/Image-Buckets" class="tab">Buckets</a>
+                <a href="/article/Image-Buckets" class="tab">Image Buckets</a>
 		{if $thetag || $theprefix || $prefixes}
                 <a href="/tags/" class="tabSelected">Tags</a>
 		{else}
@@ -81,7 +82,10 @@
 {/if}
 {if $thetag}
 	<div class="interestBox">
-		 <div style="float:right"><a href="/stuff/tagmap.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Coverage Map</a> <sup style="color:red">new!</sup></div>
+		 <div style="float:right">
+			<a href="/finder/bytag.php?q=tags:{$thetag|escape:'url'}">Related Tags</a> |
+			<a href="/stuff/tagmap.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Coverage Map</a></div>
+
 		Tag: <span class="nowrap">&nbsp;<b>{$thetag|escape:'html'|replace:' ':'&middot;'}</b> &nbsp;</span>
 
 		{if $onetag}
@@ -93,8 +97,7 @@
 				<a href="/tags/description.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Improve description</a>
 			{else}
 				<a href="/tags/description.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Provide a description for this tag!</a>
-			{/if} | {/if}{/dynamic}
-			<a href="/finder/bytag.php?q=tags:{$thetag|escape:'url'}">Related Tags</a>
+			{/if}{/if}{/dynamic}
 		{/if}
 
 	</div>

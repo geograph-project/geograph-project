@@ -86,6 +86,8 @@ if (!empty($_GET['gridimage_id'])) {
 			$client = $sphinx->_getClient();
 
                         $client->SetRankingMode(SPH_RANK_SPH04);
+
+			$client->setFieldWeights(array('tag'=>10));
 			
 			$sphinx->sort = "prefered DESC"; //within group order
 			$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC"); //overall sort order

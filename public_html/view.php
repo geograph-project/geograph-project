@@ -273,7 +273,7 @@ if ($image->isValid())
 	'Landscape',
 	'Wideangle',
 	'Indoor',
-	'Historic',
+	'Gone',
 	'People',
 	'Temporary',
 	'Life',

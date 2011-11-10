@@ -366,7 +366,7 @@ if ($gid) {
 	'Landscape',
 	'Wideangle',
 	'Indoor',
-	'Historic',
+	'Gone',
 	'People',
 	'Temporary',
 	'Life',
@@ -407,9 +407,6 @@ if (!empty($_GET['create'])) {
 	$smarty->assign('create',1);
 }
 
-if (!empty($_REQUEST['gr'])) {
-	$smarty->assign('gr',$_REQUEST['gr']);
-}
 
 
 
