@@ -62,7 +62,7 @@
 				<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree">I like this description!</a></div>
 			{/if}
 			<br/>
-			<b>Buckets</b><br/>
+			<b>Image Buckets</b><br/>
 			{foreach from=$buckets item=item}
 					<label id="label{$item|escape:'html'}" for="check{$item|escape:'html'}" style="color:gray">
 					<input type=checkbox id="check{$item|escape:'html'}" onclick="submitBucket('{$item|escape:'html'}',this.checked?1:0);"> {$item|escape:'html'}
