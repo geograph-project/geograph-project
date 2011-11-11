@@ -145,6 +145,38 @@ class GeographUser
 		return substr(base64_encode($bin), 0, $len);
 	}
 
+	function getPreference($key,$default = null,$session = false) {
+		if ($session && isset($_SESSION[$key])) 
+			return $_SESSION[$key];
+			
+		if (!$this->registered) 
+			return $default;
+			
+		$db = $this->_getDB(true);
+		
+		If (($value =$db->getOne("SELECT value FROM user_preference WHERE user_id={$this->user_id} AND pkey = ".$db->Quote($key))) !== FALSE) {
+			if ($session)
+				$_SESSION[$key] = $value;
+			return value;
+		}
+		return $default;
+	}
+	
+	function setPreference($key,$value,$session = false) {
+		if (!$this->registered) 
+			return false;
+			
+		$db = $this->_getDB();
+		
+		$values = "value=".$db->Quote($value);
+		
+		$db->Execute($sql = "INSERT INTO user_preference SET user_id={$this->user_id},created=NOW(),pkey = ".$db->Quote($key).",$values ON DUPLICATE KEY UPDATE $values");
+		if ($session)
+			$_SESSION[$key] = $value;
+				
+		return $value;	
+	}
+	
 	function getForumSortOrder() {
 		$db = $this->_getDB(true);
 	
@@ -158,16 +190,13 @@ class GeographUser
 		$db->Execute("update user set default_style = '$style' where user_id='{$this->user_id}'");
 		$this->default_style = $style;
 	}
-	
-	
-	
+		
 	function setCreditDefault($realname) {
 		$db = $this->_getDB();
 
 		$db->Execute(sprintf("update user set credit_realname = %s where user_id=%d",$db->Quote($realname),$this->user_id));
 		$this->credit_realname = $realname;
 	}
-	
 	
 	function getStyle($style='white') {
 		$valid_style=array('white', 'black','gray');

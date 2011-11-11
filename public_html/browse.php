@@ -87,6 +87,19 @@ elseif (isset($_SESSION['ht']))
 	$_GET['ht']=intval($_SESSION['ht']);
 }
 
+if (!empty($_GET['displayclass'])) {
+	$smarty->assign('displayclass',$USER->setPreference('browse.displayclass',preg_replace('/[^\w]+/','',$_GET['displayclass']),true));
+} else {
+	$smarty->assign('displayclass',$USER->getPreference('browse.displayclass','tiles',true));
+}
+$displayclasses =  array(
+			'tiles' => 'default',
+			'full' => 'full listing',
+			'thumbs' => 'thumbnails only',
+			);
+$smarty->assign_by_ref('displayclasses',$displayclasses);
+
+
 //set by encoded p param
 if (isset($_GET['p']))
 {	
@@ -544,6 +557,8 @@ if ($grid_given)
 					
 					$memcache->name_set('bx',$mkey,$imagelist->images,$memcache->compress,$memcache->period_long);
 				}
+						
+							
 				
 				$smarty->assign_by_ref('images', $imagelist->images);
 				$smarty->assign('sample', count($imagelist->images) );
@@ -971,6 +986,22 @@ if ($grid_given)
 			//otherwise, lets gether the info we need to display some thumbs
 			if ($square->totalimagecount)
 			{
+			
+				if ($_GET['displayclass'] == 'tiles2') {
+					$images2 = array();
+					$images1 = array();
+					foreach ($images as $idx => $image) {
+						$images1[] = $image;
+						if ($idx%4 == 3) {
+							$images2[] = $images1;
+							$images1 = array();
+						}
+					}
+					
+					$smarty->assign_by_ref('images2', $images2);
+				}
+					
+			
 				$smarty->assign_by_ref('images', $images);
 			}
 		}
