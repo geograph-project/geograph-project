@@ -2226,7 +2226,7 @@ CREATE TABLE `tagornot_seed` (
 `tag_id` INT UNSIGNED NOT NULL ,
 `user_id` INT UNSIGNED NOT NULL ,
 `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE = MYISAM
+) ENGINE = MYISAM'
 
 #################################################
 
@@ -2237,7 +2237,7 @@ CREATE TABLE `tag_description_log` (
 `user_id` INT UNSIGNED NOT NULL ,
 `description` TEXT NOT NULL ,
 `created` DATETIME NOT NULL
-) ENGINE = MYISAM
+) ENGINE = MYISAM'
 
 
 #################################################
@@ -2248,6 +2248,19 @@ UPDATE category_primary INNER JOIN tag ON (top = tag.tag AND prefix = 'top') SET
 
 #################################################
 
+
+CREATE TABLE `user_preference` (
+`pref_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`user_id` INT UNSIGNED NOT NULL ,
+`pkey` VARCHAR( 255 ) NOT NULL ,
+`value` VARCHAR( 255 ) NOT NULL ,
+`created` DATETIME NOT NULL ,
+`updated` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL ,
+UNIQUE `user_id` (`user_id`,`pkey`)
+) ENGINE = MYISAM;
+
+
+#################################################
 
 
 

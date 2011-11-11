@@ -155,7 +155,7 @@
 			<li style="margin-top:4px">View image(s) <a href="/gridref/{$gridref}?viewcenti={$gridref6}"><b>taken in {$gridref6}</b></b></a> or <span class="nowrap">of <a href="/gridref/{$gridref}?centi={$gridref6}"><b>subjects in {$gridref6}</b></a> (if any)</span> </li>
 		{/if}
 
-		<li style="margin-top:4px"><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph Coverage <b>Map</b></a>{if $hectad && $hectad_row}, <a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}" style="background-color:yellow">Photo Mosaic</a>{/if}</li>
+		<li style="margin-top:4px"><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph Coverage <b>Map</b></a>{if $hectad && $hectad_row}, <a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}">Photo Mosaic</a>{/if}</li>
 
 		</ul>
 
@@ -457,12 +457,62 @@
 				<blockquote><p>{$totalimagecount} Images, {$filtered_title}...</p></blockquote>
 			{/if}
 
-			{foreach from=$images item=image}
-				<div class="photo33" style="float:left; {if $sample}width:180px{/if}"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
-				<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
-				<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+			{if $displayclass == 'full'}
+				<table cellspacing="0" cellpadding="3" border="0" style="margin-left:20px">
+				{foreach from=$images item=image}
+					<tr>
+						<td valign="top" align="center">
+							<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
+						</td>
+						<td valign="top" style="border-bottom:1px solid silver">
+							{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
+							<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+							{if $image->comment}
+									<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:90:"... (<u>more</u>)"|geographlinks}</div>
+							{/if}
+						</td>
+					</tr>
+				{/foreach}
+				</table>
+
+			{elseif $displayclass == 'tiles2'}
+				<table cellspacing="0" cellpadding="3" border="0" style="margin-left:20px">
+				{foreach from=$images2 item=images}
+					<tr>
+					{foreach from=$images item=image name="loop"}
+						<td valign="top" align="center" width="{$thumbw+50}" bgcolor="{cycle values="#666666,#6C6C6C"}">
+							<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a>
+						</td>
+					{/foreach}
+					</tr>
+					<tr>
+					{foreach from=$images item=image name="loop"}
+						<td valign="top" align="center" bgcolor="{cycle values="#6C6C6C,#666666"}">
+							<div class="caption">
+							{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a></div>
+							<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+						</td>
+					{/foreach}
+					</tr>
+				{/foreach}
+				</table>
+
+			{elseif $displayclass == 'thumbs'}
+				<div style="position:relative;margin-left:20px">
+				{foreach from=$images item=image}
+					<div style="float:left;position:relative; width:{$thumbw+10}px; height:{$thumbh+10}px">
+					<a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+				{/foreach}
 				</div>
-			{/foreach}
+			{else}
+				{foreach from=$images item=image}
+					<div class="photo33" style="float:left; {if $sample}width:180px{/if}"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
+					<div class="caption"><div class="minheightprop" style="height:2.5em"></div>{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
+					<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+					</div>
+				{/foreach}
+			{/if}
+
 			<br style="clear:left;"/>&nbsp;
 
 			{if $bby == 'centi'}
@@ -491,6 +541,30 @@
 			{if $sample}
 				<div class="interestBox"> Explore more images in this square: | <a href="{linktoself name="by" value="1"}">View <b>Filtering options</b></a> | <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View <b>all {$imagecount} images</b> page by page &gt;&gt;&gt;</a> |</div><br/>
 			{/if}
+
+
+
+			<div class="interestBox" style="text-align:center">
+			<form action="/gridref/{$gridref}" method="get" style="display:inline">
+			<label for="displayclass">Display Format:</label>
+			<select name="displayclass" id="displayclass" size="1" onchange="this.form.submit()">
+				{html_options options=$displayclasses selected=$displayclass}
+			</select>
+			{if $legacy}<input type="hidden" name="legacy" value="1"/>{/if}
+			<noscript>
+			<input type="submit" value="Update"/>
+			</noscript>
+			</form> &nbsp;&nbsp; | &nbsp;&nbsp;
+
+			Background Color: [
+				<a href="{linktoself name="style" value="white"}" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photowhite"} hidelink{/if}{/dynamic}">White</a>
+			/
+				<a href="{linktoself name="style" value="black"}" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photoblack"} hidelink{/if}{/dynamic}">Black</a>
+			/
+				<a href="{linktoself name="style" value="gray"}" rel="nofollow" class="robots-nofollow robots-noindex{dynamic}{if $maincontentclass eq "content_photogray"} hidelink{/if}{/dynamic}">Grey</a>
+			 ]
+			</div>
+
 		{/if}
 	{/if}
 
