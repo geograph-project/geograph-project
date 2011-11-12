@@ -26,11 +26,18 @@ if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by'])) {
 	exit;
 }
 
-require_once('geograph/global.inc.php');
-require_once('geograph/mapmosaic.class.php');
-init_session();
+if (empty($smarty)) {
+	require_once('geograph/global.inc.php');
+	init_session();
 
-$smarty = new GeographPage;
+	$smarty = new GeographPage;
+}
+
+if (isset($_GET['save'])) {
+	$USER->setPreference('statistics.advanced',1,true);
+}
+
+
 
 $template='statistics.tpl';
 $cacheid='statistics|main';
@@ -55,7 +62,12 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$db = GeographDatabaseConnection(true);
-	
+
+	require_once('geograph/mapmosaic.class.php');
+        require_once('geograph/imagelist.class.php');
+
+        //lets find some recent photos
+        new RecentImageList($smarty);	
 
 	require_once('geograph/gridsquare.class.php');
 
@@ -69,7 +81,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	//lets add an overview map too
 	$overview=new GeographMapMosaic('overview');
-	$overview->assignToSmarty($smarty, 'overview');
+	$overview->assignToSmarty($smarty, 'overview2');
 	
 	foreach (array(1,2) as $ri) {
 		$letterlength = 3 - $ri; #should this be auto-realised by selecting a item from gridprefix?

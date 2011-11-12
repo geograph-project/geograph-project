@@ -24,8 +24,15 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-
 $smarty = new GeographPage;
+
+if (isset($_GET['save'])) {
+        $USER->setPreference('statistics.advanced',0,true);
+} elseif ($USER->getPreference('statistics.advanced',0,true)) {
+	include("./statistics.php");
+	exit;
+}
+
 
 $template='numbers.tpl';
 $cacheid='';
