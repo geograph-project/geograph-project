@@ -25,7 +25,11 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'last';
+if (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type'])) {
+        $type = $USER->setPreference('statistics.leaderhectad.type',$_GET['type'],true);
+} else {
+        $type = $USER->getPreference('statistics.leaderhectad.type','last',true);
+}
 
 
 $smarty = new GeographPage;
@@ -35,10 +39,11 @@ $cacheid=$type;
 
 
 $smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hour cache
+$smarty->cache_lifetime = 3600*23; //23hour cache
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad(1);
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');

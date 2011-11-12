@@ -63,9 +63,16 @@
 }
 </style>{/literal}
 
-<div style="position:relative; float:right">
-	&lt; <a href="/statistics.php">More Statistics</a> | <a href="/statistics/moversboard.php">Leaderboard</a> &gt;
+{dynamic}{if $user->registered}
+<div style="position:relative;float:right">
+        <b>simple</b> /
+        <a href="/statistics.php?save">advanced</a>
 </div>
+{else}
+<div style="position:relative; float:right">
+	<a href="/statistics.php">More Statistics</a>
+</div>
+{/if}{/dynamic}
 
 <h2>Geograph Britain and Ireland</h2>
 

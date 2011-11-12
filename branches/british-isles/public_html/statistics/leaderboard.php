@@ -25,7 +25,11 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
+if (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type'])) {
+        $type = $USER->setPreference('statistics.leaderboard.type',$_GET['type'],true);
+} else {
+        $type = $USER->getPreference('statistics.leaderboard.type','points',true);
+}
 
 $date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
 
@@ -120,6 +124,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		$heading = "TPoints";
 		$desc = "'TPoints' awarded";
+
+	} elseif ($type == 'tnf') {
+		if ($filtered) {
+			$sql_where = "i.points='tpoint' and ftf!=1";
+		} else {
+			$sql_table = "user_stat i";
+			$sql_column = "round(tpoints*1.0-points)";
+		}
+		$heading = "TPoints-Firsts";
+		$desc = "number of TPoints minus number of Firsts";
 
 	} elseif ($type == 'geographs') {
 		if ($filtered) {
@@ -459,7 +473,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('images', $images);
 
 
-	$smarty->assign('types', array('first','second','allpoints','geosquares','images','depth'));
+	$smarty->assign('types', array('tpoints','first','second','allpoints','personal','images','depth'));
 	
 	
 	$extra = array();

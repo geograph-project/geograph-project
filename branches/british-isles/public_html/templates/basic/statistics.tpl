@@ -1,5 +1,13 @@
 {assign var="page_title" value="Statistics"}
+{assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
+
+{dynamic}{if $user->registered}
+<div style="position:relative;float:right">
+	<a href="/numbers.php?save">simple</a> /
+	<b>advanced</b>
+</div>
+{/if}{/dynamic}
 
     <h2>Overview Statistics for Geograph Britain and Ireland</h2>
 
@@ -61,17 +69,17 @@
 </tbody>
 </table>
 
-{if $overview}
-<div style="float:right; width:{$overview_width+30}px; position:relative">
+{if $overview2}
+<div style="float:right; width:{$overview2_width+30}px; position:relative">
 
-<div class="map" style="margin-left:20px;border:2px solid black; height:{$overview_height}px;width:{$overview_width}px">
+<div class="map" style="margin-left:20px;border:2px solid black; height:{$overview2_height}px;width:{$overview2_width}px">
 
-<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
+<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview2_width}px;height:{$overview2_height}px;">
 
-{foreach from=$overview key=y item=maprow}
+{foreach from=$overview2 key=y item=maprow}
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
-	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
+	<a href="/mapbrowse.php?o={$overview2_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
 	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 	</div>

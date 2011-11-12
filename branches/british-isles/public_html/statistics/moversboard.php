@@ -25,7 +25,11 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-$type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'images';
+if (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type'])) {
+        $type = $USER->setPreference('statistics.moversboard.type',$_GET['type'],true);
+} else {
+        $type = $USER->getPreference('statistics.moversboard.type','tpoints',true);
+}
 
 
 $smarty = new GeographPage;
@@ -86,7 +90,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		//no need to resort the combined array as should have imlicit ordering!
 	} elseif ($type == 'tpoints') {
 		$sql_column = "sum(i.points='tpoint')";
-                $sql_table = " gridimage_search i ";
+               ## $sql_table = " gridimage_search i ";
 		$heading = "TPoints";
 		$desc = "TPoints";
 	} elseif ($type == 'geographs') {
@@ -245,7 +249,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
-	$smarty->assign('types', array('first','second','allpoints','personal','images','depth'));
+	$smarty->assign('types', array('tpoints','first','second','allpoints','personal','images','depth'));
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
