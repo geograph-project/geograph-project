@@ -440,6 +440,8 @@
 				<li style="padding:2px"><small>by </small><a href="/gridref/{$gridref}?by={$b.type}{$extra}"><b>{$b.name}</b></a> <small>[{$b.count}]</small></li>
 			{/foreach}
 
+				<li style="margin-top:10px;">Tags: <a href="/finder/bytag.php?q=grid_reference:{$gridref}">By Tag Search</a> (<a href="/finder/bytag.php?q={$gridref}">inc surrounding squares</a>) shows breakdown</li>
+
 				<li style="margin-top:10px;">or <b>Clustering Options</b>:<br/>
 				&nbsp; &middot; <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a>,
 				<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=cluster2&amp;breakby=imageclass%2B&amp;orderby=imageclass&amp;do=1">Category</a>,
@@ -468,7 +470,7 @@
 							{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
 							<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
 							{if $image->comment}
-									<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:90:"... (<u>more</u>)"|geographlinks}</div>
+									<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:250:"... (<u>more</u>)"|geographlinks}</div>
 							{/if}
 						</td>
 					</tr>
@@ -513,6 +515,7 @@
 				{/foreach}
 			{/if}
 
+			</table>
 			<br style="clear:left;"/>&nbsp;
 
 			{if $bby == 'centi'}
