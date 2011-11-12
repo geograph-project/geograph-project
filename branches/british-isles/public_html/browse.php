@@ -51,14 +51,8 @@ if (isset($_GET['inner'])) {
 		}
 	}
 
-	if (isset($_GET['t']) && $_GET['t'] > 1) {
-		$template='browse2.tpl';
-		$_SESSION['old_browse'] = 0;
-	} elseif (isset($_SESSION['old_browse']) && $_SESSION['old_browse']) {
-		$template='browse.tpl';
-	} else {
-		$template='browse2.tpl';
-	}
+	$template='browse.tpl';
+
 	$smarty->assign('prefixes', $square->getGridPrefixes());
 	$smarty->assign('kmlist', $square->getKMList());
 }
@@ -90,7 +84,7 @@ elseif (isset($_SESSION['ht']))
 if (!empty($_GET['displayclass'])) {
 	$smarty->assign('displayclass',$USER->setPreference('browse.displayclass',preg_replace('/[^\w]+/','',$_GET['displayclass']),true));
 } else {
-	$smarty->assign('displayclass',$USER->getPreference('browse.displayclass','tiles',true));
+	$smarty->assign('displayclass',$USER->getPreference('browse.displayclass','full',true));
 }
 $displayclasses =  array(
 			'tiles' => 'default',
@@ -254,7 +248,7 @@ if ($grid_given)
 			$smarty->assign('totalimagecount', $sphinx->resultCount);
 			$smarty->assign('imagecount', $sphinx->resultCount);
 
-			if ($square->totalimagecount < 10 || ($USER->registered && !empty($_GET['big']))) {
+			if ($square->totalimagecount < 25 || ($USER->registered && !empty($_GET['big']))) {
 				$smarty->assign('thumbw',213);
 				$smarty->assign('thumbh',160);
 			} else {
@@ -456,7 +450,7 @@ if ($grid_given)
 			
 			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
 			
-			if ($template=='browse2.tpl' && $square->imagecount > 15 && $_GET['by'] !== '1') {
+			if ($square->imagecount > 15 && $_GET['by'] !== '1') {
 				$imagelist = new ImageList();
 				
 				$mkey = $square->grid_reference;
@@ -465,7 +459,7 @@ if ($grid_given)
 				if (empty($imagelist->images)) {
 					$imagelist->_setDB($db);
 				
-					$columns = "gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference";
+					$columns = "gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference,comment";
 					$gis_where = "grid_reference = '{$square->grid_reference}'";
 					$limit = 12;
 					
@@ -508,7 +502,7 @@ if ($grid_given)
 						case 'user+category': 
 							//http://stackoverflow.com/questions/1138006/multi-column-distinct-in-mysql
 
-							$table = $CONF['db_tempdb'].".tmp_".md5(uniqid());
+							$table = $CONF['db_tempdb'].".tmp_browse";#.md5(uniqid());
 
 							$db->Execute("CREATE TEMPORARY TABLE $table SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, REVERSE(gridimage_id)");
 
@@ -630,10 +624,10 @@ if ($grid_given)
 			
 			if (empty($_GET['ht'])) {
 				//we only need these columsn if not hiding thumbnails
-				$columns = ",title,user_id,gi.realname AS credit_realname,IF(gi.realname!='',gi.realname,user.realname) AS realname,user.realname AS user_realname";
+				$columns = ",title,user_id,gi.realname AS credit_realname,IF(gi.realname!='',gi.realname,user.realname) AS realname,user.realname AS user_realname,gi.comment";
 				$gridimage_join = " INNER JOIN user USING(user_id)";
 			} else {
-				$columns = '';
+				$columns = ',gi.comment';
 				$gridimage_join = '';
 			}
 			
@@ -696,7 +690,8 @@ if ($grid_given)
 				}
 			} elseif ($_GET['by'] == 'tag') {
 				$breakdown_title = "Tag";
-				$all = $db->cacheGetAll($cacheseconds,"SELECT tag,COUNT(*) AS count,
+				$columns = str_replace(',user_id',',gi.user_id',$columns);
+				$all = $db->cacheGetAll($cacheseconds,"SELECT IF(prefix!='',CONCAT(prefix,':',tag),tag) AS tag,COUNT(*) AS count,
 				gi.gridimage_id $columns
 				FROM gridimage gi $gridimage_join
 				INNER JOIN gridimage_tag gt ON (gi.gridimage_id = gt.gridimage_id)
@@ -715,12 +710,12 @@ if ($grid_given)
 						$breakdown[$i]['image']->fastInit($row);
 					}
 					if ($row[1] > 1) {
-						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;displayclass=full&amp;q=".urlencode($row[0])."&amp;do=1";
+						$breakdown[$i]['link']="/search.php?gridref={$square->grid_reference}&amp;distance=1&amp;displayclass=full&amp;searchtext=tags:%22".urlencode($row[0])."%22&amp;do=1";
 						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;tag=".urlencode($row[0]).$extra;
 					} elseif ($row[1] == 1) {
 						$breakdown[$i]['link']="/photo/{$row[2]}";
 					} else {
-						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?cluster=".urlencode($row[0]).$extra;
+						$breakdown[$i]['link']="/gridref/{$square->grid_reference}?tag=".urlencode($row[0]).$extra;
 						$breakdown[$i]['centi']="/gridref/{$square->grid_reference}?by=centi&amp;tag=".urlencode($row[0]).$extra;
 					}
 					$i++;
