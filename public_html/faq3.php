@@ -194,6 +194,9 @@ dd div.selected a {
 }
 </style>
 
+<div style="position:relative;float:right">
+        <a href="faq-syndicator.php" class="xml-rss">RSS</a>
+</div>
 
 <h2>Geograph Knowledgebase / FAQ</h2>
 

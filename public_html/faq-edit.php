@@ -84,8 +84,8 @@ if (!empty($_POST) && !empty($_POST['content'])) {
     
     $message = "Thank you! Edit(s) saved. ";
     
-    print "$message<br><br><a href=\"faq3.php#{$row['question_id']}\">Continue</a>";
-    print "<meta http-equiv=\"refresh\" content=\"2;url=faq3.php#{$row['question_id']}\">";
+    print "$message<br><br><a href=\"faq3.php#{$row['answer_id']}\">Continue</a>";
+    print "<meta http-equiv=\"refresh\" content=\"2;url=faq3.php#{$row['answer_id']}\">";
     exit;
 }
 
