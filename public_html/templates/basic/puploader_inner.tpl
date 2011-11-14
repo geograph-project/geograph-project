@@ -118,7 +118,7 @@
 	{if $submit2}
 		<input type="button" value="Done" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(2);} else {return false;}{/literal}"/>
 		<input type="button" value="Next Step &gt;&gt;" onclick="if (checkFormSubmission(this.form,{if $rastermap->enabled}true{else}false{/if}{literal})) { window.parent.doneStep(2); window.parent.clicker(3,true);} else {return false;}{/literal}"/><br/>
-		<a href="{$script_name}?inner&amp;submit2&amp;step=1&amp;grid_reference={$grid_reference}">&lt; Back</a>
+		<br><small><a href="{$script_name}?inner&amp;submit2&amp;step=1&amp;grid_reference={$grid_reference}">&lt; Enter a Grid reference</a> or <a href="/submitmap.php?inner&amp;submit2&amp;grid_reference={$grid_reference}{if $container}&amp;container={$container|escape:'url'}{/if}">Back to Map Overview Map</a></small>
 	{/if}
 	{if $rastermap->enabled}
 		{$rastermap->getFooterTag()}

@@ -196,15 +196,31 @@
 		function updateMapMarkers() {
 			updateMapMarker(document.theForm.grid_reference,false,true);
 
-			if (document.theForm.grid_reference.value.length > 4) {
+			if (document.theForm.grid_reference.value.length > 4 && currentelement) {
 				point = currentelement.getLatLng();
 				map.setCenter(point,12);
 			}
 
 		}
 		AttachEvent(window,'load',updateMapMarkers,false);
-	</script>
 {/literal}
+
+		{dynamic}
+		{if $container}
+			{literal}
+
+			function resizeContainer() {
+				var FramePageHeight =  document.body.offsetHeight + 10;
+				window.parent.document.getElementById('{/literal}{$container|escape:'javascript'}{literal}').style.height=FramePageHeight+'px';
+			}
+
+			AttachEvent(window,'load',resizeContainer,false);
+			{/literal}
+		{/if}
+		{/dynamic}
+
+	</script>
+
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
 

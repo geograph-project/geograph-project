@@ -149,7 +149,7 @@ function restoreService() {
 	var newservice = readCookie('MapSrv');
 	if (newservice) {
 		var ele = document.getElementById('service');
-		for(var q=0;ele.options.length;q++)
+		for(var q=0;q<ele.options.length;q++)
 			if (ele.options[q].value == newservice)
 				ele.options[q].selected = true;
 	}

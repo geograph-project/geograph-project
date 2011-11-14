@@ -46,6 +46,10 @@ if (isset($_REQUEST['picasa'])) {
 	$smarty->assign('submit2',1);
 }
 
+if (!empty($_REQUEST['container'])) {
+	$smarty->assign('container', $_REQUEST['container']);
+}
+
 if (!empty($_REQUEST['grid_reference'])) 
 {
 	$square=new GridSquare;
