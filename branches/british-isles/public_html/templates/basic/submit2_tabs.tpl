@@ -222,9 +222,9 @@ function clearSubmission() {
 </script>
 {/literal}
 
-	<div style="float:right;position:relative;text-align:center">&middot; <a href="/help/submit">Other submission methods</a> &middot;<br/>&middot; <b><a href="/submit.php?redir=false" id="oldlink">Original Submission Method</a></b> &middot;{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
+	<div style="float:right;position:relative;text-align:center"><a href="/submit.php?redir=false" id="oldlink">v1</a> / <b>v2</b> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a>{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
-	<h2>Submit Image <sup style="color:gray">v2:Tabs - Gamma</sup></h2>
+	<h2>Submit Image <sup style="color:gray">v2 with Tabs</sup></h2>
 
 {$status_message}
 
@@ -238,15 +238,6 @@ function clearSubmission() {
 
 
 	<form action="{$script_name}?process" name="theForm" method="post">
-
-	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>:<br/>
-
-	&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
-		<option value="OSOS">Zoomable Modern OS Mapping</option>
-		<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
-		<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option>
-	</select> <small>(OS Maps not available for Ireland)</small></p>
-
 
 	{if !$tab}
 		{assign var="tab" value="1"}
@@ -271,6 +262,16 @@ function clearSubmission() {
 <!-- # -->
 
 	<div id="sd2" class="sd">
+	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>:<br/>
+
+	&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
+		<option value="OSOS">Zoomable Modern OS Mapping</option>
+		<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
+		<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option>
+	</select> <small>(OS Maps not available for Ireland)</small></p>
+
+
+
 		<iframe src="about:blank" id="iframe2" width="100%" height="500px"></iframe>
 	</div>
 <!-- # -->
