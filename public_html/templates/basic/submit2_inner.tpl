@@ -12,7 +12,8 @@
 	{/if}
 
 {if $step eq 0}
-	<div class="interestBox" style="float:right;width:160px;">&middot; <a href="/submit-multi.php" target="_top">Upload a batch of images</a></div>
+	<div class="interestBox" style="float:right;width:160px;">&middot; <a href="/submit-multi.php" target="_top">Upload a batch of images</a><br/>
+			&middot; <a href="/submit2.php?inner&amp;step=1&amp;container={$container|escape:'html'}" targer="_self">Upload a single image</a></div>
 
 		<table id="upload" class="report sortable">
 			<thead>
@@ -67,7 +68,7 @@
 
 		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1{if $container}&amp;container={$container|escape:'url'}{/if}">Upload a new image</a> or <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}">Select an different uploaded image</a></p>
 	{else}
-		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>&middot;  <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}">Select an uploaded image</a> <span style="color:red">New!</span></div>
+		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>&middot;  <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}">Select an uploaded image</a></div>
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
