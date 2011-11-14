@@ -57,7 +57,7 @@ function clicker(step,override,shiftKey) {
 
 	var tabname = 'sh';
 	var divname = 'sd';
-	var steps = new Array(1,2,3,4,9);
+	var steps = new Array(1,2,3,4);
 	for (var idx=0;idx<steps.length;idx++) {
 		q=steps[idx];
 		var newname = (step==q)?'tabSelected':'tab';
@@ -86,16 +86,18 @@ function clicker(step,override,shiftKey) {
 		if (step == 1) {
 			//we dont reload this - as it could be in progress, and features its own 'start over' link
 			//document.getElementById('iframe'+step).src = '/submit2.php?inner&step=1';
-		} else if (step == 9) {
-			if (document.getElementById('iframe'+step).src.endsWith('/submitmap.php?'+loc) == false)
-				   document.getElementById('iframe'+step).src = '/submitmap.php?'+loc;
 		} else if (step == 2) {
-			if (theForm.elements['service']) {
-				loc = loc + "&service="+escape(theForm.elements['service'].options[theForm.elements['service'].selectedIndex].value);
+			if (loc.indexOf('grid_reference') == -1) {
+				if (document.getElementById('iframe'+step).src.endsWith('/submitmap.php?'+loc) == false)
+				   document.getElementById('iframe'+step).src = '/submitmap.php?'+loc;
+			} else {
+				if (theForm.elements['service']) {
+					loc = loc + "&service="+escape(theForm.elements['service'].options[theForm.elements['service'].selectedIndex].value);
+				}
+				//todo - this only NEEDS a 4fig subject GR - the rest is loaded with javascript anyway
+			//	if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?'+loc) == false)
+					   document.getElementById('iframe'+step).src = '/puploader.php?'+loc;
 			}
-			//todo - this only NEEDS a 4fig subject GR - the rest is loaded with javascript anyway
-			if (document.getElementById('iframe'+step).src.endsWith('/puploader.php?'+loc) == false)
-				   document.getElementById('iframe'+step).src = '/puploader.php?'+loc;
 		} else if (step == 3) {
 			if (theForm.elements['photographer_gridref['+name+']'] && theForm.elements['photographer_gridref['+name+']'].value != '') {
 				loc = loc + "&photographer_gridref="+escape(theForm.elements['photographer_gridref['+name+']'].value);
@@ -116,9 +118,11 @@ function clicker(step,override,shiftKey) {
 }
 
 function doneStep(step,dontclose) {
-	document.getElementById('sh'+step).className = "tab sh sy";
-	if (!dontclose) {
-		clicker(step,false);
+	if (document.getElementById('sh'+step)) {
+		document.getElementById('sh'+step).className = "tab sh sy";
+		if (!dontclose) {
+			clicker(step,false);
+		}
 	}
 }
 function showPreview(url,width,height,filename) {
@@ -147,7 +151,7 @@ function restoreService() {
 	var newservice = readCookie('MapSrv');
 	if (newservice) {
 		var ele = document.getElementById('service');
-		for(var q=0;ele.options.length;q++)
+		for(var q=0;q<ele.options.length;q++)
 			if (ele.options[q].value == newservice)
 				ele.options[q].selected = true;
 	}
@@ -245,30 +249,23 @@ function clearSubmission() {
 <!-- # -->
 	<div class="tabHolder">
 		<a id="sh1" href="#" class="tab{if $tab == 1}Selected{/if} sh sn" onclick="return clicker(1,true,event.shiftKey)">1. Upload</a>
-		<a id="sh9" href="#" class="tab{if $tab == 9}Selected{/if} sh sn" onclick="return clicker(9,true,event.shiftKey)" style="font-size:0.9em">Overview Map</a>
-		<a id="sh2" href="#" class="tab{if $tab == 2}Selected{/if} sh sn" onclick="return clicker(2,true,event.shiftKey)">2. Detail Map</a>
-		<a id="sh3" href="#" class="tab{if $tab == 3}Selected{/if} sh sn" onclick="return clicker(3,true,event.shiftKey)">3. Description</a>
+		<a id="sh2" href="#" class="tab{if $tab == 2}Selected{/if} sh sn" onclick="return clicker(2,true,event.shiftKey)">2. Locate</a>
+		<a id="sh3" href="#" class="tab{if $tab == 3}Selected{/if} sh sn" onclick="return clicker(3,true,event.shiftKey)">3. Describe</a>
 		<a id="sh4" href="#" class="tab{if $tab == 4}Selected{/if} sh sn" onclick="return clicker(4,true,event.shiftKey)">4. Confirm and Finish</a>
 	</div>
 
 	<div id="sd1" class="sd" style="display:block">
 		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1" id="iframe1" width="100%" height="520px" style="border:0"></iframe>
 	</div>
-<!-- # -->
 
-	<div id="sd9" class="sd">
-		<iframe src="about:blank" id="iframe9" width="100%" height="700px"></iframe>
-	</div>
 <!-- # -->
 
 	<div id="sd2" class="sd">
-	<p style="background-color:#eeeeee;padding:2px"><b>Options</b>:<br/>
-
-	&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
+	<div style="background-color:#eeeeee;padding:2px"> <label for="service">Prefered Map service:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
 		<option value="OSOS">Zoomable Modern OS Mapping</option>
 		<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
 		<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option>
-	</select> <small>(OS Maps not available for Ireland)</small></p>
+	</select> <small>(OS Maps not available for Ireland)</small></div>
 
 
 
