@@ -851,7 +851,31 @@ split_timer('search','ECR',"$this->query_id/$pg"); //logs the wall time
 		}
 		return $recordSet;
 	}
+	
+	/**
+	 * run a search and return basic UNSORTED results - no special processing, just associtive arrays
+	 * @access public
+	 */
+	function ReturnAssoc($pg,$nocache = false) {
+		$recordSet = $this->ReturnRecordset($pg,$nocache);
 		
+		$results = array();
+		if ($recordSet)	{
+			
+			$i = 0;
+			while (!$recordSet->EOF) 
+			{
+				$results[$recordSet->fields['gridimage_id']] = $recordSet->fields;
+				
+				$recordSet->MoveNext();
+				$i++;
+			}
+			$recordSet->Close(); 
+			$this->numberofimages = $i;
+		}
+		return $results;
+	}
+	
 	/**
 	 * run a standard search and populate $this->results with GridImages
 	 * @access public
