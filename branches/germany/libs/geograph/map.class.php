@@ -4157,6 +4157,7 @@ END;
 	function& getGridInfo()
 	{
 		global $memcache;
+		global $CONF;
 
 		if ($this->type_or_user == -10) {
 			//we want a blank map!
@@ -4180,6 +4181,8 @@ END;
 		
 		$grid=array();
 
+		$tstart = microtime(true);
+		$tcalc = 0;
 		$imgw = $this->image_w;
 		$imgh = $this->image_h;
 		if ($this->mercator) {
@@ -4192,6 +4195,42 @@ END;
 			$cliprightM =  ceil ($rightM  - $this->clipright  * $widthM / $imgw);
 			$cliptopM =    ceil ($topM    - $this->cliptop    * $widthM / $imgw);
 			$clipbottomM = floor($bottomM + $this->clipbottom * $widthM / $imgw);
+			trigger_error("->CP $cliprightM $clipleftM $cliptopM  $clipbottomM", E_USER_NOTICE);
+			# Trying to solve our mysql performance issue:
+			#   select * from
+			#       gridsquare_gmcache gmc inner join gridsquare gs using (gridsquare_id)
+			#   where gmc.gxlow <= $cliprightM and gmc.gxhigh >= $clipleftM
+			#     and gmc.gylow <= $cliptopM and gmc.gyhigh >= $clipbottomM
+			# should use _all_ conditions on gmc, reducing the number of squares a lot _before_ joining.
+			# Moving the conditions to "on (...)" or a combined index makes no difference.
+			#
+			# Current workaround: We know that gxright - gxleft is limited (size of a square), i.e.
+			#    gxright - gxleft < D
+			# so we can add _more_ conditions to improve performance by using
+			#    gxlow between ($clipleftM-$D) and $cliprightM
+			# instead of
+			#    gxlow <= $cliprightM
+			#
+			# This reduces the number of rows to join quite a lot; but still way too much rows...
+			# Next test: (select * from gridsquare_gmcache ... where ...) inner join gridsquare
+			# [Probably a bad idea because join cant't use index now?]
+			#
+			# How to estimate D?
+			#  use $CONF['gmthumbsize12'] = maximal (gxhigh-gxlow)*256/4.0e7*POW(2,12) + some pixels for cropping
+			#  =>  $CONF['gmthumbsize12'] > maximal (gxhigh-gxlow)*256/4.0e7*POW(2,12)
+			#  => maximal (gxhigh-gxlow)  < $CONF['gmthumbsize12']*4.0e7/256/POW(2,12)
+			#                             = $CONF['gmthumbsize12']*4.0e7/POW(2,20)
+			#                             = $CONF['gmthumbsize12']*4.0e7/1048576
+			#
+			# What else to test?
+			# * Get rid of gridsquare_gmcache and add its columns to gridsquare?
+			# * Create a temporary table from gridsquare_gmcache inner join gridsquare every night?
+
+			$squaresize = $CONF['gmthumbsize12'] * 4.0e7 / 1048576;
+			$clipleftMD   = $clipleftM  -$squaresize;
+			$clipbottomMD = $clipbottomM-$squaresize;
+			$cliprightMD  = $cliprightM +$squaresize;
+			$cliptopMD    = $cliptopM   +$squaresize;
 
 			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
 				$where_crit = " and gi2.user_id = {$this->type_or_user}";
@@ -4202,14 +4241,22 @@ END;
 			}
 			$sql="select polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy, "
 				."gs.*,gridimage_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,title,title2 "
-				."from gridsquare_gmcache inner join gridsquare gs using(gridsquare_id) left join gridimage gi ON "
+				#."from gridsquare_gmcache gmc "
+				."from (select * from gridsquare_gmcache where "
+				."gxlow between $clipleftMD and $cliprightM and gxhigh between $clipleftM and $cliprightMD and "
+				."gylow between $clipbottomMD and $cliptopM and gyhigh between $clipbottomM and $cliptopMD "
+				.") gmc "
+				."inner join gridsquare gs on(gs.gridsquare_id=gmc.gridsquare_id) left join gridimage gi ON "
 					."(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id $where_crit2 AND imagecount > 0 AND gridimage_id = 
-						(select gridimage_id from gridimage_search gi2 where gi2.grid_reference=gs.grid_reference 
+						(select gridimage_id from gridimage_search gi2 where gi2.gridsquare_id=gs.gridsquare_id 
 						 $where_crit order by moderation_status+0 desc,seq_no limit 1)
 					) 
 					left join user using(user_id) "
-				."where gxlow <= $cliprightM and gxhigh >= $clipleftM and gylow <= $cliptopM and gyhigh >= $clipbottomM "
-				."and percent_land<>0 group by gs.grid_reference order by y,x";
+				."where "
+				##."gxlow <= $cliprightM and gxhigh >= $clipleftM and gylow <= $cliptopM and gyhigh >= $clipbottomM and "
+				#."gxlow between $clipleftMD and $cliprightM and gxhigh between $clipleftM and $cliprightMD and "
+				#."gylow between $clipbottomMD and $cliptopM and gyhigh between $clipbottomM and $cliptopMD and "
+				."percent_land<>0 group by gs.grid_reference order by y,x";
 		} else {
 			$left=$this->map_x;
 			$bottom=$this->map_y;
@@ -4252,6 +4299,7 @@ END;
 			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
 			$recordSet->fields['title1'] = $recordSet->fields['title'];
 			$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
+			$tcalc -= microtime(true);
 			$poly = array();
 			if ($this->mercator) {
 				$points = $recordSet->fields[0];
@@ -4290,10 +4338,13 @@ END;
 				$recordSet->fields['poly'] = $poly;
 				$grid[]=$recordSet->fields;
 			#}
+			$tcalc += microtime(true);
 			
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close();
+		$ttotal = microtime(true) - $tstart;
+		trigger_error("->t $ttotal, $tcalc", E_USER_NOTICE);
 
 		if ($memcache->valid)
 			$memcache->name_set($mnamespace,$mkey,$grid,$memcache->compress,$mperiod);
