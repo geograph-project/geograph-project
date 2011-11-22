@@ -393,7 +393,7 @@ $CONF['gmgrid'] =  array(3 => "German32", 4 => "German33", 5 => "German31");
  * If your gmcache is already built, you can have a look at
  * SELECT grid_reference, (gxhigh-gxlow)*256/4.0e7*POW(2,12) AS dx FROM `gridsquare_gmcache` INNER JOIN gridsquare USING ( gridsquare_id ) ORDER BY gxhigh - gxlow DESC LIMIT 30
  *
- * Add some 10% for some cropping and round up. It might be a goog idea to use multiples of 2 or 4.
+ * Add some 10% for some cropping and round up. It might be a good idea to use multiples of 2 or 4.
  */
 $CONF['gmthumbsize12'] = 64;
 
