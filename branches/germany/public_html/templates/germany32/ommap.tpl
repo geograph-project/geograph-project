@@ -3,14 +3,41 @@
 
 {include file="_basic_begin.tpl"}
 {else}
-
 {assign var="page_title" value="Geograph Mercator Map"}
+{assign var="extra_meta" value="
+    <link rel=\"stylesheet\" href=\"/ol/theme/default/style.css\" type=\"text/css\" />
+    <link rel=\"stylesheet\" href=\"/ol/theme/default/google.css\" type=\"text/css\" />
+    <!--[if lte IE 6]>
+        <link rel=\"stylesheet\" href=\"/ol/theme/default/ie6-style.css\" type=\"text/css\" />
+    <![endif]-->
+    <!--link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" /-->
+    <style type=\"text/css\">
+        .olImageLoadError `$smarty.ldelim`
+            background-color: transparent;
+            /*background-color: pink;
+	    opacity: 0.5;
+	    filter: alpha(opacity=50);*/ /* IE */
+	`$smarty.rdelim`
+
+        .olControlAttribution `$smarty.ldelim`
+            bottom: 0px 
+        `$smarty.rdelim`
+        #map `$smarty.ldelim`
+            height: 512px;
+        `$smarty.rdelim`
+    </style>
+    <!--script src=\"http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key=`$google_maps_api_key`\"></script>
+    <script src=\"/ol/OpenLayers.js\"></script-->
+"}
 {include file="_std_begin.tpl"}
 {/if}
-
+{if $google_maps_api_key}
+<script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
+{/if}
+<script src="/ol/OpenLayers.js"></script>
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
-<script type="text/javascript" src="{"/mappingG.js"|revision}"></script>
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+<script type="text/javascript" src="{"/mappingO.js"|revision}"></script>
+<!--script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script-->
 {literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -20,10 +47,11 @@
 		
 		//the google map object
 		var map;
+		var markers;
 
 		//the geocoder object
-		var geocoder;
-		var running = false;
+		//var geocoder;
+		//var running = false;
 
 {/literal}
 		var lat0 = {$lat0};
@@ -92,25 +120,6 @@
 		}
 
 /*
- * Based on Opacity GControl by Klokan Petr Pridal (based on XSlider of Mike Williams)
- */
- 
-function OpacityControl( layer, maptype, title ) {
-  this.layer = layer;
-  this.maptype = maptype;
-  this.title = title;
-}
-OpacityControl.prototype = new GControl();
-
-// This function positions the slider to match the specified opacity
-OpacityControl.prototype.setSlider = function(pos) {
-  var left = Math.round((56*pos));
-  this.slide.left = left;
-  this.knob.style.left = left+"px";
-  this.knob.style.top = "0px"; // correction001
-}
-
-// This function reads the slider and sets the overlay opacity level
 OpacityControl.prototype.setOpacity = function() {
   this.layer.opacity = this.slide.left/56;
   if (this.map.getCurrentMapType() != this.maptype)
@@ -122,84 +131,7 @@ OpacityControl.prototype.setOpacity = function() {
   map.setMapType(this.maptype);
   GEvent.trigger(this.layer, "opacitychanged");
 }
-
-// This gets called by the API when addControl(new OpacityControl())
-OpacityControl.prototype.initialize = function(map) {
-  var that=this;
-  this.map = map;
-  //this.layer = layer;
-
-  // Is this MSIE, if so we need to use AlphaImageLoader
-  var agent = navigator.userAgent.toLowerCase();
-  if ((agent.indexOf("msie") > -1) && (agent.indexOf("opera") < 1)){this.ie = true} else {this.ie = false}
-
-  // create the background graphic as a <div> containing an image
-  var container = document.createElement("div");
-  container.style.width="69px";
-  container.style.height="21px";
-
-  // Handle transparent PNG files in MSIE
-  if (this.ie) {
-    var loader = "filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/opacity-slider3.png', sizingMethod='crop');";
-    container.innerHTML = '<div style="height:21px; width:69px; ' +loader+ '" ></div>';
-  } else {
-    container.innerHTML = '<div style="height:21px; width:69px; background-image:url(/img/opacity-slider3.png)" ></div>';
-  }
-
-  // create the knob as a GDraggableObject
-  // Handle transparent PNG files in MSIE
-  if (this.ie) {
-    var loader = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/opacity-slider3.png', sizingMethod='crop');";
-    this.knob = document.createElement("div"); 
-    this.knob.title = this.title;
-    this.knob.style.height="21px";
-    this.knob.style.width="13px";
-    this.knob.style.overflow="hidden";
-    this.knob_img = document.createElement("div"); 
-    this.knob_img.style.height="21px";
-    this.knob_img.style.width="82px";
-    this.knob_img.style.filter=loader;
-    this.knob_img.style.position="relative";
-    this.knob_img.style.left="-69px";
-    this.knob.appendChild(this.knob_img);
-  } else {
-    this.knob = document.createElement("div"); 
-    this.knob.title = this.title;
-    this.knob.style.height="21px";
-    this.knob.style.width="13px";
-    this.knob.style.backgroundImage="url(/img/opacity-slider3.png)";
-    this.knob.style.backgroundPosition="-69px 0px";
-  }
-  container.appendChild(this.knob);
-  this.slide=new GDraggableObject(this.knob, {container:container});
-  this.slide.setDraggableCursor('pointer');
-  this.slide.setDraggingCursor('pointer');
-  this.container = container;
-
-  // attach the control to the map
-  map.getContainer().appendChild(container);
-
-  // init slider
-  this.setSlider( this.layer.opacity );
-
-  // Listen for the slider being moved and set the opacity
-  GEvent.addListener(this.slide, "dragend", function() {that.setOpacity()});
-  GEvent.addListener(this.map, "maptypechanged", function() {
-    if (that.map.getCurrentMapType() != that.maptype) {
-      that.container.style.display="none";
-    } else {
-      that.container.style.display="block";
-      that.setSlider( that.layer.opacity );
-    }
-  } );
-
-  return container;
-}
-
-// Set the default position for the control
-OpacityControl.prototype.getDefaultPosition = function() {
-  return new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(7, 47));
-}
+*/
 
 		/*function GetTileUrl_GeoM(txy, z) {
 			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z;
@@ -241,7 +173,401 @@ OpacityControl.prototype.getDefaultPosition = function() {
 				z + "/" + a.x + "/" + a.y + ".png";
 		}
 
-		function loadmap() {
+		function loadmapO() {
+			var epsg4326 = new OpenLayers.Projection("EPSG:4326"); //FIXME rename to epsg4326
+			var epsg900913 = new OpenLayers.Projection("EPSG:900913"); // FIXME use epsg900913 or map.getProjectionObject()?
+
+			var point1 = new OpenLayers.Geometry.Point(lonmin, latmin);
+			var point2 = new OpenLayers.Geometry.Point(lonmax, latmax);
+			point1.transform(epsg4326, epsg900913);
+			point2.transform(epsg4326, epsg900913);
+
+			var bounds = new OpenLayers.Bounds();
+			bounds.extend(point1);
+			bounds.extend(point2);
+			 //bounds.toBBOX();
+
+			//OpenLayers.Util.onImageLoadErrorColor = "transparent";//FIXME?
+
+			OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+				defaultHandlerOptions: {
+					'single': true,
+					'double': false,
+					'pixelTolerance': 0,
+					'stopSingle': false,
+					'stopDouble': false
+				},
+
+				initialize: function(options) {
+					this.handlerOptions = OpenLayers.Util.extend(
+						{}, this.defaultHandlerOptions
+					);
+					OpenLayers.Control.prototype.initialize.apply(
+						this, arguments
+					); 
+					this.handler = new OpenLayers.Handler.Click(
+						this, {
+							'click': this.trigger
+						}, this.handlerOptions
+					);
+				},
+
+				trigger: function(e) { //FIXME
+					//var lonlat = map.getLonLatFromViewPortPx(e.xy);
+					//alert("You clicked near " + lonlat.lat + " N, " +
+					//                          + lonlat.lon + " E");
+				}
+			});
+
+
+			map = new OpenLayers.Map({
+				div: "map",
+				projection: epsg900913,
+				displayProjection: epsg4326,
+				units: "m",
+				numZoomLevels: 18,
+				//minZoomLevel : 4,
+				//maxZoomLevel : 13,
+				//numZoomLevels : null,
+				maxResolution: 156543.0339,
+				//maxResolution: 156543.0339/16,
+				//zoomOffset: 13, resolutions: [19.1092570678711,9.55462853393555,4.77731426696777,2.38865713348389]
+				//maxExtent: bounds,
+				maxExtent: [-20037508, -20037508, 20037508, 20037508],
+				restrictedExtent: bounds,
+				controls : [
+					new OpenLayers.Control.Navigation(),
+					new OpenLayers.Control.PanZoomBar(),
+					new OpenLayers.Control.LayerSwitcher({'ascending':false}),//FIXME?
+					//new OpenLayers.Control.Permalink(),
+					new OpenLayers.Control.ScaleLine({ 'geodesic' : true }),//FIXME position
+					//new OpenLayers.Control.Permalink('permalink'), //FIXME?
+					//new OpenLayers.Control.MousePosition(),
+					new OpenLayers.Control.Attribution(),
+					//new OpenLayers.Control.OverviewMap(),// FIXME position/zoom level?
+					//new OpenLayers.Control.KeyboardDefaults()
+				]
+			});
+{/literal}
+{if $google_maps_api_key}
+{literal}
+			var gphy = new OpenLayers.Layer.Google(
+				"Google Physical",
+				{type: google.maps.MapTypeId.TERRAIN}
+			);
+
+			var gmap = new OpenLayers.Layer.Google(
+				"Google Streets",
+				{numZoomLevels: 20}
+			);
+
+			var ghyb = new OpenLayers.Layer.Google(
+				"Google Hybrid",
+				{type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
+			);
+
+			var gsat = new OpenLayers.Layer.Google(
+				"Google Satellite",
+				{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
+			);
+{/literal}
+{/if}
+{literal}
+			//subclass XYZ -> XYrZ
+			//errorTileUrl="/maps/transparent_256_256.png"
+			//regMinZoomLevel, regMaxZoomLevel
+			/*OpenLayers.Layer.XYZrZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
+			    errorTileUrl: null,
+			    regMinZoomLevel: null,
+			    regMaxZoomLevel: null,
+			    initialize: function(name, url, errorTileUrl, regMinZoomLevel, regMaxZoomLevel, options) {
+			    }
+			    });*/
+
+			var geo = new OpenLayers.Layer.XYZ(
+				"Geo",
+				//"/tile/0/${z}/${x}/${y}.png",
+				"/tile.php?x=${x}&y=${y}&Z=${z}&t=0",
+				{
+					//attribution: "Data CC-By-SA by <a href='http://openstreetmap.org/'>OpenStreetMap</a>",
+					sphericalMercator : true,
+					minZoomLevel : 4,
+					maxZoomLevel : 13,
+					//maxResolution: 156543.0339/16,
+					numZoomLevels : null,
+					//maxExtent:      bounds,
+					//maxExtent: [-20037508, -20037508, 20037508, 20037508],
+					//restrictedExtent: bounds,
+				}
+			);
+			//FIXME attribution
+			//FIXME displayInLayerSwitcher: false
+			var ogeo = new OpenLayers.Layer.OSM(
+				"OSM+Geo",
+				"http://tile.openstreetmap.org/${z}/${x}/${y}.png"
+			);
+			var ogeosq = new OpenLayers.Layer.XYZ(
+				"Squares",
+				"/tile.php?x=${x}&y=${y}&Z=${z}&l=2&o=1&t=0",
+				{
+					sphericalMercator : true,
+					//minZoomLevel : 4,
+					//maxZoomLevel : 14,
+					// restrictedMinZoom
+					// restrictedMinZoom
+					// serverResolutions
+					// restrictedMinZoom
+					//  maxResolution and numZoomLevels
+					/*zoomOffset: 4,
+					maxResolution: 156543.0339/16,
+					resolutions: [
+						156543.0339/16,
+						156543.0339/32,
+						156543.0339/64,
+						156543.0339/128,
+						156543.0339/256,
+						156543.0339/512,
+						156543.0339/1024,
+						156543.0339/2048,
+						156543.0339/4096,
+						156543.0339/8192,
+						156543.0339/16384,
+						156543.0339/65536
+					],*/
+					restrictedMinZoom:4,
+					//zoomOffset: 4,
+					/*serverResolutions: [
+						156543.0339/16,
+						156543.0339/32,
+						156543.0339/64,
+						156543.0339/128,
+						156543.0339/256,
+						156543.0339/512,
+						156543.0339/1024,
+						156543.0339/2048,
+						156543.0339/4096,
+						156543.0339/8192,
+						156543.0339/16384,
+						156543.0339/65536
+					],*/
+					//numZoomLevels : null,
+					isBaseLayer : false,
+				}
+			);
+			ogeosq.setOpacity(0.5);//FIXME
+			var ogeogr = new OpenLayers.Layer.XYZ(
+				"Grid",
+				"/tile.php?x=${x}&y=${y}&Z=${z}&l=8&o=1",
+				{
+					sphericalMercator : true,
+					minZoomLevel : 4,
+					maxZoomLevel : 14,
+					numZoomLevels : null,
+					isBaseLayer : false,
+				}
+			);
+			var ogeoh = new OpenLayers.Layer.OSM( //FIXME our own version?
+				"Profile",
+				"http://wanderreitkarte.de/hills/${z}/${x}/${y}.png",
+				{
+					attribution: "Hoehen CIAT",//FIXME: wanderreitkarte Nop
+					isBaseLayer : false,
+					minZoomLevel : 8, // enforce?
+					maxZoomLevel : 14,
+					visibility : false, //FIXME
+				}
+			);
+
+			var mapnik = new OpenLayers.Layer.OSM();
+
+			var osmarender = new OpenLayers.Layer.OSM(
+				"OpenStreetMap (Tiles@Home)",
+				"http://tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png"
+			);
+
+			var SHADOW_Z_INDEX = 10;
+			var MARKER_Z_INDEX = 11;
+			var styleMap = new OpenLayers.StyleMap({
+				// img/icons/cam-s.png == img/icons/view-s.png
+				// img/icons/camicon.png  img/icons/viewicon.png
+				externalGraphic:   "/img/icons/viewicon.png", //FIXME cam?
+				backgroundGraphic: "/img/icons/view-s.png",
+				backgroundXOffset: -10,
+				backgroundYOffset: -34,
+				backgroundWidth: 37,
+				backgroundHeight: 34,
+				graphicZIndex: MARKER_Z_INDEX,
+				backgroundGraphicZIndex: SHADOW_Z_INDEX,
+				//pointRadius: 20 //We use xxWitdh/xxHeight
+				graphicWidth: 20,
+				graphicHeight: 34,
+				graphicXOffset: -10, // FIXME Offsets: +/- 1??
+				graphicYOffset: -34,
+			});
+			var mtypelookup = {
+				0: {externalGraphic:   "/img/icons/viewicon.png"},
+				1: {externalGraphic:   "/img/icons/camicon.png"}, //FIXME shadow, ...
+			};
+			styleMap.addUniqueValueRules("default", "mtype", mtypelookup);
+			markers = new OpenLayers.Layer.Vector(
+				"Markers",
+				{
+					styleMap: styleMap,
+					isBaseLayer: false,
+					rendererOptions: {yOrdering: true},
+					renderers: OpenLayers.Layer.Vector.prototype.renderers //FIXME?
+				}
+			);
+			//vectorLayer.features[0].attributes.mtype=0;
+			//vectorLayer.features[1].attributes.mtype=1;
+
+
+			map.addLayers([
+				mapnik, osmarender,
+				geo,
+				ogeo,ogeoh,ogeosq,ogeogr,
+{/literal}
+{if $google_maps_api_key}
+{literal}
+				gphy, gmap, gsat, ghyb,
+{/literal}
+{/if}
+{literal}
+				markers
+			]);
+
+			var overview =  new OpenLayers.Control.OverviewMap({
+				maximized: true
+			});
+			map.addControl(overview);
+
+			function createMarker(e) {
+				var coords = map.getLonLatFromViewPortPx(e.xy);
+				if (currentelement) {
+					currentelement.move(coords);
+				} else {
+					currentelement = new OpenLayers.Feature.Vector(
+						new OpenLayers.Geometry.Point(coords.lon, coords.lat), {mtype:0}
+						//new OpenLayers.Geometry.Point(mpoint.lon, mpoint.lat), {mtype:1}
+					);
+					markers.addFeatures([currentelement]);//FIXME
+				}
+				coords.transform(map.getProjectionObject(), epsg4326);
+				document.theForm.grid_reference.value = coords.lat+" "+coords.lon; //FIXME
+			}
+			function updateMarker(vector, pixel)
+			{
+				var lonlat = map.getLonLatFromPixel(pixel).transform(map.getProjectionObject(), epsg4326);
+				document.theForm.grid_reference.value = lonlat.lat+" "+lonlat.lon; //FIXME
+			}
+			//GEvent.trigger(currentelement,'drag');
+			//updateMapMarker(document.theForm.grid_reference,false,true);
+
+			var dragFeature = new OpenLayers.Control.DragFeature(markers, {'onDrag': updateMarker});
+			map.addControl(dragFeature);
+			dragFeature.activate();
+			var click = new OpenLayers.Control.Click({'trigger': createMarker});
+			map.addControl(click);
+			click.activate();
+
+			var point = new OpenLayers.LonLat(lon0, lat0);
+			var zoom = 5;
+			if (inilat < 90)
+				point = new OpenLayers.LonLat(inilon, inilat);
+			if (iniz >= 4 && iniz <= 14/*FIXME*/)
+				zoom = iniz;
+			map.setCenter(point.transform(epsg4326, map.getProjectionObject()), zoom);
+			if (inimlat < 90) {
+				//currentelement = createMarker(new GLatLng(inimlat, inimlon),null);
+				var mpoint = new OpenLayers.LonLat(inimlon, inimlat);
+				mpoint.transform(epsg4326, map.getProjectionObject());
+				currentelement = new OpenLayers.Feature.Vector(
+					new OpenLayers.Geometry.Point(mpoint.lon, mpoint.lat), {mtype:0}
+					//new OpenLayers.Geometry.Point(mpoint.lon, mpoint.lat), {mtype:1}
+				);
+				markers.addFeatures([currentelement]);//FIXME
+				//GEvent.trigger(currentelement,'drag');
+			}
+		}
+
+    //map.setCenter(point.transform(proj,proj2), zoom);
+    //map.setCenter(point, zoom);
+
+    //map.addControl(new OpenLayers.Control.LayerSwitcher());
+    //map.addControl(new OpenLayers.Control.EditingToolbar(vector));
+    //map.addControl(new OpenLayers.Control.ZoomPanel);
+    //map.addControl(new OpenLayers.Control.Permalink());
+    //map.addControl(new OpenLayers.Control.MousePosition());
+
+/* FIXME/TODO
+
+text like "Loading Map (JavaScript Required)..."
+
+min/max zoom
+
+ini: type
+
+minimal zoom level
+osm+g
+layer switcher
+
+for small maps: grid lines + square
+
+markers /mappingO.js
+ create markers
+ drag marker
+ markers<->form
+ clear markers
+ initial marker
+
+opacity control
+
+extra-meta
+
+permalink
+
+overview map: map type?
+
+host our own osm tiles (hills+mapnik, zoom level <= 14, approx 15GB?)?
+
+*/
+/*  
+    var bounds = new OpenLayers.Bounds();
+    bounds.extend(new OpenLayers.LonLat(lonmin,latmin));
+    bounds.extend(new OpenLayers.LonLat(lonmax,latmax));
+
+var proj = new OpenLayers.Projection("EPSG:4326");
+var point = new OpenLayers.LonLat(-71, 42);
+map.setCenter(point.transform(proj, map.getProjectionObject()));
+
+var bounds = new OpenLayers.Bounds(-74.047185, 40.679648, -73.907005, 40.882078)
+bounds.transform(proj, map.getProjectionObject());
+___________________________
+var point1 = new OpenLayers.Geometry.Point(7, 48);
+point1.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")); 
+
+var point2 = new OpenLayers.Geometry.Point(11, 54);
+point2.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")); 
+
+var bounds = new OpenLayers.Bounds();
+bounds.extend(point1);
+bounds.extend(point2);
+bounds.toBBOX();
+
+
+
+
+
+
+http://openlayers.org/dev/examples/graticule.html
+http://wiki.openstreetmap.org/wiki/OpenLayers_Simple_Example
+...
+*/
+
+
+
+
+		function loadmapG() {
 			if (GBrowserIsCompatible()) {
 				var op = 0.5;
 				if (inio >= 0)
@@ -483,12 +809,12 @@ OpacityControl.prototype.getDefaultPosition = function() {
 			}
 		}
 
-		AttachEvent(window,'load',loadmap,false);
+		AttachEvent(window,'load',loadmapO,false);
 
 		function updateMapMarkers() {
 			updateMapMarker(document.theForm.grid_reference,false,true);
 		}
-		AttachEvent(window,'load',updateMapMarkers,false);
+		//AttachEvent(window,'load',updateMapMarkers,false);//FIXME
 	// ]]>
 	</script>
 {/literal}
@@ -515,7 +841,11 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="hidden" name="setpos" value=""/>
 {/if}
 
-<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>		
+<div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Loading map... -->
+<!--div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
+<!--div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
+<a href="#" id="permalink">Permalink</a>
+<div id="docs"></div>
 
 {if $ext}
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />

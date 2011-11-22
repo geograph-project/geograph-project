@@ -123,6 +123,7 @@ $smarty->assign('latmax', $CONF['gmlatrange'][0][1]);
 $smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);
 $smarty->assign('lonmax', $CONF['gmlonrange'][0][1]);
 
-$smarty->display('gmmap.tpl',$cacheid);
+$smarty->caching = 0; #FIXME
+$smarty->display('ommap.tpl',$cacheid);
 
 ?>
