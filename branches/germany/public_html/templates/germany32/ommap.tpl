@@ -47,7 +47,7 @@
 		
 		//the google map object
 		var map;
-		var markers;
+		var dragmarkers;
 
 		//the geocoder object
 		//var geocoder;
@@ -86,10 +86,11 @@
 
 		function clearMarker() {
 			if (currentelement) {
-				map.removeOverlay(currentelement);
+				dragmarkers.removeFeatures([currentelement]);
+			        currentelement.destroy();
 				currentelement = null;
 				document.theForm.grid_reference.value = '';
-				GEvent.trigger(map, "markergone");
+				//GEvent.trigger(map, "markergone");//FIXME
 			}
 		}
 
@@ -174,9 +175,6 @@ OpacityControl.prototype.setOpacity = function() {
 		}
 
 		function loadmapO() {
-			var epsg4326 = new OpenLayers.Projection("EPSG:4326"); //FIXME rename to epsg4326
-			var epsg900913 = new OpenLayers.Projection("EPSG:900913"); // FIXME use epsg900913 or map.getProjectionObject()?
-
 			var point1 = new OpenLayers.Geometry.Point(lonmin, latmin);
 			var point2 = new OpenLayers.Geometry.Point(lonmax, latmax);
 			point1.transform(epsg4326, epsg900913);
@@ -219,7 +217,6 @@ OpacityControl.prototype.setOpacity = function() {
 				}
 			});
 
-
 			map = new OpenLayers.Map({
 				div: "map",
 				projection: epsg900913,
@@ -239,13 +236,8 @@ OpacityControl.prototype.setOpacity = function() {
 					new OpenLayers.Control.Navigation(),
 					new OpenLayers.Control.PanZoomBar(),
 					new OpenLayers.Control.LayerSwitcher({'ascending':false}),//FIXME?
-					//new OpenLayers.Control.Permalink(),
 					new OpenLayers.Control.ScaleLine({ 'geodesic' : true }),//FIXME position
-					//new OpenLayers.Control.Permalink('permalink'), //FIXME?
-					//new OpenLayers.Control.MousePosition(),
 					new OpenLayers.Control.Attribution(),
-					//new OpenLayers.Control.OverviewMap(),// FIXME position/zoom level?
-					//new OpenLayers.Control.KeyboardDefaults()
 				]
 			});
 {/literal}
@@ -409,7 +401,7 @@ OpacityControl.prototype.setOpacity = function() {
 				1: {externalGraphic:   "/img/icons/camicon.png"}, //FIXME shadow, ...
 			};
 			styleMap.addUniqueValueRules("default", "mtype", mtypelookup);
-			markers = new OpenLayers.Layer.Vector(
+			dragmarkers = new OpenLayers.Layer.Vector(
 				"Markers",
 				{
 					styleMap: styleMap,
@@ -418,9 +410,6 @@ OpacityControl.prototype.setOpacity = function() {
 					renderers: OpenLayers.Layer.Vector.prototype.renderers //FIXME?
 				}
 			);
-			//vectorLayer.features[0].attributes.mtype=0;
-			//vectorLayer.features[1].attributes.mtype=1;
-
 
 			map.addLayers([
 				mapnik, osmarender,
@@ -433,40 +422,32 @@ OpacityControl.prototype.setOpacity = function() {
 {/literal}
 {/if}
 {literal}
-				markers
+				dragmarkers
 			]);
 
 			var overview =  new OpenLayers.Control.OverviewMap({
 				maximized: true
 			});
-			map.addControl(overview);
+			map.addControl(overview); // FIXME map type?
 
-			function createMarker(e) {
+			function moveMarker(e) {
 				var coords = map.getLonLatFromViewPortPx(e.xy);
 				if (currentelement) {
 					currentelement.move(coords);
 				} else {
-					currentelement = new OpenLayers.Feature.Vector(
-						new OpenLayers.Geometry.Point(coords.lon, coords.lat), {mtype:0}
-						//new OpenLayers.Geometry.Point(mpoint.lon, mpoint.lat), {mtype:1}
-					);
-					markers.addFeatures([currentelement]);//FIXME
+					coords.transform(map.getProjectionObject(), epsg4326); //FIXME?
+					currentelement = createMarker(coords, 0);
 				}
-				coords.transform(map.getProjectionObject(), epsg4326);
-				document.theForm.grid_reference.value = coords.lat+" "+coords.lon; //FIXME
-			}
-			function updateMarker(vector, pixel)
-			{
-				var lonlat = map.getLonLatFromPixel(pixel).transform(map.getProjectionObject(), epsg4326);
-				document.theForm.grid_reference.value = lonlat.lat+" "+lonlat.lon; //FIXME
+				//coords.transform(map.getProjectionObject(), epsg4326);
+				//document.theForm.grid_reference.value = coords.lat+" "+coords.lon; //FIXME
 			}
 			//GEvent.trigger(currentelement,'drag');
-			//updateMapMarker(document.theForm.grid_reference,false,true);
+			//updateMapMarker(document.theForm.grid_reference,false,true); //FIXME
 
-			var dragFeature = new OpenLayers.Control.DragFeature(markers, {'onDrag': updateMarker});
+			var dragFeature = new OpenLayers.Control.DragFeature(dragmarkers, {'onDrag': markerOnDrag, 'onComplete': markerOnComplete});
 			map.addControl(dragFeature);
 			dragFeature.activate();
-			var click = new OpenLayers.Control.Click({'trigger': createMarker});
+			var click = new OpenLayers.Control.Click({'trigger': moveMarker});
 			map.addControl(click);
 			click.activate();
 
@@ -478,26 +459,12 @@ OpacityControl.prototype.setOpacity = function() {
 				zoom = iniz;
 			map.setCenter(point.transform(epsg4326, map.getProjectionObject()), zoom);
 			if (inimlat < 90) {
-				//currentelement = createMarker(new GLatLng(inimlat, inimlon),null);
 				var mpoint = new OpenLayers.LonLat(inimlon, inimlat);
-				mpoint.transform(epsg4326, map.getProjectionObject());
-				currentelement = new OpenLayers.Feature.Vector(
-					new OpenLayers.Geometry.Point(mpoint.lon, mpoint.lat), {mtype:0}
-					//new OpenLayers.Geometry.Point(mpoint.lon, mpoint.lat), {mtype:1}
-				);
-				markers.addFeatures([currentelement]);//FIXME
+				currentelement = createMarker(mpoint, 0);
 				//GEvent.trigger(currentelement,'drag');
 			}
 		}
 
-    //map.setCenter(point.transform(proj,proj2), zoom);
-    //map.setCenter(point, zoom);
-
-    //map.addControl(new OpenLayers.Control.LayerSwitcher());
-    //map.addControl(new OpenLayers.Control.EditingToolbar(vector));
-    //map.addControl(new OpenLayers.Control.ZoomPanel);
-    //map.addControl(new OpenLayers.Control.Permalink());
-    //map.addControl(new OpenLayers.Control.MousePosition());
 
 /* FIXME/TODO
 
@@ -507,7 +474,6 @@ min/max zoom
 
 ini: type
 
-minimal zoom level
 osm+g
 layer switcher
 
@@ -531,41 +497,6 @@ overview map: map type?
 host our own osm tiles (hills+mapnik, zoom level <= 14, approx 15GB?)?
 
 */
-/*  
-    var bounds = new OpenLayers.Bounds();
-    bounds.extend(new OpenLayers.LonLat(lonmin,latmin));
-    bounds.extend(new OpenLayers.LonLat(lonmax,latmax));
-
-var proj = new OpenLayers.Projection("EPSG:4326");
-var point = new OpenLayers.LonLat(-71, 42);
-map.setCenter(point.transform(proj, map.getProjectionObject()));
-
-var bounds = new OpenLayers.Bounds(-74.047185, 40.679648, -73.907005, 40.882078)
-bounds.transform(proj, map.getProjectionObject());
-___________________________
-var point1 = new OpenLayers.Geometry.Point(7, 48);
-point1.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")); 
-
-var point2 = new OpenLayers.Geometry.Point(11, 54);
-point2.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913")); 
-
-var bounds = new OpenLayers.Bounds();
-bounds.extend(point1);
-bounds.extend(point2);
-bounds.toBBOX();
-
-
-
-
-
-
-http://openlayers.org/dev/examples/graticule.html
-http://wiki.openstreetmap.org/wiki/OpenLayers_Simple_Example
-...
-*/
-
-
-
 
 		function loadmapG() {
 			if (GBrowserIsCompatible()) {

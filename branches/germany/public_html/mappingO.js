@@ -32,123 +32,117 @@
  var lon1 = 0;
  var lat2 = 0;
  var lon2 = 0;
- var fracGold = 0.5*Math.sqrt(5.0) - 0.5;
+ //var fracGold = 0.5*Math.sqrt(5.0) - 0.5;
+ var epsg4326 = new OpenLayers.Projection("EPSG:4326"); //FIXME rename to epsg4326
+ var epsg900913 = new OpenLayers.Projection("EPSG:900913"); // FIXME use epsg900913 or map.getProjectionObject()?
+
 
  var pickupbox = null;
- 
- function createMarker(point,picon) {
- 	if (picon) {
- 		marker2 = new GMarker(point,{draggable: !iscmap, icon:picon});
- 		//marker2 = new GMarker(point,{draggable: true, icon:picon});
- 		var marker = marker2;
-	} else {
-		marker1 = new GMarker(point, {draggable: true});
-		var marker = marker1;
-	}
-	if (issubmit) {
-		GEvent.addListener(marker, "drag", function() {
-			var pp = marker.getPoint();
-			
-			//create a wgs84 coordinate
-			wgs84=new GT_WGS84();
-			wgs84.setDegrees(pp.lat(), pp.lng());
-			if (ri == -1||issubmit) {
-			if (wgs84.isIreland()) {
-				//convert to Irish
-				var grid=wgs84.getIrish(true);
-			
-			} else if (wgs84.isGreatBritain()) {
-				//convert to OSGB
-				var grid=wgs84.getOSGB();
-			} else if (wgs84.isGermany32()) {
-				//convert to German
-				var grid=wgs84.getGerman32();
-			} else if (wgs84.isGermany33()) {
-				//convert to German
-				var grid=wgs84.getGerman33();
-			} else if (wgs84.isGermany31()) {
-				//convert to German
-				var grid=wgs84.getGerman31();
-			}
-			}
-			else if (ri == 1)
-				var grid=wgs84.getOSGB();
-			else if (ri == 2)
-				var grid=wgs84.getIrish();
-			else if (ri == 3)
-				var grid=wgs84.getGerman32(true, false);
-			else if (ri == 4)
-				var grid=wgs84.getGerman33(true, false);
-			else if (ri == 5)
-				var grid=wgs84.getGerman31(true, false);
-			
-			//get a grid reference with 4 digits of precision
-			var gridref = grid.getGridRef(4);
 
-			if (picon) {
-				lon2 = wgs84.longitude*Math.PI/180.;
-				lat2 = wgs84.latitude*Math.PI/180.;
-				eastings2 = grid.eastings;
-				northings2 = grid.northings;
-				document.theForm.photographer_gridref.value = gridref;
-			} else {
-				lon1 = pp.lng()*Math.PI/180.;
-				lat1 = pp.lat()*Math.PI/180.;
-				eastings1 = grid.eastings;
-				northings1 = grid.northings;
-				document.theForm.grid_reference.value = gridref;
-			}  
-			
-			//if (document.theForm.use6fig)
-			//	document.theForm.use6fig.checked = true;
-			
-			if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
-				map.removeOverlay(pickupbox);
-				pickupbox = null;
-			}
-			
-			if (!iscmap) {
-				updateViewDirection();
-			}
-			
-			if (typeof parentUpdateVariables != 'undefined') {
-				parentUpdateVariables();
-			}
-		});
-	} else {
-		GEvent.addListener(marker, "dragend", function() {
-			marker.setPoint(point);
-		});
+ function markerOnComplete(vector, pixel) {
+	if (!vector.attributes.isdraggable) {
+		vector.move(vector.attributes.initialpos);//FIXME
 	}
+ }
+ function markerOnDrag(vector, pixel) {
+	if (vector.attributes.isdraggable) {
+		//var pp = map.getLonLatFromPixel(pixel).transform(map.getProjectionObject(), epsg4326);
+		var pp = new OpenLayers.LonLat(vector.geometry.x, vector.geometry.y);
+		pp.transform(map.getProjectionObject(), epsg4326);
+		
+		//create a wgs84 coordinate
+		wgs84=new GT_WGS84();
+		wgs84.setDegrees(pp.lat, pp.lon);
+		if (ri == -1||issubmit) {
+		if (wgs84.isIreland()) {
+			//convert to Irish
+			var grid=wgs84.getIrish(true);
+		
+		} else if (wgs84.isGreatBritain()) {
+			//convert to OSGB
+			var grid=wgs84.getOSGB();
+		} else if (wgs84.isGermany32()) {
+			//convert to German
+			var grid=wgs84.getGerman32();
+		} else if (wgs84.isGermany33()) {
+			//convert to German
+			var grid=wgs84.getGerman33();
+		} else if (wgs84.isGermany31()) {
+			//convert to German
+			var grid=wgs84.getGerman31();
+		}
+		}
+		else if (ri == 1)
+			var grid=wgs84.getOSGB();
+		else if (ri == 2)
+			var grid=wgs84.getIrish();
+		else if (ri == 3)
+			var grid=wgs84.getGerman32(true, false);
+		else if (ri == 4)
+			var grid=wgs84.getGerman33(true, false);
+		else if (ri == 5)
+			var grid=wgs84.getGerman31(true, false);
+		
+		//get a grid reference with 4 digits of precision
+		var gridref = grid.getGridRef(4);
+
+		if (vector.attributes.mtype) {//FIXME
+			lon2 = wgs84.longitude*Math.PI/180.;
+			lat2 = wgs84.latitude*Math.PI/180.;
+			eastings2 = grid.eastings;
+			northings2 = grid.northings;
+			document.theForm.photographer_gridref.value = gridref;
+		} else {
+			lon1 = pp.lon*Math.PI/180.;
+			lat1 = pp.lat*Math.PI/180.;
+			eastings1 = grid.eastings;
+			northings1 = grid.northings;
+			document.theForm.grid_reference.value = gridref;
+		}  
+		
+		//if (document.theForm.use6fig)
+		//	document.theForm.use6fig.checked = true;
+		
+		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
+			//map.removeOverlay(pickupbox); //FIXME
+			pickupbox = null;
+		}
+		
+		if (!iscmap) {
+			updateViewDirection();
+		}
+		
+		if (typeof parentUpdateVariables != 'undefined') {//FIXME
+			parentUpdateVariables();
+		}
+	}
+ }
+ 
+ function createMarker(point,type) { // types: 0==normal 1==photographer
+	point.transform(epsg4326, map.getProjectionObject()); //FIXME copy before transform?
+	var marker = new OpenLayers.Feature.Vector(
+		new OpenLayers.Geometry.Point(point.lon, point.lat),
+		{
+			mtype:type,
+			isdraggable: issubmit && !(type && iscmap),
+			initialpos:point
+		}
+	);
+ 	if (type) {
+		marker2 = marker;
+	} else {
+		marker1 = marker;
+	}
+	/*if (type && iscmap)
+		markers.addFeatures([marker]);
+	else*/
+		dragmarkers.addFeatures([marker]);
 	return marker;
 }
 
-function floathash(s) { /* string must not be empty! */
-	var res = 1.0;
-	var len = s.length;
-	for (var i = 0; i < len; ++i) {
-		res *= s.charCodeAt(i)*fracGold;
-		res -= Math.floor(res);
-	}
-	return res;
-}
-
-function inthash(s, n) {
-	return Math.floor(floathash(s)*n);
-}
-
 function createPMarker(ppoint) {
-	var picon = new GIcon();
-	picon.image = "http://"+static_host+"/img/icons/camicon.png";
-	picon.shadow = "http://"+static_host+"/img/icons/cam-s.png";
-	picon.iconSize = new GSize(20, 34);
-	picon.shadowSize = new GSize(37, 34);
-	picon.iconAnchor = new GPoint(10, 34);
-	return createMarker(ppoint,picon)
+	return createMarker(ppoint,1)
 }
-
-
-
 
 function checkFormSubmission(that_form,mapenabled) {
 	if (checkGridReferences(that_form)) {
@@ -222,8 +216,8 @@ function mapMarkerToCenter(that) {
 	} else {
 		currentelement = marker1;
 	}
-	currentelement.setPoint(latlon);
-	GEvent.trigger(currentelement,'drag');
+	currentelement.move(latlon);
+	//GEvent.trigger(currentelement,'drag'); // FIXME
 }
 
 
@@ -290,15 +284,17 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		wgs84 = grid.getWGS84(true);
 
 		//now work with wgs84.latitude and wgs84.longitude
-		var point = new GLatLng(wgs84.latitude,wgs84.longitude);
+		var point = new OpenLayers.LonLat(wgs84.longitude, wgs84.latitude);
 
 		if (currentelement == null && map) {
-			currentelement = createMarker(point,null);
-			map.addOverlay(currentelement);
+			currentelement = createMarker(point,that.name == 'photographer_gridref'? 1 : 0);
+			//map.addOverlay(currentelement);
 
-			GEvent.trigger(currentelement,'drag');
+			//GEvent.trigger(currentelement,'drag');//FIXME
+		} else {
+			point.transform(epsg4326, map.getProjectionObject());
+			currentelement.move(latlon);
 		}
-		currentelement.setPoint(point);
 
 		if (that.name == 'photographer_gridref') {
 			lon2 = wgs84.longitude*Math.PI/180.;
@@ -316,7 +312,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 			updateViewDirection();
 		
 		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
-			setTimeout(" if (pickupbox != null) {map.removeOverlay(pickupbox);pickupbox = null;}",1000);
+			//setTimeout(" if (pickupbox != null) {map.removeOverlay(pickupbox);pickupbox = null;}",1000); //FIXME
 		}
 		
 		if (typeof parentUpdateVariables != 'undefined') {
