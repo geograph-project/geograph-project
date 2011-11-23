@@ -260,20 +260,18 @@ GT_German32.prototype.getGridRef = function(precision)
 	var n="";
 	if (precision>0)
 	{
-		//FIXME round _before_ modulo ...
-		var y=Math.floor(this.northings/100000);
-		var x=Math.floor(this.eastings/100000);
+		var div=5-precision;
+		var factor = Math.pow(10, div);
+		var nr = Math.round(this.northings / factor) * factor;
+		var er = Math.round(this.eastings / factor) * factor;
+
+		var y=Math.floor(nr/100000);
+		var x=Math.floor(er/100000);
 		y -= 52;
 		x -= 2;
 
-
-		var e=Math.round(this.eastings%100000);
-		var n=Math.round(this.northings%100000);
-
-
-		var div=(5-precision);
-		e=Math.round(e / Math.pow(10, div));
-		n=Math.round(n / Math.pow(10, div));
+		var e=(er%100000) / factor;
+		var n=(nr%100000) / factor;
 	} //FIXME else: x, y =?
 	
 	var prefix=GT_German32.prefixes[x][y];
@@ -396,20 +394,18 @@ GT_German33.prototype.getGridRef = function(precision)
 	var n="";
 	if (precision>0)
 	{
-		//FIXME round _before_ modulo ...
-		var y=Math.floor(this.northings/100000);
-		var x=Math.floor(this.eastings/100000);
+		var div=5-precision;
+		var factor = Math.pow(10, div);
+		var nr = Math.round(this.northings / factor) * factor;
+		var er = Math.round(this.eastings / factor) * factor;
+
+		var y=Math.floor(nr/100000);
+		var x=Math.floor(er/100000);
 		y -= 52;
 		x -= 2;
 
-
-		var e=Math.round(this.eastings%100000);
-		var n=Math.round(this.northings%100000);
-
-
-		var div=(5-precision);
-		e=Math.round(e / Math.pow(10, div));
-		n=Math.round(n / Math.pow(10, div));
+		var e=(er%100000) / factor;
+		var n=(nr%100000) / factor;
 	} //FIXME else: x, y =?
 	
 	var prefix=GT_German33.prefixes[x][y];
@@ -530,20 +526,18 @@ GT_German31.prototype.getGridRef = function(precision)
 	var n="";
 	if (precision>0)
 	{
-		//FIXME round _before_ modulo ...
-		var y=Math.floor(this.northings/100000);
-		var x=Math.floor(this.eastings/100000);
+		var div=5-precision;
+		var factor = Math.pow(10, div);
+		var nr = Math.round(this.northings / factor) * factor;
+		var er = Math.round(this.eastings / factor) * factor;
+
+		var y=Math.floor(nr/100000);
+		var x=Math.floor(er/100000);
 		y -= 52;
 		x -= 6;
 
-
-		var e=Math.round(this.eastings%100000);
-		var n=Math.round(this.northings%100000);
-
-
-		var div=(5-precision);
-		e=Math.round(e / Math.pow(10, div));
-		n=Math.round(n / Math.pow(10, div));
+		var e=(er%100000) / factor;
+		var n=(nr%100000) / factor;
 	} //FIXME else: x, y =?
 	
 	var prefix=GT_German31.prefixes[x][y];
