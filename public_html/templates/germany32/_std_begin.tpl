@@ -29,6 +29,30 @@
 {else}
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
 {/if}
+{if $rastermap->service == 'OLayers'}
+<!-- RasterMap.getScriptTag() -->
+{literal}<link rel="stylesheet" href="/ol/theme/default/style.css" type="text/css" />
+    <link rel="stylesheet" href="/ol/theme/default/google.css" type="text/css" />
+    <!--[if lte IE 6]>
+        <link rel="stylesheet" href="/ol/theme/default/ie6-style.css" type="text/css" />
+    <![endif]-->
+    <!--link rel="stylesheet" href="style.css" type="text/css" /-->
+    <style type="text/css">
+        .olImageLoadError {
+            background-color: transparent;
+            /*background-color: pink;
+	    opacity: 0.5;
+	    filter: alpha(opacity=50);*/ /* IE */
+	}
+
+        .olControlAttribution {
+            bottom: 0px;
+        }
+        /*#map {
+            height: 512px;
+        }*/
+    </style>{/literal}
+{/if}
 {if $rastermap->service == 'Google'}
 <!-- RasterMap.getScriptTag() -->
 {literal}<style type="text/css">
