@@ -21,6 +21,7 @@
  */
  
  var currentelement = null;
+ var dragmarkers = null;
  
  var marker1 = null;
  var eastings1 = 0;
@@ -32,19 +33,55 @@
  var lon1 = 0;
  var lat2 = 0;
  var lon2 = 0;
- //var fracGold = 0.5*Math.sqrt(5.0) - 0.5;
- var epsg4326 = new OpenLayers.Projection("EPSG:4326"); //FIXME rename to epsg4326
+ var epsg4326 = new OpenLayers.Projection("EPSG:4326");
  var epsg900913 = new OpenLayers.Projection("EPSG:900913"); // FIXME use epsg900913 or map.getProjectionObject()?
 
 
  var pickupbox = null;
 
- function markerOnComplete(vector, pixel) {
+ function initMarkersLayer() {
+	var SHADOW_Z_INDEX = 10;
+	var MARKER_Z_INDEX = 11;
+	var styleMap = new OpenLayers.StyleMap({
+		// img/icons/cam-s.png == img/icons/view-s.png
+		// img/icons/camicon.png  img/icons/viewicon.png
+		externalGraphic:   "/img/icons/viewicon.png", //FIXME cam?
+		backgroundGraphic: "/img/icons/view-s.png",
+		backgroundXOffset: -10,
+		backgroundYOffset: -34,
+		backgroundWidth: 37,
+		backgroundHeight: 34,
+		graphicZIndex: MARKER_Z_INDEX,
+		backgroundGraphicZIndex: SHADOW_Z_INDEX,
+		//pointRadius: 20 //We use xxWitdh/xxHeight
+		graphicWidth: 20,
+		graphicHeight: 34,
+		graphicXOffset: -10, // FIXME Offsets: +/- 1??
+		graphicYOffset: -34,
+	});
+	var mtypelookup = {
+		0: {externalGraphic:   "/img/icons/viewicon.png"},
+		1: {externalGraphic:   "/img/icons/camicon.png"}, //FIXME shadow, ...
+	};
+	styleMap.addUniqueValueRules("default", "mtype", mtypelookup);
+	dragmarkers = new OpenLayers.Layer.Vector(
+		"Markers",
+		{
+			styleMap: styleMap,
+			isBaseLayer: false,
+			rendererOptions: {yOrdering: true},
+			renderers: OpenLayers.Layer.Vector.prototype.renderers, //FIXME?
+			displayInLayerSwitcher: false
+		}
+	);
+ }
+
+ function markerCompleteDrag(vector, pixel) {
 	if (!vector.attributes.isdraggable) {
 		vector.move(vector.attributes.initialpos);//FIXME
 	}
  }
- function markerOnDrag(vector, pixel) {
+ function markerDrag(vector, pixel) {
 	if (vector.attributes.isdraggable) {
 		//var pp = map.getLonLatFromPixel(pixel).transform(map.getProjectionObject(), epsg4326);
 		var pp = new OpenLayers.LonLat(vector.geometry.x, vector.geometry.y);
@@ -288,12 +325,10 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 		if (currentelement == null && map) {
 			currentelement = createMarker(point,that.name == 'photographer_gridref'? 1 : 0);
-			//map.addOverlay(currentelement);
-
-			//GEvent.trigger(currentelement,'drag');//FIXME
+			markerDrag(currentelement, null);
 		} else {
 			point.transform(epsg4326, map.getProjectionObject());
-			currentelement.move(latlon);
+			currentelement.move(point);
 		}
 
 		if (that.name == 'photographer_gridref') {

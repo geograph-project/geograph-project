@@ -20,11 +20,11 @@
 	`$smarty.rdelim`
 
         .olControlAttribution `$smarty.ldelim`
-            bottom: 0px 
+            bottom: 0px;
         `$smarty.rdelim`
-        #map `$smarty.ldelim`
+        /*#map `$smarty.ldelim`
             height: 512px;
-        `$smarty.rdelim`
+        `$smarty.rdelim`*/
     </style>
     <!--script src=\"http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key=`$google_maps_api_key`\"></script>
     <script src=\"/ol/OpenLayers.js\"></script-->
@@ -47,7 +47,6 @@
 		
 		//the google map object
 		var map;
-		var dragmarkers;
 
 		//the geocoder object
 		//var geocoder;
@@ -92,86 +91,6 @@
 				document.theForm.grid_reference.value = '';
 				//GEvent.trigger(map, "markergone");//FIXME
 			}
-		}
-
-		function showAddress(address) {
-			if (!geocoder) {
-				 geocoder = new GClientGeocoder();
-			}
-			if (geocoder) {
-				geocoder.getLatLng(address,function(point) {
-					if (!point) {
-						alert("Your entry '" + address + "' could not be geocoded, please try again");
-					} else {
-						if (currentelement) {
-							currentelement.setPoint(point);
-							GEvent.trigger(currentelement,'drag');
-
-						} else {
-							currentelement = createMarker(point,null);
-							map.addOverlay(currentelement);
-
-							GEvent.trigger(currentelement,'drag');
-						}
-						map.setCenter(point, 12);
-					}
-				 });
-			}
-			return false;
-		}
-
-/*
-OpacityControl.prototype.setOpacity = function() {
-  this.layer.opacity = this.slide.left/56;
-  if (this.map.getCurrentMapType() != this.maptype)
-    return;
-  //is there a less ugly way to repaint the map?
-  //map.removeMapType(this.maptype);
-  //map.addMapType(this.maptype);
-  map.setMapType(G_NORMAL_MAP);
-  map.setMapType(this.maptype);
-  GEvent.trigger(this.layer, "opacitychanged");
-}
-*/
-
-		/*function GetTileUrl_GeoM(txy, z) {
-			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z;
-		}
-		function GetTileUrl_GeoMO(txy, z) {
-			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=2&o=1";
-		}*/
-		function GetTileUrl_GeoMG(txy, z) {
-			return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=8&o=1";
-			//return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=4";
-		}
-
-		function GetTileUrl_Mapnik(a, z) {
-		    return "http://tile.openstreetmap.org/" +
-				z + "/" + a.x + "/" + a.y + ".png";
-		}
-
-
-		function GetTileUrl_TaH(a, z) {
-		    return "http://tah.openstreetmap.org/Tiles/tile/" +
-				z + "/" + a.x + "/" + a.y + ".png";
-		}
-
-		function GetTileUrl_TopB(a, z) {
-		    //return "http://topo.openstreetmap.de/base/" +
-		    return "http://base.wanderreitkarte.de/base/" +
-				z + "/" + a.x + "/" + a.y + ".png";
-		}
-
-		function GetTileUrl_TopH(a, z) {
-		    //return "http://hills-nc.openstreetmap.de/" +
-		    return "http://wanderreitkarte.de/hills/" +
-				z + "/" + a.x + "/" + a.y + ".png";
-		}
-
-		function GetTileUrl_Top(a, z) {
-		    //return "http://topo.openstreetmap.de/topo/" +
-		    return "http://topo.wanderreitkarte.de/topo/" +
-				z + "/" + a.x + "/" + a.y + ".png";
 		}
 
 		function loadmapO() {
@@ -265,6 +184,21 @@ OpacityControl.prototype.setOpacity = function() {
 {/literal}
 {/if}
 {literal}
+			OpenLayers.Util.Geograph = {};
+			OpenLayers.Util.Geograph.MISSING_TILE_URL = "/maps/transparent_256_256.png";
+			OpenLayers.Util.Geograph.originalOnImageLoadError = OpenLayers.Util.onImageLoadError;
+			OpenLayers.Util.onImageLoadError = function() { // TODO
+				if (this.src.contains("hills")) { // FIXME
+					// do nothing - this layer is transparent
+					//this.src = OpenLayers.Util.Geograph.MISSING_TILE_URL;
+				} else if (this.src.match(/tile\.php\?.*&o=1/)) {
+					// do nothing - this layer is transparent
+				} else if (this.src.match(/tile\.php\?/)) {
+					// do nothing
+				} else {
+					OpenLayers.Util.OSM.originalOnImageLoadError;
+				}
+			};
 			//subclass XYZ -> XYrZ
 			//errorTileUrl="/maps/transparent_256_256.png"
 			//regMinZoomLevel, regMaxZoomLevel
@@ -281,7 +215,7 @@ OpacityControl.prototype.setOpacity = function() {
 				//"/tile/0/${z}/${x}/${y}.png",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&t=0",
 				{
-					//attribution: "Data CC-By-SA by <a href='http://openstreetmap.org/'>OpenStreetMap</a>",
+					attribution: '&copy; <a href="http://geo.hlipp.de">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> Contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true,
 					minZoomLevel : 4,
 					maxZoomLevel : 13,
@@ -294,14 +228,15 @@ OpacityControl.prototype.setOpacity = function() {
 			);
 			//FIXME attribution
 			//FIXME displayInLayerSwitcher: false
-			var ogeo = new OpenLayers.Layer.OSM(
+			/*var ogeo = new OpenLayers.Layer.OSM(
 				"OSM+Geo",
 				"http://tile.openstreetmap.org/${z}/${x}/${y}.png"
-			);
-			var ogeosq = new OpenLayers.Layer.XYZ(
+			);*/
+			var geosq = new OpenLayers.Layer.XYZ(
 				"Squares",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&l=2&o=1&t=0",
 				{
+					attribution: '',
 					sphericalMercator : true,
 					//minZoomLevel : 4,
 					//maxZoomLevel : 14,
@@ -344,10 +279,10 @@ OpacityControl.prototype.setOpacity = function() {
 					],*/
 					//numZoomLevels : null,
 					isBaseLayer : false,
+					visibility : false, //FIXME
 				}
 			);
-			ogeosq.setOpacity(0.5);//FIXME
-			var ogeogr = new OpenLayers.Layer.XYZ(
+			var geogr = new OpenLayers.Layer.XYZ(
 				"Grid",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&l=8&o=1",
 				{
@@ -356,13 +291,14 @@ OpacityControl.prototype.setOpacity = function() {
 					maxZoomLevel : 14,
 					numZoomLevels : null,
 					isBaseLayer : false,
+					visibility : false, //FIXME
 				}
 			);
-			var ogeoh = new OpenLayers.Layer.OSM( //FIXME our own version?
+			var hills = new OpenLayers.Layer.OSM( //FIXME our own version?
 				"Profile",
 				"http://wanderreitkarte.de/hills/${z}/${x}/${y}.png",
 				{
-					attribution: "Hoehen CIAT",//FIXME: wanderreitkarte Nop
+					attribution: 'H&ouml;hen: <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> mit <a href="http://www.wanderreitkarte.de/licence_de.php">CIAT-Daten</a>',//FIXME: wanderreitkarte Nop
 					isBaseLayer : false,
 					minZoomLevel : 8, // enforce?
 					maxZoomLevel : 14,
@@ -377,44 +313,12 @@ OpacityControl.prototype.setOpacity = function() {
 				"http://tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png"
 			);
 
-			var SHADOW_Z_INDEX = 10;
-			var MARKER_Z_INDEX = 11;
-			var styleMap = new OpenLayers.StyleMap({
-				// img/icons/cam-s.png == img/icons/view-s.png
-				// img/icons/camicon.png  img/icons/viewicon.png
-				externalGraphic:   "/img/icons/viewicon.png", //FIXME cam?
-				backgroundGraphic: "/img/icons/view-s.png",
-				backgroundXOffset: -10,
-				backgroundYOffset: -34,
-				backgroundWidth: 37,
-				backgroundHeight: 34,
-				graphicZIndex: MARKER_Z_INDEX,
-				backgroundGraphicZIndex: SHADOW_Z_INDEX,
-				//pointRadius: 20 //We use xxWitdh/xxHeight
-				graphicWidth: 20,
-				graphicHeight: 34,
-				graphicXOffset: -10, // FIXME Offsets: +/- 1??
-				graphicYOffset: -34,
-			});
-			var mtypelookup = {
-				0: {externalGraphic:   "/img/icons/viewicon.png"},
-				1: {externalGraphic:   "/img/icons/camicon.png"}, //FIXME shadow, ...
-			};
-			styleMap.addUniqueValueRules("default", "mtype", mtypelookup);
-			dragmarkers = new OpenLayers.Layer.Vector(
-				"Markers",
-				{
-					styleMap: styleMap,
-					isBaseLayer: false,
-					rendererOptions: {yOrdering: true},
-					renderers: OpenLayers.Layer.Vector.prototype.renderers //FIXME?
-				}
-			);
+			initMarkersLayer();
 
 			map.addLayers([
 				mapnik, osmarender,
 				geo,
-				ogeo,ogeoh,ogeosq,ogeogr,
+				hills,geosq,geogr,
 {/literal}
 {if $google_maps_api_key}
 {literal}
@@ -438,13 +342,10 @@ OpacityControl.prototype.setOpacity = function() {
 					coords.transform(map.getProjectionObject(), epsg4326); //FIXME?
 					currentelement = createMarker(coords, 0);
 				}
-				//coords.transform(map.getProjectionObject(), epsg4326);
-				//document.theForm.grid_reference.value = coords.lat+" "+coords.lon; //FIXME
+				markerDrag(currentelement, null);
 			}
-			//GEvent.trigger(currentelement,'drag');
-			//updateMapMarker(document.theForm.grid_reference,false,true); //FIXME
 
-			var dragFeature = new OpenLayers.Control.DragFeature(dragmarkers, {'onDrag': markerOnDrag, 'onComplete': markerOnComplete});
+			var dragFeature = new OpenLayers.Control.DragFeature(dragmarkers, {'onDrag': markerDrag, 'onComplete': markerCompleteDrag});
 			map.addControl(dragFeature);
 			dragFeature.activate();
 			var click = new OpenLayers.Control.Click({'trigger': moveMarker});
@@ -461,8 +362,20 @@ OpacityControl.prototype.setOpacity = function() {
 			if (inimlat < 90) {
 				var mpoint = new OpenLayers.LonLat(inimlon, inimlat);
 				currentelement = createMarker(mpoint, 0);
-				//GEvent.trigger(currentelement,'drag');
+				markerDrag(currentelement, null);
 			}
+			var op = 0.5;
+			if (inio >= 0)
+				op = inio;
+			var opr = 1.0;
+			if (inior >= 0)
+				opr = inior;
+			var user = 0;
+			if (iniuser >= -1)
+				user = iniuser;
+			geosq.setOpacity(op);//FIXME
+			hills.setOpacity(opr);//FIXME
+			//map.setUser(user);//FIXME
 		}
 
 
@@ -472,19 +385,12 @@ text like "Loading Map (JavaScript Required)..."
 
 min/max zoom
 
-ini: type
+ini: type, user
 
 osm+g
 layer switcher
 
 for small maps: grid lines + square
-
-markers /mappingO.js
- create markers
- drag marker
- markers<->form
- clear markers
- initial marker
 
 opacity control
 
@@ -495,257 +401,12 @@ permalink
 overview map: map type?
 
 host our own osm tiles (hills+mapnik, zoom level <= 14, approx 15GB?)?
+overview map: level <= 9
 
 */
 
-		function loadmapG() {
-			if (GBrowserIsCompatible()) {
-				var op = 0.5;
-				if (inio >= 0)
-					op = inio;
-				var opr = 1.0;
-				if (inior >= 0)
-					opr = inior;
-				var user = 0;
-				if (iniuser >= -1)
-					user = iniuser;
-
-				var copyright = new GCopyright(1,
-					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-					'(<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)');
-				var copyrightCollection =
-					new GCopyrightCollection('&copy; <a href="http://geo.hlipp.de">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> Contributors');
-				copyrightCollection.addCopyright(copyright);
-				var tilelayers = [new GTileLayer(copyrightCollection,4,13)];//FIXME 4 12?
-				tilelayers[0].user = user;
-				//tilelayers[0].getTileUrl = GetTileUrl_GeoM;
-				tilelayers[0].getTileUrl = function(txy, z) {
-					return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&t="+map.user;
-				}
-				tilelayers[0].isPng = function () { return true; };
-				tilelayers[0].getOpacity = function () { return 1.0; };
-				var proj = new GMercatorProjection(19);
-				var geomapm = new GMapType(tilelayers, proj, "Geo", {tileSize: 256});
-
-				var copyright1 = new GCopyright(1,
-					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-					': http://www.openstreetmap.org/copyright');
-				var copyright2 = new GCopyright(1,
-					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-					': http://www.wanderreitkarte.de/licence_de.php');
-				var copyright3 = new GCopyright(1,
-					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-					': http://creativecommons.org/licenses/by-sa/2.0/');
-				var copyrightCollectionOSMm = new GCopyrightCollection('(c) OSM (CC)');
-				var copyrightCollectionTopoH = new GCopyrightCollection('Hoehen CIAT');
-				//var copyrightCollectionOG = new GCopyrightCollection();
-				var copyrightCollectionO = new GCopyrightCollection('Geograph Deutschland (CC)');
-				copyrightCollectionOSMm.addCopyright(copyright1);
-				copyrightCollectionTopoH.addCopyright(copyright2);
-				//copyrightCollectionO.addCopyright(copyright);
-				copyrightCollectionO.addCopyright(copyright3);
-				var tilelayers_mapnikhg = new Array();
-				tilelayers_mapnikhg[0] = new GTileLayer(copyrightCollectionOSMm, 4, 14);//0 18
-				tilelayers_mapnikhg[0].isPng = function () { return true; };
-				tilelayers_mapnikhg[0].getOpacity = function () { return 1.0; };
-				tilelayers_mapnikhg[0].getTileUrl = GetTileUrl_Mapnik;
-				tilelayers_mapnikhg[1] = new GTileLayer(copyrightCollectionTopoH, 9, 14);// 9 19
-				tilelayers_mapnikhg[1].opacity = opr;
-				tilelayers_mapnikhg[1].isPng = function () { return true; };
-				tilelayers_mapnikhg[1].getOpacity = function () { return this.opacity; };
-				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_TopH;
-				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollectionO,4,14);
-				tilelayers_mapnikhg[2].opacity = op;
-				tilelayers_mapnikhg[2].user = user;
-				//tilelayers_mapnikhg[2].getTileUrl = GetTileUrl_GeoMO;
-				tilelayers_mapnikhg[2].getTileUrl = function(txy, z) {
-					return "/tile.php?x="+txy.x+"&y="+txy.y+"&Z="+z+"&l=2&o=1&t="+map.user;
-				}
-				tilelayers_mapnikhg[2].isPng = function () { return true; };
-				tilelayers_mapnikhg[2].getOpacity = function () { return this.opacity; };
-				tilelayers_mapnikhg[3] = new GTileLayer(copyrightCollectionO,4,14);
-				tilelayers_mapnikhg[3].getTileUrl = GetTileUrl_GeoMG;
-				tilelayers_mapnikhg[3].isPng = function () { return true; };
-				tilelayers_mapnikhg[3].getOpacity = function () { return 1.0; };
-				var mapnikhg_map = new GMapType(tilelayers_mapnikhg,
-					proj, "OSM (Mapnik) + Profile",
-					{ urlArg: 'mapnikhg', linkColor: '#000000', shortName: 'OSM+G', alt: 'OSM: Mapnik+Profile, Geo' });
-
-				map = new GMap2(document.getElementById("map"));
-				map.addMapType(G_PHYSICAL_MAP);
-				map.addMapType(geomapm);
-				map.addMapType(mapnikhg_map);
-
-				map.user = user;
-				map.geolayer = tilelayers_mapnikhg[2];
-				map.relieflayer = tilelayers_mapnikhg[1];
-				map.geomaplayer = tilelayers[0];
-
-				G_NORMAL_MAP.gurlid = 'm';
-				G_SATELLITE_MAP.gurlid = 'k';
-				G_HYBRID_MAP.gurlid = 'h';
-				G_PHYSICAL_MAP.gurlid = 'p';
-				geomapm.gurlid = 'g';
-				mapnikhg_map.gurlid = 'og';
-				G_NORMAL_MAP.gmaxz = 21; // FIXME
-				G_SATELLITE_MAP.gmaxz = 19;
-				G_HYBRID_MAP.gmaxz = 21;
-				G_PHYSICAL_MAP.gmaxz = 15;
-				geomapm.gmaxz = 13;
-				mapnikhg_map.gmaxz = 14;
-				var maptypes = {
-					'm' : G_NORMAL_MAP,
-					'k' : G_SATELLITE_MAP,
-					'h' : G_HYBRID_MAP,
-					'p' : G_PHYSICAL_MAP,
-					'g' : geomapm,
-					'og': mapnikhg_map
-				}
-
-				G_PHYSICAL_MAP.getMinimumResolution = function () { return 4 };
-				G_NORMAL_MAP.getMinimumResolution = function () { return 4 };
-				G_SATELLITE_MAP.getMinimumResolution = function () { return 4 };
-				G_HYBRID_MAP.getMinimumResolution = function () { return 4 };
-				geomapm.getMinimumResolution = function () { return 4 };
-
-				map.addControl(new GLargeMapControl());
-				map.addControl(new GMapTypeControl(true));
-				map.addControl(new OpacityControl( tilelayers_mapnikhg[2], mapnikhg_map, 'Coverage: change opacity'));
-				map.addControl(new OpacityControl( tilelayers_mapnikhg[1], mapnikhg_map, 'Relief: change opacity'),
-				               new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(7,67)));
-
-				var point = new GLatLng(lat0, lon0);
-				var zoom = 5;
-				var mt = geomapm;
-				if (inilat < 90)
-					point = new GLatLng(inilat, inilon);
-				if (initype != '')
-					mt = maptypes[initype];
-				if (iniz >= 4 && iniz <= mt.gmaxz)
-					zoom = iniz;
-				map.setCenter(point, zoom, mt);
-
-				map.enableDoubleClickZoom(); 
-				map.enableContinuousZoom();
-				map.enableScrollWheelZoom();
-
-				if (inimlat < 90) {
-					currentelement = createMarker(new GLatLng(inimlat, inimlon),null);
-					map.addOverlay(currentelement);
-					GEvent.trigger(currentelement,'drag');
-				}
-				map.setUser = function(u) {
-					if (u < -1 || u == map.user)
-						return;
-					map.user = u;
-					map.geolayer.user = u;
-					map.geomaplayer.user = u;
-					cmt = map.getCurrentMapType();
-					if (cmt == geomapm || cmt == mapnikhg_map) {
-						map.setMapType(G_NORMAL_MAP);
-						map.setMapType(cmt);
-					}
-					GEvent.trigger(map, "userchanged");
-				}
-				map.trySetUserId = function(s) {
-					u = parseInt(s, 10);
-					if (u > 0) {
-						map.setUser(u);
-						return true;
-					}
-					return false;
-				}
-				function updateMapLink() {
-					var ll = map.getCenter();
-					var url = '?z=' + map.getZoom()
-						+ '&t=' + map.getCurrentMapType().gurlid
-						+ '&ll=' + ll.lat() + ',' + ll.lng();
-					if (map.user != 0) {
-						url += '&u=' + map.user;
-					}
-					if (map.geolayer.opacity != 0.5) {
-						url += '&o=' + map.geolayer.opacity;
-					}
-					if (map.relieflayer.opacity != 1) {
-						url += '&or=' + map.relieflayer.opacity;
-					}
-					if (currentelement) {
-						ll = currentelement.getPoint();
-						url += '&mll=' + ll.lat() + ',' + ll.lng();
-					}
-					var curlink = document.getElementById("maplink");
-					curlink.setAttribute("href", url);
-				}
-				updateMapLink();
-				GEvent.addListener(map, "maptypechanged", updateMapLink);
-				GEvent.addListener(map, "userchanged", updateMapLink);
-				GEvent.addListener(map, "moveend", updateMapLink);
-				GEvent.addListener(map, "zoomend", updateMapLink);
-				GEvent.addListener(tilelayers_mapnikhg[2], "opacitychanged", updateMapLink);
-				GEvent.addListener(tilelayers_mapnikhg[1], "opacitychanged", updateMapLink);
-				GEvent.addListener(map, "markergone", updateMapLink);
-
-				GEvent.addListener(map, "click", function(marker, point) {
-					if (marker) {
-					} else if (currentelement) {
-						currentelement.setPoint(point);
-						GEvent.trigger(currentelement,'drag');
-					} else {
-						currentelement = createMarker(point,null);
-						map.addOverlay(currentelement);
-						GEvent.trigger(currentelement,'drag');
-					}
-					updateMapLink();
-				});
-
-
-				AttachEvent(window,'unload',GUnload,false);
-
-				// Add a move listener to restrict the bounds range
-				GEvent.addListener(map, "move", function() {
-					checkBounds();
-				});
-
-				// The allowed region which the whole map must be within
-				var allowedBounds = new GLatLngBounds(new GLatLng(latmin,lonmin), new GLatLng(latmax,lonmax));
-
-				// If the map position is out of range, move it back
-				function checkBounds() {
-					// Perform the check and return if OK
-					if (allowedBounds.contains(map.getCenter())) {
-					  return;
-					}
-					// It`s not OK, so find the nearest allowed point and move there
-					var C = map.getCenter();
-					var X = C.lng();
-					var Y = C.lat();
-
-					var AmaxX = allowedBounds.getNorthEast().lng();
-					var AmaxY = allowedBounds.getNorthEast().lat();
-					var AminX = allowedBounds.getSouthWest().lng();
-					var AminY = allowedBounds.getSouthWest().lat();
-
-					if (X < AminX) {X = AminX;}
-					if (X > AmaxX) {X = AmaxX;}
-					if (Y < AminY) {Y = AminY;}
-					if (Y > AmaxY) {Y = AmaxY;}
-
-					map.setCenter(new GLatLng(Y,X));
-
-					// This Javascript Function is based on code provided by the
-					// Blackpool Community Church Javascript Team
-					// http://www.commchurch.freeserve.co.uk/   
-					// http://econym.googlepages.com/index.htm
-				}
-			}
-		}
-
 		AttachEvent(window,'load',loadmapO,false);
 
-		function updateMapMarkers() {
-			updateMapMarker(document.theForm.grid_reference,false,true);
-		}
-		//AttachEvent(window,'load',updateMapMarkers,false);//FIXME
 	// ]]>
 	</script>
 {/literal}
@@ -775,8 +436,6 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Loading map... -->
 <!--div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
 <!--div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
-<a href="#" id="permalink">Permalink</a>
-<div id="docs"></div>
 
 {if $ext}
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />
@@ -785,10 +444,10 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="button" value="Submit image"      onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
 <input type="button" value="Search for images" onclick="openGeoWindow(5, '/search.php?q=');" />
 <input type="button" value="Clear marker"      onclick="clearMarker();" />
-<a id="maplink" href="#">Link to this map</a>
+{*<a id="maplink" href="#">Link to this map</a>*}
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
-<br />
+{*<br />
 {dynamic}
 <input type="radio" name="mtradio" value="coverage" onclick="map.setUser(0);" {if $iniuser == 0}checked{/if} />Coverage |
 <input type="radio" name="mtradio" value="depth" onclick="map.setUser(-1);" {if $iniuser == -1}checked{/if} />Depth |
@@ -796,19 +455,19 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="radio" name="mtradio" value="user" onclick="if(!map.trySetUserId(document.theForm.mtuser.value)){ldelim}document.theForm.mtradio[{if $userid}3{else}2{/if}].checked=false;document.theForm.mtradio[0].checked=true;map.setUser(0);{rdelim};"
 {if $iniuser > 0 and $iniuser != $userid}checked{/if} />User:
 <input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
-{/dynamic}
+{/dynamic}*}
 </div>
 {/if}
 
 
 </form>
-<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
+{*<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
 <div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:</label>
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="submit" value="Find"/><small><small><br/>
 	(Powered by the Google Maps API Geocoder)</small></small>
 </div>
-</form>
+</form>*}
 
 {if $inner}
 </body>

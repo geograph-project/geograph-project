@@ -84,6 +84,7 @@ class RasterMap
 			'OS50k-small'=>125,
 			'VoB'=>250,
 			'Google'=>250,
+			'OLayers'=>250,
 			'OS250k-m10k'=>250,
 			'OS250k-m40k'=>250
 		);
@@ -136,6 +137,9 @@ class RasterMap
 						$this->enabled = true;
 						$this->service = 'VoB';
 					} 
+				} elseif(in_array('Grid',$services) && in_array('OLayers',$services)) {
+					#$this->enabled = true; ##FIXME
+					$this->service = 'OLayers';
 				} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
 					#$this->enabled = true; ##FIXME
 					$this->service = 'Google';
@@ -168,7 +172,7 @@ class RasterMap
 						$this->delmeri = (2 * $this->zone - $this->servicegk - 61) * 3;
 					}
 				}
-				if ($this->service != 'Google') {
+				if ($this->service != 'Google' && $this->service != 'OLayers') {
 					$this->enabled = true;
 				}
 				if (isset($this->tilewidth[$this->service])) {
@@ -257,7 +261,7 @@ class RasterMap
 	} 
 	
 	function addLatLong($lat,$long) {
-		if ($this->service == 'Google') {
+		if ($this->service == 'Google' || $this->service == 'OLayers') {
 			$this->enabled = true;
 		}
 		$this->lat = floatval($lat);
@@ -297,6 +301,21 @@ class RasterMap
 				$token = $token->getToken();
 				
 				return "<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map... (JavaScript required)</iframe>";
+			}
+		} elseif ($this->service == 'OLayers') {
+			if (!empty($this->inline) || !empty($this->issubmit)) {
+				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\"></div>";// FIXME Loading map... (JavaScript required)
+			} else {
+				$token=new Token;
+				
+				foreach ($this as $key => $value) {
+					if (is_scalar($value)) {
+						$token->setValue($key, $value);
+					}
+				}
+				$token = $token->getToken();
+				
+				return "<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\"></iframe>";// FIXME Loading map... (JavaScript required)
 			}
 		} elseif ($this->service == 'OS50k-small') {
 			static $idcounter = 1;
@@ -625,8 +644,21 @@ class RasterMap
 	{
 		global $CONF;
 		//defer the tag to the last minute, to help prevent the page pausing mid load
-		if ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Google') {
-			return "<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+		if ((!empty($this->inline) || !empty($this->issubmit))) {
+			if ($this->service == 'Google') {
+				return "<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+			} elseif ($this->service == 'OLayers') {
+				if ($CONF['google_maps_api_key'])
+					$ft = "<script src=\"http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+				else
+					$ft = '';
+				$ft .= <<<EOF
+<!--script type="text/javascript" src="/ol/OpenLayers.js"></script-->
+<!--script type="text/javascript" src="/mapper/geotools2.js"></script-->
+<!--script type="text/javascript" src="/mappingO.js"></script-->
+EOF;
+				return $ft;
+			}
 		}
 	}
 
@@ -638,15 +670,57 @@ class RasterMap
 			map.addOverlay(polyline);\n";
 	}
 
-	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1) {
-		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
-		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-		return "			var polyline = new GPolyline([
-				new GLatLng($lat1,$long1),
-				new GLatLng($lat2,$long2)
-			], \"#0000FF\", 1, $op);
-			map.addOverlay(polyline);\n";
+	function getMeriBlockOL($long,$lat1,$lat2,$op=1) {
+		return <<<EOF
+			var lp1 = new OpenLayers.Geometry.Point($long, $lat1);
+			var lp2 = new OpenLayers.Geometry.Point($long, $lat2);
+			var points = [
+				lp1.transform(epsg4326, map.getProjectionObject()),
+				lp2.transform(epsg4326, map.getProjectionObject())
+			];
+			var line = new OpenLayers.Geometry.LineString(points);
+
+			var style = {
+				strokeColor: '#ff0000',
+				strokeWidth: 1,
+				strokeOpacity: $op,
+			};
+
+			lines.addFeatures([new OpenLayers.Feature.Vector(line, null, style)]);
+EOF;
 	}
+
+function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1) {
+	list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
+	list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
+	return "			var polyline = new GPolyline([
+			new GLatLng($lat1,$long1),
+			new GLatLng($lat2,$long2)
+		], \"#0000FF\", 1, $op);
+		map.addOverlay(polyline);\n";
+}
+
+function getPolyLineBlockOL(&$conv,$e1,$n1,$e2,$n2,$op=1) {
+	list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
+	list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
+	return <<<EOF
+		var lp1 = new OpenLayers.Geometry.Point($long1, $lat1);
+		var lp2 = new OpenLayers.Geometry.Point($long2, $lat2);
+		var points = [
+			lp1.transform(epsg4326, map.getProjectionObject()),
+			lp2.transform(epsg4326, map.getProjectionObject())
+		];
+		var line = new OpenLayers.Geometry.LineString(points);
+
+		var style = {
+			strokeColor: '#0000ff',
+			strokeWidth: 1,
+			strokeOpacity: $op,
+		};
+
+		lines.addFeatures([new OpenLayers.Feature.Vector(line, null, style)]);
+EOF;
+}
 
 #	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2) {
 #		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
@@ -943,6 +1017,235 @@ EOF;
 					var static_host = '{$CONF['STATIC_HOST']}';
 				//]]>
 				</script>";
+		} elseif ($this->service == 'OLayers') {
+			if (empty($this->inline) && empty($this->issubmit)) {
+				//its now handled by the 'childmap'
+				return;
+			}
+			// FIXME/TODO
+			// * css in _basic_begin.tpl / _std_begin.tpl : rastermap->getCSSTag() ? ommap: Common place for css?
+			// * "enlarge map" button/link
+			// * "marker to center": update form
+			// * map types
+			// * pick up box
+			// * initial map type
+			// * pan when moving marker out of box?
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+				
+			$e = floor($this->nateastings/1000) * 1000;
+			$n = floor($this->natnorthings/1000) * 1000;
+				
+			$needvectorlayer = false;
+			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
+				
+				if (!$this->iscmap) {
+					$block = $this->getPolyLineBlockOL($conv,$e-1000,$n,$e+2000,$n);
+					$block .= $this->getPolyLineBlockOL($conv,$e-1000,$n+1000,$e+2000,$n+1000);
+					$block .= $this->getPolyLineBlockOL($conv,$e,$n-1000,$e,$n+2000);
+					$block .= $this->getPolyLineBlockOL($conv,$e+1000,$n-1000,$e+1000,$n+2000);
+					$needvectorlayer = true;
+				}
+				
+				if (!empty($this->viewpoint_northings)) {
+					if ($this->viewpoint_ri == $this->reference_index) {
+						$viewpoint_eastings = $this->viewpoint_eastings;
+						$viewpoint_northings = $this->viewpoint_northings;
+					} else {
+						$viewpoint_eastings = -1;
+						$viewpoint_northings = -1;
+						$latlong = $conv->national_to_wgs84($this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_ri);
+						if (count($latlong)) { # FIXME error handling
+							$enr = $conv->wgs84_to_national($latlong[0],$latlong[1], true, $this->reference_index);
+							if (count($enr)) { # FIXME error handling
+								$viewpoint_eastings = $enr[0];
+								$viewpoint_northings  = $enr[1];
+							}
+						}
+					}
+					$different_square_true = (intval($this->nateastings/1000) != intval($viewpoint_eastings/1000)
+						|| intval($this->natnorthings/1000) != intval($viewpoint_northings/1000));
+
+					$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
+
+					if ($show_viewpoint) {
+						$ve = $viewpoint_eastings;	$vn = $viewpoint_northings;
+						if ($this->viewpoint_grlen == '4') {
+							$ve +=500; $vn += 500;
+						}
+						if ($this->viewpoint_grlen == '6') {
+							$ve +=50; $vn += 50;
+						}
+						list($lat,$long) = $conv->national_to_wgs84($ve,$vn,$this->reference_index);
+						$block .= "
+						var ppoint = new OpenLayers.LonLat({$long},{$lat});
+						createPMarker(ppoint);\n";
+					}
+				}
+
+				if (empty($lat) && $this->issubmit) {
+					list($lat,$long) = $conv->national_to_wgs84($e-700,$n-500,$this->reference_index);
+					$block .= "
+						var ppoint = new OpenLayers.LonLat({$long},{$lat});
+						createPMarker(ppoint);\n";
+				}
+			} else {
+				$block = '';
+			}
+			if ($this->exactPosition) {
+				$block.= "
+					var point2 = new OpenLayers.LonLat({$this->long}, {$this->lat});
+					createMarker(point2, 0);";
+			} elseif ($this->issubmit) {
+				list($lat,$long) = $conv->national_to_wgs84($e-400,$n-500,$this->reference_index);
+				$block .= "
+					var point2 = new OpenLayers.LonLat({$long},{$lat});
+					createMarker(point2, 0);\n";
+			}
+			if ($this->issubmit) {
+				$zoom=13;
+			} else {
+				$zoom=14;
+			}
+			/*if ($this->issubmit && !$this->iscmap) {
+				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
+			}*/
+			if ($this->issubmit && !$this->iscmap) {
+				for ($i=100; $i<=900; $i+=100) {
+					$block .= $this->getPolyLineBlockOL($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
+					$block .= $this->getPolyLineBlockOL($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25);
+				}
+			}
+			if (empty($this->lat)) {
+				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
+			}
+			if ($CONF['showmeridian'] != 0 && !$this->iscmap) {
+				list($centlat,$centlong) = $conv->national_to_wgs84($e+500,$n+500,$this->reference_index);
+				$merilong = round($centlong/$CONF['showmeridian']) * $CONF['showmeridian'];
+				$meridist = deg2rad(abs($centlong-$merilong)) * cos(deg2rad($centlat)) * 6371;
+				if ($meridist < 3) { # only show meridian if closer than 3 km to center of square
+					$deltalat = rad2deg(3.0/6371); # show approx 2*3km
+					$block .= $this->getMeriBlockOL($merilong,$centlat-$deltalat,$centlat+$deltalat);
+				}
+			}
+			if ($this->issubmit) {
+				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
+			} else {
+				$p1 = '';
+			}
+			if (!$CONF['google_maps_api_key']) {
+				$google_block='';
+				$google_layers = '';
+			} else {
+				$google_layers = 'gphy, gmap, gsat, ghyb,';
+				$google_block=<<<EOF
+			var gphy = new OpenLayers.Layer.Google(
+				"Google Physical",
+				{type: google.maps.MapTypeId.TERRAIN}
+			);
+
+			var gmap = new OpenLayers.Layer.Google(
+				"Google Streets",
+				{numZoomLevels: 20}
+			);
+
+			var ghyb = new OpenLayers.Layer.Google(
+				"Google Hybrid",
+				{type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
+			);
+
+			var gsat = new OpenLayers.Layer.Google(
+				"Google Satellite",
+				{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
+			);
+EOF;
+			}
+			if ($needvectorlayer) {
+				$vector_layer = "lines,";
+				$vector_block = <<<EOF
+	lines = new OpenLayers.Layer.Vector(
+		"Lines",
+		{
+			isBaseLayer: false,
+			//renderers: OpenLayers.Layer.Vector.prototype.renderers, //FIXME?
+			displayInLayerSwitcher: false
+		}
+	);
+EOF;
+			} else {
+				$vector_layer = "";
+				$vector_block = "";
+			}
+
+			return "
+				$p1
+				<!--script type=\"text/javascript\" src=\"/mapper/geotools2.js\"></script-->
+				<script type=\"text/javascript\" src=\"/ol/OpenLayers.js\"></script>
+				<!--script type=\"text/javascript\" src=\"/mappingO.js\"></script-->
+				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mappingO.js")."\"></script>
+				<script type=\"text/javascript\">
+				//<![CDATA[
+					var issubmit = {$this->issubmit}+0;
+					var iscmap = {$this->iscmap}+0;
+					var ri = {$this->reference_index};
+					var map = null;
+		function loadmapO() {
+			map = new OpenLayers.Map({
+				div: \"map\",
+				projection: epsg900913,
+				displayProjection: epsg4326,
+				units: \"m\",
+				numZoomLevels: 18,
+				//minZoomLevel : 4,
+				//maxZoomLevel : 13,
+				//numZoomLevels : null,
+				maxResolution: 156543.0339,
+				//maxResolution: 156543.0339/16,
+				//zoomOffset: 13, resolutions: [19.1092570678711,9.55462853393555,4.77731426696777,2.38865713348389]
+				//maxExtent: bounds,
+				maxExtent: [-20037508, -20037508, 20037508, 20037508],
+				//restrictedExtent: bounds,
+				controls : [
+					new OpenLayers.Control.Navigation(),
+					//new OpenLayers.Control.PanZoomBar(),
+					//new OpenLayers.Control.PanZoom(),
+					new OpenLayers.Control.ZoomPanel(),
+					new OpenLayers.Control.LayerSwitcher({'ascending':false}),//FIXME?
+					//new OpenLayers.Control.ScaleLine({ 'geodesic' : true }),//FIXME position
+					new OpenLayers.Control.Attribution(),
+				]
+			});
+			$google_block
+			$vector_block
+			var mapnik = new OpenLayers.Layer.OSM();
+
+			var osmarender = new OpenLayers.Layer.OSM(
+				\"OpenStreetMap (Tiles@Home)\",
+				\"http://tah.openstreetmap.org/Tiles/tile/\${z}/\${x}/\${y}.png\"
+			);
+			//FIXME more maps
+
+			initMarkersLayer();
+
+			map.addLayers([
+				mapnik, osmarender,
+				$google_layers
+				$vector_layer
+				dragmarkers
+			]);
+			var dragFeature = new OpenLayers.Control.DragFeature(dragmarkers, {'onDrag': markerDrag, 'onComplete': markerCompleteDrag});
+			map.addControl(dragFeature);
+			dragFeature.activate();
+			var point = new OpenLayers.LonLat({$this->long}, {$this->lat});
+			map.setCenter(point.transform(epsg4326, map.getProjectionObject()), $zoom);
+			$block
+			// FIXME initial map type
+		}
+
+			AttachEvent(window,'load',loadmapO,false);
+			var static_host = '{$CONF['STATIC_HOST']}';
+				//]]>
+				</script>";
 		} else {
 				$east = (floor($this->nateastings/1000) * 1000) + 500;
 				$nort = (floor($this->natnorthings/1000) * 1000) + 500;
@@ -981,7 +1284,7 @@ EOF;
 
 	function getTitle($gridref) 
 	{
-		if ($this->service == 'Google') {
+		if ($this->service == 'Google' || $this->service == 'OLayers') {
 			return '';
 		} elseif ($this->service == 'WMS') { //FIXME id
 			return "<span id=\"mapTitleVoB\">".$this->title."</span>";
@@ -992,7 +1295,7 @@ EOF;
 
 	function getFootNote() 
 	{
-		if ($this->service == 'Google') {
+		if ($this->service == 'Google' || $this->service == 'OLayers') {
 			return '';
 		} elseif ($this->service == 'WMS') {
 			if ($this->issubmit) {
