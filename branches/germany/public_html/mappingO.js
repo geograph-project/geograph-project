@@ -38,6 +38,7 @@
 
 
  var pickupbox = null;
+ var pickuplayer = null;
 
  function initMarkersLayer() {
 	var SHADOW_Z_INDEX = 10;
@@ -141,7 +142,8 @@
 		//	document.theForm.use6fig.checked = true;
 		
 		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
-			//map.removeOverlay(pickupbox); //FIXME
+			pickuplayer.removeFeatures( [ pickupbox ] );
+			pickupbox.destroy();
 			pickupbox = null;
 		}
 		
@@ -254,7 +256,7 @@ function mapMarkerToCenter(that) {
 		currentelement = marker1;
 	}
 	currentelement.move(latlon);
-	//GEvent.trigger(currentelement,'drag'); // FIXME
+	markerDrag(currentelement, null);
 }
 
 
@@ -347,7 +349,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 			updateViewDirection();
 		
 		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
-			//setTimeout(" if (pickupbox != null) {map.removeOverlay(pickupbox);pickupbox = null;}",1000); //FIXME
+			setTimeout(" if (pickupbox != null) { pickuplayer.removeFeatures( [ pickupbox ] ); pickupbox.destroy(); pickupbox = null; }",1000); //FIXME?
 		}
 		
 		if (typeof parentUpdateVariables != 'undefined') {

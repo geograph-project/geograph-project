@@ -22,6 +22,9 @@
 	    opacity: 0.5;
 	    filter: alpha(opacity=50);*/ /* IE */
 	}
+	.olControlZoomPanel {
+	    top: 14px;
+	}
 
         .olControlAttribution {
             bottom: 0px;
