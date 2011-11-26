@@ -744,7 +744,36 @@ EOF;
 			], \"#0000FF\", 1, 0.7, \"#00FF00\", 0.5);
 			map.addOverlay(pickupbox);\n";
 	}
-	
+
+	function getPolySquareBlockOL(&$conv,$e1,$n1,$e2,$n2) {
+		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
+		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
+		return <<<EOF
+			pickuplayer = lines;
+			var p1 = new OpenLayers.Geometry.Point($long1, $lat1);
+			var p3 = new OpenLayers.Geometry.Point($long2, $lat2);
+			p1.transform(epsg4326, map.getProjectionObject());
+			p3.transform(epsg4326, map.getProjectionObject());
+			var p2 = new OpenLayers.Geometry.Point(p1.x, p3.y);
+			var p4 = new OpenLayers.Geometry.Point(p3.x, p1.y);
+
+			var points = [ p1, p2, p3, p4 ];
+
+			var ring = new OpenLayers.Geometry.LinearRing(points);
+
+			var style = {
+				strokeColor: '#0000ff',
+				strokeWidth: 1,
+				strokeOpacity: 0.7,
+				fillColor: '#00ff00',
+				fillOpacity: 0.5
+			};
+
+			pickupbox = new OpenLayers.Feature.Vector(ring, null, style);
+			pickuplayer.addFeatures([pickupbox]);
+EOF;
+	}
+
 	function getScriptTag()
 	{
 		global $CONF;
@@ -1024,11 +1053,7 @@ EOF;
 			}
 			// FIXME/TODO
 			// * css in _basic_begin.tpl / _std_begin.tpl : rastermap->getCSSTag() ? ommap: Common place for css?
-			// * "enlarge map" button/link
-			// * "marker to center": update form
 			// * map types
-			// * pick up box
-			// * initial map type
 			// * pan when moving marker out of box?
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
@@ -1107,9 +1132,9 @@ EOF;
 			} else {
 				$zoom=14;
 			}
-			/*if ($this->issubmit && !$this->iscmap) {
-				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
-			}*/
+			if ($this->issubmit && !$this->iscmap) {
+				$block .= $this->getPolySquareBlockOL($conv,$e-800,$n-600,$e-200,$n-100);
+			}
 			if ($this->issubmit && !$this->iscmap) {
 				for ($i=100; $i<=900; $i+=100) {
 					$block .= $this->getPolyLineBlockOL($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
@@ -1233,7 +1258,7 @@ EOF;
 				$vector_layer
 				dragmarkers
 			]);
-			var dragFeature = new OpenLayers.Control.DragFeature(dragmarkers, {'onDrag': markerDrag, 'onComplete': markerCompleteDrag});
+			var dragFeature = new OpenLayers.Control.DragFeature(dragmarkers, {'onDrag': markerDrag, 'onComplete': markerCompleteDrag, 'documentDrag': true});
 			map.addControl(dragFeature);
 			dragFeature.activate();
 			var point = new OpenLayers.LonLat({$this->long}, {$this->lat});
