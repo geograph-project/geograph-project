@@ -3,14 +3,50 @@
 
 {include file="_basic_begin.tpl"}
 {else}
-
 {assign var="page_title" value="Geograph Map"}
+{* FIXME move to sensible place *}
+{assign var="extra_meta" value="
+    <link rel=\"stylesheet\" href=\"/ol/theme/default/style.css\" type=\"text/css\" />
+    <!--[if lte IE 6]>
+        <link rel=\"stylesheet\" href=\"/ol/theme/default/ie6-style.css\" type=\"text/css\" />
+    <![endif]-->
+    <!--link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" /-->
+    <style type=\"text/css\">
+        .olImageLoadError `$smarty.ldelim`
+            /*background-color: transparent;*/
+            /*background-color: pink;
+	    opacity: 0.5;
+	    filter: alpha(opacity=50);*/ /* IE */
+	`$smarty.rdelim`
+
+	.olControlScaleLine `$smarty.ldelim`
+	   bottom: 45px;
+	`$smarty.rdelim`
+        .olControlAttribution `$smarty.ldelim`
+            bottom: 15px;
+        `$smarty.rdelim`
+        /*#map `$smarty.ldelim`
+            height: 512px;
+        `$smarty.rdelim`*/
+    </style>
+"}
 {include file="_std_begin.tpl"}
 {/if}
-
+<script src="/ol/OpenLayers.js"></script>
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
-<script type="text/javascript" src="{"/mappingG.js"|revision}"></script>
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+<script type="text/javascript" src="{"/mappingO.js"|revision}"></script>
+{* FIXME/TODO
+
+text like "Loading Map (JavaScript Required)..."
+
+extra-meta
+
+ommap.tpl, rastermap.class.php:
+- pan when moving marker out of box?
+- continue panning when moving mouse pointer out of box?
+
+*}
+
 {literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -18,12 +54,7 @@
 		var iscmap = 0;
 		var ri = -1;
 		
-		//the google map object
 		var map;
-
-		//the geocoder object
-		var geocoder;
-		var running = false;
 
 {/literal}
 		{strip}
@@ -148,72 +179,177 @@
 		{rdelim};
 		{/strip}
 {literal}
-
-		function GeoProj(ri) {
-			this.wgs84 = new GT_WGS84();
-			this.lonmin = lonmin[ri];
-			this.lonmax = lonmax[ri];
-			this.latmin = latmin[ri];
-			this.latmax = latmax[ri];
-			this.xmin = xmin[ri];
-			this.xmax = xmax[ri];
-			this.ymin = ymin[ri];
-			this.ymax = ymax[ri];
-			this.x0 = x0[ri];
-			this.y0 = y0[ri];
-			this.wgs84.getEN = this.wgs84[gridconv[ri]]; // should belong to this.grid...
-			this.grid = grids[ri];
+		function transformGeoToLonLat(point) {
+			var valid = false;
+			var x = point.x / 1000.;
+			var y = point.y / 1000.;
+			for (ri in xmin) {
+				if  (xmin[ri] <= x && x < xmax[ri]
+				  && ymin[ri] <= y && y < ymax[ri]) {
+					valid = true;
+					break;
+				}
+			}
+			if (!valid) {
+				point.x = 0;
+				point.y = 0;
+				return;
+			}
+			var grid = grids[ri];
+			var e = point.x - x0[ri]*1000;
+			var n = point.y - y0[ri]*1000;
+			grid.setGridCoordinates(e, n);
+			var ll = grid.getWGS84(true);
+			point.x = ll.longitude;
+			point.y = ll.latitude;
 		}
-
-		GeoProj.prototype=new GProjection();
-		GeoProj.prototype.fromLatLngToPixel=function(ll, z) {
-			//var coord = GT_Math.wgs84_to_utm(ll.lat(), ll.lng(), this.zone);
-			//var e = coord[0];
-			//var n = coord[1];
-			this.wgs84.setDegrees(ll.lat(), ll.lng());
-			var grid = this.wgs84.getEN(true, false, true);
+		function transformLonLatToGeo(point) {
+			var valid = false;
+			for (ri in lonmin) {
+				if  (lonmin[ri] <= point.x && point.x < lonmax[ri]
+				  && latmin[ri] <= point.y && point.y < latmax[ri]) {
+					valid = true;
+					break;
+				}
+			}
+			if (!valid) {
+				point.x = 0;
+				point.y = 0;
+				return;
+			}
+			var wgs84 = new GT_WGS84();
+			wgs84.getEN = wgs84[gridconv[ri]]; // should belong to grids[ri]...
+			wgs84.setDegrees(point.y, point.x);
+			var grid = wgs84.getEN(true, false, true);
 			var e = grid.eastings;
 			var n = grid.northings;
-			var y = Math.round((     yflip[z]-(n/1000+this.y0)) *      pixperkm[z]);
-			var x = Math.round(               (e/1000+this.x0)  *      pixperkm[z]);
-			return new GPoint(x,y);
-		}
-		GeoProj.prototype.fromPixelToLatLng=function(xy, z, unb) {
-			var x = xy.x;
-			var y = xy.y;
-			var e = (              x/     pixperkm[z] - this.x0) * 1000;
-			var n = (     yflip[z]-y/     pixperkm[z] - this.y0) * 1000;
-			//var coord = GT_Math.utm_to_wgs84(e, n, this.zone);
-			//var lat = coord[0];
-			//var lon = coord[1];
-			this.grid.setGridCoordinates(e, n);
-			var ll= this.grid.getWGS84(true);
-			var lat = ll.latitude;
-			var lon = ll.longitude;
-			return new GLatLng(lat,lon,unb);
-		}
-		GeoProj.prototype.tileCheckRange=function(txy,z,ts) {
-			var y1 = Math.round(     yflip[z]- txy.y *      kmpertile[z] -      kmpertile[z]);
-			var x1 = Math.round(               txy.x *      kmpertile[z]);
-
-			if (y1 +      kmpertile[z] < this.ymin || y1 > this.ymax)
-				return false;
-			if (x1 +      kmpertile[z] < this.xmin || x1 > this.xmax)
-				return false;
-
-			return true;
-		}
-		GeoProj.prototype.getWrapWidth=function(z) {
-			return 1.0e30; //FIXME
+			point.x = e + x0[ri]*1000;
+			point.y = n + y0[ri]*1000;
 		}
 
-		// The allowed region which the whole map must be within
-		var allowedBounds;
-		function setBounds() {
-			var proj = map.getCurrentMapType().getProjection();
-			allowedBounds = new GLatLngBounds(new GLatLng(proj.latmin,proj.lonmin), new GLatLng(proj.latmax,proj.lonmax));
-		}
+		OpenLayers.Projection.addTransform("GEOGRAPH", "EPSG:4326", transformGeoToLonLat);
+		OpenLayers.Projection.addTransform("EPSG:4326", "GEOGRAPH", transformLonLatToGeo);
+		var geoproj = new OpenLayers.Projection("GEOGRAPH");
 
+/**
+ * Subclass OpenLayers.Layer.XYZ for layers with a restristricted range of zoom levels.
+ */
+OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
+    /**
+     * Constructor: OpenLayers.Layer.Geograph
+     *
+     * Parameters:
+     * ri - {Integer}
+     * url - {String}
+     * errortileurl - {String}
+     * options - {Object} Hashtable of extra options to tag onto the layer
+     */
+    initialize: function(ri, url, errortileurl, options) {
+        this.minZoomLevel = 0;
+        this.maxZoomLevel = kmpertile.length - 1;
+        //this.numZoomLevels = null; //FIXME?
+        this.errorTile = errortileurl;
+        this.ri = ri;
+        this.xmin = xmin[ri];
+        this.xmax = xmax[ri];
+        this.ymin = ymin[ri];
+        this.ymax = ymax[ri];
+        this.lonmin = lonmin[ri];
+        this.lonmax = lonmax[ri];
+        this.latmin = latmin[ri];
+        this.latmax = latmax[ri];
+        url = url || this.url;
+        var name = areanames[ri];
+        var newArguments = [name, url, options];
+        OpenLayers.Layer.XYZ.prototype.initialize.apply(this, newArguments);
+    },
+    /**
+     * APIMethod: clone
+     * Create a clone of this layer
+     *
+     * Parameters:
+     * obj - {Object} Is this ever used?
+     * 
+     * Returns:
+     * {<OpenLayers.Layer.Geograph>} An exact clone of this OpenLayers.Layer.Geograph
+     */
+    clone: function (obj) {
+        
+        if (obj == null) {
+            obj = new OpenLayers.Layer.Geograph(this.ri,
+                                            this.url,
+                                            this.errorTile,
+                                            this.getOptions());
+        }
+
+        //get all additions from superclasses
+        obj = OpenLayers.Layer.XYZ.prototype.clone.apply(this, [obj]);
+
+        return obj;
+    },    
+    /**
+     * Method: getURL
+     *
+     * Parameters:
+     * bounds - {<OpenLayers.Bounds>}
+     *
+     * Returns:
+     * {String} A string with the layer's url and parameters and also the
+     *          passed-in bounds and appropriate tile size specified as
+     *          parameters
+     */
+    getURL: function (bounds) {
+        var xyz = this.getXYZ(bounds);
+        if (xyz.z < this.minZoomLevel || xyz.z > this.maxZoomLevel) {
+            return this.errorTile;
+        }
+        var ext = kmpertile[xyz.z];
+        if (xyz.x > this.xmax || xyz.y > this.ymax || (xyz.x+ext) < this.xmin || (xyz.y+ext) < this.ymin)
+            return this.errorTile;
+        var url = this.url;
+        if (OpenLayers.Util.isArray(url)) {
+            var s = '' + xyz.x + xyz.y + xyz.z;
+            url = this.selectUrl(s, url);
+        }
+        
+        if ('userParam' in this && this.userParam != null) {
+            xyz.u = this.userParam;
+        }
+        xyz.i = this.ri;
+        xyz.z = -xyz.z - 1;
+        return OpenLayers.String.format(url, xyz);
+    },
+    
+    /**
+     * Method: getXYZ
+     * Calculates x, y and z for the given bounds.
+     *
+     * Parameters:
+     * bounds - {<OpenLayers.Bounds>}
+     *
+     * Returns:
+     * {Object} - an object with x, y and z properties.
+     */
+    getXYZ: function(bounds) {
+        var z = this.serverResolutions != null ?
+            OpenLayers.Util.indexOf(this.serverResolutions, res) :
+            this.map.getZoom() + this.zoomOffset;
+        //var res = this.map.getResolution();
+        //var ext = res * ts / 1000.0;
+        var ext = kmpertile[z];
+        var x = Math.round(bounds.left/1000.0 / ext) * ext;   /* Math.round(bounds.left/1000.0)*/
+        var y = Math.round(bounds.bottom/1000.0 / ext) * ext; /* Math.round(bounds.bottom/1000.0)*/
+
+        /*var limit = Math.pow(2, z);
+        if (this.wrapDateLine)
+        {
+           x = ((x % limit) + limit) % limit;
+        }*/
+
+        return {'x': x, 'y': y, 'z': z};
+    },
+    CLASS_NAME: "OpenLayers.Layer.Geograph"
+});
 		function openGeoWindow(prec, url) {
 			var curgridref = document.theForm.grid_reference.value.replace(/ /g,'');
 			if (curgridref.search(/^[A-Za-z]+(\d\d)+$/) != 0)
@@ -227,162 +363,245 @@
 
 		function clearMarker() {
 			if (currentelement) {
-				map.removeOverlay(currentelement);
+				dragmarkers.removeFeatures([currentelement]);
+			        currentelement.destroy();
 				currentelement = null;
 				document.theForm.grid_reference.value = '';
+				map.events.triggerEvent("dragend");
 			}
 		}
 
-		function showAddress(address) {
-			if (!geocoder) {
-				 geocoder = new GClientGeocoder();
-			}
-			if (geocoder) {
-				geocoder.getLatLng(address,function(point) {
-					if (!point) {
-						alert("Your entry '" + address + "' could not be geocoded, please try again");
-					} else {
-						if (currentelement) {
-							currentelement.setPoint(point);
-							GEvent.trigger(currentelement,'drag');
+		function loadmapO() {
+			OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+				defaultHandlerOptions: {
+					'single': true,
+					'double': false,
+					'pixelTolerance': 0,
+					'stopSingle': false,
+					'stopDouble': false
+				},
 
-						} else {
-							currentelement = createMarker(point,null);
-							map.addOverlay(currentelement);
+				initialize: function(options) {
+					this.handlerOptions = OpenLayers.Util.extend(
+						{}, this.defaultHandlerOptions
+					);
+					OpenLayers.Control.prototype.initialize.apply(
+						this, arguments
+					); 
+					this.handler = new OpenLayers.Handler.Click(
+						this, {
+							'click': this.trigger
+						}, this.handlerOptions
+					);
+				},
 
-							GEvent.trigger(currentelement,'drag');
-						}
-						var curmap = map.getCurrentMapType();//null
-						var maptypes = map.getMapTypes();
-						var lon = point.lng();
-						for (idx in maptypes) {
-							var mtype = maptypes[idx];
-							var proj = mtype.getProjection();
-							if (proj.lonmin < lon && lon <= proj.lonmax) {
-								curmap = mtype;
-								break;
-							}
-						}
-
-						map.setCenter(point, 2, curmap);
-						setBounds();
-					}
-				 });
-			}
-			return false;
-		}
-
-		function GetTileUrl_Geo(txy, z, ri) {
-			var y1 = Math.round(yflip[z]- txy.y * kmpertile[z] - kmpertile[z]);
-			var x1 = Math.round(          txy.x * kmpertile[z]);
-			return "/tile.php?x="+x1+"&y="+y1+"&z="+(-z-1)+"&i="+ri;
-		}
-
-		function loadmap() {
-			if (GBrowserIsCompatible()) {
-				var copyright = new GCopyright(1,
-					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-					'(<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)');
-				var copyrightCollection =
-					new GCopyrightCollection('&copy; <a href="http://geo.hlipp.de">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> Contributors');
-				copyrightCollection.addCopyright(copyright);
-
-				var curmap;
-				var geomaps = [];
-				for (var i in ris) {
-					var curri = ris[i];
-					tilelayer = [new GTileLayer(copyrightCollection,0,7)];
-					tilelayer[0].ri = curri;
-					tilelayer[0].getTileUrl = function (txy, z) { return GetTileUrl_Geo(txy, z, this.ri)};
-					tilelayer[0].isPng = function () { return true; };
-					tilelayer[0].getOpacity = function () { return 1.0; };
-					geomaps[i] = new GMapType(tilelayer, new GeoProj(curri), areanames[curri], {tileSize: ts});
-					if (curri == ridefault)
-						curmap = geomaps[i];
+				trigger: function(e) {
 				}
+			});
 
-				map = new GMap2(document.getElementById("map"), {mapTypes:geomaps});
+			var layerswitcher = new OpenLayers.Control.LayerSwitcher({'ascending':true});
 
-				map.addControl(new GLargeMapControl());
-				map.addControl(new GMapTypeControl(true));
-				
-				var curproj = curmap.getProjection();
-				var point = new GLatLng((curproj.latmin+curproj.latmax)*.5, (curproj.lonmin+curproj.lonmax)*.5);
-				map.setCenter(point, 0, curmap);
-				setBounds();
+			var resolutions = [];
+			for (var z in kmpertile) {
+				resolutions[z] = kmpertile[z] * 1000.0 / ts;
+			}
+			var totxmin = null;
+			var totxmax = null;
+			var totymin = null;
+			var totymax = null;
+			for (var i in ris) {
+				var curri = ris[i];
+				if (totxmin == null || xmin[curri] < totxmin)
+					totxmin = xmin[curri];
+				if (totymin == null || ymin[curri] < totymin)
+					totymin = ymin[curri];
+				if (totxmax == null || xmax[curri] > totxmax)
+					totxmax = xmax[curri];
+				if (totymax == null || ymax[curri] > totymax)
+					totymax = ymax[curri];
+			}
+			// FIXME ensure totxmin, totymin = n*tilesize
 
-				map.enableDoubleClickZoom(); 
-				map.enableContinuousZoom();
-				map.enableScrollWheelZoom();
-		
-				GEvent.addListener(map, "click", function(marker, point) {
-					if (marker) {
-					} else if (currentelement) {
-						currentelement.setPoint(point);
-						GEvent.trigger(currentelement,'drag');
-					
-					} else {
-						currentelement = createMarker(point,null);
-						map.addOverlay(currentelement);
-						
-						GEvent.trigger(currentelement,'drag');
+			map = new OpenLayers.Map({
+				div: "map",
+				projection: geoproj,
+				displayProjection: epsg4326,
+				units: "m",
+				maxExtent: new OpenLayers.Bounds(totxmin*1000, totymin*1000, totxmax*1000, totymax*1000),
+				resolutions : resolutions,
+				numZoomLevels : resolutions.length,
+				tileSize : new OpenLayers.Size(ts, ts),
+				//user: user,
+				controls : [
+					new OpenLayers.Control.Navigation(),
+					new OpenLayers.Control.PanZoomBar(),
+					layerswitcher,
+					new OpenLayers.Control.Attribution(),
+				]
+			});
+
+			var curmap;
+			var geomaps = [];
+			for (var i in ris) {
+				var curri = ris[i];
+				var tilelayer = new OpenLayers.Layer.Geograph(
+					curri,
+					"/tile.php?x=${x}&y=${y}&z=${z}&i=${i}",
+					OpenLayers.Util.Geograph.MISSING_TILE_URL,
+					{
+						attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+						//userParam : user,
 					}
-				});
+				);
+				geomaps[i] = tilelayer;
+				if (curri == ridefault)
+					curmap = geomaps[i];
+			}
 
+			/*var geo = new OpenLayers.Layer.XYrZ(
+				"Geo",
+				//"/tile/0/${z}/${x}/${y}.png",
+				"/tile.php?x=${x}&y=${y}&Z=${z}&t=${u}",
+				4, 13, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+					sphericalMercator : true,
+					userParam : user,
+				}
+			);*/
 
-				AttachEvent(window,'unload',GUnload,false);
+			initMarkersLayer();
 
-				// Add a move listener to restrict the bounds range
-				GEvent.addListener(map, "maptypechanged", function() {
-					setBounds();
-					checkBounds();
-				});
-
-				// Add a move listener to restrict the bounds range
-				GEvent.addListener(map, "move", function() {
-					checkBounds();
-				});
-
-				// The allowed region which the whole map must be within
-				//var allowedBounds = new GLatLngBounds(new GLatLng(45,2), new GLatLng(57,18));//(new GLatLng(49.4,-11.8), new GLatLng(61.8,4.1));
-				// If the map position is out of range, move it back
-				function checkBounds() {
-					
-					// Perform the check and return if OK
-					if (allowedBounds.contains(map.getCenter())) {
-					  return;
-					}
-					// It`s not OK, so find the nearest allowed point and move there
-					var C = map.getCenter();
-					var X = C.lng();
-					var Y = C.lat();
-
-					var AmaxX = allowedBounds.getNorthEast().lng();
-					var AmaxY = allowedBounds.getNorthEast().lat();
-					var AminX = allowedBounds.getSouthWest().lng();
-					var AminY = allowedBounds.getSouthWest().lat();
-
-					if (X < AminX) {X = AminX;}
-					if (X > AmaxX) {X = AmaxX;}
-					if (Y < AminY) {Y = AminY;}
-					if (Y > AmaxY) {Y = AmaxY;}
-
-					map.setCenter(new GLatLng(Y,X));
-
-					// This Javascript Function is based on code provided by the
-					// Blackpool Community Church Javascript Team
-					// http://www.commchurch.freeserve.co.uk/   
-					// http://econym.googlepages.com/index.htm
+			/*map.setUser = function(u) {
+				if (u < -1 || u == map.user)
+					return;
+				map.user = u;
+				geo.userParam = u;
+				geosq.userParam = u;
+				if (map.baseLayer == geo) {
+					geo.redraw();
+					map.events.triggerEvent("changelayer", { layer: geo, property: "user" });
+				} else if (geosq.getVisibility()) {
+					geosq.redraw();
+					map.events.triggerEvent("changelayer", { layer: geosq, property: "user" });
 				}
 			}
+			map.trySetUserId = function(s) {
+				u = parseInt(s, 10);
+				if (u > 0) {
+					map.setUser(u);
+					return true;
+				}
+				return false;
+			}*/
+			/*function updateMapLink() {
+				var ll = map.center.clone().transform(map.getProjectionObject(), epsg4326);
+				var mt = map.baseLayer;
+				var type = mt.gurlid;
+				for (var key in ovltypes) {
+					ot = ovltypes[key];
+					var isvisible;
+					if (mt != geo || ot == hills)
+						isvisible = ot.getVisibility();
+					else
+						isvisible = ot.savedVisibility;
+					if (isvisible)
+						type += key;
+				}
+				var url = '?z=' + map.zoom
+					+ '&t=' + type
+					+ '&ll=' + ll.lat + ',' + ll.lon;
+				if (map.user != 0) {
+					url += '&u=' + map.user;
+				}
+				if (geosq.opacity != 0.5) {
+					url += '&o=' + geosq.opacity;
+				}
+				if (hills.opacity != 1) {
+					url += '&or=' + hills.opacity;
+				}
+				if (currentelement) {
+					ll = new OpenLayers.LonLat(currentelement.geometry.x, currentelement.geometry.y);
+					ll.transform(map.getProjectionObject(), epsg4326);
+					url += '&mll=' + ll.lat + ',' + ll.lon;
+				}
+				var curlink = document.getElementById("maplink");
+				curlink.setAttribute("href", url);
+			}*/
+
+
+			map.addLayers(geomaps);
+			map.addLayers([dragmarkers]);
+
+			/*var overview =  new OpenLayers.Control.OverviewMap({
+				//maximized: true
+			});
+			map.addControl(overview);*/
+
+			function moveMarker(e) {
+				var coords = map.getLonLatFromViewPortPx(e.xy);
+				if (currentelement) {
+					currentelement.move(coords);
+				} else {
+					coords.transform(map.getProjectionObject(), epsg4326);
+					currentelement = createMarker(coords, 0);
+				}
+				markerDrag(currentelement, null);
+			}
+
+			var dragFeature = new OpenLayers.Control.DragFeature(dragmarkers, {'onDrag': markerDrag, 'onComplete': markerCompleteDrag});
+			map.addControl(dragFeature);
+			dragFeature.activate();
+			var click = new OpenLayers.Control.Click({'trigger': moveMarker});
+			map.addControl(click);
+			click.activate();
+
+			var point = new OpenLayers.LonLat((curmap.lonmin+curmap.lonmax)*.5, (curmap.latmin+curmap.latmax)*.5);
+			var zoom = 0; //FIXME?
+			map.setBaseLayer(curmap);
+			map.setCenter(point.transform(epsg4326, map.getProjectionObject()), zoom);
+			/*if (inimlat < 90) {
+				var mpoint = new OpenLayers.LonLat(inimlon, inimlat);
+				currentelement = createMarker(mpoint, 0);
+				markerDrag(currentelement, null);
+			}*/
+
+			function checkBounds() {
+				var p = map.getCenter();
+				var mt = map.baseLayer;
+				var x = p.lon;
+				var y = p.lat;
+
+				//alert ( " "+x+ " "+y+ " "+mt.xmin+ " "+mt.ymin+ " "+mt.xmax+ " "+mt.ymax);
+				if (x >= mt.xmin*1000 && x <= mt.xmax*1000 && y >= mt.ymin*1000 && y <= mt.ymax*1000) {
+					return;
+				}
+
+				if (x < mt.xmin*1000)
+					x = mt.xmin*1000;
+				if (y < mt.ymin*1000)
+					y = mt.ymin*1000;
+				if (x > mt.xmax*1000)
+					x = mt.xmax*1000;
+				if (y > mt.ymax*1000)
+					y = mt.ymax*1000;
+
+				map.setCenter(new OpenLayers.LonLat(x, y));
+			}
+
+			map.events.on({'move' : checkBounds});
+			map.events.on({'changebaselayer' : checkBounds});
+
+			/*map.events.on({'zoomend': updateMapLink}); // == map.events.register("zoomend", map, updateMapLink);
+			map.events.on({'moveend': updateMapLink});
+			map.events.on({'dragend': updateMapLink});
+			map.events.on({'changelayer': updateMapLink});
+			updateMapLink();*/
 		}
 
-		AttachEvent(window,'load',loadmap,false);
 
-		function updateMapMarkers() {
-			updateMapMarker(document.theForm.grid_reference,false,true);
-		}
-		AttachEvent(window,'load',updateMapMarkers,false);
+		AttachEvent(window,'load',loadmapO,false);
+
 	// ]]>
 	</script>
 {/literal}
@@ -409,7 +628,9 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="hidden" name="setpos" value=""/>
 {/if}
 
-<div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>		
+<div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Loading map... -->
+<!--div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
+<!--div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
 
 {if $ext}
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />
@@ -418,20 +639,30 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="button" value="Submit image"      onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
 <input type="button" value="Search for images" onclick="openGeoWindow(5, '/search.php?q=');" />
 <input type="button" value="Clear marker"      onclick="clearMarker();" />
+{*<a id="maplink" href="#">Link to this map</a>*}
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
+{*<br />
+{dynamic}
+<input type="radio" name="mtradio" value="coverage" onclick="map.setUser(0);" {if $iniuser == 0}checked{/if} />Coverage |
+<input type="radio" name="mtradio" value="depth" onclick="map.setUser(-1);" {if $iniuser == -1}checked{/if} />Depth |
+{if $userid}<input type="radio" name="mtradio" value="personal" onclick="map.setUser({$userid});" {if $iniuser == $userid}checked{/if} />Personal |{/if}
+<input type="radio" name="mtradio" value="user" onclick="if(!map.trySetUserId(document.theForm.mtuser.value)){ldelim}document.theForm.mtradio[{if $userid}3{else}2{/if}].checked=false;document.theForm.mtradio[0].checked=true;map.setUser(0);{rdelim};"
+{if $iniuser > 0 and $iniuser != $userid}checked{/if} />User:
+<input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
+{/dynamic}*}
 </div>
 {/if}
 
 
 </form>
-<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
+{*<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
 <div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:</label>
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="submit" value="Find"/><small><small><br/>
 	(Powered by the Google Maps API Geocoder)</small></small>
 </div>
-</form>
+</form>*}
 
 {if $inner}
 </body>
