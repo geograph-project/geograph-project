@@ -40,12 +40,143 @@
  var pickupbox = null;
  var pickuplayer = null;
 
+/* Error tiles */
+//OpenLayers.Util.onImageLoadErrorColor = "transparent";//FIXME?
+OpenLayers.Util.Geograph = {};
+OpenLayers.Util.Geograph.MISSING_TILE_URL = "/maps/transparent_256_256.png";
+OpenLayers.Util.Geograph.originalOnImageLoadError = OpenLayers.Util.onImageLoadError;
+OpenLayers.Util.onImageLoadError = function() {
+	if (this.src.contains("hills")) { // FIXME
+		/* Profile (Nop) */
+		// do nothing - this layer is transparent
+	} else if (this.src.match(/tile\.php\?.*&o=1/)) {
+		/* Overlays */
+		// do nothing - this layer is transparent
+	} else if (this.src.match(/tile\.php\?/)) {
+		/* Base layer */
+		// FIXME blue tile?
+		//this.src = OpenLayers.Util.Geograph.MISSING_TILE_URL;
+	} else {
+		OpenLayers.Util.Geograph.originalOnImageLoadError;
+	}
+};
+
+/**
+ * Subclass OpenLayers.Layer.XYZ for layers with a restristricted range of zoom levels.
+ */
+OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
+    /**
+     * Constructor: OpenLayers.Layer.XYrZ
+     *
+     * Parameters:
+     * name - {String}
+     * url - {String}
+     * minzoom - {Integer}
+     * maxzoom - {Integer}
+     * errortileurl - {String}
+     * options - {Object} Hashtable of extra options to tag onto the layer
+     */
+    initialize: function(name, url, minzoom, maxzoom, errortileurl, options) {
+        this.minZoomLevel = minzoom;
+        this.maxZoomLevel = maxzoom;
+        //this.numZoomLevels = null; //FIXME?
+        this.errorTile = errortileurl;
+        url = url || this.url;
+        name = name || this.name;
+        var newArguments = [name, url, options];
+        OpenLayers.Layer.XYZ.prototype.initialize.apply(this, newArguments);
+    },
+    /**
+     * APIMethod: clone
+     * Create a clone of this layer
+     *
+     * Parameters:
+     * obj - {Object} Is this ever used?
+     * 
+     * Returns:
+     * {<OpenLayers.Layer.XYrZ>} An exact clone of this OpenLayers.Layer.XYrZ
+     */
+    clone: function (obj) {
+        
+        if (obj == null) {
+            obj = new OpenLayers.Layer.XYrZ(this.name,
+                                            this.url,
+                                            this.minZoomLevel,
+                                            this.maxZoomLevel,
+                                            this.errorTile,
+                                            this.getOptions());
+        }
+
+        //get all additions from superclasses
+        obj = OpenLayers.Layer.XYZ.prototype.clone.apply(this, [obj]);
+
+        return obj;
+    },    
+    /**
+     * Method: getURL
+     *
+     * Parameters:
+     * bounds - {<OpenLayers.Bounds>}
+     *
+     * Returns:
+     * {String} A string with the layer's url and parameters and also the
+     *          passed-in bounds and appropriate tile size specified as
+     *          parameters
+     */
+    getURL: function (bounds) {
+        var xyz = this.getXYZ(bounds);
+        if (xyz.z < this.minZoomLevel || xyz.z > this.maxZoomLevel) {
+            return this.errorTile; // FIXME check also x/y range?
+        }
+        var url = this.url;
+        if (OpenLayers.Util.isArray(url)) {
+            var s = '' + xyz.x + xyz.y + xyz.z;
+            url = this.selectUrl(s, url);
+        }
+        
+        if ('userParam' in this && this.userParam != null) {
+            xyz.u = this.userParam;
+        }
+        return OpenLayers.String.format(url, xyz);
+    },
+    
+    /**
+     * Method: getXYZ
+     * Calculates x, y and z for the given bounds.
+     *
+     * Parameters:
+     * bounds - {<OpenLayers.Bounds>}
+     *
+     * Returns:
+     * {Object} - an object with x, y and z properties.
+     */
+    getXYZ: function(bounds) {
+        var res = this.map.getResolution();
+        var x = Math.round((bounds.left - this.maxExtent.left) /
+            (res * this.tileSize.w));
+        var y = Math.round((this.maxExtent.top - bounds.top) /
+            (res * this.tileSize.h));
+        var z = this.serverResolutions != null ?
+            OpenLayers.Util.indexOf(this.serverResolutions, res) :
+            this.map.getZoom() + this.zoomOffset;
+
+        var limit = Math.pow(2, z);
+        if (this.wrapDateLine)
+        {
+           x = ((x % limit) + limit) % limit;
+        }
+
+        return {'x': x, 'y': y, 'z': z};
+    },
+    CLASS_NAME: "OpenLayers.Layer.XYrZ"
+});
+
  function initMarkersLayer() {
 	var SHADOW_Z_INDEX = 10;
 	var MARKER_Z_INDEX = 11;
 	var styleMap = new OpenLayers.StyleMap({
-		// img/icons/cam-s.png == img/icons/view-s.png
-		// img/icons/camicon.png  img/icons/viewicon.png
+		/* img/icons/cam-s.png == img/icons/view-s.png   */
+		/* img/icons/camicon.png  img/icons/viewicon.png */
 		externalGraphic:   "/img/icons/viewicon.png", //FIXME cam?
 		backgroundGraphic: "/img/icons/view-s.png",
 		backgroundXOffset: -10,
@@ -54,7 +185,6 @@
 		backgroundHeight: 34,
 		graphicZIndex: MARKER_Z_INDEX,
 		backgroundGraphicZIndex: SHADOW_Z_INDEX,
-		//pointRadius: 20 //We use xxWitdh/xxHeight
 		graphicWidth: 20,
 		graphicHeight: 34,
 		graphicXOffset: -10, // FIXME Offsets: +/- 1??
@@ -79,7 +209,7 @@
 
  function markerCompleteDrag(vector, pixel) {
 	if (!vector.attributes.isdraggable) {
-		vector.move(vector.attributes.initialpos);//FIXME
+		vector.move(vector.attributes.initialpos);
 	}
  }
  function markerDrag(vector, pixel) {
@@ -124,7 +254,7 @@
 		//get a grid reference with 4 digits of precision
 		var gridref = grid.getGridRef(4);
 
-		if (vector.attributes.mtype) {//FIXME
+		if (vector.attributes.mtype) {
 			lon2 = wgs84.longitude*Math.PI/180.;
 			lat2 = wgs84.latitude*Math.PI/180.;
 			eastings2 = grid.eastings;
@@ -151,16 +281,17 @@
 			updateViewDirection();
 		}
 		
-		if (typeof parentUpdateVariables != 'undefined') {//FIXME
+		if (typeof parentUpdateVariables != 'undefined') {
 			parentUpdateVariables();
 		}
+		map.events.triggerEvent("dragend");
 	}
  }
  
  function createMarker(point,type) { // types: 0==normal 1==photographer
-	point.transform(epsg4326, map.getProjectionObject()); //FIXME copy before transform?
+	var ll = point.clone().transform(epsg4326, map.getProjectionObject());
 	var marker = new OpenLayers.Feature.Vector(
-		new OpenLayers.Geometry.Point(point.lon, point.lat),
+		new OpenLayers.Geometry.Point(ll.lon, ll.lat),
 		{
 			mtype:type,
 			isdraggable: issubmit && !(type && iscmap),
@@ -172,10 +303,8 @@
 	} else {
 		marker1 = marker;
 	}
-	/*if (type && iscmap)
-		markers.addFeatures([marker]);
-	else*/
-		dragmarkers.addFeatures([marker]);
+	dragmarkers.addFeatures([marker]);
+	//map.events.triggerEvent("dragend");
 	return marker;
 }
 
@@ -327,7 +456,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 		if (currentelement == null && map) {
 			currentelement = createMarker(point,that.name == 'photographer_gridref'? 1 : 0);
-			markerDrag(currentelement, null);
+			//markerDrag(currentelement, null); FIXME?
 		} else {
 			point.transform(epsg4326, map.getProjectionObject());
 			currentelement.move(point);
@@ -355,6 +484,8 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		if (typeof parentUpdateVariables != 'undefined') {
 			parentUpdateVariables();
 		}
+
+		map.events.triggerEvent("dragend");
 	}
 }
 

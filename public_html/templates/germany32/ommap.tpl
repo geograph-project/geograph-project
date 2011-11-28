@@ -4,6 +4,7 @@
 {include file="_basic_begin.tpl"}
 {else}
 {assign var="page_title" value="Geograph Mercator Map"}
+{* FIXME move to sensible place *}
 {assign var="extra_meta" value="
     <link rel=\"stylesheet\" href=\"/ol/theme/default/style.css\" type=\"text/css\" />
     <link rel=\"stylesheet\" href=\"/ol/theme/default/google.css\" type=\"text/css\" />
@@ -13,14 +14,17 @@
     <!--link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" /-->
     <style type=\"text/css\">
         .olImageLoadError `$smarty.ldelim`
-            background-color: transparent;
+            /*background-color: transparent;*/
             /*background-color: pink;
 	    opacity: 0.5;
 	    filter: alpha(opacity=50);*/ /* IE */
 	`$smarty.rdelim`
 
+	.olControlScaleLine `$smarty.ldelim`
+	   bottom: 45px;
+	`$smarty.rdelim`
         .olControlAttribution `$smarty.ldelim`
-            bottom: 0px;
+            bottom: 15px;
         `$smarty.rdelim`
         /*#map `$smarty.ldelim`
             height: 512px;
@@ -38,6 +42,21 @@
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/mappingO.js"|revision}"></script>
 <!--script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script-->
+{* FIXME/TODO
+
+text like "Loading Map (JavaScript Required)..."
+
+extra-meta
+
+host our own osm tiles (hills+mapnik, zoom level <= 14, approx 15GB?)?
+overview map: level <= 9
+
+ommap.tpl, rastermap.class.php:
+- pan when moving marker out of box?
+- continue panning when moving mouse pointer out of box?
+
+*}
+
 {literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -45,12 +64,7 @@
 		var iscmap = 0;
 		var ri = -1;
 		
-		//the google map object
 		var map;
-
-		//the geocoder object
-		//var geocoder;
-		//var running = false;
 
 {/literal}
 		var lat0 = {$lat0};
@@ -89,11 +103,21 @@
 			        currentelement.destroy();
 				currentelement = null;
 				document.theForm.grid_reference.value = '';
-				//GEvent.trigger(map, "markergone");//FIXME
+				map.events.triggerEvent("dragend");
 			}
 		}
 
 		function loadmapO() {
+			var op = 0.5;
+			if (inio >= 0)
+				op = inio;
+			var opr = 1.0;
+			if (inior >= 0)
+				opr = inior;
+			var user = 0;
+			if (iniuser >= -1)
+				user = iniuser;
+
 			var point1 = new OpenLayers.Geometry.Point(lonmin, latmin);
 			var point2 = new OpenLayers.Geometry.Point(lonmax, latmax);
 			point1.transform(epsg4326, epsg900913);
@@ -102,9 +126,6 @@
 			var bounds = new OpenLayers.Bounds();
 			bounds.extend(point1);
 			bounds.extend(point2);
-			 //bounds.toBBOX();
-
-			//OpenLayers.Util.onImageLoadErrorColor = "transparent";//FIXME?
 
 			OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 				defaultHandlerOptions: {
@@ -129,33 +150,36 @@
 					);
 				},
 
-				trigger: function(e) { //FIXME
-					//var lonlat = map.getLonLatFromViewPortPx(e.xy);
-					//alert("You clicked near " + lonlat.lat + " N, " +
-					//                          + lonlat.lon + " E");
+				trigger: function(e) {
 				}
 			});
+
+			var layerswitcher = new OpenLayers.Control.LayerSwitcher({'ascending':false});
 
 			map = new OpenLayers.Map({
 				div: "map",
 				projection: epsg900913,
 				displayProjection: epsg4326,
 				units: "m",
-				numZoomLevels: 18,
 				//minZoomLevel : 4,
-				//maxZoomLevel : 13,
+				//maxZoomLevel : 18,
 				//numZoomLevels : null,
+				/* Restricted zoom levels seem to be a major pain with OpenLayers, especially when
+				   including arbitrary layers that allow different zoom ranges... So, we just allow
+				   any zoom level usual services provide und use transparent tiles for levels we
+				   don't support...
+				*/
+				numZoomLevels: 18,
 				maxResolution: 156543.0339,
-				//maxResolution: 156543.0339/16,
-				//zoomOffset: 13, resolutions: [19.1092570678711,9.55462853393555,4.77731426696777,2.38865713348389]
-				//maxExtent: bounds,
 				maxExtent: [-20037508, -20037508, 20037508, 20037508],
 				restrictedExtent: bounds,
+				geoBase: false,
+				user: user,
 				controls : [
 					new OpenLayers.Control.Navigation(),
 					new OpenLayers.Control.PanZoomBar(),
-					new OpenLayers.Control.LayerSwitcher({'ascending':false}),//FIXME?
-					new OpenLayers.Control.ScaleLine({ 'geodesic' : true }),//FIXME position
+					layerswitcher,
+					new OpenLayers.Control.ScaleLine({ 'geodesic' : true }),
 					new OpenLayers.Control.Attribution(),
 				]
 			});
@@ -184,127 +208,107 @@
 {/literal}
 {/if}
 {literal}
-			OpenLayers.Util.Geograph = {};
-			OpenLayers.Util.Geograph.MISSING_TILE_URL = "/maps/transparent_256_256.png";
-			OpenLayers.Util.Geograph.originalOnImageLoadError = OpenLayers.Util.onImageLoadError;
-			OpenLayers.Util.onImageLoadError = function() { // TODO
-				if (this.src.contains("hills")) { // FIXME
-					// do nothing - this layer is transparent
-					//this.src = OpenLayers.Util.Geograph.MISSING_TILE_URL;
-				} else if (this.src.match(/tile\.php\?.*&o=1/)) {
-					// do nothing - this layer is transparent
-				} else if (this.src.match(/tile\.php\?/)) {
-					// do nothing
-				} else {
-					OpenLayers.Util.OSM.originalOnImageLoadError;
-				}
-			};
-			//subclass XYZ -> XYrZ
-			//errorTileUrl="/maps/transparent_256_256.png"
-			//regMinZoomLevel, regMaxZoomLevel
-			/*OpenLayers.Layer.XYZrZ = OpenLayers.Class(OpenLayers.Layer.Grid, {
-			    errorTileUrl: null,
-			    regMinZoomLevel: null,
-			    regMaxZoomLevel: null,
-			    initialize: function(name, url, errorTileUrl, regMinZoomLevel, regMaxZoomLevel, options) {
-			    }
-			    });*/
-
-			var geo = new OpenLayers.Layer.XYZ(
+			var geo = new OpenLayers.Layer.XYrZ(
 				"Geo",
 				//"/tile/0/${z}/${x}/${y}.png",
-				"/tile.php?x=${x}&y=${y}&Z=${z}&t=0",
+				"/tile.php?x=${x}&y=${y}&Z=${z}&t=${u}",
+				4, 13, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '&copy; <a href="http://geo.hlipp.de">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> Contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+					attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true,
-					minZoomLevel : 4,
-					maxZoomLevel : 13,
-					//maxResolution: 156543.0339/16,
-					numZoomLevels : null,
-					//maxExtent:      bounds,
-					//maxExtent: [-20037508, -20037508, 20037508, 20037508],
-					//restrictedExtent: bounds,
+					userParam : user,
 				}
 			);
-			//FIXME attribution
-			//FIXME displayInLayerSwitcher: false
-			/*var ogeo = new OpenLayers.Layer.OSM(
-				"OSM+Geo",
-				"http://tile.openstreetmap.org/${z}/${x}/${y}.png"
-			);*/
-			var geosq = new OpenLayers.Layer.XYZ(
+			var geosq = new OpenLayers.Layer.XYrZ(
 				"Squares",
-				"/tile.php?x=${x}&y=${y}&Z=${z}&l=2&o=1&t=0",
+				"/tile.php?x=${x}&y=${y}&Z=${z}&l=2&o=1&t=${u}",
+				4, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '',
+					attribution: '&copy; <a href="/">Geograph</a> (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true,
-					//minZoomLevel : 4,
-					//maxZoomLevel : 14,
-					// restrictedMinZoom
-					// restrictedMinZoom
-					// serverResolutions
-					// restrictedMinZoom
-					//  maxResolution and numZoomLevels
-					/*zoomOffset: 4,
-					maxResolution: 156543.0339/16,
-					resolutions: [
-						156543.0339/16,
-						156543.0339/32,
-						156543.0339/64,
-						156543.0339/128,
-						156543.0339/256,
-						156543.0339/512,
-						156543.0339/1024,
-						156543.0339/2048,
-						156543.0339/4096,
-						156543.0339/8192,
-						156543.0339/16384,
-						156543.0339/65536
-					],*/
-					restrictedMinZoom:4,
-					//zoomOffset: 4,
-					/*serverResolutions: [
-						156543.0339/16,
-						156543.0339/32,
-						156543.0339/64,
-						156543.0339/128,
-						156543.0339/256,
-						156543.0339/512,
-						156543.0339/1024,
-						156543.0339/2048,
-						156543.0339/4096,
-						156543.0339/8192,
-						156543.0339/16384,
-						156543.0339/65536
-					],*/
-					//numZoomLevels : null,
 					isBaseLayer : false,
-					visibility : false, //FIXME
+					visibility : false,
+					userParam : user,
 				}
 			);
-			var geogr = new OpenLayers.Layer.XYZ(
+			var geogr = new OpenLayers.Layer.XYrZ(
 				"Grid",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&l=8&o=1",
+				4, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
+					attribution: '&copy; <a href="/">Geograph</a> (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true,
-					minZoomLevel : 4,
-					maxZoomLevel : 14,
-					numZoomLevels : null,
 					isBaseLayer : false,
-					visibility : false, //FIXME
+					visibility : false,
 				}
 			);
-			var hills = new OpenLayers.Layer.OSM( //FIXME our own version?
+
+			var hills = new OpenLayers.Layer.XYrZ( //FIXME our own version?
 				"Profile",
-				"http://wanderreitkarte.de/hills/${z}/${x}/${y}.png",
+				[ "http://wanderreitkarte.de/hills/${z}/${x}/${y}.png", "http://www.wanderreitkarte.de/hills/${z}/${x}/${y}.png"], // ol: 9..19 tiles: 8..\infty // 8..15
+				9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: 'H&ouml;hen: <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> mit <a href="http://www.wanderreitkarte.de/licence_de.php">CIAT-Daten</a>',//FIXME: wanderreitkarte Nop
+					attribution: 'H&ouml;hen: <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> mit <a href="http://www.wanderreitkarte.de/licence_de.php">CIAT-Daten</a>',
+					sphericalMercator : true,
 					isBaseLayer : false,
-					minZoomLevel : 8, // enforce?
-					maxZoomLevel : 14,
-					visibility : false, //FIXME
+					visibility : false,
 				}
 			);
+
+			var topobase = new OpenLayers.Layer.XYrZ(
+				"Nop's Wanderreitkarte",
+				[ "http://base.wanderreitkarte.de/base/${z}/${x}/${y}.png", "http://base2.wanderreitkarte.de/base/${z}/${x}/${y}.png"],
+				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_de.php">CC</a>)',
+					sphericalMercator : true,
+					isBaseLayer : true,
+				}
+			);
+			var topotrails = new OpenLayers.Layer.XYrZ(
+				"Nop's Wanderreitkarte (Wege)",
+				[ "http://topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "http://topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"],
+				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_de.php">CC</a>)',
+					sphericalMercator : true,
+					isBaseLayer : false,
+					visibility : false,
+					displayInLayerSwitcher: false,
+				}
+			);
+			map.events.register("changebaselayer", map, function(e) {
+				/* Topographical map: always show trails layer */
+				var showtopotrails = topobase == e.layer;
+				if (topotrails.getVisibility() != showtopotrails)
+					topotrails.setVisibility(showtopotrails);
+			});
+			map.events.register("changebaselayer", map, function(e) {
+				/* Geograph map: don't show overlays */
+				if (e.layer == geo) {
+					if (!map.geoBase) {
+						geosq.savedVisibility = geosq.getVisibility();
+						geogr.savedVisibility = geogr.getVisibility();
+						geosq.setVisibility(false);
+						geogr.setVisibility(false);
+						geosq.displayInLayerSwitcher = false;
+						geogr.displayInLayerSwitcher = false;
+						layerswitcher.layerStates = [];
+						layerswitcher.redraw();
+						map.geoBase = true;
+					}
+				} else if (map.geoBase) {
+					if (geosq.savedVisibility)
+						geosq.setVisibility(true);
+					if (geogr.savedVisibility)
+						geogr.setVisibility(true);
+					geosq.displayInLayerSwitcher = true;
+					geogr.displayInLayerSwitcher = true;
+					layerswitcher.layerStates = [];
+					layerswitcher.redraw();
+					map.geoBase = false;
+				}
+			});
 
 			var mapnik = new OpenLayers.Layer.OSM();
 
@@ -315,10 +319,122 @@
 
 			initMarkersLayer();
 
+			mapnik.gmaxz = 19;
+			osmarender.gmaxz = 19;
+			topobase.gmaxz = 16;
+			geo.gmaxz = 13;
+{/literal}
+{if $google_maps_api_key}
+{literal}
+			gphy.gmaxz = 15;
+			gmap.gmaxz = 19;
+			gsat.gmaxz = 21;
+			ghyb.gmaxz = 19;
+{/literal}
+{/if}
+{literal}
+			var ovltypes = {
+				'S' : geosq,
+				'G' : geogr,
+				'H' : hills
+			}
+			var maptypes = {
+{/literal}
+{if $google_maps_api_key}
+{literal}
+				'm' : gmap,
+				'k' : gsat,
+				'h' : ghyb,
+				'p' : gphy,
+{/literal}
+{/if}
+{literal}
+				'g' : geo,
+				'o' : mapnik,
+				'w' : topobase,
+				't' : osmarender
+			}
+			for (var key in maptypes) {
+				maptypes[key].gurlid = key;
+			}
+			/*for (var key in ovltypes) {
+				ovltypes[key].gurlid = key;
+			}*/
+			map.hills = hills;
+			map.geosq = geosq;
+
+			map.setUser = function(u) {
+				if (u < -1 || u == map.user)
+					return;
+				map.user = u;
+				geo.userParam = u;
+				geosq.userParam = u;
+				if (map.baseLayer == geo) {
+					geo.redraw();
+					map.events.triggerEvent("changelayer", { layer: geo, property: "user" });
+				} else if (geosq.getVisibility()) {
+					geosq.redraw();
+					map.events.triggerEvent("changelayer", { layer: geosq, property: "user" });
+				}
+			}
+			map.trySetUserId = function(s) {
+				u = parseInt(s, 10);
+				if (u > 0) {
+					map.setUser(u);
+					return true;
+				}
+				return false;
+			}
+			map.trySetOpacity = function(layer, s) {
+				o = parseFloat(s);
+				if (isNaN(o) || o < 0 || o > 100)
+					return false;
+				layer.setOpacity(o/100.0);
+				return true;
+			}
+			function updateMapLink() {
+				var ll = map.center.clone().transform(map.getProjectionObject(), epsg4326);
+				var mt = map.baseLayer;
+				var type = mt.gurlid;
+				for (var key in ovltypes) {
+					ot = ovltypes[key];
+					var isvisible;
+					if (mt != geo || ot == hills)
+						isvisible = ot.getVisibility();
+					else
+						isvisible = ot.savedVisibility;
+					if (isvisible)
+						type += key;
+				}
+				var url = '?z=' + map.zoom
+					+ '&t=' + type
+					+ '&ll=' + ll.lat + ',' + ll.lon;
+				if (map.user != 0) {
+					url += '&u=' + map.user;
+				}
+				if (geosq.opacity != 0.5) {
+					url += '&o=' + geosq.opacity;
+				}
+				if (hills.opacity != 1) {
+					url += '&or=' + hills.opacity;
+				}
+				if (currentelement) {
+					ll = new OpenLayers.LonLat(currentelement.geometry.x, currentelement.geometry.y);
+					ll.transform(map.getProjectionObject(), epsg4326);
+					url += '&mll=' + ll.lat + ',' + ll.lon;
+				}
+				var curlink = document.getElementById("maplink");
+				curlink.setAttribute("href", url);
+			}
+
+
+			/* first layer: map type for overview map */
 			map.addLayers([
 				mapnik, osmarender,
 				geo,
-				hills,geosq,geogr,
+				topobase, topotrails,
+				hills,
+				geosq, geogr,
 {/literal}
 {if $google_maps_api_key}
 {literal}
@@ -330,16 +446,16 @@
 			]);
 
 			var overview =  new OpenLayers.Control.OverviewMap({
-				maximized: true
+				//maximized: true
 			});
-			map.addControl(overview); // FIXME map type?
+			map.addControl(overview);
 
 			function moveMarker(e) {
 				var coords = map.getLonLatFromViewPortPx(e.xy);
 				if (currentelement) {
 					currentelement.move(coords);
 				} else {
-					coords.transform(map.getProjectionObject(), epsg4326); //FIXME?
+					coords.transform(map.getProjectionObject(), epsg4326);
 					currentelement = createMarker(coords, 0);
 				}
 				markerDrag(currentelement, null);
@@ -354,56 +470,38 @@
 
 			var point = new OpenLayers.LonLat(lon0, lat0);
 			var zoom = 5;
+			var mt = geo;
 			if (inilat < 90)
 				point = new OpenLayers.LonLat(inilon, inilat);
-			if (iniz >= 4 && iniz <= 14/*FIXME*/)
+			if (initype != '')
+				mt = maptypes[initype.charAt(0)];
+			if (iniz >= 4 && iniz <= mt.gmaxz)
 				zoom = iniz;
+			map.setBaseLayer(mt);
 			map.setCenter(point.transform(epsg4326, map.getProjectionObject()), zoom);
+			for (var i = 1; i < initype.length; ++i) {
+				var ot = ovltypes[initype.charAt(i)];
+				if (mt != geo || ot == hills) {
+					ot.setVisibility(true);
+				} else {
+					ot.savedVisibility = true;
+				}
+			}
 			if (inimlat < 90) {
 				var mpoint = new OpenLayers.LonLat(inimlon, inimlat);
 				currentelement = createMarker(mpoint, 0);
 				markerDrag(currentelement, null);
 			}
-			var op = 0.5;
-			if (inio >= 0)
-				op = inio;
-			var opr = 1.0;
-			if (inior >= 0)
-				opr = inior;
-			var user = 0;
-			if (iniuser >= -1)
-				user = iniuser;
-			geosq.setOpacity(op);//FIXME
-			hills.setOpacity(opr);//FIXME
-			//map.setUser(user);//FIXME
+			geosq.setOpacity(op);
+			hills.setOpacity(opr);
+
+			map.events.on({'zoomend': updateMapLink}); // == map.events.register("zoomend", map, updateMapLink);
+			map.events.on({'moveend': updateMapLink});
+			map.events.on({'dragend': updateMapLink});
+			map.events.on({'changelayer': updateMapLink});
+			updateMapLink();
 		}
 
-
-/* FIXME/TODO
-
-text like "Loading Map (JavaScript Required)..."
-
-min/max zoom
-
-ini: type, user
-
-osm+g
-layer switcher
-
-for small maps: grid lines + square
-
-opacity control
-
-extra-meta
-
-permalink
-
-overview map: map type?
-
-host our own osm tiles (hills+mapnik, zoom level <= 14, approx 15GB?)?
-overview map: level <= 9
-
-*/
 
 		AttachEvent(window,'load',loadmapO,false);
 
@@ -444,10 +542,10 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="button" value="Submit image"      onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
 <input type="button" value="Search for images" onclick="openGeoWindow(5, '/search.php?q=');" />
 <input type="button" value="Clear marker"      onclick="clearMarker();" />
-{*<a id="maplink" href="#">Link to this map</a>*}
+<a id="maplink" href="#">Link to this map</a>
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
-{*<br />
+<br />
 {dynamic}
 <input type="radio" name="mtradio" value="coverage" onclick="map.setUser(0);" {if $iniuser == 0}checked{/if} />Coverage |
 <input type="radio" name="mtradio" value="depth" onclick="map.setUser(-1);" {if $iniuser == -1}checked{/if} />Depth |
@@ -455,7 +553,15 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="radio" name="mtradio" value="user" onclick="if(!map.trySetUserId(document.theForm.mtuser.value)){ldelim}document.theForm.mtradio[{if $userid}3{else}2{/if}].checked=false;document.theForm.mtradio[0].checked=true;map.setUser(0);{rdelim};"
 {if $iniuser > 0 and $iniuser != $userid}checked{/if} />User:
 <input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
-{/dynamic}*}
+<br />
+Opacity:
+Coverage
+<input type="text" size="5" name="opcoverage" value="{if $inio >= 0}{$inio*100}{else}50{/if}" />%
+<input type="button" value="set"   onclick="map.trySetOpacity(map.geosq, document.theForm.opcoverage.value);"/>
+| Relief
+<input type="text" size="5" name="oprelief" value="{if $inior >= 0}{$inior*100}{else}100{/if}" />%
+<input type="button" value="set"   onclick="map.trySetOpacity(map.hills, document.theForm.oprelief.value);"/>
+{/dynamic}
 </div>
 {/if}
 

@@ -1053,8 +1053,6 @@ EOF;
 			}
 			// FIXME/TODO
 			// * css in _basic_begin.tpl / _std_begin.tpl : rastermap->getCSSTag() ? ommap: Common place for css?
-			// * map types
-			// * pan when moving marker out of box?
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 				
@@ -1134,12 +1132,14 @@ EOF;
 			}
 			if ($this->issubmit && !$this->iscmap) {
 				$block .= $this->getPolySquareBlockOL($conv,$e-800,$n-600,$e-200,$n-100);
+				$needvectorlayer = true;
 			}
 			if ($this->issubmit && !$this->iscmap) {
 				for ($i=100; $i<=900; $i+=100) {
 					$block .= $this->getPolyLineBlockOL($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
 					$block .= $this->getPolyLineBlockOL($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25);
 				}
+				$needvectorlayer = true;
 			}
 			if (empty($this->lat)) {
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
@@ -1152,6 +1152,7 @@ EOF;
 					$deltalat = rad2deg(3.0/6371); # show approx 2*3km
 					$block .= $this->getMeriBlockOL($merilong,$centlat-$deltalat,$centlat+$deltalat);
 				}
+				$needvectorlayer = true;
 			}
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
@@ -1220,23 +1221,22 @@ EOF;
 				projection: epsg900913,
 				displayProjection: epsg4326,
 				units: \"m\",
-				numZoomLevels: 18,
 				//minZoomLevel : 4,
-				//maxZoomLevel : 13,
+				//maxZoomLevel : 18,
 				//numZoomLevels : null,
+				/* Restricted zoom levels seem to be a major pain with OpenLayers, especially when
+				   including arbitrary layers that allow different zoom ranges... So, we just allow
+				   any zoom level usual services provide und use transparent tiles for levels we
+				   don't support...
+				*/
+				numZoomLevels: 18,
 				maxResolution: 156543.0339,
-				//maxResolution: 156543.0339/16,
-				//zoomOffset: 13, resolutions: [19.1092570678711,9.55462853393555,4.77731426696777,2.38865713348389]
-				//maxExtent: bounds,
 				maxExtent: [-20037508, -20037508, 20037508, 20037508],
 				//restrictedExtent: bounds,
 				controls : [
 					new OpenLayers.Control.Navigation(),
-					//new OpenLayers.Control.PanZoomBar(),
-					//new OpenLayers.Control.PanZoom(),
 					new OpenLayers.Control.ZoomPanel(),
-					new OpenLayers.Control.LayerSwitcher({'ascending':false}),//FIXME?
-					//new OpenLayers.Control.ScaleLine({ 'geodesic' : true }),//FIXME position
+					new OpenLayers.Control.LayerSwitcher({'ascending':false}),
 					new OpenLayers.Control.Attribution(),
 				]
 			});
@@ -1248,12 +1248,54 @@ EOF;
 				\"OpenStreetMap (Tiles@Home)\",
 				\"http://tah.openstreetmap.org/Tiles/tile/\${z}/\${x}/\${y}.png\"
 			);
-			//FIXME more maps
+
+			var hills = new OpenLayers.Layer.XYrZ( //FIXME our own version?
+				\"Profile\",
+				[ \"http://wanderreitkarte.de/hills/\${z}/\${x}/\${y}.png\", \"http://www.wanderreitkarte.de/hills/\${z}/\${x}/\${y}.png\"],
+				9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: 'H&ouml;hen: <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> mit <a href=\"http://www.wanderreitkarte.de/licence_de.php\">CIAT-Daten</a>',
+					sphericalMercator : true,
+					isBaseLayer : false,
+					visibility : false,
+				}
+			);
+
+			var topobase = new OpenLayers.Layer.XYrZ(
+				\"Nop's Wanderreitkarte\",
+				[ \"http://base.wanderreitkarte.de/base/\${z}/\${x}/\${y}.png\", \"http://base2.wanderreitkarte.de/base/\${z}/\${x}/\${y}.png\"],
+				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: '&copy; <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_de.php\">CC</a>)',
+					sphericalMercator : true,
+					isBaseLayer : true,
+				}
+			);
+			var topotrails = new OpenLayers.Layer.XYrZ(
+				\"Nop's Wanderreitkarte (Wege)\",
+				[ \"http://topo.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\", \"http://topo2.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\"],
+				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: '&copy; <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_de.php\">CC</a>)',
+					sphericalMercator : true,
+					isBaseLayer : false,
+					visibility : false,
+					displayInLayerSwitcher: false,
+				}
+			);
+			map.events.register('changebaselayer', map, function(e) {
+				/* Topographical map: always show trails layer */
+				var showtopotrails = topobase == e.layer;//map.baselayer;
+				if (topotrails.getVisibility() != showtopotrails)
+					topotrails.setVisibility(showtopotrails);
+			});
 
 			initMarkersLayer();
 
 			map.addLayers([
 				mapnik, osmarender,
+				topobase, topotrails,
+				hills,
 				$google_layers
 				$vector_layer
 				dragmarkers
