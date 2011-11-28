@@ -87,7 +87,7 @@ if (isset($_GET['or']) && is_numeric($_GET['or'])) {
 	if ($opr < 0 || $opr > 1)
 		$opr = -1;
 }
-if (isset($_GET['t']) && in_array($_GET['t'], array('m', 'k', 'h', 'p', 'g', 'og'))) {
+if (isset($_GET['t']) && preg_match('/^[mkhpgowt][SGH]*$/', $_GET['t'])) {
 	$type = $_GET['t'];
 }
 $smarty->assign('iniz',    $zoom);
