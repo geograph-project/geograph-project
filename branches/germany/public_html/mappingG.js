@@ -115,6 +115,9 @@
 				parentUpdateVariables();
 			}
 		});
+		GEvent.addListener(marker, "dragend", function() {
+			GEvent.trigger(map,'markerdragend');
+		});
 	} else {
 		GEvent.addListener(marker, "dragend", function() {
 			marker.setPoint(point);
@@ -322,6 +325,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		if (typeof parentUpdateVariables != 'undefined') {
 			parentUpdateVariables();
 		}
+		GEvent.trigger(map,'markerdragend');
 	}
 }
 

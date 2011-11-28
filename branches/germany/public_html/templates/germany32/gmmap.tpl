@@ -427,6 +427,7 @@ OpacityControl.prototype.getDefaultPosition = function() {
 				GEvent.addListener(tilelayers_mapnikhg[2], "opacitychanged", updateMapLink);
 				GEvent.addListener(tilelayers_mapnikhg[1], "opacitychanged", updateMapLink);
 				GEvent.addListener(map, "markergone", updateMapLink);
+				GEvent.addListener(map, "markerdragend", updateMapLink);
 
 				GEvent.addListener(map, "click", function(marker, point) {
 					if (marker) {
