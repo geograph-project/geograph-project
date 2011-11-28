@@ -126,6 +126,6 @@ $smarty->assign('pixperkm', $levels);
 $smarty->assign('kmpertile', $kmpertile);
 $smarty->assign('yflip', $yflip);
 
-$smarty->display('gmap.tpl',$cacheid);
+$smarty->display('omap.tpl',$cacheid);
 
 ?>
