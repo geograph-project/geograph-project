@@ -5,7 +5,7 @@
 <h2>Submitting/Contributing to Geograph!</h2>
 
 <ul>
-<li>We are currently transitioning from the outdated category submission to a newer tag-based method. <a href="/switch.php">Read More (and switch)</a></li>
+<li>We are currently moving from the outdated category submission to a newer tag-based method. <a href="/switch.php">Read more (and switch)</a></li>
 </ul>
 <br/>
 
@@ -13,7 +13,7 @@
 <table border=1 cellspacing=0 cellpadding=10 bordercolor="#dddddd">
 <tr>
 	<td align="center">
-		<b style="font-size:1.2em"><a href="/submit.php?redir=false">Original Submission method</a></b> (v1)<br/><br/>
+		<b style="font-size:1.2em"><a href="/submit.php?redir=false">Original Submission Method</a></b> (v1)<br/><br/>
 		The original, and longest established process - recommended for first time users.
 	</td>
 </tr>
@@ -37,8 +37,8 @@
 </tr>
 <tr>
 	<td align="center">
-		<b style="font-size:1.2em"><a href="/article/Content-on-Geograph">Submit a collection</a></b><br/>
-		This page details the various areas we have where users can contribute content, this includes textual articles and collections of photos. <br/><br/>
+		<b style="font-size:1.2em"><a href="/article/Content-on-Geograph">Submit a Collection</a></b><br/>
+		This page details the various areas in which users can contribute content, including textual articles and collections of photos. <br/><br/>
 		<small>Quick links to contribute:
                 &middot; <a href="/article/edit.php?page=new">an Article</a>
                 &middot; <a href="/discuss/?action=vtopic&forum=11">a Gallery</a>
@@ -50,7 +50,7 @@
 <tr>
 	<td align="center" colspan="2">
 		{external href="http://media.geograph.org.uk/" text="Media Upload"}<br/><br/>
-		Dedicated hosting for drawings, files, and other media used to accompany Geograph submissions (eg drawings for incorporation into articles.
+		Dedicated hosting for drawings, files, and other media used to accompany Geograph submissions (eg drawings for incorporation into articles).
 	</td>
 </tr>
 </table>

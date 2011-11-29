@@ -52,7 +52,7 @@ div:target { background-color:orange;padding-bottom:10px; }
 <a name="tpoints"></a>
 <h3>How do TPoints work?</h3>
 
-	<p>TPoint or 'Time-gap Point' (formally 'Temporal Point' or 'Temporally aware Point') is a new kind of point that takes into account when photos where taken.
+	<p>TPoint or 'Time-gap Point' (formally 'Temporal Point' or 'Temporally aware Point') is a new kind of point that takes into account when photos were taken.
 	A contributor can gain a TPoint by submitting a contemporary photo to a square that hasn't had a photo for 5 years. But you can also submit historic photos, and as long as there isn't a Geograph taken with 5 years (before OR after) then it gains a TPoint.
 
 	<p>In essence: <b>if there isn't a Geograph taken within 5 years of a Geograph you submit, you get a TPoint</b>.</p>
@@ -68,7 +68,7 @@ div:target { background-color:orange;padding-bottom:10px; }
 <p>We couldn't find unambiguous names for larger units of area, so we made our own! A hectad is 10km x 10km, whereas a myriad is 100km x 100km.</p>
 
 <ul>
-	<li>Read more: <a href="/help/squares">Names for Different Sized Squares</a></li>
+	<li>Read more: <a href="/help/squares">Names for Different-Sized Squares</a></li>
 	<li>Also: <a href="/article/Geographisms">Geographisms</a> - Geograph website terminology</li>
 </div>
 
@@ -82,7 +82,7 @@ div:target { background-color:orange;padding-bottom:10px; }
 		<li><b>Fourths</b>: and therefore a "<b>Fourth Visitor</b>" point is awarded to the fourth person to contribute a Geograph to a square</li>
 		<li><b>AllPoints</b>: Total of First/Second/Third/Fourth Visitor Points</li>
 		<li><b>Personal Points</b>: The first Geograph image submitted by each user in a square gets a Personal point</li>
-		<li><b>TPoints</b>: Awarded for a Geograph submitted to a square that doesn't already have a photo taken over the previous 5 years<br/><small> (short for "temporally aware" - see also separate question above),</small></li>
+		<li><b>TPoints</b>: Awarded for a Geograph submitted to a square that doesn't already have a photo taken within 5 years<br/><small> (short for "temporally aware" - see also separate question above),</small></li>
 		</ul></li>
 
 		<li><b>Images</b>: these are all images on the site, regardless if they are Geographs or Supplementals<br/><br/><ul>
