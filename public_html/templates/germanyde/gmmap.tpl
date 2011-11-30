@@ -427,6 +427,7 @@ OpacityControl.prototype.getDefaultPosition = function() {
 				GEvent.addListener(tilelayers_mapnikhg[2], "opacitychanged", updateMapLink);
 				GEvent.addListener(tilelayers_mapnikhg[1], "opacitychanged", updateMapLink);
 				GEvent.addListener(map, "markergone", updateMapLink);
+				GEvent.addListener(map, "markerdragend", updateMapLink);
 
 				GEvent.addListener(map, "click", function(marker, point) {
 					if (marker) {
@@ -493,6 +494,7 @@ OpacityControl.prototype.getDefaultPosition = function() {
 	</script>
 {/literal}
 
+{if $ext}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px\"/>
 <p>
@@ -502,6 +504,7 @@ This feature is still in development. Please use with care and try to avoid high
 Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht übermäßig nutzen um zu hohe Serverlast zu vermeiden.
 </p>
 </div>
+{/if}
 
 <p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen...</p>
 
