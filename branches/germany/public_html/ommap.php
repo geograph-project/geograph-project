@@ -40,6 +40,7 @@ if (isset($_REQUEST['inner'])) {
 	$cacheid = '';
 }
 
+$type = 'o';
 if (isset($_REQUEST['picasa'])) {
 	$cacheid .= 'picasa';
 	$smarty->assign('picasa',1);
@@ -48,6 +49,7 @@ if (isset($_REQUEST['picasa'])) {
 	$smarty->assign('submit2',1);
 } elseif (isset($_REQUEST['submit'])) {
 } else {
+	$type = '';
 	$cacheid .= 'ext';
 	$smarty->assign('ext',1);
 }
@@ -57,7 +59,6 @@ $op = -1;
 $opr = -1;
 $lat = 90; $lon = 0;
 $mlat = 90; $mlon = 0;
-$type = '';# "m" map, "k" satellite, "h" hybrid, "p" terrain, "g" geograph, "og" osm+g
 $user = 0;
 if (isset($_GET['ll']) && preg_match('/^[\d.]+,[\d.]+$/', $_GET['ll'])) {
 	list($lat,$lon) = explode(',',$_GET['ll']);
@@ -87,8 +88,12 @@ if (isset($_GET['or']) && is_numeric($_GET['or'])) {
 	if ($opr < 0 || $opr > 1)
 		$opr = -1;
 }
-if (isset($_GET['t']) && preg_match('/^[mkhpgowt][SGH]*$/', $_GET['t'])) {
-	$type = $_GET['t'];
+if (isset($_GET['t'])) {
+	if (preg_match('/^[mkhpgowt][SGH]*$/', $_GET['t'])) {
+		$type = $_GET['t'];
+	} elseif ($_GET['t'] == 'og') { /* stay compatible with gmmap */
+		$type = 'oSGH';
+	}
 }
 $smarty->assign('iniz',    $zoom);
 $smarty->assign('initype', $type);
@@ -123,7 +128,6 @@ $smarty->assign('latmax', $CONF['gmlatrange'][0][1]);
 $smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);
 $smarty->assign('lonmax', $CONF['gmlonrange'][0][1]);
 
-$smarty->caching = 0; #FIXME
 $smarty->display('ommap.tpl',$cacheid);
 
 ?>

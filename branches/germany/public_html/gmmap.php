@@ -22,6 +22,13 @@
  */
 
 require_once('geograph/global.inc.php');
+
+if (empty($CONF['google_maps_api_key'])) {
+	$qs = $_SERVER['QUERY_STRING'] === "" ? "" : "?".$_SERVER['QUERY_STRING'];
+	header("Location: http://{$_SERVER['HTTP_HOST']}/ommap.php{$qs}");
+	exit;
+}
+
 init_session();
 
 $smarty = new GeographPage;
@@ -40,6 +47,7 @@ if (isset($_REQUEST['inner'])) {
 	$cacheid = '';
 }
 
+$type = 'h';# "m" map, "k" satellite, "h" hybrid, "p" terrain, "g" geograph, "og" osm+g
 if (isset($_REQUEST['picasa'])) {
 	$cacheid .= 'picasa';
 	$smarty->assign('picasa',1);
@@ -48,6 +56,7 @@ if (isset($_REQUEST['picasa'])) {
 	$smarty->assign('submit2',1);
 } elseif (isset($_REQUEST['submit'])) {
 } else {
+	$type = '';
 	$cacheid .= 'ext';
 	$smarty->assign('ext',1);
 }
@@ -57,7 +66,6 @@ $op = -1;
 $opr = -1;
 $lat = 90; $lon = 0;
 $mlat = 90; $mlon = 0;
-$type = '';# "m" map, "k" satellite, "h" hybrid, "p" terrain, "g" geograph, "og" osm+g
 $user = 0;
 if (isset($_GET['ll']) && preg_match('/^[\d.]+,[\d.]+$/', $_GET['ll'])) {
 	list($lat,$lon) = explode(',',$_GET['ll']);

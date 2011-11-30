@@ -137,12 +137,16 @@ class RasterMap
 						$this->enabled = true;
 						$this->service = 'VoB';
 					} 
-				} elseif(in_array('Grid',$services) && in_array('OLayers',$services)) {
+				} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('OLayers',$services)) {
 					#$this->enabled = true; ##FIXME
 					$this->service = 'OLayers';
 				} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
 					#$this->enabled = true; ##FIXME
-					$this->service = 'Google';
+					if (!empty($CONF['google_maps_api_key'])) {
+						$this->service = 'Google';
+					} else {
+						$this->service = 'OLayers';
+					}
 				} 
 				if (isset($this->tilewidth[$this->service])) {
 					$this->width = $this->tilewidth[$this->service];
@@ -171,6 +175,9 @@ class RasterMap
 					} else {
 						$this->delmeri = (2 * $this->zone - $this->servicegk - 61) * 3;
 					}
+				}
+				if ($this->service == 'Google' && empty($CONF['google_maps_api_key'])) {
+					$this->service = 'OLayers';
 				}
 				if ($this->service != 'Google' && $this->service != 'OLayers') {
 					$this->enabled = true;
@@ -652,11 +659,11 @@ class RasterMap
 					$ft = "<script src=\"http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
 				else
 					$ft = '';
-				$ft .= <<<EOF
-<!--script type="text/javascript" src="/ol/OpenLayers.js"></script-->
-<!--script type="text/javascript" src="/mapper/geotools2.js"></script-->
-<!--script type="text/javascript" src="/mappingO.js"></script-->
-EOF;
+#				$ft .= <<<EOF
+#<script type="text/javascript" src="/ol/OpenLayers.js"></script>
+#<script type="text/javascript" src="/mapper/geotools2.js"></script>
+#<script type="text/javascript" src="/mappingO.js"></script>
+#EOF;
 				return $ft;
 			}
 		}
@@ -1051,8 +1058,6 @@ EOF;
 				//its now handled by the 'childmap'
 				return;
 			}
-			// FIXME/TODO
-			// * css in _basic_begin.tpl / _std_begin.tpl : rastermap->getCSSTag() ? ommap: Common place for css?
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 				
@@ -1230,8 +1235,6 @@ EOF;
 				   don't support...
 				*/
 				numZoomLevels: 18,
-				maxResolution: 156543.0339,
-				maxExtent: [-20037508, -20037508, 20037508, 20037508],
 				//restrictedExtent: bounds,
 				controls : [
 					new OpenLayers.Control.Navigation(),

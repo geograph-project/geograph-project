@@ -29,32 +29,38 @@
 {else}
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
 {/if}
-{if $rastermap->service == 'OLayers'}
+{if $olayersmap||$rastermap->service == 'OLayers'}
 <!-- RasterMap.getScriptTag() -->
-{literal}<link rel="stylesheet" href="/ol/theme/default/style.css" type="text/css" />
+    <link rel="stylesheet" href="/ol/theme/default/style.css" type="text/css" />
+{if $google_maps_api_key}
     <link rel="stylesheet" href="/ol/theme/default/google.css" type="text/css" />
+{/if}
     <!--[if lte IE 6]>
         <link rel="stylesheet" href="/ol/theme/default/ie6-style.css" type="text/css" />
     <![endif]-->
-    <!--link rel="stylesheet" href="style.css" type="text/css" /-->
+{if $olayersmap}
+{literal}
     <style type="text/css">
-        .olImageLoadError {
-            background-color: transparent;
-            /*background-color: pink;
-	    opacity: 0.5;
-	    filter: alpha(opacity=50);*/ /* IE */
-	}
-	.olControlZoomPanel {
-	    top: 14px;
-	}
-
+        .olControlScaleLine {
+            bottom: 45px;
+        }
+        .olControlAttribution {
+            bottom: 15px;
+        }
+    </style>
+{/literal}
+{else}
+{literal}
+    <style type="text/css">
+        .olControlZoomPanel {
+            top: 14px;
+        }
         .olControlAttribution {
             bottom: 0px;
         }
-        /*#map {
-            height: 512px;
-        }*/
-    </style>{/literal}
+    </style>
+{/literal}
+{/if}
 {/if}
 {if $rastermap->service == 'Google'}
 <!-- RasterMap.getScriptTag() -->
