@@ -429,18 +429,6 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 					curmap = geomaps[i];
 			}
 
-			/*var geo = new OpenLayers.Layer.XYrZ(
-				"Geo",
-				//"/tile/0/${z}/${x}/${y}.png",
-				"/tile.php?x=${x}&y=${y}&Z=${z}&t=${u}",
-				4, 13, OpenLayers.Util.Geograph.MISSING_TILE_URL,
-				{
-					attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
-					sphericalMercator : true,
-					userParam : user,
-				}
-			);*/
-
 			initMarkersLayer();
 
 			/*map.setUser = function(u) {
@@ -577,6 +565,7 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 	</script>
 {/literal}
 
+{if $ext}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px\"/>
 <p>
@@ -586,6 +575,7 @@ This feature is still in development. Please use with care and try to avoid high
 Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht übermäßig nutzen um zu hohe Serverlast zu vermeiden.
 </p>
 </div>
+{/if}
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
 
@@ -600,8 +590,6 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 {/if}
 
 <div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Loading map... -->
-<!--div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
-<!--div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
 
 {if $ext}
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />

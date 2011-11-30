@@ -232,7 +232,7 @@ ommap.tpl, rastermap.class.php:
 				}
 			);
 			var topotrails = new OpenLayers.Layer.XYrZ(
-				"Nop's Wanderreitkarte (Wege)",
+				"Nop's Wanderreitkarte (trails)",
 				[ "http://topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "http://topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"],
 				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
