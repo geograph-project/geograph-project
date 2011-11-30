@@ -239,9 +239,10 @@ $CONF['raster_service']='';
 // 'vob' - VisionOfBritain Historical Maps - Permission MUST be sought from the visionofbritain.org.uk webmaster before enableing this feature!
 // 'OS50k' - OSGB 50k Mapping - Licence Required (see next)
 // 'Google' - Use Google Mapping (api key required below)
-// 'Grid' - Should be used with 'Google'
+// 'OLayers' - Use OpenLayers (Google api key only required for displaying Google layers)
+// 'Grid' - Should be used with 'Google' or 'OLayers'
 
-$CONF['google_maps_api_key'] = 'XXXXXXX';
+$CONF['google_maps_api_key'] = '';
 
 $CONF['OS_licence'] = 'XXXXXXXX';
 
@@ -289,7 +290,7 @@ $CONF['mapservices'] = array( /*
 	)*/
 );
 
-//Username/Passowrd for the metacarta webservices api
+//Username/Password for the metacarta webservices api
 //http://developers.metacarta.com/register/
 #$CONF['metacarta_auth'] = 'user@domain.com:password';
 $CONF['metacarta_auth'] = '';

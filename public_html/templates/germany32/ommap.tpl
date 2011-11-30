@@ -1,52 +1,20 @@
+{assign var="olayersmap" value="1"}
 {if $inner}
 {assign var="page_title" value="Geograph Mercator Map"}
-
 {include file="_basic_begin.tpl"}
 {else}
 {assign var="page_title" value="Geograph Mercator Map"}
-{* FIXME move to sensible place *}
-{assign var="extra_meta" value="
-    <link rel=\"stylesheet\" href=\"/ol/theme/default/style.css\" type=\"text/css\" />
-    <link rel=\"stylesheet\" href=\"/ol/theme/default/google.css\" type=\"text/css\" />
-    <!--[if lte IE 6]>
-        <link rel=\"stylesheet\" href=\"/ol/theme/default/ie6-style.css\" type=\"text/css\" />
-    <![endif]-->
-    <!--link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" /-->
-    <style type=\"text/css\">
-        .olImageLoadError `$smarty.ldelim`
-            /*background-color: transparent;*/
-            /*background-color: pink;
-	    opacity: 0.5;
-	    filter: alpha(opacity=50);*/ /* IE */
-	`$smarty.rdelim`
-
-	.olControlScaleLine `$smarty.ldelim`
-	   bottom: 45px;
-	`$smarty.rdelim`
-        .olControlAttribution `$smarty.ldelim`
-            bottom: 15px;
-        `$smarty.rdelim`
-        /*#map `$smarty.ldelim`
-            height: 512px;
-        `$smarty.rdelim`*/
-    </style>
-    <!--script src=\"http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key=`$google_maps_api_key`\"></script>
-    <script src=\"/ol/OpenLayers.js\"></script-->
-"}
 {include file="_std_begin.tpl"}
 {/if}
 {if $google_maps_api_key}
-<script src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
 {/if}
-<script src="/ol/OpenLayers.js"></script>
+<script type="text/javascript" src="/ol/OpenLayers.js"></script>
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/mappingO.js"|revision}"></script>
-<!--script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script-->
 {* FIXME/TODO
 
 text like "Loading Map (JavaScript Required)..."
-
-extra-meta
 
 host our own osm tiles (hills+mapnik, zoom level <= 14, approx 15GB?)?
 overview map: level <= 9
@@ -170,8 +138,6 @@ ommap.tpl, rastermap.class.php:
 				   don't support...
 				*/
 				numZoomLevels: 18,
-				maxResolution: 156543.0339,
-				maxExtent: [-20037508, -20037508, 20037508, 20037508],
 				restrictedExtent: bounds,
 				geoBase: false,
 				user: user,
@@ -209,7 +175,7 @@ ommap.tpl, rastermap.class.php:
 {/if}
 {literal}
 			var geo = new OpenLayers.Layer.XYrZ(
-				"Geo",
+				"Geograph",
 				//"/tile/0/${z}/${x}/${y}.png",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&t=${u}",
 				4, 13, OpenLayers.Util.Geograph.MISSING_TILE_URL,
@@ -244,11 +210,11 @@ ommap.tpl, rastermap.class.php:
 			);
 
 			var hills = new OpenLayers.Layer.XYrZ( //FIXME our own version?
-				"Profile",
+				"Relief",
 				[ "http://wanderreitkarte.de/hills/${z}/${x}/${y}.png", "http://www.wanderreitkarte.de/hills/${z}/${x}/${y}.png"], // ol: 9..19 tiles: 8..\infty // 8..15
 				9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: 'H&ouml;hen: <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> mit <a href="http://www.wanderreitkarte.de/licence_de.php">CIAT-Daten</a>',
+					attribution: 'Relief: <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> using <a href="http://www.wanderreitkarte.de/licence_en.php">CIAT data</a>',
 					sphericalMercator : true,
 					isBaseLayer : false,
 					visibility : false,
@@ -260,7 +226,7 @@ ommap.tpl, rastermap.class.php:
 				[ "http://base.wanderreitkarte.de/base/${z}/${x}/${y}.png", "http://base2.wanderreitkarte.de/base/${z}/${x}/${y}.png"],
 				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_de.php">CC</a>)',
+					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC</a>)',
 					sphericalMercator : true,
 					isBaseLayer : true,
 				}
@@ -270,7 +236,7 @@ ommap.tpl, rastermap.class.php:
 				[ "http://topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "http://topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"],
 				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_de.php">CC</a>)',
+					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC</a>)',
 					sphericalMercator : true,
 					isBaseLayer : false,
 					visibility : false,
@@ -509,6 +475,7 @@ ommap.tpl, rastermap.class.php:
 	</script>
 {/literal}
 
+{if $ext}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px\"/>
 <p>
@@ -518,6 +485,7 @@ This feature is still in development. Please use with care and try to avoid high
 Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht übermäßig nutzen um zu hohe Serverlast zu vermeiden.
 </p>
 </div>
+{/if}
 
 <p>Click on the map to create a point, pick it up and drag to move to better location...</p>
 
@@ -532,8 +500,6 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 {/if}
 
 <div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Loading map... -->
-<!--div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
-<!--div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
 
 {if $ext}
 <div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />
@@ -554,12 +520,12 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 {if $iniuser > 0 and $iniuser != $userid}checked{/if} />User:
 <input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
 <br />
-Opacity:
+Opacity (%):
 Coverage
-<input type="text" size="5" name="opcoverage" value="{if $inio >= 0}{$inio*100}{else}50{/if}" />%
+<input type="text" size="5" name="opcoverage" value="{if $inio >= 0}{$inio*100}{else}50{/if}" />
 <input type="button" value="set"   onclick="map.trySetOpacity(map.geosq, document.theForm.opcoverage.value);"/>
 | Relief
-<input type="text" size="5" name="oprelief" value="{if $inior >= 0}{$inior*100}{else}100{/if}" />%
+<input type="text" size="5" name="oprelief" value="{if $inior >= 0}{$inior*100}{else}100{/if}" />
 <input type="button" value="set"   onclick="map.trySetOpacity(map.hills, document.theForm.oprelief.value);"/>
 {/dynamic}
 </div>

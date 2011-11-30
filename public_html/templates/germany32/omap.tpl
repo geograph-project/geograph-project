@@ -1,45 +1,17 @@
+{assign var="olayersmap" value="1"}
 {if $inner}
 {assign var="page_title" value="Geograph Map"}
-
 {include file="_basic_begin.tpl"}
 {else}
 {assign var="page_title" value="Geograph Map"}
-{* FIXME move to sensible place *}
-{assign var="extra_meta" value="
-    <link rel=\"stylesheet\" href=\"/ol/theme/default/style.css\" type=\"text/css\" />
-    <!--[if lte IE 6]>
-        <link rel=\"stylesheet\" href=\"/ol/theme/default/ie6-style.css\" type=\"text/css\" />
-    <![endif]-->
-    <!--link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\" /-->
-    <style type=\"text/css\">
-        .olImageLoadError `$smarty.ldelim`
-            /*background-color: transparent;*/
-            /*background-color: pink;
-	    opacity: 0.5;
-	    filter: alpha(opacity=50);*/ /* IE */
-	`$smarty.rdelim`
-
-	.olControlScaleLine `$smarty.ldelim`
-	   bottom: 45px;
-	`$smarty.rdelim`
-        .olControlAttribution `$smarty.ldelim`
-            bottom: 15px;
-        `$smarty.rdelim`
-        /*#map `$smarty.ldelim`
-            height: 512px;
-        `$smarty.rdelim`*/
-    </style>
-"}
 {include file="_std_begin.tpl"}
 {/if}
-<script src="/ol/OpenLayers.js"></script>
+<script type="text/javascript" src="/ol/OpenLayers.js"></script>
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/mappingO.js"|revision}"></script>
 {* FIXME/TODO
 
 text like "Loading Map (JavaScript Required)..."
-
-extra-meta
 
 ommap.tpl, rastermap.class.php:
 - pan when moving marker out of box?

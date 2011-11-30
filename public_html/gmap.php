@@ -22,6 +22,13 @@
  */
 
 require_once('geograph/global.inc.php');
+
+if (empty($CONF['google_maps_api_key'])) {
+	$qs = $_SERVER['QUERY_STRING'] === "" ? "" : "?".$_SERVER['QUERY_STRING'];
+	header("Location: http://{$_SERVER['HTTP_HOST']}/omap.php{$qs}");
+	exit;
+}
+
 init_session();
 
 $smarty = new GeographPage;
