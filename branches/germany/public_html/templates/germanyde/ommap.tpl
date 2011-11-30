@@ -76,6 +76,8 @@ ommap.tpl, rastermap.class.php:
 		}
 
 		function loadmapO() {
+			//OpenLayers.Lang.setCode("de"); /* TODO Needs OpenLayers/Lang/de.js built into OpenLayers.js */
+
 			var op = 0.5;
 			if (inio >= 0)
 				op = inio;
@@ -153,22 +155,22 @@ ommap.tpl, rastermap.class.php:
 {if $google_maps_api_key}
 {literal}
 			var gphy = new OpenLayers.Layer.Google(
-				"Google Physical",
+				"Google: Gel&auml;nde",
 				{type: google.maps.MapTypeId.TERRAIN}
 			);
 
 			var gmap = new OpenLayers.Layer.Google(
-				"Google Streets",
+				"Google: Karte",
 				{numZoomLevels: 20}
 			);
 
 			var ghyb = new OpenLayers.Layer.Google(
-				"Google Hybrid",
+				"Google: Hybrid",
 				{type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
 			);
 
 			var gsat = new OpenLayers.Layer.Google(
-				"Google Satellite",
+				"Google: Satellit",
 				{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
 			);
 {/literal}
@@ -180,13 +182,13 @@ ommap.tpl, rastermap.class.php:
 				"/tile.php?x=${x}&y=${y}&Z=${z}&t=${u}",
 				4, 13, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+					attribution: '&copy; <a href="/">Geograph</a> und <a href="http://www.openstreetmap.org/">OSM</a>-User (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true,
 					userParam : user,
 				}
 			);
 			var geosq = new OpenLayers.Layer.XYrZ(
-				"Squares",
+				"Geograph: Abdeckung",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&l=2&o=1&t=${u}",
 				4, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
@@ -198,7 +200,7 @@ ommap.tpl, rastermap.class.php:
 				}
 			);
 			var geogr = new OpenLayers.Layer.XYrZ(
-				"Grid",
+				"Geograph: Gitternetz",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&l=8&o=1",
 				4, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
@@ -214,7 +216,7 @@ ommap.tpl, rastermap.class.php:
 				[ "http://wanderreitkarte.de/hills/${z}/${x}/${y}.png", "http://www.wanderreitkarte.de/hills/${z}/${x}/${y}.png"], // ol: 9..19 tiles: 8..\infty // 8..15
 				9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: 'Relief: <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> using <a href="http://www.wanderreitkarte.de/licence_en.php">CIAT data</a>',
+					attribution: 'H&ouml;hen: <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> mit <a href="http://www.wanderreitkarte.de/licence_de.php">CIAT-Daten</a>',
 					sphericalMercator : true,
 					isBaseLayer : false,
 					visibility : false,
@@ -226,7 +228,7 @@ ommap.tpl, rastermap.class.php:
 				[ "http://base.wanderreitkarte.de/base/${z}/${x}/${y}.png", "http://base2.wanderreitkarte.de/base/${z}/${x}/${y}.png"],
 				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC</a>)',
+					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_de.php">CC</a>)',
 					sphericalMercator : true,
 					isBaseLayer : true,
 				}
@@ -236,7 +238,7 @@ ommap.tpl, rastermap.class.php:
 				[ "http://topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "http://topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"],
 				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC</a>)',
+					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nops Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_de.php">CC</a>)',
 					sphericalMercator : true,
 					isBaseLayer : false,
 					visibility : false,
@@ -487,41 +489,41 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 </div>
 {/if}
 
-<p>Click on the map to create a point, pick it up and drag to move to better location...</p>
+<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen...</p>
 
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{elseif $ext}action="javascript:void()"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 {if !$ext}
-<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Aktuelle Koordinate</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 
-<input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
+<input type="submit" value="Nächster Schritt &gt; &gt;"/> <span id="dist_message"></span></div>
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
 {/if}
 
-<div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Loading map... -->
+<div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Karte wird geladen... (JavaScript nötig) -->
 
 {if $ext}
-<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Aktuelle Koordinate</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />
 
-<input type="button" value="Show gridsquare"   onclick="openGeoWindow(5, '/gridref/');" />
-<input type="button" value="Submit image"      onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
-<input type="button" value="Search for images" onclick="openGeoWindow(5, '/search.php?q=');" />
-<input type="button" value="Clear marker"      onclick="clearMarker();" />
-<a id="maplink" href="#">Link to this map</a>
+<input type="button" value="Planquadrat zeigen" onclick="openGeoWindow(5, '/gridref/');" />
+<input type="button" value="Bild einreichen"    onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
+<input type="button" value="Bilder suchen"      onclick="openGeoWindow(5, '/search.php?q=');" />
+<input type="button" value="Marker löschen"     onclick="clearMarker();" />
+<a id="maplink" href="#">Link zur Karte</a>
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
 <br />
 {dynamic}
-<input type="radio" name="mtradio" value="coverage" onclick="map.setUser(0);" {if $iniuser == 0}checked{/if} />Coverage |
-<input type="radio" name="mtradio" value="depth" onclick="map.setUser(-1);" {if $iniuser == -1}checked{/if} />Depth |
-{if $userid}<input type="radio" name="mtradio" value="personal" onclick="map.setUser({$userid});" {if $iniuser == $userid}checked{/if} />Personal |{/if}
+<input type="radio" name="mtradio" value="coverage" onclick="map.setUser(0);" {if $iniuser == 0}checked{/if} />Abdeckung |
+<input type="radio" name="mtradio" value="depth" onclick="map.setUser(-1);" {if $iniuser == -1}checked{/if} />Dichte |
+{if $userid}<input type="radio" name="mtradio" value="personal" onclick="map.setUser({$userid});" {if $iniuser == $userid}checked{/if} />Persönlich |{/if}
 <input type="radio" name="mtradio" value="user" onclick="if(!map.trySetUserId(document.theForm.mtuser.value)){ldelim}document.theForm.mtradio[{if $userid}3{else}2{/if}].checked=false;document.theForm.mtradio[0].checked=true;map.setUser(0);{rdelim};"
-{if $iniuser > 0 and $iniuser != $userid}checked{/if} />User:
+{if $iniuser > 0 and $iniuser != $userid}checked{/if} />Nutzer:
 <input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
 <br />
-Opacity (%):
-Coverage
+Deckkraft (%):
+Abdeckung
 <input type="text" size="5" name="opcoverage" value="{if $inio >= 0}{$inio*100}{else}50{/if}" />
 <input type="button" value="set"   onclick="map.trySetOpacity(map.geosq, document.theForm.opcoverage.value);"/>
 | Relief
