@@ -1164,6 +1164,34 @@ EOF;
 			} else {
 				$p1 = '';
 			}
+			if ($CONF['lang'] == 'de') {
+				$ollang = 'de';
+				$name_gphy = "Google: Gel&auml;nde";
+				$name_gmap = "Google: Karte";
+				$name_ghyb = "Google: Hybrid";
+				$name_gsat = "Google: Satellit";
+				$name_hills = "Relief";
+				$name_topobase = "Nop's Wanderreitkarte";
+				$name_topotrails = "Nop's Wanderreitkarte (Wege)";
+				$name_osmarender = "OpenStreetMap (Tiles@Home)";
+				$attr_hills = "'H&ouml;hen: <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> mit <a href=\"http://www.wanderreitkarte.de/licence_de.php\">CIAT-Daten</a>'";
+				$attr_topo = "'&copy; <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_de.php\">CC</a>)'";
+			} else {
+				$ollang = '';
+				$name_gphy = "Google Physical";
+				$name_gmap = "Google Streets";
+				$name_ghyb = "Google Hybrid";
+				$name_gsat = "Google Satellite";
+				$name_hills = "Relief";
+				$name_topobase = "Nop's Wanderreitkarte";
+				$name_topotrails = "Nop's Wanderreitkarte (trails)";
+				$name_osmarender = "OpenStreetMap (Tiles@Home)";
+				$attr_hills = "'Relief: <a href=\"http://www.wanderreitkarte.de/\">Nop\\'s Wanderreitkarte</a> using <a href=\"http://www.wanderreitkarte.de/licence_en.php\">CIAT data</a>'";
+				$attr_topo = "'&copy; <a href=\"http://www.wanderreitkarte.de/\">Nop\\'s Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_en.php\">CC</a>)'";
+			}
+			if ($ollang !== '') {
+				$ollang = "//OpenLayers.Lang.setCode('$ollang'); /* TODO Needs OpenLayers/Lang/$ollang.js built into OpenLayers.js */";
+			}
 			if (!$CONF['google_maps_api_key']) {
 				$google_block='';
 				$google_layers = '';
@@ -1171,22 +1199,22 @@ EOF;
 				$google_layers = 'gphy, gmap, gsat, ghyb,';
 				$google_block=<<<EOF
 			var gphy = new OpenLayers.Layer.Google(
-				"Google Physical",
+				"$name_gphy",
 				{type: google.maps.MapTypeId.TERRAIN}
 			);
 
 			var gmap = new OpenLayers.Layer.Google(
-				"Google Streets",
+				"$name_gmap",
 				{numZoomLevels: 20}
 			);
 
 			var ghyb = new OpenLayers.Layer.Google(
-				"Google Hybrid",
+				"$name_ghyb",
 				{type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
 			);
 
 			var gsat = new OpenLayers.Layer.Google(
-				"Google Satellite",
+				"$name_gsat",
 				{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
 			);
 EOF;
@@ -1198,7 +1226,6 @@ EOF;
 		"Lines",
 		{
 			isBaseLayer: false,
-			//renderers: OpenLayers.Layer.Vector.prototype.renderers, //FIXME?
 			displayInLayerSwitcher: false
 		}
 	);
@@ -1221,6 +1248,7 @@ EOF;
 					var ri = {$this->reference_index};
 					var map = null;
 		function loadmapO() {
+			$ollang
 			map = new OpenLayers.Map({
 				div: \"map\",
 				projection: epsg900913,
@@ -1248,16 +1276,16 @@ EOF;
 			var mapnik = new OpenLayers.Layer.OSM();
 
 			var osmarender = new OpenLayers.Layer.OSM(
-				\"OpenStreetMap (Tiles@Home)\",
+				\"$name_osmarender\",
 				\"http://tah.openstreetmap.org/Tiles/tile/\${z}/\${x}/\${y}.png\"
 			);
 
 			var hills = new OpenLayers.Layer.XYrZ( //FIXME our own version?
-				\"Profile\",
+				\"$name_hills\",
 				[ \"http://wanderreitkarte.de/hills/\${z}/\${x}/\${y}.png\", \"http://www.wanderreitkarte.de/hills/\${z}/\${x}/\${y}.png\"],
 				9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: 'H&ouml;hen: <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> mit <a href=\"http://www.wanderreitkarte.de/licence_de.php\">CIAT-Daten</a>',
+					attribution: $attr_hills,
 					sphericalMercator : true,
 					isBaseLayer : false,
 					visibility : false,
@@ -1265,21 +1293,21 @@ EOF;
 			);
 
 			var topobase = new OpenLayers.Layer.XYrZ(
-				\"Nop's Wanderreitkarte\",
+				\"$name_topobase\",
 				[ \"http://base.wanderreitkarte.de/base/\${z}/\${x}/\${y}.png\", \"http://base2.wanderreitkarte.de/base/\${z}/\${x}/\${y}.png\"],
 				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '&copy; <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_de.php\">CC</a>)',
+					attribution: $attr_topo,
 					sphericalMercator : true,
 					isBaseLayer : true,
 				}
 			);
 			var topotrails = new OpenLayers.Layer.XYrZ(
-				\"Nop's Wanderreitkarte (Wege)\",
+				\"$name_topotrails\",
 				[ \"http://topo.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\", \"http://topo2.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\"],
 				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '&copy; <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_de.php\">CC</a>)',
+					attribution: $attr_topo ,
 					sphericalMercator : true,
 					isBaseLayer : false,
 					visibility : false,

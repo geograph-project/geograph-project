@@ -430,18 +430,6 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 					curmap = geomaps[i];
 			}
 
-			/*var geo = new OpenLayers.Layer.XYrZ(
-				"Geo",
-				//"/tile/0/${z}/${x}/${y}.png",
-				"/tile.php?x=${x}&y=${y}&Z=${z}&t=${u}",
-				4, 13, OpenLayers.Util.Geograph.MISSING_TILE_URL,
-				{
-					attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
-					sphericalMercator : true,
-					userParam : user,
-				}
-			);*/
-
 			initMarkersLayer();
 
 			/*map.setUser = function(u) {

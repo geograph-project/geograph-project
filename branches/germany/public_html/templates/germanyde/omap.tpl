@@ -1,9 +1,9 @@
 {assign var="olayersmap" value="1"}
 {if $inner}
-{assign var="page_title" value="Geograph Map"}
+{assign var="page_title" value="Geograph-Karte"}
 {include file="_basic_begin.tpl"}
 {else}
-{assign var="page_title" value="Geograph Map"}
+{assign var="page_title" value="Geograph-Karte"}
 {include file="_std_begin.tpl"}
 {/if}
 <script type="text/javascript" src="/ol/OpenLayers.js"></script>
@@ -343,6 +343,8 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 		}
 
 		function loadmapO() {
+			//OpenLayers.Lang.setCode("de"); /* TODO Needs OpenLayers/Lang/de.js built into OpenLayers.js */
+
 			OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 				defaultHandlerOptions: {
 					'single': true,
@@ -420,7 +422,7 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 					"/tile.php?x=${x}&y=${y}&z=${z}&i=${i}",
 					OpenLayers.Util.Geograph.MISSING_TILE_URL,
 					{
-						attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+						attribution: '&copy; <a href="/">Geograph</a> und <a href="http://www.openstreetmap.org/">OSM</a>-User (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 						//userParam : user,
 					}
 				);
@@ -428,18 +430,6 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 				if (curri == ridefault)
 					curmap = geomaps[i];
 			}
-
-			/*var geo = new OpenLayers.Layer.XYrZ(
-				"Geo",
-				//"/tile/0/${z}/${x}/${y}.png",
-				"/tile.php?x=${x}&y=${y}&Z=${z}&t=${u}",
-				4, 13, OpenLayers.Util.Geograph.MISSING_TILE_URL,
-				{
-					attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
-					sphericalMercator : true,
-					userParam : user,
-				}
-			);*/
 
 			initMarkersLayer();
 
@@ -577,6 +567,7 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 	</script>
 {/literal}
 
+{if $ext}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px\"/>
 <p>
@@ -586,40 +577,39 @@ This feature is still in development. Please use with care and try to avoid high
 Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht übermäßig nutzen um zu hohe Serverlast zu vermeiden.
 </p>
 </div>
+{/if}
 
-<p>Click on the map to create a point, pick it up and drag to move to better location...</p>
+<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen...</p>
 
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{elseif $ext}action="javascript:void()"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 {if !$ext}
-<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Aktuelle Koordinate</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 
-<input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
+<input type="submit" value="Nächster Schritt &gt; &gt;"/> <span id="dist_message"></span></div>
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
 {/if}
 
-<div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Loading map... -->
-<!--div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
-<!--div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div-->
+<div class="smallmap" id="map" style="width:600px; height:500px;border:1px solid blue"></div><!-- FIXME Karte wird geladen... (JavaScript nötig) -->
 
 {if $ext}
-<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />
+<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Aktuelle Koordinate</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/><br />
 
-<input type="button" value="Show gridsquare"   onclick="openGeoWindow(5, '/gridref/');" />
-<input type="button" value="Submit image"      onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
-<input type="button" value="Search for images" onclick="openGeoWindow(5, '/search.php?q=');" />
-<input type="button" value="Clear marker"      onclick="clearMarker();" />
-{*<a id="maplink" href="#">Link to this map</a>*}
+<input type="button" value="Planquadrat zeigen" onclick="openGeoWindow(5, '/gridref/');" />
+<input type="button" value="Bild einreichen"    onclick="openGeoWindow(5, '/submit.php?gridreference=');" />
+<input type="button" value="Bilder suchen"      onclick="openGeoWindow(5, '/search.php?q=');" />
+<input type="button" value="Marker löschen"     onclick="clearMarker();" />
+{*<a id="maplink" href="#">Link zur Karte</a>*}
 <input type="hidden" name="gridsquare" value=""/>
 <input type="hidden" name="setpos" value=""/>
 {*<br />
 {dynamic}
-<input type="radio" name="mtradio" value="coverage" onclick="map.setUser(0);" {if $iniuser == 0}checked{/if} />Coverage |
-<input type="radio" name="mtradio" value="depth" onclick="map.setUser(-1);" {if $iniuser == -1}checked{/if} />Depth |
-{if $userid}<input type="radio" name="mtradio" value="personal" onclick="map.setUser({$userid});" {if $iniuser == $userid}checked{/if} />Personal |{/if}
+<input type="radio" name="mtradio" value="coverage" onclick="map.setUser(0);" {if $iniuser == 0}checked{/if} />Abdeckung |
+<input type="radio" name="mtradio" value="depth" onclick="map.setUser(-1);" {if $iniuser == -1}checked{/if} />Dichte |
+{if $userid}<input type="radio" name="mtradio" value="personal" onclick="map.setUser({$userid});" {if $iniuser == $userid}checked{/if} />Persönlich |{/if}
 <input type="radio" name="mtradio" value="user" onclick="if(!map.trySetUserId(document.theForm.mtuser.value)){ldelim}document.theForm.mtradio[{if $userid}3{else}2{/if}].checked=false;document.theForm.mtradio[0].checked=true;map.setUser(0);{rdelim};"
-{if $iniuser > 0 and $iniuser != $userid}checked{/if} />User:
+{if $iniuser > 0 and $iniuser != $userid}checked{/if} />Nutzer:
 <input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
 {/dynamic}*}
 </div>
@@ -630,8 +620,8 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 {*<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
 <div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:</label>
 	<input type="text" size="50" id="addressInput" name="address" value="" />
-	<input type="submit" value="Find"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder)</small></small>
+	<input type="submit" value="Suchen"/><small><small><br/>
+	(über Google Maps API Geocoder)</small></small>
 </div>
 </form>*}
 
