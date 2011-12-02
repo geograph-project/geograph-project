@@ -140,6 +140,7 @@ ommap.tpl, rastermap.class.php:
 				numZoomLevels: 18,
 				restrictedExtent: bounds,
 				geoBase: false,
+				hillBase: false,
 				user: user,
 				controls : [
 					new OpenLayers.Control.Navigation(),
@@ -152,9 +153,10 @@ ommap.tpl, rastermap.class.php:
 {/literal}
 {if $google_maps_api_key}
 {literal}
+			// FIXME numZoomLevels: are these values sensible?
 			var gphy = new OpenLayers.Layer.Google(
 				"Google Physical",
-				{type: google.maps.MapTypeId.TERRAIN}
+				{type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 16}
 			);
 
 			var gmap = new OpenLayers.Layer.Google(
@@ -186,7 +188,7 @@ ommap.tpl, rastermap.class.php:
 				}
 			);
 			var geosq = new OpenLayers.Layer.XYrZ(
-				"Squares",
+				"Geograph: Coverage",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&l=2&o=1&t=${u}",
 				4, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
@@ -198,7 +200,7 @@ ommap.tpl, rastermap.class.php:
 				}
 			);
 			var geogr = new OpenLayers.Layer.XYrZ(
-				"Grid",
+				"Geograph: Grid",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&l=8&o=1",
 				4, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
@@ -207,6 +209,18 @@ ommap.tpl, rastermap.class.php:
 					isBaseLayer : false,
 					visibility : false,
 				}
+			);
+
+			// FIXME numZoomLevels: are these values sensible?
+			var mapnik = new OpenLayers.Layer.OSM(
+				null,
+				null,
+				{ numZoomLevels: 19 }
+			);
+			var osmarender = new OpenLayers.Layer.OSM(
+				"OpenStreetMap (Tiles@Home)",
+				"http://tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png",
+				{ numZoomLevels: 19 }
 			);
 
 			var hills = new OpenLayers.Layer.XYrZ( //FIXME our own version?
@@ -249,7 +263,13 @@ ommap.tpl, rastermap.class.php:
 				if (topotrails.getVisibility() != showtopotrails)
 					topotrails.setVisibility(showtopotrails);
 			});
+
+			gphy.hasHills = true;
+			gsat.hasHills = true;
+			ghyb.hasHills = true;
+
 			map.events.register("changebaselayer", map, function(e) {
+				var redrawlayerswitcher = false;
 				/* Geograph map: don't show overlays */
 				if (e.layer == geo) {
 					if (!map.geoBase) {
@@ -259,8 +279,7 @@ ommap.tpl, rastermap.class.php:
 						geogr.setVisibility(false);
 						geosq.displayInLayerSwitcher = false;
 						geogr.displayInLayerSwitcher = false;
-						layerswitcher.layerStates = [];
-						layerswitcher.redraw();
+						redrawlayerswitcher = true;
 						map.geoBase = true;
 					}
 				} else if (map.geoBase) {
@@ -270,32 +289,60 @@ ommap.tpl, rastermap.class.php:
 						geogr.setVisibility(true);
 					geosq.displayInLayerSwitcher = true;
 					geogr.displayInLayerSwitcher = true;
+					redrawlayerswitcher = true;
+					map.geoBase = false;
+				}
+				/* Don't show relief if already shown in base layer */
+				if (('hasHills' in e.layer) && e.layer.hasHills) {
+					if (!map.hillBase) {
+						hills.savedVisibility = hills.getVisibility();
+						hills.setVisibility(false);
+						hills.displayInLayerSwitcher = false;
+						redrawlayerswitcher = true;
+						map.hillBase = true;
+					}
+				} else if (map.hillBase) {
+					if (hills.savedVisibility)
+						hills.setVisibility(true);
+					hills.displayInLayerSwitcher = true;
+					redrawlayerswitcher = true;
+					map.hillBase = false;
+				}
+				if (redrawlayerswitcher) {
 					layerswitcher.layerStates = [];
 					layerswitcher.redraw();
-					map.geoBase = false;
+				}
+				if (e.layer instanceof OpenLayers.Layer.XYrZ) {
+					var z = map.zoom; // FIXME map.getZoom()?
+					if (z > e.layer.maxZoomLevel)
+						map.setCenter(map.center, e.layer.maxZoomLevel); // FIXME is there really no "map.setZoom(zoom)"?
+					else if (z < e.layer.minZoomLevel)
+						map.setCenter(map.center, e.layer.minZoomLevel); // FIXME is there really no "map.setZoom(zoom)"?
+				}
+			});
+			map.events.register("zoomend", map, function(e) {
+				if (map.baseLayer instanceof OpenLayers.Layer.XYrZ) {
+					var z = map.zoom; // FIXME map.getZoom()?
+					if (z > map.baseLayer.maxZoomLevel)
+						map.setCenter(map.center, map.baseLayer.maxZoomLevel); // FIXME is there really no "map.setZoom(zoom)"?
+					else if (z < map.baseLayer.minZoomLevel)
+						map.setCenter(map.center, map.baseLayer.minZoomLevel); // FIXME is there really no "map.setZoom(zoom)"?
 				}
 			});
 
-			var mapnik = new OpenLayers.Layer.OSM();
-
-			var osmarender = new OpenLayers.Layer.OSM(
-				"OpenStreetMap (Tiles@Home)",
-				"http://tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png"
-			);
-
 			initMarkersLayer();
 
-			mapnik.gmaxz = 19;
-			osmarender.gmaxz = 19;
-			topobase.gmaxz = 16;
-			geo.gmaxz = 13;
+			mapnik.gmaxz = mapnik.numZoomLevels-1;
+			osmarender.gmaxz = osmarender.numZoomLevels-1;
+			topobase.gmaxz = topobase.maxZoomLevel;
+			geo.gmaxz = geo.maxZoomLevel;
 {/literal}
 {if $google_maps_api_key}
 {literal}
-			gphy.gmaxz = 15;
-			gmap.gmaxz = 19;
-			gsat.gmaxz = 21;
-			ghyb.gmaxz = 19;
+			gphy.gmaxz = gphy.numZoomLevels-1;
+			gmap.gmaxz = gmap.numZoomLevels-1;
+			gsat.gmaxz = gsat.numZoomLevels-1;
+			ghyb.gmaxz = ghyb.numZoomLevels-1;
 {/literal}
 {/if}
 {literal}
@@ -323,9 +370,11 @@ ommap.tpl, rastermap.class.php:
 			for (var key in maptypes) {
 				maptypes[key].gurlid = key;
 			}
-			/*for (var key in ovltypes) {
-				ovltypes[key].gurlid = key;
-			}*/
+			for (var key in ovltypes) {
+				ovltypes[key].savedVisibility = false;
+			}
+
+			/* For opacity form */
 			map.hills = hills;
 			map.geosq = geosq;
 
@@ -361,11 +410,12 @@ ommap.tpl, rastermap.class.php:
 			function updateMapLink() {
 				var ll = map.center.clone().transform(map.getProjectionObject(), epsg4326);
 				var mt = map.baseLayer;
+				var mtHasHills = ('hasHills' in mt) && mt.hasHills;
 				var type = mt.gurlid;
 				for (var key in ovltypes) {
 					ot = ovltypes[key];
 					var isvisible;
-					if (mt != geo || ot == hills)
+					if (ot == hills && !mtHasHills || ot != hills && mt != geo)
 						isvisible = ot.getVisibility();
 					else
 						isvisible = ot.savedVisibility;
@@ -445,14 +495,17 @@ ommap.tpl, rastermap.class.php:
 				zoom = iniz;
 			map.setBaseLayer(mt);
 			map.setCenter(point.transform(epsg4326, map.getProjectionObject()), zoom);
+			var mtHasHills = ('hasHills' in mt) && mt.hasHills;
 			for (var i = 1; i < initype.length; ++i) {
 				var ot = ovltypes[initype.charAt(i)];
-				if (mt != geo || ot == hills) {
+				if (ot == hills && !mtHasHills || ot != hills && mt != geo) {
 					ot.setVisibility(true);
 				} else {
 					ot.savedVisibility = true;
 				}
 			}
+			map.geoBase = mt == geo;
+			map.hillBase = mtHasHills;
 			if (inimlat < 90) {
 				var mpoint = new OpenLayers.LonLat(inimlon, inimlat);
 				currentelement = createMarker(mpoint, 0);
