@@ -89,7 +89,8 @@ if (isset($_GET['or']) && is_numeric($_GET['or'])) {
 		$opr = -1;
 }
 if (isset($_GET['t'])) {
-	if (preg_match('/^[mkhpgowt][SGH]*$/', $_GET['t'])) {
+	$googletypes = empty($CONF['google_maps_api_key']) ? '' : 'mkhp';
+	if (preg_match('/^['.$googletypes.'gowt][SGH]*$/', $_GET['t'])) {
 		$type = $_GET['t'];
 	} elseif ($_GET['t'] == 'og') { /* stay compatible with gmmap */
 		$type = 'oSGH';

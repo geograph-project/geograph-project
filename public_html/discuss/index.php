@@ -40,6 +40,7 @@ $isMapMod=$GLOBALS['USER']->hasPerm('mapmod');
 $isAdmin=$GLOBALS['USER']->hasPerm('admin');
 $isTGModAdmin=$isMod||$isTicketMod||$isAdmin;
 $isModAdmin=$isMod||$isTicketMod||$isMapMod||$isAdmin;
+$useGoogleApi=!empty($CONF['google_maps_api_key']);
 
 $static_host = $CONF['STATIC_HOST'];
 $static_url = "http://{$CONF['STATIC_HOST']}/discuss";
