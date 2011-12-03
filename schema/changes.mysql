@@ -2264,3 +2264,18 @@ UNIQUE `user_id` (`user_id`,`pkey`)
 
 
 
+CREATE TABLE tagornot_archive LIKE tagornot;
+ALTER TABLE tagornot_archive DROP KEY `tag_id_2`;
+
+CREATE TABLE tag_dispute_log (
+`user_id` INT UNSIGNED NOT NULL ,
+`tag_id` int(10) unsigned NOT NULL,
+`gridimage_id` int(10) unsigned NOT NULL,
+`created` DATETIME NOT NULL ,
+`updated` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL 
+) ENGINE = MYISAM;
+
+
+#################################################
+
+
