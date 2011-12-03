@@ -23,12 +23,22 @@
      <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
     </ul></li>
     <li>Tools<ul>
-     <li><a title="Geograph Map using mercator projection" href="/gmmap.php">Mercator Map</a></li>
+    <li><small><small>Draggable Maps</small></small><ul>
   {dynamic}
   {if $is_logged_in}
-     <li><a title="Geograph Map" href="/gmap.php">Geograph Map</a></li>
+  {if $use_google_api}
+     <li><a title="Draggable Geograph map" href="/gmap.php">Geograph</a> (<a title="Draggable Geograph map using OpenLayers" href="/omap.php">ol</a>)</li>
+  {else}
+     <li><a title="Draggable Geograph map" href="/omap.php">Geograph</a></li>
+  {/if}
   {/if}
   {/dynamic}
+  {if $use_google_api}
+     <li><a title="Draggable Geograph map without zones" href="/gmmap.php">No zones</a> (<a title="Draggable Geograph map without zones using OpenLayers" href="/ommap.php">ol</a>)</li>
+  {else}
+     <li><a title="Draggable Geograph map without zones" href="/ommap.php">No zones</a></li>
+  {/if}
+    </ul></li>
      <li><a title="Coordinate conversion" href="/latlong.php">Coordinates</a></li>
     </ul></li>
     <li>Further Info<ul>

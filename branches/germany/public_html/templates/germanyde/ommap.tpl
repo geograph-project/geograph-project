@@ -175,6 +175,10 @@ ommap.tpl, rastermap.class.php:
 				"Google: Satellit",
 				{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
 			);
+
+			gphy.hasHills = true;
+			gsat.hasHills = true;
+			ghyb.hasHills = true;
 {/literal}
 {/if}
 {literal}
@@ -265,10 +269,6 @@ ommap.tpl, rastermap.class.php:
 				if (topotrails.getVisibility() != showtopotrails)
 					topotrails.setVisibility(showtopotrails);
 			});
-
-			gphy.hasHills = true;
-			gsat.hasHills = true;
-			ghyb.hasHills = true;
 
 			map.events.register("changebaselayer", map, function(e) {
 				var redrawlayerswitcher = false;

@@ -1167,7 +1167,7 @@ EOF;
 			if ($CONF['lang'] == 'de') {
 				$ollang = 'de';
 				$name_gphy = "Google: Gel&auml;nde";
-				$name_gmap = "Google: Karte";
+				$name_gmap = "Google: Stra&szlig;enkarte";
 				$name_ghyb = "Google: Hybrid";
 				$name_gsat = "Google: Satellit";
 				$name_hills = "Relief";
@@ -1200,7 +1200,7 @@ EOF;
 				$google_block=<<<EOF
 			var gphy = new OpenLayers.Layer.Google(
 				"$name_gphy",
-				{type: google.maps.MapTypeId.TERRAIN}
+				{type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 16}
 			);
 
 			var gmap = new OpenLayers.Layer.Google(
