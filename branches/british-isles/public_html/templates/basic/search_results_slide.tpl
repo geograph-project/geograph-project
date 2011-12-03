@@ -33,7 +33,7 @@
 			<b>Image Buckets</b><br/>
 			{foreach from=$buckets item=item}
 					<label id="{$image->gridimage_id}label{$item|escape:'html'}" for="{$image->gridimage_id}check{$item|escape:'html'}" style="color:gray">
-					<input type=checkbox id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0);"> {$item|escape:'html'}
+					<input type=checkbox id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0,this.value);"> {$item|escape:'html'}
 					</label><br/>
 
 			{/foreach}<br/>
@@ -78,50 +78,6 @@ var delayinsec = {$user->slideshow_delay|default:5};
 if (window.location.hash == '#autonext') {
 	setTimeout("auto_slide_go(1)",500);
 }
-
-	function submitBucket(gridimage_id,bucket,status) {
-		var data = new Object;
-		data['tag'] = "bucket:"+bucket;
-		data['status'] = status;
-		data['gridimage_id'] = gridimage_id;
-
-		$.ajax({
-			url: "/tags/tagger.json.php",
-			data: data
-		});
-
-		if (document.getElementById(gridimage_id+'label'+bucket)) {
-			document.getElementById(gridimage_id+'label'+bucket).style.color = status>0?'':'gray';
-			document.getElementById(gridimage_id+'label'+bucket).style.fontWeight = status>0?'bold':'';
-		}
-	}
-	var loadedBuckets = new Array();
-
-	function refreshMainList(gridimage_id) {
-		if (gridimage_id && !loadedBuckets[gridimage_id]) {
-
-			var url = '/tags/tags.json.php?gridimage_id='+encodeURIComponent(gridimage_id);
-
-			$.getJSON(url+"&callback=?",
-				// on completion, process the results
-				function (data) {
-					if (data) {
-						for(var tag_id in data) {
-							if (data[tag_id].prefix == 'bucket' && document.getElementById(gridimage_id+'label'+data[tag_id].tag)) {
-								document.getElementById(gridimage_id+'check'+data[tag_id].tag).checked = true;
-								document.getElementById(gridimage_id+'label'+data[tag_id].tag).style.color = '';
-								document.getElementById(gridimage_id+'label'+data[tag_id].tag).style.fontWeight = 'bold';
-							}
-						}
-					}
-				});
-
-			loadedBuckets[gridimage_id] = true;
-		}
-	}
-
-
-
 {/literal}
  //]]></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>

@@ -30,10 +30,6 @@ if (!empty($_GET['callback'])) {
 	header('Content-type: application/json');
 }
 
-if (!empty($_GET['term'])) {
-	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];	
-}
-
 $db = GeographDatabaseConnection(true);
 
 $sql = array();
@@ -42,7 +38,7 @@ $sql['tables'] = array();
 $sql['tables']['t'] = 'tag';
 
 if (!empty($_GET['term'])) {
-	$_GET['q'] = $_GET['term'];	
+	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];
 	$sql['columns'] = "if (tag.prefix and not (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki'),concat(tag.prefix,':',tag.tag),tag.tag) as tag";
 } else {
 	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
@@ -53,12 +49,17 @@ if (!empty($_GET['gridimage_id'])) {
 	if (!$USER->registered) {
 		die("{error: 'not logged in'}");
 	}
-
+	
+	$sql['columns'] .= ",gt.status";
+	
 	$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
 
 	$sql['wheres'] = array();
 	$sql['wheres'][] = "tag.status = 1";
-	$sql['wheres'][] = "gt.user_id = ".$USER->user_id;
+	if (isset($_GET['buckets'])) {
+		$sql['wheres'][] = "( (gt.user_id = {$USER->user_id} AND gt.status = 1) OR (prefix = 'bucket' AND gt.status = 2) )";
+	} else 
+		$sql['wheres'][] = "gt.user_id = ".$USER->user_id;
 	$sql['wheres'][] = "gt.gridimage_id = ".intval($_GET['gridimage_id']);
 
 	$sql['order'] = 'gt.created';

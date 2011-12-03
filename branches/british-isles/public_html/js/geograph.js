@@ -619,6 +619,58 @@ function rawurldecode( str ) {
     return ret;
 }
 
+	function submitBucket(gridimage_id,bucket,status,currentStatus,isOwner) {
+		if (status == 1 && isOwner && isOwner > 0)
+			status = 2;
+		if (status == 0 && currentStatus && currentStatus == 2) {
+			if (!confirm("You are about to suggest the public '"+bucket+"' bucket be removed from this image. It will be entered into a queue for peer review. This may take a few days.")) {
+				$('#'+gridimage_id+'check'+bucket).attr('checked',true);
+				return 0;
+			}
+			status = -1;
+		}
+		
+		var data = new Object;
+		data['tag'] = "bucket:"+bucket;
+		data['status'] = status;
+		data['gridimage_id'] = gridimage_id;
+
+		$.ajax({
+			url: "/tags/tagger.json.php",
+			data: data
+		});
+
+		if (document.getElementById(gridimage_id+'label'+bucket)) {
+			$('#'+gridimage_id+'label'+bucket).css('color',status>=1?'':'gray').css('fontWeight',status>=1?'bold':'').css('backgroundColor',status==2?'yellow':'');
+		}
+	}
+	var loadedBuckets = new Array();
+
+	function refreshMainList(gridimage_id) {
+		if (gridimage_id && !loadedBuckets[gridimage_id]) {
+
+			var url = '/tags/tags.json.php?buckets=1&gridimage_id='+encodeURIComponent(gridimage_id);
+
+			$.getJSON(url+"&callback=?",
+				// on completion, process the results
+				function (data) {
+					if (data) {
+						for(var tag_id in data) {
+							if (data[tag_id].prefix == 'bucket' && document.getElementById(gridimage_id+'label'+data[tag_id].tag)) {
+								
+								$('#'+gridimage_id+'check'+data[tag_id].tag).attr('checked',true).attr('value',data[tag_id].status);
+								$('#'+gridimage_id+'label'+data[tag_id].tag).css('color','').css('fontWeight','bold').css('backgroundColor',data[tag_id].status==2?'yellow':'pink');
+								
+							}
+						}
+					}
+				});
+
+			loadedBuckets[gridimage_id] = true;
+		}
+	}
+
+
 //	-	-	-	-	-	-	-	-
 
 //https://github.com/Cerdic/jQl
