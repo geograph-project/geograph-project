@@ -51,7 +51,7 @@
     {if $user->registered || !$is_bot}
 
 	<div class="interestBox" style="float:right;position:relative;width:20px"><span  id="hideside"></span>
-		<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side');refreshMainList();"/>
+		<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side'); if (!loadedBuckets || loadedBuckets.length == 0) jQl.loadjQ('http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js', function() {literal}{{/literal} refreshMainList({$image->gridimage_id}); {literal}});{/literal}"/>
 	</div>
 
 	<div style="float:right;position:relative">
@@ -64,60 +64,12 @@
 			<br/>
 			<b>Image Buckets</b><br/>
 			{foreach from=$buckets item=item}
-					<label id="label{$item|escape:'html'}" for="check{$item|escape:'html'}" style="color:gray">
-					<input type=checkbox id="check{$item|escape:'html'}" onclick="submitBucket('{$item|escape:'html'}',this.checked?1:0);"> {$item|escape:'html'}
+					<label id="{$image->gridimage_id}label{$item|escape:'html'}" for="{$image->gridimage_id}check{$item|escape:'html'}" style="color:gray">
+					<input type=checkbox id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0,this.value,{if $user->user_id eq $image->user_id}1{else}0{/if});"> {$item|escape:'html'}
 					</label><br/>
 
 			{/foreach}<br/>
 			<small>IMPORTANT: Please read the {newwin href="/article/Image-Buckets" title="Article about Buckets" text="Buckets Article"} before picking from this list</small>
-
-			<script>
-				var gridimage_id = {$image->gridimage_id};
-				{literal}
-
-				function submitBucket(bucket,status) {
-					var data = new Object;
-					data['tag'] = "bucket:"+bucket;
-					data['status'] = status;
-					data['gridimage_id'] = gridimage_id;
-
-					$.ajax({
-						url: "/tags/tagger.json.php",
-						data: data
-					});
-
-					if (document.getElementById('label'+bucket)) {
-						document.getElementById('label'+bucket).style.color = status>0?'':'gray';
-						document.getElementById('label'+bucket).style.fontWeight = status>0?'bold':'';
-					}
-				}
-				var loadedBuckets = false;
-
-				function refreshMainList() {
-					if (gridimage_id && !loadedBuckets) {
-						jQl.loadjQ('http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js',function() {
-
-							var url = '/tags/tags.json.php?gridimage_id='+encodeURIComponent(gridimage_id);
-
-							$.getJSON(url+"&callback=?",
-								// on completion, process the results
-								function (data) {
-									if (data) {
-										for(var tag_id in data) {
-											if (data[tag_id].prefix == 'bucket' && document.getElementById('label'+data[tag_id].tag)) {
-												document.getElementById('check'+data[tag_id].tag).checked = true;
-												document.getElementById('label'+data[tag_id].tag).style.color = '';
-												document.getElementById('label'+data[tag_id].tag).style.fontWeight = 'bold';
-											}
-										}
-									}
-								});
-						});
-						loadedBuckets = true;
-					}
-				}
-
-			{/literal}</script>
 
 		</div>
 	</div>
@@ -283,7 +235,9 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	{if $image->moderation_status eq "accepted"}
 	Supplemental image
 	{/if}
-{/if}</dd>
+{/if}
+{if strpos($image->points,'tpoint') !== false}
+<br/>First in 5 Years (TPoint) <sup><a href="/faq3.php?q=tpoint#61" class="about" style="font-size:0.7em">?</a></sup>{/if}</dd>
 
 
 {if $image_taken}
@@ -313,7 +267,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	{foreach from=$image->tag_prefix_stat key=prefix item=count}
 		{if $prefix ne 'top' && $prefix ne '' && $prefix ne 'term' && $prefix ne 'cluster' && $prefix ne 'wiki'}
 			{if $prefix == 'bucket'}
-				<dt>Image Buckets <sup><a href="/article/Image-Buckets" class="about" style="font-size:0.7em">about</a></sup></dt>
+				<dt>Image Buckets <sup><a href="/article/Image-Buckets" class="about" style="font-size:0.7em">?</a></sup></dt>
 			{else}
 				<dt>{$prefix|capitalize|escape:'html'} (from Tags)</dt>
 			{/if}

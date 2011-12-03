@@ -64,6 +64,7 @@ require_once('geograph/mapmosaic.class.php');
 require_once('geograph/rastermap.class.php');
 
 init_session();
+##$GLOBALS['USER'] =& new GeographUser;
 
 if (isset($_GET['style'])) {
 	$USER->getStyle();
@@ -78,22 +79,24 @@ if (isset($_GET['style'])) {
 	exit;
 }
 
-customGZipHandlerStart();
+#customGZipHandlerStart();
 
 $smarty = new GeographPage;
 
 if ($CONF['template']=='archive') {
-	dieUnderHighLoad(1.5);
+	//dieUnderHighLoad(1.5);
 }
 
-$template='view.tpl';
+$template='view2.tpl';
 
 $cacheid=0;
 
-if ($smarty->caching) {
-	$smarty->caching = 2; // lifetime is per cache
-	$smarty->cache_lifetime = 3600*3; //3hour cache
-}
+#if ($smarty->caching) {
+#	$smarty->caching = 2; // lifetime is per cache
+#	$smarty->cache_lifetime = 3600*3; //3hour cache
+#}
+$smarty->disable_caching = true;
+
 
 $image=new GridImage;
 

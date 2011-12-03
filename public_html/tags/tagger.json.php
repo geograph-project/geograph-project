@@ -86,18 +86,26 @@ if (!empty($USER->user_id) && !empty($_GET['tag']) && !empty($_GET['gridimage_id
 		
 		if ($_GET['status'] == 0) { 
 			unset($u['status']);
-						
+			
 			$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
 		
+		} elseif ($_GET['status'] == -1) { 
+			unset($u['status']);
+			
+			$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
+			
+			unset($u['user_id']);
+			$db->Execute('INSERT INTO tagornot_archive SELECT * FROM tagornot WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
+			$db->Execute('DELETE FROM tagornot WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
+			$db->Execute('INSERT tagornot SET created=NOW(),`'.implode('` = ? , `',array_keys($u)).'` = ?',array_values($u));
+			
+			$u['user_id'] = $USER->user_id;
+			$db->Execute('INSERT INTO tag_dispute_log SET created=NOW(),`'.implode('` = ? , `',array_keys($u)).'` = ?',array_values($u));
+	
 		} else {
-		
 			$u['status'] = 1;
-			if ($_GET['status'] == 2) { 
-				if ($gid > 4294967296) {
-					$u['status'] = 2;
-				} elseif ($db->getOne("SELECT gridimage_id FROM gridimage WHERE gridimage_id = $gid AND user_id = {$USER->user_id}")) {
-					$u['status'] = 2;
-				}
+			if ($_GET['status'] == 2 && ($gid > 4294967296 || $db->getOne("SELECT gridimage_id FROM gridimage WHERE gridimage_id = $gid AND user_id = {$USER->user_id}"))) {
+				$u['status'] = 2;
 			}
 	
 			$db->Execute('REPLACE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
@@ -108,12 +116,8 @@ if (!empty($USER->user_id) && !empty($_GET['tag']) && !empty($_GET['gridimage_id
 				//clear any caches involving this photo
 				$ab=floor($gid/10000);
 				$smarty->clear_cache(null, "img$ab|{$gid}");
-
 			}
-			
-			
 		}
 	}
-	
-	
 }
+
