@@ -19,7 +19,7 @@ works as expected on your browser before doing real changes!</b>
    
 <div style="background-color:#e0e0e0">
 <h3>Towns to display</h3>
-<p>This settings are valid for the whole session.<p>
+<p>These settings are valid for the whole session.<p>
 <form method="post">
 <label for="townlim">Minimal size: </label>
 <input type="text" id="townlim" name="townlim" size="1" value="{$townlim}" />
