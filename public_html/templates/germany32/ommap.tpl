@@ -572,7 +572,7 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 <input type="radio" name="mtradio" value="user" onclick="if(!map.trySetUserId(document.theForm.mtuser.value)){ldelim}document.theForm.mtradio[{if $userid}3{else}2{/if}].checked=false;document.theForm.mtradio[0].checked=true;map.setUser(0);{rdelim};"
 {if $iniuser > 0 and $iniuser != $userid}checked{/if} />User:
 <input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
-<br />
+<br /><br /><small>
 Opacity (%):
 Coverage
 <input type="text" size="5" name="opcoverage" value="{if $inio >= 0}{$inio*100}{else}50{/if}" />
@@ -580,6 +580,7 @@ Coverage
 | Relief
 <input type="text" size="5" name="oprelief" value="{if $inior >= 0}{$inior*100}{else}100{/if}" />
 <input type="button" value="set"   onclick="map.trySetOpacity(map.hills, document.theForm.oprelief.value);"/>
+</small>
 {/dynamic}
 </div>
 {/if}

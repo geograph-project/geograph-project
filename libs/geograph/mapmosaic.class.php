@@ -1179,120 +1179,93 @@ class GeographMapMosaic
 	function getAlignedOrigin($bestoriginx, $bestoriginy, $ispantoken = false, $exact = false)
 	{
 		global $CONF;
+
 		//figure out image size in map units
-		$mapw=$this->image_w/$this->pixels_per_unit;
-		$maph=$this->image_h/$this->pixels_per_unit;
+		$mapw = $this->image_w / $this->pixels_per_unit;
+		$maph = $this->image_h / $this->pixels_per_unit;
 
 		if ($this->mercator) {
 			$x1 = $CONF['xmrange'][0]-262144;
 			$x2 = $CONF['xmrange'][1]-262144;
-			$dx = $x2 - $x1;
-
 			$y1 = 262143-$CONF['ymrange'][1];
 			$y2 = 262143-$CONF['ymrange'][0];
-			$dy = $y2 - $y1;
-
-			if (!$exact) {
-				# this way, we have the chance to find a cached version of the map
-				# we'd need to put a lot of things (clipping, imagemap, ...) in
-				# {dynamic} tags otherwise and we couldn't use the tokens as cache id then.
-				$walign = $mapw / 4;
-				$halign = $maph / 4;
-				$bestoriginx = floor($bestoriginx / $walign) * $walign;
-				$bestoriginy = floor($bestoriginy / $halign) * $halign;
-			}
-
-			if ($mapw >= $dx) {
-				$originx = round(0.5 * ($x2 + $x1 - $mapw));
-			} elseif ($bestoriginx < $x1) {
-				$originx = $x1;
-			} elseif ($bestoriginx + $mapw > $x2) {
-				$originx = ceil($x2 - $mapw);
-			} else {
-				$originx = $bestoriginx;
-			}
-
-			if ($maph >= $dy) {
-				$originy = round(0.5 * ($y2 + $y1 - $maph));
-			} elseif ($bestoriginy < $y1) {
-				$originy = $y1;
-			} elseif ($bestoriginy + $maph > $y2) {
-				$originy = ceil($y2 - $maph);
-			} else {
-				$originy = $bestoriginy;
-			}
-
-			return array(intval($originx), intval($originy));
-		}
-
-		//figure out an alignment factor - here we align on tile
-		//boundaries so that panning the image allows reuse of tiles
-		if ($this->tilesize) {
-			if ($this->mosaictype==2) {
-				$walign=$mapw/2;
-				$halign=$maph/2;
-				if ($ispantoken) {
-						//dividing by 2 DIDNT WORK as rounded 2.5 to 3!
-					$walign=round($walign);
-					$halign=round($halign);
-				} else {
-						//dividing by 2 makes for more accurate clicking
-					$walign=round($walign/2);
-					$halign=round($halign/2);
-				}
-			} else {
-				$walign=1;
-				$halign=1;
-			}
-			#FIXME
-			trigger_error("al A: $bestoriginx $bestoriginy", E_USER_NOTICE);
-			$bestoriginx=min($bestoriginx, $CONF['maxx']-$mapw);
-			trigger_error("al B: $bestoriginx $bestoriginy", E_USER_NOTICE);
-			$bestoriginx=max($bestoriginx, $CONF['minx']);
-			trigger_error("al C: $bestoriginx $bestoriginy", E_USER_NOTICE);
-			$bestoriginy=min($bestoriginy, $CONF['maxy']-$maph);
-			trigger_error("al D: $bestoriginx $bestoriginy", E_USER_NOTICE);
-			$bestoriginy=max($bestoriginy, $CONF['miny']);
-			trigger_error("al E: $bestoriginx $bestoriginy", E_USER_NOTICE);
-
 		} else {
-			$walign=$mapw/$this->mosaic_factor_x;
-			$halign=$maph/$this->mosaic_factor_y;
-			if ($ispantoken) {
-					//dividing by 2 DIDNT WORK as rounded 2.5 to 3!
-				$walign=round($walign);
-				$halign=round($halign);
+			$x1 = $CONF['minx'];
+			$x2 = $CONF['maxx'];
+			$y1 = $CONF['miny'];
+			$y2 = $CONF['maxy'];
+
+		}
+
+		if (!$exact) {
+			# this way, we have the chance to find a cached version of the map
+			# we'd need to put a lot of things (clipping, imagemap, ...) in
+			# {dynamic} tags otherwise and we couldn't use the tokens as cache id then.
+			if ($this->mercator) {
+				$origin = array(0, 0);
+
+				$divx = 4;
+				$divy = 4;
 			} else {
-					//dividing by 2 makes for more accurate clicking
-				$walign=round($walign/2);
-				$halign=round($halign/2);
+				if (!$this->reference_index) {
+					//this sets the most likly reference_index for the center of the map
+					$this->getGridRef(-1,-1,$bestoriginx, $bestoriginy);
+				}
+
+				if ($this->reference_index) {
+					$origin = $CONF['origins'][$this->reference_index];
+				} else {
+					$origin = array(0, 0);
+				}
+
+				//figure out an alignment factor - here we align on tile
+				//boundaries so that panning the image allows reuse of tiles
+				if (!$this->tilesize) {
+					$divx = $this->mosaic_factor_x;
+					$divy = $this->mosaic_factor_y;
+				} elseif ($this->mosaictype==2) { # large mosaic on mapbrowse page
+					$divx = 2;
+					$divy = 2;
+				} else {
+					#FIXME 4?
+					$divx = 2;
+					$divy = 2;
+				}
+				if (!$ispantoken) {
+					$divx *= 2;
+					$divy *= 2;
+				}
 			}
-			//range check the bestorigin - we've got some hard coded //todo
-			//values here
-			$bestoriginx=max($bestoriginx, ($bestoriginy > 700 && $bestoriginy < 950)?-100:0);
-			$bestoriginx=min($bestoriginx, 860);
-			$bestoriginy=max($bestoriginy, 0);
-			$bestoriginy=min($bestoriginy, 1220);
-
-		}
-		
-		if ($exact) {
-			return array($bestoriginx, $bestoriginy); //FIXME skip range check?
+			$walign = round($mapw / $divx);
+			$halign = round($maph / $divy);
+			$bestoriginx = floor(($bestoriginx - $origin[0]) / $walign) * $walign + $origin[0];
+			$bestoriginy = floor(($bestoriginy - $origin[1]) / $halign) * $halign + $origin[1];
 		}
 
-		if (!$this->reference_index) {
-			//this sets the most likly reference_index for the center of the map
-			$this->getGridRef(-1,-1,$bestoriginx, $bestoriginy);
+		$dx = $x2 - $x1 + 1;
+		$dy = $y2 - $y1 + 1;
+
+		if ($mapw >= $dx) {
+			$bestoriginx = round(0.5 * ($x2 + $x1 - $mapw));
+		} elseif ($bestoriginx < $x1) {
+			$bestoriginx = $x1;
+		} elseif ($bestoriginx + $mapw > $x2) {
+			$bestoriginx = ceil($x2 - $mapw);
+		} else {
+			$bestoriginx = $bestoriginx;
 		}
 
-		if ($this->reference_index) {
-			//find closest aligned origin 
-			$bestoriginx=floor(($bestoriginx-$CONF['origins'][$this->reference_index][0])/$walign)*$walign+$CONF['origins'][$this->reference_index][0];
-			$bestoriginy=floor(($bestoriginy-$CONF['origins'][$this->reference_index][1])/$halign)*$halign+$CONF['origins'][$this->reference_index][1];
-		#trigger_error("al F: $bestoriginx $bestoriginy : {$this->reference_index} {$CONF['origins'][$this->reference_index][0]},{$CONF['origins'][$this->reference_index][1]}", E_USER_NOTICE);
+		if ($maph >= $dy) {
+			$bestoriginy = round(0.5 * ($y2 + $y1 - $maph));
+		} elseif ($bestoriginy < $y1) {
+			$bestoriginy = $y1;
+		} elseif ($bestoriginy + $maph > $y2) {
+			$bestoriginy = ceil($y2 - $maph);
+		} else {
+			$bestoriginy = $bestoriginy;
 		}
 
-		return array($bestoriginx, $bestoriginy);
+		return array(intval($bestoriginx), intval($bestoriginy));
 	}
 
 	/**

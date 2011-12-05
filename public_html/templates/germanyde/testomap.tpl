@@ -204,7 +204,7 @@ ommap.tpl, rastermap.class.php:
 		var geoproj = new OpenLayers.Projection("GEOGRAPH");
 
 /**
- * Subclass OpenLayers.Layer.XYZ for layers with a restristricted range of zoom levels.
+ * Subclass OpenLayers.Layer.XYZ for layers using Geograph's internal coordinates
  */
 OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     /**

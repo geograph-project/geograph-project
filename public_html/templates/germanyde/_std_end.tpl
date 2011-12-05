@@ -7,7 +7,7 @@
     <li>Ansicht<ul>
      <li><a title="Bildersuche" href="/search.php">Suche</a></li>
      <li><a title="Karte aller Bilder anzeigen" href="/mapbrowse.php">Karte</a>
-        (<a title="Test: Karte ohne Zonen" href="/map2/2olJ5oOXXJToNJ0oMJFoOXXJfolVXbJqohMXOVJ1olMbJL5405oNwj4ljh4uNZwub4j">zonenlos</a>)</li>
+        (<a title="Karte ohne Zonen" href="/mapbrowse2.php?mt=tm">zonenlos</a>)</li>
      <li><a title="Verschieden Zusammenstellungen von Bildern" href="/explore/">Stöbern</a></li>
      <li><a title="Nutzerbeiträge" href="/content/">Beiträge</a></li>
     </ul></li>
@@ -23,12 +23,22 @@
      <li><a title="Rangliste" href="/statistics/moversboard.php">Rangliste</a></li>
     </ul></li>
     <li>Werkzeuge<ul>
-     <li><a title="Geograph-Karte in Mercator-Projektion" href="/gmmap.php">Mercator Karte</a></li>
+    <li><small><small>Verschiebbare Karten</small></small><ul>
   {dynamic}
   {if $is_logged_in}
-     <li><a title="Geograph-Karte" href="/gmap.php">Geograph Karte</a></li>
+  {if $use_google_api}
+     <li><a title="Verschiebbare Geograph-Karte" href="/gmap.php">Geograph</a> (<a title="Auf OpenLayers basierende verschiebbare Geograph-Karte" href="/omap.php">ol</a>)</li>
+  {else}
+     <li><a title="Verschiebbare Geograph-Karte" href="/omap.php">Geograph</a></li>
+  {/if}
   {/if}
   {/dynamic}
+  {if $use_google_api}
+     <li><a title="Zonenlose Geograph-Karte" href="/gmmap.php">Zonenlos</a> (<a title="Auf OpenLayers basierende zonenlose Geograph-Karte" href="/ommap.php">ol</a>)</li>
+  {else}
+     <li><a title="Zonenlose Geograph-Karte" href="/ommap.php">Zonenlos</a></li>
+  {/if}
+    </ul></li>
      <li><a title="Koordinatenkonverter" href="/latlong.php">Koordinaten</a></li>
     </ul></li>
     <li>Informationen<ul>
