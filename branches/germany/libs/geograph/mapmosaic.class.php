@@ -1251,8 +1251,6 @@ class GeographMapMosaic
 			$bestoriginx = $x1;
 		} elseif ($bestoriginx + $mapw > $x2) {
 			$bestoriginx = ceil($x2 - $mapw);
-		} else {
-			$bestoriginx = $bestoriginx;
 		}
 
 		if ($maph >= $dy) {
@@ -1261,8 +1259,6 @@ class GeographMapMosaic
 			$bestoriginy = $y1;
 		} elseif ($bestoriginy + $maph > $y2) {
 			$bestoriginy = ceil($y2 - $maph);
-		} else {
-			$bestoriginy = $bestoriginy;
 		}
 
 		return array(intval($bestoriginx), intval($bestoriginy));
