@@ -11,8 +11,8 @@
 	<div class="tabHolder" style="text-align:right">
 		<span class="tabSelected">Simple search</span>
 		<a href="/search.php?form=text" class="tab">Advanced search</a>
-		<a href="/search.php?form=first" class="tab">First Geographs</a>
 		{if $user->registered}
+			<a href="/search.php?form=first" class="tab">First Geographs</a>
 			<a href="/search.php?form=check" class="tab">Check submissions</a>
 		{/if}
 		<a href="/finder/" class="tab">more...</a>
@@ -37,7 +37,7 @@
 <div style="float:left; margin-top:3px;  width:60%; position:relative">
 	<ul style="margin-left:0;padding:0 0 0 1em;font-size:0.8em">
 	{foreach from=$featured key=id item=row}
-	<li><a href="search.php?i={$row.id|escape:url}">{$row.searchdesc|regex_replace:'/^, /':''|escape:html}</a></li>
+	<li><a href="/search.php?i={$row.id|escape:url}">{$row.searchdesc|regex_replace:'/^, /':''|escape:html}</a></li>
 	{/foreach}
 	<li><a href="/explore/searches.php" title="Show Featured Searches"><i><b>more examples...</b></i></a></li>
 	</ul>
@@ -45,7 +45,7 @@
 <div style="float:left; margin-top:3px;  width:40%; position:relative">
 	<ul style="font-size:0.8em">
 	{foreach from=$imageclasslist key=id item=name}
-	<li><a href="search.php?imageclass={$id|escape:url}" title="Show images classed as {$id|escape:html}">{$name|escape:html}</a></li>
+	<li><a href="/search.php?imageclass={$id|escape:url}" title="Show images classed as {$id|escape:html}">{$name|escape:html}</a></li>
 	{/foreach}
 	<li><a href="/statistics/breakdown.php?by=class" title="Show Image Categories"><i><b>more categories...</b></i></a></li>
 
@@ -59,16 +59,19 @@
 	<li>And a list of your recent searches:
 	<ul style="margin-left:-10px; margin-top:3px; padding:0 0 0 0em; list-style-type:none">
 	{foreach from=$recentsearchs key=id item=obj}
-	<li>{if $obj.favorite == 'Y'}<a href="/search.php?i={$id}&amp;fav=0" title="remove favorite flag"><img src="http://{$static_host}/img/star-on.png" width="14" height="14" alt="remove favorite flag" onmouseover="this.src='http://{$static_host}/img/star-light.png'" onmouseout="this.src='http://{$static_host}/img/star-on.png'"></a> <b>{else}<a href="/search.php?i={$id}&amp;fav=1" title="make favorite - starred items stay near top"><img src="http://{$static_host}/img/star-light.png" width="14" height="14" alt="make favorite" onmouseover="this.src='http://{$static_host}/img/star-on.png'" onmouseout="this.src='http://{$static_host}/img/star-light.png'"></a> {/if}{if $obj.searchclass == 'Special'}<i>{/if}<a href="search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc|escape:"html"}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if} (Display: {$obj.displayclass})">{$obj.searchdesc|escape:"html"|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.searchclass == 'Special'}</i>{/if}{if $obj.favorite == 'Y'}</b>{/if} {if $obj.edit}<a href="/refine.php?i={$id}" style="color:red">Edit</a>{/if}</li>
+	<li>{if $obj.favorite == 'Y'}<a href="/search.php?i={$id}&amp;fav=0" title="remove favorite flag"><img src="http://{$static_host}/img/star-on.png" width="14" height="14" alt="remove favorite flag" onmouseover="this.src='http://{$static_host}/img/star-light.png'" onmouseout="this.src='http://{$static_host}/img/star-on.png'"></a> <b>{else}<a href="/search.php?i={$id}&amp;fav=1" title="make favorite - starred items stay near top"><img src="http://{$static_host}/img/star-light.png" width="14" height="14" alt="make favorite" onmouseover="this.src='http://{$static_host}/img/star-on.png'" onmouseout="this.src='http://{$static_host}/img/star-light.png'"></a> {/if}{if $obj.searchclass == 'Special'}<i>{/if}<a href="/search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc|escape:"html"}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if} (Display: {$obj.displayclass})">{$obj.searchdesc|escape:"html"|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.searchclass == 'Special'}</i>{/if}{if $obj.favorite == 'Y'}</b>{/if} {if $obj.edit}<a href="/refine.php?i={$id}" style="color:red">Edit</a>{/if}</li>
 	{/foreach}
 	{if !$more && !$all}
-	<li><a href="search.php?more=1" title="View More of your recent searches" rel="nofollow"><i>view more...</i></a></li>
+	<li><a href="/search.php?more=1" title="View More of your recent searches" rel="nofollow"><i>view more...</i></a></li>
 	{/if}
 	</ul><br/>
-	<small>Not seeing all your searches? <a href="/discuss/index.php?&action=vthread&forum=1&topic=11167">Let us know, if you affected</a>.</small>
 	</li>
 	{/if}
-	<div style="position:relative; padding:10px; background-color:#eeeeee;">
+	<div 
+	<div id="hidemarked">
+		 <small>Marked Images <input type=button value="expand" onclick="show_tree('marked')"/></small>
+	</div>
+	<div style="position:relative; padding:10px; background-color:#eeeeee;display:none" id="showmarked">
 	<div style="float:right"><a href="/article/The-Mark-facility" class="about">About</a></div>
 	<small>Marked Images <span id="marked_number"></span>: <a href="javascript:void(displayMarkedImages())"><b>Display</b>/Export</a> &nbsp; <a href="/search.php?marked=1">View as Search Results</a> &nbsp; <a href="javascript:void(importToMarkedImages())">Import to List</a> &nbsp; (<a href="javascript:void(clearMarkedImages())" style="color:red">Clear List</a>)<br/>
 	</small><small style="font-size:0.6em">TIP: Add images to your list by using the [Mark] buttons on the "full + links" and "thumbnails + links"<br/> search results display formats, and the full image page.<br/><br/>
