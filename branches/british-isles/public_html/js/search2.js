@@ -29,7 +29,10 @@ var lastrun = '';
 function runQuery(perpage) {
 	var query = $('#searchq').attr('value');
 	var location = $('#location').attr('value');
-
+	
+	if (query=='(anything)') query='';
+	if (location=='(anywhere)') location='';
+	
 	if (query.length == 0) {
 		return runQuery2(perpage,query,location);
 	}
@@ -99,6 +102,9 @@ function runQuery2(perpage,query,location,normalized) {
 
 function findPlace() {
 	var query = $('#location').attr('value');
+	
+	if (query=='(anywhere)') query='';
+	
 	if (query.length == 0)
 		return;
 	if (query.search(/^\w{1,2}\d{2,10}/) > -1) {
