@@ -175,7 +175,6 @@ function findPlace() {
 		}
 
 		$("#autocomplete").css('display','block').html("<ul></ul>");
-		document.getElementById('autocomplete').style.display='';
 
 		var ul = $("#autocomplete ul");
 
