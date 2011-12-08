@@ -123,9 +123,9 @@ function findPlace() {
 
 			if (query.length >4) {
 				if (markers.length > 0 )
-				for(q=0;q<markers.length;q++) {
-					markers[q].setIcon('https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.25%7C0%7CFF0000%7C000000');
-				}
+					for(q=0;q<markers.length;q++) {
+						markers[q].setIcon('https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.25%7C0%7CFF0000%7C000000');
+					}
 
 				//convert to a wgs84 coordinate
 				wgs84 = grid.getWGS84(true);
@@ -196,6 +196,11 @@ function findPlace() {
 			openMap();
 
 		setTimeout(function() {
+			if (markers.length > 0 )
+				for(q=0;q<markers.length;q++) {
+					markers[q].setIcon('https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.25%7C0%7CFF0000%7C000000');
+				}
+
 			showItems(data.items);
 		},400);
 	});
