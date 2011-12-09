@@ -43,7 +43,7 @@ $andwhere = '';
 if (isset($_GET['prefix'])) {
 
 	$andwhere = " AND prefix = ".$db->Quote($_GET['prefix']);
-	$smarty->assign('theprefix', $_GET['prefix']);
+	$smarty->assign('theprefix', $prefix = $_GET['prefix']);
 }
 
 
@@ -101,7 +101,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		if (!empty($_GET['tag'])) {
 		
-			$tags= $db->getAssoc("SELECT tag_id,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
+			$tags= $db->getAssoc("SELECT tag_id,prefix,tag,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 		
 			if (!empty($tags)) {
 				$bits = array();
@@ -134,6 +134,14 @@ if (!$smarty->is_cached($template, $cacheid))
 					reset($tags);
 					$smarty->assign('onetag',1);
 					$smarty->assign('description',$tags[key($tags)]['description']);
+				} elseif (empty($prefix)) {
+					foreach ($tags as $tag_id => $row) {
+						if (!empty($row['tag']) && empty($row['prefix']) && strcasecmp($row['tag'],$_GET['tag']) == 0) {
+							$smarty->assign('onetag',1);
+							$smarty->assign('needprefix',1);
+							$smarty->assign('description',$row['description']);
+						}
+					}										
 				}
 
 	
@@ -254,8 +262,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	}
 } elseif (!empty($_GET['tag'])) {
-	$tags= $db->getAssoc("SELECT tag_id,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
+	$tags= $db->getAssoc("SELECT tag_id,prefix,tag,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 	
+
 	$bits = array();
 
 	foreach ($tags as $tag_id => $row) {
@@ -278,7 +287,16 @@ if (!$smarty->is_cached($template, $cacheid))
 		reset($tags);
 		$smarty->assign('onetag',1);
 		$smarty->assign('description',$tags[key($tags)]['description']);
-	}
+	} elseif (empty($prefix)) {
+                foreach ($tags as $tag_id => $row) {
+                        if (!empty($row['tag']) && empty($row['prefix']) && strcasecmp($row['tag'],$_GET['tag']) == 0) {
+                                $smarty->assign('onetag',1);
+                                $smarty->assign('needprefix',1);
+                                $smarty->assign('description',$row['description']);
+                        }
+                }
+        }
+
 }
 
 $smarty->display($template, $cacheid);
