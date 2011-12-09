@@ -97,7 +97,10 @@
 				<a href="/tags/description.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Improve description</a>
 			{else}
 				<a href="/tags/description.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Provide a description for this tag!</a>
-			{/if}{/if}{/dynamic}
+			{/if}
+
+			&middot; <a href="/tags/synonym.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Synonyms</a>
+			{/if}{/dynamic}
 		{/if}
 
 	</div>

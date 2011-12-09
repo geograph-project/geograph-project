@@ -95,7 +95,7 @@ if (!empty($_GET['deal'])) {
 						print "# INSERT INTO tag SET ".implode(', ',$values)."; #{$row['tag2_id']}<hr/>";
 					}
 					
-					if ($images = $db->getCol("SELECT gridimage_id FROM gridimage_tag WHERE tag_id = {$row['tag_id']} AND status = 2")) {
+					if ($images = $db->getCol("SELECT gridimage_id FROM gridimage_tag WHERE tag_id = {$row['tag_id']} AND status = 2 AND gridimage_id < 4294967295")) {
 					
 						foreach ($images as $gridimage_id) {
 
@@ -122,12 +122,7 @@ if (!empty($_GET['deal'])) {
 						$s[] = "UPDATE IGNORE gridimage_tag SET tag_id = {$row['tag2_id']} WHERE tag_id = {$row['tag_id']} AND status = 2";
 						
 						//this is trickly. Any of the above that failed (due to duplicate key), means the 'new' tag is already on the image, and so the old one can be zapped. 
-						$s[] = "DELETE FROM gridimage_tag WHERE tag_id = {$row['tag_id']} AND status = 2";
-						
-						//and then promote private keys. so the wrong public is deleted, right private replaces it
-						//  - kind of like the public tag was fixed, then the now duplicate private tag deleted. 
-						//BUT we MUST only do it on the owners private tags.... 
-						$s[] = "UPDATE gridimage_tag INNER JOIN gridimage_search USING (gridimage_id,user_id) SET status = 2 WHERE tag_id = {$row['tag2_id']} AND status = 1 AND gridimage_id IN (".implode(',',$images).")";
+							
 					}
 					
 					if ($_POST['canon'][$report_id]) {
@@ -180,6 +175,8 @@ if (!empty($_GET['deal'])) {
 	if (empty($db))
 		$db = GeographDatabaseConnection(true);
 
+
+	//TODO - add AND r.user_id != $USER->user_id
 	$reports = $db->getAll("SELECT r.*, 
 					COUNT(DISTINCT gridimage_id) AS images,
 					t2.tag_id AS tag2_id,
@@ -232,10 +229,10 @@ if (!empty($_GET['deal'])) {
 	if (empty($db))
 		$db = GeographDatabaseConnection(true);
 
-	$reports = $db->getAll("SELECT tag FROM tag_report WHERE status='new' GROUP BY tag_id ORDER BY tag");
+	$reports = $db->getAll("SELECT tag FROM tag_report WHERE status='new' AND type != 'canonical' GROUP BY tag_id ORDER BY tag");
 	$smarty->assign_by_ref('reports',$reports);
 	
-	$recent = $db->getAll("SELECT tag FROM tag_report WHERE status!='new' GROUP BY tag_id ORDER BY updated DESC LIMIT 50");
+	$recent = $db->getAll("SELECT tag FROM tag_report WHERE status!='new' AND type != 'canonical' GROUP BY tag_id ORDER BY updated DESC LIMIT 50");
 	$smarty->assign_by_ref('recent',$recent);
 
 	if (!empty($_GET['tag'])) {
