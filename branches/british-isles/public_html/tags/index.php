@@ -61,6 +61,11 @@ if (!empty($_GET['tag'])) {
 		$sphinxq = "tags:\"{$_GET['tag']}\"";
 	}
 	$smarty->assign('thetag', $_GET['tag']);
+	
+	if (empty($prefix) && isset($_GET['exact'])) {
+		$andwhere = " AND prefix = ''";
+	}
+	
 }
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -104,28 +109,30 @@ if (!$smarty->is_cached($template, $cacheid))
 			$tags= $db->getAssoc("SELECT tag_id,prefix,tag,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 		
 			if (!empty($tags)) {
-				$bits = array();
-				
-				foreach ($tags as $tag_id => $row) {
-					if (!empty($row['canonical'])) {
-						$bits[] = "tag_id = {$row['canonical']}";
-						$bits[] = "canonical = {$row['canonical']}";
-					} else {
-						$bits[] = "canonical = $tag_id";
-					}
-				}
-				if (!empty($bits)) {
-					$more = $db->getAll("SELECT tag_id,prefix,tag FROM tag WHERE status = 1 AND (".implode(" OR ",$bits).")");
-					if ($more) {
-						$sphinxq = array($sphinxq);
-						foreach($more as $tag_id => $row) {
-							$sphinxq[]= "tags:".($row['prefix']?"{$row['prefix']} ":'').preg_replace('/[^\w]+/',' ',$row['tag']);
-							$tags[$tag_id] = 1;
-						}
-						if (count($sphinxq) > 1) {
-							$sphinxq = '('.implode(' ) | (',$sphinxq).' )';
+				if (!isset($_GET['exact'])) {
+					$bits = array();
+
+					foreach ($tags as $tag_id => $row) {
+						if (!empty($row['canonical'])) {
+							$bits[] = "tag_id = {$row['canonical']}";
+							$bits[] = "canonical = {$row['canonical']}";
 						} else {
-							$sphinxq = implode('',$sphinxq);
+							$bits[] = "canonical = $tag_id";
+						}
+					}
+					if (!empty($bits)) {
+						$more = $db->getAll("SELECT tag_id,prefix,tag FROM tag WHERE status = 1 AND (".implode(" OR ",$bits).")");
+						if ($more) {
+							$sphinxq = array($sphinxq);
+							foreach($more as $tag_id => $row) {
+								$sphinxq[]= "tags:".($row['prefix']?"{$row['prefix']} ":'').preg_replace('/[^\w]+/',' ',$row['tag']);
+								$tags[$tag_id] = 1;
+							}
+							if (count($sphinxq) > 1) {
+								$sphinxq = '('.implode(' ) | (',$sphinxq).' )';
+							} else {
+								$sphinxq = implode('',$sphinxq);
+							}
 						}
 					}
 				}
@@ -264,21 +271,22 @@ if (!$smarty->is_cached($template, $cacheid))
 } elseif (!empty($_GET['tag'])) {
 	$tags= $db->getAssoc("SELECT tag_id,prefix,tag,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 	
+	if (!isset($_GET['exact'])) {
+		$bits = array();
 
-	$bits = array();
-
-	foreach ($tags as $tag_id => $row) {
-		if (!empty($row['canonical'])) {
-			$bits[] = "tag_id = {$row['canonical']} OR canonical = {$row['canonical']}";
-		} else {
-			$bits[] = "canonical = $tag_id";
+		foreach ($tags as $tag_id => $row) {
+			if (!empty($row['canonical'])) {
+				$bits[] = "tag_id = {$row['canonical']} OR canonical = {$row['canonical']}";
+			} else {
+				$bits[] = "canonical = $tag_id";
+			}
 		}
-	}
-	if (!empty($bits)) {
-		$more = $db->getAll("SELECT tag_id,prefix,tag FROM tag WHERE (".implode(") OR (",$bits).")");
-		if ($more) {
-			foreach($more as $tag_id => $row) {
-				$tags[$tag_id] = 1;
+		if (!empty($bits)) {
+			$more = $db->getAll("SELECT tag_id,prefix,tag FROM tag WHERE (".implode(") OR (",$bits).")");
+			if ($more) {
+				foreach($more as $tag_id => $row) {
+					$tags[$tag_id] = 1;
+				}
 			}
 		}
 	}

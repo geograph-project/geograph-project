@@ -37,7 +37,7 @@ $db = GeographDatabaseConnection(true);
 
 $sql = array();
 
-$sql['columns'] = "tag_id, prefix, tag, count(*) as images, count(distinct user_id) as users";
+$sql['columns'] = "tag_id, prefix, tag, canonical, count(*) as images, count(distinct user_id) as users";
 
 $sql['tables'] = array();
 $sql['tables']['t'] = 'tag_public';
