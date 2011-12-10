@@ -92,11 +92,11 @@
 			{dynamic}{if $user->registered}
 			{if $description}
 				<div style="background-color:white;padding:10px">
-				<b>{$description|escape:'html'}</b>
+					<b>{$description|escape:'html'}</b>
 				</div>
-				<a href="/tags/description.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Improve description</a>
+				<a href="/tags/description.php?tag={if isset($theprefix) || $needprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Improve description</a>
 			{else}
-				<a href="/tags/description.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Provide a description for this tag!</a>
+				<a href="/tags/description.php?tag={if isset($theprefix) || $needprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Provide a description for this tag!</a>
 			{/if}
 
 			&middot; <a href="/tags/synonym.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Synonyms</a>
@@ -104,6 +104,12 @@
 		{/if}
 
 	</div>
+	{if $others}
+		Other tags: {foreach from=$others item=item}
+			<span class="tag">{if $item.prefix}{$item.prefix|escape:'html'}:{/if}<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;exact=1" class="taglink">{$item.tag|escape:'html'}</a></span>
+			&nbsp; &nbsp;
+		{/foreach}
+	{/if}
 {/if}
 
 

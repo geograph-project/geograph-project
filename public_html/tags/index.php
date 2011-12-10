@@ -109,6 +109,10 @@ if (!$smarty->is_cached($template, $cacheid))
 			$tags= $db->getAssoc("SELECT tag_id,prefix,tag,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
 		
 			if (!empty($tags)) {
+
+				$others = $db->getAssoc("SELECT tag_id,prefix,tag FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag'])." AND prefix != ".$db->Quote($tags['prefix']));
+				$smarty->assign_by_ref('others', $others);
+
 				if (!isset($_GET['exact'])) {
 					$bits = array();
 
