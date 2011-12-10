@@ -44,6 +44,12 @@ init_session();
 		$map->setImageSize(900,1300);
 		$map->setScale(1);
 
+		if (isset($_GET['big'])) {
+			$map->setOrigin(0,-10);
+			$map->setImageSize(1200,1700);
+			$map->setScale(1.3);
+		}
+
 		$year = !empty($_GET['year'])?intval($_GET['year']):date('Y');
 
 	#XMAS map for a year
@@ -60,6 +66,27 @@ init_session();
 			unset($CONF['enable_newmap']); //hide placenames
 			
 			$map->type_or_user = -1;
+
+	#CENTISQUARE DEPTH  MAP
+		} elseif (isset($_GET['centi'])) {
+			
+			$map->type_or_user = -8;
+			
+			unset($CONF['enable_newmap']); //hide placenames
+
+        #PHOTO AGE MAP
+                } elseif (isset($_GET['age'])) {
+
+                        $map->type_or_user = -7;
+
+                        unset($CONF['enable_newmap']); //hide placenames
+
+	#CENTISQUARE DEPTH  MAP
+		} elseif (isset($_GET['userdepth'])) {
+			
+			$map->type_or_user = -13;
+			
+			unset($CONF['enable_newmap']); //hide placenames
 	
 	#NUMOBER OF GROUPINGS
 		} elseif (isset($_GET['groups'])) {
@@ -213,10 +240,15 @@ init_session();
 		}
 	
 	
+		if (!empty($_GET['token'])) {
+			print_r($map);
+			print "filename: ";
+			print $map->getBaseMapFilename();
+			print "URL: ";
+			print $map->getImageUrl();exit;
+		}
 		if (count($_GET))
 			$map->returnImage();
 		exit;
 
 
-	
-?>

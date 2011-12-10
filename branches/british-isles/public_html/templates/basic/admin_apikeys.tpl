@@ -22,6 +22,11 @@
 				underscore only (case sensitive)</td>
 		  </tr>
 		  <tr>
+			 <td><b>label/name</b></td>
+			 <td><input type="text" name="label" value="{$arr.label}">
+				optional - useful for tracking</td>
+		  </tr>
+		  <tr>
 			 <td><b>IP</b></td>
 			 <td><input type="text" name="ip_text" value="{$arr.ip_text}">   key must
 				connect from this IP, blank for unrestricted</td>
@@ -30,6 +35,16 @@
 			 <td><b>homepage url</b></td>
 			 <td><input type="text" name="homepage_url" value="{$arr.homepage_url}">
 				optional - could be used to provide a page listing users of the api</td>
+		  </tr>
+		  <tr>
+			 <td><b>email</b></td>
+			 <td><input type="text" name="email" value="{$arr.email}">
+				optional - contact developer</td>
+		  </tr>
+		  <tr>
+			 <td><b>type</b></td>
+			 <td><input type="text" name="type" value="{$arr.type}">
+				commerical/non-profit/etc</td>
 		  </tr>
 		  <tr>
 			 <td><b>comments</b></td>

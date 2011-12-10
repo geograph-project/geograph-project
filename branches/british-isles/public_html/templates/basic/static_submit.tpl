@@ -4,12 +4,6 @@
 
 <h2>Submitting/Contributing to Geograph!</h2>
 
-<ul>
-<li>We are currently moving from the outdated category submission to a newer tag-based method. <a href="/switch.php">Read more (and switch)</a></li>
-</ul>
-<br/>
-
-
 <table border=1 cellspacing=0 cellpadding=10 bordercolor="#dddddd">
 <tr>
 	<td align="center">
@@ -53,6 +47,13 @@
 		Dedicated hosting for drawings, files, and other media used to accompany Geograph submissions (eg drawings for incorporation into articles).
 	</td>
 </tr>
+<tr>
+        <td align="center" colspan="2">
+                <a href="/submit-iphone.php">iPhone/iPad submission method</a><br/><br/>
+		Experimental interface for uploading images from an iPhone/iPad device, using a third party application to get around the lack of native file upload capablitity. 
+        </td>
+</tr>
+
 </table>
 
 <br/>
@@ -61,6 +62,36 @@
 </ul>
 <br/>
 
+&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
 
+		<option value="OSOS">Zoomable Modern OS Mapping</option>
+
+		<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
+
+		<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option>
+
+	</select> <small>(OS Maps not available for Ireland)</small></p>
+
+{literal}
+<script>
+
+function saveService(that) {
+	createCookie("MapSrv",that.options[that.selectedIndex].value,10);
+}
+
+function restoreService() {
+	var newservice = readCookie('MapSrv');
+	if (newservice) {
+		var ele = document.getElementById('service');
+		for(var q=0;ele.options.length;q++)
+			if (ele.options[q].value == newservice)
+				ele.options[q].selected = true;
+	}
+}
+
+AttachEvent(window,'load',restoreService,false);
+
+</script>
+{/literal}
 
 {include file="_std_end.tpl"}

@@ -2,6 +2,8 @@
 {dynamic}
 <form class="simpleform" action="{$script_name}?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$tag|escape:"url"}" method="post" name="theForm">
 
+
+
 <input type="hidden" name="id" value="{$id|escape:"html"}"/>
 
 
@@ -9,6 +11,11 @@
 <fieldset style="width:800px">
 <legend>Synonym Suggestion Form</legend>
 
+<p>Use this form to suggest that a tag is suffienctly similar to another tag, that the two tags can be "merged". ie they are synonums of each other. The 'Primary' tag will be the one shown in preference, so should be the main prefered version of the tag. Once we receive your suggestion, it will be reviewed, and hopefully applied shortly. If there is demand will open a voting process for moderating suggestions.</p>
+
+<p>Note: This form is not for correcting typos or other issues - <a href="report.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$tag|escape:"url"}">there is a special form for that</a> - but when the two forms are perfectly valid (just different).</p>
+
+<hr/>
 
 {if $message}
 	<p>{$message}</p>

@@ -166,12 +166,8 @@ $types = array(
 	$smarty->assign('distances', array(1,3,5,10,15,20,30,50,75,100));
 	$smarty->assign_by_ref('types', $types);
 		
-//lets find some recent photos
-new RecentImageList($smarty);
-
 
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+

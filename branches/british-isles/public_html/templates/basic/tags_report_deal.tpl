@@ -29,7 +29,7 @@
 			<td>{$row.tag|escape:'html'}</td>
 			<td align="right">{$row.images|escape:'html'}</td>
 			<td>{$row.tag2_id|escape:'html'}</td>
-			<td>{if $row.tag2}{$row.tag2|escape:'html'}{else}<a href="?tag={$row.tag|escape:'url'}">suggest</a>{/if}</td>
+			<td{if strcasecmp($row.tag,$row.tag2) == 0} style="background-color:pink"{/if}>{if $row.tag2}{$row.tag2|escape:'html'}{else}<a href="?tag={$row.tag|escape:'url'}">suggest</a>{/if}</td>
 			<td><input type="radio" name="res[{$row.report_id}]" value="" checked></td>
 			<td><input type="radio" name="res[{$row.report_id}]" value="reject"></td>
 			<td>{if $row.tag2}
