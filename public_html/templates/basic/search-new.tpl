@@ -54,7 +54,7 @@
    
    <p>The first box matches words in the title/description etc of the images. TIP: can search by tags, by surrounding it with [..], eg [bridge]. As you type will be prompted to autocomplete tags</p>
 
-   <p>The second box take a location, and will help you pinpoint the correct location, by plotting possible matches on a map</p>
+   <p>The second box take a location, and will help you pinpoint the correct location, by plotting possible matches on a map. The final search will include images near that location.</p>
 </div>
 
 <div id="stats">

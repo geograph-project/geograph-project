@@ -163,17 +163,23 @@ class GeographUser
 	}
 	
 	function setPreference($key,$value,$session = false) {
+		if ($session)
+			$_SESSION[$key] = $value;
+				
 		if (!$this->registered) 
-			return false;
+			return $value;
 			
 		$db = $this->_getDB();
 		
 		$values = "value=".$db->Quote($value);
 		
-		$db->Execute($sql = "INSERT INTO user_preference SET user_id={$this->user_id},created=NOW(),pkey = ".$db->Quote($key).",$values ON DUPLICATE KEY UPDATE $values");
-		if ($session)
-			$_SESSION[$key] = $value;
-				
+		$db->Execute($sql = "INSERT INTO user_preference SET user_id={$this->user_id},created=NOW(),pkey = ".$db->Quote($key).",$values ON DUPLICATE KEY UPDATE $values,changes=changes+1");
+
+		//HACK ALERT!
+		if($key == "statistics.moversboard.type") {
+			$db->Execute($sql = "INSERT INTO user_preference SET user_id={$this->user_id},created=NOW(),pkey = ".$db->Quote("$key.$value").",value=1 ON DUPLICATE KEY UPDATE value=value+1");
+		}
+
 		return $value;	
 	}
 	

@@ -68,7 +68,7 @@
 
 							var img = "http://"+static_host+"/img/icons/marker.png";
 
-							document.getElementById('mapTitleOS50k').innerHTML = "<img src=\""+img+"\"/> " + document.getElementById('mapTitleOS50k').innerHTML;
+							document.getElementById('mapTitleOS50k').innerHTML = "<img src=\""+img+"\" height=\"12\" width=\"12\"/> " + document.getElementById('mapTitleOS50k').innerHTML;
 
 						} else {
 							if (marker)
@@ -77,7 +77,7 @@
 						}
 						enabled = !enabled;
 					});
-					document.getElementById('mapTitleOS50k').onclick = function() {
+					document.getElementById('mapTitleOS50k').ondblclick = function() {
 						digits = digits-1;
 						if (digits == 1)
 							digits = 5;
@@ -98,6 +98,11 @@
 
 
 	{/if}
+
+        {if $square->reference_index == 1}
+                <p>Double click the dynamic grid-reference to change the resolution.</p>
+        {/if}
+
 {/dynamic}
 </body>
 </html>

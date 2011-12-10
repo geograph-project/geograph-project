@@ -34,6 +34,7 @@
 			{foreach from=$buckets item=item}
 					<label id="{$image->gridimage_id}label{$item|escape:'html'}" for="{$image->gridimage_id}check{$item|escape:'html'}" style="color:gray">
 					<input type=checkbox id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0,this.value);"> {$item|escape:'html'}
+					{if $item == 'CloseCrop'} (was Telephoto){/if}
 					</label><br/>
 
 			{/foreach}<br/>
@@ -77,12 +78,14 @@ var delayinsec = {$user->slideshow_delay|default:5};
 {literal}
 if (window.location.hash == '#autonext') {
 	setTimeout("auto_slide_go(1)",500);
+} else if (window.location.hash == '#nonext') {
+	hasnextpage = 0;
 }
 {/literal}
  //]]></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
- 		<div style="text-align:center;padding-top:40px"><a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slidebig">Full Page Slide-Show</a> <sup style="color:red">new!</sup></div>
+ 		<div style="text-align:center;padding-top:40px"><a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slidebig">Full Page Slide-Show</a></div>
  	<br style="clear:both"/>
 	<p>Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 	{/if}

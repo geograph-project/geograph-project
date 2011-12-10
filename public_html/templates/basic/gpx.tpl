@@ -1,5 +1,4 @@
 {assign var="page_title" value="GPX Export"}
-{assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
 	<h2>GPX Export</h2>

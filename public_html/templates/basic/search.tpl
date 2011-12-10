@@ -29,6 +29,7 @@
 			<input id="searchgo" type="submit" name="go" value="Search..." style="font-size:1.3em"/>
 		</div>
 	</div>
+	<div style="font-size:0.7em;text-align:right"><a href="?new=1">Try new experimental auto-complete version of this page</a></div>
 </form>
 {/dynamic}
 <ul style="margin-left:0;padding:0 0 0 1em;">

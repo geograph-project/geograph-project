@@ -35,14 +35,14 @@ $USER->mustHavePerm("basic");
 dieUnderHighLoad(1);
 
 customGZipHandlerStart();
-customExpiresHeader(3600*24,false,true);
+customExpiresHeader(3600*23,false,true);
 
 $smarty->assign("page_title",'Your Photos around the site');
 
 //we dont use smarty caching because the page is so big!
-$smarty->display("_std_begin.tpl");
+$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF']);
 
-$tabs = array('featured'=>'Featured Images','collection'=>'In Collections','collection2'=>'Collection Image','forum'=>'Forum/Galleries','search'=>'Marked Lists','thumbed'=>'Thumbed',''=>'');
+$tabs = array('featured'=>'Featured Images','collection'=>'In Collections','collection2'=>'Collection Image','forum-top'=>'Forum/Galleries Latest','forum'=>'Forum/Galleries All','search'=>'Marked Lists','thumbed'=>'Thumbed',''=>'');
 
 print "<div class=\"tabHolder\">";
 foreach ($tabs as $name => $value) {
@@ -65,6 +65,8 @@ $db = GeographDatabaseConnection(true);
 if (empty($_GET['tab'])) {
 	print "<p>Select a tab above</p>";
 } elseif ($db->readonly) {
+	print "<div style=\"float:right\">Generated ".date('r')."</div>";
+
 	$u = intval($USER->user_id);
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -74,18 +76,18 @@ if (empty($_GET['tab'])) {
 	if ($_GET['tab'] == 'featured') {
 
 		$t = 0;
-		$sql = "SELECT gridimage_id gid,title t,showday s FROM gridimage_search INNER JOIN gridimage_daily USING (gridimage_id) WHERE showday IS NOT NULL AND user_id = $u ORDER BY showday";
+		$sql = "SELECT gridimage_id gid,title t,showday s FROM gridimage_search INNER JOIN gridimage_daily USING (gridimage_id) WHERE showday IS NOT NULL AND showday < NOW() AND user_id = $u ORDER BY showday";
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) {
-			$r &= $recordSet->fields;
+			$r = $recordSet->fields;
 			if (!$t) {
 				print "<h3>Photograph of the Day</h3>";
 				print "<ul>";
 				$t=1;
 			}
 
-			print "<li>{$r['s']} <a href=\"/photo/{$r['gid']}\">".htmlentities($r['title'])."</a></li>";
+			print "<li>{$r['s']} <a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a></li>";
 
 			$recordSet->MoveNext();
 		}
@@ -94,7 +96,7 @@ if (empty($_GET['tab'])) {
 
 	} elseif ($_GET['tab'] == 'collection') {
 
-		$t = $l = 0;
+		$t = $l = '';
 		$sql = "SELECT gi.gridimage_id gid,gi.title t,url,c.title ct FROM gridimage_search gi INNER JOIN gridimage_content USING (gridimage_id) INNER JOIN content c USING (content_id) WHERE gi.user_id = $u ORDER BY content_id";
 
 		$recordSet = &$db->Execute($sql);
@@ -107,11 +109,11 @@ if (empty($_GET['tab'])) {
 			if ($r['url'] != $l) {
 				if ($l) { print "</ul>"; }
 
-				print "<h4><a href=\"{$r['url']}\">".htmlentities($r['ct'])."</a></h4>";
+				print "<h4><a href=\"{$r['url']}\">".htmlentities2($r['ct'])."</a></h4>";
 				$l = $r['url'];
 			}
 
-			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities($r['t'])."</a></li>";
+			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a></li>";
 
 			$recordSet->MoveNext();
 		}
@@ -120,7 +122,7 @@ if (empty($_GET['tab'])) {
 
 	} elseif ($_GET['tab'] == 'collection2') {
 
-		$t = $l = 0;
+		$t = $l = '';
 		$sql = "SELECT gi.gridimage_id gid,gi.title t,url,c.title ct FROM gridimage_search gi INNER JOIN content c USING (gridimage_id) WHERE gi.user_id = $u AND source != 'snippet' ORDER BY content_id";
 
 		$recordSet = &$db->Execute($sql);
@@ -133,21 +135,26 @@ if (empty($_GET['tab'])) {
 			if ($r['url'] != $l) {
 				if ($l) { print "</ul>"; }
 
-				print "<h4><a href=\"{$r['url']}\">".htmlentities($r['ct'])."</a></h4>";
+				print "<h4><a href=\"{$r['url']}\">".htmlentities2($r['ct'])."</a></h4>";
 				$l = $r['url'];
 			}
 
-			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities($r['t'])."</a></li>";
+			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a></li>";
 
 			$recordSet->MoveNext();
 		}
 
 		if ($l) { print "</ul>"; }
 
-	} elseif ($_GET['tab'] == 'forum') {
+	} elseif ($_GET['tab'] == 'forum' || $_GET['tab'] == 'forum-top') {
 
-		$t = $l = 0;
-		$sql = "SELECT gridimage_id gid,title t,topic_id tid,topic_title as tt FROM gridimage_search INNER JOIN gridimage_post USING (gridimage_id) INNER JOIN geobb_topics USING (topic_id) WHERE user_id = $u ORDER BY topic_id,post_id";
+		$t = $l = '';
+
+		if ($_GET['tab'] == 'forum-top') {
+			$sql = "SELECT gridimage_id gid,title t,topic_id tid,topic_title as tt,post_id p ,forum_id f FROM gridimage_search INNER JOIN gridimage_post USING (gridimage_id) INNER JOIN geobb_topics USING (topic_id) WHERE user_id = $u ORDER BY post_id DESC limit 200";
+		} else {
+			$sql = "SELECT gridimage_id gid,title t,topic_id tid,topic_title as tt,post_id p ,forum_id f FROM gridimage_search INNER JOIN gridimage_post USING (gridimage_id) INNER JOIN geobb_topics USING (topic_id) WHERE user_id = $u ORDER BY topic_id,post_id";
+		}
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) {
@@ -163,8 +170,8 @@ if (empty($_GET['tab'])) {
 				$l = $r['tid'];
 			}
 
-			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities($r['t'])."</a></li>";
-
+			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a>";
+			print " [<a href=\"/discuss/?action=vpost&amp;forum={$r['f']}&amp;topic={$r['tid']}&amp;post={$r['p']}\">post</a>]</li>";
 			$recordSet->MoveNext();
 		}
 
@@ -172,7 +179,7 @@ if (empty($_GET['tab'])) {
 
 	} elseif ($_GET['tab'] == 'search') {
 
-		$t = $l = 0;
+		$t = '';
 		$sql = "SELECT gridimage_id gid,title t,count(*) c FROM gridimage_search INNER JOIN gridimage_query USING (gridimage_id) WHERE user_id = $u GROUP BY gridimage_id HAVING c > 1 ORDER BY c DESC";
 
 		$recordSet = &$db->Execute($sql);
@@ -184,17 +191,17 @@ if (empty($_GET['tab'])) {
 				$t=1;
 			}
 
-			print "<li value=\"{$r['c']}\"><a href=\"/photo/{$r['gid']}\">".htmlentities($r['t'])."</a></li>";
+			print "<li value=\"{$r['c']}\"><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a></li>";
 
 			$recordSet->MoveNext();
 		}
 
-		if ($l) { print "</ol>"; }
+		if ($t) { print "</ol>"; }
 
 	} elseif ($_GET['tab'] == 'thumbed') {
 
-		$t = $l = 0;
-		$sql = "SELECT gridimage_id gid,title t FROM gridimage_search INNER JOIN vote_stat ON (gridimage_id=id) WHERE user_id = $u AND type in ('img','desc') ORDER BY last_vote DESC";
+		$t = '';
+		$sql = "SELECT gridimage_id gid,title t,type s FROM gridimage_search INNER JOIN vote_stat ON (gridimage_id=id) WHERE user_id = $u AND type in ('img','desc') ORDER BY last_vote DESC";
 
 		$recordSet = &$db->Execute($sql);
 		while (!$recordSet->EOF) {
@@ -205,12 +212,12 @@ if (empty($_GET['tab'])) {
 				$t=1;
 			}
 
-			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities($r['t'])."</a></li>";
+			print "<li><a href=\"/photo/{$r['gid']}\">".htmlentities2($r['t'])."</a> [{$r['s']}]</li>";
 
 			$recordSet->MoveNext();
 		}
 
-		if ($l) { print "</ul>"; }
+		if ($t) { print "</ul>"; }
 
 	} 
 	

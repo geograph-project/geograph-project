@@ -111,6 +111,9 @@
 	  <form method="post">
 	  <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
 	  <h2 class="titlebar">Moderation</h2>
+		<div style="position:relative;float:right">
+			<span id="votediv{$image->gridimage_id}">{votestars id=$image->gridimage_id type="mod"}</span>
+		</div>
 	  <p>{if $image->moderation_status eq 'pending'}
 	  	<small>(pending images should be moderated in sequence via the moderation page)</small>
 	  {else}

@@ -30,7 +30,7 @@ init_session();
 $smarty = new GeographPage;
 $template = 'finder_bytag.tpl';
 
-if (!empty($_GET['q'])) {
+if (!empty($_GET['q']) || !empty($_GET['user_id'])) {
 	$q=trim($_GET['q']);
 
 	$sphinx = new sphinxwrapper($q);
@@ -45,6 +45,8 @@ if (!empty($_GET['q'])) {
 	if (empty($pg) || $pg < 1) {$pg = 1;}
 	
 	$cacheid .=".".$pg;
+        if (!empty($_GET['user_id']))
+		$cacheid .=".".intval($_GET['user_id']);
 	
 	if (!$smarty->is_cached($template, $cacheid)) {
 	
@@ -55,6 +57,9 @@ if (!empty($_GET['q'])) {
 
 		$client = $sphinx->_getClient();
 		$client->SetArrayResult(true);
+
+                if (!empty($_GET['user_id']))
+                        $client->setFilter("user_id",array(intval($_GET['user_id'])));
 
 		$sphinx->SetGroupBy('all_tag_id', SPH_GROUPBY_ATTR, '@count DESC');
 		$res = $sphinx->groupByQuery($pg,'tagsoup');
