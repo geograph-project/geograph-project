@@ -58,11 +58,18 @@ class sphinxwrapper {
 			//http: (urls) bombs out the field: syntax
 		$q = str_replace('http://','http ',$q);
 		
+			//remove any colons in tags - will mess up field: syntax
+		$q = preg_replace('/\[([^\]]+):([^\]]+)\]/','[$1 $2]',$q);
+
 			//setup field: syntax
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 		
 			//remove unsuitable chars
-		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,-]+/',' ',trim(strtolower($q))));
+		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,-\[\]]+/',' ',trim(strtolower($q))));
+
+		$q = preg_replace('/^["]([^\(\)\'"]+)$/','"$1"',$q);
+		$q = preg_replace('/^([^\(\)\'"]+)[\(\)\'"]$/','$1',$q);
+		$q = preg_replace('/^[\(\)\'"]([^\(\)\'"]+)$/','$1',$q);
 	
 			//remove any / not in quorum
 		$q = preg_replace('/(?<!")\//',' ',$q);
@@ -107,6 +114,20 @@ class sphinxwrapper {
 			//change single quotes to double
 		$q = preg_replace('/(^|\s)\b\'([\w ]+)\'\b(\s|$)/','$1"$2"$3',$q);
 		
+			//seperate out tags!
+		if (preg_match_all('/(-?)\[([^\]]+)\]/',$q,$m)) {
+			$q2 = '';
+			foreach ($m[2] as $idx => $value) {
+				$q = str_replace($m[0][$idx],'',$q);
+				$q2 .= " ".$m[1][$idx].'"__TAG__ '.str_replace(':',' ',$value).' __TAG__"';
+			}
+			if (!empty($q2)) {
+				$q .= " @tags".$q2;
+			}
+		}
+			//FIX  '@title  @source -themed @tags "__TAG__ footpath __TAG__"'
+		$q = preg_replace('/@(\w+)\s+@/','@',$q);
+
 			//transform 'near gridref' to the put the GR first (thats how processQuery expects it) 
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
 	
@@ -118,7 +139,7 @@ class sphinxwrapper {
 
 	split_timer('sphinx'); //starts the timer
 
-		if (preg_match('/^([a-zA-Z]{1,2}) +(\d{1,5})(\.\d*|) +(\d{1,5})(\.*\d*|)/',$q,$matches) && $matches[1] != 'tp') {
+		if (preg_match('/^([a-zA-Z]{1,2}) +(\d{2,5})(\.\d*|) +(\d{2,5})(\.*\d*|)/',$q,$matches) && $matches[1] != 'tp') {
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($matches[0],true);
 
@@ -131,7 +152,7 @@ class sphinxwrapper {
 				$r = "\t--invalid Grid Ref--";
 			}
 
-		} else if (preg_match('/^([a-zA-Z]{1,2})(\d{2,10})\b/',$q,$matches) && $matches[1] != 'tp') {
+		} else if (preg_match('/^([a-zA-Z]{1,2})(\d{4,10})\b/',$q,$matches) && $matches[1] != 'tp') {
 
 			$square=new GridSquare;
 			$grid_ok=$square->setByFullGridRef($matches[0],true);
@@ -274,7 +295,18 @@ class sphinxwrapper {
 
 			list($gr2,$len) = $conv->national_to_gridref($e*1000,$n*1000,4,$reference_index,false);
 
-			if ($data['d'] > 0 && $data['d'] < 1 && !$onekm) {
+			if (isset($_GET['bbb'])) {
+				$d = max(1,abs($data['d']));
+				
+				$cl = $this->_getClient();
+				
+				list($lat1,$long1) = $conv->national_to_wgs84(($e-$d)*1000,($n-$d)*1000,$reference_index);
+				list($lat2,$long2) = $conv->national_to_wgs84(($e+$d)*1000,($n+$d)*1000,$reference_index);
+				
+				$cl->SetFilterFloatRange('wgs84_lat', deg2rad($lat1), deg2rad($lat2));
+				$cl->SetFilterFloatRange('wgs84_long', deg2rad($long1), deg2rad($long2));
+			
+			} elseif ($data['d'] > 0 && $data['d'] < 1 && !$onekm) {
 				$d = 1; //gridsquares
 				
 				//simple alogorithm to cut down on number of filters added. If the center of the search circle and gridsquare can't touch ($rad is the furthest distance where the two shapes still /just/ intersect) then there is no need to even bother with that square. 
@@ -370,6 +402,7 @@ class sphinxwrapper {
 	split_timer('sphinx'); //starts the timer
 
 		if ($index_in == "_images") {
+			$this->q = preg_replace('/@text\b/','@(title,comment,imageclass)',$this->q);
 			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
 		} elseif ($index_in == "_map") {
 			$index = "{$CONF['sphinx_prefix']}gi_map,{$CONF['sphinx_prefix']}gi_map_delta";
@@ -391,7 +424,7 @@ class sphinxwrapper {
 			$this->getFilterString(); //we only support int filters which call SetFilter for us
 		}
 		
-		if (empty($this->q)) {
+		if (empty($this->q) || $this->q == ' ') {
 			$cl->SetMatchMode ( SPH_MATCH_FULLSCAN );
 		} else {
 			$cl->SetMatchMode ( SPH_MATCH_EXTENDED );
@@ -405,11 +438,11 @@ class sphinxwrapper {
 			}
 		}
 		
-		$res = $cl->Query ( $this->q, $index );
+		$res = $cl->Query (trim($this->q), $index );
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
 			print "<pre>";
 			print_r($cl);	
-			print "<pre style='background-color:red'>( '$q', '$index' )</pre>";
+			print "<pre style='background-color:red'>( '{$this->q}', '$index' )</pre>";
 			print "<pre>";
 			print_r($res);	
 			if ( $cl->GetLastWarning() )
@@ -539,7 +572,7 @@ split_timer('sphinx'); //starts the timer
 				$q .= " @$name $value";
 			}
 		}
-		return $q;
+		return trim($q);
 	} 
 	
 	public function addFilters($filters) {
@@ -632,7 +665,7 @@ split_timer('sphinx'); //starts the timer
 		}
 		$cl->SetMatchMode ( $mode );
 		
-		$cl->SetWeights ( array ( 100, 1 ) );
+#############		$cl->SetWeights ( array ( 100, 1 ) );
 		if (!empty($DateColumn)) {
 			$cl->SetSortMode ( SPH_SORT_TIME_SEGMENTS, $DateColumn);
 			
@@ -671,7 +704,7 @@ split_timer('sphinx'); //starts the timer
 		$q = preg_replace('/@shared\b/','@(snippet,snippet_title,snippet_id)',$q);
 		$q = preg_replace('/@not(\w+)\b/','@!($1)',$q);
 		
-		$res = $cl->Query ( $q, $index );
+		$res = $cl->Query (trim($q), $index );
 		
 		if (!empty($_GET['debug']) && $_GET['debug'] == 2) {
 			print "<pre>";

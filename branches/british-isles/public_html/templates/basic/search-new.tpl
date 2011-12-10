@@ -51,14 +51,19 @@
 
 <div id="results">
    <p>Enter your search above to find images. Can enter keywords to match against the image, and/or a location. Start typing a placename, or enter a postcode/grid-reference in the Location box. </p>
+   
+   <p>The first box matches words in the title/description etc of the images. TIP: can search by tags, by surrounding it with [..], eg [bridge]. As you type will be prompted to autocomplete tags</p>
+
+   <p>The second box take a location, and will help you pinpoint the correct location, by plotting possible matches on a map</p>
 </div>
+
 <div id="stats">
 
 </div>
 
-<ul style="margin-left:0;padding:0 0 0 1em;">
+<ul style="margin-left:0;padding:0 0 0 1em;clear:both">
 
-<li>Here are a couple of example searches:<br/>
+<li><div class="interestBox">Here are a couple of example searches:</div>
 <div style="float:left; margin-top:3px;  width:60%; position:relative">
 	<ul style="margin-left:0;padding:0 0 0 1em;font-size:0.8em">
 	{foreach from=$featured key=id item=row}
@@ -69,11 +74,10 @@
 </div>
 <div style="float:left; margin-top:3px;  width:40%; position:relative">
 	<ul style="font-size:0.8em">
-	{foreach from=$imageclasslist key=id item=name}
-	<li><a href="/search.php?imageclass={$id|escape:url}" title="Show images classed as {$id|escape:html}">{$name|escape:html}</a></li>
+	{foreach from=$taglist key=id item=name}
+	<li>[<a href="/search.php?searchtext=[{$id|escape:url}]&do=1" title="Show images tagged with {$id|escape:html}">{$name|escape:html}</a>]</li>
 	{/foreach}
-	<li><a href="/statistics/breakdown.php?by=class" title="Show Image Categories"><i><b>more categories...</b></i></a></li>
-
+	<li><a href="/tags/" title="Browse Tags"><i><b>more tags...</b></i></a></li>
 	</ul>
 </div><br style="clear:both;"/><br/>
 </li>
@@ -81,7 +85,7 @@
 {dynamic}
 {if $user->registered}
 	{if $recentsearchs}
-	<li>And a list of your recent searches:
+	<li><div class="interestBox">And a list of your recent searches:</div>
 	<ul style="margin-left:-10px; margin-top:3px; padding:0 0 0 0em; list-style-type:none">
 	{foreach from=$recentsearchs key=id item=obj}
 	<li>{if $obj.favorite == 'Y'}<a href="/search.php?i={$id}&amp;fav=0" title="remove favorite flag"><img src="http://{$static_host}/img/star-on.png" width="14" height="14" alt="remove favorite flag" onmouseover="this.src='http://{$static_host}/img/star-light.png'" onmouseout="this.src='http://{$static_host}/img/star-on.png'"></a> <b>{else}<a href="/search.php?i={$id}&amp;fav=1" title="make favorite - starred items stay near top"><img src="http://{$static_host}/img/star-light.png" width="14" height="14" alt="make favorite" onmouseover="this.src='http://{$static_host}/img/star-on.png'" onmouseout="this.src='http://{$static_host}/img/star-light.png'"></a> {/if}{if $obj.searchclass == 'Special'}<i>{/if}<a href="/search.php?i={$id}" title="Re-Run search for images{$obj.searchdesc|escape:"html"}{if $obj.use_timestamp != '0000-00-00 00:00:00'}, last used {$obj.use_timestamp}{/if} (Display: {$obj.displayclass})">{$obj.searchdesc|escape:"html"|regex_replace:"/^, /":""|regex_replace:"/(, in [\w ]+ order)/":'</a><small>$1</small>'}</a>{if !is_null($obj.count)} [{$obj.count}]{/if}{if $obj.searchclass == 'Special'}</i>{/if}{if $obj.favorite == 'Y'}</b>{/if} {if $obj.edit}<a href="/refine.php?i={$id}" style="color:red">Edit</a>{/if}</li>
@@ -163,7 +167,6 @@
 #autocomplete {
 	position:absolute;top:0;left:0;width:300px;display:none;
 	z-index:1000;
-
 	background-color:silver;
 }
 .message {
