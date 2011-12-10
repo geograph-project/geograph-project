@@ -180,7 +180,7 @@ split_timer('search'); //starts the timer
 			}
 		} 
 		//todo else { parse placenames (and EWSI etc) off the end!)}
-		
+	
 		if ($location)
 			$q = str_replace($location,'',$q);
 		$q = preg_replace('/\s*near\s*$/','',$q);
@@ -193,9 +193,9 @@ split_timer('search'); //starts the timer
 
 		if ($placename != '(anywhere)' && strpos($q,':') === FALSE) {
 			if (!empty($placename)) {
-				$criteria->setByPlacename($placename);
+				$criteria->setByPlacename($placename,$location);
 			} elseif (!$location) {
-				$criteria->setByPlacename($q);
+				$criteria->setByPlacename($q,$location);
 			}
 		}
 		if ($criteria->is_multiple) {

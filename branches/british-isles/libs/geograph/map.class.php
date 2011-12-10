@@ -575,9 +575,9 @@ split_timer('map','returnImage',$file); //logs the wall time
 	#PHOTO VIEWING  (via gridimage_log) 
 				|| $this->type_or_user == -5
 	#CENTISQUARE DEPTH MAP
-				|| $this->type_or_user == -7
-	#PHOTO AGE MAP
 				|| $this->type_or_user == -8
+	#PHOTO AGE MAP
+				|| $this->type_or_user == -7
 	#USER DEPTH MAP
 				|| $this->type_or_user == -13
 	#QUADS DEPTH MAP
