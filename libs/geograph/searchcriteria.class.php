@@ -997,7 +997,7 @@ class SearchCriteria_Placename extends SearchCriteria
 		unset($this->placename);
 	}
 	
-	function setByPlacename($placename) {
+	function setByPlacename($placename,$location = '') {
 
 #we dont time this because gaz has its own split timer!
 #split_timer('search'); //starts the timer
@@ -1008,6 +1008,16 @@ class SearchCriteria_Placename extends SearchCriteria
 		
 		$places = $gaz->findPlacename($placename);
 		
+		if (!empty($location) && count($places) > 1) {
+			foreach ($places as $place) {
+				if ($location == $place['gridref']) {
+
+					$places = array($place);
+					break;
+				}
+			}
+	
+		} 
 		if (count($places) == 1) {
 			$db = $this->_getDB(true);
 			$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." and origin_x > 0 order by origin_x,origin_y limit 1");	
@@ -1020,6 +1030,7 @@ class SearchCriteria_Placename extends SearchCriteria
 			$this->reference_index = $places[0]['reference_index'];
 			$this->_matches = $places;
 		} elseif (count($places)) {
+			
 			$this->matches = $places;
 			$this->is_multiple = true;
 			$this->searchq = $placename;

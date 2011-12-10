@@ -159,13 +159,14 @@ function findPlace() {
 	if (query.length == 0)
 		return;
 	if (query.search(/^\w{1,2}\d{2,10}/) > -1) {
+		var gridref = query.match(/^\w{1,2}\d{2,10}/);
 		var grid=new GT_OSGB();
 		var ok = false;
-		if (grid.parseGridRef(query.toUpperCase())) {
+		if (grid.parseGridRef(gridref[0].toUpperCase())) {
 			ok = true;
 		} else {
 			grid=new GT_Irish();
-			ok = grid.parseGridRef(query.toUpperCase())
+			ok = grid.parseGridRef(gridref[0].toUpperCase())
 		}
 
 		if (ok) {
@@ -233,7 +234,7 @@ function findPlace() {
 		var ul = $("#autocomplete ul");
 
 		$.each(data.items, function(i,item){
-			ul.append('<li><tt>'+item.gr+'</tt> <a href="javascript:void(setLocationBoxGr(\''+item.gr+'\'))" title="'+item.localities+'">'+item.name+'</a></li>');
+			ul.append('<li><tt>'+item.gr+'</tt> <a href="javascript:void(setLocationBoxGr(\''+item.gr+' '+item.name+'\'))" title="'+item.localities+'">'+item.name+'</a></li>');
 		});
 
 		$("#autocomplete").append('<p>'+data.query_info+'</p>');
@@ -410,6 +411,8 @@ function setLocationBoxGr(gridref) {
 	$('#autocomplete').css('display','none');
 	$('#results').css('width','');
 	$('#show_values').css('display','');
+	
+	strinkMarkers();
 }
 
 
