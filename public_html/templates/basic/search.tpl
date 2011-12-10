@@ -44,11 +44,10 @@
 </div>
 <div style="float:left; margin-top:3px;  width:40%; position:relative">
 	<ul style="font-size:0.8em">
-	{foreach from=$imageclasslist key=id item=name}
-	<li><a href="/search.php?imageclass={$id|escape:url}" title="Show images classed as {$id|escape:html}">{$name|escape:html}</a></li>
-	{/foreach}
-	<li><a href="/statistics/breakdown.php?by=class" title="Show Image Categories"><i><b>more categories...</b></i></a></li>
-
+        {foreach from=$taglist key=id item=name}
+        <li>[<a href="/search.php?searchtext=[{$id|escape:url}]&do=1" title="Show images tagged with {$id|escape:html}">{$name|escape:html}</a>]</li>
+        {/foreach}
+        <li><a href="/tags/" title="Browse Tags"><i><b>more tags...</b></i></a></li>
 	</ul>
 </div><br style="clear:both;"/><br/>
 </li>

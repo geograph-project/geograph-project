@@ -1132,19 +1132,20 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 				$engine->results[$idx]->excerpt = $reply[$idx];
 			}
 		} elseif (strpos($display,'slide') === 0 || $display == 'more') { 
-			$buckets = array('Closeup',
+			$buckets = array(
+				'Closeup',
+				'CloseCrop', //was telephoto
+				'Wideangle',
+				'Landscape',
 				'Arty',
 				'Informative',
 				'Aerial',
-				'Telephoto',
-				'Landscape',
-				'Wideangle',
 				'Indoor',
-				'Gone',
-				'People',
-				'Temporary',
-				'Life',
 				'Subterranean', 
+				'Gone',
+				'Temporary',
+				'People',
+				'Life',
 				'Transport');
 			$smarty->assign_by_ref('buckets',$buckets);
 		} 
@@ -1292,6 +1293,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	//  Simple Form
 	// -------------------------------
 
+	$template = 'search.tpl';
+	if (!empty($_GET['new'])) {
+		$template = 'search-new.tpl';
+	}
+
 	if (is_int($i)) {
 		require_once('geograph/searchcriteria.class.php');
 		$engine = new SearchEngine($i);
@@ -1311,15 +1317,19 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		$smarty->assign('searchlocation', $loc);
 		$smarty->assign('searchtext', $q);
 	}
-	if (!$smarty->is_cached('search.tpl')) {
+	if (!$smarty->is_cached($template)) {
 		if (!isset($db)) {
 			$db = GeographDatabaseConnection(true);
 		}
-		//list of a few image classes
-		$arr = $db->GetAssoc("select imageclass,concat(imageclass,' [',c,']') from category_stat
-			where c > 15 order by rand() limit 5");
-		$smarty->assign_by_ref('imageclasslist',$arr);
+		//list of a few tags
+
+		//TODO this is very slow, and inefficient, must be better way!
 	
+		$arr = $db->getAssoc("SELECT if(prefix!='',concat(prefix,':',tag),tag) as tag,CONCAT(if(prefix!='',concat(prefix,':',tag),tag),' [',COUNT(*),']') `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY RAND() LIMIT 5");
+		$smarty->assign_by_ref('taglist',$arr);
+
+
+
 		$arr2 = $db->GetAll("select id,searchdesc
 			from queries_featured
 				inner join queries using (id)
@@ -1375,11 +1385,13 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	require_once('geograph/imagelist.class.php');
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
-	//lets find some recent photos
-	new RecentImageList($smarty);
+	if ($template == 'search.tpl') {
+		//lets find some recent photos
+		new RecentImageList($smarty);
+	}
 
 	customExpiresHeader(360,false,true);
-	$smarty->display('search.tpl');
+	$smarty->display($template);
 }
 
 
