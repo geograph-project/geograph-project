@@ -1,3 +1,12 @@
+/* 
+ This code is Copyright 2011 Barry Hunter 
+ and licenced for reuse under Creative Commons Attribution-Share Alike 3.0 licence.
+ http://creativecommons.org/licenses/by-sa/3.0/ 
+
+ Source: http://www.nearby.org.uk/geograph/playground/
+
+ */
+
 var timer = null;
 
 $(function() {
@@ -34,8 +43,37 @@ function runQuery(perpage) {
 	if (location=='(anywhere)') location='';
 	
 	if (query.length == 0) {
-		return runQuery2(perpage,query,location);
+		if (location.length > 0) {
+			return runQuery2(perpage,query,location);
+		}
+		return;
 	}
+
+	if (query.search(/\[[^\]]*$/) > -1) {
+		//we have an open tag search
+		var tag = query.match(/\[([^\]]*)$/);
+
+		if (tag[1].length > 1) 
+			_get_tags(tag[1],'tags/tags',function(data) {
+				if (data && data.length > 0) {
+
+					$("#autocomplete").css('display','block').html("<ul></ul>");
+
+					var ul = $("#autocomplete ul");
+
+					$.each(data, function(i,item){
+						text = item.tag;
+						if (item.prefix)
+						text = item.prefix+':'+text;
+
+						ul.append('<li><a href="javascript:void(useTag(\''+text.replace(/([\"\'])/g,'\\$1')+'\'))">'+text+'</a></li>');
+					});
+				}
+			});
+
+		return;
+	} 
+
 
 	$.ajax({
 		url:  "/finder/keywords.json.php?q="+encodeURIComponent(query)+"&callback=?",
@@ -69,11 +107,23 @@ function runQuery(perpage) {
 	});
 }
 
+function useTag(newtag) {
+	var query = $('#searchq').attr('value');
+	if (query.search(/\[[^\]]*\]?$/) > -1) {
+		query = query.replace(/\[([^\]]*)\]?$/,'['+newtag+']');
+		$('#searchq').attr('value',query);
+		runQuery("15"); 
+	}
+	$('#autocomplete').css('display','none');
+	$('#results').css('width','');
+	$('#show_values').css('display','');
+}
+
 function runQuery2(perpage,query,location,normalized) {
 	_get_textsearch(query ,function(data) {
 		lastrun = normalized;
 
-		if (!data || data.items.length < 1) {
+		if (!data || !data.items || data.items.length < 1) {
 			showMessage("no images found");
 		}
 		pages = 1;
@@ -94,8 +144,9 @@ function runQuery2(perpage,query,location,normalized) {
 			}
 			layer = new google.maps.KmlLayer(data.syndicationURL.replace(/.json/,'.kml'),{preserveViewport: true,map:map});
 		}
-
-		$("#results").append('<p>Loaded '+imagecount+' of "<a href="'+data.link+'">'+data.description.replace(/\((\d+) in total/,'(<b>$1 in total</b>')+'</a>" images</p>');
+		
+		if (data.description && data.description.length > 0)
+			$("#results").append('<p>Loaded '+imagecount+' of "<a href="'+data.link+'">'+data.description.replace(/\((\d+) in total/,'(<b>$1 in total</b>')+'</a>" images</p>');
 
 	},location,perpage);
 }
@@ -122,10 +173,7 @@ function findPlace() {
 				openMap();
 
 			if (query.length >4) {
-				if (markers.length > 0 )
-					for(q=0;q<markers.length;q++) {
-						markers[q].setIcon('https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.25%7C0%7CFF0000%7C000000');
-					}
+				strinkMarkers();
 
 				//convert to a wgs84 coordinate
 				wgs84 = grid.getWGS84(true);
@@ -196,10 +244,7 @@ function findPlace() {
 			openMap();
 
 		setTimeout(function() {
-			if (markers.length > 0 )
-				for(q=0;q<markers.length;q++) {
-					markers[q].setIcon('https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.25%7C0%7CFF0000%7C000000');
-				}
+			strinkMarkers();
 
 			showItems(data.items);
 		},400);
@@ -313,10 +358,7 @@ function newDraggableMarker(event) {
 			runQuery("6");
 			$('#results').css('width','300px');
 			$('#autocomplete').css('display','none');
-			if (markers.length > 0)
-			for(q=0;q<markers.length;q++) {
-				markers[q].setIcon('https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.25%7C0%7CFF0000%7C000000');
-			}
+			strinkMarkers();
 		});
 	}
 	if (!event.skipauto) {
@@ -324,11 +366,15 @@ function newDraggableMarker(event) {
 		runQuery("6");
 		$('#results').css('width','300px');
 		$('#autocomplete').css('display','none');
-		if (markers.length > 0)
+		strinkMarkers();
+	}
+}
+
+function strinkMarkers() {
+	if (markers.length > 0)
 		for(q=0;q<markers.length;q++) {
 			markers[q].setIcon('https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.25%7C0%7CFF0000%7C000000');
 		}
-	}
 }
 
 function closeMap() {
@@ -426,9 +472,7 @@ function newMarker(point,name,gr) {
 
 		newDraggableMarker(event); //make the main marker.
 
-		for(q=0;q<markers.length;q++) {
-			markers[q].setIcon('https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.25%7C0%7CFF0000%7C000000');
-		}
+		strinkMarkers();
 	});
 	markers.push(newmarker);
 }
