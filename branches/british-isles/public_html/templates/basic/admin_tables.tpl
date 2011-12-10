@@ -13,6 +13,7 @@
 {if $table}
    	
 	<form action="{$script_name}" method="post">
+	<input type="hidden" name="next" value="{$next}">
 	<input type="hidden" name="table" value="{$table}">
 		<table cellpadding="3" cellspacing="0" style="font-size:0.8em">
 		  <tr>
@@ -23,6 +24,12 @@
 			 <td><b>Type</b></td>
 			 <td><select name="type" id="type" size="1"> 
 				{html_options options=$types selected=$arr.type}
+			     </select></td>
+		  </tr>
+		  <tr>
+			 <td><b>Backup</b></td>
+			 <td><select name="backup" id="type" size="1"> 
+				{html_options options=$backups selected=$arr.backup}
 			     </select></td>
 		  </tr>
 		  <tr>

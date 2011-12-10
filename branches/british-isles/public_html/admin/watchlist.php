@@ -44,6 +44,8 @@ if (!empty($_GET['id']) && $USER->user_id) {
 
 $smarty = new GeographPage;
 
+ $USER->mustHavePerm("moderator");
+
 customGZipHandlerStart();
 
 $template='admin_watchlist.tpl';	
@@ -65,8 +67,12 @@ $smarty->assign('maincontentclass', 'content_photo'.$style);
 	$imagelist->_getImagesBySql($sql);
 	
 	if (count($imagelist->images)) {
-		foreach ($imagelist->images as $i => $image) 
+		foreach ($imagelist->images as $i => $image) {
 			$imagelist->images[$i]->imagetakenString = getFormattedDate($image->imagetaken);
+			if (preg_match('/^\w/',$image->word)) {
+				$image->word = ''; //snippet builder just uses the start of the title if 
+			}
+		}
 	
 		$smarty->assign_by_ref('images', $imagelist->images);
 	}

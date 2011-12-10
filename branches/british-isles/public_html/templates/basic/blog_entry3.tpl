@@ -16,7 +16,7 @@
 <div>By <a title="View profile" href="/blog/?u={$user_id}">{$realname|escape:'html'}</a></div>
 
 
-<p style="margin-left:auto;margin-right:auto;width:600px;position:relative;margin-bottom:100px;line-height:2.2em" id="blogcontent">{$content|nl2br|GeographLinks:true|regex_replace:'/(height|width)="\d+"/':'$1="14"'}</p>
+<p style="margin-left:auto;margin-right:auto;width:600px;position:relative;margin-bottom:100px;line-height:2em" id="blogcontent">{$content|nl2br|GeographLinks:true|regex_replace:'/(height|width)="\d+"/':'$1="14"'}</p>
 
 <hr/>
 

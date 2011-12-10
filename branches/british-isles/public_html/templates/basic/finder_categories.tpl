@@ -42,7 +42,7 @@
 	{/if}
 {/if}
 
-		<div style="float:right;width:200px">
+		<div style="float:right;width:220px;font-size:0.8em">
 			Geographical Context suggestion
 		</div>
 		<br style="clear:both"/>
@@ -52,8 +52,8 @@
 {foreach from=$results item=item}
 	<li>
 	{if $item.top}
-		<div style="float:right;width:200px">
-			top:<a href="/tags/?tag=top:{$item.top|escape:'url'}">{$item.top|escape:'html'}</a>
+		<div style="float:right;width:220px;font-size:0.8em">
+			<a href="/tags/?tag=top:{$item.top|escape:'url'}">{$item.top|escape:'html'}</a>
 		</div>
 	{/if}
 

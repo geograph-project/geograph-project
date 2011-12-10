@@ -29,7 +29,7 @@ if(!isset($GLOBALS['indexphp'])) $indexphp='index.php?'; else $indexphp=$GLOBALS
 
 if($useSessions) {
 $oldBbAdmin=$bb_admin;
-session_start();
+//session_start();
 if(!isset($PHPSESSID)) { $sessstr='?'.SID; $indexphp.=SID.'&'; $bb_admin.=SID.'&'; }
 else { $indexphp.='PHPSESSID='.$PHPSESSID.'&'; $bb_admin.='PHPSESSID='.$PHPSESSID.'&';}
 }
