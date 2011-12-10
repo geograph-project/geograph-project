@@ -413,6 +413,27 @@ function setLocationBoxGr(gridref) {
 	$('#show_values').css('display','');
 	
 	strinkMarkers();
+	
+	if (gridref.search(/^\w{1,2}\d{2,10}/) > -1) {
+		var gridref = query.match(/^\w{1,2}\d{2,10}/);
+		var grid=new GT_OSGB();
+		var ok = false;
+		if (grid.parseGridRef(gridref[0].toUpperCase())) {
+			ok = true;
+		} else {
+			grid=new GT_Irish();
+			ok = grid.parseGridRef(gridref[0].toUpperCase())
+		}
+
+		if (ok) {
+			//convert to a wgs84 coordinate
+			wgs84 = grid.getWGS84(true);
+
+			var point = new google.maps.LatLng(wgs84.latitude,wgs84.longitude);
+
+			newDraggableMarker({latLng: point,skipauto:true});
+		}
+	}
 }
 
 
@@ -463,7 +484,7 @@ function newMarker(point,name,gr) {
 		animation: null
 	});
 	google.maps.event.addListener(newmarker , 'click', function(event) {
-		$('#location').attr('value',gr); //+' #('+name+')'
+		$('#location').attr('value',gr+' '+name);
 		runQuery("6");
 		$('#autocomplete').css('display','none')
 		$('#results').css('width','300px');
