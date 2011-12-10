@@ -287,7 +287,7 @@ function drawSquare(grid,rounder) {
 }
 
 function showValues() {
-	$('#autocomplete').css('display','');
+	$('#autocomplete').css('display','block');
 	$('#show_values').css('display','none');
 }
 
