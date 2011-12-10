@@ -5,6 +5,8 @@
 
 <p>These are images, have have been flagged against the watches words. Once muted a image wont reappear until its edited - and the watch word is still present. You should make any alterations to the image required before pressing the mute button.</p>
 
+<p>Note: When you mute an image, you are saying the whole of the images details are ok, not just the flagged word(s) - i.e. check the whole text of the image, not just the highlighted text.</p>
+
 {dynamic}
 
 	{foreach from=$images item=image}

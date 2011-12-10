@@ -30,14 +30,14 @@
 {foreach from=$data item=item}
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}">
-<td><b><a href="/admin/typohunter.php?include={$item.include|escape:'url'}&amp;exclude={$item.exclude|escape:'url'}&amp;profile={$item.profile|escape:'url'}&amp;last_size={$item.last_size|escape:'url'}{if $item.title}&amp;title={$item.title|escape:'url'}{/if}">{$item.include|escape:'html'}</a></b></td>
+<td><b><a href="/admin/typohunter.php?include={$item.include|escape:'url'}&amp;exclude={$item.exclude|escape:'url'}&amp;profile={$item.profile|escape:'url'}&amp;size={$item.last_size|escape:'url'}{if $item.title}&amp;title={$item.title|escape:'url'}{/if}">{$item.include|escape:'html'}</a></b></td>
 <td>{$item.exclude|escape:'html'}</td>
 <td>{$item.title|escape:'html'}</td>
 <td>{$item.profile} <small>(<a href="?toggle={$item.typo_id}">Toggle</a>)</small></td>
 <td>{$item.last_time}</td>
 <td align="right"><b>{$item.last_results|thousends}</b></td>
 <td align="right" style="color:gray">{if $item.profile != 'keywords'}{$item.last_size|thousends}{/if}</td>
-<td sortvalue="{$item.updated}"><a href="/admin/typohunter.php?include={$item.include|escape:'url'}&amp;exclude={$item.exclude|escape:'url'}&amp;profile={$item.profile|escape:'url'}&amp;last_size={$item.last_size|escape:'url'}{if $item.title}&amp;title={$item.title|escape:'url'}{/if}">Run now</a> | <a href="?hide={$item.typo_id}">Hide</a> | <a href="?delete={$item.typo_id}&amp;profile={$item.profile|escape:'url'}">Delete</a></td>
+<td sortvalue="{$item.updated}"><a href="/admin/typohunter.php?include={$item.include|escape:'url'}&amp;exclude={$item.exclude|escape:'url'}&amp;profile={$item.profile|escape:'url'}&amp;size={$item.last_size|escape:'url'}{if $item.title}&amp;title={$item.title|escape:'url'}{/if}">Run now</a> | <a href="?hide={$item.typo_id}">Hide</a> | <a href="?delete={$item.typo_id}&amp;profile={$item.profile|escape:'url'}">Delete</a></td>
 </tr>
 {/foreach}
 </tbody>

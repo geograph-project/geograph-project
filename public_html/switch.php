@@ -30,6 +30,11 @@ $template='switch.tpl';
 
 $smarty = new GeographPage;
 
+//you must be logged in to submit images
+$USER->mustHavePerm("basic");
+
+
+
 if (isset($_GET['new'])) {
 	$_SESSION['submit_new'] = intval($_GET['new']);	
 } elseif (isset($USER->submission_new)) {

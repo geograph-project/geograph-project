@@ -61,7 +61,7 @@ foreach ($words as $word => $profile) {
 				$list[] = '"'.preg_replace('/\b(\w)/','=$1',$word).'"';
 			}
 		} elseif ($quotes) {
-			$list[] = '('.str_replace(" ",'',$word).') | ('.$word.')';
+			$list[] = '(='.str_replace(" ",'',$word).') | ('.$word.')';
 		} else {
 			$list[] = $word;
 		}
@@ -102,7 +102,6 @@ if ($q) {
 		$sphinx = new sphinxwrapper();
 		$sphinx->q = "@(title,comment,imageclass) ".$q;
 		$sphinx->qoutput = '--query--';
-		$q = $sphinx->q;
 
 		$pg = 1;
 

@@ -36,10 +36,12 @@ if (!$db) die('Database connection failed');
 
 		$table = $db->Quote($_POST['table']);
 		$type = $db->Quote($_POST['type']);
+		$backup = $db->Quote($_POST['backup']);
 		$description = $db->Quote($_POST['description']);
 		$sql = "INSERT INTO _tables SET created = NOW(),
 			table_name = $table,
 			type = $type,
+			`backup` = $backup,
 			description = $description
 			ON DUPLICATE KEY UPDATE
 			type = $type,
@@ -71,6 +73,18 @@ if (!$db) die('Database connection failed');
 		$arr[$t]['skipped'] = 1;
 	}
 
+	if (!empty($_REQUEST['next'])) {
+		$smarty->assign('next', $_REQUEST['next']);
+
+		foreach ($arr as $key => $row) {
+			if (empty($row['type'])) {
+				$_GET['table'] = $key;
+				break;
+			}
+		}
+	}
+	
+
 #print_r($arr);	exit;
 	if (isset($_GET['table'])) {
 		$smarty->assign('table', $_GET['table']);
@@ -79,6 +93,11 @@ if (!$db) die('Database connection failed');
 		preg_match('/\((.*)\)/',$row['Type'],$m);
 		$values= explode(',',str_replace("'",'',$m[1]));
 		$smarty->assign('types', array_combine($values,$values));
+		
+		$row = $db->getRow("SHOW COLUMNS FROM _tables LIKE 'backup'");
+		preg_match('/\((.*)\)/',$row['Type'],$m);
+		$values= explode(',',str_replace("'",'',$m[1]));
+		$smarty->assign('backups', array_combine($values,$values));
 		
 		$smarty->assign_by_ref('arr', $arr[$_GET['table']]);
 	} else {
@@ -89,5 +108,3 @@ if (!$db) die('Database connection failed');
 $smarty->display('admin_tables.tpl');
 
 
-	
-?>

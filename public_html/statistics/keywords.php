@@ -34,7 +34,7 @@ if (empty($_GET['q'])) {
 
 
 $template='statistics_graph.tpl';
-$cacheid='statistics|keywords'.md5($_GET['q']);
+$cacheid='statistics|keywords.'.md5($_GET['q']);
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -61,6 +61,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 		$data = $cl->BuildKeywords($_GET['q'],$index, true);
 
+		$prefix = htmlentities(preg_match('/_delta/',$index)?'/search.php?submitted_startYear=0000&submitted_startDay=2&do=1&searchtext=':('/search.php?submitted_end='.date('Y-m-d',time()-60*60*24*2).'&do=1&searchtext='));
 
 		$table = array();
 		$max = 0; $sum=0;
@@ -68,7 +69,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (!$row['docs'])
 				continue;
 			$line = array();
-			$line['title'] = $row['normalized'];
+			$line['title'] = "<a href=\"$prefix".htmlentities($row['normalized'])."\">".htmlentities($row['normalized'])."</a>";
 			$line['value'] = $row['docs'];
 			$table[] = $line;
 			$max = max($max,$row['docs']);
