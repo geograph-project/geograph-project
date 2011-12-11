@@ -1396,7 +1396,68 @@ ul.content li {
 	padding:3px; 
 	border-top: 1px solid lightgrey
 }
+
+/*---------------------------------------------------------------*
+ * Tags
+ *---------------------------------------------------------------*/
+
+
+#tags {
+	line-height:1.8em;
+}
+.tag span,.tag a.taglink {
+	border:1px solid silver;
+	padding:1px;
+	line-height:1.8em;
+	color:brown;
+	background-color:white;
+	text-decoration:none;
+	white-space:nowrap;
+}
+a.taglink:hover {
+	text-decoration:underline;
+}
+.tag a.delete {
+	color:red;
+	border-bottom:none;
+	font-family:monospace;
+}
+
+.tag a.delete:hover {
+	color:red;
+	font-weight:bold;
+}
+
+.tagPublic {
+	background-color:lightgreen;
+}
+
+.tagPrivate {
+	background-color:pink;
+}
+
+.tagGeneral {
+	background-color:yellow;
+}
+
+.content_photoblack .tag span, .content_photoblack .tag a.taglink {
+	background-color:#333333;
+	color:pink;
+	border:0;
+}
+
+.content_photogray .tag span, .content_photogray .tag a.taglink {
+	background-color: gray;
+	color:cyan;
+	border:1px solid #999999;
+}
+
  
+
+div.no_print {
+	border-style: none;
+}
+
 a.about {
   font: bold 12px Verdana, sans-serif; padding: 0.2em 0.5em; border: 1px solid;
   background:#C3FDB8; color: #254117; border-color: #CAEABA #356020 #1B3010 #9CD77F;	
