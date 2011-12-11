@@ -281,6 +281,9 @@ if (empty($CONF['disable_discuss_thumbs'])) {
 	$posterText = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$posterText,5);
 }
 
+$posterText = preg_replace('/\[([\w :-]+)\]/e',"replace_tags('$1')",$posterText);
+
+
 //no external images
 // the callback function
 $fixExternalImages= <<<FUNC
@@ -307,6 +310,7 @@ $domainWhitelist = array(
 	'www.ie6countdown.com',
 	'www.geograph.co.uk',
 	'www.pledgebank.com',
+	'media.geograph.org.uk',
 	'www.google.com',
 	'chart.apis.google.com',
 	'geodatastore2.appspot.com',

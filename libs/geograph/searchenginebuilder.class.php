@@ -67,7 +67,7 @@ split_timer('search'); //starts the timer
 
 		$nearstring = $this->getNearString($distance);
 		
-		$has_location = preg_match('/\bnear\b/',$q);
+		$has_location = preg_match('/(?<![":])\bnear\b/',$q);
 		
 		$searchclass = '';
 		$limit1 = '';
@@ -75,7 +75,7 @@ split_timer('search'); //starts the timer
 		$q = trim(strip_tags($q));
 		
 		if ($has_location) {
-			$bits = preg_split('/\s*near\s+/',$q);
+			$bits = preg_split('/(?<![":])\s*near\s+/',$q);
 			$qlocation = @$bits[1];
 		} else {
 			$qlocation = $q;
@@ -183,11 +183,11 @@ split_timer('search'); //starts the timer
 	
 		if ($location)
 			$q = str_replace($location,'',$q);
-		$q = preg_replace('/\s*near\s*$/','',$q);
+		$q = preg_replace('/(?<![":])\s*near\s*$/','',$q);
 		$q = trim(preg_replace('/\s+/',' ',$q));
 		
 			
-		list($q,$placename) = preg_split('/\s*near\s+/',$q);
+		list($q,$placename) = preg_split('/(?<![":])\s*near\s+/',$q);
 
 		$criteria = new SearchCriteria_Placename();
 
@@ -249,7 +249,13 @@ split_timer('search'); //starts the timer
 				} else {
 					//asuume a text search
 					$searchtext = $q;
-					$searchdesc = ", containing '{$q}' ".$searchdesc;
+					if (preg_match('/^\[.+\]$/',$q)) {
+						$searchdesc = ", tagged {$q} ".$searchdesc;
+					} elseif (preg_match('/[:@"\|]/',$q)) {
+						$searchdesc = ", matching '{$q}' ".$searchdesc;
+					} else {
+						$searchdesc = ", containing '{$q}' ".$searchdesc;
+					}
 				}
 			} else {
 				//asuume a text search - without smarty must be api/feed
@@ -376,7 +382,7 @@ split_timer('search'); //starts the timer
 		
 		if (!empty($dataarray['q'])) {
 			//we coming from multiple - which means there might be a text search stored in a q
-			list($q,$placename) = preg_split('/\s+near\s+/',$dataarray['q']);
+			list($q,$placename) = preg_split('/(?<![":])\s+near\s+/',$dataarray['q']);
 			if (!empty($dataarray['location'])) {
 				$dataarray['searchtext'] = $q;
 				if (empty($dataarray['placename'])) {
@@ -560,6 +566,8 @@ split_timer('search'); //starts the timer
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
 			if (preg_match('/^~/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching any of [".preg_replace('/^~/','',$dataarray['searchtext'])."] ".$searchdesc;
+			} elseif (preg_match('/^\[.+\]$/',$dataarray['searchtext'])) {
+				$searchdesc = ", tagged ".$dataarray['searchtext']." ".$searchdesc;
 			} elseif (preg_match('/[~\+\^\$:@ =\(-]+/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching [".$dataarray['searchtext']."] ".$searchdesc;
 			} elseif (preg_match('/^".*"$/',$dataarray['searchtext'])) {

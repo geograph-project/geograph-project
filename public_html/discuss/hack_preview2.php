@@ -33,7 +33,12 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:
 			$server = 'geo.hlipp.de';
 			$ext = true;
 			$prefix = 'de:';
-		}
+		} elseif ($g_matches[2][$g_i] == 'ci:') {
+                        $server = 'channel-islands.geographs.org';
+                        $ext = true;
+                        $prefix = 'ci:';
+                }
+
 		if (is_numeric($g_id)) {
 			if ($global_thumb_count > $CONF['global_thumb_limit'] || $thumb_count > $CONF['post_thumb_limit']) {
 				$postText2 = preg_replace("/\[?\[\[$prefix$g_id\]\]\]?/","[[<a href=\"http://{$server}/photo/$g_id\">$prefix$g_id</a>]]",$postText2);
@@ -77,6 +82,10 @@ if (empty($CONF['disable_discuss_thumbs'])) {
 	$postText2 = preg_replace('/\[image id=(\d+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '{description}'))",$postText2,5);
 	$postText2 = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$postText2,5);
 }
+
+$postText2 = preg_replace('/\[([\w :-]+)\]/e',"replace_tags('$1')",$postText2);
+
+
 
 echo ParseTpl(makeUp('hack_preview2'));
 exit;

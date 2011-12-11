@@ -54,11 +54,11 @@ if (!empty($_GET['tag'])) {
 		
 		$andwhere = " AND prefix = ".$db->Quote($prefix);
 		$smarty->assign('theprefix', $prefix);
-		$sphinxq = "tags:\"$prefix {$_GET['tag']}\"";
+		$sphinxq = "tags:\"__TAG__ $prefix {$_GET['tag']} __TAG__\"";
 	} elseif (isset($_GET['prefix'])) {
-		$sphinxq = "tags:\"{$_GET['prefix']} {$_GET['tag']}\"";
+		$sphinxq = "tags:\"__TAG__ {$_GET['prefix']} {$_GET['tag']} __TAG__\"";
 	} else {
-		$sphinxq = "tags:\"{$_GET['tag']}\"";
+		$sphinxq = "tags:\"__TAG__ {$_GET['tag']} __TAG__\"";
 	}
 	$smarty->assign('thetag', $_GET['tag']);
 	
@@ -129,7 +129,7 @@ if (!$smarty->is_cached($template, $cacheid))
 						if ($more) {
 							$sphinxq = array($sphinxq);
 							foreach($more as $tag_id => $row) {
-								$sphinxq[]= "tags:".($row['prefix']?"{$row['prefix']} ":'').preg_replace('/[^\w]+/',' ',$row['tag']);
+								$sphinxq[]= "tags:\"__TAG__ ".($row['prefix']?"{$row['prefix']} ":'').preg_replace('/[^\w]+/',' ',$row['tag'])." __TAG__\"";
 								$tags[$tag_id] = 1;
 							}
 							if (count($sphinxq) > 1) {

@@ -120,14 +120,14 @@
 			{if $images > 15}
 		        <form action="/search.php">
 		        <label for="fq">Search within these images</label>: <input type="text" name="searchtext[]" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-		        <input type="hidden" name="searchtext[]" value="tags:&quot;{if isset($theprefix)}{$theprefix|escape:'html'} {/if}{$thetag|escape:'html'}&quot;"/>
+		        <input type="hidden" name="searchtext[]" value="[{if isset($theprefix)}{$theprefix|escape:'html'} {/if}{$thetag|escape:'html'}]"/>
 		        <input type="hidden" name="do" value="1"/>
 		        <input type="submit" value="Find"/>
 		        </form>
 			{/if}
 
 			{if $gridref}
-			<a href="/search.php?q=tags:%22{if $theprefix}{$theprefix|escape:'url'}+{/if}{$thetag|escape:'url'}%22&amp;location={$gridref|escape:'url'}">Images using this tag near {$gridref}</a><br/>
+			<a href="/search.php?q=[{if $theprefix}{$theprefix|escape:'url'}+{/if}{$thetag|escape:'url'}]&amp;location={$gridref|escape:'url'}">Images using this tag near {$gridref}</a><br/>
 			{/if}
 			<b><a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View all tagged images</a></b>
 		</div>
