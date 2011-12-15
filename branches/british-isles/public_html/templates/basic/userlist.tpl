@@ -8,16 +8,28 @@
 <div style="float:right">Switch to <a href="/credits.php?cloud{if $whenname}&amp;when={$when}{/if}">cloud version</a> or <a href="/statistics/breakdown.php?by=user{if $whenname}&amp;when={$when}{/if}">statistics version</a>.</div>
 {/if}
 
-<h2>Geograph Britain and Ireland {$what} <small>[{$user_count|thousends} contributors]</small></h2>
+<div align="center" class="tabHolder">
+        <a href="/article/About-Geograph-page" class="tab">About Geograph</a>
+        <a href="/team.php" class="tab">The Geograph Team</a>
+        <span class="tabSelected">Contributors</span>
+        <a href="/help/credits" class="tab">Credits</a>
+        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
+        <a href="/contact.php" class="tab">Contact Us</a>
+        <a href="/article/Get-Involved">Get Involved...</a>
+</div>
+<div style="position:relative;" class="interestBox">
+        <h2 align="center" style="margin:0">Geograph Britain and Ireland {$what}{if !$whenname && !$where && !$filter} <small>[{$user_count|thousends} contributors]</small>{/if}</h2>
+
 {if $whenname}
-	<h3>Submitting images March 2005 though {$whenname}</h3>
+	<h3 align="center">Submitting images March 2005 though {$whenname} <small>[{$user_count|thousends} contributors]</small></h3>
 {/if}
 {if $where}
-	<h3>Submitting in {$where} Myriad</h3>
+	<h3 align="center">Submitting in {$where} Myriad <small>[{$user_count|thousends} contributors]</small></h3>
 {/if}
 {if $filter}
-	<h3>Beginning with {$filter}</h3>
+	<h3 align="center">Beginning with {$filter} <small>[{$user_count|thousends} contributors]</small></h3>
 {/if}
+</div>
 
 {if $users}
 <p class="wordnet" style="font-size:0.8em;line-height:1.4em" align="center">
@@ -27,8 +39,9 @@
 </p>
 {else}
 	{if $sample}
-		<div class="interestBox" style="font-size:0.8em;width:200px;float:right;margin-left:10px;">
-		<b>{$samplename}</b><br/>&nbsp; sample listing<br/><br/>
+		<div style="font-size:0.8em;width:200px;float:right;margin-left:10px;border-left:1px solid black;padding:3px;">
+		<h3>Sample Listing</h3>
+		{$samplename}<br/><br/>
 		{foreach from=$sample key=user_id item=obj}
 		<a title="{$obj.nickname|escape:'html'}, {$obj.images} images" {if $obj.images > 100} style="font-weight:bold"{/if} href="/profile/{$user_id}{if $obg.user_realname && $obj.realname ne $obj.user_realname}?a={$obj.realname|escape:'url'}{/if}">{$obj.realname|escape:'html'|replace:' ':'&middot;'}</a><small>&nbsp;[{$obj.images}]</small><br/>
 		{/foreach}

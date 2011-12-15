@@ -2,6 +2,17 @@
 {assign var="meta_description" value="Geograph Information, Guides and Tutorials"}
 {include file="_std_begin.tpl"}
 
+<div class="tabHolder">
+	<span class="tabSelected">Information</span>
+        <a href="/faq3.php?l=0" class="tab">FAQ</a>
+        <a href="/article/About-Geograph-page" class="tab">About Geograph</a>
+        <a href="/team.php" class="tab">The Geograph Team</a>
+        <a href="/credits/" class="tab">Contributors</a>
+        <a href="/help/credits" class="tab">Credits</a>
+        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
+        <a href="/contact.php" class="tab">Contact Us</a>
+        <a href="/article/Get-Involved">Get Involved...</a>
+</div>
 
 <div class="interestBox">
 <h2 style="margin:0">Information, Guides and Tutorials</h2>
@@ -11,6 +22,7 @@
 
 {include file="_doc_search.tpl"}
 
+	<div id="searchresults"></div>
 
 {if $enable_forums}
 <ul>
@@ -58,8 +70,7 @@
 
 	<div class="interestBox" style="font-size:1.3em;margin-bottom:20px">Can't find what you looking for? <a href="/ask.php">Ask us</a>!</div>
 
-<p align="center">Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 26 Cloister Road, Acton, London W3 0DE. <a href="/article/About-Geograph-page">About Geograph Project</a>.</p>
-
+	<p align="center">Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 26 Cloister Road, Acton, London W3 0DE. <a href="/article/About-Geograph-page">About Geograph Project</a>.</p>
 
 
 {include file="_std_end.tpl"}

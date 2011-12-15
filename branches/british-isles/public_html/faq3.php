@@ -194,11 +194,24 @@ dd div.selected a {
 }
 </style>
 
-<div style="position:relative;float:right">
-        <a href="faq-syndicator.php" class="xml-rss">RSS</a>
+<div class="tabHolder">
+        <a href="/content/documentation.php" class="tab">Information</a>
+	<span class="tabSelected">FAQ</span>
+        <a href="/article/About-Geograph-page" class="tab">About Geograph</a>
+        <a href="/team.php" class="tab">The Geograph Team</a>
+        <a href="/credits/" class="tab">Contributors</a>
+        <a href="/help/credits" class="tab">Credits</a>
+        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
+        <a href="/contact.php" class="tab">Contact Us</a>
+        <a href="/article/Get-Involved">Get Involved...</a>
 </div>
 
-<h2>Geograph Knowledgebase / FAQ</h2>
+<div class="interestBox">
+	<div style="position:relative;float:right">
+        	<a href="faq-syndicator.php" class="xml-rss">RSS</a>
+	</div>
+	<h2 style="margin:0">Geograph Knowledgebase / FAQ</h2>
+</div>
 
 <?
 
