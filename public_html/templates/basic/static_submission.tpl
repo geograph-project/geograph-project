@@ -4,57 +4,36 @@
 <h2>Geograph Submission Processes</h2>
 
 <div style="background-color:pink; color:black; border:2px solid red; padding:10px; width:200px; float:right"><b>First time here?</b><br/> Please check the following resources: <br/>
-<a href="/faq.php">FAQ</a>,<br/> <a href="/article/Geograph-Introductory-letter">Introduction</a> and<br/> <a href="/article/Geograph-Quickstart-Guide">Quickstart Guide</a>.</div>
+<a href="/help/submit_intro">Submission Introduction</a>, <br/>
+<a href="/faq.php">FAQ</a>, <a href="/article/Geograph-Introductory-letter">Introduction</a> and<br/> <a href="/article/Geograph-Quickstart-Guide">Quickstart Guide</a>.</div>
 
  <p>We have a number of ways to submit images to Geograph, a summary:</p>
 
-<hr/>
 
- <h3><a href="/submit.php?redir=false">Submit</a></h3>
+ <h3><a href="/help/submit">Main methods</a></h3>
 
- <p>The original submission process - the most complete and tested version. <b>Recommended for first-time users.</b></p>
+ <p style="margin-left:20px">See the main submission methods - if unsure start here.</p>
 
- <ul><li>Includes submission via {external href="http://www.picnik.com/" text="Picnik"} - an online photo manipulation service</li></ul>
-
-<hr/>
-
- <h3><a href="/submit2.php">Submit v2</a></h3>
-
- <p>More streamlined version - all one one page. If you are familiar with Geograph submission you might like this.</p>
-
-<ul>
-	<li>Also available <a href="/submit2.php?display=tabs">displayed as tabs</a>, which makes it look more similar to version 1</li>
-</ul>
-
-<hr/>
-
- <h3><a href="/submit-multi.php">Multi-Submit</a> <sup style="color:red">Experimental!</sup></h3>
-
- <p>Upload multiple images at once, then progress though the normal submission process one by one.</p>
-
-<hr/>
 
  <h3><a href="/submit-nofrills.php">No-Frills Submit</a></h3>
 
- <p>The bare minimum required to submit a image - recommended for seasoned contributors only!</p>
+ <p style="margin-left:20px">The bare minimum required to submit a image - recommended for seasoned contributors only!</p>
 
-<hr/>
 
  <h3><a href="/juppy.php">JUppy Java&trade; Client</a></h3>
 
- <p>Downloadable application to batch submit from your desktop. Works but a little rough around the edges.</p>
+ <p style="margin-left:20px">Downloadable application to batch submit from your desktop. Works but a little rough around the edges.</p>
 
- <p style="font-size:0.7em"><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is a solution to upload many images, allowing you to prepare the images without an internet connection. <b><a href="/juppy.php">Read More, and Get it Now!</a></b></p>
+ <p style="font-size:0.7em;margin-left:20px"><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is a solution to upload many images, allowing you to prepare the images without an internet connection. <b><a href="/juppy.php">Read More, and Get it Now!</a></b></p>
 
-<hr/>
 
  <h3><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Picasa Plugin</a></h3>
 
- <p>Plugin for the popular {external href="http://picasa.google.com/" text="Picasa"} image mananagement program.</p>
+ <p style="margin-left:20px">Plugin for the popular {external href="http://picasa.google.com/" text="Picasa"} image mananagement program.</p>
 
- <p style="font-size:0.7em">With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved, however it's only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file. <br/>
+ <p style="font-size:0.7em;margin-left:20px">With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved, however it's only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file. <br/>
  <b><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>.<br/> (You will be asked to confirm this action, <b>only works if have Picasa installed!)</b></p>
- <p style="font-size:0.7em">Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
+ <p style="font-size:0.7em;margin-left:20px">Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
 
 <hr/>
 <br/>

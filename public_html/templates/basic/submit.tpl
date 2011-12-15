@@ -19,19 +19,29 @@
 {$status_message}
 
 {if $step eq 1}
-	<p align="center">&middot; <a href="/help/submit">Other submission methods</a> &middot; <b><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">Try Version 2</a></b> &middot;</p>
+	{if $user->stats.images > 10}
+		<div style="float:right;position:relative"><b>v1</b> / <a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:'url'}{/if}">v2</a> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a>
+		<small><br/><br/><a href="/help/submit_intro">submit help page</a></small></div>
+	{else}
+		<div style="float:right;position:relative"><a href="/help/submit">alternative submission methods</a>
+		{if $user->stats.images > 0}
+		<small><br/><br/><a href="/help/submit_intro">submit help page</a></small>
+		{/if}</div>
+	{/if}
 
 	<h2>Submit Step 1 of 4 : Choose grid square</h2>
 
 
 {if $user->stats.images eq 0}
-	<div style="background-color:pink; color:black; border:2px solid red; padding:10px; margin-bottom:20px"><b>First time here?</b> If so you might like to have a look at our <a href="/faq.php">FAQs</a>, or <a href="/ask.php">ask a question</a>.</div>
+	<div style="background-color:pink; color:black; border:2px solid red; padding:10px; margin-bottom:20px"><b>First time here?</b> If so you might like to have a look at our <a href="/help/submit_intro">Introduction</a>, or <a href="/ask.php">ask a question</a>.</div>
 
 {/if}
 
 {if $user->stats.images < 20}
 <div style="width:180px;margin-left:10px;margin-bottom:100px;float:right;font-size:0.8em;padding:10px;background:#dddddd;position:relative; border:1px solid gray; z-index:100">
 <h3 style="margin-bottom:0;margin-top:0">Need help?</h3>
+
+<p>View a <a href="/faq3.php?a=49#49">Video Demonstation</a>.</p>
 
 <p>If you enter the exact location, e.g. <b>TL 246329</b> we'll figure
 out that it's in the <b>TL 2432</b> 1km square, but we'll also retain
@@ -55,7 +65,7 @@ geographing</a> first.</p>
 	<div class="tabHolder">
 		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>&nbsp;
 		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose Square</a>&nbsp;
-		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Tagged Image</a>&nbsp;
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Geotagged Image</a>&nbsp;
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'"><b>Locate on Map</b>/by Placename</a>
 	</div>
 
@@ -130,7 +140,7 @@ geographing</a> first.</p>
 	</div>
 
 </div>
-		<p>&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
+		<p><label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
 			<option value="OSOS">Zoomable Modern OS Mapping</option>
 			<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
 			<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option>

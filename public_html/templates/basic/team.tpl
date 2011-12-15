@@ -1,7 +1,17 @@
 {assign var="page_title" value="the Geograph Team"}
 {include file="_std_begin.tpl"}
 
-<h3>The Geograph team</h3>
+<div align="center" class="tabHolder">
+        <a href="/article/About-Geograph-page" class="tab">About Geograph</a>
+        <span class="tabSelected">The Geograph Team</span>
+        <a href="/credits/" class="tab">Contributors</a>
+        <a href="/help/credits" class="tab">Credits</a>
+        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
+        <a href="/contact.php" class="tab">Contact Us</a>
+</div>
+<div style="position:relative;" class="interestBox">
+        <h2 align="center" style="margin:0">The Geograph Team</h2>
+</div>
 
 {if $team}
 

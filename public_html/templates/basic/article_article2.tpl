@@ -123,15 +123,15 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 
 -->
 
-{if $moreCredits}
-	<div class="ccmessage" style="color:gray; font-size:0.8em; text-align:right">With contributions by {$moreCredits}. (<a href="/article/history.php?page={$url|escape:'url'}">details</a>)</div>
-{/if}
-
 {else}
 	<div class="ccmessage">{if $licence == 'pd'}<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">
 	<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/publicdomain/88x31.png" /></a> {/if} Text by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$publish_date|date_format:" %B %Y"}
 	</a>{if $licence == 'pd'}; This work is dedicated to the
 	<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">Public Domain</a>.{/if}</div>
+{/if}
+
+{if $moreCredits}
+	<div class="ccmessage" style="color:gray; font-size:0.8em; text-align:right">With contributions by {$moreCredits}. (<a href="/article/history.php?page={$url|escape:'url'}">details</a>)</div>
 {/if}
 
 </div>

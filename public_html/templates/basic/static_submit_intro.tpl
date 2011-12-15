@@ -18,8 +18,8 @@
 {dynamic}
 {if !$user->registered}
    <h2>Login Required</h2>
-   <p>You must <a href="/login.php">login</a> to access this page. If you haven't
-registered yet, <a title="register now" href="/register.php">go and register</a>, it's quick and free!</p>
+   <div class="interestBox">You must <a href="/login.php">login</a> to access this page. If you haven't
+registered yet, <a title="register now" href="/register.php">go and register</a>, it's quick and free!</div>
 {/if}
 {/dynamic}
 
@@ -31,14 +31,21 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 	<li>Enter the <b>title, description, category, and date</b> (which can be read direct from EXIF in the photo).</li>
 	<li><b>Confirm the licence terms</b>, and attribution options.</li>
 </ol>
- 
-<p>There may be an optional fifth step if you choose to enter the photograph in any competitions that happen to be running at the time.</p> 
 
+{dynamic} 
 {if $user->registered}
  <p>Go to the <a href="/submit.php">submit page</a> to send in your photo now!</p>
 {/if}
- 
-<hr/>
+{/dynamic}
+
+<div class="interestBox">
+        Other Resources: <a href="/submit-example.php">Preview pages of the Submission Process</a> &middot; <a href="/faq3.php?a=49#49">Video Demonstation</a> &middot; 
+		<a href="/faq3.php?q=submit">FAQs</a><br/><br/>
+	&nbsp; &nbsp; We also have a prototype <a href="/guider/submit-demo.html">Guided Demo of the First page of submission</a>.
+	<div style="text-align:right"><a href="/article/Geograph-Introductory-letter">Geograph Introductory letter</a></div>
+</div>
+
+<br/><br/>
 
 <p>As well as the above submission processes, we have the following alternatives:</p>
 
