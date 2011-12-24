@@ -239,3 +239,14 @@ table.forums div.photoguide {
 	font-size:1.1em;
 }
 
+
+
+.caption1 .inapp {
+	display:none;
+}
+
+.caption1:hover .inapp {
+	display:inline;
+}
+
+
