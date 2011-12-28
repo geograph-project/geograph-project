@@ -1,61 +1,6 @@
 {assign var="page_title" value="$month_name $year :: Calendar"}
+{assign var="extra_css" value="/templates/germany32/css/calendar.css"}
 {include file="_std_begin.tpl"}
-<style type="text/css">
-{literal}
-@media print {
-	.no_print {
-		display: none;
-	}
-	
-	/* no border on hyperlinked images*/
-	a Img
-	{
-		border:0;
-	}
-	div.ccmessage
-	{
-		width:inherit;
-		text-align:center;
-		padding:1px;
-		font-size:0.9em;
-	}
-	
-	div.ccmessage img
-	{
-		vertical-align: middle;
-	}
-	
-	/* styling for a full size portrait photo*/
-	div.photoportrait
-	{
-		width:inherit;
-		padding:10px;
-		text-align:center;
-		margin:10px;
-	}
-	
-	/* styling for a full size landscape photo*/
-	div.photolandscape
-	{
-		width:inherit;
-		padding:10px;
-		text-align:center;
-		margin:10px;
-	}
-	
-	.img-shadow img {
-		border: 1px solid #a9a9a9;
-		padding: 4px;
-	}
-
-}
-@media screen {
-	.print_only {
-		display: none;
-	}
-}
-{/literal}
-</style>
 
 <h2>Geograph Calendar :: {$month_name} {$year}</h2>
 

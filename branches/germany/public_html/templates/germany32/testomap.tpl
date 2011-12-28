@@ -419,7 +419,7 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 				var tilelayer = new OpenLayers.Layer.Geograph(
 					curri,
 					"/tile.php?x=${x}&y=${y}&z=${z}&i=${i}",
-					OpenLayers.Util.Geograph.MISSING_TILE_URL,
+					OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE,
 					{
 						attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 						//userParam : user,

@@ -94,7 +94,7 @@
 	{else}
 		{if $profile->grid_reference}
 			<li><b>Heimatquadrat</b>: 
-			<a href="/gridref/{$profile->grid_reference|escape:'html'}">{$profile->grid_reference|escape:'html'}</a>
+			<a href="/gridref/{$profile->grid_reference|escape:'html'}">{$profile->grid_reference|escape:'html'}</a></li>
 		{/if}
 		
 		<li><b>Mitglied seit</b>: 
