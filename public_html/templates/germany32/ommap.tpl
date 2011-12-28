@@ -184,7 +184,7 @@ ommap.tpl, rastermap.class.php:
 				"Geograph",
 				//"/tile/0/${z}/${x}/${y}.png",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&t=${u}",
-				4, 13, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				4, 13, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE,
 				{
 					attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true,
@@ -228,7 +228,7 @@ ommap.tpl, rastermap.class.php:
 			);
 
 			var hills = new OpenLayers.Layer.XYrZ( //FIXME our own version?
-				"Relief",
+				"Relief (Nop's Wanderreitkarte)",
 				[ "http://wanderreitkarte.de/hills/${z}/${x}/${y}.png", "http://www.wanderreitkarte.de/hills/${z}/${x}/${y}.png"], // ol: 9..19 tiles: 8..\infty // 8..15
 				9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{

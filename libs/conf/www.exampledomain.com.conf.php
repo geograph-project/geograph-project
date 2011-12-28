@@ -384,6 +384,9 @@ $CONF['gmridefault'] = 3;
 // See also public_html/mapper/geotools2.js, GT_Xxxx() and GT_WGS84.prototype.getXxxx().
 $CONF['gmgrid'] =  array(3 => "German32", 4 => "German33", 5 => "German31");
 
+// utm zones corresponding to the ris (leave empty if you don't use utm)
+$CONF['zones'] = array(3 => 32, 4 => 33, 5 => 31);
+
 /* Mercator tiles: Width of thumbnails used for rendering level 12 tiles _before_ calculating the grid square polygon.
  * This must be at least as large as xmax(spherical_mercator)-xmin(spherical_mercator) for any square kilometer!
  *

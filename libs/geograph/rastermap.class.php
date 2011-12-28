@@ -154,7 +154,7 @@ class RasterMap
 				if (!empty($epoch) && $epoch != 'latest' && preg_match('/^[\w]+$/',$epoch) ) {
 					$this->epoch = $epoch;
 				}
-			} elseif ($serviceid >= 0) { //FIXME $serviceid in CONF?
+			} elseif ($serviceid >= 0) {
 				foreach($CONF['mapservices'][$serviceid] as $name=>$value) // FIXME database?
 				{
 					if (!is_numeric($name))
@@ -162,17 +162,12 @@ class RasterMap
 				}
 				#$this->enabled = true;
 				$this->serviceid = $serviceid;
-				if ($square->reference_index == 3) {
-					$this->zone = 32;
-				} elseif ($square->reference_index == 4) {
-					$this->zone = 33;
-				} elseif ($square->reference_index == 5) {
-					$this->zone = 31;
-				}
+				if (isset($CONF['zones'][$square->reference_index]))
+					$this->zone = $CONF['zones'][$square->reference_index];
 				if ($this->service == 'WMS') {
-					if ($this->servicegk === false) {
+					if ($this->servicegk === false || !isset($this->zone)) {
 						$this->delmeri = 0;
-					} else {
+					} else { // our central meridian and the central meridian of the Gauss-Krueger WMS tiles may differ!
 						$this->delmeri = (2 * $this->zone - $this->servicegk - 61) * 3;
 					}
 				}
@@ -184,83 +179,6 @@ class RasterMap
 				}
 				if (isset($this->tilewidth[$this->service])) {
 					$this->width = $this->tilewidth[$this->service];
-				}
-				#$this->divisor = 1000;
-			} elseif (0)/*($serviceid == 0)*/ {
-					#$this->enabled = true; ##FIXME
-					$this->service = 'Google';
-			} elseif (0) { #FIXME
-				if ($serviceid == 1) {
-					$this->service = 'WMS';
-					$this->servicegk = 3;
-					$this->serviceurl='http://www.lv-bw.de/dv/service/getrds.asp?request=GetMap&layers=DVTK50K&format=PNG&width=%s&height=%s&srs=EPSG:31467&bbox=%s,%s,%s,%s&login=dv&pw=anonymous';
-					$this->width = 300;
-					$this->title = 'TK 1:50000 &copy; Landesvermessungsamt Baden-W&uuml;rttemberg';
-					$this->footnote = 'TK 1:50000 &copy; Landesvermessungsamt Baden-W&uuml;rttemberg';
-					$this->maplink = false;
-					$this->grid = true;
-				} elseif ($serviceid == 2) {
-					$this->service = 'WMS';
-					$this->servicegk = 3;
-					$this->serviceurl='http://www.geodaten.bayern.de/ogc/getogc.cgi?REQUEST=GetMap&VERSION=1.1.1&LAYERS=TK50&SRS=EPSG:31467&WIDTH=%s&HEIGHT=%s&BBOX=%s,%s,%s,%s&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=';
-					$this->width = 300;
-					$this->title = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
-					$this->footnote = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
-					$this->maplink = false;
-					$this->grid = true;
-				} elseif ($serviceid == 3) {
-					$this->service = 'WMS';
-					$this->servicegk = 4;
-					$this->serviceurl='http://www.geodaten.bayern.de/ogc/getogc.cgi?REQUEST=GetMap&VERSION=1.1.1&LAYERS=TK50&SRS=EPSG:31468&WIDTH=%s&HEIGHT=%s&BBOX=%s,%s,%s,%s&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=';
-					$this->width = 300;
-					$this->title = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
-					$this->footnote = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
-					$this->maplink = false;
-					$this->grid = true;
-				} elseif ($serviceid == 4) {
-					$this->service = 'WMS';
-					$this->servicegk = false;
-					$this->serviceurl='http://www.geodaten.bayern.de/ogc/getogc.cgi?REQUEST=GetMap&VERSION=1.1.1&LAYERS=TK50&SRS=EPSG:25832&WIDTH=%s&HEIGHT=%s&BBOX=%s,%s,%s,%s&FORMAT=image/png&TRANSPARENT=TRUE&STYLES=';
-					$this->width = 300;
-					$this->title = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
-					$this->footnote = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
-					$this->maplink = false;
-					$this->grid = true;
-				} elseif ($serviceid == 23) {
-					$this->service = 'WMS';
-					$this->servicegk = 4;
-					$this->serviceurl='http://localhost/img/testmap2.png?ignore=%s,%s,%s,%s,%s,%s';
-					$this->width = 300;
-					$this->title = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
-					$this->footnote = 'TK 1:50000 &copy; Bayerische Vermessungsverwaltung';
-					$this->maplink = false;
-					$this->grid = true;
-					# TPT2870 photo/29
-				} elseif ($serviceid == 21) {
-					$this->service = 'WMS';
-					$this->servicegk = 3;
-					$this->serviceurl='http://localhost/img/testmap.png?ignore=%s,%s,%s,%s,%s,%s';
-					$this->width = 300;
-					$this->title = 'TK 1:50000 &copy; Landesvermessungsamt Baden-W&uuml;rttemberg';
-					$this->footnote = 'TK 1:50000 &copy; Landesvermessungsamt Baden-W&uuml;rttemberg';
-					$this->maplink = false;
-					$this->grid = true;
-					# UNV1930 photo/2
-				}
-
-				$this->enabled = true;
-				$this->serviceid = $serviceid;
-				if ($square->reference_index == 3) {
-					$this->zone = 32;
-				} elseif ($square->reference_index == 4) {
-					$this->zone = 33;
-				} elseif ($square->reference_index == 5) {
-					$this->zone = 31;
-				}
-				if ($this->servicegk === false) {
-					$this->delmeri = 0;
-				} else {
-					$this->delmeri = (2 * $this->zone - $this->servicegk - 61) * 3;
 				}
 				#$this->divisor = 1000;
 			}

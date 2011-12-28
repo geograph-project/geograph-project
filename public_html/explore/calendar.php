@@ -31,11 +31,12 @@ $smarty = new GeographPage;
 
 $month=(!empty($_GET['Month']))?intval($_GET['Month']):'';
 $year=(!empty($_GET['Year']))?intval($_GET['Year']):date('Y');
+$imageid=isset($_REQUEST['image'])?intval($_REQUEST['image']):0;
 
 
 $template=($month)?'explore_calendar_month.tpl':'explore_calendar_year.tpl';
 $cacheid="$year-$month";
-if (isset($_REQUEST['image'])) {
+if ($imageid) {
 	$cacheid .= ".".intval($_REQUEST['image']);
 }
 if (isset($_GET['blank'])) {
@@ -92,14 +93,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	if (isset($_REQUEST['image']))
+	if ($imageid)
 	{
 		//initialise message
 		require_once('geograph/gridsquare.class.php');
 		require_once('geograph/gridimage.class.php');
 
 		$image=new GridImage();
-		$image->loadFromId($_REQUEST['image']);
+		$image->loadFromId($imageid);
 
 		if ($image->moderation_status=='rejected' || $image->moderation_status=='pending') {
 			//clear the image
@@ -252,7 +253,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				$weeks[] = $week;
 				$w++;		
 			}
-			$name = date('F',mktime(0,0,0,$month,1,2005)); 
+			$name = strftime('%B',mktime(0,0,0,$month,1,2005)); 
 			$months[$name] = $weeks;			
 		}
 		$month = 0;
@@ -261,9 +262,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	//array of day names to use
-	$days = array();
-	for($i=1; $i<=7; $i++)
-		$days[] = date('D',mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday 
+	#$days = array();
+	for($i=1; $i<=7; $i++) {
+		$days[] = strftime('%a', mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday
+	}
 	$smarty->assign_by_ref("days",$days);
 	$month = sprintf("%02d",$month);
 	$smarty->assign("month",$month);

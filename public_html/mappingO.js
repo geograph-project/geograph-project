@@ -44,8 +44,11 @@
 //OpenLayers.Util.onImageLoadErrorColor = "transparent";//FIXME?
 OpenLayers.Util.Geograph = {};
 OpenLayers.Util.Geograph.MISSING_TILE_URL = "/maps/transparent_256_256.png";
+OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE = "/maps/blue_256_256.png";
+OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE200 = "/maps/blue_200_200.png";
 OpenLayers.Util.Geograph.originalOnImageLoadError = OpenLayers.Util.onImageLoadError;
 OpenLayers.Util.onImageLoadError = function() {
+	// FIXME would be nice to have this.layer -> test for this.layer.errorTile
 	if (this.src.contains("hills")) { // FIXME
 		/* Profile (Nop) */
 		// do nothing - this layer is transparent
@@ -56,6 +59,8 @@ OpenLayers.Util.onImageLoadError = function() {
 		/* Base layer */
 		// FIXME blue tile?
 		//this.src = OpenLayers.Util.Geograph.MISSING_TILE_URL;
+		if (this.map.baseLayer.errorTile)
+			this.src = this.map.baseLayer.errorTile;
 	} else {
 		OpenLayers.Util.Geograph.originalOnImageLoadError;
 	}
