@@ -262,7 +262,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	//array of day names to use
-	#$days = array();
+	$days = array();
 	for($i=1; $i<=7; $i++) {
 		$days[] = strftime('%a', mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday
 	}
