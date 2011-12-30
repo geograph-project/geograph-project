@@ -616,7 +616,7 @@ class SearchCriteria
 							$sql_where .= "imagetaken LIKE '$y%' ";
 							$this->sphinx['filters']['takenyear'] = $y;
 						} elseif ($d == 0) {
-							$sql_where .= "imagetaken = '".sprintf('%04d-%02d',$y,$m)."%' ";
+							$sql_where .= "imagetaken LIKE '".sprintf('%04d-%02d',$y,$m)."%' ";
 							$this->sphinx['filters']['takenmonth'] = sprintf('%04d%02d',$y,$m);
 						} else {
 							$sql_where .= "imagetaken = '".$dates[0]."' ";
