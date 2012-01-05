@@ -2,9 +2,6 @@
 {dynamic}
 <form class="simpleform" action="{$script_name}" method="post" name="theForm">
 
-<input type="hidden" name="id" value="{$id|escape:"html"}"/>
-
-
 
 <fieldset style="width:800px">
 <legend>Report Form</legend>
@@ -64,7 +61,7 @@
 	</fieldset>
 
 	<p><a href="/discuss/">back to discussions</a>
-	<input type="submit" name="submit" value="Submit report..." style="font-size:1.1em"/></p>
+	<input type="submit" value="Submit report..." style="font-size:1.1em"/></p>
 	</form>
 
 	<p>Note: your identity is saved with the report, you wont get an individual reply. We may or may not act on this information. Thank you for taking the time to send us feedback.</p>
