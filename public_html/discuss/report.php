@@ -35,9 +35,11 @@ if (!empty($_POST)) {
 	$db = GeographDatabaseConnection(false);
 
 	$u = array();
+	$data = '';
 	foreach (array('post_id','topic_id','type','comment') as $key) {
 		if (!empty($_POST[$key])) {
 			$u[$key] = trim($_POST[$key]);
+			$data .= "$key: $value\n";
 		}
 	}
 
@@ -50,11 +52,16 @@ if (!empty($_POST)) {
 		$smarty->assign("message",'Report saved at '.date('r').', thank you!');
 		
 		
-		ob_start();
-		print "http://{$_SERVER['HTTP_HOST']}/admin/discuss_reports.php\n\nHost: ".`hostname`."\n\n";
-		print_r($_POST);
-		$con = ob_get_clean();
-		mail('geograph@barryhunter.co.uk','[Forum Report] for thread #'.$_POST['topic_id'],$con);
+		$topic = intval($_POST['topic_id']);
+		$mods=$db->GetCol("select email from user where FIND_IN_SET('forum',rights)>0;");
+			
+		$subject = "[Geograph Forum Report] for thread #$topic";
+		$body = "http://{$_SERVER['HTTP_HOST']}/admin/discuss_reports.php?topic_id=$topic\n\n";
+		$body .= "Time: ".date('r')."\n\n";
+		$body .= $data;
+		
+		foreach ($mods as $email) 
+			mail($email,$subject,$body);
 	}
 
 }
