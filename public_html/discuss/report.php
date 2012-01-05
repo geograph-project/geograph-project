@@ -63,7 +63,7 @@ if (!empty($_POST)) {
 $types = array(
 	'post'=>'This single Post',
 	'thread'=>'The whole Thread',
-	'punctuation'=>'The general Discussion from this point forward');
+	'onwards'=>'The general Discussion from this point forward');
 
 $smarty->assign_by_ref('types',$types);
 
