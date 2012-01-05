@@ -2279,3 +2279,19 @@ CREATE TABLE tag_dispute_log (
 #################################################
 
 
+create table geobb_topics_quar like geobb_topics;
+
+create table geobb_posts_quar like geobb_posts;
+
+
+alter table geobb_topics_quar add report_id int unsigned not null;
+
+alter table geobb_posts_quar add report_id int unsigned not null;
+
+
+create table discuss_report_log (log_id int unsigned NOT NULL auto_increment, `report_id` int unsigned NOT NULL, `user_id` int(10) unsigned NOT NULL, `action` varchar(30) NOT NULL, `created` timestamp NOT NULL default CURRENT_TIMESTAMP,PRIMARY KEY  (`log_id`),KEY (`report_id`));
+
+
+#################################################
+
+
