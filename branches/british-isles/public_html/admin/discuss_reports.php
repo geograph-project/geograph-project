@@ -107,8 +107,8 @@ if (!empty($_POST) && !empty($_POST['action'])) {
 
 $sql = array();
 
-$sql['columns'] = "r.*,realname,t1.forum_id,t2.forum_id AS forum_id2,COALESCE(t1.topic_title,t2.topic_title) AS thread";
-$sql['columns'] .= ",CONCAT(COALESCE(p1.post_time,p2.post_time),' by ',COALESCE(p1.poster_name,p2.poster_name)) AS post,COALESCE(p1.post_text,p2.post_text) AS post_text,r.post_id";
+$sql['columns'] = "r.*,realname,t1.forum_id AS forum_id1,t2.forum_id AS forum_id2,COALESCE(t1.topic_title,t2.topic_title) AS thread";
+$sql['columns'] .= ",CONCAT(p1.post_time,' by ',p1.poster_name) AS post1,CONCAT(p2.post_time,' by ',p2.poster_name) AS post2,COALESCE(p1.post_text,p2.post_text) AS post_text";
 	
 $sql['tables'] = array();
 $sql['tables']['r'] = 'discuss_report r';
@@ -148,7 +148,7 @@ $data = $db->getAll($query);
 
 $smarty->assign_by_ref('data',$data);
 
-$logs = $db->getAll("SELECT l.*,realname FROM discuss_report_log l INNER JOIN user USING (user_id) ORDER BY log_id DESC");
+$logs = $db->getAll("SELECT l.*,realname FROM discuss_report_log l LEFT JOIN user USING (user_id) ORDER BY log_id DESC");
 
 $smarty->assign_by_ref('logs',$logs);
 
