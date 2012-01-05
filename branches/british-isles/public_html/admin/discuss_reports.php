@@ -107,7 +107,7 @@ if (!empty($_POST) && !empty($_POST['action'])) {
 
 $sql = array();
 
-$sql['columns'] = "r.*,realname,t1.forum_id AS forum_id1,t2.forum_id AS forum_id2,COALESCE(t1.topic_title,t2.topic_title) AS thread";
+$sql['columns'] = "r.*,realname,t1.forum_id AS forum_id1,t2.forum_id AS forum_id2,COALESCE(t1.topic_title,t2.topic_title) AS thread,t1.posts_count";
 $sql['columns'] .= ",CONCAT(p1.post_time,' by ',p1.poster_name) AS post1,CONCAT(p2.post_time,' by ',p2.poster_name) AS post2,COALESCE(p1.post_text,p2.post_text) AS post_text";
 	
 $sql['tables'] = array();
@@ -124,17 +124,23 @@ $sql['tables']['p2'] = 'LEFT JOIN geobb_posts_quar p2 ON (p2.post_id = r.post_id
 $sql['wheres'] = array();
 
 if (!empty($_GET['topic_id'])) {
+	$smarty->assign("title",'Reports related to topic #'.intval($_GET['topic_id']));
 	$sql['wheres'][] = "r.`topic_id` = ".intval($_GET['topic_id']);
-} elseif (empty($_GET['all']))
+} elseif (empty($_GET['all'])) {
+	$smarty->assign("title",'New or Open reports');
 	$sql['wheres'][] = "`resolution` in ('new','open')";
+} else {
+	$smarty->assign("title",'Latest 100 reports');
+}
 
 if (!empty($_GET['user_id'])) {
+	$smarty->assign("title",'Reports related to user #'.intval($_GET['user_id']));
 	$sql['wheres'][] = "r.`user_id` = ".intval($_GET['user_id']);
 }
 
 #$sql['group'] = 'r.topic_id';
 
-$sql['order'] = 'r.updated desc';
+$sql['order'] = 'r.report_id desc';
 
 $sql['limit'] = 100;
 

@@ -9,6 +9,7 @@
 
 
 {if $data}
+	<h4>{$title}</h4>
 	<style>{literal}
 		.report td.small {
 			border-top:1px solid silver;
@@ -37,7 +38,7 @@
 		<tr bgcolor="{$bgcolor}">
 			<td>{$row.created|escape:'html'}</td>
 			{if $row.forum_id1}
-				<td><a href="/discuss/?action=vthread&forum={$row.forum_id1}&topic={$row.topic_id}"><b>{$row.thread|escape:'html'|default:$row.topic_id}</b></a><small> (<a href="?topic_id={$row.topic_id}">all</a>)</small></td>
+				<td><a href="/discuss/?action=vthread&forum={$row.forum_id1}&topic={$row.topic_id}"><b>{$row.thread|escape:'html'|default:$row.topic_id}</b></a><small> [{$row.posts_count}] (<a href="?topic_id={$row.topic_id}">all</a>)</small></td>
 			{else}
 				<td><s>{$row.thread|escape:'html'}</s><small> (<a href="?topic_id={$row.topic_id}">all</a>)</small></td>
 			{/if}
@@ -53,7 +54,7 @@
 					<option value=""></option>
 					{if $row.forum_id1}
 						<option value="delete_thread">Delete WHOLE THREAD</option>
-						{if $row.post}
+						{if $row.post1 && $row.posts_count > 1}
 							<option value="delete_post">Delete just THIS POST</option>
 							{if $row.type eq 'onwards'}
 								<option value="delete_onwards">Delete this post AND ALL AFTER</option>
@@ -62,7 +63,7 @@
 					{/if}
 					{if $row.forum_id2}
 						<option value="restore_thread">Restore WHOLE THREAD</option>
-						{if $row.post}
+						{if $row.post2 && $row.forum_id1}
 							<option value="restore_post">Restore just THIS POST</option>
 							{if $row.type eq 'onwards'}
 								<option value="restore_onwards">Restore this post AND POSTS AFTER</option>
