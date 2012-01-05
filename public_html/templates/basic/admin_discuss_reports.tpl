@@ -36,19 +36,22 @@
 		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 		<tr bgcolor="{$bgcolor}">
 			<td>{$row.created|escape:'html'}</td>
-			{if $row.forum_id}
-				<td><a href="/discuss/?action=vthread&forum={$row.forum_id}&topic={$row.topic_id}"><b>{$row.thread|escape:'html'}</b></a><small> (<a href="?topic_id={$row.topic_id}">all</a>)</small></td>
-				<td style="font-size:0.8em" title="{$row.post_text|escape:'html'}">{if $row.type != 'thread'}<a href="/discuss/?action=vpost&forum={$row.forum_id}&topic={$row.topic_id}&post={$row.post_id}">{$row.post|escape:'html'}</a>{/if}</td>
+			{if $row.forum_id1}
+				<td><a href="/discuss/?action=vthread&forum={$row.forum_id1}&topic={$row.topic_id}"><b>{$row.thread|escape:'html'|default:$row.topic_id}</b></a><small> (<a href="?topic_id={$row.topic_id}">all</a>)</small></td>
 			{else}
-				<td><b>{$row.thread|escape:'html'}</b><small> (<a href="?topic_id={$row.topic_id}">all</a>)</small></td>
-				<td style="font-size:0.8em" title="{$row.post_text|escape:'html'}">{if $row.type != 'thread'}{$row.post|escape:'html'}{/if}</td>
+				<td><s>{$row.thread|escape:'html'}</s><small> (<a href="?topic_id={$row.topic_id}">all</a>)</small></td>
+			{/if}
+			{if $row.post1}
+				<td style="font-size:0.8em" title="{$row.post_text|escape:'html'}">{if $row.type != 'thread'}<a href="/discuss/?action=vpost&forum={$row.forum_id1}&topic={$row.topic_id}&post={$row.post_id}">{$row.post1|escape:'html'}</a>{/if}</td>
+			{else}
+				<td style="font-size:0.8em" title="{$row.post_text|escape:'html'}"><s>{if $row.type != 'thread'}{$row.post2|escape:'html'}{/if}</s></td>
 			{/if}
 			<td>{$row.realname|escape:'html'}</td>
 			<td>{$row.type|escape:'html'}/{$row.resolution|escape:'html'}</td>
-			{if $row.user_id == $user->user_id}
+			{if $row.user_id != $user->user_id}
 				<td><select name="action[{$row.report_id}]">
 					<option value=""></option>
-					{if $row.forum_id}
+					{if $row.forum_id1}
 						<option value="delete_thread">Delete WHOLE THREAD</option>
 						{if $row.post}
 							<option value="delete_post">Delete just THIS POST</option>
@@ -81,7 +84,7 @@
 		{foreach from=$logs item=log}
 			{if $log.report_id eq $row.report_id}
 				<tr bgcolor="{$bgcolor}">
-					<td class="small" colspan="6">ACTION: <b>{$log.action|escape:'html'}</b> by <a href="/profile/{$log.user_id}">{$log.realname|escape:'html'}</a> @{$log.created|escape:'html'}</td>
+					<td class="small" colspan="6">ACTION: <b>{$log.action|escape:'html'}</b> by <a href="/profile/{$log.user_id}">{$log.realname|escape:'html'|default:'system'}</a> @{$log.created|escape:'html'}</td>
 				</tr>
 			{/if}
 		{/foreach}
