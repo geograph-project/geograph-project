@@ -22,8 +22,8 @@
 		{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 		<tr bgcolor="{$bgcolor}">
 			<td>{$row.created|escape:'html'}</td>
-			<td><b>{$row.thread|escape:'html'}</b></td>
-			<td style="font-size:0.8em">{$row.post|escape:'html'}</td>
+			<td><a href="/discuss/?action=vthread&forum={$row.forum_id}&topic={$row.topic_id}"><b>{$row.thread|escape:'html'}</b></a></td>
+			<td style="font-size:0.8em"><a href="/discuss/?action=vpost&forum={$row.forum_id}&topic={$row.topic_id}&post={$row.post_id}">{$row.post|escape:'html'}</a></td>
 			<td>{$row.realname|escape:'html'}</td>
 			<td>{$row.resolution|escape:'html'}</td>
 		</tr>

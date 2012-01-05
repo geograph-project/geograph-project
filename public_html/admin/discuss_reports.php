@@ -35,7 +35,7 @@ $db = GeographDatabaseConnection(false);
 
 $sql = array();
 
-$sql['columns'] = "r.*,realname,t.topic_id,topic_title AS thread";
+$sql['columns'] = "r.*,realname,t.topic_id,t.forum_id,topic_title AS thread";
 
 $sql['tables'] = array();
 $sql['tables']['r'] = 'discuss_report r';
