@@ -1534,7 +1534,7 @@ class GeographUser
 	 * @access private
 	 */
 	function __sleep() {
-		if (is_object($this->db)) {
+		if (!empty($this->db) && is_object($this->db)) {
 			#$this->db->Close();
 			unset($this->db);
 		}

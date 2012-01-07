@@ -34,6 +34,19 @@
 //global routines
 require_once('geograph/functions.inc.php');
 
+
+if (isset($_GET['profile']) && !class_exists('Profiler',false)) {
+	require "3rdparty/profiler.php";
+	Profiler::enable();
+
+	ProfilerRenderer::setIncludeJquery(true);
+	ProfilerRenderer::setJqueryLocation('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
+
+	ProfilerRenderer::setPrettifyLocation("/js/code-prettify");
+	
+	$p = Profiler::start("Global");
+}
+
 #################################################
 
 //include domain specific configuration - if your install fails on
@@ -382,6 +395,15 @@ function smarty_function_pageheader() {
 	}
 }
 function smarty_function_pagefooter() {
+
+	if (isset($_GET['profile']) && class_exists('Profiler',false)) {
+		ob_start();
+		Profiler::render();
+		return ob_get_clean();
+	}
+	
+#return "<style>body {font-family: Helvetica,Arial,sans-serif !important; }</style>";
+
 	if(extension_loaded('newrelic')) {
 		return newrelic_get_browser_timing_footer();
 	}
@@ -444,7 +466,10 @@ class GeographPage extends Smarty
 		//setup optimisations
 		$this->compile_check = $CONF['smarty_compile_check'];
 		$this->debugging = $CONF['smarty_debugging'];
-		$this->caching = $CONF['smarty_caching'];
+		if (!($this->caching = $CONF['smarty_caching'])) {
+			//TODO
+			//$this->disable_caching = true;
+		}
 
 		//register our "dynamic" handler for non-cached sections of templates
 		$this->register_block('dynamic', 'smarty_block_dynamic', false,array('cached_user_id'));
