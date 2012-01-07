@@ -77,7 +77,29 @@ function log_script_timing()
 }
 
 function split_timer($profile,$key='',$id='') {
-return false;
+
+	if (isset($_GET['profile'])) {
+		static $starts = array();
+		
+		if (empty($key)) {
+			$starts[$profile] = microtime(true);
+			return;
+		} elseif (empty($starts[$profile])) {
+			//wtf?
+			return;
+		}
+		$p = Profiler::start("$profile-$key");
+		$p->started = $starts[$profile]; //hack alert!
+		$p->end();
+		
+		//restarts the clock for the next 'segment' (if any)
+		$starts[$profile] = microtime(true);
+	}
+	
+	return false;
+	
+	#####################
+	
 	static $filehandle;
 	static $request;
 	static $unique;

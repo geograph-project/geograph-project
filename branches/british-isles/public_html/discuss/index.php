@@ -544,5 +544,9 @@ if (function_exists('apc_fetch')) {
 	}
 }
 
+if (isset($_GET['profile']) && class_exists('Profiler',false)) {
+	Profiler::render();
+}
+
 if(isset($includeFooter)) include($includeFooter); else echo ParseTpl(makeUp('main_footer'));
-?>
+

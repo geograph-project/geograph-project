@@ -494,6 +494,13 @@ class ADODB_mysql extends ADOConnection {
 	// returns queryID or false
 	function _query($sql,$inputarr)
 	{
+		if (isset($_GET['profile'])) {
+			$sql1 = Profiler::sqlStart($sql);
+			$result = mysql_query($sql,$this->_connectionID);
+			$sql1->end();
+			return $result;
+		}		
+	
 	//global $ADODB_COUNTRECS;
 		//if($ADODB_COUNTRECS) 
 		return mysql_query($sql,$this->_connectionID);
