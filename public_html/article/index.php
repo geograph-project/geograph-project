@@ -120,7 +120,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if (empty($where) && !isset($_GET['full'])) {
-		$bit = "select @counter:=@counter+1 as counter,article.article_id,'STRING' AS category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname,l.user_id as locked_user
+		$bit = "select @counter:=@counter+1 as counter,article.article_id,'STRING' AS category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname,l.user_id as locked_user,edit_prompt
 		from article 
 			inner join user using (user_id)
 			left join article_lock as l
@@ -140,7 +140,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 	
 		$list = $db->getAll("
-		select article.article_id,article.article_cat_id,category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname,l.user_id as locked_user
+		select article.article_id,article.article_cat_id,category_name,article.user_id,url,title,extract,licence,publish_date,approved,update_time,create_time,realname,l.user_id as locked_user,edit_prompt
 		from article 
 			inner join user using (user_id)
 			left join article_cat on (article.article_cat_id = article_cat.article_cat_id)

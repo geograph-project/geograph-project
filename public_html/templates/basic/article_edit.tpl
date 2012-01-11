@@ -222,14 +222,14 @@ function makeUneditable() {
 	{if $errors.extract}</div>{/if}
 </div>
 
-{if $approved == 2}
+{if $licence != 'Copyright'}
 	<div class="field">
 		{if $errors.edit_prompt}<div class="formerror"><p class="error">{$errors.edit_prompt}</p>{/if}
 
 		<label for="edit_prompt">Edit prompt:</label>
 		<input type="text" name="edit_prompt" value="{$edit_prompt|escape:"html"}" maxlength="160" size="90" style="width:58em"/>
 
-		<div class="fieldnotes">For open collaboration articles, a short message to prompt users to edit the article.</div>
+		<div class="fieldnotes">If want a open collaboration article, enter a short message to prompt users to edit the article.<br/>Leave blank so that only you (and the moderators) can edit the article.</div>
 
 		{if $errors.edit_prompt}</div>{/if}
 	</div>
