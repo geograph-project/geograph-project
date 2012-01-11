@@ -82,12 +82,12 @@ Scope: <select name="scope" style="width:80px">
 		{if $isadmin}
 			{if $item.approved > 0}
 				[<a href="/article/?page={$item.url}&amp;approve=0">Disapprove</a>]
-				{if $item.approved != 2}
+				{if $item.approved != 2 && $item.edit_prompt}
 					[<a href="/article/?page={$item.url}&amp;approve=2">Enable Collaborative Editing</a>]
 				{/if}
 			{else}
 				[<a href="/article/?page={$item.url}&amp;approve=1">Approve</a>{if $item.approved == 0 and $item.licence != 'none'}
-				{if $item.approved != 2}
+				{if $item.approved != 2 && $item.edit_prompt}
 					[<a href="/article/?page={$item.url}&amp;approve=2">Enable Collaborative Editing</a>]
 				{/if}
 				<b>Ready to be Approved</b>{/if}]
