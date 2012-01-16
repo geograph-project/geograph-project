@@ -430,7 +430,7 @@ Mit freundlichen Grüßen
 
 Das Geograph-Deutschland-Team
 EOT;
-						$register_mail_subject = '[geograph-de] Registrierungsbestätigung';
+						$register_mail_subject = 'Registrierungsbestätigung';
 					} else {
 						$register_mail_body = <<<EOT
 Thankyou for registering at %s
@@ -448,22 +448,17 @@ Kind Regards,
 
 The Geograph Deutschland Team
 EOT;
-						$register_mail_subject = '[geograph-de] Confirm registration';
+						$register_mail_subject = 'Confirm registration';
 					}
 					$msg = sprintf($register_mail_body,$register_geograph_url,$register_authentication_url,$email);
-					
-					
-					
-					#@mail($email, '[geograph] Confirm registration', $msg,
-					#	"From: geo.hlipp.de <mail@hlipp.de>"); #FIXME variable?
-				
-					@mail($email, mb_encode_mimeheader($register_mail_subject), $msg,
-						"From: geo.hlipp.de <mail@hlipp.de>\n".
+
+					@mail($email, mb_encode_mimeheader($CONF['mail_subjectprefix'].$register_mail_subject, $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg,
+						"From: Geograph <{$CONF['mail_from']}>\n".
 						"MIME-Version: 1.0\n".
-						"Content-Type: text/plain; charset=iso-8859-1\n".
+						"Content-Type: text/plain; {$CONF['mail_charset']}\n".
 						"Content-Disposition: inline\n".
 						"Content-Transfer-Encoding: 8bit",
-						"-f mail@hlipp.de"); #FIXME variable from/env from/mime?
+						is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
 				}
 			}
 		}
@@ -598,7 +593,7 @@ Mit freundlichen Grüßen
 
 Das Geograph-Deutschland-Team
 EOT;
-					$mail_subject = '[geograph-de] Neues Passwort für %s';
+					$mail_subject = 'Neues Passwort für %s';
 				} else {
 					$mail_body = <<<EOT
 Hello.
@@ -614,18 +609,18 @@ Kind Regards,
 
 The Geograph Deutschland Team
 EOT;
-					$mail_subject = '[geograph-de] New password for %s';
+					$mail_subject = 'New password for %s';
 				}
 				$msg = sprintf($mail_body, $email, $_SERVER['HTTP_HOST'], $url);
 				$sub = sprintf($mail_subject, $_SERVER['HTTP_HOST']);
 
-				@mail($email, mb_encode_mimeheader($sub), $msg,
-					"From: geo.hlipp.de <mail@hlipp.de>\n".
+				@mail($email, mb_encode_mimeheader($CONF['mail_subjectprefix'].$sub, $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg,
+					"From: Geograph <{$CONF['mail_from']}>\n".
 					"MIME-Version: 1.0\n".
-					"Content-Type: text/plain; charset=iso-8859-1\n".
+					"Content-Type: text/plain; {$CONF['mail_charset']}\n".
 					"Content-Disposition: inline\n".
 					"Content-Transfer-Encoding: 8bit",
-					"-f mail@hlipp.de"); #FIXME variable from/env from/mime?
+					is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
 				$ok=true;
 			}
 			else
@@ -970,7 +965,7 @@ Mit freundlichen Grüßen
 
 Das Geograph-Deutschland-Team
 EOT;
-					$mail_subject = '[geograph-de] Bestätigung der neuen E-Mail-Adresse für %s';
+					$mail_subject = 'Bestätigung der neuen E-Mail-Adresse für %s';
 				} else {
 					$mail_body = <<<EOT
 Hello.
@@ -986,18 +981,18 @@ Kind Regards,
 
 The Geograph Deutschland Team
 EOT;
-					$mail_subject = '[geograph-de] Please confirm your email address change for %s';
+					$mail_subject = 'Please confirm your email address change for %s';
 				}
 				$msg = sprintf($mail_body, $_SERVER['HTTP_HOST'], $profile['email'], $url);
 				$sub = sprintf($mail_subject, $_SERVER['HTTP_HOST']);
 
-				@mail($profile['email'], mb_encode_mimeheader($sub), $msg,
-					"From: geo.hlipp.de <mail@hlipp.de>\n".
+				@mail($profile['email'], mb_encode_mimeheader($CONF['mail_subjectprefix'].$sub, $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg,
+					"From: Geograph <{$CONF['mail_from']}>\n".
 					"MIME-Version: 1.0\n".
-					"Content-Type: text/plain; charset=iso-8859-1\n".
+					"Content-Type: text/plain; {$CONF['mail_charset']}\n".
 					"Content-Disposition: inline\n".
 					"Content-Transfer-Encoding: 8bit",
-					"-f mail@hlipp.de"); #FIXME variable from/env from/mime?
+					is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
 			}
 			else
 			{
