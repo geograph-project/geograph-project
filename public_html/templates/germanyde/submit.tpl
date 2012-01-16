@@ -303,7 +303,7 @@ Vorschaubild für Planquadrat {$gridref} in voller Größe:<br/><br/>
 
 <p>Der erste, der ein &quot;Geobild&quot; für {$gridref}
 einreicht, bekommt einen Punkt in sein Profil eingetragen, d.h. Ruhm und Ehre
-sind im sicher.</p>
+sind ihm sicher.</p>
 <p>Was ist also nötig, damit ein Bild ein Geobild wird?</p>
 <ul>
 <li>Das Motiv muss in Planquadrat {$gridref} liegen, der Aufnahmestandort idealerweise auch.</li>

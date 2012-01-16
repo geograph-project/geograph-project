@@ -147,6 +147,10 @@ $CONF['thousand_sep'] = ',';
 ###################################
 
 $CONF['mail_subjectprefix'] = '[geograph] ';
+$CONF['mail_transferencoding'] = 'Q';
+$CONF['mail_charset'] = 'iso-8859-1';
+$CONF['mail_envelopefrom'] = 'mail@example.invalid'; # or null
+$CONF['mail_from'] = 'mail@example.invalid';
 
 ###################################
 # optional sphinx setup

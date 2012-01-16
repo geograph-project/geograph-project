@@ -657,14 +657,14 @@ class GridImageTroubleTicket
 	*/
 	function _sendMail($to, &$msg)
 	{
-		#mail($to, mb_encode_mimeheader("[geograph-de] ".$msg['subject']), $msg['body'],
-		mail($to, mb_encode_mimeheader("[geograph-de] ".$msg['subject'], 'iso-8859-1', 'Q'), $msg['body'],
-			"From: Geograph - Reply Using Link <mail@hlipp.de>\n".
+		global $CONF;
+		mail($to, mb_encode_mimeheader($CONF['mail_subjectprefix'].$msg['subject'], $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg['body'],
+			"From: Geograph - Reply Using Link <{$CONF['mail_from']}>\n".
 			"MIME-Version: 1.0\n".
-			"Content-Type: text/plain; charset=iso-8859-1\n".
+			"Content-Type: text/plain; {$CONF['mail_charset']}\n".
 			"Content-Disposition: inline\n".
 			"Content-Transfer-Encoding: 8bit",
-			"-f mail@hlipp.de"); #FIXME conf var
+			is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
 		
 	}
 	
