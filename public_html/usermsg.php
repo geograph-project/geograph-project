@@ -98,6 +98,7 @@ if (isset($_POST['msg']))
 
 	$smarty->assign_by_ref('msg', $msg);
 
+	$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 
 	if (isSpam($msg))
 	{
@@ -148,7 +149,11 @@ if (isset($_POST['msg']))
 		//build message and send it...
 		
 		$body=$smarty->fetch('email_usermsg.tpl');
-		$subject="$from_name contacting you via {$_SERVER['HTTP_HOST']}";
+		if ($CONF['lang'] == 'de') {
+			$subject="$from_name kontaktiert Sie über {$_SERVER['HTTP_HOST']}";
+		} else {
+			$subject="$from_name contacting you via {$_SERVER['HTTP_HOST']}";
+		}
 		$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 		
 		$hostname=trim(`hostname -f`);
@@ -160,7 +165,7 @@ if (isset($_POST['msg']))
 			"Content-Type: text/plain; {$CONF['mail_charset']}\n".
 			"Content-Disposition: inline\n".
 			"Content-Transfer-Encoding: 8bit";
-		$from = "From: $from_name <$from_email>\n";
+		$from = "From: $enc_from_name <$from_email>\n";
 		$geofrom = "From: Geograph <{$CONF['mail_from']}>";
 		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 
@@ -196,8 +201,13 @@ if (isset($_POST['msg']))
 		}
 		
 		if ($sendcopy) {
-			$subject="[Geograph] Copy of message sent to {$recipient->realname}";
-		
+			if ($CONF['lang'] == 'de') {
+				$csubject="Kopie der Nachricht an {$recipient->realname}";
+			} else {
+				$csubject="Copy of message sent to {$recipient->realname}";
+			}
+			$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$csubject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+
 			if (!@mail($from_email, $encsubject, $body, $from.$mime, $envfrom)) {
 				@mail($CONF['contact_email'], 
 					'Mail Error Report from '.$_SERVER['HTTP_HOST'],
@@ -230,10 +240,15 @@ elseif (isset($_GET['image']))
 	$image=new GridImage();
 	$image->loadFromId($_GET['image']);
 	
-	if (strpos($recipient->rights,'mod') !== FALSE) {
-		$msg="Re: image for {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}\r\n";
+	if ($CONF['lang'] == 'de') {
+		$msg = "Betrifft Bild für";
 	} else {
-		$msg="Re: image for {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\r\n";
+		$msg = "Re: image for";
+	}
+	if (strpos($recipient->rights,'mod') !== FALSE) {
+		$msg .= " {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}\r\n";
+	} else {
+		$msg .= " {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\r\n";
 	}
 	$smarty->assign_by_ref('msg', $msg);
 }

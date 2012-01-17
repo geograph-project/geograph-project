@@ -4,8 +4,8 @@ This is a multi-part message in MIME format.
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40
 Content-Type: text/plain;
-	charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
+	charset="{$charset}"
+Content-Transfer-Encoding: 8bit
 
 --This message was sent through the {$http_host} web site--
    
@@ -20,43 +20,37 @@ http://{$http_host}/photo/{$image->gridimage_id}
 
 View Online at http://{$http_host}/photo/{$image->gridimage_id}
 --------------------------------
-Image =A9 Copyright {$image->realname} and licensed for reuse under this Creative Commons Licence. 
+Image © Copyright {$image->realname} and licensed for reuse under this Creative Commons Licence. 
 http://creativecommons.org/licenses/by-sa/2.0/
 --------------------------------
 
 This message was sent to you by site visitor to Geograph Deutschland,
-forward abuse complaints to: geo@hlipp.de
+forward abuse complaints to: {$contactmail}
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40
 Content-Type: text/html;
-	charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
+	charset="{$charset}"
+Content-Transfer-Encoding: 8bit
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML><HEAD><TITLE></TITLE>
-<META http-equiv=3DContent-Type content=3D"text/html; =
-charset=3Dwindows-1252"><BASE=20
-href=3D"http://{$http_host}/"\>
-<META content=3D"Geograph User: {$user->user_id}" name=3DGENERATOR>
+<META http-equiv=Content-Type content="text/html; charset={$charset}"><BASE 
+href="http://{$http_host}/"\>
+<META content="Geograph User: {$user->user_id}" name=GENERATOR>
 </HEAD>
-<BODY bgColor=3D#eeeeff leftMargin=3D0 topMargin=3D0 MARGINHEIGHT=3D"0" =
-MARGINWIDTH=3D"0">
-<TABLE cellSpacing=3D0 cellPadding=3D0 width=3D"750" align=3Dcenter style=3D"width:750px;">
+<BODY bgColor=#eeeeff leftMargin=0 topMargin=0 MARGINHEIGHT="0" MARGINWIDTH="0">
+<TABLE cellSpacing=0 cellPadding=0 width="750" align=center style="width:750px;">
 <TBODY><TR><TD>
-<TABLE cellSpacing=3D0 cellPadding=3D4 width=3D"100%">
+<TABLE cellSpacing=0 cellPadding=4 width="100%">
   <TBODY>
   <TR>
-    <TD bgColor=3D#000066>&nbsp;</TD>
-    <TD bgColor=3D#000066><A href=3D"http://{$http_host}/"><IMG =
-height=3D74=20
-      src=3D"http://{$http_host}/templates/germany32/img/logode3.gif" width=3D350 =
-border=3D0></A></TD>
-    <TD vAlign=3Dtop align=3Dcenter bgColor=3D#000066><A=20
-      href=3D"http://{$http_host}/"><FONT face=3DGeorgia =
-color=3D#ffffff=20
-      size=3D+2>{$http_host}</FONT></A><BR><FONT face=3DGeorgia =
-color=3D#ffffff><I>The Geograph Deutschland project aims to collect a geographically representative<BR> photograph for every square kilometre of Germany and you can be part of it.</I></FONT></TD>
-    <TD bgColor=3D#000066>&nbsp;</TD></TR>
+    <TD bgColor=#000066>&nbsp;</TD>
+    <TD bgColor=#000066><A href="http://{$http_host}/"><IMG height=74 
+      src="http://{$http_host}/templates/germany32/img/logode3.gif" width=350 border=0></A></TD>
+    <TD vAlign=top align=center bgColor=#000066><A 
+      href="http://{$http_host}/"><FONT face=Georgia color=#ffffff 
+      size=+2>{$http_host}</FONT></A><BR><FONT face=Georgia color=#ffffff><I>The Geograph Deutschland project aims to collect a geographically representative<BR> photograph for every square kilometre of Germany and you can be part of it.</I></FONT></TD>
+    <TD bgColor=#000066>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
     <TD COLSPAN="2" ALIGN="CENTER">
@@ -65,58 +59,45 @@ color=3D#ffffff><I>The Geograph Deutschland project aims to collect a geographic
     </TR>
   <TR>
     <TD>&nbsp;</TD>
-    <TD style=3D"BORDER-TOP: black 1px solid; BORDER-LEFT: black 1px =
-solid"=20
-    vAlign=3Dtop bgColor=3D#ffffff><BR><FONT face=3DGeorgia>
+    <TD style="BORDER-TOP: black 1px solid; BORDER-LEFT: black 1px solid" 
+    vAlign=top bgColor=#ffffff><BR><FONT face=Georgia>
     {$htmlmsg}
     </FONT><BR></TD>
-    <TD style=3D"BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px =
-solid"=20
-    align=3Dmiddle bgColor=3D#ffffff><BR><A=20
-      href=3D"http://{$http_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|replace:'=':'=3D'|replace:'alt=':'border=3D0 alt='}</A></TD>
+    <TD style="BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px solid" 
+    align=middle bgColor=#ffffff><BR><A 
+      href="http://{$http_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|replace:'alt=':'border=0 alt='}</A></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
-    <TD style=3D"BORDER-LEFT: black 1px solid" vAlign=3Dtop=20
-    bgColor=3D#ffffff>&nbsp;</TD>
-    <TD style=3D"BORDER-RIGHT: black 1px solid" align=3Dmiddle =
-bgColor=3D#ffffff>
-      <DIV class=3Dcaption><FONT face=3DGeorgia size=3D-1><B>{$image->title|escape:'html'}</B></FONT></DIV>
-      <DIV class=3Dcaption><FONT face=3DGeorgia size=3D-1>{$image->comment|escape:'html'|geographlinks}</FONT>=
-</DIV></TD>
+    <TD style="BORDER-LEFT: black 1px solid" vAlign=top 
+    bgColor=#ffffff>&nbsp;</TD>
+    <TD style="BORDER-RIGHT: black 1px solid" align=middle bgColor=#ffffff>
+      <DIV class=caption><FONT face=Georgia size=-1><B>{$image->title|escape:'html'}</B></FONT></DIV>
+      <DIV class=caption><FONT face=Georgia size=-1>{$image->comment|escape:'html'|geographlinks}</FONT></DIV></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
-    <TD=20
-    style=3D"BORDER-RIGHT: black 1px solid; BORDER-LEFT: black 1px =
-solid; BORDER-BOTTOM: black 1px solid"=20
-    vAlign=3Dtop align=3Dmiddle bgColor=3D#ffffff colSpan=3D2><FONT =
-face=3DGeorgia>View=20
-      Online at <A=20
-      =
-href=3D"http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</A></FONT></TD>
+    <TD 
+    style="BORDER-RIGHT: black 1px solid; BORDER-LEFT: black 1px solid; BORDER-BOTTOM: black 1px solid" 
+    vAlign=top align=middle bgColor=#ffffff colSpan=2><FONT face=Georgia>View 
+      Online at <A 
+      href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</A></FONT></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
-    <TD vAlign=3Dtop align=3Dmiddle bgColor=3D#dddddd colSpan=3D2><A=20
-      href=3D"http://creativecommons.org/licenses/by-sa/2.0/"><IMG =
-height=3D31=20
-      src=3D"http://creativecommons.org/images/public/somerights20.gif" width=3D88 =
-align=3Dright=20
-      border=3D0></A> <FONT face=3DGeorgia>Image =A9 Copyright <A =
-title=3D"View profile"=20
-      href=3D"http://{$http_host}{$image->profile_link|replace:'=':'=3D'}">{$image->realname}</A> and licensed for =
-reuse under this=20
-      <A class=3Dnowrap =
-href=3D"http://creativecommons.org/licenses/by-sa/2.0/"=20
-      rel=3Dlicense>Creative&nbsp;Commons&nbsp;Licence</A>.</FONT></TD>
+    <TD vAlign=top align=middle bgColor=#dddddd colSpan=2><A 
+      href="http://creativecommons.org/licenses/by-sa/2.0/"><IMG height=31 
+      src="http://creativecommons.org/images/public/somerights20.gif" width=88 align=right 
+      border=0></A> <FONT face=Georgia>Image &copy; Copyright <A title="View profile" 
+      href="http://{$http_host}{$image->profile_link}">{$image->realname}</A> and licensed for reuse under this 
+      <A class=nowrap href="http://creativecommons.org/licenses/by-sa/2.0/" 
+      rel=license>Creative&nbsp;Commons&nbsp;Licence</A>.</FONT></TD>
     <TD>&nbsp;</TD></TR>
 </TBODY></TABLE>
 </TD></TR></TBODY></TABLE>
-<P align=3Dcenter><FONT face=3DGeorgia size=3D-1>This message was sent =
-to you by site=20
-visitor to Geograph Deutschland, <BR>forward abuse complaints to:=20
-geo@hlipp.de</FONT><!-- {$user->user_id} --></P></BODY></HTML>
+<P align=center><FONT face=Georgia size=-1>This message was sent to you by site 
+visitor to Geograph Deutschland, <BR>forward abuse complaints to: 
+{$contactmail}</FONT><!-- {$user->user_id} --></P></BODY></HTML>
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40--
 
