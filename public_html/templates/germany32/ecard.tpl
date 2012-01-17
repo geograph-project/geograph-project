@@ -15,7 +15,7 @@
 		<form method="post" action="/ecard.php?image={$image->gridimage_id}">
 		<input type="hidden" name="image" value="{$image->gridimage_id|escape:'html'}">
 
-		<div style="position:relative; float:right; width:220px; background-color:#eeeeee; padding: 10px; text-align:center">
+		<div style="position:relative; float:right; width:223px; background-color:#eeeeee; padding: 10px; text-align:center">
 			<b>Chosen Image</b> (Sent full size)
 			<div class="img-shadow"><a href="/photo/{$image->gridimage_id}" target="_blank">{$image->getThumbnail(213,160)}</a>
 				 <div style="font-size:0.7em">

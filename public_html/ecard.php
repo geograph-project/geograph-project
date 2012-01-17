@@ -96,27 +96,42 @@ if (!$throttle && isset($_POST['msg']))
 	if (!isValidEmailAddress($from_email))
 	{
 		$ok=false;
-		$errors['from_email']='Please specify a valid email address';
+		if ($CONF['lang'] == 'de')
+			$errors['from_email']='Bitte gültige E-Mail-Adresse eingeben!';
+		else
+			$errors['from_email']='Please specify a valid email address';
 	}
 	if (!isValidRealName($from_name))
 	{
 		$ok=false;
-		$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		if ($CONF['lang'] == 'de')
+			$errors['from_name']='Der Name enthält ungültige Zeichen!';
+		else
+			$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 	}
 	if (!isValidEmailAddress($to_email))
 	{
 		$ok=false;
-		$errors['to_email']='Please specify a valid email address';
+		if ($CONF['lang'] == 'de')
+			$errors['to_email']='Bitte gültige E-Mail-Adresse eingeben!';
+		else
+			$errors['to_email']='Please specify a valid email address';
 	}
 	if (!isValidRealName($to_name))
 	{
 		$ok=false;
-		$errors['to_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		if ($CONF['lang'] == 'de')
+			$errors['to_name']='Der Name enthält ungültige Zeichen!';
+		else
+			$errors['to_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 	}
 	if (strlen($msg)==0)
 	{
 		$ok=false;
-		$errors['msg']="Please enter a message to send";
+		if ($CONF['lang'] == 'de')
+			$errors['msg']="Bitte Nachricht eingeben!";
+		else
+			$errors['msg']="Please enter a message to send";
 	}
 	$smarty->assign_by_ref('errors', $errors);
 
@@ -146,19 +161,29 @@ if (!$throttle && isset($_POST['msg']))
 		if (isset($_POST['preview'])) {
 			preg_match_all('/(<!DOCTYPE.*<\/HTML>)/s',$body,$matches);
 	
-			print "<title>eCard Preview</title>";
+			if ($CONF['lang'] == 'de')
+				print "<title>Postkarte: Vorschau</title>";
+			else
+				print "<title>eCard Preview</title>";
 			print "<form method=\"post\">";
 			foreach ($_POST as $name => $value) {
 				if ($name != 'preview') {
 					print "<input type=\"hidden\" name=\"$name\" value=\"".htmlentities($value)."\">";
 				}
 			}
-			print "<br/><p align=\"center\"><font face=\"Georgia\">Below is a preview the card as will be sent to $to_email </font>";
-			print "<input type=\"submit\" name=\"edit\" value=\"Edit\">";
-			print "<input type=\"submit\" name=\"send\" value=\"Send\"></p>";
-			print "</FORM>";
-			
-			print "<h3 align=center><font face=\"Georgia\">Subject: $subject</font></h3>";
+			if ($CONF['lang'] == 'de') {
+				print "<br/><p align=\"center\"><font face=\"Georgia\">Unten ist die Vorschau der Karte an $to_email zu sehen</font>";
+				print "<input type=\"submit\" name=\"edit\" value=\"Bearbeiten\">";
+				print "<input type=\"submit\" name=\"send\" value=\"Abschicken\"></p>";
+				print "</FORM>";
+				print "<h3 align=center><font face=\"Georgia\">Betreff: $subject</font></h3>";
+			} else {
+				print "<br/><p align=\"center\"><font face=\"Georgia\">Below is a preview the card as will be sent to $to_email </font>";
+				print "<input type=\"submit\" name=\"edit\" value=\"Edit\">";
+				print "<input type=\"submit\" name=\"send\" value=\"Send\"></p>";
+				print "</FORM>";
+				print "<h3 align=center><font face=\"Georgia\">Subject: $subject</font></h3>";
+			}
 			$html = preg_replace("/=[\n\r]+/s","\n",$matches[1][0]);
 			$html = preg_replace("/=(\w{2})/e",'chr(hexdec("$1"))',$html);
 			print $html;
