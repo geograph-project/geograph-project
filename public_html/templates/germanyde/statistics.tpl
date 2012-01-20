@@ -1,12 +1,12 @@
-{assign var="page_title" value="Statistics"}
+{assign var="page_title" value="Statistik"}
 {include file="_std_begin.tpl"}
  
-    <h2>Overview Statistics for Geograph Deutschland</h2>
+    <h2>Statistik für Geograph Deutschland</h2>
 
 <ul>
-<li><b>{$users_submitted}</b> Users have Submitted Images</li>
-<li><b>{$users_thisweek}</b> new Users in past 7 days</li>
-<li>A total of <b>{$images_ftf}</b> Geograph Points have been awarded</li>
+<li><b>{$users_submitted}</b> Teilnehmer haben Bilder eingereicht.</li>
+<li><b>{$users_thisweek}</b> neue Teilnehmer in den letzten 7 Tagen.</li>
+<li>Insgesamt wurden <b>{$images_ftf}</b> Geograph-Punkte erzielt.</li>
 </ul>
 
 <table border="1" cellpadding="4" cellspacing="0" class="statstable">
@@ -15,52 +15,52 @@
 	{foreach from=$references_real item=ref key=ri}
 	<th>{$ref}</th>
 	{/foreach}
-	<th><i>Total</i></th>
+	<th><i>Gesamt</i></th>
 </tr></thead>
 <tbody><tr>
-	<th>Images Submitted</th>
+	<th>Eingereichte Bilder</th>
 	{foreach from=$references_real item=ref key=ri}
 	<td><b>{$images_total[$ri]|thousends}</b></td>
 	{/foreach}
 	<td>{$images_total[0]|thousends}</td>
 </tr>
 <tr>
-	<th>&nbsp;[in past 7 days]</th>
+	<th>&nbsp;[letzte 7 Tage]</th>
 	{foreach from=$references_real item=ref key=ri}
 	<td><b>{$images_thisweek[$ri]|thousends}</b></td>
 	{/foreach}
 	<td>{$images_thisweek[0]|thousends}</td>
 </tr>
 <tr>
-	<th>1km<sup>2</sup> Grid Squares</th>
+	<th>1km<sup>2</sup>-Planquadrate</th>
 	{foreach from=$references_real item=ref key=ri}
 	<td><b>{$squares_submitted[$ri]|thousends}</b><br/>/{$squares_total[$ri]|thousends}</td>
 	{/foreach}
 	<td valign="top">{$squares_submitted[0]|thousends}<br/>/{$squares_total[0]|thousends}</td>
 </tr>
 <tr>
-	<th>&nbsp;[as percentage]</th>
+	<th>&nbsp;[Anteil]</th>
 	{foreach from=$references_real item=ref key=ri}
 	<td><b>{$percent[$ri]|floatformat:"%.3f"}%</b></td>
 	{/foreach}
 	<td>{$percent[0]|floatformat:"%.3f"}%</td>
 </tr>
 <tr>
-	<th>&nbsp;[with geograph(s)]</th>
+	<th>&nbsp;[mit Geobildern]</th>
 	{foreach from=$references_real item=ref key=ri}
 	<td><b>{$geographs_submitted[$ri]|thousends}</b></td>
 	{/foreach}
 	<td>{$geographs_submitted[0]|thousends}</td>
 </tr>
 <tr>
-	<th>Hectads<a href="/help/squares">?</a><br/>10km x 10km Squares</th>
+	<th>Hectads<a href="/help/squares">?</a><br/>10km&times;10km-Quadrate</th>
 	{foreach from=$references_real item=ref key=ri}
 	<td><b>{$tenk_submitted[$ri]|thousends}</b><br/>/{$tenk_total[$ri]|thousends}</td>
 	{/foreach}
 	<td valign="top">{$tenk_submitted[0]|thousends}<br/>/{$tenk_total[0]|thousends}</td>
 </tr>
 <tr>
-	<th>Myriads<a href="/help/squares">?</a><br/>100km x 100km Squares</th>
+	<th>Myriads<a href="/help/squares">?</a><br/>100km&times;100km-Quadrate</th>
 	{foreach from=$references_real item=ref key=ri}
 	<td><b>{$grid_submitted[$ri]}</b><br/>/{$grid_total[$ri]}</td>
 	{/foreach}
@@ -80,7 +80,7 @@
 	<div>
 	{foreach from=$maprow key=x item=mapcell}
 	<a href="/mapbrowse.php?o={$overview_token}&amp;i={$x}&amp;j={$y}&amp;center=1"><img
-	alt="Clickable map" ismap="ismap" title="Click to zoom in" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
+	alt="Klickbare Karte" ismap="ismap" title="zum Vergrößern anklicken" src="{$mapcell->getImageUrl()}" width="{$mapcell->image_w}" height="{$mapcell->image_h}"/></a>
 	{/foreach}
 	</div>
 {/foreach}
@@ -95,40 +95,40 @@
 </div>
 {/if}
 
-<p>The <acronym title="the Centre of 'gravity' for all images submitted so far" style="text-decoration:underline">Geograph Centre</acronym> for images is:
+<p>Das <acronym title="der &bdquo;Schwerpunkt&ldquo; aller bis jetzt eingereichten Bilder" style="text-decoration:underline">Geograph-Zentrum</acronym> der Bilder ist:
 
 
 {foreach from=$references_real item=ref key=ri}
-In {$ref} <a href="/gridref/{$centergr[$ri]}" title="view square {$centergr[$ri]}">{$centergr[$ri]}</a>, {place place=$place[$ri]}.
+In {$ref} <a href="/gridref/{$centergr[$ri]}" title="Planquadrat {$centergr[$ri]} ansehen">{$centergr[$ri]}</a>, {place place=$place[$ri]}.
 {/foreach}
 </p>
 
     
-    <h3><a name="more"></a>More Statistics</h3>
+    <h3><a name="more"></a>Mehr Statistik</h3>
 
 	{if $hasregions}
 	<p><b><a href="/statistics/regions.php">Regionale Statistik</a>{if $regionlistlevel > -1} (<a href="/statistics/regions.php?level={$regionlistlevel}">lange Liste</a>){/if}</b></p>
 	{/if}
 
-   <p>User <b>leaderboards</b>: <a href="/statistics/moversboard.php">Weekly</a>, <a href="/statistics/leaderboard.php">All Time</a>, <a href="/statistics/monthlyleader.php">By Month</a>, <a href="/statistics/leaderhectad.php">First Hectads</a>,  <a href="/statistics/leaderallhectad.php">Hectads</a>, <a href="/statistics/leaderboard.php?type=images&when=1989&timerel=dbefore&date=taken">Historical</a> and <a href="/statistics/busyday.php?users=1">Most in One Day</a></p>
+   <p><b>Ranglisten</b>: <a href="/statistics/moversboard.php">Wöchentlich</a>, <a href="/statistics/leaderboard.php">Gesamt</a>, <a href="/statistics/monthlyleader.php">Nach Monat</a>, <a href="/statistics/leaderhectad.php">Hectads (bzgl. der ersten Geobilder)</a>,  <a href="/statistics/leaderallhectad.php">Hectads</a>, <a href="/statistics/leaderboard.php?type=images&when=1989&timerel=dbefore&date=taken">Historische Bilder</a> und <a href="/statistics/busyday.php?users=1">Bilder je Tag</a></p>
 
-   <p><b>Covering the squares</b><a href="/help/squares">?</a>:<br/><br/>
-   None: <a href="/statistics/not_geographed.php">Hectads</a> (10<small>km</small> x 10<small>km</small> Squares) - shrinking all the time!<br/><br/>
-   Mostly: <a href="/statistics/most_geographed.php">Grid Squares &amp; Hectads</a> and <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100 x 100 Squares)</small>.<br/><br/>
-   <b>Fully: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10 x 10 Squares)</small> - including Large Mosaic!</b><br/><br/>
-   Graph: <a href="/statistics/photos_per_square.php">Gridsquares</a>, <a href="/statistics/hectads.php">Hectad</a>, <a href="/statistics/coverage_by_county.php">County</a> and <a href="/statistics/coverage_by_country.php">Country</a> Coverage</p>
+   <p><b>Abdeckung von Quadraten</b><a href="/help/squares">?</a>:<br/><br/>
+   Ohne Bilder: <a href="/statistics/not_geographed.php">Hectads</a> (10km&times;10km-Quadrate)<br/><br/>
+   Mit Bildern: <a href="/statistics/most_geographed.php">Planquadrate und Hectads</a> sowie <a href="/statistics/most_geographed_myriad.php">Myriads</a> <small>(100km&times;100km-Quadrate)</small>.<br/><br/>
+   <b>Alle Planquadrate: <a href="/statistics/fully_geographed.php">Hectads</a> <small>(10km&times;10km-Quadrate)</small> &ndash; mit großem Mosaik!</b><br/><br/>
+   Diagramm: Abeckung der <a href="/statistics/photos_per_square.php">Planquadrate</a> und <a href="/statistics/hectads.php">Hectads</a></p>
 
-   <p><b>Past Activity:</b><br/><br/>
-   Graphs: <a href="/statistics/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/statistics/leaderboard.php#submission_graph">Overall Submissions</a>, <a href="/statistics/contributors.php">Contributor Graphs</a>.<br/><br/>
-   Monthly Breakdown: <a href="/statistics/overtime.php" title="Monthly Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/overtime.php?date=taken" title="Monthly Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/overtime_users.php" title="Monthly Breakdown new User Signups">User Signups</a>, <a href="/statistics/overtime_forum.php" title="Monthly Breakdown for Forum Posts">Forum Posts</a> and <a href="/statistics/overtime_tickets.php">Change Suggestions</a>.<br/><br/>
-   Hourly and Weekday Breakdown: <a href="/statistics/date_graphs.php" title="Hourly and Weekday Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/date_graphs.php?date=taken" title="Hourly and Weekday Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/date_users_graphs.php" title="Hourly and Weekday Breakdown of User Signups">User Signups</a> and <a href="/statistics/date_forum_graphs.php" title="Hourly and Weekday Breakdown for Forum Posts">Forum Posts</a>.<br/><br/>
-   Most in a day: <a href="/statistics/busyday.php?date=submitted">Submissions</a>, <a href="/statistics/busyday.php">Images Taken</a>, <a href="/statistics/busyday_users.php">Users</a> and <a href="/statistics/busyday_forum.php">Forum Posts</a> (<a href="/statistics/busyday_forum.php?users=1" title="Most in a day by user">Users</a>,<a href="/statistics/busyday_forum.php?threads=1" title="Most in a day by topic">Topics</a>).<br/><br/>
-   Yearly Saturation: <a href="/statistics/years.php?date=submitted">Submissions</a>, <a href="/statistics/years.php">Images Taken</a> and <a href="/statistics/years_forum.php">Forum Posts</a>.<br/><br/>
-   Forum Topic Leaderboards: <a href="/statistics/leaderthread_forum.php">Most Popular Threads</a> and
-   <a href="/statistics/forum_image_breakdown.php">By Thumbnails Used</a><br/><br/></p>
+   <p><b>Aktivität</b><br/><br/>
+   Diagramme: <a href="/statistics/moversboard.php#rate_graph">Wöchentliche Einreichungens</a>, <a href="/statistics/contributors.php">Teilnehmer</a>.<br/><br/>
+   Monatliche aufgeschlüsselt: <a href="/statistics/overtime.php">Einreichungen</a>, <a href="/statistics/overtime.php?date=taken">Aufnahmedatum</a>, <a href="/statistics/overtime_users.php">Teilnehmer-Registrierungen</a>, <a href="/statistics/overtime_forum.php">Foren-Beiträge</a> und <a href="/statistics/overtime_tickets.php">Änderungsvorschläge</a>.<br/><br/>
+   Aufgeschlüsselt nach Stunde, Wochentag und Monat: <a href="/statistics/date_graphs.php">Einreichungen</a>, <a href="/statistics/date_graphs.php?date=taken">Aufnahmedatum</a>, <a href="/statistics/date_users_graphs.php">Teilnehmer-Registrierungen</a> und <a href="/statistics/date_forum_graphs.php">Foren-Beiträge</a>.<br/><br/>
+   Tage hoher Aktivität: <a href="/statistics/busyday.php?date=submitted">Einreichungen</a>, <a href="/statistics/busyday.php">aufgenommene Bilder</a>, <a href="/statistics/busyday_users.php">Teilnehmer-Registrierungen</a> und <a href="/statistics/busyday_forum.php">Foren-Beiträge</a> (<a href="/statistics/busyday_forum.php?users=1">Teilnehmer</a>,<a href="/statistics/busyday_forum.php?threads=1">Themen</a>).<br/><br/>
+   Jährliche Aktivität: <a href="/statistics/years.php?date=submitted">Einreichungen</a>, <a href="/statistics/years.php">aufgenommene Bilder</a> und <a href="/statistics/years_forum.php">Foren-Beiträge</a>.<br/><br/>
+   Foren-Aktivität: <a href="/statistics/leaderthread_forum.php">Beliebteste Themen</a> und
+   <a href="/statistics/forum_image_breakdown.php">eingebundene Bilder</a><br/><br/></p>
 
     <form method="get" action="/statistics/breakdown.php">
-    <p>View breakdown of images by 
+    <p>Bilder nach
     <select name="by">
     	{html_options options=$bys selected=$by}
     </select> in <select name="ri">
@@ -139,31 +139,32 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="view square {$centergr[$ri]
     {if $user->registered}
 	<select name="u">
 		{if $u && $u != $user->user_id}
-			<option value="{$u}">Just for {$profile->realname}</option>
+			<option value="{$u}">nur für {$profile->realname}</option>
 		{/if}
-		<option value="{$user->user_id}">Just for {$user->realname}</option>
-		<option value="" {if !$u} selected{/if}>For Everyone</option>
+		<option value="{$user->user_id}">nur für {$user->realname}</option>
+		<option value="" {if !$u} selected{/if}>für alle</option>
 	</select>
     {else}
 	{if $u}
 	<select name="u">
-		<option value="{$u}" selected>Just for {$profile->realname}</option>
-		<option value="">For Everyone</option>
+		<option value="{$u}" selected>nur für {$profile->realname}</option>
+		<option value="">für alle</option>
 	</select>
 	{/if}
     {/if}
     {/dynamic}
-    <input type="submit" value="Go"/></p></form>
+    aufschlüsseln:
+    <input type="submit" value="Los"/></p></form>
 
-   <p><b>More Technical Database Stats:</b><br/>
-   <a href="/statistics/pulse.php">Geograph Pulse</a>,
-   <a href="/statistics/totals.php">Current Totals</a>, 
+   <p><b>Technischere Datenbank-Statistiken:</b><br/>
+   <a href="/statistics/pulse.php">Geograph-Puls</a>,
+   <a href="/statistics/totals.php">Aktuelle Werte</a>, 
    {dynamic}
     {if $user->registered}
-     <a href="/statistics/contributor.php?u={$user->user_id}">Your Totals</a>, 
+     <a href="/statistics/contributor.php?u={$user->user_id}">Eigene Teilnehmerstatistik</a>, 
     {/if}
    {/dynamic}
-   <a href="/statistics/images.php">Classification Breakdown</a> and
-   <a href="/statistics/estimate.php">Future Estimates</a>.</p>
+   <a href="/statistics/images.php">Moderationsstatus</a> und
+   <a href="/statistics/estimate.php">Prognosen</a>.</p>
 
 {include file="_std_end.tpl"}

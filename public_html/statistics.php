@@ -43,7 +43,10 @@ if ($smarty->caching) {
 $smarty->assign_by_ref('references',$CONF['references_all']);		
 $smarty->assign_by_ref('references_real',$CONF['references']);		
 
-$bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Myriad');
+if ($CONF['lang'] == 'de')
+	$bys = array('status' => 'Klassifizierung','class' => 'Kategorie','takenyear' => 'Aufnahmedatum','gridsq' => '100km-Quadrat');
+else
+	$bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Myriad');
 $smarty->assign_by_ref('bys',$bys);
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
