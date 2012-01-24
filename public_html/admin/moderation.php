@@ -158,6 +158,15 @@ if (!empty($_GET['relinquish'])) {
 	
 		$db->Execute("UPDATE user SET rights = CONCAT(rights,',traineemod') WHERE user_id = {$USER->user_id}");
 		
+		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+		$from_name = $USER->realname;
+		$from_email = $USER->email;
+		$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+		$from = "From: $enc_from_name <$from_email>\n";
+		$mime = "MIME-Version: 1.0\n".
+			"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+			"Content-Disposition: inline\n".
+			"Content-Transfer-Encoding: 8bit";
 		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			
 		
 		$url = 'http://'.$_SERVER['HTTP_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
@@ -173,7 +182,7 @@ $url
 Regards, 
 
 {$USER->realname}".($USER->nickname?" (aka {$USER->nickname})":''),
-				"From: {$USER->realname} <{$USER->email}>", "-f mail@hlipp.de"); //FIXME env from
+				$from.$mime, $envfrom);
 				
 		header("Location: /profile.php");
 		exit;

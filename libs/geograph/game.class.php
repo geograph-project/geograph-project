@@ -83,7 +83,7 @@ class game {
 	}
 	
 	public function saveScore($where = 'user',$username = '') {
-		global $USER;
+		global $USER,$CONF;
 		
 		$db = $this->_getDB();
 		
@@ -98,7 +98,16 @@ class game {
 			
 			$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			
 			
-			mail(implode(',',$mods), "[Geograph] Scoreboard approval required","Click the following link to review current list\n\nhttp://{$_SERVER['HTTP_HOST']}/games/approve.php","From: Geograph <mail@hlipp.de>", "-f mail@hlipp.de"); //FIXME from+env from
+			mail(implode(',',$mods),
+				mb_encode_mimeheader($CONF['mail_subjectprefix']."Scoreboard approval required", $CONF['mail_charset'], $CONF['mail_transferencoding']),
+				"Click the following link to review current list\n\nhttp://{$_SERVER['HTTP_HOST']}/games/approve.php",
+				"From: Geograph <{$CONF['mail_from']}>\n".
+				"MIME-Version: 1.0\n".
+				"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+				"Content-Disposition: inline\n".
+				"Content-Transfer-Encoding: 8bit",
+				is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
+			);
 		}
 		if (!empty($username)) {
 			$updates['username'] = $username;
