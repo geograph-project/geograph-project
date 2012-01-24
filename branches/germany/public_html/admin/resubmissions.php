@@ -78,12 +78,14 @@ if (isset($_POST['gridimage_id']))
 			
 			//email me if we lag, but once gets big no point continuing to notify!
 			ob_start();
-			print "\n\nHost: ".`hostname`."\n\n";
+			print "\n\nHost: ".`hostname -f`."\n\n";
 			print "\n\nView: http://{$_SERVER['HTTP_HOST']}/admin/resubmissions.php?review=$gridimage_id\n\n";
 			print_r($row);
 			print_r($_SERVER);
 			$con = ob_get_clean();
-			mail('geo@hlipp.de','[Geograph] Resubmission failure!',$con); #FIXME configurable address!
+			$geofrom = "From: Geograph <{$CONF['mail_from']}>";
+			$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+			mail($CONF['contact_email'], '[Geograph] Resubmission failure!', $con, $geofrom, $envfrom);
 			
 			//unclog the queue!
 			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id} ");

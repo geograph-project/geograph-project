@@ -54,23 +54,35 @@ if (isset($_POST['msg']))
 			if ($_SESSION['user']->user_id)
 				$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
 			$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
-			
-			mail($CONF['contact_email'], 
-				'[Geograph] '.$subject,
+
+			$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+			$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+			$mime = "MIME-Version: 1.0\n".
+				"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+				"Content-Disposition: inline\n".
+				"Content-Transfer-Encoding: 8bit";
+
+			mail($CONF['contact_email'],
+				$encsubject,
 				$msg,
-				'From:'.$from, "-f geo@hlipp.de");	//FIXME env from
+				'From: '.$from."\n".$mime, $envfrom);
 
 			$smarty->assign('message_sent', true);
 		}
 		else
 		{
-			$smarty->assign('msg_error', 'Please enter your message to us above');
+			if ($CONF['lang'] == 'de')
+				$smarty->assign('msg_error', 'Bitte Nachricht eingeben!');
+			else
+				$smarty->assign('msg_error', 'Please enter your message to us above');
 		}
 	}
 	else
 	{
-		$smarty->assign('from_error', 'Invalid email address');
-		
+		if ($CONF['lang'] == 'de')
+			$smarty->assign('from_error', 'Bitte gültige E-Mail-Adresse eingeben!');
+		else
+			$smarty->assign('from_error', 'Invalid email address');
 	}
 }
 else

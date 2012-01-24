@@ -82,28 +82,41 @@ if (isset($_POST['msg']))
 	if (!isValidEmailAddress($from_email))
 	{
 		$ok=false;
-		$errors['from_email']='Please specify a valid email address';
+		if ($CONF['lang'] == 'de')
+			$errors['from_email']='Bitte gültige E-Mail-Adresse eingeben!';
+		else
+			$errors['from_email']='Please specify a valid email address';
 	}
 	if (!isValidRealName($from_name))
 	{
 		$ok=false;
-		$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		if ($CONF['lang'] == 'de')
+			$errors['from_name']='Der Name enthält ungültige Zeichen!';
+		else
+			$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 	}
 	if (strlen($msg)==0)
 	{
 		$ok=false;
-		$errors['msg']="Please enter a message to send";
+		if ($CONF['lang'] == 'de')
+			$errors['msg']="Bitte Nachricht eingeben!";
+		else
+			$errors['msg']="Please enter a message to send";
 	}
 	$smarty->assign_by_ref('errors', $errors);
 
 	$smarty->assign_by_ref('msg', $msg);
+	$smarty->assign_by_ref('contactmail', $CONF['contact_email']);
 
 	$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 
 	if (isSpam($msg))
 	{
 		$ok=false;
-		$errors['msg']="Sorry, this looks like spam";
+		if ($CONF['lang'] == 'de')
+			$errors['msg']="Die Nachricht sieht wie SPAM aus.";
+		else
+			$errors['msg']="Sorry, this looks like spam";
 	}
 	
 	//if not logged in or they been busy - lets ask them if a person! (plus jump though a few hoops to make it harder to program a bot)
@@ -166,10 +179,10 @@ if (isset($_POST['msg']))
 			"Content-Disposition: inline\n".
 			"Content-Transfer-Encoding: 8bit";
 		$from = "From: $enc_from_name <$from_email>\n";
-		$geofrom = "From: Geograph <{$CONF['mail_from']}>";
+		$geofrom = "From: Geograph <{$CONF['mail_from']}>\n";
 		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 
-		if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) {
+		if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) { # FIXME hard coded patterns
 			$smarty->assign('invalid_email', 1);
 			
 			$email = $CONF['contact_email'];
@@ -194,7 +207,7 @@ if (isset($_POST['msg']))
 				"Original To: {$recipient->email}\n".
 				"Original From: $from_name <$from_email>\n".
 				"Original Subject:\n\n$body",
-				$geofrom, $envfrom);
+				$geofrom.$mime, $envfrom);
 
 
 			$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
@@ -216,7 +229,7 @@ if (isset($_POST['msg']))
 					"Original From: $from_name <$from_email>\n".
 					"Copy of message sent to {$recipient->realname}\n".
 					"Original Subject:\n\n$body",
-					$geofrom, $envfrom);
+					$geofrom.$mime, $envfrom);
 
 
 				$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");

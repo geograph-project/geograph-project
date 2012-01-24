@@ -193,12 +193,27 @@ return $pageNav;
 
 //---------------------->
 function sendMail($email, $subject, $msg, $from_email, $errors_email) {
+/*
+$mail_subjectprefix=$CONF['mail_subjectprefix'];
+$mail_charset=$CONF['mail_charset'];
+$mail_headerenc=$CONF['mail_transferencoding'];
+$mail_envfrom=is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+$mail_from=$CONF['mail_from'];
+
+ // $errors_email == $admin_email in all cases
+$admin_email=$CONF['minibb_admin_email'];
+ */
 // Function sends mail with return-path (if incorrect email TO specifed. Reply-To: and Errors-To: need contain equal addresses!
 if (!isset($GLOBALS['genEmailDisable']) or $GLOBALS['genEmailDisable']!=1){
 $msg=str_replace("\r\n", "\n", $msg);
 $php_version=phpversion();
 $from_email="From: $from_email\nReply-To: $errors_email\nErrors-To: $errors_email\nX-Mailer: PHP ver. $php_version";
-mail($email, $GLOBALS['mail_subjectprefix'].$subject, $msg, $from_email, "-f mail@hlipp.de"); //FIXME env from
+$mime = "MIME-Version: 1.0\n".
+	"Content-Type: text/plain; {$GLOBALS['mail_charset']}\n".
+	"Content-Disposition: inline\n".
+	"Content-Transfer-Encoding: 8bit";
+$encsubject=mb_encode_mimeheader($GLOBALS['mail_subjectprefix'].$subject, $GLOBALS['mail_charset'], $GLOBALS['mail_headerenc']);
+mail($email, $encsubject, $msg, $from_email."\n".$mime, $GLOBALS['mail_envfrom']);
 }
 }
 
