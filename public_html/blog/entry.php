@@ -90,6 +90,14 @@ if (count($page)) {
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
+                if (!isset($_GET['dontcount']) && $CONF['template']!='archive'
+                        && (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE)
+                        && (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE)
+                        && (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')===FALSE)
+                        ) {
+                        $db->Execute("UPDATE LOW_PRIORITY blog SET views=views+1,updated=updated WHERE blog_id = ".$page['blog_id']);
+                }
+
 	if ($page['template'] != 1) {
 		$template = 'blog_entry'.intval($page['template']).'.tpl';
 	}
