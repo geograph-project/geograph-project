@@ -66,7 +66,7 @@ SELECT
 	'' AS extract, 
 	0 AS images, 
 	0 AS wordcount, 
-	0 AS views, 
+	views+views_archive AS views, 
 	0 AS titles, 
 	0 AS tags, 
 	content AS words, 
@@ -298,6 +298,7 @@ ON DUPLICATE KEY UPDATE
 	images = ct.images,
 	words = ct.words,
 	type = ct.type,
+	views = ct.views,
 	updated = ct.updated,
 	created = ct.created;
 	

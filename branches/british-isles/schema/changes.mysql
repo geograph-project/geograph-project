@@ -2295,3 +2295,10 @@ create table discuss_report_log (log_id int unsigned NOT NULL auto_increment, `r
 #################################################
 
 
+alter table blog add `views` mediumint(8) unsigned NOT NULL, add `views_archive` mediumint(8) unsigned NOT NULL;
+
+
+#################################################
+
+
+
