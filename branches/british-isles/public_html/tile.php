@@ -223,7 +223,7 @@ if (isset($_GET['map']))
 			}
 		
 			customCacheControl($lastmod,"$e,$n,$reference_index");
-			customExpiresHeader(86400,true);
+			customExpiresHeader(86400);
 			
 			if ($memcache->valid && $mkey && !$mustgenerate) {
 				$data =& $memcache->name_get('td',$mkey);

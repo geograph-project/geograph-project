@@ -526,13 +526,12 @@ split_timer('map'); //starts the timer
 		//use the filename as a hash
 		//can use if-last-mod as file is not unique per user
 		customCacheControl($t,$full,true);	
-		customExpiresHeader(3600*6,true);
+		customExpiresHeader(3600*6);
 		
 		
 		
 		$size=filesize($full);
 		header("Content-Type: $type");
-		header("Content-Size: $size");
 		header("Content-Length: $size");
 		
 		
@@ -1336,7 +1335,7 @@ split_timer('map'); //starts the timer
 		$number = !empty($this->minimum)?intval($this->minimum):0;
 	
 		if ($this->type_or_user == -13) {
-			$sql="select x,y,0,max(ftf) as imagecount
+			$sql="select x,y,0 as 'd',max(ftf) as imagecount
 				from gridimage_search
 				group by x,y
 				 having imagecount>0
