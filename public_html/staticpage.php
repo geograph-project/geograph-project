@@ -49,6 +49,7 @@ if (!$smarty->templateExists($template))
 	$template='static_404.tpl';
 }
 
+customGZipHandlerStart();
 
 $mtime = $smarty->templateDate($template);
 
@@ -61,7 +62,6 @@ if ($mtime) {
 }
 
 
-customGZipHandlerStart();
 customExpiresHeader(86400*3,false,true);
 
 $smarty->assign("api_host",preg_replace("/^\w+/",'api',$CONF['CONTENT_HOST']));
