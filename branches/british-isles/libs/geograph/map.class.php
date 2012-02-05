@@ -526,7 +526,7 @@ split_timer('map'); //starts the timer
 		//use the filename as a hash
 		//can use if-last-mod as file is not unique per user
 		customCacheControl($t,$full,true);	
-		customExpiresHeader(3600*6);
+		customExpiresHeader(3600*6,true);
 		
 		
 		

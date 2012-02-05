@@ -1172,7 +1172,7 @@ class RasterMap
 		#//can use if-last-mod as file is not unique per user
 		#customCacheControl($t,$mappath,true);
 
-		customExpiresHeader(15552000);
+		customExpiresHeader(15552000,true);
 		
 		header("Content-Type: image/png");
 		
