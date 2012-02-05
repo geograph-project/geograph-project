@@ -37,7 +37,29 @@ if (!empty($_GET['role']) && preg_match('/^\w+$/',$_GET['role'])) {
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	$positions = array(
+	'founder' => 'Founder',
+	'developer' => 'Developer',
+	'director' => 'Company Director',
+	'moderator' => 'Moderator',
+	'ticketmod' => 'Moderator',
+	'poty' => 'PoTY Coordinator',
+	'forum' => 'Forum Moderator',
+	'complaints' => 'Complaints Resolution',
+	'docs' => 'Documentation Writer',
+	'coordinator' => 'Moderator Coordinator',
+	'support' => 'Support Representative');
+
+	##'member' => 'Company Member',
+	##'basic' => 'Member',
+	##'traineemod' => 'Trainee Moderator',
+	##'suspicious' => '',
+	##'dormant' => '',
+
+
 	$db = GeographDatabaseConnection(true);
+
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 	$team = $db->GetAssoc("
 	select 
@@ -67,32 +89,9 @@ if (!$smarty->is_cached($template, $cacheid))
 				array_unshift($rights,$row['role']);
 
 			$team[$key]['md5_email'] = md5(strtolower($row['email']));
-			if ($_GET['preview'] == 2) {
-				$team[$key]['rights'] = implode(', ',$rights);
-			} else {
-				$team[$key]['rights'] = implode(', ',array_keys($rights));
-			}
+			$team[$key]['rights'] = implode(', ',array_keys($rights));
 		}
 	}
-
-	$positions = array(
-	'founder' => 'Founder',
-	'developer' => 'Developer',
-	'director' => 'Company Director',
-	'moderator' => 'Moderator',
-	'ticketmod' => 'Moderator',
-	'poty' => 'PoTY Coordinator',
-	'forum' => 'Forum Moderator',
-	'complaints' => 'Complaints Resolution',
-	'docs' => 'Documentation Writer',
-	'coordinator' => 'Moderator Coordinator',
-	'support' => 'Support Representative');
-
-	##'member' => 'Company Member',
-	##'basic' => 'Member',
-	##'traineemod' => 'Trainee Moderator',
-	##'suspicious' => '',
-	##'dormant' => '',
 
         $smarty->assign_by_ref('positions', $positions);
 
