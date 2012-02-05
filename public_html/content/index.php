@@ -324,6 +324,12 @@ if (!empty($_GET['debug'])) {
 	$smarty->assign("order",$order);
 	$smarty->assign_by_ref("orders",$orders);
 	$smarty->assign_by_ref("sources",$sources);
+	$colours = array('FFFFFF','FFDDFF','FFFFAA','FFAAFF','AAFFFF','DDDDDD','DDDDFF','DDFFDD','BBBBFF','BBFFBB','FFBBBB','FFFFDD','FFDDDD');
+	$keys = array_keys($sources);
+	foreach ($keys as $idx => $key) {
+		$colours[$key] = $colours[$idx];
+	}
+	$smarty->assign_by_ref("colours",$colours);
 	
 	//these are handled by the page
 	unset($extra['q']);
