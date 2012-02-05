@@ -85,7 +85,6 @@ if (defined('CHECK_CAPTCHA')) {
 
 	$size=filesize($_SERVER['DOCUMENT_ROOT']. $imgLoc);
 	header("Content-Type: image/jpeg");
-	header("Content-Size: $size");
 	header("Content-Length: $size");
 	readfile($_SERVER['DOCUMENT_ROOT']. $imgLoc);
 }

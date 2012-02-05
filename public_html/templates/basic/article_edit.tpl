@@ -8,7 +8,7 @@ function unloadMess() {
 	if (ele.value == ele.defaultValue) {
 		return;
 	}
-	return "**************************\n\nYou have unsaved changes the content box.\n\n**************************\n";
+	return "**************************\n\nYou have unsaved changes in the content box.\n\n**************************\n";
 }
 //this is unreliable with AttachEvent
 window.onbeforeunload=unloadMess;

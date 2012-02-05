@@ -392,7 +392,7 @@ class RestAPI
 	
 	function beginResponse()
 	{
-		customExpiresHeader(360,true,true);
+		customExpiresHeader(360,false,true);
 		customGZipHandlerStart();
 		if ($this->output=='json') {
 			if (!empty($this->callback)) {

@@ -1172,12 +1172,11 @@ class RasterMap
 		#//can use if-last-mod as file is not unique per user
 		#customCacheControl($t,$mappath,true);
 
-		customExpiresHeader(15552000,true);
+		customExpiresHeader(15552000);
 		
 		header("Content-Type: image/png");
 		
 		$size=filesize($mappath);
-		header("Content-Size: $size");
 		header("Content-Length: $size");
 
 		split_timer('rastermap','sending',$mappath); //logs the wall time
