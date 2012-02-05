@@ -867,8 +867,11 @@ function customExpiresHeader($diff,$public = false,$overwrite = false) {
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");    // Date in the past 
 		header("Cache-Control: max-age=0$private",$overwrite);
 	}
-	if ($public)
-		header("Cache-Control: public",false);
+	//via http://redbot.org - 
+	// Therefore, SSL-protected or HTTP-authenticated (NOT cookie-authenticated) resources may have use for public to improve cacheability, if used judiciously.
+	// However, other responses do not need to contain public ; it does not make the response "more cacheable", and only makes the headers larger.
+	//if ($public)
+	//	header("Cache-Control: public",false);
 }
 
 function getEncoding() {
