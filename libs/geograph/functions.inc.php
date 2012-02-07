@@ -796,19 +796,13 @@ function get_no_content($url) {
 
 function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 	global $encoding;
-	
-	if (!$gmdate_mod)
-		$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
-
-	header("Last-Modified: $gmdate_mod");
-
-
 	if (isset($encoding) && $encoding != 'none' && $encoding != '') {
 		$uniqstr .= $encoding;
 	}
 	
 	$hash = "\"".md5($mtime.'-'.$uniqstr)."\"";
 
+	
 	if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) { // check ETag
 		if($_SERVER['HTTP_IF_NONE_MATCH'] == $hash ) {
 			header("HTTP/1.0 304 Not Modified");
@@ -830,6 +824,8 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 
 	header ("Etag: $hash"); 
 
+	if (!$gmdate_mod)
+		$gmdate_mod = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
 
 	if ($useifmod && !empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
 		$if_modified_since = preg_replace('/;.*$/', '', $_SERVER['HTTP_IF_MODIFIED_SINCE']);
@@ -840,6 +836,8 @@ function customCacheControl($mtime,$uniqstr,$useifmod = true,$gmdate_mod = 0) {
 			exit;
 		}
 	}
+
+	header("Last-Modified: $gmdate_mod");
 }
 
 function customNoCacheHeader($type = 'nocache',$disable_auto = false) {
