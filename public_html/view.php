@@ -180,6 +180,17 @@ if ($image->isValid())
 		customCacheControl($mtime,$hash,($USER->user_id == 0));
 	}
 
+	if (!empty($_SESSION['currentSearch']) && ($idx = array_search($image->gridimage_id,$_SESSION['currentSearch']['r'])) !== FALSE) {
+		$s = $_SESSION['currentSearch']; //keep a copy to avoid adding next/prev to the session value
+		if ($idx > 0) {
+			$s['l'] = $s['r'][$idx-1];
+		}
+		if ($idx < count($_SESSION['currentSearch']['r'])-1) {
+			$s['n'] = $s['r'][$idx+1];
+		}
+		unset($s['r']);
+		$smarty->assign_by_ref('current_search',$s);
+	}
 
 	if ( (stripos($_SERVER['HTTP_USER_AGENT'], 'http')===FALSE) &&
 	    (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')===FALSE) &&

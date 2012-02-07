@@ -24,7 +24,21 @@
 <br/>
 {/if}
 {dynamic}
-{if $search_keywords && $search_count}
+{if $current_search}
+	<div class="interestBox" style="text-align:center; font-size:0.9em;width:400px;margin-left:auto;margin-right:auto">
+		{if $current_search.l}
+			<a href="/photo/{$current_search.l}">&lt; prev image</a>
+		{else}
+			<s style="color:silver" title="first image on this page - you may be able to get to another page via the 'back to search results' itself">&lt; prev image</s>
+		{/if} |
+		<a href="/search.php?i={$current_search.i}&amp;page={$current_search.p}"><b>back to search results</b></a> |
+		{if $current_search.n}
+			<a href="/photo/{$current_search.n}">next image &gt;</a>
+		{else}
+			<s style="color:silver" title="last image on this page - you may be able to get to another page via the 'back to search results' itself">next image &gt;</s>
+		{/if}
+	</div>
+{elseif $search_keywords && $search_count}
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
 		{if !$user->registered}
 		<div style="width:640px;margin-left:auto;margin-right:auto"><i>The Geograph Britain and Ireland project aims to collect geographically representative photographs and information for every square kilometre of Great Britain and Ireland, and you can be part of it.</i> <br/><a href="/faq.php">Read more...</a></div><br/>
@@ -336,12 +350,13 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <br/><br/>
 
 {if $image->tags && ($image->tag_prefix_stat.$blank || $image->tag_prefix_stat.term || $image->tag_prefix_stat.cluster || $image->tag_prefix_stat.wiki)}
-	<p style="margin-top:0px;text-align:left">
+	<p style="margin-top:0px">
 	<b>Other Tags</b><br/><span class="tags" itemprop="keywords">
 	{foreach from=$image->tags item=item name=used}{if $item.prefix eq '' || $item.prefix eq 'term' || $item.prefix eq 'cluster' || $item.prefix eq 'wiki'}
 		<span class="tag"><a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|lower|escape:'html'}</a></span>&nbsp;
 	{/if}{/foreach}</span>
 	</p>
+	<small>Click a tag, to view other nearby images.</small>
 {/if}
 
 

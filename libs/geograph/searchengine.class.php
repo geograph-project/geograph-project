@@ -980,6 +980,12 @@ split_timer('search','ECR',"$this->query_id/$pg"); //logs the wall time
 						$newlist[] = $this->results[$lookup[$id]];
 				}
 				$this->results = $newlist;
+			
+				$_SESSION['currentSearch'] = array(
+					'i' => $this->criteria->id,
+					'p' => $pg,
+					'r' => $this->orderList
+				);
 			}
 			
 			if (!$i && $this->resultCount) {
