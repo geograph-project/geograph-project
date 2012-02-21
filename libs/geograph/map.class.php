@@ -145,9 +145,12 @@ class GeographMap
 	var $layers = 31;
 
 	/**
-	 * Overlay mode if spherical mercator
+	 * Overlay mode if spherical mercator:
+	 * 0: default
+	 * 1: used as overlay in googlemaps/openlayers
+	 * 2: "mobile phone mode"
 	 */
-	var $overlay = false;
+	var $overlay = 0; #false;
 
 	/**
 	* bounding rectangles for labels, in an attempt to prevent collisions
@@ -322,7 +325,7 @@ class GeographMap
 			$token->setValue("m", 1);
 			$token->setValue("l", $this->layers);
 			if (!empty($this->overlay))
-				$token->setValue("o", 1);
+				$token->setValue("o", $this->overlay);
 		}
 		if (!empty($this->force_ri))
 			$token->setValue("i",  $this->force_ri);
@@ -364,7 +367,7 @@ class GeographMap
 					$this->setPalette($token->getValue("p"));
 				$this->force_ri = ($token->hasValue("i"))?$token->getValue("i"):0;
 				$this->layers = ($token->hasValue("l"))?$token->getValue("l"):7;
-				$this->overlay = $token->hasValue("o") && $token->getValue("o");
+				$this->overlay = $token->hasValue("o") ? $token->getValue("o") : 0;
 			}
 			
 		}
@@ -588,6 +591,8 @@ class GeographMap
 			$palette .= "_l{$layers}";
 			if ($this->overlay && !$emptyimage) {
 				$palette .= "_o";
+				if ($this->overlay != 1 /*&& $layers != 2 another set of tiles needed because imagecopymerge is great!*/)
+					$palette .= $this->overlay; # FIXME other occurences
 			}
 		}
 		
@@ -600,6 +605,22 @@ class GeographMap
 			$file=preg_replace('/\./',"-y{$this->displayYear}.",$file);
 		}
 		return $dir.$file;
+	}
+
+	/**
+	* calc filename to an osm tile which can form the base of the map
+	* @access public
+	*/
+	function getOSMFilename()
+	{
+		#$root=&$_SERVER['DOCUMENT_ROOT'];
+		
+		if (!$this->mercator) {
+			#FIXME?
+			return '';
+		}
+		#trigger_error("-> $root/tile/osm/{$this->level}/{$this->tile_x}/{$this->tile_y}.png", E_USER_NOTICE);#FIXME
+		return "/tile/osm/{$this->level}/{$this->tile_x}/{$this->tile_y}.png";
 	}
 
 	/**
@@ -704,6 +725,8 @@ class GeographMap
 			$palette .= "_m";
 			if ($this->overlay) {
 				$palette .= "_o";
+				#if ($this->overlay != 1)
+				#	$palette .= $this->overlay; # FIXME other occurences
 			}
 		}
 		
@@ -720,6 +743,7 @@ class GeographMap
 	*/
 	function _simplifyParameters()
 	{
+		#FIXME overlay == 2 only relevant for base map and square layer, fall back to 1, otherwise!
 		if ($this->mercator) {
 			if ($this->level > 11 && $this->type_or_user == -1 && !$this->overlay) $this->type_or_user = 0;
 			if ($this->type_or_user > 0 && !$this->needUserTile($this->type_or_user)) $this->type_or_user = -10;
@@ -864,7 +888,7 @@ class GeographMap
 				#$min_x -= $dx;
 				#$min_y -= $dy;
 
-				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%d,tile_y=%d,max_x=%d,max_y=%d",$leftMC,$bottomMC,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay?1:0, $this->layers, $this->level, $this->tile_x, $this->tile_y,$rightMC,$topMC);
+				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%d,tile_y=%d,max_x=%d,max_y=%d",$leftMC,$bottomMC,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay, $this->layers, $this->level, $this->tile_x, $this->tile_y,$rightMC,$topMC);
 
 				$db->Execute($sql);
 			}
@@ -2058,10 +2082,12 @@ class GeographMap
 		if (!$img) {
 			return img; #FIXME
 		}
-		imagealphablending($img, true);
-		imagesavealpha($img, true);
+		#imagealphablending($img, true);
+		imagealphablending($img, false);
+		#imagesavealpha($img, true);
 		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
 		imagefill($img,0,0,$back);
+		$alpha = $this->overlay == 2 ? 80 : 0;
 
 		$widthM=$this->map_wM;
 		$dM=$widthM/8;
@@ -2069,8 +2095,8 @@ class GeographMap
 		$bottomM=$this->map_yM;
 		$rightM=$leftM+$widthM;
 		$topM=$bottomM+$widthM;
-		$colMarker=imagecolorallocate($img, $this->colour['marker'][0],$this->colour['marker'][1],$this->colour['marker'][2]);
-		$colSuppMarker=imagecolorallocate($img, $this->colour['suppmarker'][0],$this->colour['suppmarker'][1],$this->colour['suppmarker'][2]);
+		$colMarker=imagecolorallocatealpha($img, $this->colour['marker'][0],$this->colour['marker'][1],$this->colour['marker'][2], $alpha);
+		$colSuppMarker=imagecolorallocatealpha($img, $this->colour['suppmarker'][0],$this->colour['suppmarker'][1],$this->colour['suppmarker'][2], $alpha);
 		$colBorder=imagecolorallocate($img, $this->colour['border'][0],$this->colour['border'][1],$this->colour['border'][2]);
 		if ($this->type_or_user == -1) {
 			$maxcount = 80;
@@ -2098,7 +2124,7 @@ class GeographMap
 				if ($key == $last) {
 					$colours[$o] = $lastcolour;
 				} else {
-					$lastcolour = $colours[$o] = imagecolorallocate($img, $r,$g,$b);
+					$lastcolour = $colours[$o] = imagecolorallocatealpha($img, $r,$g,$b, $alpha);
 				}
 				$last = $key;
 			}
@@ -2107,7 +2133,7 @@ class GeographMap
 		$db=&$this->_getDB();
 		if ($this->level >= 12) {
 			$dbImg=NewADOConnection($GLOBALS['DSN']);
-			imagealphablending($img, true);
+			##imagealphablending($img, true);
 			#$gridcol2=imagecolorallocate ($img, 60,205,252);
 		}
 
@@ -2155,6 +2181,7 @@ class GeographMap
 					$drawpoly[] = $bdry + round(($xM - $leftM)   / $widthM * $imgw);
 					$drawpoly[] = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
 				}
+				imagealphablending($img, false);
 				imagefilledpolygon($img, $drawpoly, $points, $color);
 			} else {
 				#if (!empty($this->type_or_user)) { #FIXME
@@ -2233,6 +2260,7 @@ class GeographMap
 					}
 					if (!is_null($photo)) {
 						imagealphablending($photo, true);
+						imagealphablending($img, true);
 						imagecopy($img, $photo, $xi, $yi, 0, 0, $thumbsize, $thumbsize);
 						imagedestroy($photo);
 						#$framepoints = count($framepoly)/2;
@@ -2274,26 +2302,41 @@ class GeographMap
 		$squareimg = null;
 		$regionimg = null;
 		$layers = array();
+		#$layerpct = array();
 
 		if ($this->layers & 1) {
-			//first of all, generate or pull in a cached based map
-			$basemap=$this->getBaseMapFilename();
-			if ($this->caching && @file_exists($root.$basemap))
-			{
-				//load it up!
-				$baseimg=imagecreatefrompng($root.$basemap);
-
-			}
-			else
-			{
-				//we need to generate a basemap
-				$baseimg=&$this->_createBasemapM($root.$basemap);
+			if ($this->overlay == 2) {
+				$basemap=$this->getOSMFilename();
+				if (@file_exists($root.$basemap)) {
+					//load it up!
+					#$baseimg=imagecreatefrompng($root.$basemap); # I hate gd ...
+					$tmpimg = imagecreatefrompng($root.$basemap);
+					if ($tmpimg) {
+						$baseimg = imagecreatetruecolor(256, 256);
+						imagecopy($baseimg, $tmpimg, 0, 0, 0, 0, 256, 256);
+						imagedestroy($tmpimg);
+					}
+				}
+			} else {
+				//first of all, generate or pull in a cached based map
+				$basemap=$this->getBaseMapFilename();
+				if ($this->caching && @file_exists($root.$basemap))
+				{
+					//load it up!
+					$baseimg=imagecreatefrompng($root.$basemap);
+				}
+				else
+				{
+					//we need to generate a basemap
+					$baseimg=&$this->_createBasemapM($root.$basemap);
+				}
 			}
 			
 			if (!$baseimg) {
 				return false;
 			}
 			$layers[] =& $baseimg;
+			#$layerpct[] = 100;
 		}
 		if (($this->layers & 2) && ($this->type_or_user != -10 || $this->layers == 2)) {
 			$squaremap=$this->getImageFilename(2);
@@ -2319,6 +2362,7 @@ class GeographMap
 				return false;
 			}
 			$layers[] =& $squareimg;
+			#$layerpct[] = $this->overlay != 2 ? 100 : 30;
 		}
 		if ($this->layers & 4) {
 			$regionmap=$this->getLabelMapFilename(false,true);
@@ -2343,6 +2387,7 @@ class GeographMap
 				return false;
 			}
 			$layers[] =& $regionimg;
+			#$layerpct[] = 100;
 		}
 		if ($this->layers & 8) {
 			$labelmap=$this->getLabelMapFilename(false,false);
@@ -2370,6 +2415,7 @@ class GeographMap
 				return false;
 			}
 			$layers[] =& $labelimg;
+			#$layerpct[] = 100;
 		}
 		if ($this->layers & 16) {
 			$tlabelmap=$this->getLabelMapFilename(true,false);
@@ -2400,6 +2446,7 @@ class GeographMap
 				return false;
 			}
 			$layers[] =& $tlabelimg;
+			#$layerpct[] = 100;
 		}
 		if (count($layers) == 1) {
 			return $ok;
@@ -2412,7 +2459,10 @@ class GeographMap
 		imagealphablending($layers[0], true);
 		for ($i = 1; $i < count($layers);++$i) {
 			imagealphablending($layers[$i], true);
-			imagecopy($layers[0], $layers[$i],      0, 0, 0, 0, $destw, $destw);
+			#if ($layerpct[$i] == 100)
+				imagecopy($layers[0], $layers[$i],      0, 0, 0, 0, $destw, $destw);
+			#else
+			#	imagecopymerge($layers[0], $layers[$i],      0, 0, 0, 0, $destw, $destw, $layerpct[$i]); # this does handle alpha transparency incorrectly. I hate gd.
 			imagedestroy($layers[$i]);
 		}
 
@@ -4181,8 +4231,8 @@ END;
 		
 		$grid=array();
 
-		$tstart = microtime(true);
-		$tcalc = 0;
+		###$tstart = microtime(true);
+		###$tcalc = 0;
 		$imgw = $this->image_w;
 		$imgh = $this->image_h;
 		if ($this->mercator) {
@@ -4195,7 +4245,7 @@ END;
 			$cliprightM =  ceil ($rightM  - $this->clipright  * $widthM / $imgw);
 			$cliptopM =    ceil ($topM    - $this->cliptop    * $widthM / $imgw);
 			$clipbottomM = floor($bottomM + $this->clipbottom * $widthM / $imgw);
-			trigger_error("->CP $cliprightM $clipleftM $cliptopM  $clipbottomM", E_USER_NOTICE);
+			###trigger_error("->CP $cliprightM $clipleftM $cliptopM  $clipbottomM", E_USER_NOTICE);
 			# Trying to solve our mysql performance issue:
 			#   select * from
 			#       gridsquare_gmcache gmc inner join gridsquare gs using (gridsquare_id)
@@ -4299,7 +4349,7 @@ END;
 			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
 			$recordSet->fields['title1'] = $recordSet->fields['title'];
 			$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
-			$tcalc -= microtime(true);
+			###$tcalc -= microtime(true);
 			$poly = array();
 			if ($this->mercator) {
 				$points = $recordSet->fields[0];
@@ -4338,13 +4388,13 @@ END;
 				$recordSet->fields['poly'] = $poly;
 				$grid[]=$recordSet->fields;
 			#}
-			$tcalc += microtime(true);
+			###$tcalc += microtime(true);
 			
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close();
-		$ttotal = microtime(true) - $tstart;
-		trigger_error("->t $ttotal, $tcalc", E_USER_NOTICE);
+		###$ttotal = microtime(true) - $tstart;
+		###trigger_error("->t $ttotal, $tcalc", E_USER_NOTICE);
 
 		if ($memcache->valid)
 			$memcache->name_set($mnamespace,$mkey,$grid,$memcache->compress,$mperiod);

@@ -214,9 +214,18 @@ ommap.tpl, rastermap.class.php:
 					visibility : false,
 				}
 			);
+			var mapnik = new OpenLayers.Layer.XYrZ(
+				"Static mapnik",
+				"/tile/osm/${z}/${x}/${y}.png",
+				0, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
+				{
+					attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+					sphericalMercator : true,
+				}
+			);
 
 			// FIXME numZoomLevels: are these values sensible?
-			var mapnik = new OpenLayers.Layer.OSM(
+			var osmmapnik = new OpenLayers.Layer.OSM(
 				null,
 				null,
 				{ numZoomLevels: 19 }
@@ -227,7 +236,19 @@ ommap.tpl, rastermap.class.php:
 				{ numZoomLevels: 19 }
 			);
 
-			var hills = new OpenLayers.Layer.XYrZ( //FIXME our own version?
+			var hills = new OpenLayers.Layer.XYrZ(
+				"Relief",
+				"/tile/hills/${z}/${x}/${y}.png",
+				9, 12/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: 'Relief: <a href="http://srtm.csi.cgiar.org/">CIAT data</a>',
+					sphericalMercator : true,
+					isBaseLayer : false,
+					visibility : false,
+				}
+			);
+
+			var topohills = new OpenLayers.Layer.XYrZ(
 				"Relief (Nop's Wanderreitkarte)",
 				[ "http://wanderreitkarte.de/hills/${z}/${x}/${y}.png", "http://www.wanderreitkarte.de/hills/${z}/${x}/${y}.png"], // ol: 9..19 tiles: 8..\infty // 8..15
 				9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
@@ -236,9 +257,9 @@ ommap.tpl, rastermap.class.php:
 					sphericalMercator : true,
 					isBaseLayer : false,
 					visibility : false,
+					displayInLayerSwitcher: false,
 				}
 			);
-
 			var topobase = new OpenLayers.Layer.XYrZ(
 				"Nop's Wanderreitkarte",
 				[ "http://base.wanderreitkarte.de/base/${z}/${x}/${y}.png", "http://base2.wanderreitkarte.de/base/${z}/${x}/${y}.png"],
@@ -261,11 +282,15 @@ ommap.tpl, rastermap.class.php:
 					displayInLayerSwitcher: false,
 				}
 			);
+			topobase.hasHills = true;
 			map.events.register("changebaselayer", map, function(e) {
 				/* Topographical map: always show trails layer */
 				var showtopotrails = topobase == e.layer;
 				if (topotrails.getVisibility() != showtopotrails)
 					topotrails.setVisibility(showtopotrails);
+				/* Topographical map: always show hills layer */
+				if (topohills.getVisibility() != showtopotrails)
+					topohills.setVisibility(showtopotrails);
 			});
 
 			map.events.register("changebaselayer", map, function(e) {
@@ -332,7 +357,8 @@ ommap.tpl, rastermap.class.php:
 
 			initMarkersLayer();
 
-			mapnik.gmaxz = mapnik.numZoomLevels-1;
+			mapnik.gmaxz = mapnik.maxZoomLevel;//mapnik.numZoomLevels-1;
+			osmmapnik.gmaxz = osmmapnik.numZoomLevels-1;
 			osmarender.gmaxz = osmarender.numZoomLevels-1;
 			topobase.gmaxz = topobase.maxZoomLevel;
 			geo.gmaxz = geo.maxZoomLevel;
@@ -363,7 +389,8 @@ ommap.tpl, rastermap.class.php:
 {/if}
 {literal}
 				'g' : geo,
-				'o' : mapnik,
+				'o' : osmmapnik,
+				'r' : mapnik,
 				'w' : topobase,
 				't' : osmarender
 			}
@@ -446,9 +473,10 @@ ommap.tpl, rastermap.class.php:
 
 			/* first layer: map type for overview map */
 			map.addLayers([
-				mapnik, osmarender,
+				mapnik,
+				osmmapnik, osmarender,
 				geo,
-				topobase, topotrails,
+				topobase, topotrails, topohills,
 				hills,
 				geosq, geogr,
 {/literal}

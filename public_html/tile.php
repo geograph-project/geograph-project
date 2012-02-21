@@ -50,7 +50,7 @@ if (isset($_GET['map']))
 	$x = intval($_GET['x']);
 	$y = intval($_GET['y']);
 	$z = intval($_GET['Z']);
-	$overlay = isset($_GET['o']) && !empty($_GET['o']);
+	$overlay = isset($_GET['o']) ? intval($_GET['o']) : 0;
 	$t = 0;
 	if (isset($_GET['t'])) {
 		$t = intval($_GET['t']);
@@ -63,7 +63,8 @@ if (isset($_GET['map']))
 	$x19 = $x * $f19;
 	$y19 = $y * $f19;
 	if  (    $layers < 1 || $layers > 31
-	      || $z < 4 || $z > ($overlay||!($layers&2) ? 14 : 13 ) //FIXME 15:13 also okay?
+	      || $overlay < 0 || $overlay > 2
+	      || $z < ($overlay == 2 ? 9 : 4) || $z > ($overlay||!($layers&2) ? 14 : 13 ) //FIXME 15:13 also okay?
 	      || $x19+$f19 < $CONF['xmrange'][0] || $x19 > $CONF['xmrange'][1]
 	      || $y19+$f19 < $CONF['ymrange'][0] || $y19 > $CONF['ymrange'][1]
 	      || $t < -1

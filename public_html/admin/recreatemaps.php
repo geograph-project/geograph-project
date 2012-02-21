@@ -271,7 +271,6 @@ if (isset($_GET['coast_GB_40'])) {
 				$map->$name=$value;
 		}
 		$map->mercator = !empty($map->mercator);
-		$map->overlay = !empty($map->overlay);
 		if ($map->mercator) {
 			$map->setScale($map->level);
 		}
