@@ -139,7 +139,7 @@ class GridSquare
 			$tmpservices = array();
 		}
 		$services = explode(',',$CONF['raster_service']);
-		if (in_array('Google',$services)) {
+		if (in_array('Google',$services) || in_array('OLayers',$services)) {
 			//$tmpservices = $tmpservices + array(0);
 			$tmpservices = array_merge($tmpservices, array(0));
 		}

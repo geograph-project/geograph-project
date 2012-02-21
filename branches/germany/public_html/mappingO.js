@@ -34,7 +34,7 @@
  var lat2 = 0;
  var lon2 = 0;
  var epsg4326 = new OpenLayers.Projection("EPSG:4326");
- var epsg900913 = new OpenLayers.Projection("EPSG:900913"); // FIXME use epsg900913 or map.getProjectionObject()?
+ var epsg900913 = new OpenLayers.Projection("EPSG:900913"); // FIXME these should be initialized in a function => openlayers could be loaded later
 
 
  var pickupbox = null;
@@ -80,8 +80,12 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
      * maxzoom - {Integer}
      * errortileurl - {String}
      * options - {Object} Hashtable of extra options to tag onto the layer
+     * highzoom - {Integer} First zoom level using highzoomurl
+     * highzoomurl - {String} URL to use for zoom levels >= highzoomurl
      */
-    initialize: function(name, url, minzoom, maxzoom, errortileurl, options) {
+    initialize: function(name, url, minzoom, maxzoom, errortileurl, options, highzoom, highzoomurl) {
+        this.highZoom = highzoom;
+        this.highZoomUrl = highzoomurl;
         this.minZoomLevel = minzoom;
         this.maxZoomLevel = maxzoom;
         //this.numZoomLevels = null; //FIXME?
@@ -109,7 +113,9 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
                                             this.minZoomLevel,
                                             this.maxZoomLevel,
                                             this.errorTile,
-                                            this.getOptions());
+                                            this.getOptions(),
+                                            this.highZoom,
+                                            this.highZoomUrl);
         }
 
         //get all additions from superclasses
@@ -133,7 +139,7 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         if (xyz.z < this.minZoomLevel || xyz.z > this.maxZoomLevel) {
             return this.errorTile; // FIXME check also x/y range?
         }
-        var url = this.url;
+        var url = ( this.highZoom != null && xyz.z >= this.highZoom ) ? this.highZoomUrl : this.url;
         if (OpenLayers.Util.isArray(url)) {
             var s = '' + xyz.x + xyz.y + xyz.z;
             url = this.selectUrl(s, url);
@@ -300,7 +306,7 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 		{
 			mtype:type,
 			isdraggable: issubmit && !(type && iscmap),
-			initialpos:point
+			initialpos:ll
 		}
 	);
  	if (type) {

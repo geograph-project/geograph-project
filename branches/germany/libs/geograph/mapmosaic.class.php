@@ -1745,6 +1745,8 @@ class GeographMapMosaic
 			$param .= "_l{$layers}";
 			if (!empty($row['overlay'])) {
 				$param .= "_o";
+				if ($row['overlay'] != 1 /*&& $layers != 2 another set of tiles needed because imagecopymerge is great!*/)
+					$param .= $row['overlay']; # FIXME other occurences
 			}
 		}
 
