@@ -1212,7 +1212,7 @@ EOF;
 					attribution: $attr_static,
 					sphericalMercator : true,
 				},
-				15, \"http://tile.openstreetmap.org/\${z}/\${x}/\${y}.png\"
+				16, \"http://tile.openstreetmap.org/\${z}/\${x}/\${y}.png\"
 			);
 			var osmmapnik = new OpenLayers.Layer.OSM();
 
@@ -1224,7 +1224,7 @@ EOF;
 			var hills = new OpenLayers.Layer.XYrZ(
 				\"$name_hills\",
 				\"/tile/hills/\${z}/\${x}/\${y}.png\",
-				9, 12/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				9, 14/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
 					attribution: $attr_hills,
 					sphericalMercator : true,
