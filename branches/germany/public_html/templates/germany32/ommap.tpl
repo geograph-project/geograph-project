@@ -215,13 +215,14 @@ ommap.tpl, rastermap.class.php:
 				}
 			);
 			var mapnik = new OpenLayers.Layer.XYrZ(
-				"Static mapnik",
+				"Mapnik (Static + OSM)",
 				"/tile/osm/${z}/${x}/${y}.png",
-				0, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
+				0, 18, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
 				{
 					attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true,
-				}
+				},
+				16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
 			);
 
 			// FIXME numZoomLevels: are these values sensible?
@@ -285,13 +286,22 @@ ommap.tpl, rastermap.class.php:
 			topobase.hasHills = true;
 			map.events.register("changebaselayer", map, function(e) {
 				/* Topographical map: always show trails layer */
-				var showtopotrails = topobase == e.layer;
-				if (topotrails.getVisibility() != showtopotrails)
-					topotrails.setVisibility(showtopotrails);
+				var showtopolayers = topobase == e.layer;
+				if (topotrails.getVisibility() != showtopolayers)
+					topotrails.setVisibility(showtopolayers);
 				/* Topographical map: always show hills layer */
-				if (topohills.getVisibility() != showtopotrails)
-					topohills.setVisibility(showtopotrails);
+				if (topohills.getVisibility() != showtopolayers)
+					topohills.setVisibility(showtopolayers);
 			});
+			var cycle = new OpenLayers.Layer.OSM(
+				"Cycle Map",
+				"http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+				{
+					attribution: '&copy; <a href="http://opencyclemap.org/">OpenCycleMap</a> (<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+					numZoomLevels: 19
+				}
+			);
+			cycle.hasHills = true;
 
 			map.events.register("changebaselayer", map, function(e) {
 				var redrawlayerswitcher = false;
@@ -361,6 +371,7 @@ ommap.tpl, rastermap.class.php:
 			osmmapnik.gmaxz = osmmapnik.numZoomLevels-1;
 			osmarender.gmaxz = osmarender.numZoomLevels-1;
 			topobase.gmaxz = topobase.maxZoomLevel;
+			cycle.gmaxz = cycle.numZoomLevels-1;
 			geo.gmaxz = geo.maxZoomLevel;
 {/literal}
 {if $google_maps_api_key}
@@ -392,6 +403,7 @@ ommap.tpl, rastermap.class.php:
 				'o' : osmmapnik,
 				'r' : mapnik,
 				'w' : topobase,
+				'c' : cycle,
 				't' : osmarender
 			}
 			for (var key in maptypes) {
@@ -476,6 +488,7 @@ ommap.tpl, rastermap.class.php:
 				mapnik,
 				osmmapnik, osmarender,
 				geo,
+				cycle,
 				topobase, topotrails, topohills,
 				hills,
 				geosq, geogr,

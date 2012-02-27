@@ -40,7 +40,7 @@ if (isset($_REQUEST['inner'])) {
 	$cacheid = '';
 }
 
-$type = 'o';
+$type = 'r';
 if (isset($_REQUEST['picasa'])) {
 	$cacheid .= 'picasa';
 	$smarty->assign('picasa',1);
@@ -90,7 +90,7 @@ if (isset($_GET['or']) && is_numeric($_GET['or'])) {
 }
 if (isset($_GET['t'])) {
 	$googletypes = empty($CONF['google_maps_api_key']) ? '' : 'mkhp';
-	if (preg_match('/^['.$googletypes.'gowtr][SGH]*$/', $_GET['t'])) {
+	if (preg_match('/^['.$googletypes.'gowtrc][SGH]*$/', $_GET['t'])) {
 		$type = $_GET['t'];
 	} elseif ($_GET['t'] == 'og') { /* stay compatible with gmmap */
 		$type = 'oSGH';
