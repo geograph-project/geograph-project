@@ -8,6 +8,7 @@
 {/if}
 
 <form method="get" action="/search.php">
+        <input type="hidden" name="form" value="basic"/>
 	<div class="tabHolder" style="text-align:right">
 		<span class="tabSelected">Simple search</span>
 		<a href="/search.php?form=text" class="tab">Advanced search</a>
@@ -31,6 +32,8 @@
 	</div>
 	<div style="font-size:0.7em;text-align:right"><a href="?new=1">Try new experimental auto-complete version of this page</a></div>
 </form>
+<small>TIP: Search by tags, by surrounding by [...] in the 'for' box above. Eg enter <tt style="border:1px solid gray;padding:3px;">[footpath]</tt> to search for "footpath" tagged images.</small><br/>
+
 {/dynamic}
 <ul style="margin-left:0;padding:0 0 0 1em;">
 

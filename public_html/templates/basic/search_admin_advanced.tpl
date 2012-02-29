@@ -7,6 +7,7 @@
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
 <form action="search.php" method="post" name="theForm" target="_blank">
+	<input type="hidden" name="form" value="admin"/>
 	<p><b>Use the following options to customise your search</b>.<br/> </p>
 		<table cellpadding="3" cellspacing="0"> 
 		  <tr> 

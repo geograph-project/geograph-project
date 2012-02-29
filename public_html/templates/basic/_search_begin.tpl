@@ -95,6 +95,7 @@ Display:
 		[<a href="javascript:void(show_tree(101));" id="hide101">quick refine</a>]</p>
 		<div class="interestBox" style="border:1px solid pink;display:none; " id="show101">
 			<form action="{$script_name}" method="get">
+				<input type="hidden" name="form" value="redo{$i}"/>
 				<div><label for="fq">New Keywords</label>: <input type="text" name="text" id="fq" size="30"{if $engine->criteria->searchtext} value="{$engine->criteria->searchtext|escape:'html'}"{/if}/>
 				<input type="submit" value="Search"/>
 				<input type="hidden" name="i" value="{$i}"/>

@@ -302,6 +302,10 @@ split_timer('search'); //starts the timer
 				$sql .=",searchtext = ".$db->Quote($searchtext).
 				",displayclass = 'excerpt'";
 			}
+			if (!empty($_GET['orderby']))
+				$sql .= ",orderby = ".$db->Quote($_GET['orderby']);
+			if (!empty($_GET['groupby']))
+				$sql .= ",groupby = ".$db->Quote($_GET['groupby']);
 			if (!empty($searchx) && !empty($searchy))
 				$sql .= ",x = $searchx,y = $searchy,limit8 = $distance";
 			if ($limit1)
@@ -313,8 +317,10 @@ split_timer('search'); //starts the timer
 			} elseif (!empty($_GET['perpage'])) {
 				 $sql .= ",resultsperpage = ".min(100,intval($_GET['perpage']));
 			}
-			$db->Execute($sql);
+			if (!empty($_REQUEST['form']))
+				 $sql .= ",`form` = ".$db->Quote($_REQUEST['form']);
 
+			$db->Execute($sql);
 			$i = $db->Insert_ID();
 			
 split_timer('search','create1',$searchdesc); //logs the wall time
@@ -812,8 +818,10 @@ split_timer('search'); //starts the timer
 
 			$sql .= ",searchdesc = ".$db->Quote($searchdesc);
 
-			$db->Execute($sql);
+			if (!empty($_REQUEST['form']))
+				 $sql .= ",`form` = ".$db->Quote($_REQUEST['form']);
 
+			$db->Execute($sql);
 			$i = $db->Insert_ID();
 			
 split_timer('search','create2',$searchdesc); //logs the wall time
