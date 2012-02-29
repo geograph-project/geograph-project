@@ -1,12 +1,19 @@
 {assign var="page_title" value="Search"}
 {include file="_std_begin.tpl"}
+
 {dynamic}
+{if $user->registered}
+<div class="interestBox" style="margin:3px;background-color:pink">
+	Please give us feedback on this new experimental interface on the <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=14232">Discussion forum</a>. thank you!
+</div>
+{/if}
 
 {if $errormsg}
 <p><b>{$errormsg}</b></p>
 {/if}
 
 <form method="get" action="/search.php">
+	<input type="hidden" name="form" value="new"/>
 	<div class="tabHolder" style="text-align:right">
 		<span class="tabSelected">Simple search</span>
 		<a href="/search.php?form=text" class="tab">Advanced search</a>
@@ -29,7 +36,7 @@
 		   </td>
 		   <td>near: (location)<br/>
 			<input type="text" id="location" name="location" value="{$searchlocation|escape:"html"|default:"(anywhere)"}" style="font-size:1.2em" size="30" onfocus="if (this.value=='(anywhere)') this.value=''" onblur="if (this.value=='') this.value='(anywhere)'"/><br/>
-			<a href="javascript:void(openMap(true))" id="open_map">Open Map</a> <a href="javascript:void(closeMap())" id="close_map" style="display:none">CloseMap</a> <a href="javascript:void(showValues())" id="show_values" style="display:none">Show Places List</a>
+			<a href="javascript:void(openMap(true))" id="open_map">Open Preview Map</a> <a href="javascript:void(closeMap())" id="close_map" style="display:none"><b>Close</b> Preview Map</a> <a href="javascript:void(showValues())" id="show_values" style="display:none">Re-open Places List</a>
 			<div style="position:relative">
 			  <div id="map_canvas">
 			  </div>
@@ -52,9 +59,11 @@
 <div id="results">
    <p>Enter your search above to find images. Can enter keywords to match against the image, and/or a location. Start typing a placename, or enter a postcode/grid-reference in the Location box. </p>
    
-   <p>The first box matches words in the title/description etc of the images. TIP: can search by tags, by surrounding it with [..], eg [bridge]. As you type will be prompted to autocomplete tags</p>
+   <p>The first box matches words in the title/description etc of the images. TIP: can search by tags, by surrounding it with [..], eg [bridge]. As you type will be prompted to autocomplete tags.</p>
 
    <p>The second box take a location, and will help you pinpoint the correct location, by plotting possible matches on a map. The final search will include images near that location.</p>
+
+   <p>If you see your required placename in the list, click to select, and show a preview of nearby images.</p>
 </div>
 
 <div id="stats">

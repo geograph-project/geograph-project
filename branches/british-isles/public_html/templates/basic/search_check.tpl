@@ -1,18 +1,13 @@
 {assign var="page_title" value="Check Submissions Tool"}
 {include file="_std_begin.tpl"}
 
-<h2>Check Submissions Tool</h2>
-<br/><br/>
-	<div style="color:red">
-	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="15" height="15" align="left" style="margin-right:10px"/>
-	NOTE: Recently this form has been locked to only search your images. Let us <a href="/contact.php">know</a> if this is an issue for you. </div>
-<br/><br/>
-
+<h2>Check YOUR Submissions Tool</h2>
 
 {if $errormsg}
 <p style="color:red"><b>{$errormsg}</b></p>
 {/if}
 <form action="/search.php" method="get" name="theForm">
+	<input type="hidden" name="form" value="check"/>
 	<div class="tabHolder">
 		<a href="/search.php?form=text" class="tab">Advanced search</a>
 		<a href="/search.php?form=simple" class="tab">Simple search</a>

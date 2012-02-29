@@ -5,6 +5,10 @@
 #maincontent form label {
 	font-size:1em;
 }
+tt {
+	border:1px solid gray;
+	padding:2px;
+}
 {/literal}
 </style>
 
@@ -37,9 +41,10 @@
 	<h2>Photograph Search <a href="/article/Searching-on-Geograph" text="More information on the Search Engine" class="about">About</a></h2>
 {/if}
 <form action="/search.php?form=text" method="post" name="theForm" onsubmit="this.imageclass.disabled=false" style="background-color:#f9f9f9">
+        <input type="hidden" name="form" value="text{$i}"/>
 
 	<div class="tabHolder">
-		<a href="/search.php?form=simple" class="tab">Simple search</a>
+		<a href="/search.php?form=basic" class="tab">Simple search</a>
 		<span class="tabSelected">Advanced search</span>
 		{dynamic}
 		{if $user->registered}
@@ -112,19 +117,20 @@
 					<div style="position:absolute;line-height:1.1em;top:0px;left:0px; background-color:#FFFFCC;width:600px;padding:5px; border-bottom:3px solid black">
 						<ul>
 							<li style="padding-bottom:5px">Separate multiple keywords with spaces, all keywords are required (ie AND)</li>
+							<li style="padding-bottom:5px">Enter <b>tags</b>, in [...], for example: <tt>[footpath]</tt></li>
 							<li style="padding-bottom:5px">Only matches whole words, punctuation is not searchable</li>
 							<li style="padding-bottom:5px">Not case sensitive</li>
-							<li style="padding-bottom:5px"><b>Looking for exact match?</b><br/>&nbsp; Prefix a keyword with <tt>=</tt> (otherwise <tt>bridge</tt> matches bridges, bridging etc)</small></li>
+							<li style="padding-bottom:5px"><b>Looking for exact match?</b> <tt>=bridge</tt><br/>&nbsp; Prefix a keyword with <tt>=</tt> (<tt>bridge</tt> matches bridges, bridging etc too)</small></li>
 							<li style="padding-bottom:5px"><b>Currently searches</b><ul>
-								<li>title, description, category, photographer name and Shared Description</li>
+								<li>title, description, tags, category, photographer name and Shared Description</li>
 								<li>image taken date ( <tt>20071103</tt>, <tt>200711</tt>, <tt>2007</tt> or even <tt>April</tt>)</li>
 								<li>subject grid-reference <span class="nowrap">( <tt>SH1234</tt>, <tt>SH13</tt> or just <tt>SH</tt> )</span></li>
-							</ul><i style="font-size:0.8em">(can optionally limit matches to a particular field, see 'word search help' above)</i></li>
-							<li style="padding-bottom:5px">Can match phrases [ <tt>"road bridge"</tt> ]</li>
-							<li style="padding-bottom:5px">Can use OR between keywords <span class="nowrap">[ <tt>bridge OR bont OR pont</tt> ]</span></li>
-							<li style="padding-bottom:5px">Can exclude words/terms [ <tt>canal -river</tt> ] or [ <tt>river -"road bridge"</tt> ]</li>
-							<li style="padding-bottom:5px">Instead run an ANY search [ <tt>~bridge road river</tt> ]</li>
-							<li><i>... plus more. See 'word search help' above.</i></li>
+							</ul><i style="font-size:0.8em">(can optionally limit matches to a particular field, see 'About' above)</i></li>
+							<li style="padding-bottom:5px">Can match phrases <tt>"road bridge"</tt></li>
+							<li style="padding-bottom:5px">Can use OR between keywords <span class="nowrap"><tt>bridge OR bont OR pont</tt></span></li>
+							<li style="padding-bottom:5px">Can exclude words/terms <tt>canal -river</tt> or <tt>river -"road bridge"</tt></li>
+							<li style="padding-bottom:5px">Instead run an ANY search <tt>~bridge road river</tt></li>
+							<li><i>... plus more. See 'About' just above.</i></li>
 						</ul>
 					</div>
 				</div>
@@ -136,6 +142,19 @@
 		  <tr>
 			 <td colspan="3" style="line-height:0.1em">&nbsp;</td>
 		  </tr>
+                  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
+                         <td><label for="tag">Tag</label></td>
+			 <td colspan="2">
+				Tag Finder: <input type="text" name="tag" size="30" maxlength="60" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);}{/literal}" autocomplete="off" id="tag"/>
+				<input type="button" value="Use" onclick="useTag(this.form.elements['tag'].value)"/> (tags are added to the keyword box above)<br/>
+				<div style="position:relative;">
+					<div style="position:absolute;top:0px;left:0px;background-color:lightgrey;margin-left:86px;padding-right:20px" id="tagParent">
+						<ul id="taglist">
+						</ul>
+					</div>
+				</div>
+                        </td>
+                  </tr>
 		  <tr onmouseover="this.style.background='#efefef'" onmouseout="this.style.background='#f9f9f9'">
 			 <td><label for="user_name">Contributor</label></td>
 			 <td colspan="2">
@@ -246,7 +265,53 @@
 		</table></form>
 
 {literal}
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript"><!--
+
+	$(function() {
+		$('#tagParent').hide();
+	});
+
+	function loadTagSuggestions(that,event) {
+
+		var unicode=event.keyCode? event.keyCode : event.charCode;
+		if (unicode == 13) {
+			//useTags(that);
+			return;
+		}
+
+		param = 'q='+encodeURIComponent(that.value);
+		$.getJSON("/tags/tags.json.php?"+param+"&callback=?",
+
+		// on search completion, process the results
+		function (data) {
+			var div = $('#taglist').empty();
+			$('#tagParent').show();
+
+			if (data && data.length > 0) {
+				for(var tag_id in data) {
+					var text = data[tag_id].tag;
+					if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='category' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
+						text = data[tag_id].prefix+':'+text;
+					}
+					text = text.replace(/<[^>]*>/ig, "");
+					text = text.replace(/['"]+/ig, " ");
+
+					div.append("<li><a href=\"javascript:void(useTag('"+text+"'))\">"+text+"</a></li>");
+				}
+			} else {
+				div.append("<li><a href=\"?tag="+text+"\">"+text+"</a></li>");
+			}
+		});
+	}
+
+	function useTag(tag) {
+		$('#tagParent').hide();
+		var ele = document.theForm.elements['searchtext'];
+
+		ele.value = ele.value + ' ['+tag+']';
+		return false;
+	}
 
 function updateBreakBy(that) {
 	name = that.options[that.selectedIndex].value;
@@ -272,8 +337,25 @@ function showLocationBox() {
 
  AttachEvent(window,'load',showLocationBox,false);
 
+var timers = new Array();
+
 function showMyHelpDiv(which,show) {
-	document.getElementById(which+'_help').style.display=show?'':'none';
+	if (show) {
+		if (timers[which]) {
+			return;
+		}
+		timers[which] = setTimeout(function() {
+			document.getElementById(which+'_help').style.display=show?'':'none';
+			clearTimeout(timers[which]);
+			timers[which] = null;
+		},100);
+	} else {
+		if (timers[which]) {
+			clearTimeout(timers[which]);
+			timers[which] = null;
+		}
+		document.getElementById(which+'_help').style.display=show?'':'none';
+	}
 }
 
 {/literal}

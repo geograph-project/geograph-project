@@ -15,9 +15,10 @@
 {/if}
 <br style="clear:both"/>
 <form action="/search.php" method="post" name="theForm" onsubmit="this.imageclass.disabled=false">
+	<input type="hidden" name="form" value="advanced{$i}"/>
 
 	<div class="tabHolder">
-		<a href="/search.php?form=simple" class="tab">Simple search</a>
+		<a href="/search.php?form=basic" class="tab">Simple search</a>
 		<span class="tabSelected">Advanced Search</span>
 		<a href="/search.php?form=first" class="tab">First Geographs</a>
 	</div>
@@ -75,12 +76,12 @@
 				</select></td>
 			 <td>&nbsp;<input type="submit" name="submit" value="Count"/> <input type="submit" value="Find"/></td>
 		  </tr>
-		  <tr>
+		  <!--tr>
 			 <td><label for="searchtext" id="l_searchtext"><b>Containing keywords</b></label></td>
 			 <td><input type="text" name="searchtext" id="searchtext" value="{$searchtext|escape:'html'}" class="searchinput"/><br/>
 			 <small>({newwin href="/help/search_new" text="open <b>text search help</b>"})</small></td>
 			<td>eg Bridge</td>
-		  </tr>
+		  </tr-->
 		  <tr>
 			 <td><label for="user_name">Contributor</label></td>
 			 <td colspan="2">

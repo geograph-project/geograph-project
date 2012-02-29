@@ -4,8 +4,8 @@
 <h2>Please refine your search</h2>
 {dynamic}
 <p>The meaning of your search for images<i>{$searchdesc|escape:"html"}</i>, is not totally clear, please find below a few alternatives.</p>
-<form action="{$script_name}" method="post">
-
+<form action="{$script_name}" method="post" name="theForm">
+<input type="hidden" name="form" value="multiple"/>
 
 {if strlen($criteria->searchq) > 20 || count($criteria->matches) > 10} 
 	<div style="float:right;position:relative">
@@ -13,11 +13,13 @@
 	</div>
 	{if $post.q && $post.location}
 		<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$post.location|escape:"html"}" id="dotext1">
-		<label for="dotext1">Just word search for '{$post.q|escape:"html"} {$post.location|escape:"html"}' please</label> <br/>
+		<label for="dotext1">Instead perform a <input type="submit" value="word search for '{$post.q|escape:"html"} {$post.location|escape:"html"}'" onclick="return submitForm('dotext1');"></label> <br/>
 	{else}
 		<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext2">
-		<label for="dotext2">Instead perform a word search for '{$criteria->searchq|escape:"html"}'</i></label><br/>
+		<label for="dotext2">Instead perform a <input type="submit" value="word search for '{$criteria->searchq|escape:"html"}'" onclick="return submitForm('dotext2');"></i></label><br/>
 	{/if}
+{else}
+	<p><input type="submit" value="Just give me a keywords search for '{$criteria->searchq|escape:"html"}'" onclick="return submitForm('dotext4')"/></p>
 {/if}
 	
 <h3 style="border-bottom:1px solid silver">Place search</h3>
@@ -89,5 +91,16 @@
 <br/>
 and enhanced with the Gazetteer of British Place Names, &copy; Association of British Counties, used with permission.<br/><br/>
 Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}, Copyright MetaCarta 2006</div>
+
+<script>
+{literal}
+
+function submitForm(theid) {
+	document.getElementById(theid).checked = true;
+	setTimeout('document.getElementById("'+theid+'").checked = true;document.theForm.submit()',100);
+	return false;
+}
+
+{/literal}</script>
 
 {include file="_std_end.tpl"}
