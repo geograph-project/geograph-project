@@ -126,6 +126,7 @@ works as expected on your browser before doing real changes!</b>
 			<option value="2" >2</option>
 			<option value="3" >3: county level</option>
 			<option value="4" selected>4</option>
+			<option value="5" >5: district of a town/community</option>
 			</select>
 		</td>
 		<td>
@@ -211,6 +212,7 @@ works as expected on your browser before doing real changes!</b>
 			<option value="2" {if $row.s eq '2'} selected{/if}>2</option>
 			<option value="3" {if $row.s eq '3'} selected{/if}>3: county level</option>
 			<option value="4" {if $row.s eq '4'} selected{/if}>4</option>
+			<option value="5" {if $row.s eq '5'} selected{/if}>5: district of a town/community</option>
 			</select>
 			<input type=button value="R" onclick="oncl(this,{$smarty.foreach.loop.iteration},'s')">
 			{if $dbarr}
@@ -447,8 +449,7 @@ function tomap(that,num) {
 	updateMapMarker(document.theForm.grid_reference,false,true);
 	updateMapMarker(document.theForm.photographer_gridref,false,true);
 	var wgs = ngrid.getWGS84();
-	var point = new GLatLng(wgs.latitude,wgs.longitude);
-	map.setCenter(point);
+	moveToLatLon(wgs.latitude, wgs.longitude);
 }
 
 

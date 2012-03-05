@@ -75,17 +75,26 @@ class GridShader
 	*/
 	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting,$updategridprefix = true,$expiremaps=true,$ignore100=false,$dryrun=false,
 	                 $minx=0,$maxx=100000,$miny=0,$maxy=100000,
-	                 $setpercland=true,$level=0,$cid=0,$limpland=false,$createsquares=false)
+	                 $setpercland=true,$level=0,$cid=0,$limpland=false,$createsquares=false,$calcpercland=false)
 	{
+		#FIXME gridbuilder.php: upload image file (and delete it after processing!)
+		if ($minx > $maxx || $miny > $maxy) {
+			$this->_err("invalid x/y range");
+			return;
+		}
 		if (file_exists($imgfile))
 		{
-			$img=imagecreatefrompng($imgfile);
+			#tried to test for 8 bit grayscale without alpha channel... does not work anyway.
+			#$imginfo = getimagesize($imgfile);
+			#if ($imginfo[0] > 0 && $imginfo[1] > 0 && $imginfo[2] == IMAGETYPE_PNG && $imginfo["channels"] == 1 && $imginfo["bits"] == 8)
+				$img=imagecreatefrompng($imgfile);
+			#else
+			#	$img=false;
 			if ($img)
 			{
 				$this->db = NewADOConnection($GLOBALS['DSN']);
 				if (!$this->db) die('Database connection failed');   
-						
-				
+
 				$imgw=imagesx($img);
 				$imgh=imagesy($img);
 				$startx = max(0,$minx);
@@ -113,6 +122,7 @@ class GridShader
 				$zeroed=0;
 				$skipped100=0;
 				$createdsquares=0;
+				$recalcsquares=0;
 				
 				$lastpercent=-1;
 				for ($imgy=$starty; $imgy<=$endy; $imgy++)
@@ -131,7 +141,9 @@ class GridShader
 						//get colour of pixel 
 						//255=white, 0% land
 						//000=black, 100% land
-						$col=imagecolorat ($img, $imgx, $imgy);
+						$colind=imagecolorat($img, $imgx, $imgy);
+						$colarr=imagecolorsforindex($img, $colind); // works also if alpha channel present + for rgb / palette images
+						$col=$colarr['green'];
 						$percent_land=round(((255-$col)*100)/255);
 						
 						if ($ignore100 && ($percent_land == 100))
@@ -164,10 +176,13 @@ class GridShader
 								$ok = is_array($gsquare) && count($gsquare);
 								$createdsquares++;
 							}
+							$needrecalc = $ok && $calcpercland && ($percent_land != 0 || $gsquare['percent_land'] != 0);
 							#if ($ok && $limpland && $percent_land > $gsquare->percent_land)
 							#	$percent_land = $gsquare->percent_land;
 							if ($ok && $limpland && $percent_land > $gsquare['percent_land'])
 								$percent_land = $gsquare['percent_land'];
+						} else {
+							$needrecalc = false;
 						}
 
 						if (!$ok) {
@@ -188,9 +203,10 @@ class GridShader
 							//$this->_trace("img($imgx,$imgy) = grid($gridx,$gridy) $percent_land%");
 							
 							//ok, that's everything we need - can we obtain an existing grid square
-							if ($setpercland)
+							if ($setpercland) {
 								$square = $this->db->GetRow("select gridsquare_id,percent_land from gridsquare where x='$gridx' and y='$gridy'");	
-							else
+							} elseif (!is_null($gsquare['gridsquare_id'])) {
+
 								$square = $this->db->GetRow("select gridsquare_id,percent as percent_land from gridsquare_percentage ".
 								                            "where gridsquare_id='{$gsquare['gridsquare_id']}' ".
 								                            #"where gridsquare_id='{$gsquare->gridsquare_id}' ".
@@ -199,6 +215,10 @@ class GridShader
 								#                            "inner join gridsquare_percentage using gridsquare_id ".
 								#                            "where x='$gridx' and y='$gridy' ".
 								#                            "and level='$level' and community_id='$cid'");
+							} else {
+								# square does not exist and we did not create one (dryrun)
+								$square = array();
+							}
 						##no need to check this as this is the first import (and its rather expensive!)	
 							
 							if (is_array($square) && count($square))
@@ -248,11 +268,29 @@ class GridShader
 									$skipped++;
 								}
 							}
+							if ($needrecalc) {
+								$recalcsquares++;
+								if (!$dryrun) {
+									$sql = "select ".
+										"greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) as percent_land, ".
+										"coalesce(gp1.percent,0)>0 as permit_photographs, ".
+										"coalesce(gp1.percent,0)-coalesce(gp3.percent,0)>0 as permit_geographs ".
+										"from gridsquare gs ".
+										"left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) ".
+										"left join gridsquare_percentage gp2 on (gs.gridsquare_id=gp2.gridsquare_id and gp1.level = -1 and gp2.community_id = 2) ".
+										"left join gridsquare_percentage gp3 on (gs.gridsquare_id=gp3.gridsquare_id and gp1.level = -1 and gp3.community_id = 3) ".
+										"left join gridsquare_percentage gp4 on (gs.gridsquare_id=gp4.gridsquare_id and gp1.level = -1 and gp4.community_id = 4) ".
+										"where gs.gridsquare_id = {$gsquare['gridsquare_id']} limit 1";
+									$newvalues = $this->db->GetRow($sql);
+									$this->db->Execute("update gridsquare set ".
+										"percent_land='{$newvalues['percent_land']}',".
+										"permit_photographs='{$newvalues['permit_photographs']}',".
+										"permit_geographs='{$newvalues['permit_geographs']}' ".
+										"where gridsquare_id='{$gsquare['gridsquare_id']}'");
+								}
+							}
 						}
-						
-			
 					}
-				
 				}
 				imagedestroy($img);
 				
@@ -288,6 +326,8 @@ class GridShader
 
 				if (!$setpercland && $createsquares)
 					$this->_trace("$createdsquares new gridsquares created");
+				if (!$setpercland && $recalcsquares)
+					$this->_trace("$recalcsquares squares were recalculated");
 				
 				if ($ignore100)
 					$this->_trace("$skipped100 squares ignored because at 100% in source");
@@ -313,7 +353,7 @@ class GridShader
 					$root=&$_SERVER['DOCUMENT_ROOT'];
 				
 					$lastpercent=-1;
-					for ($imgy=0; $imgy<$imgh; $imgy+=2)
+					for ($imgy=$starty; $imgy<=$endy; $imgy+=2)
 					{
 						//output some progress
 						$percent=round(($imgy*100)/$imgh);
@@ -324,16 +364,26 @@ class GridShader
 							$lastpercent=$percent;
 						}
 					
-						for ($imgx=0; $imgx<$imgw; $imgx+=2)
+						for ($imgx=$startx; $imgx<=$endx; $imgx+=2)
 						{
 				
 							//now lets figure out the internal grid ref
 							$gridx=$x_offset + $imgx;
 							$gridy=$y_offset + ($imgh-$imgy-1);
 
-							$sql="select * from mapcache 
-							where $gridx between map_x and max_x and 
-							$gridy between map_y and max_y";
+							$xycrit = "mercator='0' and '$gridx' between map_x and max_x and '$gridy' between map_y and max_y";
+							$sql = "select gxlow,gylow,gxhigh,gyhigh from gridsquare gs inner join gridsquare_gmcache gm using (gridsquare_id) where x='$gridx' and y='$gridy' limit 1";
+							$mercator = $this->db->GetRow($sql);
+							$havemercator = $mercator !== false && count($mercator);
+							if ($havemercator) {
+								$MCscale = 524288/(2*6378137.*M_PI);
+								$xMC_min = floor($mercator['gxlow'] * $MCscale);
+								$yMC_min = floor($mercator['gylow'] * $MCscale);
+								$xMC_max = ceil ($mercator['gxhigh'] * $MCscale);
+								$yMC_max = ceil ($mercator['gyhigh'] * $MCscale);
+								$xycrit .= " or mercator='1' and '$xMC_min'<=max_x and '$xMC_max'>=map_x and '$yMC_min'<=max_y and '$yMC_max'>=map_y";
+							}
+							$sql="select * from mapcache where $xycrit";
 						
 							
 							$recordSet = &$this->db->Execute($sql);
@@ -342,22 +392,22 @@ class GridShader
 
 								$file = $this->getBaseMapFilename($recordSet->fields);
 								if (file_exists($root.$file)) {
-									unlink($root.$file);
+									if (!$dryrun) unlink($root.$file);
 									$deleted++;
 								} 
 								$file = $this->getLabelMapFilename($recordSet->fields, false, true);
 								if (file_exists($root.$file)) {
-									unlink($root.$file);
+									if (!$dryrun) unlink($root.$file);
 									$deleted++;
 								} 
 								$file = $this->getLabelMapFilename($recordSet->fields, false, false);
 								if (file_exists($root.$file)) {
-									unlink($root.$file);
+									if (!$dryrun) unlink($root.$file);
 									$deleted++;
 								} 
 								$file = $this->getLabelMapFilename($recordSet->fields, true, false);
 								if (file_exists($root.$file)) {
-									unlink($root.$file);
+									if (!$dryrun) unlink($root.$file);
 									$deleted++;
 								} 
 								$checked++;
@@ -365,9 +415,7 @@ class GridShader
 							}
 							$recordSet->Close();
 
-							$sql="update mapcache set age=age+1 
-								where $gridx between map_x and max_x and 
-								$gridy between map_y and max_y $and_crit";
+							$sql="update mapcache set age=age+1 where $xycrit";
 							if (!$dryrun) $this->db->Execute($sql);
 						}
 				
@@ -459,6 +507,8 @@ class GridShader
 			$param .= "_m";
 			if (!empty($row['overlay'])) {
 				$param .= "_o";
+				#if ($row['overlay'] != 1 /*&& $layers != 2 another set of tiles needed because imagecopymerge is great!*/)
+				#	$param .= $row['overlay']; # only relevant for base layer, square layer and combined tiles
 			}
 		}
 

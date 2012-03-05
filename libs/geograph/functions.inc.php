@@ -260,6 +260,40 @@ function recaps($in) {
 	return stripslashes(preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out));
 }
 
+/**
+ * get comma separated list from loc_hier row
+ */
+function get_hierstring_from_array($hier, $full_name)
+{
+	global $CONF;
+	#$db=&$this->_getDB();
+	#if (empty($cid))
+	#	return '';
+	#$hier = $db->GetAssoc("select level,name from loc_hier where {$cid} between contains_cid_min and contains_cid_max order by level");
+	$showhier = array();
+	if (count($hier)) {
+		$showlevels = $CONF['hier_levels'];
+		$prefixes   = $CONF['hier_prefix'];
+		$prev = $full_name;
+		foreach($showlevels as $level) {
+			if (!isset($hier[$level]))
+				continue;
+			$shortname = $hier[$level];
+			if (isset($prefixes[$level])) {
+				$curpref = $prefixes[$level].' ';
+				$preflen = strlen($curpref);
+				if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+					$shortname = substr($shortname, $preflen);
+			}
+			if ($prev == $shortname)
+				continue;
+			$prev = $shortname;
+			$showhier[] = $hier[$level];
+		}
+	}
+	return implode(', ', $showhier);
+}
+
 function smarty_function_place($params) {
 	global $CONF;
 	$place = $params['place'];
@@ -284,42 +318,22 @@ function smarty_function_place($params) {
 		$t .= "<b>{$place['full_name']}</b><small><i>";
 	}
 	$t = str_replace(' And ','</b> and <b>',$t);
-	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
-		$parts = explode('/',$place['adm1_name']);
-		if ($CONF['place_recaps'] && !ctype_lower($parts[0])) {
-			if (isset($parts[1]) && $parts[0] == $parts[1]) {
-				unset($parts[1]);
-			}
-			$t .= ", ".recaps(implode('/',$parts));
-		} else {
-			$t .= ", {$place['adm1_name']}";
-		}
-	} elseif ($place['hist_county'])
-		$t .= ", {$place['hist_county']}";
 	if (count($place['hier'])) {
-		$showlevels = $CONF['hier_levels']; #array(7, 6, 5, 4); # configurable?
-		$prefixes   = $CONF['hier_prefix']; #array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
-		$prev = $place['full_name'];
-		#foreach($place['hier'] as $k=>$v) {
-		#	trigger_error(" --   $k : $v", E_USER_NOTICE);
-		#}
-		foreach($showlevels as $level) {
-			if (!isset($place['hier'][$level]))
-				continue;
-			$shortname = $place['hier'][$level];
-			if (isset($prefixes[$level])) {
-				$curpref = $prefixes[$level].' ';
-				$preflen = strlen($curpref);
-				if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
-					$shortname = substr($shortname, $preflen);
-			}
-			if ($prev == $shortname)
-				continue;
-			$prev = $shortname;
-			$t .= ', ';
-			$t .= $place['hier'][$level];
-		}
+		$t .= ', '.get_hierstring_from_array($place['hier'], $place['full_name']);
 	} else {
+		if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
+			$parts = explode('/',$place['adm1_name']);
+			if ($CONF['place_recaps'] && !ctype_lower($parts[0])) {
+				if (isset($parts[1]) && $parts[0] == $parts[1]) {
+					unset($parts[1]);
+				}
+				$t .= ", ".recaps(implode('/',$parts));
+			} else {
+				$t .= ", {$place['adm1_name']}";
+			}
+		} elseif ($place['hist_county']) {
+			$t .= ", {$place['hist_county']}";
+		}
 		$t .= ", {$place['reference_name']}";
 	}
 	$t .= "</i></small>";

@@ -540,3 +540,9 @@ function updateViewDirection() {
 function updateCamIcon() {
 
 }
+
+function moveToLatLon(lat, lon) {
+	var point = new OpenLayers.LonLat(lon,lat);
+	point.transform(epsg4326, map.getProjectionObject());
+	map.setCenter(point);
+}

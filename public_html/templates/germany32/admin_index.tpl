@@ -111,6 +111,9 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
    Organise the user submitted categories</li>
 {/if}
 
+<li><a title="Grid builder" href="/admin/gridbuilder.php">Grid Builder</a> - 
+   Import land percentages from grayscale images to the database</li>
+
 <li><a title="Town editor" href="/admin/towns.php">Town editor</a> - 
    Add, edit or remove towns</li>
 </ul>
