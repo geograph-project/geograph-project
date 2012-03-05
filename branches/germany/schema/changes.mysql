@@ -672,5 +672,4 @@ DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,
 #DELETE FROM `loc_hier` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000;#  Betroffene Datensätze:  16
 #DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
 
-
-
+ALTER TABLE `loc_towns` CHANGE `s`  `s` enum('1','2','3','4','5','') NOT NULL DEFAULT '1';

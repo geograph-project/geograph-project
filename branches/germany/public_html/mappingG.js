@@ -369,3 +369,8 @@ function updateViewDirection() {
 function updateCamIcon() {
 
 }
+
+function moveToLatLon(lat, lon) {
+	var point = new GLatLng(lat,lon);
+	map.setCenter(point);
+}

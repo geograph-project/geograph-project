@@ -1093,7 +1093,7 @@ EOF;
 				$name_topotrails = "Nop's Wanderreitkarte (Wege)";
 				$name_topohills = "Nop's Wanderreitkarte (Relief)";
 				$name_osmarender = "OpenStreetMap (Tiles@Home)";
-				$name_static = "Mapnik (Statisch + OpenStreetMap)";
+				$name_static = "Mapnik (Statisch + OSM)";
 				$attr_static = "'&copy; <a href=\"http://www.openstreetmap.org/\">OSM</a>-User (<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)'";
 				$attr_hills = "'Relief: <a href=\"http://srtm.csi.cgiar.org/\">CIAT-Daten</a>'";
 				$attr_topohills = "'H&ouml;hen: <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> mit <a href=\"http://www.wanderreitkarte.de/licence_de.php\">CIAT-Daten</a>'";
@@ -1109,7 +1109,7 @@ EOF;
 				$name_topotrails = "Nop's Wanderreitkarte (trails)";
 				$name_topohills = "Nop's Wanderreitkarte (relief)";
 				$name_osmarender = "OpenStreetMap (Tiles@Home)";
-				$name_static = "Mapnik (Static + OpenStreetMap)";
+				$name_static = "Mapnik (Static + OSM)";
 				$attr_static = "'&copy; <a href=\"http://www.openstreetmap.org/\">OSM</a> contributors (<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)'";
 				$attr_hills = "'Relief: <a href=\"http://srtm.csi.cgiar.org/\">CIAT data</a>'";
 				$attr_topohills = "'Relief: <a href=\"http://www.wanderreitkarte.de/\">Nop\\'s Wanderreitkarte</a> using <a href=\"http://www.wanderreitkarte.de/licence_en.php\">CIAT data</a>'";
@@ -1224,7 +1224,7 @@ EOF;
 			var hills = new OpenLayers.Layer.XYrZ(
 				\"$name_hills\",
 				\"/tile/hills/\${z}/\${x}/\${y}.png\",
-				9, 14/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				7, 14/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
 					attribution: $attr_hills,
 					sphericalMercator : true,
@@ -1270,12 +1270,12 @@ EOF;
 			topobase.hasHills = true;
 			map.events.register('changebaselayer', map, function(e) {
 				/* Topographical map: always show trails layer */
-				var showtopotrails = topobase == e.layer;//map.baselayer;
-				if (topotrails.getVisibility() != showtopotrails)
-					topotrails.setVisibility(showtopotrails);
+				var showtopolayers = topobase == e.layer;//map.baselayer;
+				if (topotrails.getVisibility() != showtopolayers)
+					topotrails.setVisibility(showtopolayers);
 				/* Topographical map: always show hills layer */
-				if (topohills.getVisibility() != showtopotrails)
-					topohills.setVisibility(showtopotrails);
+				if (topohills.getVisibility() != showtopolayers)
+					topohills.setVisibility(showtopolayers);
 			});
 			map.events.register('changebaselayer', map, function(e) {
 				var redrawlayerswitcher = false;

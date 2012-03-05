@@ -131,7 +131,7 @@ if (!$db) die('Database connection failed');
 			}
 			if ($_POST['olds'.$c] !== $_POST['news'.$c] || $_POST['oldi'.$c] === '') {
 				$_POST['news'.$c] = intval($_POST['news'.$c]);
-				if ($_POST['news'.$c] < 1 || $_POST['news'.$c] > 4) {
+				if ($_POST['news'.$c] < 1 || $_POST['news'.$c] > 5) {
 					$message .= "<p><b>Invalid town size</b>: {$_POST['oldi'.$c]}/<i>{$_POST['oldna'.$c]}</i>: <b>{$_POST['news'.$c]}</b></p>";
 					continue;
 				}

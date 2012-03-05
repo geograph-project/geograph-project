@@ -90,6 +90,41 @@ class Gazetteer
 						GeomFromText($rectangle),
 						point_en)
 				order by distance asc,f_code+0,def_nam");
+		} else if ($CONF['use_gazetteer'] == 'towns') {
+			$sql = "select
+					name as full_name,
+					'PPL' as dsg,
+					reference_index,
+					'' as adm1_name,
+					(id + 10000000) as pid,
+					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
+					'towns' as gaz,
+					e,n,
+					community_id
+				from 
+					loc_towns
+				where
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
+					reference_index = {$reference_index}
+				order by distance asc";
+			$places = $db->GetAll($sql);
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+
+			foreach ($places as $i => &$place) {
+				if (!empty($place['community_id'])) {
+					#$place['hier'] = $db->GetAssoc("select level,name from loc_hier where {$place['community_id']} between contains_cid_min and contains_cid_max order by level");
+					$place['hier'] = $this->_get_hier_from_cid($place['community_id']);
+					$place['adm1_name'] = get_hierstring_from_array($place['hier'], $place['full_name']);
+				}
+				#$sq = new GridSquare;
+				#if ($sq->loadFromPosition(floor($place['x']/1000), floor($place['y']/1000), false, false, 0, 0, true, $reference_index)) {
+				#	$place['grid_reference'] = $sq->grid_reference;
+				#}
+				list($place['grid_reference'],) = $conv->national_to_gridref($place['e'],$place['n'],4,$reference_index);
+			}
 		} else {
 			$places = $db->GetAll("select
 					full_name,
@@ -109,8 +144,6 @@ class Gazetteer
 					loc_placenames.reference_index = {$reference_index}
 				group by gns_ufi
 				order by distance asc");
-
-
 		}
 	        if ($places && count($places))
 			foreach ($places as $i => $place) {
@@ -353,7 +386,7 @@ class Gazetteer
 					'PPL' as dsg,
 					reference_index,
 					'' as adm1_name,
-					(id + 900000) as pid,
+					(id + 10000000) as pid,
 					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
 					(power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2))*power(2.5,s) as odistance,
 					'towns' as gaz,
@@ -367,7 +400,9 @@ class Gazetteer
 					reference_index = {$reference_index}
 				order by odistance asc limit 1");
 			if (!empty($places['community_id'])) {
-				$places['hier'] = $db->GetAssoc("select level,name from loc_hier where {$places['community_id']} between contains_cid_min and contains_cid_max order by level");
+				#$places['hier'] = $db->GetAssoc("select level,name from loc_hier where {$places['community_id']} between contains_cid_min and contains_cid_max order by level");
+				$places['hier'] = $this->_get_hier_from_cid($places['community_id']);
+				$places['adm1_name'] = get_hierstring_from_array($places['hier'], $places['full_name']);
 			}
 		} else {
 	//lookup a nearby settlement
@@ -716,29 +751,32 @@ class Gazetteer
 						list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
 					}
 					if (empty($row['adm1_name']) && !empty($row['community_id'])){
-						$hier = $db->GetAssoc("select level,name from loc_hier where {$row['community_id']} between contains_cid_min and contains_cid_max order by level");
-						$showhier = array();
-						if (count($hier)) {
-							$showlevels = $CONF['hier_levels']; #array(7, 6, 5, 4); # configurable?
-							$prefixes   = $CONF['hier_prefix']; #array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
-							$prev = $row['full_name'];
-							foreach($showlevels as $level) {
-								if (!isset($hier[$level]))
-									continue;
-								$shortname = $hier[$level];
-								if (isset($prefixes[$level])) {
-									$curpref = $prefixes[$level].' ';
-									$preflen = strlen($curpref);
-									if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
-										$shortname = substr($shortname, $preflen);
-								}
-								if ($prev == $shortname)
-									continue;
-								$prev = $shortname;
-								$showhier[] = $hier[$level];
-							}
-						}
-						$places[$id]['adm1_name'] = implode(', ', $showhier);
+#						$hier = $db->GetAssoc("select level,name from loc_hier where {$row['community_id']} between contains_cid_min and contains_cid_max order by level");
+#						$showhier = array();
+#						if (count($hier)) {
+#							$showlevels = $CONF['hier_levels']; #array(7, 6, 5, 4); # configurable?
+#							$prefixes   = $CONF['hier_prefix']; #array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
+#							$prev = $row['full_name'];
+#							foreach($showlevels as $level) {
+#								if (!isset($hier[$level]))
+#									continue;
+#								$shortname = $hier[$level];
+#								if (isset($prefixes[$level])) {
+#									$curpref = $prefixes[$level].' ';
+#									$preflen = strlen($curpref);
+#									if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+#										$shortname = substr($shortname, $preflen);
+#								}
+#								if ($prev == $shortname)
+#									continue;
+#								$prev = $shortname;
+#								$showhier[] = $hier[$level];
+#							}
+#						}
+#						$places[$id]['adm1_name'] = implode(', ', $showhier);
+						$places[$id]['hier'] =      $this->_get_hier_from_cid($row['community_id']);
+						#$places[$id]['adm1_name'] = $this->_get_hierstring_from_array($places[$id]['hier'], $row['full_name']);
+						$places[$id]['adm1_name'] = get_hierstring_from_array($places[$id]['hier'], $row['full_name']);
 					}
 			                $places[$id]['full_name'] = _utf8_decode($row['full_name']);
 				}
@@ -760,6 +798,17 @@ class Gazetteer
 		return $places;
 	}
 
+	/**
+	 * get row from loc_hier
+	 * @access private
+	 */
+	function _get_hier_from_cid($cid)
+	{
+		$db=&$this->_getDB();
+		if (empty($cid))
+			return array();
+		return $db->GetAssoc("select level,name from loc_hier where {$cid} between contains_cid_min and contains_cid_max order by level");
+	}
 
 	/**
 	 * get stored db object, creating if necessary
