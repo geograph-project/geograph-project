@@ -209,7 +209,7 @@ $msg=str_replace("\r\n", "\n", $msg);
 $php_version=phpversion();
 $from_email="From: $from_email\nReply-To: $errors_email\nErrors-To: $errors_email\nX-Mailer: PHP ver. $php_version";
 $mime = "MIME-Version: 1.0\n".
-	"Content-Type: text/plain; {$GLOBALS['mail_charset']}\n".
+	"Content-Type: text/plain; charset={$GLOBALS['mail_charset']}\n".
 	"Content-Disposition: inline\n".
 	"Content-Transfer-Encoding: 8bit";
 $encsubject=mb_encode_mimeheader($GLOBALS['mail_subjectprefix'].$subject, $GLOBALS['mail_charset'], $GLOBALS['mail_headerenc']);

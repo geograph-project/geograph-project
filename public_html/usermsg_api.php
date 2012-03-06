@@ -126,7 +126,7 @@ if (!empty($_REQUEST['client_ip']) && preg_match("/^[\w\.]+$/",$_REQUEST['client
 
 }
 $mime = "MIME-Version: 1.0\n".
-	"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+	"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
 	"Content-Disposition: inline\n".
 	"Content-Transfer-Encoding: 8bit";
 $from = "From: $enc_from_name <$from_email>\n";
