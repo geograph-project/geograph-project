@@ -137,7 +137,7 @@ if (!$throttle && isset($_POST['msg']))
 
 	$smarty->assign_by_ref('msg', html_entity_decode($msg)); //will be re-htmlentities'ed when output
 	$smarty->assign_by_ref('charset', $CONF['mail_charset']);
-	$smarty->assign_by_ref('contactmail', $CONF['contact_email']);
+	$smarty->assign_by_ref('contactmail', $CONF['abuse_email']);
 
 	$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 	$enc_to_name = mb_encode_mimeheader($to_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);

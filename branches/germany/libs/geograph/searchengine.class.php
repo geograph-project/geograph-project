@@ -153,7 +153,7 @@ class SearchEngine
         	        $con = ob_get_clean();
 			$geofrom = "From: Geograph <{$CONF['mail_from']}>";
 			$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
-        	        mail($CONF['contact_email'], '[Geograph Search Quota] '.date('r'), $con, $geofrom, $envfrom);
+        	        mail($CONF['admin_email'], '[Geograph Search Quota] '.date('r'), $con, $geofrom, $envfrom);
 		
 			global $smarty,$USER;
 			header("HTTP/1.1 503 Service Unavailable");

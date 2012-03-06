@@ -85,7 +85,7 @@ if (isset($_POST['gridimage_id']))
 			$con = ob_get_clean();
 			$geofrom = "From: Geograph <{$CONF['mail_from']}>";
 			$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
-			mail($CONF['contact_email'], '[Geograph] Resubmission failure!', $con, $geofrom, $envfrom);
+			mail($CONF['admin_email'], '[Geograph] Resubmission failure!', $con, $geofrom, $envfrom);
 			
 			//unclog the queue!
 			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id} ");

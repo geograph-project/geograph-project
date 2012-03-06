@@ -12,7 +12,11 @@
 	Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer Deutschlands zu sammeln.
 	</div>
  
- 	<p>Wenn Sie ein Anliegen haben, können Sie sich über dieses Formular an uns wenden. Wir versuchen, innerhalb von 24 Stunden zu antworten.</p>
+	<p>Wenn Sie ein Anliegen haben, können Sie sich über dieses Formular an uns wenden. Wir versuchen, innerhalb von 24 Stunden zu antworten.</p>
+
+	<p><b>Bitte beachten Sie, dass Mitteilungen über dieses Formular an mehrere Personen geschickt werden.
+	Wenn Sie eine bestimmte Person oder einen bestimmten Fotografen kontaktieren wollen, sind dazu
+	die Mitteilungs-Links auf den Profil-Seiten oder den Foto-Seiten besser geeignet!</b></p>
  
     <form action="contact.php" method="post">
     <p><input type="hidden" name="referring_page" value="{$referring_page|escape:'html'}"/>
