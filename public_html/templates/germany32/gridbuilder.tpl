@@ -18,11 +18,11 @@ if it doesn't already exist, and assign a land percentage to that square.</p>
 <a name="form"></a>
 <form method="post" action="gridbuilder.php">
 
-<label for"shader_image">Greyscale, 1 pixel/km PNG:</label> <input size="50" type="text" id="shader_image" name="shader_image" value="{$shader_image}"/>
+<label for="shader_image">Greyscale, 1 pixel/km PNG:</label> <input size="50" type="text" id="shader_image" name="shader_image" value="{$shader_image}"/>
 <input type="submit" name="uploadfile" value="upload file"> <input type="submit" name="listfiles" value="select file"><br />
-<label for"shader_x">Internal X coordinate of bottom left:</label> <input size="3" type="text" id="shader_x" name="shader_x" value="{$shader_x}"/><br />
-<label for"shader_y">Internal Y coordinate of bottom left:</label> <input size="3" type="text" id="shader_y" name="shader_y" value="{$shader_y}"/><br />
-<label for"reference_index">Grid Reference Index (1=GB 2=Irish):</label> <input size="1" type="text" id="reference_index" name="reference_index" value="{$reference_index}"/><br />
+<label for="shader_x">Internal X coordinate of bottom left:</label> <input size="3" type="text" id="shader_x" name="shader_x" value="{$shader_x}"/><br />
+<label for="shader_y">Internal Y coordinate of bottom left:</label> <input size="3" type="text" id="shader_y" name="shader_y" value="{$shader_y}"/><br />
+<label for="reference_index">Grid Reference Index (1=GB 2=Irish):</label> <input size="1" type="text" id="reference_index" name="reference_index" value="{$reference_index}"/><br />
 
 <input type="checkbox" name="clearexisting" id="clearexisting" value="1" {if $clearexisting}checked{/if}>
 <label for="clearexisting">Clear existing land squares if marked as sea in this image</label><br />
@@ -40,20 +40,20 @@ if it doesn't already exist, and assign a land percentage to that square.</p>
 <label for="dryrun">Dry run: Don't touch the database</label><br />
 <br />
 <p>Clipping (bottom left pixel of image: 0,0):</p>
-<label for"minx">minimal x coordinate:</label> <input size="6" type="text" id="minx" name="minx" value="{$minx}"/><br />
-<label for"maxx">maximal x coordinate:</label> <input size="6" type="text" id="maxx" name="maxx" value="{$maxx}"/><br />
-<label for"miny">minimal y coordinate:</label> <input size="6" type="text" id="miny" name="miny" value="{$miny}"/><br />
-<label for"maxy">maximal y coordinate:</label> <input size="6" type="text" id="maxy" name="maxy" value="{$maxy}"/><br />
+<label for="minx">minimal x coordinate:</label> <input size="6" type="text" id="minx" name="minx" value="{$minx}"/><br />
+<label for="maxx">maximal x coordinate:</label> <input size="6" type="text" id="maxx" name="maxx" value="{$maxx}"/><br />
+<label for="miny">minimal y coordinate:</label> <input size="6" type="text" id="miny" name="miny" value="{$miny}"/><br />
+<label for="maxy">maximal y coordinate:</label> <input size="6" type="text" id="maxy" name="maxy" value="{$maxy}"/><br />
 <br />
 <p>Additional area types:</p>
-<label for "level">Hierarchy level:</label> <input type="text" id="level" name="level" value="{$level}" /><br />
-<label for "cid">(Community) Id:</label> <input type="text" id="cid" name="cid" value="{$cid}" /><br />
+<label for="level">Hierarchy level:</label> <input type="text" id="level" name="level" value="{$level}" /><br />
+<label for="cid">(Community) Id:</label> <input type="text" id="cid" name="cid" value="{$cid}" /><br />
 <input type="checkbox" id="limpland" name="limpland" value="1" {if $limpland}checked{/if}/>
-<label for "limpland">Assure percentage &lt; land percentage</label><br />
+<label for="limpland">Assure percentage &lt; land percentage</label><br />
 <input type="checkbox" id="createsquares" name="createsquares" value="1" {if $createsquares}checked{/if}/>
-<label for "createsquares">Create squares if needed</label><br />
+<label for="createsquares">Create squares if needed</label><br />
 <input type="checkbox" id="calcpercland" name="calcpercland" value="1" {if $calcpercland}checked{/if}/>
-<label for "calcpercland">Recalculate land percentage when setting or clearing land mass or lake percentages</label><br />
+<label for="calcpercland">Recalculate land percentage when setting or clearing land mass or lake percentages</label><br />
 <br />
 <input type="submit" name="shader" value="Build Grid">
 </form><br />

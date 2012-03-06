@@ -168,9 +168,9 @@ function __autoload($class_name) {
                 $con = ob_get_clean();
 		$geofrom = "From: Geograph <{$CONF['mail_from']}>";
 		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
-                mail($CONF['contact_email'],'[Geograph Error] '.date('r'),$con,$geofrom,$envfrom);
+                mail($CONF['admin_email'],'[Geograph Error] '.date('r'),$con,$geofrom,$envfrom);
 		header("HTTP/1.1 505 Server Error");
-                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:mailto:'.$CONF['contact_email'].'">let us know</a> what you where doing that lead up to this error');
+                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:mailto:'.$CONF['admin_email'].'">let us know</a> what you where doing that lead up to this error');
         }
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');

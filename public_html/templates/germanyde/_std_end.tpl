@@ -46,7 +46,7 @@
      <li><a title="Projektbezogene Informationen" href="/content/?docs&amp;order=title">Dokumente</a></li>
      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Kontaktformular" href="/contact.php">Kontakt</a></li>
-     <li><a title="Impressum" href="http://www.hlipp.de/contact.html">Impressum</a></li>
+     <li><a title="Impressum" href="/help/legal_notice">Impressum</a></li>
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod || $is_mapmod}

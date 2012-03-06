@@ -106,7 +106,7 @@ if (isset($_POST['msg']))
 	$smarty->assign_by_ref('errors', $errors);
 
 	$smarty->assign_by_ref('msg', $msg);
-	$smarty->assign_by_ref('contactmail', $CONF['contact_email']);
+	$smarty->assign_by_ref('contactmail', $CONF['abuse_email']);
 
 	$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 

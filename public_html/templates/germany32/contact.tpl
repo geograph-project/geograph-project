@@ -13,8 +13,12 @@
 	representative photographs and information for every square kilometre of Germany.
 	</div>
  
- 	<p>Got something to tell us? Then fire away - we try to respond within 24 hours, often much quicker.</p>
- 
+	<p>Got something to tell us? Then fire away - we try to respond within 24 hours, often much quicker.</p>
+
+	<p><b>Please note that contact messages are sent to several people. If you prefer to contact a specific person
+	or photographer, you should consider sending a personal message via the message links provided on the user's
+	profile page or a photo page.</b></p>
+
     <form action="contact.php" method="post">
     <p><input type="hidden" name="referring_page" value="{$referring_page|escape:'html'}"/>
     <label for="from">Your email address</label><br/>
