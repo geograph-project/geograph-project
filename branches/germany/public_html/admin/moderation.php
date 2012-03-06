@@ -164,7 +164,7 @@ if (!empty($_GET['relinquish'])) {
 		$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 		$from = "From: $enc_from_name <$from_email>\n";
 		$mime = "MIME-Version: 1.0\n".
-			"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+			"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
 			"Content-Disposition: inline\n".
 			"Content-Transfer-Encoding: 8bit";
 		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			

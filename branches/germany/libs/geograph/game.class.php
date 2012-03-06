@@ -103,7 +103,7 @@ class game {
 				"Click the following link to review current list\n\nhttp://{$_SERVER['HTTP_HOST']}/games/approve.php",
 				"From: Geograph <{$CONF['mail_from']}>\n".
 				"MIME-Version: 1.0\n".
-				"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+				"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
 				"Content-Disposition: inline\n".
 				"Content-Transfer-Encoding: 8bit",
 				is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");

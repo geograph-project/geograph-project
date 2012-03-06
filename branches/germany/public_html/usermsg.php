@@ -175,7 +175,7 @@ if (isset($_POST['msg']))
 			"with HTTP;".
 			strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 		$mime = "MIME-Version: 1.0\n".
-			"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+			"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
 			"Content-Disposition: inline\n".
 			"Content-Transfer-Encoding: 8bit";
 		$from = "From: $enc_from_name <$from_email>\n";

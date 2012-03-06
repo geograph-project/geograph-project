@@ -58,7 +58,7 @@ if (isset($_POST['msg']))
 			$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 			$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 			$mime = "MIME-Version: 1.0\n".
-				"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+				"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
 				"Content-Disposition: inline\n".
 				"Content-Transfer-Encoding: 8bit";
 

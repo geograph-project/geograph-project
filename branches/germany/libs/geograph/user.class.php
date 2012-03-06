@@ -455,7 +455,7 @@ EOT;
 					@mail($email, mb_encode_mimeheader($CONF['mail_subjectprefix'].$register_mail_subject, $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg,
 						"From: Geograph <{$CONF['mail_from']}>\n".
 						"MIME-Version: 1.0\n".
-						"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+						"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
 						"Content-Disposition: inline\n".
 						"Content-Transfer-Encoding: 8bit",
 						is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
