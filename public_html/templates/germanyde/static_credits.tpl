@@ -39,6 +39,29 @@
     Ein Teil der Städtekoordinaten wurde der <a href="http://opengeodb.hoppe-media.com/">OpenGeoDB</a> entnommen.
     </p>
 
+    <h3>Karten</h3>
+
+    <p>
+    Vielen Dank "Nop" für die Erlaubnis, die <a href="http://www.wanderreitkarte.de/">Wanderreitkarte</a> einbinden zu dürfen,
+    sowie Andy Allan für die Erlaubnis, die <a href="http://opencyclemap.org/">OpenCycleMap</a> einbinden zu dürfen.
+    </p>
+
+    <h3>Kartendaten</h3>
+
+    <p>
+    Die statischen Mapnik-Kartenkacheln für die <a href="/ommap.php?z=12&t=rH&ll=47.565501449273,10.788951873778">verschiebbare Karte</a> wurden
+    aus <a href="http://www.openstreetmap.org">OpenStreetMap-Daten</a> erstellt, die von der <a href="http://download.geofabrik.de/">GEOFABRIK</a>
+    als Deutschland-Auszug zur Verfügung gestellt werden.
+    </p>
+
+    <h3>Digitales Höhenmodell</h3>
+
+    <p>
+    Die "Relief"-Kartenkacheln für die <a href="/ommap.php?z=12&t=rH&ll=47.565501449273,10.788951873778">verschiebbare Karte</a> wurden
+    aus <a href="http://srtm.csi.cgiar.org/">CIAT-Daten</a> erstellt. Zum Erstellen der Kacheln hat "Nop"
+    von der <a href="http://www.wanderreitkarte.de/">Wanderreitkarte</a> hilfreiche Tipps gegeben.
+    </p>
+
     <h2>Credits-Seite von <a href="http://www.geograph.org.uk/help/credits">www.geograph.org.uk</a></h2>
  
     Here's all the people and technologies that make this site possible...

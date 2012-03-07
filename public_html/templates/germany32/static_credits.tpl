@@ -40,6 +40,29 @@
     The coordinates of the towns have been partially taken from <a href="http://opengeodb.hoppe-media.com/">OpenGeoDB</a>.
     </p>
 
+    <h3>Maps</h3>
+
+    <p>
+    Many thanks to "Nop" for allowing us to include the <a href="http://www.wanderreitkarte.de/">Wanderreitkarte</a> and
+    to Andy Allan for allowing us to include the <a href="http://opencyclemap.org/">OpenCycleMap</a>.
+    </p>
+
+    <h3>Map data</h3>
+
+    <p>
+    The static mapnic tiles for the <a href="/ommap.php?z=12&t=rH&ll=47.565501449273,10.788951873778">draggable map</a> are made
+    from <a href="http://www.openstreetmap.org">OpenStreetMap data</a> provided by <a href="http://download.geofabrik.de/">GEOFABRIK</a> as
+    a dataset reduced to German features.
+    </p>
+
+    <h3>Digital elevation model</h3>
+
+    <p>
+    The "Relief" tiles for the <a href="/ommap.php?z=12&t=rH&ll=47.565501449273,10.788951873778">draggable map</a> are made
+    from <a href="http://srtm.csi.cgiar.org/">CIAT data</a>. "Nop" (<a href="http://www.wanderreitkarte.de/">Wanderreitkarte</a>)
+    provided helpful suggestions regarding tile rendering.
+    </p>
+
     <h2>Credits page of <a href="http://www.geograph.org.uk/help/credits">www.geograph.org.uk</a></h2>
  
     Here's all the people and technologies that make this site possible...
