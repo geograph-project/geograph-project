@@ -119,7 +119,7 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="Planquadrat {$centergr[$ri]
    Diagramm: Abeckung der <a href="/statistics/photos_per_square.php">Planquadrate</a> und <a href="/statistics/hectads.php">Hectads</a></p>
 
    <p><b>Aktivität</b><br/><br/>
-   Diagramme: <a href="/statistics/moversboard.php#rate_graph">Wöchentliche Einreichungens</a>, <a href="/statistics/contributors.php">Teilnehmer</a>.<br/><br/>
+   Diagramme: <a href="/statistics/moversboard.php#rate_graph">Wöchentliche Einreichungen</a>, <a href="/statistics/contributors.php">Teilnehmer</a>.<br/><br/>
    Monatliche aufgeschlüsselt: <a href="/statistics/overtime.php">Einreichungen</a>, <a href="/statistics/overtime.php?date=taken">Aufnahmedatum</a>, <a href="/statistics/overtime_users.php">Teilnehmer-Registrierungen</a>, <a href="/statistics/overtime_forum.php">Foren-Beiträge</a> und <a href="/statistics/overtime_tickets.php">Änderungsvorschläge</a>.<br/><br/>
    Aufgeschlüsselt nach Stunde, Wochentag und Monat: <a href="/statistics/date_graphs.php">Einreichungen</a>, <a href="/statistics/date_graphs.php?date=taken">Aufnahmedatum</a>, <a href="/statistics/date_users_graphs.php">Teilnehmer-Registrierungen</a> und <a href="/statistics/date_forum_graphs.php">Foren-Beiträge</a>.<br/><br/>
    Tage hoher Aktivität: <a href="/statistics/busyday.php?date=submitted">Einreichungen</a>, <a href="/statistics/busyday.php">aufgenommene Bilder</a>, <a href="/statistics/busyday_users.php">Teilnehmer-Registrierungen</a> und <a href="/statistics/busyday_forum.php">Foren-Beiträge</a> (<a href="/statistics/busyday_forum.php?users=1">Teilnehmer</a>,<a href="/statistics/busyday_forum.php?threads=1">Themen</a>).<br/><br/>
