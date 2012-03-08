@@ -1,0 +1,103 @@
+Small SphinxSearch UDF function to enable, get X within GROUP type situations. 
+
+For example:
+SELECT * FROM gridimage GROUP BY auser_id;
+
+returns you 1 single row for each auser_id. 
+
+But how to get multiple rows per user? Enter withinfirstx() UDF function. Can then do
+
+SELECT auser_id,WITHINFIRSTX(auser_id,3) AS myint FROM gridimage WHERE myint = 1 ORDER BY auser_id ASC;
+
+Which gives you at most 3 rows for each auser_id. 
+
+
+
+######################################
+INSTALLATION STEPS
+######################################
+- for Linux distributions
+
+------------
+# Get the files
+
+wget http://svn.geograph.org.uk/svn/modules/trunk/sphinx/withinfirstx.cpp
+
+wget http://sphinxsearch.googlecode.com/svn/trunk/src/sphinxudf.h
+
+------------
+# Compile!
+
+gcc -fPIC -shared -o withinfirstx.so withinfirstx.cpp
+
+------------
+
+If not used UDFs before, need to configure sphinx for them. In the 'searchd' section of sphinx.conf, add the following:
+
+
+	#need sphinxQL enabled to be able to use UDFs (to call the CREATE FUNCTION)
+        listen = localhost:9306:mysql41
+
+	#needed for UDFs
+        workers=threads
+
+	#where the UDFs live
+        plugin_dir = /var/sphinx/plugins
+
+	# sphinx will not start without binlog_path defined, when using workers=threads. Can also just do "binlog_path = " to disable binlog
+        binlog_path = /var/sphinx/binlog
+
+
+Then
+
+mkdir /var/sphinx/plugins
+mkdir /var/sphinx/binlog
+chown sphinx:sphinx /var/sphinx/binlog
+
+/etc/init.d/sphinx restart
+
+(dont forget to check it really restarts - and if not check searchd.log!) 
+
+######################################
+TESTING
+######################################
+
+-----------
+# Connect and install function
+
+mysql --protocol=tcp -P9306 --prompt=sphinxQL
+sphinxQL> CREATE FUNCTION withinfirstx RETURNS INT SONAME 'withinfirstx.so';
+
+-----------
+# run a query
+
+sphinxQL> select auser_id,withinfirstx(auser_id,3) as myint from gi_stemmed where myint = 1 order by auser_id asc limit 10;
++------+--------+----------+-------+
+| id   | weight | auser_id | myint |
++------+--------+----------+-------+
+|  134 |      1 |        1 |     1 |
+|  139 |      1 |        1 |     1 |
+|  154 |      1 |        1 |     1 |
+|   85 |      1 |        2 |     1 |
+|   87 |      1 |        2 |     1 |
+|   89 |      1 |        2 |     1 |
+|   19 |      1 |        3 |     1 |
+|  904 |      1 |        3 |     1 |
+|  905 |      1 |        3 |     1 |
+|    4 |      1 |        5 |     1 |
++------+--------+----------+-------+
+10 rows in set (1.47 sec)
+
+------------
+# Example Sphinx API code
+
+$cl->setSelect("*, withinFirstX(auser_id,3) as myint");
+$cl->setFilter('myint',array(1));
+$res = $cl->query('test','gridimage');
+
+-----------
+
+For background, see: 
+ http://www.geograph.org.uk/discuss/?action=vthread&topic=14557 
+
+/Barry Hunter - 08/03/2012
