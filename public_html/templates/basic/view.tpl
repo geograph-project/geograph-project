@@ -1,4 +1,5 @@
 {if $ireland_prompt}{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/`$image->gridimage_id`\" />"}{/if}
+{if !$image->allow_pinterest}{assign var="extra_meta" value="`$extra_meta`<meta name=\"pinterest\" content=\"nopin\" />"}{/if}
 {include file="_std_begin.tpl"}
 
 {if $image}
@@ -28,13 +29,17 @@
 	<div class="interestBox" style="text-align:center; font-size:0.9em;width:400px;margin-left:auto;margin-right:auto">
 		{if $current_search.l}
 			<a href="/photo/{$current_search.l}">&lt; prev image</a>
-		{else}
+		{elseif $current_search.c > 1}
+                        <a href="/search.php?i={$current_search.i}&amp;page={$current_search.p-1}">&lt; prev page</a>
+                {else}
 			<s style="color:silver" title="first image on this page - you may be able to get to another page via the 'back to search results' itself">&lt; prev image</s>
 		{/if} |
 		<a href="/search.php?i={$current_search.i}&amp;page={$current_search.p}"><b>back to search results</b></a> |
 		{if $current_search.n}
 			<a href="/photo/{$current_search.n}">next image &gt;</a>
-		{else}
+		{elseif $current_search.c < $current_search.t}
+                        <a href="/search.php?i={$current_search.i}&amp;page={$current_search.p+1}">next page &gt;</a>
+                {else}
 			<s style="color:silver" title="last image on this page - you may be able to get to another page via the 'back to search results' itself">next image &gt;</s>
 		{/if}
 	</div>
@@ -44,7 +49,7 @@
 		<div style="width:640px;margin-left:auto;margin-right:auto"><i>The Geograph Britain and Ireland project aims to collect geographically representative photographs and information for every square kilometre of Great Britain and Ireland, and you can be part of it.</i> <br/><a href="/faq.php">Read more...</a></div><br/>
 		{/if}
 
-		<b>We have at least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a></b>
+		<b>We have at least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1&amp;form=external">View them now</a></b>
 	</div>
 {/if}
 {/dynamic}
@@ -54,6 +59,7 @@
 	</div>
 {/if}
 
+<div about="{$image->_getFullpath(false,true)}" xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#">
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	{if $image->original_width}
 		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">More sizes</a></div>
@@ -80,6 +86,7 @@
 			{foreach from=$buckets item=item}
 					<label id="{$image->gridimage_id}label{$item|escape:'html'}" for="{$image->gridimage_id}check{$item|escape:'html'}" style="color:gray">
 					<input type=checkbox id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0,this.value,{if $user->user_id eq $image->user_id}1{else}0{/if});"> {$item|escape:'html'}
+					{if $item == 'CloseCrop'} (was Telephoto){/if}
 					</label><br/>
 
 			{/foreach}<br/>
@@ -94,7 +101,7 @@
 
   <div class="img-shadow" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull()|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
 
-  <div class="caption640" style="font-weight:bold" xmlns:dc="http://purl.org/dc/elements/1.1/" property="dc:title" itemprop="name">{$image->title|escape:'html'}</div>
+  <div class="caption640" style="font-weight:bold" property="dct:title" itemprop="name">{$image->title|escape:'html'}</div>
 
   {if $image->comment}
   <div class="caption640" itemprop="description">{$image->comment|escape:'html'|nl2br|geographlinks:$expand|hidekeywords}</div>
@@ -127,7 +134,7 @@
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL">{$image->realname|escape:'html'}</a> and
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and
 licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="{$image->_getFullpath(false,true)}" title="Creative Commons Attribution-Share Alike 2.0 Licence">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
@@ -136,6 +143,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 {include file="_rdf.tpl"}
 
 -->
+</div>
 
 {if $image_taken && $image->imagetaken > 1}
 <div class="keywords yeardisplay" title="year photo was taken">year taken <div class="year">{$image->imagetaken|truncate:4:''}</div></div>
@@ -218,7 +226,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 {if $image->credit_realname}
 	<dt>Photographer</dt>
-	 <dd property="dc:creator" itemprop="author">{$image->realname|escape:'html'}</dd>
+	 <dd property="dc:creator" itemprop="author" rel="author">{$image->realname|escape:'html'} &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;textsearch=name=%22{$image->realname|escape:'url'}%22&amp;do=1" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 
 	<dt>Contributed by</dt>
 	 <dd><a title="View profile" href="/profile/{$image->user_id}" itemprop="publisher">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
@@ -346,8 +354,6 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 	<a title="Send an electronic card" href="/ecard.php?image={$image->gridimage_id}">Forward to a<br/>friend by email</a><br/><br/>
 
-<a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;username=geograph"><img src="http://s7.addthis.com/static/btn/v2/lg-share-en.gif" width="125" height="16" alt="Bookmark and Share"/></a>
-<br/><br/>
 
 {if $image->tags && ($image->tag_prefix_stat.$blank || $image->tag_prefix_stat.term || $image->tag_prefix_stat.cluster || $image->tag_prefix_stat.wiki)}
 	<p style="margin-top:0px">
@@ -417,7 +423,6 @@ function redrawMainImage() {
 {/literal}
 /* ]]> */
 </script>
-<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=geograph"></script>
 
 
 
