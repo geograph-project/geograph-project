@@ -1224,7 +1224,7 @@ EOF;
 			var hills = new OpenLayers.Layer.XYrZ(
 				\"$name_hills\",
 				\"/tile/hills/\${z}/\${x}/\${y}.png\",
-				7, 14/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				4, 14/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
 					attribution: $attr_hills,
 					sphericalMercator : true,

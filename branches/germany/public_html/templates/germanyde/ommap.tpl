@@ -242,7 +242,7 @@ ommap.tpl, rastermap.class.php:
 			var hills = new OpenLayers.Layer.XYrZ(
 				"Relief",
 				"/tile/hills/${z}/${x}/${y}.png",
-				7, 14/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				4, 14/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
 					attribution: 'Relief: <a href="http://srtm.csi.cgiar.org/">CIAT-Daten</a>',
 					sphericalMercator : true,
