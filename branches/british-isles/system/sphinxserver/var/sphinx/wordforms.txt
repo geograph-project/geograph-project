@@ -1,0 +1,26 @@
+c 373 n > cwn
+d 373 r > dwr
+glynd 373 r > glyndwr
+t 373 r > twr
+
+t 375 > ty
+g 375 yl > gwyl
+gw 375 r > gwyr
+ll 375 n > llyn
+pr 375 s > prys
+s 375 ch > sych
+
+fa ade > facade 
+
+l n > lon
+ird > aird
+d n > dun
+fr n > fran
+h n > hen
+mh ir > mhoir
+m r > mor
+m ire > moire
+sr n > sron
+s r > sur
+
+na ve > naive
