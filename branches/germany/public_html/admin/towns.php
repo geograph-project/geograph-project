@@ -141,7 +141,7 @@ if (!$db) die('Database connection failed');
 				$sqlcolumns[]  = "s";
 			}
 			if ($_POST['oldc'.$c] !== $_POST['newc'.$c] || $_POST['oldi'.$c] === '') {
-				$_POST['newc'.$c] = intval($_POST['newc'.$c]);
+				$_POST['newc'.$c] = intval(str_replace(' ', '', $_POST['newc'.$c]));
 				if ($_POST['newc'.$c] < 0 || $_POST['newc'.$c] > 999999999) {
 					$message .= "<p><b>Invalid community id</b>: {$_POST['oldi'.$c]}/<i>{$_POST['oldna'.$c]}</i>: <b>{$_POST['newc'.$c]}</b></p>";
 					continue;
@@ -306,7 +306,8 @@ if (!$db) die('Database connection failed');
 #  ORDER BY gt2.text_val,gt.text_val
 		#
 		#$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'].$CONF['db_persist'];# allow other user/passwd?
-		$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'];# allow other user/passwd?
+		#$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'];# allow other user/passwd?
+		$ogdbDSN = $CONF['db_driver'].'://'.$CONF['db_user'].':'.$CONF['db_pwd'].'@'.$CONF['db_connect'].'/'.$CONF['ogdb_db'].'?new';# allow other user/passwd?
 		$ogdb = NewADOConnection($ogdbDSN);
 		if (!$ogdb) die('Database connection failed');
 		if (isset($_POST['findlarge'])) {
