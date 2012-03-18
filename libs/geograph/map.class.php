@@ -3393,24 +3393,28 @@ END;
 			
 			$str = floor($e/$div) .' '. floor($n/$div*1.4);
 			if (!$squares[$str]) {// || $recordSet->fields['s'] ==1) {
-				$squares[$str]++;
-			
-				list($x,$y) = $conv->national_to_internal($e,$n,$recordSet->fields['reference_index'] );
 
+				list($x,$y) = $conv->national_to_internal($e,$n,$recordSet->fields['reference_index'] );
 				$imgx1=($x-$left) * $this->pixels_per_km;
 				$imgy1=($this->image_h-($y-$bottom+1)* $this->pixels_per_km);
-				
-				//trigger_error("---->city: " . ($recordSet->fields['name']) . " w/h: " . ($this->image_w) . "/" . ($this->image_h) . " x/y: " . $imgx1 . "/" . $imgy1, E_USER_NOTICE);
-				if ($this->pixels_per_km<32) { //FIXME limit?
-					imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
-					imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
+
+				$dotsize = $this->pixels_per_km<32 ? 2 : 0; //FIXME limit?
+				#trigger_error("A: {$this->pixels_per_km} $dotsize $imgx1 $imgy1 {$this->image_w} {$this->image_h}", E_USER_NOTICE);
+				if ($imgx1 >= $dotsize && $imgy1 >= $dotsize && $imgx1 < $this->image_w - $dotsize && $imgy1 < $this->image_h - $dotsize) { # can draw dot
+					#trigger_error("B", E_USER_NOTICE);
+					$font = ($recordSet->fields['s'] ==1)?$cityfont:2;
+					$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad']);
+					if (count($img1)) { # can draw name
+						#trigger_error("C", E_USER_NOTICE);
+						$squares[$str]++;
+						if ($dotsize) {
+							imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
+							imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
+						}
+						imageGlowString($img, $font, $img1[0], $img1[1], $recordSet->fields['name'], $gridcol);
+					}
 				}
-				$font = ($recordSet->fields['s'] ==1)?$cityfont:2;
-				$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad']);
-				if (count($img1))
-					imageGlowString($img, $font, $img1[0], $img1[1], $recordSet->fields['name'], $gridcol);
-				//else trigger_error("------>fail", E_USER_NOTICE);
-			} //else trigger_error("---->skip: " . ($recordSet->fields['name']), E_USER_NOTICE);
+			}
 			
 			$recordSet->MoveNext();
 		}
@@ -3522,23 +3526,20 @@ END;
 		require_once('geograph/conversionslatlong.class.php');
 		$conv = new ConversionsLatLong;
 		$gridcol=imagecolorallocate ($img, 109,186,178);
-		if ($this->level < 7) { //FIXME limit?
-			$div = 500000; //1 per 500k square
+		if ($this->level < 6) {
 			$scrit = "s = '1' AND";
 			$cityfont = 3;
-		} elseif ($this->level < 9) { //FIXME limit?
-			$div = 100000;
+		} elseif ($this->level < 8) {
 			$scrit = "(s = '1' OR s = '2') AND";
 			$cityfont = 3;
-		} elseif ($this->level < 10) { //FIXME limit?
-			$div = 30000;
+		} elseif ($this->level < 10) {
 			$scrit = "(s IN ('1','2','3')) AND";
 			$cityfont = 3;
 		} else {
-			$div = 10000;
 			$scrit = "(s IN ('1','2','3','4')) AND";
 			$cityfont = 3;
 		}
+		$div = 10485760/pow(2,$this->level);
 		list($glatTL, $glonTL) = $conv->sm_to_wgs84($left, $top);
 		list($glatTR, $glonTR) = $conv->sm_to_wgs84($right, $top);
 		list($glatBL, $glonBL) = $conv->sm_to_wgs84($left, $bottom);
@@ -3619,27 +3620,26 @@ END;
 				
 				$str = floor($e/$div) .' '. floor($n/$div*1.4);
 				if (!$squares[$str]) {// || $recordSet->fields['s'] ==1) {
-					$squares[$str]++;
 				
 					$ll = $conv->national_to_wgs84($e, $n, $ri);
 					list($xM, $yM) = $conv->wgs84_to_sm($ll[0], $ll[1]);
 					$imgx1=$bdry + round(($xM - $leftM)   / $widthM * $imgw);
 					$imgy1=$bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
 
-					if ($imgx1 >= $bdry && $imgx1 < $imgw+$bdry && $imgy1 >=  $bdry && $imgy1 < $imgw+$bdry) {
-					
-						//trigger_error("---->city: " . ($recordSet->fields['name']) . " w/h: " . ($this->image_w) . "/" . ($this->image_h) . " x/y: " . $imgx1 . "/" . $imgy1, E_USER_NOTICE);
-						if ($this->level<=11) { //FIXME limit?
-							imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
-							imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
-						}
+					$dotsize = $this->level<=11 ? 2 : 0; //FIXME limit?
+					if ($imgx1 >= $dotsize+$bdry && $imgx1 < $imgw-$dotsize+$bdry && $imgy1 >= $dotsize+$bdry && $imgy1 < $imgw-$dotsize+$bdry) { # can draw dot
 						$font = ($recordSet->fields['s'] ==1)?$cityfont:2;
 						$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad'], $bdry);
-						if (count($img1))
+						if (count($img1)) { # can draw name
+							$squares[$str]++;
+							if ($dotsize) {
+								imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
+								imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
+							}
 							imageGlowString($img, $font, $img1[0], $img1[1], $recordSet->fields['name'], $gridcol);
-						//else trigger_error("------>fail", E_USER_NOTICE);
+						}
 					}
-				} //else trigger_error("---->skip: " . ($recordSet->fields['name']), E_USER_NOTICE);
+				}
 				$recordSet->MoveNext();
 			}
 			$recordSet->Close(); 

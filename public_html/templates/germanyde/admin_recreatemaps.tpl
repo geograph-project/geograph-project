@@ -42,10 +42,10 @@ Inc Basemap: <input type="checkbox" name="base" value="on"/>
 {if $is_admin}
 <h3>Clear all Maps (seldom used)</h3>
 
-<p>Delete &amp; Invalidate All Maps <tt>?deleteInvalidateAll=1</tt><br/>
-Invalidate All Maps <tt>?invalidateAll=1</tt><br/>
-Clear Cache <tt>?expireAll=0</tt><br/>
-(clear basemaps too) <tt>?expireAll=1</tt></p>
+<p>Delete &amp; Invalidate All Maps <tt>?deleteInvalidateAll=1</tt> (delete all non base maps and mark all cached tiles as old to start rendering)<br/>
+Invalidate All Maps <tt>?invalidateAll=1</tt> (mark all cached tiles as old to start rendering)<br/>
+Clear Cache <tt>?expireAll=0</tt> (delete all non base maps and empty cache)<br/>
+(clear basemaps too) <tt>?expireAll=1</tt> (delete all maps and empty cache)</p>
 
 <p>Non clickable to help prevent accidental clicking.</p>
 {/if}
