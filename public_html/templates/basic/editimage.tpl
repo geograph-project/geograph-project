@@ -70,7 +70,7 @@
   {/if}
   <div class="statuscaption">classification:
    {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
-   {if $image->mod_realname}(moderator: <a href="/profile/{$image->moderator_id}">{$image->mod_realname}</a>){/if}</div>
+   {if $image->mod_realname}(moderator: <a href="/profile/{$image->moderator_id}" class="statuscaption">{$image->mod_realname}</a>){/if}</div>
 </div>
 {if $showfull}
   	{if $isowner and $image->moderation_status eq 'pending'}
