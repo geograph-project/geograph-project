@@ -593,7 +593,7 @@ div.statuscaption
 	font-size:0.7em;
 	color:silver
 }
-div.statuscaption a
+div.statuscaption a.statuscaption
 {
 	color:silver
 }
