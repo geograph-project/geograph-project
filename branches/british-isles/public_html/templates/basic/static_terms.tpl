@@ -26,7 +26,7 @@ boilerplate...</p>
 
  <h2>Geograph Project Ltd Detailed Terms of Use Agreement for the {$http_host} Website</h2>
 
- <p>Last updated: 11 September 2007</p>
+ <p>Last updated: 7 April 2012</p>
 
 <p>This site is run by Geograph Project Ltd, and contains images and information, information on geographing, forums and such other services as may be made available from time to time on www.geograph.org.uk (the <b>Site</b>).
 
@@ -77,7 +77,7 @@ boilerplate...</p>
  <h3>3. License to Use Site; Restrictions</h3>
  <p>Geograph Project Ltd hereby grants You a non-exclusive, non-
  transferable, revocable license to view and use the Site in accordance with this
- Agreement and any guidelines or policies posted on the Site. Geograph Project Ltd 
+ Agreement and any guidelines or policies posted on the Site. Geograph Project Ltd
  reserves the right to suspend or revoke, in its sole discretion, the
  license hereunder and to prevent You from accessing all or any portion of the Site
  with or without notice or reason and without liability on the part of The
@@ -118,7 +118,7 @@ boilerplate...</p>
  <li>(a) Upload, post or otherwise transmit any content that is unlawful, harmful,
  threatening, abusive, harassing, tortious, defamatory, slanderous, vulgar, obscene,
  libelous, invasive of another's privacy, hateful, embarrassing, or racially,
- ethnically or otherwise objectionable to any other person or entity.</li>
+ ethnically or otherwise offensive to any other person or entity.</li>
 
  <li>(b) Impersonate any person or entity, or falsely state or otherwise misrepresent your
  affiliation with any person or entity.</li>
