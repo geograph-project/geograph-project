@@ -300,8 +300,11 @@ body>#nav_block {width:128px;}
 {
 	color:#99FFFF;
 }
+.content_photoblack .tabHolder a {
+	color:lightblue;
+}
 .content_photoblack .tabHolder a:visited {
-	color:purple;
+	color:#5DA2A2;
 }
 .content_photoblack  dl.picinfo dt
 {
@@ -369,6 +372,9 @@ body>#nav_block {width:128px;}
 .content_photogray .interestBox a {
 	color:blue;
 }
+.content_photogray .interestBox h2 {
+	color:gray;
+}
 .content_photogray .interestBox a:visited {
 	color:purple;
 }
@@ -382,9 +388,13 @@ body>#nav_block {width:128px;}
 	color:#00CCCC;
 }
 
+.content_photogray .tabSelected 
+{
+	background-color:#cccccc;
+}
 .content_photogray .tabHolder a 
 {
-	color:blue;
+	color:#2E9AFE;
 }
 .content_photogray .tabHolder b 
 {
@@ -1061,6 +1071,16 @@ div.map div.inner img
 	border-right: 1px solid #dddddd;
 	padding:3px;
 	font-weight:bold;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+a.tabSelected {
+	text-decoration:none;
 }
 
 .tab {
@@ -1070,6 +1090,12 @@ div.map div.inner img
 	border-right: 1px solid gray;
 	padding:3px;
 	cursor:pointer;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 }
 
 .interestBox {

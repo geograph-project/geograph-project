@@ -1,27 +1,8 @@
 {include file="_std_begin.tpl"}
 
 <div style="padding:10px;" class="searchresults">
-{if $engine->resultCount}
 
-<div style="float:right;position:relative; font-size:0.9em">
-<form action="/search.php" method="get" style="display:inline">
-<div>
-Display: 
-<input type="hidden" name="i" value="{$i}"/>
-{if $engine->currentPage > 1}<input type="hidden" name="page" value="{$engine->currentPage}"/>{/if}
-<select name="displayclass" size="1" onchange="this.form.submit()" style="font-size:0.9em"> 
-	{html_options options=$displayclasses selected=$engine->criteria->displayclass}
-</select>
-{if $legacy}<input type="hidden" name="legacy" value="1"/>{/if}
-<noscript>
-<input type="submit" value="Update"/>
-</noscript></div>
-</form>
-
-</div>
-{/if}
-
-{if $suggestions} 
+{if $suggestions}
 	<div><b>Alternative suggestions:</b>
 	<ul>
 	{foreach from=$suggestions item=row}
@@ -31,10 +12,46 @@ Display:
 	<hr/>
 {/if}
 
-<h2>Search Results</h2>
+{if $engine->resultCount}
+	<form action="/search.php" method="get" style="display:inline">
+		<div class="tabHolder" style="padding:0px">
+
+			<input type="hidden" name="i" value="{$i}"/>
+			{if $engine->currentPage > 1}<input type="hidden" name="page" value="{$engine->currentPage}"/>{/if}
+
+			Display:
+			{if $engine->fullText}
+				<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=excerpt" class="tab{if $engine->criteria->displayclass == 'excerpt'}Selected{assign var="disfound" value="1"}{/if}">Keywords</a>
+			{/if}
+			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=full" class="tab{if $engine->criteria->displayclass == 'full'}Selected{assign var="disfound" value="1"}{/if}">Details</a>
+			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=thumbs" class="tab{if $engine->criteria->displayclass == 'thumbs'}Selected{assign var="disfound" value="1"}{/if}">Thumbnails</a>
+			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=gmap" class="tab{if $engine->criteria->displayclass == 'gmap'}Selected{assign var="disfound" value="1"}{/if}">Map</a>
+			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=slide" class="tab{if $engine->criteria->displayclass == 'slide'}Selected{assign var="disfound" value="1"}{/if}">Slideshow</a>
+			<span class="tab">
+				<select name="displayclass" size="1" onchange="this.form.submit()" style="margin:0">
+					{if $disfound}
+						<option value="{$engine->criteria->displayclass}">more...</option>
+						{html_options options=$displayclasses}
+					{else}
+						{html_options options=$displayclasses selected=$engine->criteria->displayclass}
+					{/if}
+				</select>
+				{if $legacy}<input type="hidden" name="legacy" value="1"/>{/if}
+				<noscript>
+				<input type="submit" value="Update"/>
+				</noscript>
+			</span>
+		</div>
+		<div style="position:relative;" class="interestBox">
+			<h2 style="margin:0">Search Results</h2>
+		</div>
+	</form>
+{else}
+	<h2>Search Results</h2>
+{/if}
 
 
-<p>Your search{if !$engine->criteria->groupby} for images{/if}<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns 
+<p>Your search{if !$engine->criteria->groupby} for images{/if}<i>{$engine->criteria->searchdesc|escape:"html"}</i>, returns
 {if $engine->pageOneOnly && $engine->resultCount == $engine->numberofimages}
 	<acronym title="to keep server load under control, we delay calculating the total">many</acronym> {if $engine->criteria->groupby}groups{else}images{/if}
 {elseif $engine->islimited}
@@ -61,18 +78,18 @@ Display:
 	<div class="interestBox" style="border:1px solid pink;">
 		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However, as your search is in a predictable sort order, you can <b><a href="{$engine->nextLink|escape:'html'}">Generate a new Search</a></b> that continues from approximately this page.
 	</div>
-	
+
 {elseif $engine->fullText && $engine->numberOfPages eq $engine->currentPage && $engine->criteria->sphinx.compatible && $engine->criteria->sphinx.compatible_order && $engine->resultCount > $engine->maxResults}
 	<div class="interestBox" style="border:1px solid pink;">
 		You have reached the last page of results, this is due to the fact that the new search engine will only return at most {$engine->maxResults|number_format} results. However, your search seems to be compatible with the legacy engine. You can <a href="/search.php?i={$i}&amp;legacy=true&amp;page={$engine->currentPage+1}">view the next page in Legacy Mode</a> to continue. <b>Note, searches will be slower.</b>
 	</div>
-	
+
 {elseif $engine->fullText && (!$engine->criteria->sphinx.compatible || $engine->criteria->sphinx.no_legacy)}
 
 
 {elseif strlen($engine->criteria->searchtext) && $engine->criteria->sphinx.impossible}
 	<div style="padding:2px;border:1px solid gray; font-size:0.7em;text-align:center">You have dropped back into <a href="/help/search_new">legacy search mode</a>, the search options you have selected are not supported in the new search,<br/> you can try simplifing the chosen options to change mode.
-	
+
 	{if $engine->criteria->sphinx.no_legacy}
 	<br/><br/>
 		<b>However, legacy is not able to support this query</b> - please <a href="/contact.php">let us know</a>.
@@ -101,7 +118,7 @@ Display:
 				<input type="hidden" name="i" value="{$i}"/>
 				<input type="hidden" name="redo" value="1"/>
 				({newwin href="/article/Word-Searching-on-Geograph" text="Tips"}) - all other fields unchanged
-				
+
 				| <a href="javascript:void(hide_tree(101));">close</a></div>
 			</form>
 		</div>
