@@ -12,6 +12,7 @@
 	<div class="tabHolder" style="text-align:right">
 		<span class="tabSelected">Simple search</span>
 		<a href="/search.php?form=text" class="tab">Advanced search</a>
+		<a href="/finder/multi2.php" class="tab">Combined</a>
 		{if $user->registered}
 			<a href="/search.php?form=first" class="tab">First Geographs</a>
 			<a href="/search.php?form=check" class="tab">Check submissions</a>
@@ -70,7 +71,6 @@
 	</ul><br/>
 	</li>
 	{/if}
-	<div 
 	<div id="hidemarked">
 		 <small>Marked Images <input type=button value="expand" onclick="show_tree('marked')"/></small>
 	</div>
