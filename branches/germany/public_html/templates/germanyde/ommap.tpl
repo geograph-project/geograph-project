@@ -482,6 +482,10 @@ ommap.tpl, rastermap.class.php:
 				}
 				var curlink = document.getElementById("maplink");
 				curlink.setAttribute("href", url);
+				if (window.history.replaceState) {
+					//window.history.replaceState(null, null, url);
+					window.history.replaceState(null, '', '/ommap.php'+url);
+				}
 			}
 
 

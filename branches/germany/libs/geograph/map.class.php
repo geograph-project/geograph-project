@@ -272,7 +272,6 @@ class GeographMap
 			#$FIXME allow levels _and_ pixels_per_km
 			$this->level = intval($pixels_per_km);
 			$this->map_wM = M_PI*2*6378137.000/pow(2,$this->level);
-			#$this->pixels_per_km = 128/(M_PI*6378.137)*pow(2,$this->level);
 			$this->pixels_per_km = $width/$this->map_wM*1000.0; # only right at equator
 			$this->_calcXY();
 			$this->image_w=$width;
@@ -838,55 +837,14 @@ class GeographMap
 	*/
 	function& _renderMap() {
 		if ($this->mercator) {
-			//trigger_error("-> {$this->map_x} {$this->map_y} {$this->level} {$this->image_h} {$this->image_w}", E_USER_NOTICE);
-			#if ($this->type_or_user == 0) {
-			#	$ok = $this->_renderImageM();
-			#} elseif ($this->type_or_user == -1) {
-			#	//if thumbs level can just use normal render. 
-			#	if ($this->level <= 11) {
-			#		$ok = $this->_renderDepthImageM(); #FIXME
-			#	} else {
-			#		$ok = $this->_renderImageM();
-			#	}
-			#} elseif ($this->type_or_user > 0) {
-			#	//normal render image, understands type_or_user > 0!
-			#	$ok = $this->_renderImageM();
-			#} 
 			$ok = $this->_renderImageM();
-			if ($ok) {
+			if ($ok && $this->type_or_user != -10) {
 				$db=&$this->_getDB();
 				$widthMC  = pow(2, 19-$this->level);
 				$leftMC   = +$widthMC*$this->tile_x - 262144;
 				$topMC    = -$widthMC*$this->tile_y + 262144;
 				$rightMC  = $leftMC   + $widthMC;
 				$bottomMC = $topMC    - $widthMC;
-				#$widthM=$this->map_wM;
-				#$leftM=$this->map_xM;
-				#$bottomM=$this->map_yM;
-				#$rightM=$leftM+$widthM;
-				#$topM=$bottomM+$widthM;
-				##$sql="select min(x) as min_x, min(y) as min_y, max(x)+1 as max_x, max(y)+1 as max_y from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
-				# use db values if != NULL?
-				#require_once('geograph/conversionslatlong.class.php');
-				#$conv = new ConversionsLatLong;
-				#list($glatTL, $glonTL) = $conv->sm_to_wgs84($leftM, $topM);
-				#list($glatTR, $glonTR) = $conv->sm_to_wgs84($rightM, $topM);
-				#list($glatBL, $glonBL) = $conv->sm_to_wgs84($leftM, $bottomM);
-				#list($glatBR, $glonBR) = $conv->sm_to_wgs84($rightM, $bottomM);
-				#list($xTL, $yTL) = $conv->wgs84_to_internal($glatTL, $glonTL);
-				#list($xTR, $yTR) = $conv->wgs84_to_internal($glatTR, $glonTR);
-				#list($xBL, $yBL) = $conv->wgs84_to_internal($glatBL, $glonBL);
-				#list($xBR, $yBR) = $conv->wgs84_to_internal($glatBR, $glonBR);
-				#$min_x = min($xTL, $xTR, $xBL, $xBR);
-				#$min_y = min($yTL, $yTR, $yBL, $yBR);
-				#$max_x = max($xTL, $xTR, $xBL, $xBR)+1;
-				#$max_y = max($yTL, $yTR, $yBL, $yBR)+1;
-				#$dx = ceil(($max_x - $min_x) * 0.125); //FIXME good value?
-				#$dy = ceil(($max_y - $min_y) * 0.125); //FIXME good value?
-				#$max_x += $dx;
-				#$max_y += $dy;
-				#$min_x -= $dx;
-				#$min_y -= $dy;
 
 				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%d,tile_y=%d,max_x=%d,max_y=%d",$leftMC,$bottomMC,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay, $this->layers, $this->level, $this->tile_x, $this->tile_y,$rightMC,$topMC);
 

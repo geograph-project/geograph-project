@@ -30,6 +30,15 @@ $by = (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by']))?$_GET['by']:'m
 
 $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))&& array_key_exists(intval($_GET['ri']), $CONF['references_all']) ?intval($_GET['ri']):0;
 
+if (isset($_GET['region']) &&  preg_match('/^\d+_\d+$/',$_GET['region'])) {
+	list($rlevel,$rcid) = explode('_',$_GET['region']);
+	$rlevel = intval($rlevel);
+	$rcid = intval($rcid);
+	$has_region = in_array($rlevel, $CONF['hier_statlevels']);
+} else {
+	$has_region = false;
+}
+
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
 
 $order = (isset($_GET['order']) && preg_match('/^\w+$/' , $_GET['order']))?$_GET['order']:'';
@@ -40,7 +49,7 @@ $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET[
 
 
 $template='statistics_breakdown.tpl';
-$cacheid='statistics|'.$i.$by.'_'.$ri.'_'.$u.'_'.$order.$when;
+$cacheid='statistics|'.$i.$by.'_'.$ri.'_'.$u.'_'.$order.$when.'|'.($has_region?($rlevel.'_'.$rcid):'').'|';
 
 
 if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
@@ -72,12 +81,24 @@ if ($ri) {
 	$link .= "ri=$ri&amp;";
 }
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hr cache
+}
 
 $smarty->assign_by_ref('references',$CONF['references_all']);	
 
 $bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','myriad' => 'Myriad','user' => 'Contributor');
+foreach ($CONF['hier_statlevels'] as $level) {
+	$idx = 'level'.$level;
+	if (isset($CONF['hier_names'][$level])) {
+		$name = $CONF['hier_names'][$level];
+	} else {
+		$name = $idx;
+	}
+	$bys[$idx] = $name;
+}
+
 $smarty->assign_by_ref('bys',$bys);
 
 $smarty->assign('by', $by);
@@ -90,7 +111,21 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign('ri', $ri);
 
+	if (count($CONF['hier_statlevels'])) {
+		$sql = "select name,level,community_id from loc_hier where level in (".implode(",",$CONF['hier_statlevels']).") order by level,name";
+		$regions = $db->GetAll($sql);
+		if ($regions === false)
+			$regions = array();
+	} else {
+		$regions = array();
+	}
+	$smarty->assign("regions", $regions);
+	#$smarty->assign("curregion", $has_region?$rlevel.'_'.$rcid:'');
+	$smarty->assign("rlevel", $has_region?$rlevel:-2);
+	$smarty->assign("rcid",   $has_region?$rcid:-1);
+
 	$mysql_fields = '';
+	$sql_from = '';
 	if ($by == 'status') {
 		$sql_group = $sql_fieldname = "CONCAT(moderation_status,ELT(ftf+1, '',' (ftf)'))";
 	} else if ($by == 'class') {
@@ -131,7 +166,20 @@ if (!$smarty->is_cached($template, $cacheid))
 		$mysql_fields = ',gi.user_id';
 	} else if ($by == 'count') {
 		$sql_group = $sql_fieldname = "imagecount";
+	} else if (preg_match('/^level[0-9]+$/', $by)) {
+		$level = intval(substr($by, 5));
+		if (in_array($level, $CONF['hier_statlevels'])) {
+			$sql_from .=  " inner join gridsquare_percentage gp on (gi.gridsquare_id=gp.gridsquare_id and gp.percent > 0 and gp.level=$level)"
+			             ." inner join loc_hier lh on (gp.level=lh.level and gp.community_id=lh.community_id)"; # FIXME fallback to community id if no lh row present?
+			$sql_group = "gp.community_id";
+			$sql_fieldname = "lh.name"; # FIXME print full place/hierarchy info?
+		} else {
+			$by = '';
+		}
 	} else {
+		$by = '';
+	}
+	if ($by === "") {
 		$by = 'status';
 		$sql_group = $sql_fieldname = 'moderation_status';
 	}
@@ -145,6 +193,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$title .= " in ".$CONF['references_all'][$ri];
 	$link = "by=$by";
 
+	$sql_where = '';
 	if ($i) {
 		require_once('geograph/searchcriteria.class.php');
 		require_once('geograph/searchengine.class.php');
@@ -187,20 +236,25 @@ if (!$smarty->is_cached($template, $cacheid))
 		//preserve input
 		$link .= "&amp;i=$i";
 		$smarty->assign('i', $i);
-	} elseif ($u) {
-		$sql_from = '';
-		$sql_where = " and user_id = $u";
-		$link .= "&amp;u=$u";
-		$smarty->assign_by_ref('u', $u);
-
-
-		$profile=new GeographUser($u);
-		$smarty->assign_by_ref('profile', $profile);
-		$title .= " for ".htmlentities2($profile->realname);
 	} else {
-		$sql_from = '';
-		$sql_where = '';
+		if ($u) {
+			$sql_where .= " and user_id = $u";
+			$link .= "&amp;u=$u";
+			$smarty->assign_by_ref('u', $u);
+
+
+			$profile=new GeographUser($u);
+			$smarty->assign_by_ref('profile', $profile);
+			$title .= " for ".htmlentities2($profile->realname);
+		}
+		if ($has_region) {
+			$rname = $db->GetOne("select name from loc_hier where level=$rlevel and community_id=$rcid");
+			$sql_from .= " inner join gridsquare_percentage gpr on (gi.gridsquare_id=gpr.gridsquare_id and gpr.percent > 0 and gpr.level=$rlevel and gpr.community_id=$rcid)";
+			#$sql_where .= "";
+			$title .= " in Region '" . $rname . "'";
+		}
 	}
+
 	$smarty->assign_by_ref('link', str_replace(' ','+',$link));
 	$smarty->assign_by_ref('h2title', $title);
 
@@ -285,6 +339,7 @@ $mysql_order";
 				
 			}
 		}
+		#FIXME link for by=levelN: /search.php?region={$LEVEL}_{$COMMUNITY_ID}&...
 	}
 
 	$smarty->assign_by_ref('total', $total);
