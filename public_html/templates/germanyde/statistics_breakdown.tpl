@@ -13,6 +13,14 @@
     	id="i"/><label for="i">Limited to <a href="/search.php?i={$i}">Search</a></label>
     {else}
     {dynamic}
+    {if $regions}
+        <select name="region">
+            <option value=""></option>
+            {foreach from=$regions item=region}
+                <option value="{$region.level}_{$region.community_id}"{if $rlevel==$region.level && $rcid==$region.community_id} selected="selected"{/if}>in {$region.name|escape:'html'}</option>
+            {/foreach}
+        </select>
+    {/if}
     {if $user->registered}
 	<select name="u">
 		{if $u && $u != $user->user_id}

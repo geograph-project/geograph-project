@@ -113,18 +113,14 @@ class Gazetteer
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
 
-			foreach ($places as $i => &$rplace) {
-				if (!empty($rplace['community_id'])) {
-					#$place['hier'] = $db->GetAssoc("select level,name from loc_hier where {$place['community_id']} between contains_cid_min and contains_cid_max order by level");
-					$rplace['hier'] = $this->_get_hier_from_cid($rplace['community_id']);
-					$rplace['adm1_name'] = get_hierstring_from_array($rplace['hier'], $rplace['full_name']);
+			foreach ($places as &$place) {
+				if (!empty($place['community_id'])) {
+					$place['hier'] = $this->_get_hier_from_cid($place['community_id']);
+					$place['adm1_name'] = get_hierstring_from_array($place['hier'], $place['full_name']);
 				}
-				#$sq = new GridSquare;
-				#if ($sq->loadFromPosition(floor($place['x']/1000), floor($place['y']/1000), false, false, 0, 0, true, $reference_index)) {
-				#	$place['grid_reference'] = $sq->grid_reference;
-				#}
-				list($rplace['grid_reference'],) = $conv->national_to_gridref($rplace['e'],$rplace['n'],4,$reference_index);
+				list($place['grid_reference'],) = $conv->national_to_gridref($place['e'],$place['n'],4,$reference_index);
 			}
+			unset($place);
 		} else {
 			$places = $db->GetAll("select
 					full_name,
@@ -400,7 +396,6 @@ class Gazetteer
 					reference_index = {$reference_index}
 				order by odistance asc limit 1");
 			if (!empty($places['community_id'])) {
-				#$places['hier'] = $db->GetAssoc("select level,name from loc_hier where {$places['community_id']} between contains_cid_min and contains_cid_max order by level");
 				$places['hier'] = $this->_get_hier_from_cid($places['community_id']);
 				$places['adm1_name'] = get_hierstring_from_array($places['hier'], $places['full_name']);
 			}
