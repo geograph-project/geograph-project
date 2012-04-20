@@ -36,7 +36,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <div style="padding:20px">
 
 <h2>The following sizes of images are available for download:</h2><br/>
-<div class="interestBox">Note: all sizes are <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licenced</a>, and any reuse needs to credit <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>.</div>
+<div class="interestBox">Note: all sizes are <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licensed</a>, and any reuse needs to credit <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>.</div>
 
 {assign var="size" value=$image->_getFullSize()}
 
