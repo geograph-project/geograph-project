@@ -206,11 +206,14 @@ body>#nav_block {width:128px;}
 .nav h3.newstitle
 {
 	font-weight:bold;
-	margin: 0.8em 0 0 0;
+	margin:15px 0 10px 0;
+	padding-top:15px;
+	border-top:2px solid black;
 }
 
 .nav .newsheader
 {
+	margin-top:5px;
 	font-weight:bold;
 	font-size:0.8em;
 	background-color:#eeeeee;
@@ -222,6 +225,12 @@ body>#nav_block {width:128px;}
 	padding-top:3px;
 	font-size:0.8em;
 }
+.nav .collection
+{
+	border-top: 1px solid silver;
+	padding-top:3px;
+}
+
 
 .nav .newsfooter
 {
@@ -1380,12 +1389,22 @@ body {
 }
 
 #nav_block {
-	border: 0;
+	border:0;
 	padding:0;
 	padding-right:6px;
-	left: 0;
+	padding-bottom:20px;
+	left:0;
 	top:74px;
 	border-bottom:1px solid silver;
+}
+#nav_block .sponsor {
+	text-align:center;
+	padding-top:15px;
+	border-top:2px solid black;
+	margin-top:15px;
+}
+#nav_block .sponsor img {
+	padding:4px;
 }
 
 .nav ul li {
