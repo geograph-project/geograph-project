@@ -7,6 +7,7 @@
     <li>View<ul rel="open">
      <li><a title="Find images" href="/search.php">Search</a><ul>
       <li><a title="Advanced image search" href="/search.php?form=text">Advanced</a></li>
+      <li><a title="Advanced image search" href="/finder/">More</a></li>
      </ul></li>
      <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a><ul>
       <li><a title="Depth Map" href="/mapbrowse.php?depth=1">Depth</a></li>
@@ -20,7 +21,11 @@
       <li><a href="/explore/calendar.php">Calendar</a></li>
       <li><a href="/explore/searches.php">Featured</a></li>
      </ul></li>
-     <li><a title="Content" href="/content/">Content</a></li>
+     <li><a title="Content" href="/content/">Collections</a><ul>
+      <li><a href="/article/">Articles</a></li>
+      <li><a href="/gallery/">Galleries</a></li>
+      <li><a href="http://users.aber.ac.uk/ruw/misc/geotrip.php?osos">Geo-Trips</a></li>
+     </ul></li>
      <li><a title="Activities" href="/activities/">Activities</a><ul>
       <li><a title="Play Games" href="/games/">Games</a> </li>
       <li><a title="Imagine the map in pictures" href="/help/imagine">Imagine</a></li>
@@ -29,6 +34,7 @@
     <li>Contribute<ul rel="open">
      <li><b><a title="Submit" href="/submit.php">Submit</a></b><ul>
       <li><a title="Submit Version 2" href="/submit2.php">Submit v2</a></li>
+      <li><a title="Multi-Uploader Submission" href="/submit-multi.php">Multi-Submit</a></li>
      </ul></li>
      <li><a title="Statistics" href="/numbers.php">Statistics</a><ul>
       <li><a title="More Stats" href="/statistics.php">More Stats</a></li>
@@ -42,7 +48,7 @@
      {dynamic}{if $user->registered}
      <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
      <li><a title="Chat" href="/chat/">Chat</a> {if $irc_seen}<span style="color:gray">({$irc_seen} online)</span>{/if}</li>
-     <li><a title="Find out about local Events" href="/events/">Events</a> <sup style="color:red">New!</sup></li>
+     <li><a title="Find out about local Events" href="/events/">Events</a></li>
      {/if}{/dynamic}
     </ul></li>
     <li>Export<ul>
@@ -52,7 +58,8 @@
      <li style="font-size:0.9em;"><a title="API" href="/help/api">API</a></li>
     </ul></li>
     <li>Further Info<ul rel="open">
-     <li><a title="FAQ" href="/faq.php">FAQ</a><ul>
+     <li><a title="Recent Geograph Announcements" href="/news.php">Latest News</a></li>
+     <li><a title="FAQ" href="/faq3.php?l=0">FAQ</a><ul>
       <li><a title="Geograph Documents" href="/content/documentation.php">Documents</a></li>
      </ul></li>
      <li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>
@@ -67,7 +74,7 @@
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
     <li>Admin<ul rel="open">
-     <li><a title="Admin Tools" href="/admin/">Admin Homepage</a></li>
+     <li><a title="Admin Tools" href="/admin/">Admin Home</a></li>
      {if $is_mod}
      	<li><a title="Moderation new photo submissions" href="/admin/moderation.php">Moderation</a></li>
      {/if}
