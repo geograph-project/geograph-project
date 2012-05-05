@@ -182,7 +182,7 @@ class RestAPI
 					$obj->version = "1.0";
 					$obj->cache_age = 86400;
 					$obj->provider_name = "Geograph";
-					$obj->provider_url = "http://www.geograph.org.uk/";
+					$obj->provider_url = "http://{$_SERVER['HTTP_HOST']}/";
 
                                 if ($this->output=='json') {
                                         require_once '3rdparty/JSON.php';
