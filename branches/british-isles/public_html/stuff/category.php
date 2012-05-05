@@ -60,7 +60,7 @@ if ($_GET['type'] == 'top') {
 			$tops[$line['grouping']][] = $line;
 		}
 	} else {
-		$list = $db->getAssoc("SELECT `top`,`grouping` FROM category_primary ORDER BY `grouping`,`sort_order`");
+		$list = $db->getAssoc("SELECT `top`,`grouping` FROM category_primary ORDER BY `sort_order`");
 		foreach ($list as $top => $grouping) {
 
 			$tops[$grouping][$top] = $top;
