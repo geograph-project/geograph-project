@@ -116,7 +116,7 @@ if (!empty($message)) {
  
  
 <h2>Edit Reply</h2>
-<form action="edit.php?id=<? echo $id; ?>" method="post" style="background-color:lightgrey;padding:10px;border:1px solid gray">
+<form action="faq-edit.php?id=<? echo $id; ?>" method="post" style="background-color:lightgrey;padding:10px;border:1px solid gray">
 
 <b>Question Title</b>:<br/>
  &nbsp; &nbsp; &nbsp; <input type="text" name="title" value="<? print htmlentities($row['title']?$row['title']:$row['question']); ?>" maxlength="128" size="80"/> (128 charactors max)<br/>
