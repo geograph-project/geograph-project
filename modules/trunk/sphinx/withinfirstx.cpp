@@ -60,8 +60,8 @@ DLLEXPORT int withinfirstx_init(SPH_UDF_INIT *init,
     }
 
     // check argument types
-    if (args->arg_types[0] != SPH_UDF_TYPE_UINT32) {
-        snprintf(error_message, SPH_UDF_ERROR_LEN, "withinFirstX() requires 1st argument to be uint");
+    if (args->arg_types[0] != SPH_UDF_TYPE_UINT32 && args->arg_types[0] != SPH_UDF_TYPE_STRING && args->arg_types[0] != SPH_UDF_TYPE_UINT32SET ) {
+        snprintf(error_message, SPH_UDF_ERROR_LEN, "withinFirstX() requires 1st argument to be uint, 32bit mva or string");
         return 1;
     }
     if (args->arg_types[1] != SPH_UDF_TYPE_UINT32) {
@@ -94,8 +94,41 @@ DLLEXPORT void withinfirstx_deinit(SPH_UDF_INIT *init)
 DLLEXPORT sphinx_int64_t withinfirstx(SPH_UDF_INIT *init, SPH_UDF_ARGS *args, char *)
 {
     UserMap *m = static_cast<UserMap*>(init->func_data);
-    unsigned int unique = *(unsigned int*)args->arg_values[0];
     unsigned int limit  = *(unsigned int*)args->arg_values[1];
 
-    return ++(*m)[unique] <= limit;
+    if (args->arg_types[0] == SPH_UDF_TYPE_UINT32)
+    {
+         unsigned int unique = *(unsigned int*)args->arg_values[0];
+         return ++(*m)[unique] <= limit;
+    }
+    else if (args->arg_types[0] == SPH_UDF_TYPE_STRING)
+    {
+         const char * unique = args->arg_values[0];
+
+         //the next line is a guess! Can the char (pointer???) be used like this?
+         return ++(*m)[unique] <= limit;
+    }
+    else // MVA
+    {
+        // Both MVA32 and MVA64 are stored as dword (unsigned 32-bit) arrays.
+        // The first dword stores the array length (always in dwords too), and
+        // the next ones store the values. In pseudocode:
+        //
+        // unsigned int num_dwords
+        // unsigned int data [ num_dwords ]
+        //
+        // With MVA32, this lets you access the values pretty naturally.
+
+         unsigned int * mva = (unsigned int *) args->arg_values[0];
+         int i, n, ok;
+
+         ok = 1;
+         n = *mva++;
+         for ( i=0; i<n; i++ ) {
+             //we have to go though the whole loop, so all the counters are incremented - no ending early
+             if (++(*m)[*mva++] > limit)
+                  ok = 0;
+         }
+         return ok;
+    }
 }
