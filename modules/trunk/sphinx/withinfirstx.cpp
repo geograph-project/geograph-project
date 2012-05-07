@@ -30,7 +30,8 @@
 #include <map>
 
 // Could use std::unordered_map in C++11, but let's be more portable:
-typedef std::map<unsigned int,unsigned int> UserMap;
+typedef std::map<unsigned int,unsigned int> IntCount;
+typedef std::map<std::string,unsigned int> StringCount;
 
 
 #ifdef _MSC_VER
@@ -44,6 +45,10 @@ extern "C" {
     DLLEXPORT int withinfirstx_init(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
     DLLEXPORT void withinfirstx_deinit (SPH_UDF_INIT*);
     DLLEXPORT sphinx_int64_t withinfirstx(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
+
+    DLLEXPORT int withinfirstxstring_init(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
+    DLLEXPORT void withinfirstxstring_deinit (SPH_UDF_INIT*);
+    DLLEXPORT sphinx_int64_t withinfirstxstring(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
 }
 
 /// UDF initialization
@@ -60,8 +65,8 @@ DLLEXPORT int withinfirstx_init(SPH_UDF_INIT *init,
     }
 
     // check argument types
-    if (args->arg_types[0] != SPH_UDF_TYPE_UINT32 && args->arg_types[0] != SPH_UDF_TYPE_STRING && args->arg_types[0] != SPH_UDF_TYPE_UINT32SET ) {
-        snprintf(error_message, SPH_UDF_ERROR_LEN, "withinFirstX() requires 1st argument to be uint, 32bit mva or string");
+    if (args->arg_types[0] != SPH_UDF_TYPE_UINT32 && args->arg_types[0] != SPH_UDF_TYPE_UINT32SET) {
+        snprintf(error_message, SPH_UDF_ERROR_LEN, "withinFirstX() requires 1st argument to be uint, or 32bit mva");
         return 1;
     }
     if (args->arg_types[1] != SPH_UDF_TYPE_UINT32) {
@@ -69,7 +74,7 @@ DLLEXPORT int withinfirstx_init(SPH_UDF_INIT *init,
         return 1;
     }
 
-    init->func_data = new UserMap();
+    init->func_data = new IntCount();
 
     // all done
     return 0;
@@ -82,7 +87,7 @@ DLLEXPORT void withinfirstx_deinit(SPH_UDF_INIT *init)
 {
     // deallocate storage
     if (init->func_data) {
-        UserMap *m = static_cast<UserMap*>(init->func_data);
+        IntCount *m = static_cast<IntCount*>(init->func_data);
         delete m;
         init->func_data = NULL;
     }
@@ -93,20 +98,13 @@ DLLEXPORT void withinfirstx_deinit(SPH_UDF_INIT *init)
 /// gets called for every row, unless optimized away
 DLLEXPORT sphinx_int64_t withinfirstx(SPH_UDF_INIT *init, SPH_UDF_ARGS *args, char *)
 {
-    UserMap *m = static_cast<UserMap*>(init->func_data);
+    IntCount *m = static_cast<IntCount*>(init->func_data);
     unsigned int limit  = *(unsigned int*)args->arg_values[1];
 
     if (args->arg_types[0] == SPH_UDF_TYPE_UINT32)
     {
-         unsigned int unique = *(unsigned int*)args->arg_values[0];
-         return ++(*m)[unique] <= limit;
-    }
-    else if (args->arg_types[0] == SPH_UDF_TYPE_STRING)
-    {
-         const char * unique = args->arg_values[0];
-
-         //the next line is a guess! Can the char (pointer???) be used like this?
-         return ++(*m)[unique] <= limit;
+        unsigned int unique = *(unsigned int*)args->arg_values[0];
+        return ++(*m)[unique] <= limit;
     }
     else // MVA
     {
@@ -119,16 +117,73 @@ DLLEXPORT sphinx_int64_t withinfirstx(SPH_UDF_INIT *init, SPH_UDF_ARGS *args, ch
         //
         // With MVA32, this lets you access the values pretty naturally.
 
-         unsigned int * mva = (unsigned int *) args->arg_values[0];
-         int i, n, ok;
+        unsigned int * mva = (unsigned int *) args->arg_values[0];
+        int i, n, ok;
 
-         ok = 1;
-         n = *mva++;
-         for ( i=0; i<n; i++ ) {
-             //we have to go though the whole loop, so all the counters are incremented - no ending early
-             if (++(*m)[*mva++] > limit)
-                  ok = 0;
-         }
-         return ok;
+        ok = 1;
+        n = *mva++;
+        for ( i=0; i<n; i++ ) {
+            //we have to go though the whole loop, so all the counters are incremented - no ending early
+            if (++(*m)[*mva++] > limit)
+                 ok = 0;
+        }
+        return ok;
     }
 }
+
+//////////////////////////////////////////////////////
+
+/// UDF initialization
+/// gets called on every query, when query begins
+/// args are filled with values for a particular query
+DLLEXPORT int withinfirstxstring_init(SPH_UDF_INIT *init,
+                                SPH_UDF_ARGS *args,
+                                char *error_message)
+{
+    // check argument count
+    if (args->arg_count != 2) {
+        snprintf(error_message, SPH_UDF_ERROR_LEN, "withinFirstXString() takes 2 arguments");
+        return 1;
+    }
+
+    // check argument types
+    if (args->arg_types[0] != SPH_UDF_TYPE_STRING) {
+        snprintf(error_message, SPH_UDF_ERROR_LEN, "withinFirstXString() requires 1st argument to be string");
+        return 1;
+    }
+    if (args->arg_types[1] != SPH_UDF_TYPE_UINT32) {
+        snprintf(error_message, SPH_UDF_ERROR_LEN, "withinFirstXString() requires 2nd argument to be uint");
+        return 1;
+    }
+
+    init->func_data = new StringCount();
+
+    // all done
+    return 0;
+}
+
+
+/// UDF deinitialization
+/// gets called on every query, when query ends
+DLLEXPORT void withinfirstxstring_deinit(SPH_UDF_INIT *init)
+{
+    // deallocate storage
+    if (init->func_data) {
+        StringCount *m = static_cast<StringCount*>(init->func_data);
+        delete m;
+        init->func_data = NULL;
+    }
+}
+
+
+/// UDF implementation
+/// gets called for every row, unless optimized away
+DLLEXPORT sphinx_int64_t withinfirstxstring(SPH_UDF_INIT *init, SPH_UDF_ARGS *args, char *)
+{
+    StringCount *m = static_cast<StringCount*>(init->func_data);
+    unsigned int limit  = *(unsigned int*)args->arg_values[1];
+
+    const std::string unique(args->arg_values[0]);
+    return ++(*m)[unique] <= limit;
+}
+
