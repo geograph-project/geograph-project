@@ -28,6 +28,7 @@
 #include "sphinxudf.h"
 #include <cstdio>
 #include <map>
+#include <string>
 
 // Could use std::unordered_map in C++11, but let's be more portable:
 typedef std::map<unsigned int,unsigned int> IntCount;
