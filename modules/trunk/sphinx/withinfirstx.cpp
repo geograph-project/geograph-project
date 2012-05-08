@@ -238,7 +238,7 @@ DLLEXPORT void withinfirstxstring_deinit(SPH_UDF_INIT *init)
 /// gets called for every row, unless optimized away
 DLLEXPORT sphinx_int64_t withinfirstxstring(SPH_UDF_INIT *init, SPH_UDF_ARGS *args, char *)
 {
-    const std::string unique (args->arg_values[0], args->str_lengths[0]);
+    const std::string unique(args->arg_values[0], args->str_lengths[0]);
     unsigned int limit  = *(unsigned int*)args->arg_values[1];
     StringCount *m = static_cast<StringCount*>(init->func_data);
 
