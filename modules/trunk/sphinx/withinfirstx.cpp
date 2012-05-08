@@ -163,6 +163,13 @@ DLLEXPORT void withinfirstxmva32_deinit(SPH_UDF_INIT *init)
 /// gets called for every row, unless optimized away
 DLLEXPORT sphinx_int64_t withinfirstxmva32(SPH_UDF_INIT *init, SPH_UDF_ARGS *args, char *)
 {
+    unsigned int * mva = (unsigned int *) args->arg_values[0];
+
+    //deal with being passed a empty array
+    if ( !mva )
+        return 1;
+
+
     IntCount *m = static_cast<IntCount*>(init->func_data);
     unsigned int limit  = *(unsigned int*)args->arg_values[1];
 
@@ -175,7 +182,6 @@ DLLEXPORT sphinx_int64_t withinfirstxmva32(SPH_UDF_INIT *init, SPH_UDF_ARGS *arg
     //
     // With MVA32, this lets you access the values pretty naturally.
 
-    unsigned int * mva = (unsigned int *) args->arg_values[0];
     int i, n, ok;
 
     ok = 1;
