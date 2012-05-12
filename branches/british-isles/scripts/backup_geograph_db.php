@@ -112,49 +112,55 @@ $status = getAssoc("SHOW TABLE STATUS");
 $tables = getAssoc("SELECT * FROM _tables ORDER BY table_name"); //useful trick to put _tables at the end :)
 
 foreach ($tables as $table => $data) {
+
 	$s = $status[$table];
-	
+
 	$backup = false;
-	
+
 	switch($data['type']) {
-	
-		case 'primary':	if ($s['Update_time'] > $data['backedup']) { $backup = true; } break;
-		
+
+		case 'primary_archive': //TODO, check a primary key and include a WHERE key > x onto the dump?
+
+		case 'primary':	if ($s['Update_time'] > $data['backedup'] && $data['backup'] != 'N') { $backup = true; } break;
+
 		//only back these up once a week
 		case 'secondary': if (date('N') == 7 && $s['Update_time'] > $data['backedup']) { $backup = true; } break; 
-		
-		case 'primary_archive': //TODO, check a primary key and include a WHERE key > x onto the dump?
+
 	}
 
 	if ($backup) {
 		$file = $folder.$table.'/'.$date."_$table.sql.gz";
-		
-		$cmd = "mysqldump --opt $cred ".escapeshellarg($table)." | gzip > $file";
+
+                if ($data['sensitive'] == 'Y') {
+                        $file .= '.gpg';
+                        $cmd = "mysqldump --opt --skip-comments $cred ".escapeshellarg($table)." | gzip | gpg --encrypt --recipient 'Geograph' > $file";
+                } else {
+			$cmd = "mysqldump --opt --skip-comments $cred ".escapeshellarg($table)." | gzip --rsyncable > $file";
+		}
 		print "$cmd\n";
-		
+
 		//create the SQL before dumping the table, so updates happen after are caught in next backip
 		$sql = "UPDATE `_tables` SET `backedup` = '".date('Y-m-d H-i-s')."' WHERE `table_name` = '".mysql_real_escape_string($table)."'";
-		
+
 		if (!is_dir($folder.$table.'/')) {
 			mkdir($folder.$table.'/');
 		}
 		print `$cmd`;
-		
+
 		if (file_exists($file) && filesize($file) > 10) {
 			//we reconnect, as the connection possibly died
-			$db = mysql_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd']);
+			$db = mysql_connect($CONF['db_connect'], $CONF['db_user'], $CONF['db_pwd'], true);
 			mysql_select_db($CONF['db_db'], $db);
 			mysql_query($sql, $db) or print('<br>Error save: '.mysql_error());
 			print "\n\n";
 		} else {
-			print "++++++++++ Error: FILE $file NOT FOUND +++++++++++++\n\n
+			print "++++++++++ Error: FILE $file NOT FOUND +++++++++++++\n\n";
 		}
-		
+
 		if (0) {
 			//TODO, rotate and delete the oldest backups?
 		}
 	}
-
 }
 
 
