@@ -1,7 +1,7 @@
+{assign var="extra_meta" value='<link href="https://plus.google.com/b/104248293367205883120/" rel="publisher"/>'}
 {assign var="maincontentclass" value="content2"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
-
 
 <h2 style="text-align:center">Welcome to Geograph Britain and Ireland</h2>
 
@@ -10,11 +10,11 @@
 <div style="position:relative;margin-left:auto;margin-right:auto;width:750px">
 
 <div  class="interestBox" style="padding:2px; text-align:center;border-radius: 6px;">
-The Geograph Britain and Ireland project aims to collect geographically
+The Geograph<sup style="font-size:0.6em">&reg;</sup> Britain and Ireland project aims to collect geographically
 representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
 
-<div style="font-size:0.8em; text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} members</b> have contributed <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
+<div style="text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} contributors</b> have submitted <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
 
 
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
@@ -22,12 +22,12 @@ representative photographs and information for every square kilometre of <a href
 			<div style="position:relative;float:right;margin-right:10px">
 				<a href="/results/2087426" style="color:white;font-size:0.9em;text-decoration:none;border-bottom:1px solid gray">view previous &gt;</a>
 			</div>
-			<h3 style="margin-top:0;margin-bottom:8px;font-size:0.95em">Photograph of the day</h3>
+			<h3 style="margin-top:0;margin-bottom:8px">{$ptitles.$ptitle}</h3>
 
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
 		<div style="position:relative;float:left; width:150px">
-			<p style="margin-top:30px;text-align:center;font-size:0.8em">Click the map to start browsing photos of the <span class="nowrap">British Isles</span></p>
+			<p style="margin-top:30px;text-align:center">Click the map to start browsing photos of the <span class="nowrap">British Isles</span></p>
 
 			<div class="map" style="height:{$overview_height}px;width:{$overview_width}px">
 				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
@@ -56,7 +56,7 @@ representative photographs and information for every square kilometre of <a href
 			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->title}</a> 
 			<span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->realname}</a></span> 
 			<span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->grid_reference}</a></span>, 
-			<span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->imagetaken|date_format:"%e %b, %Y"}</a></span>
+			<span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
 		</div>
 	</div>
 
@@ -73,7 +73,6 @@ representative photographs and information for every square kilometre of <a href
 
 		<p><a title="register now" href="/register.php">Registration</a> is free so come and join us and see how
 		many grid squares you submit!</p>
-
 	</div>
 
 </div>
@@ -108,59 +107,25 @@ representative photographs and information for every square kilometre of <a href
 	</div>
 {/if}
 
-<div style="text-align:center;clear:both;font-size:0.8em;padding:10px;">
+<div style="text-align:center;clear:both;padding:10px;">
 	<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, <a href="/submit.php">add yours now</a>!
 </div>
-{if $news2}
-	<div style="clear:both; position:relative;margin-left:auto;margin-right:auto;width:750px;font-size:0.9em">
-		{if $feed}
-			<div class="interestBox" style="border-radius: 6px;margin-bottom:8px;float:left;width:233px;margin-right:7px">
-				<h3 style="margin:0">Updates</h3>
-			</div>
-		{/if}
-		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px;float:left;width:480px">
-			<div style="position:relative;float:right">
-				<a href="/discuss/index.php?&amp;action=vtopic&amp;forum=1&amp;sortBy=1"><b>read more</b> &gt;</a>
-			</div>
-			<h3 style="margin:0">Latest News {if $rss_url}&nbsp;&nbsp;&nbsp;<a rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}" class="xml-rss">News RSS Feed</a>{/if}</h3>
-		</div>
 
-		{if $feed}
-			<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px;clear:both;">
-				{foreach from=$feed item=item}
-					<div style="font-size:0.8em;text-align:justify">{$item.text}</div>
-					<div style="margin-bottom:8px;border-bottom:1px solid gray;color:silver;text-align:right">{$item.time|date_format:"%a, %e %b"}</div>
-				{/foreach}
-				More: {external href="http://twitter.com/geograph_bi" text="twitter.com/geograph_bi"}
-				<a rel="alternate" type="application/rss+xml" title="Twitter Feed" href="http://twitter.com/statuses/user_timeline/251137848.rss" class="xml-rss">RSS</a>
-			</div>
-		{/if}
-
-		{foreach from=$news2 item=newsitem}
-			<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px">
-				<h4 style="margin-top: 0px;font-size:1.2em">{$newsitem.topic_title}</h4>
-				<div style="font-size:0.8em;text-align:justify">{$newsitem.post_text}</div>
-				<div style="margin-top:8px;border-top:1px solid gray">
-				Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> <span class="nowrap">on {$newsitem.topic_time|date_format:"%a, %e %b"}</span>
-				<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
-				</div>
-			</div>
-		{/foreach}
-
-	</div>
-{/if}
-
-<br style="clear:both"/>
-
-<div class="interestBox" style="text-align:center;margin:30px; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;"><b>Looking for more?</b> Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">more pages</a>.</div>
-<div style="text-align:center">Looking for <a href="/help/geograph_british_isles">Geograph British Isles</a>?</div>
+<div class="interestBox" style="text-align:center; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;"><b>Looking for more?</b> Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">more pages</a>.</div>
 
 <p align="center">
-	This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948/source/geograph">UK Web Archive</a> project.
+	<b>New: {external href="http://www.geograph.org/gallery.php" text="Showcase Gallery"} - Curated selection of Geograph images</b>
+</p>
+
+<div class="interestBox" style="text-align:center;margin-bottom:30px; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;">
+	{external href="http://twitter.com/geograph_bi" text="Geograph on twitter"} and <a href="/news.php">More News</a>.
 </div>
 
-<p align="center"><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 26 Cloister Road, Acton, London W3 0DE.</i></small></p>
+</div>
 
+<p align="center">This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948/source/geograph">UK Web Archive</a> project.</p>
+
+<p align="center" style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>.</p>
 
 <script>
 {literal}
