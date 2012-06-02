@@ -126,10 +126,10 @@ geographing</a> first.</p>
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
 		<p><label for="jpeg_exif"><b>Upload an image with locational information attached</b></label> <br/>
 
-		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/>
+		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" accept="image/jpeg"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 
-		<input type="submit" name="setpos" value="Next &gt;"/> <br/>
+		<input type="submit" name="setpos" value="Next &gt;" onclick="return check_jpeg(this.form.jpeg_exif)"/> <br/>
 
 		 - (upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
 
@@ -145,6 +145,16 @@ geographing</a> first.</p>
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
 		<iframe {if $tab == 4}src="/submitmap.php?inner"{/if} id="innerFrame4" width="613" height="660" frameborder="0"><a href="/submitmap.php">Click here to open a Draggable Interactive Google Map</a></iframe>
 	</div>
+
+	<script type="text/javascript">
+	{literal}
+	function check_jpeg(ele) {
+		if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/.jpe?g$/i)) {
+			return confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel");
+		}
+	}
+	{/literal}
+	</script>
 
 </div>
 	{if !$user->use_autocomplete && $user->stats.images gt 10}

@@ -116,6 +116,13 @@ function createPMarker(ppoint) {
 
 
 function checkFormSubmission(that_form,mapenabled) {
+
+	if (that_form.elements['jpeg'] && that_form.elements['jpeg'].value && that_form.elements['jpeg'].value.length > 0 && !that_form.elements['jpeg'].value.match(/.jpe?g$/i)) {
+		if (!confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel")) {
+			return false;
+		}
+	}
+
 	if (checkGridReferences(that_form)) {
 		if (typeof distance != 'undefined' && distance > 10000) {
 			message = "The apparent distance between subject and photographer is "+distance+" metres, are you sure this is correct?";

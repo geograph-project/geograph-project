@@ -122,7 +122,7 @@ geographing</a> first.</p>
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" accept="image/jpeg"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 
-		<input type="submit" name="setpos" value="Next &gt;"/> <br/>
+		<input type="submit" name="setpos" value="Next &gt;" onclick="return check_jpeg(this.form.jpeg_exif)"/> <br/>
 
 		 - (upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
 
@@ -139,8 +139,18 @@ geographing</a> first.</p>
 		<iframe {if $tab == 4}src="/submitmap.php?inner"{/if} id="innerFrame4" width="613" height="660" frameborder="0"><a href="/submitmap.php">Click here to open a Draggable Interactive Google Map</a></iframe>
 	</div>
 
+	<script type="text/javascript">
+	{literal}
+	function check_jpeg(ele) {
+	    if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/.jpe?g$/i)) {
+	    	return confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel");
+	    }
+	}
+	{/literal}
+	</script>
+
 </div>
-		<p><label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
+		<p>&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
 			<option value="OSOS">Zoomable Modern OS Mapping</option>
 			<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
 			<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option>

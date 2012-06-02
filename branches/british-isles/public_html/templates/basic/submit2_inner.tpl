@@ -76,7 +76,7 @@
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white" accept="image/jpeg"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/></div>
 		<div>
-		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em"/> (while file is sending can continue on the steps below)<br/>
+		<input type="submit" name="sendfile" value="Send File &gt;" style="margin-left:140px;font-size:1.2em" onclick="return check_jpeg(this.form.jpeg_exif)"/> (while file is sending can continue on the steps below)<br/>
 		</div>
 
 		<br/>
@@ -98,6 +98,13 @@
 {/dynamic}
 <script type="text/javascript" src="{"/js/puploader.js"|revision}"></script>
 <script type="text/javascript">
+{literal}
+function check_jpeg(ele) {
+	if (ele && ele.value && ele.value.length > 0 && !ele.value.match(/.jpe?g$/i)) {
+		return confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel");
+	}
+}
+{/literal}
 {dynamic}
 {if $success}
 	{literal}
