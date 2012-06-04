@@ -11,6 +11,9 @@ Disallow: /
 #Does not respect Crawl-delay, although mentioned on their info page
 #Crawl-delay: 50
 
+User-agent: GSLFbot
+Disallow: /
+
 User-agent: Fasterfox
 Disallow: /
 

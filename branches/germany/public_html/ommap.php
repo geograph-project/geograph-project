@@ -32,6 +32,7 @@ $smarty = new GeographPage;
 #}
 
 $smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
+#$smarty->assign('google_maps_api_key','');
 
 if (isset($_REQUEST['inner'])) {
 	$cacheid = 'iframe';
@@ -90,7 +91,7 @@ if (isset($_GET['or']) && is_numeric($_GET['or'])) {
 }
 if (isset($_GET['t'])) {
 	$googletypes = empty($CONF['google_maps_api_key']) ? '' : 'mkhp';
-	if (preg_match('/^['.$googletypes.'gowtrc][SGH]*$/', $_GET['t'])) {
+	if (preg_match('/^['.$googletypes.'gowrc][SGH]*$/', $_GET['t'])) {
 		$type = $_GET['t'];
 	} elseif ($_GET['t'] == 'og') { /* stay compatible with gmmap */
 		$type = 'oSGH';

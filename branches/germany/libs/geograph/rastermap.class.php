@@ -1216,15 +1216,15 @@ EOF;
 			);
 			var osmmapnik = new OpenLayers.Layer.OSM();
 
-			var osmarender = new OpenLayers.Layer.OSM(
+			/*var osmarender = new OpenLayers.Layer.OSM(
 				\"$name_osmarender\",
 				\"http://tah.openstreetmap.org/Tiles/tile/\${z}/\${x}/\${y}.png\"
-			);
+			);*/
 
 			var hills = new OpenLayers.Layer.XYrZ(
 				\"$name_hills\",
 				\"/tile/hills/\${z}/\${x}/\${y}.png\",
-				4, 14/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				4, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
 					attribution: $attr_hills,
 					sphericalMercator : true,
@@ -1312,7 +1312,7 @@ EOF;
 
 			map.addLayers([
 				mapnik,
-				osmmapnik, osmarender,
+				osmmapnik, //osmarender,
 				topobase, topotrails, topohills,
 				hills,
 				$google_layers

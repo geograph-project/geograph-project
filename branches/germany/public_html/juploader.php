@@ -23,10 +23,6 @@ require_once('geograph/gridsquare.class.php');
 init_session();
 
 $action = isset($_GET['action']) ? $_GET['action'] : "";
-$username = isset($_GET['username']) ? $_GET['username'] : "";
-$password = isset($_GET['password']) ? $_GET['password'] : "";
-
-// echo $action . " " . $username . " " . $password . "\n";
 
 $xml = "";
 $db = NewADOConnection($GLOBALS['DSN']);
@@ -54,6 +50,29 @@ function strtotime_uk($str) {
     return strtotime(trim($str,'/'));
 }
 
+function gridref3hack($gridreference)
+{
+	#Crude hack for Geograph Germany: Add first letter to gridref
+	if (preg_match("/\b([a-zA-Z]{2}) ?(\d{1,5})[ \.](\d{1,5})\b/",$gridreference,$matches) and (strlen($matches[2]) == strlen($matches[3]))) {
+		list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
+		$length = strlen($matches[2]);
+		$natgrlen = $length * 2;
+	} elseif (preg_match("/\b([a-zA-Z]{2}) ?(\d{0,10})\b/",$gridreference,$matches) and ((strlen($matches[2]) % 2) == 0)) {
+		$natgrlen = strlen($matches[2]);
+		$length = $natgrlen / 2;
+		list ($prefix,$e,$n) = array($matches[1], substr($matches[2], 0, $length), substr($matches[2], -$length));
+	} else {
+		return $gridreference;
+	}
+	$prefixlist = array('LT'=>1, 'MT'=>1, 'NT'=>1, 'PT'=>1, 'QT'=>1, 'TN'=>1, 'UN'=>1);
+	$prefix = strtoupper($prefix);
+	if (array_key_exists($prefix, $prefixlist))
+		$preprefix = 'T';
+	else
+		$preprefix = 'U';
+	return $preprefix.$prefix.$e.$n;
+}
+
 function UploadPicture() {
 	global $CONF;
 	global $xml;
@@ -78,8 +97,6 @@ function UploadPicture() {
 
 	}
 	
-	$tmpfile = $_FILES['uploadfile']['tmp_name'];
-
 	$um = new UploadManager();
 	$gs = new GridSquare();
 
@@ -92,6 +109,9 @@ function UploadPicture() {
 		$xml['status'] = 'Bad client submission';
 		returnXML();
 	}
+
+	$_POST['subject'] = gridref3hack($_POST['subject']);
+	$_POST['photographer'] = gridref3hack($_POST['photographer']);
 
 	// validate the grid square - we may be going back to the user
 	// quickly here :-)
@@ -110,17 +130,24 @@ function UploadPicture() {
 	}
 	
 	// set up attributes from uploaded data
+	// see returnXML() below for encoding problems
 
 	$um->setSquare($gs);
 	$um->setViewpoint($_POST['photographer']);
 	$um->setDirection($_POST['direction']);
 	$um->setTaken(date('Y-m-d',$takendate));
-	$um->setTitle($_POST['title']);
-	$um->setComment($_POST['comments']);
-	$um->setClass($_POST['feature']);
+	#Crude hack for Geograph Germany: Set German texts if coming from German version of the site...
+	if ($CONF['lang'] == 'en') {
+		$um->setTitle2(/*utf8_decode*/($_POST['title']));
+		$um->setComment2(/*utf8_decode*/($_POST['comments']));
+	} else {
+		$um->setTitle(/*utf8_decode*/($_POST['title']));
+		$um->setComment(/*utf8_decode*/($_POST['comments']));
+	}
+	$um->setClass(/*utf8_decode*/($_POST['feature']));
 	$um->setUserStatus($_POST['supplemental']);
 
-	$um->processUpload($tmpfile);
+	$um->processUpload($_FILES['uploadfile']['tmp_name']);
 
 	// where there any errors back from the image processing?
 	// if so, JUppy needs to know...
@@ -129,7 +156,7 @@ function UploadPicture() {
 		$xml['status'] = $um->error;
 	} else {
 		// so far so good... can we commit the submission?
-		$rc = $um->commit();
+		$rc = $um->commit('juploader');
 		if ($rc == "") {
 			//clear user profile
 			$ab=floor($USER->user_id/10000);
@@ -147,14 +174,20 @@ function UploadPicture() {
 
 function AuthenticateUser() {
 	global $db, $xml;
-	global $username, $password;
 	global $CONF;
 
+	$username = isset($_GET['username']) ? $_GET['username'] : "";
+	$password = isset($_GET['password']) ? $_GET['password'] : "";
+
+
 	$dbusername = $db->Quote($username);
-	$sql = "select password,realname,rights,user_id from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
+	$sql = "select password,realname,rights,user_id,salt from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
 	
 	if ($rs = &$db->Execute($sql)) {
-		if ($password != $rs->fields[0]) {
+	
+		$md5password=md5($rs->fields[4].$password);
+	
+		if ($md5password != $rs->fields[0]) {
 
 			// oops - user specified invlaid password
 
@@ -204,6 +237,7 @@ function GetImageClassList() {
 	global $xml;
 
 	$sql = "select imageclass,count(*) as cnt from gridimage_search "
+		#. "group by imageclass having cnt > 0 and "
 		. "group by imageclass having cnt > 5 and "
 		. "length(imageclass) > 0";
 
@@ -226,9 +260,18 @@ function GetImageClassList() {
 
 function returnXML() {
 	global $xml;
+	// FIXME Character set problem:
+	// When running juppy using a utf8 locale, we have to use utf8_encode($value) for output.
+	// When running juppy using a latin1 locale, we need not to encode anything.
+	// The post data from Juppy always uses
+	//   Content-Type: text/plain; charset=US-ASCII
+	//   Content-Transfer-Encoding: 8bit
+	// and 8bit data is corrupted (special chars -> question mark, i.e. 0x3f).
 
 	$xmlstring = "<document>";
 	foreach($xml as $tag => $value) {
+		#$xmlstring .= "<$tag>".xmlentities($value)."</$tag>\n"; #  FIXME does not like entities...
+		#$xmlstring .= "<$tag>".utf8_encode($value)."</$tag>\n";
 		$xmlstring .= "<$tag>$value</$tag>\n";
 	}
 	$xmlstring .= "</document>";
