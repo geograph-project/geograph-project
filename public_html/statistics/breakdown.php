@@ -125,15 +125,18 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("rcid",   $has_region?$rcid:-1);
 
 	$mysql_fields = '';
-	$sql_from = '';
+	$mysql_from = '';
+	$regionparam = $has_region ? "region={$rlevel}_{$rcid}&amp;" : '';
+	$userparam = $u ? "u=$u&amp;" : '';
+	$urlparams = $regionparam.$userparam;
 	if ($by == 'status') {
 		$sql_group = $sql_fieldname = "CONCAT(moderation_status,ELT(ftf+1, '',' (ftf)'))";
 	} else if ($by == 'class') {
 		$sql_group = $sql_fieldname = 'imageclass';
-		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;imageclass=");
+		$smarty->assign('linkprefix', "/search.php?reference_index=$ri&amp;{$urlparams}imageclass=");
 	} else if ($by == 'myriad' || $by == 'gridsq') {
 		$by = 'myriad';
-		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."gridsquare=");
+		$smarty->assign('linkprefix', "/search.php?{$urlparams}gridsquare=");
 		if ($ri) {
 			$letterlength = $CONF['gridpreflen'][$ri];
 			$sql_group = $sql_fieldname = "SUBSTRING(gi.grid_reference,1,$letterlength)";
@@ -141,7 +144,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_group = $sql_fieldname = "SUBSTRING(gi.grid_reference,1,length(gi.grid_reference)-4)";
 		}
 	} else if ($by == 'hectad') {
-		$smarty->assign('linkprefix', "/search.php?".($u?"u=$u&amp;":'')."first=");
+		$smarty->assign('linkprefix', "/search.php?{$urlparams}first=");
 		if ($ri) {
 			$letterlength = $CONF['gridpreflen'][$ri];
 			$ll1 = $letterlength+1;
@@ -169,10 +172,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else if (preg_match('/^level[0-9]+$/', $by)) {
 		$level = intval(substr($by, 5));
 		if (in_array($level, $CONF['hier_statlevels'])) {
-			$sql_from .=  " inner join gridsquare_percentage gp on (gi.gridsquare_id=gp.gridsquare_id and gp.percent > 0 and gp.level=$level)"
-			             ." inner join loc_hier lh on (gp.level=lh.level and gp.community_id=lh.community_id)"; # FIXME fallback to community id if no lh row present?
+			$smarty->assign('linkpro', 1);
+			$mysql_from .=  " inner join gridsquare_percentage gp on (gi.gridsquare_id=gp.gridsquare_id and gp.percent > 0 and gp.level=$level)"
+			               ." inner join loc_hier lh on (gp.level=lh.level and gp.community_id=lh.community_id)"; # FIXME fallback to community id if no lh row present?
 			$sql_group = "gp.community_id";
-			$sql_fieldname = "lh.name"; # FIXME print full place/hierarchy info?
+			$sql_fieldname = "lh.name";
+			$mysql_fields = ',gp.community_id';
 		} else {
 			$by = '';
 		}
@@ -249,7 +254,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		if ($has_region) {
 			$rname = $db->GetOne("select name from loc_hier where level=$rlevel and community_id=$rcid");
-			$sql_from .= " inner join gridsquare_percentage gpr on (gi.gridsquare_id=gpr.gridsquare_id and gpr.percent > 0 and gpr.level=$rlevel and gpr.community_id=$rcid)";
+			$mysql_from .= " inner join gridsquare_percentage gpr on (gi.gridsquare_id=gpr.gridsquare_id and gpr.percent > 0 and gpr.level=$rlevel and gpr.community_id=$rcid)";
 			#$sql_where .= "";
 			$title .= " in Region '" . $rname . "'";
 		}
@@ -277,7 +282,7 @@ if (!$smarty->is_cached($template, $cacheid))
 $sql = "select 
 $sql_fieldname as field,
 count(*) as c $mysql_fields
-from gridimage_search as gi $sql_from
+from gridimage_search as gi $mysql_from $sql_from
 where 1 $sql_where
  $sql_crit
 group by $sql_group 
@@ -312,7 +317,7 @@ $mysql_order";
 			foreach($breakdown as $idx=>$entry) {
 				$y = $entry['field'];
 
-				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;taken_endYear=$y&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
+				$breakdown[$idx]['link'] = "/search.php?{$urlparams}reference_index=$ri&amp;taken_endYear=$y&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
 				if ($y < 100) {
 					$breakdown[$idx]['field'] = ''; //ie unspecified!
 				}
@@ -321,7 +326,7 @@ $mysql_order";
 			foreach($breakdown as $idx=>$entry) {
 				list($y,$m)=explode('-', $entry['field']);
 				
-				$breakdown[$idx]['link'] = "/search.php?".($u?"u=$u&amp;":'')."reference_index=$ri&amp;taken_endMonth=$m&amp;taken_endYear=$y&amp;taken_startMonth=$m&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
+				$breakdown[$idx]['link'] = "/search.php?{$urlparams}reference_index=$ri&amp;taken_endMonth=$m&amp;taken_endYear=$y&amp;taken_startMonth=$m&amp;taken_startYear=$y&amp;orderby=imagetaken&amp;do=1";
 			
 				if ($m>0) {
 					//well, it saves having an array of months...
@@ -338,8 +343,18 @@ $mysql_order";
 				}
 				
 			}
+		} else if (preg_match('/^level[0-9]+$/', $by)) {
+			$level = intval(substr($by, 5));
+			foreach($breakdown as $idx=>$entry) {
+				$cid = $entry['community_id'];
+				$cregionparam = "region={$level}_{$cid}&amp;";
+				$curlparams = $cregionparam.$userparam;
+				$breakdown[$idx]['link'] = "/search.php?{$curlparams}reference_index=$ri&amp;orderby=imagetaken&amp;do=1";
+				# FIXME "&amp;reverse_order_ind=1"?
+				# FIXME print full place/hierarchy info?
+				# FIXME ordering (javascript): use short name
+			}
 		}
-		#FIXME link for by=levelN: /search.php?region={$LEVEL}_{$COMMUNITY_ID}&...
 	}
 
 	$smarty->assign_by_ref('total', $total);

@@ -7,7 +7,7 @@
 {include file="_std_begin.tpl"}
 {/if}
 {if $google_maps_api_key}
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
 {/if}
 <script type="text/javascript" src="/ol/OpenLayers.js"></script>
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
@@ -231,16 +231,16 @@ ommap.tpl, rastermap.class.php:
 				null,
 				{ numZoomLevels: 19 }
 			);
-			var osmarender = new OpenLayers.Layer.OSM(
+			/*var osmarender = new OpenLayers.Layer.OSM(
 				"OpenStreetMap (Tiles@Home)",
 				"http://tah.openstreetmap.org/Tiles/tile/${z}/${x}/${y}.png",
 				{ numZoomLevels: 19 }
-			);
+			);*/
 
 			var hills = new OpenLayers.Layer.XYrZ(
 				"Relief",
 				"/tile/hills/${z}/${x}/${y}.png",
-				4, 14/*15 (more tiles to upload)*/, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				4, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
 					attribution: 'Relief: <a href="http://srtm.csi.cgiar.org/">CIAT data</a>',
 					sphericalMercator : true,
@@ -369,7 +369,7 @@ ommap.tpl, rastermap.class.php:
 
 			mapnik.gmaxz = mapnik.maxZoomLevel;//mapnik.numZoomLevels-1;
 			osmmapnik.gmaxz = osmmapnik.numZoomLevels-1;
-			osmarender.gmaxz = osmarender.numZoomLevels-1;
+			//osmarender.gmaxz = osmarender.numZoomLevels-1;
 			topobase.gmaxz = topobase.maxZoomLevel;
 			cycle.gmaxz = cycle.numZoomLevels-1;
 			geo.gmaxz = geo.maxZoomLevel;
@@ -403,8 +403,8 @@ ommap.tpl, rastermap.class.php:
 				'o' : osmmapnik,
 				'r' : mapnik,
 				'w' : topobase,
-				'c' : cycle,
-				't' : osmarender
+				'c' : cycle
+				//'t' : osmarender
 			}
 			for (var key in maptypes) {
 				maptypes[key].gurlid = key;
@@ -490,7 +490,7 @@ ommap.tpl, rastermap.class.php:
 			/* first layer: map type for overview map */
 			map.addLayers([
 				mapnik,
-				osmmapnik, osmarender,
+				osmmapnik, //osmarender,
 				geo,
 				cycle,
 				topobase, topotrails, topohills,
