@@ -649,7 +649,7 @@ split_timer('gridimage'); //starts the timer
 			if (!empty($this->snippet_count)) {
 				foreach ($this->snippets as $i => $row) {
 					if (!empty($row['title'])) {
-						$this->collections[] = array('url'=>"/snippet.php?id=".$row['snippet_id'],'title'=>$row['title'],'type'=>'Shared Description');
+						$this->collections[] = array('url'=>"/snippet/".$row['snippet_id'],'title'=>$row['title'],'type'=>'Shared Description');
 					}
 				}
 			}
@@ -788,13 +788,15 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 	
 	/**
 	* Store a file as the original
+	* (note: we set movefile=true, because we might further move the original file - see warning on manpage for "rsync --remove-source-files")
+	
 	*/
-	function storeOriginal($srcfile, $movefile=false)
+	function storeOriginal($srcfile, $movefile=true)
 	{
 		return $this->storeImage($srcfile,$movefile,'_original');
 	}
 	
-	function _getOriginalpath($check_exists=true,$returntotalpath = false, $suffix = '_original')
+	function _getOriginalpath($check_exists=true, $returntotalpath=false, $suffix='_original')
 	{
 		global $CONF;
 
@@ -809,18 +811,13 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		}
 
-		if (empty($check_exists)) {
-			if ($returntotalpath)
-				$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
-
-			return $fullpath;
+		if (!$returntotalpath && !file_exists($_SERVER['DOCUMENT_ROOT'].$filepath) && file_exists($_SERVER['DOCUMENT_ROOT'].'/internal-jam'.$filepath)) {
+			$filepath='/internal-jam'.$filepath;
 		}
 
-		$ok=file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath);
-		
-		if (!$ok)
+		if ($check_exists && !file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			$fullpath="/photos/error.jpg";
-		
+
 		if ($returntotalpath)
 			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
 
@@ -1332,7 +1329,7 @@ split_timer('gridimage'); //starts the timer
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		}
 
-		if (!empty($params['urlonly']) && $params['urlonly'] !== 2 && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
+		#if (!empty($params['urlonly']) && $params['urlonly'] !== 2) && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
 			$return=array();
 			$return['url']=$thumbpath;
 			if (!empty($CONF['enable_cluster'])) {
@@ -1341,7 +1338,7 @@ split_timer('gridimage'); //starts the timer
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			return $return;
-		}
+		#}
 
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
@@ -2087,6 +2084,8 @@ split_timer('gridimage'); //starts the timer
 	
 			$sql="DELETE FROM gridimage_search WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
+
+			//todo, note the tags column is populated by sphinx at indexing time. Should really be changed to be updated here. (and when modify tags!)
 
 			$sql="INSERT INTO gridimage_search
 			SELECT gridimage_id,gi.user_id,moderation_status,title,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)'),'' as tags,licence,points

@@ -103,7 +103,7 @@ if (isset($_POST['gridimage_id']))
 				}
 			
 				//save the pending as original
-				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl,true);
+				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
 			
 				if (!empty($CONF['awsAccessKey'])) {
 					
