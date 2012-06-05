@@ -234,10 +234,8 @@ function wgs84_to_irish_2($lat,$long,$level) {
 		$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6377340.189,6356034.447);
 		$long = $this->XYZ_to_Long($x2,$y2);
 
-
 		$e = $this->Lat_Long_to_East ($lat,$long,6377340.189,6356034.447, 200000,1.000035,53.50000,-8.00000);
 		$n = $this->Lat_Long_to_North($lat,$long,6377340.189,6356034.447, 200000,250000,1.000035,53.50000,-8.00000);
-
 
 	} 
 	else {
@@ -383,7 +381,7 @@ function wgs84_to_osgb36($lat,$long) {
     $lat2  = $this->XYZ_to_Lat ($x2,$y2,$z2,6377563.396,6356256.910);
     $long2 = $this->XYZ_to_Long($x2,$y2); 
     
-    $e = $this->Lat_Long_to_East ($lat2,$long2,6377563.396,6356256.910,400000,        0.999601272,49.00000,-2.00000);
+    $e = $this->Lat_Long_to_East ($lat2,$long2,6377563.396,6356256.910,400000,0.999601272,49.00000,-2.00000);
     $n = $this->Lat_Long_to_North($lat2,$long2,6377563.396,6356256.910,400000,-100000,0.999601272,49.00000,-2.00000);
     
     return array($e,$n);

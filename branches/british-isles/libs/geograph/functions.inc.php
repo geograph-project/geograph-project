@@ -418,7 +418,7 @@ function _utf8_decode($string)
 {
   $tmp = $string;
   $count = 0;
-  while ($count < 5 && mb_detect_encoding($tmp)=="UTF-8")
+  while (mb_detect_encoding($tmp)=="UTF-8")
   {
     $tmp = utf8_decode($tmp);
     $count++;
@@ -698,10 +698,6 @@ function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl')
 
 		if ($load>$threshold)
 		{
-			sleep(1); //TEMP throttle - not kill
-			return;
-		
-		
 			if ($CONF['template']=='archive') {
 				//heritrix doesn't understand 503 errors - so lets cause it to timeout.... (uses a socket timeout of 20000ms)
 				sleep(30);
