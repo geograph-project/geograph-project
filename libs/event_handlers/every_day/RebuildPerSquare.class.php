@@ -64,6 +64,29 @@ class RebuildPerSquare extends EventHandler
 		
 		$db->Execute("RENAME TABLE gridimage_persquare_tmp TO gridimage_persquare");
 		
+		sleep(5);
+
+		
+		$db->Execute("DROP TABLE IF EXISTS gridimage_perusersquare_tmp");
+		
+		$db->Execute("CREATE TABLE gridimage_perusersquare_tmp 
+			SELECT gridimage_id,grid_reference,moderation_status,seq_no,user_id,x,y,point_xy FROM gridimage_search
+			ORDER BY moderation_status+0 DESC,seq_no");
+
+
+		##ftf <= 1 includes ftf and supplemental :) 
+
+		sleep(5);
+		
+		$db->Execute("ALTER IGNORE TABLE gridimage_perusersquare_tmp ADD PRIMARY KEY (user_id,x,y),ADD UNIQUE (gridimage_id),ADD SPATIAL KEY(point_xy)");
+		
+		sleep(5);
+		
+		
+		$db->Execute("DROP TABLE IF EXISTS gridimage_perusersquare");
+		
+		$db->Execute("RENAME TABLE gridimage_perusersquare_tmp TO gridimage_perusersquare");
+		
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;

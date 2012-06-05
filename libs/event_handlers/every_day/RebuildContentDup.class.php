@@ -254,10 +254,11 @@ ffetcing our local traffic after nearly a week of snow and sub-zero temperatures
 			
 			$mkey = $row['SearchID'];
 			$images =& $memcache->name_get('fse',$mkey);
-			if (empty($images)) {
+			if (empty($images) && !empty($row['SearchID'])) {
 
 				$engine = new SearchEngine($row['SearchID']);
 				if ($engine->criteria) {
+					$pg = 1;
 					$engine->criteria->resultsperpage = 1; //override it
 					$engine->Execute($pg);
 					if ($engine->resultCount && $engine->results) {

@@ -62,9 +62,10 @@ class sphinxwrapper {
 		$q = preg_replace('/\[([^\]]+):([^\]]+)\]/','[$1 $2]',$q);
 
 			//setup field: syntax
-		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
+		$q = preg_replace('/(?<!\[)(-?)\b([a-z_]+):/','@$2 $1',$q);
 		
 			//remove unsuitable chars
+
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,-\[\]]+/',' ',trim(strtolower($q))));
 
 		$q = preg_replace('/^["]([^\(\)\'"]+)$/','"$1"',$q);
@@ -217,6 +218,21 @@ class sphinxwrapper {
 		if (!empty($data['bbox'])) {
 			list($e1,$n1,$ri1,$e2,$n2,$ri2) = $data['bbox'];
 			
+			list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$ri1);
+			list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$ri2);
+			
+			$this->sort = preg_replace('/@geodist \w+,?\s*/','',$this->sort);
+			$cl = $this->_getClient();
+			if (!empty($cl->_groupsort))
+				$cl->_groupsort = preg_replace('/@geodist \w+,?\s*/','',$cl->_groupsort);
+			
+			$cl->SetFilterFloatRange('wgs84_lat', deg2rad($lat1), deg2rad($lat2));
+			$cl->SetFilterFloatRange('wgs84_long', deg2rad($long1), deg2rad($long2));
+			
+		
+		} elseif (!empty($data['bbox'])) {
+			list($e1,$n1,$ri1,$e2,$n2,$ri2) = $data['bbox'];
+			
 			$span = max($e2-$e1,$n2-$n1);
 			//todo-decide-o-area?
 			if ($span > 250000) { //100k ie 1 myriad
@@ -307,6 +323,7 @@ class sphinxwrapper {
 				$cl->SetFilterFloatRange('wgs84_long', deg2rad($long1), deg2rad($long2));
 			
 			} elseif ($data['d'] > 0 && $data['d'] < 1 && !$onekm) {
+
 				$d = 1; //gridsquares
 				
 				//simple alogorithm to cut down on number of filters added. If the center of the search circle and gridsquare can't touch ($rad is the furthest distance where the two shapes still /just/ intersect) then there is no need to even bother with that square. 

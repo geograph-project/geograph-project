@@ -170,7 +170,7 @@ class RebuildUserStats extends EventHandler
 		FROM user_stat_tmp 
 		ORDER BY points DESC"); 
 	
-	//create point rank	
+	//create point rank	 
 		$last = 0;
 		$toriserank = 0;
 		$ranks = $rise = $geosquares = array();
