@@ -15,8 +15,8 @@
 		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" checked value="640" id="large640" onclick="selectImage(this.id)"/> {$preview_width} x {$preview_height}</div><br/>
 		<label for="large640"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}" name="large640" style="border:2px solid blue"/></label><br/><br/>
 		<small>(as shown on<br/> photo page)</small>
-		{assign var="last_width" value=$preview_width} 
-		{assign var="last_height" value=$preview_height} 
+		{assign var="last_width" value=$preview_width}
+		{assign var="last_height" value=$preview_height}
 		</td>
 	{/if}
 
@@ -30,7 +30,7 @@
 			{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
 		{/if}
 
-		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="800" {if $user->upload_size == 800} checked{/if} id="large800" onclick="selectImage(this.id)"/> {$resized_width} x {$resized_height}</div><br/>
+		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="800" {if $user->upload_size >= 800} checked{/if} id="large800" onclick="selectImage(this.id)"/> {$resized_width} x {$resized_height}</div><br/>
 		<label for="large800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large800" style="border:2px solid white"/></label>
 		{assign var="last_width" value=$resized_width}
 		{assign var="last_height" value=$resized_height}
@@ -47,7 +47,7 @@
 			{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
 		{/if}
 
-		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="1024" {if $user->upload_size == 1024} checked{/if} id="large1024" onclick="selectImage(this.id)"/> {$resized_width} x {$resized_height}</div><br/>
+		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="1024" {if $user->upload_size >= 1024} checked{/if} id="large1024" onclick="selectImage(this.id)"/> {$resized_width} x {$resized_height}</div><br/>
 		<label for="large1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large1024" style="border:2px solid white"/></label>
 		{assign var="last_width" value=$resized_width}
 		{assign var="last_height" value=$resized_height}
@@ -64,7 +64,7 @@
 			{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
 		{/if}
 
-		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="1600" {if $user->upload_size == 1600} checked{/if} id="large1600" onclick="selectImage(this.id)"/> {$resized_width} x {$resized_height}</div><br/>
+		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="1600" {if $user->upload_size >= 1600} checked{/if} id="large1600" onclick="selectImage(this.id)"/> {$resized_width} x {$resized_height}</div><br/>
 		<label for="large1600"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}" name="large1600" style="border:2px solid white"/></label>
 		{assign var="last_width" value=$resized_width}
 		{assign var="last_height" value=$resized_height}
@@ -73,7 +73,7 @@
 
 	{if $original_width > $last_width || $original_height > $last_height || $user->upload_size > 65530}
 
-		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="65536" {if $user->upload_size > 65530} checked{/if} id="large65536" onclick="selectImage(this.id)"/> {$original_width} x {$original_height}</div><br/>
+		<td valign="top"><div class="interestBox"><input type="radio" name="largestsize" value="65536" {if $user->upload_size > 65530 || ($user->upload_size > $original_width && $user->upload_size > $original_height)} checked{/if} id="large65536" onclick="selectImage(this.id)"/> {$original_width} x {$original_height}</div><br/>
 		<label for="large65536"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}" name="large65536" style="border:2px solid white"/></label>
 		</td>
 	{/if}
@@ -100,7 +100,7 @@ function selectImage(that) {
 	return true;
 }
 {/literal}
-{if $user->upload_size > 640} 
+{if $user->upload_size > 640}
 {literal}
  AttachEvent(window,'load',function () {
 		selectImage("large{/literal}{$user->upload_size}{literal}");
