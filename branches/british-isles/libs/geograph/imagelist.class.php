@@ -209,7 +209,7 @@ split_timer('imagelist'); //starts the timer
 		$sql = "SELECT $columnlist FROM gridimage_search WHERE gridimage_id IN(".join(",",$ids).") LIMIT ".count($ids);
 				
 		$i=0;
-		if ($sql) {
+		if ($sql && !empty($ids)) {
 			$db=&$this->_getDB(true);
 	
 			$prev_fetch_mode = $ADODB_FETCH_MODE;
@@ -450,7 +450,7 @@ class RecentImageList extends ImageList {
 		
 split_timer('imagelist'); //starts the timer
 
-		if (false) {
+		if (true) {
 			$recordSet = &$db->Execute("select * from gridimage_search order by gridimage_id desc limit 5");
 		} elseif ($reference_index == 2) {
 			$offset=rand(0,200);

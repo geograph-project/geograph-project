@@ -106,18 +106,18 @@ class RebuildHectadStat extends EventHandler
 		if (!empty($data['Create_time']) && strtotime($data['Create_time']) > (time() - 60*30)) {
 			//make sure we have a recent table
 
-			$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
+			$historytable = "hectad_stat_".date('Ymd');
+			
+			$db->Execute("DROP TABLE IF EXISTS $historytable");
 
 			//done in one operation so there is always a hectad_stat table, even if the tmp fails 
 			//... well we did until it stopped working... http://bugs.mysql.com/bug.php?id=31786
 			//$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old, hectad_stat_tmp TO hectad_stat");
 			
-			$db->Execute("RENAME TABLE hectad_stat TO hectad_stat_old");
+			$db->Execute("RENAME TABLE hectad_stat TO $historytable");
 			$db->Execute("RENAME TABLE hectad_stat_tmp TO hectad_stat");
 
-			$db->Execute("DROP TABLE IF EXISTS hectad_stat_old");
-		
-		
+			
 			//return true to signal completed processing
 			//return false to have another attempt later
 			return true;

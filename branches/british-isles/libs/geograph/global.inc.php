@@ -395,6 +395,13 @@ function smarty_function_pageheader() {
 	}
 }
 function smarty_function_pagefooter() {
+#return "<style>body {font-family: \"Comic Sans MS\"; !important; }</style>";
+
+
+#        if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' && !empty($_SESSION) && rand(1,10) > 7) {
+                return '<div style="position:absolute;top:0;left:400px;width:90px"><a href="/help/donate" title="donate to geograph"><img src="/img/donate_btn_small.png" alt="donate"/></a></div>';
+#        }
+
 
 	if (isset($_GET['profile']) && class_exists('Profiler',false)) {
 		ob_start();
@@ -426,7 +433,7 @@ class GeographPage extends Smarty
 	{
 		global $CONF;
 
-	split_timer('smarty'); //starts the timer
+	//split_timer('smarty'); //starts the timer
 
 
 		//base constructor
@@ -468,7 +475,7 @@ class GeographPage extends Smarty
 		$this->debugging = $CONF['smarty_debugging'];
 		if (!($this->caching = $CONF['smarty_caching'])) {
 			//TODO
-			//$this->disable_caching = true;
+			$this->disable_caching = true;
 		}
 
 		//register our "dynamic" handler for non-cached sections of templates
@@ -520,34 +527,6 @@ class GeographPage extends Smarty
 
 		//show more links in template?
 		if (isset($GLOBALS['USER']) && $GLOBALS['USER']->user_id > 0) {
-			if (function_exists('apc_fetch')) {
-				if (apc_fetch($_SERVER['REQUEST_URI']))  {
-					$this->caching = 0;
-					$this->disable_caching = 1; //just incase app later changes it. 
-
-					$this->assign('extra_meta', '<script src="http://asset.userfly.com/users/14743/userfly.js" type="text/javascript"></script>');
-					
-					apc_delete($_SERVER['REQUEST_URI']);
-				}
-/*
-				if (($value = apc_fetch('irc.seen')) === FALSE) {
-					if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-						$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
-					} else {
-						$value = '?';
-					}
-					apc_store('irc.seen',$value,30);
-				}  
-			} else {
-				if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-					$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
-				} else {
-					$value = '?';
-				}
-			}
-			$this->assign('irc_seen',$value);
-*/
-			}
 
 
 			if ($GLOBALS['USER']->hasPerm('admin'))
@@ -564,7 +543,7 @@ class GeographPage extends Smarty
 			}
 		}
 
-	split_timer('smarty','setup'); //logs the wall time
+	//split_timer('smarty','setup'); //logs the wall time
 
 	}
 
@@ -572,12 +551,12 @@ class GeographPage extends Smarty
 	{
 		global $USER,$CONF;
 		
-	split_timer('smarty'); //starts the timer
+	//split_timer('smarty'); //starts the timer
 
 		if (!empty($this->disable_caching)) {
 			$this->caching = 0;
 		}
-		$filename = str_replace("|","___","{$this->cache_dir}/lock_$template-$cache_id.tmp");
+		/*$filename = str_replace("|","___","{$this->cache_dir}/lock_$template-$cache_id.tmp");
 		if (isset($_GET['refresh']) && $USER->hasPerm('admin')) {
 			$this->clear_cache($template, $cache_id, $compile_id);
 		} elseif (!empty($CONF['memcache']['smarty'])) {
@@ -597,10 +576,10 @@ class GeographPage extends Smarty
 					unlink($filename);
 				}
 			}
-		}
+		}*/
 
 		$isCached = parent::is_cached($template, $cache_id, $compile_id);
-		if (!$isCached) {
+		/*if (!$isCached) {
 			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 6 && strpos($_SERVER['PHP_SELF'],'statistics/') !== FALSE ) {
 				header("HTTP/1.1 503 Service Unavailable");
 				die("server busy, please try later");
@@ -615,9 +594,9 @@ class GeographPage extends Smarty
 				fclose($h);
 			}
 			$this->wroteLock = $filename;
-		}
+		}*/
 
-	split_timer('smarty','is_cached',$template.'.'.$cache_id); //logs the wall time
+	//split_timer('smarty','is_cached',$template.'.'.$cache_id); //logs the wall time
 
 		return $isCached;
 	}
@@ -626,7 +605,7 @@ class GeographPage extends Smarty
 	{
 		global $CONF;
 		
-	split_timer('smarty'); //starts the timer
+	//split_timer('smarty'); //starts the timer
 	
 		if (!empty($this->disable_caching)) {
 			$this->caching = 0;
@@ -635,15 +614,15 @@ class GeographPage extends Smarty
 		$ret = parent::display($template, $cache_id, $compile_id);
 
 		//we finished so remove the lock file
-		if (!empty($this->wroteLock)) {
+		/*if (!empty($this->wroteLock)) {
 			if (!empty($CONF['memcache']['smarty'])) {
 				$GLOBALS['memcached_res']->delete($this->wroteLock);
 			} else {
 				unlink($this->wroteLock);
 			}
-		}
+		}*/
 		
-	split_timer('smarty','display',$template.'.'.$cache_id); //logs the wall time
+	//split_timer('smarty','display',$template.'.'.$cache_id); //logs the wall time
 	
 		return $ret;
 	}

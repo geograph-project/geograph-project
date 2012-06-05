@@ -811,8 +811,8 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		}
 
-		if (!$returntotalpath && !file_exists($_SERVER['DOCUMENT_ROOT'].$filepath) && file_exists($_SERVER['DOCUMENT_ROOT'].'/internal-jam'.$filepath)) {
-			$filepath='/internal-jam'.$filepath;
+		if (!$returntotalpath && !file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath) && file_exists($_SERVER['DOCUMENT_ROOT'].'/internal-jam'.$fullpath)) {
+			$fullpath='/internal-jam'.$fullpath;
 		}
 
 		if ($check_exists && !file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
