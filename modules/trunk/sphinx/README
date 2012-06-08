@@ -35,7 +35,7 @@ gcc -fPIC -shared -o withinfirstx.so withinfirstx.cpp
 If not used UDFs before, need to configure sphinx for them. In the 'searchd' section of sphinx.conf, add the following:
 
 
-	#need sphinxQL enabled to be able to use UDFs (to call the CREATE FUNCTION)
+	#need sphinxQL enabled to be able to use UDFs (to call the CREATE FUNCTION) although can still query with the udf via the API
         listen = localhost:9306:mysql41
 
 	#needed for UDFs
@@ -54,6 +54,8 @@ mkdir /var/sphinx/plugins
 mkdir /var/sphinx/binlog
 chown sphinx:sphinx /var/sphinx/binlog
 
+cp withinfirstx.so /var/sphinx/plugins/
+
 /etc/init.d/sphinx restart
 
 (dont forget to check it really restarts - and if not check searchd.log!) 
@@ -63,10 +65,11 @@ TESTING
 ######################################
 
 -----------
-# Connect and install function
+# Connect and install functions
 
 mysql --protocol=tcp -P9306 --prompt=sphinxQL
 sphinxQL> CREATE FUNCTION withinfirstx RETURNS INT SONAME 'withinfirstx.so';
+sphinxQL> CREATE FUNCTION withinfirstxstring RETURNS INT SONAME 'withinfirstx.so';
 
 -----------
 # run a query

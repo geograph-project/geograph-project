@@ -63,7 +63,7 @@ DLLEXPORT int uniqueserial_init(SPH_UDF_INIT *init,
                                 char *error_message)
 {
     // check argument count
-    if (args->arg_count != 2) {
+    if (args->arg_count != 1) {
         snprintf(error_message, SPH_UDF_ERROR_LEN, "uniqueserial() takes 1 argument");
         return 1;
     }
@@ -115,7 +115,7 @@ DLLEXPORT int uniqueserialstring_init(SPH_UDF_INIT *init,
                                 char *error_message)
 {
     // check argument count
-    if (args->arg_count != 2) {
+    if (args->arg_count != 1) {
         snprintf(error_message, SPH_UDF_ERROR_LEN, "uniqueserialString() takes 1 argument");
         return 1;
     }
