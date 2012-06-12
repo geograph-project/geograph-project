@@ -32,12 +32,21 @@ $smarty = new GeographPage;
 $month=(!empty($_GET['Month']))?intval($_GET['Month']):'';
 $year=(!empty($_GET['Year']))?intval($_GET['Year']):date('Y');
 $imageid=isset($_REQUEST['image'])?intval($_REQUEST['image']):0;
-
+$uid=isset($_REQUEST['u'])?intval($_REQUEST['u']):0;
+if ($uid) {
+	$profile=new GeographUser($uid);
+	$uid=$profile->user_id;
+}
+$smarty->assign("uid",$uid);
+$smarty->assign_by_ref('profile', $profile);
 
 $template=($month)?'explore_calendar_month.tpl':'explore_calendar_year.tpl';
 $cacheid="$year-$month";
 if ($imageid) {
-	$cacheid .= ".".intval($_REQUEST['image']);
+	$cacheid .= ".".$imageid;
+}
+if ($uid) {
+	$cacheid .= ".".$uid;
 }
 if (isset($_GET['blank'])) {
 	$cacheid .= "blank";
@@ -53,12 +62,14 @@ if (isset($_GET['supp'])) {
 }
 
 
-$smarty->caching = 2; // lifetime is per cache
-#if ($month == date('n') && $year == date('Y')) {
-if ($year == date('Y')) {
-	$smarty->cache_lifetime = 3600*24; //1day cache
-} else {
-	$smarty->cache_lifetime = 3600*24*7; //7day cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	#if ($month == date('n') && $year == date('Y')) {
+	if ($year == date('Y')) {
+		$smarty->cache_lifetime = 3600*24; //1day cache
+	} else {
+		$smarty->cache_lifetime = 3600*24*7; //7day cache
+	}
 }
 
 function print_rp(&$in,$exit = false) {
@@ -128,7 +139,10 @@ if (!$smarty->is_cached($template, $cacheid))
 				$where .= " AND moderation_status = 'geograph'";
 			} elseif (isset($_GET['supp'])) {
                                 $where .= " AND moderation_status = 'accept'";
-                        }
+			}
+			if ($uid) {
+				$where .= " AND user_id = $uid";
+			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$images=&$db->GetAssoc($sql= "SELECT 
 			imagetaken, 
@@ -204,6 +218,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			} elseif (isset($_GET['supp'])) {
                                 $where .= " AND moderation_status = 'accept'";
                         }
+			if ($uid) {
+				$where .= " AND user_id = $uid";
+			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$images=&$db->GetAssoc("SELECT 
 			imagetaken, 

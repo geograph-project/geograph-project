@@ -5,7 +5,21 @@
 <h2>Geograph Calendar :: {$month_name} {$year}</h2>
 
 <form action="{$script_name}" class="no_print">
-<p>Date: {html_select_date display_days=false prefix="" time=`$date` start_year="-100" reverse_years=true  month_empty="-whole year-" all_extra="onchange='this.form.submit()'"}<noscript><input type="submit" value="Update"/></noscript></p> 
+<p>Date: {html_select_date display_days=false prefix="" time=`$date` start_year="-100" reverse_years=true  month_empty="-whole year-" all_extra="onchange='this.form.submit()'"}
+{dynamic}
+{if $uid || $user->registered}
+| User:
+<select name="u" onchange="this.form.submit()">
+<option value="0"{if $uid eq 0} selected="selected"{/if}>All users</option>
+{if $user->registered && $user->user_id != $uid}
+<option value="{$user->user_id}">{$user->realname|escape:'html'}</option>
+{/if}
+{if $uid}
+<option value="{$profile->user_id}" selected="selected">{$profile->realname|escape:'html'}</option>
+{/if}
+</select>
+{/if}{/dynamic}
+<noscript><input type="submit" value="Update"/></noscript></p> 
 {if $image}
 <input type="hidden" name="image" value="{$image->gridimage_id}"/>
 {/if}
@@ -13,7 +27,7 @@
 
 {if !$blank}
 <p class="no_print">Showing one example image from each day, click a more link to list all images taken that day. 
-<br/><a href="/search.php?taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken&amp;do=1">Search all images taken {$month_name} {$year}</a>		
+<br/><a href="/search.php?taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}{if $uid}&amp;user_id={$uid}{/if}&amp;orderby=imagetaken&amp;do=1">Search all images taken {$month_name} {$year}</a>		
 &nbsp;&nbsp;&nbsp;&nbsp; Key: <span style="font-family:arial;color:green;">G: Geograph Images, <small style="color:blue">(S: Supplemental)</small></span>.</p>
 {/if}
 
@@ -48,7 +62,7 @@
 			<div style="font-size:0.8em;"><b>{$day.number}</b> 
 			
 			{if $day.image}
-				(<a href="/search.php?taken_endDay={$day.number}&amp;taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startDay={$day.number}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}&amp;orderby=imagetaken&amp;do=1">more</a>)</div>
+				(<a href="/search.php?taken_endDay={$day.number}&amp;taken_endMonth={$month}&amp;taken_endYear={$year}&amp;taken_startDay={$day.number}&amp;taken_startMonth={$month}&amp;taken_startYear={$year}{if $uid}&amp;user_id={$uid}{/if}&amp;orderby=imagetaken&amp;do=1">more</a>)</div>
 				
 				<div style="text-align:center;width:120px;height:120px;vertical-align:middle">
 					<a title="{$day.image->grid_reference} : {$day.image->title|escape:'html'} by {$day.image->realname|escape:'html'} - click to view full size image" href="/photo/{$day.image->gridimage_id}">{$day.image->getThumbnail(120,120)}</a>

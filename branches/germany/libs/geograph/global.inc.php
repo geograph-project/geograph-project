@@ -350,6 +350,14 @@ class GeographPage extends Smarty
 			}
 		}
 
+		if (count($CONF['languages'])) {
+			$this->languages = array();
+			foreach ($CONF['languages'] as $lang => $host) {
+				$this->languages[$lang] = 'http://'.$host.$_SERVER["REQUEST_URI"];
+			}
+			$this->assign('languages', $this->languages);
+			$this->assign('canonical', reset($this->languages));
+		}
 	}
 
 	function is_cached($template, $cache_id = null, $compile_id = null)
