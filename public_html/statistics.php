@@ -44,9 +44,18 @@ $smarty->assign_by_ref('references',$CONF['references_all']);
 $smarty->assign_by_ref('references_real',$CONF['references']);		
 
 if ($CONF['lang'] == 'de')
-	$bys = array('status' => 'Klassifizierung','class' => 'Kategorie','takenyear' => 'Aufnahmedatum','gridsq' => '100km-Quadrat');
+	$bys = array('status' => 'Klassifizierung','class' => 'Kategorie','takenyear' => 'Aufnahmejahr','taken' => 'Aufnahmemonat','myriad' => '100km-Quadrat','user' => 'Teilnehmer');
 else
-	$bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Myriad');
+	$bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','myriad' => 'Myriad','user' => 'Contributor');
+foreach ($CONF['hier_statlevels'] as $level) {
+	$idx = 'level'.$level;
+	if (isset($CONF['hier_names'][$level])) {
+		$name = $CONF['hier_names'][$level];
+	} else {
+		$name = $idx;
+	}
+	$bys[$idx] = $name;
+}
 $smarty->assign_by_ref('bys',$bys);
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
@@ -70,7 +79,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (count($CONF['hier_statlevels'])) {
 		$smarty->assign('hasregions',true);
 		$smarty->assign('regionlistlevel',$CONF['hier_listlevel']);
+		$sql = "select name,level,community_id from loc_hier where level in (".implode(",",$CONF['hier_statlevels']).") order by level,name";
+		$regions = $db->GetAll($sql);
+		if ($regions === false)
+			$regions = array();
+	} else {
+		$regions = array();
 	}
+	$smarty->assign("regions", $regions);
 
 	$smarty->assign('users_submitted',  $db->GetOne("select count(*)-1 from user_stat"));
 	

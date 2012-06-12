@@ -73,6 +73,14 @@ v\:* {
 }
 </style>{/literal}
 {/if}
+{if $canonical}
+<link rel="canonical" href="{$canonical|escape:'html'}" />
+{/if}
+{if $languages}
+  {foreach from=$languages key=lang item=langurl}
+<link rel="alternate" hreflang="{$lang}" href="{$langurl|escape:'html'}" />
+  {/foreach}
+{/if}
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Geograph search" href="/stuff/osd.xml" />
 <script type="text/javascript" src="{"/geograph.js"|revision}"></script>

@@ -130,11 +130,19 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="Planquadrat {$centergr[$ri]
     <form method="get" action="/statistics/breakdown.php">
     <p>Bilder nach
     <select name="by">
-    	{html_options options=$bys selected=$by}
+    	{html_options options=$bys}
     </select> in <select name="ri">
-    	{html_options options=$references selected=$ri}
+    	{html_options options=$references}
     </select> 
     
+    {if $regions}
+        <select name="region">
+            <option value=""></option>
+            {foreach from=$regions item=region}
+                <option value="{$region.level}_{$region.community_id}">in {$region.name|escape:'html'}</option>
+            {/foreach}
+        </select>
+    {/if}
     {dynamic}
     {if $user->registered}
 	<select name="u">

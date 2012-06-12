@@ -143,6 +143,8 @@ $CONF['place_recaps'] = false;
 $CONF['lang']='en';
 $CONF['decimal_sep'] = '.';
 $CONF['thousand_sep'] = ',';
+$CONF['languages']=array();
+#$CONF['languages']=array('en' => 'en.example.com', 'xy' => 'xy.example.com'); # the first entry is the "canonical version"
 
 ###################################
 

@@ -819,10 +819,10 @@ function GetTileUrl_Mapnik(a, z) {
 }
 
 
-function GetTileUrl_TaH(a, z) {
+/*function GetTileUrl_TaH(a, z) {
     return "http://tah.openstreetmap.org/Tiles/tile/" +
                 z + "/" + a.x + "/" + a.y + ".png";
-}
+}*/
 
 function GetTileUrl_TopB(a, z) {
     //return "http://topo.openstreetmap.de/base/" +
@@ -870,16 +870,16 @@ EOF;
         { urlArg: 'mapnik', linkColor: '#000000', shortName: 'OSM', alt: 'OSM: Mapnik' });
     map.addMapType(mapnik_map);
 
-    var tilelayers_tah = new Array();
+    /*var tilelayers_tah = new Array();
     tilelayers_tah[0] = new GTileLayer(copyrightCollection, 0, 17);
     tilelayers_tah[0].getTileUrl = GetTileUrl_TaH;
     tilelayers_tah[0].isPng = function () { return true; };
-    tilelayers_tah[0].getOpacity = function () { return 1.0; };
+    tilelayers_tah[0].getOpacity = function () { return 1.0; };*/
 
-    var tah_map = new GMapType(tilelayers_tah,
+    /*var tah_map = new GMapType(tilelayers_tah,
         new GMercatorProjection(19), "OSM (T@H)",
         { urlArg: 'tah', linkColor: '#000000', shortName: 'T@H', alt: 'OSM: Tiles@home' });
-    map.addMapType(tah_map);
+    map.addMapType(tah_map);*/
 
     var copyright1 = new GCopyright(1,
         new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
