@@ -27,14 +27,14 @@
   {dynamic}
   {if $is_logged_in}
   {if $use_google_api}
-     <li><a title="Draggable Geograph map" href="/gmap.php">Geograph</a> (<a title="Draggable Geograph map using OpenLayers" href="/omap.php">ol</a>)</li>
+     <li><a title="Draggable Geograph map" href="/omap.php">Geograph</a> (<a title="Draggable Geograph map using Google" href="/gmap.php">gm</a>)</li>
   {else}
      <li><a title="Draggable Geograph map" href="/omap.php">Geograph</a></li>
   {/if}
   {/if}
   {/dynamic}
   {if $use_google_api}
-     <li><a title="Draggable Geograph map without zones" href="/gmmap.php">No zones</a> (<a title="Draggable Geograph map without zones using OpenLayers" href="/ommap.php">ol</a>)</li>
+     <li><a title="Draggable Geograph map without zones" href="/ommap.php">No zones</a> (<a title="Draggable Geograph map without zones using Google" href="/gmmap.php">gm</a>)</li>
   {else}
      <li><a title="Draggable Geograph map without zones" href="/ommap.php">No zones</a></li>
   {/if}
@@ -118,6 +118,12 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 	  <a title="Register to upload photos" href="/register.php">register</a>
   {/if}
   {/dynamic}
+{if $languages}
+&emsp;[{foreach from=$languages key=lang item=langhost name=langloop}
+{if ! $smarty.foreach.langloop.first}|{/if}
+{if $lang == $language}{$lang}{else}<a href="{$curproto}{$langhost}{$canonicalreq|escape:'html'}">{$lang}</a>{/if}
+{/foreach}]
+{/if}
   </div>
 </div>
 {if $right_block}

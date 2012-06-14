@@ -3,6 +3,14 @@
 {else}
         {assign var="page_title" value="Map Browsing :: Germany"}
 {/if}
+{if $token_zoomout}
+	{assign var="canonicalreq" value="/map/`$mosaic_token`"}
+{elseif $realname}
+	{assign var="canonicalreq" value="/map/`$mosaic_token`"}
+	{*assign var="canonicalreq" value="/profile/`$user_id`/mmap"*}
+{*FIXME?else}
+	{assign var="canonicalreq" value="/mapbrowse2.php"*}
+{/if}
 {assign var="meta_description" value="Geograph coverage map of Germany, showing where we have photos, green squares are yet to be photographed."}
 {assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\"/>"}
 {include file="_std_begin.tpl"}
@@ -333,7 +341,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 <div style="position:relative;">
 	<div style="position:absolute;left:445px;top:5px;">
 	<b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="/map2/{$mosaic_token}">Link to this Map</a></b>
-	{* FIXME <b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="{if $token_zoomout}/map2/{$mosaic_token}{else}/profile/{$user_id}/map2{/if}">Link to this Map</a></b>*}
+	{* FIXME <b><a title="right click and select&#13;&#10; [Copy Shortcut] or [Copy Link Location]" href="{if $token_zoomout}/map2/{$mosaic_token}{else}/profile/{$user_id}/mmap{/if}">Link to this Map</a></b>*}
 	</div>
 </div>
 {/if}

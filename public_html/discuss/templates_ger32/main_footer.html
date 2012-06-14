@@ -36,8 +36,8 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
     <li>Tools<ul>
     <li><small><small>Draggable Maps</small></small><ul>
 {?useGoogleApi|
-     <li><a title="Draggable Geograph map" href="/gmap.php">Geograph</a> (<a title="Draggable Geograph map using OpenLayers" href="/omap.php">ol</a>)</li>
-     <li><a title="Draggable Geograph map without zones" href="/gmmap.php">No zones</a> (<a title="Draggable Geograph map without zones using OpenLayers" href="/ommap.php">ol</a>)</li>
+     <li><a title="Draggable Geograph map" href="/omap.php">Geograph</a> (<a title="Draggable Geograph map using Google" href="/gmap.php">gm</a>)</li>
+     <li><a title="Draggable Geograph map without zones" href="/ommap.php">No zones</a> (<a title="Draggable Geograph map without zones using Google" href="/gmmap.php">gm</a>)</li>
 ?}{?!useGoogleApi|
      <li><a title="Draggable Geograph map" href="/omap.php">Geograph</a></li>
      <li><a title="Draggable Geograph map without zones" href="/ommap.php">No zones</a></li>
@@ -92,7 +92,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
     </div>
   </div>
   <div id="login">
-	{$user_login}
+	{$user_login}{$language_links}
   </div>
 </div>
 <div id="footer_block">
