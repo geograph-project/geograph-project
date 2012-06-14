@@ -351,12 +351,12 @@ class GeographPage extends Smarty
 		}
 
 		if (count($CONF['languages'])) {
-			$this->languages = array();
-			foreach ($CONF['languages'] as $lang => $host) {
-				$this->languages[$lang] = 'http://'.$host.$_SERVER["REQUEST_URI"];
-			}
-			$this->assign('languages', $this->languages);
-			$this->assign('canonical', reset($this->languages));
+			$cur_proto = !$_SERVER['HTTPS'] || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
+			$this->assign('languages', $CONF['languages']);
+			$this->assign('curproto', $cur_proto);
+			$this->assign('canonicalhost', reset($CONF['languages']));
+			$this->assign('canonicalreq', $_SERVER['REQUEST_URI']); # FIXME remove session id? # can be changed in specific scripts, e.g. on the map page
+			$this->assign('language', $CONF['lang']);
 		}
 	}
 

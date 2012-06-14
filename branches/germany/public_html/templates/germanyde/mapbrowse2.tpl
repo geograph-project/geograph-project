@@ -3,6 +3,14 @@
 {else}
         {assign var="page_title" value="Kartenansicht :: Deutschland"}
 {/if}
+{if $token_zoomout}
+	{assign var="canonicalreq" value="/map/`$mosaic_token`"}
+{elseif $realname}
+	{assign var="canonicalreq" value="/map/`$mosaic_token`"}
+	{*assign var="canonicalreq" value="/profile/`$user_id`/mmap"*}
+{*FIXME?else}
+	{assign var="canonicalreq" value="/mapbrowse2.php"*}
+{/if}
 {assign var="meta_description" value="Geograph-Abdeckungskarte Deutschlands, grüne Quadrate sind noch zu fotografieren"}
 {assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\"/>"}
 {include file="_std_begin.tpl"}
@@ -334,7 +342,7 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/germanyde/mapnav/south_F
 <div style="position:relative;">
 	<div style="position:absolute;left:445px;top:5px;">
 	<b><a title="nach Rechtsklick &quot;Link-Adresse kopieren&quot; wählen" href="/map2/{$mosaic_token}">Link zu dieser Karte</a></b>
-	{* FIXME <b><a title="nach Rechtsklick &quot;Link-Adresse kopieren&quot; wählen" href="{if $token_zoomout}/map2/{$mosaic_token}{else}/profile/{$user_id}/map{/if}">Link zu dieser Karte</a></b>*}
+	{* FIXME <b><a title="nach Rechtsklick &quot;Link-Adresse kopieren&quot; wählen" href="{if $token_zoomout}/map2/{$mosaic_token}{else}/profile/{$user_id}/mmap{/if}">Link zu dieser Karte</a></b>*}
 	</div>
 </div>
 {/if}

@@ -73,12 +73,12 @@ v\:* {
 }
 </style>{/literal}
 {/if}
-{if $canonical}
-<link rel="canonical" href="{$canonical|escape:'html'}" />
+{if $canonicalhost}
+<link rel="canonical" href="http://{$canonicalhost}{$canonicalreq|escape:'html'}" />
 {/if}
 {if $languages}
-  {foreach from=$languages key=lang item=langurl}
-<link rel="alternate" hreflang="{$lang}" href="{$langurl|escape:'html'}" />
+  {foreach from=$languages key=lang item=langhost}
+<link rel="alternate" hreflang="{$lang}" href="http://{$langhost}{$canonicalreq|escape:'html'}" />
   {/foreach}
 {/if}
 <link rel="search" type="application/opensearchdescription+xml" 

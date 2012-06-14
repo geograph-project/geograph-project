@@ -807,6 +807,12 @@ $_SESSION['tab'] = $selectedtab;
 //which step to display?
 $smarty->assign('step', $step);
 
+# does not work (caching)...
+#if ($step != 1) {
+#	# disable language links to prevent users from losing their input
+#	$smarty->assign('languages', array());
+#}
+
 $smarty->display('submit.tpl');
 
 if (!empty($clear_cache)) {
