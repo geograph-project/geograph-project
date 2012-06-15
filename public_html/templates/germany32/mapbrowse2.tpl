@@ -4,9 +4,9 @@
         {assign var="page_title" value="Map Browsing :: Germany"}
 {/if}
 {if $token_zoomout}
-	{assign var="canonicalreq" value="/map/`$mosaic_token`"}
+	{assign var="canonicalreq" value="/map2/`$mosaic_token`"}
 {elseif $realname}
-	{assign var="canonicalreq" value="/map/`$mosaic_token`"}
+	{assign var="canonicalreq" value="/map2/`$mosaic_token`"}
 	{*assign var="canonicalreq" value="/profile/`$user_id`/mmap"*}
 {*FIXME?else}
 	{assign var="canonicalreq" value="/mapbrowse2.php"*}
