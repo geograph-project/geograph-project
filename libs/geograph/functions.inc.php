@@ -78,7 +78,7 @@ function log_script_timing()
 
 function split_timer($profile,$key='',$id='') {
 
-	if (isset($_GET['profile'])) {
+	if (isset($_GET['php_profile'])) {
 		static $starts = array();
 		
 		if (empty($key)) {
@@ -659,6 +659,34 @@ function GeographLinks(&$posterText,$thumbs = false) {
 	return $posterText;
 }
 
+function replace_tags($text) {
+        static $db;
+        if (empty($db)) {
+                $db = GeographDatabaseConnection(true);
+        }
+        $tag = $text;
+        $where = array();
+        $where['prefix'] = "prefix = ''";
+        if (strpos($tag,':') !== FALSE) {
+                list($prefix,$tag) = explode(':',$tag,2);
+                $where['prefix'] = "prefix = ".$db->Quote($prefix);
+        }
+        $where['tag'] = "tag = ".$db->Quote($tag);
+        $row= $db->getRow("SELECT tag_id,prefix,tag,description,canonical,COUNT(*) AS images FROM tag_public WHERE ".implode(' AND ',$where)." GROUP BY tag_id ORDER BY NULL");
+        if (!empty($row)) {
+                $row['tag'] = urlencode($row['tag']);
+                if (!empty($row['prefix']))
+                        $row['tag'] = urlencode($row['prefix']).":".$row['tag'];
+                $row['description'] = htmlentities($row['description']);
+                $text = "[<a href=\"/tags/?tag={$row['tag']}\" title=\"{$row['description']}\" target=\"_blank\">$text</a>] <i style=\"color:gray\">({$row['images']} images)</i>";
+        } else {
+                $text2= urlencode($text);
+                $text = "[<a href=\"/search.php?text=$text2\">$text</a>]";
+        }
+        return $text;
+}
+
+
 
 //available as a function, as doesn't come into effect if just re-using a smarty cache
 function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {
@@ -948,7 +976,7 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
 	if (!empty($r))
 		return($r);
 	if ($currentPage > 1) 
-		$r .= "<a href=\"$prefix".($currentPage-1)."$postfix\"$extrahtml class=\"pageNav\">&lt; &lt; prev</a> ";
+		$r .= "<a href=\"$prefix".($currentPage-1)."$postfix\"$extrahtml class=\"pageNav\" rel=\"prev\">&lt; &lt; prev</a> ";
 	$start = max(1,$currentPage-5);
 	$endr = min($numberOfPages+1,$currentPage+8);
 
@@ -965,7 +993,7 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
 		$r .= "... ";
 
 	if ($numberOfPages > $currentPage) 
-		$r .= "<a href=\"$prefix".($currentPage+1)."$postfix\"$extrahtml class=\"pageNav\">next &gt;&gt;</a> ";
+		$r .= "<a href=\"$prefix".($currentPage+1)."$postfix\"$extrahtml class=\"pageNav\" rel=\"next\">next &gt;&gt;</a> ";
 
 	if ($showLastPage) 
 		$r .= "<a href=\"$prefix".($numberOfPages)."$postfix\"$extrahtml class=\"pageNav\">last</a> ";

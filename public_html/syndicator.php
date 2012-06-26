@@ -22,12 +22,51 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if ( $_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter") {
+	header('HTTP/1.0 403 Forbidden');
+	exit;
+}
+
 require_once('geograph/global.inc.php');
 require_once('geograph/feedcreator.class.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 	
+
+
+if (!empty($CONF['redis_host']))
+{
+	if (empty($redis_handler)) {
+		$redis_handler = new RedisServer($CONF['redis_host'], $CONF['redis_port']);
+	}
+        $redis_handler->Select($CONF['redis_db']+2);
+
+	$bits = array();
+	$bits[] = $_GET['key'];
+	$bits[] = getRemoteIP();
+	if (strlen($_SERVER['HTTP_REFERER']) > 2) {
+		$ref = @parse_url($_SERVER['HTTP_REFERER']);
+		$bits[] = $ref['host'];		
+	} else {
+		$bits[] = '';
+	}
+	if (strlen($_SERVER['HTTP_USER_AGENT']) > 2) {
+		$bits[] = preg_replace('/[^\w]+/','_',$_SERVER['HTTP_USER_AGENT']);
+	}
+
+	$identy = implode('|',$bits);
+
+	#hIncrBy($key, $field, $increment)
+	$redis_handler->hIncrBy('syndicator',$identy,1);
+	$redis_handler->hIncrBy('s|'.$identy,date("Y-m-d H"),1);
+
+	//set back
+	$redis_handler->Select($CONF['redis_db']);
+}
+
+
+
 	
 $valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','KML','BASE','GeoRSS','GeoPhotoRSS','GPX','TOOLBAR','MEDIA','JSON');
 
@@ -143,7 +182,8 @@ if (isset($_GET['callback'])) {
 }
 
 $rss = new UniversalFeedCreator(); 
-$rss->useCached($format,$rssfile,$rss_timeout); 
+if (empty($_GET['refresh']))
+	$rss->useCached($format,$rssfile,$rss_timeout); 
 if ($CONF['template'] == 'ireland') {
 	$rss->title = 'Geograph Ireland'; 
 } else {
@@ -166,7 +206,7 @@ if (isset($q)) {
 	
 	$engine = new SearchEngineBuilder('#'); 
 	$engine->searchuse = "syndicator";
-	$_GET['i'] = $engine->buildSimpleQuery($q,!empty($_GET['distance'])?min(20,intval($_GET['distance'])):$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
+	$_GET['i'] = $engine->buildSimpleQuery($q,!empty($_GET['distance'])?min(20,floatval($_GET['distance'])):$CONF['default_search_distance'],false,isset($_GET['u'])?$_GET['u']:0);
 
 	if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid && isset($cacheid) && !empty($_GET['i'])) {
 		$target = "symlink:".$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";
@@ -207,7 +247,7 @@ if (isset($sphinx)) {
 		}
 		
 		$offset = ($pg -1)* $pgsize;
-		if ($pg < 10 && $offset < 250 && $sphinx->numberOfPages > $pg) {
+		if ($pg < 50 && $offset < 1000 && $sphinx->numberOfPages > $pg) {
 			$next = $pg + 1;
 			$rss->nextURL = $baselink."syndicator.php?q=".urlencode($sphinx->q).(($next>1)?"&amp;page=$next":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 		}
@@ -303,7 +343,7 @@ if (isset($sphinx)) {
 
 $cnt=count($images->images);
 
-$geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX' || $format == 'MEDIA');
+$geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX' || $format == 'MEDIA' || $format == 'JSON');
 $photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE' || $format == 'MEDIA' || $format == 'JSON');
 
 //create some feed items
@@ -341,7 +381,10 @@ for ($i=0; $i<$cnt; $i++)
 		$details = $images->images[$i]->getThumbnail(120,120,2);
 		$item->thumb = $details['server'].$details['url']; 
 		$item->thumbTag = $details['html'];
-		$item->category = $images->images[$i]->imageclass;
+		if (!empty($images->images[$i]->imageclass))
+			$item->category = $images->images[$i]->imageclass;
+		if (!empty($images->images[$i]->tags))
+			$item->tags = $images->images[$i]->tags;
 		
 		if ($format == 'MEDIA') {
 			$item->title .= " by ".$images->images[$i]->realname;
@@ -388,7 +431,7 @@ $rss->saveFeed($format, $rssfile);
  */
 function getTextKey() {
 	$t = '';
-	foreach (array('text','q','location','BBOX','lat','lon','u','perpage','distance') as $k) {
+	foreach (array('text','q','location','BBOX','lat','lon','u','perpage','distance','orderby','groupby') as $k) {
 		$t .= "|".(empty($_GET[$k])?'':$_GET[$k]);
 	}
 	return md5($t);

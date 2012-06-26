@@ -748,6 +748,12 @@ class FeedCreator extends HtmlDescribable {
 				} 
 
 				header('Content-Length: '.strlen($contents));
+				Header("Content-Type: ".$this->contentType."; charset=".$this->encoding);
+		                if (preg_match("/\.(kml|gpx)$/",$filename)) {
+                		        Header("Content-Disposition: attachment; filename=".basename($filename));
+		                } else {
+                		        Header("Content-Disposition: inline; filename=".basename($filename));
+		                }
 				print $contents;
 				die();
 			}
@@ -800,6 +806,12 @@ class FeedCreator extends HtmlDescribable {
 				} 
 				
 				header('Content-Length: '.strlen($contents));
+		                Header("Content-Type: ".$this->contentType."; charset=".$this->encoding);
+		                if (preg_match("/\.(kml|gpx)$/",$filename)) {
+                		        Header("Content-Disposition: attachment; filename=".basename($filename));
+		                } else {
+                		        Header("Content-Disposition: inline; filename=".basename($filename));
+		                }
 				print $contents;
 			}
 			
@@ -936,6 +948,10 @@ class FeedDate {
  * @author barry hunter <geo@barryhunter.co.uk>
  */
 class JSONCreator extends FeedCreator {
+
+        function JSONCreator() {
+                $this->contentType = "application/json";
+        }
 
 	/**
 	 * Builds the feed's text. The feed will be compliant to JSON
@@ -1608,7 +1624,7 @@ class AtomCreator10 extends FeedCreator {
 				$feed.= "        </author>\n";
 			}
 			if ($this->items[$i]->description!="") {
-				$feed.= "        <summary>".utf8_encode(htmlnumericentities($this->items[$i]->description))."</summary>\n";
+				$feed.= "        <summary>".$this->items[$i]->getDescription()."</summary>\n";
 			}
 			if ($this->items[$i]->thumbdata) {
 				$feed.= "        <gtb:icon mode=\"base64\" type=\"image/jpeg\">\n";
@@ -1693,7 +1709,7 @@ class AtomCreator03 extends FeedCreator {
 				$feed.= "        </author>\n";
 			}
 			if ($this->items[$i]->description!="") {
-				$feed.= "        <summary>".utf8_encode(htmlnumericentities($this->items[$i]->description))."</summary>\n";
+				$feed.= "        <summary>".$this->items[$i]->getDescription()."</summary>\n";
 			}
 			if ($this->items[$i]->thumbdata) {
 				$feed.= "        <gtb:icon mode=\"base64\" type=\"image/jpeg\">\n";
