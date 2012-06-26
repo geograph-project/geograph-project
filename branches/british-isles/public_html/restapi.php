@@ -99,7 +99,7 @@ class RestAPI
 							$obj->stats[$key] = $value;
 					}
 
-                                        print $json->encode($obj);
+                                        print $json->_encode($obj);
                                 } else {
 					echo '<status state="ok"/>';
         	                        echo '<user_id>'.intval($profile->user_id).'</user_id>';
@@ -137,12 +137,26 @@ class RestAPI
 
 		} elseif (!empty($_GET['id'])) {
 			$gridimage_id =  intval($_GET['id']);
+
 		} elseif (!empty($_GET['url']) && preg_match('/\/photo\/(\d+)/',$_GET['url'],$m)) {
 			$gridimage_id = intval($m[1]);
+
+		} elseif (!empty($_GET['url']) && preg_match('/id=(\d+)/',$_GET['url'],$m)) {
+			$gridimage_id = intval($m[1]);
+
+		} elseif (!empty($_GET['url']) && preg_match('/geograph-(\d+)-/',$_GET['url'],$m)) {
+			$gridimage_id = intval($m[1]);
+
+		} elseif (!empty($_GET['url']) && preg_match('/_(\d+)\.jpg/',$_GET['url'],$m)) {
+			$gridimage_id = intval($m[1]);
+
+#http://commons.wikimedia.org/wiki/File:Sheep_in_Antrobus_fields_-_geograph.org.uk_-_117.jpg
+#http://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Sheep_in_Antrobus_fields_-_geograph.org.uk_-_117.jpg/480px-Sheep_in_Antrobus_fields_-_geograph.org.uk_-_117.jpg
+
                 } elseif (!empty($_GET['url']) && preg_match('/\/\d{2}\/(\d+)_/',$_GET['url'],$m)) {
                         $gridimage_id = intval($m[1]);
 		} else {
-			$this->error("Unable to identifg image ID",'404 Not Found');
+			$this->error("Unable to identify image ID",'404 Not Found');
 			exit;
 		}
 
@@ -187,7 +201,7 @@ class RestAPI
                                 if ($this->output=='json') {
                                         require_once '3rdparty/JSON.php';
                                         $json = new Services_JSON();
-                                        print $json->encode($obj);
+                                        print $json->_encode($obj);
                                 } else {
                                         echo '<oembed>';
 					foreach ($obj as $key => $value) {
@@ -248,7 +262,7 @@ class RestAPI
 					$obj->wgs84_lat = $image->wgs84_lat;
 					$obj->wgs84_long = $image->wgs84_long;
 					
-					print $json->encode($obj);
+					print $json->_encode($obj);
 				} else {
 					echo '<status state="ok"/>';
 
@@ -304,7 +318,7 @@ class RestAPI
 				require_once '3rdparty/JSON.php';
 				$json = new Services_JSON();
 
-				print $json->encode($images);
+				print $json->_encode($images);
 			} else {
 				echo '<status state="ok"/>';
 
@@ -337,7 +351,7 @@ class RestAPI
 			require_once '3rdparty/JSON.php';
 			$json = new Services_JSON();
 
-			print $json->encode($images);
+			print $json->_encode($images);
 		} else {
 			echo '<status state="ok"/>';
 
@@ -366,7 +380,7 @@ class RestAPI
 			require_once '3rdparty/JSON.php';
 			$json = new Services_JSON();
 
-			print $json->encode($images);
+			print $json->_encode($images);
 		} else {
 			echo '<status state="ok"/>';
 
@@ -398,7 +412,7 @@ class RestAPI
 				require_once '3rdparty/JSON.php';
 				$json = new Services_JSON();
 
-				print $json->encode($images);
+				print $json->_encode($images);
 			} else {
 				echo '<status state="ok"/>';
 
@@ -445,7 +459,7 @@ class RestAPI
 				require_once '3rdparty/JSON.php';
 				$json = new Services_JSON();
 
-				print $json->encode($images);
+				print $json->_encode($images);
 			} else {
 				echo '<status state="ok"/>';
 
@@ -501,7 +515,7 @@ class RestAPI
 						$images[$i]->image = $image->_getFullpath(true,true);
 						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
 					}
-					print $json->encode($images);
+					print $json->_encode($images);
 				} else {
 			
 					echo '<status state="ok" count="'.$count.'" total="'.$images->resultCount.'"/>';
@@ -566,7 +580,7 @@ class RestAPI
                         	        require_once '3rdparty/JSON.php';
                                 	$json = new Services_JSON();
 
-	                                print $json->encode($images);
+	                                print $json->_encode($images);
         	                } else {
                 	                echo '<status state="ok"/>'."\n";
 
@@ -609,7 +623,7 @@ class RestAPI
 
                                         require_once '3rdparty/JSON.php';
                                         $json = new Services_JSON();
-                                        print $json->encode($square);
+                                        print $json->_encode($square);
                                 } else {
                                         echo '<status state="ok"/>'."\n";
 
@@ -669,7 +683,7 @@ ini_set('memory_limit', '64M');
 						}
 						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
 					}
-					print $json->encode($images);
+					print $json->_encode($images);
 				} else {
 			
 					echo '<status state="ok" count="'.$count.'"/>';
@@ -758,9 +772,11 @@ ini_set('memory_limit', '64M');
 		customGZipHandlerStart();
 		if ($this->output=='json') {
 			if (!empty($this->callback)) {
+				header("Content-Type:text/javascript");
 				customExpiresHeader(3600*24,true,true);
 				echo "{$this->callback}(";
 			} else {
+				header("Content-Type:application/json");
 				customExpiresHeader(360,true,true);
 			}
 		} else {
