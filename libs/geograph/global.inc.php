@@ -31,11 +31,20 @@
 * @version $Revision$
 */
 
+if (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE) {
+	header("HTTP/1.0 503 Service Unavailable");
+	exit;
+}
+
 //global routines
 require_once('geograph/functions.inc.php');
 
+if ('217.45.188.209' == $_SERVER['HTTP_X_FORWARDED_FOR']) {
+#	$_GET['php_profile'] = 1;
+}
 
-if (isset($_GET['profile']) && !class_exists('Profiler',false)) {
+
+if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
 	require "3rdparty/profiler.php";
 	Profiler::enable();
 
@@ -110,7 +119,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
 			if ($allow_readonly > 1) {
 				$row = $db->getRow("SHOW SLAVE STATUS");
 				if (!empty($row)) { //its empty if we actully connected to master!
-				    if (false && (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && ($row['Seconds_Behind_Master'] < 150) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
+				    if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && ($row['Seconds_Behind_Master'] < 150) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
 				
 				
 					//email me if we lag, but once gets big no point continuing to notify!
@@ -122,7 +131,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
                				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
                				
                				
-               				apc_store('lag_warning',1,500);
+               				apc_store('lag_warning',1,3600);
 				    }
 				    if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
 					split_timer('db'); //starts the timer
@@ -334,11 +343,33 @@ if (isset($CONF['log_script_timing']))
 
 #################################################
 
+
+function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
+
+	if (empty($_SERVER['HTTP_COOKIE']) ) { //&& $_SERVER['HTTP_X_PSS_LOOP'] == 'pagespeed_proxy') {
+		if (!empty($public_seconds)) {
+		        customExpiresHeader($public_seconds,true);
+		}
+
+	        if (!isset($_GET['novary'])) {
+	                header("Vary: Cookie");
+	                define('VARY_COOKIE',1); //so that gzip handler knows to include cookie in the header
+	        }
+	} else {
+        	init_session();
+
+                if (!empty($private_seconds)) {
+                        customExpiresHeader($private_seconds,false,true);
+                }
+	}
+}
+
+
 //global page initialisation
 function init_session()
 {
 
-	split_timer('app'); //starts the timer
+//	split_timer('app'); //starts the timer
 
 	session_start();
 
@@ -347,7 +378,7 @@ function init_session()
 	{
 		//this is a new session - as a safeguard against session
 		//fixation, we regenerate the session id
-		//not sure if wanted: if ($_REQUEST['PHPSESSID'])
+		if (!empty($_REQUEST['PHPSESSID']))
 			session_regenerate_id();
 
 		//create new user object - initially anonymous
@@ -383,30 +414,40 @@ function init_session()
 	}
 	*/
 	
-	split_timer('app','init_session',$GLOBALS['USER']->user_id); //logs the wall time
+//	split_timer('app','init_session',$GLOBALS['USER']->user_id); //logs the wall time
 
 }
 
 #################################################
 
 function smarty_function_pageheader() {
-	if(extension_loaded('newrelic')) {
-		return newrelic_get_browser_timing_header();
-	}
+//	if(extension_loaded('newrelic')) {
+///		return newrelic_get_browser_timing_header();
+//	}
 }
 function smarty_function_pagefooter() {
 
-	if (isset($_GET['profile']) && class_exists('Profiler',false)) {
+	if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' && !empty($_SESSION) && rand(1,10) > 7) {
+		return '<div style="position:absolute;top:0;left:400px;width:200px"><a href="/help/donate" style="color:cyan">donate to geograph</a></div>';
+	}
+
+#	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 == 0) {
+#		return '<script type="text/javascript">(function(a,b,c){function d(){var a=b.createElement(c),d=b.getElementsByTagName(c)[0];a.async=a.src="http://s2.cdnplanet.com/static/rum/rum.js",d.parentNode.insertBefore(a,d)}if(a.location.protocol=="https:")return;a.addEventListener&&a.addEventListener("load",d,!1)})(window,document,"script")</script>';
+#	}
+
+//        if (isset($_GET['snow']) || (isset($_SESSION['searchq']) && $_SESSION['searchq'] == 'let it snow')) {
+//        	print '<div id="snowFlakeContainer"><p class="snowflake">*</p></div><style>.snowflake {z-index:100000;position: fixed;color: #FFFFFF;}</style><script src="http://kirupa.googlecode.com/svn/trunk/snow.js"></script>';
+//	}
+
+	if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 		ob_start();
 		Profiler::render();
 		return ob_get_clean();
 	}
 	
-#return "<style>body {font-family: Helvetica,Arial,sans-serif !important; }</style>";
-
-	if(extension_loaded('newrelic')) {
-		return newrelic_get_browser_timing_footer();
-	}
+//	if(extension_loaded('newrelic')) {
+//		return newrelic_get_browser_timing_footer();
+//	}
 }
 
 /**
@@ -426,7 +467,7 @@ class GeographPage extends Smarty
 	{
 		global $CONF;
 
-	split_timer('smarty'); //starts the timer
+//	split_timer('smarty'); //starts the timer
 
 
 		//base constructor
@@ -520,35 +561,6 @@ class GeographPage extends Smarty
 
 		//show more links in template?
 		if (isset($GLOBALS['USER']) && $GLOBALS['USER']->user_id > 0) {
-			if (function_exists('apc_fetch')) {
-				if (apc_fetch($_SERVER['REQUEST_URI']))  {
-					$this->caching = 0;
-					$this->disable_caching = 1; //just incase app later changes it. 
-
-					$this->assign('extra_meta', '<script src="http://asset.userfly.com/users/14743/userfly.js" type="text/javascript"></script>');
-					
-					apc_delete($_SERVER['REQUEST_URI']);
-				}
-/*
-				if (($value = apc_fetch('irc.seen')) === FALSE) {
-					if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-						$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
-					} else {
-						$value = '?';
-					}
-					apc_store('irc.seen',$value,30);
-				}  
-			} else {
-				if (@filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
-					$value = @file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
-				} else {
-					$value = '?';
-				}
-			}
-			$this->assign('irc_seen',$value);
-*/
-			}
-
 
 			if ($GLOBALS['USER']->hasPerm('admin'))
 			{
@@ -564,7 +576,7 @@ class GeographPage extends Smarty
 			}
 		}
 
-	split_timer('smarty','setup'); //logs the wall time
+//	split_timer('smarty','setup'); //logs the wall time
 
 	}
 
@@ -572,7 +584,7 @@ class GeographPage extends Smarty
 	{
 		global $USER,$CONF;
 		
-	split_timer('smarty'); //starts the timer
+//	split_timer('smarty'); //starts the timer
 
 		if (!empty($this->disable_caching)) {
 			$this->caching = 0;
@@ -617,7 +629,7 @@ class GeographPage extends Smarty
 			$this->wroteLock = $filename;
 		}
 
-	split_timer('smarty','is_cached',$template.'.'.$cache_id); //logs the wall time
+//	split_timer('smarty','is_cached',$template.'.'.$cache_id); //logs the wall time
 
 		return $isCached;
 	}
@@ -626,7 +638,7 @@ class GeographPage extends Smarty
 	{
 		global $CONF;
 		
-	split_timer('smarty'); //starts the timer
+//	split_timer('smarty'); //starts the timer
 	
 		if (!empty($this->disable_caching)) {
 			$this->caching = 0;
@@ -643,7 +655,7 @@ class GeographPage extends Smarty
 			}
 		}
 		
-	split_timer('smarty','display',$template.'.'.$cache_id); //logs the wall time
+//	split_timer('smarty','display',$template.'.'.$cache_id); //logs the wall time
 	
 		return $ret;
 	}

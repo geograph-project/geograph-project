@@ -22,7 +22,9 @@
  */
 
 require_once('geograph/global.inc.php');
-init_session();
+
+##init_session();
+init_session_or_cache(3600*3, 900); //cache publically, and privately
 
 $smarty = new GeographPage;
 
@@ -34,18 +36,19 @@ if (isset($_GET['1'])) {
 	$template = 'content_docs.tpl';
 }
 
-$db = GeographDatabaseConnection(true);
 
-$data = $db->getRow("show table status like 'article'");
+##$data = $db->getRow("show table status like 'article'");
 
 //when this table was modified
-$mtime = strtotime($data['Update_time']);
+##$mtime = strtotime($data['Update_time']);
 	
-//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-customCacheControl($mtime,$cacheid,($USER->user_id == 0));
+##//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
+##customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	$db = GeographDatabaseConnection(true);
+
 	// retrieve the left and right value of the $root node 
 	$row = $db->GetRow("SELECT lft, rgt FROM article_cat WHERE category_name = 'Geograph Project'"); 
 	
