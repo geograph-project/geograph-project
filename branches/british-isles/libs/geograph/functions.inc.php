@@ -943,7 +943,11 @@ function customGZipHandlerEnd() {
 		// Send compressed contents
 		$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
 		header ('Content-Encoding: '.$encoding);
-		header ('Vary: Accept-Encoding');
+		if (defined('VARY_COOKIE')) {
+			header ('Vary: Cookie,Accept-Encoding');
+		} else {
+			header ('Vary: Accept-Encoding');
+		}
 	}
 	//else ... we could still send Vary: but because a browser that doesnt will accept non gzip in all cases, doesnt matter if the cache caches the non compressed version (the otherway doesnt hold true, hence the Vary: above)
 	header('Content-Length: '.strlen($contents));

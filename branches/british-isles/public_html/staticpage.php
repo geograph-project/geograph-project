@@ -28,10 +28,16 @@ if (isset($_SERVER['REDIRECT_SCRIPT_URL']) && preg_match('/120_(ie|ff).gif$/',$_
 }
 
 require_once('geograph/global.inc.php');
-init_session();
 
 //get page from request
 $page=isset($_GET['page'])?$_GET['page']:'404';
+
+
+$seconds = ($page == 'sitemap')?1800:(3600*3);
+
+//init_session();
+init_session_or_cache($seconds, 900); //cache publically, and privately
+
 
 //do we trust it? like hell we do! alphanumerics only please!
 if (!preg_match('/^[a-z0-9_]+$/' , $page))
@@ -62,13 +68,11 @@ if ($mtime) {
 }
 
 
-customExpiresHeader(86400*3,false,true);
-
 $smarty->assign("api_host",preg_replace("/^\w+/",'api',$CONF['CONTENT_HOST']));
 
 if ($template == 'static_sitemap.tpl' && !$smarty->is_cached($template)) {
 
-	$remote = file_get_contents("http://www.geographs.org/links/sitemap2.php?ajax&experimental=N&internal=Y&site=www.geograph.org.uk");
+	$remote = file_get_contents("http://nearby.geographs.org/links/sitemap2.php?ajax&experimental=N&internal=Y&depreciated=N&site=www.geograph.org.uk");
 
 	if (empty($remote) || strlen($remote) < 512) {
 		if ($memcache->valid) {

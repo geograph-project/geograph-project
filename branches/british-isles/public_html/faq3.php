@@ -25,12 +25,14 @@
 
 require_once('geograph/global.inc.php');
 
-init_session();
+##init_session();
+init_session_or_cache(3600*3, 900); //cache publically, and privately
+
 
 $smarty = new GeographPage;
 
 customGZipHandlerStart();
-customExpiresHeader(600,false,true);
+##customExpiresHeader(600,false,true);
 
 
         
