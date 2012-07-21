@@ -40,11 +40,18 @@ if (!empty($_GET['tag'])) {
 if (!empty($_GET['u'])) {
 	$cacheid .= '.'.intval($_GET['u']);
 }
+
+$when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
+$cacheid .= '.'.$when;
+
 $isadmin=$USER->hasPerm('moderator')?1:0;
 $smarty->assign_by_ref('isadmin', $isadmin);
 
 $template = 'blogs.tpl';
 
+if (isset($_GET['preview'])) {
+        $template = 'blogs2.tpl';
+}
 
 if ($isadmin) {
 	if (!empty($_GET['id']) && preg_match('/^\d+$/',$_GET['id'])) {
@@ -71,6 +78,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$datecolumn = 'created';
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
+	$prev_fetch_mode = $ADODB_FETCH_MODE;
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	$where = '';
 	
@@ -84,12 +93,18 @@ if (!$smarty->is_cached($template, $cacheid))
         }
 
 	if (!empty($_GET['tag'])) {
-		$where = " AND tags LIKE ".$db->Quote("%{$_GET['tag']}%");
+		$where .= " AND tags LIKE ".$db->Quote("%{$_GET['tag']}%");
 		$smarty->assign('thetag',$_GET['tag']);
 	}
+
+	$archive = $db->getAll("SELECT substring(published,1,4) AS year,substring(published,6,2) AS month,count(*) AS c FROM blog WHERE (approved = 1 and published < now()) $where GROUP BY substring(published,1,7) ORDER BY year DESC,month ASC");
+	$smarty->assign_by_ref('archive',$archive);
+
+	if (!empty($when)) {
+		$where .= " AND published LIKE ".$db->Quote("{$when}%");
+		$smarty->assign('when',$when);
+	}
 	
-	$prev_fetch_mode = $ADODB_FETCH_MODE;
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
 	select blog.*,realname,gs.grid_reference,x,y,unix_timestamp($datecolumn) as $datecolumn
 	from blog 
@@ -132,7 +147,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	#$smarty->assign_by_ref('geo', $geo);
 	$smarty->assign_by_ref('list', $list);
 
-	$rows = $db->getCol("SELECT tags FROM blog WHERE approved = 1 AND published < NOW()");
+	$rows = $db->getCol("SELECT tags FROM blog WHERE (approved = 1 AND published < NOW()) $where");
 	$tags = array();
 	foreach ($rows as $row) {
 		$bits = explode(',',$row);
@@ -141,6 +156,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	}
 	unset($tags['']);
+	ksort($tags);
 	$smarty->assign_by_ref('tags', $tags);
 }
 
