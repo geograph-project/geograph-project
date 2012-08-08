@@ -4,7 +4,7 @@
  <h2>Terms of use, the quick version</h2>
 
  <p>Lawyers, eh? Geograph Project's terms of use for the {$http_host} website can
- be boiled down to the following</p>
+ be boiled down to the following:</p>
  <ul>
  <li><b>We'll do no evil</b> - we'll not sell your personal details to
  spammers or abuse the copyright on your submissions.</li>
@@ -47,7 +47,7 @@ boilerplate...</p>
  <ul>
 
  <li>(a) Geograph Project Ltd may use
- Personally Identifiable Information to keep You notified of geograph related
+ Personally Identifiable Information to keep You notified of Geograph-related
  developments in Your geographic area; to give You updates on changes to the Site;
  and to allow You to log Your Geographs and share Your experiences with other users
  of the Site. </li>
@@ -74,12 +74,12 @@ boilerplate...</p>
  process.
  </p>
 
- <h3>3. License to Use Site; Restrictions</h3>
+ <h3>3. Licence to Use Site; Restrictions</h3>
  <p>Geograph Project Ltd hereby grants You a non-exclusive, non-
- transferable, revocable license to view and use the Site in accordance with this
+ transferable, revocable licence to view and use the Site in accordance with this
  Agreement and any guidelines or policies posted on the Site. Geograph Project Ltd
  reserves the right to suspend or revoke, in its sole discretion, the
- license hereunder and to prevent You from accessing all or any portion of the Site
+ licence hereunder and to prevent You from accessing all or any portion of the Site
  with or without notice or reason and without liability on the part of The
  Geograph Project Ltd.</p>
 
@@ -93,7 +93,7 @@ boilerplate...</p>
 
  <p>The site source code is copyrighted by Geograph Project Ltd and available
  under the terms of the GNU General Public Licence. All photo submissions
- are copyright their respective owners and licensed under a Creative Commons licence.
+ are copyright their respective owners and licensed under a Creative Commons Licence.
  All rights not expressly granted by these licences and this Agreement are reserved
  by Geograph Project Ltd or by the respective
  owners of the intellectual property rights. Geograph Project Ltd reserves
@@ -171,22 +171,22 @@ boilerplate...</p>
 
 
 
- <h3>6. License to Use Submissions</h3>
+ <h3>6. Licence to Use Submissions</h3>
  <p>All comments, articles, tutorials, screenshots, pictures, graphics, tools, downloads,
  and all other materials submitted to Geograph Project Ltd in connection with
  the Site or available through the Site (collectively, <b>Submissions</b>) remain the
  property and copyright of the original author. If You submit Submissions to The
  Site, You must adhere to any applicable submission guidelines
  that may be posted from time to time on the Site. All submitted photographs and accompanying
-metadata are licenced under a Creative Commons licence. For all
+metadata are licensed under a Creative Commons Licence. For all
 other types of site submission, you grant Geograph Project Ltd a worldwide, non-
- exclusive, transferable, perpetual, irrevocable, fully-paid royalty-free license and
+ exclusive, transferable, perpetual, irrevocable, fully-paid royalty-free licence and
  right to use, reproduce, distribute, import, broadcast, transmit, modify and create
  derivative works of, license, offer to sell, and sell, rent, lease or lend copies of,
  publicly display and publicly perform that Submission for any purpose and without
  restriction or obligation to You.</p>
 
- <p>The foregoing license rights are intended to provide to Geograph Project Ltd
+ <p>The foregoing licence rights are intended to provide to Geograph Project Ltd
  all rights under existing and future laws, including without limitation all rights
  under copyright and any other rights personal to You to publish the Submission on the
  Site, use the Submission in publicity and promotional materials for the Site and to
@@ -217,13 +217,13 @@ other types of site submission, you grant Geograph Project Ltd a worldwide, non-
  the copyright owner or are authorized to act on the copyright owner's behalf in this
  situation.</li>
 </ul>
- <p>Notices of copyright infringement claims should be sent to use via our
+ <p>Notices of copyright infringement claims should be sent to us via our
 <a href="/contact.php">contact</a> page.</p>
 
 
  <h3>8. Logo Usage</h3>
 
- <p>Geograph Project Ltd and Geograph logos are propriety to The
+ <p>Geograph Project Ltd and Geograph logos are proprietary to The
  Geograph Project Ltd, and Geograph Project Ltd retains all right, title,
  and interest in and to those logos. You agree that Your use, if any, of the The
  Geograph Project Ltd and Geograph logos will be in accordance with The
