@@ -249,50 +249,51 @@ ommap.tpl, rastermap.class.php:
 				}
 			);
 
-			var topohills = new OpenLayers.Layer.XYrZ(
-				"Relief (Nop's Wanderreitkarte)",
-				[ "http://wanderreitkarte.de/hills/${z}/${x}/${y}.png", "http://www.wanderreitkarte.de/hills/${z}/${x}/${y}.png"], // ol: 9..19 tiles: 8..\infty // 8..15
-				9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
-				{
-					attribution: 'Relief: <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> using <a href="http://www.wanderreitkarte.de/licence_en.php">CIAT data</a>',
-					sphericalMercator : true,
-					isBaseLayer : false,
-					visibility : false,
-					displayInLayerSwitcher: false,
-				}
-			);
+			//var topohills = new OpenLayers.Layer.XYrZ(
+			//	"Relief (Nop's Wanderreitkarte)",
+			//	[ "http://wanderreitkarte.de/hills/${z}/${x}/${y}.png", "http://www.wanderreitkarte.de/hills/${z}/${x}/${y}.png"], // ol: 9..19 tiles: 8..\infty // 8..15
+			//	9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+			//	{
+			//		attribution: 'Relief: <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> using <a href="http://www.wanderreitkarte.de/licence_en.php">CIAT data</a>',
+			//		sphericalMercator : true,
+			//		isBaseLayer : false,
+			//		visibility : false,
+			//		displayInLayerSwitcher: false,
+			//	}
+			//);
 			var topobase = new OpenLayers.Layer.XYrZ(
 				"Nop's Wanderreitkarte",
-				[ "http://base.wanderreitkarte.de/base/${z}/${x}/${y}.png", "http://base2.wanderreitkarte.de/base/${z}/${x}/${y}.png"],
+				//[ "http://base.wanderreitkarte.de/base/${z}/${x}/${y}.png", "http://base2.wanderreitkarte.de/base/${z}/${x}/${y}.png"],
+				[ "http://topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "http://topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"], // topo3, topo4
 				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
-					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC</a>)',
+					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC, CIAT</a>)',
 					sphericalMercator : true,
 					isBaseLayer : true,
 				}
 			);
-			var topotrails = new OpenLayers.Layer.XYrZ(
-				"Nop's Wanderreitkarte (trails)",
-				[ "http://topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "http://topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"],
-				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
-				{
-					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC</a>)',
-					sphericalMercator : true,
-					isBaseLayer : false,
-					visibility : false,
-					displayInLayerSwitcher: false,
-				}
-			);
+			//var topotrails = new OpenLayers.Layer.XYrZ(
+			//	"Nop's Wanderreitkarte (trails)",
+			//	[ "http://topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "http://topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"],
+			//	4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+			//	{
+			//		attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC</a>)',
+			//		sphericalMercator : true,
+			//		isBaseLayer : false,
+			//		visibility : false,
+			//		displayInLayerSwitcher: false,
+			//	}
+			//);
 			topobase.hasHills = true;
-			map.events.register("changebaselayer", map, function(e) {
-				/* Topographical map: always show trails layer */
-				var showtopolayers = topobase == e.layer;
-				if (topotrails.getVisibility() != showtopolayers)
-					topotrails.setVisibility(showtopolayers);
-				/* Topographical map: always show hills layer */
-				if (topohills.getVisibility() != showtopolayers)
-					topohills.setVisibility(showtopolayers);
-			});
+			//map.events.register("changebaselayer", map, function(e) {
+			//	/* Topographical map: always show trails layer */
+			//	var showtopolayers = topobase == e.layer;
+			//	if (topotrails.getVisibility() != showtopolayers)
+			//		topotrails.setVisibility(showtopolayers);
+			//	/* Topographical map: always show hills layer */
+			//	if (topohills.getVisibility() != showtopolayers)
+			//		topohills.setVisibility(showtopolayers);
+			//});
 			var cycle = new OpenLayers.Layer.OSM(
 				"Cycle Map",
 				"http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
@@ -493,7 +494,7 @@ ommap.tpl, rastermap.class.php:
 				osmmapnik, //osmarender,
 				geo,
 				cycle,
-				topobase, topotrails, topohills,
+				topobase, //topotrails, topohills,
 				hills,
 				geosq, geogr,
 {/literal}
