@@ -218,12 +218,12 @@ OpacityControl.prototype.getDefaultPosition = function() {
 		}
 
 
-		function GetTileUrl_TaH(a, z) {
+		/*function GetTileUrl_TaH(a, z) {
 		    return "http://tah.openstreetmap.org/Tiles/tile/" +
 				z + "/" + a.x + "/" + a.y + ".png";
-		}
+		}*/
 
-		function GetTileUrl_TopB(a, z) {
+		/*function GetTileUrl_TopB(a, z) {
 		    //return "http://topo.openstreetmap.de/base/" +
 		    return "http://base.wanderreitkarte.de/base/" +
 				z + "/" + a.x + "/" + a.y + ".png";
@@ -233,11 +233,18 @@ OpacityControl.prototype.getDefaultPosition = function() {
 		    //return "http://hills-nc.openstreetmap.de/" +
 		    return "http://wanderreitkarte.de/hills/" +
 				z + "/" + a.x + "/" + a.y + ".png";
-		}
+		}*/
 
 		function GetTileUrl_Top(a, z) {
 		    //return "http://topo.openstreetmap.de/topo/" +
 		    return "http://topo.wanderreitkarte.de/topo/" +
+				z + "/" + a.x + "/" + a.y + ".png";
+		}
+
+		function GetTileUrl_GeoH(a, z) {
+		    //return "http://hills-nc.openstreetmap.de/" +
+		    //return "http://wanderreitkarte.de/hills/" +
+		    return "http://geo.hlipp.de/tile/hills/" +
 				z + "/" + a.x + "/" + a.y + ".png";
 		}
 
@@ -273,30 +280,35 @@ OpacityControl.prototype.getDefaultPosition = function() {
 				var copyright1 = new GCopyright(1,
 					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
 					': http://www.openstreetmap.org/copyright');
-				var copyright2 = new GCopyright(1,
-					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-					': http://www.wanderreitkarte.de/licence_de.php');
+				//var copyright2 = new GCopyright(1,
+				//	new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
+				//	': http://www.wanderreitkarte.de/licence_de.php');
 				var copyright3 = new GCopyright(1,
 					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
 					': http://creativecommons.org/licenses/by-sa/2.0/');
+				var copyright4 = new GCopyright(1,
+					new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
+					': http://srtm.csi.cgiar.org/');
 				var copyrightCollectionOSMm = new GCopyrightCollection('(c) OSM (CC)');
-				var copyrightCollectionTopoH = new GCopyrightCollection('Hoehen CIAT');
+				//var copyrightCollectionTopoH = new GCopyrightCollection('Hoehen CIAT');
 				//var copyrightCollectionOG = new GCopyrightCollection();
 				var copyrightCollectionO = new GCopyrightCollection('Geograph Deutschland (CC)');
+				var copyrightCollectionGeoH = new GCopyrightCollection("Hoehen CIAT");
 				copyrightCollectionOSMm.addCopyright(copyright1);
-				copyrightCollectionTopoH.addCopyright(copyright2);
+				//copyrightCollectionTopoH.addCopyright(copyright2);
 				//copyrightCollectionO.addCopyright(copyright);
 				copyrightCollectionO.addCopyright(copyright3);
+				copyrightCollectionGeoH.addCopyright(copyright4);
 				var tilelayers_mapnikhg = new Array();
 				tilelayers_mapnikhg[0] = new GTileLayer(copyrightCollectionOSMm, 4, 14);//0 18
 				tilelayers_mapnikhg[0].isPng = function () { return true; };
 				tilelayers_mapnikhg[0].getOpacity = function () { return 1.0; };
 				tilelayers_mapnikhg[0].getTileUrl = GetTileUrl_Mapnik;
-				tilelayers_mapnikhg[1] = new GTileLayer(copyrightCollectionTopoH, 9, 14);// 9 19
+				tilelayers_mapnikhg[1] = new GTileLayer(copyrightCollectionGeoH, 4, 14);// 4 15
 				tilelayers_mapnikhg[1].opacity = opr;
 				tilelayers_mapnikhg[1].isPng = function () { return true; };
 				tilelayers_mapnikhg[1].getOpacity = function () { return this.opacity; };
-				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_TopH;
+				tilelayers_mapnikhg[1].getTileUrl = GetTileUrl_GeoH;
 				tilelayers_mapnikhg[2] = new GTileLayer(copyrightCollectionO,4,14);
 				tilelayers_mapnikhg[2].opacity = op;
 				tilelayers_mapnikhg[2].user = user;

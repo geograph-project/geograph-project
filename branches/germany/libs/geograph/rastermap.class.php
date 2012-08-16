@@ -824,7 +824,7 @@ function GetTileUrl_Mapnik(a, z) {
                 z + "/" + a.x + "/" + a.y + ".png";
 }*/
 
-function GetTileUrl_TopB(a, z) {
+/*function GetTileUrl_TopB(a, z) {
     //return "http://topo.openstreetmap.de/base/" +
     sd = inthash("" + a.x + a.y + z, 2) == 0 ? "base" : "base2" ;
     return "http://" + sd + ".wanderreitkarte.de/base/" +
@@ -835,14 +835,22 @@ function GetTileUrl_TopH(a, z) {
     //return "http://hills-nc.openstreetmap.de/" +
     return "http://wanderreitkarte.de/hills/" +
                 z + "/" + a.x + "/" + a.y + ".png";
-}
+}*/
 
 function GetTileUrl_Top(a, z) {
     //return "http://topo.openstreetmap.de/topo/" +
-    sd = inthash("" + a.x + a.y + z, 2) == 0 ? "topo" : "topo2" ;
+    sd = inthash("" + a.x + a.y + z, 2) == 0 ? "topo" : "topo2" ; // currently available: topo, topo2, topo3, topo4
     return "http://" + sd + ".wanderreitkarte.de/topo/" +
                 z + "/" + a.x + "/" + a.y + ".png";
 }
+
+function GetTileUrl_GeoH(a, z) {
+    //return "http://hills-nc.openstreetmap.de/" +
+    //return "http://wanderreitkarte.de/hills/" +
+    return "http://geo.hlipp.de/tile/hills/" +
+                z + "/" + a.x + "/" + a.y + ".png";
+}
+
 EOF;
 
 			$osm_block=<<<EOF
@@ -884,42 +892,48 @@ EOF;
     var copyright1 = new GCopyright(1,
         new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
         ': http://www.wanderreitkarte.de/licence_de.php');
-    var copyright2 = new GCopyright(1,
-        new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        ': http://www.wanderreitkarte.de/licence_de.php');
-    var copyrightCollectionTopo = new GCopyrightCollection("Nops RWK");
-    var copyrightCollectionTopoH = new GCopyrightCollection("DEM CIAT");
+    //var copyright2 = new GCopyright(1,
+    //    new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
+    //    ': http://www.wanderreitkarte.de/licence_de.php');
+    var copyrightCollectionTopo = new GCopyrightCollection("Nops RWK, CIAT");
+    //var copyrightCollectionTopoH = new GCopyrightCollection("DEM CIAT");
     copyrightCollectionTopo.addCopyright(copyright1);
-    copyrightCollectionTopoH.addCopyright(copyright2);
+    //copyrightCollectionTopoH.addCopyright(copyright2);
 
     var tilelayers_top = new Array();
     tilelayers_top[0] = new GTileLayer(copyrightCollectionTopo, 0, 17);
-    tilelayers_top[1] = new GTileLayer(copyrightCollectionTopoH, 9, 19);
-    tilelayers_top[2] = new GTileLayer(copyrightCollectionTopo, 0, 17);
+    //tilelayers_top[1] = new GTileLayer(copyrightCollectionTopoH, 9, 19);
+    //tilelayers_top[2] = new GTileLayer(copyrightCollectionTopo, 0, 17);
     tilelayers_top[0].isPng = function () { return true; };
-    tilelayers_top[1].isPng = function () { return true; };
-    tilelayers_top[2].isPng = function () { return true; };
+    //tilelayers_top[1].isPng = function () { return true; };
+    //tilelayers_top[2].isPng = function () { return true; };
     tilelayers_top[0].getOpacity = function () { return 1.0; };
-    tilelayers_top[1].getOpacity = function () { return 1.0; };
-    tilelayers_top[2].getOpacity = function () { return 1.0; };
-    tilelayers_top[0].getTileUrl = GetTileUrl_TopB;
-    tilelayers_top[1].getTileUrl = GetTileUrl_TopH;
-    tilelayers_top[2].getTileUrl = GetTileUrl_Top;
+    //tilelayers_top[1].getOpacity = function () { return 1.0; };
+    //tilelayers_top[2].getOpacity = function () { return 1.0; };
+    tilelayers_top[0].getTileUrl = GetTileUrl_Top;
+    //tilelayers_top[1].getTileUrl = GetTileUrl_TopH;
+    //tilelayers_top[2].getTileUrl = GetTileUrl_Top;
 
     var topo_map = new GMapType(tilelayers_top,
         new GMercatorProjection(19), "Nops RWK",
         { urlArg: 'topo', linkColor: '#000000', shortName: "Nop-RWK", alt: "Nop: Reit- und Wanderkarte" });
     map.addMapType(topo_map);
 
+    var copyright3 = new GCopyright(1,
+        new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
+        ': http://srtm.csi.cgiar.org/');
+    var copyrightCollectionGeoH = new GCopyrightCollection("DEM CIAT");
+    copyrightCollectionGeoH.addCopyright(copyright3);
+
     var tilelayers_mapnikh = new Array();
     tilelayers_mapnikh[0] = new GTileLayer(copyrightCollectionOSMs, 0, 18);
-    tilelayers_mapnikh[1] = new GTileLayer(copyrightCollectionTopoH, 8, 15);
+    tilelayers_mapnikh[1] = new GTileLayer(copyrightCollectionGeoH, 4, 15);
     tilelayers_mapnikh[0].isPng = function () { return true; };
     tilelayers_mapnikh[1].isPng = function () { return true; };
     tilelayers_mapnikh[0].getOpacity = function () { return 1.0; };
     tilelayers_mapnikh[1].getOpacity = function () { return 1.0; };
     tilelayers_mapnikh[0].getTileUrl = GetTileUrl_Mapnik;
-    tilelayers_mapnikh[1].getTileUrl = GetTileUrl_TopH;
+    tilelayers_mapnikh[1].getTileUrl = GetTileUrl_GeoH;
     var mapnikh_map = new GMapType(tilelayers_mapnikh,
         new GMercatorProjection(19), "OSM (Mapnik) + Profile",
         { urlArg: 'mapnikh', linkColor: '#000000', shortName: 'OSM+P', alt: 'OSM: Mapnik+Profile' });
@@ -1097,7 +1111,7 @@ EOF;
 				$attr_static = "'&copy; <a href=\"http://www.openstreetmap.org/\">OSM</a>-User (<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)'";
 				$attr_hills = "'Relief: <a href=\"http://srtm.csi.cgiar.org/\">CIAT-Daten</a>'";
 				$attr_topohills = "'H&ouml;hen: <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> mit <a href=\"http://www.wanderreitkarte.de/licence_de.php\">CIAT-Daten</a>'";
-				$attr_topo = "'&copy; <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_de.php\">CC</a>)'";
+				$attr_topo = "'&copy; <a href=\"http://www.wanderreitkarte.de/\">Nops Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_de.php\">CC, CIAT</a>)'";
 			} else {
 				$ollang = '';
 				$name_gphy = "Google Physical";
@@ -1113,7 +1127,7 @@ EOF;
 				$attr_static = "'&copy; <a href=\"http://www.openstreetmap.org/\">OSM</a> contributors (<a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)'";
 				$attr_hills = "'Relief: <a href=\"http://srtm.csi.cgiar.org/\">CIAT data</a>'";
 				$attr_topohills = "'Relief: <a href=\"http://www.wanderreitkarte.de/\">Nop\\'s Wanderreitkarte</a> using <a href=\"http://www.wanderreitkarte.de/licence_en.php\">CIAT data</a>'";
-				$attr_topo = "'&copy; <a href=\"http://www.wanderreitkarte.de/\">Nop\\'s Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_en.php\">CC</a>)'";
+				$attr_topo = "'&copy; <a href=\"http://www.wanderreitkarte.de/\">Nop\\'s Wanderreitkarte</a> (<a href=\"http://www.wanderreitkarte.de/licence_en.php\">CC, CIAT</a>)'";
 			}
 			if ($ollang !== '') {
 				$ollang = "//OpenLayers.Lang.setCode('$ollang'); /* TODO Needs OpenLayers/Lang/$ollang.js built into OpenLayers.js */";
@@ -1233,21 +1247,22 @@ EOF;
 				}
 			);
 
-			var topohills = new OpenLayers.Layer.XYrZ(
-				\"$name_topohills\",
-				[ \"http://wanderreitkarte.de/hills/\${z}/\${x}/\${y}.png\", \"http://www.wanderreitkarte.de/hills/\${z}/\${x}/\${y}.png\"],
-				9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
-				{
-					attribution: $attr_topohills,
-					sphericalMercator : true,
-					isBaseLayer : false,
-					visibility : false,
-					displayInLayerSwitcher: false,
-				}
-			);
+			//var topohills = new OpenLayers.Layer.XYrZ(
+			//	\"$name_topohills\",
+			//	[ \"http://wanderreitkarte.de/hills/\${z}/\${x}/\${y}.png\", \"http://www.wanderreitkarte.de/hills/\${z}/\${x}/\${y}.png\"],
+			//	9/*8*/, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+			//	{
+			//		attribution: $attr_topohills,
+			//		sphericalMercator : true,
+			//		isBaseLayer : false,
+			//		visibility : false,
+			//		displayInLayerSwitcher: false,
+			//	}
+			//);
 			var topobase = new OpenLayers.Layer.XYrZ(
 				\"$name_topobase\",
-				[ \"http://base.wanderreitkarte.de/base/\${z}/\${x}/\${y}.png\", \"http://base2.wanderreitkarte.de/base/\${z}/\${x}/\${y}.png\"],
+				//[ \"http://base.wanderreitkarte.de/base/\${z}/\${x}/\${y}.png\", \"http://base2.wanderreitkarte.de/base/\${z}/\${x}/\${y}.png\"],
+				[ \"http://topo.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\", \"http://topo2.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\"], // topo3, topo4
 				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 				{
 					attribution: $attr_topo,
@@ -1255,28 +1270,28 @@ EOF;
 					isBaseLayer : true,
 				}
 			);
-			var topotrails = new OpenLayers.Layer.XYrZ(
-				\"$name_topotrails\",
-				[ \"http://topo.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\", \"http://topo2.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\"],
-				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
-				{
-					attribution: $attr_topo ,
-					sphericalMercator : true,
-					isBaseLayer : false,
-					visibility : false,
-					displayInLayerSwitcher: false,
-				}
-			);
+			//var topotrails = new OpenLayers.Layer.XYrZ(
+			//	\"$name_topotrails\",
+			//	[ \"http://topo.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\", \"http://topo2.wanderreitkarte.de/topo/\${z}/\${x}/\${y}.png\"],
+			//	4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+			//	{
+			//		attribution: $attr_topo ,
+			//		sphericalMercator : true,
+			//		isBaseLayer : false,
+			//		visibility : false,
+			//		displayInLayerSwitcher: false,
+			//	}
+			//);
 			topobase.hasHills = true;
-			map.events.register('changebaselayer', map, function(e) {
-				/* Topographical map: always show trails layer */
-				var showtopolayers = topobase == e.layer;//map.baselayer;
-				if (topotrails.getVisibility() != showtopolayers)
-					topotrails.setVisibility(showtopolayers);
-				/* Topographical map: always show hills layer */
-				if (topohills.getVisibility() != showtopolayers)
-					topohills.setVisibility(showtopolayers);
-			});
+			//map.events.register('changebaselayer', map, function(e) {
+			//	/* Topographical map: always show trails layer */
+			//	var showtopolayers = topobase == e.layer;//map.baselayer;
+			//	if (topotrails.getVisibility() != showtopolayers)
+			//		topotrails.setVisibility(showtopolayers);
+			//	/* Topographical map: always show hills layer */
+			//	if (topohills.getVisibility() != showtopolayers)
+			//		topohills.setVisibility(showtopolayers);
+			//});
 			map.events.register('changebaselayer', map, function(e) {
 				var redrawlayerswitcher = false;
 				/* Don't show relief if already shown in base layer */
@@ -1313,7 +1328,7 @@ EOF;
 			map.addLayers([
 				mapnik,
 				osmmapnik, //osmarender,
-				topobase, topotrails, topohills,
+				topobase, //topotrails, topohills,
 				hills,
 				$google_layers
 				$vector_layer
