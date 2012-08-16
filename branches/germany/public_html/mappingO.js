@@ -39,6 +39,9 @@
 
  var pickupbox = null;
  var pickuplayer = null;
+ var squarebox = null;
+ var sboxeast = null;
+ var sboxnorth = null;
 
 /* Error tiles */
 //OpenLayers.Util.onImageLoadErrorColor = "transparent";//FIXME?
@@ -218,11 +221,26 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 	);
  }
 
+ /*function markerCompleteZoom() {
+	if (squarebox !== null && map.zoom < 17) {
+		pickuplayer.removeFeatures( [ squarebox ] );
+		squarebox.destroy();
+		squarebox = null;
+	}
+ }*/
+
  function markerCompleteDrag(vector, pixel) {
-	if (!vector.attributes.isdraggable) {
+	if (vector.attributes.isdraggable) {
+		if (squarebox !== null) {
+			pickuplayer.removeFeatures( [ squarebox ] );
+			squarebox.destroy();
+			squarebox = null;
+		}
+	} else {
 		vector.move(vector.attributes.initialpos);
 	}
  }
+
  function markerDrag(vector, pixel) {
 	if (vector.attributes.isdraggable) {
 		//var pp = map.getLonLatFromPixel(pixel).transform(map.getProjectionObject(), epsg4326);
@@ -279,6 +297,51 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 			document.theForm.grid_reference.value = gridref;
 		}  
 		
+		if (map.zoom >= 17) {
+			var neweast = Math.floor(grid.eastings/10);
+			var newnorth = Math.floor(grid.northings/10);
+			if (squarebox !== null && (neweast != sboxeast || newnorth != sboxnorth)) {
+				pickuplayer.removeFeatures( [ squarebox ] );
+				squarebox.destroy();
+				squarebox = null;
+			}
+			if (squarebox === null && pickuplayer !== null) {
+				sboxeast = neweast;
+				sboxnorth = newnorth;
+				grid.setGridCoordinates(sboxeast*10   , sboxnorth*10   );
+				var ll1 = grid.getWGS84(true);
+				grid.setGridCoordinates(sboxeast*10+10, sboxnorth*10   );
+				var ll2 = grid.getWGS84(true);
+				grid.setGridCoordinates(sboxeast*10+10, sboxnorth*10+10);
+				var ll3 = grid.getWGS84(true);
+				grid.setGridCoordinates(sboxeast*10   , sboxnorth*10+10);
+				var ll4 = grid.getWGS84(true);
+				var p1 = new OpenLayers.Geometry.Point(ll1.longitude, ll1.latitude);
+				var p2 = new OpenLayers.Geometry.Point(ll2.longitude, ll2.latitude);
+				var p3 = new OpenLayers.Geometry.Point(ll3.longitude, ll3.latitude);
+				var p4 = new OpenLayers.Geometry.Point(ll4.longitude, ll4.latitude);
+				p1.transform(epsg4326, map.getProjectionObject());
+				p2.transform(epsg4326, map.getProjectionObject());
+				p3.transform(epsg4326, map.getProjectionObject());
+				p4.transform(epsg4326, map.getProjectionObject());
+				var points = [ p1, p2, p3, p4 ];
+				var ring = new OpenLayers.Geometry.LinearRing(points);
+				var style = {
+					strokeColor: '#ffffff',
+					strokeWidth: 1,
+					strokeOpacity: 0.5,
+					fillColor: '#808080',
+					fillOpacity: 0.5
+				};
+				squarebox = new OpenLayers.Feature.Vector(ring, null, style);
+				pickuplayer.addFeatures([squarebox]);
+			}
+		} else if (squarebox !== null) {
+			pickuplayer.removeFeatures( [ squarebox ] );
+			squarebox.destroy();
+			squarebox = null;
+		}
+
 		//if (document.theForm.use6fig)
 		//	document.theForm.use6fig.checked = true;
 		

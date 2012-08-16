@@ -262,8 +262,8 @@ GT_German32.prototype.getGridRef = function(precision)
 	{
 		var factor = Math.pow(10, 5-precision);
 		var rfactor = Math.pow(10, precision);
-		var nr = Math.round(this.northings / factor);
-		var er = Math.round(this.eastings / factor);
+		var nr = Math.floor(this.northings / factor);
+		var er = Math.floor(this.eastings / factor);
 
 		var y=Math.floor(nr / rfactor);
 		var x=Math.floor(er / rfactor);
@@ -396,8 +396,8 @@ GT_German33.prototype.getGridRef = function(precision)
 	{
 		var factor = Math.pow(10, 5-precision);
 		var rfactor = Math.pow(10, precision);
-		var nr = Math.round(this.northings / factor);
-		var er = Math.round(this.eastings / factor);
+		var nr = Math.floor(this.northings / factor);
+		var er = Math.floor(this.eastings / factor);
 
 		var y=Math.floor(nr / rfactor);
 		var x=Math.floor(er / rfactor);
@@ -528,8 +528,8 @@ GT_German31.prototype.getGridRef = function(precision)
 	{
 		var factor = Math.pow(10, 5-precision);
 		var rfactor = Math.pow(10, precision);
-		var nr = Math.round(this.northings / factor);
-		var er = Math.round(this.eastings / factor);
+		var nr = Math.floor(this.northings / factor);
+		var er = Math.floor(this.eastings / factor);
 
 		var y=Math.floor(nr / rfactor);
 		var x=Math.floor(er / rfactor);

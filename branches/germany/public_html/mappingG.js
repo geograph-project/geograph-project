@@ -35,6 +35,9 @@
  var fracGold = 0.5*Math.sqrt(5.0) - 0.5;
 
  var pickupbox = null;
+ var squarebox = null;
+ var sboxeast = null;
+ var sboxnorth = null;
  
  function createMarker(point,picon) {
  	if (picon) {
@@ -56,7 +59,6 @@
 			if (wgs84.isIreland()) {
 				//convert to Irish
 				var grid=wgs84.getIrish(true);
-			
 			} else if (wgs84.isGreatBritain()) {
 				//convert to OSGB
 				var grid=wgs84.getOSGB();
@@ -98,6 +100,39 @@
 				northings1 = grid.northings;
 				document.theForm.grid_reference.value = gridref;
 			}  
+
+			if (map.getZoom() >= 17) {
+				var neweast = Math.floor(grid.eastings/10);
+				var newnorth = Math.floor(grid.northings/10);
+				if (squarebox !== null && (neweast != sboxeast || newnorth != sboxnorth)) {
+					map.removeOverlay(squarebox);
+					squarebox = null;
+				}
+				if (squarebox === null) {
+					sboxeast = neweast;
+					sboxnorth = newnorth;
+					grid.setGridCoordinates(sboxeast*10   , sboxnorth*10   );
+					var ll1 = grid.getWGS84(true);
+					grid.setGridCoordinates(sboxeast*10+10, sboxnorth*10   );
+					var ll2 = grid.getWGS84(true);
+					grid.setGridCoordinates(sboxeast*10+10, sboxnorth*10+10);
+					var ll3 = grid.getWGS84(true);
+					grid.setGridCoordinates(sboxeast*10   , sboxnorth*10+10);
+					var ll4 = grid.getWGS84(true);
+					squarebox = new GPolygon(
+						[
+							new GLatLng(ll1.latitude, ll1.longitude),
+							new GLatLng(ll2.latitude, ll2.longitude),
+							new GLatLng(ll3.latitude, ll3.longitude),
+							new GLatLng(ll4.latitude, ll4.longitude),
+							new GLatLng(ll1.latitude, ll1.longitude)
+						], "#FFFFFF", 1, 0.5, "#808080", 0.5);
+					map.addOverlay(squarebox);
+				}
+			} else if (squarebox !== null) {
+				map.removeOverlay(squarebox);
+				squarebox = null;
+			}
 			
 			//if (document.theForm.use6fig)
 			//	document.theForm.use6fig.checked = true;
@@ -116,8 +151,18 @@
 			}
 		});
 		GEvent.addListener(marker, "dragend", function() {
+			if (squarebox !== null) {
+				map.removeOverlay(squarebox);
+				squarebox = null;
+			}
 			GEvent.trigger(map,'markerdragend');
 		});
+		/*GEvent.addListener(map, "zoomend", function() {
+			if (squarebox !== null && map.getZoom() < 17) {
+				map.removeOverlay(squarebox);
+				squarebox = null;
+			}
+		});*/
 	} else {
 		GEvent.addListener(marker, "dragend", function() {
 			marker.setPoint(point);
