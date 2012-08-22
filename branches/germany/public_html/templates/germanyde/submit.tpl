@@ -65,7 +65,7 @@ beibehalten.</p>
 		<u title="z.B. TPT27796951 oder TPT 2779 6951">8</u> oder 
 		<u title="z.B. TPT2779269513 oder TPT 27792 69513">10</u> Ziffern) des Motivs</label><br /><br />
 		{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">löschen</a>)<br/></small></small>{/if}
-		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">O</a></small></small>
+		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="16"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">O</a></small></small>
 		&nbsp;&nbsp;&nbsp;
 		<input type="submit" name="setpos" value="Weiter &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
 		</p>
@@ -183,11 +183,11 @@ beibehalten.</p>
 		{/if}
 
 		<h4><b>Koordinaten:</b> (erwünscht)</h4>
-		<p><label for="grid_reference"><b style="color:#0018F8">Hauptmotiv</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Markiert Motiv" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Markiert Motiv" width="20" height="34" align="middle"/>{/if}
+		<p><label for="grid_reference"><b style="color:#0018F8">Hauptmotiv</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="16" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Markiert Motiv" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Markiert Motiv" width="20" height="34" align="middle"/>{/if}
 		<span style="font-size:0.8em"><br/><a href="javascript:void(mapMarkerToCenter(document.theForm.grid_reference));void(updateMapMarker(document.theForm.grid_reference,false));" style="font-size:0.8em">Marker zentrieren</a></span>
 		</p>
 	
-		<p><label for="photographer_gridref"><b style="color:#002E73">Fotograf</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Markiert den Aufnahmestandort" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Markiert den Aufnahmestandort" width="20" height="34" align="middle"/>{/if}
+		<p><label for="photographer_gridref"><b style="color:#002E73">Fotograf</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="16" onkeyup="updateMapMarker(this,false)" onpaste="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Markiert den Aufnahmestandort" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Markiert den Aufnahmestandort" width="20" height="34" align="middle"/>{/if}
 		
 		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Motivposition</a></span>
 		

@@ -42,6 +42,7 @@
  var squarebox = null;
  var sboxeast = null;
  var sboxnorth = null;
+ var sboxwidth = null;
 
 /* Error tiles */
 //OpenLayers.Util.onImageLoadErrorColor = "transparent";//FIXME?
@@ -279,9 +280,23 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 			var grid=wgs84.getGerman33(true, false);
 		else if (ri == 5)
 			var grid=wgs84.getGerman31(true, false);
-		
-		//get a grid reference with 4 digits of precision
-		var gridref = grid.getGridRef(4);
+
+		if (map.zoom >= 19) {
+			var newdigits = 5;
+			var newprec = 1;
+		} else if (map.zoom >= 16) {
+			var newdigits = 4;
+			var newprec = 10;
+		} else if (map.zoom >= 12) {
+			var newdigits = 3;
+			var newprec = 100;
+		} else {
+			var newdigits = 2;
+			var newprec = 1000;
+		}
+
+		//get a grid reference with the given precision
+		var gridref = grid.getGridRef(newdigits);
 
 		if (vector.attributes.mtype) {
 			lon2 = wgs84.longitude*Math.PI/180.;
@@ -295,12 +310,12 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 			eastings1 = grid.eastings;
 			northings1 = grid.northings;
 			document.theForm.grid_reference.value = gridref;
-		}  
-		
-		if (map.zoom >= 17) {
-			var neweast = Math.floor(grid.eastings/10);
-			var newnorth = Math.floor(grid.northings/10);
-			if (squarebox !== null && (neweast != sboxeast || newnorth != sboxnorth)) {
+		}
+
+		if (newdigits > 2) {
+			var neweast = Math.floor(grid.eastings/newprec);
+			var newnorth = Math.floor(grid.northings/newprec);
+			if (squarebox !== null && (neweast != sboxeast || newnorth != sboxnorth || newprec != sboxwidth)) {
 				pickuplayer.removeFeatures( [ squarebox ] );
 				squarebox.destroy();
 				squarebox = null;
@@ -308,13 +323,14 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 			if (squarebox === null && pickuplayer !== null) {
 				sboxeast = neweast;
 				sboxnorth = newnorth;
-				grid.setGridCoordinates(sboxeast*10   , sboxnorth*10   );
+				sboxwidth = newprec;
+				grid.setGridCoordinates( sboxeast   *newprec,  sboxnorth   *newprec);
 				var ll1 = grid.getWGS84(true);
-				grid.setGridCoordinates(sboxeast*10+10, sboxnorth*10   );
+				grid.setGridCoordinates((sboxeast+1)*newprec,  sboxnorth   *newprec);
 				var ll2 = grid.getWGS84(true);
-				grid.setGridCoordinates(sboxeast*10+10, sboxnorth*10+10);
+				grid.setGridCoordinates((sboxeast+1)*newprec, (sboxnorth+1)*newprec);
 				var ll3 = grid.getWGS84(true);
-				grid.setGridCoordinates(sboxeast*10   , sboxnorth*10+10);
+				grid.setGridCoordinates( sboxeast   *newprec, (sboxnorth+1)*newprec);
 				var ll4 = grid.getWGS84(true);
 				var p1 = new OpenLayers.Geometry.Point(ll1.longitude, ll1.latitude);
 				var p2 = new OpenLayers.Geometry.Point(ll2.longitude, ll2.latitude);
