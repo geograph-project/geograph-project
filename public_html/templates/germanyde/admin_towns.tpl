@@ -61,7 +61,7 @@ works as expected on your browser before doing real changes!</b>
 
 <form method="post" action="javascript:void()" name="theForm" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0; border-top:none">
 <label for="grid_reference"><b style="color:#0018F8">New Grid Reference</b> </label><br/>
-<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,true)" onpaste="updateMapMarker(this,false,true)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks new position" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks new position" width="20" height="34" align="middle"/>{/if}
+<input type="text" id="grid_reference" name="grid_reference" size="16" value="{$gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,true)" onpaste="updateMapMarker(this,false,true)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks new position" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks new position" width="20" height="34" align="middle"/>{/if}
 <br/>
 <span style="font-size:0.6em">
 | <a href="javascript:void(mapMarkerToCenter(document.theForm.grid_reference));void(updateMapMarker(document.theForm.grid_reference,false,true));">Marker to Center</a>
@@ -71,7 +71,7 @@ works as expected on your browser before doing real changes!</b>
 
 <p>
 <label for="photographer_gridref"><b style="color:#002E73">Old Grid Reference</b></label><br/>
-<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$gridref|escape:'html'}" readonly="readonly"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks old position" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks old position" width="20" height="34" align="middle"/>{/if}
+<input type="text" id="photographer_gridref" name="photographer_gridref" size="16" value="{$gridref|escape:'html'}" readonly="readonly"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks old position" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks old position" width="20" height="34" align="middle"/>{/if}
 
 	{literal}
 	<script type="text/javascript">
