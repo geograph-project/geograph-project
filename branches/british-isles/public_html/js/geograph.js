@@ -357,6 +357,10 @@ function markImage(image) {
 	} else {
 		ele.textContent = newtext;
 	}
+	
+	var i=new Image();
+	id = encodeURIComponent(image);
+	i.src= "/stuff/record_mark.php?id="+id;
 }
 
 function markAllImages(str) {
