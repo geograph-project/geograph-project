@@ -16,6 +16,7 @@
 		var issubmit = 1;
 		var iscmap = 0;
 		var ri = -1;
+		var nolineslayer = true;
 		
 		//the google map object
 		var map;
