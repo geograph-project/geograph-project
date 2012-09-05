@@ -172,6 +172,9 @@ $CONF['template']='basic';
 //enable forums? (set to false to hide the forum on this domain)
 $CONF['forums']=true;
 
+//filename suffix (currently used for sitemaps), e.g. '' for main page, '-en' for English page
+$CONF['sitesuffix'] = '';
+
 ###################################
 # smarty setup
 

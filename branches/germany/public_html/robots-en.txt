@@ -11,6 +11,9 @@ Disallow: /
 #Does not respect Crawl-delay, although mentioned on their info page
 #Crawl-delay: 50
 
+User-agent: netEstate NE Crawler
+Disallow: /
+
 User-agent: GSLFbot
 Disallow: /
 
@@ -18,6 +21,14 @@ User-agent: Fasterfox
 Disallow: /
 
 User-Agent: seokicks
+Disallow: /
+#Does not respect Crawl-delay
+
+User-agent: sistrix
+Disallow: /
+#Does not respect Crawl-delay
+
+User-agent: WBSearchBot
 Disallow: /
 #Does not respect Crawl-delay
 
@@ -257,4 +268,4 @@ Disallow: /article/history.php
 Disallow: /syndicator.php?
 Disallow: /stuff/kmltest
 
-#Sitemap: http://geo-en.hlipp.de/sitemap.xml
+Sitemap: http://geo-en.hlipp.de/sitemap-en.xml

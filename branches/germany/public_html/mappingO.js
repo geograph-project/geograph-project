@@ -290,9 +290,12 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 		} else if (map.zoom >= 12) {
 			var newdigits = 3;
 			var newprec = 100;
-		} else {
+		} else if (map.zoom >= 9) {
 			var newdigits = 2;
 			var newprec = 1000;
+		} else {
+			var newdigits = 2;
+			var newprec = 0;
 		}
 
 		//get a grid reference with the given precision
@@ -312,7 +315,7 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 			document.theForm.grid_reference.value = gridref;
 		}
 
-		if (newdigits > 2) {
+		if (newprec) {
 			var neweast = Math.floor(grid.eastings/newprec);
 			var newnorth = Math.floor(grid.northings/newprec);
 			if (squarebox !== null && (neweast != sboxeast || newnorth != sboxnorth || newprec != sboxwidth)) {
@@ -590,8 +593,9 @@ function updateViewDirection() {
 		sinsq = slat*slat + Math.cos(lat1)*Math.cos(lat2)*slon*slon;
 		arc = 2 * Math.atan2(Math.sqrt(sinsq), Math.sqrt(1-sinsq));
 		distance = R * arc;
+		mindist = map.zoom >= 19 ? 3 : 14;
 	
-		if (distance > 14) {
+		if (distance > mindist) {
 			//realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
 			y = Math.sin(dlon)*Math.cos(lat1);
 			x = Math.cos(lat2)*Math.sin(lat1) - Math.sin(lat2)*Math.cos(lat1)*Math.cos(dlon);
