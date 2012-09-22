@@ -1,0 +1,8 @@
+UPDATE `loc_towns` SET `e`=447380,`n`=5888460,`point_en`=GeomFromText('POINT(447380 5888460)'),
+`x`=247380,`y`=688460,`point_xy`=GeomFromText('POINT(247380 688460)') WHERE `name`='Oldenburg' limit 1;
+
+#replace into loc_towns(name, e, n, s, reference_index, quad, point_en, x, y, point_xy) values
+#('Oldenburg',              447380, 5888460, 3, 3, 0, GeomFromText('POINT(447380 5888460)'), 247380, 688460, GeomFromText('POINT(247380 688460)'));
+
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en, x, y, point_xy) values
+('Verden (Aller)',         515380, 5863590, 3, 3, 0, GeomFromText('POINT(515380 5863590)'), 315380, 663590, GeomFromText('POINT(315380 663590)'));

@@ -1,0 +1,10 @@
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en) values
+('Ludwigsburg',            514040, 5416070, 3, 3, 0, GeomFromText('POINT(514040 5416070)')),
+('Heilbronn',              515950, 5443300, 3, 3, 0, GeomFromText('POINT(515950 5443300)')),
+('Böblingen',             500890, 5392440, 3, 3, 0, GeomFromText('POINT(500890 5392440)')),
+('Esslingen',              522530, 5398890, 3, 3, 0, GeomFromText('POINT(522530 5398890)')),
+('Reutlingen',             515620, 5370990, 3, 3, 0, GeomFromText('POINT(515620 5370990)')),
+('Ulm',                    573370, 5361070, 3, 3, 0, GeomFromText('POINT(573370 5361070)')),
+('Pforzheim',              478160, 5415360, 3, 3, 0, GeomFromText('POINT(478160 5415360)')),
+('Calw',                   480760, 5395760, 3, 3, 0, GeomFromText('POINT(480760 5395760)')),
+('Kempten',                598780, 5286730, 3, 3, 0, GeomFromText('POINT(598780 5286730)'));

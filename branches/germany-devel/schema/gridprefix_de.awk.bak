@@ -1,0 +1,8 @@
+#!/usr/bin/awk -f
+BEGIN {
+	FS="\t";
+}
+NF!=4 {next}
+{
+	printf "(%-10s %d, %4d, %4d, GeomFromText('POINT(%4d %4d)'), GeomFromText('POLYGON((%4d %4d, %4d %4d, %4d %4d, %4d %4d, %4d %4d))')),\n","'" $1 "',", $2, $3, $4, $3, $4, $3, $4, $3, $4+100, $3+100, $4+100, $3+100, $4, $3, $4;
+}

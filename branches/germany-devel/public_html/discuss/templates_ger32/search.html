@@ -1,0 +1,90 @@
+<div align=center>
+
+<table class=forums>
+<tr>
+<td width="100%" class=caption3><span class=txtNr><b><a href="{$main_url}/{$indexphp}">{$sitename}</a></b> / <b>{$l_searchSite}</b> (See Also: <A href="/discuss/search.php">Grid Square Discussion Search</A> and <A href="/search.php">Image Search</A>)</span></td>
+</tr>
+</table>
+
+<table class=tbTransparent><tr><td class=tbTransparent><span class=warning>{$warning}</span></td></tr></table>
+
+<br>
+<form action="{$main_url}/{$indexphp}" method=post class=formStyle>
+
+<table class=forums>
+<tr>
+<td class=caption4 valign=top align=right>
+<input type=hidden name=action value=search>
+{$l_search[0]}
+</td>
+<td width="100%" class=caption5>
+&nbsp;<input type=text size=38 maxlength=100 name=searchFor value="{$searchFor}" class=textForm>&nbsp;
+&nbsp;<input type=submit value="{$l_search[3]}" class=inputButton>&nbsp;
+&nbsp;{$l_chooseForum}&nbsp;&nbsp;<select name=searchForum size=1 class=selectTxt>
+<option {$SFchk} value=0>...</option>
+{$listForums}
+</select>&nbsp;
+</td>
+</tr>
+<tr>
+<td class=caption4 valign=top><img src="{$static_url}/img/!pix.gif" width=150 height=1 alt=""></td>
+<td width="100%" class=caption5>
+&nbsp;&nbsp;&nbsp;<span class=txtSm><b>&raquo; </b>{$l_search[11]}</span><input type=checkbox {$eMatch} name=eMatch value=on>
+&nbsp;&nbsp;<span class=txtSm><b>&raquo; </b>{$l_days_within} <input type=text size=4 maxlength=4 name=days value="{$days}" class=textForm> {$l_days}</span>
+</td></tr>
+
+<tr>
+<td class=caption4 align=right>
+{$l_search[1]}
+</td>
+<td class=caption5>
+&nbsp;<select name=searchWhere size=1 class=selectTxt>
+<option {$SWchk[0]} value=0>{$l_search[4]}</option>
+<option {$SWchk[1]} value=1>{$l_search[5]}</option>
+<option {$SWchk[2]} value=2>{$l_search[6]}</option>
+</select>
+</td>
+</tr>
+<tr>
+<td class=caption4 align=right>
+<b>{$l_search[2]} </b>
+</td>
+<td class=caption5>
+&nbsp;<select name=searchHow size=1 class=selectTxt>
+<option {$SHchk[0]} value=0>{$l_search[7]}</option>
+<option {$SHchk[1]} value=1>{$l_search[8]}</option>
+<option {$SHchk[2]} value=2>{$l_search[9]}</option>
+</select>
+</td>
+</tr>
+</table>
+</form>
+
+<br>
+
+<table class=tbTransparent>
+<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
+</table>
+
+<table class=tbTransparent>
+<tr>
+<td width="2%">&nbsp;</td>
+<td width="98%">
+<div>
+
+{$searchResults}
+
+</div>
+</td>
+</tr>
+</table>
+
+<table class=tbTransparent>
+<tr><td class=tbTransparent><span class=txtSm><b>{$pageNav}</b></span></td></tr>
+</table>
+
+</div>
+
+<!--
+
+-->
