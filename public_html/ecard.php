@@ -75,7 +75,11 @@ if (isset($_REQUEST['image']))
 		//clear the image
 		$image=new GridImage;
 	} else {
-		$msg="Hi,\r\n\r\nI recently saw this image, and thought you might like to see it too.\r\n\r\nRegards,\r\n\r\n";
+		if ($CONF['lang'] == 'de') {
+			$msg="Hallo,\r\n\r\nich habe dieses Bild entdeckt und dachte, es könnte Dir gefallen.\r\n\r\nViele Grüße,\r\n\r\n";
+		} else {
+			$msg="Hi,\r\n\r\nI recently saw this image, and thought you might like to see it too.\r\n\r\nRegards,\r\n\r\n";
+		}
 
 		$smarty->assign_by_ref('msg', $msg);
 	}
@@ -92,33 +96,52 @@ if (!$throttle && isset($_POST['msg']))
 	if (!isValidEmailAddress($from_email))
 	{
 		$ok=false;
-		$errors['from_email']='Please specify a valid email address';
+		if ($CONF['lang'] == 'de')
+			$errors['from_email']='Bitte gültige E-Mail-Adresse eingeben!';
+		else
+			$errors['from_email']='Please specify a valid email address';
 	}
 	if (!isValidRealName($from_name))
 	{
 		$ok=false;
-		$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		if ($CONF['lang'] == 'de')
+			$errors['from_name']='Der Name enthält ungültige Zeichen!';
+		else
+			$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 	}
 	if (!isValidEmailAddress($to_email))
 	{
 		$ok=false;
-		$errors['to_email']='Please specify a valid email address';
+		if ($CONF['lang'] == 'de')
+			$errors['to_email']='Bitte gültige E-Mail-Adresse eingeben!';
+		else
+			$errors['to_email']='Please specify a valid email address';
 	}
 	if (!isValidRealName($to_name))
 	{
 		$ok=false;
-		$errors['to_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		if ($CONF['lang'] == 'de')
+			$errors['to_name']='Der Name enthält ungültige Zeichen!';
+		else
+			$errors['to_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 	}
 	if (strlen($msg)==0)
 	{
 		$ok=false;
-		$errors['msg']="Please enter a message to send";
+		if ($CONF['lang'] == 'de')
+			$errors['msg']="Bitte Nachricht eingeben!";
+		else
+			$errors['msg']="Please enter a message to send";
 	}
 	$smarty->assign_by_ref('errors', $errors);
 
 	$smarty->assign_by_ref('msg', html_entity_decode($msg)); //will be re-htmlentities'ed when output
+	$smarty->assign_by_ref('charset', $CONF['mail_charset']);
+	$smarty->assign_by_ref('contactmail', $CONF['abuse_email']);
 
-	
+	$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+	$enc_to_name = mb_encode_mimeheader($to_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+
 	//still ok?
 	if ($ok && !isset($_POST['edit']))  
 	{
@@ -128,24 +151,39 @@ if (!$throttle && isset($_POST['msg']))
 		$smarty->assign_by_ref('htmlmsg', nl2br($msg));
 		
 		$body=$smarty->fetch('email_ecard.tpl');
-		$subject="[{$_SERVER['HTTP_HOST']}] $from_name is sending you an e-Card";
+		if ($CONF['lang'] == 'de') {
+			$subject="$from_name schickt eine elektronische Postkarte";
+		} else {
+			$subject="$from_name is sending you an e-Card";
+		}
+		$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 		
 		if (isset($_POST['preview'])) {
 			preg_match_all('/(<!DOCTYPE.*<\/HTML>)/s',$body,$matches);
 	
-			print "<title>eCard Preview</title>";
+			if ($CONF['lang'] == 'de')
+				print "<title>Postkarte: Vorschau</title>";
+			else
+				print "<title>eCard Preview</title>";
 			print "<form method=\"post\">";
 			foreach ($_POST as $name => $value) {
 				if ($name != 'preview') {
 					print "<input type=\"hidden\" name=\"$name\" value=\"".htmlentities($value)."\">";
 				}
 			}
-			print "<br/><p align=\"center\"><font face=\"Georgia\">Below is a preview the card as will be sent to $to_email </font>";
-			print "<input type=\"submit\" name=\"edit\" value=\"Edit\">";
-			print "<input type=\"submit\" name=\"send\" value=\"Send\"></p>";
-			print "</FORM>";
-			
-			print "<h3 align=center><font face=\"Georgia\">Subject: $subject</font></h3>";
+			if ($CONF['lang'] == 'de') {
+				print "<br/><p align=\"center\"><font face=\"Georgia\">Unten ist die Vorschau der Karte an $to_email zu sehen</font>";
+				print "<input type=\"submit\" name=\"edit\" value=\"Bearbeiten\">";
+				print "<input type=\"submit\" name=\"send\" value=\"Abschicken\"></p>";
+				print "</FORM>";
+				print "<h3 align=center><font face=\"Georgia\">Betreff: $subject</font></h3>";
+			} else {
+				print "<br/><p align=\"center\"><font face=\"Georgia\">Below is a preview the card as will be sent to $to_email </font>";
+				print "<input type=\"submit\" name=\"edit\" value=\"Edit\">";
+				print "<input type=\"submit\" name=\"send\" value=\"Send\"></p>";
+				print "</FORM>";
+				print "<h3 align=center><font face=\"Georgia\">Subject: $subject</font></h3>";
+			}
 			$html = preg_replace("/=[\n\r]+/s","\n",$matches[1][0]);
 			$html = preg_replace("/=(\w{2})/e",'chr(hexdec("$1"))',$html);
 			print $html;
@@ -156,21 +194,23 @@ if (!$throttle && isset($_POST['msg']))
 			$ip=getRemoteIP();
 			
 			$headers = array();
-			$headers[] = "From: $from_name <{$USER->email}>";
+			$headers[] = "From: $enc_from_name <{$USER->email}>";
 			if ($from_email != $USER->email) 
-				$headers[] = "Reply-To: $from_name <$from_email>";
+				$headers[] = "Reply-To: $enc_from_name <$from_email>";
 			$headers[] = "X-GeographUserId:{$USER->user_id}";
 			$headers[] = "X-IP:$ip";
 
 			$headers[] = "Content-Type: multipart/alternative;\n	boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
 			
-			$hostname=trim(`hostname`);
+			$hostname=trim(`hostname --fqdn`);
 			$received="Received: from [{$ip}]".
-				" by {$hostname}.geograph.org.uk ".
+				" by {$hostname} ".
 				"with HTTP;".
 				strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
-			
-			@mail("$to_name <$to_email>", $subject, $body, $received.implode("\n",$headers));
+
+			$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+
+			@mail("$enc_to_name <$to_email>", $encsubject, $body, $received.implode("\n",$headers), $envfrom);
 
 			$smarty->assign('sent', 1);
 		}

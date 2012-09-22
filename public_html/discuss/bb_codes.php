@@ -22,6 +22,12 @@ $replacement[]='[[[\\2]]]';
 $pattern[]="/\[img(left|right)?\]http:\/\/{$_SERVER['HTTP_HOST']}\/photos\/\w+\/\w+\/(\d+)_([\w_]+)\.jpg\[\/img\]/i";
 $replacement[]='[[[\\2]]]';
 
+$pattern[]="/\[img(left|right)?\]http:\/\/www.geograph.org.uk\/photo\/(\d+)\[\/img\]/i";
+$replacement[]='[[[bi:\\2]]]';
+
+$pattern[]="/\[img(left|right)?\]http:\/\/www.geograph.org.uk\/photos\/\w+\/\w+\/(\d+)_([\w_]+)\.jpg\[\/img\]/i";
+$replacement[]='[[[bi:\\2]]]';
+
 
 $pattern[]="/\[img(left|right)?\](http:\/\/([^<> \n]+?)\.(gif|jpg|jpeg|png))\[\/img\]/i";
 $replacement[]='<img src="\\2" border="0" align="\\1" alt="">';

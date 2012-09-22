@@ -167,12 +167,17 @@ while (1) {
 			}
 
 			$map=new GeographMap;
-			
+			## FIXME introduce $map->from_row($row);
 			foreach($recordSet->fields as $name=>$value)
 			{
 				if (!is_numeric($name))
 					$map->$name=$value;
 			}
+			$map->mercator = !empty($map->mercator);
+			if ($map->mercator) {
+				$map->setScale($map->level);
+			}
+			$map->enableCaching(true, false); # FIXME better solution: build layers=2 at the beginning?
 
 			$ok = $map->_renderMap();
 				

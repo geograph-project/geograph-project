@@ -97,7 +97,7 @@ if (!empty($_POST))
 	$image->fullpath = "/submit.php?preview=".strip_tags(trim(stripslashes($_POST['upload_id'])));
 
 
-if (!empty($_POST['spelling'])) {
+if (!empty($_POST['spelling'])) { //FIXME smarty
 	
 	require_once("3rdparty/spellchecker.class.php");
 	?>
@@ -127,7 +127,7 @@ if (!empty($_POST['spelling'])) {
 	<?php
 	$query = "{$image->title} {$image->comment} {$image->imageclass}"; // FIXME title2, comment2
 
-	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query )); 
+	$xml = new SimpleXMLElement(SpellChecker::GetSuggestions( $query, 'de', 'de' )); // FIXME language => conf var
 	if (!$xml) {
 		die("unable to contact spelling service");
 	}
@@ -183,7 +183,7 @@ if (!empty($_POST['spelling'])) {
 		print "</blockquote><hr/>";
 	}
 	print "</form>";
-	print "<i>Powered by the <b>Google Toolbar</b> spell checker - language is set to English</i>";
+	print "<i>Powered by the <b>Google Toolbar</b> spell checker - language is set to German</i>"; // FIXME language => conf var
 	exit;
 }
 

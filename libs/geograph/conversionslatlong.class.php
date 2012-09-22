@@ -34,13 +34,285 @@
 * @author Barry Hunter <geo@barryhunter.co.uk>
 * @version $Revision$
 */
-	
+
+
+function pow2($x) {
+	return $x*$x;
+}
+
+function pow3($x) {
+	return $x*$x*$x;
+}
+
 class ConversionsLatLong extends Conversions
 {		
 
 # great circle distance in m
 function distance ($lat1, $lon1, $lat2, $lon2) {
 	return (6371000*3.1415926*sqrt(($lat2-$lat1)*($lat2-$lat1) + cos($lat2/57.29578)*cos($lat1/57.29578)*($lon2-$lon1)*($lon2-$lon1))/180);
+}
+
+
+/*******************************
+* Spherical Mercator Functions
+********************************/
+
+# google map tiles (R==6378137):
+# zoom level    tile width
+# 0             2*pi*R ~ 40000km = circumference of the earth (i.e. one tile for whole earth; |lat| < ~85 deg)
+# 1             2*pi*R / 2 (i.e. 2*2 tiles for earth)
+# ...
+# n             2*pi*R * 2^-n
+
+# position of tiles: 0,0: "upper left corner", e_merc~-20000,n_merc~+20000 (i.e. wrong direction for y)
+# => e_merc = 2 pi R (  e_gm * 2^-n - 1/2)
+#    n_merc = 2 pi R ( -n_gm * 2^-n + 1/2)
+
+# new "mapcache coordinates" for mercator maps:
+# coordinate lines = borders of "level 19 tiles"
+# => with tile width = 2 pi R / 2 ^ level, we have en_mapcache = en_merc  * 2^19 / (2 pi R) (i.e. our origin: lat=lon=0)
+# currently, we have zoom levels 4..13 (14 for OSM+G) with tile width (mapcache) 32768...64(32)
+
+# in map cache coordinates, a google map tile (upper left corner e_gm, n_gm) covers
+# an e_mc range of  2^18 [  2^(-n+1) [ e_gm   ] - 1 ] ... 2^18 [  2^(-n+1) [ e_gm   ] - 1 ] + 2^(19-n)   <-- short: e_mc1...e_mc1+D_mc
+# an n_mc range of  2^18 [ -2^(-n+1) [ n_gm+1 ] + 1 ] ... 2^18 [ -2^(-n+1) [ n_gm+1 ] + 1 ] + 2^(19-n)   <-- short: n_mc1...n_mc1+D_mc
+# => if square with e_mc_min=floor(e_merc_min*2^19/(2 pi R) - eps), e_mc_max=ceil(e_merc_max*2^19/(2 pi R) + eps), ... changes,
+# render tiles with e_mc_min<=e_mc1+D_mc and e_mc_max>=e_mc1 and ...
+# which is equivalent to e_mc_min-D_mc <= e_mc1 <= e_mc_max and n_mc_min-D_mc <= n_mc1 <= n_mc_max
+
+function sm_to_wgs84($e,$n) {
+	$r = 6378137.;
+	$lng = rad2deg($e/$r);
+	#$lat = rad2deg(2*atan(exp(deg2rad($n/$r)))) - 90;
+	$lat = rad2deg(2*atan(exp($n/$r))) - 90;
+	return array($lat,$lng);
+}
+
+function wgs84_to_sm($lat,$lng) {
+	$r = 6378137.;
+	$e = $r * deg2rad($lng);
+	#$n = $r * rad2deg(log(tan(deg2rad($lat+90)/2)));
+	$n = $r * (log(tan(deg2rad($lat+90)/2)));
+	return array($e, $n);
+}
+
+function lev19_to_wgs84($e,$n) {
+	#$r = 6378137.;
+	#$emerc = $e / 262144. *  M_PI *$r;
+	#$nmerc = $n / 262144. *  M_PI *$r;
+	#return sm_to_wgs84($emerc,$nmerc);
+	$fac = M_PI / 262144.;
+	$lng = rad2deg($e*$fac);
+	$lat = rad2deg(2*atan(exp($n*$fac))) - 90;
+	return array($lat,$lng);
+}
+
+function wgs84_to_lev19($lat,$lng) {
+	#$r = 6378137.;
+	#$emerc = $r * deg2rad($lng);
+	#$nmerc = $r * (log(tan(deg2rad($lat+90)/2)));
+	#$e = $emerc * 262144. /  M_PI /$r;
+	#$n = $nmerc * 262144. /  M_PI /$r;
+	$fac = 262144. / M_PI;
+	$e = deg2rad($lng) * $fac;
+	$n = log(tan(deg2rad($lat+90)/2)) * $fac;
+	return array($e, $n);
+}
+
+/**************************
+* UTM Functions
+***************************/
+
+function utm_to_wgs84($east,$north,$zone=32) {
+	$r1=6378137.;
+	$r2=6356752.31425;
+
+	$re=pow2($r1)/$r2;
+	$e1=1-pow2($r2/$r1);
+	$e2=1-$r2/$r1;
+	$e3=pow2($r1/$r2)-1;
+
+	$m0=1 + 3./4*$e1 + 45./64*pow2($e1) + 175./256*pow3($e1);
+	#$m1=    3./4*$e1 + 15./16*pow2($e1) + 525./512*pow3($e1);
+	#$m2=               15./64*pow2($e1) + 105./256*pow3($e1);
+	#$m3=                                   35./512*pow3($e1);
+
+	$b0=$r1*(1-$e1)*$m0;
+	#$b1=$r1*(1-$e1)*$m1/2;
+	#$b2=$r1*(1-$e1)*$m2/4;
+	#$b3=$r1*(1-$e1)*$m3/6;
+
+	$at=$e2/(2-$e2);
+	$a1=3./2*($at-9./16*pow3($at));
+	$a2=21./16*pow2($at);
+	$a3=151./96*pow3($at);
+
+	#our origin: 200, 5200
+	#$east=$east+200000;
+	#$north=$north+5200000;
+
+	#trigger_error("E/N: " . $east . "/" . $north, E_USER_NOTICE);
+
+	$y=($east-500000)/0.9996;
+	$x=$north/0.9996;
+
+	$phi=$x/$b0;
+	$bf=$phi+$a1*sin(2*$phi)+$a2*sin(4*$phi)+$a3*sin(6*$phi);
+	$lmbda=$y/$re;
+	$vf=sqrt(1+$e3*pow2(cos($bf)));
+	$del=atan($vf/(cos($bf))*sinh($lmbda));
+	$b=atan(tan($bf)*cos($del*$vf));
+
+	$lng=$zone*6-183+rad2deg($del);
+	$lat=rad2deg($b);
+
+	#trigger_error("->L/L: " . $lat . "/" . $lng, E_USER_NOTICE);
+
+	return array($lat,$lng);
+}
+
+function wgs84_to_utm($lat,$lng,$zone=32) {
+	$r1=6378137.;
+	$r2=6356752.31425;
+
+	$re=pow2($r1)/$r2;
+	$e1=1-pow2($r2/$r1);
+	#$e2=1-$r2/$r1;
+	$e3=pow2($r1/$r2)-1;
+
+	$m0=1 + 3./4*$e1 + 45./64*pow2($e1) + 175./256*pow3($e1);
+	$m1=    3./4*$e1 + 15./16*pow2($e1) + 525./512*pow3($e1);
+	$m2=               15./64*pow2($e1) + 105./256*pow3($e1);
+	$m3=                                   35./512*pow3($e1);
+
+	$b0=$r1*(1-$e1)*$m0;
+	$b1=$r1*(1-$e1)*$m1/2;
+	$b2=$r1*(1-$e1)*$m2/4;
+	$b3=$r1*(1-$e1)*$m3/6;
+
+	#$at=$e2/(2-$e2);
+	#$a1=3./2*($at-9./16*pow3($at));
+	#$a2=21./16*pow2($at);
+	#$a3=151./96*pow3($at);
+
+	#$zone2=floor($lng/6.)+31; #FIXME: floor/truncate? FIXME use calculated zone?
+
+	$del=deg2rad($lng-$zone*6+183);
+	$b=deg2rad($lat);
+	$v=sqrt(1+$e3*pow2(cos($b)));
+	$bf=atan(tan($b)/(cos($del*$v)));
+	$vf=sqrt(1+$e3*pow2(cos($bf)));
+	
+	$y=$re*asinh(tan($del)/$vf*cos($bf));
+	$x=$b0*$bf-$b1*sin(2*$bf)+$b2*sin(4*$bf)-$b3*sin(6*$bf);
+
+	$east=0.9996*$y+500000;
+	$north=0.9996*$x; # FIXME southern hem: +10000000
+
+	#our origin: 200, 5200
+	#$east=$east-200000;
+	#$north=$north-5200000;
+
+	return array($east,$north);
+}
+
+function wgs84_to_gk($lat,$long,$zone=3) {
+	$height = 0;
+
+	$x1 = $this->Lat_Long_H_to_X($lat,$long,$height,6378137.000,6356752.315);
+	$y1 = $this->Lat_Long_H_to_Y($lat,$long,$height,6378137.000,6356752.315);
+	$z1 = $this->Lat_H_to_Z     ($lat,      $height,6378137.000,6356752.315);
+
+	#cx (Meter) 	cy (Meter) 	cz (Meter) 	m (ppm) 	rx (Bogensekunde) 	ry (Bogensekunde) 	rz (Bogensekunde)
+	# -598,1 	-73,7 	-418,2 	-6,7 	0,202 	0,045 	-2,455
+	#function Helmert_X ($X,$Y,$Z,$DX,       $Y_Rot,$Z_Rot,$s) {
+	#function Helmert_Y ($X,$Y,$Z,$DY,$X_Rot,       $Z_Rot,$s) {
+	#function Helmert_Z ($X,$Y,$Z,$DZ,$X_Rot,$Y_Rot,       $s) {
+	#$x2 = $this->Helmert_X($x1,$y1,$z1,-598.1 ,        -0.045,+2.455,-6.7);
+	#$y2 = $this->Helmert_Y($x1,$y1,$z1, -73.7 , -0.202,       +2.455,-6.7);
+	#$z2 = $this->Helmert_Z($x1,$y1,$z1,-418.25, -0.202,-0.045,       -6.7);
+	$x2 = $this->Helmert_X($x1,$y1,$z1,-582.0,        -0.35 ,+3.08 ,-8.3);
+	$y2 = $this->Helmert_Y($x1,$y1,$z1,-105.0, -1.04 ,       +3.08 ,-8.3);
+	$z2 = $this->Helmert_Z($x1,$y1,$z1,-414.0, -1.04 ,-0.35 ,       -8.3);
+
+	$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6377397.155,6356078.965);
+	$long = $this->XYZ_to_Long($x2,$y2);
+
+	$e = $this->Lat_Long_to_East ($lat,$long,6377397.155,6356078.965, 500000 + $zone*1000000,    1.0, 0, $zone*3);
+	$n = $this->Lat_Long_to_North($lat,$long,6377397.155,6356078.965, 500000 + $zone*1000000, 0, 1.0, 0, $zone*3);
+#function Lat_Long_to_East  ($PHI, $LAM, $a, $b, $e0,      $f0, $PHI0, $LAM0) {
+#function Lat_Long_to_North ($PHI, $LAM, $a, $b, $e0, $n0, $f0, $PHI0, $LAM0) {
+#    Latitude (PHI) and Longitude (LAM) in decimal degrees; _
+#    ellipsoid axis dimensions (a & b) in meters; _
+#    eastings of false origin (e0) in meters; _
+#    central meridian scale factor (f0); _
+#    latitude (PHI0) and longitude (LAM0) of false origin in decimal degrees.
+# ellipsoid axis dimensions (a & b) in meters; _
+# eastings (e0) and northings (n0) of false origin in meters; _
+# central meridian scale factor (f0); _
+# latitude (PHI0) and longitude (LAM0) of false origin in decimal degrees.
+
+	return array($e,$n);
+}
+#    NRW: http://www.lverma.nrw.de/produkte/raumbezug/koordinatentransformation/Koordinatentransformation.htm#
+#    kartesische Koordinaten  	 dX = -566 m  	 dY = -116 m  	 dZ = -390 m
+#    geographische Koordinaten 	 dQ = -12,6 ppm 	  	 
+#    Erdellipsoidparameter 	 eX = -1,11 " 	 eY = -0,24 " 	eZ = +3,76 "
+#
+#	dX m	dYm	dZ m	dQ ppm	epsX "	epsY "	epsZ "	s Punkt cm
+#BRD	+ 582.	+ 105.	+ 414.	+ 8.3	+ 1.04	+ 0.35	- 3.08	± 113
+#NRW	+ 566.1	+ 116.3	+ 390.1	+ 12.6	+ 1.11	+ 0.24	- 3.76	± 34
+
+#     Wikipedia http://de.wikipedia.org/wiki/Helmert-Transformation
+#BRD?	-598.1	-73.7	-418.2	-6.7	0.202	0.045	-2.455
+
+function gk_to_wgs84($e,$n) {
+	$zone = floor($e/1000000);
+	#$e %= 1000000;
+
+	$height = 0;
+
+#function E_N_to_Lat($East, $North, $a, $b, $e0, $n0, $f0, $PHI0, $LAM0) {
+#function E_N_to_Long($East, $North, $a, $b, $e0, $n0, $f0, $PHI0, $LAM0) {
+	$lat1  = $this->E_N_to_Lat ($e, $n, 6377397.155,6356078.965, 500000 + $zone*1000000, 0, 1.0, 0, $zone*3);
+	$long1 = $this->E_N_to_Long($e, $n, 6377397.155,6356078.965, 500000 + $zone*1000000, 0, 1.0, 0, $zone*3);
+
+	#$x1 = $this->Lat_Long_H_to_X($lat,$long,$height,6378137.000,6356752.315);
+	$x1 = $this->Lat_Long_H_to_X($lat1,$long1,$height,6377397.155,6356078.965);
+	$y1 = $this->Lat_Long_H_to_Y($lat1,$long1,$height,6377397.155,6356078.965);
+	$z1 = $this->Lat_H_to_Z     ($lat1,       $height,6377397.155,6356078.965);
+
+	#cx (Meter) 	cy (Meter) 	cz (Meter) 	m (ppm) 	rx (Bogensekunde) 	ry (Bogensekunde) 	rz (Bogensekunde)
+	# -598,1 	-73,7 	-418,2 	-6,7 	0,202 	0,045 	-2,455
+	#function Helmert_X ($X,$Y,$Z,$DX,       $Y_Rot,$Z_Rot,$s) {
+	#function Helmert_Y ($X,$Y,$Z,$DY,$X_Rot,       $Z_Rot,$s) {
+	#function Helmert_Z ($X,$Y,$Z,$DZ,$X_Rot,$Y_Rot,       $s) {
+	#$x2 = $this->Helmert_X($x1,$y1,$z1,-598.1 ,        -0.045,+2.455,-6.7);
+	#$y2 = $this->Helmert_Y($x1,$y1,$z1, -73.7 , -0.202,       +2.455,-6.7);
+	#$z2 = $this->Helmert_Z($x1,$y1,$z1,-418.25, -0.202,-0.045,       -6.7);
+	$x2 = $this->Helmert_X($x1,$y1,$z1,+582.0,        +0.35 ,-3.08 ,+8.3);
+	$y2 = $this->Helmert_Y($x1,$y1,$z1,+105.0, +1.04 ,       -3.08 ,+8.3);
+	$z2 = $this->Helmert_Z($x1,$y1,$z1,+414.0, +1.04 ,+0.35 ,       +8.3);
+
+	#$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6377397.155,6356078.965);
+	$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6378137.000,6356752.315);
+	$long = $this->XYZ_to_Long($x2,$y2);
+
+#	$e = $this->Lat_Long_to_East ($lat,$long,6377397.155,6356078.965, 500000 + $zone*1000000,    1.0, 0, $zone*3);
+#	$n = $this->Lat_Long_to_North($lat,$long,6377397.155,6356078.965, 500000 + $zone*1000000, 0, 1.0, 0, $zone*3);
+#function Lat_Long_to_East  ($PHI, $LAM, $a, $b, $e0,      $f0, $PHI0, $LAM0) {
+#function Lat_Long_to_North ($PHI, $LAM, $a, $b, $e0, $n0, $f0, $PHI0, $LAM0) {
+#    Latitude (PHI) and Longitude (LAM) in decimal degrees; _
+#    ellipsoid axis dimensions (a & b) in meters; _
+#    eastings of false origin (e0) in meters; _
+#    central meridian scale factor (f0); _
+#    latitude (PHI0) and longitude (LAM0) of false origin in decimal degrees.
+# ellipsoid axis dimensions (a & b) in meters; _
+# eastings (e0) and northings (n0) of false origin in meters; _
+# central meridian scale factor (f0); _
+# latitude (PHI0) and longitude (LAM0) of false origin in decimal degrees.
+
+	return array($lat,$long);
 }
 
 /**************************

@@ -558,6 +558,7 @@ CREATE TABLE `gridimage` (
   KEY `placename_id` (`placename_id`),
   KEY `moderation_status` (`moderation_status`),
   KEY `submitted` (`submitted`)
+  KEY `gridsquare_id_2` (`gridsquare_id`),
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -648,6 +649,7 @@ CREATE TABLE `gridimage_query` (
 DROP TABLE IF EXISTS `gridimage_recent`;
 CREATE TABLE `gridimage_recent` (
   `gridimage_id` int(11) NOT NULL DEFAULT '0',
+  `gridsquare_id` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
   `moderation_status` enum('rejected','pending','accepted','geograph') DEFAULT NULL,
   `title` varchar(128) DEFAULT NULL,
@@ -682,6 +684,7 @@ CREATE TABLE `gridimage_recent` (
 DROP TABLE IF EXISTS `gridimage_search`;
 CREATE TABLE `gridimage_search` (
   `gridimage_id` int(11) NOT NULL DEFAULT '0',
+  `gridsquare_id` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
   `moderation_status` enum('rejected','pending','accepted','geograph') DEFAULT NULL,
   `title` varchar(128) DEFAULT NULL,
@@ -717,6 +720,7 @@ CREATE TABLE `gridimage_search` (
   SPATIAL KEY `point_xy` (`point_xy`),
   SPATIAL KEY `point_ll` (`point_ll`),
   KEY `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`)
+  KEY `gridsquare_id` (`gridsquare_id`),
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -814,13 +818,70 @@ CREATE TABLE `gridsquare` (
   `grid_reference` varchar(7) NOT NULL DEFAULT '',
   `reference_index` tinyint(4) DEFAULT '1',
   `has_geographs` tinyint(4) NOT NULL DEFAULT '0',
+  `permit_photographs` tinyint(1) NOT NULL DEFAULT '1',
+  `permit_geographs` tinyint(1) NOT NULL DEFAULT '1',
   `point_xy` point NOT NULL DEFAULT '',
   `placename_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `mapservices` set('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32') NOT NULL DEFAULT '';
   PRIMARY KEY (`gridsquare_id`),
   UNIQUE KEY `grid_reference` (`grid_reference`),
   KEY `x` (`x`),
   KEY `y` (`y`),
   SPATIAL KEY `point_xy` (`point_xy`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `gridsquare`
+--
+
+DROP TABLE IF EXISTS `gridsquare_gmcache`;
+CREATE TABLE gridsquare_gmcache (
+	`gridsquare_id` int(11) NOT NULL,
+	`gxlow` int(11) NOT NULL,
+	`gylow` int(11) NOT NULL,
+	`gxhigh` int(11) NOT NULL,
+	`gyhigh` int(11) NOT NULL,
+	`area` double(9,6) NOT NULL,
+	`cliparea` double(9,6) NOT NULL,
+	`rotangle` double(8,6) NOT NULL,
+	`scale` double(8,6) NOT NULL,
+	`cgx` double(10,2) NOT NULL,
+	`cgy` double(10,2) NOT NULL,
+	`polycount` tinyint(1) NOT NULL,
+	`poly1gx` double(10,2),
+	`poly1gy` double(10,2),
+	`poly2gx` double(10,2),
+	`poly2gy` double(10,2),
+	`poly3gx` double(10,2),
+	`poly3gy` double(10,2),
+	`poly4gx` double(10,2),
+	`poly4gy` double(10,2),
+	`poly5gx` double(10,2),
+	`poly5gy` double(10,2),
+	`poly6gx` double(10,2),
+	`poly6gy` double(10,2),
+	`poly7gx` double(10,2),
+	`poly7gy` double(10,2),
+	`poly8gx` double(10,2),
+	`poly8gy` double(10,2),
+	PRIMARY KEY (`gridsquare_id`),
+	KEY `gxlow` (`gxlow`),
+	KEY `gxhigh` (`gxhigh`),
+	KEY `gylow` (`gylow`),
+	KEY `gyhigh` (`gyhigh`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `gridsquare_mappal`
+--
+
+DROP TABLE IF EXISTS `gridsquare_mappal`;
+CREATE TABLE `gridsquare_mappal` (
+	`gridsquare_id` int(11) NOT NULL,
+	`level` tinyint(2) NOT NULL,
+	`mappal` float(10,4) NOT NULL DEFAULT '0',
+	`norm` float(10,4) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`gridsquare_id`,`level`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -835,6 +896,21 @@ CREATE TABLE `gridsquare_moderation_lock` (
   `lock_type` enum('modding','cantmod') NOT NULL DEFAULT 'modding',
   PRIMARY KEY (`gridsquare_id`,`user_id`),
   KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `gridsquare_percentage`
+--
+
+DROP TABLE IF EXISTS `gridsquare_percentage`;
+CREATE TABLE `gridsquare_percentage` (
+  `gridsquare_id` int(11) NOT NULL,
+  `level` tinyint(2) NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `percent` tinyint(4) NOT NULL,
+  PRIMARY KEY (`gridsquare_id`, `level`,`community_id`),
+  KEY `gridsquare_id` (`gridsquare_id`),
+  KEY `subject` (`level`,`community_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -994,6 +1070,40 @@ CREATE TABLE `loc_dsg` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
+-- Table structure for table `loc_hier`
+--
+
+DROP TABLE IF EXISTS `loc_hier`;
+CREATE TABLE `loc_hier` (
+  `level` tinyint(1) unsigned NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `contains_cid_min` int(9) unsigned NOT NULL,
+  `contains_cid_max` int(9) unsigned NOT NULL,
+  `capital_cid` int(9) unsigned NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `mappal` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`level`,`community_id`),
+  KEY `contains` (`contains_cid_min`,`contains_cid_max`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Table structure for table `loc_hier_stat`
+--
+
+CREATE TABLE `loc_hier_stat` (
+  `level` tinyint(2) NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `squares_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `images_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `squares_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `tenk_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `geographs_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `tenk_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `images_thisweek` int(8) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`level`,`community_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
 -- Table structure for table `loc_placenames`
 --
 
@@ -1061,19 +1171,26 @@ DROP TABLE IF EXISTS `loc_towns`;
 CREATE TABLE `loc_towns` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL DEFAULT '',
+  `short_name` varchar(50) NOT NULL DEFAULT '',
   `e` mediumint(6) unsigned NOT NULL DEFAULT '0',
   `n` mediumint(7) unsigned NOT NULL DEFAULT '0',
   `x` int(11) NOT NULL DEFAULT '0',
   `y` int(11) NOT NULL DEFAULT '0',
+  `cx` int(11) NOT NULL DEFAULT '0',
+  `cy` int(11) NOT NULL DEFAULT '0',
   `s` enum('1','2','3','') NOT NULL DEFAULT '1',
   `reference_index` tinyint(4) NOT NULL DEFAULT '0',
   `quad` tinyint(4) NOT NULL DEFAULT '0',
   `point_en` point NOT NULL DEFAULT '',
   `point_xy` point NOT NULL DEFAULT '',
+  `point_cxy` point NOT NULL DEFAULT '',
+  `community_id` int(9) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `gis` (`e`,`n`,`reference_index`),
   SPATIAL KEY `point_en` (`point_en`),
-  SPATIAL KEY `point_xy` (`point_xy`)
+  SPATIAL KEY `point_xy` (`point_xy`),
+  KEY `cxy` (`cx`,`cy`),
+  SPATIAL KEY `point_cxy` (`point_cxy`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -1098,13 +1215,23 @@ DROP TABLE IF EXISTS `mapcache`;
 CREATE TABLE `mapcache` (
   `map_x` smallint(6) NOT NULL DEFAULT '0',
   `map_y` smallint(6) NOT NULL DEFAULT '0',
+  `max_x` smallint(6) NOT NULL DEFAULT '0',
+  `max_y` smallint(6) NOT NULL DEFAULT '0',
   `image_w` smallint(6) unsigned NOT NULL DEFAULT '0',
   `image_h` smallint(6) unsigned NOT NULL DEFAULT '0',
   `pixels_per_km` float NOT NULL DEFAULT '0',
   `type_or_user` smallint(6) NOT NULL DEFAULT '0',
+  `force_ri` smallint(6) NOT NULL DEFAULT '0',
+  `mercator` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `overlay` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `layers` tinyint(2) unsigned NOT NULL DEFAULT '0',
+  `level` smallint(3) NOT NULL DEFAULT '0',
+  `tile_x` mediumint(8) NOT NULL DEFAULT '0',
+  `tile_y` mediumint(8) NOT NULL DEFAULT '0',
   `age` smallint(5) unsigned NOT NULL DEFAULT '0',
   `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`)
+  PRIMARY KEY ( `tile_x` , `tile_y` , `image_w` , `image_h` , `level` , `type_or_user` , `force_ri`, `mercator`, `overlay`, `layers` ),
+  KEY `xy` (`map_x`, `map_y`,  `max_x`, `max_y`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -1223,6 +1350,7 @@ CREATE TABLE `queries` (
   `limit8` smallint(5) NOT NULL DEFAULT '0',
   `limit9` int(10) unsigned NOT NULL DEFAULT '0',
   `limit10` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `limit11` varchar(32) NOT NULL DEFAULT '',
   `x` smallint(5) unsigned NOT NULL DEFAULT '0',
   `y` smallint(5) unsigned NOT NULL DEFAULT '0',
   `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens') NOT NULL DEFAULT 'full',
@@ -1259,6 +1387,7 @@ CREATE TABLE `queries_archive` (
   `limit8` smallint(5) NOT NULL DEFAULT '0',
   `limit9` int(10) unsigned NOT NULL DEFAULT '0',
   `limit10` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `limit11` varchar(32) NOT NULL DEFAULT '',
   `x` smallint(5) unsigned NOT NULL DEFAULT '0',
   `y` smallint(5) unsigned NOT NULL DEFAULT '0',
   `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens') NOT NULL DEFAULT 'full',
@@ -1344,6 +1473,7 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `password` varchar(64) DEFAULT NULL,
+  `salt` varchar(8) NOT NULL default '',
   `realname` varchar(128) DEFAULT NULL,
   `credit_realname` varchar(128) NOT NULL,
   `email` varchar(128) DEFAULT NULL,

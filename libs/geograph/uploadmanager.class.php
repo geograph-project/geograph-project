@@ -567,6 +567,7 @@ class UploadManager
 				
 				//removed the unsharp as it makes some images worse - needs to be optional
 				// best fit found so far: -unsharp 0x1+0.8+0.1 -blur 0x.1
+				// FIXME: "\"%smogrify\" -auto-orient -resize ...
 				if ($CONF['exiftooldir'] !== '')
 					$cmd = sprintf ("\"%smogrify\" -resize %ldx%ld -quality 87 jpg:%s", $CONF['imagemagick_path'],$max_dimension, $max_dimension, $filename);
 				else
@@ -697,7 +698,7 @@ class UploadManager
 		
 		$viewpoint = new GridSquare;
 		if ($this->viewpoint_gridreference) {
-			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference,true);
+			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference, true, true, false, true);
 		}
 		
 		
@@ -740,17 +741,18 @@ class UploadManager
 		$sql=sprintf("insert into $table (".
 			"gridsquare_id, seq_no, user_id, ftf,".
 			"moderation_status,title,comment,title2,comment2,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
-			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname) values ".
+			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname,reference_index,viewpoint_refindex) values ".
 			"(%d,%d,%d,%d,".
 			"'pending',%s,%s,%s,%s,%d,%d,'%d',%s,%s,".
-			"now(),%d,%d,'%d',%d,%d,%s,%s)",
+			"now(),%d,%d,'%d',%d,%d,%s,%s,'%d','%d')",
 			$this->square->gridsquare_id, $seq_no,$USER->user_id, $ftf,
 			$this->db->Quote($this->title), $this->db->Quote($this->comment), 
 			$this->db->Quote($this->title2), $this->db->Quote($this->comment2), 
 			$this->square->nateastings,$this->square->natnorthings,$this->square->natgrlen,
 			$this->db->Quote($this->imageclass), $this->db->Quote($this->imagetaken),
 			$viewpoint->nateastings,$viewpoint->natnorthings,$viewpoint->natgrlen,$this->view_direction,
-			$this->use6fig,$this->db->Quote($this->user_status),$this->db->Quote($this->realname));
+			$this->use6fig,$this->db->Quote($this->user_status),$this->db->Quote($this->realname),
+			$this->square->reference_index,$viewpoint->reference_index);
 		
 		$this->db->Query($sql);
 		
@@ -771,11 +773,11 @@ class UploadManager
 		$image->user_id = $USER->user_id;
 		
 		if ($this->clearexif && $CONF['exiftooldir'] !== '') {
-			$cmd = sprintf ("\"%sexiftool\" -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
+			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
 			passthru ($cmd);
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			if (file_exists($orginalfile)) {
-				$cmd = sprintf ("\"%sexiftool\" -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
 				passthru ($cmd);
 			}
 		}
@@ -785,8 +787,10 @@ class UploadManager
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			
 			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > $CONF['img_max_size']) {
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($orginalfile);
+				list($destwidth, $destheight, $destdim, $changedim) = $this->_new_size($owidth, $oheight, $this->largestsize);
 				
-				$this->_downsizeFile($orginalfile,$this->largestsize);
+				$this->_downsizeFile($orginalfile,$destdim);
 				
 				$storedoriginal =$image->storeOriginal($orginalfile);
 			}
@@ -846,14 +850,26 @@ class UploadManager
 
 		$src=$this->_pendingJPEG($this->upload_id);	
 
+		if ($this->clearexif && $CONF['exiftooldir'] !== '') {
+			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
+			passthru ($cmd);
+			$orginalfile = $this->_originalJPEG($this->upload_id);
+			if (file_exists($orginalfile)) {
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
+				passthru ($cmd);
+			}
+		}
+
 		//store the resized version - just for the moderator to use as a preview
 		if ($ok = $image->storeImage($src,false,'_preview')) {
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
 			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > $CONF['img_max_size']) {
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($orginalfile);
+				list($destwidth, $destheight, $destdim, $changedim) = $this->_new_size($owidth, $oheight, $this->largestsize);
 
-				$this->_downsizeFile($orginalfile,$this->largestsize);
+				$this->_downsizeFile($orginalfile,$destdim);
 				
 				//store the new original file
 				$ok =$image->storeImage($orginalfile,false,'_pending');
@@ -882,6 +898,8 @@ class UploadManager
 	*/
 	function cleanUp()
 	{
+		#@unlink($this->_pendingJPEG($this->upload_id).'_original');
+		#@unlink($this->_originalJPEG($this->upload_id).'_original');
 		@unlink($this->_pendingJPEG($this->upload_id));
 		@unlink($this->_pendingEXIF($this->upload_id));
 		@unlink($this->_originalJPEG($this->upload_id));

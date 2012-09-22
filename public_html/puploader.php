@@ -191,8 +191,8 @@ if (isset($_GET['success'])) {
 
 		if (isset($_POST['photographer_gridref'])) {
 			$square2=new GridSquare;
-			$ok= $square2->setByFullGridRef($_POST['photographer_gridref']);
-			$rastermap->addViewpoint($square2->nateastings,$square2->natnorthings,$square2->natgrlen,$_POST['view_direction']);
+			$ok= $square2->setByFullGridRef($_POST['photographer_gridref'], false, false, false, true);
+			$rastermap->addViewpoint($square2->reference_index, $square2->nateastings,$square2->natnorthings,$square2->natgrlen,$_POST['view_direction']);
 		} elseif (isset($_POST['view_direction']) && strlen($_POST['view_direction']) && $_POST['view_direction'] != -1) {
 			$rastermap->addViewDirection($_POST['view_direction']);
 		}

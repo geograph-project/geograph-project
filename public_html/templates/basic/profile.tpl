@@ -1,3 +1,10 @@
+{if $credit_realname}
+	{assign var="page_title" value="Profile for `$credit_realname`/`$profile->realname`"}
+	{assign var="meta_description" value="Profile page for `$credit_realname`/`$profile->realname`, listing recent images, statistics and links to further information."}
+{else}
+	{assign var="page_title" value="Profile for `$profile->realname`"}
+	{assign var="meta_description" value="Profile page for `$profile->realname`, listing recent images, statistics and links to further information."}
+{/if}
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}" type="text/javascript"></script>
 
@@ -152,7 +159,7 @@
 				{if $profile->stats.squares gt 1}
 					<ul style="font-size:0.8em;margin-bottom:2px">
 					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if},
-					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
+					giving a depth score of <b>{$profile->stats.depth|floatformat:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
 					</li>
 					{if $profile->stats.hectads > 1}
 						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> Myriads<sup><a href="/help/squares">?</a></sup>{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
@@ -199,6 +206,7 @@
 		<td>Title</td>
 		<td sorted="desc">Submitted</td>
 		<td>Classification</td>
+		<td>Taken</td>
 	</tr></thead>
 	<tbody>
 	{foreach from=$userimages item=image}
@@ -206,8 +214,9 @@
 		<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View discussion - last updated {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" ><img src="/templates/basic/img/discuss.gif" width="10" height="10" alt="discussion indicator"></a>{/if}</td>
 		<td sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
 		<td sortvalue="{$image->title}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
-		<td sortvalue="{$image->gridimage_id}" class="nowrap">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
+		<td sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
 		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if}</td>
+		<td sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
 		</tr>
 	{/foreach}
 	</tbody></table>
@@ -243,6 +252,7 @@
 		{if $user->user_id eq $profile->user_id}
 			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View all your image titles as a <i>Wordle</i>"}</li>
 			<li><b>Change Requests</b>: <a href="/tickets.php" rel="nofollow">View Recent Tickets</a></li>
+			<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit My Recent Submissions</a></li>
 		{/if}
 	</ul>
 	{if $user->user_id eq $profile->user_id}

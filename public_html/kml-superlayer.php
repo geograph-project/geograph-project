@@ -40,7 +40,7 @@ $NetworkLink->setItemCDATA('description',<<<END_HTML
 <a href="http://{$_SERVER['HTTP_HOST']}/"><img src="http://{$_SERVER['HTTP_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
 </td></tr></table>
 
-<p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
+<p><i>The Geograph Deutschland project aims to collect geographically representative photographs and information for every square kilometre of Germany, and you can be part of it.</i></p>
 
 <p><b>Join us now at: <a href="http://{$_SERVER['HTTP_HOST']}/">{$_SERVER['HTTP_HOST']}</a></b>, and read more about the <a href="http://{$_SERVER['HTTP_HOST']}/kml.php">Google intergration</a>.</p>
 END_HTML

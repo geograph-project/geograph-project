@@ -34,7 +34,19 @@ if it doesn't already exist, and assign a land percentage to that square.</p>
 
 <input type="checkbox" name="dryrun" id="dryrun" value="1" {if $dryrun}checked{/if}>
 <label for="dryrun">Dry run: Don't touch the database</label><br />
-
+<br />
+<p>Clipping (bottom left pixel of image: 0,0):</p>
+<label for"minx">minimal x coordinate:</label> <input size="3" type="text" id="minx" name="minx" value="{$minx}"/><br />
+<label for"maxx">maximal x coordinate:</label> <input size="3" type="text" id="maxx" name="maxx" value="{$maxx}"/><br />
+<label for"miny">minimal y coordinate:</label> <input size="3" type="text" id="miny" name="miny" value="{$miny}"/><br />
+<label for"maxy">maximal y coordinate:</label> <input size="3" type="text" id="maxy" name="maxy" value="{$maxy}"/><br />
+<br />
+<p>Additional area types:</p>
+<label for "level">Hierarchy level:</label> <input type="text" id="level" name="level" value="{$level}" /><br />
+<label for "cid">(Community) Id:</label> <input type="text" id="cid" name="cid" value="{$cid}" /><br />
+<label for "limpland">Assure percentage &lt; land percentage:</label> <input type="checkbox" id="limpland" name="limpland" value="1" {if $limpland}checked{/if}/><br />
+<label for "createsquares">Create squares if needed:</label> <input type="checkbox" id="createsquares" name="createsquares" value="1" {if $createsquares}checked{/if}/><br />
+<br />
 <input type="submit" name="shader" value="Build Grid">
 
 

@@ -32,8 +32,10 @@ $ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
 $template='statistics_graph.tpl';
 $cacheid='statistics|hectads'.$ri;
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hour cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hour cache
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -56,8 +58,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$hectads = $db->CacheGetAll(3600,"select 
 	concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
 	sum(has_geographs) as geograph_count,
-	(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage,
-	sum(percent_land >0) as land_count
+	(sum(has_geographs) * 100 / sum(permit_geographs >0)) as percentage,
+	sum(permit_geographs >0) as land_count
 	from gridsquare 
 	$where_sql
 	group by tenk_square 

@@ -33,9 +33,9 @@
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	{if $image->original_width}
 		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">More sizes</a></div>
-	{*elseif $user->user_id eq $image->user_id}
+	{elseif $user->user_id eq $image->user_id}
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
-	*}{/if}
+	{/if}
   <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
   
   
@@ -141,9 +141,18 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 	{if $rastermap->getFootNote()}
 	<div class="interestBox" style="margin-top:3px;margin-left:2px;padding:1px;"><small>{$rastermap->getFootNote()}</small></div>
 	{/if}
+	{if count($image->grid_square->services) > 1}
+	<form method="get" action="/photo/{$image->gridimage_id}">
+	<p>Karte:
+	<select name="sid">
+	{html_options options=$image->grid_square->services selected=$sid}
+	</select>
+	<input type="submit" value="Los"/></p></form>
+	{/if}
 	</div>
 
 	{$rastermap->getScriptTag()}
+    
 {else}
 	<div class="rastermap" style="width:{$rastermap->width}px;height:{$rastermap->width}px;position:relative">
 		Map Coming Soon...
@@ -206,7 +215,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <dt>Subject Location</dt>
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
+{if $image->grid_square->reference_index eq 1}OSGB36{elseif $image->grid_square->reference_index eq 2}Irish{elseif $image->grid_square->reference_index eq 3}Germany, MGRS 32{elseif $image->grid_square->reference_index eq 4}Germany, MGRS 33{elseif $image->grid_square->reference_index eq 5}Germany, MGRS 31{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude" 
 title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
@@ -215,7 +224,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <dt>Photographer Location</dt>
 
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a></dd>
+{if $image->grid_square->reference_index eq 1}OSGB36{elseif $image->grid_square->reference_index eq 2}Irish{elseif $image->grid_square->reference_index eq 3}Germany, MGRS 32{elseif $image->grid_square->reference_index eq 4}Germany, MGRS 33{elseif $image->grid_square->reference_index eq 5}Germany, MGRS 31{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a></dd>
 {/if}
 
 {if $view_direction && $image->view_direction != -1}
@@ -294,15 +303,15 @@ function redrawMainImage() {
 <div style="width:100%;position:absolute;top:0px;left:0px;height:0px">
 	<div class="interestBox" style="float: right; position:relative; padding:2px;">
 		<table border="0" cellspacing="0" cellpadding="2">
-		<tr><td><a href="/browse.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
-		<td align="center"><a href="/browse.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
-		<td><a href="/browse.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
-		<tr><td><a href="/browse.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
+		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=-1">NW</a></td>
+		<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=0">N</a></td>
+		<td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=1">NE</a></td></tr>
+		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=-1">W</a></td>
 		<td><b>Go</b></td>
-		<td align="right"><a href="/browse.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
-		<tr><td><a href="/browse.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
-		<td align="center"><a href="/browse.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
-		<td align="right"><a href="/browse.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
+		<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=1">E</a></td></tr>
+		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=-1">SW</a></td>
+		<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=0">S</a></td>
+		<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=1">SE</a></td></tr>
 		</table>
 	</div>
 	<div style="float:right">

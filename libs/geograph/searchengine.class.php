@@ -119,6 +119,7 @@ class SearchEngine
 	}
 
 	function checkExplain($sql) {
+		global $CONF;
 		$bad = 0;
 
 		if (strpos($sql,'gridimage_group') === FALSE) {
@@ -146,11 +147,13 @@ class SearchEngine
 			unset($this->criteria->db);
                 	ob_start();
         	        debug_print_backtrace();
-			print "\n\nHost: ".`hostname`."\n\n";
+			print "\n\nHost: ".`hostname -f`."\n\n";
 			print_r($this->criteria);
 	                print_r($explain);
         	        $con = ob_get_clean();
-        	        mail('geograph@barryhunter.co.uk','[Geograph Search Quota] '.date('r'),$con);
+			$geofrom = "From: Geograph <{$CONF['mail_from']}>";
+			$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+        	        mail($CONF['admin_email'], '[Geograph Search Quota] '.date('r'), $con, $geofrom, $envfrom);
 		
 			global $smarty,$USER;
 			header("HTTP/1.1 503 Service Unavailable");
@@ -357,7 +360,7 @@ END;
 				} else {
 					require_once("3rdparty/spellchecker.class.php");
 
-					$correction = SpellChecker::Correct($this->criteria->searchtext);
+					$correction = SpellChecker::Correct($this->criteria->searchtext, 'de', 'de'); // FIXME language => conf var
 
 					if ($correction != $this->criteria->searchtext && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
 

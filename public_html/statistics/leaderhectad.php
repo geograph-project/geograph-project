@@ -33,9 +33,10 @@ $smarty = new GeographPage;
 $template='statistics_leaderhectad.tpl';
 $cacheid=$type;
 
-
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hour cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hour cache
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -51,8 +52,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$hectads = $db->CacheGetAll(3600,"select 
 	concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) as tenk_square,
 	sum(has_geographs) as geograph_count,
-	sum(percent_land >0) as land_count,
-	(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage
+	sum(permit_geographs >0) as land_count,
+	(sum(has_geographs) * 100 / sum(permit_geographs >0)) as percentage
 	from gridsquare 
 	group by tenk_square 
 	having geograph_count > 0 and percentage >=100
@@ -146,7 +147,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	function cmp(&$a, &$b) 
 	{
-		global $topusers;
+		#global $topusers;
 		if ($a['imgcount'] == $b['imgcount']) {
 			if ($a['bigesthectad'] == $b['bigesthectad']) {
 				return 0;

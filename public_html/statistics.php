@@ -43,7 +43,19 @@ if ($smarty->caching) {
 $smarty->assign_by_ref('references',$CONF['references_all']);		
 $smarty->assign_by_ref('references_real',$CONF['references']);		
 
-$bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken','gridsq' => 'Myriad');
+if ($CONF['lang'] == 'de')
+	$bys = array('status' => 'Klassifizierung','class' => 'Kategorie','takenyear' => 'Aufnahmejahr','taken' => 'Aufnahmemonat','myriad' => '100km-Quadrat','user' => 'Teilnehmer');
+else
+	$bys = array('status' => 'Classification','class' => 'Category','takenyear' => 'Date Taken (Year)','taken' => 'Date Taken (Month)','myriad' => 'Myriad','user' => 'Contributor');
+foreach ($CONF['hier_statlevels'] as $level) {
+	$idx = 'level'.$level;
+	if (isset($CONF['hier_names'][$level])) {
+		$name = $CONF['hier_names'][$level];
+	} else {
+		$name = $idx;
+	}
+	$bys[$idx] = $name;
+}
 $smarty->assign_by_ref('bys',$bys);
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
@@ -64,6 +76,17 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	require_once('geograph/gridsquare.class.php');
 
+	if (count($CONF['hier_statlevels'])) {
+		$smarty->assign('hasregions',true);
+		$smarty->assign('regionlistlevel',$CONF['hier_listlevel']);
+		$sql = "select name,level,community_id from loc_hier where level in (".implode(",",$CONF['hier_statlevels']).") order by level,name";
+		$regions = $db->GetAll($sql);
+		if ($regions === false)
+			$regions = array();
+	} else {
+		$regions = array();
+	}
+	$smarty->assign("regions", $regions);
 
 	$smarty->assign('users_submitted',  $db->GetOne("select count(*)-1 from user_stat"));
 	
@@ -129,7 +152,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach ($CONF['references_all'] as $ri => $rname) {
 		$sqtotal = $stats[$ri]['squares_total'];
 		$percentage = $sqtotal == 0 ? 0.0 : $stats[$ri]['squares_submitted'] / $sqtotal * 100;
-		$stats[$ri] += array('percent' => sprintf("%.3f", $percentage));
+		$stats[$ri] += array('percent' => $percentage);
 	}
 	foreach (array('images_total','images_thisweek','squares_total','squares_submitted','tenk_total','tenk_submitted','geographs_submitted','grid_submitted','grid_total','centergr', 'place', 'marker','percent') as $name) {
 		$smarty_array = array();

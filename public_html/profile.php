@@ -73,6 +73,21 @@ if (isset($_REQUEST['edit']))
 	{
 		$profile=new GeographUser($USER->user_id);
 	}
+	#if ($CONF['lang'] == 'de')
+	#	$ticket_options = array(
+	#		'all' => 'Benachrichtigungen für alle Änderungsvorschläge' ,
+	#		'major' => 'Nur größere Änderungen', 
+	#		//'digest' => 'Receive Digest emails Once per Day',
+	#		'none' => 'Keine Anfangsbenachrichtigung'
+	#	);
+	#else
+	#	$ticket_options = array(
+	#		'all' => 'Notifications for all suggestions' ,
+	#		'major' => 'Only Major suggestions', 
+	#		//'digest' => 'Receive Digest emails Once per Day',
+	#		'none' => 'No Initial Notifications'
+	#	);
+
 	$smarty->assign('pagesizes', array(5,10,15,20,30,50));
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
 	$smarty->assign('stdsize', $CONF['img_max_size']);
@@ -80,11 +95,7 @@ if (isset($_REQUEST['edit']))
 	$smarty->assign('showorig', $CONF['img_size_unlimited']);
 	$smarty->assign('largeimages', $CONF['img_size_unlimited'] || (count($CONF['img_sizes']) != 0));
 	$smarty->assign('canclearexif', $CONF['exiftooldir'] !== '');
-	$smarty->assign('ticket_options', array(
-	'all' => 'Notifications for all suggestions' ,
-	'major' => 'Only Major suggestions', 
-	//'digest' => 'Receive Digest emails Once per Day',
-	'none' => 'No Initial Notifications' ));
+	#$smarty->assign('ticket_options', $ticket_options);
 	
 	$profile->getStats();
 	$profile->md5_email = md5(strtolower($profile->email));
@@ -206,7 +217,7 @@ if ($template=='profile.tpl')
 	$ab=floor($uid/10000);
 	
 	$cacheid="user$ab|{$uid}|{$level}";
-	
+
 	if (isset($_GET['all']) && $USER->registered) {
 		$limit = 5000;
 	} elseif (isset($_GET['more'])) {
@@ -216,6 +227,9 @@ if ($template=='profile.tpl')
 	}
 	$cacheid.="_$limit";
 
+	$map_suffix = get_map_suffix();
+	$cacheid .= $map_suffix;
+	
 	if (!empty($_GET['expand']) || $USER->expand_about == 1) {
 		$cacheid .= "E";
 	}
@@ -262,13 +276,13 @@ if ($template=='profile.tpl')
 			}
 		}
 
-		if (!empty($_GET['a'])) {
-			$smarty->assign('page_title', 'Profile for '.$_GET['a'].'/'.$profile->realname);
-			$smarty->assign('meta_description', 'Profile page for '.$_GET['a'].'/'.$profile->realname.', listing recent images, statistics and links to further information.');
-		} else {
-			$smarty->assign('page_title', 'Profile for '.$profile->realname);
-			$smarty->assign('meta_description', 'Profile page for '.$profile->realname.', listing recent images, statistics and links to further information.');
-		}
+		#if (!empty($_GET['a'])) {
+		#	$smarty->assign('page_title', 'Profile for '.$_GET['a'].'/'.$profile->realname);
+		#	$smarty->assign('meta_description', 'Profile page for '.$_GET['a'].'/'.$profile->realname.', listing recent images, statistics and links to further information.');
+		#} else {
+		#	$smarty->assign('page_title', 'Profile for '.$profile->realname);
+		#	$smarty->assign('meta_description', 'Profile page for '.$profile->realname.', listing recent images, statistics and links to further information.');
+		#}
 		
 		$smarty->assign_by_ref('profile', $profile);
 		
@@ -291,7 +305,7 @@ if ($template=='profile.tpl')
 		}	
 		
 		if (count($images->images)) {
-			$overview=new GeographMapMosaic('overview');
+			$overview=new GeographMapMosaic('overview'.$map_suffix);
 			$overview->type_or_user = $uid;
 			$overview->assignToSmarty($smarty, 'overview');
 		}

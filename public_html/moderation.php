@@ -58,10 +58,13 @@ if (isset($_POST['gridimage_id']))
 					
 				switch ($status) {
 					case 'Geograph':
+					case 'Geobild': #FIXME
 						$user_status = ''; break;
 					case 'Supplemental':
+					case 'Extrabild': #FIXME
 						$user_status = 'accepted'; break;
 					case 'Reject':
+					case 'Ablehnen':
 						$user_status = 'rejected'; break;
 					default:
 						echo "UNKNOWN STATUS";

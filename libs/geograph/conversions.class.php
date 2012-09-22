@@ -24,9 +24,23 @@
  */
 
 function FractionToDecimal($fraction) {
-	$result = 0;
-	eval ("\$result = 1.0*$fraction;");
-	return $result;
+	$parts = explode("/", $fraction, 2);
+	if (count($parts) == 1)
+		$parts[] = 1;
+	else {
+		$parts[1] = floatval($parts[1]);
+		if ($parts[1] == 0)
+			return 0.0;
+	}
+	$parts[0] = floatval($parts[0]);
+
+	/* exif_read_data bug */
+	if ($parts[1] < 0)
+		$parts[1] += 4294967296.0;
+	if ($parts[0] < 0)
+		$parts[0] += 4294967296.0;
+
+	return $parts[0]/$parts[1];
 }
 
 function ExifConvertDegMinSecToDD($deg, $min, $sec) {
@@ -51,9 +65,9 @@ class Conversions
 //use:	list($x,$y,$reference_index) = wgs84_to_internal($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
 
-function wgs84_to_internal($lat,$long) {
+function wgs84_to_internal($lat,$long,$doround=true) {
 	list($e,$n,$reference_index) = $this->wgs84_to_national($lat,$long);
-	return $this->national_to_internal($e,$n,$reference_index);
+	return $this->national_to_internal($e,$n,$reference_index,$doround);
 }
 
 
@@ -81,11 +95,14 @@ function pointInside($p,&$points) {
 
 //use:	list($e,$n,$reference_index) = wgs84_to_national($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
-function wgs84_to_national($lat,$long,$usehermert = true) {
+function wgs84_to_national($lat,$long,$usehermert = true,$ri=-1) {
 	require_once('geograph/conversionslatlong.class.php');
 	$conv = new ConversionsLatLong;
-	$ire = ($lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
-	$uk = ($lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
+	$ire = ($ri == 2 || $ri == -1 && $lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
+	$uk = ($ri == 1 || $ri == -1 && $lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
+	$ger32 = ($ri == 3 || $ri == -1 && $lat > 47 && $lat < 56 && $long >= 6 && $long <= 12); #FIXME
+	$ger33 = ($ri == 4 || $ri == -1 && $lat > 47 && $lat < 56 && $long > 12 && $long < 16); #FIXME
+	$ger31 = ($ri == 5 || $ri == -1 && $lat > 47 && $lat < 56 && $long > 4 && $long < 6); #FIXME
 	
 	if ($uk && $ire) {
 		//rough border for ireland
@@ -105,7 +122,14 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 		return array_merge($conv->wgs84_to_irish($lat,$long,$usehermert),array(2));
 	} else if ($uk) {
 		return array_merge($conv->wgs84_to_osgb36($lat,$long),array(1));
+	} else if($ger32) {
+		return array_merge($conv->wgs84_to_utm($lat,$long,32),array(3));
+	} else if($ger33) {
+		return array_merge($conv->wgs84_to_utm($lat,$long,33),array(4));
+	} else if($ger31) {
+		return array_merge($conv->wgs84_to_utm($lat,$long,31),array(5));
 	}
+	return array();
 }
 
 
@@ -113,8 +137,8 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 		//reference_index is optional as we can duduce this (but if known then can pass it in to save having to recaluate)
 			//will probably just call national_to_wgs84 once converted
 
-function internal_to_wgs84($x,$y,$reference_index = 0) {
-	list ($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index);
+function internal_to_wgs84($x,$y,$reference_index = 0,$doshift = true) {
+	list ($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index,$doshift);
 	return $this->national_to_wgs84($e,$n,$reference_index);
 }
 
@@ -129,6 +153,12 @@ function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
 		$latlong = $conv->osgb36_to_wgs84($e,$n);
 	} else if ($reference_index == 2) {
 		$latlong = $conv->irish_to_wgs84($e,$n,$usehermert);
+	} else if ($reference_index == 3) {
+		$latlong = $conv->utm_to_wgs84($e,$n,32);
+	} else if ($reference_index == 4) {
+		$latlong = $conv->utm_to_wgs84($e,$n,33);
+	} else if ($reference_index == 5) {
+		$latlong = $conv->utm_to_wgs84($e,$n,31);
 	}
 	return $latlong;
 }
@@ -202,10 +232,16 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 
 //use:    list($x,$y) = national_to_internal($e,$n,$reference_index );
 
-function national_to_internal($e,$n,$reference_index ) {
+function national_to_internal($e,$n,$reference_index,$doround=true) {
 	global $CONF;
-	$x = intval($e / 1000);
-	$y = intval($n / 1000);
+
+	$x = $e / 1000;
+	$y = $n / 1000;
+
+	if ($doround) {
+		$x = intval($x); # FIXME floor?
+		$y = intval($y); # FIXME floor?
+	}
 	
 	//add the internal origin
 	$x += $CONF['origins'][$reference_index][0];
@@ -216,7 +252,7 @@ function national_to_internal($e,$n,$reference_index ) {
 
 //use:    list($e,$n,$reference_index) = internal_to_national($x,$y,$reference_index = 0);
 // note gridsquare has its own version that takes into account the userspecified easting/northing
-function internal_to_national($x,$y,$reference_index = 0) {
+function internal_to_national($x,$y,$reference_index = 0,$doshift = true) {
 	global $CONF;
 	if (!$reference_index) {
 		$db = $this->_getDB();
@@ -247,9 +283,13 @@ function internal_to_national($x,$y,$reference_index = 0) {
 		$x -= $CONF['origins'][$reference_index][0];
 		$y -= $CONF['origins'][$reference_index][1];
 
-		//lets position the national coords in the center of the square!
-		$e = intval($x * 1000 + 500);
-		$n = intval($y * 1000 + 500);
+		$e = intval($x * 1000);
+		$n = intval($y * 1000);
+		if ($doshift) {
+			//lets position the national coords in the center of the square!
+			$e += 500;
+			$n += 500;
+		}
 		return array($e,$n,$reference_index);
 	} else {
 		return array();
@@ -269,9 +309,8 @@ function internal_to_national($x,$y,$reference_index = 0) {
 			// this is used when we have a dataset in osgb and need to convert it to irish national (eg loc_placenames etc)
 
 function wgs84_to_friendly($lat,$long) {
-	$el = ($long > 0)?'E':'W';
-	$nl = ($lat > 0)?'N':'S';
-	
+	global $CONF;
+
 	$xd = intval(abs($long));
 	$xm = intval((abs($long)-$xd)*60);
 	$xs = (abs($long)*3600)-($xm*60)-($xd*3600);
@@ -280,14 +319,33 @@ function wgs84_to_friendly($lat,$long) {
 	$ym = intval((abs($lat)-$yd)*60);
 	$ys = (abs($lat)*3600)-($ym*60)-($yd*3600);
 
-	$ymd = sprintf("%.4f",$ym+($ys/60));
-	$xmd = sprintf("%.4f",$xm+($xs/60));
+	if ($CONF['lang'] == 'de') {
+		$el = ($long > 0)?'O':'W';
+		$nl = ($lat > 0)?'N':'S';
 	
-	return array("$yd:$ymd$nl","$xd:$xmd$el");
+		$xss=sprintf("%.2f",$xs); //FIXME needs locale de_DE
+		$yss=sprintf("%.2f",$ys); //FIXME needs locale de_DE
+		
+		return array("{$yd}°$ym'$yss\"$nl","{$xd}°$xm'$xss\"$el");
+	} else {
+		$el = ($long > 0)?'E':'W';
+		$nl = ($lat > 0)?'N':'S';
+
+		$ymd = sprintf("%.4f",$ym+($ys/60));
+		$xmd = sprintf("%.4f",$xm+($xs/60));
+
+		return array("$yd:$ymd$nl","$xd:$xmd$el");
+	}
 }
 
 function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
-	$el = ($long > 0)?'E':'W';
+	global $CONF;
+
+	if ($CONF['lang'] == 'de') {
+		$el = ($long > 0)?'O':'W';
+	} else {
+		$el = ($long > 0)?'E':'W';
+	}
 	$nl = ($lat > 0)?'N':'S';
 	
 	$along = abs($long);
@@ -301,17 +359,22 @@ function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
 	$ym = intval(($alat-$yd)*60);
 	$ys = ($alat*3600)-($ym*60)-($yd*3600);
 
-	$ymd = sprintf("%.4f",$ym+($ys/60));
-	$xmd = sprintf("%.4f",$xm+($xs/60));
+	$ymd = sprintf("%.4f",$ym+($ys/60)); //FIXME needs locale de_DE
+	$xmd = sprintf("%.4f",$xm+($xs/60)); //FIXME needs locale de_DE
 	
-	$xs = sprintf("%.5f",$xs);
-	$ys = sprintf("%.5f",$ys);
+	$xs = sprintf("%.5f",$xs); //FIXME needs locale de_DE
+	$ys = sprintf("%.5f",$ys); //FIXME needs locale de_DE
 	
 	foreach (array('el','nl','along','alat','xd','xm','xs','yd','ym','ys','ymd','xmd') as $name) {
 		$smarty->assign($name, $$name);
 	}
-	$smarty->assign('latdm', "$yd:$ymd$nl");
-	$smarty->assign('longdm', "$xd:$xmd$el");
+	if ($CONF['lang'] == 'de') {
+		$smarty->assign('latdm', "{$yd}°$ymd'$nl");
+		$smarty->assign('longdm', "{$xd}°$xmd'$el");
+	} else {
+		$smarty->assign('latdm', "$yd:$ymd$nl");
+		$smarty->assign('longdm', "$xd:$xmd$el");
+	}
 }
 
 //----------------------------------------------------------------

@@ -61,6 +61,21 @@ class GeographMap
 	* y origin of map in internal coordinates
 	*/
 	var $map_y=0;
+
+	/**
+	* x origin of map in Mercator coordinates
+	*/
+	var $map_xM=0;
+	
+	/**
+	* y origin of map in Mercator coordinates
+	*/
+	var $map_yM=0;
+
+	/**
+	* only given reference index
+	*/
+	var $force_ri=0;
 	
 	/**
 	* height of map in pixels
@@ -87,17 +102,74 @@ class GeographMap
 	* should the map be cached?
 	*/
 	var $caching=true;
+	var $caching_squaremap=true;
+
+	/**
+	 * Spherical mercator?
+	 */
+	var $mercator=false;
+
+	/**
+	 * Zoom level if spherical mercator
+	 */
+	var $level=0;
 	
-	
+	/**
+	 * Tile coordinates if spherical mercator
+	 */
+	var $tile_x=0;
+	var $tile_y=0;
+
+	/**
+	 * Base map size and margins if spherical mercator
+	 */
+	var $base_margin = 0;
+	var $base_width = 0;
+	var $render_margin = 0;
+
+	/**
+	 * Tile width (m) if spherical mercator
+	 */
+	var $map_wM=0.0;
+
+	/**
+	 * Layers if spherical mercator
+	 *
+	 * 1: base map
+	 * 2: squares
+	 * 4: regions
+	 * 8: grid labels
+	 * 16: town labels
+	 */
+
+	var $layers = 31;
+
+	/**
+	 * Overlay mode if spherical mercator:
+	 * 0: default
+	 * 1: used as overlay in googlemaps/openlayers
+	 * 2: "mobile phone mode"
+	 */
+	var $overlay = 0; #false;
+
 	/**
 	* bounding rectangles for labels, in an attempt to prevent collisions
 	*/
 	var $labels = array();
+	var $gridlabels = array();
 	
 	/*
 	 * palette index, see setPalette for documentation
 	 */
 	var $palette=0;
+
+	/*
+	 * clipping
+	 */
+	var $cliptop = 0;
+	var $clipbottom = 0;
+	var $clipright = 0;
+	var $clipleft = 0;
 	
 	/*
 	 * array of colour values, initialised by setPalette
@@ -122,10 +194,38 @@ class GeographMap
 	* Cache files are still written, just never used
 	* @access public
 	*/
-	function enableCaching($enable)
+	function enableCaching($enable, $enablesquaremap = null)
 	{
 		$this->caching=$enable;
+		if (is_null($enablesquaremap))
+			$enablesquaremap=$enable;
+		$this->caching_squaremap=$enablesquaremap;
 	}
+	
+	/**
+	* Change map type to spherical mercator or back
+	* @access public
+	*/
+	function enableMercator($enable)
+	{
+		$this->mercator=$enable;
+	}
+
+	/**
+	* Set origin of map in internal coordinates, returns true if valid
+	* @access private
+	*/
+	function _calcXY()
+	{
+		if ($this->mercator) {
+			$dx = pow(2.0,$this->level-1);
+			$dy = $dx - 1;
+			$this->map_xM=($this->tile_x - $dx)*$this->map_wM;
+			$this->map_yM=($dy - $this->tile_y)*$this->map_wM;
+		}
+		return true;
+	}
+
 	
 	/**
 	* Set origin of map in internal coordinates, returns true if valid
@@ -133,8 +233,14 @@ class GeographMap
 	*/
 	function setOrigin($x,$y)
 	{
-		$this->map_x=intval($x);
-		$this->map_y=intval($y);
+		if ($this->mercator) {
+			$this->tile_x=intval($x);
+			$this->tile_y=intval($y);
+			$this->_calcXY();
+		} else {
+			$this->map_x=intval($x);
+			$this->map_y=intval($y);
+		}
 		return true;
 	}
 
@@ -144,8 +250,14 @@ class GeographMap
 	*/
 	function setImageSize($w,$h)
 	{
-		$this->image_w=intval($w);
-		$this->image_h=intval($h);
+		if ($this->mercator) {
+			#FIXME hard coded width
+			$this->image_w=256;
+			$this->image_h=256;
+		} else {
+			$this->image_w=intval($w);
+			$this->image_h=intval($h);
+		}
 		return true;
 	}
 
@@ -155,8 +267,38 @@ class GeographMap
 	*/
 	function setScale($pixels_per_km)
 	{
-		$this->pixels_per_km=floatval($pixels_per_km);
+		if ($this->mercator) {
+			$width = 256; #FIXME hard coded width
+			#$FIXME allow levels _and_ pixels_per_km
+			$this->level = intval($pixels_per_km);
+			$this->map_wM = M_PI*2*6378137.000/pow(2,$this->level);
+			$this->pixels_per_km = $width/$this->map_wM*1000.0; # only right at equator
+			$this->_calcXY();
+			$this->image_w=$width;
+			$this->image_h=$width;
+			$this->base_width = $width;
+			$this->base_margin = $width/4;#0;
+			$this->render_margin= $width/4;#0;
+			if ($this->level <= 9) {
+				$this->base_margin *= 4;
+				$this->base_width *= 4;
+			}
+		} else {
+			$this->pixels_per_km=floatval($pixels_per_km);
+		}
 		return true;
+	}
+
+	/**
+	* Set clipping parameters
+	* @access public
+	*/
+	function setClip($clipleft, $clipright, $clipbottom, $cliptop)
+	{
+		$this->cliptop = $cliptop;
+		$this->clipbottom = $clipbottom;
+		$this->clipright = $clipright;
+		$this->clipleft = $clipleft;
 	}
 
 	/**
@@ -166,11 +308,26 @@ class GeographMap
 	function getToken()
 	{
 		$token=new Token;
-		$token->setValue("x", $this->map_x);
-		$token->setValue("y", $this->map_y);
+		if (empty($this->mercator)) {
+			$token->setValue("x", $this->map_x);
+			$token->setValue("y", $this->map_y);
+		} else {
+			$token->setValue("x", $this->tile_x);
+			$token->setValue("y", $this->tile_y);
+		}
 		$token->setValue("w",  $this->image_w);
 		$token->setValue("h",  $this->image_h);
-		$token->setValue("s",  $this->pixels_per_km);
+		if (empty($this->mercator))
+			$token->setValue("s",  $this->pixels_per_km);
+		else {
+			$token->setValue("s",  $this->level);
+			$token->setValue("m", 1);
+			$token->setValue("l", $this->layers);
+			if (!empty($this->overlay))
+				$token->setValue("o", $this->overlay);
+		}
+		if (!empty($this->force_ri))
+			$token->setValue("i",  $this->force_ri);
 		if (!empty($this->type_or_user))
 			$token->setValue("t",  $this->type_or_user);
 		if (isset($this->reference_index))
@@ -198,6 +355,7 @@ class GeographMap
 				$token->hasValue("s");
 			if ($ok)
 			{
+				$this->enableMercator($token->hasValue("m") &&  $token->getValue("m"));
 				$this->setOrigin($token->getValue("x"), $token->getValue("y"));
 				$this->setImageSize($token->getValue("w"), $token->getValue("h"));
 				$this->setScale($token->getValue("s"));
@@ -206,6 +364,9 @@ class GeographMap
 					$this->reference_index = $token->getValue("r");
 				if ($token->hasValue("p")) 
 					$this->setPalette($token->getValue("p"));
+				$this->force_ri = ($token->hasValue("i"))?$token->getValue("i"):0;
+				$this->layers = ($token->hasValue("l"))?$token->getValue("l"):7;
+				$this->overlay = $token->hasValue("o") ? $token->getValue("o") : 0;
 			}
 			
 		}
@@ -229,6 +390,7 @@ class GeographMap
 		$this->colour['suppmarker']=array(236,206,64);
 		$this->colour['border']=array(255,255,255);
 		$this->colour['land']=array(117,255,101);
+		//$this->colour['land']=array(102,204,102);
 		
 		//specific to a palette...
 		switch ($idx)
@@ -253,7 +415,7 @@ class GeographMap
 	* @param ydir = amount of up/down panning, e.g. 1 to pan up
 	* @access public
 	*/
-	function getPanToken($xdir,$ydir)
+	function getPanToken($xdir,$ydir) // FIXME mercator
 	{
 		$out=new GeographMap;
 		
@@ -285,8 +447,9 @@ class GeographMap
 	* get grid reference for pixel position on image
 	* @access public
 	*/
-	function getGridRef($x, $y)
+	function getGridRef($x, $y) // FIXME mercator
 	{
+		global $CONF;
 		if ($x == -1 && $y == -1) {
 			$x = intval($this->image_w / 2);
 			$y = intval($this->image_h / 2);
@@ -341,6 +504,11 @@ class GeographMap
 				$e=$x_km-$prefix['origin_x'];
 				$this->gridref = sprintf('%s%02d%02d', $prefix['prefix'], $e, $n);
 				$this->reference_index = $prefix['reference_index'];
+			} elseif ($x_km >= $CONF['minx'] && $y_km >= $CONF['miny'] && $x_km <= $CONF['maxx'] && $y_km <= $CONF['maxy']) {
+				$xofs = $x_km-$CONF['minx'];
+				$yofs = $y_km-$CONF['miny'];
+				$this->gridref = '!'.$CONF['xnames'][floor($xofs/100)].$CONF['ynames'][floor($yofs/100)].sprintf('%02d%02d',$xofs%100,$yofs%100);
+				$this->reference_index = null;
 			} else {
 				$this->gridref = "unknown";
 			}
@@ -354,34 +522,80 @@ class GeographMap
 	* filename is from document root and includes leading slash
 	* @access public
 	*/
-	function getImageFilename()
+	function getImageFilename($layers = -1)
 	{
+		if ($layers == -1) {
+			$layers = $this->layers;
+		}
+		if ($layers == 1)
+			return $this->getBaseMapFilename();
+		elseif ($layers == 4)
+			return $this->getLabelMapFilename(false,true);
+		elseif ($layers == 8)
+			return $this->getLabelMapFilename(false,false);
+		elseif ($layers == 16)
+			return $this->getLabelMapFilename(true,false);
+
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
 		$dir="/maps/detail/";
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
-		
-		$dir.="{$this->map_x}/";
-		if (!is_dir($root.$dir))
-			mkdir($root.$dir);
-		
-		$dir.="{$this->map_y}/";
-		if (!is_dir($root.$dir))
-			mkdir($root.$dir);
-		
-		//for palette 0 we use the older, palette free filename
-		$palette="";
-		if ($this->palette>0)
-			$palette="_".$this->palette;
-		
-		if (!empty($this->minimum)) {
-			$palette .= "_n{$this->minimum}";
+
+		$emptyimage = false;
+		if (empty($this->mercator)) {
+			$map_x = $this->map_x;
+			$map_y = $this->map_y;
+			$scale = $this->pixels_per_km;
+			$extension = ($this->pixels_per_km > 64 || $this->type_or_user < -20)?'jpg':'png';
+		} else {
+			if ($layers == 2 && $this->type_or_user == -10) { # only one empty tile needed...
+				$map_x = 0;
+				$map_y = 0;
+				$scale = 0;
+				$emptyimage = true;
+			} else {
+				$map_x = $this->tile_x;
+				$map_y = $this->tile_y;
+				$scale = $this->level;
+			}
+			$extension = 'png';
 		}
 		
-		$extension = ($this->pixels_per_km > 40 || $this->type_or_user < -20)?'jpg':'png';
+		$dir.="{$map_x}/";
+		if (!is_dir($root.$dir))
+			mkdir($root.$dir);
 		
-		$file="detail_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}_{$this->type_or_user}{$palette}.$extension";
+		$dir.="{$map_y}/";
+		if (!is_dir($root.$dir))
+			mkdir($root.$dir);
+		
+		$palette="";
+		if (!$emptyimage) {
+			//for palette 0 we use the older, palette free filename
+			if ($this->palette>0)
+				$palette="_".$this->palette;
+			
+			if (!empty($this->minimum)) {
+				$palette .= "_n{$this->minimum}";
+			}
+
+			if (!empty($this->force_ri)) {
+				$palette .= "_i{$this->force_ri}";
+			}
+		}
+
+		if ($this->mercator) {
+			$palette .= "_m";
+			$palette .= "_l{$layers}";
+			if ($this->overlay && !$emptyimage) {
+				$palette .= "_o";
+				if ($this->overlay != 1 /*&& $layers != 2 another set of tiles needed because imagecopymerge is great!*/)
+					$palette .= $this->overlay; # FIXME other occurences
+			}
+		}
+		
+		$file="detail_{$map_x}_{$map_y}_{$this->image_w}_{$this->image_h}_{$scale}_{$this->type_or_user}{$palette}.$extension";
 		
 		if (!empty($this->mapDateCrit)) {
 			$file=preg_replace('/\./',"-{$this->mapDateStart}.",$file);
@@ -390,6 +604,22 @@ class GeographMap
 			$file=preg_replace('/\./',"-y{$this->displayYear}.",$file);
 		}
 		return $dir.$file;
+	}
+
+	/**
+	* calc filename to an osm tile which can form the base of the map
+	* @access public
+	*/
+	function getOSMFilename()
+	{
+		#$root=&$_SERVER['DOCUMENT_ROOT'];
+		
+		if (!$this->mercator) {
+			#FIXME?
+			return '';
+		}
+		#trigger_error("-> $root/tile/osm/{$this->level}/{$this->tile_x}/{$this->tile_y}.png", E_USER_NOTICE);#FIXME
+		return "/tile/osm/{$this->level}/{$this->tile_x}/{$this->tile_y}.png";
 	}
 
 	/**
@@ -404,11 +634,21 @@ class GeographMap
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
-		$dir.="{$this->map_x}/";
+		if (empty($this->mercator)) { #FIXME tilecache
+			$map_x = $this->map_x;
+			$map_y = $this->map_y;
+			$ext = 'gd';
+		} else {
+			$map_x = $this->tile_x;
+			$map_y = $this->tile_y;
+			$ext = 'png';
+		}
+		
+		$dir.="{$map_x}/";
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
-		$dir.="{$this->map_y}/";
+		$dir.="{$map_y}/";
 		if (!is_dir($root.$dir))
 			mkdir($root.$dir);
 		
@@ -416,11 +656,103 @@ class GeographMap
 		$palette="";
 		if ($this->palette>0)
 			$palette="_".$this->palette;
+
+		if (!empty($this->force_ri)) {
+			$palette .= "_i{$this->force_ri}";
+		}
+
+		if (empty($this->mercator)) { #FIXME tilecache
+			$scale = $this->pixels_per_km;
+		} else {
+			$scale = $this->level;
+			$palette .= "_m";
+		}
 		
-		$file="base_{$this->map_x}_{$this->map_y}_{$this->image_w}_{$this->image_h}_{$this->pixels_per_km}{$palette}.gd";
+		$file="base_{$map_x}_{$map_y}_{$this->image_w}_{$this->image_h}_{$scale}{$palette}.{$ext}";
 		
 		
 		return $dir.$file;
+	}
+
+	/**
+	* calc filename to an image which can form the labels of the map
+	* @access public
+	*/
+	function getLabelMapFilename($towns, $regions)
+	{
+		$root=&$_SERVER['DOCUMENT_ROOT'];
+		
+		$dir="/maps/label/";
+		if (!is_dir($root.$dir))
+			mkdir($root.$dir);
+		
+		if (empty($this->mercator)) { #FIXME tilecache
+			$map_x = $this->map_x;
+			$map_y = $this->map_y;
+		} else {
+			$map_x = $this->tile_x;
+			$map_y = $this->tile_y;
+		}
+		
+		$dir.="{$map_x}/";
+		if (!is_dir($root.$dir))
+			mkdir($root.$dir);
+		
+		$dir.="{$map_y}/";
+		if (!is_dir($root.$dir))
+			mkdir($root.$dir);
+		
+		//for palette 0 we use the older, palette free filename
+		$palette="";
+		if ($this->palette>0)
+			$palette="_".$this->palette;
+
+		if (!empty($this->force_ri)) {
+			$palette .= "_i{$this->force_ri}";
+		}
+		if ($towns) {
+			$palette .= "_t";
+		}
+		if ($regions) {
+			$palette .= "_r";
+		}
+
+		if (empty($this->mercator)) { #FIXME tilecache
+			$scale = $this->pixels_per_km;
+		} else {
+			$scale = $this->level;
+			$palette .= "_m";
+			if ($this->overlay) {
+				$palette .= "_o";
+				#if ($this->overlay != 1)
+				#	$palette .= $this->overlay; # FIXME other occurences
+			}
+		}
+		
+		$file="label_{$map_x}_{$map_y}_{$this->image_w}_{$this->image_h}_{$scale}{$palette}.png";
+		
+		
+		return $dir.$file;
+	}
+
+
+	/**
+	* Try to unset type_or_user, overlay, ...
+	* @access private
+	*/
+	function _simplifyParameters()
+	{
+		#FIXME overlay == 2 only relevant for base map and square layer, fall back to 1, otherwise!
+		if ($this->mercator) {
+			if ($this->level > 11 && $this->type_or_user == -1 && !$this->overlay) $this->type_or_user = 0;
+			if ($this->type_or_user > 0 && !$this->needUserTile($this->type_or_user)) $this->type_or_user = -10;
+			# FIXME have a look at  _plotGridLinesM, whether we can set $this->overlay = false for this zoom level!
+		} else {
+			//if thumbs level on depeth map, can just use normal render.
+			if ($this->type_or_user == -1 && $this->pixels_per_km >= 32) {
+				$this->type_or_user = 0;
+			}
+		}
 	}
 
 	/**
@@ -432,11 +764,10 @@ class GeographMap
 	function getImageUrl()
 	{
 		global $CONF;
-		
-		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
-			$this->type_or_user =0;
-			$real = -1;			
-		}
+
+		$realtype = $this->type_or_user;
+		$realov = $this->overlay;
+		$this->_simplifyParameters();
 		//always given dynamic url, that way cached HTML can 
 		//always get an image
 		$token=$this->getToken();
@@ -446,8 +777,8 @@ class GeographMap
 			$file = cachize_url($file);
 		}
 
-		if (isset($real)) 
-			 $this->type_or_user = $real;
+		$this->type_or_user = $realtype;
+		$this->overlay = $realov;
 
 		return $file;
 		
@@ -459,10 +790,7 @@ class GeographMap
 	*/
 	function returnImage()
 	{
-		//if thumbs level on depeth map, can just use normal render.
-		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
-			$this->type_or_user = 0;
-		}
+		$this->_simplifyParameters();
 		$file=$this->getImageFilename();
 		
 		$full=$_SERVER['DOCUMENT_ROOT'].$file;
@@ -508,6 +836,22 @@ class GeographMap
 	* @access private
 	*/
 	function& _renderMap() {
+		if ($this->mercator) {
+			$ok = $this->_renderImageM();
+			if ($ok && $this->type_or_user != -10) {
+				$db=&$this->_getDB();
+				$widthMC  = pow(2, 19-$this->level);
+				$leftMC   = +$widthMC*$this->tile_x - 262144;
+				$topMC    = -$widthMC*$this->tile_y + 262144;
+				$rightMC  = $leftMC   + $widthMC;
+				$bottomMC = $topMC    - $widthMC;
+
+				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%d,tile_y=%d,max_x=%d,max_y=%d",$leftMC,$bottomMC,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay, $this->layers, $this->level, $this->tile_x, $this->tile_y,$rightMC,$topMC);
+
+				$db->Execute($sql);
+			}
+			return $ok;
+		}
 	
 	#STANDARD MAP
 		if ($this->type_or_user == 0) {
@@ -527,7 +871,7 @@ class GeographMap
 	#DEPTH MAP (_renderDepthImage also understands date maps)
 			} elseif ($this->type_or_user == -1) {
 				//if thumbs level can just use normal render. 
-				if ($this->pixels_per_km<=4) {
+				if ($this->pixels_per_km<32) { //FIXME limit?
 					$ok = $this->_renderDepthImage();
 				} else {
 					$ok = $this->_renderImage();
@@ -557,11 +901,909 @@ class GeographMap
 		if ($ok) {
 			$db=&$this->_getDB();
 
-			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user);
+			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,max_x=%d,max_y=%d,level=%d,tile_x=%d,tile_y=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri,$this->map_x+ceil($this->image_w/$this->pixels_per_km)-1,$this->map_y+ceil($this->image_h/$this->pixels_per_km)-1,round($this->pixels_per_km*100),$this->map_x,$this->map_y);
 
 			$db->Execute($sql);
 		}
 		return $ok;
+	}
+
+	function _vcut_convexpoly($poly, $xc)
+	{
+		$found = false;
+		$point = end($poly);
+		$x = $point[0];
+		$y = $point[1];
+		foreach ($poly as &$point) {
+			$xp = $x;
+			$yp = $y;
+			$x = $point[0];
+			$y = $point[1];
+			if ($x == $xp) {
+				if ($x != $xc)
+					continue;
+				$curymin = min($y, $yp);
+				$curymax = max($y, $yp);
+				$curxmin = $x;
+				$curxmax = $x;
+				if (!$found) {
+					$xmin = $curxmin;
+					$ymin = $curymin;
+					$xmax = $curxmax;
+					$ymax = $curymax;
+					$found = true;
+				} else {
+					if ($curymin < $ymin) {
+						$xmin = $curxmin;
+						$ymin = $curymin;
+					}
+					if ($curymax > $ymax) {
+						$xmax = $curxmax;
+						$ymax = $curymax;
+					}
+				}
+			}
+			if ($x < $xp) {
+				if ($xc < $x || $xc > $xp)
+					continue;
+			} else {
+				if ($xc < $xp || $xc > $x)
+					continue;
+			}
+			$yc = $yp + ($xc - $xp) * ($y - $yp) / ($x - $xp);
+			if (!$found) {
+				$xmin = $xc;
+				$ymin = $yc;
+				$xmax = $xc;
+				$ymax = $yc;
+				$found = true;
+			} else {
+				if ($yc < $ymin) {
+					$xmin = $xc;
+					$ymin = $yc;
+				}
+				if ($yc > $ymax) {
+					$xmax = $xc;
+					$ymax = $yc;
+				}
+			}
+		}
+
+		if ($found)
+			return array(array($xmin, $ymin), array($xmax, $ymax));
+		else
+			return array();
+	}
+
+	function _hcut_convexpoly($poly, $yc)
+	{
+		$found = false;
+		$point = end($poly);
+		$x = $point[0];
+		$y = $point[1];
+		foreach ($poly as &$point) {
+			$xp = $x;
+			$yp = $y;
+			$x = $point[0];
+			$y = $point[1];
+			if ($y == $yp) {
+				if ($y != $yc)
+					continue;
+				$curxmin = min($x, $xp);
+				$curxmax = max($x, $xp);
+				$curymin = $y;
+				$curymax = $y;
+				if (!$found) {
+					$xmin = $curxmin;
+					$ymin = $curymin;
+					$xmax = $curxmax;
+					$ymax = $curymax;
+					$found = true;
+				} else {
+					if ($curxmin < $xmin) {
+						$xmin = $curxmin;
+						$ymin = $curymin;
+					}
+					if ($curxmax > $xmax) {
+						$xmax = $curxmax;
+						$ymax = $curymax;
+					}
+				}
+			}
+			if ($y < $yp) {
+				if ($yc < $y || $yc > $yp)
+					continue;
+			} else {
+				if ($yc < $yp || $yc > $y)
+					continue;
+			}
+			$xc = $xp + ($yc - $yp) * ($x - $xp) / ($y - $yp);
+			if (!$found) {
+				$xmin = $xc;
+				$ymin = $yc;
+				$xmax = $xc;
+				$ymax = $yc;
+				$found = true;
+			} else {
+				if ($xc < $xmin) {
+					$xmin = $xc;
+					$ymin = $yc;
+				}
+				if ($xc > $xmax) {
+					$xmax = $xc;
+					$ymax = $yc;
+				}
+			}
+		}
+
+		if ($found)
+			return array(array($xmin, $ymin), array($xmax, $ymax));
+		else
+			return array();
+	}
+
+	function _split_polygon(&$poly, $mult, $closed = true)
+	{
+		if (count($poly)) {
+			$tmppoly = array ();
+			if ($closed) {
+				$point = end($poly);
+				$x = $point[0];
+				$y = $point[1];
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($poly as &$point) {
+				if (!$first) {
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				if ($first) {
+					$tmppoly[] = array($x, $y);
+					$first = false;
+					continue;
+				}
+				$dx = ($x - $xp)/$mult;
+				$dy = ($y - $yp)/$mult;
+				for ($i = 1; $i < $mult; ++$i) {
+					$xn = $xp + $dx*$i;
+					$yn = $yp + $dy*$i;
+					$tmppoly[] = array($xn, $yn);
+				}
+				#$tmppoly[] = array($x, $y);
+				$tmppoly[] = $point;
+			}
+			$poly = $tmppoly;
+		}
+	}
+
+	function _clip_polygon(&$clippoly, $xmin, $xmax, $ymin, $ymax, $closed = true)
+	{
+		if (count($clippoly)) {
+			$tmppoly = array ();
+			if ($closed) {
+				$point = end($clippoly);
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $x >= $xmin;
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($clippoly as &$point) {
+				if (!$first) {
+					$insidep = $inside;
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $x >= $xmin;
+				if (!$first && $insidep != $inside) {
+					$xI = $xmin;
+					$yI = $y + ($xI - $x) * ($yp - $y) / ($xp - $x);
+					$tmppoly[] = array($xI, $yI);
+				}
+				if ($inside) {
+					$tmppoly[] = $point;#array($x, $y);
+				}
+				$first = false;
+			}
+			$clippoly = $tmppoly;
+		}
+
+		if (count($clippoly)) {
+			$tmppoly = array ();
+			if ($closed) {
+				$point = end($clippoly);
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $y >= $ymin;
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($clippoly as &$point) {
+				if (!$first) {
+					$insidep = $inside;
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $y >= $ymin;
+				if (!$first && $insidep != $inside) {
+					$yI = $ymin;
+					$xI = $x + ($yI - $y) * ($xp - $x) / ($yp - $y);
+					$tmppoly[] = array($xI, $yI);
+				}
+				if ($inside) {
+					$tmppoly[] = $point;#array($x, $y);
+				}
+				$first = false;
+			}
+			$clippoly = $tmppoly;
+		}
+
+		if (count($clippoly)) {
+			$tmppoly = array ();
+			if ($closed) {
+				$point = end($clippoly);
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $x <= $xmax;
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($clippoly as &$point) {
+				if (!$first) {
+					$insidep = $inside;
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $x <= $xmax;
+				if (!$first && $insidep != $inside) {
+					$xI = $xmax;
+					$yI = $y + ($xI - $x) * ($yp - $y) / ($xp - $x);
+					$tmppoly[] = array($xI, $yI);
+				}
+				if ($inside) {
+					$tmppoly[] = $point;#array($x, $y);
+				}
+				$first = false;
+			}
+			$clippoly = $tmppoly;
+		}
+
+		if (count($clippoly)) {
+			$tmppoly = array ();
+			if ($closed) {
+				$point = end($clippoly);
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $y <= $ymax;
+				$first = false;
+			} else {
+				$first = true;
+			}
+			foreach ($clippoly as &$point) {
+				if (!$first) {
+					$insidep = $inside;
+					$xp = $x;
+					$yp = $y;
+				}
+				$x = $point[0];
+				$y = $point[1];
+				$inside = $y <= $ymax;
+				if (!$first && $insidep != $inside) {
+					$yI = $ymax;
+					$xI = $x + ($yI - $y) * ($xp - $x) / ($yp - $y);
+					$tmppoly[] = array($xI, $yI);
+				}
+				if ($inside) {
+					$tmppoly[] = $point;#array($x, $y);
+				}
+				$first = false;
+			}
+			$clippoly = $tmppoly;
+		}
+		#return $clippoly;
+	}
+
+	function rebuildGMcache()
+	{
+		//php file -> set_time_limit(0)
+		global $CONF;
+		$db=&$this->_getDB();
+		$dbsq=NewADOConnection($GLOBALS['DSN']);
+		
+		$db->Execute("DROP TABLE IF EXISTS gridsquare_gmcache_tmp");
+		
+		// alpha, sinalpha, cosalpha, width
+		//`real_percent_land` tinyint(4) NOT NULL,
+		//`arearatio` double(7,6) NOT NULL,
+		$db->Execute('CREATE TABLE gridsquare_gmcache_tmp (
+			        `gridsquare_id` int(11) NOT NULL,
+				`gxlow` int(11) NOT NULL,
+				`gylow` int(11) NOT NULL,
+				`gxhigh` int(11) NOT NULL,
+				`gyhigh` int(11) NOT NULL,
+				`area` double(9,6) NOT NULL,
+				`cliparea` double(9,6) NOT NULL,
+				`rotangle` double(8,6) NOT NULL,
+				`scale` double(8,6) NOT NULL,
+				`cgx` double(10,2) NOT NULL,
+				`cgy` double(10,2) NOT NULL,
+				`polycount` tinyint(1) NOT NULL,
+				`poly1gx` double(10,2),
+				`poly1gy` double(10,2),
+				`poly2gx` double(10,2),
+				`poly2gy` double(10,2),
+				`poly3gx` double(10,2),
+				`poly3gy` double(10,2),
+				`poly4gx` double(10,2),
+				`poly4gy` double(10,2),
+				`poly5gx` double(10,2),
+				`poly5gy` double(10,2),
+				`poly6gx` double(10,2),
+				`poly6gy` double(10,2),
+				`poly7gx` double(10,2),
+				`poly7gy` double(10,2),
+				`poly8gx` double(10,2),
+				`poly8gy` double(10,2),
+				PRIMARY KEY (`gridsquare_id`),
+				KEY `gxlow` (`gxlow`),
+				KEY `gxhigh` (`gxhigh`),
+				KEY `gylow` (`gylow`),
+				KEY `gyhigh` (`gyhigh`)
+			) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+		');
+		require_once('geograph/conversionslatlong.class.php');
+		$conv = new ConversionsLatLong;
+		#require_once('geograph/conversions.class.php');
+		#$conv = new Conversions;
+		foreach ($CONF['references'] as $ri => $rname) {
+			$x0 = $CONF['origins'][$ri][0];
+			$y0 = $CONF['origins'][$ri][1];
+			$latmin = $CONF['latrange'][$ri][0];
+			$latmax = $CONF['latrange'][$ri][1];
+			$lonmin = $CONF['lonrange'][$ri][0];
+			$lonmax = $CONF['lonrange'][$ri][1];
+			$riwhere = "(reference_index = '{$ri}')";
+
+			$sql="select x,y,gridsquare_id from gridsquare where $riwhere";
+
+			$recordSet = &$db->Execute($sql);
+			while (!$recordSet->EOF) {
+				$geBL=($recordSet->fields[0] - $x0) * 1000;
+				$gnBL=($recordSet->fields[1] - $y0) * 1000;
+				$geTR=$geBL+1000;
+				$gnTR=$gnBL+1000;
+				$geC=$geBL+500;
+				$gnC=$gnBL+500;
+				list($glatTL, $glonTL) = $conv->national_to_wgs84($geBL, $gnTR, $ri);
+				list($glatBL, $glonBL) = $conv->national_to_wgs84($geBL, $gnBL, $ri);
+				list($glatTR, $glonTR) = $conv->national_to_wgs84($geTR, $gnTR, $ri);
+				list($glatBR, $glonBR) = $conv->national_to_wgs84($geTR, $gnBL, $ri);
+				list($glatC,  $glonC ) = $conv->national_to_wgs84($geC,  $gnC,  $ri);
+
+				list($xMTL,$yMTL) = $conv->wgs84_to_sm($glatTL, $glonTL);
+				list($xMBL,$yMBL) = $conv->wgs84_to_sm($glatBL, $glonBL);
+				list($xMTR,$yMTR) = $conv->wgs84_to_sm($glatTR, $glonTR);
+				list($xMBR,$yMBR) = $conv->wgs84_to_sm($glatBR, $glonBR);
+				list($xMC, $yMC ) = $conv->wgs84_to_sm($glatC,  $glonC );
+
+				$dxM = $xMBR - $xMBL;
+				$dyM = $yMBR - $yMBL;
+				$scale = hypot($dyM, $dxM) / 1000;
+				$rotangle = atan2($dyM, $dxM);
+				$area = (($yMTL-$yMBR)*($xMTR-$xMBL)+($yMBL-$yMTR)*($xMTL-$xMBR))/2E6;
+
+				$clippoly = array(array($glatTL, $glonTL), array($glatBL, $glonBL), array($glatBR, $glonBR), array($glatTR, $glonTR));
+				$this->_clip_polygon($clippoly, $latmin, $latmax, $lonmin, $lonmax);
+
+
+				#$drawpoly = array();
+				#foreach ($clippoly as &$ll) {
+				#	$drawpoly[] = $conv->wgs84_to_sm($ll[0], $ll[1]);
+				#}
+				if (count($clippoly)) {
+					$ll = end($clippoly);
+					$point = $conv->wgs84_to_sm($ll[0], $ll[1]);
+					$xM = $point[0];
+					$yM = $point[1];
+					$xMmin = $xM;
+					$yMmin = $yM;
+					$xMmax = $xM;
+					$yMmax = $yM;
+					$cliparea = 0.0;
+
+					$head = array();
+					$tail = array();
+					foreach ($clippoly as &$ll) {
+						$xMp = $xM;
+						$yMp = $yM;
+						$point = $conv->wgs84_to_sm($ll[0], $ll[1]);
+						$xM = $point[0];
+						$yM = $point[1];
+						$cliparea += $yM * $xMp - $xM * $yMp;
+						if ($xM < $xMmin) {
+							$xMmin = $xM;
+							$tail = array_merge($tail, $head);
+							$head = array();
+						}
+						if ($xM > $xMmax)
+							$xMmax = $xM;
+						if ($yM < $yMmin)
+							$yMmin = $yM;
+						if ($yM > $yMmax)
+							$yMmax = $yM;
+						$head[] = $point;
+					}
+					$drawpoly = array_merge($head, $tail);# first element: leftmost point
+					$cliparea /= 2E6;
+				} else {
+					$cliparea = 0.0;
+					$xMmin = 0;
+					$yMmin = 0;
+					$xMmax = 0;
+					$yMmax = 0;
+					$drawpoly = array();
+				}
+
+				$numpoints = count($drawpoly);
+				$dbpoly = $drawpoly;
+				for($i = $numpoints; $i < 8; ++$i) {
+					$dbpoly[] = array(0,0);
+				}
+				$sql = sprintf("INSERT INTO gridsquare_gmcache_tmp (gridsquare_id, gxlow, gylow, gxhigh, gyhigh, area, cliparea, rotangle, scale, cgx, cgy, polycount, poly1gx, poly1gy, poly2gx, poly2gy, poly3gx, poly3gy, poly4gx, poly4gy, poly5gx, poly5gy, poly6gx, poly6gy, poly7gx, poly7gy, poly8gx, poly8gy) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+					$db->Quote($recordSet->fields[2]),
+					$db->Quote(floor($xMmin)),
+					$db->Quote(floor($yMmin)),
+					$db->Quote(ceil ($xMmax)),
+					$db->Quote(ceil ($yMmax)),
+					$db->Quote($area),
+					$db->Quote($cliparea),
+					$db->Quote($rotangle),
+					$db->Quote($scale),
+					$db->Quote($xMC),
+					$db->Quote($yMC),
+					$db->Quote($numpoints),
+					$db->Quote($dbpoly[0][0]),
+					$db->Quote($dbpoly[0][1]),
+					$db->Quote($dbpoly[1][0]),
+					$db->Quote($dbpoly[1][1]),
+					$db->Quote($dbpoly[2][0]),
+					$db->Quote($dbpoly[2][1]),
+					$db->Quote($dbpoly[3][0]),
+					$db->Quote($dbpoly[3][1]),
+					$db->Quote($dbpoly[4][0]),
+					$db->Quote($dbpoly[4][1]),
+					$db->Quote($dbpoly[5][0]),
+					$db->Quote($dbpoly[5][1]),
+					$db->Quote($dbpoly[6][0]),
+					$db->Quote($dbpoly[6][1]),
+					$db->Quote($dbpoly[7][0]),
+					$db->Quote($dbpoly[7][1])
+				);
+				$dbsq->Execute($sql);//FIXME another db connection?
+
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+		}
+		
+		$db->Execute("DROP TABLE IF EXISTS gridsquare_gmcache");
+		$db->Execute("RENAME TABLE gridsquare_gmcache_tmp TO gridsquare_gmcache");
+		
+		//return true to signal completed processing
+		//return false to have another attempt later
+		return true;
+	}
+
+	function updateGMcache($addlimit = -1, $remlimit = -1)
+	{
+		global $CONF;
+		$db=&$this->_getDB();
+		$dbsq=NewADOConnection($GLOBALS['DSN']);
+		require_once('geograph/conversionslatlong.class.php');
+		require_once('geograph/mapmosaic.class.php');
+		$mosaic = new GeographMapMosaic;
+		$conv = new ConversionsLatLong;
+
+		$sqladd="select gs.x,gs.y,gs.gridsquare_id,gs.reference_index from gridsquare as gs left join gridsquare_gmcache as gc using  (gridsquare_id) where gc.gridsquare_id is null";
+		$sqlrem="select gc.gridsquare_id,gc.cgx,gc.cgy from gridsquare_gmcache as gc left join gridsquare as gs using  (gridsquare_id) where gs.gridsquare_id is null";
+		if ($addlimit >= 0)
+			$sqladd .= " limit $addlimit";
+		if ($remlimit >= 0)
+			$sqlrem .= " limit $remlimit";
+
+		$recordSet = &$db->Execute($sqlrem);
+		while (!$recordSet->EOF) {
+			$sql="DELETE FROM gridsquare_gmcache WHERE gridsquare_id = {$recordSet->fields[0]} LIMIT 1";
+			$dbsq->Execute($sql);//FIXME another db connection?
+			list($glatC, $glonC)   = $conv->sm_to_wgs84($recordSet->fields[1],$recordSet->fields[2]);
+			list($geC, $gnC, $ri) = $conv->wgs84_to_national($glatC, $glonC);
+			$x0 = $CONF['origins'][$ri][0];
+			$y0 = $CONF['origins'][$ri][1];
+			$x = round(($geC - 500) / 1000 + $x0);
+			$y = round(($gnC - 500) / 1000 + $y0);
+			$mosaic->expirePosition($x,$y,0,true);
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+
+		$recordSet = &$db->Execute($sqladd);
+		while (!$recordSet->EOF) {
+			$ri = $recordSet->fields[3];
+			$x0 = $CONF['origins'][$ri][0];
+			$y0 = $CONF['origins'][$ri][1];
+			$latmin = $CONF['latrange'][$ri][0];
+			$latmax = $CONF['latrange'][$ri][1];
+			$lonmin = $CONF['lonrange'][$ri][0];
+			$lonmax = $CONF['lonrange'][$ri][1];
+			####### see rebuildGMcache # cleanup needed #######
+				$geBL=($recordSet->fields[0] - $x0) * 1000;
+				$gnBL=($recordSet->fields[1] - $y0) * 1000;
+				$geTR=$geBL+1000;
+				$gnTR=$gnBL+1000;
+				$geC=$geBL+500;
+				$gnC=$gnBL+500;
+				list($glatTL, $glonTL) = $conv->national_to_wgs84($geBL, $gnTR, $ri);
+				list($glatBL, $glonBL) = $conv->national_to_wgs84($geBL, $gnBL, $ri);
+				list($glatTR, $glonTR) = $conv->national_to_wgs84($geTR, $gnTR, $ri);
+				list($glatBR, $glonBR) = $conv->national_to_wgs84($geTR, $gnBL, $ri);
+				list($glatC,  $glonC ) = $conv->national_to_wgs84($geC,  $gnC,  $ri);
+
+				list($xMTL,$yMTL) = $conv->wgs84_to_sm($glatTL, $glonTL);
+				list($xMBL,$yMBL) = $conv->wgs84_to_sm($glatBL, $glonBL);
+				list($xMTR,$yMTR) = $conv->wgs84_to_sm($glatTR, $glonTR);
+				list($xMBR,$yMBR) = $conv->wgs84_to_sm($glatBR, $glonBR);
+				list($xMC, $yMC ) = $conv->wgs84_to_sm($glatC,  $glonC );
+
+				$dxM = $xMBR - $xMBL;
+				$dyM = $yMBR - $yMBL;
+				$scale = hypot($dyM, $dxM) / 1000;
+				$rotangle = atan2($dyM, $dxM);
+				$area = (($yMTL-$yMBR)*($xMTR-$xMBL)+($yMBL-$yMTR)*($xMTL-$xMBR))/2E6;
+
+				$clippoly = array(array($glatTL, $glonTL), array($glatBL, $glonBL), array($glatBR, $glonBR), array($glatTR, $glonTR));
+				$this->_clip_polygon($clippoly, $latmin, $latmax, $lonmin, $lonmax);
+
+
+				#$drawpoly = array();
+				#foreach ($clippoly as &$ll) {
+				#	$drawpoly[] = $conv->wgs84_to_sm($ll[0], $ll[1]);
+				#}
+				if (count($clippoly)) {
+					$ll = end($clippoly);
+					$point = $conv->wgs84_to_sm($ll[0], $ll[1]);
+					$xM = $point[0];
+					$yM = $point[1];
+					$xMmin = $xM;
+					$yMmin = $yM;
+					$xMmax = $xM;
+					$yMmax = $yM;
+					$cliparea = 0.0;
+
+					$head = array();
+					$tail = array();
+					foreach ($clippoly as &$ll) {
+						$xMp = $xM;
+						$yMp = $yM;
+						$point = $conv->wgs84_to_sm($ll[0], $ll[1]);
+						$xM = $point[0];
+						$yM = $point[1];
+						$cliparea += $yM * $xMp - $xM * $yMp;
+						if ($xM < $xMmin) {
+							$xMmin = $xM;
+							$tail = array_merge($tail, $head);
+							$head = array();
+						}
+						if ($xM > $xMmax)
+							$xMmax = $xM;
+						if ($yM < $yMmin)
+							$yMmin = $yM;
+						if ($yM > $yMmax)
+							$yMmax = $yM;
+						$head[] = $point;
+					}
+					$drawpoly = array_merge($head, $tail);# first element: leftmost point
+					$cliparea /= 2E6;
+				} else {
+					$cliparea = 0.0;
+					$xMmin = 0;
+					$yMmin = 0;
+					$xMmax = 0;
+					$yMmax = 0;
+					$drawpoly = array();
+				}
+
+				$numpoints = count($drawpoly);
+				$dbpoly = $drawpoly;
+				for($i = $numpoints; $i < 8; ++$i) {
+					$dbpoly[] = array(0,0);
+				}
+				$sql = sprintf("INSERT INTO gridsquare_gmcache (gridsquare_id, gxlow, gylow, gxhigh, gyhigh, area, cliparea, rotangle, scale, cgx, cgy, polycount, poly1gx, poly1gy, poly2gx, poly2gy, poly3gx, poly3gy, poly4gx, poly4gy, poly5gx, poly5gy, poly6gx, poly6gy, poly7gx, poly7gy, poly8gx, poly8gy) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+					$db->Quote($recordSet->fields[2]),
+					$db->Quote(floor($xMmin)),
+					$db->Quote(floor($yMmin)),
+					$db->Quote(ceil ($xMmax)),
+					$db->Quote(ceil ($yMmax)),
+					$db->Quote($area),
+					$db->Quote($cliparea),
+					$db->Quote($rotangle),
+					$db->Quote($scale),
+					$db->Quote($xMC),
+					$db->Quote($yMC),
+					$db->Quote($numpoints),
+					$db->Quote($dbpoly[0][0]),
+					$db->Quote($dbpoly[0][1]),
+					$db->Quote($dbpoly[1][0]),
+					$db->Quote($dbpoly[1][1]),
+					$db->Quote($dbpoly[2][0]),
+					$db->Quote($dbpoly[2][1]),
+					$db->Quote($dbpoly[3][0]),
+					$db->Quote($dbpoly[3][1]),
+					$db->Quote($dbpoly[4][0]),
+					$db->Quote($dbpoly[4][1]),
+					$db->Quote($dbpoly[5][0]),
+					$db->Quote($dbpoly[5][1]),
+					$db->Quote($dbpoly[6][0]),
+					$db->Quote($dbpoly[6][1]),
+					$db->Quote($dbpoly[7][0]),
+					$db->Quote($dbpoly[7][1])
+				);
+				$dbsq->Execute($sql);//FIXME another db connection?
+			####### see rebuildGMcache # cleanup needed #######
+			$mosaic->expirePosition($recordSet->fields[0],$recordSet->fields[1],0,true);
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+		//return true to signal completed processing
+		//return false to have another attempt later
+		return true;
+	}
+
+	/**
+	* create tlabelmap, save as png image and return the image resource
+	* @access private
+	*/
+	function& _createTLabelmapM($file)
+	{
+		global $CONF;
+		$destw = $this->image_w;
+		$destbdry = $this->render_margin;
+		$img=imagecreatetruecolor($destw+2*$destbdry,$destw+2*$destbdry);
+
+		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
+		imagefill($img,0,0,$back);
+
+		$widthM=$this->map_wM;
+		$dM=$widthM/8;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
+		$rightM=$leftM+$widthM;
+		$topM=$bottomM+$widthM;
+
+		##//plot grid square?
+		#if ($this->level >= 5)
+		#{
+		#	$this->_plotGridLinesM($img,$leftM-$dM,$bottomM-$dM,$rightM+$dM,$topM+$dM);
+		#}
+
+		#if ($this->pixels_per_km>=1  && $this->pixels_per_km<=64 && isset($CONF['enable_newmap'])) {
+		if ($this->level >= 6  /*&& $this->level <= 13*/ && isset($CONF['enable_newmap'])) {
+			$this->_plotPlacenamesM($img,$leftM,$bottomM,$rightM,$topM);
+		}
+
+		$this->_resizeImageM($img, $destw, $destbdry, $destw, 0);
+		imagesavealpha($img, true);
+		imagealphablending($img, false);
+		#imagegd($img, $file); # gd does not like alpha components. I really like php.
+		imagepng($img, $file);
+		return $img;
+	}
+
+	/**
+	* create labelmap, save as png image and return the image resource
+	* @access private
+	*/
+	function& _createLabelmapM($file)
+	{
+		global $CONF;
+		$destw = $this->image_w;
+		$destbdry = $this->render_margin;
+		$img=imagecreatetruecolor($destw+2*$destbdry,$destw+2*$destbdry);
+
+		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
+		imagefill($img,0,0,$back);
+
+		$widthM=$this->map_wM;
+		$dM=$widthM/8;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
+		$rightM=$leftM+$widthM;
+		$topM=$bottomM+$widthM;
+
+		#//plot grid square?
+		if ($this->level >= 4)
+		{
+			$this->_plotGridLinesM($img,$leftM-$dM,$bottomM-$dM,$rightM+$dM,$topM+$dM);
+		}
+
+		##if ($this->pixels_per_km>=1  && $this->pixels_per_km<=64 && isset($CONF['enable_newmap'])) {
+		#if ($this->level >= 6  && $this->level <= 13 && isset($CONF['enable_newmap'])) {
+		#	$this->_plotPlacenamesM($img,$leftM,$bottomM,$rightM,$topM);
+		#}
+
+		$this->_resizeImageM($img, $destw, $destbdry, $destw, 0);
+		imagesavealpha($img, true);
+		imagealphablending($img, false);
+		#imagegd($img, $file); # gd does not like alpha components. I really like php.
+		imagepng($img, $file);
+		return $img;
+	}
+
+	/**
+	* create regionmap, save as png image and return the image resource
+	* @access private
+	*/
+	function& _createRegionmapM($file)
+	{
+		global $CONF;
+		$bdry = $this->base_margin;
+		$imgw = $this->base_width;
+		$destw = $this->image_w;
+
+		$img=imagecreatetruecolor($imgw+2*$bdry,$imgw+2*$bdry);
+		imagealphablending($img, false);
+		
+		//fill in with sea
+		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
+		imagefill($img,0,0,$back);
+		if (isset($CONF['gmhierlevels'][$this->level])) {
+			$hierlevel = $CONF['gmhierlevels'][$this->level];
+		
+			//set greens to use for percentages
+			$land=array( 0 => $back );
+			for ($p=1; $p<=127; $p++)
+			{
+				$land[$p]=imagecolorallocatealpha($img, 0, 0, 0, 127-$p);
+			}
+
+			$widthM=$this->map_wM;
+			$leftM=$this->map_xM;
+			$bottomM=$this->map_yM;
+			$rightM=$leftM+$widthM;
+			$topM=$bottomM+$widthM;
+			$db=&$this->_getDB();
+			$sql="select percent_land,mappal,norm,cliparea,area,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) inner join gridsquare_mappal using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and level = $hierlevel";
+			$recordSet = &$db->Execute($sql);
+			while (!$recordSet->EOF) {
+				$percent_land = $recordSet->fields[0];
+				$land_part = $percent_land < 0 ? 0. : $percent_land/100.;
+				$zone_part = $recordSet->fields[3]/$recordSet->fields[4];
+				$pal = $recordSet->fields[1];
+				$pal_norm = $recordSet->fields[2];
+				if ($pal_norm < .00001) {
+					$pal = 0;
+				} elseif ($land_part < $pal_norm) {
+					$pal *= $land_part/$pal_norm;
+				}
+				if ($zone_part > 0) {
+					$pal /= $zone_part;
+				}
+				$pal = max(0, min(127, round($pal*8)));
+
+				$points = $recordSet->fields[5];
+				$drawpoly = array();
+				for ($i = 0; $i < $points; ++$i) {
+					$xM = $recordSet->fields[6+$i*2];
+					$yM = $recordSet->fields[7+$i*2];
+					$drawpoly[] = $bdry + round(($xM - $leftM)   / $widthM * $imgw);
+					$drawpoly[] = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+				}
+
+				imagefilledpolygon($img, $drawpoly, $points, $land[$pal]);
+
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+		}
+
+		$this->_resizeImageM($img, $imgw, $bdry, $destw, 0);
+		imagesavealpha($img, true);
+		imagealphablending($img, false);
+		imagepng($img, $file);
+		return $img;
+	}
+
+	/**
+	* create basemap, save as gd image and return the image resource
+	* @access private
+	*/
+	function& _createBasemapM($file)
+	{
+		global $CONF;
+		$bdry = $this->base_margin;
+		$imgw = $this->base_width;
+		$destw = $this->image_w;
+
+		$img=imagecreatetruecolor($imgw+2*$bdry,$imgw+2*$bdry);
+		
+		//fill in with sea
+		$blue=imagecolorallocate ($img, $this->colour['sea'][0],$this->colour['sea'][1],$this->colour['sea'][2]);
+		imagefill($img,0,0,$blue);
+		
+		$rmin=$this->colour['sea'][0];
+		$rmax=$this->colour['land'][0];
+		$gmin=$this->colour['sea'][1];
+		$gmax=$this->colour['land'][1];
+		$bmin=$this->colour['sea'][2];
+		$bmax=$this->colour['land'][2];
+		
+		//set greens to use for percentages
+		$land=array();
+		for ($p=0; $p<=100; $p++)
+		{
+			$scale=$p/100;
+			
+			$r=round($rmin + ($rmax-$rmin)*$scale);
+			$g=round($gmin + ($gmax-$gmin)*$scale);
+			$b=round($bmin + ($bmax-$bmin)*$scale);
+			
+			$land[$p]=imagecolorallocate($img, $r,$g,$b);
+
+		}
+		$land[-1]=imagecolorallocate($img, $rmin,$gmin,$bmin);
+
+		$widthM=$this->map_wM;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
+		$rightM=$leftM+$widthM;
+		$topM=$bottomM+$widthM;
+		$db=&$this->_getDB();
+#SELECT * FROM `gridsquare_gmcache` mc INNER JOIN `gridsquare` gs ON (mc.gridsquare_id = gs.gridsquare_id AND `gxlow` <=1010000 AND `gxhigh` >=1000000 AND `gylow` <=6510000 AND `gyhigh` >=6500000)
+#Zeige Datensätze 0 - 29 (56 insgesamt, die Abfrage dauerte 0.1857 sek.)
+#
+#
+#SELECT * FROM `gridsquare_gmcache`  INNER JOIN `gridsquare` USING (`gridsquare_id`) WHERE `gxlow` <=1010000 AND `gxhigh` >=1000000 AND `gylow` <=6510000 AND `gyhigh` >=6500000
+#Zeige Datensätze 0 - 29 (56 insgesamt, die Abfrage dauerte 0.1767 sek.)
+		$sql="select percent_land,cliparea,area,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) {
+			$percent_land = $recordSet->fields[0];
+			$zone_part = $recordSet->fields[1]/$recordSet->fields[2];
+			if ($zone_part > 0 && $percent_land > 0) {
+				$percent_land /= $zone_part;
+				$percent_land = min(100,$percent_land);
+			}
+
+			$points = $recordSet->fields[3];
+			$drawpoly = array();
+			for ($i = 0; $i < $points; ++$i) {
+				$xM = $recordSet->fields[4+$i*2];
+				$yM = $recordSet->fields[5+$i*2];
+				$drawpoly[] = $bdry + round(($xM - $leftM)   / $widthM * $imgw);
+				$drawpoly[] = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+			}
+
+			imagefilledpolygon($img, $drawpoly, $points, $land[$percent_land]);
+
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+
+		$this->_resizeImageM($img, $imgw, $bdry, $destw, 0);
+		imagepng($img, $file);
+		return $img;
 	}
 	
 	/**
@@ -617,14 +1859,21 @@ class GeographMap
 			$land[$p]=imagecolorallocate($img, $r,$g,$b);
 
 		}
-		
+		$land[-1]=imagecolorallocate($img, $rmin,$gmin,$bmin);
+
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
+
 		//paint the land
 		$db=&$this->_getDB();
 			
 		$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 		
 		//now plot all squares in the desired area
-		$sql="select x,y,percent_land,reference_index from gridsquare where 
+		$sql="select x,y,percent_land,reference_index from gridsquare where $riwhere
 			CONTAINS( GeomFromText($rectangle),	point_xy)";
 
 		$recordSet = &$db->Execute($sql);
@@ -685,38 +1934,508 @@ class GeographMap
 		//figure out what we're mapping in internal coords
 		$db=&$this->_getDB();
 		
-		$dbImg=NewADOConnection($GLOBALS['DSN']);
+		if ($this->mercator) {
+			$widthM=$this->map_wM;
+			$leftM=$this->map_xM;
+			$bottomM=$this->map_yM;
+			$rightM=$leftM+$widthM;
+			$topM=$bottomM+$widthM;
+			$sql="select gridimage_id from gridimage_search inner join gridsquare_gmcache using(gridsquare_id) where user_id = $user_id and gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
+		} else {
+			//$dbImg=NewADOConnection($GLOBALS['DSN']);//FIXME?
 
-		$left=$this->map_x;
-		$bottom=$this->map_y;
-		$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
-		$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+			$left=$this->map_x;
+			$bottom=$this->map_y;
+			$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+			$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
 
-		//size of a marker in pixels
-		$markerpixels=$this->pixels_per_km;
-		
-		//size of marker in km
-		$markerkm=ceil($markerpixels/$this->pixels_per_km);
-		
-		//we scan for images a little over the edges so that if
-		//an image lies on a mosaic edge, we still plot the point
-		//on both mosaics
-		$overscan=$markerkm;
-		$scanleft=$left-$overscan;
-		$scanright=$right+$overscan;
-		$scanbottom=$bottom-$overscan;
-		$scantop=$top+$overscan;
+			//size of a marker in pixels
+			$markerpixels=$this->pixels_per_km;
+			
+			//size of marker in km
+			$markerkm=ceil($markerpixels/$this->pixels_per_km);
+			
+			//we scan for images a little over the edges so that if
+			//an image lies on a mosaic edge, we still plot the point
+			//on both mosaics
+			$overscan=$markerkm;
+			$scanleft=$left-$overscan;
+			$scanright=$right+$overscan;
+			$scanbottom=$bottom-$overscan;
+			$scantop=$top+$overscan;
 
-		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 
-		//because we are only interested if any photos on tile, use limit 1 (added by getOne) rather than a count(*)
-		$sql="select gridimage_id from gridimage_search where 
-				CONTAINS( GeomFromText($rectangle),	point_xy) and
-				user_id = $user_id";
+			//because we are only interested if any photos on tile, use limit 1 (added by getOne) rather than a count(*)
+			$sql="select gridimage_id from gridimage_search where 
+					CONTAINS( GeomFromText($rectangle),	point_xy) and
+					user_id = $user_id";
+		}
 		$id = $db->getOne($sql);
 		
 		return !empty($id);
 	}
+
+	/**
+	* resize image. assumptions: $destbdry == 0 _OR_ $bdry/$width == $destbdry/$destwidth
+	* @access private
+	*/
+	function _resizeImageM(&$img, $width, $bdry, $destwidth, $destbdry)
+	{
+		if ($width != $destwidth) { # rescale
+			if ($bdry != 0 && $destbdry == 0) { # remove bdry
+				$resized = imagecreatetruecolor($destwidth,$destwidth);
+				imagealphablending($resized, false);
+				imagecopyresampled($resized, $img, 0, 0, $bdry, $bdry, 
+						$destwidth,$destwidth, $width, $width);
+			} else {
+				$destwb = $destwidth+2*$destbdry;
+				$wb = $width+2*$bdry;
+				$resized = imagecreatetruecolor($destwb,$destwb);
+				imagealphablending($resized, false);
+				imagecopyresampled($resized, $img, 0, 0, 0, 0, 
+						$destwb,$destwb, $wb, $wb);
+			}
+			imagedestroy($img);
+			$img = $resized;
+		} elseif ($bdry != 0 && $destbdry == 0) { # remove bdry
+			$resized = imagecreatetruecolor($destwidth,$destwidth);
+			imagealphablending($resized, false);
+			imagecopy($resized, $img, 0, 0, $bdry, $bdry, 
+					$destwidth,$destwidth);
+			
+			imagedestroy($img);
+			$img = $resized;
+		} else { #nothing to do
+		}
+	}
+
+	/**
+	* create squaremap, save as png image and return the image resource
+	* @access private
+	*/
+	function& _createSquaremapM($file)
+	{
+		global $CONF;
+		$ok = true;
+
+		if ($this->type_or_user == -10) {
+			$imgw = $this->image_w;
+			$img = imagecreatetruecolor($imgw, $imgw);
+			if (!$img) {
+				return img; #FIXME
+			}
+			imagealphablending($img, true);
+			imagesavealpha($img, true);
+			$back = imagecolorallocatealpha ($img, 0, 0, 0, 127);
+			imagefill($img, 0, 0, $back);
+			imagealphablending($img, false);
+			imagepng($img, $file);
+			return $img; #FIXME $ok?
+		}
+
+		$bdry = $this->base_margin;
+		$imgw = $this->base_width;
+		$img=imagecreatetruecolor($imgw+2*$bdry,$imgw+2*$bdry);
+		if (!$img) {
+			return img; #FIXME
+		}
+		#imagealphablending($img, true);
+		imagealphablending($img, false);
+		#imagesavealpha($img, true);
+		$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
+		imagefill($img,0,0,$back);
+		$alpha = $this->overlay == 2 ? 80 : 0;
+
+		$widthM=$this->map_wM;
+		$dM=$widthM/8;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
+		$rightM=$leftM+$widthM;
+		$topM=$bottomM+$widthM;
+		$colMarker=imagecolorallocatealpha($img, $this->colour['marker'][0],$this->colour['marker'][1],$this->colour['marker'][2], $alpha);
+		$colSuppMarker=imagecolorallocatealpha($img, $this->colour['suppmarker'][0],$this->colour['suppmarker'][1],$this->colour['suppmarker'][2], $alpha);
+		$colBorder=imagecolorallocate($img, $this->colour['border'][0],$this->colour['border'][1],$this->colour['border'][2]);
+		if ($this->type_or_user == -1) {
+			$maxcount = 80;
+			$colours=array();
+			$last=$lastcolour=null;
+			for ($o = 0; $o <= $maxcount; $o++) {
+				//standard green, yellow => red
+				switch (true) {
+					case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
+					//case $o == 1: $r=255; $g=255; $b=0; break; 
+					//case $o == 2: $r=255; $g=196; $b=0; break; 
+					//case $o == 3: $r=255; $g=132; $b=0; break; 
+					case $o == 1: $r=255; $g=196; $b=0; break; 
+					case $o == 2: $r=255; $g=154; $b=0; break; 
+					case $o == 3: $r=255; $g=110; $b=0; break; 
+					case $o == 4: $r=255; $g=64; $b=0; break; 
+					case $o <  7: $r=225; $g=0; $b=0; break; #5-6
+					case $o < 10: $r=200; $g=0; $b=0; break; #7-9
+					case $o < 20: $r=168; $g=0; $b=0; break; #10-19
+					case $o < 40: $r=136; $g=0; $b=0; break; #20-39
+					case $o < 80: $r=112; $g=0; $b=0; break; #40-79
+					default: $r=80; $g=0; $b=0; break;
+				}
+				$key = "$r,$g,$b";
+				if ($key == $last) {
+					$colours[$o] = $lastcolour;
+				} else {
+					$lastcolour = $colours[$o] = imagecolorallocatealpha($img, $r,$g,$b, $alpha);
+				}
+				$last = $key;
+			}
+		}
+
+		$db=&$this->_getDB();
+		if ($this->level >= 12) {
+			$dbImg=NewADOConnection($GLOBALS['DSN']);
+			##imagealphablending($img, true);
+			#$gridcol2=imagecolorallocate ($img, 60,205,252);
+		}
+
+		if ($this->type_or_user == 0) {
+			# coverage map
+			$number = !empty($this->minimum)?intval($this->minimum):0;
+			#$sql="select x,y,gridsquare_id,has_geographs from gridsquare where $riwhere
+			#	CONTAINS( GeomFromText($rectangle),	point_xy)
+			#	and imagecount>$number";
+			#FIXME remove reference_index,x,y
+			$whereuser = '';
+			$sql="select gridsquare_id,has_geographs,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and imagecount > $number";
+		} else if ($this->type_or_user > 0) {
+			# personal map
+			#$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where $riwhere
+			#	CONTAINS( GeomFromText($rectangle),	point_xy) and
+			#	user_id = {$this->type_or_user} group by grid_reference";
+			$whereuser = "and user_id = {$this->type_or_user}";
+			$sql="select gridsquare_id,sum(moderation_status = 'geograph') as has_geographs,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridimage_search using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM $whereuser group by gridsquare_id";
+		} else if ($this->type_or_user == -1) {
+			# depth map
+			$number = !empty($this->minimum)?intval($this->minimum):0;
+			#$sql="select x,y,gridsquare_id,imagecount from gridsquare where $riwhere
+			#	CONTAINS( GeomFromText($rectangle),	point_xy)
+			#	and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
+			$whereuser = '';
+			$sql="select gridsquare_id,imagecount,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and imagecount > $number";
+		}
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) {
+			if ($this->type_or_user < 0) {
+				$imgcount = $recordSet->fields[1];
+				$color = $colours[$imgcount <= $maxcount ? $imgcount : $maxcount];
+			} else {
+				$has_geographs = $recordSet->fields[1];
+				$color = $has_geographs ? $colMarker : $colSuppMarker;
+			}
+
+			if ($this->level <= 11 || $this->overlay || $this->type_or_user < 0) {
+				$points = $recordSet->fields[6];
+				$drawpoly = array();
+				for ($i = 0; $i < $points; ++$i) {
+					$xM = $recordSet->fields[7+$i*2];
+					$yM = $recordSet->fields[8+$i*2];
+					$drawpoly[] = $bdry + round(($xM - $leftM)   / $widthM * $imgw);
+					$drawpoly[] = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+				}
+				imagealphablending($img, false);
+				imagefilledpolygon($img, $drawpoly, $points, $color);
+			} else {
+				#if (!empty($this->type_or_user)) { #FIXME
+				#	$grid_reference=$recordSet->fields[2];
+				#
+				#	$sql="select * from gridimage_search where grid_reference='$grid_reference' 
+				#	and user_id = {$this->type_or_user} order by moderation_status+0 desc,seq_no limit 1";
+				#} else {
+					$gridsquare_id=$recordSet->fields[0];
+			
+					$sql="select * from gridimage where gridsquare_id=$gridsquare_id 
+					and moderation_status in ('accepted','geograph') $whereuser order by moderation_status+0 desc,seq_no limit 1";
+				
+				#}
+
+				//echo "$sql\n";	
+				$rec=$dbImg->GetRow($sql);
+				if (count($rec)) {
+					$gridimage=new GridImage;
+					$gridimage->fastInit($rec);
+					$crop = 1.0;
+					$thumbsize = $CONF['gmthumbsize12'] * pow(2,$this->level-12);
+					#######################################################FIXME
+					#$ri = $recordSet->fields[21]; #FIXME
+					#$x0 = $CONF['origins'][$ri][0];
+					#$y0 = $CONF['origins'][$ri][1];
+					#$eC=($recordSet->fields[22] - $x0) * 1000 + 500;
+					#$nC=($recordSet->fields[23] - $y0) * 1000 + 500;
+					#require_once('geograph/conversionslatlong.class.php');
+					#$conv = new ConversionsLatLong;
+					#list($latC, $lonC) = $conv->national_to_wgs84($eC, $nC, $ri);
+					#list($xMC,$yMC) = $conv->wgs84_to_sm($latC, $lonC);#FIXME $xMC,$yMC -> database
+					#######################################################
+					$xMC = $recordSet->fields[4];
+					$yMC = $recordSet->fields[5];
+					$xc = $bdry + round(($xMC - $leftM)   / $widthM * $imgw);
+					$yc = $bdry + $imgw - 1 - round(($yMC - $bottomM) / $widthM * $imgw);
+					$xi = $xc - floor($thumbsize/2);
+					$yi = $yc - floor($thumbsize/2);
+					#trigger_error("ph {$gridimage->gridimage_id}", E_USER_NOTICE);
+					$points = $recordSet->fields[6];
+					$photopoly = array();
+					#$framepoly = array();
+					for ($i = 0; $i < $points; ++$i) {
+						$xM = $recordSet->fields[7+$i*2];
+						$yM = $recordSet->fields[8+$i*2];
+						$xf = $bdry + round(($xM - $leftM)   / $widthM * $imgw);
+						$yf = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+						$xp = $xf - $xi;
+						$yp = $yf - $yi;
+						#$framepoly[] = $xf;
+						#$framepoly[] = $yf;
+						#trigger_error("ph<-$xp $yp", E_USER_NOTICE);
+						$p = array($xp, $yp);
+						$photopoly[] = $p;
+					}
+					#trigger_error("ph->".implode($photopoly, ', '), E_USER_NOTICE);
+					#$ps = '';
+					#foreach ($photopoly as &$p) {
+					#	$ps .= '(' . implode($p, ', ') . '), ';
+					#}
+					#trigger_error("ph-> $ps", E_USER_NOTICE);
+					if ($has_geographs) {
+						$photo=$gridimage->getPolyThumb($thumbsize,$crop,$photopoly,"M{$this->tile_x}-{$this->tile_y}");
+					} else {
+						$scale = $recordSet->fields[2];
+						$rotangle = $recordSet->fields[3];
+						#trigger_error("pd-- $scale $rotangle", E_USER_NOTICE);
+						$sinrot = sin($rotangle);
+						$cosrot = cos($rotangle);
+						$radius = 9*pow(2,$this->level-12)*$scale;
+						$xmarker = $radius*(-$sinrot-$cosrot)+floor($thumbsize/2);
+						$ymarker = $radius*(+$sinrot-$cosrot)+floor($thumbsize/2);
+						$mp = array($xmarker, $ymarker);
+						$photo=$gridimage->getPolyThumb($thumbsize,$crop,$photopoly,"MS{$this->tile_x}-{$this->tile_y}", $mp, $this->colour['suppmarker']);
+					}
+					if (!is_null($photo)) {
+						imagealphablending($photo, true);
+						imagealphablending($img, true);
+						imagecopy($img, $photo, $xi, $yi, 0, 0, $thumbsize, $thumbsize);
+						imagedestroy($photo);
+						#$framepoints = count($framepoly)/2;
+						#if ($framepoints) {
+						#	imagepolygon($img, $framepoly, count($framepoly)/2, $gridcol2);
+						#}
+					} else {
+						$ok = false;
+					}
+				}
+			}
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+
+		$destw = $this->image_w;
+		$this->_resizeImageM($img, $imgw, $bdry, $destw, 0);
+		imagesavealpha($img, true);
+		imagealphablending($img, false);
+		imagepng($img, $file);
+		return $img; #FIXME $ok?
+	}
+
+	/**
+	* render the image to cached file if not already available
+	* @access private
+	*/
+	function _renderImageM()
+	{
+		global $CONF;
+		$root=&$_SERVER['DOCUMENT_ROOT'];
+		
+		if (($this->layers & 31) == 0) {
+			return false;
+		}
+		$ok = true;
+		$baseimg = null;
+		$labelimg = null;
+		$squareimg = null;
+		$regionimg = null;
+		$layers = array();
+		#$layerpct = array();
+
+		if ($this->layers & 1) {
+			if ($this->overlay == 2) {
+				$basemap=$this->getOSMFilename();
+				if (@file_exists($root.$basemap)) {
+					//load it up!
+					#$baseimg=imagecreatefrompng($root.$basemap); # I hate gd ...
+					$tmpimg = imagecreatefrompng($root.$basemap);
+					if ($tmpimg) {
+						$baseimg = imagecreatetruecolor(256, 256);
+						imagecopy($baseimg, $tmpimg, 0, 0, 0, 0, 256, 256);
+						imagedestroy($tmpimg);
+					}
+				}
+			} else {
+				//first of all, generate or pull in a cached based map
+				$basemap=$this->getBaseMapFilename();
+				if ($this->caching && @file_exists($root.$basemap))
+				{
+					//load it up!
+					$baseimg=imagecreatefrompng($root.$basemap);
+				}
+				else
+				{
+					//we need to generate a basemap
+					$baseimg=&$this->_createBasemapM($root.$basemap);
+				}
+			}
+			
+			if (!$baseimg) {
+				return false;
+			}
+			$layers[] =& $baseimg;
+			#$layerpct[] = 100;
+		}
+		if (($this->layers & 2) && ($this->type_or_user != -10 || $this->layers == 2)) {
+			$squaremap=$this->getImageFilename(2);
+			if ($this->caching_squaremap && @file_exists($root.$squaremap))
+			{
+				//load it up!
+				$squareimg=imagecreatefrompng($root.$squaremap);
+			}
+			else
+			{
+				//we need to generate a squaremap
+				$squareimg=&$this->_createSquaremapM($root.$squaremap);
+				#FIXME tilecache
+			}
+			
+			if (!$squareimg) {
+				if (!is_null($baseimg)) {
+					imagedestroy($baseimg);
+				}
+				#if (!is_null($labelimg)) {
+				#	imagedestroy($labelimg);
+				#}
+				return false;
+			}
+			$layers[] =& $squareimg;
+			#$layerpct[] = $this->overlay != 2 ? 100 : 30;
+		}
+		if ($this->layers & 4) {
+			$regionmap=$this->getLabelMapFilename(false,true);
+			if ($this->caching && @file_exists($root.$regionmap))
+			{
+				//load it up!
+				$regionimg=imagecreatefrompng($root.$regionmap);
+			}
+			else
+			{
+				//we need to generate a regionmap
+				$regionimg=&$this->_createRegionmapM($root.$regionmap);
+			}
+			
+			if (!$regionimg) {
+				if (!is_null($squareimg)) {
+					imagedestroy($squareimg);
+				}
+				if (!is_null($baseimg)) {
+					imagedestroy($baseimg);
+				}
+				return false;
+			}
+			$layers[] =& $regionimg;
+			#$layerpct[] = 100;
+		}
+		if ($this->layers & 8) {
+			$labelmap=$this->getLabelMapFilename(false,false);
+			if ($this->caching && @file_exists($root.$labelmap))
+			{
+				//load it up!
+				$labelimg=imagecreatefrompng($root.$labelmap);
+			}
+			else
+			{
+				//we need to generate a labelmap
+				$labelimg=&$this->_createLabelmapM($root.$labelmap);
+			}
+			
+			if (!$labelimg) {
+				if (!is_null($regionimg)) {
+					imagedestroy($regionimg);
+				}
+				if (!is_null($squareimg)) {
+					imagedestroy($squareimg);
+				}
+				if (!is_null($baseimg)) {
+					imagedestroy($baseimg);
+				}
+				return false;
+			}
+			$layers[] =& $labelimg;
+			#$layerpct[] = 100;
+		}
+		if ($this->layers & 16) {
+			$tlabelmap=$this->getLabelMapFilename(true,false);
+			if ($this->caching && @file_exists($root.$tlabelmap))
+			{
+				//load it up!
+				$tlabelimg=imagecreatefrompng($root.$tlabelmap);
+			}
+			else
+			{
+				//we need to generate a tlabelmap
+				$tlabelimg=&$this->_createTLabelmapM($root.$tlabelmap);
+			}
+			
+			if (!$tlabelimg) {
+				if (!is_null($labelimg)) {
+					imagedestroy($labelimg);
+				}
+				if (!is_null($regionimg)) {
+					imagedestroy($regionimg);
+				}
+				if (!is_null($squareimg)) {
+					imagedestroy($squareimg);
+				}
+				if (!is_null($baseimg)) {
+					imagedestroy($baseimg);
+				}
+				return false;
+			}
+			$layers[] =& $tlabelimg;
+			#$layerpct[] = 100;
+		}
+		if (count($layers) == 1) {
+			return $ok;
+		}
+
+		#foreach ($layers as &$layerimg) {
+		#	imagealphablending($layerimg, true);
+		#}
+		$destw = $this->image_w;
+		imagealphablending($layers[0], true);
+		for ($i = 1; $i < count($layers);++$i) {
+			imagealphablending($layers[$i], true);
+			#if ($layerpct[$i] == 100)
+				imagecopy($layers[0], $layers[$i],      0, 0, 0, 0, $destw, $destw);
+			#else
+			#	imagecopymerge($layers[0], $layers[$i],      0, 0, 0, 0, $destw, $destw, $layerpct[$i]); # this does handle alpha transparency incorrectly. I hate gd.
+			imagedestroy($layers[$i]);
+		}
+
+		$target=$this->getImageFilename();
+		
+		#if (preg_match('/jpg/',$target)) {
+		#	$ok = (imagejpeg($layers[0], $root.$target) && $ok); # FIXME remove?
+		#} else {
+			imagesavealpha($layers[0], true);
+			imagealphablending($layers[0], false);
+			$ok = (imagepng($layers[0], $root.$target) && $ok);
+		#}
+
+		return $ok;
+	}	
 
 	/**
 	* render the image to cached file if not already available
@@ -806,6 +2525,11 @@ class GeographMap
 		
 		$dbImg=NewADOConnection($GLOBALS['DSN']);
 		
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
 
 		$left=$this->map_x;
 		$bottom=$this->map_y;
@@ -844,13 +2568,13 @@ class GeographMap
 					inner join mapfix_log using (gridsquare_id)  
 					group by gridsquare_id";
 			} else {
-				$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where 
+				$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where $riwhere
 					CONTAINS( GeomFromText($rectangle),	point_xy) and
 					user_id = {$this->type_or_user} group by grid_reference";
 			}
 		} else {
 			$number = !empty($this->minimum)?intval($this->minimum):0;
-			$sql="select x,y,gridsquare_id,has_geographs from gridsquare where 
+			$sql="select x,y,gridsquare_id,has_geographs from gridsquare where $riwhere
 				CONTAINS( GeomFromText($rectangle),	point_xy)
 				and imagecount>$number";
 		}
@@ -891,7 +2615,7 @@ class GeographMap
 				//easy!
 				imagesetpixel($img,$imgx1, $imgy1,$color);
 			}
-			elseif ($this->pixels_per_km<=4)
+			elseif ($this->pixels_per_km<32)
 			{
 				//nice large marker
 				imagefilledrectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $color);
@@ -948,6 +2672,8 @@ class GeographMap
 		$recordSet->Close(); 
 
 		if ($img) {
+			//trigger_error("->img: pix: " . $this->pixels_per_km .", newmap: " . $CONF['enable_newmap'], E_USER_NOTICE);
+
 			//ok being false isnt fatal, as we can create a tile, however we should use it to try again later!
 			
 			//plot grid square?
@@ -956,7 +2682,7 @@ class GeographMap
 				$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 			}
 
-			if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40 && isset($CONF['enable_newmap']))
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<=64 && isset($CONF['enable_newmap']))
 			{
 				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 			}				
@@ -971,6 +2697,7 @@ class GeographMap
 			imagedestroy($img);
 			return $ok;
 		} else {
+			//trigger_error("->!img: pix: " . $this->pixels_per_km .", newmap: " . $CONF['enable_newmap'], E_USER_NOTICE);
 			return false;
 		}
 	}	
@@ -986,9 +2713,12 @@ class GeographMap
 		foreach (array(0,1,2,3,4,5,7,10,20,40) as $idx => $o) {
 			switch (true) {
 				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
-				case $o == 1: $r=255; $g=255; $b=0; break; 
-				case $o == 2: $r=255; $g=196; $b=0; break; 
-				case $o == 3: $r=255; $g=132; $b=0; break; 
+				//case $o == 1: $r=255; $g=255; $b=0; break; 
+				//case $o == 2: $r=255; $g=196; $b=0; break; 
+				//case $o == 3: $r=255; $g=132; $b=0; break; 
+				case $o == 1: $r=255; $g=196; $b=0; break; 
+				case $o == 2: $r=255; $g=154; $b=0; break; 
+				case $o == 3: $r=255; $g=110; $b=0; break; 
 				case $o == 4: $r=255; $g=64; $b=0; break; 
 				case $o <  7: $r=225; $g=0; $b=0; break; 
 				case $o < 10: $r=200; $g=0; $b=0; break; 
@@ -1039,7 +2769,13 @@ class GeographMap
 		if (!$img) {
 			return false;
 		}
-		
+
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
+
 		$db=&$this->_getDB();
 		
 		if ($this->type_or_user == -3) {
@@ -1058,9 +2794,12 @@ class GeographMap
 			//standard green, yellow => red
 			switch (true) {
 				case $o == 0: $r=$this->colour['land'][0]; $g=$this->colour['land'][1]; $b=$this->colour['land'][2]; break; 
-				case $o == 1: $r=255; $g=255; $b=0; break; 
-				case $o == 2: $r=255; $g=196; $b=0; break; 
-				case $o == 3: $r=255; $g=132; $b=0; break; 
+				//case $o == 1: $r=255; $g=255; $b=0; break; 
+				//case $o == 2: $r=255; $g=196; $b=0; break; 
+				//case $o == 3: $r=255; $g=132; $b=0; break; 
+				case $o == 1: $r=255; $g=196; $b=0; break; 
+				case $o == 2: $r=255; $g=154; $b=0; break; 
+				case $o == 3: $r=255; $g=110; $b=0; break; 
 				case $o == 4: $r=255; $g=64; $b=0; break; 
 				case $o <  7: $r=225; $g=0; $b=0; break; #5-6
 				case $o < 10: $r=200; $g=0; $b=0; break; #7-9
@@ -1122,11 +2861,11 @@ class GeographMap
 			from 
 			gridsquare gs 
 			inner join gridimage gi using(gridsquare_id)
-			where CONTAINS( GeomFromText($rectangle),	point_xy) and
+			where $riwhere CONTAINS( GeomFromText($rectangle),	point_xy) and
 			submitted < '{$this->mapDateStart}'
 			group by gi.gridsquare_id ";
 		} else {
-		$sql="select x,y,gridsquare_id,imagecount from gridsquare where 
+		$sql="select x,y,gridsquare_id,imagecount from gridsquare where $riwhere
 			CONTAINS( GeomFromText($rectangle),	point_xy)
 			and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
 		}
@@ -1177,7 +2916,7 @@ class GeographMap
 		if ($img) {
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 			
-			if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap'])) {
+			if ($this->pixels_per_km>=1  && $this->pixels_per_km<32 && isset($CONF['enable_newmap'])) {
 				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 			}				
 			
@@ -1235,6 +2974,12 @@ class GeographMap
 		#$sql="select imagecount from gridsquare group by imagecount";
 		#$counts = $db->getCol($sql);
 
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
+
 		//figure out what we're mapping in internal coords
 		$left=$this->map_x;
 		$bottom=$this->map_y;
@@ -1266,7 +3011,7 @@ class GeographMap
 				from 
 				gridsquare gs 
 				inner join gridimage gi using(gridsquare_id)
-				where CONTAINS( GeomFromText($rectangle),	point_xy) and
+				where $riwhere CONTAINS( GeomFromText($rectangle),	point_xy) and
 				imagetaken LIKE '{$this->displayYear}%'
 				group by gi.gridsquare_id ";
 		
@@ -1275,7 +3020,7 @@ class GeographMap
 				from 
 				gridsquare gs 
 				inner join gridimage gi using(gridsquare_id)
-				where CONTAINS( GeomFromText($rectangle),	point_xy) and
+				where $riwhere CONTAINS( GeomFromText($rectangle),	point_xy) and
 				submitted < '{$this->mapDateStart}'
 				group by gi.gridsquare_id ";
 		}
@@ -1310,7 +3055,7 @@ class GeographMap
 
 				imagestring($img, 5, 3, $this->image_h-30, $this->mapDateStart, $black);
 
-				if ($this->pixels_per_km>=1  && $this->pixels_per_km<40 && isset($CONF['enable_newmap']))
+				if ($this->pixels_per_km>=1  && $this->pixels_per_km<32 && isset($CONF['enable_newmap']))
 					$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
 			}
 			$target=$this->getImageFilename();
@@ -1358,6 +3103,12 @@ class GeographMap
 		$db=&$this->_getDB();
 		
 		$dbImg=NewADOConnection($GLOBALS['DSN']);
+
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
 		
 
 		$left=$this->map_x;
@@ -1507,6 +3258,7 @@ class GeographMap
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 
+		if (empty($this->force_ri)) {
 			if (!$this->reference_index) {
 				$this->getGridRef(-1,-1);
 				if (!$this->reference_index) {
@@ -1515,7 +3267,12 @@ class GeographMap
 				}
 			}
 			
-		$reference_index = $this->reference_index;
+			$reference_index = $this->reference_index;
+			$riwhere = '';
+		} else {
+			$reference_index = $this->force_ri;
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
 		
 		$gridcol=imagecolorallocate ($img, 109,186,178);
 
@@ -1526,18 +3283,22 @@ class GeographMap
 			$div = 500000; //1 per 500k square
 			$crit = "s = '1' AND";
 			$cityfont = 3;
-		} elseif ($this->pixels_per_km == 1) {
+		} elseif ($this->pixels_per_km <= 2) { //FIXME limit?
 			$div = 100000; 
 			$crit = "(s = '1' OR s = '2') AND";
 			$cityfont = 3;
-		} elseif ($this->pixels_per_km == 4) {
+		} elseif ($this->pixels_per_km <= 4) { //FIXME limit?
 			$div = 30000;
 		#	$crit = "(s = '1' OR s = '2') AND";
+			$crit = "(s IN ('1','2','3')) AND";
 			$cityfont = 3;
 		} else {
 			$div = 10000;
+			$crit = "(s IN ('1','2','3','4')) AND";
 			$cityfont = 3;
 		}
+
+		$crit = $riwhere.$crit;
 
 		$intleft=$scanleft*1000;
 		$intright=$scanright*1000;
@@ -1545,12 +3306,20 @@ class GeographMap
 		$inttop=$scantop*1000;
 		$rectangle = "'POLYGON(($natleft $natbottom,$natright $natbottom,$natright $nattop,$natleft $nattop,$natleft $natbottom))'";
 		$rectanglexy = "'POLYGON(($intleft $intbottom,$intright $intbottom,$intright $inttop,$intleft $inttop,$intleft $intbottom))'";
+		#trigger_error($rectanglexy, E_USER_NOTICE);
 		
 
 if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 ) || $reference_index >= 3) {
 	//$countries = "'EN','WA','SC'";
+	//FIXME either use 
+        //   CONTAINS( GeomFromText($rectangle),	point_en) 
+        //   AND reference_index = $reference_index
+	//(some towns are missing, then) or
+        //   CONTAINS( GeomFromText($rectanglexy),	point_xy) 
+#CONTAINS( GeomFromText($rectangle),	point_en) 
+#AND reference_index = $reference_index
 $sql = <<<END
-SELECT name,e,n,s,quad,reference_index
+SELECT short_name as name,e,n,s,quad,reference_index
 FROM loc_towns
 WHERE 
  $crit
@@ -1582,21 +3351,27 @@ END;
 			
 			$str = floor($e/$div) .' '. floor($n/$div*1.4);
 			if (!$squares[$str]) {// || $recordSet->fields['s'] ==1) {
-				$squares[$str]++;
-			
-				list($x,$y) = $conv->national_to_internal($e,$n,$recordSet->fields['reference_index'] );
 
+				list($x,$y) = $conv->national_to_internal($e,$n,$recordSet->fields['reference_index'] );
 				$imgx1=($x-$left) * $this->pixels_per_km;
 				$imgy1=($this->image_h-($y-$bottom+1)* $this->pixels_per_km);
-				
-				if ($this->pixels_per_km<=4) {				
-					imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
-					imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
+
+				$dotsize = $this->pixels_per_km<32 ? 2 : 0; //FIXME limit?
+				#trigger_error("A: {$this->pixels_per_km} $dotsize $imgx1 $imgy1 {$this->image_w} {$this->image_h}", E_USER_NOTICE);
+				if ($imgx1 >= $dotsize && $imgy1 >= $dotsize && $imgx1 < $this->image_w - $dotsize && $imgy1 < $this->image_h - $dotsize) { # can draw dot
+					#trigger_error("B", E_USER_NOTICE);
+					$font = ($recordSet->fields['s'] ==1)?$cityfont:2;
+					$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad']);
+					if (count($img1)) { # can draw name
+						#trigger_error("C", E_USER_NOTICE);
+						$squares[$str]++;
+						if ($dotsize) {
+							imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
+							imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
+						}
+						imageGlowString($img, $font, $img1[0], $img1[1], $recordSet->fields['name'], $gridcol);
+					}
 				}
-				$font = ($recordSet->fields['s'] ==1)?$cityfont:2;
-				$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad']);
-				if (count($img1))
-					imageGlowString($img, $font, $img1[0], $img1[1], $recordSet->fields['name'], $gridcol);
 			}
 			
 			$recordSet->MoveNext();
@@ -1610,40 +3385,60 @@ END;
 	* attempts to place the label so doesnt get obscured, 
 	* alogirthm isnt perfect but works quite well.
 	*********************************************/
-	function _posText($x,$y,$font,$text,$quad = 0) {
+	function _posText($x,$y,$font,$text,$quad = 0,$bdry=0) {
 		$stren = imagefontwidth($font)*strlen($text);
 		$strhr = imagefontheight($font);
+		//trigger_error("--------> w/h: " . $stren . "/" . $strhr .  ", labels: " . count($this->labels), E_USER_NOTICE);
+		//reset($this->labels);
+		//foreach ($this->labels as $a1) {
+		//	trigger_error("-----------> " . $a1[0] . "/" .  $a1[1] . "/" . $a1[2] . "/" . $a1[3], E_USER_NOTICE);
+		//}
 		$xy = array($x,$y);
 		if ($quad == 0) {
-			for ($quad = 1; $quad < 5; ++$quad) {
-				list($x,$y) = $xy;
-				if ($quad%2 != 1) {
-					$x = $x - $stren; //FIXME one pixel too much
-				}
-				if ($quad <= 2) {
-					$y = $y - $strhr; //FIXME one pixel too much
-				}
-				$thisrect = array($x,$y,$x + $stren,$y + $strhr); //FIXME one pixel too much
-				//$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
-				if ($x <= 0 || $y <= 0 || $x + $stren >= $this->image_w || $y + $strhr >= $this->image_h) { // "=" => one pixel more than neccessary
-					$intersect = true;
-				} else {
-					$intersect = false;
-					reset($this->labels);
-					foreach ($this->labels as $a1) {
-						if (rectinterrect($a1,$thisrect)) {
-							$intersect = true;
-							break;
+			for ($run = 0; $run < 2; ++$run) {
+				for ($quad = 1; $quad < 5; ++$quad) {
+					list($x,$y) = $xy;
+					if ($quad%2 != 1) {
+						$x = $x - $stren; //FIXME one pixel too much
+					}
+					if ($quad <= 2) {
+						$y = $y - $strhr; //FIXME one pixel too much
+					}
+					$thisrect = array($x,$y,$x + $stren,$y + $strhr); //FIXME one pixel too much
+					//$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
+					if ($x <= $bdry || $y <= $bdry || $x + $stren >= $this->image_w+$bdry || $y + $strhr >= $this->image_h+$bdry) { // "=" => one pixel more than neccessary
+						$intersect = true;
+					} else {
+						$intersect = false;
+						if ($run == 0) {
+							reset($this->gridlabels);
+							foreach ($this->gridlabels as $a1) {
+								if (rectinterrect($a1,$thisrect)) {
+									$intersect = true;
+									break;
+								}
+							}
 						}
+						reset($this->labels);
+						foreach ($this->labels as $a1) {
+							if (rectinterrect($a1,$thisrect)) {
+								$intersect = true;
+								break;
+							}
+						}
+					}
+					if (!$intersect) {
+						#trigger_error("label: " . $text . ": " . $stren . "px: " . $x . "..." . ($x + $stren - 1) . " / " . $y . "..." . ($y + $strhr - 1), E_USER_NOTICE);
+						break;
 					}
 				}
 				if (!$intersect) {
-					#trigger_error("label: " . $text . ": " . $stren . "px: " . $x . "..." . ($x + $stren - 1) . " / " . $y . "..." . ($y + $strhr - 1), E_USER_NOTICE);
 					break;
 				}
 			}
 			if ($intersect) {
 				#$quad=0;
+				//trigger_error("------>intersect", E_USER_NOTICE);
 				return array();
 			}
 		}
@@ -1651,7 +3446,7 @@ END;
 		if (
 		($quad%2 == 1)
 			||
-		( $quad <= 0 && ($x < ($this->image_w - $stren)) )
+		( $quad <= 0 && ($x-$bdry < ($this->image_w - $stren)) )
 		) {
 		} else {
 			list($x,$d) = $xy;
@@ -1660,13 +3455,13 @@ END;
 		if (
 		($quad > 2)
 			||
-		( $quad <= 0 && ($y < ($this->image_h - $strhr)) )
+		( $quad <= 0 && ($y-$bdry < ($this->image_h - $strhr)) )
 		) {
 		} else {
 			list($d,$y) = $xy;
 			$y = $y - $strhr;
 		}
-		if ($x > 0 && $y > 0 && ($x < ($this->image_w - $stren)) && ($y < ($this->image_h - $strhr))) {
+		if ($x > $bdry && $y > $bdry && ($x < ($this->image_w - $stren + $bdry)) && ($y < ($this->image_h - $strhr + $bdry))) {
 			$thisrect = array($x-3,$y-3,$x + $stren+3,$y + $strhr+3);
 
 			array_push($this->labels,$thisrect);
@@ -1674,10 +3469,505 @@ END;
 
 			return array($x,$y);
 		} else {
+			//trigger_error("------>bound", E_USER_NOTICE);
 			return array();
 		}
 	}
 	
+	function _plotPlacenamesM(&$img,$left,$bottom,$right,$top)
+	{
+		global $CONF;
+		$db=&$this->_getDB();
+
+		$black=imagecolorallocate ($img, 0,64,0);
+
+		require_once('geograph/conversionslatlong.class.php');
+		$conv = new ConversionsLatLong;
+		$gridcol=imagecolorallocate ($img, 109,186,178);
+		if ($this->level < 6) {
+			$scrit = "s = '1' AND";
+			$cityfont = 3;
+		} elseif ($this->level < 8) {
+			$scrit = "(s = '1' OR s = '2') AND";
+			$cityfont = 3;
+		} elseif ($this->level < 10) {
+			$scrit = "(s IN ('1','2','3')) AND";
+			$cityfont = 3;
+		} else {
+			$scrit = "(s IN ('1','2','3','4')) AND";
+			$cityfont = 3;
+		}
+		$div = 10485760/pow(2,$this->level);
+		list($glatTL, $glonTL) = $conv->sm_to_wgs84($left, $top);
+		list($glatTR, $glonTR) = $conv->sm_to_wgs84($right, $top);
+		list($glatBL, $glonBL) = $conv->sm_to_wgs84($left, $bottom);
+		list($glatBR, $glonBR) = $conv->sm_to_wgs84($right, $bottom);
+		$bdry = $this->render_margin;
+		$imgw = $this->image_w;
+		$widthM=$this->map_wM;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
+		#$rightM=$leftM+$widthM;
+		#$topM=$bottomM+$widthM;
+
+		foreach ($CONF['references'] as $ri => $rname) {
+			$x0 = $CONF['origins'][$ri][0];
+			$y0 = $CONF['origins'][$ri][1];
+			$latmin = $CONF['latrange'][$ri][0];
+			$latmax = $CONF['latrange'][$ri][1];
+			$lonmin = $CONF['lonrange'][$ri][0];
+			$lonmax = $CONF['lonrange'][$ri][1];
+			list($eTL,$nTL,$riX1) = $conv->wgs84_to_national($glatTL, $glonTL, true, $ri);
+			list($eTR,$nTR,$riX2) = $conv->wgs84_to_national($glatTR, $glonTR, true, $ri);
+			list($eBL,$nBL,$riX3) = $conv->wgs84_to_national($glatBL, $glonBL, true, $ri);
+			list($eBR,$nBR,$riX4) = $conv->wgs84_to_national($glatBR, $glonBR, true, $ri);
+			$emin = min($eTL, $eTR, $eBL, $eBR);
+			$emax = max($eTL, $eTR, $eBL, $eBR);
+			$nmin = min($nTL, $nTR, $nBL, $nBR);
+			$nmax = max($nTL, $nTR, $nBL, $nBR);
+			$xmin = $emin + $x0*1000;
+			$xmax = $emax + $x0*1000;
+			$ymin = $nmin + $y0*1000;
+			$ymax = $nmax + $y0*1000;
+			$reference_index = $ri;
+			$riwhere = "(reference_index = '$ri') and ";
+			
+			$crit = $riwhere.$scrit;
+
+			$rectangle = "'POLYGON(($emin $nmin,$emax $nmin,$emax $nmax,$emin $nmax,$emin $nmin))'";
+			$rectanglexy = "'POLYGON(($xmin $ymin,$xmax $ymin,$xmax $ymax,$xmin $ymax,$xmin $ymin))'";
+
+if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 ) || $reference_index >= 3) {
+	//$countries = "'EN','WA','SC'";
+	//FIXME either use 
+	//   CONTAINS( GeomFromText($rectangle),	point_en) 
+	//   AND reference_index = $reference_index
+	//(some towns are missing, then) or
+	//   CONTAINS( GeomFromText($rectanglexy),	point_xy) 
+#CONTAINS( GeomFromText($rectangle),	point_en) 
+#AND reference_index = $reference_index
+$sql = <<<END
+SELECT short_name as name,e,n,s,quad
+FROM loc_towns
+WHERE 
+ $crit
+CONTAINS( GeomFromText($rectanglexy),	point_xy) 
+ORDER BY s
+END;
+#GROUP BY FLOOR(e/$div),FLOOR(n/$div)
+} else {
+	$countries = "'NI','RI'";
+	$div *= 1.5; //becuase the irish data is more dence
+
+$sql = <<<END
+SELECT e,n,full_name as name
+FROM loc_placenames
+INNER JOIN `loc_wikipedia` ON ( full_name = text ) 
+WHERE dsg = 'PPL' AND
+loc_wikipedia.country IN ($countries) AND 
+CONTAINS( GeomFromText($rectangle),	point_en) 
+GROUP BY gns_ufi
+ORDER BY RAND()
+END;
+}
+			$squares=array();
+			$recordSet = &$db->Execute($sql);
+			while (!$recordSet->EOF) {
+				$e=$recordSet->fields['e'];
+				$n=$recordSet->fields['n'];
+				
+				$str = floor($e/$div) .' '. floor($n/$div*1.4);
+				if (!$squares[$str]) {// || $recordSet->fields['s'] ==1) {
+				
+					$ll = $conv->national_to_wgs84($e, $n, $ri);
+					list($xM, $yM) = $conv->wgs84_to_sm($ll[0], $ll[1]);
+					$imgx1=$bdry + round(($xM - $leftM)   / $widthM * $imgw);
+					$imgy1=$bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+
+					$dotsize = $this->level<=11 ? 2 : 0; //FIXME limit?
+					if ($imgx1 >= $dotsize+$bdry && $imgx1 < $imgw-$dotsize+$bdry && $imgy1 >= $dotsize+$bdry && $imgy1 < $imgw-$dotsize+$bdry) { # can draw dot
+						$font = ($recordSet->fields['s'] ==1)?$cityfont:2;
+						$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad'], $bdry);
+						if (count($img1)) { # can draw name
+							$squares[$str]++;
+							if ($dotsize) {
+								imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
+								imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
+							}
+							imageGlowString($img, $font, $img1[0], $img1[1], $recordSet->fields['name'], $gridcol);
+						}
+					}
+				}
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close(); 
+		}
+	}
+
+	/**
+	* plot the gridlines
+	* @access private
+	*/	
+	function _plotGridLinesM(&$img, $left, $bottom, $right, $top) {
+		global $CONF;
+		if ($this->overlay) {
+			if ($this->level <= 7) {
+				$gridcol=imagecolorallocate ($img, 109,186,178);
+				$text1=$gridcol;
+			} elseif ($this->level <= 8) {
+				$gridcol=imagecolorallocate ($img, 120,205,196);
+				$text1=$gridcol;
+			} else {
+				$gridcol=imagecolorallocate ($img, 89,126,118);
+				$gridcol2=imagecolorallocate ($img, 60,205,252);
+				$text1=imagecolorallocate ($img, 255,255,255);
+			}
+			$text2=imagecolorallocate ($img, 0,64,0);
+		} else {
+			if ($this->level <= 8) {
+				/*if ($this->overlay) {
+					//$gridcol=imagecolorallocate ($img, 60,224,255);
+					//$gridcol=imagecolorallocate ($img, 60,205,252);
+				} else {*/
+				$gridcol=imagecolorallocate ($img, 109,186,178);
+			} else {
+				$gridcol=imagecolorallocate ($img, 89,126,118);
+				$gridcol2=imagecolorallocate ($img, 60,205,252);
+			}
+			if ($this->level <= 8 && $this->level >= 6) {
+				$text1=$gridcol;
+			} else {
+				$text1=imagecolorallocate ($img, 255,255,255);
+				$text2=imagecolorallocate ($img, 0,64,0);
+			}
+		}
+		require_once('geograph/conversionslatlong.class.php');
+		$conv = new ConversionsLatLong;
+		list($glatTL, $glonTL) = $conv->sm_to_wgs84($left, $top);
+		list($glatTR, $glonTR) = $conv->sm_to_wgs84($right, $top);
+		list($glatBL, $glonBL) = $conv->sm_to_wgs84($left, $bottom);
+		list($glatBR, $glonBR) = $conv->sm_to_wgs84($right, $bottom);
+		$bdry = $this->render_margin;
+		$imgw = $this->image_w;
+		$widthM=$this->map_wM;
+		$leftM=$this->map_xM;
+		$bottomM=$this->map_yM;
+		$rightM=$leftM+$widthM;
+		$topM=$bottomM+$widthM;
+		#imageantialias ($img, true); does not work with alpha components. I like php so much...
+		$db=&$this->_getDB();
+		if ($this->level >= 9 && $this->level <= 11) { //FIXME
+			// draw hectad boundaries
+			foreach ($CONF['references'] as $ri => $rname) {
+				$x0 = $CONF['origins'][$ri][0];
+				$y0 = $CONF['origins'][$ri][1];
+				$latmin = $CONF['latrange'][$ri][0];
+				$latmax = $CONF['latrange'][$ri][1];
+				$lonmin = $CONF['lonrange'][$ri][0];
+				$lonmax = $CONF['lonrange'][$ri][1];
+				$riwhere = "(reference_index = '{$ri}')";
+				list($eTL,$nTL,$riX1) = $conv->wgs84_to_national($glatTL, $glonTL, true, $ri);
+				list($eTR,$nTR,$riX2) = $conv->wgs84_to_national($glatTR, $glonTR, true, $ri);
+				list($eBL,$nBL,$riX3) = $conv->wgs84_to_national($glatBL, $glonBL, true, $ri);
+				list($eBR,$nBR,$riX4) = $conv->wgs84_to_national($glatBR, $glonBR, true, $ri);
+				$xmin = min($eTL, $eTR, $eBL, $eBR)/1000. + $x0;
+				$xmax = max($eTL, $eTR, $eBL, $eBR)/1000. + $x0;
+				$ymin = min($nTL, $nTR, $nBL, $nBR)/1000. + $y0;
+				$ymax = max($nTL, $nTR, $nBL, $nBR)/1000. + $y0;
+				$xmin -= 100;
+				$ymin -= 100;
+				$rectangle = "'POLYGON(($xmin $ymin,$xmax $ymin,$xmax $ymax,$xmin $ymax,$xmin $ymin))'";#FIXME
+				$sql="select * from gridprefix where ".
+					"$riwhere and CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
+					"and landcount>0";
+
+				$recordSet = &$db->Execute($sql);
+				while (!$recordSet->EOF) {
+					$origin_x=$recordSet->fields['origin_x'];
+					$origin_y=$recordSet->fields['origin_y'];
+					$w=$recordSet->fields['width'];
+					$h=$recordSet->fields['height'];
+
+					//get polygon of boundary relative to corner of square
+					if (strlen($recordSet->fields['boundary'])) {
+						$polykm=explode(',', $recordSet->fields['boundary']);
+					} else {
+						$polykm=array(0,0, 0,100, 100,100, 100,0);
+					}
+					// convert to east/north
+					$enpoly=array();
+					$pts=count($polykm)/2;
+					for ($i=0; $i<$pts; $i++) {
+						$e = ($polykm[$i*2]+$origin_x-$x0)*1000;
+						$n = ($polykm[$i*2+1]+$origin_y-$y0)*1000;
+						$enpoly[] = array($e, $n);
+					}
+					for ($delta = 10; $delta <= 90; $delta += 10) {
+						for ($dir = 0; $dir <= 1; ++$dir) {
+							// intersect with horizontal/vertical lines
+							if ($dir == 0) {
+								$hectadpoly = $this->_hcut_convexpoly($enpoly, 1000 * ($delta + $origin_y-$y0));
+							} else {
+								$hectadpoly = $this->_vcut_convexpoly($enpoly, 1000 * ($delta + $origin_x-$x0));
+							}
+							//now convert km to pixels
+							//if ($this->level >= 10)
+								$this->_split_polygon($hectadpoly, 10, false);
+							$llpoly=array();
+							foreach ($hectadpoly as &$en) {
+								$llpoly[] = $conv->national_to_wgs84($en[0], $en[1], $ri);
+							}
+							$this->_clip_polygon($llpoly, $latmin, $latmax, $lonmin, $lonmax, false);
+							$poly=array();
+							foreach ($llpoly as &$ll) {
+								list($xM, $yM) = $conv->wgs84_to_sm($ll[0], $ll[1]);
+								$x=$bdry + round(($xM - $leftM)   / $widthM * $imgw);
+								$y=$bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+								$poly[] = array($x, $y);
+							}
+							if ($bdry) {
+								$this->_clip_polygon($poly, $bdry/2, $imgw+$bdry+$bdry/2, $bdry/2, $imgw+$bdry+$bdry/2, false);
+							}
+							//draw
+							if (count($poly)) {
+								$curp = array_pop($poly);
+								while(count($poly)) {
+									$prevp = $curp;
+									$curp = array_pop($poly);
+									imageline($img, $prevp[0], $prevp[1], $curp[0], $curp[1], $gridcol2);
+								}
+							}
+						}
+					}
+					$recordSet->MoveNext();
+				}
+				$recordSet->Close();
+			}
+		} elseif ($this->level >= 12) {
+			$sql="select polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
+			$recordSet = &$db->Execute($sql);
+			while (!$recordSet->EOF) {
+				$points = $recordSet->fields[0];
+				$drawpoly = array();
+				for ($i = 0; $i < $points; ++$i) {
+					$xM = $recordSet->fields[1+$i*2];
+					$yM = $recordSet->fields[2+$i*2];
+					$drawpoly[] = $bdry + round(($xM - $leftM) / $widthM * $imgw);
+					$drawpoly[] = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+				}
+				imagepolygon($img, $drawpoly, $points, $gridcol2);
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+		}
+		foreach ($CONF['references'] as $ri => $rname) {
+			$x0 = $CONF['origins'][$ri][0];
+			$y0 = $CONF['origins'][$ri][1];
+			$latmin = $CONF['latrange'][$ri][0];
+			$latmax = $CONF['latrange'][$ri][1];
+			$lonmin = $CONF['lonrange'][$ri][0];
+			$lonmax = $CONF['lonrange'][$ri][1];
+			$riwhere = "(reference_index = '{$ri}')";
+			list($eTL,$nTL,$riX1) = $conv->wgs84_to_national($glatTL, $glonTL, true, $ri);
+			list($eTR,$nTR,$riX2) = $conv->wgs84_to_national($glatTR, $glonTR, true, $ri);
+			list($eBL,$nBL,$riX3) = $conv->wgs84_to_national($glatBL, $glonBL, true, $ri);
+			list($eBR,$nBR,$riX4) = $conv->wgs84_to_national($glatBR, $glonBR, true, $ri);
+			$xmin = min($eTL, $eTR, $eBL, $eBR)/1000. + $x0;
+			$xmax = max($eTL, $eTR, $eBL, $eBR)/1000. + $x0;
+			$ymin = min($nTL, $nTR, $nBL, $nBR)/1000. + $y0;
+			$ymax = max($nTL, $nTR, $nBL, $nBR)/1000. + $y0;
+			$xmin -= 100;
+			$ymin -= 100;
+			$rectangle = "'POLYGON(($xmin $ymin,$xmax $ymin,$xmax $ymax,$xmin $ymax,$xmin $ymin))'";#FIXME
+			$sql="select * from gridprefix where ".
+				"$riwhere and CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
+				"and landcount>0";
+
+			$recordSet = &$db->Execute($sql);
+			while (!$recordSet->EOF) {
+				$origin_x=$recordSet->fields['origin_x'];
+				$origin_y=$recordSet->fields['origin_y'];
+				$w=$recordSet->fields['width'];
+				$h=$recordSet->fields['height'];
+				$labelminwidth=$recordSet->fields['labelminwidth'];
+
+				//get polygon of boundary relative to corner of square
+				if (strlen($recordSet->fields['boundary'])) {
+					$polykm=explode(',', $recordSet->fields['boundary']);
+					$labelkm=explode(',', $recordSet->fields['labelcentre']);
+					$issquare = false;
+				} else {
+					$polykm=array(0,0, 0,100, 100,100, 100,0);
+					$labelkm=array(50,50);
+					$issquare = true;
+				}
+
+				//now convert km to pixels
+				$enpoly=array();
+				$pts=count($polykm)/2;
+				for ($i=0; $i<$pts; $i++) {
+					$e = ($polykm[$i*2]+$origin_x-$x0)*1000;
+					$n = ($polykm[$i*2+1]+$origin_y-$y0)*1000;
+					$enpoly[] = array($e, $n);
+				}
+				if ($this->level >= 9)
+					$this->_split_polygon($enpoly, 10);
+				elseif ($this->level >= 7)
+					$this->_split_polygon($enpoly, 5);
+				elseif ($this->level >= 6)
+					$this->_split_polygon($enpoly, 2);
+				$llpoly=array();
+				foreach ($enpoly as &$en) {
+					$llpoly[] = $conv->national_to_wgs84($en[0], $en[1], $ri);
+				}
+				$this->_clip_polygon($llpoly, $latmin, $latmax, $lonmin, $lonmax);
+				$poly=array();
+				foreach ($llpoly as &$ll) {
+					list($xM, $yM) = $conv->wgs84_to_sm($ll[0], $ll[1]);
+					$x=$bdry + round(($xM - $leftM)   / $widthM * $imgw);
+					$y=$bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+					$poly[] = array($x, $y);
+				}
+				if ($bdry) {
+					$this->_clip_polygon($poly, $bdry/2, $imgw+$bdry+$bdry/2, $bdry/2, $imgw+$bdry+$bdry/2);
+				}
+				$numpoints=count($poly);
+				if ($numpoints) {
+					$drawpoly=array();
+					foreach ($poly as &$p) {
+						$drawpoly[] = $p[0];
+						$drawpoly[] = $p[1];
+					}
+					imagepolygon($img, $drawpoly, $numpoints, $gridcol);
+				}
+
+				if($issquare && $this->level >= 5 && 100*$this->pixels_per_km>=$labelminwidth) {
+					$e = ($labelkm[0]+$origin_x-$x0)*1000;
+					$n = ($labelkm[1]+$origin_y-$y0)*1000;
+					$ll = $conv->national_to_wgs84($e, $n, $ri);
+					list($xM, $yM) = $conv->wgs84_to_sm($ll[0], $ll[1]);
+					$labelx =  $bdry + round(($xM - $leftM)   / $widthM * $imgw);
+					$labely =  $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw);
+					//font size 1= 4x6
+					//font size 2= 6x8 normal
+					//font size 3= 6x8 bold
+					//font size 4= 7x10 normal
+					//font size 5= 8x10 bold
+
+					if($this->level >=6)
+						$font=5;
+					else
+						$font=3;
+
+
+					$text=$recordSet->fields['prefix'];
+
+					$txtw = imagefontwidth($font)*strlen($text);
+					$txth = imagefontheight($font);
+					
+
+					$txtx=round($labelx - $txtw/2);
+					$txty=round($labely - $txth/2);
+					if ($this->level <= 5 || $this->overlay) {
+						imagestring ($img, $font, $txtx+1,$txty+1, $text, $text2);
+						imagestring ($img, $font, $txtx,$txty, $text, $text1);
+					} else {
+						imagestring ($img, $font, $txtx,$txty, $text, $text1);
+					}
+					$thisrect = array($txtx,$txty,$txtx + $txtw,$txty + $txth);
+					array_push($this->gridlabels,$thisrect);
+				}
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+		}
+		//imageantialias ($img, false);
+		if ($this->level >= 9 && $this->level <= 11) { //FIXME
+			$font = 3;
+			$dx = floor(imagefontwidth($font)/2);
+			$dy = floor(imagefontheight($font)/2);
+			foreach ($CONF['references'] as $ri => $rname) {
+				$x0 = $CONF['origins'][$ri][0];
+				$y0 = $CONF['origins'][$ri][1];
+				$sql="select x,y,scale,rotangle,cgx,cgy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and reference_index=$ri and (((x - $x0)%100 = 5 and (y - $y0)%10 = 0) or ((y - $y0)%100 = 5 and (x - $x0)%10 = 0)) and abs(cliparea/area-1) < 0.01";
+				$recordSet = &$db->Execute($sql);
+				while (!$recordSet->EOF) {
+					$x = $recordSet->fields[0];
+					$y = $recordSet->fields[1];
+					$e = floor((($x-$x0) % 100) / 10);
+					$n = floor((($y-$y0) % 100) / 10);
+					$scale = $recordSet->fields[2];
+					$angle = $recordSet->fields[3];
+					$cosangle = cos($angle);
+					$sinangle = sin($angle);
+					$xMC = $recordSet->fields[4];
+					$yMC = $recordSet->fields[5];
+					if (($y-$y0) % 100 == 5 /*$n == 0*/) { # label on left side
+						$xM = $xMC - 500*$scale*$cosangle;
+						$yM = $yMC - 500*$scale*$sinangle;
+						$xl = $bdry + round(($xM - $leftM) / $widthM * $imgw) - $dx;
+						$yl = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw) - $dy;
+						$text = sprintf("%01d", $e);
+						imagestring($img, $font, $xl+1, $yl+1, $text, $text2);
+						imagestring($img, $font, $xl,   $yl,   $text, $text1);
+					}
+					if (($x-$x0) % 100 == 5 /*$e == 0*/) { # label on bottom
+						$xM = $xMC + 500*$scale*$sinangle;
+						$yM = $yMC - 500*$scale*$cosangle;
+						$xl = $bdry + round(($xM - $leftM) / $widthM * $imgw) - $dx;
+						$yl = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw) - $dy;
+						$text = sprintf("%01d", $n);
+						imagestring($img, $font, $xl+1, $yl+1, $text, $text2);
+						imagestring($img, $font, $xl,   $yl,   $text, $text1);
+					}
+					$recordSet->MoveNext();
+				}
+				$recordSet->Close();
+			}
+		} elseif ($this->level >= 12) {
+			$font = 3;
+			$dx = imagefontwidth($font);
+			$dy = floor(imagefontheight($font)/2);
+			foreach ($CONF['references'] as $ri => $rname) {
+				$x0 = $CONF['origins'][$ri][0];
+				$y0 = $CONF['origins'][$ri][1];
+				$sql="select x,y,scale,rotangle,cgx,cgy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and reference_index=$ri and ((x - $x0)%10 = 0 or (y - $y0)%10 = 0) and abs(cliparea/area-1) < 0.01";
+				$recordSet = &$db->Execute($sql);
+				while (!$recordSet->EOF) {
+					$x = $recordSet->fields[0];
+					$y = $recordSet->fields[1];
+					$e = ($x-$x0) % 100;
+					$n = ($y-$y0) % 100;
+					$scale = $recordSet->fields[2];
+					$angle = $recordSet->fields[3];
+					$cosangle = cos($angle);
+					$sinangle = sin($angle);
+					$xMC = $recordSet->fields[4];
+					$yMC = $recordSet->fields[5];
+					if ($n%10 == 0) { # label on left side
+						$xM = $xMC - 500*$scale*$cosangle;
+						$yM = $yMC - 500*$scale*$sinangle;
+						$xl = $bdry + round(($xM - $leftM) / $widthM * $imgw) - $dx;
+						$yl = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw) - $dy;
+						$text = sprintf("%02d", $e);
+						imagestring($img, $font, $xl+1, $yl+1, $text, $text2);
+						imagestring($img, $font, $xl,   $yl,   $text, $text1);
+					}
+					if ($e%10 == 0) { # label on bottom
+						$xM = $xMC + 500*$scale*$sinangle;
+						$yM = $yMC - 500*$scale*$cosangle;
+						$xl = $bdry + round(($xM - $leftM) / $widthM * $imgw) - $dx;
+						$yl = $bdry + $imgw - 1 - round(($yM - $bottomM) / $widthM * $imgw) - $dy;
+						$text = sprintf("%02d", $n);
+						imagestring($img, $font, $xl+1, $yl+1, $text, $text2);
+						imagestring($img, $font, $xl,   $yl,   $text, $text1);
+					}
+					$recordSet->MoveNext();
+				}
+				$recordSet->Close();
+			}
+		}
+	}
 	
 	/**
 	* plot the gridlines
@@ -1687,9 +3977,10 @@ END;
 		static $gridcol,$gridcol2,$text1,$text2; //these are static so they can be assigned before the images are added
 		global $CONF;
 		if ($pre) {
-			if ($this->pixels_per_km >= 40) {
+			if ($this->pixels_per_km >= 32) {
 				$gridcol=imagecolorallocate ($img, 89,126,118);
 				$gridcol2=imagecolorallocate ($img, 60,205,252);
+				//$gridcol2=imagecolorallocate ($img, 102,173,166);
 				
 				//plot the individual lines
 				for($i=0;$i<$this->image_w;$i+=$this->pixels_per_km) {
@@ -1705,6 +3996,7 @@ END;
 				
 				$gridcol=imagecolorallocate ($img, 89,126,118);
 				$gridcol2=imagecolorallocate ($img, 60,205,252);
+				//$gridcol2=imagecolorallocate ($img, 102,173,166);
 				
 				if (!$this->reference_index) {
 					$this->getGridRef(-1,-1);
@@ -1722,7 +4014,7 @@ END;
 			} else {
 				$gridcol=imagecolorallocate ($img, 109,186,178);
 			}
-			if ($this->pixels_per_km < 1 || $this->pixels_per_km >= 40) {
+			if ($this->pixels_per_km < 1 || $this->pixels_per_km >= 32) {
 				$text1=imagecolorallocate ($img, 255,255,255);
 				$text2=imagecolorallocate ($img, 0,64,0);
 			} else {
@@ -1733,6 +4025,12 @@ END;
 		
 		$db=&$this->_getDB();
 
+		if (empty($this->force_ri)) {
+			$riwhere = '';
+		} else {
+			$riwhere = "(reference_index = '{$this->force_ri}') and ";
+		}
+
 		
 		//TODO  - HARD CODED VALUES!!
 		$width = 100;
@@ -1741,7 +4039,7 @@ END;
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 		
 		$sql="select * from gridprefix where ".
-			"CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
+			"$riwhere CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
 			"and landcount>0";
 
 		$recordSet = &$db->Execute($sql);
@@ -1812,7 +4110,7 @@ END;
 					imagestring ($img, $font, $txtx,$txty, $text, $text1);
 				}
 				$thisrect = array($txtx,$txty,$txtx + $txtw,$txty + $txth);
-				array_push($this->labels,$thisrect);
+				array_push($this->gridlabels,$thisrect);
 				if ($_GET['d']) {
 					print "$text";var_dump($thisrect); print "<BR>";
 				}
@@ -1823,9 +4121,9 @@ END;
 		$recordSet->Close(); 		
 		
 		//plot the number labels
-		if ($this->pixels_per_km >= 40) {
+		if ($this->pixels_per_km >= 32) {
 			$gridref = $this->getGridRef(0, $this->image_h); //origin of image is tl, map is bl
-			if (preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$gridref, $matches))
+			if (preg_match('/^([!A-Z]{1,3})(\d\d)(\d\d)$/',$gridref, $matches))
 			{
 				$gridsquare=$matches[1];
 				$eastings=$matches[2];
@@ -1861,12 +4159,217 @@ END;
 
 
 	/**
+	* return a sparse array for every grid on the map
+	* @access private
+	*/
+	function& getGridInfo()
+	{
+		global $memcache;
+		global $CONF;
+
+		if ($this->type_or_user == -10) {
+			//we want a blank map!
+			return array();
+		} 
+
+		if ($memcache->valid) {
+			//we only use cache imagemap as they invalidate correctly - and checksheets get smarty cached anyways
+
+			$mkey = $this->getImageFilename()."..{$this->cliptop}.{$this->clipbottom}.{$this->clipright}.{$this->clipleft}";
+			$mnamespace = 'mI';
+			$grid =& $memcache->name_get($mnamespace,$mkey);
+			if ($grid) {
+				return $grid;
+			}
+			$mperiod = $memcache->period_long*4;
+		}
+
+		//figure out what we're mapping in internal coords
+		$db=&$this->_getDB();
+		
+		$grid=array();
+
+		###$tstart = microtime(true);
+		###$tcalc = 0;
+		$imgw = $this->image_w;
+		$imgh = $this->image_h;
+		if ($this->mercator) {
+			$widthM=$this->map_wM;
+			$leftM=$this->map_xM;
+			$bottomM=$this->map_yM;
+			$rightM=$leftM+$widthM;
+			$topM=$bottomM+$widthM;
+			$clipleftM =   floor($leftM   + $this->clipleft   * $widthM / $imgw);
+			$cliprightM =  ceil ($rightM  - $this->clipright  * $widthM / $imgw);
+			$cliptopM =    ceil ($topM    - $this->cliptop    * $widthM / $imgw);
+			$clipbottomM = floor($bottomM + $this->clipbottom * $widthM / $imgw);
+			###trigger_error("->CP $cliprightM $clipleftM $cliptopM  $clipbottomM", E_USER_NOTICE);
+			# Trying to solve our mysql performance issue:
+			#   select * from
+			#       gridsquare_gmcache gmc inner join gridsquare gs using (gridsquare_id)
+			#   where gmc.gxlow <= $cliprightM and gmc.gxhigh >= $clipleftM
+			#     and gmc.gylow <= $cliptopM and gmc.gyhigh >= $clipbottomM
+			# should use _all_ conditions on gmc, reducing the number of squares a lot _before_ joining.
+			# Moving the conditions to "on (...)" or a combined index makes no difference.
+			#
+			# Current workaround: We know that gxright - gxleft is limited (size of a square), i.e.
+			#    gxright - gxleft < D
+			# so we can add _more_ conditions to improve performance by using
+			#    gxlow between ($clipleftM-$D) and $cliprightM
+			# instead of
+			#    gxlow <= $cliprightM
+			#
+			# This reduces the number of rows to join quite a lot; but still way too much rows...
+			# Next test: (select * from gridsquare_gmcache ... where ...) inner join gridsquare
+			# [Probably a bad idea because join cant't use index now?]
+			#
+			# How to estimate D?
+			#  use $CONF['gmthumbsize12'] = maximal (gxhigh-gxlow)*256/4.0e7*POW(2,12) + some pixels for cropping
+			#  =>  $CONF['gmthumbsize12'] > maximal (gxhigh-gxlow)*256/4.0e7*POW(2,12)
+			#  => maximal (gxhigh-gxlow)  < $CONF['gmthumbsize12']*4.0e7/256/POW(2,12)
+			#                             = $CONF['gmthumbsize12']*4.0e7/POW(2,20)
+			#                             = $CONF['gmthumbsize12']*4.0e7/1048576
+			#
+			# What else to test?
+			# * Get rid of gridsquare_gmcache and add its columns to gridsquare?
+			# * Create a temporary table from gridsquare_gmcache inner join gridsquare every night?
+
+			$squaresize = $CONF['gmthumbsize12'] * 4.0e7 / 1048576;
+			$clipleftMD   = $clipleftM  -$squaresize;
+			$clipbottomMD = $clipbottomM-$squaresize;
+			$cliprightMD  = $cliprightM +$squaresize;
+			$cliptopMD    = $cliptopM   +$squaresize;
+
+			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
+				$where_crit = " and gi2.user_id = {$this->type_or_user}";
+				$where_crit2 = " and gi.user_id = {$this->type_or_user}";
+			} else {
+				$where_crit = '';
+				$where_crit2 = '';
+			}
+			$sql="select polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy, "
+				."gs.*,gridimage_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,title,title2 "
+				#."from gridsquare_gmcache gmc "
+				."from (select * from gridsquare_gmcache where "
+				."gxlow between $clipleftMD and $cliprightM and gxhigh between $clipleftM and $cliprightMD and "
+				."gylow between $clipbottomMD and $cliptopM and gyhigh between $clipbottomM and $cliptopMD "
+				.") gmc "
+				."inner join gridsquare gs on(gs.gridsquare_id=gmc.gridsquare_id) left join gridimage gi ON "
+					."(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id $where_crit2 AND imagecount > 0 AND gridimage_id = 
+						(select gridimage_id from gridimage_search gi2 where gi2.gridsquare_id=gs.gridsquare_id 
+						 $where_crit order by moderation_status+0 desc,seq_no limit 1)
+					) 
+					left join user using(user_id) "
+				."where "
+				##."gxlow <= $cliprightM and gxhigh >= $clipleftM and gylow <= $cliptopM and gyhigh >= $clipbottomM and "
+				#."gxlow between $clipleftMD and $cliprightM and gxhigh between $clipleftM and $cliprightMD and "
+				#."gylow between $clipbottomMD and $cliptopM and gyhigh between $clipbottomM and $cliptopMD and "
+				."percent_land<>0 group by gs.grid_reference order by y,x";
+		} else {
+			$left=$this->map_x;
+			$bottom=$this->map_y;
+			$right=$left + floor($this->image_w/$this->pixels_per_km)-1;
+			$top=$bottom + floor($this->image_h/$this->pixels_per_km)-1;
+
+			$overscan=0;
+			$scanleft=$left-$overscan;
+			$scanright=$right+$overscan;
+			$scanbottom=$bottom-$overscan;
+			$scantop=$top+$overscan;
+			
+			$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
+			if (!empty($this->type_or_user) && $this->type_or_user > 0) {
+				$where_crit = " and gi2.user_id = {$this->type_or_user}";
+				$where_crit2 = " and gi.user_id = {$this->type_or_user}";
+				$columns = ", sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount";
+			} else {
+				$where_crit = '';
+				$where_crit2 = '';
+				$columns = '';
+			}
+			//yes I know the imagecount is possibly strange in the join, but does speeds it up, having it twice speeds it up even more! (by preference have the second one, speed wise!), also keeping the join on gridsquare_id really does help too for some reason! 
+			$sql="select gs.*,gridimage_id,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,title,title2 
+				from gridsquare gs
+				left join gridimage gi ON 
+				(imagecount > 0 AND gi.gridsquare_id = gs.gridsquare_id $where_crit2 AND imagecount > 0 AND gridimage_id = 
+					(select gridimage_id from gridimage_search gi2 where gi2.grid_reference=gs.grid_reference 
+					 $where_crit order by moderation_status+0 desc,seq_no limit 1)
+				) 
+				left join user using(user_id)
+				where 
+				CONTAINS( GeomFromText($rectangle),	point_xy)
+				and percent_land<>0 
+				group by gs.grid_reference order by y,x";
+		}
+		$recordSet = &$db->Execute($sql);
+		while (!$recordSet->EOF) 
+		{
+			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
+			$recordSet->fields['title1'] = $recordSet->fields['title'];
+			$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
+			###$tcalc -= microtime(true);
+			$poly = array();
+			if ($this->mercator) {
+				$points = $recordSet->fields[0];
+				$factor = $imgw / $widthM;
+				$dx = $leftM;
+				#$dy = $bottomM + ($imgw - 1) * $widthM / $imgw;
+				$dy = $bottomM + $widthM - 1./$factor;
+				for ($i = 0; $i < $points; ++$i) {
+					$poly[] = round(($recordSet->fields[1+$i*2] - $dx)*$factor);
+					$poly[] = round(($dy - $recordSet->fields[2+$i*2])*$factor);
+				}
+			} else {
+				#FIXME clipping?
+				$gridx=$recordSet->fields['x'];
+				$gridy=$recordSet->fields['y'];
+
+				$posx=$gridx-$left;
+				$posy=$top-$gridy;
+
+				$x1 = $posx * $this->pixels_per_km;
+				$x2 = $x1   + $this->pixels_per_km;
+				$y1 = $posy * $this->pixels_per_km;
+				$y2 = $y1   + $this->pixels_per_km;
+
+				$poly[] = $x1;
+				$poly[] = $y1;
+				$poly[] = $x2;
+				$poly[] = $y1;
+				$poly[] = $x2;
+				$poly[] = $y2;
+				$poly[] = $x1;
+				$poly[] = $y2;
+			}
+			#FIXME intersection w. rectangle 0,0...$imgw-1,$imgh-1? seems to work without that...
+			#if (count($poly)) {
+				$recordSet->fields['poly'] = $poly;
+				$grid[]=$recordSet->fields;
+			#}
+			###$tcalc += microtime(true);
+			
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+		###$ttotal = microtime(true) - $tstart;
+		###trigger_error("->t $ttotal, $tcalc", E_USER_NOTICE);
+
+		if ($memcache->valid)
+			$memcache->name_set($mnamespace,$mkey,$grid,$memcache->compress,$mperiod);
+		
+		return $grid;
+	}
+
+	/**
 	* return a sparse 2d array for every grid on the map
 	* @access private
 	*/
 	function& getGridArray($isimgmap = false)
 	{
 		global $memcache;
+
+		if ($this->mercator) # use getGridInfo() instead of getGridArray(true), e.g. in mapbrowse2.tpl!
+			return array();
 
 		if ($this->type_or_user == -10) {
 			//we want a blank map!
@@ -2029,6 +4532,7 @@ function imageGlowString($img, $font, $xx, $yy, $text, $color) {
         }
 
 	imagestring($out_image, $font, 3, 3, $text, $black);
+	#imagestring($out_image, $font, 3, 3, utf8_encode($text), $black);
 
 	imagecopymerge($img, $out_image, $xx-3, $yy-3, 0, 0, $width+6, $height+6,90);
 	

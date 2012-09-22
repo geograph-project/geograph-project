@@ -157,21 +157,25 @@ require_once('geograph/user.class.php');
 
 //function to replace having to have loads of require_once's
 // PHP5 ONLY
-function __autoload($class_name) {
+function geograph_autoload($class_name) {
         if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/../libs/geograph/'.strtolower($class_name).'.class.php')) {
+		global $CONF;
                 ob_start();
                 debug_print_backtrace();
-		print "\n\nHost: ".`hostname`."\n\n";
+		print "\n\nHost: ".`hostname -f`."\n\n";
                 print_r($GLOBALS);
 		print_r(get_included_files());
                 $con = ob_get_clean();
-                mail('geograph@barryhunter.co.uk','[Geograph Error] '.date('r'),$con);
+		$geofrom = "From: Geograph <{$CONF['mail_from']}>";
+		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+                mail($CONF['admin_email'],'[Geograph Error] '.date('r'),$con,$geofrom,$envfrom);
 		header("HTTP/1.1 505 Server Error");
-                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:geograph@barryhunter.co.uk">let us know</a> what you where doing that lead up to this error');
+                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:mailto:'.$CONF['admin_email'].'">let us know</a> what you where doing that lead up to this error');
         }
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
 }
+spl_autoload_register(geograph_autoload);
 
 //remember start time of script for logging
 if (isset($CONF['log_script_timing']))
@@ -196,7 +200,7 @@ function init_session()
 			session_regenerate_id();
 
 		//create new user object - initially anonymous
-		$_SESSION['user'] =& new GeographUser;
+		$_SESSION['user'] = new GeographUser;
 
 		//give object a chance to auto-login via cookie
 		$_SESSION['user']->autoLogin();
@@ -294,6 +298,7 @@ class GeographPage extends Smarty
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
+		$this->register_modifier("floatformat", "smarty_modifier_floatformat");
 
 		//assign globallly useful stuff
 		$this->assign_by_ref('user', $GLOBALS['USER']);
@@ -303,6 +308,7 @@ class GeographPage extends Smarty
 		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);
 		$this->assign_by_ref('enable_forums', $CONF['forums']);
+		$this->assign('use_google_api', !empty($CONF['google_maps_api_key']));
 
 		$this->assign('forum_announce',         $CONF['forum_announce']);
 		$this->assign('forum_generaldiscussion',$CONF['forum_generaldiscussion']);
@@ -335,8 +341,24 @@ class GeographPage extends Smarty
 			{
 				$this->assign('is_tickmod', true);
 			}
+			if ($GLOBALS['USER']->hasPerm('mapmod'))
+			{
+				$this->assign('is_mapmod', true);
+			}
+			if ($GLOBALS['USER']->hasPerm('basic'))
+			{
+				$this->assign('is_logged_in', true);
+			}
 		}
 
+		if (count($CONF['languages'])) {
+			$cur_proto = !$_SERVER['HTTPS'] || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
+			$this->assign('languages', $CONF['languages']);
+			$this->assign('curproto', $cur_proto);
+			$this->assign('canonicalhost', reset($CONF['languages']));
+			$this->assign('canonicalreq', $_SERVER['REQUEST_URI']); # FIXME remove session id? # can be changed in specific scripts, e.g. on the map page
+			$this->assign('language', $CONF['lang']);
+		}
 	}
 
 	function is_cached($template, $cache_id = null, $compile_id = null)
@@ -453,8 +475,8 @@ class GeographPage extends Smarty
 //this is a bit cheeky - if the xhtml validator calls, turn off the automatic
 //session id insertion, as it uses & instead of &amp; in urls
 //we also turn it off for bots, as session ids can bugger it up
-if ( (strpos($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')!==FALSE) ||
-    (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0) )
+if ( isset($_SERVER['HTTP_USER_AGENT']) && ((strpos($_SERVER['HTTP_USER_AGENT'], 'W3C_Validator')!==FALSE) ||
+    (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0) ))
 {
 	ini_set ('url_rewriter.tags', '');
 }

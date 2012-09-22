@@ -33,9 +33,10 @@ $smarty = new GeographPage;
 $template='statistics_leaderallhectad.tpl';
 $cacheid=$type;
 
-
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hour cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hour cache
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -123,7 +124,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	function cmp(&$a, &$b) 
 	{
-		global $topusers;
+		#global $topusers;
 		if ($a['imgcount'] == $b['imgcount']) {
 			if ($a['bigesthectad'] == $b['bigesthectad']) {
 				return 0;

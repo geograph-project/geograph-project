@@ -32,7 +32,7 @@ if ( ($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR']) &&
      (strpos($_SERVER['HTTP_X_FORWARDED_FOR'],$CONF['server_ip']) !== 0) )  //begins with
 {
 	init_session();
-        $USER->mustHavePerm("admin");
+        $USER->hasPerm("mapmod") || $USER->mustHavePerm("admin");
 }
 
 $smarty = new GeographPage;
@@ -65,7 +65,7 @@ if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 {
 	$mosaic=new GeographMapMosaic;
 
-	$mosaic->expireAll($_GET['expireAll']?true:false);
+	$mosaic->expireAll(!empty($_GET['expireAll']),!empty($_GET['expireAll']));
 	$smarty->clear_cache(null, 'mapbrowse');
 	
 
@@ -160,7 +160,8 @@ if (isset($_GET['coast_GB_40'])) {
 		$maxy=$prefix['origin_y']+$prefix['height']-1;
 
 		
-		$crit = "map_x between $minx and $maxx and ".
+		$crit = "mercator='0' and ".
+			"map_x between $minx and $maxx and ".
 			"map_y between $miny and $maxy and ".
 			"pixels_per_km >= 40 and ".
 			"((map_x-{$prefix['origin_x']}) mod 5) != 0 and ".
@@ -216,9 +217,19 @@ if (isset($_GET['coast_GB_40'])) {
 
 		print "<h3>$gridref</h3>";
 		if (count($squares) < 5) {
-			$sql="select * from mapcache 
-					where $x between map_x and (map_x+image_w/pixels_per_km-1) and 
-					$y between map_y and (map_y+image_h/pixels_per_km-1) $and_crit";
+			$xycrit = "mercator='0' and '$x' between map_x and max_x and '$y' between map_y and max_y";
+			$sql = "select gxlow,gylow,gxhigh,gyhigh from gridsquare gs inner join gridsquare_gmcache gm using (gridsquare_id) where x='$x' and y='$y' limit 1";
+			$mercator = $db->GetRow($sql);
+			$havemercator = $mercator !== false && count($mercator);
+			if ($havemercator) {
+				$MCscale = 524288/(2*6378137.*M_PI);
+				$xMC_min = floor($mercator['gxlow'] * $MCscale);
+				$yMC_min = floor($mercator['gylow'] * $MCscale);
+				$xMC_max = ceil ($mercator['gxhigh'] * $MCscale);
+				$yMC_max = ceil ($mercator['gyhigh'] * $MCscale);
+				$xycrit .= " or mercator='1' and '$xMC_min'<=max_x and '$xMC_max'>=map_x and '$yMC_min'<=max_y and '$yMC_max'>=map_y";
+			}
+			$sql="select * from mapcache where ($xycrit) $and_crit";
 			
 			$recordSet = &$db->Execute("$sql");
 			while (!$recordSet->EOF) 
@@ -248,16 +259,22 @@ if (isset($_GET['coast_GB_40'])) {
 	echo "<h3><a href=\"recreatemaps.php\">&lt;&lt;</a> Re-Creating Maps...</h3>";
 	flush();
 	
-	$map=new GeographMap;
 	
 	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $limit");
 	while (!$recordSet->EOF) 
 	{
+		$map=new GeographMap;
+		## FIXME introduce $map->from_row($row);
 		foreach($recordSet->fields as $name=>$value)
 		{
 			if (!is_numeric($name))
 				$map->$name=$value;
 		}
+		$map->mercator = !empty($map->mercator);
+		if ($map->mercator) {
+			$map->setScale($map->level);
+		}
+		$map->enableCaching(true, false); # FIXME better solution: build layers=2 at the beginning?
 		
 		$map->_renderMap();
 

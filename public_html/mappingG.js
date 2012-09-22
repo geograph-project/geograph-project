@@ -28,52 +28,135 @@
  var marker2 = null;
  var eastings2 = 0;
  var northings2 = 0;
- 
+ var lat1 = 0;
+ var lon1 = 0;
+ var lat2 = 0;
+ var lon2 = 0;
+ var fracGold = 0.5*Math.sqrt(5.0) - 0.5;
+
  var pickupbox = null;
+ var squarebox = null;
+ var sboxeast = null;
+ var sboxnorth = null;
+ var sboxwidth = null;
  
  function createMarker(point,picon) {
  	if (picon) {
- 		marker2 = new GMarker(point,{draggable: true, icon:picon});
+ 		marker2 = new GMarker(point,{draggable: !iscmap, icon:picon});
+ 		//marker2 = new GMarker(point,{draggable: true, icon:picon});
  		var marker = marker2;
 	} else {
 		marker1 = new GMarker(point, {draggable: true});
 		var marker = marker1;
 	}
 	if (issubmit) {
+		if (typeof nolineslayer === 'undefined') {
+			nolineslayer = false;
+		}
 		GEvent.addListener(marker, "drag", function() {
 			var pp = marker.getPoint();
 			
 			//create a wgs84 coordinate
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
-			
-			if (ri == -1) {
+			if (ri == -1||issubmit) {
 			if (wgs84.isIreland()) {
 				//convert to Irish
 				var grid=wgs84.getIrish(true);
-			
 			} else if (wgs84.isGreatBritain()) {
 				//convert to OSGB
 				var grid=wgs84.getOSGB();
+			} else if (wgs84.isGermany32()) {
+				//convert to German
+				var grid=wgs84.getGerman32();
+			} else if (wgs84.isGermany33()) {
+				//convert to German
+				var grid=wgs84.getGerman33();
+			} else if (wgs84.isGermany31()) {
+				//convert to German
+				var grid=wgs84.getGerman31();
 			}
 			}
 			else if (ri == 1)
 				var grid=wgs84.getOSGB();
 			else if (ri == 2)
-				var grid=wgs84.getIrish(true);
-			
-			//get a grid reference with 4 digits of precision
-			var gridref = grid.getGridRef(4);
+				var grid=wgs84.getIrish();
+			else if (ri == 3)
+				var grid=wgs84.getGerman32(true, false);
+			else if (ri == 4)
+				var grid=wgs84.getGerman33(true, false);
+			else if (ri == 5)
+				var grid=wgs84.getGerman31(true, false);
+
+			var curzoom = map.getZoom();
+			if (curzoom >= 19) {
+				var newdigits = 5;
+				var newprec = 1;
+			} else if (curzoom >= 16) {
+				var newdigits = 4;
+				var newprec = 10;
+			} else if (curzoom >= 12) {
+				var newdigits = 3;
+				var newprec = 100;
+			} else if (curzoom >= 9) {
+				var newdigits = 2;
+				var newprec = 1000;
+			} else {
+				var newdigits = 2;
+				var newprec = 0;
+			}
+
+			//get a grid reference with the given precision
+			var gridref = grid.getGridRef(newdigits);
 
 			if (picon) {
+				lon2 = wgs84.longitude*Math.PI/180.;
+				lat2 = wgs84.latitude*Math.PI/180.;
 				eastings2 = grid.eastings;
 				northings2 = grid.northings;
 				document.theForm.photographer_gridref.value = gridref;
 			} else {
+				lon1 = pp.lng()*Math.PI/180.;
+				lat1 = pp.lat()*Math.PI/180.;
 				eastings1 = grid.eastings;
 				northings1 = grid.northings;
 				document.theForm.grid_reference.value = gridref;
-			}  
+			}
+
+
+			if (newprec) {
+				var neweast = Math.floor(grid.eastings/newprec);
+				var newnorth = Math.floor(grid.northings/newprec);
+				if (squarebox !== null && (neweast != sboxeast || newnorth != sboxnorth || newprec != sboxwidth)) {
+					map.removeOverlay(squarebox);
+					squarebox = null;
+				}
+				if (squarebox === null && !nolineslayer) {
+					sboxeast = neweast;
+					sboxnorth = newnorth;
+					sboxwidth = newprec;
+					grid.setGridCoordinates( sboxeast   *newprec,  sboxnorth   *newprec);
+					var ll1 = grid.getWGS84(true);
+					grid.setGridCoordinates((sboxeast+1)*newprec,  sboxnorth   *newprec);
+					var ll2 = grid.getWGS84(true);
+					grid.setGridCoordinates((sboxeast+1)*newprec, (sboxnorth+1)*newprec);
+					var ll3 = grid.getWGS84(true);
+					grid.setGridCoordinates( sboxeast   *newprec, (sboxnorth+1)*newprec);
+					var ll4 = grid.getWGS84(true);
+					squarebox = new GPolygon(
+						[
+							new GLatLng(ll1.latitude, ll1.longitude),
+							new GLatLng(ll2.latitude, ll2.longitude),
+							new GLatLng(ll3.latitude, ll3.longitude),
+							new GLatLng(ll4.latitude, ll4.longitude),
+							new GLatLng(ll1.latitude, ll1.longitude)
+						], "#FFFFFF", 1, 0.5, "#808080", 0.5);
+					map.addOverlay(squarebox);
+				}
+			} else if (squarebox !== null) {
+				map.removeOverlay(squarebox);
+				squarebox = null;
+			}
 			
 			//if (document.theForm.use6fig)
 			//	document.theForm.use6fig.checked = true;
@@ -83,12 +166,27 @@
 				pickupbox = null;
 			}
 			
-			updateViewDirection();
+			if (!iscmap) {
+				updateViewDirection();
+			}
 			
 			if (typeof parentUpdateVariables != 'undefined') {
 				parentUpdateVariables();
 			}
 		});
+		GEvent.addListener(marker, "dragend", function() {
+			if (squarebox !== null) {
+				map.removeOverlay(squarebox);
+				squarebox = null;
+			}
+			GEvent.trigger(map,'markerdragend');
+		});
+		/*GEvent.addListener(map, "zoomend", function() {
+			if (squarebox !== null && map.getZoom() < 17) {
+				map.removeOverlay(squarebox);
+				squarebox = null;
+			}
+		});*/
 	} else {
 		GEvent.addListener(marker, "dragend", function() {
 			marker.setPoint(point);
@@ -97,13 +195,27 @@
 	return marker;
 }
 
+function floathash(s) { /* string must not be empty! */
+	var res = 1.0;
+	var len = s.length;
+	for (var i = 0; i < len; ++i) {
+		res *= s.charCodeAt(i)*fracGold;
+		res -= Math.floor(res);
+	}
+	return res;
+}
+
+function inthash(s, n) {
+	return Math.floor(floathash(s)*n);
+}
+
 function createPMarker(ppoint) {
 	var picon = new GIcon();
 	picon.image = "http://"+static_host+"/img/icons/camicon.png";
 	picon.shadow = "http://"+static_host+"/img/icons/cam-s.png";
-	picon.iconSize = new GSize(12, 20);
-	picon.shadowSize = new GSize(22, 20);
-	picon.iconAnchor = new GPoint(6, 20);
+	picon.iconSize = new GSize(20, 34);
+	picon.shadowSize = new GSize(37, 34);
+	picon.iconAnchor = new GPoint(10, 34);
 	return createMarker(ppoint,picon)
 }
 
@@ -172,6 +284,21 @@ String.prototype.trim = function () {
 	return this.replace(/^\s+|\s+$/g,"");
 }
 
+/*function getMapCenter() {
+	latlon = map.getCenter();
+}*/
+function mapMarkerToCenter(that) {
+	latlon = map.getCenter();
+	if (that.name == 'photographer_gridref') {
+		currentelement = marker2;
+	} else {
+		currentelement = marker1;
+	}
+	currentelement.setPoint(latlon);
+	GEvent.trigger(currentelement,'drag');
+}
+
+
 function updateMapMarker(that,showmessage,dontcalcdirection) {
 	if (!checkGridReference(that,showmessage)) {
 		return false;
@@ -188,27 +315,47 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	}
 	
 	gridref = that.value.trim().toUpperCase();
-	
 	var grid;
 	var ok = false;
-
-	if (ri == -1) {
-
+	
+	if (ri == -1 || issubmit) {
+	
 	grid=new GT_OSGB();
 	if (grid.parseGridRef(gridref)) {
 		ok = true;
 	} else {
 		grid=new GT_Irish();
-		ok = grid.parseGridRef(gridref)
+		if (grid.parseGridRef(gridref)) {
+			ok = true;
+		} else {
+			grid=new GT_German32();
+			if (grid.parseGridRef(gridref)) {
+				ok = true;
+			} else {
+				grid=new GT_German33();
+				if (grid.parseGridRef(gridref)) {
+					ok = true;
+				} else {
+					grid=new GT_German31();
+					ok = grid.parseGridRef(gridref)
+				}
+			}
+		}
 	}
 	}
 	else if (ri == 1)
 		grid=new GT_OSGB();
 	else if (ri == 2)
 		grid=new GT_Irish();
+	else if (ri == 3)
+		grid=new GT_German32();
+	else if (ri == 4)
+		grid=new GT_German33();
+	else if (ri == 5)
+		grid=new GT_German31();
 	else
 		return;
-	ok = grid.parseGridRef(gridref);
+	ok = grid.parseGridRef(gridref); // FIXME needed?
 	
 	if (ok) {
 		//convert to a wgs84 coordinate
@@ -226,9 +373,13 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		currentelement.setPoint(point);
 
 		if (that.name == 'photographer_gridref') {
+			lon2 = wgs84.longitude*Math.PI/180.;
+			lat2 = wgs84.latitude*Math.PI/180.;
 			eastings2 = grid.eastings;
 			northings2 = grid.northings;
 		} else {
+			lon1 = wgs84.longitude*Math.PI/180.;
+			lat1 = wgs84.latitude*Math.PI/180.;
 			eastings1 = grid.eastings;
 			northings1 = grid.northings;
 		}  
@@ -243,16 +394,29 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		if (typeof parentUpdateVariables != 'undefined') {
 			parentUpdateVariables();
 		}
+		GEvent.trigger(map,'markerdragend');
 	}
 }
 
 function updateViewDirection() {
 	if (eastings1 > 0 && eastings2 > 0) {
-		
-		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
+		//distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
+		R = 6378137.0;
+		dlat = lat1-lat2;
+		dlon = lon1-lon2;
+		slat = Math.sin(0.5*dlat);
+		slon = Math.sin(0.5*dlon);
+		sinsq = slat*slat + Math.cos(lat1)*Math.cos(lat2)*slon*slon;
+		arc = 2 * Math.atan2(Math.sqrt(sinsq), Math.sqrt(1-sinsq));
+		distance = R * arc;
+		mindist = map.getZoom() >= 19 ? 3 : 14;
 	
-		if (distance > 14) {
-			realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
+		if (distance > mindist) {
+			//realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
+			y = Math.sin(dlon)*Math.cos(lat1);
+			x = Math.cos(lat2)*Math.sin(lat1) - Math.sin(lat2)*Math.cos(lat1)*Math.cos(dlon);
+			realangle = Math.atan2(y, x);
+			realangle *= 180./Math.PI;
 
 			if (realangle < 0)
 				realangle = realangle + 360.0;
@@ -274,4 +438,9 @@ function updateViewDirection() {
 
 function updateCamIcon() {
 
+}
+
+function moveToLatLon(lat, lon) {
+	var point = new GLatLng(lat,lon);
+	map.setCenter(point);
 }

@@ -28,6 +28,11 @@
 
 {if $is_mod} 
 
+	{if $originals_new}
+		<li><a href="/admin/resubmissions.php">High Resolution Uploads</a><br/>
+		<b>[{$originals_new} ready to be verified]</b></li>
+	{/if}
+
 {if $articles_ready}
 <li><a href="/article/">Articles</a><br/>
 <b>[{$articles_ready} ready to be approved]</b></li>
@@ -96,6 +101,8 @@ Remoderate a Square: <label for="gridref">Grid Reference:</label>
 <li><a title="Category Consolidation" href="/admin/categories.php">Category Consolidation</a> - 
    Organise the user submitted categories</li>
 
+<li><a title="Town editor" href="/admin/towns.php">Town editor</a> - 
+   Add, edit or remove towns</li>
 </ul>
 <h3>Statistics</h3>
 <ul>  

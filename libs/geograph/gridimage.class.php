@@ -122,6 +122,7 @@ class GridImage
 	* photographer grid reference
 	*/
 	var $photographer_gridref;
+	var $photographer_gridref_spaced;
 	
 	/**
 	* photographer grid reference precision (in metres)
@@ -129,9 +130,15 @@ class GridImage
 	var $photographer_gridref_precision;
 	
 	/**
+	* photographer reference index
+	*/
+	var $viewpoint_refindex;
+	
+	/**
 	* subject grid reference
 	*/
 	var $subject_gridref;
+	var $subject_gridref_spaced;
 	
 	/**
 	* subject grid reference precision (in metres)
@@ -139,10 +146,26 @@ class GridImage
 	var $subject_gridref_precision;
 	
 	/**
+	* subject reference index
+	*/
+	var $reference_index;
+	
+	/**
+	* external image?
+	 */
+	var $ext;
+	var $ext_server;
+	var $ext_thumb_url;
+	var $ext_img_url;
+	var $ext_profile_url;
+	var $ext_gridimage_id;
+
+	/**
 	* constructor
 	*/
 	function GridImage($id = null)
 	{
+		$this->ext = false;
 		if (!empty($id)) {
 			$this->loadFromId($id);
 		}
@@ -206,10 +229,13 @@ class GridImage
 	function getPhotographerGridref($spaced = false)
 	{
 		//already calculated?
-		if (strlen($this->photographer_gridref))	
+		if (!$spaced && strlen($this->photographer_gridref))
 			return $this->photographer_gridref;
+		if ($spaced && strlen($this->photographer_gridref_spaced))
+			return $this->photographer_gridref_spaced;
 
-		$this->photographer_gridref='';
+		$posgr='';
+		$posgrsp='';
 		if ($this->viewpoint_northings) 
 		{
 			require_once('geograph/conversions.class.php');
@@ -218,21 +244,30 @@ class GridImage
 			list($posgr,$len) = $conv->national_to_gridref(
 				$this->viewpoint_eastings,
 				$this->viewpoint_northings,
-				($this->use6fig && $spaced)?min(6,$this->viewpoint_grlen):max(2,$this->viewpoint_grlen),
-				$this->grid_square->reference_index,$spaced);
+				max(2,$this->viewpoint_grlen),
+				$this->viewpoint_refindex,false);
+			list($posgrsp,$lensp) = $conv->national_to_gridref(
+				$this->viewpoint_eastings,
+				$this->viewpoint_northings,
+				$this->use6fig?min(6,$this->viewpoint_grlen):max(2,$this->viewpoint_grlen),
+				$this->viewpoint_refindex,true);
 			
-			$this->photographer_gridref=$posgr;
 			$this->photographer_gridref_precision=pow(10,6-$len)/10;
-		}	
-		
-		return $this->photographer_gridref;
+		}
+
+		$this->photographer_gridref=$posgr;
+		$this->photographer_gridref_spaced=$posgrsp;
+		return $spaced ? $posgrsp : $posgr;
 	}
 	
+	// FIXME should only store when !$spaced
 	function getSubjectGridref($spaced = false)
 	{
 		//already calculated?
-		if (strlen($this->subject_gridref))	
+		if (!$spaced && strlen($this->subject_gridref))
 			return $this->subject_gridref;
+		if ($spaced && strlen($this->subject_gridref_spaced))
+			return $this->subject_gridref_spaced;
 
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
@@ -260,13 +295,19 @@ class GridImage
 		list($gr,$len) = $conv->national_to_gridref(
 			$this->grid_square->getNatEastings()-$correction,
 			$this->grid_square->getNatNorthings()-$correction,
-			($this->use6fig && $spaced)?min(6,$this->natgrlen):max(4,$this->natgrlen),
-			$this->grid_square->reference_index,$spaced);
+			max(4,$this->natgrlen),
+			$this->grid_square->reference_index,false);
+		list($grsp,$lensp) = $conv->national_to_gridref(
+			$this->grid_square->getNatEastings()-$correction,
+			$this->grid_square->getNatNorthings()-$correction,
+			$this->use6fig?min(6,$this->natgrlen):max(4,$this->natgrlen),
+			$this->grid_square->reference_index,true);
 		
 		$this->subject_gridref=$gr;
+		$this->subject_gridref_spaced=$grsp;
 		$this->subject_gridref_precision=pow(10,6-$len)/10;
 		
-		return $this->subject_gridref;
+		return $spaced ? $grsp : $gr;
 	}
 	
 	/**
@@ -294,6 +335,7 @@ class GridImage
 			if (!is_numeric($name))
 				$this->$name=$value;
 		}
+		$this->ext = false;
 		if (!empty($this->gridsquare_id)) {
 			$this->grid_square=new GridSquare;
 			if (is_object($this->db))
@@ -331,6 +373,7 @@ class GridImage
 	function fastInit(&$arr)
 	{
 		require_once('geograph/functions.inc.php');
+		$this->ext = false;
 		$this->grid_square=null;
 		$this->grid_reference='';
 		foreach($arr as $name=>$value)
@@ -407,6 +450,68 @@ class GridImage
 		
 		return $this->isValid();
 	}
+
+	/**
+	* assign members from gridimage_id and server (use api)
+	*/
+	function loadFromServer($server, $gridimage_id)
+	{
+		//todo memcache
+		
+		$this->_clear();
+		if (preg_match('/^\d+$/', $gridimage_id))
+		{
+			# http://www.geograph.org.uk/api/Photo/419440
+			$url = "http://$server/api/Photo/$gridimage_id";
+#			$xml_str=<<<EOF
+#< ?xml version="1.0" encoding="UTF-8"? ><geograph><status state="ok"/><title>Marble Arch</title><gridref>TQ2780</gridref><user profile="http://www.geograph.org.uk/profile/1621">Stephen McKay</user><img src="http://www.geograph.org.uk/photos/41/94/419440_df5f4e31.jpg" width="640" height="479"/><thumbnail>http://s0.geograph.org.uk/photos/41/94/419440_df5f4e31_120x120.jpg</thumbnail><taken>2007-04-30</taken><submitted>2007-05-01 09:55:32</submitted><category>Arch</category><comment><![CDATA[This grand edifice stands in the centre of one of London's busiest road junctions, where Oxford Street, Park Lane, Bayswater Road and Edgware Road meet. It was designed by John Nash in 1828 as a gateway to Buckingham Palace, but was removed to its present site in 1851. It is built of white Carrara marble, the design taken from the triumphal arch of Constantine in Rome.]]></comment></geograph>
+#EOF;
+			#$xml = new SimpleXMLElement($xml_str);
+			$xml = simplexml_load_file($url);
+			if ($xml !== false && $xml->status['state'] == 'ok') {
+				$this->grid_reference    = (string)$xml->gridref;
+				$this->title             = (string)$xml->title;
+				$this->realname          = (string)$xml->user;
+				$this->ext_img_url       = (string)$xml->img['src'];
+				$this->ext_profile_url   = (string)$xml->user['profile'];
+				$this->ext_thumb_url     = (string)$xml->thumbnail;
+				$this->ext               = true;
+				$this->ext_server        = $server;
+				$this->moderation_status = 'geograph';
+				$this->submitted         = (string)$xml->submitted;
+				$this->imagetaken        = (string)$xml->taken;
+				$this->imageclass        = (string)$xml->category;
+				$this->comment           = (string)$xml->comment;
+				$this->gridimage_id      = 0;
+				$this->ext_gridimage_id  = $gridimage_id;
+				$this->grid_square       = null;
+				$this->title1            = $this->title;
+				$this->comment1          = $this->comment;
+				$this->title2            = '';
+				$this->comment2          = '';
+				# getThumbnail(120,120,false,true);
+				#
+				# photographer_gridref_precision
+				# photographer_gridref
+				# subject_gridref
+				# $gridimage_id
+
+				$this->profile_link = $this->ext_profile_url;
+				
+				#if (!empty($this->credit_realname))
+				#	$this->profile_link .= "?a=".urlencode($this->realname);
+
+				if (empty($this->title))
+					$this->title="Untitled photograph for {$this->grid_reference}";
+				return true;
+			}
+
+
+		}
+		//todo memcache (probably make sure dont serialise the dbs!) 
+		
+		return false;
+	}
 	
 	/**
 	* calculate a hash to prevent easy downloading of every image in sequence
@@ -417,7 +522,7 @@ class GridImage
 		return substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8);
 	}
 	
-	function assignToSmarty($smarty) {
+	function assignToSmarty($smarty, $sid=-1, $map_suffix='') {
 		global $CONF;
 		
 		$taken=$this->getFormattedTakenDate();
@@ -442,7 +547,8 @@ class GridImage
 
 		//get a token to show a suroudding geograph map
 		$mosaic=new GeographMapMosaic;
-		$smarty->assign('map_token', $mosaic->getGridSquareToken($this->grid_square));
+		$smarty->assign('map_token', $mosaic->getGridSquareToken($this->grid_square, false));
+		$smarty->assign('map_token2', $mosaic->getGridSquareToken($this->grid_square, true));
 
 
 		//find a possible place within 25km
@@ -464,8 +570,11 @@ class GridImage
 		$smarty->assign('square_count', $this->grid_square->imagecount);
 
 		//lets add an overview map too
-		$overview=new GeographMapMosaic('largeoverview');
-		$overview->setCentre($this->grid_square->x,$this->grid_square->y); //does call setAlignedOrigin
+		#$overview=new GeographMapMosaic('largeoverview');
+		#$overview->setCentre($this->grid_square->x,$this->grid_square->y); //does call setAlignedOrigin
+		#$overview=new GeographMapMosaic('largeoverview'.$CONF['map_suffix'], $this->grid_square->x,$this->grid_square->y);
+		#$overview=new GeographMapMosaic('largeoverview'.get_map_suffix(), $this->grid_square->x,$this->grid_square->y);
+		$overview=new GeographMapMosaic('largeoverview'.$map_suffix, $this->grid_square->x,$this->grid_square->y);
 		$overview->assignToSmarty($smarty, 'overview');
 		$smarty->assign('marker', $overview->getSquarePoint($this->grid_square));
 
@@ -482,10 +591,10 @@ class GridImage
 		$smarty->assign('longdm', $longdm);
 
 		//lets add an rastermap too
-		$rastermap = new RasterMap($this->grid_square,false);
+		$rastermap = new RasterMap($this->grid_square,false,true,false,'latest',$sid);
 		$rastermap->addLatLong($lat,$long);
 		if (!empty($this->viewpoint_northings)) {
-			$rastermap->addViewpoint($this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_grlen,$this->view_direction);
+			$rastermap->addViewpoint($this->viewpoint_refindex,$this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_grlen,$this->view_direction);
 		} elseif (isset($this->view_direction) && strlen($this->view_direction) && $this->view_direction != -1) {
 			$rastermap->addViewDirection($this->view_direction);
 		}
@@ -509,6 +618,7 @@ class GridImage
 	*/
 	function& getTroubleTickets($aStatus)
 	{
+		global $CONF;
 		if (!is_array($aStatus))
 			die("GridImage::getTroubleTickets expects array param");
 			
@@ -528,20 +638,38 @@ class GridImage
 			$t=new GridImageTroubleTicket;
 			$t->loadFromRecordset($recordSet);
 			
-			if ($t->days > 365) {
-				$t->days = 'over a year';
-			} elseif ($t->days > 30) {
-				$t->days = 'over '.intval($t->days/30).' months';
-			} elseif ($t->days > 14) {
-				$t->days = 'over '.intval($t->days/7).' weeks';
-			} elseif ($t->days > 7) {
-				$t->days = 'over a week';
-			} elseif ($t->days > 1) {
-				$t->days = $t->days.' days';
-			} elseif ($t->days < 1) {
-				$t->days = 'less than a day';
+			if ($CONF['lang'] == 'de') {
+				if ($t->days > 365) {
+					$t->days = 'über einem Jahr';
+				} elseif ($t->days > 30) {
+					$t->days = 'über '.intval($t->days/30).' Monaten';
+				} elseif ($t->days > 14) {
+					$t->days = 'über '.intval($t->days/7).' Wochen';
+				} elseif ($t->days > 7) {
+					$t->days = 'über einer Woche';
+				} elseif ($t->days > 1) {
+					$t->days = $t->days.' Tagen';
+				} elseif ($t->days < 1) {
+					$t->days = 'weniger als einem Tag';
+				} else {
+					$t->days = 'einem Tag';
+				}
 			} else {
-				$t->days = '1 day';
+				if ($t->days > 365) {
+					$t->days = 'over a year';
+				} elseif ($t->days > 30) {
+					$t->days = 'over '.intval($t->days/30).' months';
+				} elseif ($t->days > 14) {
+					$t->days = 'over '.intval($t->days/7).' weeks';
+				} elseif ($t->days > 7) {
+					$t->days = 'over a week';
+				} elseif ($t->days > 1) {
+					$t->days = $t->days.' days';
+				} elseif ($t->days < 1) {
+					$t->days = 'less than a day';
+				} else {
+					$t->days = '1 day';
+				}
 			}
 			
 			//load its ticket items (should this be part of load from Recordset?
@@ -1048,6 +1176,144 @@ class GridImage
 	}
 	
 	/**
+	* returns a GD image instance for a thumbnail of the image
+	*/
+	function getPolyThumb($size, $crop, $poly, $id, $mpos = null, $mcol = null)
+	{
+		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
+		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
+		$abcdef=sprintf("%06d", $this->gridimage_id);
+		$hash=$this->_getAntiLeechHash();
+		$img=null;
+		
+		
+		$base=&$_SERVER['DOCUMENT_ROOT'];
+		if ($this->gridimage_id<1000000) {
+			$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}_p$id.png";
+		} else {
+			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
+			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$size}x{$size}_p$id.png";
+		}
+		if (!file_exists($base.$thumbpath))
+		{
+			//get path to fullsize image
+			$fullpath=$this->_getFullpath();
+			
+			if ($fullpath != '/photos/error.jpg' && file_exists($base.$fullpath))
+			{
+				
+		
+				//generate resized image
+				$fullimg = @imagecreatefromjpeg($base.$fullpath); 
+				if ($fullimg)
+				{
+					$srcw=imagesx($fullimg);
+					$srch=imagesy($fullimg);
+					
+					if ($srcw == 0 && $srch == 0)
+					{
+						//couldn't read image!
+						$img=null;
+
+						imagedestroy($fullimg);
+					} else {
+						//crop percentage is how much of the
+						//image to keep in the thumbnail
+						#$crop=0.75;
+
+						//figure out size of image we'll keep
+						if ($srcw>$srch)
+						{
+							//landscape
+							$s=$srch*$crop;
+
+
+						}
+						else
+						{
+							//portrait
+							$s=$srcw*$crop;
+						}
+
+						$srcx = round(($srcw-$s)/2);
+						$srcy = round(($srch-$s)/2);
+						$srcw = $s;
+						$srch=$s;
+
+						$img = imagecreatetruecolor($size, $size);
+						imagecopyresampled($img, $fullimg, 0, 0, $srcx, $srcy, 
+									$size,$size, $srcw, $srch);
+						imagedestroy($fullimg);
+
+						# TODO supp marker? id in file name? assumptions: leftmost polypoint at beginning
+						require_once('geograph/image.inc.php');
+						UnsharpMask($img,200,0.5,3);
+						if (!is_null($mpos)) {
+							$mx = $mpos[0];
+							$my = $mpos[1];
+							$col = imagecolorallocate($img, $mcol[0], $mcol[1], $mcol[2]);
+							imagefilledrectangle ($img, $mx-2, $my-1, $mx+2, $my+1, $col);
+							imagefilledrectangle ($img, $mx-1, $my-2, $mx+1, $my+2, $col);
+						}
+						#$ps = '';
+						#foreach ($poly as &$p) {
+						#	$ps .= '(' . implode($p, ', ') . '), ';
+						#}
+						#trigger_error("ncph-> $ps", E_USER_NOTICE);
+						$cpoly = $poly;
+						require_once('geograph/map.class.php'); ##FIXME
+						$map = new GeographMap; ##FIXME
+						$map->_clip_polygon($cpoly, 0, $size-1, 0, $size-1);
+						#$ps = '';
+						#foreach ($cpoly as &$p) {
+						#	$ps .= '(' . implode($p, ', ') . '), ';
+						#}
+						#trigger_error("cph-> $ps", E_USER_NOTICE);
+						#trigger_error("ph->".implode($photopoly, ', '), E_USER_NOTICE);
+						if (count($cpoly)) {
+							$drawpoly=array();
+							foreach ($cpoly as &$p) {
+								$drawpoly[] = $p[0];
+								$drawpoly[] = $p[1];
+							}
+							#$drawpoly += array($cpoly[0][0], $cpoly[0][1], 0, 0,  $size-1,0, $size-1,$size-1, 0,$size-1, 0,0);
+							$drawpoly = array_merge($drawpoly, array($cpoly[0][0], $cpoly[0][1], 0, 0,  $size-1,0, $size-1,$size-1, 0,$size-1, 0,0));
+						} else {
+							$drawpoly = array($size-1,0, $size-1,$size-1, 0,$size-1, 0,0);
+						}
+						#trigger_error("dp->".implode($drawpoly, ', '), E_USER_NOTICE);
+						imagealphablending($img, false);
+						$back=imagecolorallocatealpha ($img, 0, 0, 0, 127);
+						imagefilledpolygon($img, $drawpoly, count($drawpoly)/2, $back);
+
+						//save the thumbnail
+						imagesavealpha($img, true);
+						imagepng($img, $base.$thumbpath);
+					}
+					
+				}
+				else
+				{
+					//couldn't load full jpeg
+					$img=null;
+				}
+			}
+			else
+			{
+				//no original image!
+				$img=null;
+		
+			}
+			
+		}
+		else
+		{
+			$img=imagecreatefrompng($base.$thumbpath);
+		}
+		return $img;
+	}
+	
+	/**
 	* general purpose internal method for creating resized images - accepts
 	* a variety of options. Use this to build specific methods for public
 	* consumption
@@ -1060,6 +1326,7 @@ class GridImage
 	* attribname : attribute name of img tag which holds url (default 'src')
 	* bevel : give image a raised edge (default true)
 	* unsharp : do an unsharp mask on the image
+	* pano : do not crop, even if w:h > 2:1 (default false)
 	* 
 	* returns an association array containing 'html' element, which contains
 	* a fragment to load the image, and 'path' containg relative url to image
@@ -1080,6 +1347,7 @@ class GridImage
 		$bestfit=isset($params['bestfit'])?$params['bestfit']:true;
 		$bevel=isset($params['bevel'])?$params['bevel']:true;
 		$unsharp=isset($params['unsharp'])?$params['unsharp']:true;
+		$pano=isset($params['pano'])?$params['pano']:false;
 		$source=isset($params['source'])?$params['source']:'';
 		
 		
@@ -1119,7 +1387,11 @@ class GridImage
 			$return=array();
 			$return['url']=$thumbpath;
 
-			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			if ($CONF['lang'] == 'de')
+				$by = ' von ';
+			else
+				$by = ' by ';
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
@@ -1146,7 +1418,15 @@ class GridImage
 				//get path to fullsize image (will try to fetch it from fetch_on_demand)
 				$fullpath=$this->_getFullpath();
 			}
-			
+			if ($pano && $fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath)) {
+				require_once("geograph/uploadmanager.class.php");
+				$uploadmanager = new UploadManager();
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+				list($destwidth, $destheight, $destdim, $changedim) = $uploadmanager->_new_size($owidth, $oheight, $maxw);
+				$maxw = $destdim;
+				$maxh = $destdim;
+				$bestfit = true;
+			}
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				if (strlen($CONF['imagemagick_path'])) {
@@ -1167,7 +1447,7 @@ class GridImage
 							$aspect_src=$width/$height;
 							$aspect_dest=$maxw/$maxh;
 
-							if ($bestfit && $aspect_src > 2 && $aspect_dest < 2) {
+							if (!$pano && $bestfit && $aspect_src > 2 && $aspect_dest < 2) {
 								$bestfit = false;
 								$maxh = round($maxw/2);
 								$aspect_dest= 2;
@@ -1307,7 +1587,11 @@ class GridImage
 		}
 		else
 		{
-			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			if ($CONF['lang'] == 'de')
+				$by = ' von ';
+			else
+				$by = ' by ';
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
@@ -1339,6 +1623,20 @@ class GridImage
 	*/
 	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false,$attribname = 'src')
 	{
+		global $CONF;
+		if ($this->ext) {
+			# (120,120,false,true);
+			# $resized['html'];
+			if ($CONF['lang'] == 'de')
+				$by = ' von ';
+			else
+				$by = ' by ';
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
+			#$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
+			# width="120" height="90"
+			$html="<img alt=\"$title\" $attribname=\"{$this->ext_thumb_url}\" />";
+			return $html;
+		}
 		$params['maxw']=$maxw;
 		$params['maxh']=$maxh;
 		$params['attribname']=$attribname;
@@ -1377,12 +1675,13 @@ class GridImage
 	/**
 	* 
 	*/
-	function getImageFromOriginal($maxw, $maxh)
+	function getImageFromOriginal($maxw, $maxh, $pano = false)
 	{
 		$params['maxw']=$maxw;
 		$params['maxh']=$maxh;
 		$params['bevel']=false;
 		$params['unsharp']=false;
+		$params['pano']=$pano;
 		$params['source']='original';
 		$resized=$this->_getResized($params);
 		
@@ -1584,7 +1883,7 @@ class GridImage
 		$newsq=new GridSquare;
 		if (is_object($this->db))
 			$newsq->_setDB($this->_getDB());
-		if ($newsq->setByFullGridRef($grid_reference,false,true))
+		if ($newsq->setByFullGridRef($grid_reference,false,true,false,true))
 		{
 			$db=&$this->_getDB();
 			
@@ -1642,10 +1941,11 @@ class GridImage
 			//we DONT use getNatEastings here because only want them if it more than 4 figure
 			$east=$newsq->nateastings+0;
 			$north=$newsq->natnorthings+0;
+			$ri=$newsq->reference_index;
 
 			//reassign image
 			$db->Execute("update gridimage set $sql_set ".
-				"nateastings=$east,natnorthings=$north,natgrlen='{$newsq->natgrlen}' ".
+				"nateastings=$east,natnorthings=$north,reference_index=$ri,natgrlen='{$newsq->natgrlen}' ".
 				"where gridimage_id='$this->gridimage_id'");
 			
 			//ensure this is a real change
@@ -1712,6 +2012,7 @@ class GridImage
 			", viewpoint_eastings=".$db->Quote($this->viewpoint_eastings).
 			", viewpoint_northings=".$db->Quote($this->viewpoint_northings).
 			", viewpoint_grlen='{$this->viewpoint_grlen}'".					
+			", viewpoint_refindex='{$this->viewpoint_refindex}'".
 			", view_direction=".$db->Quote($this->view_direction).
 			", use6fig=".$db->Quote($this->use6fig).
 			" where gridimage_id = '{$this->gridimage_id}'";
@@ -1761,11 +2062,34 @@ class GridImage
 			}
 	
 			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
+			SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
-			$db->Execute($sql);		
+			$db->Execute($sql);
+
+			$row = &$db->GetRow("select recent_id from gridimage_recent where gridimage_id={$this->gridimage_id} limit 1");
+			if ($row !== false && count($row)) {
+				$recent_id=$row['recent_id'];
+				$sql="REPLACE INTO gridimage_recent
+				SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)'),$recent_id
+				FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
+				INNER JOIN user ON(gi.user_id=user.user_id)
+				WHERE gridimage_id = '{$this->gridimage_id}'";
+				$db->Execute($sql);		
+			}
+			#$sql="update gridimage_recent set title=".$db->Quote($this->title1).
+			#	", comment=".$db->Quote($this->comment1).
+			#	", title2=".$db->Quote($this->title2).
+			#	", comment2=".$db->Quote($this->comment2).
+			#	", imageclass=".$db->Quote($this->imageclass).
+			#	", imagetaken=".$db->Quote($this->imagetaken).
+			#	", viewpoint_eastings=".$db->Quote($this->viewpoint_eastings).
+			#	", viewpoint_northings=".$db->Quote($this->viewpoint_northings).
+			#	", viewpoint_grlen='{$this->viewpoint_grlen}'".					
+			#	", view_direction=".$db->Quote($this->view_direction).
+			#	", use6fig=".$db->Quote($this->use6fig).
+			#	" where gridimage_id = '{$this->gridimage_id}'";
 		} else {
 			//fall back if we dont know the moduration status then lets load it and start again!
 			$this->loadFromId($this->gridimage_id);	

@@ -41,7 +41,142 @@ if (isset($_GET['map']))
 	if($map->setToken($_GET['map']))
 		$map->returnImage();
 	exit;
+} elseif (isset($_GET['x']) && isset($_GET['y']) && isset($_GET['Z'])) {
+	require_once('geograph/map.class.php');
+	require_once('geograph/mapmosaic.class.php');
+	require_once('geograph/gridimage.class.php');
+	$w = 256;
+	$h = 256;
+	$x = intval($_GET['x']);
+	$y = intval($_GET['y']);
+	$z = intval($_GET['Z']);
+	$overlay = isset($_GET['o']) ? intval($_GET['o']) : 0;
+	$t = 0;
+	if (isset($_GET['t'])) {
+		$t = intval($_GET['t']);
+	}
+	$layers = 31;
+	if (isset($_GET['l'])) {
+		$layers = intval($_GET['l']);
+	}
+	$f19 = pow(2, 19-$z);
+	$x19 = $x * $f19;
+	$y19 = $y * $f19;
+	if  (    $layers < 1 || $layers > 31
+	      || $overlay < 0 || $overlay > 2
+	      || $z < ($overlay == 2 ? 9 : 4) || $z > ($overlay||!($layers&2) ? 14 : 13 ) //FIXME 15:13 also okay?
+	      || $x19+$f19 < $CONF['xmrange'][0] || $x19 > $CONF['xmrange'][1]
+	      || $y19+$f19 < $CONF['ymrange'][0] || $y19 > $CONF['ymrange'][1]
+	      || $t < -1
+	) {
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+		exit;
+	}
 
+	$map=new GeographMap;
+	//if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && (init_session() || true) && $USER->hasPerm('admin'))
+	//	$map->caching=false;
+	$map->enableMercator(true);
+	$map->setOrigin($x, $y);
+	$map->setImageSize($w,$h);
+	$map->setScale($z);
+	$map->type_or_user = $t;
+	$map->overlay = $overlay;
+	$map->layers = $layers;
+	//$map->caching=false; //FIXME
+	$map->returnImage();
+	exit;
+} elseif (isset($_GET['x']) && isset($_GET['y']) || isset($_GET['i']) && isset($_GET['e']) && isset($_GET['n'])) {
+	require_once('geograph/map.class.php');
+	require_once('geograph/mapmosaic.class.php');
+	require_once('geograph/gridimage.class.php');
+	//render and return a map given by x, y, ...
+	//init_session();
+	//if (!$USER->hasPerm("basic")) {
+	//	//$smarty->display('static_submit_intro.tpl');
+	//	exit;
+	//}
+	if (isset($_GET['x']) && isset($_GET['y'])) {
+		$x = intval($_GET['x']);
+		$y = intval($_GET['y']);
+		if (isset($_GET['i']) && array_key_exists(intval($_GET['i']), $CONF['references']))
+			$ri = intval($_GET['i']);
+	} else {
+		$ri = intval($_GET['i']);
+		$e = floor(intval($_GET['e'])/1000);
+		$n = floor(intval($_GET['n'])/1000);
+		if (!array_key_exists($ri, $CONF['references']))
+			exit;
+		$x = $e + $CONF['origins'][$ri][0];
+		$y = $n + $CONF['origins'][$ri][1];
+	}
+	$z = 0;
+	if (isset($_GET['z'])) {
+		$z = intval($_GET['z']);
+		if ($z < -8)
+			$z = -8;
+		elseif ($z > 3)
+			$z = 3;
+	}
+	if ($z >= 0) {
+		$w = 200;
+		$h = 200;
+		$levels = array(
+			0 => array( 0.3, 666),
+			1 => array( 1.0, 200),
+			2 => array( 4.0,  50),
+			3 => array(40.0,   5),
+		);
+	} else {
+		$w = 256;
+		$h = 256;
+		$levels = array(
+			0 => array(  0.5,  512),
+			1 => array(  1.0,  256),
+			2 => array(  2.0,  128),
+			3 => array(  4.0,   64),
+			4 => array(  8.0,   32),
+			5 => array( 16.0,   16),
+			6 => array( 32.0,    8),
+			7 => array( 64.0,    4),
+			//7 => array( 64.0,    6.25),
+		);
+		$z = -$z-1;
+	}
+	if ($x + $w <= $CONF['minx'] || $x  > $CONF['maxx'] || $y + $h <= $CONF['miny'] || $y  > $CONF['maxy']) {
+		exit; // ri dependend check?
+	}
+	$t = 0;
+	if (isset($_GET['t'])) {
+		$t = intval($_GET['t']);
+		if ($t < -1)
+			$t = -1;
+		elseif ($t > 0)
+			$t = 0;
+	}
+	# 400/1333 = 0.3 px/km    666km
+	# 400/ 400 =   1 px/km    200km
+	# 400/ 100 =   4 px/km     50km
+	# 400/  10 =  40 px/km      5km
+	$pixels_per_km = $levels[$z][0];
+	$width_km      = $levels[$z][1];
+	$x = floor($x/$width_km) * $width_km;
+	$y = floor($y/$width_km) * $width_km;
+	$map=new GeographMap;
+	//if (isset($_GET['refresh']) && $_GET['refresh'] == 2 && (init_session() || true) && $USER->hasPerm('admin'))
+	//	$map->caching=false;
+	$map->setOrigin($x, $y);
+	$map->setImageSize($w,$h);
+	$map->setScale($pixels_per_km);
+	$map->type_or_user = $t;
+	//$map->caching=false; //FIXME
+	if (isset($ri)) {
+		$map->force_ri = $ri;
+		$map->reference_index = $ri;
+	}
+	$map->returnImage();
+	exit;
 /**************************
 * Raster Maps
 */	
@@ -399,9 +534,12 @@ function getColorKey(&$img) {
 		$o = $counts[$p];
 		//standard green, yellow => red
 		switch (true) {
-			case $o == 1: $r=255; $g=255; $b=0; break; 
-			case $o == 2: $r=255; $g=196; $b=0; break; 
-			case $o == 3: $r=255; $g=132; $b=0; break; 
+			//case $o == 1: $r=255; $g=255; $b=0; break; 
+			//case $o == 2: $r=255; $g=196; $b=0; break; 
+			//case $o == 3: $r=255; $g=132; $b=0; break; 
+			case $o == 1: $r=255; $g=196; $b=0; break; 
+			case $o == 2: $r=255; $g=154; $b=0; break; 
+			case $o == 3: $r=255; $g=110; $b=0; break; 
 			case $o == 4: $r=255; $g=64; $b=0; break; 
 			case $o <  7: $r=225; $g=0; $b=0; break; #5-6
 			case $o < 10: $r=200; $g=0; $b=0; break; #7-9

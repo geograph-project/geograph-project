@@ -402,6 +402,7 @@ ALTER TABLE `queries_archive` CHANGE `searchuse` `searchuse` ENUM( 'search', 'fl
 ALTER TABLE `gridimage`        ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_recent` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`;
 ALTER TABLE `gridimage_search` ADD `title2` varchar(128) DEFAULT NULL AFTER `title`, ADD `comment2` text AFTER `comment`, DROP INDEX `title` , ADD INDEX `title` (`title`, `title2`), DROP INDEX `title_2` , ADD INDEX `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`);
+ALTER TABLE `loc_towns` CHANGE `s`  `s` enum('1','2','3','4','') NOT NULL DEFAULT '1';
 
 ALTER TABLE  `user` ADD  `upload_size` SMALLINT UNSIGNED NOT NULL DEFAULT  '0';
 ALTER TABLE gridimage ADD distance MEDIUMINT(8) UNSIGNED NULL default NULL;
@@ -422,3 +423,253 @@ ALTER TABLE  `gridimage_size` ADD  `original_width` MEDIUMINT UNSIGNED NOT NULL 
 ADD  `original_height` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0';
 
 ALTER TABLE  `user` ADD `clear_exif` tinyint(3) unsigned NOT NULL DEFAULT '1';
+
+DROP TABLE IF EXISTS `hectad_stat`;
+CREATE TABLE `hectad_stat` (
+  `reference_index` tinyint(4) default '1',
+  `x` int(11) NOT NULL default '0',
+  `y` int(11) NOT NULL default '0',
+  `hectad` varchar(7) NOT NULL default '',
+  `landsquares` smallint(5) unsigned  NULL default '0',
+  `images` int(11) unsigned NOT NULL default '0',
+  `geographs` mediumint(8) unsigned NULL default '0',
+  `squares` smallint(5) unsigned NOT NULL default '0',
+  `geosquares` smallint(5) unsigned NOT NULL default '0',
+  `users` mediumint(8) unsigned NOT NULL default '0',
+  `first_submitted` datetime default NULL,
+  `last_submitted` datetime default NULL,
+  `map_token` varchar(128) default NULL,
+  `largemap_token` varchar(128) default NULL,
+  PRIMARY KEY  (`hectad`),
+  KEY `reference_index` (`reference_index`),
+  KEY `geosquares` (`geosquares`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+alter table hectad_stat add ftfusers mediumint(8) unsigned NOT NULL DEFAULT '0';
+
+alter table gridimage_pending add type enum('picnik','original') default 'picnik';
+alter table gridimage_pending add status enum('new','open','accepted','rejected') default 'new';
+alter table gridimage_pending add `updated` timestamp on update current_timestamp not null default current_timestamp ;
+ALTER TABLE `gridimage_pending` CHANGE `status` `status` ENUM('new','open','accepted','confirmed','rejected') NOT NULL DEFAULT 'new';
+
+ALTER TABLE gridimage ADD `reference_index` tinyint(1) NOT NULL DEFAULT '0' AFTER `natgrlen`;
+ALTER TABLE gridimage ADD `viewpoint_refindex` tinyint(1) NOT NULL DEFAULT '0' AFTER `viewpoint_grlen`;
+
+UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.gridsquare_id) SET gi.reference_index = gs.reference_index;
+UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.gridsquare_id) SET gi.viewpoint_refindex = gs.reference_index;
+
+ALTER TABLE `user`     ADD `salt` varchar(8) NOT NULL default '' AFTER `password`;
+
+ALTER TABLE mapcache ADD `force_ri` smallint(6) NOT NULL DEFAULT '0' AFTER `type_or_user`;
+ALTER TABLE `mapcache` DROP PRIMARY KEY , ADD PRIMARY KEY ( `map_x` , `map_y` , `image_w` , `image_h` , `pixels_per_km` , `type_or_user` , `force_ri` )
+
+
+ALTER TABLE `mapcache` ADD `mercator` tinyint(1) unsigned NOT NULL DEFAULT '0' AFTER `force_ri`;
+ALTER TABLE `mapcache` ADD `overlay` tinyint(1) unsigned NOT NULL DEFAULT '0' AFTER `mercator`;
+ALTER TABLE `mapcache` ADD `layers` tinyint(2) unsigned NOT NULL DEFAULT '0' AFTER `overlay`;
+ALTER TABLE `mapcache` ADD `level` smallint(3) NOT NULL DEFAULT '0' AFTER `layers`;
+ALTER TABLE `mapcache` ADD `tile_x` mediumint(8) NOT NULL DEFAULT '0' AFTER `level`;
+ALTER TABLE `mapcache` ADD `tile_y` mediumint(8) NOT NULL DEFAULT '0' AFTER `tile_x`;
+
+ALTER TABLE `mapcache` ADD `max_x` smallint(6) NOT NULL DEFAULT '0' AFTER `map_y`;
+ALTER TABLE `mapcache` ADD `max_y` smallint(6) NOT NULL DEFAULT '0' AFTER `max_x`;
+
+TRUNCATE TABLE `mapcache`;
+ALTER TABLE `mapcache` DROP PRIMARY KEY , ADD PRIMARY KEY ( `tile_x` , `tile_y` , `image_w` , `image_h` , `level` , `type_or_user` , `force_ri`, `mercator`, `overlay`, `layers` );
+ALTER TABLE `mapcache` ADD KEY `xy` (`map_x`, `map_y`,  `max_x`, `max_y`);
+
+CREATE TABLE gridsquare_gmcache (
+	`gridsquare_id` int(11) NOT NULL,
+	`gxlow` int(11) NOT NULL,
+	`gylow` int(11) NOT NULL,
+	`gxhigh` int(11) NOT NULL,
+	`gyhigh` int(11) NOT NULL,
+	`area` double(9,6) NOT NULL,
+	`cliparea` double(9,6) NOT NULL,
+	`rotangle` double(8,6) NOT NULL,
+	`scale` double(8,6) NOT NULL,
+	`cgx` double(10,2) NOT NULL,
+	`cgy` double(10,2) NOT NULL,
+	`polycount` tinyint(1) NOT NULL,
+	`poly1gx` double(10,2),
+	`poly1gy` double(10,2),
+	`poly2gx` double(10,2),
+	`poly2gy` double(10,2),
+	`poly3gx` double(10,2),
+	`poly3gy` double(10,2),
+	`poly4gx` double(10,2),
+	`poly4gy` double(10,2),
+	`poly5gx` double(10,2),
+	`poly5gy` double(10,2),
+	`poly6gx` double(10,2),
+	`poly6gy` double(10,2),
+	`poly7gx` double(10,2),
+	`poly7gy` double(10,2),
+	`poly8gx` double(10,2),
+	`poly8gy` double(10,2),
+	PRIMARY KEY (`gridsquare_id`),
+	KEY `gxlow` (`gxlow`),
+	KEY `gxhigh` (`gxhigh`),
+	KEY `gylow` (`gylow`),
+	KEY `gyhigh` (`gyhigh`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `loc_towns` ADD `community_id` int(9) unsigned NOT NULL DEFAULT '0' AFTER `point_xy`;
+
+CREATE TABLE `loc_hier` (
+  `level` tinyint(1) unsigned NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `contains_cid_min` int(9) unsigned NOT NULL,
+  `contains_cid_max` int(9) unsigned NOT NULL,
+  `capital_cid` int(9) unsigned NOT NULL,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`level`,`community_id`),
+  KEY `contains` (`contains_cid_min`,`contains_cid_max`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+INSERT INTO `loc_hier` (`level`, `community_id`, `contains_cid_min`, `contains_cid_max`, `capital_cid`, `name`) VALUES
+(4,  1000000,  1000000,  1999999,  1002000, 'Schleswig-Holstein'),
+(4,  2000000,  2000000,  2999999,  2000000, 'Hamburg'),
+(4,  3000000,  3000000,  3999999,  3241001, 'Niedersachsen'),
+(4,  4000000,  4000000,  4999999,  4011000, 'Bremen'),
+(4,  5000000,  5000000,  5999999,  5111000, 'Nordrhein-Westfalen'),
+(4,  6000000,  6000000,  6999999,  6414000, 'Hessen'),
+(4,  7000000,  7000000,  7999999,  7315000, 'Rheinland-Pfalz'),
+(4,  8000000,  8000000,  8999999,  8111000, 'Baden-Württemberg'),
+(4,  9000000,  9000000,  9999999,  9162000, 'Bayern'),
+(4, 10000000, 10000000, 10999999, 10041100, 'Saarland'),
+(4, 11000000, 11000000, 11999999, 11000000, 'Berlin'),
+(4, 12000000, 12000000, 12999999, 12054000, 'Brandenburg'),
+(4, 13000000, 13000000, 13999999, 13004000, 'Mecklenburg-Vorpommern'),
+(4, 14000000, 14000000, 14999999, 14262000, 'Sachsen'),
+(4, 15000000, 15000000, 15999999, 15003000, 'Sachsen-Anhalt'),
+(4, 16000000, 16000000, 16999999, 16051000, 'Thüringen');
+
+CREATE TABLE `gridsquare_percentage` (
+  `gridsquare_id` int(11) NOT NULL,
+  `level` tinyint(2) NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `percent` tinyint(4) NOT NULL,
+  PRIMARY KEY (`gridsquare_id`, `level`,`community_id`),
+  KEY `gridsquare_id` (`gridsquare_id`),
+  KEY `subject` (`level`,`community_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+#CREATE TABLE  gridsquare_backup SELECT * FROM  gridsquare
+
+ALTER TABLE `gridimage_search` ADD `gridsquare_id` int(11) NOT NULL DEFAULT '0' AFTER `gridimage_id`;
+ALTER TABLE `gridimage_recent` ADD `gridsquare_id` int(11) NOT NULL DEFAULT '0' AFTER `gridimage_id`;
+UPDATE gridimage_search gs SET gridsquare_id = (select gridsquare_id from gridimage gi where gi.gridimage_id = gs.gridimage_id);
+ALTER TABLE `gridimage_search` ADD KEY `gridsquare_id` (`gridsquare_id`);
+ALTER TABLE `gridimage` ADD  KEY `gridsquare_id_2` (`gridsquare_id`);
+
+ALTER TABLE `queries` ADD `limit11` varchar(32) NOT NULL DEFAULT '' AFTER `limit10`;
+ALTER TABLE `queries_archive` ADD `limit11` varchar(32) NOT NULL DEFAULT '' AFTER `limit10`;
+
+CREATE TABLE `loc_hier_stat` (
+  `level` tinyint(2) NOT NULL,
+  `community_id` int(9) unsigned NOT NULL,
+  `squares_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `images_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `squares_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `tenk_total` int(8) unsigned NOT NULL DEFAULT '0',
+  `geographs_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `tenk_submitted` int(8) unsigned NOT NULL DEFAULT '0',
+  `images_thisweek` int(8) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`level`,`community_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `loc_towns` ADD `short_name` varchar(50) NOT NULL DEFAULT '' AFTER `name`;
+UPDATE loc_towns SET short_name=name;
+
+ALTER TABLE `loc_towns` ADD `cx` int(11) NOT NULL DEFAULT '0' AFTER `y`;
+ALTER TABLE `loc_towns` ADD `cy` int(11) NOT NULL DEFAULT '0' AFTER `cx`;
+ALTER TABLE `loc_towns` ADD `point_cxy` point NOT NULL DEFAULT '' AFTER `point_xy`;
+ALTER TABLE `loc_towns` ADD KEY `cxy` (`cx`,`cy`);
+UPDATE loc_towns SET point_cxy=point_xy; # update by script!
+ALTER TABLE `loc_towns` ADD SPATIAL KEY `point_cxy` (`point_cxy`);
+
+ALTER TABLE `loc_hier` ADD `mappal` tinyint(1) unsigned NOT NULL DEFAULT '0' AFTER `name`;
+#ALTER TABLE `gridsquare` ADD `mappal` float(10,4) NOT NULL DEFAULT '0' AFTER `mapservices`;
+CREATE TABLE gridsquare_mappal (
+	`gridsquare_id` int(11) NOT NULL,
+	`level` tinyint(2) NOT NULL,
+	`mappal` float(10,4) NOT NULL DEFAULT '0',
+	PRIMARY KEY (`gridsquare_id`,`level`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+ALTER TABLE `gridsquare_mappal` ADD `norm` float(10,4) NOT NULL DEFAULT '0' AFTER `mappal`;
+
+#DELETE FROM gridsquare_mappal WHERE level=4
+#INSERT INTO gridsquare_mappal (gridsquare_id, level, mappal)
+#SELECT gs.gridsquare_id, gp.level,COALESCE(SUM(gp.percent*lh.mappal)/100.,0)
+#FROM gridsquare gs LEFT JOIN gridsquare_percentage gp USING(gridsquare_id) LEFT JOIN loc_hier lh USING(level,community_id)
+#WHERE level=4 GROUP BY gridsquare_id;
+
+
+ALTER TABLE `gridsquare` ADD `permit_photographs` tinyint(1) NOT NULL DEFAULT '1' AFTER `has_geographs`;
+ALTER TABLE `gridsquare` ADD `permit_geographs` tinyint(1) NOT NULL DEFAULT '1' AFTER `permit_photographs`;
+
+
+ALTER TABLE `loc_hier` CHANGE  `level` `level` tinyint(2)  NOT NULL;
+INSERT INTO `loc_hier` (`level`, `community_id`, `contains_cid_min`, `contains_cid_max`, `capital_cid`, `name`) VALUES
+(-1,  1,  0,  0,  0, 'land mass (low water)'),
+(-1,  2,  0,  0,  0, 'land mass (high water)'),
+(-1,  3,  0,  0,  0, 'lakes (low water)'),
+(-1,  4,  0,  0,  0, 'lakes (high water)');
+
+ALTER TABLE `mapfix_log` ADD `level` tinyint(2) NOT NULL DEFAULT '-2' AFTER `gridsquare_id`;
+ALTER TABLE `mapfix_log` ADD `community_id` int(9) unsigned NOT NULL DEFAULT '0' AFTER `level`;
+
+#CREATE TABLE  gridsquare_backup2 SELECT * FROM  gridsquare
+
+## create grey scale image with map maker (scale 1 limit 100 user -2, black/white)
+## edit out lakes, separate utm zones
+## /admin/gridbuilder.php: Level -1, Id 1, Skip Updating GridPrefix Table,Create squares if needed
+
+##copy landmass (low water = high water)
+REPLACE INTO gridsquare_percentage (gridsquare_id,level,community_id,percent) SELECT gridsquare_id,-1,2,percent FROM gridsquare_percentage where level=-1 and community_id=1 and percent > 0
+
+##lakes = landmass-percentland
+REPLACE INTO gridsquare_percentage (gridsquare_id,level,community_id,percent) SELECT gridsquare_id,-1,3,percent-percent_land FROM gridsquare_percentage INNER JOIN gridsquare USING (gridsquare_id) WHERE level=-1 AND community_id=1 AND percent_land>=0 AND percent>percent_land
+##copy lakes (low water = high water)
+REPLACE INTO gridsquare_percentage (gridsquare_id,level,community_id,percent) SELECT gridsquare_id,-1,4,percent FROM gridsquare_percentage where level=-1 and community_id=3 and percent > 0
+
+#update gs
+UPDATE gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp3 on (gs.gridsquare_id=gp3.gridsquare_id and gp3.level = -1 and gp3.community_id = 3)  SET gs.permit_geographs=coalesce(gp1.percent,0)-coalesce(gp3.percent,0)>0,gs.permit_photographs=coalesce(gp1.percent,0)>0
+# set new percentages
+#UPDATE gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp2 on (gs.gridsquare_id=gp2.gridsquare_id and gp2.level = -1 and gp2.community_id = 2) left join gridsquare_percentage gp4 on (gs.gridsquare_id=gp4.gridsquare_id and gp4.level = -1 and gp4.community_id = 4) SET percent_land=greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) where greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != percent_land
+#test gs
+select gs.*,gp1.percent as lp1,gp2.percent as lp2,gp4.percent as lp4,greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) as perc_calc from gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp2 on (gs.gridsquare_id=gp2.gridsquare_id and gp2.level = -1 and gp2.community_id = 2) left join gridsquare_percentage gp4 on (gs.gridsquare_id=gp4.gridsquare_id and gp4.level = -1 and gp4.community_id = 4) where greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != percent_land
+# don't show transition 0->1 [ supplemental images allowed on lakes ]
+select gs.*,gp1.percent as lp1,gp2.percent as lp2,gp4.percent as lp4,greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) as perc_calc from gridsquare gs left join gridsquare_percentage gp1 on (gs.gridsquare_id=gp1.gridsquare_id and gp1.level = -1 and gp1.community_id = 1) left join gridsquare_percentage gp2 on (gs.gridsquare_id=gp2.gridsquare_id and gp2.level = -1 and gp2.community_id = 2) left join gridsquare_percentage gp4 on (gs.gridsquare_id=gp4.gridsquare_id and gp4.level = -1 and gp4.community_id = 4) where greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != percent_land and (percent_land != 0 or greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != 1)
+
+ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant', 'mapmod') NULL DEFAULT NULL;
+
+# new "mapcache coordinates" for mercator maps:
+# coordinate lines = borders of "level 19 tiles" => 32 bits sufficient
+# => with tile width = 2 pi R / 2 ^ level, we have x_mapcache = x_gmaps  * 2^18 / ( pi R)
+# currently, we have zoom levels 4..13 (14 for OSM+G) with tile width (mapcache) 32768...64(32)
+#TRUNCATE TABLE `mapcache`;
+DELETE FROM `mapcache` WHERE `mercator` != 0;
+ALTER TABLE `mapcache` CHANGE `map_x` `map_x` int(8) NOT NULL DEFAULT '0';
+ALTER TABLE `mapcache` CHANGE `map_y` `map_y` int(8) NOT NULL DEFAULT '0';
+#ALTER TABLE `mapcache` DROP KEY `xy`,DROP `max_x`, DROP `max_y`,ADD KEY `xy` (`mercator`, `map_x`, `map_y`);
+ALTER TABLE `mapcache` CHANGE `max_x` `max_x` int(8) NOT NULL DEFAULT '0';
+ALTER TABLE `mapcache` CHANGE `max_y` `max_y` int(8) NOT NULL DEFAULT '0';
+ALTER TABLE `mapcache` DROP KEY `xy`,ADD KEY `xy` (`mercator`, `map_x`, `map_y`,  `max_x`, `max_y`);
+#apply code changes
+DELETE FROM `mapcache` WHERE `mercator` != 0;
+
+CREATE TABLE loc_hier_old LIKE loc_hier;
+CREATE TABLE gridsquare_percentage_old LIKE gridsquare_percentage;
+
+#INSERT INTO `loc_hier_old` VALUES (SELECT * FROM `loc_hier`)
+INSERT INTO `loc_hier_old` SELECT * FROM `loc_hier` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+INSERT INTO `gridsquare_percentage_old` SELECT * FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+DELETE FROM `loc_hier` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+
+#DELETE FROM `loc_hier` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000;#  Betroffene Datensätze:  16
+#DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
+
+ALTER TABLE `loc_towns` CHANGE `s`  `s` enum('1','2','3','4','5','') NOT NULL DEFAULT '1';

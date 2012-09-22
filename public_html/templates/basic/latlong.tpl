@@ -60,6 +60,13 @@
 		<input type="submit" name="From" value="convert"/><br/>
 	<small>eg: "<b>Lat</b>: 54:32:40N (54.5445) <b>Lon</b>: 6:49:22W (-6.8228)"</small>
 	</form></div>
+	<div style="text-align:center;margin-top:10px;padding-top:0px;padding-bottom:10px;margin-left:10px;margin-right:10px;width:670px;padding-top:10px;background:#dddddd;">
+	<form action="{$script_name}" style="display:inline"> 
+	<h4>German Grid</h4>
+		East: <input type="text" name="gke" size="10" />
+		North: <input type="text" name="gkn" size="10" />
+		<input type="submit" name="From" value="convert" />
+	</form></div>
 
 	{if $errormgs}
 		<hr>
@@ -113,7 +120,6 @@
 		<li><a href="/search.php?q={$gridref}"><b>Search</b> for Pictures around this location</a></li>
 		<li>{if $map_token}<a href="/mapbrowse.php?t={$map_token}">Geograph <b>Map</b> around this location</a>{/if}<ul>
 		{if $datum == "osgb36"}<li><a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}">Open the <span style="color:red">New!</span> <b>Draggable Map</b></a></li>{/if}
-			<li>{getamap gridref=$gridref text="Get-a-map&trade;"}</li>
 			<li>{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}</li>
 		</ul></li>
 		<li><a href="/submit.php?gridreference={$gridref}"><b>Submit</b> a Picture for {$gridref4} (using {$gridref} as the picture location)</a></li>

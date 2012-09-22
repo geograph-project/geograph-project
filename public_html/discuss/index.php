@@ -36,11 +36,33 @@ if (empty($CONF['forums'])) {
 $noSphinx=empty($CONF['sphinx_host']);
 $isModerator=$GLOBALS['USER']->hasPerm('moderator');
 $isTicketMod=$GLOBALS['USER']->hasPerm('ticketmod');
+$isMapMod=$GLOBALS['USER']->hasPerm('mapmod');
 $isAdmin=$GLOBALS['USER']->hasPerm('admin');
-$isModAdmin=$isMod||$isTicketMod||$isAdmin;
+$isTGModAdmin=$isMod||$isTicketMod||$isAdmin;
+$isModAdmin=$isMod||$isTicketMod||$isMapMod||$isAdmin;
+$useGoogleApi=!empty($CONF['google_maps_api_key']);
 
 $static_host = $CONF['STATIC_HOST'];
 $static_url = "http://{$CONF['STATIC_HOST']}/discuss";
+
+if (count($CONF['languages'])) {
+	$cur_proto = !$_SERVER['HTTPS'] || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
+	$cur_req = htmlspecialchars($_SERVER["REQUEST_URI"]); #FIXME remove session id?
+	$langsep = '';
+	$language_links = '&emsp;[';
+	foreach ($CONF['languages'] as $lang=>$host) {
+		$language_links .= $langsep;
+		if ($lang == $CONF['lang']) {
+			$language_links .= $lang;
+		} else {
+			$language_links .= '<a href="'.$cur_proto.$host.$cur_req.'">'.$lang.'</a>';
+		}
+		$langsep = '|';
+	}
+	$language_links .= ']';
+} else {
+	$language_links = '';
+}
 
 customGZipHandlerStart();
 

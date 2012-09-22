@@ -116,9 +116,43 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 
 					list($e,$n,$reference_index) = $conv->wgs84_to_national($lat,$long);
 
-					list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
-					$_POST['photographer_gridref'] = $_POST['grid_reference'];
-					
+					list ($_POST['photographer_gridref'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+
+					if (isset($exif['GPS']['GPSDestLatitude'])) {
+						if (is_array($exif['GPS']['GPSDestLatitude'])) {
+							$deg = FractionToDecimal($exif['GPS']['GPSDestLatitude'][0]);
+							$min = FractionToDecimal($exif['GPS']['GPSDestLatitude'][1]);
+							$sec = FractionToDecimal($exif['GPS']['GPSDestLatitude'][2]);
+							$lat = ExifConvertDegMinSecToDD($deg, $min, $sec);
+						} else {
+							//not sure if this will ever happen but it could?
+							$lat = $exif['GPS']['GPSDestLatitude'];
+						}
+
+						if ($exif['GPS']['GPSDestLatitudeRef'] == 'S') 
+							$lat *= -1;
+
+						if (is_array($exif['GPS']['GPSDestLongitude'])) {
+							$deg = FractionToDecimal($exif['GPS']['GPSDestLongitude'][0]);
+							$min = FractionToDecimal($exif['GPS']['GPSDestLongitude'][1]);
+							$sec = FractionToDecimal($exif['GPS']['GPSDestLongitude'][2]);
+							$long = ExifConvertDegMinSecToDD($deg, $min, $sec);
+						} else {
+							//not sure if this will ever happen but it could?
+							$long = $exif['GPS']['GPSDestLongitude'];
+						}
+
+						if ($exif['GPS']['GPSDestLongitudeRef'] == 'W') 
+							$long *= -1;
+
+
+						list($e,$n,$reference_index) = $conv->wgs84_to_national($lat,$long);
+
+						list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+					} else {
+						$_POST['grid_reference'] = $_POST['photographer_gridref'];
+					}
+
 					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
 					
 				
@@ -193,7 +227,8 @@ if (isset($_POST['gridsquare']))
 	//ensure the submitted reference is valid
 	if (!empty($_POST['grid_reference']) && empty($_POST['setpos2'])) 
 	{
-		$ok= $square->setByFullGridRef($_POST['grid_reference']);
+		#$ok= $square->setByFullGridRef($_POST['grid_reference'], false, false, false, true);
+		$ok= $square->setByFullGridRef($_POST['grid_reference'], false, false, false, empty($_POST['setpos2'])&&empty($_POST['setpos']));
 		
 		//preserve inputs in smarty
 		$smarty->assign('grid_reference', $grid_reference = $_POST['grid_reference']);
@@ -294,7 +329,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->reReadExifFile();
 				
 				//we ok to continue
-				if (isset($_POST['photographer_gridref'])) {
+				if (isset($_POST['photographer_gridref']) && !isset($_POST['newmap'])) {
 					$step=3;
 				} else {
 					$step=2;
@@ -313,7 +348,7 @@ if (isset($_POST['gridsquare']))
 			{
 				$smarty->assign('upload_id', $uploadmanager->upload_id);
 				//we ok to continue
-				$step=3;
+				if (!isset($_POST['newmap'])) $step=3;
 			} else {
 				$smarty->assign('error', $uploadmanager->errormsg);
 				$uploadmanager->errormsg = '';
@@ -330,13 +365,14 @@ if (isset($_POST['gridsquare']))
 				case 0:
 					if (!filesize($_FILES['jpeg']['tmp_name'])) 
 					{
+						//if (!isset($_POST['newmap'])) 
 						$smarty->assign('error', 'Sorry, no file was received - please try again');
 					} 
 					elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
 					{
 						$smarty->assign('upload_id', $uploadmanager->upload_id);
 						//we ok to continue
-						$step=3;
+						if (!isset($_POST['newmap'])) $step=3;
 					} else {
 						$smarty->assign('error', $uploadmanager->errormsg);
 						$uploadmanager->errormsg = '';
@@ -353,7 +389,7 @@ if (isset($_POST['gridsquare']))
 					$smarty->assign('error', 'Your file was only partially uploaded - please try again');
 					break;
 				case UPLOAD_ERR_NO_FILE:
-					$smarty->assign('error', 'No file was uploaded - please try again');
+					if (!isset($_POST['newmap']))  $smarty->assign('error', 'No file was uploaded - please try again');
 					break;
 				case UPLOAD_ERR_NO_TMP_DIR:
 					$smarty->assign('error', 'System Error: Folder missing - please let us know');
@@ -620,12 +656,28 @@ if (isset($_POST['gridsquare']))
 		} elseif ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 
-			$rastermap = new RasterMap($square,true);
+			#if ($square->grid_reference == "UNV1930") { //FIXME
+			#	$rastermap = new RasterMap($square, true, false, false, 'latest', 21);
+			#} elseif ($square->grid_reference == "TPT2870") { //FIXME
+			#	$rastermap = new RasterMap($square, true, false, false, 'latest', 23);
+			#} else {
+			#	$rastermap = new RasterMap($square,true);
+			#}
+			if (isset($_POST['sid']) && isset($square->services[intval($_POST['sid'])])) {
+				$sid = intval($_POST['sid']);
+			} elseif (count($square->services) != 0) {
+				$sids = array_keys($square->services);
+				$sid = $sids[0];
+			} else {
+				$sid = -1;
+			}
+			$rastermap = new RasterMap($square, true, false, false, 'latest', $sid);
+			$smarty->assign('sid', $sid);
 			
 			if (isset($_POST['photographer_gridref'])) {
 				$square2=new GridSquare;
-				$ok= $square2->setByFullGridRef($_POST['photographer_gridref']);
-				$rastermap->addViewpoint($square2->nateastings,$square2->natnorthings,$square2->natgrlen,$_POST['view_direction']);
+				$ok= $square2->setByFullGridRef($_POST['photographer_gridref'], false, true, false, true);
+				$rastermap->addViewpoint($square2->reference_index,$square2->nateastings,$square2->natnorthings,$square2->natgrlen,$_POST['view_direction']);
 			} elseif (isset($_POST['view_direction']) && strlen($_POST['view_direction']) && $_POST['view_direction'] != -1) {
 				$rastermap->addViewDirection($_POST['view_direction']);
 			}
@@ -754,6 +806,12 @@ $_SESSION['tab'] = $selectedtab;
 
 //which step to display?
 $smarty->assign('step', $step);
+
+# does not work (caching)...
+#if ($step != 1) {
+#	# disable language links to prevent users from losing their input
+#	$smarty->assign('languages', array());
+#}
 
 $smarty->display('submit.tpl');
 

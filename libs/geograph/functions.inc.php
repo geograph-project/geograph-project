@@ -260,36 +260,83 @@ function recaps($in) {
 	return stripslashes(preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out));
 }
 
-function smarty_function_place($params) {
+/**
+ * get comma separated list from loc_hier row
+ */
+function get_hierstring_from_array($hier, $full_name)
+{
+	global $CONF;
+	#$db=&$this->_getDB();
+	#if (empty($cid))
+	#	return '';
+	#$hier = $db->GetAssoc("select level,name from loc_hier where {$cid} between contains_cid_min and contains_cid_max order by level");
+	$showhier = array();
+	if (count($hier)) {
+		$showlevels = $CONF['hier_levels'];
+		$prefixes   = $CONF['hier_prefix'];
+		$prev = $full_name;
+		foreach($showlevels as $level) {
+			if (!isset($hier[$level]))
+				continue;
+			$shortname = $hier[$level];
+			if (isset($prefixes[$level])) {
+				$curpref = $prefixes[$level].' ';
+				$preflen = strlen($curpref);
+				if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+					$shortname = substr($shortname, $preflen);
+			}
+			if ($prev == $shortname)
+				continue;
+			$prev = $shortname;
+			$showhier[] = $hier[$level];
+		}
+	}
+	return implode(', ', $showhier);
+}
 
+function smarty_function_place($params) {
+	global $CONF;
 	$place = $params['place'];
 	$t = '';
-	if ($place['distance'] > 3)
-		$t .= ($place['distance']-0.01)." km from ";
-	elseif (!$place['isin'])
-		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
+	if ($CONF['lang'] == 'de') {
+		if ($place['distance'] > 3)
+			$t .= ($place['distance']-0.01)." km entfernt von ";
+		elseif (!$place['isin'])
+			$t .= "<span title=\"etwa ".($place['distance']-0.01)." km entfernt\">in der Nähe</span> von ";
+	} else {
+		if ($place['distance'] > 3)
+			$t .= ($place['distance']-0.01)." km from ";
+		elseif (!$place['isin'])
+			$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
+	}
 
 	$place['full_name'] = _utf8_decode($place['full_name']);
 
-	if (!ctype_lower($place['full_name'])) {
+	if ($CONF['place_recaps'] && !ctype_lower($place['full_name'])) {
 		$t .= "<b>".recaps($place['full_name'])."</b><small><i>";
 	} else {
 		$t .= "<b>{$place['full_name']}</b><small><i>";
 	}
 	$t = str_replace(' And ','</b> and <b>',$t);
-	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
-		$parts = explode('/',$place['adm1_name']);
-		if (!ctype_lower($parts[0])) {
-			if (isset($parts[1]) && $parts[0] == $parts[1]) {
-				unset($parts[1]);
+	if (count($place['hier'])) {
+		$t .= ', '.get_hierstring_from_array($place['hier'], $place['full_name']);
+	} else {
+		if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
+			$parts = explode('/',$place['adm1_name']);
+			if ($CONF['place_recaps'] && !ctype_lower($parts[0])) {
+				if (isset($parts[1]) && $parts[0] == $parts[1]) {
+					unset($parts[1]);
+				}
+				$t .= ", ".recaps(implode('/',$parts));
+			} else {
+				$t .= ", {$place['adm1_name']}";
 			}
-			$t .= ", ".recaps(implode('/',$parts));
-		} else {
-			$t .= ", {$place['adm1_name']}";
+		} elseif ($place['hist_county']) {
+			$t .= ", {$place['hist_county']}";
 		}
-	} elseif ($place['hist_county'])
-		$t .= ", {$place['hist_county']}";
-	$t .= ", {$place['reference_name']}</i></small>";
+		$t .= ", {$place['reference_name']}";
+	}
+	$t .= "</i></small>";
 	
 	$tag = (isset($params['h3']))?'h3':'span';
 	$t2 = "<$tag";
@@ -345,20 +392,26 @@ function smarty_function_linktoself($params) {
 * adds commas to thousendise a number
 */
 function smarty_function_thousends($input,$decimals=0) {
-	return number_format($input,$decimals);
+	global $CONF;
+	return number_format($input,$decimals,$CONF['decimal_sep'],$CONF['thousand_sep']);
 }
 
 function smarty_function_ordinal($i) {
-	$units=$i%10;
-	$tens=$i%100;
-	switch($units)
-	{
-		case 1:$end=($tens==11)?'th':'st';break;
-		case 2:$end=($tens==12)?'th':'nd';break;
-		case 3:$end=($tens==13)?'th':'rd';break;
-		default: $end="th";
+	global $CONF;
+	if ($CONF['lang'] == 'de') {
+		return $i.'.';
+	} else {
+		$units=$i%10;
+		$tens=$i%100;
+		switch($units)
+		{
+			case 1:$end=($tens==11)?'th':'st';break;
+			case 2:$end=($tens==12)?'th':'nd';break;
+			case 3:$end=($tens==13)?'th':'rd';break;
+			default: $end="th";
+		}
+		return $i.$end;
 	}
-	return $i.$end;
 }
 
 /**
@@ -430,25 +483,40 @@ function smarty_function_geographlinks($input,$thumbs = false) {
 }
 
 
-
 //replace geograph links
 function GeographLinks(&$posterText,$thumbs = false) {
 	global $imageCredits,$CONF,$global_thumb_count;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
-	if (preg_match_all('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
+	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		$thumb_count = 0;
-		foreach ($g_matches[2] as $i => $g_id) {
+		foreach ($g_matches[3] as $i => $g_id) {
+			$server = $_SERVER['HTTP_HOST'];
+			$ext = false;
+			$prefix = '';
+			if ($g_matches[2][$i] == 'bi:') {
+				$server = 'www.geograph.org.uk';
+				$ext = true;
+				$prefix = 'bi:';
+			} elseif ($g_matches[2][$i] == 'ci:') {
+				$server = 'channel-islands.geographs.org';
+				$ext = true;
+				$prefix = 'ci:';
+			}
 			//photo id?
 			if (is_numeric($g_id)) {
 				if ($global_thumb_count > $CONF['global_thumb_limit'] || $thumb_count > $CONF['post_thumb_limit']) {
-					$posterText = preg_replace("/\[?\[\[$g_id\]\]\]?/","[[<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_id</a>]]",$posterText);
+					$posterText = preg_replace("/\[?\[\[$prefix$g_id\]\]\]?/","[[<a href=\"http://{$server}/photo/$g_id\">$prefix$g_id</a>]]",$posterText);
 				} else {
 					if (!isset($g_image)) {
 						$g_image=new GridImage;
 					}
-					$ok = $g_image->loadFromId($g_id);
+					if ($ext) {
+						$ok = $g_image->loadFromServer($server, $g_id);
+					} else {
+						$ok = $g_image->loadFromId($g_id);
+					}
 					if ($g_image->moderation_status == 'rejected') {
-						$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+						$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
 					} elseif ($ok) {
 						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
 						if ($g_matches[1][$i]) {
@@ -456,7 +524,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 								$g_title.=' by '.htmlentities($g_image->realname);
 								$g_img = $g_image->getThumbnail(120,120,false,true);
 
-								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
+								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
 								if (isset($imageCredits[$g_image->realname])) {
 									$imageCredits[$g_image->realname]++;
 								} else {
@@ -464,10 +532,10 @@ function GeographLinks(&$posterText,$thumbs = false) {
 								}
 							} else {
 								//we don't place thumbnails in non forum links
-								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\">$g_title</a>",$posterText);
 							}
 						} else {
-							$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+							$posterText = preg_replace("/(?<!\[)\[\[$prefix$g_id\]\]/","<a href=\"http://{$server}/photo/$g_id\">$g_title</a>",$posterText);
 						}
 					}
 					$global_thumb_count++;
@@ -475,7 +543,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				$thumb_count++;
 			} else {
 				//link to grid ref
-				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
+				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
 			}
 		}
 	}
@@ -569,7 +637,7 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 	if ($urlHandle)	{
 		socket_set_timeout($urlHandle, $timeout);
 		if ($path) {
-			$urlString = "GET $path HTTP/1.1\r\nHost: $addr\r\nConnection: keep-alive\r\nUser-Agent: www.geograph.org.uk\r\n";
+			$urlString = "GET $path HTTP/1.1\r\nHost: $addr\r\nConnection: keep-alive\r\nUser-Agent: geo.hlipp.de\r\n";
 			if ($userpass)
 				$urlString .= "Authorization: Basic ".base64_encode("$userpass")."\r\n";
 			$urlString .= "\r\n";
@@ -692,6 +760,16 @@ function getEncoding() {
 	return $encoding;
 }
 
+function get_map_suffix()
+{
+	global $CONF;
+	$map_suffix = $CONF['map_suffix'];
+	if ($map_suffix !== '' && preg_match('#Dillo/#',$_SERVER['HTTP_USER_AGENT'])) {
+		$map_suffix = ''; # can't handle 'clip'
+	}
+	return $map_suffix;
+}
+
 function customGZipHandlerStart() {
 	global $encoding;
 	if ($encoding = getEncoding()) {
@@ -730,6 +808,12 @@ function htmlnumericentities($myXML){
   return preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars($myXML));
 }
 
+function xmlentities($s) {
+	$trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+	foreach ($trans as $k=>$v) $trans[$k]= "&#".ord($k).";"; // encoding?
+	return strtr($s, $trans);
+}
+
 
 function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtml = '',$showLastPage = false) {
 	static $r;
@@ -765,7 +849,14 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
  * returns a standard textual representation of a number
  */
 function heading_string($deg) {
-	$dirs = array('north','east','south','west');
+	global $CONF;
+	if ($CONF['lang'] == 'de') {
+		$dirs = array('nord','ost','süd','west');
+		$sep = '';
+	} else {
+		$dirs = array('north','east','south','west');
+		$sep = '-';
+	}
 	$rounded = round($deg / 22.5) % 16;
 	if ($rounded < 0)
 		$rounded += 16;
@@ -775,7 +866,7 @@ function heading_string($deg) {
 		$s = $dirs[2 * intval(((intval($rounded / 4) + 1) % 4) / 2)];
 		$s .= $dirs[1 + 2 * intval($rounded / 8)];
 		if ($rounded % 2 == 1) {
-			$s = $dirs[round($rounded/4) % 4] . '-' . $s;
+			$s = $dirs[round($rounded/4) % 4] . $sep . $s;
 		}
 	}
 	return $s;
@@ -793,6 +884,16 @@ function combineTexts($lang1, $lang2)
 		return $lang2;
 	else
 		return $lang1 . ' (' . $lang2 . ')';
+}
+
+/**
+ * convert float to string using given decimal separator, needs 'C' locale!
+ */
+
+function smarty_modifier_floatformat($val, $format='%.14G')
+{
+	global $CONF;
+	return str_replace('.',$CONF['decimal_sep'], sprintf($format,$val));
 }
 
 ?>

@@ -1,0 +1,464 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<head>
+	<title>geograph_web HOWTO</title>
+	<style type="text/css">
+		body {max-width: 100ex}
+		.dummy {color:green}
+		code {color: blue}
+		.nourl {color: teal; font-family: monospace}
+	</style>
+	<meta http-equiv="content-type" content="text/html; charset=US-ASCII">
+</head>
+<body>
+	<h1>geograph_web HOWTO</h1>
+
+	<table>
+		<tr><td>Author:</td><td><a href="mailto:hjlipp@web.de">Hansj&ouml;rg Lipp</a></td></tr>
+		<tr><td>Date:</td><td>2009-03-01, minor updates 2009-08-12, 2010-04-01</td></tr>
+	</table>
+	<p>
+	This document describes the installation steps I needed to get the
+	code from
+	<a href="http://www.geograph.org.uk/">www.geograph.org.uk</a>
+	working for <a href="http://geo.hlipp.de/index.php">our tiny geograph project</a> for a small part of Germany.
+	</p>
+
+	<!--h2> TODO Table of contents</h2-->
+	<h2>1. Prerequisites</h2>
+	<p>What do you need to get the software working?</p>
+	<ul>
+		<li>apache web server</li>
+		<li>php5</li>
+		<li>mod_rewrite</li>
+		<li>permissions for running cron jobs on the machine</li>
+		<li>mysql database</li>
+		<li>Imagemagick is not neccessary, but highly recommended</li>
+		<li>detailed maps of your area which use your preferred grid: you should try to get these maps as software</li>
+		<li>formulae which allow you to convert your grid coordinates to the usual geographic latitude/longitude coordinates (and back).</li>
+		<!--li>google maps api key</li-->
+		<li>a lot of disk space on the server (about number of square kilometres times number of pictures per grid square
+		    times 0.200 MB = some Gigabytes)</li>
+		<li>basic knowledge about php, javascript, sql</li>
+		<li>a lot of time</li>
+	</ul>
+
+
+	<h2>2. Setting up the code</h2>
+	<h3>Get the code</h3>
+	<p>The first step was setting up the code:
+	Download the latest <a href="http://code.geograph.org.uk/nightly/">nightly</a> from the
+	<a href="http://www.geograph.org.uk/">geograph.org.uk</a> project (you need the latest geograph_web-* file) and unpack it.</p>
+
+	<h3>Patches</h3>
+	<p>
+	I had to apply some code changes to get the project working. The main changes can be found
+	on  <a href="http://geo.hlipp.de/code/">the project's web site</a>. If you think that applying some of these changes
+	is neccessary for you, just download the patches you
+	need, test if they are still applying cleanly to the code</p>
+	<p><code>cd local<br>patch --dry-run -p6 &lt; <span class="dummy">/PATH/TO/THE/PATCH.diff</span></code></p>
+	<p>handle error messages if neccessary, and apply the patches:</p>
+	<p><code>cd local<br>patch -p6 &lt; <span class="dummy">/PATH/TO/THE/PATCH.diff</span></code></p>
+	<p>You can do this later on, of course, but keep in mind that you might need to replicate the changes of
+	the default template directory ("basic") to your own template directory (see below) and that you have
+	to upload the modified files to your web server.</p>
+	<p>Important changes are:</p>
+	<ul>
+		<li><p>All patches named
+		       0<span class="dummy">?</span>_bug<span class="dummy">*</span>.diff
+		       and 1<span class="dummy">?</span>_bug<span class="dummy">*</span>.diff
+		       which are bug fixes.</p></li>
+		<li><p>50_mailfrom.diff changes hard coded email addresses and adds an "envelope from" which is needed here. This needs a better solution
+		using configurable mail addresses, though. Please change to your address before applying the patch.</p></li>
+		<li><p>51_url.diff changes hard coded URLs. Please change to your address before applying the patch.</p></li>
+	</ul>
+
+	<h3>Template directory</h3>
+	<p>
+	Find a name for the directory that will contain the templates from which
+	your xhtml code will be created. I've chosen "germany32" which means "Germany, UTM zone 32",
+	maybe "germany" would have been the better choice. To avoid confusion, I'll use <span class="dummy">tmplname</span>
+	in the following text.
+	</p><p>
+	Copy the default templates to your template directory:
+	</p><p><code>cd local/public_html/templates<br>
+	cp -ai basic <span class="dummy">tmplname</span></code></p>
+	<p><em>Copying is actually not needed: If smarty does not find a template, it tries to find it in the "basic" directory.</em></p>
+
+	<h3>Directory structure</h3>
+	<p>You need to add some directories:</p>
+	<p><code>cd local<br>mkdir adodbcache rastermaps rastermaps/OS-50k rastermaps/OS-50k/tiffs public_html/geophotos</code></p>
+
+	<h3><a name="permissions">Permissions</a></h3>
+	<p>Some directories need special permissions: The web server and cron jobs need write permissions.
+	I.e. you need to execute a command like this one:</p>
+	<p><code>cd local<br>
+	chmod a+w adodbcache public_html/memorymap public_html/rss<br>
+	chmod a+w public_html/kml public_html/sitemap<br>
+	chmod a+w public_html/maps public_html/photos public_html/geophotos<br>
+	chmod a+w public_html/templates/basic/cache public_html/templates/basic/compiled<br>
+	chmod a+w public_html/templates/<span class="dummy">tmplname</span>/cache public_html/templates/<span class="dummy">tmplname</span>/compiled<br>
+	chmod a+w rastermaps rastermaps/OS-50k rastermaps/OS-50k/tiffs</code></p>
+	<p>Furthermore, some scripts need to be executable:</p>
+	<p><code>cd local<br>
+	chmod a+x scripts/*.pl</code></p>
+	<p>You should also assure that public_html/geophotos/00 is a symbolic link to ../photos:</p>
+	<p><code>cd local/public_html/geophotos<br>ln -sn ../photos 00</code></p>
+
+	<h3>Grid and coordinates</h3>
+	<p>
+	You need to think about which coordinate grid(s) you should use for your area.
+	Is there a national grid? Or do you want to use <a href="http://en.wikipedia.org/wiki/Universal_Transverse_Mercator_coordinate_system">UTM coordinates</a> and the <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system">MGRS</a>?
+	Is one grid enough, or do you need several of them (different Islands, different UTM zones)?</p><p>I decided to use different MGRS grids
+	for the <a href="http://de.wikipedia.org/wiki/MGRS">UTM zones in Germany</a>.
+	</p>
+
+	<h4>Reference id</h4>
+	<p>
+	Choose numerical ids, the reference ids, for every grid you use. Currently, there are the following reference ids in the code I use:
+	</p>
+	<table border="1">
+		<tr><th>id</th><th>area</th></tr>
+		<tr><td>0</td><td>Reserved as dummy id for the whole area.</td></tr>
+		<tr><td>1</td><td>Used by <a href="http://www.geograph.org.uk/">geograph.org.uk</a> for Great Britain</td></tr>
+		<tr><td>2</td><td>Used by <a href="http://www.geograph.org.uk/">geograph.org.uk</a> for Ireland</td></tr>
+		<tr><td>3</td><td>Germany, Zone 32</td></tr>
+		<tr><td>4</td><td>Germany, Zone 33 (future)</td></tr>
+		<tr><td>5</td><td>Germany, Zone 31 (future)</td></tr>
+	</table>
+
+	<h4>Grid prefix</h4>
+	<p>
+	Choose the grid prefixes you use. The grid prefix is a combination of up to three characters which identify each square of 100&thinsp;km&nbsp;&times;&nbsp;100&thinsp;km.
+	Changing the code to allow four letters might lead to problems because they need too much space on the maps. Using one ore two letters might still lead to problems
+	because the length of the grid prefix was used to determine the region in many parts of the code.</p>
+	<p>I decided to use the MGRS coordinates without leading UTM Zone digits, which
+	results in grid prefixes of three letters (e.g. coordinates of <a href="http://geo.hlipp.de/gridref/TPT2769">F&uuml;ssen</a>: 32T&nbsp;PT&nbsp;27&nbsp;69: Grid square TPT2769 with grid prefix TPT).
+	</p>
+
+	<h4><a name="coordinates">Coordinate conversion</a></h4>
+	<p>
+	The hardest task is coordinate conversion. You have to provide php routines that convert from your local coordinates (area given by
+	reference index) to longitude/latitude (WGS84) coordinates and routines that convert from longitude/latitude (WGS84) coordinates
+	(area only given by these coordinates!) back to your local coordinates.</p><p><a name="jscoord"></a>If you want to use google for displaying the maps,
+	you also have to provide JavaScript routines which do basically the same, with one difference: You don't have a reference index here,
+	but must use the grid prefix to identify your area (one of many reasons, why you should use unique grid indexes, even for different grids).
+	See the <a href="http://geo.hlipp.de/code/current/40_coord.diff">UTM conversion routines</a>
+	I use for inspiration.</p><p>Remark: There is also a so called "internal coordinate system" in the code; these are the "real" coordinates,
+	which are used to display the maps, etc. Internal coordinates are calclulated from the local coordinates by adding a constant
+	offset (configurable for each grid index).
+	</p>
+
+	<h4><a name="initgrid">Initial grid</a></h4>
+	<p>
+	This step is easy but time consuming: For building the grid later on, you need a grayscale bitmap (one png file for every reference index)
+	where each pixel represents the "land percentage" of the gridsquares (1&thinsp;km&nbsp;&times;&nbsp;1&thinsp;km) of your area:
+	</p>
+	<table border="1">
+		<tr><td>black</td><td>This square is totally covered by land (of your area).</td></tr>
+		<tr><td>white</td><td>There's only sea (and/or another country).</td></tr>
+		<tr><td>gray</td><td>something in between</td></tr>
+	</table>
+	<p>
+	It is possible to do this in several steps, so you can start with a small area. You don't have to
+	spend too much time with the gray pixels, because there is a much easier way to estimate these percentages
+	later on. That's why I only used black (100% land) and white (&lt;&nbsp;100% land or land to be added later).
+	</p>
+	<p>
+	See my files, <a href="http://geo.hlipp.de/admin/ger32.png">stage&nbsp;1</a>, <a href="http://geo.hlipp.de/admin/ger32-2.png">stage&nbsp;2</a>, <a href="http://geo.hlipp.de/admin/ger32-3.png">stage&nbsp;3</a> or
+	the file for <a href="http://geo.hlipp.de/admin/gb-new.png">Great&nbsp;Britain</a>.
+	</p>
+	<p>
+	After creating these files, you should copy them to the administration directory of the code:
+	</p>
+	<p>
+	<code>cd local/public_html/admin<br>cp -i <span class="dummy">/PATH/TO/YOUR/FILE.png</span> .</code>
+	</p>
+
+	<h2>3. Configuration</h2>
+	<h3>Web server configuration</h3>
+	<p>
+	You can use local/apache/geograph.conf as template config file for apache:
+	</p>
+	<ul>
+		<li><p>Set the document root to the public_html directory of the source tree you will copy to the server.</p></li>
+		<li><p>Adopt the php_value lines. You might want to add a line like</p>
+		<p><code>php_value allow_call_time_pass_reference 1</code></p>
+		<p>to get rid of warnings in the log.</p></li>
+		<li><p>Adopt the rewrite rules. If you are using a .htaccess file, you might need to substitute leading slashes (/) with caret symbols (^).</p></li>
+		<li>
+		<p>If you have problems when changing a lot of categories on the category consolidation page, the following lines might help.</p>
+		<p><code>php_value suhosin.post.max_array_depth 0<br>
+		php_value suhosin.post.max_array_index_length 0<br>
+		php_value suhosin.post.max_vars 0<br>
+		php_value suhosin.request.max_array_depth 0<br>
+		php_value suhosin.request.max_array_index_length 0<br>
+		php_value suhosin.request.max_vars 0</code></p>
+		</li>
+	</ul>
+	<h3>geograph_web configuration</h3>
+	<p>
+	To configure the geograph_web code, you should copy local/libs/conf/www.exampledomain.com.conf.php to a file
+	with the name of your domain in the same directory. If the URL for your project is http://<span class="dummy">your.doma.in</span>, you'd
+	do something like
+	<p><code>cd local/libs/conf<br>cp -i www.exampledomain.com.conf.php <span class="dummy">your.doma.in</span>.conf.php</code>
+	</p>
+	<p>
+	Now, you can start editing this copy, changing the configuration
+	variables to values which match your area, server setup, etc. The comments in this file are helpful, but I'll still give some hints:
+	</p>
+	<ul>
+		<li><p>You should add the following lines which are missing (e.g. below the KML_HOST configuration near the end of the file):</p>
+		<p><code>$CONF['TILE_HOST'] = $_SERVER['HTTP_HOST'];<br>$CONF['STATIC_HOST'] = $_SERVER['HTTP_HOST'];<br>$CONF['CONTENT_HOST'] = $_SERVER['HTTP_HOST'];</code></p>
+		</li>
+		<li>
+		<p>If you want to use google for displaying the raster maps, you must get an
+		<a href="http://code.google.com/apis/maps/signup.html">API key</a> and configure the software in the following way:</p>
+		<p><code>$CONF['raster_service']='Google,Grid';<br>$CONF['google_maps_api_key'] = '<span class="dummy">YOUR-API-KEY</span>';</code></p>
+		</li>
+		<li>
+		<p>For my (one server) setup, the following line is working:</p>
+		<p><code>$CONF['enable_cluster'] = 0;</code></p>
+		</li>
+		<li>
+		<p>If you don't want to use the sphinx search engine, you need the following line:</p>
+		<p><code>$CONF['sphinx_host'] = "";</code></p>
+		</li>
+		<li>
+		<p>Set up your templates with</p>
+		<p><code>$CONF['template']='<span class="dummy">tmplname</span>';</code></p>
+		</li>
+		<li>
+		<p>On a public server you should use</p>
+		<p><code>$CONF['smarty_debugging']=0;</code></p>
+		<p>because your database password is visible otherwise.</p>
+		</li>
+		<li>
+		<p>Use some line like</p>
+		<!--p><code>$CONF['references_all'] = array_merge(array(0=&gt;'<span class="dummy">name of your project</span>'),$CONF['references']);</code></p-->
+		<p><code>$CONF['references_all'] = array(0=&gt;'<span class="dummy">name of your project</span>')+$CONF['references'];</code></p>
+		<p>in order to get properly named labels for data regarding the whole project.</p>
+		</li>
+		<li>
+		<p>You need a line like</p>
+		<p><code>$CONF['origins'] = array(<span class="dummy">reference_index_1</span> =&gt; array(<span class="dummy">x_offset_1</span>,<span class="dummy">y_offset_1</span>),<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dummy">reference_index_2</span> =&gt; array(<span class="dummy">x_offset_2</span>,<span class="dummy">y_offset_2</span>));</code></p>
+		<p>in order to define the offsets of the local coordinates of your grid and the internal coordinates (see <a href="#coordinates">section about coordinates above</a>). E.g. I use a line like</p>
+		<p><code>$CONF['origins'] = array(3 =&gt; array(-200,-5200));</code></p>
+		<p>because I want to map UTM coordinate (200,5200) (in km) to the origin of the internal coordinate system.</p>
+		</li>
+		<li>
+		<p>While changing code or templates, you should use</p>
+		<p><code>$CONF['smarty_caching']=0;</code></p>
+		<p>because your changes will be invisible for a long time otherwise. The disadvantage is a slowdown
+		and a higher server load.</p>
+		</li>
+
+	</ul>
+	<h2>4. Installation</h2>
+	<h3>Installing the code</h3>
+	<p>
+	Just upload the source tree to the server (scp, ftp, ...). Keep in mind that public_html must be your document root
+	and assure that <a href="#permissions">the permissions and the symbolic link mentioned above</a> are preserved. During the following installation process,
+	it's a good idea to watch the error log of your web server.
+	</p>
+	<h3>Initialization of the database</h3>
+	<p>
+	Setting up the database needs the following steps:
+	</p>
+	<ul>
+		<li>Import schema/schema.mysql</li>
+		<li>Import schema/changes.mysql which contains current changes to the database schema. Because these
+		changes can be somewhat imprecise I suggest importing these lines step by step. If there are major problems
+		waiting for the next nightly might help; if that does not help: I got quick, helpful and friendly answers on my messages to the <a href="http://www.geograph.org.uk/contact.php">www.geograph.org.uk developers</a>.</li>
+	</ul>
+	<h3>Setting up the grid prefixes</h3>
+	<p>
+	The next step is importing your grid prefixes into the database. schema/gridprefix_creation.txt gives some
+	hints here but is somewhat outdatet. You might want to look at my <a href="http://geo.hlipp.de/howto/gridprefix.mysql">mysql file</a> which
+	is generated from a <a href="http://geo.hlipp.de/howto/gridprefix.dat">tab separated list</a> (grid prefix, reference index, easting (kilometers), northing (kilometers)) using an <a href="http://geo.hlipp.de/howto/gridprefix.awk">awk script</a>:</p>
+	<p><code>./gridprefix.awk &lt; gridprefix.dat &gt; gridprefix.txt</code></p>
+	<p>After putting the "replace ..." line in front of gridprefix.txt and a semicolon at the end, you can import the file into
+	your database.</p>
+
+	<h3>Adding the administrator account</h3>
+	<p>
+	Now it's time to register the administrator user with <span class="nourl">/register.php</span>. Just enter your data into the form, confirm, and follow the confirmation link in the mail you'll receive afterwards.
+	</p>
+	<p>After logging out your new user, you can grant this user admin privileges using some statement like</p>
+	<p><code>update user set rights='basic,admin' where email='<span class="dummy">yourmailadress</span>';</code></p>
+	<p>Now you can log in again, edit your profile and grant your user moderator and ticket privileges using
+	the "Moderator Admin" tool (<span class="nourl">/admin/moderator_admin.php</span>) you find on the "Admin Index" page.</p>
+
+	<h3>Setting up the grid</h3>
+	<p>
+	Now, it's time to tell the system where your grid squares are situated on the map. This is done by
+	filling in the form you find on <span class="nourl">/admin/gridbuilder.php</span>: Just enter the path (relative to the document root)
+	to the <a href="#initgrid">grayscale png file(s) you created before</a>, the amount of pixels your png file should be shifted (x=0 and y=0 if you
+	used internal coordinates when creating the file(s)) and your reference index. You should check "Redraw maps" and also "Clear existing land squares if marked as sea in this image" if you want to destroy land squares you created during an earlier gridbuilder session.</p>
+
+	<h3>Testing the installation</h3>
+	<p>
+		For testing your installation, you can use <span class="nourl">/test.php</span>. Unfortunately, this script seems to be somewhat
+		hypersensitive. This can be patched away using <a href="http://geo.hlipp.de/code/current/29_test.diff">29_test.diff</a> if that makes you sleep
+		better.
+	</p>
+
+	<h3>Init scripts</h3>
+	<p>
+	There are some scripts which allow you to initialize the graphs on the statistics page:
+	</p>
+	<p><code>cd scripts<br>
+	./update_rate_graph.pl --init=<span class="dummy">STARTTIME</span> --base=<span class="dummy">/PATH/TO/SRC/TREE</span> --db=<span class="dummy">DBNAME</span> --user=<span class="dummy">DBUSER</span> --pass=<span class="dummy">DBPASSWORD</span><br>
+	./update_submission_graph.pl --init=<span class="dummy">STARTTIME</span> --base=<span class="dummy">/PATH/TO/SRC/TREE</span> --db=<span class="dummy">DBNAME</span> --user=<span class="dummy">DBUSER</span> --pass=<span class="dummy">DBPASSWORD</span></code></p>
+	<p><span class="dummy">/PATH/TO/SRC/TREE</span> is the parent directory of the document root;
+	<span class="dummy">STARTTIME</span> is the unix time stamp of the first data point. You can convert a date string to a unix time stamp using
+	</p>
+	<p><code>date -d '<span class="dummy">date string</span>' +%s</code></p>
+	<p>
+		These commands print a list of commands you should execute afterwards.
+	</p>
+	<h3>Setting up cron</h3>
+	<p>
+	For setting up cron, I basically adopted the settings from local/cron/crontab.example in the source tree: I did substitute GET with
+	<code>wget -q -O /dev/null</code> (<code>curl -s -o /dev/null</code> should work, too) and I omitted the first recreate_maps.php line
+	(which seems to be outdated) and the update_cpu_graph.pl line (because I can't access /proc/loadavg on my server).</p>
+	<p>This is also a good point for checking the error logs, access logs and mails (from cron).</p>
+	<p>You can avoid file permission problems resulting from different uids of cron daemon and web server by GETting
+	http://<span class="dummy">DOMAIN</span>/_scripts/runscript.php?job=maps (or job=kml) instead of running the scripts directly from cron.</p>
+
+	<h3>Submitting the first picture</h3>
+	<p>
+	Before submitting your first picture, you should register another user and grant him/her moderator and ticket privileges using
+	the "Moderator Admin" tool (<span class="nourl">/admin/moderator_admin.php</span>) you find on the "Admin Index" page. This is needed, because
+	you can't moderate your own pictures.
+	</p>
+	<p>
+	Submitting the photograph is straight forward, just follow the instructions on <span class="nourl">submit.php</span>.
+	After entering the grid reference you'll be asked for the file name, exact position of photographer and photo subject.
+	If you use google for displaying the maps, this is the point where you can test your
+	<a href="#jscoord">JavaScript coordinate conversion routines</a>: When you drag the markers over the map, the coordinates in
+	the form should change.
+	</p>
+	<p>
+	After submitting the picture, the second moderator can log in and should find the image on the admin index (<span class="nourl">admin/index.php</span>) and moderation index (<span class="nourl">admin/moderation.php</span>). If this is not the case, you might have forgotten to apply my
+	<a href="http://geo.hlipp.de/code/current/13_bugcantmoderate.diff">patch for this problem</a>.
+	</p>
+	<p>
+	This is the point, where you can test moderating, ticket stuff, ... You can also watch the event mechanism
+	on <span class="nourl">admin/events.php</span> or speed things up by injecting the event "every_day" on this page.
+	</p>
+
+	<h3>Setting up forums</h3>
+	<p>
+	If you want to use the forums, you have to activate them in your configutation file (libs/conf/<span class="dummy">your.doma.in</span>.conf.php):
+	</p>
+	<p><code>$CONF['forums']=true;</code></p>
+	<p>After logging in as administrator, you can use the link "Admin panel" on the discussion page (<span class="nourl">/discuss/</span>)
+	and add forums, there.</p><p>Unfortunately, there are quite a lot hard coded forum ids in the code. So, you should either create your forums
+	in the same order they were created on <a href="http://www.geograph.org.uk/">geograph.org.uk</a> or use my patch for this (NOTE: this patch is already included in the nightlies) and adopt the $CONF['forum_<span class="dummy">XXXX</span>'] settings from the example configuration file.</p>
+	<p>The forum ids on <a href="http://www.geograph.org.uk/">geograph.org.uk</a> are</p>
+	<table border="1"><tr><th>id</th><th>topic</th></tr>
+		<tr><td>1</td><td>Announcements</td></tr>
+		<tr><td>2</td><td>General Discussion</td></tr>
+		<tr><td>3</td><td>Suggestions</td></tr>
+		<tr><td>4</td><td>Bug reports</td></tr>
+		<tr><td>5</td><td>Grid Square Discussions</td></tr>
+		<tr><td>6</td><td>Themed Topics/Submitted Articles</td></tr>
+		<tr><td>7</td><td>Geograph of the Year 2006</td></tr>
+		<tr><td>8</td><td>Teaching and Learning</td></tr>
+		<tr><td>9</td><td>Moderator Discussions</td></tr>
+		<tr><td>10</td><td>Geograph of the Year 2007</td></tr>
+		<tr><td>11</td><td>Galleries</td></tr>
+		<tr><td>12</td><td>Features in Development</td></tr>
+		<tr><td>13</td><td>Geograph of the Year 2008</td></tr>
+		<tr><td>14</td><td>Privacy, Legality and related Issues</td></tr>
+		<tr><td>15</td><td>Cameras, Equipment and Photography</td></tr>
+		<tr><td>16</td><td>Mapping Websites and all things Maps</td></tr>
+	</table>
+	<p>If you want to offer galleries, you have to add the galleries forum (which will be hidden on the forum list <span class="nourl">/discuss/</span>).</p>
+
+	<h3>Fixing the border of the area</h3>
+	<p>If you want to fix land percentages of grid squares you can do this with the map fixer tool <span class="nourl">admin/mapfixer.php</span>.
+	It allows you to enter the grid reference of a square and change the land percentage.
+	</p>
+	<p>
+	If the squares you want to change are close to land squares, you can also add them to the map fixer queue (i.e. give them a land percentage of -1)
+	by simply clicking on them on the map (<span class="nourl">/mapbrowse.php</span>). The square will be black then (if you did not apply
+	<a href="http://geo.hlipp.de/code/current/31_noblacksquares.diff">my patch to make those squares blue</a>) and appear on the list on the
+	map fixer page.
+	</p>
+
+	<h3>Adding towns</h3>
+	<p>For adding town to the maps you have to import a <a href="http://geo.hlipp.de/howto/towns.mysql">mysql file like this</a>.
+	I generated it from a <a href="http://geo.hlipp.de/howto/towns.dat">tab separated list</a> (name, grid prefix, easting (10 meters), northing (10 meters), size, reference index, quadrant) using an <a href="http://geo.hlipp.de/howto/towns.awk">awk script</a>:</p>
+	<p><code>./towns.awk &lt; towns.dat &gt; towns.txt</code></p>
+	<p>After putting the "replace ..." line in front of towns.txt and a semicolon at the end, you can import the file into
+	your database.</p>
+	<p>If you want to use this script you need to enter your grid prefixes in the BEGIN section.</p>
+	<p>The meaning of the columns:</p>
+	<table border="1">
+		<tr><th>text file</th><th>database</th><th>contents</th></tr>
+		<tr><td>prefix, e, n</td><td>e, n</td><td>The coordinates where the software will draw a dot. The script uses 8 figure grid references as
+		UNV&nbsp;1331&nbsp;0282 for Stuttgart.</td></tr>
+		<tr><td>size</td><td>s</td><td>The size or importance of the city: Number from 1 (very important, also shown on overview maps) to 3.</td></tr>
+		<tr><td>quadrant</td><td>quad</td><td>Quadrant, where the label should go:
+			<table border="1">
+				<tr><th>quad</th><th>x</th><th>y</th></tr>
+				<tr><td>&lt;0</td><td>right if enough space to right margin, left otherwise</td><td>bottom if enough space to lower margin, top otherwise</td></tr>
+				<tr><td>0</td><td colspan="2">Automatically choose quad between 1 and 4 (trying to prevent labels from overlapping)</td></tr>
+				<tr><td>1</td><td>right</td><td>top</td></tr>
+				<tr><td>2</td><td>left</td><td>top</td></tr>
+				<tr><td>3</td><td>right</td><td>bottom</td></tr>
+				<tr><td>4</td><td>left</td><td>bottom</td></tr>
+			</table>
+		</td></tr>
+	</table>
+	<p>Unfortunately you have to change the code of libs/geograph/map.class.php in order to tell the software to use loc_towns
+	for your reference id. See <a href="http://geo.hlipp.de/code/current/43_towns.diff">my change for reference id 3</a>.
+	You might want to recreate the maps (<span class="nourl">admin/recreatemaps.php</span>) afterwards.</p>
+
+	<h3>Creating KML files</h3>
+	<p>For creating KML/KMZ files for GoogleEarth just visit these URLs with your favourite browser:
+	<span class="nourl">/_scripts/kml-_make.php</span>,
+	<span class="nourl">/_scripts/kml-style.php</span>,
+	<span class="nourl">/_scripts/kml-geograph.php</span>
+	</p>
+
+	<h3>Make "picture of the day" work</h3>
+	<p>To get rid of the error picture on <span class="nourl">/index.php</span> you should
+	enter your favourite pictures into the form on <span class="nourl">/admin/pictureoftheday.php</span>.
+	</p>
+	<p>The code should maybe changed to use a default picture if the list is empty...</p>
+
+	<h2>5. What ist still to do for our project</h2>
+	<h3>Logo and Icon</h3>
+	<p>We still need to create the logo (public_html/templates/<span class="dummy">tmplname</span>/img/logo.gif) and
+	a favicon (public_html/favicon.ico).</p>
+	<h3>Templates</h3>
+	<p>The templates must be translated and contents that are irrelevant for our area should be removed.</p>
+	<h3>Code changes</h3>
+	<ul>
+		<li>There are still a lot of places in the code, where hard coded user ids, reference indexes, forum ids, etc. need to be removed.</li>
+		<li>Hard coded mail addresses should be replaced by one configuration variable. Also the envelope from address should be set.</li>
+		<li>Some towns (Ludwigsburg) are not shown on the map; some towns are shown, but there's only a dot and no label.</li>
+	</ul>
+	<h2>6. What is still to add to the howto?</h2>
+	<h3>Article categories</h3>
+	<h3>Sitemap: Updates and Google</h3>
+	<h3>kml update</h3>
+	<h3>Logo and icon</h3>
+	<h3>Moving the area on the map</h3>
+	<h3>Gridbuilder and alpha channel</h3>
+	<h3>Permissions</h3>
+			<ul>
+			<li><code>cd public_html/stuff<br>
+			chmod a+w captcha_tmp</code></li>
+			<li><code>cd public_html/rss<br>
+			mkdir germanyde<br>
+			mkdir germany32<br>
+			chmod a+w germany32 germanyde</code></li>
+			<li><code>cd public_html/sitemap<br>
+			chmod a+w root</code></li>
+			</ul>
+	<h3>Create search for potd</h3>
+
+</body>

@@ -14,6 +14,7 @@
 	<script type="text/javascript">
 	//<![CDATA[
 		var issubmit = 1;
+		var iscmap = 0;
 		var ri = -1;
 		
 		//the google map object
@@ -22,6 +23,15 @@
 		//the geocoder object
 		var geocoder;
 		var running = false;
+
+{/literal}
+		var lat0 = {$lat0};
+		var lon0 = {$lon0};
+		var latmin = {$latmin};
+		var latmax = {$latmax};
+		var lonmin = {$lonmin};
+		var lonmax = {$lonmax};
+{literal}
 
 		function showAddress(address) {
 			if (!geocoder) {
@@ -62,7 +72,7 @@
 				map.addControl(new GLargeMapControl());
 				map.addControl(new GMapTypeControl(true));
 				
-				var point = new GLatLng(54.55,-3.88);
+				var point = new GLatLng(lat0, lon0);
 				map.setCenter(point, 5);
 
 				map.enableDoubleClickZoom(); 
@@ -92,7 +102,7 @@
 				});
 
 				// The allowed region which the whole map must be within
-				var allowedBounds = new GLatLngBounds(new GLatLng(49.4,-11.8), new GLatLng(61.8,4.1));
+				var allowedBounds = new GLatLngBounds(new GLatLng(latmin,lonmin), new GLatLng(latmax,lonmax));
 
 				// If the map position is out of range, move it back
 				function checkBounds() {
@@ -131,6 +141,7 @@
 			updateMapMarker(document.theForm.grid_reference,false,true);
 		}
 		AttachEvent(window,'load',updateMapMarkers,false);
+	// ]]>
 	</script>
 {/literal}
 
@@ -150,7 +161,7 @@
 
 </form>
 <form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
-<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address: 
+<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:</label>
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="submit" value="Find"/><small><small><br/>
 	(Powered by the Google Maps API Geocoder)</small></small>

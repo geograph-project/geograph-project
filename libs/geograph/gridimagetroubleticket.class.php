@@ -342,17 +342,19 @@ class GridImageTroubleTicket
 			{
 				//need to parse value for nat coords
 				$sq=new GridSquare;
-				if ($sq->setByFullGridRef($newvalue,true))
+				if ($sq->setByFullGridRef($newvalue,true,true,false,true))
 				{
 					$img->viewpoint_eastings=$sq->nateastings;
 					$img->viewpoint_northings=$sq->natnorthings;
 					$img->viewpoint_grlen=$sq->natgrlen;
+					$img->viewpoint_refindex=$sq->reference_index;
 					$this->commit_count++;
 				} elseif(empty($newvalue)) {
 					// we are setting to 'blank'
 					$img->viewpoint_eastings = 0;
 					$img->viewpoint_northings = 0;
 					$img->viewpoint_grlen=0;
+					$img->viewpoint_refindex=0;
 					$this->commit_count++;
 				}
 				
@@ -631,9 +633,10 @@ class GridImageTroubleTicket
 		
 		$image=& $this->_getImage();
 		
-		$ttype = ($this->type == 'minor')?' Minor':'';
-		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
+		$ttype = ($this->type == 'minor')?'Kleiner Änderungsvorschlag für / Minor suggestion for':'Änderungsvorschlag für / Suggestion for';
+		$msg['subject']="$ttype {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 		
+		#FIXME translate body
 		$msg['body']="Re: {$image->grid_reference} {$image->title}\n";
 		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
 		$msg['body'].="---------------------------------------\n";
@@ -654,8 +657,14 @@ class GridImageTroubleTicket
 	*/
 	function _sendMail($to, &$msg)
 	{
-		mail($to, $msg['subject'], $msg['body'],
-				"From: Geograph - Reply Using Link <lordelph@gmail.com>");
+		global $CONF;
+		mail($to, mb_encode_mimeheader($CONF['mail_subjectprefix'].$msg['subject'], $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg['body'],
+			"From: Geograph - Reply Using Link <{$CONF['mail_from']}>\n".
+			"MIME-Version: 1.0\n".
+			"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
+			"Content-Disposition: inline\n".
+			"Content-Transfer-Encoding: 8bit",
+			is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
 		
 	}
 	

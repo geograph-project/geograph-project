@@ -22,10 +22,21 @@
  */
 
 require_once('geograph/global.inc.php');
+
+if (empty($CONF['google_maps_api_key'])) {
+	$qs = $_SERVER['QUERY_STRING'];
+	if (!isset($_REQUEST['picasa']) && !isset($_REQUEST['submit2'])) {
+		if ($qs !== "")
+			$qs .= "&";
+		$qs .= "submit=1";
+	}
+	if ($qs !== "")
+		$qs = "?".$qs;
+	header("Location: http://{$_SERVER['HTTP_HOST']}/ommap.php{$qs}");
+	exit;
+}
+
 init_session();
-
-
-
 
 $smarty = new GeographPage;
 
@@ -59,6 +70,13 @@ if (!empty($_REQUEST['grid_reference']))
 		$smarty->assign('errormsg', $square->errormsg);	
 	}
 } 
+
+$smarty->assign('lat0',   $CONF['gmcentre'][0]);
+$smarty->assign('lon0',   $CONF['gmcentre'][1]);
+$smarty->assign('latmin', $CONF['gmlatrange'][0][0]);
+$smarty->assign('latmax', $CONF['gmlatrange'][0][1]);
+$smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);
+$smarty->assign('lonmax', $CONF['gmlonrange'][0][1]);
 
 $smarty->display('submitmap.tpl',$cacheid);
 

@@ -82,27 +82,41 @@ if (isset($_POST['msg']))
 	if (!isValidEmailAddress($from_email))
 	{
 		$ok=false;
-		$errors['from_email']='Please specify a valid email address';
+		if ($CONF['lang'] == 'de')
+			$errors['from_email']='Bitte gültige E-Mail-Adresse eingeben!';
+		else
+			$errors['from_email']='Please specify a valid email address';
 	}
 	if (!isValidRealName($from_name))
 	{
 		$ok=false;
-		$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		if ($CONF['lang'] == 'de')
+			$errors['from_name']='Der Name enthält ungültige Zeichen!';
+		else
+			$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 	}
 	if (strlen($msg)==0)
 	{
 		$ok=false;
-		$errors['msg']="Please enter a message to send";
+		if ($CONF['lang'] == 'de')
+			$errors['msg']="Bitte Nachricht eingeben!";
+		else
+			$errors['msg']="Please enter a message to send";
 	}
 	$smarty->assign_by_ref('errors', $errors);
 
 	$smarty->assign_by_ref('msg', $msg);
+	$smarty->assign_by_ref('contactmail', $CONF['abuse_email']);
 
+	$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 
 	if (isSpam($msg))
 	{
 		$ok=false;
-		$errors['msg']="Sorry, this looks like spam";
+		if ($CONF['lang'] == 'de')
+			$errors['msg']="Die Nachricht sieht wie SPAM aus.";
+		else
+			$errors['msg']="Sorry, this looks like spam";
 	}
 	
 	//if not logged in or they been busy - lets ask them if a person! (plus jump though a few hoops to make it harder to program a bot)
@@ -148,15 +162,27 @@ if (isset($_POST['msg']))
 		//build message and send it...
 		
 		$body=$smarty->fetch('email_usermsg.tpl');
-		$subject="[Geograph] $from_name contacting you via {$_SERVER['HTTP_HOST']}";
+		if ($CONF['lang'] == 'de') {
+			$subject="$from_name kontaktiert Sie über {$_SERVER['HTTP_HOST']}";
+		} else {
+			$subject="$from_name contacting you via {$_SERVER['HTTP_HOST']}";
+		}
+		$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 		
-		$hostname=trim(`hostname`);
+		$hostname=trim(`hostname -f`);
 		$received="Received: from [{$ip}]".
-			" by {$hostname}.geograph.org.uk ".
+			" by {$hostname} ".
 			"with HTTP;".
 			strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
+		$mime = "MIME-Version: 1.0\n".
+			"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
+			"Content-Disposition: inline\n".
+			"Content-Transfer-Encoding: 8bit";
+		$from = "From: $enc_from_name <$from_email>\n";
+		$geofrom = "From: Geograph <{$CONF['mail_from']}>\n";
+		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 
-		if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) {
+		if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) { # FIXME hard coded patterns
 			$smarty->assign('invalid_email', 1);
 			
 			$email = $CONF['contact_email'];
@@ -166,7 +192,7 @@ if (isset($_POST['msg']))
 			$email = $recipient->email;
 		}
 
-		if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+		if (@mail($email, $encsubject, $body, $received.$from.$mime, $envfrom))
 		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 		
@@ -181,16 +207,21 @@ if (isset($_POST['msg']))
 				"Original To: {$recipient->email}\n".
 				"Original From: $from_name <$from_email>\n".
 				"Original Subject:\n\n$body",
-				'From:webserver@'.$_SERVER['HTTP_HOST']);	
+				$geofrom.$mime, $envfrom);
 
 
 			$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
 		}
 		
 		if ($sendcopy) {
-			$subject="[Geograph] Copy of message sent to {$recipient->realname}";
-		
-			if (!@mail($from_email, $subject, $body, "From: $from_name <$from_email>")) {
+			if ($CONF['lang'] == 'de') {
+				$csubject="Kopie der Nachricht an {$recipient->realname}";
+			} else {
+				$csubject="Copy of message sent to {$recipient->realname}";
+			}
+			$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$csubject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+
+			if (!@mail($from_email, $encsubject, $body, $from.$mime, $envfrom)) {
 				@mail($CONF['contact_email'], 
 					'Mail Error Report from '.$_SERVER['HTTP_HOST'],
 					"Original Subject: $subject\n".
@@ -198,7 +229,7 @@ if (isset($_POST['msg']))
 					"Original From: $from_name <$from_email>\n".
 					"Copy of message sent to {$recipient->realname}\n".
 					"Original Subject:\n\n$body",
-					'From:webserver@'.$_SERVER['HTTP_HOST']);	
+					$geofrom.$mime, $envfrom);
 
 
 				$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
@@ -222,10 +253,15 @@ elseif (isset($_GET['image']))
 	$image=new GridImage();
 	$image->loadFromId($_GET['image']);
 	
-	if (strpos($recipient->rights,'mod') !== FALSE) {
-		$msg="Re: image for {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}\r\n";
+	if ($CONF['lang'] == 'de') {
+		$msg = "Betrifft Bild für";
 	} else {
-		$msg="Re: image for {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\r\n";
+		$msg = "Re: image for";
+	}
+	if (strpos($recipient->rights,'mod') !== FALSE) {
+		$msg .= " {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}\r\n";
+	} else {
+		$msg .= " {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\r\n";
 	}
 	$smarty->assign_by_ref('msg', $msg);
 }

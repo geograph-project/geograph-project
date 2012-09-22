@@ -39,6 +39,10 @@ if (isset($_GET['potd'])) {
 	$smarty->caching = 0;
 }
 
+$map_suffix = get_map_suffix();
+$map_suffix_reduced = $map_suffix === '_tm' ? '_tm' : ''; # we assume '_t' and '' to have the same layout
+$cacheid .= $map_suffix;
+
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -49,14 +53,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/map.class.php');
 	require_once('geograph/mapmosaic.class.php');
 
-	switch($CONF['template']) {
+	switch($CONF['template']) { #FIXME better solution needed
 		case 'charcoal': $preset = 'overview_charcoal'; break;
 		case 'ireland': $preset = 'overview_ireland'; break;
-		default: $preset = 'overview_large'; break;
+		default: $preset = 'homepage'.$map_suffix; break;
 	}
 	$overview=new GeographMapMosaic($preset);
 	$overview->type_or_user = 0;
-	if ($preset == 'overview_large') {
+
+	if ($CONF['home_map_large']) {
 		$overview->assignToSmarty($smarty, 'overview2');
 	} else {
 		$overview->assignToSmarty($smarty, 'overview');
@@ -73,7 +78,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	
 	//lets find some recent photos
-	if ($CONF['template']=='ireland') {
+	if ($CONF['template']=='ireland') { #FIXME?
 		new RecentImageList($smarty,2);
 	} else {
 		$smarty->assign('marker', $overview->getSquarePoint($potd->image->grid_square));
@@ -130,6 +135,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		6=>'click for more detail'));
 		
 	$smarty->assign('m',rand(0,6));	
+
+	$smarty->assign('potd_width', $CONF['home_potd_width'.$map_suffix_reduced]);
+	$smarty->assign('potd_height', $CONF['home_potd_height'.$map_suffix_reduced]);
 }
 
 

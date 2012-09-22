@@ -12,8 +12,11 @@ $USER->mustHavePerm("admin");
 $noSphinx=empty($CONF['sphinx_host']);
 $isModerator=$GLOBALS['USER']->hasPerm('moderator');
 $isTicketMod=$GLOBALS['USER']->hasPerm('ticketmod');
+$isMapMod=$GLOBALS['USER']->hasPerm('mapmod');
 $isAdmin=$GLOBALS['USER']->hasPerm('admin');
-$isModAdmin=$isMod||$isTicketMod||$isAdmin;
+$isTGModAdmin=$isMod||$isTicketMod||$isAdmin;
+$isModAdmin=$isMod||$isTicketMod||$isMapMod||$isAdmin;
+$useGoogleApi=!empty($CONF['google_maps_api_key']);
 
 $static_host = $CONF['STATIC_HOST']; 
 

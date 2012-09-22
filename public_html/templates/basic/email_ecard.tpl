@@ -25,7 +25,7 @@ http://creativecommons.org/licenses/by-sa/2.0/
 --------------------------------
 
 This message was sent to you by site visitor to Geograph British Isles,
-forward abuse complaints to: rogersgm@gmail.com
+forward abuse complaints to: geo@hlipp.de
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40
 Content-Type: text/html;
@@ -116,7 +116,7 @@ href=3D"http://creativecommons.org/licenses/by-sa/2.0/"=20
 <P align=3Dcenter><FONT face=3DGeorgia size=3D-1>This message was sent =
 to you by site=20
 visitor to Geograph British Isles, <BR>forward abuse complaints to:=20
-rogersgm@gmail.com</FONT><!-- {$user->user_id} --></P></BODY></HTML>
+geo@hlipp.de</FONT><!-- {$user->user_id} --></P></BODY></HTML>
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40--
 

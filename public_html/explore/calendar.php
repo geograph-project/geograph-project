@@ -31,12 +31,22 @@ $smarty = new GeographPage;
 
 $month=(!empty($_GET['Month']))?intval($_GET['Month']):'';
 $year=(!empty($_GET['Year']))?intval($_GET['Year']):date('Y');
-
+$imageid=isset($_REQUEST['image'])?intval($_REQUEST['image']):0;
+$uid=isset($_REQUEST['u'])?intval($_REQUEST['u']):0;
+if ($uid) {
+	$profile=new GeographUser($uid);
+	$uid=$profile->user_id;
+}
+$smarty->assign("uid",$uid);
+$smarty->assign_by_ref('profile', $profile);
 
 $template=($month)?'explore_calendar_month.tpl':'explore_calendar_year.tpl';
 $cacheid="$year-$month";
-if (isset($_REQUEST['image'])) {
-	$cacheid .= ".".intval($_REQUEST['image']);
+if ($imageid) {
+	$cacheid .= ".".$imageid;
+}
+if ($uid) {
+	$cacheid .= ".".$uid;
 }
 if (isset($_GET['blank'])) {
 	$cacheid .= "blank";
@@ -52,11 +62,14 @@ if (isset($_GET['supp'])) {
 }
 
 
-$smarty->caching = 2; // lifetime is per cache
-if ($month == date('n') && $year == date('Y')) {
-	$smarty->cache_lifetime = 3600*24; //1day cache
-} else {
-	$smarty->cache_lifetime = 3600*24*7; //7day cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	#if ($month == date('n') && $year == date('Y')) {
+	if ($year == date('Y')) {
+		$smarty->cache_lifetime = 3600*24; //1day cache
+	} else {
+		$smarty->cache_lifetime = 3600*24*7; //7day cache
+	}
 }
 
 function print_rp(&$in,$exit = false) {
@@ -91,14 +104,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	if (isset($_REQUEST['image']))
+	if ($imageid)
 	{
 		//initialise message
 		require_once('geograph/gridsquare.class.php');
 		require_once('geograph/gridimage.class.php');
 
 		$image=new GridImage();
-		$image->loadFromId($_REQUEST['image']);
+		$image->loadFromId($imageid);
 
 		if ($image->moderation_status=='rejected' || $image->moderation_status=='pending') {
 			//clear the image
@@ -126,7 +139,10 @@ if (!$smarty->is_cached($template, $cacheid))
 				$where .= " AND moderation_status = 'geograph'";
 			} elseif (isset($_GET['supp'])) {
                                 $where .= " AND moderation_status = 'accept'";
-                        }
+			}
+			if ($uid) {
+				$where .= " AND user_id = $uid";
+			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$images=&$db->GetAssoc($sql= "SELECT 
 			imagetaken, 
@@ -162,7 +178,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					$day['number'] = $dayNumber;
 					$day['key'] = sprintf("%04d-%02d-%02d",$year,$month,$dayNumber);
 					if ($images[$day['key']]) {
-						$day['image']=& new GridImage();
+						$day['image']=new GridImage();
 						$day['image']->fastInit($images[$day['key']]);	
 						$day['image']->compact();
 					}
@@ -202,6 +218,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			} elseif (isset($_GET['supp'])) {
                                 $where .= " AND moderation_status = 'accept'";
                         }
+			if ($uid) {
+				$where .= " AND user_id = $uid";
+			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$images=&$db->GetAssoc("SELECT 
 			imagetaken, 
@@ -235,7 +254,7 @@ if (!$smarty->is_cached($template, $cacheid))
 						$day['number'] = $dayNumber;
 						$day['key'] = sprintf("%04d-%02d-%02d",$year,$month,$dayNumber);
 						if ($images[$day['key']]) {
-							$day['image']=& new GridImage();
+							$day['image']=new GridImage();
 							$day['image']->fastInit($images[$day['key']]);	
 							$day['image']->compact();
 						}
@@ -251,7 +270,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				$weeks[] = $week;
 				$w++;		
 			}
-			$name = date('F',mktime(0,0,0,$month,1,2005)); 
+			$name = strftime('%B',mktime(0,0,0,$month,1,2005)); 
 			$months[$name] = $weeks;			
 		}
 		$month = 0;
@@ -261,8 +280,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	//array of day names to use
 	$days = array();
-	for($i=1; $i<=7; $i++)
-		$days[] = date('D',mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday 
+	for($i=1; $i<=7; $i++) {
+		$days[] = strftime('%a', mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday
+	}
 	$smarty->assign_by_ref("days",$days);
 	$month = sprintf("%02d",$month);
 	$smarty->assign("month",$month);

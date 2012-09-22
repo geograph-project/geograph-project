@@ -147,7 +147,7 @@ if (!empty($_GET['relinquish'])) {
 	$db->Execute("UPDATE user SET rights = REPLACE(REPLACE(rights,'traineemod',''),'moderator','') WHERE user_id = {$USER->user_id}");
 	
 	//reload the user object
-	$_SESSION['user'] =& new GeographUser($USER->user_id);
+	$_SESSION['user'] = new GeographUser($USER->user_id);
 	
 	header("Location: /profile.php?edit=1");
 
@@ -158,6 +158,15 @@ if (!empty($_GET['relinquish'])) {
 	
 		$db->Execute("UPDATE user SET rights = CONCAT(rights,',traineemod') WHERE user_id = {$USER->user_id}");
 		
+		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+		$from_name = $USER->realname;
+		$from_email = $USER->email;
+		$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+		$from = "From: $enc_from_name <$from_email>\n";
+		$mime = "MIME-Version: 1.0\n".
+			"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
+			"Content-Disposition: inline\n".
+			"Content-Transfer-Encoding: 8bit";
 		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			
 		
 		$url = 'http://'.$_SERVER['HTTP_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
@@ -173,7 +182,7 @@ $url
 Regards, 
 
 {$USER->realname}".($USER->nickname?" (aka {$USER->nickname})":''),
-				"From: {$USER->realname} <{$USER->email}>");
+				$from.$mime, $envfrom);
 				
 		header("Location: /profile.php");
 		exit;
@@ -362,6 +371,7 @@ limit $limit";
 //implied: and user_id != {$USER->user_id}
 // -> because squares with users images are locked
 
+#trigger_error("sql: ".$sql, E_USER_NOTICE);
 
 #############################
 # fetch the list of images...
@@ -379,6 +389,7 @@ foreach ($images->images as $i => $image) {
 		$images->images[$i]->use6fig = 0;
 	}
 	$token->setValue("g", $images->images[$i]->getSubjectGridref(true));
+	#trigger_error("<-image->", E_USER_NOTICE);
 	if ($image->viewpoint_eastings) {
 		//note $image DOESNT work non php4, must use $images->images[$i]
 		//move the photographer into the center to match the same done for the subject
