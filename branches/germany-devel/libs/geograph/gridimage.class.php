@@ -657,9 +657,8 @@ class GridImage
 
 		$notes=array();
 
-		$recordSet = &$db->Execute("select n.*,u.realname from gridimage_notes n ".
-			"inner join user u using(user_id) ".
-			"where n.gridimage_id={$this->gridimage_id} and n.status in ($statuses) order by n.note_id asc");
+		$recordSet = &$db->Execute("select * from gridimage_notes ".
+			"where gridimage_id={$this->gridimage_id} and status in ($statuses) order by note_id asc");
 		while (!$recordSet->EOF) {
 			$n=new GridImageNote;
 			$n->loadFromRecordset($recordSet);
@@ -983,7 +982,10 @@ class GridImage
 		} elseif ($returntotalpath)
 			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
 		
-		$html="<img $attrs alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
+		if ($attrs !== '')
+			$attrs .= ' ';
+
+		$html="<img {$attrs}alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 		
 		return $html;
 	}
