@@ -560,6 +560,7 @@ div.photolandscape
 
 div.img-shadow {
 	overflow:auto;
+	position:relative;
 }
 
 .img-shadow img {
@@ -608,6 +609,51 @@ div.photoguide
 	position:relative;
 }
 
+/* test: notes */
+
+a.notebox {
+	position: absolute;
+	border: 2px groove black;
+	padding: 0;
+	display: none;
+}
+a.notebox span {
+	display: block;
+	background: white;
+	width: 100%;
+	height: 100%;
+	opacity: 0.3;
+	-moz-opacity: 0.3;
+	filter:alpha(opacity=30);
+}
+a.notebox:hover {
+	border-color: yellow;
+}
+div.geonote {
+	display: none;
+	position: absolute;
+	padding: 4px;
+	top: 0px;
+	left: 0px;
+	color: white;
+	font-size: 13px;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	width: 25em;
+	font-weight: bold;
+	/*background: url(/images/ntbg.png);*/
+	/*opacity: 0.3;
+	-moz-opacity: 0.3;
+	filter:alpha(opacity=30);*/
+	background: rgb(0, 0, 0);  /*Fallback for older browsers */
+	background: rgba(0, 0, 0, 0.75);
+	z-Index: 100;
+
+	/* Mozilla proprietary */
+	-moz-border-radius: 12px;
+}
+div.geonote p {
+	margin: 0; padding: 0 3px;
+}
 
 /*---------------------------------------------------------------*
  * inline sidebar

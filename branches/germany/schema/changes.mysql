@@ -673,3 +673,25 @@ DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,
 #DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
 
 ALTER TABLE `loc_towns` CHANGE `s`  `s` enum('1','2','3','4','5','') NOT NULL DEFAULT '1';
+
+DROP TABLE `gridimage_notes`;
+
+CREATE TABLE IF NOT EXISTS `gridimage_notes` (
+  `note_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `x1` int (10) unsigned NOT NULL,
+  `y1` int (10) unsigned NOT NULL,
+  `x2` int (10) unsigned NOT NULL,
+  `y2` int (10) unsigned NOT NULL,
+  `z` tinyint(4) NOT NULL DEFAULT '0',
+  `imgwidth` int (10) unsigned NOT NULL,
+  `imgheight` int (10) unsigned NOT NULL,
+  -- `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('visible','pending','deleted') NOT NULL default 'pending',
+  -- `title` varchar(255) DEFAULT NULL,
+  -- `title2` varchar(255) DEFAULT NULL,
+  `comment` text NOT NULL,
+  -- `comment2` text,
+  PRIMARY KEY  (`note_id`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;

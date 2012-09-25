@@ -611,8 +611,38 @@ class GridImage
 		$level = ($this->grid_square->imagecount > 1)?6:5;
 		$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
 	}
+
+	/**
+	* get a list of annotations for this image
+	*/
+	function& getNotes($aStatus)
+	{
+		if (!is_array($aStatus))
+			die("GridImage::getNotes expects array param");
+
+		$size = $this->_getFullSize();
+
+		$db=&$this->_getDB();
+		
+		$statuses="'".implode("','", $aStatus)."'";
 	
-	
+
+		$notes=array();
+
+		$recordSet = &$db->Execute("select * from gridimage_notes ".
+			"where gridimage_id={$this->gridimage_id} and status in ($statuses) order by note_id asc");
+		while (!$recordSet->EOF) {
+			$n=new GridImageNote;
+			$n->loadFromRecordset($recordSet);
+			$n->calcSize($size[0], $size[1]);
+			$notes[]=$n;
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+
+		return $notes;
+	}
+
 	/**
 	* get a list of tickers for this image
 	*/
@@ -909,7 +939,7 @@ class GridImage
 	/**
 	* returns HTML img tag to display this image at full size
 	*/
-	function getFull($returntotalpath = true)
+	function getFull($returntotalpath = true, $attrs='')
 	{
 		global $CONF;
 
@@ -924,7 +954,10 @@ class GridImage
 		} elseif ($returntotalpath)
 			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
 		
-		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
+		if ($attrs !== '')
+			$attrs .= ' ';
+
+		$html="<img {$attrs}alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 		
 		return $html;
 	}
