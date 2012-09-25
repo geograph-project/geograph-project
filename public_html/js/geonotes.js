@@ -183,6 +183,8 @@ var gn = {
 		var epos = gn.__getElePosition(lnk.parentNode);
 		var x = mpos[0]-epos[0]-5; //FIXME move to left when outside visible range
 		var y = mpos[1]-epos[1]-5; //FIXME move to top when outside visible range
+		x += lnk.parentNode.scrollLeft; //FIXME portable?
+		y += lnk.parentNode.scrollTop;
 		txt.style.left = x+'px';
 		txt.style.top = y+'px';
 
