@@ -96,7 +96,13 @@ class GridSquare
 	var $natnorthings;
 	var $natgrlen = 0;
 	var $natspecified = false;
-	
+
+	/**
+	* latitude/longitude (wgs84)
+	*/
+	var $lat = null;
+	var $lon = null;
+
 	/**
 	* GridSquare instance of nearest square to this one with an image
 	*/
@@ -283,7 +289,60 @@ class GridSquare
 		} 
 		return $this->natnorthings;
 	}
-	
+
+	/**
+	* Convenience function to get latitude/longitude (wgs84)
+	*/
+	function getLatLon()
+	{
+		if (!isset($this->lat) || is_null($this->lat)) {
+			$e = $this->getNatEastings();
+			$n = $this->getNatNorthings();
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+			$latlon = $conv->national_to_wgs84($e, $n, $this->reference_index);
+			if (!count($latlon))
+				return array();
+			$this->lat = $latlon[0];
+			$this->lon = $latlon[1];
+		}
+		return array($this->lat, $this->lon);
+	}
+
+	/**
+	 * Calculate approximate distance from given point (assuming spherical coordinates, R=6378137)
+	 */
+	function calcDistanceFromLL($latD, $lonD)
+	{
+		list($lat2D, $lon2D) = $this->getLatLon();
+		if (is_null($lat2D))
+			return -1; # FIXME?
+		$lat1 = deg2rad($latD);
+		$lon1 = deg2rad($lonD);
+		$lat2 = deg2rad($lat2D);
+		$lon2 = deg2rad($lon2D);
+		
+		$R = 6378137.0;
+		$dlat = $lat1-$lat2;
+		$dlon = $lon1-$lon2;
+		$slat = sin(0.5*$dlat);
+		$slon = sin(0.5*$dlon);
+		$sinsq = $slat*$slat + cos($lat1)*cos($lat2)*$slon*$slon;
+		$arc = 2 * atan2(sqrt($sinsq), sqrt(1-$sinsq));
+		return $R * $arc;
+	}
+
+	/**
+	 * Calculate approximate distance from given point (assuming spherical coordinates, R=6378137)
+	 */
+	function calcDistanceFromSquare($square)
+	{
+		list($latD, $lonD) = $square->getLatLon();
+		if (is_null($latD))
+			return -1;
+		return $this->calcDistanceFromLL($latD, $lonD);
+	}
+
 	/**
 	* Get an array of valid grid prefixes
 	*/
@@ -412,7 +471,7 @@ class GridSquare
 	/**
 	*
 	*/
-	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false,$allowinternal = false,$recalc = false)
+	function setByFullGridRef($gridreference, $setnatfor4fig = false, $allowzeropercent = false, $allowinternal = false, $recalc = false, $dbsquare = true)
 	{
 		global $CONF;
 		$matches=array();
@@ -458,6 +517,8 @@ class GridSquare
 					$fn = intval($n) + ($row['origin_y']-$CONF['origins'][$ri][1]) * 1000;
 					$latlong = $conv->national_to_wgs84($fe,$fn,$ri);
 					if (count($latlong)) { # FIXME error handling
+						$this->lat = $latlong[0];
+						$this->lon = $latlong[1];
 						$enr = $conv->wgs84_to_national($latlong[0],$latlong[1]);
 						if (count($enr)) { # FIXME error handling
 							$ri2 = $enr[2];
@@ -468,12 +529,14 @@ class GridSquare
 									$shift = 5000;
 								elseif ($length == 0)
 									$shift = 50000;
+								else
+									$shift = 0;
 								$e2 = round($enr[0],$length-5) + $shift;
 								$n2 = round($enr[1],$length-5) + $shift;
 								$x = floor($e2/1000) + $CONF['origins'][$ri2][0];
 								$y = floor($n2/1000) + $CONF['origins'][$ri2][1];
 								trigger_error("----x--$e2-$n2-$x-$y--", E_USER_NOTICE);
-								$ok = $this->loadFromPosition($x, $y);#FIXME: false,$allowinternal,$allowzeropercent);
+								$ok = $this->loadFromPosition($x, $y, false, $allowinternal, 0, 0, $dbsquare, $ri2);
 								if ($ok) {
 									$prefix = $this->gridsquare;
 									$e = sprintf("%05d", $e2%100000);
@@ -483,6 +546,7 @@ class GridSquare
 									#$this->natgrlen = $natgrlen;
 									#$isfour = $natgrlen == 4;
 									#$this->natspecified = $natgrlen > 4 ? 1:0;
+									#FIXME more figures
 									trigger_error("----s--$prefix--", E_USER_NOTICE);
 								}
 							}
@@ -492,7 +556,7 @@ class GridSquare
 			}
 
 			if (!$ok)
-				$ok=$this->_setGridRef($gridref,$allowzeropercent,$allowinternal);
+				$ok=$this->_setGridRef($gridref,$allowzeropercent,$allowinternal,$dbsquare);
 			if ($ok && (!$isfour || $setnatfor4fig))
 			{
 				//we could be reassigning the square!
@@ -538,8 +602,23 @@ class GridSquare
 		}
 		
 	}
-	
-	
+
+	/**
+	 * Checks latitude/longitude range
+	 */
+	function validPosition($dlat=0, $dlon=0)
+	{
+		global $CONF;
+		$this->getLatLon();
+		#FIXME use $CONF['gmlatrange'][$ri][0/1]?
+		return isset($this->lat) && !is_null($this->lat)
+		       && isset($CONF['latrange'][$this->reference_index])
+		       && $this->lat >= $CONF['latrange'][$this->reference_index][0]
+		       && $this->lat <= $CONF['latrange'][$this->reference_index][1]
+		       && $this->lon >= $CONF['lonrange'][$this->reference_index][0]
+		       && $this->lon <= $CONF['lonrange'][$this->reference_index][1];
+	}
+
 	/**
 	* Just checks that a grid position is syntactically valid
 	* No attempt is made to see if its a real grid position, just to ensure
@@ -647,13 +726,13 @@ class GridSquare
 	/**
 	* load square from internal coordinates
 	*/
-	function loadFromPosition($internalx, $internaly, $findnearest = false, $allowinternal = false, $dx = 0, $dy = 0)
+	function loadFromPosition($internalx, $internaly, $findnearest = false, $allowinternal = false, $dx = 0, $dy = 0, $dbsquare = true, $ri = 0)
 	{
 		global $CONF;
 		$ok=false;
 		$db=&$this->_getDB();
 		#trigger_error("===>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
-		if ($dx || $dy) {
+		if ($dbsuare && ($dx || $dy)) {
 			if ($dx)
 				$dx = $dx > 0 ? 1: -1;
 			if ($dy)
@@ -711,6 +790,39 @@ class GridSquare
 		}
 		$internalx += $dx;
 		$internaly += $dy;
+		if (!$dbsquare) {
+			if ($ri)
+				$riwhere = " and reference_index='$ri'";
+			else
+				$riwhere = "";
+			$sql = "select * from gridprefix where '$internalx'-origin_x between 0 and 99 and '$internaly'-origin_y between 0 and 99 $riwhere limit 1";
+			$row = $db->GetRow($sql);
+			if (count($row)) {
+				$ri = $row['reference_index'];
+				#$x = intval($this->eastings)  + $row['origin_x']; // FIXME fact 100 (also below)
+				#$y = intval($this->northings) + $row['origin_y'];
+				# range check?
+				$xofs = $internalx - $row['origin_x'];
+				$yofs = $internaly - $row['origin_y'];
+				#FIXME eastings, northings, natXXX, prefix
+				$this->gridsquare_id = null;
+				$this->x = $internalx;
+				$this->y = $internaly;
+				$this->grid_reference = $row['prefix'].sprintf('%02d%02d',$xofs,$yofs);
+				$this->percent_land = 0;
+				$this->imagecount = 0;
+				$this->has_geographs = 0;
+				$this->reference_index = $ri;
+				$this->placename_id = 0;
+				$this->services = array(); #array( -1 => '' );
+				$this->internal_only = false;
+				trigger_error(" $internalx,$internaly->{$this->grid_reference}", E_USER_NOTICE);
+				return true;
+			} else {
+				return false; #FIXME
+			}
+			#FIXME
+		}
 		#trigger_error("  ->$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
 		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) order by percent_land desc limit 1");
 		if (count($square))
@@ -764,7 +876,7 @@ class GridSquare
 	/**
 	* set up and validate grid square selection
 	*/
-	function _setGridRef($gridref,$allowzeropercent = false,$allowinternal = false)
+	function _setGridRef($gridref, $allowzeropercent = false, $allowinternal = false, $dbsquare = true)
 	{
 		global $CONF;
 		$ok=true;
@@ -773,7 +885,30 @@ class GridSquare
 		
 		//store the reference 
 		$this->_storeGridRef($gridref);
-			
+
+		if (!$dbsquare) {
+			$sql = "select * from gridprefix where prefix='{$this->gridsquare}' limit 1";
+			$row = $db->GetRow($sql);
+			if (count($row)) {
+				$ri = $row['reference_index'];
+				$x = intval($this->eastings)  + $row['origin_x'];
+				$y = intval($this->northings) + $row['origin_y'];
+				# range check?
+				$this->gridsquare_id = null;
+				$this->x = $x;
+				$this->y = $y;
+				$this->percent_land = 0;
+				$this->imagecount = 0;
+				$this->has_geographs = 0;
+				$this->reference_index = $ri;
+				$this->placename_id = 0;
+				$this->services = array(); #array( -1 => '' );
+				$this->internal_only = false;
+				return true;
+			} else {
+				return false; #FIXME
+			}
+		}
 		//check the square exists in database
 		$count=0;
 		$square = $db->GetRow('select * from gridsquare where grid_reference='.$db->Quote($gridref).' limit 1');	
@@ -853,8 +988,8 @@ class GridSquare
 					//need to create the square - we give it a land_percent of -1
 					//to indicate it needs review, and also to prevent it being
 					//used in further findNearby calls
-					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy) 
-						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)') )";
+					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy,permit_photographs,permit_geographs) 
+						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)'),0,0)";
 					$db->Execute($sql);
 					$gridimage_id=$db->Insert_ID();
 					$this->setServices('');

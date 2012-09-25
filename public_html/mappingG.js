@@ -92,7 +92,7 @@
 			if (curzoom >= 19) {
 				var newdigits = 5;
 				var newprec = 1;
-			} else if (curzoom >= 16) {
+			} else if (curzoom >= 15) {
 				var newdigits = 4;
 				var newprec = 10;
 			} else if (curzoom >= 12) {

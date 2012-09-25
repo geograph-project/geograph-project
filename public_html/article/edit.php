@@ -150,10 +150,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	
 	//the most basic protection
 	$_POST['content'] = strip_tags($_POST['content']);
-	$_POST['content'] = preg_replace('/[“”]/','',$_POST['content']);
+	#$_POST['content'] = preg_replace('/[“”]/','',$_POST['content']);
 
 	$_POST['extract'] = strip_tags($_POST['extract']);
-	$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
+	#$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
 
 	
 	$updates = array();
@@ -179,11 +179,11 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 		} elseif (empty($_POST[$key]) && $key != 'gridsquare_id') 
 			$errors[$key] = "missing required info";		
 	}
-	#if (isset($_POST['edit_prompt'])) {
-	#	$key = 'edit_prompt';
-	#	$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
-	#	$smarty->assign($key, $_POST[$key]);
-	#}
+	if (isset($_POST['edit_prompt'])) {
+		$key = 'edit_prompt';
+		$updates[] = "`$key` = ".$db->Quote($_POST[$key]); 
+		$smarty->assign($key, $_POST[$key]);
+	}
 	if (!count($updates)) {
 		$smarty->assign('error', "No Changes to Save");
 		$errors[1] =1;

@@ -204,7 +204,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
  <dd>{$image_taken} &nbsp; (<a title="Bilder um {$image->grid_reference} vom {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">Weitere in der Nähe</a>)</dd>
 {/if}
 <dt>Eingereicht</dt>
-	<dd>{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
+	<dd>{$image->submitted|date_format:"%a, %e. %B %Y"}</dd>
 
 <dt>Kategorie</dt>
 
