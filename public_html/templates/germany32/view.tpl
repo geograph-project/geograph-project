@@ -36,7 +36,22 @@
 	{elseif $user->user_id eq $image->user_id}
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
-  <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
+  <div class="img-shadow" id="mainphoto">{if $notes}{$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\"")}{else}{$image->getFull()}{/if}
+  {if $notes}
+    <map name="notesmap" id="notesmap">
+    {foreach item=note from=$notes}
+    <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}" />
+    {/foreach}
+    </map>
+    {foreach item=note from=$notes}
+    <a title="{$note->comment|escape:'html'}" id="notebox{$note->note_id}" href="#" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1}px;height:{$note->y2-$note->y1}px;z-index:{$note->z+50}" class="notebox"><span></span></a>
+    {/foreach}
+    {foreach item=note from=$notes}
+    <div id="notetext{$note->note_id}" class="geonote"><p>{$note->html()}</p></div>
+    {/foreach}
+    <script type="text/javascript" src="/js/geonotes.js"></script>
+  {/if}
+  </div>
   
   
 
@@ -73,7 +88,6 @@
   {/if}
 
 </div>
-
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 

@@ -122,6 +122,8 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
+	$notes = $image->getNotes(array('visible'));
+
 	//what style should we use?
 	$style = $USER->getStyle();
 	$cacheid.=$style;
@@ -205,6 +207,7 @@ if ($image->isValid())
 	{
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 		$smarty->assign("sid",$sid);
+		$smarty->assign_by_ref("notes",$notes);
 
 		$image->assignToSmarty($smarty, $sid, $map_suffix);
 	}
