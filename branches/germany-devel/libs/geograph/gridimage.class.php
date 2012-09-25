@@ -54,6 +54,11 @@ class GridImage
 	var $grid_square;
 
 	/**
+	* the photographer grid square
+	*/
+	var $viewpoint_square;
+
+	/**
 	* image sequence number for associated square
 	*/
 	var $seq_no;
@@ -152,13 +157,18 @@ class GridImage
 	
 	/**
 	* external image?
-	 */
+	*/
 	var $ext;
 	var $ext_server;
 	var $ext_thumb_url;
 	var $ext_img_url;
 	var $ext_profile_url;
 	var $ext_gridimage_id;
+
+	/**
+	 * annotations
+	 */
+	#var $notes = null;
 
 	/**
 	* constructor
@@ -226,13 +236,15 @@ class GridImage
 	* Returns grid reference of photographer if available
 	* Data is additionally stored as member data
 	*/
-	function getPhotographerGridref($spaced = false)
+	function getPhotographerGridref($spaced = false, $createsquare = false)
 	{
 		//already calculated?
-		if (!$spaced && strlen($this->photographer_gridref))
-			return $this->photographer_gridref;
-		if ($spaced && strlen($this->photographer_gridref_spaced))
-			return $this->photographer_gridref_spaced;
+		if (!empty($this->viewpoint_square) || !$createsquare) {
+			if (!$spaced && strlen($this->photographer_gridref))
+				return $this->photographer_gridref;
+			if ($spaced && strlen($this->photographer_gridref_spaced))
+				return $this->photographer_gridref_spaced;
+		}
 
 		$posgr='';
 		$posgrsp='';
@@ -253,6 +265,12 @@ class GridImage
 				$this->viewpoint_refindex,true);
 			
 			$this->photographer_gridref_precision=pow(10,6-$len)/10;
+
+			#FIXME $correction = ($this->viewpoint_grlen > 4)?0:500;
+			$this->viewpoint_square=new GridSquare;
+			if (is_object($this->db))
+				$this->viewpoint_square->_setDB($this->db);
+			$this->viewpoint_square->setByFullGridRef($posgr, true, true, false, true, false);
 		}
 
 		$this->photographer_gridref=$posgr;
@@ -322,6 +340,7 @@ class GridImage
 			if ($name!="db")
 				unset($this->$name);
 		}
+		#$this->notes = null;
 	}
 
 	/**
@@ -375,6 +394,7 @@ class GridImage
 		require_once('geograph/functions.inc.php');
 		$this->ext = false;
 		$this->grid_square=null;
+		$this->viewpoint_square=null;
 		$this->grid_reference='';
 		foreach($arr as $name=>$value)
 		{
@@ -422,6 +442,13 @@ class GridImage
 		{
 			unset($this->grid_square->db);
 		}
+		if (is_object($this->viewpoint_square))
+		{
+			unset($this->viewpoint_square->db);
+		}
+		#if ($this->notes !== null) {
+		#	$this->notes = null;
+		#}
 	}
 	
 	/**
@@ -485,6 +512,7 @@ class GridImage
 				$this->gridimage_id      = 0;
 				$this->ext_gridimage_id  = $gridimage_id;
 				$this->grid_square       = null;
+				$this->viewpoint_square  = null;
 				$this->title1            = $this->title;
 				$this->comment1          = $this->comment;
 				$this->title2            = '';
@@ -611,8 +639,39 @@ class GridImage
 		$level = ($this->grid_square->imagecount > 1)?6:5;
 		$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
 	}
+
+	/**
+	* get a list of annotations for this image
+	*/
+	function& getNotes($aStatus)
+	{
+		if (!is_array($aStatus))
+			die("GridImage::getNotes expects array param");
+
+		$size = $this->_getFullSize();
+
+		$db=&$this->_getDB();
+		
+		$statuses="'".implode("','", $aStatus)."'";
 	
-	
+
+		$notes=array();
+
+		$recordSet = &$db->Execute("select n.*,u.realname from gridimage_notes n ".
+			"inner join user u using(user_id) ".
+			"where n.gridimage_id={$this->gridimage_id} and n.status in ($statuses) order by n.note_id asc");
+		while (!$recordSet->EOF) {
+			$n=new GridImageNote;
+			$n->loadFromRecordset($recordSet);
+			$n->calcSize($size[0], $size[1]);
+			$notes[]=$n;
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+
+		return $notes;
+	}
+
 	/**
 	* get a list of tickers for this image
 	*/
@@ -909,7 +968,7 @@ class GridImage
 	/**
 	* returns HTML img tag to display this image at full size
 	*/
-	function getFull($returntotalpath = true)
+	function getFull($returntotalpath = true, $attrs='')
 	{
 		global $CONF;
 
@@ -924,7 +983,7 @@ class GridImage
 		} elseif ($returntotalpath)
 			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
 		
-		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
+		$html="<img $attrs alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 		
 		return $html;
 	}

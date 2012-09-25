@@ -391,11 +391,14 @@ foreach ($images->images as $i => $image) {
 	$token->setValue("g", $images->images[$i]->getSubjectGridref(true));
 	#trigger_error("<-image->", E_USER_NOTICE);
 	if ($image->viewpoint_eastings) {
+		$token->setValue("p", $images->images[$i]->getPhotographerGridref(true, true));
 		//note $image DOESNT work non php4, must use $images->images[$i]
 		//move the photographer into the center to match the same done for the subject
-		$correction = ($images->images[$i]->viewpoint_grlen > 4)?0:500;
-		$images->images[$i]->distance = sprintf("%0.2f",
-			sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings-$correction,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings-$correction,2))/1000);
+		#$correction = ($images->images[$i]->viewpoint_grlen > 4)?0:500;
+		#$images->images[$i]->distance = sprintf("%0.2f",
+		#	sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings-$correction,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings-$correction,2))/1000);
+		$images->images[$i]->distance = sprintf("%0.2f", ($images->images[$i]->grid_square->calcDistanceFromSquare($images->images[$i]->viewpoint_square))/1000); #FIXME $correction?
+		# FIXME list($lat,$long) = $conv->gridsquare_to_wgs84($this->grid_square);///FIXME
 		
 		if (intval($images->images[$i]->grid_square->nateastings/1000) != intval($images->images[$i]->viewpoint_eastings/1000)
 			|| intval($images->images[$i]->grid_square->natnorthings/1000) != intval($images->images[$i]->viewpoint_northings/1000))
@@ -407,7 +410,6 @@ foreach ($images->images as $i => $image) {
 		if ($images->images[$i]->different_square_true && $images->images[$i]->distance > 0.1)
 			$images->images[$i]->different_square = true;
 	
-		$token->setValue("p", $images->images[$i]->getPhotographerGridref(true));
 	}	
 	if (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
 		$token->setValue("v", $image->view_direction);
@@ -418,6 +420,9 @@ foreach ($images->images as $i => $image) {
 		$images->images[$i]->photographer_gridref = '';
 		$images->images[$i]->use6fig = 1;
 	}
+	$image->percentages = $image->grid_square->percent_land < 0 || !$image->grid_square->permit_geographs || !$image->grid_square->permit_photographs;
+	$image->no_photographs = !$image->grid_square->permit_photographs;
+	$image->no_geographs = !$image->grid_square->permit_geographs;
 	
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
 

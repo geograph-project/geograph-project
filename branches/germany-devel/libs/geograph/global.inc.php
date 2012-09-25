@@ -175,7 +175,7 @@ function geograph_autoload($class_name) {
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
 }
-spl_autoload_register(geograph_autoload);
+spl_autoload_register('geograph_autoload');
 
 //remember start time of script for logging
 if (isset($CONF['log_script_timing']))

@@ -752,6 +752,9 @@ class GeographMap
 			if ($this->type_or_user == -1 && $this->pixels_per_km >= 32) {
 				$this->type_or_user = 0;
 			}
+			if ($this->force_ri && !$this->multipleGrids($this->force_ri)) {
+				$this->force_ri = 0;
+			}
 		}
 	}
 
@@ -767,6 +770,7 @@ class GeographMap
 
 		$realtype = $this->type_or_user;
 		$realov = $this->overlay;
+		$realri = $this->force_ri;
 		$this->_simplifyParameters();
 		//always given dynamic url, that way cached HTML can 
 		//always get an image
@@ -779,6 +783,7 @@ class GeographMap
 
 		$this->type_or_user = $realtype;
 		$this->overlay = $realov;
+		$this->force_ri = $realri;
 
 		return $file;
 		
@@ -1922,7 +1927,47 @@ class GeographMap
 			
 		}
 	}
-	
+
+	/**
+	* Checks if several reference indices are shown on the tile (so can use standard tile otherwise)
+	* @access private
+	*/
+	function multipleGrids($ri=0)
+	{
+		if ($this->mercator)
+			return false;
+
+		$db=&$this->_getDB();
+
+		$left        = $this->map_x;
+		$bottom      = $this->map_y;
+		$right       = $left + floor($this->image_w/$this->pixels_per_km)-1;
+		$top         = $bottom + floor($this->image_h/$this->pixels_per_km)-1;
+		$leftPlus1   = $this->map_x+1;
+		$bottomPlus1 = $this->map_y+1;
+
+		if ($ri) {
+			$riwhere = "reference_index!=$ri";
+			$limit = 1;
+		} else {
+			$riwhere = "1";
+			$limit = 2;
+		}
+
+		$sql = "SELECT COUNT(DISTINCT(reference_index))
+			FROM gridprefix
+			WHERE $riwhere
+			AND origin_x <= $right
+			AND origin_y <= $top
+			AND origin_x+width  >= $leftPlus1
+			AND origin_y+height >= $bottomPlus1
+			AND landcount > 0";
+
+		# use Intersects(g1,g2)?
+
+		return intval($db->GetOne($sql)) >= $limit;
+	}
+
 	/**
 	* checks if specified user has any images on map, (so can use standard blank tile otherwise) 
 	* @access private
