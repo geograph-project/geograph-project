@@ -74,8 +74,17 @@ var gn = {
 					if (txt) {
 						a.title = '';
 						gn.addEvent(a,"mouseover",gn.showNoteText);
-						//gn.addEvent(a,"mouseout",gn.hideNoteText);
 						gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
+						txt.style.left='0px';
+						txt.style.top='0px';
+
+						txt.style.visibility='hidden';
+						txt.style.display = 'block';
+						txt.style.width='auto'; /* optimal width */
+						txt.style.width=(txt.clientWidth+4)+'px'; /* keep width fixed */
+						txt.style.display='none';
+						txt.style.visibility='visible';
+						txt.geoimg = img;
 					}
 				}
 			}
@@ -89,33 +98,25 @@ var gn = {
 		if(window.getComputedStyle) {
 			var paddingleft=window.getComputedStyle(img, null).getPropertyValue('padding-left');
 			var paddingtop=window.getComputedStyle(img, null).getPropertyValue('padding-top');
-			var borderleft=window.getComputedStyle(img, null).getPropertyValue('border-left-width');
-			var bordertop=window.getComputedStyle(img, null).getPropertyValue('border-top-width');
 		} else if (img.currentStyle) {
 			var paddingleft = img.currentStyle.paddingLeft;
 			var paddingtop = img.currentStyle.paddingTop;
-			var borderleft = img.currentStyle.borderLeftWidth;
-			var bordertop = img.currentStyle.borderTopWidth;
 		} else {
 			return [ 0, 0 ];
 		}
 		if (  paddingleft.substr(paddingleft.length-2) != 'px'
-		    ||paddingtop.substr(paddingtop.length-2) != 'px'
-		    ||borderleft.substr(borderleft.length-2) != 'px'
-		    ||bordertop.substr(bordertop.length-2) != 'px') {
+		    ||paddingtop.substr(paddingtop.length-2) != 'px') {
 			return [ 0, 0 ];
 		}
 		paddingleft=parseInt(paddingleft.substr(0,paddingleft.length-2));
 		paddingtop=parseInt(paddingtop.substr(0,paddingtop.length-2));
-		borderleft=parseInt(borderleft.substr(0,borderleft.length-2));
-		bordertop=parseInt(bordertop.substr(0,bordertop.length-2));
-		return [ paddingleft+borderleft, paddingtop+bordertop ];
+		return [ paddingleft, paddingtop ];
 	},
 
 	__getParent: function (el, pTagName) {
 		if (el == null)
 			return null;
-		else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())	// Gecko bug, supposed to be uppercase
+		else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())
 			return el;
 		else
 			return gn.__getParent(el.parentNode, pTagName);
@@ -179,17 +180,63 @@ var gn = {
 		/*if (current_note && txt.id == current_note.id)
 			return;*/
 		if (current_note) gn.hideNoteText();
+		current_note = txt;
+		txt.style.visibility = 'hidden';
+		txt.style.display = 'block';
+		var tw = txt.clientWidth;
+		var th = txt.clientHeight;
+		var dw = txt.parentNode.clientWidth;
+		var dh = txt.parentNode.clientHeight;
+		var iw = txt.geoimg.clientWidth;
+		var ih = txt.geoimg.clientHeight;
 		var mpos = gn.__getMousePosition(e); // TODO compare with mapping1.js
 		var epos = gn.__getElePosition(lnk.parentNode);
-		var x = mpos[0]-epos[0]-5; //FIXME move to left when outside visible range
-		var y = mpos[1]-epos[1]-5; //FIXME move to top when outside visible range
-		x += lnk.parentNode.scrollLeft; //FIXME portable?
-		y += lnk.parentNode.scrollTop;
+		var sx = lnk.parentNode.scrollLeft; //FIXME portable?
+		var sy = lnk.parentNode.scrollTop;  //FIXME portable?
+		var lnkx = parseInt(lnk.style.left.substr(0,lnk.style.left.length-2));
+		var lnky = parseInt(lnk.style.top.substr(0,lnk.style.top.length-2));
+		var lnkxctr = lnkx + lnk.clientWidth/2;
+		var lnkyctr = lnky + lnk.clientHeight/2;
+		var x = mpos[0]-epos[0] + sx;
+		var y = mpos[1]-epos[1] + sy;
+
+		/* x,y = mouse pointer */
+		/* positioning txt:
+		   - txt must contain x,y.
+		   - No part of txt should be outside the visible part of the image.
+		   - txt should not cover too much of the note box (would be
+		     bad for overlapping note boxes). This can be done by aligning txt
+		     at the side of the note where the mouse pointer is located.
+		*/
+
+		if (x < lnkxctr) {
+			x -= tw - 5;
+		} else {
+			x -= 5;
+		}
+
+		if (y < lnkyctr) {
+			y -= th - 5;
+		} else {
+			y -= 5;
+		}
+
+		if (x+tw >= dw + sx) {
+			x = dw - tw - 1 + sx;
+		}
+		if (x < sx) {
+			x = sx;
+		}
+		if (y+th >= ih) {
+			y = ih - th - 1;
+		}
+		if (y < 0) {
+			y = 0;
+		}
 		txt.style.left = x+'px';
 		txt.style.top = y+'px';
 
-		current_note = txt;
-		current_note.style.display = 'block';
+		txt.style.visibility = 'visible';
 	},
 
 	showBoxes: function(e) {
@@ -215,7 +262,7 @@ var gn = {
 		}
 		var x = event.clientX;
 		var y = event.clientY;
-		if (document.documentElement) { //FIXME?
+		if (document.documentElement) { //FIXME test IE
 			x += document.documentElement.scrollLeft + document.body.scrollLeft;
 			y += document.documentElement.scrollTop + document.body.scrollTop;
 		} else {
