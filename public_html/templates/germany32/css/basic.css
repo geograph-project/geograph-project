@@ -638,7 +638,8 @@ div.geonote {
 	color: white;
 	font-size: 13px;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	width: 25em;
+	width: 25em; /* remove? */
+	max-width: 25em;
 	font-weight: bold;
 	/*background: url(/images/ntbg.png);*/
 	/*opacity: 0.3;
