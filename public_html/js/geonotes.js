@@ -17,7 +17,8 @@
  * handling.
  * If also an element "notetextNNNN" exists (might be a div with class geonote
  * containing a p element), this script tries to show that element instead of
- * the usual tool tip.
+ * the usual tool tip. While displaying the note, the class of noteboxNNNN will
+ * be changed by prepending "cur".
  */
 
 var gn = {
@@ -64,6 +65,7 @@ var gn = {
 						a.style.top = top+'px';
 					}
 					img.boxes[img.boxes.length] = a;
+					a.geoimg = img;
 
 					gn.addEvent(a,"mouseover",
 						function() {
@@ -73,20 +75,21 @@ var gn = {
 					var txt = document.getElementById('notetext'+noteid);
 					if (txt) {
 						a.title = '';
-						gn.addEvent(a,"mouseover",gn.showNoteText);
-						//gn.addEvent(a,"mouseout",gn.hideNoteText);
-						gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
 						txt.style.left='0px';
 						txt.style.top='0px';
 
 						txt.style.visibility='hidden';
 						txt.style.display = 'block';
-						txt.style.maxWidth='25em'; /* FIXME remove (css!) */
 						txt.style.width='auto'; /* optimal width */
-						txt.style.width=(txt.clientWidth+4)+'px'; /* keep width fixed (FIXME needed?) */
+						txt.style.width=(txt.clientWidth+4)+'px'; /* keep width fixed */
 						txt.style.display='none';
 						txt.style.visibility='visible';
 						txt.geoimg = img;
+						txt.geobox = a;
+						a.geonote = txt;
+						a.geoclass = a.className;
+						gn.addEvent(a,"mouseover",gn.showNoteText);
+						gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
 					}
 				}
 			}
@@ -100,33 +103,25 @@ var gn = {
 		if(window.getComputedStyle) {
 			var paddingleft=window.getComputedStyle(img, null).getPropertyValue('padding-left');
 			var paddingtop=window.getComputedStyle(img, null).getPropertyValue('padding-top');
-			//var borderleft=window.getComputedStyle(img, null).getPropertyValue('border-left-width');
-			//var bordertop=window.getComputedStyle(img, null).getPropertyValue('border-top-width');
 		} else if (img.currentStyle) {
 			var paddingleft = img.currentStyle.paddingLeft;
 			var paddingtop = img.currentStyle.paddingTop;
-			//var borderleft = img.currentStyle.borderLeftWidth;
-			//var bordertop = img.currentStyle.borderTopWidth;
 		} else {
 			return [ 0, 0 ];
 		}
 		if (  paddingleft.substr(paddingleft.length-2) != 'px'
-		    ||paddingtop.substr(paddingtop.length-2) != 'px'
-		    /*||borderleft.substr(borderleft.length-2) != 'px'
-		    ||bordertop.substr(bordertop.length-2) != 'px'*/) {
+		    ||paddingtop.substr(paddingtop.length-2) != 'px') {
 			return [ 0, 0 ];
 		}
 		paddingleft=parseInt(paddingleft.substr(0,paddingleft.length-2));
 		paddingtop=parseInt(paddingtop.substr(0,paddingtop.length-2));
-		/*borderleft=parseInt(borderleft.substr(0,borderleft.length-2));
-		bordertop=parseInt(bordertop.substr(0,bordertop.length-2));*/
-		return [ paddingleft/*+borderleft*/, paddingtop/*+bordertop*/ ];
+		return [ paddingleft, paddingtop ];
 	},
 
 	__getParent: function (el, pTagName) {
 		if (el == null)
 			return null;
-		else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())	// Gecko bug, supposed to be uppercase
+		else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())
 			return el;
 		else
 			return gn.__getParent(el.parentNode, pTagName);
@@ -166,6 +161,7 @@ var gn = {
 
 	hideNoteText: function() {
 		if (current_note) {
+			current_note.geobox.className = current_note.geobox.geoclass;
 			current_note.style.display = 'none';
 			current_note = null;
 		}
@@ -246,6 +242,7 @@ var gn = {
 		txt.style.left = x+'px';
 		txt.style.top = y+'px';
 
+		txt.geobox.className = 'cur' + txt.geobox.geoclass;
 		txt.style.visibility = 'visible';
 	},
 
@@ -272,7 +269,7 @@ var gn = {
 		}
 		var x = event.clientX;
 		var y = event.clientY;
-		if (document.documentElement) { //FIXME?
+		if (document.documentElement) { //FIXME test IE
 			x += document.documentElement.scrollLeft + document.body.scrollLeft;
 			y += document.documentElement.scrollTop + document.body.scrollTop;
 		} else {
