@@ -152,7 +152,8 @@ class GridImageNote
 	*/
 	function html()
 	{
-		$comment = preg_replace('/\n/','<br />', $this->comment);
+		$comment = htmlentities2($this->comment);
+		$comment = preg_replace('/\n/','<br />', $comment);
 		$comment = preg_replace('/\[\[(\d+)\]\]/','<a href="/photo/\\1">[[\\1]]</a>', $comment); # TODO add image title
 		$comment = preg_replace('/\[\[([a-zA-Z]{1,3}\d+)\]\]/','<a href="/gridref/\\1">[[\\1]]</a>', $comment);
 		# TODO http://XXXX

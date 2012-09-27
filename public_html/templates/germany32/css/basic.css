@@ -622,12 +622,27 @@ a.notebox span {
 	background: white;
 	width: 100%;
 	height: 100%;
-	opacity: 0.3;
-	-moz-opacity: 0.3;
-	filter:alpha(opacity=30);
+	opacity: 0.1;
+	-moz-opacity: 0.1;
+	filter:alpha(opacity=10);
 }
 a.notebox:hover {
 	border-color: yellow;
+}
+a.curnotebox {
+	position: absolute;
+	border: 2px groove yellow;
+	padding: 0;
+	display: none;
+}
+a.curnotebox span {
+	display: block;
+	background: white;
+	width: 100%;
+	height: 100%;
+	opacity: 0.2;
+	-moz-opacity: 0.2;
+	filter:alpha(opacity=20);
 }
 div.geonote {
 	display: none;
