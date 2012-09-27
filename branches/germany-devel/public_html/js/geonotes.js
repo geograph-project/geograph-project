@@ -17,7 +17,8 @@
  * handling.
  * If also an element "notetextNNNN" exists (might be a div with class geonote
  * containing a p element), this script tries to show that element instead of
- * the usual tool tip.
+ * the usual tool tip. While displaying the note, the class of noteboxNNNN will
+ * be changed by prepending "cur".
  */
 
 var gn = {
@@ -64,6 +65,7 @@ var gn = {
 						a.style.top = top+'px';
 					}
 					img.boxes[img.boxes.length] = a;
+					a.geoimg = img;
 
 					gn.addEvent(a,"mouseover",
 						function() {
@@ -73,8 +75,6 @@ var gn = {
 					var txt = document.getElementById('notetext'+noteid);
 					if (txt) {
 						a.title = '';
-						gn.addEvent(a,"mouseover",gn.showNoteText);
-						gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
 						txt.style.left='0px';
 						txt.style.top='0px';
 
@@ -85,6 +85,11 @@ var gn = {
 						txt.style.display='none';
 						txt.style.visibility='visible';
 						txt.geoimg = img;
+						txt.geobox = a;
+						a.geonote = txt;
+						a.geoclass = a.className;
+						gn.addEvent(a,"mouseover",gn.showNoteText);
+						gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
 					}
 				}
 			}
@@ -156,6 +161,7 @@ var gn = {
 
 	hideNoteText: function() {
 		if (current_note) {
+			current_note.geobox.className = current_note.geobox.geoclass;
 			current_note.style.display = 'none';
 			current_note = null;
 		}
@@ -236,6 +242,7 @@ var gn = {
 		txt.style.left = x+'px';
 		txt.style.top = y+'px';
 
+		txt.geobox.className = 'cur' + txt.geobox.geoclass;
 		txt.style.visibility = 'visible';
 	},
 
