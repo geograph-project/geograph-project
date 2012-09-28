@@ -275,6 +275,8 @@ function _call_cors_api(endpoint,data,uniquename,success) {
 //
 // patch MousePosition control to return a UK or Irish Grid Ref
 //
+//   by Bill Chadwick
+//
 ///////////////////////////////////////////////////////////////
 
 /**
