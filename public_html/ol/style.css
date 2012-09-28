@@ -1,0 +1,43 @@
+
+	html,body,#map {
+		height: 100%;
+		width: 100%;
+		border: 0px;
+		margin: 0px;
+		padding: 0px;
+	}
+
+    .olControlAttribution {
+       bottom: 0px; background-color: rgb(245, 245, 245);
+    }
+    
+    .olControlOsLogo {
+       left: 0px; bottom: 10px;
+    }
+    
+    .olControlLayerSwitcher 
+    {
+       right: 0px; top: 55px;
+    }
+    
+    div.olControlMousePosition {
+        height: 45px;
+        right: 10px;
+        top: 3px;
+        font-size:small;
+        font-family:monospace;
+        background-color: white;
+        padding: 3px;
+      
+    }
+
+#message {
+  position:fixed;
+  top:0px;
+  left:100px;
+  z-index:999;
+  font-family:verdana;
+    background-color:rgba(200,200,200,0.3);
+  font-size:0.7em;
+  padding:2px;
+}
