@@ -186,11 +186,11 @@ function mapEvent(event) {
             }
         });
 
-        $("#message").html(loaded+" of "+data.total_found+" <span>in "+data.time+" seconds</span>");
+        $("#map_message").html(loaded+" of "+data.total_found+" <span>in "+data.time+" seconds</span>");
 
      } else {
         if (data.time) {
-           $("#message").html("No results found, in "+data.time+" seconds");
+           $("#map_message").html("No results found, in "+data.time+" seconds");
            $.each(images,function(id,value) {
               //if (images[id].old == true) {
                 layers['markers'].removeMarker(images[id]);
@@ -199,7 +199,7 @@ function mapEvent(event) {
            });
         }
         else if (data.error)
-           $("#message").html(data.error.replace(/^index [\w,]+:/,''));     
+           $("#map_message").html(data.error.replace(/^index [\w,]+:/,''));     
      }
     }
   );
