@@ -1,12 +1,4 @@
 
-	html,body,#map {
-		height: 100%;
-		width: 100%;
-		border: 0px;
-		margin: 0px;
-		padding: 0px;
-	}
-
     .olControlAttribution {
        bottom: 0px; background-color: rgb(245, 245, 245);
     }
@@ -31,7 +23,7 @@
       
     }
 
-#message {
+#map_message {
   position:fixed;
   top:0px;
   left:100px;
