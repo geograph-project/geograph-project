@@ -21,6 +21,12 @@
 {else}
 	<p><input type="submit" value="Just give me a keywords search for '{$criteria->searchq|escape:"html"}'" onclick="return submitForm('dotext4')"/></p>
 {/if}
+
+	{if $pos_tag}
+
+		<p><input type="submit" value="Show me images tagged with [{$criteria->searchq|escape:"html"}]" onclick="return submitForm('dotag1')"/></p>
+	{/if}
+
 	
 <h3 style="border-bottom:1px solid silver">Place search</h3>
 
@@ -71,6 +77,11 @@
 
 <input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext4">
 <label for="dotext4">Perform a word search for '{$criteria->searchq|escape:"html"}'</i></label> <br/>	
+
+{if $pos_tag}
+<input type="radio" name="{$multipleon}" value="text:[{$criteria->searchq|escape:"html"}]" id="dotag1">
+<label for="dotag1">Perform a search for images tagged with [{$criteria->searchq|escape:"html"}]</label> <br/>	
+{/if}
 
 <p><input type="submit" name="refine" value="Refine further"> <input type="submit" value="Find &gt;" style="font-size:1.1em"></p>
 
