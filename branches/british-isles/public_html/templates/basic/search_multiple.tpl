@@ -3,31 +3,26 @@
 
 <h2>Please refine your search</h2>
 {dynamic}
-<p>The meaning of your search for images<i>{$searchdesc|escape:"html"}</i>, is not totally clear, please find below a few alternatives.</p>
+<p>From your search for images<i>{$searchdesc|escape:"html"}</i>, we found a few possible alternatives. Please click a button below to select one.</p>
 <form action="{$script_name}" method="post" name="theForm">
 <input type="hidden" name="form" value="multiple"/>
 
-{if strlen($criteria->searchq) > 20 || count($criteria->matches) > 10} 
-	<div style="float:right;position:relative">
-		 <input type="submit" value="Find &gt;" style="font-size:1.1em">
-	</div>
+{if strlen($criteria->searchq) > 20 || count($criteria->matches) > 10}
+
 	{if $post.q && $post.location}
-		<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$post.location|escape:"html"}" id="dotext1">
-		<label for="dotext1">Instead perform a <input type="submit" value="word search for '{$post.q|escape:"html"} {$post.location|escape:"html"}'" onclick="return submitForm('dotext1');"></label> <br/>
+		<button type="submit" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$post.location|escape:"html"}">Keyword search for '{$post.q|escape:"html"} {$post.location|escape:"html"}'</button>
 	{else}
-		<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext2">
-		<label for="dotext2">Instead perform a <input type="submit" value="word search for '{$criteria->searchq|escape:"html"}'" onclick="return submitForm('dotext2');"></i></label><br/>
+		<button type="submit" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}">Images matching <b>'{$criteria->searchq|escape:"html"}' keyword(s)</b></button>
 	{/if}
-{else}
-	<p><input type="submit" value="Just give me a keywords search for '{$criteria->searchq|escape:"html"}'" onclick="return submitForm('dotext4')"/></p>
+{elseif count($criteria->matches) > 4}
+	<p><button type="submit" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}">Keywords search for '<b>{$criteria->searchq|escape:"html"}</b>'</button>
 {/if}
 
 	{if $pos_tag}
 
-		<p><input type="submit" value="Show me images tagged with [{$criteria->searchq|escape:"html"}]" onclick="return submitForm('dotag1')"/></p>
+		<button type="submit" name="{$multipleon}" value="text:[{$criteria->searchq|escape:"html"}]">Images <b>tagged with [{$criteria->searchq|escape:"html"}]</b></button>
 	{/if}
 
-	
 <h3 style="border-bottom:1px solid silver">Place search</h3>
 
 <p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq|escape:"html"}': {if count($criteria->matches) > 0}<br/><small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>, or click a grid reference to go directly to that square)</small>{/if}</p>
@@ -36,64 +31,63 @@
 {foreach key=name item=value from=$post}
 	{if $value && $name != 'placename' && $name != 'go'}
 		<input type="hidden" name="{$name}" value="{$value|escape:'html'}">
-	{/if}		
+	{/if}
 {/foreach}
 <input type="hidden" name="old-{$multipleon}" value="{$criteria->searchq|escape:'html'}">
 {foreach from=$criteria->matches item=match}
-	<input type="radio" name="{$multipleon}" value="{$match.id}" id="match{$match.id}">
 	<tt><a href="/gridref/{$match.gridref}">{$match.gridref}</a></tt>
-	<label for="match{$match.id}"{if $match.hist_county} title="Historic County: {$match.hist_county}"{/if}><b>{$match.full_name}</b><small><i>{if $match.adm1_name}, {$match.adm1_name}{/if}, {$references[$match.reference_index]}</i>
+	<button type="submit" name="{$multipleon}" value="{$match.id}" id="match{$match.id}"{if $match.hist_county} title="Historic County: {$match.hist_county}"{/if}><b>{$match.full_name}</b></button><small><i>{if $match.adm1_name}, {$match.adm1_name}{/if}, {$references[$match.reference_index]}</i>
 	<small>[{$match.dsg_name}]</small></small></label> <br/>
+{foreachelse}
+	<i>none</i>
 {/foreach}
 
 {if !$criteria->ismore}
 	<br/>
-	<input type="radio" name="{$multipleon}" value="{$criteria->searchq|escape:"html"}?" id="domore">
-	<label for="domore"><b>Place looking for not listed above? Try a wider search.</b></label> <br/>		
+	Place looking for not listed above? <button type="submit" name="{$multipleon}" value="{$criteria->searchq|escape:"html"}?"><b>Try a wider place search</b></button> <br/>
 {/if}
 
 <h3 style="border-bottom:1px solid silver">Other alternatives</h3>
 
 {if $pos_realname}
-	<input type="radio" name="{$multipleon}" value="user:{$pos_user_id}" id="douser">
-	<label for="douser">Perform a search for pictures taken by '<a href="/profile/{$pos_user_id}" title="profile for {$pos_realname}">{$pos_realname}</a>' {if $pos_nickname}(nickname: '{$pos_nickname}'){/if}</label> <br/>		
+	<button type="submit" name="{$multipleon}" value="user:{$pos_user_id}">Pictures taken <b>by {$pos_realname|escape:"html"}</b></button> {if $pos_nickname}(nickname: <b>{$pos_nickname|escape:"html"}</b>){/if} <a href="/profile/{$pos_user_id}" title="profile for {$pos_realname|escape:"html"}">Profile</a> <br/>
 	<br/>
 {/if}
 
 {if preg_match('/near\s+/',$post.q) && !preg_match('/near\s+\(anywhere\)/',$post.q)}
-	<input type="radio" name="{$multipleon}" value="text:{$post.q|replace:'near ':'AND '|escape:"html"}" id="dotext3">
-	<label for="dotext3">Perform a word search for '{$post.q|replace:'near ':'AND '|escape:"html"}'</label> <br/>
+	<button type="submit" name="{$multipleon}" value="text:{$post.q|replace:'near ':' '|escape:"html"}">Keyword search for '{$post.q|replace:'near ':' '|escape:"html"}'</button> <br/>
 {elseif $post.q && $post.q != $criteria->searchq && preg_match('/near\s+$/',$post.q)}
-	<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext3">
-	<label for="dotext3">Perform a word search for '{$post.q|escape:"html"} AND {$criteria->searchq|escape:"html"}'</label> <br/>
+	<button type="submit" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$criteria->searchq|escape:"html"}">Keyword search for '{$post.q|escape:"html"} {$criteria->searchq|escape:"html"}'</button> <br/>
 {elseif $post.searchtext && $post.searchtext != $criteria->searchq}
-	<input type="radio" name="{$multipleon}" value="text:{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}" id="dotext3">
-	<label for="dotext3">Perform a word search for '{$post.searchtext|escape:"html"} AND {$criteria->searchq|escape:"html"}'</label> <br/>
-{elseif $post.q && $post.location}
-	<input type="radio" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$post.location|escape:"html"}" id="dotext3">
-	<label for="dotext3">Perform a word search for '{$post.q|escape:"html"} AND {$post.location|escape:"html"}'</label> <br/>
+	1<button type="submit" name="{$multipleon}" value="text:{$post.searchtext|escape:"html"} {$criteria->searchq|escape:"html"}">Keyword search for '{$post.searchtext|escape:"html"} {$criteria->searchq|escape:"html"}'</button> <br/>
+{elseif $post.q && $post.location && $post.location != '(anywhere)'}
+	2<button type="submit" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$post.location|escape:"html"}">Keyword search for '{$post.q|escape:"html"} {$post.location|escape:"html"}'</button> <br/>
 {/if}
 
 
-<input type="radio" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}" id="dotext4">
-<label for="dotext4">Perform a word search for '{$criteria->searchq|escape:"html"}'</i></label> <br/>	
+<button type="submit" name="{$multipleon}" value="text:{$criteria->searchq|escape:"html"}">Images matching '<b>{$criteria->searchq|escape:"html"}</b>' keyword(s)</button><br/>
 
 {if $pos_tag}
-<input type="radio" name="{$multipleon}" value="text:[{$criteria->searchq|escape:"html"}]" id="dotag1">
-<label for="dotag1">Perform a search for images tagged with [{$criteria->searchq|escape:"html"}]</label> <br/>	
+	<button type="submit" name="{$multipleon}" value="text:[{$criteria->searchq|escape:"html"}]">Images tagged <b>with [{$criteria->searchq|escape:"html"}]</b></button><br/>
 {/if}
 
-<p><input type="submit" name="refine" value="Refine further"> <input type="submit" value="Find &gt;" style="font-size:1.1em"></p>
 
-</form>	
+<h3 style="border-bottom:1px solid silver"></h3>
 
-{if $suggestions} 
+<p>if none of the above fit, <input type="submit" name="refine" value="Refine further"> (goes to advanced search form)</p>
+
+</form>
+
+<br/><br/>
+
+{if $suggestions}
 	<div><b>Did you mean:</b>
 	<ul>
 	{foreach from=$suggestions item=row}
 		<li><b><a href="/search.php?q={$row.query|escape:'url'}+near+{$row.gr}">{$row.query} <i>near</i> {$row.name}</a></b>? <small>({$row.localities})</small></li>
 	{/foreach}
 	</ul></div>
+	<br/><br/>
 {/if}
 {/dynamic}
 
