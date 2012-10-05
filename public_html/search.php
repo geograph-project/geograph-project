@@ -23,13 +23,13 @@
 
 require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
-init_session();
 
 if (!empty($_GET['debug'])) {
 	ini_set("display_errors",true);
 }
 
 if (!empty($_GET['style'])) {
+	init_session();
 	$USER->getStyle();
 	if (!empty($_SERVER['QUERY_STRING'])) {
 		$query = preg_replace('/&style=(\w+)/','&r='.rand(),$_SERVER['QUERY_STRING']);
@@ -40,20 +40,16 @@ if (!empty($_GET['style'])) {
 	}
 	header("Location: /search.php");
 	exit;
+} else {
+	init_session_or_cache(3600, 900); //cache publically, and privately
 }
 
 
 #if (count($_GET) === 1) {
 	if (!empty($_GET['tag'])) {
-		if (strpos($_GET['tag'],':') !== false) {
-			$_GET['text'] = 'tags:"'.str_replace(':',' ',trim($_GET['tag'])).'"';
-		} elseif (strpos($_GET['tag'],' ') !== false) {
-			$_GET['text'] = 'tags:"'.trim($_GET['tag']).'"';
-		} else {
-			$_GET['text'] = 'tags:'.trim($_GET['tag']);
-		}
+		$_GET['text'] = '['.trim($_GET['tag']).']';
 	} elseif (!empty($_GET['top'])) {
-		$_GET['text'] = 'tags:"top '.trim($_GET['top']).'"';
+		$_GET['text'] = '[top:'.trim($_GET['top']).']';
 	}
 #}
 
@@ -77,7 +73,7 @@ $displayclasses =  array(
 			'thumbsmore' => 'thumbnails + links',
 			'excerpt' => 'highlighted keywords',
 			'bigger' => 'bigger thumbnails',
-			'gmap' => 'on a map',
+			'map' => 'on a map',
 			'slide' => 'slideshow',
 			'slidebig' => 'slideshow - full page',
 			'reveal' => 'slideshow - map imagine',
@@ -241,7 +237,11 @@ if (isset($_GET['fav']) && $i) {
 		$data['orderby'] = 'seq_id';
 	}
 
-	$data['description'] = (($USER->registered)?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y. %H:%M");
+	if (!empty($_GET['markedImages'])) {
+		$data['description'] = "Imported list at ".strftime("%A, %e %B, %Y. %H:%M");;
+	} else {
+		$data['description'] = (($USER->registered)?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y. %H:%M");
+	}
 	$data['searchq'] = "1"; //temporally
 
 	if (!$error) {
@@ -584,12 +584,31 @@ if (isset($_GET['fav']) && $i) {
 		$_GET['searchtext'] = implode(' ',$_GET['searchtext']);
 	}
 	if (!empty($_GET['gridsquare']) && isset($_GET['eastings']) && isset($_GET['centin'])) {
-	
 		$_GET['gridref'] = sprintf("%s%02d%1d%02d%1d",$_GET['gridsquare'], $_GET['eastings'], $_GET['centie'], $_GET['northings'],$_GET['centin']);
 		unset($_GET['gridsquare']);
 	}
-	
-	
+
+	if (!empty($_GET['submit']) && $_GET['submit'] == 'Browser') {
+		$bits = array('');
+		if (!empty($_GET['q'])) {
+			$bits[] = "q=".urlencode($_GET['q']);
+		}
+		if (!empty($_GET['location'])) {
+			if ($_GET['distance'] === '1') {//TODO check really is a 4fig GR!
+				$bits[] = "grid_reference+%22".urlencode($_GET['location'])."%22";
+			} else {
+				http://www.geograph.org.uk/browser/#!/loc=TQ5050/dist=2000
+				$bits[] = "loc=".urlencode($_GET['location']);
+				if (!empty($_GET['distance']))
+					$bits[] = "dist=".($_GET['distance']*1000);
+			}
+		}
+		$url = "/browser/#!".implode('/',$bits);
+		header("Location: $url");
+		exit;
+	}
+
+
 	$engine = new SearchEngineBuilder('#');
 	if (isset($_GET['rss'])) {
 		$engine->page = "syndicator.php";
@@ -695,6 +714,8 @@ if (isset($_GET['fav']) && $i) {
 	} else {
 		$q=trim($_GET['q']);
 	}
+
+	$q = preg_replace('/\b(\w{1,2}\s?\d{2,5}\s?\d{2,5}) E: \d{2,7}\.?\d* N: \d{2,7}\.?\d*\b/','$1',$q);
 	
 	if (!isset($_GET['location']) && !empty($CONF['metacarta_auth']) && strpos($q,'near ') === FALSE && substr_count($q,' ') >= 1 && !preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$q)) {
 		$urlHandle = connectToURL('ondemand.metacarta.com',80,"/webservices/QueryParser/JSON/basic?version=1.0.0&bbox=-14.1707,48.9235,6.9506,61.7519&query=".rawurlencode($q),$CONF['metacarta_auth'],6);
@@ -730,8 +751,37 @@ if (isset($_GET['fav']) && $i) {
 		$engine->page = "kml.php";
 	}
  	
- 	if (isset($_GET['form']) && $_GET['form'] == 'simple') {
+ 	if ((isset($_GET['form']) && $_GET['form'] == 'simple') || (isset($_GET['BBOX']) && empty($_GET['BBOX'])) ) {
  		$autoredirect = 'simple';
+
+		if ($USER->registered) {
+			customNoCacheHeader();
+			$option = $USER->getPreference('search_engine','default',true);
+			if ($option && $option != 'default') {
+				header("HTTP/1.0 307 Temporary Redirect");
+                                header("Status: 307 Temporary Redirect");
+
+				$q2 = urlencode($q);
+				switch($option) {
+					case 'browser': $bits = preg_split('/(?<![":])\s*near\s+/',$q);
+						if (count($bits) == 2) {
+							if ($bits[1] == '(anywhere)') $bits[1] = '';
+							header("Location: /browser/#!/q=".urlencode($bits[0])."/loc=".urlencode($bits[1]));
+						} else {
+							header("Location: /browser/#!/q=$q2");
+						} break;
+					case 'multi2.php': header("Location: /finder/multi2.php?q=$q2"); break;
+					case 'multi.php': header("Location: /finder/multi.php?q=$q2"); break;
+					case 'full-text.php': header("Location: /full-text.php?q=$q2"); break;
+					case 'bytag.php': header("Location: /finder/bytag.php?q=$q2"); break;
+					case 'sqim.php': header("Location: /finder/sqim.php?q=$q2"); break;
+					case 'images.google.co.uk': header("Location: http://images.google.co.uk/images?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search"); break;
+					case 'www.google.co.uk': header("Location: http://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search"); break;
+					case 'www.google.co.uk/tbs': header("Location: http://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search&tbs=img:1"); break;
+				}
+				exit;
+			}
+		}
 
 		if (preg_match('/^[\w\.-]+@[\w+\.-]+\.\w+$/',$q) && $USER->user_id == 0) {
 			header("Location: /login.php?email=$q");
@@ -781,6 +831,14 @@ if (isset($_GET['fav']) && $i) {
 						$smarty->assign('pos_nickname', $usercriteria->nickname);
 				}
 			}
+
+if (!empty($engine->criteria->searchq)) {
+	if (empty($db))
+		$db=GeographDatabaseConnection(true);
+	if ($tag = $db->getRow("SELECT * FROM tag_public WHERE tag = ".$db->Quote($engine->criteria->searchq)." LIMIT 1")) {
+		$smarty->assign('pos_tag', $tag);
+	}
+}
 
 			$smarty->assign_by_ref('criteria', $engine->criteria);
 			$smarty->assign_by_ref('post', $_GET);
@@ -1197,7 +1255,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 					unset($engine->results[$idx]);
 				}
 			}
-		} elseif ($display == 'gmap' || $display == 'gmap_embed' || $display == 'landing') {
+		} elseif ($display == 'map' || $display == 'gmap' || $display == 'gmap_embed' || $display == 'landing') {
 			$markers = array();
 			$conv = new Conversions();
 			
@@ -1282,7 +1340,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		}
 	}
 
-	customExpiresHeader(3600,false,true);
+	if (!empty($_SERVER['HTTP_COOKIE']))
+		customExpiresHeader(3600,false,true);
 	$smarty->display($template, $cacheid);
 
 
@@ -1294,7 +1353,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	// -------------------------------
 
 	$template = 'search.tpl';
-	if (!empty($_GET['new'])) {
+	if (!empty($_GET['new']) || !empty($_SESSION['new_search'])) {
 		$template = 'search-new.tpl';
 	}
 
@@ -1324,8 +1383,11 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		//list of a few tags
 
 		//TODO this is very slow, and inefficient, must be better way!
-	
-		$arr = $db->getAssoc("SELECT if(prefix!='',concat(prefix,':',tag),tag) as tag,CONCAT(if(prefix!='',concat(prefix,':',tag),tag),' [',COUNT(*),']') `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY RAND() LIMIT 5");
+		#$arr = $db->getAssoc("SELECT if(prefix!='',concat(prefix,':',tag),tag) as tag,CONCAT(if(prefix!='',concat(prefix,':',tag),tag),' [',COUNT(*),']') `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY RAND() LIMIT 5");
+                
+		//oneway...
+		$rnd = rand(1,1000)/1000;
+		$arr = $db->getAssoc("SELECT tag,`count` FROM tag_random WHERE rnd > $rnd and count >= 50 ORDER BY rnd LIMIT 5");
 		$smarty->assign_by_ref('taglist',$arr);
 
 
@@ -1390,7 +1452,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		new RecentImageList($smarty);
 	}
 
-	customExpiresHeader(360,false,true);
+	if (!empty($_SERVER['HTTP_COOKIE']))
+                customExpiresHeader(360,false,true);
 	$smarty->display($template);
 }
 
@@ -1511,8 +1574,9 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		if ($is_cachable && $smarty->caching) {
 			$smarty->caching = 2; // lifetime is per cache
 			$smarty->cache_lifetime = 3600*3; //3hr cache
-			
-			customExpiresHeader($smarty->cache_lifetime,false,true);
+
+			if (!empty($_SERVER['HTTP_COOKIE']))
+				customExpiresHeader($smarty->cache_lifetime,false,true);
 		} else {
 			$smarty->caching = 0; // NO caching
 		}

@@ -21,19 +21,19 @@
 
 			Display:
 			{if $engine->fullText}
-				<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=excerpt" class="tab{if $engine->criteria->displayclass == 'excerpt'}Selected{assign var="disfound" value="1"}{/if}">Keywords</a>
+				<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=excerpt" class="tab{if $engine->display == 'excerpt'}Selected{assign var="disfound" value="1"}{/if}">Keywords</a>
 			{/if}
-			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=full" class="tab{if $engine->criteria->displayclass == 'full'}Selected{assign var="disfound" value="1"}{/if}">Details</a>
-			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=thumbs" class="tab{if $engine->criteria->displayclass == 'thumbs'}Selected{assign var="disfound" value="1"}{/if}">Thumbnails</a>
-			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=gmap" class="tab{if $engine->criteria->displayclass == 'gmap'}Selected{assign var="disfound" value="1"}{/if}">Map</a>
-			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=slide" class="tab{if $engine->criteria->displayclass == 'slide'}Selected{assign var="disfound" value="1"}{/if}">Slideshow</a>
+			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=full" class="tab{if $engine->display == 'full'}Selected{assign var="disfound" value="1"}{/if}">Details</a>
+			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=thumbs" class="tab{if $engine->display == 'thumbs'}Selected{assign var="disfound" value="1"}{/if}">Thumbnails</a>
+			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=map" class="tab{if $engine->display == 'map'}Selected{assign var="disfound" value="1"}{/if}">Map</a>
+			<a href="/search.php?i={$i}&amp;page={$engine->currentPage}&amp;displayclass=slide" class="tab{if $engine->display == 'slide'}Selected{assign var="disfound" value="1"}{/if}">Slideshow</a>
 			<span class="tab">
 				<select name="displayclass" size="1" onchange="this.form.submit()" style="margin:0">
 					{if $disfound}
-						<option value="{$engine->criteria->displayclass}">more...</option>
+						<option value="{$engine->display}">more...</option>
 						{html_options options=$displayclasses}
 					{else}
-						{html_options options=$displayclasses selected=$engine->criteria->displayclass}
+						{html_options options=$displayclasses selected=$engine->display}
 					{/if}
 				</select>
 				{if $legacy}<input type="hidden" name="legacy" value="1"/>{/if}
@@ -108,7 +108,7 @@
 	<br/>( Page {$engine->pagesString()}) {if $engine->criteria->searchclass != 'Special'}[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]{/if}
 {/if}
 
-	{if $engine->fullText && $engine->criteria->searchclass != 'Special' && ($engine->resultCount || !($engine->criteria->displayclass=='full' || $engine->criteria->displayclass=='thumbs' || $engine->criteria->displayclass=='text'))}
+	{if $engine->fullText && $engine->criteria->searchclass != 'Special' && ($engine->resultCount || !($engine->display=='full' || $engine->display=='thumbs' || $engine->display=='text'))}
 		[<a href="javascript:void(show_tree(101));" id="hide101">quick refine</a>]</p>
 		<div class="interestBox" style="border:1px solid pink;display:none; " id="show101">
 			<form action="{$script_name}" method="get">
