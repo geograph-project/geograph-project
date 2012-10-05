@@ -16,7 +16,7 @@
 	<script src="/ol/OlEpsg29902Projection.js"></script>
         <script src="/ol/km-graticule.js"></script>
         <script src="/ol/osgb-layer.v7.js"></script>
-        <script src="/ol/geograph-openlayers.v10.js"></script>
+        <script src="/ol/geograph-openlayers.v11.js"></script>
 	
         <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
 
@@ -39,20 +39,25 @@ function loadMap() {
         bounds.extend(new OpenLayers.LonLat({$image->wgs84_long}, {$image->wgs84_lat}));
 {/foreach}{literal}
 
+
 	//we using wgs84 as input here... 
-	bounds = bounds.transform(new OpenLayers.Projection("EPSG:4326"),map.getProjection());
+	//bounds = bounds.transform(new OpenLayers.Projection("EPSG:4326"),map.getProjection());
 
-	map.zoomToExtent(bounds);
-
+	map.zoomToExtent(bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),map.getProjection()));
+	
 
 
     lonLat = bounds.getCenterLonLat();    
-    if (map.getProjection() != "EPSG:4326") {
-        lonLat.transform(map.getProjection(), "EPSG:4326");
-    }
+//    if (map.getProjection() != "EPSG:4326") {
+  //      lonLat.transform(map.getProjection(), "EPSG:4326");
+    //}
     if (OpenLayers.Projection.Irish.isValidLonLat(lonLat.lon, lonLat.lat)) {
         map.setBaseLayer(layers['google_physical']);
         //todo, disable the GB grid?
+
+	//we repeat this, because ireland might be out of GB grid extents. 
+        map.zoomToExtent(bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),map.getProjection()));
+
 
         controls = map.getControlsByClass("OpenLayers.Control.OSGraticule");
         for(q=0;q<controls.length;q++)
@@ -62,7 +67,7 @@ function loadMap() {
         //todo, diable the Irish Grid?
     }
 
-	
+
         var iconSize = new OpenLayers.Size(36, 36);
         var iconOffset = new OpenLayers.Pixel(-19, -19);
 	
@@ -72,7 +77,17 @@ function loadMap() {
 	images[{$image->gridimage_id}] = createMarker({$image->gridimage_id}, markerPoint, markerIcon, "{$image->title|escape:'javascript'}","{$image->realname|escape:'javascript'}");
 
 	layers['markers'].addMarker(images[{$image->gridimage_id}]);
-{/foreach}{literal}
+{/foreach}
+
+
+                {if $markers}
+                        {foreach from=$markers item=marker}
+                                var marker = new OpenLayers.Marker(new OpenLayers.LonLat({$marker.2}, {$marker.1}).transform("EPSG:4326", map.getProjection()) );
+				layers['markers'].addMarker(marker);
+                        {/foreach}
+                {/if}{literal}
+
+{literal}
 
 
 //this is the global layer, we dont need it here...
