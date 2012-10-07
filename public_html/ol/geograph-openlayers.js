@@ -23,61 +23,91 @@
  *
  */
 
-var map;
-var layers = {};
+var olmap = {
+	map: null,
+	layers: {},
+	images: {}
+};
+var tabletOrPhone = false;
 
 function loadMapInner() { //NOTE: does not center the map, the parent function will have to take care of that!
 
-    layers['os'] = new OpenLayers.Layer.OsOpenSpaceLayer({
-    OSAPIKey: "A493C3EB96133019E0405F0ACA6056E3", // Geograph's key key
-    OSKeysUrl: encodeURIComponent(window.location.href), // Geograph's URL (escaped) registered against the key
+    if ((navigator.userAgent.indexOf('Android') != -1) ||
+        (navigator.userAgent.indexOf('Opera Mobi') != -1) ||
+        (navigator.userAgent.indexOf('iPhone') != -1) ||
+        (navigator.userAgent.indexOf('iPod') != -1) ||
+        (navigator.userAgent.indexOf('iPad') != -1)) {
+        tabletOrPhone = true;
+    }
+
+    olmap.layers['os'] = new OpenLayers.Layer.OsOpenSpaceLayer({
+        OSAPIKey: "A493C3EB96133019E0405F0ACA6056E3", // Geograph's key key
+        OSKeysUrl: 'http://'+window.location.host+'/', // Geograph's URL (escaped) registered against the key
         layerName: "Ordnance Survey GB"
     });
+
+    if (tileserver_default) { // this is set by nls-api.js
+	// Define the XYZ-based layer for NLS Map
+	OpenLayers.Layer.NLS = OpenLayers.Class(OpenLayers.Layer.XYZ, {
+		name: "NLS Maps API",
+		attribution: 'Historical maps from <a href="http://geo.nls.uk/maps/api/" target="_blank">NLS Maps API<\/a>',
+		getURL: NLSTileUrlOS,
+		sphericalMercator: true,
+		transitionEffect: 'resize',
+		CLASS_NAME: "OpenLayers.Layer.NLS"
+	});
+
+	olmap.layers['nls'] = new OpenLayers.Layer.NLS( "OS Historical GB");
+    }
     
-    layers['google_physical'] = new OpenLayers.Layer.Google(
+    olmap.layers['google_physical'] = new OpenLayers.Layer.Google(
         "Google Physical",
         { type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 20 }
     );
-    layers['google'] = new OpenLayers.Layer.Google(
+    olmap.layers['google'] = new OpenLayers.Layer.Google(
         "Google Streets", // the default
         { numZoomLevels: 20 }
     );
-    layers['google_hybrid'] = new OpenLayers.Layer.Google(
+    olmap.layers['google_hybrid'] = new OpenLayers.Layer.Google(
         "Google Hybrid",
         { type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20 }
     );
-    layers['google_satellite'] = new OpenLayers.Layer.Google(
+    olmap.layers['google_satellite'] = new OpenLayers.Layer.Google(
         "Google Satellite",
         { type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22 }
     );
 
-    layers['osm'] = new OpenLayers.Layer.OSM("OSM (OpenStreetMap)");
+    olmap.layers['osm'] = new OpenLayers.Layer.OSM("OSM (OpenStreetMap)", null, {attribution:'<a href="http://www.openstreetmap.org/copyright">&copy OpenStreetMap contributors</a>'});
 
-    layers['osm_cycle'] = new OpenLayers.Layer.OSM("OSM OpenCycleMap", ['http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png',
+    olmap.layers['osm_cycle'] = new OpenLayers.Layer.OSM("OSM OpenCycleMap", ['http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png',
                                                       'http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png',
-                                                      'http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png']);
+                                                      'http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png'],
+							 {attribution:'Tiles &copy; OpenCycleMap, Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'});
 
-    layers['osm_tran'] = new OpenLayers.Layer.OSM("OSM Public Transport", ['http://a.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png',
+    olmap.layers['osm_tran'] = new OpenLayers.Layer.OSM("OSM Public Transport", ['http://a.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png',
                                                       'http://b.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png',
-                                                      'http://c.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png']);
+                                                      'http://c.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png'],
+							 {attribution:'Tiles &copy; Gravitystorm, Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'});
 
-    layers['osm_phys'] = new OpenLayers.Layer.OSM("OSM Landscape", ['http://a.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png',
+    olmap.layers['osm_phys'] = new OpenLayers.Layer.OSM("OSM Landscape", ['http://a.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png',
                                                       'http://b.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png',
-                                                      'http://c.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png']);
+                                                      'http://c.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png'],
+                                                         {attribution:'Tiles &copy; Gravitystorm, Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'});
 
-    layers['bing'] = new OpenLayers.Layer.Bing({
+    olmap.layers['bing'] = new OpenLayers.Layer.Bing({
         name: "Bing Road",
         type: "Road",
         key: "AhwwUjiHWfAqm-dQiAhV1tJO82v-v5mU6osoxU3t1XKx-AlPyKzfBhKpTY81MKtJ"
     });
 
-    layers['bing_aerial'] = new OpenLayers.Layer.Bing({
+    olmap.layers['bing_aerial'] = new OpenLayers.Layer.Bing({
         name: "Bing Aerial",
         type: "Aerial",
         key: "AhwwUjiHWfAqm-dQiAhV1tJO82v-v5mU6osoxU3t1XKx-AlPyKzfBhKpTY81MKtJ"
     });
 
-    map = new OpenLayers.Map('map', {
+    olmap.map = new OpenLayers.Map('map', {
+        displayProjection: "EPSG:4326", //wgs84 - used for permalinks etc... 
         controls: [
 	    new OpenLayers.Control.KeyboardDefaults(),
 	    new OpenLayers.Control.Navigation(),
@@ -88,17 +118,22 @@ function loadMapInner() { //NOTE: does not center the map, the parent function w
             new OpenLayers.Control.Graticule({ visible: false, layerName: 'Lat/Long Grid' }), 
             new OpenLayers.Control.UKOSGraticule(),
             new OpenLayers.Control.IrishGraticule(),
-            new OpenLayers.Control.MousePosition({ displayProjection: "EPSG:4326", numDigits: 6, emptyString: "" }) // WGS84 pointer pos
-            // use olControlMousePosition to style the pointer
+	    new OpenLayers.Control.Permalink({anchor: true})
 	]
     });
 
-    // Even if you specify EPSG:4326 for these layers, if you add features / markers with code, you must transfrom them using map.getProjection() 
-    // so probably best not to bother
-    layers['markers'] = new OpenLayers.Layer.Markers('Markers');
+    if (!tabletOrPhone) {
+        // UK/Irish Grid Ref + WGS84 Lat/Lon pointer pos if we have a mouse
+        olmap.map.addControl(new OpenLayers.Control.MousePosition({ emptyString: "", numDigits: 6 }));               
+        // use olControlMousePosition to style the pointer
+    }
 
-    for(i in layers)
-	map.addLayer(layers[i]);
+    // Even if you specify EPSG:4326 for these layers, if you add features / markers with code, you must transfrom them using olmap.map.getProjection() 
+    // so probably best not to bother
+    olmap.layers['markers'] = new OpenLayers.Layer.Markers('Markers');
+
+    for(i in olmap.layers)
+	olmap.map.addLayer(olmap.layers[i]);
 
 }
 
@@ -109,10 +144,8 @@ function loadMapInner() { //NOTE: does not center the map, the parent function w
 //
 ///////////////////////////////////////////////////////////////
 
-var images = {};
-
 function mapEvent(event) {
- if (!layers['markers'].getVisibility()) {
+ if (!olmap.layers['markers'].getVisibility()) {
     return;
  }
 
@@ -128,7 +161,7 @@ function mapEvent(event) {
 
   data.sort="sequence ASC"; data.rank=2;
 
-  data.olbounds = map.getExtent().transform(map.getProjection(),"EPSG:4326").toString();
+  data.olbounds = olmap.map.getExtent().transform(olmap.map.getProjection(),"EPSG:4326").toString();
 
   _call_cors_api(
     endpoint,
@@ -137,16 +170,16 @@ function mapEvent(event) {
     function(data) {
      if (data && data.matches) {
         //remove the old markers
-        $.each(images,function(id,value) {
-            images[id].old = true;
+        $.each(olmap.images,function(id,value) {
+            olmap.images[id].old = true;
         });
 
 
         var loaded = 0;
         
         $.each(data.matches,function(index,value) {
-          if (images[value.id]) {
-            images[value.id].old = false;
+          if (olmap.images[value.id]) {
+            olmap.images[value.id].old = false;
           } else {
             value.attrs.thumbnail = getGeographUrl(value.id, value.attrs.hash, 'small');
 
@@ -154,35 +187,35 @@ function mapEvent(event) {
         var iconOffset = new OpenLayers.Pixel(-19, -19);
         var markerIcon = new OpenLayers.Icon(value.attrs.thumbnail, iconSize, iconOffset, null);
 
-        var markerPoint = new OpenLayers.LonLat(rad2deg(parseFloat(value.attrs.wgs84_long)), rad2deg(parseFloat(value.attrs.wgs84_lat))).transform("EPSG:4326", map.getProjection());
+        var markerPoint = new OpenLayers.LonLat(rad2deg(parseFloat(value.attrs.wgs84_long)), rad2deg(parseFloat(value.attrs.wgs84_lat))).transform("EPSG:4326", olmap.map.getProjection());
 
-	images[value.id] = new OpenLayers.Marker(markerPoint, markerIcon);
+	olmap.images[value.id] = new OpenLayers.Marker(markerPoint, markerIcon);
 
-        images[value.id].events.register('mousedown', images[value.id], function(evt) { 
+        olmap.images[value.id].events.register('mousedown', olmap.images[value.id], function(evt) { 
 		//alert(this.icon.url); 
 		//window.open("http://www.geograph.org.uk/photo/"+value.id);
 
-		images[value.id].popup = new OpenLayers.Popup('pop'+value.id,
+		olmap.images[value.id].popup = new OpenLayers.Popup('pop'+value.id,
                    markerPoint,
                    new OpenLayers.Size(300,200),
                    '<center><a href="http://www.geograph.org.uk/photo/'+value.id+'"><img src="'+value.attrs.thumbnail+'"/></a><br/><b>'+value.attrs.title+'</b> by <b>'+value.attrs.realname+'</b></center>',
                    true);
-		map.addPopup(images[value.id].popup);
+		olmap.map.addPopup(olmap.images[value.id].popup);
 
 		OpenLayers.Event.stop(evt); 
 	});
 
-	layers['markers'].addMarker(images[value.id]);
+	olmap.layers['markers'].addMarker(olmap.images[value.id]);
 
           }
           loaded=loaded+1;
         });
 
 
-        $.each(images,function(id,value) {
-            if (images[id].old && images[id].old == true) {
-                layers['markers'].removeMarker(images[id]);
-                delete images[id];
+        $.each(olmap.images,function(id,value) {
+            if (olmap.images[id].old && olmap.images[id].old == true) {
+                olmap.layers['markers'].removeMarker(olmap.images[id]);
+                delete olmap.images[id];
             }
         });
 
@@ -191,10 +224,10 @@ function mapEvent(event) {
      } else {
         if (data.time) {
            $("#map_message").html("No results found, in "+data.time+" seconds");
-           $.each(images,function(id,value) {
-              //if (images[id].old == true) {
-                layers['markers'].removeMarker(images[id]);
-                delete images[id];
+           $.each(olmap.images,function(id,value) {
+              //if (olmap.images[id].old == true) {
+                olmap.layers['markers'].removeMarker(olmap.images[id]);
+                delete olmap.images[id];
               //}
            });
         }

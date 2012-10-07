@@ -6,7 +6,7 @@
 	{if $engine->results}{literal}
         <link rel="stylesheet" href="/ol/theme/default/style.css" type="text/css">
         <link rel="stylesheet" href="/ol/theme/default/google.css" type="text/css">
-        <link rel="stylesheet" href="/ol/style.v2.css" type="text/css">        
+        <link rel="stylesheet" href="/ol/style.v4.css" type="text/css">        
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
@@ -16,50 +16,44 @@
 	<script src="/ol/OlEpsg29902Projection.js"></script>
         <script src="/ol/km-graticule.js"></script>
         <script src="/ol/osgb-layer.v7.js"></script>
-        <script src="/ol/geograph-openlayers.v11.js"></script>
+        <script src="/ol/nls-api.v1.js"></script>
+        <script src="/ol/geograph-openlayers.v16.js"></script>
 	
         <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
 
 <script type="text/javascript">
 //<![CDATA[
 
-var bounds;
-var images = {};
-
 function loadMap() {
 	loadMapInner(); //this does most things, EXCEPT center the map, and doesnt add any interaction. 
 
-//	var centre = new OpenLayers.LonLat(436000, 157000).transform("EPSG:27700", map.getProjection());
-//	map.setCenter(centre, 1);
+//	var centre = new OpenLayers.LonLat(436000, 157000).transform("EPSG:27700", olmap.map.getProjection());
+//	olmap.map.setCenter(centre, 1);
 
 
-	bounds = new OpenLayers.Bounds();
+	olmap.bounds = new OpenLayers.Bounds();
 
 {/literal}{foreach from=$engine->results item=image}
-        bounds.extend(new OpenLayers.LonLat({$image->wgs84_long}, {$image->wgs84_lat}));
+        olmap.bounds.extend(new OpenLayers.LonLat({$image->wgs84_long}, {$image->wgs84_lat}));
 {/foreach}{literal}
 
 
 	//we using wgs84 as input here... 
-	//bounds = bounds.transform(new OpenLayers.Projection("EPSG:4326"),map.getProjection());
+	//olmap.bounds = olmap.bounds.transform(new OpenLayers.Projection("EPSG:4326"),olmap.map.getProjection());
 
-	map.zoomToExtent(bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),map.getProjection()));
+	olmap.map.zoomToExtent(olmap.bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),olmap.map.getProjection()));
 	
 
 
-    lonLat = bounds.getCenterLonLat();    
-//    if (map.getProjection() != "EPSG:4326") {
-  //      lonLat.transform(map.getProjection(), "EPSG:4326");
-    //}
+    var lonLat = olmap.bounds.getCenterLonLat();    
     if (OpenLayers.Projection.Irish.isValidLonLat(lonLat.lon, lonLat.lat)) {
-        map.setBaseLayer(layers['google_physical']);
-        //todo, disable the GB grid?
+        olmap.map.setBaseLayer(olmap.layers['google_physical']);
 
 	//we repeat this, because ireland might be out of GB grid extents. 
-        map.zoomToExtent(bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),map.getProjection()));
+        olmap.map.zoomToExtent(olmap.bounds.clone().transform(new OpenLayers.Projection("EPSG:4326"),olmap.map.getProjection()));
 
-
-        controls = map.getControlsByClass("OpenLayers.Control.OSGraticule");
+        //todo, disable the GB grid?
+        controls = olmap.map.getControlsByClass("OpenLayers.Control.OSGraticule");
         for(q=0;q<controls.length;q++)
             if (controls[q].layerName == "OSGB Grid") 
                 controls[q].gratLayer.setVisibility(false);
@@ -73,17 +67,17 @@ function loadMap() {
 	
 {/literal}{foreach from=$engine->results item=image}
         var markerIcon = new OpenLayers.Icon("{$image->getThumbnail(120,120,true)}", iconSize, iconOffset, null);
-	var markerPoint = new OpenLayers.LonLat({$image->wgs84_long}, {$image->wgs84_lat}).transform("EPSG:4326", map.getProjection());
-	images[{$image->gridimage_id}] = createMarker({$image->gridimage_id}, markerPoint, markerIcon, "{$image->title|escape:'javascript'}","{$image->realname|escape:'javascript'}");
+	var markerPoint = new OpenLayers.LonLat({$image->wgs84_long}, {$image->wgs84_lat}).transform("EPSG:4326", olmap.map.getProjection());
+	olmap.images[{$image->gridimage_id}] = createMarker({$image->gridimage_id}, markerPoint, markerIcon, "{$image->title|escape:'javascript'}","{$image->realname|escape:'javascript'}");
 
-	layers['markers'].addMarker(images[{$image->gridimage_id}]);
+	olmap.layers['markers'].addMarker(olmap.images[{$image->gridimage_id}]);
 {/foreach}
 
 
                 {if $markers}
                         {foreach from=$markers item=marker}
-                                var marker = new OpenLayers.Marker(new OpenLayers.LonLat({$marker.2}, {$marker.1}).transform("EPSG:4326", map.getProjection()) );
-				layers['markers'].addMarker(marker);
+                                var marker = new OpenLayers.Marker(new OpenLayers.LonLat({$marker.2}, {$marker.1}).transform("EPSG:4326", olmap.map.getProjection()) );
+				olmap.layers['markers'].addMarker(marker);
                         {/foreach}
                 {/if}{literal}
 
@@ -91,9 +85,9 @@ function loadMap() {
 
 
 //this is the global layer, we dont need it here...
-//	map.events.register('moveend', map, mapEvent);
-//	map.events.register('zoomend', map, mapEvent);
-//      layers['markers'].events.register('visibilitychanged', layers['markers'], mapEvent);
+//	olmap.map.events.register('moveend', olmap.map, mapEvent);
+//	olmap.map.events.register('zoomend', olmap.map, mapEvent);
+//      olmap.layers['markers'].events.register('visibilitychanged', olmap.layers['markers'], mapEvent);
 
 }
 
@@ -108,7 +102,7 @@ function createMarker(uniqueId, markerPoint, markerIcon, title, realname) {
                    '<center><b>'+title+'</b> <br/>by <b>'+realname+'</b><br/><a href="http://www.geograph.org.uk/photo/'+uniqueId+'" target="_blank"><img src="'+markerIcon.url+'"/></a></center>',
 		   markerIcon,
                    true);
-                map.addPopup(marker.popup);
+                olmap.map.addPopup(marker.popup);
 
                 OpenLayers.Event.stop(evt);
         });

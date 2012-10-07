@@ -1,6 +1,9 @@
 
     .olControlAttribution {
-       bottom: 0px; background-color: rgb(245, 245, 245);
+       bottom: 0px; 
+       background-color: rgb(245, 245, 245);
+       background-color: rgba(245, 245, 245, 0.7);
+       padding: 2px;
     }
     
     .olControlOsLogo {
