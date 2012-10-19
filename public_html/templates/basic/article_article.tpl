@@ -52,6 +52,9 @@ div.breadcrumb a {
 		</div>
 	{elseif $user->user_id == $user_id}
 		<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]] [[<a href="/article/">article listing</a>]]</p>
+		{if $user_warning}
+                        <p style="text-align:center;color:red;padding:7px;border:2px solid red" class="no_print">{$user_warning}</p>
+		{/if}
 	{/if}
 {/dynamic}
 {if $parent_url && $parent_title}
@@ -68,15 +71,19 @@ div.breadcrumb a {
 </div>
 {/if}
 {if $pagetitle}
-<h1 class="pageheading"><small>{$page}.</small> {$pagetitle|escape:'html'}</h1>
-<h2 class="pageheading">{$title|escape:'html'}</h2>
+	{if $page!=$pagetitle}
+		<h1 class="pageheading"><small>{$page}.</small> {$pagetitle|escape:'html'}</h1>
+	{else}
+		<h1 class="pageheading">Page {$page}</h1>
+	{/if}
+	<h2 class="pageheading">{$title|escape:'html'}</h2>
 {else}
-<h1>{$title|escape:'html'}</h1>
+	<h1>{$title|escape:'html'}</h1>
 {/if}
 {if $pagesString}
-<div style="margin-top:0px;font-size:0.8em;">
-	( Page {$pagesString})
-</div>
+	<div style="margin-top:0px;font-size:0.8em;">
+		( Page {$pagesString})
+	</div>
 {/if}
 
 <div style="text-align:right">
@@ -133,6 +140,8 @@ div.breadcrumb a {
 {if $imageCredits}
 	<div class="ccmessage" style="color:gray; font-size:0.9em; text-align:right">Images also under a similar <a href="#imlicence">Creative Commons Licence</a>.</div>
 {/if}
+
+{elseif $licence == 'geograph'}
 
 {else}
 	<div class="ccmessage">{if $licence == 'pd'}<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">
