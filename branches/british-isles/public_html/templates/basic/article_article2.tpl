@@ -46,19 +46,26 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 		</div>
 	{elseif $user->user_id == $user_id}
 		<p style="text-align:center" class="no_print">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]] [[<a href="/article/">article listing</a>]]</p>
+                {if $user_warning}
+                        <p style="text-align:center;color:red;padding:7px;border:2px solid red" class="no_print">{$user_warning}</p>
+                {/if}
 	{/if}
 {/dynamic}
 
 {if $pagetitle}
-<h1 class="pageheading"><small>{$page}.</small> {$pagetitle|escape:'html'}</h1>
-<h2 class="pageheading">{$title|escape:'html'}</h2>
+        {if $page!=$pagetitle}
+                <h1 class="pageheading"><small>{$page}.</small> {$pagetitle|escape:'html'}</h1>
+        {else}
+                <h1 class="pageheading">Page {$page}</h1>
+        {/if}
+        <h2 class="pageheading">{$title|escape:'html'}</h2>
 {else}
-<h1>{$title|escape:'html'}</h1>
+        <h1>{$title|escape:'html'}</h1>
 {/if}
 {if $pagesString}
-<div style="margin-top:0px;font-size:0.8em;">
-	( Page {$pagesString})
-</div>
+	<div style="margin-top:0px;font-size:0.8em;">
+		( Page {$pagesString})
+	</div>
 {/if}
 
 {if $tableContents}
@@ -74,7 +81,7 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 	<div style="text-align:right;"><i>{$nextString}</i></div>
 {/if}
 
-<hr/>
+<hr style="clear:both"/>
 <div style="text-align:right">
 {if $licence == 'copyright'}
 	Text <small>&copy;</small> Copyright <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$publish_date|date_format:" %B %Y"}
@@ -123,7 +130,9 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 
 -->
 
-{else}
+{elseif $licence == 'geograph'}
+	
+{elseif $url != 'Geograph-reaches-Three-Million-Pictures'}
 	<div class="ccmessage">{if $licence == 'pd'}<a rel="license" href="http://creativecommons.org/licenses/publicdomain/">
 	<img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/publicdomain/88x31.png" /></a> {/if} Text by <a href="/profile/{$user_id}" title="View Geograph Profile for {$realname|escape:'html'}">{$realname|escape:'html'}</a>, {$publish_date|date_format:" %B %Y"}
 	</a>{if $licence == 'pd'}; This work is dedicated to the
@@ -140,7 +149,9 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 
 
 {if $imageCredits}
+	{if $url != 'Geograph-reaches-Three-Million-Pictures'}
 	<div style="float:right;position:relative"><a title="View these images in Google Earth" href="/search.php?article_id={$article_id}&amp;orderby=seq_id&amp;kml" class="xml-kml">KML</a></div>
+	{/if}
 	<div class="ccmessage copyright"><a rel="license" name="imlicence" href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 		alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; <b><a href="/search.php?article_id={$article_id}&amp;orderby=seq_id">Images used on this page</a></b>, &copy; Copyright {$imageCredits};
 		licensed for reuse under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>. <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">http://creativecommons.org/licenses/by-sa/2.0/</a><br/><br/></div>

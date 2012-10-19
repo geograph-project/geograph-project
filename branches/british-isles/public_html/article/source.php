@@ -33,18 +33,30 @@ if (empty($_GET['url']) || preg_match('/[^\w\.\,-]/',$_GET['url'])) {
 
 $db = GeographDatabaseConnection(true);
 
-$page = $db->getRow("
-select content,update_time
-from article 
-where ( (licence != 'none' and approved > 0) 
-	or user_id = {$USER->user_id} )
-	and url = ".$db->Quote($_GET['url']).'
-limit 1');
+if (!empty($_GET['rev_id'])) {
+	$page = $db->getRow("
+	select content,update_time
+	from article_revisions
+	where ( (licence != 'none' and approved > 0)
+		or user_id = {$USER->user_id} )
+		and url = ".$db->Quote($_GET['url']).'
+		and article_revision_id = '.intval($_GET['rev_id']).'
+	limit 1');
+} else {
+	$page = $db->getRow("
+	select content,update_time
+	from article
+	where ( (licence != 'none' and approved > 0)
+		or user_id = {$USER->user_id} )
+		and url = ".$db->Quote($_GET['url']).'
+	limit 1');
+}
+
 if (count($page)) {
-	
+
 	//when this page was modified
 	$mtime = strtotime($page['update_time']);
-	
+
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 

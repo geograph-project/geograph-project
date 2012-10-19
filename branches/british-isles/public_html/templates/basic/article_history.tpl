@@ -52,13 +52,13 @@
 	</tr>
 </thead>
 <tbody>
-	{foreach from=$list item=item}
+	{foreach from=$list item=item name=items}
 	<tr>
 		<td><input type="radio" name="1" value="{$item.article_revision_id}" {if ($item.approved < 1 || $item.licence == 'none') && !$isadmin && ($item.user_id != $user->user_id)} disabled="disabled"{/if}/></td>
 		
 		<td><input type="radio" name="2" value="{$item.article_revision_id}" {if ($item.approved < 1 || $item.licence == 'none') && !$isadmin && ($item.user_id != $user->user_id)} disabled="disabled"{/if}/></td>
 		
-		<td sortvalue="{$item.title}"><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="/article/{$item.url}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}hidden{/if}){/if}</td>
+		<td sortvalue="{$item.title}"><b>{if $item.approved < 1 || $item.licence == 'none'}<s>{/if}<a title="{$item.extract|default:'View Article'}" href="{if $smarty.foreach.items.index == 0}/article/{$item.url}{else}/article/source.php?url={$item.url}&amp;rev_id={$item.article_revision_id}{/if}">{$item.title}</a></b>{if $item.approved < 1 || $item.licence == 'none'}</s> ({if $item.approved == -1}<i>Archived <small>and not available for publication</small></i>{else}hidden{/if}){/if}</td>
 		
 		<td><small>{$item.category_name|truncate:30}</small></td>
 		<td align="right">{$item.content_length}</td>
