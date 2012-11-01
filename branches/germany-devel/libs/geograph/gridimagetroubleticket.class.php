@@ -329,7 +329,7 @@ class GridImageTroubleTicket
 			$img=&$this->_getImage();
 			
 			if ($note_id) {
-				$imgnote=&this->_getNote($note_id);
+				$imgnote=&$this->_getNote($note_id);
 				$imgnote->$fieldname=$newvalue;
 				
 				//we'll do this commit later

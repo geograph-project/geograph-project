@@ -118,12 +118,12 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 	  <a title="Register to upload photos" href="/register.php">register</a>
   {/if}
   {/dynamic}
-{if $languages}
+{if $languages}{dynamic}
 &emsp;[{foreach from=$languages key=lang item=langhost name=langloop}
 {if ! $smarty.foreach.langloop.first}|{/if}
 {if $lang == $language}{$lang}{else}<a href="{$curproto}{$langhost}{$canonicalreq|escape:'html'}">{$lang}</a>{/if}
 {/foreach}]
-{/if}
+{/dynamic}{/if}
   </div>
 </div>
 {if $right_block}
