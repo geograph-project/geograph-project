@@ -18,7 +18,7 @@
  * If also an element "notetextNNNN" exists (might be a div with class geonote
  * containing a p element), this script tries to show that element instead of
  * the usual tool tip. While displaying the note, the class of noteboxNNNN will
- * be changed by prepending "cur".
+ * be changed by prepending "cur" to the class name.
  */
 
 var gn = {
@@ -44,11 +44,28 @@ var gn = {
 		var mapObj = mapObjs[0];
 		var boxes = mapObj.getElementsByTagName('area');
 		img.boxes = [];
+		img.geoareas = [];
 		for (var j=boxes.length-1;j>=0;j--) {
 			if (boxes[j].getAttribute('shape').toLowerCase() == 'rect' && boxes[j].id.substr(0,8) == 'notearea') {
-				var noteid=boxes[j].id.substr(8);
+				var curarea = boxes[j];
+				var noteid = curarea.id.substr(8);
+				img.geoareas[img.geoareas.length] = curarea;
+				curarea.noteid = noteid;
+				curarea.geonoteid = noteid;
+				curarea.geonotex1 = curarea.getAttribute('geonotex1');
+				curarea.geonotex2 = curarea.getAttribute('geonotex2');
+				curarea.geonotey1 = curarea.getAttribute('geonotey1');
+				curarea.geonotey2 = curarea.getAttribute('geonotey2');
+				curarea.geonotewidth = curarea.getAttribute('geonotewidth');
+				curarea.geonoteheight = curarea.getAttribute('geonoteheight');
+				curarea.geonotestatus = curarea.getAttribute('geonotestatus');
+				curarea.geonotependingchanges = curarea.getAttribute('geonotependingchanges')!='0';
+				curarea.geoimg = img;
 				var a=document.getElementById('notebox'+noteid);
+				curarea.geobox = a;
 				if (a) {
+					a.geoarea = curarea;
+					//FIXME? curarea.title = '';
 					var left=a.style.left;
 					var top=a.style.top;
 					if (left.substr(left.length-2) == 'px' && top.substr(top.length-2) == 'px') {
@@ -73,20 +90,12 @@ var gn = {
 						}
 					);
 					var txt = document.getElementById('notetext'+noteid);
+					a.geonote = txt;
 					if (txt) {
 						a.title = '';
-						txt.style.left='0px';
-						txt.style.top='0px';
-
-						txt.style.visibility='hidden';
-						txt.style.display = 'block';
-						txt.style.width='auto'; /* optimal width */
-						txt.style.width=(txt.clientWidth+4)+'px'; /* keep width fixed */
-						txt.style.display='none';
-						txt.style.visibility='visible';
+						gn.initBoxWidth(txt);
 						txt.geoimg = img;
 						txt.geobox = a;
-						a.geonote = txt;
 						a.geoclass = a.className;
 						gn.addEvent(a,"mouseover",gn.showNoteText);
 						gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
@@ -97,6 +106,62 @@ var gn = {
 
 		gn.addEvent(img,"mouseover",gn.showBoxes);
 		gn.addEvent(img,"mouseout",gn.hideBoxes);
+	},
+
+	addNote: function(area, box, txt, parea, pbox, ptxt, x1, y1, x2, y2, img, notestatus, pendingchanges, noteid) {
+		area.noteid = noteid;
+		area.geonoteid = noteid;
+		area.geonotex1 = x1;
+		area.geonotey1 = y1;
+		area.geonotex2 = x2;
+		area.geonotey2 = y2;
+		area.geonotewidth = img.width;
+		area.geonoteheight = img.height;
+		area.geoimg = img;
+		area.geonotestatus = notestatus;
+		area.geonotependingchanges = pendingchanges;
+		img.geoareas[img.geoareas.length] = area;
+		area.geobox = box;
+		if (box) {
+			img.boxes[img.boxes.length] = box;
+			box.geoarea = area;
+			box.geoimg = img;
+			box.geonote = txt;
+			box.geoclass = box.className;
+			if (txt) {
+				txt.geoimg = img;
+				txt.geobox = box;
+			}
+		}
+		gn.recalcBox(area);
+
+		parea.appendChild(area);
+		if (box) {
+			pbox.appendChild(box);
+			gn.addEvent(box,"mouseover",
+				function() {
+					clearTimeout(gn.hiderTimeout);
+				}
+			);
+			if (txt) {
+				ptxt.appendChild(txt);
+				gn.initBoxWidth(txt);
+				gn.addEvent(box,"mouseover",gn.showNoteText);
+				gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
+			}
+		}
+	},
+
+	initBoxWidth: function(txt) {
+		txt.style.left='0px';
+		txt.style.top='0px';
+
+		txt.style.visibility='hidden';
+		txt.style.display = 'block';
+		txt.style.width='auto'; /* optimal width */
+		txt.style.width=(txt.clientWidth+4)+'px'; /* keep width fixed */
+		txt.style.display='none';
+		txt.style.visibility='visible';
 	},
 
 	__getPadding: function(img) {
@@ -131,6 +196,54 @@ var gn = {
 		if (!t || !t.boxes) return;
 		for (var i=0;i<t.boxes.length;i++) {
 			t.boxes[i].style.display = disp;
+		}
+	},
+
+	recalcBox: function(area) { //, dx, dy) {
+		var img = area.geoimg;
+		var width = img.width;
+		var height = img.height;
+		var padding = gn.__getPadding(img);
+		var dx = padding[0];
+		var dy = padding[1];
+		if (img.offsetParent) { // try img.x,img.y otherwise?
+			dx += img.offsetLeft;
+			dy += img.offsetTop;
+		}
+		var x1 = Math.floor(area.geonotex1 * width / area.geonotewidth);
+		var x2 = Math.floor(area.geonotex2 * width / area.geonotewidth);
+		var y1 = Math.floor(area.geonotey1 * height / area.geonoteheight);
+		var y2 = Math.floor(area.geonotey2 * height / area.geonoteheight);
+		area.coords = x1+","+y1+","+x2+","+y2;
+		var box = area.geobox;
+		if (box) {
+			box.style.left = (x1 + dx) + 'px';
+			box.style.top = (y1 + dy) + 'px';
+			box.style.width = (x2 - x1 + 1) + 'px';
+			box.style.height = (y2 - y1 + 1) + 'px';
+			var txt = box.geonote;
+			if (txt) {
+				txt.style.left='0px';
+				txt.style.top='0px';
+			}
+		}
+	},
+
+	recalcBoxes: function(img) { //,width,height) {
+		if (!img || !img.geoareas) return;
+		gn.hideNoteText();
+		/*var width = img.width;
+		var height = img.height;
+		var padding = gn.__getPadding(img);
+		var dx = padding[0];
+		var dy = padding[1];
+		if (img.offsetParent) { // try img.x,img.y otherwise?
+			dx += img.offsetLeft;
+			dy += img.offsetTop;
+		}*/
+		for (var i=0;i<img.geoareas.length;i++) {
+			var area = img.geoareas[i];
+			gn.recalcBox(area);//, dx, dy);
 		}
 	},
 
@@ -181,7 +294,9 @@ var gn = {
 		}
 		if (!lnk) return;
 		if (lnk.id.substr(0,7) != 'notebox') return;
-		var txt = document.getElementById('notetext'+lnk.id.substr(7));
+		//var txt = document.getElementById('notetext'+lnk.id.substr(7));
+		//var txt = document.getElementById('notetext'+lnk.geoarea.noteid);
+		var txt = lnk.geonote;
 		if (!txt) return;
 		/*if (current_note && txt.id == current_note.id)
 			return;*/
