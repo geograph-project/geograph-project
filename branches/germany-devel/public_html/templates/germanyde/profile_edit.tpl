@@ -222,12 +222,12 @@
 	<label for="upload_size" class="nowrap">Standard-Bildgröße</label>
 	
 	<select name="upload_size" id="upload_size"> 
-		<option value="{$stdsize}" {if $profile->upload_size == $stdsize} selected="selected"{/if}>{$stdsize} x {$stdsize} (Normalgröße)</a>
+		<option value="{$stdsize}" {if $profile->upload_size == $stdsize} selected="selected"{/if}>{$stdsize} x {$stdsize} (Normalgröße)</option>
 		{foreach item=cursize from=$sizes}
-		<option value="{$cursize}" {if $profile->upload_size == $cursize} selected="selected"{/if}>{$cursize} x {$cursize}</a>
+		<option value="{$cursize}" {if $profile->upload_size == $cursize} selected="selected"{/if}>{$cursize} x {$cursize}</option>
 		{/foreach}
 		{if $showorig}
-		<option value="65536" {if $profile->upload_size > 65530} selected="selected"{/if}>Wie hochgeladen</a>
+		<option value="65536" {if $profile->upload_size > 65530} selected="selected"{/if}>Wie hochgeladen</option>
 		{/if}
 	</select>
 
