@@ -82,9 +82,9 @@ class Conversions
 //use:	list($x,$y,$reference_index) = wgs84_to_internal($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
 
-function wgs84_to_internal($lat,$long) {
+function wgs84_to_internal($lat,$long,$asfloat=false) {
 	list($e,$n,$reference_index) = $this->wgs84_to_national($lat,$long);
-	return $this->national_to_internal($e,$n,$reference_index);
+	return $this->national_to_internal($e,$n,$reference_index,$asfloat);
 }
 
 
@@ -241,24 +241,16 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 
 //use:    list($x,$y) = national_to_internal($e,$n,$reference_index );
 
-function national_to_internal($e,$n,$reference_index ) {
+function national_to_internal($e,$n,$reference_index,$asfloat = false) {
 	global $CONF;
-	$x = intval($e / 1000);
-	$y = intval($n / 1000);
-	
-	//add the internal origin
-	$x += $CONF['origins'][$reference_index][0];
-	$y += $CONF['origins'][$reference_index][1];
-	return array($x,$y);
-}
+	if ($asfloat) {
+		$x = ($e / 1000);
+		$y = ($n / 1000);
+	} else {
+		$x = intval($e / 1000);
+		$y = intval($n / 1000);
+	}
 
-//use:    list($x,$y) = national_to_internalfloat($e,$n,$reference_index );
-
-function national_to_internalfloat($e,$n,$reference_index ) {
-	global $CONF;
-	$x = ($e / 1000);
-	$y = ($n / 1000);
-	
 	//add the internal origin
 	$x += $CONF['origins'][$reference_index][0];
 	$y += $CONF['origins'][$reference_index][1];
@@ -391,3 +383,4 @@ function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
 	}
 
 }
+
