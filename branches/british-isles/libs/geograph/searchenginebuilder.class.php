@@ -142,7 +142,7 @@ split_timer('search'); //starts the timer
 					case 100:
 						$p2 = floor($square->precision/2);
 						$conv = new Conversions;
-						list($x,$y) = $conv->national_to_internalfloat($square->nateastings+$p2,$square->natnorthings+$p2,$square->reference_index );
+						list($x,$y) = $conv->national_to_internal($square->nateastings+$p2,$square->natnorthings+$p2,$square->reference_index,true);
 						
 						$searchdesc = ", $nearstring grid reference ".$gr[0];
 						$searchx = $x;
@@ -165,7 +165,7 @@ split_timer('search'); //starts the timer
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
 			$conv = new Conversions;
-			list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
+			list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2],true);
 			$grid_ok=$square->loadFromPosition($x, $y, true);
 			if ($grid_ok) {
 				$searchclass = 'GridRef';
@@ -421,7 +421,7 @@ split_timer('search'); //starts the timer
 				require_once('geograph/gridsquare.class.php');
 				$square=new GridSquare;
 				$conv = new Conversions;
-				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
+				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2],true);
 				$grid_ok=$square->loadFromPosition($x, $y, true);
 				if ($grid_ok) {
 					$searchclass = 'GridRef';
@@ -478,7 +478,7 @@ split_timer('search'); //starts the timer
 						case 100:
 							$p2 = floor($square->precision/2);
 							$conv = new Conversions;
-							list($x,$y) = $conv->national_to_internalfloat($square->nateastings+$p2,$square->natnorthings+$p2,$square->reference_index );
+							list($x,$y) = $conv->national_to_internal($square->nateastings+$p2,$square->natnorthings+$p2,$square->reference_index,true);
 
 							$searchdesc = ", $nearstring grid reference ".$gr[0];
 							$searchx = $x;
@@ -498,7 +498,7 @@ split_timer('search'); //starts the timer
 				require_once('geograph/gridsquare.class.php');
 				$square=new GridSquare;
 				$conv = new Conversions;
-				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2]);
+				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2],true);
 				$grid_ok=$square->loadFromPosition($x, $y, true);
 				if ($grid_ok) {
 					$searchclass = 'GridRef';
