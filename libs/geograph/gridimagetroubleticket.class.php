@@ -170,8 +170,11 @@ class GridImageTroubleTicket
 	* array of gridimage_ticket_item records yet to be written
 	*/
 	var $changes=array();
-	
-	
+
+	/**
+	* array of gridimage_notes
+	*/
+	var $imgnotes=array();
 
 	/**
 	* array of comment records, including realname
@@ -311,7 +314,7 @@ class GridImageTroubleTicket
 	* to commit(), which persist the ticket and any unmoderated changes
 	* @access public
 	*/
-	function updateField($fieldname, $oldvalue, $newvalue, $moderated)
+	function updateField($fieldname, $oldvalue, $newvalue, $moderated, $note_id = 0)
 	{
 		$ok=true;
 		
@@ -325,8 +328,13 @@ class GridImageTroubleTicket
 			//make the changes right away...
 			$img=&$this->_getImage();
 			
-			if ($fieldname=="grid_reference")
-			{
+			if ($note_id) {
+				$imgnote=&$this->_getNote($note_id);
+				$imgnote->$fieldname=$newvalue;
+				
+				//we'll do this commit later
+				$this->commit_count++;
+			} elseif ($fieldname=="grid_reference") {
 				$err="";
 				$ok=$img->reassignGridsquare($newvalue, $err);
 				if ($ok)
@@ -383,7 +391,7 @@ class GridImageTroubleTicket
 		$found=false;
 		foreach($this->changes as $c)
 		{
-			if ($c['field']==$fieldname)
+			if ($c['field']==$fieldname && $c['note_id']==$note_id )
 				$found=true;
 		}
 		
@@ -392,6 +400,7 @@ class GridImageTroubleTicket
 			//create a change record
 			$change=array(
 				"field"=>$fieldname,
+				"note_id"=>$note_id,
 				"oldvalue"=>$oldvalue,
 				"newvalue"=>$newvalue,
 				"status"=>$status,
@@ -414,6 +423,9 @@ class GridImageTroubleTicket
 		if ($this->commit_count)
 		{
 			$img=&$this->_getImage();
+			foreach ($this->imgnotes as $imgnote) {
+				$imgnote->commitChanges();
+			}
 			$img->commitChanges();
 			$this->commit_count=0;
 			
@@ -464,10 +476,11 @@ class GridImageTroubleTicket
 				}
 				else
 				{
-					$sql=sprintf("insert into gridimage_ticket_item(gridimage_ticket_id, field, oldvalue, newvalue, status, approver_id) ".
-						"values(%d, '%s', '%s', '%s', '%s', '%d')",
+					$sql=sprintf("insert into gridimage_ticket_item(gridimage_ticket_id, field, note_id, oldvalue, newvalue, status, approver_id) ".
+						"values(%d, '%s', %d, '%s', '%s', '%s', '%d')",
 						$this->gridimage_ticket_id,
 						$change["field"],
+						$change["note_id"],
 						mysql_escape_string($change["oldvalue"]),
 						mysql_escape_string($change["newvalue"]),
 						$change["status"],
@@ -508,6 +521,8 @@ class GridImageTroubleTicket
 			{
 				if ($item['oldvalue']!=$item['newvalue'])
 				{
+					if ($item['note_id'])
+						$changes .= " Note {$item['note_id']}:";
 					$changes.=" {$item['field']} changed from \"{$item['oldvalue']}\" to \"{$item['newvalue']}\"\n";
 				}
 			}
@@ -858,10 +873,12 @@ class GridImageTroubleTicket
 				$this->changes[$idx]['approver_id']=$user_id;
 
 				//updateField does the hard work
-				$this->updateField($item['field'], $item['oldvalue'], $item['newvalue'], false);
+				$this->updateField($item['field'], $item['oldvalue'], $item['newvalue'], false, $item['note_id']);
 
 				if ($item['oldvalue']!=$item['newvalue'])
 				{
+					if ($item['note_id'])
+						$changes .= "Note {$item['note_id']}: ";
 					$changes.="{$item['field']} changed from \"{$item['oldvalue']}\" to \"{$item['newvalue']}\"\n";
 				}
 			}
@@ -930,7 +947,25 @@ class GridImageTroubleTicket
 		}	
 		return $this->gridimage;
 	}
-	
+
+	/**
+	 * get stored imagenote object, creating if necessary
+	 * @access private
+	 */
+	function &_getNote($note_id)
+	{
+		# FIXME create class GridImageNote
+		# with
+		#   GridImageNote($note_id=0)
+		#        [ and/or loadFromId($note_id) ]
+		#   commitChanges()
+		# share db?
+		if (!array_key_exists($note_id, $this->imgnotes)) {
+			$this->imgnotes[$note_id] = new GridImageNote($note_id);
+		}	
+		return $this->imgnotes[$note_id];
+	}
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
@@ -967,6 +1002,7 @@ class GridImageTroubleTicket
 		}
 		$this->commit_count=0;
 		$this->changes=array();
+		$this->imgnotes=array();
 	}
 	
 	/**

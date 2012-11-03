@@ -62,6 +62,7 @@ Disallow: /explore/calendar.php?*Year*
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
+Disallow: /geonotes.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?*when*
 Disallow: /statistics/moversboard.php?*when*
@@ -120,6 +121,7 @@ Disallow: /explore/calendar.php?*Year*
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
+Disallow: /geonotes.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?*when*
 Disallow: /statistics/moversboard.php?*when*
@@ -178,6 +180,7 @@ Disallow: /explore/calendar.php?*Year*
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
+Disallow: /geonotes.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?*when*
 Disallow: /statistics/moversboard.php?*when*
@@ -236,6 +239,7 @@ Disallow: /explore/calendar.php
 Disallow: /places.php
 Disallow: /explore/places.php
 Disallow: /usermsg.php
+Disallow: /geonotes.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?
 Disallow: /statistics/moversboard.php?
