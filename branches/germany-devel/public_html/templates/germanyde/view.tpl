@@ -37,6 +37,15 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
 	{elseif $user->user_id eq $image->user_id}
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Größere Version hochladen</a></div>
 	{/if}
+	{if $notes}
+		{if $user->registered}
+		<div class="caption640" style="text-align:right;">Mauszeiger über Bild bewegen um <a href="/geonotes.php?id={$image->gridimage_id}">Beschriftungen</a> zu zeigen.</div>
+		{else}
+		<div class="caption640" style="text-align:right;">Mauszeiger über Bild bewegen um Beschriftungen zu zeigen.</div>
+		{/if}
+	{elseif $user->registered}
+		<div class="caption640" style="text-align:right;"><a href="/geonotes.php?id={$image->gridimage_id}">Bild beschriften</a></div>
+	{/if}
   <div class="img-shadow" id="mainphoto">{if $notes}{$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\"")}{else}{$image->getFull()}{/if}
   {if $notes}
     <map name="notesmap" id="notesmap">
@@ -53,8 +62,6 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
     <script type="text/javascript" src="/js/geonotes.js"></script>
   {/if}
   </div>
-  
-  
 
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
      {if $image->title1 eq ''}
