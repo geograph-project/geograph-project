@@ -242,6 +242,24 @@ class GridImageNote
 	}
 
 	/**
+	* apply pending tickets
+	 */
+	function applyTickets($ticketowner)
+	{
+		$db=&$this->_getDB();
+		$recordSet = &$db->Execute("select ti.field,ti.newvalue from gridimage_ticket t inner join gridimage_ticket_item ti using(gridimage_ticket_id) ".
+			"where t.gridimage_id={$this->gridimage_id} and t.user_id={$ticketowner} and t.status!='closed' and ti.note_id={$this->note_id} and ti.status='pending' ".
+			"order by gridimage_ticket_id asc");
+		while (!$recordSet->EOF) {
+			$this->pendingchanges = true;
+			$field = $recordSet->fields['field'];
+			$this->$field = $recordSet->fields['newvalue'];
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+	}
+
+	/**
 	* calculate positions for scaled image
 	*/
 	function calcSize($width, $height)

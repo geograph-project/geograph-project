@@ -643,7 +643,7 @@ class GridImage
 	/**
 	* get a list of annotations for this image
 	*/
-	function& getNotes($aStatus)
+	function& getNotes($aStatus, $ticketowner = 0)
 	{
 		if (!is_array($aStatus))
 			die("GridImage::getNotes expects array param");
@@ -667,6 +667,13 @@ class GridImage
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close();
+
+		if ($ticketowner) {
+			//apply all pending tickets
+			foreach ($notes as &$note) {
+				$note->applyTickets($ticketowner);
+			}
+		}
 
 		return $notes;
 	}

@@ -560,6 +560,8 @@ div.photolandscape
 
 div.img-shadow {
 	overflow:auto;
+	/*overflow-x:auto;*/
+	position:relative;
 }
 
 .img-shadow img {
@@ -608,6 +610,112 @@ div.photoguide
 	position:relative;
 }
 
+/* image annotations */
+
+form.noteform {
+}
+
+form.noteformpending select {
+	background: #ccffcc;
+}
+form.noteformpending textarea {
+	background: #ccffcc;
+}
+form.noteformpending input/*[type=text]*/ {
+	background: #ccffcc;
+}
+
+form.noteformunsaved select {
+	background: #ffcccc;
+}
+form.noteformunsaved textarea {
+	background: #ffcccc;
+}
+form.noteformunsaved input/*[type=text]*/ {
+	background: #ffcccc;
+}
+
+div.noteboxedit {
+	position: absolute;
+	border: 1px black solid;
+	padding: 0;
+	display: none;
+	z-index: 100;
+}
+
+div.noteboxeditbg {
+	background: white;
+	width: 100%;
+	height: 100%;
+	opacity: 0.1;
+	-moz-opacity: 0.1;
+	filter:alpha(opacity=10);
+}
+div.noteboxbutton {
+	position: absolute;
+	border: 1px black solid;
+	background: #888888;
+	z-index: 101;
+	width: 3px;
+	height: 3px;
+}
+
+a.notebox {
+	position: absolute;
+	border: 2px groove black;
+	padding: 0;
+	display: none;
+}
+a.notebox span {
+	display: block;
+	background: white;
+	width: 100%;
+	height: 100%;
+	opacity: 0.1;
+	-moz-opacity: 0.1;
+	filter:alpha(opacity=10);
+}
+a.notebox:hover {
+	border-color: yellow;
+}
+a.curnotebox {
+	position: absolute;
+	border: 2px groove yellow;
+	padding: 0;
+	display: none;
+}
+a.curnotebox span {
+	display: block;
+	background: white;
+	width: 100%;
+	height: 100%;
+	opacity: 0.2;
+	-moz-opacity: 0.2;
+	filter:alpha(opacity=20);
+}
+div.geonote {
+	display: none;
+	position: absolute;
+	padding: 4px;
+	top: 0px;
+	left: 0px;
+	color: white;
+	font-size: 13px;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	width: 25em; /* remove? */
+	max-width: 25em;
+	font-weight: bold;
+	/*background: url(...);*/
+	background: rgb(0, 0, 0);  /*Fallback for older browsers */
+	background: rgba(0, 0, 0, 0.75);
+	z-Index: 100;
+
+	/* Mozilla proprietary */
+	-moz-border-radius: 12px;
+}
+div.geonote p {
+	margin: 0; padding: 0 3px;
+}
 
 /*---------------------------------------------------------------*
  * inline sidebar

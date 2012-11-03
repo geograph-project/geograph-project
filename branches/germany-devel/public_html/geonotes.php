@@ -36,7 +36,7 @@ $USER->mustHavePerm("basic");
 if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	// on change, return status + ':' + id
 	// on successfull creation, return status + ':' + id + ':' + new note_id
-	// on error return status + ':' + id + ':' + message or status + ':' + id
+	// on error return status + ':' + id + ':' + message
 	// (use id=0 for errors not related to a specific note)
 	// status:
 	//    -6: invalid note id
@@ -77,7 +77,7 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_POST['commit'])
 	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['imgwidth'])
 	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['imgheight'])
-	    ||$_REQUEST['status'] != 'visible' && $_REQUEST['status'] != 'deleted'
+	    ||$_REQUEST['status'] != 'visible' && $_REQUEST['status'] != 'deleted' && $_REQUEST['status'] != 'pending'
            ) {
 		print "-3:0:invalid parameters";
 		exit;
@@ -139,7 +139,7 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	    || $z < -10 || $z > 10
 	    || ($x2 - $x1 + 1)*$imagewidth  < 15*$iw // minimal width/height in std size ("640"): 15 pixels
 	    || ($y2 - $y1 + 1)*$imageheight < 15*$ih
-	    || ($note_id < 0) && $status == 'deleted'
+	    || ($note_id < 0) && $status != 'visible'
 	   ) {
 		print "-3:$note_id:invalid parameters";
 		exit;
@@ -163,6 +163,10 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 			print "-6:$note_id:invalid note id";
 			exit;
 		}
+		if ($status == 'pending' && $note->status != 'pending') {
+			print "-3:$note_id:setting status to pending is not allowed";
+			exit;
+		}
 		$ticket->setNotes("Changed image annotation $note_id.");
 		$ticket->updateField('x1', $note->x1, $x1, $mod, $note_id);
 		$ticket->updateField('x2', $note->x2, $x2, $mod, $note_id);
@@ -174,6 +178,10 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 		$ticket->updateField('comment', $note->comment, $comment, $mod, $note_id);
 		$ticket->updateField('status', $note->status, $status, $mod, $note_id);
 		// FIXME updateField should report errors and we should pass that to the client
+		if (!count($ticket->changes)) {
+			print("2:$note_id");
+			exit;
+		}
 		$reqinfo = '';
 	} else {
 		# add new annotation with status 'pending' and change the status to 'visible' using the $ticket
@@ -187,17 +195,14 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 		$ticket->updateField('status', 'pending', 'visible', $mod, $newnote_id);
 		$reqinfo = ":$newnote_id";
 	}
-	if (!$ticket->commit_count) {
-		print("2:$note_id");
-		exit;
-	}
 	if ($ticket->commit() == 'closed') { // FIXME error handling...
 		print "0:$note_id$reqinfo";
 	} else {
 		print "1:$note_id$reqinfo";
 	}
-	#$ab=floor($image->gridimage_id/10000);
-	#$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
+	$smarty = new GeographPage;
+	$ab=floor($image->gridimage_id/10000);
+	$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
 	#FIXME change our cache_id accordingly?
 	exit;
 }
@@ -247,10 +252,17 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
+	#if (isset($_GET['note_id'])) {
+		#FIXME
+		#* validate id
+		#* only show form for given note?
+		#* better use a ticket_id parameter: could display the new (and the old?) values, then
+	#}
+	// FIXME possibly add a column creator to the geonotes object?
 	if (!$isowner&&!$ismoderator) {
-		$notes = $image->getNotes(array('visible')); # FIXME       add pending changes made by this user, add deleted notes (but only display in form)
+		$notes = $image->getNotes(array('visible', 'pending'), $USER->user_id);
 	} else {
-		$notes = $image->getNotes(array('visible', 'pending', 'deleted')); # FIXME       add pending changes made by this user, add deleted notes (but only display in form)
+		$notes = $image->getNotes(array('visible', 'pending', 'deleted'), $USER->user_id);
 	}
 
 	#//what style should we use?
