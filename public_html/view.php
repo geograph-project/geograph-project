@@ -146,7 +146,7 @@ if ($image->isValid())
 		$sid = -1;
 		#trigger_error("sid: x: " . $sid, E_USER_NOTICE);
 	}
-	$cacheid.="|s:$sid";
+	$cacheid.="_s:$sid";
 
 	#if ($image->gridimage_id == 2 && $USER->user_id == 1)
 	#	$sid = 21;/*1;*/
@@ -160,7 +160,7 @@ if ($image->isValid())
 	#	$sid = -1;
 
 	//page is unqiue per user (the profile and links)
-	$hash = $cacheid.'.'.$USER->user_id.'.'.$sid;
+	$hash = $cacheid.'.'.$USER->user_id;
 
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$hash,($USER->user_id == 0));

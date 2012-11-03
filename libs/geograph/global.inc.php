@@ -175,7 +175,7 @@ function geograph_autoload($class_name) {
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
 }
-spl_autoload_register(geograph_autoload);
+spl_autoload_register('geograph_autoload');
 
 //remember start time of script for logging
 if (isset($CONF['log_script_timing']))
@@ -352,7 +352,7 @@ class GeographPage extends Smarty
 		}
 
 		if (count($CONF['languages'])) {
-			$cur_proto = !$_SERVER['HTTPS'] || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
+			$cur_proto = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
 			$this->assign('languages', $CONF['languages']);
 			$this->assign('curproto', $cur_proto);
 			$this->assign('canonicalhost', reset($CONF['languages']));
