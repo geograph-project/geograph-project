@@ -57,6 +57,11 @@ class GridImageNote
 	*/
 	var $status;
 
+	/**
+	* true if also pending trouble tickets have been used to create this object
+	*/
+	var $pendingchanges; // FIXME TODO
+
 	#/**
 	#* note title
 	#*/
@@ -84,12 +89,18 @@ class GridImageNote
 	var $y1;
 	var $x2;
 	var $y2;
+	var $init_x1;
+	var $init_y1;
+	var $init_x2;
+	var $init_y2;
 
 	/**
 	* image size these coordinates refer to
 	*/
 	var $imgwidth;
 	var $imgheight;
+	var $init_imgwidth;
+	var $init_imgheight;
 
 	/**
 	* z index
@@ -137,6 +148,63 @@ class GridImageNote
 			if (!is_numeric($name))
 				$this->$name=$value;
 		}
+		$this->init_x1 = $this->x1;
+		$this->init_y1 = $this->y1;
+		$this->init_x2 = $this->x2;
+		$this->init_y2 = $this->y2;
+		$this->init_imgwidth  = $this->imgwidth;
+		$this->init_imgheight = $this->imgheight;
+	}
+
+	/**
+	* create new note
+	* returns 0 on error, note_id on success
+	*/
+	function create($gridimage_id, $x1, $x2, $y1, $y2, $imgwidth, $imgheight, $comment, $z = 0, $status = 'pending')
+	{
+		$this->_clear();
+		$this->x1 = $x1;
+		$this->x2 = $x2;
+		$this->y1 = $y1;
+		$this->y2 = $y2;
+		$this->z  = $z;
+		$this->imgwidth  = $imgwidth;
+		$this->imgheight = $imgheight;
+		$this->comment = $comment;
+		$this->status = $status;
+		$this->gridimage_id = $gridimage_id;
+
+		$db =& $this->_getDB();
+
+		$sql = sprintf("insert into gridimage_notes (".
+			"gridimage_id, status, comment, x1, x2, y1, y2, z, imgwidth, imgheight".
+			") values (".
+			"%d, %s, %s, %d, %d, %d, %d, %d, %d, %d".
+			")",
+			$gridimage_id, $db->Quote($status), $db->Quote($comment), $x1, $x2, $y1, $y2, $z, $imgwidth, $imgheight);
+		
+		//$db->Query($sql);
+		if($db->Execute($sql) === false) {
+			return 0;
+		}
+		// FIXME error handling
+		
+		//get the id
+		$note_id = $db->Insert_ID();
+		if ($note_id === false) {
+			return 0;
+		}
+		$this->note_id = $note_id;
+
+		$this->init_x1 = $this->x1;
+		$this->init_y1 = $this->y1;
+		$this->init_x2 = $this->x2;
+		$this->init_y2 = $this->y2;
+		$this->init_imgwidth  = $this->imgwidth;
+		$this->init_imgheight = $this->imgheight;
+
+		$this->pendingchanges = false;
+		return $note_id;
 	}
 
 	/**
@@ -150,13 +218,15 @@ class GridImageNote
 	/**
 	* return comment as formatted html
 	*/
-	function html()
+	function html($substlinks=true)
 	{
 		$comment = htmlentities2($this->comment);
-		$comment = preg_replace('/\n/','<br />', $comment);
-		$comment = preg_replace('/\[\[(\d+)\]\]/','<a href="/photo/\\1">[[\\1]]</a>', $comment); # TODO add image title
-		$comment = preg_replace('/\[\[([a-zA-Z]{1,3}\d+)\]\]/','<a href="/gridref/\\1">[[\\1]]</a>', $comment);
-		# TODO http://XXXX
+		if ($substlinks) {
+			$comment = preg_replace('/\n/','<br />', $comment);
+			$comment = preg_replace('/\[\[(\d+)\]\]/','<a href="/photo/\\1">[[\\1]]</a>', $comment); # TODO add image title
+			$comment = preg_replace('/\[\[([a-zA-Z]{1,3}\d+)\]\]/','<a href="/gridref/\\1">[[\\1]]</a>', $comment);
+			# TODO http://XXXX
+		}
 		return $comment;
 	}
 
@@ -167,7 +237,26 @@ class GridImageNote
 	{
 		$this->_clear();
 		$this->_initFromArray($rs->fields);
+		$this->pendingchanges = false;
 		return $this->isValid();
+	}
+
+	/**
+	* apply pending tickets
+	 */
+	function applyTickets($ticketowner)
+	{
+		$db=&$this->_getDB();
+		$recordSet = &$db->Execute("select ti.field,ti.newvalue from gridimage_ticket t inner join gridimage_ticket_item ti using(gridimage_ticket_id) ".
+			"where t.gridimage_id={$this->gridimage_id} and t.user_id={$ticketowner} and t.status!='closed' and ti.note_id={$this->note_id} and ti.status='pending' ".
+			"order by gridimage_ticket_id asc");
+		while (!$recordSet->EOF) {
+			$this->pendingchanges = true;
+			$field = $recordSet->fields['field'];
+			$this->$field = $recordSet->fields['newvalue'];
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
 	}
 
 	/**
@@ -199,6 +288,7 @@ class GridImageNote
 			if (is_array($row))
 			{
 				$this->_initFromArray($row);
+				$this->pendingchanges = false;
 			}
 		}
 		//todo memcache (probably make sure dont serialise the dbs!) 
@@ -227,7 +317,7 @@ class GridImageNote
 	{
 		$db=&$this->_getDB();
 		
-		$sql="update gridimage set comment=".$db->Quote($this->comment).
+		$sql="update gridimage_notes set comment=".$db->Quote($this->comment).
 			", status='{$this->status}'". # FIXME?
 			", x1='{$this->x1}'".
 			", x2='{$this->x2}'".

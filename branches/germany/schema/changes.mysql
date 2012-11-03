@@ -695,3 +695,5 @@ CREATE TABLE IF NOT EXISTS `gridimage_notes` (
   PRIMARY KEY  (`note_id`),
   KEY `gridimage_id` (`gridimage_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `gridimage_ticket_item` ADD `note_id` int(10) unsigned DEFAULT NULL AFTER `field`;

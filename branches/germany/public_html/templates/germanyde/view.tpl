@@ -37,9 +37,31 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
 	{elseif $user->user_id eq $image->user_id}
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Größere Version hochladen</a></div>
 	{/if}
-  <div class="img-shadow" id="mainphoto">{$image->getFull()}</div>
-  
-  
+	{if $notes}
+		{if $user->registered}
+		<div class="caption640" style="text-align:right;">Mauszeiger über Bild bewegen um <a href="/geonotes.php?id={$image->gridimage_id}">Beschriftungen</a> zu zeigen.</div>
+		{else}
+		<div class="caption640" style="text-align:right;">Mauszeiger über Bild bewegen um Beschriftungen zu zeigen.</div>
+		{/if}
+	{elseif $user->registered}
+		<div class="caption640" style="text-align:right;"><a href="/geonotes.php?id={$image->gridimage_id}">Bild beschriften</a></div>
+	{/if}
+  <div class="img-shadow" id="mainphoto">{if $notes}{$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\"")}{else}{$image->getFull()}{/if}
+  {if $notes}
+    <map name="notesmap" id="notesmap">
+    {foreach item=note from=$notes}
+    <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}" />
+    {/foreach}
+    </map>
+    {foreach item=note from=$notes}
+    <a title="{$note->comment|escape:'html'}" id="notebox{$note->note_id}" href="#" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1}px;height:{$note->y2-$note->y1+1}px;z-index:{$note->z+50}" class="notebox"><span></span></a>
+    {/foreach}
+    {foreach item=note from=$notes}
+    <div id="notetext{$note->note_id}" class="geonote"><p>{$note->html()}</p></div>
+    {/foreach}
+    <script type="text/javascript" src="/js/geonotes.js"></script>
+  {/if}
+  </div>
 
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
      {if $image->title1 eq ''}
@@ -204,7 +226,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
  <dd>{$image_taken} &nbsp; (<a title="Bilder um {$image->grid_reference} vom {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">Weitere in der Nähe</a>)</dd>
 {/if}
 <dt>Eingereicht</dt>
-	<dd>{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
+	<dd>{$image->submitted|date_format:"%a, %e. %B %Y"}</dd>
 
 <dt>Kategorie</dt>
 
