@@ -209,6 +209,9 @@
 				{/if}
 			{/if}
 			<label for="accept{$item.gridimage_ticket_item_id}">
+			{if $item.note_id}
+				<a href="/geonotes.php?id={$ticket->gridimage_id}&amp;note_id={$item.note_id}" target="geonotepreview">Beschriftung Nr. {$item.note_id}</a>:
+			{/if}
 			Ändere
 			{if $item.field eq 'grid_reference'}
 			Motivposition
@@ -233,13 +236,19 @@
 			{/if}
 			von
 
-			{if $item.field eq "grid_reference"}
+			{if $item.note_id}
+				{assign var="field" value="current_`$item.note_id`_`$item.field`"}
+			{elseif $item.field eq "grid_reference"}
 				{assign var="field" value="current_subject_gridref"}
 			{else}
 				{assign var="field" value="current_`$item.field`"}
 			{/if}
 
-			{if $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
+			{if $item.note_id}
+			  <span style="border:1px solid #dddddd{if $editable && $item.oldvalue != $image->$field}; text-decoration: line-through{/if}">{$item.oldvalue|escape:'html'|default:'blank'}</span>
+			  zu 
+			  <span style="border:1px solid #dddddd">{$item.newvalue|escape:'html'|default:'blank'}</span>
+			{elseif $item.field eq "grid_reference" || $item.field eq "photographer_gridref"}
 
 				<!--<span{if $editable && $item.oldvalue != $image->$field} style="text-decoration: line-through"{/if}>
 					{getamap gridref=$item.oldvalue|default:'blank'}
