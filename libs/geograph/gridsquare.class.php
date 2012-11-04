@@ -335,7 +335,7 @@ class GridSquare
 	/**
 	 * Calculate approximate distance from given point (assuming spherical coordinates, R=6378137)
 	 */
-	function calcDistanceFromSquare($square)
+	function calcDistanceFromSquare(&$square)
 	{
 		list($latD, $lonD) = $square->getLatLon();
 		if (is_null($latD))
