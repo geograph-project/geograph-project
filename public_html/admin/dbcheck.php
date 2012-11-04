@@ -243,6 +243,9 @@ if (isset($_POST['check']))
 			"left join gridsquare_percentage gp3 on (gs.gridsquare_id=gp3.gridsquare_id and gp1.level = -1 and gp3.community_id = 3) ".
 			"left join gridsquare_percentage gp4 on (gs.gridsquare_id=gp4.gridsquare_id and gp1.level = -1 and gp4.community_id = 4) where ".
 			"greatest(round(0.5*coalesce(gp1.percent,0)+0.5*coalesce(gp2.percent,0))-coalesce(gp4.percent,0),coalesce(gp1.percent,0)>0) != percent_land or ".
+			"coalesce(gp1.percent,0)<coalesce(gp2.percent,0) or ".
+			"coalesce(gp2.percent,0)<coalesce(gp4.percent,0) or ".
+			"coalesce(gp4.percent,0)<coalesce(gp3.percent,0) or ".
 			"(coalesce(gp1.percent,0)>0) != permit_photographs or ".
 			"(coalesce(gp1.percent,0)-coalesce(gp3.percent,0)>0) != permit_geographs;";
 		$recordSet = &$db->Execute($sql);

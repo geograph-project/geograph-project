@@ -605,17 +605,24 @@ function datetimeToTimestamp($datetime) {
 }
 
 function getFormattedDate($input) {
+	global $CONF;
 	list($y,$m,$d)=explode('-', $input);
 	$date="";
 	if ($d>0) {
 		if ($y>1970) {
 			//we can use strftime
 			$t=strtotime($input." 0:0:0");//stop a warning
-			$date=strftime("%A, %e %B, %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
+			if ($CONF['lang'] == 'de')
+				$date=strftime("%a, %e. %B %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
+			else
+				$date=strftime("%A, %e %B, %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
 		} else {
 			//oh my!
 			$t=strtotime("2000-$m-$d");
-			$date=strftime("%e %B", $t)." $y";
+			if ($CONF['lang'] == 'de')
+				$date=strftime("%e. %B", $t)." $y";
+			else
+				$date=strftime("%e %B", $t)." $y";
 		}
 	} elseif ($m>0) {
 		//well, it saves having an array of months...

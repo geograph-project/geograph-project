@@ -98,6 +98,12 @@ class GridSquare
 	var $natspecified = false;
 	
 	/**
+	* latitude/longitude (wgs84)
+	*/
+	var $lat = null;
+	var $lon = null;
+
+	/**
 	* GridSquare instance of nearest square to this one with an image
 	*/
 	var $nearest=null;
@@ -285,6 +291,59 @@ class GridSquare
 	}
 	
 	/**
+	* Convenience function to get latitude/longitude (wgs84)
+	*/
+	function getLatLon()
+	{
+		if (!isset($this->lat) || is_null($this->lat)) {
+			$e = $this->getNatEastings();
+			$n = $this->getNatNorthings();
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+			$latlon = $conv->national_to_wgs84($e, $n, $this->reference_index);
+			if (!count($latlon))
+				return array();
+			$this->lat = $latlon[0];
+			$this->lon = $latlon[1];
+		}
+		return array($this->lat, $this->lon);
+	}
+
+	/**
+	 * Calculate approximate distance from given point (assuming spherical coordinates, R=6378137)
+	 */
+	function calcDistanceFromLL($latD, $lonD)
+	{
+		list($lat2D, $lon2D) = $this->getLatLon();
+		if (is_null($lat2D))
+			return -1; # FIXME?
+		$lat1 = deg2rad($latD);
+		$lon1 = deg2rad($lonD);
+		$lat2 = deg2rad($lat2D);
+		$lon2 = deg2rad($lon2D);
+		
+		$R = 6378137.0;
+		$dlat = $lat1-$lat2;
+		$dlon = $lon1-$lon2;
+		$slat = sin(0.5*$dlat);
+		$slon = sin(0.5*$dlon);
+		$sinsq = $slat*$slat + cos($lat1)*cos($lat2)*$slon*$slon;
+		$arc = 2 * atan2(sqrt($sinsq), sqrt(1-$sinsq));
+		return $R * $arc;
+	}
+
+	/**
+	 * Calculate approximate distance from given point (assuming spherical coordinates, R=6378137)
+	 */
+	function calcDistanceFromSquare($square)
+	{
+		list($latD, $lonD) = $square->getLatLon();
+		if (is_null($latD))
+			return -1;
+		return $this->calcDistanceFromLL($latD, $lonD);
+	}
+
+	/**
 	* Get an array of valid grid prefixes
 	*/
 	function getGridPrefixes($ri = 0)
@@ -458,6 +517,8 @@ class GridSquare
 					$fn = intval($n) + ($row['origin_y']-$CONF['origins'][$ri][1]) * 1000;
 					$latlong = $conv->national_to_wgs84($fe,$fn,$ri);
 					if (count($latlong)) { # FIXME error handling
+						$this->lat = $latlong[0];
+						$this->lon = $latlong[1];
 						$enr = $conv->wgs84_to_national($latlong[0],$latlong[1]);
 						if (count($enr)) { # FIXME error handling
 							$ri2 = $enr[2];
@@ -468,6 +529,8 @@ class GridSquare
 									$shift = 5000;
 								elseif ($length == 0)
 									$shift = 50000;
+								else
+									$shift = 0;
 								$e2 = round($enr[0],$length-5) + $shift;
 								$n2 = round($enr[1],$length-5) + $shift;
 								$x = floor($e2/1000) + $CONF['origins'][$ri2][0];
@@ -853,8 +916,8 @@ class GridSquare
 					//need to create the square - we give it a land_percent of -1
 					//to indicate it needs review, and also to prevent it being
 					//used in further findNearby calls
-					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy) 
-						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)') )";
+					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy,permit_photographs,permit_geographs) 
+						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)'),0,0)";
 					$db->Execute($sql);
 					$gridimage_id=$db->Insert_ID();
 					$this->setServices('');

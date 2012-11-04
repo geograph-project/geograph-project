@@ -83,8 +83,8 @@
 	  	<div style="float:right; background-color:red; color:white; border:1px solid pink; padding:6px;">{$image->sizestr}</div>
 	  {/if}
 	  
-	  <input class="accept" type="button" id="geograph{$image->gridimage_id}" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey;"{else}{if $image->different_square} style="color:lightgrey;"{/if}{/if}/>
-	  <input class="accept" type="button" id="accept{$image->gridimage_id}" value="Supp" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey;"{/if}/>
+	  <input class="accept" type="button" id="geograph{$image->gridimage_id}" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey;"{elseif $image->different_square} style="color:lightgrey;"{elseif $image->no_geographs} style="color:lightgrey;"{/if}/>
+	  <input class="accept" type="button" id="accept{$image->gridimage_id}" value="Supp" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey;"{elseif $image->no_photographs} style="color:lightgrey;"{/if}/>
 	  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateImage({$image->gridimage_id}, 'rejected')"/>
 	  {if (!$remoderate && $image->user_status && $image->moderation_status != 'pending') || $moderator || $review}
 	  	<br/>Current Classification: {$image->moderation_status} {if $image->mod_realname}, by {$image->mod_realname}{/if}
@@ -93,6 +93,7 @@
 	  	<br/><span{if $image->new_status != $image->moderation_status} style="border:1px solid red; padding:5px; line-height:3em;"{/if}>Suggested Classification: {$image->new_status} {if $image->ml_realname}, by {$image->ml_realname}{/if}</span>
 	  {/if}
 	  {if $image->user_status}<div class="caption" style="color:red">User: suggest {$image->user_status}</div>{else}{if $image->different_square}<div class="caption" style="color:red">System: suggest Accept</div>{/if}{/if}
+	  {if $image->percentages}<div class="caption" style="color:red">Possibly outside the supported area</div>{/if}
 	  <div class="caption" id="modinfo{$image->gridimage_id}">&nbsp;</div>
 	  </div>
 	  
