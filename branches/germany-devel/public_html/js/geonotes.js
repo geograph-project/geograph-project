@@ -60,12 +60,13 @@ var gn = {
 				curarea.geonoteheight = curarea.getAttribute('geonoteheight');
 				curarea.geonotestatus = curarea.getAttribute('geonotestatus');
 				curarea.geonotependingchanges = curarea.getAttribute('geonotependingchanges')!='0';
+				curarea.geonoteunsavedchanges = false;
 				curarea.geoimg = img;
 				var a=document.getElementById('notebox'+noteid);
 				curarea.geobox = a;
 				if (a) {
 					a.geoarea = curarea;
-					//FIXME? curarea.title = '';
+					curarea.title = '';
 					var left=a.style.left;
 					var top=a.style.top;
 					if (left.substr(left.length-2) == 'px' && top.substr(top.length-2) == 'px') {
@@ -109,8 +110,8 @@ var gn = {
 	},
 
 	addNote: function(area, box, txt, parea, pbox, ptxt, x1, y1, x2, y2, img, notestatus, pendingchanges, noteid) {
-		area.noteid = noteid;
-		area.geonoteid = noteid;
+		area.noteid = noteid;    /* corresponds to the element's id, never changes */
+		area.geonoteid = noteid; /* when creating a note, this changes to the actual note_id */
 		area.geonotex1 = x1;
 		area.geonotey1 = y1;
 		area.geonotex2 = x2;
@@ -120,11 +121,13 @@ var gn = {
 		area.geoimg = img;
 		area.geonotestatus = notestatus;
 		area.geonotependingchanges = pendingchanges;
+		area.geonoteunsavedchanges = true;
 		img.geoareas[img.geoareas.length] = area;
 		area.geobox = box;
 		if (box) {
 			img.boxes[img.boxes.length] = box;
 			box.geoarea = area;
+			area.title = '';
 			box.geoimg = img;
 			box.geonote = txt;
 			box.geoclass = box.className;
@@ -195,7 +198,8 @@ var gn = {
 	__setBoxes: function(t,disp) {
 		if (!t || !t.boxes) return;
 		for (var i=0;i<t.boxes.length;i++) {
-			t.boxes[i].style.display = disp;
+			var area = t.boxes[i].geoarea;
+			t.boxes[i].style.display = area.geonotehide || area.geonotestatus=='deleted' ? 'none' : disp;
 		}
 	},
 
@@ -216,11 +220,12 @@ var gn = {
 		var y2 = Math.floor(area.geonotey2 * height / area.geonoteheight);
 		area.coords = x1+","+y1+","+x2+","+y2;
 		var box = area.geobox;
+		var borderbox = 1; // FIXME
 		if (box) {
 			box.style.left = (x1 + dx) + 'px';
 			box.style.top = (y1 + dy) + 'px';
-			box.style.width = (x2 - x1 + 1) + 'px';
-			box.style.height = (y2 - y1 + 1) + 'px';
+			box.style.width = (x2 - x1 + 1 - 2*borderbox) + 'px';
+			box.style.height = (y2 - y1 + 1 - 2*borderbox) + 'px';
 			var txt = box.geonote;
 			if (txt) {
 				txt.style.left='0px';
