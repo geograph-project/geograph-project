@@ -118,7 +118,7 @@ class RestAPI
 	}
 
 
-        function handleoembed()
+        function handleOembed()
         {
 
 		if (!empty($this->params[0])) {

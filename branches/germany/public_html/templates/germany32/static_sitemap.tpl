@@ -4,7 +4,7 @@
 
  <h2>Geograph Sitemap</h2>
  
- <p>Quick links to nealy all Geograph Webpages</p>
+ <p>Quick links to nearly all Geograph Webpages</p>
  
  <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
  <h3>Help and Info...</h3>
@@ -32,12 +32,27 @@
  
 <h3>Getting started...</h3>
 <ul>
-	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
 	<li><a title="Find photographs" href="/search.php"><b>search images</b> taken by other members</a></li>
 	<li><a title="Submit a photograph" href="/submit.php"><b>upload</b> your own <b>pictures</b></a></li>
 	<li><a title="Content" href="/content/">read <b>content</b> submitted by members</a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></li>
 </ul>
- 
+
+<h3>Maps</h3>
+<ul>
+	<li><a title="Browse by Map" href="/mapbrowse.php">browse images on a <b>map</b></a></li>
+	<li><a title="Browse by Map without zones" href="/mapbrowse2.php?mt=tm">browse images on a <b>map without zones</b></a></li>
+	<li><a title="Draggable Map" href="/omap.php">browse images on a <b>draggable map</b></a>
+	{if $google_maps_api_key}
+	<a title="Draggable Map using the GoogleMaps API" href="/gmap.php">(alternative version based on GoogleMaps)</a>
+	{/if}
+	</li>
+	<li><a title="Draggable Map without zones" href="/ommap.php">browse images on a <b>draggable map without zones</b></a>
+	{if $google_maps_api_key}
+	<a title="Draggable Map without zones using the GoogleMaps API" href="/gmmap.php">(alternative version based on GoogleMaps)</a>
+	{/if}
+	</li>
+</ul>
+
 <h3>Exploring in more depth...</h3>
 <ul>
 	<li><a title="Browse by Grid Reference" href="/browse.php">browse by <b>grid square</b></a></li>
@@ -162,6 +177,14 @@ Refine:
  {html_select_date display_days=false prefix="when2" time="0000-00-00" start_year="-100" reverse_years=true  month_empty="" year_empty=""}) <input type="submit" value="Go"/>
 </form></li></ul></li>
 
+	<li><a href="/statistics/leaderboard.php?type=images&when=1989&timerel=dbefore&date=taken">Contributors of historical images</a>
+	{if $hasregions}
+	<li><a href="/statistics/regions.php">Regional statistics</a>
+	{if $regionlistlevel > -1}
+	(<a href="/statistics/regions.php?level={$regionlistlevel}">large list</a>)
+	{/if}
+	</li>
+	{/if}
 	<li><a href="/statistics/monthlyleader.php">By Month</b> Leaderboard</a></li>
 	<!--li><a href="/statistics.php?by=user&amp;ri=1"><b>Great Britain Contributor</b> List</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=2"><b>Ireland Contributor</b> List</a></li-->

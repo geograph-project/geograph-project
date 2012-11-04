@@ -54,6 +54,8 @@ if ($page == "sitemap" && !$smarty->is_cached($template)) { #FIXME?
 	if (!$db) die('Database connection failed');
 
 	if (count($CONF['hier_statlevels'])) {
+		$smarty->assign('hasregions',true);
+		$smarty->assign('regionlistlevel',$CONF['hier_listlevel']);
 		$sql = "select name,level,community_id from loc_hier where level in (".implode(",",$CONF['hier_statlevels']).") order by level,name";
 		$regions = $db->GetAll($sql);
 		if ($regions === false)
@@ -62,6 +64,7 @@ if ($page == "sitemap" && !$smarty->is_cached($template)) { #FIXME?
 		$regions = array();
 	}
 	$smarty->assign("regions", $regions);
+	$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
 }
 
 

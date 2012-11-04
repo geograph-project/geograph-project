@@ -83,6 +83,10 @@ if (isset($_GET['gridref']))
 			$createregperc = false;
 			$setregperc = false;
 			$setperc = false;
+			$haveextperc = false;
+			$createextperc = false;
+			$updateperm = false;
+			$msgextperc = false;
 			if ($isadmin) {
 				$percent=intval($_GET['percent_land']);
 				if (isset($_GET['region']) &&  preg_match('/^[+-]?\d+_\d+$/',$_GET['region'])) {
@@ -119,6 +123,9 @@ if (isset($_GET['gridref']))
 					}
 				} else {
 					$oldpercreg = 0;
+					if ($percent >= 0) {
+						$haveextperc = $db->GetOne("select exists(select 1 from gridsquare_percentage where gridsquare_id=$gridsquare_id and level=-1)") == 1;
+					}
 				}
 			} else {
 				//we need to create a square
@@ -205,8 +212,39 @@ if (isset($_GET['gridref']))
 				//update existing square
 				$db->Execute("update gridsquare set percent_land='{$percent}' where gridsquare_id='{$sq['gridsquare_id']}'");
 			}
+			if (!$error && $level < -1 && !$recalclp) { # user sets the total percentage, should we update regional percentages or permissions?
+				if ($percent < 0) {
+					$updateperm = true;
+					$newperm = 0; # set to zero to alert moderators
+				} else {
+					if ($haveextperc) { # don't change anything if regional percentages exist: the user should know better
+						$msgextperc = true;
+					} else {
+						if ($percent > 0) { # create land percentages (low water/high water)
+							$createextperc = true;
+							$sql="replace into gridsquare_percentage(gridsquare_id,level,community_id,percent) ".
+								"values($gridsquare_id,-1,1,$percent)";
+							$db->Execute($sql);
+							$sql="replace into gridsquare_percentage(gridsquare_id,level,community_id,percent) ".
+								"values($gridsquare_id,-1,2,$percent)";
+							$db->Execute($sql);
+						}
+						$updateperm = true;
+						$newperm = $percent > 0 ? 1 : 0;
+					}
+				}
+				if ($updateperm) {
+					$db->Execute("update gridsquare set ".
+						"permit_photographs=$newperm,".
+						"permit_geographs=$newperm ".
+						"where gridsquare_id='{$gridsquare_id}'");
+				}
+			}
 			if (!$error) {
 				$status = array();
+				if ($msgextperc) {
+					$status[] = "Gridsquare $gridref: Please remember to set also the land/lake percentages for high/low water!";
+				}
 				if ($createsq) {
 					if ($recalclp)
 						$status[] = "New gridsquare $gridref created.";
@@ -214,7 +252,7 @@ if (isset($_GET['gridref']))
 						$status[] = "New gridsquare $gridref created with new land percentage of $percent %.";
 				}
 				if ($recalclp)
-					$status[] = "Gridsquare $gridref updated with calculated land percentage of $percent %.";
+					$status[] = "Gridsquare $gridref updated with calculated land percentage of $percent % and set permissions.";
 				if ($setperc)
 					$status[] = "Gridsquare $gridref updated with new land percentage of $percent %.";
 				if ($setregperc) {
@@ -223,11 +261,22 @@ if (isset($_GET['gridref']))
 					else
 						$status[] = "Changed regional percentage for square $gridref, $level, $cid: $percentreg %.";
 				}
+				if ($createextperc) {
+					$status[] = "Added regional percentage for square $gridref, -1, 1: $percent %.";
+					$status[] = "Added regional percentage for square $gridref, -1, 2: $percent %.";
+				}
+				if ($updateperm) {
+					$status[] = "Set permissions for square $gridref.";
+				}
 				$smarty->assign('status', implode(' ', $status));
 				if ($createsq||$recalclp||$setperc)
 					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, new_percent_land='{$percent}', old_percent_land='{$oldperc}',created=now(),comment=".$db->Quote($_GET['comment']));
 				if ($setregperc)
 					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, level={$level}, community_id={$cid}, new_percent_land='{$percentreg}', old_percent_land='{$oldpercrec}',created=now(),comment=".$db->Quote($_GET['comment']));
+				if ($createextperc) {
+					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, level=-1, community_id=1, new_percent_land='{$percent}', old_percent_land=0,created=now(),comment=".$db->Quote($_GET['comment']));
+					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, level=-1, community_id=2, new_percent_land='{$percent}', old_percent_land=0,created=now(),comment=".$db->Quote($_GET['comment']));
+				}
 				if ($isadmin) {
 					require_once('geograph/mapmosaic.class.php');
 					$mosaic = new GeographMapMosaic;

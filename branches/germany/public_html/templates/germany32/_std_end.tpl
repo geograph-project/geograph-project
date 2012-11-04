@@ -121,7 +121,6 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 {if $languages}{dynamic}
 &emsp;[{foreach from=$languages key=lang item=langhost name=langloop}
 {if ! $smarty.foreach.langloop.first}|{/if}
-{*if $lang == $language}{$lang}{else}{dynamic}<a href="{$curproto}{$langhost}{$canonicalreq|escape:'html'}">{$lang}</a>{/dynamic}{/if*}
 {if $lang == $language}{$lang}{else}<a href="{$curproto}{$langhost}{$canonicalreq|escape:'html'}">{$lang}</a>{/if}
 {/foreach}]
 {/dynamic}{/if}
