@@ -393,11 +393,12 @@ foreach ($images->images as $i => $image) {
 	if ($image->viewpoint_eastings) {
 		//note $image DOESNT work non php4, must use $images->images[$i]
 		$token->setValue("p", $images->images[$i]->getPhotographerGridref(true));
-		#//move the photographer into the center to match the same done for the subject
-		#$correction = ($images->images[$i]->viewpoint_grlen > 4)?0:500;
-		#$images->images[$i]->distance = sprintf("%0.2f",
-		#	sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings-$correction,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings-$correction,2))/1000);
-		$images->images[$i]->distance = sprintf("%0.2f", ($images->images[$i]->grid_square->calcDistanceFromSquare($images->images[$i]->viewpoint_square))/1000); #FIXME $correction?
+		//move the photographer into the center to match the same done for the subject
+		$correction = ($images->images[$i]->viewpoint_grlen > 4)?0:500;
+		$images->images[$i]->distance = sprintf("%0.2f",
+			sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings-$correction,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings-$correction,2))/1000);
+		#viewpoint square not yet in stable branch..
+		#$images->images[$i]->distance = sprintf("%0.2f", ($images->images[$i]->grid_square->calcDistanceFromSquare($images->images[$i]->viewpoint_square))/1000); #FIXME $correction?
 		
 		if (intval($images->images[$i]->grid_square->nateastings/1000) != intval($images->images[$i]->viewpoint_eastings/1000)
 			|| intval($images->images[$i]->grid_square->natnorthings/1000) != intval($images->images[$i]->viewpoint_northings/1000))
