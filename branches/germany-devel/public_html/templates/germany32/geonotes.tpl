@@ -18,7 +18,16 @@
 * display last error message or "no changed values"
 * reset button?
 * try to capture all mouse events while dragging, or find out how
-  to prevent the browsers from also doing drag and drop...
+  to prevent the browsers from doing drag and drop additionally to our drag and drop...
+* when adding new note, place note near centre of visible area
+  (or at least into the visible area if the image is scrolled)
+* "add note" can make a vertical scroll bar appear.
+  Fix coordinate calculation for that case.
+* prevent scrolling of the image while dragging or change coordinate
+  calculation to cope with a scrolled image
+* image description: "hide button" or scroll bar (max-height,overflow:auto)?
+* geonote.php: reverse order of notes (current note = first)
+* check if edit box and normal box are exactly at the same place
 *}
 {if $image}
 
