@@ -36,7 +36,6 @@
 	{elseif $user->user_id eq $image->user_id}
 		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Upload a larger version</a></div>
 	{/if}
-	{dynamic}
 	{if $notes}
 		{if $user->registered}
 		<div class="caption640" style="text-align:right;">Move the mouse pointer over the image to display <a href="/geonotes.php?id={$image->gridimage_id}">image annotations</a>.</div>
@@ -46,7 +45,6 @@
 	{elseif $user->registered}
 		<div class="caption640" style="text-align:right;"><a href="/geonotes.php?id={$image->gridimage_id}">Create image annotations</a></div>
 	{/if}
-	{/dynamic}
   <div class="img-shadow" id="mainphoto">{if $notes}{$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\"")}{else}{$image->getFull()}{/if}
   {if $notes}
     <map name="notesmap" id="notesmap">

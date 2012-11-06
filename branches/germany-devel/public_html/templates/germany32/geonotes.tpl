@@ -17,8 +17,6 @@
 * display "unsaved changes" or "unmoderated changes"
 * display last error message or "no changed values"
 * reset button?
-* try to capture all mouse events while dragging, or find out how
-  to prevent the browsers from doing drag and drop additionally to our drag and drop...
 * when adding new note, place note near centre of visible area
   (or at least into the visible area if the image is scrolled)
 * "add note" can make a vertical scroll bar appear.
@@ -489,6 +487,21 @@ function setimgsize(large) {
 		forms.insertBefore(form, addbutton);
 		statuschanged(area);
 	}
+	function cancelEvent(e) {
+		if (window.event) {
+			e = window.event;
+		}
+		/*if (e.stopPropagation) {
+			e.stopPropagation();
+		} else {
+			e.cancelBubble = true;
+		}*/
+		if (e.preventDefault) {
+			e.preventDefault();
+		} else {
+			e.returnValue = false;
+		}
+	}
 	function startDrag(e, ix, iy) {
 		var mpos = gn.__getMousePosition(e); // TODO compare with mapping1.js
 		dragmx = mpos[0];
@@ -509,15 +522,8 @@ function setimgsize(large) {
 
 		/*if (edbox.parentNode.setCapture && !edbox.parentNode.addEventListener) {
 			edbox.parentNode.setCapture(false);
-		}
-		if (window.event) {
-			e = window.event;
-		}
-		if (e.stopPropagation) {
-			e.stopPropagation();
-		} else {
-			e.cancelBubble = true;
 		}*/
+		cancelEvent(e);
 		return false;
 	}
 	function stopDrag() {
@@ -576,14 +582,7 @@ function setimgsize(large) {
 		area.geonoteunsavedchanges = true;
 		gn.recalcBox(area); // FIXME do that only in stopedit()?
 		statuschanged(area);
-		/*if (window.event) {
-			e = window.event;
-		}
-		if (e.stopPropagation) {
-			e.stopPropagation();
-		} else {
-			e.cancelBubble = true;
-		}*/
+		cancelEvent(e);
 		return false;
 	}
 	function initnoteedit() {
@@ -598,6 +597,7 @@ function setimgsize(large) {
 			}
 		}
 		var edbox = document.getElementById("noteboxedit");
+		//gn.addEvent(document, "mousemove", dragBox/*, true*/);
 		gn.addEvent(edbox.parentNode, "mousemove", dragBox/*, true*/);
 		gn.addEvent(document,"mouseup", stopDrag);
 		//gn.addEvent(edbox.parentNode, "mouseup",stopDrag);
