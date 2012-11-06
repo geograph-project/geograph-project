@@ -98,10 +98,11 @@ if (isset($_GET['id']))
 	$image->loadFromId(intval($_GET['id']));
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$ismoderator=$USER->hasPerm('moderator')?1:0;
+	$isregistered=$USER->registered?1:0;
 
 	$ab=floor($_GET['id']/10000);
 
-	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}";
+	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}_{$isregistered}";
 
 	//is the image accepted? - otherwise, only the owner and administrator should see it
 	if (!$isowner&&!$ismoderator) {
