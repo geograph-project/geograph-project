@@ -6,26 +6,26 @@
 * replace geonotewidth,... hack with something sensible,
    e.g. var initialvalus = { id1 : { 'x1' : ... } ... }
 * use a.getAttribute('b') etc. instead of a.b?
-* compatibility checks
+* compatibility checks (test if _all_ needed functions are available early, i.e. in init routine)
+* test IE compatibility
 * implement _GET['note_id'] handling in geonotes.php for editimage.php
 * imagemap is only fallback if javascript is not enabled
    => set img.usemap = null inside gn.__initImage(), ignore areas without corresponding
       box and note, there as well as in gn.addNote()
 * move everything (besides references to area) from txt/box to area (and finally to something like gn.annotation[id],
   i.e. use something like gn.annotation[id].img instead of document.getElementById("notearea"+id).img
-* check if border size has been used correctly in coordinate calculations
+* check if border size etc have been used correctly in coordinate calculations
+  and make box position consistent with edit box position
 * display "unsaved changes" or "unmoderated changes"
 * display last error message or "no changed values"
-* reset button?
-* when adding new note, place note near centre of visible area
-  (or at least into the visible area if the image is scrolled)
+* "reset" button?
 * "add note" can make a vertical scroll bar appear.
   Fix coordinate calculation for that case.
-* prevent scrolling of the image while dragging or change coordinate
-  calculation to cope with a scrolled image
-* image description: "hide button" or scroll bar (max-height,overflow:auto)?
-* geonote.php: reverse order of notes (current note = first)
-* check if edit box and normal box are exactly at the same place
+* geonote.php: reverse order of notes (latest note = first)?
+* doubleclicking note => scroll form into view and start edit mode
+* check min/max values for edit box: when left part is not visible (scrolled out),
+  moving a box to the left is impossible (by padding of img?).
+  Also initial positions for new boxes should be checked.
 *}
 {if $image}
 
@@ -60,6 +60,7 @@
     <script type="text/javascript" src="/js/geonotes.js"></script>
   </div>
 
+  <div id="imagetexts">
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
      {if $image->title1 eq ''}
        <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
@@ -91,6 +92,7 @@
        <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
      {/if}
   {/if}
+  </div>
 
 </div>
 
@@ -107,6 +109,9 @@ var curedit = 0;
 var dragx1, dragx2, dragy1, dragy2;
 var dragmx, dragmy;
 var minx, maxx, miny, maxy, minwidth, minheight;
+var bbwidth, bbheight;
+var edboxbordersx, edboxbordersy, edboxborderx, edboxbordery;
+var imgpaddborderx, imgpaddbordery;
 var dragging = -1;
 var editbuttons = [];
 var imageid = {$image->gridimage_id};
@@ -141,6 +146,20 @@ function setimgsize(large) {
 {/literal}
 {/if}
 {literal}
+	var showtexts = true;
+	function toggleTexts()
+	{
+		var button = document.getElementById('toggletexts');
+		var div = document.getElementById('imagetexts');
+		showtexts = !showtexts;
+		if (showtexts) {
+			button.value = "Hide texts";
+			div.style.display = 'block';
+		} else {
+			button.value = "Show texts";
+			div.style.display = 'none';
+		}
+	}
 	function getXMLRequestObject() // stolen from admin/moderation.js
 	{
 		var xmlhttp=false;
@@ -170,6 +189,8 @@ function setimgsize(large) {
 		if (!id || id != curedit) {
 			return;
 		}
+		var button = document.getElementById('note_edit_' + id);
+		button.value = 'edit box';
 		curedit = 0;
 		dragging = -1;
 		var area = document.getElementById("notearea"+id);
@@ -180,9 +201,8 @@ function setimgsize(large) {
 	function drawedit(area, edbox, x1, x2, y1, y2)
 	{
 		var img = area.geoimg;
-		var padding = gn.__getPadding(img);
-		var dx = padding[0];
-		var dy = padding[1];
+		var dx = imgpaddborderx;
+		var dy = imgpaddbordery;
 		if (img.offsetParent) { // try img.x,img.y otherwise?
 			dx += img.offsetLeft;
 			dy += img.offsetTop;
@@ -191,22 +211,19 @@ function setimgsize(large) {
 		dragx2 = x2;
 		dragy1 = y1;
 		dragy2 = y2;
-		var borderedbox = 1; // FIXME hard coded
+
 		edbox.style.left = (x1 + dx) + 'px';
 		edbox.style.top = (y1 + dy) + 'px';
-		edbox.style.width = (x2 - x1 + 1 - 2*borderedbox) + 'px';
-		edbox.style.height = (y2 - y1 + 1 - 2*borderedbox) + 'px';
-		var bborder = 1; // FIXME hard coded
-		var bwidth = 3 + 2*bborder; // FIXME hard coded
-		var bheight = 3 + 2*bborder; // FIXME hard coded
-		var xarray = [ 0, Math.floor((x2 - x1 + 1 - bwidth)/2),  x2 - x1 - bwidth + 1 ];
-		var yarray = [ 0, Math.floor((y2 - y1 + 1 - bheight)/2), y2 - y1 - bheight + 1 ];
+		edbox.style.width = (x2 - x1 + 1 - edboxbordersx) + 'px';
+		edbox.style.height = (y2 - y1 + 1 - edboxbordersy) + 'px';
+		var xarray = [ 0, Math.floor((x2 - x1 + 1 - bbwidth)/2),  x2 - x1 - bbwidth + 1 ];
+		var yarray = [ 0, Math.floor((y2 - y1 + 1 - bbheight)/2), y2 - y1 - bbheight + 1 ];
 		for (var j = 0; j <= 2; ++j) {
 			for (var i = 0; i <= 2; ++i) {
 				//var ebbut = document.getElementById("noteboxedit"+i+j);
 				var ebbut = editbuttons[j*3+i];
-				ebbut.style.left = (xarray[i]-bborder) + 'px';
-				ebbut.style.top = (yarray[j]-bborder) + 'px';
+				ebbut.style.left = (xarray[i]-edboxborderx) + 'px';
+				ebbut.style.top = (yarray[j]-edboxbordery) + 'px';
 				ebbut.style.display = 'block';
 			}
 		}
@@ -218,6 +235,8 @@ function setimgsize(large) {
 			stopedit(curedit);
 		}
 		curedit = id;
+		var button = document.getElementById('note_edit_' + id);
+		button.value = 'stop editing';
 		var area = document.getElementById("notearea"+id);
 		var edbox = document.getElementById("noteboxedit");
 		var box = area.geobox;
@@ -393,10 +412,27 @@ function setimgsize(large) {
 		var noteid = -newnotes;
 		var img = document.getElementById('gridimage');
 
+		var dw = img.parentNode.clientWidth;
+		var dh = img.parentNode.clientHeight;
+		var sx = img.parentNode.scrollLeft; //FIXME portable?
+		var sy = img.parentNode.scrollTop;  //FIXME portable?
+
+		var width = Math.ceil(15*imgwidth/stdwidth);
+		var height = Math.ceil(15*imgheight/stdheight);
+
+		// FIXME this needs more thought: scrolling + borders + padding ...
+		var miny = 0;
+		var maxy = imgheight - 1;
+		var minx = sx;
+		var maxx = Math.min(sx + dw - 1, imgwidth - 1);
+
+		var x1 = Math.floor((minx + maxx - width) / 2);
+		var y1 = Math.floor((miny + maxy - height) / 2);
+		var x2 = x1 + width - 1;
+		var y2 = y1 + height - 1;
+
 		var area = document.createElement('area');
 		area.id = "notearea" + noteid;
-		var x2 = Math.ceil(15*imgwidth/stdwidth)-1;
-		var y2 = Math.ceil(15*imgheight/stdheight)-1;
 		area.shape = 'rect';
 		area.noHref = true;
 
@@ -415,7 +451,7 @@ function setimgsize(large) {
 		var nmap = document.getElementById('notesmap');
 		var pdiv = document.getElementById('mainphoto');
 
-		gn.addNote(area, box, txt, nmap, pdiv, pdiv, 0, 0, x2, y2, img, 'visible', true, noteid);
+		gn.addNote(area, box, txt, nmap, pdiv, pdiv, x1, y1, x2, y2, img, 'visible', true, noteid);
 
 		var head = document.createElement('h4');
 		head.appendChild(document.createTextNode('New annotation #'+-noteid));
@@ -483,9 +519,18 @@ function setimgsize(large) {
 
 		var forms = document.getElementById('noteforms');
 		var addbutton = document.getElementById('addbutton');
-		forms.insertBefore(head, addbutton);
-		forms.insertBefore(form, addbutton);
+		//forms.insertBefore(head, addbutton);
+		//forms.insertBefore(form, addbutton);
+		// FIXME forms.insertBefore(newele, forms.firstChild)
+		forms.appendChild(head, addbutton);
+		forms.appendChild(form, addbutton);
+
 		statuschanged(area);
+
+		if (form.scrollIntoView) {
+			form.scrollIntoView(true);
+		}
+		startedit(noteid);
 	}
 	function cancelEvent(e) {
 		if (window.event) {
@@ -517,6 +562,7 @@ function setimgsize(large) {
 		var dh = edbox.parentNode.clientHeight;
 		var sx = edbox.parentNode.scrollLeft; //FIXME portable?
 		var sy = edbox.parentNode.scrollTop;  //FIXME portable?
+		// FIXME this needs more thought: scrolling + borders + padding ...
 		dragminx = sx;
 		dragmaxx = Math.min(sx + dw - 1, imgwidth - 1);
 
@@ -586,6 +632,19 @@ function setimgsize(large) {
 		return false;
 	}
 	function initnoteedit() {
+		var img = document.getElementById('gridimage');
+		var edbox = document.getElementById('noteboxedit');
+		var editbuttons0 = document.getElementById('noteboxedit00');
+		imgpaddborderx = gn.getStylePX(img, 'border-left-width') + gn.getStylePX(img, 'padding-left');
+		imgpaddbordery = gn.getStylePX(img, 'border-top-width') + gn.getStylePX(img, 'padding-top');
+		bbwidth = gn.getStylePX(editbuttons0, 'border-left-width') + gn.getStylePX(editbuttons0, 'border-right-width') + gn.getStylePX(editbuttons0, 'width');
+		bbheight = gn.getStylePX(editbuttons0, 'border-top-width') + gn.getStylePX(editbuttons0, 'border-bottom-width') + gn.getStylePX(editbuttons0, 'height');
+		edboxborderx = gn.getStylePX(edbox, 'border-left-width');
+		edboxbordery = gn.getStylePX(edbox, 'border-top-width');
+		edboxbordersx = edboxborderx + gn.getStylePX(edbox, 'border-right-width');
+		edboxbordersy = edboxbordery + gn.getStylePX(edbox, 'border-bottom-width');
+		//alert([imgpaddborderx, imgpaddbordery, bbwidth, bbheight, edboxborderx, edboxbordery, edboxbordersx, edboxbordersy].join(', '));
+
 		for (var j = 0; j <= 2; ++j) {
 			for (var i = 0; i <= 2; ++i) {
 				var ebbut = document.getElementById("noteboxedit"+i+j);
@@ -597,8 +656,8 @@ function setimgsize(large) {
 			}
 		}
 		var edbox = document.getElementById("noteboxedit");
-		//gn.addEvent(document, "mousemove", dragBox/*, true*/);
-		gn.addEvent(edbox.parentNode, "mousemove", dragBox/*, true*/);
+		gn.addEvent(document, "mousemove", dragBox/*, true*/);
+		//gn.addEvent(edbox.parentNode, "mousemove", dragBox/*, true*/);
 		gn.addEvent(document,"mouseup", stopDrag);
 		//gn.addEvent(edbox.parentNode, "mouseup",stopDrag);
 	}
@@ -607,15 +666,17 @@ function setimgsize(large) {
 /* ]]> */
 </script>
 <div>
-{if $showorig}
 	<form action="javascript:void(0);">
+{if $showorig}
 		<label for="imgsize">Image size:</label>
 		<select name="imgsize" id="imgsize" onchange="setimgsize(this.options[this.selectedIndex].value=='original');">
 			<option value="default" selected="selected">{$std_width}x{$std_height} (default)</option>
 			<option value="original">{$original_width}x{$original_height}</option>
 		</select>
-	</form>
 {/if}
+		<input type="button" value="Add annotation" onclick="addNote();" />
+		<input id="toggletexts" type="button" value="Hide texts" onclick="toggleTexts();" />
+	</form>
 </div>
 <div id="noteforms" style="max-height:50ex;overflow:auto;background-color:#eeeeee">
     {foreach item=note from=$notes}
@@ -638,9 +699,6 @@ function setimgsize(large) {
 		<input type="button" value="commit" id="note_commit_{$note->note_id}" onclick="commitNote({$note->note_id});" />
 	</form>
     {/foreach}
-     <form action="javascript:void(0);" id="addbutton">
-          <input type="button" value="Add annotation" onclick="addNote();" />
-     </form>
 </div>
 {else}
 <h2>Sorry, image not available</h2>

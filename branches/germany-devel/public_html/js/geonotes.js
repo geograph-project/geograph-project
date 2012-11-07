@@ -167,23 +167,57 @@ var gn = {
 		txt.style.visibility='visible';
 	},
 
-	__getPadding: function(img) {
+	capitalize: function(s) {
+		return s.charAt(0).toUpperCase() + s.slice(1);
+	},
+
+	convStyle: function(s) {
+		var parts = s.split('-');
+		var ret = parts[0];
+		for (var i = 1; i < parts.length; ++i) {
+			ret += gn.capitalize(parts[i]);
+		}
+		return ret;
+	},
+
+	getStylePX: function(ele, stx) {
 		if(window.getComputedStyle) {
-			var paddingleft=window.getComputedStyle(img, null).getPropertyValue('padding-left');
-			var paddingtop=window.getComputedStyle(img, null).getPropertyValue('padding-top');
-		} else if (img.currentStyle) {
-			var paddingleft = img.currentStyle.paddingLeft;
-			var paddingtop = img.currentStyle.paddingTop;
+			var style = window.getComputedStyle(ele, null);
+			var x = style.getPropertyValue(stx);
+		} else if (ele.currentStyle) {
+			var x = ele.currentStyle[gn.convStyle(stx)];
+		} else {
+			return 0;
+		}
+		if (x.substr(x.length-2) != 'px') {
+			return 0;
+		}
+		x=parseInt(x.substr(0,x.length-2));
+		return x;
+	},
+
+	getStyleXY: function(ele, stx, sty) {
+		if(window.getComputedStyle) {
+			var style = window.getComputedStyle(ele, null);
+			var x = style.getPropertyValue(stx);
+			var y = style.getPropertyValue(sty);
+		} else if (ele.currentStyle) {
+			var x = ele.currentStyle[gn.convStyle(stx)];
+			var y = ele.currentStyle[gn.convStyle(sty)];
 		} else {
 			return [ 0, 0 ];
 		}
-		if (  paddingleft.substr(paddingleft.length-2) != 'px'
-		    ||paddingtop.substr(paddingtop.length-2) != 'px') {
+		if (  x.substr(x.length-2) != 'px'
+		    ||y.substr(y.length-2) != 'px') {
 			return [ 0, 0 ];
 		}
-		paddingleft=parseInt(paddingleft.substr(0,paddingleft.length-2));
-		paddingtop=parseInt(paddingtop.substr(0,paddingtop.length-2));
-		return [ paddingleft, paddingtop ];
+		x=parseInt(x.substr(0,x.length-2));
+		y=parseInt(y.substr(0,y.length-2));
+		return [ x, y ];
+	},
+
+	__getPadding: function(ele) {
+		return gn.getStyleXY(ele, 'padding-left', 'padding-top');
 	},
 
 	__getParent: function (el, pTagName) {
