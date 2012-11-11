@@ -30,8 +30,7 @@ require_once('geograph/uploadmanager.class.php');
 
 init_session();
 
-//you must be logged in to request changes
-$USER->mustHavePerm("basic");
+$USER->mustHavePerm("basic"); // FIXME remove? not registered users should at least have $showorig = false?
 
 if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	// on change, return status + ':' + id
@@ -48,9 +47,6 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	//    0:  applied changes
 	//    1:  pending (awaiting moderation)
 	//    2:  old values = new values, no changes made
-
-	// FIXME invalidate cache of view.php and geonotes.php on success
-	// FIXME also invalidate cache of geonotes.php when changing image details
 
 	if (  !isset($_REQUEST['id'])
 	    ||!isset($_REQUEST['imageid'])
@@ -149,7 +145,7 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	$ticket->setSuggester($USER->user_id,$USER->realname);
 	if ($ismoderator && !$isowner)
 		$ticket->setModerator($USER->user_id);
-	//$ticket->setType('normal'); // FIXME?
+	//$ticket->setType('normal');
 	$ticket->setPublic('everyone'); // FIXME?
 	$ticket->setImage($gridimage_id);
 	$mod = !($isowner||$ismoderator); # FIXME change to something like $mod=!($isowner||$ismoderator&&$immediate) with $immediate corresponding to some new control...
@@ -203,7 +199,6 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	$smarty = new GeographPage;
 	$ab=floor($image->gridimage_id/10000);
 	$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
-	#FIXME change our cache_id accordingly?
 	exit;
 }
 
@@ -229,9 +224,8 @@ if (isset($_GET['id']))
 
 	$ab=floor($id/10000);
 
-	//$cacheid="geonote$ab|{$id}|{$isowner}_{$ismoderator}";
-	$cacheid="img$ab|{$id}|notes|{$USER->user_id}_{$isowner}_{$ismoderator}"; # FIXME is caching still sensible?
 	// cache id must depend on user as we also display pending changes made by the user...
+	$cacheid="img$ab|{$id}|notes|{$USER->user_id}_{$isowner}_{$ismoderator}"; # FIXME is caching still sensible?
 
 	//is the image accepted? - otherwise, only the owner and administrator should see it
 	if (!$isowner&&!$ismoderator) {

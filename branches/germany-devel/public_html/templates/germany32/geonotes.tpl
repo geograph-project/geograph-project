@@ -2,7 +2,7 @@
 
 {* TODO
 * move more code to geonotes.js?
-* note text: create links ([[AB1234]] or [[12345]] or even https?://.*)
+* note text: convert https?://.*
 * replace geonotewidth,... hack with something sensible,
    e.g. var initialvalus = { id1 : { 'x1' : ... } ... }
 * use a.getAttribute('b') etc. instead of a.b?
@@ -12,8 +12,7 @@
 * imagemap is only fallback if javascript is not enabled
    => set img.usemap = null inside gn.__initImage(), ignore areas without corresponding
       box and note, there as well as in gn.addNote()
-* move everything (besides references to area) from txt/box to area (and finally to something like gn.annotation[id],
-  i.e. use something like gn.annotation[id].img instead of document.getElementById("notearea"+id).img
+* note boxes: convert <a> to <div> or are <a>'s tooltips as fallback sensible?
 * check if border size etc have been used correctly in coordinate calculations
   and make box position consistent with edit box position
 * display "unsaved changes" or "unmoderated changes"
@@ -22,10 +21,12 @@
 * "add note" can make a vertical scroll bar appear.
   Fix coordinate calculation for that case.
 * geonote.php: reverse order of notes (latest note = first)?
-* doubleclicking note => scroll form into view and start edit mode
 * check min/max values for edit box: when left part is not visible (scrolled out),
   moving a box to the left is impossible (by padding of img?).
   Also initial positions for new boxes should be checked.
+* Button "save all changes"
+* Translation
+* dark text on lighter background?
 *}
 {if $image}
 
@@ -43,7 +44,9 @@
     <a title="{$note->comment|escape:'html'}" id="notebox{$note->note_id}" href="#" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1-2}px;height:{$note->y2-$note->y1+1-2}px;z-index:{$note->z+50}" class="notebox"><span></span></a>
     {/foreach}
     {foreach item=note from=$notes}
-    <div id="notetext{$note->note_id}" class="geonote"><p>{$note->html()}</p></div>
+    <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p>
+    <hr /><input id="note_t_edit_{$note->note_id}" type="button" value="edit" onclick="return editNote('{$note->note_id}');"><input id="note_t_delete_{$note->note_id}" type="button" value="delete" onclick="return deleteNote('{$note->note_id}');">
+    </div>
     {/foreach}
     <div id="noteboxedit" class="noteboxedit">
       <div id="noteboxeditbg" class="noteboxeditbg"></div>
@@ -57,7 +60,7 @@
       <div id="noteboxedit21" class="noteboxbutton"></div>
       <div id="noteboxedit22" class="noteboxbutton"></div>
     </div>
-    <script type="text/javascript" src="/js/geonotes.js"></script>
+    <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
   </div>
 
   <div id="imagetexts">
@@ -123,7 +126,7 @@ var stdheight = {$std_height};
 {if $showorig}
 {literal}
 function setimgsize(large) {
-	stopedit(curedit);
+	stopEdit(curedit);
 	if (large) {
 {/literal}
 		imgurl = '{$orig_url}';
@@ -153,10 +156,10 @@ function setimgsize(large) {
 		var div = document.getElementById('imagetexts');
 		showtexts = !showtexts;
 		if (showtexts) {
-			button.value = "Hide texts";
+			button.value = "Hide description";
 			div.style.display = 'block';
 		} else {
-			button.value = "Show texts";
+			button.value = "Show description";
 			div.style.display = 'none';
 		}
 	}
@@ -184,7 +187,7 @@ function setimgsize(large) {
 
 		return xmlhttp;
 	}
-	function stopedit(id)
+	function stopEdit(id)
 	{
 		if (!id || id != curedit) {
 			return;
@@ -193,14 +196,13 @@ function setimgsize(large) {
 		button.value = 'edit box';
 		curedit = 0;
 		dragging = -1;
-		var area = document.getElementById("notearea"+id);
 		var edbox = document.getElementById("noteboxedit");
-		area.geonotehide = false;
+		gn.notes[id].hide = false;
 		edbox.style.display = 'none';
 	}
-	function drawedit(area, edbox, x1, x2, y1, y2)
+	function drawedit(id, edbox, x1, x2, y1, y2)
 	{
-		var img = area.geoimg;
+		var img = gn.notes[id].img;
 		var dx = imgpaddborderx;
 		var dy = imgpaddbordery;
 		if (img.offsetParent) { // try img.x,img.y otherwise?
@@ -220,7 +222,6 @@ function setimgsize(large) {
 		var yarray = [ 0, Math.floor((y2 - y1 + 1 - bbheight)/2), y2 - y1 - bbheight + 1 ];
 		for (var j = 0; j <= 2; ++j) {
 			for (var i = 0; i <= 2; ++i) {
-				//var ebbut = document.getElementById("noteboxedit"+i+j);
 				var ebbut = editbuttons[j*3+i];
 				ebbut.style.left = (xarray[i]-edboxborderx) + 'px';
 				ebbut.style.top = (yarray[j]-edboxbordery) + 'px';
@@ -229,45 +230,45 @@ function setimgsize(large) {
 		}
 		edbox.style.display = 'block';
 	}
-	function startedit(id)
+	function startEdit(id)
 	{
 		if (id != curedit) { // refreshes current edit frame otherwise
-			stopedit(curedit);
+			stopEdit(curedit);
 		}
 		curedit = id;
 		var button = document.getElementById('note_edit_' + id);
 		button.value = 'stop editing';
-		var area = document.getElementById("notearea"+id);
-		var edbox = document.getElementById("noteboxedit");
-		var box = area.geobox;
-		area.geonotehide = true;
+		var noteinfo = gn.notes[id];
+		var box = noteinfo.box;
+		noteinfo.hide = true;
 		box.style.display = 'none';
 
-		var img = area.geoimg;
+		var img = noteinfo.img;
 		var width = img.width;
 		var height = img.height;
-		var x1 = Math.floor(area.geonotex1 * width / area.geonotewidth);
-		var x2 = Math.floor(area.geonotex2 * width / area.geonotewidth);
-		var y1 = Math.floor(area.geonotey1 * height / area.geonoteheight);
-		var y2 = Math.floor(area.geonotey2 * height / area.geonoteheight);
+		var x1 = Math.floor(noteinfo.x1 * width / noteinfo.width);
+		var x2 = Math.floor(noteinfo.x2 * width / noteinfo.width);
+		var y1 = Math.floor(noteinfo.y1 * height / noteinfo.height);
+		var y2 = Math.floor(noteinfo.y2 * height / noteinfo.height);
 
-		drawedit(area, edbox, x1, x2, y1, y2);
+		var edbox = document.getElementById("noteboxedit");
+		drawedit(id, edbox, x1, x2, y1, y2);
 	}
-	function toggleedit(id)
+	function toggleEdit(id)
 	{
 		if (id == curedit) {
-			stopedit(id);
+			stopEdit(id);
 		} else {
-			startedit(id);
+			startEdit(id);
 		}
 	}
-	function statuschanged(area)
+	function statusChanged(id)
 	{
-		var id = area.noteid;
 		var form = document.getElementById("note_form_"+id);
-		if (area.geonoteunsavedchanges) {
+		var noteinfo = gn.notes[id];
+		if (noteinfo.unsavedchanges) {
 			form.className = "noteformunsaved";
-		} else if (area.geonotependingchanges) {
+		} else if (noteinfo.pendingchanges) {
 			form.className = "noteformpending";
 			// FIXME disable commit button?
 		} else {
@@ -277,8 +278,7 @@ function setimgsize(large) {
 	}
 	function commitNote(id)
 	{
-		var area = document.getElementById("notearea"+id);
-		//var noteid = area.id.substr(8);
+		var noteinfo = gn.notes[id];
 		var elcommit = document.getElementById("note_commit_"+id);
 		elcommit.disabled = true;
 		var elz = document.getElementById("note_z_"+id);
@@ -287,17 +287,17 @@ function setimgsize(large) {
 		var valtxt = eltxt.value;
 
 		var postdata = 'commit=1';
-		postdata += '&id=' + encodeURIComponent(area.geonoteid);
+		postdata += '&id=' + encodeURIComponent(noteinfo.id);
 		postdata += '&imageid=' + encodeURIComponent(imageid);
-		postdata += '&x1=' + encodeURIComponent(area.geonotex1);
-		postdata += '&y1=' + encodeURIComponent(area.geonotey1);
-		postdata += '&x2=' + encodeURIComponent(area.geonotex2);
-		postdata += '&y2=' + encodeURIComponent(area.geonotey2);
-		postdata += '&imgwidth=' + encodeURIComponent(area.geonotewidth);
-		postdata += '&imgheight=' + encodeURIComponent(area.geonoteheight);
+		postdata += '&x1=' + encodeURIComponent(noteinfo.x1);
+		postdata += '&y1=' + encodeURIComponent(noteinfo.y1);
+		postdata += '&x2=' + encodeURIComponent(noteinfo.x2);
+		postdata += '&y2=' + encodeURIComponent(noteinfo.y2);
+		postdata += '&imgwidth=' + encodeURIComponent(noteinfo.width);
+		postdata += '&imgheight=' + encodeURIComponent(noteinfo.height);
 		postdata += '&z=' + encodeURIComponent(valz);
 		postdata += '&comment=' + encodeURIComponent(valtxt);
-		postdata += '&status=' + area.geonotestatus;
+		postdata += '&status=' + noteinfo.status;
 
 		var url="/geonotes.php";
 		var req=getXMLRequestObject();
@@ -333,16 +333,16 @@ function setimgsize(large) {
 				return;
 			}
 
-			if (area.geonoteid < 0) {
+			if (noteinfo.id < 0) {
 				//FIXME error if parts.length < 3 || parts[2] not a number
-				area.geonoteid = parseInt(parts[2]);
+				noteinfo.id = parseInt(parts[2]);
 			}
 
-			area.geonotependingchanges = rcode == 1;
-			area.geonoteunsavedchanges = false; // FIXME disable editing until this moment?
+			noteinfo.pendingchanges = rcode == 1;
+			noteinfo.unsavedchanges = false; // FIXME disable editing until this moment?
 
 			elcommit.disabled = false;
-			statuschanged(area);
+			statusChanged(id);
 		}
 		/*url += '?' + postdata;
 		req.open("GET", url, true);
@@ -352,59 +352,78 @@ function setimgsize(large) {
 		//req.setRequestHeader("Connection", "close");
 		req.send(postdata);
 	}
-	function updatenotez(id) {
-		var area = document.getElementById("notearea"+id);
+	function updateNoteZ(id) {
+		var noteinfo = gn.notes[id];
 		var el = document.getElementById("note_z_"+id)
 		var val = parseInt(el.options[el.selectedIndex].value);
-		area.geonoteunsavedchanges = true;
-		var box = area.geobox;
-		if (box) {
-			box.style.zIndex = val + 50;
-		}
-		statuschanged(area);
+		noteinfo.unsavedchanges = true;
+		var box = noteinfo.box;
+		box.style.zIndex = val + 50;
+		statusChanged(id);
 	}
-	function updatenotestatus(id) {
-		var area = document.getElementById("notearea"+id);
+	function updateNoteStatus(id) {
+		var noteinfo = gn.notes[id];
 		var el = document.getElementById("note_status_"+id);
-		area.geonotestatus = el.options[el.selectedIndex].value;
-		area.geonoteunsavedchanges = true;
-		statuschanged(area);
+		noteinfo.status = el.options[el.selectedIndex].value;
+		noteinfo.unsavedchanges = true;
+		statusChanged(id);
 	}
-	function updatenotecomment(id) {
-		var area = document.getElementById("notearea"+id);
-		var el = document.getElementById("note_comment_"+id)
-		var val = el.value
-		area.title = val; // FIXME area.title='' if box exists?
-		area.geonoteunsavedchanges = true;
-		var box = area.geobox;
-		if (box) {
-			txt = box.geonote
-			if (txt) {
-				box.title = '';
-				/*while (txt.hasChildNodes()) {
-					txt.removeChild(txt.lastChild);
-				}*/
-				// <p> + val + </p>
-				var p = document.createElement('p');
-				//p.appendChild(document.createTextNode(val)); // FIXME create links? line breaks -> <br >, ...
-				var nlval = val.replace('\r\n', '\n');
-				var lines = nlval.split('\n');
-				for (var i = 0; i < lines.length-1; i++) {
-					p.appendChild(document.createTextNode(lines[i]));
-					p.appendChild(document.createElement('br'));
+	function handleLinks(node, str) {
+		// TODO we probably should introduce something like [[:url:href|text]] and [[:url:href]] which would become <a href="href">text</a> or <a href="href">Link</a>
+		//      would make parsing easier, no assumptions about probable urls needed... could easily introduce [[:whatever:...]] using the same code...
+
+		/*
+		  See GeographLinks() in functions.php:
+		  Find
+		       /(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/
+		       /(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/
+		       ( prepend http:// in second case )
+		  and create
+		       <span class="nowrap"><a title="URL" rel="nofollow" href="URL" target="_blank">Link</a><img class="externallink" alt="External link" title="External link - opens in a new window" src="/img/external.png" width="10" height="10"/></span>
+
+		*/
+		node.appendChild(document.createTextNode(str)); //TODO
+	}
+	function makeText(node, line) {
+		//node.appendChild(document.createTextNode(line));
+		var re = /(.*?)(\[\[[A-Za-z]{0,3}[0-9]+\]\])|(.+)/g;
+		var match;
+		while (match = re.exec(line)) {
+			if (typeof(match[2]) !== "undefined"
+			    && match[2] !== '' /* FIXME should work around IE bug, but can't test it */ ) {
+				if (match[1].length) {
+					handleLinks(node, match[1]);
 				}
-				p.appendChild(document.createTextNode(lines[lines.length-1]));
-
-				//txt.appendChild(p);
-				txt.replaceChild(p, txt.lastChild);
-
-				/* reset box size */
-				gn.initBoxWidth(txt);
+				var link = document.createElement('a');
+				var linkdest = match[2].substr(2, match[2].length - 4);
+				link.href =  (/\d/.test(linkdest.charAt(0)) ? '/photo/' : '/gridref/') + linkdest;
+				link.appendChild(document.createTextNode(match[2]));
+				node.appendChild(link);
 			} else {
-				box.title = val;
+				handleLinks(node, match[3]);
 			}
 		}
-		statuschanged(area);
+	}
+	function updateNoteComment(id) {
+		var noteinfo = gn.notes[id];
+		var txt = noteinfo.note;
+		var el = document.getElementById("note_comment_"+id)
+		var val = el.value
+		noteinfo.unsavedchanges = true;
+		var p = document.createElement('p');
+		var nlval = val.replace('\r\n', '\n');
+		var lines = nlval.split('\n');
+		for (var i = 0; i < lines.length-1; i++) {
+			makeText(p, lines[i]);
+			p.appendChild(document.createElement('br'));
+		}
+		makeText(p, lines[lines.length-1]);
+
+		txt.replaceChild(p, txt.firstChild);
+
+		/* reset box size */
+		gn.initBoxWidth(txt);
+		statusChanged(id);
 	}
 	var newnotes = 0;
 	function addNote() {
@@ -448,6 +467,24 @@ function setimgsize(large) {
 		txt.className = 'geonote';
 		txt.appendChild(document.createElement('p'));
 
+		var ele;
+
+		//gn.addEvent(txt, "dblclick", function() { return editNote(noteid); } );
+		ele = document.createElement('hr');
+		txt.appendChild(ele);
+		ele = document.createElement('input');
+		ele.id = 'note_t_edit_' + noteid;
+		ele.type = 'button';
+		ele.value = 'edit';
+		gn.addEvent(ele, "click", function() { return editNote(noteid); } );
+		txt.appendChild(ele);
+		ele = document.createElement('input');
+		ele.id = 'note_t_delete_' + noteid;
+		ele.type = 'button';
+		ele.value = 'delete';
+		gn.addEvent(ele, "click", function() { return deleteNote(noteid); } );
+		txt.appendChild(ele);
+
 		var nmap = document.getElementById('notesmap');
 		var pdiv = document.getElementById('mainphoto');
 
@@ -457,7 +494,6 @@ function setimgsize(large) {
 		head.appendChild(document.createTextNode('New annotation #'+-noteid));
 		var form = document.createElement('form');
 		form.id = 'note_form_' + noteid;
-		var ele;
 
 		ele = document.createElement('label');
 		ele.for = 'note_z_' + noteid;
@@ -466,15 +502,11 @@ function setimgsize(large) {
 		ele = document.createElement('select');
 		ele.name = 'note_z_' + noteid;
 		ele.id = 'note_z_' + noteid;
-		gn.addEvent(ele,"change",function(){updatenotestatus(noteid);});
-		//opt = document.createElement('option');...
-		//ele.appendChild(opt);
-		//ele.options[0] = new Option("awaiting moderation", "pending", false, false);
+		gn.addEvent(ele,"change",function(){updateNoteStatus(noteid);});
 		for (var i=-10; i<=10; ++i) {
 			ele.options[i+10] = new Option(i, i, false, i==0);
 		}
 		form.appendChild(ele);
-		//form.appendChild(document.createElement('br'));
 		form.appendChild(document.createTextNode(' | '));
 
 		ele = document.createElement('label');
@@ -484,21 +516,18 @@ function setimgsize(large) {
 		ele = document.createElement('select');
 		ele.name = 'note_status_' + noteid;
 		ele.id = 'note_status_' + noteid;
-		gn.addEvent(ele,"change",function(){updatenotestatus(noteid);});
-		//opt = document.createElement('option');...
-		//ele.appendChild(opt);
+		gn.addEvent(ele,"change",function(){updateNoteStatus(noteid);});
 		//ele.options[0] = new Option("awaiting moderation", "pending", false, false);
 		ele.options[0] = new Option("visible", "visible", false, true);
 		ele.options[1] = new Option("deleted", "deleted", false, false);
 		form.appendChild(ele);
-		//form.appendChild(document.createElement('br'));
 		form.appendChild(document.createTextNode(' | '));
 
 		ele = document.createElement('input');
 		ele.id = 'note_edit_' + noteid;
 		ele.type = 'button';
 		ele.value = 'edit box';
-		gn.addEvent(ele,"click",function(){toggleedit(noteid);});
+		gn.addEvent(ele,"click",function(){toggleEdit(noteid);});
 		form.appendChild(ele);
 		form.appendChild(document.createElement('br'));
 
@@ -506,7 +535,7 @@ function setimgsize(large) {
 		ele.rows = 10;
 		ele.cols = 50;
 		ele.id = 'note_comment_' + noteid;
-		gn.addEvent(ele,"change",function(){updatenotecomment(noteid);});
+		gn.addEvent(ele,"change",function(){updateNoteComment(noteid);});
 		form.appendChild(ele);
 		form.appendChild(document.createElement('br'));
 
@@ -519,18 +548,15 @@ function setimgsize(large) {
 
 		var forms = document.getElementById('noteforms');
 		var addbutton = document.getElementById('addbutton');
-		//forms.insertBefore(head, addbutton);
-		//forms.insertBefore(form, addbutton);
-		// FIXME forms.insertBefore(newele, forms.firstChild)
-		forms.appendChild(head, addbutton);
-		forms.appendChild(form, addbutton);
+		forms.appendChild(head);
+		forms.appendChild(form);
 
-		statuschanged(area);
+		statusChanged(noteid);
 
 		if (form.scrollIntoView) {
 			form.scrollIntoView(true);
 		}
-		startedit(noteid);
+		startEdit(noteid);
 	}
 	function cancelEvent(e) {
 		if (window.event) {
@@ -547,12 +573,42 @@ function setimgsize(large) {
 			e.returnValue = false;
 		}
 	}
+	function deleteNote(noteid) {
+		form = document.getElementById('note_form_' + noteid);
+		if (form.scrollIntoView) {
+			form.scrollIntoView(true);
+		}
+		gn.hideNoteText();
+
+		var noteinfo = gn.notes[noteid];
+		var el = document.getElementById("note_status_"+noteid);
+		for (var i = 0; i < el.options.length; ++i) {
+			if (el.options[i].value == 'deleted') {
+				el.selectedIndex = i;
+				break;
+			}
+		}
+		noteinfo.status = el.options[el.selectedIndex].value;
+		noteinfo.unsavedchanges = true;
+		statusChanged(noteid);
+
+		return false;
+	}
+	function editNote(noteid) {
+		form = document.getElementById('note_form_' + noteid);
+		if (form.scrollIntoView) {
+			form.scrollIntoView(true);
+		}
+		gn.hideNoteText();
+		startEdit(noteid);
+
+		return false;
+	}
 	function startDrag(e, ix, iy) {
-		var mpos = gn.__getMousePosition(e); // TODO compare with mapping1.js
+		var mpos = gn.getMousePosition(e); // TODO compare with mapping1.js
 		dragmx = mpos[0];
 		dragmy = mpos[1];
 		dragging = ix+3*iy;
-		//alert(ix+","+iy+":"+dragging);
 		dragminy = 0;
 		dragmaxy = imgheight - 1;
 		dragminwidth = Math.ceil(15*imgwidth/stdwidth);
@@ -566,17 +622,11 @@ function setimgsize(large) {
 		dragminx = sx;
 		dragmaxx = Math.min(sx + dw - 1, imgwidth - 1);
 
-		/*if (edbox.parentNode.setCapture && !edbox.parentNode.addEventListener) {
-			edbox.parentNode.setCapture(false);
-		}*/
 		cancelEvent(e);
 		return false;
 	}
 	function stopDrag() {
 		dragging = -1;
-		/*if (document.releaseCapture) {
-			document.releaseCapture();
-		}*/
 	}
 	function dragBox(e) {
 		if (dragging == -1) {
@@ -584,7 +634,7 @@ function setimgsize(large) {
 		}
 		var ix = dragging % 3;
 		var iy = (dragging - ix) / 3;
-		var mpos = gn.__getMousePosition(e); // TODO compare with mapping1.js
+		var mpos = gn.getMousePosition(e); // TODO compare with mapping1.js
 
 		var dx = mpos[0] - dragmx;
 		var dy = mpos[1] - dragmy;
@@ -616,22 +666,22 @@ function setimgsize(large) {
 		}
 		dragmx = mpos[0];
 		dragmy = mpos[1];
-		var area = document.getElementById("notearea"+curedit);
+		var noteinfo = gn.notes[curedit];
 		var edbox = document.getElementById("noteboxedit");
-		drawedit(area, edbox, newx1, newx2, newy1, newy2)
-		area.geonotex1 = newx1;
-		area.geonotex2 = newx2;
-		area.geonotey1 = newy1;
-		area.geonotey2 = newy2;
-		area.geonotewidth = imgwidth;
-		area.geonoteheight = imgheight;
-		area.geonoteunsavedchanges = true;
-		gn.recalcBox(area); // FIXME do that only in stopedit()?
-		statuschanged(area);
+		drawedit(curedit, edbox, newx1, newx2, newy1, newy2)
+		noteinfo.x1 = newx1;
+		noteinfo.x2 = newx2;
+		noteinfo.y1 = newy1;
+		noteinfo.y2 = newy2;
+		noteinfo.width = imgwidth;
+		noteinfo.height = imgheight;
+		noteinfo.unsavedchanges = true;
+		gn.recalcBox(curedit); // FIXME do that only in stopEdit()?
+		statusChanged(curedit);
 		cancelEvent(e);
 		return false;
 	}
-	function initnoteedit() {
+	function initNoteEdit() {
 		var img = document.getElementById('gridimage');
 		var edbox = document.getElementById('noteboxedit');
 		var editbuttons0 = document.getElementById('noteboxedit00');
@@ -651,17 +701,14 @@ function setimgsize(large) {
 				var ix = i;
 				var iy = j;
 				editbuttons[j*3+i] = ebbut;
-				//gn.addEvent(ebbut,"mousedown",function(ev){startDrag(ev, i, j);return false;}); // this happens all the time... need more coffee
-				gn.addEvent(ebbut,"mousedown",function(ix,iy){return function(ev){startDrag(ev, ix, iy);return false;}}(i,j));
+				gn.addEvent(ebbut,"mousedown",function(ix,iy){return function(ev){return startDrag(ev, ix, iy);}}(i,j));
 			}
 		}
 		var edbox = document.getElementById("noteboxedit");
-		gn.addEvent(document, "mousemove", dragBox/*, true*/);
-		//gn.addEvent(edbox.parentNode, "mousemove", dragBox/*, true*/);
-		gn.addEvent(document,"mouseup", stopDrag);
-		//gn.addEvent(edbox.parentNode, "mouseup",stopDrag);
+		gn.addEvent(document, "mousemove", dragBox);
+		gn.addEvent(document, "mouseup", stopDrag);
 	}
-	gn.addEvent(window,"load",initnoteedit);
+	gn.addEvent(window,"load",initNoteEdit);
 {/literal}
 /* ]]> */
 </script>
@@ -672,30 +719,31 @@ function setimgsize(large) {
 		<select name="imgsize" id="imgsize" onchange="setimgsize(this.options[this.selectedIndex].value=='original');">
 			<option value="default" selected="selected">{$std_width}x{$std_height} (default)</option>
 			<option value="original">{$original_width}x{$original_height}</option>
-		</select>
+		</select> |
 {/if}
-		<input type="button" value="Add annotation" onclick="addNote();" />
-		<input id="toggletexts" type="button" value="Hide texts" onclick="toggleTexts();" />
+		<input type="button" value="Add annotation" onclick="addNote();" /> |
+		<input id="toggletexts" type="button" value="Hide description" onclick="toggleTexts();" /> |
+		<a href="/photo/{$image->gridimage_id}" target="_blank">Open photo page in new window.</a>
 	</form>
 </div>
-<div id="noteforms" style="max-height:50ex;overflow:auto;background-color:#eeeeee">
+<div id="noteforms" class="noteforms">
     {foreach item=note from=$notes}
 	<h4>Annotation #{$note->note_id}</h4>
 	<form action="javascript:void(0);" id="note_form_{$note->note_id}" class="{if $note->pendingchanges}noteformpending{else}noteform{/if}">
 		<label for="note_z_{$note->note_id}">z:</label>
-		<select name="note_z_{$note->note_id}" id="note_z_{$note->note_id}" onchange="updatenotez({$note->note_id});">
+		<select name="note_z_{$note->note_id}" id="note_z_{$note->note_id}" onchange="updateNoteZ({$note->note_id});">
 		{section name=zloop start=0 loop=21}{* no negative values... *}
 			<option value="{$smarty.section.zloop.index-10}"{if $smarty.section.zloop.index-10==$note->z} selected="selected"{/if}>{$smarty.section.zloop.index-10}</option>
 		{/section}
 		</select> |
 		<label for="note_status_{$note->note_id}">status:</label>
-		<select name="note_status_{$note->note_id}" id="note_status_{$note->note_id}" onchange="updatenotestatus({$note->note_id});">
+		<select name="note_status_{$note->note_id}" id="note_status_{$note->note_id}" onchange="updateNoteStatus({$note->note_id});">
 			<option value="pending"{if $note->status=='pending'} selected="selected"{/if}>awaiting moderation</option>
 			<option value="visible"{if $note->status=='visible'} selected="selected"{/if}>visible</option>
 			<option value="deleted"{if $note->status=='deleted'} selected="selected"{/if}>deleted</option>
 		</select> |
-		<input type="button" value="edit box" id="note_edit_{$note->note_id}" onclick="toggleedit({$note->note_id});" /><br />
-		<textarea name="note_comment_{$note->note_id}" id="note_comment_{$note->note_id}" cols="50" rows="10" onchange="updatenotecomment({$note->note_id});">{$note->html(false)}</textarea><br />
+		<input type="button" value="edit box" id="note_edit_{$note->note_id}" onclick="toggleEdit({$note->note_id});" /><br />
+		<textarea name="note_comment_{$note->note_id}" id="note_comment_{$note->note_id}" cols="50" rows="10" onchange="updateNoteComment({$note->note_id});">{$note->comment|escape:'html'}</textarea><br />
 		<input type="button" value="commit" id="note_commit_{$note->note_id}" onclick="commitNote({$note->note_id});" />
 	</form>
     {/foreach}

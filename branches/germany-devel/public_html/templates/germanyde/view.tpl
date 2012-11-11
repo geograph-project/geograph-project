@@ -32,19 +32,24 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
 {/dynamic}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
-	{if $image->original_width}
-		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">Andere Größen</a></div>
-	{elseif $user->user_id eq $image->user_id}
-		<div class="caption640" style="text-align:right;"><a href="/resubmit.php?id={$image->gridimage_id}">Größere Version hochladen</a></div>
-	{/if}
+        {if $image->original_width || $user->user_id eq $image->user_id || $notes || $user->registered}
+	<div class="caption640" style="text-align:right;">
 	{if $notes}
 		{if $user->registered}
-		<div class="caption640" style="text-align:right;">Mauszeiger über Bild bewegen um <a href="/geonotes.php?id={$image->gridimage_id}">Beschriftungen</a> zu zeigen.</div>
+		Mauszeiger über Bild bewegen um <a href="/geonotes.php?id={$image->gridimage_id}">Beschriftungen</a> zu zeigen
 		{else}
-		<div class="caption640" style="text-align:right;">Mauszeiger über Bild bewegen um Beschriftungen zu zeigen.</div>
+		Mauszeiger über Bild bewegen um Beschriftungen zu zeigen
 		{/if}
 	{elseif $user->registered}
-		<div class="caption640" style="text-align:right;"><a href="/geonotes.php?id={$image->gridimage_id}">Bild beschriften</a></div>
+		<a href="/geonotes.php?id={$image->gridimage_id}">Bild beschriften</a>
+	{/if}
+	{if ($image->original_width || $user->user_id eq $image->user_id) && ($notes || $user->registered)}|{/if}
+	{if $image->original_width}
+		<a href="/more.php?id={$image->gridimage_id}">Andere Größen</a>
+	{elseif $user->user_id eq $image->user_id}
+		<a href="/resubmit.php?id={$image->gridimage_id}">Größere Version hochladen</a>
+	{/if}
+	</div>
 	{/if}
   <div class="img-shadow" id="mainphoto">{if $notes}{$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\"")}{else}{$image->getFull()}{/if}
   {if $notes}
@@ -57,9 +62,9 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
     <a title="{$note->comment|escape:'html'}" id="notebox{$note->note_id}" href="#" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1}px;height:{$note->y2-$note->y1+1}px;z-index:{$note->z+50}" class="notebox"><span></span></a>
     {/foreach}
     {foreach item=note from=$notes}
-    <div id="notetext{$note->note_id}" class="geonote"><p>{$note->html()}</p></div>
+    <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p></div>
     {/foreach}
-    <script type="text/javascript" src="/js/geonotes.js"></script>
+    <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
   {/if}
   </div>
 
