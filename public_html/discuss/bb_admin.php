@@ -19,6 +19,7 @@ $isModAdmin=$isMod||$isTicketMod||$isMapMod||$isAdmin;
 $useGoogleApi=!empty($CONF['google_maps_api_key']);
 
 $static_host = $CONF['STATIC_HOST']; 
+$static_url = "http://{$CONF['STATIC_HOST']}/discuss";
 
 function get_microtime() {
 $mtime=explode(' ',microtime());
@@ -76,7 +77,7 @@ if($handle=@opendir($GLOBALS['pathToFiles'].'img/forum_icons')) {
 $ss=0;
 while (($file=readdir($handle))!==false) {
 if ($file != '.' && $file != '..' and (substr(strtolower($file),-3)=='gif' OR substr(strtolower($file),-3)=='jpg' OR substr(strtolower($file),-4)=='jpeg')) {
-$iconList.="<a href=\"JavaScript:paste_strinL('{$file}')\" onMouseOver=\"window.status='{$GLOBALS['l_forumIcon']}: {$file}'; return true\"><img src=\"{$GLOBALS['static_url']}/img/forum_icons/{$file}\" border=0 alt=\"{$file}\"></a>&nbsp;&nbsp;";
+$iconList.="<a href=\"#\" onclick=\"return paste_strinL('{$file}')\" onMouseOver=\"window.status='{$GLOBALS['l_forumIcon']}: {$file}'; return true\"><img src=\"{$GLOBALS['static_url']}/img/forum_icons/{$file}\" border=0 alt=\"{$file}\"></a>&nbsp;&nbsp;";
 $ss++;
 if ($ss==5) {
 $ss=0;
