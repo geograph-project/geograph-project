@@ -672,6 +672,46 @@ DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,
 #DELETE FROM `loc_hier` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000;#  Betroffene Datensätze:  16
 #DELETE FROM `gridsquare_percentage` WHERE level=7 AND community_id in (13001000,13002000,13005000,13006000) OR community_id between 13051000 and 13062000
 
+
+
+
+#CREATE TABLE IF NOT EXISTS `fn_annotation_rows` (
+#  `file` varchar(500) NOT NULL,
+#  `image_id` varchar(36) default NULL,
+#  `user_id` varchar(36) default NULL,
+#  `username` varchar(128) default NULL,
+#  `added` int(10) unsigned default NULL,
+#  `modified` int(10) unsigned default NULL,
+#  `annotation` text,
+#  `annotation_id` varchar(255) NOT NULL default '',
+#  `annotation_title` varchar(255) default NULL,
+#  `annotation_author` varchar(255) default NULL,
+#  `annotation_boundingbox` varchar(100) default NULL,
+#  `annotation_content` text,
+#  PRIMARY KEY  (`annotation_id`)
+#) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+#CREATE TABLE IF NOT EXISTS `gridimage_notes` (
+#  `note_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+#  `user_id` int(10) unsigned NOT NULL,
+#  `gridimage_id` int(10) unsigned NOT NULL,
+#  `x1` int (10) unsigned NOT NULL,
+#  `y1` int (10) unsigned NOT NULL,
+#  `x2` int (10) unsigned NOT NULL,
+#  `y2` int (10) unsigned NOT NULL,
+#  `old_id` int(10) unsigned NOT NULL default 0,
+#  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+#  `status` enum('visible','pending','rejected','deleted','modified') NOT NULL default 'pending',
+#  `title` varchar(255) DEFAULT NULL,
+#  `comment` text,
+#  PRIMARY KEY  (`note_id`),
+#  KEY `gridimage_id` (`gridimage_id`)
+#) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+#  #`hidden` int(1) unsigned NOT NULL default 0,
+#  #`status` enum('visible','pending','rejected','deleted') NOT NULL default 'pending',
+
+#ALTER TABLE `gridimage_notes` ADD `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `old_id`;
+
 ALTER TABLE `loc_towns` CHANGE `s`  `s` enum('1','2','3','4','5','') NOT NULL DEFAULT '1';
 
 DROP TABLE `gridimage_notes`;
@@ -697,3 +737,5 @@ CREATE TABLE IF NOT EXISTS `gridimage_notes` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 ALTER TABLE `gridimage_ticket_item` ADD `note_id` int(10) unsigned DEFAULT NULL AFTER `field`;
+
+ALTER TABLE `user` ADD `calendar_public` enum('no','registered','everyone') NOT NULL DEFAULT 'no' AFTER `ticket_public`;

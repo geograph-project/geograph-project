@@ -25,8 +25,6 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-
-
 $smarty = new GeographPage;
 
 $month=(!empty($_GET['Month']))?intval($_GET['Month']):'';
@@ -43,10 +41,10 @@ $smarty->assign_by_ref('profile', $profile);
 $template=($month)?'explore_calendar_month.tpl':'explore_calendar_year.tpl';
 $cacheid="$year-$month";
 if ($imageid) {
-	$cacheid .= ".".$imageid;
+	$cacheid .= ".i".$imageid;
 }
 if ($uid) {
-	$cacheid .= ".".$uid;
+	$cacheid .= ".u".$uid;
 }
 if (isset($_GET['blank'])) {
 	$cacheid .= "blank";
@@ -70,6 +68,10 @@ if ($smarty->caching) {
 	} else {
 		$smarty->cache_lifetime = 3600*24*7; //7day cache
 	}
+}
+
+if ($uid && $profile->calendar_public != 'everyone') {
+	$USER->mustHavePerm("basic", $profile->calendar_public == 'registered' ? 0 : $uid);
 }
 
 function print_rp(&$in,$exit = false) {
