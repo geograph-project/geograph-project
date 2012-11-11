@@ -699,3 +699,7 @@ CREATE TABLE IF NOT EXISTS `gridimage_notes` (
 ALTER TABLE `gridimage_ticket_item` ADD `note_id` int(10) unsigned DEFAULT NULL AFTER `field`;
 
 ALTER TABLE `user` ADD `calendar_public` enum('no','registered','everyone') NOT NULL DEFAULT 'no' AFTER `ticket_public`;
+
+alter table geobb_users add user_show varchar(64) not null default '' after user_forums;
+
+ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant', 'mapmod', 'forum') NULL DEFAULT NULL;
