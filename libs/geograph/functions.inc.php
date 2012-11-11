@@ -188,7 +188,7 @@ function smarty_function_external($params)
 	global $CONF;
   	//get params and use intelligent defaults...
   	$href=str_replace(' ','+',$params['href']);
-  	if (strpos($href,'http://') !== 0)
+  	if (strpos($href,'http://') !== 0 && strpos($href,'https://') !== 0)
   		$href ="http://$href";
 
   	if (isset($params['text']))
@@ -206,10 +206,10 @@ function smarty_function_external($params)
 
   	if ($params['target'] == '_blank') {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img class=\"externallink\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	} else {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img class=\"externallink\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	}
 }
 
@@ -478,13 +478,13 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 /**
 * smarty wrapper to GeographLinks
 */
-function smarty_function_geographlinks($input,$thumbs = false) {
-	return GeographLinks($input,$thumbs);
+function smarty_function_geographlinks($input, $thumbs = false, $short = false, $newwindow = false) {
+	return GeographLinks($input,$thumbs,$short,$newwindow);
 }
 
 
 //replace geograph links
-function GeographLinks(&$posterText,$thumbs = false) {
+function GeographLinks(&$posterText, $thumbs = false, $short = false, $newwindow = false) {
 	global $imageCredits,$CONF,$global_thumb_count;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
@@ -504,7 +504,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 			}
 			//photo id?
 			if (is_numeric($g_id)) {
-				if ($global_thumb_count > $CONF['global_thumb_limit'] || $thumb_count > $CONF['post_thumb_limit']) {
+				if ($short || $global_thumb_count > $CONF['global_thumb_limit'] || $thumb_count > $CONF['post_thumb_limit']) {
 					$posterText = preg_replace("/\[?\[\[$prefix$g_id\]\]\]?/","[[<a href=\"http://{$server}/photo/$g_id\">$prefix$g_id</a>]]",$posterText);
 				} else {
 					if (!isset($g_image)) {
@@ -550,10 +550,14 @@ function GeographLinks(&$posterText,$thumbs = false) {
 	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
 		$posterText = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$posterText);
 	}
-	
-	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);
 
-	$posterText = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);
+	$targetstr = $newwindow ? ", 'target'=>'_blank'" : "";
+
+	# TODO we probably should introduce something like [[:url:href|text]] and [[:url:href]] which would become <a href="href">text</a> or <a href="href">Link</a>
+	#      would make parsing easier, no assumptions about probable urls needed... could easily introduce [[:whatever:...]] using the same code...
+	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"$targetstr))",$posterText);
+
+	$posterText = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"$targetstr))",$posterText);
 
 	return $posterText;
 }
