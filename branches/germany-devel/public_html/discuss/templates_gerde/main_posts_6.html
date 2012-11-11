@@ -4,6 +4,7 @@ function checkBrowser()
 {
 this.ver=navigator.appVersion;
 this.dom=document.getElementById?1:0;
+this.ie8=(this.ver.indexOf("MSIE 8")>-1 && this.dom)?1:0;
 this.ie7=(this.ver.indexOf("MSIE 7")>-1 && this.dom)?1:0;
 this.ie6=(this.ver.indexOf("MSIE 6")>-1 && this.dom)?1:0;
 this.ie5=(this.ver.indexOf("MSIE 5")>-1 && this.dom)?1:0;
@@ -42,7 +43,7 @@ else window.selection='';
 
 function getQuotation() {
 var bw=new checkBrowser();
-if (bw.ns6 || bw.ie5 || bw.ie6 || bw.ie7 || bw.ns4 || bw.safari || bw.opr) {
+if (bw.ns6 || bw.ie5 || bw.ie6 || bw.ie7 || bw.ie8 || bw.ns4 || bw.safari || bw.opr) {
 document.writeln('<a href="#" onclick="return paste_strinL(window.selection,1)" onMouseMove="pasteSel()">{$l_quoting}<'+'/a>');
 }
 }

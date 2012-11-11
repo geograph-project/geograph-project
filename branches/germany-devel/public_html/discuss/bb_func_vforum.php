@@ -57,6 +57,8 @@ $keyAr++;
 
 if(isset($mod_rewrite) and $mod_rewrite) $linkToForums="{$main_url}/{$forum}_0.html"; else $linkToForums="{$main_url}/{$indexphp}action=vtopic&amp;forum={$forum}";
 
+$checked = ((empty($showIds) && $forum != $CONF['forum_gridsquare']) || in_array($forum,$showIds))?' checked':'';
+
 $list_forums.=ParseTpl($tpl);
 $i=-$i;
 }
