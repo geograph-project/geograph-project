@@ -260,6 +260,19 @@
 
 
 <div class="field"> 
+	<label for="calendar_public">Persönlicher Kalender</label>
+	
+	<select name="calendar_public" id="calendar_public">
+		<option value="no">Mein persönlicher Kalender ist privat.</option>
+		<option value="registered" {if $profile->calendar_public eq 'registered'} selected{/if}>Der Kalender ist für angemeldete Teilnehmer sichtbar.</option>
+		<option value="everyone" {if $profile->calendar_public eq 'everyone'} selected{/if}>Mein persönlicher Kalender ist öffentlich.</option>
+	</select>
+	 
+	<div class="fieldnotes">Im persönlichen Kalender sieht man, wann welche Bilder aufgenommen wurden. Hier kann eingestellt werden, ob der Kalender öffentlich oder privat sein soll.</div>
+</div>
+
+
+<div class="field"> 
 	<label for="ticket_public">Anonymität in Tickets:</label>
 	
 	<select name="ticket_public" id="ticket_public">
