@@ -216,21 +216,6 @@ class GridImageNote
 	}
 
 	/**
-	* return comment as formatted html
-	*/
-	function html($substlinks=true)
-	{
-		$comment = htmlentities2($this->comment);
-		if ($substlinks) {
-			$comment = preg_replace('/\n/','<br />', $comment);
-			$comment = preg_replace('/\[\[(\d+)\]\]/','<a href="/photo/\\1">[[\\1]]</a>', $comment); # TODO add image title
-			$comment = preg_replace('/\[\[([a-zA-Z]{1,3}\d+)\]\]/','<a href="/gridref/\\1">[[\\1]]</a>', $comment);
-			# TODO http://XXXX
-		}
-		return $comment;
-	}
-
-	/**
 	* assign members from recordset containing required members
 	*/
 	function loadFromRecordset(&$rs)

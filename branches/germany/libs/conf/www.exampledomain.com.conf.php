@@ -512,3 +512,10 @@ $CONF['picnik_method'] = 'inabox'; //'inabox'|'redirect'
 
 #$CONF['log_script_folder'] = '/var/logs/geograph';	
 
+###################################
+
+$REVISIONS = array(
+#	"/templates/basic/css/basic.css"     => "0001",
+#	"/js/geonotes.js"                    => "0001",
+);
+
