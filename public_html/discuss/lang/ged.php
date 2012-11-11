@@ -420,5 +420,7 @@ $l_lastDiscussions2='aktuelle Themen';
 $l_show='Zeige';
 $l_next='Weiter';
 $l_prev='Zurück';
+$l_showrec='Unter "Letzte Diskussionen" zeigen?';
+$l_vpost='Diskussionen in';
 
 ?>

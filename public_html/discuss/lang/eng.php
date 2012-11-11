@@ -361,5 +361,7 @@ $l_lastDiscussions2='Recent Topics';
 $l_show='Show';
 $l_next='Next';
 $l_prev='Prev';
+$l_showrec='Show in Recent Topics?';
+$l_vpost='View or post in';
 
 ?>
