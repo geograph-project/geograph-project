@@ -260,7 +260,7 @@
 
 
 <div class="field"> 
-	<label for="calendar_public">Persönlicher Kalender</label>
+	<label for="calendar_public">Persönlicher Kalender:</label>
 	
 	<select name="calendar_public" id="calendar_public">
 		<option value="no">Mein persönlicher Kalender ist privat.</option>
