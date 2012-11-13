@@ -12,12 +12,12 @@
  * the notes can be specified using the title attribute. This works without
  * JavaScript.
  * If an area element of the image map has an id "noteareaNNNN", there must also
- * exist an element with id "noteboxNNNN" (might be a link with class notebox).
+ * exist an element with id "noteboxNNNN" (might be a div with class notebox).
  * This script tries to implement some mouse over event handling for that box.
  * Additionally, an element "notetextNNNN" is required (might be a div with class
- * geonote containing a p element). This script tries to show that element instead of
- * the usual tool tip. While displaying the note, the class of noteboxNNNN will
- * be changed by prepending "cur" to the class name.
+ * geonote). This script tries to show that element instead of the usual tool tip.
+ * While displaying the note, the class of noteboxNNNN will be changed by prepending
+ * "cur" to the class name.
  */
 
 var gn = {
@@ -39,10 +39,28 @@ var gn = {
 		}
 	},
 
+	__initImageInfo: function(img) {
+		var imginfo = {
+			'img' : img,
+			'notes' : [],
+		};
+		var paddinglt = gn.getStyleXY(img, 'padding-left', 'padding-top');
+		var borderlt  = gn.getStyleXY(img, 'border-left-width', 'border-top-width');
+		//var borderrb  = gn.getStyleXY(img, 'border-right-width', 'border-bottom-width');
+
+		imginfo['paddborderx'] = paddinglt[0] + borderlt[0];
+		imginfo['paddbordery'] = paddinglt[1] + borderlt[1];
+		//imginfo['bordersx'] = borderlt[0] + borderrb[0]
+		//imginfo['bordersy'] = borderlt[1] + borderrb[1]
+		return imginfo;
+	},
+
 	__initImage: function(img) {
 		var imageindex = gn.images.length++;
-		gn.images[imageindex] = { 'img' : img, 'notes' : [] }
+		var imginfo = gn.__initImageInfo(img);
+		gn.images[imageindex] = imginfo;
 		var mapName = img.getAttribute('usemap');
+		img.setAttribute('usemap', null);
 		if (mapName.substr(0,1) == '#') mapName = mapName.substr(1);
 		var mapObjs = document.getElementsByName(mapName);
 		if (mapObjs.length != 1) return;
@@ -53,53 +71,71 @@ var gn = {
 			if (boxes[j].getAttribute('shape').toLowerCase() == 'rect' && boxes[j].id.substr(0,8) == 'notearea') {
 				var curarea = boxes[j];
 				var noteid = curarea.id.substr(8);
-				var a = document.getElementById('notebox'+noteid);
+				var box = document.getElementById('notebox'+noteid);
 				var txt = document.getElementById('notetext'+noteid);
-				if (a && txt) {
+				if (box && txt) {
 					notelist[notelist.length] = noteid;
-					gn.notes[noteid] = {
+					var borderlt  = gn.getStyleXY(box, 'border-left-width', 'border-top-width');
+					var borderrb  = gn.getStyleXY(box, 'border-right-width', 'border-bottom-width');
+					var noteinfo = {
 						'area':           curarea,
-						'box':            a,
+						'box':            box,
 						'note':           txt,
 						'img':            img,
+						'imageinfo':      gn.images[imageindex],
 						'noteid':         noteid, /* corresponds to the element's id, never changes */
 						'id':             noteid, /* when creating a note, this changes to the actual note_id */
-						'x1':             curarea.getAttribute('geonotex1'),
-						'x2':             curarea.getAttribute('geonotex2'),
-						'y1':             curarea.getAttribute('geonotey1'),
-						'y2':             curarea.getAttribute('geonotey2'),
-						'width':          curarea.getAttribute('geonotewidth'),
-						'height':         curarea.getAttribute('geonoteheight'),
-						'status':         curarea.getAttribute('geonotestatus'),
-						'pendingchanges': curarea.getAttribute('geonotependingchanges')!='0',
+						'x1':             curarea.getAttribute('data-geonote-x1'),
+						'x2':             curarea.getAttribute('data-geonote-x2'),
+						'y1':             curarea.getAttribute('data-geonote-y1'),
+						'y2':             curarea.getAttribute('data-geonote-y2'),
+						'width':          curarea.getAttribute('data-geonote-width'),
+						'height':         curarea.getAttribute('data-geonote-height'),
+						'status':         curarea.getAttribute('data-geonote-status'),
+						'pendingchanges': curarea.getAttribute('data-geonote-pendingchanges')!='0',
 						'unsavedchanges': false,
 						'hidden'        : false,
-						'class'         : a.className,
+						'class'         : box.className,
+						'bordersx'      : borderlt[0] + borderrb[0],
+						'bordersy'      : borderlt[1] + borderrb[1],
 					};
+					gn.notes[noteid] = noteinfo;
 					curarea.title = '';
-					a.title = '';
-					var left=a.style.left;
-					var top=a.style.top;
+					var left=box.style.left;
+					var top=box.style.top;
 					if (left.substr(left.length-2) == 'px' && top.substr(top.length-2) == 'px') {
 						left=parseInt(left.substr(0,left.length-2))
 						top=parseInt(top.substr(0,top.length-2))
-						var padding = gn.__getPadding(img);
-						left+=padding[0];
-						top+=padding[1];
+						left += imginfo['paddborderx'];
+						top += imginfo['paddbordery'];
 						if (img.offsetParent) { // try img.x,img.y otherwise?
 							left+=img.offsetLeft;
 							top+=img.offsetTop;
 						}
-						a.style.left = left+'px';
-						a.style.top = top+'px';
+						box.style.left = left+'px';
+						box.style.top = top+'px';
 					}
-					gn.addEvent(a,"mouseover",
+					var width=box.style.width;
+					var height=box.style.height;
+					if (width.substr(width.length-2) == 'px' && height.substr(height.length-2) == 'px') {
+						width=parseInt(width.substr(0,width.length-2))
+						height=parseInt(height.substr(0,height.length-2))
+						width -= noteinfo['bordersx'];
+						height -= noteinfo['bordersy'];
+						box.style.width = width+'px';
+						box.style.height = height+'px';
+					}
+					// FIXME if data-geonote-XXX not present, use "current values", there? (test by comparing with null _and_ empty string)
+					// x1,y1,x2,y2 from noteinfo.area.coords
+					// width,height from noteinfo.img.width,noteinfo.img.height
+					// status: "unknown"? pendingchanges: false?
+					gn.addEvent(box,"mouseover",
 						function() {
 							clearTimeout(gn.hiderTimeout);
 						}
 					);
 					gn.initBoxWidth(txt);
-					gn.addEvent(a,"mouseover",gn.showNoteText);
+					gn.addEvent(box,"mouseover",gn.showNoteText);
 					gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
 				}
 			}
@@ -125,11 +161,12 @@ var gn = {
 		noteid = noteid.toString();
 		var notelist = gn.images[imageindex].notes;
 		notelist[notelist.length] = noteid;
-		gn.notes[noteid] = {
+		var noteinfo = {
 			'area':           area,
 			'box':            box,
 			'note':           txt,
 			'img':            img,
+			'imageinfo':      gn.images[imageindex],
 			'noteid':         noteid, /* corresponds to the element's id, never changes */           // FIXME rename to noteid_dom?
 			'id':             noteid, /* when creating a note, this changes to the actual note_id */ // FIXME rename to noteid_db?
 			'x1':             x1,
@@ -144,12 +181,17 @@ var gn = {
 			'hidden'        : false,
 			'class'         : box.className,
 		}
+		gn.notes[noteid] = noteinfo;
+
 		area.title = '';
-		box.title = '';
-		gn.recalcBox(noteid);
 
 		parea.appendChild(area);
 		pbox.appendChild(box);
+		var borderlt  = gn.getStyleXY(box, 'border-left-width', 'border-top-width');
+		var borderrb  = gn.getStyleXY(box, 'border-right-width', 'border-bottom-width');
+		noteinfo['bordersx'] = borderlt[0] + borderrb[0];
+		noteinfo['bordersy'] = borderlt[1] + borderrb[1];
+		gn.recalcBox(noteid);
 		gn.addEvent(box,"mouseover",
 			function() {
 				clearTimeout(gn.hiderTimeout);
@@ -222,17 +264,15 @@ var gn = {
 		return [ x, y ];
 	},
 
-	__getPadding: function(ele) {
-		return gn.getStyleXY(ele, 'padding-left', 'padding-top');
-	},
-
-	__getParent: function (el, pTagName) {
-		if (el == null)
-			return null;
-		else if (el.nodeType == 1 && el.tagName.toLowerCase() == pTagName.toLowerCase())
-			return el;
-		else
-			return gn.__getParent(el.parentNode, pTagName);
+	scanParents: function (el, idprefix) {
+		var len = idprefix.length;
+		while (el !== null) {
+			if (el.nodeType == 1 && el.id.slice(0, len) == idprefix) {
+				return el;
+			}
+			el = el.parentNode;
+		}
+		return el;
 	},
 
 	setBoxes: function(idlist,disp) {
@@ -244,12 +284,12 @@ var gn = {
 
 	recalcBox: function(noteid) { //, dx, dy) {
 		var noteinfo = gn.notes[noteid];
+		var imageinfo = noteinfo.imageinfo;
 		var img = noteinfo.img;
 		var width = img.width;
 		var height = img.height;
-		var padding = gn.__getPadding(img);
-		var dx = padding[0];
-		var dy = padding[1];
+		var dx = imageinfo['paddborderx'];
+		var dy = imageinfo['paddbordery'];
 		if (img.offsetParent) { // try img.x,img.y otherwise?
 			dx += img.offsetLeft;
 			dy += img.offsetTop;
@@ -259,34 +299,24 @@ var gn = {
 		var y1 = Math.floor(noteinfo.y1 * height / noteinfo.height);
 		var y2 = Math.floor(noteinfo.y2 * height / noteinfo.height);
 		noteinfo.area.coords = x1+","+y1+","+x2+","+y2;
-		var borderbox = 1; // FIXME hard coded: determine in init()
 		var box = noteinfo.box;
 		box.style.left = (x1 + dx) + 'px';
 		box.style.top = (y1 + dy) + 'px';
-		box.style.width = (x2 - x1 + 1 - 2*borderbox) + 'px';
-		box.style.height = (y2 - y1 + 1 - 2*borderbox) + 'px';
+		box.style.width = (x2 - x1 + 1 - noteinfo.bordersx) + 'px';
+		box.style.height = (y2 - y1 + 1 - noteinfo.bordersy) + 'px';
 		var txt = noteinfo.note;
 		txt.style.left='0px';
 		txt.style.top='0px';
 	},
 
-	recalcBoxes: function(img) { //,width,height) {
+	recalcBoxes: function(img) {
 		var imageindex = gn.findImage(img);
 		if (imageindex < 0)
 			return;
 		var idlist = gn.images[imageindex].notes;
 		gn.hideNoteText();
-		/*var width = img.width;
-		var height = img.height;
-		var padding = gn.__getPadding(img);
-		var dx = padding[0];
-		var dy = padding[1];
-		if (img.offsetParent) { // try img.x,img.y otherwise?
-			dx += img.offsetLeft;
-			dy += img.offsetTop;
-		}*/
 		for (var i = 0; i < idlist.length; i++) {
-			gn.recalcBox(idlist[i]);//, dx, dy);
+			gn.recalcBox(idlist[i]);
 		}
 	},
 
@@ -328,20 +358,17 @@ var gn = {
 	},
 
 	showNoteText: function(e) {
-		var lnk = null;
+		var ele = null;
 		if (window.event && window.event.srcElement) {
-			lnk = window.event.srcElement
+			ele = window.event.srcElement
 		} else if (e && e.target) {
-			lnk = e.target
+			ele = e.target
 		}
-		if (!lnk) return;
-		if (lnk.nodeName.toUpperCase() != 'A') {
-			// lnk is not actually the link -- ascend parents until we hit a link
-			lnk = gn.__getParent(lnk,"A");
+		box = gn.scanParents(ele, "notebox");
+		if (!box) {
+			return;
 		}
-		if (!lnk) return;
-		if (lnk.id.substr(0,7) != 'notebox') return;
-		var noteid = lnk.id.substr(7);
+		var noteid = box.id.substr(7);
 		
 		var noteinfo = gn.notes[noteid];
 		var txt = noteinfo.note;
@@ -358,13 +385,13 @@ var gn = {
 		var iw = noteinfo.img.clientWidth;
 		var ih = noteinfo.img.clientHeight;
 		var mpos = gn.getMousePosition(e); // TODO compare with mapping1.js
-		var epos = gn.getElePosition(lnk.parentNode);
-		var sx = lnk.parentNode.scrollLeft; //FIXME portable?
-		var sy = lnk.parentNode.scrollTop;  //FIXME portable?
-		var lnkx = parseInt(lnk.style.left.substr(0,lnk.style.left.length-2));
-		var lnky = parseInt(lnk.style.top.substr(0,lnk.style.top.length-2));
-		var lnkxctr = lnkx + lnk.clientWidth/2;
-		var lnkyctr = lnky + lnk.clientHeight/2;
+		var epos = gn.getElePosition(box.parentNode);
+		var sx = box.parentNode.scrollLeft; //FIXME portable?
+		var sy = box.parentNode.scrollTop;  //FIXME portable?
+		var boxx = parseInt(box.style.left.substr(0,box.style.left.length-2));
+		var boxy = parseInt(box.style.top.substr(0,box.style.top.length-2));
+		var boxxctr = boxx + box.clientWidth/2;
+		var boxyctr = boxy + box.clientHeight/2;
 		var x = mpos[0]-epos[0] + sx;
 		var y = mpos[1]-epos[1] + sy;
 
@@ -377,13 +404,13 @@ var gn = {
 		     at the side of the note where the mouse pointer is located.
 		*/
 
-		if (x < lnkxctr) {
+		if (x < boxxctr) {
 			x -= tw - 5;
 		} else {
 			x -= 5;
 		}
 
-		if (y < lnkyctr) {
+		if (y < boxyctr) {
 			y -= th - 5;
 		} else {
 			y -= 5;
@@ -404,7 +431,7 @@ var gn = {
 		txt.style.left = x+'px';
 		txt.style.top = y+'px';
 
-		lnk.className = 'cur' + noteinfo.class;
+		box.className = 'cur' + noteinfo.class;
 		txt.style.visibility = 'visible';
 	},
 
