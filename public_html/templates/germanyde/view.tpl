@@ -59,7 +59,7 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
     {/foreach}
     </map>
     {foreach item=note from=$notes}
-    <a title="{$note->comment|escape:'html'}" id="notebox{$note->note_id}" href="#" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1}px;height:{$note->y2-$note->y1+1}px;z-index:{$note->z+50}" class="notebox"><span></span></a>
+    <div id="notebox{$note->note_id}" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1}px;height:{$note->y2-$note->y1+1}px;z-index:{$note->z+50}" class="notebox"><span></span></div>
     {/foreach}
     {foreach item=note from=$notes}
     <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p></div>

@@ -133,8 +133,8 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	    || $y1 < 0 || $y2 >= $ih
 	    || $iw < $imagewidth || $ih < $imageheight
 	    || $z < -10 || $z > 10
-	    || ($x2 - $x1 + 1)*$imagewidth  < 15*$iw // minimal width/height in std size ("640"): 15 pixels
-	    || ($y2 - $y1 + 1)*$imageheight < 15*$ih
+	    || ($x2 - $x1 + 1)*$imagewidth  < 8*$iw // minimal width/height in std size ("640"): 8 pixels // FIXME hard coded...
+	    || ($y2 - $y1 + 1)*$imageheight < 8*$ih
 	    || ($note_id < 0) && $status != 'visible'
 	   ) {
 		print "-3:$note_id:invalid parameters";
