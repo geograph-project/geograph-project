@@ -20,6 +20,12 @@ Disallow: /
 User-agent: Fasterfox
 Disallow: /
 
+#User-agent: Pixray-Seeker
+#Disallow: /
+
+User-agent: Yandex
+Disallow: /
+
 User-Agent: seokicks
 Disallow: /
 #Does not respect Crawl-delay
