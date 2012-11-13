@@ -1,31 +1,25 @@
 {include file="_std_begin.tpl"}
 
 {* TODO
+* geonotes.js: don't set onload handler, this should be done by the page which includes the script
 * move more code to geonotes.js?
 * note text: convert https?://.*
-* replace geonotewidth,... hack with something sensible,
-   e.g. var initialvalus = { id1 : { 'x1' : ... } ... }
+* replace data-geonote-width,... hack with something sensible?
+   e.g. var initialvalues = { id1 : { 'x1' : ... } ... }
 * use a.getAttribute('b') etc. instead of a.b?
 * compatibility checks (test if _all_ needed functions are available early, i.e. in init routine)
 * test IE compatibility
 * implement _GET['note_id'] handling in geonotes.php for editimage.php
-* imagemap is only fallback if javascript is not enabled
-   => set img.usemap = null inside gn.__initImage(), ignore areas without corresponding
-      box and note, there as well as in gn.addNote()
-* note boxes: convert <a> to <div> or are <a>'s tooltips as fallback sensible?
-* check if border size etc have been used correctly in coordinate calculations
-  and make box position consistent with edit box position
 * display "unsaved changes" or "unmoderated changes"
 * display last error message or "no changed values"
 * "reset" button?
 * "add note" can make a vertical scroll bar appear.
   Fix coordinate calculation for that case.
 * geonote.php: reverse order of notes (latest note = first)?
-* check min/max values for edit box: when left part is not visible (scrolled out),
-  moving a box to the left is impossible (by padding of img?).
-  Also initial positions for new boxes should be checked.
-* Button "save all changes"
-* Translation
+* Initial positions for new boxes should be checked (scrolling, div width, padding, ...)
+* Position calculation for note text should be checked (scrolling, div width, padding, ...)
+* button "save all changes"
+* translation
 * dark text on lighter background?
 *}
 {if $image}
@@ -37,11 +31,11 @@
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
-    geonotewidth="{$note->init_imgwidth}" geonoteheight="{$note->init_imgheight}" geonotex1="{$note->init_x1}" geonotex2="{$note->init_x2}" geonotey1="{$note->init_y1}" geonotey2="{$note->init_y2}" geonotestatus="{$note->status}" geonotependingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
+    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
     {/foreach}
     </map>
     {foreach item=note from=$notes}
-    <a title="{$note->comment|escape:'html'}" id="notebox{$note->note_id}" href="#" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1-2}px;height:{$note->y2-$note->y1+1-2}px;z-index:{$note->z+50}" class="notebox"><span></span></a>
+    <div id="notebox{$note->note_id}" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1}px;height:{$note->y2-$note->y1+1}px;z-index:{$note->z+50}" class="notebox"><span></span></div>
     {/foreach}
     {foreach item=note from=$notes}
     <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p>
@@ -63,7 +57,7 @@
     <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
   </div>
 
-  <div id="imagetexts">
+  <div id="imagetexts" style="display:none">
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
      {if $image->title1 eq ''}
        <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
@@ -110,12 +104,12 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 /* <![CDATA[ */
 var curedit = 0;
 var dragx1, dragx2, dragy1, dragy2;
+var dragdx1, dragdx2, dragdy1, dragdy2, dragdxs, dragdys;
 var dragmx, dragmy;
-var minx, maxx, miny, maxy, minwidth, minheight;
 var bbwidth, bbheight;
 var edboxbordersx, edboxbordersy, edboxborderx, edboxbordery;
-var imgpaddborderx, imgpaddbordery;
 var dragging = -1;
+var minboxsize = 8; // FIXME hard coded
 var editbuttons = [];
 var imageid = {$image->gridimage_id};
 var imgurl = '{$img_url}';
@@ -125,7 +119,7 @@ var stdwidth = {$std_width};
 var stdheight = {$std_height};
 {if $showorig}
 {literal}
-function setimgsize(large) {
+function setImgSize(large) {
 	stopEdit(curedit);
 	if (large) {
 {/literal}
@@ -149,7 +143,7 @@ function setimgsize(large) {
 {/literal}
 {/if}
 {literal}
-	var showtexts = true;
+	var showtexts = false;
 	function toggleTexts()
 	{
 		var button = document.getElementById('toggletexts');
@@ -200,26 +194,23 @@ function setimgsize(large) {
 		gn.notes[id].hide = false;
 		edbox.style.display = 'none';
 	}
-	function drawedit(id, edbox, x1, x2, y1, y2)
+	function drawEdit(id, edbox, x1, x2, y1, y2)
 	{
-		var img = gn.notes[id].img;
-		var dx = imgpaddborderx;
-		var dy = imgpaddbordery;
+		var imageinfo = gn.notes[id].imageinfo;
+		var img = imageinfo.img;
+		var dx = imageinfo.paddborderx;
+		var dy = imageinfo.paddbordery;
 		if (img.offsetParent) { // try img.x,img.y otherwise?
 			dx += img.offsetLeft;
 			dy += img.offsetTop;
 		}
-		dragx1 = x1;
-		dragx2 = x2;
-		dragy1 = y1;
-		dragy2 = y2;
 
 		edbox.style.left = (x1 + dx) + 'px';
 		edbox.style.top = (y1 + dy) + 'px';
 		edbox.style.width = (x2 - x1 + 1 - edboxbordersx) + 'px';
 		edbox.style.height = (y2 - y1 + 1 - edboxbordersy) + 'px';
-		var xarray = [ 0, Math.floor((x2 - x1 + 1 - bbwidth)/2),  x2 - x1 - bbwidth + 1 ];
-		var yarray = [ 0, Math.floor((y2 - y1 + 1 - bbheight)/2), y2 - y1 - bbheight + 1 ];
+		var xarray = [ -bbwidth +1, Math.floor((x2 - x1 + 1 - bbwidth)/2),  x2 - x1 ];
+		var yarray = [ -bbheight+1, Math.floor((y2 - y1 + 1 - bbheight)/2), y2 - y1 ];
 		for (var j = 0; j <= 2; ++j) {
 			for (var i = 0; i <= 2; ++i) {
 				var ebbut = editbuttons[j*3+i];
@@ -252,7 +243,7 @@ function setimgsize(large) {
 		var y2 = Math.floor(noteinfo.y2 * height / noteinfo.height);
 
 		var edbox = document.getElementById("noteboxedit");
-		drawedit(id, edbox, x1, x2, y1, y2);
+		drawEdit(id, edbox, x1, x2, y1, y2);
 	}
 	function toggleEdit(id)
 	{
@@ -436,8 +427,8 @@ function setimgsize(large) {
 		var sx = img.parentNode.scrollLeft; //FIXME portable?
 		var sy = img.parentNode.scrollTop;  //FIXME portable?
 
-		var width = Math.ceil(15*imgwidth/stdwidth);
-		var height = Math.ceil(15*imgheight/stdheight);
+		var width = Math.ceil(minboxsize*imgwidth/stdwidth);
+		var height = Math.ceil(minboxsize*imgheight/stdheight);
 
 		// FIXME this needs more thought: scrolling + borders + padding ...
 		var miny = 0;
@@ -455,10 +446,9 @@ function setimgsize(large) {
 		area.shape = 'rect';
 		area.noHref = true;
 
-		var box = document.createElement('a');
+		var box = document.createElement('div');
 		box.id = "notebox" + noteid;
 		box.className = 'notebox';
-		box.href = '#';
 		box.style.zIndex = 0 + 50;
 		box.appendChild(document.createElement('span'));
 
@@ -469,7 +459,6 @@ function setimgsize(large) {
 
 		var ele;
 
-		//gn.addEvent(txt, "dblclick", function() { return editNote(noteid); } );
 		ele = document.createElement('hr');
 		txt.appendChild(ele);
 		ele = document.createElement('input');
@@ -606,26 +595,39 @@ function setimgsize(large) {
 	}
 	function startDrag(e, ix, iy) {
 		var mpos = gn.getMousePosition(e); // TODO compare with mapping1.js
+		var noteinfo = gn.notes[curedit];
+		var img = noteinfo.img;
+		var width = img.width;
+		var height = img.height;
+		dragx1 = Math.floor(noteinfo.x1 * width / noteinfo.width);
+		dragx2 = Math.floor(noteinfo.x2 * width / noteinfo.width);
+		dragy1 = Math.floor(noteinfo.y1 * height / noteinfo.height);
+		dragy2 = Math.floor(noteinfo.y2 * height / noteinfo.height);
 		dragmx = mpos[0];
 		dragmy = mpos[1];
 		dragging = ix+3*iy;
-		dragminy = 0;
-		dragmaxy = imgheight - 1;
-		dragminwidth = Math.ceil(15*imgwidth/stdwidth);
-		dragminheight = Math.ceil(15*imgheight/stdheight);
-		var edbox = document.getElementById("noteboxedit");
-		var dw = edbox.parentNode.clientWidth;
-		var dh = edbox.parentNode.clientHeight;
-		var sx = edbox.parentNode.scrollLeft; //FIXME portable?
-		var sy = edbox.parentNode.scrollTop;  //FIXME portable?
-		// FIXME this needs more thought: scrolling + borders + padding ...
-		dragminx = sx;
-		dragmaxx = Math.min(sx + dw - 1, imgwidth - 1);
+		var dragminx = 0;
+		var dragmaxx = imgwidth - 1;
+		var dragminy = 0;
+		var dragmaxy = imgheight - 1;
+		var dragminwidth = Math.ceil(minboxsize*imgwidth/stdwidth);
+		var dragminheight = Math.ceil(minboxsize*imgheight/stdheight);
+		dragdx2 = dragmaxx - dragx2;
+		dragdx1 = dragminx - dragx1;
+		dragdy2 = dragmaxy - dragy2;
+		dragdy1 = dragminy - dragy1;
+		dragdxs = (dragx2 - dragx1 + 1) - dragminwidth;
+		dragdys = (dragy2 - dragy1 + 1) - dragminheight;
 
 		cancelEvent(e);
 		return false;
 	}
 	function stopDrag() {
+		if (dragging == -1) {
+			return;
+		}
+		gn.recalcBox(curedit); // FIXME do that only in stopEdit()?
+		statusChanged(curedit);
 		dragging = -1;
 	}
 	function dragBox(e) {
@@ -644,31 +646,37 @@ function setimgsize(large) {
 		var newy1 = dragy1;
 		var newy2 = dragy2;
 		if (ix == 1 && iy == 1) {
+			dx = Math.max(dx, dragdx1);
+			dx = Math.min(dx, dragdx2);
+			dy = Math.max(dy, dragdy1);
+			dy = Math.min(dy, dragdy2);
 			newx1 += dx;
 			newx2 += dx;
 			newy1 += dy;
 			newy2 += dy;
 		} else {
 			if (ix == 0) {
+				dx = Math.max(dx, dragdx1);
+				dx = Math.min(dx, +dragdxs);
 				newx1 += dx;
 			} else if (ix == 2) {
+				dx = Math.max(dx, -dragdxs);
+				dx = Math.min(dx, dragdx2);
 				newx2 += dx;
 			}
 			if (iy == 0) {
+				dy = Math.max(dy, dragdy1);
+				dy = Math.min(dy, +dragdys);
 				newy1 += dy;
 			} else if (iy == 2) {
+				dy = Math.max(dy, -dragdys);
+				dy = Math.min(dy, dragdy2);
 				newy2 += dy;
 			}
 		}
-		if (   newx1 < dragminx || newx2 > dragmaxx || newx2-newx1+1 < dragminwidth
-		    || newy1 < dragminy || newy2 > dragmaxy || newy2-newy1+1 < dragminheight) {
-			return;
-		}
-		dragmx = mpos[0];
-		dragmy = mpos[1];
 		var noteinfo = gn.notes[curedit];
 		var edbox = document.getElementById("noteboxedit");
-		drawedit(curedit, edbox, newx1, newx2, newy1, newy2)
+		drawEdit(curedit, edbox, newx1, newx2, newy1, newy2)
 		noteinfo.x1 = newx1;
 		noteinfo.x2 = newx2;
 		noteinfo.y1 = newy1;
@@ -676,24 +684,41 @@ function setimgsize(large) {
 		noteinfo.width = imgwidth;
 		noteinfo.height = imgheight;
 		noteinfo.unsavedchanges = true;
-		gn.recalcBox(curedit); // FIXME do that only in stopEdit()?
-		statusChanged(curedit);
 		cancelEvent(e);
 		return false;
 	}
 	function initNoteEdit() {
+		if (typeof gn === 'undefined') {
+			return;
+		}
+		if (!gn.images.length) {
+			gn.init();
+			if (!gn.images.length) {
+				return;
+			}
+		}
+		// TODO compatibility checks for features not tested by gn.init() go here
+
+		var statusline = document.getElementById("notestatus");
+		statusline.replaceChild(document.createTextNode(""), statusline.firstChild);
+
 		var img = document.getElementById('gridimage');
 		var edbox = document.getElementById('noteboxedit');
 		var editbuttons0 = document.getElementById('noteboxedit00');
-		imgpaddborderx = gn.getStylePX(img, 'border-left-width') + gn.getStylePX(img, 'padding-left');
-		imgpaddbordery = gn.getStylePX(img, 'border-top-width') + gn.getStylePX(img, 'padding-top');
-		bbwidth = gn.getStylePX(editbuttons0, 'border-left-width') + gn.getStylePX(editbuttons0, 'border-right-width') + gn.getStylePX(editbuttons0, 'width');
-		bbheight = gn.getStylePX(editbuttons0, 'border-top-width') + gn.getStylePX(editbuttons0, 'border-bottom-width') + gn.getStylePX(editbuttons0, 'height');
-		edboxborderx = gn.getStylePX(edbox, 'border-left-width');
-		edboxbordery = gn.getStylePX(edbox, 'border-top-width');
-		edboxbordersx = edboxborderx + gn.getStylePX(edbox, 'border-right-width');
-		edboxbordersy = edboxbordery + gn.getStylePX(edbox, 'border-bottom-width');
-		//alert([imgpaddborderx, imgpaddbordery, bbwidth, bbheight, edboxborderx, edboxbordery, edboxbordersx, edboxbordersy].join(', '));
+
+		var innersize = gn.getStyleXY(editbuttons0, 'width', 'height');
+		var borderlt  = gn.getStyleXY(editbuttons0, 'border-left-width', 'border-top-width');
+		var borderrb  = gn.getStyleXY(editbuttons0, 'border-right-width', 'border-bottom-width');
+		bbwidth = borderlt[0] + borderrb[0] + innersize[0];
+		bbheight = borderlt[1] + borderrb[1] + innersize[1];
+
+		borderlt  = gn.getStyleXY(edbox, 'border-left-width', 'border-top-width');
+		borderrb  = gn.getStyleXY(edbox, 'border-right-width', 'border-bottom-width');
+		edboxborderx = borderlt[0];
+		edboxbordery = borderlt[1];
+		edboxbordersx = edboxborderx + borderrb[0];
+		edboxbordersy = edboxbordery + borderrb[1];
+		//alert([bbwidth, bbheight, edboxborderx, edboxbordery, edboxbordersx, edboxbordersy].join(', '));
 
 		for (var j = 0; j <= 2; ++j) {
 			for (var i = 0; i <= 2; ++i) {
@@ -704,7 +729,6 @@ function setimgsize(large) {
 				gn.addEvent(ebbut,"mousedown",function(ix,iy){return function(ev){return startDrag(ev, ix, iy);}}(i,j));
 			}
 		}
-		var edbox = document.getElementById("noteboxedit");
 		gn.addEvent(document, "mousemove", dragBox);
 		gn.addEvent(document, "mouseup", stopDrag);
 	}
@@ -716,16 +740,17 @@ function setimgsize(large) {
 	<form action="javascript:void(0);">
 {if $showorig}
 		<label for="imgsize">Image size:</label>
-		<select name="imgsize" id="imgsize" onchange="setimgsize(this.options[this.selectedIndex].value=='original');">
+		<select name="imgsize" id="imgsize" onchange="setImgSize(this.options[this.selectedIndex].value=='original');">
 			<option value="default" selected="selected">{$std_width}x{$std_height} (default)</option>
 			<option value="original">{$original_width}x{$original_height}</option>
 		</select> |
 {/if}
 		<input type="button" value="Add annotation" onclick="addNote();" /> |
-		<input id="toggletexts" type="button" value="Hide description" onclick="toggleTexts();" /> |
+		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts();" /> |
 		<a href="/photo/{$image->gridimage_id}" target="_blank">Open photo page in new window.</a>
 	</form>
 </div>
+<p id="notestatus">JavaScript required</p>
 <div id="noteforms" class="noteforms">
     {foreach item=note from=$notes}
 	<h4>Annotation #{$note->note_id}</h4>
