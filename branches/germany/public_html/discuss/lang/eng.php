@@ -362,6 +362,12 @@ $l_show='Show';
 $l_next='Next';
 $l_prev='Prev';
 $l_showrec='Show in Recent Topics?';
-$l_vpost='View or post in';
+$l_reload='Reload';
+$l_watch='Watch';
+$l_shorthead1='Show ';
+$l_shorthead_list='Forum List';
+$l_shorthead2=' | View ';
+$l_shorthead_gsd='Recent Grid Square Discussions';
+$l_update='Update';
 
 ?>
