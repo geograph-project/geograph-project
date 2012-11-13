@@ -421,6 +421,12 @@ $l_show='Zeige';
 $l_next='Weiter';
 $l_prev='Zurück';
 $l_showrec='Unter "Letzte Diskussionen" zeigen?';
-$l_vpost='Diskussionen in';
+$l_reload='Neu laden';
+$l_watch='Beobachten';
+$l_shorthead1='Zeige ';
+$l_shorthead_list='Forenliste';
+$l_shorthead2=' | Betrachte ';
+$l_shorthead_gsd='aktuelle Planquadrat-Diskussionen';
+$l_update='Anwenden';
 
 ?>

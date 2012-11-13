@@ -478,14 +478,14 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		}
 		$title=$sitename;
 		echo load_header();
-                print "<div style=\"float:left\"><a href=\"index.php\">Reload</a></div>";
- 		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">Watch</a></div>";
-		print "<div style=\"text-align:center\">Show <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum={$CONF['forum_gridsquare']}\">Recent Grid Square Discussions</a></div>";
+                print "<div style=\"float:left\"><a href=\"index.php\">{$l_reload}</a></div>";
+ 		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">{$l_watch}</a></div>";
+		print "<div style=\"text-align:center\">{$l_shorthead1}<a href=\"index.php?forums=1\">{$l_shorthead_list}</a>{$l_shorthead2}<a href=\"index.php?action=vtopic&amp;forum={$CONF['forum_gridsquare']}\">{$l_shorthead_gsd}</a></div>";
 		print "<form style=\"display:inline\">";
 		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em;background-color:#f9f9f9;width:100%\">";
-		print "<div style=\"float:right;display:none\" id=\"updatebutton\"><input type=submit value=Update /></div> Show:";
+		print "<div style=\"float:right;display:none\" id=\"updatebutton\"><input type=\"submit\" value=\"{$l_update}\" /></div> {$l_show}:";
 
-		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id',' NOT IN ','(11,7)','forum_order')){
+		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id',' NOT IN ','('.$CONF['forum_gallery'].')','forum_order')){
 			do {
 				$forum=$cols[0];
 
