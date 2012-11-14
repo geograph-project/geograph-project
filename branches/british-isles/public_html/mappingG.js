@@ -109,7 +109,7 @@ function createPMarker(ppoint) {
 function checkFormSubmission(that_form,mapenabled) {
 
 	if (that_form.elements['jpeg'] && that_form.elements['jpeg'].value && that_form.elements['jpeg'].value.length > 0 && !that_form.elements['jpeg'].value.match(/.jpe?g$/i)) {
-		if (!confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. To upload anyway, press OK. To select a different file click Cancel")) {
+		if (!confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. If you beleive this file really is a JPEG image, and want to upload anyway, press OK. To select a different file click Cancel")) {
 			return false;
 		}
 	}
