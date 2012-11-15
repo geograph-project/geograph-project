@@ -1,7 +1,6 @@
 {include file="_std_begin.tpl"}
 
 {* TODO
-* geonotes.js: don't set onload handler, this should be done by the page which includes the script
 * move more code to geonotes.js?
 * note text: convert https?://.*
 * replace data-geonote-width,... hack with something sensible?
@@ -16,8 +15,6 @@
 * "add note" can make a vertical scroll bar appear.
   Fix coordinate calculation for that case.
 * geonote.php: reverse order of notes (latest note = first)?
-* Initial positions for new boxes should be checked (scrolling, div width, padding, ...)
-* Position calculation for note text should be checked (scrolling, div width, padding, ...)
 * button "save all changes"
 * translation
 * dark text on lighter background?
@@ -27,7 +24,8 @@
 <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
-  <div class="img-shadow" id="mainphoto">{$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\"")}
+  <div class="img-shadow" id="mainphoto"><div class="notecontainer" id="notecontainer">
+    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\"")}
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
@@ -55,7 +53,7 @@
       <div id="noteboxedit22" class="noteboxbutton"></div>
     </div>
     <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
-  </div>
+  </div></div>
 
   <div id="imagetexts" style="display:none">
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
@@ -241,6 +239,24 @@ function setImgSize(large) {
 		var x2 = Math.floor(noteinfo.x2 * width / noteinfo.width);
 		var y1 = Math.floor(noteinfo.y1 * height / noteinfo.height);
 		var y2 = Math.floor(noteinfo.y2 * height / noteinfo.height);
+		var minwidth = Math.ceil(minboxsize*imgwidth/stdwidth);
+		var minheight = Math.ceil(minboxsize*imgheight/stdheight);
+		var dx = x2 - x1 + 1 - minwidth;
+		if (dx < 0) {
+			x2 -= dx;
+			if (x2 >= width) {
+				x1 = width - minwidth;
+				x2 = width - 1;
+			}
+		}
+		var dy = y2 - y1 + 1 - minheight;
+		if (dy < 0) {
+			y2 -= dy;
+			if (y2 >= height) {
+				y1 = height - minheight;
+				y2 = height - 1;
+			}
+		}
 
 		var edbox = document.getElementById("noteboxedit");
 		drawEdit(id, edbox, x1, x2, y1, y2);
@@ -421,20 +437,28 @@ function setImgSize(large) {
 		++newnotes;
 		var noteid = -newnotes;
 		var img = document.getElementById('gridimage');
+		var imageindex = gn.findImage(img);
+		if (imageindex < 0)
+			return;
+			gn.images[imageindex]
+		var imageinfo = gn.images[imageindex];
 
-		var dw = img.parentNode.clientWidth;
-		var dh = img.parentNode.clientHeight;
-		var sx = img.parentNode.scrollLeft; //FIXME portable?
-		var sy = img.parentNode.scrollTop;  //FIXME portable?
+		var dw = img.parentNode.parentNode.clientWidth;
+		var dh = img.parentNode.parentNode.clientHeight;
+		var sx = img.parentNode.parentNode.scrollLeft; //FIXME portable?
+		var sy = img.parentNode.parentNode.scrollTop;  //FIXME portable?
+		var ix = img.offsetLeft + imageinfo['paddborderx'];
+		var iy = img.offsetTop + imageinfo['paddbordery'];
+		var sxi = sx - ix;
+		var syi = sy - iy;
 
 		var width = Math.ceil(minboxsize*imgwidth/stdwidth);
 		var height = Math.ceil(minboxsize*imgheight/stdheight);
 
-		// FIXME this needs more thought: scrolling + borders + padding ...
-		var miny = 0;
-		var maxy = imgheight - 1;
-		var minx = sx;
-		var maxx = Math.min(sx + dw - 1, imgwidth - 1);
+		var minx = Math.max(sxi, 0);
+		var miny = Math.max(syi, 0);
+		var maxx = Math.min(sxi + dw - 1, img.width - 1);
+		var maxy = Math.min(syi + dh - 1, img.height - 1);
 
 		var x1 = Math.floor((minx + maxx - width) / 2);
 		var y1 = Math.floor((miny + maxy - height) / 2);
@@ -465,17 +489,17 @@ function setImgSize(large) {
 		ele.id = 'note_t_edit_' + noteid;
 		ele.type = 'button';
 		ele.value = 'edit';
-		gn.addEvent(ele, "click", function() { return editNote(noteid); } );
+		AttachEvent(ele, "click", function() { return editNote(noteid); } );
 		txt.appendChild(ele);
 		ele = document.createElement('input');
 		ele.id = 'note_t_delete_' + noteid;
 		ele.type = 'button';
 		ele.value = 'delete';
-		gn.addEvent(ele, "click", function() { return deleteNote(noteid); } );
+		AttachEvent(ele, "click", function() { return deleteNote(noteid); } );
 		txt.appendChild(ele);
 
 		var nmap = document.getElementById('notesmap');
-		var pdiv = document.getElementById('mainphoto');
+		var pdiv = document.getElementById('notecontainer');
 
 		gn.addNote(area, box, txt, nmap, pdiv, pdiv, x1, y1, x2, y2, img, 'visible', true, noteid);
 
@@ -491,7 +515,7 @@ function setImgSize(large) {
 		ele = document.createElement('select');
 		ele.name = 'note_z_' + noteid;
 		ele.id = 'note_z_' + noteid;
-		gn.addEvent(ele,"change",function(){updateNoteStatus(noteid);});
+		AttachEvent(ele,"change",function(){updateNoteStatus(noteid);});
 		for (var i=-10; i<=10; ++i) {
 			ele.options[i+10] = new Option(i, i, false, i==0);
 		}
@@ -505,7 +529,7 @@ function setImgSize(large) {
 		ele = document.createElement('select');
 		ele.name = 'note_status_' + noteid;
 		ele.id = 'note_status_' + noteid;
-		gn.addEvent(ele,"change",function(){updateNoteStatus(noteid);});
+		AttachEvent(ele,"change",function(){updateNoteStatus(noteid);});
 		//ele.options[0] = new Option("awaiting moderation", "pending", false, false);
 		ele.options[0] = new Option("visible", "visible", false, true);
 		ele.options[1] = new Option("deleted", "deleted", false, false);
@@ -516,7 +540,7 @@ function setImgSize(large) {
 		ele.id = 'note_edit_' + noteid;
 		ele.type = 'button';
 		ele.value = 'edit box';
-		gn.addEvent(ele,"click",function(){toggleEdit(noteid);});
+		AttachEvent(ele,"click",function(){toggleEdit(noteid);});
 		form.appendChild(ele);
 		form.appendChild(document.createElement('br'));
 
@@ -524,7 +548,7 @@ function setImgSize(large) {
 		ele.rows = 10;
 		ele.cols = 50;
 		ele.id = 'note_comment_' + noteid;
-		gn.addEvent(ele,"change",function(){updateNoteComment(noteid);});
+		AttachEvent(ele,"change",function(){updateNoteComment(noteid);});
 		form.appendChild(ele);
 		form.appendChild(document.createElement('br'));
 
@@ -532,7 +556,7 @@ function setImgSize(large) {
 		ele.id = 'note_commit_' + noteid;
 		ele.type = 'button';
 		ele.value = 'commit';
-		gn.addEvent(ele,"click",function(){commitNote(noteid);});
+		AttachEvent(ele,"click",function(){commitNote(noteid);});
 		form.appendChild(ele);
 
 		var forms = document.getElementById('noteforms');
@@ -612,6 +636,23 @@ function setImgSize(large) {
 		var dragmaxy = imgheight - 1;
 		var dragminwidth = Math.ceil(minboxsize*imgwidth/stdwidth);
 		var dragminheight = Math.ceil(minboxsize*imgheight/stdheight);
+		var dx = dragx2 - dragx1 + 1 - dragminwidth;
+		if (dx < 0) {
+			dragx2 -= dx;
+			if (dragx2 >= width) {
+				dragx1 = width - dragminwidth;
+				dragx2 = width - 1;
+			}
+		}
+		var dy = dragy2 - dragy1 + 1 - dragminheight;
+		if (dy < 0) {
+			dragy2 -= dy;
+			if (dragy2 >= height) {
+				dragy1 = height - dragminheight;
+				dragy2 = height - 1;
+			}
+		}
+
 		dragdx2 = dragmaxx - dragx2;
 		dragdx1 = dragminx - dragx1;
 		dragdy2 = dragmaxy - dragy2;
@@ -726,13 +767,13 @@ function setImgSize(large) {
 				var ix = i;
 				var iy = j;
 				editbuttons[j*3+i] = ebbut;
-				gn.addEvent(ebbut,"mousedown",function(ix,iy){return function(ev){return startDrag(ev, ix, iy);}}(i,j));
+				AttachEvent(ebbut,"mousedown",function(ix,iy){return function(ev){return startDrag(ev, ix, iy);}}(i,j));
 			}
 		}
-		gn.addEvent(document, "mousemove", dragBox);
-		gn.addEvent(document, "mouseup", stopDrag);
+		AttachEvent(document, "mousemove", dragBox);
+		AttachEvent(document, "mouseup", stopDrag);
 	}
-	gn.addEvent(window,"load",initNoteEdit);
+	AttachEvent(window,"load",initNoteEdit);
 {/literal}
 /* ]]> */
 </script>
