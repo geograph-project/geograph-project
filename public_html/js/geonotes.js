@@ -7,10 +7,9 @@
  * No idea which licence we should use, many things work differently, here.
  *
  * Basic idea:
- * We have a container div with position:relative (e.g. class img-shadow)
- * which contains the image of class geonotes and an image map, where
- * the notes can be specified using the title attribute. This works without
- * JavaScript.
+ * We have a container div with position:relative which contains the image of
+ * class geonotes and an image map, where the notes can be specified using the
+ * title attribute. This works without JavaScript.
  * If an area element of the image map has an id "noteareaNNNN", there must also
  * exist an element with id "noteboxNNNN" (might be a div with class notebox).
  * This script tries to implement some mouse over event handling for that box.
@@ -18,6 +17,9 @@
  * geonote). This script tries to show that element instead of the usual tool tip.
  * While displaying the note, the class of noteboxNNNN will be changed by prepending
  * "cur" to the class name.
+ * The image should be located at a fixed position inside the container div. The div
+ * containing the container div may be smaller than the container div, scrolling
+ * is taken into account.
  */
 
 var gn = {
@@ -40,7 +42,7 @@ var gn = {
 	},
 
 	__initImageInfo: function(img) {
-		var imginfo = {
+		var imageinfo = {
 			'img' : img,
 			'notes' : [],
 		};
@@ -48,17 +50,17 @@ var gn = {
 		var borderlt  = gn.getStyleXY(img, 'border-left-width', 'border-top-width');
 		//var borderrb  = gn.getStyleXY(img, 'border-right-width', 'border-bottom-width');
 
-		imginfo['paddborderx'] = paddinglt[0] + borderlt[0];
-		imginfo['paddbordery'] = paddinglt[1] + borderlt[1];
-		//imginfo['bordersx'] = borderlt[0] + borderrb[0]
-		//imginfo['bordersy'] = borderlt[1] + borderrb[1]
-		return imginfo;
+		imageinfo['paddborderx'] = paddinglt[0] + borderlt[0];
+		imageinfo['paddbordery'] = paddinglt[1] + borderlt[1];
+		//imageinfo['bordersx'] = borderlt[0] + borderrb[0]
+		//imageinfo['bordersy'] = borderlt[1] + borderrb[1]
+		return imageinfo;
 	},
 
 	__initImage: function(img) {
 		var imageindex = gn.images.length++;
-		var imginfo = gn.__initImageInfo(img);
-		gn.images[imageindex] = imginfo;
+		var imageinfo = gn.__initImageInfo(img);
+		gn.images[imageindex] = imageinfo;
 		var mapName = img.getAttribute('usemap');
 		img.setAttribute('usemap', null);
 		if (mapName.substr(0,1) == '#') mapName = mapName.substr(1);
@@ -99,6 +101,21 @@ var gn = {
 						'bordersx'      : borderlt[0] + borderrb[0],
 						'bordersy'      : borderlt[1] + borderrb[1],
 					};
+					if (noteinfo.status === null || noteinfo.status === "") {
+						/* custom attributes not supported or provided */
+						noteinfo.status = 'visible';
+						noteinfo.pendingchanges = false;
+						noteinfo.width = img.width;
+						noteinfo.height = img.height;
+						var coords = curarea.getAttribute('coords').split(',');
+						if (coords.length == 4) {
+							noteinfo.x1 = parseInt(coords[0]);
+							noteinfo.y1 = parseInt(coords[1]);
+							noteinfo.x2 = parseInt(coords[2]);
+							noteinfo.y2 = parseInt(coords[3]);
+						}
+					}
+					//alert([noteinfo.x1,noteinfo.y1,noteinfo.x2,noteinfo.y2,noteinfo.width,noteinfo.height].join(', '));
 					gn.notes[noteid] = noteinfo;
 					curarea.title = '';
 					var left=box.style.left;
@@ -106,8 +123,8 @@ var gn = {
 					if (left.substr(left.length-2) == 'px' && top.substr(top.length-2) == 'px') {
 						left=parseInt(left.substr(0,left.length-2))
 						top=parseInt(top.substr(0,top.length-2))
-						left += imginfo['paddborderx'];
-						top += imginfo['paddbordery'];
+						left += imageinfo['paddborderx'];
+						top += imageinfo['paddbordery'];
 						if (img.offsetParent) { // try img.x,img.y otherwise?
 							left+=img.offsetLeft;
 							top+=img.offsetTop;
@@ -125,25 +142,22 @@ var gn = {
 						box.style.width = width+'px';
 						box.style.height = height+'px';
 					}
-					// FIXME if data-geonote-XXX not present, use "current values", there? (test by comparing with null _and_ empty string)
-					// x1,y1,x2,y2 from noteinfo.area.coords
-					// width,height from noteinfo.img.width,noteinfo.img.height
-					// status: "unknown"? pendingchanges: false?
-					gn.addEvent(box,"mouseover",
+					AttachEvent(box,"mouseover",
 						function() {
 							clearTimeout(gn.hiderTimeout);
 						}
 					);
 					gn.initBoxWidth(txt);
-					gn.addEvent(box,"mouseover",gn.showNoteText);
-					gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
+					AttachEvent(box,"mouseover",gn.showNoteText);
+					AttachEvent(txt,"mouseout",gn.hideNoteTextEvent);
 				}
 			}
 		}
 
-		gn.addEvent(img,"mouseover",gn.showBoxes);
-		gn.addEvent(img,"mouseout",gn.hideBoxes);
+		AttachEvent(img,"mouseover",gn.showBoxes);
+		AttachEvent(img,"mouseout",gn.hideBoxes);
 	},
+
 	findImage: function(img) {
 		if (!img)
 			return -1;
@@ -154,6 +168,7 @@ var gn = {
 		}
 		return -1;
 	},
+
 	addNote: function(area, box, txt, parea, pbox, ptxt, x1, y1, x2, y2, img, notestatus, pendingchanges, noteid) {
 		var imageindex = gn.findImage(img);
 		if (imageindex < 0)
@@ -192,15 +207,15 @@ var gn = {
 		noteinfo['bordersx'] = borderlt[0] + borderrb[0];
 		noteinfo['bordersy'] = borderlt[1] + borderrb[1];
 		gn.recalcBox(noteid);
-		gn.addEvent(box,"mouseover",
+		AttachEvent(box,"mouseover",
 			function() {
 				clearTimeout(gn.hiderTimeout);
 			}
 		);
 		ptxt.appendChild(txt);
 		gn.initBoxWidth(txt);
-		gn.addEvent(box,"mouseover",gn.showNoteText);
-		gn.addEvent(txt,"mouseout",gn.hideNoteTextEvent);
+		AttachEvent(box,"mouseover",gn.showNoteText);
+		AttachEvent(txt,"mouseout",gn.hideNoteTextEvent);
 	},
 
 	initBoxWidth: function(txt) {
@@ -378,20 +393,27 @@ var gn = {
 		gn.current_note = noteid;
 		txt.style.visibility = 'hidden';
 		txt.style.display = 'block';
-		var tw = txt.clientWidth;
-		var th = txt.clientHeight;
-		var dw = txt.parentNode.clientWidth;
-		var dh = txt.parentNode.clientHeight;
-		var iw = noteinfo.img.clientWidth;
-		var ih = noteinfo.img.clientHeight;
+		var tw = txt.offsetWidth; // FIXME portable?
+		var th = txt.offsetHeight; // FIXME portable?
+		var dw = txt.parentNode.parentNode.clientWidth;
+		var dh = txt.parentNode.parentNode.clientHeight;
+
+		//var iw = noteinfo.img.width;
+		//var ih = noteinfo.img.height;
+		var ix1 = noteinfo.img.offsetLeft;
+		var iy1 = noteinfo.img.offsetTop;
+		var ix2 = ix1 + noteinfo.img.offsetWidth - 1; // FIXME portable?
+		var iy2 = iy1 + noteinfo.img.offsetHeight - 1; // FIXME portable?
 		var mpos = gn.getMousePosition(e); // TODO compare with mapping1.js
-		var epos = gn.getElePosition(box.parentNode);
-		var sx = box.parentNode.scrollLeft; //FIXME portable?
-		var sy = box.parentNode.scrollTop;  //FIXME portable?
-		var boxx = parseInt(box.style.left.substr(0,box.style.left.length-2));
-		var boxy = parseInt(box.style.top.substr(0,box.style.top.length-2));
-		var boxxctr = boxx + box.clientWidth/2;
-		var boxyctr = boxy + box.clientHeight/2;
+		var epos = gn.getElePosition(txt.parentNode);
+		var sx = txt.parentNode.parentNode.scrollLeft; //FIXME portable?
+		var sy = txt.parentNode.parentNode.scrollTop;  //FIXME portable?
+		//var sx = 0;
+		//var sy = 0;
+		var boxx = box.offsetLeft; // FIXME portable?
+		var boxy = box.offsetTop; // FIXME portable?
+		var boxxctr = boxx + (box.offsetWidth-1)/2; // FIXME portable?
+		var boxyctr = boxy + (box.offsetHeight-1)/2; // FIXME portable?
 		var x = mpos[0]-epos[0] + sx;
 		var y = mpos[1]-epos[1] + sy;
 
@@ -405,28 +427,40 @@ var gn = {
 		*/
 
 		if (x < boxxctr) {
-			x -= tw - 5;
+			x -= tw - 5 - 1;
 		} else {
 			x -= 5;
 		}
 
 		if (y < boxyctr) {
-			y -= th - 5;
+			y -= th - 5 - 1;
 		} else {
 			y -= 5;
 		}
 
-		if (x+tw >= dw + sx) {
-			x = dw - tw - 1 + sx;
+		if (x+tw > dw + sx) {
+			x = dw - tw + sx;
 		}
 		if (x < sx) {
 			x = sx;
 		}
-		if (y+th >= ih) {
-			y = ih - th - 1;
+		if (y+th > dh + sy) {
+			y = dh - th + sy;
 		}
-		if (y < 0) {
-			y = 0;
+		if (y < sy) {
+			y = sy;
+		}
+		if (x + tw - 1 > ix2) {
+			x = ix2 - tw + 1;
+		}
+		if (x < ix1) {
+			x = ix1;
+		}
+		if (y + th - 1 > iy2) {
+			y = iy2 - th + 1;
+		}
+		if (y < iy1) {
+			y = iy1;
 		}
 		txt.style.left = x+'px';
 		txt.style.top = y+'px';
@@ -494,20 +528,4 @@ var gn = {
 		}
 	},
 
-
-	addEvent: function(elm, evType, fn, useCapture) {
-		// cross-browser event handling for IE5+, NS6 and Mozilla
-		// By Scott Andrew
-		if (elm.addEventListener){
-			elm.addEventListener(evType, fn, useCapture);
-			return true;
-		} else if (elm.attachEvent){
-			var r = elm.attachEvent("on"+evType, fn);
-			return r;
-		} else {
-			elm['on'+evType] = fn;
-		}
-	}
 }
-
-gn.addEvent(window,"load",gn.init);
