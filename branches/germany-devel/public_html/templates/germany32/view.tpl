@@ -50,8 +50,10 @@
 	{/if}
 	</div>
 	{/if}
-  <div class="img-shadow" id="mainphoto">{if $notes}{$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\"")}{else}{$image->getFull()}{/if}
+  <div class="img-shadow" id="mainphoto"><!-- comment out whitespace
   {if $notes}
+    --><div class="notecontainer" id="notecontainer">
+    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\"")}
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}" />
@@ -64,8 +66,11 @@
     <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p></div>
     {/foreach}
     <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
+    </div><!--
+  {else}
+  -->{$image->getFull()}<!--
   {/if}
-  </div>
+  --></div>
 
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
      {if $image->title1 eq ''}
@@ -305,6 +310,11 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <div style="text-align:center;margin-top:3px" class="interestBox" id="styleLinks"></div>
 <script type="text/javascript">
 /* <![CDATA[ */
+
+{if $notes}
+AttachEvent(window,"load",gn.init);
+{/if}
+
 {literal}
 function addStyleLinks() {
 {/literal}

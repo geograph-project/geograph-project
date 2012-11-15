@@ -561,7 +561,6 @@ div.photolandscape
 div.img-shadow {
 	overflow:auto;
 	/*overflow-x:auto;*/
-	position:relative;
 }
 
 .img-shadow img {
@@ -611,6 +610,14 @@ div.photoguide
 }
 
 /* image annotations */
+
+div.notecontainer {
+	position:relative;
+	display: -moz-inline-stack; /* Firefox 2 */
+	display: inline-block;
+	zoom: 1; /* IE7 and below */
+	*display: inline; /* IE7 and below */
+}
 
 div.noteforms {
 	max-height:50ex;

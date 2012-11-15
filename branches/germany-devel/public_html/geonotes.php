@@ -137,6 +137,7 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	    || ($y2 - $y1 + 1)*$imageheight < 8*$ih
 	    || ($note_id < 0) && $status != 'visible'
 	   ) {
+		//trigger_error("inv param: $x1 $x2 $iw $y1 $y2 $ih $z $note_id $status $imagewidth $imageheight", E_USER_NOTICE);
 		print "-3:$note_id:invalid parameters";
 		exit;
 	}
