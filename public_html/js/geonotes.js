@@ -148,16 +148,9 @@ var gn = {
 						box.style.width = width+'px';
 						box.style.height = height+'px';
 					}
-					/*AttachEvent(box,"mouseover",
-						function() {
-							clearTimeout(gn.hiderTimeout);
-						}
-					);*/
 					gn.initBoxWidth(txt);
 					AttachEvent(box,"mouseover",gn.showNoteText);
 					AttachEvent(txt,"mouseout",gn.hideNoteTextEvent);
-					//AttachEvent(box,"mouseout",gn.hideBoxesEvent);
-					//AttachEvent(txt,"mouseout",gn.hideBoxesEvent);
 				}
 			}
 		}
@@ -216,11 +209,6 @@ var gn = {
 		noteinfo.bordersx = borderlt[0] + borderrb[0];
 		noteinfo.bordersy = borderlt[1] + borderrb[1];
 		gn.recalcBox(noteid);
-		/*AttachEvent(box,"mouseover",
-			function() {
-				clearTimeout(gn.hiderTimeout);
-			}
-		);*/
 		ptxt.appendChild(txt);
 		gn.initBoxWidth(txt);
 		AttachEvent(box,"mouseover",gn.showNoteText);
@@ -250,22 +238,6 @@ var gn = {
 			ret += gn.capitalize(parts[i]);
 		}
 		return ret;
-	},
-
-	getStylePX: function(ele, stx) {
-		if(window.getComputedStyle) {
-			var style = window.getComputedStyle(ele, null);
-			var x = style.getPropertyValue(stx);
-		} else if (ele.currentStyle) {
-			var x = ele.currentStyle[gn.convStyle(stx)];
-		} else {
-			return 0;
-		}
-		if (x.substr(x.length-2) != 'px') {
-			return 0;
-		}
-		x=parseInt(x.substr(0,x.length-2));
-		return x;
 	},
 
 	getStyleXY: function(ele, stx, sty) {
@@ -306,7 +278,7 @@ var gn = {
 		}
 	},
 
-	recalcBox: function(noteid) { //, dx, dy) {
+	recalcBox: function(noteid) {
 		var noteinfo = gn.notes[noteid];
 		var imageinfo = noteinfo.imageinfo;
 		var img = noteinfo.img;
@@ -340,71 +312,42 @@ var gn = {
 		}
 	},
 
-	hideBoxesEvent: function(e) {
-		/* did we really move _out_? */
-		if (!gn.current_image) {
-			return;
-		}
-		var ele = null;
+	movedOut: function(e, findele) {
+		/* Did we really move _out_? */
 		var toele = null;
-		if (window.event && window.event.srcElement) {
-			ele = window.event.srcElement
+		if (window.event && window.event.toElement) {
 			toele = window.event.toElement;
 		} else if (e) {
-			ele = e.target;
 			toele = e.relatedTarget;
 		}
-		/*var log = document.getElementById('log');
-		if (log) {
-			log.value += ele + (ele && ele.id !=='' ? ' (' +  ele.id + ')' : '') + ' -> ' + toele + (toele && toele.id !=='' ? ' (' +  toele.id + ')' : '') + '\n';
-		}*/
-		if (!ele || !toele)
-			return;
-		/*if (ele != gn.current_image.img.parentNode)
-			return;
-		while (ele != toele && toele.nodeName.toLowerCase() != 'body') {
-			toele = toele.parentNode;
-		}*/
-		var findele = gn.current_image.img.parentNode;
+		if (!toele)
+			return true; /* Should not happen. Better not to ignore the event in this case. */
 		while (toele != findele && toele != document.body && toele) {
 			toele = toele.parentNode;
 		}
-		if (findele == toele) { /* we only moved to a child element */
+		if (findele == toele) { /* We only moved to a child element. */
+			return false;
+		}
+		return true;
+	},
+
+	hideBoxesEvent: function(e) {
+		if (!gn.current_image) {
 			return;
 		}
-
+		if (!gn.movedOut(e, gn.current_image.img.parentNode)) {
+			return;
+		}
 		gn.hideBoxes();
 	},
 
 	hideNoteTextEvent: function(e) {
-		/* did we really move _out_? */
 		if (!gn.current_note) {
 			return;
 		}
-		var ele = null;
-		var toele = null;
-		if (window.event && window.event.srcElement) {
-			ele = window.event.srcElement
-			toele = window.event.toElement;
-		} else if (e) {
-			ele = e.target;
-			toele = e.relatedTarget;
-		}
-		if (!ele || !toele)
-			return;
-		/*if (ele != gn.notes[gn.current_note].note)
-			return;
-		while (ele != toele && toele.nodeName.toLowerCase() != 'body') {
-			toele = toele.parentNode;
-		}*/
-		var findele = gn.notes[gn.current_note].note;
-		while (toele != findele && toele != document.body && toele) {
-			toele = toele.parentNode;
-		}
-		if (findele == toele) { /* we only moved to a child element */
+		if (!gn.movedOut(e, gn.notes[gn.current_note].note)) {
 			return;
 		}
-
 		gn.hideNoteText();
 	},
 
@@ -527,21 +470,7 @@ var gn = {
 		gn.setBoxes(gn.current_image.notes,'block');
 	},
 
-	hideBoxes: function(/*e*/) {
-		/*var t = null;
-		if (window.event && window.event.srcElement) {
-			t = window.event.srcElement;
-		} else if (e && e.target) {
-			t = e.target;
-		}
-		var imageindex = gn.findImage(t);
-		if (imageindex < 0)
-			return;*/
-		/*clearTimeout(gn.hiderTimeout);
-		gn.hiderTimeout = setTimeout(
-			function() { gn.setBoxes(gn.images[imageindex].notes,'none') },
-			300);*/
-		//gn.setBoxes(gn.images[imageindex].notes,'none');
+	hideBoxes: function() {
 		if (gn.current_image) {
 			gn.setBoxes(gn.current_image.notes,'none');
 			gn.current_image = null;
