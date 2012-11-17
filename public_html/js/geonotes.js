@@ -1,10 +1,5 @@
-/* This is inspired by
- *   http://www.kryogenix.org/code/browser/annimg/annimg.html
- * and
- *   http://www.kryogenix.org/code/browser/nicetitle/
- * which comes with an MIT licence.
- *
- * No idea which licence we should use, many things work differently, here.
+/*
+ * Copyright (c)2012 Hansjoerg Lipp (hjlipp@web.de) - Licensed under: GNU Public License 2 or later
  *
  * Basic idea:
  * We have a container div with position:relative which contains the image of
@@ -20,22 +15,33 @@
  * The image should be located at a fixed position inside the container div. The div
  * containing the container div may be smaller than the container div, scrolling
  * is taken into account.
+ *
+ * This is inspired by
+ *   http://www.kryogenix.org/code/browser/annimg/annimg.html
+ * and
+ *   http://www.kryogenix.org/code/browser/nicetitle/
+ * but working differently in many ways.
+ *
  */
 
 var gn = {
 	images: [],
 	notes: {},
 	current_note: null,
+	current_image: null,
 
 	init: function() {
 		if (!document.getElementById ||
 		    !document.createElement ||
-		    !document.getElementsByTagName)
+		    !document.getElementsByTagName ||
+		    !document.body // is there any browser which does that?
+		   )
 			return; // FIXME add other functions we need
 		var images = document.getElementsByTagName('img');
 		for (var i=0;i<images.length;i++) {
-			if ((images[i].className.search(/\bgeonotes\b/) != -1) &&
-			    (images[i].getAttribute('usemap') != null)) {
+			if (images[i].offsetParent &&
+			    images[i].getAttribute('usemap') != null &&
+			    images[i].className.search(/\bgeonotes\b/) != -1) {
 				gn.__initImage(images[i]);
 			}
 		}
@@ -46,14 +52,17 @@ var gn = {
 			'img' : img,
 			'notes' : [],
 		};
+		// FIXME skip image if padding-left, padding-top, border-left-width, border-top-width can't be read (or don't end with 'px')?
 		var paddinglt = gn.getStyleXY(img, 'padding-left', 'padding-top');
 		var borderlt  = gn.getStyleXY(img, 'border-left-width', 'border-top-width');
 		//var borderrb  = gn.getStyleXY(img, 'border-right-width', 'border-bottom-width');
 
-		imageinfo['paddborderx'] = paddinglt[0] + borderlt[0];
-		imageinfo['paddbordery'] = paddinglt[1] + borderlt[1];
-		//imageinfo['bordersx'] = borderlt[0] + borderrb[0]
-		//imageinfo['bordersy'] = borderlt[1] + borderrb[1]
+		imageinfo.paddborderx = paddinglt[0] + borderlt[0];
+		imageinfo.paddbordery = paddinglt[1] + borderlt[1];
+		//imageinfo.bordersx = borderlt[0] + borderrb[0]
+		//imageinfo.bordersy = borderlt[1] + borderrb[1]
+		imageinfo.paddborderoffsetx = paddinglt[0] + borderlt[0] + img.offsetLeft;
+		imageinfo.paddborderoffsety = paddinglt[1] + borderlt[1] + img.offsetTop;
 		return imageinfo;
 	},
 
@@ -123,12 +132,8 @@ var gn = {
 					if (left.substr(left.length-2) == 'px' && top.substr(top.length-2) == 'px') {
 						left=parseInt(left.substr(0,left.length-2))
 						top=parseInt(top.substr(0,top.length-2))
-						left += imageinfo['paddborderx'];
-						top += imageinfo['paddbordery'];
-						if (img.offsetParent) { // try img.x,img.y otherwise?
-							left+=img.offsetLeft;
-							top+=img.offsetTop;
-						}
+						left += imageinfo.paddborderoffsetx;
+						top += imageinfo.paddborderoffsety;
 						box.style.left = left+'px';
 						box.style.top = top+'px';
 					}
@@ -137,25 +142,27 @@ var gn = {
 					if (width.substr(width.length-2) == 'px' && height.substr(height.length-2) == 'px') {
 						width=parseInt(width.substr(0,width.length-2))
 						height=parseInt(height.substr(0,height.length-2))
-						width -= noteinfo['bordersx'];
-						height -= noteinfo['bordersy'];
+						width -= noteinfo.bordersx;
+						height -= noteinfo.bordersy;
 						box.style.width = width+'px';
 						box.style.height = height+'px';
 					}
-					AttachEvent(box,"mouseover",
+					/*AttachEvent(box,"mouseover",
 						function() {
 							clearTimeout(gn.hiderTimeout);
 						}
-					);
+					);*/
 					gn.initBoxWidth(txt);
 					AttachEvent(box,"mouseover",gn.showNoteText);
 					AttachEvent(txt,"mouseout",gn.hideNoteTextEvent);
+					//AttachEvent(box,"mouseout",gn.hideBoxesEvent);
+					//AttachEvent(txt,"mouseout",gn.hideBoxesEvent);
 				}
 			}
 		}
 
 		AttachEvent(img,"mouseover",gn.showBoxes);
-		AttachEvent(img,"mouseout",gn.hideBoxes);
+		AttachEvent(img.parentNode,"mouseout",gn.hideBoxesEvent);
 	},
 
 	findImage: function(img) {
@@ -204,14 +211,14 @@ var gn = {
 		pbox.appendChild(box);
 		var borderlt  = gn.getStyleXY(box, 'border-left-width', 'border-top-width');
 		var borderrb  = gn.getStyleXY(box, 'border-right-width', 'border-bottom-width');
-		noteinfo['bordersx'] = borderlt[0] + borderrb[0];
-		noteinfo['bordersy'] = borderlt[1] + borderrb[1];
+		noteinfo.bordersx = borderlt[0] + borderrb[0];
+		noteinfo.bordersy = borderlt[1] + borderrb[1];
 		gn.recalcBox(noteid);
-		AttachEvent(box,"mouseover",
+		/*AttachEvent(box,"mouseover",
 			function() {
 				clearTimeout(gn.hiderTimeout);
 			}
-		);
+		);*/
 		ptxt.appendChild(txt);
 		gn.initBoxWidth(txt);
 		AttachEvent(box,"mouseover",gn.showNoteText);
@@ -303,12 +310,8 @@ var gn = {
 		var img = noteinfo.img;
 		var width = img.width;
 		var height = img.height;
-		var dx = imageinfo['paddborderx'];
-		var dy = imageinfo['paddbordery'];
-		if (img.offsetParent) { // try img.x,img.y otherwise?
-			dx += img.offsetLeft;
-			dy += img.offsetTop;
-		}
+		var dx = imageinfo.paddborderoffsetx;
+		var dy = imageinfo.paddborderoffsety;
 		var x1 = Math.floor(noteinfo.x1 * width / noteinfo.width);
 		var x2 = Math.floor(noteinfo.x2 * width / noteinfo.width);
 		var y1 = Math.floor(noteinfo.y1 * height / noteinfo.height);
@@ -335,6 +338,42 @@ var gn = {
 		}
 	},
 
+	hideBoxesEvent: function(e) {
+		/* did we really move _out_? */
+		if (!gn.current_image) {
+			return;
+		}
+		var ele = null;
+		var toele = null;
+		if (window.event && window.event.srcElement) {
+			ele = window.event.srcElement
+			toele = window.event.toElement;
+		} else if (e) {
+			ele = e.target;
+			toele = e.relatedTarget;
+		}
+		/*var log = document.getElementById('log');
+		if (log) {
+			log.value += ele + (ele && ele.id !=='' ? ' (' +  ele.id + ')' : '') + ' -> ' + toele + (toele && toele.id !=='' ? ' (' +  toele.id + ')' : '') + '\n';
+		}*/
+		if (!ele || !toele)
+			return;
+		/*if (ele != gn.current_image.img.parentNode)
+			return;
+		while (ele != toele && toele.nodeName.toLowerCase() != 'body') {
+			toele = toele.parentNode;
+		}*/
+		var findele = gn.current_image.img.parentNode;
+		while (toele != findele && toele != document.body && toele) {
+			toele = toele.parentNode;
+		}
+		if (findele == toele) { /* we only moved to a child element */
+			return;
+		}
+
+		gn.hideBoxes();
+	},
+
 	hideNoteTextEvent: function(e) {
 		/* did we really move _out_? */
 		if (!gn.current_note) {
@@ -351,12 +390,16 @@ var gn = {
 		}
 		if (!ele || !toele)
 			return;
-		if (ele != gn.notes[gn.current_note].note)
+		/*if (ele != gn.notes[gn.current_note].note)
 			return;
 		while (ele != toele && toele.nodeName.toLowerCase() != 'body') {
 			toele = toele.parentNode;
+		}*/
+		var findele = gn.notes[gn.current_note].note;
+		while (toele != findele && toele != document.body && toele) {
+			toele = toele.parentNode;
 		}
-		if (ele == toele) { /* we only moved to a child element */
+		if (findele == toele) { /* we only moved to a child element */
 			return;
 		}
 
@@ -393,27 +436,23 @@ var gn = {
 		gn.current_note = noteid;
 		txt.style.visibility = 'hidden';
 		txt.style.display = 'block';
-		var tw = txt.offsetWidth; // FIXME portable?
-		var th = txt.offsetHeight; // FIXME portable?
+		var tw = txt.offsetWidth;
+		var th = txt.offsetHeight;
 		var dw = txt.parentNode.parentNode.clientWidth;
 		var dh = txt.parentNode.parentNode.clientHeight;
 
-		//var iw = noteinfo.img.width;
-		//var ih = noteinfo.img.height;
 		var ix1 = noteinfo.img.offsetLeft;
 		var iy1 = noteinfo.img.offsetTop;
-		var ix2 = ix1 + noteinfo.img.offsetWidth - 1; // FIXME portable?
-		var iy2 = iy1 + noteinfo.img.offsetHeight - 1; // FIXME portable?
+		var ix2 = ix1 + noteinfo.img.offsetWidth - 1;
+		var iy2 = iy1 + noteinfo.img.offsetHeight - 1;
 		var mpos = gn.getMousePosition(e); // TODO compare with mapping1.js
 		var epos = gn.getElePosition(txt.parentNode);
-		var sx = txt.parentNode.parentNode.scrollLeft; //FIXME portable?
-		var sy = txt.parentNode.parentNode.scrollTop;  //FIXME portable?
-		//var sx = 0;
-		//var sy = 0;
-		var boxx = box.offsetLeft; // FIXME portable?
-		var boxy = box.offsetTop; // FIXME portable?
-		var boxxctr = boxx + (box.offsetWidth-1)/2; // FIXME portable?
-		var boxyctr = boxy + (box.offsetHeight-1)/2; // FIXME portable?
+		var sx = txt.parentNode.parentNode.scrollLeft;
+		var sy = txt.parentNode.parentNode.scrollTop;
+		var boxx = box.offsetLeft;
+		var boxy = box.offsetTop;
+		var boxxctr = boxx + (box.offsetWidth-1)/2;
+		var boxyctr = boxy + (box.offsetHeight-1)/2;
 		var x = mpos[0]-epos[0] + sx;
 		var y = mpos[1]-epos[1] + sy;
 
@@ -479,11 +518,15 @@ var gn = {
 		var imageindex = gn.findImage(t);
 		if (imageindex < 0)
 			return;
-		gn.setBoxes(gn.images[imageindex].notes,'block');
+		if (gn.current_image) {
+			gn.hideBoxes();
+		}
+		gn.current_image = gn.images[imageindex];
+		gn.setBoxes(gn.current_image.notes,'block');
 	},
 
-	hideBoxes: function(e) {
-		var t = null;
+	hideBoxes: function(/*e*/) {
+		/*var t = null;
 		if (window.event && window.event.srcElement) {
 			t = window.event.srcElement;
 		} else if (e && e.target) {
@@ -491,11 +534,17 @@ var gn = {
 		}
 		var imageindex = gn.findImage(t);
 		if (imageindex < 0)
-			return;
-		clearTimeout(gn.hiderTimeout);
+			return;*/
+		/*clearTimeout(gn.hiderTimeout);
 		gn.hiderTimeout = setTimeout(
 			function() { gn.setBoxes(gn.images[imageindex].notes,'none') },
-			300);
+			300);*/
+		//gn.setBoxes(gn.images[imageindex].notes,'none');
+		if (gn.current_image) {
+			gn.setBoxes(gn.current_image.notes,'none');
+			gn.current_image = null;
+		}
+		gn.hideNoteText();
 	},
 
 	getMousePosition: function(event) {
@@ -515,7 +564,7 @@ var gn = {
 	},
 
 	getElePosition: function(ele) {
-		if (ele.offsetParent) { /* FIXME test body */
+		if (ele.offsetParent) {
 			var x = 0;
 			var y = 0;
 			for (; ele.offsetParent; ele = ele.offsetParent) {
