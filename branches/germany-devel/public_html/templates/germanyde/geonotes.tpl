@@ -196,12 +196,8 @@ function setImgSize(large) {
 	{
 		var imageinfo = gn.notes[id].imageinfo;
 		var img = imageinfo.img;
-		var dx = imageinfo.paddborderx;
-		var dy = imageinfo.paddbordery;
-		if (img.offsetParent) { // try img.x,img.y otherwise?
-			dx += img.offsetLeft;
-			dy += img.offsetTop;
-		}
+		var dx = imageinfo.paddborderoffsetx;
+		var dy = imageinfo.paddborderoffsety;
 
 		edbox.style.left = (x1 + dx) + 'px';
 		edbox.style.top = (y1 + dy) + 'px';
@@ -445,10 +441,10 @@ function setImgSize(large) {
 
 		var dw = img.parentNode.parentNode.clientWidth;
 		var dh = img.parentNode.parentNode.clientHeight;
-		var sx = img.parentNode.parentNode.scrollLeft; //FIXME portable?
-		var sy = img.parentNode.parentNode.scrollTop;  //FIXME portable?
-		var ix = img.offsetLeft + imageinfo['paddborderx'];
-		var iy = img.offsetTop + imageinfo['paddbordery'];
+		var sx = img.parentNode.parentNode.scrollLeft;
+		var sy = img.parentNode.parentNode.scrollTop;
+		var ix = imageinfo.paddborderoffsetx;
+		var iy = imageinfo.paddborderoffsety;
 		var sxi = sx - ix;
 		var syi = sy - iy;
 
@@ -792,6 +788,7 @@ function setImgSize(large) {
 	</form>
 </div>
 <p id="notestatus">JavaScript required</p>
+{*<textarea name="log" id="log" cols="100" rows="30" readonly="readonly"></textarea>*}
 <div id="noteforms" class="noteforms">
     {foreach item=note from=$notes}
 	<h4>Annotation #{$note->note_id}</h4>
