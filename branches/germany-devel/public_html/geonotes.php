@@ -204,23 +204,11 @@ if (isset($_POST['commit'])) {
 	//    0:  applied changes
 	//    1:  pending (awaiting moderation)
 	//    2:  old values = new values, no changes made
-	if (!preg_match('/^\s*[0-9]+\s*$/', $_POST['commit'])) {
+	if (!preg_match('/^\s*[1-9][0-9]*\s*$/', $_POST['commit'])) {
 		print "-3:0:invalid parameters";
 		exit;
 	}
 	$commitnotes = intval($_POST['commit']);
-	if ($commitnotes < 1) {
-		print "-3:0:invalid parameters";
-		exit;
-	}
-	/*if ($commitnotes == 1) {
-		$ret = check_params(0);
-		if ($ret !== 0) {
-			print $ret;
-			exit;
-		}
-		$ret = commit_note(0);
-	} else {*/
 	// multiple commit:
 	// * basic parameter check for all notes at the beginning
 	// * $commitnotes contains the number of annotations to change/add
@@ -234,13 +222,10 @@ if (isset($_POST['commit'])) {
 			exit;
 		}
 	}
-	$ret = '';
-	$sep = '';
-	for ($i = 1; $i <= $commitnotes; ++$i) {
-		$ret .= $sep . commit_note($i);
-		$sep = '#';
+	$ret = commit_note(1);
+	for ($i = 2; $i <= $commitnotes; ++$i) {
+		$ret .= '#' . commit_note($i);
 	}
-	/*}*/
 	print $ret;
 	$smarty = new GeographPage;
 	$ab=floor($image->gridimage_id/10000);
@@ -253,11 +238,6 @@ $smarty = new GeographPage;
 $template='geonotes.tpl';
 
 $cacheid=0;
-
-#if ($smarty->caching) {
-#	$smarty->caching = 2; // lifetime is per cache
-#	$smarty->cache_lifetime = 3600*3; //3hour cache
-#}
 
 $image=new GridImage;
 
@@ -293,11 +273,10 @@ if (isset($_GET['id']))
 if ($image->isValid())
 {
 	#if (isset($_GET['note_id'])) {
-		#FIXME
-		#* validate id
-		#* only show form for given note?
-		#* better use a ticket_id parameter: could display the new (and the old?) values, then
 	#}
+	# FIXME We need to think about a way to show moderators (or image owners) specific changes, editimage.php would link to here, then.
+	# Should we (also?) use a ticket_id parameter? Could display the new (and the old?) values,
+	# probably as coloured boxes. Maybe a button "show/hide other notes" would be helpful, too?
 
 	#//what style should we use?
 	$style = 'white';

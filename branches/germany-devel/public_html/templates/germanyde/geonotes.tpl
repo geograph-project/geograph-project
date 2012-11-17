@@ -322,7 +322,7 @@ function setImgSize(large) {
 		if (rcode < 0) {
 			noteinfo.lasterror = "Error: Server returned error " + -rcode + " (" + parts[2] + ")";
 		} else {
-			noteinfo.lasterror = "";
+			noteinfo.lasterror = /*rcode == 2 ? "There was nothing to change." :*/ "";
 			if (noteinfo.id < 0) {
 				//FIXME error if parts.length < 3 || parts[2] not a number || parts[2] <= 0
 				noteinfo.id = parseInt(parts[2]);
@@ -338,13 +338,6 @@ function setImgSize(large) {
 		var postdata = ''; //'commit=1';
 		var numnotes = 0;
 		var allids = gn.images[0].notes;
-		for (var i = 0; i < allids.length; ++i) {
-			var id = allids[i];
-			var noteinfo = gn.notes[id];
-			var elcommit = document.getElementById("note_commit_"+id);
-			elcommit.disabled = true;
-			/* FIXME disable every control? */
-		}
 
 		for (var i = 0; i < ids.length; ++i) {
 			var id = ids[i];
@@ -376,8 +369,14 @@ function setImgSize(large) {
 			return;
 		}
 		postdata = 'commit=' + numnotes + postdata;
-		//alert(postdata);
 
+		for (var i = 0; i < allids.length; ++i) {
+			var id = allids[i];
+			var noteinfo = gn.notes[id];
+			var elcommit = document.getElementById("note_commit_"+id);
+			elcommit.disabled = true;
+			/* FIXME disable every control? */
+		}
 		var elcommit = document.getElementById("commit_all");
 		elcommit.disabled = true;
 
@@ -386,8 +385,7 @@ function setImgSize(large) {
 		var reqTimer = setTimeout(function() {
 		       req.abort();
 		}, 30000);
-		req.onreadystatechange = function()
-		{
+		req.onreadystatechange = function() {
 			if (req.readyState != 4) {
 				return;
 			}
@@ -399,14 +397,12 @@ function setImgSize(large) {
 				alert("Cannot communicate with server, status " + req.status);
 			} else {
 				var responseText = req.responseText;
-				//if (responses.length == 1 && /^-[0-9]+:0:.*$/.test(responses[0]) { /* general error */
 				if (/^-[0-9]+:0:[^#]*$/.test(responseText)) { /* general error */
 					var parts = responseText.split(':');
 					var rcode = parseInt(parts[0]);
 					alert("Error: Server returned error " + -rcode + " (" + parts[2] + ")");
 				} else if (!/^(-?[0-9]+:-?[1-9][0-9]*(:[^#]*)?#)*(-?[0-9]+:-?[1-9][0-9]*(:[^#]*)?)$/.test(responseText)) {
 					alert("Unexpected response from server");
-					//alert(responseText);
 				} else {
 					var responses = responseText.split('#');
 					commiterrors = false;
@@ -431,85 +427,6 @@ function setImgSize(large) {
 			}
 			updateStatusLine();
 		}
-		/*url += '?' + postdata;
-		req.open("GET", url, true);
-		req.send(null);*/
-		req.open("POST", url, true);
-		req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		//req.setRequestHeader("Connection", "close");
-		req.send(postdata);
-	}
-	function commitNote(id)
-	{
-		var noteinfo = gn.notes[id];
-		var elcommit = document.getElementById("note_commit_"+id);
-		elcommit.disabled = true;
-		var elz = document.getElementById("note_z_"+id);
-		var valz = parseInt(elz.options[elz.selectedIndex].value);
-		var eltxt = document.getElementById("note_comment_"+id);
-		var valtxt = eltxt.value;
-
-		var postdata = 'commit=1';
-		postdata += '&id=' + encodeURIComponent(noteinfo.id);
-		postdata += '&imageid=' + encodeURIComponent(imageid);
-		postdata += '&x1=' + encodeURIComponent(noteinfo.x1);
-		postdata += '&y1=' + encodeURIComponent(noteinfo.y1);
-		postdata += '&x2=' + encodeURIComponent(noteinfo.x2);
-		postdata += '&y2=' + encodeURIComponent(noteinfo.y2);
-		postdata += '&imgwidth=' + encodeURIComponent(noteinfo.width);
-		postdata += '&imgheight=' + encodeURIComponent(noteinfo.height);
-		postdata += '&z=' + encodeURIComponent(valz);
-		postdata += '&comment=' + encodeURIComponent(valtxt);
-		postdata += '&status=' + noteinfo.status;
-
-		var url="/geonotes.php";
-		var req=getXMLRequestObject();
-		var reqTimer = setTimeout(function() {
-		       req.abort();
-		}, 30000);
-		req.onreadystatechange = function()
-		{
-			if (req.readyState != 4) {
-				return;
-			}
-			clearTimeout(reqTimer);
-			req.onreadystatechange = function() {};
-
-			if (req.status != 200) {
-				alert("Cannot communicate with server, status " + req.status);
-				elcommit.disabled = false;
-				return;
-			}
-
-			var parts = req.responseText.split(':');
-			var renum = /^-?[0-9]+$/;
-			if (!renum.test(parts[0])) {
-				alert("Unexpected response from server");
-				elcommit.disabled = false;
-				return;
-			}
-
-			var rcode = parseInt(parts[0]);
-			if (rcode < 0) {
-				alert("Error: Server returned error " + -rcode + " (" + parts[2] + ")");
-				elcommit.disabled = false;
-				return;
-			}
-
-			if (noteinfo.id < 0) {
-				//FIXME error if parts.length < 3 || parts[2] not a number
-				noteinfo.id = parseInt(parts[2]);
-			}
-
-			noteinfo.pendingchanges = rcode == 1;
-			noteinfo.unsavedchanges = false; // FIXME disable editing until this moment?
-
-			elcommit.disabled = false;
-			statusChanged(id, true);
-		}
-		/*url += '?' + postdata;
-		req.open("GET", url, true);
-		req.send(null);*/
 		req.open("POST", url, true);
 		req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		//req.setRequestHeader("Connection", "close");
@@ -548,7 +465,6 @@ function setImgSize(large) {
 		node.appendChild(document.createTextNode(str)); //TODO
 	}
 	function makeText(node, line) {
-		//node.appendChild(document.createTextNode(line));
 		var re = /(.*?)(\[\[[A-Za-z]{0,3}[0-9]+\]\])|(.+)/g;
 		var match;
 		while (match = re.exec(line)) {
@@ -714,7 +630,7 @@ function setImgSize(large) {
 		ele = document.createElement('input');
 		ele.id = 'note_commit_' + noteid;
 		ele.type = 'button';
-		ele.value = 'commit';
+		ele.value = 'save';
 		AttachEvent(ele,"click",function(){commitUnsavedNotes([noteid]);});
 		form.appendChild(ele);
 
@@ -938,6 +854,7 @@ function setImgSize(large) {
 </script>
 <div>
 	<form action="javascript:void(0);">
+	<p>
 {if $showorig}
 		<label for="imgsize">Image size:</label>
 		<select name="imgsize" id="imgsize" onchange="setImgSize(this.options[this.selectedIndex].value=='original');">
@@ -947,17 +864,17 @@ function setImgSize(large) {
 {/if}
 		<input type="button" value="Add annotation" onclick="addNote();" /> |
 		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts();" /> |
-		<input type="button" value="save all" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
+		<input type="button" value="Save all" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
 		<a href="/photo/{$image->gridimage_id}" target="_blank">Open photo page in new window.</a>
+		<span id="statusline" style="padding-left:2em">JavaScript required</span>
+	</p>
 	</form>
 </div>
-<p id="statusline">JavaScript required</p>
-{*<textarea name="log" id="log" cols="100" rows="30" readonly="readonly"></textarea>*}
 <div id="noteforms" class="noteforms">
     {foreach item=note from=$notes}
-	<h4>Annotation #{$note->note_id}</h4>
-	<p id="statusline_{$note->note_id}"></p>
+	<p><b>Annotation #{$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em"></span></p>
 	<form action="javascript:void(0);" id="note_form_{$note->note_id}" class="{if $note->pendingchanges}noteformpending{else}noteform{/if}">
+	<p>
 		<label for="note_z_{$note->note_id}">z:</label>
 		<select name="note_z_{$note->note_id}" id="note_z_{$note->note_id}" onchange="updateNoteZ({$note->note_id});">
 		{section name=zloop start=0 loop=21}{* no negative values... *}
@@ -972,7 +889,8 @@ function setImgSize(large) {
 		</select> |
 		<input type="button" value="edit box" id="note_edit_{$note->note_id}" onclick="toggleEdit({$note->note_id});" /><br />
 		<textarea name="note_comment_{$note->note_id}" id="note_comment_{$note->note_id}" cols="50" rows="10" onchange="updateNoteComment({$note->note_id});">{$note->comment|escape:'html'}</textarea><br />
-		<input type="button" value="commit" id="note_commit_{$note->note_id}" onclick="commitUnsavedNotes([{$note->note_id}]);" />
+		<input type="button" value="save" id="note_commit_{$note->note_id}" onclick="commitUnsavedNotes([{$note->note_id}]);" />
+	</p>
 	</form>
     {/foreach}
 </div>
