@@ -57,8 +57,8 @@ var gn = {
 		var borderlt  = gn.getStyleXY(img, 'border-left-width', 'border-top-width');
 		//var borderrb  = gn.getStyleXY(img, 'border-right-width', 'border-bottom-width');
 
-		imageinfo.paddborderx = paddinglt[0] + borderlt[0];
-		imageinfo.paddbordery = paddinglt[1] + borderlt[1];
+		//imageinfo.paddborderx = paddinglt[0] + borderlt[0];
+		//imageinfo.paddbordery = paddinglt[1] + borderlt[1];
 		//imageinfo.bordersx = borderlt[0] + borderrb[0]
 		//imageinfo.bordersy = borderlt[1] + borderrb[1]
 		imageinfo.paddborderoffsetx = paddinglt[0] + borderlt[0] + img.offsetLeft;
@@ -105,6 +105,7 @@ var gn = {
 						'status':         curarea.getAttribute('data-geonote-status'),
 						'pendingchanges': curarea.getAttribute('data-geonote-pendingchanges')!='0',
 						'unsavedchanges': false,
+						'lasterror'     : '',
 						'hidden'        : false,
 						'class'         : box.className,
 						'bordersx'      : borderlt[0] + borderrb[0],
@@ -201,6 +202,7 @@ var gn = {
 			'pendingchanges': pendingchanges,
 			'unsavedchanges': true,
 			'hidden'        : false,
+			'lasterror'     : '',
 			'class'         : box.className,
 		}
 		gn.notes[noteid] = noteinfo;
