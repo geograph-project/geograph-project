@@ -1,7 +1,6 @@
 {include file="_std_begin.tpl"}
 
 {* TODO
-* move more code to geonotes.js?
 * note text: convert https?://.*
 * replace data-geonote-width,... hack with something sensible?
    e.g. var initialvalues = { id1 : { 'x1' : ... } ... }
@@ -9,13 +8,8 @@
 * compatibility checks (test if _all_ needed functions are available early, i.e. in init routine)
 * test IE compatibility
 * implement _GET['note_id'] handling in geonotes.php for editimage.php
-* display "unsaved changes" or "unmoderated changes"
-* display last error message or "no changed values"
 * "reset" button?
-* "add note" can make a vertical scroll bar appear.
-  Fix coordinate calculation for that case.
 * geonote.php: reverse order of notes (latest note = first)?
-* button "save all changes"
 * translation
 * dark text on lighter background?
 *}
@@ -100,6 +94,8 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <script type="text/javascript">
 /* <![CDATA[ */
+var commiterrors = false;
+var unsavedchanges = false;
 var curedit = 0;
 var dragx1, dragx2, dragy1, dragy2;
 var dragdx1, dragdx2, dragdy1, dragdy2, dragdxs, dragdys;
@@ -265,19 +261,183 @@ function setImgSize(large) {
 			startEdit(id);
 		}
 	}
-	function statusChanged(id)
+	function updateStatusLine()
+	{
+		var msg = '';
+		if (unsavedchanges) {
+			msg = 'There are unsaved changes.';
+		}
+		if (commiterrors) {
+			if (msg != '') {
+				msg += ' | ';
+			}
+			msg += 'The server reported errors when saving the changes.';
+		}
+		var statusline = document.getElementById("statusline");
+		if (statusline.firstChild)
+			statusline.replaceChild(document.createTextNode(msg), statusline.firstChild);
+		else
+			statusline.appendChild(document.createTextNode(msg));
+	}
+	function statusChanged(id, globalstatus)
 	{
 		var form = document.getElementById("note_form_"+id);
 		var noteinfo = gn.notes[id];
+		var msg = '';
+		unsavedchanges |= noteinfo.unsavedchanges;
 		if (noteinfo.unsavedchanges) {
 			form.className = "noteformunsaved";
+			msg = "There are unsaved changes.";
+			// FIXME enable commit button?
 		} else if (noteinfo.pendingchanges) {
 			form.className = "noteformpending";
+			msg = "There are unmoderated changes.";
 			// FIXME disable commit button?
 		} else {
+			msg = '';
 			form.className = "noteform";
 			// FIXME disable commit button?
 		}
+		if (noteinfo.lasterror !== '') {
+			if (msg != '') {
+				msg += ' | '
+			}
+			msg += noteinfo.lasterror;
+		}
+		var statusline = document.getElementById("statusline_"+id);
+		if (statusline.firstChild)
+			statusline.replaceChild(document.createTextNode(msg), statusline.firstChild);
+		else
+			statusline.appendChild(document.createTextNode(msg));
+		if (globalstatus) {
+			updateStatusLine();
+		}
+	}
+	function handleResponse(response) {
+		var parts = response.split(':');
+		var rcode = parseInt(parts[0]);
+		var id = parts[1];
+		var noteinfo = gn.notes[id]; // FIXME check if not there?
+
+		if (rcode < 0) {
+			noteinfo.lasterror = "Error: Server returned error " + -rcode + " (" + parts[2] + ")";
+		} else {
+			noteinfo.lasterror = "";
+			if (noteinfo.id < 0) {
+				//FIXME error if parts.length < 3 || parts[2] not a number || parts[2] <= 0
+				noteinfo.id = parseInt(parts[2]);
+			}
+			noteinfo.pendingchanges = rcode == 1;
+			noteinfo.unsavedchanges = false; // FIXME disable editing until this moment?
+		}
+		statusChanged(id, false);
+		return rcode < 0;
+	}
+	function commitUnsavedNotes(ids)
+	{
+		var postdata = ''; //'commit=1';
+		var numnotes = 0;
+		var allids = gn.images[0].notes;
+		for (var i = 0; i < allids.length; ++i) {
+			var id = allids[i];
+			var noteinfo = gn.notes[id];
+			var elcommit = document.getElementById("note_commit_"+id);
+			elcommit.disabled = true;
+			/* FIXME disable every control? */
+		}
+
+		for (var i = 0; i < ids.length; ++i) {
+			var id = ids[i];
+			var noteinfo = gn.notes[id];
+			if (!noteinfo.unsavedchanges) {
+				continue;
+			}
+			++numnotes;
+			var suffix = numnotes != 1 ? '_' + numnotes : '';
+			var elz = document.getElementById("note_z_"+id);
+			var valz = parseInt(elz.options[elz.selectedIndex].value);
+			var eltxt = document.getElementById("note_comment_"+id);
+			var valtxt = eltxt.value;
+
+			postdata += '&id' + suffix + '=' + encodeURIComponent(noteinfo.id);
+			postdata += '&imageid' + suffix + '=' + encodeURIComponent(imageid);
+			postdata += '&x1' + suffix + '=' + encodeURIComponent(noteinfo.x1);
+			postdata += '&y1' + suffix + '=' + encodeURIComponent(noteinfo.y1);
+			postdata += '&x2' + suffix + '=' + encodeURIComponent(noteinfo.x2);
+			postdata += '&y2' + suffix + '=' + encodeURIComponent(noteinfo.y2);
+			postdata += '&imgwidth' + suffix + '=' + encodeURIComponent(noteinfo.width);
+			postdata += '&imgheight' + suffix + '=' + encodeURIComponent(noteinfo.height);
+			postdata += '&z' + suffix + '=' + encodeURIComponent(valz);
+			postdata += '&comment' + suffix + '=' + encodeURIComponent(valtxt);
+			postdata += '&status' + suffix + '=' + noteinfo.status;
+		}
+
+		if (!numnotes) {
+			return;
+		}
+		postdata = 'commit=' + numnotes + postdata;
+		//alert(postdata);
+
+		var elcommit = document.getElementById("commit_all");
+		elcommit.disabled = true;
+
+		var url="/geonotes.php";
+		var req=getXMLRequestObject();
+		var reqTimer = setTimeout(function() {
+		       req.abort();
+		}, 30000);
+		req.onreadystatechange = function()
+		{
+			if (req.readyState != 4) {
+				return;
+			}
+			clearTimeout(reqTimer);
+			req.onreadystatechange = function() {};
+			commiterrors = true;
+
+			if (req.status != 200) {
+				alert("Cannot communicate with server, status " + req.status);
+			} else {
+				var responseText = req.responseText;
+				//if (responses.length == 1 && /^-[0-9]+:0:.*$/.test(responses[0]) { /* general error */
+				if (/^-[0-9]+:0:[^#]*$/.test(responseText)) { /* general error */
+					var parts = responseText.split(':');
+					var rcode = parseInt(parts[0]);
+					alert("Error: Server returned error " + -rcode + " (" + parts[2] + ")");
+				} else if (!/^(-?[0-9]+:-?[1-9][0-9]*(:[^#]*)?#)*(-?[0-9]+:-?[1-9][0-9]*(:[^#]*)?)$/.test(responseText)) {
+					alert("Unexpected response from server");
+					//alert(responseText);
+				} else {
+					var responses = responseText.split('#');
+					commiterrors = false;
+					for (var i = 0; i < responses.length; ++i) {
+						commiterrors |= handleResponse(responses[i]);
+					}
+					if (commiterrors) {
+						alert("The server reported errors when saving the changes.");
+					}
+				}
+			}
+			unsavedchanges = false;
+			var elcommit = document.getElementById("commit_all");
+			elcommit.disabled = false;
+			for (var i = 0; i < allids.length; ++i) {
+				var id = allids[i];
+				var noteinfo = gn.notes[id];
+				unsavedchanges |= noteinfo.unsavedchanges;
+				var elcommit = document.getElementById("note_commit_"+id);
+				elcommit.disabled = false;
+				/* FIXME enable controls after disabling them at the beginning of commitUnsavedNotes */
+			}
+			updateStatusLine();
+		}
+		/*url += '?' + postdata;
+		req.open("GET", url, true);
+		req.send(null);*/
+		req.open("POST", url, true);
+		req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		//req.setRequestHeader("Connection", "close");
+		req.send(postdata);
 	}
 	function commitNote(id)
 	{
@@ -345,7 +505,7 @@ function setImgSize(large) {
 			noteinfo.unsavedchanges = false; // FIXME disable editing until this moment?
 
 			elcommit.disabled = false;
-			statusChanged(id);
+			statusChanged(id, true);
 		}
 		/*url += '?' + postdata;
 		req.open("GET", url, true);
@@ -362,14 +522,14 @@ function setImgSize(large) {
 		noteinfo.unsavedchanges = true;
 		var box = noteinfo.box;
 		box.style.zIndex = val + 50;
-		statusChanged(id);
+		statusChanged(id, true);
 	}
 	function updateNoteStatus(id) {
 		var noteinfo = gn.notes[id];
 		var el = document.getElementById("note_status_"+id);
 		noteinfo.status = el.options[el.selectedIndex].value;
 		noteinfo.unsavedchanges = true;
-		statusChanged(id);
+		statusChanged(id, true);
 	}
 	function handleLinks(node, str) {
 		// TODO we probably should introduce something like [[:url:href|text]] and [[:url:href]] which would become <a href="href">text</a> or <a href="href">Link</a>
@@ -426,7 +586,7 @@ function setImgSize(large) {
 
 		/* reset box size */
 		gn.initBoxWidth(txt);
-		statusChanged(id);
+		statusChanged(id, true);
 	}
 	var newnotes = 0;
 	function addNote() {
@@ -501,6 +661,9 @@ function setImgSize(large) {
 
 		var head = document.createElement('h4');
 		head.appendChild(document.createTextNode('New annotation #'+-noteid));
+		var statusline = document.createElement('p');
+		statusline.id = 'statusline_'+noteid;
+	
 		var form = document.createElement('form');
 		form.id = 'note_form_' + noteid;
 
@@ -552,15 +715,16 @@ function setImgSize(large) {
 		ele.id = 'note_commit_' + noteid;
 		ele.type = 'button';
 		ele.value = 'commit';
-		AttachEvent(ele,"click",function(){commitNote(noteid);});
+		AttachEvent(ele,"click",function(){commitUnsavedNotes([noteid]);});
 		form.appendChild(ele);
 
 		var forms = document.getElementById('noteforms');
 		var addbutton = document.getElementById('addbutton');
 		forms.appendChild(head);
+		forms.appendChild(statusline);
 		forms.appendChild(form);
 
-		statusChanged(noteid);
+		statusChanged(noteid, true);
 
 		if (form.scrollIntoView) {
 			form.scrollIntoView(true);
@@ -599,7 +763,7 @@ function setImgSize(large) {
 		}
 		noteinfo.status = el.options[el.selectedIndex].value;
 		noteinfo.unsavedchanges = true;
-		statusChanged(noteid);
+		statusChanged(noteid, true);
 
 		return false;
 	}
@@ -664,7 +828,7 @@ function setImgSize(large) {
 			return;
 		}
 		gn.recalcBox(curedit); // FIXME do that only in stopEdit()?
-		statusChanged(curedit);
+		statusChanged(curedit, true);
 		dragging = -1;
 	}
 	function dragBox(e) {
@@ -736,8 +900,7 @@ function setImgSize(large) {
 		}
 		// TODO compatibility checks for features not tested by gn.init() go here
 
-		var statusline = document.getElementById("notestatus");
-		statusline.replaceChild(document.createTextNode(""), statusline.firstChild);
+		updateStatusLine(); /* removes "JavaScript required" */
 
 		var img = document.getElementById('gridimage');
 		var edbox = document.getElementById('noteboxedit');
@@ -784,14 +947,16 @@ function setImgSize(large) {
 {/if}
 		<input type="button" value="Add annotation" onclick="addNote();" /> |
 		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts();" /> |
+		<input type="button" value="save all" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
 		<a href="/photo/{$image->gridimage_id}" target="_blank">Open photo page in new window.</a>
 	</form>
 </div>
-<p id="notestatus">JavaScript required</p>
+<p id="statusline">JavaScript required</p>
 {*<textarea name="log" id="log" cols="100" rows="30" readonly="readonly"></textarea>*}
 <div id="noteforms" class="noteforms">
     {foreach item=note from=$notes}
 	<h4>Annotation #{$note->note_id}</h4>
+	<p id="statusline_{$note->note_id}"></p>
 	<form action="javascript:void(0);" id="note_form_{$note->note_id}" class="{if $note->pendingchanges}noteformpending{else}noteform{/if}">
 		<label for="note_z_{$note->note_id}">z:</label>
 		<select name="note_z_{$note->note_id}" id="note_z_{$note->note_id}" onchange="updateNoteZ({$note->note_id});">
@@ -807,7 +972,7 @@ function setImgSize(large) {
 		</select> |
 		<input type="button" value="edit box" id="note_edit_{$note->note_id}" onclick="toggleEdit({$note->note_id});" /><br />
 		<textarea name="note_comment_{$note->note_id}" id="note_comment_{$note->note_id}" cols="50" rows="10" onchange="updateNoteComment({$note->note_id});">{$note->comment|escape:'html'}</textarea><br />
-		<input type="button" value="commit" id="note_commit_{$note->note_id}" onclick="commitNote({$note->note_id});" />
+		<input type="button" value="commit" id="note_commit_{$note->note_id}" onclick="commitUnsavedNotes([{$note->note_id}]);" />
 	</form>
     {/foreach}
 </div>

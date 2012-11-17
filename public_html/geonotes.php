@@ -32,71 +32,67 @@ init_session();
 
 $USER->mustHavePerm("basic"); // FIXME remove? not registered users should at least have $showorig = false?
 
-if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
-	// on change, return status + ':' + id
-	// on successfull creation, return status + ':' + id + ':' + new note_id
-	// on error return status + ':' + id + ':' + message
-	// (use id=0 for errors not related to a specific note)
-	// status:
-	//    -6: invalid note id
-	//    -5: invalid image id
-	//    -4: missung parameters
-	//    -3: invalid parameters
-	//    -2: could not convert comment
-	//    -1: internal error/access denied
-	//    0:  applied changes
-	//    1:  pending (awaiting moderation)
-	//    2:  old values = new values, no changes made
-
-	if (  !isset($_REQUEST['id'])
-	    ||!isset($_REQUEST['imageid'])
-	    ||!isset($_REQUEST['x1'])
-	    ||!isset($_REQUEST['x2'])
-	    ||!isset($_REQUEST['y1'])
-	    ||!isset($_REQUEST['y2'])
-	    ||!isset($_REQUEST['z'])
-	    ||!isset($_REQUEST['status'])
-	    ||!isset($_REQUEST['imgwidth'])
-	    ||!isset($_REQUEST['imgheight'])
-	    ||!isset($_REQUEST['comment'])) {
-		print "-4:0:missing parameters";
-		exit;
+/*
+ * Note upload: Basic check of input parameters.
+ * Returns: 0 on success, error message on error
+ */
+function check_params($no)
+{
+	if ($no == 1) {
+		$suffix = '';
+	} else {
+		$suffix = '_'.$no;
 	}
-	if (  !preg_match('/^[\x09\x0a\x0d\x20-\xff]*[\x21-\xff][\x09\x0a\x0d\x20-\xff]*$/', $_REQUEST['comment'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['id'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['imageid'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['x1'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['y1'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['x2'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['y2'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['z'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_POST['commit'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['imgwidth'])
-	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST['imgheight'])
-	    ||$_REQUEST['status'] != 'visible' && $_REQUEST['status'] != 'deleted' && $_REQUEST['status'] != 'pending'
+	if (  !isset($_REQUEST["id$suffix"])
+	    ||!isset($_REQUEST["imageid$suffix"])
+	    ||!isset($_REQUEST["x1$suffix"])
+	    ||!isset($_REQUEST["x2$suffix"])
+	    ||!isset($_REQUEST["y1$suffix"])
+	    ||!isset($_REQUEST["y2$suffix"])
+	    ||!isset($_REQUEST["z$suffix"])
+	    ||!isset($_REQUEST["status$suffix"])
+	    ||!isset($_REQUEST["imgwidth$suffix"])
+	    ||!isset($_REQUEST["imgheight$suffix"])
+	    ||!isset($_REQUEST["comment$suffix"])) {
+		return '-4:0:missing parameters';
+	}
+	if (  !preg_match('/^[\x09\x0a\x0d\x20-\xff]*[\x21-\xff][\x09\x0a\x0d\x20-\xff]*$/', $_REQUEST["comment$suffix"])
+	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["id$suffix"])
+	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["imageid$suffix"])
+	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["x1$suffix"])
+	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["y1$suffix"])
+	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["x2$suffix"])
+	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["y2$suffix"])
+	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["z$suffix"])
+	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["imgwidth$suffix"])
+	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["imgheight$suffix"])
+	    ||$_REQUEST["status$suffix"] != 'visible' && $_REQUEST["status$suffix"] != 'deleted' && $_REQUEST["status$suffix"] != 'pending'
            ) {
-		print "-3:0:invalid parameters";
-		exit;
+		return '-3:0:invalid parameters';
 	}
-	$commitnotes = intval($_POST['commit']);
-	if ($commitnotes != 1) {
-		// TODO allow multiple commit:
-		//   check all parameters at the beginning (isset, preg_match, $note_id == 0, $commitnotes >= 1)
-		//   $commitnotes contains the number of annotations to change/add
-		//   use $_REQUEST['id_'+seqno], seqno=1..$commitnotes instead of $_REQUEST['id'], etc.
-		//   concatenate all result strings, using '#' as separator: 
-		//   "-2:3:could not convert character#1:-2:123#..."   <-- could not change note with id 3, successfully added note -2 which has id 123, now.
-		print "-3:0:invalid parameters";
-		exit;
-	}
-	$note_id = intval($_REQUEST['id']);
+	$note_id = intval($_REQUEST["id$suffix"]);
 	if ($note_id == 0) {
-		print "-3:0:invalid parameters";
-		exit;
+		return '-3:0:invalid parameters';
 	}
-	$comment = $_REQUEST['comment'];
+	return 0;
+}
+
+/*
+ * Note upload: Evaluate input parameters and try to change or create a note.
+ * Returns: status message
+ */
+function commit_note($no)
+{
+	global $USER;
+	if ($no == 1) {
+		$suffix = '';
+	} else {
+		$suffix = '_'.$no;
+	}
+	$note_id = intval($_REQUEST["id$suffix"]);
+	$comment = $_REQUEST["comment$suffix"];
 	$oldsu = mb_substitute_character();
-	//if (!mb_substitute_character(0)) { // php only allows 1...ffff ...
+	//if (!mb_substitute_character(0)) { // php only allows 0x0001...0xffff
 	if (!mb_substitute_character(1)) {
 		trigger_error("could not change substitute character", E_USER_WARNING);
 	}
@@ -104,25 +100,23 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	mb_substitute_character($oldsu);
 	//if (strpos($comment, chr(0)) !== false) {
 	if (strpos($comment, chr(1)) !== false) {
-		print "-2:$note_id:could not convert character";
-		exit;
+		return "-2:$note_id:could not convert character";
 	}
 	$comment = str_replace("\r\n", "\n", $comment);
 	// FIXME trim comment?
-	$status = $_REQUEST['status'];
-	$x1 = intval($_REQUEST['x1']);
-	$x2 = intval($_REQUEST['x2']);
-	$y1 = intval($_REQUEST['y1']);
-	$y2 = intval($_REQUEST['y2']);
-	$iw = intval($_REQUEST['imgwidth']);
-	$ih = intval($_REQUEST['imgheight']);
-	$z  = intval($_REQUEST['z']);
-	$gridimage_id = intval($_REQUEST['imageid']);
+	$status = $_REQUEST["status$suffix"];
+	$x1 = intval($_REQUEST["x1$suffix"]);
+	$x2 = intval($_REQUEST["x2$suffix"]);
+	$y1 = intval($_REQUEST["y1$suffix"]);
+	$y2 = intval($_REQUEST["y2$suffix"]);
+	$iw = intval($_REQUEST["imgwidth$suffix"]);
+	$ih = intval($_REQUEST["imgheight$suffix"]);
+	$z  = intval($_REQUEST["z$suffix"]);
+	$gridimage_id = intval($_REQUEST["imageid$suffix"]);
 	$image=new GridImage;
 	$image->loadFromId($gridimage_id);
 	if (!$image->isValid()) {
-		print "-5:$note_id:invalid image id";
-		exit;
+		return "-5:$note_id:invalid image id";
 	}
 	$imagesize = $image->_getFullSize();
 	$imagewidth = $imagesize[0];
@@ -138,8 +132,7 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	    || ($note_id < 0) && $status != 'visible'
 	   ) {
 		//trigger_error("inv param: $x1 $x2 $iw $y1 $y2 $ih $z $note_id $status $imagewidth $imageheight", E_USER_NOTICE);
-		print "-3:$note_id:invalid parameters";
-		exit;
+		return "-3:$note_id:invalid parameters";
 	}
 
 	$ticket=new GridImageTroubleTicket();
@@ -149,20 +142,18 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 	//$ticket->setType('normal');
 	$ticket->setPublic('everyone'); // FIXME?
 	$ticket->setImage($gridimage_id);
-	$mod = !($isowner||$ismoderator); # FIXME change to something like $mod=!($isowner||$ismoderator&&$immediate) with $immediate corresponding to some new control...
-	// FIXME optional comment by the user
+	$mod = !($isowner||$ismoderator); # FIXME change to something like $mod=!($isowner||$ismoderator&&$immediate) with $immediate corresponding to some new control...?
+	// FIXME optional comment by the user?
 
 	$note=new GridImageNote;
 	if ($note_id > 0) {
 		# change existing annotation using the $ticket
 		$note->loadFromId($note_id);
 		if (!$note->isValid() || $note->gridimage_id != $gridimage_id) {
-			print "-6:$note_id:invalid note id";
-			exit;
+			return "-6:$note_id:invalid note id";
 		}
 		if ($status == 'pending' && $note->status != 'pending') {
-			print "-3:$note_id:setting status to pending is not allowed";
-			exit;
+			return "-3:$note_id:setting status to pending is not allowed";
 		}
 		$ticket->setNotes("Changed image annotation $note_id.");
 		$ticket->updateField('x1', $note->x1, $x1, $mod, $note_id);
@@ -176,8 +167,7 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 		$ticket->updateField('status', $note->status, $status, $mod, $note_id);
 		// FIXME updateField should report errors and we should pass that to the client
 		if (!count($ticket->changes)) {
-			print("2:$note_id");
-			exit;
+			return "2:$note_id";
 		}
 		$reqinfo = '';
 	} else {
@@ -185,18 +175,73 @@ if (isset($_POST['commit'])) { // change (id > 0) or add (id < 0) annotation
 		# (this way, the user gets a notification mail and we get an "annotation history")
 		$newnote_id =  $note->create($gridimage_id, $x1, $x2, $y1, $y2, $iw, $ih, $comment, $z, 'pending');
 		if (!$note->isValid()) {
-			print "-1:$note_id:could not create annotation";
-			exit;
+			return "-1:$note_id:could not create annotation";
 		}
 		$ticket->setNotes("Created image annotation $newnote_id.");
 		$ticket->updateField('status', 'pending', 'visible', $mod, $newnote_id);
 		$reqinfo = ":$newnote_id";
 	}
 	if ($ticket->commit() == 'closed') { // FIXME error handling...
-		print "0:$note_id$reqinfo";
+		return "0:$note_id$reqinfo";
 	} else {
-		print "1:$note_id$reqinfo";
+		return "1:$note_id$reqinfo";
 	}
+}
+
+if (isset($_POST['commit'])) {
+	// change (id > 0) or add (id < 0) annotation(s)
+	// on change, return status + ':' + id
+	// on successfull creation, return status + ':' + id + ':' + new note_id
+	// on error return status + ':' + id + ':' + message
+	// (id=0 for errors not related to a specific note)
+	// status:
+	//    -6: invalid note id
+	//    -5: invalid image id
+	//    -4: missung parameters
+	//    -3: invalid parameters
+	//    -2: could not convert comment
+	//    -1: internal error/access denied
+	//    0:  applied changes
+	//    1:  pending (awaiting moderation)
+	//    2:  old values = new values, no changes made
+	if (!preg_match('/^\s*[0-9]+\s*$/', $_POST['commit'])) {
+		print "-3:0:invalid parameters";
+		exit;
+	}
+	$commitnotes = intval($_POST['commit']);
+	if ($commitnotes < 1) {
+		print "-3:0:invalid parameters";
+		exit;
+	}
+	/*if ($commitnotes == 1) {
+		$ret = check_params(0);
+		if ($ret !== 0) {
+			print $ret;
+			exit;
+		}
+		$ret = commit_note(0);
+	} else {*/
+	// multiple commit:
+	// * basic parameter check for all notes at the beginning
+	// * $commitnotes contains the number of annotations to change/add
+	// * uses $_REQUEST['id_'.$no], $no=2..$commitnotes additionally to $_REQUEST['id'], etc.
+	// * concatenates all result strings, using '#' as separator:
+	//   "-2:3:could not convert character#1:-2:123#..."  <-- could not change note with id 3, successfully added note -2 which has geonote_id 123, ...
+	for ($i = 1; $i <= $commitnotes; ++$i) {
+		$ret = check_params($i);
+		if ($ret !== 0) {
+			print $ret;
+			exit;
+		}
+	}
+	$ret = '';
+	$sep = '';
+	for ($i = 1; $i <= $commitnotes; ++$i) {
+		$ret .= $sep . commit_note($i);
+		$sep = '#';
+	}
+	/*}*/
+	print $ret;
 	$smarty = new GeographPage;
 	$ab=floor($image->gridimage_id/10000);
 	$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
@@ -253,12 +298,6 @@ if ($image->isValid())
 		#* only show form for given note?
 		#* better use a ticket_id parameter: could display the new (and the old?) values, then
 	#}
-	// FIXME possibly add a column creator to the geonotes object?
-	if (!$isowner&&!$ismoderator) {
-		$notes = $image->getNotes(array('visible', 'pending'), $USER->user_id);
-	} else {
-		$notes = $image->getNotes(array('visible', 'pending', 'deleted'), $USER->user_id);
-	}
 
 	#//what style should we use?
 	$style = 'white';
@@ -277,57 +316,28 @@ if ($image->isValid())
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
+		// FIXME possibly add a column creator to the geonotes object?
+		if (!$isowner&&!$ismoderator) {
+			$notes = $image->getNotes(array('visible', 'pending'), $USER->user_id);
+		} else {
+			$notes = $image->getNotes(array('visible', 'pending', 'deleted'), $USER->user_id);
+		}
+
 		$imagesize = $image->_getFullSize();
 
-		#$sizes = array();
-		#$widths = array();
-		#$heights = array();
-		#$showorig = false;
-		#if ($image->original_width) {
-		#	$smarty->assign('original_width', $image->original_width);
-		#	$smarty->assign('original_height', $image->original_height);
-		#	$uploadmanager=new UploadManager;
-		#	list($destwidth, $destheight, $maxdim, $changedim) = $uploadmanager->_new_size($image->original_width, $image->original_height);
-		#	if ($changedim) {
-		#		$showorig = true;
-		#		foreach ($CONF['show_sizes'] as $cursize) {
-		#			list($destwidth, $destheight, $destdim, $changedim) = $uploadmanager->_new_size($image->original_width, $image->original_height, $cursize);
-		#			if (!$changedim)
-		#				break;
-		#			$sizes[] = $cursize;
-		#			$widths[] = $destwidth;
-		#			$heights[] = $destheight;
-		#			$maxdim = $destdim;
-		#		}
-		#		$maxdim = max($image->original_width, $image->original_height);
-		#	}
-		#} else {
-		#	$maxdim = max($imagesize[0], $imagesize[1]);
-		#}
-
 		$showorig = false;
-
 		if ($image->original_width) {
 			$smarty->assign('original_width', $image->original_width);
 			$smarty->assign('original_height', $image->original_height);
+			// check if original size == std size
 			$uploadmanager=new UploadManager;
-			list($destwidth, $destheight, $maxdim, $changedim) = $uploadmanager->_new_size($image->original_width, $image->original_height);
+			list($destwidth, $destheight, $destdim, $changedim) = $uploadmanager->_new_size($image->original_width, $image->original_height);
 			if ($changedim) {
 				$showorig = true;
-				$maxdim = $destdim;
-				$maxdim = max($image->original_width, $image->original_height); # FIXME?
 			}
-		} else {
-			$maxdim = max($imagesize[0], $imagesize[1]);
 		}
-		#$smarty->assign('sizes', $sizes);
-		#$smarty->assign('widths', $widths);
-		#$smarty->assign('heights', $heights);
-		$smarty->assign('stdsize', $CONF['img_max_size']);
-		$smarty->assign('originalsize', $maxdim);
 		$smarty->assign('std_width', $imagesize[0]);
 		$smarty->assign('std_height', $imagesize[1]);
-
 		$smarty->assign('showorig', $showorig);
 		$smarty->assign('orig_url', $image->_getOriginalpath());
 		$smarty->assign('img_url', $image->_getFullpath());
