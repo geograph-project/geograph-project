@@ -575,18 +575,21 @@ function setImgSize(large) {
 
 		gn.addNote(area, box, txt, nmap, pdiv, pdiv, x1, y1, x2, y2, img, 'visible', true, noteid);
 
-		var head = document.createElement('h4');
-		head.appendChild(document.createTextNode('New annotation #'+-noteid));
-		var statusline = document.createElement('p');
-		statusline.id = 'statusline_'+noteid;
-	
-		var form = document.createElement('form');
-		form.id = 'note_form_' + noteid;
+		var head = document.createElement('p');
+		ele = document.createElement('b');
+		ele.appendChild(document.createTextNode('New annotation #'+-noteid));
+		head.appendChild(ele);
+		ele = document.createElement('span');
+		ele.id = 'statusline_' + noteid;
+		ele.style.paddingLeft = '2em';
+		head.appendChild(ele);
+
+		var formp = document.createElement('p');
 
 		ele = document.createElement('label');
 		ele.for = 'note_z_' + noteid;
 		ele.appendChild(document.createTextNode('z:'));
-		form.appendChild(ele);
+		formp.appendChild(ele);
 		ele = document.createElement('select');
 		ele.name = 'note_z_' + noteid;
 		ele.id = 'note_z_' + noteid;
@@ -594,13 +597,13 @@ function setImgSize(large) {
 		for (var i=-10; i<=10; ++i) {
 			ele.options[i+10] = new Option(i, i, false, i==0);
 		}
-		form.appendChild(ele);
-		form.appendChild(document.createTextNode(' | '));
+		formp.appendChild(ele);
+		formp.appendChild(document.createTextNode(' | '));
 
 		ele = document.createElement('label');
 		ele.for = 'note_status_' + noteid;
 		ele.appendChild(document.createTextNode('status:'));
-		form.appendChild(ele);
+		formp.appendChild(ele);
 		ele = document.createElement('select');
 		ele.name = 'note_status_' + noteid;
 		ele.id = 'note_status_' + noteid;
@@ -608,36 +611,39 @@ function setImgSize(large) {
 		//ele.options[0] = new Option("awaiting moderation", "pending", false, false);
 		ele.options[0] = new Option("visible", "visible", false, true);
 		ele.options[1] = new Option("deleted", "deleted", false, false);
-		form.appendChild(ele);
-		form.appendChild(document.createTextNode(' | '));
+		formp.appendChild(ele);
+		formp.appendChild(document.createTextNode(' | '));
 
 		ele = document.createElement('input');
 		ele.id = 'note_edit_' + noteid;
 		ele.type = 'button';
 		ele.value = 'edit box';
 		AttachEvent(ele,"click",function(){toggleEdit(noteid);});
-		form.appendChild(ele);
-		form.appendChild(document.createElement('br'));
+		formp.appendChild(ele);
+		formp.appendChild(document.createElement('br'));
 
 		ele = document.createElement('textarea');
 		ele.rows = 10;
 		ele.cols = 50;
 		ele.id = 'note_comment_' + noteid;
 		AttachEvent(ele,"change",function(){updateNoteComment(noteid);});
-		form.appendChild(ele);
-		form.appendChild(document.createElement('br'));
+		formp.appendChild(ele);
+		formp.appendChild(document.createElement('br'));
 
 		ele = document.createElement('input');
 		ele.id = 'note_commit_' + noteid;
 		ele.type = 'button';
 		ele.value = 'save';
 		AttachEvent(ele,"click",function(){commitUnsavedNotes([noteid]);});
-		form.appendChild(ele);
+		formp.appendChild(ele);
+
+		var form = document.createElement('form');
+		form.id = 'note_form_' + noteid;
+		form.appendChild(formp);
 
 		var forms = document.getElementById('noteforms');
 		var addbutton = document.getElementById('addbutton');
 		forms.appendChild(head);
-		forms.appendChild(statusline);
 		forms.appendChild(form);
 
 		statusChanged(noteid, true);
