@@ -95,7 +95,7 @@ var gn = {
 						'img':            img,
 						'imageinfo':      gn.images[imageindex],
 						'noteid':         noteid, /* corresponds to the element's id, never changes */
-						'id':             noteid, /* when creating a note, this changes to the actual note_id */
+						'servernoteid':   noteid, /* when creating a note, this changes to the actual note_id */
 						'x1':             curarea.getAttribute('data-geonote-x1'),
 						'x2':             curarea.getAttribute('data-geonote-x2'),
 						'y1':             curarea.getAttribute('data-geonote-y1'),
@@ -183,8 +183,8 @@ var gn = {
 			'note':           txt,
 			'img':            img,
 			'imageinfo':      gn.images[imageindex],
-			'noteid':         noteid, /* corresponds to the element's id, never changes */           // FIXME rename to noteid_dom?
-			'id':             noteid, /* when creating a note, this changes to the actual note_id */ // FIXME rename to noteid_db?
+			'noteid':         noteid, /* corresponds to the element's id, never changes */
+			'servernoteid':   noteid, /* when creating a note, this changes to the actual note_id */
 			'x1':             x1,
 			'y1':             y1,
 			'x2':             x2,

@@ -68,10 +68,13 @@ function check_params($no)
 	    ||!preg_match('/^\s*-?[0-9]+\s*$/', $_REQUEST["imgheight$suffix"])
 	    ||$_REQUEST["status$suffix"] != 'visible' && $_REQUEST["status$suffix"] != 'deleted' && $_REQUEST["status$suffix"] != 'pending'
            ) {
+		$a = "{$_REQUEST["comment$suffix"]},{$_REQUEST["id$suffix"]},{$_REQUEST["imageid$suffix"]},{$_REQUEST["x1$suffix"]},{$_REQUEST["y1$suffix"]},{$_REQUEST["x2$suffix"]},{$_REQUEST["y2$suffix"]},{$_REQUEST["z$suffix"]},{$_REQUEST["imgwidth$suffix"]},{$_REQUEST["imgwidth$suffix"]},{$_REQUEST["imgheight$suffix"]},{$_REQUEST["status$suffix"]}";
+		trigger_error("inv val: $a", E_USER_WARNING);
 		return '-3:0:invalid parameters';
 	}
 	$note_id = intval($_REQUEST["id$suffix"]);
 	if ($note_id == 0) {
+		trigger_error("inv id: {$note_id}", E_USER_WARNING);
 		return '-3:0:invalid parameters';
 	}
 	return 0;
@@ -131,7 +134,7 @@ function commit_note($no)
 	    || ($y2 - $y1 + 1)*$imageheight < 8*$ih
 	    || ($note_id < 0) && $status != 'visible'
 	   ) {
-		//trigger_error("inv param: $x1 $x2 $iw $y1 $y2 $ih $z $note_id $status $imagewidth $imageheight", E_USER_NOTICE);
+		trigger_error("inv param: $x1 $x2 $iw $y1 $y2 $ih $z $note_id $status $imagewidth $imageheight", E_USER_WARNING);
 		return "-3:$note_id:invalid parameters";
 	}
 
@@ -205,6 +208,7 @@ if (isset($_POST['commit'])) {
 	//    1:  pending (awaiting moderation)
 	//    2:  old values = new values, no changes made
 	if (!preg_match('/^\s*[1-9][0-9]*\s*$/', $_POST['commit'])) {
+		trigger_error("inv commit: {$_POST['commit']}", E_USER_WARNING);
 		print "-3:0:invalid parameters";
 		exit;
 	}
