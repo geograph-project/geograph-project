@@ -313,24 +313,57 @@ function setImgSize(large) {
 			updateStatusLine();
 		}
 	}
-	function handleResponse(response) {
-		var parts = response.split(':');
-		var rcode = parseInt(parts[0]);
-		var id = parts[1];
-		var noteinfo = gn.notes[id]; // FIXME check if not there?
+	var internalids = { };
+	function parseResponseText(responseText) {
+		if (!/^(-?[0-9]+:-?[1-9][0-9]*(:[^#]*)?#)*(-?[0-9]+:-?[1-9][0-9]*(:[^#]*)?)$/.test(responseText)) {
+			return [];
+		}
+		var result = [];
+		var responses = responseText.split('#');
+		for (var i = 0; i < responses.length; ++i) {
+			var parts = responses[i].split(':');
+			rcode = parseInt(parts[0]);
+			parts[0] = rcode;
+			var id = parts[1];
+			if (id in internalids) {
+				id = internalids[id];
+			}
+			if (!(id in gn.notes)) {
+				return [];
+			}
+			var noteinfo = gn.notes[id];
+			parts[1] = noteinfo;
+			if (rcode < 0) {
+				if (parts.length < 3) {
+					parts[2] = '';
+				}
+			} else if (noteinfo.servernoteid < 0) {
+				if (rcode > 1 || parts.length < 3 || !/^[1-9][0-9]*$/.test(parts[2])) {
+					return [];
+				}
+			} else if (rcode > 2) {
+				return [];
+			}
+			result[result.length] = parts;
+		}
+		return result;
+	}
+	function handleResponse(parts) {
+		var rcode = parts[0];
+		var noteinfo = parts[1];
 
 		if (rcode < 0) {
 			noteinfo.lasterror = "Error: Server returned error " + -rcode + " (" + parts[2] + ")";
 		} else {
 			noteinfo.lasterror = /*rcode == 2 ? "There was nothing to change." :*/ "";
-			if (noteinfo.id < 0) {
-				//FIXME error if parts.length < 3 || parts[2] not a number || parts[2] <= 0
-				noteinfo.id = parseInt(parts[2]);
+			if (noteinfo.servernoteid < 0) {
+				noteinfo.servernoteid = parts[2];
+				internalids[noteinfo.servernoteid] = noteinfo.noteid;
 			}
 			noteinfo.pendingchanges = rcode == 1;
-			noteinfo.unsavedchanges = false; // FIXME disable editing until this moment?
+			noteinfo.unsavedchanges = false;
 		}
-		statusChanged(id, false);
+		statusChanged(noteinfo.noteid, false);
 		return rcode < 0;
 	}
 	function commitUnsavedNotes(ids)
@@ -352,7 +385,7 @@ function setImgSize(large) {
 			var eltxt = document.getElementById("note_comment_"+id);
 			var valtxt = eltxt.value;
 
-			postdata += '&id' + suffix + '=' + encodeURIComponent(noteinfo.id);
+			postdata += '&id' + suffix + '=' + encodeURIComponent(noteinfo.servernoteid);
 			postdata += '&imageid' + suffix + '=' + encodeURIComponent(imageid);
 			postdata += '&x1' + suffix + '=' + encodeURIComponent(noteinfo.x1);
 			postdata += '&y1' + suffix + '=' + encodeURIComponent(noteinfo.y1);
@@ -369,6 +402,7 @@ function setImgSize(large) {
 			return;
 		}
 		postdata = 'commit=' + numnotes + postdata;
+		//alert(postdata);// FIXME remove
 
 		for (var i = 0; i < allids.length; ++i) {
 			var id = allids[i];
@@ -397,20 +431,23 @@ function setImgSize(large) {
 				alert("Cannot communicate with server, status " + req.status);
 			} else {
 				var responseText = req.responseText;
-				if (/^-[0-9]+:0:[^#]*$/.test(responseText)) { /* general error */
+				//alert(responseText);// FIXME remove
+				if (/^-[1-9][0-9]*:0:[^#]*$/.test(responseText)) { /* general error */
 					var parts = responseText.split(':');
 					var rcode = parseInt(parts[0]);
 					alert("Error: Server returned error " + -rcode + " (" + parts[2] + ")");
-				} else if (!/^(-?[0-9]+:-?[1-9][0-9]*(:[^#]*)?#)*(-?[0-9]+:-?[1-9][0-9]*(:[^#]*)?)$/.test(responseText)) {
-					alert("Unexpected response from server");
 				} else {
-					var responses = responseText.split('#');
-					commiterrors = false;
-					for (var i = 0; i < responses.length; ++i) {
-						commiterrors |= handleResponse(responses[i]);
-					}
-					if (commiterrors) {
-						alert("The server reported errors when saving the changes.");
+					var responses = parseResponseText(responseText);
+					if (responses.length == 0) {
+						alert("Unexpected response from server");
+					} else {
+						commiterrors = false;
+						for (var i = 0; i < responses.length; ++i) {
+							commiterrors |= handleResponse(responses[i]);
+						}
+						if (commiterrors) {
+							alert("The server reported errors when saving the changes.");
+						}
 					}
 				}
 			}
