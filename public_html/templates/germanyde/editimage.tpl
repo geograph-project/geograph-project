@@ -19,7 +19,7 @@
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	<div class="caption640" style="text-align:right;">
-		<a href="/geonotes.php?id={$image->gridimage_id}">Edit image annotations</a>
+		<a href="/geonotes.php?id={$image->gridimage_id}">Beschriftungen bearbeiten</a>
 	{if $image->original_width}
 		| <a href="/more.php?id={$image->gridimage_id}">Andere Größen</a> | <a href="/resubmit.php?id={$image->gridimage_id}">Größere Version hochladen</a>
 	{elseif $user->user_id eq $image->user_id}
