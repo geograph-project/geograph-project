@@ -238,6 +238,10 @@ function wgs84_to_gk($lat,$long,$zone=3) {
 	$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6377397.155,6356078.965);
 	$long = $this->XYZ_to_Long($x2,$y2);
 
+	if ($zone < 0) {
+		$zone = floor($long / 3);
+	}
+
 	$e = $this->Lat_Long_to_East ($lat,$long,6377397.155,6356078.965, 500000 + $zone*1000000,    1.0, 0, $zone*3);
 	$n = $this->Lat_Long_to_North($lat,$long,6377397.155,6356078.965, 500000 + $zone*1000000, 0, 1.0, 0, $zone*3);
 #function Lat_Long_to_East  ($PHI, $LAM, $a, $b, $e0,      $f0, $PHI0, $LAM0) {

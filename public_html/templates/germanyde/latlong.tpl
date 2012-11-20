@@ -110,6 +110,7 @@
 		<!--small><br/><b>Exact: Easting</b>: {$e} <b>Northing:</b>{$n}</small--></p>
 		
 		<p><b>MGRS</b>: {$gridref}</p>
+		<p><b>Gauß-Krüger (Ostwert/Nordwert):</b> {$gke|string_format:"%d"},{$gkn|string_format:"%d"}</p>
 		</div>
 		 {if $place.distance}
 		 <div style="color:silver">&nbsp;{if $place.distance > 3}{$place.distance-0.01} km entfernt von{else}in der Nähe von{/if} <b>{$place.full_name}</b><small><i>{if $place.adm1_name && $place.adm1_name != $place.reference_name}, {$place.adm1_name}{/if}, {$place.reference_name}</i></small></div>{/if}
