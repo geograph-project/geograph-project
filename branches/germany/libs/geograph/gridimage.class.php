@@ -2100,9 +2100,19 @@ class GridImage
 			} else {
 				list($lat,$long) = $conv->internal_to_wgs84($square->x,$square->y,$square->reference_index);
 			}
-	
+
+			/* GROUP_CONCAT limits the resulting length, so using php... */
+			$notes = $db->GetCol("SELECT comment FROM gridimage_notes WHERE gridimage_id='{$this->gridimage_id}' and status='visible'");
+			if ($notes === false) {
+				trigger_error("could not get notes for image {$this->gridimage_id}", E_USER_WARNING); # FIXME remove
+				$notes = '';
+			} else {
+				$notes = implode(' ', $notes);
+			}
+			$notes = $db->Quote($notes);
+
 			$sql="REPLACE INTO gridimage_search
-			SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)')
+			SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,GeomFromText('POINT($long $lat)')
 			FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
@@ -2112,7 +2122,7 @@ class GridImage
 			if ($row !== false && count($row)) {
 				$recent_id=$row['recent_id'];
 				$sql="REPLACE INTO gridimage_recent
-				SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)'),$recent_id
+				SELECT gridimage_id,gi.gridsquare_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,$notes,point_xy,GeomFromText('POINT($long $lat)'),$recent_id
 				FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
 				INNER JOIN user ON(gi.user_id=user.user_id)
 				WHERE gridimage_id = '{$this->gridimage_id}'";

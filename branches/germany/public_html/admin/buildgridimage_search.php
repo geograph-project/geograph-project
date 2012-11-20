@@ -52,10 +52,38 @@ $smarty->display('_std_begin.tpl');
 <input type="submit" name="go" value="Start">
 </form>
 
+<h3>Rebuild search cache for specific images</h3>
+<form action="buildgridimage_search.php" method="post">
+<p>
+<label for="images">Image id(s) (comma separated):</label>
+<input type="text" name="images" id="images" />
+<br />
+<input type="submit" name="listsubmit" id="listsubmit" value="Start" />
+</p>
+</form>
 <?php
 
 set_time_limit(3600*24);
 	
+if (isset($_POST['listsubmit']) && isset($_POST['images']) && preg_match('/^(\s*[1-9][0-9]*\s*,)*\s*[1-9][0-9]*\s*$/', $_POST['images'])) {
+	require_once('geograph/gridimage.class.php');
+	echo "<h3>Rebuilding gridimage_search from gridimage for the given images</h3>";
+	flush();
+	$images = explode(',',$_POST['images']);
+	foreach($images as $image) {
+		$gridimage_id = intval($image);
+		echo "<p>Image $gridimage_id: ";
+		$gridimage = new GridImage($gridimage_id);
+		if ($gridimage->isValid()) {
+			$gridimage->updateCachedTables();
+			echo "done";
+		} else {
+			echo "<b>not found</b>";
+		}
+		echo "</p>";flush();
+	}
+}
+
 if (isset($_POST['recreate']))
 {
 	die("THIS IS TOO DANGEROUS - exiting for your own safety");
