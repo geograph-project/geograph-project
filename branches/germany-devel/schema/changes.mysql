@@ -743,3 +743,7 @@ ALTER TABLE `user` ADD `calendar_public` enum('no','registered','everyone') NOT 
 alter table geobb_users add user_show varchar(64) not null default '' after user_forums;
 
 ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant', 'mapmod', 'forum') NULL DEFAULT NULL;
+
+ALTER TABLE `gridimage_search` ADD `notes` text AFTER `seq_no`;
+ALTER TABLE `gridimage_search` DROP KEY `title_2`, ADD KEY `title_2` (`title`, `title2`, `comment`(250), `comment2`(250), `imageclass`, `notes`(150));
+ALTER TABLE `gridimage_recent` ADD `notes` text AFTER `seq_no`;

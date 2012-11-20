@@ -213,7 +213,7 @@
 			{/if}
 			<label for="accept{$item.gridimage_ticket_item_id}">
 			{if $item.note_id}
-				<a href="/geonotes.php?id={$ticket->gridimage_id}&amp;note_id={$item.note_id}" target="geonotepreview">Image annotation #{$item.note_id}</a>:
+				<a href="/geonotes.php?id={$ticket->gridimage_id}&amp;ticket={$ticket->gridimage_ticket_id}" target="geonotepreview">Image annotation #{$item.note_id}</a>:
 			{/if}
 			Change {$item.field} from
 

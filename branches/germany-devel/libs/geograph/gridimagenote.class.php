@@ -229,16 +229,38 @@ class GridImageNote
 	/**
 	* apply pending tickets
 	 */
-	function applyTickets($ticketowner)
+	function applyTickets($ticketowner, $maxticketid = null, $minticketid = null, $onlypending = true, $oldversion = false)
 	{
 		$db=&$this->_getDB();
-		$recordSet = &$db->Execute("select ti.field,ti.newvalue from gridimage_ticket t inner join gridimage_ticket_item ti using(gridimage_ticket_id) ".
-			"where t.gridimage_id={$this->gridimage_id} and t.user_id={$ticketowner} and t.status!='closed' and ti.note_id={$this->note_id} and ti.status='pending' ".
-			"order by gridimage_ticket_id asc");
+		$ticketwhere = '';
+		$statuswhere = '';
+		if (!is_null($minticketid) && !is_null($maxticketid)) {
+			if ($minticketid == $maxticketid) {
+				$ticketwhere .= " and t.gridimage_ticket_id = '{$minticketid}'";
+			} elseif ($minticketid < $maxticketid) {
+				$ticketwhere .= " and t.gridimage_ticket_id between '{$minticketid}' and '{$maxticketid}'";
+			} else {
+				return;
+			}
+		} else {
+			if (!is_null($minticketid)) {
+				$ticketwhere .= " and t.gridimage_ticket_id >= '{$minticketid}'";
+			}
+			if (!is_null($maxticketid)) {
+				$ticketwhere .= " and t.gridimage_ticket_id <= '{$maxticketid}'";
+			}
+		}
+		if ($onlypending) {
+			$statuswhere .= " and t.status!='closed' and ti.status='pending'";
+		}
+		$valkey = $oldversion ? 'oldvalue' : 'newvalue';
+		$recordSet = &$db->Execute("select ti.field,ti.newvalue,ti.oldvalue from gridimage_ticket t inner join gridimage_ticket_item ti using(gridimage_ticket_id) ".
+			"where t.gridimage_id={$this->gridimage_id}{$ticketwhere} and t.user_id={$ticketowner}{$statuswhere} and ti.note_id={$this->note_id} ".
+			"order by t.gridimage_ticket_id asc");
 		while (!$recordSet->EOF) {
 			$this->pendingchanges = true;
 			$field = $recordSet->fields['field'];
-			$this->$field = $recordSet->fields['newvalue'];
+			$this->$field = $recordSet->fields[$valkey];
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close();
