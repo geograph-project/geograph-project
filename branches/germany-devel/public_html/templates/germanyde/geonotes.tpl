@@ -7,7 +7,7 @@
 * use a.getAttribute('b') etc. instead of a.b?
 * compatibility checks (test if _all_ needed functions are available early, i.e. in init routine)
 * test IE compatibility
-* implement _GET['note_id'] handling in geonotes.php for editimage.php
+* implement _GET['note_id'] and/or _GET['ticket_id'] handling in geonotes.php for editimage.php
 * "reset" button?
 * geonote.php: reverse order of notes (latest note = first)?
 * translation
@@ -25,14 +25,36 @@
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
     data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
     {/foreach}
+    {foreach item=note from=$oldnotes}
+    <area alt="" title="{$note->comment|escape:'html'}" id="noteareaold{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
+    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
+    {/foreach}
+    {foreach item=note from=$newnotes}
+    <area alt="" title="{$note->comment|escape:'html'}" id="noteareanew{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
+    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
+    {/foreach}
     </map>
     {foreach item=note from=$notes}
     <div id="notebox{$note->note_id}" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1}px;height:{$note->y2-$note->y1+1}px;z-index:{$note->z+50}" class="notebox"><span></span></div>
     {/foreach}
+    {foreach item=note from=$oldnotes}
+    <div id="noteboxold{$note->note_id}" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1}px;height:{$note->y2-$note->y1+1}px;z-index:{$note->z+50}" class="noteboxold"><span></span></div>
+    {/foreach}
+    {foreach item=note from=$newnotes}
+    <div id="noteboxnew{$note->note_id}" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1}px;height:{$note->y2-$note->y1+1}px;z-index:{$note->z+50}" class="noteboxnew"><span></span></div>
+    {/foreach}
     {foreach item=note from=$notes}
     <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p>
+    {if !$ticket}
     <hr /><input id="note_t_edit_{$note->note_id}" type="button" value="edit" onclick="return editNote('{$note->note_id}');"><input id="note_t_delete_{$note->note_id}" type="button" value="delete" onclick="return deleteNote('{$note->note_id}');">
+    {/if}
     </div>
+    {/foreach}
+    {foreach item=note from=$oldnotes}
+    <div id="notetextold{$note->note_id}" class="geonoteold"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p></div>
+    {/foreach}
+    {foreach item=note from=$newnotes}
+    <div id="notetextnew{$note->note_id}" class="geonotenew"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p></div>
     {/foreach}
     <div id="noteboxedit" class="noteboxedit">
       <div id="noteboxeditbg" class="noteboxeditbg"></div>
@@ -386,7 +408,6 @@ function setImgSize(large) {
 			var valtxt = eltxt.value;
 
 			postdata += '&id' + suffix + '=' + encodeURIComponent(noteinfo.servernoteid);
-			postdata += '&imageid' + suffix + '=' + encodeURIComponent(imageid);
 			postdata += '&x1' + suffix + '=' + encodeURIComponent(noteinfo.x1);
 			postdata += '&y1' + suffix + '=' + encodeURIComponent(noteinfo.y1);
 			postdata += '&x2' + suffix + '=' + encodeURIComponent(noteinfo.x2);
@@ -401,7 +422,7 @@ function setImgSize(large) {
 		if (!numnotes) {
 			return;
 		}
-		postdata = 'commit=' + numnotes + postdata;
+		postdata = 'commit=' + numnotes + '&imageid=' + imageid + postdata;
 		//alert(postdata);// FIXME remove
 
 		for (var i = 0; i < allids.length; ++i) {
@@ -905,15 +926,48 @@ function setImgSize(large) {
 			<option value="original">{$original_width}x{$original_height}</option>
 		</select> |
 {/if}
+		{if $ticket}
+		<input id="toggleold" type="button" value="Hide old" onclick="toggleBoxes('old');" /> |
+		<input id="togglenew" type="button" value="Hide new" onclick="toggleBoxes('new');" /> |
+		<input id="toggleother" type="button" value="Hide unaffected notes" onclick="toggleBoxes('other');" /> |
+		{else}
 		<input type="button" value="Add annotation" onclick="addNote();" /> |
-		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts();" /> |
 		<input type="button" value="Save all" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
+		{/if}
+		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts();" /> |
 		<a href="/photo/{$image->gridimage_id}" target="_blank">Open photo page in new window.</a>
 		<span id="statusline" style="padding-left:2em">JavaScript required</span>
 	</p>
 	</form>
 </div>
 <div id="noteforms" class="noteforms">
+{if $ticket}
+	<table>
+	<tr><th class="oldnote">Old</th><th class="newnote">New</th></tr>
+	{foreach item=oldnote from=$oldnotes name=oldloop}
+	{assign var=noteidx value=$smarty.foreach.oldloop.index}
+	{assign var=newnote value=$newnotes.$noteidx}
+	<tr><td colspan="2"><b>Annotation #{$oldnote->note_id}</b><span id="statusline_{$oldnote->note_id}" style="padding-left:2em"></span><span id="statusline_{$newnote->note_id}" style="padding-left:2em"></span></td></tr>
+	<tr><td>
+		<form action="javascript:void(0);" id="note_form_{$oldnote->note_id}" class="noteformold">
+		<label for="note_z_{$oldnote->note_id}">z:</label>
+		<input type="text" name="note_z_{$oldnote->note_id}" id="note_z_{$oldnote->note_id}" value="{$oldnote->z}" readonly="readonly" {if $oldnote->z != $newnote->z}class="oldnote"{/if} /> |
+		<label for="note_status_{$oldnote->note_id}">status:</label>
+		<input type="text" name="note_status_{$oldnote->note_id}" id="note_status_{$oldnote->note_id}" value="{if $oldnote->status=='pending'}awaiting moderation{else}{$oldnote->status}{/if}" readonly="readonly" {if $oldnote->status != $newnote->status}class="oldnote"{/if} /><br />
+		<textarea name="note_comment_{$oldnote->note_id}" id="note_comment_{$oldnote->note_id}" cols="50" rows="10" readonly="readonly" {if $oldnote->comment != $newnote->comment}class="oldnote"{/if} >{$oldnote->comment|escape:'html'}</textarea>
+		</form>
+	</td><td>
+		<form action="javascript:void(0);" id="note_form_{$newnote->note_id}" class="noteformnew">
+		<label for="note_z_{$newnote->note_id}">z:</label>
+		<input type="text" name="note_z_{$newnote->note_id}" id="note_z_{$newnote->note_id}" value="{$newnote->z}" readonly="readonly" {if $oldnote->z != $newnote->z}class="newnote"{/if} /> |
+		<label for="note_status_{$newnote->note_id}">status:</label>
+		<input type="text" name="note_status_{$newnote->note_id}" id="note_status_{$newnote->note_id}" value="{if $newnote->status=='pending'}awaiting moderation{else}{$newnote->status}{/if}" readonly="readonly" {if $newnote->status != $oldnote->status}class="newnote"{/if} /><br />
+		<textarea name="note_comment_{$newnote->note_id}" id="note_comment_{$newnote->note_id}" cols="50" rows="10" readonly="readonly" {if $oldnote->comment != $newnote->comment}class="newnote"{/if} >{$newnote->comment|escape:'html'}</textarea>
+		</form>
+	</td></tr>
+	{/foreach}
+	</table>
+{else}
     {foreach item=note from=$notes}
 	<p><b>Annotation #{$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em"></span></p>
 	<form action="javascript:void(0);" id="note_form_{$note->note_id}" class="{if $note->pendingchanges}noteformpending{else}noteform{/if}">
@@ -936,6 +990,7 @@ function setImgSize(large) {
 	</p>
 	</form>
     {/foreach}
+{/if}
 </div>
 {else}
 <h2>Sorry, image not available</h2>

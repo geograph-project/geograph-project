@@ -193,6 +193,9 @@ if (!empty($_GET['To'])) { //to lat/long
 	$smarty->assign('lat', $_GET['lat']);
 	$smarty->assign('long', $_GET['long']);
 	$conv->wgs84_to_friendly_smarty_parts($_GET['lat'],$_GET['long'],$smarty);
+	list ($gke, $gkn) = $conv->wgs84_to_gk($_GET['lat'],$_GET['long'],-1);
+	$smarty->assign('gke', $gke);
+	$smarty->assign('gkn', $gkn);
 }
 $smarty->assign('datum', $_GET['datum']);
 $smarty->assign('usehermert', $_GET['usehermert']);
