@@ -605,7 +605,8 @@ class SearchCriteria
 								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words.')';
 								#$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.')';
 							} elseif (preg_match('/\+$/',$terms)) {								
-								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words .' OR gi.imageclass '.$words.')';
+								#$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words .' OR gi.imageclass '.$words.')';
+								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words .' OR gi.imageclass '.$words.' OR gi.notes '.$words .')'; # todo sphinx <-> notes
 								#$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.imageclass '.$words.')';
 							} else {
 								$sql_where .= " $prefix (gi.title ".$words.' OR gi.title2 '.$words.')';
@@ -651,9 +652,10 @@ class SearchCriteria
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$q).'%');
 			#$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
 			$sql_where .= ' (gi.title LIKE '.$words. ' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.
-			            ' OR gi.title2 LIKE '.$words.' OR gi.comment2 LIKE '.$words.')';
+			            ' OR gi.title2 LIKE '.$words.' OR gi.comment2 LIKE '.$words.' OR gi.notes LIKE '.$words.')';
 			$this->sphinx['query'] .= " ".preg_replace("/\+$/",'',$q);
 			$this->isallsearch = 1;
+			//$this->sphinx['impossible']++; // todo sphinx <-> notes? how to prevent noCache!=0
 		} elseif (preg_match('/[:@]/',$q)) {
 			#$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');//todo, maybe better handle this - jsut for legacy searches...
 			$sql_where .= ' (gi.title LIKE '.$db->Quote('%'.$q.'%'). //todo, maybe better handle this - jsut for legacy searches...
