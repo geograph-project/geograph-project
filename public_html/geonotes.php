@@ -30,8 +30,6 @@ require_once('geograph/uploadmanager.class.php');
 
 init_session();
 
-$USER->mustHavePerm("basic"); // FIXME remove? not registered users should at least have $showorig = false?
-
 /*
  * Note upload: Basic check of input parameters.
  * Returns: 0 on success, error message on error
@@ -192,6 +190,12 @@ function commit_note($no, $gridimage_id, $imagewidth, $imageheight, $ismoderator
 }
 
 if (isset($_POST['commit'])) {
+	if (!$USER->hasPerm("basic")) { // FIXME remove?
+		trigger_error("note change without logging in", E_USER_WARNING);
+		print "-1:0:not logged in";
+		exit;
+	}
+
 	// change (id > 0) or add (id < 0) annotation(s)
 	// on change, return status + ':' + id
 	// on successfull creation, return status + ':' + id + ':' + new note_id
@@ -252,6 +256,8 @@ if (isset($_POST['commit'])) {
 	exit;
 }
 
+$USER->mustHavePerm("basic"); // FIXME remove? not registered users should at least have $showorig = false?
+
 $uid = 0;
 $ticketid = 0;
 if (isset($_GET['ticket'])) {
@@ -303,7 +309,7 @@ if ($image->isValid()) {
 	if (!$uid) {
 		$uid = $USER->user_id;
 	}
-	if ($uid != $USER->user_id && !$isowner) {
+	if ($uid != $USER->user_id && !$isowner) { // FIXME tickets need to be treated differently (tickets by other useres if note not deleted (excluding pending or rejected changes)?)
 		$USER->mustHavePerm("moderator"); // FIXME ticketmod?
 	}
 	#if (isset($_GET['note_id'])) {
@@ -332,31 +338,31 @@ if ($image->isValid()) {
 
 
 	if (!$smarty->is_cached($template, $cacheid)) {
+		$anystatus = array('visible', 'pending', 'deleted');
+		$notdeleted = array('visible', 'pending');
+		$selection = $isowner || $ismoderator ? $anystatus : $notdeleted;
 		if ($ticketid) {
 			$affectednotes = $ticket->getAffectedNotes();
 			if ($affectednotes === false) {
 				die("database error");
 			}
-			# test length of array? currently only 1 possible...
-			# FIXME assure that all of x1,x2,y1,y2,width,height go into the ticket if at least on of them changes! save all old/new pairs even if unchanged? (probably "immediate" or new "unchanged" then)
-			# FIXME show 'deleted' notes
-			# FIXME style old/new forms / table
-			# FIXME disable editing/saving
-			# FIXME implement toggle events
-			# FIXME get rid of status lines
+			# test length of $affectednotes? currently only 1 possible...
+
+			#$notes = $image->getNotes(array('visible', 'pending'), 0, null, null, true, null, $affectednotes);
+			#$oldnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, $ticketid, false, $affectednotes, null, true);
+			#$newnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, $ticketid, false, $affectednotes);
+
 			#$notes = $image->getNotes(array('visible', 'pending'), $uid, $ticketid-1, null, false, null, $affectednotes);
-			$notes = $image->getNotes(array('visible', 'pending'), 0, null, null, true, null, $affectednotes);
 			#$oldnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, null, false, $affectednotes, null, true);
-			$oldnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, $ticketid, false, $affectednotes, null, true);
 			#$newnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, null, false, $affectednotes);
-			$newnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, $ticketid, false, $affectednotes);
+			$notes =    $image->getNotes($selection, $uid /*FIXME or null?*/, $ticketid, false, null, $affectednotes, array('visible'));
+			$oldnotes = $image->getNotes($anystatus, $uid,                    $ticketid, true,  $affectednotes);
+			$newnotes = $image->getNotes($anystatus, $uid,                    $ticketid, false, $affectednotes);
 			$smarty->assign_by_ref("oldnotes",$oldnotes);
 			$smarty->assign_by_ref("newnotes",$newnotes);
 			$smarty->assign_by_ref("ticket",$ticket);
-		} elseif (!$isowner && !$ismoderator) {
-			$notes = $image->getNotes(array('visible', 'pending'), $uid);
 		} else {
-			$notes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid);
+			$notes = $image->getNotes($selection, $uid);
 		}
 		$smarty->assign_by_ref("notes",$notes);
 

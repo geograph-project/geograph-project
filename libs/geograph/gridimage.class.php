@@ -637,13 +637,18 @@ class GridImage
 		}
 
 		$level = ($this->grid_square->imagecount > 1)?6:5;
-		$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
+		$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square));
 	}
 
 	/**
 	* get a list of annotations for this image
+	* see comment in $note->applyTickets() for details on $ticketowner, $ticketid, $oldvalues
+	* $aStatus: array containing any allowed current note status
+	* $noteids: list of note ids (or null for all notes)
+	* $exclude: list of note ids to exclude
+	* $aStatusTickets: array containing any allowed note status after applying the tickets (default: $aStatus)
 	*/
-	function& getNotes($aStatus, $ticketowner = 0, $maxticketid = null, $minticketid = null, $onlypending = true, $noteids = null, $exclude = null, $oldversion = false)
+	function& getNotes($aStatus, $ticketowner=null, $ticketid=null, $oldvalues=false, $noteids = null, $exclude = null, $aStatusTickets = null)
 	{
 		if (!is_array($aStatus))
 			die("GridImage::getNotes expects array param");
@@ -669,25 +674,26 @@ class GridImage
 		while (!$recordSet->EOF) {
 			$n=new GridImageNote;
 			$n->loadFromRecordset($recordSet);
-			$n->calcSize($size[0], $size[1]);
 			$notes[]=$n;
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close();
 
-		if ($ticketowner) {
-			//apply tickets
-			foreach ($notes as &$note) {
-				if ($oldversion) {
-					$note->applyTickets($ticketowner, $maxticketid-1, $minticketid, $onlypending);
-					$note->applyTickets($ticketowner, $maxticketid, $maxticketid, $onlypending, true);
-				} else {
-					$note->applyTickets($ticketowner, $maxticketid, $minticketid, $onlypending);
-				}
+		if (is_null($aStatusTickets)) {
+			$aStatusTickets = $aStatus;
+		}
+
+		$retnotes = array();
+		foreach ($notes as &$note) {
+			$note->applyTickets($ticketowner, $ticketid, $oldvalues);
+			if (in_array($note->status, $aStatusTickets)) { /* status may have changed */
+				$note->storeInitialValues();
+				$note->calcSize($size[0], $size[1]);
+				$retnotes[] = $note;
 			}
 		}
 
-		return $notes;
+		return $retnotes;
 	}
 
 	/**

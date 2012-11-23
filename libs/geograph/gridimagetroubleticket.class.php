@@ -942,8 +942,8 @@ class GridImageTroubleTicket
 	function &getAffectedNotes()
 	{
 		$db=&$this->_getDB();
-		return $db->GetCol("SELECT DISTINCT(note_id) FROM gridimage_ticket_item WHERE gridimage_ticket_id='{$this->gridimage_ticket_id}' AND note_id!=0");
-		#FIXME Only variable references should be returned by reference
+		$cols =& $db->GetCol("SELECT DISTINCT(note_id) FROM gridimage_ticket_item WHERE gridimage_ticket_id='{$this->gridimage_ticket_id}' AND note_id!=0");
+		return $cols;
 	}
 
 	/**
