@@ -7,11 +7,16 @@
 * use a.getAttribute('b') etc. instead of a.b?
 * compatibility checks (test if _all_ needed functions are available early, i.e. in init routine)
 * test IE compatibility
-* implement _GET['note_id'] and/or _GET['ticket_id'] handling in geonotes.php for editimage.php
 * "reset" button?
 * geonote.php: reverse order of notes (latest note = first)?
 * translation
 * dark text on lighter background?
+* css -> geonotes.css
+* border of boxes: black -> grey for chromium?
+* if $ticket:
+   * display ticket changes also to other users
+   * improve table style
+   * implement toggle new/old/unaffected events
 *}
 {if $image}
 
@@ -157,6 +162,11 @@ function setImgSize(large) {
 	gn.recalcBoxes(el);
 }
 {/literal}
+{/if}
+{if $ticket}
+	var show_hidden = true;
+{else}
+	var show_hidden = false;
 {/if}
 {literal}
 	var showtexts = false;
@@ -872,6 +882,7 @@ function setImgSize(large) {
 		if (typeof gn === 'undefined') {
 			return;
 		}
+		gn.show_hidden = show_hidden;
 		if (!gn.images.length) {
 			gn.init();
 			if (!gn.images.length) {
@@ -927,9 +938,9 @@ function setImgSize(large) {
 		</select> |
 {/if}
 		{if $ticket}
-		<input id="toggleold" type="button" value="Hide old" onclick="toggleBoxes('old');" /> |
+		{*<input id="toggleold" type="button" value="Hide old" onclick="toggleBoxes('old');" /> |
 		<input id="togglenew" type="button" value="Hide new" onclick="toggleBoxes('new');" /> |
-		<input id="toggleother" type="button" value="Hide unaffected notes" onclick="toggleBoxes('other');" /> |
+		<input id="toggleother" type="button" value="Hide unaffected notes" onclick="toggleBoxes('other');" /> |*}
 		{else}
 		<input type="button" value="Add annotation" onclick="addNote();" /> |
 		<input type="button" value="Save all" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
@@ -969,7 +980,7 @@ function setImgSize(large) {
 	</table>
 {else}
     {foreach item=note from=$notes}
-	<p><b>Annotation #{$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em"></span></p>
+	<p><b>Annotation #{$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em">{if $note->pendingchanges}There are unmoderated changes.{/if}</span></p>
 	<form action="javascript:void(0);" id="note_form_{$note->note_id}" class="{if $note->pendingchanges}noteformpending{else}noteform{/if}">
 	<p>
 		<label for="note_z_{$note->note_id}">z:</label>

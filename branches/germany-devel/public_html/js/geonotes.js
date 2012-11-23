@@ -29,6 +29,7 @@ var gn = {
 	notes: {},
 	current_note: null,
 	current_image: null,
+	show_hidden: false,
 
 	init: function() {
 		if (!document.getElementById ||
@@ -274,7 +275,7 @@ var gn = {
 	setBoxes: function(idlist,disp) {
 		for (var i = 0; i < idlist.length; i++) {
 			var noteinfo = gn.notes[idlist[i]];
-			noteinfo.box.style.display = noteinfo.hide || noteinfo.status=='deleted' ? 'none' : disp;
+			noteinfo.box.style.display = noteinfo.hide || noteinfo.status=='deleted' && !gn.show_hidden ? 'none' : disp;
 		}
 	},
 

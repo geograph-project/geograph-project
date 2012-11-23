@@ -60,7 +60,7 @@ class GridImageNote
 	/**
 	* true if also pending trouble tickets have been used to create this object
 	*/
-	var $pendingchanges; // FIXME TODO
+	var $pendingchanges;
 
 	#/**
 	#* note title
@@ -148,6 +148,10 @@ class GridImageNote
 			if (!is_numeric($name))
 				$this->$name=$value;
 		}
+	}
+
+	function storeInitialValues()
+	{
 		$this->init_x1 = $this->x1;
 		$this->init_y1 = $this->y1;
 		$this->init_x2 = $this->x2;
@@ -229,41 +233,114 @@ class GridImageNote
 	/**
 	* apply pending tickets
 	 */
-	function applyTickets($ticketowner, $maxticketid = null, $minticketid = null, $onlypending = true, $oldversion = false)
+	function applyTickets($ticketowner=null, $ticketid=null, $oldvalues=false)
 	{
+		/*
+		 *   The following cases are interesting:
+		 *   * Current note:
+		 *     Don't apply any tickets
+		 *   * Note showing all pending changes $user suggested until now
+		 *     Iterate over all fields:
+		 *        * Get the ticket item regarding current field and note, with status pending, ticket owner $user, having the highest ticket id
+		 *          * If found: apply newvalue
+		 *          * If not found: nothing to do
+		 *   * Note as it was shown to the "normal user" at the time when ticket with id $ticket was created
+		 *     Iterate over all fields:
+		 *        * Get the ticket item regarding current field and note, with status immediate or approved, having the highest ticket id < $ticket.
+		 *          * If found: apply newvalue
+		 *          * If not found: we have to reconstruct the original value:
+		 *            Get the ticket item regarding current field and note, with any status, having the lowest ticket id (not limited!).
+		 *            * If found: apply oldvalue
+		 *            * If not found: nothing to do, value never changed
+		 *   * Note showing all changes $user suggested until $ticket was created by $user (we can't say "all pending changes" as we'd needed to take into account the times when the item status changed):
+		 *     Iterate over all fields:
+		 *        * If field changed in ticket $ticket: apply oldvalue
+		 *        * Otherwise:
+		 *          Get the ticket item regarding current field and note, with (ticket owner $user, any status) or (status immediate or approved) having the highest ticket id < $ticket.
+		 *          * If found: apply newvalue
+		 *          * If not found: we have to reconstruct the original value:
+		 *            Get the ticket item regarding current field and note, with any status, having the lowest ticket id (not limited!).
+		 *            * If found: apply oldvalue
+		 *            * If not found: nothing to do, value never changed
+		 *   * Note showing all changes $user suggested until $ticket was created by $user, including changes in that ticket :
+		 *     Iterate over all fields:
+		 *        * If field changed in ticket $ticket: apply newvalue
+		 *        * Otherwise:
+		 *          Get the ticket item regarding current field and note, with (ticket owner $user, any status) or (status immediate or approved) having the highest ticket id < $ticket.
+		 *          * If found: apply newvalue
+		 *          * If not found: we have to reconstruct the original value:
+		 *            Get the ticket item regarding current field and note, with any status, having the lowest ticket id (not limited!).
+		 *            * If found: apply oldvalue
+		 *            * If not found: nothing to do, value never changed
+		 *
+		 *   This is:
+		 *   1) No tickets                                        [applyTickets()]                             getNotes($aStatus)
+		 *   2) ((pending)&&$user)                                 applyTickets($ticketowner)                  getNotes($aStatus, $ticketowner)
+		 *   3) ((immediate,approved)), $ticket                    applyTickets(null,         $ticketid)       getNotes($aStatus, null,         $ticketid)
+		 *   4) ((immediate,approved)||$user), $ticket, oldvalue   applyTickets($ticketowner, $ticketid, true) getNotes($aStatus, $ticketowner, $ticketid, true)
+		 *   5) ((immediate,approved)||$user), $ticket, newvalue   applyTickets($ticketowner, $ticketid)       getNotes($aStatus, $ticketowner, $ticketid)
+		 *
+		 *  => applyTickets($ticketowner=null, $ticketid=null, $oldvalues=false)
+		 *     getNotes($aStatus, $ticketowner=null, $ticketid=null, $oldvalues=false, $noteids = null, $exclude = null)
+		 */
+		if (is_null($ticketowner) && is_null($ticketid)) {
+			return;
+		}
 		$db=&$this->_getDB();
-		$ticketwhere = '';
-		$statuswhere = '';
-		if (!is_null($minticketid) && !is_null($maxticketid)) {
-			if ($minticketid == $maxticketid) {
-				$ticketwhere .= " and t.gridimage_ticket_id = '{$minticketid}'";
-			} elseif ($minticketid < $maxticketid) {
-				$ticketwhere .= " and t.gridimage_ticket_id between '{$minticketid}' and '{$maxticketid}'";
-			} else {
-				return;
+		$fields = array('x1', 'x2', 'y1', 'y2', 'z', 'imgwidth', 'imgheight', 'status', 'comment');
+		if (!is_null($ticketowner) && !is_null($ticketid)) {
+			$valkey = $oldvalues ? 'oldvalue' : 'newvalue';
+			# apply all changes of the given ticket
+			$applied = array();
+			# FIXME test if ticketowner matches?
+			$recordSet = &$db->Execute("select ti.field,ti.newvalue,ti.oldvalue from gridimage_ticket_item ti ".
+				"where ti.gridimage_ticket_id = '{$ticketid}' and ti.note_id={$this->note_id}");
+			while (!$recordSet->EOF) {
+				$field = $recordSet->fields['field'];
+				$applied[] = $field;
+				$this->$field = $recordSet->fields[$valkey];
+				$recordSet->MoveNext();
 			}
+			$recordSet->Close();
+			$fields = array_diff($fields, $applied);
+		}
+		if (is_null($ticketowner)) {
+			$table = "gridimage_ticket_item ti";
+			$where = "ti.gridimage_ticket_id<'$ticketid' and ti.status in ('immediate','approved')";
+			$findold = true;
+		} elseif (is_null($ticketid)) {
+			$table = "gridimage_ticket_item ti inner join gridimage_ticket t using (gridimage_ticket_id)";
+			$where = "t.user_id='$ticketowner' and ti.status='pending'";
+			$findold = false;
 		} else {
-			if (!is_null($minticketid)) {
-				$ticketwhere .= " and t.gridimage_ticket_id >= '{$minticketid}'";
+			$table = "gridimage_ticket_item ti inner join gridimage_ticket t using (gridimage_ticket_id)";
+			$where = "ti.gridimage_ticket_id<'$ticketid' and (t.user_id='$ticketowner' or ti.status in ('immediate','approved'))";
+			$findold = true;
+		}
+		foreach ($fields as $field) {
+			$sql = "select ti.newvalue from $table where $where and ti.note_id='{$this->note_id}' and ti.field='$field' order by ti.gridimage_ticket_id desc limit 1"; # limit 1"; adodb adds an additional "LIMIT 1" for GetOne...
+			#$value = $db->GetOne($sql);
+			## $value === false -> ?
+			#if (!is_null($value)) { # this test does not work...
+			$row = $db->GetRow($sql);
+			# $row === false -> ?
+			if (count($row)) {
+				$value = $row['newvalue'];
+				$this->$field = $value;
+				$this->pendingchanges = true;
+			} elseif ($findold) {
+				$sql = "select ti.oldvalue from gridimage_ticket_item ti where ti.note_id='{$this->note_id}' and ti.field='$field' order by ti.gridimage_ticket_id asc limit 1"; # limit 1";
+				#$value = $db->GetOne($sql);
+				## $value === false -> ?
+				#if (!is_null($value)) {
+				$row = $db->GetRow($sql);
+				# $row === false -> ?
+				if (count($row)) {
+					$value = $row['oldvalue'];
+					$this->$field = $value;
+				}
 			}
-			if (!is_null($maxticketid)) {
-				$ticketwhere .= " and t.gridimage_ticket_id <= '{$maxticketid}'";
-			}
 		}
-		if ($onlypending) {
-			$statuswhere .= " and t.status!='closed' and ti.status='pending'";
-		}
-		$valkey = $oldversion ? 'oldvalue' : 'newvalue';
-		$recordSet = &$db->Execute("select ti.field,ti.newvalue,ti.oldvalue from gridimage_ticket t inner join gridimage_ticket_item ti using(gridimage_ticket_id) ".
-			"where t.gridimage_id={$this->gridimage_id}{$ticketwhere} and t.user_id={$ticketowner}{$statuswhere} and ti.note_id={$this->note_id} ".
-			"order by t.gridimage_ticket_id asc");
-		while (!$recordSet->EOF) {
-			$this->pendingchanges = true;
-			$field = $recordSet->fields['field'];
-			$this->$field = $recordSet->fields[$valkey];
-			$recordSet->MoveNext();
-		}
-		$recordSet->Close();
 	}
 
 	/**
@@ -325,7 +402,7 @@ class GridImageNote
 		$db=&$this->_getDB();
 		
 		$sql="update gridimage_notes set comment=".$db->Quote($this->comment).
-			", status='{$this->status}'". # FIXME?
+			", status='{$this->status}'".
 			", x1='{$this->x1}'".
 			", x2='{$this->x2}'".
 			", y1='{$this->y1}'".
