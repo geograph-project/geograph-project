@@ -79,7 +79,7 @@ function check_params($no)
  * Note upload: Evaluate input parameters and try to change or create a note.
  * Returns: status message
  */
-function commit_note($no, $gridimage_id, $imagewidth, $imageheight, $ismoderator, $isowner)
+function commit_note($no, $gridimage_id, $imagewidth, $imageheight, $ismoderator, $isowner, $ticketnote, $immediate)
 {
 	global $USER;
 	if ($no == 1) {
@@ -105,7 +105,7 @@ function commit_note($no, $gridimage_id, $imagewidth, $imageheight, $ismoderator
 		return "-2:$note_id:could not convert character";
 	}
 	$comment = str_replace("\r\n", "\n", $comment);
-	// FIXME trim comment?
+	$comment = trim($comment);
 	$status = $_REQUEST["status$suffix"];
 	$x1 = intval($_REQUEST["x1$suffix"]);
 	$x2 = intval($_REQUEST["x2$suffix"]);
@@ -134,8 +134,13 @@ function commit_note($no, $gridimage_id, $imagewidth, $imageheight, $ismoderator
 	//$ticket->setType('normal');
 	$ticket->setPublic('everyone'); // FIXME?
 	$ticket->setImage($gridimage_id);
-	$mod = !($isowner||$ismoderator); # FIXME change to something like $mod=!($isowner||$ismoderator&&$immediate) with $immediate corresponding to some new control...?
-	// FIXME optional comment by the user?
+	$mod = !($isowner||$ismoderator&&$immediate);
+
+	if ($ticketnote === '' ) {
+		$ticketnoteappend = '.';
+	} else {
+		$ticketnoteappend = ":\n$ticketnote";
+	}
 
 	$note=new GridImageNote;
 	if ($note_id > 0) {
@@ -148,7 +153,7 @@ function commit_note($no, $gridimage_id, $imagewidth, $imageheight, $ismoderator
 		if ($status == 'pending' && $note->status != 'pending') {
 			return "-3:$note_id:setting status to pending is not allowed";
 		}
-		$ticket->setNotes("Changed image annotation $note_id.");
+		$ticket->setNotes("Changed image annotation $note_id$ticketnoteappend");
 		if (   $note->x1 != $x1
 		    || $note->x2 != $x2
 		    || $note->y1 != $y1
@@ -178,7 +183,7 @@ function commit_note($no, $gridimage_id, $imagewidth, $imageheight, $ismoderator
 		if (!$note->isValid()) {
 			return "-1:$note_id:could not create annotation";
 		}
-		$ticket->setNotes("Created image annotation $newnote_id.");
+		$ticket->setNotes("Created image annotation $newnote_id$ticketnoteappend");
 		$ticket->updateField('status', 'pending', 'visible', $mod, $newnote_id);
 		$reqinfo = ":$newnote_id";
 	}
@@ -206,7 +211,7 @@ if (isset($_POST['commit'])) {
 	//    -5: invalid image id
 	//    -4: missung parameters
 	//    -3: invalid parameters
-	//    -2: could not convert comment
+	//    -2: could not convert character
 	//    -1: internal error/access denied
 	//    0:  applied changes
 	//    1:  pending (awaiting moderation)
@@ -214,10 +219,41 @@ if (isset($_POST['commit'])) {
 	if (  !preg_match('/^\s*[1-9][0-9]*\s*$/', $_POST['commit'])
 	    ||!isset($_REQUEST['imageid'])
 	    ||!preg_match('/^\s*[1-9][0-9]*\s*$/', $_REQUEST['imageid'])
+	    ||isset($_REQUEST['ticketnote'])&&!preg_match('/^[\x09\x0a\x0d\x20-\xff]*$/', $_REQUEST['ticketnote'])
+	    ||isset($_REQUEST['immediate'])&&!preg_match('/^\s*[01]\s*$/', $_REQUEST['immediate'])
 	   ) {
 		trigger_error("inv commit: {$_POST['commit']}", E_USER_WARNING);
 		print "-3:0:invalid parameters";
 		exit;
+	}
+	$ticketnote = '';
+	if (isset($_REQUEST['ticketnote'])) {
+		$ticketnote = $_REQUEST['ticketnote'];
+		$oldsu = mb_substitute_character();
+		//if (!mb_substitute_character(0)) { // php only allows 0x0001...0xffff
+		if (!mb_substitute_character(1)) {
+			trigger_error("could not change substitute character", E_USER_WARNING);
+		}
+		$ticketnote = mb_convert_encoding($ticketnote, 'Windows-1252', 'UTF-8'); // store as Windows-1252 despite declaring latin1, see http://www.w3.org/TR/2009/WD-html5-20090423/infrastructure.html#character-encodings-0 or http://dev.w3.org/html5/spec/parsing.html#character-encodings-0
+		mb_substitute_character($oldsu);
+		//if (strpos($ticketnote, chr(0)) !== false) {
+		if (strpos($ticketnote, chr(1)) !== false) {
+			trigger_error("inv ticketnote", E_USER_WARNING);
+			print "-2:0:could not convert character";
+			exit;
+		}
+		$ticketnote = str_replace("\r\n", "\n", $ticketnote);
+		$ticketnote = trim($ticketnote);
+	}
+	$ismoderator = $USER->hasPerm('moderator')?1:0; // FIXME ticketmod?
+	$immediate = false;
+	if (isset($_REQUEST['immediate'])) {
+		$immediate = intval($_REQUEST['immediate']) != 0;
+		if ($immediate && !$ismoderator) {
+			trigger_error("immediate change without sufficient permissions", E_USER_WARNING);
+			print "-1:0:only moderators can apply changes immediately";
+			exit;
+		}
 	}
 	$commitnotes = intval($_POST['commit']);
 	// multiple commit:
@@ -243,11 +279,10 @@ if (isset($_POST['commit'])) {
 	$imagewidth = $imagesize[0];
 	$imageheight = $imagesize[1];
 	$isowner=($image->user_id==$USER->user_id)?1:0;
-	$ismoderator=$USER->hasPerm('moderator')?1:0;
 
-	$ret = commit_note(1, $gridimage_id, $imagewidth, $imageheight, $ismoderator, $isowner);
+	$ret = commit_note(1, $gridimage_id, $imagewidth, $imageheight, $ismoderator, $isowner, $ticketnote, $immediate);
 	for ($i = 2; $i <= $commitnotes; ++$i) {
-		$ret .= '#' . commit_note($i, $gridimage_id, $imagewidth, $imageheight, $ismoderator, $isowner);
+		$ret .= '#' . commit_note($i, $gridimage_id, $imagewidth, $imageheight, $ismoderator, $isowner, $ticketnote, $immediate);
 	}
 	print $ret;
 	$smarty = new GeographPage;
@@ -348,13 +383,6 @@ if ($image->isValid()) {
 			}
 			# test length of $affectednotes? currently only 1 possible...
 
-			#$notes = $image->getNotes(array('visible', 'pending'), 0, null, null, true, null, $affectednotes);
-			#$oldnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, $ticketid, false, $affectednotes, null, true);
-			#$newnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, $ticketid, false, $affectednotes);
-
-			#$notes = $image->getNotes(array('visible', 'pending'), $uid, $ticketid-1, null, false, null, $affectednotes);
-			#$oldnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, null, false, $affectednotes, null, true);
-			#$newnotes = $image->getNotes(array('visible', 'pending', 'deleted'), $uid, $ticketid, null, false, $affectednotes);
 			$notes =    $image->getNotes($selection, $uid /*FIXME or null?*/, $ticketid, false, null, $affectednotes, array('visible'));
 			$oldnotes = $image->getNotes($anystatus, $uid,                    $ticketid, true,  $affectednotes);
 			$newnotes = $image->getNotes($anystatus, $uid,                    $ticketid, false, $affectednotes);
@@ -373,7 +401,7 @@ if ($image->isValid()) {
 			$smarty->assign('original_width', $image->original_width);
 			$smarty->assign('original_height', $image->original_height);
 			$smarty->assign('orig_url', $image->_getOriginalpath());
-			// check if original size == std size
+			// check if original size == std size // gbi could compare with 640, instead
 			$uploadmanager=new UploadManager;
 			list($destwidth, $destheight, $destdim, $changedim) = $uploadmanager->_new_size($image->original_width, $image->original_height);
 			if ($changedim) {
@@ -395,6 +423,7 @@ if ($image->isValid()) {
 		$smarty->assign('page_title', $image->bigtitle.":: {$gridrefpref}{$image->grid_reference}");
 
 		$smarty->assign('ismoderator', $ismoderator);
+		$smarty->assign('isowner', $isowner);
 		$smarty->assign_by_ref('image', $image);
 	}
 } elseif (!empty($rejected)) {

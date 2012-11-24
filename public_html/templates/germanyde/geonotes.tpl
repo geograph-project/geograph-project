@@ -9,18 +9,17 @@
 * test IE compatibility
 * "reset" button?
 * geonote.php: reverse order of notes (latest note = first)?
-* translation
 * dark text on lighter background?
-* css -> geonotes.css
-* border of boxes: black -> grey for chromium?
+* css -> geonotes.css?
 * if $ticket:
    * display ticket changes also to other users
    * improve table style
-   * implement toggle new/old/unaffected events
+   * get rid of status lines
+* statusline: style->class
 *}
 {if $image}
 
-<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+<h2><a title="Planquadrat {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto"><div class="notecontainer" id="notecontainer">
@@ -28,15 +27,15 @@
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
-    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
+    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}" />
     {/foreach}
     {foreach item=note from=$oldnotes}
     <area alt="" title="{$note->comment|escape:'html'}" id="noteareaold{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
-    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
+    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}" data-geonote-noteclass="old" />
     {/foreach}
     {foreach item=note from=$newnotes}
     <area alt="" title="{$note->comment|escape:'html'}" id="noteareanew{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
-    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
+    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}" data-geonote-noteclass="new" />
     {/foreach}
     </map>
     {foreach item=note from=$notes}
@@ -51,7 +50,7 @@
     {foreach item=note from=$notes}
     <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p>
     {if !$ticket}
-    <hr /><input id="note_t_edit_{$note->note_id}" type="button" value="edit" onclick="return editNote('{$note->note_id}');"><input id="note_t_delete_{$note->note_id}" type="button" value="delete" onclick="return deleteNote('{$note->note_id}');">
+    <hr /><input id="note_t_edit_{$note->note_id}" type="button" value="ändern" onclick="return editNote('{$note->note_id}');"><input id="note_t_delete_{$note->note_id}" type="button" value="löschen" onclick="return deleteNote('{$note->note_id}');">
     {/if}
     </div>
     {/foreach}
@@ -114,8 +113,8 @@
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="Profil betrachten" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> und  
+lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">dieser Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
 
@@ -165,21 +164,36 @@ function setImgSize(large) {
 {/if}
 {if $ticket}
 	var show_hidden = true;
+{literal}
+	var notelists = { '' : [], 'new' : [], 'old' : [] }
+	var classvisible = { '' : true, 'new' : true, 'old' : true }
+	function toggleBoxes(noteclass, hidetext, showtext)
+	{
+		var button = document.getElementById('toggleclass'+noteclass);
+		var visible = !classvisible[noteclass];
+		classvisible[noteclass] = visible;
+		button.value = visible ? hidetext : showtext;
+		for (var i = 0; i < notelists[noteclass].length; ++i) {
+			var noteinfo = notelists[noteclass][i];
+			noteinfo.hide = !visible;
+		}
+	}
+{/literal}
 {else}
 	var show_hidden = false;
 {/if}
 {literal}
 	var showtexts = false;
-	function toggleTexts()
+	function toggleTexts(hidemsg, showmsg)
 	{
 		var button = document.getElementById('toggletexts');
 		var div = document.getElementById('imagetexts');
 		showtexts = !showtexts;
 		if (showtexts) {
-			button.value = "Hide description";
+			button.value = hidemsg;
 			div.style.display = 'block';
 		} else {
-			button.value = "Show description";
+			button.value = showmsg;
 			div.style.display = 'none';
 		}
 	}
@@ -213,7 +227,7 @@ function setImgSize(large) {
 			return;
 		}
 		var button = document.getElementById('note_edit_' + id);
-		button.value = 'edit box';
+		button.value = 'Box ändern';
 		curedit = 0;
 		dragging = -1;
 		var edbox = document.getElementById("noteboxedit");
@@ -250,7 +264,7 @@ function setImgSize(large) {
 		}
 		curedit = id;
 		var button = document.getElementById('note_edit_' + id);
-		button.value = 'stop editing';
+		button.value = 'Box fixieren';
 		var noteinfo = gn.notes[id];
 		var box = noteinfo.box;
 		noteinfo.hide = true;
@@ -297,13 +311,13 @@ function setImgSize(large) {
 	{
 		var msg = '';
 		if (unsavedchanges) {
-			msg = 'There are unsaved changes.';
+			msg = 'Es gibt ungesicherte Änderungen.';
 		}
 		if (commiterrors) {
 			if (msg != '') {
 				msg += ' | ';
 			}
-			msg += 'The server reported errors when saving the changes.';
+			msg += 'Es gab Fehler beim Speichern.';
 		}
 		var statusline = document.getElementById("statusline");
 		if (statusline.firstChild)
@@ -319,11 +333,11 @@ function setImgSize(large) {
 		unsavedchanges |= noteinfo.unsavedchanges;
 		if (noteinfo.unsavedchanges) {
 			form.className = "noteformunsaved";
-			msg = "There are unsaved changes.";
+			msg = "Ungesicherte Änderungen";
 			// FIXME enable commit button?
 		} else if (noteinfo.pendingchanges) {
 			form.className = "noteformpending";
-			msg = "There are unmoderated changes.";
+			msg = "Unmoderierte Änderungen";
 			// FIXME disable commit button?
 		} else {
 			msg = '';
@@ -385,7 +399,7 @@ function setImgSize(large) {
 		var noteinfo = parts[1];
 
 		if (rcode < 0) {
-			noteinfo.lasterror = "Error: Server returned error " + -rcode + " (" + parts[2] + ")";
+			noteinfo.lasterror = "Fehler: Der Server meldete Fehler " + -rcode + " (" + parts[2] + ")";
 		} else {
 			noteinfo.lasterror = /*rcode == 2 ? "There was nothing to change." :*/ "";
 			if (noteinfo.servernoteid < 0) {
@@ -400,7 +414,7 @@ function setImgSize(large) {
 	}
 	function commitUnsavedNotes(ids)
 	{
-		var postdata = ''; //'commit=1';
+		var postdata = 'imageid=' + imageid;
 		var numnotes = 0;
 		var allids = gn.images[0].notes;
 
@@ -432,7 +446,17 @@ function setImgSize(large) {
 		if (!numnotes) {
 			return;
 		}
-		postdata = 'commit=' + numnotes + '&imageid=' + imageid + postdata;
+		postdata += '&commit=' + numnotes;
+		var elticketnote = document.getElementById("ticketnote");
+		postdata += '&ticketnote=' + encodeURIComponent(elticketnote.value);
+{/literal}
+{if $ismoderator && !$isowner}
+		var elimmediate = document.getElementById("immediate");
+		postdata += '&immediate=' + (elimmediate.checked ? '1' : '0');
+{else}
+		postdata += '&immediate=0';
+{/if}
+{literal}
 		//alert(postdata);// FIXME remove
 
 		for (var i = 0; i < allids.length; ++i) {
@@ -459,25 +483,25 @@ function setImgSize(large) {
 			commiterrors = true;
 
 			if (req.status != 200) {
-				alert("Cannot communicate with server, status " + req.status);
+				alert("Kommunikation mit dem Server fehlgeschlagen, status " + req.status);
 			} else {
 				var responseText = req.responseText;
 				//alert(responseText);// FIXME remove
 				if (/^-[1-9][0-9]*:0:[^#]*$/.test(responseText)) { /* general error */
 					var parts = responseText.split(':');
 					var rcode = parseInt(parts[0]);
-					alert("Error: Server returned error " + -rcode + " (" + parts[2] + ")");
+					alert("Fehler: Der Server meldete Fehler " + -rcode + " (" + parts[2] + ")");
 				} else {
 					var responses = parseResponseText(responseText);
 					if (responses.length == 0) {
-						alert("Unexpected response from server");
+						alert("Unerwartete Antwort vom Server");
 					} else {
 						commiterrors = false;
 						for (var i = 0; i < responses.length; ++i) {
 							commiterrors |= handleResponse(responses[i]);
 						}
 						if (commiterrors) {
-							alert("The server reported errors when saving the changes.");
+							alert("Es gab Fehler beim Speichern.");
 						}
 					}
 				}
@@ -628,13 +652,13 @@ function setImgSize(large) {
 		ele = document.createElement('input');
 		ele.id = 'note_t_edit_' + noteid;
 		ele.type = 'button';
-		ele.value = 'edit';
+		ele.value = 'ändern';
 		AttachEvent(ele, "click", function() { return editNote(noteid); } );
 		txt.appendChild(ele);
 		ele = document.createElement('input');
 		ele.id = 'note_t_delete_' + noteid;
 		ele.type = 'button';
-		ele.value = 'delete';
+		ele.value = 'löschen';
 		AttachEvent(ele, "click", function() { return deleteNote(noteid); } );
 		txt.appendChild(ele);
 
@@ -645,7 +669,7 @@ function setImgSize(large) {
 
 		var head = document.createElement('p');
 		ele = document.createElement('b');
-		ele.appendChild(document.createTextNode('New annotation #'+-noteid));
+		ele.appendChild(document.createTextNode('Neue Beschriftung '+-noteid));
 		head.appendChild(ele);
 		ele = document.createElement('span');
 		ele.id = 'statusline_' + noteid;
@@ -670,22 +694,22 @@ function setImgSize(large) {
 
 		ele = document.createElement('label');
 		ele.for = 'note_status_' + noteid;
-		ele.appendChild(document.createTextNode('status:'));
+		ele.appendChild(document.createTextNode('Status:'));
 		formp.appendChild(ele);
 		ele = document.createElement('select');
 		ele.name = 'note_status_' + noteid;
 		ele.id = 'note_status_' + noteid;
 		AttachEvent(ele,"change",function(){updateNoteStatus(noteid);});
-		//ele.options[0] = new Option("awaiting moderation", "pending", false, false);
-		ele.options[0] = new Option("visible", "visible", false, true);
-		ele.options[1] = new Option("deleted", "deleted", false, false);
+		//ele.options[0] = new Option("unmoderiert", "pending", false, false);
+		ele.options[0] = new Option("sichtbar", "visible", false, true);
+		ele.options[1] = new Option("gelöscht", "deleted", false, false);
 		formp.appendChild(ele);
 		formp.appendChild(document.createTextNode(' | '));
 
 		ele = document.createElement('input');
 		ele.id = 'note_edit_' + noteid;
 		ele.type = 'button';
-		ele.value = 'edit box';
+		ele.value = 'Box ändern';
 		AttachEvent(ele,"click",function(){toggleEdit(noteid);});
 		formp.appendChild(ele);
 		formp.appendChild(document.createElement('br'));
@@ -701,7 +725,7 @@ function setImgSize(large) {
 		ele = document.createElement('input');
 		ele.id = 'note_commit_' + noteid;
 		ele.type = 'button';
-		ele.value = 'save';
+		ele.value = 'Speichern';
 		AttachEvent(ele,"click",function(){commitUnsavedNotes([noteid]);});
 		formp.appendChild(ele);
 
@@ -891,6 +915,19 @@ function setImgSize(large) {
 		}
 		// TODO compatibility checks for features not tested by gn.init() go here
 
+{/literal}
+{if $ticket}
+{literal}
+		var allids = gn.images[0].notes;
+		for (var i = 0; i < allids.length; ++i) {
+			var id = allids[i];
+			var noteinfo = gn.notes[id];
+			var nl = notelists[noteinfo.noteclass];
+			nl[nl.length] = noteinfo;
+		}
+{/literal}
+{/if}
+{literal}
 		updateStatusLine(); /* removes "JavaScript required" */
 
 		var img = document.getElementById('gridimage');
@@ -931,48 +968,54 @@ function setImgSize(large) {
 	<form action="javascript:void(0);">
 	<p>
 {if $showorig}
-		<label for="imgsize">Image size:</label>
+		<label for="imgsize">Bildgröße:</label>
 		<select name="imgsize" id="imgsize" onchange="setImgSize(this.options[this.selectedIndex].value=='original');">
-			<option value="default" selected="selected">{$std_width}x{$std_height} (default)</option>
+			<option value="default" selected="selected">{$std_width}x{$std_height} (Normalgröße)</option>
 			<option value="original">{$original_width}x{$original_height}</option>
 		</select> |
 {/if}
+		<input id="toggletexts" type="button" value="Bildbeschreibung zeigen" onclick="toggleTexts('Bildbeschreibung verbergen','Bildbeschreibung zeigen');" /> |
 		{if $ticket}
-		{*<input id="toggleold" type="button" value="Hide old" onclick="toggleBoxes('old');" /> |
-		<input id="togglenew" type="button" value="Hide new" onclick="toggleBoxes('new');" /> |
-		<input id="toggleother" type="button" value="Hide unaffected notes" onclick="toggleBoxes('other');" /> |*}
+		<input id="toggleclassold" type="button" value="Alte Beschriftung verbergen" onclick="toggleBoxes('old', 'Alte Beschriftung verbergen', 'Alte Beschriftung zeigen');" /> |
+		<input id="toggleclassnew" type="button" value="Neue Beschriftung verbergen" onclick="toggleBoxes('new', 'Neue Beschriftung verbergen', 'Neue Beschriftung zeigen');" /> |
+		<input id="toggleclass"    type="button" value="Andere verbergen" onclick="toggleBoxes('', 'Andere verbergen', 'Andere zeigen');" /> |
 		{else}
-		<input type="button" value="Add annotation" onclick="addNote();" /> |
-		<input type="button" value="Save all" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
+		<input type="button" value="Hinzufügen" onclick="addNote();" /> |
+		<label for="ticketnote">Kommentar (optional):</label>
+		<textarea id="ticketnote" name="ticketnote" cols="20" rows="1"></textarea> |
+{if $ismoderator && !$isowner}
+		<label for="immediate">Sofort anwenden:</label>
+		<input type="checkbox" id="immediate" name="immediate" /> |
+{/if}
+		<input type="button" value="Alle speichern" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
 		{/if}
-		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts();" /> |
-		<a href="/photo/{$image->gridimage_id}" target="_blank">Open photo page in new window.</a>
-		<span id="statusline" style="padding-left:2em">JavaScript required</span>
+		<a href="/photo/{$image->gridimage_id}" target="_blank">Foto-Seite in neuem Fenster öffnen.</a>
+		<span id="statusline" style="padding-left:2em">JavaScript erforderlich</span>
 	</p>
 	</form>
 </div>
 <div id="noteforms" class="noteforms">
 {if $ticket}
 	<table>
-	<tr><th class="oldnote">Old</th><th class="newnote">New</th></tr>
+	<tr><th class="oldnote">Alt</th><th class="newnote">Neu</th></tr>
 	{foreach item=oldnote from=$oldnotes name=oldloop}
 	{assign var=noteidx value=$smarty.foreach.oldloop.index}
 	{assign var=newnote value=$newnotes.$noteidx}
-	<tr><td colspan="2"><b>Annotation #{$oldnote->note_id}</b><span id="statusline_{$oldnote->note_id}" style="padding-left:2em"></span><span id="statusline_{$newnote->note_id}" style="padding-left:2em"></span></td></tr>
+	<tr><td colspan="2"><b>Beschriftung {$oldnote->note_id}</b><span id="statusline_{$oldnote->note_id}" style="padding-left:2em"></span><span id="statusline_{$newnote->note_id}" style="padding-left:2em"></span></td></tr>
 	<tr><td>
 		<form action="javascript:void(0);" id="note_form_{$oldnote->note_id}" class="noteformold">
 		<label for="note_z_{$oldnote->note_id}">z:</label>
 		<input type="text" name="note_z_{$oldnote->note_id}" id="note_z_{$oldnote->note_id}" value="{$oldnote->z}" readonly="readonly" {if $oldnote->z != $newnote->z}class="oldnote"{/if} /> |
-		<label for="note_status_{$oldnote->note_id}">status:</label>
-		<input type="text" name="note_status_{$oldnote->note_id}" id="note_status_{$oldnote->note_id}" value="{if $oldnote->status=='pending'}awaiting moderation{else}{$oldnote->status}{/if}" readonly="readonly" {if $oldnote->status != $newnote->status}class="oldnote"{/if} /><br />
+		<label for="note_status_{$oldnote->note_id}">Status:</label>
+		<input type="text" name="note_status_{$oldnote->note_id}" id="note_status_{$oldnote->note_id}" value="{if $oldnote->status=='pending'}unmoderiert{elseif $oldnote->status=='deleted'}gelöscht{else}sichtbar{/if}" readonly="readonly" {if $oldnote->status != $newnote->status}class="oldnote"{/if} /><br />
 		<textarea name="note_comment_{$oldnote->note_id}" id="note_comment_{$oldnote->note_id}" cols="50" rows="10" readonly="readonly" {if $oldnote->comment != $newnote->comment}class="oldnote"{/if} >{$oldnote->comment|escape:'html'}</textarea>
 		</form>
 	</td><td>
 		<form action="javascript:void(0);" id="note_form_{$newnote->note_id}" class="noteformnew">
 		<label for="note_z_{$newnote->note_id}">z:</label>
 		<input type="text" name="note_z_{$newnote->note_id}" id="note_z_{$newnote->note_id}" value="{$newnote->z}" readonly="readonly" {if $oldnote->z != $newnote->z}class="newnote"{/if} /> |
-		<label for="note_status_{$newnote->note_id}">status:</label>
-		<input type="text" name="note_status_{$newnote->note_id}" id="note_status_{$newnote->note_id}" value="{if $newnote->status=='pending'}awaiting moderation{else}{$newnote->status}{/if}" readonly="readonly" {if $newnote->status != $oldnote->status}class="newnote"{/if} /><br />
+		<label for="note_status_{$newnote->note_id}">Status:</label>
+		<input type="text" name="note_status_{$newnote->note_id}" id="note_status_{$newnote->note_id}" value="{if $newnote->status=='pending'}unmoderiert{elseif $oldnote->status=='deleted'}gelöscht{else}sichtbar{/if}" readonly="readonly" {if $newnote->status != $oldnote->status}class="newnote"{/if} /><br />
 		<textarea name="note_comment_{$newnote->note_id}" id="note_comment_{$newnote->note_id}" cols="50" rows="10" readonly="readonly" {if $oldnote->comment != $newnote->comment}class="newnote"{/if} >{$newnote->comment|escape:'html'}</textarea>
 		</form>
 	</td></tr>
@@ -980,7 +1023,7 @@ function setImgSize(large) {
 	</table>
 {else}
     {foreach item=note from=$notes}
-	<p><b>Annotation #{$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em">{if $note->pendingchanges}There are unmoderated changes.{/if}</span></p>
+	<p><b>Beschriftung {$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em">{if $note->pendingchanges}Unmoderierte Änderungen{/if}</span></p>
 	<form action="javascript:void(0);" id="note_form_{$note->note_id}" class="{if $note->pendingchanges}noteformpending{else}noteform{/if}">
 	<p>
 		<label for="note_z_{$note->note_id}">z:</label>
@@ -989,25 +1032,25 @@ function setImgSize(large) {
 			<option value="{$smarty.section.zloop.index-10}"{if $smarty.section.zloop.index-10==$note->z} selected="selected"{/if}>{$smarty.section.zloop.index-10}</option>
 		{/section}
 		</select> |
-		<label for="note_status_{$note->note_id}">status:</label>
+		<label for="note_status_{$note->note_id}">Status:</label>
 		<select name="note_status_{$note->note_id}" id="note_status_{$note->note_id}" onchange="updateNoteStatus({$note->note_id});">
-			<option value="pending"{if $note->status=='pending'} selected="selected"{/if}>awaiting moderation</option>
-			<option value="visible"{if $note->status=='visible'} selected="selected"{/if}>visible</option>
-			<option value="deleted"{if $note->status=='deleted'} selected="selected"{/if}>deleted</option>
+			<option value="pending"{if $note->status=='pending'} selected="selected"{/if}>unmoderiert</option>
+			<option value="visible"{if $note->status=='visible'} selected="selected"{/if}>sichtbar</option>
+			<option value="deleted"{if $note->status=='deleted'} selected="selected"{/if}>gelöscht</option>
 		</select> |
-		<input type="button" value="edit box" id="note_edit_{$note->note_id}" onclick="toggleEdit({$note->note_id});" /><br />
+		<input type="button" value="Box ändern" id="note_edit_{$note->note_id}" onclick="toggleEdit({$note->note_id});" /><br />
 		<textarea name="note_comment_{$note->note_id}" id="note_comment_{$note->note_id}" cols="50" rows="10" onchange="updateNoteComment({$note->note_id});">{$note->comment|escape:'html'}</textarea><br />
-		<input type="button" value="save" id="note_commit_{$note->note_id}" onclick="commitUnsavedNotes([{$note->note_id}]);" />
+		<input type="button" value="Speichern" id="note_commit_{$note->note_id}" onclick="commitUnsavedNotes([{$note->note_id}]);" />
 	</p>
 	</form>
     {/foreach}
 {/if}
 </div>
 {else}
-<h2>Sorry, image not available</h2>
-<p>The image you requested is not available. This maybe due to software error, or possibly because
-the image was rejected after submission - please <a title="Contact Us" href="/contact.php">contact us</a>
-if you have queries</p>
+<h2>Bild nicht verfügbar</h2>
+<p>Das gewünschte Bild ist nicht vorhanden. Das kann an einem Softwarefehler liegen oder daran, dass
+das Bild nach dem Einreichen abgelehnt oder zurückgezogen wurde - Fragen dazu können über das <a title="Contact Us" href="/contact.php">Kontaktformular</a>
+gestellt werden.</p>
 {/if}
 
 {include file="_std_end.tpl"}

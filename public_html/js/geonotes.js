@@ -105,6 +105,7 @@ var gn = {
 						'height':         curarea.getAttribute('data-geonote-height'),
 						'status':         curarea.getAttribute('data-geonote-status'),
 						'pendingchanges': curarea.getAttribute('data-geonote-pendingchanges')!='0',
+						'noteclass'     : curarea.getAttribute('data-geonote-noteclass'),
 						'unsavedchanges': false,
 						'lasterror'     : '',
 						'hidden'        : false,
@@ -125,6 +126,9 @@ var gn = {
 							noteinfo.x2 = parseInt(coords[2]);
 							noteinfo.y2 = parseInt(coords[3]);
 						}
+					}
+					if (noteinfo.noteclass === null) {
+						noteinfo.noteclass = '';
 					}
 					//alert([noteinfo.x1,noteinfo.y1,noteinfo.x2,noteinfo.y2,noteinfo.width,noteinfo.height].join(', '));
 					gn.notes[noteid] = noteinfo;
@@ -194,6 +198,7 @@ var gn = {
 			'height':         img.height,
 			'status':         notestatus,
 			'pendingchanges': pendingchanges,
+			'noteclass'     : '',
 			'unsavedchanges': true,
 			'hidden'        : false,
 			'lasterror'     : '',
