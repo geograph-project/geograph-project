@@ -9,18 +9,17 @@
 * test IE compatibility
 * "reset" button?
 * geonote.php: reverse order of notes (latest note = first)?
-* translation
 * dark text on lighter background?
-* css -> geonotes.css
-* border of boxes: black -> grey for chromium?
+* css -> geonotes.css?
 * if $ticket:
    * display ticket changes also to other users
    * improve table style
-   * implement toggle new/old/unaffected events
+   * get rid of status lines
+* statusline: style->class
 *}
 {if $image}
 
-<h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+<h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto"><div class="notecontainer" id="notecontainer">
@@ -28,15 +27,15 @@
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
-    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
+    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}" />
     {/foreach}
     {foreach item=note from=$oldnotes}
     <area alt="" title="{$note->comment|escape:'html'}" id="noteareaold{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
-    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
+    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}" data-geonote-noteclass="old" />
     {/foreach}
     {foreach item=note from=$newnotes}
     <area alt="" title="{$note->comment|escape:'html'}" id="noteareanew{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
-    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}"/>
+    data-geonote-width="{$note->init_imgwidth}" data-geonote-height="{$note->init_imgheight}" data-geonote-x1="{$note->init_x1}" data-geonote-x2="{$note->init_x2}" data-geonote-y1="{$note->init_y1}" data-geonote-y2="{$note->init_y2}" data-geonote-status="{$note->status}" data-geonote-pendingchanges="{if $note->pendingchanges}1{else}0{/if}" data-geonote-noteclass="new" />
     {/foreach}
     </map>
     {foreach item=note from=$notes}
@@ -165,21 +164,36 @@ function setImgSize(large) {
 {/if}
 {if $ticket}
 	var show_hidden = true;
+{literal}
+	var notelists = { '' : [], 'new' : [], 'old' : [] }
+	var classvisible = { '' : true, 'new' : true, 'old' : true }
+	function toggleBoxes(noteclass, hidetext, showtext)
+	{
+		var button = document.getElementById('toggleclass'+noteclass);
+		var visible = !classvisible[noteclass];
+		classvisible[noteclass] = visible;
+		button.value = visible ? hidetext : showtext;
+		for (var i = 0; i < notelists[noteclass].length; ++i) {
+			var noteinfo = notelists[noteclass][i];
+			noteinfo.hide = !visible;
+		}
+	}
+{/literal}
 {else}
 	var show_hidden = false;
 {/if}
 {literal}
 	var showtexts = false;
-	function toggleTexts()
+	function toggleTexts(hidemsg, showmsg)
 	{
 		var button = document.getElementById('toggletexts');
 		var div = document.getElementById('imagetexts');
 		showtexts = !showtexts;
 		if (showtexts) {
-			button.value = "Hide description";
+			button.value = hidemsg;
 			div.style.display = 'block';
 		} else {
-			button.value = "Show description";
+			button.value = showmsg;
 			div.style.display = 'none';
 		}
 	}
@@ -400,7 +414,7 @@ function setImgSize(large) {
 	}
 	function commitUnsavedNotes(ids)
 	{
-		var postdata = ''; //'commit=1';
+		var postdata = 'imageid=' + imageid;
 		var numnotes = 0;
 		var allids = gn.images[0].notes;
 
@@ -432,7 +446,17 @@ function setImgSize(large) {
 		if (!numnotes) {
 			return;
 		}
-		postdata = 'commit=' + numnotes + '&imageid=' + imageid + postdata;
+		postdata += '&commit=' + numnotes;
+		var elticketnote = document.getElementById("ticketnote");
+		postdata += '&ticketnote=' + encodeURIComponent(elticketnote.value);
+{/literal}
+{if $ismoderator && !$isowner}
+		var elimmediate = document.getElementById("immediate");
+		postdata += '&immediate=' + (elimmediate.checked ? '1' : '0');
+{else}
+		postdata += '&immediate=0';
+{/if}
+{literal}
 		//alert(postdata);// FIXME remove
 
 		for (var i = 0; i < allids.length; ++i) {
@@ -891,6 +915,19 @@ function setImgSize(large) {
 		}
 		// TODO compatibility checks for features not tested by gn.init() go here
 
+{/literal}
+{if $ticket}
+{literal}
+		var allids = gn.images[0].notes;
+		for (var i = 0; i < allids.length; ++i) {
+			var id = allids[i];
+			var noteinfo = gn.notes[id];
+			var nl = notelists[noteinfo.noteclass];
+			nl[nl.length] = noteinfo;
+		}
+{/literal}
+{/if}
+{literal}
 		updateStatusLine(); /* removes "JavaScript required" */
 
 		var img = document.getElementById('gridimage');
@@ -937,15 +974,21 @@ function setImgSize(large) {
 			<option value="original">{$original_width}x{$original_height}</option>
 		</select> |
 {/if}
+		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts('Hide description','Show description');" /> |
 		{if $ticket}
-		{*<input id="toggleold" type="button" value="Hide old" onclick="toggleBoxes('old');" /> |
-		<input id="togglenew" type="button" value="Hide new" onclick="toggleBoxes('new');" /> |
-		<input id="toggleother" type="button" value="Hide unaffected notes" onclick="toggleBoxes('other');" /> |*}
+		<input id="toggleclassold" type="button" value="Hide old" onclick="toggleBoxes('old', 'Hide old', 'Show old');" /> |
+		<input id="toggleclassnew" type="button" value="Hide new" onclick="toggleBoxes('new', 'Hide new', 'Show new');" /> |
+		<input id="toggleclass"    type="button" value="Hide unaffected notes" onclick="toggleBoxes('', 'Hide unaffected notes', 'Show unaffected notes');" /> |
 		{else}
 		<input type="button" value="Add annotation" onclick="addNote();" /> |
+		<label for="ticketnote">Optional ticket description:</label>
+		<textarea id="ticketnote" name="ticketnote" cols="20" rows="1"></textarea> |
+{if $ismoderator && !$isowner}
+		<label for="immediate">Apply immediately:</label>
+		<input type="checkbox" id="immediate" name="immediate" /> |
+{/if}
 		<input type="button" value="Save all" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
 		{/if}
-		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts();" /> |
 		<a href="/photo/{$image->gridimage_id}" target="_blank">Open photo page in new window.</a>
 		<span id="statusline" style="padding-left:2em">JavaScript required</span>
 	</p>

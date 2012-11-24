@@ -694,7 +694,7 @@ div.noteboxbutton {
 
 div.notebox {
 	position: absolute;
-	border: 2px groove black;
+	border: 2px groove #808080 /*black*/;
 	padding: 0;
 	display: none;
 }
