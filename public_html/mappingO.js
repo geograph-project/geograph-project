@@ -203,11 +203,11 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 		graphicWidth: 20,
 		graphicHeight: 34,
 		graphicXOffset: -10, // FIXME Offsets: +/- 1??
-		graphicYOffset: -34,
+		graphicYOffset: -34
 	});
 	var mtypelookup = {
 		0: {externalGraphic:   "/img/icons/viewicon.png"},
-		1: {externalGraphic:   "/img/icons/camicon.png"}, //FIXME shadow, ...
+		1: {externalGraphic:   "/img/icons/camicon.png"} //FIXME shadow, ...
 	};
 	styleMap.addUniqueValueRules("default", "mtype", mtypelookup);
 	dragmarkers = new OpenLayers.Layer.Vector(
