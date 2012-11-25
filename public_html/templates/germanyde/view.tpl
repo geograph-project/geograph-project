@@ -54,7 +54,7 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
   <div class="img-shadow" id="mainphoto"><!-- comment out whitespace
   {if $notes}
     --><div class="notecontainer" id="notecontainer">
-    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\"")}
+    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\"")}
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}" />
@@ -69,7 +69,7 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
     <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
     </div><!--
   {else}
-  -->{$image->getFull()}<!--
+  -->{$image->getFull(true,"id=\"gridimage\"")}<!--
   {/if}
   --></div>
 
@@ -349,10 +349,6 @@ Ostsüdost
 <script type="text/javascript">
 /* <![CDATA[ */
 
-{if $notes}
-AttachEvent(window,"load",gn.init);
-{/if}
-
 {literal}
 function addStyleLinks() {
 {/literal}
@@ -370,10 +366,46 @@ function redrawMainImage() {
  AttachEvent(window,'load',redrawMainImage,false);
  AttachEvent(window,'load',showMarkedImages,false);
   
+function fixIE()
+{
+	var photo = document.getElementById('gridimage');
+	//var notecontainer = document.getElementById('notecontainer');
+	var container = document.getElementById('mainphoto');
+
+	/*if (notecontainer) {
+		notecontainer.style.width = photo.offsetWidth + 'px';
+		notecontainer.style.height = photo.offsetHeight + 'px';
+		notecontainer.style.display = 'block';
+		notecontainer.style.overflow = 'visible';
+	}*/
+
+	//container.style.position = 'relative';
+	container.style.overflowX = 'auto';
+	container.style.overflowY = 'hidden';
+	var scrolldiff = photo.offsetHeight - container.clientHeight;
+	if (scrolldiff > 0) {
+		container.style.height = photo.offsetHeight + scrolldiff;
+	}
+}
 {/literal}
 /* ]]> */
 </script>
 
+<!--[if lte IE 7]>
+<script type="text/javascript">
+/* <![CDATA[ */
+AttachEvent(window,'load',fixIE,false);
+/* ]]> */
+</script>
+<![endif]-->
+
+{if $notes}
+<script type="text/javascript">
+/* <![CDATA[ */
+AttachEvent(window,"load",gn.init);
+/* ]]> */
+</script>
+{/if}
 
 <div style="width:100%;position:absolute;top:0px;left:0px;height:0px">
 	<div class="interestBox" style="float: right; position:relative; padding:2px;">

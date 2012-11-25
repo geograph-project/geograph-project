@@ -314,13 +314,13 @@ class GridImageTroubleTicket
 	* to commit(), which persist the ticket and any unmoderated changes
 	* @access public
 	*/
-	function updateField($fieldname, $oldvalue, $newvalue, $moderated, $note_id = 0)
+	function updateField($fieldname, $oldvalue, $newvalue, $moderated, $note_id = 0, $force = false)
 	{
 		$ok=true;
 		
 		
 		//no change?
-		if ($oldvalue==$newvalue)
+		if ($oldvalue==$newvalue || $force)
 			return $ok;
 	
 		if (!$moderated)
@@ -935,6 +935,18 @@ class GridImageTroubleTicket
 	}
 
 	/**
+	 * get an array containing the affected note ids != 0
+	 * returns false on error
+	 * @access public
+	 */
+	function &getAffectedNotes()
+	{
+		$db=&$this->_getDB();
+		$cols =& $db->GetCol("SELECT DISTINCT(note_id) FROM gridimage_ticket_item WHERE gridimage_ticket_id='{$this->gridimage_ticket_id}' AND note_id!=0");
+		return $cols;
+	}
+
+	/**
 	 * get stored gridimage object, creating if necessary
 	 * @access private
 	 */
@@ -954,12 +966,6 @@ class GridImageTroubleTicket
 	 */
 	function &_getNote($note_id)
 	{
-		# FIXME create class GridImageNote
-		# with
-		#   GridImageNote($note_id=0)
-		#        [ and/or loadFromId($note_id) ]
-		#   commitChanges()
-		# share db?
 		if (!array_key_exists($note_id, $this->imgnotes)) {
 			$this->imgnotes[$note_id] = new GridImageNote($note_id);
 		}	
