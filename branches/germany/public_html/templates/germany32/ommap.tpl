@@ -147,7 +147,7 @@ ommap.tpl, rastermap.class.php:
 					new OpenLayers.Control.PanZoomBar(),
 					layerswitcher,
 					new OpenLayers.Control.ScaleLine({ 'geodesic' : true }),
-					new OpenLayers.Control.Attribution(),
+					new OpenLayers.Control.Attribution()
 				]
 			});
 {/literal}
@@ -188,7 +188,7 @@ ommap.tpl, rastermap.class.php:
 				{
 					attribution: '&copy; <a href="/">Geograph</a> and <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true,
-					userParam : user,
+					userParam : user
 				}
 			);
 			var geosq = new OpenLayers.Layer.XYrZ(
@@ -200,7 +200,7 @@ ommap.tpl, rastermap.class.php:
 					sphericalMercator : true,
 					isBaseLayer : false,
 					visibility : false,
-					userParam : user,
+					userParam : user
 				}
 			);
 			var geogr = new OpenLayers.Layer.XYrZ(
@@ -211,7 +211,7 @@ ommap.tpl, rastermap.class.php:
 					attribution: '&copy; <a href="/">Geograph</a> (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 					sphericalMercator : true,
 					isBaseLayer : false,
-					visibility : false,
+					visibility : false
 				}
 			);
 			var mapnik = new OpenLayers.Layer.XYrZ(
@@ -220,7 +220,7 @@ ommap.tpl, rastermap.class.php:
 				0, 18, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
 				{
 					attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
-					sphericalMercator : true,
+					sphericalMercator : true
 				},
 				16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
 			);
@@ -245,7 +245,7 @@ ommap.tpl, rastermap.class.php:
 					attribution: 'Relief: <a href="http://srtm.csi.cgiar.org/">CIAT data</a>',
 					sphericalMercator : true,
 					isBaseLayer : false,
-					visibility : false,
+					visibility : false
 				}
 			);
 
@@ -258,7 +258,7 @@ ommap.tpl, rastermap.class.php:
 			//		sphericalMercator : true,
 			//		isBaseLayer : false,
 			//		visibility : false,
-			//		displayInLayerSwitcher: false,
+			//		displayInLayerSwitcher: false
 			//	}
 			//);
 			var topobase = new OpenLayers.Layer.XYrZ(
@@ -269,7 +269,7 @@ ommap.tpl, rastermap.class.php:
 				{
 					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC, CIAT</a>)',
 					sphericalMercator : true,
-					isBaseLayer : true,
+					isBaseLayer : true
 				}
 			);
 			//var topotrails = new OpenLayers.Layer.XYrZ(
@@ -281,7 +281,7 @@ ommap.tpl, rastermap.class.php:
 			//		sphericalMercator : true,
 			//		isBaseLayer : false,
 			//		visibility : false,
-			//		displayInLayerSwitcher: false,
+			//		displayInLayerSwitcher: false
 			//	}
 			//);
 			topobase.hasHills = true;
