@@ -51,7 +51,7 @@ var gn = {
 	__initImageInfo: function(img) {
 		var imageinfo = {
 			'img' : img,
-			'notes' : [],
+			'notes' : []
 		};
 		// FIXME skip image if padding-left, padding-top, border-left-width, border-top-width can't be read (or don't end with 'px')?
 		var paddinglt = gn.getStyleXY(img, 'padding-left', 'padding-top');
@@ -109,9 +109,9 @@ var gn = {
 						'unsavedchanges': false,
 						'lasterror'     : '',
 						'hidden'        : false,
-						'class'         : box.className,
+						'classname'     : box.className,
 						'bordersx'      : borderlt[0] + borderrb[0],
-						'bordersy'      : borderlt[1] + borderrb[1],
+						'bordersy'      : borderlt[1] + borderrb[1]
 					};
 					if (noteinfo.status === null || noteinfo.status === "") {
 						/* custom attributes not supported or provided */
@@ -202,7 +202,7 @@ var gn = {
 			'unsavedchanges': true,
 			'hidden'        : false,
 			'lasterror'     : '',
-			'class'         : box.className,
+			'classname'     : box.className
 		}
 		gn.notes[noteid] = noteinfo;
 
@@ -360,7 +360,7 @@ var gn = {
 	hideNoteText: function() {
 		if (gn.current_note) {
 			var noteinfo = gn.notes[gn.current_note];
-			noteinfo.box.className = noteinfo.class;
+			noteinfo.box.className = noteinfo.classname;
 			noteinfo.note.style.display = 'none';
 			gn.current_note = null;
 		}
@@ -455,7 +455,7 @@ var gn = {
 		txt.style.left = x+'px';
 		txt.style.top = y+'px';
 
-		box.className = 'cur' + noteinfo.class;
+		box.className = 'cur' + noteinfo.classname;
 		txt.style.visibility = 'visible';
 	},
 
@@ -512,6 +512,6 @@ var gn = {
 		} else {
 			return [ ele.x, ele.y ];
 		}
-	},
+	}
 
 }
