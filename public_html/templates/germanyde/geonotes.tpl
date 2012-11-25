@@ -20,6 +20,9 @@
 {if $image}
 
 <h2><a title="Planquadrat {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+<!--[if lte IE 7]>
+<p><b style="color:red">Dieser Browser ist veraltet und kann diese Seite nicht korrekt darstellen!</b></p>
+<![endif]-->
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto"><div class="notecontainer" id="notecontainer">
@@ -600,12 +603,13 @@ function setImgSize(large) {
 	function addNote() {
 		++newnotes;
 		var noteid = -newnotes;
-		var img = document.getElementById('gridimage');
+		/*var img = document.getElementById('gridimage');
 		var imageindex = gn.findImage(img);
 		if (imageindex < 0)
 			return;
-			gn.images[imageindex]
-		var imageinfo = gn.images[imageindex];
+		var imageinfo = gn.images[imageindex];*/
+		var imageinfo = gn.images[0];
+		var img = imageinfo.img;
 
 		var dw = img.parentNode.parentNode.clientWidth;
 		var dh = img.parentNode.parentNode.clientHeight;

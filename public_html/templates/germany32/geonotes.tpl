@@ -20,6 +20,9 @@
 {if $image}
 
 <h2><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
+<!--[if lte IE 7]>
+<p><b style="color:red">Your browser ist too old to display this page properly!</b></p>
+<![endif]-->
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto"><div class="notecontainer" id="notecontainer">
@@ -600,12 +603,13 @@ function setImgSize(large) {
 	function addNote() {
 		++newnotes;
 		var noteid = -newnotes;
-		var img = document.getElementById('gridimage');
+		/*var img = document.getElementById('gridimage');
 		var imageindex = gn.findImage(img);
 		if (imageindex < 0)
 			return;
-			gn.images[imageindex]
-		var imageinfo = gn.images[imageindex];
+		var imageinfo = gn.images[imageindex];*/
+		var imageinfo = gn.images[0];
+		var img = imageinfo.img;
 
 		var dw = img.parentNode.parentNode.clientWidth;
 		var dh = img.parentNode.parentNode.clientHeight;
@@ -679,7 +683,8 @@ function setImgSize(large) {
 		var formp = document.createElement('p');
 
 		ele = document.createElement('label');
-		ele.for = 'note_z_' + noteid;
+		//ele.for = 'note_z_' + noteid; // IE does not like this
+		ele.setAttribute('for', 'note_z_' + noteid);
 		ele.appendChild(document.createTextNode('z:'));
 		formp.appendChild(ele);
 		ele = document.createElement('select');
@@ -693,7 +698,8 @@ function setImgSize(large) {
 		formp.appendChild(document.createTextNode(' | '));
 
 		ele = document.createElement('label');
-		ele.for = 'note_status_' + noteid;
+		//ele.for = 'note_status_' + noteid; // IE does not like this
+		ele.setAttribute('for', 'note_status_' + noteid);
 		ele.appendChild(document.createTextNode('status:'));
 		formp.appendChild(ele);
 		ele = document.createElement('select');
