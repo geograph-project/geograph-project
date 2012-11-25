@@ -608,7 +608,7 @@ class RasterMap
 			var style = {
 				strokeColor: '#ff0000',
 				strokeWidth: 1,
-				strokeOpacity: $op,
+				strokeOpacity: $op
 			};
 
 			lines.addFeatures([new OpenLayers.Feature.Vector(line, null, style)]);
@@ -640,7 +640,7 @@ function getPolyLineBlockOL(&$conv,$e1,$n1,$e2,$n2,$op=1) {
 		var style = {
 			strokeColor: '#0000ff',
 			strokeWidth: 1,
-			strokeOpacity: $op,
+			strokeOpacity: $op
 		};
 
 		lines.addFeatures([new OpenLayers.Feature.Vector(line, null, style)]);
@@ -1213,7 +1213,7 @@ EOF;
 					new OpenLayers.Control.Navigation(),
 					new OpenLayers.Control.ZoomPanel(),
 					layerswitcher,
-					new OpenLayers.Control.Attribution(),
+					new OpenLayers.Control.Attribution()
 				]
 			});
 			$google_block
@@ -1224,7 +1224,7 @@ EOF;
 				0, 18, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
 				{
 					attribution: $attr_static,
-					sphericalMercator : true,
+					sphericalMercator : true
 				},
 				16, \"http://tile.openstreetmap.org/\${z}/\${x}/\${y}.png\"
 			);
@@ -1243,7 +1243,7 @@ EOF;
 					attribution: $attr_hills,
 					sphericalMercator : true,
 					isBaseLayer : false,
-					visibility : false,
+					visibility : false
 				}
 			);
 
@@ -1256,7 +1256,7 @@ EOF;
 			//		sphericalMercator : true,
 			//		isBaseLayer : false,
 			//		visibility : false,
-			//		displayInLayerSwitcher: false,
+			//		displayInLayerSwitcher: false
 			//	}
 			//);
 			var topobase = new OpenLayers.Layer.XYrZ(
@@ -1267,7 +1267,7 @@ EOF;
 				{
 					attribution: $attr_topo,
 					sphericalMercator : true,
-					isBaseLayer : true,
+					isBaseLayer : true
 				}
 			);
 			//var topotrails = new OpenLayers.Layer.XYrZ(
@@ -1279,7 +1279,7 @@ EOF;
 			//		sphericalMercator : true,
 			//		isBaseLayer : false,
 			//		visibility : false,
-			//		displayInLayerSwitcher: false,
+			//		displayInLayerSwitcher: false
 			//	}
 			//);
 			topobase.hasHills = true;
