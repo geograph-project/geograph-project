@@ -123,14 +123,7 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
-	#if (strpos($_SERVER['HTTP_USER_AGENT'], 'Opera') !== false
-	##    ||    strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 6') === false
-	#       && strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 7') === false) {
-	#	// FIXME still sensible to find out how to get it working on IE7?
-		$notes = $image->getNotes(array('visible'));
-	#} else {
-	#	$notes = array();
-	#}# would have to be included in cache id. trying ie specific comments in templates
+	$notes = $image->getNotes(array('visible'));
 
 	//what style should we use?
 	$style = $USER->getStyle();
