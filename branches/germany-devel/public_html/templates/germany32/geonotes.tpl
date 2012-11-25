@@ -6,7 +6,6 @@
    e.g. var initialvalues = { id1 : { 'x1' : ... } ... }
 * use a.getAttribute('b') etc. instead of a.b?
 * compatibility checks (test if _all_ needed functions are available early, i.e. in init routine)
-* test IE compatibility
 * "reset" button?
 * geonote.php: reverse order of notes (latest note = first)?
 * dark text on lighter background?
@@ -123,6 +122,7 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 
 <script type="text/javascript">
 /* <![CDATA[ */
+var ie7 = false;
 var commiterrors = false;
 var unsavedchanges = false;
 var curedit = 0;
@@ -161,6 +161,9 @@ function setImgSize(large) {
 	el.src = imgurl;
 	el.width = imgwidth;
 	el.height = imgheight;
+	if (ie7) {
+		fixIE();
+	}
 	gn.recalcBoxes(el);
 }
 {/literal}
@@ -908,9 +911,34 @@ function setImgSize(large) {
 		cancelEvent(e);
 		return false;
 	}
+	function fixIE()
+	{
+		var photo = document.getElementById('gridimage');
+		//var notecontainer = document.getElementById('notecontainer');
+		var container = document.getElementById('mainphoto');
+
+		/*if (notecontainer) {
+			notecontainer.style.width = photo.offsetWidth + 'px';
+			notecontainer.style.height = photo.offsetHeight + 'px';
+			notecontainer.style.display = 'block';
+			notecontainer.style.overflow = 'visible';
+		}*/
+
+		//container.style.position = 'relative';
+		container.style.overflowX = 'auto';
+		container.style.height = '';
+		container.style.overflowY = 'hidden';
+		var scrolldiff = photo.offsetHeight - container.clientHeight;
+		if (scrolldiff > 0) {
+			container.style.height = photo.offsetHeight + scrolldiff;
+		}
+	}
 	function initNoteEdit() {
 		if (typeof gn === 'undefined') {
 			return;
+		}
+		if (ie7) {
+			fixIE();
 		}
 		gn.show_hidden = show_hidden;
 		if (!gn.images.length) {
@@ -970,6 +998,14 @@ function setImgSize(large) {
 {/literal}
 /* ]]> */
 </script>
+<!--[if lte IE 7]>
+<script type="text/javascript">
+/* <![CDATA[ */
+ie7 = true;
+/* ]]> */
+</script>
+<![endif]-->
+
 <div>
 	<form action="javascript:void(0);">
 	<p>
