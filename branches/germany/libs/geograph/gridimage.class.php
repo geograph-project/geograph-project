@@ -614,8 +614,13 @@ class GridImage
 
 	/**
 	* get a list of annotations for this image
+	* see comment in $note->applyTickets() for details on $ticketowner, $ticketid, $oldvalues
+	* $aStatus: array containing any allowed current note status
+	* $noteids: list of note ids (or null for all notes)
+	* $exclude: list of note ids to exclude
+	* $aStatusTickets: array containing any allowed note status after applying the tickets (default: $aStatus)
 	*/
-	function& getNotes($aStatus, $ticketowner = 0)
+	function& getNotes($aStatus, $ticketowner=null, $ticketid=null, $oldvalues=false, $noteids = null, $exclude = null, $aStatusTickets = null)
 	{
 		if (!is_array($aStatus))
 			die("GridImage::getNotes expects array param");
@@ -629,25 +634,38 @@ class GridImage
 
 		$notes=array();
 
+		$listwhere = '';
+		if (!is_null($noteids)) {
+			$listwhere .= " and note_id in ('" . implode("','", $noteids) . "')";
+		}
+		if (!is_null($exclude)) {
+			$listwhere .= " and not note_id in ('" . implode("','", $exclude) . "')";
+		}
 		$recordSet = &$db->Execute("select * from gridimage_notes ".
-			"where gridimage_id={$this->gridimage_id} and status in ($statuses) order by note_id asc");
+			"where gridimage_id={$this->gridimage_id}{$listwhere} and status in ($statuses) order by note_id asc");
 		while (!$recordSet->EOF) {
 			$n=new GridImageNote;
 			$n->loadFromRecordset($recordSet);
-			$n->calcSize($size[0], $size[1]);
 			$notes[]=$n;
 			$recordSet->MoveNext();
 		}
 		$recordSet->Close();
 
-		if ($ticketowner) {
-			//apply all pending tickets
-			foreach ($notes as &$note) {
-				$note->applyTickets($ticketowner);
+		if (is_null($aStatusTickets)) {
+			$aStatusTickets = $aStatus;
+		}
+
+		$retnotes = array();
+		foreach ($notes as &$note) {
+			$note->applyTickets($ticketowner, $ticketid, $oldvalues);
+			if (in_array($note->status, $aStatusTickets)) { /* status may have changed */
+				$note->storeInitialValues();
+				$note->calcSize($size[0], $size[1]);
+				$retnotes[] = $note;
 			}
 		}
 
-		return $notes;
+		return $retnotes;
 	}
 
 	/**
