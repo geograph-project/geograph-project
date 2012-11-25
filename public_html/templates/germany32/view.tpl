@@ -52,21 +52,21 @@
 	{/if}
   <div class="img-shadow" id="mainphoto"><!-- comment out whitespace
   {if $notes}
-    --><div class="notecontainer" id="notecontainer">
+    --><![if gte IE 8]><div class="notecontainer" id="notecontainer"><![endif]>
     {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\"")}
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}" />
     {/foreach}
-    </map>
+    </map><![if gte IE 8]>
     {foreach item=note from=$notes}
     <div id="notebox{$note->note_id}" style="left:{$note->x1}px;top:{$note->y1}px;width:{$note->x2-$note->x1+1}px;height:{$note->y2-$note->y1+1}px;z-index:{$note->z+50}" class="notebox"><span></span></div>
     {/foreach}
     {foreach item=note from=$notes}
     <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p></div>
-    {/foreach}
+    {/foreach}<![endif]>
     <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
-    </div><!--
+    <![if gte IE 8]></div><![endif]><!--
   {else}
   -->{$image->getFull()}<!--
   {/if}
