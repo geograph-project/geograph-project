@@ -344,7 +344,7 @@ if ($image->isValid()) {
 	if (!$uid) {
 		$uid = $USER->user_id;
 	}
-	if ($uid != $USER->user_id && !$isowner) { // FIXME tickets need to be treated differently (tickets by other useres if note not deleted (excluding pending or rejected changes)?)
+	if ($uid != $USER->user_id && !$isowner && !$ticketid) { // FIXME tickets need to be treated differently (tickets by other useres if note not deleted (excluding pending or rejected changes)?)
 		$USER->mustHavePerm("moderator"); // FIXME ticketmod?
 	}
 	#if (isset($_GET['note_id'])) {

@@ -802,7 +802,7 @@ div.geonoteold p {
 }
 div.noteboxnew {
 	position: absolute;
-	border: 2px groove green;
+	border: 2px groove #00cc00;
 	padding: 0;
 	display: none;
 }
