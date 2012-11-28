@@ -320,7 +320,7 @@ class GridImageTroubleTicket
 		
 		
 		//no change?
-		if ($oldvalue==$newvalue || $force)
+		if ($oldvalue==$newvalue && !$force)
 			return $ok;
 	
 		if (!$moderated)
