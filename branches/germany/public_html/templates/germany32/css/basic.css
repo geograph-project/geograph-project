@@ -687,7 +687,7 @@ div.noteboxeditbg {
 div.noteboxbutton {
 	position: absolute;
 	border: 1px black solid;
-	background: #888888;
+	background: #ffff00; /*#888888;*/
 	z-index: 101;
 	width: 4px;
 	height: 4px;
