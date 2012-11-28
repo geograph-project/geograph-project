@@ -681,6 +681,7 @@ function setImgSize(large) {
 		ele = document.createElement('span');
 		ele.id = 'statusline_' + noteid;
 		ele.style.paddingLeft = '2em';
+		ele.style.whiteSpace = 'nowrap';
 		head.appendChild(ele);
 
 		var formp = document.createElement('p');
@@ -1032,7 +1033,7 @@ ie7 = true;
 		<input type="button" value="Save all" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
 		{/if}
 		<a href="/photo/{$image->gridimage_id}" target="_blank">Open photo page in new window.</a>
-		<span id="statusline" style="padding-left:2em">JavaScript required</span>
+		<span id="statusline" style="padding-left:2em;white-space:nowrap">JavaScript required</span>
 	</p>
 	</form>
 </div>
@@ -1065,7 +1066,7 @@ ie7 = true;
 	</table>
 {else}
     {foreach item=note from=$notes}
-	<p><b>Annotation #{$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em">{if $note->pendingchanges}There are unmoderated changes.{/if}</span></p>
+	<p><b>Annotation #{$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em;white-space:nowrap">{if $note->pendingchanges}There are unmoderated changes.{/if}</span></p>
 	<form action="javascript:void(0);" id="note_form_{$note->note_id}" class="{if $note->pendingchanges}noteformpending{else}noteform{/if}">
 	<p>
 		<label for="note_z_{$note->note_id}">z:</label>
