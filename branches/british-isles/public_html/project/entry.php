@@ -107,6 +107,10 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (!empty($page['extract'])) {
 			$smarty->assign('meta_description', $page['description']);
 		}
+		
+		$links = $db->getAll("SELECT * FROM project_link WHERE project_id = {$page['project_id']} ORDER BY project_link_id");
+		$smarty->assign_by_ref('links', $links);
+		
 	} else {
 		$template = 'static_404.tpl';
 		header("HTTP/1.0 404 Not Found");

@@ -91,11 +91,17 @@
 	<div style="position:relative;width:233px;float:left; border-left: 2px solid silver; padding-left:5px;margin-left:5px; margin-bottom:20px; height:28em;{if $item.approved < 1}background-color:pink{/if}">
 		<h4 style="margin-top: 0px;font-size:1.2em; margin-bottom:0; background-color:lightgrey;padding:2px;"><a href="/project/entry.php?id={$item.project_id}" style="text-decoration:none">{$item.title|escape:'html'}</a></h4>
 		<div style="text-align:right;margin-bottom:3px;color:gray">{$item.created}</div>
-		{if $item.image}
-			<div style="float:left;padding-right:6px;padding-bottom:2px;"><a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a></div>
+
+		{if $item.reason && $item.purpose}
+			<b>Purpose/Goal</b>
+			<div style="font-size:0.8em;padding-left:3px;text-align:justify;overflow:none;font-family:'Comic Sans MS',Georgia,Verdana,Arial,serif">{$item.purpose|truncate:255|escape:'html'}</div>
+			<b>Why do this project?</b>
+			<div style="font-size:0.8em;padding-left:3px;text-align:justify;overflow:none;font-family:'Comic Sans MS',Georgia,Verdana,Arial,serif">{$item.reason|truncate:255|escape:'html'}</div>
+		{else}
+
+			<div style="font-size:0.8em;text-align:justify;overflow:none;font-family:'Comic Sans MS',Georgia,Verdana,Arial,serif">{$item.content|truncate:500|escape:'html'|replace:'/':'/<wbr/>'|regex_replace:'/\[\[\[(\d+)\]\]\]/':'<a href="/photo/\1">Photo</a>'}</div>
 		{/if}
 
-		<div style="font-size:0.8em;text-align:justify;overflow:none;font-family:'Comic Sans MS',Georgia,Verdana,Arial,serif">{$item.content|truncate:500|escape:'html'|replace:'/':'/<wbr/>'|regex_replace:'/\[\[\[(\d+)\]\]\]/':'<a href="/photo/\1">Photo</a>'}</div>
 		<div style="margin-top:8px;border-top:1px solid gray">
 		Posted by <a title="View profile" href="/profile/{$item.user_id}">{$item.realname|escape:'html'}</a> <a href="?u={$item.user_id}">+</a> <span class="nowrap">on {$item.published|date_format:"%a, %e %b"}</span>
 		<a href="/project/entry.php?id={$item.project_id}"><b>Read More...</b></a>
