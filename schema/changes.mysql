@@ -2323,3 +2323,17 @@ CREATE TABLE `project` (
 #################################################
 
 
+CREATE TABLE `project_link` (
+`project_link_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+`project_id` INT UNSIGNED NOT NULL ,
+`user_id` INT UNSIGNED NOT NULL ,
+`link` VARCHAR( 255 ) NOT NULL ,
+`title` VARCHAR( 100 ) NOT NULL ,
+`created` DATETIME NOT NULL ,
+`updated` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+INDEX (  `project_id` )
+) ENGINE = MYISAM AUTO_INCREMENT=100; #the autoincrement is important!
+
+
+#################################################
+

@@ -27,13 +27,25 @@
 
 <p style="margin-left:auto;margin-right:auto;width:600px;background-color:#eee;padding:10px;">{$content|nl2br|GeographLinks:true}</p>
 
+{if $links}
+	<div style="margin-left:auto;margin-right:auto;width:600px;margin-top:10px">
+		<b>Links about this project</b>
+		<ul>
+		{foreach from=$links item=link}
+			<li><a href="{$link.link|escape:'html'}">{$link.title|escape:'html'|default:'untitled link'}</a></li>
+		{/foreach}
+		</ul>
+	</div>
+{/if}
+
+
 <hr/>
 <div style="text-align:right;color:gray">{$published|date_format:"%a, %e %b %Y at %H:%M"}</div>
 
 
 
 {if $user->user_id == $user_id || $isadmin}
-	<p style="clear:both"><a href="/project/edit.php?id={$project_id}">Edit this entry</a></p>
+	<p style="clear:both"><a href="/project/edit.php?id={$project_id}">Edit this entry</a> | <a href="/project/links.php?id={$project_id}">Edit Links</a></p>
 {/if}
 
 <br style="clear:both"/>

@@ -78,7 +78,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 	<label for="content">Main Description:</label>
 	<textarea rows="10" cols="80" name="content" style="width:58em">{$content|escape:"html"}</textarea>
 
-	<div class="fieldnotes">General overview of the project, include details like who should partipate, specialist skills involved, rough timeframe etc.</div>
+	<div class="fieldnotes">General overview of the project, include details like who should partipate, specialist skills involved, rough timeframe etc. Links to pages pertaining are best put in the links section which can be edited after the project has been created</div>
 
 	{if $errors.content}</div>{/if}
 </div>
