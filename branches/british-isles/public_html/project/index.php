@@ -33,6 +33,8 @@ init_session();
 
 $smarty = new GeographPage;
 
+$USER->mustHavePerm('basic');
+
 $cacheid = $USER->hasPerm('basic')?$USER->user_id:0;
 if (!empty($_GET['tag'])) {
 	$cacheid .= '.'.md5($_GET['tag']);

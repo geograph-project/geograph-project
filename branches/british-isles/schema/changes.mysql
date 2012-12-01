@@ -2337,3 +2337,22 @@ INDEX (  `project_id` )
 
 #################################################
 
+
+CREATE TABLE `project_register` (
+  `project_register_id` int(10) unsigned NOT NULL auto_increment,
+  `project_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `supporter` tinyint(3) unsigned NOT NULL default '0',
+  `helper` tinyint(3) unsigned NOT NULL default '0',
+  `role` text NOT NULL,
+  `subscriber` tinyint(3) unsigned NOT NULL default '0',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`project_register_id`),
+  UNIQUE KEY `user_id` (`user_id`,`project_id`),
+  KEY `project_id` (`project_id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+
+#################################################
+
