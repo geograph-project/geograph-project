@@ -60,6 +60,14 @@ span.tag, a.tag {
 .entry h4 a {
 	text-decoration:none;
 }
+.entry .iamge {
+	float:left;
+	padding-right:8px;
+	padding-bottom:2px;
+}
+.entry .iamge img {
+	box-shadow: 3px 3px 5px #888888;
+}
 .entry div.date {
 	text-align:right;
 	margin-bottom:3px;
@@ -68,7 +76,6 @@ span.tag, a.tag {
 .entry div.textual {
 	font-size:0.8em;
 	padding-left:3px;
-
 	overflow:none;
 	font-family:'Comic Sans MS',Georgia,Verdana,Arial,serif
 }
@@ -172,10 +179,10 @@ span.tag, a.tag {
 
 
 		{if $item.image}
-			<div style="float:left;padding-right:6px;padding-bottom:2px;"><a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a></div>
+			<div class="iamge"><a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a></div>
 		{/if}
 
-		<div class="textual">{$item.content|truncate:500|escape:'html'|replace:'/':'/<wbr/>'|regex_replace:'/\[\[\[(\d+)\]\]\]/':'<a href="/photo/\1">Photo</a>'}</div>
+		<div class="textual">{$item.content|truncate:500|escape:'html'|regex_replace:'/\[\[\[(\d+)\]\]\]/':'<a href="/photo/\1">Photo</a>'|GeographLinks:false}</div>
 		{if $item.tags}
 			<div class="tags">
 			<span class="tag">{$item.tags|escape:'html'|lower|replace:',':'</span> <span class="tag">'}</span>
