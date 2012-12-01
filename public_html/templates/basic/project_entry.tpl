@@ -29,19 +29,46 @@
 
 {if $links}
 	<div style="margin-left:auto;margin-right:auto;width:600px;margin-top:10px">
-		<b>Links about this project</b>
-		<ul>
+		<b>Links about this project</b><br/>
 		{foreach from=$links item=link}
-			<li><a href="{$link.link|escape:'html'}">{$link.title|escape:'html'|default:'untitled link'}</a></li>
+			&middot; <a href="{$link.link|escape:'html'}">{$link.title|escape:'html'|default:'untitled link'}</a><br/>
 		{/foreach}
-		</ul>
+		</div>
+{/if}
+
+{if $registers}
+	<div style="margin-left:auto;margin-right:auto;width:600px;margin-top:10px">
+		<div style="float:left;width:280px;">
+			<b>Supporters</b><br/>
+
+			{foreach from=$registers item=register}
+			    {if $register.supporter}
+					&middot; <a href="/profile/{$register.user_id|escape:'html'}" title="{$register.role|escape:'html'}">{$register.realname|escape:'html'}</a><br/>
+				{/if}
+				{if $register.user_id eq $user->user_id}
+					{assign var="current_register" value="1"}
+				{/if}
+			{/foreach}
+			</ul>
+		</div>
+		<div style="float:left;width:280px;">
+			<b>Helpers</b><br/>
+
+			{foreach from=$registers item=register}
+			    {if $register.helper}
+					&middot; <a href="/profile/{$register.user_id|escape:'html'}" title="{$register.role|escape:'html'}">{$register.realname|escape:'html'}</a><br/>
+				{/if}
+			{/foreach}
+			</ul>
+		</div>
+		<br style="clear:both"/>
 	</div>
 {/if}
 
+<div class="interestBox" style="margin-top:10px"><a href="/project/register.php?id={$project_id}">{if $current_register}Modify{else}Register{/if} your interest in this project</a></div>
 
 <hr/>
 <div style="text-align:right;color:gray">{$published|date_format:"%a, %e %b %Y at %H:%M"}</div>
-
 
 
 {if $user->user_id == $user_id || $isadmin}

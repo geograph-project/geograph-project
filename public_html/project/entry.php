@@ -53,6 +53,7 @@ $project_id = intval($_GET['id']);
 
 $db=NewADOConnection($GLOBALS['DSN']);
 
+$USER->mustHavePerm('basic');
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
 
@@ -110,6 +111,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$links = $db->getAll("SELECT * FROM project_link WHERE project_id = {$page['project_id']} ORDER BY project_link_id");
 		$smarty->assign_by_ref('links', $links);
+		
+		$registers = $db->getAll("SELECT r.*,realname FROM project_register r INNER JOIN user USING (user_id) WHERE project_id = {$page['project_id']} ORDER BY project_register_id");
+		$smarty->assign_by_ref('registers', $registers);
 		
 	} else {
 		$template = 'static_404.tpl';
