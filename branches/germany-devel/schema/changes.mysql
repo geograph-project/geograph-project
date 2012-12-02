@@ -749,3 +749,5 @@ ALTER TABLE `gridimage_search` DROP KEY `title_2`, ADD KEY `title_2` (`title`, `
 ALTER TABLE `gridimage_recent` ADD `notes` text AFTER `seq_no`;
 
 ALTER TABLE `gridimage_ticket_item` ADD KEY `note_id` (`note_id`);
+
+ALTER TABLE `loc_hier_stat` ADD `squares_geo` int(8) unsigned NOT NULL DEFAULT '0' AFTER `squares_total`;
