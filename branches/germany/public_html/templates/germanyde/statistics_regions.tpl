@@ -16,6 +16,7 @@
 	<td>Quadrate</td>
 	<td>mit<br />Bildern</td>
 	<td>(%)</td>
+	<td>Landquadrate</td>
 	<td>mit<br />Geobildern</td>
 	<td>(%)</td>
 	<td>Hectads<br />(10km&times;10km)</td>
@@ -34,6 +35,7 @@
 	<td sortvalue="{$row.squares_total}">{$row.squares_total|thousends}</td>
 	<td sortvalue="{$row.squares_submitted}">{$row.squares_submitted|thousends}</td>
 	<td sortvalue="{$row.percent}">{$row.percent|floatformat:"%.3f"}%</td>
+	<td sortvalue="{$row.squares_geo}">{$row.squares_geo|thousends}</td>
 	<td sortvalue="{$row.geographs_submitted}">{$row.geographs_submitted|thousends}</td>
 	<td sortvalue="{$row.geopercent}">{$row.geopercent|floatformat:"%.3f"}%</td>
 	<td sortvalue="{$row.tenk_total}">{$row.tenk_total|thousends}</td>

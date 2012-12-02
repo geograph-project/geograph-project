@@ -16,6 +16,7 @@
 	<td>Squares</td>
 	<td>With images</td>
 	<td>(percent)</td>
+	<td>Land Squares</td>
 	<td>With geographs</td>
 	<td>(percent)</td>
 	<td>Hectads</td>
@@ -34,6 +35,7 @@
 	<td sortvalue="{$row.squares_total}">{$row.squares_total|thousends}</td>
 	<td sortvalue="{$row.squares_submitted}">{$row.squares_submitted|thousends}</td>
 	<td sortvalue="{$row.percent}">{$row.percent|floatformat:"%.3f"}%</td>
+	<td sortvalue="{$row.squares_geo}">{$row.squares_geo|thousends}</td>
 	<td sortvalue="{$row.geographs_submitted}">{$row.geographs_submitted|thousends}</td>
 	<td sortvalue="{$row.geopercent}">{$row.geopercent|floatformat:"%.3f"}%</td>
 	<td sortvalue="{$row.tenk_total}">{$row.tenk_total|thousends}</td>
