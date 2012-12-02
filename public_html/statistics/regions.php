@@ -77,7 +77,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$linkify = false;
 	if (count($CONF['hier_statlevels'])) {
 		if ($cid == -1) { // every region of the given level
-			$sql = "select name,level,community_id,squares_total,images_total,squares_submitted,tenk_total,geographs_submitted,tenk_submitted,images_thisweek from loc_hier left join loc_hier_stat using (level,community_id) where level=$level order by name";
+			$sql = "select name,level,community_id,squares_total,squares_geo,images_total,squares_submitted,tenk_total,geographs_submitted,tenk_submitted,images_thisweek from loc_hier left join loc_hier_stat using (level,community_id) where level=$level order by name";
 			$hstats = $db->GetAll($sql);
 			if ($hstats === false)
 				$hstats = array();
@@ -91,7 +91,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 			$regioninfo = $db->getRow("select name,contains_cid_min,contains_cid_max from loc_hier where level=$level and community_id=$cid");
 			if ($regioninfo !== false and count($regioninfo)) {
-				$sql = "select name,level,community_id,squares_total,images_total,squares_submitted,tenk_total,geographs_submitted,tenk_submitted,images_thisweek from loc_hier left join loc_hier_stat using (level,community_id) where level=$nextlevel and community_id between {$regioninfo['contains_cid_min']} and {$regioninfo['contains_cid_max']} order by name";
+				$sql = "select name,level,community_id,squares_total,squares_geo,images_total,squares_submitted,tenk_total,geographs_submitted,tenk_submitted,images_thisweek from loc_hier left join loc_hier_stat using (level,community_id) where level=$nextlevel and community_id between {$regioninfo['contains_cid_min']} and {$regioninfo['contains_cid_max']} order by name";
 				$hstats = $db->GetAll($sql);
 				if ($hstats === false)
 					$hstats = array();
@@ -128,7 +128,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sqtotal = $row['squares_total'];
 		$percentage = $sqtotal == 0 ? 0.0 : $row['squares_submitted'] / $sqtotal * 100;
 		$row += array('percent' => $percentage);
-		$percentage = $sqtotal == 0 ? 0.0 : $row['geographs_submitted'] / $sqtotal * 100;
+		$sqgeo = $row['squares_geo'];
+		$percentage = $sqgeo == 0 ? 0.0 : $row['geographs_submitted'] / $sqgeo * 100;
 		$row += array('geopercent' => $percentage);
 	}
 

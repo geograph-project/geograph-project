@@ -46,11 +46,18 @@
 	<td>{$percent[0]|floatformat:"%.3f"}%</td>
 </tr>
 <tr>
-	<th>&nbsp;[with geograph(s)]</th>
+	<th>Land Squares with Geograph(s)</th>
 	{foreach from=$references_real item=ref key=ri}
-	<td><b>{$geographs_submitted[$ri]|thousends}</b></td>
+	<td><b>{$geographs_submitted[$ri]|thousends}</b><br/>/{$squares_geo[$ri]|thousends}</td>
 	{/foreach}
-	<td>{$geographs_submitted[0]|thousends}</td>
+	<td valign="top">{$geographs_submitted[0]|thousends}<br/>/{$squares_geo[0]|thousends}</td>
+</tr>
+<tr>
+	<th>&nbsp;[as percentage]</th>
+	{foreach from=$references_real item=ref key=ri}
+	<td><b>{$percent_geo[$ri]|floatformat:"%.3f"}%</b></td>
+	{/foreach}
+	<td>{$percent_geo[0]|floatformat:"%.3f"}%</td>
 </tr>
 <tr>
 	<th>Hectads<a href="/help/squares">?</a><br/>10km x 10km Squares</th>
