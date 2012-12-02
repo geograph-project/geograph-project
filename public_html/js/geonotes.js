@@ -68,9 +68,6 @@ var gn = {
 	},
 
 	__initImage: function(img) {
-		var imageindex = gn.images.length++;
-		var imageinfo = gn.__initImageInfo(img);
-		gn.images[imageindex] = imageinfo;
 		var mapName = img.getAttribute('usemap');
 		img.setAttribute('usemap', null);
 		if (mapName.substr(0,1) == '#') mapName = mapName.substr(1);
@@ -78,6 +75,9 @@ var gn = {
 		if (mapObjs.length != 1) return;
 		var mapObj = mapObjs[0];
 		var boxes = mapObj.getElementsByTagName('area');
+		var imageindex = gn.images.length;
+		var imageinfo = gn.__initImageInfo(img);
+		gn.images[imageindex] = imageinfo;
 		var notelist = gn.images[imageindex].notes;
 		for (var j=boxes.length-1;j>=0;j--) {
 			if (boxes[j].getAttribute('shape').toLowerCase() == 'rect' && boxes[j].id.substr(0,8) == 'notearea') {
