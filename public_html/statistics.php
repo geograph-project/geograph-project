@@ -106,8 +106,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	foreach ($CONF['references'] as $ri => $rname) {
 		$letterlength = $CONF['gridpreflen'][$ri];
 
+		# sum(permit_photographs>0) as squares_supp <- not needed as we currently have percent_land>=1 if permit_photographs is set
 		$newstats = $db->CacheGetRow(3*3600,"select 
 			count(*) as squares_total,
+			sum(permit_geographs>0) as squares_geo,
 			sum(imagecount) as images_total,
 			sum(imagecount > 0) as squares_submitted,
 			count(distinct concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1))) as tenk_total
@@ -142,7 +144,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$stats[$ri] += array("centergr" => 'unknown');
 		}
 	}
-	foreach (array('images_total','images_thisweek','squares_total','squares_submitted','tenk_total','tenk_submitted','geographs_submitted','grid_submitted','grid_total') as $name) {
+	foreach (array('images_total','images_thisweek','squares_total','squares_geo','squares_submitted','tenk_total','tenk_submitted','geographs_submitted','grid_submitted','grid_total') as $name) {
 		$sum = 0;
 		foreach ($CONF['references'] as $ri => $rname) {
 			$sum += $stats[$ri][$name];
@@ -153,8 +155,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sqtotal = $stats[$ri]['squares_total'];
 		$percentage = $sqtotal == 0 ? 0.0 : $stats[$ri]['squares_submitted'] / $sqtotal * 100;
 		$stats[$ri] += array('percent' => $percentage);
+		$sqgeo = $stats[$ri]['squares_geo'];
+		$percentage = $sqgeo == 0 ? 0.0 : $stats[$ri]['geographs_submitted'] / $sqgeo * 100;
+		$stats[$ri] += array('percent_geo' => $percentage);
 	}
-	foreach (array('images_total','images_thisweek','squares_total','squares_submitted','tenk_total','tenk_submitted','geographs_submitted','grid_submitted','grid_total','centergr', 'place', 'marker','percent') as $name) {
+	foreach (array('images_total','images_thisweek','squares_total','squares_geo','squares_submitted','tenk_total','tenk_submitted','geographs_submitted','grid_submitted','grid_total','centergr', 'place', 'marker','percent','percent_geo') as $name) {
 		$smarty_array = array();
 		foreach ($CONF['references_all'] as $ri => $rname) {
 			if (array_key_exists($name,$stats[$ri])) {
