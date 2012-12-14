@@ -150,7 +150,10 @@ class Coords:
 		return (self.e0 + zone*self.zoneeast + p * (IV + p2 * (V + p2 * VI)), dn + I + p2 * (II + p2 * (III + p2 * IIIA)), zone, PHI < 0, band)
 	def en_to_ll(self, East, North, zone=None, shem=None, band=None):
 		if zone is None:
-			zone = 0 # FIXME: GK: zone from easting
+			if self.zoneeast:
+				zone = floor(East / self.zoneeast)
+			else:
+				zone = 0
 		if shem is None:
 			if band is None:
 				shem = False # FIXME warning
