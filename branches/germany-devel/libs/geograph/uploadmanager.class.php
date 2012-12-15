@@ -498,7 +498,7 @@ class UploadManager
 	function setOrientation($exif)
 	{
 		global $CONF;
-		if (!strlen($CONF['imagemagick_path'])) {
+		if ($CONF['imagemagick_path'] === '' || $CONF['imagemagick_buggy'] && $CONF['exiftooldir'] === '') {
 			$orientation = 0;
 		} elseif (isset($exif['IFD0']) && isset($exif['IFD0']['Orientation'])) {
 			$orientation = $exif['IFD0']['Orientation'];
@@ -512,10 +512,39 @@ class UploadManager
 		if ($orientation < 0 || $orientation > 8) {
 			$orientation = 0;
 		}
-		trigger_error("O: $orientation", E_USER_WARNING);
+		#trigger_error("O: $orientation", E_USER_WARNING);
 		#$this->orientation = $orientation;
 		$this->autoorient = $orientation > 1;
 		$this->switchxy = $orientation > 4;
+		if ($this->autoorient) {
+			if ($CONF['imagemagick_buggy']) {
+				switch($orientation) {
+				case 2:
+					$this->im_autoorient = '-flop';
+					break;
+				case 3:
+					$this->im_autoorient = '-rotate 180';
+					break;
+				case 4:
+					$this->im_autoorient = '-flip';
+					break;
+				case 5:
+					$this->im_autoorient = '-transpose'; # '-flip -rotate 90';
+					break;
+				case 6:
+					$this->im_autoorient = '-rotate 90';
+					break;
+				case 7:
+					$this->im_autoorient = '-transverse'; # '-flop -rotate 90'
+					break;
+				case 8:
+					$this->im_autoorient = '-rotate 270';
+					break;
+				}
+			} else {
+				$this->im_autoorient = '-auto-orient';
+			}
+		}
 	}
 
 	function _processFile($upload_id,$pendingfile) {
@@ -585,20 +614,7 @@ class UploadManager
 			{
 				//get the exif data and set orientation
 				$this->reReadExifFile();
-				#//get the exif data
-				#$exiffile=$this->_pendingEXIF($this->upload_id);
-				#$exif="";
-				#$f=@fopen($exiffile, 'r');
-				#if ($f)
-				#{
-				#	$exif = fread ($f, filesize($exiffile)); 
-				#	fclose($f);
-				#	$exif = unserialize($exif)
-				#	$this->setOrientation($exif);
-				#}
-				###
-				#$exif = exif_read_data($orginalfile,0,true);
-				#$this->setOrientation($exif);
+
 				$this->hasoriginal = true;
 				$s=getimagesize($orginalfile);
 				if ($this->switchxy) {
@@ -621,13 +637,20 @@ class UploadManager
 			return false;
 		}
 
-		$options = ' -auto-orient';
+		#$options = ' -auto-orient';
+		$options = ' ' . $this->im_autoorient;
 		if ($CONF['exiftooldir'] === '') {
 			$options .= ' -strip';
 		}
 		$cmd = sprintf ("\"%smogrify\"%s jpg:%s", $CONF['imagemagick_path'], $options, $filename);
+		#trigger_error("-> $cmd", E_USER_WARNING);
 
 		passthru ($cmd);
+
+		if ($CONF['imagemagick_buggy']) {
+			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -Orientation=1 -n \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $filename);
+			passthru ($cmd);
+		}
 
 		return true; // error handling?
 	}
@@ -650,7 +673,8 @@ class UploadManager
 				$options .= ' -strip';
 			}
 			if ($this->autoorient) {
-				$options .= ' -auto-orient';
+				#$options .= ' -auto-orient';
+				$options .= ' ' . $this->im_autoorient;
 			}
 			if ($width > $max_dimension || $height > $max_dimension) {
 				#$options .= sprintf(' -resize "%ldx%ld>" -quality 87', $max_dimension, $max_dimension);
@@ -658,8 +682,14 @@ class UploadManager
 			}
 			if ($options !== '') {
 				$cmd = sprintf ("\"%smogrify\"%s jpg:%s", $CONF['imagemagick_path'], $options, $filename);
+				#trigger_error("-> $cmd", E_USER_WARNING);
 
 				passthru ($cmd);
+
+				if ($this->autoorient && $CONF['imagemagick_buggy']) {
+					$cmd = sprintf ("\"%sexiftool\" -overwrite_original -Orientation=1 -n \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $filename);
+					passthru ($cmd);
+				}
 
 				list($width, $height, $type, $attr) = getimagesize($filename);
 			}
