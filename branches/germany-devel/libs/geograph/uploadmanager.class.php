@@ -52,6 +52,8 @@ class UploadManager
 	var $autoorient = false;
 	var $switchxy = false;
 
+	var $rawExifData = false;
+
 	/**
 	* Constructor
 	*/
@@ -581,6 +583,8 @@ class UploadManager
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			if (@file_exists($orginalfile))
 			{
+				//get the exif data and set orientation
+				$this->reReadExifFile();
 				#//get the exif data
 				#$exiffile=$this->_pendingEXIF($this->upload_id);
 				#$exif="";
@@ -592,8 +596,9 @@ class UploadManager
 				#	$exif = unserialize($exif)
 				#	$this->setOrientation($exif);
 				#}
-				$exif = exif_read_data($orginalfile,0,true);
-				$this->setOrientation($exif);
+				###
+				#$exif = exif_read_data($orginalfile,0,true);
+				#$this->setOrientation($exif);
 				$this->hasoriginal = true;
 				$s=getimagesize($orginalfile);
 				if ($this->switchxy) {
@@ -648,6 +653,7 @@ class UploadManager
 				$options .= ' -auto-orient';
 			}
 			if ($width > $max_dimension || $height > $max_dimension) {
+				#$options .= sprintf(' -resize "%ldx%ld>" -quality 87', $max_dimension, $max_dimension);
 				$options .= sprintf(' -resize %ldx%ld -quality 87', $max_dimension, $max_dimension);
 			}
 			if ($options !== '') {
@@ -733,6 +739,10 @@ class UploadManager
 	
 	function reReadExifFile() 
 	{
+		if ($this->rawExifData !== false) {
+			return;
+		}
+		$this->rawExifData = array();
 		//get the exif data
 		$exiffile=$this->_pendingEXIF($this->upload_id);
 		$exif="";
@@ -802,21 +812,8 @@ class UploadManager
 		//ftf is zero under image is moderated
 		$ftf=0;
 		
-		//get the exif data
-		$exiffile=$this->_pendingEXIF($this->upload_id);
-		$exif="";
-		$rawExif = array();
-		$f=@fopen($exiffile, 'r');
-		if ($f)
-		{
-			$exif = fread ($f, filesize($exiffile)); 
-			fclose($f);
-			$rawExif = unserialize($exif);
-			if ($rawExif === false) {
-				$rawExif = array();
-			}
-			$this->setOrientation($rawExif);
-		}
+		//get the exif data and set orientation
+		$this->reReadExifFile();
 		
 		if (!empty($CONF['use_insertionqueue'])) {
 			$table = "gridimage_queue";
