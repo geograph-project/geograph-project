@@ -140,15 +140,18 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (isset($_GET['geo'])) {
 				$where .= " AND moderation_status = 'geograph'";
 			} elseif (isset($_GET['supp'])) {
-                                $where .= " AND moderation_status = 'accept'";
+				$where .= " AND moderation_status = 'accept'";
+			} else {
+				$where .= " AND moderation_status in ('geograph','accept')";
 			}
 			if ($uid) {
 				$where .= " AND user_id = $uid";
 			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			#gridimage_id, title, user_id, realname, grid_reference,
 			$images=&$db->GetAssoc($sql= "SELECT 
-			imagetaken, 
-			gridimage_id, title, user_id, realname, grid_reference,
+			imagetaken,
+			MIN(gridimage_id) as gridimage_id,
 			COUNT(*) AS images,
 			SUM(moderation_status = 'accepted') AS `supps`
 			FROM `gridimage_search`
@@ -157,7 +160,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (!empty($_GET['debug'])) {
 				print "<pre>$sql</pre>";
 			}
-			foreach ($images as $day=>$arr) {
+			foreach ($images as $day=>&$arr) {
+				$arr += $db->GetRow($sql= "SELECT title, user_id, realname, grid_reference FROM `gridimage_search` WHERE gridimage_id='{$arr['gridimage_id']}'");
 				if ($maximages < $arr['images'])
 					$maximages = $arr['images'];
 			}

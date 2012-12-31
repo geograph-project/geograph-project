@@ -481,6 +481,7 @@ $CONF['search_count_first_page'] = true; //true/false
 $CONF['searchid_recent'] = 0;
 $CONF['searchid_potd'] = 0;
 $CONF['searchid_historical'] = 0;
+$CONF['searchid_current'] = 0;
 
 ###################################
 

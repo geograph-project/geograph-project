@@ -26,7 +26,11 @@
 
  {if $recentcount}
   
-  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Recent Photos <small>[<a href="{if $recentsearch}/results/{$recentsearch}{else}/search.php?displayclass=full&amp;orderby=submitted&amp;breakby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=15&amp;do=1{/if}" title="Show the most recent submissions">more...</a>]</small></h3>
+	<div style="{if $overview} padding-top:15px; border-top: 2px solid black; margin-top: 15px;{/if} float:right">
+	<p style="margin:0">
+	<small style="white-space:nowrap">[<a href="{if $recentsearch}/results/{$recentsearch}{else}/search.php?displayclass=full&amp;orderby=submitted&amp;breakby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=15&amp;do=1{/if}" title="Show the most recent submissions">more</a>|<a href="{if $recentsearchcur}/results/{$recentsearchcur}{else}/search.php?displayclass=full&amp;orderby=imagetaken&amp;breakby=imagetaken&amp;reverse_order_ind=1&amp;resultsperpage=15&amp;do=1{/if}" title="Show current images">new</a>]</small>
+	</p></div>
+  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Recent Photos</h3>
   	
   	{foreach from=$recent item=image}
   
