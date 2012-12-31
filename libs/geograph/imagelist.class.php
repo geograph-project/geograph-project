@@ -364,6 +364,7 @@ class ImageList
 		$smarty->assign_by_ref($basename, $this->images);		
 		$smarty->assign($basename.'count', count($this->images));
 		$smarty->assign($basename.'search', $CONF['searchid_recent']);
+		$smarty->assign($basename.'searchcur', $CONF['searchid_current']);
 	}
 	
 	/**
