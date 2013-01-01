@@ -140,9 +140,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (isset($_GET['geo'])) {
 				$where .= " AND moderation_status = 'geograph'";
 			} elseif (isset($_GET['supp'])) {
-				$where .= " AND moderation_status = 'accept'";
+				$where .= " AND moderation_status = 'accepted'";
 			} else {
-				$where .= " AND moderation_status in ('geograph','accept')";
+				$where .= " AND moderation_status in ('geograph','accepted')";
 			}
 			if ($uid) {
 				$where .= " AND user_id = $uid";
