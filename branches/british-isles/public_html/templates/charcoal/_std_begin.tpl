@@ -11,7 +11,7 @@
 <meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 {$extra_meta}
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/charcoal/css/charcoal.css"|revision}" media="screen" />
-<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
+<link rel="shortcut icon" type="image/x-icon" href="http://{$static_host}/favicon.ico"/>
 {if $image && $image->gridimage_id && $image->moderation_status ne 'rejected'}
 <link rel="alternate" type="application/vnd.google-earth.kml+xml" href="/photo/{$image->gridimage_id}.kml"/>
 {elseif $profile && $profile->user_id}
@@ -83,7 +83,7 @@ function bodyOnLoad()
 		<li id="t_sub"><a href="/submit.php">Submit</a></li>
 		{if $enable_forums}<li id="t_dis"><a href="/discuss/">Discuss</a></li>{/if}
 		<li id="t_sta"><a href="/numbers.php">Stats</a></li>
-		<li id="t_hel"><a href="/faq.php">Help</a></li>
+		<li id="t_hel"><a href="/faq3.php?l=0">Help</a></li>
 		</ul>
 	</div>
 

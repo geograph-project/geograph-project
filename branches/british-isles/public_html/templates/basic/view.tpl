@@ -1,5 +1,5 @@
+
 {if $ireland_prompt}{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/`$image->gridimage_id`\" />"}{/if}
-{if !$image->allow_pinterest}{assign var="extra_meta" value="`$extra_meta`<meta name=\"pinterest\" content=\"nopin\" />"}{/if}
 {include file="_std_begin.tpl"}
 
 {if $image}
@@ -153,7 +153,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 <table style="width:100%">
 <tr>
-	<td colspan="6" align="center" style="background-color:lightgrey;"><b><a href="/reuse.php?id={$image->gridimage_id}">Find out how to reuse this Image</a></b> <span style="font-size:0.7em;">For example on your webpage, blog, a forum, or Wikipedia.</span></td>
+	<td colspan="6" align="center" style="background-color:lightgrey;">&middot; <b><a href="/reuse.php?id={$image->gridimage_id}">Find out how to reuse this image</a></b> &middot; <span style="font-size:0.7em;">For example on your webpage, blog, a forum, or Wikipedia.</span> &middot;</td>
 </tr>
 <tr>
 {if $enable_forums}
@@ -282,7 +282,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 		<dd style="width:256px" class="tags" itemprop="keywords">
 			{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'top'}
 			<span class="tag">
-			<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a></span>&nbsp;
+			<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}?photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span>&nbsp;
 		{/if}{/foreach}</dd>
 	{/if}
 
@@ -296,7 +296,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 			<dd style="width:256px;font-size:0.9em" class="tags" itemprop="keywords">
 			{foreach from=$image->tags item=item name=used}{if $item.prefix == $prefix}
 				<span class="tag">
-				<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|escape:'html'}</a></span>&nbsp;
+				<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}?photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span>&nbsp;
 			{/if}{/foreach}</dd>
 		{/if}
 	{/foreach}
@@ -359,7 +359,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	<p style="margin-top:0px">
 	<b>Other Tags</b><br/><span class="tags" itemprop="keywords">
 	{foreach from=$image->tags item=item name=used}{if $item.prefix eq '' || $item.prefix eq 'term' || $item.prefix eq 'cluster' || $item.prefix eq 'wiki'}
-		<span class="tag"><a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink">{$item.tag|lower|escape:'html'}</a></span>&nbsp;
+		<span class="tag"><a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}?photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|lower|escape:'html'}</a></span>&nbsp;
 	{/if}{/foreach}</span>
 	</p>
 	<small>Click a tag, to view other nearby images.</small>
