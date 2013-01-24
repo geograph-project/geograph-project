@@ -38,6 +38,9 @@ function smarty_modifier_escape($string, $esc_type = 'html', $char_set = 'ISO-88
         case 'url':
             return rawurlencode($string);
 
+        case 'urlplus':
+            return str_replace('%2F','/',str_replace('%3A',':',urlencode($string)));
+
         case 'urlpathinfo':
             return str_replace('%2F','/',rawurlencode($string));
             
