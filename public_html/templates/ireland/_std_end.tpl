@@ -13,7 +13,7 @@
       <li><a title="Depth Map" href="/mapbrowse.php?depth=1">Depth</a></li>
       <li><a title="Draggable Map" href="/mapper/">Draggable</a></li>
      </ul></li>
-     <li><a title="Browse" href="/browse.php">Browse</a></li>
+     <li><a title="Interactive browser, search and map in one" href="/browser/#!/country+(%22Northern+Ireland%22+%7C+%22Republic+of+Ireland%22)">Browser</a></li>
      <li><a title="Explore Images by Theme" href="/explore/">Explore</a><ul>
       <li><a href="/statistics/fully_geographed.php">Mosaics</a></li>
       <li><a href="/explore/routes.php">Routes</a></li>

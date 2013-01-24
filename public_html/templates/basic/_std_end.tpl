@@ -7,16 +7,17 @@
     <li>View<ul>
      <li><a title="Find and locate images" href="/search.php">Search</a></li>
      <li><a title="View map of all submissions" href="/mapbrowse.php">Maps</a></li>
+     <li><a title="Interactive browser, search and map in one" href="/browser/#!start">Browser</a></li>
      <li><a title="Explore images by theme" href="/explore/">Explore</a></li>
+    </ul></li>
+    <li><ul>
      <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li>
     </ul></li>
     <li>Interact<ul>
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
-     <li><a title="Activities on the site" href="/activities/">Activities</a> </li>
      <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
      {dynamic}{if $user->registered}
      <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
-     <li><a title="Find out about local Events" href="/events/">Events</a></li>
      {/if}{/dynamic}
     </ul></li>
     <li>Contributors<ul>
@@ -131,6 +132,8 @@
   <div id="footer" class="no_print">
      <p style="color:#AAAABB;float:left">Page updated at {$smarty.now|date_format:"%H:%M"}</p>
    <p><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>
+       <span class="sep">|</span>
+       <a href="/article/Use-of-Cookies-on-Geograph-Website" title="How this site uses cookies">Cookies</a>
        <span class="sep">|</span>
        <a href="/help/credits" title="Who built this and how?">Credits</a>
        <span class="sep">|</span>

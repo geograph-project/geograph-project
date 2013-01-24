@@ -11,7 +11,7 @@
 <meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
 {$extra_meta}
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
-<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
+<link rel="shortcut icon" type="image/x-icon" href="http://{$static_host}/favicon.ico"/>
 
 <script type="text/javascript" src="{"/js/geograph.js"|revision}"></script>
 </head>
