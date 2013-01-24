@@ -47,33 +47,55 @@
 </ul>
 
 {if $profile->about_yourself && $profile->public_about}
-	<div class="caption" style="background-color:#dddddd; padding:10px;">
+	<div class="caption" style="clear:both">
 	{if !$profile->deceased_date}
-	<h2 style="margin-top:0px;margin-bottom:0px">About Me</h2>
+		<div class="interestBox" style="border-radius: 10px;">
+			<h2 style="margin-top:0px;margin-bottom:0px">About Me</h2>
+		</div>
+		<div style="padding-left:10px">
+			{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}
+		</div>
+	{else}
+		{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big><b>Further information</b></big>...'|nl2br|GeographLinks:true}
 	{/if}
-	{$profile->about_yourself|TruncateWithExpand:'(<small>this is a preview only</small>) <big>Click here to <b>Read More</b></big>...'|nl2br|GeographLinks:true}</div>
+	</div>
 {/if}
 
 	<br/><br/>
 
 
-
 {if $profile->stats.images gt 0}
- 	<div style="background-color:#dddddd; padding:10px;">
+ 	<div class="interestBox" style="border-radius: 10px;">
 
 		{if $profile->deceased_date}
 		<h3 style="margin-top:0px;margin-bottom:0px">Statistics</h3>
 		{else}
-		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics</h3>
+		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics <a href="/help/stats_faq" class="about" style="font-size:0.7em">About</a></h3>
 		{/if}
-		<ul>
+	</div>
+	<div style="float:right;font-size:0.8em; color:gray;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
+	<div>
+ 		<ul>
 			{if $profile->stats.points}
-				<li><b>{$profile->stats.points}</b> Geograph points <sup>(see <a title="Frequently Asked Questions" href="/faq.php#points">FAQ</a>)</sup>
+				<li><b>{$profile->stats.points}</b> First Geograph points
 					{if $user->user_id eq $profile->user_id && $profile->stats.points_rank > 0}
 						<ul style="font-size:0.8em;margin-bottom:2px">
 						<li>Overall Rank: <b>{$profile->stats.points_rank|ordinal}</b> {if $profile->stats.points_rank > 1}({$profile->stats.points_rise} more needed to rise rank){/if}</li>
 						</ul>
 					{/if}
+				</li>
+			{/if}
+			{if $profile->stats.seconds || $profile->stats.thirds || $profile->stats.fourths}
+				<li style="padding-bottom:3px">
+				{if $profile->stats.seconds}
+					<b>{$profile->stats.seconds}</b> Second Visitor points,
+				{/if}
+				{if $profile->stats.thirds}
+					<b>{$profile->stats.thirds}</b> Third Visitor points,
+				{/if}
+				{if $profile->stats.fourths}
+					<b>{$profile->stats.fourths}</b> Fourth Visitor points
+				{/if}
 				</li>
 			{/if}
 			{if $profile->stats.geosquares}
@@ -85,21 +107,24 @@
 					{/if}
 				</li>
 			{/if}
-			{if $profile->stats.geographs}
-				<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
-				{if $profile->stats.geographs != $profile->stats.images}
-					and <b>{$profile->stats.images-$profile->stats.geographs}</b> Supplemental
-				{/if}
-				</li>
+			{if $profile->stats.tpoints}
+				<li><b>{$profile->stats.tpoints}</b> TPoints (Time-gap points <sup><a href="/help/stats_faq#tpoints" class="about" style="font-size:0.6em">About</a></sup>)</li>
 			{/if}
 			<li><b>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if}
 				{if $profile->stats.squares gt 1}
 					<ul style="font-size:0.8em;margin-bottom:2px">
-					<li><b>{$profile->stats.squares}</b> gridsquare{if $profile->stats.squares ne 1}s{/if},
-					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b> <sup>(see <a title="Statistics - Frequently Asked Questions" href="/help/stats_faq">FAQ</a>)</sup>
+					{if $profile->stats.geographs}
+						<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
+						{if $profile->stats.geographs != $profile->stats.images}
+							and <b>{$profile->stats.images-$profile->stats.geographs}</b> Supplementals
+						{/if}
+						</li>
+					{/if}
+					<li><b>{$profile->stats.squares}</b> grid square{if $profile->stats.squares ne 1}s{/if},
+					giving a depth score of <b>{$profile->stats.depth|string_format:"%.2f"}</b>
 					</li>
 					{if $profile->stats.hectads > 1}
-						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> Myriads<sup><a href="/help/squares">?</a></sup>{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
+						<li>in <b>{$profile->stats.hectads}</b> different hectads and <b>{$profile->stats.myriads}</b> myriads{if $profile->stats.days > 3}, taken on <b>{$profile->stats.days}</b> different days{/if}</li>
 					{/if}
 					</ul>
 				{/if}
@@ -112,9 +137,8 @@
 				</li>
 			{/if}
 		</ul>
-		<div style="float:right;font-size:0.8em; color:gray; margin-top:-20px">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
 	</div>
-{else}
+{elseif !$userimages}
 	<h3>My Statistics</h3>
 	<ul>
 		  <li>No photographs submitted {if $userimages}(statistics can take a few hours to appear if you have only recently begun submitting){/if}</li>
@@ -122,7 +146,9 @@
 {/if}
 
 {if $userimages}
-	<h3 style="margin-bottom:0px">Photographs</h3>
+	<div class="interestBox" style="border-radius: 10px;">
+	<h3 style="margin-top:0px;margin-bottom:0px">Photographs</h3>
+	</div>
 	
 	<p style="font-size:0.7em">Click column headers to sort in a different order</p>
 	
@@ -137,15 +163,17 @@
 		<td>Title</td>
 		<td sorted="desc">Submitted</td>
 		<td>Classification</td>
+		<td>Taken</td>
 	</tr></thead>
 	<tbody>
 	{foreach from=$userimages item=image}
 		<tr>
 		<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View discussion - last updated {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" ><img src="/templates/basic/img/discuss.gif" width="10" height="10" alt="discussion indicator"></a>{/if}</td>
-		<td sortvalue="{$image->grid_reference}"><a title="view full size image" href="{if $image->gridimage_id < 1498791}javascript:void(loadimage({$image->gridimage_id}));{else}/photo/{$image->gridimage_id}{/if}">{$image->grid_reference}</a></td>
-		<td>{$image->title}</td>
-		<td sortvalue="{$image->gridimage_id}" class="nowrap">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
-		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){/if}</td>
+		<td sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
+		<td sortvalue="{$image->title}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
+		<td sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
+		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if}</td>
+		<td sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
 		</tr>
 	{/foreach}
 	</tbody></table>
