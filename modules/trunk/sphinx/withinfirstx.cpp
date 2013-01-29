@@ -43,6 +43,8 @@ typedef std::map<std::string,unsigned int> StringCount;
 #endif
 
 extern "C" {
+	DLLEXPORT int withinfirstx_ver();
+
     DLLEXPORT int withinfirstx_init(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
     DLLEXPORT void withinfirstx_deinit (SPH_UDF_INIT*);
     DLLEXPORT sphinx_int64_t withinfirstx(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
@@ -54,6 +56,13 @@ extern "C" {
     DLLEXPORT int withinfirstxstring_init(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
     DLLEXPORT void withinfirstxstring_deinit (SPH_UDF_INIT*);
     DLLEXPORT sphinx_int64_t withinfirstxstring(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
+}
+
+/// UDF version control
+/// gets called once when the library is loaded
+DLLEXPORT int withinfirstx_ver()
+{
+        return SPH_UDF_VERSION;
 }
 
 //////////////////////////////////////////////////////
