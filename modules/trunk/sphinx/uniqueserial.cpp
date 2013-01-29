@@ -43,6 +43,9 @@ typedef std::map<std::string,unsigned int> StringCount;
 #endif
 
 extern "C" {
+
+    DLLEXPORT int uniqueserial_ver();
+
     DLLEXPORT int uniqueserial_init(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
     DLLEXPORT void uniqueserial_deinit (SPH_UDF_INIT*);
     DLLEXPORT sphinx_int64_t uniqueserial(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
@@ -50,6 +53,14 @@ extern "C" {
     DLLEXPORT int uniqueserialstring_init(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
     DLLEXPORT void uniqueserialstring_deinit (SPH_UDF_INIT*);
     DLLEXPORT sphinx_int64_t uniqueserialstring(SPH_UDF_INIT*, SPH_UDF_ARGS*, char*);
+}
+
+
+/// UDF version control
+/// gets called once when the library is loaded
+DLLEXPORT int uniqueserial_ver()
+{
+        return SPH_UDF_VERSION;
 }
 
 //////////////////////////////////////////////////////
