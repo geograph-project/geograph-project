@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+<ModulePrefs title="Geograph Photo of the Day" scrolling="true" description="Displays the Geograph Photo of the Day" title_url="http://www.geograph.org.uk/" author="Barry Hunter" author_affiliation="Developer" author_email="geograph@barryhunter.co.uk" author_link="http://www.nearby.org.uk/blog/" screenshot="http://www.geograph.org.uk/img/ggadget0.png" thumbnail="http://www.geograph.org.uk/img/ggadget0-thumb.png" width="250" height="250">
+	<Require feature="analytics"/>
+</ModulePrefs>
+<UserPref name="inumber" display_name="Search Results number" default_value="2087426" datatype="hidden"/>
+<UserPref name="results" display_name="Results to display (max 15)" default_value="1" required="true"/>
+
+<Content type="html"><![CDATA[
+<div id="content_div" style="font-family:Arial,Helvetica;text-align:left;font-size:70%"></div>
+<script type="text/javascript">
+	function displayMenu() {
+		var prefs = new _IG_Prefs();
+
+		var inumber = prefs.getString("inumber");
+
+		var url = "http://www.geograph.org.uk/feed/results/"+inumber+".geophotorss";
+
+		var results = prefs.getString("results");
+
+		_IG_FetchXmlContent(url, function (response) {
+		if (response == null || typeof(response) != "object" || response.firstChild == null) {
+			_gel("content_div").innerHTML = "<i>Invalid data.</i>";
+			return;
+		}
+
+		var nodeList = response.getElementsByTagName("channel").item(0).childNodes;
+		// Loop through child nodes. Extract data from the text nodes
+		for (var j = 0; j < nodeList.length ; j++) {
+			var node = nodeList.item(j);
+			if (node.nodeName == "title") {
+				var title = node.firstChild.nodeValue;
+			}
+			if (node.nodeName == "link") {
+				var link = node.firstChild.nodeValue;
+			}
+			if (node.nodeName == "description") {
+				var desc= node.firstChild.nodeValue;
+			}
+		}
+		if (inumber == 2087426) {
+			desc = '';
+		}
+		html ='<div style="text-align:center; background-color:#000066; font-family:Georgia; font-weight: 700;">';
+		html += '<a href="'+link+'" target="_blank" style="color:white">'+title + "</a></div>";
+
+		html +='<div style="text-align:center; background-color:#EEEEEE; font-size:0.8em;">';
+		html += desc+ '</div>';
+
+		var itemList = response.getElementsByTagName("item");
+
+		for (var i = 0; i < Math.min(results,itemList.length) ; i++) {
+			var nodeList = itemList.item(i).childNodes;
+			var imageurl ;
+
+			// Loop through child nodes. Extract data from the text nodes
+			for (var j = 0; j < nodeList.length ; j++) {
+				var node = nodeList.item(j);
+				if (node.nodeName == "title") {
+					var title = node.firstChild.nodeValue;
+				}
+				if (node.nodeName == "link") {
+					var link = node.firstChild.nodeValue;
+				}
+				if (node.nodeName == "dc:creator") {
+					var user = node.firstChild.nodeValue;
+				}
+				if (node.nodeName == "dc:source") {
+					var profile = node.firstChild.nodeValue;
+				}
+				if (node.nodeName == "photo:thumbnail") {
+					imageurl = _IG_GetCachedUrl(node.firstChild.nodeValue.replace(/120x120/,'213x160'),{ refreshInterval: 604800});
+				}
+			}
+			if (imageurl) {
+				html += '<div style="float:left;position:relative; width:223px; height:190px; text-align:center; padding:1px">';
+				html += '<a href="'+link+'" target="_blank"><img src="'+imageurl+'" border="0"></a><br/>';
+				html += '<a title="view full size image" href="'+link+'" target="_blank">'+title+'</a>';
+				html += ' by <a href="'+profile+'" target="_blank">'+user+'</a>';
+				html += "</div>";
+			}
+		}
+		html += '<br style="clear:both"/>';
+		html +='<div style="text-align:center; background-color:#EEEEEE; font-size:0.8em;">photos licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative Commons Licence</a></div>';
+
+		_gel('content_div').innerHTML = html;
+		
+		_IG_Analytics("UA-172738-3", "/stuff/ggadget1.xml");
+		});
+	}
+	_IG_RegisterOnloadHandler(displayMenu);
+	</script>
+]]>
+</Content>
+</Module>
