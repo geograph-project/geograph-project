@@ -9,7 +9,7 @@
 <div style="background-color:#eeeeee;padding:2px; text-align:center">
 Das Ziel von Geograph-CH ist es, für jeden Quadratkilometer in der Schweiz und Liechtenstein Bilder zu sammeln Ð und Du kannst mitmachen.</div>
 
-<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;">
+<div style="padding-right:5px;position:relative;text-align:center;">
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
