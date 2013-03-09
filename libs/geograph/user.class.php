@@ -389,11 +389,11 @@ class GeographUser
 					
 					$msg.="We hope you enjoy using and contributing to the site\n\n";
 					$msg.="Kind Regards,\n\n";
-					$msg.="The Geograph.org.uk Team";
+					$msg.="The ch.Geograph.org Team";
 					
 					
 					@mail($email, '[geograph] Confirm registration', $msg,
-						"From: Geograph Website <noreply@geograph.org.uk>");
+						"From: Geograph Website <geograph@geo.uzh.ch>");
 				}
 			}
 		}
@@ -513,7 +513,7 @@ class GeographUser
 				"If you do not wish to change your password, simply disregard this message";
 
 				@mail($email, 'Password Reminder for '.$_SERVER['HTTP_HOST'], $msg,
-				"From: Geograph Website <noreply@geograph.org.uk>");
+				"From: Geograph Website <geograph@geo.uzh.ch>");
 				$ok=true;
 			}
 			else
@@ -819,7 +819,7 @@ class GeographUser
 				"If you do not wish to change your address, simply disregard this message";
 				
 				@mail($profile['email'], 'Please confirm your email address change', $msg,
-				"From: Geograph Website <noreply@geograph.org.uk>");
+				"From: Geograph Website <geograph@geo.uzh.ch>");
 				
 				
 			}

@@ -48,25 +48,10 @@ class GridShader
 	*/
 	function _getGridRef($x, $y, $reference_index)
 	{
-		$gridref="";
-		
-		//find all grid boxes in which the coordinate falls
-		$sql="select prefix,origin_x,origin_y from gridprefix where ".
-			"$x between origin_x and (origin_x+width-1) and ".
-			"$y between origin_y and (origin_y+height-1) and ".
-			"reference_index=$reference_index";
-		
-		$recordSet = &$this->db->Execute($sql);
-		if (!$recordSet->EOF) 
-		{
-			$gridref=sprintf("%s%02d%02d", 
-				$recordSet->fields[0],
-				$x-$recordSet->fields[1],
-				$y-$recordSet->fields[2]);
-			
-		}
-		$recordSet->Close(); 
-		
+		$gridref=sprintf("%03d%03d",
+                                $x,
+                                $y);
+
 		return $gridref;
 	}
 	

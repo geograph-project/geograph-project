@@ -212,23 +212,10 @@ class GridSquare
 		
 		if (!isset($this->nateastings)) {
 			//fails quickly if not using memcached!
-			$mkey = $this->gridsquare;
-			$square =& $memcache->name_get('pr',$mkey);
-			if (!$square) {
-				$db=&$this->_getDB();
 
-				$square = $db->GetRow('select origin_x,origin_y from gridprefix where prefix='.$db->Quote($this->gridsquare).' limit 1');
-				
-				//fails quickly if not using memcached!
-				$memcache->name_set('pr',$mkey,$square,$memcache->compress,$memcache->period_short);
-			}
-			
-			//get the first gridprefix with the required reference_index
-			//after ordering by x,y - you'll get the bottom
-			//left gridprefix, and hence the origin
-			
-			$square['origin_x'] -= $CONF['origins'][$this->reference_index][0];
-			$square['origin_y'] -= $CONF['origins'][$this->reference_index][1];
+			$square = array();
+			$square['origin_x'] = $CONF['origins'][$this->reference_index][0];
+			$square['origin_y'] = $CONF['origins'][$this->reference_index][1];
 			
 			$this->nateastings = sprintf("%05d",intval($square['origin_x']/100)*100000+ ($this->eastings * 1000 + 500));
 			$this->natnorthings = sprintf("%05d",intval($square['origin_y']/100)*100000+ ($this->northings * 1000 +500));
@@ -297,32 +284,32 @@ class GridSquare
 		$matches=array();
 		$isfour=false;
 		
-		if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
+		if (preg_match("/\b(\d{6})[ \.]?(\d{6})\b/",$gridreference,$matches)) {
+			list ($e,$n) = array($matches[1],$matches[2]);
 			$this->natspecified = 1;
 			$natgrlen = $this->natgrlen = 10;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{4})[ \.]?(\d{4})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]0","$matches[3]0");
+		} else if (preg_match("/\b(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
+			list ($e,$n) = array("$matches[1]0","$matches[2]0");
 			$this->natspecified = 1;
 			$natgrlen = $this->natgrlen = 8;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{3})[ \.]*(\d{3})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]00","$matches[3]00");
+		} else if (preg_match("/\b(\d{4})[ \.]*(\d{4})\b/",$gridreference,$matches)) {
+			list ($e,$n) = array("$matches[1]00","$matches[2]00");
 			$this->natspecified = 1;
 			$natgrlen = $this->natgrlen = 6;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{2})[ \.]?(\d{2})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]000","$matches[3]000");
+		} else if (preg_match("/\b(\d{3})[ \.]?(\d{3})\b/",$gridreference,$matches)) {
+			list ($e,$n) = array("$matches[1]000","$matches[2]000");
 			$isfour = true;
 			$natgrlen = $this->natgrlen = 4;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1})[ \.]*(\d{1})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]5000","$matches[3]5000");
+		} else if (preg_match("/\b(\d{2})[ \.]*(\d{2})\b/",$gridreference,$matches)) {
+			list ($e,$n) = array("$matches[1]5000","$matches[2]5000");
 			$natgrlen = $this->natgrlen = 2;
-		} else if (preg_match("/\b([a-zA-Z]{1,3})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"50000","50000");
+		} else if (preg_match("/\b(\d{1})[ \.]*(\d{1})\b/",$gridreference,$matches)) {
+			list ($e,$n) = array("$matches[1]50000","$matches[2]50000");
 			$natgrlen = $this->natgrlen = 0;
 		} 		
-		if (!empty($prefix))
+		if (!empty($e))
 		{
-			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
+			$gridref=sprintf("%03d%03d", intval($e/1000), intval($n/1000));
 			$ok=$this->_setGridRef($gridref,$allowzeropercent);
 			if ($ok && (!$isfour || $setnatfor4fig))
 			{
@@ -345,7 +332,7 @@ class GridSquare
 			}
 		} else {
 			$ok=false;
-			$this->_error(htmlentities($gridreference).' is not a valid grid reference');
+			$this->_error(htmlentities($gridreference).' is not a valid grid reference..');
 
 		}
 				

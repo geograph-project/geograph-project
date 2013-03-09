@@ -176,7 +176,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 
 //for every stage after step 1, we expect to get a
 //grid reference posted...
-if (isset($_POST['gridsquare']))
+if (isset($_POST['grid_reference']))
 {
 	if (isset($_POST['photographer_gridref'])) {
 		$smarty->assign('photographer_gridref', $_POST['photographer_gridref']);
@@ -198,16 +198,7 @@ if (isset($_POST['gridsquare']))
 		//preserve inputs in smarty
 		$smarty->assign('grid_reference', $grid_reference = $_POST['grid_reference']);
 	} 
-	else 
-	{
-		$ok= $square->setGridPos($_POST['gridsquare'], $_POST['eastings'], $_POST['northings']);
-		if ($ok)
-		{
-			//preserve inputs in smarty
-			$smarty->assign('grid_reference', $grid_reference = $square->grid_reference);
-			$selectedtab =2;
-		}
-	}
+
 	if ($ok)
 	{
 		$uploadmanager->setSquare($square);
