@@ -47,7 +47,7 @@ Das Ziel von Geograph-CH ist es, für jeden Quadratkilometer in der Schweiz und 
 
 </div><br style="clear:both"/>
 
-<div style="width:300px;float:left;position:relative">
+<div style="position:relative">
 
 <p><a title="Registriere Dich!" href="/register.php">Mitmachen</a> ist gratis! 
 
