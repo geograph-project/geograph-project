@@ -2,14 +2,13 @@
 {include file="_std_begin.tpl"}
 
 
-<h2>Welcome to Geograph British Isles</h2>
+<h2>Welcome to Geograph Switzerland</h2>
 
 <div style="position:relative;background-color:white;">
 
 <div style="background-color:#eeeeee;padding:2px; text-align:center">
-The Geograph British Isles project aims to collect geographically
-representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and 
-<a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
+The Geograph Switzerland project aims to collect geographically
+representative photographs and information for every square kilometre of <a href="/explore/places/10/">Switzerland</a>, and you can be part of it.</div>
 
 
 <div style="width:35%;float:left;position:relative;margin-right:10px">

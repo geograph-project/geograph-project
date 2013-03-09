@@ -10,13 +10,14 @@ $CONF=array();
 
 //see http://domain/admin/curtail.php - set to a positive number to enable - need to implement a cachize_url to convert a url to cache version
 $CONF['curtail_level']=0;
-
+/*
 function cachize_url($url) {
         if (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0) {
                 return $url;
         }
 	return "http://mymirror/".str_replace('http://','',$url);
 }
+*/
 
 ###################################
 # host setup

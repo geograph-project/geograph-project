@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if} xml:lang="en" id="geograph">
 <head>
 <title>Geograph-CH</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 {if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
 {else}<meta name="description" content="Geograph-CH ist ein Projekt, das fŸr jeden Quadratkilometer in der Schweiz und Liechtenstein reprŠsentative Bilder sammelt."/>{/if}
 {if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}

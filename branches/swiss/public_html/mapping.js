@@ -309,12 +309,12 @@ function checkGridReferences(that_form) {
 } 
 
 function checkGridReference(that,showmessage) {
-	GridRef = /\b([a-zA-Z]{1,3}) ?(\d{2,5})[ \.]?(\d{2,5})\b/;
+	GridRef = /\b(\d{2,5})[ \.]?(\d{2,5})\b/;
 	ok = true;
 	if (that.value.length > 0) {
 		myArray = GridRef.exec(that.value); 
 		if (myArray && myArray.length > 0) {
-			numbers = myArray[2]+myArray[3];
+			numbers = myArray[1]+myArray[2];
 			if (numbers.length == 0 || numbers.length % 2 != 0) {
 				ok = false;
 			}
