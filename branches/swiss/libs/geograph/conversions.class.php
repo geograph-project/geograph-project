@@ -82,30 +82,17 @@ function pointInside($p,&$points) {
 //use:	list($e,$n,$reference_index) = wgs84_to_national($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
 function wgs84_to_national($lat,$long,$usehermert = true) {
-	require_once('geograph/conversionslatlong.class.php');
-	$conv = new ConversionsLatLong;
-	$ire = ($lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
-	$uk = ($lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
-	
-	if ($uk && $ire) {
-		//rough border for ireland
-		$ireland = array(
-			array(-12.19,50.38),
-			array( -6.39,50.94),
-			array( -5.07,53.71),
-			array( -5.25,54.71),
-			array( -6.13,55.42),
-			array(-10.65,56.15),
-			array(-12.19,50.38) );
-		$ire = $this->pointInside(array($long,$lat),$ireland);
-		$uk = 1 - $ire;
-	} 
-	
-	if ($ire) {
-		return array_merge($conv->wgs84_to_irish($lat,$long,$usehermert),array(2));
-	} else if ($uk) {
-		return array_merge($conv->wgs84_to_osgb36($lat,$long),array(1));
-	}
+include_once("proj4php/src/proj4php/proj4php.php");
+
+$proj4 = new Proj4php();
+$projWGS84 = new Proj4phpProj('EPSG:4326',$proj4);
+$projSwiss = new Proj4phpProj('EPSG:21781',$proj4);
+
+$pointSrc = new proj4phpPoint($long,$lat);
+$pointDest = $proj4->transform($projWGS84,$projSwiss,$pointSrc);
+
+return array($pointDest->x,$pointDest->y,10);
+
 }
 
 
@@ -122,15 +109,18 @@ function internal_to_wgs84($x,$y,$reference_index = 0) {
 //use:	list($lat,$long) = national_to_wgs84($e,$n,$reference_index);
 
 function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
-	require_once('geograph/conversionslatlong.class.php');
-	$conv = new ConversionsLatLong;
-	$latlong = array();
-	if ($reference_index == 1) {
-		$latlong = $conv->osgb36_to_wgs84($e,$n);
-	} else if ($reference_index == 2) {
-		$latlong = $conv->irish_to_wgs84($e,$n,$usehermert);
-	}
-	return $latlong;
+
+include_once("proj4php/src/proj4php/proj4php.php");
+
+$proj4 = new Proj4php();
+$projWGS84 = new Proj4phpProj('EPSG:4326',$proj4);
+$projSwiss = new Proj4phpProj('EPSG:21781',$proj4);
+
+$pointSrc = new proj4phpPoint($e,$n);
+$pointDest = $proj4->transform($projSwiss,$projWGS84,$pointSrc);
+
+return array($pointDest->y,$pointDest->x,10);
+
 }
 
 
@@ -159,28 +149,10 @@ function internal_to_gridref($x,$y,$gr_length,$reference_index = 0) {
 //use:    list($gr,$len) = national_to_gridref($e,$n,$gr_length,$reference_index);
 
 function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) {
-	if (!$reference_index) {
-		return array("",0);
-	}
 	list($x,$y) = $this->national_to_internal($e,$n,$reference_index );
 
-	$db = $this->_getDB();
-
-	$x_lim=$x-100;
-	$y_lim=$y-100;
-	$sql="select prefix from gridprefix ".
-		"where CONTAINS(geometry_boundary, GeomFromText('POINT($x $y)')) ".
-		"and (origin_x > $x_lim) and (origin_y > $y_lim) ".
-		"and reference_index=$reference_index";
-	$prefix=$db->GetOne($sql);
-	#$sql="select prefix from gridprefix ".
-	#	"where $x between origin_x and (origin_x+width-1) and ".
-	#	"$y between origin_y and (origin_y+height-1) and reference_index=$reference_index";
-	#$prefix=$db->GetOne($sql);
-
-	$eastings = sprintf("%05d",($e+ 500000) % 100000); //cope with negative! (for Rockall...)
-	$northings = sprintf("%05d",$n % 100000);
-	
+	$eastings = sprintf("%06d",$e);
+	$northings = sprintf("%06d",$n);
 
 	if ($gr_length) {
 		$len = intval($gr_length/2);
@@ -190,13 +162,13 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 		$north = preg_replace("/^(\d+?)0*$/",'$1',$northings);
 		$len = max(strlen($east),strlen($north),2);
 	}
-	
-	$eastings = substr($eastings,0,$len);
-	$northings = substr($northings,0,$len);
+
+	$eastings = substr($eastings,0,$len+1);
+	$northings = substr($northings,0,$len+1);
 	if ($spaced) {
-		return array("$prefix $eastings $northings",$len);
+		return array("$eastings $northings",$len);
 	} else {
-		return array($prefix.$eastings.$northings,$len);
+		return array($eastings.$northings,$len);
 	}
 }
 
@@ -218,29 +190,8 @@ function national_to_internal($e,$n,$reference_index ) {
 // note gridsquare has its own version that takes into account the userspecified easting/northing
 function internal_to_national($x,$y,$reference_index = 0) {
 	global $CONF;
-	if (!$reference_index) {
-		$db = $this->_getDB();
-		
-		$reference_index=$db->GetOne("select reference_index from gridsquare where CONTAINS( GeomFromText('POINT($x $y)'),point_xy )");
-		
-		//But what to do when the square is not on land??
-		
-		if (!$reference_index) {
-			//when not on land just try any square!
-			// but favour the _smaller_ grid - works better, but still not quite right where the two grids almost overlap
-			$where_crit =  "order by reference_index desc";
-			$x_lim=$x-100;
-			$y_lim=$y-100;
-		
-			#$sql="select reference_index from gridprefix ".
-			#	"where $x between origin_x and (origin_x+width-1) and ".
-			#	"$y between origin_y and (origin_y+height-1) $where_crit";
-			$sql="select reference_index from gridprefix ".
-				"where CONTAINS(geometry_boundary, GeomFromText('POINT($x $y)')) and (origin_x > $x_lim) and (origin_y > $y_lim) ".
-				$where_crit;
-			$reference_index=$db->GetOne($sql);
-		}
-	}
+
+$reference_index = 10;
 
 	if ($reference_index) {
 		//remove the internal origin

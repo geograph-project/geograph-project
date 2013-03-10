@@ -40,8 +40,8 @@ $smarty->display('_std_begin.tpl');
 ?>
 <h2>gridimage_search Rebuild Tool</h2>
 <form action="buildgridimage_search.php" method="post">
-<input type="checkbox" id="recreate" name="recreate" value="1" disabled>
-<label for="recreate">Recreate entire gridimage_search table from gridimage table</label> THIS IS TOO DANGEROUS - disabled for your own safety<br>
+<input type="checkbox" id="recreate" name="recreate" value="1">
+<label for="recreate">Recreate entire gridimage_search table from gridimage table</label><br>
 &nbsp;<input type="checkbox" id="use_new" name="use_new" value="1" checked="checked">
 <label for="use_new">Use multi-stage copy (recommended on a live site)</label><br>
 <br>
@@ -58,10 +58,6 @@ set_time_limit(3600*24);
 	
 if (isset($_POST['recreate']))
 {
-	die("THIS IS TOO DANGEROUS - exiting for your own safety");
-	
-	
-	
 	echo "<h3>Rebuilding gridimage_search from gridimage</h3>";
 	flush();
 	
