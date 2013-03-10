@@ -30,26 +30,17 @@ require_once('geograph/mapmosaic.class.php');
 init_session();
 
 
-$conv = new ConversionsLatLong;
+$conv = new Conversions;
 
 $smarty = new GeographPage;
 
 $template='latlong.tpl';
 $cacheid='';
 
-if (!isset($_GET['usehermert']))
-	$_GET['usehermert'] = 1;
-if (!isset($_GET['datum']))
-	$_GET['datum'] = '-';
 
 if (!empty($_GET['To'])) { //to lat/long
-	if ($_GET['datum'] == 'osgb36') {
-		$latlong = $conv->osgb36_to_wgs84($_GET['e'],$_GET['n']);
-	} else if ($_GET['datum'] == 'irish') {
-		$latlong = $conv->irish_to_wgs84($_GET['e'],$_GET['n'],$_GET['usehermert']);
-	} else {
-		//todo: make an educated guess - basically if could be irish then use that otherwise gb ?!? - probably not...
-	}
+	$latlong = $conv->national_to_wgs84($_GET['e'],$_GET['n']);
+	
 	if (count($latlong)) {
 		$smarty->assign('lat', $latlong[0]);
 		$smarty->assign('long', $latlong[1]);
@@ -77,24 +68,11 @@ if (!empty($_GET['To'])) { //to lat/long
 			$_GET['long'] *= -1;
 
 
-	if ($_GET['datum'] == 'osgb36') {
-		$en = $conv->wgs84_to_osgb36($_GET['lat'],$_GET['long']);
-	} else if ($_GET['datum'] == 'irish') {
-		$en = $conv->wgs84_to_irish($_GET['lat'],$_GET['long'],$_GET['usehermert']);
+	$en = $conv->wgs84_to_national($_GET['lat'],$_GET['long']);
         
-	} else {
-		list($e,$n,$reference_index) = $conv->wgs84_to_national($_GET['lat'],$_GET['long'],$_GET['usehermert']);
-		if ($reference_index == 1) {
-			$en = array($e,$n);
-			$_GET['datum'] = "osgb36";
-		} else if ($reference_index == 2) {
-			$en = array($e,$n);
-			$_GET['datum'] = "irish";
-		}
-	}
 	if (isset($en) && count($en)) {
 		list ($gridref,$len) = $conv->national_to_gridref($en[0],$en[1],0,$reference_index);
-		
+
 		$square = new GridSquare;
 		if($square->setByFullGridRef($gridref)) {
 			//find a possible place
@@ -129,10 +107,6 @@ if (!empty($_GET['To'])) { //to lat/long
 	$smarty->assign('long', $_GET['long']);
 	$conv->wgs84_to_friendly_smarty_parts($_GET['lat'],$_GET['long'],$smarty);
 }
-$smarty->assign('datum', $_GET['datum']);
-$smarty->assign('usehermert', $_GET['usehermert']);
 
 $smarty->display($template, $cacheid);
 
-	
-?>
