@@ -393,7 +393,7 @@ class GeographUser
 					
 					
 					@mail($email, '[geograph] Confirm registration', $msg,
-						"From: Geograph Website <geograph@geo.uzh.ch>");
+						"From: Geograph-CH Website <geograph@geo.uzh.ch>");
 				}
 			}
 		}
@@ -819,7 +819,7 @@ class GeographUser
 				"If you do not wish to change your address, simply disregard this message";
 				
 				@mail($profile['email'], 'Please confirm your email address change', $msg,
-				"From: Geograph Website <geograph@geo.uzh.ch>");
+				"From: Geograph-CH Website <geograph@geo.uzh.ch>");
 				
 				
 			}
