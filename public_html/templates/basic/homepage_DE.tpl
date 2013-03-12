@@ -27,7 +27,7 @@ Das Ziel von geograph-ch ist es, für jeden Quadratkilometer in der Schweiz und 
 </div>
 	
 <div style="margin-top:10px;padding:5px;position:relative;">
-	<h3 style="margin-top:0;margin-bottom:4px;">Was ist geograph-ch?</h3>
+	<h1>Was ist geograph-ch?</h1>
 	<ul>
 		<li> Es ist ein Spiel: Welchen Anteil der Schweiz wirst Du fotografieren k&ouml;nnen?</li>
 		<li> Es ist ein Geographie-Projekt f&uuml;r alle.</li>
