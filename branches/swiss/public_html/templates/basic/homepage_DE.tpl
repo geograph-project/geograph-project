@@ -8,30 +8,24 @@
 
 Das Ziel von geograph-ch ist es, für jeden Quadratkilometer in der Schweiz und Liechtenstein Bilder zu sammeln &ndash; und Du kannst mitmachen.
 
-<div style="padding-right:5px;position:relative;text-align:center;">
+<div style="padding:5px;position:relative;text-align:center;border: 1px solid silver;">
 
-	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
+	<div style="position:relative; text-align:center">
 
-	<h3 style="margin-bottom:2px;margin-top:2px;">Bild des Tages {if $pictureoftheday.search} <small>[<a href="/results/{$pictureoftheday.search}">mehr...</a>]</small>{/if}</h3>
-	<a href="/photo/{$pictureoftheday.gridimage_id}" 
-	title="Klicken für gr&ouml;sseres Bild">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
+		<h3 style="margin-bottom:2px;margin-top:2px;">Bild des Tages {if $pictureoftheday.search} <small>[<a href="/results/{$pictureoftheday.search}">mehr...</a>]</small>{/if}</h3>
+		<a href="/photo/{$pictureoftheday.gridimage_id}" title="Klicken für gr&ouml;sseres Bild">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
+		<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
 
+		<div class="ccmessage">
+			Bild von <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> im Quadrat
+			<a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a> (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons-Lizenz</a>)
+		</div>
+		
+		<b class="nowrap">{$stats.users|thousends} users</b> haben <b class="nowrap">{$stats.images|thousends} Bilder</b> <span  class="nowrap"> auf <b class="nowrap">{$stats.squares|thousends} Quadratkilometern</b> beigetragen: das sind <b class="nowrap">{$stats.percentage|number_format:2}%</b> der Fläche der Schweiz.
 
-	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
-
-	<div class="ccmessage">Bild von <a title="Profile" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> im Quadrat
-	<a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a> (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons-Lizenz</a>)
 	</div>
-	</div>
-
 </div>
-
-<br style="clear:both"/>
-
-<div style="font-size:0.8em; text-align:center; border: 1px solid silver; padding:5px"><b class="nowrap">{$stats.users|thousends} users</b> haben <b class="nowrap">{$stats.images|thousends} Bilder</b> <span  class="nowrap"> auf <b class="nowrap">{$stats.squares|thousends} Quadratkilometern</b> beigetragen: das sind <b class="nowrap">{$stats.percentage|number_format:2}%</b> der Fläche der Schweiz</span>.<br/>
-
-</div><br style="clear:both"/>
-
+	
 <div style="margin-top:10px;padding:5px;position:relative;">
 	<h3 style="margin-top:0;margin-bottom:4px;">Was ist geograph-ch?</h3>
 	<ul>
