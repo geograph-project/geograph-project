@@ -9,6 +9,7 @@
 {if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
 <meta name="DC.title" content="Geograph-CH"/>
 {$extra_meta}
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700" rel="stylesheet" type="text/css">
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/basic/css/basic.css"|revision}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
 {if $rss_url}
