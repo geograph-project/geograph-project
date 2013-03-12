@@ -8,7 +8,7 @@
 
 Das Ziel von geograph-ch ist es, für jeden Quadratkilometer in der Schweiz und Liechtenstein Bilder zu sammeln &ndash; und Du kannst mitmachen.
 
-<div style="padding:5px;position:relative;text-align:center;border: 1px solid silver;">
+<div style="margin-top:10px;padding:10px;position:relative;text-align:center;border: 1px solid silver;">
 
 	<div style="position:relative; text-align:center">
 
@@ -21,7 +21,7 @@ Das Ziel von geograph-ch ist es, für jeden Quadratkilometer in der Schweiz und 
 			<a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a> (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons-Lizenz</a>)
 		</div>
 		
-		<b class="nowrap">{$stats.users|thousends} users</b> haben <b class="nowrap">{$stats.images|thousends} Bilder</b> <span  class="nowrap"> auf <b class="nowrap">{$stats.squares|thousends} Quadratkilometern</b> beigetragen: das sind <b class="nowrap">{$stats.percentage|number_format:2}%</b> der Fläche der Schweiz.
+		<b class="nowrap">{$stats.users|thousends} Mitglieder</b> haben <b class="nowrap">{$stats.images|thousends} Bilder</b> <span  class="nowrap"> auf <b class="nowrap">{$stats.squares|thousends} Quadratkilometern</b> beigetragen: das sind <b class="nowrap">{$stats.percentage|number_format:2}%</b> der Fläche der Schweiz.
 
 	</div>
 </div>
