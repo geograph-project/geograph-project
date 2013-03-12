@@ -7,7 +7,7 @@ body
 {
 	font-family:Georgia, Verdana, Arial, serif; /* FIXME fonts do not match */
 	margin:0px;
-	background: #eeeeff;
+	background: rgb(245, 245, 245);
 	font-size: 1em;
 	padding:0px;
 }
