@@ -13,6 +13,11 @@ body
 	color:rgb(60,60,70);
 }
 
+h2{
+	color:rgb(100,100,120);
+}
+
+
 a:link, a:visited, a:active {
 	color: rgb(0, 136, 224);
 	text-decoration: none;
