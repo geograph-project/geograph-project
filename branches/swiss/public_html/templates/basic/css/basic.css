@@ -12,10 +12,10 @@ body
 	padding:0px;
 }
 
-a:link {color:rgb(0, 109, 99);}      
-a:visited {color:rgb(0, 109, 99);}  
-a:hover {color:rgb(193, 224, 255)}  
-a:active {color:rgb(59, 123, 185);}
+a:link {color:rgb(0, 136, 224);}      
+a:visited {color:rgb(0, 136, 224);}  
+a:hover {color:rgb(69, 173, 255)}  
+a:active {color:rgb(0, 136, 224);}
 
 /* no border on hyperlinked images*/
 a Img
