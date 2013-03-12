@@ -51,7 +51,7 @@ a.hidelink {
 /* header content placement*/
 #header_block
 {
-	background:rgb(193, 224, 255);;
+	background:rgb(193, 224, 255);
 	margin:0px;
 }
 
@@ -84,15 +84,14 @@ a.hidelink {
 	position:absolute;
 	top:4px;
 	right:0.4em;
-	width:21em;
-	background:#000066;
+	width:30em;
+	background:rgb(193, 224, 255);
 	text-align:right;
 }
 
 #search
 {
 	color:white;
-	font-weight:bold;
 }
 
 #search form
@@ -104,7 +103,6 @@ a.hidelink {
 {
 	font-size:0.8em;
 	color:white;
-	font-weight:bold;
 }
 
 #login a
@@ -116,8 +114,6 @@ a.hidelink {
 {
 	color: #eeeeee;
 }
-
-
 
 .searchinput {
 	width:250px;
