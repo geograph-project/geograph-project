@@ -102,10 +102,11 @@ a.hidelink {
 #login
 {
 	font-size:0.8em;
-	color:white;
+	/* color:white; */
 }
 
-#login a
+/*
+ #login a
 {
 	color: #aaaaaa;
 }
@@ -114,6 +115,7 @@ a.hidelink {
 {
 	color: #eeeeee;
 }
+*/
 
 .searchinput {
 	width:250px;
