@@ -12,6 +12,11 @@ body
 	padding:0px;
 }
 
+a:link {color:rgb(59, 123, 185);}      
+a:visited {color:rgb(59, 123, 185);}  
+a:hover {color:rgb(193, 224, 255)}  
+a:active {color:rgb(59, 123, 185);}
+
 /* no border on hyperlinked images*/
 a Img
 {
@@ -89,6 +94,9 @@ a.hidelink {
 	text-align:right;
 }
 
+#search_block a:hover {
+	color:white;
+}
 /*
 #search
 {
