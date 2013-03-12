@@ -46,4 +46,4 @@ Lese <a title="Häufige Fragen" href="/faq.php">die häufigsten Fragen</a> und s
 &nbsp;
 
 </div>
-{include file="_std_end.tpl"}
+{include file="_std_end_DE.tpl"}
