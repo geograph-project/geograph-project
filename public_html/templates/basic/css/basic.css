@@ -13,10 +13,13 @@ body
 }
 
 a:link, a:visited, a:active {
-	color:rgb(0, 136, 224);
-	text-decoration:none;
+	color: rgb(0, 136, 224);
+	text-decoration: none;
 } 
-a:hover {color:rgb(69, 173, 255)}  
+a:hover {
+	color:  rgb(69, 173, 255);
+	text-decoration: underline;
+}  
 
 /* no border on hyperlinked images*/
 a Img
