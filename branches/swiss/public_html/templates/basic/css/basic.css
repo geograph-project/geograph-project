@@ -66,6 +66,7 @@ a.hidelink {
 	margin:0px;
 	background-image: url('/templates/basic/img/logo.gif');
 	height:74px;
+	width:461px;
 	cursor:pointer;
 	/*cursor:hand;*/
 }
