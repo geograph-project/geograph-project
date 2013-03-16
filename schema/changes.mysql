@@ -422,3 +422,12 @@ ALTER TABLE  `gridimage_size` ADD  `original_width` MEDIUMINT UNSIGNED NOT NULL 
 ADD  `original_height` MEDIUMINT UNSIGNED NOT NULL DEFAULT  '0';
 
 ALTER TABLE  `user` ADD `clear_exif` tinyint(3) unsigned NOT NULL DEFAULT '1';
+
+
+
+
+ALTER TABLE `user` ADD `salt` VARCHAR(8) NOT NULL AFTER `password`;
+
+ALTER TABLE `user` ADD `confirmed` DATETIME NOT NULL;
+
+
