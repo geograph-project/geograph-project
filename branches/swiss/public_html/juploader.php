@@ -23,10 +23,6 @@ require_once('geograph/gridsquare.class.php');
 init_session();
 
 $action = isset($_GET['action']) ? $_GET['action'] : "";
-$username = isset($_GET['username']) ? $_GET['username'] : "";
-$password = isset($_GET['password']) ? $_GET['password'] : "";
-
-// echo $action . " " . $username . " " . $password . "\n";
 
 $xml = "";
 $db = NewADOConnection($GLOBALS['DSN']);
@@ -78,8 +74,6 @@ function UploadPicture() {
 
 	}
 	
-	$tmpfile = $_FILES['uploadfile']['tmp_name'];
-
 	$um = new UploadManager();
 	$gs = new GridSquare();
 
@@ -120,7 +114,7 @@ function UploadPicture() {
 	$um->setClass($_POST['feature']);
 	$um->setUserStatus($_POST['supplemental']);
 
-	$um->processUpload($tmpfile);
+	$um->processUpload($_FILES['uploadfile']['tmp_name']);
 
 	// where there any errors back from the image processing?
 	// if so, JUppy needs to know...
@@ -147,14 +141,20 @@ function UploadPicture() {
 
 function AuthenticateUser() {
 	global $db, $xml;
-	global $username, $password;
 	global $CONF;
 
+	$username = isset($_GET['username']) ? $_GET['username'] : "";
+	$password = isset($_GET['password']) ? $_GET['password'] : "";
+
+
 	$dbusername = $db->Quote($username);
-	$sql = "select password,realname,rights,user_id from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
+	$sql = "select password,realname,rights,user_id,salt from user where nickname = $dbusername OR email = $dbusername LIMIT 1";
 	
 	if ($rs = &$db->Execute($sql)) {
-		if ($password != $rs->fields[0]) {
+	
+		$md5password=hash_hmac('md5',$password,$rs->fields[4]);
+	
+		if ($md5password != $rs->fields[0]) {
 
 			// oops - user specified invlaid password
 
@@ -235,4 +235,4 @@ function returnXML() {
 	echo $xmlstring;
 	exit;
 }
-?>
+
