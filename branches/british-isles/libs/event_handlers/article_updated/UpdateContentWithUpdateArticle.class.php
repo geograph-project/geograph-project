@@ -31,11 +31,16 @@ class UpdateContentWithUpdateArticle extends EventHandler
 {
 	var $gridimage_ids = array();
 	
-	function add_image_to_list($id,$text ='') {
-		if (is_numeric($id)) {
-			$this->gridimage_ids[] = $id;
+	function add_image_to_list($id1,$id2) {
+		if (is_numeric($id1)) {
+			$this->gridimage_ids[] = $id1;
+			return " $id1 ";
 		}
-		return " $text ";
+		if (is_numeric($id2)) {
+			$this->gridimage_ids[] = $id2;
+			return " $id2 ";
+		}
+		return "";
 	}
 
 	function processEvent(&$event)
@@ -47,7 +52,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 		
 		$page = $db->getRow("
 		select article.*,category_name,type
-		from article 
+		from article
 		left join article_cat on (article.article_cat_id = article_cat.article_cat_id)
 		where (licence != 'none' and approved > 0) and article_id = $article_id");
 		
@@ -66,7 +71,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			
 			$updates[] = "`gridsquare_id` = {$page['gridsquare_id']}";
 			
-			$updates[] = "`extract` = ".$db->Quote($page['extract']);			
+			$updates[] = "`extract` = ".$db->Quote($page['extract']);
 			
 			//we working on the unhtmlified content!
 			if (preg_match_all('/\[h(\d)\]([^\n]+?)\[\/h(\d)\]/',$page['content'],$matches)) {
@@ -76,11 +81,7 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			$content = $page['content'];
 			$content = str_replace("\r",'',$content);
 			
-			$content = preg_replace('/\[image id=(\d+) text=([^\}]+)\]/e',"\$this->add_image_to_list('\$1','\$2')",$content);
-			
-			$content = preg_replace('/\[image id=(\d+)\]/e',"\$this->add_image_to_list('\$1','{description}')",$content);
-			
-			$content = preg_replace('/\[\[(\[?)(\w{0,2} ?\d+ ?\d*)(\]?)\]\]/e',"\$this->add_image_to_list('\$2','\$2')",$content);
+			$content = preg_replace('/\[\[\[?(\d+)\]?\]\]|\[image id=(\d+)/e',"\$this->add_image_to_list('\$1','\$2')",$content);
 			
 			$content = strip_tags(preg_replace('/\[(\/?)(\w+)=?(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)?\]/','<{$1}tag>',$content));
 			
@@ -151,4 +152,4 @@ class UpdateContentWithUpdateArticle extends EventHandler
 	}
 	
 }
-?>
+
