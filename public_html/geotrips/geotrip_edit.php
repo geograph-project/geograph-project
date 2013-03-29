@@ -68,7 +68,7 @@ There is no undo facility, but you can always edit again if you change your mind
 If you make changes to your images on Geograph (such as adding a camera position or description, or correcting
 coordinates etc.), those changes will take up to a week before they make it through to Geo-Trips.
           </p>
-          <form name="trip" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" enctype="multipart/form-data">
+          <form name="trip" method="post" enctype="multipart/form-data">
             <hr style="color:#992233">
             <p>
               <b>Location</b> <span class="hlt">(required)</span><br />
