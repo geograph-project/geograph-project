@@ -79,8 +79,14 @@ li div {
 <h2>Geograph Categories as at <? echo ($date = date('Y-m-d')); ?></h2><p>Click a term to run a search directly on Geograph, press 'alt' and <i>letter</i> at any time to jump</p><p>Jump: | 
 <?
 
+if (!empty($_GET['tags'])) {
+	$data = $db->getAssoc("SELECT IF(prefix='',tag,CONCAT(prefix,':',tag)) AS tag,COUNT(*) AS c FROM tag_public GROUP BY tag_id ORDER BY tag,prefix");
+	$urlprefix = "http://www.geograph.org.uk/search.php?tag=";
+} else {
+	$data = $db->getAssoc("SELECT imageclass,c FROM category_stat ORDER BY imageclass");
+	$urlprefix = "http://www.geograph.org.uk/search.php?imageclass=";
+}
 
-$data = array(''=>1212423)+$db->getAssoc("SELECT imageclass,c FROM category_stat ORDER BY imageclass");
 
 $alphas = array();
 foreach ($data as $category => $count) {
@@ -121,7 +127,7 @@ foreach ($data as $category => $count) {
 	$html = preg_replace("/^".preg_quote($common,'/')."/","$common<b>",$html)."</b>";
 	
 	print "<li value=\"$count\"";
-        if ($alpha != $lastalpha) {
+	if ($alpha != $lastalpha) {
 		print " class=\"break\">";
 		if ($alphas[$alpha] > 4)
 			print "<div>$alpha</div>";
@@ -129,7 +135,7 @@ foreach ($data as $category => $count) {
 	} elseif (strpos($html,' <') === FALSE) {
 		print " class=\"padder\"";
 	}
-        print "><a href=\"http://www.geograph.org.uk/search.php?imageclass=$url\">$html</a></li>";
+	print "><a href=\"$urlprefix$url\">$html</a></li>";
 	$lastalpha = $alpha;
 	$last = $category;
 }
