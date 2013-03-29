@@ -151,5 +151,3 @@ function bbox2gr($bbox) {
   return $gr;
 }
 
-?>
-

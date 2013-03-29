@@ -1,41 +1,63 @@
 <?php
-  $lastmod='';
+/**
+ * $Project: GeoGraph $
+ * $Id$
+ * 
+ * GeoGraph geographic photo archive project
+ * This file copyright (C) 2011 Rudi Winter (http://www.geograph.org.uk/profile/2520)
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+ 
+ini_set("display_errors",1);
+
+
+if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
+	require_once('./geograph_snub.inc.php');
+} else {
+	require_once('geograph/global.inc.php');
+}
+init_session();
+
+$smarty = new GeographPage;
+
+include('./geotrip_func.php');
+$db = GeographDatabaseConnection(false);
+// can now use mysql_query($sql); directly, or mysql_query($sql,$db->_connectionID);
+
+
   // get tracks from database
-  $db=sqlite_open('../db/geotrips.db');
-  if (isset($_GET['debug'])) $trk=sqlite_fetch_all(sqlite_query($db,"select * from geotrips where location='debug' order by id desc"));
-  else $trk=sqlite_fetch_all(sqlite_query($db,"select * from geotrips where location!='debug' order by id desc"));
-//  sqlite_close($db);
-  $hdr1='Geo-Trips';
-  $hdr2="Overview map";
-  $descr="A collection of square-bagging trips by members of the Geograph project, with photographs, descriptions and GPS tracks plotted on an Ordnance Survey map.";
-  $prev='';
-  $next='';
-  $lect=0;     // whether lecture style sheet is available
-  $cym=0;      // 0- English only, 1- English selected, 2- Welsh selected
-  $cyfiethwyd='';
-  $noidx=0;    // don't allow indexing by search engines if TRUE
-  $dir=dirname($_SERVER['SCRIPT_NAME']);
-  if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
-    $docroot=$_SERVER['DOCUMENT_ROOT'].'/ruw';
-  } else {     // include() can't cope with the symlinks on the AU server - not even using realpath()
-    $docroot='/ceri/staff1/base/r/ruw/public_html';
-  }
-  include('geotrip_func.php');
-  include($docroot.'/templates/head.php');
-  // authentication stuff from Geograph
-  require_once('token.class.php');
-  $login_url='http://www.geograph.org.uk/auth.php?a=WohlJL5405owauhVbuZ4VZbbZh4';
-  $token=new Token;
-  $token->magic='79438906cb765eea3670da00c96328ee';
-  $token->setValue("action",'authenticate');
-  $token->setValue("callback","http://users.aber.ac.uk/ruw/misc/geograph_callback.php");
-  $login_url.='&amp;t='.$token->getToken();
+  if (isset($_GET['debug'])) $trks=$db->getAll("select * from geotrips where location='debug' order by id desc");
+  else $trks=$db->getAll("select * from geotrips where location!='debug' order by id desc limit 10");
+
+
+$smarty->assign('page_title', 'Overview map :: Geo-Trips');
+$smarty->assign('meta_description', 'A collection of square-bagging trips by members of the Geograph project, with photographs, descriptions and GPS tracks plotted on an Ordnance Survey map.');
+
+$smarty->display('_std_begin.tpl');
+print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
+
+
+
+
 ?>
 
   <!--RSS feed via Geograph-->
   <link rel="alternate" type="application/rss+xml" title="Geo-Trips RSS" href="http://www.geograph.org.uk/content/syndicator.php?scope[]=trip" />
 
-<script type="text/javascript" src="http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key=8BEE466DD1F7476FE0405F0ACA6011E3"></script>
+<script src="http://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3" type="text/javascript"></script>
 
 <script type="text/javascript">
   var osMap;
@@ -51,7 +73,7 @@
     <?php print("osMap.setCenter(new OpenSpace.MapPoint(350000,630000),1);\n"); ?>
     trkLayer=osMap.getVectorLayer();
 <?php
-    foreach ($trk as $track) {
+    foreach ($trks as $track) {
       $bbox=explode(' ',$track['bbox']);
       $cen[0]=(int)(($bbox[0]+$bbox[2])/2);
       $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
@@ -91,7 +113,7 @@
 <?php
       // Link multi-day trips
       if ($track['contfrom']) {
-        $prevbbox=sqlite_fetch_array(sqlite_query($db,"select bbox from geotrips where id={$track['contfrom']}"));
+        $prevbbox=$db->getRow("select bbox from geotrips where id={$track['contfrom']}");
         $prevbbox=explode(' ',$prevbbox['bbox']);
         $pcen[0]=(int)(($prevbbox[0]+$prevbbox[2])/2);
         $pcen[1]=(int)(($prevbbox[1]+$prevbbox[3])/2);
@@ -107,11 +129,9 @@
     }
 ?>
   }
-</script>
+   AttachEvent(window,'load',initmap,false);
 
-<?php
-  include($docroot.'/templates/top.php');
-?>
+</script>
 
 <div class="panel maxi" style="max-width:800px">
   <h3>Geo-Trips overview map</h3>
@@ -178,30 +198,30 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
   $i=0;
   if ($_GET['max']) $max=$_GET['max'];
   else $max=3;
-  while ($trk[$i]['updated']>date('U')-86400||$i<$max) {  // show all uploaded in last 24 hours, but at least three
-    if ($trk[$i]['title']) $title=str_replace('\\','',$trk[$i]['title']);
-    else $title=str_replace('\\','',$trk[$i]['location']).' from '.str_replace('\\','',$trk[$i]['start']);
-    $start=str_replace('\\','',$trk[$i]['start']);
-    $descr=str_replace('\\','',preg_replace('/\n/','</p><p>',$trk[$i]['descr']));
+  while ($trks[$i]['updated']>date('U')-86400||$i<$max) {  // show all uploaded in last 24 hours, but at least three
+    if ($trks[$i]['title']) $title=str_replace('\\','',$trks[$i]['title']);
+    else $title=str_replace('\\','',$trks[$i]['location']).' from '.str_replace('\\','',$trks[$i]['start']);
+    $start=str_replace('\\','',$trks[$i]['start']);
+    $descr=str_replace('\\','',preg_replace('/\n/','</p><p>',$trks[$i]['descr']));
     if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
-    $gr=bbox2gr($trk[$i]['bbox']);
+    $gr=bbox2gr($trks[$i]['bbox']);
     // fetch Geograph thumbnail
-    $csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i={$trk[$i]['search']}&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1"),'r');
+    $csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i={$trks[$i]['search']}&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1"),'r');
     fgets($csvf);  // discard header
     $line=fgetcsv($csvf,4092,',','"');   // take the thumb of the first pic in case the requested one is beyond the 250 pic search limit...
     $thumb=$line[6];
-    while ($line=fgetcsv($csvf,4092,',','"')) if ($line[0]==$trk[$i]['img']) $thumb=$line[6];  // ...then replace it if we can
+    while ($line=fgetcsv($csvf,4092,',','"')) if ($line[0]==$trks[$i]['img']) $thumb=$line[6];  // ...then replace it if we can
     fclose($csvf);
     $thumb=str_replace("_120x120.jpg","_213x160.jpg",$thumb);
-    $mmmyy=explode('-',$trk[$i]['date']);
-    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"http://www.geograph.org.uk/profile/{$trk[$i]['uid']}\">{$trk[$i]['user']}</a> and available under a<br /><a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://users.aber.ac.uk/ruw/templates/external.png\" /> via<br /><a href=\"http://www.geograph.org.uk\">Geograph Britain&amp;Ireland</a><img alt=\"external link\" title=\"\" src=\"http://users.aber.ac.uk/ruw/templates/external.png\" /></span>";
+    $mmmyy=explode('-',$trks[$i]['date']);
+    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"http://www.geograph.org.uk/profile/{$trks[$i]['uid']}\">{$trks[$i]['user']}</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://users.aber.ac.uk/ruw/templates/external.png\" /></span>";
     print('<div class="inner">');
     print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
     print("<b>$title</b><br />");
-    print("<em>{$trk[$i]['location']}</em> -- A ".whichtype($trk[$i]['type'])." from $start<br />");
-    print("by <a href=\"http://www.geograph.org.uk/profile/{$trk[$i]['uid']}\">{$trk[$i]['user']}</a>");
+    print("<em>{$trks[$i]['location']}</em> -- A ".whichtype($trks[$i]['type'])." from $start<br />");
+    print("by <a href=\"http://www.geograph.org.uk/profile/{$trks[$i]['uid']}\">{$trks[$i]['user']}</a>");
     print("<div class=\"inner flt_r\">$gr</div>");
-    print("<p>$descr&nbsp;[<a href=\"geotrip_show.php?osos&trip={$trk[$i]['id']}\">more</a>]</p>");
+    print("<p>$descr&nbsp;[<a href=\"geotrip_show.php?osos&trip={$trks[$i]['id']}\">more</a>]</p>");
     print('<div class="row"></div>');
     print('</div>');
     $i++;
@@ -209,4 +229,8 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
 ?>
 </div>
 
-<?php include($docroot.'/templates/bottom.php'); ?>
+<?php 
+
+$smarty->display('_std_end.tpl');
+
+
