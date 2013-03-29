@@ -40,7 +40,7 @@ $db = GeographDatabaseConnection(true);
   $trk=$db->getRow("select * from geotrips where id=".intval($_GET['trip']));
   $foll=$db->getRow("select id from geotrips where contfrom=".intval($_GET['trip']));
 
-  if ($trk['title']) $hdr2=str_replace('\\','',preg_replace('/\n/','</p><p>',$trk['title']));
+  if (!empty($trk['title'])) $hdr2=$trk['title'];
   else $hdr2=$trk['location'].' from '.$trk['start'];
   
 $smarty->assign('page_title', $hdr2.' :: Geo-Trips');
@@ -120,7 +120,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
       content+='View full image on ';
       content+='<a href=\"http://www.geograph.org.uk/photo/<?php print($geograph[$i][0]);?>\">';
       content+='Geograph Britain&amp;Ireland</a> ';
-      content+='<img alt=\"external link\" title=\"\" src=\"http://users.aber.ac.uk/ruw/templates/external.png\" />';
+      content+='<img alt=\"external link\" title=\"\" src=\"http://s1.geograph.org.uk/img/external.png\" />';
       content+='</p>';
 //]]>
       popUpSize=new OpenLayers.Size(300,320);
@@ -155,9 +155,9 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 <div class="panel maxi">
 <?php 
-  print('<h3>'.str_replace('\\','',$trk['location']).'</h3>');
+  print('<h3>'.htmlentities($trk['location']).'</h3>');
   $date=date('D, j M Y',strtotime($trk['date']));
-  print('<h4>A '.whichtype($trk['type']).' from '.str_replace('\\','',$trk['start'])."</h4><h4>$date</h4><h4>by <a href=\"http://www.geograph.org.uk/profile/$trk[uid]\">$trk[user]</a></h4><p style=\"text-align:center\">");
+  print('<h4>A '.whichtype($trk['type']).' from '.htmlentities($trk['start'])."</h4><h4>$date</h4><h4>by <a href=\"http://www.geograph.org.uk/profile/$trk[uid]\">".htmlentities($trk[user])."</a></h4><p style=\"text-align:center\">");
   // row of random images
   $selected=array();
   for ($i=0;$i<3;$i++) {
@@ -177,16 +177,16 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   $foll=$foll['id'];
   if ($prec||$foll) {
     print('<table class="ruled" style="margin:auto"></tr>');
-    if ($prec) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"geotrip_show.php?osos&trip=$prec\">preceding leg</a></td>");
+    if ($prec) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"geotrip_show.php?trip=$prec\">preceding leg</a></td>");
     else print('<td></td>');
     print('<td style="margin:20px;text-align:center"><b>This trip is part of a series.</b></td>');
-    if ($foll) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"geotrip_show.php?osos&trip=$foll\">next leg</a></td>");
+    if ($foll) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"geotrip_show.php?trip=$foll\">next leg</a></td>");
     else print('<td></td>');
     print('</tr></table>');
   }
 ?>
   <p>
-<?php print(str_replace('\\','',preg_replace('/\n/','</p><p>',$trk['descr']))) ?>
+<?php print(str_replace("\n",'</p><p>',htmlentities($trk['descr']))) ?>
   </p>
   <div class="inner flt_r">
     [<a href="/geotrips/">overview map</a>]
@@ -197,13 +197,13 @@ Click the blue circles to see a photograph
 taken from that spot and read further information about the location.  The blue lines indicate
 the direction of view.  There is also a
 <a href="http://www.geograph.org.uk/search.php?i=<?php print($search);?>&amp;displayclass=slidebig">slideshow</a>
-<img alt="external link" title="" src="http://users.aber.ac.uk/ruw/templates/external.png" /> of this trip.
+<img alt="external link" title="" src="http://s1.geograph.org.uk/img/external.png" /> of this trip.
   </small></p></div>
   <div class="row"></div>
   <div id="map" class="inner" style="width:798px;height:800px"></div>
   <p style="font-size:.65em">
-All images &copy; <?php print("<a href=\"http://www.geograph.org.uk/profile/{$trk['uid']}\">{$trk['user']}</a>");?> and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">
-Creative Commons licence</a> <img alt="external link" title="" src="http://users.aber.ac.uk/ruw/templates/external.png" />.
+All images &copy; <?php print("<a href=\"http://www.geograph.org.uk/profile/{$trk['uid']}\">".htmlentities($trk['user'])."</a>");?> and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">
+Creative Commons licence</a> <img alt="external link" title="" src="http://s1.geograph.org.uk/img/external.png" />.
   </p>
 </div>
 
