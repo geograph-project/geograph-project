@@ -1,34 +1,62 @@
 <?php
-  $lastmod='110128';
-  $hdr1='Geo-Trips';
-  $hdr2="Geograph trip reports";
-  $descr="";
-  $prev='';
-  $next='';
-  $lect=0;     // whether lecture style sheet is available
-  $cym=0;      // 0- English only, 1- English selected, 2- Welsh selected
-  $cyfiethwyd='';
-  $noidx=1;    // don't allow indexing by search engines if TRUE
-  $dir=dirname($_SERVER['SCRIPT_NAME']);
-  if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
-    $docroot=$_SERVER['DOCUMENT_ROOT'].'/ruw';
-  } else {     // include() can't cope with the symlinks on the AU server - not even using realpath()
-    $docroot='/ceri/staff1/base/r/ruw/public_html';
-  }
-  session_cache_limiter('none');
-  session_start();
-  include('geotrip_func.php');
-  include($docroot.'/templates/head.php');
-  include($docroot.'/templates/top.php');
-?>
+/**
+ * $Project: GeoGraph $
+ * $Id$
+ * 
+ * GeoGraph geographic photo archive project
+ * This file copyright (C) 2011 Rudi Winter (http://www.geograph.org.uk/profile/2520)
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+ 
+ini_set("display_errors",1);
 
-<?php
-  if (isset($_SESSION['uid'])||$_SERVER['SERVER_ADDR']=='127.0.0.1') {
+
+if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
+	require_once('./geograph_snub.inc.php');
+} else {
+	require_once('geograph/global.inc.php');
+}
+init_session();
+
+$smarty = new GeographPage;
+
+//you must be logged in to request changes
+$USER->mustHavePerm("basic");
+
+include('./geotrip_func.php');
+
+
+$db = GeographDatabaseConnection(false);
+// can now use mysql_query($sql); directly, or mysql_query($sql,$db->_connectionID);
+
+
+
+
+
+$smarty->assign('page_title', 'Geo-Trip creation :: Geo-Trips');
+
+
+$smarty->display('_std_begin.tpl');
+print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
+
     if (!isset($_POST['submit2'])) {
 ?>
       <div class="panel maxi">
         <h3>Geo-Trip submission form</h3>
-        <form name="trip" method="post" action="<?php echo $PHP_SELF;?>" enctype="multipart/form-data">
+        <form name="trip" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" enctype="multipart/form-data">
           <hr style="color:#992233">
           <p>
             <b>Location</b> <span class="hlt">(required)</span><br />
@@ -195,13 +223,13 @@ URL here.  This will create links in both directions.
       if ($_POST['loc']&&$_POST['start']&&$_POST['type']&&$_POST['search']&&$_POST['search']!=$_POST['img']) {
         // fetch Geograph data
         $search=explode('=',$_POST['search']);
-        $search=$search[sizeof($search)-1];
+        $search=intval($search[sizeof($search)-1]);
         @$csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i=$search&count=250&taken=1&en=1&thumb=1&desc=1&dir=1&ppos=1&big=1"),'r') or die('Geograph seems to be down at the moment.  Please don\'t navigate away from this page and press F5 in a few minutes.');
         fgets($csvf);  // discard header
         while ($line=fgetcsv($csvf,4092,',','"')) {
           if (
             $line[10]                                                  // camera position defined
-            && $line[3]==$_SESSION['uname']                            // taken by submitter
+            && $line[3]==$USER->realname                               // taken by submitter
             && $line[12]>4                                             // camera position at least six figures
             && ($line[14]||$line[7]!=$line[10]||$line[8]!=$line[11])   // view direction given, or camera and subject different
           ) {
@@ -262,32 +290,32 @@ and there need to be at least three images matching these criteria in your searc
         // database update
         if ($_POST['img']) {
           $img=explode('/',$_POST['img']);
-          $img=$img[sizeof($img)-1];
+          $img=intval($img[sizeof($img)-1]);
         } else $img=$geograph[0][0];
         if ($_POST['contfrom']) {
           $contfrom=explode('=',$_POST['contfrom']);
-          $contfrom=$contfrom[sizeof($contfrom)-1];
+          $contfrom=intval($contfrom[sizeof($contfrom)-1]);
         } else $contfrom=0;
+        
         $query='insert into geotrips values(null,';
-        $query=$query.$_SESSION['uid'].',';
-        $query=$query."'".$_SESSION['uname']."',";
-        $query=$query."'".$_POST['type']."',";
-        $query=$query."'".str_replace('\\','',sqlite_escape_string($_POST['loc']))."',";
-        $query=$query."'".str_replace('\\','',sqlite_escape_string($_POST['start']))."',";
-        $query=$query."'".str_replace('\\','',sqlite_escape_string($_POST['title']))."',";
+        $query=$query.intval($USER->user_id).',';
+        $query=$query."'".str_replace('\\','',mysql_real_escape_string($USER->realname))."',";
+        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['type']))."',";
+        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['loc']))."',";
+        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['start']))."',";
+        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['title']))."',";
         $query=$query."'".$geograph[0][13]."',";
         $query=$query."'".$bbox."',";
         $query=$query."'".$trk."',";
         $query=$query.$search.",";
         $query=$query.$img.",";
-        $query=$query."'".str_replace('\\','',sqlite_escape_string($_POST['descr']))."',";
+        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['descr']))."',";
         $query=$query.date('U').",";
         $query=$query.$contfrom.')';
-        $db=sqlite_open('../db/geotrips.db');
-        sqlite_query($db,$query);
-        $newid=sqlite_fetch_array(sqlite_query($db,'select id from geotrips order by id desc limit 1'));
-        $newid=$newid['id'];
-        sqlite_close($db);
+        
+        $db->Execute($query);
+        $newid=$db->Insert_ID();
+   
         // success
 ?>
         <div class="panel maxi">
@@ -315,7 +343,7 @@ information you've submitted to Geo-trips, so you can tweak the blog post before
           $pub=explode('-',date('d-m-Y-H-i-s'));
           $descr=$_POST['descr'].'  You can see this trip plotted on a map on the Geo-trips page http://users.aber.ac.uk/ruw/misc/geotrip_show.php?osos&trip='.$newid.' .';
           $imgid=explode('/',$_POST['img']);
-          $imgid=$img[sizeof($img)-1];
+          $imgid=intval($img[sizeof($img)-1]);
 ?>
           <form name="blog" method="post" action="http://www.geograph.org.uk/blog/edit.php">
             <input type="hidden" name="id" value="new" />
@@ -351,23 +379,7 @@ trip on the map.  Please fill in at least these fields.
 <?php
       }
     }
-  } else {
-    // authentication stuff from Geograph
-    require_once('token.class.php');
-    $login_url='http://www.geograph.org.uk/auth.php?a=WohlJL5405owauhVbuZ4VZbbZh4';
-    $token=new Token;
-    $token->magic='79438906cb765eea3670da00c96328ee';
-    $token->setValue("action",'authenticate');
-    $token->setValue("callback","http://users.aber.ac.uk/ruw/misc/geograph_callback.php");
-    $login_url.='&amp;t='.$token->getToken();
-?>
-    <div class="panel maxi">
-      <p>
-Please <a href="<?php print($login_url);?>">log in via Geograph</a> to submit a trip.
-      </p>
-    </div>
-<?php
-  }
-?>
 
-<?php include($docroot.'/templates/bottom.php'); ?>
+
+$smarty->display('_std_end.tpl');
+

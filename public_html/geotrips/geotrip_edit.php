@@ -23,6 +23,7 @@
  
 ini_set("display_errors",1);
 
+
 if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
 	require_once('./geograph_snub.inc.php');
 } else {
@@ -43,14 +44,16 @@ $db = GeographDatabaseConnection(false);
 
 
   // get track from database
-  if (!empty($_GET['trip'])) $trip=mysql_fetch_array(mysql_query("select * from geotrips where id='{$_GET['trip']}'"));
-  else $trip=mysql_fetch_all(mysql_query("select * from geotrips where uid={$USER->user_id}"));
+  if (!empty($_GET['trip'])) $trip=$db->getRow("select * from geotrips where id=".intval($_GET['trip']));
+  else $trips=$db->getAll("select * from geotrips where uid!={$USER->user_id}"); 
 
 
 $smarty->assign('page_title', 'Geo-Trip editor :: Geo-Trips');
 
 
 $smarty->display('_std_begin.tpl');
+print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
+
 
 
     if (!empty($trip['uid']) && $trip['uid']==$USER->user_id) {  // editing your own trip?
@@ -67,7 +70,7 @@ There is no undo facility, but you can always edit again if you change your mind
 If you make changes to your images on Geograph (such as adding a camera position or description, or correcting
 coordinates etc.), those changes will take up to a week before they make it through to Geo-Trips.
           </p>
-          <form name="trip" method="post" action="<?php echo $PHP_SELF;?>" enctype="multipart/form-data">
+          <form name="trip" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" enctype="multipart/form-data">
             <hr style="color:#992233">
             <p>
               <b>Location</b> <span class="hlt">(required)</span><br />
@@ -154,31 +157,31 @@ is still included, or choose a new one.
       } else {  // input received - update database
         $db=sqlite_open('../db/geotrips.db');
         if ($_POST['type']!=$trip['type'])
-          sqlite_query($db,"update geotrips set type='{$_POST['type']}' where id={$trip['id']}");
+          $db->Execute("update geotrips set type='".str_replace('\\','',mysql_real_escape_string($_POST['type']))."' where id={$trip['id']}");
         if ($_POST['loc']&&$_POST['loc']!=$trip['location'])
-          sqlite_query($db,"update geotrips set location='".str_replace('\\','',sqlite_escape_string($_POST['loc']))."' where id={$trip['id']}");
+          $db->Execute("update geotrips set location='".str_replace('\\','',mysql_real_escape_string($_POST['loc']))."' where id={$trip['id']}");
         if ($_POST['start']&&$_POST['start']!=$trip['start'])
-          sqlite_query($db,"update geotrips set start='".str_replace('\\','',sqlite_escape_string($_POST['start']))."' where id={$trip['id']}");
+          $db->Execute("update geotrips set start='".str_replace('\\','',mysql_real_escape_string($_POST['start']))."' where id={$trip['id']}");
         if ($_POST['title']!=$trip['title'])
-          sqlite_query($db,"update geotrips set title='".str_replace('\\','',sqlite_escape_string($_POST['title']))."' where id={$trip['id']}");
+          $db->Execute("update geotrips set title='".str_replace('\\','',mysql_real_escape_string($_POST['title']))."' where id={$trip['id']}");
         if ($_POST['img']&&$_POST['img']!=$trip['img']) {
           $img=explode('/',$_POST['img']);
-          $img=$img[sizeof($img)-1];
-          sqlite_query($db,"update geotrips set img=$img where id={$trip['id']}");
+          $img=intval($img[sizeof($img)-1]);
+          $db->Execute("update geotrips set img=$img where id={$trip['id']}");
         }
         if ($_POST['descr']!=$trip['descr'])
-          sqlite_query($db,"update geotrips set descr='".str_replace('\\','',sqlite_escape_string($_POST['descr']))."' where id={$trip['id']}");
-        sqlite_query($db,"update geotrips set updated='".date('U')."' where id={$trip['id']}");
+          $db->Execute("update geotrips set descr='".str_replace('\\','',mysql_real_escape_string($_POST['descr']))."' where id={$trip['id']}");
+        $db->Execute("update geotrips set updated='".date('U')."' where id={$trip['id']}");
         if ($_POST['search']&&$_POST['search']!=$trip['search']) {
           $search=explode('=',$_POST['search']);
-          $search=$search[sizeof($search)-1];
+          $search=intval($search[sizeof($search)-1]);
           $cachepath="../cache/file".md5($url).".cache";
           @$csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i=$search&count=250&taken=1&en=1&thumb=1&desc=1&dir=1&ppos=1"),'r') or die('Geograph seems to be down at the moment.  Please don\'t navigate away from this page and press F5 in a few minutes.');
           fgets($csvf);  // discard header
           while ($line=fgetcsv($csvf,4092,',','"')) {
             if (
               $line[10]                                                  // camera position defined
-              && $line[3]==$_SESSION['uname']                            // taken by submitter
+              && $line[3]==$USER->realname                               // taken by submitter
               && $line[12]>4                                             // camera position at least six figures
               && ($line[14]||$line[7]!=$line[10]||$line[8]!=$line[11])   // view direction given, or camera and subject different
               && $line[13]==$trip['date']
@@ -186,7 +189,7 @@ is still included, or choose a new one.
           }
           fclose($csvf);
           if (count($geograph)>=3)   // we need three different images for the thumbnails at the top
-            sqlite_query($db,"update geotrips set search=$search where id={$trip['id']}");
+            $db->Execute("update geotrips set search=$search where id={$trip['id']}");
           else {
 ?>
             <div class="panel maxi">
@@ -228,14 +231,14 @@ If you've made changes to any other fields, these will have been updated.
             }
           }
           $bbox=min($ee).' '.min($nn).' '.max($ee).' '.max($nn);
-          sqlite_query($db,"update geotrips set track='$trk' where id={$trip['id']}");
-          sqlite_query($db,"update geotrips set bbox='$bbox' where id={$trip['id']}");
+          $db->Execute("update geotrips set track='$trk' where id={$trip['id']}");
+          $db->Execute("update geotrips set bbox='$bbox' where id={$trip['id']}");
         }
         if ($_POST['contfrom']=="") $_POST['contfrom']=0;
         if ($_POST['contfrom']!=$trip['contfrom']) {
           $contfrom=explode('=',$_POST['contfrom']);
-          $contfrom=$contfrom[sizeof($contfrom)-1];
-          sqlite_query($db,"update geotrips set contfrom=$contfrom where id={$trip['id']}");
+          $contfrom=intval($contfrom[sizeof($contfrom)-1]);
+          $db->Execute("update geotrips set contfrom=$contfrom where id={$trip['id']}");
         }
 ?>
         <div class="panel maxi">
@@ -258,26 +261,26 @@ work as expected.
 You can only edit your own trips.  Choose one from the list below:
         </p>
 <?php
-        for ($i=0;$i<count($trip);$i++) if ($trip[$i]['uid']==$USER->user_id) {
-          if ($trip[$i]['title']) $title=$trip[$i]['title'];
-          else $title=$trip[$i]['location'].' from '.$trip[$i]['start'];
-          $descr=preg_replace('/\n/','</p><p>',$trip[$i]['descr']);
+        for ($i=0;$i<count($trips);$i++) if ($trips[$i]['uid']==$USER->user_id) { 
+          if ($trips[$i]['title']) $title=$trips[$i]['title'];
+          else $title=$trips[$i]['location'].' from '.$trips[$i]['start'];
+          $descr=preg_replace('/\n/','</p><p>',$trips[$i]['descr']);
           if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
           // fetch Geograph thumbnail
-		  $csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i={$trip[$i]['search']}&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1"),'r');
+		  $csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i={$trips[$i]['search']}&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1"),'r');
           fgets($csvf);  // discard header
           $line=fgetcsv($csvf,4092,',','"');   // take the thumb of the first pic in case the requested one is beyond the 250 pic search limit...
           $thumb=$line[6];
-          while ($line=fgetcsv($csvf,4092,',','"')) if ($line[0]==$trip[$i]['img']) $thumb=$line[6];  // ...then replace it if we can
+          while ($line=fgetcsv($csvf,4092,',','"')) if ($line[0]==$trips[$i]['img']) $thumb=$line[6];  // ...then replace it if we can
           fclose($csvf);
           $thumb=str_replace("_120x120.jpg","_213x160.jpg",$thumb);
-          $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"http://www.geograph.org.uk/profile/{$trip[$i]['uid']}\">{$trip[$i]['user']}</a> and available under a<br /><a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://users.aber.ac.uk/ruw/templates/external.png\" /> via<br /><a href=\"http://www.geograph.org.uk\">Geograph Britain&amp;Ireland</a><img alt=\"external link\" title=\"\" src=\"http://users.aber.ac.uk/ruw/templates/external.png\" /></span>";
+          $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"http://www.geograph.org.uk/profile/{$trips[$i]['uid']}\">{$trips[$i]['user']}</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://users.aber.ac.uk/ruw/templates/external.png\" /></span>";
           print('<div class="inner">');
           print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
           print("<b>$title</b><br />");
-          print("<em>{$trip[$i]['location']}</em> -- A ".whichtype($trip[$i]['type'])." from {$trip[$i]['start']}<br />");
-          print("by <a href=\"http://www.geograph.org.uk/profile/{$trip[$i]['uid']}\">{$trip[$i]['user']}</a>");
-          print("<p>$descr&nbsp;[<a href=\"geotrip_edit.php?osos&trip={$trip[$i]['id']}\">edit</a>]</p>");
+          print("<em>{$trips[$i]['location']}</em> -- A ".whichtype($trips[$i]['type'])." from {$trips[$i]['start']}<br />");
+          print("by <a href=\"http://www.geograph.org.uk/profile/{$trips[$i]['uid']}\">{$trips[$i]['user']}</a>");
+          print("<p>$descr&nbsp;[<a href=\"geotrip_edit.php?osos&trip={$trips[$i]['id']}\">edit</a>]</p>");
           print('<div class="row"></div>');
           print('</div>');
         }
@@ -288,5 +291,4 @@ You can only edit your own trips.  Choose one from the list below:
     
     
 $smarty->display('_std_end.tpl');
-exit;
 
