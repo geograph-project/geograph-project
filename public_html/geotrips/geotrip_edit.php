@@ -153,7 +153,6 @@ is still included, or choose a new one.
         </div>
 <?php
       } else {  // input received - update database
-        $db=sqlite_open('../db/geotrips.db');
         if ($_POST['type']!=$trip['type'])
           $db->Execute("update geotrips set type='".str_replace('\\','',mysql_real_escape_string($_POST['type']))."' where id={$trip['id']}");
         if ($_POST['loc']&&$_POST['loc']!=$trip['location'])
