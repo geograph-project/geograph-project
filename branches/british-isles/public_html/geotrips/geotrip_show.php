@@ -58,7 +58,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   $bbox=explode(' ',$trk['bbox']);
   $cen[0]=(int)(($bbox[0]+$bbox[2])/2);
   $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
-  if ($bbox[2]-$bbox[0]>4000||$bbox[3]-$bbox[1]>3000) $scale=6;
+  if ($bbox[2]-$bbox[0]>4000||$bbox[3]-$bbox[1]>3000) $scale=7;
   else $scale=8;
   $search=$trk['search'];
   $track=explode(' ',$trk['track']);
