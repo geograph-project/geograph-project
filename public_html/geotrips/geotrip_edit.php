@@ -72,12 +72,12 @@ coordinates etc.), those changes will take up to a week before they make it thro
             <hr style="color:#992233">
             <p>
               <b>Location</b> <span class="hlt">(required)</span><br />
-              <input type="text" name="loc" size="72" value="<?php print_r($trip['location']); ?>" /><br />
+              <input type="text" name="loc" size="72" value="<?php print(htmlentities($trip['location'])); ?>" /><br />
             </p>
             <hr style="color:#992233">
             <p>
               <b>Starting point</b> <span class="hlt">(required)</span><br />
-              <input type="text" name="start" size="72" value="<?php print($trip['start']); ?>" /><br />
+              <input type="text" name="start" size="72" value="<?php print(htmlentities($trip['start'])); ?>" /><br />
             </p>
             <hr style="color:#992233">
             <p>
@@ -105,7 +105,7 @@ box above.
             <hr style="color:#992233">
             <p>
               <b>Title</b> (optional)<br />
-              <input type="text" name="title" size="72" value="<?php print($trip['title']); ?>" /><br />
+              <input type="text" name="title" size="72" value="<?php print(htmlentities($trip['title'])); ?>" /><br />
             </p>
             <hr style="color:#992233">
             <p>
@@ -139,7 +139,7 @@ is still included, or choose a new one.
             <hr style="color:#992233">
             <p>
               <b>Description</b> (optional)<br />
-              <textarea rows="8" cols="80" name="descr"><?php print(preg_replace('/\n/','</p><p>',$trip['descr'])); ?></textarea>
+              <textarea rows="8" cols="80" name="descr"><?php print(htmlentities($trip['descr'])); ?></textarea>
             </p>
             <hr style="color:#992233">
             <p>

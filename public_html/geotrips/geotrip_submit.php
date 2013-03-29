@@ -346,7 +346,7 @@ information you've submitted to Geo-trips, so you can tweak the blog post before
           <form name="blog" method="post" action="http://www.geograph.org.uk/blog/edit.php">
             <input type="hidden" name="id" value="new" />
             <input type="hidden" name="initial" value="true" />
-            <input type="hidden" name="title" value="<?php print($title); ?>" />
+            <input type="hidden" name="title" value="<?php print(htmlentities($title)); ?>" />
             <input type="hidden" name="publishedDay" value="<?php print($pub[0]); ?>" />
             <input type="hidden" name="publishedMonth" value="<?php print($pub[1]); ?>" />
             <input type="hidden" name="publishedYear" value="<?php print($pub[2]); ?>" />
@@ -355,7 +355,7 @@ information you've submitted to Geo-trips, so you can tweak the blog post before
             <input type="hidden" name="publishedSecond" value="<?php print($pub[5]); ?>" />
             <input type="hidden" name="grid_reference" value="<?php print($gr); ?>" />
             <input type="hidden" name="gridimage_id" value="<?php print($imgid); ?>" />
-            <input type="hidden" name="content" value="<?php print($descr); ?>" />
+            <input type="hidden" name="content" value="<?php print(htmlentities($descr)); ?>" />
             <input type="hidden" name="tags" value="<?php print($tags); ?>" />
             <div style="text-align:center;background-color:green">
               <input type="submit" name="submit" value="Submit to Geograph blog" style="margin:10px" />
