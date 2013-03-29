@@ -21,8 +21,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
  
-ini_set("display_errors",1);
-
 
 if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
 	require_once('./geograph_snub.inc.php');
@@ -40,13 +38,13 @@ $db = GeographDatabaseConnection(false);
 
   // get tracks from database
   if (isset($_GET['debug'])) $trks=$db->getAll("select * from geotrips where location='debug' order by id desc");
-  else $trks=$db->getAll("select * from geotrips where location!='debug' order by id desc limit 10");
+  else $trks=$db->getAll("select * from geotrips where location!='debug' order by id desc");
 
 
 $smarty->assign('page_title', 'Overview map :: Geo-Trips');
 $smarty->assign('meta_description', 'A collection of square-bagging trips by members of the Geograph project, with photographs, descriptions and GPS tracks plotted on an Ordnance Survey map.');
 
-$smarty->display('_std_begin.tpl');
+$smarty->display('_std_begin.tpl','trip_home');
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 

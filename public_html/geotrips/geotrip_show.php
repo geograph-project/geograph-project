@@ -21,8 +21,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
  
-ini_set("display_errors",1);
-
 
 if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
 	require_once('./geograph_snub.inc.php');
@@ -48,7 +46,7 @@ $db = GeographDatabaseConnection(true);
 $smarty->assign('page_title', $hdr2.' :: Geo-Trips');
 $smarty->assign('meta_description', "A ".whichtype($trk['type'])." near $trk[location], starting from $trk[start], with pictures and plotted on a map.");
 
-$smarty->display('_std_begin.tpl');
+$smarty->display('_std_begin.tpl','trip'.$trk['id']);
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 
@@ -191,7 +189,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 <?php print(str_replace('\\','',preg_replace('/\n/','</p><p>',$trk['descr']))) ?>
   </p>
   <div class="inner flt_r">
-    [<a href="geotrip.php?osos">overview map</a>]
+    [<a href="/geotrips/">overview map</a>]
   </div>
   <div> <p><small>
 <?php if ($trk['track']) print('On the map below, the grey line is the GPS track from this trip. ');?>

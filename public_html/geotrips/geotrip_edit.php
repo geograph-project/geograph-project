@@ -21,8 +21,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
  
-ini_set("display_errors",1);
-
 
 if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
 	require_once('./geograph_snub.inc.php');
@@ -51,7 +49,7 @@ $db = GeographDatabaseConnection(false);
 $smarty->assign('page_title', 'Geo-Trip editor :: Geo-Trips');
 
 
-$smarty->display('_std_begin.tpl');
+$smarty->display('_std_begin.tpl','trip_edit');
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 
