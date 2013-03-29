@@ -146,6 +146,7 @@ Each Geo-Trip is marked on the map by a round
 symbol.  Clicking the symbol gives details in a pop-up, and clicking the thumbnail in the pop-up
 takes you to the map page for the trip, with all the pictures and information shown on the map.
   </p>
+  <?php if ($USER->registered) { ?>
   <p class="inner hlt">
 If you are a <em>Geograph</em>-er and would like to put your own square-bagging
 expeditions on the map - on foot, by bike, in a car or by any other mode of transport -
@@ -153,6 +154,7 @@ please use the <a href="geotrip_submit.php">Geo-Trip submission form</a>.
 If you upload a GPS track log in GPX format, the track will also be shown.
 You can also <a href="geotrip_edit.php">edit your existing Geo-Trips</a>.
   </p>
+  <?php } ?>
   <p>
 Please note that Geo-Trips currently only work in England, Scotland, Wales and the Isle of Man as the
 map is based on the <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a>'s OpenSpace mapping.

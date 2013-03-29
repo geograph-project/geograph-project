@@ -43,7 +43,7 @@ $db = GeographDatabaseConnection(false);
 
   // get track from database
   if (!empty($_GET['trip'])) $trip=$db->getRow("select * from geotrips where id=".intval($_GET['trip']));
-  else $trips=$db->getAll("select * from geotrips where uid!={$USER->user_id}"); 
+  else $trips=$db->getAll("select * from geotrips where uid={$USER->user_id}"); 
 
 
 $smarty->assign('page_title', 'Geo-Trip editor :: Geo-Trips');
