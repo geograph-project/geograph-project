@@ -21,8 +21,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
  
-ini_set("display_errors",1);
-
 
 if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
 	require_once('./geograph_snub.inc.php');
@@ -49,7 +47,7 @@ $db = GeographDatabaseConnection(false);
 $smarty->assign('page_title', 'Geo-Trip creation :: Geo-Trips');
 
 
-$smarty->display('_std_begin.tpl');
+$smarty->display('_std_begin.tpl','trip_submit');
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
     if (!isset($_POST['submit2'])) {
@@ -322,7 +320,7 @@ and there need to be at least three images matching these criteria in your searc
           <h3>Thanks for adding your trip.</h3>
           <p>
 If all has gone well, your <a href="geotrip_show.php?osos&trip=<?php print($newid); ?>">new trip</a>
-should show on the <a href="geotrip.php?osos">map</a> now.  Please
+should show on the <a href="./">map</a> now.  Please
 <a href="http://www.geograph.org.uk/usermsg.php?to=2520">let me know</a> if anything doesn't
 work as expected.
           </p>
