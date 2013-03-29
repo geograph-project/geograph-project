@@ -202,7 +202,7 @@ no need to repeat them here.
           <p>
             <b>Continuation from previous trip</b> (optional)<br />
             <input type="text" name="contfrom" size="72" /><br />
-            (e.g. <em>123</em> or <em>http://users.aber.ac.uk/ruw/misc/geotrip_show.php?osos&trip=123</em>)
+            (e.g. <em>123</em> or <em>http://www.geograph.org.uk/geotrips/geotrip_show.php?trip=123</em>)
           </p>
           <ul>
             <li>
@@ -297,17 +297,17 @@ and there need to be at least three images matching these criteria in your searc
         
         $query='insert into geotrips values(null,';
         $query=$query.intval($USER->user_id).',';
-        $query=$query."'".str_replace('\\','',mysql_real_escape_string($USER->realname))."',";
-        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['type']))."',";
-        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['loc']))."',";
-        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['start']))."',";
-        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['title']))."',";
+        $query=$query."'".mysql_real_escape_string($USER->realname)."',";
+        $query=$query."'".mysql_real_escape_string($_POST['type'])."',";
+        $query=$query."'".mysql_real_escape_string($_POST['loc'])."',";
+        $query=$query."'".mysql_real_escape_string($_POST['start'])."',";
+        $query=$query."'".mysql_real_escape_string($_POST['title'])."',";
         $query=$query."'".$geograph[0][13]."',";
         $query=$query."'".$bbox."',";
         $query=$query."'".$trk."',";
         $query=$query.$search.",";
         $query=$query.$img.",";
-        $query=$query."'".str_replace('\\','',mysql_real_escape_string($_POST['descr']))."',";
+        $query=$query."'".mysql_real_escape_string($_POST['descr'])."',";
         $query=$query.date('U').",";
         $query=$query.$contfrom.')';
         
@@ -319,7 +319,7 @@ and there need to be at least three images matching these criteria in your searc
         <div class="panel maxi">
           <h3>Thanks for adding your trip.</h3>
           <p>
-If all has gone well, your <a href="geotrip_show.php?osos&trip=<?php print($newid); ?>">new trip</a>
+If all has gone well, your <a href="geotrip_show.php?trip=<?php print($newid); ?>">new trip</a>
 should show on the <a href="./">map</a> now.  Please
 <a href="http://www.geograph.org.uk/usermsg.php?to=2520">let me know</a> if anything doesn't
 work as expected.
@@ -329,7 +329,7 @@ work as expected.
           <h3>Add a blog post for your Geo-trip</h3>
           <p>
 Two for the price of one!  If you'd like to add a post to the
-<a href="http://www.geograph.org.uk/blog">Geograph blog</a> to highlight your trip, please
+<a href="http://www.geograph.org.uk/blog/">Geograph blog</a> to highlight your trip, please
 press the submit button below.  This will take you to the blog edit page prefilled with the
 information you've submitted to Geo-trips, so you can tweak the blog post before it goes live.
           </p>
@@ -339,7 +339,7 @@ information you've submitted to Geo-trips, so you can tweak the blog post before
           $gr=bbox2gr($bbox);
           $tags='Geo-trip, '.whichtype($_POST['type']);
           $pub=explode('-',date('d-m-Y-H-i-s'));
-          $descr=$_POST['descr'].'  You can see this trip plotted on a map on the Geo-trips page http://users.aber.ac.uk/ruw/misc/geotrip_show.php?osos&trip='.$newid.' .';
+          $descr=$_POST['descr'].'  You can see this trip plotted on a map on the Geo-trips page http://www.geograph.org.uk/geotrips/geotrip_show.php?trip='.$newid.' .';
           $imgid=explode('/',$_POST['img']);
           $imgid=intval($img[sizeof($img)-1]);
 ?>
@@ -371,7 +371,7 @@ Location, starting point, type of trip and a Geograph search id are required to 
 trip on the map.  Please fill in at least these fields.
           </p>
           <p>
-<a href="geotrip_submit.php">Try again.</a>
+Press Back button, or <a href="geotrip_submit.php">Try again.</a>
           </p>
         </div>
 <?php

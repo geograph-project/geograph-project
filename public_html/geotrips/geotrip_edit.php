@@ -154,20 +154,20 @@ is still included, or choose a new one.
 <?php
       } else {  // input received - update database
         if ($_POST['type']!=$trip['type'])
-          $db->Execute("update geotrips set type='".str_replace('\\','',mysql_real_escape_string($_POST['type']))."' where id={$trip['id']}");
+          $db->Execute("update geotrips set type='".mysql_real_escape_string($_POST['type'])."' where id={$trip['id']}");
         if ($_POST['loc']&&$_POST['loc']!=$trip['location'])
-          $db->Execute("update geotrips set location='".str_replace('\\','',mysql_real_escape_string($_POST['loc']))."' where id={$trip['id']}");
+          $db->Execute("update geotrips set location='".mysql_real_escape_string($_POST['loc'])."' where id={$trip['id']}");
         if ($_POST['start']&&$_POST['start']!=$trip['start'])
-          $db->Execute("update geotrips set start='".str_replace('\\','',mysql_real_escape_string($_POST['start']))."' where id={$trip['id']}");
+          $db->Execute("update geotrips set start='".mysql_real_escape_string($_POST['start'])."' where id={$trip['id']}");
         if ($_POST['title']!=$trip['title'])
-          $db->Execute("update geotrips set title='".str_replace('\\','',mysql_real_escape_string($_POST['title']))."' where id={$trip['id']}");
+          $db->Execute("update geotrips set title='".mysql_real_escape_string($_POST['title'])."' where id={$trip['id']}");
         if ($_POST['img']&&$_POST['img']!=$trip['img']) {
           $img=explode('/',$_POST['img']);
           $img=intval($img[sizeof($img)-1]);
           $db->Execute("update geotrips set img=$img where id={$trip['id']}");
         }
         if ($_POST['descr']!=$trip['descr'])
-          $db->Execute("update geotrips set descr='".str_replace('\\','',mysql_real_escape_string($_POST['descr']))."' where id={$trip['id']}");
+          $db->Execute("update geotrips set descr='".mysql_real_escape_string($_POST['descr'])."' where id={$trip['id']}");
         $db->Execute("update geotrips set updated='".date('U')."' where id={$trip['id']}");
         if ($_POST['search']&&$_POST['search']!=$trip['search']) {
           $search=explode('=',$_POST['search']);
@@ -244,7 +244,7 @@ Thanks for updating your trip.
           </p>
           <p>
 If all has gone well, the changes should be visible on the
-<a href="geotrip_show.php?osos&trip=<?php print($_GET['trip']); ?>">trip page</a> now.  Please
+<a href="geotrip_show.php?trip=<?php print($_GET['trip']); ?>">trip page</a> now.  Please
 <a href="http://www.geograph.org.uk/usermsg.php?to=2520">let me know</a> if anything doesn't
 work as expected.
           </p>
@@ -259,9 +259,9 @@ You can only edit your own trips.  Choose one from the list below:
         </p>
 <?php
         for ($i=0;$i<count($trips);$i++) if ($trips[$i]['uid']==$USER->user_id) { 
-          if ($trips[$i]['title']) $title=$trips[$i]['title'];
-          else $title=$trips[$i]['location'].' from '.$trips[$i]['start'];
-          $descr=preg_replace('/\n/','</p><p>',$trips[$i]['descr']);
+          if ($trips[$i]['title']) $title=htmlentities($trips[$i]['title']);
+          else $title=htmlentities($trips[$i]['location'].' from '.$trips[$i]['start']);
+          $descr=str_replace("\n",'</p><p>',htmlentities($trips[$i]['descr']));
           if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
           // fetch Geograph thumbnail
 		  $csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i={$trips[$i]['search']}&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1"),'r');
@@ -271,13 +271,13 @@ You can only edit your own trips.  Choose one from the list below:
           while ($line=fgetcsv($csvf,4092,',','"')) if ($line[0]==$trips[$i]['img']) $thumb=$line[6];  // ...then replace it if we can
           fclose($csvf);
           $thumb=str_replace("_120x120.jpg","_213x160.jpg",$thumb);
-          $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"http://www.geograph.org.uk/profile/{$trips[$i]['uid']}\">{$trips[$i]['user']}</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://users.aber.ac.uk/ruw/templates/external.png\" /></span>";
+          $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"http://www.geograph.org.uk/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://s1.geograph.org.uk/img/external.png\" /></span>";
           print('<div class="inner">');
           print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
           print("<b>$title</b><br />");
-          print("<em>{$trips[$i]['location']}</em> -- A ".whichtype($trips[$i]['type'])." from {$trips[$i]['start']}<br />");
-          print("by <a href=\"http://www.geograph.org.uk/profile/{$trips[$i]['uid']}\">{$trips[$i]['user']}</a>");
-          print("<p>$descr&nbsp;[<a href=\"geotrip_edit.php?osos&trip={$trips[$i]['id']}\">edit</a>]</p>");
+          print("<em>".htmlentities($trips[$i]['location'])."</em> -- A ".whichtype($trips[$i]['type'])." from ".htmlentities($trips[$i]['start'])."<br />");
+          print("by <a href=\"http://www.geograph.org.uk/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a>");
+          print("<p>$descr&nbsp;[<a href=\"geotrip_edit.php?trip={$trips[$i]['id']}\">edit</a>]</p>");
           print('<div class="row"></div>');
           print('</div>');
         }
