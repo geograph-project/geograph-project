@@ -62,7 +62,11 @@ print "<th>By</th>";
 print "<th>Action</th>";
 print "</tr>";
 
-$data = $db->getAll("SELECT id,title,start,location,uid,user,FROM_UNIXTIME(updated) as updated FROM geotrips ORDER BY id DESC");
+$limit = 100;
+if (!empty($_GET['all']))
+	$limit = 10000;
+
+$data = $db->getAll("SELECT id,title,start,location,uid,user,FROM_UNIXTIME(updated) as updated FROM geotrips ORDER BY id DESC LIMIT $limit");
 foreach ($data as $row) {
 	print "<tr>";
 	print "<td>#".htmlentities($row['id'])."</td>";
@@ -76,6 +80,9 @@ foreach ($data as $row) {
 
 }
 print "</table>";
+
+if (empty($_GET['all']))
+	print "<p>$limit most recent shown. <a href=\"?all=1\">Show all</a></p>";
 
 $smarty->display('_std_end.tpl');
 
