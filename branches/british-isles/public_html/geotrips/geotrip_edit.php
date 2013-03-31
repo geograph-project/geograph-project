@@ -55,7 +55,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 print "<h2><a href=\"./\">Geo-Trips</a> :: Edit Trip</h2>";
 
 
-    if (!empty($trip['uid']) && $trip['uid']==$USER->user_id) {  // editing your own trip?
+    if (!empty($trip['uid']) && ($trip['uid']==$USER->user_id || $USER->hasPerm("moderator"))) {  // editing your own trip?
     
       if (!isset($_POST['submit2'])) {  // input form
 ?>

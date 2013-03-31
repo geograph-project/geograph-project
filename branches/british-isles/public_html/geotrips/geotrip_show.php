@@ -40,8 +40,11 @@ $db = GeographDatabaseConnection(true);
   $trk=$db->getRow("select * from geotrips where id=".intval($_GET['trip']));
   $foll=$db->getRow("select id from geotrips where contfrom=".intval($_GET['trip']));
   
-  if (empty($trk))
-  	die("no trip specified");
+  if (empty($trk)) {
+    header("HTTP/1.0 404 Not Found");
+    $smarty->display('static_404.tpl');
+    exit;
+  }
   
 
   if (!empty($trk['title'])) $hdr2=$trk['title'];
@@ -170,7 +173,8 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
     $imgno=mt_rand(0,$len-1);
     if (!in_array($imgno,$selected)) {
       $thumb=str_replace("_120x120.jpg","_213x160.jpg",$geograph[$imgno][6]);
-      print("<img alt=\"$geograph[$imgno][1]\" class=\"inner\" src=\"$thumb\" />&nbsp;");
+      print("<a href=\"/photo/{$geograph[$imgno][0]}\" title=\"".htmlentities($geograph[$imgno][1])."\">");
+      print("<img alt=\"".htmlentities($geograph[$imgno][1])."\" class=\"inner\" src=\"$thumb\" /></a>&nbsp;");
       $selected[]=$imgno;
     } else {
       $i--;
