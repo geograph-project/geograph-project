@@ -131,8 +131,9 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 </script>
 
+<h2>Geo-Trips overview map</h2>
+
 <div class="panel maxi" style="max-width:800px">
-  <h3>Geo-Trips overview map</h3>
   <p>
 The map below shows Geo-Trips submitted by members of the <a href="http://www.geograph.org.uk">Geograph</a>
 project.  Each point on the map represents a day trip by one Geograph-er to cover a number of

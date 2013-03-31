@@ -39,6 +39,10 @@ $db = GeographDatabaseConnection(true);
   // get track from database
   $trk=$db->getRow("select * from geotrips where id=".intval($_GET['trip']));
   $foll=$db->getRow("select id from geotrips where contfrom=".intval($_GET['trip']));
+  
+  if (empty($trk))
+  	die("no trip specified");
+  
 
   if (!empty($trk['title'])) $hdr2=$trk['title'];
   else $hdr2=$trk['location'].' from '.$trk['start'];
@@ -152,6 +156,8 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   AttachEvent(window,'load',initmap,false);
 
 </script>
+
+<h2><a href="./">Geo-Trips</a> :: <? echo htmlentities($hdr2); ?></h2>
 
 <div class="panel maxi">
 <?php 

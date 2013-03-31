@@ -50,10 +50,12 @@ $smarty->assign('page_title', 'Geo-Trip creation :: Geo-Trips');
 $smarty->display('_std_begin.tpl','trip_submit');
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
+print "<h2><a href=\"./\">Geo-Trips</a> :: Submission Form</h2>";
+
+
     if (!isset($_POST['submit2'])) {
 ?>
       <div class="panel maxi">
-        <h3>Geo-Trip submission form</h3>
         <form name="trip" method="post" action="<?php echo $_SERVER['PHP_SELF'];?>" enctype="multipart/form-data">
           <hr style="color:#992233">
           <p>
