@@ -52,6 +52,7 @@ $smarty->assign('page_title', 'Geo-Trip editor :: Geo-Trips');
 $smarty->display('_std_begin.tpl','trip_edit');
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
+print "<h2><a href=\"./\">Geo-Trips</a> :: Edit Trip</h2>";
 
 
     if (!empty($trip['uid']) && $trip['uid']==$USER->user_id) {  // editing your own trip?
@@ -59,7 +60,6 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
       if (!isset($_POST['submit2'])) {  // input form
 ?>
         <div class="panel maxi">
-          <h3>Geo-Trip edit form</h3>
           <p>
 Each input field shows the values currently stored.  Edit any that need updating and submit.
 There is no undo facility, but you can always edit again if you change your mind.
@@ -139,7 +139,7 @@ is still included, or choose a new one.
             <hr style="color:#992233">
             <p>
               <b>Description</b> (optional)<br />
-              <textarea rows="8" cols="80" name="descr"><?php print(htmlentities($trip['descr'])); ?></textarea>
+              <textarea rows="8" cols="80" name="descr"><?php print(htmlentities(str_replace("\r",'',str_replace('</p><p>',"\n",$trip['descr'])))); ?></textarea>
             </p>
             <hr style="color:#992233">
             <p>
@@ -167,7 +167,7 @@ is still included, or choose a new one.
           $db->Execute("update geotrips set img=$img where id={$trip['id']}");
         }
         if ($_POST['descr']!=$trip['descr'])
-          $db->Execute("update geotrips set descr='".mysql_real_escape_string($_POST['descr'])."' where id={$trip['id']}");
+          $db->Execute("update geotrips set descr='".mysql_real_escape_string(strip_tags($_POST['descr']))."' where id={$trip['id']}");
         $db->Execute("update geotrips set updated='".date('U')."' where id={$trip['id']}");
         if ($_POST['search']&&$_POST['search']!=$trip['search']) {
           $search=explode('=',$_POST['search']);
