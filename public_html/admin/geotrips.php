@@ -47,6 +47,7 @@ print "<h2><a href=\"/geotrips/\">Geo-Trips</a> :: Moderation</h2>";
 
 if (!empty($_POST['delete'])) {
 	$db->Execute("DELETE FROM geotrips WHERE id = ".intval($_POST['delete']));
+	$db->Execute("DELETE FROM content WHERE source = 'trip' AND foreign_id = ".intval($_POST['delete']));
 	print "<p>trip #".intval($_POST['delete'])." deleted</p>";
 }
 
