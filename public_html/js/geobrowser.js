@@ -132,8 +132,8 @@ function updateGridReference(form) {
 									img = document.createElement("img");
 									img.setAttribute('alt',"hover to load");
 									img.setAttribute('title',data[j].title+' by '+data[j].realname);
-									img.setAttribute('lowsrc',data[j].thumbnail);
-									img.setAttribute('onmouseover',"if (!this.src) this.src=this.lowsrc");
+									img.setAttribute('data-src',data[j].thumbnail);
+									img.setAttribute('onmouseover',"if (!this.src) this.src=this.getAttribute('data-src')");
 									a = document.createElement("a");
 									a.appendChild(img);
 									a.setAttribute('href','/photo/'+data[j].gridimage_id);

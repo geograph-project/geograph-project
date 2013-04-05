@@ -29,7 +29,7 @@
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 		</div>
-		<div class="img-shadow" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` lowsrc="}</a></div>
+		<div class="img-shadow" style="clear:both; position:relative;"><a title="{$image->title|escape:'html'} - click to view image page" href="/photo/{$image->gridimage_id}">{$image->getFull()|replace:'src=':"name=image`$smarty.foreach.results.iteration` data-src="}</a></div>
 		{if $image->comment}
 		  <div class="caption" style="font-size:1.2em">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
   		{/if}
@@ -54,8 +54,8 @@
 <script>//<![CDATA[
 var resultcount = {$engine->numberofimages};
 var hasnextpage = {if $engine->numberOfPages > $engine->currentPage}1{else}0{/if};
-setTimeout("document.images['image1'].src = document.images['image1'].lowsrc",300);
-setTimeout("document.images['image2'].src = document.images['image2'].lowsrc",600);
+setTimeout("document.images['image1'].src = document.images['image1'].getAttribute('data-src')",300);
+setTimeout("document.images['image2'].src = document.images['image2'].getAttribute('data-src')",600);
 {dynamic}
 var delayinsec = {$user->slideshow_delay|default:5};
 {/dynamic}
