@@ -1311,9 +1311,6 @@ split_timer('gridimage'); //starts the timer
 		$source=isset($params['source'])?$params['source']:'';
 		
 		
-		
-		
-		global $CONF;
 		//establish whether we have a cached thumbnail
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -1329,7 +1326,7 @@ split_timer('gridimage'); //starts the timer
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		}
 
-		#if (!empty($params['urlonly']) && $params['urlonly'] !== 2) && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
+		if ($CONF['template']=='archive' || ((!empty($params['urlonly']) && $params['urlonly'] !== 2) && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath))) {
 			$return=array();
 			$return['url']=$thumbpath;
 			if (!empty($CONF['enable_cluster'])) {
@@ -1338,7 +1335,7 @@ split_timer('gridimage'); //starts the timer
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			return $return;
-		#}
+		}
 
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
