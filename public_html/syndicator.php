@@ -115,6 +115,9 @@ if (isset($cacheid)) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):1;
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension";
 	$rss_timeout = 3600;
+} elseif (isset($_GET['potd'])) {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/potd-{$format}{$opt_expand}.$extension";
+	$rss_timeout = 3600;
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}{$opt_expand}.$extension";
 	$rss_timeout = 1800;
@@ -155,6 +158,7 @@ if (isset($q)) {
 	}
 }
 
+$date_column = 'submitted';
 
 /**
  * A full-text query
@@ -226,6 +230,19 @@ if (isset($sphinx)) {
 	$images->images = &$images->results;
 
 /**
+ * Feed for pictures of the day
+ */
+} elseif (isset($_GET['potd'])) {
+	$rss->description = 'Picture of the day';
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/potd.".strtolower($format);
+
+
+	//lets find some recent photos
+	$images=new ImageList();
+	$images->getPOTD('showday desc', 15, false);
+	$date_column = 'showday';
+	
+/**
  * A user specific feed
  */
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
@@ -272,7 +289,7 @@ for ($i=0; $i<$cnt; $i++)
 		$item->imageTaken = $images->images[$i]->imagetaken;
 	}
 
-	$item->date = strtotime($images->images[$i]->submitted);
+	$item->date = strtotime($images->images[$i]->$date_column);
 	$item->source = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->profile_link;
 	$item->author = $images->images[$i]->realname;
 
