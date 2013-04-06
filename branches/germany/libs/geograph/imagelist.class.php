@@ -60,11 +60,47 @@ class ImageList
 	
 	/**
 	* build a basic image list from basic criteria
+	* @param sort - optional sort field and direction, e.g. submitted desc
+	* @param count - optional upper limit on images returned
+	* @param advanced - true to use real table, eg if need pending (default: false)
+	*/
+	function getPOTD($sort=null, $count=null,$advanced = false)
+	{
+		if (is_null($sort))
+			$orderby="";
+		else
+			$orderby="order by $sort";
+		
+		if (is_null($count))
+			$limit="";
+		else
+			$limit="limit $count";
+		
+		if ($advanced) {
+			$sql = "select gi.*,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,imagecount,gd.showday ".
+				"from gridimage as gi ".
+				"inner join gridsquare as gs using(gridsquare_id) ".
+				"inner join user on(gi.user_id=user.user_id) ".
+				"inner join gridimage_daily gd using(gridimage_id) ".
+				"where gd.showday is not null and gd.showday < NOW() ".
+				"$orderby $limit";
+		} else {
+			$sql = "select gi.*,gd.showday ".
+				"from gridimage_search gi ".
+				"inner join gridimage_daily gd using(gridimage_id) ".
+				"where gd.showday is not null and gd.showday < NOW() ".
+				"$orderby $limit";
+		}
+		
+		return $this->_getImagesBySql($sql);
+	}
+
+	/**
+	* build a basic image list from basic criteria
 	* @param statuses - either an array of statuses or a single status (pending, rejected or accepted)
 	* @param sort - optional sort field and direction, e.g. submitted desc
 	* @param count - optional upper limit on images returned
 	* @param advanced - true to use real table, eg if need pending (default: false)
-	* @param includeUserStatus - include any that have been self moderated (default: false)
 	*/
 	function getImages($statuses, $sort=null, $count=null,$advanced = false)
 	{

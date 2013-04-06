@@ -30,7 +30,7 @@
 	<p style="margin:0">
 	<small style="white-space:nowrap">[<a href="{if $recentsearch}/results/{$recentsearch}{else}/search.php?displayclass=full&amp;orderby=submitted&amp;breakby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=15&amp;do=1{/if}" title="Neu hochgeladene Bilder zeigen">mehr</a>|<a href="{if $recentsearchcur}/results/{$recentsearchcur}{else}/search.php?displayclass=full&amp;orderby=imagetaken&amp;breakby=imagetaken&amp;reverse_order_ind=1&amp;resultsperpage=15&amp;do=1{/if}" title="Aktuelle Fotos zeigen">neu</a>]</small>
 	</p></div>
-  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Neue Bilder</h3>
+  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Letzte Bilder</h3>
   	
   	{foreach from=$recent item=image}
   

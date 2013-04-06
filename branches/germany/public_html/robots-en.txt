@@ -79,6 +79,7 @@ Disallow: /statistics/regions.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
+Disallow: /more.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php?
@@ -138,6 +139,7 @@ Disallow: /statistics/regions.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
+Disallow: /more.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php?
@@ -197,6 +199,7 @@ Disallow: /statistics/regions.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
+Disallow: /more.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php?
@@ -254,6 +257,7 @@ Disallow: /statistics/regions.php?
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
+Disallow: /more.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php

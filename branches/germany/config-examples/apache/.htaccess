@@ -80,7 +80,7 @@ Options -Multiviews
     RewriteRule ^tile/(-?[0-9]+)/(2)/(11)/([0-9]+)/([0-9]+)/([0-9]+)\.png /tile.php?t=$1&o=$2&l=$3&Z=$4&x=$5&y=$6 [qsa]
 
     RewriteRule ^photo/([0-9]+)\.xml /api/photo/$1 [qsa]
-    RewriteRule ^api/.* /restapi.php [qsa]
+    RewriteRule ^api/(.*) /restapi.php/api/$1 [qsa]
     RewriteRule ^photo/([0-9]+)\.rdf /rdfapi.php?id=$1 [qsa]
     RewriteRule ^photo/([0-9]+)\.kml /kml.php?id=$1 [qsa]
     RewriteRule ^photo/([0-9]+) /view.php?id=$1 [qsa]
@@ -124,6 +124,8 @@ Options -Multiviews
 
     RewriteRule ^feed/recent\.([\w]+) /syndicator.php?extension=$1 [qsa]
     RewriteRule ^feed/recent/?([^/]*)/? /syndicator.php?format=$1 [qsa]
+    RewriteRule ^feed/potd\.([\w]+) /syndicator.php?potd=1&extension=$1 [qsa]
+    RewriteRule ^feed/potd/?([^/]*)/? /syndicator.php?potd=1&format=$1 [qsa]
 
     RewriteRule ^feed/results/([0-9]+)(|/[0-9]+)\.nl$ /kml.php?page=$2&i=$1&submit=1&simple=1&type=view [qsa]
     RewriteRule ^feed/results/([0-9]+)(|/[0-9]+)\.([\w]+) /syndicator.php?page=$2&i=$1&extension=$3 [qsa]
