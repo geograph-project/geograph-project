@@ -520,6 +520,7 @@ $CONF['picnik_method'] = 'inabox'; //'inabox'|'redirect'
 
 $REVISIONS = array(
 #	"/templates/basic/css/basic.css"     => "0001",
+#	"/slideshow.js"                      => "0001",
 #	"/js/geonotes.js"                    => "0001",
 );
 
