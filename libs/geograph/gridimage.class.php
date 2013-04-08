@@ -1809,6 +1809,17 @@ class GridImage
 			INNER JOIN user ON(gi.user_id=user.user_id)
 			WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
+
+			$row = &$db->GetRow("select recent_id from gridimage_recent where gridimage_id={$this->gridimage_id} limit 1");
+			if ($row !== false && count($row)) {
+				$recent_id=$row['recent_id'];
+				$sql="REPLACE INTO gridimage_recent
+				SELECT gridimage_id,gi.user_id,moderation_status,title,title2,submitted,imageclass,imagetaken,upd_timestamp,x,y,gs.grid_reference,gi.realname!='' as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,gs.reference_index,comment,comment2,$lat,$long,ftf,seq_no,point_xy,GeomFromText('POINT($long $lat)'),$recent_id
+				FROM gridimage AS gi INNER JOIN gridsquare AS gs USING(gridsquare_id)
+				INNER JOIN user ON(gi.user_id=user.user_id)
+				WHERE gridimage_id = '{$this->gridimage_id}'";
+				$db->Execute($sql);		
+			}
 		} else {
 			//fall back if we dont know the moduration status then lets load it and start again!
 			$this->loadFromId($this->gridimage_id);	
