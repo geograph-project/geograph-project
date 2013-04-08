@@ -152,11 +152,12 @@ class RasterMap
 		$this->long = floatval($long);
 	}
 	
-	function addViewpoint($viewpoint_eastings,$viewpoint_northings,$viewpoint_grlen,$view_direction = -1) {
+	function addViewpoint($viewpoint_ri, $viewpoint_eastings,$viewpoint_northings,$viewpoint_grlen,$view_direction = -1) {
 		$this->viewpoint_eastings = $viewpoint_eastings;
 		$this->viewpoint_northings = $viewpoint_northings;
 		$this->viewpoint_grlen = $viewpoint_grlen;
 		$this->view_direction = $view_direction;
+		$this->viewpoint_ri = $viewpoint_ri;
 	}
 	function addViewDirection($view_direction = -1) {
 		$this->view_direction = $view_direction;
@@ -321,14 +322,30 @@ class RasterMap
 			else
 				$iconfile = "$prefix--1.png";
 
-			$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
-						|| intval($this->natnorthings/1000) != intval($this->viewpoint_northings/1000));
+			if ($this->viewpoint_ri == $this->reference_index) {
+				$viewpoint_eastings = $this->viewpoint_eastings;
+				$viewpoint_northings = $this->viewpoint_northings;
+			} else {
+				$viewpoint_eastings = -1;
+				$viewpoint_northings = -1;
+				$latlong = $conv->national_to_wgs84($this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_ri);
+				if (count($latlong)) {
+					$enr = $conv->wgs84_to_national($latlong[0],$latlong[1], true, $this->reference_index);
+					if (count($enr)) {
+						$viewpoint_eastings = $enr[0];
+						$viewpoint_northings  = $enr[1];
+					}
+				}
+			}
 	
+			$different_square_true = (intval($this->nateastings/1000) != intval($viewpoint_eastings/1000)
+						|| intval($this->natnorthings/1000) != intval($viewpoint_northings/1000));
+
 			$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
 
 	//calculate photographer position
 			if (!$this->issubmit && $show_viewpoint) {
-				$e = $this->viewpoint_eastings;	$n = $this->viewpoint_northings;
+				$e = $viewpoint_eastings;	$n = $viewpoint_northings;
 				if ($this->viewpoint_grlen == '4') {
 					$e +=500; $n += 500;
 				}
@@ -514,13 +531,28 @@ class RasterMap
 				$block .= $this->getPolyLineBlock($conv,$e+1000,$n-1000,$e+1000,$n+2000);
 				
 				if (!empty($this->viewpoint_northings)) {
-					$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
-						|| intval($this->natnorthings/1000) != intval($this->viewpoint_northings/1000));
+					if ($this->viewpoint_ri == $this->reference_index) {
+						$viewpoint_eastings = $this->viewpoint_eastings;
+						$viewpoint_northings = $this->viewpoint_northings;
+					} else {
+						$viewpoint_eastings = -1;
+						$viewpoint_northings = -1;
+						$latlong = $conv->national_to_wgs84($this->viewpoint_eastings,$this->viewpoint_northings,$this->viewpoint_ri);
+						if (count($latlong)) {
+							$enr = $conv->wgs84_to_national($latlong[0],$latlong[1], true, $this->reference_index);
+							if (count($enr)) {
+								$viewpoint_eastings = $enr[0];
+								$viewpoint_northings  = $enr[1];
+							}
+						}
+					}
+					$different_square_true = (intval($this->nateastings/1000) != intval($viewpoint_eastings/1000)
+						|| intval($this->natnorthings/1000) != intval($viewpoint_northings/1000));
 
 					$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
 
 					if ($show_viewpoint) {
-						$ve = $this->viewpoint_eastings;	$vn = $this->viewpoint_northings;
+						$ve = $viewpoint_eastings;	$vn = $viewpoint_northings;
 						if ($this->viewpoint_grlen == '4') {
 							$ve +=500; $vn += 500;
 						}
