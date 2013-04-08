@@ -95,11 +95,11 @@ function pointInside($p,&$points) {
 
 //use:	list($e,$n,$reference_index) = wgs84_to_national($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
-function wgs84_to_national($lat,$long,$usehermert = true) {
+function wgs84_to_national($lat,$long,$usehermert = true,$ri=-1) {
 	require_once('geograph/conversionslatlong.class.php');
 	$conv = new ConversionsLatLong;
-	$ire = ($lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
-	$uk = ($lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
+	$ire = ($ri == 2 || $ri == -1 && $lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
+	$uk = ($ri == 1 || $ri == -1 && $lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
 	
 	if ($uk && $ire) {
 		//rough border for ireland
@@ -120,6 +120,7 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 	} else if ($uk) {
 		return array_merge($conv->wgs84_to_osgb36($lat,$long),array(1));
 	}
+	return array();
 }
 
 

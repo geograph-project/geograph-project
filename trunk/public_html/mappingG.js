@@ -28,6 +28,10 @@
  var marker2 = null;
  var eastings2 = 0;
  var northings2 = 0;
+ var lat1 = 0;
+ var lon1 = 0;
+ var lat2 = 0;
+ var lon2 = 0;
  
  var pickupbox = null;
  
@@ -47,7 +51,7 @@
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
 			
-			if (ri == -1) {
+			if (ri == -1||issubmit) {
 			if (wgs84.isIreland()) {
 				//convert to Irish
 				var grid=wgs84.getIrish(true);
@@ -66,10 +70,14 @@
 			var gridref = grid.getGridRef(4);
 
 			if (picon) {
+				lon2 = wgs84.longitude*Math.PI/180.;
+				lat2 = wgs84.latitude*Math.PI/180.;
 				eastings2 = grid.eastings;
 				northings2 = grid.northings;
 				document.theForm.photographer_gridref.value = gridref;
 			} else {
+				lon1 = pp.lng()*Math.PI/180.;
+				lat1 = pp.lat()*Math.PI/180.;
 				eastings1 = grid.eastings;
 				northings1 = grid.northings;
 				document.theForm.grid_reference.value = gridref;
@@ -192,7 +200,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	var grid;
 	var ok = false;
 
-	if (ri == -1) {
+	if (ri == -1 || issubmit) {
 
 	grid=new GT_OSGB();
 	if (grid.parseGridRef(gridref)) {
@@ -226,9 +234,13 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		currentelement.setPoint(point);
 
 		if (that.name == 'photographer_gridref') {
+			lon2 = wgs84.longitude*Math.PI/180.;
+			lat2 = wgs84.latitude*Math.PI/180.;
 			eastings2 = grid.eastings;
 			northings2 = grid.northings;
 		} else {
+			lon1 = wgs84.longitude*Math.PI/180.;
+			lat1 = wgs84.latitude*Math.PI/180.;
 			eastings1 = grid.eastings;
 			northings1 = grid.northings;
 		}  
@@ -248,11 +260,22 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 function updateViewDirection() {
 	if (eastings1 > 0 && eastings2 > 0) {
-		
-		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
+		//distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
+		R = 6378137.0;
+		dlat = lat1-lat2;
+		dlon = lon1-lon2;
+		slat = Math.sin(0.5*dlat);
+		slon = Math.sin(0.5*dlon);
+		sinsq = slat*slat + Math.cos(lat1)*Math.cos(lat2)*slon*slon;
+		arc = 2 * Math.atan2(Math.sqrt(sinsq), Math.sqrt(1-sinsq));
+		distance = R * arc;
 	
 		if (distance > 14) {
-			realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
+			//realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
+			y = Math.sin(dlon)*Math.cos(lat1);
+			x = Math.cos(lat2)*Math.sin(lat1) - Math.sin(lat2)*Math.cos(lat1)*Math.cos(dlon);
+			realangle = Math.atan2(y, x);
+			realangle *= 180./Math.PI;
 
 			if (realangle < 0)
 				realangle = realangle + 360.0;

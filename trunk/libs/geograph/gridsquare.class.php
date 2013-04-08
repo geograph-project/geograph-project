@@ -292,38 +292,69 @@ class GridSquare
 	/**
 	*
 	*/
-	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false)
+	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false,$recalc = false)
 	{
 		$matches=array();
 		$isfour=false;
 		
-		if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{5})[ \.]?(\d{5})\b/",$gridreference,$matches)) {
+		if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1,5})[ \.](\d{1,5})\b/",$gridreference,$matches) and (strlen($matches[2]) == strlen($matches[3]))) {
 			list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
-			$this->natspecified = 1;
-			$natgrlen = $this->natgrlen = 10;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{4})[ \.]?(\d{4})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]0","$matches[3]0");
-			$this->natspecified = 1;
-			$natgrlen = $this->natgrlen = 8;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{3})[ \.]*(\d{3})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]00","$matches[3]00");
-			$this->natspecified = 1;
-			$natgrlen = $this->natgrlen = 6;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{2})[ \.]?(\d{2})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]000","$matches[3]000");
-			$isfour = true;
-			$natgrlen = $this->natgrlen = 4;
-		} else if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1})[ \.]*(\d{1})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"$matches[2]5000","$matches[3]5000");
-			$natgrlen = $this->natgrlen = 2;
-		} else if (preg_match("/\b([a-zA-Z]{1,3})\b/",$gridreference,$matches)) {
-			list ($prefix,$e,$n) = array($matches[1],"50000","50000");
-			$natgrlen = $this->natgrlen = 0;
-		} 		
+			$length = strlen($matches[2]);
+			$natgrlen = $length * 2;
+		} elseif (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{0,10})\b/",$gridreference,$matches) and ((strlen($matches[2]) % 2) == 0)) {
+			$natgrlen = strlen($matches[2]);
+			$length = $natgrlen / 2;
+			list ($prefix,$e,$n) = array($matches[1], substr($matches[2], 0, $length), substr($matches[2], -$length));
+		}
+
 		if (!empty($prefix))
 		{
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
-			$ok=$this->_setGridRef($gridref,$allowzeropercent);
+
+			$ok = false;
+			if ($recalc) {
+				$db=&$this->_getDB();
+				$prefix = strtoupper($prefix);
+				$sql = "select * from gridprefix where prefix='{$prefix}' limit 1";
+				$row = $db->GetRow($sql);
+				if (count($row)) {
+					require_once('geograph/conversions.class.php');
+					$conv = new Conversions;
+					$ri = $row['reference_index'];
+					$fe = intval($e) + ($row['origin_x']-$CONF['origins'][$ri][0]) * 1000;
+					$fn = intval($n) + ($row['origin_y']-$CONF['origins'][$ri][1]) * 1000;
+					$latlong = $conv->national_to_wgs84($fe,$fn,$ri);
+					if (count($latlong)) {
+						$enr = $conv->wgs84_to_national($latlong[0],$latlong[1]);
+						if (count($enr)) {
+							$ri2 = $enr[2];
+							$fe2=$enr[0];$fn2=$enr[1];
+							if ($ri2 != $ri) { // we got a new ri
+								if ($length == 1)
+									$shift = 5000;
+								elseif ($length == 0)
+									$shift = 50000;
+								else
+									$shift = 0;
+								$e2 = round($enr[0],$length-5) + $shift;
+								$n2 = round($enr[1],$length-5) + $shift;
+								$x = floor($e2/1000) + $CONF['origins'][$ri2][0];
+								$y = floor($n2/1000) + $CONF['origins'][$ri2][1];
+								$ok = $this->loadFromPosition($x, $y);
+								if ($ok) {
+									$prefix = $this->gridsquare;
+									$e = sprintf("%05d", $e2%100000);
+									$n = sprintf("%05d", $n2%100000);
+									$gridref = $this->grid_reference;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (!$ok)
+				$ok=$this->_setGridRef($gridref,$allowzeropercent);
 			if ($ok && (!$isfour || $setnatfor4fig))
 			{
 				//we could be reassigning the square!

@@ -150,7 +150,7 @@ class MapMaker
 		}
 
 		//now plot all squares in the desired area
-		$sql="select x,y,percent_land,$sql_imagecount,reference_index,gs.gridsquare_id from $sql_table where ".
+		$sql="select x,y,percent_land,$sql_imagecount,gs.reference_index,gs.gridsquare_id from $sql_table where ".
 			"(x between $left and $right) and ".
 			"(y between $bottom and $top)$sql_group$sql_order";
 		trigger_error("map file: $filename", E_USER_NOTICE);
