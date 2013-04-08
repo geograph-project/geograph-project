@@ -78,6 +78,12 @@ if (isset($_GET['gridref']))
 				$smarty->assign('status', "Existing gridsquare $gridref updated with new land percentage of $percent %");
 				
 				$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$sq['gridsquare_id']}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now(),comment=".$db->Quote($_GET['comment']));
+
+				if ($isadmin) {
+					require_once('geograph/mapmosaic.class.php');
+					$mosaic = new GeographMapMosaic;
+					$mosaic->expirePosition($sq['x'],$sq['y'],0,true);
+				}
 			}
 			else
 			{
@@ -105,6 +111,11 @@ if (isset($_GET['gridref']))
 						
 					$db->Execute("REPLACE INTO mapfix_log SET user_id = {$USER->user_id}, gridsquare_id = {$gridsquare_id}, new_percent_land='{$percent}', old_percent_land='{$sq['percent_land']}',created=now(),comment=".$db->Quote($_GET['comment']));
 					
+					if ($isadmin) {
+						require_once('geograph/mapmosaic.class.php');
+						$mosaic = new GeographMapMosaic;
+						$mosaic->expirePosition($x,$y,0,true);
+					}
 				} else {
 					$smarty->assign('gridref_error', "Error, please try again later");
 				}
