@@ -33,8 +33,10 @@ $myriad = (isset($_GET['myriad']) && preg_match('/^\w+$/' , $_GET['myriad']))?$_
 $template='statistics_most_geographed.tpl';
 $cacheid='statistics|most_geographed'.$myriad;
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hr cache
+}
 
 $smarty->assign_by_ref('references_real',$CONF['references']);
 

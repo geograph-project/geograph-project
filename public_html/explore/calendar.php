@@ -52,11 +52,13 @@ if (isset($_GET['supp'])) {
 }
 
 
-$smarty->caching = 2; // lifetime is per cache
-if ($month == date('n') && $year == date('Y')) {
-	$smarty->cache_lifetime = 3600*24; //1day cache
-} else {
-	$smarty->cache_lifetime = 3600*24*7; //7day cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	if ($month == date('n') && $year == date('Y')) {
+		$smarty->cache_lifetime = 3600*24; //1day cache
+	} else {
+		$smarty->cache_lifetime = 3600*24*7; //7day cache
+	}
 }
 
 function print_rp(&$in,$exit = false) {
