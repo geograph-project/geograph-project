@@ -97,7 +97,9 @@ if (isset($_POST['msg']))
 	$smarty->assign_by_ref('errors', $errors);
 
 	$smarty->assign_by_ref('msg', $msg);
+	$smarty->assign_by_ref('contactmail', $CONF['abuse_email']);
 
+	$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 
 	if (isSpam($msg))
 	{
@@ -148,15 +150,23 @@ if (isset($_POST['msg']))
 		//build message and send it...
 		
 		$body=$smarty->fetch('email_usermsg.tpl');
-		$subject="[Geograph] $from_name contacting you via {$_SERVER['HTTP_HOST']}";
+		$subject="$from_name contacting you via {$_SERVER['HTTP_HOST']}";
+		$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 		
-		$hostname=trim(`hostname`);
+		$hostname=trim(`hostname -f`);
 		$received="Received: from [{$ip}]".
-			" by {$hostname}.geograph.org.uk ".
+			" by {$hostname} ".
 			"with HTTP;".
 			strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
+		$mime = "MIME-Version: 1.0\n".
+			"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
+			"Content-Disposition: inline\n".
+			"Content-Transfer-Encoding: 8bit";
+		$from = "From: $enc_from_name <$from_email>\n";
+		$geofrom = "From: Geograph <{$CONF['mail_from']}>\n";
+		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 
-		if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) {
+		if (preg_match('/(DORMANT|DELETED|@.*geograph\.org\.uk|@.*geograph\.co\.uk)/i',$recipient->email) || strpos($recipient->rights,'dormant') !== FALSE) { # FIXME hard coded patterns
 			$smarty->assign('invalid_email', 1);
 			
 			$email = $CONF['contact_email'];
@@ -166,7 +176,7 @@ if (isset($_POST['msg']))
 			$email = $recipient->email;
 		}
 
-		if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+		if (@mail($email, $encsubject, $body, $received.$from.$mime, $envfrom))
 		{
 			$db->query("insert into throttle set user_id=$user_id,feature = 'usermsg'");
 		
@@ -181,16 +191,17 @@ if (isset($_POST['msg']))
 				"Original To: {$recipient->email}\n".
 				"Original From: $from_name <$from_email>\n".
 				"Original Subject:\n\n$body",
-				'From:webserver@'.$_SERVER['HTTP_HOST']);	
+				$geofrom.$mime, $envfrom);
 
 
 			$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");
 		}
 		
 		if ($sendcopy) {
-			$subject="[Geograph] Copy of message sent to {$recipient->realname}";
-		
-			if (!@mail($from_email, $subject, $body, "From: $from_name <$from_email>")) {
+			$csubject="Copy of message sent to {$recipient->realname}";
+			$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$csubject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+
+			if (!@mail($from_email, $encsubject, $body, $from.$mime, $envfrom)) {
 				@mail($CONF['contact_email'], 
 					'Mail Error Report from '.$_SERVER['HTTP_HOST'],
 					"Original Subject: $subject\n".
@@ -198,7 +209,7 @@ if (isset($_POST['msg']))
 					"Original From: $from_name <$from_email>\n".
 					"Copy of message sent to {$recipient->realname}\n".
 					"Original Subject:\n\n$body",
-					'From:webserver@'.$_SERVER['HTTP_HOST']);	
+					$geofrom.$mime, $envfrom);
 
 
 				$smarty->assign('error', "<a href=\"/contact.php\">Please let us know</a>");

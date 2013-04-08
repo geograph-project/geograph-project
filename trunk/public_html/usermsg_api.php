@@ -101,15 +101,19 @@ if (!$ok) {
 }
 
 $smarty->assign_by_ref('msg', $msg);
+$smarty->assign_by_ref('contactmail', $CONF['abuse_email']);
+
+$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 
 $smarty->assign('http_host', "{$_SERVER['HTTP_HOST']} on behalf of {$domain}");
 $body=$smarty->fetch('email_usermsg.tpl');
-$subject="[Geograph] $from_name contacting you via {$domain}";
+$subject="$from_name contacting you via {$domain}";
+$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 
 $ip=getRemoteIP();
-$hostname=trim(`hostname`);
+$hostname=trim(`hostname -f`);
 $received="Received: from [{$ip}]".
-	" by {$hostname}.geograph.org.uk ".
+	" by {$hostname} ".
 	"with HTTP;".
 	strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
 
@@ -121,6 +125,13 @@ if (!empty($_REQUEST['client_ip']) && preg_match("/^[\w\.]+$/",$_REQUEST['client
 
 
 }
+$mime = "MIME-Version: 1.0\n".
+	"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
+	"Content-Disposition: inline\n".
+	"Content-Transfer-Encoding: 8bit";
+$from = "From: $enc_from_name <$from_email>\n";
+$geofrom = "From: Geograph <{$CONF['mail_from']}>\n";
+$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 
 
 if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) {
@@ -131,7 +142,7 @@ if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|l
 } else {
 	$email = $recipient->email;
 }
-if (@mail($email, $subject, $body, $received."From: $from_name <$from_email>")) 
+if (@mail($email, $encsubject, $body, $received.$from.$mime, $envfrom))
 {
 
 
@@ -146,7 +157,7 @@ else
 		"Original To: {$recipient->email}\n".
 		"Original From: $from_name <$from_email>\n".
 		"Original Subject:\n\n$body",
-		'From:webserver@'.$_SERVER['HTTP_HOST']);	
+		$geofrom.$mime, $envfrom); #FIXME conf var
 
 	die("ERROR: fatal error, Please let us know");
 }

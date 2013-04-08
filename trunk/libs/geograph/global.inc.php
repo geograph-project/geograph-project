@@ -159,15 +159,18 @@ require_once('geograph/user.class.php');
 // PHP5 ONLY
 function geograph_autoload($class_name) {
         if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/../libs/geograph/'.strtolower($class_name).'.class.php')) {
+		global $CONF;
                 ob_start();
                 debug_print_backtrace();
-		print "\n\nHost: ".`hostname`."\n\n";
+		print "\n\nHost: ".`hostname -f`."\n\n";
                 print_r($GLOBALS);
 		print_r(get_included_files());
                 $con = ob_get_clean();
-                mail('geograph@barryhunter.co.uk','[Geograph Error] '.date('r'),$con);
+		$geofrom = "From: Geograph <{$CONF['mail_from']}>";
+		$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+                mail($CONF['admin_email'],'[Geograph Error] '.date('r'),$con,$geofrom,$envfrom);
 		header("HTTP/1.1 505 Server Error");
-                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:geograph@barryhunter.co.uk">let us know</a> what you where doing that lead up to this error');
+                die('Fatal Internal Error, the developers have been notified, if possible please <a href="mailto:mailto:'.$CONF['admin_email'].'">let us know</a> what you where doing that lead up to this error');
         }
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
