@@ -11,7 +11,7 @@
 
 <dl style="float:right; margin:0px; position:relative">
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $square->reference_index eq 1}OSGB36{else}Irish{/if}: {getamap gridref=$gridrefraw text=$gridrefraw} [{$square->precision}m precision]<br/>
+{if $square->reference_index eq 1}OSGB36{else}Irish{/if}: {$gridrefraw} [{$square->precision}m precision]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude" 
 title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
