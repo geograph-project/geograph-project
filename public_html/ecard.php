@@ -117,8 +117,12 @@ if (!$throttle && isset($_POST['msg']))
 	$smarty->assign_by_ref('errors', $errors);
 
 	$smarty->assign_by_ref('msg', html_entity_decode($msg)); //will be re-htmlentities'ed when output
+	$smarty->assign_by_ref('charset', $CONF['mail_charset']);
+	$smarty->assign_by_ref('contactmail', $CONF['abuse_email']);
 
-	
+	$enc_from_name = mb_encode_mimeheader($from_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+	$enc_to_name = mb_encode_mimeheader($to_name, $CONF['mail_charset'], $CONF['mail_transferencoding']);
+
 	//still ok?
 	if ($ok && !isset($_POST['edit']))  
 	{
@@ -129,6 +133,7 @@ if (!$throttle && isset($_POST['msg']))
 		
 		$body=$smarty->fetch('email_ecard.tpl');
 		$subject="[{$_SERVER['HTTP_HOST']}] $from_name is sending you an e-Card";
+		$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 		
 		if (isset($_POST['preview'])) {
 			preg_match_all('/(<!DOCTYPE.*<\/HTML>)/s',$body,$matches);
@@ -156,21 +161,23 @@ if (!$throttle && isset($_POST['msg']))
 			$ip=getRemoteIP();
 			
 			$headers = array();
-			$headers[] = "From: $from_name <{$USER->email}>";
+			$headers[] = "From: $enc_from_name <{$USER->email}>";
 			if ($from_email != $USER->email) 
-				$headers[] = "Reply-To: $from_name <$from_email>";
+				$headers[] = "Reply-To: $enc_from_name <$from_email>";
 			$headers[] = "X-GeographUserId:{$USER->user_id}";
 			$headers[] = "X-IP:$ip";
 
 			$headers[] = "Content-Type: multipart/alternative;\n	boundary=\"----=_NextPart_000_00DF_01C5EB66.9313FF40\"";
 			
-			$hostname=trim(`hostname`);
+			$hostname=trim(`hostname --fqdn`);
 			$received="Received: from [{$ip}]".
-				" by {$hostname}.geograph.org.uk ".
+				" by {$hostname} ".
 				"with HTTP;".
 				strftime("%d %b %Y %H:%M:%S -0000", time())."\n";
-			
-			@mail("$to_name <$to_email>", $subject, $body, $received.implode("\n",$headers));
+
+			$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+
+			@mail("$enc_to_name <$to_email>", $encsubject, $body, $received.implode("\n",$headers), $envfrom);
 
 			$smarty->assign('sent', 1);
 		}

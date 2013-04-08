@@ -138,6 +138,10 @@ $CONF['exiftooldir']='';
 ###################################
 
 $CONF['mail_subjectprefix'] = '[geograph] ';
+$CONF['mail_transferencoding'] = 'Q';
+$CONF['mail_charset'] = 'iso-8859-1';
+$CONF['mail_envelopefrom'] = 'mail@example.invalid'; # or null
+$CONF['mail_from'] = 'mail@example.invalid';
 
 ###################################
 # optional sphinx setup
@@ -172,8 +176,10 @@ $CONF['smarty_caching']=1;
 ###################################
 # admin details
 
-//email address to send site messages to
-$CONF['contact_email']='someone@somewhere.com,other@elsewhere.com';
+//email addresses to send site messages to
+$CONF['contact_email']='someone@somewhere.invalid,other@elsewhere.invalid';
+$CONF['abuse_email']='abuse@somewhere.invalid';
+$CONF['admin_email']='webmaster@somewhere.invalid';
 
 ###################################
 # folder setup

@@ -387,25 +387,34 @@ class GeographUser
 					$register_authentication_url="http://".
 						$_SERVER['HTTP_HOST'].'/reg/'.$user_id.
 						'/'.substr(md5($user_id.$CONF['register_confirmation_secret']),0,16);
-					
-					$msg="Thankyou for registering at http://".$_SERVER['HTTP_HOST']."\n\n";
-					
-					$msg="Before you can log in, you must first confirm your registration ".
-						"by following the link below:\n\n";
-					$msg.=$register_authentication_url."\n\n";
-					
-					$msg.="Once you have confirmed your registration, you will be able to ".
-						"log in with the email address and password you provided:\n";
-					$msg.="    email: $email\n";
-					//$msg.="    password: $password1\n\n";
-					
-					$msg.="We hope you enjoy using and contributing to the site\n\n";
-					$msg.="Kind Regards,\n\n";
-					$msg.="The Geograph.org.uk Team";
-					
-					
-					@mail($email, '[geograph] Confirm registration', $msg,
-						"From: Geograph Website <noreply@geograph.org.uk>");
+					$register_geograph_url="http://".$_SERVER['HTTP_HOST'];
+
+					$register_mail_body = <<<EOT
+Thankyou for registering at %s
+
+Before you can log in, you must first confirm your registration by following the link below:
+
+%s
+
+Once you have confirmed your registration, you will be able to log in with the email address and password you provided:
+    email: %s
+
+We hope you enjoy using and contributing to the site
+
+Kind Regards,
+
+The Geograph Team
+EOT;
+					$register_mail_subject = 'Confirm registration';
+					$msg = sprintf($register_mail_body,$register_geograph_url,$register_authentication_url,$email);
+
+					@mail($email, mb_encode_mimeheader($CONF['mail_subjectprefix'].$register_mail_subject, $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg,
+						"From: Geograph <{$CONF['mail_from']}>\n".
+						"MIME-Version: 1.0\n".
+						"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
+						"Content-Disposition: inline\n".
+						"Content-Transfer-Encoding: 8bit",
+						is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
 				}
 			}
 		}
@@ -516,17 +525,31 @@ class GeographUser
 					$_SERVER['HTTP_HOST'].'/reg/p'.$id.
 					'/'.substr(md5('p'.$id.$CONF['register_confirmation_secret']),0,16);
 						
-				$msg="You recently requested the password ".
-				"for your account at ".$_SERVER['HTTP_HOST']." be changed.\n\n".
+				$mail_body = <<<EOT
+Hello.
 
-				"To confirm, please click this link:\n\n".
+You recently requested the password for account %s at %s to be changed.
+To confirm, please click this link:
 
-				"$url\n\n".
+%s
 
-				"If you do not wish to change your password, simply disregard this message";
+If you do not wish to change your password, simply disregard this message.
 
-				@mail($email, 'Password Change Confirmation for '.$_SERVER['HTTP_HOST'], $msg,
-				"From: Geograph Website <noreply@geograph.org.uk>");
+Kind Regards,
+
+The Geograph Team
+EOT;
+				$mail_subject = 'New password for %s';
+				$msg = sprintf($mail_body, $email, $_SERVER['HTTP_HOST'], $url);
+				$sub = sprintf($mail_subject, $_SERVER['HTTP_HOST']);
+
+				@mail($email, mb_encode_mimeheader($CONF['mail_subjectprefix'].$sub, $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg,
+					"From: Geograph <{$CONF['mail_from']}>\n".
+					"MIME-Version: 1.0\n".
+					"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+					"Content-Disposition: inline\n".
+					"Content-Transfer-Encoding: 8bit",
+					is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
 				$ok=true;
 			}
 			else
@@ -825,20 +848,32 @@ class GeographUser
 				$url="http://".
 					$_SERVER['HTTP_HOST'].'/reg/m'.$id.
 					'/'.substr(md5('m'.$id.$CONF['register_confirmation_secret']),0,16);
-						
-				$msg="You recently requested the email address ".
-				"for your account at ".$_SERVER['HTTP_HOST']." be changed to {$profile['email']}.\n\n".
-				
-				"To confirm, please click this link:\n\n".
-				
-				"$url\n\n".
-				
-				"If you do not wish to change your address, simply disregard this message";
-				
-				@mail($profile['email'], 'Please confirm your email address change', $msg,
-				"From: Geograph Website <noreply@geograph.org.uk>");
-				
-				
+
+				$mail_body = <<<EOT
+Hello.
+
+You recently requested the email address for your account at %s be changed to %s.
+To confirm, please click this link:
+
+%s
+
+If you do not wish to change your address, simply disregard this message.
+
+Kind Regards,
+
+The Geograph Team
+EOT;
+				$mail_subject = 'Please confirm your email address change for %s';
+				$msg = sprintf($mail_body, $_SERVER['HTTP_HOST'], $profile['email'], $url);
+				$sub = sprintf($mail_subject, $_SERVER['HTTP_HOST']);
+
+				@mail($profile['email'], mb_encode_mimeheader($CONF['mail_subjectprefix'].$sub, $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg,
+					"From: Geograph <{$CONF['mail_from']}>\n".
+					"MIME-Version: 1.0\n".
+					"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+					"Content-Disposition: inline\n".
+					"Content-Transfer-Encoding: 8bit",
+					is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
 			}
 			else
 			{
