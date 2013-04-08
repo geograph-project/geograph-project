@@ -130,15 +130,15 @@ if (isset($_REQUEST['id']))
 			$db=NewADOConnection($GLOBALS['DSN']);
 					
 			$exif = $db->getOne("SELECT exif FROM gridimage_exif WHERE gridimage_id = ".$image->gridimage_id);
-			if (empty($exif)) {
-				$exif = $db->getOne("SELECT exif FROM gridimage_exif3 WHERE gridimage_id = ".$image->gridimage_id);
-			}
-			if (empty($exif)) {
-				$exif = $db->getOne("SELECT exif FROM gridimage_exif2 WHERE gridimage_id = ".$image->gridimage_id);
-			}
-			if (empty($exif)) {
-				$exif = $db->getOne("SELECT exif FROM gridimage_exif1 WHERE gridimage_id = ".$image->gridimage_id);
-			}
+			#if (empty($exif)) {
+			#	$exif = $db->getOne("SELECT exif FROM gridimage_exif3 WHERE gridimage_id = ".$image->gridimage_id);
+			#}
+			#if (empty($exif)) {
+			#	$exif = $db->getOne("SELECT exif FROM gridimage_exif2 WHERE gridimage_id = ".$image->gridimage_id);
+			#}
+			#if (empty($exif)) {
+			#	$exif = $db->getOne("SELECT exif FROM gridimage_exif1 WHERE gridimage_id = ".$image->gridimage_id);
+			#}
 
 			if (!empty($exif)) {
 				$exif = unserialize($exif);
