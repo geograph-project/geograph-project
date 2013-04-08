@@ -122,6 +122,7 @@ class GridImage
 	* photographer grid reference
 	*/
 	var $photographer_gridref;
+	var $photographer_gridref_spaced;
 	
 	/**
 	* photographer grid reference precision (in metres)
@@ -132,6 +133,7 @@ class GridImage
 	* subject grid reference
 	*/
 	var $subject_gridref;
+	var $subject_gridref_spaced;
 	
 	/**
 	* subject grid reference precision (in metres)
@@ -206,10 +208,13 @@ class GridImage
 	function getPhotographerGridref($spaced = false)
 	{
 		//already calculated?
-		if (strlen($this->photographer_gridref))	
+		if (!$spaced && strlen($this->photographer_gridref))
 			return $this->photographer_gridref;
+		if ($spaced && strlen($this->photographer_gridref_spaced))
+			return $this->photographer_gridref_spaced;
 
-		$this->photographer_gridref='';
+		$posgr='';
+		$posgrsp='';
 		if ($this->viewpoint_northings) 
 		{
 			require_once('geograph/conversions.class.php');
@@ -218,21 +223,30 @@ class GridImage
 			list($posgr,$len) = $conv->national_to_gridref(
 				$this->viewpoint_eastings,
 				$this->viewpoint_northings,
-				($this->use6fig && $spaced)?min(6,$this->viewpoint_grlen):max(2,$this->viewpoint_grlen),
-				$this->grid_square->reference_index,$spaced);
+				max(2,$this->viewpoint_grlen),
+				$this->grid_square->reference_index,false);
+			list($posgrsp,$lensp) = $conv->national_to_gridref(
+				$this->viewpoint_eastings,
+				$this->viewpoint_northings,
+				$this->use6fig?min(6,$this->viewpoint_grlen):max(2,$this->viewpoint_grlen),
+				$this->grid_square->reference_index,true);
 			
-			$this->photographer_gridref=$posgr;
 			$this->photographer_gridref_precision=pow(10,6-$len)/10;
-		}	
-		
-		return $this->photographer_gridref;
+		}
+
+		$this->photographer_gridref=$posgr;
+		$this->photographer_gridref_spaced=$posgrsp;
+		return $spaced ? $posgrsp : $posgr;
 	}
 	
+	// FIXME should only store when !$spaced
 	function getSubjectGridref($spaced = false)
 	{
 		//already calculated?
-		if (strlen($this->subject_gridref))	
+		if (!$spaced && strlen($this->subject_gridref))
 			return $this->subject_gridref;
+		if ($spaced && strlen($this->subject_gridref_spaced))
+			return $this->subject_gridref_spaced;
 
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
@@ -260,13 +274,19 @@ class GridImage
 		list($gr,$len) = $conv->national_to_gridref(
 			$this->grid_square->getNatEastings()-$correction,
 			$this->grid_square->getNatNorthings()-$correction,
-			($this->use6fig && $spaced)?min(6,$this->natgrlen):max(4,$this->natgrlen),
-			$this->grid_square->reference_index,$spaced);
+			max(4,$this->natgrlen),
+			$this->grid_square->reference_index,false);
+		list($grsp,$lensp) = $conv->national_to_gridref(
+			$this->grid_square->getNatEastings()-$correction,
+			$this->grid_square->getNatNorthings()-$correction,
+			$this->use6fig?min(6,$this->natgrlen):max(4,$this->natgrlen),
+			$this->grid_square->reference_index,true);
 		
 		$this->subject_gridref=$gr;
+		$this->subject_gridref_spaced=$grsp;
 		$this->subject_gridref_precision=pow(10,6-$len)/10;
 		
-		return $this->subject_gridref;
+		return $spaced ? $grsp : $gr;
 	}
 	
 	/**
