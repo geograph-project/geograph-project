@@ -771,11 +771,11 @@ class UploadManager
 		$image->user_id = $USER->user_id;
 		
 		if ($this->clearexif && $CONF['exiftooldir'] !== '') {
-			$cmd = sprintf ("\"%sexiftool\" -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
+			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
 			passthru ($cmd);
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			if (file_exists($orginalfile)) {
-				$cmd = sprintf ("\"%sexiftool\" -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
 				passthru ($cmd);
 			}
 		}
@@ -847,6 +847,16 @@ class UploadManager
 		}
 
 		$src=$this->_pendingJPEG($this->upload_id);	
+
+		if ($this->clearexif && $CONF['exiftooldir'] !== '') {
+			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
+			passthru ($cmd);
+			$orginalfile = $this->_originalJPEG($this->upload_id);
+			if (file_exists($orginalfile)) {
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $orginalfile);
+				passthru ($cmd);
+			}
+		}
 
 		//store the resized version - just for the moderator to use as a preview
 		if ($ok = $image->storeImage($src,false,'_preview')) {
