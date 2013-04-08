@@ -72,8 +72,10 @@ if ($ri) {
 	$link .= "ri=$ri&amp;";
 }
 
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hr cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hr cache
+}
 
 $smarty->assign_by_ref('references',$CONF['references_all']);	
 

@@ -33,9 +33,10 @@ $smarty = new GeographPage;
 $template='statistics_leaderallhectad.tpl';
 $cacheid=$type;
 
-
-$smarty->caching = 2; // lifetime is per cache
-$smarty->cache_lifetime = 3600*24; //24hour cache
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24hour cache
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
