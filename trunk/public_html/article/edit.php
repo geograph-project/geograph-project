@@ -134,10 +134,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	
 	//the most basic protection
 	$_POST['content'] = strip_tags($_POST['content']);
-	$_POST['content'] = preg_replace('/[“”]/','',$_POST['content']);
+	#$_POST['content'] = preg_replace('/[“”]/','',$_POST['content']);
 
 	$_POST['extract'] = strip_tags($_POST['extract']);
-	$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
+	#$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
 
 	
 	$updates = array();
