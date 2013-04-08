@@ -72,7 +72,7 @@ $CAPTCHA_CONFIG = array(
 require_once('geograph/b2evo_captcha.class.php');
 
 //Initialize the captcha object with our configuration options
-$captcha =& new b2evo_captcha($CAPTCHA_CONFIG);
+$captcha = new b2evo_captcha($CAPTCHA_CONFIG);
 $captcha->validchars = preg_replace('/[^\w]+/i','',$captcha->validchars);
 
 if (defined('CHECK_CAPTCHA')) {
