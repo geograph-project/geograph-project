@@ -14,14 +14,16 @@
 		<br/><div style="font-size:0.6em;">[[[{$image->gridimage_id}]]]</div>
 	  </div>
 	  <div style="float:left; position:relative">
-		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/></a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]
+		<a name="{$image->gridimage_id}"><input type="text" name="title" size="80" value="{$image->title1|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/></a><br />
+		<input type="text" name="title2" size="80" value="{$image->title2|escape:'html'}" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''"/>
+		[<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>]
 		<br/>
 		for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $image->realname} by <a title="view user profile" href="/profile/{$user->user_id}?a={$image->realname|escape:'url'}">{$image->realname}</a>{/if}<br/>
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
 
-		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;"/>{if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="Apply changes"/>{/if}
+		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment1|escape:'html'}</textarea><br/><textarea name="comment2" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment2|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;"/>{if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="Apply changes"/>{/if}
 		<br/><span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]</span>
 
 		</div>
