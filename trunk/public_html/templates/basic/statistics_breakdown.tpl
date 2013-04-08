@@ -1,6 +1,6 @@
 {assign var="page_title" value="Statistics:: $h2title"}
 {include file="_std_begin.tpl"}
-<script src="{"/sorttable.js"|revision}"></script>
+<script src="{"/sorttable.js"|revision}" type="text/javascript"></script>
     <form method="get" action="{$script_name}">
     <p>View breakdown of images by 
     <select name="by">
@@ -46,37 +46,37 @@
 	<td {if $order ne 'c'} sorted="{$jsdir}"{/if}>{$title}</td>
 	<td {if $order eq 'c'} sorted="{$jsdir}"{/if}>Number</td>
 	<td sorted="none">Percentage</td></tr></thead>
+	<tfoot>
+	<tr class="totalrow sortbottom"><td>({$breakdown_count} items)</td>
+	<th align="right">{$total}</th>
+	<th align="right">100%</th></tr>
+	</tfoot>
 	<tbody>
 
 
 	{if $linkpro}
 		{foreach from=$breakdown item=line}
 		<tr><td><a href="{$line.link}">{$line.field|default:"<i>-unspecified-</i>"}</a></td>
-		<td align=right>{$line.c}</td>
-		<td align=right>{$line.per}%</td></tr>
+		<td align="right">{$line.c}</td>
+		<td align="right">{$line.per}%</td></tr>
 		{/foreach}
 	{else}
 		{if $linkprefix}
 			{foreach from=$breakdown item=line}
 			<tr><td><a href="{$linkprefix}{$line.field|escape:url|default:"-"}">{$line.field|default:"<i>-unspecified-</i>"}</a></td>
-			<td align=right>{$line.c}</td>
-			<td align=right>{$line.per}%</td></tr>
+			<td align="right">{$line.c}</td>
+			<td align="right">{$line.per}%</td></tr>
 			{/foreach}
 		{else}
 			{foreach from=$breakdown item=line}
 			<tr><td>{$line.field}</td>
-			<td align=right>{$line.c}</td>
-			<td align=right>{$line.per}%</td></tr>
+			<td align="right">{$line.c}</td>
+			<td align="right">{$line.per}%</td></tr>
 			{/foreach}
 		{/if}
 	{/if}
 
 	</tbody>
-	
-	<tr class="totalrow sortbottom"><td>({$breakdown_count} items)</td>
-	<th align=right>{$total}</th>
-	<th align=right>100%</th></tr>
-	
 	</table>
 	{else}
 		<p><i>No Results to Display</i></p>
