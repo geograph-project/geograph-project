@@ -328,7 +328,17 @@ elseif($action=='search') {if($reqTxt!=1)require($pathToFiles.'bb_func_txt.php')
 elseif($action=='wait') {
 	if ($user_sort==1) $orderBy='topic_id DESC'; else $orderBy='topic_last_post_id DESC';
 
-	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id','!=',strval($CONF['forum_gridsquare']),$orderBy,1,'forum_id','!=',strval($CONF['forum_gallery']))){
+	$showIds = $USER->getForumOption('show','',false);
+
+	$filterCrit = " NOT IN ";
+	$filterIds = "({$CONF['forum_gridsquare']},{$CONF['forum_gallery']})";
+
+	if (!empty($showIds)) {
+		$filterCrit = " IN ";
+		$filterIds = "($showIds)";
+	}
+
+	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id',$filterCrit,$filterIds,$orderBy,1)){
 		if ($cols[9]) {
 			print "<title>Updated Since Last Visit</title>";
 			print "<b>Updated Since Last Visit</b>";
@@ -418,6 +428,25 @@ if(db_simpleSelect(0,$Tf,'forum_id') and $countRes>0){
 if ($viewTopicsIfOnlyOneForum!=1) {
 	$showforums = $USER->getForumOption('forums',1);
 	
+	if (empty($_GET['show'])) {
+		$showIds = $USER->getForumOption('show','',false);
+
+		if (empty($showIds)) {
+			$showIds = array();
+		} else {
+			$showIds = explode(',',$showIds);
+		}
+
+	} elseif (is_array($_GET['show'])) {
+		$_GET['show'] = $show = trim(preg_replace('/[^\d,]+/','',implode(',',$_GET['show'])),',');
+		$USER->getForumOption('show',$show,true);
+		header("Location: /discuss/?show=$show");
+		exit;
+	} else {
+		$showIds = explode(',',trim(preg_replace('/[^\d,]+/','',$_GET['show'])));
+	}
+
+	
 	if (!$showforums) {
 		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_icon')){
 			do{
@@ -427,9 +456,34 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		}
 		$title=$sitename;
 		echo load_header();
-                print "<div style=\"float:left\"><a href=\"index.php\">Reload</a></div>";
- 		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">Watch</a></div>";
-		print "<div style=\"text-align:center\">Show <a href=\"index.php?forums=1\">Forum List</a> | View <a href=\"index.php?action=vtopic&amp;forum={$CONF['forum_gridsquare']}\">Recent Grid Square Discussions</a></div>";
+                print "<div style=\"float:left\"><a href=\"index.php\">{$l_reload}</a></div>";
+ 		print "<div style=\"float:right\"><a href=\"index.php?action=wait&amp;countdown=100\">{$l_watch}</a></div>";
+		print "<div style=\"text-align:center\">{$l_shorthead1}<a href=\"index.php?forums=1\">{$l_shorthead_list}</a>{$l_shorthead2}<a href=\"index.php?action=vtopic&amp;forum={$CONF['forum_gridsquare']}\">{$l_shorthead_gsd}</a></div>";
+		print "<form style=\"display:inline\">";
+		print "<div class=interestBox style=\"padding:2px;margin-top:4px;vertical-align:middle;font-size:0.8em;background-color:#f9f9f9;width:100%\">";
+		print "<div style=\"float:right;display:none\" id=\"updatebutton\"><input type=\"submit\" value=\"{$l_update}\" /></div> {$l_show}:";
+
+		if($cols=db_simpleSelect(0,$Tf,'forum_id, forum_name, forum_icon','forum_id',' NOT IN ','('.$CONF['forum_gallery'].')','forum_order')){
+			do {
+				$forum=$cols[0];
+
+				$forum_title=$cols[1];
+				$forum_icon=$cols[2];
+				
+				$checked = ((empty($showIds) && $forum != $CONF['forum_gridsquare']) || in_array($forum,$showIds))?' checked':'';
+				
+				print "<input type=checkbox name=\"show[]\" value=\"$forum\" title=\"{$forum_title}\" $checked onclick=\"document.getElementById('updatebutton').style.display='';\">";
+				print "<a href=\"index.php?&action=vtopic&amp;forum={$forum}\">";
+				print "<img src=\"{$static_url}/img/forum_icons/{$forum_icon}\" width=16 height=16 border=0 alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
+				print "</a>&nbsp;";
+
+
+			} while($cols=db_simpleSelect(1));
+		}
+		
+		print "</div>";
+		print "</form>";
+		
 	} else {
 		require($pathToFiles.'bb_func_vforum.php');
 	}
