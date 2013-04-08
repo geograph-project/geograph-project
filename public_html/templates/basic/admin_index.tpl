@@ -28,6 +28,11 @@
 
 {if $is_mod} 
 
+	{if $originals_new}
+		<li><a href="/admin/resubmissions.php">High Resolution Uploads</a><br/>
+		<b>[{$originals_new} ready to be verified]</b></li>
+	{/if}
+
 {if $articles_ready}
 <li><a href="/article/">Articles</a><br/>
 <b>[{$articles_ready} ready to be approved]</b></li>

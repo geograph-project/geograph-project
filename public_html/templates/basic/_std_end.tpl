@@ -15,6 +15,9 @@
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit" href="/submit.php">Submit</a></li>
+     {dynamic}{if $is_logged_in}
+     <li><a title="Your most recent submissions" href="/submissions.php">Submissions</a></li>
+     {/if}{/dynamic}
      <li><a title="Statistics" href="/numbers.php">Statistics</a></li>
      <li><a title="Leaderboard" href="/statistics/moversboard.php">Leaderboard</a></li>
     </ul></li>
