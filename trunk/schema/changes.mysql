@@ -431,3 +431,7 @@ ALTER TABLE `user` ADD `salt` VARCHAR(8) NOT NULL AFTER `password`;
 ALTER TABLE `user` ADD `confirmed` DATETIME NOT NULL;
 
 
+alter table gridimage_pending add type enum('picnik','original') default 'picnik';
+alter table gridimage_pending add status enum('new','open','accepted','rejected') default 'new';
+alter table gridimage_pending add `updated` timestamp on update current_timestamp not null default current_timestamp ;
+ALTER TABLE `gridimage_pending` CHANGE `status` `status` ENUM('new','open','accepted','confirmed','rejected') NOT NULL DEFAULT 'new';

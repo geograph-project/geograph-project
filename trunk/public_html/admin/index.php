@@ -64,6 +64,8 @@ if ($USER->hasPerm("moderator")) {
 
 
 	$smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
+
+	$smarty->assign('originals_new', $db->getOne("select count(*) from gridimage_pending where status = 'new' and type = 'original'"));
 }	
 
 $smarty->assign('names_pending', $db->GetOne("select count(*) from game_score where approved=0"));
