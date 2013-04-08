@@ -24,25 +24,9 @@
 
 
 		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment1|escape:'html'}</textarea><br/><textarea name="comment2" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment2|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;"/>{if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="Apply changes"/>{/if}
-		<br/><span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]</span>
-
 		</div>
 	  </div><br style="clear:both;"/>
-		{if $is_mod || $user->user_id == $image->user_id}
-		  <div class="interestBox" id="showshare{$image->gridimage_id}" style="display:none">
-			<iframe src="about:blank" height="400" width="100%" id="shareframe{$image->gridimage_id}">
-			</iframe>
-			<div><a href="#" onclick="hide_tree('share{$image->gridimage_id}');loadSnippetCount(true);return false">- Close <i>Shared Descriptions</I> box</a> ({newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"})</div>
-		  </div>
-		{/if}
 
-		<span id="hidetag{$image->gridimage_id}" style="font-size:0.8em"><span id="tags{$image->gridimage_id}"></span> &middot; <a href="#" onclick="return open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Tagging</b> Box</a></span>
-
-		<div class="interestBox" id="showtag{$image->gridimage_id}" style="display:none">
-			<iframe src="about:blank" height="200" width="100%" id="tagframe{$image->gridimage_id}">
-			</iframe>
-			<div><a href="#" onclick="hide_tree('tag{$image->gridimage_id}');return false">- Close <i>Tagging</I> box</a> ({newwin href="/article/Tags" text="Article about Tags"})</div>
-		</div>
 
 	  </form><br/>
 	 </div>
@@ -76,66 +60,5 @@
 {/if}
 
 <p><small>Note: Page generated at 10 minute intervals, please don't refresh more often than that.</small></p>
-
-<script type="text/javascript">
-{literal}
-function open_shared(gid,gr,extra) {
-	show_tree('share'+gid);
-
-	if (extra == '&tab=suggestions') {
-		var thatForm = document.forms['form'+gid];
-
-		if (thatForm.elements['title']) {
-			str = thatForm.elements['title'].value;
-		}
-		if (thatForm.elements['comment']) {
-			str = str + ' '+ thatForm.elements['comment'].value;
-		}
-		if (thatForm.elements['imageclass']) {
-			str = str + ' '+ thatForm.elements['imageclass'].value;
-		}
-
-		extra= extra + "&corpus="+encodeURIComponent(str.replace(/[\r\n]+/,' '));
-	}
-
-
-	document.getElementById('shareframe'+gid).src='/submit_snippet.php?gridimage_id='+gid+'&gr='+gr+extra;
-	return false;
-}
-function open_tagging(gid,gr,extra) {
-	show_tree('tag'+gid);
-
-
-	document.getElementById('tagframe'+gid).src='/tags/tagger.php?gridimage_id='+gid+'&gr='+gr+extra;
-	return false;
-}
-
-function loadSnippetCount(random) {
-	var ids = new Array();
-	{/literal}
-	{foreach from=$images item=image}
-		ids.push({$image->gridimage_id});
-	{/foreach}
-	{literal}
-	var script = document.createElement("script");
-	script.setAttribute("src", "/api/Snippet/"+ids.join(',')+'?output=json&callback=showSnippetCount'+(random?"&rnd="+Math.random():''));
-	script.setAttribute("type", "text/javascript");
-	document.documentElement.firstChild.appendChild(script);
-}
-function showSnippetCount(data) {
-	if (data.error) {
-		alert(data.error);
-	} else {
-
-		for(var gid in data) {
-			document.getElementById('c'+gid).innerHTML = " ["+data[gid]+"]";
-			document.getElementById('c'+gid).style.backgroundColor='pink';
-		}
-	}
-
-}
- AttachEvent(window,'load',loadSnippetCount,false);
-{/literal}
-</script>
 
 {include file="_std_end.tpl"}
