@@ -785,8 +785,10 @@ class UploadManager
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			
 			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > $CONF['img_max_size']) {
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($orginalfile);
+				list($destwidth, $destheight, $destdim, $changedim) = $this->_new_size($owidth, $oheight, $this->largestsize);
 				
-				$this->_downsizeFile($orginalfile,$this->largestsize);
+				$this->_downsizeFile($orginalfile,$destdim);
 				
 				$storedoriginal =$image->storeOriginal($orginalfile);
 			}
@@ -852,8 +854,10 @@ class UploadManager
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
 			if (file_exists($orginalfile) && $this->largestsize && $this->largestsize > $CONF['img_max_size']) {
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($orginalfile);
+				list($destwidth, $destheight, $destdim, $changedim) = $this->_new_size($owidth, $oheight, $this->largestsize);
 
-				$this->_downsizeFile($orginalfile,$this->largestsize);
+				$this->_downsizeFile($orginalfile,$destdim);
 				
 				//store the new original file
 				$ok =$image->storeImage($orginalfile,false,'_pending');
