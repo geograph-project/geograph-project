@@ -248,7 +248,7 @@ $CONF['rastermap'] = array(
 			)	
 );
 
-//Username/Passowrd for the metacarta webservices api
+//Username/Password for the metacarta webservices api
 //http://developers.metacarta.com/register/
 #$CONF['metacarta_auth'] = 'user@domain.com:password';
 $CONF['metacarta_auth'] = '';

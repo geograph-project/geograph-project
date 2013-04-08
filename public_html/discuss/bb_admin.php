@@ -16,6 +16,7 @@ $isAdmin=$GLOBALS['USER']->hasPerm('admin');
 $isModAdmin=$isMod||$isTicketMod||$isAdmin;
 
 $static_host = $CONF['STATIC_HOST']; 
+$static_url = "http://{$CONF['STATIC_HOST']}/discuss";
 
 function get_microtime() {
 $mtime=explode(' ',microtime());
