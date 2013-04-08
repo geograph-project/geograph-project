@@ -38,7 +38,7 @@ if (isset($_GET['revoke'])) {
 		if ($db->Execute("UPDATE user SET rights = REPLACE(rights,'$right','') WHERE user_id = {$u->user_id}")) {
 			$smarty->assign('message', "$right rights removed from ".$u->realname);
 			if ($USER->user_id == $u->user_id) 
-				$_SESSION['user'] =& new GeographUser($USER->user_id);
+				$_SESSION['user'] = new GeographUser($USER->user_id);
 		}
 	}
 } elseif (isset($_GET['grant'])) {
@@ -48,7 +48,7 @@ if (isset($_GET['revoke'])) {
 		if ($db->Execute("UPDATE user SET rights = CONCAT(rights,',$right') WHERE user_id = {$u->user_id}")) {
 			$smarty->assign('message', "$right rights added for ".$u->realname);
 			if ($USER->user_id == $u->user_id) 
-				$_SESSION['user'] =& new GeographUser($USER->user_id);
+				$_SESSION['user'] = new GeographUser($USER->user_id);
 		}
 	}
 } elseif (isset($_GET['role'])) {
@@ -58,7 +58,7 @@ if (isset($_GET['revoke'])) {
 		if ($db->Execute("UPDATE user SET role = $role WHERE user_id = {$u->user_id}")) {
 			$smarty->assign('message', $u->realname." assigned the role of $role");
 			if ($USER->user_id == $u->user_id) 
-				$_SESSION['user'] =& new GeographUser($USER->user_id);
+				$_SESSION['user'] = new GeographUser($USER->user_id);
 		}
 	}
 }

@@ -197,7 +197,7 @@ function init_session()
 			session_regenerate_id();
 
 		//create new user object - initially anonymous
-		$_SESSION['user'] =& new GeographUser;
+		$_SESSION['user'] = new GeographUser;
 
 		//give object a chance to auto-login via cookie
 		$_SESSION['user']->autoLogin();
