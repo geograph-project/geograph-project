@@ -157,7 +157,7 @@ require_once('geograph/user.class.php');
 
 //function to replace having to have loads of require_once's
 // PHP5 ONLY
-function __autoload($class_name) {
+function geograph_autoload($class_name) {
         if (!file_exists($_SERVER['DOCUMENT_ROOT'].'/../libs/geograph/'.strtolower($class_name).'.class.php')) {
                 ob_start();
                 debug_print_backtrace();
@@ -172,6 +172,7 @@ function __autoload($class_name) {
 
 	require_once('geograph/'.strtolower($class_name).'.class.php');
 }
+spl_autoload_register('geograph_autoload');
 
 //remember start time of script for logging
 if (isset($CONF['log_script_timing']))
