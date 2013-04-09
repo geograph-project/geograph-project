@@ -82,7 +82,9 @@
 		{include file="_overview.tpl"}
 		</div>
 	{/if}
-
+	{if $place}
+		<div style="font-size:0.8em;border-bottom:1px solid silver;margin-bottom:2px">{place place=$place}</div>
+	{/if}
 	{if $imagecount}
 		{* There are some thumbnails to display *}
 		<small><small><b>Sample links for this square...</b></small></small>
