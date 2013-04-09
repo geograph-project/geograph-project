@@ -233,6 +233,9 @@
 		<li><b>Maps</b>: {if $profile->stats.images gt 10}<a href="/profile/{$profile->user_id}/map" rel="nofollow">Personalised Geograph Map</a> or {/if} Recent Photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&amp;ie=UTF8&amp;om=1">Google Maps</a></li>
 
 		<li><b>Recent Images</b>: <a title="View images by {$profile->realname} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml">as KML</a> or <a title="RSS Feed for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
+		{if $profile->calendar_public=='everyone' || $profile->calendar_public=='registered' && $user->registered || $user->user_id==$profile->user_id}
+		<li><b>Calendar</b>: <a href="/explore/calendar.php?u={$profile->user_id}" rel="nofollow">View personal calendar</a></li>
+		{/if}
 		{if $profile->stats.images gt 10}
 			{dynamic}{if $user->registered}
 				<li><b>Download</b>: 

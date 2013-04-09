@@ -196,9 +196,11 @@ if ($template=='profile.tpl')
 	}
 	
 	if ($uid==$USER->user_id) {
-		$level = 1;
-	} elseif ($USER->hasPerm('moderator')) {
 		$level = 2;
+	} elseif ($USER->hasPerm('moderator')) {
+		$level = 3;
+	} elseif ($USER->user_id != 0) {
+		$level = 1;
 	} else {
 		$level = 0;
 	}

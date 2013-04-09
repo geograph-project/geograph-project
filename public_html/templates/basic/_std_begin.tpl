@@ -29,6 +29,9 @@
 {else}
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
 {/if}
+{if $extra_css}
+    <link rel="stylesheet" href="{$extra_css}" type="text/css" />
+{/if}
 {if $rastermap->service == 'Google'}
 <!-- RasterMap.getScriptTag() -->
 {literal}<style type="text/css">

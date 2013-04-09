@@ -25,18 +25,26 @@ require_once('geograph/global.inc.php');
 init_session();
 
 
-
-
 $smarty = new GeographPage;
 
 $month=(!empty($_GET['Month']))?intval($_GET['Month']):'';
 $year=(!empty($_GET['Year']))?intval($_GET['Year']):date('Y');
-
+$imageid=isset($_REQUEST['image'])?intval($_REQUEST['image']):0;
+$uid=isset($_REQUEST['u'])?intval($_REQUEST['u']):0;
+if ($uid) {
+	$profile=new GeographUser($uid);
+	$uid=$profile->user_id;
+}
+$smarty->assign("uid",$uid);
+$smarty->assign_by_ref('profile', $profile);
 
 $template=($month)?'explore_calendar_month.tpl':'explore_calendar_year.tpl';
 $cacheid="$year-$month";
-if (isset($_REQUEST['image'])) {
-	$cacheid .= ".".intval($_REQUEST['image']);
+if ($imageid) {
+	$cacheid .= ".i".$imageid;
+}
+if ($uid) {
+	$cacheid .= ".u".$uid;
 }
 if (isset($_GET['blank'])) {
 	$cacheid .= "blank";
@@ -59,6 +67,10 @@ if ($smarty->caching) {
 	} else {
 		$smarty->cache_lifetime = 3600*24*7; //7day cache
 	}
+}
+
+if ($uid && $profile->calendar_public != 'everyone') {
+	$USER->mustHavePerm("basic", $profile->calendar_public == 'registered' ? 0 : $uid);
 }
 
 function print_rp(&$in,$exit = false) {
@@ -93,14 +105,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
 
-	if (isset($_REQUEST['image']))
+	if ($imageid)
 	{
 		//initialise message
 		require_once('geograph/gridsquare.class.php');
 		require_once('geograph/gridimage.class.php');
 
 		$image=new GridImage();
-		$image->loadFromId($_REQUEST['image']);
+		$image->loadFromId($imageid);
 
 		if ($image->moderation_status=='rejected' || $image->moderation_status=='pending') {
 			//clear the image
@@ -127,12 +139,18 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (isset($_GET['geo'])) {
 				$where .= " AND moderation_status = 'geograph'";
 			} elseif (isset($_GET['supp'])) {
-                                $where .= " AND moderation_status = 'accept'";
-                        }
+				$where .= " AND moderation_status = 'accepted'";
+			} else {
+				$where .= " AND moderation_status in ('geograph','accepted')";
+			}
+			if ($uid) {
+				$where .= " AND user_id = $uid";
+			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			#gridimage_id, title, user_id, realname, grid_reference,
 			$images=&$db->GetAssoc($sql= "SELECT 
-			imagetaken, 
-			gridimage_id, title, user_id, realname, grid_reference,
+			imagetaken,
+			MIN(gridimage_id) as gridimage_id,
 			COUNT(*) AS images,
 			SUM(moderation_status = 'accepted') AS `supps`
 			FROM `gridimage_search`
@@ -141,7 +159,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (!empty($_GET['debug'])) {
 				print "<pre>$sql</pre>";
 			}
-			foreach ($images as $day=>$arr) {
+			foreach ($images as $day=>&$arr) {
+				$arr += $db->GetRow($sql= "SELECT title, user_id, realname, grid_reference FROM `gridimage_search` WHERE gridimage_id='{$arr['gridimage_id']}'");
 				if ($maximages < $arr['images'])
 					$maximages = $arr['images'];
 			}
@@ -204,6 +223,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			} elseif (isset($_GET['supp'])) {
                                 $where .= " AND moderation_status = 'accept'";
                         }
+			if ($uid) {
+				$where .= " AND user_id = $uid";
+			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$images=&$db->GetAssoc("SELECT 
 			imagetaken, 
