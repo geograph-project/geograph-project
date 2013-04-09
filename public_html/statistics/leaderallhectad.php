@@ -124,7 +124,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	function cmp(&$a, &$b) 
 	{
-		#global $topusers;
 		if ($a['imgcount'] == $b['imgcount']) {
 			if ($a['bigesthectad'] == $b['bigesthectad']) {
 				return 0;
