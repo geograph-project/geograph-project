@@ -348,7 +348,7 @@ class Gazetteer
 					reference_index,
 					'' as adm1_name,
 					(id + 900000) as pid,
-					power(e-{$e},2)+power(n-{$n},2) as distance,
+					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
 					'towns' as gaz
 				from 
 					loc_towns
