@@ -230,7 +230,7 @@ if ($forum == $CONF['forum_submittedarticles'] || $forum == $CONF['forum_gallery
 unset($result);unset($countRes);
 }
 
-$isMod=($forum!=0 and isset($mods) and isset($mods[$forum]) and in_array($user_id,$mods[$forum]))?1:0;
+$isMod=($forum!=0 and isset($mods) and isset($mods[$forum]) and in_array($user_id,$mods[$forum]))||($isAdmin || $GLOBALS['USER']->hasPerm('forum'))?1:0;
 
 }//forb
 
