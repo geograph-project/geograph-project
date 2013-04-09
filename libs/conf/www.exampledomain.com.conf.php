@@ -291,6 +291,13 @@ $CONF['gridrefname'] = array(1 => 'OS grid ', 2 => 'OS grid ');
 // google maps: show meridians n*$CONF['showmeridian'] degrees (0: don't show any meridian)
 $CONF['showmeridian'] = 0;
 
+// google maps: valid geographical coordinates for given reference index (0: whole area)
+$CONF['gmlatrange'] = array(0 => array(45.0,57.0), 3 => array(47.0,56.0), 4 => array(47.0,56.0), 5 => array(47.0,56.0));
+$CONF['gmlonrange'] = array(0 => array( 2.0,18.0), 3 => array(6.0,12.0), 4 => array(12.0,16.0), 5 => array(4.0,6.0));
+
+// google maps: map center (lat, lon)
+$CONF['gmcentre'] = array(51.0, 10.0);
+
 ###################################
 
 // picture of the day
