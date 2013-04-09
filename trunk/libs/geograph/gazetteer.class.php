@@ -73,6 +73,12 @@ class Gazetteer
 		if (($CONF['use_gazetteer'] == 'OS' || $CONF['use_gazetteer'] == 'OS250') && $reference_index == 1) {
 			//even for 250k gaz, lets use the 50k as we want the detailed list
 			
+			#FIXME exponent for odistance configurable?
+
+			#circles around towns: radius r = D K / (K*K-1)
+			#where D is distance between respective towns, K is "penalty factor" on distance for smaller town,
+			#here we use K = pow(alpha,abs(s1-s2))
+			#line below is ... *power(alpha*alpha,s) as odistance
 			$places = $db->GetAll("select
 					`def_nam` as full_name,
 					km_ref as grid_reference,
@@ -89,7 +95,7 @@ class Gazetteer
 					CONTAINS( 	
 						GeomFromText($rectangle),
 						point_en)
-				order by distance asc,f_code+0,def_nam");
+				order by odistance asc,f_code+0,def_nam");
 		} else if ($CONF['use_gazetteer'] == 'towns') {
 			$sql = "select
 					name as full_name,
@@ -98,6 +104,7 @@ class Gazetteer
 					'' as adm1_name,
 					(id + 10000000) as pid,
 					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
+					(power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2))*power(2.5,s) as odistance,
 					'towns' as gaz,
 					e,n
 				from 
