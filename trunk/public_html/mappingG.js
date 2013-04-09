@@ -34,6 +34,10 @@
  var lon2 = 0;
  
  var pickupbox = null;
+ var squarebox = null;
+ var sboxeast = null;
+ var sboxnorth = null;
+ var sboxwidth = null;
  
  function createMarker(point,picon) {
  	if (picon) {
@@ -44,6 +48,9 @@
 		var marker = marker1;
 	}
 	if (issubmit) {
+		if (typeof nolineslayer === 'undefined') {
+			nolineslayer = false;
+		}
 		GEvent.addListener(marker, "drag", function() {
 			var pp = marker.getPoint();
 			
@@ -55,7 +62,6 @@
 			if (wgs84.isIreland()) {
 				//convert to Irish
 				var grid=wgs84.getIrish(true);
-			
 			} else if (wgs84.isGreatBritain()) {
 				//convert to OSGB
 				var grid=wgs84.getOSGB();
@@ -65,9 +71,27 @@
 				var grid=wgs84.getOSGB();
 			else if (ri == 2)
 				var grid=wgs84.getIrish(true);
-			
-			//get a grid reference with 4 digits of precision
-			var gridref = grid.getGridRef(4);
+
+			var curzoom = map.getZoom();
+			if (curzoom >= 19) {
+				var newdigits = 5;
+				var newprec = 1;
+			} else if (curzoom >= 15) {
+				var newdigits = 4;
+				var newprec = 10;
+			} else if (curzoom >= 12) {
+				var newdigits = 3;
+				var newprec = 100;
+			} else if (curzoom >= 9) {
+				var newdigits = 2;
+				var newprec = 1000;
+			} else {
+				var newdigits = 2;
+				var newprec = 0;
+			}
+
+			//get a grid reference with the given precision
+			var gridref = grid.getGridRef(newdigits);
 
 			if (picon) {
 				lon2 = wgs84.longitude*Math.PI/180.;
@@ -81,7 +105,42 @@
 				eastings1 = grid.eastings;
 				northings1 = grid.northings;
 				document.theForm.grid_reference.value = gridref;
-			}  
+			}
+
+
+			if (newprec) {
+				var neweast = Math.floor(grid.eastings/newprec);
+				var newnorth = Math.floor(grid.northings/newprec);
+				if (squarebox !== null && (neweast != sboxeast || newnorth != sboxnorth || newprec != sboxwidth)) {
+					map.removeOverlay(squarebox);
+					squarebox = null;
+				}
+				if (squarebox === null && !nolineslayer) {
+					sboxeast = neweast;
+					sboxnorth = newnorth;
+					sboxwidth = newprec;
+					grid.setGridCoordinates( sboxeast   *newprec,  sboxnorth   *newprec);
+					var ll1 = grid.getWGS84(true);
+					grid.setGridCoordinates((sboxeast+1)*newprec,  sboxnorth   *newprec);
+					var ll2 = grid.getWGS84(true);
+					grid.setGridCoordinates((sboxeast+1)*newprec, (sboxnorth+1)*newprec);
+					var ll3 = grid.getWGS84(true);
+					grid.setGridCoordinates( sboxeast   *newprec, (sboxnorth+1)*newprec);
+					var ll4 = grid.getWGS84(true);
+					squarebox = new GPolygon(
+						[
+							new GLatLng(ll1.latitude, ll1.longitude),
+							new GLatLng(ll2.latitude, ll2.longitude),
+							new GLatLng(ll3.latitude, ll3.longitude),
+							new GLatLng(ll4.latitude, ll4.longitude),
+							new GLatLng(ll1.latitude, ll1.longitude)
+						], "#FFFFFF", 1, 0.5, "#808080", 0.5);
+					map.addOverlay(squarebox);
+				}
+			} else if (squarebox !== null) {
+				map.removeOverlay(squarebox);
+				squarebox = null;
+			}
 			
 			//if (document.theForm.use6fig)
 			//	document.theForm.use6fig.checked = true;
@@ -96,6 +155,13 @@
 			if (typeof parentUpdateVariables != 'undefined') {
 				parentUpdateVariables();
 			}
+		});
+		GEvent.addListener(marker, "dragend", function() {
+			if (squarebox !== null) {
+				map.removeOverlay(squarebox);
+				squarebox = null;
+			}
+			GEvent.trigger(map,'markerdragend');
 		});
 	} else {
 		GEvent.addListener(marker, "dragend", function() {
@@ -255,6 +321,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 		if (typeof parentUpdateVariables != 'undefined') {
 			parentUpdateVariables();
 		}
+		GEvent.trigger(map,'markerdragend');
 	}
 }
 
@@ -269,8 +336,9 @@ function updateViewDirection() {
 		sinsq = slat*slat + Math.cos(lat1)*Math.cos(lat2)*slon*slon;
 		arc = 2 * Math.atan2(Math.sqrt(sinsq), Math.sqrt(1-sinsq));
 		distance = R * arc;
+		mindist = map.getZoom() >= 19 ? 3 : 14;
 	
-		if (distance > 14) {
+		if (distance > mindist) {
 			//realangle = Math.atan2( eastings1 - eastings2, northings1 - northings2 ) / (Math.PI/180);
 			y = Math.sin(dlon)*Math.cos(lat1);
 			x = Math.cos(lat2)*Math.sin(lat1) - Math.sin(lat2)*Math.cos(lat1)*Math.cos(dlon);
