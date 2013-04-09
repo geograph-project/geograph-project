@@ -441,3 +441,5 @@ ALTER TABLE gridimage ADD `viewpoint_refindex` tinyint(1) NOT NULL DEFAULT '0' A
 
 UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.gridsquare_id) SET gi.reference_index = gs.reference_index;
 UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.gridsquare_id) SET gi.viewpoint_refindex = gs.reference_index;
+
+ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant', 'mapmod') NULL DEFAULT NULL;
