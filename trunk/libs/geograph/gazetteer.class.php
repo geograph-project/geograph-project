@@ -90,6 +90,32 @@ class Gazetteer
 						GeomFromText($rectangle),
 						point_en)
 				order by distance asc,f_code+0,def_nam");
+		} else if ($CONF['use_gazetteer'] == 'towns') {
+			$sql = "select
+					name as full_name,
+					'PPL' as dsg,
+					reference_index,
+					'' as adm1_name,
+					(id + 10000000) as pid,
+					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
+					'towns' as gaz,
+					e,n
+				from 
+					loc_towns
+				where
+					CONTAINS( 	
+						GeomFromText($rectangle),
+						point_en) AND
+					reference_index = {$reference_index}
+				order by distance asc";
+			$places = $db->GetAll($sql);
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+
+			foreach ($places as &$place) {
+				list($place['grid_reference'],) = $conv->national_to_gridref($place['e'],$place['n'],4,$reference_index);
+			}
+			unset($place);
 		} else {
 			$places = $db->GetAll("select
 					full_name,
@@ -347,7 +373,7 @@ class Gazetteer
 					'PPL' as dsg,
 					reference_index,
 					'' as adm1_name,
-					(id + 900000) as pid,
+					(id + 10000000) as pid,
 					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
 					'towns' as gaz
 				from 
@@ -436,7 +462,9 @@ class Gazetteer
 		$places = array();
 		
 		if (is_numeric($placename)) {
-			if ($placename > 1000000) {
+			if ($placename > 10000000) {
+				$places = $db->GetAll("select name as full_name,'PPL' as dsg, e, n, reference_index,'' as adm1_name from loc_towns where id=".$db->Quote($placename-10000000));
+			} elseif ($placename > 1000000) {
 				$places = $db->GetAll("select `def_nam` as full_name,'PPL' as dsg,`east` as e,`north` as n,1 as reference_index,`full_county` as adm1_name from os_gaz where seq=".$db->Quote($placename-1000000));
 			} else {
 				$places = $db->GetAll("select full_name,dsg,e,n,loc_placenames.reference_index,loc_adm1.name as adm1_name from loc_placenames left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country) where id=".$db->Quote($placename));
@@ -640,7 +668,53 @@ class Gazetteer
 								array_push($places,$place2);
 						}
 					} else {
-						$places =& $place2;
+						$places =& $places2;
+					}
+				}
+			}
+			# loc_towns
+			if (count($places) < 10 || $ismore) {
+				//search the widest possible
+				//km_ref as gridref
+				//county from loc_hier?
+				//	`full_county` as adm1_name,
+				$places2 = $db->GetAll($sql = "
+				select
+					(id + 10000000) as id,
+					name as full_name,
+					'PPL' as dsg, e, n,
+					'' as dsg_name,
+					reference_index,
+					'' as adm1_name,
+					'' as hist_county,
+					'' as gridref
+				from 
+					loc_towns
+				where
+					( name LIKE ".$db->Quote('%'.$placename.'%')."
+					OR name SOUNDS LIKE ".$db->Quote($placename).")
+				order by 
+					name = ".$db->Quote($placename)." desc,
+					name SOUNDS LIKE ".$db->Quote($placename)." desc
+				limit $limi2");
+				if (isset($_GET['debug']))
+					print "<pre>$sql</pre>count2 = ".count($places2)."<hr>";
+				if (count($places2)) {
+					if (count($places)) {
+						foreach ($places2 as $i2 => $place2) {
+							$found = 0; $look = str_replace("-",' ',$place2['full_name']);
+							foreach ($places as $i => $place) {
+								if ($place['full_name'] == $look && $place['reference_index'] == $place2['reference_index'] && 
+										($d = pow($place['e']-$place2['e'],2)+pow($place['n']-$place2['n'],2)) && 
+										($d < 5000*5000) ) {
+									$found = 1; break;
+								}
+							}
+							if (!$found) 
+								array_push($places,$place2);
+						}
+					} else {
+						$places =& $places2;
 					}
 				}
 			}
