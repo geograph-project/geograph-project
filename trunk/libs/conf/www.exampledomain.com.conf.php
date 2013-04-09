@@ -210,6 +210,9 @@ $CONF['imagemagick_path'] = '/usr/bin/';
 //font used in map tile generation
 $CONF['imagemagick_font'] = '/usr/share/fonts/truetype/freefont/FreeSans.ttf';
 
+//there are ImageMagick versions where the -auto-orient option does not work
+$CONF['imagemagick_buggy'] = false;
+
 ###################################
 
 //you get minibb admin privilege by using a geograph admin login - these
