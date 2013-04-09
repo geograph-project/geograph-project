@@ -129,11 +129,45 @@ if (isset($_FILES['jpeg_exif']))
 
 					list($e,$n,$reference_index) = $conv->wgs84_to_national($lat,$long);
 
-					list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+					list ($photographer_gridref,$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
 					
-					$smarty->assign('photographer_gridref',$grid_reference); 
+					$smarty->assign('photographer_gridref',$photographer_gridref);
 					
-					list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
+					if (isset($exif['GPS']['GPSDestLatitude'])) {
+						if (is_array($exif['GPS']['GPSDestLatitude'])) {
+							$deg = FractionToDecimal($exif['GPS']['GPSDestLatitude'][0]);
+							$min = FractionToDecimal($exif['GPS']['GPSDestLatitude'][1]);
+							$sec = FractionToDecimal($exif['GPS']['GPSDestLatitude'][2]);
+							$lat = ExifConvertDegMinSecToDD($deg, $min, $sec);
+						} else {
+							//not sure if this will ever happen but it could?
+							$lat = $exif['GPS']['GPSDestLatitude'];
+						}
+
+						if ($exif['GPS']['GPSDestLatitudeRef'] == 'S') 
+							$lat *= -1;
+
+						if (is_array($exif['GPS']['GPSDestLongitude'])) {
+							$deg = FractionToDecimal($exif['GPS']['GPSDestLongitude'][0]);
+							$min = FractionToDecimal($exif['GPS']['GPSDestLongitude'][1]);
+							$sec = FractionToDecimal($exif['GPS']['GPSDestLongitude'][2]);
+							$long = ExifConvertDegMinSecToDD($deg, $min, $sec);
+						} else {
+							//not sure if this will ever happen but it could?
+							$long = $exif['GPS']['GPSDestLongitude'];
+						}
+
+						if ($exif['GPS']['GPSDestLongitudeRef'] == 'W') 
+							$long *= -1;
+
+
+						list($e,$n,$reference_index) = $conv->wgs84_to_national($lat,$long);
+
+						list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
+					} else {
+						#FIXME $grid_reference = $photographer_gridref
+						list ($grid_reference,$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
+					}
 					
 					$smarty->assign('grid_reference', $grid_reference);
 				} 
