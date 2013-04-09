@@ -445,3 +445,5 @@ UPDATE gridimage as gi LEFT JOIN gridsquare as gs ON (gi.gridsquare_id = gs.grid
 ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant', 'mapmod') NULL DEFAULT NULL;
 
 ALTER TABLE `user` CHANGE `rights` `rights` SET( 'basic', 'moderator', 'admin', 'ticketmod', 'traineemod', 'suspicious', 'dormant', 'mapmod', 'forum') NULL DEFAULT NULL;
+
+alter table geobb_users add user_show varchar(64) not null default '' after user_forums;
