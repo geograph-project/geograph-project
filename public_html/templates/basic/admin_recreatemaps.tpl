@@ -39,6 +39,7 @@ Inc Basemap: <input type="checkbox" name="base" value="on"/>
 
 {/dynamic}    
 
+{if $is_admin}
 <h3>Clear all Maps (seldom used)</h3>
 
 <p>Delete &amp; Invalidate All Maps <tt>?deleteInvalidateAll=1</tt><br/>
@@ -47,5 +48,6 @@ Clear Cache <tt>?expireAll=0</tt><br/>
 (clear basemaps too) <tt>?expireAll=1</tt></p>
 
 <p>Non clickable to help prevent accidental clicking.</p>
+{/if}
 
 {include file="_std_end.tpl"}

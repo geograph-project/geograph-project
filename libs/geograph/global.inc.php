@@ -339,6 +339,10 @@ class GeographPage extends Smarty
 			{
 				$this->assign('is_tickmod', true);
 			}
+			if ($GLOBALS['USER']->hasPerm('mapmod'))
+			{
+				$this->assign('is_mapmod', true);
+			}
 		}
 
 	}

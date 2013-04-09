@@ -35,7 +35,7 @@ require_once('geograph/global.inc.php');
 require_once('geograph/gridsquare.class.php');
 init_session();
 
-$USER->hasPerm("admin") || $USER->mustHavePerm("moderator");
+$USER->hasPerm("admin") || $USER->hasPerm("mapmod") || $USER->mustHavePerm("moderator");
 
 $smarty = new GeographPage;
 
