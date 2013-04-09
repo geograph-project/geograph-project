@@ -1,65 +1,25 @@
+{assign var="page_title" value="$year :: Calendar"}
+{assign var="extra_css" value="/templates/basic/css/calendar.css"}
 {include file="_std_begin.tpl"}
-<style type="text/css">
-{literal}
-@media print {
-	.no_print {
-		display: none;
-	}
-	
-	/* no border on hyperlinked images*/
-	a Img
-	{
-		border:0;
-	}
-	div.ccmessage
-	{
-		width:inherit;
-		text-align:center;
-		padding:1px;
-		font-size:0.9em;
-	}
-	
-	div.ccmessage img
-	{
-		vertical-align: middle;
-	}
-	
-	/* styling for a full size portrait photo*/
-	div.photoportrait
-	{
-		width:inherit;
-		padding:10px;
-		text-align:center;
-		margin:10px;
-	}
-	
-	/* styling for a full size landscape photo*/
-	div.photolandscape
-	{
-		width:inherit;
-		padding:10px;
-		text-align:center;
-		margin:10px;
-	}
-	
-	.img-shadow img {
-		border: 1px solid #a9a9a9;
-		padding: 4px;
-	}
-
-}
-@media screen {
-	.print_only {
-		display: none;
-	}
-}
-{/literal}
-</style>
 
 <h2>Geograph Calendar :: {$year}</h2>
 
 <form action="{$script_name}" class="no_print">
-<p>Date: {html_select_date display_days=false prefix="" time=`$date` start_year="-100" reverse_years=true  month_empty="-whole year-" all_extra="onchange='this.form.submit()'"}<noscript><input type="submit" value="Update"/></noscript></p> 
+<p>Date: {html_select_date display_days=false prefix="" time=`$date` start_year="-100" reverse_years=true  month_empty="-whole year-" all_extra="onchange='this.form.submit()'"}
+{dynamic}
+{if $uid || $user->registered}
+| User:
+<select name="u" onchange="this.form.submit()">
+<option value="0"{if $uid eq 0} selected="selected"{/if}>All users</option>
+{if $user->registered && $user->user_id != $uid}
+<option value="{$user->user_id}">{$user->realname|escape:'html'}</option>
+{/if}
+{if $uid}
+<option value="{$profile->user_id}" selected="selected">{$profile->realname|escape:'html'}</option>
+{/if}
+</select>
+{/if}{/dynamic}
+<noscript><input type="submit" value="Update"/></noscript></p> 
 {if $image}
 <input type="hidden" name="image" value="{$image->gridimage_id}"/>
 {/if}
@@ -87,7 +47,7 @@
 {foreach from=$months key=name item=weeks name=loop}
 <div style="position:relative;float:left;width=340px;padding:10px;height:280px;">
 
-<h2><a href="{$script_name}?Year={$year}&amp;Month={$smarty.foreach.loop.iteration}" rel="nofollow">{$name}</a></h2>
+<h2><a href="{$script_name}?Year={$year}&amp;Month={$smarty.foreach.loop.iteration}&amp;u={$uid}" rel="nofollow">{$name}</a></h2>
 
 <table class="report" bordercolor="#eeeeee" border="1" cellspacing="0" cellpadding="1" style="position:relative">
 <thead><tr>{foreach from=$days item=day}

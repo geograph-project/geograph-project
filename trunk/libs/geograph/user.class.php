@@ -930,6 +930,7 @@ EOT;
 				use_age_group=%d,
 				home_gridsquare=%s,
 				ticket_public=%s,
+				calendar_public=%s,
 				ticket_option=%s,
 				message_sig=%s,
 				upload_size=%d,
@@ -949,6 +950,7 @@ EOT;
 				$profile['use_age_group']?1:0,
 				$gs->gridsquare_id,
 				$db->Quote($profile['ticket_public']),
+				$db->Quote($profile['calendar_public']),
 				$db->Quote($profile['ticket_option']),
 				$db->Quote(stripslashes($profile['message_sig'])),
 				intval($profile['upload_size']), #FIXME check values!
@@ -990,6 +992,7 @@ EOT;
 				$this->age_group=stripslashes($profile['age_group']);
 				$this->use_age_group=stripslashes($profile['use_age_group']);
 				$this->grid_reference=$gs->grid_reference;	
+				$this->calendar_public=stripslashes($profile['calendar_public']);
 				$this->ticket_public=stripslashes($profile['ticket_public']);
 				$this->ticket_option=stripslashes($profile['ticket_option']);				
 				$this->message_sig=stripslashes($profile['message_sig']);
@@ -1076,7 +1079,7 @@ EOT;
 	/**
 	* force inline login if user isn't authenticated
 	*/
-	function mustHavePerm($perm)
+	function mustHavePerm($perm, $uid = 0)
 	{
 		//not logged in? do that first
 		if (!$this->registered)
@@ -1086,7 +1089,7 @@ EOT;
 		}
 		
 		//to reach here, user is logged in, lets check the perms
-		if (strpos($this->rights, $perm)===false)
+		if (strpos($this->rights, $perm)===false || $uid != 0 && $uid != $this->user_id)
 		{
 			//user is logged in, but hasn't got sufficient rights
 			$smarty = new GeoGraphPage;

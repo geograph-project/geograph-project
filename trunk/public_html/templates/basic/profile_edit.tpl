@@ -261,6 +261,19 @@
 
 
 <div class="field"> 
+	<label for="calendar_public" class="nowrap">Personal calendar</label>
+	
+	<select name="calendar_public" id="calendar_public">
+		<option value="no">My personal calendar is private</option>
+		<option value="registered" {if $profile->calendar_public eq 'registered'} selected{/if}>Show my calendar to registered users</option>
+		<option value="everyone" {if $profile->calendar_public eq 'everyone'} selected{/if}>My calendar is public</option>
+	</select>
+	 
+	<div class="fieldnotes">Your personal calendar shows when you took your images. You can make it public or private using this box.</div>
+</div>
+
+
+<div class="field"> 
 	<label for="ticket_public" class="nowrap">Ticket Anonymity</label>
 	
 	<select name="ticket_public" id="ticket_public">
