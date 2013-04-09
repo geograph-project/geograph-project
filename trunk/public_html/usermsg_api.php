@@ -157,7 +157,7 @@ else
 		"Original To: {$recipient->email}\n".
 		"Original From: $from_name <$from_email>\n".
 		"Original Subject:\n\n$body",
-		$geofrom.$mime, $envfrom); #FIXME conf var
+		$geofrom.$mime, $envfrom);
 
 	die("ERROR: fatal error, Please let us know");
 }

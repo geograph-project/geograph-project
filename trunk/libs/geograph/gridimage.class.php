@@ -249,7 +249,6 @@ class GridImage
 		return $spaced ? $posgrsp : $posgr;
 	}
 	
-	// FIXME should only store when !$spaced
 	function getSubjectGridref($spaced = false)
 	{
 		//already calculated?
