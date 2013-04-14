@@ -192,7 +192,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	<div style="text-align:right;font-size:0.8em" id="hidetag"><a href="#" onclick="document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';show_tree('tag');return false;">Open <b>Tagging</b> Box</a></div>
 
 	<div class="interestBox" id="showtag" style="display:none">
-		<iframe src="about:blank" height="200" width="100%" id="tagframe">
+		<iframe src="about:blank" height="300" width="100%" id="tagframe">
 		</iframe>
 		<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> ({newwin href="/article/Tags" text="Article about Tags"})</div>
 	</div>

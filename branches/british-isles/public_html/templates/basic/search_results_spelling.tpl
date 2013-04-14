@@ -40,7 +40,7 @@
 		<span id="hidetag{$image->gridimage_id}" style="font-size:0.8em">Tags: <span id="tags{$image->gridimage_id}"></span> &middot; <a href="#" onclick="return open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Tagging</b> Box</a></span>
 
 		  <div class="interestBox" id="showtag{$image->gridimage_id}" style="display:none">
-				<iframe src="about:blank" height="200" width="100%" id="tagframe{$image->gridimage_id}">
+				<iframe src="about:blank" height="300" width="100%" id="tagframe{$image->gridimage_id}">
 				</iframe>
 				<div><a href="#" onclick="hide_tree('tag{$image->gridimage_id}');return false">- Close <i>Tagging</I> box</a> ({newwin href="/article/Tags" text="Article about Tags"})</div>
 		  </div>

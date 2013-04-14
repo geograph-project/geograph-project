@@ -448,15 +448,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 		<p><b>Tags (Optional)</b> <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}&v=3';" id="hidetag"/></p>
 
 		<div class="interestBox" id="showtag" style="display:none">
-			<ul>
-				<li>Tags are simple free-form keywords/short phrases, used to describe the image.</li>
-				<li>Please add as many Tags as you need. Tags will help other people find your photo.</li>
-				<li>It is not compulsory to add any Tags.</li>
-				<li>Note: Tags should be singular, ie a image of a church should have the tag "church", not "churches" - it's a specific tag, not a category.<br/> <small>(however if photo is of multiple fence posts, then the tag "fence posts" should be used)</small></li>
-				<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croydon" - similarlly could use "near:Tring".</li>
-				<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
-			</ul>
-			<iframe src="about:blank" height="200" width="100%" id="tagframe">
+			<iframe src="about:blank" height="300" width="100%" id="tagframe">
 			</iframe>
 			<div><a href="#" onclick="hide_tree('tag');return false">- Close <i>Tagging</I> box</a> <a href="/article/Tags" class="about" target="_blank">About Tags</a> </div>
 		</div></p>

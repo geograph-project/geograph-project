@@ -21,6 +21,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (!empty($_GET['mode']) && $_GET['mode'] == 'suggestions' && !empty($_GET['string'])) {
+	require("./topics.json.php");
+	exit;
+}
+
 require_once('geograph/global.inc.php');
 
 
@@ -36,6 +41,7 @@ $sql = array();
 
 $sql['tables'] = array();
 $sql['tables']['t'] = 'tag';
+$sql['wheres'] = array();
 
 if (isset($_GET['term'])) {
 	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];
@@ -46,8 +52,26 @@ if (isset($_GET['term'])) {
 } else {
 	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
 }
-
-if (!empty($_GET['gridimage_id'])) {
+	
+if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
+	init_session();
+	
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	if ($USER->registered) {
+		
+		$sql['columns'] .= ",MAX(gt.created) AS last_used";
+		
+		$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
+	
+		$sql['wheres'][] = "gt.user_id = {$USER->user_id}";
+		$sql['wheres'][] = "prefix != 'top'";
+		
+		$sql['group'] = 'tag.tag_id';
+		$sql['order'] = 'last_used DESC';
+		$sql['limit'] = 30;
+	} 
+	
+} elseif (!empty($_GET['gridimage_id'])) {
 	init_session();
 	if (!$USER->registered) {
 		die("{error: 'not logged in'}");
@@ -57,7 +81,6 @@ if (!empty($_GET['gridimage_id'])) {
 	
 	$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
 
-	$sql['wheres'] = array();
 	$sql['wheres'][] = "tag.status = 1";
 	if (isset($_GET['buckets'])) {
 		$sql['wheres'][] = "( (gt.user_id = {$USER->user_id} AND gt.status = 1) OR (prefix = 'bucket' AND gt.status = 2) )";
@@ -72,7 +95,6 @@ if (!empty($_GET['gridimage_id'])) {
 
         $sql['columns'] = "tag_id,".$sql['columns'];
 
-        $sql['wheres'] = array();
         $sql['wheres'][] = "status = 1";
         $sql['wheres'][] = "tag_id IN (".($_GET['tag_ids']).")";
 
@@ -81,8 +103,7 @@ if (!empty($_GET['gridimage_id'])) {
 
         $sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
         $sql['tables']['gi'] = 'INNER JOIN gridimage_search gi USING (gridimage_id)';
-
-        $sql['wheres'] = array();
+        
         $sql['wheres'][] = "tag.status = 1";
         $sql['wheres'][] = "gt.status = 2";
         $sql['wheres'][] = "gi.grid_reference = ".$db->Quote($_GET['gridref']);
@@ -109,13 +130,7 @@ if (!empty($_GET['gridimage_id'])) {
 		if ($offset < (1000-$pgsize) ) { 
 			$client = $sphinx->_getClient();
 
-                        //$client->SetRankingMode(SPH_RANK_SPH04);
-                        $client->SetRankingMode(SPH_RANK_WORDCOUNT);
-
-			$client->setFieldWeights(array('tag'=>10));
-			
-			$sphinx->sort = "prefered DESC, images DESC"; //within group order
-			$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, images DESC, @id DESC"); //overall sort order
+                        $client->SetSelect('id'); //we dont need any, but sphinx wants somethingt
 			
 			if ($sphinx->q && strpos($sphinx->q,'@') === false) {
 				$sphinx->q = "\"^{$sphinx->q}$ \" | \"^={$sphinx->q}$ \" | \"^{$sphinx->q}\" | \"{$sphinx->q}$ \" | (^$sphinx->q) | (=$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$ \"";
@@ -124,6 +139,61 @@ if (!empty($_GET['gridimage_id'])) {
 				}
 			} elseif (!empty($prefix)) {
 				$sphinx->q = "\"^{$prefix}$\" | (^$prefix) | ($prefix) | @tag (^$prefix) | @tag \"^{$prefix}$\"";
+			}
+			if (!empty($_GET['mode'])) {
+				switch($_GET['mode']) {
+					case 'alpha': 
+						$sphinx->sort = "tag ASC";						
+						//... falls though to use exclusion for top
+						
+					case 'ranked': //the default anyway!
+						if (empty($prefix)) {
+							if (empty($sphinx->q)) {
+								$sphinx->q = "_ALL_ @prefix -top";
+							} else {
+								$sphinx->q = "({$sphinx->q}) @prefix -top";
+							}
+						}
+						break;
+					case 'selfalpha': 
+						$sphinx->sort = "tag ASC";						
+						$_GET['mine'] = 1; //actully used below
+						break;
+						
+					case 'selfrecent':  
+						//TODO - dont know how this going to work... 
+						//(for now its handled by a special caluse at top of this file)
+						
+						$_GET['mine'] = 1; 
+						break;
+					case 'subject': 
+					case 'top': 
+					case 'bucket':
+						$sphinx->sort = "tag ASC";
+						if (empty($prefix)) {
+							$prefix = $_GET['mode'];
+							if (empty($sphinx->q)) {
+								$sphinx->q = "_ALL_ @prefix $prefix";
+							} else {
+								$sphinx->q = "({$sphinx->q}) @prefix $prefix";
+							}
+						}
+						break;
+				}
+			}
+			
+			if ($sphinx->sort == "tag ASC") {
+				$client->SetRankingMode(SPH_RANK_NONE);
+				
+				$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,$sphinx->sort); //overall sort order
+				$sphinx->sort = "prefered DESC, images DESC";
+			} else {
+				//$client->SetRankingMode(SPH_RANK_SPH04);
+				$client->SetRankingMode(SPH_RANK_WORDCOUNT);
+				$client->setFieldWeights(array('tag'=>10));
+				
+				$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, images DESC, @id DESC"); //overall sort order
+				$sphinx->sort = "prefered DESC, images DESC"; //within group order
 			}
 
 			if (isset($_GET['mine'])) {

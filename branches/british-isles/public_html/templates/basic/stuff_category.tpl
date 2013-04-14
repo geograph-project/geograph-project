@@ -141,7 +141,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 		<li>Adding a placename as a tag, please prefix with "place:", eg "place:Croydon" - similarlly could use "near:Tring".</li>
 		<li>... read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
 	</ul>
-	<iframe src="about:blank" height="200" width="100%" id="tagframe">
+	<iframe src="about:blank" height="300" width="100%" id="tagframe">
 	</iframe>
 
 </div>

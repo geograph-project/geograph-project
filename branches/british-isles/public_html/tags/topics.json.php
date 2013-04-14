@@ -50,7 +50,10 @@ if (!empty($_GET['gridimage_id'])) {
 	//todo - if none found, perhaps load a string, and do it on the fly?
 } 
 
-if (!empty($_GET['string'])) {
+if (false) {
+	$topics[] = array('tag'=>"testing",'prefix'=>'');
+
+} elseif (!empty($_GET['string'])) {
 	customExpiresHeader(360000);
 
 	$string = $_GET['string'];
@@ -119,7 +122,11 @@ if (!empty($_GET['string'])) {
 
 
 }
-
+if (isset($_GET['term'])) {
+	foreach ($topics as $idx => $row) {
+		$topics[$idx] = ($row['prefix'])?"{$row['prefix']}:{$row['tag']}":$row['tag'];
+	}
+}
 
 if (!empty($_GET['callback'])) {
         $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);

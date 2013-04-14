@@ -83,7 +83,7 @@
 
 
 	<div>Tagging box for all these images. Any tag added here, will be added to all images above. {if !$onlymine}If an image isn't yours and you set the tag to public, it will be default to a private tag.{/if}</div>
-			<iframe src="/tags/tagger.php?ids={$idlist}" height="200" width="100%" id="tagframe"></iframe>
+			<iframe src="/tags/tagger.php?ids={$idlist}" height="300" width="100%" id="tagframe"></iframe>
 
 
 {/if}

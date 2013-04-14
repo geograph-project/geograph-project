@@ -179,8 +179,18 @@
 {/dynamic}
 
 <br style="clear:both"/>
-<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">{newwin href="/article/Tags" text="Article about Tags"} Colour key: <span class="tags"><span class="tag tagPublic">Public Tag (Your own)</span> <span class="tag tagPrivate">Private (your own)</span> <span class="tag tagGeneral">Public (by others)</span></span> (click X to remove tag)<br/>
+<div class="interestBox" style="font-size:0.7em; border-top:2px solid gray">Colour key: <span class="tags"><span class="tag tagPublic">Public Tag (Your own)</span> <span class="tag tagPrivate">Private (your own)</span> <span class="tag tagGeneral">Public (by others)</span></span> (click X to remove tag)<br/>
 {if $is_owner}<b>Single click</b> tag to toggle public/private. {/if}<b>Double click</b> the tag, to return it to Add box; useful for editing a tag.
+</div>
+
+	<div style="float:right;"><a href="/article/Tags" title="Article about Tags" class="about" target="_blank">More about Tags</a></div>
+
+<div style="font-size:0.8em;padding-right:20px;padding-top:20px">
+
+	&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/>
+	&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/>
+	&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/>
+	&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".
 </div>
 
 {literal}<style type="text/css">
@@ -320,7 +330,7 @@ function toggleTag(text) {
 		}
 
 		param = 'q='+encodeURIComponent(that.value);
-		
+
 		if (document.getElementById('mine_checkbox') && document.getElementById('mine_checkbox').checked == true) {
 			param = param + '&mine=1';
 		}

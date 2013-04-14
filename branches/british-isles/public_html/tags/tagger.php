@@ -26,10 +26,18 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$template='tags_tagger.tpl';
-
-
 $USER->mustHavePerm("basic");
+
+$usenew = $USER->getPreference('tags.tagger_new','0',true);
+
+
+if ($usenew) {
+	$template='tags_tagger2.tpl';
+} else {
+	$template='tags_tagger.tpl';
+}
+
+
 
 $gid = 0;
 
@@ -270,8 +278,6 @@ if (!empty($_POST['save']) && !empty($ids)) {
 
 } elseif ($gid && !empty($_POST['remove'])) {
 	
-split_timer('tags'); //starts the timer
-
 	$criteria = array();
 	$criteria['gridimage_id'] = $gid;
 	
@@ -289,13 +295,8 @@ split_timer('tags'); //starts the timer
 
 	}
 
-split_timer('tags','remove',$gid); //logs the wall time
-
-
 } elseif ($gid && !empty($_POST['add'])) {
 	
-split_timer('add'); //starts the timer
-
 	$updates = array();
 	$updates['gridimage_id'] = $gid;
 	$updates['user_id'] = $USER->user_id;
@@ -313,8 +314,6 @@ split_timer('add'); //starts the timer
 		$smarty->clear_cache(null, "img$ab|{$gid}");
 	}
 
-split_timer('tags','remove',$gid); //logs the wall time
-
 }
 
 
@@ -324,22 +323,31 @@ if ($gid) {
 	$used = $db->getAll("SELECT *,gs.status,(gs.user_id = {$USER->user_id}) AS is_owner FROM gridimage_tag gs INNER JOIN tag s USING (tag_id) WHERE gridimage_id = $gid AND (gs.user_id = {$USER->user_id} OR gs.status = 2) AND gs.status > 0 ORDER BY gs.created");
 
 	$smarty->assign_by_ref('used',$used);
-	
-	$db2 = GeographDatabaseConnection(true);	
-	$suggestions = $db2->getAll("(SELECT label AS tag,'' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid ORDER BY score DESC,sort_order) 
-	UNION (SELECT result AS tag,'' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id)
-	UNION (SELECT result AS tag,'' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id)
-	UNION (SELECT tag,'wiki' AS `prefix` FROM gridimage_wiki WHERE gridimage_id = $gid ORDER BY seq)");
-	if (count($used) && count($suggestions)) {
-		$list = array();
-		foreach ($used as $row) $list[$row['tag']]=1;
-		
-		foreach ($suggestions as $idx => $row) {
-			if (isset($list[$row['tag']]))
-				unset($suggestions[$idx]);
+	if (!empty($used)) {
+		$text = array();
+		foreach ($used as $row) {
+			$text[] = ($row['prefix'])?"{$row['prefix']}:{$row['tag']}":$row['tag'];
 		}
+		$smarty->assign('usedtext',implode(';',$text));
 	}
-	$smarty->assign_by_ref('suggestions',$suggestions);
+	
+	if ($gid < 4294967296 && empty($usenew)) {
+		$db2 = GeographDatabaseConnection(true);	
+		$suggestions = $db2->getAll("(SELECT label AS tag,'' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid ORDER BY score DESC,sort_order) 
+		UNION (SELECT result AS tag,'' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id)
+		UNION (SELECT result AS tag,'' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id)
+		UNION (SELECT tag,'wiki' AS `prefix` FROM gridimage_wiki WHERE gridimage_id = $gid ORDER BY seq)");
+		if (count($used) && count($suggestions)) {
+			$list = array();
+			foreach ($used as $row) $list[$row['tag']]=1;
+
+			foreach ($suggestions as $idx => $row) {
+				if (isset($list[$row['tag']]))
+					unset($suggestions[$idx]);
+			}
+		}
+		$smarty->assign_by_ref('suggestions',$suggestions);
+	}
 	
 } elseif ($ids) {
 	//TODO -- look though the images, and compile popular terns/clusters...
