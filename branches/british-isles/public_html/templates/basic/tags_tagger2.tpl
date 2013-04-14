@@ -139,7 +139,7 @@ $(function() {
 			callback(data);
 		}
 	}).on('change', function (e) {
-		console.log(e.val,e.added,e.removed);
+		//console.log(e.val,e.added,e.removed);
 		if (e.added) {
 			submitTag(e.added.text, 2);
 		} else if (e.removed) {
