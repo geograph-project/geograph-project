@@ -283,15 +283,7 @@
 		</div>
 
 		<div id="div2" class="interestBox" style="display:none">
-			<div style="float:right"><a href="/article/Tags" title="Article about Tags" class="about" target="_blank">More about Tags</a></div>
-			<div style="font-size:0.8em;padding-bottom:5px;">
-			&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/>
-			&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/>
-			&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/>
-			&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".
-			</div>
-
-			<iframe src="about:blank" height="200" width="100%" id="tagframe" style="border:0">
+			<iframe src="about:blank" height="300" width="100%" id="tagframe" style="border:0">
 			</iframe>
 		</div>
 
