@@ -37,11 +37,14 @@ $sql = array();
 $sql['tables'] = array();
 $sql['tables']['t'] = 'tag';
 
-if (!empty($_GET['term'])) {
+if (isset($_GET['term'])) {
 	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];
-	$sql['columns'] = "if (tag.prefix and not (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki'),concat(tag.prefix,':',tag.tag),tag.tag) as tag";
+	$sql['columns'] = "if (tag.prefix != '' and not (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki'),concat(tag.prefix,':',tag.tag),tag.tag) as tag";
+	if (empty($_GET['term']) && !empty($CONF['sphinx_host'])) {
+		$_REQUEST['q'] = $_GET['q'] = '..'; //falls though as an empty to query, which sphinx now orders by images desc - so gives most popular tags!
+	}
 } else {
-	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
+	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
 }
 
 if (!empty($_GET['gridimage_id'])) {
@@ -63,6 +66,26 @@ if (!empty($_GET['gridimage_id'])) {
 	$sql['wheres'][] = "gt.gridimage_id = ".intval($_GET['gridimage_id']);
 
 	$sql['order'] = 'gt.created';
+
+} elseif (!empty($_GET['tag_ids']) && preg_match('/\d+(,\d+)*/',$_GET['tag_ids'])) {
+        customExpiresHeader(3600*24);
+
+        $sql['columns'] = "tag_id,".$sql['columns'];
+
+        $sql['wheres'] = array();
+        $sql['wheres'][] = "status = 1";
+        $sql['wheres'][] = "tag_id IN (".($_GET['tag_ids']).")";
+
+} elseif (!empty($_GET['gridref'])) {
+        $sql['columns'] = "gridimage_id,".$sql['columns'];
+
+        $sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
+        $sql['tables']['gi'] = 'INNER JOIN gridimage_search gi USING (gridimage_id)';
+
+        $sql['wheres'] = array();
+        $sql['wheres'][] = "tag.status = 1";
+        $sql['wheres'][] = "gt.status = 2";
+        $sql['wheres'][] = "gi.grid_reference = ".$db->Quote($_GET['gridref']);
 
 } elseif (!empty($_GET['q'])) {
 	customExpiresHeader(3600);
@@ -86,15 +109,16 @@ if (!empty($_GET['gridimage_id'])) {
 		if ($offset < (1000-$pgsize) ) { 
 			$client = $sphinx->_getClient();
 
-                        $client->SetRankingMode(SPH_RANK_SPH04);
+                        //$client->SetRankingMode(SPH_RANK_SPH04);
+                        $client->SetRankingMode(SPH_RANK_WORDCOUNT);
 
 			$client->setFieldWeights(array('tag'=>10));
 			
-			$sphinx->sort = "prefered DESC"; //within group order
-			$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC"); //overall sort order
+			$sphinx->sort = "prefered DESC, images DESC"; //within group order
+			$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, images DESC, @id DESC"); //overall sort order
 			
 			if ($sphinx->q && strpos($sphinx->q,'@') === false) {
-				$sphinx->q = "\"^{$sphinx->q}$\" | (^$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$\"";
+				$sphinx->q = "\"^{$sphinx->q}$ \" | \"^={$sphinx->q}$ \" | \"^{$sphinx->q}\" | \"{$sphinx->q}$ \" | (^$sphinx->q) | (=$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$ \"";
 				if (!empty($prefix)) {
 					$sphinx->q = "({$sphinx->q}) @prefix $prefix";
 				}
@@ -160,9 +184,11 @@ if (!empty($_GET['gridimage_id'])) {
 }
 
 $query = sqlBitsToSelect($sql);
+if (!empty($_GET['deb']))
+        print_r($query);
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-if (!empty($_GET['term'])) {
+if (isset($_GET['term'])) {
 	$data = $db->getCol($query);
 } else {
 	$data = $db->getAll($query);
