@@ -54,7 +54,7 @@ if (false) {
 	$topics[] = array('tag'=>"testing",'prefix'=>'');
 
 } elseif (!empty($_GET['string'])) {
-	customExpiresHeader(360000);
+	customExpiresHeader(360000,true);
 
 	$string = $_GET['string'];
 

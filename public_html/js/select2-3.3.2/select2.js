@@ -356,6 +356,8 @@ the specific language governing permissions and limitations under the Apache Lic
                     data = options.data, // ajax data function
                     url = ajaxUrl, // ajax url string or function
                     transport = options.transport || $.ajax,
+                    cache = options.cache || false,
+                    jsonpCallback = options.jsonpCallback || undefined,
                     type = options.type || 'GET', // set type of request (GET or POST)
                     params = {};
 
@@ -377,7 +379,8 @@ the specific language governing permissions and limitations under the Apache Lic
                     dataType: options.dataType,
                     data: data,
                     type: type,
-                    cache: false,
+                    cache: cache,
+                    jsonpCallback: jsonpCallback,
                     success: function (data) {
                         if (requestNumber < requestSequence) {
                             return;
@@ -2472,7 +2475,7 @@ the specific language governing permissions and limitations under the Apache Lic
         },
 
         // multi
-        postprocessResults: function () {
+        postprocessResults: function (dummy1, dummy2, noHighlightUpdate) {
             var val = this.getVal(),
                 choices = this.results.find(".select2-result"),
                 compound = this.results.find(".select2-result-with-children"),
@@ -2495,7 +2498,7 @@ the specific language governing permissions and limitations under the Apache Lic
                 }
             });
 
-            if (this.highlight() == -1){
+            if (this.highlight() == -1 && noHighlightUpdate !== false){
                 self.highlight(0);
             }
 
