@@ -2,7 +2,7 @@
 {include file="_basic_begin.tpl"}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <link href="/js/select2-3.3.2/select2.css" rel="stylesheet"/>
-<script src="/js/select2-3.3.2/select2.min.js"></script>
+<script src="/js/select2-3.3.2/select2.js"></script>
 <div style="position:fixed;top:200px;left:10px;border:1px solid red"></div>
 <div style="padding:6px">
 <style>{literal}

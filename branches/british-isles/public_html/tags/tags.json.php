@@ -62,6 +62,7 @@ if (isset($_GET['term'])) {
 }
 	
 if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
+	customExpiresHeader(90,false);
 	init_session();
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -81,6 +82,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 	} 
 	
 } elseif (!empty($_GET['gridimage_id'])) {
+	customExpiresHeader(180);
 	init_session();
 	if (!$USER->registered) {
 		die("{error: 'not logged in'}");
@@ -108,6 +110,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
         $sql['wheres'][] = "tag_id IN (".($_GET['tag_ids']).")";
 
 } elseif (!empty($_GET['gridref'])) {
+        customExpiresHeader(180);
         $sql['columns'] = "gridimage_id,".$sql['columns'];
 
         $sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
@@ -118,7 +121,6 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
         $sql['wheres'][] = "gi.grid_reference = ".$db->Quote($_GET['gridref']);
 
 } elseif (!empty($_GET['q'])) {
-	customExpiresHeader(3600);
 
 	if (!empty($CONF['sphinx_host'])) {
 		if (strpos($_REQUEST['q'],':') !== FALSE) {
@@ -242,6 +244,12 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 		$sql['limit'] = 100;
 	}
 	//todo sort by popularity?
+	
+	if (isset($_GET['mine'])) {
+		customExpiresHeader(3600);
+	} else {
+		customExpiresHeader(3600*3,true);
+	}
 } else {
 	die("todo");
 	
