@@ -24,6 +24,14 @@
 if (!empty($_GET['mode']) && $_GET['mode'] == 'suggestions' && !empty($_GET['string'])) {
 	require("./topics.json.php");
 	exit;
+} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'categories') {
+	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];
+        if (empty($_GET['term'])) {
+                $_REQUEST['q'] = $_GET['q'] = '..'; //falls though as an empty to query, which sphinx now orders by images desc - so gives most popular tags!
+        }
+	$_GET['mine'] = 1;
+	require("../finder/categories.json.php");
+	exit;
 }
 
 require_once('geograph/global.inc.php');
@@ -65,6 +73,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 	
 		$sql['wheres'][] = "gt.user_id = {$USER->user_id}";
 		$sql['wheres'][] = "prefix != 'top'";
+		$sql['wheres'][] = "gridimage_id < 4294967296";
 		
 		$sql['group'] = 'tag.tag_id';
 		$sql['order'] = 'last_used DESC';

@@ -1,4 +1,4 @@
-{assign var="page_title" value="Tags"}
+{assign var="page_title" value="Tagging Box"}
 {include file="_basic_begin.tpl"}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <link href="/js/select2-3.3.2/select2.css" rel="stylesheet"/>
@@ -54,17 +54,18 @@
 	</div>
 
 	<div style="float:left;position:relative;font-size:0.9em;z-index:10000">
-		<input type="radio" name="selector" value="alpha" id="sel_alpha"/> <label for="sel_alpha">All tags - Alphabetical</label><br/>
-		<input type="radio" name="selector" value="ranked" id="sel_ranked" checked/> <label for="sel_ranked">All tags - Ranked</label><br/>
-		<input type="radio" name="selector" value="selfrecent" id="sel_selfrecent"/> <label for="sel_selfrecent">Your tags - Recently Used</label><br/>
-		<input type="radio" name="selector" value="selfalpha" id="sel_selfalpha"/> <label for="sel_selfalpha">Your tags - Alphabetical</label><br/>
+		<input type="radio" name="selector" value="alpha" id="sel_alpha"/> <label for="sel_alpha">All Tags - Alphabetical</label><br/>
+		<input type="radio" name="selector" value="ranked" id="sel_ranked" checked/> <label for="sel_ranked">All Tags - Ranked</label><br/>
+		<input type="radio" name="selector" value="selfrecent" id="sel_selfrecent"/> <label for="sel_selfrecent">Your Tags - Recently Used</label><br/>
+		<input type="radio" name="selector" value="selfalpha" id="sel_selfalpha"/> <label for="sel_selfalpha">Your Tags - Alphabetical</label><br/>
 		{dynamic}
 		{if $topicstring}
-			<input type="radio" name="selector" value="suggestions" id="sel_suggestions" checked/> <label for="sel_suggestions">Automatic Suggestions</label><br/>
+			<input type="radio" name="selector" value="suggestions" id="sel_suggestions" checked/> <label for="sel_suggestions">Automatic suggestions</label><br/>
 		{/if}{/dynamic}
 		<input type="radio" name="selector" value="subject" id="sel_subject"/> <label for="sel_subject">Subject List</label><br/>
 		<input type="radio" name="selector" value="top" id="sel_top"/> <label for="sel_top">Context List</label><br/>
 		<input type="radio" name="selector" value="bucket" id="sel_bucket"/> <label for="sel_bucket">Bucket List</label><br/>
+		<input type="radio" name="selector" value="categories" id="sel_categories"/> <label for="sel_categories">Your Category list</label><br/>
 
 	</div>
 
@@ -126,7 +127,7 @@ $(function() {
 		},
 		createSearchChoice: function (term) {
 			var mode =$("input[name=selector]:checked").val()
-			if (mode == 'subject' || mode == 'top' || mode == 'bucket')
+			if (mode == 'subject' || mode == 'top' || mode == 'bucket' || mode == 'categories')
 				return false;
 			return {id: term, text: term};
 		},

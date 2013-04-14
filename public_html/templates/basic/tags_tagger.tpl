@@ -31,7 +31,7 @@
 
 	<div style="float:left;width:40%;font-size:0.9em">
 
-			<b>New</b>: <input type="text" name="__newtag" size="22" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}"/> <input type="button" value="Add" onclick="useTags(this.form.elements['__newtag'])"/><br/>
+			<b>New</b>: <input type="text" name="__newtag" size="22" onkeyup="{literal}if (this.value.length > 2) { return loadTagSuggestions(this,event);} {/literal}" onkeypress="myKeyPress(this,event)"/> <input type="button" value="Add" onclick="useTags(this.form.elements['__newtag'])"/><br/>
 			<input type=checkbox id="mine_checkbox" onclick="loadTagSuggestions(this.form.elements['__newtag'],event);"/> <label for="mine_checkbox">Only suggest tags I have already used</label><br/><br/>
 
 			<b>Current Tags</b>:<br/>
@@ -321,12 +321,30 @@ function toggleTag(text) {
 		});
 	}
 
+        function myKeyPress(that,event) {
+
+                var unicode=event.keyCode? event.keyCode : event.charCode;
+                if (unicode == 13) {
+                        useTags(that);
+                        if (event.preventDefault) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                        }
+                        return false;
+                }
+		return true;
+	}
+
 	function loadTagSuggestions(that,event) {
 
 		var unicode=event.keyCode? event.keyCode : event.charCode;
 		if (unicode == 13) {
 			useTags(that);
-			return;
+			if (event.preventDefault) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+			return false;
 		}
 
 		param = 'q='+encodeURIComponent(that.value);
@@ -365,6 +383,8 @@ function toggleTag(text) {
 			}
 			div.innerHTML = str;
 		});
+
+		return true;
 	}
 
 	function loadTagTopics(value) {
