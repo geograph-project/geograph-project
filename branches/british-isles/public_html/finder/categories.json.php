@@ -24,18 +24,23 @@
 require_once('geograph/global.inc.php');
 
 
-header('Content-type: application/json');
+if (!empty($_GET['callback'])) {
+	header('Content-type: text/javascript');
 
+        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
+        echo "{$callback}(";
+} else {
+	header('Content-type: application/json');
+}
 
 customExpiresHeader(3600);
 
 
 if (!empty($_GET['canonical'])) {
-	
 	$db = GeographDatabaseConnection(true);
-	
+
 	$table = isset($_GET['more'])?'category_canonical_log':'category_canonical';
-	
+
 	$rows = $db->getCol("
 	SELECT imageclass
 	FROM $table
@@ -45,42 +50,54 @@ if (!empty($_GET['canonical'])) {
 	$sep = "[";
 	$results = array();
 	foreach ($rows as $c) {
-		
 		print $sep;
 		print '"'.trim(addslashes($c)).'"';
-
 		$sep = ",";
 	}
 	print "]\n";
-	
 
 } elseif (!empty($_REQUEST['q'])) {
 	$q=trim($_REQUEST['q']);
-	
+
 	$sphinx = new sphinxwrapper($q);
 
-	//gets a cleaned up verion of the query (suitable for filename etc) 
+	//gets a cleaned up verion of the query (suitable for filename etc)
 	$cacheid = $sphinx->q;
 
-	$sphinx->pageSize = $pgsize = 60; 
+	$sphinx->pageSize = $pgsize = 60;
 
-	
 	$pg = (!empty($_REQUEST['page']))?intval(str_replace('/','',$_REQUEST['page'])):0;
 	if (empty($pg) || $pg < 1) {$pg = 1;}
-	
-	$cacheid .=".".$pg;
-	
 
-		
+	$cacheid .=".".$pg;
+
 	$offset = (($pg -1)* $sphinx->pageSize)+1;
 
-	if ($offset < (1000-$pgsize) ) { 
+	if ($offset < (1000-$pgsize) ) {
 		$sphinx->processQuery();
 
-		$sphinx->q = "\"^{$sphinx->q}$\" | ($sphinx->q)";
+		if ($sphinx->q == '..') {
+			$sphinx->q = '';
+		} elseif (!empty($sphinx->q) && $sphinx->q != '..')
+			$sphinx->q = "\"^{$sphinx->q}$\" | ($sphinx->q)";
 
-		$ids = $sphinx->returnIds($pg,'category');
-		
+
+                $client = $sphinx->_getClient();
+
+                $client->SetSelect('id'); //we dont need any, but sphinx wants somethingt
+
+                if (isset($_GET['mine'])) {
+                        init_session();
+                        if (!$USER->registered) {
+                                die("{error: 'not logged in'}");
+                        }
+                        $sphinx->addFilters(array('user_id'=>array($USER->user_id)));
+
+			$ids = $sphinx->returnIds($pg,'category2');
+                } else {
+			$ids = $sphinx->returnIds($pg,'category');
+		}
+
 		if (!empty($ids) && count($ids)) {
 
 			$where = "category_id IN(".join(",",$ids).")";
@@ -92,7 +109,7 @@ if (!empty($_GET['canonical'])) {
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$rows = $db->getAssoc("
 			SELECT category_id,imageclass
-			FROM category_stat 
+			FROM category_stat
 			WHERE $where
 			LIMIT $limit");
 
@@ -101,25 +118,23 @@ if (!empty($_GET['canonical'])) {
 			foreach ($ids as $c => $id) {
 				$row = $rows[$id];
 				if (!preg_match('/^(Supplemental|Geograph|Accept)/i',$row['imageclass'])) {
-				
 					print $sep;
 					print '"'.trim(addslashes($row)).'"';
-
 					$sep = ",";
 				}
 			}
 			print "]\n";
-			
-			
-			
 		} else {
 			print "[]";
 		}
 	} else {
 		print "[]";
-
 	}
 } else {
 	print "[]";
+}
+
+if (!empty($_GET['callback'])) {
+        echo ");";
 }
 
