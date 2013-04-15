@@ -16,11 +16,38 @@
 .tagGeneral span,.tagGeneral a.taglink {
 	background-color:yellow !important;
 }
-.interestBox .tag {
-	margin-left:5px;
-	white-space:nowrap;
+
+.select2-search-choice {
+	font-family: "comic sans MS";
+	font-weight: normal;
+	font-size: 0.8em;
 }
 
+.select2-drop .select2-results {
+	border-top:1px dotted silver;
+}
+.select2-drop .select2-result {
+	font-family: "comic sans MS";
+	font-weight: normal;
+	font-size: 0.8em;
+	line-height: 1.1em;
+	border-bottom: 1px solid #eee;
+}
+
+.select2-compact .select2-result {
+	float: left;
+	padding: 1px;
+	border: 1px solid silver;
+	margin: 1px;
+	border-radius: 3px;
+	background-color: #eee;
+}
+.select2-compact .select2-highlighted {
+	background: #3875d7;
+}
+.select2-compact li.select2-more-results {
+	clear:both;
+}
 {/literal}</style>
 
 
@@ -53,7 +80,7 @@
 
 	</div>
 
-	<div style="float:left;position:relative;font-size:0.9em;z-index:10000">
+	<div style="float:left;position:relative;font-size:0.9em;z-index:10000"><br/>
 		<input type="radio" name="selector" value="alpha" id="sel_alpha"/> <label for="sel_alpha">All Tags - Alphabetical</label><br/>
 		<input type="radio" name="selector" value="ranked" id="sel_ranked" checked/> <label for="sel_ranked">All Tags - Ranked</label><br/>
 		<input type="radio" name="selector" value="selfrecent" id="sel_selfrecent"/> <label for="sel_selfrecent">Your Tags - Recently Used</label><br/>
@@ -70,6 +97,11 @@
 		<input type="radio" name="selector" value="bucket" id="sel_bucket"/> <label for="sel_bucket">Bucket List</label><br/>
 		<input type="radio" name="selector" value="categories" id="sel_categories"/> <label for="sel_categories">Your Category list</label><br/>
 
+		<br/><br/>
+		<a href="javascript:void(export_tags())">Export current Tags as text</a>
+
+		<br/>
+		<input type=checkbox onclick="toggle_compact(this)" id="compact"/> <label for="compact">Compact Listing Format</label>
 	</div>
 
 </form>
@@ -84,6 +116,24 @@
 {literal}
 
 <script type="text/javascript">
+
+function export_tags() {
+	var list = $('#__newtag').select2('val');
+	if (!list || list.length == 0) {
+		alert("Please select some tags first!");
+	} else {
+		prompt('Current tags:',list.join('; ')+';');
+	}
+	return false;
+}
+
+function toggle_compact(that) {
+	if (that.checked) {
+		$(".select2-drop").addClass("select2-compact");
+	} else {
+		$(".select2-drop").removeClass("select2-compact");
+	}
+}
 
 $(function() {
 	$('#__newtag').select2({
