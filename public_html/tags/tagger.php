@@ -30,13 +30,11 @@ $USER->mustHavePerm("basic");
 
 $usenew = $USER->getPreference('tags.tagger_new','0',true);
 
-
 if ($usenew) {
 	$template='tags_tagger2.tpl';
 } else {
 	$template='tags_tagger.tpl';
 }
-
 
 
 $gid = 0;
@@ -319,7 +317,7 @@ if (!empty($_POST['save']) && !empty($ids)) {
 
 
 if ($gid) {
-	
+
 	$used = $db->getAll("SELECT *,gs.status,(gs.user_id = {$USER->user_id}) AS is_owner FROM gridimage_tag gs INNER JOIN tag s USING (tag_id) WHERE gridimage_id = $gid AND (gs.user_id = {$USER->user_id} OR gs.status = 2) AND gs.status > 0 ORDER BY gs.created");
 
 	$smarty->assign_by_ref('used',$used);
@@ -330,10 +328,10 @@ if ($gid) {
 		}
 		$smarty->assign('usedtext',implode(';',$text));
 	}
-	
-	if ($gid < 4294967296 && empty($usenew)) {
-		$db2 = GeographDatabaseConnection(true);	
-		$suggestions = $db2->getAll("(SELECT label AS tag,'' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid ORDER BY score DESC,sort_order) 
+
+	if ($gid < 4294967296 && $template=='tags_tagger.tpl') {
+		$db2 = GeographDatabaseConnection(true);
+		$suggestions = $db2->getAll("(SELECT label AS tag,'' AS `prefix` FROM gridimage_group WHERE gridimage_id = $gid AND label NOT IN ('Other Topics','(Other)') ORDER BY score DESC,sort_order) 
 		UNION (SELECT result AS tag,'' AS `prefix` FROM at_home_result WHERE gridimage_id = $gid ORDER BY at_home_result_id)
 		UNION (SELECT result AS tag,'' AS `prefix` FROM at_home_result_archive WHERE gridimage_id = $gid ORDER BY at_home_result_id)
 		UNION (SELECT tag,'wiki' AS `prefix` FROM gridimage_wiki WHERE gridimage_id = $gid ORDER BY seq)");
@@ -348,11 +346,11 @@ if ($gid) {
 		}
 		$smarty->assign_by_ref('suggestions',$suggestions);
 	}
-	
+
 } elseif ($ids) {
 	//TODO -- look though the images, and compile popular terns/clusters...
 }
-	
+
 	if (!empty($is_owner) && empty($_GET['v'])) {
 
 		if (empty($db2))
@@ -366,20 +364,20 @@ if ($gid) {
 		$smarty->assign_by_ref('tree',$tree);
 	}
 	
-	$buckets = array('Closeup',
-	'Arty',
-	'Informative',
-	'Aerial',
-	'Telephoto',
-	'Landscape',
-	'Wideangle',
-	'Indoor',
-	'Gone',
-	'People',
-	'Temporary',
-	'Life',
-	'Subterranean', 
-	'Transport');
+	 $buckets = array('Closeup',
+        'CloseCrop', //was telephoto
+        'Wideangle',
+        'Landscape',
+        'Arty',
+        'Informative',
+        'Aerial',
+        'Indoor',
+        'Subterranean',
+        'Gone',
+        'Temporary',
+        'People',
+        'Life',
+        'Transport');
 	$smarty->assign_by_ref('buckets',$buckets);
 
 if (!empty($_GET['title']) || !empty($_GET['comment'])) {
@@ -387,21 +385,23 @@ if (!empty($_GET['title']) || !empty($_GET['comment'])) {
 
         $smarty->assign('topicstring',$string);
 
-} 
+}
 
-if ($db2 && $USER->user_id) {
-		
+if ($template=='tags_tagger.tpl' && $USER->user_id) {
+	if (empty($db2))
+                $db2 = GeographDatabaseConnection(true);
+
 	$recent = $db2->getAll("SELECT tag,prefix,MAX(gt.created) AS last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 20");
 	if (count($used) && count($recent)) {
 		$list = array();
 		foreach ($used as $row) $list[$row['tag']]=1;
-		
+
 		foreach ($recent as $idx => $row) {
 			if (isset($list[$row['tag']]))
 				unset($recent[$idx]);
 		}
 	}
-	$smarty->assign_by_ref('recent',$recent);	
+	$smarty->assign_by_ref('recent',$recent);
 }
 
 
@@ -418,5 +418,5 @@ if (!empty($_GET['create'])) {
 
 
 
-$smarty->display($template);
+$smarty->display($template,$template);
 
