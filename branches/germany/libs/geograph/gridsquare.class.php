@@ -31,6 +31,8 @@
 * @version $Revision$
 */
 
+include_messages('class_gridsquare');
+
 /**
 * GridSquare class
 * Provides an abstraction of a grid square, providing all the
@@ -473,7 +475,7 @@ class GridSquare
 	*/
 	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false,$allowinternal = false,$recalc = false)
 	{
-		global $CONF;
+		global $CONF, $MESSAGES;
 		$matches=array();
 		$isfour=false;
 
@@ -577,10 +579,7 @@ class GridSquare
 			}
 		} else {
 			$ok=false;
-			if ($CONF['lang'] == 'de')
-				$this->_error(htmlentities($gridreference).' ist keine gültige Koordinate');
-			else
-				$this->_error(htmlentities($gridreference).' is not a valid grid reference');
+			$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities($gridreference)));
 
 		}
 				
@@ -649,7 +648,7 @@ class GridSquare
 	*/
 	function setGridRef($gridref, $allowzeropercent = false, $allowinternal = false)
 	{
-		global $CONF;
+		global $MESSAGES;
 		$gridref = preg_replace('/[^\w]+/','',strtoupper($gridref)); #assume the worse and remove everything, also not everyone uses the shift key
 		//assume the inputs are tainted..
 		$ok=$this->validGridRef($gridref);
@@ -664,17 +663,11 @@ class GridSquare
 			if (preg_match('/^([!A-Z]{1,3})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
 			{
 				$fixed=$matches[1].$matches[2].$matches[3];
-				if ($CONF['lang'] == 'de')
-					$this->_error('Bitte eine Koordinate mit vier Ziffern eingeben, z.B. '.$fixed.' statt '.$gridref);
-				else
-					$this->_error('Please enter a 4 figure reference, i.e. '.$fixed.' instead of '.$gridref);
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_4fig'], $fixed, $gridref));
 			}
 			else
 			{
-				if ($CONF['lang'] == 'de')
-					$this->_error(htmlentities($gridref).' ist keine gültige Koordinate');
-				else
-					$this->_error(htmlentities($gridref).' is not a valid grid reference');
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities($gridref)));
 			}
 		}
 		
@@ -712,7 +705,7 @@ class GridSquare
 	*/
 	function loadFromPosition($internalx, $internaly, $findnearest = false, $allowinternal = false, $dx = 0, $dy = 0)
 	{
-		global $CONF;
+		global $CONF, $MESSAGES;
 		$ok=false;
 		$db=&$this->_getDB();
 		#trigger_error("===>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
@@ -816,10 +809,7 @@ class GridSquare
 			$this->internal_only = true;
 			$ok=true;
 		} else {
-			if ($CONF['lang'] == 'de')
-				$this->_error("Dieser Ort scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um Rückmeldung, falls dies nicht der Fall sein sollte.");
-			else
-				$this->_error("This location seems to be outside the supported area! Please contact us if you think this is in error");
+			$this->_error($MESSAGES['class_gridsquare']['outside_area']);
 		}
 		return $ok;
 	}
@@ -829,7 +819,7 @@ class GridSquare
 	*/
 	function _setGridRef($gridref,$allowzeropercent = false,$allowinternal = false)
 	{
-		global $CONF;
+		global $CONF, $MESSAGES;
 		$ok=true;
 
 		$db=&$this->_getDB();
@@ -853,10 +843,7 @@ class GridSquare
 			
 			if ($this->percent_land==0 && !$allowzeropercent && $this->imagecount==0)
 			{
-				if ($CONF['lang'] == 'de')
-					$this->_error("$gridref scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um <a href=\"/mapfixer.php?gridref=$gridref\">Rückmeldung</a>, falls dies nicht der Fall sein sollte.");
-				else
-					$this->_error("$gridref seems to be outside the supported area! Please <a href=\"/mapfixer.php?gridref=$gridref\">contact us</a> if you think this is in error.");
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_outside_area_link'], $gridref));
 				$ok=false;
 
 			}
@@ -936,10 +923,7 @@ class GridSquare
 			
 			
 			if (!$ok) {
-				if ($CONF['lang'] == 'de')
-					$this->_error("$gridref scheint außerhalb des Landes/der Zone zu liegen! Wir bitten um Rückmeldung, falls dies nicht der Fall sein sollte.");
-				else
-					$this->_error("$gridref seems to be outside the supported area! Please contact us if you think this is in error");
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_outside_area'], $gridref));
 			}
 
 		}

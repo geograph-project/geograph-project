@@ -907,4 +907,15 @@ function smarty_modifier_floatformat($val, $format='%.14G')
 	return str_replace('.',$CONF['decimal_sep'], sprintf($format,$val));
 }
 
+/**
+ * include messages depending on the language settings
+ */
+
+function include_messages($id)
+{
+	global $MESSAGES, $CONF;
+	include_once('messages/'.$CONF['lang'].'/'.$id.'.php');
+	if (!isset($MESSAGES[$id])) require_once('messages/en/'.$id.'.php');
+}
+
 ?>

@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+include_messages('moversboard');
 init_session();
 
 
@@ -54,8 +55,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed'); 
 
-	//:s/} elseif ($type == '\([^']*\)') {/^I'\1' => array(/
-	//:s/\$sql_\([a-z]*\) *= *"\([^"]*\)" *; *$/^I'\1' => "\2",/
 	$sql_qtable = array (
 		'squares' => array('column' => ''),
 		'geosquares' => array('column' => ''),
@@ -135,165 +134,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			'column' => "sum(i.ftf=1 and i.moderation_status='geograph')",
 		),
 	);
-	// s/\$\([a-z]*\) *= *"\([^"]*\)" *; *$/^I'\1' => "\2",/
-	if ($CONF['lang'] == 'de') $text_table = array (
-		'geosquares' => array(
-			'heading' => "Quadrate mit Geobildern",
-			'desc' => "der Anzahl verschiedener Quadrate mit Geobildern",
-		),
-		'squares' => array(
-			'heading' => "Fotografierte Quadrate",
-			'desc' => "der Anzahl verschiedener fotografierter Quadrate",
-		),
-		'geographs' => array(
-			'heading' => "Neue Geobilder",
-			'desc' => "der Anzahl eingereichter Geobilder",
-		),
-		'additional' => array(
-			'heading' => "Zusätzliche Geobilder",
-			'desc' => "der Anzahl eingereichter Geobilder in schon fotografierten Quadraten",
-		),
-		'supps' => array(
-			'heading' => "Neue Extrabilder",
-			'desc' => "der Anzahl eingereichter Extrabilder",
-		),
-		'images' => array(
-			'heading' => "Neue Bilder",
-			'desc' => "der Anzahl eingereichter Bilder",
-		),
-		'test_points' => array(
-			'heading' => "G-Points",
-			'desc' => "test points",
-		),
-		'depth' => array(
-			'heading' => "Dichte",
-			'desc' => "der Dichte",
-		),
-		'myriads' => array(
-			'heading' => "100km-Quadrate",
-			'desc' => "der Anzahl unterschiedlicher 100km-Quadrate",
-		),
-		'hectads' => array(
-			'heading' => "10km-Quadrate",
-			'desc' => "der Anzahl unterschiedlicher 10km-Quadrate",
-		),
-		'days' => array(
-			'heading' => "Tage",
-			'desc' => "der Anzahl unterschiedlicher Tage",
-		),
-		'antispread' => array(
-			'heading' => "AntiSpread Score",
-			'desc' => "antispread score (images/hectads)",
-		),
-		'spread' => array(
-			'heading' => "Spread Score",
-			'desc' => "spread score (hectads/images)",
-		),
-		'classes' => array(
-			'heading' => "Kategorien",
-			'desc' => "der Anzahl unterschiedlicher Kategorien",
-		),
-		'clen' => array(
-			'heading' => "Average Description Length",
-			'desc' => "average length of the description",
-		),
-		'tlen' => array(
-			'heading' => "Average Title Length",
-			'desc' => "average length of the title",
-		),
-		'category_depth' => array(
-			'heading' => "Category Depth",
-			'desc' => "the category depth score",
-		),
-		'centi' => array(
-		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
-			'heading' => "100m-Quadrate",
-			'desc' => "der Anzahl unterschiedlicher 100m-Quadrate",
-		),
-		'points' => array(
-			'heading' => "Geograph-Punkte",
-			'desc' => "der Anzahl erreichter Geograph-Punkte",
-		),
-	);
-	else $text_table = array (
-		'geosquares' => array(
-			'heading' => "Squares Geographed",
-			'desc' => "different squares geographed",
-		),
-		'squares' => array(
-			'heading' => "Squares Photographed",
-			'desc' => "different squares photographed",
-		),
-		'geographs' => array(
-			'heading' => "New Geographs",
-			'desc' => "'geograph' images submitted",
-		),
-		'additional' => array(
-			'heading' => "Non-First Geographs",
-			'desc' => "non first 'geograph' images submitted",
-		),
-		'supps' => array(
-			'heading' => "New Supplemental",
-			'desc' => "'supplemental' images submitted",
-		),
-		'images' => array(
-			'heading' => "New Images",
-			'desc' => "images submitted",
-		),
-		'test_points' => array(
-			'heading' => "G-Points",
-			'desc' => "test points",
-		),
-		'depth' => array(
-			'heading' => "Depth",
-			'desc' => "depth score",
-		),
-		'myriads' => array(
-			'heading' => "Myriads",
-			'desc' => "different myriads",
-		),
-		'hectads' => array(
-			'heading' => "Hectads",
-			'desc' => "different hectads",
-		),
-		'days' => array(
-			'heading' => "Days",
-			'desc' => "different days",
-		),
-		'antispread' => array(
-			'heading' => "AntiSpread Score",
-			'desc' => "antispread score (images/hectads)",
-		),
-		'spread' => array(
-			'heading' => "Spread Score",
-			'desc' => "spread score (hectads/images)",
-		),
-		'classes' => array(
-			'heading' => "Categories",
-			'desc' => "different categories",
-		),
-		'clen' => array(
-			'heading' => "Average Description Length",
-			'desc' => "average length of the description",
-		),
-		'tlen' => array(
-			'heading' => "Average Title Length",
-			'desc' => "average length of the title",
-		),
-		'category_depth' => array(
-			'heading' => "Category Depth",
-			'desc' => "the category depth score",
-		),
-		'centi' => array(
-		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
-			'heading' => "Centigraph Points",
-			'desc' => "centisquares photographed",
-		),
-		'points' => array(
-			'heading' => "New Geograph Points",
-			'desc' => "geograph points awarded",
-		),
-	);
 
 	if (!isset($sql_qtable[$type])) {
 		$type = 'points';
@@ -302,22 +142,19 @@ if (!$smarty->is_cached($template, $cacheid))
 	$isfloat = false;
 	if (isset($sql_qtable[$type]['isfloat'])) $isfloat = $sql_qtable[$type]['isfloat'];
 
-	$desc = $text_table[$type]['desc'];
+	$desc = $MESSAGES['moversboard']['descriptions'][$type];
 
 	if ($has_region) {
 		$region_name = $db->GetOne("select name from loc_hier where level=$level and community_id=$cid");
 		$region_table = "inner join gridsquare_percentage using (gridsquare_id)";
 		$region_where = "level=$level and community_id=$cid and percent>0 and ";
-		if ($CONF['lang'] == 'de')
-			$desc .= " in ".$region_name;
-		else
-			$desc .= " in ".$region_name;
+		$desc .= sprintf($MESSAGES['moversboard']['in_region'], $region_name);
 	} else {
 		$region_table = '';
 		$region_where = '';
 	}
 
-	$smarty->assign('heading', $text_table[$type]['heading']);
+	$smarty->assign('heading', $MESSAGES['moversboard']['headings'][$type]);
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
 	$smarty->assign('isfloat', $isfloat);
@@ -419,10 +256,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
 	$smarty->assign('types', array('points','geosquares','images','depth'));
-	if ($CONF['lang'] == 'de')
-		$smarty->assign('typenames', array('Punkte','Geoquadrate','Bilder','Dichte'));
-	else
-		$smarty->assign('typenames', array('points','geosquares','images','depth'));
+	$smarty->assign('typenames', $MESSAGES['moversboard']['type_names']);
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);
