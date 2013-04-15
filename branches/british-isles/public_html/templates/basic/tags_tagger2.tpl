@@ -59,6 +59,9 @@
 		<input type="radio" name="selector" value="selfrecent" id="sel_selfrecent"/> <label for="sel_selfrecent">Your Tags - Recently Used</label><br/>
 		<input type="radio" name="selector" value="selfalpha" id="sel_selfalpha"/> <label for="sel_selfalpha">Your Tags - Alphabetical</label><br/>
 		{dynamic}
+		{if $gr}
+			<input type="radio" name="selector" value="nearby" id="sel_nearby"/> <label for="sel_nearby">Nearby Tags</label><br/>
+		{/if}
 		{if $topicstring}
 			<input type="radio" name="selector" value="suggestions" id="sel_suggestions" checked/> <label for="sel_suggestions">Automatic suggestions</label><br/>
 		{/if}{/dynamic}
@@ -96,25 +99,19 @@ $(function() {
 			jsonpCallback: 'tagsFunc',
 			dataType: 'jsonp',
 			data: function (term, page) {
-				var mode =$("input[name=selector]:checked").val()
-				if (mode == 'suggestions' && $("input[name=topicstring]").val().length > 0) {
-					return {
-						mode: mode,
-						term: '', //send a empty string to help with caching
-						string: $("input[name=topicstring]").val()
-					};
+				var mode =$("input[name=selector]:checked").val();
+				var data = {mode: mode, term: term};
+				if (mode == 'suggestions' && $("input[name=topicstring]").length > 0) {
+					data.term = ''; //send a empty string to help with caching
+					data.string = $("input[name=topicstring]").val();
+				} else if (mode == 'nearby' && $("input[name=gr]").length > 0) {
+					data.gr = $("input[name=gr]").val();
+				} else if (mode == 'selfrecent') { //tofix temp patch, because CANT search selfrecent yet?
+					data.term = '';
+				} else {
+					data.page = page;
 				}
-				if (mode == 'selfrecent') { //tofix temp patch, because CANT search selfrecent yet?
-					return {
-						mode: mode,
-						term: ''
-					};
-				}
-				return {
-					mode: mode,
-					term: term, // search term
-					page: page
-				};
+				return data;
 			},
 			results: function (data, page) { // parse the results into the format expected by Select2.
 				var more = (data.length == 60 && (page*60) < 1000);

@@ -177,6 +177,17 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 						
 						$_GET['mine'] = 1; 
 						break;
+					case 'nearby': 
+						if (!empty($_GET['gr']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gr'])) {
+							if (empty($sphinx->q)) {
+								$sphinx->q = $_GET['gr'];
+							} else {
+								$sphinx->q = "{$_GET['gr']} ({$sphinx->q})";
+							}
+							$sphinx->processQuery();
+							$sphinx->q = str_replace('@grid_reference (',"@image_square ({$_GET['gr']} | ",$sphinx->q);
+						}
+						break;
 					case 'subject': 
 					case 'top': 
 					case 'bucket':

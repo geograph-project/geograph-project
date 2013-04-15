@@ -402,8 +402,20 @@ if ($template=='tags_tagger.tpl' && $USER->user_id) {
 		}
 	}
 	$smarty->assign_by_ref('recent',$recent);
-}
+} elseif ($template=='tags_tagger2.tpl' && !empty($_REQUEST['gr'])) {
+	$square=new GridSquare;
+	
+	$grid_given=false;
+	if ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
+		$grid_given = true;
 
+		$smarty->assign('gr',$square->grid_reference);
+
+		if ($square->natgrlen > 4) {
+			$smarty->assign('centisquare',1);
+		}
+	}
+}
 
 
 
