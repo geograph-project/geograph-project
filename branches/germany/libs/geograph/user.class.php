@@ -1075,7 +1075,6 @@ class GeographUser
 		if (isset($_SERVER['PHP_AUTH_USER']))
 		{
 			$email=stripslashes(trim($_SERVER['PHP_AUTH_USER']));
-			$password=md5(stripslashes(trim($_SERVER['PHP_AUTH_PW'])));
 			
 			$db = $this->_getDB();
 
@@ -1092,8 +1091,10 @@ class GeographUser
 				$arr = $db->GetRow($sql);	
 				if (count($arr))
 				{
+					$md5password=md5($arr['salt'].stripslashes(trim($_SERVER['PHP_AUTH_PW'])));
+
 					//passwords match?
-					if ($arr['password']==$password)
+					if ($arr['password']==$md5password)
 					{
 						//final test = if they have no rights, they haven't confirmed
 						//their registration
