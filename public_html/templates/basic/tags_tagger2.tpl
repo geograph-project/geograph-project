@@ -36,9 +36,9 @@
 
 .select2-compact .select2-result {
 	float: left;
-	padding: 1px;
+	padding: 0px;
 	border: 1px solid silver;
-	margin: 1px;
+	margin: 3px;
 	border-radius: 3px;
 	background-color: #eee;
 }
@@ -48,6 +48,11 @@
 .select2-compact li.select2-more-results {
 	clear:both;
 }
+.select2-container-multi .select2-choices .select2-search-field {
+	z-index:121000;
+	position:relative;
+}
+
 {/literal}</style>
 
 
@@ -97,7 +102,7 @@
 		<input type="radio" name="selector" value="bucket" id="sel_bucket"/> <label for="sel_bucket">Bucket List</label><br/>
 		<input type="radio" name="selector" value="categories" id="sel_categories"/> <label for="sel_categories">Your Category list</label><br/>
 
-		<br/><br/>
+		<br/>
 		<a href="javascript:void(export_tags())">Export current Tags as text</a>
 
 		<br/>
@@ -178,6 +183,7 @@ $(function() {
 				return false;
 			return {id: term, text: term};
 		},
+		//formatCreateNew: function (term) { return "\"" + term + "\" (create as new tag)"; },
 		initSelection: function (element, callback) {
 			var data = [];
 			$(element.val().split(/;/)).each(function () {
@@ -196,8 +202,13 @@ $(function() {
 
 
 	$("input[name=selector]").click(function() {
+		var txt = $('.select2-input').val();
 		$('#__newtag').select2('close');
 		$('#__newtag').select2('open');
+		if (txt.length > 0) {
+			$('.select2-input').val(txt);
+		}
+
 	});
 
 });
