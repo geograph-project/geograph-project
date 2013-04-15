@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+include_messages('leaderboard');
 init_session();
 
 
@@ -104,53 +105,32 @@ $timesqlrel = '';
 if ($timerel == 'between') {
 	if (!empty($when) && !empty($when2)) {
 		$timesqlrel = "BETWEEN YEAR('$whenlow')*12+MONTH('$whenlow') AND YEAR('$whenhigh')*12+MONTH('$whenhigh')-1";
-		if ($CONF['lang'] == 'de')
-			$timedescrel = "zwischen ".getFormattedDate($when)." und ".getFormattedDate($when2);
-		else
-			$timedescrel = "between ".getFormattedDate($when)." and ".getFormattedDate($when2);
+		$timedescrel = sprintf($MESSAGES['leaderboard']['time_between'], getFormattedDate($when), getFormattedDate($when2));
 	}
 } else if ($timerel == 'during') {
 	if (!empty($when) && !empty($when2)) {
 		$timesqlrel = "BETWEEN YEAR('$whenlow')*12+MONTH('$whenlow') AND YEAR('$whenhigh')*12+MONTH('$whenhigh')-1";
-		if ($CONF['lang'] == 'de')
-			$timedescrel = getFormattedDate($when);
-		else
-			$timedescrel = "during ".getFormattedDate($when);
+		$timedescrel = sprintf($MESSAGES['leaderboard']['time_during'], getFormattedDate($when));
 	}
 } else if ($timerel == 'dbefore') {
 	if (!empty($when2)) {
 		$timesqlrel = "< YEAR('$whenhigh')*12+MONTH('$whenhigh')";
-		if ($CONF['lang'] == 'de')
-			$timedescrel = "bis ".getFormattedDate($when2);
-		else
-			$timedescrel = "until ".getFormattedDate($when2);
+		$timedescrel = sprintf($MESSAGES['leaderboard']['time_until'], getFormattedDate($when2));
 	}
 } else if ($timerel == 'dafter') {
 	if (!empty($when)) {
 		$timesqlrel = ">= YEAR('$whenlow')*12+MONTH('$whenlow')";
-		if ($CONF['lang'] == 'de')
-			$timedescrel = "ab ".getFormattedDate($when);
-		else
-			$timedescrel = "from ".getFormattedDate($when);
+		$timedescrel = sprintf($MESSAGES['leaderboard']['time_from'], getFormattedDate($when));
 	}
 }
 if ($timesqlrel !== '') {
 	if ($date == 'both') {
 		$timesql = " and year(imagetaken) != 0 and year(submitted) != 0 and month(imagetaken) != 0 and month(submitted) != 0 and year(imagetaken)*12+month(imagetaken) $timesqlrel and year(submitted)*12+month(submitted) $timesqlrel";
-		if ($CONF['lang'] == 'de')
-			$timedesc = " <b>für Bilder mit Aufnahme- und Einreichdatum ".$timedescrel."</b>";
-		else
-			$timedesc = ", <b>for images taken and submitted ".$timedescrel."</b>";
+		$timedesc = sprintf($MESSAGES['leaderboard']['taken_submitted'], $timedescrel);
 	} else {
 		$column = ($date == 'taken')?'imagetaken':'submitted';
 		$timesql = " and year($column) != 0 and month($column) != 0 and year($column)*12+month($column) $timesqlrel";
-		if ($CONF['lang'] == 'de') {
-			$title = ($date == 'taken')?'Aufnahmedatum':'Einreichdatum'; 
-			$timedesc = " <b>für Bilder mit $title ".$timedescrel."</b>";
-		} else {
-			$title = ($date == 'taken')?'taken':'submitted'; 
-			$timedesc = ", <b>for images $title ".$timedescrel."</b>";
-		}
+		$timedesc = sprintf($MESSAGES['leaderboard'][$date == 'taken' ? 'taken' : 'submitted'], $timedescrel);
 	}
 }
 
@@ -216,16 +196,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	$sql_column = "count(*)";
 	$sql_having_having = '';
 	if ($maximum) {
-		if ($CONF['lang'] == 'de')
-			$minimax = "zwischen $minimum und $maximum";
-		else
-			$minimax = "between $minimum and $maximum";
+		$minimax = sprintf($MESSAGES['leaderboard']['minimax'], $minimum, $maximum);
 		$sql_minimax = "between $minimum and $maximum";
 	} else {
-		if ($CONF['lang'] == 'de')
-			$minimax = "über $minimum";
-		else
-			$minimax = "over $minimum";
+		$minimax = sprintf($MESSAGES['leaderboard']['minimum'], $minimum);
 		$sql_minimax = "> $minimum";
 	}
 
@@ -417,188 +391,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		),
 	);
 
-	if ($CONF['lang'] == 'de') $text_table = array (
-		'squares' => array(
-			'heading' => "Fotografierte Quadrate",
-			'desc' => "der Anzahl verschiedener fotografierter Quadrate",
-		),
-		'geosquares' => array(
-			'heading' => "Quadrate mit Geobildern",
-			'desc' => "der Anzahl verschiedener Quadrate mit Geobildern (persönlicher Punkte)",
-		),
-		'geographs' => array(
-			'heading' => "Geobilder",
-			'desc' => "der Anzahl eingereichter Geobilder",
-		),
-		'additional' => array(
-			'heading' => "Zusätzliche Geobilder",
-			'desc' => "der Anzahl eingereichter Geobilder in schon fotografierten Quadraten",
-		),
-		'supps' => array(
-			'heading' => "Extrabilder",
-			'desc' => "der Anzahl eingereichter Extrabilder",
-		),
-		'images' => array(
-			'heading' => "Bilder",
-			'desc' => "der Anzahl eingereichter Bilder",
-		),
-		'test_points' => array(
-			'heading' => "G-Points",
-			'desc' => "test points",
-		),
-		'reverse_points' => array(
-			'heading' => "Dichte",
-			'desc' => "dem <b>ungefähren</b> Verhältnis von Bildern zu Punkten bei mehr als $minimum eingereichten Bildern",
-		),
-		'depth' => array(
-			'desc' => "der Dichte bei $minimax eingereichten Bildern",
-			'heading' => "Dichte",
-		),
-		'depth2' => array(
-			'heading' => "High Depth",
-			'desc' => "the depth score X images, and having submitted over $minimum images",
-		),
-		'myriads' => array(
-			'heading' => "100km-Quadrate",
-			'desc' => "der Anzahl unterschiedlicher 100km-Quadrate",
-		),
-		'antispread' => array(
-			'heading' => "AntiSpread Score",
-			'desc' => "antispread score (images/hectads)",
-		),
-		'spread' => array(
-			'heading' => "Spread Score",
-			'desc' => "spread score (hectads/images), and having submitted over $minimum images",
-		),
-		'hectads' => array(
-			'heading' => "10km-Quadrate",
-			'desc' => "der Anzahl unterschiedlicher 10km-Quadrate",
-		),
-		'days' => array(
-			'heading' => "Tage",
-			'desc' => "der Anzahl unterschiedlicher Tage",
-		),
-		'classes' => array(
-			'heading' => "Kategorien",
-			'desc' => "der Anzahl unterschiedlicher Kategorien",
-		),
-		'clen' => array(
-			'heading' => "Average Description Length",
-			'desc' => "average length of the description, and having submitted over $minimum images",
-		),
-		'tlen' => array(
-			'heading' => "Average Title Length",
-			'desc' => "average length of the title, and having submitted over $minimum images",
-		),
-		'category_depth' => array(
-			'heading' => "Category Depth",
-			'desc' => "the category depth score",
-		),
-		'centi' => array(
-		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
-			'heading' => "100m-Quadrate",
-			'desc' => "der Anzahl unterschiedlicher 100m-Quadrate",
-		),
-		'content' => array(
-			'heading' => "Content Items",
-			'desc' => "items submitted",
-		),
-		'points' => array(
-			'heading' => "Geograph-Punkte",
-			'desc' => "der Anzahl erreichter Geograph-Punkte",
-		),
-	); else $text_table = array (
-		'squares' => array(
-			'heading' => "Squares Photographed",
-			'desc' => "different squares photographed",
-		),
-		'geosquares' => array(
-			'heading' => "Squares Geographed",
-			'desc' => "different squares geographed (aka Personal Points)",
-		),
-		'geographs' => array(
-			'heading' => "Geograph Images",
-			'desc' => "'geograph' images submitted",
-		),
-		'additional' => array(
-			'heading' => "Non-First Geograph Images",
-			'desc' => "non first 'geograph' images submitted",
-		),
-		'supps' => array(
-			'heading' => "Supplemental Images",
-			'desc' => "'supplemental' images submitted",
-		),
-		'images' => array(
-			'heading' => "Images",
-			'desc' => "images submitted",
-		),
-		'test_points' => array(
-			'heading' => "G-Points",
-			'desc' => "test points",
-		),
-		'reverse_points' => array(
-			'heading' => "Depth",
-			'desc' => "the <b>approx</b> images/points ratio, and having submitted over $minimum images",
-		),
-		'depth' => array(
-			'desc' => "the depth score, and having submitted $minimax images",
-			'heading' => "Depth",
-		),
-		'depth2' => array(
-			'heading' => "High Depth",
-			'desc' => "the depth score X images, and having submitted over $minimum images",
-		),
-		'myriads' => array(
-			'heading' => "Myriads",
-			'desc' => "different myriads",
-		),
-		'antispread' => array(
-			'heading' => "AntiSpread Score",
-			'desc' => "antispread score (images/hectads)",
-		),
-		'spread' => array(
-			'heading' => "Spread Score",
-			'desc' => "spread score (hectads/images), and having submitted over $minimum images",
-		),
-		'hectads' => array(
-			'heading' => "Hectads",
-			'desc' => "different hectads",
-		),
-		'days' => array(
-			'heading' => "Days",
-			'desc' => "different days",
-		),
-		'classes' => array(
-			'heading' => "Categories",
-			'desc' => "different categories",
-		),
-		'clen' => array(
-			'heading' => "Average Description Length",
-			'desc' => "average length of the description, and having submitted over $minimum images",
-		),
-		'tlen' => array(
-			'heading' => "Average Title Length",
-			'desc' => "average length of the title, and having submitted over $minimum images",
-		),
-		'category_depth' => array(
-			'heading' => "Category Depth",
-			'desc' => "the category depth score",
-		),
-		'centi' => array(
-		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
-			'heading' => "Centigraph Points",
-			'desc' => "centigraph points awarded (centisquares photographed)",
-		),
-		'content' => array(
-			'heading' => "Content Items",
-			'desc' => "items submitted",
-		),
-		'points' => array(
-			'heading' => "Geograph Points",
-			'desc' => "geograph points awarded",
-		),
-	);
-
 	if ($filtered) {
 		$sql_qtable =& $sql_qtable_filtered;
 	} else {
@@ -618,30 +410,21 @@ if (!$smarty->is_cached($template, $cacheid))
 	if (isset($sql_qtable[$type]['table'])) $sql_table = $sql_qtable[$type]['table'];
 	if (isset($sql_qtable[$type]['orderby'])) $sql_orderby = $sql_qtable[$type]['orderby'];
 
-	$heading = $text_table[$type]['heading'];
-	$desc = $text_table[$type]['desc'];
+	$heading = $MESSAGES['leaderboard']['headings'][$type];
+	$desc = str_replace(array('@minimum', '@minimax'), array($minimum, $minimax), $MESSAGES['leaderboard']['descriptions'][$type]);
 
 	$sql_where .= $timesql;
 	$desc .= $timedesc;
 	if ($has_region) {
-		if ($CONF['lang'] == 'de')
-			$desc .= " in ".$region_name;
-		else
-			$desc .= " in ".$region_name;
+		$desc .= sprintf($MESSAGES['leaderboard']['in_region'], $region_name);
 	}
 	if ($myriad) {
 		$sql_where .= " and grid_reference LIKE '{$myriad}____'";
-		if ($CONF['lang'] == 'de')
-			$desc .= " bezogen auf das 100km-Quadrat $myriad";
-		else
-			$desc .= " in Myriad $myriad";
+		$desc .= sprintf($MESSAGES['leaderboard']['in_myriad'], $myriad);
 	}
 	if ($ri) {
 		$sql_where .= " and reference_index = $ri";
-		if ($CONF['lang'] == 'de')
-			$desc .= " in ".$CONF['references_all'][$ri];
-		else
-			$desc .= " in ".$CONF['references_all'][$ri];
+		$desc .= sprintf($MESSAGES['leaderboard']['in_grid'], $CONF['references_all'][$ri]);
 	}
 	
 	$smarty->assign('heading', $heading);
@@ -703,10 +486,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 
 	$smarty->assign('types', array('points','geosquares','images','depth'));
-	if ($CONF['lang'] == 'de')
-		$smarty->assign('typenames', array('Punkte','Geoquadrate','Bilder','Dichte'));
-	else
-		$smarty->assign('typenames', array('points','geosquares','images','depth'));
+	$smarty->assign('typenames', $MESSAGES['leaderboard']['type_names']);
 	
 	
 	$extra = array();

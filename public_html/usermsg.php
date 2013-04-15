@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+include_messages('usermsg');
 
 init_session();
 
@@ -82,26 +83,17 @@ if (isset($_POST['msg']))
 	if (!isValidEmailAddress($from_email))
 	{
 		$ok=false;
-		if ($CONF['lang'] == 'de')
-			$errors['from_email']='Bitte gültige E-Mail-Adresse eingeben!';
-		else
-			$errors['from_email']='Please specify a valid email address';
+		$errors['from_email']=$MESSAGES['usermsg']['email_invalid'];
 	}
 	if (!isValidRealName($from_name))
 	{
 		$ok=false;
-		if ($CONF['lang'] == 'de')
-			$errors['from_name']='Der Name enthält ungültige Zeichen!';
-		else
-			$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		$errors['from_name']=$MESSAGES['usermsg']['name_chars'];
 	}
 	if (strlen($msg)==0)
 	{
 		$ok=false;
-		if ($CONF['lang'] == 'de')
-			$errors['msg']="Bitte Nachricht eingeben!";
-		else
-			$errors['msg']="Please enter a message to send";
+		$errors['msg']=$MESSAGES['usermsg']['empty_message'];
 	}
 	$smarty->assign_by_ref('errors', $errors);
 
@@ -113,10 +105,7 @@ if (isset($_POST['msg']))
 	if (isSpam($msg))
 	{
 		$ok=false;
-		if ($CONF['lang'] == 'de')
-			$errors['msg']="Die Nachricht sieht wie SPAM aus.";
-		else
-			$errors['msg']="Sorry, this looks like spam";
+		$errors['msg']=$MESSAGES['usermsg']['spam'];
 	}
 	
 	//if not logged in or they been busy - lets ask them if a person! (plus jump though a few hoops to make it harder to program a bot)
@@ -162,11 +151,7 @@ if (isset($_POST['msg']))
 		//build message and send it...
 		
 		$body=$smarty->fetch('email_usermsg.tpl');
-		if ($CONF['lang'] == 'de') {
-			$subject="$from_name kontaktiert Sie über {$_SERVER['HTTP_HOST']}";
-		} else {
-			$subject="$from_name contacting you via {$_SERVER['HTTP_HOST']}";
-		}
+		$subject=sprintf($MESSAGES['usermsg']['mail_subject'], $from_name, $_SERVER['HTTP_HOST']);
 		$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 		
 		$hostname=trim(`hostname -f`);
@@ -214,11 +199,7 @@ if (isset($_POST['msg']))
 		}
 		
 		if ($sendcopy) {
-			if ($CONF['lang'] == 'de') {
-				$csubject="Kopie der Nachricht an {$recipient->realname}";
-			} else {
-				$csubject="Copy of message sent to {$recipient->realname}";
-			}
+			$csubject=sprintf($MESSAGES['usermsg']['copy_subject'], $recipient->realname);
 			$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$csubject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 
 			if (!@mail($from_email, $encsubject, $body, $from.$mime, $envfrom)) {
@@ -253,11 +234,7 @@ elseif (isset($_GET['image']))
 	$image=new GridImage();
 	$image->loadFromId($_GET['image']);
 	
-	if ($CONF['lang'] == 'de') {
-		$msg = "Betrifft Bild für";
-	} else {
-		$msg = "Re: image for";
-	}
+	$msg = $MESSAGES['usermsg']['message_template'];
 	if (strpos($recipient->rights,'mod') !== FALSE) {
 		$msg .= " {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}\r\n";
 	} else {

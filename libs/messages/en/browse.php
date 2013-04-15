@@ -1,0 +1,43 @@
+<?php
+
+$MESSAGES['browse'] = array (
+	'breakdowns' => array (
+		'user'=>'Contributors',
+		'centi'=>'Centisquares',
+		'class'=>'Categories',
+		'taken'=>'Taken Months',
+		'takenyear'=>'Taken Years',
+		'submitted'=>'Submitted Months',
+		'submittedyear'=>'Submitted Years',
+		'direction'=>'View Directions',
+		'viewpoint'=>'Photographer Gridsquares',
+		'viewcenti'=>'Photographer Centisquares',
+		'status'=>'Classifications',
+	),
+	'bdtitle_class'           => "Category",
+	'title_class'             => "in category",
+	'bdtitle_status'          => "Classification",
+	'substs_status'           => array('accepted'=>'supplemental'),
+	'bdtitle_user'            => "Contributor",
+	'title_user'              => "contributed by",
+	'bdtitle_direction'       => "View Direction",
+	'title_direction'         => "looking",
+	'title_unknown_direction' => "unknown direction",
+	'format_direction'        => "about %d degrees",
+	'bdtitle_viewpoint'       => "Photographer Gridsquare",
+	'title_viewpoint'         => "taken in",
+	'title_here_viewpoint'    => "taken in this square",
+	'title_unknown_viewpoint' => "photographer position unspecified",
+	'bdtitle_centi'           => "Centisquare<a href=\"/help/squares\">?</a>",
+	'bdtitle_viewcenti'       => "Photographer Centisquare<a href=\"/help/squares\">?</a>",
+	'bdtitle_month_taken'     => "Taken Month",
+	'bdtitle_year_taken'      => "Taken",
+	'bdtitle_month_submitted' => "Submitted Month",
+	'bdtitle_year_submitted'  => "Submitted",
+	'title_month_taken'       => "Taken",
+	'title_year_taken'        => "Taken",
+	'title_month_submitted'   => "Submitted",
+	'title_year_submitted'    => "Submitted",
+);
+
+?>

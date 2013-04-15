@@ -31,6 +31,7 @@
 * @version $Revision$
 */
 
+$MESSAGES = array();
 
 //include domain specific configuration - if your install fails on
 //this line, copy and adapt one of the existing configuration

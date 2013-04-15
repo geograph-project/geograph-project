@@ -44,6 +44,7 @@
 
 require_once('geograph/gridsquare.class.php');
 
+include_messages('class_user');
 
 class GeographUser
 {
@@ -258,7 +259,7 @@ class GeographUser
 	*/
 	function register(&$form, &$errors)
 	{
-		global $CONF;
+		global $CONF, $MESSAGES;
 		
 		//get the inputs
 		$name=stripslashes(trim($form['name']));
@@ -275,20 +276,14 @@ class GeographUser
 		if (strlen($name)==0)
 		{
 			$ok=false;
-			if ($CONF['lang'] == 'de')
-				$errors['name']='Es wurde kein Name angegeben!';
-			else
-				$errors['name']='You must give your name';
+			$errors['name']=$MESSAGES['class_user']['name_missing'];
 		}
 		else
 		{
 			if (!isValidRealName($name))
 			{
 				$ok=false;
-				if ($CONF['lang'] == 'de')
-					$errors['name']='Der Name enthält ungültige Zeichen!';
-				else
-					$errors['name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+				$errors['name']=$MESSAGES['class_user']['name_chars'];
 			}
 		}
 		
@@ -296,28 +291,19 @@ class GeographUser
 		if (!isValidEmailAddress($email))
 		{
 			$ok=false;
-			if ($CONF['lang'] == 'de')
-				$errors['email']='Bitte gültige E-Mail-Adresse eingeben!';
-			else
-				$errors['email']='Please enter a valid email address';
+			$errors['email']=$MESSAGES['class_user']['email_invalid'];
 		}
 		
 		//check password
 		if (strlen($password1)==0)
 		{
 			$ok=false;
-			if ($CONF['lang'] == 'de')
-				$errors['password1']='Es wurde kein Passwort angegeben!';
-			else
-				$errors['password1']='You must specify a password';
+			$errors['password1']=$MESSAGES['class_user']['password1'];
 		}
 		elseif ($password1!=$password2)
 		{
 			$ok=false;
-			if ($CONF['lang'] == 'de')
-				$errors['password2']='Passwörter stimmen nicht überein!';
-			else
-				$errors['password2']='Passwords didn\'t match, please try again';
+			$errors['password2']=$MESSAGES['class_user']['password2'];
 		}
 		
 		//if the params check out, lets ensure they aren't 
@@ -332,10 +318,7 @@ class GeographUser
 			{
 				//email address already exists in database
 				$ok=false;
-				if ($CONF['lang'] == 'de')
-					$errors['email']='E-Mail-Adresse schon registriert!';
-				else
-					$errors['email']='Email address is already registered';
+				$errors['email']=$MESSAGES['class_user']['already_registered'];
 			}
 			else
 			{
@@ -359,10 +342,7 @@ class GeographUser
 						
 					if ($db->Execute($sql) === false) 
 					{
-						if ($CONF['lang'] == 'de')
-							$errors['general']='Datenbank-Update fehlgeschlagen: '.$db->ErrorMsg();
-						else
-							$errors['general']='error updating: '.$db->ErrorMsg();
+						$errors['general']=$MESSAGES['class_user']['error_dbupdate'].$db->ErrorMsg();
 						$ok=false;
 					}
 				
@@ -381,10 +361,7 @@ class GeographUser
 					
 					if ($db->Execute($sql) === false) 
 					{
-						if ($CONF['lang'] == 'de')
-							$errors['general']='Datenbank-Insert fehlgeschlagen: '.$db->ErrorMsg();
-						else
-							$errors['general']='error inserting: '.$db->ErrorMsg();
+						$errors['general']=$MESSAGES['class_user']['error_dbinsert'].$db->ErrorMsg();
 						$ok=false;
 					}
 					else
@@ -412,44 +389,8 @@ class GeographUser
 						$_SERVER['HTTP_HOST'].'/reg/'.$user_id.
 						'/'.substr(md5($user_id.$CONF['register_confirmation_secret']),0,16);
 					$register_geograph_url="http://".$_SERVER['HTTP_HOST'];
-
-					if ($CONF['lang'] == 'de') {
-						$register_mail_body = <<<EOT
-Danke für die Registrierung bei %s !
-
-Vor dem ersten Einloggen muss die Registrierung durch Aufrufen des Links
-
-%s
-
-bestätigt werden. Nach erfolgter Bestätigung ist das Einloggen durch Eingabe von
-E-Mail-Adresse (%s) und Passwort möglich.
-
-Wir wünschen viel Freude an der Teilnahme am Projekt!
-
-Mit freundlichen Grüßen
-
-Das Geograph-Deutschland-Team
-EOT;
-						$register_mail_subject = 'Registrierungsbestätigung';
-					} else {
-						$register_mail_body = <<<EOT
-Thankyou for registering at %s
-
-Before you can log in, you must first confirm your registration by following the link below:
-
-%s
-
-Once you have confirmed your registration, you will be able to log in with the email address and password you provided:
-    email: %s
-
-We hope you enjoy using and contributing to the site
-
-Kind Regards,
-
-The Geograph Deutschland Team
-EOT;
-						$register_mail_subject = 'Confirm registration';
-					}
+					$register_mail_body = $MESSAGES['class_user']['mailbody_register'];
+					$register_mail_subject = $MESSAGES['class_user']['mailsubject_register'];
 					$msg = sprintf($register_mail_body,$register_geograph_url,$register_authentication_url,$email);
 
 					@mail($email, mb_encode_mimeheader($CONF['mail_subjectprefix'].$register_mail_subject, $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg,
@@ -540,25 +481,16 @@ EOT;
 	*/
 	function sendReminder($email, $password1, $password2, &$errors)
 	{
-		global $CONF;
+		global $CONF, $MESSAGES;
 		$errors=array();
 		$ok=false;
 
 		if (!isValidEmailAddress($email)) {
-			if ($CONF['lang'] == 'de')
-				$errors['email']='Ungültige E-Mail-Adresse';
-			else
-				$errors['email']='This isn\'t a valid email address';
+			$errors['email']=$MESSAGES['class_user']['reminder_email_invalid'];
 		} else if (strlen($password1)==0) {
-			if ($CONF['lang'] == 'de')
-				$errors['password1']='Es muss ein Passwort eingegeben werden!';
-			else
-				$errors['password1']='You must specify a password';
+			$errors['password1']=$MESSAGES['class_user']['password1'];
 		} elseif ($password1!=$password2) {
-			if ($CONF['lang'] == 'de')
-				$errors['password2']='Die Passwörter stimmen nicht überein!';
-			else
-				$errors['password2']='Passwords didn\'t match, please try again';
+			$errors['password2']=$MESSAGES['class_user']['password2'];
 		} else {
 			$db = $this->_getDB();
 
@@ -578,39 +510,8 @@ EOT;
 					$_SERVER['HTTP_HOST'].'/reg/p'.$id.
 					'/'.substr(md5('p'.$id.$CONF['register_confirmation_secret']),0,16);
 						
-				if ($CONF['lang'] == 'de') {
-					$mail_body = <<<EOT
-Hallo,
-
-wir wurden aufgefordert, das Passwort für den Account %s bei %s zu ändern.
-Um das neue Passwort zu bestätigen bitte folgenden Link aufrufen:
-
-%s
-
-Wenn das Passwort nicht geändert werden soll, kann diese Mail einfach ignoriert werden.
-
-Mit freundlichen Grüßen
-
-Das Geograph-Deutschland-Team
-EOT;
-					$mail_subject = 'Neues Passwort für %s';
-				} else {
-					$mail_body = <<<EOT
-Hello.
-
-You recently requested the password for account %s at %s to be changed.
-To confirm, please click this link:
-
-%s
-
-If you do not wish to change your password, simply disregard this message.
-
-Kind Regards,
-
-The Geograph Deutschland Team
-EOT;
-					$mail_subject = 'New password for %s';
-				}
+				$mail_body = $MESSAGES['class_user']['mailbody_reminder'];
+				$mail_subject = $MESSAGES['class_user']['mailsubject_reminder'];
 				$msg = sprintf($mail_body, $email, $_SERVER['HTTP_HOST'], $url);
 				$sub = sprintf($mail_subject, $_SERVER['HTTP_HOST']);
 
@@ -625,10 +526,7 @@ EOT;
 			}
 			else
 			{
-				if ($CONF['lang'] == 'de')
-					$errors['email']='Diese E-Mail-Adresse ist nicht registriert!';
-				else
-					$errors['email']="This email address isn't registered";
+				$errors['email']=$MESSAGES['class_user']['not_registered'];
 			}
 		}
 
@@ -802,7 +700,7 @@ EOT;
 	*/
 	function updateProfile(&$profile, &$errors)
 	{
-		global $CONF;
+		global $CONF, $MESSAGES;
 		$db = $this->_getDB();
 		
 		$ok=true;
@@ -835,19 +733,13 @@ EOT;
 			if (!isValidRealName($profile['realname']))
 			{
 				$ok=false;
-				if ($CONF['lang'] == 'de')
-					$errors['realname']='Der Name enthält ungültige Zeichen!';
-				else
-					$errors['realname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+				$errors['realname']=$MESSAGES['class_user']['name_chars'];
 			}
 		}
 		else
 		{
 			$ok=false;
-			if ($CONF['lang'] == 'de')
-				$errors['realname']='Please enter your real name, we use it to credit your photographs';
-			else
-				$errors['realname']='Es wurde kein Name angegeben!';
+			$errors['realname']=$MESSAGES['class_user']['realname'];
 		}
 		
 		
@@ -861,10 +753,7 @@ EOT;
 			else
 			{
 				$ok=false;
-				if ($CONF['lang'] == 'de')
-					$errors['website']='Die Adresse scheint ungültig zu sein.';
-				else
-					$errors['website']='This doesn\'t appear to be a valid URL';
+				$errors['website']=$MESSAGES['class_user']['website'];
 			}
 		}
 		
@@ -878,10 +767,7 @@ EOT;
 			if (count($r))
 			{
 				$ok=false;
-				if ($CONF['lang'] == 'de')
-					$errors['nickname']='Dieser Kurzname ist schon vergeben!';
-				else
-					$errors['nickname']='Sorry, this nickname is already taken by another user';
+				$errors['nickname']=$MESSAGES['class_user']['nickname_in_use'];
 			}
 			//todo check seperate table
 		}
@@ -892,25 +778,16 @@ EOT;
 			#	$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
 			#else
 			#	$errors['nickname']='Please enter a nickname for use on the forums';
-			if ($CONF['lang'] == 'de')
-				$errors['nickname']='Der Name enthält ungültige Zeichen!';
-			else
-				$errors['nickname']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+			$errors['nickname']=$MESSAGES['class_user']['name_chars'];
 		}
 
 		if (strlen($profile['password1'])) {
 			if (md5($this->salt.$profile['oldpassword']) != $this->password) {
 				$ok=false;
-				if ($CONF['lang'] == 'de')
-					$errors['oldpassword']='Bitte aktuelles Passwort angeben, wenn ein Passwortwechsel gewünscht ist!';
-				else
-					$errors['oldpassword']='Please enter your current password if you wish to change it';
+				$errors['oldpassword']=$MESSAGES['class_user']['oldpassword'];
 			} elseif ($profile['password1'] != $profile['password2']) {
 				$ok=false;
-				if ($CONF['lang'] == 'de')
-					$errors['password2']='Passwörter stimmen nicht überein!';
-				else
-					$errors['password2']='Passwords didn\'t match, please try again';
+				$errors['password2']=$MESSAGES['class_user']['password2'];
 			} else {
 				$salt = $this->randomSalt(8);
 				$password = md5($salt.$profile['password1']);
@@ -925,14 +802,7 @@ EOT;
 		{
 			if (isValidEmailAddress($profile['email']))
 			{
-				if ($CONF['lang'] == 'de')
-					$errors['general']='Um den E-Mail-Adressen-Wechsel '.
-						'zu bestätigen, bitte die Anweisungen in der E-Mail befolgen, '.
-						'die wir an '.$profile['email'].' geschickt haben!';
-				else
-					$errors['general']='To change your email address, '.
-						'we\'ve sent an email to '.$profile['email'].' which contains '.
-						'instructions on how to confirm the change.';
+				$errors['general']=sprintf($MESSAGES['class_user']['mail_change'], $profile['email']);
 				$ok=false;
 				
 				
@@ -950,39 +820,8 @@ EOT;
 					$_SERVER['HTTP_HOST'].'/reg/m'.$id.
 					'/'.substr(md5('m'.$id.$CONF['register_confirmation_secret']),0,16);
 
-				if ($CONF['lang'] == 'de') {
-					$mail_body = <<<EOT
-Hallo,
-
-wir wurden aufgefordert, die E-Mail-Adresse für den Account bei %s zu %s zu ändern.
-Um die neue E-Mail-Adresse zu bestätigen bitte folgenden Link aufrufen:
-
-%s
-
-Wenn die Adresse nicht geändert werden soll, kann diese Mail einfach ignoriert werden.
-
-Mit freundlichen Grüßen
-
-Das Geograph-Deutschland-Team
-EOT;
-					$mail_subject = 'Bestätigung der neuen E-Mail-Adresse für %s';
-				} else {
-					$mail_body = <<<EOT
-Hello.
-
-You recently requested the email address for your account at %s be changed to %s.
-To confirm, please click this link:
-
-%s
-
-If you do not wish to change your address, simply disregard this message.
-
-Kind Regards,
-
-The Geograph Deutschland Team
-EOT;
-					$mail_subject = 'Please confirm your email address change for %s';
-				}
+				$mail_body = $MESSAGES['class_user']['mailbody_mail_change'];
+				$mail_subject = $MESSAGES['class_user']['mailsubject_mail_change'];
 				$msg = sprintf($mail_body, $_SERVER['HTTP_HOST'], $profile['email'], $url);
 				$sub = sprintf($mail_subject, $_SERVER['HTTP_HOST']);
 
@@ -996,10 +835,7 @@ EOT;
 			}
 			else
 			{
-				if ($CONF['lang'] == 'de')
-					$errors['email']='Ungültige E-Mail-Adresse!';
-				else
-					$errors['email']='Invalid email address';
+				$errors['email']=$MESSAGES['class_user']['new_email_invalid'];
 				$ok=false;
 			}
 			
@@ -1084,10 +920,7 @@ EOT;
 
 			if ($db->Execute($sql) === false) 
 			{
-				if ($CONF['lang'] == 'de')
-					$errors['general']='Datenbank-Update fehlgeschlagen: '.$db->ErrorMsg();
-				else
-					$errors['general']='error updating: '.$db->ErrorMsg();
+				$errors['general']=$MESSAGES['class_user']['error_dbupdate'].$db->ErrorMsg();
 				$ok=false;
 			}
 			else
@@ -1135,10 +968,7 @@ EOT;
 
 					if ($db->Execute($sql) === false) 
 					{
-						if ($CONF['lang'] == 'de')
-							$errors['general']='Datenbank-Update fehlgeschlagen: '.$db->ErrorMsg();
-						else
-							$errors['general']='error updating: '.$db->ErrorMsg();
+						$errors['general']=$MESSAGES['class_user']['error_dbupdate'].$db->ErrorMsg();
 						$ok=false;
 					}
 				}
@@ -1241,6 +1071,7 @@ EOT;
 	}
 	
 	function basicAuthLogin() {
+		global $MESSAGES;
 		if (isset($_SERVER['PHP_AUTH_USER']))
 		{
 			$email=stripslashes(trim($_SERVER['PHP_AUTH_USER']));
@@ -1280,25 +1111,25 @@ EOT;
 						}
 						else
 						{
-							$error ='You must confirm your registration by following the link in the email sent to '.$email;
+							$error = sprintf($MESSAGES['class_user']['must_confirm'], $email);
 						}
 					}
 					else
 					{
 						//speak friend and enter					
-						$error ='Wrong password - don\'t forget passwords are case-sensitive';
+						$error = $MESSAGES['class_user']['invalid_password'];
 					}
 
 				}
 				else
 				{
 					//sorry son, your name's not on the list
-					$error ='This email address or nickname is not registered';
+					$error = $MESSAGES['class_user']['user_unknown'];
 				}
 			}
 			else
 			{
-				$error ='This is not a valid email address or nickname';
+				$error = $MESSAGES['class_user']['E-Mail-Adresse bzw. Benutzername ungültig'];
 
 			}
 		} 
@@ -1325,7 +1156,7 @@ EOT;
 	*/
 	function login($inline=true)
 	{
-		global $CONF;
+		global $MESSAGES;
 		
 		$logged_in=false;
 		
@@ -1398,37 +1229,25 @@ EOT;
 							}
 							else
 							{
-								if ($CONF['lang'] == 'de')
-									$errors['general']='Vor dem ersten Einloggen muss der Link aus der Bestätigungsmail an '.$email.' aufgerufen werden!';
-								else
-									$errors['general']='You must confirm your registration by following the link in the email sent to '.$email;
+								$errors['general']=sprintf($MESSAGES['class_user']['must_confirm'], $email);
 							}
 						}
 						else
 						{
 							//speak friend and enter					
-							if ($CONF['lang'] == 'de')
-								$errors['password']='Falsches Passwort! Bitte Groß-/Kleinschreibung beachten!';
-							else
-								$errors['password']='Wrong password - don\'t forget passwords are case-sensitive';
+							$errors['password']=$MESSAGES['class_user']['invalid_password'];
 						}
 
 					}
 					else
 					{
 						//sorry son, your name's not on the list
-						if ($CONF['lang'] == 'de')
-							$errors['email']='E-Mail-Adresse bzw. Benutzername ist nicht registriert';
-						else
-							$errors['email']='This email address or nickname is not registered';
+						$errors['email']=$MESSAGES['class_user']['user_unknown'];
 					}
 				}
 				else
 				{
-					if ($CONF['lang'] == 'de')
-						$errors['email']='E-Mail-Adresse bzw. Benutzername ungültig';
-					else
-						$errors['email']='This is not a valid email address or nickname';
+					$errors['email']=$MESSAGES['class_user']['user_invalid'];
 					
 				}
 				

@@ -319,20 +319,20 @@ function wgs84_to_friendly($lat,$long) {
 	$ym = intval((abs($lat)-$yd)*60);
 	$ys = (abs($lat)*3600)-($ym*60)-($yd*3600);
 
+	$ymd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$ym+($ys/60)));
+	$xmd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$xm+($xs/60)));
+
+	$xs = str_replace('.', $CONF['decimal_sep'], sprintf("%.2F",$xs));
+	$ys = str_replace('.', $CONF['decimal_sep'], sprintf("%.2F",$ys));
+
 	if ($CONF['lang'] == 'de') {
 		$el = ($long > 0)?'O':'W';
 		$nl = ($lat > 0)?'N':'S';
 	
-		$xss=sprintf("%.2f",$xs); //FIXME needs locale de_DE
-		$yss=sprintf("%.2f",$ys); //FIXME needs locale de_DE
-		
-		return array("{$yd}°$ym'$yss\"$nl","{$xd}°$xm'$xss\"$el");
+		return array("{$yd}°$ym'$ys\"$nl","{$xd}°$xm'$xs\"$el");
 	} else {
 		$el = ($long > 0)?'E':'W';
 		$nl = ($lat > 0)?'N':'S';
-
-		$ymd = sprintf("%.4f",$ym+($ys/60));
-		$xmd = sprintf("%.4f",$xm+($xs/60));
 
 		return array("$yd:$ymd$nl","$xd:$xmd$el");
 	}
@@ -343,10 +343,11 @@ function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
 
 	if ($CONF['lang'] == 'de') {
 		$el = ($long > 0)?'O':'W';
+		$nl = ($lat > 0)?'N':'S';
 	} else {
 		$el = ($long > 0)?'E':'W';
+		$nl = ($lat > 0)?'N':'S';
 	}
-	$nl = ($lat > 0)?'N':'S';
 	
 	$along = abs($long);
 	$alat = abs($lat);
@@ -359,11 +360,11 @@ function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
 	$ym = intval(($alat-$yd)*60);
 	$ys = ($alat*3600)-($ym*60)-($yd*3600);
 
-	$ymd = sprintf("%.4f",$ym+($ys/60)); //FIXME needs locale de_DE
-	$xmd = sprintf("%.4f",$xm+($xs/60)); //FIXME needs locale de_DE
+	$ymd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$ym+($ys/60)));
+	$xmd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$xm+($xs/60)));
 	
-	$xs = sprintf("%.5f",$xs); //FIXME needs locale de_DE
-	$ys = sprintf("%.5f",$ys); //FIXME needs locale de_DE
+	$xs = str_replace('.', $CONF['decimal_sep'], sprintf("%.5F",$xs));
+	$ys = str_replace('.', $CONF['decimal_sep'], sprintf("%.5F",$ys));
 	
 	foreach (array('el','nl','along','alat','xd','xm','xs','yd','ym','ys','ymd','xmd') as $name) {
 		$smarty->assign($name, $$name);

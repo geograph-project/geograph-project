@@ -23,6 +23,7 @@
 
 require_once('geograph/global.inc.php');
 require_once('geograph/security.inc.php');
+include_messages('contact');
 init_session();
 
 $smarty = new GeographPage;
@@ -71,18 +72,12 @@ if (isset($_POST['msg']))
 		}
 		else
 		{
-			if ($CONF['lang'] == 'de')
-				$smarty->assign('msg_error', 'Bitte Nachricht eingeben!');
-			else
-				$smarty->assign('msg_error', 'Please enter your message to us above');
+			$smarty->assign('msg_error', $MESSAGES['contact']['empty_message']);
 		}
 	}
 	else
 	{
-		if ($CONF['lang'] == 'de')
-			$smarty->assign('from_error', 'Bitte gültige E-Mail-Adresse eingeben!');
-		else
-			$smarty->assign('from_error', 'Invalid email address');
+		$smarty->assign('from_error', $MESSAGES['contact']['email_invalid']);
 	}
 }
 else
