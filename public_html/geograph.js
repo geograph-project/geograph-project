@@ -69,6 +69,88 @@ function autoDisable(that) {
 
 //	-	-	-	-	-	-	-	-
 
+/* FIXME remove other instances of this */
+function geoGetXMLRequestObject() // stolen from admin/moderation.js
+{
+	var xmlhttp=false;
+		
+	/*@cc_on @*/
+	/*@if (@_jscript_version >= 5)
+	// JScript gives us Conditional compilation, we can cope with old IE versions.
+	// and security blocked creation of the objects.
+	 try {
+	  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+	 } catch (e) {
+	  try {
+	   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	  } catch (E) {
+	   xmlhttp = false;
+	  }
+	 }
+	@end @*/
+	if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+	  xmlhttp = new XMLHttpRequest();
+	}
+
+	return xmlhttp;
+}
+
+function imgvote(imageid, type, vote) {
+	var classbase = [ '', 'voteneg', 'voteneg', 'voteneu', 'votepos', 'votepos' ];
+	var postdata = 'imageid=' + imageid;
+	postdata += '&type=' + type;
+	postdata += '&vote=' + vote;
+	var url="/imgvote.php";
+	var req=geoGetXMLRequestObject();
+	var reqTimer = setTimeout(function() {
+	       req.abort();
+	}, 30000);
+	req.onreadystatechange = function() {
+		if (req.readyState != 4) {
+			return;
+		}
+		clearTimeout(reqTimer);
+		req.onreadystatechange = function() {};
+		commiterrors = true;
+
+		if (req.status != 200) {
+			alert("Cannot communicate with server, status " + req.status);
+		} else {
+			var responseText = req.responseText;
+			//alert(responseText);// FIXME remove
+			if (/^-[1-9][0-9]*:[^:]+$/.test(responseText)) { /* general error */
+				var parts = responseText.split(':');
+				var rcode = parseInt(parts[0]);
+				alert("Error: Server returned error " + -rcode + " (" + parts[1] + ")");
+			} else if (! /^0(:[^:]+:[0-5])*$/.test(responseText)) {
+				alert("Unexpected response from server: "+responseText);
+			} else {
+				var parts = responseText.split(':');
+				for (var i = 1; i < parts.length; i+=2) {
+					var curtype = parts[i];
+					var curvote = parts[i+1];
+					for (var j = 1; j <= 5; ++j) {
+						var ele = document.getElementById('vote'+imageid+curtype+j);
+						if (ele) {
+							if (j != curvote) {
+								ele.className = classbase[j];
+							} else {
+								ele.className = classbase[j] + 'active';
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	req.open("POST", url, true);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	//req.setRequestHeader("Connection", "close");
+	req.send(postdata);
+}
+
+//	-	-	-	-	-	-	-	-
+
 function record_vote(type,id,vote) {
 	var i=new Image();
 	i.src= "/stuff/record_vote.php?t="+type+"&id="+id+"&v="+vote;
@@ -468,13 +550,22 @@ function eraseCookie(name) {
 
 //	-	-	-	-	-	-	-	-
 
-	function show_tree(id) {
-		document.getElementById("show"+id).style.display='';
+	function show_tree(id, display) {
+		if (typeof display === "undefined") {
+			var display = '';
+		}
+		document.getElementById("show"+id).style.display=display;
 		document.getElementById("hide"+id).style.display='none';
+		if (typeof resizeContainer != 'undefined') {
+			setTimeout(resizeContainer,100);
+		}
 	}
 	function hide_tree(id) {
 		document.getElementById("show"+id).style.display='none';
 		document.getElementById("hide"+id).style.display='';
+		if (typeof resizeContainer != 'undefined') {
+			setTimeout(resizeContainer,100);
+		}
 	}
 
 //	-	-	-	-	-	-	-	-
