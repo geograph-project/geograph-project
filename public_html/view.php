@@ -202,6 +202,7 @@ if ($image->isValid())
 	}
 	if ($USER->registered) {
 		$smarty->assign_by_ref('vote', $image->getVotes($USER->user_id));
+		$smarty->assign('imageid', $image->gridimage_id);
 	}
 
 	$map_suffix = get_map_suffix();
