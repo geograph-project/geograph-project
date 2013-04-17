@@ -699,6 +699,27 @@ class GridSquare
 		}
 		return false;
 	}
+
+	/**
+	 * get array of grid references of neighbouring squares in order
+	 *   NW N NE W Center E SW S SE
+	 */
+	function &nextNeighbours($findnearest = false)
+	{
+		$square = new GridSquare();
+		$result = array();
+		for ($dy = +1; $dy >= -1; --$dy) {
+			for ($dx = -1; $dx <= +1; ++$dx) {
+				if ($dx == 0 && $dy == 0) {
+					$result[] = $this->grid_reference;
+					continue;
+				}
+				$grid_ok = $square->loadFromPosition($this->x, $this->y, $findnearest, false, $dx, $dy);
+				$result[] = $grid_ok ? $square->grid_reference : '';
+			}
+		}
+		return $result;
+	}
 	
 	/**
 	* load square from internal coordinates
