@@ -372,15 +372,15 @@ AttachEvent(window,"load",gn.init);
 <div style="width:100%;position:absolute;top:0px;left:0px;height:0px">
 	<div class="interestBox" style="float: right; position:relative; padding:2px;">
 		<table border="0" cellspacing="0" cellpadding="2">
-		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=-1">NW</a></td>
-		<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=0">N</a></td>
-		<td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=1">NE</a></td></tr>
-		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=-1">W</a></td>
+		<tr><td><a href="/gridref/{$neighbours.0}">NW</a></td>
+		<td align="center"><a href="/gridref/{$neighbours.1}">N</a></td>
+		<td><a href="/gridref/{$neighbours.2}">NE</a></td></tr>
+		<tr><td><a href="/gridref/{$neighbours.3}">W</a></td>
 		<td><b>Go</b></td>
-		<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=1">E</a></td></tr>
-		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=-1">SW</a></td>
-		<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=0">S</a></td>
-		<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=1">SE</a></td></tr>
+		<td align="right"><a href="/gridref/{$neighbours.5}">E</a></td></tr>
+		<tr><td><a href="/gridref/{$neighbours.6}">SW</a></td>
+		<td align="center"><a href="/gridref/{$neighbours.7}">S</a></td>
+		<td align="right"><a href="/gridref/{$neighbours.8}">SE</a></td></tr>
 		</table>
 	</div>
   {dynamic}

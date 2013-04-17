@@ -605,6 +605,7 @@ class GridImage
 
 		$smarty->assign('x', $this->grid_square->x);
 		$smarty->assign('y', $this->grid_square->y);
+		$smarty->assign('neighbours', $this->grid_square->nextNeighbours());
 
 		if ($this->view_direction > -1) {
 			$smarty->assign('view_direction', ($this->view_direction%90==0)?strtoupper(heading_string($this->view_direction)):ucwords(heading_string($this->view_direction)) );

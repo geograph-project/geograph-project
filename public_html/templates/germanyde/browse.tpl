@@ -14,15 +14,15 @@
 {if $showresult}
 	<div class="interestBox" style="float: right; position:relative; padding:2px; margin-right:25px">
 	<table border="0" cellspacing="0" cellpadding="2">
-	<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=-1">NW</a></td>
-	<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=0">N</a></td>
-	<td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=1">NO</a></td></tr>
-	<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=-1">W</a></td>
+	<tr><td><a href="/gridref/{$neighbours.0}">NW</a></td>
+	<td align="center"><a href="/gridref/{$neighbours.1}">N</a></td>
+	<td><a href="/gridref/{$neighbours.2}">NO</a></td></tr>
+	<tr><td><a href="/gridref/{$neighbours.3}">W</a></td>
 	<td><b>Nach</b></td>
-	<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=1">O</a></td></tr>
-	<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=-1">SW</a></td>
-	<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=0">S</a></td>
-	<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=1">SO</a></td></tr>
+	<td align="right"><a href="/gridref/{$neighbours.5}">O</a></td></tr>
+	<tr><td><a href="/gridref/{$neighbours.6}">SW</a></td>
+	<td align="center"><a href="/gridref/{$neighbours.7}">S</a></td>
+	<td align="right"><a href="/gridref/{$neighbours.8}">SO</a></td></tr>
 	</table>
 	</div>
 {else}
@@ -217,10 +217,10 @@
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			<p><small>Das folgende Gitter zeigt die 100 &bdquo;centisquares&ldquo; in {$gridref}, von denen {$allcount} Bilder enthalten. Um die sechsziffrigen Koordinaten zu sehen, bitte mit der Maus über das betreffende Quadrat fahren.</small></p>
 	<table border="0" cellspacing="0" cellpadding="2">
-		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=-1&amp;by={$by}">NW</a></td>
-		<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=0&amp;by={$by}">N</a></td>
-		<td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=1&amp;by={$by}">NO</a></td></tr>
-		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=-1&amp;by={$by}">W</a></td>
+		<tr><td><a href="/gridref/{$neighbours.0}?by={$by}">NW</a></td>
+		<td align="center"><a href="/gridref/{$neighbours.1}?by={$by}">N</a></td>
+		<td><a href="/gridref/{$neighbours.2}?by={$by}">NO</a></td></tr>
+		<tr><td><a href="/gridref/{$neighbours.3}?by={$by}">W</a></td>
 		<td>	
 			{if $rastermap->enabled && $rastermap->mapurl}
 				<div style="position:relative; width:330px; height:330px">
@@ -256,10 +256,10 @@
 				</div>
 			{/if}
 	</td>
-		<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=1&amp;by={$by}">O</a></td></tr>
-		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=-1&amp;by={$by}">SW</a></td>
-		<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=0&amp;by={$by}">S</a></td>
-		<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=1&amp;by={$by}">SO</a></td></tr>
+		<td align="right"><a href="/gridref/{$neighbours.5}?by={$by}">O</a></td></tr>
+		<tr><td><a href="/gridref/{$neighbours.6}?by={$by}">SW</a></td>
+		<td align="center"><a href="/gridref/{$neighbours.7}?by={$by}">S</a></td>
+		<td align="right"><a href="/gridref/{$neighbours.8}?by={$by}">SO</a></td></tr>
 	</table>
 			{if $breakdown.50.50.link}
 				<ul>

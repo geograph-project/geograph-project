@@ -188,6 +188,7 @@ if ($grid_given)
 		$smarty->assign('hectad', $hectad = $square->gridsquare.intval($square->eastings/10).intval($square->northings/10));
 		$smarty->assign('x', $square->x);
 		$smarty->assign('y', $square->y);
+		$smarty->assign('neighbours', $square->nextNeighbours());
 		
 		//store details the browser manager has figured out
 		$smarty->assign('showresult', 1);
