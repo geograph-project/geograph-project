@@ -711,3 +711,14 @@ ALTER TABLE `gridimage_recent` ADD `notes` text AFTER `seq_no`;
 ALTER TABLE `gridimage_ticket_item` ADD KEY `note_id` (`note_id`);
 
 ALTER TABLE `loc_hier_stat` ADD `squares_geo` int(8) unsigned NOT NULL DEFAULT '0' AFTER `squares_total`;
+
+DROP TABLE IF EXISTS `gridimage_vote`;
+CREATE TABLE `gridimage_vote` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `user_id` int(11) unsigned NOT NULL,
+  `type` enum('info','like','site','qual') NOT NULL,
+  `vote` tinyint(4) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gridimage_id`, `user_id`,`type`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;

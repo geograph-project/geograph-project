@@ -615,6 +615,28 @@ class GridImage
 	}
 
 	/**
+	* record a vote for this image
+	* returns true on success
+	*/
+	function vote($uid, $type, $vote)
+	{
+		$db =& $this->_getDB();
+		$sql="replace into gridimage_vote(gridimage_id,user_id,type,vote) ".
+			"values({$this->gridimage_id},$uid,'$type',$vote)";
+		return $db->Execute($sql) !== false;
+	}
+
+	/**
+	* get a list of votes for this image
+	*/
+	function& getVotes($uid)
+	{
+		$db =& $this->_getDB();
+		$retval =& $db->getAssoc("select type,vote from gridimage_vote where gridimage_id='{$this->gridimage_id}' and user_id='$uid'");
+		return $retval;
+	}
+
+	/**
 	* get a list of annotations for this image
 	* see comment in $note->applyTickets() for details on $ticketowner, $ticketid, $oldvalues
 	* $aStatus: array containing any allowed current note status

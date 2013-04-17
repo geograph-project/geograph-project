@@ -853,6 +853,96 @@ div.geonotenew {
 div.geonotenew p {
 	margin: 0; padding: 0 3px;
 }
+
+/*---------------------------------------------------------------*
+ * vote
+ *---------------------------------------------------------------*/
+
+.invisible { display: none; }
+
+div.thumbbox {
+	float:right;
+	position:relative;
+	width:20px;
+	margin-right:3px;
+	margin-left:3px;
+}
+
+div.thumbwincontainer {
+	float:right;
+	position:relative;
+}
+div.thumbwindow {
+	position:absolute;
+	left:-310px;
+	top:0px;
+	width:320px;
+	padding:10px;
+	display:none;
+	text-align:left;
+}
+
+div.votebox {
+	font-size:.9em;
+	text-align:right;
+}
+span.votebuttons {
+	padding-bottom:3px;
+	font-size:.9em;
+	display:inline-block;
+}
+
+a.votepos:hover, .voteposactive {
+	background-color: #00a000;
+	border: 1px solid #00a000;
+	color: #000000;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-decoration: none;
+}
+a.votepos {
+	background-color: #ffffff;
+	border: 1px solid #00a000;
+	color: #00a000;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-decoration: none;
+}
+
+a.voteneg:hover, .votenegactive {
+	background-color: #d00000;
+	border: 1px solid #d00000;
+	color: #000000;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-decoration: none;
+}
+a.voteneg {
+	background-color: #ffffff;
+	border: 1px solid #d00000;
+	color: #d00000;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-decoration: none;
+}
+
+a.voteneu:hover, .voteneuactive {
+	background-color: #907000;
+	border: 1px solid #907000;
+	color: #000000;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-decoration: none;
+}
+a.voteneu {
+	background-color: #ffffff;
+	border: 1px solid #907000;
+	color: #907000;
+	padding-left: 4px;
+	padding-right: 4px;
+	text-decoration: none;
+}
+
 /*---------------------------------------------------------------*
  * inline sidebar
  *---------------------------------------------------------------*/

@@ -200,6 +200,9 @@ if ($image->isValid())
 			
 		}
 	}
+	if ($USER->registered) {
+		$smarty->assign_by_ref('vote', $image->getVotes($USER->user_id));
+	}
 
 	$map_suffix = get_map_suffix();
 	$cacheid .= $map_suffix;
