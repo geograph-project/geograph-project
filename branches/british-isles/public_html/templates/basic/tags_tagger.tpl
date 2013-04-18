@@ -68,22 +68,22 @@
 			<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,10)">Suggestions</a>&nbsp;
 			{if $topics || $topicstring}
 				{assign var="ctab" value=$ctab+1}
-				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Topics</a>&nbsp;
+				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10);recordNext='';">Topics</a>&nbsp;
 			{/if}
 			{if $recent}
 				{assign var="ctab" value=$ctab+1}
-				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Recent</a>&nbsp;
+				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10);recordNext='';">Recent</a>&nbsp;
 			{/if}
 			{if $gr}
 				{assign var="ctab" value=$ctab+1}
-				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Nearby</a>&nbsp;
+				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10);recordNext='';">Nearby</a>&nbsp;
 			{/if}
 			{foreach from=$tree key=key item=item name=tree}
 				{assign var="ctab" value=$ctab+1}
-				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">{$key}</a>&nbsp;
+				<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10);recordNext='';">{$key}</a>&nbsp;
 			{/foreach}
 			{assign var="ctab" value=$ctab+1}
-			<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10)">Buckets</a>&nbsp;
+			<a class="tab{if $tab == $ctab}Selected{/if} nowrap" id="tab{$ctab}" onclick="tabClick('tab','div',{$ctab},10);recordNext='';">Buckets</a>&nbsp;
 
 		</div>
 		{assign var="ctab" value="1"}
@@ -215,6 +215,9 @@ function useTags(ele) {
 	ele.focus();
 }
 
+var recordNext = '';
+
+
 function addTag(text,suggestion,clearText) {
 
 	if (!text || text.length == 0) {
@@ -224,6 +227,17 @@ function addTag(text,suggestion,clearText) {
 
 	if (clearText) {
 		var ele = document.forms['theForm'].elements['__newtag'];
+
+		if (recordNext && ele.value.length == 0) {
+			$.ajax({
+				url: '/stuff/record_usage.php',
+				data: {action:'_doubletag', param:recordNext, value:text},
+				xhrFields: { withCredentials: true }
+			});
+		}
+		if (ele.value.length > 0)
+			recordNext = ele.value+"|"+text;
+
 		ele.value='';
 		ele.focus();
 	}
@@ -321,17 +335,19 @@ function toggleTag(text) {
 		});
 	}
 
-        function myKeyPress(that,event) {
+	function myKeyPress(that,event) {
 
-                var unicode=event.keyCode? event.keyCode : event.charCode;
-                if (unicode == 13) {
-                        useTags(that);
-                        if (event.preventDefault) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                        }
-                        return false;
-                }
+		recordNext = '';
+
+		var unicode=event.keyCode? event.keyCode : event.charCode;
+		if (unicode == 13) {
+			useTags(that);
+			if (event.preventDefault) {
+					event.preventDefault();
+					event.stopPropagation();
+			}
+			return false;
+		}
 		return true;
 	}
 
@@ -359,7 +375,7 @@ function toggleTag(text) {
 		// on search completion, process the results
 		function (data) {
 			if (data && data.length > 0) {
-				tabClick('tab','div',1,10);
+				tabClick('tab','div',1,10);recordNext='';
 
 				var div = document.getElementById('div1');
 
