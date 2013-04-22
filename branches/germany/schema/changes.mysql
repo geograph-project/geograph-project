@@ -722,3 +722,32 @@ CREATE TABLE `gridimage_vote` (
   PRIMARY KEY (`gridimage_id`, `user_id`,`type`),
   KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `gridimage_rating`;
+CREATE TABLE `gridimage_rating` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `type` enum('info','like','site','qual') NOT NULL,
+  `rating` float(7,6) NOT NULL,
+  `votes` int(11) unsigned NOT NULL,
+  `weighted_votes` float(11,6) NOT NULL,
+  PRIMARY KEY (`gridimage_id`, `type`),
+  KEY `rating` (`rating`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `user_vote_stat`;
+CREATE TABLE `user_vote_stat` (
+  `user_id` int(11) unsigned NOT NULL,
+  `type` enum('info','like','site','qual') NOT NULL,
+  `weight` float(7,6) NOT NULL DEFAULT 0,
+  `votes` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes1` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes2` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes3` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes4` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes5` int(11) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`user_id`, `type`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `user_vote_stat` DROP `weight`;
+ALTER TABLE `gridimage_vote` CHANGE `created` `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `gridimage_vote` ADD `weight` float(7,6) NOT NULL DEFAULT 0 AFTER `vote`;
