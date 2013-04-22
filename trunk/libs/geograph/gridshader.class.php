@@ -73,8 +73,13 @@ class GridShader
 	/**
 	* adds or updates squares
 	*/
-	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting,$updategridprefix = true,$expiremaps=true,$ignore100=false,$dryrun=false)
+	function process($imgfile, $x_offset, $y_offset, $reference_index, $clearexisting,$updategridprefix = true,$expiremaps=true,$ignore100=false,$dryrun=false,
+	                 $minx=0,$maxx=100000,$miny=0,$maxy=100000)
 	{
+		if ($minx > $maxx || $miny > $maxy) {
+			$this->_err("invalid x/y range");
+			return;
+		}
 		if (file_exists($imgfile))
 		{
 			$img=imagecreatefrompng($imgfile);
@@ -86,7 +91,10 @@ class GridShader
 				
 				$imgw=imagesx($img);
 				$imgh=imagesy($img);
-				
+				$startx = max(0,$minx);
+				$endx   = min($imgw-1,$maxx);
+				$starty = ($imgh-1)-min($imgh-1,$maxy);
+				$endy   = ($imgh-1)-max(0,$miny);
 
 				$this->_trace("Image is {$imgw}km x {$imgh}km");
 				if ($dryrun) $this->_trace("DRY RUN!");
@@ -107,10 +115,10 @@ class GridShader
 				$skipped100=0;
 				
 				$lastpercent=-1;
-				for ($imgy=0; $imgy<$imgh; $imgy++)
+				for ($imgy=$starty; $imgy<=$endy; $imgy++)
 				{
 					//output some progress
-					$percent=round(($imgy*100)/$imgh);
+					$percent=round(100*($imgy-$starty)/($endy-$starty));
 					$percent=round($percent/5)*5;
 					if ($percent!=$lastpercent)
 					{
@@ -118,12 +126,14 @@ class GridShader
 						$lastpercent=$percent;
 					}
 					
-					for ($imgx=0; $imgx<$imgw; $imgx++)
+					for ($imgx=$startx; $imgx<=$endx; $imgx++)
 					{
 						//get colour of pixel 
 						//255=white, 0% land
 						//000=black, 100% land
-						$col=imagecolorat ($img, $imgx, $imgy);
+						$colind=imagecolorat($img, $imgx, $imgy);
+						$colarr=imagecolorsforindex($img, $colind); // works also if alpha channel present + for rgb / palette images
+						$col=$colarr['green'];
 						$percent_land=round(((255-$col)*100)/255);
 						
 						if ($ignore100 && ($percent_land == 100))
@@ -259,7 +269,7 @@ class GridShader
 					$root=&$_SERVER['DOCUMENT_ROOT'];
 				
 					$lastpercent=-1;
-					for ($imgy=0; $imgy<$imgh; $imgy+=2)
+					for ($imgy=$starty; $imgy<=$endy; $imgy+=2)
 					{
 						//output some progress
 						$percent=round(($imgy*100)/$imgh);
@@ -270,7 +280,7 @@ class GridShader
 							$lastpercent=$percent;
 						}
 					
-						for ($imgx=0; $imgx<$imgw; $imgx+=2)
+						for ($imgx=$startx; $imgx<=$endx; $imgx+=2)
 						{
 				
 							//now lets figure out the internal grid ref
@@ -288,7 +298,7 @@ class GridShader
 
 								$file = $this->getBaseMapFilename($recordSet->fields);
 								if (file_exists($root.$file)) {
-									unlink($root.$file);
+									if (!$dryrun) unlink($root.$file);
 									$deleted++;
 								} 
 								$checked++;
