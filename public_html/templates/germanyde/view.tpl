@@ -432,35 +432,35 @@ AttachEvent(window,"load",gn.init);
 		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
 			<div class="votebox">
 				Allgemeiner Eindruck: <span class="votebuttons">
-				<span class="invisible"  >[</span><a id="vote{$imageid}like1" class="voteneg{if $vote.like==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 1)" title="I don't like this image at all"><b>--</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}like2" class="voteneg{if $vote.like==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 2)" title="I like this image below average"><b>-</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}like3" class="voteneu{if $vote.like==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 3)" title="This is an average image"><b>o</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}like4" class="votepos{if $vote.like==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 4)" title="I like this image above average"><b>+</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}like5" class="votepos{if $vote.like==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 5)" title="I like this image a lot"><b>++</b></a>
+				<span class="invisible"  >[</span><a id="vote{$imageid}like1" class="voteneg{if $vote.like==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 1); return false;" title="Das Bild gefällt mir überhaupt nicht"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like2" class="voteneg{if $vote.like==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 2); return false;" title="Das Bild gefällt mir nicht"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like3" class="voteneu{if $vote.like==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 3); return false;" title="Das Bild ist durchschnittlich"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like4" class="votepos{if $vote.like==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 4); return false;" title="Das Bild gefällt mir"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like5" class="votepos{if $vote.like==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 5); return false;" title="Das Bild gefällt mir sehr"><b>++</b></a>
 				<span class="invisible">]</span></span>
 			</div><div class="votebox">
-				Landschaft: <span class="votebuttons">
-				<span class="invisible"  >[</span><a id="vote{$imageid}site1" class="voteneg{if $vote.site==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 1)" title="I don't like this place at all"><b>--</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}site2" class="voteneg{if $vote.site==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 2)" title="I like this place below average"><b>-</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}site3" class="voteneu{if $vote.site==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 3)" title="This is an average place"><b>o</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}site4" class="votepos{if $vote.site==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 4)" title="This is a nice place"><b>+</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}site5" class="votepos{if $vote.site==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 5)" title="This place is beautiful"><b>++</b></a>
+				Ort oder Landschaft: <span class="votebuttons">
+				<span class="invisible"  >[</span><a id="vote{$imageid}site1" class="voteneg{if $vote.site==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 1); return false;" title="Dort gefällt es mir überhaupt nicht"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site2" class="voteneg{if $vote.site==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 2); return false;" title="Dort gefällt es mir nicht"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site3" class="voteneu{if $vote.site==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 3); return false;" title="Dort ist es durchschnittlich schön"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site4" class="votepos{if $vote.site==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 4); return false;" title="Dort gefällt es mir"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site5" class="votepos{if $vote.site==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 5); return false;" title="Dort gefällt es mir sehr"><b>++</b></a>
 				<span class="invisible">]</span></span>
 			</div><div class="votebox">
 				Qualität: <span class="votebuttons">
-				<span class="invisible"  >[</span><a id="vote{$imageid}qual1" class="voteneg{if $vote.qual==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 1)" title="The quality of this image is much below average"><b>--</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}qual2" class="voteneg{if $vote.qual==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 2)" title="The quality of this image is below average"><b>-</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}qual3" class="voteneu{if $vote.qual==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 3)" title="This is an average image"><b>o</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}qual4" class="votepos{if $vote.qual==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 4)" title="This is an image of high quality"><b>+</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}qual5" class="votepos{if $vote.qual==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 5)" title="This is an image of very high quality"><b>++</b></a>
+				<span class="invisible"  >[</span><a id="vote{$imageid}qual1" class="voteneg{if $vote.qual==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 1); return false;" title="Dies ist ein Bild sehr geringer Qualität"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual2" class="voteneg{if $vote.qual==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 2); return false;" title="Dies ist ein Bild geringer Qualität"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual3" class="voteneu{if $vote.qual==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 3); return false;" title="Dies ist ein Bild durchschnittlicher Qualität"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual4" class="votepos{if $vote.qual==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 4); return false;" title="Dies ist ein Bild hoher Qualität"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual5" class="votepos{if $vote.qual==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 5); return false;" title="Dies ist ein Bild sehr hoher Qualität"><b>++</b></a>
 				<span class="invisible">]</span></span>
 			</div><div class="votebox">
 				Informationsgehalt: <span class="votebuttons">
-				<span class="invisible"  >[</span><a id="vote{$imageid}info1" class="voteneg{if $vote.info==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 1)" title="I don't see much geographical information"><b>--</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}info2" class="voteneg{if $vote.info==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 2)" title="This is not very interesting"><b>-</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}info3" class="voteneu{if $vote.info==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 3)" title="This is an average image"><b>o</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}info4" class="votepos{if $vote.info==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 4)" title="This is interesting"><b>+</b></a>
-				<span class="invisible">] [</span><a id="vote{$imageid}info5" class="votepos{if $vote.info==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 5)" title="This is very interesting"><b>++</b></a>
+				<span class="invisible"  >[</span><a id="vote{$imageid}info1" class="voteneg{if $vote.info==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 1); return false;" title="Ich erkenne kaum geographischen Bezug"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}info2" class="voteneg{if $vote.info==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 2); return false;" title="Motiv bzw. Beschreibung ist nicht besonders interessant"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}info3" class="voteneu{if $vote.info==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 3); return false;" title="Geographische Relevanz bzw. Beschreibung ist durchschnittlich"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}info4" class="votepos{if $vote.info==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 4); return false;" title="Motiv bzw. die Beschreibung ist interessant"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}info5" class="votepos{if $vote.info==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 5); return false;" title="Motiv bzw. die Beschreibung ist sehr interessant"><b>++</b></a>
 				<span class="invisible">]</span></span>
 			</div>
 		</div>

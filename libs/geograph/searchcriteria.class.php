@@ -213,7 +213,17 @@ class SearchCriteria
 			}
 		} 
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
-			switch ($this->orderby) {
+			if (preg_match('/^rating_/', $this->orderby)) {
+				$type = preg_replace('/^rating_([a-z_]+).*$/', '$1', $this->orderby);
+				$sql_order = preg_replace('/^rating_[a-z_]+(.*)$/', '$1', $this->orderby);
+				$sql_order = 'gr.rating'.preg_replace('/[^\w,\(\)]+/',' ',$sql_order);
+				$sql_from .= " inner join gridimage_rating gr on (gi.gridimage_id=gr.gridimage_id and gr.type='$type') ";
+				$this->sphinx['impossible']++;
+				if ($sql_where) {
+					$sql_where .= ' and ';
+				}
+				$sql_where .= "gr.rating > 0.25";
+			} else switch ($this->orderby) {
 				case 'random':
 					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
 					$this->sphinx['compatible_order'] = 0;
