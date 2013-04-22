@@ -18,8 +18,6 @@
 }
 
 .select2-search-choice {
-	font-family: "comic sans MS";
-	font-weight: normal;
 	font-size: 0.8em;
 }
 
@@ -27,8 +25,6 @@
 	border-top:1px dotted silver;
 }
 .select2-drop .select2-result {
-	font-family: "comic sans MS";
-	font-weight: normal;
 	font-size: 0.8em;
 	line-height: 1.1em;
 	border-bottom: 1px solid #eee;
@@ -191,10 +187,18 @@ $(function() {
 			});
 			callback(data);
 		}
+
 	}).on('change', function (e) {
 		//console.log(e.val,e.added,e.removed);
 		if (e.added) {
 			submitTag(e.added.text, 2);
+
+			//bodge to prevent the event firing when emptying the box (Select2.updateResults does if (equal(term, lastTerm)) return;
+			$.data($('.select2-container'), "select2-last-term", '');
+
+			//empty the search box
+			$('.select2-input').val('');
+
 		} else if (e.removed) {
 			submitTag(e.removed.text, 0);
 		}
@@ -208,7 +212,11 @@ $(function() {
 		if (txt.length > 0) {
 			$('.select2-input').val(txt);
 		}
+	});
 
+	//fix for firefox to allow the search box to be clicked to focus (works with just the z-index bodge on other browsers) 
+	$(".select2-search-field input").bind('click',function(e) {
+		$(this).focus();
 	});
 
 });
