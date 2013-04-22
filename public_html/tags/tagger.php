@@ -380,7 +380,10 @@ if ($gid) {
         'Transport');
 	$smarty->assign_by_ref('buckets',$buckets);
 
-if (!empty($_GET['title']) || !empty($_GET['comment'])) {
+if ($template=='tags_tagger.tpl' && isset($_GET['form']) && $_GET['form'] == 'submissions') {
+	//stop this working on the old form! BEcause it runs the extraction, even if dont ever visit the tab.
+
+} elseif (!empty($_GET['title']) || !empty($_GET['comment'])) {
         $string = $_GET['title'].' '.$_GET['comment'];
 
         $smarty->assign('topicstring',$string);

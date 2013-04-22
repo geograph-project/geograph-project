@@ -80,6 +80,7 @@ if (false) {
         ###################
         # tagthe.net extraction API
 
+if (false) {
 
         $url = "http://tagthe.net/api/?text=".urlencode($string)."&view=json";
 
@@ -119,7 +120,7 @@ if (false) {
                         }
                 }
         }
-
+}
 
 }
 if (isset($_GET['term'])) {
