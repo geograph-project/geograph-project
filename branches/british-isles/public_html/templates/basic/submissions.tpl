@@ -20,21 +20,19 @@
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
-
 		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;"/>{if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="Apply changes"/>{/if}
-		<br/><span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a> [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]</span>
+		<br/>
+		<span id="hidetag{$image->gridimage_id}" style="font-size:0.8em"><span id="tags{$image->gridimage_id}"></span> &middot; <a href="#" onclick="return open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Tagging</b> Box</a></span>
+		<span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a>
+		 [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]</span>
 
 		</div>
 	  </div><br style="clear:both;"/>
-		{if $is_mod || $user->user_id == $image->user_id}
-		  <div class="interestBox" id="showshare{$image->gridimage_id}" style="display:none">
+		<div class="interestBox" id="showshare{$image->gridimage_id}" style="display:none">
 			<iframe src="about:blank" height="400" width="100%" id="shareframe{$image->gridimage_id}">
 			</iframe>
 			<div><a href="#" onclick="hide_tree('share{$image->gridimage_id}');loadSnippetCount(true);return false">- Close <i>Shared Descriptions</I> box</a> ({newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"})</div>
-		  </div>
-		{/if}
-
-		<span id="hidetag{$image->gridimage_id}" style="font-size:0.8em"><span id="tags{$image->gridimage_id}"></span> &middot; <a href="#" onclick="return open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Tagging</b> Box</a></span>
+		</div>
 
 		<div class="interestBox" id="showtag{$image->gridimage_id}" style="display:none">
 			<iframe src="about:blank" height="300" width="100%" id="tagframe{$image->gridimage_id}">
@@ -103,6 +101,13 @@ function open_shared(gid,gr,extra) {
 function open_tagging(gid,gr,extra) {
 	show_tree('tag'+gid);
 
+        var thatForm = document.forms['form'+gid];
+        if (thatForm.elements['title'] && thatForm.elements['title'].value && thatForm.elements['title'].value.length > 0) {
+                extra = extra + "&form=submissions&title="+encodeURIComponent(thatForm.elements['title'].value);
+        }
+        if (thatForm.elements['comment'] && thatForm.elements['comment'].value && thatForm.elements['comment'].value.length > 0) {
+                extra = extra + "&form=submissions&comment="+encodeURIComponent(thatForm.elements['comment'].value);
+        }
 
 	document.getElementById('tagframe'+gid).src='/tags/tagger.php?gridimage_id='+gid+'&gr='+gr+extra;
 	return false;

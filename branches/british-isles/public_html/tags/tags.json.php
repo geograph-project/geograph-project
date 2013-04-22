@@ -24,10 +24,13 @@
 if (!empty($_GET['mode']) && $_GET['mode'] == 'suggestions' && !empty($_GET['string'])) {
 	require("./topics.json.php");
 	exit;
+} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'prospective' && !empty($_GET['string'])) {
+	require("./prospective.json.php");
+	exit;
 } elseif (!empty($_GET['mode']) && $_GET['mode'] == 'categories') {
 	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];
         if (empty($_GET['term'])) {
-                $_REQUEST['q'] = $_GET['q'] = '..'; //falls though as an empty to query, which sphinx now orders by images desc - so gives most popular tags!
+                $_REQUEST['q'] = $_GET['q'] = '..'; //falls though as an empty to query
         }
 	$_GET['mine'] = 1;
 	require("../finder/categories.json.php");
@@ -62,8 +65,8 @@ if (isset($_GET['term'])) {
 }
 	
 if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
-	customExpiresHeader(90,false);
 	init_session();
+	customExpiresHeader(90,false,true);
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if ($USER->registered) {
@@ -82,11 +85,11 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 	} 
 	
 } elseif (!empty($_GET['gridimage_id'])) {
-	customExpiresHeader(180);
 	init_session();
 	if (!$USER->registered) {
 		die("{error: 'not logged in'}");
 	}
+	customExpiresHeader(180,false,true);
 	
 	$sql['columns'] .= ",gt.status";
 	
@@ -127,7 +130,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 			list($prefix,$_REQUEST['q']) = explode(':',$_REQUEST['q'],2);
 		}
 		
-                $q = trim(preg_replace('/[^\w@]+/',' ',str_replace("'",'',$_REQUEST['q'])));
+                $q = trim(preg_replace('/[^\w@!]+/',' ',str_replace("'",'',$_REQUEST['q'])));
 		
 		$sphinx = new sphinxwrapper($q);
 		
