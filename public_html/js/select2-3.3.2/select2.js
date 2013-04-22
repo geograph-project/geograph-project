@@ -766,6 +766,9 @@ the specific language governing permissions and limitations under the Apache Lic
 
                             formatted=opts.formatResult(result, label, query, self.opts.escapeMarkup);
                             if (formatted!==undefined) {
+                                if (result.newItem) {
+                                    formatted = opts.formatCreateNew(formatted);
+                                }
                                 label.html(formatted);
                             }
 
@@ -1446,8 +1449,9 @@ the specific language governing permissions and limitations under the Apache Lic
                     if (def !== undefined && def !== null && self.id(def) !== undefined && self.id(def) !== null) {
                         if ($(data.results).filter(
                             function () {
-                                return equal(self.id(this), self.id(def));
+                                return equal(self.id(this).toLowerCase(), self.id(def).toLowerCase());
                             }).length === 0) {
+                            def.newItem = true;
                             data.results.unshift(def);
                         }
                     }
@@ -2415,7 +2419,25 @@ the specific language governing permissions and limitations under the Apache Lic
             }
 
             if(enableChoice){
-              choice.find(".select2-search-choice-close")
+              choice.bind("dblclick", this.bind(function (e) {
+                  if (!this.enabled) return;
+                  $(e.target).closest(".select2-search-choice").fadeOut('fast', this.bind(function(){
+                  
+			var val = $(e.target).text();
+			if (val && val.length>0) {
+			     $('.select2-input').val(val);
+			}
+                  
+		       this.unselect($(e.target));
+		       this.selection.find(".select2-search-choice-focus").removeClass("select2-search-choice-focus");
+		       this.close();
+		       this.resizeSearch();
+		       this.focusSearch();
+		       this.open();
+		       this.updateResults(true);
+                  })).dequeue();
+                  killEvent(e);
+              })).find(".select2-search-choice-close")
                   .bind("mousedown", killEvent)
                   .bind("click dblclick", this.bind(function (e) {
                   if (!this.enabled) return;
@@ -2738,6 +2760,7 @@ the specific language governing permissions and limitations under the Apache Lic
         formatSelectionTooBig: function (limit) { return "You can only select " + limit + " item" + (limit == 1 ? "" : "s"); },
         formatLoadMore: function (pageNumber) { return "Loading more results..."; },
         formatSearching: function () { return "Searching..."; },
+        formatCreateNew: function (term) { return term; },
         minimumResultsForSearch: 0,
         minimumInputLength: 0,
         maximumInputLength: null,
