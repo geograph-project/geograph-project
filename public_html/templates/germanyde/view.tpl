@@ -430,6 +430,13 @@ AttachEvent(window,"load",gn.init);
 		
 	<div class="thumbwincontainer"><div class="thumbwindow" id="showside" onmouseout="hide_tree('side')">
 		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
+			<h4 style="margin-top:0px">Bild-Bewertung</h4>
+			<p>
+			Bitte im Vorfeld <a href="/discuss/index.php?&action=vthread&forum=2&topic=126">diesen Foren-Thread</a> lesen um
+			näheres zu dieser Funktion zu erfahren. Das ist auch deshalb wichtig, weil es zu Anfang Missverständnisse bezüglich
+			der Bewertung des Informationsgehalts gab, die sowohl die Bildbeschreibung als auch die Wahl eines interessanten Motivs
+			berücksichtigen sollte.
+			</p>
 			<div class="votebox">
 				Allgemeiner Eindruck: <span class="votebuttons">
 				<span class="invisible"  >[</span><a id="vote{$imageid}like1" class="voteneg{if $vote.like==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 1); return false;" title="Das Bild gefällt mir überhaupt nicht"><b>--</b></a>
