@@ -895,7 +895,7 @@ span.votebuttons {
 a.votepos:hover, .voteposactive {
 	background-color: #00a000;
 	border: 1px solid #00a000;
-	color: #000000;
+	color: #ffffff;
 	padding-left: 4px;
 	padding-right: 4px;
 	text-decoration: none;
@@ -912,7 +912,7 @@ a.votepos {
 a.voteneg:hover, .votenegactive {
 	background-color: #d00000;
 	border: 1px solid #d00000;
-	color: #000000;
+	color: #ffffff;
 	padding-left: 4px;
 	padding-right: 4px;
 	text-decoration: none;
@@ -929,7 +929,7 @@ a.voteneg {
 a.voteneu:hover, .voteneuactive {
 	background-color: #907000;
 	border: 1px solid #907000;
-	color: #000000;
+	color: #ffffff;
 	padding-left: 4px;
 	padding-right: 4px;
 	text-decoration: none;
