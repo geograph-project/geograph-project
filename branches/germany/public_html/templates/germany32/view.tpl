@@ -392,6 +392,12 @@ AttachEvent(window,"load",gn.init);
 		
 	<div class="thumbwincontainer"><div class="thumbwindow" id="showside" onmouseout="hide_tree('side')">
 		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
+			<h4 style="margin-top:0px">Image rating</h4>
+			<p>
+			Please read <a href="/discuss/index.php?&action=vthread&forum=2&topic=126">this forum thread</a> to learn what this is about.
+			This is especially important as there were some misconceptions regarding the "Geographical information" rating which
+			should take into account both the description and the subject of the image.
+			</p>
 			<div class="votebox">
 				General impression: <span class="votebuttons">
 				<span class="invisible"  >[</span><a id="vote{$imageid}like1" class="voteneg{if $vote.like==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 1); return false;" title="I don't like this image at all"><b>--</b></a>
