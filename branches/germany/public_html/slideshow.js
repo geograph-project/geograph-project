@@ -17,18 +17,18 @@ function slide_go(delta) {
 			if (timer != false) {
 				setTimeout('show_slide_part2('+cs+')',mapdelayinsec*1000);
 			}
-			document.images['mapC'+cs].src = document.images['mapC'+cs].getAttribute('data-lowsrc');
-			document.images['mapD'+cs].src = document.images['mapD'+cs].getAttribute('data-lowsrc');
+			document.images['mapC'+cs].src = document.images['mapC'+cs].getAttribute('data-src');
+			document.images['mapD'+cs].src = document.images['mapD'+cs].getAttribute('data-src');
 		} else {
 			document.getElementById("result"+cs).style.display = '';
 		}
-		document.images['image'+cs].src = document.images['image'+cs].getAttribute('data-lowsrc');
+		document.images['image'+cs].src = document.images['image'+cs].getAttribute('data-src');
 		csnext = cs + delta;
 		if (document.getElementById("result"+csnext)) {
-			document.images['image'+csnext].src = document.images['image'+csnext].getAttribute('data-lowsrc');
+			document.images['image'+csnext].src = document.images['image'+csnext].getAttribute('data-src');
 			if (document.getElementById("mapA"+csnext)) {
-				document.images['mapC'+csnext].src = document.images['mapC'+csnext].getAttribute('data-lowsrc');
-				document.images['mapD'+csnext].src = document.images['mapD'+csnext].getAttribute('data-lowsrc');
+				document.images['mapC'+csnext].src = document.images['mapC'+csnext].getAttribute('data-src');
+				document.images['mapD'+csnext].src = document.images['mapD'+csnext].getAttribute('data-src');
 			}
 		}
 	} else {
