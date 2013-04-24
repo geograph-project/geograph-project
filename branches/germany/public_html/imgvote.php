@@ -35,19 +35,29 @@ if (!$USER->hasPerm("basic")) {
 $types = array('info', 'qual', 'site', 'like');
 
 if (  !isset($_POST['imageid'])
-    ||!preg_match('/^\s*[1-9][0-9]*\s*$/', $_POST['imageid'])
-    ||!isset($_POST['vote'])
-    ||!preg_match('/^\s*[1-5]\s*$/', $_POST['vote'])
-    ||!isset($_POST['type'])
-    ||!in_array($_POST['type'], $types, true)) {
+    ||!preg_match('/^\s*[1-9][0-9]*\s*$/', $_POST['imageid'])) {
 	trigger_error("invalid parameters: {$_POST['imageid']} {$_REQUEST['vote']} {$_REQUEST['type']}", E_USER_WARNING);
 	print "-3:invalid parameters";
 	exit;
 }
 
+if (!isset($_POST['vote']) && !isset($_POST['type'])) {
+	# only get current votes for this image
+	$vote = 0;
+	$type = '';
+} elseif (  !isset($_POST['vote'])
+          ||!preg_match('/^\s*[1-5]\s*$/', $_POST['vote'])
+          ||!isset($_POST['type'])
+          ||!in_array($_POST['type'], $types, true)) {
+	trigger_error("invalid parameters: {$_POST['imageid']} {$_REQUEST['vote']} {$_REQUEST['type']}", E_USER_WARNING);
+	print "-3:invalid parameters";
+	exit;
+} else {
+	# vote and get current votes for this image
+	$vote = intval($_POST['vote']);
+	$type = $_POST['type'];
+}
 $gridimage_id = intval($_POST['imageid']);
-$vote = intval($_POST['vote']);
-$type = $_POST['type'];
 
 $image = new GridImage($gridimage_id);
 if (!$image->isValid()) {
@@ -58,7 +68,7 @@ if (!$image->isValid()) {
 
 $uid = $USER->user_id;
 
-if (!$image->vote($uid, $type, $vote)) {
+if ($vote && !$image->vote($uid, $type, $vote)) {
 	print "-7:update failed";
 	exit;
 }

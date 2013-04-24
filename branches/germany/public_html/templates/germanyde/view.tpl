@@ -424,6 +424,13 @@ AttachEvent(window,"load",gn.init);
   {dynamic}
     {if $user->registered}
 
+{* display current votes even if the browser gets this from the cache *}
+<script type="text/javascript">
+/* <![CDATA[ */
+ AttachEvent(window,'load',function() {ldelim}imgvote({$imageid}, '', 0);{rdelim},false);
+/* ]]> */
+</script>
+
 	<div class="interestBox thumbbox"><span id="hideside"></span>
 		<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side','block')"/>
 	</div>
