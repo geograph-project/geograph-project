@@ -98,8 +98,10 @@ function geoGetXMLRequestObject() // stolen from admin/moderation.js
 function imgvote(imageid, type, vote) {
 	var classbase = [ '', 'voteneg', 'voteneg', 'voteneu', 'votepos', 'votepos' ];
 	var postdata = 'imageid=' + imageid;
-	postdata += '&type=' + type;
-	postdata += '&vote=' + vote;
+	if (vote) {
+		postdata += '&type=' + type;
+		postdata += '&vote=' + vote;
+	}
 	var url="/imgvote.php";
 	var req=geoGetXMLRequestObject();
 	var reqTimer = setTimeout(function() {
@@ -114,16 +116,22 @@ function imgvote(imageid, type, vote) {
 		commiterrors = true;
 
 		if (req.status != 200) {
-			alert("Cannot communicate with server, status " + req.status);
+			if (vote) {
+				alert("Cannot communicate with server, status " + req.status);
+			}
 		} else {
 			var responseText = req.responseText;
 			//alert(responseText);// FIXME remove
 			if (/^-[1-9][0-9]*:[^:]+$/.test(responseText)) { /* general error */
 				var parts = responseText.split(':');
 				var rcode = parseInt(parts[0]);
-				alert("Error: Server returned error " + -rcode + " (" + parts[1] + ")");
+				if (vote) {
+					alert("Error: Server returned error " + -rcode + " (" + parts[1] + ")");
+				}
 			} else if (! /^0(:[^:]+:[0-5])*$/.test(responseText)) {
-				alert("Unexpected response from server: "+responseText);
+				if (vote) {
+					alert("Unexpected response from server: "+responseText);
+				}
 			} else {
 				var parts = responseText.split(':');
 				for (var i = 1; i < parts.length; i+=2) {
