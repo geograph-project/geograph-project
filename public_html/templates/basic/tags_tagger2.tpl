@@ -1,8 +1,10 @@
 {assign var="page_title" value="Tagging Box"}
 {include file="_basic_begin.tpl"}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-<link href="/js/select2-3.3.2/select2.css" rel="stylesheet"/>
-<script src="/js/select2-3.3.2/select2.js"></script>
+<link href="{"/js/select2-3.3.2/select2.css"|revision}" rel="stylesheet"/>
+<script src="{"/js/select2-3.3.2/select2.js"|revision}"></script>
+<script src="{"/js/to-title-case.js"|revision}"></script>
+<script src="/js/jquery.storage.js"></script>
 <div style="position:fixed;top:200px;left:10px;border:1px solid red"></div>
 <div style="padding:6px">
 <style>{literal}
@@ -49,8 +51,27 @@
 	position:relative;
 }
 
+.column1 {
+	float:left;
+	position:relative;
+	width:610px;
+	height:240px;
+}
+.column2 {
+	float:left;
+	margin-left:10px;
+	position:relative;
+	font-size:0.9em;
+	z-index:10000;
+}
+
+@media all and (max-width: 800px) {
+	.column1 { width:410px; }
+}
+
 {/literal}</style>
 
+{dynamic}
 
 <form method="post" action="{$script_name}?gr={$gr|escape:'url'}&amp;upload_id={$upload_id|escape:'url'}&amp;gridimage_id={$gridimage_id}" style="background-color:#f0f0f0;" name="theForm">
 	<div id="savebutton" style="float:right;display:none">
@@ -64,10 +85,9 @@
 
 	<div style="float:right;"><a href="/article/Tags" title="Article about Tags" class="about" target="_blank">More about Tags</a></div>
 
-	<div style="float:left;position:relative;width:610px;">
-{dynamic}
+	<div class="column1">
 		{if $topicstring}<input type="hidden" name="topicstring" value="{$topicstring|escape:'html'}" />{/if}
-		<input type=hidden name="__newtag" id="__newtag" value="{$usedtext|escape:html}" size="50" style="width:600px"/>
+		<input type=hidden name="__newtag" id="__newtag" value="{$usedtext|escape:html}" size="50" style="width:100%"/>
 {/dynamic}
 
 		<div style="font-size:0.8em;padding-right:20px;padding-top:20px">
@@ -81,7 +101,7 @@
 
 	</div>
 
-	<div style="float:left;position:relative;font-size:0.9em;z-index:10000"><br/>
+	<div class="column2">
 		<input type="radio" name="selector" value="alpha" id="sel_alpha"/> <label for="sel_alpha">All Tags - Alphabetical</label><br/>
 		<input type="radio" name="selector" value="ranked" id="sel_ranked" checked/> <label for="sel_ranked">All Tags - Ranked</label><br/>
 		<input type="radio" name="selector" value="selfrecent" id="sel_selfrecent"/> <label for="sel_selfrecent">Your Tags - Recently Used</label><br/>
@@ -91,7 +111,8 @@
 			<input type="radio" name="selector" value="nearby" id="sel_nearby"/> <label for="sel_nearby">Nearby Tags</label><br/>
 		{/if}
 		{if $topicstring}
-			<input type="radio" name="selector" value="suggestions" id="sel_suggestions" checked/> <label for="sel_suggestions">Automatic suggestions</label><br/>
+			<input type="radio" name="selector" value="suggestions" id="sel_suggestions"{if strlen($topicstring) > 100} checked{/if}/> <label for="sel_suggestions">Automatic suggestions</label><br/>
+			<input type="radio" name="selector" value="prospective" id="sel_prospective"/> <label for="sel_prospective">Tags used in description</label><br/>
 		{/if}{/dynamic}
 		<input type="radio" name="selector" value="subject" id="sel_subject"/> <label for="sel_subject">Subject List</label><br/>
 		<input type="radio" name="selector" value="top" id="sel_top"/> <label for="sel_top">Context List</label><br/>
@@ -129,6 +150,7 @@ function export_tags() {
 }
 
 function toggle_compact(that) {
+	$.localStorage('tagger_compact', that.checked);
 	if (that.checked) {
 		$(".select2-drop").addClass("select2-compact");
 	} else {
@@ -136,13 +158,16 @@ function toggle_compact(that) {
 	}
 }
 
+var sentFirst = false;
+var defaultMode = false;
+
 $(function() {
 	$('#__newtag').select2({
 		multiple: true,
 		separator: ';',
 		placeholder: 'enter tags here',
 		closeOnSelect: false,
-		tokenSeparators: [',',';'],
+		tokenSeparators: [';',','],
 		ajax: {
 			quietMillis: 200,
 			url: "/tags/tags.json.php",
@@ -152,7 +177,7 @@ $(function() {
 			data: function (term, page) {
 				var mode =$("input[name=selector]:checked").val();
 				var data = {mode: mode, term: term};
-				if (mode == 'suggestions' && $("input[name=topicstring]").length > 0) {
+				if ((mode == 'suggestions' || mode == 'prospective') && $("input[name=topicstring]").length > 0) {
 					data.term = ''; //send a empty string to help with caching
 					data.string = $("input[name=topicstring]").val();
 				} else if (mode == 'nearby' && $("input[name=gr]").length > 0) {
@@ -168,7 +193,7 @@ $(function() {
 				var more = (data.length == 60 && (page*60) < 1000);
 				var results = [];
 				$.each(data, function(){
-					results.push({id: this, text: this });
+					results.push({id: this, text: this.toTitleCase() });
 				});
 				return {results: results, more: more};
 			}
@@ -183,7 +208,7 @@ $(function() {
 		initSelection: function (element, callback) {
 			var data = [];
 			$(element.val().split(/;/)).each(function () {
-				data.push({id: this, text: this});
+				data.push({id: this, text: this.toTitleCase() });
 			});
 			callback(data);
 		}
@@ -198,6 +223,24 @@ $(function() {
 
 			//empty the search box
 			$('.select2-input').val('');
+
+			var mode =$("input[name=selector]:checked").val();
+			if (!sentFirst) {
+				if (current = $.localStorage('tagger_mode_'+mode)) {
+					if (defaultMode != mode || current < 10 || Math.random() > 0.95) {
+						//if its the current leader, then dont allow it race too far ahead
+						$.localStorage('tagger_mode_'+mode, current+1);
+					}
+				} else {
+					$.localStorage('tagger_mode_'+mode, 1);
+				}
+				sentFirst = true;
+			}
+                        $.ajax({
+                                url: '/stuff/record_usage.php',
+                                data: {action:'_newtag', param:mode, value:e.added.text},
+                                xhrFields: { withCredentials: true }
+                        });
 
 		} else if (e.removed) {
 			submitTag(e.removed.text, 0);
@@ -218,6 +261,25 @@ $(function() {
 	$(".select2-search-field input").bind('click',function(e) {
 		$(this).focus();
 	});
+
+	if ($.localStorage('tagger_compact')) {
+		$('#compact').prop('checked',true);
+		$(".select2-drop").addClass("select2-compact");		
+	}
+
+	var mode = null;
+	var num = 0;
+	$("input[name=selector]").each(function(index){ 
+		current = $.localStorage('tagger_mode_'+$(this).val());
+		if (current && current > num) {
+			mode = $(this).val();
+			num = current;
+		}
+	});
+	if (mode) {
+		defaultMode = mode;
+		$("input[name=selector][value="+mode+"]").prop('checked',true);
+	}
 
 });
 
