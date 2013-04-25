@@ -60,6 +60,7 @@ Disallow: /maplarge.php
 Disallow: /mapprint.php
 Allow: /admin/team.php
 Disallow: /admin/
+Disallow: /code/
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
@@ -120,6 +121,7 @@ Disallow: /maplarge.php
 Disallow: /mapprint.php
 Allow: /admin/team.php
 Disallow: /admin/
+Disallow: /code/
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
@@ -180,6 +182,7 @@ Disallow: /maplarge.php
 Disallow: /mapprint.php
 Allow: /admin/team.php
 Disallow: /admin/
+Disallow: /code/
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
@@ -240,6 +243,7 @@ Disallow: /maplarge.php
 Disallow: /mapprint.php
 Allow: /admin/team.php
 Disallow: /admin/
+Disallow: /code/
 Disallow: /search.php
 Disallow: /full-text.php
 Disallow: /finder/
