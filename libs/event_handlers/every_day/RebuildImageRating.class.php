@@ -72,12 +72,17 @@ class RebuildImageRating extends EventHandler
 		FROM gridimage gi INNER JOIN gridimage_vote gv ON (gi.gridimage_id=gv.gridimage_id)
 		WHERE gi.user_id != gv.user_id GROUP BY gv.user_id, gv.type;');
 
+		$db->Execute('DROP TABLE IF EXISTS user_vote_stat_old;');
+		$db->Execute('RENAME TABLE user_vote_stat TO user_vote_stat_old, user_vote_stat_tmp TO user_vote_stat;');
+		$db->Execute('DROP TABLE IF EXISTS user_vote_stat_old;');
+
+		#######
 		# calculate gridimage_vote.weight: less weight for
 		# * contributors having few geosquares (i.e. only votes of real contributors are taken into account)
 		# * contributors who don't vote a lot (i.e. favour contributors who make good statistics)
 		# * contributors who only give maximal/minimal votes (i.e. contributors who allow for differentiated statistics)
 
-		$votecount=$db->GetAssoc("SELECT type,SUM(votes),SUM(votes1),SUM(votes2),SUM(votes3),SUM(votes4),SUM(votes5) FROM user_vote_stat_tmp GROUP BY type;");
+		$votecount=$db->GetAssoc("SELECT type,SUM(votes),SUM(votes1),SUM(votes2),SUM(votes3),SUM(votes4),SUM(votes5) FROM user_vote_stat GROUP BY type;");
 		$types = array_keys($votecount);
 		$dist = array();
 		foreach($types as $type) {
@@ -90,7 +95,7 @@ class RebuildImageRating extends EventHandler
 		}
 
 		foreach($types as $type) {
-			$recordSet = &$db->Execute("SELECT user_id,votes,votes1,votes2,votes3,votes4,votes5,geosquares FROM user_vote_stat_tmp LEFT JOIN user_stat USING(user_id) WHERE type='$type'");
+			$recordSet = &$db->Execute("SELECT user_id,votes,votes1,votes2,votes3,votes4,votes5,geosquares FROM user_vote_stat LEFT JOIN user_stat USING(user_id) WHERE type='$type'");
 			while (!$recordSet->EOF) {
 				$geosquares = $recordSet->fields[7];
 				if (is_null($geosquares)) {
@@ -115,10 +120,6 @@ class RebuildImageRating extends EventHandler
 			}
 			$recordSet->Close();
 		}
-
-		$db->Execute('DROP TABLE IF EXISTS user_vote_stat_old;');
-		$db->Execute('RENAME TABLE user_vote_stat TO user_vote_stat_old, user_vote_stat_tmp TO user_vote_stat;');
-		$db->Execute('DROP TABLE IF EXISTS user_vote_stat_old;');
 
 		#######
 		# calculate image ratings

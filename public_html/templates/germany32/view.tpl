@@ -438,6 +438,9 @@ AttachEvent(window,"load",gn.init);
 				<span class="invisible">] [</span><a id="vote{$imageid}info5" class="votepos{if $vote.info==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 5); return false;" title="This is very interesting"><b>++</b></a>
 				<span class="invisible">]</span></span>
 			</div>
+			<p>
+			<a href="/imgvote.php">Show my recent votes</a>
+			</p>
 		</div>
 	</div></div>
     {/if}
