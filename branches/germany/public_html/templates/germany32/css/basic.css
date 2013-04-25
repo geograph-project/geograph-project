@@ -900,7 +900,7 @@ a.votepos:hover, .voteposactive {
 	padding-right: 4px;
 	text-decoration: none;
 }
-a.votepos {
+.votepos {
 	background-color: #ffffff;
 	border: 1px solid #00a000;
 	color: #00a000;
@@ -917,7 +917,7 @@ a.voteneg:hover, .votenegactive {
 	padding-right: 4px;
 	text-decoration: none;
 }
-a.voteneg {
+.voteneg {
 	background-color: #ffffff;
 	border: 1px solid #d00000;
 	color: #d00000;
@@ -934,7 +934,7 @@ a.voteneu:hover, .voteneuactive {
 	padding-right: 4px;
 	text-decoration: none;
 }
-a.voteneu {
+.voteneu {
 	background-color: #ffffff;
 	border: 1px solid #907000;
 	color: #907000;
