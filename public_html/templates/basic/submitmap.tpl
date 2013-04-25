@@ -9,7 +9,8 @@
 {/if}
 
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
-<script type="text/javascript" src="{"/mappingG.js"|revision}"></script>
+<script type="text/javascript" src="{"/js/mappingG3.js"|revision}"></script>
+<script type="text/javascript" src="http://nls.tileserver.com/api.js"></script>
 {literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -17,6 +18,7 @@
 
 		//the google map object
 		var map;
+		var panorama;
 
 		//the geocoder object
 		var geocoder;
@@ -24,17 +26,17 @@
 
 		function showAddress(address) {
 			if (!geocoder) {
-				 geocoder = new GClientGeocoder();
+				 geocoder = new google.maps.Geocoder();
 			}
 			if (geocoder) {
 				//replace full uk postcodes by the sector version
 				//address = address.replace(/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i,'$1$2 $3');
 				//uk postcodes now work!
 
-				geocoder.getLatLng(address,function(point) {
-					if (!point) {
-						alert("Your entry '" + address + "' could not be geocoded, please try again");
-					} else {
+				geocoder.geocode( { 'address': address}, function(results, status) {
+					if (status == google.maps.GeocoderStatus.OK) {
+						var point = results[0].geometry.location;
+
 						lat = point.lat();
 						lng = point.lng();
 						ire = (lat > 51.2 && lat < 55.73 && lng > -12.2 && lng < -4.8);
@@ -45,150 +47,123 @@
 							return;
 						}
 
-						if (currentelement) {
-							currentelement.setPoint(point);
-							GEvent.trigger(currentelement,'drag');
+						makeMarker(point)
+						map.panTo(point);
 
-						} else {
-							currentelement = createMarker(point,null);
-							map.addOverlay(currentelement);
-
-							GEvent.trigger(currentelement,'drag');
-						}
-						map.setCenter(point, 12);
+					} else {
+						alert('Geocode was not successful for the following reason: ' + status);
 					}
-				 });
+				});
 			}
 			return false;
 		}
 
 		function loadmap() {
-			if (GBrowserIsCompatible()) {
-				map = new GMap2(document.getElementById("map"));
-				map.addMapType(G_PHYSICAL_MAP);
+			var point = new google.maps.LatLng(54.55,-3.88);
+			var zoom = 5;
+			var newtype = readCookie('GMapType');
+			var mapTypeId = google.maps.MapTypeId.TERRAIN;
 
-				G_PHYSICAL_MAP.getMinimumResolution = function () { return 5 };
-				G_NORMAL_MAP.getMinimumResolution = function () { return 5 };
-				G_SATELLITE_MAP.getMinimumResolution = function () { return 5 };
-				G_HYBRID_MAP.getMinimumResolution = function () { return 5 };
+			newview = readCookie('GMapView');
+			if (newview) {
+				var pairs = newview.split("&");
+				for (var i=0; i<pairs.length; i++) {
+					// break each pair at the first "=" to obtain the argname and value
+					var pos = pairs[i].indexOf("=");
+					var argname = pairs[i].substring(0,pos).toLowerCase();
+					var value = pairs[i].substring(pos+1).toLowerCase();
 
-				map.addControl(new GLargeMapControl());
-				map.addControl(new GMapTypeControl(true));
+					if (argname == "ll") {
+						var bits = value.split(',');
+						point = new google.maps.LatLng(parseFloat(bits[0]),parseFloat(bits[1]));
+					}
+					if (argname == "z") {zoom = parseInt(value,10);}
+					if (argname == "t") {
 
-				var point = new GLatLng(54.55,-3.88);
-				var zoom = 5;
-
-				newview = readCookie('GMapView');
-				if (newview) {
-
-					var pairs = newview.split("&");
-					for (var i=0; i<pairs.length; i++) {
-						// break each pair at the first "=" to obtain the argname and value
-						var pos = pairs[i].indexOf("=");
-						var argname = pairs[i].substring(0,pos).toLowerCase();
-						var value = pairs[i].substring(pos+1).toLowerCase();
-
-						if (argname == "ll") {
-							var bits = value.split(',');
-							point = new GLatLng(parseFloat(bits[0]),parseFloat(bits[1]));
-						}
-						if (argname == "z") {zoom = parseInt(value,10);}
-						if (argname == "t") {
-							if (value == "m") {mapType = G_NORMAL_MAP;}
-							if (value == "k") {mapType = G_SATELLITE_MAP;}
-							if (value == "h") {mapType = G_HYBRID_MAP;}
-							if (value == "p") {mapType = G_PHYSICAL_MAP;}
-							if (value == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
-						}
 					}
 				}
+			}
 
-				newtype = readCookie('GMapType');
-				if (newtype) {
-					if (newtype == "m") {mapType = G_NORMAL_MAP;}
-					if (newtype == "k") {mapType = G_SATELLITE_MAP;}
-					if (newtype == "h") {mapType = G_HYBRID_MAP;}
-					if (newtype == "p") {mapType = G_PHYSICAL_MAP;}
-					if (newtype == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
-					map.setCenter(point, zoom, mapType);
-				} else {
-					map.setCenter(point, zoom);
+			if (newtype == 'r') {mapTypeId = google.maps.MapTypeId.ROADMAP;}
+			if (newtype == 's') {mapTypeId = google.maps.MapTypeId.SATELLITE;}
+			if (newtype == 'h') {mapTypeId = google.maps.MapTypeId.HYBRID;}
+			if (newtype == 't') {mapTypeId = google.maps.MapTypeId.TERRAIN;}
+			if (newtype == 'n') {mapTypeId = 'nls';}
+
+			map = new google.maps.Map(
+				document.getElementById('map'), {
+				center: point,
+				zoom: zoom,
+				mapTypeId: mapTypeId,
+				streetViewControl: true,
+				mapTypeControlOptions: {
+					mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN, "nls"],
+					style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
 				}
+			});
 
-				map.enableDoubleClickZoom();
-				map.enableContinuousZoom();
-				map.enableScrollWheelZoom();
+			// TODO: Automatic load balancing & server availability test:
+			// add <img src="testtile" onLoad="win()"> and decide which from available servers is fastest for the client
+			var nlsmap = new google.maps.ImageMapType({
+				getTileUrl: function(tile, zoom) { return NLSTileUrlOS(tile.x, tile.y, zoom); },
+				tileSize: new google.maps.Size(256, 256),
+				isPng: false,
+				maxZoom: 14,
+				minZoom: 1,
+				name: "Historic",
+				alt: "NLS Historic Map"
+			});
+			map.mapTypes.set("nls",nlsmap);
 
-				GEvent.addListener(map, "click", function(marker, point) {
-					if (marker) {
-					} else if (currentelement) {
-						currentelement.setPoint(point);
-						GEvent.trigger(currentelement,'drag');
+			google.maps.event.addListener(map, "click", function(event) {
+				makeMarker(event.latLng);
+			});
 
-					} else {
-						currentelement = createMarker(point,null);
-						map.addOverlay(currentelement);
+			panorama = map.getStreetView();
+			google.maps.event.addListener(panorama, "position_changed", streetViewPosition);
+			google.maps.event.addListener(panorama, "visible_changed", streetViewPosition);
 
-						GEvent.trigger(currentelement,'drag');
-					}
-				});
+			google.maps.event.addListener(map, "idle", saveView);
+			google.maps.event.addListener(map, "maptypeid_changed", saveMapType);
+		}
 
+		function streetViewPosition() {
+			if (!panorama.getVisible())
+				return false;
 
-				AttachEvent(window,'unload',GUnload,false);
+			makeMarker(panorama.getPosition());
+		}
 
-				// Add a move listener to restrict the bounds range
-				GEvent.addListener(map, "move", function() {
-					checkBounds();
-				});
-
-				// The allowed region which the whole map must be within
-				var allowedBounds = new GLatLngBounds(new GLatLng(49.4,-11.8), new GLatLng(61.8,4.1));
-
-				// If the map position is out of range, move it back
-				function checkBounds() {
-					// Perform the check and return if OK
-					if (allowedBounds.contains(map.getCenter())) {
-					  return;
-					}
-					// It`s not OK, so find the nearest allowed point and move there
-					var C = map.getCenter();
-					var X = C.lng();
-					var Y = C.lat();
-
-					var AmaxX = allowedBounds.getNorthEast().lng();
-					var AmaxY = allowedBounds.getNorthEast().lat();
-					var AminX = allowedBounds.getSouthWest().lng();
-					var AminY = allowedBounds.getSouthWest().lat();
-
-					if (X < AminX) {X = AminX;}
-					if (X > AmaxX) {X = AmaxX;}
-					if (Y < AminY) {Y = AminY;}
-					if (Y > AmaxY) {Y = AmaxY;}
-
-					map.setCenter(new GLatLng(Y,X));
-
-					// This Javascript Function is based on code provided by the
-					// Blackpool Community Church Javascript Team
-					// http://www.commchurch.freeserve.co.uk/
-					// http://econym.googlepages.com/index.htm
-				}
-				GEvent.addListener(map, "moveend", saveView);
-				GEvent.addListener(map, "zoomend", saveView);
-				GEvent.addListener(map, "maptypechanged", saveMapType);
-				map.savePosition();
+		function makeMarker(position) {
+			if (currentelement) {
+				currentelement.setPosition(position);
+			} else {
+				currentelement = createMarker(position,null);
+			}
+			google.maps.event.trigger(currentelement,'drag');
+		}
+		function centerMarker() {
+			map.panTo(currentelement.getPosition());
+			if (map.getZoom() < 10) {
+				map.setZoom(11);
 			}
 		}
 
 		function saveView() {
 			var ll = map.getCenter().toUrlValue(6);
 			var z = map.getZoom();
-			var t = map.getCurrentMapType().getUrlArg();
+			var t = map.getMapTypeId().substr(0,1);
 			createCookie('GMapView','ll='+ll+'&z='+z+'&t='+t,10);
 		}
 
 		function saveMapType() {
-			var t = map.getCurrentMapType().getUrlArg();
+			var t = map.getMapTypeId().substr(0,1);
 			createCookie('GMapType',t,10);
+		}
+
+		function resetView() {
+			map.setZoom(5);
+			map.panTo(new google.maps.LatLng(55.55,-3.88));
 		}
 
 		AttachEvent(window,'load',loadmap,false);
@@ -197,10 +172,9 @@
 			updateMapMarker(document.theForm.grid_reference,false,true);
 
 			if (document.theForm.grid_reference.value.length > 4 && currentelement) {
-				point = currentelement.getLatLng();
+				point = currentelement.getPosition();
 				map.setCenter(point,12);
 			}
-
 		}
 		AttachEvent(window,'load',updateMapMarkers,false);
 {/literal}
@@ -242,11 +216,11 @@
 	<input type="text" size="50" id="addressInput" name="address" value="" />
 	<input type="submit" value="Find"/><small><small><br/>
 	(Powered by the Google Maps API Geocoder)<br/>
-	Change view: <a href="javascript:void(map.setCenter(new GLatLng(55.55,-3.88), 5));">Whole British Isles</a> &middot; <a href="javascript:void(map.returnToSavedPosition());">Initial View</a> &middot; <a href="javascript:void(map.setCenter(currentelement.getLatLng(), 12));">Center on Marker</a></small></small>
+	Change view: <a href="javascript:void(resetView());">Whole British Isles</a> &middot; <a href="javascript:void(centerMarker());">Center on Marker</a></small></small>
 </div>
 </form>
 
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+<script src="//maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
 {if $inner}
 </body>
 </html>
