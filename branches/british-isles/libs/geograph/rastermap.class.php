@@ -142,6 +142,7 @@ class RasterMap
 			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
 				//$this->enabled = true;
 				$this->service = 'Google';
+				$this->inline = 1; //no need for none inline anymore... 
 			} 
 			if (isset($this->tilewidth[$this->service])) {
 				$this->width = $this->tilewidth[$this->service];
@@ -165,6 +166,10 @@ class RasterMap
 			$this->service = 'OSOS';
 		} elseif($service == 'Google' && in_array('Google',$services)) {
 			$this->service = 'Google';
+			$this->inline = 1; //no need for none inline anymore... 
+			if ($this->issubmit) {
+				$this->tilewidth[$this->service] = 350;
+			}
 		} 
 		if (isset($this->tilewidth[$this->service])) {
 			$this->width = $this->tilewidth[$this->service];
@@ -521,7 +526,8 @@ class RasterMap
 		global $CONF;
 		//defer the tag to the last minute, to help prevent the page pausing mid load
 		if ((!empty($this->inline) || !empty($this->issubmit)) && $this->service == 'Google') {
-			return "<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+			///key={$CONF['google_maps_api_key']}&amp;
+			return "<script src=\"//maps.googleapis.com/maps/api/js?sensor=false\" type=\"text/javascript\"></script>";
 		} elseif ($this->service == 'OSOS') {
 			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {
 				return "<script src=\"http://openspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
@@ -540,24 +546,38 @@ class RasterMap
 	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-		return "			var polyline = new GPolyline([
-				new GLatLng($lat1,$long1),
-				new GLatLng($lat2,$long2)
-			], \"#0000FF\", 1, $op);
-			map.addOverlay(polyline);\n";
+		
+		return "
+			var polyline = new google.maps.Polyline({
+			path: [
+				new google.maps.LatLng($lat1,$long1),
+				new google.maps.LatLng($lat2,$long2)
+			],
+			strokeColor: \"#0000FF\",
+			strokeWeight: 1,
+			strokeOpacity: $op,
+			map: map});\n";
 	}
 	
 	function getPolySquareBlock(&$conv,$e1,$n1,$e2,$n2) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-		return "			pickupbox = new GPolygon([
-				new GLatLng($lat1,$long1),
-				new GLatLng($lat1,$long2),
-				new GLatLng($lat2,$long2),
-				new GLatLng($lat2,$long1),
-				new GLatLng($lat1,$long1)
-			], \"#0000FF\", 1, 0.7, \"#00FF00\", 0.5);
-			map.addOverlay(pickupbox);\n";
+		return "
+			pickupbox = new google.maps.Polygon({
+			paths: [
+				new google.maps.LatLng($lat1,$long1),
+				new google.maps.LatLng($lat1,$long2),
+				new google.maps.LatLng($lat2,$long2),
+				new google.maps.LatLng($lat2,$long1),
+				new google.maps.LatLng($lat1,$long1)
+			],
+			strokeColor: \"#0000FF\",
+			strokeWeight: 1,
+			strokeOpacity: 0.7,
+			fillColor: \"#00FF00\",
+			fillOpacity: 0.5,
+			clickable: false,
+			map: map});\n";
 	}
 	
 	function getPolySquareBlockOS($e1,$n1,$e2,$n2) {
@@ -684,27 +704,27 @@ class RasterMap
 						}
 						list($lat,$long) = $conv->national_to_wgs84($ve,$vn,$this->reference_index);
 						$block .= "
-						var ppoint = new GLatLng({$lat},{$long});
-						map.addOverlay(createPMarker(ppoint));\n";
+						var ppoint = new google.maps.LatLng({$lat},{$long});
+						createPMarker(ppoint);\n";
 					}
 				}
 
 				if (empty($lat) && $this->issubmit) {
-					list($lat,$long) = $conv->national_to_wgs84($e-700,$n-400,$this->reference_index);
+					list($lat,$long) = $conv->national_to_wgs84($e-660,$n-520,$this->reference_index);
 					$block .= "
-						var ppoint = new GLatLng({$lat},{$long});
-						map.addOverlay(createPMarker(ppoint));\n";
+						var ppoint = new google.maps.LatLng({$lat},{$long});
+						createPMarker(ppoint);\n";
 				}
 			} else {
 				$block = '';
 			}
 			if ($this->exactPosition) {
-				$block.= "map.addOverlay(createMarker(point));";
+				$block.= "createMarker(point);";
 			} elseif ($this->issubmit) {
-				list($lat,$long) = $conv->national_to_wgs84($e-400,$n-500,$this->reference_index);
+				list($lat,$long) = $conv->national_to_wgs84($e-380,$n-520,$this->reference_index);
 				$block .= "
-					var point2 = new GLatLng({$lat},{$long});
-					map.addOverlay(createMarker(point2));\n";
+					var point2 = new google.maps.LatLng({$lat},{$long});
+					createMarker(point2);\n";
 			}
 			if ($this->issubmit) {
 				$zoom=13;
@@ -722,6 +742,7 @@ class RasterMap
 			if (empty($this->lat)) {
 				list($this->lat,$this->long) = $conv->national_to_wgs84($this->nateastings,$this->natnorthings,$this->reference_index);
 			}
+			$p1 = $p2 = '';
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
 				
@@ -729,74 +750,82 @@ class RasterMap
 					$p1 .= "<script type=\"text/javascript\" src=\"http://nls.tileserver.com/api.js\"></script>";
 
 					$block .= '
-					// -- copy&paste block start
-					var copyright = new GCopyright(1, new GLatLngBounds(new GLatLng(-90, -180),new GLatLng(90, 180)), 1,
-						"Historical maps from <a href=\"http://geo.nls.uk/maps/api/\">NLS Maps API<\/a>");
-					var copyrightCollection = new GCopyrightCollection();
-					copyrightCollection.addCopyright(copyright);
-					var tilelayer = new GTileLayer(copyrightCollection, 1, NLSTileUrlOS("MAXZOOM"));
-					tilelayer.getTileUrl = NLSTileUrlOS;
-					var nlsmap = new GMapType([tilelayer], G_NORMAL_MAP.getProjection(), "His");
-					// -- copy&paste block end
-
-					// -- remember to add the new map layer to your mashup!!
-					map.addMapType(nlsmap);
-
-					//map.setMapType(nlsmap);
+					
+					// TODO: Automatic load balancing & server availability test:
+					// add <img src="testtile" onLoad="win()"> and decide which from available servers is fastest for the client
+					var nlsmap = new google.maps.ImageMapType({
+						getTileUrl: function(tile, zoom) { return NLSTileUrlOS(tile.x, tile.y, zoom); },
+						tileSize: new google.maps.Size(256, 256),
+						isPng: false,
+						maxZoom: 14,
+						minZoom: 1,
+						name: "Historic",
+						alt: "NLS Historic Map"
+					});
+					
+					map.mapTypes.set("nls",nlsmap);
 					';
+					
+					$p2 = ',mapTypeControlOptions: {
+						mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN, "nls"],
+						style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+					}';
 				}
-			} else {
-				$p1 = '';
+				
+				$block .= '
+				var panorama = map.getStreetView();
+				google.maps.event.addListener(panorama, "position_changed", function() {
+					if (!panorama.getVisible())
+						return false;
+					
+					marker2.setPosition(panorama.getPosition());
+					google.maps.event.trigger(marker2,"drag");
+				});
+				//todo, listen for pov_changed, and set view direction (if no subject location?) 
+				';
 			}
 			return "
 				
 				$p1
-				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mappingG.js")."\"></script>
+				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/mappingG3.js")."\"></script>
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					var issubmit = {$this->issubmit}+0;
 					var ri = {$this->reference_index};
 					var map = null;
 					function loadmap() {
-						if (GBrowserIsCompatible()) {
-							map = new GMap2(document.getElementById(\"map\"));
-							map.addMapType(G_PHYSICAL_MAP);
-							map.addControl(new GSmallZoomControl());
-							map.addControl(new GHierarchicalMapTypeControl(true));
-							map.enableDoubleClickZoom(); 
-							map.enableContinuousZoom();
-							map.enableScrollWheelZoom();
+						var point = new google.maps.LatLng({$this->lat},{$this->long});
+						var newtype = readCookie('GMapType');
+						var mapTypeId = google.maps.MapTypeId.TERRAIN;
+						
+						if (newtype == 'r') {mapTypeId = google.maps.MapTypeId.ROADMAP;}
+						if (newtype == 's') {mapTypeId = google.maps.MapTypeId.SATELLITE;}
+						if (newtype == 'h') {mapTypeId = google.maps.MapTypeId.HYBRID;}
+						if (newtype == 't') {mapTypeId = google.maps.MapTypeId.TERRAIN;}
+						if (newtype == 'n') {mapTypeId = 'nls';}
+						
+						map = new google.maps.Map(
+							document.getElementById('map'), {
+							center: point,
+							zoom: 13,
+							mapTypeId: mapTypeId,
+							streetViewControl: issubmit?true:false
+							$p2
+						});
 
-							var point = new GLatLng({$this->lat},{$this->long});
+						$block 
 
-							newtype = readCookie('GMapType');
-							if (newtype) {
-								if (newtype == \"m\") {mapType = G_NORMAL_MAP;}
-								if (newtype == \"k\") {mapType = G_SATELLITE_MAP;}
-								if (newtype == \"h\") {mapType = G_HYBRID_MAP;}
-								if (newtype == \"p\") {mapType = G_PHYSICAL_MAP;}
-								if (newtype == \"e\") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
-								map.setCenter(point, 13, mapType);
-							} else {
-								map.setCenter(point, 13, G_PHYSICAL_MAP);
-							}
-
-							$block 
-
-
-							AttachEvent(window,'unload',GUnload,false);
-
-							GEvent.addListener(map, \"maptypechanged\", saveMapType);
-						}
+						google.maps.event.addListener(map, \"maptypeid_changed\", function() {
+							var t = map.getMapTypeId().substr(0,1);
+							createCookie('GMapType',t,10);
+						});
+						
 						if (typeof updateMapMarkers == 'function') {
 							updateMapMarkers();
 						}
 					}
 					AttachEvent(window,'load',loadmap,false);
-					function saveMapType() {
-						var t = map.getCurrentMapType().getUrlArg();
-						createCookie('GMapType',t,10);
-					}
+					
 					var static_host = '{$CONF['STATIC_HOST']}';
 				//]]>
 				</script>";
