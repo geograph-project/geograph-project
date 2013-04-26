@@ -130,9 +130,17 @@ Refine:
 <select name="date">
 <option value="submitted">Submitted</option> 
 <option value="taken">Taken</option>
-</select> during
+</select>
 
- {html_select_date display_days=false prefix="when" time="0000-00-00" start_year="-100" reverse_years=true  month_empty="" year_empty=""} <input type="submit" value="Go"/>
+<select name="timerel">
+<option value="during">during</option>
+<option value="dbefore">during and before</option>
+<option value="dafter">during and after</option>
+<option value="between">between</option>
+</select>
+
+ {html_select_date display_days=false prefix="when" time="0000-00-00" start_year="-100" reverse_years=true  month_empty="" year_empty=""} (and
+ {html_select_date display_days=false prefix="when2" time="0000-00-00" start_year="-100" reverse_years=true  month_empty="" year_empty=""}) <input type="submit" value="Go"/>
 </form></li></ul></li>
 
 	<li><a href="/statistics/monthlyleader.php">By Month</b> Leaderboard</a></li>
