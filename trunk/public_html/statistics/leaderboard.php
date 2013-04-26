@@ -28,7 +28,11 @@ init_session();
 
 $type = (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type']))?$_GET['type']:'points';
 
+$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
+
 $date = (isset($_GET['date']) && ctype_lower($_GET['date']))?$_GET['date']:'submitted';
+
+$timerel = (isset($_GET['timerel']) && in_array($_GET['timerel'], array('during','dbefore','dafter','between'))) ? $_GET['timerel'] : 'during';
 
 if (!empty($_GET['whenYear'])) {
 	if (!empty($_GET['whenMonth'])) {
@@ -38,9 +42,97 @@ if (!empty($_GET['whenYear'])) {
 	}
 }
 
-$ri = (isset($_GET['ri']) && is_numeric($_GET['ri']))?intval($_GET['ri']):0;
+if (!empty($_GET['when2Year'])) {
+	if (!empty($_GET['when2Month'])) {
+		$_GET['when2'] = sprintf("%04d-%02d",$_GET['when2Year'],$_GET['when2Month']);
+	} else {
+		$_GET['when2'] = sprintf("%04d",$_GET['when2Year']);
+	}
+}
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
+$when2 = (isset($_GET['when2']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when2']))?$_GET['when2']:'';
+if ($_GET['when']  != '' && !isset($_GET['whenYear']))  list($_GET['whenYear'], $_GET['whenMonth'], $_GET['whenDay'])  = explode('-', $_GET['when']);
+if ($_GET['when2'] != '' && !isset($_GET['when2Year'])) list($_GET['when2Year'],$_GET['when2Month'],$_GET['when2Day']) = explode('-', $_GET['when2']);
+
+if ($timerel == 'during' || $timerel == 'dbefore') {
+	$_GET['when2Year'] = $_GET['whenYear'];
+	$_GET['when2Month'] = $_GET['whenMonth'];
+	$when2 = $when;
+}
+if ($timerel == 'dbefore') {
+	$_GET['whenYear'] = '';
+	$_GET['whenMonth'] = '';
+	$when = '';
+} elseif ($timerel == 'dafter') {
+	$_GET['when2Year'] = '';
+	$_GET['when2Month'] = '';
+	$when2 = '';
+}
+
+if (!empty($_GET['whenYear'])) {
+	$year = intval($_GET['whenYear']);
+	if (!empty($_GET['whenMonth'])) {
+		$month = intval($_GET['whenMonth']);
+	} else {
+		$month = 1;
+	}
+	$whenlow = sprintf("%04d-%02d-01",$year,$month);
+}
+
+if (!empty($_GET['when2Year'])) {
+	$year = intval($_GET['when2Year']);
+	if (!empty($_GET['when2Month'])) {
+		$month = intval($_GET['when2Month']);
+		if ($month != 12) {
+			$month += 1;
+		} else {
+			$month = 1;
+			$year += 1;
+		}
+	} else {
+		$month = 1;
+		$year += 1;
+	}
+	$whenhigh = sprintf("%04d-%02d-01",$year,$month);
+}
+
+trigger_error("$timerel, {$_GET['whenYear']}-{$_GET['whenMonth']} ... {$_GET['when2Year']}-{$_GET['when2Month']} : {$_GET['when']} ... {$_GET['when2']} : $whenlow ... $whenhigh : $when ... $when2", E_USER_NOTICE);
+
+$timedesc = '';
+$timesql = '';
+$timesqlrel = '';
+if ($timerel == 'between') {
+	if (!empty($when) && !empty($when2)) {
+		$timesqlrel = "BETWEEN YEAR('$whenlow')*12+MONTH('$whenlow') AND YEAR('$whenhigh')*12+MONTH('$whenhigh')-1";
+		$timedescrel = sprintf($MESSAGES['leaderboard']['time_between'], getFormattedDate($when), getFormattedDate($when2));
+	}
+} else if ($timerel == 'during') {
+	if (!empty($when) && !empty($when2)) {
+		$timesqlrel = "BETWEEN YEAR('$whenlow')*12+MONTH('$whenlow') AND YEAR('$whenhigh')*12+MONTH('$whenhigh')-1";
+		$timedescrel = sprintf($MESSAGES['leaderboard']['time_during'], getFormattedDate($when));
+	}
+} else if ($timerel == 'dbefore') {
+	if (!empty($when2)) {
+		$timesqlrel = "< YEAR('$whenhigh')*12+MONTH('$whenhigh')";
+		$timedescrel = sprintf($MESSAGES['leaderboard']['time_until'], getFormattedDate($when2));
+	}
+} else if ($timerel == 'dafter') {
+	if (!empty($when)) {
+		$timesqlrel = ">= YEAR('$whenlow')*12+MONTH('$whenlow')";
+		$timedescrel = sprintf($MESSAGES['leaderboard']['time_from'], getFormattedDate($when));
+	}
+}
+if ($timesqlrel !== '') {
+	if ($date == 'both') {
+		$timesql = " and year(imagetaken) != 0 and year(submitted) != 0 and month(imagetaken) != 0 and month(submitted) != 0 and year(imagetaken)*12+month(imagetaken) $timesqlrel and year(submitted)*12+month(submitted) $timesqlrel";
+		$timedesc = sprintf($MESSAGES['leaderboard']['taken_submitted'], $timedescrel);
+	} else {
+		$column = ($date == 'taken')?'imagetaken':'submitted';
+		$timesql = " and year($column) != 0 and month($column) != 0 and year($column)*12+month($column) $timesqlrel";
+		$timedesc = sprintf($MESSAGES['leaderboard'][$date == 'taken' ? 'taken' : 'submitted'], $timedescrel);
+	}
+}
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):150;
 
@@ -65,7 +157,7 @@ if (isset($_GET['inner'])) {
 } else {
 	$template='statistics_leaderboard.tpl';
 }
-$cacheid=$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad;
+$cacheid=$minimum.'-'.$maximum.$type.$date.$when.':'.$when2.$timerel.$limit.'.'.$ri.'.'.$u.$myriad;
 
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
@@ -78,7 +170,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
-	$filtered = ($when || $ri || $myriad);
+	$filtered = ($when || $when2 || $ri || $myriad);
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed');  
@@ -305,25 +397,8 @@ if (!$smarty->is_cached($template, $cacheid))
 	$heading = $MESSAGES['leaderboard']['headings'][$type];
 	$desc = str_replace(array('@minimum', '@minimax'), array($minimum, $minimax), $MESSAGES['leaderboard']['descriptions'][$type]);
 
-	if ($when) {
-		if ($date == 'both') {
-			$sql_where .= " and imagetaken LIKE '$when%' and submitted LIKE '$when%'";
-			if ($CONF['lang'] == 'de')
-				$desc .= ", <b>für Bilder mit Aufnahme- und Einreichdatum ".getFormattedDate($when)."</b>";
-			else
-				$desc .= ", <b>for images taken and submitted during ".getFormattedDate($when)."</b>";
-		} else {
-			$column = ($date == 'taken')?'imagetaken':'submitted';
-			$sql_where .= " and $column LIKE '$when%'";
-			if ($CONF['lang'] == 'de') {
-				$title = ($date == 'taken')?'Aufnahmedatum':'Einreichdatum'; 
-				$desc .= ", <b>für Bilder mit $title ".getFormattedDate($when)."</b>";
-			} else {
-				$title = ($date == 'taken')?'taken':'submitted'; 
-				$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
-			}
-		}
-	}
+	$sql_where .= $timesql;
+	$desc .= $timedesc;
 	if ($myriad) {
 		$sql_where .= " and grid_reference LIKE '{$myriad}____'";
 		$desc .= sprintf($MESSAGES['leaderboard']['in_myriad'], $myriad);
@@ -342,13 +417,14 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_column = "max(gridimage_id) as last,$sql_column";
 	}
 	$limit2 = intval($limit * 1.6);
-	$topusers=$db->GetAll("select 
+	$sql="select 
 	i.user_id,u.realname, $sql_column as imgcount
 	from $sql_table inner join user u using (user_id)
 	where $sql_where
 	group by user_id 
 	$sql_having_having
-	order by imgcount desc $sql_orderby,last asc limit $limit2"); 
+	order by imgcount desc $sql_orderby,last asc limit $limit2";
+	$topusers=$db->GetAll($sql);
 	$lastimgcount = 0;
 	$toriserank = 0;
 	$points = 0;
@@ -396,7 +472,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$extra = array();
 	$extralink = '';
 	
-	foreach (array('when','date','ri','myriad') as $key) {
+	foreach (array('when','when2','timerel','date','ri','myriad') as $key) {
 		if (isset($_GET[$key])) {
 			$extra[$key] = $_GET[$key];
 			$extralink .= "&amp;$key={$_GET[$key]}";
