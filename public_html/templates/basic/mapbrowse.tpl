@@ -3,6 +3,13 @@
 {else}
         {assign var="page_title" value="Map Browsing :: British Isles"}
 {/if}
+{if $token_zoomout}
+	{assign var="canonicalreq" value="/map/`$mosaic_token`"}
+{elseif $realname}
+	{assign var="canonicalreq" value="/profile/`$user_id`/map"}
+{*FIXME?else}
+	{assign var="canonicalreq" value="/mapbrowse.php"*}
+{/if}
 {assign var="meta_description" value="Geograph coverage map of the British Isles, showing where we have photos, green squares are yet to be photographed."}
 {assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\"/>"}
 {include file="_std_begin.tpl"}

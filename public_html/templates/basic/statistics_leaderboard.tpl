@@ -2,10 +2,10 @@
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 
-<h2>Top {$limit} Leaderboard :: {$heading|replace:'<br/>':' '}</h2>
+<h2>Top {$limit} Leaderboard :: {$heading}</h2>
 
-<p>Variation: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/leaderboard.php?type={$t}{$extralink}">{$t}</a>{/if}]
+<p>Variation: {foreach from=$types item=t key=key}
+[{if $t == $type}<b>{$typenames.$key}</b>{else}<a href="/statistics/leaderboard.php?type={$t}{$extralink}">{$typenames.$key}</a>{/if}]
 {/foreach} <a href="/help/sitemap#users">more...</a></p>
 
 <p>Listed below are the top {$limit} contributors based on number of
@@ -22,14 +22,14 @@ top submitters this week.</p>
 {foreach from=$topusers item=topuser}
 <tr><td>{$topuser.ordinal}</td><td><a title="View profile" href="/profile/{$topuser.user_id}">{$topuser.realname}</a></td>
 {if $isfloat}
-<td align="right">{$topuser.imgcount|string_format:"%.4f"}</td>
+<td align="right">{$topuser.imgcount|floatformat:"%.4f"}</td>
 {else}
 <td align="right">{$topuser.imgcount}</td>
 {/if}
 {if $points}<td align="right">{$topuser.points}</td>{/if}
 {if $images}<td align="right">{$topuser.images}</td>{/if}
 {if $topuser.depth}
-<td align="right">{$topuser.depth|string_format:"%.2f"}</td>
+<td align="right">{$topuser.depth|floatformat:"%.2f"}</td>
 {/if}
 </tr>
 {/foreach}

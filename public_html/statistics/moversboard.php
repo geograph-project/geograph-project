@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+include_messages('moversboard');
 init_session();
 
 
@@ -35,6 +36,9 @@ $cacheid=$type;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+	/////////////
+	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
+
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
@@ -42,23 +46,108 @@ if (!$smarty->is_cached($template, $cacheid))
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$db=NewADOConnection($GLOBALS['DSN']);
 	if (!$db) die('Database connection failed'); 
-	
-	/////////////
-	// in the following code 'geographs' is used a column for legacy reasons, but dont always represent actual geographs....
+
+	$sql_qtable = array (
+		'squares' => array('column' => ''),
+		'geosquares' => array('column' => ''),
+		'geographs' => array(
+			'column' => "sum(i.moderation_status='geograph')",
+		),
+		'additional' => array(
+			'column' => "sum(i.moderation_status='geograph' and ftf = 0)",
+		),
+		'supps' => array(
+			'column' => "sum(i.moderation_status='accepted')",
+		),
+		'images' => array(
+			'orderby' => ",points desc",
+			'column' => "sum(i.ftf=1 and i.moderation_status='geograph') as points, sum(i.moderation_status in ('geograph','accepted'))",
+		),
+		'test_points' => array(
+			'column' => "sum((i.moderation_status = 'geograph') + ftf + 1)",
+			'table' => " gridimage_search i ",
+		),
+		'depth' => array(
+			'column' => "count(*)/count(distinct grid_reference)",
+			'table' => " gridimage_search i ",
+			'isfloat' => true,
+		),
+		'myriads' => array(
+		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
+			'column' => "count(distinct substring(grid_reference,1,length(grid_reference)-4))",
+			'table' => " gridimage_search i ",
+		),
+		'hectads' => array(
+		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
+			'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
+			'table' => " gridimage_search i ",
+		),
+		'days' => array(
+			'column' => "count(distinct imagetaken)",
+			'table' => " gridimage_search i ",
+		),
+		'antispread' => array(
+			//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
+			'column' => "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )",
+			'table' => " gridimage_search i ",
+			'isfloat' => true,
+		),
+		'spread' => array(
+			//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
+			'column' => "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)",
+			'table' => " gridimage_search i ",
+			'isfloat' => true,
+		),
+		'classes' => array(
+			'column' => "count(distinct imageclass)",
+			'table' => " gridimage_search i ",
+		),
+		'clen' => array(
+			'column' => "avg(length(comment))",
+			'table' => " gridimage_search i ",
+			'isfloat' => true,
+		),
+		'tlen' => array(
+			'column' => "avg(length(title))",
+			'table' => " gridimage_search i ",
+			'isfloat' => true,
+		),
+		'category_depth' => array(
+			'column' => "count(*)/count(distinct imageclass)",
+			'table' => " gridimage_search i ",
+			'isfloat' => true,
+		),
+		'centi' => array(
+		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
+			'column' => "COUNT(DISTINCT nateastings div 100, natnorthings div 100)",
+			'where' => "and i.moderation_status='geograph' and nateastings div 1000 > 0",
+		),
+		'points' => array(
+			'column' => "sum(i.ftf=1 and i.moderation_status='geograph')",
+		),
+	);
+
+	if (!isset($sql_qtable[$type])) {
+		$type = 'points';
+	}
+
+	$isfloat = false;
+	if (isset($sql_qtable[$type]['isfloat'])) $isfloat = $sql_qtable[$type]['isfloat'];
+
+	$smarty->assign('heading', $MESSAGES['moversboard']['headings'][$type]);
+	$smarty->assign('desc', $MESSAGES['moversboard']['descriptions'][$type]);
+	$smarty->assign('type', $type);
+	$smarty->assign('isfloat', $isfloat);
+
 	$sql_column = '';
 	$sql_orderby = '';
 	$sql_table = " gridimage as i ";
 	$sql_where = '';
-	$isfloat = false;
-	if ($type == 'squares' || $type == 'geosquares') {
+	if ($sql_qtable[$type]['column'] === '') {
 		if ($type == 'geosquares') {
 			$sql_where = " and i.moderation_status='geograph'";
-			$heading = "Squares<br/>Geographed";
-			$desc = "different squares geographed";
-		} else {
-			$heading = "Squares<br/>Photographed";
-			$desc = "different squares photographed";
-		}
+		} // else { // $type == 'squares'
+		//}
 		//squares has to use a count(distinct ...) meaning cant have pending in same query... possibly could do with a funky subquery but probably would lower performance...
 		$sql="select i.user_id,u.realname,
 		count(distinct grid_reference) as geographs
@@ -91,106 +180,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			}
 		}
 		//no need to resort the combined array as should have imlicit ordering!
-	} elseif ($type == 'geographs') {
-		$sql_column = "sum(i.moderation_status='geograph')";
-		$heading = "New<br/>Geographs";
-		$desc = "'geograph' images submitted";
-	} elseif ($type == 'additional') {
-		$sql_column = "sum(i.moderation_status='geograph' and ftf = 0)";
-		$heading = "Non-First<br/>Geographs";
-		$desc = "non first 'geograph' images submitted";
-	} elseif ($type == 'supps') {
-		$sql_column = "sum(i.moderation_status='accepted')";
-		$heading = "New<br/>Supplemental";
-		$desc = "'supplemental' images submitted";
-	} elseif ($type == 'images') {
-		$sql_orderby = ',points desc';
-		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph') as points, sum(i.moderation_status in ('geograph','accepted'))";
-		$heading = "New<br/>Images";
-		$desc = "images submitted";
-	} elseif ($type == 'test_points') {
-		$sql_column = "sum((i.moderation_status = 'geograph') + ftf + 1)";
-		$sql_table = " gridimage_search i ";
-		$heading = "G-Points";
-		$desc = "test points";
-	} elseif ($type == 'depth') {
-		$sql_column = "count(*)/count(distinct grid_reference)";
-		$sql_table = " gridimage_search i ";
-		$isfloat = true;
-		$heading = "Depth";
-		$desc = "depth score";
-	} elseif ($type == 'myriads') {
-		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
-		$sql_column = "count(distinct substring(grid_reference,1,length(grid_reference)-4))";
-		$sql_table = " gridimage_search i ";
-		$heading = "Myriads";
-		$desc = "different myriads";
-	} elseif ($type == 'hectads') {
-		//we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
-		$sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
-		$sql_table = " gridimage_search i ";
-		$heading = "Hectads";
-		$desc = "different hectads";
-	} elseif ($type == 'days') {
-		$sql_column = "count(distinct imagetaken)";
-		$sql_table = " gridimage_search i ";
-		$heading = "Days";
-		$desc = "different days";
-        } elseif ($type == 'antispread') {
-                //we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
-                $sql_column = "count(*)/count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )";
-		$sql_table = " gridimage_search i ";
-		$isfloat = true;
-                $heading = "AntiSpread Score";
-                $desc = "antispread score (images/hectads)";
-        } elseif ($type == 'spread') {
-                //we dont have access to grid_reference - possibly join with grid_prefix, but for now lets just exclude pending!
-                $sql_column = "count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) )/count(*)";
-                $sql_table = " gridimage_search i ";
-		$isfloat = true;
-                $heading = "Spread Score";
-                $desc = "spread score (hectads/images)";
-	} elseif ($type == 'classes') {
-		$sql_column = "count(distinct imageclass)";
-		$sql_table = " gridimage_search i ";
-		$heading = "Categories";
-		$desc = "different categories";
-	} elseif ($type == 'clen') {
-		$sql_column = "avg(length(comment))";
-		$sql_table = " gridimage_search i ";
-		$isfloat = true;
-		$heading = "Average Description Length";
-		$desc = "average length of the description";
-	} elseif ($type == 'tlen') {
-		$sql_column = "avg(length(title))";
-		$sql_table = " gridimage_search i ";
-		$isfloat = true;
-		$heading = "Average Title Length";
-		$desc = "average length of the title";
-	} elseif ($type == 'category_depth') {
-		$sql_column = "count(*)/count(distinct imageclass)";
-		$sql_table = " gridimage_search i ";
-		$isfloat = true;
-		$heading = "Category Depth";
-		$desc = "the category depth score";
-	} elseif ($type == 'centi') {
-		//NOT USED AS REQUIRES A NEW INDEX ON gridimage!
-		$sql_column = "COUNT(DISTINCT nateastings div 100, natnorthings div 100)";
-		$sql_where = "and i.moderation_status='geograph' and nateastings div 1000 > 0";
-		$heading = "Centigraph<br/>Points";
-		$desc = "centisquares photographed";
-	} else { #if ($type == 'points') {
-		$sql_column = "sum(i.ftf=1 and i.moderation_status='geograph')";
-		$heading = "New<br/>Geograph<br/>Points";
-		$desc = "geograph points awarded";
-		$type = 'points';
-	} 
-	$smarty->assign('heading', $heading);
-	$smarty->assign('desc', $desc);
-	$smarty->assign('type', $type);
-	$smarty->assign('isfloat', $isfloat);
-	
-	if ($sql_column) {
+	} else {
+		$sql_column = $sql_qtable[$type]['column'];
+		if (isset($sql_qtable[$type]['where'])) $sql_where = $sql_qtable[$type]['where'];
+		if (isset($sql_qtable[$type]['table'])) $sql_table = $sql_qtable[$type]['table'];
+		if (isset($sql_qtable[$type]['orderby'])) $sql_orderby = $sql_qtable[$type]['orderby'];
+
 		$sqlsum="select $sql_column as geographs from $sql_table
 		where i.submitted > date_sub(now(), interval 7 day) $sql_where";
 		$sum=$db->GetRow($sqlsum);
@@ -228,7 +223,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$pending += $entry['pending'];
 		#$points += $entry['points'];
 		if (empty($entry['points'])) $topusers[$user_id]['points'] = '';
-	}	
+	}
 	
 	
 	$geographs=$sum['geographs'];
@@ -241,6 +236,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('cutoff_time', time()-86400*7);
 	
 	$smarty->assign('types', array('points','geosquares','images','depth'));
+	$smarty->assign('typenames', $MESSAGES['moversboard']['type_names']);
 	
 	//lets find some recent photos
 	new RecentImageList($smarty);

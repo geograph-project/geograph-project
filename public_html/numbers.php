@@ -55,11 +55,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$stats['nophotos'] = $stats['total'] - $stats['squares'];
 	
-	$stats['percentage'] = sprintf("%.2f",$stats['squares']/$stats['total']*100);
-	$stats['fewpercentage'] = sprintf("%.2f",$stats['fewphotos']/$stats['total']*100);
+	$stats['percentage'] = $stats['squares']/$stats['total']*100;
+	$stats['fewpercentage'] = $stats['fewphotos']/$stats['total']*100;
 	$stats['negfewpercentage'] = sprintf("%.1f",100-$stats['fewpercentage']);
-	$stats['persquare'] = sprintf("%.1f",$stats['images']/$stats['squares']);
-	$stats['peruser'] = sprintf("%.1f",$stats['images']/$stats['users']);
+	$stats['persquare'] = $stats['images']/$stats['squares'];
+	$stats['peruser'] = $stats['images']/$stats['users'];
 	
 #	$test_data = array(); $labels = array(); $colours = array();
 #	$test_data[] = $stats['percentage']; $colours[] = "0000ff"; $labels[] = urlencode($stats['percentage']."% or ".number_format($stats['squares']));

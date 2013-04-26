@@ -5,8 +5,8 @@
 
 <h2>Weekly Leaderboard :: {$heading}</h2>
 	
-<p><i>Variation</i>: {foreach from=$types item=t}
-[{if $t == $type}<b>{$type}</b>{else}<a href="/statistics/moversboard.php?type={$t}">{$t}</a>{/if}]
+<p><i>Variation</i>: {foreach from=$types item=t key=key}
+[{if $t == $type}<b>{$typenames.$key}</b>{else}<a href="/statistics/moversboard.php?type={$t}">{$typenames.$key}</a>{/if}]
 {/foreach} <a href="/help/sitemap#users">more...</a></p>
 
 <p>Here is a list of contributors in the past 7 days, ordered by
@@ -26,7 +26,7 @@ how much each person will climb when their pictures are moderated!{/if}</p>
 {foreach from=$topusers key=topuser_id item=topuser}
 <tr><td align="right">{$topuser.ordinal}</td><td><a title="View profile" href="/profile/{$topuser_id}">{$topuser.realname}</a></td>
 {if $isfloat}
-<td align="right">{$topuser.geographs|string_format:"%.4f"}</td>
+<td align="right">{$topuser.geographs|floatformat:"%.4f"}</td>
 {else}
 <td align="right">{$topuser.geographs}</td>
 {/if}
@@ -38,7 +38,7 @@ how much each person will climb when their pictures are moderated!{/if}</p>
 
 <tr class="totalrow"><th>&nbsp;</th><th>Totals</th><th align="right">
 {if $isfloat}
-{$geographs|string_format:"%.4f"}
+{$geographs|floatformat:"%.4f"}
 {else}
 {$geographs}
 {/if}

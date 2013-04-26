@@ -275,7 +275,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				$weeks[] = $week;
 				$w++;		
 			}
-			$name = date('F',mktime(0,0,0,$month,1,2005)); 
+			$name = strftime('%B',mktime(0,0,0,$month,1,2005)); 
 			$months[$name] = $weeks;			
 		}
 		$month = 0;
@@ -285,8 +285,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	//array of day names to use
 	$days = array();
-	for($i=1; $i<=7; $i++)
-		$days[] = date('D',mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday 
+	for($i=1; $i<=7; $i++) {
+		$days[] = strftime('%a', mktime(0,0,0,8,$i,2005));//just a month that happens to start on a monday
+	}
 	$smarty->assign_by_ref("days",$days);
 	$month = sprintf("%02d",$month);
 	$smarty->assign("month",$month);
