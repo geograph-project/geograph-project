@@ -22,7 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
-
+require_once('geograph/topics.inc.php');
 
 if (!empty($_GET['callback'])) {
 	header('Content-type: text/javascript');
@@ -114,7 +114,31 @@ if (!empty($_GET['deb']))
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 if (isset($_GET['term'])) {
-	$data = $db->getCol($query);
+
+	if (isset($_GET['topics'])) {
+	        ###################
+        	# Yahoo Term Extraction API
+
+	        $mkey = md5($string);
+	        $value =& $memcache->name_get('term',$mkey);
+
+        	if (empty($value)) {
+	                $yahoo_appid = "R7drYPbV34FffYJ1XzR0uw2hACglcoZKtAALrgk3xShTg3M04lzPf9spFg_QEZh.xA--";
+
+	                $value = termExtraction($string);
+
+	                $memcache->name_set('term',$mkey,$value,$memcache->compress,$memcache->period_med);
+	        }
+		$topics = array();
+	        if (!empty($value) && !empty($value['ResultSet']) && !empty($value['ResultSet']['Result'])) {
+	                foreach ($value['ResultSet']['Result'] as $topic) {
+	                        $topics[] = $topic;
+	                }
+	        }
+		$data = array_merge($topics,$db->getCol($query));
+	} else {
+		$data = $db->getCol($query);
+	}
 } else {
 	$data = $db->getAll($query);
 }

@@ -27,6 +27,10 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'suggestions' && !empty($_GET['str
 } elseif (!empty($_GET['mode']) && $_GET['mode'] == 'prospective' && !empty($_GET['string'])) {
 	require("./prospective.json.php");
 	exit;
+} elseif (!empty($_GET['mode']) && $_GET['mode'] == 'automatic' && !empty($_GET['string'])) {
+	$_GET['topics'] = 1;
+	require("./prospective.json.php");
+	exit;
 } elseif (!empty($_GET['mode']) && $_GET['mode'] == 'categories') {
 	$_REQUEST['q'] = $_GET['q'] = $_GET['term'];
         if (empty($_GET['term'])) {
@@ -63,42 +67,42 @@ if (isset($_GET['term'])) {
 } else {
 	$sql['columns'] = "tag.tag,if (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki','',tag.prefix) as prefix";
 }
-	
+
 if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'])) {
 	init_session();
 	customExpiresHeader(90,false,true);
-	
+
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if ($USER->registered) {
-		
+
 		$sql['columns'] .= ",MAX(gt.created) AS last_used";
-		
+
 		$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
-	
+
 		$sql['wheres'][] = "gt.user_id = {$USER->user_id}";
 		$sql['wheres'][] = "prefix != 'top'";
 		$sql['wheres'][] = "gridimage_id < 4294967296";
-		
+
 		$sql['group'] = 'tag.tag_id';
 		$sql['order'] = 'last_used DESC';
 		$sql['limit'] = 30;
-	} 
-	
+	}
+
 } elseif (!empty($_GET['gridimage_id'])) {
 	init_session();
 	if (!$USER->registered) {
 		die("{error: 'not logged in'}");
 	}
 	customExpiresHeader(180,false,true);
-	
+
 	$sql['columns'] .= ",gt.status";
-	
+
 	$sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
 
 	$sql['wheres'][] = "tag.status = 1";
 	if (isset($_GET['buckets'])) {
 		$sql['wheres'][] = "( (gt.user_id = {$USER->user_id} AND gt.status = 1) OR (prefix = 'bucket' AND gt.status = 2) )";
-	} else 
+	} else
 		$sql['wheres'][] = "gt.user_id = ".$USER->user_id;
 	$sql['wheres'][] = "gt.gridimage_id = ".intval($_GET['gridimage_id']);
 
@@ -118,7 +122,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 
         $sql['tables']['gt'] = 'INNER JOIN gridimage_tag gt USING (tag_id)';
         $sql['tables']['gi'] = 'INNER JOIN gridimage_search gi USING (gridimage_id)';
-        
+
         $sql['wheres'][] = "tag.status = 1";
         $sql['wheres'][] = "gt.status = 2";
         $sql['wheres'][] = "gi.grid_reference = ".$db->Quote($_GET['gridref']);
@@ -129,24 +133,23 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 		if (strpos($_REQUEST['q'],':') !== FALSE) {
 			list($prefix,$_REQUEST['q']) = explode(':',$_REQUEST['q'],2);
 		}
-		
+
                 $q = trim(preg_replace('/[^\w@!]+/',' ',str_replace("'",'',$_REQUEST['q'])));
-		
+
 		$sphinx = new sphinxwrapper($q);
-		
-		$sphinx->pageSize = $pgsize = 60; 
-		
+		$sphinx->pageSize = $pgsize = 60;
+
 		$pg = (!empty($_REQUEST['page']))?intval(str_replace('/','',$_REQUEST['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
-		
+
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
-	
-		if ($offset < (1000-$pgsize) ) { 
+
+		if ($offset < (1000-$pgsize) ) {
 			$client = $sphinx->_getClient();
 
                         $client->SetSelect('id'); //we dont need any, but sphinx wants somethingt
-			
-			if ($sphinx->q && strpos($sphinx->q,'@') === false) {
+
+			if ($sphinx->q && strpos($sphinx->q,'@') === false && !preg_match('/(images|alpha)$/',$_GET['mode'])) {
 				$sphinx->q = "\"^{$sphinx->q}$ \" | \"^={$sphinx->q}$ \" | \"^{$sphinx->q}\" | \"{$sphinx->q}$ \" | (^$sphinx->q) | (=$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$ \"";
 				if (!empty($prefix)) {
 					$sphinx->q = "({$sphinx->q}) @prefix $prefix";
@@ -157,9 +160,8 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 			if (!empty($_GET['mode'])) {
 				switch($_GET['mode']) {
 					case 'alpha': 
-						$sphinx->sort = "tag ASC";						
+						$sphinx->sort = "tag ASC";
 						//... falls though to use exclusion for top
-						
 					case 'ranked': //the default anyway!
 						if (empty($prefix)) {
 							if (empty($sphinx->q)) {
@@ -169,18 +171,22 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 							}
 						}
 						break;
-					case 'selfalpha': 
-						$sphinx->sort = "tag ASC";						
+
+					case 'selfimages':
+						$sphinx->sort = "images DESC";
 						$_GET['mine'] = 1; //actully used below
 						break;
-						
-					case 'selfrecent':  
-						//TODO - dont know how this going to work... 
-						//(for now its handled by a special caluse at top of this file)
-						
-						$_GET['mine'] = 1; 
+					case 'selfalpha':
+						$sphinx->sort = "tag ASC";
+						$_GET['mine'] = 1; //actully used below
 						break;
-					case 'nearby': 
+					case 'selfrecent':
+						//TODO - dont know how this going to work...
+						//(for now its handled by a special caluse at top of this file)
+						$_GET['mine'] = 1;
+						break;
+
+					case 'nearby':
 						if (!empty($_GET['gr']) && preg_match('/^\w{1,2}\d{4}$/',$_GET['gr'])) {
 							if (empty($sphinx->q)) {
 								$sphinx->q = $_GET['gr'];
@@ -188,11 +194,11 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 								$sphinx->q = "{$_GET['gr']} ({$sphinx->q})";
 							}
 							$sphinx->processQuery();
-							$sphinx->q = str_replace('@grid_reference (',"@image_square ({$_GET['gr']} | ",$sphinx->q);
+							$sphinx->q = str_replace('@grid_reference (',"@image_square ({$_GET['gr']} | ",$sphinx->q)." @prefix -top";
 						}
 						break;
-					case 'subject': 
-					case 'top': 
+					case 'subject':
+					case 'top':
 					case 'bucket':
 						$sphinx->sort = "tag ASC";
 						if (empty($prefix)) {
@@ -206,17 +212,19 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 						break;
 				}
 			}
-			
+
 			if ($sphinx->sort == "tag ASC") {
 				$client->SetRankingMode(SPH_RANK_NONE);
-				
+				$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,$sphinx->sort); //overall sort order
+				$sphinx->sort = "prefered DESC, images DESC";
+			} elseif ($sphinx->sort == "images DESC") {
+				$client->SetRankingMode(SPH_RANK_NONE);
 				$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,$sphinx->sort); //overall sort order
 				$sphinx->sort = "prefered DESC, images DESC";
 			} else {
 				//$client->SetRankingMode(SPH_RANK_SPH04);
 				$client->SetRankingMode(SPH_RANK_WORDCOUNT);
 				$client->setFieldWeights(array('tag'=>10));
-				
 				$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, images DESC, @id DESC"); //overall sort order
 				$sphinx->sort = "prefered DESC, images DESC"; //within group order
 			}
@@ -228,13 +236,13 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 			        }
 				$sphinx->addFilters(array('user_id'=>array($USER->user_id)));
 			}
-	
+
 			$ids = $sphinx->returnIds($pg,'tags');
-			
+
 			if (!empty($ids) && count($ids)) {
 				$idstr = join(",",$ids);
 				$where = "tag_id IN(".join(",",$ids).")";
-	
+
 				$sql['wheres'] = array("`tag_id` IN ($idstr)");
 				$sql['order'] = "FIELD(`tag_id`,$idstr)";
 				$sql['limit'] = count($ids);
@@ -258,7 +266,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 		$sql['limit'] = 100;
 	}
 	//todo sort by popularity?
-	
+
 	if (isset($_GET['mine'])) {
 		customExpiresHeader(3600);
 	} else {
@@ -266,22 +274,6 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 	}
 } else {
 	die("todo");
-	
-        $sql['tables']['gt'] = "INNER JOIN `gridimage_tag` USING (tag_id)";
-
-        $sql['wheres'] = array('status = 1');
-
-        if (!empty($_GET['user_id'])) {
-                $sql['wheres'][] = "t user_id = ".intval($_GET['user_id']);
-        }
-        if (!empty($_GET['tag'])) {
-                if ($row2 = getRow("SELECT tag_id FROM `tag` WHERE `tag` = ".dbQuote($_GET['tag']))) {
-                        $sql['tables'][] = "INNER JOIN `link2tag` l2 USING (link_id)";
-                        $sql['wheres'][] = "l2.tag_id = ".$row2['tag_id'];
-                }
-        }
-
-        $sql['group'] = 'tag.tag_id';
 }
 
 $query = sqlBitsToSelect($sql);

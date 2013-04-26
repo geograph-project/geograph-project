@@ -68,7 +68,9 @@
 @media all and (max-width: 800px) {
 	.column1 { width:410px; }
 }
-
+.experimental {
+	display:none;
+}
 {/literal}</style>
 
 {dynamic}
@@ -102,28 +104,32 @@
 	</div>
 
 	<div class="column2">
-		<input type="radio" name="selector" value="alpha" id="sel_alpha"/> <label for="sel_alpha">All Tags - Alphabetical</label><br/>
-		<input type="radio" name="selector" value="ranked" id="sel_ranked" checked/> <label for="sel_ranked">All Tags - Ranked</label><br/>
-		<input type="radio" name="selector" value="selfrecent" id="sel_selfrecent"/> <label for="sel_selfrecent">Your Tags - Recently Used</label><br/>
-		<input type="radio" name="selector" value="selfalpha" id="sel_selfalpha"/> <label for="sel_selfalpha">Your Tags - Alphabetical</label><br/>
+		<span class="experimental">
+		<input type="radio" name="selector" accesskey="1" value="alpha" id="sel_alpha"/> <label for="sel_alpha">All Tags - Alphabetical</label><br/></span>
+		<input type="radio" name="selector" accesskey="2" value="ranked" id="sel_ranked" checked/> <label for="sel_ranked">All Tags<span class="experimental"> - Ranked</span></label><br/>
+		<input type="radio" name="selector" accesskey="3" value="selfrecent" id="sel_selfrecent"/> <label for="sel_selfrecent">Your Tags - Recently Used</label><br/>
+		<span class="experimental">
+		<input type="radio" name="selector" accesskey="e" value="selfimages" id="sel_selfimages"/> <label for="sel_selfimages">Your Tags - Most Used</label><br/>
+		<input type="radio" name="selector" accesskey="4" value="selfalpha" id="sel_selfalpha"/> <label for="sel_selfalpha">Your Tags - Alphabetical</label><br/></span>
 		{dynamic}
 		{if $gr}
-			<input type="radio" name="selector" value="nearby" id="sel_nearby"/> <label for="sel_nearby">Nearby Tags</label><br/>
+			<input type="radio" name="selector" accesskey="5" value="nearby" id="sel_nearby"/> <label for="sel_nearby">Nearby Tags</label><br/>
 		{/if}
 		{if $topicstring}
-			<input type="radio" name="selector" value="suggestions" id="sel_suggestions"{if strlen($topicstring) > 100} checked{/if}/> <label for="sel_suggestions">Automatic suggestions</label><br/>
-			<input type="radio" name="selector" value="prospective" id="sel_prospective"/> <label for="sel_prospective">Tags used in description</label><br/>
+			<input type="radio" name="selector" accesskey="7" value="automatic" id="sel_automatic"/> <label for="sel_automatic">Tags derived from description</label><br/>
 		{/if}{/dynamic}
-		<input type="radio" name="selector" value="subject" id="sel_subject"/> <label for="sel_subject">Subject List</label><br/>
-		<input type="radio" name="selector" value="top" id="sel_top"/> <label for="sel_top">Context List</label><br/>
-		<input type="radio" name="selector" value="bucket" id="sel_bucket"/> <label for="sel_bucket">Bucket List</label><br/>
-		<input type="radio" name="selector" value="categories" id="sel_categories"/> <label for="sel_categories">Your Category list</label><br/>
-
+		<span class="experimental">
+		<input type="radio" name="selector" accesskey="s" value="subject" id="sel_subject"/> <label for="sel_subject">Subject List</label><br/>
+		<input type="radio" name="selector" accesskey="8" value="top" id="sel_top"/> <label for="sel_top">Context List</label><br/>
+		<input type="radio" name="selector" accesskey="9" value="bucket" id="sel_bucket"/> <label for="sel_bucket">Bucket List</label><br/>
+		<input type="radio" name="selector" accesskey="0" value="categories" id="sel_categories"/> <label for="sel_categories">Your Category list</label><br/>
+		</span>
 		<br/>
 		<a href="javascript:void(export_tags())">Export current Tags as text</a>
 
 		<br/>
-		<input type=checkbox onclick="toggle_compact(this)" id="compact"/> <label for="compact">Compact Listing Format</label>
+		<input type=checkbox onclick="toggle_compact(this)" id="compact"/> <label for="compact">Compact Listing Format</label><br/>
+		<input type=checkbox onclick="toggle_experimental(this)" id="experimental"/> <label for="experimental">Show Experimental Modes</label>
 	</div>
 
 </form>
@@ -157,6 +163,14 @@ function toggle_compact(that) {
 		$(".select2-drop").removeClass("select2-compact");
 	}
 }
+function toggle_experimental(that) {
+	$.localStorage('tagger_experimental', that.checked);
+	if (that.checked) {
+		$(".experimental").show();
+	} else {
+		$(".experimental").hide();
+	}
+}
 
 var sentFirst = false;
 var defaultMode = false;
@@ -177,7 +191,7 @@ $(function() {
 			data: function (term, page) {
 				var mode =$("input[name=selector]:checked").val();
 				var data = {mode: mode, term: term};
-				if ((mode == 'suggestions' || mode == 'prospective') && $("input[name=topicstring]").length > 0) {
+				if ((mode == 'suggestions' || mode == 'prospective' || mode == 'automatic') && $("input[name=topicstring]").length > 0) {
 					data.term = ''; //send a empty string to help with caching
 					data.string = $("input[name=topicstring]").val();
 				} else if (mode == 'nearby' && $("input[name=gr]").length > 0) {
@@ -255,6 +269,8 @@ $(function() {
 		if (txt.length > 0) {
 			$('.select2-input').val(txt);
 		}
+		var mode =$("input[name=selector]:checked").val();
+		$('.select2-input').prop('disabled',(mode == 'selfrecent' || mode == 'suggestions' || mode == 'prospective' || mode == 'automatic'));
 	});
 
 	//fix for firefox to allow the search box to be clicked to focus (works with just the z-index bodge on other browsers) 
@@ -265,6 +281,10 @@ $(function() {
 	if ($.localStorage('tagger_compact')) {
 		$('#compact').prop('checked',true);
 		$(".select2-drop").addClass("select2-compact");		
+	}
+	if ($.localStorage('tagger_experimental')) {
+		$('#experimental').prop('checked',true);
+		$(".experimental").show();		
 	}
 
 	var mode = null;
