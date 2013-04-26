@@ -14,7 +14,7 @@
 		<b class="nowrap">{$stats.total|thousends}</b><br/>
 		<br/>
 	</div>
-	<div class="redbar" style="width:{$stats.percentage}%;">
+	<div class="redbar" style="width:{$stats.percentage|string_format:"%.2f"}%;">
 		<div class="righttextbox">
 		{if $stats.percentage >= 50 }
 			<b class="nowrap">{$stats.squares|thousends}</b> Squares photographed<br/>
@@ -29,17 +29,17 @@
 		{if $stats.percentage >= 50 }
 		<div class="innerlefttextbox">
 		<br/>
-		<b class="nowrap">{$stats.percentage}%</b>
+		<b class="nowrap">{$stats.percentage|floatformat:"%.2f"}%</b>
 		</div>
 		<br/>
-		<b class="nowrap">{$stats.percentage}%</b><br/>
+		<b class="nowrap">{$stats.percentage|floatformat:"%.2f"}%</b><br/>
 		{else}
 		<div class="innerlefttextbox">
 		<b class="nowrap">{$stats.squares|thousends}</b> Squares photographed<br/>
-		<b class="nowrap">{$stats.percentage}%</b><br/>
+		<b class="nowrap">{$stats.percentage|floatformat:"%.2f"}%</b><br/>
 		</div>
 		<b class="nowrap">{$stats.squares|thousends}</b> Squares photographed<br/>
-		<b class="nowrap">{$stats.percentage}%</b><br/>
+		<b class="nowrap">{$stats.percentage|floatformat:"%.2f"}%</b><br/>
 		{/if}
 	</div>
 	<br style="clear:both"/>
@@ -61,7 +61,7 @@
 			images in total!
 		</div>
 		<div> 
-			<b class="nowrap">{$stats.persquare}</b><br/>
+			<b class="nowrap">{$stats.persquare|floatformat:"%.1f"}</b><br/>
 			average images<br/>
 			per square
 		</div>
@@ -84,7 +84,7 @@
 
 <small><br style="clear:both"/><br/></small>
 <div class="finalboxframe">
-	<div class="finalbox" style="width:{$stats.fewpercentage}%;">
+	<div class="finalbox" style="width:{$stats.fewpercentage|string_format:"%.2f"}%;">
 		{if $stats.fewpercentage >= 50 }
 		<b class="nowrap">{$stats.fewphotos|thousends}</b>
 		 photographed<br/> squares... <br/> 
@@ -92,7 +92,7 @@
 		<br/><br/>
 		{/if}
 	</div>
-	<!--div class="finalbox2" style="width:{$stats.negfewpercentage}%;"-->
+	<!--div class="finalbox2" style="width:{$stats.negfewpercentage|string_format:"%.1f"}%;"-->
 	<div class="finalbox2">
 		{if $stats.fewpercentage >= 50 }
 		... with <b>fewer than 4 photos,<br/>

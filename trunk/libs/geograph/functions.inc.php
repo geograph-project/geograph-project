@@ -261,13 +261,20 @@ function recaps($in) {
 }
 
 function smarty_function_place($params) {
-
+	global $CONF;
 	$place = $params['place'];
 	$t = '';
-	if ($place['distance'] > 3)
-		$t .= ($place['distance']-0.01)." km from ";
-	elseif (!$place['isin'])
-		$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
+	if ($CONF['lang'] == 'de') {
+		if ($place['distance'] > 3)
+			$t .= ($place['distance']-0.01)." km entfernt von ";
+		elseif (!$place['isin'])
+			$t .= "<span title=\"etwa ".($place['distance']-0.01)." km entfernt\">in der Nähe</span> von ";
+	} else {
+		if ($place['distance'] > 3)
+			$t .= ($place['distance']-0.01)." km from ";
+		elseif (!$place['isin'])
+			$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
+	}
 
 	$place['full_name'] = _utf8_decode($place['full_name']);
 
@@ -345,20 +352,26 @@ function smarty_function_linktoself($params) {
 * adds commas to thousendise a number
 */
 function smarty_function_thousends($input,$decimals=0) {
-	return number_format($input,$decimals);
+	global $CONF;
+	return number_format($input,$decimals,$CONF['decimal_sep'],$CONF['thousand_sep']);
 }
 
 function smarty_function_ordinal($i) {
-	$units=$i%10;
-	$tens=$i%100;
-	switch($units)
-	{
-		case 1:$end=($tens==11)?'th':'st';break;
-		case 2:$end=($tens==12)?'th':'nd';break;
-		case 3:$end=($tens==13)?'th':'rd';break;
-		default: $end="th";
+	global $CONF;
+	if ($CONF['lang'] == 'de') {
+		return $i.'.';
+	} else {
+		$units=$i%10;
+		$tens=$i%100;
+		switch($units)
+		{
+			case 1:$end=($tens==11)?'th':'st';break;
+			case 2:$end=($tens==12)?'th':'nd';break;
+			case 3:$end=($tens==13)?'th':'rd';break;
+			default: $end="th";
+		}
+		return $i.$end;
 	}
-	return $i.$end;
 }
 
 /**
@@ -428,7 +441,6 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 function smarty_function_geographlinks($input,$thumbs = false) {
 	return GeographLinks($input,$thumbs);
 }
-
 
 
 //replace geograph links
@@ -537,17 +549,24 @@ function datetimeToTimestamp($datetime) {
 }
 
 function getFormattedDate($input) {
+	global $CONF;
 	list($y,$m,$d)=explode('-', $input);
 	$date="";
 	if ($d>0) {
 		if ($y>1970) {
 			//we can use strftime
 			$t=strtotime($input." 0:0:0");//stop a warning
-			$date=strftime("%A, %e %B, %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
+			if ($CONF['lang'] == 'de')
+				$date=strftime("%a, %e. %B %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
+			else
+				$date=strftime("%A, %e %B, %Y", $t);   //%e doesnt work on WINDOWS!  (could use %d)
 		} else {
 			//oh my!
 			$t=strtotime("2000-$m-$d");
-			$date=strftime("%e %B", $t)." $y";
+			if ($CONF['lang'] == 'de')
+				$date=strftime("%e. %B", $t)." $y";
+			else
+				$date=strftime("%e %B", $t)." $y";
 		}
 	} elseif ($m>0) {
 		//well, it saves having an array of months...
@@ -771,7 +790,14 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
  * returns a standard textual representation of a number
  */
 function heading_string($deg) {
-	$dirs = array('north','east','south','west');
+	global $CONF;
+	if ($CONF['lang'] == 'de') {
+		$dirs = array('nord','ost','süd','west');
+		$sep = '';
+	} else {
+		$dirs = array('north','east','south','west');
+		$sep = '-';
+	}
 	$rounded = round($deg / 22.5) % 16;
 	if ($rounded < 0)
 		$rounded += 16;
@@ -781,7 +807,7 @@ function heading_string($deg) {
 		$s = $dirs[2 * intval(((intval($rounded / 4) + 1) % 4) / 2)];
 		$s .= $dirs[1 + 2 * intval($rounded / 8)];
 		if ($rounded % 2 == 1) {
-			$s = $dirs[round($rounded/4) % 4] . '-' . $s;
+			$s = $dirs[round($rounded/4) % 4] . $sep . $s;
 		}
 	}
 	return $s;
@@ -799,6 +825,27 @@ function combineTexts($lang1, $lang2)
 		return $lang2;
 	else
 		return $lang1 . ' (' . $lang2 . ')';
+}
+
+/**
+ * convert float to string using given decimal separator, needs 'C' locale!
+ */
+
+function smarty_modifier_floatformat($val, $format='%.14G')
+{
+	global $CONF;
+	return str_replace('.',$CONF['decimal_sep'], sprintf($format,$val));
+}
+
+/**
+ * include messages depending on the language settings
+ */
+
+function include_messages($id)
+{
+	global $MESSAGES, $CONF;
+	include_once('messages/'.$CONF['lang'].'/'.$id.'.php');
+	if (!isset($MESSAGES[$id])) require_once('messages/en/'.$id.'.php');
 }
 
 ?>

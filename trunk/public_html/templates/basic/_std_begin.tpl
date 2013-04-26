@@ -40,6 +40,16 @@ v\:* {
 }
 </style>{/literal}
 {/if}
+{if $canonicalhost}
+<!-- uncomment if you want to specify a canonical host
+<link rel="canonical" href="http://{$canonicalhost}{$canonicalreq|escape:'html'}" />
+-->
+{/if}
+{if $languages}
+  {foreach from=$languages key=lang item=langhost}
+<link rel="alternate" hreflang="{$lang}" href="http://{$langhost}{$canonicalreq|escape:'html'}" />
+  {/foreach}
+{/if}
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Geograph British Isles search" href="/stuff/osd.xml" />
 <script type="text/javascript" src="{"/geograph.js"|revision}"></script>

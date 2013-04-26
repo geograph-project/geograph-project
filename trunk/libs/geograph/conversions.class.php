@@ -284,9 +284,8 @@ function internal_to_national($x,$y,$reference_index = 0) {
 			// this is used when we have a dataset in osgb and need to convert it to irish national (eg loc_placenames etc)
 
 function wgs84_to_friendly($lat,$long) {
-	$el = ($long > 0)?'E':'W';
-	$nl = ($lat > 0)?'N':'S';
-	
+	global $CONF;
+
 	$xd = intval(abs($long));
 	$xm = intval((abs($long)-$xd)*60);
 	$xs = (abs($long)*3600)-($xm*60)-($xd*3600);
@@ -295,15 +294,35 @@ function wgs84_to_friendly($lat,$long) {
 	$ym = intval((abs($lat)-$yd)*60);
 	$ys = (abs($lat)*3600)-($ym*60)-($yd*3600);
 
-	$ymd = sprintf("%.4f",$ym+($ys/60));
-	$xmd = sprintf("%.4f",$xm+($xs/60));
+	$ymd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$ym+($ys/60)));
+	$xmd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$xm+($xs/60)));
+
+	$xs = str_replace('.', $CONF['decimal_sep'], sprintf("%.2F",$xs));
+	$ys = str_replace('.', $CONF['decimal_sep'], sprintf("%.2F",$ys));
+
+	if ($CONF['lang'] == 'de') {
+		$el = ($long > 0)?'O':'W';
+		$nl = ($lat > 0)?'N':'S';
 	
-	return array("$yd:$ymd$nl","$xd:$xmd$el");
+		return array("{$yd}°$ym'$ys\"$nl","{$xd}°$xm'$xs\"$el");
+	} else {
+		$el = ($long > 0)?'E':'W';
+		$nl = ($lat > 0)?'N':'S';
+
+		return array("$yd:$ymd$nl","$xd:$xmd$el");
+	}
 }
 
 function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
-	$el = ($long > 0)?'E':'W';
-	$nl = ($lat > 0)?'N':'S';
+	global $CONF;
+
+	if ($CONF['lang'] == 'de') {
+		$el = ($long > 0)?'O':'W';
+		$nl = ($lat > 0)?'N':'S';
+	} else {
+		$el = ($long > 0)?'E':'W';
+		$nl = ($lat > 0)?'N':'S';
+	}
 	
 	$along = abs($long);
 	$alat = abs($lat);
@@ -316,17 +335,22 @@ function wgs84_to_friendly_smarty_parts($lat,$long,&$smarty) {
 	$ym = intval(($alat-$yd)*60);
 	$ys = ($alat*3600)-($ym*60)-($yd*3600);
 
-	$ymd = sprintf("%.4f",$ym+($ys/60));
-	$xmd = sprintf("%.4f",$xm+($xs/60));
+	$ymd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$ym+($ys/60)));
+	$xmd = str_replace('.', $CONF['decimal_sep'], sprintf("%.4F",$xm+($xs/60)));
 	
-	$xs = sprintf("%.5f",$xs);
-	$ys = sprintf("%.5f",$ys);
+	$xs = str_replace('.', $CONF['decimal_sep'], sprintf("%.5F",$xs));
+	$ys = str_replace('.', $CONF['decimal_sep'], sprintf("%.5F",$ys));
 	
 	foreach (array('el','nl','along','alat','xd','xm','xs','yd','ym','ys','ymd','xmd') as $name) {
 		$smarty->assign($name, $$name);
 	}
-	$smarty->assign('latdm', "$yd:$ymd$nl");
-	$smarty->assign('longdm', "$xd:$xmd$el");
+	if ($CONF['lang'] == 'de') {
+		$smarty->assign('latdm', "{$yd}°$ymd'$nl");
+		$smarty->assign('longdm', "{$xd}°$xmd'$el");
+	} else {
+		$smarty->assign('latdm', "$yd:$ymd$nl");
+		$smarty->assign('longdm', "$xd:$xmd$el");
+	}
 }
 
 //----------------------------------------------------------------

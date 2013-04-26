@@ -31,6 +31,8 @@
 * @version $Revision$
 */
 
+include_messages('class_gridsquare');
+
 /**
 * GridSquare class
 * Provides an abstraction of a grid square, providing all the
@@ -294,6 +296,7 @@ class GridSquare
 	*/
 	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false,$recalc = false)
 	{
+		global $CONF, $MESSAGES;
 		$matches=array();
 		$isfour=false;
 		
@@ -376,7 +379,7 @@ class GridSquare
 			}
 		} else {
 			$ok=false;
-			$this->_error(htmlentities($gridreference).' is not a valid grid reference');
+			$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities($gridreference)));
 
 		}
 				
@@ -445,6 +448,7 @@ class GridSquare
 	*/
 	function setGridRef($gridref)
 	{
+		global $MESSAGES;
 		$gridref = preg_replace('/[^\w]+/','',strtoupper($gridref)); #assume the worse and remove everything, also not everyone uses the shift key
 		//assume the inputs are tainted..
 		$ok=$this->validGridRef($gridref);
@@ -459,11 +463,11 @@ class GridSquare
 			if (preg_match('/^([A-Z]{1,3})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
 			{
 				$fixed=$matches[1].$matches[2].$matches[3];
-				$this->_error('Please enter a 4 figure reference, i.e. '.$fixed.' instead of '.$gridref);
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_4fig'], $fixed, $gridref));
 			}
 			else
 			{
-				$this->_error(htmlentities($gridref).' is not a valid grid reference');
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities($gridref)));
 			}
 		}
 		
@@ -500,6 +504,7 @@ class GridSquare
 	*/
 	function loadFromPosition($internalx, $internaly, $findnearest = false)
 	{
+		global $CONF, $MESSAGES;
 		$ok=false;
 		$db=&$this->_getDB();
 		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) order by percent_land desc limit 1");
@@ -524,7 +529,7 @@ class GridSquare
 				$this->findNearby($square['x'], $square['y'], 100);
 			}
 		} else {
-			$this->_error("This location seems to be all at sea! Please contact us if you think this is in error");
+			$this->_error($MESSAGES['class_gridsquare']['outside_area']);
 		}
 		return $ok;
 	}
@@ -534,6 +539,7 @@ class GridSquare
 	*/
 	function _setGridRef($gridref,$allowzeropercent = false)
 	{
+		global $CONF, $MESSAGES;
 		$ok=true;
 
 		$db=&$this->_getDB();
@@ -556,7 +562,7 @@ class GridSquare
 			
 			if ($this->percent_land==0 && !$allowzeropercent && $this->imagecount==0)
 			{
-				$this->_error("$gridref seems to be all at sea! Please <a href=\"/mapfixer.php?gridref=$gridref\">contact us</a> if you think this is in error.");
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_outside_area_link'], $gridref));
 				$ok=false;
 
 			}
@@ -618,8 +624,9 @@ class GridSquare
 			}
 			
 			
-			if (!$ok)
-				$this->_error("$gridref seems to be all at sea! Please contact us if you think this is in error");
+			if (!$ok) {
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_outside_area'], $gridref));
+			}
 
 		}
 

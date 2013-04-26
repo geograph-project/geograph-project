@@ -31,6 +31,7 @@
 * @version $Revision$
 */
 
+$MESSAGES = array();
 
 //include domain specific configuration - if your install fails on
 //this line, copy and adapt one of the existing configuration
@@ -298,6 +299,7 @@ class GeographPage extends Smarty
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
+		$this->register_modifier("floatformat", "smarty_modifier_floatformat");
 
 		//assign globallly useful stuff
 		$this->assign_by_ref('user', $GLOBALS['USER']);
@@ -345,6 +347,14 @@ class GeographPage extends Smarty
 			}
 		}
 
+		if (count($CONF['languages'])) {
+			$cur_proto = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
+			$this->assign('languages', $CONF['languages']);
+			$this->assign('curproto', $cur_proto);
+			$this->assign('canonicalhost', reset($CONF['languages']));
+			$this->assign('canonicalreq', $_SERVER['REQUEST_URI']); # FIXME remove session id? # can be changed in specific scripts, e.g. on the map page
+			$this->assign('language', $CONF['lang']);
+		}
 	}
 
 	function is_cached($template, $cache_id = null, $compile_id = null)

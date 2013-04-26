@@ -22,6 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
+include_messages('ecard');
 
 init_session();
 
@@ -75,7 +76,7 @@ if (isset($_REQUEST['image']))
 		//clear the image
 		$image=new GridImage;
 	} else {
-		$msg="Hi,\r\n\r\nI recently saw this image, and thought you might like to see it too.\r\n\r\nRegards,\r\n\r\n";
+		$msg = $MESSAGES['ecard']['message_template'];
 
 		$smarty->assign_by_ref('msg', $msg);
 	}
@@ -92,27 +93,27 @@ if (!$throttle && isset($_POST['msg']))
 	if (!isValidEmailAddress($from_email))
 	{
 		$ok=false;
-		$errors['from_email']='Please specify a valid email address';
+		$errors['from_email']=$MESSAGES['ecard']['email_invalid'];
 	}
 	if (!isValidRealName($from_name))
 	{
 		$ok=false;
-		$errors['from_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		$errors['from_name']=$MESSAGES['ecard']['name_chars'];
 	}
 	if (!isValidEmailAddress($to_email))
 	{
 		$ok=false;
-		$errors['to_email']='Please specify a valid email address';
+		$errors['to_email']=$MESSAGES['ecard']['email_invalid'];
 	}
 	if (!isValidRealName($to_name))
 	{
 		$ok=false;
-		$errors['to_name']='Only letters A-Z, a-z, hyphens and apostrophes allowed';
+		$errors['to_name']=$MESSAGES['ecard']['name_chars'];
 	}
 	if (strlen($msg)==0)
 	{
 		$ok=false;
-		$errors['msg']="Please enter a message to send";
+		$errors['msg']=$MESSAGES['ecard']['empty_message'];
 	}
 	$smarty->assign_by_ref('errors', $errors);
 
@@ -132,25 +133,20 @@ if (!$throttle && isset($_POST['msg']))
 		$smarty->assign_by_ref('htmlmsg', nl2br($msg));
 		
 		$body=$smarty->fetch('email_ecard.tpl');
-		$subject="[{$_SERVER['HTTP_HOST']}] $from_name is sending you an e-Card";
+		$subject=sprintf($MESSAGES['ecard']['mail_subject'], $from_name);
 		$encsubject=mb_encode_mimeheader($CONF['mail_subjectprefix'].$subject, $CONF['mail_charset'], $CONF['mail_transferencoding']);
 		
 		if (isset($_POST['preview'])) {
 			preg_match_all('/(<!DOCTYPE.*<\/HTML>)/s',$body,$matches);
 	
-			print "<title>eCard Preview</title>";
+			print $MESSAGES['ecard']['preview_title'];
 			print "<form method=\"post\">";
 			foreach ($_POST as $name => $value) {
 				if ($name != 'preview') {
 					print "<input type=\"hidden\" name=\"$name\" value=\"".htmlentities($value)."\">";
 				}
 			}
-			print "<br/><p align=\"center\"><font face=\"Georgia\">Below is a preview the card as will be sent to $to_email </font>";
-			print "<input type=\"submit\" name=\"edit\" value=\"Edit\">";
-			print "<input type=\"submit\" name=\"send\" value=\"Send\"></p>";
-			print "</FORM>";
-			
-			print "<h3 align=center><font face=\"Georgia\">Subject: $subject</font></h3>";
+			printf($MESSAGES['ecard']['preview_html'], $to_email, $subject);
 			$html = preg_replace("/=[\n\r]+/s","\n",$matches[1][0]);
 			$html = preg_replace("/=(\w{2})/e",'chr(hexdec("$1"))',$html);
 			print $html;

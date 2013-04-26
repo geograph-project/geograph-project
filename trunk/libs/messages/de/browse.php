@@ -1,0 +1,43 @@
+<?php
+
+$MESSAGES['browse'] = array (
+	'breakdowns' => array (
+		'user'=>'Einreicher',
+		'centi'=>'Centisquare',
+		'class'=>'Kategorie',
+		'taken'=>'Aufnahmemonat',
+		'takenyear'=>'Aufnahmejahr',
+		'submitted'=>'Einreichmonat',
+		'submittedyear'=>'Einreichjahr',
+		'direction'=>'Blickrichtung',
+		'viewpoint'=>'Aufnahmestandort',
+		'viewcenti'=>'Aufnahmecentisquare',
+		'status'=>'Klassifizierung',
+	),
+	'bdtitle_class'           => "Kategorie",
+	'title_class'             => "in Kategorie",
+	'bdtitle_status'          => "Klassifizierung",
+	'substs_status'           => array('geograph'=>'Geobild','accepted'=>'Extrabild','pending'=>'Unmoderiert','rejected'=>'Abgelehnt'),
+	'bdtitle_user'            => "Einreicher",
+	'title_user'              => "eingereicht von",
+	'bdtitle_direction'       => "Blickrichtung",
+	'title_direction'         => "Blick nach",
+	'title_unknown_direction' => "Blickrichtung unbekannt",
+	'format_direction'        => "etwa %d°",
+	'bdtitle_viewpoint'       => "Aufnahmestandort",
+	'title_viewpoint'         => "aufgenommen in",
+	'title_here_viewpoint'    => "aufgenommen in diesem Quadrat",
+	'title_unknown_viewpoint' => "Aufnahmestandort unbekannt",
+	'bdtitle_centi'           => "Centisquare",
+	'bdtitle_viewcenti'       => "Aufnahmecentisquare",
+	'bdtitle_month_taken'     => "Aufnahmemonat",
+	'bdtitle_year_taken'      => "Aufnahmejahr",
+	'bdtitle_month_submitted' => "Einreichmonat",
+	'bdtitle_year_submitted'  => "Einreichjahr",
+	'title_month_taken'       => "Aufgenommen im",
+	'title_year_taken'        => "Aufgenommen",
+	'title_month_submitted'   => "Eingereicht im",
+	'title_year_submitted'    => "Eingereicht",
+);
+
+?>

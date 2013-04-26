@@ -26,6 +26,7 @@ require_once('geograph/gridimage.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/imagelist.class.php');
 require_once('geograph/gridimagetroubleticket.class.php');
+include_messages('moderation');
 
 init_session();
 
@@ -57,11 +58,11 @@ if (isset($_POST['gridimage_id']))
 					die ("CANT EDIT REJECTED IMAGES");
 					
 				switch ($status) {
-					case 'Geograph':
+					case $MESSAGES['moderation']['geograph'].
 						$user_status = ''; break;
-					case 'Supplemental':
+					case $MESSAGES['moderation']['supplemental']:
 						$user_status = 'accepted'; break;
-					case 'Reject':
+					case $MESSAGES['moderation']['reject']:
 						$user_status = 'rejected'; break;
 					default:
 						echo "UNKNOWN STATUS";

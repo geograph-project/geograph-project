@@ -137,6 +137,14 @@ $CONF['exiftooldir']='';
 
 ###################################
 
+$CONF['lang']='en';
+$CONF['decimal_sep'] = '.';
+$CONF['thousand_sep'] = ',';
+$CONF['languages']=array();
+#$CONF['languages']=array('en' => 'en.example.com', 'xy' => 'xy.example.com'); # the first entry is the "canonical version"
+
+###################################
+
 $CONF['mail_subjectprefix'] = '[geograph] ';
 $CONF['mail_transferencoding'] = 'Q';
 $CONF['mail_charset'] = 'iso-8859-1';

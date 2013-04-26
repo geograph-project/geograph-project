@@ -80,11 +80,6 @@ if (isset($_REQUEST['edit']))
 	$smarty->assign('showorig', $CONF['img_size_unlimited']);
 	$smarty->assign('largeimages', $CONF['img_size_unlimited'] || (count($CONF['img_sizes']) != 0));
 	$smarty->assign('canclearexif', $CONF['exiftooldir'] !== '');
-	$smarty->assign('ticket_options', array(
-	'all' => 'Notifications for all suggestions' ,
-	'major' => 'Only Major suggestions', 
-	//'digest' => 'Receive Digest emails Once per Day',
-	'none' => 'No Initial Notifications' ));
 	
 	$profile->getStats();
 	$profile->md5_email = md5(strtolower($profile->email));
@@ -264,14 +259,6 @@ if ($template=='profile.tpl')
 			}
 		}
 
-		if (!empty($_GET['a'])) {
-			$smarty->assign('page_title', 'Profile for '.$_GET['a'].'/'.$profile->realname);
-			$smarty->assign('meta_description', 'Profile page for '.$_GET['a'].'/'.$profile->realname.', listing recent images, statistics and links to further information.');
-		} else {
-			$smarty->assign('page_title', 'Profile for '.$profile->realname);
-			$smarty->assign('meta_description', 'Profile page for '.$profile->realname.', listing recent images, statistics and links to further information.');
-		}
-		
 		$smarty->assign_by_ref('profile', $profile);
 		
 		$images=new ImageList;

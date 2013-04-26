@@ -31,6 +31,8 @@
 * @version $Revision$
 */
 
+include_messages('class_gridimage');
+
 /**
 * GridImage class
 * Provides an abstraction of a grid image, providing all the
@@ -538,6 +540,7 @@ class GridImage
 	*/
 	function& getTroubleTickets($aStatus)
 	{
+		global $MESSAGES;
 		if (!is_array($aStatus))
 			die("GridImage::getTroubleTickets expects array param");
 			
@@ -558,19 +561,19 @@ class GridImage
 			$t->loadFromRecordset($recordSet);
 			
 			if ($t->days > 365) {
-				$t->days = 'over a year';
+				$t->days = $MESSAGES['class_gridimage']['days_365'];
 			} elseif ($t->days > 30) {
-				$t->days = 'over '.intval($t->days/30).' months';
+				$t->days = sprintf($MESSAGES['class_gridimage']['days_30'], intval($t->days/30));
 			} elseif ($t->days > 14) {
-				$t->days = 'over '.intval($t->days/7).' weeks';
+				$t->days = sprintf($MESSAGES['class_gridimage']['days_14'], intval($t->days/7));
 			} elseif ($t->days > 7) {
-				$t->days = 'over a week';
+				$t->days = $MESSAGES['class_gridimage']['days_7'];
 			} elseif ($t->days > 1) {
-				$t->days = $t->days.' days';
+				$t->days = sprintf($MESSAGES['class_gridimage']['days_gt1'], $t->days);
 			} elseif ($t->days < 1) {
-				$t->days = 'less than a day';
+				$t->days = $MESSAGES['class_gridimage']['days_lt1'];
 			} else {
-				$t->days = '1 day';
+				$t->days = $MESSAGES['class_gridimage']['days_eq1'];
 			}
 			
 			//load its ticket items (should this be part of load from Recordset?
@@ -1096,7 +1099,7 @@ class GridImage
 	*/
 	function _getResized($params)
 	{
-		global $memcache,$CONF;
+		global $memcache, $CONF, $MESSAGES;
 		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
 		//fails quickly if not using memcached!
 		$result =& $memcache->name_get('ir',$mkey);
@@ -1150,7 +1153,8 @@ class GridImage
 			$return=array();
 			$return['url']=$thumbpath;
 
-			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			$by = $MESSAGES['class_gridimage']['by'];
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
@@ -1346,7 +1350,8 @@ class GridImage
 		}
 		else
 		{
-			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
+			$by = $MESSAGES['class_gridimage']['by'];
+			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");

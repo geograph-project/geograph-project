@@ -26,6 +26,7 @@ require_once('geograph/conversions.class.php');
 require_once('geograph/conversionslatlong.class.php');
 require_once('geograph/gridsquare.class.php');
 require_once('geograph/mapmosaic.class.php');
+include_messages('latlong');
 
 init_session();
 
@@ -123,7 +124,7 @@ if (!empty($_GET['To'])) { //to lat/long
 		$smarty->assign('n', $en[1]);
 		
 	} else {
-		$smarty->assign('errormgs', 'This location does not appear to be in the British Isles');
+		$smarty->assign('errormgs', $MESSAGES['latlong']['outside_area']);
 	}
 	$smarty->assign('lat', $_GET['lat']);
 	$smarty->assign('long', $_GET['long']);
