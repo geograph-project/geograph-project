@@ -345,6 +345,10 @@ class GeographPage extends Smarty
 			{
 				$this->assign('is_mapmod', true);
 			}
+			if ($GLOBALS['USER']->hasPerm('basic'))
+			{
+				$this->assign('is_logged_in', true);
+			}
 		}
 
 		if (count($CONF['languages'])) {
