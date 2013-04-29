@@ -439,7 +439,7 @@ class RecentImageList extends ImageList {
 	* constructor - used to build a basic list (See getImages)
 	*/
 	function RecentImageList(&$smarty,$reference_index = 0) {
-		global $memcache;
+		global $memcache, $ADODB_FETCH_MODE;
 		
 		$mkey = rand(1,10).'.'.$reference_index;
 		//fails quickly if not using memcached!
@@ -450,35 +450,69 @@ class RecentImageList extends ImageList {
 		}
 		
 		$db=&$this->_getDB();
-		
-		if ($reference_index == 2) {
-			$offset=rand(0,200);
-			$recordSet = &$db->Execute("select * from gridimage_search where reference_index=$reference_index order by gridimage_id desc limit $offset,5");
-		} else {
-			$where = ($reference_index)?" and reference_index = $reference_index":'';
+		$prev_fetch_mode = $ADODB_FETCH_MODE;
 
-			$start = $db->getOne("select recent_id from gridimage_recent where 1 $where");
-
-			$offset=rand(1,50);
-			$ids = range($start+$offset,$start+$offset+40);
-			shuffle($ids);
-
-			$id_string = join(',',array_slice($ids,0,5));
-			$recordSet = &$db->Execute("select * from gridimage_recent where recent_id in ($id_string) $where limit 5");
+		# get list of all images and list of the images by contributor
+		$imagesbyuser = array();
+		$images = array();
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		$recordSet = &$db->Execute("select gridimage_id, user_id from gridimage_recent limit 100");
+		$ADODB_FETCH_MODE = $prev_fetch_mode;
+		while (!$recordSet->EOF) {
+			$uid = $recordSet->fields['user_id'];       #$recordSet->fields[1];
+			$giid = $recordSet->fields['gridimage_id']; #$recordSet->fields[0];
+			if (array_key_exists($uid, $imagesbyuser)) {
+				$imagesbyuser[$uid][] = $giid;
+			} else {
+				$imagesbyuser[$uid] = array($giid);
+			}
+			$images[$giid] = $giid;
+			$recordSet->MoveNext();
 		}
-		
-		//lets find some recent photos
+		$recordSet->Close();
+
+		# get random list of image ids
+		$reslist = array();
+		$size = min(count($images), 5);
+		if ($size >= 1) {
+			# try to select a random set of contributors and get one random picture submitted by each of those
+			$users = min(count($imagesbyuser), $size);
+			if ($users == 1) { # thanks, array_rand()...
+				reset($imagesbyuser);
+				$selectedusers = array(key($imagesbyuser));
+			} else {
+				$selectedusers =& array_rand($imagesbyuser, $users);
+			}
+			foreach ($selectedusers as $uid) {
+				$giid = $imagesbyuser[$uid][array_rand($imagesbyuser[$uid])];
+				$reslist[] = $giid;
+				unset($images[$giid]);
+			}
+			$size -= count($reslist);
+			if ($size) { # not enough contributors, get rest from $images
+				if ($size == 1) { # thanks, array_rand()...
+					$reslist[] = array_rand($images);
+				} else {
+					$reslist = array_merge($reslist, array_rand($images, $size));
+				}
+			}
+		}
+
 		$this->images=array();
 		$i=0;
-
-		while (!$recordSet->EOF) 
-		{
-			$this->images[$i]=new GridImage;
-			$this->images[$i]->fastInit($recordSet->fields);
-			$recordSet->MoveNext();
-			$i++;
+		if (count($reslist)) {
+			$id_string = join(',',$reslist);
+			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+			$recordSet = &$db->Execute("select * from gridimage_search where gridimage_id in ($id_string) order by RAND()");
+			$ADODB_FETCH_MODE = $prev_fetch_mode;
+			while (!$recordSet->EOF) {
+				$this->images[$i] = new GridImage;
+				$this->images[$i]->fastInit($recordSet->fields);
+				$recordSet->MoveNext();
+				$i++;
+			}
+			$recordSet->Close();
 		}
-		$recordSet->Close(); 
 		$this->assignSmarty($smarty, 'recent');
 		
 		//fails quickly if not using memcached!
