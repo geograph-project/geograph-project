@@ -571,7 +571,7 @@ class RasterMap
 		//defer the tag to the last minute, to help prevent the page pausing mid load
 		if ((!empty($this->inline) || !empty($this->issubmit))) {
 			if ($this->service == 'Google') {
-				return "<script src=\"http://maps.google.com/maps?file=api&amp;v=2&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+				return "<script src=\"http://maps.googleapis.com/maps/api/js?sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
 			} elseif ($this->service == 'OLayers') {
 				if ($CONF['google_maps_api_key'])
 					$ft = "<script src=\"http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
@@ -588,11 +588,15 @@ class RasterMap
 	}
 
 	function getMeriBlock($long,$lat1,$lat2,$op=1) {
-		return "			var polyline = new GPolyline([
-				new GLatLng($lat1,$long),
-				new GLatLng($lat2,$long)
-			], \"#FF0000\", 1, $op);
-			map.addOverlay(polyline);\n";
+		return "var polyline = new google.maps.Polyline({
+			path: [
+				new google.maps.LatLng($lat1,$long),
+				new google.maps.LatLng($lat2,$long)
+			],
+			strokeColor: \"#FF0000\",
+			strokeWeight: 1,
+			strokeOpacity: $op,
+			map: map});\n";
 	}
 
 	function getMeriBlockOL($long,$lat1,$lat2,$op=1) {
@@ -618,11 +622,15 @@ EOF;
 function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1) {
 	list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 	list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-	return "			var polyline = new GPolyline([
-			new GLatLng($lat1,$long1),
-			new GLatLng($lat2,$long2)
-		], \"#0000FF\", 1, $op);
-		map.addOverlay(polyline);\n";
+	return "var polyline = new google.maps.Polyline({
+		path: [
+			new google.maps.LatLng($lat1,$long1),
+			new google.maps.LatLng($lat2,$long2)
+		],
+		strokeColor: \"#0000FF\",
+		strokeWeight: 1,
+		strokeOpacity: $op,
+		map: map});\n";
 }
 
 function getPolyLineBlockOL(&$conv,$e1,$n1,$e2,$n2,$op=1) {
@@ -660,14 +668,21 @@ EOF;
 	function getPolySquareBlock(&$conv,$e1,$n1,$e2,$n2) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-		return "			pickupbox = new GPolygon([
-				new GLatLng($lat1,$long1),
-				new GLatLng($lat1,$long2),
-				new GLatLng($lat2,$long2),
-				new GLatLng($lat2,$long1),
-				new GLatLng($lat1,$long1)
-			], \"#0000FF\", 1, 0.7, \"#00FF00\", 0.5);
-			map.addOverlay(pickupbox);\n";
+		return "pickupbox = new google.maps.Polygon({
+			paths: [
+				new google.maps.LatLng($lat1,$long1),
+				new google.maps.LatLng($lat1,$long2),
+				new google.maps.LatLng($lat2,$long2),
+				new google.maps.LatLng($lat2,$long1),
+				new google.maps.LatLng($lat1,$long1)
+			],
+			strokeColor: \"#0000FF\",
+			strokeWeight: 1,
+			strokeOpacity: 0.7,
+			fillColor: \"#00FF00\",
+			fillOpacity: 0.5,
+			clickable: false,
+			map: map});\n";
 	}
 
 	function getPolySquareBlockOL(&$conv,$e1,$n1,$e2,$n2) {
@@ -753,27 +768,29 @@ EOF;
 						}
 						list($lat,$long) = $conv->national_to_wgs84($ve,$vn,$this->reference_index);
 						$block .= "
-						var ppoint = new GLatLng({$lat},{$long});
-						map.addOverlay(createPMarker(ppoint));\n";
+						var ppoint = new google.maps.LatLng({$lat},{$long});
+						createPMarker(ppoint);\n";
 					}
 				}
 
 				if (empty($lat) && $this->issubmit) {
 					list($lat,$long) = $conv->national_to_wgs84($e-700,$n-500,$this->reference_index);
+					#list($lat,$long) = $conv->national_to_wgs84($e-660,$n-520,$this->reference_index);
 					$block .= "
-						var ppoint = new GLatLng({$lat},{$long});
-						map.addOverlay(createPMarker(ppoint));\n";
+						var ppoint = new google.maps.LatLng({$lat},{$long});
+						createPMarker(ppoint);\n";
 				}
 			} else {
 				$block = '';
 			}
 			if ($this->exactPosition) {
-				$block.= "map.addOverlay(createMarker(point));";
+				$block.= "createMarker(point);";
 			} elseif ($this->issubmit) {
 				list($lat,$long) = $conv->national_to_wgs84($e-400,$n-500,$this->reference_index);
+				#list($lat,$long) = $conv->national_to_wgs84($e-380,$n-520,$this->reference_index);
 				$block .= "
-					var point2 = new GLatLng({$lat},{$long});
-					map.addOverlay(createMarker(point2));\n";
+					var point2 = new google.maps.LatLng({$lat},{$long});
+					createMarker(point2);\n";
 			}
 			if ($this->issubmit) {
 				$zoom=13;
@@ -806,6 +823,8 @@ EOF;
 			} else {
 				$p1 = '';
 			}
+			$maptypes = 'google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN';
+
 			#	<style type=\"text/css\">
 			#	v\:* {
 			#		behavior:url(#default#VML);
@@ -818,25 +837,6 @@ function GetTileUrl_Mapnik(a, z) {
                 z + "/" + a.x + "/" + a.y + ".png";
 }
 
-
-/*function GetTileUrl_TaH(a, z) {
-    return "http://tah.openstreetmap.org/Tiles/tile/" +
-                z + "/" + a.x + "/" + a.y + ".png";
-}*/
-
-/*function GetTileUrl_TopB(a, z) {
-    //return "http://topo.openstreetmap.de/base/" +
-    sd = inthash("" + a.x + a.y + z, 2) == 0 ? "base" : "base2" ;
-    return "http://" + sd + ".wanderreitkarte.de/base/" +
-                z + "/" + a.x + "/" + a.y + ".png";
-}
-
-function GetTileUrl_TopH(a, z) {
-    //return "http://hills-nc.openstreetmap.de/" +
-    return "http://wanderreitkarte.de/hills/" +
-                z + "/" + a.x + "/" + a.y + ".png";
-}*/
-
 function GetTileUrl_Top(a, z) {
     //return "http://topo.openstreetmap.de/topo/" +
     sd = inthash("" + a.x + a.y + z, 2) == 0 ? "topo" : "topo2" ; // currently available: topo, topo2, topo3, topo4
@@ -845,107 +845,92 @@ function GetTileUrl_Top(a, z) {
 }
 
 function GetTileUrl_GeoH(a, z) {
-    //return "http://hills-nc.openstreetmap.de/" +
-    //return "http://wanderreitkarte.de/hills/" +
     return "http://geo.hlipp.de/tile/hills/" +
                 z + "/" + a.x + "/" + a.y + ".png";
 }
-
 EOF;
-
 			$osm_block=<<<EOF
-    var copyright = new GCopyright(1,
-        new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        ': http://www.openstreetmap.org/copyright');
-    var copyrightCollection =
-        new GCopyrightCollection('(c) OSM Contributors');
-    copyrightCollection.addCopyright(copyright);
+					// copyright messages for custom tile layers have become much worse with v3...
+					var copyrightDiv = document.createElement("div");
+					copyrightDiv.id = "map-copyright";
+					copyrightDiv.style.fontSize = "11px";
+					copyrightDiv.style.fontFamily = "Arial, sans-serif";
+					copyrightDiv.style.margin = "0 2px 2px 0";
+					copyrightDiv.style.whiteSpace = "nowrap";
+					map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(copyrightDiv);
+					var copyrights = {};
+					function updateCopyright() {
+					    newMapType = map.getMapTypeId();
+					    copyrightDiv.innerHTML = newMapType in copyrights ? copyrights[newMapType] : "";
+					}
 
-    var copyrightOSMs = new GCopyright(1,
-        new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        ': http://www.openstreetmap.org/copyright');
-    var copyrightCollectionOSMs =
-        new GCopyrightCollection('(c) OSM');
-    copyrightCollectionOSMs.addCopyright(copyrightOSMs);
+					var mapnik_map = new google.maps.ImageMapType({
+						getTileUrl: GetTileUrl_Mapnik,
+						tileSize: new google.maps.Size(256, 256),
+						isPng: true,
+						maxZoom: 18,
+						minZoom: 0,
+						name: "OSM",
+						alt: "OSM: Mapnik",
+					});
+					map.mapTypes.set("mapnik", mapnik_map);
+					copyrights["mapnik"] = "<a target=\"_blank\" href=\"http://www.openstreetmap.org/\">OSM</a> (<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)";
 
-    var tilelayers_mapnik = new Array();
-    tilelayers_mapnik[0] = new GTileLayer(copyrightCollection, 0, 18);
-    tilelayers_mapnik[0].getTileUrl = GetTileUrl_Mapnik;
-    tilelayers_mapnik[0].isPng = function () { return true; };
-    tilelayers_mapnik[0].getOpacity = function () { return 1.0; };
-    var mapnik_map = new GMapType(tilelayers_mapnik,
-        new GMercatorProjection(19), "OSM (Mapnik)",
-        { urlArg: 'mapnik', linkColor: '#000000', shortName: 'OSM', alt: 'OSM: Mapnik' });
-    map.addMapType(mapnik_map);
+					// tile overlays have become much worse with v3...
+					var relief_map = new google.maps.ImageMapType({
+						getTileUrl: GetTileUrl_GeoH,
+						tileSize: new google.maps.Size(256, 256),
+						isPng: true,
+						maxZoom: 15,
+						minZoom: 4,
+						name: "Relief",
+						alt: "Relief",
+					});
+					map.mapTypes.set("relief", relief_map);
+					//copyrights["relief"] = "DEM <a target=\"_blank\" href=\"http://srtm.csi.cgiar.org/\">CIAT</a>";
+					//map.overlayMapTypes.insertAt(0, relief_map);
+					var mapnik_map_rel = new google.maps.ImageMapType({
+						getTileUrl: GetTileUrl_Mapnik,
+						tileSize: new google.maps.Size(256, 256),
+						isPng: true,
+						maxZoom: 18,
+						minZoom: 0,
+						name: "OSM+Relief",
+						alt: "OSM: Mapnik + Relief",
+					});
+					map.mapTypes.set("mapnikh", mapnik_map_rel);
+					copyrights["mapnikh"] = "<a target=\"_blank\" href=\"http://www.openstreetmap.org/\">OSM</a> (<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>), DEM <a target=\"_blank\" href=\"http://srtm.csi.cgiar.org/\">CIAT</a>";
+					google.maps.event.addListener(map, "maptypeid_changed", function(e) {
+						if(map.mapTypeId === "mapnikh") {
+							if (map.overlayMapTypes.getLength() == 0) {
+								map.overlayMapTypes.insertAt(0, relief_map);
+							}
+						} else {
+							if (map.overlayMapTypes.getLength() > 0){
+								map.overlayMapTypes.removeAt(0);
+							}
+						}
+					});
 
-    /*var tilelayers_tah = new Array();
-    tilelayers_tah[0] = new GTileLayer(copyrightCollection, 0, 17);
-    tilelayers_tah[0].getTileUrl = GetTileUrl_TaH;
-    tilelayers_tah[0].isPng = function () { return true; };
-    tilelayers_tah[0].getOpacity = function () { return 1.0; };*/
+					var topo_map = new google.maps.ImageMapType({
+						getTileUrl: GetTileUrl_Top,
+						tileSize: new google.maps.Size(256, 256),
+						isPng: true,
+						maxZoom: 17,
+						minZoom: 0,
+						name: "Nop-RWK",
+						alt: "Nop: Reit- und Wanderkarte",
+					});
+					map.mapTypes.set("topo", topo_map);
+					copyrights["topo"] = "<a target=\"_blank\" href=\"http://www.wanderreitkarte.de/licence_de.php\">Nops RWK</a> DEM <a target=\"_blank\" href=\"http://srtm.csi.cgiar.org/\">CIAT</a>";
 
-    /*var tah_map = new GMapType(tilelayers_tah,
-        new GMercatorProjection(19), "OSM (T@H)",
-        { urlArg: 'tah', linkColor: '#000000', shortName: 'T@H', alt: 'OSM: Tiles@home' });
-    map.addMapType(tah_map);*/
-
-    var copyright1 = new GCopyright(1,
-        new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        ': http://www.wanderreitkarte.de/licence_de.php');
-    //var copyright2 = new GCopyright(1,
-    //    new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-    //    ': http://www.wanderreitkarte.de/licence_de.php');
-    var copyrightCollectionTopo = new GCopyrightCollection("Nops RWK, CIAT");
-    //var copyrightCollectionTopoH = new GCopyrightCollection("DEM CIAT");
-    copyrightCollectionTopo.addCopyright(copyright1);
-    //copyrightCollectionTopoH.addCopyright(copyright2);
-
-    var tilelayers_top = new Array();
-    tilelayers_top[0] = new GTileLayer(copyrightCollectionTopo, 0, 17);
-    //tilelayers_top[1] = new GTileLayer(copyrightCollectionTopoH, 9, 19);
-    //tilelayers_top[2] = new GTileLayer(copyrightCollectionTopo, 0, 17);
-    tilelayers_top[0].isPng = function () { return true; };
-    //tilelayers_top[1].isPng = function () { return true; };
-    //tilelayers_top[2].isPng = function () { return true; };
-    tilelayers_top[0].getOpacity = function () { return 1.0; };
-    //tilelayers_top[1].getOpacity = function () { return 1.0; };
-    //tilelayers_top[2].getOpacity = function () { return 1.0; };
-    tilelayers_top[0].getTileUrl = GetTileUrl_Top;
-    //tilelayers_top[1].getTileUrl = GetTileUrl_TopH;
-    //tilelayers_top[2].getTileUrl = GetTileUrl_Top;
-
-    var topo_map = new GMapType(tilelayers_top,
-        new GMercatorProjection(19), "Nops RWK",
-        { urlArg: 'topo', linkColor: '#000000', shortName: "Nop-RWK", alt: "Nop: Reit- und Wanderkarte" });
-    map.addMapType(topo_map);
-
-    var copyright3 = new GCopyright(1,
-        new GLatLngBounds(new GLatLng(-90,-180), new GLatLng(90,180)), 0,
-        ': http://srtm.csi.cgiar.org/');
-    var copyrightCollectionGeoH = new GCopyrightCollection("DEM CIAT");
-    copyrightCollectionGeoH.addCopyright(copyright3);
-
-    var tilelayers_mapnikh = new Array();
-    tilelayers_mapnikh[0] = new GTileLayer(copyrightCollectionOSMs, 0, 18);
-    tilelayers_mapnikh[1] = new GTileLayer(copyrightCollectionGeoH, 4, 15);
-    tilelayers_mapnikh[0].isPng = function () { return true; };
-    tilelayers_mapnikh[1].isPng = function () { return true; };
-    tilelayers_mapnikh[0].getOpacity = function () { return 1.0; };
-    tilelayers_mapnikh[1].getOpacity = function () { return 1.0; };
-    tilelayers_mapnikh[0].getTileUrl = GetTileUrl_Mapnik;
-    tilelayers_mapnikh[1].getTileUrl = GetTileUrl_GeoH;
-    var mapnikh_map = new GMapType(tilelayers_mapnikh,
-        new GMercatorProjection(19), "OSM (Mapnik) + Profile",
-        { urlArg: 'mapnikh', linkColor: '#000000', shortName: 'OSM+P', alt: 'OSM: Mapnik+Profile' });
-    map.addMapType(mapnikh_map);
-
+					google.maps.event.addListener(map, "maptypeid_changed", updateCopyright);
 EOF;
-
-
+			$maptypes .= ',"mapnik","mapnikh","topo"';
 
 			return "
 				$p1
-				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mappingG.js")."\"></script>
+				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mappingG3.js")."\"></script>
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					var issubmit = {$this->issubmit}+0;
@@ -954,31 +939,28 @@ EOF;
 					var map = null;
 					$osm_func
 					function loadmap() {
-						if (GBrowserIsCompatible()) {
-							map = new GMap2(document.getElementById(\"map\"));
-							map.addMapType(G_PHYSICAL_MAP);
-							$osm_block
-							map.addControl(new GSmallZoomControl());
-							///////////////
-							//var mapControl = new GHierarchicalMapTypeControl();
-							//mapControl.clearRelationships();
-							//mapControl.addRelationship(G_SATELLITE_MAP, G_HYBRID_MAP, \"Labels\", false);
-							//mapControl.addRelationship(mapnik_map, tah_map, \"T@H\", false);
-							//map.addControl(mapControl);
-							///////////////
-							//map.addControl(new GMapTypeControl(true));
-							map.addControl(new GMenuMapTypeControl(true));
-							//map.disableDragging();
-							map.enableDoubleClickZoom(); 
-							map.enableContinuousZoom();
-							map.enableScrollWheelZoom();
-							var point = new GLatLng({$this->lat},{$this->long});
-							//map.setCenter(point, 13, G_PHYSICAL_MAP);
-							map.setCenter(point, $zoom, G_HYBRID_MAP);
-							//map.setCenter(point, $zoom, G_SATELLITE_MAP);
-							$block 
-							
-							AttachEvent(window,'unload',GUnload,false);
+						var point = new google.maps.LatLng({$this->lat},{$this->long});
+
+						map = new google.maps.Map(
+							document.getElementById('map'), {
+							center: point,
+							zoom: $zoom,
+							mapTypeId: google.maps.MapTypeId.HYBRID,
+							//streetViewControl: issubmit?true:false
+							streetViewControl: false,
+							mapTypeControlOptions: {
+								mapTypeIds: [ $maptypes ],
+								style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+							},
+						});
+						map.setTilt(0);
+
+						$osm_block
+
+						$block 
+
+						if (typeof updateMapMarkers == 'function') {
+							updateMapMarkers();
 						}
 					}
 					AttachEvent(window,'load',loadmap,false);
