@@ -213,7 +213,7 @@ beibehalten.</p>
 			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';map.updateSize();return false">Größere Karte</a>
 		{/if}{*FIXME move to FootNote?*}
 		{if $rastermap->service == 'Google'}
-			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';map.checkResize();return false">Größere Karte</a>
+			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';google.maps.event.trigger(map, 'resize');return false">Größere Karte</a>
 		{/if}{*FIXME move to FootNote?*}
 		{if count($square->services) > 1}
 		{*<form method="get" action="/gridref/{$gridref}">*}{*FIXME*}
