@@ -42,8 +42,23 @@ $conv = new Conversions;
 
 $gr = $_GET['gr'];
 
+if (!preg_match('/^([A-Z]{1,3})([\d_]*)([NS]*)([EW]*)$/',strtoupper($gr))) {
+	die("invalid gr");
+}
+
+//convert subhectad/mosaic references to normal, eg SH43NW -> SH4035 
+
+//SH43(N)E -> SH43(5)E 
+$gr2 = preg_replace('/^(.+)N([EW])$/e','$1."5".$2',$gr);
+$gr2 = preg_replace('/^(.+)S([EW])$/e','$1."0".$2',$gr2);
+
+//SH435(W) -> SH4(0)35 
+$gr2 = preg_replace('/^(.+)(\d{2})E$/e','"$1"."5"."$2"',$gr2);
+$gr2 = preg_replace('/^(.+)(\d{2})W$/e','"$1"."0"."$2"',$gr2);
+
+
 $square=new GridSquare;
-$grid_ok=$square->setByFullGridRef($gr);
+$grid_ok=$square->setByFullGridRef($gr2);
 
 
 $html = '';
