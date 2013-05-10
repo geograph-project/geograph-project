@@ -24,7 +24,17 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
 <br/>
 {/if}
 {dynamic}
-{if $search_keywords && $search_count}
+{if $searchid}
+	<div class="interestBox" style="text-align:center; font-size:0.9em;width:400px;margin-left:auto;margin-right:auto">
+		{if $searchidx}
+			<a href="/results/browse/{$searchid}/{$searchidx-1}">&lt; Voriges Bild</a>
+                {else}
+			<span style="color:silver" title="erstes Bild">&lt; Voriges Bild</span>
+		{/if} |
+		<a href="/search.php?i={$searchid}&amp;page={$searchpg}"><b>Suchergebnisse</b></a> |
+		<a href="/results/browse/{$searchid}/{$searchidx+1}" >Nächstes Bild &gt;</a>
+	</div>
+{elseif $search_keywords && $search_count}
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
 		Es gibt mindestens <b>{$search_count} Bilder</b>, die die Anfrage [{$search_keywords|escape:'html'}] im Gebiet erfüllen! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">Jetzt ansehen</a>
 	</div>

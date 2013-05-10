@@ -23,7 +23,17 @@
 <br/>
 {/if}
 {dynamic}
-{if $search_keywords && $search_count}
+{if $searchid}
+	<div class="interestBox" style="text-align:center; font-size:0.9em;width:400px;margin-left:auto;margin-right:auto">
+		{if $searchidx}
+			<a href="/results/browse/{$searchid}/{$searchidx-1}">&lt; prev image</a>
+                {else}
+			<span style="color:silver" title="first image">&lt; prev image</span>
+		{/if} |
+		<a href="/search.php?i={$searchid}&amp;page={$searchpg}"><b>back to search results</b></a> |
+		<a href="/results/browse/{$searchid}/{$searchidx+1}" >next image &gt;</a>
+	</div>
+{elseif $search_keywords && $search_count}
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
 		We have at least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a>
 	</div>

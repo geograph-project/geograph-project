@@ -49,12 +49,18 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 		print "<title>Image no longer available</title>";
 	}
 	exit;
-} elseif ((strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
+} elseif (isset($_GET['id']) && (strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE || strlen($_GET['id']) !== strlen(intval($_GET['id'])))) {
 	//keep urls nice and clean - esp. for search engines!
 	header("HTTP/1.0 301 Moved Permanently");
 	header("Status: 301 Moved Permanently");
 	header("Location: /photo/".intval($_GET['id']));
 	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_GET['id'])."\">View image page</a>";
+	exit;
+} elseif (!isset($_GET['id']) && isset($_GET['searchid']) && (strpos($_SERVER["REQUEST_URI"],'/browse/') === FALSE || strlen($_GET['searchid']) !== strlen(intval($_GET['searchid'])) || strlen($_GET['searchidx']) !== strlen(intval($_GET['searchidx'])) )) {
+	header("HTTP/1.0 301 Moved Permanently");
+	header("Status: 301 Moved Permanently");
+	header("Location: /results/browse/".intval($_GET['searchid'])."/".intval($_GET['searchidx']));
+	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/results/browse/".intval($_GET['searchid'])."/".intval($_GET['searchidx'])."\">View image page</a>";
 	exit;
 }
 
@@ -91,6 +97,76 @@ if ($smarty->caching) {
 	$smarty->cache_lifetime = 3600*3; //3hour cache
 }
 
+if (isset($_GET['searchid']) && preg_match('/^\s*[1-9][0-9]*\s*$/', $_GET['searchid'])) {
+	$searchid = intval($_GET['searchid']);
+	if (isset($_GET['searchidx']) && preg_match('/^\s*[0-9]+\s*$/', $_GET['searchidx'])) {
+		$searchidx = intval($_GET['searchidx']);
+	} else {
+		$searchidx = 0;
+	}
+} else {
+	$searchid = 0;
+	$searchidx = 0;
+}
+if ($searchid) {
+	$haveimgid = isset($_GET['id']) && $_GET['id'] !== '0';
+	if ($_SESSION['cursearch_id'] == $searchid && ($haveimgid || $_SESSION['cursearch_minidx'] <= $searchidx && $searchidx < $_SESSION['cursearch_maxidx'])) { // FIXME expire result?
+		if (!$haveimgid) {
+			$_GET['id'] = $_SESSION['cursearch_imageids'][$searchidx - $_SESSION['cursearch_minidx']];
+		}
+		$pgsize = $_SESSION['cursearch_pgsize'];
+		$pg = floor($searchidx / $pgsize) + 1;
+	} else {
+		require_once('geograph/searchcriteria.class.php');
+		require_once('geograph/searchengine.class.php');
+		$engine = new SearchEngine($searchid);
+		if (empty($engine->criteria)) {
+			$searchid = 0;
+			$searchidx = 0;
+		} else {
+			$pgsize = $engine->criteria->resultsperpage;
+			if (!$pgsize) {
+				$pgsize = 15;
+			}
+			$pg = floor($searchidx / $pgsize) + 1;
+			if (!$haveimgid) {
+				$residx = $searchidx % $pgsize;
+				$engine->Execute($pg);
+				if (count($engine->results) <= $residx) {  /* not found => go to first image */
+					$searchidx = 0;
+					$residx = 0;
+					$pg = 1;
+					$engine->Execute(1);
+				}
+				if (count($engine->results) > $residx) {
+					$_GET['id'] = $engine->results[$residx]->gridimage_id;
+					$_SESSION['cursearch_id'] = $searchid;
+					$_SESSION['cursearch_pgsize'] = $pgsize;
+					$_SESSION['cursearch_minidx'] = ($pg - 1) * $pgsize;
+					$_SESSION['cursearch_maxidx'] = $_SESSION['cursearch_minidx'] + count($engine->results);
+					$_SESSION['cursearch_imageids'] = array();
+					foreach ($engine->results as &$resimage) {
+						$_SESSION['cursearch_imageids'][] = $resimage->gridimage_id;
+					}
+					unset ($resimage);
+				}
+			}
+		}
+	}
+	/*if (isset($_GET['id'])) {
+		header("HTTP/1.0 301 Moved Permanently");
+		header("Status: 301 Moved Permanently");
+		header("Location: /photo/".intval($_GET['id'])."?searchid=$searchid&searchidx=$searchidx");
+		exit;
+	} else {
+		header("Location: /");
+		exit;
+	}*/
+	if (isset($_GET['id'])) {
+		$smarty->assign('canonicalreq', '/photo/'.$_GET['id']);
+	}
+}
+
 $image=new GridImage;
 
 if (isset($_GET['id']))
@@ -123,12 +199,15 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
-	$notes = $image->getNotes(array('visible'));
-
 	//what style should we use?
 	$style = $USER->getStyle();
 	$cacheid.=$style;
 
+	$smarty->assign("searchid", $searchid);
+	$smarty->assign("searchidx", $searchidx);
+	if ($searchid) {
+		$smarty->assign("searchpg", $pg);
+	}
 
 	//when this image was modified
 	$mtime = strtotime($image->upd_timestamp);
@@ -149,16 +228,8 @@ if ($image->isValid())
 	}
 	$cacheid.="_s:$sid";
 
-	#if ($image->gridimage_id == 2 && $USER->user_id == 1)
-	#	$sid = 21;/*1;*/
-	#elseif (($image->gridimage_id == 29 /*|| $image->gridimage_id == 34*/ /*34*/ /*25*/) && $USER->user_id == 1)
-	#	$sid = 23;
-	#elseif ((/*$image->gridimage_id == 29 ||*/ $image->gridimage_id == 34 /*34*/ /*25*/) && $USER->user_id == 1)
-	#	$sid = 3;
-	#elseif ($image->gridimage_id == 40 && $USER->user_id == 1)
-	#	$sid = 4;
-	#else
-	#	$sid = -1;
+	$map_suffix = get_map_suffix();
+	$cacheid .= $map_suffix;
 
 	//page is unqiue per user (the profile and links)
 	$hash = $cacheid.'.'.$USER->user_id;
@@ -205,11 +276,10 @@ if ($image->isValid())
 		$smarty->assign('imageid', $image->gridimage_id);
 	}
 
-	$map_suffix = get_map_suffix();
-	$cacheid .= $map_suffix;
-
 	if (!$smarty->is_cached($template, $cacheid))
 	{
+		$notes =& $image->getNotes(array('visible'));
+
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 		$smarty->assign("sid",$sid);
 		$smarty->assign_by_ref("notes",$notes);

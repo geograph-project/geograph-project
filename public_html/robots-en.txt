@@ -96,6 +96,7 @@ Disallow: /tile.php
 Disallow: /tile/
 Disallow: /feed/userid/
 Disallow: /feed/results
+Disallow: /results/browse
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
@@ -157,6 +158,7 @@ Disallow: /tile.php
 Disallow: /tile/
 Disallow: /feed/userid/
 Disallow: /feed/results
+Disallow: /results/browse
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
@@ -218,6 +220,7 @@ Disallow: /tile.php
 Disallow: /tile/
 Disallow: /feed/userid/
 Disallow: /feed/results
+Disallow: /results/browse
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
@@ -277,6 +280,7 @@ Disallow: /tile.php
 Disallow: /tile/
 Disallow: /feed/userid/
 Disallow: /feed/results
+Disallow: /results/browse
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
