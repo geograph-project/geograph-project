@@ -87,7 +87,7 @@ foreach($photos as $id=>$entry)
 	if ($entry['imagecount']==1) {
 		$placemark = new kmlPlacemark($entry['gridimage_id'],$entry['grid_reference'].' :: '.$title,$point);
 		$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
-		$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$entry['title'].' by '.$entry['realname']);
+		$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$title.' by '.$entry['realname']);
 		$placemark->setItem('description',$placemark->link);
 
 		$r = ($entry['natgrlen'] > 4)?'':'r';
