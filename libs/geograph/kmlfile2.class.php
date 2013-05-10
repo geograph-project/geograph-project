@@ -188,6 +188,10 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		//SH43(5)E  -> SH43(N)E 
 		$gr = preg_replace('/^(.+)[5-9]([EW])$/e','$1."N".$2',$gr);
 		$gr = preg_replace('/^(.+)[0-4]([EW])$/e','$1."S".$2',$gr);
+	} elseif ($level == 4) {
+		$gr = preg_replace('/[NS][EW]$/','',$gr);
+	} elseif ($level == 6) {
+		$gr = preg_replace('/^(.+)(\d\d)\d(\d\d)\d$/e','$1$2$3',$gr);
 	}
 			
 	
