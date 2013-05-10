@@ -916,6 +916,22 @@ if (isset($_GET['fav']) && $i) {
 
 		$smarty->assign('querytime', $engine->Execute($pg));
 
+		if ($display == 'full' && count($engine->results)) {
+			$pgsize = $engine->criteria->resultsperpage;
+			if (!$pgsize) {
+				$pgsize = 15;
+			}
+			$_SESSION['cursearch_id'] = $i;
+			$_SESSION['cursearch_pgsize'] = $pgsize;
+			$_SESSION['cursearch_minidx'] = ($pg - 1) * $pgsize;
+			$_SESSION['cursearch_maxidx'] = $_SESSION['cursearch_minidx'] + count($engine->results);
+			$_SESSION['cursearch_imageids'] = array();
+			foreach ($engine->results as &$resimage) {
+				$_SESSION['cursearch_imageids'][] = $resimage->gridimage_id;
+			}
+			unset ($resimage);
+		}
+
 		$smarty->assign('i', $i);
 		$smarty->assign('currentPage', $pg);
 		$smarty->assign_by_ref('engine', $engine);
