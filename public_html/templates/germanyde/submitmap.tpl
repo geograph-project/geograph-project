@@ -9,7 +9,7 @@
 {/if}
 
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
-<script type="text/javascript" src="{"/mappingG.js"|revision}"></script>
+<script type="text/javascript" src="{"/mappingG3.js"|revision}"></script>
 {literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -36,104 +36,54 @@
 
 		function showAddress(address) {
 			if (!geocoder) {
-				 geocoder = new GClientGeocoder();
+				 geocoder = new google.maps.Geocoder();
 			}
 			if (geocoder) {
-				geocoder.getLatLng(address,function(point) {
-					if (!point) {
-						alert("Die Eingabe '" + address + "' konnte nicht bearbeitet werden, bitte nochmals versuchen");
+				geocoder.geocode( { 'address': address}, function(results, status) {
+					if (status == google.maps.GeocoderStatus.OK) {
+						var point = results[0].geometry.location;
+
+						makeMarker(point)
+						map.panTo(point);
+
 					} else {
-						if (currentelement) {
-							currentelement.setPoint(point);
-							GEvent.trigger(currentelement,'drag');
-
-						} else {
-							currentelement = createMarker(point,null);
-							map.addOverlay(currentelement);
-
-							GEvent.trigger(currentelement,'drag');
-						}
-						map.setCenter(point, 12);
+						alert('Es konnte kein pasender Ort bestimmt werden, Geocode meldet folgendes Problem: ' + status);
 					}
-				 });
+				});
 			}
 			return false;
 		}
 
 		function loadmap() {
-			if (GBrowserIsCompatible()) {
-				map = new GMap2(document.getElementById("map"));
-				map.addMapType(G_PHYSICAL_MAP);
+			var point = new google.maps.LatLng(lat0,lon0);
+			var zoom = 5;
+			var mapTypeId = google.maps.MapTypeId.HYBRID;
 
-				G_PHYSICAL_MAP.getMinimumResolution = function () { return 5 };
-				G_NORMAL_MAP.getMinimumResolution = function () { return 5 };
-				G_SATELLITE_MAP.getMinimumResolution = function () { return 5 };
-				G_HYBRID_MAP.getMinimumResolution = function () { return 5 };
-
-				map.addControl(new GLargeMapControl());
-				map.addControl(new GMapTypeControl(true));
-				
-				var point = new GLatLng(lat0, lon0);
-				map.setCenter(point, 5);
-
-				map.enableDoubleClickZoom(); 
-				map.enableContinuousZoom();
-				map.enableScrollWheelZoom();
-		
-				GEvent.addListener(map, "click", function(marker, point) {
-					if (marker) {
-					} else if (currentelement) {
-						currentelement.setPoint(point);
-						GEvent.trigger(currentelement,'drag');
-					
-					} else {
-						currentelement = createMarker(point,null);
-						map.addOverlay(currentelement);
-						
-						GEvent.trigger(currentelement,'drag');
-					}
-				});
-
-
-				AttachEvent(window,'unload',GUnload,false);
-
-				// Add a move listener to restrict the bounds range
-				GEvent.addListener(map, "move", function() {
-					checkBounds();
-				});
-
-				// The allowed region which the whole map must be within
-				var allowedBounds = new GLatLngBounds(new GLatLng(latmin,lonmin), new GLatLng(latmax,lonmax));
-
-				// If the map position is out of range, move it back
-				function checkBounds() {
-					// Perform the check and return if OK
-					if (allowedBounds.contains(map.getCenter())) {
-					  return;
-					}
-					// It`s not OK, so find the nearest allowed point and move there
-					var C = map.getCenter();
-					var X = C.lng();
-					var Y = C.lat();
-
-					var AmaxX = allowedBounds.getNorthEast().lng();
-					var AmaxY = allowedBounds.getNorthEast().lat();
-					var AminX = allowedBounds.getSouthWest().lng();
-					var AminY = allowedBounds.getSouthWest().lat();
-
-					if (X < AminX) {X = AminX;}
-					if (X > AmaxX) {X = AmaxX;}
-					if (Y < AminY) {Y = AminY;}
-					if (Y > AmaxY) {Y = AmaxY;}
-
-					map.setCenter(new GLatLng(Y,X));
-
-					// This Javascript Function is based on code provided by the
-					// Blackpool Community Church Javascript Team
-					// http://www.commchurch.freeserve.co.uk/   
-					// http://econym.googlepages.com/index.htm
+			map = new google.maps.Map(
+				document.getElementById('map'), {
+				center: point,
+				zoom: zoom,
+				mapTypeId: mapTypeId,
+				streetViewControl: false, //true,
+				mapTypeControlOptions: {
+					mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN],
+					style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
 				}
+			});
+			map.setTilt(0);
+
+			google.maps.event.addListener(map, "click", function(event) {
+				makeMarker(event.latLng);
+			});
+		}
+
+		function makeMarker(position) {
+			if (currentelement) {
+				currentelement.setPosition(position);
+			} else {
+				currentelement = createMarker(position,null);
 			}
+			google.maps.event.trigger(currentelement,'drag');
 		}
 
 		AttachEvent(window,'load',loadmap,false);
@@ -169,7 +119,7 @@
 </div>
 </form>
 
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;key={$google_maps_api_key}" type="text/javascript"></script>
 {if $inner}
 </body>
 </html>
