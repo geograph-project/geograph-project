@@ -249,7 +249,7 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 		pp.transform(map.getProjectionObject(), epsg4326);
 		
 		//create a wgs84 coordinate
-		wgs84=new GT_WGS84();
+		var wgs84=new GT_WGS84();
 		wgs84.setDegrees(pp.lat, pp.lon);
 		if (ri == -1||issubmit) {
 		if (wgs84.isIreland()) {
@@ -302,8 +302,8 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 		var gridref = grid.getGridRef(newdigits);
 
 		if (vector.attributes.mtype) {
-			lon2 = wgs84.longitude*Math.PI/180.;
-			lat2 = wgs84.latitude*Math.PI/180.;
+			lon2 = pp.lon*Math.PI/180.;
+			lat2 = pp.lat*Math.PI/180.;
 			eastings2 = grid.eastings;
 			northings2 = grid.northings;
 			document.theForm.photographer_gridref.value = gridref;
@@ -542,7 +542,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	
 	if (ok) {
 		//convert to a wgs84 coordinate
-		wgs84 = grid.getWGS84(true);
+		var wgs84 = grid.getWGS84(true);
 
 		//now work with wgs84.latitude and wgs84.longitude
 		var point = new OpenLayers.LonLat(wgs84.longitude, wgs84.latitude);
