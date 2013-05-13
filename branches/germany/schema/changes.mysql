@@ -751,3 +751,15 @@ CREATE TABLE `user_vote_stat` (
 ALTER TABLE `user_vote_stat` DROP `weight`;
 ALTER TABLE `gridimage_vote` CHANGE `created` `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE `gridimage_vote` ADD `weight` float(7,6) NOT NULL DEFAULT 0 AFTER `vote`;
+
+####
+# just for documentation: gets changed automatically by libs/event_handlers/every_hour/RebuildUserStats.class.php
+
+alter table user_stat add `content` mediumint(5) unsigned NOT NULL default '0' after `last`;
+
+alter table user_stat add `selfrate_like` mediumint(5) unsigned NOT NULL DEFAULT '0' after `content`;
+alter table user_stat add `selfrate_site` mediumint(5) unsigned NOT NULL DEFAULT '0' after `selfrate_site`;
+alter table user_stat add `selfrate_qual` mediumint(5) unsigned NOT NULL DEFAULT '0' after `selfrate_qual`;
+alter table user_stat add `selfrate_info` mediumint(5) unsigned NOT NULL DEFAULT '0' after `selfrate_info`;
+
+####

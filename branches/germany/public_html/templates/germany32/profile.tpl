@@ -185,7 +185,7 @@
 {/if}
 
 {if $userimages}
-	<div style="float:right; position:relative; font-size:0.7em; padding:10px"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)<br/>
+	<div style="float:right; position:relative; font-size:0.7em; padding:10px"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>{if $profile->stats.selfrate_like gt 2}, <a href="/search.php?u={$profile->user_id}&amp;orderby=selfrate_like&amp;reverse_order_ind=1&amp;displayclass=full"><b>selected images</b></a>{/if})<br/>
 	<form action="/search.php" style="display:inline">
 	<label for="fq">Search</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 	<input type="hidden" name="user_id" value="{$profile->user_id}"/>
