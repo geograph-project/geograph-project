@@ -11,10 +11,10 @@
 	{searchbreak image=$image}
 	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
-		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}?searchid={$i}&amp;searchidx={$engine->currentPage*$pgl-$pgl+$residx}">{$image->getThumbnail(120,120)}</a>
+		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}{if $is_logged_in}?searchid={$i}&amp;searchidx={$engine->currentPage*$pgl-$pgl+$residx}{/if}">{$image->getThumbnail(120,120)}</a>
 	  </div>
 	  <div style="float:left; position:relative">
-		<a title="view full size image" href="/photo/{$image->gridimage_id}?searchid={$i}&amp;searchidx={$engine->currentPage*$pgl-$pgl+$residx}"><b>{$image->title|escape:'html'}</b></a>
+		<a title="view full size image" href="/photo/{$image->gridimage_id}{if $is_logged_in}?searchid={$i}&amp;searchidx={$engine->currentPage*$pgl-$pgl+$residx}{/if}"><b>{$image->title|escape:'html'}</b></a>
 		by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
 		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
 		<i>{$image->dist_string}</i><br/>
