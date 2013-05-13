@@ -52,6 +52,8 @@ ommap.tpl, rastermap.class.php:
 		var inimlon = {$inimlon};
 		var iniuser = {$iniuser};
 {/dynamic}
+		var ovltypes;
+		var maptypes;
 {literal}
 
 		function openGeoWindow(prec, url) {
@@ -74,7 +76,42 @@ ommap.tpl, rastermap.class.php:
 				map.events.triggerEvent("dragend");
 			}
 		}
+{/literal}
+{if $google_maps_api_key}
+{literal}
+		//the geocoder object
+		var geocoder;
 
+		function showAddress(address) {
+			if (!geocoder) {
+				 geocoder = new google.maps.Geocoder();
+			}
+			if (geocoder) {
+				geocoder.geocode( { 'address': address}, function(results, status) {
+					if (status == google.maps.GeocoderStatus.OK) {
+						var gmpoint = results[0].geometry.location;
+						var ll = new OpenLayers.LonLat(gmpoint.lng(), gmpoint.lat());
+						var point = ll.clone().transform(epsg4326, map.getProjectionObject());
+						if (!(map.baseLayer instanceof OpenLayers.Layer.Google)) {
+							map.setBaseLayer(maptypes['h']);
+						}
+						if (currentelement) {
+							currentelement.move(point);
+						} else {
+							currentelement = createMarker(ll, 0);
+						}
+						map.setCenter(point, 15);
+						markerDrag(currentelement, null);
+					} else {
+						alert('Es konnte kein pasender Ort bestimmt werden, Geocode meldet folgendes Problem: ' + status);
+					}
+				});
+			}
+			return false;
+		}
+{/literal}
+{/if}
+{literal}
 		function loadmapO() {
 			//OpenLayers.Lang.setCode("de"); /* TODO Needs OpenLayers/Lang/de.js built into OpenLayers.js */
 
@@ -386,12 +423,12 @@ ommap.tpl, rastermap.class.php:
 {/literal}
 {/if}
 {literal}
-			var ovltypes = {
+			ovltypes = {
 				'S' : geosq,
 				'G' : geogr,
 				'H' : hills
 			}
-			var maptypes = {
+			maptypes = {
 {/literal}
 {if $google_maps_api_key}
 {literal}
@@ -588,7 +625,8 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 </div>
 {/if}
 
-<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen...</p>
+<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen.<br />
+Anklicken der <img alt="+" src="/ol/img/layer-switcher-maximize.png" />-Symbole zeigt andere Kartentypen und eine Übersichtskarte.</p>
 
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{elseif $ext}action="javascript:void()"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
@@ -635,13 +673,15 @@ Abdeckung
 
 
 </form>
-{*<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
-<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:</label>
+{if $google_maps_api_key}
+<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
+<div style="width:600px; text-align:center;"><label for="addressInput">Adresse eingeben:</label>
 	<input type="text" size="50" id="addressInput" name="address" value="" />
-	<input type="submit" value="Find"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder)</small></small>
+	<input type="submit" value="Suchen"/><small><small><br/>
+	(über Google Maps API Geocoder)</small></small>
 </div>
-</form>*}
+</form>
+{/if}
 
 {if $inner}
 </body>
