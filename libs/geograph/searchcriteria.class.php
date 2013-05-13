@@ -213,7 +213,7 @@ class SearchCriteria
 			}
 		} 
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
-			if (preg_match('/^rating_/', $this->orderby)) {
+			if (preg_match('/^rating_[a-z_]/', $this->orderby)) {
 				$type = preg_replace('/^rating_([a-z_]+).*$/', '$1', $this->orderby);
 				$sql_order = preg_replace('/^rating_[a-z_]+(.*)$/', '$1', $this->orderby);
 				$sql_order = 'gr.rating'.preg_replace('/[^\w,\(\)]+/',' ',$sql_order);
@@ -223,6 +223,21 @@ class SearchCriteria
 					$sql_where .= ' and ';
 				}
 				$sql_where .= "gr.rating > 0.25";
+			} elseif (preg_match('/^selfrate_[a-z_]/', $this->orderby) /*&& !empty($this->limit1) && strpos($this->limit1,'!') !== 0*/) {
+				$type = preg_replace('/^selfrate_([a-z_]+).*$/', '$1', $this->orderby);
+				$sql_order = preg_replace('/^selfrate_[a-z_]+(.*)$/', '$1', $this->orderby);
+				$sql_order = 'gv.vote'.preg_replace('/[^\w,\(\)]+/',' ',$sql_order);
+				$sql_from .= " inner join gridimage_vote gv on (gi.gridimage_id=gv.gridimage_id and gi.user_id=gv.user_id and gv.type='$type') ";
+				$this->sphinx['impossible']++;
+				if ($sql_where) {
+					$sql_where .= ' and ';
+				}
+				if (empty($this->limit1) || strpos($this->limit1,'!') === 0) {
+					// only for searches on a specific user. use impossible condition to get an empty result.
+					$sql_where .= "gv.vote >= 1000";
+				} else {
+					$sql_where .= "gv.vote >= 3";
+				}
 			} else switch ($this->orderby) {
 				case 'random':
 					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
