@@ -15,24 +15,35 @@
 	<script type="text/javascript">
 	//<![CDATA[
 	var map;
+	var infoWindow;
 
 	function onLoad() {
-		map = new GMap2(document.getElementById("map"));
-		map.addMapType(G_PHYSICAL_MAP);
-		map.addControl(new GSmallMapControl());
-		map.addControl(new GMapTypeControl());
-		var mapType = G_NORMAL_MAP;
+		var point = new google.maps.LatLng(0,0);
+		var zoom = 0;
+		var mapType = google.maps.MapTypeId.HYBRID;
+		infoWindow = new google.maps.InfoWindow();
 
-		var bounds = new GLatLngBounds();
+		map = new google.maps.Map(
+			document.getElementById('map'), {
+			center: point,
+			zoom: zoom,
+			mapTypeId: mapType,
+			streetViewControl: false, //true,
+			mapTypeControlOptions: {
+				mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN],
+				style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+			}
+		});
+
+		var bounds = new google.maps.LatLngBounds();
 
 		{/literal}{foreach from=$engine->results item=image}
-			bounds.extend(new GLatLng({$image->wgs84_lat}, {$image->wgs84_long}));
+			bounds.extend(new google.maps.LatLng({$image->wgs84_lat}, {$image->wgs84_long}));
 		{/foreach}{literal}
 
-		var newZoom = map.getBoundsZoomLevel(bounds);
-		var center = bounds.getCenter();
+		map.fitBounds(bounds);
 		
-		if (location.hash.length) {
+		if (location.hash.length) { // FIXME not working?
 			// If there are any parameters at the end of the URL, they will be in location.search
 			// looking something like  "#ll=50,-3&z=10&t=h"
 
@@ -48,51 +59,126 @@
 
 				if (argname == "ll") {
 					var bits = value.split(',');
-					center = new GLatLng(parseFloat(bits[0]),parseFloat(bits[1]));
+					var center = new google.maps.LatLng(parseFloat(bits[0]),parseFloat(bits[1]));
+					map.setCenter(center);
 				}
-				if (argname == "z") {newZoom = parseInt(value);}
+				if (argname == "z") {
+					var newZoom = parseInt(value);
+					map.setZoom(newZoom);
+				}
 				if (argname == "t") {
-					if (value == "m") {mapType = G_NORMAL_MAP;}
-					if (value == "k") {mapType = G_SATELLITE_MAP;}
-					if (value == "h") {mapType = G_HYBRID_MAP;}
-					if (value == "p") {mapType = G_PHYSICAL_MAP;}
-					if (value == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
+					if (value == "m") {
+						map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+					} else if (value == "k") {
+						map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+					} else if (value == "h") {
+						map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+					} else if (value == "p") {
+						map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+					}
+					//if (value == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
 				}
 			}
 		}
 
-		map.setCenter(center, newZoom,mapType);
-
-
 		{/literal}
-		var xml = new GGeoXml("http://{$http_host}/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.kml");
-		map.addOverlay(xml);
+		//var xml = new GGeoXml("http://{$http_host}/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.kml");
+		//map.addOverlay(xml);
 
-		{if $markers} 
+		{if $markers}
 			{foreach from=$markers item=marker}
-				map.addOverlay(createMarker(new GLatLng({$marker.1},{$marker.2}),'{$marker.0}'));
+				createMarker(new google.maps.LatLng({$marker.1},{$marker.2}),'{$marker.0}');
 			{/foreach}
 		{/if}{literal}
 
-		GEvent.addListener(map, "moveend", makeHash);
-		GEvent.addListener(map, "zoomend", makeHash);
-		GEvent.addListener(map, "maptypechanged", makeHash);
+		var html;
+		var thumburl;
+		var thumbwidth;
+		var thumbheight;
+		{/literal}{foreach from=$engine->results item=image}
+			thumburl = '{$image->getThumbnail(120,120,3)|escape:"javascript"}';
+			thumbwidth = {$image->last_width};
+			thumbheight = {$image->last_height};
+			html = makeHtml(
+				'/photo/{$image->gridimage_id}',
+				'{$image->realname|escape:"html"|escape:"javascript"}',
+				'{$image->grid_reference|escape:"html"|escape:"javascript"}',
+				'{$image->title1|escape:"html"|escape:"javascript"}',
+				'{$image->title2|escape:"html"|escape:"javascript"}',
+				'{$image->comment1|escape:"html"|nl2br|geographlinks|escape:"javascript"}',
+				'{$image->comment2|escape:"html"|nl2br|geographlinks|escape:"javascript"}',
+				thumburl, thumbwidth, thumbheight
+			);
+			createMarker(new google.maps.LatLng({$image->wgs84_lat}, {$image->wgs84_long}), html, thumburl, thumbwidth, thumbheight);
+		{/foreach}{literal}
+
+		google.maps.event.addListener(map, "dragend", makeHash);
+		google.maps.event.addListener(map, "zoom_changed", makeHash);
+		google.maps.event.addListener(map, "maptypeid_changed", makeHash);
+		// FIXME tilt_changed
 	}
 
 	function makeHash() {
 		var ll = map.getCenter().toUrlValue(6);
 		var z = map.getZoom();
-		var t = map.getCurrentMapType().getUrlArg();
+		var t = map.getMapTypeId();//CurrentMapType().getUrlArg();
+		if (t == google.maps.MapTypeId.ROADMAP) {
+			t = 'm';
+		} else if (t == google.maps.MapTypeId.SATELLITE) {
+			t = 'k';
+		} else if (t == google.maps.MapTypeId.HYBRID) {
+			t = 'h';
+		} else if (t == google.maps.MapTypeId.TERRAIN) {
+			t = 'p';
+		} else {
+			t = 'h';
+		}
 		window.location.hash = '#ll='+ll+'&z='+z+'&t='+t;
 	}
 
-	function createMarker(point,myHtml) {
-		var marker = new GMarker(point, {draggable: true});
+	function makeHtml(photourl, realname, gridref, title1, title2, comment1, comment2, thumburl, thumbwidth, thumbheight) {
+		var title = title2 === '' ? title1 : (title1 === '' ? title2 : title1 + ' (' + title2 + ')');
+		title = gridref + ' : ' + title;
+		var comment = comment2 === '' ? comment1 : (comment1 === '' ? comment2 : comment1 + '</p><hr style="width:3em"/><p style="font-weight:bold">' + comment2);
+		var html = '<h4 style="font-family:Arial,sans-serif;font-weight:bold;font-size:medium">'+title+'</h4>';
+		html += '<div style="font-family:Arial,sans-serif;text-align:center;font-size:small">';
+		html += '<p><a href="'+photourl+'" target="_blank"><img src="'+thumburl+'" width="'+thumbwidth+'" height="'+thumbheight+'" alt="'+title+'"/></a></p>';
+		if (comment !== '') {
+			html += '<p style="font-weight:bold">' + comment + '</p>';
+		}
+		html += '<p>&copy; Copyright <i>'+realname+'</i> and licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative Commons Licence</a></p>';
+		html += '<p><a href="'+photourl+'" target="_blank">View photo page</a></p>';
+		html += '</div>';
+		return html;
+	}
 
-		GEvent.addListener(marker, "click", function() {
-			map.openInfoWindowHtml(point, myHtml);
+	function createMarker(point,myHtml,url,w,h) {
+		if (url !== null) {
+			var maxdim = Math.max(w, h);
+			var scale = maxdim <= 40 ? 1 : 40.0/maxdim;
+			var sw = Math.round(scale * w);
+			var sh = Math.round(scale * h);
+			var ax = Math.round(0.5 * sw);
+			var ay = Math.round(0.5 * sh);
+			var icon = new google.maps.MarkerImage(url, new google.maps.Size(w, h), null, new google.maps.Point(ax, ay), new google.maps.Size(sw, sh));
+			var marker = new google.maps.Marker({
+				position: point,
+				map: map,
+				icon: icon,
+			});
+		} else {
+			var marker = new google.maps.Marker({
+				position: point,
+				map: map,
+				draggable: true,
+			});
+		}
+
+		google.maps.event.addListener(marker, "click", function() {
+			infoWindow.setContent(myHtml);
+			infoWindow.open(map, marker);
 		});
-		GEvent.addListener(marker, "dragend", function() {
+		google.maps.event.addListener(marker, "dragend", function() {
 			marker.setPoint(point);
 		});
 
@@ -114,7 +200,7 @@
 	{if $engine->results}
 	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 	
-	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+	<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;key={$google_maps_api_key}" type="text/javascript"></script>
 	{/if}
 {else}
 	{include file="_search_noresults.tpl"}

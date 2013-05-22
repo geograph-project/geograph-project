@@ -1434,7 +1434,7 @@ class GridImage
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		}
 
-		if (!empty($params['urlonly']) && $params['urlonly'] !== 2 && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
+		if (!empty($params['urlonly']) && $params['urlonly'] !== 2 && $params['urlonly'] !== 3 && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
 			$return=array();
 			$return['url']=$thumbpath;
 			if (!empty($CONF['enable_cluster'])) {
@@ -1468,6 +1468,10 @@ class GridImage
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
 			$return['html']=$html;
+
+			// keep those for smarty templates
+			$this->last_width = $size[0];
+			$this->last_height = $size[1];
 					
 			return $return;
 		}
@@ -1646,6 +1650,8 @@ class GridImage
 		if ($thumbpath=='/photos/error.jpg')
 		{
 			$html="<img $attribname=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" />";
+			$this->last_width = $maxw;
+			$this->last_height = $maxh;
 		}
 		else
 		{
@@ -1664,6 +1670,10 @@ class GridImage
 			}
 			
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
+
+			// keep those for smarty templates
+			$this->last_width = $size[0];
+			$this->last_height = $size[1];
 			
 			//fails quickly if not using memcached!
 			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_med);
@@ -1701,11 +1711,11 @@ class GridImage
 		
 		if (!empty($urlonly)) {
 			if ($urlonly === 2) 
-				return $resized;
+				return $resized; // $urlonly === 2
 			else 
-				return $resized['server'].$resized['url'];
+				return $resized['server'].$resized['url']; // $urlonly == true || $urlonly === 1 || $urlonly === 3
 		} else
-			return $resized['html'];
+			return $resized['html']; // $urlonly === false || $urlonly === 0
 	}	
 	
 	/**
