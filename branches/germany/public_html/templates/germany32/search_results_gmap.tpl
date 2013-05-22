@@ -18,32 +18,11 @@
 	var infoWindow;
 
 	function onLoad() {
-		var point = new google.maps.LatLng(0,0);
-		var zoom = 0;
+		var point = null;
+		var zoom = null;
 		var mapType = google.maps.MapTypeId.HYBRID;
-		infoWindow = new google.maps.InfoWindow();
 
-		map = new google.maps.Map(
-			document.getElementById('map'), {
-			center: point,
-			zoom: zoom,
-			mapTypeId: mapType,
-			streetViewControl: false, //true,
-			mapTypeControlOptions: {
-				mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN],
-				style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-			}
-		});
-
-		var bounds = new google.maps.LatLngBounds();
-
-		{/literal}{foreach from=$engine->results item=image}
-			bounds.extend(new google.maps.LatLng({$image->wgs84_lat}, {$image->wgs84_long}));
-		{/foreach}{literal}
-
-		map.fitBounds(bounds);
-		
-		if (location.hash.length) { // FIXME not working?
+		if (location.hash.length) {
 			// If there are any parameters at the end of the URL, they will be in location.search
 			// looking something like  "#ll=50,-3&z=10&t=h"
 
@@ -59,31 +38,57 @@
 
 				if (argname == "ll") {
 					var bits = value.split(',');
-					var center = new google.maps.LatLng(parseFloat(bits[0]),parseFloat(bits[1]));
-					map.setCenter(center);
+					point = new google.maps.LatLng(parseFloat(bits[0]),parseFloat(bits[1]));
 				}
 				if (argname == "z") {
-					var newZoom = parseInt(value);
-					map.setZoom(newZoom);
+					zoom = parseInt(value);
 				}
 				if (argname == "t") {
 					if (value == "m") {
-						map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
+						mapType = google.maps.MapTypeId.ROADMAP;
 					} else if (value == "k") {
-						map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+						mapType = google.maps.MapTypeId.SATELLITE;
 					} else if (value == "h") {
-						map.setMapTypeId(google.maps.MapTypeId.HYBRID);
+						mapType = google.maps.MapTypeId.HYBRID;
 					} else if (value == "p") {
-						map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+						mapType = google.maps.MapTypeId.TERRAIN;
 					}
 					//if (value == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
 				}
 			}
 		}
 
+		var fitbounds = point === null || zoom === null;
+		if (fitbounds) {
+			point = new google.maps.LatLng(0,0);
+			zoom = 0;
+		}
+
+		infoWindow = new google.maps.InfoWindow();
+
+		map = new google.maps.Map(
+			document.getElementById('map'), {
+			center: point,
+			zoom: zoom,
+			mapTypeId: mapType,
+			streetViewControl: false, //true,
+			mapTypeControlOptions: {
+				mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN],
+				style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+			}
+		});
+
+		if (fitbounds) {
+			var bounds = new google.maps.LatLngBounds();
+
+			{/literal}{foreach from=$engine->results item=image}
+				bounds.extend(new google.maps.LatLng({$image->wgs84_lat}, {$image->wgs84_long}));
+			{/foreach}{literal}
+
+			map.fitBounds(bounds);
+		}
+		
 		{/literal}
-		//var xml = new GGeoXml("http://{$http_host}/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.kml");
-		//map.addOverlay(xml);
 
 		{if $markers}
 			{foreach from=$markers item=marker}
@@ -115,7 +120,7 @@
 		google.maps.event.addListener(map, "dragend", makeHash);
 		google.maps.event.addListener(map, "zoom_changed", makeHash);
 		google.maps.event.addListener(map, "maptypeid_changed", makeHash);
-		// FIXME tilt_changed
+		// FIXME tilt_changed?
 	}
 
 	function makeHash() {
@@ -153,7 +158,7 @@
 	}
 
 	function createMarker(point,myHtml,url,w,h) {
-		if (url !== null) {
+		if (typeof url !== "undefined") {
 			var maxdim = Math.max(w, h);
 			var scale = maxdim <= 40 ? 1 : 40.0/maxdim;
 			var sw = Math.round(scale * w);
@@ -179,7 +184,7 @@
 			infoWindow.open(map, marker);
 		});
 		google.maps.event.addListener(marker, "dragend", function() {
-			marker.setPoint(point);
+			marker.setPosition(point);
 		});
 
 		return marker;
