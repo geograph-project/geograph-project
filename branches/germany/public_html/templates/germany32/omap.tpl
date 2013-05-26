@@ -343,6 +343,7 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 		}
 
 		function loadmapO() {
+			initOL();
 			OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 				defaultHandlerOptions: {
 					'single': true,

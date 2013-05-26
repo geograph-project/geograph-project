@@ -22,6 +22,9 @@
  
  var currentelement = null;
  var dragmarkers = null;
+
+ var markers = null;
+ var current_popup = null;
  
  var marker1 = null;
  var eastings1 = 0;
@@ -33,9 +36,8 @@
  var lon1 = 0;
  var lat2 = 0;
  var lon2 = 0;
- var epsg4326 = new OpenLayers.Projection("EPSG:4326");
- var epsg900913 = new OpenLayers.Projection("EPSG:900913"); // FIXME these should be initialized in a function => openlayers could be loaded later
-
+ var epsg4326;
+ var epsg900913;
 
  var pickupbox = null;
  var pickuplayer = null;
@@ -50,25 +52,30 @@ OpenLayers.Util.Geograph = {};
 OpenLayers.Util.Geograph.MISSING_TILE_URL = "/maps/transparent_256_256.png";
 OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE = "/maps/blue_256_256.png";
 OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE200 = "/maps/blue_200_200.png";
-OpenLayers.Util.Geograph.originalOnImageLoadError = OpenLayers.Util.onImageLoadError;
-OpenLayers.Util.onImageLoadError = function() {
-	// FIXME would be nice to have this.layer -> test for this.layer.errorTile
-	if (this.src.contains("hills")) { // FIXME
-		/* Profile (Nop) */
-		// do nothing - this layer is transparent
-	} else if (this.src.match(/tile\.php\?.*&o=1/)) {
-		/* Overlays */
-		// do nothing - this layer is transparent
-	} else if (this.src.match(/tile\.php\?/)) {
-		/* Base layer */
-		// FIXME blue tile?
-		//this.src = OpenLayers.Util.Geograph.MISSING_TILE_URL;
-		if (this.map.baseLayer.errorTile)
-			this.src = this.map.baseLayer.errorTile;
-	} else {
-		OpenLayers.Util.Geograph.originalOnImageLoadError;
-	}
-};
+
+function initOL() {
+	epsg4326 = new OpenLayers.Projection("EPSG:4326");
+	epsg900913 = new OpenLayers.Projection("EPSG:900913"); // FIXME these should be initialized in a function => openlayers could be loaded later
+	OpenLayers.Util.Geograph.originalOnImageLoadError = OpenLayers.Util.onImageLoadError;
+	OpenLayers.Util.onImageLoadError = function() {
+		// FIXME would be nice to have this.layer -> test for this.layer.errorTile
+		if (this.src.contains("hills")) { // FIXME
+			/* Profile (Nop) */
+			// do nothing - this layer is transparent
+		} else if (this.src.match(/tile\.php\?.*&o=1/)) {
+			/* Overlays */
+			// do nothing - this layer is transparent
+		} else if (this.src.match(/tile\.php\?/)) {
+			/* Base layer */
+			// FIXME blue tile?
+			//this.src = OpenLayers.Util.Geograph.MISSING_TILE_URL;
+			if (this.map.baseLayer.errorTile)
+				this.src = this.map.baseLayer.errorTile;
+		} else {
+			OpenLayers.Util.Geograph.originalOnImageLoadError;
+		}
+	};
+}
 
 /**
  * Subclass OpenLayers.Layer.XYZ for layers with a restristricted range of zoom levels.
@@ -221,6 +228,86 @@ OpenLayers.Layer.XYrZ = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 		}
 	);
  }
+
+function initIconLayer() {
+	markers = new OpenLayers.Layer.Markers(
+		"Icons markers",
+		{
+			isBaseLayer: false,
+			displayInLayerSwitcher: false
+		}
+	);
+}
+
+GeoPopup = OpenLayers.Class(OpenLayers.Popup.FramedCloud, {
+	'autoSize': true,
+	'maxSize': new OpenLayers.Size(450,350),
+});
+
+function createPopupMarker(point,html,url,w,h,scaleddim) {
+	if (typeof url !== "undefined" && url != null) {
+		var maxdim = Math.max(w, h);
+		var scale = scaleddim ? (maxdim <= scaleddim ? 1 : scaleddim/maxdim) : 1;
+		var sw = Math.round(scale * w);
+		var sh = Math.round(scale * h);
+		var ax = Math.round(0.5 * sw);
+		var ay = Math.round(0.5 * sh);
+	} else {
+		var url = '/img/icons/viewicon.png';
+		var sw = 20;
+		var sh = 34;
+		var ax = 10;
+		var ay = 34; // FIXME Offsets: +/- 1??
+	}
+	var size = new OpenLayers.Size(sw,sh);
+	var offset = new OpenLayers.Pixel(-ax,-ay);
+	var icon = new OpenLayers.Icon(url,size,offset,null);
+	addPopupMarker(point, GeoPopup, html, true, true, icon);
+}
+
+/* http://openlayers.org/dev/examples/popupMatrix.html */
+/**
+ * Function: addMarker
+ * Add a new marker to the markers layer given the following lonlat, 
+ *     popupClass, and popup contents HTML. Also allow specifying 
+ *     whether or not to give the popup a close box.
+ * 
+ * Parameters:
+ * ll - {<OpenLayers.LonLat>} Where to place the marker
+ * popupClass - {<OpenLayers.Class>} Which class of popup to bring up 
+ *     when the marker is clicked.
+ * popupContentHTML - {String} What to put in the popup
+ * closeBox - {Boolean} Should popup have a close box?
+ * overflow - {Boolean} Let the popup overflow scrollbars?
+ */
+function addPopupMarker(ll, popupClass, popupContentHTML, closeBox, overflow, icon) {
+	var feature = new OpenLayers.Feature(markers, ll.clone().transform(epsg4326, map.getProjectionObject()));
+	feature.closeBox = closeBox;
+	feature.popupClass = popupClass;
+	feature.data.popupContentHTML = popupContentHTML;
+	feature.data.overflow = (overflow) ? "auto" : "hidden";
+	feature.data.icon = icon;
+
+	var marker = feature.createMarker();
+
+	var markerClick = function (evt) {
+		if (current_popup != null && current_popup != this.popup) {
+			current_popup.hide();
+		}
+		if (this.popup == null) {
+			this.popup = this.createPopup(this.closeBox);
+			map.addPopup(this.popup);
+			this.popup.show();
+		} else {
+			this.popup.toggle();
+		}
+		current_popup = this.popup;
+		OpenLayers.Event.stop(evt);
+	};
+	marker.events.register("mousedown", feature, markerClick);
+
+	markers.addMarker(marker);
+}
 
  /*function markerCompleteZoom() {
 	if (squarebox !== null && map.zoom < 17) {

@@ -52,9 +52,9 @@ ommap.tpl, rastermap.class.php:
 		var inimlon = {$inimlon};
 		var iniuser = {$iniuser};
 {/dynamic}
+{literal}
 		var ovltypes;
 		var maptypes;
-{literal}
 
 		function openGeoWindow(prec, url) {
 			var curgridref = document.theForm.grid_reference.value.replace(/ /g,'');
@@ -113,6 +113,7 @@ ommap.tpl, rastermap.class.php:
 {/if}
 {literal}
 		function loadmapO() {
+			initOL();
 			var op = 0.5;
 			if (inio >= 0)
 				op = inio;
