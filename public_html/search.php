@@ -1044,6 +1044,12 @@ if (isset($_GET['fav']) && $i) {
 				}
 			}
 			$smarty->assign_by_ref('markers',$markers);
+			$smarty->assign('lat0',   $CONF['gmcentre'][0]);
+			$smarty->assign('lon0',   $CONF['gmcentre'][1]);
+			$smarty->assign('latmin', $CONF['gmlatrange'][0][0]);
+			$smarty->assign('latmax', $CONF['gmlatrange'][0][1]);
+			$smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);
+			$smarty->assign('lonmax', $CONF['gmlonrange'][0][1]);
 		}
 	}
 
