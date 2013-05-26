@@ -1175,6 +1175,7 @@ EOF;
 					var ri = {$this->reference_index};
 					var map = null;
 		function loadmapO() {
+			initOL();
 			$ollang
 			var layerswitcher = new OpenLayers.Control.LayerSwitcher({'ascending':false});
 			map = new OpenLayers.Map({

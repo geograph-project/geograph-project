@@ -345,6 +345,7 @@ OpenLayers.Layer.Geograph = OpenLayers.Class(OpenLayers.Layer.XYZ, {
 		function loadmapO() {
 			//OpenLayers.Lang.setCode("de"); /* TODO Needs OpenLayers/Lang/de.js built into OpenLayers.js */
 
+			initOL();
 			OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 				defaultHandlerOptions: {
 					'single': true,
