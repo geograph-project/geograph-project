@@ -59,7 +59,13 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 ?>
 
-<!--script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false&amp;key={$google_maps_api_key}"></script-->
+<?php
+	if ($CONF['google_maps_api_key']) {
+?>
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false&amp;key=<?php print($CONF['google_maps_api_key']);?>"></script>
+<?php
+	}
+?>
 <script type="text/javascript" src="/ol/OpenLayers.js"></script>
 <script type="text/javascript" src="/mapper/geotools2.js"></script>
 <script type="text/javascript" src="/mappingO.js"></script>
@@ -163,7 +169,50 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 					new OpenLayers.Control.Attribution()
 				]
 			});
+<?php
+	if ($CONF['google_maps_api_key']) {
+?>
+			var gphy = new OpenLayers.Layer.Google(
+				"Google Physical",
+				{type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 16}
+			);
 
+			var gmap = new OpenLayers.Layer.Google(
+				"Google Streets",
+				{numZoomLevels: 20}
+			);
+
+			var ghyb = new OpenLayers.Layer.Google(
+				"Google Hybrid",
+				{type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
+			);
+
+			var gsat = new OpenLayers.Layer.Google(
+				"Google Satellite",
+				{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
+			);
+
+			gphy.hasHills = true;
+			gsat.hasHills = true;
+			ghyb.hasHills = true;
+			gphy.gmaxz = gphy.numZoomLevels-1;
+			gmap.gmaxz = gmap.numZoomLevels-1;
+			gsat.gmaxz = gsat.numZoomLevels-1;
+			ghyb.gmaxz = ghyb.numZoomLevels-1;
+<?php
+	}
+?>
+			var geogr = new OpenLayers.Layer.XYrZ(
+				"Geograph: Grid",
+				"/tile.php?x=${x}&y=${y}&Z=${z}&l=8&o=1",
+				4, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: '&copy; <a href="/">Geograph</a> (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+					sphericalMercator : true,
+					isBaseLayer : false,
+					visibility : false
+				}
+			);
 			var mapnik = new OpenLayers.Layer.XYrZ(
 				"Mapnik (Static + OSM)",
 				"/tile/osm/${z}/${x}/${y}.png",
@@ -174,16 +223,104 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 				},
 				16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
 			);
-
 			var osmmapnik = new OpenLayers.Layer.OSM(
 				null,
 				null,
 				{ numZoomLevels: 19 }
 			);
+			var hills = new OpenLayers.Layer.XYrZ(
+				"Relief",
+				"/tile/hills/${z}/${x}/${y}.png",
+				4, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: 'Relief: <a href="http://srtm.csi.cgiar.org/">CIAT data</a>',
+					sphericalMercator : true,
+					isBaseLayer : false,
+					visibility : false
+				}
+			);
+			hills.savedVisibility = false;
+			var topobase = new OpenLayers.Layer.XYrZ(
+				"Nop's Wanderreitkarte",
+				//[ "http://base.wanderreitkarte.de/base/${z}/${x}/${y}.png", "http://base2.wanderreitkarte.de/base/${z}/${x}/${y}.png"],
+				[ "http://topo.wanderreitkarte.de/topo/${z}/${x}/${y}.png", "http://topo2.wanderreitkarte.de/topo/${z}/${x}/${y}.png"], // topo3, topo4
+				4, 16, OpenLayers.Util.Geograph.MISSING_TILE_URL,
+				{
+					attribution: '&copy; <a href="http://www.wanderreitkarte.de/">Nop\'s Wanderreitkarte</a> (<a href="http://www.wanderreitkarte.de/licence_en.php">CC, CIAT</a>)',
+					sphericalMercator : true,
+					isBaseLayer : true
+				}
+			);
+			topobase.hasHills = true;
+			var cycle = new OpenLayers.Layer.OSM(
+				"Cycle Map",
+				"http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+				{
+					attribution: '&copy; <a href="http://opencyclemap.org/">OpenCycleMap</a> (<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+					numZoomLevels: 19
+				}
+			);
+			cycle.hasHills = true;
+
+			mapnik.gmaxz = mapnik.maxZoomLevel;//mapnik.numZoomLevels-1;
+			osmmapnik.gmaxz = osmmapnik.numZoomLevels-1;
+			topobase.gmaxz = topobase.maxZoomLevel;
+			cycle.gmaxz = cycle.numZoomLevels-1;
+
+			map.events.register("changebaselayer", map, function(e) {
+				var redrawlayerswitcher = false;
+				/* Don't show relief if already shown in base layer */
+				if (('hasHills' in e.layer) && e.layer.hasHills) {
+					if (!map.hillBase) {
+						hills.savedVisibility = hills.getVisibility();
+						hills.setVisibility(false);
+						hills.displayInLayerSwitcher = false;
+						redrawlayerswitcher = true;
+						map.hillBase = true;
+					}
+				} else if (map.hillBase) {
+					if (hills.savedVisibility)
+						hills.setVisibility(true);
+					hills.displayInLayerSwitcher = true;
+					redrawlayerswitcher = true;
+					map.hillBase = false;
+				}
+				if (redrawlayerswitcher) {
+					layerswitcher.layerStates = [];
+					layerswitcher.redraw();
+				}
+				if (e.layer instanceof OpenLayers.Layer.XYrZ) {
+					var z = map.zoom;
+					if (z > e.layer.maxZoomLevel)
+						map.setCenter(map.center, e.layer.maxZoomLevel);
+					else if (z < e.layer.minZoomLevel)
+						map.setCenter(map.center, e.layer.minZoomLevel);
+				}
+			});
+			map.events.register("zoomend", map, function(e) {
+				if (map.baseLayer instanceof OpenLayers.Layer.XYrZ) {
+					var z = map.zoom;
+					if (z > map.baseLayer.maxZoomLevel)
+						map.setCenter(map.center, map.baseLayer.maxZoomLevel);
+					else if (z < map.baseLayer.minZoomLevel)
+						map.setCenter(map.center, map.baseLayer.minZoomLevel);
+				}
+			});
 
 			map.addLayers([
 				mapnik,
 				osmmapnik,
+				topobase,
+				cycle,
+<?php
+	if ($CONF['google_maps_api_key']) {
+?>
+				gphy, gmap, gsat, ghyb,
+<?php
+	}
+?>
+				hills,
+				geogr,
 				trkLayer,
 				markers
 			]);
@@ -194,6 +331,9 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 			map.addControl(overview);
 			var point = new OpenLayers.LonLat(<?php print("$cen[1],$cen[0]"); ?>);
 			var mt = mapnik; //FIXME
+			var mtHasHills = ('hasHills' in mt) && mt.hasHills;
+			map.hillBase = mtHasHills;
+			hills.setOpacity(0.75);//FIXME
 			map.setBaseLayer(mt);
 			map.setCenter(point.transform(epsg4326, map.getProjectionObject())/*, iniz*/);
 			map.zoomToExtent(tripbounds);
