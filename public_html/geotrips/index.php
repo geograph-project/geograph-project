@@ -34,6 +34,7 @@
   * include in "content" (probably port content changes from gbi)
   * robots?
   * sitemap?
+  * reduce track size?
 
 */
 
@@ -54,6 +55,7 @@ if (!$db) die('Database connection failed');
 
 $smarty->assign('page_title', 'Overview map :: Geo-Trips');
 $smarty->assign('meta_description', 'A collection of square-bagging trips by members of the Geograph project, with photographs, descriptions and GPS tracks plotted on an Ordnance Survey map.');
+$smarty->assign('olayersmap', 1);
 
 $smarty->display('_std_begin.tpl','trip_home');
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
