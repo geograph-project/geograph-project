@@ -1,0 +1,247 @@
+body {
+  margin:0px;
+  padding:0px;
+  font-size:1em;
+  background-color:#ffe0b0;
+}
+
+/* Header bar at the top */
+#header {
+  position:absolute;
+  width:100%;
+  background-color:#992233;
+  color:#dddddd;
+}
+
+#header h1 {
+  margin:0px;
+  position:absolute;
+  top:26px;
+  left:161px;
+  font-size:25px;
+  z-index:3;
+  background-color:#992233;  /* If the headline is long, it should overlay the switches. */
+}
+
+#header h2 {
+  margin:0px;
+  font-size:100%;
+  position:absolute;
+  left:161px;
+  top:5px;
+  z-index:3;
+  background-color:#992233;
+}
+
+#header img {
+  position:relative;
+  left:20px;
+  border:none;
+}
+
+/* Navigation column on the left (main nav, context menu, contact addresses) */
+#nav_col {
+  position:absolute;
+  left:10px;
+  top:75px;
+  width:140px;
+}
+
+#nav {
+  margin-bottom:10px;
+}
+
+#nav ul {
+  margin:0px;
+  padding:0px 0px 0px 1.5em;
+  font-size:0.85em;
+}
+
+#context {
+  margin-bottom:10px;
+  font-size:0.8em;
+}
+
+#context ul {
+  margin:0px;
+  padding:0px 0px 0px 1.5em;
+  font-size:0.85em;
+}
+
+#context ul li {
+  margin-bottom:5px;
+}
+
+#contact {
+  font-size:0.8em;
+  margin-bottom:10px;
+}
+
+#contact img {
+  width:130px;
+  position:relative;
+  left:3px;
+}
+
+#content_col {
+  position:absolute;
+  left:160px;
+  top:75px;
+}
+
+/* Footer: updates and disclaimer */
+#footer {
+  position:relative;
+  color:#999999;
+  font-size:0.85em;
+  clear:both;
+}
+
+/* Skip to content link if no stylesheet is applied */
+#skip {
+  display:none;
+}
+
+/* Vectors */
+.vec {
+  text-decoration:underline;
+  font-style:italic;
+}
+
+/* Content boxes */
+.panel {
+  border:2px solid #992233;
+  background-color:#eeeeee;
+}
+
+.mini { /* small floating box for overview pages */
+  margin-right:10px;
+  margin-bottom:10px;
+  float:left;
+}
+
+.mini h3,h4 {
+  margin:0px;
+  text-align:center;
+}
+
+.mini p {
+  width:400px;
+}
+
+.mini hr {
+  margin:1px;
+}
+
+.maxi { /* full width box */
+  margin-right:10px;
+  margin-bottom:10px;
+  max-width:800px;
+}
+
+.maxi p {
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.maxi table {
+  padding-left:7px;
+  padding-right:7px;
+}
+
+.maxi h3 {
+  text-align:center;
+}
+
+.maxi div ul li {    /* make sure bullets don't overlap with floating image box to the left */
+  list-style-position:inside;
+}
+
+/* small box inside a panel */
+.inner {
+  border:1px solid #992233;
+  margin:5px;
+}
+
+.half {
+  max-width:50%;
+}
+
+/* fit object (image usually) in available space */
+.fit {
+  max-width:100%;
+}
+
+/* row within a panel */
+.row {
+  clear:both;
+}
+
+/* Mathematical formula png */
+.formula {
+  vertical-align:middle;
+  margin:4px;
+  position:relative;
+  top:-2px;
+}
+
+/* floating images inside panels */
+.flt_r {
+  float:right;
+  margin-left:5px;
+}
+
+.flt_l {
+  float:left;
+  margin-right:5px;
+}
+
+/* Highlighted box */
+.hlt {
+  background-color:#ffcc88;
+}
+
+/* Exercise */
+.exercise {
+  width:50%;
+  background-color:#dddddd;
+}
+
+/* Table with rules=all in old money */
+.ruled {
+  border-collapse:collapse;
+}
+.ruled td,th {
+  border:1px solid #992233;
+}
+
+/* Things that are only displayed in lecture mode */
+.screen {
+  display:none;
+}
+
+/* Switches top right */
+.switch {
+  position:absolute;
+  background-color:#ffe0b0;
+  width:6.5em;
+  text-align:center;
+  font-size:0.75em;
+  font-weight:bold;
+}
+
+.lect { /* lecture/website switch */
+  top:5px;
+  right:0px;
+}
+
+.cym { /* English/Welsh switch */
+  top:45px;
+  right:0px;
+}
+
+.next { /* Previous/next switches */
+  top:25px;
+  right:0px;
+}
+

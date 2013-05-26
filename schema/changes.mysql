@@ -763,3 +763,26 @@ alter table user_stat add `selfrate_qual` mediumint(5) unsigned NOT NULL DEFAULT
 alter table user_stat add `selfrate_info` mediumint(5) unsigned NOT NULL DEFAULT '0' after `selfrate_info`;
 
 ####
+
+CREATE TABLE IF NOT EXISTS `geotrips` ( # FIXME defaults,null,keys
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT, # auto? -> geotrip_id
+  `uid` int(11) unsigned NOT NULL DEFAULT '0', # -> user_id
+  `user` varchar(128) NOT NULL DEFAULT '', # -> realname # needed?
+  `type` enum('trip','walk','bike','road','rail','boat','bus') NOT NULL DEFAULT 'trip',
+  `location` varchar(128) NOT NULL DEFAULT '',
+  `start` varchar(128) NOT NULL DEFAULT '',
+  `title` varchar(128) NOT NULL DEFAULT '',
+  `date` date NOT NULL DEFAULT '0000-00-00',
+  `bbox` varchar(128) NOT NULL DEFAULT '', # string?
+  `track` text NOT NULL, # string? # better upload {$geotrip_id}.gpx ? would have to sanitize it and remove additional data?
+  `search` int(10) unsigned DEFAULT NULL, # ->query_id
+  `img` int(11) NOT NULL DEFAULT '0', # ->gridimage_id
+  `descr` text NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `contfrom` int(10) unsigned NOT NULL DEFAULT '0', # -> part_prev?
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `geotrips` ADD INDEX (`contfrom`);
+ALTER TABLE `geotrips` CHANGE `updated` `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
