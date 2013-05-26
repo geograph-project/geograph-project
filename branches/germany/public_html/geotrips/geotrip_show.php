@@ -52,6 +52,7 @@ if (!$db) die('Database connection failed');
   
 $smarty->assign('page_title', $hdr2.' :: Geo-Trips');
 $smarty->assign('meta_description', "A ".whichtype($trk['type'])." near $trk[location], starting from $trk[start], with pictures and plotted on a map.");
+$smarty->assign('olayersmap', 1);
 
 $smarty->display('_std_begin.tpl','trip'.$trk['id']);
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
