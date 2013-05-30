@@ -204,7 +204,7 @@ no need to repeat them here.
           <p>
             <b>Continuation from previous trip</b> (optional)<br />
             <input type="text" name="contfrom" size="72" /><br />
-            (e.g. <em>123</em> or <em>http://www.geograph.org.uk/geotrips/geotrip_show.php?trip=123</em>)
+            (e.g. <em>123</em> or <em>http://www.geograph.org.uk/geotrips/geotrip_show.php?trip=123</em> or <em>http://www.geograph.org.uk/geotrips/123</em>)
           </p>
           <ul>
             <li>
@@ -292,9 +292,8 @@ and there need to be at least three images matching these criteria in your searc
           $img=explode('/',$_POST['img']);
           $img=intval($img[sizeof($img)-1]);
         } else $img=$geograph[0][0];
-        if ($_POST['contfrom']) {
-          $contfrom=explode('=',$_POST['contfrom']);
-          $contfrom=intval($contfrom[sizeof($contfrom)-1]);
+        if ($_POST['contfrom'] && preg_match('/(\d+)\s*$/',$_POST['contfrom'],$m)) {
+          $contfrom=intval($m[1]);
         } else $contfrom=0;
         
         $query='insert into geotrips values(null,';
@@ -311,17 +310,32 @@ and there need to be at least three images matching these criteria in your searc
         $query=$query.$img.",";
         $query=$query."'".mysql_real_escape_string($_POST['descr'])."',";
         $query=$query.date('U').",";
-        $query=$query.$contfrom.')';
+        $query=$query.$contfrom.',null)';
         
         $db->Execute($query);
         $newid=$db->Insert_ID();
    
+	if (empty($newid)) {
+		print "There was an error creating your trip. Please contact us";
+
+					ob_start();
+                                        print "Host: ".`hostname`."\n\n";
+					print "Message: ".$db->ErrorMsg()."\n\n";
+					print "Query: $query\n\n";
+                                        print_r($_POST);
+                                        print_r($_SERVER);
+                                        $con = ob_get_clean();
+                                        mail('geograph@barryhunter.co.uk','[Geograph Geotrip] Creation Error',$con);
+
+
+
+	} else {
         // success
 ?>
         <div class="panel maxi">
           <h3>Thanks for adding your trip.</h3>
           <p>
-If all has gone well, your <a href="geotrip_show.php?trip=<?php print($newid); ?>">new trip</a>
+If all has gone well, your <a href="/geotrips/<?php print($newid); ?>">new trip</a>
 should show on the <a href="./">map</a> now.  Please
 <a href="http://www.geograph.org.uk/usermsg.php?to=2520">let me know</a> if anything doesn't
 work as expected.
@@ -341,7 +355,7 @@ information you've submitted to Geo-trips, so you can tweak the blog post before
           $gr=bbox2gr($bbox);
           $tags='Geo-trip, '.whichtype($_POST['type']);
           $pub=explode('-',date('d-m-Y-H-i-s'));
-          $descr=$_POST['descr'].'  You can see this trip plotted on a map on the Geo-trips page http://www.geograph.org.uk/geotrips/geotrip_show.php?trip='.$newid.' .';
+          $descr=$_POST['descr'].'  You can see this trip plotted on a map on the Geo-trips page http://www.geograph.org.uk/geotrips/'.$newid.' .';
           $imgid=explode('/',$_POST['img']);
           $imgid=intval($img[sizeof($img)-1]);
 ?>
@@ -365,6 +379,7 @@ information you've submitted to Geo-trips, so you can tweak the blog post before
           </form>
         </div>
 <?php
+	}
       } else {
 ?>
         <div class="panel maxi">

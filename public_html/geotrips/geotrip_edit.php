@@ -231,10 +231,9 @@ If you've made changes to any other fields, these will have been updated.
           $db->Execute("update geotrips set track='$trk' where id={$trip['id']}");
           $db->Execute("update geotrips set bbox='$bbox' where id={$trip['id']}");
         }
-        if ($_POST['contfrom']=="") $_POST['contfrom']=0;
-        if ($_POST['contfrom']!=$trip['contfrom']) {
-          $contfrom=explode('=',$_POST['contfrom']);
-          $contfrom=intval($contfrom[sizeof($contfrom)-1]);
+        if ($_POST['contfrom']=="") $_POST['contfrom']="0";
+        if ($_POST['contfrom']!=$trip['contfrom'] && preg_match('/(\d+)\s*$/',$_POST['contfrom'],$m)) {
+          $contfrom=intval($m[1]);
           $db->Execute("update geotrips set contfrom=$contfrom where id={$trip['id']}");
         }
 ?>
@@ -244,7 +243,7 @@ Thanks for updating your trip.
           </p>
           <p>
 If all has gone well, the changes should be visible on the
-<a href="geotrip_show.php?trip=<?php print($_GET['trip']); ?>">trip page</a> now.  Please
+<a href="/geotrips/<?php print($_GET['trip']); ?>">trip page</a> now.  Please
 <a href="http://www.geograph.org.uk/usermsg.php?to=2520">let me know</a> if anything doesn't
 work as expected.
           </p>

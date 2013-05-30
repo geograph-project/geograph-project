@@ -22,6 +22,16 @@
  */
  
 
+if ((!preg_match('/\/geotrips\/\d+/',$_SERVER["REQUEST_URI"]) && isset($_GET['trip'])) || strlen($_GET['trip']) !== strlen(intval($_GET['trip']))) {
+        //keep urls nice and clean - esp. for search engines!
+        header("HTTP/1.0 301 Moved Permanently");
+        header("Status: 301 Moved Permanently");
+        header("Location: /geotrips/".intval($_GET['trip']));
+        print "<a href=\"http://{$_SERVER['HTTP_HOST']}/geotrips/".intval($_GET['trip'])."\">Continue to view this trip</a>";
+        exit;
+}
+
+
 if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
 	require_once('./geograph_snub.inc.php');
 } else {
@@ -163,7 +173,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 <h2><a href="./">Geo-Trips</a> :: <? echo htmlentities($hdr2); ?></h2>
 
 <div class="panel maxi">
-<?php 
+<?php
   print('<h3>'.htmlentities($trk['location']).'</h3>');
   $date=date('D, j M Y',strtotime($trk['date']));
   print('<h4>A '.whichtype($trk['type']).' from '.htmlentities($trk['start'])."</h4><h4>$date</h4><h4>by <a href=\"http://www.geograph.org.uk/profile/$trk[uid]\">".htmlentities($trk[user])."</a></h4><p style=\"text-align:center\">");
@@ -187,20 +197,22 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   $foll=$foll['id'];
   if ($prec||$foll) {
     print('<table class="ruled" style="margin:auto"></tr>');
-    if ($prec) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"geotrip_show.php?trip=$prec\">preceding leg</a></td>");
+    if ($prec) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"/geotrips/$prec\">preceding leg</a></td>");
     else print('<td></td>');
     print('<td style="margin:20px;text-align:center"><b>This trip is part of a series.</b></td>');
-    if ($foll) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"geotrip_show.php?trip=$foll\">next leg</a></td>");
+    if ($foll) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"/geotrips/$foll\">next leg</a></td>");
     else print('<td></td>');
     print('</tr></table>');
   }
 ?>
   <p>
-<?php print(str_replace("\n",'</p><p>',htmlentities($trk['descr']))) ?>
+<?php print(str_replace("\n",'</p><p>',GeographLinks(htmlentities($trk['descr'])))); ?>
   </p>
+<? if ($trk['uid'] == $USER->user_id) { ?>
   <div class="inner flt_r">
-    [<a href="/geotrips/">overview map</a>]
+    [<a href="geotrip_edit.php?trip=<? echo $trk['id']; ?>">edit this trip</a>]
   </div>
+<? } ?>
   <div> <p><small>
 <?php if ($trk['track']) print('On the map below, the grey line is the GPS track from this trip. ');?>
 Click the blue circles to see a photograph

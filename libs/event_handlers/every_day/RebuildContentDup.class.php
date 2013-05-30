@@ -154,7 +154,7 @@ SELECT
 	CONCAT('/snippet/',s.snippet_id) AS url, 
 	s.user_id, 
 	gridimage_id, 
-	0 AS gridsquare_id, 
+	gridsquare_id, 
 	'' AS extract, 
 	COUNT(gridimage_id) AS images, 
 	0 AS wordcount, 
@@ -168,6 +168,7 @@ SELECT
 	s.created 
 FROM snippet s
 INNER JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)
+LEFT JOIN gridsquare g USING (grid_reference)
 GROUP BY s.snippet_id;
 
 		");
@@ -207,7 +208,35 @@ INNER JOIN gridimage_search ON (last=gridimage_id);
 #####################################
 # GEO-TRIPS
 
-if ($h = fopen('http://users.aber.ac.uk/ruw/misc/geotrip_csv.php', 'r')) {
+
+if (true) {
+                $db->Execute("
+
+INSERT INTO `content_tmp`
+SELECT
+        NULL AS content_id,
+        t.id AS foreign_id,
+        TRIM(IF(title='',CONCAT(location,' from ',start),title)) AS title,
+        CONCAT('/geotrips/',t.id) AS url,
+        uid AS user_id,
+        img AS gridimage_id,
+        0 AS gridsquare_id,
+        IF(LENGTH(descr)>500,CONCAT(SUBSTRING(descr,1,500),' ...'),descr) AS extract,
+        coalesce(c.count,0) AS images,
+        0 AS wordcount,
+        0 AS views,
+        0 AS titles,
+        type AS tags,
+        descr AS words,
+        'trip' AS source,
+        'info' AS type,
+        FROM_UNIXTIME(updated) AS updated,
+        `date` AS created
+FROM geotrips t left join queries_count c on (c.id = t.search)
+
+                ");
+
+} elseif ($h = fopen('http://users.aber.ac.uk/ruw/misc/geotrip_csv.php', 'r')) {
 	$c = 0;
 	while (($data = fgetcsv($h, 65536, ',', '"' )) !== FALSE) {
 		if (!$c) {
@@ -255,7 +284,7 @@ ffetcing our local traffic after nearly a week of snow and sub-zero temperatures
 			$mkey = $row['SearchID'];
 			$images =& $memcache->name_get('fse',$mkey);
 			if (empty($images)) {
-
+				$pg = 1;
 				$engine = new SearchEngine($row['SearchID']);
 				if ($engine->criteria) {
 					$engine->criteria->resultsperpage = 1; //override it
