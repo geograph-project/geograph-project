@@ -35,10 +35,9 @@ include('./geotrip_func.php');
 $db = GeographDatabaseConnection(false);
 // can now use mysql_query($sql); directly, or mysql_query($sql,$db->_connectionID);
 
+$updated = $db->GetOne("SELECT MAX(updated) FROM geotrips")+1;
 
-  // get tracks from database
-  if (isset($_GET['debug'])) $trks=$db->getAll("select * from geotrips where location='debug' order by id desc");
-  else $trks=$db->getAll("select * from geotrips where location!='debug' order by id desc");
+customCacheControl($updated,$updated);
 
 
 $smarty->assign('page_title', 'Overview map :: Geo-Trips');
@@ -48,6 +47,17 @@ $smarty->display('_std_begin.tpl','trip_home');
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 
+$str =& $memcache->name_get('geotrip_home',$USER->registered.".".$updated);
+
+if (!empty($str)) {
+  print $str;
+
+} else {
+  ob_start();
+
+  // get tracks from database
+  if (isset($_GET['debug'])) $trks=$db->getAll("select * from geotrips where location='debug' order by id desc");
+  else $trks=$db->getAll("select * from geotrips where location!='debug' order by id desc");
 
 
 ?>
@@ -63,7 +73,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   var cont,contFeature,contString;
   var style_trk={strokeColor:"#000000",strokeOpacity:.7,strokeWidth:4.};
   function initmap() {
-    osMap=new OpenSpace.Map('map',{controls:[]});
+    osMap=new OpenSpace.Map('map',{controls:[],centreInfoWindow:false});
     osMap.addControl(new OpenSpace.Control.PoweredBy());             //  needed for T/C compliance
     osMap.addControl(new OpenSpace.Control.CopyrightCollection());   //  needed for T/C compliance
     osMap.addControl(new OpenSpace.Control.SmallMapControl());       //  compass and zoom buttons
@@ -96,7 +106,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
       icon=new OpenSpace.Icon('<?php print("{$track['type']}.png");?>',size,offset,null,infoWindowAnchor);
 //<![CDATA[
       content='<p>';
-      content+='<a href=\"<?php print("geotrip_show.php?trip={$track['id']}");?>\">';
+      content+='<a href=\"<?php print("/geotrips/{$track['id']}");?>\">';
       content+='<img alt=\"<?php print(str_replace("'","\'",$loc));?>\" src=\"';
       content+='<?php print($thumb);?>\" />';
       content+='</a>';
@@ -221,7 +231,7 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
     print("<em>".htmlentities($trks[$i]['location'])."</em> -- A ".whichtype($trks[$i]['type'])." from ".htmlentities($trks[$i]['start'])."<br />");
     print("by <a href=\"http://www.geograph.org.uk/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a>");
     print("<div class=\"inner flt_r\">$gr</div>");
-    print("<p>$descr&nbsp;[<a href=\"geotrip_show.php?trip={$trks[$i]['id']}\">more</a>]</p>");
+    print("<p>$descr&nbsp;[<a href=\"/geotrips/{$trks[$i]['id']}\">more</a>]</p>");
     print('<div class="row"></div>');
     print('</div>');
     $i++;
@@ -229,7 +239,12 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
 ?>
 </div>
 
-<?php 
+<?php
+	$str = ob_get_flush();
+
+	$memcache->name_set('geotrip_home',$USER->registered.".".$updated,$str,$memcache->compress,$memcache->period_long);
+
+}
 
 $smarty->display('_std_end.tpl');
 
