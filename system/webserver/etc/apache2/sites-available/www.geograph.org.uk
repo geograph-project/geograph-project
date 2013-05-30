@@ -9,6 +9,7 @@
     ServerAlias t0.geograph.org.uk
     ServerAlias archive.geograph.org.uk
     ServerAlias api.geograph.org.uk
+    ServerAlias api.mobile.geograph.org.uk
     ServerAlias api.www.geograph.org.uk
     ServerAlias toast.www.geograph.org.uk
 
@@ -28,6 +29,7 @@
     php_value include_path .:/var/www/geograph_live/libs/:/usr/share/php:/usr/share/pear
     php_value register_globals Off
     php_value upload_max_filesize 8M
+    php_value post_max_size 15M
     php_value memory_limit  32M
 
     <Directory /var/www/geograph_live/public_html/>
@@ -58,7 +60,7 @@
 
 	#List of valid urls on api...
     RewriteCond %{HTTP_HOST}   ^api\.www\.geograph\.org\.uk [NC,OR]
-    RewriteCond %{HTTP_HOST}   ^api\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   api\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/api
     RewriteCond %{REQUEST_URI} !^/syndicator
     RewriteCond %{REQUEST_URI} !^/export
@@ -75,6 +77,8 @@
     RewriteCond %{HTTP_HOST}   ^t0\.www\.geograph\.org\.uk [NC,OR]
     RewriteCond %{HTTP_HOST}   ^t0\.geograph\.org\.uk [NC]
     RewriteCond %{REQUEST_URI} !^/tile
+    RewriteCond %{REQUEST_URI} !^/stuff/captcha.php
+    RewriteCond %{REQUEST_URI} !^/maps/
     RewriteCond %{REQUEST_URI} !^/robots
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
@@ -100,6 +104,7 @@
     RewriteCond %{HTTP_HOST}   !kml\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^www\.geograph\.ie [NC]
     RewriteCond %{HTTP_HOST}   !^t0\.geograph\.org\.uk [NC]
+    RewriteCond %{HTTP_HOST}   !^t0\.www\.geograph\.org\.uk [NC]
     RewriteRule ^/robots.txt   /robots-none.txt [qsa]
 
 	#Special robots file for Ireland
@@ -130,7 +135,9 @@
     RewriteRule ^/gridref/(.*) /browse.php?gridref=$1 [qsa]
 
     RewriteRule ^/snippet/([0-9]+) /snippet.php?id=$1 [qsa]
+    RewriteRule ^/geotrips/([0-9]+) /geotrips/geotrip_show.php?trip=$1 [qsa]
     RewriteRule ^/blog/([0-9]+) /blog/entry.php?id=$1 [qsa]
+    RewriteRule ^/gloc/([0-9-]+) /stuff/geolocate.php?date=$1 [qsa]
     
     RewriteRule ^/help/([^/]*) /staticpage.php?page=$1 [qsa]
 
@@ -146,6 +153,7 @@
     RewriteRule ^/profile/(\d+)/more/?$ /profile.php?id=$1&more=1
     RewriteRule ^/profile/(\d+)/?$ /profile.php?id=$1 [qsa]
 
+    RewriteRule ^/tagged/(.*) /tags/index.php?tag=$1 [qsa]
     RewriteRule ^/map/(.*) /mapbrowse.php?t=$1 [qsa]
     RewriteRule ^/article/([\w-]+)/?([0-9]*)/?$ /article/article.php?url=$1&page=$2 [qsa]
     RewriteRule ^/gallery/([\w-]+)/?([0-9]*)/?$ /gallery/gallery.php?url=$1&page=$2 [qsa]
@@ -154,8 +162,8 @@
     RewriteRule ^/reg/([^/]+)/(.*) /register.php?u=$1&confirm=$2 [qsa]
     RewriteRule ^/list/([A-Z]{1,2}) /list.php?square=$1 [qsa]
 
-    RewriteRule ^/credits/?([\d-]*)/?$ /credits.php?when=$1
-    RewriteRule ^/contributors/(\d+) /statistics/breakdown.php?by=user&i=$1
+    RewriteRule ^/credits/?([\d-]*)/?$ /credits.php?when=$1 [qsa]
+    RewriteRule ^/contributors/(\d+) /statistics/breakdown.php?by=user&i=$1 [qsa]
 
     RewriteRule ^/content/feed/recent\.([\w]+) /content/syndicator.php?extension=$1 [qsa]
     RewriteRule ^/article/feed/recent\.([\w]+) /article/syndicator.php?extension=$1 [qsa]
@@ -180,6 +188,7 @@
     RewriteRule ^/discuss/feed/forum([0-9]+)/?([^/]*) /discuss/syndicator.php?forum=$1&format=$2 [qsa]
 
     RewriteRule ^/get-juppy.jnlp /get-juppy.php [qsa]
+    RewriteRule ^/superlayer.kml /kml-superlayer.php [qsa]
 
     #allow sitemap files to be at top level, but served from a shared folder
     RewriteRule ^/(sitemap[\d\w\.-]*\.xml.*)$ /sitemap/root/$1 [L]
@@ -231,5 +240,13 @@
 </Location>
 
 RewriteRule ^/rss/(.*\.kmz)         http://kml.geograph.org.uk/kml/$1 [L,R=permanent]
+
+<Files reuse.php>
+        XSendFile on
+</Files>
+<Files sendfile.php>
+        XSendFile on
+</Files>
+
 
 </VirtualHost>
