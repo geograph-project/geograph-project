@@ -253,6 +253,7 @@ If you've made changes to any other fields, these will have been updated.
           $db->Execute("update geotrips set contfrom=$contfrom where id={$trip['id']}");
         }
         $smarty->clear_cache(null, "trip|{$trip['id']}");
+        $smarty->clear_cache(null, "trip|overview");
 ?>
         <div class="panel maxi">
           <p>

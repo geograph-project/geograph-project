@@ -32,6 +32,11 @@ $trip_id = isset($_GET['trip']) ? intval($_GET['trip']) : 0;
 $cacheid = "trip|$trip_id|show";
 $template = 'geotrips_show.tpl';
 
+if ($smarty->caching) {
+	$smarty->caching = 2; // lifetime is per cache
+	$smarty->cache_lifetime = 3600*24; //24 hour cache
+}
+
 if (!$smarty->is_cached($template, $cacheid)) {
 
 	require_once('geograph/searchcriteria.class.php');
@@ -62,12 +67,19 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$trk['lonmax'] = $bbox[3];
 	$trk['nicetype'] = whichtype($trk['type']);
 	$trk['nextpart'] = $foll['id'];
-	$trk['track'] = array_chunk(explode(' ',trim($trk['track'])), 2);
+	$trk['track'] = trim($trk['track']);
+	$trk['track'] = $trk['track'] !== "" ? array_chunk(explode(' ',trim($trk['track'])), 2) : array();
 
 	// fetch Geograph data
 	$conv = new ConversionsLatLong;
 	$geograph = array();
 	$realnames = array();
+	$cells = array(); # $cells("$x_$y") = array($x, $y, array(images taken from cell: index in geograph array))
+	$groupdist = 5; # group images below that distance (metres)
+	$scale_lat_y = 40000000/360.0;
+	$scale_lon_x = $scale_lat_y * cos(deg2rad($trk['latcen'])); # for small areas this is nearly constant
+	$cell_height = $groupdist/$scale_lat_y;
+	$cell_width =  $groupdist/$scale_lon_x;
 	$engine = new SearchEngine($trk['search']);
 	$engine->criteria->resultsperpage = 250; // FIXME really?
 	$recordSet = $engine->ReturnRecordset(0, true);
@@ -108,18 +120,141 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$latlon = $conv->national_to_wgs84($ea, $no, $image['reference_index'], true);
 			$image['subject'] = $latlon;
 
-			$geograph[] = $image;
 			if ($image['credit_realname']) {
 				$realnames[$image['realname']] = $image['realname'];
 			}
+			$image['nice_view_direction'] = $image['view_direction'] < 0 ? '' : heading_string($image['view_direction']);
+			$image['group'] = -1;
+
+			# reduce complexity for finding other images taken nearby
+			$cell_key_x = floor(($image['viewpoint'][1]+180)/$cell_width);
+			$cell_key_y = floor(($image['viewpoint'][0]+90)/$cell_height);
+			$cell_key = $cell_key_x.'_'.$cell_key_y; # php does not allow pairs/tuples as keys
+			if (!array_key_exists($cell_key, $cells)) {
+				$cells[$cell_key] = array($cell_key_x, $cell_key_y, array(count($geograph)));
+			} else {
+				$cells[$cell_key][2][] = count($geograph);
+			}
+			$image['cell_key'] = $cell_key;
+
+			$geograph[] = $image;
 		}
 		$recordSet->MoveNext();
 	}
 	$recordSet->Close();
+	
+
+	# Find other images taken nearby and group images if necessary.
+	# There are two obvious strategies:
+	# * Put all points connected by at least one short distance in one group and assign
+	#   a new position afterwards.
+	# * When iterating over pairs, move the second point to the first one if the distance is short.
+	#
+	# The first method is symmetric, the order of evaluating distances does not matter.
+	# The second method can yield smaller groups but has the problem that the points
+	# move during evaluation. Currently, try the first method.
+	$groups = array(); # $group[$groupid] = array(ctrlat, ctrlon, array(photos: index in geograph array)) # $groupid=photo index of a member
+	foreach($geograph as $idx=>&$image) {
+		$curcell =& $cells[$image['cell_key']];
+		for ($i = -1; $i <= 1; ++$i) {
+			$cell_key_x = $curcell[0] + $i;
+			for ($j = -1; $j <= 1; ++$j) {
+				$cell_key_y = $curcell[1] + $j;
+				$cell_key = $cell_key_x.'_'.$cell_key_y;
+				if (array_key_exists($cell_key, $cells)) {
+					foreach ($cells[$cell_key][2] as $idx2) {
+						if ($idx2 <= $idx) {
+							continue; # pair already done
+						}
+						$image2 =& $geograph[$idx2];
+						$group1 = $image['group'];
+						$group2 = $image2['group'];
+						if ($group1 != -1 && $group1 == $group2) {
+							continue; # already belonging to the same group
+						}
+						$dx = ($image['viewpoint'][1]-$image2['viewpoint'][1]) * $scale_lon_x;
+						$dy = ($image['viewpoint'][0]-$image2['viewpoint'][0]) * $scale_lat_y;
+						if ($dx*$dx + $dy*$dy > $groupdist*$groupdist) {
+							continue; # too far away to form a group
+						}
+						# $image and $image2 are too close, form a group
+						if ($group1 == -1) {
+							if ($group2 == -1) { # new group containing both images
+								$groups[$idx] = array(
+									$image['viewpoint'][0]+$image2['viewpoint'][0],
+									$image['viewpoint'][1]+$image2['viewpoint'][1],
+									array($idx, $idx2)
+								);
+								$image['group'] = $idx;
+								$image2['group'] = $idx;
+							} else { # add $image to group containing $image2
+								$groups[$group2][0] += $image['viewpoint'][0];
+								$groups[$group2][1] += $image['viewpoint'][1];
+								$groups[$group2][2][] = $idx;
+								$image['group'] = $group2;
+							}
+						} elseif ($group2 == -1) { #FIXME can this shappen? # add $image2 to group containing $image
+							$groups[$group1][0] += $image2['viewpoint'][0];
+							$groups[$group1][1] += $image2['viewpoint'][1];
+							$groups[$group1][2][] = $idx2;
+							$image2['group'] = $group1;
+						} else { # merge groups
+							if (count($groups[$group2][2]) < count($groups[$group1][2])) { # keep larger group, add members of smaller group
+								$keepgroup = $group1;
+								$delgroup = $group2;
+							} else {
+								$keepgroup = $group2;
+								$delgroup = $group1;
+							}
+							$groups[$keepgroup][0] += $groups[$delgroup][0];
+							$groups[$keepgroup][1] += $groups[$delgroup][1];
+							$groups[$keepgroup][2] += $groups[$delgroup][2];
+							foreach ($groups[$delgroup][2] as $chgidx) {
+								$geograph[$chgidx]['group'] = $keepgroup;
+							}
+							unset($groups[$delgroup]);
+						}
+					}
+				}
+			}
+		}
+	}
+	unset($image);
+
+	function viewcmp($idx1, $idx2)
+	{
+		global $geograph;
+		return $geograph[$idx1]['view_direction'] - $geograph[$idx2]['view_direction'];
+	}
+
+	#groups:
+	#* calculate group centre and use closest image position as group position
+	#* sort group members by view direction
+	foreach ($groups as &$group) {
+		$len = count($group[2]);
+		$group[0] /= $len;
+		$group[1] /= $len;
+		$bestdsq = -1;
+		$bestidx = -1;
+		foreach ($group[2] as $idx) {
+			$dx = ($group[1]-$geograph[$idx]['viewpoint'][1]) * $scale_lon_x;
+			$dy = ($group[0]-$geograph[$idx]['viewpoint'][0]) * $scale_lat_y;
+			$dsq = $dx*$dx + $dx*$dy;
+			if ($bestdsq < 0 || $dsq < $bestdsq) {
+				$bestidx = $idx;
+				$bestdsq = $dsq;
+			}
+		}
+		$group[0] = $geograph[$bestidx]['viewpoint'][0];
+		$group[1] = $geograph[$bestidx]['viewpoint'][1];
+		usort($group[2], viewcmp);
+	}
+	unset($group);
 
 	$selected = array_rand($geograph, 3); // select three random images
 
 	$smarty->assign_by_ref('images', $geograph);
+	$smarty->assign_by_ref('groups', $groups);
 	$smarty->assign_by_ref('selectedimages', $selected);
 	$smarty->assign_by_ref('realnames', $realnames);
 	$smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);

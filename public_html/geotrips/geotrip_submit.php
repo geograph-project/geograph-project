@@ -303,8 +303,6 @@ and there need to be at least three images matching these criteria in your searc
           }
           unset($image);
         }
-        //$ee=array_filter($ee);  // remove zero eastings/northings (camera position missing) // would not work with $ee == 0 && $nn != 0 etc.
-        //$nn=array_filter($nn);
         $bbox=sprintf('%.6F %.6F %.6F %.6F', min($ee), min($nn), max($ee), max($nn));
         // database update
         $img = 0;
@@ -316,7 +314,7 @@ and there need to be at least three images matching these criteria in your searc
           $img=$geograph[0]['gridimage_id'];
         }
         $contfrom = 0;
-        if (isset($_POST['contfrom'])) { // FIXME check if valid trip id and submitted by this user
+        if (isset($_POST['contfrom'])) { // FIXME check if valid trip id and submitted by this user // FIXME test if linear link graph
           $contfrom=explode('=',$_POST['contfrom']);
           $contfrom=intval($contfrom[sizeof($contfrom)-1]);
         }
@@ -345,7 +343,12 @@ and there need to be at least three images matching these criteria in your searc
         $db->Execute($query);
         $newid=$db->Insert_ID();
    
-        // success
+	// success // FIXME error handling
+
+        if ($contfrom) {
+            $smarty->clear_cache(null, "trip|{$contfrom}");
+        }
+        $smarty->clear_cache(null, "trip|overview");
 ?>
         <div class="panel maxi">
           <h3>Thanks for adding your trip.</h3>

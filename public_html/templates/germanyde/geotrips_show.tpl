@@ -263,8 +263,9 @@
 {/if}
 		var pos, content, icon, thumburl, thumbwidth, thumbheight;
 		var size=new OpenLayers.Size(9,9);
-		var offset=new OpenLayers.Pixel(-4,-9);    // No idea why offset=-9 rather than -4 but otherwise the view line doesn't start at the centre //FIXME
+		var offset=new OpenLayers.Pixel(-5,-10);    // No idea why offset=-9 rather than -4 but otherwise the view line doesn't start at the centre //FIXME
 	{foreach item=image from=$images}
+		{if $image.group < 0}
 			// Define camera marker
 			pos=new OpenLayers.LonLat({$image.viewpoint.1},{$image.viewpoint.0});
 			thumburl = '{$image.gridimage->getThumbnail(213,160,3)|escape:"javascript"}';
@@ -282,6 +283,7 @@
 			);
 			icon=new OpenLayers.Icon('walk.png',size,offset,null);
 			addPopupMarker(pos, GeoPopup, content, true, true, icon);
+		{/if}
 			// Define view direction
 			vdir=new Array();
 			pos=new OpenLayers.Geometry.Point({$image.viewpoint.1},{$image.viewpoint.0});
@@ -294,11 +296,37 @@
 			vdirFeature=new OpenLayers.Feature.Vector(vdirString,null,style_vdir);
 			trkLayer.addFeatures([vdirFeature]);
 	{/foreach}
+	{foreach item=group from=$groups}
+			// Define group marker
+			pos=new OpenLayers.LonLat({$group.1},{$group.0});
+			content = '';
+		{foreach item=idx from=$group.2 name=grouploop}{assign var="image" value="`$images.$idx`"}
+		{if !$smarty.foreach.grouploop.first}
+			content += '<hr />';
+		{/if}
+			thumburl = '{$image.gridimage->getThumbnail(213,160,3)|escape:"javascript"}';
+			thumbwidth = {$image.gridimage->last_width};
+			thumbheight = {$image.gridimage->last_height};
+			content += makeHtml(
+				'/photo/{$image.gridimage_id}',
+				'{$image.realname|escape:"html"|escape:"javascript"}',
+				'{$image.grid_reference|escape:"html"|escape:"javascript"}',
+				'{$image.title|escape:"html"|escape:"javascript"}',
+				'{$image.title2|escape:"html"|escape:"javascript"}',
+				'{$image.comment|escape:"html"|nl2br|geographlinks|escape:"javascript"}',
+				'{$image.comment2|escape:"html"|nl2br|geographlinks|escape:"javascript"}',
+				thumburl, thumbwidth, thumbheight,
+				'{$image.nice_view_direction|escape:"html"}'
+			);
+		{/foreach}
+			icon=new OpenLayers.Icon('bike.png',size,offset,null);
+			addPopupMarker(pos, GeoPopup, content, true, true, icon);
+	{/foreach}
 {literal}
 
 	}
 
-	function makeHtml(photourl, realname, gridref, title1, title2, comment1, comment2, thumburl, thumbwidth, thumbheight) {
+	function makeHtml(photourl, realname, gridref, title1, title2, comment1, comment2, thumburl, thumbwidth, thumbheight, direction) {
 		var title = title2 === '' ? title1 : (title1 === '' ? title2 : title1 + ' (' + title2 + ')');
 		title = gridref + ' : ' + title;
 		var comment = comment2 === '' ? comment1 : (comment1 === '' ? comment2 : comment1 + '</p><hr style="width:3em"/><p style="font-weight:bold">' + comment2);
@@ -307,6 +335,9 @@
 		html += '<p><a href="'+photourl+'" target="_blank"><img src="'+thumburl+'" width="'+thumbwidth+'" height="'+thumbheight+'" alt="'+title+'"/></a></p>';
 		if (comment !== '') {
 			html += '<p style="font-weight:bold">' + comment + '</p>';
+		}
+		if (typeof direction !== 'undefined' && direction !== '') {
+			html += '<p><i>(looking '+direction+')</i></p>';
 		}
 		html += '<p>&copy; Copyright <i>'+realname+'</i> and licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative Commons Licence</a></p>';
 		html += '<p><a href="'+photourl+'" target="_blank">View photo page</a></p>';
