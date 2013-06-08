@@ -46,6 +46,9 @@
   * clear cache of neighbouring trips on change (old+new neighbour!)
   * don't load track for index page etc.
   * allow images with identical positions/without view direction
+  * allow disconnected tracks: push current track after </rte> or </trk> (or </trkseg>?)
+  * kml-export: images + track
+  * German translation: solve "from $start" problem...
 
 */
 

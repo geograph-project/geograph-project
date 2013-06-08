@@ -1,10 +1,10 @@
 {if $trip.title}
 {assign var="triptitle" value="`$trip.title`"}
 {else}
-{assign var="triptitle" value="`$trip.location` from `$trip.start`"}
+{assign var="triptitle" value="`$trip.location` vom Ausgangspunkt `$trip.start`"}
 {/if}
 {assign var="page_title" value="`$triptitle` :: Geo-Trips"}
-{assign var="meta_description" value="A `$trip.nicetype` near `$trip.location`, starting from `$trip.start`, with pictures and plotted on a map."}
+{assign var="meta_description" value="`$trip.location`: `$trip.nicetype` vom Ausgangspunkt `$trip.start` mit Bildern und Track auf einer Landkarte."}
 {assign var="extra_css" value="/geotrips/geotrips.css"}
 {assign var="olayersmap" value="1"}
 {include file="_std_begin.tpl"}
@@ -85,22 +85,22 @@
 {if $google_maps_api_key}
 {literal}
 		var gphy = new OpenLayers.Layer.Google(
-			"Google Physical",
+			"Google: Gel&auml;nde",
 			{type: google.maps.MapTypeId.TERRAIN, numZoomLevels: 16}
 		);
 
 		var gmap = new OpenLayers.Layer.Google(
-			"Google Streets",
+			"Google: Stra&szlig;enkarte",
 			{numZoomLevels: 20}
 		);
 
 		var ghyb = new OpenLayers.Layer.Google(
-			"Google Hybrid",
+			"Google: Hybrid",
 			{type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
 		);
 
 		var gsat = new OpenLayers.Layer.Google(
-			"Google Satellite",
+			"Google: Satellit",
 			{type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
 		);
 
@@ -115,7 +115,7 @@
 {/if}
 {literal}
 		var geogr = new OpenLayers.Layer.XYrZ(
-			"Geograph: Grid",
+			"Geograph: Gitternetz",
 			"/tile.php?x=${x}&y=${y}&Z=${z}&l=8&o=1",
 			4, 14, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 			{
@@ -126,11 +126,11 @@
 			}
 		);
 		var mapnik = new OpenLayers.Layer.XYrZ(
-			"Mapnik (Static + OSM)",
+			"Mapnik (Statisch + OSM)",
 			"/tile/osm/${z}/${x}/${y}.png",
 			0, 18, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
 			{
-				attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+				attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a>-User (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 				sphericalMercator : true
 			},
 			16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
@@ -145,7 +145,7 @@
 			"/tile/hills/${z}/${x}/${y}.png",
 			4, 15, OpenLayers.Util.Geograph.MISSING_TILE_URL,
 			{
-				attribution: 'Relief: <a href="http://srtm.csi.cgiar.org/">CIAT data</a>',
+				attribution: 'Relief: <a href="http://srtm.csi.cgiar.org/">CIAT-Daten</a>',
 				sphericalMercator : true,
 				isBaseLayer : false,
 				visibility : false
@@ -337,10 +337,10 @@
 			html += '<p style="font-weight:bold">' + comment + '</p>';
 		}
 		if (typeof direction !== 'undefined' && direction !== '') {
-			html += '<p><i>(looking '+direction+')</i></p>';
+			html += '<p><i>(Blickrichtung: '+direction+')</i></p>';
 		}
-		html += '<p>&copy; Copyright <i>'+realname+'</i> and licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative Commons Licence</a></p>';
-		html += '<p><a href="'+photourl+'" target="_blank">View photo page</a></p>';
+		html += '<p>&copy; Copyright <i>'+realname+'</i> und lizenziert unter dieser <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">Creative-Commons-Lizenz</a></p>';
+		html += '<p><a href="'+photourl+'" target="_blank">Foto-Seite zeigen</a></p>';
 		html += '</div>';
 		return html;
 	}
@@ -355,44 +355,43 @@ AttachEvent(window,'load',initmap,false);
 
 <div class="panel maxi">
 	<h3>{$trip.location|escape:"html"}</h3>
-	<h4>A {$trip.nicetype|escape:"html"} from {$trip.start|escape:"html"}</h4>
-	<h4>{$trip.date|date_format:"%A, %e %B %Y"}</h4>{*FIXME H4?*}
-	<h4>by <a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}</a></h4>{*FIXME H4?*}
+	<h4>{$trip.nicetype|ucfirst|escape:"html"} vom Ausgangspunkt {$trip.start|escape:"html"}</h4>
+	<h4>{$trip.date|date_format:"%A, %e. %B %Y"}</h4>{*FIXME H4?*}
+	<h4>Von <a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}</a></h4>{*FIXME H4?*}
 	<p style="text-align:center">{*FIXME title2*}
 	{foreach item=idx from=$selectedimages}<a href="/photo/{$images.$idx.gridimage_id}" title="{$images.$idx.title|escape:"html"}"
 	><img alt="{$images.$idx.title|escape:"html"}" class="inner" src="{$images.$idx.gridimage->getThumbnail(213,160,true)}" /></a>&nbsp;{/foreach}
 	</p>
 
 {if $trip.contfrom || $trip.nextpart}
-	<table class="ruled" style="margin:auto"></tr>
-	{if $trip.contfrom}<td class="hlt" style="width:120px;text-align:center"><a href="geotrip_show.php?trip={$trip.contfrom}">preceding leg</a></td>{else}<td></td>{/if}
-	<td style="margin:20px;text-align:center"><b>This trip is part of a series.</b></td>
-	{if $trip.nextpart}<td class="hlt" style="width:120px;text-align:center"><a href="geotrip_show.php?trip={$trip.nextpart}">next leg</a></td>{else}<td></td>{/if}
+	<table class="ruled" style="margin:auto"><tr>
+	{if $trip.contfrom}<td class="hlt" style="width:120px;text-align:center"><a href="geotrip_show.php?trip={$trip.contfrom}">Voriger Teil</a></td>{else}<td></td>{/if}
+	<td style="margin:20px;text-align:center"><b>Diese Tour ist Teil einer Serie.</b></td>
+	{if $trip.nextpart}<td class="hlt" style="width:120px;text-align:center"><a href="geotrip_show.php?trip={$trip.nextpart}">Nächster Teil</a></td>{else}<td></td>{/if}
 	</tr></table>
 {/if}
 
 	<p>{$trip.descr|escape:"html"|nl2br|geographlinks}</p>
-	<div class="inner flt_r">[<a href="/geotrips/">overview map</a>]</div>
+	<div class="inner flt_r">[<a href="/geotrips/">Übersichtskarte</a>]</div>
 	<div><p><small>
 {if $trip.track}
-		On the map below, the grey line is the GPS track from this trip.
+		Die graue Linie auf der Karte ist der GPS-Track dieser Tour.
 {/if}
-		Click the blue circles to see a photograph
-		taken from that spot and read further information about the location.  The blue lines indicate
-		the direction of view.  There is also a
-		<a href="/search.php?i={$trip.search}&amp;displayclass=slide">slideshow</a>
-		<img alt="external link" title="" src="/img/external.png" /> of this trip.
+		Nach Anklicken der Kreise werden von der betreffenden Stelle aus aufgenommene Bilder und weitere Informationen
+		gezeigt. Die blauen Linien zeigen die Blickrichtung an. Es gibt auch eine
+		<a href="/search.php?i={$trip.search}&amp;displayclass=slide">Dia-Show</a>
+		dieser Tour.
 	</small></p></div>
 	<div class="row"></div>
 	<div id="map" class="inner" style="width:798px;height:650px"></div>
 	<p style="font-size:.65em">
-		All images &copy;
+		Alle Bilder &copy;
 		<a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}</a
 		>{foreach item=realname from=$realnames},
 		<a href="/profile/{$trip.uid}?a={$realname|escape:"url"}">{$realname|escape:"html"}</a>
 		{/foreach}
-		and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a>
-		<img alt="external link" title="" src="http://geo.hlipp.de/img/external.png" />.
+		und lizenziert unter einer <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative-Commons-Lizenz</a>
+		<img alt="Externer Link" title="" src="http://geo.hlipp.de/img/external.png" />.
 	</p>
 </div>
 
