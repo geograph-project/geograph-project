@@ -136,6 +136,7 @@ if ($searchid) {
 					$searchidx = 0;
 					$residx = 0;
 					$pg = 1;
+					$engine = new SearchEngine($searchid);
 					$engine->Execute(1);
 				}
 				if (count($engine->results) > $residx) {
