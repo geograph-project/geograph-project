@@ -290,7 +290,7 @@ You can only edit your own trips.  Choose one from the list below:
           print('<div class="inner">');
           print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
           print("<b>$title</b><br />");
-          print("<em>".htmlentities($trips[$i]['location'])."</em> &ndash; A ".whichtype($trips[$i]['type'])." from ".htmlentities($trips[$i]['start'])."<br />");
+          print("<em>".htmlentities($trips[$i]['location'])."</em> &ndash; A ".whichtype($trips[$i]['type'], false)." from ".htmlentities($trips[$i]['start'])."<br />");
           print("by <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a>");
           print("<p>$descr&nbsp;[<a href=\"geotrip_edit.php?trip={$trips[$i]['id']}\">edit</a>]</p>");
           print('<div class="row"></div>');

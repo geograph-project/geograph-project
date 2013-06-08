@@ -1,5 +1,5 @@
 {assign var="page_title" value="Overview map :: Geo-Trips"}
-{assign var="meta_description" value="A collection of square-bagging trips by members of the Geograph project, with photographs, descriptions and GPS tracks plotted on an Ordnance Survey map."}
+{assign var="meta_description" value="A collection of square-bagging trips by members of the Geograph project, with photographs, descriptions and GPS tracks plotted on a map."}
 {assign var="extra_css" value="/geotrips/geotrips.css"}
 {assign var="olayersmap" value="1"}
 {include file="_std_begin.tpl"}
@@ -169,13 +169,13 @@ AttachEvent(window,'load',initmap,false);
 		project.  Each point on the map represents a day trip by one Geograph-er to cover a number of
 		grid squares of the UTM Grid as shown on topographical maps.  The Geograph project aims
 		to collect photographs and information for each grid square.
-	</p><p>
+	</p><p><small>
 		Pan around the map using the left mouse button, or use the arrows in the top left corner of the map.
 		The +/- buttons on the map allow you to zoom in or out.  Double click zooms in on the spot.
 		Each Geo-Trip is marked on the map by a round
 		symbol.  Clicking the symbol gives details in a pop-up, and clicking the thumbnail in the pop-up
 		takes you to the map page for the trip, with all the pictures and information shown on the map.
-	</p>
+	</small></p>
 {dynamic}{if $user->registered}
 	<p class="inner hlt">
 		If you are a <em>Geograph</em>-er and would like to put your own square-bagging

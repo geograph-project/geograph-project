@@ -1,5 +1,5 @@
-{assign var="page_title" value="Overview map :: Geo-Trips"}
-{assign var="meta_description" value="A collection of square-bagging trips by members of the Geograph project, with photographs, descriptions and GPS tracks plotted on an Ordnance Survey map."}
+{assign var="page_title" value="Übersichtskarte :: Geo-Trips"}
+{assign var="meta_description" value="Eine Zusammenstellung von Touren von Teilnehmern des Geograph-Projekts mit Fotos, Beschreibungen und GPS-Tracks, dargestellt auf einer Landkarte."}
 {assign var="extra_css" value="/geotrips/geotrips.css"}
 {assign var="olayersmap" value="1"}
 {include file="_std_begin.tpl"}
@@ -68,11 +68,11 @@
 		});
 
 		var mapnik = new OpenLayers.Layer.XYrZ(
-			"Mapnik (Static + OSM)",
+			"Mapnik (Statisch + OSM)",
 			"/tile/osm/${z}/${x}/${y}.png",
 			0, 18, OpenLayers.Util.Geograph.MISSING_TILE_URL_BLUE /*FIXME*/,
 			{
-				attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a> contributors (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
+				attribution: '&copy; <a href="http://www.openstreetmap.org/">OSM</a>-User (<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">CC</a>)',
 				sphericalMercator : true
 			},
 			16, "http://tile.openstreetmap.org/${z}/${x}/${y}.png"
@@ -107,7 +107,7 @@
 		{if $trip.title}
 			{assign var="triptitle" value="`$trip.title`"}
 		{else}
-			{assign var="triptitle" value="`$trip.location` from `$trip.start`"}
+			{assign var="triptitle" value="`$trip.location` vom Ausgangspunkt `$trip.start`"}
 		{/if}
 			// Define marker
 			pos=new OpenLayers.LonLat({$trip.latlon.1},{$trip.latlon.0});
@@ -120,7 +120,7 @@
 				'/profile/{$trip.uid}',
 				'{$triptitle|escape:"html"|escape:"javascript"}',
 				'{$trip.location|escape:"html"|escape:"javascript"}',
-				'{$trip.date|date_format:"%A, %e %B %Y"}',
+				'{$trip.date|date_format:"%A, %e. %B %Y"}',
 				'{$trip.nicetype|escape:"html"|escape:"javascript"}',
 				'{$trip.start|escape:"html"|escape:"javascript"}',
 				thumburl, thumbwidth, thumbheight
@@ -149,8 +149,8 @@
 		var html = '<h4 style="font-family:Arial,sans-serif;font-weight:bold;font-size:medium">'+title+'</h4>';
 		html += '<div style="font-family:Arial,sans-serif;text-align:center;font-size:small">';
 		html += '<p><a href="'+tripurl+'"  target="_blank"><img src="'+thumburl+'" width="'+thumbwidth+'" height="'+thumbheight+'" alt="'+triploc+'" /></a></p>';
-		html += '<p><b>'+triploc+' &ndash; A '+triptype+' from '+tripstart+' by <a href="'+profileurl+'">'+realname+'</a><br /> '+tripdate+'</b></p>';
-		html += '<p>Click image to see details of this trip.</p>';
+		html += '<p><b>'+triploc+' &ndash; '+triptype+' vom Ausgangspunkt '+tripstart+' von <a href="'+profileurl+'">'+realname+'</a><br /> '+tripdate+'</b></p>';
+		html += '<p>Anklicken des Fotos zeigt Tour-Details.</p>';
 		html += '</div>';
 		return html;
 	}
@@ -161,58 +161,54 @@ AttachEvent(window,'load',initmap,false);
 </script>
 {/literal}
 
-<h2>Geo-Trips overview map</h2>
+<h2>Geo-Trips-Übersichtskarte</h2>
 
 <div class="panel maxi" style="max-width:800px">
 	<p>
-		The map below shows Geo-Trips submitted by members of the <a href="/">Geograph</a>
-		project.  Each point on the map represents a day trip by one Geograph-er to cover a number of
-		grid squares of the UTM Grid as shown on topographical maps.  The Geograph project aims
-		to collect photographs and information for each grid square.
-	</p><p>
-		Pan around the map using the left mouse button, or use the arrows in the top left corner of the map.
-		The +/- buttons on the map allow you to zoom in or out.  Double click zooms in on the spot.
-		Each Geo-Trip is marked on the map by a round
-		symbol.  Clicking the symbol gives details in a pop-up, and clicking the thumbnail in the pop-up
-		takes you to the map page for the trip, with all the pictures and information shown on the map.
-	</p>
+		Die untenstehende Karte zeigt von den Teilnehmern des <a href="/">Geograph-Projekts</a> hochgeladene Geo-Trips.
+		Jeder Kreis auf der Karte steht für eine Tagestour, die ein Geographer unternommen hat, um die auf
+		topographischen Karten verzeichneten Planquadrate des UTM-Gitters fotografisch zu dokumentieren.
+		Das Geograph-Projekt verfolgt das Ziel, für jedes dieser Planquadrate Fotos und Informationen zu sammeln.
+	</p><p><small>
+		Die Karte kann durch Anklicken der Pfeile oder durch Mausbewegung bei gedrückter linker Maustaste verschoben werden.
+		Zoomen kann man durch Anklicken der "+"/"-"-Symbole auf der linken Seite, durch Doppelklick oder mit Hilfe des
+		Scrollrads der Maus. Anklicken der "+"-Symbole auf der rechten Seite öffnet eine Auswahl alternativer Karten oder
+		eine Übersichtskarte.
+		Klickt man auf einen der Kreise, so öffnet sich ein Fenster, das Details und ein Foto des zugehörigen Geo-Trips enthält.
+		Anklicken dieses Fotos öffnet eine detaillierte Beschreibung der Tour sowie eine Landkarte, auf der Fotos und weitere
+		Informationen eingetragen sind.
+	</small></p>
 {dynamic}{if $user->registered}
 	<p class="inner hlt">
-		If you are a <em>Geograph</em>-er and would like to put your own square-bagging
-		expeditions on the map - on foot, by bike, in a car or by any other mode of transport -
-		please use the <a href="geotrip_submit.php">Geo-Trip submission form</a>.
-		If you upload a GPS track log in GPX format, the track will also be shown.
-		You can also <a href="geotrip_edit.php">edit your existing Geo-Trips</a>.
+		Teilnehmer des <em>Geograph</em>-Projekts können eigene Touren (zu Fuß, auf dem Rad, im Auto
+		oder auf andere Weise unternommen) über das <a href="geotrip_submit.php">Geo-Trip-Einreichformular</a>
+		hochladen. Dieses erlaubt es auch, GPS-Tracks im GPX-Format hochzuladen.
+		Bereits hochgeladene Touren können auch <a href="geotrip_edit.php">nachträglich geändert</a> werden.
 	</p>
 {/if}{/dynamic}
 	<table class="ruled"><tr>
-		<td><b>Legend:</b></td>
-		<td><img src="walk.png" alt="" title="Fig.: Walk symbol" /> Walk</td><td></td>
-		<td><img src="bike.png" alt="" title="Fig.: Bike symbol" /> Cycle ride</td><td></td>
-		<td><img src="boat.png" alt="" title="Fig.: Boat symbol" /> Boat trip</td><td></td>
-		<td><img src="rail.png" alt="" title="Fig.: Rail symbol" /> Train ride</td><td></td>
-		<td><img src="road.png" alt="" title="Fig.: Road symbol" /> Drive</td><td></td>
-		<td><img src="bus.png"  alt="" title="Fig.: Bus symbol" />  Scheduled public transport</td>
+		<td><b>Legende:</b></td>
+		<td><img src="walk.png" alt="" title="Abb.: Wanderungs-Symbol" /> Zu Fuß</td><td></td>
+		<td><img src="bike.png" alt="" title="Abb.: Fahrrad-Symbol" /> Fahrrad</td><td></td>
+		<td><img src="boat.png" alt="" title="Abb.: Boot-Symbol" /> Boot</td><td></td>
+		<td><img src="rail.png" alt="" title="Abb.: Zug-Symbol" /> Zug</td><td></td>
+		<td><img src="road.png" alt="" title="Abb.: Straßen-Symbol" /> Auto</td><td></td>
+		<td><img src="bus.png"  alt="" title="Abb.: Bus-Symbol" /> Öffentliche Verkehrsmittel</td>
 	</tr></table>
 	<div id="map" class="inner" style="width:798px;height:650px"></div>
 	<table class="ruled"><tr>
-		<td><b>Legend:</b></td>
-		<td><img src="walk.png" alt="" title="Fig.: Walk symbol" /> Walk</td><td></td>
-		<td><img src="bike.png" alt="" title="Fig.: Bike symbol" /> Cycle ride</td><td></td>
-		<td><img src="boat.png" alt="" title="Fig.: Boat symbol" /> Boat trip</td><td></td>
-		<td><img src="rail.png" alt="" title="Fig.: Rail symbol" /> Train ride</td><td></td>
-		<td><img src="road.png" alt="" title="Fig.: Road symbol" /> Drive</td><td></td>
-		<td><img src="bus.png"  alt="" title="Fig.: Bus symbol" />  Scheduled public transport</td>
+		<td><b>Legende:</b></td>
+		<td><img src="walk.png" alt="" title="Abb.: Wanderungs-Symbol" /> Zu Fuß</td><td></td>
+		<td><img src="bike.png" alt="" title="Abb.: Fahrrad-Symbol" /> Fahrrad</td><td></td>
+		<td><img src="boat.png" alt="" title="Abb.: Boot-Symbol" /> Boot</td><td></td>
+		<td><img src="rail.png" alt="" title="Abb.: Zug-Symbol" /> Zug</td><td></td>
+		<td><img src="road.png" alt="" title="Abb.: Straßen-Symbol" /> Auto</td><td></td>
+		<td><img src="bus.png"  alt="" title="Abb.: Bus-Symbol" /> Öffentliche Verkehrsmittel</td>
 	</tr></table>
-	<p>
-		In the spirit if not the scope of Geo-Trips, here's <b>Thomas Nugent</b>'s
-		<a href="http://www.geograph.org.uk/article/Luton-to-Glasgow-in-50-minutes">flight from Luton to Glasgow</a>,
-		plotted on a Google Map, with tips for other flying Geograph-ers.
-	</p>
 </div>
 
 <div class="panel maxi">
-	<h3>Recently uploaded Geo-Trips</h3>
+	<h3>Kürzlich hochgeladene Geo-Trips</h3>
 	<p>
 		{*FIXME
 		There is a <a href="/content/?scope[]=trip">full list of Geo-Trips</a> (updated once daily
@@ -221,9 +217,9 @@ AttachEvent(window,'load',initmap,false);
 		<a href="/content/syndicator.php?scope[]=trip">RSS feed</a> with new Geo-Trips as they
 		come in. *}
 {if $alltrips}
-		The list below shows all trips uploaded so far. {if $max < 0}See also the <a href="./">list of recent trips</a> which is updated more frequently.{/if}
+		Die untenstehende Liste zeigt alle bisher hochgeladenen Touren. {if $max < 0}Siehe auch die <a href="./">Liste aktueller Touren</a>, die häufiger aktualisiert wird.{/if}
 {else}
-		The list below includes all trips uploaded in the last {if $days==1}24 hours{else}{$days} days{/if}. See also the <a href="?max=-1">list of all trips</a>.
+		Die untenstehende Liste enthält alle in den letzten {if $days==1}24 Stunden{else}{$days} Tagen{/if} hochgeladenen Touren. Siehe auch die <a href="?max=-1">Liste aller Touren</a>.
 {/if}
 	</p>
 
@@ -231,23 +227,23 @@ AttachEvent(window,'load',initmap,false);
 	{if $trip.title}
 		{assign var="triptitle" value="`$trip.title`"}
 	{else}
-		{assign var="triptitle" value="`$trip.location` from `$trip.start`"}
+		{assign var="triptitle" value="`$trip.location` vom Ausgangspunkt `$trip.start`"}
 	{/if}
 	<div class="inner">
 		<div class="inner flt_r" style="max-width:213px">
 			<img src="{$trip.gridimage->getThumbnail(213,160,true)}" alt="" title="{$triptitle|escape:"html"}" />
 			<br />
-			<span style="font-size:0.6em">Image &copy;
+			<span style="font-size:0.6em">Bild &copy;
 				<a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}{*FIXME realname*}</a>
-				and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a><img alt="external link" title="" src="/img/external.png" />
+				und lizenziert unter einer <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative-Commons-Lizenz</a><img alt="external link" title="" src="/img/external.png" />
 			</span>
 		</div>
 		<b>{$triptitle|escape:"html"}</b><br />
-		<i>{$trip.location|escape:"html"}</i> &ndash; A {$trip.nicetype|escape:"html"} from {$trip.start|escape:"html"}<br />
-		by <a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}</a>
+		<i>{$trip.location|escape:"html"}</i> &ndash; {$trip.nicetype|escape:"html"} vom Ausgangspunkt {$trip.start|escape:"html"}<br />
+		von <a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}</a>
 		<div class="inner flt_r">{$trip.grid_reference}</div>
 		<p title="{$trip.descr|escape:'html'}">
-			{$trip.descr|escape:'html'|nl2br|truncate:500:"... (<u>more</u>)"|geographlinks}&nbsp;[<a href="geotrip_show.php?trip={$trip.id}">show</a>]
+			{$trip.descr|escape:'html'|nl2br|truncate:500:"... (<u>more</u>)"|geographlinks}&nbsp;[<a href="geotrip_show.php?trip={$trip.id}">Details</a>]
 			{*FIXME edit if moderator or owner*}
 		</p>
 		<div class="row"></div>

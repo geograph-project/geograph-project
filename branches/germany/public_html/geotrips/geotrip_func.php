@@ -1,13 +1,24 @@
 <?php
 
-function whichtype($type) {
-  if     ($type=='walk') return 'walk';
-  elseif ($type=='bike') return 'cycle ride';
-  elseif ($type=='road') return 'drive';
-  elseif ($type=='rail') return 'train ride';
-  elseif ($type=='boat') return 'boat trip';
-  elseif ($type=='bus')  return 'journey by scheduled public transport';
-  else                   return 'trip';
+function whichtype($type, $translate = true) {
+	global $CONF;
+	if ($translate && $CONF['lang'] === 'de') { # FIXME use $MESSAGES + use array
+		if     ($type=='walk') return 'eine Wanderung';
+		elseif ($type=='bike') return 'eine Radtour';
+		elseif ($type=='road') return 'eine Fahrt';
+		elseif ($type=='rail') return 'eine Zugfahrt';
+		elseif ($type=='boat') return 'eine Bootsfahrt';
+		elseif ($type=='bus')  return 'eine Reise mit öffentlichen Verkehrsmitteln';
+		else                   return 'eine Tour';
+	} else {
+		if     ($type=='walk') return 'walk';
+		elseif ($type=='bike') return 'cycle ride';
+		elseif ($type=='road') return 'drive';
+		elseif ($type=='rail') return 'train ride';
+		elseif ($type=='boat') return 'boat trip';
+		elseif ($type=='bus')  return 'journey by scheduled public transport';
+		else                   return 'trip';
+	}
 }
 
 function xml_startTag($parser,$data,$attr) {

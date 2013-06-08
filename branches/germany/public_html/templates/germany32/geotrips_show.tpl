@@ -364,7 +364,7 @@ AttachEvent(window,'load',initmap,false);
 	</p>
 
 {if $trip.contfrom || $trip.nextpart}
-	<table class="ruled" style="margin:auto"></tr>
+	<table class="ruled" style="margin:auto"><tr>
 	{if $trip.contfrom}<td class="hlt" style="width:120px;text-align:center"><a href="geotrip_show.php?trip={$trip.contfrom}">preceding leg</a></td>{else}<td></td>{/if}
 	<td style="margin:20px;text-align:center"><b>This trip is part of a series.</b></td>
 	{if $trip.nextpart}<td class="hlt" style="width:120px;text-align:center"><a href="geotrip_show.php?trip={$trip.nextpart}">next leg</a></td>{else}<td></td>{/if}
