@@ -70,6 +70,7 @@ $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$lef
 
 $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
+$ri = $prefix['reference_index'];
 
 $photos = $db->GetAll("select 
 gridimage_id,grid_reference,title,title2,imagecount,view_direction,natgrlen,realname,
