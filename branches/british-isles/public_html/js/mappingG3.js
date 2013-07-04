@@ -311,11 +311,19 @@ function updateCamIcon() {
 
 }
 
-
-if (google && google.maps) {
-	var mapTypeIds = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN];
+var mapTypeIds;
 
 	function firstLetterToType(newtype) {
+		mapTypeIds = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN];
+
+                if (typeof NLSTileUrlOS == 'function') {
+	                mapTypeIds.push("nls");
+                }
+                mapTypeIds.push("osm");
+                mapTypeIds.push("cm");
+                mapTypeIds.push("ply");
+
+
                 //if (newtype == 'r') {
 			mapTypeId = google.maps.MapTypeId.ROADMAP;
 		//}
@@ -339,6 +347,7 @@ map.mapTypes.set("osm", new google.maps.ImageMapType({
         },
         tileSize: new google.maps.Size(256, 256),
         name: "OSM",
+	alt: "OpenStreetMap",
         maxZoom: 18
 }));
 
@@ -351,6 +360,7 @@ map.mapTypes.set("cm", new google.maps.ImageMapType({
         },
         tileSize: new google.maps.Size(256, 256),
         name: "Cycle Map",
+	alt: "Open Cycle Map",
         maxZoom: 18
 }));
 
@@ -363,12 +373,9 @@ map.mapTypes.set("phy", new google.maps.ImageMapType({
         },
         tileSize: new google.maps.Size(256, 256),
         name: "Physical",
+	alt: "Terrain from Open Cycle Map",
         maxZoom: 18
 }));
-
-		mapTypeIds.push("osm");
-		mapTypeIds.push("cm");
-		mapTypeIds.push("ply");
 
 	}
 
@@ -390,4 +397,3 @@ function Attribution(map,mapTypeId) {
   });
 };
 
-}
