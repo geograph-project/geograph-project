@@ -749,6 +749,8 @@ class RasterMap
 				if ($this->reference_index == 1) {
 					//$p1 .= "<script type=\"text/javascript\" src=\"http://nls.tileserver.com/api.js\"></script>";
 					$p1 .= "<script type=\"text/javascript\" src=\"/js/nls.tileserver.com-api.js\"></script>";
+
+					$block .= " setupNLSTiles(map); \n";
 				}
 
 				$block .= '

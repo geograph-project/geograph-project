@@ -98,6 +98,7 @@
 				}
 			});
 
+			setupNLSTiles(map);
 			setupOSMTiles(map);
 
 			google.maps.event.addListener(map, "click", function(event) {
