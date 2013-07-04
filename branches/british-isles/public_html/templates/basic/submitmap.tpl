@@ -10,7 +10,7 @@
 
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/mappingG3.js"|revision}"></script>
-<script type="text/javascript" src="http://nls.tileserver.com/api.js"></script>
+<script type="text/javascript" src="/js/nls.tileserver.com-api.js"></script>
 {literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -84,11 +84,7 @@
 				}
 			}
 
-			if (newtype == 'r') {mapTypeId = google.maps.MapTypeId.ROADMAP;}
-			if (newtype == 's') {mapTypeId = google.maps.MapTypeId.SATELLITE;}
-			if (newtype == 'h') {mapTypeId = google.maps.MapTypeId.HYBRID;}
-			if (newtype == 't') {mapTypeId = google.maps.MapTypeId.TERRAIN;}
-			if (newtype == 'n') {mapTypeId = 'nls';}
+			mapTypeId = firstLetterToType(newtype);
 
 			map = new google.maps.Map(
 				document.getElementById('map'), {
@@ -97,23 +93,12 @@
 				mapTypeId: mapTypeId,
 				streetViewControl: true,
 				mapTypeControlOptions: {
-					mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN, "nls"],
+					mapTypeIds: mapTypeIds,
 					style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
 				}
 			});
 
-			// TODO: Automatic load balancing & server availability test:
-			// add <img src="testtile" onLoad="win()"> and decide which from available servers is fastest for the client
-			var nlsmap = new google.maps.ImageMapType({
-				getTileUrl: function(tile, zoom) { return NLSTileUrlOS(tile.x, tile.y, zoom); },
-				tileSize: new google.maps.Size(256, 256),
-				isPng: false,
-				maxZoom: 14,
-				minZoom: 1,
-				name: "Historic",
-				alt: "NLS Historic Map"
-			});
-			map.mapTypes.set("nls",nlsmap);
+			setupOSMTiles(map);
 
 			google.maps.event.addListener(map, "click", function(event) {
 				makeMarker(event.latLng);
@@ -125,6 +110,8 @@
 
 			google.maps.event.addListener(map, "idle", saveView);
 			google.maps.event.addListener(map, "maptypeid_changed", saveMapType);
+
+			Attribution(map,mapTypeId);
 		}
 
 		function streetViewPosition() {
