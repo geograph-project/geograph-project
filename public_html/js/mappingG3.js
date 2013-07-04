@@ -321,7 +321,7 @@ var mapTypeIds;
                 }
                 mapTypeIds.push("osm");
                 mapTypeIds.push("cm");
-                mapTypeIds.push("ply");
+                mapTypeIds.push("phy");
 
 
                 //if (newtype == 'r') {
