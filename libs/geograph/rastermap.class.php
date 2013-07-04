@@ -748,7 +748,7 @@ class RasterMap
 
 				if ($this->reference_index == 1) {
 					//$p1 .= "<script type=\"text/javascript\" src=\"http://nls.tileserver.com/api.js\"></script>";
-					$p1 .= "<script type=\"text/javascript\" src=\"/js/nls.tileserver.com-api.js\"></script>";
+					$p1 .= "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/nls.tileserver.com-api.js")."\"></script>";
 
 					$block .= " setupNLSTiles(map); \n";
 				}
@@ -773,6 +773,7 @@ class RasterMap
 					var issubmit = {$this->issubmit}+0;
 					var ri = {$this->reference_index};
 					var map = null;
+
 					function loadmap() {
 						var point = new google.maps.LatLng({$this->lat},{$this->long});
 						var newtype = readCookie('GMapType');
