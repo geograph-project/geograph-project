@@ -88,7 +88,7 @@ function NLSTileUrlOS( x, y, z ) {
 ///////////////////////////////
 // created by geograph 
 
-if (mapTypeIds && google && google.maps && map) {
+	function setupNLSTiles(map) {
 	
                                         // TODO: Automatic load balancing & server availability test:
                                         // add <img src="testtile" onLoad="win()"> and decide which from available servers is fastest for the client
@@ -105,6 +105,4 @@ if (mapTypeIds && google && google.maps && map) {
 					map.mapTypes.set("nls",nlsmap);
 
 					mapTypeIds.push("nls");
-
-
-}
+	}
