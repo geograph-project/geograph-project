@@ -794,7 +794,9 @@ class RasterMap
 							$p2
 						});
 
-						$block 
+						$block
+
+						setupOSMTiles(map);
 
 						google.maps.event.addListener(map, \"maptypeid_changed\", function() {
 							var t = map.getMapTypeId().substr(0,1);
