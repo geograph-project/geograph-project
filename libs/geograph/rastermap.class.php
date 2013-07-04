@@ -246,7 +246,7 @@ class RasterMap
 			
 			$title = "Map data (c) openstreetmap.org  CC-BY-SA 2.0";
 			
-			return "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img name=\"tile\" src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" alt=\"$title\"/></div>";
+			return "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img name=\"tile\" src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" alt=\"$title\" nopin=\"true\"/></div>";
 
 			
 		} elseif ($this->service == 'OSOS') {
@@ -292,7 +292,7 @@ class RasterMap
 				//nice central marker
 
 				$padding = intval(($width-29)/2);
-				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/icons/circle.png'\"><img src=\"http://{$CONF['STATIC_HOST']}/img/icons/circle.png\" style=\"padding:{$padding}px;width:29px;height:29px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/icons/circle.png'\"><img src=\"http://{$CONF['STATIC_HOST']}/img/icons/circle.png\" style=\"padding:{$padding}px;width:29px;height:29px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\" nopin=\"true\"/></a>";
 
 			} elseif ($this->displayMarker1) {
 				//need to manipualte the marker position
@@ -326,12 +326,12 @@ class RasterMap
 
 				$padding = "padding:{$ptop}px {$pright}px {$pbottom}px {$pleft}px";
 
-				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/icons/circle.png'\"><img src=\"http://{$CONF['STATIC_HOST']}/img/icons/circle.png\" style=\"{$padding};width:29px;height:29px;background-image:url($mapurl);\" border=\"0\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\" onmouseover=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/blank.gif'\" onmouseout=\"document.getElementById('marker$idcounter').src='http://{$CONF['STATIC_HOST']}/img/icons/circle.png'\"><img src=\"http://{$CONF['STATIC_HOST']}/img/icons/circle.png\" style=\"{$padding};width:29px;height:29px;background-image:url($mapurl);\" border=\"0\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\" nopin=\"true\"/></a>";
 
 			} else {
 				//no marker
 
-				$str .= "<a href=\"/gridref/$gr\" title=\"$title\"><img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" id=\"marker$idcounter\"/></a>";
+				$str .= "<a href=\"/gridref/$gr\" title=\"$title\"><img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" nopin=\"true\" id=\"marker$idcounter\"/></a>";
 			}
 		
 			$idcounter++;
@@ -375,7 +375,7 @@ class RasterMap
 			$str = "<div style=\"position:relative;height:".($width+$extra)."px;width:{$this->width}px;\" id=\"rastermap\">";
 
 	//map image
-			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img name=\"tile\" src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" alt=\"$title\"/></div>";
+			$str .= "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img name=\"tile\" src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" alt=\"$title\" nopin=\"true\"/></div>";
 
 	//drag prompt
 			if ($this->issubmit)
@@ -475,7 +475,7 @@ class RasterMap
 
 	//overlay (for dragging)
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;z-index:3\">";
-			$imagestr = "<img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/>";
+			$imagestr = "<img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\" nopin=\"true\"/>";
 			if (!empty($gridref) && $this->nateastings > 0) {
 				$this->clickable = true;
 				$str .= smarty_function_getamap(array('text'=>$imagestr,'gridref'=>$gridref,'title'=>$title,'icon'=>'no'));
@@ -530,7 +530,7 @@ class RasterMap
 			return "<script src=\"//maps.googleapis.com/maps/api/js?sensor=false\" type=\"text/javascript\"></script>";
 		} elseif ($this->service == 'OSOS') {
 			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {
-				return "<script src=\"http://openspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
+				return "<script src=\"http://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
 			} else {
 				return "<script src=\"http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
 			}
@@ -733,7 +733,7 @@ class RasterMap
 			}
 			if ($this->issubmit) {
 				$block .= $this->getPolySquareBlock($conv,$e-800,$n-600,$e-200,$n-100);
-				
+
 				for ($i=100; $i<=900; $i+=100) {
 					$block .= $this->getPolyLineBlock($conv,$e,   $n+$i,$e+1000,$n+$i,   0.25);
 					$block .= $this->getPolyLineBlock($conv,$e+$i,$n,   $e+$i,  $n+1000, 0.25);
@@ -745,49 +745,27 @@ class RasterMap
 			$p1 = $p2 = '';
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
-				
-				if ($this->reference_index == 1) {
-					$p1 .= "<script type=\"text/javascript\" src=\"http://nls.tileserver.com/api.js\"></script>";
 
-					$block .= '
-					
-					// TODO: Automatic load balancing & server availability test:
-					// add <img src="testtile" onLoad="win()"> and decide which from available servers is fastest for the client
-					var nlsmap = new google.maps.ImageMapType({
-						getTileUrl: function(tile, zoom) { return NLSTileUrlOS(tile.x, tile.y, zoom); },
-						tileSize: new google.maps.Size(256, 256),
-						isPng: false,
-						maxZoom: 14,
-						minZoom: 1,
-						name: "Historic",
-						alt: "NLS Historic Map"
-					});
-					
-					map.mapTypes.set("nls",nlsmap);
-					';
-					
-					$p2 = ',mapTypeControlOptions: {
-						mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN, "nls"],
-						style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
-					}';
+				if ($this->reference_index == 1) {
+					//$p1 .= "<script type=\"text/javascript\" src=\"http://nls.tileserver.com/api.js\"></script>";
+					$p1 .= "<script type=\"text/javascript\" src=\"/js/nls.tileserver.com-api.js\"></script>";
 				}
-				
+
 				$block .= '
 				var panorama = map.getStreetView();
 				google.maps.event.addListener(panorama, "position_changed", function() {
 					if (!panorama.getVisible())
 						return false;
-					
+
 					marker2.setPosition(panorama.getPosition());
 					google.maps.event.trigger(marker2,"drag");
 				});
-				//todo, listen for pov_changed, and set view direction (if no subject location?) 
+				//todo, listen for pov_changed, and set view direction (if no subject location?)
 				';
 			}
 			return "
-				
-				$p1
 				<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/mappingG3.js")."\"></script>
+				$p1
 				<script type=\"text/javascript\">
 				//<![CDATA[
 					var issubmit = {$this->issubmit}+0;
@@ -797,19 +775,19 @@ class RasterMap
 						var point = new google.maps.LatLng({$this->lat},{$this->long});
 						var newtype = readCookie('GMapType');
 						var mapTypeId = google.maps.MapTypeId.TERRAIN;
-						
-						if (newtype == 'r') {mapTypeId = google.maps.MapTypeId.ROADMAP;}
-						if (newtype == 's') {mapTypeId = google.maps.MapTypeId.SATELLITE;}
-						if (newtype == 'h') {mapTypeId = google.maps.MapTypeId.HYBRID;}
-						if (newtype == 't') {mapTypeId = google.maps.MapTypeId.TERRAIN;}
-						if (newtype == 'n') {mapTypeId = 'nls';}
-						
+
+						mapTypeId = firstLetterToType(newtype);
+
 						map = new google.maps.Map(
 							document.getElementById('map'), {
 							center: point,
 							zoom: 13,
 							mapTypeId: mapTypeId,
-							streetViewControl: issubmit?true:false
+							streetViewControl: issubmit?true:false,
+							mapTypeControlOptions: {
+								mapTypeIds: mapTypeIds,
+		                                                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+                		                        }
 							$p2
 						});
 
@@ -819,13 +797,16 @@ class RasterMap
 							var t = map.getMapTypeId().substr(0,1);
 							createCookie('GMapType',t,10);
 						});
-						
+
 						if (typeof updateMapMarkers == 'function') {
 							updateMapMarkers();
 						}
+						if (typeof Attribution == 'function') {
+							Attribution(map,mapTypeId);
+						}
 					}
 					AttachEvent(window,'load',loadmap,false);
-					
+
 					var static_host = '{$CONF['STATIC_HOST']}';
 				//]]>
 				</script>";
@@ -1111,7 +1092,7 @@ class RasterMap
 			if (!$path) 
 				$path = $this->getOSGBStorePath('OS50k',$east,$nort,true);
 
-			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile 3x3 png:- | "%sconvert" - -crop %ldx%ld+%ld+%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,230 155,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 \'© Crown Copyright %s\'" -colors 128 -depth 8 -type Palette png:%s', 
+			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile 3x3 png:- | "%sconvert" - -crop %ldx%ld+%ld+%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,230 160,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 \'(c) Crown Copyright %s\'" -colors 128 -depth 8 -type Palette png:%s', 
 				isset($_GET['nice'])?'nice ':'',
 				$CONF['imagemagick_path'],
 				implode(' ',$tilelist),
@@ -1149,7 +1130,7 @@ class RasterMap
 		
 		$by20 = $this->width/20; //to center on the centisquare
 				
-		$cmd = sprintf('%s"%sconvert" png:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld +repage -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 13,114 112,130 3,3" -fill "#000066" -pointsize 10 -draw "text 14,123 \'© OSGB %s\'" -colors 128 -depth 8 -type Palette png:%s', 
+		$cmd = sprintf('%s"%sconvert" png:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld +repage -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 13,114 118,130 3,3" -fill "#000066" -pointsize 10 -draw "text 14,123 \'(c) OSGB %s\'" -colors 128 -depth 8 -type Palette png:%s', 
 			isset($_GET['nice'])?'nice ':'',
 			$CONF['imagemagick_path'],
 			$input,
@@ -1166,7 +1147,7 @@ class RasterMap
 
 		exec ($cmd);
 		if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
-			print "<pre>$cmd</pre>";
+			die("<pre>$cmd</pre>");
 
 		if (file_exists($path)) {
 			return true;
@@ -1225,7 +1206,7 @@ class RasterMap
 		$token->setValue("s", $this->service);
 		if ($this->epoch != 'latest') {
 			$token->setValue("r", $this->epoch);
-		} 
+		}
 		return $token->getToken();
 	}
 
@@ -1278,15 +1259,29 @@ class RasterMap
 		list($source,$dummy) = explode('-',$service);
 		
 		$dir=$CONF['rastermap'][$source]['path'].$this->epoch.'/'.$folder;
+		$dir2='/mnt/secondry/rastermaps-OS-50k-'.$this->epoch.'-'.str_replace('/','-',$folder);
 		$dir.=$e2.'/';
+		$dir2.=$e2.'-';
 		if ($create && !is_dir($dir))
 			mkdir($dir);
 
 		$dir.=$n2.'/';
+		$dir2.=$n2.'-';
 		if ($create && !is_dir($dir))
 			mkdir($dir);
 
-		return $dir.$e3.'-'.$n3.'.png';
+		$file = $dir.$e3.'-'.$n3.'.png';
+		$file2 = $dir2.$e3.'-'.$n3.'.png';
+
+if ($_GET['debug'])
+	print "'$file2'";
+
+		if (!file_exists($file) && file_exists($file2)) {
+			return $file2;
+		} else {
+			return $file;
+		}
+
 	}
 
 	function _trace($msg)

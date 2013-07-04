@@ -310,3 +310,84 @@ function updateViewDirection() {
 function updateCamIcon() {
 
 }
+
+
+if (google && google.maps) {
+	var mapTypeIds = [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN];
+
+	function firstLetterToType(newtype) {
+                //if (newtype == 'r') {
+			mapTypeId = google.maps.MapTypeId.ROADMAP;
+		//}
+                if (newtype == 's') {mapTypeId = google.maps.MapTypeId.SATELLITE;}
+                if (newtype == 'h') {mapTypeId = google.maps.MapTypeId.HYBRID;}
+                if (newtype == 't') {mapTypeId = google.maps.MapTypeId.TERRAIN;}
+                if (newtype == 'n') {mapTypeId = 'nls';}
+                if (newtype == 'o') {mapTypeId = 'osm';}
+                if (newtype == 'c') {mapTypeId = 'cm';}
+                if (newtype == 'p') {mapTypeId = 'phy';}
+
+		return mapTypeId;
+	}
+
+	function setupOSMTiles(map) {
+
+//Define OSM map type pointing at the OpenStreetMap tile server
+map.mapTypes.set("osm", new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+                return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+        },
+        tileSize: new google.maps.Size(256, 256),
+        name: "OSM",
+        maxZoom: 18
+}));
+
+//Define CM map type pointing at the OpenCycleMap tile server
+map.mapTypes.set("cm", new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+                var subdomains = ['a','b','c'];
+                var index = Math.abs(coord.x + coord.x) % subdomains.length;
+                return "http://"+subdomains[index]+".tile.opencyclemap.org/cycle/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+        },
+        tileSize: new google.maps.Size(256, 256),
+        name: "Cycle Map",
+        maxZoom: 18
+}));
+
+//Define PHY map type pointing at the OpenCycleMap tile server
+map.mapTypes.set("phy", new google.maps.ImageMapType({
+        getTileUrl: function(coord, zoom) {
+                var subdomains = ['a','b','c'];
+                var index = Math.abs(coord.x + coord.x) % subdomains.length;
+                return "http://"+subdomains[index]+".tile3.opencyclemap.org/landscape/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+        },
+        tileSize: new google.maps.Size(256, 256),
+        name: "Physical",
+        maxZoom: 18
+}));
+
+		mapTypeIds.push("osm");
+		mapTypeIds.push("cm");
+		mapTypeIds.push("ply");
+
+	}
+
+function Attribution(map,mapTypeId) {
+  var el = document.createElement('div');
+  var style = el.style;
+  if (mapTypeId != 'osm' && mapTypeId != 'cm' && mapTypeId != 'phy')
+    style.display = 'none';
+  style.fontFamily = 'sans-serif';
+  style.fontSize = '11px';
+
+  el.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors';
+
+  map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(el);
+
+  google.maps.event.addListener(map, 'maptypeid_changed', function() {
+    var type = map.getMapTypeId();
+    style.display = (type == 'osm' || type == 'cm' || type == 'phy') ? '' : 'none';
+  });
+};
+
+}
