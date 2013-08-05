@@ -95,6 +95,8 @@ class GeoGridFS(Fuse):
 
     def readdir(self, path, offset):
         dedup = {}
+        yield fuse.Direntry('.')   #os.listdir does NOT include these!
+        yield fuse.Direntry('..')
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
                 for e in os.listdir(mount + path):
@@ -220,28 +222,28 @@ class GeoGridFS(Fuse):
         direct_io = False
         keep_cache = False
         
-        def __init__(self, path, flags, *mode):
+        def __init__(self, server, path, flags, *mode):
             self.file = False
             
             #first see if can find an actual file
-            for mount in self.getOrderedMounts(path):
+            for mount in server.getOrderedMounts(path):
                 if os.path.exists(mount + path):
-                    self.file = os.fdopen(os.open(self.getFirstMount(path) + path, flags, *mode), flag2mode(flags))
+                    self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                     break
             
             #find a mount that has a folder we can use
-            if not self.file: #todo AND not READ_ONLY
-                for mount in self.getOrderedMounts(path):
+            if not self.file and not (flags | os.O_RDONLY):
+                for mount in server.getOrderedMounts(path):
                     if os.path.exists(os.path.dirname(mount + path)):
-                        self.file = os.fdopen(os.open(self.getFirstMount(path) + path, flags, *mode), flag2mode(flags))
+                        self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                         break
                 
                 #if still not found, then just create it on the first mount
                 if not self.file: 
-                    for mount in self.getOrderedMounts(path):
+                    for mount in server.getOrderedMounts(path):
                         if not os.path.exists(os.path.dirname(mount + path)):
                             os.makedirs(os.path.dirname(mount + path)) # use makedirs so will also create parent dirs as required
-                        self.file = os.fdopen(os.open(self.getFirstMount(path) + path, flags, *mode), flag2mode(flags))
+                        self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                         break
             
             if not self.file:
@@ -324,9 +326,15 @@ class GeoGridFS(Fuse):
             fcntl.lockf(self.fd, op, kw['l_start'], kw['l_len'])
 
 
+
     def main(self, *a, **kw):
 
-        self.file_class = self.GeoGridFSFile
+        #see http://sourceforge.net/apps/mediawiki/fuse/index.php?title=FUSE_Python_Reference#File_Class_Methods
+        class wrapped_GeoGridFSFile(self.GeoGridFSFile):
+            def __init__(self2, *a, **kw):
+                self.GeoGridFSFile.__init__(self2, self, *a, **kw)
+
+        self.file_class = wrapped_GeoGridFSFile
 
         return Fuse.main(self, *a, **kw)
 
