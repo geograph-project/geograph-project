@@ -15,6 +15,7 @@
 
 import os, sys
 import os.path
+import random
 from errno import *
 from stat import *
 import fcntl
@@ -58,34 +59,41 @@ class GeoGridFS(Fuse):
         self.root = '/'
         
         self.mounts = {}
-        self.mounts['milk'] = '/var/mount/milk'
         self.mounts['cream'] = '/var/mount/cream'
+        self.mounts['milk'] = '/var/mount/milk'
         self.mounts['jam'] = '/var/mount/jam'
-        
+
+#############################################################################
 
     def getFirstMount(self, path='/'):
     #todo!
         return self.mounts['milk']
 
     def getOrderedMounts(self, path='/'):
-    #todo!
+        # this mostly replicates how files are distributed amongst servers currently, so reads should find them in their ideal location most of the time. 
+        if 'photos/' in path:
+            if '_original' in path:
+                return [self.mounts['jam'], self.mounts['cream']]
+            elif 'photos/03/' in path:
+                return [self.mounts['cream'], self.mounts['jam'], self.mounts['milk']]   #may as well use milk as a fallback to write if all else fails!
+            elif (random.random() < 0.7):
+                #because we know it has a complete copy, might as well as let jam take some strain
+                return [self.mounts['jam'], self.mounts['cream']]
+            else:
+                return [self.mounts['cream'], self.mounts['jam']]
+        else:
+            return [self.mounts['milk'], self.mounts['jam']]
+        
         return self.mounts.values()
 
-#    def mythread(self):
-#
-#        """
-#        The beauty of the FUSE python implementation is that with the python interp
-#        running in foreground, you can have threads
-#        """
-#        print "mythread: started"
-#        while 1:
-#            time.sleep(120)
-#            print "mythread: ticking"
+#############################################################################
 
     def getattr(self, path):
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
                 return os.lstat(mount + path)
+        
+        return os.lstat(mount + 'nonexistant')
         return -ENOENT
 
     def readlink(self, path):
@@ -153,7 +161,7 @@ class GeoGridFS(Fuse):
 
     def mkdir(self, path, mode):
         for mount in self.getOrderedMounts(path):
-            os.mkdir(mount + path, mode)
+            os.makedirs(mount + path, mode) #so can make dirs recurivly
 
     def utime(self, path, times):
         for mount in self.getOrderedMounts(path):
@@ -174,25 +182,7 @@ class GeoGridFS(Fuse):
 #            if not os.access(mount + path, mode):
 #                return -EACCES
 
-#    This is how we could add stub extended attribute handlers...
-#    (We can't have ones which aptly delegate requests to the underlying fs
-#    because Python lacks a standard xattr interface.)
-#
-#    def getxattr(self, path, name, size):
-#        val = name.swapcase() + '@' + path
-#        if size == 0:
-#            # We are asked for size of the value.
-#            return len(val)
-#        return val
-#
-#    def listxattr(self, path, size):
-#        # We use the "user" namespace to please XFS utils
-#        aa = ["user." + a for a in ("foo", "bar")]
-#        if size == 0:
-#            # We are asked for size of the attr list, ie. joint size of attrs
-#            # plus null separators.
-#            return len("".join(aa)) + len(aa)
-#        return aa
+#############################################################################
 
     def statfs(self):
         """
@@ -218,9 +208,13 @@ class GeoGridFS(Fuse):
     def fsinit(self):
         os.chdir(self.root)
 
+#############################################################################
+
     class GeoGridFSFile(object):
         direct_io = False
         keep_cache = False
+        file = False
+        fd = False
         
         def __init__(self, server, path, flags, *mode):
             self.file = False
@@ -232,7 +226,7 @@ class GeoGridFS(Fuse):
                     break
             
             #find a mount that has a folder we can use
-            if not self.file and not (flags | os.O_RDONLY):
+            if self.file is False:  # and not (flags | os.O_RDONLY)
                 for mount in server.getOrderedMounts(path):
                     if os.path.exists(os.path.dirname(mount + path)):
                         self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
@@ -245,8 +239,8 @@ class GeoGridFS(Fuse):
                             os.makedirs(os.path.dirname(mount + path)) # use makedirs so will also create parent dirs as required
                         self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                         break
-            
-            if not self.file:
+
+            if self.file is False:
                return -EIO
             
             self.fd = self.file.fileno()
@@ -286,27 +280,6 @@ class GeoGridFS(Fuse):
             self.file.truncate(len)
 
         def lock(self, cmd, owner, **kw):
-            # The code here is much rather just a demonstration of the locking
-            # API than something which actually was seen to be useful.
-
-            # Advisory file locking is pretty messy in Unix, and the Python
-            # interface to this doesn't make it better.
-            # We can't do fcntl(2)/F_GETLK from Python in a platfrom independent
-            # way. The following implementation *might* work under Linux. 
-            #
-            # if cmd == fcntl.F_GETLK:
-            #     import struct
-            # 
-            #     lockdata = struct.pack('hhQQi', kw['l_type'], os.SEEK_SET,
-            #                            kw['l_start'], kw['l_len'], kw['l_pid'])
-            #     ld2 = fcntl.fcntl(self.fd, fcntl.F_GETLK, lockdata)
-            #     flockfields = ('l_type', 'l_whence', 'l_start', 'l_len', 'l_pid')
-            #     uld2 = struct.unpack('hhQQi', ld2)
-            #     res = {}
-            #     for i in xrange(len(uld2)):
-            #          res[flockfields[i]] = uld2[i]
-            #  
-            #     return fuse.Flock(**res)
 
             # Convert fcntl-ish lock parameters to Python's weird
             # lockf(3)/flock(2) medley locking API...
@@ -325,7 +298,7 @@ class GeoGridFS(Fuse):
 
             fcntl.lockf(self.fd, op, kw['l_start'], kw['l_len'])
 
-
+#############################################################################
 
     def main(self, *a, **kw):
 
@@ -370,3 +343,6 @@ Unify a number of folders into one virtual folder. Designed for merging NFS shar
 
 if __name__ == '__main__':
     main()
+
+#############################################################################
+
