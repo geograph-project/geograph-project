@@ -26,6 +26,10 @@ except ImportError:
     pass
 import fuse
 from fuse import Fuse
+import config
+import _mysql
+import hashlib
+
 
 
 if not hasattr(fuse, '__version__'):
@@ -48,7 +52,8 @@ def flag2mode(flags):
 
 
 class GeoGridFS(Fuse):
-
+    con = False
+    
     def __init__(self, *args, **kw):
 
         Fuse.__init__(self, *args, **kw)
@@ -70,6 +75,8 @@ class GeoGridFS(Fuse):
         return self.mounts['milk']
 
     def getOrderedMounts(self, path='/'):
+        # todo - could check the metadata server for the ACTUAL mounts... but would still need to be sorted
+        
         # this mostly replicates how files are distributed amongst servers currently, so reads should find them in their ideal location most of the time. 
         if 'photos/' in path:
             if '_original' in path:
@@ -85,10 +92,39 @@ class GeoGridFS(Fuse):
             return [self.mounts['milk'], self.mounts['jam']]
         
         return self.mounts.values()
+        
+        
+    def getServerFromMount(self, mount):
+        #todo, would be more reliable to find it self.mounts!
+        return os.path.basename(mount);
+    
+    def getFolderId(self, path):
+        #todo - add caching! folder path should never change!
+        con = self.con
+        con.query("SELECT folder_id FROM "+config.database['folder_table']+" WHERE folder = '"+con.escape_string(path)+"'")
+        result = con.store_result()
+        if result.num_rows() == 0:
+            con.query("INSERT INTO "+config.database['folder_table']+" SET meta_created = NOW(), folder = '"+con.escape_string(path)+"'")
+            folder_id = con.insert_id()
+        else:
+            folder_id = result.fetch_row()[0][0]
+        return folder_id
+        
+    #http://code.activestate.com/recipes/576583-md5sum/
+    def md5sum(self, path):
+        file = open(path, 'rb')
+        md5 = hashlib.md5()
+        buffer = file.read(2 ** 20)
+        while buffer:
+            md5.update(buffer)
+            buffer = file.read(2 ** 20)
+        file.close()
+        return str(md5.hexdigest())
 
 #############################################################################
 
     def getattr(self, path):
+        ##todo use metedata server if can?
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
                 return os.lstat(mount + path)
@@ -116,11 +152,13 @@ class GeoGridFS(Fuse):
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
                 os.unlink(mount + path)
+        #todo mark deleted in metadata (dont delete, because it might still be replicated - or maybe delete if replica_count =0)
 
     def rmdir(self, path):
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
                 os.rmdir(mount + path)
+        #todo, delete from metadata.folder?
 
     def symlink(self, path, path1):
         for mount in self.getOrderedMounts(path):
@@ -131,6 +169,10 @@ class GeoGridFS(Fuse):
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
                 os.rename(mount + path, mount + path1)
+        
+        folder_id = self.getFolderId(os.path.dirname(path1))
+        con = self.con
+        con.query("UPDATE "+config.database['file_table']+" SET folder_id = "+folder_id+", filename = '"+con.escape_string(path1)+"' WHERE filename = '"+con.escape_string(path)+"'")
 
     def link(self, path, path1):
         for mount in self.getOrderedMounts(path):
@@ -153,6 +195,7 @@ class GeoGridFS(Fuse):
                 f = open(mount + path, "a")
                 f.truncate(len)
                 f.close()
+        #todo change size in metedata
 
     def mknod(self, path, mode, dev):
         for mount in self.getOrderedMounts(path):
@@ -207,6 +250,10 @@ class GeoGridFS(Fuse):
 
     def fsinit(self):
         os.chdir(self.root)
+        
+        #todo, this is NOT thread safe, need to adopt a connection pool!
+        self.con = _mysql.connect(config.database['hostname'], config.database['username'], config.database['password'], config.database['database'])
+
 
 #############################################################################
 
@@ -218,17 +265,20 @@ class GeoGridFS(Fuse):
         
         def __init__(self, server, path, flags, *mode):
             self.file = False
+            final_mount = False
             
             #first see if can find an actual file
             for mount in server.getOrderedMounts(path):
                 if os.path.exists(mount + path):
+                    final_mount = mount
                     self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                     break
             
             #find a mount that has a folder we can use
-            if self.file is False:  # and not (flags | os.O_RDONLY)
+            if self.file is False and (flags & os.O_CREAT or flags & os.O_WRONLY or flags & os.O_RDWR):
                 for mount in server.getOrderedMounts(path):
                     if os.path.exists(os.path.dirname(mount + path)):
+                        final_mount = mount
                         self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                         break
                 
@@ -237,12 +287,16 @@ class GeoGridFS(Fuse):
                     for mount in server.getOrderedMounts(path):
                         if not os.path.exists(os.path.dirname(mount + path)):
                             os.makedirs(os.path.dirname(mount + path)) # use makedirs so will also create parent dirs as required
+                        final_mount = mount
                         self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                         break
 
             if self.file is False:
                return -EIO
             
+            self.server = server
+            self.mount = final_mount
+            self.path = path
             self.fd = self.file.fileno()
 
         def read(self, length, offset):
@@ -256,6 +310,42 @@ class GeoGridFS(Fuse):
 
         def release(self, flags):
             self.file.close()
+            
+            try:
+                con = self.server.con
+                con.query("SELECT file_id FROM "+config.database['file_table']+" WHERE filename = '"+con.escape_string(self.path)+"'")
+                result = con.store_result()
+            
+                if result.num_rows() == 0:
+                    folder_id = self.server.getFolderId(os.path.dirname(self.path))
+                    
+                    stat = os.stat(self.mount + self.path)
+                    if (stat.st_size > 0):
+                        md5sum = self.server.md5sum(self.mount + self.path)
+                    else:
+                        md5sum =''
+                    
+                    con.query("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
+                         "filename = '"+con.escape_string(self.path)+"', " + \
+                         "folder_id = "+str(folder_id)+", " + \
+                         "`size` = "+str(stat.st_size)+", " + \
+                         "`file_created` = FROM_UNIXTIME("+str(stat.st_ctime)+"), " + \
+                         "`file_modified` = FROM_UNIXTIME("+str(stat.st_mtime)+"), " + \
+                         "`file_accessed` = FROM_UNIXTIME("+str(stat.st_atime)+"), " + \
+                         "`md5sum` = '"+md5sum+"', " + \
+                         
+                         "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
+                         "replica_count=1")
+                    
+                else:
+                    print "TODO"
+            
+            except _mysql.Error, e:
+            
+                print "Error %d: %s" % (e.args[0], e.args[1])
+                sys.exit(1)
+            
+            
 
         def _fflush(self):
             if 'w' in self.file.mode or 'a' in self.file.mode:
