@@ -201,8 +201,9 @@ def replicate_now():
 
 def main(argv):
     action = 'unknown'
+    path = ''
     try:
-        opts, args = getopt.getopt(argv,"a:",["action="])
+        opts, args = getopt.getopt(argv,"a:p:",["action=","path="])
     except getopt.GetoptError:
         print 'replication.py -a (walk|replicate)'
         sys.exit(2)
@@ -210,16 +211,18 @@ def main(argv):
     for opt, arg in opts:
         if opt in ("-a", "--action"):
             action = arg
+        elif opt in ("-p", "--path"):
+            path = arg
             
     if action == 'unknown':
-        print 'replication.py -a (walk|replicate)'
+        print 'replication.py -a (walk|replicate) -p /geograph_live/rastermaps'
         sys.exit(2)
     
     elif action == 'walk':
-        walk_and_notify()
+        walk_and_notify(path)
     
     elif action == 'replicate':
-        replicate_now()
+        replicate_now(path)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
