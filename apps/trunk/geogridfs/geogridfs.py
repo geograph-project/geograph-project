@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# $Project: GeoGraph $
+# $Id$
+__version__ = filter(str.isdigit, "$Revision$")
+
 ## Merges a number of folders into a single virtual filesyste, - tailored for Geograph use
 
 #    Copyright (C) 2013  Barry Hunter  <geo@barryhunter.co.uk>

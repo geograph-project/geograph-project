@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# $Project: GeoGraph $
+# $Id$
+__version__ = filter(str.isdigit, "$Revision$")
+
 ## Script to run on Geograph File System storage node servers. Performs two main functions:
 #
 #  Walk the local disk, and tells the metadata server about the files available
@@ -73,7 +77,7 @@ def walk_and_notify(folder = ''):
             
             c=db.cursor(MySQLdb.cursors.DictCursor)
             cex=db.cursor()
-            c.execute("SELECT file_id,filename,replicas,size,md5sum,FROM_UNIXTIME(file_modified) AS modified FROM "+config.database['file_table']+" WHERE folder_id = "+folder_id)
+            c.execute("SELECT file_id,filename,replicas,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM "+config.database['file_table']+" WHERE folder_id = "+folder_id)
             
             while True:
                 row = c.fetchone()
