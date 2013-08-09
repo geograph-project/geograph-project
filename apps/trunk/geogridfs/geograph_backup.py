@@ -30,20 +30,20 @@ import json
 import urllib
 import urllib2
 import time
+import hmac
 
 
 config = dict(
     folder = '/mnt/fake', # Set this the folder where you store files 
-    keep_free = '2G',
-    
-    mode = 'partial', # choose from full, or partial (check with Geograph for more details on options!)
+    keep_free = '2G', # we wont replicate if less than this disk space (only G units supported!)
     
     # Get these from Geograph Support
+    mode = 'partial', 
     api_endpoint = '', 
     download_docroot = '', 
     download_endpoint = '', 
     identity = '', 
-    secret = '', 
+    secret = '', # don't share this secret!
 )
 
 #############################################################################
@@ -76,15 +76,16 @@ def walk_and_notify(folder = ''):
             #print dirs
             print files
             
+            query = "ident="+config['identity']+"&command=filelist&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
             
-            url = config['api_endpoint'] + "?ident="+config['identity']+"&c=1&command=filelist&folder=" + urllib.quote(string.replace(root,mount,''))
-            #todo! hash_hmac('md5', $USER->user_id, $CONF['token_secret'])
+            sig = hmac.new(config['secret'], query);
+            url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
             
             print url
             
-            url = url + "&r="+str(random.randint(1,100000)) #just to defeat caching
-            
-            f = urllib2.urlopen(url)
+            req = urllib2.Request(url)
+            req.add_header('User-agent', urllib._urlopener.version)
+            f = urllib2.urlopen(req)
             response = f.read()
             f.close()
             
@@ -134,15 +135,19 @@ def walk_and_notify(folder = ''):
                     print "We have a unknown file! "+ filename
                     
             if notify:
-                url = config['api_endpoint'] + "?ident="+config['identity']+"&command=notify&folder=" + urllib.quote(string.replace(root,mount,''))
+                query = "ident="+config['identity']+"&command=notify&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
+                
+                sig = hmac.new(config['secret'], query);
+                url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
+                
                 data = urllib.urlencode({'file_ids': ' '.join(notify)})
                 
-                print data;
-                
-                f = urllib2.urlopen(urllib2.Request(url, data))
-                print f
+                req = urllib2.Request(url, data)
+                req.add_header('User-agent', urllib._urlopener.version)
+                f = urllib2.urlopen(req)
                 response = f.read()
                 f.close()
+                
                 print response
 
             print "-----------"
@@ -152,14 +157,14 @@ def walk_and_notify(folder = ''):
 def replicate_now(path = ''):
     mount = config['folder']
     
-    url = config['api_endpoint'] + "?ident="+config['identity']+"&command=filelist&mode="+config['mode']
-    #todo! hash_hmac('md5', $USER->user_id, $CONF['token_secret'])
+    query = "ident="+config['identity']+"&command=filelist&mode="+config['mode']+"&r="+str(random.randint(1,100000)) #just to defeat caching
+    
+    sig = hmac.new(config['secret'], query);
+    url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
 
-    print url
-
-    url = url + "&r="+str(random.randint(1,100000)) #just to defeat caching
-
-    f = urllib2.urlopen(url)
+    req = urllib2.Request(url)
+    req.add_header('User-agent', urllib._urlopener.version)
+    f = urllib2.urlopen(req)
     response = f.read()
     f.close()
 
@@ -172,6 +177,8 @@ def replicate_now(path = ''):
     ##SELECT file_id,filename,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified
 
     notify = []
+    
+    c = 0;
 
     for row in result:
 
@@ -181,8 +188,6 @@ def replicate_now(path = ''):
         
         if not os.path.exists(os.path.dirname(mount + row['filename'])):
             os.makedirs(os.path.dirname(mount + row['filename'])) ##recursive
-        
-        print row
         
         urllib.urlretrieve(url, mount + row['filename'])
         
@@ -204,21 +209,21 @@ def replicate_now(path = ''):
 
         time.sleep(2)
     
-        print notify
-        sys.exit(2)
-
     if notify:
-        url = config['api_endpoint'] + "?ident="+config['identity']+"&command=notify&folder=" + urllib.quote(string.replace(root,mount,''))
+        query = "ident="+config['identity']+"&command=notify&mode="+config['mode']+"&r="+str(random.randint(1,100000))
+
+        sig = hmac.new(config['secret'], query);
+        url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
+
         data = urllib.urlencode({'file_ids': ' '.join(notify)})
 
-        print data;
-
-        f = urllib2.urlopen(urllib2.Request(url, data))
-        print f
+        req = urllib2.Request(url, data)
+        req.add_header('User-agent', urllib._urlopener.version)
+        f = urllib2.urlopen(req)
         response = f.read()
         f.close()
+        
         print response
-
 
 #############################################################################
 
