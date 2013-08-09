@@ -21,3 +21,26 @@ server = dict(
         self = 'cream'
 )
 
+#the replication classes, the Regex that defines them, the replica_target and the backup_target
+# - these are precessed in ORDER, so its recommended to put popular AND more specific ones first. eg the unspecific others class will catch all files not defined above it
+#NOTE: if change the targets, should possible update the meta data eg ( UPDATE file SET replica_target = 4 WHERE class = 'base.png' )
+patterns = [
+	('full.jpg',      r'/\d{6,}_\w{8}\.jpg$',    3, 4),
+	('original.jpg',  r'_original\.jpg$',        2, 4),
+	('thumb.jpg',     r'_\d+[xX]+\d+\.jpg$',     3, 0),
+	('detail.png',    r'/detail_[\w\.-]+\.png$', 1, 0),
+	('detail.jpg',    r'/detail_[\w\.-]+\.jpg$', 1, 0),
+	('base.png',      r'/base_[\w\.-]+\.png$',   2, 0),
+	('thumb.gd',      r'_\d+x\d+\.gd$',          2, 0),
+	('preview.jpg',   r'_preview\.jpg$',         2, 0),
+	('pending.jpg',   r'_pending\.jpg$',         3, 0),
+	('tile.png',      r'/\d+-\d+\.png$',         2, 0),
+	('tile.tif',      r'/\w+\d+\.TIF$',          3, 0),
+	('kml',           r'/kml/',                  2, 0),
+	('sitemap.gz',    r'/sitemap/root/',         1, 0),
+	('sitemap.html',  r'/sitemap/',              2, 0),
+	('torrents',      r'/torrent/',              1, 0),
+	('templates',     r'/templates/',            1, 0),
+	('rss',           r'/rss/',                  1, 0),
+	('.others',       r'/.*/',                   2, 0),
+]

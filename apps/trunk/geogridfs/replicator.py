@@ -28,6 +28,7 @@ import hashlib
 import getopt
 import string
 import shutil
+import re
 
 
 db=MySQLdb.connect(host=config.database['hostname'], user=config.database['username'], passwd=config.database['password'],db=config.database['database'])
@@ -120,27 +121,36 @@ def walk_and_notify(folder = ''):
                         md5su = md5sum(root + "/" + filename)
                     else:
                         md5su =''
-                    
                     specifics = "`size` = "+str(stat.st_size)+", " + \
-                         "`file_created` = FROM_UNIXTIME("+str(stat.st_ctime)+"), " + \
-                         "`file_modified` = FROM_UNIXTIME("+str(stat.st_mtime)+"), " + \
-                         "`file_accessed` = FROM_UNIXTIME("+str(stat.st_atime)+"), " + \
-                         "`md5sum` = '"+md5su+"', "
+                        "`file_created` = FROM_UNIXTIME("+str(stat.st_ctime)+"), " + \
+                        "`file_modified` = FROM_UNIXTIME("+str(stat.st_mtime)+"), " + \
+                        "`file_accessed` = FROM_UNIXTIME("+str(stat.st_atime)+"), " + \
+                        "`md5sum` = '"+md5su+"', "
+                    
+                    final = False
+                    targets = ''
+                    for pattern in config.patterns:
+                        if re.search(pattern[1],filename):
+                            final = pattern
+                            break
+                    if final:
+                        targets = "`class` = '"+final[0]+ "', " + \
+                            "`replica_target` = "+str(final[2])+ ", " + \
+                            "`backup_target` = "+str(final[3])+ " "
                     
                     path = string.replace(root,mount,'') + "/" + filename
-                    
                     c.execute("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
-                         "filename = '"+db.escape_string(path)+"', " + \
-                         "folder_id = "+str(folder_id)+", " + \
-                         specifics + \
-                         "replicas = '"+config.server['self']+"', " + \
-                         "replica_count=1")
+                        "filename = '"+db.escape_string(path)+"', " + \
+                        "folder_id = "+str(folder_id)+", " + \
+                        specifics + targets + \
+                        "replicas = '"+config.server['self']+"', " + \
+                        "replica_count=1")
 
             print "-----------"
 
 #############################################################################
 
-def replicate_now():
+def replicate_now(path = ''):
     mount = config.mounts[config.server['self']]
     
     c=db.cursor(MySQLdb.cursors.DictCursor)
@@ -197,6 +207,28 @@ def replicate_now():
                 "replica_count=replica_count+1 "+ \
                 "WHERE file_id = "+str(row['file_id']))
 
+def fixup_classes(path = ''):
+    c=db.cursor(MySQLdb.cursors.DictCursor)
+    cex=db.cursor()
+    c.execute("SELECT file_id,filename FROM "+config.database['file_table']+" WHERE `class` = '' LIMIT 1000");
+    while True:
+        row = c.fetchone()
+        if not row: break
+        
+        print row['filename']
+        final = False
+        for pattern in config.patterns:
+            if re.search(pattern[1],row['filename']):
+                final = pattern
+                break
+                
+        if final:
+            cex.execute("UPDATE "+config.database['file_table']+" SET " + \
+                "`class` = '"+final[0]+ "', " + \
+                "`replica_target` = "+str(final[2])+ ", " + \
+                "`backup_target` = "+str(final[3])+ " " + \
+                "WHERE file_id = "+str(row['file_id']))
+        
 #############################################################################
 
 def main(argv):
@@ -205,7 +237,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"a:p:",["action=","path="])
     except getopt.GetoptError:
-        print 'replication.py -a (walk|replicate)'
+        print 'replication.py -a (walk|replicate) [-p /geograph_live/rastermaps]'
         sys.exit(2)
     
     for opt, arg in opts:
@@ -213,9 +245,9 @@ def main(argv):
             action = arg
         elif opt in ("-p", "--path"):
             path = arg
-            
+    
     if action == 'unknown':
-        print 'replication.py -a (walk|replicate) -p /geograph_live/rastermaps'
+        print 'replication.py -a (walk|replicate) [-p /geograph_live/rastermaps]'
         sys.exit(2)
     
     elif action == 'walk':
@@ -223,6 +255,9 @@ def main(argv):
     
     elif action == 'replicate':
         replicate_now(path)
+
+    elif action == 'fixup':
+        fixup_classes(path)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

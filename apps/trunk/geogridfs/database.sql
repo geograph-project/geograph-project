@@ -21,9 +21,11 @@ CREATE TABLE `file` (
   `backup_target` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `meta_created` datetime NOT NULL,
   `meta_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `class` varchar(32) NOT NULL, --todo: change this into a enum!
   PRIMARY KEY (`file_id`),
   UNIQUE KEY `filename` (`filename`),
-  KEY `folder_id` (`folder_id`)
+  KEY `folder_id` (`folder_id`),
+  KEY `class` (`class`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --

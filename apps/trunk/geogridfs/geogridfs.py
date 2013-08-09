@@ -29,6 +29,7 @@ from fuse import Fuse
 import config
 import _mysql
 import hashlib
+import re
 
 
 
@@ -329,10 +330,21 @@ class GeoGridFS(Fuse):
                 if result.num_rows() == 0:
                     folder_id = self.server.getFolderId(os.path.dirname(self.path))
                     
+                    final = False
+                    targets = ''
+                    for pattern in config.patterns:
+                        if re.search(pattern[1],self.path):
+                            final = pattern
+                            break
+                    if final:
+                        targets = "`class` = '"+final[0]+ "', " + \
+                            "`replica_target` = "+str(final[2])+ ", " + \
+                            "`backup_target` = "+str(final[3])+ " "
+                    
                     con.query("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
                          "filename = '"+con.escape_string(self.path)+"', " + \
                          "folder_id = "+str(folder_id)+", " + \
-                         specifics + \
+                         specifics + targets + \
                          "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
                          "replica_count=1")
                 else:
