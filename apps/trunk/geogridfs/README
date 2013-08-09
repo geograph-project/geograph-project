@@ -1,0 +1,42 @@
+Geograph GridFS Implementation
+
+	A new lightweight virtual distributed filesystem (DFS) to address 
+	many of the problems faced with the current Network File System (NFS)
+	used on the Live Geograph WebServers. 
+
+	Basically, takes a number of storage servers, and presents a single 
+	unified and clean file system. At the same time making sure files are 
+	sent to remote backup locations for safe keeping. 
+
+
+Initial setup
+
+	svn checkout http://svn.geograph.org.uk/svn/apps/trunk/geogridfs/ /folder/of/your/choice
+
+	Copy config.example.py to config.py
+
+	Edit config.py to point to a real database, correct mount list, and identity - see file for details
+
+	import database.sql into the database
+
+
+Provisioning a Storage Node 
+
+	Make sure metadata knows about this node, (add this server to the replicas SET column in the file table)
+
+	Run this ONCE, when a new storage node is added:
+
+		python replicator.py -a walk
+		
+		will walk the local folder, tell the metedata about any unknown files, and add self to replicas of existing files
+
+	Setup command to run via cron, eg once a minute. Runs a lightweight SQL query to find new files that should be copied to this node
+		
+		sudo -u www-data crontab -e
+
+		* * * * * * /bin/python replicator.py -a replicate
+
+
+
+		
+

@@ -50,29 +50,23 @@ def flag2mode(flags):
 
     return m
 
-
 class GeoGridFS(Fuse):
     con = False
     
     def __init__(self, *args, **kw):
-
+        
         Fuse.__init__(self, *args, **kw)
-
+        
         # do stuff to set up your filesystem here, if you want
         #import thread
         #thread.start_new_thread(self.mythread, ())
         self.root = '/'
-        
-        self.mounts = {}
-        self.mounts['cream'] = '/var/mount/cream'
-        self.mounts['milk'] = '/var/mount/milk'
-        self.mounts['jam'] = '/var/mount/jam'
 
 #############################################################################
 
     def getFirstMount(self, path='/'):
     #todo!
-        return self.mounts['milk']
+        return config.mounts['milk']
 
     def getOrderedMounts(self, path='/'):
         # todo - could check the metadata server for the ACTUAL mounts... but would still need to be sorted
@@ -80,24 +74,24 @@ class GeoGridFS(Fuse):
         # this mostly replicates how files are distributed amongst servers currently, so reads should find them in their ideal location most of the time. 
         if 'photos/' in path:
             if '_original' in path:
-                return [self.mounts['jam'], self.mounts['cream']]
+                return [config.mounts['jam'], config.mounts['cream']]
             elif 'photos/03/' in path:
-                return [self.mounts['cream'], self.mounts['jam'], self.mounts['milk']]   #may as well use milk as a fallback to write if all else fails!
+                return [config.mounts['cream'], config.mounts['jam'], config.mounts['milk']]   #may as well use milk as a fallback to write if all else fails!
             elif (random.random() < 0.7):
                 #because we know it has a complete copy, might as well as let jam take some strain
-                return [self.mounts['jam'], self.mounts['cream']]
+                return [config.mounts['jam'], config.mounts['cream']]
             else:
-                return [self.mounts['cream'], self.mounts['jam']]
+                return [config.mounts['cream'], config.mounts['jam']]
         else:
-            return [self.mounts['milk'], self.mounts['jam']]
+            return [config.mounts['milk'], config.mounts['jam']]
         
-        return self.mounts.values()
-        
-        
+        return config.mounts.values()
+
     def getServerFromMount(self, mount):
-        #todo, would be more reliable to find it self.mounts!
-        return os.path.basename(mount);
-    
+        for (key,value) in config.mounts.iteritems():
+            if value == mount:
+                return key
+
     def getFolderId(self, path):
         #todo - add caching! folder path should never change!
         con = self.con
@@ -109,7 +103,7 @@ class GeoGridFS(Fuse):
         else:
             folder_id = result.fetch_row()[0][0]
         return folder_id
-        
+
     #http://code.activestate.com/recipes/576583-md5sum/
     def md5sum(self, path):
         file = open(path, 'rb')
@@ -297,6 +291,7 @@ class GeoGridFS(Fuse):
             self.server = server
             self.mount = final_mount
             self.path = path
+            self.flags = flags
             self.fd = self.file.fileno()
 
         def read(self, length, offset):
@@ -311,34 +306,46 @@ class GeoGridFS(Fuse):
         def release(self, flags):
             self.file.close()
             
+            if not self.flags & os.O_WRONLY and not self.flags & os.O_RDWR: #ie IS readonly
+                return
+            
             try:
+                stat = os.stat(self.mount + self.path)
+                if (stat.st_size > 0):
+                    md5sum = self.server.md5sum(self.mount + self.path)
+                else:
+                    md5sum =''
+                
+                specifics = "`size` = "+str(stat.st_size)+", " + \
+                         "`file_created` = FROM_UNIXTIME("+str(stat.st_ctime)+"), " + \
+                         "`file_modified` = FROM_UNIXTIME("+str(stat.st_mtime)+"), " + \
+                         "`file_accessed` = FROM_UNIXTIME("+str(stat.st_atime)+"), " + \
+                         "`md5sum` = '"+md5sum+"', "
+                
                 con = self.server.con
                 con.query("SELECT file_id FROM "+config.database['file_table']+" WHERE filename = '"+con.escape_string(self.path)+"'")
                 result = con.store_result()
-            
+                
                 if result.num_rows() == 0:
                     folder_id = self.server.getFolderId(os.path.dirname(self.path))
-                    
-                    stat = os.stat(self.mount + self.path)
-                    if (stat.st_size > 0):
-                        md5sum = self.server.md5sum(self.mount + self.path)
-                    else:
-                        md5sum =''
                     
                     con.query("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
                          "filename = '"+con.escape_string(self.path)+"', " + \
                          "folder_id = "+str(folder_id)+", " + \
-                         "`size` = "+str(stat.st_size)+", " + \
-                         "`file_created` = FROM_UNIXTIME("+str(stat.st_ctime)+"), " + \
-                         "`file_modified` = FROM_UNIXTIME("+str(stat.st_mtime)+"), " + \
-                         "`file_accessed` = FROM_UNIXTIME("+str(stat.st_atime)+"), " + \
-                         "`md5sum` = '"+md5sum+"', " + \
-                         
+                         specifics + \
                          "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
                          "replica_count=1")
-                    
                 else:
-                    print "TODO"
+                    file_id = result.fetch_row()[0][0]
+                    
+                    ## here, we obliterate record of any other replicas, because they will now be outdated, their worker should pickup this 'new' file
+                    ## todo: should we also obliterate the backups?
+                    con.query("UPDATE "+config.database['file_table']+" SET " + \
+                         specifics + \
+                         "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
+                         "replica_count=1 "+ \
+                         "WHERE file_id = "+file_id)
+                    
             
             except _mysql.Error, e:
             
