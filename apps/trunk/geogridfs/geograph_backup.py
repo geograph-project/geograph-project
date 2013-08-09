@@ -35,7 +35,7 @@ import hmac
 
 config = dict(
     folder = '/mnt/fake', # Set this the folder where you store files 
-    keep_free = '2G', # we wont replicate if less than this disk space (only G units supported!)
+    keep_free_gig = '2', # we wont replicate if less than this disk space (only Gigabytes units supported!)
     
     # Get these from Geograph Support
     mode = 'partial', 
@@ -156,6 +156,14 @@ def walk_and_notify(folder = ''):
 
 def replicate_now(path = ''):
     mount = config['folder']
+    
+    s = os.statvfs(mount)
+    bytes_free = (s.f_bavail * s.f_frsize) / 1024
+    gigabytes = bytes_free / (1024 * 1024)
+    
+    if gigabytes < int(filter(str.isdigit, config['keep_free_gig'])):
+        print "There is only " + str(bytes_free) + " bytes free, which is less than configured keep_free_gig="+config['keep_free_gig']
+        sys.exit(2)
     
     query = "ident="+config['identity']+"&command=filelist&mode="+config['mode']+"&r="+str(random.randint(1,100000)) #just to defeat caching
     

@@ -8,6 +8,7 @@ Geograph GridFS Implementation
 	unified and clean file system. At the same time making sure files are 
 	sent to remote backup locations for safe keeping. 
 
+	/Barry Hunter (geo@barryhunter.co.uk) Aug 2013
 
 Initial setup
 
@@ -17,7 +18,8 @@ Initial setup
 
 	Edit config.py to point to a real database, correct mount list, and identity - see file for details
 
-	import database.sql into the database
+	If this is the first ever use, need to 	import database.sql into the database
+
 
 
 Provisioning a Storage Node 
@@ -38,5 +40,50 @@ Provisioning a Storage Node
 
 
 
+Provisioning a Backup Node (Linux!)
+
+	Download the code and put it somewhere convenient (just one file needed!)
+
+		http://svn.geograph.org.uk/svn/apps/trunk/geogridfs/geograph_backup.py
+
+	Try running the file (this command wont do anything, other than check you have python and all the required modules installed!)
+
+		python /path/to/geograph_backup.py 
+
+		install any missing modules it complains about!
+
+	Edit the config near the top of the file - Contact the Filesystem Admin for the values to enter in your client
+
+	Set the 'folder' to where you want put files. Note this folder will contain folder "geograph_live", which in turn contains "public_html", but we may from time to time create other folders
+
+		So if you want images to be stored in 
+
+			/var/backups/geograph/geograph_live/public_html
 		
+		folder, set folder = '/var/backups/geograph'
+
+	If the folder is empty, then just setup a cronjob to execute, it say once an hour (exact schedule, by agreement of Geograph admin!) 
+
+		33 * * * * * python /path/to/geograph_backup.py -a replicate
+
+
+	But if you have files in the folder, first need to 'walk' it to notify the central server of the files you have alrady got a copy of. 
+
+		Quickly test it by running
+
+			python /path/to/geograph_backup.py -a walk -p /geograph_live/public_html/photo/00/00
+
+		which will only compare about 100 files. Will for example replicate the file
+
+			/var/backups/geograph/geograph_live/public_html/photos/00/00/000004_a2a3a15c.jpg
+
+		Once run the test successfully, can run it on more folders eg, 
+
+			python /path/to/geograph_backup.py -a walk -p /geograph_live/public_html/photo
+
+		... it make take MANY hours to run. Your computer will work hard, as it has to read each file (to create a checksum), but is lightweight for the server, as it already has checksums precomputed
+
+	Once the WHOLE of your local filesystem has been 'walk'ed ready to run regular replicate, setup a cronjob as above to call the replicate action. 
+
+
 
