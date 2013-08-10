@@ -1,0 +1,2 @@
+#!/bin/sh
+fusermount -u /var/mount/combined
