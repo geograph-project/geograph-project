@@ -61,13 +61,16 @@ def md5sum(path):
 
 #############################################################################
 
-def walk_and_notify(folder = ''):
+def walk_and_notify(folder = '', track_progress = True):
     mount = config['folder']
 
     print mount+folder
     for root, dirs, files in os.walk(mount+folder):
         
         if files:
+            if track_progress and os.path.exists(root+'/backup.done'):
+                continue
+            
             print root
             #print dirs
             print files
@@ -145,7 +148,9 @@ def walk_and_notify(folder = ''):
                 f.close()
                 
                 print response
-
+            
+            if track_progress:
+                open(root+'/backup.done', 'w').close()
             print "-----------"
 
 #############################################################################

@@ -63,13 +63,16 @@ def md5sum(path):
 
 #############################################################################
 
-def walk_and_notify(folder = ''):
+def walk_and_notify(folder = '', track_progress = True):
     mount = config.mounts[config.server['self']]
 
     print mount+folder
     for root, dirs, files in os.walk(mount+folder):
         
         if files:
+            if track_progress and os.path.exists(root+'/replicator.done'):
+                continue
+            
             print root
             #print dirs
             print files
@@ -149,7 +152,9 @@ def walk_and_notify(folder = ''):
                         specifics + targets + \
                         "replicas = '"+config.server['self']+"', " + \
                         "replica_count=1")
-
+            
+            if track_progress:
+                open(root+'/replicator.done', 'w').close()
             print "-----------"
 
 #############################################################################
