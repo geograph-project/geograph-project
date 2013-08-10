@@ -28,6 +28,7 @@ require_once('geograph/global.inc.php');
 
 //todo, ideally read these from the filesyste, config.py file!
 $DSN = 'mysql://user:pass@localhost/filesystem';
+
 $file_table = 'file';
 $folder_table = 'folder';
 
@@ -67,6 +68,8 @@ if ($_GET['command'] == 'filelist') {
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+	$data = array();
+
 	if (!empty($_GET['mode'])) {
 		if ($_GET['mode'] == 'full') {
 			//and files this identity doesnt have!
@@ -77,21 +80,27 @@ if ($_GET['command'] == 'filelist') {
 			$where = "WHERE backups NOT LIKE '%$ident%' AND backup_count < backup_target"; //todo - change this to use bitmatchign!
 			$limit = 1000;
 		}
+		//these are hardcoded, but included here SO they could be changed as required
+		$data['docroot'] = '/geograph_live/public_html';
+		$data['server'] = 'http://s0.geograph.org.uk';
+		$data['sleep'] = 2;
 
+		//in theory should only offer such files for download, but just in case, could filter them out.
+		//$where .= " AND filename LIKE '{$data['docroot']}%'";
 	} elseif (!empty($_GET['folder'])) {
 
 		if ($folder_id = $db->getOne("SELECT folder_id FROM $folder_table WHERE folder = ".$db->Quote($_GET['folder']))) {
 			$where = "WHERE folder_id = ".$folder_id." AND backup_count < backup_target"; // AND backups NOT LIKE '%$ident%'"); //todo - change this to use bitmatchign!
 			$limit = 20000;
 		} else {
-			$data = array('error'=>'Unknown folder');
+			$data['error'] = 'Unknown folder';
 		}
 	} else {
-		$data = array('error'=>'Unknown mode');
+		$data['error'] = 'Unknown mode';
 	}
 
 	if (!empty($where)) {
-		$data = $db->getAll("SELECT file_id,filename,backups,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM $file_table $where LIMIT $limit");
+		$data['rows'] = $db->getAll("SELECT file_id,filename,backups,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM $file_table $where LIMIT $limit");
 	}
 
 	customGZipHandlerStart();
