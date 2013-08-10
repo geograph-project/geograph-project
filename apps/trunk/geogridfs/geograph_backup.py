@@ -24,8 +24,6 @@ import random
 import hashlib
 import getopt
 import string
-import shutil
-import re
 import json
 import urllib
 import urllib2
@@ -40,8 +38,6 @@ config = dict(
     # Get these from Geograph Support
     mode = 'partial', 
     api_endpoint = '', 
-    download_docroot = '', 
-    download_endpoint = '', 
     identity = '', 
     secret = '', # don't share this secret!
 )
@@ -99,7 +95,7 @@ def walk_and_notify(folder = ''):
             
             notify = []
             
-            for row in result:
+            for row in result['rows']:
                 
                 filename = os.path.basename(row['filename'])
                 if filename in files:
@@ -187,35 +183,42 @@ def replicate_now(path = ''):
     notify = []
     
     c = 0;
+    for row in result['rows']:
 
-    for row in result:
-
-        url = string.replace(row['filename'],config['download_docroot'],config['download_endpoint'])
+        url = string.replace(row['filename'],result['docroot'],result['server'])
         
         print "download " + row['filename'] + " from "+ url
         
-        if not os.path.exists(os.path.dirname(mount + row['filename'])):
-            os.makedirs(os.path.dirname(mount + row['filename'])) ##recursive
+        filename = mount + row['filename']
         
-        urllib.urlretrieve(url, mount + row['filename'])
+        if os.path.exists(filename):
+            if os.path.getsize(filename) == 0:
+                unlink(filename)
+        else:
+            if not os.path.exists(os.path.dirname(filename)):
+                os.makedirs(os.path.dirname(filename)) ##recursive
         
-        stat = os.stat(mount + row['filename'])
+        if not os.path.isfile(filename):
+            urllib.urlretrieve(url, filename)
+        
+        stat = os.stat(filename)
         if (stat.st_size > 0):
-            os.utime(mount + row['filename'], (int(time.time()), int(row['modified'])) )
-            md5su = md5sum(mount + row['filename'])
+            os.utime(filename, (int(time.time()), int(row['modified'])) )
+            md5su = md5sum(filename)
         else:
             md5su =''
         
         if md5su != row['md5sum']:
             print "BUT md5 checksum doesnt match '"+md5su+"' != '"+row['md5sum']+"'"
         elif int(stat.st_size) != int(row['size']):
-            print "BUT size doesnt match"
+            print "BUT size doesnt match '"+str(stat.st_size)+"' != '"+str(row['size'])+"'"
         #elif stat.st_mtime != row['modified']:
         #    print "BUT dates doesnt match '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
         else:
             notify.append(row['file_id'])
-
-        time.sleep(2)
+        
+        if 'sleep' in result:
+            time.sleep(result['sleep'])
     
     if notify:
         query = "ident="+config['identity']+"&command=notify&mode="+config['mode']+"&r="+str(random.randint(1,100000))

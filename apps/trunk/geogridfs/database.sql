@@ -43,3 +43,9 @@ CREATE TABLE `folder` (
   PRIMARY KEY (`folder_id`),
   UNIQUE KEY `folder` (`folder`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+alter table file add replica_active tinyint unsigned not null default 0, add index(`replica_active`);
+
+alter table file add backup_active tinyint unsigned not null default 0, add index(`backup_active`);
+

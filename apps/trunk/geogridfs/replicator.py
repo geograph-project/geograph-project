@@ -177,7 +177,9 @@ def replicate_now(path = ''):
     
     print "idx = "+str(idx)
     
-    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND replica_count < replica_target ORDER BY folder_id LIMIT 10");
+    #c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND replica_count < replica_target ORDER BY folder_id LIMIT 10")
+    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND replica_active = 1 ORDER BY folder_id LIMIT 50")
+
     while True:
         row = c.fetchone()
         if not row: break
@@ -188,14 +190,21 @@ def replicate_now(path = ''):
         replica = random.choice(replicas)
         print "download " + row['filename'] + " from "+ replica
         
-        if not os.path.exists(os.path.dirname(mount + row['filename'])):
-            os.makedirs(os.path.dirname(mount + row['filename'])) ##recursive
+        filename = mount + row['filename']
         
-        shutil.copy2(config.mounts[replica] + row['filename'], mount + row['filename'])
+        if os.path.exists(filename):
+            if os.path.getsize(filename) == 0:
+                unlink(filename)
+        else:
+            if not os.path.exists(os.path.dirname(filename)):
+                os.makedirs(os.path.dirname(filename)) ##recursive
+
+        if not os.path.exists(filename):
+            shutil.copy2(config.mounts[replica] + row['filename'], filename)
         
-        stat = os.stat(mount + row['filename'])
+        stat = os.stat(filename)
         if (stat.st_size > 0):
-            md5su = md5sum(mount + row['filename'])
+            md5su = md5sum(filename)
         else:
             md5su =''
         
@@ -232,7 +241,25 @@ def fixup_classes(path = ''):
                 "`replica_target` = "+str(final[2])+ ", " + \
                 "`backup_target` = "+str(final[3])+ " " + \
                 "WHERE file_id = "+str(row['file_id']))
-        
+
+def update_active():
+    c=db.cursor()
+    
+    c.execute("UPDATE "+config.database['file_table']+" SET replica_active = 0 WHERE replica_active = 1 AND replica_count>=replica_target")
+    
+    c.execute("SELECT COUNT(*) FROM "+config.database['file_table']+" WHERE replica_active = 1")
+    row = c.fetchone()
+    if row[0] < 1000:
+        c.execute("UPDATE "+config.database['file_table']+" SET replica_active = 1 WHERE replica_count<replica_target LIMIT 200");
+    
+    
+    c.execute("UPDATE "+config.database['file_table']+" SET backup_active = 0 WHERE backup_active = 1 AND backup_count>=backup_target")
+    
+    c.execute("SELECT COUNT(*) FROM "+config.database['file_table']+" WHERE backup_active = 1")
+    row = c.fetchone()
+    if row[0] < 1000:
+        c.execute("UPDATE "+config.database['file_table']+" SET backup_active = 1 WHERE backup_count<backup_target LIMIT 200");
+
 #############################################################################
 
 def main(argv):
@@ -262,6 +289,9 @@ def main(argv):
 
     elif action == 'fixup':
         fixup_classes(path)
+
+    elif action == 'active':
+        update_active()
 
 if __name__ == '__main__':
     main(sys.argv[1:])
