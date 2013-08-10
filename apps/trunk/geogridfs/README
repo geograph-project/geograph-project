@@ -10,7 +10,25 @@ Geograph GridFS Implementation
 
 	/Barry Hunter (geo@barryhunter.co.uk) Aug 2013
 
-Initial setup
+1. Scripts included
+
+	geogridfs.py
+		This the FUSE client. It its run on all "Clients" that need to read/write to the virtual filesystem
+
+	replicator.py
+		This script is run on every "Storage Node", it iteracts with the metadata server and replicates new files to the local storage
+	
+	geograph_backup.py
+		This script is run on every "Backup Node", it contacts a central API to find new files to download
+
+	filesystem-api.php
+		Central API endpoint, runs on webserver with access to metadata server, also authenticates and controls/throttles remote backup replication
+
+	filesystem.php
+		Optional PHP script that uses the metadata server to present some statistics and health of the whole system. Probably runs on same webserver as the API endpoint
+
+
+2. Initial setup for all (can skip this for backup nodes)
 
 	svn checkout http://svn.geograph.org.uk/svn/apps/trunk/geogridfs/ /folder/of/your/choice
 
@@ -18,11 +36,11 @@ Initial setup
 
 	Edit config.py to point to a real database, correct mount list, and identity - see file for details
 
-	If this is the first ever use, need to 	import database.sql into the database
+	If this is the first ever use, need to import database.sql into the database
 
 
 
-Provisioning a Storage Node 
+3. Provisioning a Storage Node 
 
 	Make sure metadata knows about this node, (add this server to the replicas SET column in the file table)
 
@@ -39,8 +57,23 @@ Provisioning a Storage Node
 		* * * * * * /bin/python replicator.py -a replicate
 
 
+4. Provisioning a Client
 
-Provisioning a Backup Node (Linux!)
+	Make sure can communicate with ALL storage nodes. Use NFS to mount the each nodes storage on a local mount point (listed in the config file) 
+
+	As the www-data user, run
+
+		python geogridfs.py /mnt/combined
+
+	which should mount the virtual file system on /mnt/combined. In theory doing a ls on that folder, should now list files from ALL storage nodes. 
+
+		(it might prompt you to install fuse and or python-fuse, eg `apt-get install python-fuse`
+
+	To unmount it run 	
+		fusermount -u /mnt/combined
+
+
+5. Provisioning a Backup Node (Linux!)
 
 	Download the code and put it somewhere convenient (just one file needed!)
 
@@ -52,7 +85,7 @@ Provisioning a Backup Node (Linux!)
 
 		install any missing modules it complains about!
 
-	Edit the config near the top of the file - Contact the Filesystem Admin for the values to enter in your client
+	Edit the config near the top of the file - Contact the Filesystem Admin for the values to enter in your client (if you are the admin, make sure the database knows about this new backup-node!)
 
 	Set the 'folder' to where you want put files. Note this folder will contain folder "geograph_live", which in turn contains "public_html", but we may from time to time create other folders
 
@@ -85,5 +118,7 @@ Provisioning a Backup Node (Linux!)
 
 	Once the WHOLE of your local filesystem has been 'walk'ed ready to run regular replicate, setup a cronjob as above to call the replicate action. 
 
+6. Provisioning a Backup Node (Windows!)
 
+	Coming soon... 
 

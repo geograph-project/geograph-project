@@ -343,7 +343,7 @@ class GeoGridFS(Fuse):
                     if final:
                         targets = "`class` = '"+final[0]+ "', " + \
                             "`replica_target` = "+str(final[2])+ ", " + \
-                            "`backup_target` = "+str(final[3])+ " "
+                            "`backup_target` = "+str(final[3])+ ", "
                     
                     con.query("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
                          "filename = '"+con.escape_string(self.path)+"', " + \

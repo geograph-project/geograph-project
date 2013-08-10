@@ -140,7 +140,7 @@ def walk_and_notify(folder = ''):
                     if final:
                         targets = "`class` = '"+final[0]+ "', " + \
                             "`replica_target` = "+str(final[2])+ ", " + \
-                            "`backup_target` = "+str(final[3])+ " "
+                            "`backup_target` = "+str(final[3])+ ", "
                     
                     path = string.replace(root,mount,'') + "/" + filename
                     c.execute("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
