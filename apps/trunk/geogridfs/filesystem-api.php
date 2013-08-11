@@ -64,6 +64,7 @@ if ($sig != $_GET['sig'])
 if (empty($_GET['command'])) $_GET['command'] = 'log';
 if ($_GET['command'] == 'filelist') {
 	$where = '';
+	$order = '';
 	$limit = 100;
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -72,25 +73,49 @@ if ($_GET['command'] == 'filelist') {
 
 	if (!empty($_GET['mode'])) {
 		if ($_GET['mode'] == 'full') {
-			//and files this identity doesnt have!
-			$where = "WHERE backups NOT LIKE '%$ident%' AND backup_target > 0 ORDER BY backup_count"; //todo - change this to use bitmatchign!
-			$limit = 500;
+			//any files this identity doesnt have!
+			$filter = "backup_target > 0";
+			$order = " ORDER BY backup_count";
 		} elseif ($_GET['mode'] == 'partial') {
 			//get a share of as yet unreplicated files!
-			$where = "WHERE backups NOT LIKE '%$ident%' AND backup_count < backup_target"; //todo - change this to use bitmatchign!
-			$limit = 1000;
+			$filter = "backup_count < backup_target";
+		} else {
+			die("unknown");
 		}
+		$where = "WHERE backups NOT LIKE '%$ident%' AND $filter"; //todo - change this to use bitmatchign!
+		$limit = 1000;
+
+		if (true) {
+			$mode = $db->Quote($_GET['mode']);
+			$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' LIMIT 1");
+
+			if (empty($task)) {
+				//todo - need some sort of protection, rather than keep repeating this every time once there really no tasks!
+
+				$db->Execute($sql = "INSERT INTO backup_task SELECT null,min(file_id) start,max(file_id) end,count(*) files,$mode as mode,'$ident' as identity
+					FROM $file_table $where GROUP BY file_id DIV 1000 $order");
+
+				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode `identity` = '$ident' LIMIT 1");
+			}
+
+			if (empty($task)) {
+				$data['error'] = 'No tasks right now';
+                        } else {
+				$where .= " AND file_id BETWEEN {$task['start']} AND {$task['end']}";
+				$data['task_id'] = $task['task_id'];
+				$db->Execute("DELETE FROM backup_task WHERE task_id = {$task['task_id']}");
+			}
+		}
+
 		//these are hardcoded, but included here SO they could be changed as required
 		$data['docroot'] = '/geograph_live/public_html';
 		$data['server'] = 'http://s0.geograph.org.uk';
 		$data['sleep'] = 2;
 
-		//in theory should only offer such files for download, but just in case, could filter them out.
-		//$where .= " AND filename LIKE '{$data['docroot']}%'";
 	} elseif (!empty($_GET['folder'])) {
 
 		if ($folder_id = $db->getOne("SELECT folder_id FROM $folder_table WHERE folder = ".$db->Quote($_GET['folder']))) {
-			$where = "WHERE folder_id = ".$folder_id." AND backup_count < backup_target"; // AND backups NOT LIKE '%$ident%'"); //todo - change this to use bitmatchign!
+			$where = "WHERE folder_id = ".$folder_id." AND backup_target > 0";
 			$limit = 20000;
 		} else {
 			$data['error'] = 'Unknown folder';
@@ -100,7 +125,10 @@ if ($_GET['command'] == 'filelist') {
 	}
 
 	if (!empty($where)) {
-		$data['rows'] = $db->getAll("SELECT file_id,filename,backups,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM $file_table $where LIMIT $limit");
+		//in theory should only offer such files for download, but just in case, could filter them out.
+ 		//$where .= " AND filename LIKE '{$data['docroot']}%'";
+
+		$data['rows'] = $db->getAll("SELECT file_id,filename,backups,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM $file_table $where $order LIMIT $limit");
 	}
 
 	customGZipHandlerStart();
@@ -128,6 +156,7 @@ if (!empty($row)) {
         command = ".$db->Quote(@$_GET['command']).",
         folder = ".$db->Quote(@$_GET['folder']).",
         `mode` = ".$db->Quote(@$_GET['mode']).",
+        `notes` = ".$db->Quote(@$_POST['notes']).",
 	ids = ".(empty($ids)?0:count($ids)).",
         ipaddr = INET_ATON('".getRemoteIP()."'),
         useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']);
