@@ -71,16 +71,12 @@ def walk_and_notify(folder = '', track_progress = True):
             if track_progress and os.path.exists(root+'/backup.done'):
                 continue
             
-            print root
-            #print dirs
-            print files
+            print "Processing: "+root
             
             query = "ident="+config['identity']+"&command=filelist&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
             
             sig = hmac.new(config['secret'], query);
             url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
-            
-            print url
             
             req = urllib2.Request(url)
             req.add_header('User-agent', urllib._urlopener.version)
@@ -97,6 +93,7 @@ def walk_and_notify(folder = '', track_progress = True):
             ##SELECT file_id,filename,backups,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified
             
             notify = []
+            failures = []
             
             for row in result['rows']:
                 
@@ -105,9 +102,9 @@ def walk_and_notify(folder = '', track_progress = True):
                     ##We have the file, lets check we noted in replicas
                     
                     if config['identity'] in row['backups']: 
-                        print "great, metadata already knows we have "+row['filename']
+                        print "Already Notified: "+row['filename']
                     else:
-                        print "hey! we have "+row['filename']
+                        print "Validating: "+row['filename']
                         
                         stat = os.stat(root + "/" + filename)
                         if (stat.st_size > 0):
@@ -116,11 +113,14 @@ def walk_and_notify(folder = '', track_progress = True):
                             md5su =''
                         
                         if md5su != row['md5sum']:
-                            print "BUT md5 checksum doesnt match '"+md5su+"' != '"+row['md5sum']+"'"
+                            print " md5 checksum does not match '"+md5su+"' != '"+row['md5sum']+"'"
+                            failures.append("md5,"+md5su+","+row['md5sum']+","+filename)
                         elif int(stat.st_size) != int(row['size']):
-                            print "BUT size doesnt match '"+str(stat.st_size)+"' != '"+str(row['size'])+"'"
+                            print " size does not match '"+str(stat.st_size)+"' != '"+str(row['size'])+"'"
+                            failures.append("size,"+str(stat.st_size)+","+str(row['size'])+","+filename)
                         #elif stat.st_mtime != row['modified']:
-                        #    print "BUT dates doesnt match '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
+                        #    print " dates does not match '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
+                        #    failures.append("dates,"+str(stat.st_mtime)+","+str(row['modified'])+","+filename)
                         else:
                             notify.append(row['file_id'])
                     
@@ -131,7 +131,8 @@ def walk_and_notify(folder = '', track_progress = True):
             
             if files:
                 for filename in files:
-                    print "We have a unknown file! "+ filename
+                    print "Unknown File: "+ filename
+                    failures.append("unknown,"+filename)
                     
             if notify:
                 query = "ident="+config['identity']+"&command=notify&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
@@ -140,6 +141,22 @@ def walk_and_notify(folder = '', track_progress = True):
                 url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
                 
                 data = urllib.urlencode({'file_ids': ' '.join(notify)})
+                
+                req = urllib2.Request(url, data)
+                req.add_header('User-agent', urllib._urlopener.version)
+                f = urllib2.urlopen(req)
+                response = f.read()
+                f.close()
+                
+                print response
+            
+            if failures:
+                query = "ident="+config['identity']+"&command=failures&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
+                
+                sig = hmac.new(config['secret'], query);
+                url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
+                
+                data = urllib.urlencode({'notes': json.write(failures)})
                 
                 req = urllib2.Request(url, data)
                 req.add_header('User-agent', urllib._urlopener.version)
@@ -182,10 +199,11 @@ def replicate_now(path = ''):
     if result and 'error' in result:
         print result['error']
         sys.exit(2)
-
+    
     ##SELECT file_id,filename,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified
-
+    
     notify = []
+    failures = []
     
     c = 0;
     for row in result['rows']:
@@ -203,7 +221,7 @@ def replicate_now(path = ''):
             if not os.path.exists(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename)) ##recursive
         
-        if not os.path.isfile(filename):
+        if not os.path.exists(filename):
             urllib.urlretrieve(url, filename)
         
         stat = os.stat(filename)
@@ -213,12 +231,12 @@ def replicate_now(path = ''):
         else:
             md5su =''
         
-        if md5su != row['md5sum']:
-            print "BUT md5 checksum doesnt match '"+md5su+"' != '"+row['md5sum']+"'"
-        elif int(stat.st_size) != int(row['size']):
-            print "BUT size doesnt match '"+str(stat.st_size)+"' != '"+str(row['size'])+"'"
-        #elif stat.st_mtime != row['modified']:
-        #    print "BUT dates doesnt match '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
+        if int(stat.st_size) != int(row['size']):
+            print " size does not match '"+str(stat.st_size)+"' != '"+str(row['size'])+"'"
+            failures.append("size,"+str(stat.st_size)+","+str(row['size'])+","+filename)
+        elif md5su != row['md5sum']:
+            print " md5 checksum does not match '"+md5su+"' != '"+row['md5sum']+"'"
+            failures.append("md5,"+md5su+","+row['md5sum']+","+filename)
         else:
             notify.append(row['file_id'])
         
@@ -239,6 +257,22 @@ def replicate_now(path = ''):
         response = f.read()
         f.close()
         
+        print response
+
+    if failures:
+        query = "ident="+config['identity']+"&command=failures&mode="+config['mode']+"&r="+str(random.randint(1,100000))
+
+        sig = hmac.new(config['secret'], query);
+        url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
+
+        data = urllib.urlencode({'notes': json.write(failures)})
+
+        req = urllib2.Request(url, data)
+        req.add_header('User-agent', urllib._urlopener.version)
+        f = urllib2.urlopen(req)
+        response = f.read()
+        f.close()
+
         print response
 
 #############################################################################
