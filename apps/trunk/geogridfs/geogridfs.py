@@ -125,8 +125,11 @@ class GeoGridFS(Fuse):
     def getattr(self, path):
         ##todo use metedata server if can?
         for mount in self.getOrderedMounts(path):
-            if os.path.exists(mount + path):
-                return os.lstat(mount + path)
+            try:
+                result = os.lstat(mount + path)
+                return result
+            except os.error:
+                pass
         
         return os.lstat(mount + 'nonexistant')
         return -ENOENT
