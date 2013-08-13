@@ -120,11 +120,13 @@ class GeoGridFS(Fuse):
             if value == mount:
                 return key
 
-    def getFolderId(self, path):
+    def getFolderId(self, path, create = True):
         #todo - add caching! folder path should never change!
         query = PySQLPool.getNewQuery(self.connection)
         query.Query("SELECT folder_id FROM "+config.database['folder_table']+" WHERE folder = '"+query.escape_string(path)+"' LIMIT 1")
         if query.rowcount == 0:
+            if not create:
+                return 0
             query.Query("INSERT INTO "+config.database['folder_table']+" SET meta_created = NOW(), folder = '"+query.escape_string(path)+"'")
             folder_id = query.lastInsertID
         else:
@@ -174,16 +176,23 @@ class GeoGridFS(Fuse):
                         yield fuse.Direntry(e)
 
     def unlink(self, path):
+        query = PySQLPool.getNewQuery(self.connection)
+    
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
+                
+                #mark deleted in metadata
+                short = self.getServerFromMount(mount);
+                query.Query("UPDATE "+config.database['file_table']+" "+ \
+                    "SET replicas = REPLACE(replicas,'"+short+"',''), replica_count=replica_count-1 "+ \
+                    "WHERE filename = '"+query.escape_string(path)+"' AND replicas = '%"+short+"%'")
+                
                 os.unlink(mount + path)
-        #todo mark deleted in metadata (dont delete, because it might still be replicated - or maybe delete if replica_count =0)
 
     def rmdir(self, path):
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
                 os.rmdir(mount + path)
-        #todo, delete from metadata.folder?
 
     def symlink(self, path, path1):
         for mount in self.getOrderedMounts(path):
@@ -191,13 +200,47 @@ class GeoGridFS(Fuse):
                 os.symlink(mount + path, mount + path1)
 
     def rename(self, path, path1):
+        folder = False
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
+                if os.path.isdir(mount + path):
+                    folder = True
                 os.rename(mount + path, mount + path1)
         
-        folder_id = self.getFolderId(os.path.dirname(path1))
         query = PySQLPool.getNewQuery(self.connection)
-        query.Query("UPDATE "+config.database['file_table']+" SET folder_id = "+str(folder_id)+", filename = '"+query.escape_string(path1)+"' WHERE filename = '"+query.escape_string(path)+"'")
+        if folder:
+            old_folder_id = self.getFolderId(path, False)
+            
+            if old_folder_id != 0:
+                new_folder_id = self.getFolderId(path1, False)
+                if new_folder_id == 0:
+                    #if the new folder doesnt exist, change the folder itself
+                    new_folder_id = old_folder_id
+                    query.Query("UPDATE "+config.database['folder_table']+" "+ \
+                            "SET folder = '"+query.escape_string(path1)+"' "+ \
+                            "WHERE folder_id = "+str(old_folder_id))
+                else:
+                    new_folder_id = self.getFolderId(os.path.dirname(path1))
+
+                #change any files DIRECTLY in the folder
+                query.Query("UPDATE "+config.database['file_table']+" "+ \
+                        "SET folder_id = "+str(new_folder_id)+", filename = REPLACE(filename,'"+query.escape_string(path)+"/','"+query.escape_string(path1)+"/') "+ \
+                        "WHERE folder_id = "+str(old_folder_id))
+
+                #todo, clear getFolderId's cache for old_folder_id!
+
+            #todo, should ALSO check [[ FROM file WHERE filename LIKE '"+query.escape_string(path)+"/%' ]] 
+            # NOT easy to do, as needs to also set folder_id, 
+            # maybe needs to first SELECT folder_id,folder FROM folder WHERE folder REGEXP '^{$folder}(/|$)', then do each one in turn?
+            # - maybe offload into an async process? 
+
+        else:
+            new_folder_id = self.getFolderId(os.path.dirname(path1))
+        
+            #renaming a file is easy!
+            query.Query("UPDATE "+config.database['file_table']+" "+ \
+                    "SET folder_id = "+str(new_folder_id)+", filename = '"+query.escape_string(path1)+"' "+ \
+                    "WHERE filename = '"+query.escape_string(path)+"'")
 
     def link(self, path, path1):
         for mount in self.getOrderedMounts(path):
@@ -220,7 +263,12 @@ class GeoGridFS(Fuse):
                 f = open(mount + path, "a")
                 f.truncate(len)
                 f.close()
-        #todo change size in metedata
+                
+        query = PySQLPool.getNewQuery(self.connection)
+
+        query.Query("UPDATE "+config.database['file_table']+" "+ \
+                    "SET size = "+str(len)+", md5sum = '' "+ \
+                    "WHERE filename = '"+query.escape_string(path)+"'")
 
     def mknod(self, path, mode, dev):
         for mount in self.getOrderedMounts(path):
@@ -230,6 +278,9 @@ class GeoGridFS(Fuse):
     def mkdir(self, path, mode):
         for mount in self.getOrderedMounts(path):
             os.makedirs(mount + path, mode) #so can make dirs recurivly
+        
+        #NOTE, we dont create the metadata.folder here, but COULD. 
+        #Instead will be created as needed (with getFolderId) when a file is written there
 
     def utime(self, path, times):
         for mount in self.getOrderedMounts(path):
@@ -374,11 +425,12 @@ class GeoGridFS(Fuse):
                         file_id = row['file_id']
                     
                     ## here, we obliterate record of any other replicas, because they will now be outdated, their worker should pickup this 'new' file
-                    ## todo: should we also obliterate the backups?
                     query.Query("UPDATE "+config.database['file_table']+" SET " + \
                          specifics + \
                          "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
                          "replica_count=1 "+ \
+                         "backups='' "+ \
+                         "backup_count= "+ \
                          "WHERE file_id = "+str(file_id))
                     
             
