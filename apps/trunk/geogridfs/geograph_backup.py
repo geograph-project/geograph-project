@@ -32,7 +32,7 @@ import hmac
 
 
 config = dict(
-    folder = '/mnt/fake', # Set this the folder where you store files 
+    folder = '/mnt/fake', # Set this the folder where you store files (no trailing slash!)
     keep_free_gig = '2', # we wont replicate if less than this disk space (only Gigabytes units supported!)
     
     # Get these from Geograph Support
@@ -59,6 +59,19 @@ def md5sum(path):
     file.close()
     return str(md5.hexdigest())
 
+##the json interface has changed between python versions!
+def json_read(inp):
+    try:
+        return json.read(inp) #2.4
+    except AttributeError:
+        return json.loads(inp) #2.7
+
+def josn_write(inp):
+    try:
+        return json.write(inp) #2.4
+    except AttributeError:
+        return json.dumps(inp) #2.7
+
 #############################################################################
 
 def walk_and_notify(folder = '', track_progress = True):
@@ -84,7 +97,7 @@ def walk_and_notify(folder = '', track_progress = True):
             response = f.read()
             f.close()
             
-            result = json.read(response)
+            result = json_read(response)
             
             if result and 'error' in result:
                 print result['error']
@@ -156,7 +169,7 @@ def walk_and_notify(folder = '', track_progress = True):
                 sig = hmac.new(config['secret'], query);
                 url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
                 
-                data = urllib.urlencode({'notes': json.write(failures)})
+                data = urllib.urlencode({'notes': json_write(failures)})
                 
                 req = urllib2.Request(url, data)
                 req.add_header('User-agent', urllib._urlopener.version)
@@ -194,7 +207,7 @@ def replicate_now(path = ''):
     response = f.read()
     f.close()
 
-    result = json.read(response)
+    result = json_read(response)
 
     if result and 'error' in result:
         print result['error']
@@ -265,7 +278,7 @@ def replicate_now(path = ''):
         sig = hmac.new(config['secret'], query);
         url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
 
-        data = urllib.urlencode({'notes': json.write(failures)})
+        data = urllib.urlencode({'notes': json_write(failures)})
 
         req = urllib2.Request(url, data)
         req.add_header('User-agent', urllib._urlopener.version)
