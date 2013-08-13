@@ -19,6 +19,7 @@ __version__ = filter(str.isdigit, "$Revision$")
 
 import os, sys
 import os.path
+import stat
 import random
 from errno import *
 from stat import *
@@ -35,6 +36,8 @@ import MySQLdb
 import PySQLPool   #https://code.google.com/p/pysqlpool/wiki/Installing
 import hashlib
 import re
+import string
+import collections
 
 
 
@@ -56,8 +59,23 @@ def flag2mode(flags):
 
     return m
 
+class MyStat(fuse.Stat):
+    def __init__(self):
+        self.st_mode = stat.S_IFDIR | 0755
+        self.st_ino = 0
+        self.st_dev = 0
+        self.st_nlink = 2
+        self.st_uid = 0
+        self.st_gid = 0
+        self.st_size = 4096
+        self.st_atime = 0
+        self.st_mtime = 0
+        self.st_ctime = 0
+
 class GeoGridFS(Fuse):
     connection = False
+    row_cache = dict()
+    folder_cache = dict()
     
     def __init__(self, *args, **kw):
         
@@ -97,23 +115,54 @@ class GeoGridFS(Fuse):
         return config.mounts['milk']
 
     def getOrderedMounts(self, path='/'):
-        # todo - could check the metadata server for the ACTUAL mounts... but would still need to be sorted
+        mounts = collections.OrderedDict()
         
         # this mostly replicates how files are distributed amongst servers currently, so reads should find them in their ideal location most of the time. 
         if 'photos/' in path:
             if '_original' in path:
-                return [config.mounts['jam'], config.mounts['cream']]
+                mounts['jam'] = config.mounts['jam']
+                mounts['cream'] = config.mounts['cream']
             elif 'photos/03/' in path:
-                return [config.mounts['cream'], config.mounts['jam'], config.mounts['milk']]   #may as well use milk as a fallback to write if all else fails!
+                mounts['cream'] = config.mounts['cream']
+                mounts['jam'] = config.mounts['jam']
             elif (random.random() < 0.7):
                 #because we know it has a complete copy, might as well as let jam take some strain
-                return [config.mounts['jam'], config.mounts['cream']]
+                mounts['jam'] = config.mounts['jam']
+                mounts['cream'] = config.mounts['cream']
             else:
-                return [config.mounts['cream'], config.mounts['jam']]
+                mounts['cream'] = config.mounts['cream']
+                mounts['jam'] = config.mounts['jam']
+            mounts['milk'] = config.mounts['milk']
         else:
-            return [config.mounts['milk'], config.mounts['jam']]
+            mounts['milk'] = config.mounts['milk']
+            mounts['jam'] = config.mounts['jam']
+            mounts['cream'] = config.mounts['cream']
         
-        return config.mounts.values()
+        #if have metadata record, use it to promote mounts with actual replicas
+        try:
+            if path not in self.row_cache:
+                query = PySQLPool.getNewQuery(self.connection)
+                query.Query("SELECT file_id,size,UNIX_TIMESTAMP(file_created) as created,UNIX_TIMESTAMP(file_modified) as modified,UNIX_TIMESTAMP(file_accessed) as accessed,replicas FROM "+config.database['file_table']+" WHERE filename = '"+query.escape_string(path)+"' LIMIT 1")
+                if query.rowcount == 1:
+                    for row in query.record:
+                        print str(row)
+                        self.row_cache[path] = row
+                    
+            if path in self.row_cache:
+                replicas = string.split(self.row_cache[path]['replicas'], ',')
+                for short,mount in mounts.items():
+                    if short not in replicas:
+                        del mounts[short] 
+                        mounts[short] = config.mounts[short]
+
+                #todo, loop though relicas, add add any missing
+            
+        except MySQLdb.Error, e:
+            if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
+                print "Error %d: %s" % (e.args[0], e.args[1])
+                sys.exit(1)
+        
+        return mounts.values()
 
     def getServerFromMount(self, mount):
         for (key,value) in config.mounts.iteritems():
@@ -121,7 +170,9 @@ class GeoGridFS(Fuse):
                 return key
 
     def getFolderId(self, path, create = True):
-        #todo - add caching! folder path should never change!
+        
+        if path in self.folder_cache:
+            return self.folder_cache[path]
         
         try:
             query = PySQLPool.getNewQuery(self.connection)
@@ -134,6 +185,8 @@ class GeoGridFS(Fuse):
             else:
                 for row in query.record:
                     folder_id = row['folder_id']
+            
+            self.folder_cache[path] = folder_id
             return folder_id
         
         except MySQLdb.Error, e:
@@ -158,11 +211,29 @@ class GeoGridFS(Fuse):
 
     def getattr(self, path):
         ##todo use metedata server if can?
+        print "**************************************"
+        print "START "+path
+        if path in self.row_cache:
+            st = MyStat()
+            print str(self.row_cache[path])
+            
+            st.st_atime = int(self.row_cache[path]['accessed'])
+            st.st_mtime = int(self.row_cache[path]['modified'])
+            st.st_ctime = int(self.row_cache[path]['created'])
+            st.st_mode = stat.S_IFREG | 0666
+            st.st_nlink = 1
+            st.st_size = int(self.row_cache[path]['size'])
+            return st
+        
+        print "ORDERED"
+        print
         for mount in self.getOrderedMounts(path):
+            print "TRYING "+mount
             try:
                 result = os.lstat(mount + path)
                 return result
-            except os.error:
+            except os.error, e:
+                print "Error %d: %s" % (e.args[0], e.args[1])
                 pass
         
         return os.lstat(mount + 'nonexistant')
@@ -195,7 +266,8 @@ class GeoGridFS(Fuse):
                     short = self.getServerFromMount(mount);
                     query.Query("UPDATE "+config.database['file_table']+" "+ \
                         "SET replicas = REPLACE(replicas,'"+short+"',''), replica_count=replica_count-1 "+ \
-                        "WHERE filename = '"+query.escape_string(path)+"' AND replicas = '%"+short+"%'")
+                        "WHERE filename = '"+query.escape_string(path)+"' AND replicas LIKE '%"+short+"%'")
+                
                 except MySQLdb.Error, e:
                     if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                         print "Error %d: %s" % (e.args[0], e.args[1])
@@ -242,7 +314,9 @@ class GeoGridFS(Fuse):
                             "SET folder_id = "+str(new_folder_id)+", filename = REPLACE(filename,'"+query.escape_string(path)+"/','"+query.escape_string(path1)+"/') "+ \
                             "WHERE folder_id = "+str(old_folder_id))
 
-                    #todo, clear getFolderId's cache for old_folder_id!
+                    #clear getFolderId's cache for old_folder_id!
+                    if path in self.folder_cache:
+                        del self.folder_cache[path]
 
                 #todo, should ALSO check [[ FROM file WHERE filename LIKE '"+query.escape_string(path)+"/%' ]] 
                 # NOT easy to do, as needs to also set folder_id, 
@@ -385,7 +459,7 @@ class GeoGridFS(Fuse):
                         final_mount = mount
                         self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                         break
-
+            
             if self.file is False:
                return -EIO
             
@@ -465,7 +539,6 @@ class GeoGridFS(Fuse):
                 if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                     print "Error %d: %s" % (e.args[0], e.args[1])
                     sys.exit(1)
-            
             
 
         def _fflush(self):
