@@ -122,17 +122,26 @@ class GeoGridFS(Fuse):
 
     def getFolderId(self, path, create = True):
         #todo - add caching! folder path should never change!
-        query = PySQLPool.getNewQuery(self.connection)
-        query.Query("SELECT folder_id FROM "+config.database['folder_table']+" WHERE folder = '"+query.escape_string(path)+"' LIMIT 1")
-        if query.rowcount == 0:
-            if not create:
-                return 0
-            query.Query("INSERT INTO "+config.database['folder_table']+" SET meta_created = NOW(), folder = '"+query.escape_string(path)+"'")
-            folder_id = query.lastInsertID
-        else:
-            for row in query.record:
-                folder_id = row['folder_id']
-        return folder_id
+        
+        try:
+            query = PySQLPool.getNewQuery(self.connection)
+            query.Query("SELECT folder_id FROM "+config.database['folder_table']+" WHERE folder = '"+query.escape_string(path)+"' LIMIT 1")
+            if query.rowcount == 0:
+                if not create:
+                    return 0
+                query.Query("INSERT INTO "+config.database['folder_table']+" SET meta_created = NOW(), folder = '"+query.escape_string(path)+"'")
+                folder_id = query.lastInsertID
+            else:
+                for row in query.record:
+                    folder_id = row['folder_id']
+            return folder_id
+        
+        except MySQLdb.Error, e:
+            if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
+                print "Error %d: %s" % (e.args[0], e.args[1])
+                #sys.exit(1)
+            
+            return 0
 
     #http://code.activestate.com/recipes/576583-md5sum/
     def md5sum(self, path):
@@ -181,11 +190,16 @@ class GeoGridFS(Fuse):
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
                 
-                #mark deleted in metadata
-                short = self.getServerFromMount(mount);
-                query.Query("UPDATE "+config.database['file_table']+" "+ \
-                    "SET replicas = REPLACE(replicas,'"+short+"',''), replica_count=replica_count-1 "+ \
-                    "WHERE filename = '"+query.escape_string(path)+"' AND replicas = '%"+short+"%'")
+                try:
+                    #mark deleted in metadata
+                    short = self.getServerFromMount(mount);
+                    query.Query("UPDATE "+config.database['file_table']+" "+ \
+                        "SET replicas = REPLACE(replicas,'"+short+"',''), replica_count=replica_count-1 "+ \
+                        "WHERE filename = '"+query.escape_string(path)+"' AND replicas = '%"+short+"%'")
+                except MySQLdb.Error, e:
+                    if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
+                        print "Error %d: %s" % (e.args[0], e.args[1])
+                        #sys.exit(1)
                 
                 os.unlink(mount + path)
 
@@ -207,40 +221,46 @@ class GeoGridFS(Fuse):
                     folder = True
                 os.rename(mount + path, mount + path1)
         
-        query = PySQLPool.getNewQuery(self.connection)
-        if folder:
-            old_folder_id = self.getFolderId(path, False)
-            
-            if old_folder_id != 0:
-                new_folder_id = self.getFolderId(path1, False)
-                if new_folder_id == 0:
-                    #if the new folder doesnt exist, change the folder itself
-                    new_folder_id = old_folder_id
-                    query.Query("UPDATE "+config.database['folder_table']+" "+ \
-                            "SET folder = '"+query.escape_string(path1)+"' "+ \
+        try:
+            query = PySQLPool.getNewQuery(self.connection)
+            if folder:
+                old_folder_id = self.getFolderId(path, False)
+
+                if old_folder_id != 0:
+                    new_folder_id = self.getFolderId(path1, False)
+                    if new_folder_id == 0:
+                        #if the new folder doesnt exist, change the folder itself
+                        new_folder_id = old_folder_id
+                        query.Query("UPDATE "+config.database['folder_table']+" "+ \
+                                "SET folder = '"+query.escape_string(path1)+"' "+ \
+                                "WHERE folder_id = "+str(old_folder_id))
+                    else:
+                        new_folder_id = self.getFolderId(os.path.dirname(path1))
+
+                    #change any files DIRECTLY in the folder
+                    query.Query("UPDATE "+config.database['file_table']+" "+ \
+                            "SET folder_id = "+str(new_folder_id)+", filename = REPLACE(filename,'"+query.escape_string(path)+"/','"+query.escape_string(path1)+"/') "+ \
                             "WHERE folder_id = "+str(old_folder_id))
-                else:
-                    new_folder_id = self.getFolderId(os.path.dirname(path1))
 
-                #change any files DIRECTLY in the folder
+                    #todo, clear getFolderId's cache for old_folder_id!
+
+                #todo, should ALSO check [[ FROM file WHERE filename LIKE '"+query.escape_string(path)+"/%' ]] 
+                # NOT easy to do, as needs to also set folder_id, 
+                # maybe needs to first SELECT folder_id,folder FROM folder WHERE folder REGEXP '^{$folder}(/|$)', then do each one in turn?
+                # - maybe offload into an async process? 
+
+            else:
+                new_folder_id = self.getFolderId(os.path.dirname(path1))
+
+                #renaming a file is easy!
                 query.Query("UPDATE "+config.database['file_table']+" "+ \
-                        "SET folder_id = "+str(new_folder_id)+", filename = REPLACE(filename,'"+query.escape_string(path)+"/','"+query.escape_string(path1)+"/') "+ \
-                        "WHERE folder_id = "+str(old_folder_id))
+                        "SET folder_id = "+str(new_folder_id)+", filename = '"+query.escape_string(path1)+"' "+ \
+                        "WHERE filename = '"+query.escape_string(path)+"'")
 
-                #todo, clear getFolderId's cache for old_folder_id!
-
-            #todo, should ALSO check [[ FROM file WHERE filename LIKE '"+query.escape_string(path)+"/%' ]] 
-            # NOT easy to do, as needs to also set folder_id, 
-            # maybe needs to first SELECT folder_id,folder FROM folder WHERE folder REGEXP '^{$folder}(/|$)', then do each one in turn?
-            # - maybe offload into an async process? 
-
-        else:
-            new_folder_id = self.getFolderId(os.path.dirname(path1))
-        
-            #renaming a file is easy!
-            query.Query("UPDATE "+config.database['file_table']+" "+ \
-                    "SET folder_id = "+str(new_folder_id)+", filename = '"+query.escape_string(path1)+"' "+ \
-                    "WHERE filename = '"+query.escape_string(path)+"'")
+        except MySQLdb.Error, e:
+            if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
+                print "Error %d: %s" % (e.args[0], e.args[1])
+                #sys.exit(1)
 
     def link(self, path, path1):
         for mount in self.getOrderedMounts(path):
@@ -263,12 +283,18 @@ class GeoGridFS(Fuse):
                 f = open(mount + path, "a")
                 f.truncate(len)
                 f.close()
-                
-        query = PySQLPool.getNewQuery(self.connection)
+        
+        try:
+            query = PySQLPool.getNewQuery(self.connection)
 
-        query.Query("UPDATE "+config.database['file_table']+" "+ \
-                    "SET size = "+str(len)+", md5sum = '' "+ \
-                    "WHERE filename = '"+query.escape_string(path)+"'")
+            query.Query("UPDATE "+config.database['file_table']+" "+ \
+                        "SET size = "+str(len)+", md5sum = '' "+ \
+                        "WHERE filename = '"+query.escape_string(path)+"'")
+
+        except MySQLdb.Error, e:
+            if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
+                print "Error %d: %s" % (e.args[0], e.args[1])
+                #sys.exit(1)
 
     def mknod(self, path, mode, dev):
         for mount in self.getOrderedMounts(path):
@@ -382,6 +408,7 @@ class GeoGridFS(Fuse):
             self.file.close()
             
             if not self.flags & os.O_WRONLY and not self.flags & os.O_RDWR: #ie IS readonly
+                #todo, if this file isnt in metadata, and we can (now) connect, should add it anyway. 
                 return
             
             try:
@@ -428,16 +455,16 @@ class GeoGridFS(Fuse):
                     query.Query("UPDATE "+config.database['file_table']+" SET " + \
                          specifics + \
                          "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
-                         "replica_count=1 "+ \
-                         "backups='' "+ \
-                         "backup_count= "+ \
+                         "replica_count=1, "+ \
+                         "backups='', "+ \
+                         "backup_count= 0 "+ \
                          "WHERE file_id = "+str(file_id))
                     
             
             except MySQLdb.Error, e:
-            
-                print "Error %d: %s" % (e.args[0], e.args[1])
-                sys.exit(1)
+                if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
+                    print "Error %d: %s" % (e.args[0], e.args[1])
+                    sys.exit(1)
             
             
 
