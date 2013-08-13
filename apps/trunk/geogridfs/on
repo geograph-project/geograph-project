@@ -1,2 +1,2 @@
 #!/bin/sh
-python geogridfs.py combined/
+python geogridfs.py /var/mount/combined/

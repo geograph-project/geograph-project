@@ -76,6 +76,7 @@ def walk_and_notify(folder = '', track_progress = True):
             print root
             #print dirs
             print files
+            
             folder_id = getFolderId(string.replace(root,mount,''), True)
             
             c=db.cursor(MySQLdb.cursors.DictCursor)
@@ -123,6 +124,8 @@ def walk_and_notify(folder = '', track_progress = True):
             if files:
                 for filename in files:
                     print "sending new file "+ filename
+                    path = string.replace(root,mount,'') + "/" + filename
+                    
                     stat = os.stat(root + "/" + filename)
                     if (stat.st_size > 0):
                         md5su = md5sum(root + "/" + filename)
@@ -137,7 +140,7 @@ def walk_and_notify(folder = '', track_progress = True):
                     final = False
                     targets = ''
                     for pattern in config.patterns:
-                        if re.search(pattern[1],filename):
+                        if re.search(pattern[1],path):
                             final = pattern
                             break
                     if final:
@@ -145,7 +148,6 @@ def walk_and_notify(folder = '', track_progress = True):
                             "`replica_target` = "+str(final[2])+ ", " + \
                             "`backup_target` = "+str(final[3])+ ", "
                     
-                    path = string.replace(root,mount,'') + "/" + filename
                     c.execute("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
                         "filename = '"+db.escape_string(path)+"', " + \
                         "folder_id = "+str(folder_id)+", " + \
@@ -215,8 +217,10 @@ def replicate_now(path = ''):
         
         if md5su != row['md5sum']:
             print "BUT md5 checksum doesnt match '"+md5su+"' != '"+row['md5sum']+"'"
+            #todo - report this somewhere!
         elif stat.st_size != row['size']:
             print "BUT size doesnt match"
+            #todo - report this somewhere!
         #elif stat.st_mtime != row['modified']:
         #    print "BUT dates doesnt match '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
         else:
