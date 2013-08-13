@@ -31,7 +31,8 @@ except ImportError:
 import fuse
 from fuse import Fuse
 import config
-import _mysql
+import MySQLdb
+import PySQLPool   #https://code.google.com/p/pysqlpool/wiki/Installing
 import hashlib
 import re
 
@@ -56,7 +57,7 @@ def flag2mode(flags):
     return m
 
 class GeoGridFS(Fuse):
-    con = False
+    connection = False
     
     def __init__(self, *args, **kw):
         
@@ -65,7 +66,29 @@ class GeoGridFS(Fuse):
         # do stuff to set up your filesystem here, if you want
         #import thread
         #thread.start_new_thread(self.mythread, ())
-        self.root = '/'
+
+
+    def fsinit(self):
+        """
+        Will be called after the command line arguments are successfully
+        parsed. It doesn't have to exist or do anything, but as options to the
+        filesystem are not available in __init__, fsinit is more suitable for
+        the mounting logic than __init__.
+
+        To access the command line passed options and nonoption arguments, use
+        cmdline.
+
+        The mountpoint is not stored in cmdline.
+        """
+        
+        #http://pythonhosted.org/PySQLPool/reference.html#PySQLPool.PySQLConnection
+        self.connection = PySQLPool.getNewConnection(
+            username=config.database['username'], 
+            password=config.database['password'], 
+            host=config.database['hostname'], 
+            db=config.database['database'],
+            connect_timeout=5,
+            )
 
 #############################################################################
 
@@ -99,14 +122,14 @@ class GeoGridFS(Fuse):
 
     def getFolderId(self, path):
         #todo - add caching! folder path should never change!
-        con = self.con
-        con.query("SELECT folder_id FROM "+config.database['folder_table']+" WHERE folder = '"+con.escape_string(path)+"'")
-        result = con.store_result()
-        if result.num_rows() == 0:
-            con.query("INSERT INTO "+config.database['folder_table']+" SET meta_created = NOW(), folder = '"+con.escape_string(path)+"'")
-            folder_id = con.insert_id()
+        query = PySQLPool.getNewQuery(self.connection)
+        query.Query("SELECT folder_id FROM "+config.database['folder_table']+" WHERE folder = '"+query.escape_string(path)+"' LIMIT 1")
+        if query.rowcount == 0:
+            query.Query("INSERT INTO "+config.database['folder_table']+" SET meta_created = NOW(), folder = '"+query.escape_string(path)+"'")
+            folder_id = query.lastInsertID
         else:
-            folder_id = result.fetch_row()[0][0]
+            for row in query.record:
+                folder_id = row['folder_id']
         return folder_id
 
     #http://code.activestate.com/recipes/576583-md5sum/
@@ -173,8 +196,8 @@ class GeoGridFS(Fuse):
                 os.rename(mount + path, mount + path1)
         
         folder_id = self.getFolderId(os.path.dirname(path1))
-        con = self.con
-        con.query("UPDATE "+config.database['file_table']+" SET folder_id = "+folder_id+", filename = '"+con.escape_string(path1)+"' WHERE filename = '"+con.escape_string(path)+"'")
+        query = PySQLPool.getNewQuery(self.connection)
+        query.Query("UPDATE "+config.database['file_table']+" SET folder_id = "+str(folder_id)+", filename = '"+query.escape_string(path1)+"' WHERE filename = '"+query.escape_string(path)+"'")
 
     def link(self, path, path1):
         for mount in self.getOrderedMounts(path):
@@ -250,13 +273,6 @@ class GeoGridFS(Fuse):
         #todo total up all mounts?
         return os.statvfs(self.getFirstMount())
 
-    def fsinit(self):
-        os.chdir(self.root)
-        
-        #todo, this is NOT thread safe, need to adopt a connection pool!
-        self.con = _mysql.connect(config.database['hostname'], config.database['username'], config.database['password'], config.database['database'])
-
-
 #############################################################################
 
     class GeoGridFSFile(object):
@@ -330,11 +346,10 @@ class GeoGridFS(Fuse):
                          "`file_accessed` = FROM_UNIXTIME("+str(stat.st_atime)+"), " + \
                          "`md5sum` = '"+md5sum+"', "
                 
-                con = self.server.con
-                con.query("SELECT file_id FROM "+config.database['file_table']+" WHERE filename = '"+con.escape_string(self.path)+"'")
-                result = con.store_result()
+                query = PySQLPool.getNewQuery(self.server.connection)
+                query.Query("SELECT file_id FROM "+config.database['file_table']+" WHERE filename = '"+query.escape_string(self.path)+"'")
                 
-                if result.num_rows() == 0:
+                if query.rowcount == 0:
                     folder_id = self.server.getFolderId(os.path.dirname(self.path))
                     
                     final = False
@@ -348,25 +363,26 @@ class GeoGridFS(Fuse):
                             "`replica_target` = "+str(final[2])+ ", " + \
                             "`backup_target` = "+str(final[3])+ ", "
                     
-                    con.query("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
-                         "filename = '"+con.escape_string(self.path)+"', " + \
+                    query.Query("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
+                         "filename = '"+query.escape_string(self.path)+"', " + \
                          "folder_id = "+str(folder_id)+", " + \
                          specifics + targets + \
                          "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
                          "replica_count=1")
                 else:
-                    file_id = result.fetch_row()[0][0]
+                    for row in query.record:
+                        file_id = row['file_id']
                     
                     ## here, we obliterate record of any other replicas, because they will now be outdated, their worker should pickup this 'new' file
                     ## todo: should we also obliterate the backups?
-                    con.query("UPDATE "+config.database['file_table']+" SET " + \
+                    query.Query("UPDATE "+config.database['file_table']+" SET " + \
                          specifics + \
                          "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
                          "replica_count=1 "+ \
-                         "WHERE file_id = "+file_id)
+                         "WHERE file_id = "+str(file_id))
                     
             
-            except _mysql.Error, e:
+            except MySQLdb.Error, e:
             
                 print "Error %d: %s" % (e.args[0], e.args[1])
                 sys.exit(1)
@@ -427,6 +443,7 @@ class GeoGridFS(Fuse):
 
         return Fuse.main(self, *a, **kw)
 
+#############################################################################
 
 def main():
 
@@ -441,18 +458,9 @@ Unify a number of folders into one virtual folder. Designed for merging NFS shar
 
     # Disable multithreading: if you want to use it, protect all method of
     # XmlFile class with locks, in order to prevent race conditions
-    server.multithreaded = False
+    server.multithreaded = True
 
-    server.parser.add_option(mountopt="root", metavar="PATH", default='/',
-                             help="mirror filesystem from under PATH [default: %default]")
     server.parse(values=server, errex=1)
-
-    try:
-        if server.fuse_args.mount_expected():
-            os.chdir(server.root)
-    except OSError:
-        print >> sys.stderr, "can't enter root of underlying filesystem"
-        sys.exit(1)
 
     server.main()
 
