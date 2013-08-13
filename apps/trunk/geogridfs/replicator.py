@@ -229,7 +229,7 @@ def replicate_now(path = ''):
                 "replica_count=replica_count+1 "+ \
                 "WHERE file_id = "+str(row['file_id']))
 
-def fixup_classes(path = ''):
+def fixup_classes():
     c=db.cursor(MySQLdb.cursors.DictCursor)
     cex=db.cursor()
     c.execute("SELECT file_id,filename FROM "+config.database['file_table']+" WHERE `class` = '' LIMIT 1000");
@@ -250,6 +250,23 @@ def fixup_classes(path = ''):
                 "`replica_target` = "+str(final[2])+ ", " + \
                 "`backup_target` = "+str(final[3])+ " " + \
                 "WHERE file_id = "+str(row['file_id']))
+
+def update_stat():
+    c=db.cursor();
+    make_columns = "count(*) as files, sum(size) as total_bytes, count(distinct folder_id) as folders, min(file_modified) AS oldest,max(file_modified) AS newest, filename as example, NOW() as updated ";
+    c.execute("REPLACE INTO `stat` SELECT CONCAT('r:',replicas) AS id, replicas AS value, "+make_columns+\
+                "FROM file GROUP BY replicas+0 ORDER BY NULL")
+    c.execute("REPLACE INTO `stat` SELECT CONCAT('t:',class,',',replica_target-replica_count) AS id, CONCAT(class,' ',replica_count,'/',replica_target) AS value, "+make_columns+\
+                "FROM file GROUP BY class,replica_target,replica_count ORDER BY NULL")
+    c.execute("REPLACE INTO `stat` SELECT CONCAT('b:',backups) AS id, backups AS value, "+make_columns+\
+                "FROM file WHERE backup_target > 0 GROUP BY backups+0 ORDER BY NULL")
+    c.execute("REPLACE INTO `stat` SELECT CONCAT('y:',class,',',backup_target,backup_count) AS id, CONCAT(class,' ',backup_count,'/',backup_target) AS value, "+make_columns+\
+                "FROM file WHERE backup_target > 0 GROUP BY class,backup_target,backup_count ORDER BY NULL")
+    c.execute("REPLACE INTO `stat` SELECT CONCAT('c:',class) AS id, class AS value, "+make_columns+\
+                "FROM file GROUP BY class ORDER BY NULL")
+    c.execute("REPLACE INTO `stat` SELECT CONCAT('s:',substring_index(filename,'_',-1)) AS id, substring_index(filename,'_',-1) AS value, "+make_columns+\
+                "FROM file WHERE class in ('thumb.jpg','thumb.gd') GROUP BY substring_index(filename,'_',-1) ORDER BY NULL")
+
 
 def update_active():
     c=db.cursor()
@@ -297,7 +314,10 @@ def main(argv):
         replicate_now(path)
 
     elif action == 'fixup':
-        fixup_classes(path)
+        fixup_classes()
+
+    elif action == 'stat':
+        update_stat()
 
     elif action == 'active':
         update_active()
