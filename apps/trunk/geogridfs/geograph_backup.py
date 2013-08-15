@@ -66,7 +66,7 @@ def json_read(inp):
     except AttributeError:
         return json.loads(inp) #2.7
 
-def josn_write(inp):
+def json_write(inp):
     try:
         return json.write(inp) #2.4
     except AttributeError:
@@ -120,7 +120,7 @@ def walk_and_notify(folder = '', track_progress = True):
                         print "Validating: "+row['filename']
                         
                         stat = os.stat(root + "/" + filename)
-                        if (stat.st_size > 0):
+                        if (stat.st_size > 0 and stat.st_size < 52428800):
                             md5su = md5sum(root + "/" + filename)
                         else:
                             md5su =''
@@ -238,7 +238,7 @@ def replicate_now(path = ''):
             urllib.urlretrieve(url, filename)
         
         stat = os.stat(filename)
-        if (stat.st_size > 0):
+        if (stat.st_size > 0 and stat.st_size < 52428800):
             os.utime(filename, (int(time.time()), int(row['modified'])) )
             md5su = md5sum(filename)
         else:

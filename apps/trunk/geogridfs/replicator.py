@@ -97,7 +97,7 @@ def walk_and_notify(folder = '', track_progress = True):
                         print "hey! we have "+row['filename']
                         
                         stat = os.stat(root + "/" + filename)
-                        if (stat.st_size > 0):
+                        if (stat.st_size > 0 and stat.st_size < 52428800):
                             md5su = md5sum(root + "/" + filename)
                         else:
                             md5su =''
@@ -127,7 +127,7 @@ def walk_and_notify(folder = '', track_progress = True):
                     path = string.replace(root,mount,'') + "/" + filename
                     
                     stat = os.stat(root + "/" + filename)
-                    if (stat.st_size > 0):
+                    if (stat.st_size > 0 and stat.st_size < 52428800):
                         md5su = md5sum(root + "/" + filename)
                     else:
                         md5su =''
@@ -202,6 +202,8 @@ def replicate_now(path = ''):
         if os.path.exists(filename):
             if os.path.getsize(filename) == 0:
                 unlink(filename)
+                
+            #todo, later we should allow their newer file to overwrite our older file. (to allow for new versions of files) BUT not if class = full.jpg/thumbs.jpg etc
         else:
             if not os.path.exists(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename)) ##recursive
@@ -210,7 +212,7 @@ def replicate_now(path = ''):
             shutil.copy2(config.mounts[replica] + row['filename'], filename)
         
         stat = os.stat(filename)
-        if (stat.st_size > 0):
+        if (stat.st_size > 0 and stat.st_size < 52428800):
             md5su = md5sum(filename)
         else:
             md5su =''
@@ -254,18 +256,25 @@ def fixup_classes():
 def update_stat():
     c=db.cursor();
     make_columns = "count(*) as files, sum(size) as total_bytes, count(distinct folder_id) as folders, min(file_modified) AS oldest,max(file_modified) AS newest, filename as example, NOW() as updated ";
+    print 'r'
     c.execute("REPLACE INTO `stat` SELECT CONCAT('r:',replicas) AS id, replicas AS value, "+make_columns+\
                 "FROM file GROUP BY replicas+0 ORDER BY NULL")
+    print 't'
     c.execute("REPLACE INTO `stat` SELECT CONCAT('t:',class,',',replica_target-replica_count) AS id, CONCAT(class,' ',replica_count,'/',replica_target) AS value, "+make_columns+\
                 "FROM file GROUP BY class,replica_target,replica_count ORDER BY NULL")
+    print 'b'
     c.execute("REPLACE INTO `stat` SELECT CONCAT('b:',backups) AS id, backups AS value, "+make_columns+\
                 "FROM file WHERE backup_target > 0 GROUP BY backups+0 ORDER BY NULL")
+    print 'y'
     c.execute("REPLACE INTO `stat` SELECT CONCAT('y:',class,',',backup_target,backup_count) AS id, CONCAT(class,' ',backup_count,'/',backup_target) AS value, "+make_columns+\
                 "FROM file WHERE backup_target > 0 GROUP BY class,backup_target,backup_count ORDER BY NULL")
+    print 'c'
     c.execute("REPLACE INTO `stat` SELECT CONCAT('c:',class) AS id, class AS value, "+make_columns+\
                 "FROM file GROUP BY class ORDER BY NULL")
+    print 's'
     c.execute("REPLACE INTO `stat` SELECT CONCAT('s:',substring_index(filename,'_',-1)) AS id, substring_index(filename,'_',-1) AS value, "+make_columns+\
                 "FROM file WHERE class in ('thumb.jpg','thumb.gd') GROUP BY substring_index(filename,'_',-1) ORDER BY NULL")
+    print 'done'
 
 
 def update_active():
