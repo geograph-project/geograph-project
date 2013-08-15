@@ -38,7 +38,7 @@ import hashlib
 import re
 import string
 import collections
-
+import threading
 
 
 if not hasattr(fuse, '__version__'):
@@ -313,6 +313,7 @@ class GeoGridFS(Fuse):
                     query.Query("UPDATE "+config.database['file_table']+" "+ \
                             "SET folder_id = "+str(new_folder_id)+", filename = REPLACE(filename,'"+query.escape_string(path)+"/','"+query.escape_string(path1)+"/') "+ \
                             "WHERE folder_id = "+str(old_folder_id))
+                    #todo - need to invalidate any relevent rows in row_cache!
 
                     #clear getFolderId's cache for old_folder_id!
                     if path in self.folder_cache:
@@ -330,6 +331,9 @@ class GeoGridFS(Fuse):
                 query.Query("UPDATE "+config.database['file_table']+" "+ \
                         "SET folder_id = "+str(new_folder_id)+", filename = '"+query.escape_string(path1)+"' "+ \
                         "WHERE filename = '"+query.escape_string(path)+"'")
+                        
+                if path in self.row_cache:
+                    del self.row_cache[path]
 
         except MySQLdb.Error, e:
             if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
@@ -431,156 +435,188 @@ class GeoGridFS(Fuse):
         keep_cache = False
         file = False
         fd = False
+        thread_lock = False
         
         def __init__(self, server, path, flags, *mode):
             self.file = False
             final_mount = False
             
-            #first see if can find an actual file
-            for mount in server.getOrderedMounts(path):
-                if os.path.exists(mount + path):
-                    final_mount = mount
-                    self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
-                    break
-            
-            #find a mount that has a folder we can use
-            if self.file is False and (flags & os.O_CREAT or flags & os.O_WRONLY or flags & os.O_RDWR):
+            self.thread_lock = threading.Lock()
+            self.thread_lock.acquire()
+            try:
+
+                #first see if can find an actual file
                 for mount in server.getOrderedMounts(path):
-                    if os.path.exists(os.path.dirname(mount + path)):
+                    if os.path.exists(mount + path):
                         final_mount = mount
                         self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                         break
-                
-                #if still not found, then just create it on the first mount
-                if not self.file: 
+
+                #find a mount that has a folder we can use
+                if self.file is False and (flags & os.O_CREAT or flags & os.O_WRONLY or flags & os.O_RDWR):
                     for mount in server.getOrderedMounts(path):
-                        if not os.path.exists(os.path.dirname(mount + path)):
-                            os.makedirs(os.path.dirname(mount + path)) # use makedirs so will also create parent dirs as required
-                        final_mount = mount
-                        self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
-                        break
-            
-            if self.file is False:
-               return -EIO
-            
-            self.server = server
-            self.mount = final_mount
-            self.path = path
-            self.flags = flags
-            self.fd = self.file.fileno()
+                        if os.path.exists(os.path.dirname(mount + path)):
+                            final_mount = mount
+                            self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
+                            break
+
+                    #if still not found, then just create it on the first mount
+                    if not self.file: 
+                        for mount in server.getOrderedMounts(path):
+                            if not os.path.exists(os.path.dirname(mount + path)):
+                                os.makedirs(os.path.dirname(mount + path)) # use makedirs so will also create parent dirs as required
+                            final_mount = mount
+                            self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
+                            break
+
+                if self.file is False:
+                   return -EIO
+
+                self.server = server
+                self.mount = final_mount
+                self.path = path
+                self.flags = flags
+                self.fd = self.file.fileno()
+            finally:
+                self.thread_lock.release()
 
         def read(self, length, offset):
-            self.file.seek(offset)
-            return self.file.read(length)
+            self.thread_lock.acquire()
+            try:
+                self.file.seek(offset)
+                return self.file.read(length)
+            finally:
+                self.thread_lock.release()
 
         def write(self, buf, offset):
-            self.file.seek(offset)
-            self.file.write(buf)
-            return len(buf)
+            self.thread_lock.acquire()
+            try:
+                self.file.seek(offset)
+                self.file.write(buf)
+                return len(buf)
+            finally:
+                self.thread_lock.release()
 
         def release(self, flags):
-            self.file.close()
-            
-            if not self.flags & os.O_WRONLY and not self.flags & os.O_RDWR: #ie IS readonly
-                #todo, if this file isnt in metadata, and we can (now) connect, should add it anyway. 
-                return
-            
+            self.thread_lock.acquire()
             try:
-                stat = os.stat(self.mount + self.path)
-                if (stat.st_size > 0):
-                    md5sum = self.server.md5sum(self.mount + self.path)
-                else:
-                    md5sum =''
+                self.file.close()
+
+                if not self.flags & os.O_WRONLY and not self.flags & os.O_RDWR: #ie IS readonly
+                    #todo, if this file isnt in metadata, and we can (now) connect, should add it anyway. 
+                    return
+
+                if self.path in self.server.row_cache:
+                    del self.server.row_cache[self.path]
+
+                try:
+                    stat = os.stat(self.mount + self.path)
+                    if (stat.st_size > 0 and stat.st_size < 52428800):
+                        md5sum = self.server.md5sum(self.mount + self.path)
+                    else:
+                        md5sum =''
+
+                    specifics = "`size` = "+str(stat.st_size)+", " + \
+                             "`file_created` = FROM_UNIXTIME("+str(stat.st_ctime)+"), " + \
+                             "`file_modified` = FROM_UNIXTIME("+str(stat.st_mtime)+"), " + \
+                             "`file_accessed` = FROM_UNIXTIME("+str(stat.st_atime)+"), " + \
+                             "`md5sum` = '"+md5sum+"', "
+
+                    #todo 
+                    #if self.path in self.server.row_cache:
+                    #   file_id = 
+                    #else:
+                    query = PySQLPool.getNewQuery(self.server.connection)
+                    query.Query("SELECT file_id FROM "+config.database['file_table']+" WHERE filename = '"+query.escape_string(self.path)+"'")
+
+                    if query.rowcount == 0:
+                        folder_id = self.server.getFolderId(os.path.dirname(self.path))
+
+                        final = False
+                        targets = ''
+                        for pattern in config.patterns:
+                            if re.search(pattern[1],self.path):
+                                final = pattern
+                                break
+                        if final:
+                            targets = "`class` = '"+final[0]+ "', " + \
+                                "`replica_target` = "+str(final[2])+ ", " + \
+                                "`backup_target` = "+str(final[3])+ ", "
+
+                        query.Query("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
+                             "filename = '"+query.escape_string(self.path)+"', " + \
+                             "folder_id = "+str(folder_id)+", " + \
+                             specifics + targets + \
+                             "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
+                             "replica_count=1")
+                    else:
+                        for row in query.record:
+                            file_id = row['file_id']
+
+                        ## here, we obliterate record of any other replicas, because they will now be outdated, their worker should pickup this 'new' file
+                        query.Query("UPDATE "+config.database['file_table']+" SET " + \
+                             specifics + \
+                             "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
+                             "replica_count=1, "+ \
+                             "backups='', "+ \
+                             "backup_count= 0 "+ \
+                             "WHERE file_id = "+str(file_id))
+
+
                 
-                specifics = "`size` = "+str(stat.st_size)+", " + \
-                         "`file_created` = FROM_UNIXTIME("+str(stat.st_ctime)+"), " + \
-                         "`file_modified` = FROM_UNIXTIME("+str(stat.st_mtime)+"), " + \
-                         "`file_accessed` = FROM_UNIXTIME("+str(stat.st_atime)+"), " + \
-                         "`md5sum` = '"+md5sum+"', "
-                
-                query = PySQLPool.getNewQuery(self.server.connection)
-                query.Query("SELECT file_id FROM "+config.database['file_table']+" WHERE filename = '"+query.escape_string(self.path)+"'")
-                
-                if query.rowcount == 0:
-                    folder_id = self.server.getFolderId(os.path.dirname(self.path))
-                    
-                    final = False
-                    targets = ''
-                    for pattern in config.patterns:
-                        if re.search(pattern[1],self.path):
-                            final = pattern
-                            break
-                    if final:
-                        targets = "`class` = '"+final[0]+ "', " + \
-                            "`replica_target` = "+str(final[2])+ ", " + \
-                            "`backup_target` = "+str(final[3])+ ", "
-                    
-                    query.Query("INSERT INTO "+config.database['file_table']+" SET meta_created = NOW(), " + \
-                         "filename = '"+query.escape_string(self.path)+"', " + \
-                         "folder_id = "+str(folder_id)+", " + \
-                         specifics + targets + \
-                         "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
-                         "replica_count=1")
-                else:
-                    for row in query.record:
-                        file_id = row['file_id']
-                    
-                    ## here, we obliterate record of any other replicas, because they will now be outdated, their worker should pickup this 'new' file
-                    query.Query("UPDATE "+config.database['file_table']+" SET " + \
-                         specifics + \
-                         "replicas = '"+self.server.getServerFromMount(self.mount)+"', " + \
-                         "replica_count=1, "+ \
-                         "backups='', "+ \
-                         "backup_count= 0 "+ \
-                         "WHERE file_id = "+str(file_id))
-                    
-            
-            except MySQLdb.Error, e:
-                if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
-                    print "Error %d: %s" % (e.args[0], e.args[1])
-                    sys.exit(1)
-            
+
+                except MySQLdb.Error, e:
+                    if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
+                        print "Error %d: %s" % (e.args[0], e.args[1])
+                        sys.exit(1)
+            finally:
+                self.thread_lock.release()
+
 
         def _fflush(self):
             if 'w' in self.file.mode or 'a' in self.file.mode:
                 self.file.flush()
 
         def fsync(self, isfsyncfile):
-            self._fflush()
-            if isfsyncfile and hasattr(os, 'fdatasync'):
-                os.fdatasync(self.fd)
-            else:
-                os.fsync(self.fd)
+            self.thread_lock.acquire()
+            try:
+                self._fflush()
+                if isfsyncfile and hasattr(os, 'fdatasync'):
+                    os.fdatasync(self.fd)
+                else:
+                    os.fsync(self.fd)
+            finally:
+                self.thread_lock.release()
 
         def flush(self):
-            self._fflush()
-            # cf. xmp_flush() in fusexmp_fh.c
-            os.close(os.dup(self.fd))
+            self.thread_lock.acquire()
+            try:
+                self._fflush()
+                # cf. xmp_flush() in fusexmp_fh.c
+                os.close(os.dup(self.fd))
+            finally:
+                self.thread_lock.release()
 
         def fgetattr(self):
-            return os.fstat(self.fd)
+            self.thread_lock.acquire()
+            try:
+                return os.fstat(self.fd)
+            finally:
+                self.thread_lock.release()
 
         def ftruncate(self, len):
-            self.file.truncate(len)
+            self.thread_lock.acquire()
+            try:
+                self.file.truncate(len)
+            finally:
+                self.thread_lock.release()
 
         def lock(self, cmd, owner, **kw):
-
-            # Convert fcntl-ish lock parameters to Python's weird
-            # lockf(3)/flock(2) medley locking API...
-            op = { fcntl.F_UNLCK : fcntl.LOCK_UN,
-                   fcntl.F_RDLCK : fcntl.LOCK_SH,
-                   fcntl.F_WRLCK : fcntl.LOCK_EX }[kw['l_type']]
-            if cmd == fcntl.F_GETLK:
-                return -EOPNOTSUPP
-            elif cmd == fcntl.F_SETLK:
-                if op != fcntl.LOCK_UN:
-                    op |= fcntl.LOCK_NB
-            elif cmd == fcntl.F_SETLKW:
+            self.thread_lock.acquire()
+            try:
                 pass
-            else:
-                return -EINVAL
-
-            fcntl.lockf(self.fd, op, kw['l_start'], kw['l_len'])
+            finally:
+                self.thread_lock.release()
 
 #############################################################################
 
