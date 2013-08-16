@@ -39,6 +39,7 @@ import re
 import string
 import collections
 import threading
+from mpycache import LRUCache;
 
 
 if not hasattr(fuse, '__version__'):
@@ -74,12 +75,16 @@ class MyStat(fuse.Stat):
 
 class GeoGridFS(Fuse):
     connection = False
-    row_cache = dict()
-    folder_cache = dict()
+    row_cache = False
+    folder_cache = False
     
     def __init__(self, *args, **kw):
         
         Fuse.__init__(self, *args, **kw)
+        
+        #see https://code.google.com/p/mpycache/
+        self.row_cache = LRUCache(1000, 3000, 300)
+        self.folder_cache = LRUCache(1000, 30000, 300)
         
         # do stuff to set up your filesystem here, if you want
         #import thread
@@ -140,16 +145,15 @@ class GeoGridFS(Fuse):
         
         #if have metadata record, use it to promote mounts with actual replicas
         try:
-            if path not in self.row_cache:
+            if not self.row_cache.has_key(path):
                 query = PySQLPool.getNewQuery(self.connection)
                 query.Query("SELECT file_id,size,UNIX_TIMESTAMP(file_created) as created,UNIX_TIMESTAMP(file_modified) as modified,UNIX_TIMESTAMP(file_accessed) as accessed,replicas FROM "+config.database['file_table']+" WHERE filename = '"+query.escape_string(path)+"' LIMIT 1")
                 if query.rowcount == 1:
                     for row in query.record:
-                        print str(row)
-                        self.row_cache[path] = row
+                        self.row_cache.put(path,row)
                     
-            if path in self.row_cache:
-                replicas = string.split(self.row_cache[path]['replicas'], ',')
+            if self.row_cache.has_key(path):
+                replicas = string.split(self.row_cache.get(path)['replicas'], ',')
                 for short,mount in mounts.items():
                     if short not in replicas:
                         del mounts[short] 
@@ -171,8 +175,8 @@ class GeoGridFS(Fuse):
 
     def getFolderId(self, path, create = True):
         
-        if path in self.folder_cache:
-            return self.folder_cache[path]
+        if self.folder_cache.has_key(path):
+            return self.folder_cache.get(path)
         
         try:
             query = PySQLPool.getNewQuery(self.connection)
@@ -186,7 +190,7 @@ class GeoGridFS(Fuse):
                 for row in query.record:
                     folder_id = row['folder_id']
             
-            self.folder_cache[path] = folder_id
+            self.folder_cache.put(path,folder_id)
             return folder_id
         
         except MySQLdb.Error, e:
@@ -210,25 +214,20 @@ class GeoGridFS(Fuse):
 #############################################################################
 
     def getattr(self, path):
-        ##todo use metedata server if can?
-        print "**************************************"
-        print "START "+path
-        if path in self.row_cache:
+        # use metedata server if can
+        if self.row_cache.has_key(path):
             st = MyStat()
-            print str(self.row_cache[path])
+            cache = self.row_cache.get(path)
             
-            st.st_atime = int(self.row_cache[path]['accessed'])
-            st.st_mtime = int(self.row_cache[path]['modified'])
-            st.st_ctime = int(self.row_cache[path]['created'])
+            st.st_atime = int(cache['accessed'])
+            st.st_mtime = int(cache['modified'])
+            st.st_ctime = int(cache['created'])
             st.st_mode = stat.S_IFREG | 0666
             st.st_nlink = 1
-            st.st_size = int(self.row_cache[path]['size'])
+            st.st_size = int(cache['size'])
             return st
         
-        print "ORDERED"
-        print
         for mount in self.getOrderedMounts(path):
-            print "TRYING "+mount
             try:
                 result = os.lstat(mount + path)
                 return result
@@ -316,8 +315,8 @@ class GeoGridFS(Fuse):
                     #todo - need to invalidate any relevent rows in row_cache!
 
                     #clear getFolderId's cache for old_folder_id!
-                    if path in self.folder_cache:
-                        del self.folder_cache[path]
+                    if self.folder_cache.has_key(path):
+                        self.folder_cache.erase(path)
 
                 #todo, should ALSO check [[ FROM file WHERE filename LIKE '"+query.escape_string(path)+"/%' ]] 
                 # NOT easy to do, as needs to also set folder_id, 
@@ -332,8 +331,8 @@ class GeoGridFS(Fuse):
                         "SET folder_id = "+str(new_folder_id)+", filename = '"+query.escape_string(path1)+"' "+ \
                         "WHERE filename = '"+query.escape_string(path)+"'")
                         
-                if path in self.row_cache:
-                    del self.row_cache[path]
+                if self.row_cache.has_key(path):
+                    self.row_cache.erase(path)
 
         except MySQLdb.Error, e:
             if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
@@ -506,8 +505,8 @@ class GeoGridFS(Fuse):
                     #todo, if this file isnt in metadata, and we can (now) connect, should add it anyway. 
                     return
 
-                if self.path in self.server.row_cache:
-                    del self.server.row_cache[self.path]
+                if self.server.row_cache.has_key(self.path):
+                    self.server.row_cache.erase(self.path)
 
                 try:
                     stat = os.stat(self.mount + self.path)
