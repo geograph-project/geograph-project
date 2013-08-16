@@ -83,7 +83,7 @@ class GeoGridFS(Fuse):
         Fuse.__init__(self, *args, **kw)
         
         #see https://code.google.com/p/mpycache/
-        self.row_cache = LRUCache(1000, 3000, 300)
+        self.row_cache = LRUCache(1000, 30000, 300)
         self.folder_cache = LRUCache(1000, 30000, 300)
         
         # do stuff to set up your filesystem here, if you want
