@@ -31,7 +31,7 @@ patterns = [
 	('detail.png',    r'/detail_[\w\.-]+\.png$', 1, 0),
 	('detail.jpg',    r'/detail_[\w\.-]+\.jpg$', 1, 0),
 	('base.png',      r'/base_[\w\.-]+\.png$',   2, 0),
-	('thumb.gd',      r'_\d+x\d+\.gd$',          2, 0),
+	('thumb.gd',      r'_\d+x\d+\.gd$',          1, 0),
 	('preview.jpg',   r'_preview\.jpg$',         2, 0),
 	('pending.jpg',   r'_pending\.jpg$',         3, 0),
 	('tile.png',      r'/\d+-\d+\.png$',         2, 0),

@@ -184,8 +184,7 @@ def replicate_now(path = ''):
     
     print "idx = "+str(idx)
     
-    #c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND replica_count < replica_target ORDER BY folder_id LIMIT 10")
-    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND replica_active = 1 ORDER BY folder_id LIMIT 50")
+    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND replica_count < replica_target ORDER BY folder_id LIMIT 100")
 
     while True:
         row = c.fetchone()

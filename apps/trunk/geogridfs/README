@@ -122,3 +122,54 @@ Geograph GridFS Implementation
 
 	Coming soon... 
 
+
+
+
+==========================
+
+Common errors
+
+------------
+> ImportError: No module named fuse
+
+sudo apt-get install python-fuse
+
+
+------------
+> ImportError: No module named PySQLPool
+
+wget https://pysqlpool.googlecode.com/files/PySQLPool-0.3.7.tar.gz
+tar -xzf PySQLPool-0.3.7.tar.gz
+cd PySQLPool-0.3.7
+python setup.py install
+
+
+------------
+> ImportError: No module named mpycache
+
+svn update
+
+(the module is included via svn:externals)
+
+
+------------
+> AttributeError: 'module' object has no attribute 'OrderedDict'
+
+#find `mounts = collections.OrderedDict()` and replace with `mounts = dict()`
+
+(Not ideal, but best idea for now)
+
+------------
+> fuse: bad mount point `/mnt/combined': No such file or directory
+
+mkdir /mnt/combined
+chown www-data:www-data /mnt/combined
+
+------------
+> fusermount: option allow_other only allowed if 'user_allow_other' is set in /etc/fuse.conf
+
+#edit /etc/fuse.conf and uncomment the user_allow_other line!
+chmod a+r /etc/fuse.conf
+
+
+
