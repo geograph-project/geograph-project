@@ -37,7 +37,6 @@ import PySQLPool   #https://code.google.com/p/pysqlpool/wiki/Installing
 import hashlib
 import re
 import string
-import collections
 import threading
 from mpycache import LRUCache;
 
@@ -120,28 +119,28 @@ class GeoGridFS(Fuse):
         return config.mounts['milk']
 
     def getOrderedMounts(self, path='/'):
-        mounts = collections.OrderedDict()
+        scores = dict()
         
         # this mostly replicates how files are distributed amongst servers currently, so reads should find them in their ideal location most of the time. 
         if 'photos/' in path:
             if '_original' in path:
-                mounts['jam'] = config.mounts['jam']
-                mounts['cream'] = config.mounts['cream']
+                scores['jam'] = 3
+                scores['cream'] = 2
             elif 'photos/03/' in path:
-                mounts['cream'] = config.mounts['cream']
-                mounts['jam'] = config.mounts['jam']
+                scores['cream'] = 3
+                scores['jam'] = 2
             elif (random.random() < 0.7):
                 #because we know it has a complete copy, might as well as let jam take some strain
-                mounts['jam'] = config.mounts['jam']
-                mounts['cream'] = config.mounts['cream']
+                scores['jam'] = 3
+                scores['cream'] = 2
             else:
-                mounts['cream'] = config.mounts['cream']
-                mounts['jam'] = config.mounts['jam']
-            mounts['milk'] = config.mounts['milk']
+                scores['cream'] = 3
+                scores['jam'] = 2
+            scores['milk'] = 1
         else:
-            mounts['milk'] = config.mounts['milk']
-            mounts['jam'] = config.mounts['jam']
-            mounts['cream'] = config.mounts['cream']
+            scores['milk'] = 3
+            scores['jam'] = 2
+            scores['cream'] = 1
         
         #if have metadata record, use it to promote mounts with actual replicas
         try:
@@ -153,20 +152,18 @@ class GeoGridFS(Fuse):
                         self.row_cache.put(path,row)
                     
             if self.row_cache.has_key(path):
-                replicas = string.split(self.row_cache.get(path)['replicas'], ',')
-                for short,mount in mounts.items():
-                    if short not in replicas:
-                        del mounts[short] 
-                        mounts[short] = config.mounts[short]
-
-                #todo, loop though relicas, add add any missing
+                for replica in string.split(self.row_cache.get(path)['replicas'], ','):
+                    scores[replica] = 100+scores.get(replica,1)
             
         except MySQLdb.Error, e:
             if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                 print "Error %d: %s" % (e.args[0], e.args[1])
                 sys.exit(1)
         
-        return mounts.values()
+        mounts = []
+        for result in sorted(scores, key=scores.get, reverse=True):
+            mounts.append(config.mounts[result])
+        return mounts
 
     def getServerFromMount(self, mount):
         for (key,value) in config.mounts.iteritems():
