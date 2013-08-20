@@ -562,6 +562,8 @@ class GeoGridFS(Fuse):
                 
 
                 except MySQLdb.Error, e:
+                    #todo could add the filename to a log file, so when metadata is available again, it can be replayed? 
+                    
                     if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                         print "Error %d: %s" % (e.args[0], e.args[1])
                         sys.exit(1)
