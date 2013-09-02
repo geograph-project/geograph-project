@@ -72,7 +72,7 @@ jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js',fu
 
 {else}
 <div class="interestBox" style="width:200px;float:right">
-	Unfortunatly this search is not compatible with the tag browser right now. It works best with plain keyword searches.
+	Unfortunately this search is not compatible with the tag browser right now. It works best with plain keyword searches.
 </div>
 {/if}
 

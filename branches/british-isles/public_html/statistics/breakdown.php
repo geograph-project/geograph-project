@@ -166,7 +166,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		
 		if (!empty($sql_where)) {
-			$sql_where = "AND $sql_where";
+			$sql_where = "AND ($sql_where)";
 			$engine->islimited = true;
 		}
 		
@@ -221,12 +221,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($by == 'class' && $sql_where == '' && $sql_crit == '' && $sql_from == '') {
 $sql = "select $sql_fieldname as field,c 
 from category_stat 
-$mysql_order";	
+$mysql_order
+limit 5000";	
 		$cacheseconds = 3600*6;
 	} elseif ($by == 'user' && $sql_where == '' && $sql_crit == '' && $sql_from == '') {
 $sql = "select $sql_fieldname as field, images as c, user_id
 from user_stat inner join user using (user_id) 
-$mysql_order";	
+$mysql_order
+limit 5000";	
 		$cacheseconds = 600;
 	} else {
 $sql = "select 
@@ -236,7 +238,8 @@ from gridimage_search as gi $sql_from
 where 1 $sql_where
  $sql_crit
 group by $sql_group 
-$mysql_order";
+$mysql_order
+limit 5000";
 		$cacheseconds = 3600*12;
 	}
 	if ($_GET['debug'])
@@ -313,4 +316,3 @@ $mysql_order";
 $smarty->display($template, $cacheid);
 
 	
-?>

@@ -36,10 +36,16 @@
 
 	<h3>{$h2title}</h3>
 	{if $total > 0}
-	<p><small>Click a column header to change the sort order.
+	<p><small>Click a column header to change the sort order. ( NOTE: Only sorts results shown on screen - not all results. )
 	{if $linkpro || $linkprefix}
 		Click a {$title} to run a search for just images within that {$title}.
 	{/if}</small></p>
+
+        {if $breakdown_count == 5000}
+                <div class="interestBox">
+                        NOTE: This page only displays the first 5,000 items. There may be more. Unfortunately we don't have a easy way to access them at the moment.
+                </div>
+        {/if}
 
 	<table class="report sortable" id="reportlist">
 	<thead><tr>
