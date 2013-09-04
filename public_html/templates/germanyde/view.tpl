@@ -45,11 +45,7 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
         {if $image->original_width || $user->user_id eq $image->user_id || $notes || $user->registered}
 	<div class="caption640" style="text-align:right;">
 	{if $notes}
-		{if $user->registered}
-		Mauszeiger über Bild bewegen um <a href="/geonotes.php?id={$image->gridimage_id}">Beschriftungen</a> zu zeigen
-		{else}
-		Mauszeiger über Bild bewegen um Beschriftungen zu zeigen
-		{/if}
+		Mauszeiger über Bild bewegen um <a href="/geonotes.php?id={$image->gridimage_id}&amp;size=original">Beschriftungen</a> zu zeigen
 	{elseif $user->registered}
 		<a href="/geonotes.php?id={$image->gridimage_id}">Bild beschriften</a>
 	{/if}

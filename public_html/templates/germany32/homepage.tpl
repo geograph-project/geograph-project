@@ -11,17 +11,7 @@
 The Geograph project aims to collect geographically representative photographs and information for every square kilometre of Germany.
 We use <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system">MGRS coordinates</a> (<a href="http://upload.wikimedia.org/wikipedia/commons/1/19/Utmzonenugitterp.png">grid in Germany</a>) in UTM zones 31, 32, and 33.
 </p>
-<p>
-The project uses code, which is kindly provided by the maintainers of the <a href="http://www.geograph.org.uk">British Geograph project</a>.
-More information about using the code can be found in the <a href="/howto/">HOWTO</a> and in the <a href="/code/">code area</a>. Please note that the project
-is still at a very early stage, so many pages are not yet translated or even not available at all.
-</p>
-<p>
-Although the implementation is still incomplete, your contribution to the project is welcome. Feedback is possible via our
-<a href="/contact.php">contact form</a> or <a href="mailto:geo@hlipp.de">mail</a>.
-</p>
 </div>
-
 
 <div style="width:35%;float:left;position:relative;margin-right:10px">
 {if $overview2}
@@ -59,11 +49,15 @@ Although the implementation is still incomplete, your contribution to the projec
 
 </div>
 
-<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;">
+<div style="width:{$potd_width}px;float:left;padding-right:5px;position:relative;text-align:center;">
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
+	{if $pictureoftheday.search||$searchpopular}
+	<div style="float:right"><small>[{if $pictureoftheday.search}<a href="/results/{$pictureoftheday.search}">more</a>{if $searchpopular}|{/if}{/if}{if $searchpopular}<a href="/results/{$searchpopular}">popular</a>{/if}]</small>
+	</div>
+	{/if}
 
-	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day{if $pictureoftheday.search} <small>[<a href="/results/{$pictureoftheday.search}">more...</a>]</small>{/if}</h3>
+	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
 	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail($potd_width,$potd_height)}</a><br/>
 
@@ -156,4 +150,16 @@ and <a href="http://www.geograph.org.uk/article/Ways-to-view-Geograph-Images">ev
 &nbsp;
 
 </div>
+<div style="background-color:#eeeeee;padding:2px; text-align:justify">
+<p>
+The project uses code, which is kindly provided by the maintainers of the <a href="http://www.geograph.org.uk">British Geograph project</a>.
+More information about using the code can be found in the <a href="/howto/">HOWTO</a> and in the <a href="/code/">code area</a>. Please note that the project
+is still at a very early stage, so many pages are not yet translated or even not available at all.
+</p>
+<p>
+Although the implementation is still incomplete, your contribution to the project is welcome. Feedback is possible via our
+<a href="/contact.php">contact form</a> or <a href="mailto:geo@hlipp.de">mail</a>.
+</p>
+</div>
+
 {include file="_std_end.tpl"}

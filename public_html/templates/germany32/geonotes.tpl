@@ -7,7 +7,6 @@
 * use a.getAttribute('b') etc. instead of a.b?
 * compatibility checks (test if _all_ needed functions are available early, i.e. in init routine)
 * "reset" button?
-* geonote.php: reverse order of notes (latest note = first)?
 * dark text on lighter background?
 * css -> geonotes.css?
 * if $ticket:
@@ -51,7 +50,7 @@
     {/foreach}
     {foreach item=note from=$notes}
     <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p>
-    {if !$ticket}
+    {if !$ticket && !$readonly}
     <hr /><input id="note_t_edit_{$note->note_id}" type="button" value="edit" onclick="return editNote('{$note->note_id}');"><input id="note_t_delete_{$note->note_id}" type="button" value="delete" onclick="return deleteNote('{$note->note_id}');">
     {/if}
     </div>
@@ -744,14 +743,13 @@ function setImgSize(large) {
 		form.appendChild(formp);
 
 		var forms = document.getElementById('noteforms');
-		var addbutton = document.getElementById('addbutton');
-		forms.appendChild(head);
-		forms.appendChild(form);
+		forms.insertBefore(form, forms.firstChild);
+		forms.insertBefore(head, form);
 
 		statusChanged(noteid, true);
 
-		if (form.scrollIntoView) {
-			form.scrollIntoView(true);
+		if (head.scrollIntoView) {
+			head.scrollIntoView(true);
 		}
 		startEdit(noteid);
 	}
@@ -994,6 +992,13 @@ function setImgSize(large) {
 		}
 		AttachEvent(document, "mousemove", dragBox);
 		AttachEvent(document, "mouseup", stopDrag);
+{/literal}
+{if $iniorigsize}
+{literal}
+		setImgSize(true);
+{/literal}
+{/if}
+{literal}
 	}
 	AttachEvent(window,"load",initNoteEdit);
 {/literal}
@@ -1013,11 +1018,12 @@ ie7 = true;
 {if $showorig}
 		<label for="imgsize">Image size:</label>
 		<select name="imgsize" id="imgsize" onchange="setImgSize(this.options[this.selectedIndex].value=='original');">
-			<option value="default" selected="selected">{$std_width}x{$std_height} (default)</option>
-			<option value="original">{$original_width}x{$original_height}</option>
+			<option value="default"{if !$iniorigsize} selected="selected"{/if}>{$std_width}x{$std_height} (default)</option>
+			<option value="original"{if $iniorigsize} selected="selected"{/if}>{$original_width}x{$original_height}</option>
 		</select> |
 {/if}
 		<input id="toggletexts" type="button" value="Show description" onclick="toggleTexts('Hide description','Show description');" /> |
+{if !$readonly}
 		{if $ticket}
 		<input id="toggleclassold" type="button" value="Hide old" onclick="toggleBoxes('old', 'Hide old', 'Show old');" /> |
 		<input id="toggleclassnew" type="button" value="Hide new" onclick="toggleBoxes('new', 'Hide new', 'Show new');" /> |
@@ -1032,11 +1038,13 @@ ie7 = true;
 {/if}
 		<input type="button" value="Save all" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
 		{/if}
+{/if}
 		<a href="/photo/{$image->gridimage_id}" target="_blank">Open photo page in new window.</a>
 		<span id="statusline" style="padding-left:2em;white-space:nowrap">JavaScript required</span>
 	</p>
 	</form>
 </div>
+{if !$readonly}
 <div id="noteforms" class="noteforms">
 {if $ticket}
 	<table>
@@ -1089,6 +1097,7 @@ ie7 = true;
     {/foreach}
 {/if}
 </div>
+{/if}
 {else}
 <h2>Sorry, image not available</h2>
 <p>The image you requested is not available. This maybe due to software error, or possibly because

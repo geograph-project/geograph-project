@@ -44,11 +44,7 @@
         {if $image->original_width || $user->user_id eq $image->user_id || $notes || $user->registered}
 	<div class="caption640" style="text-align:right;">
 	{if $notes}
-		{if $user->registered}
-		Move the mouse pointer over the image to display <a href="/geonotes.php?id={$image->gridimage_id}">image annotations</a>
-		{else}
-		Move the mouse pointer over the image to display image annotations
-		{/if}
+		Move the mouse pointer over the image to display <a href="/geonotes.php?id={$image->gridimage_id}&amp;size=original">image annotations</a>
 	{elseif $user->registered}
 		<a href="/geonotes.php?id={$image->gridimage_id}">Create image annotations</a>
 	{/if}

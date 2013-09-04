@@ -85,9 +85,10 @@ a.hidelink {
 	position:absolute;
 	top:4px;
 	right:0.4em;
-	width:30em;
+	width:29em;
 	background:#000066;
 	text-align:right;
+	font-size: 0.9em;
 }
 
 #search
