@@ -34,6 +34,7 @@
 	{if $hasregions}
 	<li><a href="/statistics/regions.php">Regional statistics</a>{if $regionlistlevel > -1} (<a href="/statistics/regions.php?level={$regionlistlevel}">large list</a>){/if}</li>
 	{/if}
+	<li>Positively rated images: <a href="/results/180491">popular images</a>, <a href="/results/180495">popular locations</a>, <a href="/results/180493">image quality</a>, <a href="/results/180494">geographical information</a></li>
 </ul>
 <h3>Breakdowns...</h3>
 <ul class="explore">

@@ -53,6 +53,7 @@ class UploadManager
 	var $switchxy = false;
 
 	var $rawExifData = false;
+	var $strExifData = false;
 
 	/**
 	* Constructor
@@ -558,12 +559,12 @@ class UploadManager
 			$this->trySetDateFromExif($exif);
 			$this->rawExifData = $exif;
 			$this->setOrientation($exif);
-			$strExif=serialize($exif);
+			$this->strExifData = serialize($exif);
 			$exif =  $this->_pendingEXIF($upload_id);
 			$f=fopen($exif, 'w');
 			if ($f)
 			{
-				fwrite($f, $strExif);
+				fwrite($f, $this->strExifData);
 				fclose($f);
 			}
 		}
@@ -781,12 +782,13 @@ class UploadManager
 		{
 			$exif = fread ($f, filesize($exiffile)); 
 			fclose($f);
-			$strExif=unserialize($exif);
-			if ($strExif!==false)
+			$rawExif=unserialize($exif);
+			if ($rawExif!==false)
 			{
-				$this->trySetDateFromExif($strExif);
-				$this->rawExifData = $strExif;
-				$this->setOrientation($strExif);
+				$this->trySetDateFromExif($rawExif);
+				$this->rawExifData = $rawExif;
+				$this->strExifData = $exif;
+				$this->setOrientation($rawExif);
 			}
 		}
 	}
@@ -877,7 +879,7 @@ class UploadManager
 		//save the exif
 		$sql=sprintf("insert into gridimage_exif (".
 			"gridimage_id,exif) values ".
-			"(%d,%s)",$gridimage_id,$this->db->Quote($exif));
+			"(%d,%s)",$gridimage_id,$this->db->Quote($this->strExifData));
 		$this->db->Query($sql);
 		
 		//copy image to correct area

@@ -482,6 +482,7 @@ $CONF['searchid_recent'] = 0;
 $CONF['searchid_potd'] = 0;
 $CONF['searchid_historical'] = 0;
 $CONF['searchid_current'] = 0;
+$CONF['searchid_popular'] = 0;
 
 ###################################
 
@@ -520,7 +521,6 @@ $CONF['picnik_method'] = 'inabox'; //'inabox'|'redirect'
 
 $REVISIONS = array(
 #	"/templates/basic/css/basic.css"     => "0001",
-#	"/slideshow.js"                      => "0001",
 #	"/js/geonotes.js"                    => "0001",
 );
 

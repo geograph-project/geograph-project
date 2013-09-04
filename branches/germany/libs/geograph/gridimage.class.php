@@ -641,11 +641,12 @@ class GridImage
 	* get a list of annotations for this image
 	* see comment in $note->applyTickets() for details on $ticketowner, $ticketid, $oldvalues
 	* $aStatus: array containing any allowed current note status
+	* $orderdesc: sort order (by note id)
 	* $noteids: list of note ids (or null for all notes)
 	* $exclude: list of note ids to exclude
 	* $aStatusTickets: array containing any allowed note status after applying the tickets (default: $aStatus)
 	*/
-	function& getNotes($aStatus, $ticketowner=null, $ticketid=null, $oldvalues=false, $noteids = null, $exclude = null, $aStatusTickets = null)
+	function& getNotes($aStatus, $orderdesc = false, $ticketowner = null, $ticketid = null, $oldvalues = false, $noteids = null, $exclude = null, $aStatusTickets = null)
 	{
 		if (!is_array($aStatus))
 			die("GridImage::getNotes expects array param");
@@ -667,7 +668,8 @@ class GridImage
 			$listwhere .= " and not note_id in ('" . implode("','", $exclude) . "')";
 		}
 		$recordSet = &$db->Execute("select * from gridimage_notes ".
-			"where gridimage_id={$this->gridimage_id}{$listwhere} and status in ($statuses) order by note_id asc");
+			"where gridimage_id={$this->gridimage_id}{$listwhere} and status in ($statuses) order by note_id ".
+			( $orderdesc ? "desc" : "asc"));
 		while (!$recordSet->EOF) {
 			$n=new GridImageNote;
 			$n->loadFromRecordset($recordSet);

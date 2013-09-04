@@ -14,10 +14,16 @@ Disallow: /
 User-agent: netEstate NE Crawler
 Disallow: /
 
+User-agent: BLEXBot
+Disallow: /
+
 User-agent: GSLFbot
 Disallow: /
 
 User-agent: Fasterfox
+Disallow: /
+
+User-agent: Ezooms
 Disallow: /
 
 #User-agent: Pixray-Seeker
@@ -38,11 +44,22 @@ User-agent: WBSearchBot
 Disallow: /
 #Does not respect Crawl-delay
 
+User-agent: BacklinkCrawler
+Disallow: /
+
+User-agent: magpie-crawler
+Disallow: /
+
 #User-agent: Baiduspider
 #Disallow: /
 
 User-agent: Browsershots
 Disallow:
+
+# Same content for mobile devices
+User-agent: Googlebot-Mobile
+Disallow: /
+Allow: /$
 
 User-Agent: Googlebot
 Crawl-delay: 25

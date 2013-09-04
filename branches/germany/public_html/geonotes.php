@@ -291,15 +291,23 @@ if (isset($_POST['commit'])) {
 	exit;
 }
 
-$USER->mustHavePerm("basic"); // FIXME remove? not registered users should at least have $showorig = false?
-
 $uid = 0;
 $ticketid = 0;
+$iniorigsize = 0;
 if (isset($_GET['ticket'])) {
 	$ticketid = intval($_GET['ticket']);
 } elseif (isset($_GET['u'])) { /* ignored when there's a ticket parameter */
 	$uid = intval($_GET['u']);
 }
+if (isset($_GET['size']) && $_GET['size'] == 'original') {
+	$iniorigsize = 1;
+}
+
+if ($uid || $ticketid ) {
+	$USER->mustHavePerm("basic");
+}
+
+$readonly = $USER->hasPerm("basic") ? 0 : 1;
 
 $smarty = new GeographPage;
 
@@ -354,7 +362,7 @@ if ($image->isValid()) {
 	$ab=floor($id/10000);
 
 	// cache id must depend on user as we also display pending changes made by the user...
-	$cacheid="img$ab|{$id}|notes|{$USER->user_id}_{$isowner}_{$ismoderator}_{$ticketid}_{$uid}"; # FIXME is caching still sensible?
+	$cacheid="img$ab|{$id}|notes|{$USER->user_id}_{$isowner}_{$ismoderator}_{$ticketid}_{$uid}_{$iniorigsize}_{$isloggedin}_{$readonly}"; # FIXME is caching still sensible?
 
 
 	#//what style should we use?
@@ -383,14 +391,14 @@ if ($image->isValid()) {
 			}
 			# test length of $affectednotes? currently only 1 possible...
 
-			$notes =    $image->getNotes($selection, $uid /*FIXME or null?*/, $ticketid, false, null, $affectednotes, array('visible'));
-			$oldnotes = $image->getNotes($anystatus, $uid,                    $ticketid, true,  $affectednotes);
-			$newnotes = $image->getNotes($anystatus, $uid,                    $ticketid, false, $affectednotes);
+			$notes =    $image->getNotes($selection, true, $uid /*FIXME or null?*/, $ticketid, false, null, $affectednotes, array('visible'));
+			$oldnotes = $image->getNotes($anystatus, true, $uid,                    $ticketid, true,  $affectednotes);
+			$newnotes = $image->getNotes($anystatus, true, $uid,                    $ticketid, false, $affectednotes);
 			$smarty->assign_by_ref("oldnotes",$oldnotes);
 			$smarty->assign_by_ref("newnotes",$newnotes);
 			$smarty->assign_by_ref("ticket",$ticket);
 		} else {
-			$notes = $image->getNotes($selection, $uid);
+			$notes = $image->getNotes($selection, true, $uid);
 		}
 		$smarty->assign_by_ref("notes",$notes);
 
@@ -413,6 +421,8 @@ if ($image->isValid()) {
 		$smarty->assign('img_url', $image->_getFullpath());
 		$smarty->assign('showorig', $showorig);
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
+		$smarty->assign('iniorigsize', $iniorigsize && $showorig);
+		$smarty->assign('readonly', $readonly);
 
 		//remove grid reference from title
 		$image->bigtitle=trim(preg_replace("/^{$image->grid_reference}/", '', $image->title));
