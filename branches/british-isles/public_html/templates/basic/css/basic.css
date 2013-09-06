@@ -1290,13 +1290,8 @@ input.imageselect {
 	border:1px solid silver;
 	padding:1px;
 	line-height:1.8em;
-	color:brown;
 	background-color:white;
-	text-decoration:none;
 	white-space:nowrap;
-}
-a.taglink:hover {
-	text-decoration:underline;
 }
 .tag a.delete {
 	color:red;
