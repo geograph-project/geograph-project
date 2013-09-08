@@ -53,7 +53,7 @@ if(sizeof($lPosts)>0) $xtr=getClForums($lPosts,'where','','post_id','or','='); e
 if($row=db_simpleSelect(0, $Tp, 'poster_id, poster_name, post_time, topic_id')) do $pVals[$row[3]]=array($row[0],$row[1],$row[2]); while($row=db_simpleSelect(1));
 unset($xtr);
 
-if($cols=db_simpleSelect(0,"$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})",'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, topic_status, posts_count, sticky, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id','=',$forum,$orderBy,$makeLim)) {
+if($cols=db_simpleSelect(0,"$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})",'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, topic_status, posts_count, sticky, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id, muted','forum_id','=',$forum,$orderBy,$makeLim)) {
 
 $i=1;
 $tpl=makeUp('main_topics_cell');
@@ -67,7 +67,8 @@ $topic_views=$cols[8];
 if(isset($themeDesc) and in_array($topic,$themeDesc)) $topic_reverse="<img src=\"{$static_url}/img/topic_reverse.gif\" align=middle border=0 alt=\"\">&nbsp;";
 
 if ($cols[9]) {
-	$topic_reverse = "<a href=\"{$indexphp}action=vpost&amp;forum={$forum}&amp;topic={$topic}&amp;post={$cols[10]}\"><img src=\"{$static_url}/img/topic_updated.gif\" align=middle border=0 alt=\"Updated Since Last Visit\" height=\"10\" width=\"10\"></a>&nbsp;";
+	$dot = ($cols[11])?'topic_muted.gif':'topic_updated.gif';
+	$topic_reverse = "<a href=\"{$indexphp}action=vpost&amp;forum={$forum}&amp;topic={$topic}&amp;post={$cols[10]}\"><img src=\"{$static_url}/img/$dot\" align=middle border=0 alt=\"Updated Since Last Visit\" height=\"10\" width=\"10\"></a>&nbsp;";
 } elseif (is_null($cols[9])) {
 	$topic_reverse = "<img src=\"{$static_url}/img/topic_new.gif\" align=middle border=0 alt=\"New Since Last Visit\" height=\"6\" width=\"10\">&nbsp;";
 }   
