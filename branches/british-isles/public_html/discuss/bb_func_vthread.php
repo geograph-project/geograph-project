@@ -4,7 +4,7 @@ This file is part of miniBB. miniBB is free discussion forums/message board soft
 */
 if (!defined('INCLUDED776')) die ('Fatal error.');
 
-$listPosts=''; $deleteTopic='';
+$listPosts=''; $deleteTopic=''; $muteTopic='';
 
 /*** CHECK ***/
 if($topicData and $topicData[4]==$forum){
@@ -190,7 +190,7 @@ if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterTe
 	global $memcache;
 	$mkey = $cols[6].$_SERVER['HTTP_HOST'].((!empty($_GET['l']))?'y':'');
 	//fails quickly if not using memcached!
-	if ($memtext =& $memcache->name_get('fp',$mkey)) {
+	if (empty($_GET['refresh']) && $memtext =& $memcache->name_get('fp',$mkey)) {
 		$posterText = $memtext;
 	} elseif (empty($CONF['disable_discuss_thumbs'])) {
 		$thumb_count = 0;
@@ -281,7 +281,7 @@ if (empty($CONF['disable_discuss_thumbs'])) {
 	$posterText = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$posterText,5);
 }
 
-$posterText = preg_replace('/\[([\w :-]+)\]/e',"replace_tags('$1')",$posterText);
+##$posterText = preg_replace('/\[([\w :-]+)\]([^>]*)(<(?!\/a>)|$)/e',"replace_tags('$1').'$2$3'",$posterText);
 
 
 //no external images
@@ -312,6 +312,7 @@ $domainWhitelist = array(
 	'www.pledgebank.com',
 	'media.geograph.org.uk',
 	'www.google.com',
+	'imgs.xkcd.com',
 	'chart.apis.google.com',
 	'geodatastore2.appspot.com',
 	'wordle.net',
@@ -326,6 +327,12 @@ $posterText=preg_replace_callback(
 	             '$matches',
 	             $fixExternalImages),
              $posterText);
+
+
+##<img src="http://media.geograph.org.uk/files/33e75ff09dd601bbe69f351039152189/toptags_overview.png" border="0" align="" alt="">
+if ($topic == 14539) {
+	$posterText=preg_replace('/<img src="(http:\/\/media\.geograph\.org\.uk\/[^"]+)" ([^>]+)>/','<a href="$1" target="_blank"><img src="$1" $2 width="690"></a>',$posterText);
+}
              
 
 $listPosts.=ParseTpl($tpl);
@@ -367,16 +374,33 @@ if (file_exists("templates/main_post_area_{$forum}.html")) {
 	$templatename = "main_post_area_{$forum}";
 } else {
 	$templatename = "main_post_area";
-} 
+}
 $mainPostArea=makeUp($templatename);
 $nTop=1;
 }
 }
 else {
+if ($topic != 12804)
+$emailCheckBox=str_replace('or Subscribe without posting','Subscribe to updates',preg_replace('/<input.*<\/label>/','',emailCheckBox()));
 $mainPostArea=makeUp('main_post_closed');
 $listPosts=str_replace('getQuotation();','',$listPosts);
 }
 $mainPostArea=ParseTpl($mainPostArea);
+
+#############
+
+$result = mysql_query("SELECT muted FROM geobb_lastviewed WHERE user_id=$user_id AND topic_id = $topic") or print("<br>Error getOne [[ $query ]] : ".mysql_error());
+if (mysql_num_rows($result)) {
+	if (mysql_result($result,0,0)) {
+		//muted, so need to be able to unmute!
+		$muteTopic = "$l_sepr <a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=0\">Unmute Topic</a>";
+	} else {
+		//link to mute the thread;
+		$muteTopic = "$l_sepr <a href=\"{$main_url}/{$indexphp}action=mute&amp;forum=$forum&amp;topic=$topic&amp;mute=1\">Mute Topic</a>";
+	}
+}
+
+#############
 
 if ($logged_admin==1 or $isMod==1) {
 
@@ -386,7 +410,7 @@ $moveTopic="$l_sepr <a href=\"{$main_url}/{$indexphp}action=movetopic&amp;forum=
 
 if ($topicStatus==0) { $chstat=1; $cT=$l_closeTopic; }
 else { $chstat=0; $cT=$l_unlockTopic; }
-$closeTopic="<a href=\"{$main_url}/{$indexphp}action=locktopic&amp;forum=$forum&amp;topic=$topic&amp;chstat=$chstat\">$cT</a>";
+$closeTopic="$l_sepr <a href=\"{$main_url}/{$indexphp}action=locktopic&amp;forum=$forum&amp;topic=$topic&amp;chstat=$chstat\">$cT</a>";
 
 if ($topicSticky==0) { $chstat=1; $cT=$l_makeSticky; }
 else { $chstat=0; $cT=$l_makeUnsticky; }

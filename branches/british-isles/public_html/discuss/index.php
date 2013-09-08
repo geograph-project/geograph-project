@@ -319,7 +319,14 @@ elseif($action=='vpost') { $pageAnchor=db_searchDeSlice(false,intval($_GET['post
 
 elseif($action=='search') {if($reqTxt!=1)require($pathToFiles.'bb_func_txt.php');require($pathToFiles.'bb_func_search.php');}
 
-elseif($action=='wait') {
+elseif($action=='mute') {
+	$mute = intval($_GET['mute']);
+	mysql_query("UPDATE geobb_lastviewed SET muted = $mute,ts=ts WHERE user_id = $user_id AND topic_id = $topic");
+
+	header("Location: {$main_url}/");
+	exit;
+
+} elseif($action=='wait') {
 	if ($user_sort==1) $orderBy='topic_id DESC'; else $orderBy='topic_last_post_id DESC';
 
 	$showIds = $USER->getForumOption('show','',false);
@@ -331,6 +338,7 @@ elseif($action=='wait') {
 		$filterCrit = " IN ";
 		$filterIds = "($showIds)";
 	}
+	print '<link rel="apple-touch-icon" href="http://www.geograph.org.uk/apple-touch-icon.png"/>';
 
 	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id',$filterCrit,$filterIds,$orderBy,1)){
 		if ($cols[9]) {
@@ -468,7 +476,7 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 				$checked = ((empty($showIds) && $forum != 5) || in_array($forum,$showIds))?' checked':'';
 				
 				print "<input type=checkbox name=\"show[]\" value=\"$forum\" title=\"{$forum_title}\" $checked onclick=\"document.getElementById('updatebutton').style.display='';\">";
-				print "<a href=\"index.php?&action=vtopic&amp;forum={$forum}\">";
+				print "<a href=\"index.php?action=vtopic&amp;forum={$forum}\">";
 				print "<img src=\"{$static_url}/img/forum_icons/{$forum_icon}\" width=16 height=16 border=0 alt=\"{$forum_title}\" title=\"{$forum_title}\"/>";
 				print "</a>&nbsp;";
 
@@ -488,6 +496,24 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 		if ($_GET['latest'] > 40)
 			$save = false;
 	}
+
+	if ($USER->user_id == 3 || $USER->user_id==93) { // && $GLOBALS['memcache']->valid) {
+		$result=mysql_query("select max(poster_id) from geobb_posts");
+		$poster_id = mysql_result($result,0);
+		$mkey = "forum_first_post:".$USER->user_id;
+		$last_id = $GLOBALS['memcache']->get($mkey);
+		if ($last_id != $poster_id) {
+			$result = mysql_query("SELECT * FROM geobb_posts WHERE poster_id = $poster_id");
+			print "<h4>New Poster!</h4><ul>";
+			while($row = mysql_fetch_assoc($result)) {
+				print "<li><a href=\"?action=vpost&topic={$row['topic_id']}&forum={$row['forum_id']}&post={$row['post_id']}\">".htmlentities($row['poster_name'])."</a> : ".htmlentities($row['post_text'])."</li>";
+			}
+			print "</ul><p><a href=\"/admin/latestposts.php\">All Latest Users</a></p>";
+			$GLOBALS['memcache']->set($mkey, $poster_id, false, 3600*24*7);
+		}
+
+	}
+
 	$viewlastdiscussions = $USER->getForumOption('latest',$viewlastdiscussions,$save);
 	if ($viewlastdiscussions!=0) {
 		require($pathToFiles.'bb_func_ldisc.php');
@@ -527,7 +553,9 @@ if ($USER->hasPerm("basic")) {
 	$user_login = ParseTpl(makeUp('main_footer_login'));
 }
 
-if (function_exists('apc_fetch')) {
+if (1) {
+	$irc_seen = 0;
+} elseif (function_exists('apc_fetch')) {
 	if (($irc_seen = apc_fetch('irc.seen')) === FALSE) {
 		if (filemtime($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen') > time() - 60) {		
 			$irc_seen = file_get_contents($_SERVER['DOCUMENT_ROOT'].'/rss/irc.seen');
@@ -544,9 +572,13 @@ if (function_exists('apc_fetch')) {
 	}
 }
 
-if (isset($_GET['profile']) && class_exists('Profiler',false)) {
+if (isset($_GET['php_profile']) && class_exists('Profiler',false)) {
 	Profiler::render();
 }
 
 if(isset($includeFooter)) include($includeFooter); else echo ParseTpl(makeUp('main_footer'));
 
+if (!empty($auto_logoff)) {
+	//log them off to slow them down.
+	$USER->logout();
+}
