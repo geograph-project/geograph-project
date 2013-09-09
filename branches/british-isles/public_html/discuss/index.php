@@ -340,7 +340,7 @@ elseif($action=='mute') {
 	}
 	print '<link rel="apple-touch-icon" href="http://www.geograph.org.uk/apple-touch-icon.png"/>';
 
-	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','forum_id',$filterCrit,$filterIds,$orderBy,1)){
+	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','(muted = 0 OR muted IS NULL) AND forum_id',$filterCrit,$filterIds,$orderBy,1)){
 		if ($cols[9]) {
 			print "<title>Updated Since Last Visit</title>";
 			print "<b>Updated Since Last Visit</b>";
