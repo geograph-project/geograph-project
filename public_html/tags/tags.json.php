@@ -85,7 +85,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 
 		$sql['group'] = 'tag.tag_id';
 		$sql['order'] = 'last_used DESC';
-		$sql['limit'] = 30;
+		$sql['limit'] = 59;
 	}
 
 } elseif (!empty($_GET['gridimage_id'])) {
@@ -146,8 +146,12 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 
 		if ($offset < (1000-$pgsize) ) {
 			$client = $sphinx->_getClient();
-
-                        $client->SetSelect('id'); //we dont need any, but sphinx wants somethingt
+			if (!empty($_GET['counts'])) {
+				$client->SetSelect('images');
+				$sql['columns'] .= ",tag_id";
+			} else {
+	                        $client->SetSelect('id'); //we dont need any, but sphinx wants somethingt
+			}
 
 			if ($sphinx->q && strpos($sphinx->q,'@') === false && !preg_match('/(images|alpha)$/',$_GET['mode'])) {
 				$sphinx->q = "\"^{$sphinx->q}$ \" | \"^={$sphinx->q}$ \" | \"^{$sphinx->q}\" | \"{$sphinx->q}$ \" | (^$sphinx->q) | (=$sphinx->q) | ($sphinx->q) | @tag (^$sphinx->q) | @tag \"^{$sphinx->q}$ \"";
@@ -285,6 +289,11 @@ if (isset($_GET['term'])) {
 	$data = $db->getCol($query);
 } else {
 	$data = $db->getAll($query);
+	if (!empty($_GET['counts']) && !empty($sphinx) && !empty($sphinx->res)) {
+		foreach ($data as $idx => $row) {
+			$data[$idx]['images'] = $sphinx->res['matches'][$row['tag_id']]['attrs']['images'];
+		}
+	}
 }
 
 if (!empty($_GET['callback'])) {

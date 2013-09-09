@@ -7,17 +7,17 @@
 <table class="report sortable" id="photolist" style="font-size:8pt;">
 	<thead>
 	<tr>
-		<th>Type</th>
-		<th>Old</th>
-		<th>Original</th>
-		<th>Uses</th>
-		<th>New?</th>
-		<th>Suggestion</th>
-		<th>Ignore</th>
-		<th>Reject</th>
-		<th>Move Images</th>
-		<th>Rename Tag</th>
-		<th>Set Canonical</th>
+		<td>Type</td>
+		<td>Old</td>
+		<td>Original</td>
+		<td>Uses</td>
+		<td>New?</td>
+		<td>Suggestion</td>
+		<td>Ignore</td>
+		<td>Reject</td>
+		<td>Move Images</td>
+		<td>Rename Tag</td>
+		<td>Set Canonical</td>
 	</tr></thead>
 
 {dynamic}
@@ -39,7 +39,11 @@
 				<input type="radio" name="res[{$row.report_id}]" value="rename">
 			{/if}</td>
 			<td>{if $row.tag2_id && !$row.canonical}
-				<input type="checkbox" name="canon[{$row.report_id}]" value="on" checked>
+				{if $row.type == 'canonical'}
+					<input type="radio" name="res[{$row.report_id}]" value="canonical">
+				{else}
+					<input type="checkbox" name="canon[{$row.report_id}]" value="on" checked>
+				{/if}
 			{/if}</td>
 		</tr>
 	{/foreach}
