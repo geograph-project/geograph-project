@@ -33,7 +33,110 @@ $USER->mustHavePerm("basic");
 
 
 
-if (!empty($_GET['deal'])) {
+if (!empty($_GET['finder'])) {
+	 $template = 'tags_report_finder.tpl';
+
+} elseif (!empty($_GET['lookup'])) {
+
+	$db = GeographDatabaseConnection(false);
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+	$data = $db->getAll("SELECT * FROM tag_report WHERE tag_id = ".intval($_GET['tag_id'])." AND tag2 != '' AND status != 'rejected' AND type != 'canonical' ORDER BY tag2");
+
+	if (!empty($_GET['callback'])) {
+	        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
+	        echo "{$callback}(";
+	}
+
+	require_once '3rdparty/JSON.php';
+	$json = new Services_JSON();
+	print $json->encode($data);
+
+	if (!empty($_GET['callback'])) {
+	        echo ");";
+	}
+	exit;
+
+} elseif (!empty($_GET['approver'])) {
+	$USER->mustHavePerm("tagsmod");
+
+	$template = 'tags_report_approver.tpl';
+
+        $db = GeographDatabaseConnection(false);
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+	if (!empty($_POST['report_id'])) {
+		$report_id = intval($_POST['report_id']);
+		if (!empty($_POST['skip'])) {
+			$db->Execute("INSERT INTO tag_report_skip SET report_id = $report_id, user_id = {$USER->user_id}, created = NOW()");
+		} elseif (!empty($_POST['approve'])) {
+			$db->Execute("UPDATE tag_report SET status = 'approved',approver_id = {$USER->user_id} WHERE report_id = $report_id");
+		} elseif (!empty($_POST['reject'])) {
+			$db->Execute("UPDATE tag_report SET status = 'rejected',approver_id = {$USER->user_id} WHERE report_id = $report_id");
+
+
+			//if the tag is already empty, might as well deactivate it. (will automatically be activated if someone uses it again!)
+			$row = $db->getOne("SELECT tag_id,tag2_id FROM tag_report WHERE report_id = $report_id");
+			if (!empty($row['tag_id'])) {
+				if (!$db->getOne("SELECT tag_id FROM gridimage_tag WHERE tag_id = {$row['tag_id']} LIMIT 1")) {
+					if (empty($row['tag2_id'])) {
+						$db->Execute("UPDATE tag SET status=0 WHERE tag_id = {$row['tag_id']}");
+					} else {
+						$db->Execute("UPDATE tag SET status=0,canonical={$row['tag2_id']} WHERE tag_id = {$row['tag_id']}");
+					}
+				}
+			}
+		}
+	}
+	$status = (empty($_GET['status']) || !ctype_alpha($_GET['status']))?'new':$_GET['status'];
+	$report = $db->getRow("SELECT r.*,u.realname FROM tag_report r
+		INNER JOIN tag t USING (tag_id)
+		INNER JOIN user u ON (u.user_id = r.user_id)
+		LEFT JOIN tag_report_skip s ON (s.report_id = r.report_id AND s.user_id = {$USER->user_id})
+		WHERE r.user_id != {$USER->user_id}
+		AND s.user_id IS NULL
+		AND r.status = '$status'
+		AND t.status = 1
+		AND r.type != 'canonical'
+		ORDER BY r.report_id
+		LIMIT 1");
+
+	if ($report['type'] == 'split') {
+		$report['tag2'] = ''; //the old style suggestions wont work anymore, so let the admin create a new one!
+	}
+
+	$smarty->assign_by_ref('report',$report);
+
+
+} elseif (!empty($_GET['review'])) {
+	$USER->mustHavePerm("tagsmod");
+
+                $db = GeographDatabaseConnection(false);
+
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+	$reports = $db->getAll("SELECT report_id,tag_id,tag2_id,tag,tag2,r.type,r.user_id,approver_id,COUNT(gridimage_id) as images FROM tag_report r LEFT JOIN gridimage_tag USING (tag_id) WHERE r.status IN ('approved','moved') AND type != 'split' AND type != 'canonical' group by tag_id ORDER BY tag_id");
+
+	foreach ($reports as $idx => $report) {
+		$reports[$idx]['levenshtein'] = levenshtein($report['tag'],$report['tag2']);
+	}
+
+?>
+<script type="text/javascript" src="http://s1.geograph.org.uk/js/geograph.v7635.js"></script>
+<script src="http://s1.geograph.org.uk/sorttable.v7274.js"></script>
+<?
+
+
+        print "<TABLE class=\"report sortable\" id=\"photolist\" cellspacing=0 cellpadding=3 border=1>";
+	print "<thead><tr><th>".implode('</th><th>',array_keys($reports[0])).'</th></tr></htead>';
+
+	print "<tbody>";
+	foreach ($reports as $report) {
+		print "<tr><td>".implode('</td><td>',$report).'</td></tr>';
+	}
+	print "</tbody></table>";
+	exit;
+
+} elseif (!empty($_GET['deal'])) {
 	$USER->mustHavePerm("admin");
 
 	$template = 'tags_report_deal.tpl';
@@ -69,6 +172,17 @@ if (!empty($_GET['deal'])) {
 					
 					break;
 					
+				case 'canonical':
+                                        if (empty($row['tag2_id'])) {
+                                                die("UNKNOWN DESTINIATION TAG {$row['tag2']}!!!");
+                                        }
+
+                                        $s[] = "UPDATE tag SET canonical = {$row['tag_id']} WHERE tag_id = {$row['tag2_id']}";
+
+					$s[] = "UPDATE tag_report SET status = 'moved' WHERE report_id = $report_id";
+
+					break;
+
 				case 'move':
 					if (empty($row['tag2'])) {
 						die("UNKNOWN DESTINIATION TAG {$row['tag2']}!!!");
@@ -189,8 +303,10 @@ if (!empty($_GET['deal'])) {
 				GROUP BY tag_id,tag2");
 
 	$smarty->assign_by_ref('reports',$reports);
-	
+
+
 } else {
+
 	if (!empty($_POST)) {
 
 		$db = GeographDatabaseConnection(false);
@@ -206,14 +322,58 @@ if (!empty($_GET['deal'])) {
 
 			$u['user_id'] = $USER->user_id;
 
-			$db->Execute('INSERT INTO tag_report SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+
+			if (!empty($_GET['admin']) && $USER->hasPerm("tagsmod") && !empty($_POST['tags'])) {
+				$u['status'] = 'approved';
+				foreach (explode("\n",trim(str_replace("\r",'',$_POST['tags']))) as $tag2) {
+					$tag2 = trim($tag2);
+					if (empty($tag2))
+						continue;
+					$u['tag2'] = $tag2;
+					$prefix2 = '';
+					$bits = explode(':',$tag2,2);
+					if (count($bits) > 1) {
+						list($prefix2,$tag2) = $bits;
+					}
+					$u['tag2_id'] = $db->getOne("SELECT tag_id FROM tag WHERE prefix = ".$db->Quote($prefix2)." AND tag = ".$db->Quote($tag2));
+					$db->Execute('INSERT INTO tag_report SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+				}
+			} else {
+				if (!empty($_GET['admin']) && $USER->hasPerm("tagsmod") && !empty($_POST['tag2']) && levenshtein($_POST['tag'],$_POST['tag2']) < 3) {
+					$u['status'] = 'approved';
+				}
+
+				$db->Execute('INSERT INTO tag_report SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+			}
+
+			if (!empty($_GET['close'])) {
+				print 'Report Saved. <a href="javascript:window.close()">Close Window</a>';
+				exit;
+			}
 
 			$smarty->assign("message",'Report saved at '.date('r'));
+
+
 		}
 
 	}
 
-	$types = array(
+	if (!empty($_GET['admin'])) {
+        	$USER->mustHavePerm("tagsmod");
+
+	        $template = 'tags_report_admin.tpl';
+
+        	$types = array(
+                'spelling'=>'Spelling',
+                'grammer'=>'Grammer',
+                'punctuation'=>'Punctuation',
+                'caps'=>'Capitalization',
+                //'prefix'=>'Change the prefix/namespace used',
+                'split'=>'Needs splitting - refers to multiple distinct topics');
+	        //todo, synonums
+
+	} else {
+		$types = array(
 		'spelling'=>'Spelling',
 		'grammer'=>'Grammer',
 		'punctuation'=>'Punctuation',
@@ -224,16 +384,16 @@ if (!empty($_GET['deal'])) {
 		'split'=>'Needs splitting - refers to multiple distinct topics',
 		'other'=>'Other... (anything else not covered above)');
 
+		if (empty($db))
+			$db = GeographDatabaseConnection(true);
+
+		$reports = $db->getAll("SELECT tag FROM tag_report WHERE status='new' AND type != 'canonical' GROUP BY tag_id ORDER BY tag");
+		$smarty->assign_by_ref('reports',$reports);
+
+		$recent = $db->getAll("SELECT tag FROM tag_report WHERE status!='new' AND type != 'canonical' GROUP BY tag_id ORDER BY updated DESC LIMIT 50");
+		$smarty->assign_by_ref('recent',$recent);
+	}
 	$smarty->assign_by_ref('types',$types);
-
-	if (empty($db))
-		$db = GeographDatabaseConnection(true);
-
-	$reports = $db->getAll("SELECT tag FROM tag_report WHERE status='new' AND type != 'canonical' GROUP BY tag_id ORDER BY tag");
-	$smarty->assign_by_ref('reports',$reports);
-	
-	$recent = $db->getAll("SELECT tag FROM tag_report WHERE status!='new' AND type != 'canonical' GROUP BY tag_id ORDER BY updated DESC LIMIT 50");
-	$smarty->assign_by_ref('recent',$recent);
 
 	if (!empty($_GET['tag'])) {
 		$smarty->assign_by_ref('tag',$_GET['tag']);

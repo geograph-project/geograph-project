@@ -40,7 +40,7 @@
 
 	<div id="tag2-message" style="float:right"></div>
 
-	<div class="fieldnotes">Optional, what this tag should/could be changed to.</div>
+	<div class="fieldnotes">Optional, what this tag should/could be changed to. However please take the time to provide it if possible.</div>
 
 	{if $errors.tag2}</div>{/if}
 </div>
@@ -133,6 +133,18 @@
 				if (that.name == 'tag') {
 					that.form.elements['submit'].disabled = false;
 				}
+                                if (data.tag_id) {
+                                        $.getJSON("/tags/report.php?lookup=1&tag_id="+encodeURIComponent(data.tag_id),function(data2) {
+                                                if (data2.length > 0) {
+                                                        var msg = '';
+                                                        for(q=0;q<data2.length;q++) {
+                                                                msg = msg + "<br/>We already have a report for '"+data2[q].tag+"' &gt; '"+data2[q].tag2+"'";
+                                                        }
+                                                        $('#'+that.name+'-message').html($('#'+that.name+'-message').html()+msg);
+                                                }
+                                        });
+                                }
+
 			} else if (data.error) {
 				if (that.name == 'tag') {
 					str = data.error;
