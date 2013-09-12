@@ -98,11 +98,12 @@ class Tags
 		$lookup = array();
 		foreach ($this->tags as $tag => $tag_id) {
 			if (empty($tag_id)) {
+				$tag = str_replace('\\','',$tag);
 				$bits = explode(':',$tag,2);
 				if (count($bits) == 2) {
-					$lookup[] = $db->Quote($bits[1]);	
+					$lookup[] = $db->Quote(trim($bits[1]));
 				} else {
-					$lookup[] = $db->Quote($tag);
+					$lookup[] = $db->Quote(trim($tag));
 				}
 			}
 		}
@@ -132,10 +133,10 @@ class Tags
 						
 						$db = $this->_getDB(false); //very quick if we already have a connection
 						
-						$u['tag'] = $tag;
-						$bits = explode(':',$u['tag']);
+						$u['tag'] = str_replace('\\','',$tag);
+						$bits = explode(':',$u['tag'],2);
 						if (count($bits) > 1) {
-							$u['prefix'] = trim($bits[0]);
+							$u['prefix'] = trim(strtolower($bits[0]));
 							$u['tag'] = $bits[1];
 						} else {
 							$u['prefix'] = '';

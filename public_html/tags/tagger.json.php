@@ -44,10 +44,10 @@ if (!empty($USER->user_id) && !empty($_GET['tag']) && !empty($_GET['gridimage_id
 
 	$db = GeographDatabaseConnection(false);
 	$u = array();
-	$u['tag'] = $_GET['tag'];
-	$bits = explode(':',$u['tag']);
+	$u['tag'] = str_replace('\\','',$_GET['tag']);
+	$bits = explode(':',$u['tag'],2);
 	if (count($bits) > 1) {
-		$u['prefix'] = trim($bits[0]);
+		$u['prefix'] = trim(strtolower($bits[0]));
 		$u['tag'] = $bits[1];
 	}
 	$u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));

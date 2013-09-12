@@ -103,10 +103,10 @@ if (!empty($_POST['save']) && !empty($ids)) {
 			//its a new tag for this link!
 
 			$u = array();
-			$u['tag'] = $text;
-			$bits = explode(':',$u['tag']);
+			$u['tag'] = str_replace('\\','',$text);
+			$bits = explode(':',$u['tag'],2);
 			if (count($bits) > 1) {
-				$u['prefix'] = trim($bits[0]);
+				$u['prefix'] = trim(strtolower($bits[0]));
 				$u['tag'] = $bits[1];
 			}
 			$u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));
@@ -227,9 +227,9 @@ if (!empty($_POST['save']) && !empty($ids)) {
 				
 				$u = array();
 				$u['tag'] = $text;
-				$bits = explode(':',$u['tag']);
+				$bits = explode(':',$u['tag'],2);
 				if (count($bits) > 1) {
-					$u['prefix'] = trim($bits[0]);
+					$u['prefix'] = trim(strtolower($bits[0]));
 					$u['tag'] = $bits[1];
 				}
 				$u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));
@@ -350,6 +350,8 @@ if ($gid) {
 } elseif ($ids) {
 	//TODO -- look though the images, and compile popular terns/clusters...
 }
+	if (!empty($_GET['v']))
+		$smarty->assign('hide_context',1);
 
 	if (!empty($is_owner) && empty($_GET['v'])) {
 
