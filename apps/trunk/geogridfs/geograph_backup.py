@@ -82,6 +82,7 @@ def walk_and_notify(folder = '', track_progress = True):
         
         if files:
             if track_progress and os.path.exists(root+'/backup.done'):
+                print "done " + root
                 continue
             
             print "Processing: "+root
@@ -185,7 +186,7 @@ def walk_and_notify(folder = '', track_progress = True):
 
 #############################################################################
 
-def replicate_now(path = ''):
+def replicate_now(path = '',mode=False):
     mount = config['folder']
     
     s = os.statvfs(mount)
@@ -195,8 +196,11 @@ def replicate_now(path = ''):
     if gigabytes < int(filter(str.isdigit, config['keep_free_gig'])):
         print "There is only " + str(bytes_free) + " bytes free, which is less than configured keep_free_gig="+config['keep_free_gig']
         sys.exit(2)
+
+    if not mode:
+        mode=config['mode']
     
-    query = "ident="+config['identity']+"&command=filelist&mode="+config['mode']+"&r="+str(random.randint(1,100000)) #just to defeat caching
+    query = "ident="+config['identity']+"&command=filelist&mode="+mode+"&r="+str(random.randint(1,100000)) #just to defeat caching
     
     sig = hmac.new(config['secret'], query);
     url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
@@ -220,30 +224,66 @@ def replicate_now(path = ''):
     
     c = 0;
     for row in result['rows']:
-
-        url = string.replace(row['filename'],result['docroot'],result['server'])
+        if '000000_' in row['filename']:
+            continue
         
-        print "download " + row['filename'] + " from "+ url
+        #choose sever to download from
+        if isinstance(result['server'], basestring):
+            url = string.replace(row['filename'],result['docroot'],result['server'])
+        else:
+            server = random.choice(result['server'])
+            url = string.replace(row['filename'],result['docroot'],server)
         
         filename = mount + row['filename']
         
+        #if have file already check its validity
+        # if not valid then archive it
         if os.path.exists(filename):
-            if os.path.getsize(filename) == 0:
-                unlink(filename)
+            print "have "+filename+" already"
+            stat = os.stat(filename)
+            if int(stat.st_size) == 0:
+                os.unlink(filename)
+            else:
+                if (stat.st_size > 0 and stat.st_size < 52428800):
+                    md5su = md5sum(filename)
+                else:
+                    md5su =''
+                if int(stat.st_size) != int(row['size']):
+                    print " size does not match '"+str(stat.st_size)+"' != '"+str(row['size'])+"'"
+                    n=''
+                    while os.path.exists(filename+'.old'+str(n)):
+                        n = int(n)+1
+                    os.rename(filename,filename+'.old'+str(n))
+                    print " saved as "+filename+'.old'+str(n)
+                    failures.append("exist_size,"+str(stat.st_size)+","+str(row['size'])+","+filename+",.old"+str(n))
+                    
+                elif md5su != row['md5sum']:
+                    print " md5 checksum does not match '"+md5su+"' != '"+row['md5sum']+"'"
+                    n=''
+                    while os.path.exists(filename+'.old'+str(n)):
+                        n = int(n)+1
+                    os.rename(filename,filename+'.old'+str(n))
+                    print " saved as "+filename+'.old'+str(n)
+                    failures.append("exist_md5,"+md5su+","+row['md5sum']+","+filename+",.old"+str(n))
+                else:
+                    print " appears to be ok!"
         else:
             if not os.path.exists(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename)) ##recursive
         
+        #download as required
         if not os.path.exists(filename):
+            print "download " + row['filename'] + " from "+ url
             urllib.urlretrieve(url, filename)
         
+        #check if it worked
         stat = os.stat(filename)
-        if (stat.st_size > 0 and stat.st_size < 52428800):
+        if stat.st_size > 0:
             os.utime(filename, (int(time.time()), int(row['modified'])) )
+        if (stat.st_size > 0 and stat.st_size < 52428800):
             md5su = md5sum(filename)
         else:
             md5su =''
-        
         if int(stat.st_size) != int(row['size']):
             print " size does not match '"+str(stat.st_size)+"' != '"+str(row['size'])+"'"
             failures.append("size,"+str(stat.st_size)+","+str(row['size'])+","+filename)
@@ -257,7 +297,7 @@ def replicate_now(path = ''):
             time.sleep(result['sleep'])
     
     if notify:
-        query = "ident="+config['identity']+"&command=notify&mode="+config['mode']+"&r="+str(random.randint(1,100000))
+        query = "ident="+config['identity']+"&command=notify&mode="+mode+"&r="+str(random.randint(1,100000))
 
         sig = hmac.new(config['secret'], query);
         url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
@@ -273,7 +313,7 @@ def replicate_now(path = ''):
         print response
 
     if failures:
-        query = "ident="+config['identity']+"&command=failures&mode="+config['mode']+"&r="+str(random.randint(1,100000))
+        query = "ident="+config['identity']+"&command=failures&mode="+mode+"&r="+str(random.randint(1,100000))
 
         sig = hmac.new(config['secret'], query);
         url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
@@ -293,8 +333,10 @@ def replicate_now(path = ''):
 def main(argv):
     action = 'unknown'
     path = ''
+    mode = False
+
     try:
-        opts, args = getopt.getopt(argv,"a:p:",["action=","path="])
+        opts, args = getopt.getopt(argv,"a:p:m:",["action=","path=","mode="])
     except getopt.GetoptError:
         print 'replication.py -a (walk|replicate) [-p /geograph_live/rastermaps]'
         sys.exit(2)
@@ -302,6 +344,8 @@ def main(argv):
     for opt, arg in opts:
         if opt in ("-a", "--action"):
             action = arg
+        elif opt in ("-m", "--mode"):
+            mode = arg
         elif opt in ("-p", "--path"):
             path = arg
     
@@ -313,7 +357,7 @@ def main(argv):
         walk_and_notify(path)
     
     elif action == 'replicate':
-        replicate_now(path)
+        replicate_now(path,mode)
 
 
 if __name__ == '__main__':
