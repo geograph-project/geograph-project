@@ -30,17 +30,15 @@ import urllib2
 import time
 import hmac
 
+#############################################################################
 
-config = dict(
-    folder = '/mnt/fake', # Set this the folder where you store files (no trailing slash!)
-    keep_free_gig = '2', # we wont replicate if less than this disk space (only Gigabytes units supported!)
-    
-    # Get these from Geograph Support
-    mode = 'partial', 
-    api_endpoint = '', 
-    identity = '', 
-    secret = '', # don't share this secret!
-)
+import ConfigParser
+configparser = ConfigParser.ConfigParser()
+configparser.read("geograph_backup.ini")
+
+config = dict()
+for option in configparser.options('client'):
+    config[option] = configparser.get('client', option)
 
 #############################################################################
 
@@ -189,13 +187,14 @@ def walk_and_notify(folder = '', track_progress = True):
 def replicate_now(path = '',mode=False):
     mount = config['folder']
     
-    s = os.statvfs(mount)
-    bytes_free = (s.f_bavail * s.f_frsize) / 1024
-    gigabytes = bytes_free / (1024 * 1024)
-    
-    if gigabytes < int(filter(str.isdigit, config['keep_free_gig'])):
-        print "There is only " + str(bytes_free) + " bytes free, which is less than configured keep_free_gig="+config['keep_free_gig']
-        sys.exit(2)
+    if 'statvfs' in dir(os):
+        s = os.statvfs(mount)
+        bytes_free = (s.f_bavail * s.f_frsize) / 1024
+        gigabytes = bytes_free / (1024 * 1024)
+
+        if gigabytes < int(filter(str.isdigit, config['keep_free_gig'])):
+            print "There is only " + str(bytes_free) + " bytes free, which is less than configured keep_free_gig="+config['keep_free_gig']
+            sys.exit(2)
 
     if not mode:
         mode=config['mode']
