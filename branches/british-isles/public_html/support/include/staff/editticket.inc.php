@@ -70,7 +70,7 @@ if($_POST && $errors){
             <i>Time is based on your time zone (GM <?=$thisuser->getTZoffset()?>)</i>&nbsp;<font class="error">&nbsp;<?=$errors['time']?></font><br>
             <input id="duedate" name="duedate" value="<?=Format::htmlchars($info['duedate'])?>"
                 onclick="event.cancelBubble=true;calendar(this);" autocomplete=OFF>
-            <a href="#" onclick="event.cancelBubble=true;calendar(getObj('duedate')); return false;"><img src='images/cal.png'border=0 alt=""></a>
+            <a href="#" onclick="event.cancelBubble=true;calendar(getObj('duedate')); return false;"><img src='http://s0.geograph.org.uk/support/scp/images/cal.png'border=0 alt=""></a>
             &nbsp;&nbsp;
             <?php
              $min=$hr=null;

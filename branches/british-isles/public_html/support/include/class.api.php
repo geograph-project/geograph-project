@@ -80,10 +80,13 @@ class Api {
 
     function validate($key,$ip) {
 
-        $resp=db_query('SELECT id FROM '.API_KEY_TABLE.' WHERE ipaddr='.db_input($ip).' AND apikey='.db_input($key));
+##        $resp=db_query('SELECT id FROM '.API_KEY_TABLE.' WHERE ipaddr='.db_input($ip).' AND apikey='.db_input($key));
+
+        $resp=db_query('SELECT id FROM '.API_KEY_TABLE.' WHERE apikey='.db_input($key));
+
         return ($resp && db_num_rows($resp))?true:false;
 
     }
-   
+
 }
-?>
+

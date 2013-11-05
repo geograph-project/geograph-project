@@ -14,6 +14,9 @@
     vim: expandtab sw=4 ts=4 sts=4:
     $Id: $
 **********************************************************************/
+##die("Service Unavailable");
+$_SERVER['HTTP_HOST']='www.geograph.org.uk';
+
 if(basename($_SERVER['SCRIPT_NAME'])==basename(__FILE__)) die('Kwaheri rafiki!'); //Say hi to our friend..
 if(!file_exists('../main.inc.php')) die('Fatal error..get tech support');
 define('ROOT_PATH','../'); //Path to the root dir.

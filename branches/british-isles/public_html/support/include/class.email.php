@@ -166,7 +166,7 @@ class Email {
                           'X-Mailer' =>'osTicket v 1.6',
                           'Content-Type' => 'text/html; charset="UTF-8"'
                           );
-        $mime = new Mail_mime();
+        $mime = new Mail_mime("\n");
         $mime->setTXTBody($body);
         //attachment TODO: allow multiple attachments - $attachment should be mixed parts.
         if($attachment && $attachment['file'] && is_readable($attachment['file'])) { //file of mime type.
@@ -224,7 +224,7 @@ class Email {
                           'X-Mailer' =>'osTicket v 1.6',
                           'Content-Type' => 'text/html; charset="UTF-8"'
                           );
-        $mime = new Mail_mime();
+        $mime = new Mail_mime("\n");
         $mime->setTXTBody($body);
         $options=array('head_encoding' => 'quoted-printable',
                        'text_encoding' => 'quoted-printable',

@@ -77,9 +77,9 @@ $negorder=$order=='DESC'?'ASC':'DESC'; //Negate the sorting..
     <tr>
         <td width="60%" class="msg"><?=$showing?>&nbsp;&nbsp;<?=$results_type?></td>
         <td nowrap >
-            <a href="view.php?status=open"><img src="images/view_open_btn.gif" alt="View Open" border=0></a>            
-            <a href="view.php?status=closed"><img src="images/view_closed_btn.gif" alt="View Closed" border=0></a>            
-            <a href=""><img src="images/refresh_btn.gif" alt="Refresh" border=0></a>
+            <a href="view.php?status=open"><img src="http://s0.geograph.org.uk/support/images/view_open_btn.gif" alt="View Open" border=0></a>            
+            <a href="view.php?status=closed"><img src="http://s0.geograph.org.uk/support/images/view_closed_btn.gif" alt="View Closed" border=0></a>            
+            <a href=""><img src="http://s0.geograph.org.uk/support/images/refresh_btn.gif" alt="Refresh" border=0></a>
         </td>
     </tr>
  </table>

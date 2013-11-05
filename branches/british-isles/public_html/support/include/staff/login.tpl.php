@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<title>osTicket:: SCP Login</title>
-<link rel="stylesheet" href="css/login.css" type="text/css" />
+<title>Geograph Support Staff Login</title>
+<link rel="stylesheet" href="http://s0.geograph.org.uk/support/scp/css/login.css" type="text/css" />
 <meta name="robots" content="noindex" />
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="pragma" content="no-cache" />

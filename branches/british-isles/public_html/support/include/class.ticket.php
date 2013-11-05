@@ -670,7 +670,7 @@ class Ticket{
                     }
                 }
                 //If enabled...send alert to staff (New Message Alert)
-                if($cfg->alertONNewMessage()){
+                if($cfg->alertONNewMessage() && $this->getId() != 3958){
                     $sql='SELECT message_alert_subj,message_alert_body FROM '.EMAIL_TEMPLATE_TABLE.
                          ' WHERE cfg_id='.db_input($cfg->getId()).' AND tpl_id='.db_input($tplId);
 
