@@ -73,4 +73,6 @@ if($_POST && (!empty($_POST['username']) && !empty($_POST['passwd']))){
 define("OSTSCPINC",TRUE); //Make includes happy!
 $login_err=($_POST)?true:false; //error displayed only on post
 include_once(INCLUDE_DIR.'staff/login.tpl.php');
+
+print "<p><b><big>If you would be willing to help answer 'contact form' emails, please email <a href=\"mailto:geograph@barryhunter.co.uk\">barry</a>.";
 ?>

@@ -196,6 +196,8 @@ if(!$order_by && $showanswered) {
     $order_by='ticket.lastresponse DESC, ticket.created'; //No priority sorting for answered tickets.
 }elseif(!$order_by && !strcasecmp($status,'closed')){
     $order_by='ticket.closed DESC, ticket.created'; //No priority sorting for closed tickets.
+} elseif (!$order_by) {
+	$order_by='ticket.created';
 }
 
 
@@ -230,6 +232,14 @@ $qselect.=' ,count(attach.attach_id) as attachments, IF(ticket.reopened is NULL,
 $qfrom.=' LEFT JOIN '.TICKET_PRIORITY_TABLE.' pri ON ticket.priority_id=pri.priority_id '.
         ' LEFT JOIN '.TICKET_LOCK_TABLE.' tlock ON ticket.ticket_id=tlock.ticket_id AND tlock.expire>NOW() '.
         ' LEFT JOIN '.TICKET_ATTACHMENT_TABLE.' attach ON  ticket.ticket_id=attach.ticket_id ';
+
+///////
+$qselect = str_replace(',email',',ticket.email',$qselect);
+$qselect .= ", ban.email AS banned";
+$qfrom .= ' LEFT JOIN '.BANLIST_TABLE.' ban ON (ticket.email = ban.email) ';
+///////
+
+
 
 $query="$qselect $qfrom $qwhere $qgroup ORDER BY $order_by $order LIMIT ".$pageNav->getStart().",".$pageNav->getLimit();
 //echo $query;
@@ -308,11 +318,11 @@ $basic_display=!isset($_REQUEST['advance_search'])?true:false;
         Date Span:
         &nbsp;From&nbsp;<input id="sd" name="startDate" value="<?=Format::htmlchars($_REQUEST['startDate'])?>" 
                 onclick="event.cancelBubble=true;calendar(this);" autocomplete=OFF>
-            <a href="#" onclick="event.cancelBubble=true;calendar(getObj('sd')); return false;"><img src='images/cal.png'border=0 alt=""></a>
+            <a href="#" onclick="event.cancelBubble=true;calendar(getObj('sd')); return false;"><img src='http://s0.geograph.org.uk/support/scp/images/cal.png'border=0 alt=""></a>
             &nbsp;&nbsp; to &nbsp;&nbsp;
             <input id="ed" name="endDate" value="<?=Format::htmlchars($_REQUEST['endDate'])?>" 
                 onclick="event.cancelBubble=true;calendar(this);" autocomplete=OFF >
-                <a href="#" onclick="event.cancelBubble=true;calendar(getObj('ed')); return false;"><img src='images/cal.png'border=0 alt=""></a>
+                <a href="#" onclick="event.cancelBubble=true;calendar(getObj('ed')); return false;"><img src='http://s0.geograph.org.uk/support/scp/images/cal.png'border=0 alt=""></a>
             &nbsp;&nbsp;
     </div>
     <table>
@@ -375,7 +385,7 @@ $basic_display=!isset($_REQUEST['advance_search'])?true:false;
     <tr>
         <td width="80%" class="msg" >&nbsp;<b><?=$showing?>&nbsp;&nbsp;&nbsp;<?=$results_type?></b></td>
         <td nowrap style="text-align:right;padding-right:20px;">
-            <a href=""><img src="images/refresh.gif" alt="Refresh" border=0></a>
+            <a href=""><img src="http://s0.geograph.org.uk/support/scp/images/refresh.gif" alt="Refresh" border=0></a>
         </td>
     </tr>
  </table>
@@ -421,7 +431,7 @@ $basic_display=!isset($_REQUEST['advance_search'])?true:false;
                     //$subject=sprintf('<b>%s</b>',Format::truncate($row['subject'],40)); // Making the subject bold is too much for the eye
                 }
                 ?>
-            <tr class="<?=$class?> " id="<?=$row['ticket_id']?>">
+            <tr class="<?=$class?> " id="<?=$row['ticket_id']?>" <? if ($row['banned']) {echo ' style="text-decoration: line-through;"';} ?>>
                 <?if($canDelete || $canClose) {?>
                 <td align="center" class="nohover">
                     <input type="checkbox" name="tids[]" value="<?=$row['ticket_id']?>" onClick="highLight(this.value,this.checked);">

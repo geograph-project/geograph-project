@@ -1,4 +1,3 @@
-#!/usr/bin/php -q
 <?php
 /*********************************************************************
     pipe.php
@@ -95,7 +94,8 @@ if(preg_match ("[[#][0-9]{1,10}]",$var['subject'],$regs)) {
     $extid=trim(preg_replace("/[^0-9]/", "", $regs[0]));
     $ticket= new Ticket(Ticket::getIdByExtId($extid));
     //Allow mismatched emails?? For now hell NO.
-    if(!is_object($ticket) || strcasecmp($ticket->getEmail(),$var['email']))
+//    if(!is_object($ticket) || strcasecmp($ticket->getEmail(),$var['email']))
+    if(!is_object($ticket))
         $ticket=null;
 }        
 $errors=array();

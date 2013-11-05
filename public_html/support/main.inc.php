@@ -36,7 +36,15 @@
     #No cache
     ini_set('session.cache_limiter', 'nocache');
     #Cookies
-    //ini_set('session.cookie_path','/osticket/');
+
+ini_set('session.cache_expire',1440); //24 hours!
+session_cache_expire(1440);
+
+ini_set('session.save_path','/mnt/cream-ram/osticket_sessions/');
+session_save_path('/mnt/cream-ram/osticket_sessions/');
+
+ini_set('session.cookie_path','/support/');
+session_name('OSTSESS');
 
     #Error reporting...Good idea to ENABLE error reporting to a file. i.e display_errors should be set to false
     error_reporting(E_ALL ^ E_NOTICE); //Respect whatever is set in php.ini (sysadmin knows better??)

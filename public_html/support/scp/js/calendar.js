@@ -64,7 +64,7 @@ function Top(obj)
 }
 	
 document.write('<table id="fc" style="position:absolute;border-collapse:collapse;background:#FFFFFF;border:1px solid #ABABAB;display:none" cellpadding=2>');
-document.write('<tr><td style="cursor:pointer" onclick="csubm()"><img src="images/arrowleftmonth.gif"></td><td colspan=5 id="mns" align="center" style="font:bold 13px Arial;text-align:center"></td><td align="right" style="cursor:pointer" onclick="caddm()"><img src="images/arrowrightmonth.gif"></td></tr>');
+document.write('<tr><td style="cursor:pointer" onclick="csubm()"><img src="http://s0.geograph.org.uk/support/scp/images/arrowleftmonth.gif"></td><td colspan=5 id="mns" align="center" style="font:bold 13px Arial;text-align:center"></td><td align="right" style="cursor:pointer" onclick="caddm()"><img src="http://s0.geograph.org.uk/support/scp/images/arrowrightmonth.gif"></td></tr>');
 document.write('<tr><td align=center style="background:#ABABAB;font:12px Arial">S</td><td align=center style="background:#ABABAB;font:12px Arial">M</td><td align=center style="background:#ABABAB;font:12px Arial">T</td><td align=center style="background:#ABABAB;font:12px Arial">W</td><td align=center style="background:#ABABAB;font:12px Arial">T</td><td align=center style="background:#ABABAB;font:12px Arial">F</td><td align=center style="background:#ABABAB;font:12px Arial">S</td></tr>');
 for(var kk=1;kk<=6;kk++) {
 	document.write('<tr>');

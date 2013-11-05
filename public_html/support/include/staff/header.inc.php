@@ -8,18 +8,18 @@ echo '<meta http-equiv="refresh" content="'.AUTO_REFRESH_RATE.'" />';
 }
 ?>
 <title>osTicket :: Staff Control Panel</title>
-<link rel="stylesheet" href="css/main.css" media="screen">
-<link rel="stylesheet" href="css/style.css" media="screen">
-<link rel="stylesheet" href="css/tabs.css" type="text/css">
-<link rel="stylesheet" href="css/autosuggest_inquisitor.css" type="text/css" media="screen" charset="utf-8" />
-<script type="text/javascript" src="js/ajax.js"></script>
-<script type="text/javascript" src="js/scp.js"></script>
-<script type="text/javascript" src="js/tabber.js"></script>
-<script type="text/javascript" src="js/calendar.js"></script>
-<script type="text/javascript" src="js/bsn.AutoSuggest_2.1.3.js" charset="utf-8"></script>
+<link rel="stylesheet" href="http://s0.geograph.org.uk/support/scp/css/main.css" media="screen">
+<link rel="stylesheet" href="http://s0.geograph.org.uk/support/scp/css/style.css" media="screen">
+<link rel="stylesheet" href="http://s0.geograph.org.uk/support/scp/css/tabs.css" type="text/css">
+<link rel="stylesheet" href="http://s0.geograph.org.uk/support/scp/css/autosuggest_inquisitor.css" type="text/css" media="screen" charset="utf-8" />
+<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/ajax.js"></script>
+<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/scp.js"></script>
+<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/tabber.js"></script>
+<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/calendar.js"></script>
+<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/bsn.AutoSuggest_2.1.3.js" charset="utf-8"></script>
 <?php
 if($cfg && $cfg->getLockTime()) { //autoLocking enabled.?>
-<script type="text/javascript" src="js/autolock.js" charset="utf-8"></script>
+<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/autolock.js" charset="utf-8"></script>
 <?}?>
 </head>
 <body>
@@ -30,7 +30,7 @@ if($sysnotice){?>
 }?>
 <div id="container">
     <div id="header">
-        <a id="logo" href="index.php" title="osTicket"><img src="images/ostlogo.jpg" width="188" height="72" alt="osTicket"></a>
+        <a id="logo" href="index.php" title="osTicket"><img src="http://s0.geograph.org.uk/support/scp/images/ostlogo.jpg" width="188" height="72" alt="osTicket"></a>
         <p id="info">Welcome back, <strong><?=$thisuser->getUsername()?></strong> 
            <?php
             if($thisuser->isAdmin() && !defined('ADMINPAGE')) { ?>
