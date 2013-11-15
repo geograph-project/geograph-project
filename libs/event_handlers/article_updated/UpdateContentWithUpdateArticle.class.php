@@ -132,11 +132,14 @@ class UpdateContentWithUpdateArticle extends EventHandler
 			$db->Execute($sql);
 			
 			if (count($this->gridimage_ids) && $content_id) {
-				$db->Execute("DELETE FROM gridimage_content WHERE content_id=$content_id");
+				$start_date = $db->getOne("SELECT date_sub(now(),interval 1 hour)");
+
 				foreach ($this->gridimage_ids as $i => $g_id) {
 
-					$db->Execute("INSERT INTO gridimage_content SET gridimage_id = $g_id,content_id = $content_id");
+					$db->Execute("INSERT INTO gridimage_content SET gridimage_id = $g_id,content_id = $content_id,created=NOW() ON DUPLICATE KEY UPDATE `updated`=NOW()");
 				}
+
+				$db->Execute("DELETE FROM gridimage_content WHERE content_id=$content_id AND updated < ".$db->Quote($start_date));
 			}
 		} elseif ($content_id) {
 			$sql = "DELETE FROM `content` WHERE ".implode(' AND ',$updates);
