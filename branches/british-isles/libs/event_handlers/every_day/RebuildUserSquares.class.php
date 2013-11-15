@@ -45,12 +45,12 @@ class RebuildUserSquares extends EventHandler
 		
 		
 		$db->Execute("CREATE TABLE user_gridsquare_tmp
-				(INDEX (user_id,`grid_reference`))
+				(INDEX (user_id,`grid_reference`),INDEX(`grid_reference`))
 				ENGINE=MyISAM
 				SELECT user_id,`grid_reference`,
 				sum(moderation_status='geograph') as has_geographs,count(*) as imagecount
 				FROM gridimage_search
-				GROUP BY user_id,`grid_reference`");
+				GROUP BY user_id,`grid_reference` ORDER BY NULL");
 		
 		$db->Execute("DROP TABLE IF EXISTS user_gridsquare");
 		$db->Execute("RENAME TABLE user_gridsquare_tmp TO user_gridsquare");

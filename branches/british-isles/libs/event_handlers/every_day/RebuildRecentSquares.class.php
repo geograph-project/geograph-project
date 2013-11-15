@@ -61,7 +61,10 @@ class RebuildRecentSquares extends EventHandler
 		
 		$db->Execute("UPDATE gridsquare SET has_recent = 0");
 		$db->Execute("UPDATE gridsquare INNER JOIN recent_only USING (gridsquare_id) SET gridsquare.has_recent = 1");
-		
+
+                $db->Execute("create temporary table gridsquare_updater (gridsquare_id INT UNSIGNED primary key) select gridsquare_id,max(ftf) as max_ftf from gridimage where moderation_status = 'geograph' group by gridsquare_id order by null");
+                $db->Execute("update gridsquare gs inner join gridsquare_updater u using (gridsquare_id) SET gs.max_ftf = u.max_ftf");
+
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;
