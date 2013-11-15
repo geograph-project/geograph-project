@@ -225,7 +225,7 @@ class RebuildUserStats extends EventHandler
 		$db->Execute('INSERT INTO user_stat_tmp SET `'.implode('` = ?,`',array_keys($overall)).'` = ?',array_values($overall));
 
 	//add content data
-		$topusers=$db->GetAssoc("SELECT user_id,count(*) as content
+		$topusers=$db->GetAssoc("SELECT user_id,count(distinct if(source in ('blog','trip'),title,content_id)) as content
 			FROM content 
 			WHERE source IN('article','gallery','help','blog','trip')
 			GROUP BY user_id 

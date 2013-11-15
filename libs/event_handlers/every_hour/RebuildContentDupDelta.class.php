@@ -103,7 +103,7 @@ SELECT
 FROM snippet s
 INNER JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)
 LEFT JOIN gridsquare g USING (grid_reference)
-WHERE s.updated > DATE_SUB(NOW(),INTERVAL 2 HOUR)
+WHERE s.updated > DATE_SUB(NOW(),INTERVAL 2 HOUR) AND s.enabled = 1
 GROUP BY s.snippet_id
 ORDER BY NULL
 		");
@@ -153,7 +153,7 @@ ON DUPLICATE KEY UPDATE
 	gridimage_id = ct.gridimage_id,
 	gridsquare_id = ct.gridsquare_id,
 	extract = ct.extract,
-	images = ct.images,
+	images = IF(ct.images=0,content.images,ct.images),
 	words = ct.words,
 	type = ct.type,
 	views = ct.views,
