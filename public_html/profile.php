@@ -24,11 +24,15 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
-	
-init_session();
+
+if (empty($_POST) && empty($_GET['style']) && empty($_REQUEST['edit'])) {
+        init_session_or_cache(3600, 360); //cache publically, and privately
+} else {
+	init_session();
+}
 
 $smarty = new GeographPage;
-$template='profile.tpl';	
+$template='profile.tpl';
 $cacheid='';
 $profile = array();
 
@@ -77,15 +81,15 @@ if (isset($_REQUEST['edit']))
 	$smarty->assign('delays', array(2,3,4,5,6,10,12));
 	$smarty->assign('ticket_options', array(
 	'all' => 'Notifications for all suggestions' ,
-	'major' => 'Only Major suggestions', 
+	'major' => 'Only Major suggestions',
 	//'digest' => 'Receive Digest emails Once per Day',
 	'none' => 'No Initial Notifications' ));
-	
+
 	$profile->getStats();
 	$profile->md5_email = md5(strtolower($profile->email));
-	
-	$smarty->assign_by_ref('profile', $profile);	
-} 
+
+	$smarty->assign_by_ref('profile', $profile);
+}
 elseif (isset($_REQUEST['notifications']))
 {
 	//must be logged in to proceed with an edit
@@ -94,32 +98,42 @@ elseif (isset($_REQUEST['notifications']))
 	$template='profile_notifications.tpl';
 
 	//save changes?
-	if (isset($_POST['savechanges']))
-	{
-		
-	} 
-	else
-	{
-		$profile=new GeographUser($USER->user_id);
-		
-		$db = NewADOConnection($GLOBALS['DSN']);
-		if (!$db) die('Database connection failed');  
+	if (isset($_POST['savechanges'])) {
+		if (!empty($_POST['freq'])) {
+			$str = $_POST['freq'].'|'.implode(',',$_POST['items']);
+			$USER->setPreference('notification.myphotos',$str);
 
-		$subs = $db->getAll("select topic_id,topic_title from geobb_send_mails Ts inner join geobb_topics Tt using (topic_id) where user_id = {$USER->user_id}");		
-		$smarty->assign_by_ref("subs",$subs);
-		$smarty->assign("sub_count",count($subs));
-		
-		$arr = array('general','test');
-		
-		$n = array();
-		foreach($arr as $idx => $key) {
-			$n[$key] = 'checked="checked"';
+			header("Location: /profile.php");
+			exit;
 		}
-		
-		$smarty->assign_by_ref("notification",$n);
-		
-	}
+	} else {
+		$profile=new GeographUser($USER->user_id);
 
+		$freqs = array('disabled','daily','weekly','monthly');
+
+		$items = array(
+		'featured'=>array('title'=>'Featured Images'),
+		'collection'=>array('title'=>'In Collections'),
+		'forum'=>array('title'=>'Forum/Galleries'),
+		'thumbed'=>array('title'=>'Thumbed'),
+		'gallery'=>array('title'=>'Showcase Gallery'),
+		'squares'=>array('title'=>'My Squares (images submitted to squares you\'ve submitted images to)'),
+		'photos'=>array('title'=>'Photo Descriptions (Other photos that link directly to yours)'),
+		);
+
+
+		$bits = explode('|',$USER->getPreference('notification.myphotos',''));
+		$smarty->assign('freq',$bits[0]);
+		if (!empty($bits[1])) {
+			foreach (explode(",",$bits[1]) as $key) {
+				$items[$key]['checked'] = true;
+			}
+		}
+
+		$smarty->assign_by_ref('freqs', $freqs);
+		$smarty->assign_by_ref('items', $items);
+
+	}
 }
 
 
@@ -257,7 +271,7 @@ if ($template=='profile.tpl')
 			exit;
 		}
 		
-		$profile->getStats();
+		$profile->getStats(!empty($_GET['id']));
 		
 		if ($uid==$USER->user_id && empty($_GET['id'])) {
 			$profile->countTickets();
@@ -335,7 +349,7 @@ function smarty_function_TruncateWithExpand($input,$more = 'Click here to Read M
 			$after = $bits[1];
 		} else {
 			preg_match('/^(.{300,}?)(?![\w\d\[\]\'])(.*)/s',$input,$m);
-			$input = $m[1];
+			$input = str_replace('[--more--]',' ',$m[1]);
 			if (!preg_match("/[\.\n]+\$/",$input)) {
 				$input .= " ...";
 			}
