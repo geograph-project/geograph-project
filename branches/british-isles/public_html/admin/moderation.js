@@ -68,6 +68,15 @@ function moderateImage(gridimage_id, status)
 			var divInfo=document.getElementById('modinfo'+gridimage_id);
 			divInfo.innerHTML=req.responseText;
 
+			if (document.forms['counter']) {
+				var f = document.forms['counter'];
+				f.elements['done'].value = parseInt(f.elements['done'].value,10)+1;
+				if (f.elements['done'].value == f.elements['total'].value) {
+					f.style.backgroundColor = 'lightgreen';
+				}
+				f.style.display='';
+			}
+
 			//patch the memory leak
 			req.onreadystatechange = function() {};
 		}

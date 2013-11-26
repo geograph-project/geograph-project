@@ -11,6 +11,9 @@
 	
 	
 {dynamic}
+
+{$status_message}
+
 {if $remoderate}{literal}
 <script type="text/javascript">
 	remoderate = true;
@@ -41,7 +44,7 @@
 		<li>Sometimes a button is grayed out, this is at the suggestion of the submitter themselves, and/or the system. Please moderate as you normally would, but you can take the suggestion into account. </li>
 	
 		{if !$apply}
-			<li><span style="color:red">New!</span> Can now rate images at during moderation. '3' stars is average, and is the same as no vote.</li>
+			<li>Can now rate images at during moderation. '3' stars is average, and is the same as no vote.</li>
 		{/if}
 	{/if}
 
@@ -58,7 +61,7 @@
 	  <div style="margin-left:233px"> 
 	  
 	  square: <b><a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></b> ({$image->imagecount} images) &nbsp;&nbsp; category: <b><a href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}&amp;do=1">{$image->imageclass}</a></b><br/>
-	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b> ({$image->images} images)<br/>
+	  by: <b><a title="view user profile" href="{$image->profile_link}">{$image->realname}</a></b> <span{if $image->images<11} style="background-color:yellow"{/if}>({$image->images} images)</span><br/>
 	  title: <b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> (<a href="/editimage.php?id={$image->gridimage_id}">edit</a>)<br/>
 	  
 	  {if $image->comment}
@@ -128,6 +131,10 @@
 	{elseif $remoderate}
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a></div>
 	{/if}
+	<form name="counter" style="display:none">
+		Progress: <input type=text size=2 name="done" value="0" readonly />/
+		<input type=text size=2 name="total" value="{$unmoderatedcount}" readonly />
+	</form>
 {else}
 
 	<p>There are no images available to moderate at this time!</p>
