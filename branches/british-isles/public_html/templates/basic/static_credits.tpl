@@ -13,17 +13,18 @@
         <a href="/article/Get-Involved">Get Involved...</a>
 </div>
 <div style="position:relative;" class="interestBox">
-	<h2 align="center" style="margin:0">Credits</h2>
+	<h2 style="margin:0">Project Credits</h2>
 </div>
 
  
-    Here are all the people and technologies that make this site possible...
+    <p>Here are all the people and technologies that make this site possible...</p>
     
     <h3>Original Idea</h3>
     <ul>
-    <li>{mailto address="rogersgm@gmail.com" text="Gary Rogers" encode="javascript"} came up with original concept.</li>
+    <li><a href="/profile/1">Gary Rogers</a> came up with original concept.</li>
     </ul>
 
+        <a name="photos"></a>
     <h3>Photographs</h3>
     <ul>
     <li>Copyright on all photographs is retained by the original contributors, but all are 
@@ -32,32 +33,36 @@
     <li>View the <a href="/credits/">Photograph Contributor Listing</a>.</li>
     </ul>
     
+	<a name="software"></a>    
     <h3>Software</h3>
     <ul>
-    <li>{mailto address="paul@elphin.com" text="Paul Dixon" encode="javascript"} manages the
-    software development as an open-source, GPL licensed project, and is responsible for 
-    much of the coding / design, as well as specifying and building the dedicated server farm. 
+    <li><a href="/profile/2">Paul Dixon</a>, created the
+    software as an open-source, GPL licensed project, and is responsible for 
+    much of the original coding / design, as well as building the first dedicated server farm. 
     Paul can be contracted through his company {external href="http://www.elphin.com/" title="Elphin Limited" text="Elphin Limited"}.</li>
     
-    <li>{mailto address="geo@barryhunter.co.uk" text="Barry Hunter" encode="javascript"}, 
-    developer and maintainer of 
+    <li><a href="/profile/3">Barry Hunter</a>, developer and maintainer of 
     {external title="Nearby.org.uk Website" href="http://www.nearby.org.uk" text="www.nearby.org.uk"} lends his wide experience of working with 
-    mapping technologies and was responsible for the site search, as well as 
-    contributing many other enhancements.</li>
-    
-    <li>Ian Rutson contributed to the Memory Map export features.</li>
-    
-    <li>David Morris has helped with the profile features and a bulk standalone upload application - JUppy.</li>
+    mapping technologies and is responsible many of the site search and mapping features, as well as 
+    contributing many other enhancements. Now takes care of the day to day running of the site servers.</li>
     
     <li>{external href="http://geo-en.hlipp.de/profile/1" text="Hansj&ouml;rg Lipp"} has fixed many a bug in the core code, during the creation of {external href="http://geo-en.hlipp.de/" text="Geograph Germany"}.</li>
+
+    <li><a href="/profile/80">Ian Rutson</a> contributed to the Memory Map export features.</li>
+    
+    <li><a href="/profile/2407">David Morris</a> has helped with the profile features and a bulk standalone upload application - JUppy.</li>
+
+    <li><a href="/profile/2520">Rudi Winter</a> created the <a href="/geotrips/">GeoTrips</a> section.</li>
     
     </ul>
-    
+
+        <a name="team"></a>
     <h3>Moderators</h3>
     <ul>
     <li>A growing number of volunteer moderators drawn from the contributor list, donate their time and effort to help sort and maintain the image archive. View <a href="/team.php">the Geograph Team</a> for the list of current and past moderators.</li>
     </ul>
     
+	<a name="data"></a>    
     <h3>Mapping &amp; Location Data</h3>
     <ul>
     <li>Historical Maps from the mid 20<sup>th</sup> century kindly made available by 
@@ -86,16 +91,20 @@
     <li>UK Unit Postcodes, from OS OpenData : <i>Contains Royal Mail data &copy Royal mail copyright and database right 2010.</i></li>
     </ul>
     
+	<a name="hosting"></a>    
     <h3>Hosting</h3>
     <ul>
-     <li>{external href="http://www.ordnancesurvey.co.uk/oswebsite/education/" text="Ordnance Survey&reg;"} Great Britain have agreed to sponsor the project, allowing us to secure reliable hosting, as well as to develop the project into an educational context.</li>
+     <li>{external href="http://www.ordnancesurvey.co.uk/education-research/" text="Ordnance Survey&reg;"} Great Britain have agreed to sponsor the project, allowing us to secure reliable hosting, as well as to develop the project into an educational context.</li>
      
      <li>{external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"}/{external title="Visit Fubra website" href="http://catn.com/" text="CatN"} provide superb co-location hosting and support, giving a home to {external href="http://blog.dixo.net/2006/07/28/geograph-servers-coming-to-life/" text="our collection of servers"}.</li> 
-     <li>During the early days of the project, we relied on a dedicated server generously donated by {external title="Visit Positive Internet website" href="http://www.positive-internet.com/" text="Positive Internet"}.</li> 
+
+     <li>{external title="Visit World of Computers website" href="http://www.woc.co.uk/" text="World of Computers"} build all our servers. Reliable machines coupled with great technical support.</li>
+
+     <li><small>During the early days of the project, we relied on a dedicated server generously donated by {external title="Visit Positive Internet website" href="http://www.positive-internet.com/" text="Positive Internet"}.</small></li> 
 
     </ul>
 
-
+	<a name="apis"></a>    
     <h3>Supporting Functionality</h3>
     <p>The following support Geograph in various functions:</p>
     
@@ -106,7 +115,8 @@
      <li>{external href="http://www.easyalgo.com/eaflashupload.aspx" title="Upload multiple files with" text="EAFlashUpload flash file uploader"}</li>
     </ul>
     <p>NOTE: use of these features does not imply endorsement by the host organizations</p>
-    
+
+	<a name="technology"></a>    
     <h3>Technology</h3>
     <p>This project relies on the following open-source technologies:</p>
     
@@ -117,9 +127,12 @@
     {external title="Sphinx Full Text Search" href="http://www.sphinxsearch.com/" text='<img src="/img/sphinx_silver.gif" width="88" height="31" alt="powered by Sphinx"/>'}
      </div>
    
-   <p>In addition www.geograph.org.uk uses:<br/> Linux (Debian &amp; Ubuntu), Apache, <b>{external href="http://www.danga.com/memcached/" text="memcached"}</b>, munin, nfs, haproxy, varnish and {external href="http://mmonit.com/" text="m/monit"}.<br/> to deliver a high performance website - but are not required to run the Geograph codebase.</p/>
+    <p>In addition www.geograph.org.uk uses:<br/> 
+	&nbsp;&nbsp; Linux ({external href="http://www.ubuntu.com/" text="Ubuntu"}), {external href="http://httpd.apache.org/Apache"}, {external href="http://www.danga.com/memcached/" text="memcached"}, {external href="http://redis.io/" text="redis"}, {external href="http://munin-monitoring.org/" text="munin"}, {external href="http://nfs.sourceforge.net/" text="nfs"}, {external href="http://haproxy.1wt.eu/" text="haproxy"}, {external href="https://www.varnish-cache.org/" text="varnish"}, and {external href="http://mmonit.com/" text="m/monit"}.<br/>
+	 to deliver a high performance website - but are not <b>required</b> to run the Geograph codebase.</p/>
    
    
+	<a name="code"></a>    
     <h3>Code Libaries</h3>
     <p>We have reused code from following open-source projects:</p>
     <ul>
