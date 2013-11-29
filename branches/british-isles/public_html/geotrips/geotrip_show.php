@@ -77,16 +77,28 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
   if ($bbox[2]-$bbox[0]>4000||$bbox[3]-$bbox[1]>3000) $scale=7;
   else $scale=8;
-  $search=$trk['search'];
   $track=explode(' ',$trk['track']);
   $len=count($track);
   // fetch Geograph data
-  $cachefile=fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i=$search&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1&big=1");
-//print_r($cachefile);
-  $csvf=fopen($cachefile,'r') or die('Geograph seems to be down at the moment.  Please try again in a few moments.');
-  fgets($csvf);  // discard header
-  while ($line=fgetcsv($csvf,4092,',','"')) if ($line[10]) $geograph[]=$line;  // only show pictures with camera position
-  fclose($csvf);
+	$engine = new SearchEngine($trk['search']);
+	$engine->criteria->resultsperpage = 250; // FIXME really?
+	$recordSet = $engine->ReturnRecordset(0, true);
+	while (!$recordSet->EOF) {
+		$image = $recordSet->fields;
+		if (    $image['nateastings']
+		    &&  $image['viewpoint_eastings']
+		    &&  $image['user_id'] == $trk['uid']
+		    &&  $image['viewpoint_grlen'] > 4
+		    &&  $image['natgrlen'] > 4
+		    && (   $image['view_direction'] != -1
+		        || $image['viewpoint_eastings']  != $image['nateastings']
+		        || $image['viewpoint_northings'] != $image['natnorthings'])
+		    &&  $image['imagetaken'] === $trk['date']
+		) {
+			$geograph[] = $image;
+		}
+		$recordSet->MoveNext();
+	}
 ?>
 
 <script type="text/javascript">
@@ -115,44 +127,46 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
     $len=count($geograph);
     for ($i=0;$i<$len;$i++) {
       // shift marker to centre of square indicated by GR
-      $geograph[$i]=fake_precision($geograph[$i]);
+      fake_precision($geograph[$i]);
+      $image = new GridImage();
+      $image->fastInit($geograph[$i]);
 ?>
       // Define camera marker
-      pos=new OpenSpace.MapPoint(<?php print("{$geograph[$i][10]},{$geograph[$i][11]}");?>);
+      pos=new OpenSpace.MapPoint(<?php print("{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']}");?>);
       size=new OpenLayers.Size(9,9);
       offset=new OpenLayers.Pixel(-4,-9);    // No idea why offset=-9 rather than -4 but otherwise the view line doesn't start at the centre
       infoWindowAnchor=new OpenLayers.Pixel(4,4);
       icon=new OpenSpace.Icon('walk.png',size,offset,null,infoWindowAnchor);
 //<![CDATA[
       content='<p>';
-      content+='<a href=\"http://www.geograph.org.uk/photo/<?php print($geograph[$i][0]);?>\">';
-      content+='<img alt=\"<?php print(sanitise($geograph[$i][1]));?>\" src=\"';
-      content+='<?php print(str_replace("_120x120.jpg","_213x160.jpg",$geograph[$i][6]));?>';
-      content+='\"</a>';
+      content+='<a href=\"/photo/<?php print($geograph[$i]['gridimage_id']);?>\">';
+      content+='<img alt=\"<?php print(sanitise($geograph[$i]['title']));?>\" src=\"';
+      content+='<?php print($image->getThumbnail(213,160,true));?>';
+      content+='\"></a>';
       content+='</p><p>';
-      content+='<strong><?php print(sanitise($geograph[$i][1]));?></strong>';
+      content+='<strong><?php print(sanitise($geograph[$i]['title']));?></strong>';
       content+='</p><p>';
-      content+='<?php print(sanitise($geograph[$i][5]));?>';
+      content+='<?php print(sanitise($geograph[$i]['comment']));?>';
       content+='</p><p>';
       content+='View full image on ';
-      content+='<a href=\"http://www.geograph.org.uk/photo/<?php print($geograph[$i][0]);?>\">';
+      content+='<a href=\"/photo/<?php print($geograph[$i]['gridimage_id']);?>\">';
       content+='Geograph Britain&amp;Ireland</a> ';
-      content+='<img alt=\"external link\" title=\"\" src=\"http://s1.geograph.org.uk/img/external.png\" />';
+      content+='<img alt=\"external link\" title=\"\" src=\"http://<?php echo $CONF['STATIC_HOST']; ?>/img/external.png\" />';
       content+='</p>';
 //]]>
       popUpSize=new OpenLayers.Size(300,320);
       osMap.createMarker(pos,icon,content,popUpSize);
       // Define view direction
       vdir=new Array();
-      vdir.push(new OpenLayers.Geometry.Point(<?php print("{$geograph[$i][10]},{$geograph[$i][11]}");?>));
+      vdir.push(new OpenLayers.Geometry.Point(<?php print("{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']}");?>));
 <?php
-      if ($geograph[$i][7]!=$geograph[$i][10]||$geograph[$i][8]!=$geograph[$i][11]) {  // subject GR != camera GR
+      if ($geograph[$i]['nateastings']!=$geograph[$i]['viewpoint_eastings']||$geograph[$i]['natnorthings']!=$geograph[$i]['viewpoint_northings']) {  // subject GR != camera GR
 ?>
-        vdir.push(new OpenLayers.Geometry.Point(<?php print("{$geograph[$i][7]},{$geograph[$i][8]}");?>));
+        vdir.push(new OpenLayers.Geometry.Point(<?php print("{$geograph[$i]['nateastings']},{$geograph[$i]['natnorthings']}");?>));
 <?php
       } else {
-        $ea=$geograph[$i][7]+round(100.*sin($geograph[$i][13]*M_PI/180.));
-        $no=$geograph[$i][8]+round(100.*cos($geograph[$i][13]*M_PI/180.));
+        $ea=$geograph[$i]['nateastings']+round(100.*sin($geograph[$i]['view_direction']*M_PI/180.));
+        $no=$geograph[$i]['natnorthings']+round(100.*cos($geograph[$i]['view_direction']*M_PI/180.));
 ?>
         vdir.push(new OpenLayers.Geometry.Point(<?php print("$ea,$no");?>));
 <?php
@@ -176,15 +190,17 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 <?php
   print('<h3>'.htmlentities($trk['location']).'</h3>');
   $date=date('D, j M Y',strtotime($trk['date']));
-  print('<h4>A '.whichtype($trk['type']).' from '.htmlentities($trk['start'])."</h4><h4>$date</h4><h4>by <a href=\"http://www.geograph.org.uk/profile/$trk[uid]\">".htmlentities($trk[user])."</a></h4><p style=\"text-align:center\">");
+  print('<h4>A '.whichtype($trk['type']).' from '.htmlentities($trk['start'])."</h4><h4>$date</h4><h4>by <a href=\"/profile/$trk[uid]\">".htmlentities($trk[user])."</a></h4><p style=\"text-align:center\">");
   // row of random images
   $selected=array();
   for ($i=0;$i<3;$i++) {
     $imgno=mt_rand(0,$len-1);
     if (!in_array($imgno,$selected)) {
-      $thumb=str_replace("_120x120.jpg","_213x160.jpg",$geograph[$imgno][6]);
-      print("<a href=\"/photo/{$geograph[$imgno][0]}\" title=\"".htmlentities($geograph[$imgno][1])."\">");
-      print("<img alt=\"".htmlentities($geograph[$imgno][1])."\" class=\"inner\" src=\"$thumb\" /></a>&nbsp;");
+      $image = new GridImage();
+      $image->fastInit($geograph[$imgno]);
+      $thumb=$image->getThumbnail(213,160,true)
+      print("<a href=\"/photo/{$geograph[$imgno]['gridimage_id']}\" title=\"".htmlentities($geograph[$imgno]['title'])."\">");
+      print("<img alt=\"".htmlentities($geograph[$imgno]['title'])."\" class=\"inner\" src=\"$thumb\" /></a>&nbsp;");
       $selected[]=$imgno;
     } else {
       $i--;
@@ -218,14 +234,13 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 Click the blue circles to see a photograph
 taken from that spot and read further information about the location.  The blue lines indicate
 the direction of view.  There is also a
-<a href="http://www.geograph.org.uk/search.php?i=<?php print($search);?>&amp;displayclass=slidebig">slideshow</a>
-<img alt="external link" title="" src="http://s1.geograph.org.uk/img/external.png" /> of this trip.
+<a href="/search.php?i=<?php print($trk['search']);?>&amp;displayclass=slidebig">slideshow</a> of this trip.
   </small></p></div>
   <div class="row"></div>
   <div id="map" class="inner" style="width:798px;height:800px"></div>
   <p style="font-size:.65em">
-All images &copy; <?php print("<a href=\"http://www.geograph.org.uk/profile/{$trk['uid']}\">".htmlentities($trk['user'])."</a>");?> and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">
-Creative Commons licence</a> <img alt="external link" title="" src="http://s1.geograph.org.uk/img/external.png" />.
+All images &copy; <?php print("<a href=\"/profile/{$trk['uid']}\">".htmlentities($trk['user'])."</a>");?> and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">
+Creative Commons licence</a> <img alt="external link" title="" src="http://<?php echo $CONF['STATIC_HOST']; ?>/img/external.png" />.
   </p>
 </div>
 

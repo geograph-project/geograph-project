@@ -89,7 +89,7 @@ print "<h2><a href=\"./\">Geo-Trips</a> :: Submission Form</h2>";
           <p>
             <b>Geograph search id</b> <span class="hlt">(required)</span><br />
             <input type="text" name="search" size="72" /><br />
-            (e.g. <em>12345678</em> or <em>http://www.geograph.org.uk/search.php?i=12345678</em>)
+            (e.g. <em>12345678</em> or <em>http://<? echo $_SERVER['HTTP_HOST']; ?>/search.php?i=12345678</em>)
           </p>
           <ul>
             <li>
@@ -100,12 +100,12 @@ The search id is the number at the end of the web address (URL) of the page that
 results.  You can either copy and paste the whole address line or just the id number.
             </li>
             <li>
-The <a href="http://www.geograph.org.uk/search.php?form=advanced">search</a> should include only
+The <a href="/search.php?form=advanced">search</a> should include only
 images <b>taken by yourself on the same day</b>, in date-submitted order (assuming you've submitted
 in the order they were taken).
             </li>
             <li>
-Here is a list of <a target="_blank" href="http://www.geograph.org.uk/stuff/latestdays.php">
+Here is a list of <a target="_blank" href="/stuff/latestdays.php">
 your ten most recent days out</a> (opens in a new window),
 with pre-defined searches.  Click one of the links in the list, and paste the URL of the
 search results page that you get.
@@ -172,7 +172,7 @@ to your computer.
           <p>
             <b>Geograph image id</b> (optional)<br />
             <input type="text" name="img" size="72" /><br />
-            (e.g. <em>1234567</em> or <em>http://www.geograph.org.uk/photo/1234567</em>)
+            (e.g. <em>1234567</em> or <em>http://<? echo $_SERVER['HTTP_HOST']; ?>/photo/1234567</em>)
           </p>
           <ul>
             <li>
@@ -204,7 +204,7 @@ no need to repeat them here.
           <p>
             <b>Continuation from previous trip</b> (optional)<br />
             <input type="text" name="contfrom" size="72" /><br />
-            (e.g. <em>123</em> or <em>http://www.geograph.org.uk/geotrips/geotrip_show.php?trip=123</em> or <em>http://www.geograph.org.uk/geotrips/123</em>)
+            (e.g. <em>123</em> or <em>http://<? echo $_SERVER['HTTP_HOST']; ?>/geotrips/geotrip_show.php?trip=123</em> or <em>http://<? echo $_SERVER['HTTP_HOST']; ?>/geotrips/123</em>)
           </p>
           <ul>
             <li>
@@ -224,21 +224,34 @@ URL here.  This will create links in both directions.
         // fetch Geograph data
         $search=explode('=',$_POST['search']);
         $search=intval($search[sizeof($search)-1]);
-        @$csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i=$search&count=250&taken=1&en=1&thumb=1&desc=1&dir=1&ppos=1&big=1"),'r') or die('Geograph seems to be down at the moment.  Please don\'t navigate away from this page and press F5 in a few minutes.');
-        fgets($csvf);  // discard header
-        while ($line=fgetcsv($csvf,4092,',','"')) {
-          if (
-            $line[10]                                                  // camera position defined
-            && $line[3]==$USER->realname                               // taken by submitter
-            && $line[12]>4                                             // camera position at least six figures
-            && ($line[14]||$line[7]!=$line[10]||$line[8]!=$line[11])   // view direction given, or camera and subject different
-          ) {
-            $geograph[]=$line;
-          }
-        }
-        fclose($csvf);
-        $len=count($geograph);                                         // taken on the same day
-        for ($i=1;$i<$len;$i++) if ($geograph[$i][13]!=$geograph[0][13]) $geograph=0;
+
+	require_once('geograph/searchcriteria.class.php');
+	require_once('geograph/searchengine.class.php');
+	$geograph = array();
+	$engine = new SearchEngine($search);
+	$engine->criteria->resultsperpage = 250; // FIXME really?
+	$recordSet = $engine->ReturnRecordset(0, true);
+	while (!$recordSet->EOF) {
+		$image = $recordSet->fields;
+		if (    $image['nateastings']
+		    &&  $image['viewpoint_eastings']
+		    #&&  $image['realname'] == $USER->realname
+		    &&  $image['user_id'] == $USER->user_id
+		    &&  $image['viewpoint_grlen'] > 4
+		    &&  $image['natgrlen'] > 4
+		    && (   $image['view_direction'] != -1
+		        || $image['viewpoint_eastings']  != $image['nateastings']
+		        || $image['viewpoint_northings'] != $image['natnorthings'])
+		) {
+			if ($geograph[0]['imagetaken'] != $image['imagetaken']) { // taken on the same day
+				$geograph = array();
+				break;
+			}
+			$geograph[] = $image;
+		}
+		$recordSet->MoveNext();
+	}
+	$recordSet->Close();
         if (count($geograph)<3) {   // we need three different images for the thumbnails at the top
 ?>
           <div class="panel maxi">
@@ -262,8 +275,9 @@ and there need to be at least three images matching these criteria in your searc
         // extract coordinates from GPX file
         $trk='';
         if (file_exists($_FILES['gpxfile']['tmp_name'])) {
+          $trkpt = array();
           $gpxf=fopen($_FILES['gpxfile']['tmp_name'],'r');
-          $xml_data=fread($gpxf,999999);
+          $xml_data=fread($gpxf,filesize($_FILES['gpxfile']['tmp_name']));
           fclose($gpxf);
           $xml_parser=xml_parser_create();
           xml_set_element_handler($xml_parser,'xml_startTag',null);
@@ -280,19 +294,23 @@ and there need to be at least three images matching these criteria in your searc
         } else {
           $len=count($geograph);
           for ($i=0;$i<$len;$i++) {
-            $ee[$i]=$geograph[$i][10];
-            $nn[$i]=$geograph[$i][11];
+            $ee[$i]=$geograph[$i]['viewpoint_eastings'];
+            $nn[$i]=$geograph[$i]['viewpoint_northings'];
           }
         }
         $ee=array_filter($ee);  // remove zero eastings/northings (camera position missing)
         $nn=array_filter($nn);
         $bbox=min($ee).' '.min($nn).' '.max($ee).' '.max($nn);
         // database update
-        if ($_POST['img']) {
+        $img = 0;
+        if (isset($_POST['img'])) { // FIXME check if valid image and taken by this user (taken on that day etc.?)
           $img=explode('/',$_POST['img']);
           $img=intval($img[sizeof($img)-1]);
-        } else $img=$geograph[0][0];
-        if ($_POST['contfrom'] && preg_match('/(\d+)\s*$/',$_POST['contfrom'],$m)) {
+        }
+        if (!$img) {
+          $img=$geograph[0]['gridimage_id'];
+        }
+        if (!empty($_POST['contfrom']) && preg_match('/(\d+)\s*$/',$_POST['contfrom'],$m)) {
           $contfrom=intval($m[1]);
         } else $contfrom=0;
         
@@ -303,13 +321,13 @@ and there need to be at least three images matching these criteria in your searc
         $query=$query."'".mysql_real_escape_string($_POST['loc'])."',";
         $query=$query."'".mysql_real_escape_string($_POST['start'])."',";
         $query=$query."'".mysql_real_escape_string($_POST['title'])."',";
-        $query=$query."'".$geograph[0][13]."',";
+        $query=$query."'".$geograph[0]['imagetaken']."',";
         $query=$query."'".$bbox."',";
         $query=$query."'".$trk."',";
         $query=$query.$search.",";
         $query=$query.$img.",";
         $query=$query."'".mysql_real_escape_string($_POST['descr'])."',";
-        $query=$query.date('U').",";
+        $query=$query."NOW(),";
         $query=$query.$contfrom.',null)';
         
         $db->Execute($query);

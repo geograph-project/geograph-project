@@ -187,8 +187,7 @@ is still included, or choose a new one.
 			    &&  $image['natgrlen'] > 4
 			    && (   $image['view_direction'] != -1 
 			        || $image['viewpoint_eastings'] != $image['nateastings']
-			        || $image['viewpoint_northings'] != $image['natnorthings']
-			        || $image['viewpoint_refindex']  != $image['reference_index'])
+			        || $image['viewpoint_northings'] != $image['natnorthings'])
 			    &&  $image['imagetaken'] === $trip['date'] //FIXME allow update of date but require all dates to be identical?
 			) {
 				$geograph[] = $image;
@@ -245,8 +244,7 @@ If you've made changes to any other fields, these will have been updated.
             }
           }
           $bbox=min($ee).' '.min($nn).' '.max($ee).' '.max($nn);
-          $db->Execute("update geotrips set track='$trk' where id={$trip['id']}");
-          $db->Execute("update geotrips set bbox='$bbox' where id={$trip['id']}");
+          $db->Execute("update geotrips set track='$trk', bbox='$bbox' where id={$trip['id']}");
         }
         if ($_POST['contfrom']=="") $_POST['contfrom']="0";
         if ($_POST['contfrom']!=$trip['contfrom'] && preg_match('/(\d+)\s*$/',$_POST['contfrom'],$m)) {
