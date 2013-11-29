@@ -118,22 +118,21 @@ function sanitise($str) {
   return addslashes($str);
 }
 
-function fake_precision($geo) {
-  if ($geo[9]==8) {
-    $geo[7]+=5;
-    $geo[8]+=5;
-  } elseif ($geo[9]==6) {
-    $geo[7]+=50;
-    $geo[8]+=50;
+function fake_precision(&$geo) {
+  if ($geo['natgrlen']==8) {
+    $geo['nateastings']+=5;
+    $geo['natnorthings']+=5;
+  } elseif ($geo['natgrlen']==6) {
+    $geo['nateastings']+=50;
+    $geo['natnorthings']+=50;
   }
-  if ($geo[12]==8) {
-    $geo[10]+=5;
-    $geo[11]+=5;
-  } elseif ($geo[12]==6) {
-    $geo[10]+=50;
-    $geo[11]+=50;
+  if ($geo['viewpoint_grlen']==8) {
+    $geo['viewpoint_eastings']+=5;
+    $geo['viewpoint_northings']+=5;
+  } elseif ($geo['viewpoint_grlen']==6) {
+    $geo['viewpoint_eastings']+=50;
+    $geo['viewpoint_northings']+=50;
   }
-  return $geo;
 }
 
 $lookup=array(0=>"SV",10=>"SW",20=>"SX",30=>"SY",40=>"SZ",50=>"TV",60=>"TW",1=>"SQ",11=>"SR",21=>"SS",31=>"ST",41=>"SU",51=>"TQ",61=>"TR",2=>"SL",12=>"SM",22=>"SN",32=>"SO",42=>"SP",52=>"TL",62=>"TM",3=>"SF",13=>"SG",23=>"SH",33=>"SJ",43=>"SK",53=>"TF",63=>"TG",4=>"SA",14=>"SB",24=>"SC",34=>"SD",44=>"SE",54=>"TA",64=>"TB",5=>"NV",15=>"NW",25=>"NX",35=>"NY",45=>"NZ",55=>"OV",65=>"OW",6=>"NQ",16=>"NR",26=>"NS",36=>"NT",46=>"NU",56=>"OQ",66=>"OR",7=>"NL",17=>"NM",27=>"NN",37=>"NO",47=>"NP",57=>"OL",67=>"OM",8=>"NF",18=>"NG",28=>"NH",38=>"NJ",48=>"NK",58=>"OF",68=>"OG",9=>"NA",19=>"NB",29=>"NC",39=>"ND",49=>"NE",59=>"OA",69=>"OB",110=>"HW",210=>"HX",310=>"HY",410=>"HZ",111=>"HR",211=>"HS",311=>"HT",411=>"HU",112=>"HM",212=>"HN",312=>"HO",412=>"HP");
