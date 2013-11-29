@@ -97,7 +97,7 @@ coordinates etc.), those changes will take up to a week before they make it thro
               <input type="text" name="search" size="72" value="<?php print($trip['search']); ?>" /><br />
             </p>
             <p>
-<a target="_blank" href="http://www.geograph.org.uk/search.php?i=<?php print($trip['search']); ?>&displayclass=more">This search</a>
+<a target="_blank" href="/search.php?i=<?php print($trip['search']); ?>&displayclass=more">This search</a>
 (opens in a new window) is currently in use.  To refine it, use the <em>mark</em> buttons on the search page.  When finished,
 click <em>view as search results</em> at the bottom of the search page.  Then copy the URL of the resulting custom search in the
 box above.
@@ -114,15 +114,14 @@ box above.
             </p>
             <hr style="color:#992233">
 <?php
-            // fetch Geograph thumbnail
-            $csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i={$trip['search']}&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1&big=1"),'r');
-            fgets($csvf);  // discard header
-            while ($line=fgetcsv($csvf,4092,',','"')) if ($line[0]==$trip['img']) $thumb=$line[6];
-            fclose($csvf);
-            $thumb=str_replace("_120x120.jpg","_213x160.jpg",$thumb);
+            require_once('geograph/gridimage.class.php');
+            $image = new GridImage($trip['img']);
+            if (!$image->isValid()) {
+              //FIXME
+            }
 ?>
             <div class="inner flt_r">
-              <img alt="" title="Currently selected featured image." src="<?php print($thumb); ?>" />
+              <img alt="" title="Currently selected featured image." src="<?php print($image->getThumbnail(213,160,true)); ?>" />
             </div>
             <p>
               <b>Geograph image id</b> (optional)<br />
@@ -172,19 +171,33 @@ is still included, or choose a new one.
         if ($_POST['search']&&$_POST['search']!=$trip['search']) {
           $search=explode('=',$_POST['search']);
           $search=intval($search[sizeof($search)-1]);
-          $cachepath="../cache/file".md5($url).".cache";
-          @$csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i=$search&count=250&taken=1&en=1&thumb=1&desc=1&dir=1&ppos=1"),'r') or die('Geograph seems to be down at the moment.  Please don\'t navigate away from this page and press F5 in a few minutes.');
-          fgets($csvf);  // discard header
-          while ($line=fgetcsv($csvf,4092,',','"')) {
-            if (
-              $line[10]                                                  // camera position defined
-              && $line[3]==$USER->realname                               // taken by submitter
-              && $line[12]>4                                             // camera position at least six figures
-              && ($line[14]||$line[7]!=$line[10]||$line[8]!=$line[11])   // view direction given, or camera and subject different
-              && $line[13]==$trip['date']
-            ) $geograph[]=$line;
-          }
-          fclose($csvf);
+		require_once('geograph/searchcriteria.class.php');
+		require_once('geograph/searchengine.class.php');
+		$geograph = array();
+		$engine = new SearchEngine($search);
+		$engine->criteria->resultsperpage = 250; // FIXME really?
+		$recordSet = $engine->ReturnRecordset(0, true);
+		while (!$recordSet->EOF) {
+			$image = $recordSet->fields;
+			if (    $image['nateastings']
+			    &&  $image['viewpoint_eastings']
+			    #&&  $image['realname'] == $USER->realname
+			    &&  $image['user_id'] == $USER->user_id
+			    &&  $image['viewpoint_grlen'] > 4
+			    &&  $image['natgrlen'] > 4
+			    && (   $image['view_direction'] != -1 
+			        || $image['viewpoint_eastings'] != $image['nateastings']
+			        || $image['viewpoint_northings'] != $image['natnorthings']
+			        || $image['viewpoint_refindex']  != $image['reference_index'])
+			    &&  $image['imagetaken'] === $trip['date'] //FIXME allow update of date but require all dates to be identical?
+			) {
+				$geograph[] = $image;
+			}
+			$recordSet->MoveNext();
+		}
+		$recordSet->Close();
+		//FIXME update bounding box if no track given
+		//FIXME search can change. we need a way to update the bounding box accordingly, e.g. everytime this form is submitted
           if (count($geograph)>=3)   // we need three different images for the thumbnails at the top
             $db->Execute("update geotrips set search=$search where id={$trip['id']}");
           else {
@@ -211,8 +224,12 @@ If you've made changes to any other fields, these will have been updated.
           }
         }
         if (file_exists($_FILES['gpxfile']['tmp_name'])) {
+          $ee = array();
+          $nn = array();
+          $trk='';
+          $trkpt = array();
           $gpxf=fopen($_FILES['gpxfile']['tmp_name'],'r');
-          $xml_data=fread($gpxf,999999);
+          $xml_data=fread($gpxf,filesize($_FILES['gpxfile']['tmp_name']));
           fclose($gpxf);
           $xml_parser=xml_parser_create();
           xml_set_element_handler($xml_parser,'xml_startTag',null);
@@ -243,8 +260,8 @@ Thanks for updating your trip.
           </p>
           <p>
 If all has gone well, the changes should be visible on the
-<a href="/geotrips/<?php print($_GET['trip']); ?>">trip page</a> now.  Please
-<a href="http://www.geograph.org.uk/usermsg.php?to=2520">let me know</a> if anything doesn't
+<a href="/geotrips/<?php print(intval($_GET['trip'])); ?>">trip page</a> now.  Please
+<a href="/contact_us.php">let us know</a> if anything doesn't
 work as expected.
           </p>
         </div>
@@ -262,20 +279,18 @@ You can only edit your own trips.  Choose one from the list below:
           else $title=htmlentities($trips[$i]['location'].' from '.$trips[$i]['start']);
           $descr=str_replace("\n",'</p><p>',htmlentities($trips[$i]['descr']));
           if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
-          // fetch Geograph thumbnail
-		  $csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i={$trips[$i]['search']}&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1"),'r');
-          fgets($csvf);  // discard header
-          $line=fgetcsv($csvf,4092,',','"');   // take the thumb of the first pic in case the requested one is beyond the 250 pic search limit...
-          $thumb=$line[6];
-          while ($line=fgetcsv($csvf,4092,',','"')) if ($line[0]==$trips[$i]['img']) $thumb=$line[6];  // ...then replace it if we can
-          fclose($csvf);
-          $thumb=str_replace("_120x120.jpg","_213x160.jpg",$thumb);
-          $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"http://www.geograph.org.uk/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://s1.geograph.org.uk/img/external.png\" /></span>";
+          require_once('geograph/gridimage.class.php');
+          $image = new GridImage($trips[$i]['img']);
+          if (!$image->isValid()) {
+            //FIXME
+          }
+          $thumb=$image->getThumbnail(213,160,true);
+          $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
           print('<div class="inner">');
           print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
           print("<b>$title</b><br />");
-          print("<em>".htmlentities($trips[$i]['location'])."</em> -- A ".whichtype($trips[$i]['type'])." from ".htmlentities($trips[$i]['start'])."<br />");
-          print("by <a href=\"http://www.geograph.org.uk/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a>");
+          print("<em>".htmlentities($trips[$i]['location'])."</em> &ndash; A ".whichtype($trips[$i]['type'], false)." from ".htmlentities($trips[$i]['start'])."<br />");
+          print("by <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a>");
           print("<p>$descr&nbsp;[<a href=\"geotrip_edit.php?trip={$trips[$i]['id']}\">edit</a>]</p>");
           print('<div class="row"></div>');
           print('</div>');
