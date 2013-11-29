@@ -87,13 +87,11 @@ if (!empty($str)) {
       $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
       $date=date('D, j M Y',strtotime($track['date']));
       // fetch Geograph thumbnail
-      $csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i={$track['search']}&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1&checkbig=1"),'r');
-      fgets($csvf);  // discard header
-      $line=fgetcsv($csvf,4092,',','"');   // take the thumb of the first pic in case the requested one is beyond the 250 pic search limit...
-      $thumb=$line[6];
-      while ($line=fgetcsv($csvf,4092,',','"')) if ($line[0]==$track['img']) $thumb=$line[6];  // ...then replace it if we can
-      fclose($csvf);
-      $thumb=str_replace("_120x120.jpg","_213x160.jpg",$thumb);
+      $image = new GridImage($track['img']);
+		if (!	$image->isValid()) {
+			//FIXME error handling
+		}
+      $thumb=$image->getThumbnail(213,160,true);
       if ($track['title']) $title=$track['title'];
       else $title=$track['location'].' from '.$track['start'];
       $loc=$track['location'];
@@ -216,13 +214,11 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
     if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
     $gr=bbox2gr($trks[$i]['bbox']);
     // fetch Geograph thumbnail
-    $csvf=fopen(fetch_url("http://www.geograph.org.uk/export.csv.php?key=7u3131n73r&i={$trks[$i]['search']}&count=250&en=1&thumb=1&desc=1&dir=1&ppos=1"),'r');
-    fgets($csvf);  // discard header
-    $line=fgetcsv($csvf,4092,',','"');   // take the thumb of the first pic in case the requested one is beyond the 250 pic search limit...
-    $thumb=$line[6];
-    while ($line=fgetcsv($csvf,4092,',','"')) if ($line[0]==$trks[$i]['img']) $thumb=$line[6];  // ...then replace it if we can
-    fclose($csvf);
-    $thumb=str_replace("_120x120.jpg","_213x160.jpg",$thumb);
+    $image = new GridImage($trks[$i]['img']);
+		if (!	$image->isValid()) {
+			//FIXME error handling
+		}
+    $thumb=$image->getThumbnail(213,160,true);
     $mmmyy=explode('-',$trks[$i]['date']);
     $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"http://www.geograph.org.uk/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://s1.geograph.org.uk/img/external.png\" /></span>";
     print('<div class="inner">');
