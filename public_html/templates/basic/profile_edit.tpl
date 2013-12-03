@@ -104,7 +104,7 @@
 	<label for="gravatar">Gravatar:</label>
 	<img src="http://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" align="left" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>
 	
-	<div class="fieldnotes">To set up or change your Avatar image, go to {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address as above.</div>
+	<div class="fieldnotes">To set up or change your Avatar image, go to {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address as above.. <br/>(Tick this box: <input type="checkbox" name="gravatar_reset"/> if you have recently uploaded a Gravatar)</div>
 
 </div>
 

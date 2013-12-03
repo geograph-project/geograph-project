@@ -2356,3 +2356,12 @@ CREATE TABLE `project_register` (
 
 #################################################
 
+
+alter table user add gravatar enum('unknown','found','none') not null default 'unknown';
+
+alter table user_archive add gravatar enum('unknown','found','none') not null default 'unknown';
+
+
+#################################################
+
+
