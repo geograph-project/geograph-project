@@ -711,7 +711,7 @@ class GeographUser
 			{
 			
 				//change email address
-				$sql="update user set email=".$db->Quote($arr['newemail'])." where user_id=".$db->Quote($arr['user_id']);
+				$sql="update user set email=".$db->Quote($arr['newemail']).",gravatar='unknown' where user_id=".$db->Quote($arr['user_id']);
 				$db->Execute($sql);
 
 				$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
@@ -964,6 +964,7 @@ class GeographUser
 				upload_size=%d,
 				submission_method=%s,
 				submission_new=%s,
+				gravatar=%s,
 				salt=%s,
 				password=%s
 				where user_id=%d",
@@ -986,6 +987,7 @@ class GeographUser
 				intval($profile['upload_size']),
 				$db->Quote(stripslashes($profile['submission_method'])),
 				$db->Quote(stripslashes($profile['submission_new'])),
+				$db->Quote($profile['gravatar_reset']?'unknown':$this->gravatar),
 				$db->Quote($salt),
 				$db->Quote($password),
 				$this->user_id

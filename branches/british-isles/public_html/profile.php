@@ -86,7 +86,9 @@ if (isset($_REQUEST['edit']))
 	'none' => 'No Initial Notifications' ));
 
 	$profile->getStats();
-	$profile->md5_email = md5(strtolower($profile->email));
+
+	if ($profile->gravatar && $profile->gravatar == 'found')
+		$profile->md5_email = md5(strtolower($profile->email));
 
 	$smarty->assign_by_ref('profile', $profile);
 }
