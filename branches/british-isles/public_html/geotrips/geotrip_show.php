@@ -37,6 +37,9 @@ if ($_SERVER['SERVER_ADDR']=='127.0.0.1') {
 } else {
 	require_once('geograph/global.inc.php');
 }
+require_once('geograph/searchcriteria.class.php');
+require_once('geograph/searchengine.class.php');
+
 init_session();
 
 $smarty = new GeographPage;
@@ -198,7 +201,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
     if (!in_array($imgno,$selected)) {
       $image = new GridImage();
       $image->fastInit($geograph[$imgno]);
-      $thumb=$image->getThumbnail(213,160,true)
+      $thumb=$image->getThumbnail(213,160,true);
       print("<a href=\"/photo/{$geograph[$imgno]['gridimage_id']}\" title=\"".htmlentities($geograph[$imgno]['title'])."\">");
       print("<img alt=\"".htmlentities($geograph[$imgno]['title'])."\" class=\"inner\" src=\"$thumb\" /></a>&nbsp;");
       $selected[]=$imgno;

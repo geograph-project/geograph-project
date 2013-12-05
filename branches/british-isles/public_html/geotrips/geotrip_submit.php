@@ -243,11 +243,11 @@ URL here.  This will create links in both directions.
 		        || $image['viewpoint_eastings']  != $image['nateastings']
 		        || $image['viewpoint_northings'] != $image['natnorthings'])
 		) {
+			$geograph[] = $image;
 			if ($geograph[0]['imagetaken'] != $image['imagetaken']) { // taken on the same day
 				$geograph = array();
 				break;
 			}
-			$geograph[] = $image;
 		}
 		$recordSet->MoveNext();
 	}
