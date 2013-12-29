@@ -41,7 +41,7 @@ $cacheid="$g.$l.$limit";
 
 if (isset($_GET['more'])) {
 	$smarty->clear_cache($template, $cacheid);
-} 
+}
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -50,8 +50,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed'); 
-	
+	if (!$db) die('Database connection failed');
+
 	/////////////
 	if ($l > -1) {
 		$where = "level = $l";
@@ -60,8 +60,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	if ($g > 0) {
 		$where .= " and game_id = $g";
-	} 
-	
+	} else {
+		$where .= " and game_id != 3";
+	}
+
 	$sql="select game_score_id,username,gs.user_id,realname,round(avg(level)) as level,sum(score) as score,sum(games) as games,sum(score)/sum(games) as average
 	from game_score gs
 		left join user using(user_id)
@@ -71,7 +73,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($_GET['debug'])
 		print $sql;
 	$topusers=$db->GetAssoc($sql);
-	
+
 	//assign an ordinal
 
 	$i=1;$lastscore = '?';
@@ -98,9 +100,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		$average += $entry['average'];
 		$score += $entry['score'];
 		$games += $entry['games'];
-	}	
-	
-	
+	}
+
 	if ($i > 1) {
 		$smarty->assign('average', sprintf("%.2f",$average/($i-1)));
 	} else {
@@ -110,13 +111,11 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('games', $games);
 	$smarty->assign('l', $l);
 	$smarty->assign('g', $g);
-	
+
 	$smarty->assign_by_ref('topusers', $topusers);
-	
+
 	$smarty->assign('cutoff_time', time()-86400*7);
 }
 
 $smarty->display($template, $cacheid);
 
-	
-?>

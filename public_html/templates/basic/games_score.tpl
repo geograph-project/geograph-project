@@ -11,18 +11,19 @@
 
 {if $user->registered}
 
-	<p>To save your {$game->score} points to your account, <a href="{$script_name}?save=user">click here</a></p> 
+	<p>To save your {$game->score} points to your account, <a href="{$script_name}?save=user{if $quiz_id}&amp;quiz_id={$quiz_id}{/if}">click here</a></p> 
 
 {else}
 
 	<p>To save your {$game->score} points, either:</p>
 	
 	<ol>
-		<li><a href="{$script_name}?login=1">Login</a> to save your scores to your account
+		<li><a href="{$script_name}?login=1{if $quiz_id}&amp;quiz_id={$quiz_id}{/if}">Login</a> to save your scores to your account
 		
 		<br/><br/><i>- or -</i><br/><br/></li>
 		
 		<li><form action="{$script_name}">
+		{if $quiz_id}<input type="hidden" name="quiz_id" value="{$quiz_id}"/>{/if}
 		<label for="username">Enter your name:</label> <input name="username" id="username" maxlength="64" value="{$username|escape:'html'}"/> <input type="submit" name="save" value="Save"/>
 		<br/><br/>
 		* Names are moderated and unsuitable ones are rejected.
