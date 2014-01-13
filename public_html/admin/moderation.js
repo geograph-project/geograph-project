@@ -14,6 +14,7 @@
  */
 
 var remoderate = false;
+var doneids = new Array();
 
 function getXMLRequestObject()
 {
@@ -70,7 +71,8 @@ function moderateImage(gridimage_id, status)
 
 			if (document.forms['counter']) {
 				var f = document.forms['counter'];
-				f.elements['done'].value = parseInt(f.elements['done'].value,10)+1;
+				doneids[gridimage_id]=1;
+				f.elements['done'].value = doneids.length;
 				if (f.elements['done'].value == f.elements['total'].value) {
 					f.style.backgroundColor = 'lightgreen';
 				}
