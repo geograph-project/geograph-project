@@ -14,7 +14,15 @@
  */
 
 var remoderate = false;
-var doneids = new Array();
+var doneids = new Object();
+
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
 
 function getXMLRequestObject()
 {
@@ -72,7 +80,7 @@ function moderateImage(gridimage_id, status)
 			if (document.forms['counter']) {
 				var f = document.forms['counter'];
 				doneids[gridimage_id]=1;
-				f.elements['done'].value = doneids.length;
+				f.elements['done'].value = Object.size(doneids);
 				if (f.elements['done'].value == f.elements['total'].value) {
 					f.style.backgroundColor = 'lightgreen';
 				}
