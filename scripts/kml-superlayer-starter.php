@@ -21,13 +21,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-require_once('geograph/global.inc.php');
 
-if (!isLocalIPAddress())
-{
-	init_session();
-        $USER->mustHavePerm("admin");
-}
+//these are the arguments we expect
+$param=array(
+        'dir'=>'/var/www/geograph_live', //base installation dir
+        'config'=>'www.geograph.org.uk', //effective config
+        'help'=>0,              //show script help?
+);
+
+require "./_scripts.inc.php";
 
 $db = GeographDatabaseConnection(false);
 
@@ -37,7 +39,7 @@ set_time_limit(3600*24);
 #####################
 
 
-print "Drop<br>";flush();
+print "Drop\n";
 
 $db->Execute("drop table if exists gridimage_kml");
 
@@ -45,14 +47,14 @@ $db->Execute("drop table if exists gridimage_kml");
 #####################
 
 
-print "Create<br>";flush();
+print "Create\n";
 
-#need to join gi and g2 as each contains columns not in the other. 
+#need to join gi and g2 as each contains columns not in the other.
 
 $db->Execute("
 create table gridimage_kml
 ENGINE = MYISAM
-select 
+select
 	gi.gridimage_id,
 	gi.x,
 	gi.y,
@@ -68,13 +70,13 @@ select
 	gi.point_xy,
 	0 as `tile`,
 	gs.imagecount
-from 
+from
 	gridimage_search gi
-	inner join gridsquare gs 
+	inner join gridsquare gs
 		using (grid_reference)
-	inner join gridimage g2 
+	inner join gridimage g2
 		on (gi.gridimage_id = g2.gridimage_id)
-order by 
+order by
 	imagecount desc,
 	(natgrlen != '4') desc,
 	(gi.moderation_status = 'geograph') desc,
@@ -82,22 +84,22 @@ order by
 
 # order preference:
 #  dense squares first (so they shown in the tile selection)
-#  higher percision first (so the 'first' image is less likly to be grid based.) 
-#  geograph first (so will show geograph first) 
+#  higher percision first (so the 'first' image is less likly to be grid based.)
+#  geograph first (so will show geograph first)
 #  then random so all images should get a a lookin
 
 #####################
 
 
-print "Index<br>";flush();
+print "Index\n";
 
 $db->Execute("ALTER IGNORE TABLE `gridimage_kml` ADD UNIQUE (`x` ,`y`) ");
 
-/* done by the unique index above! 
+/* done by the unique index above!
 print "Select<br>";flush();
 $db->Execute("
-delete from gridimage_kml 
-where gridimage_id <> ANY 
+delete from gridimage_kml
+where gridimage_id <> ANY
 	(select gridimage_id from gridimage_kml group by x,y)");
 */
 
@@ -105,9 +107,9 @@ where gridimage_id <> ANY
 #####################
 
 
-print "Temp<br>";flush();
+print "Temp\n";
 
-//need to create temp table as wont allow join withself in update (even in subquery) 
+//need to create temp table as wont allow join withself in update (even in subquery)
 $db->Execute("
 create TEMPORARY table gridimage_kml2 ENGINE=HEAP
 select gridimage_id from gridimage_kml group by x div 3,y div 3
@@ -118,30 +120,29 @@ $db->Execute("ALTER IGNORE TABLE `gridimage_kml2` ADD UNIQUE (gridimage_id) ");
 #####################
 
 
-print "Tile<br>";flush();
+print "Tile\n";
 
 $db->Execute("
-update gridimage_kml k,gridimage_kml2 k2 set k.tile = 1 
+update gridimage_kml k,gridimage_kml2 k2 set k.tile = 1
 where k.gridimage_id = k2.gridimage_id");
 
 
 #####################
 
 
-print "Spatial Index<br>";flush();
+print "Spatial Index\n";
 
 $db->Execute("ALTER TABLE `gridimage_kml` ADD SPATIAL KEY(point_xy)");
 
 
 #####################
 
-print "Start Rendering!<br>";flush();
+print "Start Rendering!\n";
 
 $db->Execute("update kmlcache set `rendered` = 0 where `level` = 1");
 
 
 
-print "END";
+print "END\n";
 exit;
 
-?>
