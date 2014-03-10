@@ -188,7 +188,7 @@ def replicate_now(path = '',mode=False):
     mount = config['folder']
     
     if 'statvfs' in dir(os):
-        s = os.statvfs(mount)
+        s = os.statvfs(mount+'/geograph_live/')
         bytes_free = (s.f_bavail * s.f_frsize) / 1024
         gigabytes = bytes_free / (1024 * 1024)
 
@@ -251,7 +251,10 @@ def replicate_now(path = '',mode=False):
                     print " size does not match '"+str(stat.st_size)+"' != '"+str(row['size'])+"'"
                     n=''
                     while os.path.exists(filename+'.old'+str(n)):
-                        n = int(n)+1
+                        if not n:
+                            n=1
+                        else:
+                            n = int(n)+1
                     os.rename(filename,filename+'.old'+str(n))
                     print " saved as "+filename+'.old'+str(n)
                     failures.append("exist_size,"+str(stat.st_size)+","+str(row['size'])+","+filename+",.old"+str(n))
@@ -260,7 +263,10 @@ def replicate_now(path = '',mode=False):
                     print " md5 checksum does not match '"+md5su+"' != '"+row['md5sum']+"'"
                     n=''
                     while os.path.exists(filename+'.old'+str(n)):
-                        n = int(n)+1
+                        if not n:
+                            n=1
+                        else:
+                            n = int(n)+1
                     os.rename(filename,filename+'.old'+str(n))
                     print " saved as "+filename+'.old'+str(n)
                     failures.append("exist_md5,"+md5su+","+row['md5sum']+","+filename+",.old"+str(n))
