@@ -1,0 +1,40 @@
+#
+# Email template: ticket.autoresp.yaml
+#
+# Sent to a user when a new ticket is created
+#
+---
+notes: |
+    Sent to a user when a new ticket is created
+
+subject: |
+    Support Ticket Opened [#%{ticket.number}]
+body: |
+    <h3><strong>Dear %{recipient.name.first},</strong></h3>
+    Our customer care team has created a ticket,
+    <a href="%{recipient.ticket_link}">#%{ticket.number}</a> on your behalf,
+    with the following details and summary: <br>
+    <br>
+    Subject: <strong>%{ticket.subject}</strong><br>
+    Submitted: <strong>%{ticket.create_date}</strong>
+    <br>
+    <br>
+    %{message}
+    <br>
+    <br>
+    A representative will follow-up with you as soon as possible. You can
+    <a href="%{recipient.ticket_link}">view this ticket's progress
+    online</a>.
+    <br>
+    <br>
+    <div style="color: rgb(127, 127, 127)">
+    Your %{company.name} Team,
+    <br>
+    %{signature}
+    </div>
+    <hr>
+    <div style="color: rgb(127, 127, 127); font-size: small; "><em>If you
+    wish to provide additional comments or information regarding the issue,
+    please reply to this email or <a href="%{recipient.ticket_link}"><span
+    style="color: rgb(84, 141, 212);" >login to your account</span></a> for
+    a complete archive of your support requests.</em></div>
