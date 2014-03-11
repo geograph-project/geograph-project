@@ -5,7 +5,7 @@
     Nothing special...just a central location for all cron calls.
     
     Peter Rotich <peter@osticket.com>
-    Copyright (c)  2006-2010 osTicket
+    Copyright (c)  2006-2013 osTicket
     http://www.osticket.com
 
     Released under the GNU General Public License WITHOUT ANY WARRANTY.
@@ -14,14 +14,13 @@
     TODO: The plan is to make cron jobs db based.
     
     vim: expandtab sw=4 ts=4 sts=4:
-    $Id: $
 **********************************************************************/
 //TODO: Make it DB based!
 class Cron {
 
     function MailFetcher() {
         require_once(INCLUDE_DIR.'class.mailfetch.php');
-        MailFetcher::fetchMail(); //Fetch mail..frequency is limited by email account setting.
+        MailFetcher::run(); //Fetch mail..frequency is limited by email account setting.
     }
 
     function TicketMonitor() {
@@ -32,13 +31,30 @@ class Cron {
     }
 
     function PurgeLogs() {
-        Sys::purgeLogs();
+        global $ost;
+        if($ost) $ost->purgeLogs();
+    }
+
+    function PurgeDrafts() {
+        require_once(INCLUDE_DIR.'class.draft.php');
+        Draft::cleanup();
+    }
+
+    function CleanOrphanedFiles() {
+        require_once(INCLUDE_DIR.'class.file.php');
+        AttachmentFile::deleteOrphans();
     }
 
     function run(){ //called by outside cron NOT autocron
-        Cron::MailFetcher();
-        Cron::TicketMonitor();
-        cron::PurgeLogs();
+        global $ost;
+        if (!$ost || $ost->isUpgradePending())
+            return;
+
+        self::MailFetcher();
+        self::TicketMonitor();
+        self::PurgeLogs();
+        self::CleanOrphanedFiles();
+        self::PurgeDrafts();
     }
 }
 ?>

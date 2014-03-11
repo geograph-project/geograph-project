@@ -1,65 +1,116 @@
-<? if(!defined('OSTSCPINC') || !is_object($thisuser) || !$thisuser->isStaff() || !is_object($nav)) die('Access Denied'); ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<?php
-if(defined('AUTO_REFRESH') && is_numeric(AUTO_REFRESH_RATE) && AUTO_REFRESH_RATE>0){ //Refresh rate
-echo '<meta http-equiv="refresh" content="'.AUTO_REFRESH_RATE.'" />';
-}
-?>
-<title>osTicket :: Staff Control Panel</title>
-<link rel="stylesheet" href="http://s0.geograph.org.uk/support/scp/css/main.css" media="screen">
-<link rel="stylesheet" href="http://s0.geograph.org.uk/support/scp/css/style.css" media="screen">
-<link rel="stylesheet" href="http://s0.geograph.org.uk/support/scp/css/tabs.css" type="text/css">
-<link rel="stylesheet" href="http://s0.geograph.org.uk/support/scp/css/autosuggest_inquisitor.css" type="text/css" media="screen" charset="utf-8" />
-<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/ajax.js"></script>
-<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/scp.js"></script>
-<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/tabber.js"></script>
-<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/calendar.js"></script>
-<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/bsn.AutoSuggest_2.1.3.js" charset="utf-8"></script>
-<?php
-if($cfg && $cfg->getLockTime()) { //autoLocking enabled.?>
-<script type="text/javascript" src="http://s0.geograph.org.uk/support/scp/js/autolock.js" charset="utf-8"></script>
-<?}?>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <title><?php echo ($ost && ($title=$ost->getPageTitle()))?$title:'osTicket :: Staff Control Panel'; ?></title>
+    <!--[if IE]>
+    <style type="text/css">
+        .tip_shadow { display:block !important; }
+    </style>
+    <![endif]-->
+    <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script type="text/javascript" src="../js/jquery.multifile.js"></script>
+    <script type="text/javascript" src="./js/tips.js"></script>
+    <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/redactor.min.js"></script>
+    <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/redactor-osticket.js"></script>
+    <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/redactor-fonts.js"></script>
+    <script type="text/javascript" src="./js/bootstrap-typeahead.js"></script>
+    <script type="text/javascript" src="./js/scp.js"></script>
+    <link rel="stylesheet" href="<?php echo ROOT_PATH ?>css/thread.css" media="screen">
+    <link rel="stylesheet" href="./css/scp.css" media="screen">
+    <link rel="stylesheet" href="<?php echo ROOT_PATH; ?>css/redactor.css" media="screen">
+    <link rel="stylesheet" href="./css/typeahead.css" media="screen">
+    <link type="text/css" href="<?php echo ROOT_PATH; ?>css/ui-lightness/jquery-ui-1.10.3.custom.min.css"
+         rel="stylesheet" media="screen" />
+     <link type="text/css" rel="stylesheet" href="<?php echo ROOT_PATH; ?>css/font-awesome.min.css">
+    <!--[if IE 7]>
+    <link rel="stylesheet" href="<?php echo ROOT_PATH; ?>css/font-awesome-ie7.min.css">
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="./css/dropdown.css">
+    <script type="text/javascript" src="./js/jquery.dropdown.js"></script>
+    <?php
+    if($ost && ($headers=$ost->getExtraHeaders())) {
+        echo "\n\t".implode("\n\t", $headers)."\n";
+    }
+    ?>
 </head>
 <body>
-<?php
-if($sysnotice){?>
-<div id="system_notice"><?php echo $sysnotice; ?></div>
-<?php 
-}?>
 <div id="container">
+    <?php
+    if($ost->getError())
+        echo sprintf('<div id="error_bar">%s</div>', $ost->getError());
+    elseif($ost->getWarning())
+        echo sprintf('<div id="warning_bar">%s</div>', $ost->getWarning());
+    elseif($ost->getNotice())
+        echo sprintf('<div id="notice_bar">%s</div>', $ost->getNotice());
+    ?>
     <div id="header">
-        <a id="logo" href="index.php" title="osTicket"><img src="http://s0.geograph.org.uk/support/scp/images/ostlogo.jpg" width="188" height="72" alt="osTicket"></a>
-        <p id="info">Welcome back, <strong><?=$thisuser->getUsername()?></strong> 
+        <a href="index.php" id="logo">osTicket - Customer Support System</a>
+        <p id="info">Welcome, <strong><?php echo $thisstaff->getFirstName(); ?></strong>
            <?php
-            if($thisuser->isAdmin() && !defined('ADMINPAGE')) { ?>
-            | <a href="admin.php">Admin Panel</a> 
-            <?}else{?>
+            if($thisstaff->isAdmin() && !defined('ADMINPAGE')) { ?>
+            | <a href="admin.php">Admin Panel</a>
+            <?php }else{ ?>
             | <a href="index.php">Staff Panel</a>
-            <?}?>
-            | <a href="profile.php?t=pref">My Preference</a> | <a href="logout.php">Log Out</a></p>
+            <?php } ?>
+            | <a href="profile.php">My Preferences</a>
+            | <a href="logout.php?auth=<?php echo $ost->getLinkToken(); ?>">Log Out</a>
+        </p>
     </div>
-    <div id="nav">
-        <ul id="main_nav" <?=!defined('ADMINPAGE')?'class="dist"':''?>>
-            <?
-            if(($tabs=$nav->getTabs()) && is_array($tabs)){
-             foreach($tabs as $tab) { ?>
-                <li><a <?=$tab['active']?'class="active"':''?> href="<?=$tab['href']?>" title="<?=$tab['title']?>"><?=$tab['desc']?></a></li>
-            <?}
-            }else{ //?? ?>
-                <li><a href="profile.php" title="My Preference">My Account</a></li>
-            <?}?>
-        </ul>
-        <ul id="sub_nav">
-            <?php
-            if(($subnav=$nav->getSubMenu()) && is_array($subnav)){
-              foreach($subnav as $item) { ?>
-                <li><a class="<?=$item['iconclass']?>" href="<?=$item['href']?>" title="<?=$item['title']?>"><?=$item['desc']?></a></li>
-              <?}
-            }?>
-        </ul>
-    </div>
-    <div class="clear"></div>
-    <div id="content" width="100%">
+    <ul id="nav">
+        <?php
+        if(($tabs=$nav->getTabs()) && is_array($tabs)){
+            foreach($tabs as $name =>$tab) {
+                echo sprintf('<li class="%s"><a href="%s">%s</a>',$tab['active']?'active':'inactive',$tab['href'],$tab['desc']);
+                if(!$tab['active'] && ($subnav=$nav->getSubMenu($name))){
+                    echo "<ul>\n";
+                    foreach($subnav as $k => $item) {
+                        if (!($id=$item['id']))
+                            $id="nav$k";
 
+                        echo sprintf('<li><a class="%s" href="%s" title="%s" id="%s">%s</a></li>',
+                                $item['iconclass'], $item['href'], $item['title'], $id, $item['desc']);
+                    }
+                    echo "\n</ul>\n";
+                }
+                echo "\n</li>\n";
+            }
+        } ?>
+    </ul>
+    <ul id="sub_nav">
+        <?php
+        if(($subnav=$nav->getSubMenu()) && is_array($subnav)){
+            $activeMenu=$nav->getActiveMenu();
+            if($activeMenu>0 && !isset($subnav[$activeMenu-1]))
+                $activeMenu=0;
+            foreach($subnav as $k=> $item) {
+                if($item['droponly']) continue;
+                $class=$item['iconclass'];
+                if ($activeMenu && $k+1==$activeMenu
+                        or (!$activeMenu
+                            && (strpos(strtoupper($item['href']),strtoupper(basename($_SERVER['SCRIPT_NAME']))) !== false
+                                or ($item['urls']
+                                    && in_array(basename($_SERVER['SCRIPT_NAME']),$item['urls'])
+                                    )
+                                )))
+                    $class="$class active";
+                if (!($id=$item['id']))
+                    $id="subnav$k";
+
+                echo sprintf('<li><a class="%s" href="%s" title="%s" id="%s">%s</a></li>',
+                        $class, $item['href'], $item['title'], $id, $item['desc']);
+            }
+        }
+        ?>
+    </ul>
+    <div id="content">
+        <?php if($errors['err']) { ?>
+            <div id="msg_error"><?php echo $errors['err']; ?></div>
+        <?php }elseif($msg) { ?>
+            <div id="msg_notice"><?php echo $msg; ?></div>
+        <?php }elseif($warn) { ?>
+            <div id="msg_warning"><?php echo $warn; ?></div>
+        <?php } ?>
