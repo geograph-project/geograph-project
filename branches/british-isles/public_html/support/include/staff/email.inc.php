@@ -1,200 +1,267 @@
 <?php
-if(!defined('OSTADMININC') || basename($_SERVER['SCRIPT_NAME'])==basename(__FILE__)) die('Habari/Jambo rafiki? '); //Say hi to our friend..
-if(!$thisuser || !$thisuser->isadmin()) die('Access Denied');
-
-$info=($_POST && $errors)?$_POST:array(); //Re-use the post info on error...savekeyboards.org
-if($email && $_REQUEST['a']!='new'){
-    $title='Edit Email'; 
+if(!defined('OSTADMININC') || !$thisstaff || !$thisstaff->isAdmin()) die('Access Denied');
+$info=array();
+$qstr='';
+if($email && $_REQUEST['a']!='add'){
+    $title='Update Email';
     $action='update';
-    if(!$info) {
-        $info=$email->getInfo();
-        $info['userpass']=$info['userpass']?Misc::decrypt($info['userpass'],SECRET_SALT):'';
-    }
-    $qstr='?t=email&id='.$email->getId();
-}else {
-   $title='New Email';
-   $action='create';
-   $info['smtp_auth']=isset($info['smtp_auth'])?$info['smtp_auth']:1;
-}
+    $submit_text='Save Changes';
+    $info=$email->getInfo();
+    $info['id']=$email->getId();
+    if($info['mail_delete'])
+        $info['postfetch']='delete';
+    elseif($info['mail_archivefolder'])
+        $info['postfetch']='archive';
+    else
+        $info['postfetch']=''; //nothing.
+    if($info['userpass'])
+        $passwdtxt='To change password enter new password above.';
 
-$info=Format::htmlchars($info);
-//get the goodies.
-$depts= db_query('SELECT dept_id,dept_name FROM '.DEPT_TABLE);
-$priorities= db_query('SELECT priority_id,priority_desc FROM '.TICKET_PRIORITY_TABLE);
+    $qstr.='&id='.$email->getId();
+}else {
+    $title='Add New Email';
+    $action='create';
+    $submit_text='Submit';
+    $info['ispublic']=isset($info['ispublic'])?$info['ispublic']:1;
+    $info['ticket_auto_response']=isset($info['ticket_auto_response'])?$info['ticket_auto_response']:1;
+    $info['message_auto_response']=isset($info['message_auto_response'])?$info['message_auto_response']:1;
+    $qstr.='&a='.$_REQUEST['a'];
+}
+$info=Format::htmlchars(($errors && $_POST)?$_POST:$info);
 ?>
-<div class="msg"><?=$title?></div>
-<table width="100%" border="0" cellspacing=0 cellpadding=0>
-<form action="admin.php<?=$qstr?>" method="post">
- <input type="hidden" name="do" value="<?=$action?>">
- <input type="hidden" name="a" value="<?=Format::htmlchars($_REQUEST['a'])?>">
- <input type="hidden" name="t" value="email">
- <input type="hidden" name="email_id" value="<?=$info['email_id']?>">
- <tr><td>
-    <table width="100%" border="0" cellspacing=0 cellpadding=2 class="tform">
-        <tr class="header"><td colspan=2>Email Info</td></tr>
-        <tr class="subheader">
-            <td colspan=2 >Settings are mainly for emailed tickets. For online/web tickets see help topics.</td>
+<h2>Email Address</h2>
+<form action="emails.php?<?php echo $qstr; ?>" method="post" id="save">
+ <?php csrf_token(); ?>
+ <input type="hidden" name="do" value="<?php echo $action; ?>">
+ <input type="hidden" name="a" value="<?php echo Format::htmlchars($_REQUEST['a']); ?>">
+ <input type="hidden" name="id" value="<?php echo $info['id']; ?>">
+ <table class="form_table" width="940" border="0" cellspacing="0" cellpadding="2">
+    <thead>
+        <tr>
+            <th colspan="2">
+                <h4><?php echo $title; ?></h4>
+                <em><strong>Email Information &amp; Settings</strong></em>
+            </th>
         </tr>
-        <tr><th>Email Address</th>
+    </thead>
+    <tbody>
+        <tr>
+            <td width="180" class="required">
+                Email Address
+            </td>
             <td>
-                <input type="text" name="email" size=30 value="<?=$info['email']?>">&nbsp;<font class="error">*&nbsp;<?=$errors['email']?></font>
+                <input type="text" size="35" name="email" value="<?php echo $info['email']; ?>">
+                &nbsp;<span class="error">*&nbsp;<?php echo $errors['email']; ?></span>
             </td>
         </tr>
-        <tr><th>Email Name:</th>
+        <tr>
+            <td width="180" class="required">
+                Email Name
+            </td>
             <td>
-                <input type="text" name="name" size=30 value="<?=$info['name']?>">&nbsp;<font class="error">&nbsp;<?=$errors['name']?></font>
-                &nbsp;&nbsp;(<i>Optional email's FROM name.</i>)
+                <input type="text" size="35" name="name" value="<?php echo $info['name']; ?>">
+                &nbsp;<span class="error">*&nbsp;<?php echo $errors['name']; ?>&nbsp;</span>
             </td>
         </tr>
-        <tr><th>New Ticket Priority</th>
+        <tr>
+            <td width="180">
+                New Ticket Priority
+            </td>
             <td>
                 <select name="priority_id">
-                    <option value=0>Select Priority</option>
-                    <?
-                    while (list($id,$name) = db_fetch_row($priorities)){
-                        $selected = ($info['priority_id']==$id)?'selected':''; ?>
-                        <option value="<?=$id?>"<?=$selected?>><?=$name?></option>
-                    <?
-                    }?>
-                </select>&nbsp;<font class="error">*&nbsp;<?=$errors['priority_id']?></font>
+                    <option value="">&mdash; Select Priority &mdash;</option>
+                    <?php
+                    $sql='SELECT priority_id,priority_desc FROM '.PRIORITY_TABLE.' pri ORDER by priority_urgency DESC';
+                    if(($res=db_query($sql)) && db_num_rows($res)){
+                        while(list($id,$name)=db_fetch_row($res)){
+                            $selected=($info['priority_id'] && $id==$info['priority_id'])?'selected="selected"':'';
+                            echo sprintf('<option value="%d" %s>%s</option>',$id,$selected,$name);
+                        }
+                    }
+                    ?>
+                </select>
+                &nbsp;<span class="error"><?php echo $errors['priority_id']; ?></span>
             </td>
         </tr>
-        <tr><th>New Ticket Dept.</th>
+        <tr>
+            <td width="180">
+                New Ticket Dept.
+            </td>
             <td>
                 <select name="dept_id">
-                    <option value=0>Select Department</option>
-                    <?
-                    while (list($id,$name) = db_fetch_row($depts)){
-                        $selected = ($info['dept_id']==$id)?'selected':''; ?>
-                        <option value="<?=$id?>"<?=$selected?>><?=$name?> Dept</option>
-                    <?
-                    }?>
-                </select>&nbsp;<font class="error">&nbsp;<?=$errors['dept_id']?></font>&nbsp;
+                    <option value="">&mdash; Select Department &mdash;</option>
+                    <?php
+                    $sql='SELECT dept_id,dept_name FROM '.DEPT_TABLE.' dept ORDER by dept_name';
+                    if(($res=db_query($sql)) && db_num_rows($res)){
+                        while(list($id,$name)=db_fetch_row($res)){
+                            $selected=($info['dept_id'] && $id==$info['dept_id'])?'selected="selected"':'';
+                            echo sprintf('<option value="%d" %s>%s</option>',$id,$selected,$name);
+                        }
+                    }
+                    ?>
+                </select>
+                &nbsp;<span class="error"><?php echo $errors['dept_id']; ?></span>
             </td>
         </tr>
-        <tr><th>Auto Response</th>
+        <tr>
+            <td width="180">
+                Auto-response
+            </td>
             <td>
-                <input type="checkbox" name="noautoresp" value=1 <?=$info['noautoresp']? 'checked': ''?> ><b>Disable</b> autoresponse for this email.
-                &nbsp;&nbsp;(<i>Overwrite Dept setting</i>)
+                <input type="checkbox" name="noautoresp" value="1" <?php echo $info['noautoresp']?'checked="checked"':''; ?> >
+                <strong>Disable</strong> new ticket auto-response for this
+                email. Override global and dept. settings.
             </td>
         </tr>
-        <tr class="subheader">
-            <td colspan=2 ><b>Login info (optional)</b>: Required when IMAP/POP and/or SMTP are enabled.</td>
+        <tr>
+            <th colspan="2">
+                <em><strong>Login Information:</strong>: Optional BUT required when IMAP/POP or SMTP (with auth.) are enabled.</em>
+            </th>
         </tr>
-        <tr><th>Username</th>
-            <td><input type="text" name="userid" size=35 value="<?=$info['userid']?>" autocomplete='off' >
-                &nbsp;<font class="error">&nbsp;<?=$errors['userid']?></font>
+        <tr>
+            <td width="180">
+                Username
             </td>
-        </tr>
-        <tr><th>Password</th>
             <td>
-               <input type="password" name="userpass" size=35 value="<?=$info['userpass']?>" autocomplete='off'>
-                &nbsp;<font class="error">&nbsp;<?=$errors['userpass']?></font>
+                <input type="text" size="35" name="userid" value="<?php echo $info['userid']; ?>"
+                    autocomplete="off" autocorrect="off">
+                &nbsp;<span class="error">&nbsp;<?php echo $errors['userid']; ?>&nbsp;</span>
             </td>
         </tr>
-        <tr class="header"><td colspan=2>Mail Account (Optional)</b></td></tr>
-        <tr class="subheader"><td colspan=2>
-             Setting for fetching incoming emails. Mail fetching must be enabled with autocron active or external cron setup.<br>
-            <b>Please be patient, the system will try to login to mail server to validate the entered login info.</b>
-            <font class="error">&nbsp;<?=$errors['mail']?></font></td></tr>
-        <tr><th>Status</th>
+        <tr>
+            <td width="180">
+               Password
+            </td>
             <td>
-                <label><input type="radio" name="mail_active"  value="1"   <?=$info['mail_active']?'checked':''?> />Enable</label>
-                <label><input type="radio" name="mail_active"  value="0"   <?=!$info['mail_active']?'checked':''?> />Disable</label>
-                &nbsp;<font class="error">&nbsp;<?=$errors['mail_active']?></font>
+                <input type="password" size="35" name="passwd" value="<?php echo $info['passwd']; ?>"
+                    autocomplete="off">
+                &nbsp;<span class="error">&nbsp;<?php echo $errors['passwd']; ?>&nbsp;</span>
+                <br><em><?php echo $passwdtxt; ?></em>
             </td>
         </tr>
-        <tr><th>Host</th>
-            <td><input type="text" name="mail_host" size=35 value="<?=$info['mail_host']?>">
-                &nbsp;<font class="error">&nbsp;<?=$errors['mail_host']?></font>
+        <tr>
+            <th colspan="2">
+                <em><strong>Mail Account</strong>: Optional setting for fetching incoming emails. Mail fetching must be enabled with autocron active or external cron setup. &nbsp;<font class="error">&nbsp;<?php echo $errors['mail']; ?></font></em>
+            </th>
+        </tr>
+        <tr><td>Status</td>
+            <td>
+                <label><input type="radio" name="mail_active"  value="1"   <?php echo $info['mail_active']?'checked="checked"':''; ?> /><strong>Enable</strong></label>
+                &nbsp;&nbsp;
+                <label><input type="radio" name="mail_active"  value="0"   <?php echo !$info['mail_active']?'checked="checked"':''; ?> />Disable</label>
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['mail_active']; ?></font>
             </td>
         </tr>
-        <tr><th>Port</th>
-            <td><input type="text" name="mail_port" size=6 value="<?=$info['mail_port']?$info['mail_port']:''?>">
-                &nbsp;<font class="error">&nbsp;<?=$errors['mail_port']?></font>
+        <tr><td>Host</td>
+            <td><input type="text" name="mail_host" size=35 value="<?php echo $info['mail_host']; ?>">
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['mail_host']; ?></font>
             </td>
         </tr>
-        <tr><th>Protocol</th>
+        <tr><td>Port</td>
+            <td><input type="text" name="mail_port" size=6 value="<?php echo $info['mail_port']?$info['mail_port']:''; ?>">
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['mail_port']; ?></font>
+            </td>
+        </tr>
+        <tr><td>Protocol</td>
             <td>
                 <select name="mail_protocol">
-                    <option value='POP'>Select</option>
-                    <option value='POP' <?=($info['mail_protocol']=='POP')?'selected="selected"':''?> >POP</option>
-                    <option value='IMAP' <?=($info['mail_protocol']=='IMAP')?'selected="selected"':''?> >IMAP</option>
+                    <option value='POP'>&mdash; Select Mail Protocol &mdash;</option>
+                    <option value='POP' <?php echo ($info['mail_protocol']=='POP')?'selected="selected"':''; ?> >POP</option>
+                    <option value='IMAP' <?php echo ($info['mail_protocol']=='IMAP')?'selected="selected"':''; ?> >IMAP</option>
                 </select>
-                <font class="error">&nbsp;<?=$errors['mail_protocol']?></font>
+                <font class="error">&nbsp;<?php echo $errors['mail_protocol']; ?></font>
             </td>
         </tr>
 
-        <tr><th>Encryption</th>
+        <tr><td>Encryption</td>
             <td>
-                 <label><input type="radio" name="mail_encryption"  value="NONE"
-                    <?=($info['mail_encryption']!='SSL')?'checked':''?> />None</label>
-                 <label><input type="radio" name="mail_encryption"  value="SSL"
-                    <?=($info['mail_encryption']=='SSL')?'checked':''?> />SSL</label>
-                <font class="error">&nbsp;<?=$errors['mail_encryption']?></font>
+                <select name="mail_encryption">
+                    <option value='NONE'>None</option>
+                    <option value='SSL' <?php echo ($info['mail_encryption']=='SSL')?'selected="selected"':''; ?> >SSL</option>
+                </select>
+                <font class="error">&nbsp;<?php echo $errors['mail_encryption']; ?></font>
             </td>
         </tr>
-        <tr><th>Fetch Frequency</th>
+        <tr><td>Fetch Frequency</td>
             <td>
-                <input type="text" name="mail_fetchfreq" size=4 value="<?=$info['mail_fetchfreq']?$info['mail_fetchfreq']:''?>"> Delay intervals in minutes
-                &nbsp;<font class="error">&nbsp;<?=$errors['mail_fetchfreq']?></font>
+                <input type="text" name="mail_fetchfreq" size=4 value="<?php echo $info['mail_fetchfreq']?$info['mail_fetchfreq']:''; ?>"> Delay intervals in minutes
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['mail_fetchfreq']; ?></font>
             </td>
         </tr>
-        <tr><th>Maximum Emails Per Fetch</th>
+        <tr><td>Emails Per Fetch</td>
             <td>
-                <input type="text" name="mail_fetchmax" size=4 value="<?=$info['mail_fetchmax']?$info['mail_fetchmax']:''?>"> Maximum emails to process per fetch.
-                &nbsp;<font class="error">&nbsp;<?=$errors['mail_fetchmax']?></font>
+                <input type="text" name="mail_fetchmax" size=4 value="<?php echo $info['mail_fetchmax']?$info['mail_fetchmax']:''; ?>"> Maximum emails to process per fetch.
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['mail_fetchmax']; ?></font>
             </td>
         </tr>
-        <tr><th>Delete Messages</th>
+        <tr><td valign="top">Fetched Emails</td>
+             <td>
+                <input type="radio" name="postfetch" value="archive" <?php echo ($info['postfetch']=='archive')? 'checked="checked"': ''; ?> >
+                 Move to: <input type="text" name="mail_archivefolder" size="20" value="<?php echo $info['mail_archivefolder']; ?>"/> folder.
+                    &nbsp;<font class="error">&nbsp;<?php echo $errors['mail_folder']; ?></font>
+                <input type="radio" name="postfetch" value="delete" <?php echo ($info['postfetch']=='delete')? 'checked="checked"': ''; ?> >
+                Delete fetched emails
+                <input type="radio" name="postfetch" value="" <?php echo (isset($info['postfetch']) && !$info['postfetch'])? 'checked="checked"': ''; ?> >
+                 Do nothing (Not recommended)
+              <br><em>Moving fetched emails to a backup folder is highly recommended.</em> &nbsp;<font class="error"><?php echo $errors['postfetch']; ?></font>
+            </td>
+        </tr>
+
+        <tr>
+            <th colspan="2">
+                <em><strong>SMTP Settings</strong>: When enabled the <b>email account</b> will use SMTP server instead of internal PHP mail() function for outgoing emails. &nbsp;<font class="error">&nbsp;<?php echo $errors['smtp']; ?></font></em>
+            </th>
+        </tr>
+        <tr><td>Status</td>
             <td>
-                <input type="checkbox" name="mail_delete" value=1 <?=$info['mail_delete']? 'checked': ''?> >
-                    Delete fetched message(s) (<i>recommended when using POP</i>)
-                &nbsp;<font class="error">&nbsp;<?=$errors['mail_delete']?></font>
+                <label><input type="radio" name="smtp_active"  value="1"   <?php echo $info['smtp_active']?'checked':''; ?> />Enable</label>
+                <label><input type="radio" name="smtp_active"  value="0"   <?php echo !$info['smtp_active']?'checked':''; ?> />Disable</label>
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['smtp_active']; ?></font>
             </td>
         </tr>
-        <tr class="header"><td colspan=2>SMTP Settings (Optional)</b></td></tr>
-        <tr class="subheader"><td colspan=2>
-             When enabled the <b>email account</b> will use SMTP server instead of internal PHP mail() function for outgoing emails.<br>
-            <b>Please be patient, the system will try to login to SMTP server to validate the entered login info.</b>
-                <font class="error">&nbsp;<?=$errors['smtp']?></font></td></tr>
-        <tr><th>Status</th>
-            <td>
-                <label><input type="radio" name="smtp_active"  value="1"   <?=$info['smtp_active']?'checked':''?> />Enable</label>
-                <label><input type="radio" name="smtp_active"  value="0"   <?=!$info['smtp_active']?'checked':''?> />Disable</label>
-                &nbsp;<font class="error">&nbsp;<?=$errors['smtp_active']?></font>
+        <tr><td>SMTP Host</td>
+            <td><input type="text" name="smtp_host" size=35 value="<?php echo $info['smtp_host']; ?>">
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['smtp_host']; ?></font>
             </td>
         </tr>
-        <tr><th>SMTP Host</th>
-            <td><input type="text" name="smtp_host" size=35 value="<?=$info['smtp_host']?>">
-                &nbsp;<font class="error">&nbsp;<?=$errors['smtp_host']?></font>
+        <tr><td>SMTP Port</td>
+            <td><input type="text" name="smtp_port" size=6 value="<?php echo $info['smtp_port']?$info['smtp_port']:''; ?>">
+                &nbsp;<font class="error">&nbsp;<?php echo $errors['smtp_port']; ?></font>
             </td>
         </tr>
-        <tr><th>SMTP Port</th>
-            <td><input type="text" name="smtp_port" size=6 value="<?=$info['smtp_port']?$info['smtp_port']:''?>">
-                &nbsp;<font class="error">&nbsp;<?=$errors['smtp_port']?></font>
-            </td>
-        </tr>
-        <tr><th>Authentication Required?</th>
+        <tr><td>Authentication Required?</td>
             <td>
 
                  <label><input type="radio" name="smtp_auth"  value="1"
-                    <?=$info['smtp_auth']?'checked':''?> />Yes</label>
+                    <?php echo $info['smtp_auth']?'checked':''; ?> />Yes</label>
                  <label><input type="radio" name="smtp_auth"  value="0"
-                    <?=!$info['smtp_auth']?'checked':''?> />NO</label>
-                <font class="error">&nbsp;<?=$errors['smtp_auth']?></font>
+                    <?php echo !$info['smtp_auth']?'checked':''; ?> />NO</label>
+                <font class="error">&nbsp;<?php echo $errors['smtp_auth']; ?></font>
             </td>
         </tr>
-        <tr><th>Encryption</th>
-            <td>Best available authentication method is auto-selected based on what the sever supports.</td>
+        <tr>
+            <td>Allow Header Spoofing?</td>
+            <td>
+                <input type="checkbox" name="smtp_spoofing" value="1" <?php echo $info['smtp_spoofing'] ?'checked="checked"':''; ?>>
+                Allow email header spoofing <em>(only applies to emails being sent through this account)</em>
+            </td>
         </tr>
-    </table>
-   </td></tr>
-   <tr><td style="padding:10px 0 10px 220px;">
-            <input class="button" type="submit" name="submit" value="Submit">
-            <input class="button" type="reset" name="reset" value="Reset">
-            <input class="button" type="button" name="cancel" value="Cancel" onClick='window.location.href="admin.php?t=email"'>
-        </td>
-     </tr>
-</form>
+        <tr>
+            <th colspan="2">
+                <em><strong>Internal Notes</strong>: Admin's notes. &nbsp;<span class="error">&nbsp;<?php echo $errors['notes']; ?></span></em>
+            </th>
+        </tr>
+        <tr>
+            <td colspan=2>
+                <textarea class="richtext no-bar" name="notes" cols="21"
+                    rows="5" style="width: 60%;"><?php echo $info['notes']; ?></textarea>
+            </td>
+        </tr>
+    </tbody>
 </table>
+<p style="padding-left:225px;">
+    <input type="submit" name="submit" value="<?php echo $submit_text; ?>">
+    <input type="reset"  name="reset"  value="Reset">
+    <input type="button" name="cancel" value="Cancel" onclick='window.location.href="emails.php"'>
+</p>
+</form>

@@ -1,249 +1,528 @@
-//Copyright (c) 2007 osTicket.com
+/*
+   scp.js
 
-function getCannedResponse(idx,fObj,target)
-{
-    if(idx==0) { return false; }
+   osTicket SCP
+   Copyright (c) osTicket.com
 
-    var tid =0;
-    if(fObj && fObj.ticket_id)
-        tid=fObj.ticket_id.value;
-    Http.get({
-        url: "ajax.php?api=kbase&f=cannedResp&id="+idx+'&tid='+tid,
-        callback: setCannedResponse
-    },[fObj,target]);
+ */
 
-}
+function checkbox_checker(formObj, min, max) {
 
-function setCannedResponse(xmlreply,fObj,target)
-{
-    if (xmlreply.status == Http.Status.OK)
-    {
-        var resp=xmlreply.responseText;
-        iObj=fObj.elements[target];
-        if(iObj && resp){
-            iObj.value=(fObj.append && fObj.append.checked)?trim(iObj.value+"\n\n"+resp):trim(resp)+"\n\n";
-        }else {
-            alert("Invalid form or tag");
-        }
-    }
-    else{
-        alert("Cannot handle the AJAX call. Error#"+ xmlreply.status);
-    }
-}
-
-function getSelectedCheckbox(formObj) {
-   var retArr = new Array();
-   var x=0;
-	for (var i= 0; i< formObj.length; i++)
-    {
-        fldObj = formObj.elements[i];
-        if ((fldObj.type == 'checkbox') && fldObj.checked)
-			retArr[x++]=fldObj.value;
-   	}
-   return retArr;
-} 
-
-
-function selectAll(formObj,task,highlight)
-{
-   var highlight = highlight || false;
-
-   for (var i=0;i < formObj.length;i++)
-   {
-      var e = formObj.elements[i];
-      if (e.type == 'checkbox' && !e.disabled)
-      {
-         if(task==0) {
-            e.checked =false;
-         }else if(task==1) {
-            e.checked = true;
-         }else{
-            e.checked = (e.checked) ? false : true;
-         }
-         
-	     if(highlight) {
-			highLight(e.value,e.checked);
-		 }
-       }
-   }
-   //Return false..to mute submits or href.
-   return false;
-}
-
-function reset_all(formObj){
-    return selectAll(formObj,0,true);
-}
-function select_all(formObj,highlight){
-    return selectAll(formObj,1,highlight);
-}
-function toogle_all(formObj,highlight){
-
-	var highlight = highlight || false;
-    
-	return selectAll(formObj,2,highlight);
-}
-
-
-function checkbox_checker(formObj, min,max,sure,action)
-{
-
-	var checked=getSelectedCheckbox(formObj); 
-	var total=checked.length;
+    var max = max || 0;
+    var min = min || 1;
+    var checked=$('input:checkbox:checked', formObj).length;
     var action= action?action:"process";
- 	
-	if (max>0 && total > max )
- 	{
- 		msg="You're limited to only " + max + " selections.\n"
- 		msg=msg + "You have made " + total + " selections.\n"
- 		msg=msg + "Please remove " + (total-max) + " selection(s)."
- 		alert(msg)
- 		return (false);
- 	}
- 
- 	if (total< min )
- 	{
- 		alert("Please make at least " + min + " selections. " + total + " entered so far.")
- 		return (false);
- 	}
-   
-  if(sure){
-  	if(confirm("PLEASE CONFIRM\n About to "+ action +" "+ total + " record(s).")){
- 		return (true);
-  	}else{
-        reset_all(formObj);
-	 	return (false);
-  	}
-  }
- 
-  return (true);
-}
-
-function toggleLayer(whichLayer) {
-    var elem, vis;
-
-    if( document.getElementById ) // this is the way the standards work
-        elem = document.getElementById( whichLayer );
-    else if( document.all ) // this is the way old msie versions work
-        elem = document.all[whichLayer];
-    else if( document.layers ) // this is the way nn4 works
-        elem = document.layers[whichLayer];
-  
-    vis = elem.style;
-    // if the style.display value is blank we try to figure it out here
-    if(vis.display==''&&elem.offsetWidth!=undefined&&elem.offsetHeight!=undefined)
-        vis.display = (elem.offsetWidth!=0&&elem.offsetHeight!=0)?'block':'none';
-    vis.display = (vis.display==''||vis.display=='block')?'none':'block';
-}
-
-
-function showHide(){
-
-	for (var i=0; i<showHide.arguments.length; i++){
-        toggleLayer(showHide.arguments[i]);
-	}
-    return false;
-}
-
-function visi(){	 
-	for (var i=0; i<visi.arguments.length; i++){
-        var element = document.getElementById(visi.arguments[i]);
-        element.style.visibility=(element.style.visibility == "hidden")?"visible" : "hidden";
+    if (max>0 && checked > max ){
+        msg="You're limited to only " + max + " selections.\n"
+        msg=msg + "You have made " + checked + " selections.\n"
+        msg=msg + "Please remove " + (checked-max) + " selection(s)."
+        alert(msg)
+        return (false);
     }
-}
-function visible(id){
-	var element = document.getElementById(id).style.visibility="visible";
-}
 
-
-function highLight(trid,checked) {
-
-    var class_name='highlight';
-    var elem;
-
-    if( document.getElementById )
-        elem = document.getElementById( trid );
-    else if( document.all )
-        elem = document.all[trid];
-    else if( document.layers )
-        elem = document.layers[trid];
-    if(elem){
-        var found=false;
-        var temparray=elem.className.split(' ');
-        for(var i=0;i<temparray.length;i++){
-            if(temparray[i]==class_name){found=true;}
-        }
-        if(found && checked) { return; }
-
-        if(found && checked==false){ //remove
-            var rep=elem.className.match(' '+class_name)?' '+class_name:class_name;
-            elem.className=elem.className.replace(rep,'');
-        }
-        if(checked && found==false) { //add
-            elem.className+=elem.className?' '+class_name:class_name;
-        }
+    if (checked< min ){
+        alert("Please make at least " + min + " selections. " + checked + " checked so far.")
+        return (false);
     }
+
+    return (true);
 }
 
-function highLightToggle(trid) {
 
-    var class_name='highlight';
-    var e;
-    if( document.getElementById )
-        e = document.getElementById(trid);
-    else if( document.all )
-        e = document.all[trid];
-    else if( document.layers )
-        e = document.layers[trid];
+$(document).ready(function(){
 
-    if(e){
-        var found=false;
-        var temparray=e.className.split(' ');
-        for(var i=0;i<temparray.length;i++){
-            if(temparray[i]==class_name){found=true;}
+    $("input:not(.dp):visible:enabled:first").focus();
+    $('table.list tbody tr:odd').addClass('odd');
+    $('table.list input:checkbox').bind('click, change', function() {
+        $(this)
+            .parents("tr:first")
+            .toggleClass("highlight", this.checked);
+     });
+
+    $('table.list input:checkbox:checked').trigger('change');
+
+    $('#selectAll').click(function(e) {
+        e.preventDefault();
+        var target = $(this).attr('href').substr(1, $(this).attr('href').length);
+        $(this).closest('form')
+            .find('input:enabled:checkbox.'+target)
+            .prop('checked', true)
+            .trigger('change');
+
+        return false;
+     });
+
+
+    $('#selectNone').click(function(e) {
+        e.preventDefault();
+        var target = $(this).attr('href').substr(1, $(this).attr('href').length);
+        $(this).closest('form')
+            .find('input:enabled:checkbox.'+target)
+            .prop('checked', false)
+            .trigger('change');
+        return false;
+     });
+
+    $('#selectToggle').click(function(e) {
+        e.preventDefault();
+        var target = $(this).attr('href').substr(1, $(this).attr('href').length);
+        $(this).closest('form')
+            .find('input:enabled:checkbox.'+target)
+            .each(function() {
+                $(this)
+                    .prop('checked', !$(this).is(':checked'))
+                    .trigger('change');
+             });
+        return false;
+     });
+
+    $('#actions input:submit.button').bind('click', function(e) {
+
+        var formObj = $(this).closest('form');
+        e.preventDefault();
+        if($('.dialog#confirm-action p#'+this.name+'-confirm').length == 0) {
+            alert('Unknown action '+this.name+' - get technical help.');
+        } else if(checkbox_checker(formObj, 1)) {
+            var action = this.name;
+            $('.dialog#confirm-action').undelegate('.confirm');
+            $('.dialog#confirm-action').delegate('input.confirm', 'click.confirm', function(e) {
+                e.preventDefault();
+                $('.dialog#confirm-action').hide();
+                $('#overlay').hide();
+                $('input#action', formObj).val(action);
+                formObj.submit();
+                return false;
+             });
+            $('#overlay').show();
+            $('.dialog#confirm-action .confirm-action').hide();
+            $('.dialog#confirm-action p#'+this.name+'-confirm')
+            .show()
+            .parent('div').show().trigger('click');
         }
-        if(found){ //remove
-            var rep=e.className.match(' '+class_name)?' '+class_name:class_name;
-            e.className=e.className.replace(rep,'');
-        }else { //add
-            e.className+=e.className?' '+class_name:class_name;
+
+        return false;
+     });
+
+    if($.browser.msie) {
+        $('.inactive').mouseenter(function() {
+            var elem = $(this);
+            var ie_shadow = $('<div>').addClass('ieshadow').css({
+                height:$('ul', elem).height()
+            });
+            elem.append(ie_shadow);
+        }).mouseleave(function() {
+            $('.ieshadow').remove();
+        });
+    }
+
+    var warnOnLeave = function (el) {
+        var fObj = el.closest('form');
+        if(!fObj.data('changed')){
+            fObj.data('changed', true);
+            $('input[type=submit]', fObj).css('color', 'red');
+            $(window).bind('beforeunload', function(e) {
+                return 'Are you sure you want to leave? Any changes or info you\'ve entered will be discarded!';
+             });
         }
-    }
-}
+    };
 
+    $("form#save :input").change(function() {
+        warnOnLeave($(this));
+    });
 
-function toggleMessage(id) {
-
-    var imgId = 'img_'+ id;
-    var msgId = 'msg_'+ id;
-
-    if(document.getElementById(msgId).className == 'hide'){
-        document.getElementById(msgId).className='show';
-        document.getElementById(imgId).src='images/minus.gif';
-    }else {
-        document.getElementById(msgId).className='hide';
-        document.getElementById(imgId).src='images/plus.gif';
-    }
-}
-
-
-
-//trim
-function trim (str) {
-    str = this != window? this : str;
-    return str.replace(/^\s+/,'').replace(/\s+$/,'');
-}
-
-//strcmp
-function strcmp(){
-    var arg1=arguments[0];
-    if(arg1) {
-        for (var i=1; i<arguments.length; i++){
-            if(arg1==arguments[i])
-                return true;
+    $("form#save :input[type=reset]").click(function() {
+        var fObj = $(this).closest('form');
+        if(fObj.data('changed')){
+            $('input[type=submit]', fObj).removeAttr('style');
+            $('label', fObj).removeAttr('style');
+            $('label', fObj).removeClass('strike');
+            fObj.data('changed', false);
+            $(window).unbind('beforeunload');
         }
+    });
+
+    $('form#save, form:has(table.list)').submit(function() {
+        $(window).unbind('beforeunload');
+        $('#overlay, #loading').show();
+        return true;
+     });
+
+    $('select#tpl_options').change(function() {
+        $(this).closest('form').submit();
+     });
+
+    $(".clearrule").live('click',function() {
+        $(this).closest("tr").find(":input").val('');
+        return false;
+     });
+
+
+    //Canned attachments.
+    $('.canned_attachments, .faq_attachments').delegate('input:checkbox', 'click', function(e) {
+        var elem = $(this);
+        if(!$(this).is(':checked') && confirm("Are you sure you want to remove this attachment?")==true) {
+            elem.parent().addClass('strike');
+        } else {
+            elem.attr('checked', 'checked');
+            elem.parent().removeClass('strike');
+        }
+     });
+
+    $('form select#cannedResp').change(function() {
+
+        var fObj=$(this).closest('form');
+        var cannedId = $(this).val();
+        var ticketId = $(':input[name=id]',fObj).val();
+
+        $(this).find('option:first').attr('selected', 'selected').parent('select');
+
+        $.ajax({
+                type: "GET",
+                url: 'ajax.php/kb/canned-response/'+cannedId+'.json',
+                data: 'tid='+ticketId,
+                dataType: 'json',
+                cache: false,
+                success: function(canned){
+                    //Canned response.
+                    var box = $('#response',fObj),
+                        redactor = box.data('redactor');
+                    if(canned.response) {
+                        if($('#append',fObj).is(':checked') &&  $('#response',fObj).val()) {
+                            if (redactor)
+                                redactor.insertHtml(canned.response);
+                            else
+                                box.val(canned.response);
+                        }
+                        else {
+                            if (redactor)
+                                redactor.set(canned.response);
+                            else
+                                box.val(canned.response);
+                        }
+                        if (redactor)
+                            redactor.observeStart();
+                    }
+                    //Canned attachments.
+                    if(canned.files && $('.canned_attachments',fObj).length) {
+                        $.each(canned.files,function(i, j) {
+                            if(!$('.canned_attachments #f'+j.id,fObj).length) {
+                                var file='<span><label><input type="checkbox" name="cannedattachments[]" value="' + j.id+'" id="f'+j.id+'" checked="checked">';
+                                    file+= ' '+ j.name + '</label>';
+                                    file+= ' (<a href="file.php?h=' + j.hash + j.key+ '">view</a>) </span>';
+                                $('.canned_attachments', fObj).append(file);
+                            }
+
+                         });
+                    }
+                }
+            })
+            .done(function() { })
+            .fail(function() { });
+     });
+
+
+
+
+    /************ global inits *****************/
+
+    //Add CSRF token to the ajax requests.
+    // Many thanks to https://docs.djangoproject.com/en/dev/ref/contrib/csrf/ + jared.
+    $(document).ajaxSend(function(event, xhr, settings) {
+
+        function sameOrigin(url) {
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                // or any other URL that isn't scheme relative or absolute i.e
+                // relative.
+                !(/^(\/\/|http:|https:).*/.test(url));
+        }
+
+        function safeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+            xhr.setRequestHeader("X-CSRFToken", $("meta[name=csrf_token]").attr("content"));
+        }
+
+       });
+
+    /* Get config settings from the backend */
+    jQuery.fn.exists = function() { return this.length>0; };
+
+    /* Multifile uploads */
+    var elems = $('.multifile');
+    if (elems.exists()) {
+        /* Get config settings from the backend */
+        getConfig().then(function(c) {
+            elems.multifile({
+                container:   '.uploads',
+                max_uploads: c.max_file_uploads || 1,
+                file_types:  c.file_types || ".*",
+                max_file_size: c.max_file_size || 0
+            });
+        });
     }
-    return false;
-}
+
+    $.translate_format = function(str) {
+        var translation = {
+            'd':'dd',
+            'j':'d',
+            'z':'o',
+            'm':'mm',
+            'F':'MM',
+            'n':'m',
+            'Y':'yy'
+        };
+        // Change PHP formats to datepicker ones
+        $.each(translation, function(php, jqdp) {
+            str = str.replace(php, jqdp);
+        });
+        return str;
+    };
+
+    /* Datepicker */
+    getConfig().then(function(c) {
+        $('.dp').datepicker({
+            numberOfMonths: 2,
+            showButtonPanel: true,
+            buttonImage: './images/cal.png',
+            showOn:'both',
+            dateFormat: $.translate_format(c.date_format||'m/d/Y'),
+        });
+        $(document).on('submit', 'form', function() {
+            $('.dp', $(this)).each(function(i, e) {
+                var $e = $(e),
+                    d = $e.datepicker('getDate'),
+                    day = ('0'+d.getDate()).substr(-2),
+                    month = ('0'+(d.getMonth()+1)).substr(-2),
+                    year = d.getFullYear();
+                $e.val(year+'-'+month+'-'+day);
+            });
+        });
+    });
+
+    /* Typeahead tickets lookup */
+    $('#basic-ticket-search').typeahead({
+        source: function (typeahead, query) {
+            $.ajax({
+                url: "ajax.php/tickets/lookup?q="+query,
+                dataType: 'json',
+                success: function (data) {
+                    typeahead.process(data);
+                }
+            });
+        },
+        onselect: function (obj) {
+            $('#basic-ticket-search').val(obj.value);
+            $('#basic-ticket-search').closest('form').submit();
+        },
+        property: "matches"
+    });
+
+    /* Typeahead user lookup */
+    $('.email.typeahead').typeahead({
+        source: function (typeahead, query) {
+            if(query.length > 2) {
+                $.ajax({
+                    url: "ajax.php/users?q="+query,
+                    dataType: 'json',
+                    success: function (data) {
+                        typeahead.process(data);
+                    }
+                });
+            }
+        },
+        onselect: function (obj) {
+            var fObj=$('.email.typeahead').closest('form');
+            if(obj.name)
+                $('.auto.name', fObj).val(obj.name);
+        },
+        property: "email"
+    });
+
+    //Overlay
+    $('#overlay').css({
+        opacity : 0.3,
+        top     : 0,
+        left    : 0
+    });
+
+    //Dialog
+    $('.dialog').each(function() {
+        var w = $(window), $this=$(this);
+        $this.css({
+            top : (w.innerHeight() / 7),
+            left : (w.width() - $this.outerWidth()) / 2
+        });
+        $this.hasClass('draggable') && $this.draggable({handle:'h3'});
+    });
+
+    $('.dialog').delegate('input.close, a.close', 'click', function(e) {
+        e.preventDefault();
+        $(this).parents('div.dialog').hide()
+        $('#overlay').hide();
+
+        return false;
+    });
+
+    /* advanced search */
+    $('.dialog#advanced-search').css({
+        top  : ($(window).height() / 6),
+        left : ($(window).width() / 2 - 300)
+    });
+
+    /* loading ... */
+    $("#loading").css({
+        top  : ($(window).height() / 3),
+        left : ($(window).width() - $("#loading").outerWidth()) / 2
+    });
+
+    $('#go-advanced').click(function(e) {
+        e.preventDefault();
+        $('#result-count').html('');
+        $('#overlay').show();
+        $('#advanced-search').show();
+    });
 
 
+    $(document).on('click', 'a#new-ticket', function(e) {
+        e.preventDefault();
+        var $elem = $(this);
+        $.userLookup('ajax.php/users/lookup/form', function (user) {
+            window.location.href = $elem.attr('href')+'&uid='+user.id;
+           });
+     });
 
+    $.userLookup = function (url, callback) {
+
+        $('.dialog#popup .body').load(url, function () {
+            $('#overlay').show();
+            $('.dialog#popup').show();
+            $(document).off('.user');
+            $(document).on('submit.user', '.dialog#popup form.user',function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                var $dialog = $form.closest('.dialog');
+                $.ajax({
+                    type:  $form.attr('method'),
+                    url: 'ajax.php/'+$form.attr('action').substr(1),
+                    data: $form.serialize(),
+                    cache: false,
+                    success: function(resp, status, xhr) {
+                        if (xhr && xhr.status == 201) {
+                            var user = $.parseJSON(xhr.responseText);
+                            $('div.body', $dialog).empty();
+                            $dialog.hide();
+                            $('#overlay').hide();
+                            if(callback) callback(user);
+                        } else {
+                            $('div.body', $dialog).html(resp);
+                            $('#msg_notice, #msg_error', $dialog).delay(5000).slideUp();
+                        }
+                    }
+                })
+                .done(function() { })
+                .fail(function() { });
+                return false;
+            });
+         });
+     };
+
+    $('#advanced-search').delegate('#status', 'change', function() {
+        switch($(this).val()) {
+            case 'closed':
+                $('select#assignee').find('option:first').attr('selected', 'selected').parent('select');
+                $('select#assignee').attr('disabled','disabled');
+                $('select#staffId').removeAttr('disabled');
+                break;
+            case 'open':
+            case 'overdue':
+            case 'answered':
+                $('select#staffId').find('option:first').attr('selected', 'selected').parent('select');
+                $('select#staffId').attr('disabled','disabled');
+                $('select#assignee').removeAttr('disabled');
+                break;
+            default:
+                $('select#staffId').removeAttr('disabled');
+                $('select#assignee').removeAttr('disabled');
+        }
+    });
+
+    $('#advanced-search form#search').submit(function(e) {
+        e.preventDefault();
+        var fObj = $(this);
+        var elem = $('#advanced-search');
+        $('#result-count').html('');
+        $.ajax({
+                url: "ajax.php/tickets/search",
+                data: fObj.serialize(),
+                dataType: 'json',
+                beforeSend: function ( xhr ) {
+                   $('.buttons', elem).hide();
+                   $('.spinner', elem).show();
+                   return true;
+                },
+                success: function (resp) {
+
+                    if(resp.success) {
+                        $('#result-count').html('<div class="success">' + resp.success +'</div>');
+                    } else if (resp.fail) {
+                        $('#result-count').html('<div class="fail">' + resp.fail +'</div>');
+                    } else {
+                        $('#result-count').html('<div class="fail">Unknown error</div>');
+                    }
+                }
+            })
+            .done( function () {
+             })
+            .fail( function () {
+                $('#result-count').html('<div class="fail">Advanced search failed - try again!</div>');
+            })
+            .always( function () {
+                $('.spinner', elem).hide();
+                $('.buttons', elem).show();
+             });
+    });
+
+   // Return a helper with preserved width of cells
+   var fixHelper = function(e, ui) {
+      ui.children().each(function() {
+          $(this).width($(this).width());
+      });
+      return ui;
+   };
+   // Sortable tables for dynamic forms objects
+   $('.sortable-rows').sortable({
+       'helper': fixHelper,
+       'stop': function(e, ui) {
+           var attr = ui.item.parent('tbody').data('sort');
+           warnOnLeave(ui.item);
+           $('input[name^='+attr+']', ui.item.parent('tbody')).each(function(i, el) {
+               $(el).val(i+1);
+           });
+       }
+   });
+});
+
+// NOTE: getConfig should be global
+getConfig = (function() {
+    var dfd = $.Deferred(),
+        requested = null;
+    return function() {
+        if (dfd.state() != 'resolved' && !requested)
+            requested = $.ajax({
+                url: "ajax.php/config/scp",
+                dataType: 'json',
+                success: function (json_config) {
+                    dfd.resolve(json_config);
+                }
+            });
+        return dfd;
+    }
+})();

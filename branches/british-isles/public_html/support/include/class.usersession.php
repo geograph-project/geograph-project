@@ -5,14 +5,13 @@
     User (client and staff) sessions handle.
 
     Peter Rotich <peter@osticket.com>
-    Copyright (c)  2006-2010 osTicket
+    Copyright (c)  2006-2013 osTicket
     http://www.osticket.com
 
     Released under the GNU General Public License WITHOUT ANY WARRANTY.
     See LICENSE.TXT for details.
 
     vim: expandtab sw=4 ts=4 sts=4:
-    $Id: $
 **********************************************************************/
 
 include_once(INCLUDE_DIR.'class.client.php');
@@ -69,23 +68,23 @@ class UserSession {
 
    function isvalidSession($htoken,$maxidletime=0,$checkip=false){
         global $cfg;
-       
+
         $token = rawurldecode($htoken);
-        
+
         #check if we got what we expected....
         if($token && !strstr($token,":"))
             return FALSE;
-        
+
         #get the goodies
         list($hash,$expire,$ip)=explode(":",$token);
-        
+
         #Make sure the session hash is valid
         if((md5($expire . SESSION_SECRET . $this->userID)!=$hash)){
             return FALSE;
         }
         #is it expired??
-        
-        
+
+
         if($maxidletime && ((time()-$expire)>$maxidletime)){
             return FALSE;
         }
@@ -105,11 +104,11 @@ class UserSession {
 }
 
 class ClientSession extends Client {
-    
+
     var $session;
 
-    function ClientSession($email,$id){
-        parent::Client($email,$id);
+    function ClientSession($email, $id){
+        parent::Client($id, $email);
         $this->session= new UserSession($email);
     }
 
@@ -118,7 +117,7 @@ class ClientSession extends Client {
 
         if(!$this->getId() || $this->session->getSessionId()!=session_id())
             return false;
-        
+
         return $this->session->isvalidSession($_SESSION['_client']['token'],$cfg->getClientTimeout(),false)?true:false;
     }
 
@@ -135,20 +134,20 @@ class ClientSession extends Client {
     function getSessionToken() {
         return $this->session->sessionToken();
     }
-    
+
     function getIP(){
         return $this->session->getIP();
-    }    
+    }
 }
 
 
 class StaffSession extends Staff {
-    
+
     var $session;
-    
+
     function StaffSession($var){
         parent::Staff($var);
-        $this->session= new UserSession($var);
+        $this->session= new UserSession($this->getId());
     }
 
     function isValid(){
@@ -156,7 +155,7 @@ class StaffSession extends Staff {
 
         if(!$this->getId() || $this->session->getSessionId()!=session_id())
             return false;
-        
+
         return $this->session->isvalidSession($_SESSION['_staff']['token'],$cfg->getStaffTimeout(),$cfg->enableStaffIPBinding())?true:false;
     }
 
@@ -164,7 +163,7 @@ class StaffSession extends Staff {
         global $_SESSION;
         $_SESSION['_staff']['token']=$this->getSessionToken();
     }
-    
+
     function getSession() {
         return $this->session;
     }
@@ -172,11 +171,11 @@ class StaffSession extends Staff {
     function getSessionToken() {
         return $this->session->sessionToken();
     }
-    
+
     function getIP(){
         return $this->session->getIP();
     }
-    
+
 }
 
 ?>

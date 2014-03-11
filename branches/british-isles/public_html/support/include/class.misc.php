@@ -5,84 +5,83 @@
     Misc collection of useful generic helper functions.
 
     Peter Rotich <peter@osticket.com>
-    Copyright (c)  2006-2010 osTicket
+    Copyright (c)  2006-2013 osTicket
     http://www.osticket.com
 
     Released under the GNU General Public License WITHOUT ANY WARRANTY.
     See LICENSE.TXT for details.
 
     vim: expandtab sw=4 ts=4 sts=4:
-    $Id: $
 **********************************************************************/
 class Misc {
-    
-	function randCode($len=8) {
-		return substr(strtoupper(base_convert(microtime(),10,16)),0,$len);
+
+	function randCode($count=8, $chars=false) {
+        $chars = $chars ? $chars
+            : 'abcdefghijklmnopqrstuvwzyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-.';
+        $data = '';
+        $m = strlen($chars) - 1;
+        for ($i=0; $i < $count; $i++)
+            $data .= $chars[mt_rand(0,$m)];
+        return $data;
 	}
-    
+
+    function __rand_seed($value=0) {
+        // Form a 32-bit figure for the random seed with the lower 16-bits
+        // the microseconds of the current time, and the upper 16-bits from
+        // received value
+        $seed = ((int) $value % 65535) << 16;
+        $seed += (int) ((double) microtime() * 1000000) % 65535;
+        mt_srand($seed);
+    }
+
     /* Helper used to generate ticket IDs */
     function randNumber($len=6,$start=false,$end=false) {
 
-        mt_srand ((double) microtime() * 1000000);
         $start=(!$len && $start)?$start:str_pad(1,$len,"0",STR_PAD_RIGHT);
         $end=(!$len && $end)?$end:str_pad(9,$len,"9",STR_PAD_RIGHT);
-        
+
         return mt_rand($start,$end);
     }
 
-    function encrypt($text, $salt) {
-
-        //if mcrypt extension is not installed--simply return unencryted text and log a warning.
-        if(!function_exists('mcrypt_encrypt') || !function_exists('mcrypt_decrypt')) {
-            $msg='Cryptography extension mcrypt is not enabled or installed. IMAP/POP passwords are being stored as plain text in database.';
-            Sys::log(LOG_WARN,'mcrypt missing',$msg);
-            return $text;
-        }
-
-        return trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256,$salt, $text, MCRYPT_MODE_ECB,
-                         mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
-    }
-
-    function decrypt($text, $salt) {
-        if(!function_exists('mcrypt_encrypt') || !function_exists('mcrypt_decrypt'))
-            return $text;
-
-        return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $salt, base64_decode($text), MCRYPT_MODE_ECB,
-                        mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
-    }
-
-    /* misc date helpers...this will go away once we move to php 5 */ 
+    /* misc date helpers...this will go away once we move to php 5 */
     function db2gmtime($var){
         global $cfg;
         if(!$var) return;
-        
+
         $dbtime=is_int($var)?$var:strtotime($var);
-        return $dbtime-($cfg->getMysqlTZoffset()*3600);
+        return $dbtime-($cfg->getDBTZoffset()*3600);
     }
 
     //Take user time or gmtime and return db (mysql) time.
     function dbtime($var=null){
          global $cfg;
-             
+
         if(is_null($var) || !$var)
             $time=Misc::gmtime(); //gm time.
         else{ //user time to GM.
             $time=is_int($var)?$var:strtotime($var);
-            $offset=$_SESSION['TZ_OFFSET']+($_SESSION['daylight']?date('I',$time):0);
+            $offset=$_SESSION['TZ_OFFSET']+($_SESSION['TZ_DST']?date('I',$time):0);
             $time=$time-($offset*3600);
         }
         //gm to db time
-        return $time+($cfg->getMysqlTZoffset()*3600);
+        return $time+($cfg->getDBTZoffset()*3600);
     }
-    
+
     /*Helper get GM time based on timezone offset*/
     function gmtime() {
         return time()-date('Z');
     }
 
+    /* Needed because of PHP 4 support */
+    function micro_time() {
+        list($usec, $sec) = explode(" ", microtime());
+
+        return ((float)$usec + (float)$sec);
+    }
+
     //Current page
     function currentURL() {
-        
+
         $str = 'http';
         if ($_SERVER['HTTPS'] == 'on') {
             $str .='s';
@@ -93,7 +92,7 @@ class Misc {
             if (isset($_SERVER['QUERY_STRING'])) {
                 $_SERVER['REQUEST_URI'].='?'.$_SERVER['QUERY_STRING'];
             }
-        } 
+        }
         if ($_SERVER['SERVER_PORT']!=80) {
             $str .= $_SERVER['SERVER_NAME'].':'.$_SERVER['SERVER_PORT'].$_SERVER['REQUEST_URI'];
         } else {
@@ -107,7 +106,7 @@ class Misc {
         $hr =is_null($hr)?0:$hr;
         $min =is_null($min)?0:$min;
 
-        //normalize;    
+        //normalize;
         if($hr>=24)
             $hr=$hr%24;
         elseif($hr<0)
@@ -121,7 +120,7 @@ class Misc {
             $min=15;
         else
             $min=0;
-       
+
         ob_start();
         echo sprintf('<select name="%s" id="%s">',$name,$name);
         echo '<option value="" selected>Time</option>';
@@ -140,6 +139,5 @@ class Misc {
         return $output;
     }
 
-   
 }
 ?>

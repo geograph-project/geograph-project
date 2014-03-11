@@ -1,171 +1,150 @@
 <?php
-if(!defined('OSTADMININC') || !$thisuser->isadmin()) die('Access Denied');
+if(!defined('OSTADMININC') || !$thisstaff->isAdmin()) die('Access Denied');
 
-
-$select='SELECT tpl.*,count(dept.tpl_id) as depts ';
-$from='FROM '.EMAIL_TEMPLATE_TABLE.' tpl '.
-      'LEFT JOIN '.DEPT_TABLE.' dept USING(tpl_id) ';
-$where='';
-$sortOptions=array('date'=>'tpl.created','name'=>'tpl.name');
+$qstr='';
+$sql='SELECT tpl.*,count(dept.tpl_id) as depts '.
+     'FROM '.EMAIL_TEMPLATE_GRP_TABLE.' tpl '.
+     'LEFT JOIN '.DEPT_TABLE.' dept USING(tpl_id) '.
+     'WHERE 1 ';
+$sortOptions=array('name'=>'tpl.name','status'=>'tpl.isactive','created'=>'tpl.created','updated'=>'tpl.updated');
 $orderWays=array('DESC'=>'DESC','ASC'=>'ASC');
+$sort=($_REQUEST['sort'] && $sortOptions[strtolower($_REQUEST['sort'])])?strtolower($_REQUEST['sort']):'name';
 //Sorting options...
-if($_REQUEST['sort']) {
-    $order_column =$sortOptions[$_REQUEST['sort']];
+if($sort && $sortOptions[$sort]) {
+    $order_column =$sortOptions[$sort];
 }
+$order_column=$order_column?$order_column:'tpl.name';
 
-if($_REQUEST['order']) {
-    $order=$orderWays[$_REQUEST['order']];
+if($_REQUEST['order'] && $orderWays[strtoupper($_REQUEST['order'])]) {
+    $order=$orderWays[strtoupper($_REQUEST['order'])];
 }
-$order_column=$order_column?$order_column:'name';
 $order=$order?$order:'ASC';
-$order_by=" ORDER BY $order_column $order ";
 
-$total=db_count('SELECT count(*) '.$from.' '.$where);
-$pagelimit=1000;//No limit.
+if($order_column && strpos($order_column,',')){
+    $order_column=str_replace(','," $order,",$order_column);
+}
+$x=$sort.'_sort';
+$$x=' class="'.strtolower($order).'" ';
+$order_by="$order_column $order ";
+
+$total=db_count('SELECT count(*) FROM '.EMAIL_TEMPLATE_GRP_TABLE.' tpl ');
 $page=($_GET['p'] && is_numeric($_GET['p']))?$_GET['p']:1;
-$pageNav=new Pagenate($total,$page,$pagelimit);
-$pageNav->setURL('admin.php',$qstr.'&sort='.urlencode($_REQUEST['sort']).'&order='.urlencode($_REQUEST['order']));
-$query="$select $from $where GROUP BY tpl.tpl_id $order_by";
-//echo $query;
-$result = db_query($query);
-$showing=db_num_rows($result)?$pageNav->showing():'';
-$negorder=$order=='DESC'?'ASC':'DESC'; //Negate the sorting..
-$deletable=0;
+$pageNav=new Pagenate($total, $page, PAGE_LIMIT);
+$pageNav->setURL('templates.php',$qstr.'&sort='.urlencode($_REQUEST['sort']).'&order='.urlencode($_REQUEST['order']));
+//Ok..lets roll...create the actual query
+$qstr.='&order='.($order=='DESC'?'ASC':'DESC');
+$query="$sql GROUP BY tpl.tpl_id ORDER BY $order_by LIMIT ".$pageNav->getStart().",".$pageNav->getLimit();
+$res=db_query($query);
+if($res && ($num=db_num_rows($res)))
+    $showing=$pageNav->showing().' Templates';
+else
+    $showing='No templates found!';
+
 ?>
-<div class="msg">Email Templates</div>
-<hr>
-<div><b><?=$showing?></b></div>
- <table width="100%" border="0" cellspacing=1 cellpadding=2>
-   <form action="admin.php?t=templates" method="POST" name="tpl" onSubmit="return checkbox_checker(document.forms['tpl'],1,0);">
-   <input type=hidden name='t' value='templates'>
-   <input type=hidden name='do' value='mass_process'>
-   <tr><td>
-    <table border="0" cellspacing=0 cellpadding=2 class="dtable" align="center" width="100%">
+
+<div style="width:700px;padding-top:5px; float:left;">
+ <h2>Email Templates</h2>
+</div>
+<div style="float:right;text-align:right;padding-top:5px;padding-right:5px;">
+ <b><a href="templates.php?a=add" class="Icon newEmailTemplate">Add New Template</a></b></div>
+<div class="clear"></div>
+<form action="templates.php" method="POST" name="tpls">
+ <?php csrf_token(); ?>
+ <input type="hidden" name="do" value="mass_process" >
+<input type="hidden" id="action" name="a" value="" >
+ <table class="list" border="0" cellspacing="1" cellpadding="0" width="940">
+    <caption><?php echo $showing; ?></caption>
+    <thead>
         <tr>
-	        <th width="7px">&nbsp;</th>
-	        <th>
-                <a href="admin.php?t=templates&sort=name&order=<?=$negorder?><?=$qstr?>" title="Sort by name <?=$negorder?>">Name</a></th>
-            <th width="20" nowrap>In-Use</th>
-	        <th width="170" nowrap>&nbsp;&nbsp;
-                <a href="admin.php?t=templates&sort=date&order=<?=$negorder?><?=$qstr?>" title="Sort By Create Date <?=$negorder?>">Last Update</a></th>
-            <th width="170" nowrap>Created</th>
+            <th width="7">&nbsp;</th>
+            <th width="350"><a <?php echo $name_sort; ?> href="templates.php?<?php echo $qstr; ?>&sort=name">Name</a></th>
+            <th width="100"><a  <?php echo $status_sort; ?> href="templates.php?<?php echo $qstr; ?>&sort=status">Status</a></th>
+            <th width="80"><a <?php echo $inuse_sort; ?> href="templates.php?<?php echo $qstr; ?>&sort=inuse">In-Use</a></th>
+            <th width="120" nowrap><a  <?php echo $created_sort; ?>href="templates.php?<?php echo $qstr; ?>&sort=created">Date Added</a></th>
+            <th width="150" nowrap><a  <?php echo $updated_sort; ?>href="templates.php?<?php echo $qstr; ?>&sort=updated">Last Updated</a></th>
         </tr>
-        <?
-        $class = 'row1';
+    </thead>
+    <tbody>
+    <?php
         $total=0;
-        $sids=($errors && is_array($_POST['ids']))?$_POST['ids']:null;
-        if($result && db_num_rows($result)):
-            $dtpl=$cfg->getDefaultTemplateId();
-            while ($row = db_fetch_array($result)) {
+        $ids=($errors && is_array($_POST['ids']))?$_POST['ids']:null;
+        if($res && db_num_rows($res)):
+            $defaultTplId=$cfg->getDefaultTemplateId();
+            while ($row = db_fetch_array($res)) {
+                $inuse=($row['depts'] || $row['tpl_id']==$defaultTplId);
                 $sel=false;
-                $disabled='';
-                if($dtpl==$row['tpl_id'] || $row['depts'])
-                    $disabled='disabled';
-                else {
-                    $deletable++;
-                    if($sids && in_array($row['tpl_id'],$sids)){
-                        $class="$class highlight";
-                        $sel=true;
-                    }
-                }
+                if($ids && in_array($row['tpl_id'],$ids))
+                    $sel=true;
+
+                $default=($defaultTplId==$row['tpl_id'])?'<small class="fadded">(System Default)</small>':'';
                 ?>
-            <tr class="<?=$class?>" id="<?=$row['tpl_id']?>">
+            <tr id="<?php echo $row['tpl_id']; ?>">
                 <td width=7px>
-                  <input type="checkbox" name="ids[]" value="<?=$row['tpl_id']?>" <?=$sel?'checked':''?> <?=$disabled?>
-                        onClick="highLight(this.value,this.checked);">
-                <td><a href="admin.php?t=templates&id=<?=$row['tpl_id']?>"><?=$row['name']?></a></td>
-                <td><?=$disabled?'Yes':'No'?></td>
-                <td><?=Format::db_datetime($row['updated'])?></td>
-                <td><?=Format::db_datetime($row['created'])?></td>
+                  <input type="checkbox" class="ckb" name="ids[]" value="<?php echo $row['tpl_id']; ?>"
+                            <?php echo $sel?'checked="checked"':''; ?> <?php echo $default?'disabled="disabled"':''; ?> >
+                </td>
+                <td>&nbsp;<a href="templates.php?tpl_id=<?php echo $row['tpl_id']; ?>"><?php echo Format::htmlchars($row['name']); ?></a>
+                &nbsp;<?php echo $default; ?></td>
+                <td>&nbsp;<?php echo $row['isactive']?'Active':'<b>Disabled</b>'; ?></td>
+                <td>&nbsp;&nbsp;<?php echo ($inuse)?'<b>Yes</b>':'No'; ?></td>
+                <td>&nbsp;<?php echo Format::db_date($row['created']); ?></td>
+                <td>&nbsp;<?php echo Format::db_datetime($row['updated']); ?></td>
             </tr>
-            <?
-            $class = ($class =='row2') ?'row1':'row2';
+            <?php
             } //end of while.
-        else: //nothin' found!! ?> 
-            <tr class="<?=$class?>"><td colspan=5><b>Query returned 0 results</b>&nbsp;&nbsp;<a href="admin.php?t=templates">Index list</a></td></tr>
-        <?
         endif; ?>
-     </table>
-    </td></tr>
-    <?
-    if(db_num_rows($result)>0 && $deletable): //Show options..
-     ?>
-    <tr>
-        <td align="center">
-            <input class="button" type="submit" name="delete" value="Delete Template(s)" 
-                     onClick='return confirm("Are you sure you want to DELETE selected template(s)?");'>
+    <tfoot>
+     <tr>
+        <td colspan="6">
+            <?php if($res && $num){ ?>
+            Select:&nbsp;
+            <a id="selectAll" href="#ckb">All</a>&nbsp;&nbsp;
+            <a id="selectNone" href="#ckb">None</a>&nbsp;&nbsp;
+            <a id="selectToggle" href="#ckb">Toggle</a>&nbsp;&nbsp;
+            <?php }else{
+                echo 'No templates found';
+            } ?>
         </td>
-    </tr>
-    <?
-    endif;
-    ?>
-    </form>
- </table>
- <br/>
- <div class="msg">Add New Template</div>
- <hr>
- <div>
-   To add a new template - select existing template and edit it thereafter.<br/>
-   <form action="admin.php?t=templates" method="POST" >
-    <input type=hidden name='t' value='templates'>
-    <input type=hidden name='do' value='add'>
-    Name:
-    <input name="name" size=30 value="<?=($errors)?Format::htmlchars($_REQUEST['name']):''?>" />
-    <font class="error">*&nbsp;<?=$errors['name']?></font>&nbsp;&nbsp;
-    Copy: 
-    <select name="copy_template">
-        <option value=0>Select Template to Copy</option>
-          <?
-          $result=db_query('SELECT tpl_id,name FROM '.EMAIL_TEMPLATE_TABLE);
-          while (list($id,$name)= db_fetch_row($result)){ ?>
-              <option value="<?=$id?>"><?=$name?></option>
-                  <?
-          }?>
-     </select>&nbsp;<font class="error">*&nbsp;<?=$errors['copy_template']?></font>
-     &nbsp;&nbsp; <input class="button" type="submit" name="add" value="Add">
- </div>
- <br/>
- <div class="msg">Variables</div>
- <hr>
- <div>
- Variables are used on email templates as placeholders. Please note that non-base variables depends on the context in question. 
- <table width="100%" border="0" cellspacing=1 cellpadding=2>
-    <tr><td width="50%" valign="top"><b>Base Variables</b></td><td><b>Other Variables</b></td></tr>
-    <tr>
-        <td width="50%" valign="top">
-            <table width="100%" border="0" cellspacing=1 cellpadding=1>
-                <tr><td width="100">%id</td><td>Ticket ID (internal ID)</td></tr>
-                <tr><td>%ticket</td><td>Ticket number (external ID)</td></tr>
-                <tr><td>%email</td><td>Email address</td></tr>
-                <tr><td>%name</td><td>Full name</td></tr>
-                <tr><td>%subject</td><td>Subject</td></tr>
-                <tr><td>%topic</td><td>Help topic (web only)</td></tr>
-                <tr><td>%phone</td><td>Phone number | ext</td></tr>
-                <tr><td>%status</td><td>Status</td></tr>
-                <tr><td>%priority</td><td>Priority</td></tr>
-                <tr><td>%dept</td><td>Department</td></tr>
-                <tr><td>%assigned_staff</td><td>Assigned staff (if any)</td></tr>
-                <tr><td>%createdate</td><td>Date created</td></tr>
-                <tr><td>%duedate</td><td>Due date</td></tr>
-                <tr><td>%closedate</td><td>Date closed</td></tr>
-        </table>
-        </td>
-        <td valign="top">
-            <table width="100%" border="0" cellspacing=1 cellpadding=1>
-                <tr><td width="100">%message</td><td>Message (incoming)</td></tr>
-                <tr><td>%response</td><td>Response (outgoing)</td></tr>
-                <tr><td>%note</td><td>Internal note</td></tr>
-                <tr><td>%staff</td><td>Staff's name (alert/notices)</td></tr>
-                <tr><td>%assignee</td><td>Assigned staff</td></tr>
-                <tr><td>%assigner</td><td>Staff assigning the ticket</td></tr>
-                <tr><td>%url</td><td>osTicket's base url (FQDN)</td></tr>
+     </tr>
+    </tfoot>
+</table>
+<?php
+if($res && $num): //Show options..
+    echo '<div>&nbsp;Page:'.$pageNav->getPageLinks().'&nbsp;</div>';
+?>
+<p class="centered" id="actions">
+    <input class="button" type="submit" name="enable" value="Enable" >
+    <input class="button" type="submit" name="disable" value="Disable" >
+    <input class="button" type="submit" name="delete" value="Delete" >
+</p>
+<?php
+endif;
+?>
+</form>
 
-            </table>
-        </td>
-    </tr>
- </table>
- </div>
-
-
-
-
+<div style="display:none;" class="dialog" id="confirm-action">
+    <h3>Please Confirm</h3>
+    <a class="close" href=""><i class="icon-remove-circle"></i></a>
+    <hr/>
+    <p class="confirm-action" style="display:none;" id="enable-confirm">
+        Are you sure want to <b>enable</b> selected templates?
+    </p>
+    <p class="confirm-action" style="display:none;" id="disable-confirm">
+        Are you sure want to <b>disable</b>  selected templates?
+    </p>
+    <p class="confirm-action" style="display:none;" id="delete-confirm">
+        <font color="red"><strong>Are you sure you want to DELETE selected templates?</strong></font>
+        <br><br>Deleted templates CANNOT be recovered.
+    </p>
+    <div>Please confirm to continue.</div>
+    <hr style="margin-top:1em"/>
+    <p class="full-width">
+        <span class="buttons" style="float:left">
+            <input type="button" value="No, Cancel" class="close">
+        </span>
+        <span class="buttons" style="float:right">
+            <input type="button" value="Yes, Do it!" class="confirm">
+        </span>
+     </p>
+    <div class="clear"></div>
+</div>

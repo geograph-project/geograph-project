@@ -2,32 +2,65 @@
 /*********************************************************************
     class.banlist.php
 
-    Banned emails handle.
+    Banned email addresses handle.
 
     Peter Rotich <peter@osticket.com>
-    Copyright (c)  2006-2010 osTicket
+    Copyright (c)  2006-2013 osTicket
     http://www.osticket.com
 
     Released under the GNU General Public License WITHOUT ANY WARRANTY.
     See LICENSE.TXT for details.
 
     vim: expandtab sw=4 ts=4 sts=4:
-    $Id: $
 **********************************************************************/
+
+require_once "class.filter.php";
 
 class Banlist {
     
     function add($email,$submitter='') {
-        $sql='INSERT IGNORE INTO '.BANLIST_TABLE.' SET added=NOW(),email='.db_input($email).',submitter='.db_input($submitter);
-        return (db_query($sql) && ($id=db_insert_id()))?$id:0;
+        return self::getSystemBanList()->addRule('email','equal',$email);
     }
     
     function remove($email) {
-        $sql='DELETE FROM '.BANLIST_TABLE.' WHERE email='.db_input($email);
-        return (db_query($sql) && db_affected_rows())?true:false;
+        return self::getSystemBanList()->removeRule('email','equal',$email);
     }
     
     function isbanned($email) {
-        return db_num_rows(db_query('SELECT id FROM '.BANLIST_TABLE.' WHERE email='.db_input($email)))?true:false;
+        return TicketFilter::isBanned($email);
+    }
+
+    function includes($email) {
+        return self::getSystemBanList()->containsRule('email','equal',$email);
+    }
+
+    function ensureSystemBanList() {
+
+        if (!($id=Filter::getIdByName('SYSTEM BAN LIST')))
+            $id=self::createSystemBanList();
+
+        return $id;
+    }
+
+    function createSystemBanList() {
+        # XXX: Filter::create should return the ID!!!
+        $errors=array();
+        return Filter::create(array(
+            'execorder'     => 99,
+            'name'          => 'SYSTEM BAN LIST',
+            'isactive'      => 1,
+            'match_all_rules' => false,
+            'reject_ticket'  => true,
+            'rules'         => array(),
+            'notes'         => 'Internal list for email banning. Do not remove'
+        ), $errors);
+    }
+
+    function getSystemBanList() {
+        return new Filter(self::ensureSystemBanList());
+    }
+
+    function getFilter() {
+        return self::getSystemBanList();
     }
 }

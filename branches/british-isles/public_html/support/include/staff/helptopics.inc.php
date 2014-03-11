@@ -1,82 +1,153 @@
 <?php
-if(!defined('OSTADMININC') || !$thisuser->isadmin()) die('Access Denied');
+if(!defined('OSTADMININC') || !$thisstaff->isAdmin()) die('Access Denied');
 
-//List all help topics
-$sql='SELECT topic_id,isactive,topic.noautoresp,topic.dept_id,topic,dept_name,priority_desc,topic.created,topic.updated FROM '.TOPIC_TABLE.' topic '.
-     ' LEFT JOIN '.DEPT_TABLE.' dept ON dept.dept_id=topic.dept_id '.
-     ' LEFT JOIN '.TICKET_PRIORITY_TABLE.' pri ON pri.priority_id=topic.priority_id ';
-$services=db_query($sql.' ORDER BY topic'); 
+$qstr='';
+$sql='SELECT topic.* '
+    .', IF(ptopic.topic_pid IS NULL, topic.topic, CONCAT_WS(" / ", ptopic.topic, topic.topic)) as name '
+    .', dept.dept_name as department '
+    .', priority_desc as priority '
+    .' FROM '.TOPIC_TABLE.' topic '
+    .' LEFT JOIN '.TOPIC_TABLE.' ptopic ON (ptopic.topic_id=topic.topic_pid) '
+    .' LEFT JOIN '.DEPT_TABLE.' dept ON (dept.dept_id=topic.dept_id) '
+    .' LEFT JOIN '.TICKET_PRIORITY_TABLE.' pri ON (pri.priority_id=topic.priority_id) ';
+$sql.=' WHERE 1';
+$sortOptions=array('name'=>'name','status'=>'topic.isactive','type'=>'topic.ispublic',
+                   'dept'=>'department','priority'=>'priority','updated'=>'topic.updated');
+$orderWays=array('DESC'=>'DESC','ASC'=>'ASC');
+$sort=($_REQUEST['sort'] && $sortOptions[strtolower($_REQUEST['sort'])])?strtolower($_REQUEST['sort']):'name';
+//Sorting options...
+if($sort && $sortOptions[$sort]) {
+    $order_column =$sortOptions[$sort];
+}
+$order_column=$order_column?$order_column:'topic.topic';
+
+if($_REQUEST['order'] && $orderWays[strtoupper($_REQUEST['order'])]) {
+    $order=$orderWays[strtoupper($_REQUEST['order'])];
+}
+$order=$order?$order:'ASC';
+
+if($order_column && strpos($order_column,',')){
+    $order_column=str_replace(','," $order,",$order_column);
+}
+$x=$sort.'_sort';
+$$x=' class="'.strtolower($order).'" ';
+$order_by="$order_column $order ";
+
+$total=db_count('SELECT count(*) FROM '.TOPIC_TABLE.' topic ');
+$page=($_GET['p'] && is_numeric($_GET['p']))?$_GET['p']:1;
+$pageNav=new Pagenate($total, $page, PAGE_LIMIT);
+$pageNav->setURL('helptopics.php',$qstr.'&sort='.urlencode($_REQUEST['sort']).'&order='.urlencode($_REQUEST['order']));
+//Ok..lets roll...create the actual query
+$qstr.='&order='.($order=='DESC'?'ASC':'DESC');
+$query="$sql GROUP BY topic.topic_id ORDER BY $order_by LIMIT ".$pageNav->getStart().",".$pageNav->getLimit();
+$res=db_query($query);
+if($res && ($num=db_num_rows($res)))
+    $showing=$pageNav->showing().' help topics';
+else
+    $showing='No help topic found!';
+
 ?>
-<div class="msg">Help Topics</div>
-<table width="100%" border="0" cellspacing=1 cellpadding=2>
-   <form action="admin.php?t=settings" method="POST" name="topic" onSubmit="return checkbox_checker(document.forms['topic'],1,0);">
-   <input type='hidden' name='t' value='topics'>
-   <input type=hidden name='do' value='mass_process'>
-   <tr><td>
-    <table border="0" cellspacing=0 cellpadding=2 class="dtable" align="center" width="100%">
+<div style="width:700px;padding-top:5px; float:left;">
+ <h2>Help Topics</h2>
+ </div>
+<div style="float:right;text-align:right;padding-top:5px;padding-right:5px;">
+    <b><a href="helptopics.php?a=add" class="Icon newHelpTopic">Add New Help Topic</a></b></div>
+<div class="clear"></div>
+<form action="helptopics.php" method="POST" name="topics">
+ <?php csrf_token(); ?>
+ <input type="hidden" name="do" value="mass_process" >
+<input type="hidden" id="action" name="a" value="" >
+ <table class="list" border="0" cellspacing="1" cellpadding="0" width="940">
+    <caption><?php echo $showing; ?></caption>
+    <thead>
         <tr>
-	        <th width="7px">&nbsp;</th>
-	        <th>Help Topic</th>
-            <th>Status</th>
-            <th>AutoResp.</th>
-            <th>Department</th>
-            <th>Priority</th>
-	        <th>Last Updated</th>
+            <th width="7">&nbsp;</th>        
+            <th width="320"><a <?php echo $name_sort; ?> href="helptopics.php?<?php echo $qstr; ?>&sort=name">Help Topic</a></th>
+            <th width="80"><a  <?php echo $status_sort; ?> href="helptopics.php?<?php echo $qstr; ?>&sort=status">Status</a></th>
+            <th width="100"><a  <?php echo $type_sort; ?> href="helptopics.php?<?php echo $qstr; ?>&sort=type">Type</a></th>
+            <th width="100"><a  <?php echo $priority_sort; ?> href="helptopics.php?<?php echo $qstr; ?>&sort=priority">Priority</a></th>
+            <th width="200"><a  <?php echo $dept_sort; ?> href="helptopics.php?<?php echo $qstr; ?>&sort=dept">Department</a></th>
+            <th width="150" nowrap><a  <?php echo $updated_sort; ?>href="helptopics.php?<?php echo $qstr; ?>&sort=updated">Last Updated</a></th>
         </tr>
-        <?
-        $class = 'row1';
+    </thead>
+    <tbody>
+    <?php
         $total=0;
-        $ids=($errors && is_array($_POST['tids']))?$_POST['tids']:null;
-        if($services && db_num_rows($services)):
-            while ($row = db_fetch_array($services)) {
+        $ids=($errors && is_array($_POST['ids']))?$_POST['ids']:null;
+        if($res && db_num_rows($res)):
+            while ($row = db_fetch_array($res)) {
                 $sel=false;
-                if(($ids && in_array($row['topic_id'],$ids)) or ($row['topic_id']==$topicID)){
-                    $class="$class highlight";
+                if($ids && in_array($row['topic_id'],$ids))
                     $sel=true;
-                }
                 ?>
-            <tr class="<?=$class?>" id="<?=$row['topic_id']?>">
+            <tr id="<?php echo $row['topic_id']; ?>">
                 <td width=7px>
-                 <input type="checkbox" name="tids[]" value="<?=$row['topic_id']?>" <?=$sel?'checked':''?>  onClick="highLight(this.value,this.checked);">
-                <td><a href="admin.php?t=topics&id=<?=$row['topic_id']?>"><?=Format::htmlchars(Format::truncate($row['topic'],30))?></a></td>
-                <td><?=$row['isactive']?'Active':'<b>Disabled</b>'?></td>
-                <td>&nbsp;&nbsp;<?=$row['noautoresp']?'No':'<b>Yes</b>'?></td>
-                <td><a href="admin.php?t=dept&id=<?=$row['dept_id']?>"><?=$row['dept_name']?></a></td>
-                <td><?=$row['priority_desc']?></td>
-                <td><?=Format::db_datetime($row['updated'])?></td>
+                  <input type="checkbox" class="ckb" name="ids[]" value="<?php echo $row['topic_id']; ?>" 
+                            <?php echo $sel?'checked="checked"':''; ?>>
+                </td>
+                <td><a href="helptopics.php?id=<?php echo $row['topic_id']; ?>"><?php echo $row['name']; ?></a>&nbsp;</td>
+                <td><?php echo $row['isactive']?'Active':'<b>Disabled</b>'; ?></td>
+                <td><?php echo $row['ispublic']?'Public':'<b>Private</b>'; ?></td>
+                <td><?php echo $row['priority']; ?></td>
+                <td><a href="departments.php?id=<?php echo $row['dept_id']; ?>"><?php echo $row['department']; ?></a></td>
+                <td>&nbsp;<?php echo Format::db_datetime($row['updated']); ?></td>
             </tr>
-            <?
-            $class = ($class =='row2') ?'row1':'row2';
+            <?php
             } //end of while.
-        else: //notthing! ?> 
-            <tr class="<?=$class?>"><td colspan=8><b>Query returned 0 results</b></td></tr>
-        <?
         endif; ?>
-    </table>
-    </td></tr>
-    <?
-    if(db_num_rows($services)>0): //Show options..
-     ?>
-    <tr>
-        <td style="padding-left:20px">
+    <tfoot>
+     <tr>
+        <td colspan="7">
+            <?php if($res && $num){ ?>
             Select:&nbsp;
-            <a href="#" onclick="return select_all(document.forms['topic'],true)">All</a>&nbsp;&nbsp;
-            <a href="#" onclick="return reset_all(document.forms['topic'])">None</a>&nbsp;&nbsp;
-            <a href="#" onclick="return toogle_all(document.forms['topic'],true)">Toggle</a>&nbsp;&nbsp;
+            <a id="selectAll" href="#ckb">All</a>&nbsp;&nbsp;
+            <a id="selectNone" href="#ckb">None</a>&nbsp;&nbsp;
+            <a id="selectToggle" href="#ckb">Toggle</a>&nbsp;&nbsp;
+            <?php }else{
+                echo 'No help topics found';
+            } ?>
         </td>
-    </tr>
-    <tr>
-        <td align="center">
-            <input class="button" type="submit" name="enable" value="Enable"
-                onClick=' return confirm("Are you sure you want to make selected services active?");'>
-            <input class="button" type="submit" name="disable" value="Disable" 
-                onClick=' return confirm("Are you sure you want to DISABLE selected services?");'>
-            <input class="button" type="submit" name="delete" value="Delete" 
-                onClick=' return confirm("Are you sure you want to DELETE selected services?");'>
-        </td>
-    </tr>
-    <?
-    endif;
-    ?>
-    </form>
+     </tr>
+    </tfoot>
 </table>
+<?php
+if($res && $num): //Show options..
+    echo '<div>&nbsp;Page:'.$pageNav->getPageLinks().'&nbsp;</div>';
+?>
+<p class="centered" id="actions">
+    <input class="button" type="submit" name="enable" value="Enable" >
+    <input class="button" type="submit" name="disable" value="Disable">
+    <input class="button" type="submit" name="delete" value="Delete">
+</p>
+<?php
+endif;
+?>
+</form>
+
+<div style="display:none;" class="dialog" id="confirm-action">
+    <h3>Please Confirm</h3>
+    <a class="close" href=""><i class="icon-remove-circle"></i></a>
+    <hr/>
+    <p class="confirm-action" style="display:none;" id="enable-confirm">
+        Are you sure want to <b>enable</b> selected help topics?
+    </p>
+    <p class="confirm-action" style="display:none;" id="disable-confirm">
+        Are you sure want to <b>disable</b>  selected help topics?
+    </p>
+    <p class="confirm-action" style="display:none;" id="delete-confirm">
+        <font color="red"><strong>Are you sure you want to DELETE selected help topics?</strong></font>
+        <br><br>Deleted topics CANNOT be recovered.
+    </p>
+    <div>Please confirm to continue.</div>
+    <hr style="margin-top:1em"/>
+    <p class="full-width">
+        <span class="buttons" style="float:left">
+            <input type="button" value="No, Cancel" class="close">
+        </span>
+        <span class="buttons" style="float:right">
+            <input type="button" value="Yes, Do it!" class="confirm">
+        </span>
+     </p>
+    <div class="clear"></div>
+</div>
+
