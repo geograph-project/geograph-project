@@ -44,12 +44,12 @@ if($_POST):
         $vars['files'] = AttachmentFile::format($_FILES['attachments'], true);
 
     if (!$errors && !empty($_POST['ref'])) {
-        $vars['message'].="\n\n-------------------------------\n";
-        $vars['message'].="Referring page: ".$_POST['ref']."\n";
+        $vars['message'].="<br/>\n<br/>\n-------------------------------<br/>\n";
+        $vars['message'].="Referring page: ".strip_tags($_POST['ref'])."<br/>\n";
         if (!empty($_POST['user_id'])) {
-                $vars['message'].="User profile: http://{$_SERVER['HTTP_HOST']}/profile/".intval($_POST['user_id'])."\n";
+                $vars['message'].="User profile: http://{$_SERVER['HTTP_HOST']}/profile/".intval($_POST['user_id'])."<br/>\n";
         }
-        $vars['message'].="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
+        $vars['message'].="Browser: ".strip_tags($_SERVER['HTTP_USER_AGENT'])."<br/>\n";
     }
 
     //Ticket::create...checks for errors..

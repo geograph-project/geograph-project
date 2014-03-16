@@ -248,6 +248,13 @@ $prios = array();
 while ($row = db_fetch_array($res))
     $prios[$row['priority_id']] = $row;
 
+
+///////
+$qselect .= ", ban.val AS banned";
+$qfrom .= " LEFT JOIN ost_filter_rule ban ON (ban.filter_id = 1 and ban.what = 'email' and ban.how = '' and email.address = ban.val) ";
+///////
+
+
 $query="$qselect $qfrom $qwhere $qgroup ORDER BY $order_by $order LIMIT ".$pageNav->getStart().",".$pageNav->getLimit();
 if (!empty($_GET['qq']))
 	echo $query;
@@ -374,7 +381,7 @@ $negorder=$order=='DESC'?'ASC':'DESC'; //Negate the sorting..
                     $tid=sprintf('<b>%s</b>',$tid);
                 }
                 ?>
-            <tr id="<?php echo $row['ticket_id']; ?>">
+            <tr id="<?php echo $row['ticket_id']; ?>" <? if ($row['banned']) {echo ' style="text-decoration: line-through;"';} ?>>
                 <?php if($thisstaff->canManageTickets()) {
 
                     $sel=false;
