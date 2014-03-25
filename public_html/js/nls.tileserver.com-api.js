@@ -19,9 +19,9 @@
 
 // Global variable with the tileserver
 var tileserver = "";
-#var tileserver_default = "uk.tileserver.com/_os1/r0/";
+//var tileserver_default = "uk.tileserver.com/_os1/r0/";
 var tileserver_default = "cz.tileserver.com/nls/";
-#var _gaq = _gaq || [];
+//var _gaq = _gaq || [];
 
 // THE PUBLIC FUNCTIONS:
 // =====================
