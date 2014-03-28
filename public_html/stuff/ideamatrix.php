@@ -72,7 +72,7 @@ $comments = $db->getAll("SELECT c.*, realname, SUBSTRING(c.created,1,10) AS `day
 	FROM idea_comment c INNER JOIN user USING (user_id) LEFT JOIN idea_vote v USING (idea_id,comment_id)
 	WHERE status =1 GROUP BY comment_id");
 foreach ($comments as $comment) {
-	if (empty($ideas[ $comment['idea_id'] ])
+	if (empty($ideas[ $comment['idea_id'] ]))
 		continue;
 	$ideas[ $comment['idea_id'] ]['columns'][ $comment['tone'] ][] = $comment;
 }
