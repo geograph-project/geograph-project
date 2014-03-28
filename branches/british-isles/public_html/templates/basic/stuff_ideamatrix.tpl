@@ -28,6 +28,14 @@
             z-index:1002;
             overflow: auto;
         }
+.closer {
+	float:right;
+	background-color:pink;
+	padding:4px;
+}
+.closer a {
+	color:black;
+}
 .ideamatrix {
 	font-size:0.9em;
 }
@@ -39,6 +47,7 @@
 }
 .ideamatrix th.titlebar h3 {
 	margin-top:0;	
+	border-bottom:1px solid gray;
 }
 .ideamatrix th a {
 	color:cyan;
@@ -84,7 +93,7 @@ function showbox(formm,idea_id,idea,tone) {
 
 <h2>Idea Matrix :: Evolving the moderation system</h2>
 
-<p><a href="javascript:void(showbox(1))">Add new idea</a></p>
+<p><a href="javascript:void(showbox(1))">Add new Idea / Proposal</a></p>
 
 {dynamic}
 
@@ -134,23 +143,26 @@ function showbox(formm,idea_id,idea,tone) {
 {include file="_std_end.tpl"}
 
 <div id="light1" class="white_content">
+	<div class="closer"><a href="javascript:void(0)" onclick="document.getElementById('light1').style.display='none';document.getElementById('fade').style.display='none'">Close</a></div>
         <form method="post" action="{$script_name}?createIdea" name="createIdea">
+		<h3>Create a new Idea/Proposal</h3>
 		Title: <input type=text name="title" size=50 maxlength=64 placeholder="Enter a short title here"><br/>
 		<textarea name="description" rows="15" cols="60" placeholder="Enter a short description here"></textarea><br/>
-		Just put the facts of the idea here. Can expand on the pros and cons seperatly.<br/>
+		Just put the facts of the idea here. Can expand on the pros and cons seperatly (as comments).<br/>
 		<input type="submit" value="create">
 	</form>
-	<div style="text-align:right;"><a href="javascript:void(0)" onclick="document.getElementById('light1').style.display='none';document.getElementById('fade').style.display='none'">Close</a></div>
 </div>
 <div id="light2" class="white_content">
+	<div class="closer"><a href="javascript:void(0)" onclick="document.getElementById('light2').style.display='none';document.getElementById('fade').style.display='none'">Close</a></div>
         <form method="post" action="{$script_name}?createComment" name="createComment">
+		<h3>Add new Comment to a Idea/Proposal</h3>
 		<input type=hidden name=idea_id value="">
 		<input type=text name=idea value="" size="64" readonly=readonly><br/>
 		Tone:<input type=text name=tone value="" size="40" readonly=readonly><br/>
 		<textarea name="comment" rows="15" cols="60" placeholder="Enter your comment here"></textarea><br/>
+		If you have multiple points please submit as SEPERATE comments, rather than bundle all together. A comment should be short, easily digestable, and self-contained. <br/>
 		<input type="submit" value="submit">
 	</form>
-	<div style="text-align:right;"><a href="javascript:void(0)" onclick="document.getElementById('light2').style.display='none';document.getElementById('fade').style.display='none'">Close</a></div>
 </div>
 <div id="fade" class="black_overlay"></div>
 
