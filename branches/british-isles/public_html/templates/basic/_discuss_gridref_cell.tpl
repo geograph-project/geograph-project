@@ -27,6 +27,9 @@
 
 		{/foreach}
 		<br style="clear:both"/>
+		{if count($images) == 500}
+			Note: Only the first 500 images in the square are shown above.
+		{/if}
 		</div>
 	</div>
 	{/if}
