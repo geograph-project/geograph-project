@@ -67,7 +67,7 @@ if (!empty($CONF['disable_discuss_thumbs'])) {
 	$gridThumbs = "<h4 style=\"color:red\">During times of heavy load we limit the display of thumbnails in the posts.<br/>Sorry for the loss of this feature.</h4>";
 } else {
 	if ($gridref || ($forum == 5 && $gridref = $topicName)) {
-	
+
 		require_once('geograph/gridimage.class.php');
 		require_once('geograph/gridsquare.class.php');
 
@@ -79,21 +79,20 @@ if (!empty($CONF['disable_discuss_thumbs'])) {
 		if ($grid_ok) {
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(75000));
-			
+
 			if ($square->imagecount)
 			{
 				//todo use smarty caching
-				
+
 				//what style should we use?
 				$style = $USER->getStyle();
-				$smarty->assign('maincontentclass', 'content_photo'.$style);	
-				$smarty->assign('backgroundcolor', $style);	
-				
-				$images=$square->getImages(false,false,'order by moderation_status+0 desc,seq_no limit 100');
-				$smarty->assign_by_ref('images', $images);
+				$smarty->assign('maincontentclass', 'content_photo'.$style);
+				$smarty->assign('backgroundcolor', $style);
 
+				$images=$square->getImages(false,false,'order by moderation_status+0 desc,seq_no limit 500');
+				$smarty->assign_by_ref('images', $images);
 			}
-			$smarty->assign('gridref', $gridref);	
+			$smarty->assign('gridref', $gridref);
 			$gridThumbs = $smarty->fetch("_discuss_gridref_cell.tpl");
 		}
 	}
@@ -182,6 +181,7 @@ if(isset($mod_rewrite) and $mod_rewrite) $viewReg="<a href=\"{$main_url}/user{$c
 else $viewReg='';
 
 $posterName=$cols[1];
+$posterNameJS=addslashes($cols[1]);
 $posterText=$cols[3];
 if (($topicDesc && !$postID) || !$topicDesc)
 	$postID = $cols[6];
@@ -284,56 +284,12 @@ if (empty($CONF['disable_discuss_thumbs'])) {
 ##$posterText = preg_replace('/\[([\w :-]+)\]([^>]*)(<(?!\/a>)|$)/e',"replace_tags('$1').'$2$3'",$posterText);
 
 
-//no external images
-// the callback function
-$fixExternalImages= <<<FUNC
-	if (in_array(\$matches[2],\$GLOBALS['domainWhitelist']))
-	{
-		//this is fine
-		return \$matches[0];
-	}
-	else
-	{
-		\$url=\$matches[1].\$matches[2].\$matches[3];
-		//no external images allowed
-		return "<a title=\"Externally hosted image - caution advised\" href=\"".htmlentities(\$url)."\">".htmlentities(\$url)."</a> (external image) ";	
-	}
-FUNC;
-
-$domainWhitelist = array(
-	'www.geograph.org.uk',
-	's0.geograph.org.uk',
-	't0.geograph.org.uk',
-	't0cdn.geograph.org.uk',
-	'www.nearby.org.uk',
-	'www.gravatar.com',
-	'www.ie6countdown.com',
-	'www.geograph.co.uk',
-	'www.pledgebank.com',
-	'media.geograph.org.uk',
-	'www.google.com',
-	'imgs.xkcd.com',
-	'chart.apis.google.com',
-	'geodatastore2.appspot.com',
-	'wordle.net',
-	'www.wordle.net'
-);
-
-$posterText=preg_replace_callback(
-             '/<img src="(http:\/\/)([^\/]*)([^"]*)".*?>/is',
-             create_function(
-	             // single quotes are essential here,
-	             // or alternative escape all $ as \$
-	             '$matches',
-	             $fixExternalImages),
-             $posterText);
-
 
 ##<img src="http://media.geograph.org.uk/files/33e75ff09dd601bbe69f351039152189/toptags_overview.png" border="0" align="" alt="">
 if ($topic == 14539) {
 	$posterText=preg_replace('/<img src="(http:\/\/media\.geograph\.org\.uk\/[^"]+)" ([^>]+)>/','<a href="$1" target="_blank"><img src="$1" $2 width="690"></a>',$posterText);
 }
-             
+
 
 $listPosts.=ParseTpl($tpl);
 

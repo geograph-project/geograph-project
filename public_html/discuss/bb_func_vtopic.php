@@ -12,13 +12,14 @@ if($viewTopicsIfOnlyOneForum=='1'){
 $forum=db_simpleSelect(0,$Tf,'forum_id'); $forum=$forum[0];
 }
 
-if ($forum==0 or !($row=db_simpleSelect(0,$Tf,'forum_name, forum_id, forum_icon, topics_count','forum_id','=',$forum))) {
+if ($forum==0 or !($row=db_simpleSelect(0,$Tf,'forum_name, forum_id, forum_icon, topics_count, forum_desc','forum_id','=',$forum))) {
 $errorMSG=$l_forumnotexists; $correctErr=$backErrorLink;
 $title=$title.$l_forumnotexists;
 echo load_header(); echo ParseTpl(makeUp('main_warning')); return;
 }
 
 $forumName=$row[0]; $forumIcon=$row[2];
+$forumDesc=$row[4];
 
 if($user_sort=='') $user_sort=$sortingTopics; /* Sort messages default by last answer (0) desc OR 1 - by last new topics */
 
@@ -67,7 +68,7 @@ $topic_views=$cols[8];
 if(isset($themeDesc) and in_array($topic,$themeDesc)) $topic_reverse="<img src=\"{$static_url}/img/topic_reverse.gif\" align=middle border=0 alt=\"\">&nbsp;";
 
 if ($cols[9]) {
-	$dot = ($cols[11])?'topic_muted.gif?':'topic_updated.gif';
+	$dot = ($cols[11])?'topic_muted.gif?v2':'topic_updated.gif';
 	$topic_reverse = "<a href=\"{$indexphp}action=vpost&amp;forum={$forum}&amp;topic={$topic}&amp;post={$cols[10]}\"><img src=\"{$static_url}/img/$dot\" align=middle border=0 alt=\"Updated Since Last Visit\" height=\"10\" width=\"10\"></a>&nbsp;";
 } elseif (is_null($cols[9])) {
 	$topic_reverse = "<img src=\"{$static_url}/img/topic_new.gif\" align=middle border=0 alt=\"New Since Last Visit\" height=\"6\" width=\"10\">&nbsp;";
@@ -119,25 +120,23 @@ if ($gridref) {
 	$square=new GridSquare;
 
 	$grid_ok=$square->setGridRef($gridref);
-	
+
 	if ($grid_ok) {
 		//find a possible place within 25km
 		$smarty->assign('place', $square->findNearestPlace(75000));
-		
+
 		if ($square->imagecount)
 		{
 			$style = $USER->getStyle();
-			$smarty->assign('maincontentclass', 'content_photo'.$style);	
-			$smarty->assign('backgroundcolor', $style);	
-			
-			$images=$square->getImages();
-			$smarty->assign_by_ref('images', $images);
+			$smarty->assign('maincontentclass', 'content_photo'.$style);
+			$smarty->assign('backgroundcolor', $style);
 
+			$images=$square->getImages(false,false,'order by moderation_status+0 desc,seq_no limit 500');
+			$smarty->assign_by_ref('images', $images);
 		}
-		
-		$smarty->assign('gridref', $gridref);	
+
+		$smarty->assign('gridref', $gridref);
 		$gridThumbs = $smarty->fetch("_discuss_gridref_cell.tpl");
-		
 	}
 
 	$l_messageABC="New ".$l_message." for ".$gridref ;
