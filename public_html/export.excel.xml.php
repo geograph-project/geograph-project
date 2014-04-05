@@ -75,8 +75,6 @@ while (!$recordSet->EOF)
 	print "<Cell><Data ss:Type=\"String\">{$image['imageclass']}</Data></Cell>";
 	if (!empty($_GET['desc']))
 		print "<Cell><Data ss:Type=\"String\">{$image['comment']}</Data></Cell>";
-	if (!empty($_GET['tags']))
-		print "<Cell><Data ss:Type=\"String\">{$image['tags']}</Data></Cell>";
 	if (!empty($_GET['thumb'])) {
 		$gridimage->fastInit($image);
 		print "<Cell><Data ss:Type=\"String\">".$gridimage->getThumbnail(120,120,true)."</Data></Cell>";
@@ -107,9 +105,13 @@ while (!$recordSet->EOF)
 			print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_northings']}</Data></Cell>\n";
 			print "<Cell><Data ss:Type=\"Number\">{$image['viewpoint_grlen']}</Data></Cell>\n";
 		}
-	} elseif (!empty($_GET['ll'])) {
-		print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_lat']}</Data></Cell>\n";
-		print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_long']}</Data></Cell>\n";
+	} else {
+		if (!empty($_GET['ll'])) {
+			print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_lat']}</Data></Cell>\n";
+			print "<Cell><Data ss:Type=\"Number\">{$image['wgs84_long']}</Data></Cell>\n";
+		}
+		if (!empty($_GET['tags']))
+			print "<Cell><Data ss:Type=\"String\">{$image['tags']}</Data></Cell>";
 	}
 	if (!empty($_GET['taken'])) {
 		if (strpos($image['imagetaken'],'-00') === FALSE) 
@@ -124,7 +126,7 @@ while (!$recordSet->EOF)
 	if (!empty($_GET['hits']))
 		print "<Cell><Data ss:Type=\"Number\">{$image['hits']}</Data></Cell>\n";
 	if (!empty($_GET['status']))
-		print "<Cell><Data ss:Type=\"String\">{$image['status']}</Data></Cell>\n";
+		print "<Cell><Data ss:Type=\"String\">{$image['moderation_status']}</Data></Cell>\n";
 	if (!empty($_GET['level']))
 		print "<Cell><Data ss:Type=\"Number\">{$image['ftf']}</Data></Cell>\n";
 	
