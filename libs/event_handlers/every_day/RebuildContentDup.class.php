@@ -169,6 +169,7 @@ SELECT
 FROM snippet s
 INNER JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)
 LEFT JOIN gridsquare g USING (grid_reference)
+WHERE s.enabled = 1
 GROUP BY s.snippet_id;
 
 		");
@@ -324,7 +325,7 @@ ON DUPLICATE KEY UPDATE
 	gridimage_id = ct.gridimage_id,
 	gridsquare_id = ct.gridsquare_id,
 	extract = ct.extract,
-	images = ct.images,
+	images = IF(ct.images=0,content.images,ct.images),
 	words = ct.words,
 	type = ct.type,
 	views = ct.views,
