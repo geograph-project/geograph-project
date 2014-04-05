@@ -63,16 +63,30 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 	//set by grid ref?
 	elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	{
-		$grid_ok=$square->setByFullGridRef($_GET['gridref']);
-		$smarty->assign('gridref', stripslashes($_GET['gridref']));
+		if (preg_match('/^(GB|NI)-(\d+)-(\d+)$/i',$_GET['gridref'],$m)) {
+			require_once('geograph/conversions.class.php');
+                        $conv = new Conversions;
+
+			$reference_index = (strtoupper($m[1]) == 'GB')?1:2;
+
+			list($x,$y) = $conv->national_to_internal(intval($m[2]),intval($m[3]),$reference_index);
+			$grid_ok=$square->loadFromPosition($x, $y, true);
+			$smarty->assign('gridref', $square->grid_reference);
+		} else {
+			$grid_ok=$square->setByFullGridRef($_GET['gridref']);
+			$smarty->assign('gridref', stripslashes($_GET['gridref']));
+		}
 	}
 	
-	if ($grid_ok && $square->reference_index == 1)
+	if ($grid_ok && ($square->reference_index == 1 || ($square->reference_index ==2 && $square->getNatNorthings() >=300000)))
 	{
 		$square->rememberInSession();
 
 		$cacheid .= "|".$square->grid_reference;
 
+	if (!empty($_GET['year'])) {
+		$cacheid .= "|".intval($_GET['year']);
+	}
 	
 		$sphinx->pageSize = $pgsize = 15;
 
@@ -84,11 +98,21 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 
 		if (!$smarty->is_cached($template, $cacheid)) {
 
+			if (preg_match('/(SC.*|NX3.0.|NX4.0)/',$square->grid_reference)) {
+				//isle of man uses a different origin!
+				$e = (intval(($square->getNatEastings()+2000)/4000)*4)-2;
+				$n = (intval(($square->getNatNorthings()+1000)/3000)*3)-1;
+			} else {
 			
-			$e = intval($square->getNatEastings()/4000)*4;
-			$n = intval($square->getNatNorthings()/3000)*3;
-			
-			$dblock = sprintf("GB-%d-%d",$e*1000,$n*1000);
+				$e = intval($square->getNatEastings()/4000)*4;
+				$n = intval($square->getNatNorthings()/3000)*3;
+			}			
+
+			if ($square->reference_index == 1) {
+				$dblock = sprintf("GB-%d-%d",$e*1000,$n*1000);
+			} else {
+				$dblock = sprintf("NI-%d-%d",$e*1000,$n*1000);
+			}
 			$smarty->assign("dblock",$dblock);
 			
 			require_once('geograph/conversions.class.php');
@@ -109,6 +133,29 @@ if (!empty($_GET['gridref']) || !empty($_GET['p'])) {
 
 			$client = $sphinx->_getClient();
 			$client->SetArrayResult(true);
+
+
+	//TODO use multi queries for this!
+	//can we use setselect to reduce the attributes returned?
+	//should use RANK_NONE
+	$sphinx->pageSize = 200;
+	$sphinx->SetGroupBy('atakenyear', SPH_GROUPBY_ATTR, 'atakenyear ASC'); 
+	$res = $sphinx->groupByQuery(1,'_images'); 
+
+	if (!empty($res['matches'])) { 
+		$years = array(); 
+		foreach ($res['matches'] as $idx => $row) { 
+			$years[$row['attrs']['@groupby']] = $row['attrs']['@count']; 
+		}
+		$smarty->assign_by_ref('years',$years);
+	} 
+	$sphinx->pageSize = 15;
+	
+	if (!empty($_GET['year'])) {
+		$sphinx->q .= " @takenyear (".intval($_GET['year']).")";
+		$smarty->assign('year',intval($_GET['year']));
+	}
+
 
 			$sphinx->SetGroupBy('agridsquare', SPH_GROUPBY_ATTR, 'wgs84_long ASC, wgs84_lat DESC');
 			$res = $sphinx->groupByQuery($pg,'_images');

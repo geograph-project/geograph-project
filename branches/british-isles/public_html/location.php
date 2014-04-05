@@ -45,7 +45,9 @@ $square=new GridSquare;
 
 $template='location.tpl';
 
-
+if (isset($_GET['getamap'])) {
+	$smarty->assign('getamap', 1);
+}
 
 //we can be passed a gridreference as gridsquare/northings/eastings 
 //or just gridref. So lets initialise our grid square
@@ -157,6 +159,19 @@ if ($grid_given)
 				6,
 				$square->reference_index,false);
 			$smarty->assign('gridref6', $gr6);
+		}
+
+		if ($square->reference_index == 1) {
+                        if (preg_match('/(SC.*|NX3.0.|NX4.0)/',$square->grid_reference)) {
+                                //isle of man uses a different origin!
+				$dblock = sprintf("GB-%d-%d",(intval(($square->getNatEastings()+2000)/4000)*4000)-2000,(intval(($square->getNatNorthings()+1000)/3000)*3000)-1000);
+                        } else {
+				$dblock = sprintf("GB-%d-%d",intval($square->getNatEastings()/4000)*4000,intval($square->getNatNorthings()/3000)*3000);
+			}
+			$smarty->assign('dblock', $dblock);
+		} elseif ($square->reference_index == 2 && $square->getNatNorthings() >= 300000) {
+			$dblock = sprintf("NI-%d-%d",intval($square->getNatEastings()/4000)*4000,intval($square->getNatNorthings()/3000)*3000);
+			$smarty->assign('dblock', $dblock);
 		}
 		
 		//lets add an overview map too

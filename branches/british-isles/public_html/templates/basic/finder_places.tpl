@@ -52,7 +52,7 @@
 <ol start="{$offset}">
 {foreach from=$results item=item}
 	<li>
-	<tt><a href="/gridref/{$item.gr}">{$item.gr}</a></tt> <a href="/finder/search-maker.php?placename={$item.id}&amp;do=1" target="_top"><img src="http://{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/></a> <b style="font-size:{math equation="2-log(s)/2" s=$item.score}em"><a href="/search.php?placename={$item.id}&amp;do=1" target="_top">{$item.name|escape:'html'|default:'unknown'}{if $item.name_2} <small>[{$item.name_2|escape:'html'}]</small>{/if}</a></b>
+	<tt><a href="/gridref/{$item.gr}">{$item.gr}</a></tt> <a href="/finder/dblock.php?gridref={$item.gr}" title="D-Block Viewer">D</a> <a href="/finder/search-maker.php?placename={$item.id}&amp;do=1" target="_top"><img src="http://{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/></a> <b style="font-size:{math equation="2-log(s)/2" s=$item.score}em"><a href="/search.php?placename={$item.id}&amp;do=1" target="_top">{$item.name|escape:'html'|default:'unknown'}{if $item.name_2} <small>[{$item.name_2|escape:'html'}]</small>{/if}</a></b>
 	{if $item.localities}&nbsp;&nbsp;&nbsp;<small style="color:#666666">{$item.localities|escape:'html'}</small>{/if}
 	{if $item.localities_2}&nbsp;<small style="color:gray">[{$item.localities_2|escape:'html'}]</small>{/if}
 	</li>
