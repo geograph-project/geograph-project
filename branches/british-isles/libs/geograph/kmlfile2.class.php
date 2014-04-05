@@ -239,10 +239,14 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 	} else {
 		$file = getKmlFilepath($kml->extension,$level,$square,$gr);
 		
-		$db->Execute("replace into kmlcache set `url` = '$self?gr=$gr',filename='$file',`level` = $level,`rendered` = 1");
 
 		$base=$_SERVER['DOCUMENT_ROOT'];
 		$kml->outputFile('kmz',false,$base.$file);
+
+		$size = filesize($base.$file);
+
+		$db->Execute("replace into kmlcache set `url` = '$self?gr=$gr',filename='$file',`level` = $level,`rendered` = 1,filesize = $size");
+
 		
 		if ($html) {
 			$file = str_replace("kml",'sitemap',$file);
