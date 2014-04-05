@@ -383,7 +383,7 @@ class GridImage
 			if ($usesearch) {
 				$row = &$db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
 			} else {
-				$row = &$db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
+				$row = &$db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname,allow_pinterest from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
 			}
 			if (is_array($row))
 			{
@@ -482,10 +482,25 @@ split_timer('gridimage'); //starts the timer
 		$this->bigtitle=trim(preg_replace("/^{$this->grid_reference}/", '', $this->title));
 		$this->bigtitle=preg_replace('/(?<![\.])\.$/', '', $this->bigtitle);
 
-		$smarty->assign('page_title', $this->bigtitle.":: OS grid {$this->grid_reference}");
+#if ($this->gridimage_id == 2847145) {
+		$adv = ($this->user_id == 3 || $this->user_id == 1533 || $this->user_id == 2520 || strpos($_SERVER['HTTP_USER_AGENT'], 'Google')!==FALSE);
 
+		$lines = explode("\n",wordwrap($this->bigtitle,40,"\n"));
+		$bits = array();
+		$bits[] = $lines[0].(count($lines)>1?'...':'');
+		$bits[] = ($adv)?'&copy;':'(C)';
+		$bits[] = $this->realname;
+		if ($adv) {
+			if (($this->gridimage_id%2) == 0)
+				$bits[] = "cc-by-sa/2.0";
+		}
+
+		$smarty->assign('page_title', implode(' ',$bits));
+#} else {
+#		$smarty->assign('page_title', $this->bigtitle.":: OS grid {$this->grid_reference}");
+#}
 		$smarty->assign('image_taken', $taken);
-		$smarty->assign('ismoderator', $ismoderator);
+		//$smarty->assign('ismoderator', $ismoderator);
 		$smarty->assign_by_ref('image', $this);
 
 		//get a token to show a suroudding geograph map
@@ -500,7 +515,7 @@ split_timer('gridimage'); //starts the timer
 		$smarty->assign_by_ref('place', $place);
 
 		if (empty($this->comment)) {
-			$smarty->assign('meta_description', "{$this->grid_reference} :: {$this->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place))) );
+			$smarty->assign('meta_description', "{$this->grid_reference} :: {$this->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place)))." by ".$this->realname );
 		} else {
 			$smarty->assign('meta_description', $this->comment);
 		}
@@ -606,7 +621,7 @@ split_timer('gridimage'); //starts the timer
 		
 		//find tags
 		if (empty($db)) $db=&$this->_getDB(true); 
-		$this->tags = $db->getAll("SELECT prefix,tag FROM tag_public WHERE gridimage_id = {$this->gridimage_id} ORDER BY created");
+		$this->tags = $db->getAll("SELECT prefix,tag,description FROM tag_public WHERE gridimage_id = {$this->gridimage_id} ORDER BY created");
 		if (!empty($this->tags)) {
 			$this->tag_prefix_stat = array();
 			foreach ($this->tags as $row)
@@ -703,7 +718,7 @@ split_timer('gridimage','loadCollections',$this->gridimage_id); //logs the wall 
 		if (!is_array($aStatus))
 			die("GridImage::getTroubleTickets expects array param");
 			
-		$db=&$this->_getDB(5); //need currency
+		$db=&$this->_getDB(false); //need currency
 
 split_timer('gridimage'); //starts the timer
 		
@@ -819,7 +834,7 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 			$fullpath="/photos/error.jpg";
 
 		if ($returntotalpath)
-			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+			$fullpath="http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
 		return $fullpath;
 	}
@@ -859,7 +874,7 @@ split_timer('gridimage'); //starts the timer
 		
 		if (empty($check_exists)) {
 			if ($returntotalpath)
-				$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+				$fullpath="http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
 			return $fullpath;
 		}
@@ -919,7 +934,7 @@ split_timer('gridimage'); //starts the timer
 			$fullpath="/photos/error.jpg";
 
 		if ($returntotalpath)
-			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+			$fullpath="http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 			
 split_timer('gridimage','_getFullpath',$this->gridimage_id); //logs the wall time
 
@@ -1008,9 +1023,9 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 		$title=htmlentities2($this->title);
 		
 		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
-			$fullpath = cachize_url("http://".$CONF['STATIC_HOST'].$fullpath);
+			$fullpath = cachize_url("http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath);
 		} elseif ($returntotalpath)
-			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+			$fullpath="http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 		
@@ -1147,7 +1162,7 @@ split_timer('gridimage'); //starts the timer
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
@@ -1318,7 +1333,7 @@ split_timer('gridimage'); //starts the timer
 		$hash=$this->_getAntiLeechHash();
 
 		$base=$_SERVER['DOCUMENT_ROOT'].'/photos';
-		
+
 		if ($this->gridimage_id<1000000) {
 			$thumbpath="/photos/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		} else {
@@ -1330,7 +1345,7 @@ split_timer('gridimage'); //starts the timer
 			$return=array();
 			$return['url']=$thumbpath;
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
@@ -1340,46 +1355,39 @@ split_timer('gridimage'); //starts the timer
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
 		$size =& $memcache->name_get('is',$mkey);
-		
+
+		if (empty($size)) {
+			$db=&$this->_getDB(true);
+
+                        $prev_fetch_mode = $db->SetFetchMode(ADODB_FETCH_NUM);
+                        $size = $db->getRow("select width,height from gridimage_thumbsize where gridimage_id = {$this->gridimage_id} and maxw = $maxw and maxh = $maxh");
+                        $db->SetFetchMode($prev_fetch_mode);
+
+			if (!empty($size[1]))
+				$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+		}
+
 		if ($size) {
 			$return=array();
 			$return['url']=$thumbpath;
 
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.htmlentities2($this->realname);
-		
-		/*	
-			$usecount = $memcache->name_get('iscount',$mkey);
-			
-			if (!$usecount) {
-				$v = 1;
-				$memcache->name_set('iscount',$mkey,$v,$memcache->compress,$memcache->period_med);
-			} else {
-				$memcache->name_increment('iscount',$mkey);
-			}
-		
-			if ($usecount > 2) {
-				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster'])."cdn","http://{$CONF['STATIC_HOST']}");
-				if ($usecount == 3) { //the first time! - lets prime the cache
-					get_no_content($return['server'].$thumbpath);
-				}
 
-			} else
-		*/
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-			
+
 			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
 				$thumbpath = cachize_url($thumbpath);
 			}
-			
+
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
-			
+
 			$return['html']=$html;
-		
+
 split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 
 			return $return;
@@ -1540,13 +1548,12 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 			{
 				//no original image! - return link to error image
 				$thumbpath="/photos/error.jpg";
-		
 			}
 		}
-		
+
 		$return=array();
 		$return['url']=$thumbpath;
-		
+
 		if ($thumbpath=='/photos/error.jpg')
 		{
 			$html="<img $attribname=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" />";
@@ -1556,29 +1563,32 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-			
+
 			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
 				$thumbpath = cachize_url($thumbpath);
 			}
-			
+
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
-			
+
 			split_timer('gridimage','_getResized'.(isset($srcw)?'-create':''),$thumbpath); //logs the wall time
-			
+
 			//fails quickly if not using memcached!
 			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*4);
+
+			$db=&$this->_getDB(false);
+                        $db->Execute("replace into gridimage_thumbsize set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]},maxw=$maxw,maxh=$maxh");
 		}
-		
+
 		$return['html']=$html;
-		
+
 		return $return;
 	}
-	
+
 	/**
 	* returns HTML img tag to display a thumbnail that would fit the given dimensions
 	* If the required thumbnail doesn't exist, it is created. This method is really
@@ -1601,16 +1611,20 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 		$params['attribname']=$attribname;
 		$params['urlonly']=$urlonly;
 		$resized=$this->_getResized($params);
-		
+
+if (!empty($_GET['ddd'])) {
+	print_r($resized);
+}
+
 		if (!empty($urlonly)) {
-			if ($urlonly === 2) 
+			if ($urlonly === 2)
 				return $resized;
-			else 
+			else
 				return $resized['server'].$resized['url'];
 		} else
 			return $resized['html'];
-	}	
-	
+	}
+
 	/**
 	* returns HTML img tag to display a thumbnail that would EXACTLY fit the given dimensions
 	* If the required thumbnail doesn't exist, it is created. This method is really
@@ -1627,9 +1641,16 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 		$params['bevel']=false;
 		$params['unsharp']=false;
 		$resized=$this->_getResized($params);
-		
-		return $resized['html'];
-	}	
+
+		if (!empty($urlonly)) {
+			if ($urlonly === 2)
+				return $resized;
+			else
+				return $resized['server'].$resized['url'];
+		} else
+			return $resized['html'];
+	}
+
 
 	/**
 	* 
@@ -1837,7 +1858,7 @@ split_timer('gridimage','setModerationStatus',"{$this->gridimage_id},$status,$mo
 		//invalidate any cached maps (on anything except rejecting a pending image)
 		$updatemaps = ( !($status == 'rejected' && $this->moderation_status == 'pending') );
 
-
+		$old_status = $this->moderation_status;
 	
 		//fire an event (a lot of the stuff that follows should 
 		//really be done asynchronously by an event handler
@@ -1854,7 +1875,9 @@ split_timer('gridimage','setModerationStatus',"{$this->gridimage_id},$status,$mo
 		//finally, we update status information for the gridsquare
 		$this->grid_square->updateCounts();
 		
-	
+if ($old_status == 'pending' && $status != 'rejected') {
+	$db->Execute("insert into gridimage_counter select {$this->gridimage_id} as gridimage_id,count(*) as count,now() as created from gridimage_search");
+}
 	
 		
 		return "Classification is now $status";	
