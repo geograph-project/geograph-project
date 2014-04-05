@@ -131,7 +131,7 @@ function split_timer($profile,$key='',$id='') {
 		$_SERVER['REQUEST_TIME'], //timestamp of request start
 		$unique, //helps idenity unique reqests
 		$request, //example "/search.php"
-		time(), //curent timestamp
+		$microtime, //curent timestamp
 		$profile, //example 'sphinx'
 		$key, //example 'lookupids'
 		$id, //example 'query_id=123456'
@@ -174,6 +174,8 @@ function smarty_function_getamap($params)
 	{
 		if (!empty($params['gridref2']))
 			$gridref4 .= ",'{$params['gridref2']}'";
+		$params['text'] =  str_ireplace('Get-a-map','Map', $params['text']);
+
 		return "<a title=\"1:25,000 OS Maps\" href=\"javascript:popupOSMap($gridref4)\">{$params['text']}</a>$icon";
 	}
 	else if (preg_match('/^([A-Z]{1,3})(\d{4,10})$/i', $gridref4, $matches))
@@ -182,6 +184,8 @@ function smarty_function_getamap($params)
 			$text=$params['text'];
 		else
 			$text=$params['gridref'];
+
+		$text = str_ireplace('Get-a-map','Map',$text);
 
 		$gridref6="";
 		$coords=$matches[2];
@@ -276,7 +280,7 @@ function smarty_function_external($params)
 	if (isset($params['nofollow']))
 		$title .= "\" rel=\"nofollow"; 	
 
-  	if ($params['target'] == '_blank') {
+  	if (isset($params['target']) && $params['target'] == '_blank') {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
   			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>";
   	} else {
@@ -322,7 +326,7 @@ function smarty_function_gridimage($params)
 	if (isset($params['extra'])) {
 		if ($params['extra'] == '{description}') {
 			if (!empty($image->comment)) {
-				$desc = GeographLinks(nl2br(htmlentities2($image->comment))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
+				$desc = GeographLinks(preg_replace("/[\n\r]+/",'',nl2br(htmlentities2($image->comment)))).'<div style="text-align:right;font-size:0.8em">by '.htmlentities2($image->realname).'</a></div>';
 				
 				$desc = preg_replace('/\b(more sizes)\b/i',"<a href=\"/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
 			} else {
@@ -470,13 +474,36 @@ function smarty_function_ordinal($i) {
 	return $i.$end;
 }
 
+function to_title_case($i) {
+
+	return ucfirst(preg_replace_callback('/([^\W_]+[^\s-]*) */', function($m) {
+		//todo, /js/to-title-case.js prevents the last word from firing too. (we ue the outer ucfirst, to always cap the first word!)
+		if ($m[1] == 'i' || preg_match('/^i{2,}/',$m[1])) {
+			return str_replace('i','I',$m[0]);
+		} elseif (preg_match("/^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|vs?\.?|via)$/i",$m[1])) {
+			return $m[0];
+		} else {
+			return ucfirst($m[0]);
+		}
+	},preg_replace('/ s\b/','s',$i)));
+}
+
+function smarty_function_capitalizetag($i) {
+	$bits = explode(":",$i,2);
+	if (count($bits) == 2) {
+		return strtolower($bits[0]).':'.to_title_case($bits[1]);
+	} else {
+		return to_title_case($i);
+	}
+}
+
 /**
 * smarty function to get revision number
 */
 function smarty_modifier_revision($filename) {
 	global $REVISIONS,$CONF;
 	if (isset($REVISIONS[$filename])) {
-		#$url = "http://".str_replace('s0','s0cdn',$CONF['STATIC_HOST']).preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+		#$url = "http://".str_replace('s1','s1cdn',$CONF['STATIC_HOST']).preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 		$url = "http://".$CONF['STATIC_HOST'].preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 		
 		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 && strpos($filename,'css') === FALSE && empty($GLOBALS['USER']->user_id)) {
@@ -600,6 +627,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 					if (!isset($g_image)) {
 						$g_image=new GridImage;
 					}
+					$g_img = null;
 					if ($ext) {
 						$ok = $g_image->loadFromServer($server, $g_id);
 					} elseif (isset($data[$g_id])) {
@@ -609,6 +637,12 @@ function GeographLinks(&$posterText,$thumbs = false) {
 					} else {
 						$ok = $g_image->loadFromId($g_id);
 					}
+					if ($g_image->moderation_status == 'rejected' && !empty($db)) {
+						if ($to = $db->getOne("SELECT destination FROM gridimage_redirect WHERE gridimage_id = ".intval($g_id))) {
+							$ok = $g_image->loadFromId($to);
+						}
+					}
+
 					if ($g_image->moderation_status == 'rejected') {
 						if ($thumbs) {
 							$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
@@ -635,7 +669,8 @@ function GeographLinks(&$posterText,$thumbs = false) {
 							$posterText = preg_replace("/(?<!\[)\[\[$prefix$g_id\]\]/","<a href=\"http://{$server}/photo/$g_id\">$g_title</a>",$posterText);
 						}
 					}
-					$global_thumb_count++;
+					if ($g_img)
+						$global_thumb_count++;
 				}
 				$thumb_count++;
 			} else {
@@ -654,7 +689,7 @@ function GeographLinks(&$posterText,$thumbs = false) {
 	
 	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
 
-	$posterText = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'http://\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
+	$posterText = preg_replace('/(?<![>\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'http://\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
 
 	return $posterText;
 }
@@ -885,6 +920,8 @@ function customNoCacheHeader($type = 'nocache',$disable_auto = false) {
 function customExpiresHeader($diff,$public = false,$overwrite = false) {
 	$private = ($public)?'':', private';
 	if ($diff > 0) {
+		if (strpos($_SERVER['HTTP_USER_AGENT'], 'bingbot')!==FALSE)
+			return;
 		$expires=gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
 		header("Expires: $expires");
 		header("Cache-Control: max-age=$diff$private",$overwrite);
