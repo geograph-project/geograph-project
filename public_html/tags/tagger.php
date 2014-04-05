@@ -91,13 +91,13 @@ if (!empty($_POST['save']) && !empty($ids)) {
 	//add only, no delete!
 
 	$ownimages = $db->getCol("SELECT gridimage_id FROM gridimage_search WHERE gridimage_id IN (".implode(',',$ids).") AND user_id = {$USER->user_id}");
-	
+
 	$stats = array();
 	$stats['total'] = $stats['tags'] = $stats['public'] = 0;
-	
+
 	foreach ($_POST['tag_id'] as $idx => $text) {
 		if ($text == '-deleted-') {
-			//its a tag created and deleted 
+			//its a tag created and deleted
 
 		} else {
 			//its a new tag for this link!
@@ -110,6 +110,7 @@ if (!empty($_POST['save']) && !empty($ids)) {
 				$u['tag'] = $bits[1];
 			}
 			$u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));
+			$u['tag'] = str_replace("'",'',$u['tag']);
 
 			if (preg_match('/^id:(\d+)$/',$text,$m)) {
 				$tag_id = $m[1];
@@ -131,12 +132,12 @@ if (!empty($_POST['save']) && !empty($ids)) {
 
 			$u['tag_id'] = $tag_id;
 			$u['user_id'] = $USER->user_id;
-			
+
 			foreach ($ids as $gid) {
 				$u['gridimage_id'] = $gid;
 
 				$u['status'] = 1;
-				if (($_POST['mode'][$idx] == 'Public' || $_POST['mode'][$idx] == 2) && in_array($gid,$ownimages)) { 
+				if (($_POST['mode'][$idx] == 'Public' || $_POST['mode'][$idx] == 2) && in_array($gid,$ownimages)) {
 					$u['status'] = 2;
 					$stats['public']++;
 				}
@@ -147,11 +148,10 @@ if (!empty($_POST['save']) && !empty($ids)) {
 			$gid = 0;
 			$stats['tags']++;
 		}
-		
 	}
 	$stats['images'] = count($ids);
 	$smarty->assign("message","{$stats['tags']} different tags added to {$stats['images']} images. A total of {$stats['total']} individual tags, of which {$stats['public']} were public.");
-	
+
 } elseif (!empty($_POST['save']) && $gid) {
 
 	//tags precheck
