@@ -86,16 +86,16 @@ else //display everything
 		else
 			echo "<a href=\"$scriptname" . "page_number=$page\">$page</a>-\n";
 		$page++;
-		$count = $count + 5;
+		$count = $count + 50;
 	}
 	echo "</p>\n";
 	
 	if (!isset($_GET["page_number"]))
-		$query = "SELECT * FROM ".$prefix."summary LEFT JOIN ".$prefix."namemap ON ".$prefix."summary.info_hash = ".$prefix."namemap.info_hash $where ORDER BY ".$prefix."namemap.filename LIMIT 0,5";
+		$query = "SELECT * FROM ".$prefix."summary LEFT JOIN ".$prefix."namemap ON ".$prefix."summary.info_hash = ".$prefix."namemap.info_hash $where ORDER BY ".$prefix."namemap.filename LIMIT 0,50";
 	else
 	{
-		$page_limit = ($_GET["page_number"] - 1) * 5;
-		$query = "SELECT * FROM ".$prefix."summary LEFT JOIN ".$prefix."namemap ON ".$prefix."summary.info_hash = ".$prefix."namemap.info_hash $where ORDER BY ".$prefix."namemap.filename LIMIT $page_limit,5";
+		$page_limit = ($_GET["page_number"] - 1) * 50;
+		$query = "SELECT * FROM ".$prefix."summary LEFT JOIN ".$prefix."namemap ON ".$prefix."summary.info_hash = ".$prefix."namemap.info_hash $where ORDER BY ".$prefix."namemap.filename LIMIT $page_limit,50";
 	}
 }
 
@@ -200,7 +200,7 @@ if (!isset($_POST["filename_search"]))
 	else
 		echo "<a href=\"$scriptname" . "page_number=$page\">$page</a>-\n";
 	$page++;
-	$count = $count + 5;
+	$count = $count + 50;
 	}
 	echo "</p>\n";
 }

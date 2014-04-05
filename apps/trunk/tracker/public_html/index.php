@@ -165,7 +165,12 @@ huge bandwidth bills.</p>
 	<img src="http://s0.geograph.org.uk/templates/basic/img/icon_alert.gif" style="float:left">
 <b>Please continue to seed these torrents for as long as possible even after you have<br/>
  finished downloading</b> - <i>even a small amount of bandwidth can help</i>.<br/><br/>
-If nobody is willing to help with long term seeding, <br/>then offering this service is unsustainable. <a href="http://www.nearby.org.uk/blog/2009/02/06/how-to-promote-long-term-seeding/">read why</a>.</div>
+If nobody is willing to help with long term seeding, <br/>then offering this service is unsustainable. <a href="http://www.nearby.org.uk/blog/2009/02/06/how-to-promote-long-term-seeding/">read why</a>.
+
+<br/><br/>
+Update 2012: Well nobody was willing to help seed. So most of these torrents are now offline. If you would like a copy of the images, the best method is a Disk via snailmail, <a href="http://www.geograph.org.uk/contact.php">Contact Us</a>.
+
+</div>
 
 </div>
 
@@ -177,11 +182,11 @@ else
 mysql_select_db($database) or die(errorMessage() . "Tracker error: can't open database $database - " . mysql_error() . "</p>");
 
 if (isset($_GET["seededonly"]))
-	$where = " WHERE seeds > 0";
+	$where = " WHERE seeds > 0 AND geo_hidden=0";
 else if (isset($_GET["activeonly"]))
-	$where = " WHERE leechers+seeds > 0";
+	$where = " WHERE leechers+seeds > 0 AND geo_hidden=0";
 else
-	$where = " ";
+	$where = " WHERE geo_hidden=0";
 
 $query = "SELECT COUNT(*) FROM ".$prefix."summary $where";
 $results = mysql_query($query);
@@ -422,8 +427,7 @@ if ($GLOBALS["countbytes"]) //stop count bytes variable
 	interest to potential developers, <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=9237">more on forum</a>.</small></p>
 
 
-<p>If you need any help or have questions about this service, contact Paul Dixon
-(<a href='ma&#105;lto&#58;&#108;%6Fr%&#54;4&#101;&#108;ph&#37;40g&#109;a&#105;&#108;&#37;2&#69;%6&#51;&#37;&#54;&#70;%6D'>&#108;o&#114;de&#108;p&#104;&#64;g&#109;ail&#46;co&#109;</a>)
+<p>If you need any help or have questions about this service, <a href="http://www.geograph.org.uk/contact.php">contact us</a></p>
 </p>
 </div>
 

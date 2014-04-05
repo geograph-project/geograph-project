@@ -12,7 +12,7 @@ else
 mysql_select_db($database) or die(errorMessage() . "Tracker error: can't open database $database - " . mysql_error() . "</p>");
 
 
-$where = '';
+$where = 'WHERE '.$prefix.'summary.geo_hidden = 0';
 $query = "SELECT * FROM ".$prefix."summary LEFT JOIN ".$prefix."namemap ON ".$prefix."summary.info_hash = ".$prefix."namemap.info_hash $where ORDER BY ".$prefix."namemap.filename";
 
 
