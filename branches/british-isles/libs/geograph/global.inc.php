@@ -39,9 +39,9 @@ if (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE) {
 //global routines
 require_once('geograph/functions.inc.php');
 
-if ('217.45.188.209' == $_SERVER['HTTP_X_FORWARDED_FOR']) {
-#	$_GET['php_profile'] = 1;
-}
+//if ('217.45.188.209' == $_SERVER['HTTP_X_FORWARDED_FOR']) {
+//#	$_GET['php_profile'] = 1;
+//}
 
 
 if (isset($_GET['php_profile']) && !class_exists('Profiler',false)) {
@@ -106,31 +106,32 @@ if (empty($CONF['db_tempdb'])) {
 }
 
 function GeographDatabaseConnection($allow_readonly = false) {
+	static $logged = 0;
 
 	//see if we can use a read only slave connection
 	if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
-	
+
 #		split_timer('db'); //starts the timer
 		$db=NewADOConnection($GLOBALS['DSN_READ']);
 #		split_timer('db','connect','readonly'); //logs the wall time
-		
+
 		if ($db) {
 			//if the application dictates it needs currency
 			if ($allow_readonly > 1) {
 				$row = $db->getRow("SHOW SLAVE STATUS");
 				if (!empty($row)) { //its empty if we actully connected to master!
 				    if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && ($row['Seconds_Behind_Master'] < 150) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
-				
-				
+
 					//email me if we lag, but once gets big no point continuing to notify!
 					ob_start();
 					print "\n\nHost: ".`hostname`."\n\n";
+				        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+					print_r($db->getAll("SHOW FULL PROCESSLIST"));
 					print_r($row);
 					debug_print_backtrace();
 					$con = ob_get_clean();
                				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
-               				
-               				
+
                				apc_store('lag_warning',1,3600);
 				    }
 				    if (is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > $allow_readonly) {
@@ -144,7 +145,20 @@ function GeographDatabaseConnection($allow_readonly = false) {
 				    }
 				}
 			}
-		
+
+	if (empty($logged)) {
+		global $USER;
+		$ins = "INSERT INTO rolling_log SET
+	        ip = ".$db->Quote($GLOBALS['ip']).",
+	        user_id = ".intval($USER->user_id).",
+	        url = ".$db->Quote($_SERVER['REQUEST_URI']).",
+	        useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']).",
+	        session = ".$db->Quote(session_id());
+
+		$db->Execute($ins);
+		$logged = 1;
+	}
+
 			$db->readonly = true;
 			return $db;
 		} else {
@@ -155,7 +169,7 @@ function GeographDatabaseConnection($allow_readonly = false) {
 		}
 	} else {
 		//otherwise just get a standard connection
-		
+
 		//todo - we could add a 'curtail' feature here, to disable any page that needs write access - allowing some pages to still work without master online!
 #		split_timer('db'); //starts the timer
 		$db=NewADOConnection($GLOBALS['DSN']);
@@ -177,10 +191,24 @@ function GeographDatabaseConnection($allow_readonly = false) {
 					print_r($_SERVER);
 					debug_print_backtrace();
 					$con = ob_get_clean();
-               				mail('geograph@barryhunter.co.uk','[Geograph Database] Connection failed: '.mysql_error(),$con);
-             		
+               		///		mail('geograph@barryhunter.co.uk','[Geograph Database] Connection failed: '.mysql_error(),$con);
+
 		die("Database connection failed");
 	}
+
+	if (empty($logged)) {
+		global $USER;
+		$ins = "INSERT INTO rolling_log SET
+	        ip = ".$db->Quote($GLOBALS['ip']).",
+	        user_id = ".intval($USER->user_id).",
+	        url = ".$db->Quote($_SERVER['REQUEST_URI']).",
+	        useragent = ".$db->Quote($_SERVER['HTTP_USER_AGENT']).",
+	        session = ".$db->Quote(session_id());
+
+		$db->Execute($ins);
+		$logged = 1;
+	}
+
 	$db->readonly = false;
 	return $db;
 }
@@ -229,25 +257,49 @@ require_once('geograph/security.inc.php');
 
 #################################################
 
-// a 'Hack' so that webarchive.org.uk can come crawling... (but lets do the same for 
+// a 'Hack' so that webarchive.org.uk can come crawling... (but lets do the same for
 
 $ip = getRemoteIP();
-if ($ip == '128.86.236.164' || $ip == '194.66.232.85' || (strpos($_SERVER['HTTP_USER_AGENT'], 'ia_archiver')!==FALSE) || (strpos($_SERVER['HTTP_USER_AGENT'], 'heritrix')!==FALSE) ) {
+if ($ip == '128.86.236.164' || $ip == '194.66.232.85' ||
+	(strpos($_SERVER['HTTP_USER_AGENT'], 'bl.uk_lddc_bot')!==FALSE) ||
+	(strpos($_SERVER['HTTP_USER_AGENT'], 'ia_archiver')!==FALSE) ||
+	(strpos($_SERVER['HTTP_USER_AGENT'], 'heritrix')!==FALSE) ) {
 
 	if ($CONF['curtail_level'] > 3) {
 		  //heritrix doesn't understand 503 errors - so lets cause it to timeout.... (uses a socket timeout of 20000ms)
                         sleep(30);
-		
 		header("HTTP/1.1 503 Service Unavailable");
-
 		die("server busy, please try later");
 	}
-	
 	$CONF['template']='archive';
-	
 	$CONF['curtail_level'] = 0; //we dont want any messy proxy urls cached!
 }
 
+if (false && function_exists('apc_store') && !preg_match('/(iPad|iPhone|Chrome|MSIE|Firefox|Safari|Opera|PLAYSTATION)/',$_SERVER['HTTP_USER_AGENT'])
+	&& $_SERVER['HTTP_USER_AGENT'] != "geograph-cron"
+	&& !preg_match('/(w\.google\.com\/bot|HostTracker.com|Yahoo! Slurp|YandexBot|Baiduspider|Ezooms|msnbot|Pingdom.com_bot|Exabot|Blekkobot|MJ12bot|AhrefsBot|bingbot|BingPreview)/',$_SERVER['HTTP_USER_AGENT'])) {
+
+	$count = apc_fetch($_SERVER['HTTP_USER_AGENT']);
+
+	if (empty($count)) {
+		apc_store($_SERVER['HTTP_USER_AGENT'],1,600);
+	} else {
+		apc_store($_SERVER['HTTP_USER_AGENT'],$count+1,600);
+	}
+	if ($count == 50) {
+                                        ob_start();
+                                        print "Host: ".`hostname`."\n\n";
+                                        print_r($_SERVER);
+                                        $con = ob_get_clean();
+                                        mail('geograph@barryhunter.co.uk','[Geograph Useragent] '.$_SERVER['HTTP_USER_AGENT'],$con);
+	} elseif ($count == 100) {
+                                        ob_start();
+                                        print "Host: ".`hostname`."\n\n";
+                                        print_r($_SERVER);
+                                        $con = ob_get_clean();
+                                        mail('geograph@barryhunter.co.uk','[Geograph USERAGENT] '.$_SERVER['HTTP_USER_AGENT'],$con);
+	}
+}
 
 #################################################
 
@@ -355,6 +407,11 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 	                header("Vary: Cookie");
 	                define('VARY_COOKIE',1); //so that gzip handler knows to include cookie in the header
 	        }
+
+
+                $GLOBALS['USER'] =& new GeographUser;
+                @apache_note('user_id', $GLOBALS['USER']->user_id);
+
 	} else {
         	init_session();
 
@@ -421,6 +478,10 @@ function init_session()
 #################################################
 
 function smarty_function_pageheader() {
+	//if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
+	//	return '<script type="application/javascript">var _prum={id:"5166ef76e6e53d853b000000"};var PRUM_EPISODES=PRUM_EPISODES||{};PRUM_EPISODES.q=[];PRUM_EPISODES.mark=function(b,a){PRUM_EPISODES.q.push(["mark",b,a||new Date().getTime()])};PRUM_EPISODES.measure=function(b,a,b){PRUM_EPISODES.q.push(["measure",b,a,b||new Date().getTime()])};PRUM_EPISODES.done=function(a){PRUM_EPISODES.q.push(["done",a])};PRUM_EPISODES.mark("firstbyte");(function(){var b=document.getElementsByTagName("script")[0];var a=document.createElement("script");a.type="text/javascript";a.async=true;a.charset="UTF-8";a.src="//rum-static.pingdom.net/prum.min.js";b.parentNode.insertBefore(a,b)})();</script>';
+	//}
+
 //	if(extension_loaded('newrelic')) {
 ///		return newrelic_get_browser_timing_header();
 //	}
@@ -428,7 +489,9 @@ function smarty_function_pageheader() {
 function smarty_function_pagefooter() {
 
 	if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' && !empty($_SESSION) && rand(1,10) > 7) {
-		return '<div style="position:absolute;top:0;left:400px;width:200px"><a href="/help/donate" style="color:cyan">donate to geograph</a></div>';
+		$texts = array('donate to geograph','please support us','donations welcome!','please donate','donations accepted');
+		$text = $texts[array_rand($texts)];
+		return '<div style="position:absolute;top:0;left:400px;width:200px"><a href="/help/donate" style="color:cyan">'.$text.'</a></div>';
 	}
 
 #	if (crc32($_SERVER['HTTP_X_FORWARDED_FOR'])%3 == 0) {
@@ -539,6 +602,7 @@ class GeographPage extends Smarty
 		$this->register_modifier("revision", "smarty_modifier_revision");
 		$this->register_modifier("geographlinks", "smarty_function_geographlinks");
 		$this->register_modifier("ordinal", "smarty_function_ordinal");
+		$this->register_modifier("capitalizetag", "smarty_function_capitalizetag");
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
