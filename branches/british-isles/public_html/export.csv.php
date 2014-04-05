@@ -64,16 +64,13 @@ while (!$recordSet->EOF)
 			echo ',"'.str_replace('"', '""', $image['comment']).'"';
 		}
 	}
-	if (!empty($_GET['tags'])) {
-		if (empty($image['tags'])) {
-			echo ',';
-		} else {
-			echo ',"'.str_replace('"', '""', $image['tags']).'"';
-		}
-	}
 	if (!empty($_GET['thumb'])) {
 		$gridimage->fastInit($image);
 		echo ','.$gridimage->getThumbnail(120,120,true);
+
+		if (!empty($_GET['checkbig'])) {
+			$gridimage->getThumbnail(213,160,true);
+		}
 	}
 	if (!empty($_GET['gr'])) {
 		if (empty($image['nateastings'])) {
@@ -102,8 +99,17 @@ while (!$recordSet->EOF)
 		}
 		if (!empty($_GET['ppos']))
 			echo ",{$image['viewpoint_eastings']},{$image['viewpoint_northings']},{$image['viewpoint_grlen']}";
-	} elseif (!empty($_GET['ll']))
-		echo ",{$image['wgs84_lat']},{$image['wgs84_long']}";
+	} else {
+		if (!empty($_GET['ll']))
+			echo ",{$image['wgs84_lat']},{$image['wgs84_long']}";
+		if (!empty($_GET['tags'])) {
+			if (empty($image['tags'])) {
+				echo ',';
+			} else {
+				echo ',"'.str_replace('"', '""', $image['tags']).'"';
+			}
+		}
+	}
 	if (!empty($_GET['taken']))
 		echo ",{$image['imagetaken']}";
 	if (!empty($_GET['submitted']))

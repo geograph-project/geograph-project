@@ -42,6 +42,16 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
 		$hardlimit = 250;
 		$sql_hardlimit = " LIMIT $hardlimit";
 	} 
+
+	if (isset($_GET['thumb'])) {
+		if (!empty($profile['apikey'])) {
+			//phew!
+		} elseif (!empty($_GET['u']) && isset($USER) && $_GET['u'] == $USER->user_id) {
+			//phew!
+		} else {
+			unset($_GET['thumb']);
+		}
+	}
 }
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
@@ -52,10 +62,6 @@ $csvhead = "Id,Name,Grid Ref,Submitter,Image Class";
 if (!empty($_GET['desc'])) {
 	$csvhead .= ",Description";
 	$sql_from .= ',comment';
-}
-if (!empty($_GET['tags'])) {
-	$csvhead .= ",Tags";
-	$sql_from .= ',tags';
 }
 if (!empty($_GET['thumb'])) {
 	require_once('geograph/gridimage.class.php');
@@ -79,9 +85,15 @@ if (!empty($_GET['gr'])) {
 		$csvhead .= ",Photographer Eastings,Photographer Northings,Photographer Figures";
 		$sql_from .= ",viewpoint_eastings,viewpoint_northings,if(use6fig=1,6,viewpoint_grlen) as viewpoint_grlen";
 	}
-} elseif (!empty($_GET['ll'])) {
-	$csvhead .= ",Lat,Long";
-	$sql_from .= ',wgs84_lat,wgs84_long';
+} else {
+	if (!empty($_GET['ll'])) {
+		$csvhead .= ",Lat,Long";
+		$sql_from .= ',wgs84_lat,wgs84_long';
+	}
+	if (!empty($_GET['tags'])) {
+		$csvhead .= ",Tags";
+		$sql_from .= ',tags';
+	}
 }
 
 if (!empty($_GET['taken'])) {
