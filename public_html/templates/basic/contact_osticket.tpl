@@ -11,7 +11,7 @@
         <a href="/article/Get-Involved">Get Involved...</a>
 </div>
 <div style="position:relative;" class="interestBox">
-        <h2 align="center" style="margin:0">Contact Geograph, photographic archive of Britain and Ireland</h2>
+        <h2 style="margin:0">Contact Geograph, photographic archive of Britain and Ireland</h2>
 </div>
 
 <p>Geograph Britain and Ireland uses a support ticket system. Please use the form below to contact the Geograph website developers and/or image moderators.</p> 
@@ -39,10 +39,10 @@
 		<br style="clear:both"/><br/>
 	{/if}
 
-	<iframe src="http://www.geograph.org.uk/support/open.php?ref={$referring_page|escape:'url'}{if $user->registered}&amp;user_id={$user->user_id}&amp;t={$t}{/if}" width="100%" height="600" frameborder="0" name="content"></iframe>
+	<iframe src="http://www.geograph.org.uk/support/open.php?ref={$referring_page|escape:'url'}{if $user->registered}&amp;user_id={$user->user_id}&amp;t={$t}{/if}" width="100%" height="800" frameborder="0" name="content"></iframe>
 
 {/dynamic} 
 
-<p>Your message will become a ticket in our system, and will be answered by one of the <a href="/team.php">team</a>. If you have a personal issue, you can <a href="/usermsg.php?to=3">contact a developer directly</a>.</p>
+<p>Your message will become a ticket in our system, and will be answered by one of the <a href="/team.php">team</a>. If you have a personal issue, you can <a href="/usermsg.php?to=3&amp;dev=1">contact a developer directly</a>.</p>
 
 {include file="_std_end.tpl"}
