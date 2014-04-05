@@ -36,6 +36,7 @@ $cacheid='22';
 
 $db = NewADOConnection($GLOBALS['DSN']);
 
+
 if (isset($_GET['gsid'])) {
 	$template='adopt_edit_inner.tpl';
 	
@@ -93,10 +94,19 @@ if (isset($_GET['gsid'])) {
 	}
 	
 } elseif (isset($_GET['hectad'])) {
+
 	$template='adopt_edit.tpl';
 
 	$hectad = strtoupper(preg_replace('/[^\w]/','',$_GET['hectad']));
 	$smarty->assign_by_ref('hectad',$hectad);
+
+	if (isset($_POST['complete'])) {
+		$sql = "UPDATE hectad_assignment
+		SET `complete` = ".intval($_POST['complete'])."
+		WHERE user_id = {$USER->user_id}
+                AND hectad = '$hectad'";
+		$db->Execute($sql);
+	}
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if(!($row = $db->getRow("
@@ -109,7 +119,10 @@ if (isset($_GET['gsid'])) {
 	}
 	$smarty->assign_by_ref('assignment',$row);
 	$smarty->assign_by_ref('hectad_assignment_id',$row['hectad_assignment_id']);
-	print_r($row);
+
+	$smarty->assign('completes',range(0,100,10));
+	$smarty->assign('complete',$row['complete']);
+
 	$square = new GridSquare();
 	$grid_ok=$square->setByFullGridRef($hectad,false,true);
 
