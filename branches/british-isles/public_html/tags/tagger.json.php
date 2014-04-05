@@ -51,6 +51,7 @@ if (!empty($USER->user_id) && !empty($_GET['tag']) && !empty($_GET['gridimage_id
 		$u['tag'] = $bits[1];
 	}
 	$u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));
+	$u['tag'] = str_replace("'",'',$u['tag']);
 
 	if ($u['prefix'] == 'id' && preg_match('/^(\d+)$/',$u['tag'],$m)) {
 		$tag_id = $m[1];

@@ -123,16 +123,16 @@ class Tags
 					$this->tags[$tag] = $tag_id;
 				}
 			}
-			
+
 			if ($create) {
 				$u = array();
 				$u['user_id'] = $USER->user_id;
-		
+
 				foreach ($this->tags as $tag => $tag_id) {
 					if (empty($tag_id)) {
-						
+
 						$db = $this->_getDB(false); //very quick if we already have a connection
-						
+
 						$u['tag'] = str_replace('\\','',$tag);
 						$bits = explode(':',$u['tag'],2);
 						if (count($bits) > 1) {
@@ -142,6 +142,7 @@ class Tags
 							$u['prefix'] = '';
 						}
 						$u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));
+						$u['tag'] = str_replace("'",'',$u['tag']);
 
 						$db->Execute('INSERT INTO tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
 
@@ -151,7 +152,7 @@ class Tags
 			}
 		}
 	}
-	
+
 	function commit($gid = 0, $public = false) { //todo, more granular control over this?
 		global $USER;
 		

@@ -33,18 +33,15 @@ $smarty = new GeographPage;
 $template = 'tags_primary.tpl';
 $cacheid = "";
 
-
-
 if (!$smarty->is_cached($template, $cacheid))
 {
-	
 	$db = GeographDatabaseConnection(true);
-	
+
 	$tags = $db->getAssoc("
-		SELECT top,CONCAT(ids,IF(ids != '',',',''),COALESCE(GROUP_CONCAT(gridimage_id),'')) AS ids,COUNT(*) AS images,category_primary.description,grouping
-		FROM category_primary 
-		LEFT JOIN tag t ON (top = tag AND prefix = 'top') 
-		LEFT JOIN gridimage_tag gt ON (t.tag_id = gt.tag_id AND gt.status = 2) 
+		SELECT top,ids,`count` AS images,category_primary.description,grouping
+		FROM category_primary
+		LEFT JOIN tag t ON (top = tag AND prefix = 'top')
+		LEFT JOIN tag_stat USING (tag_id)
 		GROUP BY top
 		ORDER BY sort_order
 		LIMIT 75");
@@ -52,15 +49,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	$ids = array();
 	foreach ($tags as $tag => $row) {
 		if ($row['ids']) {
-			$i = explode(',',str_replace(' ','',$row['ids']));
+			$i = explode(',',str_replace(',,',',',str_replace(' ','',$row['ids'])));
 			$ids = array_merge($ids,array_slice($i,0,4));
 		}
 	}
-	
-		$ids = implode(',',$ids);
-		$sql = "select gi.*
-			from gridimage_search gi 
-			where gridimage_id in ($ids)";
+
+	$ids = implode(',',$ids);
+	$sql = "select gi.*
+		from gridimage_search gi
+		where gridimage_id in ($ids)";
 
 	$imagelist = new ImageList();
 	$imagelist->_setDB($db);//to reuse the same connection
@@ -74,20 +71,20 @@ if (!$smarty->is_cached($template, $cacheid))
 	$results = array();
 	foreach ($tags as $tag => $row) {
 		$row['description']= str_replace("|",'',$row['description']);
-		
+
 		$result = array('tag'=>$tag,'resultCount'=>$row['images'],'description'=>$row['description'],'grouping'=>$row['grouping']);
 
 		$i = explode(',',str_replace(' ','',$row['ids']));
 		$ids = array_slice($i,0,4);
 		foreach ($ids as $id) {
 			if ($imagelist->images[$ids2[$id]])
-				$result['images'][] = $imagelist->images[$ids2[$id]];		
+				$result['images'][] = $imagelist->images[$ids2[$id]];
 		}
 		$results[] = $result;
 	}
 
 	$smarty->assign_by_ref('results', $results);
-			
+
 	$smarty->assign('example',1);
 }
 
