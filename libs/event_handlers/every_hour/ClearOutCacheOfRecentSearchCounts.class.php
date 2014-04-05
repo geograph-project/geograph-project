@@ -41,9 +41,7 @@ class ClearOutCacheOfRecentSearchCounts extends EventHandler
 		
 		$db=&$this->_getDB();
 		
-		$db->GetOne("delete from queries_count where ts < date_sub(now(), interval 6 hour) ");
-			
-		
+		$db->GetOne("delete from queries_count where ts < date_sub(now(), interval 6 hour) and `count` > 0");
 		
 		//return true to signal completed processing
 		//return false to have another attempt later
