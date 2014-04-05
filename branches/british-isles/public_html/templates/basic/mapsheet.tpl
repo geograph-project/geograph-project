@@ -119,7 +119,10 @@ div.hl {
 <br/>
 <a accesskey="X" title="Pan map south (Alt+X)" href="/mapsheet.php?t={$token_south}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">South</a><br/>
 <br/>
-(<a title="return to the map" href="/mapbrowse.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">static map</a> or <br/> <a title="return to the map" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">draggable</a><sup style="color:red">New!</sup>)
+<b>Others</b>
+<a title="show the contributor depth" href="/mapsheet.php?t={$mosaic_token}&amp;levels=1{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">contributor depth</a><br/>
+<a title="return to the map" href="/mapbrowse.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">static map</a><br/>
+<a title="view interactive map" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">draggable</a>
 </div></div>
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.2em;width:10em;height:1em;font-size:4em;border:1px solid black;background:white;">

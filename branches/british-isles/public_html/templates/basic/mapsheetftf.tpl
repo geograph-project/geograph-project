@@ -125,19 +125,22 @@ div.hl {
 
 <div class="no_print" style="position:absolute;padding:5px;left:11em;top:0.2em;width:1.5em;height:1em;font-size:4em;border:1px solid black;background:#eeeeee;"><div style="font-size:8pt;font-family:Georgia;Arial;text-align:center">
 <b>Navigation</b><br/>
-<a accesskey="W" title="Pan map north (Alt+W)" href="/mapsheet.php?t={$token_north}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">North</a>
+<a accesskey="W" title="Pan map north (Alt+W)" href="/mapsheet.php?t={$token_north}&amp;levels=1{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">North</a>
 <br/>
-<a accesskey="A" title="Pan map west (Alt+A)" href="/mapsheet.php?t={$token_west}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">West</a>
+<a accesskey="A" title="Pan map west (Alt+A)" href="/mapsheet.php?t={$token_west}&amp;levels=1{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">West</a>
 &middot;
-<a accesskey="D" title="Pan map east (Alt+D)" href="/mapsheet.php?t={$token_east}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">East</a>
+<a accesskey="D" title="Pan map east (Alt+D)" href="/mapsheet.php?t={$token_east}&amp;levels=1{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">East</a>
 <br/>
-<a accesskey="X" title="Pan map south (Alt+X)" href="/mapsheet.php?t={$token_south}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">South</a><br/>
+<a accesskey="X" title="Pan map south (Alt+X)" href="/mapsheet.php?t={$token_south}&amp;levels=1{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">South</a><br/>
 <br/>
-(<a title="return to the map" href="/mapbrowse.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">static map</a> or <br/> <a title="return to the map" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">draggable</a><sup style="color:red">New!</sup>)
+<b>Others</b><br/>
+<a title="back to normal checksheet" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">normal</a><br/>
+<a title="return to the map" href="/mapbrowse.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">static map</a><br/>
+<a title="view interactive map" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}">draggable</a>
 </div></div>
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.2em;width:10em;height:1em;font-size:4em;border:1px solid black;background:white;">
-<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do. Squares with Geographs are <b>marked with a number of visit points awarded</b>. Squares with only Supplemental images are marked by "sup" and the number, and "pend" is shown on squares with just unmoderated images. The date the last photo in the square was taken is also shown. <br/><div style="float:left; font-size:0.9em"><a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div>{if $recent}<div style="text-align:center"><b>Only includes images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"}</b></div>{/if}</div>
+<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet and take it out with you to mark off the squares that you do. Squares with Geographs are <b>marked with a number of visit points awarded</b>. The date the last photo in the square was taken is also shown. <br/><div style="float:left; font-size:0.9em"><a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div>{if $recent}<div style="text-align:center"><b>Only includes images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"}</b></div>{/if}</div>
 </div>
  
 {*begin map square divs*}
