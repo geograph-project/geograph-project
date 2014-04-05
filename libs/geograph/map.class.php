@@ -579,6 +579,8 @@ split_timer('map','returnImage',$file); //logs the wall time
 				|| $this->type_or_user == -7
 	#USER DEPTH MAP
 				|| $this->type_or_user == -13
+	#YEAR DEPTH MAP
+				|| $this->type_or_user == -14
 	#QUADS DEPTH MAP
 				|| $this->type_or_user == -9) {
 				
@@ -619,9 +621,13 @@ split_timer('map','returnImage',$file); //logs the wall time
 			
 			$age = ($ok)?0:-1;
 
-			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d,palette=%d,age=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->palette,$age);
+			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%f,type_or_user=%d,palette=%d,age=%d,created=now()",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->palette,$age);
 
 			$db->Execute($sql);
+
+			//if ($db->Affected_Rows() == 2) {
+				//todo purge from edgecast (ie there was a tile before) 
+			//}
 		//}
 		return $ok;
 	}
@@ -1161,7 +1167,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 			//ok being false isnt fatal, as we can create a tile, however we should use it to try again later!
 			
 			//plot grid square?
-			if ($this->pixels_per_km>=0)
+			if ($this->pixels_per_km>=0 && empty($this->transparent))
 			{
 				$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left);
 			}
@@ -1263,7 +1269,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 
 split_timer('map'); //starts the timer
 
-		if ($this->type_or_user == -7 || $this->type_or_user == -8 || $this->type_or_user == -13) {
+		if ($this->type_or_user == -7 || $this->type_or_user == -8 || $this->type_or_user == -13 || $this->type_or_user == -14) {
 
 			set_time_limit(600);
 
@@ -1335,10 +1341,17 @@ split_timer('map'); //starts the timer
 		$number = !empty($this->minimum)?intval($this->minimum):0;
 	
 		if ($this->type_or_user == -13) {
-			$sql="select x,y,0 as 'd',max(ftf) as imagecount
+			$sql="select x,y,0 as `d`,max(ftf) as imagecount
 				from gridimage_search
 				group by x,y
 				 having imagecount>0
+				 order by null";
+
+		} elseif ($this->type_or_user == -14) {
+			$sql="select x,y,0 as `d`,count(distinct year(imagetaken)) as imagecount
+				from gridimage_search
+				where imagetaken NOT LIKE '0000-%'
+				group by x,y
 				 order by null";
 
 		} elseif ($this->type_or_user == -9) {
@@ -2286,14 +2299,11 @@ split_timer('map'); //starts the timer
 						CONTAINS( GeomFromText($rectangle),	point_xy)
 						and percent_land<>0";
 				}elseif ($this->type_or_user == -13) {
-					$sql="select x,y,imagecount,max(ftf) as max_ftf,reference_index
+					$sql="select x,y,imagecount,max_ftf,reference_index
 						from gridsquare gs
-						left join gridimage gi on(gi.gridsquare_id = gs.gridsquare_id and moderation_status='geograph' )
 						where 
 						CONTAINS( GeomFromText($rectangle),	point_xy)
-						and percent_land<>0
-						group by gs.gridsquare_id
-						order by null";
+						and percent_land<>0";
 				} 
 			} else {
 				$sql="select x,y,imagecount,has_geographs,reference_index,
