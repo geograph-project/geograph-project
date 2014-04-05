@@ -66,6 +66,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		//this copes with leap years etc
 		$smarty->assign('recent', $db->getOne("SELECT DATE_SUB(NOW(),INTERVAL 5 YEAR)"));
+	}  elseif ($mosaic->type_or_user == -10) {
+		$overview->type_or_user = -10;
 	}
 
 	//assign overview to smarty
