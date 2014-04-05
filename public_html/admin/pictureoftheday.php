@@ -100,6 +100,11 @@ if (!$smarty->is_cached($template, $cacheid))
 				if(strlen($error)==0)
 				{
 					$assigned=$db->GetRow("select showday from gridimage_daily where gridimage_id=$gridimage_id");
+
+if (empty($assigned)) {
+	 $assigned=$db->GetRow("select showday from gridimage_daily_archive where gridimage_id=$gridimage_id");
+
+}
 					
 					
 					if (is_array($assigned) && count($assigned))
@@ -173,7 +178,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 	
 	//get ordered list of pool images
-	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null and (vote_baysian > 3.5) and (user_id not in ($ids)) order by  moderation_status+0 desc,(abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()>0.7,7,0) asc,crc32(gridimage_id) desc limit $days");
+	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null and (vote_baysian > 3.1) and (user_id not in ($ids)) order by  moderation_status+0 desc,(abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()>0.7,7,0) asc,crc32(concat(gridimage_id,yearweek(now()))) desc limit $days");
 	
 	
 	//fill in blanks
