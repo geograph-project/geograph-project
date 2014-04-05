@@ -29,6 +29,8 @@
 	{if $engine->results}
 	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 	{/if}
+	<p>&middot; <a href="http://www.cooliris.com/tab/#cs=11&url=http%3A%2F%2F{$http_host}{$rss_url|escape:'url'}">Open in Cooliris Plugin</a> <small>You may be prompted to install the plugin</small>
+
 {else}
 	{include file="_search_noresults.tpl"}
 {/if}
