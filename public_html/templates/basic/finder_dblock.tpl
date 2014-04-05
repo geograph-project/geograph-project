@@ -22,15 +22,15 @@
 {if $dblock && $x && $y}
 	<div style="float:right">
 		<table border="0" cellspacing="0" cellpadding="2">
-		<tr><td><a href="{$script_name}?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
-		<td align="center"><a href="{$script_name}?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
-		<td><a href="{$script_name}?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
-		<tr><td><a href="{$script_name}?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
+		<tr><td><a href="{$script_name}?p={math equation="900*(y+3)+900-(x-4)" x=$x y=$y}">NW</a></td>
+		<td align="center"><a href="{$script_name}?p={math equation="900*(y+3)+900-(x)" x=$x y=$y}">N</a></td>
+		<td><a href="{$script_name}?p={math equation="900*(y+3)+900-(x+4)" x=$x y=$y}">NE</a></td></tr>
+		<tr><td><a href="{$script_name}?p={math equation="900*(y)+900-(x-4)" x=$x y=$y}">W</a></td>
 		<td><b>Go</b></td>
-		<td align="right"><a href="{$script_name}?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
-		<tr><td><a href="{$script_name}?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
-		<td align="center"><a href="{$script_name}?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
-		<td align="right"><a href="{$script_name}?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
+		<td align="right"><a href="{$script_name}?p={math equation="900*(y)+900-(x+4)" x=$x y=$y}">E</a></td></tr>
+		<tr><td><a href="{$script_name}?p={math equation="900*(y-3)+900-(x-4)" x=$x y=$y}">SW</a></td>
+		<td align="center"><a href="{$script_name}?p={math equation="900*(y-3)+900-(x)" x=$x y=$y}">S</a></td>
+		<td align="right"><a href="{$script_name}?p={math equation="900*(y-3)+900-(x+4)" x=$x y=$y}">SE</a></td></tr>
 		</table>
 	</div>
 {/if}
@@ -56,6 +56,16 @@
 	</ul>
 {/if}
 
+{if $years}
+	<p>Year Filter:
+	{foreach from=$years key=y item=count}
+		{if $year eq $y}
+			<b class="nowrap">{$y} <small>({$count} images)</small></b> &middot;
+		{else}
+			<span class="nowrap"><a href="{$script_name}?gridref={$gridref|escape:'url'}{if $q}&amp;q={$q|escape:'url'}{/if}&amp;year={$y}">{$y}</a> <small>({$count})</small></span> &middot;
+		{/if}
+	{/foreach}</p>
+{/if}
 
 	{if $results}
 
@@ -65,9 +75,9 @@
 					{foreach from=$xarr item=x}
 						{if $results.$x.$y}
 							{assign var="image" value=$results.$x.$y}
-							<td align="center">
+							<td align="center" width="25%">
 
-								<div class="interestBox" style="margin-bottom:4px"><a href="/search.php?searchtext={$q|escape:'url'}+gridref:{$image->grid_reference}">{$image->grid_reference}</a> <b>{$image->count}</b><small> images</small></div>
+								<div class="interestBox" style="margin-bottom:4px"><a href="/search.php?searchtext={$q|escape:'url'}+gridref:{$image->grid_reference}{if $year}+takenyear:{$year}{/if}&amp;do=1">{$image->grid_reference}</a> <b>{$image->count}</b><small> images</small></div>
 								<div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
 								<div class="caption"><div class="minheightprop" style="height:2.5em"></div><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
 								<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
@@ -81,6 +91,8 @@
 				<tr>
 			{/foreach}
 		</table>
+	{else}
+		Enter Grid Reference above to jump to the corresponding D-block. Note can also enter a dblock (eg NI-332000-372000) directly.
 	{/if}
 
 	<br style="clear:both"/>
