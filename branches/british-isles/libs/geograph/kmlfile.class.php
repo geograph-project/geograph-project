@@ -345,16 +345,18 @@ class kmlPlacemark extends kmlPrimative {
 		return $this;
 	}
 
-	public function useImageAsIcon($url) {
+	public function useImageAsIcon($url,$scale=null) {
 		$Style = $this->addChild('Style');
 		$IconStyle = $Style->addChild('IconStyle');
+		if (!empty($scale))
+			$IconStyle->setItem('scale',$scale);
 		$Icon = $IconStyle->addChild('Icon');
 		$Icon->setItem('href',htmlspecialchars($url));
 		return $this;
 	}
 
-	public function makeFloating() {
-		$this->getChild('Point')->makeFloating();
+	public function makeFloating($alt = 125) {
+		$this->getChild('Point')->makeFloating($alt);
 		return $this;
 	}
 }
@@ -428,11 +430,11 @@ class kmlPoint extends kmlPrimative {
 		$this->alt = $alt;
 	}
 
- 	public function makeFloating() {
- 		$point = $this->getChild('Point');
+ 	public function makeFloating($alt = 125) {
  		$this->setItem('extrude',1);
  		$this->setItem('altitudeMode','relativeToGround');
- 		$this->alt = 125;
+		if (!empty($alt))
+	 		$this->alt = $alt;
  		return $this;
 	}
 
