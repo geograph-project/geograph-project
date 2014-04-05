@@ -81,10 +81,9 @@ class SearchEngine
 	function SearchEngine($query_id = '')
 	{
 		if (is_numeric($query_id)) {
-	
+
 			$db=$this->_getDB(10);
-split_timer('search'); //starts the timer
-			
+
 			$tries = 0;
 			$query = array();
 			$sleep = 500000;
@@ -94,6 +93,9 @@ split_timer('search'); //starts the timer
 					$query = $db->GetRow("SELECT *,crt_timestamp+0 as crt_timestamp_ts FROM queries_archive WHERE id = $query_id LIMIT 1");
 				}
 				if (empty($query)) {
+					if(extension_loaded('newrelic'))
+					        newrelic_ignore_transaction();
+
 					if ($db->readonly && $tries < 9) {
 						if ($tries == 8) {
 							//try swapping back to the master connection
@@ -103,30 +105,24 @@ split_timer('search'); //starts the timer
 						$sleep*=2;
 						$tries++;
 					} else {
-					
-split_timer('search','startup-failed',$query_id); //logs the wall time
-					
 						return false;
 					}
 				}
 			}
-			
+
 			$this->query_id = $query_id;
-			
+
 			$classname = "SearchCriteria_".$query['searchclass'];
 			$this->criteria = new $classname($query['q']);
-			
+
 			#if ($query['searchclass'] == "Special")	{
 			#	$query['searchq'] = stripslashes($query['searchq']);
 			#}
 
 			$this->criteria->_initFromArray($query);
+		}
+	}
 
-split_timer('search','startup',$query_id); //logs the wall time
-
-		} 
-	} 
-	
 	/**
 	 * count how many images in this saved 'marked list'
 	 * @access public
@@ -145,8 +141,6 @@ split_timer('search','startup',$query_id); //logs the wall time
 			return;
 		}
 
-split_timer('search'); //starts the timer
-
 		$db=$this->_getDB(true);
 		global $ADODB_FETCH_MODE;
 		$oldmode = $ADODB_FETCH_MODE;
@@ -164,8 +158,6 @@ split_timer('search'); //starts the timer
 			}
 		}
 
-split_timer('search','checkExplain',$sql); //logs the wall time
-		
 		if ($bad) {
 			unset($this->criteria->db);
                 	ob_start();
@@ -194,8 +186,6 @@ split_timer('search','checkExplain',$sql); //logs the wall time
 		global $CONF;
 		$db=$this->_getDB(true);
 
-split_timer('search'); //starts the timer
-		
 		$this->criteria->getSQLParts();
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
@@ -302,6 +292,9 @@ split_timer('search'); //starts the timer
 						$db2=&$db;
 					}
 					$db2->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+
+	                                if (empty($this->resultCount))
+						$db->Execute("replace into queries_failed set id = {$this->query_id}");
 				}
 			}
 			$this->numberOfPages = ceil($this->resultCount/$pgsize);
@@ -310,8 +303,6 @@ split_timer('search'); //starts the timer
 			|| ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount)
 			|| ( ($this->numberOfPages) && ($pg > $this->numberOfPages) ) 
 			) {
-
-split_timer('search','ERR-count',"$this->query_id/$pg"); //logs the wall time
 
 			return 0;
 		}
@@ -367,10 +358,11 @@ END;
 				$this->resultCount = 0;
 				$this->numberOfPages = 0;
 				$this->pageOneOnly = 1;
+
+				$db=$this->_getDB(false); //'upgrade' to a read/write connection
+				$db->Execute("replace into queries_failed set id = {$this->query_id}");
 			}
 		}
-
-split_timer('search','ERR',"$this->query_id/$pg"); //logs the wall time
 
 		return $recordSet;
 	}
@@ -384,10 +376,8 @@ split_timer('search','ERR',"$this->query_id/$pg"); //logs the wall time
 		global $CONF;
 		$db=$this->_getDB(true);
 
-split_timer('search'); //starts the timer
-		
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
-		
+
 		$sphinx = new sphinxwrapper($this->criteria->sphinx['query']);
 
 		$this->fullText = 1;
@@ -402,7 +392,7 @@ split_timer('search'); //starts the timer
 		}
 
 	//look for suggestions - this needs to be done before the filters are added - the same filters wont work on the gaz index
-		if (isset($GLOBALS['smarty']) && !preg_match('/@viewsquare/',$sphinx->q) && strpos($_SERVER['HTTP_REFERER'],'?i=') === FALSE) {
+		if (isset($GLOBALS['smarty']) && !preg_match('/@viewsquare/',$sphinx->q) && strpos($_SERVER['HTTP_REFERER'],'?i='.$this->criteria->id) === FALSE) {
 		
 			$suggestions = array();
 			if (empty($this->countOnly) && $sphinx->q && strlen($sphinx->q) < 64 && empty($this->criteria->sphinx['x']) ) {
@@ -439,7 +429,7 @@ split_timer('search'); //starts the timer
 							'localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}"
 							);
 					}
-				} elseif (empty($CONF['disable_spelling']) && !preg_match('/(@\w+\b|\b\w+:\s*\w+|\/\d|"\^|^\^|centi\()/',$this->criteria->searchtext) && !isset($_GET['extension']) ) {
+				} elseif (empty($CONF['disable_spelling']) && !preg_match('/(@\(?\w+\b|\b\w+:\s*\w+|\/\d|"\^|^\^|centi\()/',$this->criteria->searchtext) && !isset($_GET['extension']) ) {
 					require_once("3rdparty/spellchecker.class.php");
 					$original = preg_replace('/ftf:\d/','',$this->criteria->searchtext);
 					$correction = SpellChecker::Correct($original);
@@ -454,11 +444,11 @@ split_timer('search'); //starts the timer
 					}
 				}
 				
-				if ($pg == 1) {
+				if ($pg == 1 && empty($_GET['skip']) && $this->criteria->resultsperpage > 1 && !preg_match('/[\]:@]/',$this->criteria->searchtext)) {
 					$sphinx2 = new sphinxwrapper();
 					$sphinx2->pageSize = $pgsize = 3;
 					
-					$sphinx2->prepareQuery("@title ".$this->criteria->searchtext." @source -themed");
+					$sphinx2->prepareQuery("@title ".$this->criteria->searchtext." @source -themed -portal");
 
 					$ids = $sphinx2->returnIds(1,'content_stemmed');
 
@@ -532,7 +522,7 @@ split_timer('search'); //starts the timer
 		if (is_array($this->criteria->sphinx['filters']) && count($this->criteria->sphinx['filters'])) {
 			$sphinx->addFilters($this->criteria->sphinx['filters']);
 		}
-		
+
 	//run the sphinx search
 		$ids = $sphinx->returnIds($pg,'_images');
 
@@ -544,8 +534,7 @@ split_timer('search'); //starts the timer
 
 		if (isset($GLOBALS['smarty']) && !empty($sphinx->res['words']) && (count($sphinx->res['words']) > 1 || !$this->resultCount)) {
 			$GLOBALS['smarty']->assign("statistics",$sphinx->res['words']);
-		} 
-
+		}
 
 		if ($this->countOnly || !$this->resultCount) {
 			if (!empty($sphinx->query_error)) {
@@ -555,12 +544,15 @@ split_timer('search'); //starts the timer
 				$this->info = $sphinx->query_info;
 			}
 
-split_timer('search','ESR-count',$this->query_id); //logs the wall time
+			if (empty($this->recordCount)) {
+	                        $db=$this->_getDB(false); //'upgrade' to a read/write connection
+        	                $db->Execute("replace into queries_failed set id = {$this->query_id}");
+                	}
 
 			return 0;
 		}
 		$this->orderList = $ids;
-		
+
 		if (!empty($this->criteria->sphinx['d']) && $this->criteria->sphinx['d'] !== '1') {
 			$this->sphinx_reply = $sphinx->res;
 			$sql_fields = ',-1 as dist_sqd' ;
@@ -600,26 +592,29 @@ END;
 
 		$this->querytime = ($querytime_after - $querytime_before) + $sphinx->query_time;
 
-                $logfile='/tmp/sphinx.'.date('Ymd-H').'.log';
-                $h = @fopen($logfile,'a');
-                if ($h)
-                {
-                        $time = date("i:s");
-                        $logline = sprintf("%04.3f,%04.3f,%04.3f",$this->querytime,($querytime_after - $querytime_before),$sphinx->query_time).",$time,{$this->query_id},{$this->resultCount}\n";
+		if (false) {
+	                $logfile='/tmp/sphinx.'.date('Ymd-H').'.log';
+        	        $h = @fopen($logfile,'a');
+                	if ($h)
+	                {
+        	                $time = date("i:s");
+                	        $logline = sprintf("%04.3f,%04.3f,%04.3f",$this->querytime,($querytime_after - $querytime_before),$sphinx->query_time).",$time,{$this->query_id},{$this->resultCount}\n";
 
-                        fwrite($h,$logline);
+                        	fwrite($h,$logline);
 
-                        fclose($h);
-                }
-		
-		
+	                        fclose($h);
+        	        }
+		}
+
 	//finish off
 		if (!empty($recordSet) && empty($_GET['BBOX']) && $this->getDisplayclass() != 'reveal') {
 			$db=$this->_getDB(false); //'upgrade' to a read/write connection
 			$db->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+
+		} elseif (empty($this->recordCount)) {
+			$db=$this->_getDB(false); //'upgrade' to a read/write connection
+			$db->Execute("replace into queries_failed set id = {$this->query_id}");
 		}
-		
-split_timer('search','ESR',$this->query_id); //logs the wall time
 
 		return $recordSet;
 	}
@@ -633,8 +628,6 @@ split_timer('search','ESR',$this->query_id); //logs the wall time
 		global $CONF;
 		$db=$this->_getDB(true);
 
-split_timer('search'); //starts the timer
-		
 		$this->criteria->getSQLParts();
 		extract($this->criteria->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 		
@@ -766,16 +759,21 @@ split_timer('search'); //starts the timer
 						$db2=&$db;
 					}
 					$db2->Execute("replace into queries_count set id = {$this->query_id},`count` = {$this->resultCount}");
+
+					if (empty($this->resultCount))
+	        		                $db2->Execute("replace into queries_failed set id = {$this->query_id}");
 				}
 			}
-			$this->numberOfPages = ceil($this->resultCount/$pgsize);
+			if ($this->query_id == 19618112) {
+				$this->numberOfPages = 20;
+			} else {
+				$this->numberOfPages = ceil($this->resultCount/$pgsize);
+			}
 		}
 		if ($this->countOnly
 			|| ( ($pg > 1 || $CONF['search_count_first_page']) && !$this->resultCount)
-			|| ( ($this->numberOfPages) && ($pg > $this->numberOfPages) ) 
+			|| ( ($this->numberOfPages) && ($pg > $this->numberOfPages) )
 			) {
-			
-split_timer('search','ECR-count',$this->query_id); //logs the wall time
 
 			return 0;
 		}
@@ -830,10 +828,11 @@ END;
 				$this->resultCount = 0;
 				$this->numberOfPages = 0;
 				$this->pageOneOnly = 1;
+
+        	                $db=$this->_getDB(false); //'upgrade' to a read/write connection
+	                        $db->Execute("replace into queries_failed set id = {$this->query_id}");
 			}
 		}
-		
-split_timer('search','ECR',"$this->query_id/$pg"); //logs the wall time
 
 		return $recordSet;
 	}
@@ -906,17 +905,14 @@ split_timer('search','ECR',"$this->query_id/$pg"); //logs the wall time
 			print_r($this->criteria);
 			print_r($_SERVER);
 			$con = ob_get_clean();
-			mail('geograph@barryhunter.co.uk','[Geograph '.$this->error.'] '.$this->criteria->searchdesc,$con);
+			#mail('geograph@barryhunter.co.uk','[Geograph '.$this->error.'] '.$this->criteria->searchdesc,$con);
 		}
-		
+
 		//we dont actully want to process anything
 		if ($this->countOnly)
 			return 0;
-			
-		if ($recordSet)	{
-		
-		split_timer('search'); //starts the timer
 
+		if ($recordSet)	{
 			$dist_format = ($this->criteria->searchclass == 'Postcode' && strlen($this->criteria->searchq) < 7)?"Dist:%dkm":"Dist:%.1fkm";
 
 			$this->results=array();
@@ -924,14 +920,14 @@ split_timer('search','ECR',"$this->query_id/$pg"); //logs the wall time
 
 			$showtaken = ($this->criteria->limit7 || preg_match('/^imagetaken/',$this->criteria->orderby));
 
-			while (!$recordSet->EOF) 
+			while (!$recordSet->EOF)
 			{
 				$this->results[$i]=new GridImage;
 				$this->results[$i]->fastInit($recordSet->fields);
 
 				$this->results[$i]->dist_string = '';
 				if (!empty($recordSet->fields['dist_sqd'])) {
-					
+
 					if ($recordSet->fields['dist_sqd'] == -1) {
 						$d = $this->sphinx_reply['matches'][$this->results[$i]->gridimage_id]['attrs']['@geodist']/1000;
 					} else {
@@ -984,8 +980,22 @@ split_timer('search','ECR',"$this->query_id/$pg"); //logs the wall time
 				$_SESSION['currentSearch'] = array(
 					'i' => $this->criteria->id,
 					'p' => $pg,
+					'c' => $this->currentPage,
+					't' => $this->numberOfPages,
 					'r' => $this->orderList
 				);
+			} else {
+				$aaa = array();
+				foreach ($this->results as $row) {
+					$aaa[] = $row->gridimage_id;
+				}
+				$_SESSION['currentSearch'] = array(
+                                        'i' => $this->criteria->id,
+                                        'p' => $pg,
+					'c' => $this->currentPage,
+					't' => $this->numberOfPages,
+                                        'r' => $aaa
+                                );
 			}
 			
 			if (!$i && $this->resultCount) {
@@ -1003,15 +1013,12 @@ split_timer('search','ECR',"$this->query_id/$pg"); //logs the wall time
 					$this->resultCount = 0;
 				}
 			}
-			
-split_timer('search','Execute',$this->query_id); //logs the wall time
-
-		} else 
+		} else
 			return 0;
-			
+
 		return $this->querytime;
 	}
-	
+
 	/**
 	 * finds the current displayclass
 	 * @access public
@@ -1019,7 +1026,7 @@ split_timer('search','Execute',$this->query_id); //logs the wall time
 	function getDisplayclass() {
 		return $this->criteria->displayclass;
 	}
-	
+
 	/**
 	 * applies a new display class to this search
 	 * @access public
@@ -1054,7 +1061,7 @@ split_timer('search','Execute',$this->query_id); //logs the wall time
 		}
 		
 		if ($this->currentPage > 1) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."$postfix\"$extrahtml>&lt; &lt; prev</a> ";
+			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."$postfix\" rel=\"prev\"$extrahtml>&lt; &lt; prev</a> ";
 		$start = max(1,$this->currentPage-5);
 		$endr = min($this->numberOfPages+1,$this->currentPage+8);
 		
@@ -1071,7 +1078,7 @@ split_timer('search','Execute',$this->query_id); //logs the wall time
 			$r .= "... ";
 			
 		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."$postfix\"$extrahtml>next &gt;&gt;</a> ";
+			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."$postfix\" rel=\"next\"$extrahtml>next &gt;&gt;</a> ";
 	
 		if ( $this->fullText && empty($_GET['legacy']) && $this->currentPage < $this->numberOfPages && $this->resultCount <= $this->maxResults ) 
 			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->numberOfPages)."$postfix\"$extrahtml>last</a> ";
