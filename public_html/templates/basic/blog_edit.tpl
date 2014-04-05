@@ -126,7 +126,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 </fieldset>
 
 <input type="reset" name="reset" value="Reset" onclick="return confirm('Are you sure? Changes will be lost!');"/>
-<input type="submit" name="submit" value="Save Changes..." style="font-size:1.1em"/> {if $title == 'New Entry'}<br/>(Entries will only show on the site once they have been approved by a site moderator){/if}</p>
+<input type="submit" name="submit" value="Save Changes..." onclick="autoDisable(this);" style="font-size:1.1em"/> {if $title == 'New Entry'}<br/>(Entries will only show on the site once they have been approved by a site moderator){/if}</p>
 </form>
 
 <script type="text/javascript">{literal}
