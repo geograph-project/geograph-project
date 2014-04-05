@@ -134,6 +134,15 @@ END_HTML;
 $networklink->setItemCDATA('description',$desc);
 $networklink->setItem('Snippet','move...scroll...rotate...tilt, to view the Geograph Archive...');
 
+
+$LookAt = $networklink->addChild('LookAt');
+$LookAt->setItem('longitude',-2.968);
+$LookAt->setItem('latitude',55.031);
+$LookAt->setItem('altitude',0);
+$LookAt->setItem('range',1253729);
+$LookAt->setItem('heading',0);
+$LookAt->setItem('tilt',0);
+
 	$UrlTag = $networklink->useUrl("http://{$_SERVER['HTTP_HOST']}/kml-superlayer.php?download".($i?"&i=$i":''));
 	$UrlTag->setItem('refreshMode','onInterval');
 	$UrlTag->setItem('refreshInterval',60*60*24);
