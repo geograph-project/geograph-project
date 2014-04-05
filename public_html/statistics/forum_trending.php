@@ -57,6 +57,12 @@ $cacheid='statistics|'.$template.'.'.$s.'.'.$h;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+        //lets hobble this!
+        header("HTTP/1.1 503 Service Unavailable");
+        $smarty->assign('searchq',stripslashes($_GET['q']));
+        $smarty->display('function_disabled.tpl');
+        exit;
+
 	$db = GeographDatabaseConnection(false); //the forum uses the master directly, so more likly to have the tables cached
 
 	if ($s == 2) {

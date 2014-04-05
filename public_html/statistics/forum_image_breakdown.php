@@ -51,6 +51,12 @@ $cacheid='statistics|forum_image_breakdown'.$ri.'.'.$u;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
+        //lets hobble this!
+        header("HTTP/1.1 503 Service Unavailable");
+        $smarty->assign('searchq',stripslashes($_GET['q']));
+        $smarty->display('function_disabled.tpl');
+        exit;
+
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
