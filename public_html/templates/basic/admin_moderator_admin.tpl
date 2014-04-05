@@ -45,7 +45,7 @@
 <tr bgcolor="{$bgcolor}">
 	<td{if strpos($userrow.rights,'admin') > 0} style="font-weight:bold"{/if}><a href="/profile/{$userrow.user_id}">{$userrow.realname}</a></td>
 	<td>{$userrow.nickname}</td>
-	<td>{if $userrow.role}{$userrow.role}{else}{if strpos($userrow.rights,'admin') > 0}Developer{else}{if strpos($userrow.rights,'moderator') > 0}Moderator{/if}{/if}{/if}&nbsp;<a href="javascript:assignRole({$userrow.user_id},'{$userrow.role}');">e</a></td>
+	<td>{if $userrow.role}{$userrow.role}{else}{if strpos($userrow.rights,'admin') > 0}Developer{else}{if strpos($userrow.rights,'moderator') > 0}Moderator{/if}{/if}{/if}&nbsp;<a href="javascript:void(assignRole({$userrow.user_id},'{$userrow.role}'));">e</a></td>
 	<td>{$userrow.signup_date}</td>
 	<td title="{$userrow.last_log_time}">{$userrow.last_log} ({$userrow.log_count})</td>
 	{if $stats}
@@ -70,7 +70,7 @@
 	</td>
 	<td>
 		{if strpos($userrow.rights,'ticketmod') > 0}
-			<a href="/admin/tickets.php?moderator={$userrow.user_id}">Review</a>
+			<a href="/admin/suggestions.php?moderator={$userrow.user_id}&amp;locked=on&amp;type=any">Review</a>
 			<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}&amp;right=ticketmod">Revoke</a>
 		{else}
 			<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=ticketmod">Grant</a>
