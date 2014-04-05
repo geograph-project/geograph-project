@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: conversion.php 2960 2007-01-15 14:33:27Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2007 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -32,14 +32,20 @@ if (!isLocalIPAddress())
         $USER->mustHavePerm("admin");
 }
 
-$conv = new Conversions;	
+$conv = new Conversions;
 $db = GeographDatabaseConnection(true);
-			
+
 $kml = new kmlFile();
 $kml->atom = true;
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
 
-$kml->filename = "Geograph-Members.kml";
+if (isset($_GET['year'])) {
+	$kml->filename = "Geograph-Members-LastYear.kml";
+	$where = "where user_stat.last > ".$db->getOne("SELECT gridimage_id FROM gridimage_search WHERE submitted > DATE_SUB(NOW(),INTERVAL 1 YEAR)");
+} else {
+	$kml->filename = "Geograph-Members.kml";
+	$where = '';
+}
 $folder = $kml->addChild('Document');
 $folder->setItem('name',"Geograph British Isles Members");
 
@@ -50,16 +56,21 @@ $users = $db->GetAssoc("select
 		from user
 			left join user_stat using (user_id)
 			inner join gridsquare gs on (home_gridsquare = gridsquare_id)
+		$where
 		order by realname");
 
 foreach ($users as $user_id => $user) {
 
 	list($wgs84_lat,$wgs84_long) = $conv->internal_to_wgs84($user['x'],$user['y']);
-				
 
-	$point = new kmlPoint($wgs84_lat,$wgs84_long);			
+	//fudge the position by upto 0.001 degree. somewhere on the order of 100m
+	//to multiple people in the square are visible!
+	$wgs84_lat  += rand(-100,100)/100000.0;
+	$wgs84_long += rand(-100,100)/100000.0;
 
-	$placemark = new kmlPlacemark($user_id,$user['realname'].' :: '.$user['images'],$point);
+	$point = new kmlPoint($wgs84_lat,$wgs84_long);
+
+	$placemark = new kmlPlacemark($user_id,$user['realname'].($user['images']?' :: '.$user['images']:''),$point);
 	$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/profile/$user_id");
 	if (empty($user['nickname'])) {
 		$placemark->setItemCDATA('description',$placemark->link);
@@ -72,7 +83,10 @@ foreach ($users as $user_id => $user) {
 }
 
 $base=$_SERVER['DOCUMENT_ROOT'];
-$file = "/kml/members.kmz";
+if (isset($_GET['year']))
+	$file = "/kml/members-lastyear.kmz";
+else
+	$file = "/kml/members.kmz";
 $kml->outputFile('kmz',false,$base.$file);
 
 if (isset($_GET['debug'])) {
@@ -80,8 +94,5 @@ if (isset($_GET['debug'])) {
 	print "<textarea rows=35 style=width:100%>";
 	print $kml->returnKML();
 	print "</textarea>";
-} 
-exit;
+}
 
-
-?>
