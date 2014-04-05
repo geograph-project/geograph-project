@@ -22,7 +22,7 @@
  */
 
 require_once('geograph/global.inc.php');
-require_once('libs/geograph/topics.inc.php');
+require_once('geograph/topics.inc.php');
 
 if (!empty($_GET['callback'])) {
 	header('Content-type: text/javascript');

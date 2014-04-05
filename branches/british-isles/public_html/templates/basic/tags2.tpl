@@ -44,7 +44,7 @@
 		{if $item.tag eq $thetag}
 			<span class="nowrap">&nbsp;<b>{$item.tag|escape:'html'|replace:' ':'&middot;'}</b> [<a href="{$script_name}{if isset($theprefix)}?prefix={$theprefix|escape:'url'}{/if}">remove filter</a>] &nbsp;</span>
 		{else}
-			&nbsp;<a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="{$script_name}?tag={$item.tag|escape:'url'}{if isset($theprefix)}&amp;prefix={$theprefix|escape:'url'}{/if}">{$item.tag|escape:'html'|replace:' ':'&middot;'}</a> &nbsp;
+			&nbsp;<a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="/tagged/{if isset($theprefix)}{$theprefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}{if isset($theprefix)}">{$item.tag|escape:'html'|replace:' ':'&middot;'}</a> &nbsp;
 		{/if}
 	{/foreach}
 	</div>
@@ -78,7 +78,7 @@
 				<div>Tags:
 				{foreach from=$image->tags item=item name=used}
 					<span class="tag">
-					<a href="/tags/?tag={if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}&amp;photo={$image->gridimage_id}" class="taglink" style="text-decoration:none">{$item.tag|escape:'html'}</a>{if $item.tag != $thetag}<a href="{$script_name}?tag={$thetag|escape:'url'}&amp;exclude={$item.tag|escape:'url'}" class="delete" title="Exclude this tag">X</a>{/if}
+					<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" style="text-decoration:none">{$item.tag|escape:'html'}</a>{if $item.tag != $thetag}<a href="{$script_name}?tag={$thetag|escape:'url'}&amp;exclude={$item.tag|escape:'url'}" rel="nofollow" class="delete" title="Exclude this tag">X</a>{/if}
 					</span>&nbsp;
 				{/foreach}
 				</div>
