@@ -157,7 +157,7 @@ class GeographUser
 		If (($value =$db->getOne("SELECT value FROM user_preference WHERE user_id={$this->user_id} AND pkey = ".$db->Quote($key))) !== FALSE) {
 			if ($session)
 				$_SESSION[$key] = $value;
-			return value;
+			return $value;
 		}
 		return $default;
 	}
@@ -265,7 +265,7 @@ class GeographUser
 	* get stats for user represented by this instance - 
 	* all stats are stored in
 	*/
-	function getStats()
+	function getStats($tags = false)
 	{
 		$db = $this->_getDB(true);
 		
@@ -273,6 +273,11 @@ class GeographUser
 
 		$data = $db->GetRow("SHOW TABLE STATUS LIKE 'user_stat'");
 		$this->stats['updated'] = $data['Update_time'];
+
+		if ($tags) {
+			##$this->tags = $db->getAll("select tag,prefix,count(*) as images,max(created) as last_used from tag_public where user_id ={$this->user_id} and gridimage_id < 4294967296 group by tag_id order by last_used desc limit 20");
+			$this->tags = $db->getAll("select tag,prefix,count(*) as images from tag_public where user_id ={$this->user_id} and gridimage_id < 4294967296 group by tag_id order by images desc limit 50");
+		}
 	}
 	
 	
@@ -959,6 +964,7 @@ class GeographUser
 				ticket_public=%s,
 				ticket_option=%s,
 				use_autocomplete=%s,
+				allow_pinterest=%s,
 				message_sig=%s,
 				expand_about=%d,
 				upload_size=%d,
@@ -982,6 +988,7 @@ class GeographUser
 				$db->Quote($profile['ticket_public']),
 				$db->Quote($profile['ticket_option']),
 				empty($profile['use_autocomplete'])?0:1,
+				empty($profile['allow_pinterest'])?0:1,
 				$db->Quote(stripslashes($profile['message_sig'])),
 				intval($profile['expand_about']),
 				intval($profile['upload_size']),
@@ -993,7 +1000,7 @@ class GeographUser
 				$this->user_id
 				);
 
-			if ($db->Execute($sql) === false) 
+			if ($db->Execute($sql) === false)
 			{
 				$errors['general']='error updating: '.$db->ErrorMsg();
 				$ok=false;
@@ -1001,22 +1008,21 @@ class GeographUser
 			else
 			{
 				//hurrah - it's all good - lets update ourself..
-				
+
 				//update gridimage_search too
 				if ($this->realname != stripslashes($profile['realname'])) {
 					$sql="update gridimage_search set realname=".$db->Quote(stripslashes($profile['realname'])).
 						" where user_id = {$this->user_id} and credit_realname = 0";
 					$db->Execute($sql);
 				}
-				
-				
+
 				$this->realname=$profile['realname'];
 				$this->nickname=$profile['nickname'];
 				$this->password=$password;
 				$this->salt=$salt;
 				$this->website=$profile['website'];
 				$this->public_email=isset($profile['public_email'])?1:0;
-				if (isset($profile['sortBy'])) 
+				if (isset($profile['sortBy']))
 					$this->sortBy=stripslashes($profile['sortBy']);
 				$this->search_results=stripslashes($profile['search_results']);
 				$this->slideshow_delay=stripslashes($profile['slideshow_delay']);
@@ -1024,10 +1030,11 @@ class GeographUser
 				$this->public_about=stripslashes($profile['public_about']);
 				$this->age_group=stripslashes($profile['age_group']);
 				$this->use_age_group=stripslashes($profile['use_age_group']);
-				$this->grid_reference=$gs->grid_reference;	
+				$this->grid_reference=$gs->grid_reference;
 				$this->ticket_public=stripslashes($profile['ticket_public']);
 				$this->ticket_option=stripslashes($profile['ticket_option']);
 				$this->use_autocomplete=stripslashes($profile['use_autocomplete']);
+				$this->allow_pinterest=stripslashes($profile['allow_pinterest']);
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->expand_about=intval($profile['expand_about']);
 				$this->upload_size=intval($profile['upload_size']);
@@ -1438,6 +1445,12 @@ class GeographUser
 			{
 				setcookie('autologin', '', time()-3600*24*365,'/');
 				setcookie('autologin', '', time()-3600*24*365);
+			}
+			
+			if (isset($_COOKIE['__utma'])) {
+				setcookie('__utma', '', time()-3600*24*365,'/','.geograph.org.uk');
+				setcookie('__utmz', '', time()-3600*24*365,'/','.geograph.org.uk');
+				setcookie('__utmv', '', time()-3600*24*365,'/','.geograph.org.uk');
 			}
 		}
 	}
