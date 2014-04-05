@@ -67,7 +67,7 @@ split_timer('search'); //starts the timer
 
 		$nearstring = $this->getNearString($distance);
 		
-		$has_location = preg_match('/(?<![":])\bnear\b/',$q);
+		$has_location = preg_match('/(?<![":\[])\bnear\b/',$q);
 		
 		$searchclass = '';
 		$limit1 = '';
@@ -75,7 +75,7 @@ split_timer('search'); //starts the timer
 		$q = trim(strip_tags($q));
 		
 		if ($has_location) {
-			$bits = preg_split('/(?<![":])\s*near\s+/',$q);
+			$bits = preg_split('/(?<![":\[])\s*near\s+/',$q);
 			$qlocation = @$bits[1];
 		} else {
 			$qlocation = $q;
@@ -166,7 +166,7 @@ split_timer('search'); //starts the timer
 			$square=new GridSquare;
 			$conv = new Conversions;
 			list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2],true);
-			$grid_ok=$square->loadFromPosition($x, $y, true);
+			$grid_ok=$square->loadFromPosition(intval($x), intval($y), true);
 			if ($grid_ok) {
 				$searchclass = 'GridRef';
 				list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
@@ -183,11 +183,11 @@ split_timer('search'); //starts the timer
 	
 		if ($location)
 			$q = str_replace($location,'',$q);
-		$q = preg_replace('/(?<![":])\s*near\s*$/','',$q);
+		$q = preg_replace('/(?<![":\[])\s*near\s*$/','',$q);
 		$q = trim(preg_replace('/\s+/',' ',$q));
 		
 			
-		list($q,$placename) = preg_split('/(?<![":])\s*near\s+/',$q);
+		list($q,$placename) = preg_split('/(?<![":\[])\s*near\s+/',$q);
 
 		$criteria = new SearchCriteria_Placename();
 
@@ -224,7 +224,7 @@ split_timer('search'); //starts the timer
 				//check if this is a user 
 				$criteria2 = new SearchCriteria_All();
 				$criteria2->setByUsername($q);
-				if (!empty($criteria2->realname)) {
+				if (!empty($criteria2->realname) && empty($userlimit)) {
 					if (strcasecmp($q,$criteria2->realname) == 0) {
 						$searchq = $criteria2->realname;
 						$limit1 = $criteria2->user_id;
@@ -388,7 +388,7 @@ split_timer('search'); //starts the timer
 		
 		if (!empty($dataarray['q'])) {
 			//we coming from multiple - which means there might be a text search stored in a q
-			list($q,$placename) = preg_split('/(?<![":])\s+near\s+/',$dataarray['q']);
+			list($q,$placename) = preg_split('/(?<![":\[])\s+near\s+/',$dataarray['q']);
 			if (!empty($dataarray['location'])) {
 				$dataarray['searchtext'] = $q;
 				if (empty($dataarray['placename'])) {
@@ -422,7 +422,7 @@ split_timer('search'); //starts the timer
 				$square=new GridSquare;
 				$conv = new Conversions;
 				list($x,$y,$reference_index) = $conv->wgs84_to_internal($ll[1],$ll[2],true);
-				$grid_ok=$square->loadFromPosition($x, $y, true);
+				$grid_ok=$square->loadFromPosition(intval($x), intval($y), true);
 				if ($grid_ok) {
 					$searchclass = 'GridRef';
 					list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
