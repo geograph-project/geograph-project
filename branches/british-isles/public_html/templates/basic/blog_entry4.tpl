@@ -1,6 +1,7 @@
 {assign var="page_title" value="Blog :: $title"}
 {assign var="meta_description" value=$content|truncate:200}
 {assign var="rss_url" value="/blog/feed.rss"}
+{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://www.geograph.org.uk/blog/`$blog_id`\" />"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 .unable,.unable A  {
@@ -19,6 +20,17 @@
 <div style="margin-left:auto;margin-right:auto;width:600px;position:relative;margin-bottom:100px;line-height:1.2em" id="blogcontent"><p>{$content|regex_replace:"/\n\s*\n/":'</p><p style="clear:both">'|nl2br|GeographLinks:true|regex_replace:'/(height|width)="\d+"/':'$1="16"'}</p></div>
 
 <hr style="clear:both"/>
+{literal}
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style ">
+<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+<a class="addthis_button_tweet"></a>
+<a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+<a class="addthis_counter addthis_pill_style"></a>
+</div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=geograph"></script>
+<!-- AddThis Button END -->
+{/literal}
 
 {if $gridsquare_id}
 <div style="float:right; position:relative; padding:5px; border:1px solid gray; ">
