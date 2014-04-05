@@ -45,7 +45,7 @@ AttachEvent(window,'load',setupSubmitForm,false);
 
 <input type="hidden" name="tag_id" value="{$tag_id|escape:"html"}"/>
 
-<p><a href="/tags/?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">&lt;&lt; Return to Tag Page</a></p>
+<p><a href="/tagged/{if isset($theprefix)}{$theprefix|escape:'urlplus'}:{/if}{$thetag|escape:'urlplus'}">&lt;&lt; Return to Tag Page</a></p>
 
 
 <fieldset>

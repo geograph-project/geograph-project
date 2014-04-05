@@ -48,78 +48,85 @@ class sphinxwrapper {
 
 	public function prepareQuery($q) {
 		$this->rawq = $q;
-		
+
 			//change OR to the right syntax
 		$q = str_replace(' OR ',' | ',$q);
 
 			//AND is pointless
 		$q = str_replace(' AND ',' ',$q);
-		
+
 			//http: (urls) bombs out the field: syntax
 		$q = str_replace('http://','http ',$q);
-		
+
 			//remove any colons in tags - will mess up field: syntax
-		$q = preg_replace('/\[([^\]]+):([^\]]+)\]/','[$1 $2]',$q);
+		$q = preg_replace('/\[([^\]]+)[:-]([^\]]+)\]/','[$1 $2]',$q);
 
 			//setup field: syntax
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
-		
+
+			//see http://milk.geograph.org.uk/wordforms.txt
+		$q = str_replace('&#373;','w',$q);
+		$q = str_replace('&#375;','y',$q);
+
 			//remove unsuitable chars
 		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,-\[\]]+/',' ',trim(strtolower($q))));
 
 		$q = preg_replace('/^["]([^\(\)\'"]+)$/','"$1"',$q);
 		$q = preg_replace('/^([^\(\)\'"]+)[\(\)\'"]$/','$1',$q);
 		$q = preg_replace('/^[\(\)\'"]([^\(\)\'"]+)$/','$1',$q);
-	
+
 			//remove any / not in quorum
-		$q = preg_replace('/(?<!")\//',' ',$q);
-	
+		$q = preg_replace('/(?<!"|near)\//',' ',$q);
+
 			//convert ="phrase" to = on all words
 		$q = preg_replace('/="(\^)?(\w[\w ]+)(\$?)"/e','"\\"$1".preg_replace("/\b(\w+)/","=\\$1","$2")."$3\\""',$q);
-	
+
 			//remove any = not at word start
 		$q = preg_replace('/(^|[\s\(~"^-]+)=/','$1%',$q);
 		$q = str_replace('=',' ',$q);
 		$q = trim(str_replace('%','=',$q));
-	
+
 			//remove any ^ not at field start
 		$q = preg_replace('/(^|@[\(\)\w,]+ |")\^/','$1%',$q);
 		$q = str_replace('^',' ',$q);
 		$q = trim(str_replace('%','^',$q));
-	
+
 			//remove any $ not at field end
 		$q = trim(preg_replace('/\$(?!@ |$|")/',' ',$q));
-	
+
 			//remove any strange chars at end
 		$q = trim(preg_replace('/[@^=\(~-]+$/','',$q));
-	
+
+			//change back to right case
+		$q = str_replace('near/','NEAR/',$q);
+
 			//change it back to simple: syntax
 		$q2 = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
 		$q2 = str_replace('|',' OR ',$q2);
 		$this->qclean = trim(str_replace('  ',' ',$q2));
-	
-	
+
+
 			//make excluded hyphenated words phrases
 		$q = preg_replace('/(?<!"|\w)-(=?\w+)(-[-\w]*\w)/e','"-(\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2").")"',$q);
-		
+
 			//make hyphenated words phrases
-		$q = preg_replace('/(?<!")(\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
-		
-			//make excluded aposphies work (as a phrase) 
+		$q = preg_replace('/(?<!")(=?\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
+
+			//make excluded aposphies work (as a phrase)
 		$q = preg_replace('/(?<!"|\w)-(=?\w+)(\'\w*[\'\w]*\w)/e','"-(\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2").")"',$q);
-		
-			//make aposphies work (as a phrase) 
+
+			//make aposphies work (as a phrase)
 		$q = preg_replace('/(?<!")(\w+)(\'\w*[\'\w]*\w)/e','"\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2")',$q);
-		
+
 			//change single quotes to double
 		$q = preg_replace('/(^|\s)\b\'([\w ]+)\'\b(\s|$)/','$1"$2"$3',$q);
-		
+
 			//seperate out tags!
 		if (preg_match_all('/(-?)\[([^\]]+)\]/',$q,$m)) {
 			$q2 = '';
 			foreach ($m[2] as $idx => $value) {
 				$q = str_replace($m[0][$idx],'',$q);
-				$q2 .= " ".$m[1][$idx].'"__TAG__ '.str_replace(':',' ',$value).' __TAG__"';
+				$q2 .= " ".$m[1][$idx].'"__TAG__ '.strtr($value,':-','  ').' __TAG__"';
 			}
 			if (!empty($q2)) {
 				$q .= " @tags".$q2;
@@ -128,12 +135,12 @@ class sphinxwrapper {
 			//FIX  '@title  @source -themed @tags "__TAG__ footpath __TAG__"'
 		$q = preg_replace('/@(\w+)\s+@/','@',$q);
 
-			//transform 'near gridref' to the put the GR first (thats how processQuery expects it) 
+			//transform 'near gridref' to the put the GR first (thats how processQuery expects it)
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
-	
+
 		$this->q = $q;
 	}
-	
+
 	public function processQuery() {
 		$q = $this->q;
 
@@ -402,7 +409,7 @@ class sphinxwrapper {
 	split_timer('sphinx'); //starts the timer
 
 		if ($index_in == "_images") {
-			$this->q = preg_replace('/@text\b/','@(title,comment,imageclass)',$this->q);
+			$this->q = preg_replace('/@text\b/','@(title,comment,imageclass,tags)',$this->q);
 			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
 		} elseif ($index_in == "_map") {
 			$index = "{$CONF['sphinx_prefix']}gi_map,{$CONF['sphinx_prefix']}gi_map_delta";
@@ -654,7 +661,7 @@ split_timer('sphinx'); //starts the timer
 		#} elseif (preg_match('/^[\w\|\(\) -]*[\|\(\)-]+[\w\|\(\) -]*$/',$q)) {
 		#	$mode = SPH_MATCH_BOOLEAN; //doesnt perform no relvence !
 		#	//todo if we enable this need to deal with filters
-		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
+		} elseif (preg_match('/[~\|\(\)@"\/$^-]/',$q)) {
 			if (count($this->filters)) {
 				$q .= " ".$this->getFilterString();
 			} 
@@ -690,10 +697,10 @@ split_timer('sphinx'); //starts the timer
 		}
 		
 		if ($index_in == "_images") {
-			$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
+			$q = preg_replace('/@text\b/','@(title,comment,imageclass,tags)',$q);
 			$index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
 		} elseif ($index_in == "_images_exact") {
-			$q = preg_replace('/@text\b/','@(title,comment,imageclass)',$q);
+			$q = preg_replace('/@text\b/','@(title,comment,imageclass,tags)',$q);
 			$index = "{$CONF['sphinx_prefix']}gridimage,{$CONF['sphinx_prefix']}gi_delta";
 		} elseif ($index_in == "_posts") {
 			$index = "{$CONF['sphinx_prefix']}post_stemmed,{$CONF['sphinx_prefix']}post_stemmed_delta";
@@ -759,6 +766,7 @@ split_timer('sphinx'); //starts the timer
 		if (empty($q)) {
 			return array();
 		}
+		$q = str_replace('__TAG__','',$q);
 		$q = preg_replace('/@([a-z_]+) /','',$q);
 		$q = preg_replace('/([a-z_]+):/','',$q);
 		$q = preg_replace('/[\|"\']+/','',$q);

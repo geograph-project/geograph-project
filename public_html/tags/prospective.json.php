@@ -68,7 +68,12 @@ if (!empty($_GET['string'])) {
 
 			$sphinx->q = '@tag "'.$sphinx->q.'"/1';
 
-			$client->SetRankingMode(SPH_RANK_EXPR,'if(sum(hit_count)>=tag_wc,10,1)*sum((word_count+(lcs-1)*max_lcs)*user_weight)');
+			$client->SetRankingMode(SPH_RANK_EXPR,'if(sum(hit_count)>=tag_len,10,1)*sum((word_count+(lcs-1)*max_lcs)*user_weight)');
+
+#another alternative
+#option ranker=expr('if(sum(lcs)>=tag_len,if(tag_len>1,100,10),if(tag_len>1,10,1))*sum(lcs+word_count)');
+# seems to be better?
+
 			$client->setFieldWeights(array('tag'=>10));
 
 			$client->SetGroupBy('grouping',SPH_GROUPBY_ATTR,"@relevance DESC, images DESC, @id DESC"); //overall sort order

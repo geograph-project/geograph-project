@@ -159,7 +159,7 @@ if (!empty($_GET['mode']) && $_GET['mode'] == 'selfrecent' && empty($_GET['term'
 					$sphinx->q = "({$sphinx->q}) @prefix $prefix";
 				}
 			} elseif (!empty($prefix)) {
-				$sphinx->q = "\"^{$prefix}$\" | (^$prefix) | ($prefix) | @tag (^$prefix) | @tag \"^{$prefix}$\"";
+				$sphinx->q = "\"^{$prefix}$\" | (^$prefix) | ($prefix) | @tag (^$prefix) | @tag \"^{$prefix}$\" | @prefix \"^{$prefix}\" | @prefix \"^{$prefix}\" | @prefix \"^{$prefix}\"";
 			}
 			if (!empty($_GET['mode'])) {
 				switch($_GET['mode']) {
