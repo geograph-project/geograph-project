@@ -58,6 +58,8 @@
 	{foreachelse}
 		{if $item.skipped}
 			<div><small><i>matching images in square not checked</i></small></div>
+		{elseif $item.imagecount}
+			<div><small><i>unable to identify matching images</i></small></div>
 		{else}
 			<div><small><i>no images found matching {$q|escape:'html'} in square</i></small></div>
 		{/if}
