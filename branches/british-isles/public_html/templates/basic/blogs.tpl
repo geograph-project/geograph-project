@@ -20,7 +20,9 @@ span.tag, a.tag {
 	color:brown;
 	white-space:nowrap;
 }
-
+.content-with-sidebar {
+	padding-right:220px;
+}
 .listing-sidebar {
 	line-height:1.4em;
 	width:200px;
@@ -82,10 +84,6 @@ span.tag, a.tag {
 .entry div.footer {
 	margin-top:8px;
 	border-top:1px solid gray;
-	color:gray;
-}
-.entry div.footer a {
-	color:#9372E8;
 }
 
 {/literal}</style>
@@ -163,8 +161,9 @@ span.tag, a.tag {
 		{/foreach}
 		</div>
 	{/if}
-	<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+	<br/><br/>
 	</div>
+	<div class="content-with-sidebar">
 {/if}
 
 
@@ -217,6 +216,9 @@ span.tag, a.tag {
   <p>There are no listed entries.</p>
 {/if}
 
+{if $tags || $archive}
+	</div>
+{/if}
 
 {dynamic}
 {if $user->registered}
