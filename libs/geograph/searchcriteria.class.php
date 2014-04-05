@@ -231,13 +231,15 @@ class SearchCriteria
 				$this->sphinx['d'] = $this->limit8;
 				
 				$this->sphinx['sort'] = "@geodist ASC, @relevance DESC, @id DESC";
+
+				$this->sphinx['compatible'] = 0;
 			} else {
 				$this->sphinx['impossible']++;
 			}
 			if ($this->limit8 == 1) {
 				$sql_fields .= ", 0 as dist_sqd";
 			} else {
-				//not using "power(gs.x -$x,2) * power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
+				//not using "power(gs.x -$x,2) + power( gs.y -$y,2)" beucause is testing could be upto 2 times slower!
 				$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 				$sql_order = ' dist_sqd ';
 			}
@@ -252,6 +254,7 @@ class SearchCriteria
 				case 'dist_sqd':
 					break;
 				case 'relevance':
+				case 'relevance desc':
 					$sql_order = '';
 					$this->sphinx['sort'] = "@relevance DESC, @id DESC";
 					break;
@@ -302,6 +305,10 @@ class SearchCriteria
 							break;
 						case 'user_id':
 							$this->sphinx['sort'] = 'auser_id';
+							break;
+						case 'sequence':
+							$sql_from .= " INNER JOIN gridimage_sequence seq ON(gi.gridimage_id=seq.gridimage_id) ";
+							$this->sphinx['sort'] = 'sequence';
 							break;
 						case 'realname':
 						case 'title':
@@ -490,9 +497,11 @@ class SearchCriteria
 			$sql_where .= 'gs.reference_index = '.($this->limit4).' ';
 			
 			if (empty($this->sphinx['d'])) {//no point adding this filter if querying on location!
-				$square=new GridSquare;
-				$prefixes = $square->getGridPrefixes($this->limit4);
-				$this->sphinx['filters']['myriad'] = "(".implode(' | ',$prefixes).")";
+				#$square=new GridSquare;
+				#$prefixes = $square->getGridPrefixes($this->limit4);
+				#$this->sphinx['filters']['myriad'] = "(".implode(' | ',$prefixes).")";
+
+				$this->sphinx['filters']['scenti'] = array($this->limit4*10000000,(($this->limit4+1)*10000000)-1);
 			}
 		} 
 		if (!empty($this->limit5)) {
@@ -553,16 +562,16 @@ class SearchCriteria
 					if ($dates[0] == $dates[1]) {
 						//both the same
 						$sql_where .= "submitted LIKE '".$dates[0]."%' ";
-						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[0]." 23:59:59")); 
+						$this->sphinx['filters']['submitted'] = array(strtotime(str_replace('-00','-01',$dates[0])),strtotime($dates[0]." 23:59:59")); 
 					} else {
 						//between
 						$sql_where .= "submitted BETWEEN '".$dates[0]."' AND DATE_ADD('".$dates[1]."',INTERVAL 1 DAY) ";
-						$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),strtotime($dates[1]." 23:59:59")); 
+						$this->sphinx['filters']['submitted'] = array(strtotime(str_replace('-00','-01',$dates[0])),strtotime($dates[1]." 23:59:59")); 
 					}
 				} else {
 					//from
 					$sql_where .= "submitted >= '".$dates[0]."' ";
-					$this->sphinx['filters']['submitted'] = array(strtotime($dates[0]),time()); 
+					$this->sphinx['filters']['submitted'] = array(strtotime(str_replace('-00','-01',$dates[0])),time()); 
 				}
 			} else {
 				//to
