@@ -34,9 +34,9 @@ if (!$db) {
 }
 if ($wid = $db->getOne("SELECT at_home_worker_id FROM at_home_worker WHERE `ip` = INET_ATON('".mysql_real_escape_string(getRemoteIP())."')")) { 
 
-	$row = $db->getRow("SELECT * FROM at_home_job INNER JOIN at_home_result USING (at_home_job_id) WHERE at_home_worker_id = $wid AND at_home_result.created > DATE_SUB(NOW(),INTERVAL 10 MINUTE)");
+	$row = $db->getRow("SELECT at_home_worker_id FROM at_home_job INNER JOIN at_home_result USING (at_home_job_id) WHERE at_home_worker_id = $wid AND at_home_result.created > DATE_SUB(NOW(),INTERVAL 10 MINUTE)");
 
-	if (count($row)) {
+	if (!empty($row) && count($row)) {
 		die("You can only run one browser window at once. If the other window has died, please wait at least 15 minutes and try again.");
 	}
 }
@@ -53,5 +53,5 @@ $cacheid='';
 
 $smarty->display($template,$cacheid);
 
-	
-?>
+
+
