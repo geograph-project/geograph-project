@@ -55,13 +55,26 @@ class SpellChecker
 		return $query;
 	}
 
-    $result = $query; 
+	$data = self::GetSuggestions( $query, $lang, $hl );
 
-    $xml = new SimpleXMLElement(self::GetSuggestions( $query, $lang, $hl )); 
+	if (empty($data)) {
+		return $query;
+	}
+
+	try {
+		$xml = new SimpleXMLElement($data); 
+	} catch (Exception $e) {
+		$d = "/tmp/exception.".uniqid();
+		file_put_contents($d,$data);
+		trigger_error("XML ERROR, log written to $d",E_USER_NOTICE);
+	}
 
 	if (!$xml) {
 		return $query;
 	}
+
+        $result = $query; 
+
 
     $replacement = array(); 
     foreach($xml->c as $correction) 
@@ -97,8 +110,8 @@ class SpellChecker
 	$mkey = md5($query).$lang.$hl;
 	//fails quickly if not using memcached!
 	$data =& $memcache->name_get('sp',$mkey);
-	if ($data)
-		return $data;
+//	if ($data)
+//		return $data;
 
 	if (!function_exists('curl_init')) {
 		return false;
@@ -131,6 +144,13 @@ class SpellChecker
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $header); 
 
     $data = curl_exec($ch); 
+
+	if (strpos($data,'Error 503') !== false) {
+		print "The Spell checker server is offline. This might be temporary, but is likely permentant. You should seek alternateive methods to check. Eg Chrome and Firefox include built in spell checkers.";
+		return false;
+	}
+
+
     if (curl_errno($ch)) { 
 	return false;
         throw new Exception( curl_error($ch) ); 
@@ -138,11 +158,13 @@ class SpellChecker
         curl_close($ch); 
     } 
 
+/*
     $xml_parser = xml_parser_create(); 
     xml_parser_set_option($xml_parser, XML_OPTION_CASE_FOLDING, 0); 
     xml_parser_set_option($xml_parser, XML_OPTION_SKIP_WHITE, 1); 
     xml_parse_into_struct($xml_parser, $data, $vals, $index); 
     xml_parser_free($xml_parser); 
+*/
 
 	//fails quickly if not using memcached!
 	$memcache->name_set('sp',$mkey,$data,$memcache->compress,$memcache->period_long);
