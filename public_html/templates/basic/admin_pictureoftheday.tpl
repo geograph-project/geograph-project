@@ -68,7 +68,7 @@
 <td>{$date}</td>
 
 {if $info.gridimage_id}
-	<td><a href="/photo/{$info.gridimage_id}">photo {$info.gridimage_id}</a> 
+	<td><a href="/photo/{$info.gridimage_id}" class="imagepopup">photo {$info.gridimage_id}</a> 
 		{if $info.pool}
 		 (from pool)
 		{/if}
@@ -82,6 +82,47 @@
 </table>
 
 <p><i>Note: the exact date a pool image will be used is subject to change. If the pool runs dry lower rated images may be used.</i></p>     
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+
+{literal}
+<style>
+	#dispThumbs {
+		position:absolute;
+		color:white;
+		z-index:1000;
+	} 
+	#dispThumbs iframe {
+		width:550px;
+		height:280px;
+	}
+</style>
+<script>
+	$(function() {
+		var xOffset = 20;
+		var yOffset = 20;
+
+		$('a.imagepopup').hover(
+			function(e) {
+				var m = this.href.match(/\/(\d+)$/);
+				$("body").append("<div id='dispThumbs'><iframe src='/frame.php?id="+m[1]+"'></iframe></div>");
+			},
+			function() {
+				$("#dispThumbs").remove();
+			}
+		).mousemove(function(e){
+			$("#dispThumbs")
+				.css("top",(e.pageY + xOffset) + "px")
+				.css("left",(e.pageX + yOffset) + "px");
+		});
+	});
+</script>
+
+
+
+{/literal}
+
+
 
 {include file="_std_end.tpl"}
 
