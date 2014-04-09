@@ -1,4 +1,5 @@
 {assign var="page_title" value="Search"}
+{assign var="meta_description" value="Search and browser Geograph images, by keyword, location and more"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 {dynamic}
@@ -31,9 +32,9 @@
 			<input id="searchgo" type="submit" name="go" value="Search..." style="font-size:1.3em"/>
 		</div>
 	</div>
-	<div style="font-size:0.7em;text-align:right"><a href="?new=1">Try new experimental auto-complete version of this page</a></div>
+	<div style="font-size:0.8em;text-align:right"><a href="/browser/">Try the new Geograph Browser (includes search)</a></div>
 </form>
-<small>TIP: Search by tags, by surrounding by [...] in the 'for' box above. Eg enter <tt style="border:1px solid gray;padding:3px;">[footpath]</tt> to search for "footpath" tagged images.</small><br/>
+<!--small>TIP: Search by tags, by surrounding by [...] in the 'for' box above. Eg enter <tt style="border:1px solid gray;padding:3px;">[footpath]</tt> to search for "footpath" tagged images.</small><br/-->
 
 {/dynamic}
 <ul style="margin-left:0;padding:0 0 0 1em;">
@@ -49,8 +50,8 @@
 </div>
 <div style="float:left; margin-top:3px;  width:40%; position:relative">
 	<ul style="font-size:0.8em">
-        {foreach from=$taglist key=id item=name}
-        <li>[<a href="/search.php?searchtext=[{$id|escape:url}]&do=1" title="Show images tagged with {$id|escape:html}">{$name|escape:html}</a>]</li>
+        {foreach from=$taglist key=id item=count}
+        <li>[<a href="/search.php?searchtext=[{$id|escape:url}]&amp;do=1&amp;displayclass=full" title="Show images tagged with {$id|escape:html}">{$id|escape:html}</a>] x{$count}</li>
         {/foreach}
         <li><a href="/tags/" title="Browse Tags"><i><b>more tags...</b></i></a></li>
 	</ul>
@@ -104,7 +105,7 @@
 <li>You may prefer to browse images on a <a title="Geograph Map Browser" href="/mapbrowse.php">map of the British Isles</a>.<br/><br/></li>
 
 
-<li>Or you can browse a <a title="choose a photograph" href="browse.php">particular grid square</a>.<br/><br/></li>
+<li>Or you can browse a <a title="choose a photograph" href="/browse.php">particular grid square</a>.<br/><br/></li>
 
 {if $enable_forums}
 <li>Registered users can also <a href="/finder/discussions.php">search the forum</a>.</li>
