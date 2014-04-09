@@ -55,7 +55,7 @@ return false;
 </tr>
 <tr>
 <td class=caption3 style="background-color:pink; font-size:1em; line-height:1.2em;">
-<img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="20" height="20" align="left" style="margin-right:5px"/>If the problem is with the website, please: <ul><li>Remember to mention <b>what browser you are using</b></li><li>Ideally provide a <b>link to the exact page</b> (copy/paste from your browser addesss bar) with the problem</li><li>If the issue is with an image, don't forget to mention which one</li><li>If you get an error message, please copy <b>the exact message text</b></li></ul> Including this information up front will not only speed up fixing it, but will prevent us just having to ask for it anyway. Thank You!
+<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="20" height="20" align="left" style="margin-right:5px"/>If the problem is with the website, please: <ul><li>Remember to mention <b>what browser you are using</b></li><li>Ideally provide a <b>link to the exact page</b> (copy/paste from your browser addesss bar) with the problem</li><li>If the issue is with an image, don't forget to mention which one</li><li>If you get an error message, please copy <b>the exact message text</b></li></ul> Including this information up front will not only speed up fixing it, but will prevent us just having to ask for it anyway. Thank You!
 </td>
 <td class=caption5></td>
 </tr>
@@ -64,7 +64,7 @@ return false;
 
 <tr>
 <td class=caption5>
-<INPUT TYPE=SUBMIT VALUE="{$l_sub_post_tpc}" class=inputButton tabindex=5>
+<INPUT TYPE=SUBMIT VALUE="{$l_sub_post_tpc}" class=inputButton tabindex=5 ONCLICK="return checkHasLink(this.form)">
 <input type=button value="Preview" class=inputButton onClick="prevThis();">
 </td>
 </tr>
@@ -88,6 +88,17 @@ return false;
 <p align=right><a title="RSS Feed for this Forum" href="/discuss/syndicator.php?forum={$forum}" class="xml-rss">RSS</a></p>
 
 <script language="JavaScript">
+
+function checkHasLink(form) {
+	var text = form.elements['postText'].value;
+
+	if (text.match(/http:\/\//)) {
+		return true;
+	} else {
+		return !confirm("Your post doesn't appear to contain a link. Experience has shown that a vast majority of bug reports could be improved with the addition of url of the page showing the error. Please consider providing one, if seeing the issue on many pages, one or two examples is fine. Click OK to return the form, and copy/paste the link. Or Cancel to continue anyway");
+	}
+}
+
 function prevThis(){
 var pT,tT,cT;
 pT=document.forms['postMsg'].elements['postText'].value;
