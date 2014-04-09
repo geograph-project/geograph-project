@@ -32,15 +32,17 @@ if (empty($_GET['scope']) && !empty( $_SESSION['content_scope'])) {
 	$_GET['scope'] = $_SESSION['content_scope'];
 } 
 if (empty($_GET['scope'])) {
-	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
-		$_GET['scope'] = 'article,gallery,help';
-	} else {
+#	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
 		$_GET['scope'] = 'article,gallery,help,blog,trip';
-	}
+#	} else {
+#		$_GET['scope'] = 'article,gallery,help,blog,trip,themed';
+#	}
 }
 
-ksort($_GET);
-$cacheid .= md5(serialize($_GET));
+$GET = $_GET;
+unset($GET['refresh']);
+ksort($GET);
+$cacheid .= md5(serialize($GET));
 	
 $template = 'content.tpl';
 
@@ -69,26 +71,31 @@ switch ($order) {
 	case 'views': $sql_order = "views desc";
 		$title = "Most Viewed"; break;
 	case 'images': $sql_order = "images desc";
+		$sphinx_sort = "aimages desc, @id desc";
 		$title = "Most Images"; break;
 	case 'created': $sql_order = "created desc";
+		$sphinx_sort = "created desc";
 		$title = "Recently Created"; break;
 	case 'rand': $sql_order = "rand()";
+		$sphinx_sort = "@random";
 		$title = "Random Order"; break;
 	case 'title': $sql_order = "title";
 		$title = "By Collection Title";break;
 	case 'updated':
 	default: $sql_order = "updated desc";
+		$sphinx_sort = "updated desc";
 		$title = "Recently Updated";
 		$order = 'updated';
 }
 $orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated','images'=>'Most Images','rand'=>'Random Order');
 
-$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'context'=>'Geographical Context', 'other'=>'Other');
+$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'context'=>'Geographical Context', 'other'=>'Other', 'faq'=>'FAQ Answer');
 
 if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
 	unset($sources['themed']);
 }
 if (!empty($_GET['scope']) && $_GET['scope'] == 'all') {
+	unset($sources['portal']);
 	$_GET['scope'] = array_keys($sources);
 }
 
@@ -130,6 +137,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				case 'user':
 				case 'category':
 				case 'context':
+				case 'faq':
 				case 'other':
 					$filters['source'][] = $scope;
 					$smarty->assign("scope_".$scope,1);
@@ -166,9 +174,13 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		
 	} elseif (!empty($_GET['q'])) {
 
+                $_GET['q'] = preg_replace('/\b(not)?(gridref):/','\1grid_reference:',$_GET['q']);
+                $_GET['q'] = preg_replace('/\b(not)?(description):/','\1words:',$_GET['q']);
+                $_GET['q'] = preg_replace('/\b(not)?(name|by):/','\1realname:',$_GET['q']);
+
 		$sphinx = new sphinxwrapper(trim($_GET['q']));
 		$sphinx->pageSize = $pageSize;
-		
+
 		if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
 			$pg = intval($m[2]);
 			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
@@ -179,13 +191,17 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				$sphinx->q = "@title ".$sphinx->q;
 			}
 			$smarty->assign('in_title', 1);
-		}
+		} elseif (!empty($_GET['in']) && $_GET['in'] == 'nottitle') {
+                        if (!preg_match('/^\w+:/',$sphinx->q)) {
+                                $sphinx->q = "@!(title) ".$sphinx->q;
+                        }
+                }
 		
 		$smarty->assign_by_ref('q', $sphinx->qclean);
 		$extra['q'] = $sphinx->qclean;
 		$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
 		
-		#$sphinx->processQuery();
+		$sphinx->processQuery();
 		
 		$sphinx->qoutput = $sphinx->q;
 		if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
@@ -209,12 +225,14 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$sphinx->addFilters($filters);
 		}
 
-		$cl = $sphinx->_getClient();		
-		$cl->SetFieldWeights(array('title'=>100));	
+		$cl = $sphinx->_getClient();
+		$cl->SetFieldWeights(array('title'=>100));
+		if (!empty($sphinx_sort))
+			$sphinx->sort = $sphinx_sort;
 
 		$ids = $sphinx->returnIds($pg,'content_stemmed');
 		
-		$smarty->assign("query_info",$sphinx->query_info);
+		$smarty->assign("query_info",str_replace($sphinx->q,$sphinx->qclean,$sphinx->query_info));
 		
 		if (count($ids)) {
 			$where[] = "content_id IN(".join(",",$ids).")";
@@ -275,7 +293,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll($sql = "
-	select content.content_id,content.user_id,url,title,extract,unix_timestamp(content.$datecolumn) as $datecolumn,realname,content.source,content.gridimage_id,
+	select content.content_id,content.user_id,url,title,extract,unix_timestamp(replace(content.$datecolumn,'-00','-01')) as $datecolumn,realname,content.source,content.gridimage_id,
 		(content.views+coalesce(article_stat.views,0)+coalesce(topic_views,0)) as views,
 		(content.images+coalesce(article_stat.images,0)+coalesce(count(gridimage_post.seq_id),0)) as images,
 		article_stat.words,coalesce(posts_count,0) as posts_count,coalesce(count(distinct gridimage_post.post_id),0) as posts_with_images
@@ -286,7 +304,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		left join gridimage_post using (topic_id)
 	where $where
 	group by content_id
-	having posts_with_images >= posts_count/2
+	having (posts_with_images >= posts_count/2) OR (content.source = 'gallery' AND posts_with_images>1)
 	order by content.`type` = 'info' desc, $sql_order 
 	limit $limit");
 	
@@ -324,7 +342,13 @@ if (!empty($_GET['debug'])) {
 	$smarty->assign("order",$order);
 	$smarty->assign_by_ref("orders",$orders);
 	$smarty->assign_by_ref("sources",$sources);
-	$colours = array('FFFFFF','FFDDFF','FFFFAA','FFAAFF','AAFFFF','DDDDDD','DDDDFF','DDFFDD','BBBBFF','BBFFBB','FFBBBB','FFFFDD','FFDDDD');
+
+	#pallete by rudi
+	#$colours = array('FFFFFF','FFDDFF','FFFFAA','FFAAFF','AAFFFF','DDDDDD','DDDDFF','DDFFDD','BBBBFF','BBFFBB','FFBBBB','FFFFDD','FFDDDD');
+
+	#pallet by http://jiminy.medialab.sciences-po.fr/tools/palettes/index.php
+	$colours = array('E1BBDA','DDEA8E','83E7E1','D5CEA9','E6B875','A7CEE5','E9B1A5','A6E09A','7DE0B8','CED4CF','B2DAAD','C5C474','A0DACA');
+
 	$keys = array_keys($sources);
 	foreach ($keys as $idx => $key) {
 		$colours[$key] = $colours[$idx];
