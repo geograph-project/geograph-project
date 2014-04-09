@@ -29,6 +29,11 @@ $USER->mustHavePerm("ticketmod");
 
 $smarty = new GeographPage;
 
+if (!empty($CONF['moderation_message'])) {
+        $smarty->assign("status_message",$CONF['moderation_message']);
+}
+
+
 $db = GeographDatabaseConnection(false);
 
 if (!empty($_GET['relinqush'])) {
@@ -130,10 +135,12 @@ if (isset($_GET['moderator']) && ($mid = intval($_GET['moderator']))) {
 	$sql_where .= " and i.moderator_id=$mid";
 	$smarty->assign('moderator', 1);
 
-} elseif (isset($_GET['user_id']) && ($mid = intval($_GET['user_id']))) {
+}
+if (isset($_GET['user_id']) && ($mid = intval($_GET['user_id']))) {
 	$sql_where .= " and i.user_id=$mid";
-	
-} elseif (isset($_GET['suggestor']) && ($mid = intval($_GET['suggestor']))) {
+
+}
+if (isset($_GET['suggestor']) && ($mid = intval($_GET['suggestor']))) {
 	$sql_where .= " and t.user_id=$mid";
 }
 
