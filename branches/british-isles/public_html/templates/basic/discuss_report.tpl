@@ -7,12 +7,13 @@
 <legend>Report Form</legend>
 
 
+
 {if $message}
 	<p>{$message}</p>
 
 	<a href="/discuss/">back to discussions</a>
 {else}
-
+	<p>Use this form to let us know about a post or thread that you think we should investigate.</p>
 
 	<div class="field">
 		{if $errors.thread}<div class="formerror"><p class="error">{$errors.thread}</p>{/if}
@@ -55,7 +56,18 @@
 
 		<div class="fieldnotes">Optional, please describe the issue</div>
 
-		{if $errors.tag2}</div>{/if}
+		{if $errors.comment}</div>{/if}
+	</div>
+
+	<div class="field" style="display:none">
+		{if $errors.message}<div class="formerror"><p class="error">{$errors.message}</p>{/if}
+
+		<label for="message">Blank:</label>
+			<textarea name="message" rows="4" cols="80">{$message|escape:"html"}</textarea>
+
+		<div class="fieldnotes">LEAVE THIS BOX BLANK PLEASE</div>
+
+		{if $errors.message}</div>{/if}
 	</div>
 
 	</fieldset>
@@ -64,7 +76,7 @@
 	<input type="submit" value="Submit report..." style="font-size:1.1em"/></p>
 	</form>
 
-	<p>Note: your identity is saved with the report, you wont get an individual reply. We may or may not act on this information. Thank you for taking the time to send us feedback.</p>
+	<p>Note: While your identity is saved with the report, you won't get an individual reply. We may or may not act on this information. Thank you for taking the time to send us feedback.</p>
 
 {/if}
 
