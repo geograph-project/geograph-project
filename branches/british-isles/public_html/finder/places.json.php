@@ -28,17 +28,87 @@ $results = array();
 
 if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
-	
-	$fuzzy = !empty($_GET['f']);
-	
-	$sphinx = new sphinxwrapper($q);
 
-	$sphinx->pageSize = $pgsize = 15;
+	if (preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",strtoupper($q),$pc) 
+	&& !in_array(strtoupper($pc[1]),array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
+		//these prefixs are not postcodes but are valid gridsquares
 
+		if ($pc[1] != 'BT' && $pc[4]) { //GB can do full postcodes now!
+			$code = strtoupper($pc[1].$pc[2]." ".$pc[3].$pc[4]);
+		} else {
+			$code = strtoupper($pc[1].$pc[2].($pc[3]?" ".$pc[3]:''));
+		}
+
+		if (empty($db))
+			$db = GeographDatabaseConnection(true);
+
+	//outcode only
+		if (strpos($code,' ') === FALSE) {
+			$postcodes = $db->GetAll('select code,e,n,reference_index from loc_postcodes where code like '.$db->Quote("$code _").'');
+
+	//full unit postcode
+		} elseif ($pc[1] != 'BT' && preg_match("/([0-9])([A-Z]{2})$/i",strtoupper($code)) ) { //GB can do full postcodes now!
+			if (strlen($code) == 8) {
+				//codepoint open encodes it as a 7char string. rather than being always with/without a space.
+				$code = str_replace(' ','',$code);
+			}
+			$postcodes = $db->GetAll('select code,e,n,1 as reference_index from postcode_codeopen where code='.$db->Quote($code).' limit 1');
+
+	//1 digit missing
+		} elseif ($pc[1] != 'BT' && preg_match("/([0-9])([A-Z]{1})$/i",strtoupper($code)) ) {
+			if (strlen($code) == 7) {
+                                //codepoint open encodes it as a 7char string. rather than being always with/without a space.
+                                $code = str_replace(' ','',$code);
+                        }
+                        $postcodes = $db->GetAll('select code,e,n,1 as reference_index from postcode_codeopen where code like '.$db->Quote($code."_").' limit 40');
+	//sector
+		} else {
+			if ($pc[1] != 'BT') {
+				if (strlen($code) == 6) {
+					//codepoint open encodes it as a 7char string. rather than being always with/without a space.
+					$code = str_replace(' ','',$code);
+				}
+				$postcodes = $db->GetAll('select code,e,n,1 as reference_index from postcode_codeopen where code like '.$db->Quote($code."__").' limit 40');
+
+			} else {
+				$postcodes = $db->GetAll('select code,e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');
+			}
+		}
+
+		if (!empty($postcodes)) {
+			$conv = new Conversions();
+
+			$results['items'] = array();
+			foreach ($postcodes as $row) {
+				if (strlen($row['code']) == 7 && strpos($row['code'],' ') === false) {
+					$row['code'] = substr($row['code'],0,4).' '.substr($row['code'],4,3);
+				}
+				list($gr,$len) = $conv->national_to_gridref($row['e'],$row['n'],8,$row['reference_index']);
+				$output = array(
+					'name' => $row['code'],
+					'gr' => $gr,
+					'localities'=>''
+				);
+
+				$results['items'][] = $output;
+			}
+			$results['total_found'] = count($postcodes);
+			$results['query_info'] = '';
+			$results['copyright'] = "Contains Ordnance Survey data (c) Crown copyright and database right 2012";
+		}
+	}
 	
-	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
-	if (empty($pg) || $pg < 1) {$pg = 1;}
-	
+	if (empty($results)) {
+		$fuzzy = !empty($_GET['f']);
+
+		$sphinx = new sphinxwrapper($q);
+
+		$sphinx->pageSize = $pgsize = 15;
+
+
+		$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
+		if (empty($pg) || $pg < 1) {$pg = 1;}
+
 
 		
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
@@ -58,7 +128,8 @@ if (!empty($_GET['q'])) {
 			if (!empty($ids) && count($ids)) {
 				$where = "id IN(".join(",",$ids).")";
 
-				$db = GeographDatabaseConnection(true);
+				if (empty($db))
+					$db = GeographDatabaseConnection(true);
 
 				$limit = 25;
 
@@ -83,7 +154,7 @@ if (!empty($_GET['q'])) {
 		} else {
 			$results = "Search will only return 1000 results - please refine your search";
 		}
-	
+	}
 } else {
 	$results = "No query!";
 }
@@ -103,4 +174,5 @@ print $json->encode($results);
 if (!empty($_GET['callback'])) {
         echo ");";
 }
+
 
