@@ -31,7 +31,7 @@ $mosaic=new GeographMapMosaic;
 $mosaic->pixels_per_km = 40;
 
 if (isset($_GET['random'])) {
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection(false);
 	
 	$count = $db->cacheGetOne(86400,"SELECT COUNT(*) FROM gridsquare WHERE reference_index=1 AND percent_land = 100");
 	
@@ -99,6 +99,11 @@ if (isset($_REQUEST['recent'])) {
 	$smarty->assign('extra','recent');
 	$cacheid.='|recent';
 } 
+if (isset($_REQUEST['contrib'])) {
+	$smarty->assign('contrib',1);
+	$smarty->assign('extra','contrib');
+	$cacheid.='|contrib';
+} 
 
 if (isset($_REQUEST['full'])) {
         $template = 'mapper_full.tpl';
@@ -140,9 +145,9 @@ if (isset($_SESSION['maptt']) || isset($_REQUEST['inner'])) {
 	$tt = new ThrottleToken('',false);
 
 	if ($USER->hasPerm('admin') || $USER->hasPerm('moderator')) {
-		$tt->uses = 500;
+		$tt->uses = 800;
 	} elseif ($USER->hasPerm('basic')) {
-		$tt->uses = 250;
+		$tt->uses = 400;
 	} else {
 		$tt->uses = 50;
 	}
