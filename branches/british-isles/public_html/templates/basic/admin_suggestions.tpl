@@ -12,6 +12,8 @@
 
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> :: Change Suggestions, <small>{$title}</small></h2>
 
+{$status_message}
+
     <form method="get" action="{$script_name}" style="background-color:#f0f0f0;padding:2px;margin:0px; border:1px solid #d0d0d0;">
     <div> 
     <span class="nowrap">When:<select name="modifer">
