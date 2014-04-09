@@ -1,15 +1,16 @@
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}"></script>
 
-<div style="float:right;position:relative">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</div>
+<div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> / <b>multi</b> / <a href="/help/submit">more...</a></div>
 
-	<h2>Multiple Image Submission <sup>Experimental</sup></h2>
+	<h2>Multiple Image Submission</h2>
 
 <div style="position:relative;">
 	<div class="tabHolder">
 		<a class="tab nowrap" id="tab1" href="{$script_name}">A) Add/Upload Images</a>&nbsp;
 		<a class="tabSelected nowrap" id="tab2">B) Submit Images (v1)</a>
-		<a class="tab nowrap" id="tab3" href="/submit2.php?multi=true">B) Submit Images (v2) <sup style="color:red">New!</sup></a>
+		<a class="tab nowrap" id="tab3" href="/submit2.php?multi=true">B) Submit Images (v2)</a>
+                <a class="tab nowrap" id="tab4" href="/submit2.php?multi=true&amp;display=tabs">(Tabs)</a>
 	</div>
 
 	<div class="interestBox">
@@ -26,12 +27,12 @@
 
 		<table id="upload" class="report sortable">
 			<thead>
-			<tr style="color:yellow">
-				<th>Preview</th>
-				<th>Continue</th>
-				<th>Uploaded</th>
-				<th>Taken</th>
-				<th>Done</th>
+			<tr>
+				<td>Preview</td>
+				<td>Continue</td>
+				<td>Uploaded</td>
+				<td>Taken</td>
+				<td>Done</td>
 			</tr>
 			</thead>
 			<tbody>

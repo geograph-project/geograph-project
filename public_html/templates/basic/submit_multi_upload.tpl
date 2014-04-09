@@ -1,19 +1,22 @@
 {include file="_std_begin.tpl"}
 
-<div style="float:right;position:relative">&middot; <a href="/help/submission">Alternative Submission Methods</a> &middot;</div>
+<div style="float:right;position:relative"><a href="/submit.php?redir=false">v1</a> / <a href="/submit2.php">v2</a> / <b>multi</b> / <a href="/help/submit">more...</a></div>
 
-	<h2>Multiple Image Submission <sup>Experimental</sup></h2>
+	<h2>Multiple Image Submission</h2>
+
+{dynamic}{$status_message}{/dynamic}
 
 <div style="position:relative;">
 	<div class="tabHolder">
 		<a class="tabSelected nowrap" id="tab1">A) Add/Upload Images</a>&nbsp;
 		<a class="tab nowrap" id="tab2" href="{$script_name}?tab=submit#sort=Uploaded%A0%A0%u2193">B) Submit Images (v1)</a>
-		<a class="tab nowrap" id="tab3" href="/submit2.php?multi=true">B) Submit Images (v2) <sup style="color:red">New!</sup></a>
+		<a class="tab nowrap" id="tab3" href="/submit2.php?multi=true">B) Submit Images (v2)</a>
+                <a class="tab nowrap" id="tab4" href="/submit2.php?multi=true&amp;display=tabs">(Tabs)</a>
 	</div>
 
 	<div class="interestBox">
 <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css" type="text/css" />
-<link rel="stylesheet" href="{"/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css"|revision}" type="text/css" />
+<link rel="stylesheet" href="{"/plupload/js/jquery.ui.plupload/css/jquery.ui.plupload.css"|revision|replace:'v7433':'v74332'}" type="text/css" />
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js" type="text/javascript"></script>
@@ -21,8 +24,8 @@
 <!-- Thirdparty intialization scripts, needed for the Google Gears and BrowserPlus runtimes -->
 <script type="text/javascript" src="http://bp.yahooapis.com/2.4.21/browserplus-min.js"></script>
 
-<script type="text/javascript" src="{"/plupload/js/plupload.full.js"|revision}"></script>
-<script type="text/javascript" src="{"/plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"|revision}"></script>
+<script type="text/javascript" src="{"/plupload/js/plupload.full.js"|revision|replace:'v7433':'v74332'}"></script>
+<script type="text/javascript" src="{"/plupload/js/jquery.ui.plupload/jquery.ui.plupload.js"|revision|replace:'v7433':'v74332'}"></script>
 
 {literal}
 <script type="text/javascript">
