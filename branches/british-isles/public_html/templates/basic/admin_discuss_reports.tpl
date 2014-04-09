@@ -7,6 +7,7 @@
 <h2><a title="Admin home page" href="/admin/index.php">Admin</a> :: <a href="?">Forum Reports</a></h2>
 
 
+<form method="post">
 
 {if $data}
 	<h4>{$title}</h4>
@@ -20,7 +21,6 @@
 			background-color:brown;
 		}
 	</style>{/literal}
-	<form method="post">
 	
 	<table class="report">
 	<thead><tr>
@@ -49,10 +49,10 @@
 			{/if}
 			<td>{$row.realname|escape:'html'}</td>
 			<td>{$row.type|escape:'html'}/{$row.resolution|escape:'html'}</td>
-			{if $row.user_id != $user->user_id}
+
 				<td><select name="action[{$row.report_id}]">
 					<option value=""></option>
-					{if $row.forum_id1}
+					{if $row.forum_id1 || $row.post1}
 						<option value="delete_thread">Delete WHOLE THREAD</option>
 						{if $row.post1 && $row.posts_count > 1}
 							<option value="delete_post">Delete just THIS POST</option>
@@ -61,7 +61,7 @@
 							{/if}
 						{/if}
 					{/if}
-					{if $row.forum_id2}
+					{if $row.forum_id2 || $row.post2}
 						<option value="restore_thread">Restore WHOLE THREAD</option>
 						{if $row.post2 && $row.forum_id1}
 							<option value="restore_post">Restore just THIS POST</option>
@@ -71,11 +71,10 @@
 						{/if}
 					{/if}
 					<option value="">----</option>
-					<option value="open">Mark Open</option>
-					<option value="rejected">Mark Rejected</option>
-					<option value="delt">Mark Delt</option>
+					<option value="open">Mark Open (to show you aware)</option>
+					<option value="rejected">Mark Report as Invalid</option>
+					<option value="delt">Mark Delt/Resolved</option>
 				</select></td>
-			{/if}
 		</tr>
 		{if $row.comment}
 			<tr bgcolor="{$bgcolor}">
@@ -104,8 +103,19 @@
 	</form>
 {else}
 	<p>No data to show...</p>	
+
+	{if $topic_id}
+		If (and only if) the thread is completely SPAM:
+		<input type="hidden" name="topic_id" value="{$topic_id}"/>		
+				<select name="action[new]">
+                                        <option value=""></option>
+                                        <option value="delete_thread">Delete WHOLE THREAD</option>
+                                </select>
+		<input type=submit value="Update"/>
+	{/if}
 {/if}
 <br/>
+</form>
 
 
 <p>Note: Data is incomplete prior to 5/1/12 - no log was kept, and deleted threads can't be restored.</p>
