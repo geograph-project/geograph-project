@@ -2301,6 +2301,67 @@ alter table blog add `views` mediumint(8) unsigned NOT NULL, add `views_archive`
 #################################################
 
 
+alter table queries add `form` varchar(30) not null default '';
+alter table queries_archive add `form` varchar(30) not null default '';
+
+
+#################################################
+
+
+create table queries_failed (id int unsigned primary key,created timestamp default current_timestamp);
+
+
+#################################################
+
+
+ alter table at_home_worker drop key `ip`;
+
+
+#################################################
+
+
+create table tag_myriad_stat select tag,prefix,avg(wgs84_lat) as wgs84_lat,avg(wgs84_long) as wgs84_long, SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-4) AS myriad,count(*) as images,count(distinct gi.user_id) as users from gridimage_search gi inner join tag_public using (gridimage_id) group by tag_id,myriad order by null;
+
+
+create table tag_stat select tag_id,tag,prefix,std(wgs84_lat) as std_lat,std(wgs84_long) as std_long,avg(wgs84_lat) as avg_lat,avg(wgs84_long) as avg_long, COUNT(DISTINCT SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-4)) AS myriads,COUNT(DISTINCT CONCAT(SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-3),SUBSTRING(gi.grid_reference,LENGTH(gi.grid_reference)-1,1)) ) as hectads,count(*) as images,count(distinct gi.user_id) as users,0 as processed from gridimage_search gi inner join tag_public using (gridimage_id) group by tag_id order by null;
+
+
+#################################################
+
+alter table at_home_job add repeat_of int(10) unsigned NOT NULL default 0;
+
+alter table at_home_job_archive add repeat_of int(10) unsigned NOT NULL default 0;
+
+
+create table at_home_result_merge like at_home_result;
+alter table at_home_result_merge ENGINE=MERGE UNION(`at_home_result`,`at_home_result_archive`);
+
+
+create table at_home_job_merge like at_home_job;
+alter table at_home_job_merge ENGINE=MERGE UNION(`at_home_job`,`at_home_job_archive`);
+
+
+alter table at_home_job add index (`repeat_of`);
+
+alter table at_home_job_archive add index (`repeat_of`);
+
+alter table at_home_job_merge add index (`repeat_of`);
+
+#################################################
+
+DROP TABLE IF EXISTS gridimage_term;
+CREATE TABLE gridimage_term (INDEX(gridimage_id),INDEX(term)) (select gridimage_id,result as term,at_home_result_id as seq_id from at_home_result_archive) UNION (select gridimage_id,result as term,at_home_result_id as seq_id from at_home_result);
+
+create table term_stat select term,std(wgs84_lat) as std_lat,std(wgs84_long) as std_long,avg(wgs84_lat) as avg_lat,avg(wgs84_long) as avg_long, COUNT(DISTINCT SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-4)) AS myriads,COUNT(DISTINCT CONCAT(SUBSTRING(gi.grid_reference,1,LENGTH(gi.grid_reference)-3),SUBSTRING(gi.grid_reference,LENGTH(gi.grid_reference)-1,1)) ) as hectads,count(*) as images,count(distinct gi.user_id) as users,0 as processed from gridimage_search gi inner join gridimage_term using (gridimage_id) group by term order by null;
+
+create table tag_cluster (cluster_id int(10) unsigned NOT NULL auto_increment, `tag_id` int(10) unsigned NOT NULL, images mediumint unsigned not null, `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',created timestamp not null,PRIMARY KEY  (`cluster_id`));
+
+create table term_cluster (cluster_id int(10) unsigned NOT NULL auto_increment, `term` varchar(255) NOT NULL, images mediumint unsigned not null, `wgs84_lat` decimal(10,6) NOT NULL default '0.000000',  `wgs84_long` decimal(10,6) NOT NULL default '0.000000',created timestamp not null,PRIMARY KEY  (`cluster_id`));
+
+
+#################################################
+
+
 CREATE TABLE `project` (
   `project_id` int(10) unsigned NOT NULL auto_increment,
   `user_id` int(10) unsigned NOT NULL,
@@ -2357,9 +2418,29 @@ CREATE TABLE `project_register` (
 #################################################
 
 
+CREATE TABLE `gridimage_thumbsize` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `maxw` smallint(5) unsigned NOT NULL,
+  `maxh` smallint(5) unsigned NOT NULL,
+  `width` smallint(5) unsigned NOT NULL,
+  `height` smallint(5) unsigned NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`gridimage_id`,`maxw`,`maxh`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+#################################################
+
+
 alter table user add gravatar enum('unknown','found','none') not null default 'unknown';
 
 alter table user_archive add gravatar enum('unknown','found','none') not null default 'unknown';
+
+
+#################################################
+
+
+ alter table game_score modify `level` mediumint NOT NULL, modify `user_id` int NOT NULL default '0';
 
 
 #################################################
