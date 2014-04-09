@@ -39,7 +39,7 @@ if (empty($_REQUEST['id'])) {
 $template = 'project_edit.tpl';
 $cacheid = '';
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection(false);
 	if ($_REQUEST['id'] == 'new') {
 		$smarty->assign('id', "new");
 		$smarty->assign('title', "New Entry");

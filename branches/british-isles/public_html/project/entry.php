@@ -51,7 +51,7 @@ if (empty($_GET['id']) || preg_match('/[^\d]/',$_GET['id'])) {
 
 $project_id = intval($_GET['id']);
 
-$db=NewADOConnection($GLOBALS['DSN']);
+$db=GeographDatabaseConnection(false);
 
 $USER->mustHavePerm('basic');
 $isadmin=$USER->hasPerm('moderator')?1:0;

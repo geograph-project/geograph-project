@@ -43,7 +43,7 @@ if (empty($_REQUEST['id'])) {
 $template = 'project_links.tpl';
 $cacheid = '';
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection(false);
 	
 		$sql_where = " project_id = ".$db->Quote($_REQUEST['id']);
 		 
