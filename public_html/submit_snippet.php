@@ -228,8 +228,8 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 		
 		split_timer('snippet'); //starts the timer
 
-		$results = $db->getAll($sql="SELECT s.* $fields FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) WHERE gs.user_id = {$USER->user_id} AND gridimage_id != $gid GROUP BY s.snippet_id ORDER BY gs.created DESC LIMIT 50"); 
-		
+		$results = $db->getAll($sql="SELECT s.*,MAX(gs.created) AS last_used $fields FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) WHERE gs.user_id = {$USER->user_id} AND gridimage_id != $gid GROUP BY s.snippet_id ORDER BY last_used DESC LIMIT 50"); 
+
 		
 		$smarty->assign('tab',$_REQUEST['tab']);
 		
@@ -425,34 +425,42 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 				$smarty->assign('empty',1);
 			}
 
-			$where[] = "enabled = 1"; 
-			
+			$where[] = "enabled = 1";
+
 			split_timer('snippet','general'); //logs the wall time
 		}
 
 		$smarty->assign_by_ref('radius',$_POST['radius']);
-		
-		split_timer('snippet'); //starts the timer
-		
-		$where[] = 'ge.gridimage_id IS NULL';
-		$where= implode(' AND ',$where);
 
-		$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours $fields FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gs.gridimage_id < 4294967296) LEFT JOIN gridimage_snippet ge ON (s.snippet_id = ge.snippet_id AND ge.gridimage_id = $gid) WHERE $where GROUP BY s.snippet_id $orderby LIMIT 200"); 
-		#print $sql;
-		
+		split_timer('snippet'); //starts the timer
+
+		if (!in_array("0",$where,true)) {
+			$where[] = 'ge.gridimage_id IS NULL';
+			$where= implode(' AND ',$where);
+
+			$results = $db->getAll($sql="SELECT s.*,realname,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours $fields FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gs.gridimage_id < 4294967296) LEFT JOIN gridimage_snippet ge ON (s.snippet_id = ge.snippet_id AND ge.gridimage_id = $gid) WHERE $where GROUP BY s.snippet_id $orderby LIMIT 200"); 
+		}
+
+		if (empty($results) && empty($_REQUEST['tab'])) {
+			$results = $db->getAll($sql="SELECT s.*,MAX(gs.created) AS last_used $fields FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) WHERE gs.user_id = {$USER->user_id} AND gridimage_id != $gid GROUP BY s.snippet_id ORDER BY last_used DESC LIMIT 50"); 
+
+			if (count($results) > 1)
+				$smarty->assign('tab','recent');
+		}
+
 		split_timer('snippet','query',$where); //logs the wall time
 	}
-	
+
 	if ($fields) {
 		foreach ($results as $id => $row) {
 			if ($row['distance'] > 0)
 				$results[$id]['distance'] = round(sqrt($row['distance'])/1000)+0.01;
 		}
 	}
-	
+
 	$smarty->assign_by_ref('grid_reference',$square->grid_reference);
 	$smarty->assign_by_ref('results',$results);
-} 
+}
 
 if (!empty($CONF['sphinx_host'])) {
 	$smarty->assign('sphinx',1);
