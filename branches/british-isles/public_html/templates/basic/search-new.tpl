@@ -83,8 +83,8 @@
 </div>
 <div style="float:left; margin-top:3px;  width:40%; position:relative">
 	<ul style="font-size:0.8em">
-	{foreach from=$taglist key=id item=name}
-	<li>[<a href="/search.php?searchtext=[{$id|escape:url}]&do=1" title="Show images tagged with {$id|escape:html}">{$name|escape:html}</a>]</li>
+	{foreach from=$taglist key=id item=count}
+	<li>[<a href="/search.php?searchtext=[{$id|escape:url}]&amp;do=1&amp;displayclass=full" title="Show images tagged with {$id|escape:html}">{$name|escape:html}</a>] x{$count}</li>
 	{/foreach}
 	<li><a href="/tags/" title="Browse Tags"><i><b>more tags...</b></i></a></li>
 	</ul>
@@ -139,7 +139,7 @@
 <li>You may prefer to browse images on a <a title="Geograph Map Browser" href="/mapbrowse.php">map of the British Isles</a>.<br/><br/></li>
 
 
-<li>Or you can browse a <a title="choose a photograph" href="browse.php">particular grid square</a>.<br/><br/></li>
+<li>Or you can browse a <a title="choose a photograph" href="/browse.php">particular grid square</a>.<br/><br/></li>
 
 {if $enable_forums}
 <li>Registered users can also <a href="/finder/discussions.php">search the forum</a>.</li>
