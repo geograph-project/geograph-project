@@ -7,13 +7,13 @@
 
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
-We have recently introduced a new search engine - <a href="/help/search_new">see this page</a> for more details.<br/>
+We have recently introduced a new search engine - <a href="/help/search_new">see this page</a> for more details. <br/><br/>The details on this page are <b>NO LONGER VALID</b>.<br/>
 </div>
 <br/>
 
 
 
-<p><i>By default the Geograph omage search just searches for the exact text you enter anywhere in the <b>title</b>, matching part words (does not separate into keywords).</i></p>
+<p><i>By default the Geograph image search just searches for the exact text you enter anywhere in the <b>title</b>, matching part words (does not separate into keywords).</i></p>
 
 
 <p>Use any of the following features to refine your search:</p>
