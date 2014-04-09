@@ -116,7 +116,12 @@ if (!$smarty->is_cached($template, $cacheid))
 	} else {
 		$where = '';
 	}
-	
+	if (!empty($_GET['squares'])) {
+                $where .= " AND title REGEXP '[[:<:]][[:alpha:]]{1,2}[[:digit:]]{2,4}[[:>:]]'";
+                $smarty->assign('extra', "&amp;squares=1");
+                $smarty->assign('desc', ", gridsquare articles");
+        }
+
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	if (empty($where) && !isset($_GET['full'])) {
