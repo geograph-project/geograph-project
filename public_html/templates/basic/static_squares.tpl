@@ -60,7 +60,7 @@
 		</tr> 
 		<tr> 
 		  <td><a
-			href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html">Interactive
+			href="http://www.ordnancesurvey.co.uk/resources/maps-and-geographic-resources/the-national-grid.html">Interactive
 			 guide</a> <br/> &amp; One-inch maps</td> 
 		  <td>&nbsp;</td> 
 		  <td>1km squares</td> 
