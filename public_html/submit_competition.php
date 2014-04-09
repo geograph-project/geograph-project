@@ -45,7 +45,7 @@ if (isset($_REQUEST['code']) && trim(strtoupper($_REQUEST['code'])) == 'MN1') {
 			header("Status: 410 Gone");
 			$template = "static_404.tpl";
 		} elseif (!empty($_REQUEST['finalise'])) {
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection(false);
 
 			$updates = array();
 

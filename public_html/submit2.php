@@ -31,7 +31,15 @@ init_session();
 
 $smarty = new GeographPage;
 
-#$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:2px solid red;padding:20px;margin:20px;font-size:1.1em;">There will be a brief interuption of service at 11pm tonight. It is not recommended to have any submissions in progress at that time. When this message disappears it will be safe to continue. Sorry for the inconvenience.</div>');
+if (!empty($CONF['submission_message'])) {
+        $smarty->assign("status_message",$CONF['submission_message']);
+}
+
+if (empty($_GET['multi']) && isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTTP_X_PSS_LOOP'] == 'pagespeed_proxy') {
+	$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:6px solid red;padding:20px;margin:20px;font-size:1.1em;">geograph.org.uk is currently in reduced functionality mode - to deal with traffic levels. <b>The maximum filesize that can be uploaded is now 5Mb.</b> To upload a larger image, please use <a href="http://www.geograph.ie/submit2.php">www.geograph.ie</a> or <a href="http://schools.geograph.org.uk/submit2.php" onclick="location.host = \'schools.geograph.org.uk\'; return false">schools.geograph.org.uk</a> <small>(they upload to the same database)</small></div>');
+	$smarty->assign("small_upload",1);
+}
+
 
 //you must be logged in to submit images
 $USER->mustHavePerm("basic");
@@ -110,7 +118,26 @@ if (isset($_FILES['jpeg_exif']))
 			break;
 	}
 
+} elseif (!empty($_POST['jpeg_url'])) {
+        $uploadmanager=new UploadManager;
 
+	if ($uploadmanager->processURL($_POST['jpeg_url'])) {
+
+		$upload_to_process=true;
+
+		if (!empty($GLOBALS['http_response_header'])) {
+			foreach ($GLOBALS['http_response_header'] as $header) {
+				if (preg_match('/filename="(.*?)"/',$header,$m)) {
+					$smarty->assign('filename',$m[1]);
+				}
+			}
+		}
+
+                $smarty->assign('success', 1);
+        } else {
+                 $smarty->assign('error', $uploadmanager->errormsg);
+                 $uploadmanager->errormsg = '';
+	}
 
 } elseif (isset($_POST['finalise'])) {
 	$status = array();
@@ -194,6 +221,8 @@ if (isset($_FILES['jpeg_exif']))
 	$template='puploader_success.tpl';
 	if (isset($_GET['nofrills']))
 		$smarty->assign('nofrills', 1);
+	if (isset($_REQUEST['display']) && $_REQUEST['display'] == 'tabs')
+		$smarty->assign('display', 'tabs');
 	$smarty->assign('submit2', 1);
 	$smarty->assign('status', $status);
 	$smarty->assign('filenames', $filenames);
@@ -262,9 +291,9 @@ if ($upload_to_process && !empty($uploadmanager) && $uploadmanager->upload_id) {
 			$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3].$m[4]);
 		}
 
-	} elseif (!empty($exif['COMMENT']) && preg_match("/\b([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
-		if (strlen($m[2]) == strlen($m[3]) || (strlen($m[2])+strlen($m[3]))%2==0) {
-			$smarty->assign('grid_reference', $grid_reference = $m[1].$m[2].$m[3]);
+	} elseif (!empty($exif['COMMENT']) && preg_match("/(_|\b)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
+		if (strlen($m[3]) == strlen($m[4]) || (strlen($m[3])+strlen($m[4]))%2==0) {
+			$smarty->assign('grid_reference', $grid_reference = $m[2].$m[3].$m[4]);
 		}
 	}
 
@@ -275,7 +304,6 @@ if ($upload_to_process && !empty($uploadmanager) && $uploadmanager->upload_id) {
 
 if (isset($_REQUEST['inner'])) {
 	$template='submit2_inner.tpl';
-	
 
 	if (!empty($_REQUEST['grid_reference']))
 	{
@@ -293,24 +321,24 @@ if (isset($_REQUEST['inner'])) {
 		}
 	} elseif (isset($_GET['step']) && $_GET['step'] == 0) {
 		$step = 0;
-		
+
 		$uploadmanager=new UploadManager;
 
 		$data = $uploadmanager->getUploadedFiles();
 
-		$smarty->assign_by_ref('data',$data);		
+		$smarty->assign_by_ref('data',$data);
 	} else {
 		$step = 1;
 	}
 
 	$smarty->assign('step', $step);
-	
+
 	if (!empty($_REQUEST['container'])) {
 		$smarty->assign('container', $_REQUEST['container']);
 	}
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'GET' && $step !== 0) {
+if ($_SERVER['REQUEST_METHOD'] == 'GET' && $step !== 0 && empty($CONF['submission_message'])) {
 	customExpiresHeader(900,false,true);
 }
 
@@ -318,6 +346,36 @@ if (!empty($_REQUEST['multi'])) {
 	$smarty->assign('multi', 1);
 }
 	
+if ($template=='puploader_success.tpl' && !$smarty->is_cached($template, $cacheid)) {
+
+        if ($CONF['forums']) {
+                if (empty($db))
+                        $db=GeographDatabaseConnection(false);
+
+                //let's find recent posts in the announcements forum made by administrators
+                $sql="select t.topic_title,p.post_text,t.topic_id,t.topic_time, DATEDIFF(NOW(),t.topic_time) as days
+                        from geobb_topics as t
+                        inner join geobb_posts as p on(t.topic_id=p.topic_id)
+                        inner join user as u on (t.topic_poster=u.user_id)
+                        where (find_in_set('director',u.rights)>0) and
+			topic_time > DATE_SUB(NOW(),INTERVAL 1 MONTH) and
+                        abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
+                        t.forum_id=1
+                        group by t.topic_id desc limit 5";
+                $news=$db->CacheGetAll(3600,$sql);
+                if ($news)
+                {
+                        foreach($news as $idx=>$item)
+                        {
+                                $news[$idx]['post_text']=strip_tags($news[$idx]['post_text']);
+                        }
+                        $smarty->assign_by_ref('news', $news);
+                }
+
+        }
+}
+
+
 $smarty->display($template, $cacheid);
 
 flush();
