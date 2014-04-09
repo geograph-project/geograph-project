@@ -94,6 +94,9 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 	} else {
 		$where = 1;
 	}
+	if (!empty($_GET['u'])) {
+		$where .= " and blog.user_id = ".intval($_GET['u']);
+	}
 	
 	
 $sql="select blog_id,blog.user_id,title,content,blog.updated,blog.created,realname,gridsquare_id
@@ -111,12 +114,11 @@ while (!$recordSet->EOF)
 	$item->title = $recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/blog/entry.php?id=".$recordSet->fields['blog_id'];
+	$item->link = "http://{$_SERVER['HTTP_HOST']}/blog/".$recordSet->fields['blog_id'];
 	
-	$description = $recordSet->fields['content'];
-#	if (strlen($description) > 160)
-#		$description = substr($description,0,157)."...";
-	$item->description = $description;
+	$item->description = GeographLinks(nl2br($recordSet->fields['content']),1);
+	$item->descriptionHtmlSyndicated = true;
+
 	$item->date = strtotime($recordSet->fields['created']);
 	$item->author = $recordSet->fields['realname'];
 	if ($format == 'KML') {

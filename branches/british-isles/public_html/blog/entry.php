@@ -24,9 +24,11 @@
 require_once('geograph/global.inc.php');
 
 if (empty($CONF['forums'])) {
+        header("HTTP/1.0 404 Not Found");
+
 	$smarty = new GeographPage;
         $smarty->display('static_404.tpl');
-        exit;	
+        exit;
 }
 
 if ((!preg_match('/\/blog\/\d+/',$_SERVER["REQUEST_URI"]) && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
@@ -43,13 +45,21 @@ init_session();
 $smarty = new GeographPage;
 
 if (empty($_GET['id']) || preg_match('/[^\d]/',$_GET['id'])) {
+        header("HTTP/1.0 404 Not Found");
 	$smarty->display('static_404.tpl');
 	exit;
 }
 
 $blog_id = intval($_GET['id']);
 
-$db=NewADOConnection($GLOBALS['DSN']);
+if ($blog_id > 10000000) {
+        header("HTTP/1.0 404 Not Found");
+	print "404 - not found";
+	exit;
+}
+
+
+$db=GeographDatabaseConnection(false);
 
 $isadmin=$USER->hasPerm('moderator')?1:0;
 
@@ -75,8 +85,8 @@ limit 1");
 if (count($page)) {
 	
 	if ($page['approved'] == -1 && !$USER->hasPerm('moderator')) {
-		header("HTTP/1.0 403 Forbidden");
-		header("Status: 403 Forbidden");
+		header("HTTP/1.0 410 Gone");
+		header("Status: 410 Gone");
 		$template = "static_404.tpl";
 	}
 
