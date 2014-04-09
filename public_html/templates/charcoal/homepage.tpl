@@ -26,7 +26,7 @@
 
 
 <div id="sponsor">sponsored by</div>
-<span id="sponsorlink"><a href="http://www.ordnancesurvey.co.uk/oswebsite/education/" title="Geograph British Isles sponsored by Ordnance Survey"><img src="http://{$static_host}/templates/charcoal/css/oslogo.gif" width="127" height="35" alt="Ordnance Survey Logo"/></a></span>
+<span id="sponsorlink"><a href="http://www.ordnancesurvey.co.uk/education-research/" title="Geograph British Isles sponsored by Ordnance Survey"><img src="http://{$static_host}/templates/charcoal/css/oslogo.gif" width="127" height="35" alt="Ordnance Survey Logo"/></a></span>
 </div>
 {/box}
 
@@ -102,7 +102,7 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	<li><a href="/activities/" title="Activites">View images in our <b>Activities section</b></a></li>
 	<li><a href="/teachers/" title="Education Area">Geograph for <b>teachers</b></a><br/><br/></li>
 	
-	<li>All our photos are licenced for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a></li>
+	<li>All our photos are licensed for reuse under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a></li>
 </ul>
 
 
@@ -150,7 +150,7 @@ fewer than 4 photos, <a href="/submit.php">add yours now!</a>
 	<h2>Need Help?</h2>
 	<ul>
 
-		<li><a href="/faq.php" title="">View our Frequently Asked Questions</a></li>
+		<li><a href="/faq3.php?l=0" title="">View our Frequently Asked Questions</a></li>
 		<li><a href="/help/credits" title="">Who runs the site</a></li>
 		<li><a href="/contact.php" title="">Contact Us</a></li>
 

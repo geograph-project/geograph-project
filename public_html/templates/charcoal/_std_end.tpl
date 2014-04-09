@@ -4,7 +4,7 @@
 {box colour="333"}
 
    <div id="footer_right" style="text-align:right">
-   Project sponsored by <a href="http://www.ordnancesurvey.co.uk/oswebsite/education/" title="Geograph Britain and Ireland sponsored by Ordnance Survey"><img src="http://{$static_host}/templates/charcoal/css/oslogo-small.gif" width="54" height="15" alt="Ordnance Survey Logo"/></a><br/>
+   Project sponsored by <a href="http://www.ordnancesurvey.co.uk/education-research/" title="Geograph Britain and Ireland sponsored by Ordnance Survey"><img src="http://{$static_host}/templates/charcoal/css/oslogo-small.gif" width="54" height="15" alt="Ordnance Survey Logo"/></a><br/>
    <small>Hosting supported by 
      {external title="click to visit the CatN website - home of vCluster hosting" href="http://catn.com/" text="CatN"}<br/></small>
 	</div>
