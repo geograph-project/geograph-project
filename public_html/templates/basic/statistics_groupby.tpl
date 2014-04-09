@@ -64,7 +64,7 @@
 		</tr>
 	{/if}
 	</table>
-
+	<input type="checkbox" name="less" {if $less}checked="checked"{/if} id="less"/> <label for="less">Ignore recent images</label> <small>(doesn't include images submitted in last 48 hours or so - however in general aggregate statistics will be more accurate)</small><br/>
 	<input type="submit" value="Update" style="font-size:1.1em"/></p></form>
 {/if}
 

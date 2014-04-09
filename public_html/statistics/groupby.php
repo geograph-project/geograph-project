@@ -152,8 +152,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (count($filters)) {
 			$sphinx->addFilters($filters);
 		}
-		
-		$res = $sphinx->groupByQuery($pg,'_images');
+		$index = empty($_GET['less'])?'_images':"{$CONF['sphinx_prefix']}gi_stemmed";		
+		$res = $sphinx->groupByQuery($pg,$index);
 		
 		if ($res && $res['matches']) {
 			if ($groupby == 'auser_id') {
@@ -188,13 +188,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		#print_r($res);
 		#print_r($client);
 		#exit;
-		$smarty->assign("headnote",'This is still an experimental page, please treat the results with care.');
-	
+		$smarty->assign("headnote",'This is still an experimental page, please treat the results with EXTREME care. <b>Results shown are estimates</b>. Tick "Ignore recent images" to generally increase the accuracy, but then excludes images submitted in the last 48 hours or so.');	
+
 		$smarty->assign('footnote',$sphinx->query_info);
 	}
 	
 	$smarty->assign_by_ref('table', $table);
 	
+	if (!empty($_GET['less']))
+		$smarty->assign("less",1);
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
 	$smarty->assign_by_ref('references',$CONF['references_all']);	
