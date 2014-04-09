@@ -191,7 +191,7 @@ AttachEvent(window,'load',readHash,false);
 
 	<h2>Submit Image <sup style="color:gray">v2:Tabs - Gamma</sup></h2>
 
-{$status_message}
+{dynamic}{$status_message}{/dynamic}
 
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
@@ -351,7 +351,7 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="view_direction"/>
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
-	<textarea name="comment" style="display:none"/></textarea>
+	<textarea name="comment" style="display:none"></textarea>
 	<input type="hidden" name="tags"/>
 	<input type="hidden" name="imageclass"/>
 	<input type="hidden" name="imageclassother"/>
@@ -360,9 +360,6 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Preview submission in a new window" onclick="return previewImage()" id="previewButton"/>
-
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
 	</form>
 
 	<div style="position:fixed;left:1px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:138px" id="hidePreview">

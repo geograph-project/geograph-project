@@ -193,7 +193,7 @@ AttachEvent(window,'load',readHash,false);
 
 	<h2>Submit Image <sup style="color:gray">v2 - Gamma</sup></h2>
 
-{$status_message}
+{dynamic}{$status_message}{/dynamic}
 
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
@@ -228,7 +228,7 @@ AttachEvent(window,'load',readHash,false);
 	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1,null,event.shiftKey)"><span id="se1">-</span> Step 1 - Upload Photo</a>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1#sort=Uploaded%A0%A0%u2193" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
 	</div>
 <!-- # -->
 	<a id="sh9" href="#" class="sh sn" onclick="return clicker(9,null,event.shiftKey)" style="font-size:0.9em"><span id="se9">+</span> Find Square on Map (optional tool)</a>
@@ -351,7 +351,7 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="view_direction"/>
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
-	<textarea name="comment" style="display:none"/></textarea>
+	<textarea name="comment" style="display:none"></textarea>
 	<input type="hidden" name="tags"/>
 	<input type="hidden" name="imageclass"/>
 	<input type="hidden" name="imageclassother"/>
@@ -360,9 +360,6 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Preview submission in a new window" onclick="return previewImage()" id="previewButton"/>
-
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
 	</form>
 
 	<div style="position:fixed;left:1px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:138px" id="hidePreview">
