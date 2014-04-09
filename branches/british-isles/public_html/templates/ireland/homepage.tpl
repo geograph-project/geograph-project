@@ -69,6 +69,9 @@ we hope you'll enjoy being a part of this great project
 	may show some pages with elements a little out of
 	kilter, but we still welcome any <a href="/contact.php">feedback</a>.</p>
 </div>
+<br/>
+&middot; Geograph on: {external href="http://twitter.com/geograph_bi" text="Twitter"}, {external href="http://www.facebook.com/geograph.org.uk" text="Facebook"}<br/>
+
 
 </div>
 
