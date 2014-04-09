@@ -182,8 +182,18 @@ function get_snippet($snippet,$gridimage_id = 0) {
 		}
 	}
 
-	$html.='<br style="clear:both"/></div>';	
-		
+	$html.='<br style="clear:both"/>';
+
+	if (preg_match('/National Cycle.* (\d+)/i',$row['title'],$m)) {
+		$sphinxq = "national cycle|cycleway \"route {$m[1]}\"";
+                $sphinx = new sphinxwrapper($sphinxq);
+		$count = $sphinx->countMatches('_images');
+		if ($count) {
+			$html .="<small><i>There are <b>$count images</b> matching (<a href=\"/search.php?text=".urlencode($sphinxq)."\">".htmlentities($sphinxq)."</a>)</i></small>";
+		}
+	}
+	$html.='</div>';
+
 	return $html;
 }
 
@@ -340,6 +350,11 @@ function smarty_function_articletext($input) {
 		$thispage = empty($_GET['page'])?1:intval($_GET['page']);
 		$thispage = min($numberOfPages,$thispage);
 		$thispage = max(1,$thispage);
+		$offset = ($thispage-1)*2;
+		if (stripos($pages[$offset],'[singlePageContents]')!==FALSE) {
+			$pages[$offset] = str_ireplace('[singlePageContents]','',$pages[$offset]);
+			$singlePageContents = $thispage;
+		}
 	}
 
 	if (preg_match_all('/<h(\d)>([^\n]+?)<\/h(\d)>/',$output,$matches)) {
@@ -352,7 +367,8 @@ function smarty_function_articletext($input) {
 					$url = ($offset==$thispage)?'':"/article/{$GLOBALS['page']['url']}/$offset";
 					foreach ($matches[1] as $i => $level) {
 						$hash = getUniqueHash($matches[2][$i]);
-						$list[] = "<li class=\"h$level\"$style><a href=\"$url#$hash\">{$matches[2][$i]}</a></li>";
+						if (empty($singlePageContents) || $singlePageContents == $offset)
+							$list[] = "<li class=\"h$level\"$style><a href=\"$url#$hash\">{$matches[2][$i]}</a></li>";
 						$pattern[]='/<h('.$level.')>('.preg_quote($matches[2][$i], '/').')<\/h('.$level.')>/';
 						$replacement[]='<h$1><a name="'.$hash.'"></a><a name="p'.$i.'"></a>$2</h$3>';
 						$style = '';
@@ -642,23 +658,30 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (!empty($page['extract'])) {
 			$smarty->assign('meta_description', "User contributed article about, ".$page['extract']);
 		}
-		
+		if ($page['url'] != $_GET['url']) {
+			$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://{$CONF['CONTENT_HOST']}/article/{$page['url']}".(empty($_GET['page'])?'':"/".intval($_GET['page']))."\"/>");
+		}
+
+
 		if (!empty($page['gridsquare_id'])) {
 			$square=new GridSquare;
 			$square->loadFromId($page['gridsquare_id']);
 			$smarty->assign('grid_reference', $square->grid_reference);
-			
+
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
-		
+
 			list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
 		}
 		if (preg_match('/\bgeograph\b/i',$page['category_name']) || $page['ctype'] == 'document') {
+			if (empty($db))
+			        $db = GeographDatabaseConnection(true);
+
 			$db->Execute("set @last=0");
-			$users = $db->getAll("select realname,modifier,if(approved = @last,1,least(@last := approved,0)) as same 
-			from article_revisions 
+			$users = $db->getAll("select realname,modifier,if(approved = @last,1,least(@last := approved,0)) as same
+			from article_revisions
 			left join user on (article_revisions.modifier = user.user_id)
 			where article_id = {$page['article_id']} order by article_revision_id");
 			$arr = array();
@@ -672,13 +695,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 
 		if (!empty($page['parent_url'])) {
+			if (empty($db))
+			        $db = GeographDatabaseConnection(true);
+
 			$parent = $db->getRow("SELECT url AS parent_url,title AS parent_title FROM article WHERE approved > 0 AND url LIKE ".$db->Quote("%".preg_replace("/^.*\//",'',$page['parent_url'])));
 			if (!empty($parent) && $parent['parent_url'] != $page['url']) {
 				$smarty->assign($parent);
 			}
 		}
-
-	} 
+	}
 } else {
 	$smarty->assign('edit_prompt', $page['edit_prompt']);
 	$smarty->assign('approved', $page['approved']);
