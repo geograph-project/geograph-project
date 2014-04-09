@@ -22,7 +22,8 @@
  */
 
 require_once('geograph/global.inc.php');
-init_session();
+
+init_session_or_cache(3600, 360); //cache publically, and privately
 
 
 if (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type'])) {
@@ -58,8 +59,9 @@ $maximum = (isset($_GET['maximum']) && is_numeric($_GET['maximum']))?intval($_GE
 
 $filtered = ($when || $ri || $myriad);
 
+$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min($filtered?250:1000,intval($_GET['limit'])):250;
 
-$limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min($filtered?250:1000,intval($_GET['limit'])):150;
+$quarter = (isset($_GET['quarter']) && preg_match('/^\d{4}\/\d$/',$_GET['quarter']))?$_GET['quarter']:'';
 
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
@@ -75,7 +77,7 @@ if (isset($_GET['inner'])) {
 } else {
 	$template='statistics_leaderboard.tpl';
 }
-$cacheid="statistics|".$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad;
+$cacheid="statistics|".$minimum.'-'.$maximum.$type.$date.$when.$limit.'.'.$ri.'.'.$u.$myriad.'.'.$quarter;
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*3; //3hour cache
@@ -104,7 +106,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Squares<br/>Photographed";
 		$desc = "different squares photographed";
 
-	} elseif ($type == 'geosquares' || $type == 'personal') {
+	} elseif ($type == 'geosquares') {
 		if ($filtered) {
 			$sql_column = "count(distinct grid_reference)";
 			$sql_where = "i.moderation_status='geograph'";
@@ -113,7 +115,28 @@ if (!$smarty->is_cached($template, $cacheid))
 			$sql_column = "geosquares";
 		}
 		$heading = "Squares<br/>Geographed";
-		$desc = "different squares geographed (aka Personal Points)";
+		$desc = "different squares geographed".(empty($when)?" (aka Personal Points)":'');
+
+        } elseif ($type == 'personal') {
+                if ($filtered) {
+                        $sql_where = "i.ftf>0 and i.moderation_status='geograph'";
+                } else {
+                        $sql_table = "user_stat i";
+                        $sql_column = "geosquares"; //if NOT filtered, personal happens to be the same as geosquares.
+                }
+                $heading = "Personal<br/>Points";
+                $desc = "personal points awarded".(empty($when)?" (aka different squares geographed)":'');
+
+        } elseif ($type == 'revisit') {
+                if ($filtered) {
+                        $sql_column = "count(distinct grid_reference)-sum(i.ftf>0)";
+                        $sql_where = "i.moderation_status='geograph'";
+                } else {
+                        $sql_table = "user_stat i";
+                        $sql_column = "0"; //will always be zero!
+                }
+                $heading = "Revisited<br/>Squares";
+                $desc = "squares geographed that been to before";
 
 	} elseif ($type == 'tpoints') {
 		if ($filtered) {
@@ -389,6 +412,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			$title = ($date == 'taken')?'taken':'submitted'; 
 			$desc .= ", <b>for images $title during ".getFormattedDate($when)."</b>";
 		}
+	} elseif ($quarter) {
+		list($year,$quart) = explode('/',$quarter);
+		$sql_table .= " INNER JOIN user USING (user_id)";
+		$sql_where .= sprintf(" and signup_date between '%04d-%02d-01' and DATE_SUB('%04d-%02d-01',INTERVAL 1 DAY)",
+				$year,($quart*3)-2,$year+(($quart == 4)?1:0),($quart < 4)?($quart*3+1):1);
+		$desc .= ", <b>for users signed up during quarter $quart of $year</b>";
 	}
 	if ($myriad) {
 		$sql_where .= " and grid_reference LIKE '{$myriad}____'";
@@ -414,12 +443,12 @@ if (!$smarty->is_cached($template, $cacheid))
 		$sql_where .= " and $rank_column >= $start_rank"; 
 		
 		
-	} elseif ($sql_table != 'user_stat i') {
+	} elseif (strpos($sql_table,'user_stat i') !== 0) {
 		$sql_column = "max(gridimage_id) as last,$sql_column";
 	}
 	
 	$limit2 = intval($limit * 1.6);
-	$topusers=$db->GetAll("
+	$topusers=$db->GetAll($sql = "
 	select t2.*,u.realname 
 	from (
 		select i.user_id, $sql_column as imgcount
@@ -430,13 +459,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		order by imgcount desc $sql_orderby,last asc limit $limit2
 	) t2 inner join user u using (user_id) "); 
 	
-	
+	if (isset($_GET['debug']))
+		print $sql;
 	
 	
 	$lastimgcount = 0;
 	$toriserank = 0;
 	$points = 0;
 	$images = 0;
+	$started_truncate = 0;
 	foreach($topusers as $idx=>$entry)
 	{
 		$i=$idx+$start_rank;
@@ -444,7 +475,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		if ($lastimgcount == $entry['imgcount']) {
 			if ($u && $u == $entry['user_id']) {
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal((!empty($user_rank))?$user_rank:$i);
-			} elseif ($i > $limit+$start_rank) {
+			} elseif ($started_truncate && ($i > $limit+$start_rank)) {
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = '&nbsp;&nbsp;&nbsp;&quot;';
@@ -455,6 +486,7 @@ if (!$smarty->is_cached($template, $cacheid))
                                 $topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
                         } elseif ($i > $limit+$start_rank) {
 				unset($topusers[$idx]);
+				$started_truncate = 1;
 			} else {
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
 				$points += $entry['points'];
@@ -467,34 +499,31 @@ if (!$smarty->is_cached($template, $cacheid))
 
 		}
 	}
-	
+
 	$smarty->assign_by_ref('topusers', $topusers);
 	$smarty->assign('points', $points);
 	$smarty->assign('images', $images);
 
-
 	$smarty->assign('types', array('tpoints','first','second','allpoints','personal','images','depth'));
-	
-	
+
 	$extra = array();
 	$extralink = '';
-	
-	foreach (array('when','date','ri','myriad') as $key) {
+
+	foreach (array('when','date','ri','myriad','quarter') as $key) {
 		if (isset($_GET[$key])) {
 			$extra[$key] = $_GET[$key];
 			$extralink .= "&amp;$key={$_GET[$key]}";
 		}
 	}
-	$smarty->assign_by_ref('extra',$extra);	
-	$smarty->assign_by_ref('extralink',$extralink);	
-	$smarty->assign_by_ref('limit',$limit);	
-	$smarty->assign_by_ref('u',$u);	
-	
+	$smarty->assign_by_ref('extra',$extra);
+	$smarty->assign_by_ref('extralink',$extralink);
+	$smarty->assign_by_ref('limit',$limit);
+	$smarty->assign('filtered',$filtered);
+	$smarty->assign_by_ref('u',$u);
+
 	//lets find some recent photos
 	new RecentImageList($smarty);
 }
 
 $smarty->display($template, $cacheid);
 
-	
-?>
