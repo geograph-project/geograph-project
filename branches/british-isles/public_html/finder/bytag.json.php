@@ -43,25 +43,27 @@ $sql['columns'] = "tag_id,tag.tag,if (tag.prefix='term' or tag.prefix='cluster' 
 
 $sql['wheres'] = array();
 
-if (!empty($_GET['q'])) {
+if (!empty($_GET['q']) || !empty($_GET['recent'])) {
 	$q=trim($_GET['q']);
 
 	$sphinx = new sphinxwrapper($q);
 	$sphinx->pageSize = $pgsize = 60;
 
-	
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	if (empty($pg) || $pg < 1) {$pg = 1;}
-	
 
-	
-	$sphinx->processQuery();
+###	$sphinx->processQuery();
 
 
-	$sphinx->sort = "@weight DESC, @id ASC"; //this is the WITHIN GROUP ordering 
+	$sphinx->sort = "@weight DESC, @id ASC"; //this is the WITHIN GROUP ordering
 
 	$client = $sphinx->_getClient();
 	$client->SetArrayResult(true);
+
+        if (!empty($_GET['recent'])) {
+                $max = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage_search");
+                $client->SetIDRange($max-1000,$max+10);
+        }
 
 	$sphinx->SetGroupBy('all_tag_id', SPH_GROUPBY_ATTR, '@count DESC');
 	$res = $sphinx->groupByQuery($pg,'tagsoup');
@@ -72,7 +74,7 @@ if (!empty($_GET['q'])) {
 			$tagids[] = $row['attrs']['@groupby'];
 			$count[$row['attrs']['@groupby']] = $row['attrs']['@count'];
 		}
-	
+
 		if (!empty($tagids)) {
 			$idstr = join(",",$tagids);
 			$sql['wheres'][] = "tag_id IN($idstr)";

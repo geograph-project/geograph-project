@@ -68,7 +68,9 @@ if (!empty($_GET['q'])) {
 #				$sphinx->qoutput = $sphinx->q;
 #				$sphinx->q = "{$sphinx->q} | {$sphinx->q}*"; //rank full matches first
 #			}
-		
+
+			$sphinx->q = str_replace('grid_reference','gr',$sphinx->q);
+
 			if ($fuzzy) {
 				$sphinx->_getClient()->SetIndexWeights(array('gaz'=>10,'gaz_meta'=>1));
 				$ids = $sphinx->returnIds($pg,'gaz,gaz_meta');	

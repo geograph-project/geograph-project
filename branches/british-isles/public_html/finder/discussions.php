@@ -39,48 +39,58 @@ if (!empty($_GET['q'])) {
 	$sphinx = new sphinxwrapper($q);
 
 	$grouped = !empty($_GET['t']);
+	if ($titleonly = !empty($_GET['titleonly'])) {
+		$grouped = 1;
+	}
 
-	//gets a cleaned up verion of the query (suitable for filename etc) 
-	$cacheid = $sphinx->q.'.'.$grouped;
+	$forum = (!empty($_GET['forum']))?intval($_GET['forum']):0;
+	$expand = (!empty($_GET['expand']))?intval($_GET['expand']):0;
+
+	//gets a cleaned up verion of the query (suitable for filename etc)
+	$cacheid = implode('.',array($sphinx->q,$grouped,$titleonly,$forum,$expand));
+
 
 	$sphinx->pageSize = $pgsize = 15;
 
-	
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	if (empty($pg) || $pg < 1) {$pg = 1;}
-	
+
 	$cacheid .=".".$pg;
-	
+
 	if (!$smarty->is_cached($template, $cacheid)) {
-		
+		$db = GeographDatabaseConnection(false);
+
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
 		if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{2,5})[ \.]?(\d{2,5})\b/",$sphinx->q,$m)) {
 			$smarty->assign('gridref',$m[1].$m[2].$m[3]);
 			$sphinx->q = " ".$sphinx->q;
 		}
-		
-		if ($offset < (1000-$pgsize) ) { 
+
+		if ($offset < (1000-$pgsize) ) {
 			$sphinx->processQuery();
-			
+
+			if ($titleonly && strpos($sphinx->q,'@') !== 0) {
+				$sphinx->q = "@title ".$sphinx->q;
+			}
+			if (!empty($forum))
+				$sphinx->q .= " @forum $forum";
+
 			if ($grouped) {
 				require_once ( "3rdparty/sphinxapi.php" ); //toload the sphinx constants
-			
+
 				//sorts by relevence within the groups (sphinxclient default) - timesegment sorting doesn't work
 				//...then the groups are orded in date descending
-				
+
 				$sphinx->setGroupBy('topic_id',SPH_GROUPBY_ATTR,"@id DESC");
-				
-				$ids = $sphinx->returnIds($pg,'_posts');	
+
+				$ids = $sphinx->returnIds($pg,'_posts');
 			} else {
 				//sort in time segments then relevence
-				$ids = $sphinx->returnIds($pg,'_posts','post_time');	
+				$ids = $sphinx->returnIds($pg,'_posts','post_time');
 			}
 
-			
 			if (!empty($ids) && count($ids)) {
 				$where = "post_id IN(".join(",",$ids).")";
-
-				$db = GeographDatabaseConnection(false);
 
 				$limit = 25;
 
@@ -89,26 +99,30 @@ if (!empty($_GET['q'])) {
 				$rows = $db->getAssoc($sql = "
 				select post_id,post_text,poster_name,poster_id,
 					geobb_posts.topic_id,geobb_topics.forum_id,topic_title,topic_poster,topic_poster_name
-				from geobb_posts 
+				from geobb_posts
 					inner join geobb_topics using (topic_id)
 				where $where
 				limit $limit");
-				
+
 				$docs = array();
 				foreach ($ids as $c => $id) {
 					$row = $rows[$id];
 					$docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['post_text']));
 				}
-				$reply = $sphinx->BuildExcerpts($docs, 'post_stemmed', $sphinx->q);
-				
+				if ($expand) {
+					$reply = $sphinx->BuildExcerpts($docs, 'post_stemmed', $sphinx->q,array('limit' => 512,'around' => 12, 'query_mode' => 1));
+				} else {
+					$reply = $sphinx->BuildExcerpts($docs, 'post_stemmed', $sphinx->q);
+				}
+
 				$times = array(
 				'hour' => time() - 3600,
 				'day' => time() - 3600*24,
 				'week' => time() - 3600*24*7,
 				'month' => time() - 3600*24*30,
 				'three months' => time() - 3600*24*90);
-				
-				
+
+
 				$results = array(); $i =0;
 				$lookup = array();
 				foreach ($ids as $c => $id) {
@@ -123,7 +137,7 @@ if (!empty($_GET['q'])) {
 						}
 					}
 					$row['excerpt'] = $reply[$c];
-					
+
 					if (isset($lookup[$row['topic_id']])) {
 						$results[$lookup[$row['topic_id']]]['results'][] = $row;
 						$results[$lookup[$row['topic_id']]]['result_count']++;
@@ -138,22 +152,28 @@ if (!empty($_GET['q'])) {
 				$smarty->assign("query_info",$sphinx->query_info);
 
 				if ($sphinx->numberOfPages > 1) {
-					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).($grouped?"&amp;t=on":'')."&amp;page=",'','',$sphinx->resultCount <= $sphinx->maxResults) );
+					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).($titleonly?"&amp;titleonly=on":'').($grouped?"&amp;t=on":'')."&amp;page=",'','',$sphinx->resultCount <= $sphinx->maxResults) );
 					$smarty->assign("offset",$offset);
 				}
 				$ADODB_FETCH_MODE = $prev_fetch_mode;
 			}
 		} else {
 			$smarty->assign("query_info","Search will only return 1000 results - please refine your search");
-			$smarty->assign('pagesString', pagesString($pg,1,$_SERVER['PHP_SELF']."?q=".urlencode($q).($grouped?"&amp;t=on":'')."&amp;page=") );
+			$smarty->assign('pagesString', pagesString($pg,1,$_SERVER['PHP_SELF']."?q=".urlencode($q).($titleonly?"&amp;titleonly=on":'').($grouped?"&amp;t=on":'')."&amp;page=") );
 
 		}
+		$forums = $db->getAssoc("SELECT forum_id,forum_name FROM geobb_forums");
+		$forums = array(0=>'Any/All Discussion Forums')+$forums;
+		$smarty->assign_by_ref("forums",$forums);
+		$smarty->assign("forum",$forum);
 	}
-	
+
 	$smarty->assign("q",$sphinx->qclean);
 	$smarty->assign("grouped",$grouped);
+	$smarty->assign("titleonly",$titleonly);
 }
 
 $smarty->display($template,$cacheid);
 
-?>
+
+

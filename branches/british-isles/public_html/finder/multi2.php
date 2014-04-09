@@ -66,6 +66,7 @@ if (!empty($_GET['q'])) {
 		$u2 = urlencode($sphinx->qclean);
 
 		$others['search'] = array('title'=>'Full Image Search','url'=>"/search.php?q=$u2");
+		$others['tags'] = array('title'=>'Image Tags','url'=>"/finder/bytag.php?q=$u2");
 		$others['content'] = array('title'=>'Collections','url'=>"/content/?q=$u2");
 		$others['places'] = array('title'=>'Placenames','url'=>"/finder/places.php?q=$u2");
 		$others['users'] = array('title'=>'Contributors','url'=>"/finder/contributors.php?q=$u2");
@@ -77,6 +78,8 @@ if (!empty($_GET['q'])) {
 
 		$others['google'] = array('title'=>'Google Search','url'=>"http://www.google.co.uk/search?q=$u2&sitesearch=".$_SERVER['HTTP_HOST']);
 		$others['gimages'] = array('title'=>'Google Images','url'=>"http://images.google.com/images?q=$u2+site:".$_SERVER['HTTP_HOST']);
+
+		$others['browser'] = array('title'=>'Geograph Browser','url'=>"http://www.geograph.org.uk/browser/#!/q=$u2");
 
 		$old = $sphinx->q;
 		$try_words = true;
@@ -227,6 +230,7 @@ if (!empty($_GET['q'])) {
 			##########################################################
 			//alternate: $places = $gaz->findPlacename($placename);
 			$ids = $sphinx->returnIds($pg,'gaz');
+			unset($others['places']); //now we checked this no point showing it! (we know it wont work!)
 			if (!empty($ids) && count($ids)) {
 			
 				$where = "id IN(".join(",",$ids).")";
@@ -252,12 +256,12 @@ if (!empty($_GET['q'])) {
 				$result['count'] = $sphinx->resultCount." places";
 				$result['link'] = "/finder/places.php?q=$u2";
 				$results[] = $result;
-			
-				unset($others['places']);
-				
+
 			} elseif (strpos($sphinx->q,' ') !== FALSE) {
 				$sphinx->q = "@name (^".implode('$|^',preg_split('/ +/',$sphinx->q)).'$)';
+				$sphinx->pageSize *= 3;
 				$ids = $sphinx->returnIds($pg,'gaz_stemmed'); //used stemmed because it has enable_star
+				$sphinx->pageSize /= 3;
 				if (!empty($ids) && count($ids)) {
 				
 					$where = "id IN(".join(",",$ids).")";
@@ -298,6 +302,35 @@ if (!empty($_GET['q'])) {
 				//todo - see multi.php
 			}
 			
+			##########################################################
+
+			//todo - change the query to promote short matches (eg | "^bridge$") - field end doesnt work right now :(
+
+			$ids = $sphinx->returnIds($pg,'tags');
+			if (!empty($ids) && count($ids)) {
+			
+				$where = "tag_id IN(".join(",",$ids).")";
+																		
+				$sql = "SELECT if (tag.prefix != '' and not (tag.prefix='term' or tag.prefix='category' or tag.prefix='cluster' or tag.prefix='wiki'),concat(tag.prefix,':',tag.tag),tag.tag) as title, count(*) as images
+				FROM tag_public tag
+				WHERE $where
+				GROUP BY tag_id
+				LIMIT 60";
+
+				$result = array();
+				$result['title'] = "Tag matches";
+				$result['results'] = array();
+
+				$list = $db->getAll($sql);
+				foreach ($list as $row) {
+					$row['link'] = '/tags/?tag='.urlencode($row['title']);
+					$result['results'][] = $row;
+				}
+				$result['count'] = $sphinx->resultCount." tags";
+				$result['link'] = "/finder/tags.php?q=$u2";
+				$results[] = $result;
+			}
+
 			##########################################################
 
 			$ids = $sphinx->returnIds($pg,'user');
@@ -360,8 +393,10 @@ if (!empty($_GET['q'])) {
 				$result['count'] = $sphinx->resultCount." collections";
 				$result['link'] = "/content/?q=$u2&scope=all&in=title";
 				$results[] = $result;
-				
-				unset($others['content']);
+
+				//actully we only done a content TITLE search,  whole document matches could be different
+				$others['content'] = array('title'=>'Collections (non title)','url'=>"/content/?q=$u2&scope=all&in=nottitle");
+
 			} else {
 				$sphinx->q = $old." @source -themed -user -category";
 				
