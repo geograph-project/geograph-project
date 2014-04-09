@@ -4,7 +4,7 @@
 
 
 {if $overview}
-  <div style="float:right; width:{$overview_width+30}px; position:relative">
+  <div style="float:right; width:{$overview_width+30}px; position:relative;z-index:100">
   {include file="_overview.tpl"}
   </div>
 {/if}
