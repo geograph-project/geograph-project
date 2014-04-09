@@ -49,6 +49,10 @@
 		{if $image->comment}
 		  <div class="caption">{$image->comment|escape:'html'|nl2br|geographlinks}</div>
   		{/if}
+
+		<br/><br/>
+                <div style="font-size:0.8em">&copy; Copyright <b><a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></b> and licensed for reuse under <a href="http://creativecommons.org/licenses/by-sa/2.0/">a Creative Commons licence</a> </div>
+
 	 </div>
 	{foreachelse}
 	 	{if $engine->resultCount}
@@ -70,8 +74,12 @@
 <script>//<![CDATA[
 var resultcount = {$engine->numberofimages};
 var hasnextpage = {if $engine->numberOfPages > $engine->currentPage}1{else}0{/if};
-setTimeout("document.images['image1'].src = document.images['image1'].getAttribute('data-src')",300);
-setTimeout("document.images['image2'].src = document.images['image2'].getAttribute('data-src')",600);
+{literal}
+AttachEvent(window,'load',function () {
+        document.images['image1'].src = document.images['image1'].getAttribute('data-src');
+        setTimeout("document.images['image2'].src = document.images['image2'].getAttribute('data-src')",600);
+},false);
+{/literal}
 {dynamic}
 var delayinsec = {$user->slideshow_delay|default:5};
 {/dynamic}
