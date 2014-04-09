@@ -20,31 +20,34 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
     <li>View<ul>
      <li><a title="Find and locate images" href="/search.php">Search</a></li>
      <li><a title="View map of all submissions" href="/mapbrowse.php">Maps</a></li>
+     <li><a title="Interactive Browse/Search/Map interface" href="/browser/#!start">Browser</a></li>
      <li><a title="Explore images by theme" href="/explore/">Explore</a></li>
+     <li><a title="Curated selection of images" href="/gallery.php">Gallery</a></li>
+    </ul></li>
+    <li><ul>
      <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li>
     </ul></li>
     <li>Interact<ul>
      <li><a title="Geographical games to play" href="/games/">Games</a></li>
-     <li><a title="Activities on the site" href="/activities/">Activities</a></li>
      <li><a title="Discussion Forum" href="/discuss/">Discussions</a></li>
      <li><a title="Geograph Blog" href="/blog/">Blog</a></li>
-     <li><a title="Local Events and Meetups" href="/events/">Events</a></li>
+     <li><a title="Upcoming Social Events" href="/events/">Events</a></li>
     </ul></li>
     <li>Contributors<ul>
      <li><a title="Submit your photos" href="/submit.php">Submit</a></li>
-     <li><a title="Your most recent submissions" href="/submissions.php">Submissions</a></li>
+     <li><a title="Your most recent submissions" href="/submissions.php" class="nowrap">Recent Uploads</a></li>
      <li><a title="Interesting facts and figures" href="/numbers.php">Statistics</a></li>
      <li><a title="Contributor leaderboards" href="/statistics/moversboard.php">Leaderboards</a></li>
     </ul></li>
     <li>General<ul>
-     <li><a title="Frequently Asked Questions" href="/faq.php">FAQ</a></li>
+     <li><a title="Frequently Asked Questions" href="/faq3.php?l=0">FAQ</a></li>
      <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Information</a></li>
      <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
     </ul></li>
 </ul>
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
-<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
+<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/education-research/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey" style="padding:4px;"/></a></div>
   </div>
 </div>
 <div id="search_block">
@@ -52,7 +55,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
     <div id="searchform">
     <form method="get" action="/finder/discussions.php">
 	<div id="searchfield">
-	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10" onfocus="search_focus(this)" onblur="search_blur(this)" style="background-image: url('/templates/basic/img/searchbox-discuss.gif');"/>
+	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10" onfocus="search_focus(this)" onblur="search_blur(this)" style="background-image: url('http://{$static_host}/templates/basic/img/searchbox-discuss.gif');"/>
 	<input id="searchbutton" type="submit" value="Find"/></div>
 	</form>
     </div>
