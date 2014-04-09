@@ -49,7 +49,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->display('function_disabled.tpl');
 	exit;
 
-	$db = NewADOConnection($GLOBALS['DSN']);
+	$db = GeographDatabaseConnection(false);
 	$table = array();
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table = $db->getAll("
