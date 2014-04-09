@@ -22,7 +22,13 @@
  */
 
 require_once('geograph/global.inc.php');
-init_session();
+
+init_session_or_cache(3600, 360); //cache publically, and privately
+
+if (isset($_GET['debug'])) {
+	print_r($USER);
+	print_r($_SESSION);
+}
 
 
 if (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type'])) {
@@ -30,7 +36,11 @@ if (isset($_GET['type']) && preg_match('/^\w+$/' , $_GET['type'])) {
 } else {
         $type = $USER->getPreference('statistics.moversboard.type','tpoints',true);
 }
-
+if (isset($_GET['debug'])) {
+	print "TYPE=$type\n";
+	print date('r');
+	exit;
+}
 
 $smarty = new GeographPage;
 
@@ -93,6 +103,10 @@ if (!$smarty->is_cached($template, $cacheid))
                ## $sql_table = " gridimage_search i ";
 		$heading = "TPoints";
 		$desc = "TPoints";
+	} elseif ($type == 'tnf') {
+		$sql_column = "sum(i.points='tpoint' and ftf!=1)";
+                $heading = "TPoints-Firsts";
+                $desc = "number of TPoints minus number of Firsts";
 	} elseif ($type == 'geographs') {
 		$sql_column = "sum(i.moderation_status='geograph')";
 		$heading = "New<br/>Geographs";
