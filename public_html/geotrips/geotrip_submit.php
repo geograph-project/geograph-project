@@ -327,7 +327,7 @@ and there need to be at least three images matching these criteria in your searc
         $query=$query.$search.",";
         $query=$query.$img.",";
         $query=$query."'".mysql_real_escape_string($_POST['descr'])."',";
-        $query=$query."NOW(),";
+        $query=$query."UNIX_TIMESTAMP(NOW()),";
         $query=$query.$contfrom.',null)';
         
         $db->Execute($query);
