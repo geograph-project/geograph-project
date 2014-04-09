@@ -1,7 +1,15 @@
 {include file="_search_begin.tpl"}
 
 {if $engine->resultCount}
-
+<style>{literal}
+#map {
+	background-color:white;
+	color:black;
+}
+#map a {
+	color:inherit;
+}
+{/literal}</style>
 	<div id="map" style="width:800px; height:600px; position:relative;"></div>
 	{if $engine->results}
         <link rel="stylesheet" href="http://{$static_host}/ol/theme/default/style.css" type="text/css">
