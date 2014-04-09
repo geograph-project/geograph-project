@@ -27,10 +27,7 @@ if (false && !empty($_GET['user_id']) && $_GET['t'] == hash_hmac('md5',intval($_
     <tr>
         <td class="required">Help Topic:</td>
         <td>
-            <select id="topicId" name="topicId" onchange="javascript:
-                    $('#dynamic-form').load(
-                        'ajax.php/form/help-topic/' + this.value);
-                    ">
+            <select id="topicId" name="topicId" onchange=" showTopicHelp(this.options[this.selectedIndex].value); $('#dynamic-form').load('ajax.php/form/help-topic/' + this.value);">
                 <option value="" selected="selected">&mdash; Select a Help Topic &mdash;</option>
                 <?php
                 if($topics=Topic::getPublicHelpTopics()) {
@@ -44,6 +41,49 @@ if (false && !empty($_GET['user_id']) && $_GET['t'] == hash_hmac('md5',intval($_
                 } ?>
             </select>
             <font class="error">*&nbsp;<?php echo $errors['topicId']; ?></font>
+
+                <div id="topic11" style="display:none;padding:10px;color:black;border:2px solid red;background-color:yellow;">
+                        Geograph is an online collaborative project collecting photos of every corner of the British Isles. <br/><br/>
+
+                        We don't hold contact details for the locations photographed, so it's unlikely we will be able to help.
+                </div>
+                <div id="topic10" style="display:none;padding:10px;color:black;border:2px solid red;background-color:yellow;">
+                        All photos on Geograph are <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank" style="text-decoration:underline" title="View creative commons deed - opens in new window">Creative Commons</a><img style="padding-left:2px;" alt="New Window" title="opens in a new window" src="http://s0.geograph.org.uk/img/newwin.png" width="10" height="10"/> licensed. <br/><br/>
+
+                        So as long as you credit the photographer when you use the image, you can use it for pretty much any purpose. Don't need to ask permission first.<br/><br/>
+
+                        If you want a higher resolution version, or have requirements not met by the Creative Commons licence, you need to contact the photographer. So best to contact them in the first instance, there is a link on the main photo page.
+                </div>
+                <div id="topic8" style="display:none;padding:10px;color:black;border:2px solid red;background-color:yellow;">
+                        Are you <b>sure</b> this is a <b>Geograph</b> related matter? (Geograph is an online project collecting photos of every square kilometre of the Britain and Ireland)
+                </div>
+                <script type="text/javascript">
+                        function showTopicHelp(id) {
+                                var needhide = false;
+                                for (q=0;q<=30;q++) {
+                                        if (document.getElementById("topic"+q)) {
+                                                document.getElementById("topic"+q).style.display=(id==q)?'':'none';
+                                                if (id==q)
+                                                        needhide = 1;
+                                        }
+                                }
+                                var rows = document.getElementsByTagName("tr");
+                                for (var i = 0; i < rows.length; i++) {
+                                        if (rows[i].className && rows[i].className == 'tohide')
+                                                 rows[i].style.display=(needhide)?'none':'';
+                                }
+                        }
+                        function showContact() {
+                                var rows = document.getElementsByTagName("tr");
+                                for (var i = 0; i < rows.length; i++) {
+                                        if (rows[i].className && rows[i].className == 'tohide')
+                                                 rows[i].style.display='';
+                                }
+                        }
+                </script>
+
+
+
         </td>
     </tr>
 <?php
