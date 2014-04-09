@@ -169,7 +169,7 @@ $prev_fetch_mode = $ADODB_FETCH_MODE;
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $list = $db->getAll($sql = "
 select geoevent_attendee.*,realname
-from geoevent_attendee 
+from geoevent_attendee
 	left join user using (user_id)
 where $sql_where
 order by `type`+0,updated desc");
@@ -188,8 +188,8 @@ $smarty->assign_by_ref('stats', $stats);
 $smarty->assign_by_ref('list', $list);
 $smarty->assign('types', $types);
 $smarty->assign('geoevent_id', $page['geoevent_id']);
+if (isset($_GET['edit']))
+	$smarty->assign('edit', 1);
 
 $smarty->display($template, $cacheid);
 
-	
-?>
