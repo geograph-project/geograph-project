@@ -155,7 +155,10 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	$_POST['extract'] = strip_tags($_POST['extract']);
 	$_POST['extract'] = preg_replace('/[“”]/','',$_POST['extract']);
 
-	
+	if (strlen($_POST['content']) < 90 && strlen($page['content']) > 90) {
+		$errors['content'] = "Missing article Content";;
+	}
+
 	$updates = array();
 	
 	if ($page['approved'] == 2 && $USER->user_id != $page['user_id']) {
