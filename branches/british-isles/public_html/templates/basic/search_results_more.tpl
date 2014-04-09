@@ -2,18 +2,22 @@
 
 {if $engine->resultCount}
 
+	<table cellspacing="0" cellpadding="2" border="0">
 	{foreach from=$engine->results item=image}
-	{searchbreak image=$image}
-	 <div style="border-top: 1px solid lightgrey; padding-top:1px;">
+	{searchbreak image=$image table=true}
+  <tr>
+      <td align="center" valign="top">
+        <a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+      </td>
+      <td valign="top">
+
+
 	  {if $image->count}
 	  	<div style="float:right;position:relative;width:130px;font-size:small;text-align:right">
 	  		{$image->count|thousends} images in group
 	  	</div>
 	  {/if}
-	  <div style="float:left; position:relative; width:130px; text-align:center">
-		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
-	  </div>
-	  <div style="float:left; position:relative">
+
 		<a title="view full size image" href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a>
 		by <a title="view user profile" href="{$image->profile_link}">{$image->realname}</a><br/>
 		{if $image->moderation_status == 'geograph'}geograph{else}{if $image->moderation_status == 'pending'}pending{/if}{/if} for square <a href="/location.php?gridref={$image->grid_reference}"><img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/></a> <a title="view page for {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>
@@ -22,14 +26,14 @@
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
 		{if $image->comment}
-		<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:90:"... (<u>more</u>)"|geographlinks}</div>
+		<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->comment|escape:'html'|truncate:128:"... (<u>more</u>)"|geographlinks}</div>
 		{/if}
 
-		<div class="interestBox" style="font-size:0.7em;margin-top:7px;width:500px;padding:2px">Links: <a href="/kml.php?id={$image->gridimage_id}">Google Earth</a> <a href="/ecard.php?image={$image->gridimage_id}">eCard</a> {if $enable_forums}<a href="/discuss/index.php?gridref={$image->grid_reference}">Discuss</a>{/if} <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact Contributor</a> <a href="/editimage.php?id={$image->gridimage_id}">Edit</a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>] <span id="hideside{$image->gridimage_id}" onmouseover="show_tree('side{$image->gridimage_id}');refreshMainList({$image->gridimage_id});">[Thumb &amp; Buckets]</div>
+		<div class="interestBox" style="font-size:0.7em;margin-top:7px;width:500px;padding:2px">Links: <a href="/kml.php?id={$image->gridimage_id}">Google Earth</a> <a href="/ecard.php?image={$image->gridimage_id}">eCard</a> {if $enable_forums}<a href="/discuss/index.php?gridref={$image->grid_reference}">Discuss</a>{/if} <a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact Contributor</a> <a href="/editimage.php?id={$image->gridimage_id}">Edit</a> [<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}">Mark</a>] <span id="hideside{$image->gridimage_id}" onmouseover="show_tree('side{$image->gridimage_id}');refreshMainList({$image->gridimage_id});">[Thumb &amp; Buckets]</span></div>
 
 
-	<div style="float:right;position:relative">
-	<div style="position:absolute;left:-210px;top:-20px;width:220px;padding:10px;display:none;text-align:left;z-index:1000" id="showside{$image->gridimage_id}" onmouseout="hide_tree('side{$image->gridimage_id}')">
+	<div style="float:left;position:relative">
+	<div style="position:absolute;left:360px;top:-40px;width:220px;padding:20px;display:none;text-align:left;z-index:1000" id="showside{$image->gridimage_id}" onmouseout="hide_tree('side{$image->gridimage_id}')">
 		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
 			<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" style="float:left;padding:4px"/>
 			<div id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree">I like this image!</a></div>
@@ -40,7 +44,7 @@
 			<b>Buckets</b><br/>
 			{foreach from=$buckets item=item}
 					<label id="{$image->gridimage_id}label{$item|escape:'html'}" for="{$image->gridimage_id}check{$item|escape:'html'}" style="color:gray">
-					<input type=checkbox id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0);"> {$item|escape:'html'}
+					<input type="checkbox" id="{$image->gridimage_id}check{$item|escape:'html'}" onclick="submitBucket({$image->gridimage_id},'{$item|escape:'html'}',this.checked?1:0);"> {$item|escape:'html'}
 					</label><br/>
 
 			{/foreach}<br/>
@@ -52,13 +56,15 @@
 	</div>
 
 
-	  </div><br style="clear:both;"/>
-	 </div>
+      </td>
+  </tr>
 	{foreachelse}
 	 	{if $engine->resultCount}
 	 		<p style="background:#dddddd;padding:20px;"><a href="/search.php?i={$i}{if $engine->temp_displayclass}&amp;displayclass={$engine->temp_displayclass}{/if}"><b>continue to results</b> &gt; &gt;</a></p>
 	 	{/if}
 	{/foreach}
+ </table>
+
 
 <script>//<![CDATA[
 {literal}
