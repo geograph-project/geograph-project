@@ -80,7 +80,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$min = 999999999999999999999;
 			foreach ($users as $i => $user) {
 				if ($user['first_first_submitted'] < $min) {
-					$min = $user['first_submitted'];
+					$min = $user['first_first_submitted'];
 					$best_user = $user;
 				}
 			}
