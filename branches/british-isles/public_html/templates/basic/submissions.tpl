@@ -1,4 +1,5 @@
 {assign var="page_title" value="My Submissions"}
+{assign var="meta_description" value="Lists your most recent submissions for easy editing and review"}
 {include file="_std_begin.tpl"}
 
 <h2>My Submissions{if $criteria}<small style="font-weight:normal">, submitted at or before: {$criteria|escape:'html'}</small>{/if}</h2>
@@ -20,7 +21,7 @@
 		{if $image->imagetakenString}<small>Taken: {$image->imagetakenString}</small><br/>{/if}
 		{if $image->imageclass}<small>Category: {$image->imageclass}</small>{/if}
 
-		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;"/>{if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="Apply changes"/>{/if}
+		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;" onclick="mark_color(this.form,'yellow')"/>{if $image->moderation_status == 'pending'}<input type="submit" name="apply" value="Apply changes" onclick="mark_color(this.form,'lightgreen')"/>{/if}
 		<br/>
 		<span id="hidetag{$image->gridimage_id}" style="font-size:0.8em"><span id="tags{$image->gridimage_id}"></span> &middot; <a href="#" onclick="return open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Tagging</b> Box</a></span>
 		<span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a>
@@ -73,8 +74,22 @@
 
 <p><small>Note: Page generated at 10 minute intervals, please don't refresh more often than that.</small></p>
 
+<b>Key</b>
+<ul>
+	<li>White, the box hasn't been changed</li>
+	<li><span style="background-color:pink">Pink</span>, the contents of the box has been changed (but not saved)</li>
+	<li><span style="background-color:yellow">Yellow</span>, you've opened the edit page (unknown if has been submitted)</li>
+	<li><span style="background-color:lightgreen">Green</span>, the contents of the box been saved</li>
+</ul>
+
 <script type="text/javascript">
 {literal}
+function mark_color(form,color) {
+	if (form.elements['title'].value!=form.elements['title'].defaultValue)
+		form.elements['title'].style.backgroundColor = color;
+	if (form.elements['comment'].value!=form.elements['comment'].defaultValue)
+		form.elements['comment'].style.backgroundColor = color;
+}
 function open_shared(gid,gr,extra) {
 	show_tree('share'+gid);
 
