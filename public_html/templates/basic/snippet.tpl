@@ -65,6 +65,7 @@
 			<small>Selection is automatic and approximate, it might not always select closely matching descriptions</small>
 		{/if}
 	</div>
+	<div style="padding-right:260px">
 {/if}
 
 {if $images}
@@ -85,12 +86,24 @@
 	{/foreach}
 	<br style="clear:both"/>
 
+	{if $images > 25}
+		... and <a href="/browser/content-redirect.php?id={$snippet_id}&amp;source=snippet">{$images-25} more images</a>.
+	{/if}
+{if $others || $related}
+	</div>
+{/if}
 
 <ul class="explore">
+	{if $images > 2}
+		<li class="interestBox"><a href="/browser/content-redirect.php?id={$snippet_id}&amp;source=snippet"><b>View these images in the Browser</b></a>
+			| <a href="/browser/content-redirect.php?id={$snippet_id}&amp;source=snippet&amp;map">On a <b>Map</b></a></li>
+	{/if}
+
 	{if $images && $title}
+
 		<li class="interestBox"><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1"><b>View all images</b> using "{$title|escape:'html'}" Shared Description(s)</a>
 		{if $images < 15}
-			| <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1&displayclass=gmap">On a <b>Map</b></a>
+			| <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1&displayclass=map">On a <b>Map</b></a>
 		{/if}
 		| (<a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">Just <i>this</i> description</a>)
 		</li>
