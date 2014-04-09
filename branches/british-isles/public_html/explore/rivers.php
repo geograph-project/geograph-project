@@ -28,10 +28,11 @@ require_once('geograph/gridsquare.class.php');
 init_session();
 
 $smarty = new GeographPage;
-	
+
+$alpha = (!empty($_GET['alpha']) && ctype_upper($_GET['alpha']) )?$_GET['alpha']:'G';
 
 $template='explore_rivers.tpl';
-$cacheid='';
+$cacheid=$alpha;
 
 if (!$smarty->is_cached($template, $cacheid))
 {
@@ -40,41 +41,47 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/conversions.class.php');
 	$conv = new Conversions;
 
-	
-	$smarty->assign("page_title", "Prime Rivers of Great Britain");
-		
-	
-	$raw = $db->GetAll("SELECT poster_id,post_text FROM geobb_posts WHERE topic_id = 11785 ORDER BY post_id DESC LIMIT 40");
-	$results = $users = array();
+	if ($alpha) {
+		$smarty->assign("page_title", "Prime Rivers beginning with $alpha (Great Britain)");
+	} else {
+		$smarty->assign("page_title", "Prime Rivers of Great Britain");
+	}
+
+	$raw = $db->GetAll("SELECT poster_id,post_text FROM geobb_posts WHERE topic_id = 11785 ORDER BY post_id ASC");
+	$results = $users = $stats = array();
 	foreach ($raw as $i => $row) {
-	
+
 		if (preg_match_all('/\[\[\[(\d+)\]\]\]/',$row['post_text'],$g_matches)) {
-			
+
 			preg_match('/<b>([\w ,-]+)<\/b>/',$row['post_text'],$name) ;
-			
+
 			if (empty($name)) {
 				preg_match('/^(River [\w ,-]+)<br/',$row['post_text'],$name) ;
-						
 			}
-			
-			if (($ids = $g_matches[1]) && !empty($name)) {
-			
-			
+
+			if (!empty($name)) {
+				preg_match('/^(River |)(\w.*)/',$name[1],$m);
+				if ($slug = strtoupper($m[2]))
+					$stats[substr($slug,0,1)]++;
+			}
+
+			if (($ids = $g_matches[1]) && !empty($name) && strpos($slug,$alpha) === 0) {
+
 				$result = array();
 
 				list($result['name'],$result['county']) = explode(', ',$name[1],2);
 				$result['hash'] = str_replace(' ','-',trim(preg_replace('/[^\w \-]+/','',strtolower($result['name']))));
-				
+
 				if (!empty($result['county'])) {
 					$result['q'] = "({$result['name']}) | ({$result['county']} {$result['name']})";
 				} else {
 					$result['q'] = $result['name'];
 				}
-				
+
 				$sql = "select gridimage_id,user_id,realname,title,grid_reference from gridimage_search where gridimage_id in (".implode(',',$ids).")";
 
 				$images = $db->getAll($sql);
-				
+
 				foreach ($images as $idx => $image) {
 					$gridimage=new GridImage;
 					$gridimage->fastInit($image);
@@ -84,20 +91,23 @@ if (!$smarty->is_cached($template, $cacheid))
 				$results[] = $result;
 				$users[] = $row['poster_id'];
 			}
-			
 		}
 	}
-		
+
+
 	$sql = "select user_id,realname,nickname from user where user_id in (".implode(',',$users).")";
 	$user_rows = $db->getAll($sql);
 	$bits = array();
 	foreach ($user_rows as $row) {
 		$bits[] = "<a href=\"/profile/{$row['user_id']}\">".htmlentities($row['realname'])."</a>";
 	}
-	$extra_info = "Compiled by ".implode(', ',array_slice($bits,0,count($bits)-1))." and ".array_pop($bits);			
+	$extra_info = "Compiled by ".implode(', ',array_slice($bits,0,count($bits)-1))." and ".array_pop($bits);
 
-	$smarty->assign_by_ref("results", $results);	
-	$smarty->assign_by_ref("extra_info", $extra_info);	
+	$smarty->assign_by_ref("results", $results);
+	ksort($stats);
+	$smarty->assign_by_ref("stats", $stats);
+	$smarty->assign_by_ref("alpha", $alpha);
+	$smarty->assign_by_ref("extra_info", $extra_info);
 }
 
 

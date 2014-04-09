@@ -4,10 +4,22 @@
 {if $start_info}
 <p>{$start_info}</p>
 {/if}    
+
     
-    Rivers on this page: |
+    <b>Beginning with</b>: 
+    {foreach from=$stats key=alp item=count}
+		{if $alp === $alpha}
+			<b title="{$count} rivers">{$alp|escape:'html'}</b>
+		{else}
+			<a href="?alpha={$alp|escape:'url'}" title="{$count} rivers">{$alp|escape:'html'}</a> 
+		{/if}
+    {/foreach}
+    
+    <hr/>
+    
+    <b>Rivers on this page</b>:
     {foreach from=$results item=row}
-		<a href="#{$row.hash}">{$row.name|escape:'html'}</a> | 
+		<a href="#{$row.hash}">{$row.name|escape:'html'}</a> |
     {/foreach}
     
     <hr/>
