@@ -1172,7 +1172,7 @@ class RasterMap
 		$mappath = $this->getMapPath($this->service);
 
 		if (!$mappath || !file_exists($mappath)) {
-			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+604800);
+			$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", time()+3600*6);
 			header("Expires: $expires");
 
 			header("Location: /maps/errortile.png");
