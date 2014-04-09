@@ -49,7 +49,8 @@ if (!$smarty->is_cached($template, $cacheid))
 submitted_month , user_id, realname, COUNT(*) as imgcount
 FROM `gridimage_search` 
 GROUP BY SUBSTRING( submitted, 1, $length ) , user_id 
-ORDER BY submitted_month DESC");
+ORDER BY imgcount DESC 
+LIMIT 150");
 	$month = array();
 	foreach($topusers as $idx=>$entry)
 	{
