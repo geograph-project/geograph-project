@@ -32,7 +32,6 @@ init_session();
 $smarty = new GeographPage;
 
 $USER->mustHavePerm('basic');
-$isadmin=$USER->hasPerm('moderator')?1:0;
 
 if (empty($_REQUEST['id'])) {
 	$smarty->display('static_404.tpl');
@@ -43,7 +42,7 @@ if (empty($_REQUEST['id'])) {
 $template = 'project_register.tpl';
 $cacheid = '';
 
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection(false);
 	
 		$sql_where = " project_id = ".$db->Quote($_REQUEST['id']);
 		 
@@ -57,7 +56,7 @@ $cacheid = '';
 		limit 1");
 		$ADODB_FETCH_MODE = $prev_fetch_mode;
 		
-		if (count($page) && ($page['user_id'] == $USER->user_id || $USER->hasPerm('moderator'))) {
+		if (count($page) && !empty($page['approved']) && $page['approved'] > 0) {
 			$smarty->assign($page);
 			$smarty->assign('id', $page['project_id']);
 			
@@ -85,7 +84,7 @@ if ($template != 'static_404.tpl' && isset($_POST) && isset($_POST['submit'])) {
 	foreach (array('supporter','helper','subscriber') as $checkbox) 
 		$updates[] = "`$checkbox` = ".(isset($_POST[$checkbox])+0);
 	
-	$updates[] = "`role` = ".$db->Quote(trim(strip_tabs($_POST['role']))); 
+	$updates[] = "`role` = ".$db->Quote(trim(strip_tags($_POST['role']))); 
 	
 	if ($db->Execute('INSERT INTO project_register SET '.implode(',',$updates).',created=NOW() ON DUPLICATE KEY UPDATE '.implode(',',$updates))) {
 	

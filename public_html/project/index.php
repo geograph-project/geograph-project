@@ -77,7 +77,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
 	$datecolumn = 'created';
 	
-	$db=NewADOConnection($GLOBALS['DSN']);
+	$db=GeographDatabaseConnection(false);
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
