@@ -372,7 +372,7 @@ var guiders = (function($) {
     if (nextGuiderId !== null && nextGuiderId !== "") {
       var myGuider = guiders._guiderById(nextGuiderId);
       var omitHidingOverlay = myGuider.overlay ? true : false;
-      guiders.hideAll(omitHidingOverlay, true);
+      guiders.hideAll(omitHidingOverlay, nextGuiderId);
       if (currentGuider && currentGuider.highlight) {
           guiders._dehighlightElement(currentGuider.highlight);
       }
@@ -399,7 +399,7 @@ var guiders = (function($) {
     if (prevGuiderId !== null && prevGuiderId !== "") {
       var myGuider = guiders._guiderById(prevGuiderId);
       var omitHidingOverlay = myGuider.overlay ? true : false;
-      guiders.hideAll(omitHidingOverlay, true);
+      guiders.hideAll(omitHidingOverlay, prevGuiderId);
       if (prevGuider && prevGuider.highlight) {
         guiders._dehighlightElement(prevGuider.highlight);
       }
