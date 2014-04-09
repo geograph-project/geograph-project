@@ -59,9 +59,9 @@
 {elseif $post.q && $post.q != $criteria->searchq && preg_match('/near\s+$/',$post.q)}
 	<button type="submit" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$criteria->searchq|escape:"html"}">Keyword search for '{$post.q|escape:"html"} {$criteria->searchq|escape:"html"}'</button> <br/>
 {elseif $post.searchtext && $post.searchtext != $criteria->searchq}
-	1<button type="submit" name="{$multipleon}" value="text:{$post.searchtext|escape:"html"} {$criteria->searchq|escape:"html"}">Keyword search for '{$post.searchtext|escape:"html"} {$criteria->searchq|escape:"html"}'</button> <br/>
+	<button type="submit" name="{$multipleon}" value="text:{$post.searchtext|escape:"html"} {$criteria->searchq|escape:"html"}">Keyword search for '{$post.searchtext|escape:"html"} {$criteria->searchq|escape:"html"}'</button> <br/>
 {elseif $post.q && $post.location && $post.location != '(anywhere)'}
-	2<button type="submit" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$post.location|escape:"html"}">Keyword search for '{$post.q|escape:"html"} {$post.location|escape:"html"}'</button> <br/>
+	<button type="submit" name="{$multipleon}" value="text:{$post.q|escape:"html"} {$post.location|escape:"html"}">Keyword search for '{$post.q|escape:"html"} {$post.location|escape:"html"}'</button> <br/>
 {/if}
 
 

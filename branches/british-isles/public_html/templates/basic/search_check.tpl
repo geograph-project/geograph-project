@@ -77,7 +77,7 @@
 				readonly="readonly"/>
 				<div style="color:red">
 				<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="15" height="15" align="left" style="margin-right:10px"/>
-				NOTE: Recently this form has been locked to only search your images. Let us <a href="/contact.php">know</a> if this is an issue for you. </div>
+				You can only search your images with this tool. </div>
 
 		  </tr> 
 		  <tr> 
