@@ -18,16 +18,16 @@
         <a href="/article/Get-Involved">Get Involved...</a>
 </div>
 <div style="position:relative;" class="interestBox">
-        <h2 align="center" style="margin:0">Geograph Britain and Ireland {$what}{if !$whenname && !$where && !$filter} <small>[{$user_count|thousends} contributors]</small>{/if}</h2>
+        <h2 style="margin:0">Geograph Britain and Ireland {$what}{if !$whenname && !$where && !$filter} <small>[{$user_count|thousends} contributors]</small>{/if}</h2>
 
 {if $whenname}
-	<h3 align="center">Submitting images March 2005 though {$whenname} <small>[{$user_count|thousends} contributors]</small></h3>
+	<h3>Submitting images March 2005 though {$whenname} <small>[{$user_count|thousends} contributors]</small></h3>
 {/if}
 {if $where}
-	<h3 align="center">Submitting in {$where} Myriad <small>[{$user_count|thousends} contributors]</small></h3>
+	<h3>Submitting in {$where} Myriad <small>[{$user_count|thousends} contributors]</small></h3>
 {/if}
 {if $filter}
-	<h3 align="center">Beginning with {$filter} <small>[{$user_count|thousends} contributors]</small></h3>
+	<h3>Beginning with {$filter} <small>[{$user_count|thousends} contributors]</small></h3>
 {/if}
 </div>
 
