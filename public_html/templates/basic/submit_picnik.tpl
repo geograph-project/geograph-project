@@ -1,6 +1,6 @@
-{assign var="page_title" value="Submit to Geograph via Picnik"}
+{assign var="page_title" value="Submit to Geograph via Picmonkey"}
 {include file="_std_begin.tpl"}
-	<h2>Submit Image via Picnik</h2>
+	<h2>Submit Image via Picmonkey</h2>
 
 {dynamic}
 {if $_post}

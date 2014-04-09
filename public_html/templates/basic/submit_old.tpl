@@ -20,7 +20,7 @@
 
 {if $step eq 1}
 	<div class="interestBox">
-		<span style="color:red">New!</span> - Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
+		- Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
 	</div>
 
 
@@ -34,10 +34,11 @@
 <div style="background-color:pink; color:black; border:2px solid red; padding:20px; margin-bottom:30px;">
 	<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 
-	You are using the old Category based submission process. <br/>
-	We have a new submisssion method available, <a href="/switch.php"><b>Read more</b> (and switch methods)</a>.
+	You still have the catagory dropdown enabled, we are in the process of phasing out categories altogether.<br/><br/>
 
-	<br/><br/>Otherwise please <a href="https://spreadsheets.google.com/spreadsheet/viewform?formkey=dFpiTjJsTEZRRXVwZ2pxWXdXczY2ZGc6MQ" target="_blank">tell us why</a> you haven't switched yet - Thanks!
+	If you are not using categories anyway, <a href="/switch.php"><b>please switch it off</b></a>; this will hide this message. 
+
+	<br/><br/>Otherwise please <a href="https://spreadsheets.google.com/spreadsheet/viewform?formkey=dFpiTjJsTEZRRXVwZ2pxWXdXczY2ZGc6MQ" target="_blank">tell us why</a> you still using the category dropdown. 
 </div>
 
 
@@ -72,7 +73,7 @@ geographing</a> first.</p>
 	<div class="tabHolder">
 		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Enter Grid Reference</a>&nbsp;
 		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,4)">Choose Square</a>&nbsp;
-		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Tagged Image</a>&nbsp;
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,4)">Geotagged Image</a>&nbsp;
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,4); if (!document.getElementById('innerFrame4').src) document.getElementById('innerFrame4').src = '/submitmap.php?inner'"><b>Locate on Map</b>/by Placename</a>
 	</div>
 
@@ -89,10 +90,10 @@ geographing</a> first.</p>
 		{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">clear</a>)<br/></small></small>{/if}
 		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
 		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or enter location above and <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>
+		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or enter location above and <input type="submit" name="picnik" value="Upload via Picmonkey &gt;"/>
 		</p>
 
-		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>
+		<p><small>Clicking the <i>Upload via Picmonkey</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>
 		{/if}</p>
 	</div>
 
@@ -116,10 +117,10 @@ geographing</a> first.</p>
 		</select>
 		<small><sup><a href="javascript:doMove2(0,1);">N</a></sup><sub><a href="javascript:doMove2(0,-1);">S</a></sub></small>
 		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="setpos2" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or select location above and <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>
+		<input type="submit" name="setpos2" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or select location above and <input type="submit" name="picnik" value="Upload via Picmonkey &gt;"/>
 		</p>
 
-		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>{/if}
+		<p><small>Clicking the <i>Upload via Picmonkey</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>{/if}
 		</p>
 	</div>
 
@@ -179,7 +180,7 @@ geographing</a> first.</p>
 		(e.g. from a GPS receiver, or from multimap site), then see our
 		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
 		<li><b>For information on {external href="http://en.wikipedia.org/wiki/Grid_reference" text="Grid References"}</b> <br/>see
-		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html"}.
+		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/resources/maps-and-geographic-resources/the-national-grid.html"}.
 		The {external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish National Grid"} is very similar, but using a single letter prefix,
 		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
 		</li>
@@ -405,7 +406,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 <div style="font-size:0.7em;margin-top:0;margin-bottom:4px">Please add at least one Tag or Context item. Note: <b>Can use the old Category list to create a Tag</b>, click the Tags tab.</div>
 
 <div class="tabHolder" style="font-size:1em">
-	<a class="tab nowrap" id="tab2" style="font-size:0.9em" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags</a>&nbsp;
+	<a class="tab nowrap" id="tab2" style="font-size:0.9em" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags <small>(and category)</small></a>&nbsp;
 	<a class="tabSelected nowrap" id="tab1" style="font-size:0.9em" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
 	<a class="tab nowrap" id="tab3" style="font-size:0.9em" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions <small>(Optional)</small></a>
 </div>
@@ -423,7 +424,6 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			&middot; Tick as many Geogaphical Contexts as required.<br/>
 			&middot; Hover over name for a description, see also <a href="/tags/primary.php" text="More examples" target="_blank">further details and examples</a><br/>
 			&middot; If in doubt about the exact context, simply pick the best match from Natural Environment or Human Habitat.<br/>
-			&middot; As we have been adding Context to the previous categories, you could also try <a href="/finder/categories.php" target="_blank">searching by the old category name here</a>.<br/>
 			</div>
 
 			{foreach from=$tops key=key item=item}
@@ -439,7 +439,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 				</div>
 			{/foreach}
 			<br style="clear:both"/>
-
+			<p>The Geographical Context list define broad subject areas for the photograph, making it easier to browse photos. More specific details can be added via tags. Tags work very similar to the old Category (in defining what the photo is about), except there can be multiple Tags per photo.</p>
 		</div>
 
 		<div id="div2" class="interestBox" style="display:none">
@@ -779,9 +779,6 @@ have problems
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()" id="previewButton"/>
-
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
 	</form>
 {/if}
 

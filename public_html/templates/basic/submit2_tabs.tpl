@@ -177,7 +177,7 @@ function readHash() {
 				var theForm = document.forms['theForm'];
 				var name = theForm.elements['selected'].value;
 				theForm.elements['grid_reference['+name+']'].value = unescape(value);
-				clicker(2,true);
+				//clicker(2,true);
 
 				document.getElementById("oldlink").href=document.getElementById("oldlink").href+"&gridreference="+value;
 			}
@@ -197,15 +197,15 @@ function openInNewWindow() {
 		window.open('','submission');//forces a new window rather than tab?
 
 		setTimeout(clearSubmission,200);
-
 	} else {
 		form.target = "_self";
-	}
 
+		window.onbeforeunload=null;
+	}
 }
 
 function clearSubmission() {
-	document.getElementById('iframe'+1).src = '/submit2.php?inner&step={/literal}{dynamic}{if $multi}0{else}1{/if}{/dynamic}{literal}&container=iframe1';
+	document.getElementById('iframe'+1).src = '/submit2.php?inner&step={/literal}{dynamic}{if $multi}0{else}1{/if}{/dynamic}{literal}&container=iframe1#sort=Uploaded%A0%A0%u2193';
 	for(q=1;q<=3;q++)
 		document.getElementById('sh'+q).className = "tab sh sn";
 	clicker(1,true);
@@ -223,6 +223,20 @@ function clearSubmission() {
  	form.elements['finalise'].value="I AGREE >";
 }
 
+
+function unloadMess() {
+        var form = document.forms['theForm'];
+        var name = form.elements['selected'].value;
+
+	if (form.elements['upload_id['+name+']'].value == '') {
+	        return;
+        }
+        return "**************************\n\nYou have unsaved changes.\n\n**************************\n";
+}
+//this is unreliable with AttachEvent
+window.onbeforeunload=unloadMess;
+
+
 </script>
 {/literal}
 
@@ -230,7 +244,7 @@ function clearSubmission() {
 
 	<h2>Submit Image <sup style="color:gray">v2 with Tabs</sup></h2>
 
-{$status_message}
+{dynamic}{$status_message}{/dynamic}
 
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
@@ -255,7 +269,7 @@ function clearSubmission() {
 	</div>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1" id="iframe1" width="100%" height="520px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1#sort=Uploaded%A0%A0%u2193" id="iframe1" width="100%" height="520px" style="border:0"></iframe>
 	</div>
 
 <!-- # -->
@@ -263,8 +277,8 @@ function clearSubmission() {
 	<div id="sd2" class="sd">
 	<div style="background-color:#eeeeee;padding:2px"> <label for="service">Prefered Map service:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
 		<option value="OSOS">Zoomable Modern OS Mapping</option>
-		<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
-		<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option>
+		<option value="OS50k">OS Modern 1:50,000 Mapping</option>
+		<option value="Google">Zoomable Google Mapping + OSM + 1920s to 1940s OS</option>
 	</select> <small>(OS Maps not available for Ireland)</small></div>
 
 
@@ -345,7 +359,7 @@ function clearSubmission() {
 		<div><span>Description:</span><textarea name="comment[{$key}]" cols="30" rows="2" wrap="soft"></textarea></div>
 		<div><span>Tags:</span><input type="text" name="tags[{$key}]" value="" size="80"/></div>
 		<div><span>Date:</span><input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/></div>
-
+		<input type="hidden" name="display" value="tabs"/>
 		<input type="hidden" name="selected" value="0"/>
 	</div>
 <!-- # -->
@@ -381,16 +395,13 @@ function clearSubmission() {
 	<input type="hidden" name="view_direction"/>
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
-	<textarea name="comment" style="display:none"/></textarea>
+	<textarea name="comment" style="display:none"></textarea>
 	<input type="hidden" name="tags"/>
 	<input type="hidden" name="imagetakenDay"/>
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Preview submission in a new window" onclick="return previewImage()" id="previewButton"/>
-
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
 	</form>
 
 	<div style="position:fixed;left:1px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:138px" id="hidePreview">

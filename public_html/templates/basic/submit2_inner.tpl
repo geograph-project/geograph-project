@@ -17,11 +17,11 @@
 
 		<table id="upload" class="report sortable">
 			<thead>
-			<tr style="color:yellow">
-				<th>Preview</th>
-				<th>Continue</th>
-				<th>Uploaded</th>
-				<th>Taken</th>
+			<tr>
+				<td>Preview</td>
+				<td>Continue</td>
+				<td>Uploaded</td>
+				<td>Taken</td>
 			</tr>
 			</thead>
 			<tbody>
@@ -66,13 +66,13 @@
 			<img src="{$preview_url}" width="{$preview_width}" height="{$preview_height}"/>
 		{/if}
 
-		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1{if $container}&amp;container={$container|escape:'url'}{/if}">Upload a new image</a> or <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}">Select an different uploaded image</a></p>
+		<p>Is this the wrong image? <a href="/submit2.php?inner&amp;step=1{if $container}&amp;container={$container|escape:'url'}{/if}">Upload a new image</a> or <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193">Select an different uploaded image</a></p>
 	{else}
-		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>&middot;  <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}">Select an uploaded image</a></div>
+		<div class="interestBox" style="float:right;width:200px;">&middot; <a href="/submit-multi.php" target="_top">Upload multiple images</a><br/>&middot;  <a href="/submit2.php?inner&amp;step=0{if $container}&amp;container={$container|escape:'url'}{/if}#sort=Uploaded%A0%A0%u2193">Select an uploaded image</a></div>
 		{if $error}
 			<p style="color:#990000;font-weight:bold;">{$error}</p>
 		{/if}
-		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto 8Mb filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
+		<div><label for="jpeg_exif"><b>Select Image file to upload</b></label> - (upload photos larger than 640px - upto {if $small_upload}<b>5Mb</b>{else}8Mb{/if} filesize <a href="/article/Larger-Uploads-Information" class="about" target="_blank">About</a>)<br/>
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60" style="background-color:white" accept="image/jpeg"/>
 		<input type="hidden" name="MAX_FILE_SIZE" value="8192000"/></div>
 		<div>

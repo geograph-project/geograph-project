@@ -182,9 +182,6 @@
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Preview Submission in a new window" onclick="return previewImage()"/> 
-	
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
 	</form>
 
 {include file="_std_end.tpl"}

@@ -16,7 +16,9 @@
 
     <form enctype="multipart/form-data" action="{$script_name}" method="post" name="theForm" onsubmit="if (this.imageclass) this.imageclass.disabled=false;" {if $step ne 1}style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;"{/if}>
 
-{$status_message}
+{if $step eq 1 || $step eq 2}
+	{$status_message}
+{/if}
 
 {if $step eq 1}
 	{if $user->stats.images > 10}
@@ -82,10 +84,10 @@ geographing</a> first.</p>
 		{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">clear</a>)<br/></small></small>{/if}
 		<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
 		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or enter location above and <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>
+		<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or enter location above and <input type="submit" name="picnik" value="Upload via Picmonkey &gt;"/>
 		</p>
 
-		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>
+		<p><small>Clicking the <i>Upload via Picmonkey</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>
 		{/if}</p>
 	</div>
 
@@ -109,10 +111,10 @@ geographing</a> first.</p>
 		</select>
 		<small><sup><a href="javascript:doMove2(0,1);">N</a></sup><sub><a href="javascript:doMove2(0,-1);">S</a></sub></small>
 		&nbsp;&nbsp;&nbsp;
-		<input type="submit" name="setpos2" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or select location above and <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>
+		<input type="submit" name="setpos2" value="Next &gt;"/> {if $picnik_api_key}<hr/><br/>or select location above and <input type="submit" name="picnik" value="Upload via Picmonkey &gt;"/>
 		</p>
 
-		<p><small>Clicking the <i>Upload via Picnik</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>{/if}
+		<p><small>Clicking the <i>Upload via Picmonkey</i> button above allows submission via an online image manipulation service that allows tweaking of the image prior to automatically transferring it to Geograph.</small>{/if}
 		</p>
 	</div>
 
@@ -132,7 +134,7 @@ geographing</a> first.</p>
 		<li>Subject grid-reference in EXIF Comment tag</li>
 		</ul></div>
 
-		<p><sup style=color:red>New!</sup> the <a href="/submit-multi.php">Multi-Submit</a>, now understands tagged images like this upload box does.</p>
+		<p>The <a href="/submit-multi.php">Multi-Submit</a>, now understands tagged images like this upload box does.</p>
 	</div>
 
 	<div style="position:relative;{if $tab != 4}display:none{/if}" class="interestBox" id="div4">
@@ -152,8 +154,8 @@ geographing</a> first.</p>
 </div>
 		<p>&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);">
 			<option value="OSOS">Zoomable Modern OS Mapping</option>
-			<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
-			<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option>
+			<option value="OS50k">OS Modern 1:50,000 Mapping</option>
+			<option value="Google">Zoomable Google Mapping + OSM + 1920s to 1940s OS</option>
 		</select> <small>(OS Maps not available for Ireland)</small></p>
 
 		<script>{literal}
@@ -192,7 +194,7 @@ geographing</a> first.</p>
 		(e.g. from a GPS receiver, or from multimap site), then see our
 		<a href="/latlong.php">Lat/Long to Grid Reference Convertor</a><br/><br/></li>
 		<li><b>For information on {external href="http://en.wikipedia.org/wiki/Grid_reference" text="Grid References"}</b> <br/>see
-		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/oswebsite/gi/nationalgrid/nghelp1.html"}.
+		{external title="Guide to the National Grid" text="Interactive Guide to the National Grid in Great Britain" href="http://www.ordnancesurvey.co.uk/resources/maps-and-geographic-resources/the-national-grid.html"}.
 		The {external href="http://en.wikipedia.org/wiki/Irish_national_grid_reference_system" text="Irish National Grid"} is very similar, but using a single letter prefix,
 		see <a href="/mapbrowse.php">Overview Map</a> for the layout of the squares.
 		</li>
@@ -329,7 +331,7 @@ geographing</a> first.</p>
 	<br style="clear:both"/>
 
 	{if $imagecount gt 6 || $shownimagecount == 6}
-		<div>{newwin href="/gridref/`$gridref`" text="View browse page for `$gridref`"}, {newwin href="/search.php?gridref=`$gridref`&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" text="View images page by page"}</div>
+		<div>{newwin href="/gridref/`$gridref`" text="View browse page for `$gridref`"}, {newwin href="/browser/#!/grid_reference+%22`$gridref`%22" text="View in Browser"}, {newwin href="/search.php?gridref=`$gridref`&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" text="View images page by page"}</div>
 	{/if}&nbsp;
 	</div>
 	{else}
@@ -598,6 +600,20 @@ function rehighlight(that,check) {
 <li><a href="/submissions.php" rel="nofollow">Edit My Recent Submissions</a></li>
 </ul>
 
+
+<br/><hr/><br/>
+
+{if $news}
+	<b>Latest News</b>
+	<ol>
+	{foreach from=$news item=newsitem}
+		<li>{if $newsitem.days < 4}<b>{/if}<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}" title="{$newsitem.post_text|escape:'html'}">{$newsitem.topic_title}</a></b> <small>{$newsitem.topic_time|date_format:"%a, %e %b"} ({$newsitem.days} days ago)</small></li>
+	{/foreach}
+	</ul>
+
+	<br/><hr/><br/>
+{/if}
+
 {/if}
 
 {if $step eq 6}
@@ -649,9 +665,6 @@ have problems
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()" id="previewButton"/>
-
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
 	</form>
 {/if}
 

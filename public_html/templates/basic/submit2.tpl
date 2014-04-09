@@ -178,6 +178,7 @@ function readHash() {
 				clicker(2,true);
 
 				document.getElementById("oldlink").href=document.getElementById("oldlink").href+"&gridreference="+value;
+				document.getElementById("tablink").href=document.getElementById("tablink").href+"#gridref="+value;
 			}
 		}
 	}
@@ -203,7 +204,7 @@ function openInNewWindow() {
 }
 
 function clearSubmission() {
-	document.getElementById('iframe'+1).src = '/submit2.php?inner&step={/literal}{dynamic}{if $multi}0{else}1{/if}{/dynamic}{literal}&container=iframe1';
+	document.getElementById('iframe'+1).src = '/submit2.php?inner&step={/literal}{dynamic}{if $multi}0{else}1{/if}{/dynamic}{literal}&container=iframe1#sort=Uploaded%A0%A0%u2193';
 	for(q=1;q<=3;q++)
 		document.getElementById('sh'+q).className = "sh sn";
 	clicker(1,true);
@@ -225,11 +226,11 @@ function clearSubmission() {
 </script>
 {/literal}
 
-	<div style="float:right;position:relative;text-align:center"><a href="/submit.php?redir=false" id="oldlink">v1</a> / <b>v2</b> / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a>{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
+	<div style="float:right;position:relative;text-align:center"><a href="/submit.php?redir=false" id="oldlink">v1</a> / <b>v2</b> (<a href="/submit2.php?display=tabs" id="tablink">tabs</a>) / <a href="/submit-multi.php">multi</a> / <a href="/help/submit">more...</a>{if $user->submission_method == 'submit'}<br/><br/><div class="interestBox">Set <b>Version 2</b> as <i>your</i> default<br/> on <a href="/profile.php?edit=1#prefs">Profile Edit page</a></div>{/if}</div>
 
 	<h2>Submit Image</h2>
 
-{$status_message}
+{dynamic}{$status_message}{/dynamic}
 
 	<noscript>
 	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
@@ -246,8 +247,8 @@ function clearSubmission() {
 
 	&middot; <label for="service">Prefered Map service in Step 2:</label> <select name="service" id="service" onchange="saveService(this);clicker(2,false); clicker(2,true);">
 		<option value="OSOS">Zoomable Modern OS Mapping</option>
-		<option value="OS50k">OS Modern 1:50,000 Mapping + 1940s New Popular</option>
-		<option value="Google">Zoomable Google Mapping + 1920s to 1940s OS</option>
+		<option value="OS50k">OS Modern 1:50,000 Mapping</option>
+		<option value="Google">Zoomable Google Mapping + OSM + 1920s to 1940s OS</option>
 	</select> <small>(OS Maps not available for Ireland)</small></p>
 
 
@@ -255,7 +256,7 @@ function clearSubmission() {
 	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1,null,event.shiftKey)"><span id="se1">-</span> Step 1 - Upload Photo</a>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1#sort=Uploaded%A0%A0%u2193" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
 	</div>
 <!-- # -->
 	<a id="sh9" href="#" class="sh sn" onclick="return clicker(9,null,event.shiftKey)" style="font-size:0.9em"><span id="se9">+</span> Find Square on Map (optional tool)</a>
@@ -381,16 +382,13 @@ function clearSubmission() {
 	<input type="hidden" name="view_direction"/>
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
-	<textarea name="comment" style="display:none"/></textarea>
+	<textarea name="comment" style="display:none"></textarea>
 	<input type="hidden" name="tags"/>
 	<input type="hidden" name="imagetakenDay"/>
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Preview submission in a new window" onclick="return previewImage()" id="previewButton"/>
-
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
 	</form>
 
 	<div style="position:fixed;left:1px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:138px" id="hidePreview">
