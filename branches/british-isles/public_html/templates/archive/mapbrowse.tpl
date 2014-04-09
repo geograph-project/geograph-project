@@ -337,9 +337,6 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 	{/if}
 	<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" href="/mapprint.php?t={$mosaic_token}">Printable</a>
 	<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/map/{$mosaic_token}?recent=1">Recent Only</a>
-	{if !$token_zoomout}
-	 <a class="tab{if $tab == 9}Selected{/if} nowrap" id="tab9" href="/mapper/clusters.php#r=c">Interactive Clusters</a>
-	{/if}
 </div>
 <div class="interestBox">
 

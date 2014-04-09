@@ -28,7 +28,7 @@
     </ul></li>
   </ul>
 <div class="sponsor">sponsored by <br/> <br/>
-<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey"/></a></div>
+<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/education-research/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey"/></a></div>
 {if $image && $image->collections}
 	<h3 class="newstitle">This photo is linked from:</h3>
 	{assign var="lasttype" value="0"}
