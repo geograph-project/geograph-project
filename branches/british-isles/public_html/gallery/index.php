@@ -38,32 +38,29 @@ $data = $db->getRow("show table status like 'content'"); //we use content as it 
 
 //when this table was modified
 $mtime = strtotime($data['Update_time']);
-	
+
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
 if (!$smarty->is_cached($template, $cacheid))
 {
-	
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("
-	select topic_id,topic_title,topic_poster,topic_poster_name,topic_time,topic_views,posts_count,count(*) as images_count
+	select topic_id,topic_title,topic_poster,topic_poster_name,topic_time,topic_views,posts_count,count(gridimage_post.gridimage_id) as images_count
 	from geobb_topics
 	left join gridimage_post using (topic_id)
 	where forum_id = 11
 	group by topic_id
 	order by topic_last_post_id desc");
-	
+
 	foreach ($list as $i => $row) {
 		$list[$i]['url'] = trim(strtolower(preg_replace('/[^\w]+/','_',html_entity_decode(preg_replace('/&#\d+;?/','_',$row['topic_title'])))),'_').'_'.$row['topic_id'];
 	}
-	
+
 	$smarty->assign_by_ref('list', $list);
 
 }
 
 $smarty->display($template, $cacheid);
 
-	
-?>

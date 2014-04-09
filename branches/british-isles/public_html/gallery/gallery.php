@@ -45,7 +45,14 @@ if ($topic_id == 7838) {
         header("Location: /article/Medieval-Churches-in-Norfolk");
         print "<a href=\"/article/Medieval-Churches-in-Norfolk\">go</a>";
         exit;
+} elseif (strpos($_GET['url'],'a_postcode_album') === 0) {
+        header("HTTP/1.0 301 Moved Permanently");
+        header("Status: 301 Moved Permanently");
+        header("Location: /article/Postal-address-history-and-photo-album");
+        print "<a href=\"/article/Postal-address-history-and-photo-album\">go</a>";
+        exit;
 }
+
 
 $cacheid = "$topic_id.$pg";
 
