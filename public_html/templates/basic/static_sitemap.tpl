@@ -1,15 +1,12 @@
 {assign var="page_title" value="Sitemap v2"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
-.links {
-	background-color:#eeeeee;
-}
-.links .feature {
-	color: green;
+.links .info {
+	color:green;
 }
 .links h4.title {
 	margin-bottom:0;
-	background-color:#eeeeee;
+	font-size:1.3em;
 	width:500px;
 }
 .links div.filter {
@@ -32,10 +29,19 @@
 }
 </style>{/literal}
 
-<div class="interestBox" style="float:right">This is a new experimental dynamic sitemap, <a href="/help/sitemap_orig">see the original version</a>.</div>
+<div align="center" class="tabHolder">
+        <a href="/article/About-Geograph-page" class="tab">About Geograph</a>
+        <a href="/team.php" class="tab">The Geograph Team</a>
+        <a href="/credits/" class="tab">Contributors</a>
+        <a href="/help/credits" class="tab">Credits</a>
+        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
+        <a href="/contact.php" class="tab">Contact Us</a>
+        <a href="/article/Get-Involved">Get Involved...</a>
+</div>
+<div style="position:relative;" class="interestBox">
+        <h2 style="margin:0">Geograph Sitemap</h2>
+</div>
 
- <h2>Geograph Sitemap</h2>
-  
  <p>Powered by the {external href="http://www.geographs.org/links/" text="Geograph Links Directory"} - wiki-style editable database of all Geograph-related links.</p>   
 
 	<div class="rightbox"> 
