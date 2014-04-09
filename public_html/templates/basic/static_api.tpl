@@ -1,17 +1,17 @@
 {assign var="page_title" value="API"}
 {include file="_std_begin.tpl"}
 
-	 <h2>Geograph API <sub>(25th Mar 2010 Release)</sub></h2> 
+	 <h2>Geograph API <sub>(last updated 1st May 2012)</sub></h2> 
 	 <div
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
 		<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;"> 
 		  <li><a href="#dumps">Database Dumps</a></li> 
 		  <li><a href="#torrents">Image bittorrent downloads</a></li> 
-		  <li><a href="#rss">RSS feeds</a> 
+		  <li><a href="#rss">Images API</a> 
 			 <ul> 
 				<li><a href="#rss_param">Types</a>, <a href="#rss_options">Options</a>, <a href="#rss_format">Formats</a></li> 
 			 </ul></li> 
-		  <li><a href="#rest">REST interface</a> 
+		  <li><a href="#rest">Details API</a> 
 			 <ul> 
 				<li><a href="#rest_services">Services</a></li> 
 				<li><a href="#rest_format">Formats</a></li> 
@@ -83,14 +83,19 @@
 	 <p>Once you have a API-key simply replace [apikey] in the examples below to
 		obtain your feed.</p> 
 		
-	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>RSS-feeds <a href="/faq.php#rss" class="xml-rss">RSS</a></h3> 
-	 <p>Really Simple Syndication allows you to obtain a details for a number of
-		images, (usually) in XML format, this makes it really easy for you to reuse
-		small sections of information on your website or project. The feed lives at<br/><br/>
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rss"></a>Images API</h3> 
+	 <p>This API accesses the Images database, allowing a wide variety of output formats, and filtering options. 
+		Include RSS style outputs (can be used directly as a RSS feed), but also supports various XML, KML, JSON and HTML outputs. The feed lives at<br/><br/>
 	 <a title="Geograph RSS feed"
 		href="http://{$api_host}/syndicator.php?key=[apikey]" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]</a><br/><br/>
 	 and by default returns obtains an up-to-date listing of the 15 latest
 		Geograph submissions, you can however return different results as below</p> 
+
+         <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+		Note: These feeds are designed for ondemand access of specific content, eg finding nearby images for a single page. Not for bulk download of content. <b>Most searches created via this system can only access the first 1,000 images matching the query.</b>
+		For larger extracts, the database dumps are still the best method. 
+	 </div>
+
 	 <h4><a name="rss_param"></a>Feed Type</h4> 
 	 <p>You should supply <b>one</b> of the following parameters to specify the type of
 		results you would like...</p> 
@@ -137,11 +142,11 @@
 				</tr> 
 				<tr> 
 				  <th>distance=[number]</th> 
-				  <td>Limit results to within this distance (in km, maximum 20km)</td> 
+				  <td>Limit results to within this distance (in km, default 10km, maximum 20km)</td> 
 				</tr> 
 				<tr> 
 				  <th>perpage=[number]</th> 
-				  <td>Number of results per page (100 maximum)</td> 
+				  <td>Number of results per page (15 default, 100 maximum)</td> 
 				</tr> 
 		 </table></td> 
 		</tr> 
@@ -151,7 +156,7 @@
 		</tr> 
 		<tr> 
 		  <th rowspan="2">location=[location]</th> 
-		  <td>Returns 15 or all within 10km (which ever is less) of the specified location (grid reference, postcode or decimal lat/long) (see also <a href="#building">Building a query</a> for pitfalls of the q paramater) - will in fact create an i query on the fly, so you can use that to get page 2 etc of the results. Accepts additional parameter:</span>
+		  <td>Returns 15 or all within 10km (which ever is less) of the specified location (grid reference, postcode or decimal lat/long) (see also <a href="#building">Building a query</a> for pitfalls of the q parameter) - will in fact create an i query on the fly, so you can use that to get page 2 etc of the results. Accepts additional parameter:</span>
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>text=[text string]</th> 
@@ -163,11 +168,11 @@
 				</tr> 
 				<tr> 
 				  <th>distance=[number]</th> 
-				  <td>Limit results to within this distance (in km, maximum 20km)</td> 
+				  <td>Limit results to within this distance (in km, default 10km, maximum 20km)</td> 
 				</tr> 
 				<tr> 
 				  <th>perpage=[number]</th> 
-				  <td>Number of results per page (100 maximum)</td> 
+				  <td>Number of results per page (15 default, 100 maximum)</td> 
 				</tr> 
 		 </table></td> 
 		</tr> 
@@ -185,13 +190,21 @@
 				</tr> 
 				<tr> 
 				  <th>perpage=[number]</th> 
-				  <td>Number of results per page (100 maximum)</td> 
+				  <td>Number of results per page (15 default, 100 maximum)</td> 
 				</tr> 
 		 </table></td> 
 		</tr> 
 		<tr> 
 		  <td>
 			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;text=bridge" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;text=bridge</a></td>
+		</tr> 
+		<tr> 
+		  <th rowspan="2">callback=[function]</th> 
+		  <td>wraps the output in a function call. <b>Only works with <tt>format=JSON</tt></b>, to allow use in client-side Javascript web-apps</td> 
+		</tr> 
+		<tr> 
+		  <td>
+			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;format=JSON&amp;callback=function" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;format=JSON&amp;callback=function</a></td>
 		</tr> 
 	 </table> 
 	 
@@ -283,8 +296,13 @@
 				</tr> 
 		 </table></td> 
 		</tr>
+		<tr> 
+		  <td>format=<b>JSON</b> <sup style="color:red">NEW!</sup></td> 
+		  <td><a title="Geograph JSON feed"
+			 href="http://{$api_host}/syndicator.php?key=[apikey]&format=JSON" rel="nofollow">JSON</a> encoded output - particully suitable for integration into Javascript apps, but many other languages have json decoders. Also supports JSONP with <b>&callback=functionname</b> so can use in a webapp - JQuery etc make this easy!</td> 
+		</tr> 
 	 </table> 
-	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rest"></a>REST interface</h3>
+	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="rest"></a>Details API</h3>
 	 <p>Provides a very simple interface for obtaining details about a particular image or grid square. Will later be extended to include contributors, and tags, and possibly even hectads and myriads and some aggregate statistics. If looking for bulk downloads please consider one of the alternative means.</p>
 	 
 	 <h4><a name="rest_services"></a>Services</h4> 
@@ -333,8 +351,17 @@
 			 href="http://{$api_host}/api/latlong/2km/50.64163,-1.94978/[apikey]" rel="nofollow">http://{$api_host}/api/latlong/[distance]km/[lat],[long]/[apikey]</a></th> 
 		</tr> 
 		<tr> 
-		  <th>Search Nearby</th> 
-		  <td>Returns an XML infoset of surrounding images, currently returns:
+		  <th>Search Nearby <b style="color:red">[DEPRECATED]</b></th> 
+		  <td>
+<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+	In general, using the syndicator.php API is recommended instead of this option. It offers the same functionality, with a lot more options (eg specifying a sort order, filtering by keywords) <br><br>
+
+	Example: <a href="http://{$api_host}/syndicator.php?format=JSON&q=50.64163,-1.94978&distance=2&key=[apikey]" rel="nofollow">http://{$api_host}/syndicator.php?format=JSON&q=[lat],[long]&distance=[distance]&key=[apikey]</a>
+</div>
+
+
+
+Returns an XML infoset of surrounding images, currently returns:
 <pre style="font-size:0.7em;">
 &lt;?xml version="1.0" encoding="UTF-8" ?&gt; 
 &lt;geograph&gt;
@@ -482,7 +509,7 @@ Note:the distance should be 10km or below.
 			 <table border="1" cellpadding="3" cellspacing="0"> 
 				<tr> 
 				  <th>count=[number]</th> 
-				  <td>overrides the page size specified in the query,<br/> or -1 for unlimited</td> 
+				  <td>overrides the page size specified in the query,<br/> or -1 for biggest possible (usually 1000)</td> 
 				</tr> 
 				<tr> 
 				  <th>page=[number]</th> 
@@ -635,8 +662,12 @@ Note:the distance should be 10km or below.
 		  <td>10</td> 
 		</tr> 
 		<tr style="background-color:#eeeeee"> 
+		  <th colspan="2" ALIGN="LEFT">&amp;submitted=1</th> 
+		  <td colspan="2">Date/Time of image submission</td> 
+		</tr> 
+		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT">&amp;hits=1</th> 
-		  <td colspan="2">Appoximate hit count for the full photo page</td> 
+		  <td colspan="2">Approximate hit count for the full photo page</td> 
 		</tr> 
 		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT">&amp;status=1</th> 
@@ -646,9 +677,14 @@ Note:the distance should be 10km or below.
 		  <th colspan="2" ALIGN="LEFT">&amp;level=1</th> 
 		  <td colspan="2">1=First Geograph,2=Second Geograph Contributor Point, etc.</td> 
 		</tr> 
+		<tr style="background-color:#eeeeee"> 
+		  <th colspan="2" ALIGN="LEFT">&amp;tags=1</th> 
+		  <td colspan="2">Include the tags as a question mark separated list. Note: <b>can't</b> be used in conjunction with en/ppos options.</td> 
+		</tr> 
+
 	 </table> 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="building"></a>Building a Search Query</h3> 
-	 <p>There are there main methods for obtaining some valid <b>i</b> numbers
+	 <p>There are three main methods for obtaining some valid <b>i</b> numbers
 		for passing to the RSS or CSV feeds (or in fact directing the user to a search
 		results page!).</p> 
 	 <p>TIP: where ever you pass a i parameter you can also pass a <i>page</i>
@@ -776,7 +812,29 @@ Note:the distance should be 10km or below.
 	 </ul>
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
 	 <p>We wish you luck in you project and look forward to seeing the results! If you have any 
-		problems using the API, then please do get in <a href="/contact.php">contact</a>. Please consider joining the <a href="http://groups-beta.google.com/group/geograph-api-users">Geograph-API-Users</a> Google Discussion Group, which is primarlly used for announcements.</p>
+		problems using the API, then please do get in <a href="/contact.php">contact</a>. Please consider joining the <a href="http://groups-beta.google.com/group/geograph-api-users">Geograph-API-Users</a> Google Discussion Group, which is primarily used for announcements.</p>
+
+
+<br/><hr/>
+
+<div id="disqus_thread"></div>
+{literal}
+<script type="text/javascript">
+    var disqus_shortname = 'geograph';
+    var disqus_identifier = 'static_api';
+    var disqus_url = 'http://www.geograph.org.uk/help/api'; //USE canonical domain, so works on all domains
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+{/literal}
+
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
 {include file="_std_end.tpl"}
 
 
