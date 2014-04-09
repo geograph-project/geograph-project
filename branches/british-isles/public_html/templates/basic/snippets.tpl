@@ -23,6 +23,15 @@
 
 <div>
 	<h3>Editing {$title|escape:'html'}</h3>
+
+
+	{if $admin_edit}
+		<div class="interestBox" style="background-color:yellow;margin:20px">
+			<h3>Not your Shared Description</h3>
+			You can still edit it as a moderator, but only vital changes should be made directly. For routine edits, please refer to <a href="/profile/{$user_id}">the contributor</a>. 
+		</div>
+	{/if}
+
 	<div style="color:gray;margin-bottom:10px;margin-top:0">Used on {$images|thousends} images {if $yours && $images != $yours}(of which are {$yours|thousends} yours){/if}</div>
 		
 	<fieldset style="background-color:#f0f0f0;">
