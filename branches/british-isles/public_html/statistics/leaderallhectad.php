@@ -49,20 +49,19 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/imagelist.class.php');
 
         $db = GeographDatabaseConnection(true);
-	
+
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$hectads = $db->getAll("select 
+	$hectads = $db->getAll("select
 	hectad,
 	geosquares,
 	landsquares,
 	(geosquares * 100 / landsquares) as percentage
-	from hectad_stat 
+	from hectad_stat
 	where geosquares > 0 and geosquares >= landsquares
 	order by percentage desc,landsquares desc,hectad");
-	
-	
+
 	foreach ($hectads as $i => $hectad) {
-		
+
 		$users = $db->getAll("SELECT user_id,u.realname,
 			images,
 			geosquares,
@@ -74,8 +73,8 @@ if (!$smarty->is_cached($template, $cacheid))
 			WHERE 
 				hectad LIKE '{$hectad['hectad']}'
 			ORDER BY last_submitted DESC");
-		
-		$best_user = array();
+
+		$best_users = array();
 		if ($type == 'every') {
 			foreach ($users as $i => $user) {
 				if ($user['geosquares'] == $hectad['landsquares']) {
@@ -96,33 +95,37 @@ if (!$smarty->is_cached($template, $cacheid))
 			foreach ($users as $i => $user) {
 				if ($user['geosquares'] > $max) {
 					$max = $user['geosquares'];
-					$best_user = $user;
-				}
-			}
-		} 
-		
-		if (count($best_user)) {
-			if ($best_user['geosquares'] == $hectad['landsquares']) {
-				$landsquares = $hectad['landsquares'];
-			} else {
-				$landsquares = $best_user['geosquares'].'/'.$hectad['landsquares'];
-			}
-			if (isset($topusers[$best_user['user_id']])) {
-				$topusers[$best_user['user_id']]['imgcount']++;
-				$topusers[$best_user['user_id']]['bigesthectad'] = max($topusers[$best_user['user_id']]['bigesthectad'],$hectad['landsquares']);
-				array_push($topusers[$best_user['user_id']]['squares'],$hectad['hectad']."[".$landsquares."]");
-			} else {
-				$topusers[$best_user['user_id']] = $best_user;
-				$topusers[$best_user['user_id']]['imgcount'] = 1;
-				$topusers[$best_user['user_id']]['bigesthectad'] = $hectad['landsquares'];
-				$topusers[$best_user['user_id']]['squares'] = array($hectad['hectad']."[".$landsquares."]");
+					$best_users = array();
+					$best_users[] = $user;
+				} elseif ($user['geosquares'] == $max) {
+                                        $best_users[] = $user;
+                                }
 			}
 		}
-		
-	
+
+		if (count($best_users)) {
+			if ($best_users[0]['geosquares'] == $hectad['landsquares']) {
+				$landsquares = $hectad['landsquares'];
+			} else {
+				$landsquares = $best_users[0]['geosquares'].'/'.$hectad['landsquares'];
+			}
+			foreach ($best_users as $best_user) {
+				if (isset($topusers[$best_user['user_id']])) {
+					$topusers[$best_user['user_id']]['imgcount']++;
+					$topusers[$best_user['user_id']]['bigesthectad'] = max($topusers[$best_user['user_id']]['bigesthectad'],$hectad['landsquares']);
+					array_push($topusers[$best_user['user_id']]['squares'],$hectad['hectad']."[".$landsquares."]");
+				} else {
+					$topusers[$best_user['user_id']] = $best_user;
+					$topusers[$best_user['user_id']]['imgcount'] = 1;
+					$topusers[$best_user['user_id']]['bigesthectad'] = $hectad['landsquares'];
+					$topusers[$best_user['user_id']]['squares'] = array($hectad['hectad']."[".$landsquares."]");
+				}
+			}
+		}
+
 	}
-	
-	function cmp(&$a, &$b) 
+
+	function cmp(&$a, &$b)
 	{
 		if ($a['imgcount'] == $b['imgcount']) {
 			if ($a['bigesthectad'] == $b['bigesthectad']) {
@@ -134,15 +137,14 @@ if (!$smarty->is_cached($template, $cacheid))
 	}
 
 	uasort($topusers, "cmp");
-	
+
 	$heading = "Hectads";
 	if ($type == 'every') {
 		$desc = "hectads contributed to every square";
 	} elseif ($type == 'most') {
 		$desc = "hectads where they are the contributor to the most squares";
-	} 
-	
-	
+	}
+
 	$lastimgcount = 0;
 	$i = 1;
 	foreach($topusers as $idx=>$entry)
@@ -166,15 +168,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		$i++;
 	}
-	
+
 	$smarty->assign_by_ref('topusers', $topusers);
-	
+
 	$smarty->assign('heading', $heading);
 	$smarty->assign('desc', $desc);
 	$smarty->assign('type', $type);
 
 	$smarty->assign('types', array('every','most'));
-	
+
 	//lets find some recent photos
 	new RecentImageList($smarty);
 }
