@@ -40,6 +40,18 @@ $q = preg_replace('/ OR /',' | ',$q);
 
 $q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
 
+                        //seperate out tags!
+                if (preg_match_all('/(-?)\[([^\]]+)\]/',$q,$m)) {
+                        $q2 = '';
+                        foreach ($m[2] as $idx => $value) {
+                                $q = str_replace($m[0][$idx],'',$q);
+                                $q2 .= " ".$m[1][$idx].'"__TAG__ '.strtr($value,':-','  ').' __TAG__"';
+                        }
+                        if (!empty($q2)) {
+                                $q .= " @tags".$q2;
+                        }
+                }
+
 $q = trim(preg_replace('/[^\w~\|\(\)@"\/\*=<^$,-]+/',' ',trim(strtolower($q))));
 
 $q = preg_replace('/(\w+)(-\w+[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\""',$q);
@@ -56,11 +68,16 @@ $searchmode = (isset($_GET['mode']) && preg_match('/^\w+$/' , $_GET['mode']))?$_
 $template = "search_service.tpl";
 $cacheid = md5($q.'|'.$searchmode).(isset($_GET['inner'])+1).(isset($_GET['feedback'])+1);
 
-if (!empty($_GET['before']) && preg_match('/^\d{4}(-\d{2})*/',$_GET['before'])) {
+if (!empty($_GET['before']) && preg_match('/^\d{4}(-\d{2})*$/',$_GET['before'])) {
 	$cacheid .= "b".$_GET['before'];	
-} elseif (!empty($_GET['after']) && preg_match('/^\d{4}(-\d{2})*/',$_GET['after'])) {
+} elseif (!empty($_GET['after']) && preg_match('/^\d{4}(-\d{2})*$/',$_GET['after'])) {
 	$cacheid .= "a".$_GET['after'];	
 }
+if (!empty($_GET['function']) && preg_match('/^\w+$/',$_GET['function'])) {
+        $cacheid .= "ff".$_GET['function'];
+}
+
+
 
 customCacheControl(filemtime(__FILE__),$cacheid,false);
 customExpiresHeader(3600*6,true,true);
@@ -155,6 +172,14 @@ if (!$smarty->is_cached($template, $cacheid))
 			$mode = SPH_MATCH_EXTENDED;
 		} 
 		$index = "gi_stemmed,gi_stemmed_delta";
+
+if (!empty($_GET['new'])) 
+	$CONF['sphinx_host'] = '192.168.77.45';
+
+//if (preg_match('/crossgrid/i',$q) && (!preg_match('/supplemental/i',$q) || preg_match('/geograph|-supplemental/',$q)) ) {
+//	die("unable to execute query");
+//}
+
 		
 		$cl = new SphinxClient ();
 		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
@@ -184,12 +209,15 @@ if (!$smarty->is_cached($template, $cacheid))
 					}
 					break;
 				case '8': //try just one mode
+					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
 					$cl->SetRankingMode(SPH_RANK_BM25);
 					break;
 				case '9': //try just one mode
+					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
 					$cl->SetRankingMode(SPH_RANK_PROXIMITY);
 					break;
 				case '10': //very simple
+					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
 					$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
 					break;
 				case '11': //wildcard!
@@ -197,7 +225,12 @@ if (!$smarty->is_cached($template, $cacheid))
 					break;
 				case '12': //just latest
 					$cl->SetSortMode ( SPH_SORT_EXTENDED, "@id DESC" );
+					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
 					$cl->SetRankingMode(SPH_RANK_NONE); //we dont need any ranking... 
+					break;
+				case '13': 
+					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
+					$cl->SetRankingMode(SPH_RANK_SPH04);
 					break;
 				case '4': //try some field weights
 					$cl->SetIndexWeights(array('title'=>100,'comment'=>30));
@@ -234,11 +267,37 @@ if (!$smarty->is_cached($template, $cacheid))
 			if (strpos($q,'*') !== FALSE) {
 				$index = 'gi_star';
 			}
-			$cl->SetWeights ( array ( 100, 1 ) );
+			$cl->SetIndexWeights(array('title'=>100));
 			$cl->SetSortMode ( SPH_SORT_EXTENDED, "@relevance DESC, @id DESC" );
 			$cl->SetMatchMode ( $mode );
 			$cl->SetLimits($offset,25);
 		}
+
+if (!empty($_GET['function'])) {
+	$bits = explode('_',$_GET['function']);
+
+	switch($bits[1]) {
+		case 'user': $attribute = 'auser_id'; break;
+		case 'class': $attribute = 'classcrc'; break;
+		case 'day': $attribute = 'takendays'; break;
+		case 'year': $attribute = 'atakenyear'; break;
+		case 'myriad': $attribute = 'amyriad'; break;
+		case 'hectad': $attribute = 'ahectad'; break;
+		case 'gridref': $attribute = 'agridsquare'; break;
+		case 'centi': $attribute = 'scenti'; break;
+		case 'combi': $attribute = 'auser_id'; break; //TODO!
+	}
+
+	if ($bits[0] == 'first') {
+		$cl->setSelect("withinfirstx($attribute,2) as myint,$attribute as group");
+		$cl->setFilter('myint',array(1));
+	} elseif ($bits[0] == 'serial') {
+		$cl->setSelect("uniqueserial($attribute) as sequence");
+		$cl->SetSortMode(SPH_SORT_EXTENDED, "sequence ASC, @relevance DESC, @id DESC" );
+	}
+}
+
+
 
 		if (!empty($_GET['before']) && preg_match('/^\d{4}(-\d{2})*/',$_GET['before'])) {
 			while (strlen($_GET['before'])<10) {
@@ -266,6 +325,13 @@ if (!$smarty->is_cached($template, $cacheid))
 		$q = preg_replace('/@not(\w+)\b/','@!($1)',$q);
 
 		$res = $cl->Query ( $q, $CONF['sphinx_prefix'].$index );
+
+if (!empty($_GET['debug'])) {
+	print_r($cl);
+	print_r($q);
+	print_r($CONF['sphinx_prefix'].$index);
+	print_r($res);
+}
 		
 		if (strlen($q) < 64 && $mode != SPH_MATCH_EXTENDED && !isset($_GET['inner']) && !isset($_GET['feedback']))
 			$smarty->assign("suggestions",didYouMean($q,$cl));

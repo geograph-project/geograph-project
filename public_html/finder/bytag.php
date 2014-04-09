@@ -58,8 +58,10 @@ if (!empty($_GET['q']) || !empty($_GET['user_id'])) {
 		$client = $sphinx->_getClient();
 		$client->SetArrayResult(true);
 
-                if (!empty($_GET['user_id']))
-                        $client->setFilter("user_id",array(intval($_GET['user_id'])));
+		if (!empty($_GET['user_id'])) {
+			$client->setFilter("user_id",array(intval($_GET['user_id'])));
+			$smarty->assign("user_id",$user_id = intval($_GET['user_id']));
+		}
 
 		$sphinx->SetGroupBy('all_tag_id', SPH_GROUPBY_ATTR, '@count DESC');
 		$res = $sphinx->groupByQuery($pg,'tagsoup');
@@ -109,7 +111,7 @@ if (!empty($_GET['q']) || !empty($_GET['user_id'])) {
 			$smarty->assign("query_info",$sphinx->query_info);
 
 			if ($sphinx->numberOfPages > 1) {
-				$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q)."&amp;page=") );
+				$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).(empty($user_id)?'':'&amp;user_id='.intval($user_id))."&amp;page=") );
 				$smarty->assign("offset",(($pg -1)* $sphinx->pageSize)+1);
 			}
 			$ADODB_FETCH_MODE = $prev_fetch_mode;

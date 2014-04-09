@@ -37,6 +37,8 @@ if (!empty($_GET['q'])) {
 
 	//gets a cleaned up verion of the query (suitable for filename etc) 
 	$cacheid = $sphinx->q;
+	if (!empty($_GET['fuzzy']))
+		$cacheid .=".fuzzy";
 
 	$sphinx->pageSize = $pgsize = 10;
 
@@ -66,27 +68,32 @@ if (!empty($_GET['q'])) {
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 				$rows = $db->getAssoc("
 				select gridsquare_id,grid_reference,imagecount,name as place
-				from gridsquare 
-				left join placename_index p on (placename_id = p.id) 
+				from gridsquare
+				left join placename_index p on (placename_id = p.id)
 				where $where
 				limit $limit");
 
 				$q2 = trim(preg_replace('/\b(easting|northing):([ \d\(\)OR\|]+)/',' ',$q));
 				$q2 = trim(preg_replace('/\b(land):([ \d\(\)ORland\|]+)/',' ',$q2));
 				$q2 = trim(preg_replace('/\b(place|locality):([\w ]+)/',' ',$q2));
+				if (!empty($_GET['fuzzy'])) {
+					$q2 = "(".preg_replace('/[^\w]+/',' | ',trim($q2)).")";
+				}
+
 				$smarty->assign("q2",$q2);
-				
+
 				$results = array();
 				foreach ($ids as $c => $id) {
 					$row = $rows[$id];
-					
-					if (($c < 3 || rand(1,10) < 5) && strlen($q2) > 3) {
+
+					if ((!empty($_GET['fuzzy']) || $c < 3 || rand(1,100) < 98) && strlen($q2) > 3) {
 						$images=new ImageList();
+						//todo -when fuzzy change ranking mode
 						$images->getImagesBySphinx($q2.' '.$row['grid_reference'],3);
 						$row['images'] = $images->images;
 						$row['resultCount'] = $images->resultCount;
 						$row['query'] = $q2.' '.$row['grid_reference'];
-					} else if (rand(1,10) < 5 &&  strlen($q2) < 1)  {
+					} else if (rand(1,109) < 98 &&  strlen($q2) < 1)  {
 						$images=new ImageList();
 						$images->getImagesBySphinx('grid_reference:'.$row['grid_reference'],3);
 						$row['images'] = $images->images;
@@ -97,7 +104,7 @@ if (!empty($_GET['q'])) {
 					}
 					$results[] = $row;
 				}
-				
+
 				$smarty->assign_by_ref('results', $results);
 				$smarty->assign("query_info",$sphinx->query_info);
 
@@ -113,11 +120,10 @@ if (!empty($_GET['q'])) {
 
 		}
 	}
-	
+
 	$smarty->assign("q",$sphinx->qclean);
 	$smarty->assign("fuzzy",$fuzzy);
 }
 
 $smarty->display($template,$cacheid);
 
-?>
