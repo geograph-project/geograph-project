@@ -39,6 +39,7 @@ $uploadmanager=new UploadManager;
 //display preview image?
 if (isset($_GET['preview']))
 {
+        header("Content-Type: image/jpeg");
 	$uploadmanager->outputPreviewImage($_GET['preview']);
 	exit;
 }
@@ -49,8 +50,14 @@ $GLOBALS['STARTTIME'] = ((float)$usec + (float)$sec);
 $square=new GridSquare;
 $smarty = new GeographPage;
 
-#$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:2px solid red;padding:20px;margin:20px;font-size:1.1em;">There will be a brief interuption of service at 11pm tonight. It is not recommended to have any submissions in progress at that time. When this message disappears it will be safe to continue. Sorry for the inconvenience.</div>');
+if (!empty($CONF['submission_message'])) {
+        $smarty->assign("status_message",$CONF['submission_message']);
+}
 
+if (isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTTP_X_PSS_LOOP'] == 'pagespeed_proxy') {
+	$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:6px solid red;padding:20px;margin:20px;font-size:1.1em;">geograph.org.uk is currently in reduced functionality mode - to deal with traffic levels. <b>The maximum filesize that can be uploaded is now 5Mb.</b> To upload a larger image, please use <a href="http://www.geograph.ie/submit2.php">www.geograph.ie</a> or <a href="http://schools.geograph.org.uk/submit2.php" onclick="location.host = \'schools.geograph.org.uk\'; return false">schools.geograph.org.uk</a> <small>(they upload to the same database)</small></div>');
+	$smarty->assign("small_upload",1);
+}
 
 if (!$USER->hasPerm("basic")) {
 	$smarty->display('static_submit_intro.tpl');
@@ -76,33 +83,33 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 	switch($_FILES['jpeg_exif']['error'])
 	{
 		case 0:
-			if (!filesize($_FILES['jpeg_exif']['tmp_name'])) 
+			if (!filesize($_FILES['jpeg_exif']['tmp_name']))
 			{
 				$smarty->assign('error', 'Sorry, no file was received - please try again');
-			} 
+			}
 			elseif ($uploadmanager->processUpload($_FILES['jpeg_exif']['tmp_name']))
 			{
 				$smarty->assign('upload_id', $uploadmanager->upload_id);
 				$smarty->assign('transfer_id', $uploadmanager->upload_id);
-				
+
 				$smarty->assign('preview_url', "/submit.php?preview=".$uploadmanager->upload_id);
 				$smarty->assign('preview_width', $uploadmanager->upload_width);
 				$smarty->assign('preview_height', $uploadmanager->upload_height);
-				
+
 				$exif = $uploadmanager->rawExifData;
-				
+
 				if (!empty($exif['GPS'])) {
 					$conv = new Conversions;
-					
+
 					list($e,$n,$reference_index) = ExifToNational($exif);
 
 					list ($_POST['photographer_gridref'],$len) = $conv->national_to_gridref(intval($e),intval($n),0,$reference_index);
 
 					list ($_POST['grid_reference'],$len) = $conv->national_to_gridref(intval($e),intval($n),4,$reference_index);
-					
+
 					$_POST['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$_POST['grid_reference']);
 
-				
+
 				} elseif (preg_match("/(_|\b)([a-zA-Z]{1,3})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
 					if (strlen($m[3]) != strlen($m[4])) {
 						if (preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{4,10})(\b|[A-Za-z_])/",$_FILES['jpeg_exif']['name'],$m)) {
@@ -113,12 +120,12 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 						$_POST['gridsquare'] = $m[2];
 						$_POST['grid_reference'] = $m[2].$m[3].$m[4];
 					}
-		
-				} elseif (!empty($exif['COMMENT']) && preg_match("/\b([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",implode(' ',$exif['COMMENT']),$m)) {
-					$_POST['gridsquare'] = $m[1];
-					$_POST['grid_reference'] = $m[1].$m[2].$m[3];
+
+				} elseif (!empty($exif['COMMENT']) && preg_match("/(_|\b)([a-zA-Z]{1,2})[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/",implode(' ',$exif['COMMENT']),$m)) {
+					$_POST['gridsquare'] = $m[2];
+					$_POST['grid_reference'] = $m[2].$m[3].$m[4];
 				}
-				
+
 				$_POST['eastings'] = '';
 				$selectedtab =3;
 			} else {
@@ -167,16 +174,19 @@ if (isset($_POST['gridsquare']))
 	if (!empty($_POST['use6fig'])) {
 		$smarty->assign('use6fig', $_POST['use6fig']);
 	}
-	
+
 	//ensure the submitted reference is valid
-	if (!empty($_POST['grid_reference']) && empty($_POST['setpos2'])) 
+	if (!empty($_POST['grid_reference']) && empty($_POST['setpos2']))
 	{
 		$ok= $square->setByFullGridRef($_POST['grid_reference']);
-		
+		if (!empty($_POST['setpos']) && empty($exif)) { //$exif will be set if processed a geotagged image
+			$selectedtab =1;
+		}
+
 		//preserve inputs in smarty
 		$smarty->assign('grid_reference', $grid_reference = $_POST['grid_reference']);
-	} 
-	else 
+	}
+	else
 	{
 		$ok= $square->setGridPos($_POST['gridsquare'], $_POST['eastings'], $_POST['northings']);
 		if ($ok)
@@ -189,17 +199,17 @@ if (isset($_POST['gridsquare']))
 	if ($ok)
 	{
 		$uploadmanager->setSquare($square);
-		
+
 		$square->rememberInSession();
 
 		if (isset($_POST['picnik'])) {
 			if ($_POST['picnik'] == 'return') {
 				unset($_POST['picnik']);
 				$smarty->assign('_post',$_POST);
-				$smarty->display('submit_picnik.tpl');			
+				$smarty->display('submit_picnik.tpl');
 				exit;
 			}
-		
+
 			$q = array();
 			$q['_apikey'] = $CONF['picnik_api_key'];
 			$q['_page'] = '/in/upload';
@@ -211,20 +221,20 @@ if (isset($_POST['gridsquare']))
 			$q['_export_title'] = 'Send to Geograph';
 			$q['_host_name'] = 'Geograph';
 			$q['setpos'] = 1;
-			$q['grid_reference'] = $grid_reference;
+			$q['grid_reference'] = str_replace(' ','',$grid_reference);
 			$q['gridsquare'] = $square->gridsquare;
 			if (isset($_POST['photographer_gridref'])) {
-				$q['photographer_gridref'] = $_POST['photographer_gridref'];
+				$q['photographer_gridref'] = str_replace(' ','',$_POST['photographer_gridref']);
 			}
 			if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
 				$q['view_direction'] = $_POST['view_direction'];
 			} 
 			if ($CONF['picnik_method'] == 'inabox' && !preg_match('/safari|msie 6/i',$_SERVER['HTTP_USER_AGENT'])) { 
 				$q['picnik'] = 'return';
-				$smarty->assign('picnik_url','http://www.picnik.com/service?'.http_build_query($q));
+				$smarty->assign('picnik_url','http://www.picmonkey.com/service?'.http_build_query($q));
 				$smarty->display('submit_picnik.tpl');
 			} else {
-				header('Location: http://www.picnik.com/service?'.http_build_query($q));
+				header('Location: http://www.picmonkey.com/service?'.http_build_query($q));
 			}
 			exit;
 		}
@@ -388,11 +398,6 @@ if (isset($_POST['gridsquare']))
 						$tags = stripslashes($_POST['tags']);
 					}
 					$smarty->assign_by_ref('tags', $tags);
-					$tagarray = array();
-					foreach (explode('|',$tags) as $tag) {
-						$tagarray[str_replace('top:','',$tag)] = 1;
-					}
-					$smarty->assign_by_ref('tagarray', $tagarray);
 				}
 				
 				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
@@ -511,11 +516,17 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('comment', stripslashes($_POST['comment']));
 			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 			if (!empty($_POST['tags'])) {
-				$tags = array();
-				foreach (explode('|',stripslashes($_POST['tags'])) as $tag) {
-					$tags[$tag]=1;
+				if (is_array($_POST['tags'])) {
+                                        $tags = stripslashes(implode('|',$_POST['tags']));
+                                } else {
+                                        $tags = stripslashes($_POST['tags']);
+                                }
+
+				$tagarray = array();
+				foreach (explode('|',$tags) as $tag) {
+					$tagarray[str_replace('top:','',$tag)] = 1;
 				}
-				$smarty->assign_by_ref('tags',$tags);
+				$smarty->assign_by_ref('tagarray', $tagarray);
 			}
 			if (!empty($_POST['imageclass']))
 				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
@@ -534,7 +545,7 @@ if (isset($_POST['gridsquare']))
 			
 			$tags = new Tags;
 			$tags->assignPrimarySmarty($smarty);	
-			
+
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));
 
@@ -643,6 +654,34 @@ if (isset($_POST['gridsquare']))
 			}
 			$dirs['00'] = $dirs[0];
 			$smarty->assign_by_ref('dirs', $dirs);
+		} elseif ($step == 5) {
+
+        if ($CONF['forums']) {
+                if (empty($db))
+                        $db=GeographDatabaseConnection(false);
+
+                //let's find recent posts in the announcements forum made by administrators
+                $sql="select t.topic_title,p.post_text,t.topic_id,t.topic_time, DATEDIFF(NOW(),t.topic_time) as days
+                        from geobb_topics as t
+                        inner join geobb_posts as p on(t.topic_id=p.topic_id)
+                        inner join user as u on (t.topic_poster=u.user_id)
+                        where (find_in_set('director',u.rights)>0) and
+			topic_time > DATE_SUB(NOW(),INTERVAL 1 MONTH) and
+                        abs(unix_timestamp(t.topic_time) - unix_timestamp(p.post_time) ) < 10 and
+                        t.forum_id=1
+                        group by t.topic_id desc limit 5";
+                $news=$db->CacheGetAll(3600,$sql);
+                if ($news)
+                {
+                        foreach($news as $idx=>$item)
+                        {
+                                $news[$idx]['post_text']=strip_tags($news[$idx]['post_text']);
+                        }
+                        $smarty->assign_by_ref('news', $news);
+                }
+
+        }
+
 		}
 		if (isset($_SESSION['last_imagetaken'])) {
 			$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
@@ -726,6 +765,23 @@ else
 			}
 			if (isset($_SESSION['submit_new'])) {
 				$url .= "?new=".intval($_SESSION['submit_new']);
+			}
+			
+			if (!empty($grid_reference)) {
+				$url .= "#gridref=$grid_reference";
+			}
+			header("Location: $url");
+			print "<a href=\"$url\">Continue</a>";
+			exit;
+
+		} elseif (isset($USER->submission_method) && $USER->submission_method == 'submit2tabs' && !isset($_GET['redir'])) {
+		
+			$url = "/submit2.php?display=tabs";
+			if (isset($USER->submission_new)) {
+			        $_SESSION['submit_new'] = intval($USER->submission_new);
+			}
+			if (isset($_SESSION['submit_new'])) {
+				$url .= "&new=".intval($_SESSION['submit_new']);
 			}
 			
 			if (!empty($grid_reference)) {
