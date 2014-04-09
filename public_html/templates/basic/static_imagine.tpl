@@ -1,7 +1,7 @@
 {assign var="page_title" value="Imagine"}
 {include file="_std_begin.tpl"}
 
-<h2>Through The Square Window..... <sup style="color:red">New!</sup></h2>
+<h2>Through The Square Window.....</h2>
 
 <p>We have created a new page specially designed for use in the classroom. 
 Here a map is shown, the class can be asked to imagine what the landscape looks like at the spot highlighted, and then a button can be clicked to reveal the photo to see how it matches up.</p>
