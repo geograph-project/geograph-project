@@ -11,11 +11,16 @@
 	<a class="tab nowrap" href="/statistics/leaderboard.php?type={$t}{$extralink}">{$t}</a>
 	{/if}
 	{/foreach}
-	<a href="/help/sitemap#users">more...</a> &nbsp;
-	
-	<span class="tabSelected">all time</span>
-	
-	<a class="tab" href="/statistics/moversboard.php?type={$type}">weekly</a> leaderboard
+	<a href="/statistics.php#more">more...</a> &nbsp;
+
+	{if $filtered}
+		<a class="tab" href="/statistics/leaderboard.php?type={$type}">all time</a>
+		<span class="tabSelected">limited</span>
+	{else}	
+		<span class="tabSelected">all time</span>
+		<a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2014">2014</a>
+	{/if}
+	<a class="tab" href="/statistics/moversboard.php?type={$type}">weekly</a>
 </div>
 <div class="interestBox">
 <h2>Top {$limit} Leaderboard :: {$heading|replace:'<br/>':' '}</h2>

@@ -8,14 +8,14 @@
 	{if $t == $type}
 	<span class="tabSelected">{$t}</span>
 	{else}
-	<a class="tab nowrap" href="/statistics/moversboard.php?type={$t}{$extralink}">{$t}</a>
+	<a class="tab nowrap" href="{$script_name}?type={$t}{$extralink}">{$t}</a>
 	{/if}
 	{/foreach}
-	<a href="/help/sitemap#users">more...</a> &nbsp;
+	<a href="/statistics.php#more">more...</a> &nbsp;
 	
 	<a class="tab" href="/statistics/leaderboard.php?type={$type}">all time</a> 
-
-	<span class="tabSelected">weekly</span> leaderboard
+        <a class="tab" href="/statistics/leaderboard.php?type={$type}&amp;whenYear=2014">2014</a>
+	<span class="tabSelected">weekly</span>
 	
 </div>
 <div class="interestBox">
