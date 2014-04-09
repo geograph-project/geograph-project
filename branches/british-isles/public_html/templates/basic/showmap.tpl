@@ -27,6 +27,16 @@
 
 			{if $square->reference_index == 1}
 				{literal}
+				<style type="text/css"> 
+					#mapTitleOS50k {
+						font-family: verdana, arial, sans-serif;
+					}
+					#mapTitleOS50k small {
+						font-size:x-small;
+						margin-left:40px;
+						font-weight:normal;
+					}
+				</style>
 				<script type="text/javascript">
 
 				var digits = 5;
@@ -51,8 +61,8 @@
 								pt = map.getLonLatFromViewPortPx(e.xy);
 
 							var gro = new GT_OSGB();
-							gro.northings = pt.lat;
-							gro.eastings = pt.lon;
+							gro.northings = parseInt(pt.lat,10);
+							gro.eastings = parseInt(pt.lon,10);
 
 							curgr = gro.getGridRef(digits);
 
