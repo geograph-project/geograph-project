@@ -150,7 +150,7 @@ Display:
 			[<a href="/search.php?i={$i}&amp;form=advanced">refine search</a>]</div>{/if}
 	
 		<b><a href="/search.php?i={$i}&amp;displayclass=cooliris">View results on a 3D Wall</a></b> |
-		<a href="/search.php?i={$i}&amp;displayclass=gmap">Larger Map</a> |
+		<a href="/search.php?i={$i}&amp;displayclass=map">Larger Map</a> |
 		<a href="/search.php?i={$i}&amp;displayclass=full">Full Results</a> |
 		{if $engine->numberOfPages > 1} 
 			<b><a href="/search.php?i={$i}&amp;page=2&amp;displayclass=excerpt">Next Page of results &gt; &gt;</a></b>
