@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if} xml:lang="en" id="geograph">
 <head>
 	{pageheader}
-	{if $page_title}<title>{$page_title|escape:'html'} :: Geograph Ireland - photograph every grid square!</title>
+	{if $page_title}<title>{$page_title|escape:'html'} :: Geograph Ireland</title>
 	{else}<title>Geograph Ireland - photograph every grid square!</title>{/if}
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	{if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
