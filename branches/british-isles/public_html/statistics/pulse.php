@@ -43,37 +43,36 @@ $smarty->cache_lifetime = 600; //10min cache
 if (!$smarty->is_cached($template, $cacheid))
 {
 	dieUnderHighLoad(5);
-	
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed'); 	
+
+	$db=GeographDatabaseConnection(false);
+	if (!$db) die('Database connection failed');
 
 	$title = "Geograph Pulse";
 
-	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$table = array();
 
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 10 MINUTE)";
 	calc("Images Submitted in last 10 minutes",$sql);
-	
+
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 1 HOUR)";
 	calc("Images Submitted in last hour",$sql);
-	
+
 	if ($upper_limit = $db->getOne("SELECT MIN(gridimage_id) FROM gridimage WHERE moderation_status = 'pending'")) {
 		$sql = "SELECT MAX(gridimage_id) FROM gridimage_search WHERE gridimage_id < $upper_limit";
 	} else {
 		$sql = "SELECT MAX(gridimage_id) FROM gridimage_search";
 	}
 	calc("All moderated upto ID",$sql);
-	
+
 	$data = $db->GetRow("select count(*) as `count`,(unix_timestamp(now()) - unix_timestamp(min(submitted))) as age from gridimage where moderation_status='pending'");
-	
+
 	$table[] = array("Parameter"=>"Images Pending","Value"=>$data['count']);
 	$table[] = array("Parameter"=>"Oldest Pending","Value"=>intval($data['age']/3600).' hours');
-	
+
 
 $table[] = array("Parameter"=>'',"Value"=>'');
-	
+
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Images Submitted in last 24 hours",$sql,600);
 
@@ -83,11 +82,12 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	$sql = "SELECT COUNT(DISTINCT moderator_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 48 HOUR) and moderator_id > 0 and moderated > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Active Moderators in last 24 hours",$sql,3600);
 
+/*
 $table[] = array("Parameter"=>'',"Value"=>'');
 
-	$sql = "SELECT COUNT(*) FROM category_canonical";
-	calc("Categories mapped to canonical",$sql,3600);
-
+	$sql = "SELECT COUNT(*) FROM category_top";
+	calc("Categories mapped to Geographical Context",$sql,3600);
+*/
 $table[] = array("Parameter"=>'',"Value"=>'');
 
 	$sql = "SELECT COUNT(*) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 7 DAY)";
@@ -95,6 +95,11 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 
 	$sql = "SELECT COUNT(DISTINCT user_id) FROM gridimage WHERE submitted > DATE_SUB(NOW() , INTERVAL 7 DAY)";
 	calc("Image Contributors in last 7 days",$sql,3600*3);
+
+$table[] = array("Parameter"=>'',"Value"=>'');
+
+	$sql = "SELECT COUNT(*) FROM  gridimage_daily where showday is NULL and vote_baysian > 3.2";
+        calc("Images in Daily Photo Upcoming Pool",$sql);
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 
@@ -119,7 +124,7 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	calc("Forum Posters in last hour",$sql);
 
 $table[] = array("Parameter"=>'',"Value"=>'');
-	
+
 	$sql = "SELECT COUNT(*) FROM geobb_posts WHERE post_time > DATE_SUB(NOW() , INTERVAL 24 HOUR)";
 	calc("Forum Posts in last 24 hours",$sql,3600);
 
@@ -130,7 +135,16 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 	calc("Forum Viewers in last 24 hours",$sql,3600);
 
 $table[] = array("Parameter"=>'',"Value"=>'');
-	
+
+	$filedb=NewADOConnection($CONF['filesystem_dsn']);
+
+	$files = $filedb->getOne("select max(file_id) from file"); //yes its not quite the same as COUNT(*) but its an innodb table, so count(*) is not optimized!
+	$recent = $filedb->getOne("select count(*) from file where file_id > $files-1000 and file_created > date_sub(now(),interval 1 hour)");
+	$table[] = array("Parameter"=>"Total FileSystem Objects","Value"=>$files);
+	$table[] = array("Parameter"=>"Created in last Hour","Value"=>$recent);
+
+$table[] = array("Parameter"=>'',"Value"=>'');
+
 	if (strpos($_ENV["OS"],'Windows') === FALSE) {
 		//check load average
 		$buffer = "0 0 0";
@@ -140,50 +154,49 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 				$buffer = fgets($f, 1024);
 				$loads = explode(" ",$buffer);
 				$load = (float)$loads[0];
-				
+
 				$name = "Hamsters currently sweating*";
 				$table[] = array("Parameter"=>$name,"Value"=>sprintf("%d",$load*10));
 				$smarty->assign("footnote","<p>* below 10 is good, above 20 is worse, above 40 is bad.</p>");
 				$table[] = array("Parameter"=>'',"Value"=>'');
 			}
-			fclose($f);			
+			fclose($f);
 		}
 	}
-	
+
 	$sql = "SELECT count(*) FROM event WHERE status='pending'";
 	calc("Pending Hamster Tasks",$sql,100);
-		
-	$sql = "SELECT COUNT(*) FROM kmlcache WHERE rendered = 0";
-	calc("Superlayers tiles to update",$sql,3600);
-	
-	$sql = "SELECT COUNT(DISTINCT url) FROM gridimage_link WHERE next_check < NOW()";
-	calc("Links waiting to be checked",$sql);
-	
+
+#	$sql = "select count(distinct id) from vote_stat where type = 'i19618112'";
+#	calc("Rated Images",$sql);
+
+#	$sql = "SELECT COUNT(*) FROM kmlcache WHERE rendered = 0";
+#	calc("Superlayers tiles to update",$sql,3600);
+
+#	$sql = "SELECT COUNT(DISTINCT url) FROM gridimage_link WHERE next_check < NOW()";
+#	calc("Links waiting to be checked",$sql);
+
 	$sql = "SELECT COUNT(*) FROM gridimage_queue";
 	calc("Images in prepending queue",$sql);
-	
+
 	$smarty->assign_by_ref('table', $table);
-	
+
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
 	$smarty->assign("nosort",1);
-		
-
-} 
+}
 
 $smarty->display($template, $cacheid);
 
 function calc($name,$sql,$cache = 0) {
 	global $db,$table;
-	
+
 	if ($cache) {
 		$val = $db->cacheGetOne($cache,$sql);
 	} else {
 		$val = $db->getOne($sql);
 	}
-	
+
 	$table[] = array("Parameter"=>$name,"Value"=>$val);
-	
 }
-	
-?>
+
