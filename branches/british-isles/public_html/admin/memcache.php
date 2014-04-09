@@ -160,6 +160,11 @@ if (isset($_GET['getExtendedStats'])) {
 	} elseif ($_GET['action'] == 'delete') {
 		$ok = $memcache->name_delete($namespace,intval($_GET['image_id']).':'.$size);
 		print "<p>Delete return value: $ok</p>";
+
+		if (!empty($_GET['cleardb'])) {
+			$db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = ".intval($_GET['image_id']));
+			print "Affected Rows: ".$db->Affected_Rows();
+		}
 	}
 
 } elseif (isset($_GET['flushMemcache'])) {
@@ -207,15 +212,18 @@ key <input type="text" name="key" value="" size="7"/> <input type="submit" value
 <hr/>
 <form method="get">
 <h3>Image Stat Cache</h3>
-post_id: <input type="text" name="image_id" value="" size="7"/> <input type="submit" value="Go"><br/>
+gridimage_id: <input type="text" name="image_id" value="" size="7"/> <input type="submit" value="Go"><br/>
 
 <input type="radio" name="size" value="120x120" checked> 120x120 <br/>
 <input type="radio" name="size" value="213x160"> 213x160 <br/>
+<input type="radio" name="size" value="393x300"> 393x300 <br/>
 <input type="radio" name="size" value="F"> Full <br/>
 <br/>
 
 <input type="radio" name="action" value="view" checked> View Contents<br/>
 <input type="radio" name="action" value="delete"> Delete Cache<br/>
+
+<input type="checkbox" name="cleardb" checked> Also clear gridimage_size table.
 </form>
 
 <hr/>
