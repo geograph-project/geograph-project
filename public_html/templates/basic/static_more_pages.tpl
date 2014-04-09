@@ -21,7 +21,7 @@
 	<li>All photos are licensed for re-use under a <b>{external href="http://creativecommons.org/licenses/by-sa/2.0/" text="Creative Commons Licence"}</b>. <a href="/help/freedom" title="">Find out more</a><br/><br/></li>
 	<li><a href="/kml.php" title="">Geograph with <b>Google Earth</b> and <b>Google Maps</b></a></li>
 	<li><a href="/help/sitemap#software" title=""><b>Other ways</b> to can use this fabulous resource</a></li>
-	<li><a href="/activities/">View images in our <b>Activities section</b></a><sup style="color:red">New!</sup></li>
+	<li><a href="/activities/">View images in our <b>Activities section</b></a></li>
 	<li><a href="/teachers/" title="Education Area">Geograph for <b>teachers</b></a></li>
 </ul>
 
