@@ -150,6 +150,14 @@ $orderWays=array('DESC'=>'DESC','ASC'=>'ASC');
 //Sorting options...
 $queue = isset($_REQUEST['status'])?strtolower($_REQUEST['status']):$status;
 $order_by=$order=null;
+
+if (empty($_SESSION[$queue.'_tickets']['sort'])) {
+	//set a default sort order
+	//sort=date&order=DESC
+	$_SESSION[$queue.'_tickets']['sort'] = 'date';
+	$_SESSION[$queue.'_tickets']['order'] = 'DESC';
+}
+
 if($_REQUEST['sort'] && $sortOptions[$_REQUEST['sort']])
     $order_by =$sortOptions[$_REQUEST['sort']];
 elseif($sortOptions[$_SESSION[$queue.'_tickets']['sort']]) {
