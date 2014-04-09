@@ -340,22 +340,14 @@ function showLocationBox() {
 var timers = new Array();
 
 function showMyHelpDiv(which,show) {
-	if (show) {
 		if (timers[which]) {
-			return;
+			clearTimeout(timers[which]);
 		}
 		timers[which] = setTimeout(function() {
 			document.getElementById(which+'_help').style.display=show?'':'none';
 			clearTimeout(timers[which]);
 			timers[which] = null;
-		},100);
-	} else {
-		if (timers[which]) {
-			clearTimeout(timers[which]);
-			timers[which] = null;
-		}
-		document.getElementById(which+'_help').style.display=show?'':'none';
-	}
+		},400);
 }
 
 {/literal}
