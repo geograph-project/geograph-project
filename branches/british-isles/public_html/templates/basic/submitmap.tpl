@@ -10,7 +10,7 @@
 
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
 <script type="text/javascript" src="{"/js/mappingG3.js"|revision}"></script>
-<script type="text/javascript" src="/js/nls.tileserver.com-api.js"></script>
+<script type="text/javascript" src="{"/js/nls.tileserver.com-api.js"|revision}"></script>
 {literal}
 	<script type="text/javascript">
 	//<![CDATA[
@@ -165,6 +165,16 @@
 			}
 		}
 		AttachEvent(window,'load',updateMapMarkers,false);
+
+function myPress(that,event) {
+	var unicode=event.keyCode? event.keyCode : event.charCode;
+	if (unicode == 13) { //enter
+		showAddress(that.value);
+		return false;
+	}
+	return true;
+}
+
 {/literal}
 
 		{dynamic}
@@ -189,8 +199,9 @@
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
 
-<div style="width:600px; text-align:center;"><label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
-
+<div style="width:600px; text-align:center;">
+<label for="addressInput">Enter Address/place/postcode:	<input type="text" size="42" id="addressInput" name="address" value="" onkeypress="return myPress(this,event)"/></label> <input type="button" value="Find" onclick="return showAddress(this.form.elements['address'].value);"/><br/>
+<label for="grid_reference"><b style="color:#0018F8">Selected Grid Reference</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{dynamic}{if $grid_reference}{$grid_reference|escape:'html'}{/if}{/dynamic}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>
 <input type="submit" value="Next Step &gt; &gt;"/> <span id="dist_message"></span></div>
 
 <div id="map" style="width:600px; height:500px;border:1px solid blue">Loading map...</div>
@@ -199,14 +210,9 @@
 <input type="hidden" name="setpos" value=""/>
 
 </form>
-<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
-<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:
-	<input type="text" size="50" id="addressInput" name="address" value="" />
-	<input type="submit" value="Find"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder)<br/>
-	Change view: <a href="javascript:void(resetView());">Whole British Isles</a> &middot; <a href="javascript:void(centerMarker());">Center on Marker</a></small></small>
+<div style="width:600px; text-align:center;">
+	<small><small>Change view: <a href="javascript:void(resetView());">Whole British Isles</a> &middot; <a href="javascript:void(centerMarker());">Center on Marker</a></small></small>
 </div>
-</form>
 
 <script src="//maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
 {if $inner}
