@@ -181,8 +181,19 @@ if (!empty($map['squares'])) {
                 'when' => 'submitted',
                 'sql' => "SELECT $columns,gi.submitted AS date,CONCAT(gi.title,' by ',gi.realname) AS title,CONCAT(gi.grid_reference,IF(name is not null,concat(' near ',name,', ',localities),'')) AS special_title, CONCAT('/gridref/',gi.grid_reference) AS special_url, ug.user_id as user_id
                         FROM user_gridsquare ug INNER JOIN gridimage_search gi USING (grid_reference) INNER JOIN gridimage g2 USING (gridimage_id) LEFT JOIN placename_index ON (gr=grid_reference)
-                        WHERE gi.submitted > DATE_SUB($crit, INTERVAL 3 DAY) AND g2.moderated > $crit AND ug.user_id IN ($ids) AND gi.user_id NOT in ($ids) GROUP BY gridimage_id ORDER BY gi.grid_reference,gridimage_id"
+                        WHERE gi.submitted > DATE_SUB($crit, INTERVAL 3 DAY) AND g2.moderated > $crit AND ug.user_id IN ($ids) AND gi.user_id != ug.user_id GROUP BY gridimage_id ORDER BY gi.grid_reference,gridimage_id"
 			//used moderated as the filter, but include submitted in there too, as it has an index. (because when a mod backlog, images would be missed on daily schedule)
+        );
+}
+
+if (!empty($map['snippets'])) {
+        $ids = implode(',',array_keys($map['snippets']));
+        $todo[] = array(
+                'title' => 'Images using your Shared Descriptions',
+                'when' => 'added',
+                'sql' => "SELECT $columns,gs.created AS date,CONCAT(gi.title,' by ',gi.realname) AS title,s.title AS special_title, CONCAT('/snippet/',snippet_id) AS special_url, s.user_id as user_id
+                        FROM snippet s INNER JOIN gridimage_snippet gs USING (snippet_id) INNER JOIN gridimage_search gi USING (gridimage_id)
+                        WHERE gs.created > $crit AND s.user_id IN ($ids) AND gi.user_id != s.user_id GROUP BY gridimage_id ORDER BY snippet_id,gridimage_id"
         );
 }
 
@@ -237,16 +248,16 @@ foreach ($results as $user_id => $collections) {
 		$body .= str_repeat('=',70)."\n$title\n\n";
 		$last = '';
 		foreach ($images as $idx => $image) {
-			$body .= "{$image['title']}, http://{$param['config']}/photo/{$image['gridimage_id']} {$image['when']} {$image['date']}\n\n";
 			if (!empty($image['special_title']) && $last != $image['special_title']) {
-				if ($image['when'] == 'posted') {
+				$body .= html_entity_decode("{$image['special_title']}, http://{$param['config']}{$image['special_url']}\n\n");
+				if ($image['when'] != 'posted') {
 					//ugly hack because the forum is already entity encoding
-					$html .= "<b><a href=\"http://{$param['config']}{$image['special_url']}\">{$image['special_title']}</a></b><br/>\n";
-				} else {
-					$html .= "<b><a href=\"http://{$param['config']}{$image['special_url']}\">".htmlentities($image['special_title'])."</a></b><br/>\n";
+					$image['special_title'] = htmlentities($image['special_title']);
 				}
+				$html .= "<b><a href=\"http://{$param['config']}{$image['special_url']}\">{$image['special_title']}</a></b><br/>\n";
 				$last = $image['special_title'];
 			}
+			$body .= "* {$image['title']}, http://{$param['config']}/photo/{$image['gridimage_id']} {$image['when']} {$image['date']}\n\n";
 			$html .= "&middot; <a href=\"http://{$param['config']}/photo/{$image['gridimage_id']}\">".htmlentities($image['title'])."</a> {$image['when']} {$image['date']}<br/>\n";
 		}
 	}
@@ -279,4 +290,8 @@ foreach ($results as $user_id => $collections) {
 	if ($param['action'] == 'send' || $param['action'] == 'fake') {
 	        $mail->send(array($to));
 	}
+}
+
+if ($param['action'] == 'send' && count($results) > 2) {
+	file_get_contents("http://www.geograph.org.uk/project/systemtask.php?id[]=45&spotcheck=1&api=1&method=POST");
 }
