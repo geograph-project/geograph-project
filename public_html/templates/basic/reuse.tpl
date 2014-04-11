@@ -30,6 +30,10 @@ div:target {
 </style>
 <a name="top"></a>
 
+<div style="float:right">
+	Geograph ID:<br/> [[[{$image->gridimage_id}]]]
+</div>
+
 <div style="float:left; position:relative; padding-right:10px;"><h2><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
 alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" align="top" /></a> <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>
 
@@ -76,12 +80,12 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <ul class="checklist" style="display:none" id="showweb">
 
 <li><b>We do ask you be polite and not abuse the Geograph website resources.</b> <br/>
-<i>Please do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"} the fullsize image directly off our servers, this is likely to be blocked.</i><br/>
+<i>Please do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"} the fullsize image directly off our servers, unauthorized hotlinking will likely be blocked.</i><br/>
 Instead download a copy, and upload it to your own webspace. <b>
 {if $image->isLandscape()}{/if}
 <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download {if !$image->original_width}fullsize{/if} {$image->cached_size.0}x{$image->cached_size.1}px JPEG file</a>
 {if $image->original_width}
-or <a href="/more.php?id={$image->gridimage_id}">View other sizes zvailable...</a>
+or <a href="/more.php?id={$image->gridimage_id}">View other sizes available...</a>
 {/if}
 </b></li>
 
@@ -96,15 +100,17 @@ or <a href="/more.php?id={$image->gridimage_id}">View other sizes zvailable...</
 
 <div style="text-align:right; border-bottom:1px solid gray"><i>Thank you for your attention in this matter.</i></div>
 <br/><br/>
+
+
+<div class="interestBox">
+	<a href="/help/donate"><img src="http://{$static_host}/img/donate-now-button.gif" style="vertical-align: middle;"/></a> Please support the long term viablity of the Geograph Project!
+</div>
 <br/><br/>
-
-
-<div style="float:right; position:relative; text-align:center; width:180px; border:1px solid red; padding:10px; background-color:lightgrey">Code for pasting into a Geograph related page <input type=text size="10" value="[[[{$image->gridimage_id}]]]" readonly="readonly"/></div>
 
 
 <p>We have created some snippets of code to make using the photo easy on various websites or similar:</p>
 <br/>
-<div class="interestBox">Jump snippets for: <a href="#html">HTML</a>, <a href="#bbcode">Forums</a> or <a href="#wikipedia">Wikipedia</a>. Or get <a href="#meta">CC-metadata</a> (RDF) or <a href="#kml">KML File</a></div>
+<div class="interestBox">Jump snippets for: <a href="#html">HTML</a>, <a href="#bbcode">Forums</a> or <a href="#wikipedia">Wikipedia</a>. Or get <a href="#meta">CC-metadata</a> (RDF) or <a href="#kml">KML File</a>.</div>
 <br/>
 
 
@@ -167,9 +173,11 @@ Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so 
 <b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=geograph+_`$image->gridimage_id`.jpg&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</div>
 <br/>
 
-The following is the recommended template for using on the photo page. You should <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download the image</a>, and upload to {external href="http://commons.wikimedia.org/wiki/Main_Page" text="wikimedia commons"}.
+The following is the recommended template for using on the photo page. You should <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download the image</a>, and upload to {external href="http://commons.wikimedia.org/wiki/Main_Page" text="wikimedia commons"}.<br/><br/>
 
-<form><textarea rows="7" style="font-size:0.8em">== {literal}{{int:filedesc}}{/literal} ==
+You can also use the {external href="http://tools.wmflabs.org/geograph2commons/?server=www.geograph.org.uk&amp;photo_id=`$image->gridimage_id`" text="geograph2commons"} to crossload the image (clicking that link should prefill the image-id for you!)<br/><br/>
+
+<form><textarea rows="7" style="font-size:0.8em" id="wikitext">== {literal}{{int:filedesc}}{/literal} ==
 {literal}{{{/literal}Information
 |Description={literal}{{{/literal}en|1={$image->title|escape:'html'}{literal}}}{/literal}
 |Source=From [http://{$http_host}/photo/{$image->gridimage_id} geograph.org.uk]
