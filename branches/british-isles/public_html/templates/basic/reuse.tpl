@@ -8,7 +8,10 @@ textarea {
 	font-size:0.9em;
 	background-color:#eeeeee
 }
-.checklist LI {
+ul.checklist {
+	width:750px;
+}
+ul.checklist li {
 	padding:10px;
 }
 h3 {
@@ -37,7 +40,7 @@ div:target {
 <div style="float:left; position:relative; padding-right:10px;"><h2><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
 alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" align="top" /></a> <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>
 
-<h2 style="margin-bottom:0px" class="nowrap"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
+<h2 style="margin-bottom:0px"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
 <div>by <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 
 <br style="clear:both;"/>
@@ -58,7 +61,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 	<br style="clear:both"/>
 </div>
 
-<p><b>Thank you for your interest in this photo</b>, you are more than welcome to use it as long as you <b>follow a few basic requirements:</b></p>
+<div class="interestBox" style="background-color:#eee"><b>Thank you for your interest in this photo</b>, you are more than welcome to use it as long as you <b>follow a few basic requirements:</b></div>
 
    <div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
    	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed" style="padding-left:20px"/></a><br/>
@@ -75,35 +78,38 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 </ul>
 
-<p><b>Web based project?</b><span id="hideweb"> (<a href="javascript:void(show_tree('web'));">if so, click here</a>)</span></p>
+<p><b>Web based project?</b></p>
 
-<ul class="checklist" style="display:none" id="showweb">
+<ul class="checklist">
 
-<li><b>We do ask you be polite and not abuse the Geograph website resources.</b> <br/>
-<i>Please do not {external href="http://en.wikipedia.org/wiki/Inline_linking" text="hotlink"} the fullsize image directly off our servers, unauthorized hotlinking will likely be blocked.</i><br/>
-Instead download a copy, and upload it to your own webspace. <b>
 {if $image->isLandscape()}{/if}
-<a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">Download {if !$image->original_width}fullsize{/if} {$image->cached_size.0}x{$image->cached_size.1}px JPEG file</a>
-{if $image->original_width}
-or <a href="/more.php?id={$image->gridimage_id}">View other sizes available...</a>
-{/if}
-</b></li>
+<li><b>We do ask you be polite and not abuse the Geograph website resources.</b> <br/>
+<small>&nbsp; <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="16" height="16"/>
+{external href="http://en.wikipedia.org/wiki/Inline_linking" text="Hotlinking"} the image directly off our servers will trigger automatic watermarks and may be blocked</small><br/><br/>
 
-<li><small>Ideally you should link back to the main photo page, at <a href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</a>, where the latest information for the photo will be available.</small></li>
+Instead please <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><b>Download</b> {if !$image->original_width}fullsize{/if} image <small>({$image->cached_size.0}x{$image->cached_size.1}px jpeg)</small></a>, and upload it to your own webspace. {if $image->original_width} <a href="/more.php?id={$image->gridimage_id}">Bigger sizes also available</a>{/if}
+</li>
+
+<li><span style="color:red">New!</span> We provide a <a href="/stamp.php?id={$image->gridimage_id}">self service tool, available here</a>, to download a image file with a creative commons complicant credit included as text overlay. Or get an <a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}">image with the default settings</a>.</li>
+
+<li>Remember to link back to the main photo page, at <a href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</a>, where the latest information will be available.</li>
+
 </ul>
-<br style="clear:both"/>
-<p><i>For offline reproduction, wording similar to the following is recommended:</i></p>
 
-<form><textarea rows="3">Image Copyright {$image->realname|escape:'html'}. This work is licensed under the Creative Commons Attribution-Share Alike 2.0 Generic Licence. To view a copy of this licence, visit http://creativecommons.org/licenses/by-sa/2.0/ or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.</textarea></form>
+<p><b>For offline reproduction, wording similar to the following is recommended:</i></b>
+
+<ul class="checklist">
+	<li>Image Copyright {$image->realname|escape:'html'}. This work is licensed under the Creative Commons Attribution-Share Alike 2.0 Generic Licence. To view a copy of this licence, visit http://creativecommons.org/licenses/by-sa/2.0/ or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.</li>
+</ul>
 
 <br/><br/>
 
-<div style="text-align:right; border-bottom:1px solid gray"><i>Thank you for your attention in this matter.</i></div>
+<div style="text-align:center;">Thank you for your attention in this matter.</div>
 <br/><br/>
 
 
-<div class="interestBox">
-	<a href="/help/donate"><img src="http://{$static_host}/img/donate-now-button.gif" style="vertical-align: middle;"/></a> Please support the long term viablity of the Geograph Project!
+<div class="interestBox" style="background-color:lightgreen;text-align:center">
+	Found Geograph Images useful? Please consider <a href="/help/donate">donating</a> to support the Geograph Project!
 </div>
 <br/><br/>
 
