@@ -178,6 +178,9 @@ if (isset($_FILES['jpeg_exif']))
 					$uploadmanager->setTags(explode('|',$_POST['tags'][$key]));
 				}
 			}
+			if (!empty($_POST['subject'][$key])) {
+				$uploadmanager->setSubject($_POST['subject'][$key]);
+			}
 			
 
 			if ($_POST['pattrib'] == 'other') {

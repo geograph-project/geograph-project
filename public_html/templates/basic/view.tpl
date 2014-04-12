@@ -290,6 +290,8 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 		{if $prefix ne 'top' && $prefix ne '' && $prefix ne 'term' && $prefix ne 'cluster' && $prefix ne 'wiki'}
 			{if $prefix == 'bucket'}
 				<dt>Image Buckets <sup><a href="/article/Image-Buckets" class="about" style="font-size:0.7em">?</a></sup></dt>
+			{elseif $prefix == 'subject'}
+				<dt>Primary Subject of Photo</dt>
 			{else}
 				<dt>{$prefix|capitalize|escape:'html'} (from Tags)</dt>
 			{/if}
