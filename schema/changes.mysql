@@ -2446,3 +2446,18 @@ alter table user_archive add gravatar enum('unknown','found','none') not null de
 #################################################
 
 
+CREATE TABLE `gridimage_thumbsize` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `maxw` smallint(5) unsigned NOT NULL,
+  `maxh` smallint(5) unsigned NOT NULL,
+  `width` smallint(5) unsigned NOT NULL,
+  `height` smallint(5) unsigned NOT NULL,
+  `created` timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY  (`gridimage_id`,`maxw`,`maxh`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+#################################################
+
+
+
