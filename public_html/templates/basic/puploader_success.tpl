@@ -1,4 +1,4 @@
-]{assign var="page_title" value="Upload Results"}
+{assign var="page_title" value="Upload Results"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 
