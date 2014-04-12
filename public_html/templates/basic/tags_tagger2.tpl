@@ -8,6 +8,9 @@
 <div style="position:fixed;top:200px;left:10px;border:1px solid red"></div>
 <div style="padding:6px">
 <style>{literal}
+body {
+	background-color: #f0f0f0 !important;
+}
 .tagPublic span,.tagPublic a.taglink {
 	background-color:lightgreen !important;
 }
@@ -94,8 +97,9 @@
 
 		<div style="font-size:0.8em;padding-right:20px;padding-top:20px">
 
-			&middot; To start a new tag, just type a comma or semicolon.<br/><br/>
+			&middot; Having typed a tag, to start another, just type a comma or semicolon.<br/><br/>
 			&middot; Tags are simple free-form keywords/short phrases used to describe the image.<br/><br/>
+			&middot; Tags should ONLY contain letters, numbers, spaces, and/or hyphens.<br/><br/>
 			&middot; Please add as many Tags as you need. Tags will help other people find your photo.<br/><br/>
 			&middot; Tags should be singular, ie an image of a church should have the tag "church", not "churches"<br/> <small>&nbsp;&nbsp;(however if a photo is of multiple say fence posts, then the tag "fence post<b>s</b>" should be used).</small><br/><br/>
 			&middot; To add a placename as a Tag, please prefix with "place:", eg "place:Croydon" - similarly could use "near:Tring".
@@ -107,7 +111,7 @@
 		<span class="experimental">
 		<input type="radio" name="selector" accesskey="1" value="alpha" id="sel_alpha"/> <label for="sel_alpha">All Tags - Alphabetical</label><br/></span>
 		<input type="radio" name="selector" accesskey="2" value="ranked" id="sel_ranked" checked/> <label for="sel_ranked">All Tags<span class="experimental"> - Ranked</span></label><br/>
-		<input type="radio" name="selector" accesskey="3" value="selfrecent" id="sel_selfrecent"/> <label for="sel_selfrecent">Your Tags - Recently Used</label><br/>
+		<input type="radio" name="selector" accesskey="3" value="selfrecent" id="sel_selfrecent"/> <label for="sel_selfrecent">Your Tags<span class="experimental"> - Recently Used</span></label><br/>
 		<span class="experimental">
 		<input type="radio" name="selector" accesskey="e" value="selfimages" id="sel_selfimages"/> <label for="sel_selfimages">Your Tags - Most Used</label><br/>
 		<input type="radio" name="selector" accesskey="4" value="selfalpha" id="sel_selfalpha"/> <label for="sel_selfalpha">Your Tags - Alphabetical</label><br/></span>
@@ -116,11 +120,14 @@
 			<input type="radio" name="selector" accesskey="5" value="nearby" id="sel_nearby"/> <label for="sel_nearby">Nearby Tags</label><br/>
 		{/if}
 		{if $topicstring}
-			<input type="radio" name="selector" accesskey="7" value="automatic" id="sel_automatic"/> <label for="sel_automatic">Tags derived from description</label><br/>
-		{/if}{/dynamic}
-		<span class="experimental">
-		<input type="radio" name="selector" accesskey="s" value="subject" id="sel_subject"/> <label for="sel_subject">Subject List</label><br/>
+			<input type="radio" name="selector" accesskey="7" value="automatic" id="sel_automatic" checked/> <label for="sel_automatic">Tags derived from description</label><br/>
+		{/if}
+		{if $hide_context}<span class="experimental">{/if}
 		<input type="radio" name="selector" accesskey="8" value="top" id="sel_top"/> <label for="sel_top">Context List</label><br/>
+		{if $hide_context}</span>{/if}
+		{/dynamic}
+		<input type="radio" name="selector" accesskey="s" value="subject" id="sel_subject"/> <label for="sel_subject">Subject List</label><br/>
+		<span class="experimental">
 		<input type="radio" name="selector" accesskey="9" value="bucket" id="sel_bucket"/> <label for="sel_bucket">Bucket List</label><br/>
 		<input type="radio" name="selector" accesskey="0" value="categories" id="sel_categories"/> <label for="sel_categories">Your Category list</label><br/>
 		</span>
@@ -131,19 +138,22 @@
 		<input type=checkbox onclick="toggle_compact(this)" id="compact"/> <label for="compact">Compact Listing Format</label><br/>
 		<input type=checkbox onclick="toggle_experimental(this)" id="experimental"/> <label for="experimental">Show Experimental Modes</label>
 	</div>
-
+	<br style="clear:both"/>
 </form>
-
-
-
-
-
-<br style="clear:both"/>
 
 
 {literal}
 
 <script type="text/javascript">
+
+String.prototype.capitalizeTag = function () {
+	var bits = this.split(":",2);
+	if (bits.length == 2) {
+		return bits[0].toLowerCase()+':'+bits[1].toTitleCase();
+	} else {
+		return this.toTitleCase();
+	}
+}
 
 function export_tags() {
 	var list = $('#__newtag').select2('val');
@@ -179,7 +189,7 @@ $(function() {
 	$('#__newtag').select2({
 		multiple: true,
 		separator: ';',
-		placeholder: 'enter tags here',
+		placeholder: 'enter or search for tags here',
 		closeOnSelect: false,
 		tokenSeparators: [';',','],
 		ajax: {
@@ -196,8 +206,15 @@ $(function() {
 					data.string = $("input[name=topicstring]").val();
 				} else if (mode == 'nearby' && $("input[name=gr]").length > 0) {
 					data.gr = $("input[name=gr]").val();
-				} else if (mode == 'selfrecent') { //tofix temp patch, because CANT search selfrecent yet?
-					data.term = '';
+				} else if (mode == 'selfrecent') { 
+					if (term.length > 0 && !$('.experimental').prop('checked')) {
+						//if entered a term, fall back to 'Your Tags - Ranked'
+						data.mode = 'ranked';
+						data.mine = 1;
+						data.page = page;
+					} else {
+						data.term = ''; //send a empty string to help with caching
+					}
 				} else {
 					data.page = page;
 				}
@@ -207,7 +224,7 @@ $(function() {
 				var more = (data.length == 60 && (page*60) < 1000);
 				var results = [];
 				$.each(data, function(){
-					results.push({id: this, text: this.toTitleCase() });
+					results.push({id: this, text: this.capitalizeTag() });
 				});
 				return {results: results, more: more};
 			}
@@ -222,7 +239,7 @@ $(function() {
 		initSelection: function (element, callback) {
 			var data = [];
 			$(element.val().split(/;/)).each(function () {
-				data.push({id: this, text: this.toTitleCase() });
+				data.push({id: this, text: this.capitalizeTag() });
 			});
 			callback(data);
 		}
@@ -270,7 +287,7 @@ $(function() {
 			$('.select2-input').val(txt);
 		}
 		var mode =$("input[name=selector]:checked").val();
-		$('.select2-input').prop('disabled',(mode == 'selfrecent' || mode == 'suggestions' || mode == 'prospective' || mode == 'automatic'));
+		$('.select2-input').prop('disabled',(mode == 'suggestions' || mode == 'prospective' || mode == 'automatic'));
 	});
 
 	//fix for firefox to allow the search box to be clicked to focus (works with just the z-index bodge on other browsers) 
