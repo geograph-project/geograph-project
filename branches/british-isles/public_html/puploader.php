@@ -27,6 +27,10 @@ require_once("3rdparty/xmlHandler.class.php");
 
 $smarty = new GeographPage;
 
+if (!empty($CONF['submission_message'])) {
+	$smarty->assign("status_message",$CONF['submission_message']);
+}
+
 //you must be logged in to request changes
 $USER->mustHavePerm("basic");
 
@@ -159,7 +163,7 @@ if (isset($_GET['success'])) {
 	if (isset($USER->submission_new)) {
 	        $_SESSION['submit_new'] = intval($USER->submission_new);
 	}
-	if (!empty($_SESSION['submit_new'])) {
+	if (!empty($_SESSION['submit_new']) && empty($_GET['old'])) {
 		$template = 'puploader_inner.tpl';
 	} else {
 		$template = 'puploader_inner_old.tpl';
@@ -312,7 +316,7 @@ if (isset($_GET['success'])) {
 	}
 	
 	
-	if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+	if ($_SERVER['REQUEST_METHOD'] == 'GET' && empty($CONF['submission_message'])) {
 		customExpiresHeader(3600,false,true);
 	}
 
