@@ -2460,4 +2460,12 @@ CREATE TABLE `gridimage_thumbsize` (
 #################################################
 
 
+CREATE TABLE `subjects` (
+  `subject` varchar(64) NOT NULL,
+  PRIMARY KEY  (`subject`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+
+#################################################
+
 

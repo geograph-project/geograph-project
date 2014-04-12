@@ -429,7 +429,18 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 
 <h3>Further Information</h3>
 
-		<div style="float:right">Categories have changed! <a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">Read More</a></div>
+		<div><label for="title"><b>Primary Subject (Optional)</b></label>
+			{if $error.subject}
+				<br/><span class="formerror">{$error.subject}</span>
+			{/if}<br/>
+			&nbsp;<select id="subject" name="subject" style="width:300px">
+				<option value="">select...</option>
+				{html_options options=$subjects selected=$subject}
+			</select>
+			<div style="font-size:0.7em">The Subject is a special type of tag, used to highlight the primary subject of the photo</div>
+		</div>
+
+
 
 		<p><label for="top"><b>Geographical Context</b></label> <small style="font-size:0.7em">(tick as many as required, hover over name for a description, <a href="/tags/primary.php" text="More examples" class="about" target="_blank" style="font-size:0.85em">more</a>)</small><br />
 
@@ -521,6 +532,7 @@ function rehighlight(that,check) {
 	<input type="hidden" name="title" value="{$title|escape:'html'}"/>
 	<input type="hidden" name="comment" value="{$comment|escape:'html'}"/>
 	<input type="hidden" name="tags" value="{$tags|escape:'html'}"/>
+	<input type="hidden" name="subject" value="{$subject|escape:'html'}"/>
 	<input type="hidden" name="imageclass" value="{$imageclass|escape:'html'}"/>
 	<input type="hidden" name="imagetaken" value="{$imagetaken|escape:'html'}"/>
 	<input type="hidden" name="user_status" value="{$user_status|escape:'html'}"/>
@@ -658,6 +670,7 @@ have problems
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
 	<textarea name="comment" style="display:none"/></textarea>
+	<input type="hidden" name="subject"/>
 	<input type="hidden" name="imageclass"/>
 	<input type="hidden" name="imageclassother"/>
 	<input type="hidden" name="imagetakenDay"/>

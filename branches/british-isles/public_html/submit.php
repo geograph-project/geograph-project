@@ -263,6 +263,7 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('comment', stripslashes($_POST['comment']));
 				$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 				$smarty->assign('tags', stripslashes($_POST['tags']));
+				$smarty->assign('subject', stripslashes($_POST['subject']));
 				$smarty->assign('imageclass', stripslashes($_POST['imageclass']));
 				$smarty->assign('user_status', stripslashes($_POST['user_status']));
 			}
@@ -400,6 +401,8 @@ if (isset($_POST['gridsquare']))
 					$smarty->assign_by_ref('tags', $tags);
 				}
 				
+				$smarty->assign('subject', trim(stripslashes($_POST['subject'])));
+				
 				if (($_POST['imageclass'] == 'Other' || empty($_POST['imageclass'])) && !empty($_POST['imageclassother'])) {
 					$imageclass = stripslashes($_POST['imageclassother']);
 				} else if ($_POST['imageclass'] != 'Other') {
@@ -446,6 +449,8 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setTaken(stripslashes($_POST['imagetaken']));
 				if (!empty($_POST['tags']))
 					$uploadmanager->setTags(explode('|',stripslashes(trim($_POST['tags']))));
+				if (!empty($_POST['subject']))
+					$uploadmanager->setSubject(stripslashes(trim($_POST['subject'])));
 				if (!empty($_POST['imageclass']))
 					$uploadmanager->setClass(stripslashes(trim($_POST['imageclass'])));
 				$uploadmanager->setViewpoint(stripslashes($_POST['photographer_gridref']));
@@ -517,10 +522,10 @@ if (isset($_POST['gridsquare']))
 			$smarty->assign('imagetaken', stripslashes($_POST['imagetaken']));
 			if (!empty($_POST['tags'])) {
 				if (is_array($_POST['tags'])) {
-                                        $tags = stripslashes(implode('|',$_POST['tags']));
-                                } else {
-                                        $tags = stripslashes($_POST['tags']);
-                                }
+					$tags = stripslashes(implode('|',$_POST['tags']));
+				} else {
+					$tags = stripslashes($_POST['tags']);
+				}
 
 				$tagarray = array();
 				foreach (explode('|',$tags) as $tag) {
@@ -544,7 +549,8 @@ if (isset($_POST['gridsquare']))
 			}
 			
 			$tags = new Tags;
-			$tags->assignPrimarySmarty($smarty);	
+			$tags->assignPrimarySmarty($smarty);
+			$tags->assignSubjectSmarty($smarty);
 
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));

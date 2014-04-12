@@ -357,6 +357,7 @@ window.onbeforeunload=unloadMess;
 		<div><span>View Direction:</span><input type="text" name="view_direction[{$key}]" value="" size="3" maxlength="4"/></div>
 		<div><span>Title:</span><input type="text" name="title[{$key}]" value="" size="20" maxlength="128"/></div>
 		<div><span>Description:</span><textarea name="comment[{$key}]" cols="30" rows="2" wrap="soft"></textarea></div>
+		<div><span>Subject:</span><input type="text" name="subject[{$key}]" value="" size="80"/></div>
 		<div><span>Tags:</span><input type="text" name="tags[{$key}]" value="" size="80"/></div>
 		<div><span>Date:</span><input type="text" name="imagetaken[{$key}]" value="" size="10" maxlength="10"/></div>
 		<input type="hidden" name="display" value="tabs"/>
@@ -396,6 +397,7 @@ window.onbeforeunload=unloadMess;
 	<input type="hidden" name="use6fig"/>
 	<input type="hidden" name="title"/>
 	<textarea name="comment" style="display:none"></textarea>
+	<input type="hidden" name="subject"/>
 	<input type="hidden" name="tags"/>
 	<input type="hidden" name="imagetakenDay"/>
 	<input type="hidden" name="imagetakenMonth"/>

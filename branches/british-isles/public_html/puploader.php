@@ -272,7 +272,9 @@ if (isset($_GET['success'])) {
 		$smarty->assign('use_autocomplete', $USER->use_autocomplete);
 		
 		$tags = new Tags;
-		$tags->assignPrimarySmarty($smarty);		
+		$tags->assignPrimarySmarty($smarty);
+		$tags->assignSubjectSmarty($smarty);
+
 		
 		if (!empty($_REQUEST['grid_reference'])) {
 			$token=new Token;

@@ -149,6 +149,14 @@ class UploadManager
 	}
 	
 	/**
+	* set tags
+	*/
+	function setSubject($subject)
+	{
+		$this->subject=$subject;
+	}
+	
+	/**
 	* set image taken date
 	*/
 	function setTaken($taken)
@@ -780,6 +788,11 @@ class UploadManager
 		//make sure any tags we have are added too
 		if (!empty($this->tags)) {
 			$tags->addTags($this->tags,$this->tagsPrefix);
+		}
+		if (!empty($this->subject)) {
+			$tags->addSubject($this->subject);
+		}
+		if (!empty($this->tags) || !empty($this->subject)) {
 			$tags->commit($gridimage_id,true);
 		}
 		

@@ -69,6 +69,12 @@ class Tags
 		if (!isset($this->tags[$tag])) //dont want to overright if already there
 			$this->tags[$tag]=0;
 	}
+	
+	//a specific function - so could hand special prefixes etc.
+	function addSubject($tag,$prefix='subject') {
+		$this->addTag($tag,$prefix);
+	}
+	
 	function addTags($tags,$prefix='') {
 		if (!is_array($tags)) {
 			return false;
@@ -220,6 +226,15 @@ class Tags
 		}
 		$smarty->assign_by_ref($name,$tops);
 	}
+	
+	function assignSubjectSmarty($smarty, $name = 'subjects') {
+		$db = $this->_getDB(true);
+				
+		$subjects = $db->getCol("SELECT subject FROM subjects");
+		
+		$smarty->assign($name, array_combine($subjects,$subjects) );
+	}
+	
 	
 	/**
 	 * store image list as $basename in $smarty instance
