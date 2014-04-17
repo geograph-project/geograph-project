@@ -48,13 +48,20 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 if (!empty($_GET['subject'])) {
 	$crit = $db->Quote($_GET['subject']);
-	$suggestions = $db->getAll("SELECT m.*,count(*) images from category_mapping m inner join gridimage_search gi using (imageclass) where m.imageclass like $crit OR m.canonical like $crit group by imageclass");
+	$where = "m.imageclass like $crit OR m.subject like $crit";
 	$smarty->assign('subject',$_GET['subject']);
+	$limit = 1000;
 } else {
-	$suggestions = $db->getAll("SELECT m.*,count(*) images from category_mapping m inner join gridimage_search gi using (imageclass) where user_id = {$USER->user_id} group by imageclass");
+	$where = "gi.user_id = {$USER->user_id}";
+	$smarty->assign('user_id',intval($USER->user_id));
+	$limit = 110000;
 }
-$smarty->assign_by_ref('suggestions',$suggestions);
 
+$suggestions = $db->getAll($sql = "SELECT m.*,c.canonical,count(*) images
+	from category_mapping m inner join gridimage_search gi using (imageclass)
+		left join category_canonical_log c using (imageclass)
+	where $where group by imageclass limit $limit");
+$smarty->assign_by_ref('suggestions',$suggestions);
 
 $smarty->display('stuff_category_mapping.tpl');
 

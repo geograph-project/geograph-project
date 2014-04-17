@@ -8,15 +8,15 @@
 <p>Where a subject is not 'Offical' there are a couple of ways this can be rectified:</p>
 <ol>
 	<li>Add it to the offical subject list, by clicking Approve</li>
-	<li>Change/correct the category->subject mapping, so only uses a offical subject</li>
 	<li>Report the tag, so the images can be moved to an offical subject</li>
 	<li>Report the tag, so the subject prefix can be removed (to make a standard unprifixed tag)</li>
+	<li>Change/correct the category->subject mapping, so only uses (now) offical subjects</li>
 </ol>
 <p>Also a subject that is used on very few images, is a sign it could removed from the offical list (using the Disapprove), then cleared up as above</p>
 <hr/>
 {/if}
 
-<p>This list is a amalgamation of three list, a) the offical subject list, b) subject:* tags on images and c) subjects listed in the <a href="/stuff/category_mapping.php">category->subject mapping</a> database</p>
+<p>This subject list is a amalgamation of three lists, a) the offical subject list, b) subject:* tags on images, and c) subjects listed in the <a href="/stuff/category_mapping.php">category->subject mapping</a> database</p>
 
 <table class="report sortable" id="catlist" style="font-size:8pt;" cellpadding=4>
 <thead>
@@ -42,8 +42,9 @@
 		<td align="right">{$row.cats}</td>
 		{if $admin}
 			<td><a href="?admin=1&amp;subject={$row.subject|default:$row.tag|escape:'url'}&amp;{if $row.subject}approve=0">Disapprove{else}approve=1">Approve{/if}</a>
+			{if $row.images && $row.tag}&middot; <a href="/tags/report.php?tag=subject:{$row.tag|escape:'url'}">Report Tag</a>{/if}
 			{if $row.historic}&middot; <a href="/stuff/category_mapping.php?subject={$row.subject|default:$row.tag|escape:'url'}">View Mapping</a>{/if}
-			{if $row.images && $row.tag}&middot; <a href="/tags/report.php?tag=subject:{$row.tag|escape:'url'}">Report Tag</a>{/if}</td>
+			</td>
 		{/if}
 	</tr>
 {/foreach}

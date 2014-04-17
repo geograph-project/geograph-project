@@ -65,12 +65,12 @@ $sql = " (
 ) order by coalesce(subject,tag)";
 
 //union (
-//      select canonical as subject,null as tag, from gridimage_search inner join category_mapping using (imageclass) group by canonical
+//      select subject,null as tag, from gridimage_search inner join category_mapping using (imageclass) group by subject
 
 	$list = $db->getAll($sql);
 
 
-	$historic = $db->getAssoc("select canonical as subject,count(*) images,count(distinct imageclass) as cats from gridimage_search inner join category_mapping using (imageclass) group by canonical order by null");
+	$historic = $db->getAssoc("select subject,count(*) images,count(distinct imageclass) as cats from gridimage_search inner join category_mapping using (imageclass) group by subject order by null");
 	foreach ($list as $idx => $row) {
 		if (!empty($historic[$row['subject']])) {
 			$list[$idx]['historic'] = $historic[$row['subject']]['images'];
