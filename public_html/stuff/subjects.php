@@ -59,7 +59,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 
 $sql = " (
-	select subject,t.tag,count(gridimage_id) images from subjects s left join tag t on (t.tag = s.subject and t.prefix = 'subject' and gt.status = 2) left join gridimage_tag gt using (tag_id) group by subject order by null
+	select subject,t.tag,count(gridimage_id) images from subjects s left join tag t on (t.tag = s.subject and t.prefix = 'subject') left join gridimage_tag gt on (t.tag_id = gt.tag_id and gt.status = 2) group by subject order by null
 ) union (
 	select subject,t.tag,count(gridimage_id) images from tag t inner join gridimage_tag gt using (tag_id) left join subjects s on (t.tag = s.subject) where t.prefix = 'subject' and gt.status = 2 and s.subject is null group by tag_id order by null
 ) order by coalesce(subject,tag)";
