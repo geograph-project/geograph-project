@@ -30,7 +30,7 @@
 {foreach from=$suggestions item=row}
 	{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 	<tr bgcolor="{$bgcolor}">
-		<td><b>{$row.imageclass|escape:'html'}</b></td>
+		<td><b><a href="/search.php?imageclass={$row.imageclass|escape:'url'}&amp;do=1{if $user_id}&amp;user_id={$user_id}{/if}">{$row.imageclass|escape:'html'}</a></b></td>
               	<td align=right><b>{$row.images}</b></td>
 		<td class="tags">
 			{if $row.context1 && $row.context1!='-bad-' && $row.context1!='forum alerted'}
@@ -50,22 +50,30 @@
 			{/if}
 		</td>
 		<td class="tags">
-			{if $row.canonical}
+			{if $row.subject}
 				<span class=tag>
-				subject:<a href="/tagged/subject:{$row.canonical|escape:'url'}" class="taglink">{$row.canonical|escape:'html'}</a>
+				<a href="/tagged/subject:{$row.subject|escape:'url'}" class="taglink">{$row.subject|escape:'html'}</a>
 				</span>
 			{/if}
 		</td>
 		<td class="tags">
-			{if $row.tags}
-                                <span class=tag>
-                                <a href="/tagged/{$row.tags|escape:'url'}" class="taglink">{$row.tags|escape:'html'}</a>
-                                </span>
+			{if $row.subject|lower ne $row.imageclass|lower}
+				{if $row.tags && $row.tagne ne '-bad-'}
+        	                        <span class=tag>
+                	                <a href="/tagged/{$row.tags|escape:'url'}" class="taglink">{$row.tags|escape:'html'}</a>
+                        	        </span>
 
-			{elseif !$row.subject || $row.subject|lower ne $row.imageclass|lower}
+				{elseif !$row.subject}
+					<span class=tag>
+					<a href="/tagged/category:{$row.imageclass|escape:'url'}" class="taglink">{$row.imageclass|lower|escape:'html'}</a>
+					</span>
+				{/if}
+			{/if}
+
+			{if $row.canonical && $row.canonical|lower ne $row.imageclass|lower && $row.canonical ne '-bad-'}
 				<span class=tag>
-				<a href="/tagged/category:{$row.imageclass|escape:'url'}" class="taglink">{$row.imageclass|lower|escape:'html'}</a>
-				</span>
+                                <a href="/search.php?canonical={$row.canonical|escape:'url'}" class="taglink">{$row.canonical|escape:'html'}</a>
+                                </span>
 			{/if}
 		</td>
 	</tr>
