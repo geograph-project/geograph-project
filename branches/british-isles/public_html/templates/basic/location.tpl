@@ -2,6 +2,12 @@
 {assign var="page_title" value="$gridrefraw :: Links"}
 {include file="_std_begin.tpl"}
 
+{if $getamap}
+	<div class="interestBox">
+		<b>Note: Get-a-Map is currently unavailable, you have been taken to our location links page so can open alternative mapping. </b> read more: <a href="http://www.getamap.ordnancesurveyleisure.co.uk/">www.getamap.ordnancesurveyleisure.co.uk</a>
+	</div>
+{/if}
+
 {if $errormsg}
 	<p>{$errormsg}</p>
 {else}
@@ -71,7 +77,12 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{if strlen($gridrefraw) < 5}
 		<li><img src="http://{$static_host}/img/links/20/hectad.png" width="20" height="20" alt="hectad icon" align="absmiddle"/> <a title="First Geographs within {$gridrefraw}" href="/search.php?first={$gridrefraw}">Find <b>First Geographs for hectad</b> {$gridrefraw}</a></li>
 	{/if}
-	<li><img src="http://{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>Search</b> for images near {$gridref}</a></li>
+	<li><img src="http://{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridref}" href="/search.php?q={$gridref}"><b>Search</b> for images near {$gridref}</a>
+	{if $gridref6}
+		(<b><a href="/search.php?q={$gridref6}">near {$gridref6}</a></b>)
+	{/if}	
+	</li>
+	<li><img src="http://{$static_host}/img/links/20/search.png" width="20" height="20" alt="search icon" align="absmiddle"/> <a title="search for nearby images to {$gridref}" href="/browser/#!/grid_reference+%22{$gridref}%22">Open <b>Browser</b> for images in {$gridref}</a></a>
 	<li><img src="http://{$static_host}/img/links/20/place.png" width="20" height="20" alt="places icon" align="absmiddle"/> <a href="/finder/places.php?q={$gridref}"><b>Places near {$gridref}</b></a></li>
 	<li><img src="http://{$static_host}/img/links/20/no-photos.png" width="20" height="20" alt="no photos icon" align="absmiddle"/> <a title="Empty Squares" href="/squares.php?gridref={$gridref}&amp;type=without">View list of nearby <b>squares without images</b></a> or <a title="Few Squares" href="/squares.php?gridref={$gridref}&amp;type=few">without many images</a></li>
 	<li><img src="http://{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}&amp;gridref_from={$gridref}">View a <b>printable check sheet</b> for {if strlen($gridrefraw) < 5}{$gridrefraw}{else}{$gridref}{/if}</a><br/><br/></li>
@@ -85,11 +96,12 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	
 	{if $square->reference_index == 1}<li style="list-style-type:none">Draggable Maps: <img src="http://{$static_host}/img/links/20/mapper.png" width="20" height="20" alt="draggable icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}"><b>Grid Squares</b></a>, <img src="http://{$static_host}/img/links/20/dragcenti.png" width="20" height="20" alt="dragable centi icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1"><b>Centisquares</b></a></li>{/if} 
 	
-	<li style="list-style-type:none">Interactive Map: <img src="http://{$static_host}/img/links/20/clusters.png" width="20" height="20" alt="clusters icon" align="absmiddle"/> <a href="/mapper/clusters.php#ll={$lat},{$long}&amp;z=12&amp;t=p&amp;r=c"><b>Clusters</b></a></li>
+	<li style="list-style-type:none">Interactive Map: <img src="http://{$static_host}/img/links/20/clusters.png" width="20" height="20" alt="clusters icon" align="absmiddle"/> <a href="/browser/#!/grid_reference+%22{$gridref}%22/display=map_dots/pagesize=100"><b>Browser Map</b></a></li>
 
 </ul>
 
 <form method="get" action="/search.php">
+	<input type="hidden" name="form" value="location"/>
 	<div class="interestBox" style="margin-top:5px; margin-bottom:10px">
 	<b>Search local images</b>:  
 	<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
@@ -136,27 +148,26 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 <b>Mapping Websites</b>:
 <ul style="margin-bottom:0px">
-	<li>{getamap gridref=$gridrefraw text="Get-a-Map&trade;"}</li>
 	{if $square->reference_index eq 1}
-		<li>{external href="http://magic.defra.gov.uk/website/magic/opener.htm?startTopic=maggb&xygridref=`$square->nateastings`,`$square->natnorthings`&startscale=10000" text="magic.defra.gov.uk"}{if $gridref6} ({external href="http://magic.defra.gov.uk/website/magic/opener.htm?startTopic=maggb&xygridref=`$square->nateastings`,`$square->natnorthings`&startscale=5000" text="closer"}){/if}</li> 
+		<li>{getamap gridref=$gridrefraw text="Geograph Map Popup"}</li>
+		<li>{external href="http://www.old-maps.co.uk/maps.html?txtXCoord=`$square->nateastings`&amp;txtYCoord=`$square->natnorthings`" text="old-maps.co.uk"}</li>
+		<li>{external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&amp;xygridref=`$square->nateastings`,`$square->natnorthings`&amp;startscale=10000" text="magic.defra.gov.uk"}{if $gridref6} ({external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&xygridref=`$square->nateastings`,`$square->natnorthings`&startscale=5000" text="closer"}){/if}</li> 
 		<li>{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}</li> 
-		<li>{external href="http://www.multimap.com/maps/?title=[`$urltitle`]+on+geograph.org.uk#t=l&amp;map=$lat,$long|14|4&amp;dp=841&amp;loc=GB:$lat:$long:14|$gridref|$gridref" text="multimap.com"} {external href="http://www.multimap.com/map/browse.cgi?GridE=`$square->nateastings`&amp;GridN=`$square->natnorthings`&amp;scale=25000&amp;title=[`$urltitle`]+on+geograph.org.uk" text="(old)"}</li>
 		
 		<li>{external href="http://wtp2.appspot.com/wheresthepath.htm?lat=$lat&amp;lon=$long" text="Where's the path?"}</li>
 		
-	{else}
-		<li>{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland"}</li>
-	{/if}</li>
+	{/if}
+	<li>{external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14" text="OpenStreetMap.org"} ({external href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14&amp;layers=C" text="Cycling"})</li>
 
 
 	{if $id}
 		<li><a title="Open in Google Earth" href="http://{$http_host}/photo/{$id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</li>
 		<li>{external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://`$http_host`/photo/`$id`.kml" text="Google Maps"}</li>
-		<li>{external href="http://maps.live.com/default.aspx?v=2&amp;mkt=en-us&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1&amp;mapurl=http://`$http_host`/photo/`$id`.kml" text="maps.live.com" title="detailed aerial photography from maps.live.com"}</li>
+		<li>{external href="http://maps.live.com/default.aspx?v=2&amp;mkt=en-us&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1&amp;mapurl=http://`$http_host`/photo/`$id`.kml" text="Bing Maps" title="detailed aerial photography from maps.live.com"}</li>
 	{else}
-		<li><a title="Open in Google Earth" href="http://www.nearby.org.uk/googleEarth.kml.php?lat={$lat}&amp;long={$long}&amp;zoom=11" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</li>
-		<li>{external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http%3A%2F%2Fwww.nearby.org.uk%2FgoogleEarth.kml.php%3Flat%3D`$lat`%26long%3D`$long`%26zoom%3D11&z=11" text="Google Maps"}</li>
-		<li>{external href="http://maps.live.com/default.aspx?v=2&amp;mkt=en-us&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1" text="maps.live.com" title="detailed aerial photography from maps.live.com"}</li>
+		<li><a title="Open in Google Earth" href="http://www.nearby.org.uk/googleEarth.kml.php?lat={$lat}&amp;long={$long}&amp;p={$gridrefraw}" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</li>
+		<li>{external title="Open in Google Maps" href="http://www.google.co.uk/maps/place/`$lat`,`$long`/`$lat`,`$long`,11z/" text="Google Maps"}</li>
+		<li>{external href="http://maps.live.com/default.aspx?v=2&amp;mkt=en-us&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1" text="Bing Maps" title="detailed aerial photography from maps.live.com"}</li>
 	{/if}
 
 </ul>
@@ -168,7 +179,14 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 		{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;MONTH=%m&amp;YEAR=%Y"}
 		<li>{external href="http://www.weatheronline.co.uk/cgi-bin/geotarget?LAT=`$lat`&amp;LON=`$long``$imagetakenurl`" text="weatheronline.co.uk" title="weather at the time this photo was taken from weatheronline.co.uk"}</li>
 	{/if}
+	{if $dblock}
+		<li>{external href="http://www.bbc.co.uk/history/domesday/dblock/`$dblock`" text="Domesday Reloaded" title="Domesday Reloaded via BBC History"} 
+			<small>(<a href="/finder/dblock.php?gridref={$gridref|escape:'url'}">Geograph D-Block Viewer</a>)</small>
+		</li>
+	{/if}
+
 	{if $square->reference_index eq 1}
+
 			<li>{external href="http://www.geocaching.com/seek/nearest.aspx?lat=`$lat`&amp;lon=`$long`" text="Geocaches" title="Geocaches from geocaching.com"}</li>
 			<li>{external title="Trigpoints from trigpointinguk.com" href="http://www.trigpointinguk.com/trigtools/find.php?t=`$gridrefraw`" text="Trigpoints"}</li>
 			<li>{external href="http://geourl.org/near?lat=`$lat`&amp;long=`$long`" text="geourl.org" title="search for webpages near this location"}<br/><br/></li>
