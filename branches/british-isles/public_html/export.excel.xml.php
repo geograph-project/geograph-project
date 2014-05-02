@@ -36,7 +36,7 @@ include('geograph/export.inc.php');
 header("Content-type: application/vnd.ms-excel");
 header("Content-Disposition: attachment; filename=\"geograph.xml\"");
 
-print "<?xml version=\"1.0\"?>\n";
+print "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n";
 print "<?mso-application progid=\"Excel.Sheet\"?>\n";
 ?>
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
@@ -63,7 +63,7 @@ print "<?mso-application progid=\"Excel.Sheet\"?>\n";
 	print "</Row>\n";
 
 $counter = -1;
-while (!$recordSet->EOF) 
+while (!$recordSet->EOF)
 {
 	print "<Row>\n";
 	$image = $recordSet->fields;
@@ -114,9 +114,9 @@ while (!$recordSet->EOF)
 			print "<Cell><Data ss:Type=\"String\">{$image['tags']}</Data></Cell>";
 	}
 	if (!empty($_GET['taken'])) {
-		if (strpos($image['imagetaken'],'-00') === FALSE) 
+		if (strpos($image['imagetaken'],'-00') === FALSE)
 			print "<Cell ss:StyleID=\"sDt\"><Data ss:Type=\"DateTime\">{$image['imagetaken']}T00:00:00.000</Data></Cell>\n";
-		else 
+		else
 			print "<Cell><Data ss:Type=\"String\">{$image['imagetaken']}</Data></Cell>\n";
 	}
 	if (!empty($_GET['submitted']))
@@ -129,7 +129,7 @@ while (!$recordSet->EOF)
 		print "<Cell><Data ss:Type=\"String\">{$image['moderation_status']}</Data></Cell>\n";
 	if (!empty($_GET['level']))
 		print "<Cell><Data ss:Type=\"Number\">{$image['ftf']}</Data></Cell>\n";
-	
+
 	echo "</Row>\n";
 	$recordSet->MoveNext();
 	$counter++;
@@ -143,15 +143,17 @@ $recordSet->Close();
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 
+if (empty($_GET['key']))
+	exit;
+
 $db = GeographDatabaseConnection(false);
 
 //todo
 //if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 // or if (isset($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 // ... find all rejected (at first glance think only need ones submitted BEFORE but moderated AFTER, as ones submitted after wont be included!) - either way shouldnt harm to include them anyway!
-	
-$sql = "UPDATE apikeys SET accesses=accesses+1, records=records+$counter,last_use = NOW() WHERE `apikey` = '{$_GET['key']}'";
 
-$db->Execute($sql);	
+$sql = "UPDATE apikeys SET accesses=accesses+1, records=records+$counter,last_use = NOW() WHERE `apikey` = ".$db->Quote($_GET['key']);
 
-?>
+$db->Execute($sql);
+
