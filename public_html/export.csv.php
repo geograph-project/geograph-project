@@ -130,16 +130,18 @@ while (!$recordSet->EOF)
 $recordSet->Close();
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
-	
-$db = GeographDatabaseConnection(false);	
-	
+
+if (empty($_GET['key']))
+        exit;
+
+$db = GeographDatabaseConnection(false);
+
 //todo
 //if (isset($_GET['since']) && preg_match("/^\d+-\d+-\d+$/",$_GET['since']) ) {
 // or if (isset($_GET['last']) && preg_match("/^\d+ \w+$/",$_GET['last']) ) {
 // ... find all rejected (at first glance think only need ones submitted BEFORE but moderated AFTER, as ones submitted after wont be included!) - either way shouldnt harm to include them anyway!
-	
-$sql = "UPDATE apikeys SET accesses=accesses+1, records=records+$counter,last_use = NOW() WHERE `apikey` = '{$_GET['key']}'";
 
-$db->Execute($sql);	
+$sql = "UPDATE apikeys SET accesses=accesses+1, records=records+$counter,last_use = NOW() WHERE `apikey` = ".$db->Quote($_GET['key']);
 
-?>
+$db->Execute($sql);
+
