@@ -245,6 +245,21 @@ If you've made changes to any other fields, these will have been updated.
           }
           $bbox=min($ee).' '.min($nn).' '.max($ee).' '.max($nn);
           $db->Execute("update geotrips set track='$trk', bbox='$bbox' where id={$trip['id']}");
+
+        //if there is no tracklog and we have some images, we should update the bbox.
+        } elseif (empty($trip['track']) && !empty($geograph)) {
+          $ee = array();
+          $nn = array();
+          $len=count($geograph);
+          for ($i=0;$i<$len;$i++) {
+            $ee[$i]=$geograph[$i]['viewpoint_eastings'];
+            $nn[$i]=$geograph[$i]['viewpoint_northings'];
+          }
+          $ee=array_filter($ee);  // remove zero eastings/northings (camera position missing)
+          $nn=array_filter($nn);
+          $bbox=min($ee).' '.min($nn).' '.max($ee).' '.max($nn);
+
+          $db->Execute("update geotrips set bbox='$bbox' where id={$trip['id']}");
         }
         if ($_POST['contfrom']=="") $_POST['contfrom']="0";
         if ($_POST['contfrom']!=$trip['contfrom'] && preg_match('/(\d+)\s*$/',$_POST['contfrom'],$m)) {
