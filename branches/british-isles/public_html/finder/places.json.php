@@ -29,7 +29,10 @@ $results = array();
 if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
 
-	if (preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",strtoupper($q),$pc) 
+	if ((
+	preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]*) +([0-9])([A-Z]{0,2})\b/i",strtoupper($q),$pc)
+	|| preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]*) *([0-9])([A-Z]{2})\b/i",strtoupper($q),$pc)
+	|| preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?)\b/i",strtoupper($q),$pc) )
 	&& !in_array(strtoupper($pc[1]),array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 		//these prefixs are not postcodes but are valid gridsquares
 
@@ -96,8 +99,23 @@ if (!empty($_GET['q'])) {
 			$results['query_info'] = '';
 			$results['copyright'] = "Contains Ordnance Survey data (c) Crown copyright and database right 2012";
 		}
+	} elseif (preg_match("/^[^:]*\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$q,$gr)) {
+                require_once('geograph/gridsquare.class.php');
+                $square=new GridSquare;
+                $grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
+                if ($grid_ok || $square->x && $square->y) {
+			$results['items'] = array();
+			$output = array(
+                                'name' => "Grid Reference in ".$square->grid_reference,
+                                'gr' => strtoupper($gr[1].$gr[2].$gr[3]),
+                                'localities'=>''
+                        );
+			$results['items'][] = $output;
+			$results['total_found'] = count($results['items']);
+        	        $results['query_info'] = '';
+		}
 	}
-	
+
 	if (empty($results)) {
 		$fuzzy = !empty($_GET['f']);
 
@@ -110,21 +128,24 @@ if (!empty($_GET['q'])) {
 		if (empty($pg) || $pg < 1) {$pg = 1;}
 
 
-		
+
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
-		
-		if ($offset < (1000-$pgsize) ) { 
+
+		if ($offset < (1000-$pgsize) ) {
 			$sphinx->processQuery();
 
 			$sphinx->sort = "score ASC, @relevance DESC, @id DESC";
-			
+
 			if ($fuzzy) {
 				$sphinx->_getClient()->SetIndexWeights(array('gaz'=>10,'gaz_meta'=>1));
-				$ids = $sphinx->returnIds($pg,'gaz,gaz_meta');	
+				$ids = $sphinx->returnIds($pg,'gaz,gaz_meta');
+			} elseif (!empty($_GET['new'])) {
+				$sphinx->sort = "@relevance DESC, @id DESC";
+				$ids = $sphinx->returnIds($pg,'gaznew');
 			} else {
-				$ids = $sphinx->returnIds($pg,'gaz');	
+				$ids = $sphinx->returnIds($pg,'gaz');
 			}
-			
+
 			if (!empty($ids) && count($ids)) {
 				$where = "id IN(".join(",",$ids).")";
 
@@ -135,11 +156,11 @@ if (!empty($_GET['q'])) {
 
 				$prev_fetch_mode = $ADODB_FETCH_MODE;
 				$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-				$rows = $db->getAssoc("
-				select id,name,gr,localities,score
-				from placename_index 
-				where $where
-				limit $limit");
+				if (!empty($_GET['new'])) {
+					$rows = $db->getAssoc("select placename_id,Place as name,km_ref as gr,concat(County,', ',Country) as localities from sphinx_placenames where placename_$where limit $limit");
+				} else {
+					$rows = $db->getAssoc("select id,name,gr,localities,score from placename_index where $where limit $limit");
+				}
 
 				$results['items'] = array();
 				foreach ($ids as $c => $id) {

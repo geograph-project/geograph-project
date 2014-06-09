@@ -71,12 +71,13 @@ $displayclasses =  array(
 			'more' => 'full listing + links',
 			'thumbs' => 'thumbnails only',
 			'thumbsmore' => 'thumbnails + links',
+			'bigger' => 'thumbnails - bigger',
 			'excerpt' => 'highlighted keywords',
-			'bigger' => 'bigger thumbnails',
 			'map' => 'on a map',
 			'slide' => 'slideshow',
 			'slidebig' => 'slideshow - full page',
 			'reveal' => 'slideshow - map imagine',
+			'black' => 'georiver - full images + detail',
 			'cooliris' => 'cooliris 3d wall',
 			'mooflow' => 'cover flow',
 			'text' => 'text list only',
@@ -227,7 +228,7 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
-
+ customNoCacheHeader();
 	$data = $_GET;
 	$error = false;
 
@@ -339,9 +340,12 @@ if (isset($_GET['fav']) && $i) {
 		}
 		if ($i = $engine->buildAdvancedQuery($data,false)) {
 
-			if (preg_match_all("/\[\[(\[?)(\d+)(\]?)\]\]/",$page['content'],$g_matches)) {
-				foreach ($g_matches[2] as $idx => $g_id) {
-					$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($g_id));
+			if (preg_match_all("/\[\[\[?(\d+)\]?\]\]|\[image id=(\d+)/",$page['content'],$g_matches)) {
+				foreach ($g_matches[1] as $idx => $g_id) {
+					if (!empty($g_id))
+						$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($g_id));
+					if (!empty($g_matches[2][$idx]))
+						$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($g_matches[2][$idx]));
 				}
 				$data['searchq'] = "inner join gridimage_query using (gridimage_id) where query_id = $i";
 
@@ -770,6 +774,7 @@ if (isset($_GET['fav']) && $i) {
 						} else {
 							header("Location: /browser/#!/q=$q2");
 						} break;
+					case 'of.php': header("Location: /of/".str_replace('%2F','/',str_replace('%3A',':',urlencode($q)))); break;
 					case 'multi2.php': header("Location: /finder/multi2.php?q=$q2"); break;
 					case 'multi.php': header("Location: /finder/multi.php?q=$q2"); break;
 					case 'full-text.php': header("Location: /full-text.php?q=$q2"); break;
@@ -1184,7 +1189,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			foreach ($engine->results as $idx => $image) {
 				$docs[$idx] = strip_tags($image->comment?$image->comment:$image->title).(empty($image->imageclass)?'':(" Category: ".strip_tags($image->imageclass)));
 			}
-			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $sphinx->q);
+			$reply = $sphinx->BuildExcerpts($docs, 'gi_stemmed', $sphinx->q, array("query_mode"=>(strpos($sphinx->q,'~')===FALSE)?1:0,"limit"=>350));
 			
 			foreach ($engine->results as $idx => $image) {
 				$engine->results[$idx]->excerpt = $reply[$idx];
@@ -1288,7 +1293,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$sphinx->pageSize = $pgsize = 5;
 			$pg = 1;
 
-			$sphinx->prepareQuery($engine->criteria->searchtext." @source -themed");
+			$sphinx->prepareQuery($engine->criteria->searchtext." @source -themed -portal");
 			
 	                $cl = $sphinx->_getClient();
         	        $cl->SetFieldWeights(array('title'=>20));
@@ -1381,21 +1386,14 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$db = GeographDatabaseConnection(true);
 		}
 		//list of a few tags
-
-		//TODO this is very slow, and inefficient, must be better way!
-		#$arr = $db->getAssoc("SELECT if(prefix!='',concat(prefix,':',tag),tag) as tag,CONCAT(if(prefix!='',concat(prefix,':',tag),tag),' [',COUNT(*),']') `count` FROM tag_public WHERE prefix != 'top' GROUP BY tag_id ORDER BY RAND() LIMIT 5");
-                
-		//oneway...
 		$rnd = rand(1,1000)/1000;
-		$arr = $db->getAssoc("SELECT tag,`count` FROM tag_random WHERE rnd > $rnd and count >= 50 ORDER BY rnd LIMIT 5");
+		$arr = $db->getAssoc("SELECT if(prefix!='',concat(prefix,':',tag),tag) as tag,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' AND rnd > $rnd and count >= 50 ORDER BY rnd LIMIT 5");
 		$smarty->assign_by_ref('taglist',$arr);
-
-
 
 		$arr2 = $db->GetAll("select id,searchdesc
 			from queries_featured
 				inner join queries using (id)
-			where approved = 1 
+			where approved = 1
 			order by rand() limit 5");
 		$smarty->assign_by_ref('featured',$arr2);
 	}
@@ -1548,6 +1546,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			unset($displayclasses['full']);
 			unset($displayclasses['thumbs']);
 			unset($displayclasses['slide']);
+			unset($displayclasses['black']);
 			unset($displayclasses['text']);
 			$displayclasses['searchtext'] = "Text-based Sidebar (IE Only)";
 			
