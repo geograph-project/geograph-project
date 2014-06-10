@@ -79,7 +79,7 @@ if (isset($_GET['t'])) {
 			WHERE compare_pair_id = ?",array($token->getValue("p")));
 	}
 } else {
-	if ($USER->user_id) {
+	if ($USER->registered) {
 		$where = "user_id = ?";
 		$a = array($USER->user_id);
 	} else {

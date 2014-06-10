@@ -29,7 +29,7 @@ init_session();
 
 $smarty = new GeographPage;
 
-if ($USER->user_id) {
+if ($USER->registered) {
 	$db = NewADOConnection($GLOBALS['DSN']);
 
 	if (isset($_GET['accept'])) {

@@ -32,7 +32,7 @@ if (empty($_GET['scope']) && !empty( $_SESSION['content_scope'])) {
 	$_GET['scope'] = $_SESSION['content_scope'];
 } 
 if (empty($_GET['scope'])) {
-#	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+#	if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
 		$_GET['scope'] = 'article,gallery,help,blog,trip';
 #	} else {
 #		$_GET['scope'] = 'article,gallery,help,blog,trip,themed';
@@ -54,7 +54,7 @@ $data = $db->getRow("show table status like 'content'");
 $mtime = strtotime($data['Update_time']);
 	
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-customCacheControl($mtime,$cacheid,($USER->user_id == 0));
+customCacheControl($mtime,$cacheid,!($USER->registered));
 
 $smarty->assign("inline",$inline);
 
@@ -91,7 +91,7 @@ $orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'A
 
 $sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'context'=>'Geographical Context', 'other'=>'Other', 'faq'=>'FAQ Answer');
 
-if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
 	unset($sources['themed']);
 }
 if (!empty($_GET['scope']) && $_GET['scope'] == 'all') {
@@ -204,7 +204,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$sphinx->processQuery();
 		
 		$sphinx->qoutput = $sphinx->q;
-		if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+		if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
 			$sphinx->q .= " @source -themed";
 		}
 
@@ -263,7 +263,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$where[] = "content.`type` = 'info'";
 	}
 	
-	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+	if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
 		$where[] = "content.`source` != 'themed'";
 	}
 	
