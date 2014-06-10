@@ -72,6 +72,8 @@ if (!empty($_GET['q'])) {
 		$others['users'] = array('title'=>'Contributors','url'=>"/finder/contributors.php?q=$u2");
 		$others['sqim'] = array('title'=>'Images by Square','url'=>"/finder/sqim.php?q=$u2");
 		$others['text'] = array('title'=>'Simple Text Search','url'=>"/full-text.php?q=$u2");
+		$others['snippet'] = array('title'=>'Shared Descriptions','url'=>"/snippets.php?q=$u2");
+
 		if ($CONF['forums']) {
 			$others['discuss'] = array('title'=>'Discussions','url'=>"/finder/discussions.php?q=$u2");
 		}
@@ -364,7 +366,7 @@ if (!empty($_GET['q'])) {
 
 //todo - worth striping out any of the other collections to dedicated searchs (or maybe if collections count is over 20 say?) 
 
-			$sphinx->q = "@title ".$sphinx->q." @source -themed -user -category"; //we look at user above, and category below
+			$sphinx->q = "@title ".$sphinx->q." @source -themed -user -category -portal"; //we look at user above, and category below
 
 			$ids = $sphinx->returnIds($pg,'content_stemmed');
 			if (!empty($ids) && count($ids)) {
