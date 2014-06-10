@@ -11,6 +11,9 @@
 {dynamic}
 
 <h2>Administrative Tasks</h2>
+
+{$status_message}
+
 <ul>
 
 {if $names_pending}
@@ -19,20 +22,13 @@
 {/if}
 
 {if $is_mod} 
-
 	<li><a href="/admin/moderation.php">Moderate</a> new photo submissions (<span><a href="/admin/moderation.php?review=1" style="color:gray">Review</a>)</span><br/>
-	<b>[{$images_pending.count} pending, {dynamic}{$images_pending_available}{/dynamic} available to moderate, oldest is {$images_pending.age/3600|thousends} hours]</b></li>
+	<b>[{$images_pending.count} pending, {$images_pending_available} available to moderate, oldest is {$images_pending.age/3600|thousends} hours]</b></li>
 {/if}
 
 {if $is_tickmod} 
 	<li><a title="Trouble Tickets" href="/admin/suggestions.php">Change Suggestions</a> <small>(Sidebar: <a title="Trouble Tickets" href="/admin/suggestions.php?sidebar=1" target="_search">IE &amp; Firefox</a>, <a title="Trouble Tickets" href="/admin/suggestions.php?sidebar=1" rel="sidebar" title="Tickets">Opera</a>)</small> - 
 	   Deal with image problems<br/> <b>[{$tickets_new} new, {$tickets_yours} <a href="/admin/suggestions.php?type=open&amp;theme=tmod">open by you</a>]</b></li>
-
-	{if $contacts_open}
-		<li><a href="/admin/contact.php">Contact Requests</a> <br/>
-		<b>[{$contacts_open} open]</b></li>
-	{/if}
-
 {/if}
 
 
@@ -40,7 +36,7 @@
 {if $is_mod} 
 	{if $support_open}
 	<li>{external href="http://www.geograph.org.uk/support/scp/tickets.php" text="Ticket List in the Geograph Support System"}<br/>
-                <b>[{$support_open} open tickets]</b></li>
+                <b>[{$support_open} open tickets in last 7 days]</b></li>
 	{/if}
 
 	{if $originals_new}
@@ -69,6 +65,9 @@
 	{if $gridsquares_sea.1 || $gridsquares_sea.2}<b>[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in queue]</b>{/if}
 	</form>
 	</li>
+
+	<li><a href="/admin/geotrips.php">GeoTrips Admin</a></li>
+
 </ul>
 <h3>Tools</h3>
 <ul>
@@ -91,13 +90,13 @@
 {/if}
 
 <li>Stats: <br/>
-   <a href="/statistics/admin_turnaround.php">Turn Around</a> {dynamic}(<a href="/statistics/admin_turnaround.php?u={$user->user_id}">You</a>){/dynamic} - 
+   <a href="/statistics/admin_turnaround.php">Turn Around</a> (<a href="/statistics/admin_turnaround.php?u={$user->user_id}">You</a>) - 
    rough estimate at moderation times <br/>
    <a title="Web Stats" href="/statistics/pulse.php">Geograph Pulse</a> - 
    up to the minute general site status</li>
 
 
-{if $is_mod} 
+{if $is_mod && 0} 
 <li>
 
 <div class="interestBox" style="border:1px solid red;padding:3px">
