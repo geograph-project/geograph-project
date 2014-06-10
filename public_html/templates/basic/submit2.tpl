@@ -125,7 +125,7 @@ function doneStep(step,dontclose) {
 }
 function showPreview(url,width,height,filename) {
 	height2=Math.round((138 * height)/width);
-	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="138" height="'+height2+'" id="imgPreview" onmouseover="this.height='+height+';this.width='+width+'" onmouseout="this.height='+height2+';this.width=138" /><br/>'+filename;
+	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="138" height="'+height2+'" id="imgPreview" onmouseover="var that = this; mytimer=setTimeout(function() {that.height='+height+';that.width='+width+';}, 500);" onmouseout="this.height='+height2+';this.width=138;clearTimeout(mytimer)" /><br/>'+filename;
 	document.getElementById('hidePreview').style.display='';
 }
 function scalePreview(scale) {
