@@ -279,7 +279,7 @@ class RasterMap
 			}
 			
 			$mapurl = "http://{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 3 && empty($GLOBALS['USER']->user_id)) {
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 3 && empty($GLOBALS['USER']->registered)) {
 				$mapurl = cachize_url($mapurl);
 			}
 			$gr= str_replace(' ','+',!empty($this->square->grid_reference_full)?$this->square->grid_reference_full:$this->square->grid_reference);
@@ -344,7 +344,7 @@ class RasterMap
 			} else {
 				$mapurl = "http://{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
 			}
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 3 && empty($GLOBALS['USER']->user_id)) {
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 3 && empty($GLOBALS['USER']->registered)) {
 				$mapurl = cachize_url($mapurl);
 			}
 			#$this->mapurl = $mapurl;

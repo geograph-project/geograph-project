@@ -221,7 +221,7 @@ class SearchEngine
 			
 			ob_start();
 			print "\n\nHost: ".`hostname`."\n\n";
-			if (!empty($GLOBALS['USER']->user_id)) {
+			if (!empty($GLOBALS['USER']->registered)) {
 				print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
 			}
 			unset($this->criteria->db);

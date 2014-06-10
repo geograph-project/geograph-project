@@ -66,7 +66,7 @@ class game {
 	
 		$updates = array();
 		
-		if (!empty($USER->user_id)) {
+		if (!empty($USER->registered)) {
 			$updates['user_id'] = $USER->user_id;
 		}
 		if (!empty($this->image)) {
@@ -90,7 +90,7 @@ class game {
 		$updates = array();
 		
 		$app = 1; 
-		if (!empty($USER->user_id)) {
+		if (!empty($USER->registered)) {
 			$updates['user_id'] = $USER->user_id;
 		} elseif (!$db->getOne('SELECT game_score_id FROM game_score WHERE approved = 1 and username = '.$db->Quote($username))) {
 			$updates['approved'] = '0';
@@ -122,7 +122,7 @@ class game {
 		
 		$updates = array();
 		
-		if (!empty($USER->user_id)) {
+		if (!empty($USER->registered)) {
 			$updates['user_id'] = $USER->user_id;
 		}
 		if (!empty($this->i)) {
