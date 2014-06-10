@@ -305,7 +305,7 @@ if ($page<$iVal) {
 	$listPosts.=ParseTpl(makeUp('main_posts_cell_next'));
 }
 
-if ($USER->user_id) {
+if ($USER->registered) {
 	$myRes=mysql_query("insert into geobb_lastviewed set topic_id=$topic,user_id={$USER->user_id},last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)",$GLOBALS['minibb_link']) or die('<p>'.mysql_error($GLOBALS['minibb_link']).'. Please, try another name or value.');
 }
 

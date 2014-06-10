@@ -392,7 +392,7 @@ if ($template=='tags_tagger.tpl' && isset($_GET['form']) && $_GET['form'] == 'su
 
 }
 
-if ($template=='tags_tagger.tpl' && $USER->user_id) {
+if ($template=='tags_tagger.tpl' && $USER->registered) {
 	if (empty($db2))
                 $db2 = GeographDatabaseConnection(true);
 

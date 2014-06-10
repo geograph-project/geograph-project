@@ -40,7 +40,7 @@ if (!empty($_GET['upload_id'])) {
 	$_GET['gridimage_id'] = sprintf('%0.0f',$gid);
 }
 
-if (!empty($USER->user_id) && !empty($_GET['tag']) && !empty($_GET['gridimage_id']) && preg_match('/^\d+$/',$_GET['gridimage_id'])) {
+if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage_id']) && preg_match('/^\d+$/',$_GET['gridimage_id'])) {
 
 	$db = GeographDatabaseConnection(false);
 	$u = array();

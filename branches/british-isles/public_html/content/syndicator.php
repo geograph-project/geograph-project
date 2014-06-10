@@ -112,7 +112,7 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 		
 		#$sphinx->processQuery();
 		
-		//if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+		//if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
 			$sphinx->qoutput = $sphinx->q;
 			$sphinx->q .= " @source -themed";
 		//}

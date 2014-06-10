@@ -35,7 +35,7 @@ $data = $db->getRow("show table status like 'content_group'");
 $mtime = strtotime($data['Update_time']);
 	
 //can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
-customCacheControl($mtime,$cacheid,($USER->user_id == 0));
+customCacheControl($mtime,$cacheid,!($USER->registered));
 
 $template = 'content_themes.tpl';
 
@@ -55,7 +55,7 @@ $cacheid = $source.'.'.$USER->registered.'.'.$CONF['forums'];
 if (!$smarty->is_cached($template, $cacheid))
 {
 	$where  = '';
-	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
+	if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
 		$where .= " AND content.`source` != 'themed'";
 	}
 	if ($source == 'words') {

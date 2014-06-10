@@ -176,7 +176,7 @@ order by `type`+0,updated desc");
 $stats = array();
 $a = false;
 foreach ($list as $i => $row) {
-	if (!empty($USER->user_id) && $USER->user_id == $row['user_id']) {
+	if (!empty($USER->registered) && $USER->user_id == $row['user_id']) {
 		$smarty->assign('attendee', $list[$i]);
 		$a = true;
 	}

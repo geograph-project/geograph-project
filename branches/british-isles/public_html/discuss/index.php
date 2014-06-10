@@ -343,15 +343,17 @@ elseif($action=='mute') {
 	if($cols=db_simpleSelect(0, "$Tt Tt left join geobb_lastviewed Tl on (Tt.topic_id = Tl.topic_id and Tl.user_id = {$USER->user_id})", 'Tt.topic_id, topic_title, topic_poster, topic_poster_name, topic_time, forum_id, posts_count, topic_last_post_id, topic_views, (topic_last_post_id > last_post_id) as isnew, last_post_id','(muted = 0 OR muted IS NULL) AND forum_id',$filterCrit,$filterIds,$orderBy,1)){
 		if ($cols[9]) {
 			print "<title>Updated Since Last Visit</title>";
+			print '<meta name="viewport" content="width=device-width, user-scalable=no">';
 			print "<b>Updated Since Last Visit</b>";
-			print " - <a href=\"{$main_url}/\">Visit Forum</a>"; 
+			print " - <a href=\"{$main_url}/\">Visit Forum</a>";
 			exit;
 		} elseif (is_null($cols[9])) {
 			print "<title>New Thread Since Last Visit</title>";
+			print '<meta name="viewport" content="width=device-width, user-scalable=no">';
 			print "<b>New Thread Since Last Visit</b>";
-			print " - <a href=\"{$main_url}/\">Visit Forum</a>"; 
+			print " - <a href=\"{$main_url}/\">Visit Forum</a>";
 			exit;
-		} 
+		}
 	}
 	print "<title>Geograph - No new Posts</title>";
 	$countdown = intval($_GET['countdown']);
@@ -512,6 +514,11 @@ if ($viewTopicsIfOnlyOneForum!=1) {
 			$GLOBALS['memcache']->set($mkey, $poster_id, false, 3600*24*7);
 		}
 
+	}
+	$critwhere = (empty($showIds))?'':(" AND t.forum_id IN (".implode(',',$showIds).")");
+	$result=mysql_query("SELECT COUNT(*) cnt FROM geobb_promoted a INNER JOIN geobb_posts p USING (post_id) INNER JOIN geobb_topics t USING (topic_id) LEFT JOIN geobb_lastviewed l ON (l.user_id = {$USER->user_id} AND l.topic_id = t.topic_id) WHERE (l.last_post_id < p.post_id OR l.topic_id IS NULL) AND votes > 1 AND muted != 1 $critwhere");
+	if ($count = mysql_result($result,0)) {
+		print "<div style=text-align:center><a href=\"/discuss/promoted.php\">View $count new posts you might like</a></div>";
 	}
 
 	$viewlastdiscussions = $USER->getForumOption('latest',$viewlastdiscussions,$save);
