@@ -481,7 +481,7 @@ split_timer('map','getBaseMapFilename',"$file"); //logs the wall time
 		$token=$this->getToken();
 		$file="http://{$CONF['TILE_HOST']}/tile.php?map=$token";
 
-		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 2 && empty($GLOBALS['USER']->user_id)) {
+		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 2 && empty($GLOBALS['USER']->registered)) {
 			$file = cachize_url($file);
 		}
 

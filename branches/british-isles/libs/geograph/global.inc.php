@@ -106,7 +106,7 @@ if (empty($CONF['db_tempdb'])) {
 }
 
 function GeographDatabaseConnection($allow_readonly = false) {
-	static $logged = 0;
+	static $logged = 1;
 
 	//see if we can use a read only slave connection
 	if ($allow_readonly && !empty($GLOBALS['DSN_READ']) && $GLOBALS['DSN'] != $GLOBALS['DSN_READ']) {
@@ -408,9 +408,8 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 	                define('VARY_COOKIE',1); //so that gzip handler knows to include cookie in the header
 	        }
 
-
-                $GLOBALS['USER'] =& new GeographUser;
-                @apache_note('user_id', $GLOBALS['USER']->user_id);
+		$GLOBALS['USER'] =& new GeographUser;
+                @apache_note('user_id', 0);
 
 	} else {
         	init_session();
@@ -456,7 +455,7 @@ function init_session()
 	//HACK for CDN - under heavy traffic this could be uncommented (or enabled via curtail_level) to shift of non logged in traffic to cdn. 
 	// could for example only enable for a % of traffic, or based on IP etc etc
 	/*
-	if (	empty($GLOBALS['USER']->user_id) 
+	if (	empty($GLOBALS['USER']->registered) 
 		&& empty($_COOKIE[session_name()])
 		&& $_SERVER['HTTP_HOST'] == 'www.geograph.virtual'
 		&& empty($_POST['password'])
@@ -624,7 +623,7 @@ class GeographPage extends Smarty
 
 
 		//show more links in template?
-		if (isset($GLOBALS['USER']) && $GLOBALS['USER']->user_id > 0) {
+		if (isset($GLOBALS['USER']) && $GLOBALS['USER']->registered) {
 
 			if ($GLOBALS['USER']->hasPerm('admin'))
 			{

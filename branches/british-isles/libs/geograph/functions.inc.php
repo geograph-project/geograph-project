@@ -480,7 +480,7 @@ function to_title_case($i) {
 		//todo, /js/to-title-case.js prevents the last word from firing too. (we ue the outer ucfirst, to always cap the first word!)
 		if ($m[1] == 'i' || preg_match('/^i{2,}/',$m[1])) {
 			return str_replace('i','I',$m[0]);
-		} elseif (preg_match("/^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|vs?\.?|via)$/i",$m[1])) {
+		} elseif (preg_match("/^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|vs?\.?|via|with)$/i",$m[1])) {
 			return $m[0];
 		} else {
 			return ucfirst($m[0]);
@@ -506,7 +506,7 @@ function smarty_modifier_revision($filename) {
 		#$url = "http://".str_replace('s1','s1cdn',$CONF['STATIC_HOST']).preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 		$url = "http://".$CONF['STATIC_HOST'].preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 		
-		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 && strpos($filename,'css') === FALSE && empty($GLOBALS['USER']->user_id)) {
+		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 && strpos($filename,'css') === FALSE && empty($GLOBALS['USER']->registered)) {
 			$url = cachize_url($url);
 		}
 		return $url;

@@ -1022,7 +1022,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 
 		$title=htmlentities2($this->title);
 		
-		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
+		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->registered) && isset($GLOBALS['smarty'])) {
 			$fullpath = cachize_url("http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath);
 		} elseif ($returntotalpath)
 			$fullpath="http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
@@ -1168,7 +1168,7 @@ split_timer('gridimage'); //starts the timer
 			}
 			$thumbpath = $return['server'].$thumbpath;
 			
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->registered) && isset($GLOBALS['smarty'])) {
 				$thumbpath = cachize_url($thumbpath);
 			}
 			
@@ -1380,7 +1380,7 @@ split_timer('gridimage'); //starts the timer
 			}
 			$thumbpath = $return['server'].$thumbpath;
 
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->registered) && isset($GLOBALS['smarty'])) {
 				$thumbpath = cachize_url($thumbpath);
 			}
 
@@ -1569,7 +1569,7 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 			}
 			$thumbpath = $return['server'].$thumbpath;
 
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->registered) && isset($GLOBALS['smarty'])) {
 				$thumbpath = cachize_url($thumbpath);
 			}
 
