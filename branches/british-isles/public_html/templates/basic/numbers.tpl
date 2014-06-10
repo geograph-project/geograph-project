@@ -20,6 +20,7 @@
 	background-image: url('/templates/basic/img/numbers-arrow.gif');
 	background-position: center left;
 	background-repeat: no-repeat;
+	width:32px;
 }
 .innerlefttextbox {
 	position:absolute; top:1px; left:1px; color:#000066; padding-left: 5px; padding-top:10px; padding-bottom:10px; 
@@ -85,17 +86,12 @@
 
 		<div class="righttextbox">
 			<b class="nowrap">{$stats.points|thousends}</b> Squares geographed<br/>
-			<br/>
+			<b class="nowrap">{$stats.percentage}%</b><br/>
 		</div>
 		<br style="clear:both"/>
 	</div>
 	<div class="lefttextbox">
-		<div class="innerlefttextbox">
 		<br/>
-		<b class="nowrap">{$stats.percentage}%</b>
-		</div>
-		<br/>
-		<b class="nowrap">{$stats.percentage}%</b><br/>
 	</div>
 	<br style="clear:both"/>	
 </div>
@@ -153,7 +149,7 @@
 <div class="linksbox">
 <h3>Further Statistics</h3>
 | <b><a href="/statistics.php">More Numbers...</a></b> | <a href="/statistics.php#more">More Pages...</a> | 
-<a href="/statistics/moversboard.php">Leaderboard</a> |
+<a href="/statistics/tables.php">Totals</a> |
 <a href="/statistics/pulse.php">Geograph Pulse</a> |
 <a href="/statistics/estimate.php">Future Estimates</a> |
    
