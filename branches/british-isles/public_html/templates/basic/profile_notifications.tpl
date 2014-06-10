@@ -1,20 +1,25 @@
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}"></script>
 
-<h2>Notification Preferences - Experimental</h2>
+<div class="tabHolder" style="text-align:right">
+        <a href="/profile.php" class="tab">Back to Profile</a>
+        <a href="/profile.php?edit=1" class="tab">General Settings</a>
+        <span class="tabSelected">Email Notifications</span>
+        <a href="/choose-search.php" class="tab">Site Search Engine</a>
+        <a href="/switch_tagger.php" class="tab">Tagging Box</a>
+        <a href="/switch.php" class="tab">Submission Method</a>
+</div>
+<div style="position:relative;" class="interestBox">
+	<h2>Notification Preferences - Experimental</h2>
+</div>
+
+
 
 {dynamic}
 
-<div class="interestBox">
-	Note: This feature is still being worked on. By enabling notifications below you agree that: 
-	<ul>
-		<li>We may end up sending emails more regular than specified (but will try to avoid it!)</li>
-		<li>We may sometimes fail to send a notification, and that we wont start sending them right away</li>
-		<li>For now - changing your preference below, might reset your notifications history, meaning will get duplicate notificiations</li>
-	</ul>
-</div>
-
 <br/><br/>
+
+<p>Use this page to configure automated notifications, which will let you know how your contributed images are being used around the site.</p>
 
 
 <div style="float:right">

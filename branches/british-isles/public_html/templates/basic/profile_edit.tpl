@@ -1,6 +1,20 @@
 {include file="_std_begin.tpl"}
 {dynamic}
 
+<div class="tabHolder" style="text-align:right">
+        <a href="/profile.php">Back to Profile</a>
+        <span class="tabSelected">General Settings</span>
+        <a href="/profile.php?notifications=1" class="tab">Email Notifications</a>
+        <a href="/choose-search.php" class="tab">Site Search Engine</a>
+        <a href="/switch_tagger.php" class="tab">Tagging Box</a>
+        <a href="/switch.php" class="tab">Submission Method</a>
+</div>
+<div style="position:relative;" class="interestBox">
+	<h2 style="margin:0">Your Profile Settings</h2>
+</div>
+
+<br/><br/>
+
 <form class="simpleform" method="post" action="/profile.php">
 <input type="hidden" name="edit" value="1"/>
 
@@ -104,7 +118,7 @@
 	<label for="gravatar">Gravatar:</label>
 	<img src="http://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" align="left" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>
 	
-	<div class="fieldnotes">To set up or change your Avatar image, go to {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address as above.. <br/>(Tick this box: <input type="checkbox" name="gravatar_reset"/> if you have recently uploaded a Gravatar)</div>
+	<div class="fieldnotes">To set up or change your Avatar image, go to {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} and use the same email address as above. <br/>(Tick this box: <input type="checkbox" name="gravatar_reset"/> if you have recently uploaded a Gravatar)</div>
 
 </div>
 
@@ -165,7 +179,7 @@
 	<label for="grid_reference">Home grid square:</label>
 	<input type="text" id="grid_reference" name="grid_reference" value="{$profile->grid_reference|escape:'html'}" size="6" />
 	
-	<div class="fieldnotes">If you wish, tell us the Great Britain or Ireland grid reference of your home.</div>
+	<div class="fieldnotes">If you wish, tell us the Great Britain or Ireland grid reference of your home. This will be displayed on your public profile</div>
 
 	{if $errors.grid_reference}</div>{/if}
 </div>
@@ -242,11 +256,12 @@
 	<select name="submission_method" id="submission_method"> 
 		<option value="submit">Original Submission Method</option>
 		<option value="submit2" {if $profile->submission_method =='submit2'} selected="selected"{/if}>Submit Version 2</option>
+		<option value="submit2tabs" {if $profile->submission_method =='submit2tabs'} selected="selected"{/if}>Submit Version 2 Tabs</option>
 		<option value="multi" {if $profile->submission_method =='multi'} selected="selected"{/if}>Multi Submit</option>
 	</select>
 
 	 
-	<div class="fieldnotes">If you choose "Submit v2" then you will be taken direct to the new version, but you can still choose to use version 1 on a per image basis. <br/><a href="/help/submission" target="_blank">View alternative submission methods</a></div>
+	<div class="fieldnotes">If you choose "Submit v2" then you will be taken direct to the new version, but you can still choose to use version 1 on a per image basis. <br/><a href="/help/submit" target="_blank">View alternative submission methods</a></div>
 </div>
 
 <div class="field"> 
@@ -287,30 +302,33 @@
 </div>
 
 
+{if $profile->ticket_public ne 'everyone' && $profile->ticket_public ne ''}
 <div class="field"> 
 	<label for="ticket_public" class="nowrap">Change Suggestion Anonymity</label>
 	
 	<select name="ticket_public" id="ticket_public">
-		<option value="no">Do not disclose my name</option>
-		<option value="owner" {if $profile->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
+		{if $profile->ticket_public eq 'no'}<option value="no">Do not disclose my name</option>{/if}
+		{if $profile->ticket_public eq 'owner'}<option value="owner" selected>Show my name to the photo owner</option>{/if}
 		<option value="everyone" {if $profile->ticket_public eq 'everyone'} selected{/if}>Show my name against the suggestion</option>
 	</select>
 	 
-	<div class="fieldnotes">Change how your name is disclosed on suggestions your create from now on.</div>
+	<div class="fieldnotes">Change how your name is disclosed on suggestions your create from now on. <br/>
+	<b>Note: This setting will no longer be honoured. It's only shown here so you can change the setting to "Show my name against the suggestion" and remove the message from the edit page.</b>
+	</div>
 </div>
-
+{/if}
 
 <div class="field"> 
 	<label for="ticket_public_change" class="nowrap">Anonymity for previous suggestions</label>
 	<br/>
 	<select name="ticket_public_change" id="ticket_public_change" style="margin-left:10em;">
 		<option value="">No change - leave previous suggestions as is</option>
-		<option value="no">Do not disclose my name</option>
+		<!--option value="no">Do not disclose my name</option-->
 		<option value="owner">Show my name to the photo owner</option>
 		<option value="everyone">Show my name against the suggestion</option>
 	</select>
 	 
-	<div class="fieldnotes">Optionally use this box to change all your previous suggestions to a new setting.</div>
+	<div class="fieldnotes">(Optionally) use this box to change all your previous suggestions to a new Anonymity setting.</div>
 </div>
 
 
@@ -367,15 +385,34 @@
 	<div class="fieldnotes">Changes the category dropdown to an autocomplete text field - EXPERIMENTAL</div>  
 </div>
 
+
 </fieldset>
 
 
+<p><b>Other Options</b>: <a href="/choose-search.php" target="_blank">Choose Site Search Engine</a>,
+	<a href="/profile.php?notifications=1" target="_blank">Email Notifications for your photos</a>,
+	<a href="/switch_tagger.php" target="_blank">Enable Experimental Tag Box</a>,
+	<a href="/switch.php" target="_blank">Old submission method</a>,
+	and <a href="/help/submit" target="_blank">Choose Prefered mapping provider for submission</a> - these options are setable on their own page, which open in new window.</p>
 
  	<input type="submit" name="savechanges" value="Save Changes"/>
  	<input type="submit" name="cancel" value="Cancel"/>
 
-{if ($profile->stats.squares gt 20) || ($profile->rights && $profile->rights ne 'basic')}
+{if $company_link} 
 	<br/><br/><br/><br/><br/><br/>
+	<fieldset>
+        <legend>Geograph Project Limited - Company Membership</legend>
+        <div class="field">
+		<label class="nowrap">Apply</label>
+
+		<a href="{$company_link|escape:'html'}">Follow this link to be taken to the company mini-site</a>
+
+		<div class="fieldnotes">You already qualify for membership - from there can apply for Company Membership.</div>
+        </div>
+	</fieldset>
+{/if}
+
+{if ($profile->stats.squares gt 20) || ($profile->rights && $profile->rights ne 'basic')}
 	<fieldset>
 	<legend>User Roles</legend>
 

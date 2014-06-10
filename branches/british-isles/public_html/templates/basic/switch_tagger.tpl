@@ -1,8 +1,19 @@
 {assign var="page_title" value="Submission Method"}
 {include file="_std_begin.tpl"}
 
-<h2>Tag Box Update</h2>
+<div class="tabHolder" style="text-align:right">
+        <a href="/profile.php" class="tab">Back to Profile</a>
+        <a href="/profile.php?edit=1" class="tab">General Settings</a>
+        <a href="/profile.php?notifications=1" class="tab">Email Notifications</a>
+        <a href="/choose-search.php" class="tab">Site Search Engine</a>
+        <span class="tabSelected">Tagging Box</span>
+        <a href="/switch.php" class="tab">Submission Method</a>
+</div>
+<div style="position:relative;" class="interestBox">
+	<h2>Tag Box Update</h2>
+</div>
 
+<br/><br/>
 
 {dynamic}
 <div class="interestBox" style="padding-left:20px">
