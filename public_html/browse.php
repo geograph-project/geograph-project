@@ -29,15 +29,18 @@ require_once('geograph/map.class.php');
 require_once('geograph/mapmosaic.class.php');
 require_once('geograph/rastermap.class.php');
 
-init_session();
-
+if (empty($_GET['style'])) {
+	init_session_or_cache(3600, 360); //cache publically, and privately
+} else {
+	init_session();
+	##customExpiresHeader(360,false,true);
+}
 
 $smarty = new GeographPage;
 
 dieUnderHighLoad(4);
 
 customGZipHandlerStart();
-customExpiresHeader(360,false,true);
 
 $square=new GridSquare;
 
@@ -90,6 +93,7 @@ $displayclasses =  array(
 			'tiles' => 'default',
 			'full' => 'full listing',
 			'thumbs' => 'thumbnails only',
+			'tilesbig' => 'bigger thumbnails',
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
@@ -272,7 +276,7 @@ if ($grid_given)
 			$extra .= "&amp;user=".intval($_GET['user']);
 		}
 		if (!empty($_GET['status'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection(false);
 			$filtered_title .= " moderated as '".htmlentities2($_GET['status'])."'";
 			$extra .= "&amp;status=".urlencode($_GET['status']);
 			$_GET['status'] = str_replace('supplemental','accepted',$_GET['status']);
@@ -280,28 +284,28 @@ if ($grid_given)
 			$smarty->assign("bby",'status');
 		}
 		if (!empty($_GET['class'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection(false);
 			$custom_where .= " and imageclass = ".$db->Quote($_GET['class']);
 			$filtered_title .= " categorised as '".htmlentities2($_GET['class'])."'";
 			$smarty->assign("bby",'class');
 			$extra .= "&amp;class=".urlencode($_GET['class']);
 		}
 		if (!empty($_GET['cluster'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection(false);
 			$custom_where .= " and label = ".$db->Quote($_GET['cluster']);
 			$filtered_title .= " labeled as '".htmlentities2($_GET['cluster'])."'";
 			$smarty->assign("bby",'cluster');
 			$extra .= "&amp;cluster=".urlencode($_GET['cluster']);
 		}
 		if (!empty($_GET['tag'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection(false);
 			$custom_where .= " and tag = ".$db->Quote($_GET['tag']);
 			$filtered_title .= " tagged as '".htmlentities2($_GET['tag'])."'";
 			$smarty->assign("bby",'tag');
 			$extra .= "&amp;tag=".urlencode($_GET['tag']);
 		}
 		if (!empty($_GET['taken'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection(false);
 			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['taken']."%");
 			$date = getFormattedDate($_GET['taken']);
 			$filtered_title .= " Taken in $date";
@@ -309,7 +313,7 @@ if ($grid_given)
 			$extra .= "&amp;taken=".urlencode($_GET['taken']);
 		}
 		if (!empty($_GET['takenyear'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection(false);
 			$custom_where .= " and imagetaken LIKE ".$db->Quote($_GET['takenyear']."%");
 			$date = getFormattedDate($_GET['takenyear']);
 			$filtered_title .= " Taken in $date";
@@ -317,7 +321,7 @@ if ($grid_given)
 			$extra .= "&amp;takenyear=".urlencode($_GET['takenyear']);
 		}
 		if (!empty($_GET['submitted'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection(false);
 			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submitted']."%");
 			$date = getFormattedDate($_GET['submitted']);
 			$filtered_title .= " Submitted in $date";
@@ -325,7 +329,7 @@ if ($grid_given)
 			$extra .= "&amp;submitted=".urlencode($_GET['submitted']);
 		}
 		if (!empty($_GET['submittedyear'])) {
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+			if (!$db) $db=GeographDatabaseConnection(false);
 			$custom_where .= " and submitted LIKE ".$db->Quote($_GET['submittedyear']."%");
 			$date = getFormattedDate($_GET['submittedyear']);
 			$filtered_title .= " Submitted in $date";
@@ -413,7 +417,7 @@ if ($grid_given)
 			$smarty->assign('filtered', 1);
 		}
 			
-		if ($USER->user_id && !empty($_GET['nl'])) {
+		if ($USER->registered && !empty($_GET['nl'])) {
 			$extra .= "&amp;nl=1";
 			$smarty->assign('nl', 1);
 			
@@ -442,126 +446,87 @@ if ($grid_given)
 		if (!empty($extra)) {
 			$smarty->assign('extra', $extra);
 		}
-			
+
 		if (($square->imagecount > 15 && !isset($_GET['by']) && !$custom_where) || (isset($_GET['by']) && $_GET['by'] == 1)) {
 			$square->totalimagecount = $square->imagecount;
-			
+
 			$square->loadCollections();
-			
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
-			
+
+			if (!$db) $db=GeographDatabaseConnection(false);
+
 			if ($square->imagecount > 15 && $_GET['by'] !== '1') {
 				$imagelist = new ImageList();
-				
+
 				$mkey = $square->grid_reference;
 				$imagelist->images =& $memcache->name_get('bx',$mkey);
-				
+
 				if (empty($imagelist->images)) {
 					$imagelist->_setDB($db);
-				
+
 					$columns = "gridimage_id,user_id,realname,credit_realname,title,imageclass,grid_reference,comment";
 					$gis_where = "grid_reference = '{$square->grid_reference}'";
 					$limit = 12;
-					
-					$methodsa = array('any'=>1,'random'=>1,'latest'=>1,'few'=>1,'groups'=>1); 
-					
-					if ($square->imagecount > 50) {
-						$methodsa['user+category']=1;
-					}
-					if ($square->imagecount > $limit*2) {
-						$methodsa['category']=1;
-						$methodsa['spaced']=1;
-					}
-					
-					$methods = array_keys($methodsa);
-					
-					$method = $methods[rand(0,count($methods)-1)];
-					
-					if ($method == 'groups') {
-						$c = $db->getOne("SELECT c FROM gridsquare_group_stat WHERE gridsquare_id = {$square->gridsquare_id}");
-						if (!$c || $c < 4) {
-							unset($methodsa['groups']);
-							$methods = array_keys($methodsa);
-							$method = $methods[rand(0,count($methods)-1)];
-						}
-					}
-					
-					
+
+
 					list($usec, $sec) = explode(' ',microtime());
 					$starttime = ((float)$usec + (float)$sec);
-					
-					switch ($method) {
-						case 'category':
-							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where GROUP BY imageclass ORDER BY seq_no LIMIT $limit";
-							break;
-						
-						case 'groups':
-							$sql = "SELECT DISTINCT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search INNER JOIN gridimage_group USING (gridimage_id) WHERE $gis_where GROUP BY label ORDER BY seq_no LIMIT $limit";
-							break;
-						
-						case 'user+category': 
-							//http://stackoverflow.com/questions/1138006/multi-column-distinct-in-mysql
 
-							$table = $CONF['db_tempdb'].".tmp_browse";#.md5(uniqid());
+					$sphinx = new sphinxwrapper("@grid_reference {$square->grid_reference}");
+					$sphinx->pageSize = $pgsize = $limit;
+					$pg = 1;
+					$client = $sphinx->_getClient();
+				        $bits = array();
+                        	        $bits[] = "uniqueserial(atakenyear)";
+                	                $bits[] = "uniqueserial(takendays)";
+        	                        $bits[] = "uniqueserial(classcrc)";
+	                                $bits[] = "uniqueserial(scenti)";
+                        	        if (!preg_match('/user_id/',$q)) {
+                	                        $bits[] = "uniqueserial(auser_id)";
+        	                        }
+	                                $client->setSelect(implode('+',$bits)." as myint");
 
-							$db->Execute("CREATE TEMPORARY TABLE $table SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, REVERSE(gridimage_id)");
+                                        if (method_exists($client,'SetOuterSelect')) {
+                                                $client->SetOuterSelect("myint ASC,sequence ASC",0,$limit); //sets the final results
+                                                $sphinx->sort = "id DESC"; //this is the INNER sort, applies BEFORE the UDF
+                                                $sphinx->pageSize = 1000; //this means sample works from the last 1000 submissions.
+                                        } else {
+                                                $sphinx->sort = "myint ASC,sequence ASC";
+                                        }
 
-							$db->Execute("ALTER IGNORE TABLE $table ADD UNIQUE (user_id),ADD UNIQUE (imageclass)");
-
-							$sql = "/* {$square->grid_reference}/{$square->gridsquare_id} */ SELECT SQL_CALC_FOUND_ROWS * FROM $table LIMIT $limit";
-							break;
-							
-						case 'spaced': 
-							$db->Execute("set @c := -1");
-							$space = max(1,floor($square->imagecount/$limit));
-							
-							$sql = "select SQL_CALC_FOUND_ROWS $columns,if(@c=$space,@c:=0,@c:=@c+1) AS c FROM gridimage_search WHERE $gis_where HAVING c=0 ORDER by seq_no";
-							break;
-						
-						case 'any':
-							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC LIMIT $limit";
-							break;
-						
-						case 'random':
-							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, REVERSE(gridimage_id) LIMIT $limit";
-							break;
-						
-						case 'latest':
-							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, seq_no DESC LIMIT $limit";
-							break;
-						
-						case 'few':
-						default:
-							$sql = "SELECT SQL_CALC_FOUND_ROWS $columns FROM gridimage_search WHERE $gis_where ORDER BY seq_no LIMIT $limit";
-						
+					$ids = $sphinx->returnIds($pg,'_images');
+					if ($ids) {
+						$ids = join(",",$ids);
+						$sql = "SELECT $columns FROM gridimage_search WHERE gridimage_id IN($ids) ORDER BY FIELD(gridimage_id,$ids)";
+						$imagelist->_getImagesBySql($sql);
+						$total = $sphinx->resultCount;
+						$method = 'sphinx';
+					} else {
+						$sql = "SELECT $columns FROM gridimage_search WHERE $gis_where ORDER BY ftf BETWEEN 1 AND 4 DESC, seq_no DESC LIMIT $limit";
+						$total = $square->imagecount;
+						$method = 'latest';
 					}
-					$imagelist->_getImagesBySql($sql);
-					
 					list($usec, $sec) = explode(' ',microtime());
 					$endtime = ((float)$usec + (float)$sec);
 					$timetaken = $endtime - $starttime;
-					
-					$total = $db->getOne("SELECT FOUND_ROWS()"); 
-					
+
+
 					$updates = "timetaken = $timetaken,total = $total,results = ".count($imagelist->images);
-					
-					$db->Execute("INSERT INTO browse_cluster 
+
+					$db->Execute("INSERT INTO browse_cluster
 							SET gridsquare_id = {$square->gridsquare_id},method = '$method',$updates,created=NOW()
 							ON DUPLICATE KEY UPDATE uses=uses+1,$updates");
-					
+
 					$memcache->name_set('bx',$mkey,$imagelist->images,$memcache->compress,$memcache->period_long);
 				}
-						
-							
-				
+
 				$smarty->assign_by_ref('images', $imagelist->images);
 				$smarty->assign('sample', count($imagelist->images) );
-				
+
 				$groupbys = array(''=>'','takendays'=>'Day Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','auser_id'=>'Contributor','classcrc'=>'Image Category',' '=>'','scenti'=>'Centisquare');
 				$smarty->assign_by_ref('groupbys', $groupbys);
 			} else {
-			
-			$row = $db->cacheGetRow($cacheseconds,"SELECT 
+
+			$row = $db->cacheGetRow($cacheseconds,"SELECT
 			count(distinct user_id) as user,
 			count(distinct imageclass) as class,
 			count(distinct SUBSTRING(imagetaken,1,7)) as taken,
@@ -575,7 +540,7 @@ if ($grid_given)
 			FROM gridimage gi
 			WHERE gridsquare_id = {$square->gridsquare_id}
 			AND $user_crit");
-			
+
 			$breakdowns = array();
 			$breakdowns[] = array('type'=>'user','name'=>'Contributor','count'=>$row['user'].' Contributors');
 			$breakdowns[] = array('type'=>'centi','name'=>'Centisquare','count'=>$row['centi'].' Centisquares');
@@ -592,12 +557,12 @@ if ($grid_given)
 			if ($square->imagecount > 15) {
 				$c = $db->getOne("SELECT c FROM gridsquare_group_stat WHERE gridsquare_id = {$square->gridsquare_id}");
 				if ($c > 1) {
-					array_unshift($breakdowns,array('type'=>'cluster','name'=>'Automatic Cluster <sup style=color:red>New!</sup>','count'=>$c.' Groups'));
+					array_unshift($breakdowns,array('type'=>'cluster','name'=>'Automatic Cluster','count'=>$c.' Groups'));
 				}
 			}
 
 			$smarty->assign_by_ref('breakdowns', $breakdowns);
-			
+
 			if (rand(1,10) > 7) {
 				$order = "(moderation_status = 'geograph') desc,rand()";
 			} else {
@@ -615,13 +580,13 @@ if ($grid_given)
 				$smarty->assign_by_ref('image', $image);
 			}
 			}
-		} elseif (!empty($_GET['by'])) {
+		} elseif (!empty($_GET['by']) && preg_match('/^\w+$/',$_GET['by'])) {
 			$square->totalimagecount = $square->imagecount;
-			
-			if (!$db) $db=NewADOConnection($GLOBALS['DSN']);
+
+			if (!$db) $db=GeographDatabaseConnection(false);
 			$breakdown = array();
 			$i = 0;
-			
+
 			if (empty($_GET['ht'])) {
 				//we only need these columsn if not hiding thumbnails
 				$columns = ",title,user_id,gi.realname AS credit_realname,IF(gi.realname!='',gi.realname,user.realname) AS realname,user.realname AS user_realname,gi.comment";
@@ -630,7 +595,10 @@ if ($grid_given)
 				$columns = ',gi.comment';
 				$gridimage_join = '';
 			}
-			
+			if (strpos($custom_where,'label ') !== FALSE) {
+				$gridimage_join .= " INNER JOIN gridimage_group gg USING (gridimage_id)";
+			}
+
 			if ($_GET['by'] == 'class') {
 				$breakdown_title = "Category";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT imageclass,COUNT(*) AS count,
@@ -753,10 +721,13 @@ if ($grid_given)
 					$i++;
 				}
 			} elseif ($_GET['by'] == 'user') {
+				if (strpos($gridimage_join,"JOIN user ") === FALSE)
+					$gridimage_join .= " INNER JOIN user USING(user_id)";
+
 				$breakdown_title = "Contributor";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT user.realname AS user_realname,COUNT(*) AS count,
 				gridimage_id, user_id $columns
-				FROM gridimage gi INNER JOIN user USING(user_id)
+				FROM gridimage gi $gridimage_join
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY user_id
@@ -855,7 +826,7 @@ if ($grid_given)
 			} elseif ($_GET['by'] == 'centi') {
 				$breakdown_title = "Centisquare<a href=\"/help/squares\">?</a>";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT (nateastings = 0),COUNT(*) AS count,gridimage_id,nateastings DIV 100, natnorthings DIV 100
-				FROM gridimage gi
+				FROM gridimage gi $gridimage_join
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY nateastings DIV 100, natnorthings DIV 100,(nateastings = 0)");
@@ -893,7 +864,7 @@ if ($grid_given)
 				$n = intval($square->getNatNorthings()/1000);
 				$breakdown_title = "Photographer Centisquare<a href=\"/help/squares\">?</a>";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT (viewpoint_eastings = 0),COUNT(*) AS count,gridimage_id,viewpoint_eastings DIV 100, viewpoint_northings DIV 100
-				FROM gridimage gi
+				FROM gridimage gi $gridimage_join
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				AND ((viewpoint_eastings DIV 1000 = $e AND viewpoint_northings DIV 1000 = $n) OR viewpoint_eastings = 0)
