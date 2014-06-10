@@ -42,7 +42,7 @@ if (isset($_GET['submit'])) { //We use GET (rather than POST) so the back button
         $USER->setPreference('search_engine',$option,true);
 	$smarty->assign('optset',true);
 } else {
-	$option = $USER->getPreference('search_engine','default',true);
+	$option = $USER->getPreference('search_engine','of.php',true);
 }
 
 $smarty->assign('option',$option);

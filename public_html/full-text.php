@@ -34,10 +34,17 @@ if (!empty($_GET['q'])) {
 	$q = preg_replace('/ OR /',' | ',$q);
 
 	$q = preg_replace('/[^\w~\|\(\)@"\/:=<^$-]+/',' ',trim(strtolower($q)));
+
+	header("Location: /of/$q");
+	exit;
+
 	$smarty->assign("q",$q);
 }
 
+
+
+header("Location: /of/");
+exit;
+
 $smarty->display('full-text.tpl');
 
-	
-?>

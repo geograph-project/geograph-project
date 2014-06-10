@@ -11,6 +11,7 @@
 <form method="get" action="/search.php">
         <input type="hidden" name="form" value="basic"/>
 	<div class="tabHolder" style="text-align:right">
+		<a href="/of/" class="tab">Quick search</a>
 		<span class="tabSelected">Simple search</span>
 		<a href="/search.php?form=text" class="tab">Advanced search</a>
 		<a href="/finder/multi2.php" class="tab">Combined</a>

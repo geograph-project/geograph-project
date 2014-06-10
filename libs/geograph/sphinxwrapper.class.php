@@ -629,7 +629,7 @@ split_timer('sphinx'); //starts the timer
 			print "<pre>";
 			print_r($this->filters);
 		}
-		$mode = SPH_MATCH_ALL;
+		$mode = SPH_MATCH_EXTENDED;
 		
 		if (strpos($q,'=~') === 0) {
 			$q = preg_replace('/^=/','',$q);
