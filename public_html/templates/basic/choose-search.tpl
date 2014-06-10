@@ -1,11 +1,22 @@
 {assign var="page_title" value="Search Engine to Use"}
 {include file="_std_begin.tpl"}
 
-<h2>Search Engine to Use</h2>
+
+<div class="tabHolder" style="text-align:right">
+        <a href="/profile.php" class="tab">Back to Profile</a>
+        <a href="/profile.php?edit=1" class="tab">General Settings</a>
+        <a href="/profile.php?notifications=1" class="tab">Email Notifications</a>
+        <span class="tabSelected">Site Search Engine</span>
+        <a href="/switch_tagger.php" class="tab">Tagging Box</a>
+        <a href="/switch.php" class="tab">Submission Method</a>
+</div>
+<div style="position:relative;" class="interestBox">
+	<h2>Search Engine to Use</h2>
+</div>
 
 <p>Use this page to configure which search engine your query is forwarded to when you enter something in the "search images..." top right of site pages. <br/><br/>
 
-<i>N.B. on Discussion Forum pages, that will always forward direct to the Discussion Search.</i></p>
+<i>N.B. on Discussion Forum pages, the search box is directly searches discussions.</i></p>
 
 {dynamic}
 {if $optset}
