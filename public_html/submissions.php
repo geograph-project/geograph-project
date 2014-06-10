@@ -118,6 +118,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('prev', 1);
 		}
 	}
+
+	if (empty($USER->db)) {
+		$USER->db = $imagelist->db;
+	}
+	$USER->getStats();
+
 }
 
 
