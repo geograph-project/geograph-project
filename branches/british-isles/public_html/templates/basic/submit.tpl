@@ -433,7 +433,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 			{if $error.subject}
 				<br/><span class="formerror">{$error.subject}</span>
 			{/if}<br/>
-			&nbsp;<select id="subject" name="subject" style="width:300px">
+			&nbsp;<select name="subject" style="width:300px">
 				<option value="">select...</option>
 				{html_options options=$subjects selected=$subject}
 			</select>
@@ -693,7 +693,7 @@ have problems
 {literal}
 function showPreview(url,width,height,filename) {
 	height2=Math.round((138 * height)/width);
-	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="138" height="'+height2+'" id="imgPreview" onmouseover="this.height='+height+';this.width='+width+'" onmouseout="this.height='+height2+';this.width=138" /><br/>'+filename;
+	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="138" height="'+height2+'" id="imgPreview" onmouseover="var that = this; mytimer=setTimeout(function() {that.height='+height+';that.width='+width+';}, 500);" onmouseout="this.height='+height2+';this.width=138;clearTimeout(mytimer)" /><br/>'+filename;
 	document.getElementById('hidePreview').style.display='';
 }
  AttachEvent(window,'load',function () {showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height},'{$filename|escape:'javascript'}'{literal}) },false);

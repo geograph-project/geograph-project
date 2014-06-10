@@ -38,7 +38,7 @@
 
 	If you are not using categories anyway, <a href="/switch.php"><b>please switch it off</b></a>; this will hide this message. 
 
-	<br/><br/>Otherwise please <a href="https://spreadsheets.google.com/spreadsheet/viewform?formkey=dFpiTjJsTEZRRXVwZ2pxWXdXczY2ZGc6MQ" target="_blank">tell us why</a> you still using the category dropdown. 
+	<br/><br/>We plan to get on with turning off categories completely, a provisional timetable <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=21&topic=26275&page=0">here</a>, please give feedback via that forum thread.
 </div>
 
 
@@ -794,7 +794,7 @@ have problems
 {literal}
 function showPreview(url,width,height,filename) {
 	height2=Math.round((138 * height)/width);
-	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="138" height="'+height2+'" id="imgPreview" onmouseover="this.height='+height+';this.width='+width+'" onmouseout="this.height='+height2+';this.width=138" /><br/>'+filename;
+	document.getElementById('previewInner').innerHTML = '<img src="'+url+'" width="138" height="'+height2+'" id="imgPreview" onmouseover="var that = this; mytimer=setTimeout(function() {that.height='+height+';that.width='+width+';}, 500);" onmouseout="this.height='+height2+';this.width=138;clearTimeout(mytimer)" /><br/>'+filename;
 	document.getElementById('hidePreview').style.display='';
 }
  AttachEvent(window,'load',function () {showPreview({/literal}'{$preview_url}',{$preview_width},{$preview_height},'{$filename|escape:'javascript'}'{literal}) },false);
