@@ -89,7 +89,7 @@ function UploadPicture() {
 			returnXML();
 		}
 		
-		if (!$USER->user_id || !$USER->hasPerm('basic')) {
+		if (!$USER->registered || !$USER->hasPerm('basic')) {
 			$xml['status'] = 'Not authorised to post';
 			returnXML();
 		}
