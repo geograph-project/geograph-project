@@ -24,29 +24,21 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-
-//next, we want to be sure you can only view pages intended for static viewing
-$template='choose-search.tpl';
-
-$smarty = new GeographPage;
-
-//you must be logged in to submit images
-$USER->mustHavePerm("basic");
-
-
-
-
-if (isset($_GET['submit'])) { //We use GET (rather than POST) so the back button can still work :(
-	$keys = array_keys($_GET['submit']);
-	$option = array_pop($keys);
-        $USER->setPreference('search.engine',$option,true);
-	$smarty->assign('optset',true);
+if (!empty($_GET['option'])) {
+	$option = $_GET['option'];
 } else {
-	$option = $USER->getPreference('search.engine','of.php',true);
+	$option = $USER->getPreference('preview.method','none',true);
 }
 
-$smarty->assign('option',$option);
+customExpiresHeader(3600,true,true);
 
+header("Content-type: text/javascript");
 
-$smarty->display($template);
+customGZipHandlerStart();
 
+switch($option) {
+	case 'preview': readfile('js/preview.js',false); break;
+	case 'preview2': readfile('js/preview2.js',false); break;
+}
+
+//output nothing - a nice noop!

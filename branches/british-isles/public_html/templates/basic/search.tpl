@@ -14,9 +14,7 @@
 		<a href="/of/" class="tab">Quick search</a>
 		<span class="tabSelected">Simple search</span>
 		<a href="/search.php?form=text" class="tab">Advanced search</a>
-		<a href="/finder/multi2.php" class="tab">Combined</a>
 		{if $user->registered}
-			<a href="/search.php?form=first" class="tab">First Geographs</a>
 			<a href="/search.php?form=check" class="tab">Check submissions</a>
 		{/if}
 		<a href="/finder/" class="tab">more...</a>

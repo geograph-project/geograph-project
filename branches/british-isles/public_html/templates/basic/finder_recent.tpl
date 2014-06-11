@@ -53,7 +53,7 @@
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 <script src="/js/lazy.v1.js" type="text/javascript"></script>
-<script src="/js/preview2.v5.js" type="text/javascript"></script>
+<script src="/preview.js.php" type="text/javascript"></script>
 <script>
 var query = '';
 var iii = 1522;
