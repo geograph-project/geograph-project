@@ -38,10 +38,10 @@ function initHover() {
 		mytimer = setTimeout(function() {
 			$('#hovercard').remove();
 		},500);
-	}).mousemove(function(e){
+	}).mousemove(function(event){
 		$("#hovercard").css({
-			'top':(e.pageY + 20) + "px",
-			'left':(e.pageX + 20) + "px"
+			'top':(event.pageY + 20) + "px",
+			'left':(event.pageX + 20) + "px"
 		});
 	});
 }
@@ -49,7 +49,8 @@ function initHover() {
 function displayHover(link,event) {
 	var m = link.match(/\/(\d+)$/);
 	if ($('#hovercard').length ==0) {
-		$("body").append('<div id="hovercard" style="position:absolute;z-index:1000;"><iframe src="/frame.php?id='+m[1]+'" width="550" height="280" frameborder="0"></iframe></div>');
+		$("body").append('<div id="hovercard" style="position:absolute;z-index:1000;top:'+(event.pageY+20)+'px;left:'+(event.pageX+20)+'px">'+
+			'<iframe src="/frame.php?id='+m[1]+'" width="550" height="280" frameborder="0"></iframe></div>');
 	} else {
 		$('#hovercard iframe').attr('src','/frame.php?id='+m[1]);
 	}

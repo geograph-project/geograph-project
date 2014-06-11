@@ -760,7 +760,7 @@ if (isset($_GET['fav']) && $i) {
 
 		if ($USER->registered && !preg_match('/^\w{1,2}\d{4}$/',$q) ) {
 			customNoCacheHeader();
-			$option = $USER->getPreference('search_engine','of.php',true);
+			$option = $USER->getPreference('search.engine','of.php',true);
 			if ($option && $option != 'default') {
 				header("HTTP/1.0 307 Temporary Redirect");
                                 header("Status: 307 Temporary Redirect");

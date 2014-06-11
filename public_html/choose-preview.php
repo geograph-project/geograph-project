@@ -26,7 +26,7 @@ init_session();
 
 
 //next, we want to be sure you can only view pages intended for static viewing
-$template='choose-search.tpl';
+$template='choose-preview.tpl';
 
 $smarty = new GeographPage;
 
@@ -39,14 +39,13 @@ $USER->mustHavePerm("basic");
 if (isset($_GET['submit'])) { //We use GET (rather than POST) so the back button can still work :(
 	$keys = array_keys($_GET['submit']);
 	$option = array_pop($keys);
-        $USER->setPreference('search.engine',$option,true);
+        $USER->setPreference('preview.method',$option,true);
 	$smarty->assign('optset',true);
 } else {
-	$option = $USER->getPreference('search.engine','of.php',true);
+	$option = $USER->getPreference('preview.method','none',true);
 }
 
 $smarty->assign('option',$option);
-
 
 $smarty->display($template);
 

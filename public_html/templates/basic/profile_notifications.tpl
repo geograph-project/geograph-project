@@ -6,6 +6,7 @@
         <a href="/profile.php?edit=1" class="tab">General Settings</a>
         <span class="tabSelected">Email Notifications</span>
         <a href="/choose-search.php" class="tab">Site Search Engine</a>
+        <a href="/choose-preview.php" class="tab">Preview Method</a>
         <a href="/switch_tagger.php" class="tab">Tagging Box</a>
         <a href="/switch.php" class="tab">Submission Method</a>
 </div>
