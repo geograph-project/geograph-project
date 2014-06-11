@@ -46,8 +46,23 @@ $smarty = new GeographPage;
 
 customExpiresHeader(3600,false,true);
 
+$src = 'data-src';
+if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
+        (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
+	$src = 'src';//revert back to standard non lazy loading
+}
+
 $qh = $qu = '';
 if (!empty($_GET['q'])) {
+	$_GET['q'] = str_replace(" near (anywhere)",'',$_GET['q']);
+
+	if (preg_match('/^(\(anything\)\s* |)near (.+)$/',$_GET['q'],$m)) {
+		header("Location: /near/".urlencode2($m[2]));
+                exit;
+	}
+
+
+
         $sphinx = new sphinxwrapper(trim($_GET['q']));
 
 	$qu = urlencode(trim($_GET['q']));
@@ -60,9 +75,9 @@ if (!empty($_GET['q'])) {
 	}
 
 
-	$data = file_get_contents("http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1");
-	if (strlen($data) > 40) {
-        	$decode = json_decode($data);
+	$str = file_get_contents("http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1");
+	if (strlen($str) > 40) {
+        	$decode = json_decode($str);
 	}
 
 
@@ -80,7 +95,8 @@ if (!empty($_GET['q'])) {
 	<div style="float:right">
 		More:
 		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=decade">Over Time</a> &middot;
-		<a href="/finder/recent.php?q=<? echo $qu; ?>">Recent</a> &middot;
+		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=segment">Recent</a> &middot;
+		<!--a href="/finder/recent.php?q=<? echo $qu; ?>">Recent</a> &middot; -->
 		<!--a href="/of/<? echo $qu2; ?>?sort=recent">Recent</a> &middot; -->
 		<?
 		$db = GeographDatabaseConnection(true);
@@ -102,13 +118,19 @@ if (!empty($_GET['q'])) {
 if (!empty($_GET['q'])) {
 
 	if (!empty($decode)) {
-		if ($decode->total_found > 0) {
-			print "Or view images near <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
+		if ($decode->total_found == 1) {
+			$object = $decode->items[0];
+			if (strpos($object->name,$object->gr) === false)
+                                 $object->name .= "/{$object->gr}";
+                        print "Or view images <i>near</i> <b><a href=\"/near/".urlencode2($object->name)."\">".htmlentities($object->name)."</a></b>";
+
+		} else if ($decode->total_found > 0) {
+			print "Or view images <i>near</i> <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
 			foreach ($decode->items as $object) {
 				if (strpos($object->name,$object->gr) === false)
                                 	$object->name .= "/{$object->gr}";
                                 printf('<option value="%s"%s>%s</option>', $val = $object->name, ($gr == $object->gr)?' selected':'',
-                                        $object->name.($object->localities?", ".$object->localities:''));
+                                        str_replace('/',' &nbsp; ',$object->name).($object->localities?", ".$object->localities:''));
 			}
 
 			print '<optgroup></optgroup>';
@@ -130,6 +152,13 @@ if (!empty($_GET['q'])) {
 
 
 if (!empty($_GET['q'])) {
+	$bits = explode(' near ',$_GET['q']);
+	if (count($bits) == 2) {
+		print "<div>Looking for keywords '".htmlentities($bits[0])."' <i>near</i> place '".htmlentities($bits[1])."'? If so <a href=\"/search.php?q=$qu\">click here</a>.</div>";
+		$sphinx->q = str_replace(' near ',' @(Place,County,Country) ',$sphinx->q);
+	}
+
+
 	$limit = 50;
 
                 $prev_fetch_mode = $ADODB_FETCH_MODE;
@@ -161,15 +190,19 @@ if (!empty($_GET['q'])) {
 
 		$rows = array();
 		if (empty($_GET['sort'])) {
-			$rows[] = $sph->getAll($sql = "
+			$rows['score'] = $sph->getAll($sql = "
         	                select id,realname,user_id,title,grid_reference
                 	        from sample8
                         	where $where
 	                        order by score desc
-        	                limit 8");
+        	                limit 8
+				option ranker=none, max_query_time=800");
 
-			if (empty($rows[0]) && preg_match('/\s\w+\s+\w/',$_GET['q'])) {
-				print "<i>No results found for '".htmlentities($_GET['q'])."', showing results containing only some of the words...</i><br/>";
+			if (!empty($rows['score']))
+				$data = $sph->getAssoc("SHOW META");
+
+			if (empty($rows['score']) && preg_match('/\s\w+\s+\w/',$_GET['q'])) {
+				print "<i>No results found for '".htmlentities($_GET['q'])."', showing results containing only <b>some of the words</b>...</i><br/>";
 				$words = $_GET['q'];
 	                        $words = str_replace('_SEP_','',$words);
         	                $words = trim(preg_replace('/[^\w]+/',' ',$words));
@@ -178,9 +211,18 @@ if (!empty($_GET['q'])) {
 		}
 
 		if (empty($id)) {
-			$data = file_get_contents("https://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=$qu+site:geograph.org.uk");
-			if (strlen($data) > 400) {
-				$decode = json_decode($data);
+			$opts = array('http' =>
+			    array(
+			        'timeout'  => 1.8,
+			        'header'  => 'Connection: close',
+			    )
+			);
+
+			$context = stream_context_create($opts);
+
+			$str = file_get_contents("http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=$qu+site:geograph.org.uk+OR+site:geograph.ie&userip=".getRemoteIP(), false, $stream);
+			if (strlen($str) > 300) {
+				$decode = json_decode($str);
 				$ids = array();
 				foreach ($decode->responseData->results as $result) {
 					if (preg_match('/photo\/(\d+)/',$result->originalContextUrl,$m)) {
@@ -190,7 +232,7 @@ if (!empty($_GET['q'])) {
 	                                }
 				}
 				if (!empty($ids))
-					$rows[] = $sph->getAll($sql = "
+					$rows['google'] = $sph->getAll($sql = "
                         			select id,realname,user_id,title,grid_reference
 		                        	from sample8
 	                		        where id IN(".implode(',',$ids).")
@@ -199,37 +241,46 @@ if (!empty($_GET['q'])) {
 			}
 		}
 
+		//$option = ", ranker=expr('sum(lcs*lccs*user_weight)*1000+bm25')";
+		$option = "";
+
 		if (preg_match('/^\w+\s+\w+[\w\s]*$/',$_GET['q'])) {
 	                $where = "match(".$sph->Quote('('.$_GET['q'].') | "'.$_GET['q'].'"').")";
+			$option = ", ranker=expr('sum((word_count+(lcs-1)*max_lcs)*user_weight)')";
 		}
 
 		$order = "w2ln desc, combined asc";
-		$columns = "sequence / baysian as combined";
+		$columns = ", sequence / baysian as combined";
 		if (!empty($_GET['sort']) && $_GET['sort'] == 'recent') {
 			$offset = time()-3600*24*356;
-			$columns = "sequence / ln(submitted-$offset) as combined";
+			$columns = ", sequence / ln(submitted-$offset) as combined";
 			$where .= " and submitted > $offset";
+		} elseif (!empty($data) && $data['total_found'] > 50000) {
+			//the combined calculation can be expensive!
+			$order = "w2ln desc, sequence asc";
+			$columns = "";
 		}
-                $rows[] = $sph->getAll($sql = "
-                        select id,realname,user_id,title,grid_reference, integer(ln(weight())) as w2ln, $columns
+                $rows['combined'] = $sph->getAll($sql = "
+                        select id,realname,user_id,title,grid_reference, integer(ln(weight())) as w2ln $columns
                         from sample8
                         where $where
                         order by $order
                         limit {$limit}
-			option field_weights=(place=10,county=8,country=7,title=5,tags=3,imageclass=4) ");
-			//,ranker=expr('sum(lcs*lccs*user_weight)*1000+bm25')");
+			option field_weights=(place=10,county=8,country=7,title=5,tags=3,imageclass=4)
+			, cutoff=1000000 $ranker ");
 
 if (!empty($_GET['d']))
 	print $sql;
 
-		$data = $sph->getAssoc("SHOW META");
+		if (empty($rows['score']))
+			$data = $sph->getAssoc("SHOW META");
 
 		$final = array();
 		foreach ($rows as $idx => $arr) {
 			if (!empty($arr)) {
 				foreach ($arr as $row)
 					$final[$row['id']] = $row;
-				unset($rows[idx]);
+				//unset($rows[$idx]);
 			}
 		}
 
@@ -249,14 +300,17 @@ if (!empty($_GET['d']))
 ?>
           <div style="float:left;position:relative; width:120px; height:120px;padding:1px;">
           <div align="center">
-          <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true); ?></a></div>
+          <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
           </div>
 <?
 
 		}
 
 		print "<br style=clear:both></div>";
-		print '<script src="/js/preview.v43.js" type="text/javascript"></script>';
+		if ($src == 'data-src')
+			print '<script src="/js/lazy.v2.js" type="text/javascript"></script>';
+		if (!empty($USER->registered))
+			print '<script src="/preview.js.php" type="text/javascript"></script>';
 
 	} elseif (count($final)) {
 		foreach ($final as $idx => $row) {
@@ -275,13 +329,25 @@ if (!empty($_GET['d']))
 			print "Or try a <a href=\"/near/".urlencode2($object->name)."\">searching for images <i>near</i> <b>".htmlentities($object->name)."</b></a>.";
 		}
 		print "</p>";
+
+
+		$str = file_get_contents("http://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q=$qu");
+	        if (preg_match_all('/ data="(.+?)"/',$str,$m)) {
+			print "<p>Alternative Queries: ";
+			foreach ($m[1] as $item) {
+				print "<a href=\"/of/".urlencode($item)."\">".htmlentities($item)."</a> &middot; ";
+			}
+			print " (may or may not return results)</p>";
+			//todo verify these links at least might return results, with CALL KEYWORDS
+		}
 	}
 
+if (!empty($final) && empty($words) && count($final) != count($rows['google'])) {
 	print "<br/><div class=interestBox>";
 	if (!empty($data['total_found']) && $data['total_found'] > 10)
 		print "About ".number_format($data['total_found'])." results. ";
-	print '<a href="/browser/#!/q='.$qu.'">Explore these images more in the Browser</a> or ';
-	print '<a href="/search.php?do=1&searchtext='.$qu.'">in the standard search</a>';
+	print '<a href="/browser/#!/q='.$qu.'"><b>Explore these images more</b> in the Browser</a> or ';
+	print '<a href="/search.php?do=1&searchtext='.(empty($words)?'':'~').$qu.'">in the standard search</a> (may return slightly different results).';
 	$suggestions = array();
 	if ($data['total_found'] > 300) {
 		if (!empty($tag_id) && strpos($_GET['q'],'[') !== 0)
@@ -294,11 +360,19 @@ if (!empty($_GET['d']))
 	}
 	print "</div>";
 
+} elseif (!empty($final) && count($final) == count($rows['google'])) {
+	print "<br/><div class=interestBox>";
+	print '<a href="https://www.google.co.uk/search?q='.$qu.'+site:geograph.org.uk+OR+site:geograph.ie&amp;tbm=isch" target=_blank><b>Explore these images more</b> via Google Images</a>';
+	print "</div>";
+} else {
+	print "<hr/>";
+}
 
 if (!empty($USER->registered)) {
 	print "<p>If you prefer the traditional search, you can <a href=\"/choose-search.php\">choose your default search engine to use</a>.</p>";
 	if ($CONF['forums']) {
-		print "<p>Having trouble with this page (no matter how small), <a href=\"/discuss/index.php?&action=vthread&forum=12&topic=26439\">please let us know</a>.</p>";
+		print "<p>Having trouble with this page? <a href=\"/discuss/index.php?&action=vthread&forum=12&topic=26439\">Please let us know on the discussion forum</a>,
+		or fill out <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>Feedback Form</a>, thank you!</p>";
 	}
 }
 
@@ -322,7 +396,14 @@ if (!empty($USER->registered)) {
 
 	if (count($list)) {
 
-	print "<p>Enter a search above, in the meantime here are some random images...</p>";
+	print "<p>Enter a search above, in the meantime here are some example searches";
+
+	print '&middot; <a href="/of/pylons">pylons</a> ';
+	print '&middot; <a href="/of/tobermory">tobermory</a> ';
+	print '&middot; <a href="/of/canals">canals</a> ';
+	print '&middot; <a href="/near/newquay">newquay</a> ';
+
+	print "<p> and some random images...</p>";
 
                 $thumbh = 160;
                 $thumbw = 213;
@@ -330,7 +411,7 @@ if (!empty($USER->registered)) {
                         $image = new GridImage();
                         $image->fastInit($row);
 ?>
-                                <div style="float:left;" class="photo33"><div style="height:<? echo $thumbh; ?>px;vertical-align:middle"><a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true); ?></a></div>
+                                <div style="float:left;" class="photo33"><div style="height:<? echo $thumbh; ?>px;vertical-align:middle"><a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
                                 <div class="caption"><div class="minheightprop" style="height:2.5em"></div><a href="/gridref/<? echo $image->grid_reference; ?>"><? echo $image->grid_reference; ?></a> : <a title="view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo htmlentities($image->title); ?></a><div class="minheightclear"></div></div>
                                 <div class="statuscaption">by <a href="<? echo $image->profile_link; ?>"><? echo htmlentities($image->realname); ?></a></div>
                                 </div>
@@ -340,6 +421,11 @@ if (!empty($USER->registered)) {
 	} else {
 		print "nothing to display";
 	}
+
+	if ($src == 'data-src')
+		print '<script src="/js/lazy.v2.js" type="text/javascript"></script>';
+	if (!empty($USER->registered))
+		print '<script src="/preview.js.php" type="text/javascript"></script>';
 
 	$smarty->display('_std_end.tpl');
 	exit;

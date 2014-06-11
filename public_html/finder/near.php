@@ -46,6 +46,12 @@ $smarty = new GeographPage;
 
 customExpiresHeader(3600,false,true);
 
+$src = 'data-src';
+if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
+        (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
+	$src = 'src';//revert back to standard non lazy loading
+}
+
 $qh = $qu = '';
 if (!empty($_GET['q'])) {
 	$qu = urlencode(trim($_GET['q']));
@@ -56,7 +62,7 @@ if (!empty($_GET['q'])) {
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
 
 
-	if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$_GET['q'],$ll)) {
+	if (preg_match("/^(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)$/",$_GET['q'],$ll)) {
                 require_once('geograph/conversions.class.php');
                 $conv = new Conversions;
 
@@ -74,7 +80,7 @@ if (!empty($_GET['q'])) {
 
 	$square=new GridSquare;
 	if (preg_match('/\b([a-zA-Z]{1,2}) ?(\d{2,5})(\.\d*|) ?(\d{2,5})(\.*\d*|)\b/',$_GET['q'],$matches)) {
-	        $grid_ok=$square->setByFullGridRef($matches[0],true,true);
+	        $grid_ok=$square->setByFullGridRef($matches[1].$matches[2].$matches[4],true,true);
 		$gru = urlencode($gr = $matches[0]);
 	} elseif (!empty($decode) && !empty($decode->total_found)) {
 		$grid_ok=$square->setByFullGridRef($decode->items[0]->gr,true,true);
@@ -109,7 +115,7 @@ if (!empty($_GET['q'])) {
 }
 
 ?>
-<form onsubmit="location.href = '/near/'+encodeURIComponent(this.q.value); return false;">
+<form onsubmit="location.href = '/near/'+encodeURI(this.q.value); return false;">
 <div class="interestBox">
 	<? if (!empty($_GET['q'])) { ?>
 	<div style="float:right">
@@ -128,7 +134,7 @@ if (!empty($_GET['q'])) {
 
 	if (!empty($decode)) {
 		if ($decode->total_found > 1) {
-			print "Location: <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
+			print "Possible Locations: <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
 			foreach ($decode->items as $object) {
 				if (strpos($object->name,$object->gr) === false)
                                 	$object->name .= "/{$object->gr}";
@@ -146,7 +152,7 @@ if (!empty($_GET['q'])) {
 			$object = $decode->items[0];
 			if (strpos($object->name,$object->gr) === false)
                                	$object->name .= " / {$object->gr}";
-			print "Matched Location: {$object->name}".($object->localities?", ".$object->localities:'');
+			print "Matched Location: <b>{$object->name}</b>".($object->localities?", ".$object->localities:'');
 		}
 	}
 
@@ -248,20 +254,25 @@ if (!empty($_GET['d']))
 ?>
           <div style="float:left;position:relative; width:120px; height:120px;padding:1px;">
           <div align="center">
-          <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true); ?></a></div>
+          <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
           </div>
 <?
 
 		}
 
 		print "<br style=clear:both></div>";
-		print '<script src="/js/preview.v43.js" type="text/javascript"></script>';
+		if ($src == 'data-src')
+			print '<script src="/js/lazy.v2.js" type="text/javascript"></script>';
+		if (!empty($USER->registered))
+			print '<script src="/preview.js.php" type="text/javascript"></script>';
 
 	} else {
 		print "<p>No Results found. Try a <a href=\"/of/$qu\">keyword search for <b>$qh</b></a>.</p>";
 	}
+}
 
-	print "<form action=\"/browser/redirect.php\"><div class=interestBox>";
+if (!empty($final)) {
+	print "<form action=\"/browser/redirect.php\"><br><div class=interestBox>";
 	if (!empty($data['total_found']) && $data['total_found'] > 10)
 		print "About ".number_format($data['total_found'])." photos within 10km. ";
 ?>
@@ -278,7 +289,7 @@ if (!empty($_GET['d']))
 if (!empty($USER->registered)) {
 	print "<p>If you prefer the traditional search, you can <a href=\"/choose-search.php\">choose your default search engine to use</a>.</p>";
 	if ($CONF['forums']) {
-		print "<p>Having trouble with this page (no matter how small), <a href=\"/discuss/index.php?&action=vthread&forum=12&topic=26439\">please let us know</a>.</p>";
+		print "<p>Having trouble with this page? No matter how small, <a href=\"/discuss/index.php?&action=vthread&forum=12&topic=26439\">please let us know</a>, thank you!</p>";
 	}
 }
 
