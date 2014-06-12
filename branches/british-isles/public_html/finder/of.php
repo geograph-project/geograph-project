@@ -80,14 +80,24 @@ if (!empty($_GET['q'])) {
 		exit;
 	}
 
+	$smarty->assign("page_title",'Photos of '.$_GET['q']);
+	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
+
+	if ($memcache->valid && $mkey = md5(trim($_GET['q']));
+		$str =& $memcache->name_get('of',$mkey);
+		if (!empty($str)) {
+			print $str;
+			$smarty->display('_std_end.tpl');
+			exit;
+		}
+	
+		ob_start();
+	}
 
 	$str = file_get_contents("http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1");
 	if (strlen($str) > 40) {
         	$decode = json_decode($str);
 	}
-
-	$smarty->assign("page_title",'Photos of '.$_GET['q']);
-	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
 
 } else {
 	$smarty->display('_std_begin.tpl');
@@ -383,15 +393,16 @@ if (!empty($_GET['d']))
 		}
 		print "</p>";
 
-
-		$str = file_get_contents("http://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q=$qu");
-	        if (preg_match_all('/ data="(.+?)"/',$str,$m)) {
-			print "<p>Alternative Queries: ";
-			foreach ($m[1] as $item) {
-				print "<a href=\"/of/".urlencode($item)."\">".htmlentities($item)."</a> &middot; ";
+		if (empty($decode) || $decode->total_found != 1) {
+			$str = file_get_contents("http://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q=$qu");
+			if (preg_match_all('/ data="(.+?)"/',$str,$m)) {
+				print "<p>Alternative Queries: ";
+				foreach ($m[1] as $item) {
+					print "<a href=\"/of/".urlencode($item)."\">".htmlentities($item)."</a> &middot; ";
+				}
+				print " (may or may not return results)</p>";
+				//todo verify these links at least might return results, with CALL KEYWORDS
 			}
-			print " (may or may not return results)</p>";
-			//todo verify these links at least might return results, with CALL KEYWORDS
 		}
 	}
 
@@ -422,6 +433,14 @@ if (!empty($final) && empty($words) && count($final) != count($rows['google'])) 
 	print "</div>";
 } else {
 	print "<hr/>";
+}
+
+#########################################
+
+if ($memcache->valid && $mkey) {
+	$str = ob_get_flush();
+
+	$memcache->name_set('of',$mkey,$memcache->compress,$memcache->period_long);
 }
 
 #########################################
