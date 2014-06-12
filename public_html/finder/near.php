@@ -21,8 +21,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#########################################
+# redirect for non JS clients
 
-if (false && strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
+if (strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
         header("HTTP/1.0 301 Moved Permanently");
         header("Status: 301 Moved Permanently");
 
@@ -37,6 +39,8 @@ if (false && strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
         exit;
 }
 
+#########################################
+# general page startup
 
 require_once('geograph/global.inc.php');
 
@@ -51,6 +55,9 @@ if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
         (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
 	$src = 'src';//revert back to standard non lazy loading
 }
+
+#########################################
+# quick query parsing, to possibly redirect to the nearby page.
 
 $qh = $qu = '';
 if (!empty($_GET['q'])) {
@@ -72,9 +79,9 @@ if (!empty($_GET['q'])) {
 		$_GET['q'] = $gr;
 
 	} else {
-		$data = file_get_contents("http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1");
-		if (strlen($data) > 40) {
-        		$decode = json_decode($data);
+		$str = file_get_contents("http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1");
+		if (strlen($str) > 40) {
+        		$decode = json_decode($str);
 		}
 	}
 
@@ -94,6 +101,7 @@ if (!empty($_GET['q'])) {
 		$e = floor($square->nateastings/1000);
                 $n = floor($square->natnorthings/1000);
 
+		//todo - make the radius dynamic (maybeing checking square->imagecount as a proxy for now popular the area is
 		$d = 10; //units is km!
 			$grs = array();
                         for($x=$e-$d;$x<=$e+$d;$x+=10) {
@@ -107,12 +115,15 @@ if (!empty($_GET['q'])) {
 
 		$qu = urlencode(trim($sphinxq));
 	} else {
-		print "Couldn't identify Grid Reference";
+		print "<!-- Couldn't identify Grid Reference -->";
 	}
 
 } else {
 	$smarty->display('_std_begin.tpl');
 }
+
+#########################################
+# the top of page form
 
 ?>
 <form onsubmit="location.href = '/near/'+encodeURI(this.q.value); return false;">
@@ -120,8 +131,9 @@ if (!empty($_GET['q'])) {
 	<? if (!empty($_GET['q'])) { ?>
 	<div style="float:right">
 		More:
-		<a href="/of/<? echo urlencode2($_GET['q']); ?>">Keyword Search</a> &middot;
+		<a href="/of/<? echo urlencode2($_GET['q']); ?>?redir=false">Keyword Search</a> &middot;
 		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=decade">Over Time</a> &middot;
+		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=segment">Recent</a> &middot;
 		<a href="/browser/#!/loc=<? echo $gru; ?>/dist=10000/display=map_dots/pagesize=50">Map</a> &middot;
 		<a href="/browser/#!/loc=<? echo $gru; ?>/pagesize=50">Browser</a> &middot;
 		<a href="/finder/multi2.php?q=<? echo $qu; ?>">Others</a>
@@ -130,16 +142,25 @@ if (!empty($_GET['q'])) {
 	Images near: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br/>
 <?
 
+#########################################
+# display the location results dropdown, for directing to near page.
+
 if (!empty($_GET['q'])) {
 
 	if (!empty($decode)) {
-		if ($decode->total_found > 1) {
+		if ($decode->total_found == 1) {
+			$object = $decode->items[0];
+			if (strpos($object->name,$object->gr) === false)
+                                 $object->name .= " / {$object->gr}";
+			print "Matched Location: <b>{$object->name}</b>".($object->localities?", ".$object->localities:'');
+
+		} elseif ($decode->total_found > 0) {
 			print "Possible Locations: <select onchange=\"location.href = '/near/'+encodeURI(this.value);\"><option value=''>Choose Location...</option>";
 			foreach ($decode->items as $object) {
 				if (strpos($object->name,$object->gr) === false)
                                 	$object->name .= "/{$object->gr}";
                                 printf('<option value="%s"%s>%s</option>', $val = $object->name, ($gr == $object->gr)?' selected':'',
-                                        $object->name.($object->localities?", ".$object->localities:''));
+                                        str_replace('/',' &nbsp; ',$object->name).($object->localities?", ".$object->localities:''));
 			}
 
 			print '<optgroup></optgroup>';
@@ -148,18 +169,14 @@ if (!empty($_GET['q'])) {
 			if (!empty($decode->copyright))
 				printf('<optgroup label="%s"></optgroup>', $decode->copyright);
 			print "</select> ({$decode->total_found})";
-		} elseif ($decode->total_found == 1) {
-			$object = $decode->items[0];
-			if (strpos($object->name,$object->gr) === false)
-                               	$object->name .= " / {$object->gr}";
-			print "Matched Location: <b>{$object->name}</b>".($object->localities?", ".$object->localities:'');
 		}
 	}
 
 }
 
-?>
+#########################################
 
+?>
 
 </div>
 </form>
@@ -167,12 +184,17 @@ if (!empty($_GET['q'])) {
 
 
 if (!empty($_GET['q'])) {
+
+#########################################
+
 	$limit = 50;
 
 
 
         if ($grid_ok) {
 
+#########################################
+# setup search results
 
 		list($lat,$lng) = $conv->national_to_wgs84($square->nateastings,$square->natnorthings,$square->reference_index);
 
@@ -183,6 +205,7 @@ if (!empty($_GET['q'])) {
                 $CONF['sphinxql_dsn'] = 'mysql://192.168.77.35:9306/';
 
                 $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
+
 
 		$where = array();
                 //$where[] = "match(".$sph->Quote($_GET['q']).")";
@@ -200,17 +223,24 @@ if (!empty($_GET['q'])) {
                 $where = preg_replace('/__TAG__/i','_SEP_',$where);
 
 		$rows = array();
+
+#########################################
+# retreive a small number of high scoring images
+
 		if (!empty($_GET['score'])) {
-			$rows[] = $sph->getAll($sql = "
+			$rows['score'] = $sph->getAll($sql = "
         	                select id,realname,user_id,title,grid_reference $columns
                 	        from sample8
                         	where $where
 	                        order by score desc
         	                limit 8
-				option ranker=none");
+				option ranker=none, max_query_time=800");
 		}
 
-                $rows[] = $sph->getAll($sql = "
+#########################################
+# the main results set!
+
+                $rows['ordered'] = $sph->getAll($sql = "
                         select id,realname,user_id,title,grid_reference $columns
                         from sample8
                         where $where
@@ -221,14 +251,18 @@ if (!empty($_GET['q'])) {
 if (!empty($_GET['d']))
 	print $sql;
 
-		$data = $sph->getAssoc("SHOW META");
+#########################################
+# merge all the results into one
+
+		if (empty($data))
+			$data = $sph->getAssoc("SHOW META");
 
 		$final = array();
 		foreach ($rows as $idx => $arr) {
 			if (!empty($arr)) {
 				foreach ($arr as $row)
 					$final[$row['id']] = $row;
-				unset($rows[idx]);
+				unset($rows[$idx]);
 			}
 		}
 
@@ -236,6 +270,8 @@ if (!empty($_GET['d']))
 
         print "<br style=clear:both>";
 
+#########################################
+# display normal thumbnail results!
 
 	if (!empty($final)) {
 		$thumbh = 120;
@@ -266,10 +302,17 @@ if (!empty($_GET['d']))
 		if (!empty($USER->registered))
 			print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
 
+
+#########################################
+# handler for no results
+
 	} else {
 		print "<p>No Results found. Try a <a href=\"/of/$qu\">keyword search for <b>$qh</b></a>.</p>";
 	}
 }
+
+#########################################
+# footer links
 
 if (!empty($final)) {
 	print "<form action=\"/browser/redirect.php\"><br><div class=interestBox>";
@@ -286,6 +329,9 @@ if (!empty($final)) {
 <?
 }
 
+#########################################
+# special footer just for registered users - who have had their default changed
+
 if (!empty($USER->registered)) {
 	print "<p>If you prefer the traditional search, you can <a href=\"/choose-search.php\">choose your default search engine to use</a>.</p>";
 	if ($CONF['forums']) {
@@ -293,10 +339,15 @@ if (!empty($USER->registered)) {
 	}
 }
 
+#########################################
 
 	$smarty->display('_std_end.tpl');
 	exit;
 
+#########################################
+# functions!
+
 function urlencode2($input) {
-	return str_replace(array('%2F','%3A','%20'),array('/',':','+'),$input);
+        return str_replace(array('%2F','%3A','%20'),array('/',':','+'),$input);
 }
+
