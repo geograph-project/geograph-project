@@ -63,7 +63,7 @@ $qh = $qu = '';
 if (!empty($_GET['q'])) {
 	$_GET['q'] = str_replace(" near (anywhere)",'',$_GET['q']);
 
-	if (preg_match('/^(\(anything\)\s* |)near (.+)$/',$_GET['q'],$m)) {
+	if (preg_match('/^(\(anything\)\s* |)near (.+)$/',$_GET['q'],$m) && !isset($_GET['redir'])) {
 		header("Location: /near/".urlencode2($m[2]));
                 exit;
 	}
@@ -75,7 +75,7 @@ if (!empty($_GET['q'])) {
 	$qu2 = urlencode2(trim($_GET['q']));
 	$qh = htmlentities(trim($_GET['q']));
 
-	if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$_GET['q'],$ll)) {
+	if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$_GET['q'],$ll) && !isset($_GET['redir'])) {
 		header("Location: /near/$qu2");
 		exit;
 	}
@@ -375,7 +375,7 @@ if (!empty($_GET['d']))
 
         	if (!empty($decode) && $decode->total_found > 0) {
                         $object = $decode->items[0];
-			if ($decode->total_found == 1)
+			if ($decode->total_found == 1 && !isset($_GET['redir']))
 				print "<script>location.href='/near/".urlencode2($object->name)."';</script>";
                         if (strpos($object->name,$object->gr) === false && $decode->total_found > 1)
                                 $object->name .= "/{$object->gr}";
