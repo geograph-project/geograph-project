@@ -68,14 +68,14 @@ if (!empty($_GET['q'])) {
 	$smarty->assign("page_title",'Photos near '.$_GET['q']);
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
 
-	if ($memcache->valid && $mkey = md5(trim($_GET['q']));
+	if ($memcache->valid && $mkey = md5(trim($_GET['q']))) {
 		$str =& $memcache->name_get('near',$mkey);
 		if (!empty($str)) {
 			print $str;
 			$smarty->display('_std_end.tpl');
 			exit;
 		}
-	
+
 		ob_start();
 	}
 	if (preg_match("/^(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)$/",$_GET['q'],$ll)) {
@@ -95,12 +95,25 @@ if (!empty($_GET['q'])) {
 	}
 
 	$square=new GridSquare;
-	if (preg_match('/\b([a-zA-Z]{1,2}) ?(\d{2,5})(\.\d*|) ?(\d{2,5})(\.*\d*|)\b/',$_GET['q'],$matches)) {
-	        $grid_ok=$square->setByFullGridRef($matches[1].$matches[2].$matches[4],true,true);
-		$gru = urlencode($gr = $matches[0]);
+	if (preg_match_all('/\b([a-zA-Z]{1,2}) ?(\d{2,5})(\.\d*|) ?(\d{2,5})(\.*\d*|)\b/',$_GET['q'],$matches)) {
+		$gr = array_pop($matches[0]); //take the last, so that '/near/Grid%20Reference%20in%20C1931/C198310' works!
+	        $grid_ok=$square->setByFullGridRef($gr,true,true);
+		$gru = urlencode($gr);
 	} elseif (!empty($decode) && !empty($decode->total_found)) {
-		$grid_ok=$square->setByFullGridRef($decode->items[0]->gr,true,true);
-		$gru = urlencode($gr = $decode->items[0]->gr);
+		$gr = $decode->items[0]->gr;
+		$grid_ok=$square->setByFullGridRef($gr,true,true);
+		$gru = urlencode($gr);
+	}
+
+	//for some unexplainable reason, setByFullGridRef SOMETIMES returns false, and fails to set nateastings - even though allow-zero-percent is set. Fix that...
+	if (!$square->nateastings && $square->x && $square->y) {
+		require_once('geograph/conversions.class.php');
+                $conv = new Conversions;
+		list($e,$n,$reference_index) = $conv->internal_to_national($square->x,$square->y);
+		$square->nateastings = $e;
+		$square->natnorthings = $n;
+		$square->reference_index = $reference_index;
+		$grid_ok = 1;
 	}
 
 	if ($grid_ok) {
@@ -207,6 +220,7 @@ if (!empty($_GET['q'])) {
 
 		list($lat,$lng) = $conv->national_to_wgs84($square->nateastings,$square->natnorthings,$square->reference_index);
 
+print "<!-- ($lat,$lng) -->";
 
                 $prev_fetch_mode = $ADODB_FETCH_MODE;
                 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
@@ -343,7 +357,7 @@ if (!empty($final)) {
 if ($memcache->valid && $mkey) {
 	$str = ob_get_flush();
 
-	$memcache->name_set('near',$mkey,$memcache->compress,$memcache->period_long);
+	$memcache->name_set('near',$mkey,$str,$memcache->compress,$memcache->period_long);
 }
 
 #########################################
@@ -354,6 +368,8 @@ if (!empty($USER->registered)) {
 	if ($CONF['forums']) {
 		print "<p>Having trouble with this page? No matter how small, <a href=\"/discuss/index.php?&action=vthread&forum=12&topic=26439\">please let us know</a>, thank you!</p>";
 	}
+} else {
+	print "<p>Have feedback on this search? <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>please let us know</a>!</p>";
 }
 
 #########################################
