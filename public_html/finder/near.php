@@ -68,7 +68,16 @@ if (!empty($_GET['q'])) {
 	$smarty->assign("page_title",'Photos near '.$_GET['q']);
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
 
-
+	if ($memcache->valid && $mkey = md5(trim($_GET['q']));
+		$str =& $memcache->name_get('near',$mkey);
+		if (!empty($str)) {
+			print $str;
+			$smarty->display('_std_end.tpl');
+			exit;
+		}
+	
+		ob_start();
+	}
 	if (preg_match("/^(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)$/",$_GET['q'],$ll)) {
                 require_once('geograph/conversions.class.php');
                 $conv = new Conversions;
@@ -327,6 +336,14 @@ if (!empty($final)) {
 	</div>
 	</form>
 <?
+}
+
+#########################################
+
+if ($memcache->valid && $mkey) {
+	$str = ob_get_flush();
+
+	$memcache->name_set('near',$mkey,$memcache->compress,$memcache->period_long);
 }
 
 #########################################
