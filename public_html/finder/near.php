@@ -264,7 +264,7 @@ if (!empty($_GET['d']))
 		if ($src == 'data-src')
 			print '<script src="/js/lazy.v2.js" type="text/javascript"></script>';
 		if (!empty($USER->registered))
-			print '<script src="/preview.js.php" type="text/javascript"></script>';
+			print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
 
 	} else {
 		print "<p>No Results found. Try a <a href=\"/of/$qu\">keyword search for <b>$qh</b></a>.</p>";

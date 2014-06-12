@@ -29,7 +29,7 @@
 
 	  <div style="float:left;position:relative; width:130px; height:130px">
 	  <div align="center">
-	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_parent">{$image->getThumbnail(120,120,false,true)|replace:'src=':'src="/img/blank.gif" data-src='}</a></div>
+	  <a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}" target="_parent">{$image->getThumbnail(120,120,false,true,$src)}</a></div>
 	  </div>
 
 {foreachelse}
@@ -52,8 +52,10 @@
 
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
-<script src="/js/lazy.v1.js" type="text/javascript"></script>
-<script src="/preview.js.php" type="text/javascript"></script>
+{if $src == 'data-src'}
+	<script src="/js/lazy.v2.js" type="text/javascript"></script>
+{/if}
+<script src="/preview.js.php?d=preview" type="text/javascript"></script>
 <script>
 var query = '';
 var iii = 1522;

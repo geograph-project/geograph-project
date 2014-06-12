@@ -24,10 +24,15 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-if (!empty($_GET['option'])) {
-	$option = $_GET['option'];
+
+if (!empty($_GET['o'])) {
+	$option = $_GET['o'];
 } else {
-	$option = $USER->getPreference('preview.method','none',true);
+	$default = 'none';
+	if (!empty($_GET['d'])) {
+		$default = $_GET['d'];
+	}
+	$option = $USER->getPreference('preview.method',$default,true);
 }
 
 customExpiresHeader(3600,true,true);

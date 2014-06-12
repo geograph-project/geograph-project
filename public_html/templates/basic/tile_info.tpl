@@ -17,7 +17,7 @@ body {overflow:hidden;}
   </div>
 {/if}
 
-			<div>in <b>{$image->grid_reference|escape:'html'}</b>, taken on <b>{$image_taken}</b>, by <b>{$image->realname|escape:'html'}</b></div>
+			<div><b>{$image->grid_reference|escape:'html'}</b> | <b>{$image_taken}</b> | <b>{$image->realname|escape:'html'}</b></div>
 
 			{if 0 && $image->subject_gridref}<div>Location: {$image->subject_gridref}</div>{/if}
 

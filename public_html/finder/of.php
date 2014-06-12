@@ -21,6 +21,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#########################################
+# redirect for non JS clients
 
 if (strpos($_SERVER['REQUEST_URI'],'/finder/of.php') === 0) {
         header("HTTP/1.0 301 Moved Permanently");
@@ -37,6 +39,8 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/of.php') === 0) {
         exit;
 }
 
+#########################################
+# general page startup
 
 require_once('geograph/global.inc.php');
 
@@ -52,6 +56,9 @@ if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
 	$src = 'src';//revert back to standard non lazy loading
 }
 
+#########################################
+# quick query parsing, to possibly redirect to the nearby page.
+
 $qh = $qu = '';
 if (!empty($_GET['q'])) {
 	$_GET['q'] = str_replace(" near (anywhere)",'',$_GET['q']);
@@ -60,7 +67,6 @@ if (!empty($_GET['q'])) {
 		header("Location: /near/".urlencode2($m[2]));
                 exit;
 	}
-
 
 
         $sphinx = new sphinxwrapper(trim($_GET['q']));
@@ -80,13 +86,15 @@ if (!empty($_GET['q'])) {
         	$decode = json_decode($str);
 	}
 
-
 	$smarty->assign("page_title",'Photos of '.$_GET['q']);
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
 
 } else {
 	$smarty->display('_std_begin.tpl');
 }
+
+#########################################
+# the top of page form
 
 ?>
 <form onsubmit="location.href = '/of/'+encodeURIComponent(this.q.value); return false;">
@@ -114,6 +122,9 @@ if (!empty($_GET['q'])) {
 	<? } ?>
 	Images of: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br>
 <?
+
+#########################################
+# display the location results dropdown, for directing to near page.
 
 if (!empty($_GET['q'])) {
 
@@ -144,6 +155,8 @@ if (!empty($_GET['q'])) {
 
 }
 
+#########################################
+
 ?>
 
 </div>
@@ -152,6 +165,10 @@ if (!empty($_GET['q'])) {
 
 
 if (!empty($_GET['q'])) {
+
+#########################################
+# yet another catch for nearby queries
+
 	$bits = explode(' near ',$_GET['q']);
 	if (count($bits) == 2) {
 		print "<div>Looking for keywords '".htmlentities($bits[0])."' <i>near</i> place '".htmlentities($bits[1])."'? If so <a href=\"/search.php?q=$qu\">click here</a>.</div>";
@@ -168,6 +185,9 @@ if (!empty($_GET['q'])) {
 
                 $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
 
+#########################################
+# experient to find related images
+
 		if (preg_match('/^related:(\d+)$/',$_GET['q'],$m)) {
 			$id = intval($m[1]);
 			$row = $sph->getRow("
@@ -179,6 +199,7 @@ if (!empty($_GET['q'])) {
 			$words = str_replace('_SEP_','',$words);
 			$words = trim(preg_replace('/[^\w]+/',' ',$words));
 			$where = "match(".$sph->Quote('"'.$words.'"/0.5').")";
+			print '<iframe src="http://t0.geograph.org.uk/tile-info.php?id='.$id.'" width="100%" height="250" frameborder=0></iframe>';
 
 		} else {
 	                $where = "match(".$sph->Quote($sphinx->q).")";
@@ -189,6 +210,20 @@ if (!empty($_GET['q'])) {
                 $where = preg_replace('/__TAG__/i','_SEP_',$where);
 
 		$rows = array();
+
+#########################################
+# special handler to catch entered id numbers
+
+		if (preg_match('/\b(\d{2,})\b/',$_GET['q'],$m) && $m[1]>3 && $m[1] < 10000000) {
+			 $rows['single'] = $sph->getAll($sql = "
+                                select id,realname,user_id,title,grid_reference
+                                from sample8
+                                where id = {$m[1]}");
+		}
+
+#########################################
+# retreive a small number of high scoring images
+
 		if (empty($_GET['sort'])) {
 			$rows['score'] = $sph->getAll($sql = "
         	                select id,realname,user_id,title,grid_reference
@@ -209,6 +244,9 @@ if (!empty($_GET['q'])) {
                 	        $where = "match(".$sph->Quote('"'.$words.'"/0.5').")";
 			}
 		}
+
+#########################################
+# get 4 results from Google Images!
 
 		if (empty($id)) {
 			$opts = array('http' =>
@@ -241,6 +279,9 @@ if (!empty($_GET['q'])) {
 			}
 		}
 
+#########################################
+# the main results set!
+
 		//$option = ", ranker=expr('sum(lcs*lccs*user_weight)*1000+bm25')";
 		$option = "";
 
@@ -272,7 +313,10 @@ if (!empty($_GET['q'])) {
 if (!empty($_GET['d']))
 	print $sql;
 
-		if (empty($rows['score']))
+#########################################
+# merge all the results into one
+
+		if (empty($data))
 			$data = $sph->getAssoc("SHOW META");
 
 		$final = array();
@@ -286,6 +330,8 @@ if (!empty($_GET['d']))
 
         print "<br style=clear:both>";
 
+#########################################
+# display normal thumbnail results!
 
 	if (count($final) > 3) {
 		$thumbh = 120;
@@ -310,13 +356,20 @@ if (!empty($_GET['d']))
 		if ($src == 'data-src')
 			print '<script src="/js/lazy.v2.js" type="text/javascript"></script>';
 		if (!empty($USER->registered))
-			print '<script src="/preview.js.php" type="text/javascript"></script>';
+			print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
+
+#########################################
+# fallback and use the preview iframe for a few results
 
 	} elseif (count($final)) {
 		foreach ($final as $idx => $row) {
-			print '<iframe src="http://www.geograph.org.uk/tile-info.php?id='.$row['id'].'" width="100%" height="250" frameborder=0></iframe>';
+			print '<iframe src="http://t0.geograph.org.uk/tile-info.php?id='.$row['id'].'" width="100%" height="250" frameborder=0></iframe>';
 			print "<hr/><br/>";
 		}
+
+#########################################
+# handler for no results
+
 	} else {
 		print "<p>No keywords Results found. ";
 
@@ -341,6 +394,9 @@ if (!empty($_GET['d']))
 			//todo verify these links at least might return results, with CALL KEYWORDS
 		}
 	}
+
+#########################################
+# footer links
 
 if (!empty($final) && empty($words) && count($final) != count($rows['google'])) {
 	print "<br/><div class=interestBox>";
@@ -368,6 +424,9 @@ if (!empty($final) && empty($words) && count($final) != count($rows['google'])) 
 	print "<hr/>";
 }
 
+#########################################
+# special footer just for registered users - who have had their default changed
+
 if (!empty($USER->registered)) {
 	print "<p>If you prefer the traditional search, you can <a href=\"/choose-search.php\">choose your default search engine to use</a>.</p>";
 	if ($CONF['forums']) {
@@ -376,10 +435,13 @@ if (!empty($USER->registered)) {
 	}
 }
 
+#########################################
 
         $smarty->display('_std_end.tpl');
         exit;
 
+#########################################
+# fallback if not using magic - but never used
 
 } elseif (!empty($_GET['q'])) {
 	print '<iframe src="/finder/search-service.php?q='.$qu.'" width="700" height="700" name="searchwindow" style="width:100%"></iframe>';
@@ -387,7 +449,8 @@ if (!empty($USER->registered)) {
         exit;
 }
 
-
+#########################################
+# do something instead of an empty page when no query... 
 
 	$db = GeographDatabaseConnection(true);
 
@@ -430,6 +493,8 @@ if (!empty($USER->registered)) {
 	$smarty->display('_std_end.tpl');
 	exit;
 
+#########################################
+# functions!
 
 function urlencode2($input) {
         return str_replace(array('%2F','%3A','%20'),array('/',':','+'),$input);
