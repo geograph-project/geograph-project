@@ -25,29 +25,37 @@ h4.title {
 	margin:0px;
 	margin-top:20px;
 }
+
+	#taglist li {
+		padding:2px
+		z-index:1000px;
+	}
+	#taglist li a {
+		text-decoration:none
+	}
+	#taglist li a:hover {
+		text-decoration:underline
+	}
+
 </style>{/literal}
 
  <h2>Geograph Search Tools</h2>
 
 
 
-<div style="position:relative;height:600px;">
+<div style="position:relative;height:800px;">
 	<div class="tabHolder">
 	{dynamic}
+		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,10)">Images</a>
+		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,10)">Images by Square</a>
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab9" onclick="tabClick('tab','div',9,10)">Tags</a>
+		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,10)">Combined</a>
+		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,10)">Content</a>
+		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,10)">Contributors</a>
+		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" onclick="tabClick('tab','div',6,10)">Locations</a>
+		<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" onclick="tabClick('tab','div',7,10)">Shared Descriptions</a>
 		{if $enable_forums}
-			{assign var="tabs" value="8"}
-		{else}
-			{assign var="tabs" value="9"}
-		{/if}
-		<a class="tab{if $tab == 1}Selected{/if} nowrap" id="tab1" onclick="tabClick('tab','div',1,{$tabs})">Images</a>
-		<a class="tab{if $tab == 2}Selected{/if} nowrap" id="tab2" onclick="tabClick('tab','div',2,{$tabs})">Images by Square</a>
-		<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" onclick="tabClick('tab','div',3,{$tabs})">Combined</a>
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" onclick="tabClick('tab','div',4,{$tabs})">Content</a>
-		<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" onclick="tabClick('tab','div',5,{$tabs})">Contributors</a>
-		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" onclick="tabClick('tab','div',6,{$tabs})">Locations</a>
-		<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" onclick="tabClick('tab','div',7,{$tabs})">Shared Descriptions</a>
-		{if $enable_forums}
-			<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" onclick="tabClick('tab','div',8,{$tabs})">Discussions</a>
+			<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" onclick="tabClick('tab','div',8,10)">Discussions</a>
 		{/if}
 	{/dynamic}
 	</div>
@@ -57,6 +65,7 @@ h4.title {
 
 		<h4 class="title">Geograph standard search</h4>
 		<form method="get" action="/search.php">
+		<input type="hidden" name="form" value="finder"/>
 		<div style="position:relative;" class="interestBox">
 			<div style="position:relative;">
 				<label for="searchq" style="line-height:1.8em"><b>Search for</b>:</label> <small>(<a href="/article/Searching-on-Geograph">help &amp; tips</a>)</small><br/>
@@ -73,10 +82,60 @@ h4.title {
 		<p>&middot; <a href="/search.php?form=text">More options...</a></p>
 
 		<h4 class="title">Quick search</h4>
-		<form method="get" action="/full-text.php">
+		<form method="get" action="/finder/of.php">
 			<label for="fq">Keywords </label> <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/>
-			<p>&middot; Currently searches the title, description, category and photographer name fields as well as various forms of the subject grid reference</p>
+			<p>&middot; Searches the title, description, tags/category, nearby placenames and photographer name fields as well as various forms of the subject grid reference and data taken.</p>
+		</form>
+
+		<h4 class="title">Browser</h4>
+		<form method="get" action="/browser/redirect.php">
+			<label for="fq">Keywords </label> <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<input type="submit" value="Search"/>
+			<p>&middot; The <a href="/browser/">Browser</a> incorperates a comprehensive search facility too</p>
+		</form>
+
+		<h4 class="title">Grouped Results</h4>
+		<form method="get" action="/finder/groups.php">
+			<label for="fq">Keywords </label> <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<label for="fgroup">Group By <select name="group" id="fgroup">
+	        <option label="" value=":1"></option>
+<option label="Top Level Contexts" value="context_ids">Top Level Contexts</option>
+<option label="Tags" value="tag_ids">Tags</option>
+<option label="Shared Descriptions" value="snippet_ids">Shared Descriptions</option>
+<option label="Buckets" value="bucket_ids">Buckets</option>
+<option label="Automatic Clusters" value="group_ids">Automatic Clusters</option>
+<option label="Extracted Terms" value="term_ids">Extracted Terms</option>
+<option label="Image Category" value="imageclass">Image Category</option>
+<option label="WikiMedia Categories" value="wiki_ids">WikiMedia Categories</option>
+<option label="" value=":2"></option>
+<option label="Myriad Square" value="myriad">Myriad Square</option>
+<option label="Hectad Square" value="hectad">Hectad Square</option>
+<option label="Grid Square" value="grid_reference">Grid Square</option>
+<option label="" value=":3"></option>
+<option label="Contributor" value="user_id">Contributor</option>
+<option label="" value=":8"></option>
+<option label="Country" value="country">Country</option>
+<option label="County" value="county">County</option>
+<option label="Placename" value="place">Placename</option>
+<option label="" value=":4"></option>
+<option label="Decade Taken" value="decade" selected>Decade Taken</option>
+<option label="Year Taken" value="takenyear">Year Taken</option>
+<option label="Month Taken" value="takenmonth">Month Taken</option>
+<option label="Day Taken" value="takenday">Day Taken</option>
+<option label="" value=":5"></option>
+<option label="When Submitted" value="segment">When Submitted</option>
+<option label="" value=":6"></option>
+<option label="View Direction" value="direction">View Direction</option>
+<option label="Subject Distance" value="distance">Subject Distance</option>
+<option label="" value=":7"></option>
+<option label="Image Format" value="format">Image Format</option>
+<option label="Moderation Status" value="status">Moderation Status</option>
+
+	     </select>
+
+			<input type="submit" value="Search"/>
+			
 		</form>
 
 		<h4 class="title">Google Images</h4>
@@ -106,10 +165,92 @@ h4.title {
 		<p>&nbsp;</p>
 	</div>
 
+	<div style="position:relative;{if $tab != 9}display:none{/if}" class="interestBox" id="div9">
+		<h3 class="title">Tag Search</h3>
+		<br/>
+	<form action="/tags/">
+		Tag Search: <input type="text" name="tag" size="30" maxlength="60" onkeyup="if (this.value.length > 2) loadTagSuggestions(this,event);" autocomplete="off"/>
+		<input type="submit" value="View"/><br/>
+
+		<div style="position:relative;">
+			<div style="position:absolute;top:0px;left:0px;background-color:lightgrey;margin-left:86px;padding-right:20px;display:none;z-index:10000" id="tagParent">
+				<ol id="taglist">
+				</ol>
+			</div>
+		</div>
+	</form>
+
+	<p>Search directly for tags using the form above</p>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+
+{literal}
+<script>
+
+	function loadTagSuggestions(that,event) {
+
+		var unicode=event.keyCode? event.keyCode : event.charCode;
+		if (unicode == 13) {
+			//useTags(that);
+			return;
+		}
+
+		param = 'q='+encodeURIComponent(that.value);
+
+		$.getJSON("/tags/tags.json.php?"+param+"&counts=1&callback=?",
+
+		// on search completion, process the results
+		function (data) {
+			var div = $('#taglist').empty();
+			$('#tagParent').show();
+
+			if (data && data.length > 0) {
+
+				for(var tag_id in data) {
+					var text = data[tag_id].tag;
+					if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='category' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
+						text = data[tag_id].prefix+':'+text;
+					}
+					text = text.replace(/<[^>]*>/ig, "");
+					text = text.replace(/['"]+/ig, " ");
+
+					div.append("<li value=\""+data[tag_id].images+"\"><a href=\"/tagged/"+text+"\">"+text+"</a></li>");
+				}
+
+			} else {
+				div.append("<li value=\"0\"><a href=\"/tagged/"+that.value+"\">"+that.value+"</a></li>");
+			}
+		});
+	}
+</script>
+{/literal}
+
+                <h3 class="title">By Tag</h3>
+
+		<form method="get" action="/finder/bytag.php">
+			<label for="fcq">Keywords </label> <input type="text" name="q" id="fcq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<input type="submit" value="Search"/>
+		</form>
+
+		<p>View searches grouped by tags</p>
+
+
+
+                <h3 class="title">Category Search</h3>
+
+		<form method="get" action="/finder/categories.php">
+			<label for="fcq">Keywords </label> <input type="text" name="q" id="fcq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<input type="submit" value="Search"/>
+		</form>
+		<p>use this form to search the old categories</p>
+
+		<p>&nbsp;</p>
+	</div>
+
 	<div style="position:relative;{if $tab != 3}display:none{/if}" class="interestBox" id="div3">
 		<h3 class="title">Combined searches</h3>
 
-		<h4 class="title">Google search (~75% coverage July 2008)</h4>
+		<h4 class="title">Google search (~70% coverage Apr 2011)</h4>
 		<!-- Google CSE Search Box Begins -->
 			<form id="searchbox_012385187440385394957:bpr_ubkvuy4" action="http://www.google.com/cse" STYLE="display:inline;">
 				<input type="hidden" name="cx" value="012385187440385394957:bpr_ubkvuy4" />
@@ -121,25 +262,21 @@ h4.title {
 		<!-- Google CSE Search Box Ends -->
 
 		<h4 class="title">Yahoo search</sup></h4>
-		<form id="searchBoxForm_U0RWYBqs6@OUcAAT3rzik" action="http://builder.search.yahoo.com/a/bouncer" style="padding:0;">
-			<input name="mobid" value="U0RWYBqs6@OUcAAT3rzik" type="hidden">
-			<input name="ei" value="UTF-8" type="hidden">
-			<input name="fr" value="ystg-c" type="hidden">
+		<form  action="http://search.yahoo.com/search" style="padding:0;" method="get">
 			<input type="text" id="searchTerm"
 				onFocus="this.style.background='#fff';"
 				onBlur="if(this.value=='')this.style.background='#fff url(http://us.i1.yimg.com/us.yimg.com/i/us/sch/gr/horiz_pwrlogo_red2.gif) 3px center  no-repeat'"
 				name="p" style="width:260px; color:#666666; background:#fff url(http://us.i1.yimg.com/us.yimg.com/i/us/sch/gr/horiz_pwrlogo_red2.gif) 3px center no-repeat; position:relative;">
 			<input type="submit" value="Yahoo Search">
 
-			<input name="mobvs" id="site_U0RWYBqs6@OUcAAT3rzik" value="1" onclick='displayPopSearch("site","U0RWYBqs6@OUcAAT3rzik");'   type="hidden">
-			<script type="text/javascript" src="http://builder.search.yahoo.com/j/popsearch?mobid=U0RWYBqs6%40OUcAAT3rzik&c=666666&default=web"></script>
+			<input name="vs" value="{$http_host}" type="hidden">
 		</form>
 
 		<h4 class="title">Geograph</h4>
 		<form action="/finder/multi.php" method="get" onsubmit="focusBox()">
 				<div class="interestBox">
 					<label for="fq">Combined search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-					<input type="submit" value="Search"/><sup style="color:red">Experimental beta</sup><br/>
+					<input type="submit" value="Search"/><br/>
 					(Enter a placename, grid reference, word search, or person's name)
 				</div>
 		</form>
@@ -290,13 +427,13 @@ h4.title {
 	{/if}
 </div>
 
-<h3>Experimental searches...</h3>
+<h3 class="title">Experimental searches...</h3>
 
 <ul>
 	<li><form action="/finder/multi2.php" method="get" onsubmit="focusBox()">
 		<div class="interestBox">
 			<label for="fq">Combined <b>image</b> search</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
-			<input type="submit" value="Search"/><sup style="color:red">Experimental beta</sup><br/>
+			<input type="submit" value="Search"/><br/>
 			(Enter a placename, grid reference, word search, or person's name)
 		</div>
 	</form><br/></li>
