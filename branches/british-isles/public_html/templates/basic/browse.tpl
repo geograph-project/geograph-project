@@ -161,6 +161,10 @@
 			<li style="margin-top:4px"><a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;do=1">Search images by distance</a> (<a href="/search.php?gridref={$gridref6}&amp;distance=2&amp;displayclass=map&amp;do=1">on a map</a>)</li>
 		{/if}
 
+		{if $square->reference_index == 1}
+			<li style="margin-top:4px"><a href="/finder/dblock.php?gridref={$gridref}">View images by D-Block</a></li>
+		{/if}
+
 		<li style="margin-top:4px"><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph Coverage <b>Map</b></a>{if $hectad && $hectad_row}, <a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}">Photo Mosaic</a>{/if}</li>
 
 		</ul>

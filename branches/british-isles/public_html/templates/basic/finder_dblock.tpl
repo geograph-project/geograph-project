@@ -36,22 +36,22 @@
 {/if}
 
 {if !$inner}
-	<h2><a href="/finder/">Finder</a> :: D-Block</h2>
+	<h2><a href="/finder/">Finder</a> :: D-Block {$dblock}</h2>
 
 	<form action="{$script_name}" method="get" onsubmit="focusBox()" class="interestBox" style="width:660px">
-		<p>
 			<label for="fgridref">Gridref</label>: <input type="text" name="gridref" id="fgridref" size="6"{dynamic}{if $gridref} value="{$gridref|escape:'html'}"{/if}{/dynamic}/>
 			<label for="fq">Optional Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/>
-		</p>
 	</form>
 
 {/if}
 
-{if $dblock}
+	<p>The Domesday Project, published by the BBC, captured 23,225 photos of the United Kingdom, in 1986, {external href="http://www.bbc.co.uk/history/domesday/story" text="read more here"}. <i>The whole of the UK - including the Channel Islands and Isle of Man - was divided into 23,000 4x3km areas called Domesday Squares or "D-Blocks".</i></p>
+	<p>This page shows the images Geograph has for each D-Block. Can enter a Grid-Reference above, to jump to the corresponding D-Block, and optionally filter the images by keyword.</p>
 
+{if $dblock}
 	<ul>
-		<li>{external href="http://www.bbc.co.uk/history/domesday/dblock/`$dblock`" text="View D-Block <b>`$dblock`</b> on Domesday Reloaded" title="view on Domesday Reloaded provided by BBC History"}
+		<li>{external href="http://www.bbc.co.uk/history/domesday/dblock/`$dblock`" text="View D-Block <b>`$dblock`</b> on Domesday Reloaded" title="view on Domesday Reloaded provided by BBC History"} (Photos in 1986 and 2011)
 		<li>Go: <a href="{$script_name}?p={math equation="900*(y+3)+900-(x)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">North</a> | <a href="{$script_name}?p={math equation="900*(y)+900-(x-4)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">West</a> | <a href="{$script_name}?p={math equation="900*(y-3)+900-(x)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">South</a> | <a href="{$script_name}?p={math equation="900*(y)+900-(x+4)" x=$x y=$y}{if $q}&amp;q={$q|escape:'url'}{/if}">East</a></li>
 	</ul>
 {/if}
@@ -92,7 +92,13 @@
 			{/foreach}
 		</table>
 	{else}
-		Enter Grid Reference above to jump to the corresponding D-block. Note can also enter a dblock (eg NI-332000-372000) directly.
+		{if $dblock}
+			No Images found for this D-Block.
+		{else}
+			UNKNOWN D-BLOCK
+		{/if}
+
+		Note can also enter a dblock (eg NI-332000-372000) directly, but remember does not cover Southern Ireland.
 	{/if}
 
 	<br style="clear:both"/>
