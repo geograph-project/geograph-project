@@ -1,0 +1,23 @@
+#!/bin/sh
+echo apache2ctl graceful-stop
+apache2ctl graceful-stop
+
+sleep 3
+
+echo ./off
+sudo -u www-data ./off
+
+echo ./on
+sudo -u www-data ./on
+
+echo /remount
+php remount
+
+echo ls -l /var/www/geograph_static/public_html/geophotos
+ls -l /var/www/geograph_static/public_html/geophotos
+
+echo "ps aux \| grep python"
+ps aux | grep python | grep -v grep
+
+echo 
+echo "apache2ctl start #(NOT run)"

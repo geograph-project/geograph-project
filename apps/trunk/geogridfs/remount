@@ -1,0 +1,32 @@
+#!/usr/bin/php
+<?
+
+$list = explode("\n",trim(`mount | grep combined | uniq`));
+
+$before = true;
+
+$todo = array();
+foreach ($list as $line) {
+	if (preg_match('/geogridfs.py/',$line)) {
+		$before = false;
+	} elseif ($before && preg_match('/^(\/\w[\w\/]+) on (\/\w[\w\/]+) type none \(rw,bind\)/',$line,$m)) {
+		$todo[] = $m;
+	}
+}
+
+if (!empty($todo))
+	foreach ($todo as $m) {
+		$c = 0;
+		do {
+			if ($c)
+				sleep(1);
+
+			print "umount {$m[2]}\n";
+			`umount {$m[2]}`;
+			$c++;
+
+		} while(strlen(`mount | grep {$m[2]}`) > 10 && $c < 10);
+
+		print "mount --bind {$m[1]} {$m[2]}\n";
+		`mount --bind {$m[1]} {$m[2]}`;
+	}
