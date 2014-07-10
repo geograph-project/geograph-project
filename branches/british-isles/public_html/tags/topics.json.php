@@ -24,13 +24,6 @@
 require_once('geograph/global.inc.php');
 require_once('geograph/topics.inc.php');
 
-if (!empty($_GET['callback'])) {
-	header('Content-type: text/javascript');
-} else {
-	header('Content-type: application/json');
-}
-
-
 $topics = array();
 
 if (!empty($_GET['gridimage_id'])) {
@@ -129,18 +122,5 @@ if (isset($_GET['term'])) {
 	}
 }
 
-if (!empty($_GET['callback'])) {
-        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
-        echo "{$callback}(";
-}
-
-require_once '3rdparty/JSON.php';
-$json = new Services_JSON();
-print $json->encode($topics);
-
-if (!empty($_GET['callback'])) {
-        echo ");";
-}
-
-
+outputJSON($topics);
 

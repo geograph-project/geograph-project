@@ -687,9 +687,9 @@ function GeographLinks(&$posterText,$thumbs = false) {
 		$posterText = str_replace('//'.$CONF['CONTENT_HOST'],'//'.$_SERVER['HTTP_HOST'],$posterText);
 	}
 	
-	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
+	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
 
-	$posterText = preg_replace('/(?<![>\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'http://\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
+	$posterText = preg_replace('/(?<![>\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'http://\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);
 
 	return $posterText;
 }
@@ -1102,4 +1102,26 @@ function sqlBitsToSelect($sql) {
 		$query .= " LIMIT {$sql['limit']}";
 	}
 	return $query;
+}
+
+function outputJSON(&$data) {
+        if (!empty($_GET['callback'])) {
+		header("Content-Type:text/javascript");
+                $callback = preg_replace('/[^\w\.\$]+/','',$_GET['callback']);
+                echo "/**/{$callback}(";
+        } else {
+		header("Content-Type:application/json");
+	}
+
+	if (function_exists('json_encode')) {
+		print json_encode($data);
+	} else {
+	        require_once '3rdparty/JSON.php';
+        	$json = new Services_JSON();
+	        print $json->encode($data);
+	}
+
+        if (!empty($_GET['callback'])) {
+                echo ");";
+        }
 }

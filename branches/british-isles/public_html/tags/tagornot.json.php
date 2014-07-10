@@ -23,13 +23,6 @@
 
 require_once('geograph/global.inc.php');
 
-
-if (!empty($_GET['callback'])) {
-	header('Content-type: text/javascript');
-} else {
-	header('Content-type: application/json');
-}
-
 init_session();
 if (!$USER->registered) {
 	die("{error: 'not logged in'}");
@@ -105,18 +98,7 @@ if (!empty($data['gridimage_id'])) {
 
 ########
 
-if (!empty($_GET['callback'])) {
-        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
-        echo "{$callback}(";
-}
-
-require_once '3rdparty/JSON.php';
-$json = new Services_JSON();
-print $json->encode($data);
-
-if (!empty($_GET['callback'])) {
-        echo ");";
-}
+outputJSON($data);
 
 
 
