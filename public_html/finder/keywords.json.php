@@ -23,8 +23,6 @@
 
 require_once('geograph/global.inc.php');
 
-$results = array();
-
 customExpiresHeader(360000);
 
 if (!empty($_GET['q'])) {
@@ -34,22 +32,11 @@ if (!empty($_GET['q'])) {
 
         $cl = $sphinx->_getClient();
 
-        $results = $cl->BuildKeywords($q,"{$CONF['sphinx_prefix']}gi_stemmed", true);
+        $data = $cl->BuildKeywords($q,"{$CONF['sphinx_prefix']}gi_stemmed", true);
 } else {
-	$results = "No query!";
+	$data = "No query!";
 }
 
 
-if (!empty($_GET['callback'])) {
-        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
-        echo "{$callback}(";
-}
-
-require_once '3rdparty/JSON.php';
-$json = new Services_JSON();
-print $json->encode($results);
-
-if (!empty($_GET['callback'])) {
-        echo ");";
-}
+outputJSON($data);
 
