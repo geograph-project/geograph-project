@@ -330,7 +330,7 @@ var mapTypeIds;
                 if (newtype == 's') {mapTypeId = google.maps.MapTypeId.SATELLITE;}
                 if (newtype == 'h') {mapTypeId = google.maps.MapTypeId.HYBRID;}
                 if (newtype == 't') {mapTypeId = google.maps.MapTypeId.TERRAIN;}
-                if (newtype == 'n') {mapTypeId = 'nls';}
+                if (newtype == 'n' && mapTypeIds.indexOf('nls') > -1) {mapTypeId = 'nls';}
                 if (newtype == 'o') {mapTypeId = 'osm';}
                 if (newtype == 'c') {mapTypeId = 'cm';}
                 if (newtype == 'p') {mapTypeId = 'phy';}
