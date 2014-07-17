@@ -92,6 +92,7 @@ a.rem {
 		explanation: <input type="text" name="explanation" size=100 maxlength="255"><br>
 		 (please explain why making this change)<br>
 		<input type=submit name=confirm value="confirm">
+		<input type=hidden name=subject value="{$subject|escape:'html'}">
 	</form>
 {else}
 	<h3>Moderate Suggestions</h3>
@@ -101,7 +102,9 @@ a.rem {
 	<p>This page looks at what categories you have used on your images, and shows the Context(s), Subject and Tags that could be auto added to those images.</p>
 {/if}
 
-<p>Click a "X" to remove the particular mapping. Or a "Add" to suggest a new mapping - a label that can be added for all images using the particular category</p>
+<p>Click a "X" to remove the particular mapping. Or a "Add" to suggest a new mapping - a label that can be added for <u>all</u> images using the particular category</p>
+
+<p>Clicking 'Checked' on a category, hides the category from your view, click this to signifiy you would be happy for the conversion as it shows <b>now</b> to be applied to YOUR images</p>
 
 <a href="?show=1{$extra}">Show all (dont hide checked rows)</a>
 <table class="report sortable" id="catlist" style="font-size:8pt;" cellpadding=4>
@@ -154,7 +157,7 @@ a.rem {
 		<td class="tags">
 			{if $row.tags}
 				{foreach from=$row.tags item=tag}
-					{if $tag ne '-bad-' && $tag|lower ne $imageclass|lower}
+					{if $tag ne '-bad-' && $tag|lower ne $row.subject|lower && $tag|lower ne $row.canonical|lower}
 	        	                        <span class=tag>
                			                <a href="/tagged/{$tag|escape:'url'}" class="taglink">{$tag|escape:'html'}</a>
 						<a href="?imageclass={$imageclass|escape:'url'}&amp;field=tag&action=remove&amp;value={$tag|escape:'url'}{$extra}" class="rem">X</a>
@@ -168,7 +171,7 @@ a.rem {
 				</span>
 			{/if}
 
-			{if $row.canonical && $row.canonical|lower ne $imageclass|lower && $row.canonical ne '-bad-'}
+			{if $row.canonical && $row.canonical|lower ne $row.subject|lower && $row.canonical ne '-bad-'}
 				<span class=tag>
                                 <a href="/search.php?canonical={$row.canonical|escape:'url'}&amp;do=1" class="taglink">{$row.canonical|escape:'html'}</a>
 				<a href="?imageclass={$imageclass|escape:'url'}&amp;field=canonical&action=remove&amp;value={$row.canonical|escape:'url'}{$extra}" class="rem">X</a>

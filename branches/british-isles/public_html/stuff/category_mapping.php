@@ -37,6 +37,7 @@ if (!empty($_GET['action']) && !empty($_GET['imageclass'])) {
 		$smarty->assign('field',$_GET['field']);
 		$smarty->assign('action',$_GET['action']);
 		$smarty->assign('value',$_GET['value']);
+		$smarty->assign('subject',$_GET['subject']);
 
 		if ($_GET['action'] == 'add' && empty($_GET['value'])) {
 			$db = GeographDatabaseConnection(true);
@@ -49,8 +50,6 @@ if (!empty($_GET['action']) && !empty($_GET['imageclass'])) {
 				$smarty->assign('values',array_combine($values,$values));
 		}
 
-		//to filter the categories shown!
-		$_GET['subject'] = $_GET['imageclass'];
 	} else {
 		$db = GeographDatabaseConnection(false);
 
@@ -64,6 +63,9 @@ if (!empty($_GET['action']) && !empty($_GET['imageclass'])) {
 	        if (!empty($_GET['explanation'])) $updates['explanation'] = $_GET['explanation'];
 
         	$db->Execute('INSERT INTO category_mapping_change SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
+
+
+		$_GET['imageclass'] = ''; //remove the filter
 	}
 }
 
@@ -74,9 +76,18 @@ if (empty($db))
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-if (!empty($_GET['subject'])) {
-	$crit = $db->Quote($_GET['subject']);
-	$where = "m.imageclass like $crit OR m.subject like $crit";
+if (!empty($_GET['imageclass'])) {
+	$crit = $db->Quote($_GET['imageclass']);
+        $where = "m.imageclass like $crit OR m.subject like $crit";
+	$limit = 100;
+	$_GET['show']=1;
+} elseif (!empty($_GET['subject'])) {
+	if ($_GET['subject'] == '-') {
+		$where = "m.subject NOT IN(SELECT subject FROM subjects)";
+	} else {
+		$crit = $db->Quote($_GET['subject']);
+		$where = "m.imageclass like $crit OR m.subject like $crit";
+	}
 	$smarty->assign('subject',$_GET['subject']);
 	$smarty->assign('extra',"&amp;subject=".urlencode($_GET['subject']));
 	$limit = 1000;
@@ -86,17 +97,18 @@ if (!empty($_GET['subject'])) {
 	$limit = 110000;
 }
 
-$suggestions = $db->getAssoc("SELECT m.*,c.canonical,count(*) images
+$suggestions = $db->getAssoc($sql = "SELECT m.*,c.canonical,count(distinct gridimage_id) images
 	from category_mapping m inner join gridimage_search gi using (imageclass)
 		left join category_canonical_log c using (imageclass)
 	where $where group by imageclass limit $limit");
+
 foreach ($suggestions as $imageclass => $row) {
 	//split into array
 	if (!empty($row['tags']))
 		$suggestions[$imageclass]['tags'] = preg_split('/\s*[,;]\s*/',$row['tags']);
 }
 
-$delta = $db->getAll("SELECT * FROM category_mapping_change WHERE user_id = {$USER->user_id} AND status > 0 ORDER BY change_id");
+$delta = $db->getAll("SELECT * FROM category_mapping_change WHERE (action != 'checked' or user_id = {$USER->user_id}) AND status > 0 ORDER BY change_id");
 if (!empty($delta)) {
 	foreach($delta as $row) {
 		if (!isset($suggestions[$row['imageclass']]))

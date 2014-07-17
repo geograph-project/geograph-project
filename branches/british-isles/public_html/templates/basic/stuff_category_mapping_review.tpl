@@ -33,6 +33,7 @@ td.rem {
 	<td>Context(s)</td>
 	<td>Subject</td>
 	<td>Tag(s)</td>
+	<td>Tag(s)</td>
 	<td>Agree</td>
 	<td>Disagree</td>
 	<td colspan=2>Comment</td>
