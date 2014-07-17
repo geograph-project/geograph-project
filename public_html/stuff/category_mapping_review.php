@@ -37,7 +37,7 @@ if (!empty($_POST['choice'])) {
                 $updates = array();
                 $updates['change_id'] = intval($change_id);
                 $updates['user_id'] = $USER->user_id;
-                $updates['status'] = intval($_GET['action']);
+                $updates['status'] = intval($status);
 
                 $db->Execute('INSERT INTO category_mapping_change_log SET created = NOW(),`'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 	}
@@ -58,7 +58,7 @@ ORDER BY imageclass,change_id"); //todo user_id != $USER->user_id
 
 $smarty->assign_by_ref('suggestions',$suggestions);
 
-$smarty->assign('fields',array('context','subject','tag'));
+$smarty->assign('fields',array('context','subject','tag','canonical'));
 $smarty->display('stuff_category_mapping_review.tpl');
 
 
