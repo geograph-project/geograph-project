@@ -18,5 +18,5 @@ String.prototype.toTitleCase = function () {
     }
 
     return match.charAt(0).toUpperCase() + match.substr(1);
-  });
+  }).replace(/ S\b/,'s');
 };
