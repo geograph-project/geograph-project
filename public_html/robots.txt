@@ -14,6 +14,12 @@ Disallow: /
 User-agent: netEstate NE Crawler
 Disallow: /
 
+User-agent: spbot
+Disallow: /
+
+User-agent: TurnitinBot
+Disallow: /
+
 User-agent: BLEXBot
 Disallow: /
 
@@ -26,11 +32,14 @@ Disallow: /
 User-agent: Ezooms
 Disallow: /
 
+User-agent: Spiderlytics
+Disallow: /
+
 #User-agent: Pixray-Seeker
 #Disallow: /
 
-User-agent: Yandex
-Disallow: /
+#User-agent: Yandex
+#Disallow: /
 
 User-Agent: seokicks
 Disallow: /
