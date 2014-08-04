@@ -27,6 +27,7 @@
 	</ul></li>
 
 	<li><a href="/gallery/"><b>Galerien</b></a> - ausgewählte Bilder zu verschiedenen Themen</li>
+	<li><a href="/geotrips/?max=-1"><b>Geotrips</b></a>: Tourberichte der Teilnehmer</li>
 
 	<!--li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li-->
 
