@@ -807,7 +807,20 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 	{
 		global $CONF;
 		static $counter = 0;
-		
+
+		if ($this->pixels_per_km < 1 && $this->type_or_user == -6) {
+                        //render at 1px/km and scale...
+                        $this->real_pixels_per_km = $this->pixels_per_km;
+                        $this->real_image_w = $this->image_w;
+                        $this->real_image_h = $this->image_h;
+
+                        //need to change the actual values as need to fool other functions too
+                        $this->image_w = floor($this->image_w/$this->pixels_per_km);
+                        $this->image_h = floor($this->image_h/$this->pixels_per_km);
+                        $this->pixels_per_km = 1;
+                }
+
+
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
 		$ok = true;
@@ -918,7 +931,7 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 		$scanbottom=$bottom-$overscan;
 		$scantop=$top+$overscan;
 		
-		if (empty($this->transparent)) {
+		if (empty($this->transparent) && !(isset($this->real_pixels_per_km) && $this->real_pixels_per_km < 1) ) {
 			//setup ready to plot squares
 			$this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
 		}
@@ -1149,23 +1162,40 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 
 					if (!$recordSet->fields['has_geographs']) {
                                                imagefilledrectangle ($img, $imgx1+2, $imgy1+3, $imgx1+6, $imgy1+5, $colSuppMarker);
-                                               imagefilledrectangle ($img, $imgx1+3, $imgy1+2, $imgx1+5, $imgy1+6, $colSuppMarker);					
+                                               imagefilledrectangle ($img, $imgx1+3, $imgy1+2, $imgx1+5, $imgy1+6, $colSuppMarker);
 					}
 				} else {
 					$ok = false;
 				}
 
 			}
-			
-			
+
 			$recordSet->MoveNext();
 		}
 		if (!empty($recordSet))
-			$recordSet->Close(); 
+			$recordSet->Close();
+
+                if (isset($this->real_pixels_per_km) && $this->real_pixels_per_km < 1) {
+                        //render at 1px/km and scale...
+
+                        $resized = imagecreatetruecolor($this->real_image_w, $this->real_image_h);
+                        imagecopyresampled($resized, $img, 0, 0, 0, 0,
+                                                $this->real_image_w, $this->real_image_h, $this->image_w, $this->image_h);
+
+                        imagedestroy($img);
+
+                        $img = $resized;
+
+                        $this->pixels_per_km = $this->real_pixels_per_km;
+                        $this->image_w = $this->real_image_w;
+                        $this->image_h = $this->real_image_h;
+
+                        $this->_plotGridLines($img,$scanleft,$scanbottom,$scanright,$scantop,$bottom,$left,true);
+                }
 
 		if ($img) {
 			//ok being false isnt fatal, as we can create a tile, however we should use it to try again later!
-			
+
 			//plot grid square?
 			if ($this->pixels_per_km>=0 && empty($this->transparent))
 			{
@@ -1175,8 +1205,8 @@ split_timer('map','needUserTile',$user_id); //logs the wall time
 			if ($this->pixels_per_km>=1  && $this->pixels_per_km<=40 && isset($CONF['enable_newmap']) && empty($this->transparent))
 			{
 				$this->_plotPlacenames($img,$left,$bottom,$right,$top,$bottom,$left);
-			}				
-			
+			}
+
 			$target=$this->getImageFilename();
 			if (preg_match('/jpg/',$target)) {
 				$ok = (imagejpeg($img, $root.$target) && $ok);
