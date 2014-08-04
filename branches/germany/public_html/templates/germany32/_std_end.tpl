@@ -26,18 +26,10 @@
     <li><small><small>Draggable Maps</small></small><ul>
   {dynamic}
   {if $is_logged_in}
-  {if $use_google_api}
-     <li><a title="Draggable Geograph map" href="/omap.php">Geograph</a> (<a title="Draggable Geograph map using Google" href="/gmap.php">gm</a>)</li>
-  {else}
      <li><a title="Draggable Geograph map" href="/omap.php">Geograph</a></li>
   {/if}
-  {/if}
   {/dynamic}
-  {if $use_google_api}
-     <li><a title="Draggable Geograph map without zones" href="/ommap.php">No zones</a> (<a title="Draggable Geograph map without zones using Google" href="/gmmap.php">gm</a>)</li>
-  {else}
      <li><a title="Draggable Geograph map without zones" href="/ommap.php">No zones</a></li>
-  {/if}
     </ul></li>
      <li><a title="Coordinate conversion" href="/latlong.php">Coordinates</a></li>
     </ul></li>
