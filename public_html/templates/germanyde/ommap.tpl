@@ -67,6 +67,26 @@ ommap.tpl, rastermap.class.php:
 			window.open(url+gridref,'_blank');
 		}
 
+		var large = 0;
+		function toggleLarge(smallmsg, largemsg)
+		{
+			var button = document.getElementById('togglelarge');
+			var div = document.getElementById('map');
+			large = !large;
+			if (large) {
+				button.value = smallmsg;
+				var width = "800px";
+				var height = "800px";
+			} else {
+				button.value = largemsg;
+				var width = "600px";
+				var height = "500px";
+			}
+			div.style.width = width;
+			div.style.height = height;
+			map.updateSize();
+		}
+
 		function clearMarker() {
 			if (currentelement) {
 				dragmarkers.removeFeatures([currentelement]);
@@ -660,6 +680,7 @@ Anklicken der <img alt="+" src="/ol/img/layer-switcher-maximize.png" />-Symbole 
 {if $iniuser > 0 and $iniuser != $userid}checked{/if} />Nutzer:
 <input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
 <br /><br /><small>
+{if $userid}<input id="togglelarge" type="button" value="Größer" onclick="toggleLarge('Kleiner','Größer');" /> | {/if}
 Deckkraft (%):
 Abdeckung
 <input type="text" size="5" name="opcoverage" value="{if $inio >= 0}{$inio*100}{else}50{/if}" />
