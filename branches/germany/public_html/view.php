@@ -285,6 +285,12 @@ if ($image->isValid())
 		$smarty->assign("sid",$sid);
 		$smarty->assign_by_ref("notes",$notes);
 
+		$imagesize = $image->_getFullSize();
+		$altimg = $image->getAltImage($imagesize[0], $imagesize[1]);
+		$smarty->assign("altimg", $altimg);
+		$smarty->assign('std_width', $imagesize[0]);
+		$smarty->assign('std_height', $imagesize[1]);
+
 		$image->assignToSmarty($smarty, $sid, $map_suffix);
 	}
 } elseif (!empty($rejected)) {

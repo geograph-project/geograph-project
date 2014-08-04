@@ -41,14 +41,14 @@
 {/dynamic}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
-        {if $image->original_width || $user->user_id eq $image->user_id || $notes || $user->registered}
+        {if $image->original_width || $user->user_id eq $image->user_id || $notes || $altimg neq '' || $user->registered}
 	<div class="caption640" style="text-align:right;">
-	{if $notes}
+	{if $notes || $altimg neq ''}
 		Move the mouse pointer over the image to display <a href="/geonotes.php?id={$image->gridimage_id}&amp;size=original">image annotations</a>
 	{elseif $user->registered}
 		<a href="/geonotes.php?id={$image->gridimage_id}">Create image annotations</a>
 	{/if}
-	{if ($image->original_width || $user->user_id eq $image->user_id) && ($notes || $user->registered)}|{/if}
+	{if ($image->original_width || $user->user_id eq $image->user_id) && ($notes || $altimg neq '' || $user->registered)}|{/if}
 	{if $image->original_width}
 		<a href="/more.php?id={$image->gridimage_id}">More sizes</a>
 	{elseif $user->user_id eq $image->user_id}
@@ -59,7 +59,8 @@
   <div class="img-shadow" id="mainphoto"><!-- comment out whitespace
   {if $notes}
     --><div class="notecontainer" id="notecontainer">
-    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\"")}
+    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}<!--
+    {if $altimg neq ''}--><img src="{$altimg}" height="{$std_height}px" width="{$std_width}px" id="gridimagealt" alt="" style="position:absolute;top:0px;left:0px;z-index:2;" /><!--{/if}-->
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}" />
@@ -71,6 +72,12 @@
     {foreach item=note from=$notes}
     <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p></div>
     {/foreach}
+    <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
+    </div><!--
+  {elseif $altimg neq ''}
+    --><div class="notecontainer" id="notecontainer">
+    {$image->getFull(true,"class=\"geonotes\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}
+    <img src="{$altimg}" height="{$std_height}px" width="{$std_width}px" id="gridimagealt" alt="" style="position:absolute;top:0px;left:0px;z-index:2;" />
     <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
     </div><!--
   {else}
@@ -367,7 +374,7 @@ AttachEvent(window,'load',fixIE,false);
 </script>
 <![endif]-->
 
-{if $notes}
+{if $notes || $altimg}
 <script type="text/javascript">
 /* <![CDATA[ */
 AttachEvent(window,"load",gn.init);

@@ -48,9 +48,8 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 
 <h3>Step 2 : Confirm image size</h3>
 
-		{if $original_width}
-			
-			{assign var="hide640" value=1}
+		{if $original_width || $altimg}
+			{if !$altimg}{assign var="hide640" value=1}{/if}
 			{include file="_submit_sizes.tpl"}
 
 	{if $canclearexif}
@@ -58,13 +57,15 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 		<input type="checkbox" name="clearexif" id="clearexif" {if $wantclearexif}checked{/if} value="1"/> <label for="clearexif">Clear any EXIF data from the image. Check this box to hide metadata such as exact creation time or camera type.</label><!--br/-->
 	{/if}
 
+	<input type="hidden" name="altimg" value="{if $altimg}1{else}0{/if}" />
+
 <script type="text/javascript">{literal}
 
 function hideStep3() {
 	document.getElementById("step3").style.display = 'none';
 }
 {/literal}
-{if !$user->upload_size || $user->upload_size == 640}
+{if !$altimg && (!$user->upload_size || $user->upload_size == 640)}
  AttachEvent(window,'load',hideStep3,false);
 {/if}
 </script>
@@ -116,7 +117,7 @@ function hideStep3() {
 <ul>
 	<li>Use this form to add a higher resolution image to the above submission</li>
 	<li>This should only be used to add the same exact image - although for example better tweaking of contrast and brightness is fine</li>
-	<li>NOTE: This only adds a higher resolution version - it does NOT affect the photo shown on <a href="/photo/{$image->gridimage_id}">the photo page</a>
+	<li>NOTE: This only adds a higher resolution version - it does NOT affect the photo shown on <a href="/photo/{$image->gridimage_id}">the photo page</a></li>
 </ul>
 
 {if $exif}
@@ -152,6 +153,7 @@ function hideStep3() {
 <input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
 <label for="jpeg"><b>JPEG Image File</b></label>
 <input id="jpeg" name="jpeg" type="file" /><br/>
+<input type="checkbox" name="altimg" id="altimg" value="1"/> <label for="altimg">This image is an alternative picture providing annotations etc.</label><br />
 
 <p>(There is no resolution limit, but the file must be under 8 Megabytes)</p>
 
