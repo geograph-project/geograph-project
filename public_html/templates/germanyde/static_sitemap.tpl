@@ -59,6 +59,7 @@
 	<li><a title="Statistical Breakdown" href="/statistics.php"><b>view statistics</b> of images submitted</a> (<a href="#stats">more below</a>)</li>
 	<li><a title="Explore Images" href="/explore/"><b>explore</b> geograph images</a></li>
 	<li><a title="Photo Gallery" href="/gallery/">view some <b>themed galleries</b></a></li>
+	<li><a title="Geotrips" href="/geotrips/?max=-1">view <b>trip reports</b> by our members</a></li>
 	<li><a title="List of all images" href="/sitemap/geograph.html">view the <b>full list</b> of images</a></li>
 	<!--li><a href="/help/imagine">Through The Square Window...</a></li-->
 	<li><a href="/explore/searches.php">A list of <b>featured searches</b></a> <a title="RSS Feed Featured Searches" href="/explore/searches.rss.php" class="xml-rss">RSS</a></li>
