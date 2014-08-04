@@ -580,7 +580,8 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 </div>
 {/if}
 
-<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen...</p>
+<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen.<br />
+Nach Anklicken des <img alt="+" src="/ol/img/layer-switcher-maximize.png" />-Symbols kann die UTM-Zone ausgewählt werden.</p>
 
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{elseif $ext}action="javascript:void()"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
