@@ -41,7 +41,6 @@ var gn = {
 		var images = document.getElementsByTagName('img');
 		for (var i=0;i<images.length;i++) {
 			if (images[i].offsetParent &&
-			    images[i].getAttribute('usemap') != null &&
 			    images[i].className.search(/\bgeonotes\b/) != -1) {
 				gn.__initImage(images[i]);
 			}
@@ -64,98 +63,103 @@ var gn = {
 		//imageinfo.bordersy = borderlt[1] + borderrb[1]
 		imageinfo.paddborderoffsetx = paddinglt[0] + borderlt[0] + img.offsetLeft;
 		imageinfo.paddborderoffsety = paddinglt[1] + borderlt[1] + img.offsetTop;
+		imageinfo.altimg = document.getElementById(img.id + 'alt');
 		return imageinfo;
 	},
 
 	__initImage: function(img) {
 		var mapName = img.getAttribute('usemap');
-		img.setAttribute('usemap', null);
-		if (mapName.substr(0,1) == '#') mapName = mapName.substr(1);
-		var mapObjs = document.getElementsByName(mapName);
-		if (mapObjs.length != 1) return;
-		var mapObj = mapObjs[0];
-		var boxes = mapObj.getElementsByTagName('area');
+		if (mapName != null) {
+			img.setAttribute('usemap', null);
+			if (mapName.substr(0,1) == '#') mapName = mapName.substr(1);
+			var mapObjs = document.getElementsByName(mapName);
+			if (mapObjs.length != 1) return;
+		}
 		var imageindex = gn.images.length;
 		var imageinfo = gn.__initImageInfo(img);
 		gn.images[imageindex] = imageinfo;
-		var notelist = gn.images[imageindex].notes;
-		for (var j=boxes.length-1;j>=0;j--) {
-			if (boxes[j].getAttribute('shape').toLowerCase() == 'rect' && boxes[j].id.substr(0,8) == 'notearea') {
-				var curarea = boxes[j];
-				var noteid = curarea.id.substr(8);
-				var box = document.getElementById('notebox'+noteid);
-				var txt = document.getElementById('notetext'+noteid);
-				if (box && txt) {
-					notelist[notelist.length] = noteid;
-					var borderlt  = gn.getStyleXY(box, 'border-left-width', 'border-top-width');
-					var borderrb  = gn.getStyleXY(box, 'border-right-width', 'border-bottom-width');
-					var noteinfo = {
-						'area':           curarea,
-						'box':            box,
-						'note':           txt,
-						'img':            img,
-						'imageinfo':      gn.images[imageindex],
-						'noteid':         noteid, /* corresponds to the element's id, never changes */
-						'servernoteid':   noteid, /* when creating a note, this changes to the actual note_id */
-						'x1':             curarea.getAttribute('data-geonote-x1'),
-						'x2':             curarea.getAttribute('data-geonote-x2'),
-						'y1':             curarea.getAttribute('data-geonote-y1'),
-						'y2':             curarea.getAttribute('data-geonote-y2'),
-						'width':          curarea.getAttribute('data-geonote-width'),
-						'height':         curarea.getAttribute('data-geonote-height'),
-						'status':         curarea.getAttribute('data-geonote-status'),
-						'pendingchanges': curarea.getAttribute('data-geonote-pendingchanges')!='0',
-						'noteclass'     : curarea.getAttribute('data-geonote-noteclass'),
-						'unsavedchanges': false,
-						'lasterror'     : '',
-						'hidden'        : false,
-						'classname'     : box.className,
-						'bordersx'      : borderlt[0] + borderrb[0],
-						'bordersy'      : borderlt[1] + borderrb[1]
-					};
-					if (noteinfo.status === null || noteinfo.status === "") {
-						/* custom attributes not supported or provided */
-						noteinfo.status = 'visible';
-						noteinfo.pendingchanges = false;
-						noteinfo.width = img.width;
-						noteinfo.height = img.height;
-						var coords = curarea.getAttribute('coords').split(',');
-						if (coords.length == 4) {
-							noteinfo.x1 = parseInt(coords[0]);
-							noteinfo.y1 = parseInt(coords[1]);
-							noteinfo.x2 = parseInt(coords[2]);
-							noteinfo.y2 = parseInt(coords[3]);
+		if (mapName != null) {
+			var mapObj = mapObjs[0];
+			var boxes = mapObj.getElementsByTagName('area');
+			var notelist = gn.images[imageindex].notes;
+			for (var j=boxes.length-1;j>=0;j--) {
+				if (boxes[j].getAttribute('shape').toLowerCase() == 'rect' && boxes[j].id.substr(0,8) == 'notearea') {
+					var curarea = boxes[j];
+					var noteid = curarea.id.substr(8);
+					var box = document.getElementById('notebox'+noteid);
+					var txt = document.getElementById('notetext'+noteid);
+					if (box && txt) {
+						notelist[notelist.length] = noteid;
+						var borderlt  = gn.getStyleXY(box, 'border-left-width', 'border-top-width');
+						var borderrb  = gn.getStyleXY(box, 'border-right-width', 'border-bottom-width');
+						var noteinfo = {
+							'area':           curarea,
+							'box':            box,
+							'note':           txt,
+							'img':            img,
+							'imageinfo':      gn.images[imageindex],
+							'noteid':         noteid, /* corresponds to the element's id, never changes */
+							'servernoteid':   noteid, /* when creating a note, this changes to the actual note_id */
+							'x1':             curarea.getAttribute('data-geonote-x1'),
+							'x2':             curarea.getAttribute('data-geonote-x2'),
+							'y1':             curarea.getAttribute('data-geonote-y1'),
+							'y2':             curarea.getAttribute('data-geonote-y2'),
+							'width':          curarea.getAttribute('data-geonote-width'),
+							'height':         curarea.getAttribute('data-geonote-height'),
+							'status':         curarea.getAttribute('data-geonote-status'),
+							'pendingchanges': curarea.getAttribute('data-geonote-pendingchanges')!='0',
+							'noteclass'     : curarea.getAttribute('data-geonote-noteclass'),
+							'unsavedchanges': false,
+							'lasterror'     : '',
+							'hidden'        : false,
+							'classname'     : box.className,
+							'bordersx'      : borderlt[0] + borderrb[0],
+							'bordersy'      : borderlt[1] + borderrb[1]
+						};
+						if (noteinfo.status === null || noteinfo.status === "") {
+							/* custom attributes not supported or provided */
+							noteinfo.status = 'visible';
+							noteinfo.pendingchanges = false;
+							noteinfo.width = img.width;
+							noteinfo.height = img.height;
+							var coords = curarea.getAttribute('coords').split(',');
+							if (coords.length == 4) {
+								noteinfo.x1 = parseInt(coords[0]);
+								noteinfo.y1 = parseInt(coords[1]);
+								noteinfo.x2 = parseInt(coords[2]);
+								noteinfo.y2 = parseInt(coords[3]);
+							}
 						}
+						if (noteinfo.noteclass === null) {
+							noteinfo.noteclass = '';
+						}
+						//alert([noteinfo.x1,noteinfo.y1,noteinfo.x2,noteinfo.y2,noteinfo.width,noteinfo.height].join(', '));
+						gn.notes[noteid] = noteinfo;
+						curarea.title = '';
+						var left=box.style.left;
+						var top=box.style.top;
+						if (left.substr(left.length-2) == 'px' && top.substr(top.length-2) == 'px') {
+							left=parseInt(left.substr(0,left.length-2))
+							top=parseInt(top.substr(0,top.length-2))
+							left += imageinfo.paddborderoffsetx;
+							top += imageinfo.paddborderoffsety;
+							box.style.left = left+'px';
+							box.style.top = top+'px';
+						}
+						var width=box.style.width;
+						var height=box.style.height;
+						if (width.substr(width.length-2) == 'px' && height.substr(height.length-2) == 'px') {
+							width=parseInt(width.substr(0,width.length-2))
+							height=parseInt(height.substr(0,height.length-2))
+							width -= noteinfo.bordersx;
+							height -= noteinfo.bordersy;
+							box.style.width = width+'px';
+							box.style.height = height+'px';
+						}
+						gn.initBoxWidth(txt);
+						AttachEvent(box,"mouseover",gn.showNoteText);
+						AttachEvent(txt,"mouseout",gn.hideNoteTextEvent);
 					}
-					if (noteinfo.noteclass === null) {
-						noteinfo.noteclass = '';
-					}
-					//alert([noteinfo.x1,noteinfo.y1,noteinfo.x2,noteinfo.y2,noteinfo.width,noteinfo.height].join(', '));
-					gn.notes[noteid] = noteinfo;
-					curarea.title = '';
-					var left=box.style.left;
-					var top=box.style.top;
-					if (left.substr(left.length-2) == 'px' && top.substr(top.length-2) == 'px') {
-						left=parseInt(left.substr(0,left.length-2))
-						top=parseInt(top.substr(0,top.length-2))
-						left += imageinfo.paddborderoffsetx;
-						top += imageinfo.paddborderoffsety;
-						box.style.left = left+'px';
-						box.style.top = top+'px';
-					}
-					var width=box.style.width;
-					var height=box.style.height;
-					if (width.substr(width.length-2) == 'px' && height.substr(height.length-2) == 'px') {
-						width=parseInt(width.substr(0,width.length-2))
-						height=parseInt(height.substr(0,height.length-2))
-						width -= noteinfo.bordersx;
-						height -= noteinfo.bordersy;
-						box.style.width = width+'px';
-						box.style.height = height+'px';
-					}
-					gn.initBoxWidth(txt);
-					AttachEvent(box,"mouseover",gn.showNoteText);
-					AttachEvent(txt,"mouseout",gn.hideNoteTextEvent);
 				}
 			}
 		}
@@ -459,6 +463,12 @@ var gn = {
 		txt.style.visibility = 'visible';
 	},
 
+	altImage: function(visible) {
+		if (!gn.current_image || !gn.current_image.altimg)
+			return;
+		gn.current_image.altimg.style.zIndex = visible ? "3" : "2";
+	},
+
 	showBoxes: function(e) {
 		var t = null;
 		if (window.event && window.event.srcElement) {
@@ -473,11 +483,13 @@ var gn = {
 			gn.hideBoxes();
 		}
 		gn.current_image = gn.images[imageindex];
+		gn.altImage(1);
 		gn.setBoxes(gn.current_image.notes,'block');
 	},
 
 	hideBoxes: function() {
 		if (gn.current_image) {
+			gn.altImage(0);
 			gn.setBoxes(gn.current_image.notes,'none');
 			gn.current_image = null;
 		}

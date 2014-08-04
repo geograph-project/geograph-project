@@ -779,9 +779,51 @@ class GridImage
 	/**
 	* Store a file as the original
 	*/
-	function storeOriginal($srcfile, $movefile=false)
+	function storeOriginal($srcfile, $movefile=false, $altimg=false)
 	{
-		return $this->storeImage($srcfile,$movefile,'_original');
+		return $this->storeImage($srcfile, $movefile, $altimg ? '_altimg' : '_original');
+	}
+
+	function getAltImage($width, $height)
+	{
+		global $CONF;
+
+		/* Is there an image? */
+		$origpath = $this->_getOriginalpath(false, false, '_altimg');
+		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$origpath))
+			return '';
+
+		/* Is there a resized image created from the recent altimage file? */
+		$imgpath = $this->_getOriginalpath(false, false, '_altimg_'.intval($width).'x'.intval($height));
+		if (file_exists($_SERVER['DOCUMENT_ROOT'].$imgpath)) {
+			$t1 = filemtime($_SERVER['DOCUMENT_ROOT'].$origpath);
+			$t2 = filemtime($_SERVER['DOCUMENT_ROOT'].$imgpath);
+			if ($t1 == false || $t2 == false)
+				return '';
+			if ($t2 >= $t1)
+				return $imgpath;
+		}
+
+		if ($CONF['imagemagick_path'] === '')
+			return '';
+
+		$osize = getimagesize($_SERVER['DOCUMENT_ROOT'].$origpath);
+		if ($osize === false || $osize[0] < $width || $osize[1] < $height)
+			return ''; // error or altimage not large enough
+
+		/* resize or copy the image if the dimensions are already correct */
+		if ($osize[0] == $width && $osize[1] == $height) {
+			copy($_SERVER['DOCUMENT_ROOT'].$origpath, $_SERVER['DOCUMENT_ROOT'].$imgpath);
+		} else {
+			$cmd = sprintf("\"%sconvert\" -resize '%ldx%ld!' -quality 87 jpg:%s jpg:%s",
+				$CONF['imagemagick_path'],
+				$width, $height,
+				$_SERVER['DOCUMENT_ROOT'].$origpath,
+				$_SERVER['DOCUMENT_ROOT'].$imgpath);
+			passthru($cmd);
+		}
+
+		return $imgpath;
 	}
 	
 	function _getOriginalpath($check_exists=true,$returntotalpath = false, $suffix = '_original')

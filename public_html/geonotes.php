@@ -403,17 +403,27 @@ if ($image->isValid()) {
 		$smarty->assign_by_ref("notes",$notes);
 
 		$imagesize = $image->_getFullSize();
+		$altimg = $image->getAltImage($imagesize[0], $imagesize[1]);
+		$smarty->assign("altimg", $altimg);
 
 		$showorig = false;
 		if ($image->original_width) {
+			$origpath = $image->_getOriginalpath();
 			$smarty->assign('original_width', $image->original_width);
 			$smarty->assign('original_height', $image->original_height);
-			$smarty->assign('orig_url', $image->_getOriginalpath());
+			$smarty->assign('orig_url', $origpath);
 			// check if original size == std size // gbi could compare with 640, instead
 			$uploadmanager=new UploadManager;
 			list($destwidth, $destheight, $destdim, $changedim) = $uploadmanager->_new_size($image->original_width, $image->original_height);
 			if ($changedim) {
 				$showorig = true;
+				if ($altimg !== '') {
+					$altimglarge = $image->getAltImage($image->original_width, $image->original_height);
+					if ($altimglarge === '') {
+						$altimglarge = $origpath;
+					}
+					$smarty->assign("altimglarge", $altimglarge);
+				}
 			}
 		}
 		$smarty->assign('std_width', $imagesize[0]);

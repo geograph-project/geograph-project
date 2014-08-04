@@ -24,7 +24,8 @@
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto"><div class="notecontainer" id="notecontainer">
-    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\"")}
+    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}<!--
+    {if $altimg neq ''}--><img src="{$altimg}" height="{$std_height}px" width="{$std_width}px" id="gridimagealt" alt="" style="position:absolute;top:0px;left:0px;z-index:2;" /><!--{/if}-->
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
@@ -135,6 +136,7 @@ var minboxsize = 8; // FIXME hard coded
 var editbuttons = [];
 var imageid = {$image->gridimage_id};
 var imgurl = '{$img_url}';
+var imgurl2 = '{$altimg}';
 var imgwidth = {$std_width};
 var imgheight = {$std_height};
 var stdwidth = {$std_width};
@@ -146,12 +148,14 @@ function setImgSize(large) {
 	if (large) {
 {/literal}
 		imgurl = '{$orig_url}';
+		imgurl2 = '{$altimglarge}';
 		imgwidth = {$original_width};
 		imgheight = {$original_height};
 {literal}
 	} else {
 {/literal}
 		imgurl = '{$img_url}';
+		imgurl2 = '{$altimg}';
 		imgwidth = {$std_width};
 		imgheight = {$std_height};
 {literal}
@@ -160,6 +164,14 @@ function setImgSize(large) {
 	el.src = imgurl;
 	el.width = imgwidth;
 	el.height = imgheight;
+{/literal}
+{if $altimg neq ''}
+	elalt = document.getElementById('gridimagealt');
+	elalt.src = imgurl2;
+	elalt.width = imgwidth;
+	elalt.height = imgheight;
+{/if}
+{literal}
 	if (ie7) {
 		fixIE();
 	}

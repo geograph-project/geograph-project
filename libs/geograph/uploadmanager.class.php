@@ -951,9 +951,11 @@ class UploadManager
 	/**
 	* add a high res image
 	*/
-	function addOriginal($image)
+	function addOriginal($image, $altimg = false)
 	{
 		global $USER,$CONF,$memcache;
+
+		$suffix = $altimg ? '_altimg' : '';
 		
 		if($this->validUploadId($this->upload_id))
 		{
@@ -978,7 +980,7 @@ class UploadManager
 		}
 
 		//store the resized version - just for the moderator to use as a preview
-		if ($ok = $image->storeImage($src,false,'_preview')) {
+		if ($ok = $image->storeImage($src,false,'_preview'.$suffix)) {
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
@@ -997,17 +999,18 @@ class UploadManager
 				}
 				
 				//store the new original file
-				$ok =$image->storeImage($orginalfile,false,'_pending');
+				$ok =$image->storeImage($orginalfile,false,'_pending'.$suffix);
 			}
 		}
 		
 		if ($ok) {
 			
 			$sql = sprintf("insert into gridimage_pending (gridimage_id,upload_id,user_id,suggested,type) ".
-				"values (%s,%s,%s,now(),'original')",
+				"values (%s,%s,%s,now(),'%s')",
 				$this->db->Quote($image->gridimage_id),
 				$this->db->Quote($this->upload_id),
-				$this->db->Quote($USER->user_id));
+				$this->db->Quote($USER->user_id),
+				$altimg?'altimg':'original');
 					
 			$this->db->Query($sql);
 			

@@ -881,6 +881,7 @@ div.thumbwindow {
 	padding:10px;
 	display:none;
 	text-align:left;
+	z-Index:5;
 }
 
 div.votebox {

@@ -12,6 +12,7 @@
 {if $image}
 <form method="post" action="{$script_name}">
 	<input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
+	<input type="hidden" name="altimg" value="{if $altimg}1{else}0{/if}"/>
 	<br/>
 
 	<table border="1" cellpadding="4" cellspacing="0">
@@ -47,7 +48,7 @@
 		<li>Unable to load preview. Click the button to notify a developer: <input style="background-color:pink; width:200px" type="submit" name="broken" value="This is broken."/></li>
 	</ul>
 	{else}
-	<p>Please confirm the two images above represent the same base image</p>
+	<p>Please confirm the two images above represent the same base image.{if $altimg} <b>This is an alternative image which may contain annotations etc.</b>{/if}</p>
 
 	<input style="background-color:pink; width:200px" type="submit" name="diff" value="Different - don't allow!"/>
 
@@ -58,6 +59,12 @@
 	<input style="background-color:lightgrey; color:green; width:200px" type="submit" name="similar" value="Close enough" onclick="autoDisable(this);" id="closebutton"/>
 
 	<ul>
+	{if $altimg}
+	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>
+	<li>Major tweaking as overlaid text etc is fine - even for "Identical""</li>
+	<li>Only very small cropping changes are allowed and must be marked "Close enough"</li>
+	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
+	{else}
 	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>
 	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
 	<li>Minor cropping changes is permissible, but must be marked "Close enough"</li>
@@ -65,6 +72,7 @@
 		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of the larger panorama - still marked "Close enough")</li>
 		</ul></li>
 	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
+	{/if}
 	</ul>
 	{/if}
 
@@ -113,7 +121,7 @@ function checkImageSizes() {
 
 
 {if $last_id}
-	<div class="interestBox"><a href="?review={$last_id|escape:'url'}" target="_blank">Reopen Last page</a> (opens in new window)</div>
+	<div class="interestBox"><a href="?{if $altimg}altimg=1&amp;{/if}review={$last_id|escape:'url'}" target="_blank">Reopen Last page</a> (opens in new window)</div>
 {/if}
 
 {/dynamic}

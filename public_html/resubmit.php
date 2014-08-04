@@ -78,10 +78,12 @@ if (isset($_REQUEST['id']))
 		{
 			if($uploadmanager->setUploadId($_POST['upload_id']))
 			{
-				$uploadmanager->setLargestSize($_POST['largestsize']);
+				$largestsize = intval($_POST['largestsize']);
+				$uploadmanager->setLargestSize($largestsize);
 				$uploadmanager->setClearExif($_POST['clearexif']);
+				$altimg = !empty($_POST['altimg']);
 				
-				$uploadmanager->addOriginal($image);
+				$uploadmanager->addOriginal($image, $altimg);
 			
 				$smarty->assign('step',4);
 			
@@ -100,7 +102,6 @@ if (isset($_REQUEST['id']))
 			
 		} elseif (isset($_POST['next'])) {
 			
-			
 			if (!filesize($_FILES['jpeg']['tmp_name'])) 
 			{
 				$smarty->assign('error', 'Sorry, no file was received - please try again');
@@ -117,7 +118,10 @@ if (isset($_REQUEST['id']))
 				$smarty->assign('preview_url', "/resubmit.php?preview=".$uploadmanager->upload_id);
 				$smarty->assign('preview_width', $uploadmanager->upload_width);
 				$smarty->assign('preview_height', $uploadmanager->upload_height);
-				
+
+				$altimg = !empty($_POST['altimg']);
+				$smarty->assign('altimg', $altimg);
+
 				$sizes = array();
 				$widths = array();
 				$heights = array();

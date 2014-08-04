@@ -34,6 +34,10 @@
 		<li><a href="/admin/resubmissions.php">High Resolution Uploads</a><br/>
 		<b>[{$originals_new} ready to be verified]</b></li>
 	{/if}
+	{if $altimgs_new}
+		<li><a href="/admin/resubmissions.php?altimg=1">Alternative Image Uploads</a><br/>
+		<b>[{$altimgs_new} ready to be verified]</b></li>
+	{/if}
 
 {if $articles_ready}
 <li><a href="/article/">Articles</a><br/>

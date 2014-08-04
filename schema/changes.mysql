@@ -786,3 +786,4 @@ CREATE TABLE IF NOT EXISTS `geotrips` ( # FIXME defaults,null,keys
 ALTER TABLE `geotrips` ADD INDEX (`contfrom`);
 ALTER TABLE `geotrips` CHANGE `updated` `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
+ALTER TABLE `gridimage_pending` CHANGE `type` `type` enum('picnik','original','altimg') default 'picnik';
