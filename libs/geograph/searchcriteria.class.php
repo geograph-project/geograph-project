@@ -224,6 +224,28 @@ class SearchCriteria
 					}
 				}
 			}
+
+			if ($this->limit8 > 100) {
+				//do we really need to support this?
+				header("HTTP/1.1 503 Service Unavailable");
+				$GLOBALS['smarty']->assign('searchq',stripslashes($_GET['q']));
+				$GLOBALS['smarty']->assign('temp',1);
+				$GLOBALS['smarty']->display('function_disabled.tpl');
+
+				ob_start();
+				print "\n\nHost: ".`hostname`."\n\n";
+				if (!empty($GLOBALS['USER']->registered)) {
+					print "User: {$GLOBALS['USER']->user_id} [{$GLOBALS['USER']->realname}]\n";
+				}
+				unset($this->db);
+				print_r($this);
+				print_r($_SERVER);
+				$con = ob_get_clean();
+				mail('geograph@barryhunter.co.uk','[Geograph Disabled] '.$this->searchdesc,$con);
+						
+				exit;
+			}
+
 			if ($this->limit8 && $this->limit8 <= 20 && $this->limit8 > -20) { //todo - increase this? sphinx could use hectads
 				//possible, but calculate it JIT
 				$this->sphinx['x'] = $x;
@@ -501,7 +523,7 @@ class SearchCriteria
 				#$prefixes = $square->getGridPrefixes($this->limit4);
 				#$this->sphinx['filters']['myriad'] = "(".implode(' | ',$prefixes).")";
 
-				$this->sphinx['filters']['scenti'] = array($this->limit4*10000000,(($this->limit4+1)*10000000)-1);
+				$this->sphinx['filters']['scenti'] = array($this->limit4*100000000,(($this->limit4+1)*100000000)-1);
 			}
 		} 
 		if (!empty($this->limit5)) {
@@ -675,12 +697,16 @@ class SearchCriteria
 
 			$db = $this->_getDB(true);
 
-			$row = $db->GetCol('select crc32(lower(imageclass)) from category_canonical_log where canonical = '.$db->Quote($this->limit11).' group by imageclass limit 4000');
+			if (strpos($this->limit11,'.') === 0) {
+				$row = $db->GetCol('select crc32(lower(imageclass)) from category_mapping where subject = '.$db->Quote(str_replace('.','',$this->limit11)));
+			} else {
+				$row = $db->GetCol('select crc32(lower(imageclass)) from category_canonical_log where canonical = '.$db->Quote($this->limit11).' group by imageclass limit 4000');
+			}
 
 			if (empty($row)) {
 				$row = array(0);
 			} elseif (count($row) == 2) { //setFilter things that a two element array is a range query
-				$row[] = 0;
+				$row[] = 11; //something unlikly
 			}
 
 			$this->sphinx['filters']['classcrc'] = $row;
@@ -713,18 +739,18 @@ class SearchCriteria
 		}
 
 		if (preg_match('/centi\(([A-Z]{1,2}\d{6,})\)/i',$q,$m)) {
-			#(gi.reference_index * 10000000 + IF(g2.natgrlen+0 <= 3,((g2.nateastings DIV 100) mod 100) * 100 + ((g2.natnorthings DIV 100) mod 100),0)) AS scenti \
-			
+			#(gi.reference_index * 100000000 + IF(g2.natgrlen+0 <= 3,(g2.nateastings DIV 100) * 10000 + (g2.natnorthings DIV 100),0)) AS scenti \
+
 			$square = new GridSquare;
-			
+
 			if ($square->setByFullGridRef($m[1]) && $square->natgrlen >= 6) {
-				
-				$centi = ($square->reference_index * 10000000)+ ((intval($square->nateastings/100)%100)*100) + (intval($square->natnorthings/100)%100);
-			
-				$this->sphinx['filters']['scenti'] = array($centi);
+
+				$scenti = ($square->reference_index * 100000000) + (intval($square->nateastings/100)*10000) + intval($square->natnorthings/100);
+
+				$this->sphinx['filters']['scenti'] = array($scenti);
 				$this->sphinx['no_legacy']++;
-				
-				//we inject the gridsuare back - because scenti repeats per myriad, so need to ensure its the right square too
+
+				//we inject the gridsuare back - because scenti repeats per hectad, so need to ensure its the right square too
 				$q = str_replace($m[0],$square->grid_reference,$q);
 			}
 		}
@@ -929,24 +955,28 @@ class SearchCriteria_Special extends SearchCriteria
 {
 	function getSQLParts() {
 		parent::getSQLParts();
-		
+
 		extract($this->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
-		
+
 		if ($sql_where) {
 			$sql_where .= ' and ';
 		}
 		$sql_where .= $this->searchq;
 		$this->sphinx['impossible']++; //todo, safest - but could do some?
-		
+
 		if (preg_match("/group by ([\w\,\(\)\/ ]+)/i",$sql_where,$matches)) {
 			$this->sphinx['impossible']++; //todo, safest - but could do some?
-		
+
 		} elseif (preg_match("/(left |inner |)join ([\w\,\(\) \.\'!=`]+) where/i",$sql_where,$matches)) {
 			$this->sphinx['impossible']++; //will never be possible?
 		}
-		
+
 		if (preg_match('/^(\w+)\+$/i',$this->breakby,$matches) && !in_array($matches[1],array('email','password','age_group')) ) { #todo untimately check what table it comes from
 			$sql_fields .= ", ".$matches[1];
+		}
+
+		if (strpos($this->searchq,"inner join gridimage_query using (gridimage_id) where query_id = ") === 0) {
+			$this->markedlist = true;
 		}
 	}
 }
@@ -955,7 +985,7 @@ class SearchCriteria_Text extends SearchCriteria
 {
 	function getSQLParts() {
 		parent::getSQLParts();
-		
+
 		$this->getSQLPartsFromText($this->searchq);
 	}
 }
