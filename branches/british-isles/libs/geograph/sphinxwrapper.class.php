@@ -376,7 +376,7 @@ class sphinxwrapper {
 				$cl->SetFilterFloatRange('@geodist', 0.0, floatval($data['d']*1000));
 				if ($data['d'] > 0 && $data['d'] < 1 && !$onekm) {
 					//exclude images without (at least) centisquare resolution.
-					$cl->setFilter('scenti',array(100000000,200000000),true); //todo we have hard-coded ri - should be primed from $CONF['references']
+					$cl->setFilter('scenti',array(1000000000,2000000000),true); //todo we have hard-coded ri - should be primed from $CONF['references']
 				}
 			} else {
 				$this->sort = preg_replace('/@geodist \w+,?\s*/','',$this->sort);

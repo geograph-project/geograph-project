@@ -523,7 +523,7 @@ class SearchCriteria
 				#$prefixes = $square->getGridPrefixes($this->limit4);
 				#$this->sphinx['filters']['myriad'] = "(".implode(' | ',$prefixes).")";
 
-				$this->sphinx['filters']['scenti'] = array($this->limit4*100000000,(($this->limit4+1)*100000000)-1);
+				$this->sphinx['filters']['scenti'] = array($this->limit4*1000000000,(($this->limit4+1)*1000000000)-1);
 			}
 		} 
 		if (!empty($this->limit5)) {
@@ -739,13 +739,13 @@ class SearchCriteria
 		}
 
 		if (preg_match('/centi\(([A-Z]{1,2}\d{6,})\)/i',$q,$m)) {
-			#(gi.reference_index * 100000000 + IF(g2.natgrlen+0 <= 3,(g2.nateastings DIV 100) * 10000 + (g2.natnorthings DIV 100),0)) AS scenti \
+			#(gi.reference_index * 1000000000 + IF(g2.natgrlen+0 <= 3,(g2.nateastings DIV 100) * 100000 + (g2.natnorthings DIV 100),0)) AS scenti \
 
 			$square = new GridSquare;
 
 			if ($square->setByFullGridRef($m[1]) && $square->natgrlen >= 6) {
 
-				$scenti = ($square->reference_index * 100000000) + (intval($square->nateastings/100)*10000) + intval($square->natnorthings/100);
+				$scenti = ($square->reference_index * 1000000000) + (intval($square->nateastings/100)*100000) + intval($square->natnorthings/100);
 
 				$this->sphinx['filters']['scenti'] = array($scenti);
 				$this->sphinx['no_legacy']++;
