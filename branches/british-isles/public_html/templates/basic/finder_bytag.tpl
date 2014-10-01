@@ -26,12 +26,23 @@
 {/literal}
 
 {if !$inner}
-	<h2><a href="/finder/">Finder</a> :: By Tag</h2>
+
+	{if $gridref}
+		{include file="_bar_location.tpl"}
+		<div class="interestBox">
+			<h2><a href="/finder/">Finder</a> :: By Tag</h2>
+		</div>
+	{else}
+		<h2><a href="/finder/">Finder</a> :: By Tag</h2>
+	{/if}
 
 	<form action="{$script_name}" method="get" onsubmit="focusBox()">
 		<p>
-			<label for="fq">Name</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+			<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 			<input type="submit" value="Search"/>
+			{if $user_id}
+				<input type="hidden" name="user_id" value="{$user_id}"/>
+			{/if}
 		</p>
 	</form>
 
@@ -46,6 +57,13 @@
 		<p>Tags on images matching your term, with one example image per tag; Click a tag to find other images with that tag.</p>
 	{/if}
 
+<div style="margin-top:0px;font-size:0.7em;margin-bottom:7px;text-align:right">
+{if $pagesString}
+	( Page {$pagesString})
+{/if}
+</div>
+
+
 	<table cellspacing="0" cellpadding="2" border="0">
 	{foreach from=$results item=image}
 		<tr>
@@ -54,8 +72,8 @@
 			</td>
 			<td valign="top">
 				<div class="interestBox" style="font-weight:bold">
-				<span class="tag">{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}:{/if}<a{if $image->count > 1} href="/search.php?searchtext={$q|escape:'url'}+tags:%22{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}+{/if}{$image->tag.tag|escape:'html'}%22"{/if} class="taglink">{$image->tag.tag|escape:'html'}</a></span> <small>x</small><b>{$image->count}</b></div>
-
+					<div style="float:right"><small>x</small><b>{$image->count}</b></div>
+				<span class="tag">{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}:{/if}<a{if $image->count > 1} href="/search.php?searchtext={$q|escape:'url'}+tags:%22{if $image->tag.prefix}{$image->tag.prefix|escape:'html'}+{/if}{$image->tag.tag|escape:'html'}%22{if $user_id}&amp;user_id={$user_id}{/if}&amp;do=1"{/if} class="taglink">{$image->tag.tag|escape:'html'}</a></span></div>
 
 				<div class="caption" style="margin-top:10px;">{if $mode != 'normal'}<a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {/if}<a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></div>
 				<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>

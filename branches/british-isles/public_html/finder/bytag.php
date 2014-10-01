@@ -35,25 +35,27 @@ if (!empty($_GET['q']) || !empty($_GET['user_id'])) {
 
 	$sphinx = new sphinxwrapper($q);
 
-	//gets a cleaned up verion of the query (suitable for filename etc) 
+	//gets a cleaned up verion of the query (suitable for filename etc)
 	$cacheid = $sphinx->q;
 
 	$sphinx->pageSize = $pgsize = 15;
 
-	
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	if (empty($pg) || $pg < 1) {$pg = 1;}
-	
+
 	$cacheid .=".".$pg;
         if (!empty($_GET['user_id']))
 		$cacheid .=".".intval($_GET['user_id']);
-	
+
 	if (!$smarty->is_cached($template, $cacheid)) {
-	
+
 		$sphinx->processQuery();
-		
-		
-		$sphinx->sort = "@weight DESC, @id ASC"; //this is the WITHIN GROUP ordering 
+
+                if (preg_match('/@grid_reference \(/',$sphinx->q) && preg_match('/^\w{1,2}\d{4}$/',$sphinx->qclean)) {
+                        $smarty->assign('gridref',$sphinx->qclean);
+                }
+
+		$sphinx->sort = "@weight DESC, @id ASC"; //this is the WITHIN GROUP ordering
 
 		$client = $sphinx->_getClient();
 		$client->SetArrayResult(true);
@@ -65,7 +67,7 @@ if (!empty($_GET['q']) || !empty($_GET['user_id'])) {
 
 		$sphinx->SetGroupBy('all_tag_id', SPH_GROUPBY_ATTR, '@count DESC');
 		$res = $sphinx->groupByQuery($pg,'tagsoup');
-		
+
 		#$sphinx->returnIds($pg,'tagsoup');
 		#$res = $sphinx->res;
 
@@ -78,7 +80,6 @@ if (!empty($_GET['q']) || !empty($_GET['user_id'])) {
 				$tagids[] = $row['attrs']['@groupby'];
 			}
 		}
-		 
 
 		if (!empty($imageids)) {
 			$where = "tag_id IN(".join(",",$tagids).")";
