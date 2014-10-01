@@ -206,6 +206,12 @@
 </div>
 
 {if $showresult}
+	{if $totalimagecount && !$square->has_recent && $user->registered}
+		<div class="interestBox" style="text-align:center;margin-bottom:20px">
+			This square doesn't have any recent images, taken in the last 5 years. Can you <a href="{if $user->submission_method == 'submit2'}/submit2.php#gridref={$gridrefraw}{else}/submit.php?gridreference={$gridrefraw}{/if}">add some</a>? You can get a TPoint!
+		</div>
+	{/if}
+
 	{* We have a valid GridRef *}
 
 	{if $mode eq 'takenfrom'}
@@ -293,16 +299,49 @@
 	{/if}
 	</div>
 	{if $sample && $groupbys}
-		<form method="get" action="/search.php" style="text-align:center">
-			View a sample of images by:
-			<select name="groupby" id="groupby" size="1">
-				{html_options options=$groupbys selected='scenti'}
-			</select>
-			<input type="submit" value="Go"/>
-			<input type="hidden" name="location" value="{$gridref}"/>
-			<input type="hidden" name="distance" value="1"/>
-			<input type="hidden" name="do" value="1"/>
-		</form>
+		<div align=center>
+			<form action="/finder/groups.php" method="get" style="display:inline">
+				<input type="hidden" name="q" value="^{$gridref}"/>
+				View images grouped by:
+				<select name="group" id="fgroup">
+					<option value=":1"></option>
+					<option value="context_ids">Geographical Contexts</option>
+					<option value="tag_ids">Tags</option>
+					<option value="snippet_ids">Shared Descriptions</option>
+					<option value="group_ids">Automatic Clusters</option>
+					<option value="subject_ids">Subject</option>
+					<option value=":3"></option>
+					<option value="user_id">Contributor</option>
+					<option value=":4"></option>
+					<option value="decade">Decade Taken</option>
+					<option value="takenyear">Year Taken</option>
+					<option value="takenmonth">Month Taken</option>
+					<option value="takenday">Day Taken</option>
+					<option value=":5"></option>
+					<option value="segment" selected="selected">When Submitted</option>
+					<option value=":6"></option>
+					<option value="direction">View Direction</option>
+					<option value="distance">Subject Distance</option>
+					<option value=":7"></option>
+					<option value="format">Image Format</option>
+					<option value="status">Moderation Status</option>
+
+				</select><input type="submit" value="Go"/>
+			</form>
+
+			or
+			<form method="get" action="/search.php" style="display:inline">
+				View a sample by:
+				<select name="groupby" id="groupby" size="1">
+					{html_options options=$groupbys selected='scenti'}
+				</select>
+				<input type="submit" value="Go"/>
+				<input type="hidden" name="location" value="{$gridref}"/>
+				<input type="hidden" name="distance" value="1"/>
+				<input type="hidden" name="do" value="1"/>
+			</form>
+
+		</div>
 	{/if}
 	{if $breakdown}
 		{* We want to display a breakdown list *}
@@ -450,12 +489,13 @@
 
 			<ul>
 				<li style="margin-bottom:10px;"><a href="/browser/#!/grid_reference+%22{$gridref}%22">View and explore other breakdowns in the Browser</a></li>
+				<li style="margin-bottom:3px;"><small>by </small><a href="/finder/groups.php?q=%5E{$gridref}&amp;group=context_ids"><b>Geographical Context</b></a></li>
 
 			{foreach from=$breakdowns item=b}
-				<li style="padding:2px"><small>by </small><a href="/gridref/{$gridref}?by={$b.type}{$extra}"><b>{$b.name}</b></a> <small>[{$b.count}]</small></li>
+				<li style="margin-bottom:2px"><small>by </small><a href="/gridref/{$gridref}?by={$b.type}{$extra}"><b>{$b.name}</b></a>{if $b.count != 'unknown'} <small>[{$b.count}]</small>{/if}</li>
 			{/foreach}
 
-				<li style="margin-top:10px;">Tags: <a href="/finder/bytag.php?q=grid_reference:{$gridref}">By Tag Search</a> (<a href="/finder/bytag.php?q={$gridref}">inc surrounding squares</a>) shows breakdown</li>
+				<li style="margin-top:8px;"><small>by </small><a href="/finder/bytag.php?q=grid_reference:{$gridref}"><b>Tags</b></a><small> (<a href="/finder/bytag.php?q={$gridref}">inc surrounding squares</a>)</small></li>
 
 				<li style="margin-top:10px;">or <b>Clustering Options</b>:<br/>
 				&nbsp; &middot; <a href="/search.php?gridref={$gridref}&amp;cluster2=1&amp;orderby=label">Automatic</a>,
@@ -563,7 +603,7 @@
 				<div class="interestBox">| <a href="/search.php?searchtext={$gridref}+-gridref:{$gridref}&amp;displayclass=map&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1&amp;resultsperpage=50">View these photos on a map</a> | <a href="/search.php?searchtext={$gridref}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Find all images about this square</a> |</div>
 			{/if}
 			{if $sample}
-				<div class="interestBox"> Explore more images in this square: | <a href="{linktoself name="by" value="1"}">View <b>Filtering options</b></a> | <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View <b>all {$imagecount} images</b> page by page &gt;&gt;&gt;</a> |</div><br/>
+				<div class="interestBox"> Explore more images in this square: | <a href="{linktoself name="by" value="1"}">View <b>Filtering options</b></a> | <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">View <b>{if $imagecount > 1000}upto 1000 {else}all {$imagecount}{/if} images</b> page by page &gt;&gt;&gt;</a> |</div><br/>
 			{/if}
 
 
