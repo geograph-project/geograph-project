@@ -185,7 +185,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$pg = intval($m[2]);
 			$sphinx->q = preg_replace('/\bp(age|)\d+\s*$/','',$sphinx->q);
 		}
-		
+
 		if (!empty($_GET['in']) && $_GET['in'] == 'title') {
 			if (!preg_match('/^\w+:/',$sphinx->q)) {
 				$sphinx->q = "@title ".$sphinx->q;
@@ -196,44 +196,66 @@ if (!$smarty->is_cached($template, $cacheid)) {
                                 $sphinx->q = "@!(title) ".$sphinx->q;
                         }
                 }
-		
+
 		$smarty->assign_by_ref('q', $sphinx->qclean);
 		$extra['q'] = $sphinx->qclean;
 		$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
-		
-		$sphinx->processQuery();
-		
-		$sphinx->qoutput = $sphinx->q;
-		if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
-			$sphinx->q .= " @source -themed";
-		}
 
-		if (!empty($filters)) {
-			foreach ($filters as $key => $value) {
-				if (!empty($filters[$key])) {
-					$filters[$key] = "(".implode('|',$filters[$key]).")";
-				}
+		$sphinx->processQuery();
+		$sphinx->qoutput = $sphinx->q;
+
+
+		if (preg_match('/@grid_reference \(/',$sphinx->q) && preg_match('/^\w{1,2}\d{4}$/',$sphinx->qclean)) {
+
+			$sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
+
+				//paging is still done in mysql, because we CANT filter by type :(
+			$rows = $sph->getAll($sql = "SELECT GROUPBY() AS cid, COUNT(*) cnt FROM sample8 WHERE MATCH(".$sph->Quote($sphinx->q).") GROUP BY content_ids ORDER BY cnt DESC LIMIT 200");
+
+			if (!empty($_GET['debug'])) {
+				print "<pre>$sql</pre>";
 			}
 
-                if (!empty($_REQUEST['max']) || !empty($_REQUEST['min'])) {
-                        if (empty($_REQUEST['max'])) {
-                                $_REQUEST['max'] = 10000000;
-                        }
-                        $filters['aimages'] = array(intval($_REQUEST['min']),intval($_REQUEST['max']));
-                }
+			$ids = array();
+			if (!empty($rows)) {
+				foreach ($rows as $row)
+					$ids[] = $row['cid'];
+			}
+			$title = "Collections used near ".htmlentities($sphinx->qclean);
+			$smarty->assign('gridref',$sphinx->qclean);
+		} else {
 
-			$sphinx->addFilters($filters);
+			if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
+				$sphinx->q .= " @source -themed";
+			}
+
+			if (!empty($filters)) {
+				foreach ($filters as $key => $value) {
+					if (!empty($filters[$key])) {
+						$filters[$key] = "(".implode('|',$filters[$key]).")";
+					}
+				}
+
+        		        if (!empty($_REQUEST['max']) || !empty($_REQUEST['min'])) {
+                        		if (empty($_REQUEST['max'])) {
+		                                $_REQUEST['max'] = 10000000;
+                		        }
+		                        $filters['aimages'] = array(intval($_REQUEST['min']),intval($_REQUEST['max']));
+               			}
+
+				$sphinx->addFilters($filters);
+			}
+
+			$cl = $sphinx->_getClient();
+			$cl->SetFieldWeights(array('title'=>100));
+			if (!empty($sphinx_sort))
+				$sphinx->sort = $sphinx_sort;
+
+			$ids = $sphinx->returnIds($pg,'content_stemmed');
 		}
 
-		$cl = $sphinx->_getClient();
-		$cl->SetFieldWeights(array('title'=>100));
-		if (!empty($sphinx_sort))
-			$sphinx->sort = $sphinx_sort;
-
-		$ids = $sphinx->returnIds($pg,'content_stemmed');
-		
 		$smarty->assign("query_info",str_replace($sphinx->q,$sphinx->qclean,$sphinx->query_info));
-		
+
 		if (count($ids)) {
 			$where[] = "content_id IN(".join(",",$ids).")";
 			if ($order == 'relevance') {
@@ -244,9 +266,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 		$resultCount = $sphinx->resultCount;
 		$numberOfPages = $sphinx->numberOfPages;
-		
+
 		$orders['relevance'] = 'Relevance';
-		
+
 		// --------------
 	} elseif (isset($_GET['docs'])) {
 		$where[] = "content.`type` = 'document'";
@@ -262,16 +284,16 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	} else {
 		$where[] = "content.`type` = 'info'";
 	}
-	
+
 	if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
 		$where[] = "content.`source` != 'themed'";
 	}
-	
+
 	$where = implode(' AND ',$where);
-	
+
 	if (!isset($resultCount))
 		$resultCount = $db->getOne("SELECT COUNT(*) FROM content WHERE $where");
-	
+
 	if (!isset($numberOfPages))
 		$numberOfPages = ceil($resultCount/$pageSize);
 
@@ -280,16 +302,16 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$smarty->assign('pagesString', pagesString($pg,$numberOfPages,$_SERVER['PHP_SELF']."?$extra2&amp;page=") );
 		$smarty->assign("offset",(($pg -1)* $pageSize)+1);
 	}
-	
-	if ($pg > 1 && !isset($ids)) {
+
+	if ($pg > 1 && (!isset($ids) || isset($sph)) ) {
 		$page = ($pg -1)* $pageSize;
 		$limit = "$page,$pageSize";
 	} else {
 		$limit = $pageSize;
 	}
-	
+
 	$datecolumn = ($order == 'created')?'created':'updated';
-	
+
 	$prev_fetch_mode = $ADODB_FETCH_MODE;
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll($sql = "
@@ -307,10 +329,11 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	having (posts_with_images >= posts_count/2) OR (content.source = 'gallery' AND posts_with_images>1)
 	order by content.`type` = 'info' desc, $sql_order 
 	limit $limit");
-	
-if (!empty($_GET['debug'])) {
-	print "<pre>$sql</pre>";
-}
+
+	if (!empty($_GET['debug'])) {
+		print "<pre>$sql</pre>";
+	}
+
 	foreach ($list as $i => $row) {
 		if ($row['gridimage_id']) {
 			$list[$i]['image'] = new GridImage;

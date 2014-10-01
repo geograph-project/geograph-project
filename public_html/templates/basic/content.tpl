@@ -8,9 +8,17 @@
 {assign var="rss_url" value="/content/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 
-<div style="float:right"><a href="./themes.php?v=1">Common Words</a> {external href="http://maps.google.co.uk/maps?q=http:%2F%2Fwww.geograph.org.uk%2Fcontent%2Ffeed%2Frecent.kml&amp;t=p" text="Map"} <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
+<div style="float:right"><a href="./recent.php">Recent</a> <a href="./themes.php?v=1">Common Words</a> {external href="http://maps.google.co.uk/maps?q=http:%2F%2Fwww.geograph.org.uk%2Fcontent%2Ffeed%2Frecent.kml&amp;t=p" text="Map"} <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
 
-<h2>Photo Collections</h2>
+
+        {if $gridref}
+                {include file="_bar_location.tpl"}
+                <div class="interestBox">
+			<h2>Photo Collections</h2>
+                </div>
+        {else}
+		<h2>Photo Collections</h2>
+        {/if}
 
 {dynamic}
 {if $pending}
@@ -32,7 +40,7 @@
 		<b>{$title|escape:"html"}</b>
 	</div>
 
-	<div class="interestBox" style="width:200px;font-size:0.8em;float:right">
+	<div class="interestBox" style="width:200px;font-size:0.8em;float:right;border:1px solid black">
 		Keyword Search:  <input type="submit" value="Find"/> <br/>
 		<input type="text" name="q" id="qs" size="20" {if $q} value="{$q|escape:'html'}"{/if}/><br/>
 		<input type=checkbox name=in value="title" id="in_title" {if $in_title}checked{/if}/><label for="in_title">Search in title only</label>
@@ -46,8 +54,8 @@
 		<input type=checkbox name=scope[] value="blog" onclick="clicked()" {if $scope_blog}checked{/if}/><a href="/blog/" style="background-color:#{$colours.blog}">Blog Entries</a><br/>
 		<input type=checkbox name=scope[] value="help" onclick="clicked()" {if $scope_help}checked{/if}/><a href="/content/documentation.php" style="background-color:#{$colours.help}">Help Documents</a><br/>
 		<input type=checkbox name=scope[] value="snippet" onclick="clicked()" {if $scope_snippet}checked{/if}/><a href="/snippets.php" style="background-color:#{$colours.snippet}">Shared Descriptions</a><br/>
-		<input type=checkbox name=scope[] value="trip" onclick="clicked()" {if $scope_trip}checked{/if}/><span style="background-color:#{$colours.trip}">{external href="http://users.aber.ac.uk/ruw/misc/geotrip.php?osos" text="Geo-Trips" title="Trip reports based on Geograph pictures and a GPS track log"}</span> <small style="color:red">Experimental</small><br/>
-		<input type=checkbox name=scope[] value="portal" onclick="clicked()" {if $scope_portal}checked{/if}/><span style="background-color:#{$colours.portal}">{external href="http://www.geographs.org/portals/" text="Portals"}</span> <small style="color:red">Experimental</small><br/>
+		<input type=checkbox name=scope[] value="trip" onclick="clicked()" {if $scope_trip}checked{/if}/><a href="http://www.geograph.org.uk/geotrips/" title="Trip reports based on Geograph pictures and a GPS track log" style="background-color:#{$colours.trip}">Geo-Trips</a><br/>
+		<!--input type=checkbox name=scope[] value="portal" onclick="clicked()" {if $scope_portal}checked{/if}/><span style="background-color:#{$colours.portal}">{external href="http://www.geographs.org/portals/" text="Portals"}</span> <small style="color:red">Experimental</small><br/-->
 		<input type=checkbox name=scope[] value="user" onclick="clicked()" {if $scope_user}checked{/if}/><a href="/finder/contributors.php" style="background-color:#{$colours.user}">User Profiles</a><br/>
 		<input type=checkbox name=scope[] value="category" onclick="clicked()" {if $scope_category}checked{/if}/><a href="/stuff/canonical.php?final=1" style="background-color:#{$colours.category}">Categories</a><br/>
 		<input type=checkbox name=scope[] value="context" onclick="clicked()" {if $scope_context}checked{/if}/><a href="/tags/primary.php" style="background-color:#{$colours.context}">Geographical Context</a><br/>
@@ -64,6 +72,7 @@
 		</select></p>
 
 		<hr/>
+		<p>We also have <a href="/tags/">Tags</a> but they not included on this page.</p>
 
 		<p><small><b>Interested in contributing to Collections?</b> See <a href="/article/Content-on-Geograph">this Article</a> for where to do it</small></p>
 	</div>
@@ -72,6 +81,15 @@
 	{/foreach}
 </form>
 
+<style>{literal}
+ul.content {
+	font-family:"Comic Sans MS", Georgia, Verdana, Arial, serif;
+}
+ul.content b {
+	font-family:Georgia, Verdana, Arial, serif;
+}
+
+{/literal}</style>
 
 
 <ul class="content" style="border:0">
@@ -80,12 +98,21 @@
 	<li style="border:0; background-color:{cycle values="#e9e9e9,#f0f0f0"}">
 	<div style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
 		{if $item.image}
-		<a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
+		<a title="{$item.image->title|escape:'html'} by {$item.image->realname|escape:'html'} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
 		{/if}
 	</div>
-	<b><a href="{$item.url}">{$item.title}</a></b><br/>
+	{if $item.images > 2 && ($item.source == 'themed' || $item.source == 'gallery' || $item.source == 'snippet' || $item.source == 'article')}
+		<div style="position:relative;float:right;margin-right:10px">
+			<a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="http://s1.geograph.org.uk/templates/basic/img/cameraicon.gif" border="0"/></a>
+		</div>
+	{elseif $item.source == 'user' && $item.images > 2}
+		<div style="position:relative;float:right;margin-right:10px">
+			<a href="/browser/#/realname+%22{$item.title|escape:'url'}%22" title="View Images"><img src="http://s1.geograph.org.uk/templates/basic/img/cameraicon.gif" border="0"/></a>
+		</div>
+	{/if}
+	<b><a href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>
 	{assign var="source" value=$item.source}
-	<small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname}" style="color:#6699CC">{$item.realname}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
+	<small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
 	{if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</small></small>
 	{if $item.extract}
 		<div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
@@ -100,8 +127,9 @@
 		<li style="padding:20px">You have searched in Collections,<br/> you might like to try searching the <a href="/search.php?searchtext={$q|escape:'url'}&amp;do=1"><b>image database</b></a>:<br/><br/>
 
 		<form action="/search.php" class="interestBox" style="width:420px">
+			<input type="hidden" name="form" value="content"/>
 			<input type=hidden name=do value="1"/>
-			Keyword Search <input type=text name="searchtext" value="{$q|escape:'url'}"/>
+			Keyword Search <input type=text name="searchtext" value="{$q|escape:'html'}"/>
 			<input type=submit value="Search"/>
 		</form></li>
 	{/if}
