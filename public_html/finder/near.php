@@ -68,7 +68,7 @@ if (!empty($_GET['q'])) {
 	$smarty->assign("page_title",'Photos near '.$_GET['q']);
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
 
-	if ($memcache->valid && $mkey = md5(trim($_GET['q']))) {
+	if ($memcache->valid && $mkey = md5(trim($_GET['q']).$src)) {
 		$str =& $memcache->name_get('near',$mkey);
 		if (!empty($str)) {
 			print $str;
@@ -155,10 +155,14 @@ if (!empty($_GET['q'])) {
 		More:
 		<a href="/of/<? echo urlencode2($_GET['q']); ?>?redir=false">Keyword Search</a> &middot;
 		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=decade">Over Time</a> &middot;
-		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=segment">Recent</a> &middot;
-		<a href="/browser/#!/loc=<? echo $gru; ?>/dist=10000/display=map_dots/pagesize=50">Map</a> &middot;
+                <a href="/gridref/<? echo $gru; ?>">Browse Page</a> &middot;
+		<? if (!empty($square->reference_index) && $square->reference_index == 1) { ?>
+		        <a href="/search.php?do=1&gridref=<? echo $gru; ?>&amp;displayclass=map">OS Map</a> &middot;
+		        <a href="/finder/dblock.php?gridref=<? echo $gru; ?>">D-block</a> &middot;
+		<? } else { ?>
+			<a href="/browser/#!/loc=<? echo $gru; ?>/dist=10000/display=map_dots/pagesize=50"><b>Map</b></a> &middot;
+		<? } ?>
 		<a href="/browser/#!/loc=<? echo $gru; ?>/pagesize=50">Browser</a> &middot;
-		<a href="/finder/multi2.php?q=<? echo $qu; ?>">Others</a>
 	</div>
 	<? } ?>
 	Images near: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br/>
@@ -225,13 +229,12 @@ print "<!-- ($lat,$lng) -->";
                 $prev_fetch_mode = $ADODB_FETCH_MODE;
                 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-                $CONF['sphinxql_dsn'] = 'mysql://192.168.77.35:9306/';
-
                 $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
 
 
 		$where = array();
-                //$where[] = "match(".$sph->Quote($_GET['q']).")";
+                if (!empty($sphinxq))
+			$where[] = "match(".$sph->Quote($sphinxq).")";
 		$lat = deg2rad($lat);
 		$lng = deg2rad($lng);
 		$columns = ", GEODIST($lat, $lng, wgs84_lat, wgs84_long) as distance";
@@ -293,6 +296,11 @@ if (!empty($_GET['d']))
 
         print "<br style=clear:both>";
 
+if (!empty($_GET['d'])) {
+	print "<p><a href=\"/search.php?displayclass=map&marked=1&markedImages=".implode(',',array_keys($final))."\">View on Map</a></p>";
+}
+
+
 #########################################
 # display normal thumbnail results!
 
@@ -303,17 +311,28 @@ if (!empty($_GET['d']))
 		print "<div id=thumbs>";
 
 	        if (!empty($data['total_found']) && $data['total_found'] > 10)
-			print '<div style="float:left;position:relative; width:120px; height:120px;padding:1px;float:right">About '.number_format($data['total_found'])." photos within 10km.</div>";
+			print '<div style="position:relative;float:right">About '.number_format($data['total_found'])." photos within 10km.</div>";
 
+		$last = 0;
                 foreach ($final as $idx => $row) {
 			$row['gridimage_id'] = $row['id'];
                         $image = new GridImage();
                         $image->fastInit($row);
-
+			if ($image->distance < 800 && $square->precision < 1000) {
+				if ($image->distance < 100) {
+					$d2 = 0.1;
+				} else
+					$d2 = sprintf("%0.1f",(intval($image->distance/300)/3)+0.3);
+			} else
+				$d2 = intval($image->distance/1000)+1;
+			if ($last != $d2) {
+				print "<div style=\"clear:left;font-size:0.8em;padding:2px;background-color:#eee\">Within <b>$d2</b> km</div>";
+				$last = $d2;
+			}
 ?>
           <div style="float:left;position:relative; width:120px; height:120px;padding:1px;">
           <div align="center">
-          <a title="<? echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
+          <a title="<? printf("%.1f km, ",$image->distance/1000); echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
           </div>
 <?
 
@@ -321,16 +340,22 @@ if (!empty($_GET['d']))
 
 		print "<br style=clear:both></div>";
 		if ($src == 'data-src')
-			print '<script src="/js/lazy.v2.js" type="text/javascript"></script>';
-		if (!empty($USER->registered))
-			print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
+			print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazy.v2.js" type="text/javascript"></script>';
+		print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
 
 
 #########################################
 # handler for no results
 
 	} else {
-		print "<p>No Results found. Try a <a href=\"/of/$qu\">keyword search for <b>$qh</b></a>.</p>";
+		if (empty($sph)) {
+	                $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
+		}
+		print "<p>No Results found. Try a <a href=\"/of/$qu\">keyword search for <b>$qh</b></a> ";
+		$sph->query("SELECT id FROM sample8 WHERE MATCH(".$sph->quote($_GET['q']).") LIMIT 0");
+		$data = $sph->getAssoc("SHOW META");
+		if (!empty($data['total_found']))
+			print " (finds about <b>{$data['total_found']}</b> images)";
 	}
 }
 
@@ -352,6 +377,19 @@ if (!empty($final)) {
 <?
 }
 
+if (false) {
+?>
+    <script type="text/javascript">
+        var _mfq = _mfq || [];
+        (function () {
+        var mf = document.createElement("script"); mf.type = "text/javascript"; mf.async = true;
+        mf.src = "//cdn.mouseflow.com/projects/57522984-763c-43cc-98c8-33ff8d5634c4.js";
+        document.getElementsByTagName("head")[0].appendChild(mf);
+      })();
+    </script>
+<?
+}
+
 #########################################
 
 if ($memcache->valid && $mkey) {
@@ -365,11 +403,43 @@ if ($memcache->valid && $mkey) {
 
 if (!empty($USER->registered)) {
 	print "<p>If you prefer the traditional search, you can <a href=\"/choose-search.php\">choose your default search engine to use</a>.</p>";
-	if ($CONF['forums']) {
+	if (false && $CONF['forums']) {
 		print "<p>Having trouble with this page? No matter how small, <a href=\"/discuss/index.php?&action=vthread&forum=12&topic=26439\">please let us know</a>, thank you!</p>";
 	}
-} else {
+} elseif (false) {
 	print "<p>Have feedback on this search? <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>please let us know</a>!</p>";
+}
+
+#########################################
+
+
+if ($src == 'data-src') { //because we need jQuery!
+
+	print "<p id=votediv>Have these results helped you today? Rate these results: ";
+
+	$id = 1;
+	$qstr = "'".urlencode($_GET['q'])."'";
+	$names = array('','Hmm','Below average','So So','Good','Excellent');
+	foreach (range(1,5) as $i) {
+		print "<a href=\"javascript:void(vote_log('near',$qstr,$i));\" title=\"{$names[$i]}\"><img src=\"http://{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
+	}
+
+	print " (1 no much, 5 very much, <a href=\"/help/voting\">more</a>)</p>";
+?>
+<script>
+function vote_log(action,param,value) {
+   $.ajax({
+      url: '/stuff/record_usage.php',
+      data: {action: action,param: param,value: value},
+      xhrFields: { withCredentials: true }
+   });
+        document.getElementById("votediv").innerHTML = "Thank you!";
+	setTimeout(function() {
+		document.getElementById("votediv").style.display='none';
+	},3000);
+}
+</script>
+<?
 }
 
 #########################################
