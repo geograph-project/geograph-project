@@ -34,7 +34,7 @@ import hmac
 
 import ConfigParser
 configparser = ConfigParser.ConfigParser()
-configparser.read("geograph_backup.ini")
+configparser.read(os.path.dirname(os.path.realpath(__file__))+"/geograph_backup.ini")
 
 config = dict()
 for option in configparser.options('client'):
