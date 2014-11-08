@@ -54,7 +54,7 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 		<li>(either Geo Extensions to the EXIF specification, or the file named with the grid reference)</li>
 	</ul></li>
 	
-	<li>Pre-process the image with <b>{external href="http://www.picnik.com/" text="Picnik"} online image manipulation</b> service, transferring the image automatically to continue the above process.</li>
+	<li>Pre-process the image with <b>{external href="http://www.picmonkey.com/" text="PicMonkey"} online image manipulation</b> service, transferring the image automatically to continue the above process.</li>
 	
  	<li>Bulk upload photos using an on <b>offline Java application</b>, locate and describe your images offline, and then upload when ready to connect to the internet (this does not include the draggable icons on map).</li>
  	

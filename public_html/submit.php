@@ -54,6 +54,8 @@ if (!empty($CONF['submission_message'])) {
         $smarty->assign("status_message",$CONF['submission_message']);
 }
 
+$smarty->assign('extra_meta','<link rel="dns-prefetch" href="http://osopenspacepro.ordnancesurvey.co.uk/">');
+
 if (isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTTP_X_PSS_LOOP'] == 'pagespeed_proxy') {
 	$smarty->assign("status_message",'<div class="interestBox" style="background-color:yellow;border:6px solid red;padding:20px;margin:20px;font-size:1.1em;">geograph.org.uk is currently in reduced functionality mode - to deal with traffic levels. <b>The maximum filesize that can be uploaded is now 5Mb.</b> To upload a larger image, please use <a href="http://www.geograph.ie/submit2.php">www.geograph.ie</a> or <a href="http://schools.geograph.org.uk/submit2.php" onclick="location.host = \'schools.geograph.org.uk\'; return false">schools.geograph.org.uk</a> <small>(they upload to the same database)</small></div>');
 	$smarty->assign("small_upload",1);
@@ -203,13 +205,6 @@ if (isset($_POST['gridsquare']))
 		$square->rememberInSession();
 
 		if (isset($_POST['picnik'])) {
-			if ($_POST['picnik'] == 'return') {
-				unset($_POST['picnik']);
-				$smarty->assign('_post',$_POST);
-				$smarty->display('submit_picnik.tpl');
-				exit;
-			}
-
 			$q = array();
 			$q['_apikey'] = $CONF['picnik_api_key'];
 			$q['_page'] = '/in/upload';
@@ -228,14 +223,8 @@ if (isset($_POST['gridsquare']))
 			}
 			if (isset($_POST['view_direction']) && strlen($_POST['view_direction'])) {
 				$q['view_direction'] = $_POST['view_direction'];
-			} 
-			if ($CONF['picnik_method'] == 'inabox' && !preg_match('/safari|msie 6/i',$_SERVER['HTTP_USER_AGENT'])) { 
-				$q['picnik'] = 'return';
-				$smarty->assign('picnik_url','http://www.picmonkey.com/service?'.http_build_query($q));
-				$smarty->display('submit_picnik.tpl');
-			} else {
-				header('Location: http://www.picmonkey.com/service?'.http_build_query($q));
 			}
+			header('Location: http://www.picmonkey.com/service?'.http_build_query($q));
 			exit;
 		}
 

@@ -82,7 +82,7 @@
   <td></td>
  </tr>
  <tr>
-  <td>Upload via Picnik</td>
+  <td>Upload via PicMonkey</td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td></td>
   <td></td>
