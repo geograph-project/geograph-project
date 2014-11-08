@@ -66,7 +66,7 @@
     <h3>Mapping &amp; Location Data</h3>
     <ul>
     <li>Historical Maps from the mid 20<sup>th</sup> century kindly made available by 
-    {external href="http://www.visionofbritain.org.uk/" title="a Vision of Britain" text="VisionOfBritain.org.uk"}.</li>
+    {external href="http://maps.nls.uk/" title="National Library of Scotland Maps" text="National Library of Scotland"}.</li>
     <li>GB &amp; Ireland outline reproduced from 1990 World Vector Shoreline dataset by 
     {external href="http://www.nima.mil/" title="U.S. National Imagery and Mapping Agency" text="MIMA"}, 
     not subject to copyright protection under 17 U.S.C. 403.</li> 
@@ -110,7 +110,7 @@
     
     <ul>
      <li>Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}</li>
-     <li>Online image manipulation by {external href="http://picnik.com/" text="picnik.com"}</li>
+     <li>Online image manipulation by {external href="http://picmonkey.com/" text="picmonkey.com"}</li>
      <li>Interactive 3D image viewer by {external href="http://cooliris.com/" text="cooliris.com"}</li>
      <li>{external href="http://www.easyalgo.com/eaflashupload.aspx" title="Upload multiple files with" text="EAFlashUpload flash file uploader"}</li>
     </ul>
