@@ -474,7 +474,8 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 
 
 function updateViewDirection() {
-	document.getElementById("dist_message").innerHTML = '';
+	if (document.getElementById("dist_message"))
+		document.getElementById("dist_message").innerHTML = '';
 	if (eastings1 > 0 && eastings2 > 0) {
 		
 		distance = Math.sqrt( Math.pow(eastings1 - eastings2,2) + Math.pow(northings1 - northings2,2) );
@@ -501,15 +502,17 @@ function updateViewDirection() {
 				document.images['subicon'].src = "http://"+static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png";
 			else 
 				document.images['subicon'].src = "http://"+static_host+"/img/icons/circle.png";
-				
-			if (distance < 100) {
-				distance = Math.round(distance);
-			} else if (distance < 1000) {
-				distance = Math.round(distance/5)*5;
-			} else{
-				distance = Math.round(distance/50)*50;
+	
+			if (document.getElementById("dist_message")) {			
+				if (distance < 100) {
+					distance = Math.round(distance);
+				} else if (distance < 1000) {
+					distance = Math.round(distance/5)*5;
+				} else{
+					distance = Math.round(distance/50)*50;
+				}
+				document.getElementById("dist_message").innerHTML = "range about "+distance+" metres";
 			}
-			document.getElementById("dist_message").innerHTML = "range about "+distance+" metres";
 			
 			if (typeof parentUpdateVariables != 'undefined') {
 				parentUpdateVariables();
