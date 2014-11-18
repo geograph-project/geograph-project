@@ -58,7 +58,7 @@ function onCheckCompleted()
 		
 		divresponce.innerHTML=bits[0]+"<br/><br/>";
 		if (bits[1]) {
-			thatForm = document.forms[0]; //for some strange reason theForm doesnt work here...
+			thatForm = document.forms['theForm']; //for some strange reason theForm doesnt work here...
 			if (bits[1] == '-1') {
 				oldscore = parseInt(thatForm.points.value,10)
 				score = oldscore - 1;
