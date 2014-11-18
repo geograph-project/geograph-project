@@ -270,7 +270,8 @@ function overlayMouseMove(e) {
 	}
 	if (currentelement != null) {
 		if (!updateViewDirection()) {
-			parentUpdateVariables();
+			if (typeof parentUpdateVariables != 'undefined')
+				parentUpdateVariables();
 		}
 	} else if (typeof parentUpdateVariables != 'undefined') {
 		parentUpdateVariables();
