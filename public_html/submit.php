@@ -753,15 +753,8 @@ else
 	if ($step == 1) {
 	
 		if (isset($USER->submission_method) && $USER->submission_method == 'submit2' && !isset($_GET['redir'])) {
-		
+
 			$url = "/submit2.php";
-			if (isset($USER->submission_new)) {
-			        $_SESSION['submit_new'] = intval($USER->submission_new);
-			}
-			if (isset($_SESSION['submit_new'])) {
-				$url .= "?new=".intval($_SESSION['submit_new']);
-			}
-			
 			if (!empty($grid_reference)) {
 				$url .= "#gridref=$grid_reference";
 			}
@@ -770,15 +763,8 @@ else
 			exit;
 
 		} elseif (isset($USER->submission_method) && $USER->submission_method == 'submit2tabs' && !isset($_GET['redir'])) {
-		
+
 			$url = "/submit2.php?display=tabs";
-			if (isset($USER->submission_new)) {
-			        $_SESSION['submit_new'] = intval($USER->submission_new);
-			}
-			if (isset($_SESSION['submit_new'])) {
-				$url .= "&new=".intval($_SESSION['submit_new']);
-			}
-			
 			if (!empty($grid_reference)) {
 				$url .= "#gridref=$grid_reference";
 			}
@@ -788,13 +774,6 @@ else
 
 		} elseif (isset($USER->submission_method) && $USER->submission_method == 'multi' && !isset($_GET['redir'])) {
 			$url = "/submit-multi.php";
-			if (isset($USER->submission_new)) {
-			        $_SESSION['submit_new'] = intval($USER->submission_new);
-			}
-			if (isset($_SESSION['submit_new'])) {
-				$url .= "?new=".intval($_SESSION['submit_new']);
-			}
-			
 			if (!empty($grid_reference)) {
 				$url .= "#gridref=$grid_reference";
 			}
