@@ -24,7 +24,7 @@
 	{if $grid_reference}<small><small>(<a href="javascript:void(document.getElementById('grid_reference').value = '');">clear</a>)<br/></small></small>{/if}
 	<input id="grid_reference" type="text" name="grid_reference" value="{$grid_reference|escape:'html'}" size="14"/><small class="navButtons"><small><a href="javascript:doMove('grid_reference',-1,0);">W</a></small><sup><a href="javascript:doMove('grid_reference',0,1);">N</a></sup><sub><a href="javascript:doMove('grid_reference',0,-1);">S</a></sub><small><a href="javascript:doMove('grid_reference',1,0);">E</a></small></small>
 	&nbsp;&nbsp;&nbsp;
-	<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picnik &gt;"/>{/if}
+	<input type="submit" name="setpos" value="Next &gt;"/> {if $picnik_api_key}or <input type="submit" name="picnik" value="Upload via Picmonkey &gt;"/>{/if}
 	</p>
 	{if $service}
 		<input type="hidden" name="service" value="{$service|escape:'html'}"/>
@@ -43,6 +43,8 @@
 
 		{if $reference_index == 2}
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
+		{elseif $rastermap->service == 'OSOS'}
+			<small style="font-size:0.8em">Click the icon beside entry boxes to bring to front on map</small> 
 		{/if}
 
 		<h4><b>Grid References:</b> (recommended)</h4>
@@ -88,9 +90,13 @@
 				function nudgeMarker(that) {
 
 					if (that.name == 'photographer_gridref') {
+						if (eastings2 < 10) 
+							return;
 						currentelement = marker2;
 						var point = new OpenSpace.MapPoint(eastings2, northings2-3);
 					} else {
+						if (eastings1 < 10) 
+							return;
 						currentelement = marker1;
 						var point = new OpenSpace.MapPoint(eastings1, northings1-3);
 					}
@@ -169,9 +175,12 @@
 
 		<div class="tabHolder" style="font-size:1em">
 
-			<a class="tabSelected nowrap" id="tab1" onclick="tabClick('tab','div',1,3)">Geographical Context</a>&nbsp;
-			<a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,3);show_tagging(document.forms['theForm'])">Tags (Optional)</a>&nbsp;
-			<a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,3); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions (Optional)</a>
+			<a class="tabSelected nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
+			<a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags (Optional)</a>&nbsp;
+			<a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions (Optional){if $snippets} <span style="background-color:yellow" title="{$snippets} Shared Description(s) being used in this square">[{$snippets}]</span>{/if}</a>
+			{if $grid_reference}
+				<a class="tab nowrap" id="tab4" onclick="tabClick('tab','div',4,4);open_nearby(document.forms['theForm'])">Used Nearby</a>&nbsp;
+			{/if}
 		</div>
 
 		<div id="div3" class="interestBox" style="display:none">
@@ -201,7 +210,7 @@
 				</div>
 			{/foreach}
 			<br style="clear:both"/>
-			<small>(<a href="javascript:void(untick_all())">Untick All</a>)</small>
+			<small>(<a href="javascript:void(untick_all())">Untick All</a>)</small> - <a href="#" onclick="tabClick('tab','div',2,3);show_tagging(document.forms['theForm']);return false">Select tags &gt; &gt;</a>
 
 		</div>
 
@@ -210,8 +219,21 @@
 			</iframe>
 		</div>
 
+		<div id="div4" class="interestBox" style="display:none">
+			<iframe src="about:blank" height="300" width="100%" id="nearframe" style="border:0">
+			</iframe>
+		</div>
+
 {literal}
 <script type="text/javascript">
+function open_nearby(form) {
+	var query = 'upload_id={/literal}{$upload_id}&gr={$grid_reference|escape:'html'}{literal}';
+	for(q=0;q<form.elements['tags[]'].length;q++)
+		if (form.elements['tags[]'][q].checked)
+			query=query+'&tags[]='+encodeURIComponent(form.elements['tags[]'][q].value);
+	if (document.getElementById('nearframe').src == 'about:blank')
+		document.getElementById('nearframe').src='/finder/used-nearby.php?'+query;
+}
 function show_tagging(form) {
 	var query = 'upload_id={/literal}{$upload_id}&gr={$grid_reference|escape:'html'}{literal}&v=3';
 	if (form.elements['title'].value.length> 0 )
@@ -248,6 +270,55 @@ function rehighlight(that,check) {
 		<p style="color:red">&middot; Further details can only be set once image has finished uploading,
 		<a href="javascript:void(window.parent.clicker(3,false));void(window.parent.clicker(3,true));">close and re-open this step</a> once the image has uploaded.</p>
 	{/if}
+{else}
+	<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
+		<br/><span class="formerror">{$error.imageclass}</span>
+	{/if}<br />
+
+				{literal}
+				<script type="text/javascript">
+				<!--
+				//rest loaded in geograph.js
+				function mouseOverImageClass() {
+					if (!hasloaded) {
+						setTimeout("prePopulateImageclass2()",100);
+					}
+					hasloaded = true;
+				}
+
+				function prePopulateImageclass2() {
+					var sel=document.getElementById('imageclass');
+					sel.disabled = false;
+					var oldText = sel.options[0].text;
+					sel.options[0].text = "please wait...";
+
+					populateImageclass();
+
+					hasloaded = true;
+					sel.options[0].text = oldText;
+					if (document.getElementById('imageclass_enable_button'))
+						document.getElementById('imageclass_enable_button').disabled = true;
+				}
+				AttachEvent(window,'load',onChangeImageclass,false);
+				//-->
+				</script>
+				{/literal}
+
+				<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onfocus="prePopulateImageclass()" onmouseover="mouseOverImageClass()" style="width:300px">
+						<option value="">--please select feature--</option>
+						{if $imageclass}
+							<option value="{$imageclass}" selected="selected">{$imageclass}</option>
+						{/if}
+						<option value="Other">Other...</option>
+					</select>
+
+					<span id="otherblock">
+					<label for="imageclassother">Please specify </label>
+					<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
+					</span></p>
+
+	<script type="text/javascript" src="/categories.js.php"></script>
+	<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
 {/if}
 
 

@@ -19,7 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  **/
- 
+
 require_once('geograph/global.inc.php');
 init_session();
 
@@ -44,30 +44,30 @@ if (!empty($_REQUEST['use_autocomplete'])) {
 if (isset($_REQUEST['submit2'])) {
 	$cacheid .= 'submit2';
 	$smarty->assign('submit2',1);
-	
+
 	if (isset($_REQUEST['upload_id'])) {
 		$smarty->assign('upload_id',$_REQUEST['upload_id']);
 	}
 }
 
-if (isset($_GET['success'])) {  
+if (isset($_GET['success'])) {
 	$token=new Token;
 	if ($token->parse($_GET['t'])) {
 		$template='puploader_success.tpl';
 		$smarty->assign('status', unserialize($token->getValueBinary("s")));
 		$smarty->assign('filenames', unserialize($token->getValueBinary("f")));
 	}
-	
+
 } elseif (isset($_POST['selected'])) {  //we dont get the button :(
 	$status = array();
 	$filenames = array();
-	
+
 	foreach ($_POST['field'] as $key => $value) {
 		$uploadmanager = new UploadManager();
 		$square = new GridSquare();
 
 		$files_key = str_replace('.','_',$value);
-		
+
 		$filenames[$key] = $_FILES[$files_key]['name'];
 
 		$ok = $square->setByFullGridRef($_POST['grid_reference'][$key]);
@@ -83,14 +83,14 @@ if (isset($_GET['success'])) {
 				//bug? in Picasa sends the name in the value if blank, useful! (but only seems to apply to textareas)
 				$uploadmanager->setComment(utf8_decode($_POST['comment'][$key]));
 			}
-			
+
 			if (($_POST['imageclass'][$key] == 'Other' || empty($_POST['imageclass'][$key])) && !empty($_POST['imageclassother'][$key])) {
 				$imageclass = stripslashes($_POST['imageclassother'][$key]);
 			} else if ($_POST['imageclass'] != 'Other') {
 				$imageclass =  stripslashes($_POST['imageclass'][$key]);
-			}			
+			}
 			$uploadmanager->setClass(utf8_decode($imageclass));
-			
+
 			if (!empty($_POST['tags'][$key])) {
 				if (is_array($_POST['tags'][$key])) {
 					$uploadmanager->setTags($_POST['tags'][$key]);
@@ -98,8 +98,7 @@ if (isset($_GET['success'])) {
 					$uploadmanager->setTags(explode('|',utf8_decode($_POST['tags'][$key])));
 				}
 			}
-			
-			
+
 			if ($_POST['pattrib'] == 'other') {
 				$uploadmanager->setCredit(stripslashes(utf8_decode($_POST['pattrib_name'])));
 				$smarty->assign('credit_realname',utf8_decode($_POST['pattrib_name']));
@@ -107,13 +106,12 @@ if (isset($_GET['success'])) {
 				$uploadmanager->setCredit('');
 			}
 
-			
 			$ok = $uploadmanager->processUpload($_FILES[$files_key]['tmp_name']);
 
 			if ($ok) {
 				$err = $uploadmanager->commit('puploader');
 
-				if (empty($err)) { 
+				if (empty($err)) {
 					$status[$key] = "ok:".$uploadmanager->gridimage_id;
 				} else {
 					$status[$key] = $err;
@@ -133,7 +131,7 @@ if (isset($_GET['success'])) {
 		if (!empty($_POST['photographer_gridref'])) {
 			$_SESSION['last_photographer_gridref'] = $_POST['photographer_gridref'];
 		}
-				
+
 		if ($memcache->valid) {
 			//the submit list
 			$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by submitted desc limit 6");
@@ -141,7 +139,7 @@ if (isset($_GET['success'])) {
 			//the browse page for the user (to show pending)
 			$mkey = md5("{$square->gridsquare_id}:{$USER->user_id},,order by if(ftf between 1 and 4,ftf,5),gridimage_id");
 			$memcache->name_delete('gi',$mkey);
-		}	
+		}
 	}
 	if (!empty($_POST['pattrib_default'])) {
 		$USER->setCreditDefault(($_POST['pattrib'] == 'other')?stripslashes($_POST['pattrib_name']):'');
@@ -151,12 +149,12 @@ if (isset($_GET['success'])) {
 	$smarty->clear_cache(null, "user$ab|{$USER->user_id}");
 
 	$token=new Token;
-		
+
 	$token->setValueBinary("s", serialize($status));
 	$token->setValueBinary("f", serialize($filenames));
-				
+
 	$t = $token->getToken($expiry);
-	
+
 	print "http://{$_SERVER['HTTP_HOST']}/puploader.php?success&t=$t";
 	exit;
 } elseif (isset($_REQUEST['inner'])) {
@@ -169,39 +167,38 @@ if (isset($_GET['success'])) {
 		$template = 'puploader_inner_old.tpl';
 	}
 	$step = 1;
-	
 	$square=new GridSquare;
-	
-	if (!empty($_REQUEST['photographer_gridref']) && empty($_REQUEST['grid_reference'])) 
+
+	if (!empty($_REQUEST['photographer_gridref']) && empty($_REQUEST['grid_reference']))
 	{
 		$_REQUEST['grid_reference'] = $_REQUEST['photographer_gridref'];
 	}
-	
-	if (!empty($_REQUEST['grid_reference'])) 
+
+	if (!empty($_REQUEST['grid_reference']))
 	{
 		$ok= $square->setByFullGridRef($_REQUEST['grid_reference']);
 
 		if ($ok) {
 			//preserve inputs in smarty
 			$smarty->assign('grid_reference', $grid_reference = $_REQUEST['grid_reference']);
-			$step = 2; 
+			$step = 2;
 
-			if (!empty($_REQUEST['photographer_gridref'])) 
+			if (!empty($_REQUEST['photographer_gridref']))
 			{
 				//preserve inputs in smarty
 				$smarty->assign('photographer_gridref', $photographer_gridref = $_REQUEST['photographer_gridref']);
-				$step = 3; 
-			} 
+				$step = 3;
+			}
 		} else {
-			$smarty->assign('errormsg', $square->errormsg);	
+			$smarty->assign('errormsg', $square->errormsg);
 		}
-	} 
+	}
 	if (!empty($_REQUEST['step'])) {
 		$step = intval($_REQUEST['step']);
 	}
-	if (empty($_REQUEST['grid_reference']) && $step == 2) 
+	if (empty($_REQUEST['grid_reference']) && $step == 2)
 		$step = 1;
-		
+
 	if (isset($_REQUEST['service'])) {
 		if ($_REQUEST['service'] == 'Google') {
 			$smarty->assign('service', 'Google');
@@ -209,7 +206,7 @@ if (isset($_GET['success'])) {
 			$smarty->assign('service', 'OS50k');
 		}
 	}
-	
+
 	if ($step == 2) {
 		require_once('geograph/rastermap.class.php');
 
@@ -272,24 +269,28 @@ if (isset($_GET['success'])) {
 
 		//find a possible place within 25km
 		$smarty->assign('place', $square->findNearestPlace(25000));
-		
+
 		$smarty->assign('use_autocomplete', $USER->use_autocomplete);
-		
+
 		$tags = new Tags;
 		$tags->assignPrimarySmarty($smarty);
 		$tags->assignSubjectSmarty($smarty);
 
-		
 		if (!empty($_REQUEST['grid_reference'])) {
 			$token=new Token;
 			$token->setValue("g", !empty($_REQUEST['grid_reference'])?$_REQUEST['grid_reference']:$square->grid_reference);
 			$token->setValue("p", $_REQUEST['photographer_gridref']);
 			$token->setValue("v", $_REQUEST['view_direction']);
 			$smarty->assign('reopenmaptoken', $token->getToken());
-			
+
 			$smarty->assign_by_ref('square', $square);
+
+			$sphinxq = "+".$square->grid_reference;
+	                $sphinx = new sphinxwrapper($sphinxq);
+        	        $count = $sphinx->countMatches('snippet');
+			$smarty->assign('snippets',$count);
 		}
-		
+
 		if ($_REQUEST['imagetaken'] && $_REQUEST['imagetaken'] != '0000-00-00') {
 			$smarty->assign('imagetaken', stripslashes($_REQUEST['imagetaken']));
 		} elseif ($smarty->get_template_vars('imagetaken')) {
@@ -305,22 +306,19 @@ if (isset($_GET['success'])) {
 			$smarty->assign('last_imagetaken', $_SESSION['last_imagetaken']);
 		}
 		$smarty->assign('today_imagetaken', date("Y-m-d"));
-	} 
-	
-	
+	}
+
 	//which step to display?
 	$smarty->assign('step', $step);
-	
+
 	if (!empty($_REQUEST['container'])) {
 		$smarty->assign('container', $_REQUEST['container']);
 	}
-	
-	
+
 	if ($_SERVER['REQUEST_METHOD'] == 'GET' && empty($CONF['submission_message'])) {
 		customExpiresHeader(3600,false,true);
 	}
 
-	
 } elseif(!empty($_POST['rss'])) {
 	$xh = new xmlHandler();
 	$nodeNames = array("PHOTO:THUMBNAIL", "PHOTO:IMGSRC", "TITLE");
@@ -330,9 +328,9 @@ if (isset($_GET['success'])) {
 	$xh->setXmlParser();
 	$xh->setXmlData(stripslashes($_POST['rss']));
 	$pData = $xh->xmlParse();
-	
+
 	$smarty->assign_by_ref('pData', array_slice($pData,0,10));
-	
+
 } else {
 	$template = "puploader_login.tpl";
 }
