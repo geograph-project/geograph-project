@@ -331,8 +331,9 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 	//homepage
 	$template = 'games_quiz.tpl';
 
-	$quizs = $db->getAll("SELECT q.*,qt.title as tag, COUNT(DISTINCT qq.question_id) AS count, COUNT(DISTINCT ql.user_id) AS players
+	$quizs = $db->getAll("SELECT q.*,qt.title as tag, COUNT(DISTINCT qq.question_id) AS count, COUNT(DISTINCT ql.user_id) AS players, u.realname
 			FROM quiz q
+			INNER JOIN user u ON (u.user_id = q.user_id)
 			INNER JOIN quiz_tag qt USING (tag_id)
 			INNER JOIN quiz_question qq USING (tag_id)
 			LEFT JOIN quiz_log ql USING (question_id,quiz_id)
@@ -344,8 +345,9 @@ if (isset($_REQUEST['login']) || isset($_REQUEST['save'])) {
 
 	if ($USER->registered) {
 
-		$tags = $db->getAll("SELECT qt.*,COUNT(DISTINCT qq.question_id) AS count,COUNT(DISTINCT qqq.question_id) AS count_user
+		$tags = $db->getAll("SELECT qt.*,COUNT(DISTINCT qq.question_id) AS count,COUNT(DISTINCT qqq.question_id) AS count_user, u.realname
 			FROM quiz_tag qt
+			INNER JOIN user u ON (u.user_id = qt.user_id)
 			LEFT JOIN quiz_question qq ON (qt.tag_id = qq.tag_id AND qq.approved = 1)
 			LEFT JOIN quiz_question qqq ON (qt.tag_id = qqq.tag_id AND qqq.approved = 1 AND qqq.user_id = {$USER->user_id})
 			WHERE qt.approved = 1
