@@ -46,8 +46,7 @@ if ($_GET['url'] == 'Shepherd-Neame2') {
 	exit;
 }
 
-$isadmin=$USER->hasPerm('moderator')?1:0;
-
+$isadmin=($USER->hasPerm('moderator') || $USER->hasPerm('director'))?1:0;
 
 $template = 'article_article.tpl';
 
@@ -344,8 +343,14 @@ function smarty_function_articletext($input) {
 		$output);
 
 	$pattern=array(); $replacement=array();
-	
+
 	if ($pages = preg_split("/\n+\s*~{6,}(~[\w \t\{\}\+:-]*)\n+/",$output,-1,PREG_SPLIT_DELIM_CAPTURE)) {
+
+		if (!empty($_GET['page']) && $_GET['page'] == 9999) {
+			$pages = array(implode("\n[hr/]\n",$pages));
+			$_GET['page'] = 1;
+		}
+
 		$numberOfPages = ceil(count($pages)/2);
 		$thispage = empty($_GET['page'])?1:intval($_GET['page']);
 		$thispage = min($numberOfPages,$thispage);
@@ -386,7 +391,7 @@ function smarty_function_articletext($input) {
 		$list = implode("\n",$list);
 		$smarty->assign("tableContents", $list);
 	}
-	
+
 	if (count($pages) > 1) {
 		$smarty->assign('page',$thispage);
 		$offset = ($thispage-1)*2;
@@ -398,7 +403,7 @@ function smarty_function_articletext($input) {
 	
 	if (!empty($_GET['test'])) {
 		print "<pre>";
-		print htmlentities($output);
+		print htmlentities(print_r($pages,1));
 		exit;
 	}
 
@@ -410,7 +415,7 @@ function smarty_function_articletext($input) {
 	$pattern[]='/(?<!["\'\[\/\!\w])([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
 	$replacement[]="<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
 
-	$pattern[]='/\[image id=(\d+) text=([^\]]+)\]/e';
+	$pattern[]='/\[image id=(\d+) text=([^\]"]+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";
 
 	$pattern[]='/\[image id=(\d+)\]/e';
@@ -420,13 +425,13 @@ function smarty_function_articletext($input) {
 	$pattern[]='/\[snippet id=(\d+)(?: image=(\d+))?\]/e';
 	$replacement[]="get_snippet('\$1','\$2')";
 
-	$pattern[]='/\[tag=([^=\]]+?)(?: gr=(\w{1,2}\d{0,4}))?(?: images=(\d+))?\]/e';
+	$pattern[]='/\[tag=([^=\]"]+?)(?: gr=(\w{1,2}\d{0,4}))?(?: images=(\d+))?\]/e';
 	$replacement[]="get_tag('\$1','\$2','\$3')";
 
 	$pattern[]='/(\!)([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
 	$replacement[]="\\2";
 
-	$pattern[]='/\[img=([^\] ]+)(| [^\]]+)\]/';
+	$pattern[]='/\[img=([^\]" ]+)(| [^\]"]+)\]/';
 	$replacement[]='<img src="\1" alt="\2" title="\2"/>';
 
 	$pattern[]='/\[mooflow=(\d+)\]/';
@@ -471,7 +476,7 @@ function smarty_function_articletext($input) {
 	$pattern[]="/\[url=http:\/\/getamap\.ordnancesurvey\.co\.uk\/getamap\/frames\.htm.*?gazString=(\w+)\](.+?)\[\/url\]/ie";
 	$replacement[]="smarty_function_getamap(array('gridref'=>\"\$1\",'text'=>'\$2'))";
 
-	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n]+?)\](.+?)\[\/url\]/ie";
+	$pattern[]="/\[url=((f|ht)tp[s]?:\/\/[^<> \n\"]+?)\](.+?)\[\/url\]/ie";
 	$replacement[]="smarty_function_external(array('href'=>\"\$1\",'text'=>'\$3','title'=>\"\$1\"))";
 
 	$pattern[]="/\[url=#([\w-]+)\](.+?)\[\/url\]/i";
