@@ -7,10 +7,11 @@
 
 {dynamic}
 	
-	<h3>Published Quizes</h3>
+	<h3>Published Quizzes</h3>
 		<table class="report sortable" id="events">
 		<thead><tr>
 			<td>Title</td>
+			<td>Created By</td>
 			{if $user_id}
 			<td>Series</td>
 			<td>Public</td>
@@ -24,6 +25,7 @@
 		{foreach from=$quizs item=item}
 			<tr>
 				<td><a href="?go={$item.quiz_id}">{$item.title|escape:"html"}</a></td>
+				<td><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
 				{if $user_id}
 				<td>{$item.tag|escape:"html"}</td>
 				<td>{if $item.public}yes{/if}</td>
@@ -49,6 +51,7 @@
 		<table class="report sortable" id="events">
 		<thead><tr>
 			<td>Series</td>
+			<td>Created By</td>
 			<td>Questions</td>
 			{if $user_id}
 			   <td>Yours</td>
@@ -59,6 +62,7 @@
 		{foreach from=$tags item=item}
 			<tr>
 				<td>{$item.title|escape:"html"}</td>
+				<td><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
 				<td><a href="?questions={$item.tag_id}">{$item.count|escape:"html"}</a></td>
 				{if $user_id}
 				<td><a href="?questions={$item.tag_id}&amp;user_id={$user_id}">{$item.count_user|escape:"html"}</a></td>
