@@ -36,7 +36,14 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 <div style="padding:20px">
 
 <h2>The following sizes of images are available for download:</h2><br/>
-<div class="interestBox">Note: all sizes are <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licensed</a>, and any reuse needs to credit <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>.</div>
+<div class="interestBox">
+        <img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
+
+
+Note: all sizes are <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licensed</a>, and any reuse needs to credit <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>.
+
+Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell you more about how to credit images.
+</div>
 
 {assign var="size" value=$image->_getFullSize()}
 
@@ -138,17 +145,6 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 			</table>
 			<p>Preview{if $last_width > 640 || $last_height > 640}s{/if} shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size{if $ratio ne 1} - NOT representative of the final quality{/if}.</p>		
 			
-		{if $image->original_width}
-			<form action="http://zoom.it/pages/create/" method="post" enctype="application/x-www-form-urlencoded"> 
-
-				<input name="url" type="hidden" value="http://{$http_host}/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original" /> 
-
-				<input type="submit" value="View largest image on zoom.it" />  <sup style="color:red">Experimental</sup><br/>
-				
-				Zoom.it (formally Seadragon) allows you to zoom and pan around any image on the web, no matter how big. 
-			</form> 
-		{/if}
-
 
 
 <br/><br/><hr/><br/>
