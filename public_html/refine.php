@@ -34,7 +34,7 @@ $smarty = new GeographPage;
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
-$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','seq_id'=>'** Import Order **');
+$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','sequence'=>'Geographically','seq_id'=>'** Import Order **');
 $breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted',);
 
 $displayclasses =  array(
@@ -42,14 +42,18 @@ $displayclasses =  array(
 			'more' => 'full listing + links',
 			'thumbs' => 'thumbnails only',
 			'thumbsmore' => 'thumbnails + links',
-			'bigger' => 'bigger thumbnails',
-			'gmap' => 'on a map',
-			'slide' => 'slideshow - fullsize',
+			'bigger' => 'thumbnails - bigger',
+			'excerpt' => 'highlighted keywords',
+			'map' => 'on a map',
+			'slide' => 'slideshow',
+			'slidebig' => 'slideshow - full page',
 			'reveal' => 'slideshow - map imagine',
+			'black' => 'georiver - full images + detail',
 			'cooliris' => 'cooliris 3d wall',
 			'mooflow' => 'cover flow',
 			'text' => 'text list only',
-			'spelling' => 'spelling utility'
+			'spelling' => 'multi editor',
+			'bytag' => 'tags (experimental)'
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 $smarty->assign('pagesizes', array(5,10,15,20,30,50));
@@ -88,7 +92,7 @@ $smarty->assign_by_ref('breakdowns', $breakdowns);
 		$dataarray = $_POST;
 		
 		if (empty($db)) {
-			$db=NewADOConnection($GLOBALS['DSN']);
+			$db=GeographDatabaseConnection(false);
 			if (!$db) die('Database connection failed');
 		}
 		

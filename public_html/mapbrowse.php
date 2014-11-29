@@ -42,6 +42,7 @@ if (isset($_GET['map']))
 	
 }
 
+init_session_or_cache(3600, 360); //cache publically, and privately
 
 init_session();
 $template='mapbrowse.tpl';
@@ -49,7 +50,7 @@ $template='mapbrowse.tpl';
 $smarty = new GeographPage;
 
 customGZipHandlerStart();
-customExpiresHeader(360,false,true);
+##customExpiresHeader(360,false,true);
 
 //initialise mosaic
 $mosaic=new GeographMapMosaic;
@@ -99,6 +100,15 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 		$mosaic->type_or_user = 0;
 		$overview->type_or_user = 0;
 	}
+} elseif (isset($_GET['userdepth'])) {
+	if ($_GET['userdepth']) {
+		$smarty->assign('userdepth', 1);
+		$mosaic->type_or_user = -13;
+		$overview->type_or_user = -13;
+	} else {
+		$mosaic->type_or_user = 0;
+		$overview->type_or_user = 0;
+	}
 } elseif (isset($_GET['recent'])) {
 	if ($_GET['recent']) {
 		$db = GeographDatabaseConnection(true);
@@ -113,11 +123,16 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 } elseif ($mosaic->type_or_user == -1) {
 	$smarty->assign('depth', 1);
 	$overview->type_or_user = -1;
+} elseif ($mosaic->type_or_user == -13) {
+	$smarty->assign('userdepth', 1);
+	$overview->type_or_user = -13;
 } elseif ($mosaic->type_or_user == -6) {
 	$db = GeographDatabaseConnection(true);
 	//this copes with leap years etc
 	$smarty->assign('recent', $db->getOne("SELECT DATE_SUB(NOW(),INTERVAL 5 YEAR)"));
 	$overview->type_or_user = -6;
+} elseif ($mosaic->type_or_user == -10) {
+	$overview->type_or_user = -10;
 }
 
 //are we zooming in on an image map? we'll have a url like this
@@ -125,6 +140,7 @@ if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 //http://geograph.elphin/mapbrowse.php?t=token&i=0&j=0&zoomin=?275,199
 if (isset($_GET['zoomin']))
 {
+	dieUnderHighLoad(1.2);
 	//get click coordinate, or use centre point if not supplied
 
 	$x=isset($_GET['x'])?intval($_GET['x']):round(($mosaic->image_w/$mosaic->mosaic_factor)/2);
@@ -200,6 +216,8 @@ if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['g
 //regenerate?
 if (!$smarty->is_cached($template, $cacheid))
 {
+	dieUnderHighLoad(1.2);
+
 	$overview->setPreset('overview');
 	
 	//assign overview to smarty

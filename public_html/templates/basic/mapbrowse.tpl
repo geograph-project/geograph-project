@@ -102,7 +102,7 @@ table.navtable {
 	</div>
 {/if}
 
-{if $depth}
+{if $depth || $userdepth}
 	<img src="http://{$static_host}/img/depthkey.png" width="{$mosaic_width}" height="20" style="padding-left:10px;"/>
 {elseif !$token_zoomin}
 	<div style="background-color:#000066;text-align:center;font-size:0.7em;color:white;border-top:1px solid silver">Key
@@ -112,7 +112,7 @@ table.navtable {
 {elseif $recent}
 	<div style="background-color:#000066;text-align:center;font-size:0.7em;color:white;border-top:1px solid silver">Key
 	| <span style="color:#FF0000">Recent photos</span>
-	| <span style="color:#ECCE40">Any photos</span>
+	| <span style="color:#ECCE40">Only older photos</span>
 	| <span style="color:#75FF65">No photos</span> |
 	</div>
 {else}
@@ -196,9 +196,9 @@ table.navtable {
 
   <tr><!-- row 2 -->
    <td rowspan="6"><img alt="" src="http://{$static_host}/templates/basic/mapnav/left.gif" width="12" height="211"/></td>
-   <td>{if $token_zoomin}<a accesskey="S" title="Zoom in (Alt+S)" href="/map/{$token_zoomin}" onmouseout="di20('zoomin','/templates/basic/mapnav/zoomin.gif');"  onmouseover="di20('zoomin','/templates/basic/mapnav/zoomin_F2.gif');" ><img alt="Zoom In" id="zoomin" src="http://{$static_host}/templates/basic/mapnav/zoomin.gif" width="30" height="29"/></a>{else}<img alt="Zoom In" title="Can't zoom in any further" id="zoomin" src="http://{$static_host}/templates/basic/mapnav/zoomin_F3.gif" width="30" height="29"/>{/if}</td>
+   <td>{if $token_zoomin}<a accesskey="S" title="Zoom in (Alt+S)" href="/map/{$token_zoomin}" onmouseout="di20('zoomin','http://{$static_host}/templates/basic/mapnav/zoomin.gif');"  onmouseover="di20('zoomin','http://{$static_host}/templates/basic/mapnav/zoomin_F2.gif');" ><img alt="Zoom In" id="zoomin" src="http://{$static_host}/templates/basic/mapnav/zoomin.gif" width="30" height="29"/></a>{else}<img alt="Zoom In" title="Can't zoom in any further" id="zoomin" src="http://{$static_host}/templates/basic/mapnav/zoomin_F3.gif" width="30" height="29"/>{/if}</td>
    <td><img alt="" id="fill1" src="http://{$static_host}/templates/basic/mapnav/fill1.gif" width="30" height="29"/></td>
-   <td>{if $token_zoomout}<a accesskey="W" title="Pan north (Alt+W)" href="/map/{$token_north}" onmouseout="di20('north','/templates/basic/mapnav/north.gif');"  onmouseover="di20('north','/templates/basic/mapnav/north_F2.gif');" ><img id="north" alt="Pan North" src="http://{$static_host}/templates/basic/mapnav/north.gif" width="30" height="29"/></a>{else}<img alt="North" title="North" id="north" src="http://{$static_host}/templates/basic/mapnav/north_F3.gif" width="30" height="29"/>{/if}</td>
+   <td>{if $token_zoomout}<a accesskey="W" title="Pan north (Alt+W)" href="/map/{$token_north}" onmouseout="di20('north','http://{$static_host}/templates/basic/mapnav/north.gif');"  onmouseover="di20('north','http://{$static_host}/templates/basic/mapnav/north_F2.gif');" ><img id="north" alt="Pan North" src="http://{$static_host}/templates/basic/mapnav/north.gif" width="30" height="29"/></a>{else}<img alt="North" title="North" id="north" src="http://{$static_host}/templates/basic/mapnav/north_F3.gif" width="30" height="29"/>{/if}</td>
    <td><img alt="" id="fill2" src="http://{$static_host}/templates/basic/mapnav/fill2.gif" width="30" height="29"/></td>
    <td rowspan="6"><img alt="" src="http://{$static_host}/templates/basic/mapnav/right.gif" width="11" height="211"/></td>
    <td><img alt="" src="http://{$static_host}/templates/basic/mapnav/shim.gif" width="1" height="29"/></td>
@@ -206,16 +206,16 @@ table.navtable {
 
   <tr><!-- row 3 -->
    <td><img alt="" id="fill3" src="http://{$static_host}/templates/basic/mapnav/fill3.gif" width="30" height="29"/></td>
-   <td>{if $token_zoomout}<a accesskey="A" title="Pan west (Alt+A)" href="/map/{$token_west}" onmouseout="di20('west','/templates/basic/mapnav/west.gif');"  onmouseover="di20('west','/templates/basic/mapnav/west_F2.gif');"><img id="west" alt="Pan West" src="http://{$static_host}/templates/basic/mapnav/west.gif" width="30" height="29"/></a>{else}<img alt="West" title="West" id="west" src="http://{$static_host}/templates/basic/mapnav/west_F3.gif" width="30" height="29"/>{/if}</td>
+   <td>{if $token_zoomout}<a accesskey="A" title="Pan west (Alt+A)" href="/map/{$token_west}" onmouseout="di20('west','http://{$static_host}/templates/basic/mapnav/west.gif');"  onmouseover="di20('west','http://{$static_host}/templates/basic/mapnav/west_F2.gif');"><img id="west" alt="Pan West" src="http://{$static_host}/templates/basic/mapnav/west.gif" width="30" height="29"/></a>{else}<img alt="West" title="West" id="west" src="http://{$static_host}/templates/basic/mapnav/west_F3.gif" width="30" height="29"/>{/if}</td>
    <td><img alt="" id="fill4" src="http://{$static_host}/templates/basic/mapnav/fill4.gif" width="30" height="29"/></td>
-   <td>{if $token_zoomout}<a accesskey="D" title="Pan east (Alt+D)" href="/map/{$token_east}" onmouseout="di20('east','/templates/basic/mapnav/east.gif');"  onmouseover="di20('east','/templates/basic/mapnav/east_F2.gif');" ><img id="east" alt="Pan East" src="http://{$static_host}/templates/basic/mapnav/east.gif" width="30" height="29"/></a>{else}<img alt="East" title="East" id="east" src="http://{$static_host}/templates/basic/mapnav/east_F3.gif" width="30" height="29"/>{/if}</td>
+   <td>{if $token_zoomout}<a accesskey="D" title="Pan east (Alt+D)" href="/map/{$token_east}" onmouseout="di20('east','http://{$static_host}/templates/basic/mapnav/east.gif');"  onmouseover="di20('east','http://{$static_host}/templates/basic/mapnav/east_F2.gif');" ><img id="east" alt="Pan East" src="http://{$static_host}/templates/basic/mapnav/east.gif" width="30" height="29"/></a>{else}<img alt="East" title="East" id="east" src="http://{$static_host}/templates/basic/mapnav/east_F3.gif" width="30" height="29"/>{/if}</td>
    <td><img alt="" src="http://{$static_host}/templates/basic/mapnav/shim.gif" width="1" height="29"/></td>
   </tr>
 
   <tr><!-- row 4 -->
-   <td>{if $token_zoomout}<a accesskey="Q" title="Zoom out (Alt+Q)" href="/map/{$token_zoomout}" onmouseout="di20('zoomout','/templates/basic/mapnav/zoomout.gif');"  onmouseover="di20('zoomout','/templates/basic/mapnav/zoomout_F2.gif');"><img id="zoomout" src="http://{$static_host}/templates/basic/mapnav/zoomout.gif" width="30" height="29" alt="Zoom Out"/></a>{else}<img alt="Zoom Out" title="Can't zoom out any further" id="zoomout" src="http://{$static_host}/templates/basic/mapnav/zoomout_F3.gif" width="30" height="29"/>{/if}</td>
+   <td>{if $token_zoomout}<a accesskey="Q" title="Zoom out (Alt+Q)" href="/map/{$token_zoomout}" onmouseout="di20('zoomout','http://{$static_host}/templates/basic/mapnav/zoomout.gif');"  onmouseover="di20('zoomout','http://{$static_host}/templates/basic/mapnav/zoomout_F2.gif');"><img id="zoomout" src="http://{$static_host}/templates/basic/mapnav/zoomout.gif" width="30" height="29" alt="Zoom Out"/></a>{else}<img alt="Zoom Out" title="Can't zoom out any further" id="zoomout" src="http://{$static_host}/templates/basic/mapnav/zoomout_F3.gif" width="30" height="29"/>{/if}</td>
    <td><img alt="" id="fill5" src="http://{$static_host}/templates/basic/mapnav/fill5.gif" width="30" height="29"/></td>
-   <td>{if $token_zoomout}<a accesskey="X" title="Pan south (Alt+X)" href="/map/{$token_south}" onmouseout="di20('south','/templates/basic/mapnav/south.gif');"  onmouseover="di20('south','/templates/basic/mapnav/south_F2.gif');"><img id="south" alt="Pan South" src="http://{$static_host}/templates/basic/mapnav/south.gif" width="30" height="29"/></a>{else}<img alt="South" title="South" id="south" src="http://{$static_host}/templates/basic/mapnav/south_F3.gif" width="30" height="29"/>{/if}</td>
+   <td>{if $token_zoomout}<a accesskey="X" title="Pan south (Alt+X)" href="/map/{$token_south}" onmouseout="di20('south','http://{$static_host}/templates/basic/mapnav/south.gif');"  onmouseover="di20('south','http://{$static_host}/templates/basic/mapnav/south_F2.gif');"><img id="south" alt="Pan South" src="http://{$static_host}/templates/basic/mapnav/south.gif" width="30" height="29"/></a>{else}<img alt="South" title="South" id="south" src="http://{$static_host}/templates/basic/mapnav/south_F3.gif" width="30" height="29"/>{/if}</td>
    <td><img alt="" id="fill6" src="http://{$static_host}/templates/basic/mapnav/fill6.gif" width="30" height="29"/></td>
    <td><img alt="" src="http://{$static_host}/templates/basic/mapnav/shim.gif" width="1" height="29"/></td>
   </tr>
@@ -266,12 +266,14 @@ table.navtable {
 <script type="text/javascript">
 <!--
 if (document.images) {
-zoomin_F2 = new Image(30,29); zoomin_F2.src = "/templates/basic/mapnav/zoomin_F2.gif";
-north_F2 = new Image(30,29); north_F2.src = "/templates/basic/mapnav/north_F2.gif";
-west_F2 = new Image(30,29); west_F2.src = "/templates/basic/mapnav/west_F2.gif";
-east_F2 = new Image(30,29); east_F2.src = "/templates/basic/mapnav/east_F2.gif";
-zoomout_F2 = new Image(30,29); zoomout_F2.src = "/templates/basic/mapnav/zoomout_F2.gif";
-south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gif";
+{/literal}
+zoomin_F2 = new Image(30,29); zoomin_F2.src = "http://{$static_host}/templates/basic/mapnav/zoomin_F2.gif";
+north_F2 = new Image(30,29); north_F2.src = "http://{$static_host}/templates/basic/mapnav/north_F2.gif";
+west_F2 = new Image(30,29); west_F2.src = "http://{$static_host}/templates/basic/mapnav/west_F2.gif";
+east_F2 = new Image(30,29); east_F2.src = "http://{$static_host}/templates/basic/mapnav/east_F2.gif";
+zoomout_F2 = new Image(30,29); zoomout_F2.src = "http://{$static_host}/templates/basic/mapnav/zoomout_F2.gif";
+south_F2 = new Image(30,29); south_F2.src = "http://{$static_host}/templates/basic/mapnav/south_F2.gif";
+{literal}
 }
 -->
 </script>
@@ -302,10 +304,16 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 {/if}
 <br style="clear:both;"/><br/>
 
+{if !$token_zoomout}
+<small>TIP: The new Geograph Browser application, includes a <a href="/browser/#!{if $realname}/realname+%22{$realname|escape:'url'}%22{/if}/display=map">Interactive Map feature</a> - allows easy filtering of results shown<br/><br/></small>
+{/if}
+
 {if $realname}
 	{assign var="tab" value="2"}
 {elseif $depth && $token_zoomin}
 	{assign var="tab" value="3"}
+{elseif $userdepth && $token_zoomin}
+	{assign var="tab" value="13"}
 {elseif $recent}
 	{assign var="tab" value="8"}
 {else}
@@ -326,24 +334,22 @@ south_F2 = new Image(30,29); south_F2.src = "/templates/basic/mapnav/south_F2.gi
 	{/if}{/dynamic}
 	{if $token_zoomin}
 	<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="/map/{$mosaic_token}?depth=1" title="visualizes how many photos we have in each square">Depth</a>
+	<a class="tab{if $tab == 13}Selected{/if} nowrap" id="tab13" href="/map/{$mosaic_token}?userdepth=1" title="visualizes how many contributors we have in each square">User Depth</a>
 	{/if}
 	{if ($mapwidth == 100 || !$token_zoomin) && $mosaic_ri == 1}
 		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="interactive coverage map overlaid over OS raster maps">Draggable OS
 		{if $mapwidth == 100}<sup style="color:red">New!</sup>{/if}</a>
 	{elseif $mosaic_ri == 1}
-		<a class="tab" id="tab4">Draggable OS <sup style="font-size:0.7em;color:blue">[Zoom in to enable]</sup></a>
+		<a class="tab" id="tab4">Draggable OS <sup style="font-size:0.7em;color:blue">[Zoom first]</sup></a>
 	{/if}
 	{if !$token_zoomin && $mosaic_ri == 1}
 	<a class="tab{if $tab == 5}Selected{/if} nowrap" id="tab5" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}&amp;centi=1" title="shows the coverage at centisquare level - overlaid on OS raster maps">Centisquares Coverage</a>
 	{/if}
 	{if $mapwidth == 10 || $mapwidth == 100}
-		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field">{if $realname}Personalised {elseif $recent}Recent Only {elseif $depth && $token_zoomin}Depth {/if}Check Sheet</a>
+		<a class="tab{if $tab == 6}Selected{/if} nowrap" id="tab6" href="/mapsheet.php?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field">{if $realname}Personalised {elseif $recent}Recent Only {elseif $tab ==3}Depth {elseif $userdepth}User Depth {/if}Check Sheet</a>
 	{/if}
 	<a class="tab{if $tab == 7}Selected{/if} nowrap" id="tab7" href="/mapprint.php?t={$mosaic_token}" title="A version of this map optimized for printing">Printable</a>
 	<a class="tab{if $tab == 8}Selected{/if} nowrap" id="tab8" href="/map/{$mosaic_token}?recent=1" title="shows squares with recent squares - so can find squares without recent photos">Recent Only</a>
-	{if !$token_zoomout}
-	 <a class="tab{if $tab == 9}Selected{/if} nowrap" id="tab9" href="/mapper/clusters.php#r=c" title="draggable interactive map visualizing coverage into clusters">Interactive Clusters</a>
-	{/if}
 
 	<a href="/article/Mapping-on-Geograph" title="More information about the various map types" class="about">About</a>
 
