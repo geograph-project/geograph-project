@@ -10,6 +10,10 @@
 {/if}
 {include file="_std_begin.tpl"}
 
+{if $ireland}
+	<div class=interestBox>This page only shows images from Ireland - Great Britain is automatically excluded.</div>
+{/if}
+
 {if $thetag && $gridref}
 <div class="breadcrumb" style="margin-bottom:20px">
 <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
@@ -39,8 +43,9 @@
 {elseif $bucket}
         <div class="tabHolder">
                 <a href="/tags/primary.php" class="tab">Geographical Context</a>
-                <span class="tabSelected">Image Buckets</span>
+		<a href="/tags/?prefix=subject" class="tab">Subjects</a>
                 <a href="/tags/" class="tab">Tags</a>
+                <span class="tabSelected">Image Buckets</span>
         </div>
         <div style="position:relative;" class="interestBox">
 		<h2>Image Buckets</h2>
@@ -54,12 +59,18 @@
 	</div>
         <div class="tabHolder">
                 <a href="/tags/primary.php" class="tab">Geographical Context</a>
-                <a href="/article/Image-Buckets" class="tab">Image Buckets</a>
+		{if $theprefix == 'subject'} 
+		<a href="/tags/?prefix=subject" class="tabSelected">Subjects</a>
+		<a href="/tags/" class="tab">Tags</a>
+		{else}
+		<a href="/tags/?prefix=subject" class="tab">Subjects</a>
 		{if $thetag || $theprefix || $prefixes}
                 <a href="/tags/" class="tabSelected">Tags</a>
 		{else}
                 <span class="tabSelected">Tags</span>
 		{/if}
+		{/if}
+                <a href="/article/Image-Buckets" class="tab">Image Buckets</a>
         </div>
         <div style="position:relative;padding-bottom:3px" class="interestBox">
 		<h2 style="margin:0">Public Tags</h2>
