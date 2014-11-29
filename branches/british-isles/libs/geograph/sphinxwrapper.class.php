@@ -69,7 +69,7 @@ class sphinxwrapper {
 		$q = str_replace('&#375;','y',$q);
 
 			//remove unsuitable chars
-		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,-\[\]]+/',' ',trim(strtolower($q))));
+		$q = trim(preg_replace('/[^\w~\|\(\)@"\/\'=<^$,\[\]\!-]+/',' ',trim(strtolower($q))));
 
 		$q = preg_replace('/^["]([^\(\)\'"]+)$/','"$1"',$q);
 		$q = preg_replace('/^([^\(\)\'"]+)[\(\)\'"]$/','$1',$q);
