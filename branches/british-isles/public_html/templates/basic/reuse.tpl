@@ -148,6 +148,9 @@ licensed for reuse under this <a rel="license" href="http://creativecommons.org/
 &amp;nbsp; &amp;copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</div></textarea></form>
 </div>
+Alternativly to embed an iframe:
+<form><textarea rows="1"><iframe src="http://{$http_host}/frame.php?id={$image->gridimage_id}" width="550" height="280" frameborder="0"></iframe></textarea></form>
+
 <div class="top"><a href="#top">back to top</a></div>
 
 
