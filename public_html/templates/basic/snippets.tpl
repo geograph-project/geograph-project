@@ -6,7 +6,14 @@
 	&middot; <a href="/article/Shared-Descriptions">Read about Shared Descriptions</a>
 </div>
 
-<h2>Shared Descriptions</h2>
+        {if $gridref}
+                {include file="_bar_location.tpl"}
+                <div class="interestBox">
+			<h2>Shared Descriptions</h2>
+                </div>
+        {else}
+		<h2>Shared Descriptions</h2>
+        {/if}
 
 {if $thankyou && $thankyou == 'saved'} 
 	<div style="background-color:lightgreen;padding:10px">
