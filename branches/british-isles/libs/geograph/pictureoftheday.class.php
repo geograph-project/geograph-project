@@ -50,28 +50,28 @@ class PictureOfTheDay
 		}
 		return $this->db;
 	}
-	
+
 	function PictureOfTheDay($w=381,$h=255)
 	{
 		$this->width=$w;
 		$this->height=$h;
 	}
-	
+
 	function initToday()
 	{
 		$db=$this->_getDB(true);
-	
+
 		$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where showday=date(now())");
 		if (empty($gridimage_id))
 		{
 			$db=$this->_getDB(false);
-			
+
 			//get timestamp from db server
 			$now=$db->GetOne("select now()");
-			
+
 			//lock the table to avoid a midnight race
 			$db->Execute("lock tables gridimage_daily write,gridimage_search write");
-			
+
 			//we've got our lock, so lets check we weren't beaten to the punch
 			$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where showday=date(now())");
 			if (empty($gridimage_id))
@@ -82,11 +82,15 @@ class PictureOfTheDay
 				} else {
 					$ids = implode(',',$ids);
 				}
-	
+
 				//ok, there is still no image for today, and we have a
 				//lock on the table - assign the first available image
-				//ordered by number - giving preference to geograph and highly voted images 
-				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by (user_id in ($ids)), (vote_baysian >= 3.1) desc,(vote_baysian > 3.0) desc,(vote_baysian > 2.5) desc,moderation_status+0 desc,(abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()> 0.7,7,0) asc,crc32(concat(gridimage_id,yearweek(now()))) desc");
+				//ordered by number - giving preference to geograph and highly voted images
+				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id)
+				where showday is null
+				order by (user_id in ($ids)), (vote_baysian >= 3.2) desc,(vote_baysian > 3.0) desc,(vote_baysian > 2.5) desc,
+					moderation_status+0 desc, coalesce((abs(datediff(now(),imagetaken)) mod 365 div 14)-if(rand()> 0.7,7,0),floor(rand()*20)) asc,
+					crc32(concat(gridimage_id,yearweek(now()))) desc");
 
 				if (!empty($gridimage_id)) {
 					$db->Execute("update gridimage_daily set showday='$now' where gridimage_id = $gridimage_id");
@@ -95,11 +99,11 @@ class PictureOfTheDay
 					$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily where showday=date(now())");
 				}
 			}
-				
+
 			//release our stranglehold
 			$db->Execute("unlock tables");
 		}
-		
+
 		if (empty($gridimage_id))
 		{
 			//select the most recent old one
@@ -107,10 +111,10 @@ class PictureOfTheDay
 					"where showday<date(now()) " .
 					"order by (to_days(now())-to_days(showday))");
 		}
-		
+
 		$this->gridimage_id=$gridimage_id;
 	}
-	
+
 	function assignToSmarty(&$smarty,$gridimage_id = 0)
 	{
 		if (empty($gridimage_id)) {
@@ -118,16 +122,16 @@ class PictureOfTheDay
 		} else {
 			$this->gridimage_id = $gridimage_id;
 		}
-		
+
 		$pictureoftheday=array();
 		$pictureoftheday['gridimage_id']=$this->gridimage_id;
 		$pictureoftheday['width']=$this->width;
 		$pictureoftheday['height']=$this->height;
 		$pictureoftheday['image']=new GridImage($this->gridimage_id);
 		$pictureoftheday['image']->compact();
-		
+
 		$smarty->assign('pictureoftheday', $pictureoftheday);
-	
+
 		$this->image =& $pictureoftheday['image'];
 	}
 
@@ -139,13 +143,13 @@ class PictureOfTheDay
 		    $this->width=$token->getValue("w");
 		    $this->height=$token->getValue("h");
 		    $this->gridimage_id=$token->getValue("i");
-		    
+
 		    $image=new GridImage($this->gridimage_id);
 		}
 		else
 		{
 			header("HTTP/1.0 403 Bad Token");
 		}
-	}	
+	}
 }
-?>
+

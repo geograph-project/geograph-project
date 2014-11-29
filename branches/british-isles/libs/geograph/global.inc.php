@@ -106,6 +106,7 @@ if (empty($CONF['db_tempdb'])) {
 }
 
 function GeographDatabaseConnection($allow_readonly = false) {
+	global $ADODB_FETCH_MODE;
 	static $logged = 1;
 
 	//see if we can use a read only slave connection
@@ -118,6 +119,8 @@ function GeographDatabaseConnection($allow_readonly = false) {
 		if ($db) {
 			//if the application dictates it needs currency
 			if ($allow_readonly > 1) {
+				$prev_fetch_mode = $ADODB_FETCH_MODE;
+			        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 				$row = $db->getRow("SHOW SLAVE STATUS");
 				if (!empty($row)) { //its empty if we actully connected to master!
 				    if ((is_null($row['Seconds_Behind_Master']) || $row['Seconds_Behind_Master'] > 120) && ($row['Seconds_Behind_Master'] < 150) && function_exists('apc_store') && !apc_fetch('lag_warning')) {
@@ -125,9 +128,11 @@ function GeographDatabaseConnection($allow_readonly = false) {
 					//email me if we lag, but once gets big no point continuing to notify!
 					ob_start();
 					print "\n\nHost: ".`hostname`."\n\n";
-				        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-					print_r($db->getAll("SHOW FULL PROCESSLIST"));
 					print_r($row);
+					$list = $db->getAll("SHOW FULL PROCESSLIST");
+					foreach ($list as $lag)
+						if ($lag['State'] != 'Locked')
+							print_r($lag);
 					debug_print_backtrace();
 					$con = ob_get_clean();
                				mail('geograph@barryhunter.co.uk','[Geograph LAG] '.$row['Seconds_Behind_Master'],$con);
@@ -140,10 +145,12 @@ function GeographDatabaseConnection($allow_readonly = false) {
 					split_timer('db','connect','master-muchlag'); //logs the wall time
 					if ($db2) {
 						$db2->readonly = false;
+						$ADODB_FETCH_MODE = $prev_fetch_mode;
 						return $db2;
 					}
 				    }
 				}
+				$ADODB_FETCH_MODE = $prev_fetch_mode;
 			}
 
 	if (empty($logged)) {
@@ -487,7 +494,7 @@ function smarty_function_pageheader() {
 }
 function smarty_function_pagefooter() {
 
-	if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' && !empty($_SESSION) && rand(1,10) > 7) {
+	if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk' && !empty($_SESSION) && rand(1,10) > 7 && (strpos($_SERVER['HTTP_USER_AGENT'], 'bot') === FALSE) ) {
 		$texts = array('donate to geograph','please support us','donations welcome!','please donate','donations accepted');
 		$text = $texts[array_rand($texts)];
 		return '<div style="position:absolute;top:0;left:400px;width:200px"><a href="/help/donate" style="color:cyan">'.$text.'</a></div>';
