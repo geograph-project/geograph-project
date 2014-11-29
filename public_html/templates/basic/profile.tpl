@@ -1,5 +1,5 @@
-{if $userimages}
-{assign var="extra_meta" value="<link rel=\"canonical\" href=\"/profile/`$profile->user_id`\" />"}
+{if $userimages && $profile->user_id != 1695}
+{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://`$http_host`/profile/`$profile->user_id`\" />"}
 {else}
 {assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\" />"}
 {/if}
@@ -54,6 +54,10 @@
 {elseif strpos($profile->rights,'moderator') > 0}
 	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Geograph Role</b>: Moderator</div>
 {/if}
+{if strpos($profile->rights,'member') > 0}
+        <div style="margin-top:-1px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 3px; font-size:0.9em">Geograph Project Limited Company Member</div>
+{/if}
+
 
 <ul>
 	<li><b>Name</b>: {$profile->realname|escape:'html'}</li>
@@ -62,12 +66,16 @@
 		<li><b>Nickname</b>: {$profile->nickname|escape:'html'}</li>
 	{/if}
 
-	{if $profile->website}
+	{if $profile->website && !$profile->hasPerm('suspicious',true)}
 		{if $userimages}
 			<li><b>Website</b>: {external href=$profile->website}</li>
 		{else}
 			<li><b>Website</b>: {$profile->website|escape:'html'|replace:'http://':''|replace:'.':' [dot] '}</li>
 		{/if}
+	{/if}
+
+        {if $profile->google_profile}
+		<li><b>Google Profile</b>: <a rel="me" href="{$profile->google_profile|escape:'html'}?rel=author">{$profile->google_profile|escape:'html'}</a></li>
 	{/if}
 
  	{if $profile->hasPerm('dormant',true)}
@@ -84,14 +92,14 @@
 	{/if}
 
 	{if $profile->deceased_date}
-		<li><b>Member</b>:  {$profile->signup_date|date_format:"%B %Y"} - {$profile->deceased_date|date_format:"%B %Y"}</li>
+		<li><b>Site Member</b>:  {$profile->signup_date|date_format:"%B %Y"} - {$profile->deceased_date|date_format:"%B %Y"}</li>
 	{else}
 		{if $profile->grid_reference}
 			<li><b>Home grid reference</b>:
 			<a href="/gridref/{$profile->grid_reference|escape:'html'}">{$profile->grid_reference|escape:'html'}</a>
 		{/if}
 
-		<li><b>Member since</b>:
+		<li><b>Site Member since</b>:
 			{$profile->signup_date|date_format:"%B %Y"}
 		</li>
 	{/if}
@@ -128,7 +136,7 @@
 {/if}
 
 {if $profile->stats.images gt 0}
- 	<div class="interestBox" style="border-radius: 10px;">
+ 	<div class="interestBox" style="clear:both;border-radius: 10px;">
  		{if $profile->stats.images > 2}
 		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a><sup><a href="/help/squares" title="What is a Myriad?" class="about" style="font-size:0.7em">?</a></sup>.</div>
 		{/if}
@@ -173,7 +181,7 @@
 				</li>
 			{/if}
 			{if $profile->stats.tpoints}
-				<li><b>{$profile->stats.tpoints}</b> TPoints (Time-gap points <sup><a href="/help/stats_faq#tpoints" class="about" style="font-size:0.6em">About</a></sup>)</li>
+				<li style="padding-bottom:3px"><b>{$profile->stats.tpoints}</b> TPoints (Time-gap points <sup><a href="/help/stats_faq#tpoints" class="about" style="font-size:0.6em">About</a></sup>)</li>
 			{/if}
 			<li><b>{$profile->stats.images}</b> Photograph{if $profile->stats.images ne 1}s{/if}
 				{if $profile->stats.squares gt 1}
@@ -212,10 +220,11 @@
 
 {if $userimages}
 	<div class="interestBox" style="border-radius: 10px;">
-	<div style="float:right; position:relative; font-size:0.7em;"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slideshow mode</a>)</div>
+	<div style="float:right; position:relative; font-size:0.7em;"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnails</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slideshow</a>, <a href="/browser/#!/q=user{$profile->user_id}/realname+%22{$profile->realname|escape:'url'}%22">Browser</a></div>
 	<h3 style="margin-top:0px;margin-bottom:0px">Photographs</h3>
 	</div>
 	<form action="/search.php" style="display:inline;float:right">
+	<input type="hidden" name="form" value="profile"/>
 	<label for="fq">Search</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 	<input type="hidden" name="user_id" value="{$profile->user_id}"/>
 	<input type="submit" value="Find"/>
@@ -223,13 +232,15 @@
 
 	<p style="font-size:0.7em">Click column headers to sort in a different order</p>
 
-	{if $limit}
-		<p>This page shows the latest {$limit} images, more are available <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=text&amp;resultsperpage=100&amp;page=2">via the search interface</a></p>
-	{/if}
-	<br style="clear:both"/>
-	<table class="report sortable" id="photolist" style="font-size:8pt;">
+
+{if $profile->tags}
+	<div style="clear:both;position:relative;width:1010px">
+	<div style="float:left;position:relative;width:790px">
+{/if}
+
+	<table class="report sortable" id="photolist" style="font-size:8pt;clear:none">
 	<thead><tr>
-		<td><img title="Any grid square discussions?" src="/templates/basic/img/discuss.gif" width="10" height="10"> ?</td>
+		<td><img title="Any grid square discussions?" src="http://{$static_host}/templates/basic/img/discuss.gif" width="10" height="10"> ?</td>
 		<td>Grid Ref</td>
 		<td>Title</td>
 		<td sorted="desc">Submitted</td>
@@ -239,11 +250,11 @@
 	<tbody>
 	{foreach from=$userimages item=image}
 		<tr>
-		<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View discussion - last updated {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" ><img src="/templates/basic/img/discuss.gif" width="10" height="10" alt="discussion indicator"></a>{/if}</td>
+		<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View discussion - last updated {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" ><img src="http://{$static_host}/templates/basic/img/discuss.gif" width="10" height="10" alt="discussion indicator"></a>{/if}</td>
 		<td sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
 		<td sortvalue="{$image->title}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
 		<td sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
-		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if}</td>
+		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if} {if $image->points eq 'tpoint'}(tpoint){/if}</td>
 		<td sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
 		</tr>
 	{/foreach}
@@ -259,6 +270,20 @@
 		{/if}
 		{/dynamic}
 	{/if}
+
+</div>
+
+{if $profile->tags}
+	<div style="float:left;width:200px;background-color:white;font-size:0.7em;line-height:1.4em; text-align:center;margin:10px;{if count($tags) > 100 && $results} height:150px;overflow:auto{/if}">
+	<b><a href="/finder/bytag.php?user_id={$profile->user_id}">Most Used Tags</a></b>:<br/><br/>
+	{foreach from=$profile->tags item=item}
+		<span class="tag"><a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="/search.php?searchtext=[{if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}]&user_id={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a></span> <br/>
+	{/foreach}
+	</div>
+
+	<br style="clear:both"/>
+	</div>
+{/if}
 
 	{if !$profile->deceased_date}
 		<h3 style="margin-bottom:0px">Explore My Images</h3>
@@ -278,14 +303,20 @@
 			{/if}{/dynamic}
 		{/if}
 		{if $user->user_id eq $profile->user_id}
-			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View all your image titles as a <i>Wordle</i>"}</li>
+			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View words from image titles as a <i>Wordle</i>"} or 
+				{external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`&amp;tags=1" text="View your tags"}</li>
 			<li><b>Change Requests</b>: <a href="/suggestions.php" rel="nofollow">View recent suggestions</a></li>
-			<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit my recent submissions</a></li>
+			{if !$enable_forums}
+				<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit my recent submissions</a></li>
+			{/if}
+			<li><b>Uses</b>: <a href="/myphotos.php">Use of my photos around the site</a></li>
+			<li><b>2013</b>: <a href="/stuff/your-2013.php">Your 2013 (in pictures)</a></li>
 		{/if}
 	</ul>
 	{if $user->user_id eq $profile->user_id}
 		<ul>
-		<li><a href="/search.php?my_squares=1&amp;user_id={$profile->user_id}&amp;user_invert_ind=1&amp;submitted_startDay=30&amp;submitted_startYear">Search for submissions in last 30 days in squares I have photographed</a></li>
+		<li><a href="/browser/my_squares-redirect.php?days=30">Browse submissions in last 30 days in squares I have photographed</a>
+		   (<a href="/search.php?my_squares=1&amp;user_id={$profile->user_id}&amp;user_invert_ind=1&amp;submitted_startDay=30&amp;submitted_startYear">Old Search</a>)</li>
 		</ul>
 	{/if}
 {/if}
