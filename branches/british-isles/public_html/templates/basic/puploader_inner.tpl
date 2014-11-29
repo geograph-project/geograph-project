@@ -309,13 +309,7 @@ function rehighlight(that,check) {
 						{if $imageclass}
 							<option value="{$imageclass}" selected="selected">{$imageclass}</option>
 						{/if}
-						<option value="Other">Other...</option>
 					</select>
-
-					<span id="otherblock">
-					<label for="imageclassother">Please specify </label>
-					<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
-					</span></p>
 
 	<script type="text/javascript" src="/categories.js.php"></script>
 	<script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>

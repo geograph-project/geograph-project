@@ -536,10 +536,17 @@ if (isset($_POST['gridsquare']))
 				//so get a new one...
 				$square->_getDB();
 			}
-			
+
 			$tags = new Tags;
 			$tags->assignPrimarySmarty($smarty);
 			$tags->assignSubjectSmarty($smarty);
+
+			if (!empty($square)) {
+				$sphinxq = "+".$square->grid_reference;
+        	                $sphinx = new sphinxwrapper($sphinxq);
+                	        $count = $sphinx->countMatches('snippet');
+                        	$smarty->assign('snippets',$count);
+			}
 
 			//find a possible place within 25km
 			$smarty->assign('place', $square->findNearestPlace(25000));

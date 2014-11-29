@@ -510,14 +510,7 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 					{if $imageclass}
 						<option value="{$imageclass}" selected="selected">{$imageclass}</option>
 					{/if}
-					<option value="Other">Other...</option>
 				</select>
-
-				<span id="otherblock">
-				<label for="imageclassother">Please specify </label>
-				<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/>
-				</span>
-
 
 				<input type=button value="Add" onclick="addCategoryTag(this.form)"/></p>
 
@@ -531,13 +524,9 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 <script type="text/javascript">
 
 function addCategoryTag(form) {
-	var catother = form.elements['imageclassother'].value;
 
 	var ele = form.elements['imageclass'];
 	var value = ele.options[ele.selectedIndex].value;
-	if (value == 'Other' && catother.length > 0) {
-		value = catother;
-	}
 
 	var loader = new Image();
 	loader.src = "/tags/tagger.json.php?upload_id={/literal}{$upload_id}{literal}&status=2&tag="+encodeURIComponent("category:"+value);
@@ -773,7 +762,6 @@ have problems
 	<input type="hidden" name="title"/>
 	<textarea name="comment" style="display:none"/></textarea>
 	<input type="hidden" name="imageclass"/>
-	<input type="hidden" name="imageclassother"/>
 	<input type="hidden" name="imagetakenDay"/>
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>

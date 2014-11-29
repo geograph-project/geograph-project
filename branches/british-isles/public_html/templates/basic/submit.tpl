@@ -414,7 +414,7 @@ it was taken or other interesting geographical information. <span id="styleguide
 
 
 <div>
-	<b>Shared Descriptions/References (Optional)</b>
+	<b>Shared Descriptions/References (Optional){if $snippets} <span style="background-color:yellow" title="{$snippets} Shared Description(s) being used in this square">[{$snippets}]</span>{/if}</b>
 	<span id="hideshare"><input type=button onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';return false;" value="Expand"/></span>
 
 	<div id="showshare" style="display:none">
@@ -672,7 +672,6 @@ have problems
 	<textarea name="comment" style="display:none"/></textarea>
 	<input type="hidden" name="subject"/>
 	<input type="hidden" name="imageclass"/>
-	<input type="hidden" name="imageclassother"/>
 	<input type="hidden" name="imagetakenDay"/>
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
