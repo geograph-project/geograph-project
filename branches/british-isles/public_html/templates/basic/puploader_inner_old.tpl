@@ -43,6 +43,8 @@
 
 		{if $reference_index == 2}
 		{external href="http://www.multimap.com/maps/?zoom=15&countryCode=GB&lat=`$lat`&lon=`$long`&dp=904|#map=`$lat`,`$long`|15|4&dp=925&bd=useful_information||United%20Kingdom" text="multimap.com" title="multimap includes 1:50,000 mapping for Northern Ireland" target="_blank"} includes 1:50,000 mapping for Northern Ireland.
+		{elseif $rastermap->service == 'OSOS'}
+			<small style="font-size:0.8em">Click the icon beside entry boxes to bring to front on map</small> 
 		{/if}
 
 		<h4><b>Grid References:</b> (recommended)</h4>
@@ -88,9 +90,13 @@
 				function nudgeMarker(that) {
 
 					if (that.name == 'photographer_gridref') {
+						if (eastings2 < 10) 
+							return;
 						currentelement = marker2;
 						var point = new OpenSpace.MapPoint(eastings2, northings2-3);
 					} else {
+						if (eastings1 < 10) 
+							return;
 						currentelement = marker1;
 						var point = new OpenSpace.MapPoint(eastings1, northings1-3);
 					}
@@ -154,13 +160,13 @@
 		<br/>
 
 		<div class="tabHolder" style="font-size:1em">
-			<a class="tabSelected nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Primary Category</a>&nbsp;
-			<a class="tab nowrap" id="tab1" style="font-size:0.9em" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
+			<a class="tab nowrap" id="tab4" onclick="tabClick('tab','div',4,4)">Primary Category</a>&nbsp;
+			<a class="tabSelected nowrap" id="tab1" style="font-size:0.9em" onclick="tabClick('tab','div',1,4)">Geographical Context</a>&nbsp;
 			<a class="tab nowrap" id="tab2" style="font-size:0.9em" onclick="tabClick('tab','div',2,4);show_tagging(document.forms['theForm'])">Tags <small>(Optional)</small></a>&nbsp;
 			<a class="tab nowrap" id="tab3" style="font-size:0.9em" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?upload_id={$upload_id}&gr={$grid_reference|escape:'html'}';">Shared Descriptions <small>(Optional)</small></a>
 		</div>
 
-		<div id="div4" class="interestBox">
+		<div id="div4" class="interestBox" style="display:none">
 	{/if}
 {else}
 	<p><label for="imageclass"><b>Primary geographical category</b></label> {if $error.imageclass}
@@ -254,7 +260,7 @@
 			</iframe>
 		</div>
 
-		<div id="div1" class="interestBox" style="display:none">
+		<div id="div1" class="interestBox">
 			<div style="float:right"><a href="/article/Transitioning-Categories-to-Tags" text="Article about new tags and categories" class="about" target="_blank">About Context/Tags</a></div>
 			<div style="font-size:0.8em;padding-bottom:5px;">
 			&middot; Tick as many Geogaphical Contexts as required.<br/>
