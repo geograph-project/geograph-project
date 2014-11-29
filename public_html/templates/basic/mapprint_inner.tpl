@@ -33,7 +33,7 @@
 		<img src="/img/depthkey.png" width="{$mosaic_width}" height="20" style="padding-left:10px;"/>
 	{/if}
 	
-	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
+	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://{$static_host}/img/80x15.png" /></a>
 	&nbsp;&nbsp;&copy; Copyright Geograph Project Ltd</div>
 {*end containing div for main map*}
 </div>
