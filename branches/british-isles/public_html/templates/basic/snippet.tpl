@@ -87,7 +87,7 @@
 	<br style="clear:both"/>
 
 	{if $images > 25}
-		... and <a href="/browser/content-redirect.php?id={$snippet_id}&amp;source=snippet">{$images-25} more images</a>.
+		... and {$images-25} more images.
 	{/if}
 {if $others || $related}
 	</div>
@@ -95,25 +95,27 @@
 
 <ul class="explore">
 	{if $images > 2}
-		<li class="interestBox"><a href="/browser/content-redirect.php?id={$snippet_id}&amp;source=snippet"><b>View these images in the Browser</b></a>
+		<li class="interestBox"><a href="/browser/content-redirect.php?id={$snippet_id}&amp;source=snippet">View all images using <b>this description</b> in the <b>Browser</b></a>
 			| <a href="/browser/content-redirect.php?id={$snippet_id}&amp;source=snippet&amp;map">On a <b>Map</b></a></li>
 	{/if}
 
-	{if $images && $title}
+	{if $images && $images <= 1000}
+		{if $title}
 
-		<li class="interestBox"><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1"><b>View all images</b> using "{$title|escape:'html'}" Shared Description(s)</a>
-		{if $images < 15}
-			| <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1&displayclass=map">On a <b>Map</b></a>
+			<li class="interestBox"><a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1"><b>View all images</b> using "{$title|escape:'html'}" Shared Description(s)</a>
+			{if $images < 15}
+				| <a href="/search.php?searchtext=snippet_title%3A{$title|escape:'url'}&amp;do=1&displayclass=map">On a <b>Map</b></a>
+			{/if}
+			| (<a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">Just <i>this</i> shared description</a>)
+			</li>
+		{else}
+			<li class="interestBox"><b><a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">List all {$images} images</a> using this description.</b></li>
 		{/if}
-		| (<a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">Just <i>this</i> description</a>)
-		</li>
-	{elseif $images}
-		<li class="interestBox"><b><a href="/search.php?searchtext=snippet_id%3A{$snippet_id}&amp;do=1">List all {$images} images</a> that this description.</b></li>
 	{/if}
 	{if $grid_reference}
-		<li class="interestBox"><a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | <a href="/gridref/{$grid_reference}"><b>Photos</b> for {$grid_reference}</a></li>
+		<li class="interestBox">This description is located in {$grid_reference}, <a href="/gridref/{$grid_reference}/links"><img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" style="padding:2px;" alt="More Links for {$grid_reference}"/></a> <a href="/gridref/{$grid_reference}/links">Links for <b>{$grid_reference}</b></a> | <a href="/gridref/{$grid_reference}"><b>Photos</b> for {$grid_reference}</a></li>
 	{/if}
-	{if $title}<li class="interestBox"><a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find {if $grid_reference}nearby{/if} images <b>mentioning the words [ {$title|escape:'html'} ]</b></a></li>{/if}
+	{if $title}<li class="interestBox"><a href="/search.php?searchtext={$title|escape:'url'}&amp;gridref={$grid_reference}&amp;do=1">Find {if $grid_reference}nearby{/if} images <b>mentioning the words [ {$title|escape:'html'} ]</b></a> | (<a href="/browser/#!/q={$title|escape:'url'}/">in ther Browser</a>)</li>{/if}
 </ul>
 
 <br/>

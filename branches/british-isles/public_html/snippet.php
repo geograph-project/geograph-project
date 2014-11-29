@@ -63,7 +63,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		if ($data['images']) {
 			$imagelist = new ImageList();
 
-			$sql = "SELECT gridimage_id,gi.user_id,realname,credit_realname,gi.title,imageclass,grid_reference FROM gridimage_snippet gs INNER JOIN gridimage_search gi USING (gridimage_id) WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296 LIMIT 25";
+			$sql = "SELECT gridimage_id,gi.user_id,realname,credit_realname,gi.title,imageclass,grid_reference FROM gridimage_snippet gs INNER JOIN gridimage_search gi USING (gridimage_id) WHERE snippet_id = $snippet_id AND gridimage_id < 4294967296 ORDER BY crc32(concat(gridimage_id,yearweek(now()))) LIMIT 25";
 
 			$imagelist->_getImagesBySql($sql);
 			$smarty->assign_by_ref('results', $imagelist->images);
@@ -120,6 +120,8 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			} else {
 				$sphinx->prepareQuery($data['grid_reference']);
 			}
+$client = $sphinx->_getClient();
+$client->setFilter('images',array(0),true);
 			
 			$ids = $sphinx->returnIds($pg,'snippet');
 
@@ -140,11 +142,10 @@ if (!$smarty->is_cached($template, $cacheid)) {
 				$smarty->assign_by_ref('others',$others);
 				
 				
-				//we only replace links, if they appears to be in bits not affected by markup - should help prevent replaces in what is already links, or titles of images etc
-				$nohtml = strip_tags(preg_replace('/<a\s.+?>.*?<\/a>/','', $data['comment']));
+				//we only replace links, if they appears to be in bits not affected by markup 
 				foreach ($others as $id => $row) {
-					if (strlen($row['title']) > 3 && stripos($nohtml,$row['title']) !== FALSE)
-						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b/i",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
+					if (strlen($row['title']) > 3 && stripos($data['comment'],$row['title']) !== FALSE)
+						$data['comment'] = preg_replace("/\b(".preg_quote($row['title'],'/').")\b(?![^<]*>)/i",'<a href="/snippet/'.$row['snippet_id'].'">$1</a>',$data['comment']);
 				}
 			} 
 		} 
@@ -170,6 +171,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			
 			$sphinx->prepareQuery("(@title {$data['title']}) | (@comment \"{$data['title']}\") ".$crit);
 ##			$sphinx->setGroupBy('titlecrc',SPH_GROUPBY_ATTR,"@relevance DESC, @id DESC");
+
+$client = $sphinx->_getClient();
+$client->setFilter('images',array(0),true);
 			
 			$ids = $sphinx->returnIds($pg,'snippet');
 			
@@ -185,7 +189,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 				$where= implode(' AND ',$where);
 
-				$related = $db->getAll($sql="SELECT s.snippet_id,title,comment,realname,COUNT(gs.snippet_id) AS images FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)  WHERE $where  GROUP BY s.snippet_id $orderby"); 
+				$related = $db->getAll($sql="SELECT s.snippet_id,title,comment,realname,s.user_id,COUNT(gs.snippet_id) AS images FROM snippet s LEFT JOIN user u USING (user_id) LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296)  WHERE $where  GROUP BY s.snippet_id $orderby"); 
 	
 				$smarty->assign_by_ref('related',$related);
 				
@@ -212,6 +216,9 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$smarty->assign('page_title',$data['title'].$t2);
 		}
 	} else {
+		header("HTTP/1.0 404 Not Found");
+		header("Status: 404 Not Found");
+
 		$template = 'static_404.tpl';
 	}
 } else {
@@ -220,10 +227,6 @@ if (!$smarty->is_cached($template, $cacheid)) {
  
 
 
-
-
-
-
 $smarty->display($template, $cacheid);
 
-?>
+
