@@ -35,15 +35,14 @@
 		<li>You can see what the new tab based submission method looks like <a href="/stuff/category.php?type=top&v=3" target="_blank">on this mockup</a>.<br/><br/></li>
 		<li>It's almost identical to the current submission, but the dropwdown to select the category from a mamoth 9000+ list, you just choose from a short compact list. Please try it!</li>
 	</ul>
+
+	(NOTE: This only applies, to the original submission method, not the new V2) 
 {/if}
 </div>
 
 <p>Continue to the submission processes:</p>
 <ul>
 	<li><a href="/submit.php?new={$new}&amp;redir=false">Original Submission method</a></li>
-	<li><a href="/submit2.php?new={$new}">Submission v2</a></li>
-	<li><a href="/submit2.php?display=tabs&amp;new={$new}">Submission v2 (tabs)</a></li>
-	<li><a href="/submit-multi.php?new={$new}">Multi Submission</a></li>
 </ul>
 
 
