@@ -472,9 +472,9 @@ split_timer('map','getBaseMapFilename',"$file"); //logs the wall time
 	{
 		global $CONF;
 		
-		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
+		if (($this->type_or_user == -1 || $this->type_or_user == -13) && $this->pixels_per_km >4) {
+			$real = $this->type_or_user;
 			$this->type_or_user =0;
-			$real = -1;
 		}
 		//always given dynamic url, that way cached HTML can 
 		//always get an image
@@ -500,7 +500,7 @@ split_timer('map','getBaseMapFilename',"$file"); //logs the wall time
 
 
 		//if thumbs level on depeth map, can just use normal render.
-		if ($this->type_or_user == -1 && $this->pixels_per_km >4) {
+		if (($this->type_or_user == -1 || $this->type_or_user == -13) && $this->pixels_per_km >4) {
 			$this->type_or_user = 0;
 		}
 		$file=$this->getImageFilename();
@@ -1369,10 +1369,11 @@ split_timer('map'); //starts the timer
 		$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
 
 		$number = !empty($this->minimum)?intval($this->minimum):0;
-	
+
 		if ($this->type_or_user == -13) {
 			$sql="select x,y,0 as `d`,max(ftf) as imagecount
 				from gridimage_search
+				where CONTAINS( GeomFromText($rectangle),       point_xy)
 				group by x,y
 				 having imagecount>0
 				 order by null";

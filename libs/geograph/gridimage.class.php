@@ -131,11 +131,11 @@ class GridImage
 	/**
 	* constructor
 	*/
-	function GridImage($id = null) //todo - offer to load the snippets, and collection references here (remmeber memcache!) 
+	function GridImage($id = null,$usesearch = false) //todo - offer to load the snippets, and collection references here (remmeber memcache!) 
 	{
 		$this->ext = false;
 		if (!empty($id)) {
-			$this->loadFromId($id);
+			$this->loadFromId($id,$usesearch);
 		}
 	}
 	
@@ -483,7 +483,7 @@ split_timer('gridimage'); //starts the timer
 		$this->bigtitle=preg_replace('/(?<![\.])\.$/', '', $this->bigtitle);
 
 #if ($this->gridimage_id == 2847145) {
-		$adv = ($this->user_id == 3 || $this->user_id == 1533 || $this->user_id == 2520 || strpos($_SERVER['HTTP_USER_AGENT'], 'Google')!==FALSE);
+		$adv = ($this->user_id == 3 || $this->user_id == 1533 || $this->user_id == 2520 || strpos($_SERVER['HTTP_USER_AGENT'], 'Google')!==FALSE || strpos($_SERVER['HTTP_USER_AGENT'], 'bing'));
 
 		$lines = explode("\n",wordwrap($this->bigtitle,40,"\n"));
 		$bits = array();
@@ -567,20 +567,24 @@ split_timer('gridimage'); //starts the timer
 		if ($this->view_direction > -1) {
 			$smarty->assign('view_direction', ($this->view_direction%90==0)?strtoupper(heading_string($this->view_direction)):ucwords(heading_string($this->view_direction)) );
 		}
-		
+
 		$this->hectad = $this->grid_square->gridsquare.intval($this->grid_square->eastings/10).intval($this->grid_square->northings/10);
-		
+
 		if ($CONF['template']=='archive') {
 			$smarty->assign('sitemap',"/sitemap/{$this->grid_square->gridsquare}/{$this->hectad}/{$this->grid_square->grid_reference}.html");
 		} else {
 			$level = ($this->grid_square->imagecount > 1)?6:5;
-			$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square)); 
+			$smarty->assign('sitemap',getSitemapFilepath($level,$this->grid_square));
 		}
 
 split_timer('gridimage','assignToSmarty',$this->gridimage_id); //logs the wall time
 
+		if ($this->user_id == 1695) {
+			$smarty->assign('extra_meta','<meta name="robots" content="noindex">');
+			header("X-Robots-Tag: noindex");
+		}
 	}
-	
+
 	function loadSnippets($gid = 0) {
 		global $memcache;
 
@@ -971,18 +975,23 @@ split_timer('gridimage'); //starts the timer
 					$src = 'db';
 				} else {
 					$fullpath = $this->_getFullpath(true); //will fetch the file if needbe
-					
+
+					if ($fullpath=="/photos/error.jpg") {
+						//break early, to avoid caching the broken dimensions.
+						return array(640,640,null,'');
+					}
+
 					$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
-					
+
 					$origpath = $this->_getOriginalpath(true);
-					
+
 					$db=&$this->_getDB(false);
-					
+
 					if ($origpath!="/photos/error.jpg") {
 						$osize=getimagesize($_SERVER['DOCUMENT_ROOT'].$origpath);
 						$this->original_width = $size[4] = $osize[0];
 						$this->original_height = $size[5] = $osize[1];
-					
+
 						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]},original_width={$osize[0]}, original_height={$osize[1]}");
 					} else {
 						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
@@ -1783,7 +1792,7 @@ split_timer('gridimage'); //starts the timer
 		//find out how many users have contributed to the square, and if this is the first from this user, then give it a ftf. 
 		//NOT ftf used to just mean first overall, now we mark the first from each contributor. (with the sequence in the square)
 		list($contributors,$has_image) = $db->GetRow("select count(distinct user_id) as contributors,sum(user_id = {$this->user_id}) as has_image from gridimage where gridsquare_id={$this->gridsquare_id} and moderation_status='geograph' and gridimage_id<>{$this->gridimage_id}");
-		
+
 		$this->ftf=0;
 		if (($status=='geograph') && ($has_image==0)) 
 		{

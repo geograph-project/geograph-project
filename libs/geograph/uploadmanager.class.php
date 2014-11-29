@@ -75,7 +75,7 @@ class UploadManager
 	function _pendingJPEG($id)
 	{
 		global $USER;
-		return $this->tmppath.'/newpic_u'.$USER->user_id.'_'.$id.'.jpeg';
+		return $this->tmppath.'/'.($USER->user_id%10).'/newpic_u'.$USER->user_id.'_'.$id.'.jpeg';
 	}
 
 	/**
@@ -84,7 +84,7 @@ class UploadManager
 	function _originalJPEG($id)
 	{
 		global $USER;
-		return $this->tmppath.'/newpic_u'.$USER->user_id.'_'.$id.'.original.jpeg';
+		return $this->tmppath.'/'.($USER->user_id%10).'/newpic_u'.$USER->user_id.'_'.$id.'.original.jpeg';
 	}
 
 	/**
@@ -93,7 +93,7 @@ class UploadManager
 	function _pendingEXIF($id)
 	{
 		global $USER;
-		return $this->tmppath.'/newpic_u'.$USER->user_id.'_'.$id.'.exif';
+		return $this->tmppath.'/'.($USER->user_id%10).'/newpic_u'.$USER->user_id.'_'.$id.'.exif';
 	}
 		
 	
@@ -301,6 +301,19 @@ class UploadManager
 		if (function_exists('mime_content_type'))
 		{
 			$is_jpeg= mime_content_type($file)=='image/jpeg';
+
+			if (!$is_jpeg) {
+                                        ob_start();
+                                        print "\n\nHost: ".`hostname`."\n\n";
+                                        print_r(mime_content_type($file));print "\n";
+					print_r($_FILES);
+					print_r($_POST);
+                                        print_r($_SERVER);
+                                        debug_print_backtrace();
+                                        $con = ob_get_clean();
+                                        mail('geograph@barryhunter.co.uk','[Geograph] JPEG Detection Failed',$con);
+			}
+
 		}
 		else
 		{
@@ -352,12 +365,15 @@ class UploadManager
 				$data = file_get_contents($url);
 				if (strlen($data) > 0) {
 					file_put_contents($filename,$data);
+
+					$GLOBALS['http_response_header'] = $http_response_header;
+
 					return true;
 				}
 				return false;
 			}
 
-		if (preg_match('/^http:\/\/[\w\.-]+\/[\w\.\/-]+\.jpg$/',$url) || preg_match('/^http:\/\/www\.picnik\.com\/file\/\d+$/',$url)) 
+		if (preg_match('/^http:\/\/[\w\.-]+\/[\w\.\/-]+\.jpg$/',$url) || preg_match('/^http:\/\/www\.picnik\.com\/file\/\d+$/',$url) || preg_match('/^https:\/\/www\.filepicker\.io\//',$url)) 
 		{	
 			if (fetch_remote_file($url, $temp_file)) 
 			{	
@@ -512,6 +528,10 @@ class UploadManager
 	function _downsizeFile($filename,$max_dimension,$source = '') {
 		global $USER,$CONF;
 	
+                if(extension_loaded('newrelic'))
+                        newrelic_ignore_transaction();
+
+
 	split_timer('upload'); //starts the timer
 	
 		if (strlen($CONF['imagemagick_path'])) {
@@ -669,7 +689,7 @@ class UploadManager
 	split_timer('upload'); //starts the timer
 
 		$mkey = $this->square->gridsquare_id;
-		$seq_no =& $memcache->name_get('sid',$mkey);
+		$seq_no =& $memcache->name_get('sid2',$mkey);
 		
 		if (empty($seq_no) && !empty($CONF['use_insertionqueue'])) {
 			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage_queue where gridsquare_id={$this->square->gridsquare_id}");
@@ -679,7 +699,7 @@ class UploadManager
 		}
 		$seq_no=max($seq_no+1, 0);
 		
-		$memcache->name_set('sid',$mkey,$seq_no,false,$memcache->period_long);
+		$memcache->name_set('sid2',$mkey,$seq_no,false,$memcache->period_long);
 	
 	split_timer('upload','startup',"$mkey"); //logs the wall time
 
@@ -806,9 +826,9 @@ class UploadManager
 				$endtime = ((float)$usec + (float)$sec);
 				$timetaken = $endtime - $GLOBALS['STARTTIME'];
 				
-				$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method',timetaken=$timetaken");
+				$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method',timetaken=$timetaken,preview_key='{$this->upload_id}',largestsize = '{$this->largestsize}'");
 			} else {
-				$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method'");
+				$this->db->Execute("INSERT INTO submission_method SET gridimage_id = $gridimage_id,method='$method',preview_key='{$this->upload_id}',largestsize = '{$this->largestsize}'");
 			}
 		}
 		
@@ -880,6 +900,11 @@ class UploadManager
 	*/
 	function cleanUp()
 	{
+		@rename($from=$this->_pendingJPEG($this->upload_id), str_replace('upload_tmp_dir','upload_tmp_dir_old',$from));
+		@rename($from=$this->_pendingEXIF($this->upload_id), str_replace('upload_tmp_dir','upload_tmp_dir_old',$from));
+		@rename($from=$this->_originalJPEG($this->upload_id), str_replace('upload_tmp_dir','upload_tmp_dir_old',$from));
+
+
 		@unlink($this->_pendingJPEG($this->upload_id));
 		@unlink($this->_pendingEXIF($this->upload_id));
 		@unlink($this->_originalJPEG($this->upload_id));
@@ -890,7 +915,7 @@ class UploadManager
 	{
 		global $CONF,$USER;
 		
-		chdir($CONF['photo_upload_dir']);
+		chdir($CONF['photo_upload_dir'].'/'.($USER->user_id%10));
 		
 		if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) {
 			$files = glob("newpic_u{$USER->user_id}_*.exif");
@@ -922,9 +947,9 @@ class UploadManager
 						$row['gridsquare'] = preg_replace('/^([A-Z]+).*$/','',$row['grid_reference']);
 					}
 				
-					if (!empty($exif['COMMENT']) && preg_match("/\b([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
-						if (strlen($m[2]) == strlen($m[3]) || (strlen($m[2])+strlen($m[3]))%2==0) {
-							$row['grid_reference'] = $m[1].$m[2].$m[3];
+					if (!empty($exif['COMMENT']) && preg_match("/(\b|_)([B-DF-JL-OQ-TV-X]|[HNST][A-Z]|MC|OV)[ \._-]?(\d{2,5})[ \._-]?(\d{2,5})(\b|[A-Za-z_])/i",implode(' ',$exif['COMMENT']),$m)) {
+						if (strlen($m[3]) == strlen($m[4]) || (strlen($m[3])+strlen($m[4]))%2==0) {
+							$row['grid_reference'] = $m[2].$m[3].$m[4];
 						}
 					}
 					//dont know yet which of these is best but they all seem to be the same on my test images
@@ -935,7 +960,7 @@ class UploadManager
 						//Example: ["DateTimeOriginal"]=> string(19) "2004:07:09 14:05:19"
 						 list($date,$time) = explode(' ',$date);
 						 $dates = explode(':',$date);
-						 $row['imagetaken'] = implode('-',$dates).($time)?' '.$time:'';
+						 $row['imagetaken'] = implode('-',$dates).(($time)?' '.$time:'');
 					}
 				}
 				$data[] = $row;
