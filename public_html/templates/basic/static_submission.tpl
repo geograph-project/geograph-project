@@ -42,11 +42,11 @@
 
 <h2>Feature Matrix</h2>
 
-<table style="font-size:0.9em" border=1 cellspacing=0 cellpadding=3 class="report">
+<table style="font-size:0.9em" border=1 cellspacing=0 cellpadding=4 class="report">
 <thead>
  <tr>
   <td>.</td>
-  <td>Submit</td>
+  <td>Submit (original v1)</td>
   <td>Submit v2</td>
   <td>Multi-Submit</td>
   <td>No Frills Submit</td>
@@ -56,7 +56,7 @@
 </thead>
  <tr>
   <td>JavaScript Required</td>
-  <td style="background-color:lightgreen" align="center">NO</td>
+  <td style="background-color:lightgreen" align="center">no</td>
   <td align="center">yes</td>
   <td align="center">yes</td>
   <td align="center">yes</td>
