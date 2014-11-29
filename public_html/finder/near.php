@@ -153,9 +153,9 @@ if (!empty($_GET['q'])) {
 	<? if (!empty($_GET['q'])) { ?>
 	<div style="float:right">
 		More:
-		<a href="/of/<? echo urlencode2($_GET['q']); ?>?redir=false">Keyword Search</a> &middot;
+		<a href="/of/<? echo urlencode2($_GET['q']); ?>?redir=false" rel="nofollow">Keyword Search</a> &middot;
 		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=decade">Over Time</a> &middot;
-                <a href="/gridref/<? echo $gru; ?>">Browse Page</a> &middot;
+                <a href="/gridref/<? echo strtoupper($gru); ?>">Browse Page</a> &middot;
 		<? if (!empty($square->reference_index) && $square->reference_index == 1) { ?>
 		        <a href="/search.php?do=1&gridref=<? echo $gru; ?>&amp;displayclass=map">OS Map</a> &middot;
 		        <a href="/finder/dblock.php?gridref=<? echo $gru; ?>">D-block</a> &middot;
@@ -351,7 +351,7 @@ if (!empty($_GET['d'])) {
 		if (empty($sph)) {
 	                $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
 		}
-		print "<p>No Results found. Try a <a href=\"/of/$qu\">keyword search for <b>$qh</b></a> ";
+		print "<p>No Results found. Try a <a href=\"/of/$qu\" rel=\"nofollow\">keyword search for <b>$qh</b></a> ";
 		$sph->query("SELECT id FROM sample8 WHERE MATCH(".$sph->quote($_GET['q']).") LIMIT 0");
 		$data = $sph->getAssoc("SHOW META");
 		if (!empty($data['total_found']))

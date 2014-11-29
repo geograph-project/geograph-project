@@ -101,6 +101,8 @@ if (!empty($_GET['q'])) {
 	$domains = "site:geograph.ie";
 	if ($_SERVER['HTTP_HOST'] != 'www.geograph.ie')
 		$domains .= "+OR+site:geograph.org.uk";
+	else
+		print "<div class=interestBox>This page only shows images from Ireland - Great Britain is automatically excluded.</div>";
 
 	$remotes = parallel_get_contents(array(
 		"http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1",
@@ -141,7 +143,7 @@ if (!empty($_GET['q'])) {
 			<a href="/tagged/<? echo $qu2; ?>">Tagged</a> &middot;
 		<? } ?>
 		<? if (preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$_GET['q'])) { ?>
-		        <a href="/gridref/<? echo $qu2; ?>">Browse Page</a> &middot;
+		        <a href="/gridref/<? echo strtoupper($qu2); ?>">Browse Page</a> &middot;
                 <? } ?>
 		<a href="/browser/#!/q=<? echo $qu; ?>/display=map_dots/pagesize=50">Map</a> &middot;
 		<a href="/browser/#!/q=<? echo $qu; ?>/pagesize=50">Browser</a> &middot;
@@ -459,7 +461,7 @@ if (!empty($_GET['d'])) {
 					$data = $sph->getAssoc("SHOW META");
 					if (!empty($data['total_found'])) {
 						$h = ($data['total_found'] > 100)?"<b>".htmlentities($item)."</b>":htmlentities($item);
-						$bits[] = "<span class=nowrap><a href=\"/of/".urlencode($item)."\">$h</a> (~{$data['total_found']} images)</span>";
+						$bits[] = "<span class=nowrap><a href=\"/of/".urlencode($item)."\" rel=\"nofollow\">$h</a> (~{$data['total_found']} images)</span>";
 					}
 				}
 				if (!empty($bits))
@@ -474,7 +476,7 @@ if (!empty($_GET['d'])) {
 		                $grid_ok=$square->setByFullGridRef($gr,true,true);
 				if ($grid_ok && $square->imagecount) {
 					$qnew = urlencode2($square->grid_reference." \"".preg_replace('/[^\w]+/',' ',$_GET['q'])."\"/1");
-					print "<p>Or <a href=\"/of/$qnew\">View images in {$square->grid_reference}</a> (~{$square->imagecount} images)</p>";
+					print "<p>Or <a href=\"/of/$qnew\" rel=\"nofollow\">View images in {$square->grid_reference}</a> (~{$square->imagecount} images)</p>";
 				}
 			}
 		}
@@ -505,12 +507,12 @@ if (!empty($final) && empty($words) && count($final) != count($rows['google']) &
 			$t = $tag['tag']; //we need to use the actual tag, rather than the query, because it might be a prefixed tag!
 			if (!empty($tag['prefix']))
                                 $t = $tag['prefix'].':'.$t;
-			$suggestions[] = '<a href="/of/['.urlencode($t).']">Images <i>tagged</i> with ['.htmlentities($t).']</a>';
+			$suggestions[] = '<a href="/of/['.urlencode($t).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities($t).']</a>';
 		}
 		if (strpos($_GET['q'],'"') !== 0 && strpos($_GET['q'],' ') > 3)
-			$suggestions[] = "<a href=\"/of/%22$qu2%22\">Images with <i>phrase</i> &quot;$qh&quot</a>";
+			$suggestions[] = "<a href=\"/of/%22$qu2%22\" rel=\"nofollow\">Images with <i>phrase</i> &quot;$qh&quot</a>";
 		if (strpos($_GET['q'],':') !== 0 && !empty($decode[0]) && $decode[0]->total_found > 0)
-			$suggestions[] = "<a href=\"/of/text:$qu2\">Pure Keyword Match for '$qh'</a>";
+			$suggestions[] = "<a href=\"/of/text:$qu2\" rel=\"nofollow\">Pure Keyword Match for '$qh'</a>";
 	}
 	if (!empty($suggestions)) {
 		print "<br/>&middot; To many imprecise results? Try ".implode(' or ',$suggestions);
@@ -552,7 +554,7 @@ if (!empty($final) && !empty($remotes[2])) {
 			$sph->query("SELECT id FROM sample8 WHERE MATCH(".$sph->quote($item).") LIMIT 0");
 			$data = $sph->getAssoc("SHOW META");
 			if (!empty($data['total_found']))
-				$bits[] = "<span class=nowrap><a href=\"/of/".urlencode($item)."\">".htmlentities($item)."</a> (~{$data['total_found']} images)</span>";
+				$bits[] = "<span class=nowrap><a href=\"/of/".urlencode($item)."\" rel=\"nofollow\">".htmlentities($item)."</a> (~{$data['total_found']} images)</span>";
 		}
 		if (!empty($bits))
 			print "<p>Alternative Queries: ".implode(" &middot; ",$bits)."</p>";
