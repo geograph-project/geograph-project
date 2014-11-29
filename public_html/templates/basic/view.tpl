@@ -1,5 +1,6 @@
-
-{if $ireland_prompt}{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/`$image->gridimage_id`\" />"}{/if}
+{assign var="imageurl" value=$image->_getFullpath(false,true)}
+{assign var="extra_meta" value="`$extra_meta`<meta property=\"og:image\" content=\"http://t0.geograph.org.uk/stamp.php?id=`$image->gridimage_id`\"/><meta name=\"twitter:card\" content=\"photo\"><meta name=\"twitter:site\" content=\"@geograph_bi\"><meta name=\"twitter:title\" content=\"`$page_title`\"><meta name=\"twitter:image\" content=\"`$imageurl`\">"}
+{if $ireland_prompt}{assign var="extra_meta" value="`$extra_meta`<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/`$image->gridimage_id`\" />"}{/if}
 {include file="_std_begin.tpl"}
 
 {if $image}
@@ -59,7 +60,7 @@
 	</div>
 {/if}
 
-<div about="{$image->_getFullpath(false,true)}" xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#">
+<div about="{$imageurl}" xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#">
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	{if $image->original_width}
 		<div class="caption640" style="text-align:right;"><a href="/more.php?id={$image->gridimage_id}">More sizes</a></div>
@@ -135,7 +136,7 @@
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and
-licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="{$image->_getFullpath(false,true)}" title="Creative Commons Attribution-Share Alike 2.0 Licence">Creative Commons Licence</a>.</div>
+licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="{$imageurl}" title="Creative Commons Attribution-Share Alike 2.0 Licence">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
 <!--
@@ -152,13 +153,27 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 <div class="buttonbar">
 
 <table style="width:100%">
+{if $image->gridimage_id && ($image->moderation_status eq "geograph" || $image->moderation_status eq "accepted")}
 <tr>
-	<td colspan="6" align="center" style="background-color:lightgrey;">&middot; <b><a href="/reuse.php?id={$image->gridimage_id}">Find out how to reuse this image</a></b> &middot; <span style="font-size:0.7em;">For example on your webpage, blog, a forum, or Wikipedia.</span> &middot;</td>
+<td colspan="6" align="center" style="padding:5px;border-bottom:1px solid gray;font-size:0.8em;">
+	&middot; <a href="/reuse.php?id={$image->gridimage_id}">Find out <b>How to reuse</b> this image</a> &middot;
+
+	Share: 
+	<a title="Share this photo via Twitter" href="https://twitter.com/intent/tweet?text={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&url=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Twitter" src="http://{$static_host}/img/twitter_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Share this photo via Facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Facebook" src="http://{$static_host}/img/facebook_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Share this photo via Google Plus" href="https://plus.google.com/share?url=http://{$http_host}/photo/{$image->gridimage_id}&t={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Google Plus" src="http://{$static_host}/img/googleplus_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Share this photo via Pinterest" href="http://www.pinterest.com/pin/create/button/?media={$imageurl}&url=http://{$http_host}/photo/{$image->gridimage_id}&description={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Pinterest" src="http://{$static_host}/img/pinterest_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Share this photo via Flipboard" href="https://share.flipboard.com/bookmarklet/popout?v=2&title={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&url=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Flipboard" src="http://{$static_host}/img/flipboard_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Send an electronic card" href="/ecard.php?image={$image->gridimage_id}"><img src="http://{$static_host}/img/email_16.png" width=16 height=16 style="vertical-align:middle"></a> &middot;
+
+	<img src="http://{$static_host}/img/download_16.png" width=16 height=16 style="vertical-align:middle"> <b><a href="/{if $image->original_width}more{else}reuse{/if}.php?id={$image->gridimage_id}">Download Image</a></b> &middot;
+</td>
+{/if}
 </tr>
 <tr>
 {if $enable_forums}
-<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="http://{$static_host}/templates/basic/img/icon_discuss.gif" alt="Discuss" width="50" height="44"/></a></td>
-<td style="font-size:0.7em;vertical-align:middle">
+<td width="11%" align="right"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="http://{$static_host}/templates/basic/img/icon_discuss.gif" alt="Discuss" width="40" height="34" style="vertical-align:middle"/></a></td>
+<td style="font-size:0.8em;vertical-align:middle" align="left" width="22%">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
 	<a href="/discuss/index.php?gridref={$image->grid_reference}">discussion<br/>on {$image->grid_reference}</a> (preview on the left)
@@ -168,8 +183,8 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 </td>
 {/if}
 
-<td style="width:50px"><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44"/></a></td>
-<td style="font-size:0.7em;vertical-align:middle">
+<td width="11%" align="right"><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="40" height="34" style="vertical-align:middle"/></a></td>
+<td style="font-size:0.8em;vertical-align:middle" align="left" width="22%">
 	{if $user->user_id eq $image->user_id}
 		<big><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}><b>Change Image Details</b></a></big><br/>
 		(or raise a query with a moderator)
@@ -178,8 +193,8 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	{/if}
 </td>
 {if $user->user_id ne $image->user_id}
-<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
-<td style="font-size:0.7em;vertical-align:middle">
+<td width="11%" align="right"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="40" height="34" style="vertical-align:middle"/></a></td>
+<td style="font-size:0.8em;vertical-align:middle" align="left" width="22%">
 	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the contributor</a>
 </td>
 {/if}
@@ -226,13 +241,13 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 {if $image->credit_realname}
 	<dt>Photographer</dt>
-	 <dd property="dc:creator" itemprop="author" rel="author">{$image->realname|escape:'html'} &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;textsearch=name=%22{$image->realname|escape:'url'}%22&amp;do=1" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd property="dc:creator" itemprop="author" rel="author">{$image->realname|escape:'html'} &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;searchtext=name:%22{$image->realname|escape:'url'}%22&amp;do=1" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 
 	<dt>Contributed by</dt>
-	 <dd><a title="View profile" href="/profile/{$image->user_id}" itemprop="publisher">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd><a title="View profile" href="/profile/{$image->user_id}" itemprop="publisher">{$image->user_realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->user_realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {else}
 	<dt>Photographer</dt>
-	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="author" rel="author">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
+	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="author" rel="author">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
 <dt>Image classification<sup><a href="/faq.php#points" class="about" style="font-size:0.7em">?</a></sup></dt>
@@ -264,7 +279,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 {if $image_taken}
 	<dt>Date Taken</dt>
-	<dd><span itemprop="exifData">{$image_taken}</span> &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->grid_reference}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
+	<dd><span itemprop="exifData">{$image_taken}</span> &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
 {/if}
 <dt>Submitted</dt>
 	<dd itemprop="uploadDate" datetime="{$image->submitted|replace:' ':'T'}Z">{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
@@ -282,7 +297,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 		<dd style="width:256px" class="tags" itemprop="keywords">
 			{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'top'}
 			<span class="tag">
-			<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}?photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span>&nbsp;
+			<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span>&nbsp;
 		{/if}{/foreach}</dd>
 	{/if}
 
@@ -298,7 +313,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 			<dd style="width:256px;font-size:0.9em" class="tags" itemprop="keywords">
 			{foreach from=$image->tags item=item name=used}{if $item.prefix == $prefix}
 				<span class="tag">
-				<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}?photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span>&nbsp;
+				<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span>&nbsp;
 			{/if}{/foreach}</dd>
 		{/if}
 	{/foreach}
@@ -310,7 +325,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	<dd>{if $image->canonical}
 		<a href="/search.php?gridref={$image->grid_reference}&amp;canonical={$image->canonical|escape:'url'}&amp;do=1">{$image->canonical|escape:'html'}</a> &gt;
 	{/if}
-	<span itemprop="keywords">{$image->imageclass}</span> &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->grid_reference}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">more nearby</a>)
+	<span itemprop="keywords">{$image->imageclass}</span> &nbsp; (<a title="pictures near {$image->grid_reference} of {$image->imageclass|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;imageclass={$image->imageclass|escape:'url'}" rel="nofollow">more nearby</a>)
 	</dd>
 {/if}
 
@@ -354,14 +369,11 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{include file="_overview.tpl"}
 	<div style="width:inherit;margin-left:20px;"><br/>
 
-	<a title="Send an electronic card" href="/ecard.php?image={$image->gridimage_id}">Forward to a<br/>friend by email</a><br/><br/>
-
-
 {if $image->tags && ($image->tag_prefix_stat.$blank || $image->tag_prefix_stat.term || $image->tag_prefix_stat.cluster || $image->tag_prefix_stat.wiki)}
 	<p style="margin-top:0px">
 	<b>Other Tags</b><br/><span class="tags" itemprop="keywords">
 	{foreach from=$image->tags item=item name=used}{if $item.prefix eq '' || $item.prefix eq 'term' || $item.prefix eq 'cluster' || $item.prefix eq 'wiki'}
-		<span class="tag"><a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}?photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|lower|escape:'html'}</a></span>&nbsp;
+		<span class="tag"><a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|capitalizetag|escape:'html'}</a></span>&nbsp;
 	{/if}{/foreach}</span>
 	</p>
 	<small>Click a tag, to view other nearby images.</small>
