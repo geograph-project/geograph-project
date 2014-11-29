@@ -167,6 +167,8 @@
 
 		<li style="margin-top:4px"><a href="/mapbrowse.php?t={$map_token}&amp;gridref_from={$gridref}">Geograph Coverage <b>Map</b></a>{if $hectad && $hectad_row}, <a title="View Mosaic for {$hectad_row.hectad}, completed {$hectad_row.last_submitted}" href="/maplarge.php?t={$hectad_row.largemap_token}">Photo Mosaic</a>{/if}</li>
 
+		<li style="margin-top:4px"><a href="/finder/bytag.php?q={$gridref}">Nearby Tags</a> - <a href="/content/?q={$gridref}">Nearby Collections</a><sup style=color:red>new</sup></li>
+
 		</ul>
 
 	{if $imagecount}
