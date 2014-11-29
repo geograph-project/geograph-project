@@ -60,7 +60,7 @@ $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
 $imagestatuses = array('geograph' => 'geograph only','accepted' => 'supplemental only');
 
-$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance','count'=>'Number in Group');
+$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance','count'=>'Number in Group','sequence'=>'Geographically');
 
 $breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted','  '=>'','realname'=>'Contributor Name','user_id'=>'Contributor','imageclass'=>'Image Category',' '=>'','grid_reference'=>'Grid Square','myriad'=>'Myriad','hectad'=>'Hectad');
 
@@ -758,39 +758,49 @@ if (isset($_GET['fav']) && $i) {
  	if ((isset($_GET['form']) && $_GET['form'] == 'simple') || (isset($_GET['BBOX']) && empty($_GET['BBOX'])) ) {
  		$autoredirect = 'simple';
 
-		if ($USER->registered && !preg_match('/^\w{1,2}\d{4}$/',$q) ) {
-			customNoCacheHeader();
-			$option = $USER->getPreference('search.engine','of.php',true);
-			if ($option && $option != 'default') {
-				header("HTTP/1.0 307 Temporary Redirect");
-                                header("Status: 307 Temporary Redirect");
-
-				$q2 = urlencode($q);
-				switch($option) {
-					case 'browser': $bits = preg_split('/(?<![":])\s*near\s+/',$q);
-						if (count($bits) == 2) {
-							if ($bits[1] == '(anywhere)') $bits[1] = '';
-							header("Location: /browser/#!/q=".urlencode($bits[0])."/loc=".urlencode($bits[1]));
-						} else {
-							header("Location: /browser/#!/q=$q2");
-						} break;
-					case 'of.php': header("Location: /of/".str_replace('%2F','/',str_replace('%3A',':',urlencode($q)))); break;
-					case 'multi2.php': header("Location: /finder/multi2.php?q=$q2"); break;
-					case 'multi.php': header("Location: /finder/multi.php?q=$q2"); break;
-					case 'full-text.php': header("Location: /full-text.php?q=$q2"); break;
-					case 'bytag.php': header("Location: /finder/bytag.php?q=$q2"); break;
-					case 'sqim.php': header("Location: /finder/sqim.php?q=$q2"); break;
-					case 'images.google.co.uk': header("Location: http://images.google.co.uk/images?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search"); break;
-					case 'www.google.co.uk': header("Location: http://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search"); break;
-					case 'www.google.co.uk/tbs': header("Location: http://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search&tbs=img:1"); break;
-				}
-				exit;
-			}
-		}
-
-		if (preg_match('/^[\w\.-]+@[\w+\.-]+\.\w+$/',$q) && $USER->user_id == 0) {
+		if (preg_match('/^[\w\.-]+@[\w+\.-]+\.\w+$/',$q) && !$USER->registered) {
 			header("Location: /login.php?email=$q");
 			exit;
+		}
+
+		if ( !preg_match('/^\w{1,2}(\d{4}| \d{2} ?\d{2})$/',$q) ) {
+			if ($USER->registered) {
+				//if registered users an option
+				$option = $USER->getPreference('search.engine','of.php',true);
+				if ($option && $option != 'default') {
+					customNoCacheHeader();
+					header("HTTP/1.0 307 Temporary Redirect");
+                                	header("Status: 307 Temporary Redirect");
+
+					$q2 = urlencode($q);
+					switch($option) {
+						case 'browser': $bits = preg_split('/(?<![":])\s*near\s+/',$q);
+							if (count($bits) == 2) {
+								if ($bits[1] == '(anywhere)') $bits[1] = '';
+								header("Location: /browser/#!/q=".urlencode($bits[0])."/loc=".urlencode($bits[1]));
+							} else {
+								header("Location: /browser/#!/q=$q2");
+							} break;
+						case 'of.php': header("Location: /of/".str_replace('%2F','/',str_replace('%3A',':',urlencode($q)))); break;
+						case 'multi2.php': header("Location: /finder/multi2.php?q=$q2"); break;
+						case 'multi.php': header("Location: /finder/multi.php?q=$q2"); break;
+						case 'full-text.php': header("Location: /full-text.php?q=$q2"); break;
+						case 'bytag.php': header("Location: /finder/bytag.php?q=$q2"); break;
+						case 'sqim.php': header("Location: /finder/sqim.php?q=$q2"); break;
+						case 'images.google.co.uk': header("Location: http://images.google.co.uk/images?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search"); break;
+						case 'www.google.co.uk': header("Location: http://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search"); break;
+						case 'www.google.co.uk/tbs': header("Location: http://www.google.co.uk/search?q=$q2&as_q=site:geograph.org.uk+OR+site:geograph.ie&btnG=Search&tbs=img:1"); break;
+					}
+					exit;
+				}
+			} else {
+				//redirect everyone else
+				customNoCacheHeader();
+				header("HTTP/1.0 307 Temporary Redirect");
+				header("Location: /of/".($url = str_replace('%2F','/',str_replace('%3A',':',urlencode($q)))));
+				print "<a href=\"/of/$url\">continue...</a>";
+				exit;
+			}
 		}
 
  	} elseif ($_SERVER['SCRIPT_NAME'] == '/results/') {
@@ -1414,7 +1424,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			$nlimit = "limit 12";
 		}
 		#group by searchdesc,searchq,displayclass,resultsperpage
-		$recentsearchs = $db->CacheGetAssoc(isset($_GET['d'])?0:60,"
+		$recentsearchs = $db->getAssoc("
 			(select queries.id,favorite,searchdesc,`count`,use_timestamp,searchclass ,searchq,displayclass,resultsperpage from queries
 			left join queries_count using (id)
 			where user_id = {$USER->user_id} and favorite = 'N' and searchuse = 'search'
@@ -1450,8 +1460,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		new RecentImageList($smarty);
 	}
 
-	if (!empty($_SERVER['HTTP_COOKIE']))
-                customExpiresHeader(360,false,true);
+	//if (!empty($_SERVER['HTTP_COOKIE']))
+        //        customExpiresHeader(360,false,true);
 	$smarty->display($template);
 }
 
@@ -1584,24 +1594,24 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
 			function addkm($a) {
-				return $a."km";
+				return str_replace('1.001','1',$a)."km";
 			}
 			if ($_GET['form'] == 'text' || $_GET['form'] == 'cluster2') {
-				$d = array(0.1,0.3,0.5,0.7,1,2,3,4,5,7,8,10,20);
-				$d = array_combine($d,array_map('addkm',$d));
+				$d = array(0.1,0.3,0.5,0.7,1.001,1.5,2,2.5,3,4,5,7,8,10,20);
+				$d = array(1=>'in same square')+array_combine($d,array_map('addkm',$d));
 			} else {
 				$d = array(1,2,3,4,5,7,8,10,20);
 				$d = array_combine($d,array_map('addkm',$d));
 				$d += array(-5=>'5km square',-10=>'10km square');
-			
+
 				$topicsraw = $db->GetAssoc("select gp.topic_id,concat(topic_title,' [',count(*),']') as title,forum_name from gridimage_post gp
 					inner join geobb_topics using (topic_id)
 					inner join geobb_forums using (forum_id)
-					group by gp.topic_id 
+					group by gp.topic_id
 					having count(*) > 4
 					order by geobb_topics.forum_id desc,topic_title");
 
-				$topics=array("1"=>"Any Topic"); 
+				$topics=array("1"=>"Any Topic");
 
 				$options = array();
 				foreach ($topicsraw as $topic_id => $row) {
