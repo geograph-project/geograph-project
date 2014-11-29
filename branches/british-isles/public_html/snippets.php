@@ -63,8 +63,12 @@ if (!empty($_REQUEST['edit'])) {
 	
 	$data = $db->getRow("SELECT s.*,COUNT(gs.snippet_id) AS images,SUM(gs.user_id = {$USER->user_id}) AS yours FROM snippet s LEFT JOIN gridimage_snippet gs ON (s.snippet_id = gs.snippet_id AND gridimage_id < 4294967296) WHERE s.snippet_id = $snippet_id GROUP BY s.snippet_id");
 	
-	if (!$USER->hasPerm('moderator') && $data['user_id'] != $USER->user_id) {
-		die("not your snippet");
+	if ($data['user_id'] != $USER->user_id) {
+		if ($USER->hasPerm('moderator')) {
+			$smarty->assign("admin_edit",1);
+		} else {
+			die("not your snippet");
+		}
 	}
 	
 	if (!empty($_POST['save'])) {
@@ -208,6 +212,7 @@ if (empty($_REQUEST['edit']) && (!empty($_REQUEST['gr']) || !empty($_REQUEST['q'
 			if ($square->natgrlen > 4) {
 				$smarty->assign('centisquare',1);
 			}
+                        $smarty->assign('gridref',$square->grid_reference);
 
 		} else {
 			print "invalid GR!";
