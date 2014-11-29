@@ -44,21 +44,12 @@ if (empty($_GET['multi']) && isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTT
 //you must be logged in to submit images
 $USER->mustHavePerm("basic");
 
-if (isset($USER->submission_new)) {
-	$_SESSION['submit_new'] = intval($USER->submission_new);
-}
-if (!empty($_SESSION['submit_new'])) {
-	$template = 'submit2.tpl';
-} else {
-	$template = 'submit2_old.tpl';
-}
+$smarty->assign('extra_meta','<link rel="dns-prefetch" href="http://osopenspacepro.ordnancesurvey.co.uk/">');
+
+$template = 'submit2.tpl';
 
 if (!empty($_GET['display']) && $_GET['display'] == 'tabs') {
-	if (!empty($_SESSION['submit_new'])) {
-		$template = 'submit2_tabs.tpl';
-	} else {
-		$template = 'submit2_tabs_old.tpl';
-	}
+	$template = 'submit2_tabs.tpl';
 }
 
 $cacheid='';
@@ -231,12 +222,6 @@ if (isset($_FILES['jpeg_exif']))
 	$smarty->assign('filenames', $filenames);
 	$smarty->assign('grid_reference', $grid_reference);
 
-	if (!empty($_SESSION['submit_new'])) {
-	        $smarty->assign('new',1);
-	} else {
-	        $smarty->assign('new',0);
-	}
-
 } elseif (isset($_GET['transfer_id'])) {
 	$uploadmanager=new UploadManager;
 		
@@ -327,11 +312,18 @@ if (isset($_REQUEST['inner'])) {
 
 		$uploadmanager=new UploadManager;
 
+	        if (!empty($_GET['delete']) && $uploadmanager->validUploadId($_GET['delete']) ) {
+                	$uploadmanager->setUploadId($_GET['delete'],false);
+        	        $uploadmanager->cleanUp();
+	        }
+
 		$data = $uploadmanager->getUploadedFiles();
 
 		$smarty->assign_by_ref('data',$data);
 	} else {
 		$step = 1;
+		if (!empty($_GET['filepicker']))
+			$smarty->assign('filepicker',1);
 	}
 
 	$smarty->assign('step', $step);

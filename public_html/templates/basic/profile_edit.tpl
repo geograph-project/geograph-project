@@ -266,7 +266,7 @@
 </div>
 
 <div class="field"> 
-	<label for="submission_new" class="nowrap">Submission Style</label>
+	<label for="submission_new" class="nowrap">Submission Style (only applies to v1)</label>
 	
 	<select name="submission_new" id="submission_new"> 
 		<option value="{if $profile->submission_new ==2}2{else}1{/if}">Geographical Context (Recommended)</option>

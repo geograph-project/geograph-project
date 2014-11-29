@@ -31,10 +31,10 @@
 
 <p>Continue to the submission processes:</p>
 <ul>
-	<li><a href="/submit.php?new={$new}&amp;redir=false">Original Submission method</a></li>
-	<li><a href="/submit2.php?new={$new}">Submission v2</a></li>
-	<li><a href="/submit2.php?display=tabs&amp;new={$new}">Submission v2 (tabs)</a></li>
-	<li><a href="/submit-multi.php?new={$new}">Multi Submission</a></li>
+	<li><a href="/submit.php?redir=false">Original Submission method</a></li>
+	<li><a href="/submit2.php">Submission v2</a></li>
+	<li><a href="/submit2.php?display=tabs">Submission v2 (tabs)</a></li>
+	<li><a href="/submit-multi.php">Multi Submission</a></li>
 </ul>
 
 
