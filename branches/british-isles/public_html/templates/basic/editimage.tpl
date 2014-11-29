@@ -16,6 +16,25 @@
 <h2><span class="formerror">Changes not submitted - check and correct errors below...</span></h2>
 {/if}
 
+{if $current_search}
+	<div class="interestBox" style="text-align:center; font-size:0.9em;width:400px;margin-left:auto;margin-right:auto">
+		{if $current_search.l}
+			<a href="/editimage.php?id={$current_search.l}">&lt; prev image</a>
+		{elseif $current_search.c > 1}
+			<a href="/search.php?i={$current_search.i}&amp;page={$current_search.p-1}">&lt; prev page</a>
+		{else}
+			<s style="color:silver" title="first image on this page - you may be able to get to another page via the 'back to search results' itself">&lt; prev image</s>
+		{/if} |
+		<a href="/search.php?i={$current_search.i}&amp;page={$current_search.p}"><b>back to search results</b></a> |
+		{if $current_search.n}
+			<a href="/editimage.php?id={$current_search.n}">next image &gt;</a>
+		{elseif $current_search.c < $current_search.t}
+			<a href="/search.php?i={$current_search.i}&amp;page={$current_search.p+1}">next page &gt;</a>
+		{else}
+			<s style="color:silver" title="last image on this page - you may be able to get to another page via the 'back to search results' itself">next image &gt;</s>
+		{/if}
+	</div>
+ {/if}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
 	{if $image->original_width}
@@ -84,23 +103,32 @@
 
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
-  	  <h2 class="titlebar">Moderation Suggestion</h2>
-  	  <p>I suggest this image should become:
-  	  {if $image->user_status}
-  	  <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
-  	  {/if}
-  	  {if $image->user_status != 'accepted'}
-  	  <input class="accept" type="submit" id="accept" name="user_status" value="Supplemental"/>
-  	  {/if}
-  	  {if $image->user_status != 'rejected'}
-  	  <input class="reject" type="submit" id="reject" name="user_status" value="Reject" onclick="this.form.elements['comment'].value = prompt('Please leave a comment to explain the reason for suggesting rejection of this image.','');"/>
-  	  {/if}
-  	  {if $image->user_status}
-	  <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}Supplemental{else}{$image->user_status}{/if}</small>]
-	  {/if}</p>
-  	  <p style="font-size:0.8em">(Click one of these buttons to leave a hint to the moderator when they moderate your image)</p>
-  	  <input type="hidden" name="comment"/>
+ 	  <h2 class="titlebar">Moderation Suggestion</h2>
+	  {if $image->user_status == 'accepted'}
+
+  	    <p>I suggest this image should become:
+  	    {if $image->user_status}
+  	      <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
+  	    {/if}
+  	    {if $image->user_status != 'accepted'}
+  	      <input class="accept" type="submit" id="accept" name="user_status" value="Supplemental"/>
+  	    {/if}
+  	    {if $image->user_status != 'rejected'}
+  	      <input class="reject" type="submit" id="reject" name="user_status" value="Reject" onclick="this.form.elements['comment'].value = prompt('Please leave a comment to explain the reason for suggesting rejection of this image.','');"/>
+  	    {/if}
+  	    {if $image->user_status}
+	       <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}Supplemental{else}{$image->user_status}{/if}</small>]
+	    {/if}</p>
+  	    <p style="font-size:0.8em">(Click one of these buttons to leave a hint to the moderator when they moderate your image)</p>
+          {elseif $image->user_status == 'rejected'}
+            <input class="accept" type="submit" id="geograph" name="user_status" value="Cancel Rejection request"/>
+	  {else}
+  	    <input class="reject" type="submit" id="reject" name="user_status" value="Request Rejection of this image" onclick="this.form.elements['comment'].value = prompt('Please leave a comment to explain the reason for suggesting rejection of this image.','');"/>
+		Note: You should only request rejection of an image that should not be released. If any of the details are incorrect (inc. grid-references) just change them below. 
+          {/if}
+	  <input type="hidden" name="comment"/>
   	  </form>
+
   	{elseif $isadmin and $image->user_status}
   	  <h2 class="titlebar">Moderation Suggestion</h2>
   	   Suggestion: {if $image->user_status eq "accepted"}Supplemental{else}{$image->user_status}{/if}
@@ -109,6 +137,7 @@
 <br/>
   {if $isadmin && $is_mod}
 	  <form method="post">
+
 	  <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
 	  <h2 class="titlebar">Moderation</h2>
 		<div style="position:relative;float:right">
@@ -128,19 +157,33 @@
 
 {if $thankyou eq 'pending'}
 	<a name="form"></a>
-	<h2 class="titlebar" style="background-color:lightgreen">Thankyou!</h2>
+	<br/><br/>
+	<h2 class="titlebar" style="background-color:lightgreen">Thank you</h2>
 	<p>Thanks for suggesting changes, you will receive an email when
 	we process your suggestion. </p>
 
 	<p>You can review your requested changes below, or <a href="/photo/{$image->gridimage_id}">click here to return to the image page</a></p>
+	<br/><br/>
+{/if}
+
+{if $thankyou eq 'closed'}
+	<a name="form"></a>
+	<br/><br/>
+	<h2 class="titlebar" style="background-color:lightgreen">Thank you</h2>
+	<p>Your changes have been saved, and will be visible shortly.</p>
+
+	<p>You can review the changes below, or <a href="/photo/{$image->gridimage_id}">click here to return to the image page</a></p>
+	<br/><br/>
 {/if}
 
 {if $thankyou eq 'comment'}
 	<a name="form"></a>
-	<h2 class="titlebar" style="background-color:lightgreen">Thankyou!</h2>
+	<br/><br/>
+	<h2 class="titlebar" style="background-color:lightgreen">Thank you</h2>
 	<p>Thanks for commenting on the change request, the moderators have been notified.</p>
 
 	<p>You can review outstanding change requests below, or <a href="/photo/{$image->gridimage_id}">click here to return to the image page</a></p>
+	<br/><br/>
 {/if}
 
 
@@ -378,11 +421,16 @@
 
 <br/>
 <br/>
-{if !($opentickets && !$error && $isowner && $ticketsforcomments)}
-<a href="/editimage.php?id={$image->gridimage_id}&amp;simple=1" style="font-size:0.6em">Switch to Simple Edit Page</a>
-{/if}
+	{if !($opentickets && !$error && $isowner && $ticketsforcomments)}
+		<div style="text-align:right">
+		<a href="/editimage.php?id={$image->gridimage_id}&amp;simple=1" style="font-size:0.6em">Switch to Simple Edit Page</a>
+		</div>
+
+	{/if}
 {else}
-<a href="/editimage.php?id={$image->gridimage_id}&amp;simple=0" style="font-size:0.6em">Switch to Full Edit Page</a>
+	<div style="text-align:right">
+	<a href="/editimage.php?id={$image->gridimage_id}&amp;simple=0" style="font-size:0.6em">Switch to Full Edit Page</a>
+	</div>
 {/if}
 
 {if $opentickets && !$error && $isowner && $ticketsforcomments && $showfull}
@@ -399,6 +447,16 @@
 
 {else}
 
+<div class="tabHolder" style="font-size:1em">
+	<a class="tabSelected nowrap" id="tab1" onclick="tabClick('tab','div',1,4)">Image Details</a>&nbsp;
+        <a class="tab nowrap" id="tab2" onclick="tabClick('tab','div',2,4); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';">Tags, Subject, Geographical Context</a>&nbsp;
+{if $isadmin || $isowner}
+        <a class="tab nowrap" id="tab3" onclick="tabClick('tab','div',3,4); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';">Shared Descriptions</a>
+	<a class="tab nowrap" id="tab4" onclick="tabClick('tab','div',4,4); document.getElementById('nearframe').src='/finder/used-nearby.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';">Used Nearby</a>&nbsp;
+{/if}
+</div>
+
+<div id="div1">
 <h2 class="titlebar" style="margin-bottom:0px">{if $isowner}Change{else}Suggest a Change to{/if} Image Details <small><a href="/help/changes">[help]</a></small></h2>
 {if $error}
 <a name="form"></a>
@@ -457,13 +515,13 @@
 <p>
 <label for="grid_reference"><b style="color:#0018F8">Subject Grid Reference</b> {if $moderated.grid_reference}<span class="moderatedlabel">(moderated{if $isowner} for gridsquare changes{/if})</span>{/if}</label><br/>
 {if $error.grid_reference}<span class="formerror">{$error.grid_reference}</span><br/>{/if}
-<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="20" height="34" align="middle"/>{/if}
+<input type="text" id="grid_reference" name="grid_reference" size="14" value="{$image->subject_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{else}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="14" height="24" align="middle"/>{/if}
 
 
 <p>
 <label for="photographer_gridref"><b style="color:#002E73">Photographer Grid Reference</b> - Optional {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
-<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->reference_index == 1}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon.png" alt="Marks the Photographer" width="12" height="20" align="middle"/>{/if}
+<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon-new.png" alt="Marks the Photographer" width="14" height="24" align="middle"/>{/if}
 <br/>
 <span style="font-size:0.6em">
 | <a href="javascript:void(copyGridRef());">Copy from Subject</a> |
@@ -642,16 +700,25 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	{/if}
 {/if}
 
+
+{if !$isowner && !$isadmin && $user->ticket_public ne 'everyone' && $user->ticket_public ne ''}
+<div class="interestBox" style="background-color:pink;border:3px solid red;margin:10px">
+	<b>We no longer allow anonymous suggestions</b><br/><br/>
+	You currently have your preferences set to hide your name on new suggestions. This will no longer be honoured, and <span class="nowrap">your name and link to your profile <b>will</b> appear with the suggestion</span>, and be visible to everyone.<br/>
+
+		<ul style="font-size:0.8em">
+			<li>Remove this message by changing the option on your {newwin href="/profile.php?edit=1#prefs" text="preferences"} page.</li>
+			<li>{newwin href="/contact.php" text="Contact us"} if you have concerns.</li>
+	</div>
+{/if}
+
 <input type="submit" name="save" value="Submit Changes" onclick="autoDisable(this)"/>
 <input type="button" name="cancel" value="Cancel" onclick="document.location='/photo/{$image->gridimage_id}';"/>
 
-{if !$isowner && !$isadmin}
-&nbsp;	<select name="public">
-		<option value="no">Do not disclose my name</option>
-		<option value="owner" {if $user->ticket_public eq 'owner'} selected{/if}>Show my name to the photo owner</option>
-		<option value="everyone" {if $user->ticket_public eq 'everyone'} selected{/if}>Show my name against the suggestion</option>
-	</select>
+{if !$isowner && !$isadmin && ($user->ticket_public eq 'everyone' || $user->ticket_public eq '')}
+	<span style="font-size:0.8em; color:gray; padding-left:50px">(We no longer allow anonymous suggestions)</span>
 {/if}
+
 </div>
 </form>
 
@@ -682,40 +749,35 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	<input type="hidden" name="imagetakenYear"/>
 	<input type="hidden" name="id"/>
 	<input type="submit" value="Preview edits in a new window" onclick="previewImage()"/>
-
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
 	</form>
 
-{if $isadmin || $isowner}
+
 <br/><br/>
-<h2 class="titlebar">Shared Descriptions/References (Optional) <input type="button" value="expand" onclick="show_tree('share'); document.getElementById('shareframe').src='/submit_snippet.php?gridimage_id={$image->gridimage_id}&gr='+escape(document.theForm.grid_reference.value)+'&gr2={$image->subject_gridref|escape:'html'}';" id="hideshare"/></h2>
-<div id="showshare" style="display:none">
-	<ul>
-		<li>Currently 'Shared Descriptions' are not tracked though the 'Change Suggestion' system, and updates apply immediately (but all changes are monitored).</li>
-		<li>There is no need to click 'Submit Changes' above to apply changes to Shared Descriptions.<ul>
-			<li><b>In fact don't click the button if you are only changing the Shared Description(s).</b></li>
-			</ul></li>
-		<li>Only you (and the moderators) can edit your Shared Description, although anyone can use your descriptions on their own images.</li>
-		<li>... read more in {newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"}</li>
-	</ul>
-	<iframe src="about:blank" height="400" width="100%" id="shareframe">
+<p>Looking for Tags/Shared Descriptions? See the tabs, further up the page.</p> 
+</div>
+
+<div id="div2" style="display:none">
+	<iframe src="about:blank" height="300" width="100%" id="tagframe">
 	</iframe>
+
+	<p><a href="/photo/{$image->gridimage_id}">return to image page</a> <small>- changes made inside the Tags box apply immediately</small></p>
+</div>
+{if $isadmin || $isowner}
+<div id="div3" style="display:none">
+        <iframe src="about:blank" height="400" width="100%" id="shareframe">
+        </iframe>
 
 	<p><a href="/photo/{$image->gridimage_id}">return to image page</a> <small>- changes made inside the Shared Description box apply immediately</small></p>
 </div>
-{/if}
-<br/><br/>
-<h2 class="titlebar">Tags (Optional) <input type="button" value="expand" onclick="show_tree('tag'); document.getElementById('tagframe').src='/tags/tagger.php?gridimage_id={$image->gridimage_id}';" id="hidetag"/>   - includes 'Geographical Context'</h2>
-<div id="showtag" style="display:none">
-	<ul>
-		<li>Tags are a new feature on Geograph - they are still under heavy development - not fully working yet!</li>
-		<li>There is no need to click 'Submit Changes' above to apply changes to Tags.</li>
-		<li>Read more in {newwin href="/article/Tags" text="Article about Tags"}</li>
-	</ul>
-	<iframe src="about:blank" height="200" width="100%" id="tagframe">
-	</iframe>
+
+<div id="div4" style="display:none">
+        <iframe src="about:blank" height="300" width="100%" id="nearframe">
+        </iframe>
+
+	<p><a href="/photo/{$image->gridimage_id}">return to image page</a> <small>- changes made inside the Nearby box apply immediately</small></p>
 </div>
+
+{/if}
 
 
 {/if}

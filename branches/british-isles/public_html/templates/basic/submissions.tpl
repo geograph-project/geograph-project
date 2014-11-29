@@ -23,22 +23,34 @@
 
 		<div><textarea name="comment" style="font-size:0.9em;" rows="4" cols="70" spellcheck="true" onchange="this.style.backgroundColor=(this.value!=this.defaultValue)?'pink':''">{$image->comment|escape:'html'}</textarea><input type="submit" name="create" value="Continue &gt;" onclick="mark_color(this.form,'yellow')"/>{if $image->moderation_status == 'pending' || $user->stats.images > 100}<input type="submit" name="apply" value="Apply changes" onclick="mark_color(this.form,'lightgreen')"/>{/if}
 		<br/>
-		<span id="hidetag{$image->gridimage_id}" style="font-size:0.8em"><span id="tags{$image->gridimage_id}"></span> &middot; <a href="#" onclick="return open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Tagging</b> Box</a></span>
-		<span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">&middot; <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Open <b>Shared Description<span id="c{$image->gridimage_id}"></span></b> Box</a>
-		 [ <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a> | <a href="#" onclick="return open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">Quick Create</a> ]</span>
+
+		<div class="tabHolder" style="font-size:1em">		
+			<a class="tab nowrap" id="tab{$image->gridimage_id}1" onclick="if(tabClick2('tab{$image->gridimage_id}','div{$image->gridimage_id}',1,3)) open_tagging({$image->gridimage_id},'{$image->grid_reference}','');">Tags</a>&nbsp;
+                        <a class="tab nowrap" id="tab{$image->gridimage_id}2" onclick="if(tabClick2('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3)) open_shared({$image->gridimage_id},'{$image->grid_reference}','');">Shared Descriptions<span id="c{$image->gridimage_id}"></span></a>
+			<span id="hideshare{$image->gridimage_id}" style="font-size:0.8em">
+				[ <a onclick="tabClick('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3); open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=recent');">Recent</a>
+				 | <a onclick="tabClick('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3); open_shared({$image->gridimage_id},'{$image->grid_reference}','&tab=suggestions');">Suggestions</a>
+				 | <a onclick="tabClick('tab{$image->gridimage_id}','div{$image->gridimage_id}',2,3); open_shared({$image->gridimage_id},'{$image->grid_reference}','&create=true');">New</a> ]</span>
+                        {if $image->grid_reference}
+                                <a class="tab nowrap" id="tab{$image->gridimage_id}3" onclick="if (tabClick2('tab{$image->gridimage_id}','div{$image->gridimage_id}',3,3)) open_nearby({$image->gridimage_id},'{$image->grid_reference}','');">Used Nearby</a>&nbsp;
+                        {/if}
+		</div>
 
 		</div>
 	  </div><br style="clear:both;"/>
-		<div class="interestBox" id="showshare{$image->gridimage_id}" style="display:none">
-			<iframe src="about:blank" height="400" width="100%" id="shareframe{$image->gridimage_id}">
-			</iframe>
-			<div><a href="#" onclick="hide_tree('share{$image->gridimage_id}');loadSnippetCount(true);return false">- Close <i>Shared Descriptions</I> box</a> ({newwin href="/article/Shared-Descriptions" text="Article about Shared Descriptions"})</div>
-		</div>
-
-		<div class="interestBox" id="showtag{$image->gridimage_id}" style="display:none">
+		<div class="interestBox" id="div{$image->gridimage_id}1" style="display:none">
 			<iframe src="about:blank" height="300" width="100%" id="tagframe{$image->gridimage_id}">
 			</iframe>
-			<div><a href="#" onclick="hide_tree('tag{$image->gridimage_id}');return false">- Close <i>Tagging</I> box</a> ({newwin href="/article/Tags" text="Article about Tags"})</div>
+		</div>
+
+		<div class="interestBox" id="div{$image->gridimage_id}2" style="display:none">
+			<iframe src="about:blank" height="400" width="100%" id="shareframe{$image->gridimage_id}">
+			</iframe>
+		</div>
+
+		<div class="interestBox" id="div{$image->gridimage_id}3" style="display:none">
+			<iframe src="about:blank" height="300" width="100%" id="nearframe{$image->gridimage_id}">
+			</iframe>
 		</div>
 
 	  </form><br/>
@@ -84,6 +96,16 @@
 
 <script type="text/javascript">
 {literal}
+function tabClick2(tabname,divname,num,count) {
+	var ret = true;
+	if (document.getElementById(tabname+num) && document.getElementById(tabname+num).className == 'tabSelected') {
+		num = 99;
+		ret = false;
+	}
+	tabClick(tabname,divname,num,count);
+	return ret;
+}
+
 function mark_color(form,color) {
 	if (form.elements['title'].value!=form.elements['title'].defaultValue)
 		form.elements['title'].style.backgroundColor = color;
@@ -91,7 +113,6 @@ function mark_color(form,color) {
 		form.elements['comment'].style.backgroundColor = color;
 }
 function open_shared(gid,gr,extra) {
-	show_tree('share'+gid);
 
 	if (extra == '&tab=suggestions') {
 		var thatForm = document.forms['form'+gid];
@@ -114,7 +135,6 @@ function open_shared(gid,gr,extra) {
 	return false;
 }
 function open_tagging(gid,gr,extra) {
-	show_tree('tag'+gid);
 
         var thatForm = document.forms['form'+gid];
         if (thatForm.elements['title'] && thatForm.elements['title'].value && thatForm.elements['title'].value.length > 0) {
@@ -123,8 +143,13 @@ function open_tagging(gid,gr,extra) {
         if (thatForm.elements['comment'] && thatForm.elements['comment'].value && thatForm.elements['comment'].value.length > 0) {
                 extra = extra + "&form=submissions&comment="+encodeURIComponent(thatForm.elements['comment'].value);
         }
-
 	document.getElementById('tagframe'+gid).src='/tags/tagger.php?gridimage_id='+gid+'&gr='+gr+extra;
+	return false;
+}
+function open_nearby(gid,gr,extra) {
+        var thatForm = document.forms['form'+gid];
+	if (document.getElementById('nearframe'+gid).src=='about:blank')
+		document.getElementById('nearframe'+gid).src='/finder/used-nearby.php?gridimage_id='+gid+'&gr='+gr+extra;
 	return false;
 }
 
@@ -147,7 +172,7 @@ function showSnippetCount(data) {
 
 		for(var gid in data) {
 			document.getElementById('c'+gid).innerHTML = " ["+data[gid]+"]";
-			document.getElementById('c'+gid).style.backgroundColor='pink';
+			//document.getElementById('c'+gid).style.backgroundColor='pink';
 		}
 	}
 

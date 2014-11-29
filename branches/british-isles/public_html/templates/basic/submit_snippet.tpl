@@ -119,7 +119,7 @@ to a grid square or another image.<br/>For a web link just enter directly like: 
 {/if}
  (<input type="checkbox" name="onlymine" {if $onlymine} checked{/if}/> show mine)
 
- <input type="submit" value="Find"/>
+ <input type="submit" name=find value="Find"/>
 </div>
 {/if}
 

@@ -58,6 +58,9 @@ if (!empty($_GET['upload_id'])) {
 
 $db = GeographDatabaseConnection(false);
 
+if (empty($_REQUEST['tab']) && !empty($_POST['find'])) {
+	$_REQUEST['tab'] = 'search';
+}
 
 if (!empty($_POST['create']) && (!empty($_POST['title']) || !empty($_POST['comment'])) ) {
 
@@ -254,7 +257,7 @@ if (!empty($_REQUEST['gr']) || !empty($_REQUEST['q']) || !empty($_REQUEST['tab']
 			}
 			
 			if (strlen($q) > 40) {
-				$q = '"'.$q.'"/4';
+				$q = '"'.$q.'"/3';
 			} else {
 				$q = '~'.$q;
 			}

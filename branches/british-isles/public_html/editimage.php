@@ -129,6 +129,20 @@ if (isset($_REQUEST['id']))
 				$image->{"current_$name"} = $image->$name;
 		}
 
+
+	if (!empty($_SESSION['currentSearch']) && ($idx = array_search($image->gridimage_id,$_SESSION['currentSearch']['r'])) !== FALSE) {
+		$sss = $_SESSION['currentSearch']; //keep a copy to avoid adding next/prev to the session value
+		if ($idx > 0) {
+			$sss['l'] = $sss['r'][$idx-1];
+		}
+		if ($idx < count($_SESSION['currentSearch']['r'])-1) {
+			$sss['n'] = $sss['r'][$idx+1];
+		}
+		unset($sss['r']);
+		$smarty->assign_by_ref('current_search',$sss);
+	}
+
+
 		//do our thing!
 		$smarty->assign('page_title', $image->grid_reference);
 		$smarty->assign_by_ref('image', $image);
@@ -381,6 +395,11 @@ if (isset($_REQUEST['id']))
 				$ok=false;
 				$error['title']="Please specify an image title";
 			}
+			elseif ("$title." == trim($image->title) && !$isowner)
+			{
+				$ok=false;
+                                $error['title']="Please don't use this form just to remove full stop";
+			}
 
 			$updatenote=trim(stripslashes($_POST['updatenote']));
 			$updatenote=strip_tags($updatenote);
@@ -548,16 +567,16 @@ if (isset($_REQUEST['id']))
 				}
 				
 				//return to this edit screen with a thankyou
-				if ($status=="pending")
-				{
-					//since we can't process the changes, show the user the edit page with a thankyou
+				#if ($status=="pending")
+				#{
+				#	//since we can't process the changes, show the user the edit page with a thankyou
 					header("Location: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}&thankyou=$status");
-				}
-				else
-				{
-					//all edits are complete, so lets show the user the result of their handiwork
-					header("Location: http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}");
-				}
+				#}
+				#else
+				#{
+				#	//all edits are complete, so lets show the user the result of their handiwork
+				#	header("Location: http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}");
+				#}
 				exit;
 			}
 			else
@@ -613,6 +632,18 @@ if (isset($_REQUEST['id']))
 		require_once('geograph/rastermap.class.php');
 
 		$rastermap = new RasterMap($image->grid_square,true);
+			if (empty($_REQUEST['service']) && !empty($_COOKIE['MapSrv'])) {
+                                $_REQUEST['service'] = $_COOKIE['MapSrv'];
+                        }
+                        if (isset($_REQUEST['service'])) {
+                                if ($_REQUEST['service'] == 'Google') {
+                                        $rastermap->setService('Google');
+                                } elseif ($_REQUEST['service'] == 'OS50k' && $rastermap->service == 'OSOS') {
+                                        $rastermap->setService('OS50k');
+                                }
+                        }
+
+
 		if (!empty($image->viewpoint_northings)) {
 			$rastermap->addViewpoint($image->viewpoint_eastings,$image->viewpoint_northings,$image->viewpoint_grlen,$image->view_direction);
 		} elseif (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
