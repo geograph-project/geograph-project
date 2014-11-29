@@ -304,6 +304,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$heading = "Days";
 		$desc = "different days";
 
+	} elseif ($type == 'seasons') {
+		$sql_column = "count(distinct concat( (month(imagetaken)%12) div 4,grid_reference))";
+		$heading = "Square Seasons";
+		$desc = "seasons within a square";
+
 	} elseif ($type == 'classes') {
 		$sql_column = "count(distinct imageclass)";
 		$heading = "Categories";
