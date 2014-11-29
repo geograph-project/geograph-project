@@ -133,7 +133,11 @@ function UploadPicture() {
 	$um->setTaken(date('Y-m-d',$takendate));
 	$um->setTitle($_POST['title']);
 	$um->setComment($_POST['comments']);
-	$um->setClass($_POST['feature']);
+
+	if (preg_match('/subject:(.*)/',$_POST['feature'],$m)) {
+		$um->setSubject($m[1]);
+	} else
+		$um->setClass($_POST['feature']);
 	$um->setUserStatus($_POST['supplemental']);
 
 	$um->processUpload($_FILES['uploadfile']['tmp_name']);
@@ -225,18 +229,16 @@ function GetImageClassList() {
 	global $db;
 	global $xml;
 
-	$sql = "select imageclass,count(*) as cnt from gridimage_search "
-		. "group by imageclass having cnt > 5 and "
-		. "length(imageclass) > 0";
+	$sql = "select subject from subjects order by subject";
 
 	$classlist = "";
 
 	if($rs = &$db->Execute($sql)) {
 		while(!$rs->EOF) {
 			if ($classlist == "") {
-				$classlist = $rs->fields[0];
+				$classlist = "subject:" . $rs->fields[0];
 			} else {
-				$classlist .= "}" . $rs->fields[0];
+				$classlist .= "}subject:" . $rs->fields[0];
 			}
 			$rs->moveNext();
 		}
