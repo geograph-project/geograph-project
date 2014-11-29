@@ -621,23 +621,13 @@ AttachEvent(window,'load', function() {
 		<span class="formerror">{$error.imageclass}</span><br/>
 		{/if}
 
-		{if $error.imageclassother}
-		<span class="formerror">{$error.imageclassother}</span><br/>
-		{/if}
-
 		<select id="imageclass" name="imageclass" onchange="onChangeImageclass()" onmouseover="prePopulateImageclass()" disabled="disabled">
 			<option value="">--please select feature--</option>
 			{if $image->imageclass}
 				<option value="{$image->imageclass}" selected="selected">{$image->imageclass}</option>
 			{/if}
-			<option value="Other">Other...</option>
 		</select><input type="button" name="imageclass_enable_button" value="change" onclick="prePopulateImageclass()"/>
 
-
-		<span id="otherblock"><br/>
-		<label for="imageclassother">Please specify </label>
-		<input size="32" id="imageclassother" name="imageclassother" value="{$imageclassother|escape:'html'}" maxlength="32" spellcheck="true"/></p>
-		</span>
 	</p>
 {/if}
 {/if}
@@ -743,7 +733,6 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	<input type="hidden" name="title"/>
 	<textarea name="comment" style="display:none"/></textarea>
 	<input type="hidden" name="imageclass"/>
-	<input type="hidden" name="imageclassother"/>
 	<input type="hidden" name="imagetakenDay"/>
 	<input type="hidden" name="imagetakenMonth"/>
 	<input type="hidden" name="imagetakenYear"/>
