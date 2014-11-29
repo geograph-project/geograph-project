@@ -83,6 +83,11 @@ if (strpos($_SERVER['REQUEST_URI'],'/tags/index.php') === 0
 	exit;
 }
 
+if (!empty($_GET['tag']) && preg_match('/^\/tagged\/([^\?]+)/',$_SERVER['REQUEST_URI'],$m) && $_GET['tag'] != $m[1]) {
+	//fix for /at:Saxmundham+Sports+%26+Recreation+Ground    (the & is has already been urldcoded in QUERY_STRING)
+	$_GET['tag'] = urldecode($m[1]);
+}
+
 
 init_session();
 
@@ -264,7 +269,8 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 						$sphinx->sort = "@geodist ASC, @relevance DESC, @id DESC";
 					} elseif ($_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
 						$cl = $sphinx->_getClient();
-						$cl->SetFilterRange('scenti',20000000,30000000);
+						$cl->SetFilterRange('scenti',2000000000,3000000000);
+						$smarty->assign('ireland',1);
 					}
 
 					$ids = $sphinx->returnIds($pg,'_images');
