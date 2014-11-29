@@ -38,7 +38,12 @@
 	<b>Land Squares</b>
 {else}
 	<a href="?w=3">Land Squares</a>
-{/if}
+{/if} | 
+{if $which eq 4}
+	<b>Green Squares</b>
+{else}
+	<a href="?w=4">Green Squares</a>
+{/if} 
 <input type="hidden" name="w" value="{$which}"/>
 {dynamic}
     {if $user->registered}
@@ -87,7 +92,7 @@
 	{strip}{section name=x loop=$w start=$x1 step=1}
 		{assign var="x" value=$smarty.section.x.index}
 		{if $grid.$y.$x}{assign var="mapcell" value=$grid.$y.$x}
-			<td bgcolor="#{$mapcell.$column|colerize}" title="{$mapcell.hectad}: {$mapcell.geosquares}/{$mapcell.landsquares}={$mapcell.percentage}%">
+			<td bgcolor="#{$mapcell.$column|colerize}" title="{$mapcell.hectad}: {$mapcell.geosquares}/{$mapcell.landsquares}={$mapcell.percentage}%" style="{if $mapcell.digits % 10 == 0}border-bottom:1px solid blue;{/if}{if $mapcell.digits < 10}border-left:1px solid blue;{/if}">
 			<a href="/gridref/{$mapcell.hectad}">{if $mapcell.geosquares}<b>{$mapcell.digits}</b>{else}{$mapcell.digits}{/if}</a>
 			</td>
 		{else}
