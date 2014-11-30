@@ -532,35 +532,50 @@ split_timer('sphinx'); //starts the timer
 			return $this->resultCount;
 		}
 	}
-	
+
 	public function countQuery($q,$index_in) {
 		$this->prepareQuery($q);
 		return $this->countMatches($index_in);
 	}
-	
+
+        public function countKeywords($q,$index_in) {
+		global $CONF;
+		if (!empty($q))
+			$this->prepareQuery($q);
+
+                if ($index_in == "_images") {
+                        $index = "{$CONF['sphinx_prefix']}gi_stemmed,{$CONF['sphinx_prefix']}gi_stemmed_delta";
+                } elseif ($index_in == "_posts") {
+                        $index = "{$CONF['sphinx_prefix']}post_stemmed,{$CONF['sphinx_prefix']}post_stemmed_delta";
+                } else {
+                        $index = $CONF['sphinx_prefix'].$index_in;
+                }
+
+		return $this->_getClient()->BuildKeywords($this->q, $index, true);
+	}
+
 	public function countImagesViewpoint($e,$n,$ri,$exclude = '') {
-		
+
 		$q = "@viewsquare ".($ri*1000000 + intval($n/1000)*1000 + intval($e/1000));
 		if ($exclude) {
 			$q .= " @grid_reference -$exclude";
 		}
 		$this->q = $q;
-		
+
 		return $this->countMatches("_images");
 	}
-	
+
 	public function returnIdsViewpoint($e,$n,$ri,$exclude = '',$page = 1) {
-		
+
 		$q = "@viewsquare ".($ri*1000000 + intval($n/1000)*1000 + intval($e/1000));
 		if ($exclude) {
 			$q .= " @grid_reference -$exclude";
 		}
 		$this->q = $q;
-		
-		
+
 		return $this->returnIds($page,'_images');
 	}
-	
+
 	public function getFilterString() {
 		$q = '';
 		
