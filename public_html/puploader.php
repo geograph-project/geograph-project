@@ -278,10 +278,10 @@ if (isset($_GET['success'])) {
 
 			$smarty->assign_by_ref('square', $square);
 
-			$sphinxq = "+".$square->grid_reference;
-	                $sphinx = new sphinxwrapper($sphinxq);
-        	        $count = $sphinx->countMatches('snippet');
-			$smarty->assign('snippets',$count);
+	                $sphinx = new sphinxwrapper();
+	                foreach ($sphinx->countKeywords($square->grid_reference, 'snippet') as $row) {
+        	                $smarty->assign('snippets',$row['docs']);
+                	}
 		}
 
 		if ($_REQUEST['imagetaken'] && $_REQUEST['imagetaken'] != '0000-00-00') {

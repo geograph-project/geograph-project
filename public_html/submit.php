@@ -542,10 +542,10 @@ if (isset($_POST['gridsquare']))
 			$tags->assignSubjectSmarty($smarty);
 
 			if (!empty($square)) {
-				$sphinxq = "+".$square->grid_reference;
-        	                $sphinx = new sphinxwrapper($sphinxq);
-                	        $count = $sphinx->countMatches('snippet');
-                        	$smarty->assign('snippets',$count);
+	                        $sphinx = new sphinxwrapper();
+        	                foreach ($sphinx->countKeywords($square->grid_reference, 'snippet') as $row) {
+                	                $smarty->assign('snippets',$row['docs']);
+                        	}
 			}
 
 			//find a possible place within 25km
