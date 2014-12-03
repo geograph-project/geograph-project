@@ -359,10 +359,12 @@ class SearchCriteria
 					$sorder = '@id';
 					break;
 				case 'x':
+					$breakby = $this->breakby;
 					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'wgs84_long';
 					break;
 				case 'y':
+					$breakby = $this->breakby;
 					$this->sphinx['compatible_order'] = 0;
 					$sorder = 'wgs84_lat';
 					break;
@@ -389,12 +391,15 @@ class SearchCriteria
 					$sorder = 'takendays';
 					break;
 				case 'imageclass':
+					$breakby = $this->breakby;
 					$sorder = 'classcrc';
 					break;
 				case 'user_id':
+					$breakby = $this->breakby;
 					$sorder = 'auser_id';
 					break;
 				case 'grid_reference':
+					$breakby = $this->breakby;
 					$sorder = 'agridsquare';
 					break;
 				case 'hectad':
@@ -411,23 +416,23 @@ class SearchCriteria
 					break;
 				case 'realname':
 				case 'title':
-				default: 
+				default:
+					$breakby = $this->breakby;
 					$this->sphinx['impossible']++;
 			}
-			
+
 			if (strpos($sql_order,' desc') !== FALSE) {
 				$breakby .= ' desc';
 				$sorder2 = " DESC";
 			} else {
 				$sorder2 = " ASC";
 			}
-			
+
 			if ($breakby != $sql_order && !preg_match('/^(\w+)\+$/i',$this->breakby) ) {
 				$sql_order = $breakby.($sql_order?", $sql_order":'');
 				$this->sphinx['sort'] = "$sorder $sorder2".($this->sphinx['sort']?", {$this->sphinx['sort']}":'');
 			}
 		}
-		
 		if ($this->groupby) {
 			require_once ( "3rdparty/sphinxapi.php" ); //toload the sphinx constants
 
