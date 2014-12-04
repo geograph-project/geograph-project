@@ -31,7 +31,7 @@
 * @version $Revision$
 */
 
-if (strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE) {
+if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'TalkTalk Virus Alerts')!==FALSE) {
 	header("HTTP/1.0 503 Service Unavailable");
 	exit;
 }
