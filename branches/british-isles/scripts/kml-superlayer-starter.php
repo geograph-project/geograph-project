@@ -22,13 +22,7 @@
  */
 
 
-//these are the arguments we expect
-$param=array(
-        'dir'=>'/var/www/geograph_live', //base installation dir
-        'config'=>'www.geograph.org.uk', //effective config
-        'help'=>0,              //show script help?
-);
-
+chdir(__DIR__);
 require "./_scripts.inc.php";
 
 $db = GeographDatabaseConnection(false);
