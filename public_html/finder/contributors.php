@@ -29,33 +29,33 @@ init_session();
 
 $smarty = new GeographPage;
 $template = 'finder_contributors.tpl';
+$cacheid = isset($_GET['popup']).'-'.isset($_REQUEST['inner']);
 
 if (!empty($_GET['q'])) {
 	$q=trim($_GET['q']);
 
 	$sphinx = new sphinxwrapper($q);
 
-	//gets a cleaned up verion of the query (suitable for filename etc) 
+	//gets a cleaned up verion of the query (suitable for filename etc)
 	$cacheid = $sphinx->q;
 
 	$sphinx->pageSize = $pgsize = 15;
 
-	
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):0;
 	if (empty($pg) || $pg < 1) {$pg = 1;}
-	
-	$cacheid .=".".$pg;
-	
+
+	$cacheid .=".".$pg.".".isset($_GET['popup']);
+
 	if (isset($_REQUEST['inner'])) {
 		$cacheid .= '.iframe';
 		$smarty->assign('inner',1);
 	}
-	
+
 	if (!$smarty->is_cached($template, $cacheid)) {
-	
+
 		$sphinx->processQuery();
-		
-		$ids = $sphinx->returnIds($pg,'user');	
+
+		$ids = $sphinx->returnIds($pg,'user');
 
 		if (count($ids)) {
 			$where = "user_id IN(".join(",",$ids).")";
@@ -68,7 +68,7 @@ if (!empty($_GET['q'])) {
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$rows = $db->getAssoc("
 			select user.user_id,nickname,realname,images
-			from user 
+			from user
 			left join user_stat using (user_id)
 			where $where
 			limit $limit");
@@ -89,9 +89,8 @@ if (!empty($_GET['q'])) {
 			$ADODB_FETCH_MODE = $prev_fetch_mode;
 		}
 	}
-	
-	$smarty->assign("q",$sphinx->qclean);
 
+	$smarty->assign("q",$sphinx->qclean);
 }
 
 if (isset($_GET['popup'])) {
@@ -100,4 +99,4 @@ if (isset($_GET['popup'])) {
 
 $smarty->display($template,$cacheid);
 
-?>
+
