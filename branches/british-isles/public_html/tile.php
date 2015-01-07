@@ -47,7 +47,7 @@ if (isset($_GET['map']))
 */	
 } elseif (isset($_GET['r'])) {
 
-	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE) {
+	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')!==FALSE) {
                 header("HTTP/1.0 401 Forbidden");
                 header("Status: 401 Forbidden");
 		exit;
@@ -73,7 +73,7 @@ if (isset($_GET['map']))
 */
 } elseif (isset($_GET['e']) && isset($_GET['n'])) {
 
-	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Web Preview')!==FALSE) {
+	if (strpos($_SERVER['HTTP_USER_AGENT'], 'Preview')!==FALSE) {
                 header("HTTP/1.0 401 Forbidden");
                 header("Status: 401 Forbidden");
 		exit;
@@ -213,6 +213,9 @@ if (isset($_GET['map']))
 			
 			if ($memcache->valid && !isset($_GET['refresh'])) {
 				$mkey = "{$_GET['l']}:$e,$n,$reference_index,$widthdist";
+if ($_GET['l'] == 'u') {
+	$mkey .= "...";
+}
 				$lastmod =& $memcache->name_get('tl',$mkey);
 				if (!$lastmod) {
 					$lastmod = time();
@@ -285,11 +288,18 @@ if (isset($_GET['map']))
 			} elseif ($_GET['l'] == 'r') {
 				$sql="select x,y,percent_land,has_recent as has_geographs from gridsquare where 
 					CONTAINS( GeomFromText($rectangle),	point_xy) and has_recent = 0";
+			} elseif ($_GET['l'] == 'u') {
+				$sql="select x,y,max(ftf) as imagecount,percent_land,has_geographs from gridsquare gs
+					left join gridimage gi on (gs.gridsquare_id = gi.gridsquare_id and moderation_status = 'geograph') where 
+					CONTAINS( GeomFromText($rectangle),	point_xy)
+					group by gs.gridsquare_id";
 			} else {
 				$sql="select x,y,imagecount,percent_land,has_geographs from gridsquare where 
 					CONTAINS( GeomFromText($rectangle),	point_xy)";
 			}
-			
+			if (isset($_GET['dbeug'])) {
+	print $sql;
+}
 			/////////////////////////
 			// fetch from database
 			$arr = $db->getAll($sql);
@@ -302,6 +312,8 @@ if (isset($_GET['map']))
 				if ($_GET['l'] == 'p') {
 					$pixels_per_centi = ($w / ($widthdist * 10) ); //10 as ten centis per km
 					$half = ($pixels_per_centi/2);
+
+					$pixels_per_centi2 = $pixels_per_centi-(($widthdist == 2)?2:0);
 					
 					$img=imagecreate($w,$w);
 					$colMarker=imagecolorallocate($img, 255,255,255);
@@ -322,9 +334,9 @@ if (isset($_GET['map']))
 						$y2 = $w - intval(($y1 * $pixels_per_centi)+$half);
 
 						$color = $colour[$row['imagecount']];
-						imagefilledellipse($img,$x2,$y2,$pixels_per_centi,$pixels_per_centi,$color);
+						imagefilledellipse($img,$x2,$y2,$pixels_per_centi2,$pixels_per_centi2,$color);
 						
-						imageellipse($img,$x2,$y2,$pixels_per_centi,$pixels_per_centi,$lastcolour);
+						imageellipse($img,$x2,$y2,$pixels_per_centi2,$pixels_per_centi2,$lastcolour);
 					}
 					imagesavealpha($img, true);
 
