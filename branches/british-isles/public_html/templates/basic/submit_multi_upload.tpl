@@ -36,7 +36,7 @@ $(function() {
 		runtimes : 'html5,browserplus,silverlight,gears,html4',
 		url : '{/literal}{$script_name}{literal}',
 		max_file_size : '8mb',
-		max_file_count: 20, // user can add no more then 20 files at a time
+		max_file_count: 100, // user can add no more then 100 files at a time
 	//	chunk_size : '1mb',
 		unique_names : true,
 		multiple_queues : true,
@@ -121,11 +121,11 @@ function setResize(that) {
 			</div>
 
 			<ol>
-				<li>Choose what size file you want to upload. By resizing the image before upload, you save time and bandwidth. But EXIF data will not be available to the Geograph website</li>
+				<li>Choose what size image you want to upload. (By resizing the image using the provided resize option, you save time and bandwidth. But EXIF data will probably not be available to the Geograph website)</li>
 				<li>Click "<b>Add Files</b>" and select image(<b>s</b>) you want to upload. Maximum filesize 8Mb.<ul>
 					<li>Tip: In some browsers can also drag and drop images onto the white area above<br/> (you will see a message to that affect if your browser supports it)</li></ul></li>
-				<li>Once you have selected all files (can repeat step 1. to select upto 20 files) - click "<b>Start Upload</b>"</li>
-				<li>When all files are uploaded, click "<b>Submit Images</b>" to continue to next stage</li>
+				<li>Once you have selected all files (can repeat step 2. to select upto 100 files) - click "<b>Start Upload</b>"</li>
+				<li>When all files are uploaded, click one of "<b>Submit Images</b>" tabs to continue to next stage using your favorite submission method</li>
 			</ol>
 		</form>
 
