@@ -51,7 +51,7 @@ function getXMLRequestObject()
 
 
 
-function moderateImage(gridimage_id, status)
+function moderateImage(gridimage_id, status, callback)
 {
 	var url="/admin/moderation.php?gridimage_id="+gridimage_id+"&status="+status;
 	if (remoderate)
@@ -76,6 +76,9 @@ function moderateImage(gridimage_id, status)
 		{
 			var divInfo=document.getElementById('modinfo'+gridimage_id);
 			divInfo.innerHTML=req.responseText;
+
+			if (callback)
+				callback(req.responseText);
 
 			if (document.forms['counter']) {
 				var f = document.forms['counter'];
