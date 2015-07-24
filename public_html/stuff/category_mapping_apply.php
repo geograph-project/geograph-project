@@ -29,14 +29,24 @@ $smarty = new GeographPage;
 $USER->mustHavePerm("basic");
 
 
-
-
-
 if (empty($db))
 	$db = GeographDatabaseConnection(false);
-
-
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+
+$smarty->display('_std_begin.tpl');
+
+?>
+<div class="tabHolder">
+        <a class="tab nowrap" href="category_mapping.php">A) Check Conversions</a>
+        <a class="tabSelected nowrap">B) Apply Conversions</a>
+        <a class="tab nowrap" href="category_mapping_stats.php">Statistics</a>
+</div>
+<div class="interestBox">
+        <h2>Bulk Category --> Context, Subjects and Tags convertor :: Apply</h2>
+</div>
+<?
+
 
 if (!empty($_GET['imageclass'])) {
 	$category = $_GET['imageclass'];
@@ -46,7 +56,7 @@ if (!empty($_GET['imageclass'])) {
 }
 
 if (empty($row)) {
-	die("no category found, have you checked any? Click this link: <a href=\"category_mapping.php\">View Mapping</a> to view possible mappings, you can approve.");
+	die("No checked, but unapplied categories found. Just the Check Conversions link above to see if you have any categories still to check");
 }
 
 $category = $row['imageclass'];
@@ -68,7 +78,6 @@ $suggestions = $db->getAssoc($sql = "SELECT m.*,c.canonical,count(distinct gridi
 
 
 
-$smarty->display('_std_begin.tpl');
 
 if (empty($suggestions)) {
 	die("no images found for this category");
@@ -78,10 +87,10 @@ if (empty($suggestions[$category]['images'])) {
 }
 
 
-print "<div style='float:right;width:300px;background-color:#eee;padding:10px'>";
-	print "<h4>Change Log</h4>";
+print "<div style='float:right;width:300px;background-color:#eee;padding:10px;border:1px solid black'>";
+	print "<h4>Change Log for this Category</h4>";
 	$row = $suggestions[$category];
-	foreach (explode(',','context1,context2,context3,subject,tags') as $key) {
+	foreach (explode(',','context1,context2,context3,subject,tags,canonical') as $key) {
 		if (!empty($row[$key])) {
 			print "<b>$key</b>: ".htmlentities($row[$key])."<br>";
 		}
@@ -104,24 +113,28 @@ foreach ($delta as $row) {
 	print "<b>{$row['field']}</b>: ".strtoupper($row['action'])." ".htmlentities($row['value']);
 	print "</span><br>";
 }
-
+print "<hr/>";
 if (!empty($more)) {
-	print "<br/><b>The items in gray where added after you checked this category, would you actully like to approve all of these?</b> ";
-	print "<a href=\"category_mapping.php?imageclass=".urlencode($category)."&action=checked\">Click here to approve ALL these changes</a>";
+	print "<b>The items in gray where added AFTER you checked this category - and so NOT reflected on the left.</b> ";
+	print "<a href=\"category_mapping.php?imageclass=".urlencode($category)."&action=checked\">Click here to approve the additions, so you can use them on your images.</a> or ";
 }
 
-print " or <a href=\"category_mapping.php?imageclass=".urlencode($category)."&show=1\">Update the changes for this category</a>";
+print "<a href=\"category_mapping.php?imageclass=".urlencode($category)."&show=1\">Make further changes for this category conversion</a>";
 
 print "</div>";
 
-print "<h2>Category: ".htmlentities($category)."</h2>";
+print "<br>Category: <big style=background-color:yellow>".htmlentities($category)."</big>";
 
-print "<h4>Will Add</h4>";
+print "<h4>Tag(s) to be added: (as when clicked 'checked')</h4>";
 print "<ul>";
 $row = $suggestions[$category];
 
+if (!empty($row['canonical']) && strtolower($row['canonical']) == strtolower($row['canonical']) ) {
+	$row['canonical'] = '';
+}
+
 $tags = array();
-foreach (explode(',','context1,context2,context3,subject,tags') as $key) {
+foreach (explode(',','context1,context2,context3,subject,tags,canonical') as $key) {
         if (!empty($row[$key])) {
 		if (is_array($row[$key])) {
 			foreach ($row[$key] as $tag) {
@@ -134,7 +147,7 @@ foreach (explode(',','context1,context2,context3,subject,tags') as $key) {
 	                print "<li><b>$key</b>: ".htmlentities($row[$key])."</li>";
 			if ($key == 'subject') {
 				$tags[] = 'subject:'.$row[$key];
-			} elseif (strpos($key,'context') == 0) {
+			} elseif (strpos($key,'context') === 0) {
 				$tags[] = 'top:'.$row[$key];
 			} else {
 				$tags[] = $row[$key];
@@ -149,13 +162,27 @@ print "</ul>";
 
 if (!empty($tags)) {
 
+	$words = preg_split('/[^\w]+/',strtolower($category));
+	$taglist = implode(';',$tags);
+
+	print "Words: ";
+	foreach ($words as $word) {
+		if (preg_match('/\b'.preg_quote($word,'/').'\b/i',$taglist)) {
+			print "<span style=background-color:lightgreen>".htmlentities($word)."</span> ";
+		} else {
+			print "<span style=background-color:pink>".htmlentities($word)."</span> ";
+		}
+	}
+	print "(red means the word is not mentioned in the tags)<br/><br/>";
+
+
 	$url = "/search.php?imageclass=".urlencode($category)."&do=1&user_id=".$USER->user_id;
 	print "Affects <a href=\"$url\">{$row['images']} Images</a>, <b>creating ".(count($tags)*$row['images'])." tags</b>.";
 	print "<hr style=clear:both>";
 
 	if (empty($_POST['confirm'])) {
 		?>
-		Does this mapping perserve ALL information from the category? <small>Consider that the category will be <b>removed from the image</b>, so the above tags being added should perserve all the detail possible.</small><br/><br/>
+		<b>Does this mapping perserve ALL information from the category?</b> Consider that the category will be <b>removed from the image</b>, so the above tags being added should perserve all the detail possible.<br/><br/>
 
 		Also if at all possible this should be creating a <b>Geographical Context</b> for the image - but appreciate that some categories simply can't be used to create a context.<br/><br/>
 
@@ -205,24 +232,12 @@ if (empty($tag_id)) {
 	//$sqls[] = "UPDATE gridimage_search SET imageclass = '' WHERE imageclass LIKE $category_quote AND user_id = {$USER->user_id}";
 
 
-	$str = '';
 	$total = 0;
 	foreach ($sqls as $sql) {
-		$str .= $sql.";\n";
 		$db->Execute($sql);
 		$affected= mysql_affected_rows();
-		$str .= "#Affected = $affected\n";
 		$total+=$affected;
 	}
-	$str .= "#Total = $total\n";
-	$str .= "\n\n".'---------'."\n";
- 	$str .= print_r($_SERVER,1)."\n";
-        $str .= print_r($_POST,1)."\n";
-        $str .= print_r($USER->realname,1)."\n";
-        $str .= print_r($USER->user_id,1)."\n";
-        $str .= print_r($USER->email,1)."\n\n\n";
-
-        mail("barry@barryhunter.co.uk","[geograph] category bulk conversion",$str);
 
 	print "Actions Performed = $total. Images affected = $affected. ";
 

@@ -41,23 +41,43 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 $smarty->display('_std_begin.tpl');
 
+?>
+<div class="tabHolder">
+        <a class="tab nowrap" href="category_mapping.php">A) Check Conversions</a>
+        <a class="tab nowrap" href="category_mapping_apply.php">B) Apply Conversions</a>
+        <a class="tabSelected nowrap" >Statistics</a>
+</div>
+<div class="interestBox">
+        <h2>Bulk Category --> Context, Subjects and Tags convertor :: Statistics</h2>
+</div>
+<?
+
 
 $title = "Number of categories";
 $sql = "SELECT COUNT(*) FROM category_stat";
 dump_sql_table($sql,$title);
 
+
 $title = "Number of categories checked, by number of users having checked the category";
 $sql = "select users,count(*) categories,imageclass as `example category` from 
 	(select count(distinct user_id) users,imageclass from category_mapping_change where action='checked' group by imageclass order by null) t2 
 	group by users with rollup";
+dump_sql_table($sql,$title);
+print "the blank row at the end is the total acorss all categories checked (regardless of number of user)";
 
 
 $title = "Number of categories actully converted, by number of users having performed the conversion";
 $sql = "select users,count(*) categories,sum(images) as images,sum(context) as `images gained context`,sum(subject) as `images gained subject`,imageclass as `example category` from
 	(select count(distinct user_id) users,count(*) as images,sum(taglist like '%top:%') as context,sum(taglist like '%subject:%') as subject, imageclass from category_mapping_done group by imageclass order by null) t2 
 	group by users with rollup";
+dump_sql_table($sql,$title);
+print "the blank row at the end is the total acorss all categories converted (regardless of number of user)";
 
-print "the blank row at the end is the total acorss all images/users";
+
+$title = "Last 30 Conversions performed";
+$sql = "select count(distinct user_id) users,count(*) as images,imageclass as category,replace(taglist,';',' | ') as tags,max(created) as created from category_mapping_done group by imageclass,taglist order by created desc limit 30";
+dump_sql_table($sql,$title);
+
 
 $smarty->display('_std_end.tpl');
 

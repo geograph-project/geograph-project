@@ -5,6 +5,7 @@
         <a class="tab nowrap" href="?admin=1">Admin Suggestion Form</a>
         <a class="tabSelected nowrap" href="?finder=1">Quick Tag Searcher</a>
         <a class="tab nowrap" href="?approver=1">Approve Suggestions</a>
+	<a class="tab nowrap" href="?report=outstanding">List Approved Suggestions</a>
 </div>
 <div class="interestBox">
         <h3>Quick Tag Searcher</h3>

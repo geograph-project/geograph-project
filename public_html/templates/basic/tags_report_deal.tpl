@@ -1,6 +1,11 @@
 {include file="_std_begin.tpl"}
 <script src="{"/sorttable.js"|revision}"></script>
 
+<div class="interestBox" style="background-color:pink">
+	NOTE: Suggestions are now processed by an automated system. (see scripts/process-tag-typos.php)
+	This form can no longer be used to make changes. Left only as a way to quickly review suggestions.
+</div>
+
 
 <form method="post" action="{$script_name}?deal=1">
 
