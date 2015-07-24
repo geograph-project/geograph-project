@@ -166,7 +166,7 @@ while (!$recordSet->EOF)
 		}
 
 	        $sqls['t:'.$r['tag_id']] = "UPDATE tag SET status =0".((!empty($r['tag2_id']) && $r['type']!='split')?", canonical = {$r['tag2_id']}":'')." WHERE tag_id = {$r['tag_id']} # {$r['tag']} > {$r['tag2']}";
-		$sqls['r:'.$r['report_id']] = "UPDATE tag_report SET status = 'moved' WHERE report_id = {$r['report_id']} # {$r['tag']} > {$r['tag2']}";
+		$sqls['r:'.$r['report_id']] = "UPDATE tag_report SET status = 'moved',tag2_id = {$r['tag2_id']} WHERE report_id = {$r['report_id']} # {$r['tag']} > {$r['tag2']}";
 
 		if ($r['type']=='split') {
 			$sqls[] = "INSERT IGNORE INTO gridimage_tag SELECT gridimage_id,{$r['tag2_id']} as tag_id,user_id,created,status FROM gridimage_tag WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # {$r['tag']} > {$r['tag2']}";

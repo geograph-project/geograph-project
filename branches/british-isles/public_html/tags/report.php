@@ -30,7 +30,9 @@ $template = 'tags_report.tpl';
 
 $USER->mustHavePerm("basic");
 
-
+if (!empty($_GET['review'])) {
+	$_GET['report'] = 'review';
+}
 
 
 if (!empty($_GET['finder'])) {
@@ -43,18 +45,7 @@ if (!empty($_GET['finder'])) {
 
 	$data = $db->getAll("SELECT * FROM tag_report WHERE tag_id = ".intval($_GET['tag_id'])." AND tag2 != '' AND status != 'rejected' AND type != 'canonical' ORDER BY tag2");
 
-	if (!empty($_GET['callback'])) {
-	        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
-	        echo "{$callback}(";
-	}
-
-	require_once '3rdparty/JSON.php';
-	$json = new Services_JSON();
-	print $json->encode($data);
-
-	if (!empty($_GET['callback'])) {
-	        echo ");";
-	}
+	outputJSON($data);
 	exit;
 
 } elseif (!empty($_GET['approver'])) {
@@ -105,36 +96,208 @@ if (!empty($_GET['finder'])) {
 		$report['tag2'] = ''; //the old style suggestions wont work anymore, so let the admin create a new one!
 	}
 
+	$report['levenshtein'] = levenshtein($report['tag'],$report['tag2']);
+
 	$smarty->assign_by_ref('report',$report);
 
 
-} elseif (!empty($_GET['review'])) {
-	$USER->mustHavePerm("tagsmod");
 
-                $db = GeographDatabaseConnection(false);
+} elseif (!empty($_GET['report'])) {
 
-        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$reports = $db->getAll("SELECT report_id,tag_id,tag2_id,tag,tag2,r.type,r.user_id,approver_id,COUNT(gridimage_id) as images FROM tag_report r LEFT JOIN gridimage_tag USING (tag_id) WHERE r.status IN ('approved','moved') AND type != 'split' AND type != 'canonical' group by tag_id ORDER BY tag_id");
+	$smarty->display('_std_begin.tpl');
 
-	foreach ($reports as $idx => $report) {
-		$reports[$idx]['levenshtein'] = levenshtein($report['tag'],$report['tag2']);
+        $db = GeographDatabaseConnection(false);
+
+	if ($_GET['report'] == 'mine') {
+		$USER->mustHavePerm("basic");
+
+	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        	$reports = $db->getAll("select gridimage_id,title,r.tag as old,tag2 as new from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search gi using (gridimage_id) where r.status in ('approved','moved') and type != 'canonical' and gi.user_id = {$USER->user_id}");
+
+	} elseif ($_GET['report'] == 'subjects') {
+
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+                $reports = $db->getAll(" select tag,tag2,type,user_id,created,updated,status,approver_id from tag_report where tag like 'subject:%' order by tag,status+0 desc");
+
+		print "<b>new</b> - suggestion made but not approved yet<br>";
+		print "<b>approved</b> - suggestion approved but not yet actioned<br>";
+		print "<b>moved</b> - the images have been moved from one tag to other (and new images will continue to be moved!)<br>";
+		print "<b>renamed</b> - the actual tag has been edited to rename it (doesn't stop the same tag being recreated later)<br>";
+		print "<b>rejected</b> - the suggestion has been actively rejected and will have no effect<br>";
+
+
+	} elseif ($_GET['report'] == 'outstanding') {
+		$USER->mustHavePerm("basic");
+
+		print "<h3>The following changes will soon be made automatically. You do not need to make any changes yourself (it's best that you dont)</h3>";
+
+
+	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        	$reports = $db->getAll("select r.updated,r.tag as old,tag2 as new,count(*) as images from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search gi using (gridimage_id) where r.status in ('approved','moved') and type != 'canonical' group by tag_id,tag2");
+
+	} else if ($_GET['report'] == 'review') {
+		$USER->mustHavePerm("tagsmod");
+
+	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		$reports = $db->getAll("SELECT report_id,tag_id,tag2_id,tag,tag2,r.type,r.status,r.user_id,approver_id,COUNT(gi.gridimage_id) as images,count(distinct gt.user_id) as users FROM tag_report r LEFT JOIN gridimage_tag gt USING (tag_id) LEFT JOIN gridimage_search gi USING (gridimage_id) WHERE r.status IN ('approved','moved') AND type != 'split' AND type != 'canonical' group by tag_id ORDER BY tag_id");
+
+		foreach ($reports as $idx => $report) {
+			$reports[$idx]['levenshtein'] = levenshtein($report['tag'],$report['tag2']);
+		}
+
+	} else if ($_GET['report'] == 'reject') {
+		$USER->mustHavePerm("tagsmod");
+
+	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+		$reports = $db->getAll("SELECT report_id,tag_id,tag2_id,tag,tag2,r.type,r.user_id,approver_id,COUNT(gridimage_id) as images,count(distinct gt.user_id) as users FROM tag_report r LEFT JOIN gridimage_tag gt USING (tag_id) WHERE r.status IN ('rejected') AND type != 'canonical' group by tag_id ORDER BY tag_id");
+
+		foreach ($reports as $idx => $report) {
+			$reports[$idx]['levenshtein'] = levenshtein($report['tag'],$report['tag2']);
+		}
+
+	} elseif ($_GET['report'] == 'list') {
+		$USER->mustHavePerm("tagsmod");
+
+		$limit = empty($_GET['limit'])?30:intval($_GET['limit']);
+		$status = (empty($_GET['status']) || !ctype_alpha($_GET['status'])?'rejected':$_GET['status']);
+
+		$ADODB_FETCH_MODE = ADODB_FETCH_NUM;
+		$reports = $db->getAll($sql = "select r.*,t.* from tag_report r left join tag_report t on (t.tag_id = r.tag_id and t.report_id != r.report_id) where r.status = '$status' order by r.report_id desc limit $limit");
+
+        } elseif ($_GET['report'] == 'potential2') {
+
+		if (!empty($_GET['r'])) {
+			foreach(explode("\n",trim("
+update tag_suggest set score = 0;
+update tag_suggest inner join tag using (tag_id) set score=score+80 where tag.tag = replace(replace(tag_suggest.tag,'&amp;','&'),'&#39;',\"'\");
+update tag_suggest inner join tag using (tag_id) set score=score+1 where replace(replace(replace(replace(tag.tag,' ',''),'-',''),'&amp;','&'),'&#39;',\"'\") = replace(replace(replace(replace(tag_suggest.tag,' ',''),'-',''),'&amp;','&'),'&#39;',\"'\");
+update tag_suggest inner join tag using (tag_id) set score=score+1 where tag_suggest.tag = concat(tag.tag,'s');
+update tag_suggest inner join tag using (tag_id) set score=score+1 where tag_suggest.tag like concat(tag.tag,'%');
+update tag_suggest inner join tag using (tag_id) set score=score+1 where tag_suggest.others like concat(tag.tag,'%');
+update tag_suggest inner join tag using (tag_id) set score=score+1 where tag_suggest.others like concat('%',tag.tag,'%');
+update tag_suggest set score=score+1 where tag != '' && tag != substring_index(others,'|',1);
+update tag_suggest set score=score+1 where tag != '';
+			")) as $sql) {
+				$db->Execute(trim($sql,'; '));
+			}
+		}
+
+
+		@$s = intval($_GET['s']);
+		@$g = intval($_GET['g']);
+		$size = 10000;
+
+		print "<form target=_self><input type=hidden name=report value=potential2 >";
+		$data = $db->getAll("SELECT tag_id DIV $size AS g,COUNT(*) as tags FROM tag_suggest WHERE score = $s GROUP BY tag_id DIV $size");
+		print "Set:<select name=g onchange=\"this.form.submit()\">";
+		foreach ($data as $row) {
+			printf("<option value=\"%d\"%s>%d [%d tags]</option>",$row['g'],$row['g']==$g?' selected':'',$row['g'],$row['tags']);
+		}
+		print "</select> ";
+		$data = $db->getAll("SELECT score as s,COUNT(*) as tags FROM tag_suggest WHERE tag_id DIV $size = $g AND score < 50 GROUP BY score");
+		print "Level:<select name=s onchange=\"this.form.submit()\">";
+		foreach ($data as $row) {
+			printf("<option value=\"%d\"%s>%d [%d tags]</option>",$row['s'],$row['s']==$s?' selected':'',$row['s'],$row['tags']);
+		}
+		print "</select> ";
+		print "</form>";
+
+                $reports = $db->getAll($sql = "select tag_id,prefix,t.tag,s.tag as suggest,others from tag t inner join tag_suggest s using (tag_id)
+                                inner join tag_stat using (tag_id)
+                                left join tag_report r using (tag_id)
+                        where tag_id DIV $size = $g AND score = $s
+			and t.tag not like '%)'
+			and t.status = 1 and r.tag_id is null and `count` > 0
+			and prefix not in ('wiki','top')
+			order by t.tag,prefix
+                        limit 5000");
+
+                print "<base target=_blank>";
+                print "<ol>";
+                @$l = intval($_GET['l']); //specify &l=1 to get reports what has the supplied tag 'somewhere' in the suggestions, suggests its ok, just not as popular as suggestion
+                @$c = intval($_GET['c']); //specify &c=1 to get reports that only differ in Special Chars
+                foreach ($reports as $row) {
+                        print "<li><a href=\"?admin=1#t=".rawurlencode($row['prefix']?"{$row['prefix']}:{$row['tag']}":$row['tag'])."\"";
+                        print ">".htmlentities($row['tag'])."</a>";
+                        print " &gt; ".str_replace('&#39;','',$row['suggest'])."</li>";
+                }
+                print "</ol>";
+
+		$smarty->display('_std_end.tpl');
+
+                exit;
+
+
+
+        } elseif ($_GET['report'] == 'potential') {
+
+		$reports = $db->getAll($sql = "select tag_id,t.tag,s.tag as suggest,others from tag t inner join tag_suggest s using (tag_id)
+				inner join tag_stat using (tag_id)
+				left join tag_report r using (tag_id)
+			where t.tag != s.tag and s.tag != CONCAT(t.tag,'s')
+			and t.tag not like '%)' and s.others not like concat(t.tag,' %')
+			and t.status = 1 and r.tag_id is null and status2 > 0
+			 limit 1000");
+
+		print "<base target=_blank>";
+		print "<ol>";
+		@$l = intval($_GET['l']); //specify &l=1 to get reports what has the supplied tag 'somewhere' in the suggestions, suggests its ok, just not as popular as suggestion
+		@$c = intval($_GET['c']); //specify &c=1 to get reports that only differ in Special Chars
+		foreach ($reports as $row) {
+			if (preg_match('/^'.preg_quote(str_replace('&','&amp;',$row['tag']),'/').'s?\b/i',$row['others'])) {
+				continue;
+			} elseif ($c xor strtolower(preg_replace('/[^\w ]+/','',$row['tag'])) == preg_replace('/[^\w ]+/','',$row['suggest'])) {
+				continue;
+			} elseif ($l xor preg_match('/\b'.preg_quote($row['tag'],'/').'\b/i',$row['others'])) {
+				continue;
+			}
+			print "<li><a href=\"?admin=1#t=".rawurlencode($row['tag'])."\"";
+			#if (preg_match('/\b'.preg_quote($row['tag'],'/').'\b/i',$row['others'])) {
+			#	print " style=\"color:gray\"";
+			#}
+			if (preg_match('/^'.preg_quote($row['tag'],'/').'/i',$row['others'])) {
+				print " style=\"color:gray\"";
+			}
+			print ">".htmlentities($row['tag'])."</a>";
+			print " &gt; ".str_replace('&#39;','',$row['suggest'])."</li>";
+		}
+		print "</ol>";
+		print $db->getOne("select count(*) from tag_suggest"). " of ";
+		print $db->getOne("select count(*) from tag where status = 1")." tags processed so far";
+
+		$smarty->display('_std_end.tpl');
+
+		exit;
+
+	} else {
+		die(":(");
+	}
+
+	if (empty($reports)) {
+		die("nothing to show. Hopefully that is a good thing!");
 	}
 
 ?>
+
 <script type="text/javascript" src="http://s1.geograph.org.uk/js/geograph.v7635.js"></script>
 <script src="http://s1.geograph.org.uk/sorttable.v7274.js"></script>
+<p>Click a column header to resort the table</p>
+<TABLE class="report sortable" id="photolist" cellspacing=0 cellpadding=3 border=1>
 <?
 
+        print "<thead><tr><th>".implode('</th><th>',array_keys($reports[0])).'</th></tr></htead>';
 
-        print "<TABLE class=\"report sortable\" id=\"photolist\" cellspacing=0 cellpadding=3 border=1>";
-	print "<thead><tr><th>".implode('</th><th>',array_keys($reports[0])).'</th></tr></htead>';
+        print "<tbody>";
+        foreach ($reports as $report) {
+                print "<tr><td>".implode('</td><td>',$report).'</td></tr>';
+        }
+        print "</tbody></table>";
 
-	print "<tbody>";
-	foreach ($reports as $report) {
-		print "<tr><td>".implode('</td><td>',$report).'</td></tr>';
-	}
-	print "</tbody></table>";
-	exit;
+
+	$smarty->display('_std_end.tpl');
+
+        exit;
+
 
 } elseif (!empty($_GET['deal'])) {
 	$USER->mustHavePerm("admin");
@@ -142,148 +305,8 @@ if (!empty($_GET['finder'])) {
 	$template = 'tags_report_deal.tpl';
 
 	if (!empty($_POST)) {
-		
-		//dont want this to die!
-		set_time_limit(3600*24);
-		print str_repeat(' ',1000);
-		flush();
-		
-		
-		$db = GeographDatabaseConnection(false);
 
-		$reports = $db->getAssoc("SELECT r.*, 
-						t2.tag_id AS tag2_id,
-						t2.canonical
-					FROM tag_report r 
-						INNER JOIN tag t1 USING (tag_id) 
-						LEFT JOIN tag t2 ON ( t2.tag = SUBSTRING_INDEX(r.tag2,':',-1) AND t2.prefix = IF(r.tag2 LIKE '%:%',SUBSTRING_INDEX(r.tag2,':',1),'') )
-					WHERE r.status = 'new' ");
-		
-		$s = array();
-		
-		foreach ($_POST['res'] as $report_id => $resolution) {
-			if (!($row = $reports[$report_id]))
-				die("unable to find $report_id");
-				
-			switch ($resolution) {
-				case 'reject':   
-					#$s[] = "UPDATE tag_report SET status = 'rejected' WHERE report_id = $report_id";
-					$s[] = "UPDATE tag_report SET status = 'rejected' WHERE tag_id = {$row['tag_id']} AND tag2 = ".$db->Quote($row['tag2']);
-					
-					break;
-					
-				case 'canonical':
-                                        if (empty($row['tag2_id'])) {
-                                                die("UNKNOWN DESTINIATION TAG {$row['tag2']}!!!");
-                                        }
-
-                                        $s[] = "UPDATE tag SET canonical = {$row['tag_id']} WHERE tag_id = {$row['tag2_id']}";
-
-					$s[] = "UPDATE tag_report SET status = 'moved' WHERE report_id = $report_id";
-
-					break;
-
-				case 'move':
-					if (empty($row['tag2'])) {
-						die("UNKNOWN DESTINIATION TAG {$row['tag2']}!!!");
-					}
-					
-					if (empty($row['tag2_id'])) {
-						$bits = explode(':',$row['tag2'],2);
-						if (count($bits) > 1) {
-							$values = array("prefix = ".$db->Quote($bits[0]),"tag = ".$db->Quote($bits[1]));
-						} else {
-							$values = array("tag = ".$db->Quote($row['tag2']));
-						}
-							
-						if ($db->getOne("SELECT tag_id FROM tag WHERE ".implode(' AND ',$values))) {
-							die("THERE IS ALREADY A TAG {$row['tag2']}!!!");
-						}
-
-						$values[] = "created = NOW()";
-						$values[] = "user_id = {$USER->user_id}";
-						$db->Execute("INSERT INTO tag SET ".implode(', ',$values));
-						
-						$row['tag2_id'] = $db->Insert_ID();
-						
-						print "# INSERT INTO tag SET ".implode(', ',$values)."; #{$row['tag2_id']}<hr/>";
-					}
-					
-					if ($images = $db->getCol("SELECT gridimage_id FROM gridimage_tag WHERE tag_id = {$row['tag_id']} AND status = 2 AND gridimage_id < 4294967295")) {
-					
-						foreach ($images as $gridimage_id) {
-
-							$s[] = "INSERT INTO gridimage_ticket SET 
-								gridimage_id=$gridimage_id,
-								suggested=NOW(),
-								user_id={$USER->user_id},
-								updated=NOW(),
-								status='closed',
-								notes='Applying a change to a tag',
-								type='minor',
-								notify='',
-								public='everyone'";
-
-							$s[] = "INSERT INTO gridimage_ticket_item SET
-								gridimage_ticket_id = LAST_INSERT_ID(),
-								approver_id = {$USER->user_id},
-								field = 'tag',
-								oldvalue = ".$db->Quote($row['tag']).",
-								newvalue = ".$db->Quote($row['tag2']).",
-								status = 'immediate'";
-						}
-
-						$s[] = "UPDATE IGNORE gridimage_tag SET tag_id = {$row['tag2_id']} WHERE tag_id = {$row['tag_id']} AND status = 2";
-						
-						//this is trickly. Any of the above that failed (due to duplicate key), means the 'new' tag is already on the image, and so the old one can be zapped. 
-							
-					}
-					
-					if ($_POST['canon'][$report_id]) {
-						$s[] = "UPDATE tag SET canonical = {$row['tag2_id']} WHERE tag_id = {$row['tag_id']}";
-					}
-
-					#$s[] = "UPDATE tag_report SET status = 'moved' WHERE report_id = $report_id";
-					$s[] = "UPDATE tag_report SET status = 'moved' WHERE tag_id = {$row['tag_id']} AND tag2 = ".$db->Quote($row['tag2']);
-					
-					break;
-					
-				case 'rename':
-					if (empty($row['tag2'])) {
-						die("UNKNOWN DESTINIATION TAG {$row['tag2']}!!!");
-					}
-					
-					$bits = explode(':',$row['tag2'],2);
-					if (count($bits) > 1) {
-						$values = array("prefix = ".$db->Quote($bits[0]),"tag = ".$db->Quote($bits[1]));
-					} else {
-						$values = array("tag = ".$db->Quote($row['tag2']));
-					}
-
-					if ($db->getOne("SELECT tag_id FROM tag WHERE ".implode(' AND ',$values)." AND tag_id != {$row['tag_id']}")) {
-						die("THERE IS ALREADY A TAG {$row['tag2']}!!!");
-					}
-					
-					$s[] = "UPDATE tag SET ".implode(', ',$values)." WHERE tag_id = {$row['tag_id']}";
-					
-					#$s[] = "UPDATE tag_report SET status = 'renamed' WHERE report_id = $report_id";
-					$s[] = "UPDATE tag_report SET status = 'renamed' WHERE tag_id = {$row['tag_id']} AND tag2 = ".$db->Quote($row['tag2']);
-					
-					break;
-			
-			}
-		
-		}
-
-			
-		if (!empty($s)) {
-			foreach ($s as $q) {
-				print htmlentities($q).";";
-				$db->Execute($q);
-				
-				print " #Rows = ".$db->Affected_Rows()."<hr/>";
-			}
-		}
+		die("Currently disabled. Suggestions are now processed by an automated system. (see scripts/process-tag-typos.php)");
 	}
 
 	if (empty($db))
@@ -319,9 +342,9 @@ if (!empty($_GET['finder'])) {
 		}
 
 		if (!empty($u)) {
-
+			$u['tag2'] = str_replace('\\','',$u['tag2']);
+			$u['tag2'] = str_replace("'",'',$u['tag2']);
 			$u['user_id'] = $USER->user_id;
-
 
 			if (!empty($_GET['admin']) && $USER->hasPerm("tagsmod") && !empty($_POST['tags'])) {
 				$u['status'] = 'approved';
@@ -352,10 +375,7 @@ if (!empty($_GET['finder'])) {
 			}
 
 			$smarty->assign("message",'Report saved at '.date('r'));
-
-
 		}
-
 	}
 
 	if (!empty($_GET['admin'])) {
@@ -387,7 +407,7 @@ if (!empty($_GET['finder'])) {
 		if (empty($db))
 			$db = GeographDatabaseConnection(true);
 
-		$reports = $db->getAll("SELECT tag FROM tag_report WHERE status='new' AND type != 'canonical' GROUP BY tag_id ORDER BY tag");
+		$reports = $db->getAll("SELECT r.tag FROM tag_report r INNER JOIN tag t USING (tag_id) WHERE r.status='new' AND type != 'canonical' AND t.status = 1 GROUP BY tag_id ORDER BY r.tag");
 		$smarty->assign_by_ref('reports',$reports);
 
 		$recent = $db->getAll("SELECT tag FROM tag_report WHERE status!='new' AND type != 'canonical' GROUP BY tag_id ORDER BY updated DESC LIMIT 50");

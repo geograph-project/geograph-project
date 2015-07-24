@@ -1,10 +1,13 @@
 {include file="_std_begin.tpl"}
 
 <div class="tabHolder">
-	<a class="tab nowrap" href="?">Public Suggestion Form</a>
-	<a class="tabSelected nowrap">Admin Suggestion Form</a>
-	<a class="tab nowrap" href="?finder=1">Quick Tag Searcher</a>
-	<a class="tab nowrap" href="?approver=1">Approve Suggestions</a>
+	<a class="tab nowrap" href="?">Public Form</a>
+	<a class="tabSelected nowrap">Admin Form</a>
+	<a class="tab nowrap" href="?finder=1">Searcher</a>
+	<a class="tab nowrap" href="?approver=1">Approve</a>
+	<a class="tab nowrap" href="?report=outstanding">List Approved</a>
+	<a class="tab nowrap" href="create-subject.php">new Subjects</a>
+	<a class="tab nowrap" href="create-context.php">new Contexts</a>
 </div>
 <div class="interestBox">
 	<h3>Make Tag Edit Suggestion</h3>
@@ -310,7 +313,7 @@ function checkMultiTags(that,event) {
 				text = text.replace(/['"]+/ig, " ");
 
 
-				str = 'Found [<b><a href="/search.php?tag='+encodeURIComponent(text)+'" target="_blank">'+text+'</a></b>]';
+				str = 'Found [<b><a href="/tagged/'+encodeURIComponent(text)+'?exact=1&amp;lacacy=1" target="_blank">'+text+'</a></b>]';
 
 				if (data.images) {
 					str = str + " used by "+data.images+" images";

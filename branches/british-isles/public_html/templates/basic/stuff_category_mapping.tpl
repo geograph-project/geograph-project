@@ -11,8 +11,15 @@ a.rem {
 }
 </style>
 {/literal}
-<h2>Bulk Category --> Context and Tags convertor</h2>
 
+<div class="tabHolder">
+        <a class="tabSelected nowrap">A) Check Conversions</a>
+        <a class="tab nowrap" href="category_mapping_apply.php">B) Apply Conversions</a>
+        <a class="tab nowrap" href="category_mapping_stats.php">Statistics</a>
+</div>
+<div class="interestBox">
+	<h2>Bulk Category --> Context, Subject and Tags convertor :: Checker</h2>
+</div>
 
 {dynamic}    
 

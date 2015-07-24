@@ -5,6 +5,7 @@
         <a class="tab nowrap" href="?admin=1">Admin Suggestion Form</a>
         <a class="tab nowrap" href="?finder=1">Quick Tag Searcher</a>
         <a class="tabSelected nowrap" href="?approver=1">Approve Suggestions</a>
+	<a class="tab nowrap" href="?report=outstanding">List Approved Suggestions</a>
 </div>
 <div class="interestBox">
         <h3>Tag Report/Suggestion Approver</h3>
@@ -28,21 +29,27 @@
 	<div style="float:left;width:100px">Type:</div> <i>{$report.type|escape:'html'}</i>, by <a href="/profile/{$report.user_id|escape:'url'}">{$report.realname|escape:'html'}</a>
 	<hr/>
 
-	<div id="tag-message" style="float:right"></div>
 	<div style="float:left;width:100px">Original: <a href="http://www.google.com/search?q={$report.tag|escape:'url'}" target="_blank">G</a></div>
-	<tt style="font-size:1.2em">{$report.tag|escape:'html'}</tt>
+	<tt style="font-size:1.2em;background-color:#eee;" class="nowrap">{$report.tag|escape:'html'}</tt>
+	<div id="tag-message" style="text-align:right"></div>
 	<input type="hidden" name="tag" value="{$report.tag|escape:'html'}"/>
 	<hr/>
 
-	<div id="tag2-message" style="float:right"></div>
 	{if $report.tag2} 
 		<div style="float:left;width:100px">New: <a href="http://www.google.com/search?q={$report.tag2|escape:'url'}" target="_blank">G</a></div>  
-		<tt style="font-size:1.2em">{$report.tag2|escape:'html'}</tt> 
+		<tt style="font-size:1.2em;background-color:#eee;" class="nowrap">{$report.tag2|escape:'html'}</tt> 
+		<div id="tag2-message" style="text-align:right"></div>
 		<input type="hidden" name="tag2" value="{$report.tag2|escape:'html'}"/>
 	{else}
 		<b>No suggestion made</b>. Please use <a href="report.php?admin=1&amp;close=1#t={$report.tag|escape:'url'}" target="_blank">Tag suggestion form</a> to create a new suggestion. Then return here and reject this suggestion.
 	{/if}
 	<hr/>
+        {if $report.tag2 && $report.levenshtein}
+		<div style="float:left;width:100px">Changed:</div> 
+		<b>{$report.levenshtein}</b> (number of letters changed between the two versions)
+		<hr/>
+	{/if}
+
 
 	<p>
 		{if $report.tag2}
@@ -57,7 +64,11 @@
 	<p>Use Skip, to abstain from dealing with this suggestion.</p>
 
 	<ul>
-		<li>Remember this process is only for correctly clear mistakes and typos. Reject any suggestion that changes the wording, meaning or 'style' of the tag. This includes any suggestion clearly just intended to 'merge' multiple similar tags.
+		<li>Remember this process is only for correctly clear mistakes and typos. Reject any suggestion that changes the wording, meaning or 'style' of the tag. This includes any suggestion clearly just intended to 'merge' multiple similar tags.</li>
+		{if $report.tag2 && $report.levenshtein}
+			<li>Pay close attention to suggestions with a high number of changes, these indicate not simple typo fixing</li>
+		{/if}
+		<li>If it's a suggestion, that CAN'T be delt with via a 'minor' edit to the tag label, please refer it to Barry before approving the suggestion</li>
 	</ul>
 
 {else}
@@ -100,7 +111,7 @@ $(function() {
 				text = text.replace(/<[^>]*>/ig, "");
 				text = text.replace(/['"]+/ig, " ");
 
-				str = 'Found [<b><a href="/search.php?tag='+encodeURIComponent(text)+'" target="_blank">'+text+'</a></b>]';
+				str = 'Found [<b><a href="/tagged/'+encodeURIComponent(text)+'?exact=1&amp;lacacy=1" target="_blank">'+text+'</a></b>]<br/>';
 
 				if (data.images) {
 					str = str + " used by "+data.images+" images";
