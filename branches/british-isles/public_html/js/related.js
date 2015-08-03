@@ -122,7 +122,7 @@ function processImage(row) {
 	var splits = ['contexts','groups','tags','snippets','subjects'];
 	for(var g=0;g<splits.length;g++)
 		if (row[splits[g]] && row[splits[g]].length > 5) {
-			var list = row[splits[g]].replace(/(^\s*_SEP_\s*|\s*_SEP_\s*$)/g,'').split(/ _SEP_ /);
+			var list = row[splits[g]].replace(/(^\s*_SEP_\s*|\s*_SEP_\s*$)/g,'').replace(/(top|subject):/g,'').split(/ _SEP_ /);
 			for(var i = 0; i < list.length; i++) {
 				optional.push('"'+list[i]+'"');
 			}
