@@ -15,7 +15,7 @@ $(function() {
 	$.ajaxSetup({
 	 	cache: true
 	});
-	$.getScript('/js/jquery.hoverIntent.minified.js',function() {
+	$.getScript('http://s1.geograph.org.uk/js/jquery.hoverIntent.minified.js',function() {
                 initHover();
 	});
 });

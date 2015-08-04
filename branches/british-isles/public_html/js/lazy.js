@@ -13,8 +13,11 @@ $(function() {
 	$.ajaxSetup({
 	 	cache: true
 	});
-	$.getScript('/js/jquery.sonar.min.js',function() {
+	$.getScript('http://s1.geograph.org.uk/js/jquery.sonar.min.js',function() {
                 initLazy();
+		if (typeof initLazy2 == 'function') { 
+			initLazy2(); 
+		}
 	});
 });
 
