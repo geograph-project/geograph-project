@@ -1,6 +1,6 @@
 var gridimage_id = null;
 
-if (window.innerWidth > 960 && window.location.pathname.match(/^\/photo\/(\d+)/) ) {
+if (window.innerWidth > 980 && window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 	
 	//we can do this before even jquery loads...
 	document.getElementById('maincontent_block').style.marginRight = "150px";
@@ -21,7 +21,7 @@ if (window.innerWidth > 960 && window.location.pathname.match(/^\/photo\/(\d+)/)
 		}
 
 		$('#maincontent_block').css('margin-right','150px');
-		$('body').append('<div id="related" style="width:149px;background-color:white;border-left:1px solid silver;padding-top:4px;position:absolute;top:74px;right:0;text-align:center"></div>');
+		$('body').append('<div id="related" style="width:149px;background-color:white;border-left:1px solid silver;padding-top:4px;position:absolute;top:74px;right:0;text-align:center;min-height:900px"></div>');
 		
 		if ($('#maincontent_block').length)
 			$('#related').css('backgroundColor',$('#maincontent_block').css('backgroundColor'));
