@@ -1,6 +1,6 @@
 var gridimage_id = null;
 
-if (window.innerWidth > 980 && window.location.pathname.match(/^\/photo\/(\d+)/) ) {
+if (window.innerWidth > 1024 && window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 	
 	//we can do this before even jquery loads...
 	document.getElementById('maincontent_block').style.marginRight = "150px";
