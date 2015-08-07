@@ -29,6 +29,16 @@ if (window.innerWidth > 1024 && window.location.pathname.match(/^\/photo\/(\d+)/
 			
 		$("<style type='text/css'> #related a { color: "+$('#maincontent_block a').css('color')+"} </style>").appendTo("head");
 
+		$( window ).resize(function() {
+			if (window.innerWidth > 1024) {
+				$('#maincontent_block').css('margin-right','150px');
+				$('#related').show();
+			} else {
+				$('#maincontent_block').css('margin-right','0');
+				$('#related').hide();
+			}
+		});
+
 		$.ajaxSetup({
 			cache: true
 		});
