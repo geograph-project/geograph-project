@@ -46,12 +46,12 @@ if (window.innerWidth > 1024 && window.location.pathname.match(/^\/photo\/(\d+)/
 			//initLazy();
 			
 			$('#related').append('<form><select onchange="renderRelatedImage()">'+
-				'<option value="">General Related Images</option>'+
-				'<option value="recent">Recent Nearby Images</option>'+
-				'<option value="takenday">Taken the same Day</option>'+
-				'<option value="contributor">By the same Contributor</option>'+
-				'<option value="centisquare">In the same Centisquare</option>'+
-				'<option value="grid_reference">The same Grid-Square</option>'+
+				'<option value="">Related Images</option>'+
+				'<option value="recent">Recent Nearby</option>'+
+				'<option value="takenday">Same Day</option>'+
+				'<option value="contributor">Same Contributor</option>'+
+				'<option value="centisquare">Same Centisquare</option>'+
+				'<option value="grid_reference">Same Grid-Square</option>'+
 				'</select></form>');
 			
 			$('#related').append('<div class=thumbs style="padding:5px">Loading...</div>');
