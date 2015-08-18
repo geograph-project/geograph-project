@@ -61,7 +61,6 @@
         }
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
-<script src="/js/lazy.v2.js" type="text/javascript"></script>
 <script>
 
 jQuery(document).ready( function() {
@@ -69,8 +68,10 @@ jQuery(document).ready( function() {
 });
 
 </script>
-<div id="mapdiv"><img src="/img/blank.gif" name="map"/></div>
 {/literal}
+
+<script src="http://{$static_host}/js/lazy.v4.js" type="text/javascript"></script>
+<div id="mapdiv"><img src="http://{$static_host}/img/blank.gif" name="map"/></div>
 
 <table border="0" cellspacing="0" cellpadding="5">
         {foreach from=$engine->results item=image}
@@ -78,12 +79,12 @@ jQuery(document).ready( function() {
     <tr>
         <td valign="middle" align="center"><a href="/photo/{$image->gridimage_id}" title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in group{/if}" onmouseover="showMap('{$image->wgs84_lat} {$image->wgs84_long}')" onmouseout="hideMap()">{$image->getFull()|replace:'src=':'src="/img/blank.gif" data-src='}</a></td>
         <td valign="middle" align="center">
-            <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetaken > 1 && $image->imagetaken < 2012}<span class="year" title="year taken" style="color:gray;font-size:1.5em">, {$image->imagetaken|truncate:4:''}</span>{/if}<br/>
+            <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetaken > 1 && $image->imagetaken < 2015}<span class="year" title="year taken" style="color:gray;font-size:1.5em">, {$image->imagetaken|truncate:4:''}</span>{/if}<br/>
             {if $image->comment}
                 <br/><small>{$image->comment|escape:'html'|nl2br|geographlinks}</small>
             {/if}
 	    {if $image->imagetaken > 1}
-		<br/><small><br/>Image taken: {$image->imagetaken|date_format:"%e %b, %Y"}</small>
+		<br/><small><br/>Image taken: {$image->imagetakenString}</small>
             {/if}
             <br/><br/>
             <div>&copy; Copyright <b><a href="{$image->profile_link}">{$image->realname|escape:'html'}</a></b> and licensed for reuse under <a href="http://creativecommons.org/licenses/by-sa/2.0/">a Creative Commons licence</a> </div>

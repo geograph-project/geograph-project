@@ -1,25 +1,22 @@
 {assign var="page_title" value="Recent Images"}
 {include file="_std_begin.tpl"}
 
-{if $gallery}
+{if $tab eq 'gallery'}
 <div style="width:200px;float:right;position:relative;text-align:center">
 	<a href="/gallery.php?tab=daily">View in Gallery</a>
 </div>
-
-<div class="tabHolder">
-	<a href="daily.php" class="tab">From the Homepage</a>
-	<a class="tabSelected">From the Gallery</a>
-</div>
-{else}
+{elseif $tab eq 'potd'}
 <div style="width:200px;float:right;position:relative;text-align:center">
 	<a href="/results/2087426">View as search result</a>
 </div>
+{/if}
 
 <div class="tabHolder">
-	<a class="tabSelected">From the Homepage</a>
-	<a href="?gallery=1" class="tab">From the Gallery</a>
+	<a href="daily.php" class="tab{if $tab eq 'potd'}Selected{/if}">From the Homepage</a>
+	<a href="?tab=gallery" class="tab{if $tab eq 'gallery'}Selected{/if}">From the Gallery</a>
+	<a href="?tab=mixed" class="tab{if $tab eq 'mixed'}Selected{/if}">Mixed Selection</a>
 </div>
-{/if}
+
 <div class="interestBox">
 	<h2>Recently Featured Images</h2>
 </div>
@@ -118,14 +115,16 @@ div.thumbs a:hover {
 
 <br style="clear:both"/>
 <br/>
+
+{if $tab eq 'potd'}
 <div class="interestBox">
         <a href="{if $gallery}/gallery.php?tab=daily{else}/results/2087426{/if}">View more...</a>
 </div>
-
+{/if}
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 {if $src == 'data-src'}
-	<script src="http://{$static_host}/js/lazy.v2.js" type="text/javascript"></script>
+	<script src="http://{$static_host}/js/lazy.v4.js" type="text/javascript"></script>
 {/if}
 <script src="/preview.js.php?d=preview" type="text/javascript"></script>
 

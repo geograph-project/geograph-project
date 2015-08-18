@@ -53,7 +53,7 @@
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 {if $src == 'data-src'}
-	<script src="/js/lazy.v2.js" type="text/javascript"></script>
+	<script src="http://{$static_host}/js/lazy.v4.js" type="text/javascript"></script>
 {/if}
 <script src="/preview.js.php?d=preview" type="text/javascript"></script>
 <script>
@@ -67,9 +67,9 @@ $(function() {
 
 function redo(fragment) {
 	if (fragment.indexOf('-') == 0) {
-		fragment = fragment.replace(/^\-/,'-"').replace(/:/g,' ')+'"';
+		fragment = fragment.replace(/^\-/,'-"')+'"';
 	} if (fragment.indexOf(':') > 0) {
-		fragment = 'tags:"'+fragment.replace(/:/g,' ')+'"';
+		fragment = '['+fragment+']';
 	}
 
 	var url = "/search.php?text="+encodeURIComponent(query+" "+fragment)+"&i="+iii+"&redo=1";

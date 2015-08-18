@@ -39,6 +39,10 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/of.php') === 0) {
         exit;
 }
 
+if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
+        $mobile_url = "http://m.geograph.org.uk/of/".urlencode2($_GET['q']);
+}
+
 #########################################
 # general page startup
 
@@ -134,7 +138,7 @@ if (!empty($_GET['q'])) {
 	<? if (!empty($_GET['q'])) { ?>
 	<div style="float:right">
 		More:
-		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=decade">Over Time</a> &middot;
+		<a href="/browser/#!/q==<? echo $qu; ?>/display=group/group=decade/n=4/gorder=alpha%20desc">Over Time</a> &middot;
 		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=segment">Recent</a> &middot;
 		<?
 		$db = GeographDatabaseConnection(true);
@@ -146,7 +150,7 @@ if (!empty($_GET['q'])) {
 		        <a href="/gridref/<? echo strtoupper($qu2); ?>">Browse Page</a> &middot;
                 <? } ?>
 		<a href="/browser/#!/q=<? echo $qu; ?>/display=map_dots/pagesize=50">Map</a> &middot;
-		<a href="/browser/#!/q=<? echo $qu; ?>/pagesize=50">Browser</a> &middot;
+		<a href="/browser/#!/q=<? echo $qu; ?>">Browser</a> &middot;
 		<a href="/finder/multi2.php?q=<? echo $qu; ?>">Others</a>
 	</div>
 	<? } ?>
@@ -213,6 +217,13 @@ if (!empty($_GET['q'])) {
 
 	} elseif (!empty($prefixMatch) && $prefixMatch > 1) {
 		print "<div style=\"font-size:0.8em;\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities($_GET['q'])."'</a>, below are combined results. To search a specific one, select from the dropdown above.</div>";
+
+	} elseif (!empty($db)) {
+		//todo - rewrite this to use a full-text index.
+		$usercnt = $db->getOne("SELECT COUNT(*) FROM user WHERE realname = ".$db->Quote(trim($_GET['q'])));
+		if ($usercnt > 0) {
+			print "<div style=\"font-size:0.8em;\">There are a number of users with this name, below are combined results. Can also <a href=\"/browser/#!/q=$qu/display=group/group=user_id/n=4/gorder=images%20desc\">view images by contributor</a>.</div>";
+		}
 	}
 
 
@@ -246,15 +257,17 @@ if (!empty($_GET['q'])) {
 		}
 
                 //convert gi_stemmed -> sample8 format.
-                $where = preg_replace('/@by/','@realname',$where);
+                $where = str_replace('@by','@realname',$where);
                 $where = preg_replace('/__TAG__/i','_SEP_',$where);
+                $where = str_replace('@tags \\"_SEP_ top ','@contexts \\"_SEP_ ',$where);
+                $where = preg_replace('/@tags \\\\"_SEP_ (bucket|subject|term|group|wiki|snippet) /','@$1s \\"_SEP_ ',$where);
 
 		$rows = array();
 
 #########################################
 # special handler to catch entered id numbers
 
-		if (preg_match_all('/\b(\d{2,})\b/',$_GET['q'],$m) && !preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$_GET['q'])) {
+		if (empty($words) && preg_match_all('/\b(\d{2,})\b/',$_GET['q'],$m) && !preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$_GET['q'])) {
 			$rows['single'] = $sph->getAll($sql = "
                                 select id,realname,user_id,title,grid_reference
                                 from sample8
@@ -424,7 +437,7 @@ if (!empty($_GET['d'])) {
 
 		print "<br style=clear:both></div>";
 		if ($src == 'data-src')
-			print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazy.v2.js" type="text/javascript"></script>';
+			print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazy.v4.js" type="text/javascript"></script>';
 		print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
 
 #########################################
@@ -673,7 +686,7 @@ function vote_log(action,param,value) {
 	}
 
 	if ($src == 'data-src')
-		print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazy.v2.js" type="text/javascript"></script>';
+		print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazy.v4.js" type="text/javascript"></script>';
 	print '<script src="/preview.js.php" type="text/javascript"></script>';
 
 	$smarty->display('_std_end.tpl');
@@ -731,13 +744,28 @@ function parallel_get_contents($urls, $timeout = 3) {
         /* writeable sockets can accept an HTTP request */
         foreach ($write as $w) {
             $id = array_search($w, $sockets);
-            fwrite($w, "GET {$paths[$id]} HTTP/1.0\r\nHost: {$hosts[$id]}\r\nConnection: close\r\n\r\n");
-            $status[$id] = "waiting for response";
+
+	    /* first time round, send request */
+            if ($status[$id] == "in progress") {
+
+		if (!is_resource($w)) {
+                                        ob_start();
+                                        print "\n\nHost: ".`hostname`."\n\n";
+					print "GET {$paths[$id]} HTTP/1.0\r\nHost: {$hosts[$id]}\r\nConnection: close\r\n\r\n";
+					print_r($status);
+                                        $con = ob_get_clean();
+                                        mail('geograph@barryhunter.co.uk','[Geograph OF] failed '.$hosts[$id],$con);
+		}
+
+            	fwrite($w, "GET {$paths[$id]} HTTP/1.0\r\nHost: {$hosts[$id]}\r\nConnection: close\r\n\r\n");
+                $status[$id] = "waiting for response";
+	    }
         }
     } else {
         /* timed out waiting; assume that all hosts associated
          * with $sockets are faulty */
         foreach ($sockets as $id => $s) {
+
             $status[$id] = "timed out " . $status[$id];
         }
         break;
