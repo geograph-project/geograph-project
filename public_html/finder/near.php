@@ -30,6 +30,8 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
 
         $url = "/near/".urlencode2($_GET['q']);
 	//todo add sorting?
+	if (!empty($_GET['filter']))
+		$url .= "?filter=".urlencode($_GET['filter']);
 	if (!empty($_GET['sort']))
 		$url .= "?sort=".urlencode($_GET['sort']);
 
@@ -38,6 +40,11 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
 
         exit;
 }
+
+if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
+        $mobile_url = "http://m.geograph.org.uk/near/".urlencode2($_GET['q']);
+}
+
 
 #########################################
 # general page startup
@@ -65,10 +72,19 @@ if (!empty($_GET['q'])) {
 	$qu2 = urlencode2(trim($_GET['q']));
 	$qh = htmlentities(trim($_GET['q']));
 
-	$smarty->assign("page_title",'Photos near '.$_GET['q']);
-	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
+	$sphinxq = '';
 
-	if ($memcache->valid && $mkey = md5(trim($_GET['q']).$src)) {
+	$mkey = md5(trim($_GET['q']).$src);
+	if (!empty($_GET['filter'])) {
+		$sphinx = new sphinxwrapper(trim($_GET['filter']));
+		$sphinxq = $sphinx->q;
+		$mkey = md5($sphinxq.'.'.$mkey);
+	}
+
+	$smarty->assign("page_title",'Photos near '.$_GET['q']);
+	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].$mkey);
+
+	if ($memcache->valid) {
 		$str =& $memcache->name_get('near',$mkey);
 		if (!empty($str)) {
 			print $str;
@@ -78,7 +94,18 @@ if (!empty($_GET['q'])) {
 
 		ob_start();
 	}
-	if (preg_match("/^(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)$/",$_GET['q'],$ll)) {
+
+	if (preg_match("/^(\d+),\s*(\d+)\s*([OSIGB]*)$/i",$_GET['q'],$ee)) {
+                require_once('geograph/conversions.class.php');
+                $conv = new Conversions;
+		$e = intval($ee[1]);
+		$n = intval($ee[2]);
+		$reference_index = (stripos($ee[3],'i')!==FALSE)?2:1;
+		list($gr,$len) = $conv->national_to_gridref($e,$n,null,$reference_index,false);
+
+		$_GET['q'] = $gr;
+
+	} elseif (preg_match("/^(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)$/",$_GET['q'],$ll)) {
                 require_once('geograph/conversions.class.php');
                 $conv = new Conversions;
 
@@ -133,7 +160,7 @@ if (!empty($_GET['q'])) {
                                                 $grs[] = $gr2;
                                 }
                         }
-                        $sphinxq = "@hectad (".join(" | ",$grs).")";
+                        $sphinxq .= " @hectad (".join(" | ",$grs).")";
 
 		$qu = urlencode(trim($sphinxq));
 	} else {
@@ -148,7 +175,7 @@ if (!empty($_GET['q'])) {
 # the top of page form
 
 ?>
-<form onsubmit="location.href = '/near/'+encodeURI(this.q.value); return false;">
+<form onsubmit="location.href = '/near/'+encodeURI(this.q.value).(this.form.elements['filter']?"?filter="+encodeURI(this.form.elements['filter'].value):''); return false;">
 <div class="interestBox">
 	<? if (!empty($_GET['q'])) { ?>
 	<div style="float:right">
@@ -167,6 +194,9 @@ if (!empty($_GET['q'])) {
 	<? } ?>
 	Images near: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br/>
 <?
+	if (isset($_GET['filter'])) {
+		print "Matching: <input type=text name=filter value=\"".htmlentities($_GET['filter'])."\">";
+	}
 
 #########################################
 # display the location results dropdown, for directing to near page.
@@ -245,8 +275,10 @@ print "<!-- ($lat,$lng) -->";
 		$where = implode(' and ',$where);
 
                 //convert gi_stemmed -> sample8 format.
-                $where = preg_replace('/@by/','@realname',$where);
+                $where = str_replace('@by','@realname',$where);
                 $where = preg_replace('/__TAG__/i','_SEP_',$where);
+                $where = str_replace('@tags \\"_SEP_ top ','@contexts \\"_SEP_ ',$where);
+                $where = preg_replace('/@tags \\\\"_SEP_ (bucket|subject|term|group|wiki|snippet) /','@$1s \\"_SEP_ ',$where);
 
 		$rows = array();
 
@@ -266,6 +298,25 @@ print "<!-- ($lat,$lng) -->";
 #########################################
 # the main results set!
 
+if (!empty($_GET['preview'])) {
+
+##                $columns = ", GEODIST($lat, $lng, wgs84_lat, wgs84_long) as distance";
+
+$columns = preg_replace('/GEODIST\((.+?)\)/',"atan2($lat-wgs84_lat,$lng-wgs84_long) AS atan, INTERVAL(GEODIST($1), 0,100,300,600,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000) as disti, GEODIST($1)",$columns);
+
+print "<hr>$columns<hr>";
+
+                $rows['ordered'] = $sph->getAll($sql = "
+                        select id,realname,user_id,title,grid_reference $columns
+                        from sample8
+                        where $where
+                        order by disti asc, atan asc, sequence asc
+                        limit {$limit}
+			option ranker=none");
+
+
+} else {
+
                 $rows['ordered'] = $sph->getAll($sql = "
                         select id,realname,user_id,title,grid_reference $columns
                         from sample8
@@ -273,6 +324,7 @@ print "<!-- ($lat,$lng) -->";
                         order by distance asc, sequence asc
                         limit {$limit}
 			option ranker=none");
+}
 
 if (!empty($_GET['d']))
 	print $sql;
@@ -296,7 +348,7 @@ if (!empty($_GET['d']))
 
         print "<br style=clear:both>";
 
-if (!empty($_GET['d'])) {
+if (!empty($_GET['d']) && !empty($final)) {
 	print "<p><a href=\"/search.php?displayclass=map&marked=1&markedImages=".implode(',',array_keys($final))."\">View on Map</a></p>";
 }
 
@@ -340,7 +392,7 @@ if (!empty($_GET['d'])) {
 
 		print "<br style=clear:both></div>";
 		if ($src == 'data-src')
-			print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazy.v2.js" type="text/javascript"></script>';
+			print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazy.v4.js" type="text/javascript"></script>';
 		print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
 
 
@@ -395,7 +447,8 @@ if (false) {
 if ($memcache->valid && $mkey) {
 	$str = ob_get_flush();
 
-	$memcache->name_set('near',$mkey,$str,$memcache->compress,$memcache->period_long);
+	if (empty($_GET['d']))
+		$memcache->name_set('near',$mkey,$str,$memcache->compress,$memcache->period_long);
 }
 
 #########################################

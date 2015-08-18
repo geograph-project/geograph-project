@@ -92,7 +92,7 @@
 
 <br style="clear:both"/>
 
-<script src="http://{$static_host}/js/lazy.v2.js" type="text/javascript"></script>
+<script src="http://{$static_host}/js/lazy.v4.js" type="text/javascript"></script>
 {literal}
 <script type="text/javascript">
 

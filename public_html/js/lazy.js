@@ -29,8 +29,10 @@ function initLazy() {
                 $img.hide();
 
                 $img.unbind( 'scrollin' ); // clean up binding
-                img.src = $img.attr( 'data-src' );
-                $img.attr( 'data-src', '' );
+		if ( src = $img.attr( 'data-src' ) ) {
+	                img.src = src;
+	                $img.attr( 'data-src', '' );
+		}
 
                 $img.css('height','');
 
