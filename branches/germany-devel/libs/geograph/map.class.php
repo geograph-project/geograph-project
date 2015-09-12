@@ -4212,6 +4212,8 @@ END;
 		global $memcache;
 		global $CONF;
 
+		return array(); #FIXME currently too slow
+
 		if ($this->type_or_user == -10) {
 			//we want a blank map!
 			return array();

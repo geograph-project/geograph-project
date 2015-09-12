@@ -66,7 +66,7 @@ $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
 $sql_where .= ' and reference_index = '.$prefix['reference_index'].' ';
 
-
+$ri = $prefix['reference_index'];
 
 $letterlength = $CONF['gridpreflen'][$prefix['reference_index']];
 

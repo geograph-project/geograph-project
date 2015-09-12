@@ -848,6 +848,16 @@ function GetTileUrl_GeoH(a, z) {
     return "http://geo.hlipp.de/tile/hills/" +
                 z + "/" + a.x + "/" + a.y + ".png";
 }
+
+function GetTileUrl_GeoS(a, z) {
+    return (z < 16 ? "http://geo.hlipp.de/tile/osm/" : "http://tile.openstreetmap.org/") +
+                z + "/" + a.x + "/" + a.y + ".png";
+}
+
+function GetTileUrl_Cycle(a, z) {
+    return "http://a.tile.opencyclemap.org/cycle/" +
+                z + "/" + a.x + "/" + a.y + ".png";
+}
 EOF;
 			$osm_block=<<<EOF
 					// copyright messages for custom tile layers have become much worse with v3...
@@ -863,6 +873,18 @@ EOF;
 					    newMapType = map.getMapTypeId();
 					    copyrightDiv.innerHTML = newMapType in copyrights ? copyrights[newMapType] : "";
 					}
+
+					var mapnik_map_static = new google.maps.ImageMapType({
+						getTileUrl: GetTileUrl_GeoS,
+						tileSize: new google.maps.Size(256, 256),
+						isPng: true,
+						maxZoom: 18,
+						minZoom: 0,
+						name: "OSM(s)",
+						alt: "OSM: Static Mapnik",
+					});
+					map.mapTypes.set("mapniks", mapnik_map_static);
+					copyrights["mapniks"] = "<a target=\"_blank\" href=\"http://www.openstreetmap.org/\">OSM</a> (<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)";
 
 					var mapnik_map = new google.maps.ImageMapType({
 						getTileUrl: GetTileUrl_Mapnik,
@@ -890,7 +912,7 @@ EOF;
 					//copyrights["relief"] = "DEM <a target=\"_blank\" href=\"http://srtm.csi.cgiar.org/\">CIAT</a>";
 					//map.overlayMapTypes.insertAt(0, relief_map);
 					var mapnik_map_rel = new google.maps.ImageMapType({
-						getTileUrl: GetTileUrl_Mapnik,
+						getTileUrl: GetTileUrl_GeoS, //GetTileUrl_Mapnik,
 						tileSize: new google.maps.Size(256, 256),
 						isPng: true,
 						maxZoom: 18,
@@ -924,9 +946,27 @@ EOF;
 					map.mapTypes.set("topo", topo_map);
 					copyrights["topo"] = "<a target=\"_blank\" href=\"http://www.wanderreitkarte.de/licence_de.php\">Nops RWK</a> DEM <a target=\"_blank\" href=\"http://srtm.csi.cgiar.org/\">CIAT</a>";
 
+					var cycle_map = new google.maps.ImageMapType({
+						getTileUrl: GetTileUrl_Cycle,
+						tileSize: new google.maps.Size(256, 256),
+						isPng: true,
+						maxZoom: 19,
+						minZoom: 0,
+						name: "Cycle Map",
+						alt: "OpenCycleMap",
+					});
+					map.mapTypes.set("cycle", cycle_map);
+					copyrights["cycle"] = "<a target=\"_blank\" href=\"http://opencyclemap.org/\">OpenCycleMap</a> (<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)";
+
 					google.maps.event.addListener(map, "maptypeid_changed", updateCopyright);
+					if (map.mapTypeId === "mapnikh") {
+						if (map.overlayMapTypes.getLength() == 0) {
+							map.overlayMapTypes.insertAt(0, relief_map);
+						}
+					}
+					updateCopyright();
 EOF;
-			$maptypes .= ',"mapnik","mapnikh","topo"';
+			$maptypes .= ',"mapniks","mapnik","mapnikh","topo","cycle"';
 
 			return "
 				$p1
@@ -940,14 +980,19 @@ EOF;
 					$osm_func
 					function loadmap() {
 						var point = new google.maps.LatLng({$this->lat},{$this->long});
+						var mt = readCookie('GMapType');
+						if (mt === false || [ $maptypes ].indexOf(mt) == -1) {
+							mt = google.maps.MapTypeId.HYBRID;
+						}
 
 						map = new google.maps.Map(
 							document.getElementById('map'), {
 							center: point,
 							zoom: $zoom,
-							mapTypeId: google.maps.MapTypeId.HYBRID,
+							mapTypeId: mt,
 							//streetViewControl: issubmit?true:false
 							streetViewControl: false,
+							//XX p2
 							mapTypeControlOptions: {
 								mapTypeIds: [ $maptypes ],
 								style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
@@ -959,6 +1004,10 @@ EOF;
 
 						$block 
 
+						google.maps.event.addListener(map, 'maptypeid_changed', function(e) {
+							var mt = map.getMapTypeId();
+							createCookie('GMapType',mt,365);
+						});
 						if (typeof updateMapMarkers == 'function') {
 							updateMapMarkers();
 						}
@@ -1174,6 +1223,7 @@ EOF;
 					var ri = {$this->reference_index};
 					var map = null;
 		function loadmapO() {
+			initOL();
 			$ollang
 			var layerswitcher = new OpenLayers.Control.LayerSwitcher({'ascending':false});
 			map = new OpenLayers.Map({

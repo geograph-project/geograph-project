@@ -2,7 +2,7 @@
 {dynamic}
 {if $sent}
 
-<h2>Bestätigungsmail an {$email} wurde versandt</h2>
+<h2>Bestätigungsmail an {$email|escape:'html'} wurde versandt</h2>
 <p>Nach dem Aufrufen des in der Bestätigungsmail enthaltenen Links wird das neue Passwort aktiviert. Falls dabei Probleme
 auftreten, bitten wir um <a title="Kontaktformular" href="contact.php">Rückmeldung</a>.</p>
 

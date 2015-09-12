@@ -26,6 +26,11 @@
 	sind nun weitere Einstellungen möglich.
 	</p>
 
+{elseif $confirmation_status eq "expired"}
+	<p>Die Registrierung liegt schon zu lange zurück und wurde aus Sicherheitsgründen verworfen.
+	Daher ist eine erneute
+	<a title="Hier registrieren" href="/register.php">Anmeldung</a> erforderlich.</p>
+
 {elseif $confirmation_status eq "alreadycomplete"}
 	<p>Die Registrierung ist bereits abgeschlossen. Bitte mit Benutzernamen und Passwort
 	<a title="Hier anmelden" href="/login.php">einloggen</a>.</p>
@@ -36,6 +41,14 @@
 {else}
 
 	<form action="register.php" method="post">
+	<input type="hidden" name="CSRF_token" value="{$CSRF_token}" />
+
+	{if $errors.csrf}
+	<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px; font-size:0.9em">
+	Aus <a href="/help/csrf">Sicherheitsgründen</a> konnte die Registrierung nicht durchgeführt werden.
+	Wir bitten darum, die Eingaben zu überprüfen und erneut abzusenden.
+	</div>
+	{/if}
 
 	<p>Vor dem Einreichen von Bildern ist es erforderlich, sich zu registrieren. Die Registrierung ist aber
 	schnell, schmerz- und natürlich kostenlos.</p>

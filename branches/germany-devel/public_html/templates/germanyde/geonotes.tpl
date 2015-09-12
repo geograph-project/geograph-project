@@ -7,7 +7,6 @@
 * use a.getAttribute('b') etc. instead of a.b?
 * compatibility checks (test if _all_ needed functions are available early, i.e. in init routine)
 * "reset" button?
-* geonote.php: reverse order of notes (latest note = first)?
 * dark text on lighter background?
 * css -> geonotes.css?
 * if $ticket:
@@ -25,7 +24,8 @@
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
   <div class="img-shadow" id="mainphoto"><div class="notecontainer" id="notecontainer">
-    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\"")}
+    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}<!--
+    {if $altimg neq ''}--><img src="{$altimg}" height="{$std_height}px" width="{$std_width}px" id="gridimagealt" alt="" style="position:absolute;top:0px;left:0px;z-index:2;" /><!--{/if}-->
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}"
@@ -51,7 +51,7 @@
     {/foreach}
     {foreach item=note from=$notes}
     <div id="notetext{$note->note_id}" class="geonote"><p>{$note->comment|escape:'html'|nl2br|geographlinks:false:true:true}</p>
-    {if !$ticket}
+    {if !$ticket && !$readonly}
     <hr /><input id="note_t_edit_{$note->note_id}" type="button" value="ändern" onclick="return editNote('{$note->note_id}');"><input id="note_t_delete_{$note->note_id}" type="button" value="löschen" onclick="return deleteNote('{$note->note_id}');">
     {/if}
     </div>
@@ -136,6 +136,7 @@ var minboxsize = 8; // FIXME hard coded
 var editbuttons = [];
 var imageid = {$image->gridimage_id};
 var imgurl = '{$img_url}';
+var imgurl2 = '{$altimg}';
 var imgwidth = {$std_width};
 var imgheight = {$std_height};
 var stdwidth = {$std_width};
@@ -147,12 +148,14 @@ function setImgSize(large) {
 	if (large) {
 {/literal}
 		imgurl = '{$orig_url}';
+		imgurl2 = '{$altimglarge}';
 		imgwidth = {$original_width};
 		imgheight = {$original_height};
 {literal}
 	} else {
 {/literal}
 		imgurl = '{$img_url}';
+		imgurl2 = '{$altimg}';
 		imgwidth = {$std_width};
 		imgheight = {$std_height};
 {literal}
@@ -161,6 +164,14 @@ function setImgSize(large) {
 	el.src = imgurl;
 	el.width = imgwidth;
 	el.height = imgheight;
+{/literal}
+{if $altimg neq ''}
+	elalt = document.getElementById('gridimagealt');
+	elalt.src = imgurl2;
+	elalt.width = imgwidth;
+	elalt.height = imgheight;
+{/if}
+{literal}
 	if (ie7) {
 		fixIE();
 	}
@@ -689,14 +700,15 @@ function setImgSize(large) {
 		ele = document.createElement('label');
 		//ele.for = 'note_z_' + noteid; // IE does not like this
 		ele.setAttribute('for', 'note_z_' + noteid);
-		ele.appendChild(document.createTextNode('z:'));
+		ele.appendChild(document.createTextNode('Ebene:'));
 		formp.appendChild(ele);
 		ele = document.createElement('select');
 		ele.name = 'note_z_' + noteid;
 		ele.id = 'note_z_' + noteid;
 		AttachEvent(ele,"change",function(){updateNoteStatus(noteid);});
 		for (var i=-10; i<=10; ++i) {
-			ele.options[i+10] = new Option(i, i, false, i==0);
+			var zdesc = i == 1 || i == 10 ? ': Vordergrund' : (i == -1 || i == -10 ? ': Hintergrund' : '');
+			ele.options[i+10] = new Option(i+zdesc, i, false, i==0);
 		}
 		formp.appendChild(ele);
 		formp.appendChild(document.createTextNode(' | '));
@@ -744,14 +756,13 @@ function setImgSize(large) {
 		form.appendChild(formp);
 
 		var forms = document.getElementById('noteforms');
-		var addbutton = document.getElementById('addbutton');
-		forms.appendChild(head);
-		forms.appendChild(form);
+		forms.insertBefore(form, forms.firstChild);
+		forms.insertBefore(head, form);
 
 		statusChanged(noteid, true);
 
-		if (form.scrollIntoView) {
-			form.scrollIntoView(true);
+		if (head.scrollIntoView) {
+			head.scrollIntoView(true);
 		}
 		startEdit(noteid);
 	}
@@ -994,6 +1005,13 @@ function setImgSize(large) {
 		}
 		AttachEvent(document, "mousemove", dragBox);
 		AttachEvent(document, "mouseup", stopDrag);
+{/literal}
+{if $iniorigsize}
+{literal}
+		setImgSize(true);
+{/literal}
+{/if}
+{literal}
 	}
 	AttachEvent(window,"load",initNoteEdit);
 {/literal}
@@ -1013,11 +1031,12 @@ ie7 = true;
 {if $showorig}
 		<label for="imgsize">Bildgröße:</label>
 		<select name="imgsize" id="imgsize" onchange="setImgSize(this.options[this.selectedIndex].value=='original');">
-			<option value="default" selected="selected">{$std_width}x{$std_height} (Normalgröße)</option>
-			<option value="original">{$original_width}x{$original_height}</option>
+			<option value="default"{if !$iniorigsize} selected="selected"{/if}>{$std_width}x{$std_height} (Normalgröße)</option>
+			<option value="original"{if $iniorigsize} selected="selected"{/if}>{$original_width}x{$original_height}</option>
 		</select> |
 {/if}
 		<input id="toggletexts" type="button" value="Bildbeschreibung zeigen" onclick="toggleTexts('Bildbeschreibung verbergen','Bildbeschreibung zeigen');" /> |
+{if !$readonly}
 		{if $ticket}
 		<input id="toggleclassold" type="button" value="Alte Beschriftung verbergen" onclick="toggleBoxes('old', 'Alte Beschriftung verbergen', 'Alte Beschriftung zeigen');" /> |
 		<input id="toggleclassnew" type="button" value="Neue Beschriftung verbergen" onclick="toggleBoxes('new', 'Neue Beschriftung verbergen', 'Neue Beschriftung zeigen');" /> |
@@ -1032,11 +1051,13 @@ ie7 = true;
 {/if}
 		<input type="button" value="Alle speichern" id="commit_all" onclick="commitUnsavedNotes(gn.images[0].notes);" /> |
 		{/if}
+{/if}
 		<a href="/photo/{$image->gridimage_id}" target="_blank">Foto-Seite in neuem Fenster öffnen.</a>
 		<span id="statusline" style="padding-left:2em;white-space:nowrap">JavaScript erforderlich</span>
 	</p>
 	</form>
 </div>
+{if !$readonly}
 <div id="noteforms" class="noteforms">
 {if $ticket}
 	<table>
@@ -1069,10 +1090,10 @@ ie7 = true;
 	<p><b>Beschriftung {$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em;white-space:nowrap">{if $note->pendingchanges}Unmoderierte Änderungen{/if}</span></p>
 	<form action="javascript:void(0);" id="note_form_{$note->note_id}" class="{if $note->pendingchanges}noteformpending{else}noteform{/if}">
 	<p>
-		<label for="note_z_{$note->note_id}">z:</label>
+		<label for="note_z_{$note->note_id}">Ebene:</label>
 		<select name="note_z_{$note->note_id}" id="note_z_{$note->note_id}" onchange="updateNoteZ({$note->note_id});">
 		{section name=zloop start=0 loop=21}{* no negative values... *}
-			<option value="{$smarty.section.zloop.index-10}"{if $smarty.section.zloop.index-10==$note->z} selected="selected"{/if}>{$smarty.section.zloop.index-10}</option>
+			<option value="{$smarty.section.zloop.index-10}"{if $smarty.section.zloop.index-10==$note->z} selected="selected"{/if}>{$smarty.section.zloop.index-10}{if $smarty.section.zloop.first||$smarty.section.zloop.index-10==-1}: Hintergrund{/if}{if $smarty.section.zloop.last||$smarty.section.zloop.index-10==1}: Vordergrund{/if}</option>
 		{/section}
 		</select> |
 		<label for="note_status_{$note->note_id}">Status:</label>
@@ -1089,6 +1110,7 @@ ie7 = true;
     {/foreach}
 {/if}
 </div>
+{/if}
 {else}
 <h2>Bild nicht verfügbar</h2>
 <p>Das gewünschte Bild ist nicht vorhanden. Das kann an einem Softwarefehler liegen oder daran, dass

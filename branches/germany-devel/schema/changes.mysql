@@ -751,3 +751,104 @@ ALTER TABLE `gridimage_recent` ADD `notes` text AFTER `seq_no`;
 ALTER TABLE `gridimage_ticket_item` ADD KEY `note_id` (`note_id`);
 
 ALTER TABLE `loc_hier_stat` ADD `squares_geo` int(8) unsigned NOT NULL DEFAULT '0' AFTER `squares_total`;
+
+DROP TABLE IF EXISTS `gridimage_vote`;
+CREATE TABLE `gridimage_vote` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `user_id` int(11) unsigned NOT NULL,
+  `type` enum('info','like','site','qual') NOT NULL,
+  `vote` tinyint(4) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gridimage_id`, `user_id`,`type`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `gridimage_rating`;
+CREATE TABLE `gridimage_rating` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `type` enum('info','like','site','qual') NOT NULL,
+  `rating` float(7,6) NOT NULL,
+  `votes` int(11) unsigned NOT NULL,
+  `weighted_votes` float(11,6) NOT NULL,
+  PRIMARY KEY (`gridimage_id`, `type`),
+  KEY `rating` (`rating`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+DROP TABLE IF EXISTS `user_vote_stat`;
+CREATE TABLE `user_vote_stat` (
+  `user_id` int(11) unsigned NOT NULL,
+  `type` enum('info','like','site','qual') NOT NULL,
+  `weight` float(7,6) NOT NULL DEFAULT 0,
+  `votes` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes1` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes2` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes3` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes4` int(11) unsigned NOT NULL DEFAULT 0,
+  `votes5` int(11) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`user_id`, `type`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `user_vote_stat` DROP `weight`;
+ALTER TABLE `gridimage_vote` CHANGE `created` `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `gridimage_vote` ADD `weight` float(7,6) NOT NULL DEFAULT 0 AFTER `vote`;
+
+####
+# just for documentation: gets changed automatically by libs/event_handlers/every_hour/RebuildUserStats.class.php
+
+alter table user_stat add `content` mediumint(5) unsigned NOT NULL default '0' after `last`;
+
+alter table user_stat add `selfrate_like` mediumint(5) unsigned NOT NULL DEFAULT '0' after `content`;
+alter table user_stat add `selfrate_site` mediumint(5) unsigned NOT NULL DEFAULT '0' after `selfrate_site`;
+alter table user_stat add `selfrate_qual` mediumint(5) unsigned NOT NULL DEFAULT '0' after `selfrate_qual`;
+alter table user_stat add `selfrate_info` mediumint(5) unsigned NOT NULL DEFAULT '0' after `selfrate_info`;
+
+####
+
+CREATE TABLE IF NOT EXISTS `geotrips` ( # FIXME defaults,null,keys
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT, # auto? -> geotrip_id
+  `uid` int(11) unsigned NOT NULL DEFAULT '0', # -> user_id
+  `user` varchar(128) NOT NULL DEFAULT '', # -> realname # needed?
+  `type` enum('trip','walk','bike','road','rail','boat','bus') NOT NULL DEFAULT 'trip',
+  `location` varchar(128) NOT NULL DEFAULT '',
+  `start` varchar(128) NOT NULL DEFAULT '',
+  `title` varchar(128) NOT NULL DEFAULT '',
+  `date` date NOT NULL DEFAULT '0000-00-00',
+  `bbox` varchar(128) NOT NULL DEFAULT '', # string?
+  `track` text NOT NULL, # string? # better upload {$geotrip_id}.gpx ? would have to sanitize it and remove additional data?
+  `search` int(10) unsigned DEFAULT NULL, # ->query_id
+  `img` int(11) NOT NULL DEFAULT '0', # ->gridimage_id
+  `descr` text NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `contfrom` int(10) unsigned NOT NULL DEFAULT '0', # -> part_prev?
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `geotrips` ADD INDEX (`contfrom`);
+ALTER TABLE `geotrips` CHANGE `updated` `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+ALTER TABLE `gridimage_pending` CHANGE `type` `type` enum('picnik','original','altimg') default 'picnik';
+
+ALTER TABLE `sessions` CHANGE `SESSKEY` `SESSKEY` varchar(64) NOT NULL DEFAULT '';
+
+ALTER TABLE `sessions` CHANGE `ipaddr`  `ipaddr`  varchar(45) NOT NULL DEFAULT '';
+ALTER TABLE `geobb_posts` CHANGE `poster_ip` `poster_ip` varchar(45) NOT NULL DEFAULT '';
+ 
+ALTER TABLE `geobb_users` CHANGE `user_password` `user_password` varchar(60) NOT NULL DEFAULT '';
+
+DROP TABLE IF EXISTS `user_log`;
+CREATE TABLE `user_log` (
+  `userlog_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned NOT NULL,
+  `event` enum('login', 'pwdchange', 'mailchange', 'register') NOT NULL DEFAULT 'login',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `mailsent` TINYINT UNSIGNED NOT NULL DEFAULT  '0',
+  PRIMARY KEY (`userlog_id`),
+  KEY `user_id` (`user_id`),
+  KEY `created` (`created`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `queries` CHANGE `limit1` `limit1` varchar(7) NOT NULL DEFAULT '';
+ALTER TABLE `queries` CHANGE `limit5` `limit5` char(3) NOT NULL DEFAULT '';
+ALTER TABLE `queries_archive` CHANGE `limit1` `limit1` varchar(7) NOT NULL DEFAULT '';
+ALTER TABLE `queries_archive` CHANGE `limit5` `limit5` char(3) NOT NULL DEFAULT '';
+

@@ -134,8 +134,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		5=>'click to see bigger map',
 		6=>'click for more detail'));
 		
-	$smarty->assign('m',rand(0,6));	
+	$smarty->assign('m',rand(0,6));
 
+	$smarty->assign('searchpopular', $CONF['searchid_popular']);
 	$smarty->assign('potd_width', $CONF['home_potd_width'.$map_suffix_reduced]);
 	$smarty->assign('potd_height', $CONF['home_potd_height'.$map_suffix_reduced]);
 }

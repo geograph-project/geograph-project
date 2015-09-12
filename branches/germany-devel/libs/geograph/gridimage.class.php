@@ -31,6 +31,8 @@
 * @version $Revision$
 */
 
+include_messages('class_gridimage');
+
 /**
 * GridImage class
 * Provides an abstraction of a grid image, providing all the
@@ -552,6 +554,27 @@ class GridImage
 	
 	function assignToSmarty($smarty, $sid=-1, $map_suffix='') {
 		global $CONF;
+
+		$thumb = $this->getMinThumbnail(200,200,2);
+		$imgurl = $thumb['server'].$thumb['url'];
+		$smarty->assign('ogimage', $thumb['server'].$thumb['url']);
+		$smarty->assign('ogimageheight', $this->last_height);
+		$smarty->assign('ogimagewidth', $this->last_width);
+		$smarty->assign('ogtype', 'place');
+		$smarty->assign('ogtitle', $this->title);
+		$smarty->assign('ogauthor', $this->realname);
+		$smarty->assign('ogdescription', $this->comment);
+		if (count($CONF['languages'])) {
+			$canonical_host = reset($CONF['languages']);
+		} else {
+			$canonical_host = $_SERVER['HTTP_HOST'];
+		}
+		$smarty->assign('ogurl', 'http://'.$canonical_host.'/photo/'.$this->gridimage_id); #FIXME https if https page? would lead to caching problem...
+		#	$cur_proto = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
+		#FIXME define global variables $cur_proto $canonical_proto $canonical_host in global.inc?
+
+		#og:image:type 'image/jpeg'
+#{assign var="ogimage" value=$image->getMinThumbnail(200,200,true)}
 		
 		$taken=$this->getFormattedTakenDate();
 
@@ -631,6 +654,7 @@ class GridImage
 
 		$smarty->assign('x', $this->grid_square->x);
 		$smarty->assign('y', $this->grid_square->y);
+		$smarty->assign('neighbours', $this->grid_square->nextNeighbours());
 
 		if ($this->view_direction > -1) {
 			$smarty->assign('view_direction', ($this->view_direction%90==0)?strtoupper(heading_string($this->view_direction)):ucwords(heading_string($this->view_direction)) );
@@ -641,14 +665,37 @@ class GridImage
 	}
 
 	/**
+	* record a vote for this image
+	* returns true on success
+	*/
+	function vote($uid, $type, $vote)
+	{
+		$db =& $this->_getDB();
+		$sql="replace into gridimage_vote(gridimage_id,user_id,type,vote) ".
+			"values({$this->gridimage_id},$uid,'$type',$vote)";
+		return $db->Execute($sql) !== false;
+	}
+
+	/**
+	* get a list of votes for this image
+	*/
+	function& getVotes($uid)
+	{
+		$db =& $this->_getDB();
+		$retval =& $db->getAssoc("select type,vote from gridimage_vote where gridimage_id='{$this->gridimage_id}' and user_id='$uid'");
+		return $retval;
+	}
+
+	/**
 	* get a list of annotations for this image
 	* see comment in $note->applyTickets() for details on $ticketowner, $ticketid, $oldvalues
 	* $aStatus: array containing any allowed current note status
+	* $orderdesc: sort order (by note id)
 	* $noteids: list of note ids (or null for all notes)
 	* $exclude: list of note ids to exclude
 	* $aStatusTickets: array containing any allowed note status after applying the tickets (default: $aStatus)
 	*/
-	function& getNotes($aStatus, $ticketowner=null, $ticketid=null, $oldvalues=false, $noteids = null, $exclude = null, $aStatusTickets = null)
+	function& getNotes($aStatus, $orderdesc = false, $ticketowner = null, $ticketid = null, $oldvalues = false, $noteids = null, $exclude = null, $aStatusTickets = null)
 	{
 		if (!is_array($aStatus))
 			die("GridImage::getNotes expects array param");
@@ -670,7 +717,8 @@ class GridImage
 			$listwhere .= " and not note_id in ('" . implode("','", $exclude) . "')";
 		}
 		$recordSet = &$db->Execute("select * from gridimage_notes ".
-			"where gridimage_id={$this->gridimage_id}{$listwhere} and status in ($statuses) order by note_id asc");
+			"where gridimage_id={$this->gridimage_id}{$listwhere} and status in ($statuses) order by note_id ".
+			( $orderdesc ? "desc" : "asc"));
 		while (!$recordSet->EOF) {
 			$n=new GridImageNote;
 			$n->loadFromRecordset($recordSet);
@@ -701,7 +749,7 @@ class GridImage
 	*/
 	function& getTroubleTickets($aStatus)
 	{
-		global $CONF;
+		global $MESSAGES;
 		if (!is_array($aStatus))
 			die("GridImage::getTroubleTickets expects array param");
 			
@@ -721,38 +769,20 @@ class GridImage
 			$t=new GridImageTroubleTicket;
 			$t->loadFromRecordset($recordSet);
 			
-			if ($CONF['lang'] == 'de') {
-				if ($t->days > 365) {
-					$t->days = 'über einem Jahr';
-				} elseif ($t->days > 30) {
-					$t->days = 'über '.intval($t->days/30).' Monaten';
-				} elseif ($t->days > 14) {
-					$t->days = 'über '.intval($t->days/7).' Wochen';
-				} elseif ($t->days > 7) {
-					$t->days = 'über einer Woche';
-				} elseif ($t->days > 1) {
-					$t->days = $t->days.' Tagen';
-				} elseif ($t->days < 1) {
-					$t->days = 'weniger als einem Tag';
-				} else {
-					$t->days = 'einem Tag';
-				}
+			if ($t->days > 365) {
+				$t->days = $MESSAGES['class_gridimage']['days_365'];
+			} elseif ($t->days > 30) {
+				$t->days = sprintf($MESSAGES['class_gridimage']['days_30'], intval($t->days/30));
+			} elseif ($t->days > 14) {
+				$t->days = sprintf($MESSAGES['class_gridimage']['days_14'], intval($t->days/7));
+			} elseif ($t->days > 7) {
+				$t->days = $MESSAGES['class_gridimage']['days_7'];
+			} elseif ($t->days > 1) {
+				$t->days = sprintf($MESSAGES['class_gridimage']['days_gt1'], $t->days);
+			} elseif ($t->days < 1) {
+				$t->days = $MESSAGES['class_gridimage']['days_lt1'];
 			} else {
-				if ($t->days > 365) {
-					$t->days = 'over a year';
-				} elseif ($t->days > 30) {
-					$t->days = 'over '.intval($t->days/30).' months';
-				} elseif ($t->days > 14) {
-					$t->days = 'over '.intval($t->days/7).' weeks';
-				} elseif ($t->days > 7) {
-					$t->days = 'over a week';
-				} elseif ($t->days > 1) {
-					$t->days = $t->days.' days';
-				} elseif ($t->days < 1) {
-					$t->days = 'less than a day';
-				} else {
-					$t->days = '1 day';
-				}
+				$t->days = $MESSAGES['class_gridimage']['days_eq1'];
 			}
 			
 			//load its ticket items (should this be part of load from Recordset?
@@ -798,9 +828,51 @@ class GridImage
 	/**
 	* Store a file as the original
 	*/
-	function storeOriginal($srcfile, $movefile=false)
+	function storeOriginal($srcfile, $movefile=false, $altimg=false)
 	{
-		return $this->storeImage($srcfile,$movefile,'_original');
+		return $this->storeImage($srcfile, $movefile, $altimg ? '_altimg' : '_original');
+	}
+
+	function getAltImage($width, $height)
+	{
+		global $CONF;
+
+		/* Is there an image? */
+		$origpath = $this->_getOriginalpath(false, false, '_altimg');
+		if (!file_exists($_SERVER['DOCUMENT_ROOT'].$origpath))
+			return '';
+
+		/* Is there a resized image created from the recent altimage file? */
+		$imgpath = $this->_getOriginalpath(false, false, '_altimg_'.intval($width).'x'.intval($height));
+		if (file_exists($_SERVER['DOCUMENT_ROOT'].$imgpath)) {
+			$t1 = filemtime($_SERVER['DOCUMENT_ROOT'].$origpath);
+			$t2 = filemtime($_SERVER['DOCUMENT_ROOT'].$imgpath);
+			if ($t1 == false || $t2 == false)
+				return '';
+			if ($t2 >= $t1)
+				return $imgpath;
+		}
+
+		if ($CONF['imagemagick_path'] === '')
+			return '';
+
+		$osize = getimagesize($_SERVER['DOCUMENT_ROOT'].$origpath);
+		if ($osize === false || $osize[0] < $width || $osize[1] < $height)
+			return ''; // error or altimage not large enough
+
+		/* resize or copy the image if the dimensions are already correct */
+		if ($osize[0] == $width && $osize[1] == $height) {
+			copy($_SERVER['DOCUMENT_ROOT'].$origpath, $_SERVER['DOCUMENT_ROOT'].$imgpath);
+		} else {
+			$cmd = sprintf("\"%sconvert\" -resize '%ldx%ld!' -quality 87 jpg:%s jpg:%s",
+				$CONF['imagemagick_path'],
+				$width, $height,
+				$_SERVER['DOCUMENT_ROOT'].$origpath,
+				$_SERVER['DOCUMENT_ROOT'].$imgpath);
+			passthru($cmd);
+		}
+
+		return $imgpath;
 	}
 	
 	function _getOriginalpath($check_exists=true,$returntotalpath = false, $suffix = '_original')
@@ -1412,14 +1484,16 @@ class GridImage
 	* attribname : attribute name of img tag which holds url (default 'src')
 	* bevel : give image a raised edge (default true)
 	* unsharp : do an unsharp mask on the image
-	* pano : do not crop, even if w:h > 2:1 (default false)
+	* pano : allow wider images than maxw for large w:h (default false)
+	* minsize: maxw,maxh actually contain the minimum width,height (default false)
+	* pano || minsize: do not crop, even if w:h > 2:1
 	* 
 	* returns an association array containing 'html' element, which contains
 	* a fragment to load the image, and 'path' containg relative url to image
 	*/
 	function _getResized($params)
 	{
-		global $memcache,$CONF;
+		global $memcache, $CONF, $MESSAGES;
 		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
 		//fails quickly if not using memcached!
 		$result =& $memcache->name_get('ir',$mkey);
@@ -1434,12 +1508,13 @@ class GridImage
 		$bevel=isset($params['bevel'])?$params['bevel']:true;
 		$unsharp=isset($params['unsharp'])?$params['unsharp']:true;
 		$pano=isset($params['pano'])?$params['pano']:false;
+		$minsize=isset($params['minsize'])?$params['minsize']:false;
 		$source=isset($params['source'])?$params['source']:'';
 		
 		
 		
 		
-		global $CONF;
+		global $CONF;#FIXME remove?
 		//establish whether we have a cached thumbnail
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -1454,8 +1529,9 @@ class GridImage
 			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		}
+		#FIXME $thumbpath and $mkey should depend on $params
 
-		if (!empty($params['urlonly']) && $params['urlonly'] !== 2 && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
+		if (!empty($params['urlonly']) && $params['urlonly'] !== 2 && $params['urlonly'] !== 3 && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
 			$return=array();
 			$return['url']=$thumbpath;
 			if (!empty($CONF['enable_cluster'])) {
@@ -1473,10 +1549,7 @@ class GridImage
 			$return=array();
 			$return['url']=$thumbpath;
 
-			if ($CONF['lang'] == 'de')
-				$by = ' von ';
-			else
-				$by = ' by ';
+			$by = $MESSAGES['class_gridimage']['by'];
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
@@ -1492,6 +1565,10 @@ class GridImage
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
 			$return['html']=$html;
+
+			// keep those for smarty templates
+			$this->last_width = $size[0];
+			$this->last_height = $size[1];
 					
 			return $return;
 		}
@@ -1513,11 +1590,22 @@ class GridImage
 				$maxh = $destdim;
 				$bestfit = true;
 			}
+			if ($minsize && $fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath)) {
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+				$oasp = $owidth/$oheight;
+				$minasp = $maxw/$maxh;
+				if ($oasp > $minasp) {
+					$maxw = round($maxh * $oasp);
+				} else {
+					$maxh = round($maxw / $oasp);
+				}
+				$bestfit = true;
+			}
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				if (strlen($CONF['imagemagick_path'])) {
 					
-					if (($info = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath)) === FALSE) {
+					if (($info = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath)) === FALSE) { # FIXME get size before and use in pano, minsize sections
 						//couldn't read image!
 						$thumbpath="/photos/error.jpg";
 					} else {
@@ -1533,7 +1621,7 @@ class GridImage
 							$aspect_src=$width/$height;
 							$aspect_dest=$maxw/$maxh;
 
-							if (!$pano && $bestfit && $aspect_src > 2 && $aspect_dest < 2) {
+							if (!$pano && !$minsize && $bestfit && $aspect_src > 2 && $aspect_dest < 2) {
 								$bestfit = false;
 								$maxh = round($maxw/2);
 								$aspect_dest= 2;
@@ -1670,13 +1758,12 @@ class GridImage
 		if ($thumbpath=='/photos/error.jpg')
 		{
 			$html="<img $attribname=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\" />";
+			$this->last_width = $maxw;
+			$this->last_height = $maxh;
 		}
 		else
 		{
-			if ($CONF['lang'] == 'de')
-				$by = ' von ';
-			else
-				$by = ' by ';
+			$by = $MESSAGES['class_gridimage']['by'];
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
@@ -1691,6 +1778,10 @@ class GridImage
 			}
 			
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
+
+			// keep those for smarty templates
+			$this->last_width = $size[0];
+			$this->last_height = $size[1];
 			
 			//fails quickly if not using memcached!
 			$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_med);
@@ -1709,14 +1800,11 @@ class GridImage
 	*/
 	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false,$attribname = 'src')
 	{
-		global $CONF;
+		global $MESSAGES;
 		if ($this->ext) {
 			# (120,120,false,true);
 			# $resized['html'];
-			if ($CONF['lang'] == 'de')
-				$by = ' von ';
-			else
-				$by = ' by ';
+			$by = $MESSAGES['class_gridimage']['by'];
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).$by.htmlentities2($this->realname);
 			#$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			# width="120" height="90"
@@ -1731,13 +1819,39 @@ class GridImage
 		
 		if (!empty($urlonly)) {
 			if ($urlonly === 2) 
-				return $resized;
+				return $resized; // $urlonly === 2
 			else 
-				return $resized['server'].$resized['url'];
+				return $resized['server'].$resized['url']; // $urlonly == true || $urlonly === 1 || $urlonly === 3
 		} else
-			return $resized['html'];
+			return $resized['html']; // $urlonly === false || $urlonly === 0
 	}	
-	
+
+	/**
+	* returns HTML img tag to display a thumbnail that would not be smaller than the given dimensions
+	* If the required thumbnail doesn't exist, it is created. This method is really
+	* handy helper for Smarty templates, for instance, given an instance of this
+	* class, you can use this {$image->getMinThumbnail(150,150)} to show a thumbnail
+	*/
+	function getMinThumbnail($minw, $minh,$urlonly = false,$attribname = 'src')
+	{
+		$params['minsize'] = true;
+		$params['bevel']=false;
+		$params['unsharp']=false;
+		$params['maxw']=$minw;
+		$params['maxh']=$minh;
+		$params['attribname']=$attribname;
+		$params['urlonly']=$urlonly;
+		$resized=$this->_getResized($params);
+		
+		if (!empty($urlonly)) {
+			if ($urlonly === 2) 
+				return $resized; // $urlonly === 2
+			else 
+				return $resized['server'].$resized['url']; // $urlonly == true || $urlonly === 1 || $urlonly === 3
+		} else
+			return $resized['html']; // $urlonly === false || $urlonly === 0
+	}
+
 	/**
 	* returns HTML img tag to display a thumbnail that would EXACTLY fit the given dimensions
 	* If the required thumbnail doesn't exist, it is created. This method is really

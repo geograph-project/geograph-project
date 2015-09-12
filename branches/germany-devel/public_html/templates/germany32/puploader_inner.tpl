@@ -72,8 +72,11 @@
 		{$rastermap->getImageTag()}<br/>
 		<b>{$rastermap->getTitle($gridref)}</b><br/>
 		<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>
+		{if $rastermap->service == 'OLayers'}
+			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';map.updateSize();return false">Enlarge Map</a>
+		{/if}{*FIXME move to FootNote?*}
 		{if $rastermap->service == 'Google'}
-			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';map.checkResize();return false">Enlarge Map</a>
+			<a href="#" onclick="this.style.display='none';document.getElementById('map').style.width = '100%';document.getElementById('map').style.height = '400px';google.maps.event.trigger(map, 'resize');return false">Enlarge Map</a>
 		{/if}{*FIXME move to FootNote?*}
 		
 		</div>

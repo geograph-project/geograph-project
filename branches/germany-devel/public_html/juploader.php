@@ -175,6 +175,7 @@ function UploadPicture() {
 function AuthenticateUser() {
 	global $db, $xml;
 	global $CONF;
+	global $USER; # could also use $u = new GeographUser();
 
 	$username = isset($_GET['username']) ? $_GET['username'] : "";
 	$password = isset($_GET['password']) ? $_GET['password'] : "";
@@ -185,12 +186,16 @@ function AuthenticateUser() {
 	
 	if ($rs = &$db->Execute($sql)) {
 	
-		$md5password=md5($rs->fields[4].$password);
-	
-		if ($md5password != $rs->fields[0]) {
+		if (!$USER->password_verify($password, $rs->fields[0], $rs->fields[4], 'login', $rs->fields[3])) {
 
 			// oops - user specified invlaid password
 
+			#if ($USER->lock_seconds >= 120) {
+			#	$lock_str = ceil($USER->lock_seconds / 60) . ' minutes';
+			#} else {
+			#	$lock_str = $USER->lock_seconds . ' seconds';
+			#}
+			#$xml['status'] = 'Invalid password, access blocked for '.$lock_str;
 			$xml['status'] = 'Invalid password';
 
 			returnXML();

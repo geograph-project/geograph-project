@@ -26,18 +26,10 @@
     <li><small><small>Verschiebbare Karten</small></small><ul>
   {dynamic}
   {if $is_logged_in}
-  {if $use_google_api}
-     <li><a title="Verschiebbare Geograph-Karte" href="/omap.php">Geograph</a> (<a title="Auf der Google API basierende verschiebbare Geograph-Karte" href="/gmap.php">gm</a>)</li>
-  {else}
      <li><a title="Verschiebbare Geograph-Karte" href="/omap.php">Geograph</a></li>
   {/if}
-  {/if}
   {/dynamic}
-  {if $use_google_api}
-     <li><a title="Zonenlose Geograph-Karte" href="/ommap.php">Zonenlos</a> (<a title="Auf der Google API basierende zonenlose Geograph-Karte" href="/gmmap.php">gm</a>)</li>
-  {else}
      <li><a title="Zonenlose Geograph-Karte" href="/ommap.php">Zonenlos</a></li>
-  {/if}
     </ul></li>
      <li><a title="Koordinatenkonverter" href="/latlong.php">Koordinaten</a></li>
     </ul></li>

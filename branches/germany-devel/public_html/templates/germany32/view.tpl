@@ -23,7 +23,17 @@
 <br/>
 {/if}
 {dynamic}
-{if $search_keywords && $search_count}
+{if $searchid}
+	<div class="interestBox" style="text-align:center; font-size:0.9em;width:400px;margin-left:auto;margin-right:auto">
+		{if $searchidx}
+			<a href="/results/browse/{$searchid}/{$searchidx-1}">&lt; prev image</a>
+                {else}
+			<span style="color:silver" title="first image">&lt; prev image</span>
+		{/if} |
+		<a href="/search.php?i={$searchid}&amp;page={$searchpg}"><b>back to search results</b></a> |
+		<a href="/results/browse/{$searchid}/{$searchidx+1}" >next image &gt;</a>
+	</div>
+{elseif $search_keywords && $search_count}
 	<div class="interestBox" style="text-align:center; font-size:0.9em">
 		We have at least <b>{$search_count} images</b> that match your query [{$search_keywords|escape:'html'}] in the area! <a href="/search.php?searchtext={$search_keywords|escape:'url'}&amp;gridref={$image->grid_reference}&amp;do=1">View them now</a>
 	</div>
@@ -31,18 +41,14 @@
 {/dynamic}
 
 <div class="{if $image->isLandscape()}photolandscape{else}photoportrait{/if}">
-        {if $image->original_width || $user->user_id eq $image->user_id || $notes || $user->registered}
+        {if $image->original_width || $user->user_id eq $image->user_id || $notes || $altimg neq '' || $user->registered}
 	<div class="caption640" style="text-align:right;">
-	{if $notes}
-		{if $user->registered}
-		Move the mouse pointer over the image to display <a href="/geonotes.php?id={$image->gridimage_id}">image annotations</a>
-		{else}
-		Move the mouse pointer over the image to display image annotations
-		{/if}
+	{if $notes || $altimg neq ''}
+		Move the mouse pointer over the image to display <a href="/geonotes.php?id={$image->gridimage_id}&amp;size=original">image annotations</a>
 	{elseif $user->registered}
 		<a href="/geonotes.php?id={$image->gridimage_id}">Create image annotations</a>
 	{/if}
-	{if ($image->original_width || $user->user_id eq $image->user_id) && ($notes || $user->registered)}|{/if}
+	{if ($image->original_width || $user->user_id eq $image->user_id) && ($notes || $altimg neq '' || $user->registered)}|{/if}
 	{if $image->original_width}
 		<a href="/more.php?id={$image->gridimage_id}">More sizes</a>
 	{elseif $user->user_id eq $image->user_id}
@@ -53,7 +59,8 @@
   <div class="img-shadow" id="mainphoto"><!-- comment out whitespace
   {if $notes}
     --><div class="notecontainer" id="notecontainer">
-    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\"")}
+    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}<!--
+    {if $altimg neq ''}--><img src="{$altimg}" height="{$std_height}px" width="{$std_width}px" id="gridimagealt" alt="" style="position:absolute;top:0px;left:0px;z-index:2;" /><!--{/if}-->
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
     <area alt="" title="{$note->comment|escape:'html'}" id="notearea{$note->note_id}" nohref="nohref" shape="rect" coords="{$note->x1},{$note->y1},{$note->x2},{$note->y2}" />
@@ -67,6 +74,12 @@
     {/foreach}
     <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
     </div><!--
+  {elseif $altimg neq ''}
+    --><div class="notecontainer" id="notecontainer">
+    {$image->getFull(true,"class=\"geonotes\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}
+    <img src="{$altimg}" height="{$std_height}px" width="{$std_width}px" id="gridimagealt" alt="" style="position:absolute;top:0px;left:0px;z-index:2;" />
+    <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
+    </div><!--
   {else}
   -->{$image->getFull(true,"id=\"gridimage\"")}<!--
   {/if}
@@ -74,33 +87,33 @@
 
   {if $image->comment1 neq '' && $image->comment2 neq '' && $image->comment1 neq $image->comment2}
      {if $image->title1 eq ''}
-       <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
-       <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+       <div class="caption640"><b>{$image->title2|escape:'html'}</b></div>
+       <div class="caption640">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
        <hr style="width:3em" />
-       <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+       <div class="caption640">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
      {else}
-       <div class="caption"><b>{$image->title1|escape:'html'}</b></div>
-       <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+       <div class="caption640"><b>{$image->title1|escape:'html'}</b></div>
+       <div class="caption640">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
        <hr style="width:3em" />
        {if $image->title2 neq ''}
-       <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
+       <div class="caption640"><b>{$image->title2|escape:'html'}</b></div>
        {/if}
-       <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+       <div class="caption640">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
      {/if}
   {else}
      {if $image->title1 neq ''}
        {if $image->title2 neq '' && $image->title2 neq $image->title1 }
-       <div class="caption"><b>{$image->title1|escape:'html'} ({$image->title2|escape:'html'})</b></div>
+       <div class="caption640"><b>{$image->title1|escape:'html'} ({$image->title2|escape:'html'})</b></div>
        {else}
-       <div class="caption"><b>{$image->title1|escape:'html'}</b></div>
+       <div class="caption640"><b>{$image->title1|escape:'html'}</b></div>
        {/if}
      {else}
-       <div class="caption"><b>{$image->title2|escape:'html'}</b></div>
+       <div class="caption640"><b>{$image->title2|escape:'html'}</b></div>
      {/if}
      {if $image->comment1 neq ''}
-       <div class="caption">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+       <div class="caption640">{$image->comment1|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
      {elseif $image->comment2 neq ''}
-       <div class="caption">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
+       <div class="caption640">{$image->comment2|escape:'html'|nl2br|geographlinks|hidekeywords}</div>
      {/if}
   {/if}
 
@@ -361,7 +374,7 @@ AttachEvent(window,'load',fixIE,false);
 </script>
 <![endif]-->
 
-{if $notes}
+{if $notes || $altimg}
 <script type="text/javascript">
 /* <![CDATA[ */
 AttachEvent(window,"load",gn.init);
@@ -372,17 +385,79 @@ AttachEvent(window,"load",gn.init);
 <div style="width:100%;position:absolute;top:0px;left:0px;height:0px">
 	<div class="interestBox" style="float: right; position:relative; padding:2px;">
 		<table border="0" cellspacing="0" cellpadding="2">
-		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=-1">NW</a></td>
-		<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=0">N</a></td>
-		<td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=1&amp;dx=1">NE</a></td></tr>
-		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=-1">W</a></td>
+		<tr><td><a href="/gridref/{$neighbours.0}">NW</a></td>
+		<td align="center"><a href="/gridref/{$neighbours.1}">N</a></td>
+		<td><a href="/gridref/{$neighbours.2}">NE</a></td></tr>
+		<tr><td><a href="/gridref/{$neighbours.3}">W</a></td>
 		<td><b>Go</b></td>
-		<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=0&amp;dx=1">E</a></td></tr>
-		<tr><td><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=-1">SW</a></td>
-		<td align="center"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=0">S</a></td>
-		<td align="right"><a href="/browse.php?x={$x}&amp;y={$y}&amp;dy=-1&amp;dx=1">SE</a></td></tr>
+		<td align="right"><a href="/gridref/{$neighbours.5}">E</a></td></tr>
+		<tr><td><a href="/gridref/{$neighbours.6}">SW</a></td>
+		<td align="center"><a href="/gridref/{$neighbours.7}">S</a></td>
+		<td align="right"><a href="/gridref/{$neighbours.8}">SE</a></td></tr>
 		</table>
 	</div>
+  {dynamic}
+    {if $user->registered}
+
+{* display current votes even if the browser gets this from the cache *}
+<script type="text/javascript">
+/* <![CDATA[ */
+ AttachEvent(window,'load',function() {ldelim}imgvote({$imageid}, '', 0);{rdelim},false);
+/* ]]> */
+</script>
+
+	<div class="interestBox thumbbox"><span id="hideside"></span>
+		<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side','block')"/>
+	</div>
+		
+	<div class="thumbwincontainer"><div class="thumbwindow" id="showside" onmouseout="hide_tree('side')">
+		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
+			<h4 style="margin-top:0px">Image rating</h4>
+			<p>
+			Please read <a href="/discuss/index.php?&action=vthread&forum=2&topic=126">this forum thread</a> to learn what this is about.
+			This is especially important as there were some misconceptions regarding the "Geographical information" rating which
+			should take into account both the description and the subject of the image.
+			</p>
+			<div class="votebox">
+				General impression: <span class="votebuttons">
+				<span class="invisible"  >[</span><a id="vote{$imageid}like1" class="voteneg{if $vote.like==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 1); return false;" title="I don't like this image at all"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like2" class="voteneg{if $vote.like==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 2); return false;" title="I like this image below average"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like3" class="voteneu{if $vote.like==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 3); return false;" title="This is an average image"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like4" class="votepos{if $vote.like==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 4); return false;" title="I like this image above average"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}like5" class="votepos{if $vote.like==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'like', 5); return false;" title="I like this image a lot"><b>++</b></a>
+				<span class="invisible">]</span></span>
+			</div><div class="votebox">
+				Location or scenic beauty: <span class="votebuttons">
+				<span class="invisible"  >[</span><a id="vote{$imageid}site1" class="voteneg{if $vote.site==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 1); return false;" title="I don't like this place at all"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site2" class="voteneg{if $vote.site==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 2); return false;" title="I like this place below average"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site3" class="voteneu{if $vote.site==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 3); return false;" title="This is an average place"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site4" class="votepos{if $vote.site==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 4); return false;" title="This is a nice place"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}site5" class="votepos{if $vote.site==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'site', 5); return false;" title="This place is beautiful"><b>++</b></a>
+				<span class="invisible">]</span></span>
+			</div><div class="votebox">
+				Image quality: <span class="votebuttons">
+				<span class="invisible"  >[</span><a id="vote{$imageid}qual1" class="voteneg{if $vote.qual==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 1); return false;" title="The quality of this image is much below average"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual2" class="voteneg{if $vote.qual==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 2); return false;" title="The quality of this image is below average"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual3" class="voteneu{if $vote.qual==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 3); return false;" title="This is an average image"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual4" class="votepos{if $vote.qual==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 4); return false;" title="This is an image of high quality"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}qual5" class="votepos{if $vote.qual==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'qual', 5); return false;" title="This is an image of very high quality"><b>++</b></a>
+				<span class="invisible">]</span></span>
+			</div><div class="votebox">
+				Geographical information: <span class="votebuttons">
+				<span class="invisible"  >[</span><a id="vote{$imageid}info1" class="voteneg{if $vote.info==1}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 1); return false;" title="I don't see much geographical information"><b>--</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}info2" class="voteneg{if $vote.info==2}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 2); return false;" title="This is not very interesting"><b>-</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}info3" class="voteneu{if $vote.info==3}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 3); return false;" title="This is an average image"><b>o</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}info4" class="votepos{if $vote.info==4}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 4); return false;" title="This is interesting"><b>+</b></a>
+				<span class="invisible">] [</span><a id="vote{$imageid}info5" class="votepos{if $vote.info==5}active{/if}" href="#" onclick="imgvote({$imageid}, 'info', 5); return false;" title="This is very interesting"><b>++</b></a>
+				<span class="invisible">]</span></span>
+			</div>
+			<p>
+			<a href="/imgvote.php">Show my recent votes</a>
+			</p>
+		</div>
+	</div></div>
+    {/if}
+  {/dynamic}
 	<div style="float:right">
 		[<a href="javascript:void(markImage({$image->gridimage_id}));" id="mark{$image->gridimage_id}" title="Add this image to your site marked list">Mark</a>]&nbsp;
 	</div>

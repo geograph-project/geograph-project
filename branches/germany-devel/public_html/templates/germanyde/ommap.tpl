@@ -51,8 +51,11 @@ ommap.tpl, rastermap.class.php:
 		var inimlat = {$inimlat};
 		var inimlon = {$inimlon};
 		var iniuser = {$iniuser};
+		var userid = {$userid};
 {/dynamic}
 {literal}
+		var ovltypes;
+		var maptypes;
 
 		function openGeoWindow(prec, url) {
 			var curgridref = document.theForm.grid_reference.value.replace(/ /g,'');
@@ -65,6 +68,26 @@ ommap.tpl, rastermap.class.php:
 			window.open(url+gridref,'_blank');
 		}
 
+		var large = 0;
+		function toggleLarge(smallmsg, largemsg)
+		{
+			var button = document.getElementById('togglelarge');
+			var div = document.getElementById('map');
+			large = !large;
+			if (large) {
+				button.value = smallmsg;
+				var width = "800px";
+				var height = "800px";
+			} else {
+				button.value = largemsg;
+				var width = "600px";
+				var height = "500px";
+			}
+			div.style.width = width;
+			div.style.height = height;
+			map.updateSize();
+		}
+
 		function clearMarker() {
 			if (currentelement) {
 				dragmarkers.removeFeatures([currentelement]);
@@ -74,19 +97,113 @@ ommap.tpl, rastermap.class.php:
 				map.events.triggerEvent("dragend");
 			}
 		}
+{/literal}
+{if $google_maps_api_key}
+{literal}
+		//the geocoder object
+		var geocoder;
 
+		function showAddress(address) {
+			if (!geocoder) {
+				 geocoder = new google.maps.Geocoder();
+			}
+			if (geocoder) {
+				geocoder.geocode( { 'address': address}, function(results, status) {
+					if (status == google.maps.GeocoderStatus.OK) {
+						var gmpoint = results[0].geometry.location;
+						var ll = new OpenLayers.LonLat(gmpoint.lng(), gmpoint.lat());
+						var point = ll.clone().transform(epsg4326, map.getProjectionObject());
+						if (!(map.baseLayer instanceof OpenLayers.Layer.Google)) {
+							map.setBaseLayer(maptypes['h']);
+						}
+						if (currentelement) {
+							currentelement.move(point);
+						} else {
+							currentelement = createMarker(ll, 0);
+						}
+						map.setCenter(point, 15);
+						markerDrag(currentelement, null);
+					} else {
+						alert('Es konnte kein pasender Ort bestimmt werden, Geocode meldet folgendes Problem: ' + status);
+					}
+				});
+			}
+			return false;
+		}
+{/literal}
+{/if}
+{literal}
+		function readIntCookie(name) {
+			var ret = readCookie(name);
+			if (ret === false)
+				return false;
+			ret = parseInt(ret); // more validation?
+			if (isNaN(ret))
+				return false;
+			return ret;
+		}
+		function readFloatCookie(name) {
+			var ret = readCookie(name);
+			if (ret === false)
+				return false;
+			ret = parseFloat(ret); // more validation?
+			if (isNaN(ret))
+				return false;
+			return ret;
+		}
 		function loadmapO() {
 			//OpenLayers.Lang.setCode("de"); /* TODO Needs OpenLayers/Lang/de.js built into OpenLayers.js */
 
+			initOL();
 			var op = 0.5;
 			if (inio >= 0)
 				op = inio;
+			else {
+				var opc = readFloatCookie('OMapOp');
+				if (opc !== false && opc >= 0.0 && opc <= 1.0) {
+					op = opc;
+					document.theForm.opcoverage.value = opc*100;
+				}
+			}
 			var opr = 1.0;
 			if (inior >= 0)
 				opr = inior;
+			else {
+				var opc = readFloatCookie('OMapOpr');
+				if (opc !== false && opc >= 0.0 && opc <= 1.0) {
+					opr = opc;
+					document.theForm.oprelief.value = opc*100;
+				}
+			}
 			var user = 0;
 			if (iniuser >= -1)
 				user = iniuser;
+			else {
+				var userc = readIntCookie('OMapUser');
+				if (userc !== false && userc >= -1) {
+					user = userc;
+					if (userc == -1) {
+						document.theForm.mtradio[1].checked = true;
+					} else if (userc == 0) {
+						document.theForm.mtradio[0].checked = true;
+					} else if (userc == userid) {
+						document.theForm.mtradio[2].checked = true;
+					} else {
+						document.theForm.mtuser.value = userc;
+						document.theForm.mtradio[userid ? 3 : 2].checked = true;
+					}
+				}
+			}
+			var maptype = '';
+			if (initype !== '')
+				maptype = initype;
+			else {
+				maptype = readCookie('OMapType'); /* is validated later */
+				if (maptype === false) {
+					maptype = '';
+				}
+			}
+			var curtype = '';
 
 			var point1 = new OpenLayers.Geometry.Point(lonmin, latmin);
 			var point2 = new OpenLayers.Geometry.Point(lonmax, latmax);
@@ -205,6 +322,7 @@ ommap.tpl, rastermap.class.php:
 					userParam : user
 				}
 			);
+			geosq.opCookie = 'OMapOp';
 			var geogr = new OpenLayers.Layer.XYrZ(
 				"Geograph: Gitternetz",
 				"/tile.php?x=${x}&y=${y}&Z=${z}&l=8&o=1",
@@ -250,6 +368,7 @@ ommap.tpl, rastermap.class.php:
 					visibility : false
 				}
 			);
+			hills.opCookie = 'OMapOpr';
 
 			//var topohills = new OpenLayers.Layer.XYrZ(
 			//	"Relief (Nop's Wanderreitkarte)",
@@ -386,12 +505,12 @@ ommap.tpl, rastermap.class.php:
 {/literal}
 {/if}
 {literal}
-			var ovltypes = {
+			ovltypes = {
 				'S' : geosq,
 				'G' : geogr,
 				'H' : hills
 			}
-			var maptypes = {
+			maptypes = {
 {/literal}
 {if $google_maps_api_key}
 {literal}
@@ -433,21 +552,29 @@ ommap.tpl, rastermap.class.php:
 					geosq.redraw();
 					map.events.triggerEvent("changelayer", { layer: geosq, property: "user" });
 				}
+				createCookie('OMapUser', u, 365);
 			}
 			map.trySetUserId = function(s) {
-				u = parseInt(s, 10);
-				if (u > 0) {
-					map.setUser(u);
-					return true;
-				}
-				return false;
+				var u = parseInt(s, 10);
+				if (isNaN(u) || u < 1)
+					return false;
+				map.setUser(u);
+				return true;
 			}
 			map.trySetOpacity = function(layer, s) {
-				o = parseFloat(s);
+				var o = parseFloat(s);
 				if (isNaN(o) || o < 0 || o > 100)
 					return false;
-				layer.setOpacity(o/100.0);
+				o /= 100.0;
+				layer.setOpacity(o);
+				if ('opCookie' in layer) {
+					createCookie(layer.opCookie, o, 365);
+				}
 				return true;
+			}
+			function updateLayer() {
+				updateMapLink();
+				createCookie('OMapType',curtype,365);
 			}
 			function updateMapLink() {
 				var ll = map.center.clone().transform(map.getProjectionObject(), epsg4326);
@@ -464,6 +591,7 @@ ommap.tpl, rastermap.class.php:
 					if (isvisible)
 						type += key;
 				}
+				curtype = type;
 				var url = '?z=' + map.zoom
 					+ '&t=' + type
 					+ '&ll=' + ll.lat + ',' + ll.lon;
@@ -537,19 +665,26 @@ ommap.tpl, rastermap.class.php:
 			var mt = geo;
 			if (inilat < 90)
 				point = new OpenLayers.LonLat(inilon, inilat);
-			if (initype != '')
-				mt = maptypes[initype.charAt(0)];
+			if (maptype !== '') {
+				var mtc = maptype.charAt(0);
+				if (mtc in maptypes) {
+					mt = maptypes[mtc];
+				}
+			}
 			if (iniz >= 4 && iniz <= mt.gmaxz)
 				zoom = iniz;
 			map.setBaseLayer(mt);
 			map.setCenter(point.transform(epsg4326, map.getProjectionObject()), zoom);
 			var mtHasHills = ('hasHills' in mt) && mt.hasHills;
-			for (var i = 1; i < initype.length; ++i) {
-				var ot = ovltypes[initype.charAt(i)];
-				if (ot == hills && !mtHasHills || ot != hills && mt != geo) {
-					ot.setVisibility(true);
-				} else {
-					ot.savedVisibility = true;
+			for (var i = 1; i < maptype.length; ++i) {
+				var otc = maptype.charAt(i);
+				if (otc in ovltypes) {
+					var ot = ovltypes[otc];
+					if (ot == hills && !mtHasHills || ot != hills && mt != geo) {
+						ot.setVisibility(true);
+					} else {
+						ot.savedVisibility = true;
+					}
 				}
 			}
 			map.geoBase = mt == geo;
@@ -565,7 +700,7 @@ ommap.tpl, rastermap.class.php:
 			map.events.on({'zoomend': updateMapLink}); // == map.events.register("zoomend", map, updateMapLink);
 			map.events.on({'moveend': updateMapLink});
 			map.events.on({'dragend': updateMapLink});
-			map.events.on({'changelayer': updateMapLink});
+			map.events.on({'changelayer': updateLayer});
 			updateMapLink();
 		}
 
@@ -588,7 +723,8 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 </div>
 {/if}
 
-<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen...</p>
+<p>Bitte Karte anklicken um einen verschiebbaren Marker zu erzeugen.<br />
+Anklicken der <img alt="+" src="/ol/img/layer-switcher-maximize.png" />-Symbole zeigt andere Kartentypen und eine Übersichtskarte.</p>
 
 <form {if $submit2}action="/submit2.php?inner"{elseif $picasa}action="/puploader.php?inner"{elseif $ext}action="javascript:void()"{else}action="/submit.php" {if $inner} target="_top"{/if}{/if}name="theForm" method="post" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
@@ -621,6 +757,7 @@ Diese Kartenansicht ist noch in einem frühen Entwicklungsstadium! Bitte nicht üb
 {if $iniuser > 0 and $iniuser != $userid}checked{/if} />Nutzer:
 <input type="text" size="5" name="mtuser"  value="{if $iniuser > 0}{$iniuser}{elseif $userid}{$userid}{/if}" />
 <br /><br /><small>
+{if $userid}<input id="togglelarge" type="button" value="Größer" onclick="toggleLarge('Kleiner','Größer');" /> | {/if}
 Deckkraft (%):
 Abdeckung
 <input type="text" size="5" name="opcoverage" value="{if $inio >= 0}{$inio*100}{else}50{/if}" />
@@ -635,13 +772,15 @@ Abdeckung
 
 
 </form>
-{*<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
-<div style="width:600px; text-align:center;"><label for="addressInput">Enter Address:</label>
+{if $google_maps_api_key}
+<form action="javascript:void()" onsubmit="return showAddress(this.address.value);" style="padding-top:5px">
+<div style="width:600px; text-align:center;"><label for="addressInput">Adresse eingeben:</label>
 	<input type="text" size="50" id="addressInput" name="address" value="" />
-	<input type="submit" value="Find"/><small><small><br/>
-	(Powered by the Google Maps API Geocoder)</small></small>
+	<input type="submit" value="Suchen"/><small><small><br/>
+	(über Google Maps API Geocoder)</small></small>
 </div>
-</form>*}
+</form>
+{/if}
 
 {if $inner}
 </body>

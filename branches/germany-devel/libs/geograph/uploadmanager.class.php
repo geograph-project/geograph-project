@@ -53,6 +53,7 @@ class UploadManager
 	var $switchxy = false;
 
 	var $rawExifData = false;
+	var $strExifData = false;
 
 	/**
 	* Constructor
@@ -558,12 +559,12 @@ class UploadManager
 			$this->trySetDateFromExif($exif);
 			$this->rawExifData = $exif;
 			$this->setOrientation($exif);
-			$strExif=serialize($exif);
+			$this->strExifData = serialize($exif);
 			$exif =  $this->_pendingEXIF($upload_id);
 			$f=fopen($exif, 'w');
 			if ($f)
 			{
-				fwrite($f, $strExif);
+				fwrite($f, $this->strExifData);
 				fclose($f);
 			}
 		}
@@ -781,11 +782,13 @@ class UploadManager
 		{
 			$exif = fread ($f, filesize($exiffile)); 
 			fclose($f);
-			$strExif=unserialize($exif);
-			if ($strExif!==false)
+			$rawExif=unserialize($exif);
+			if ($rawExif!==false)
 			{
-				$this->trySetDateFromExif($strExif);
-				$this->rawExifData = $strExif;
+				$this->trySetDateFromExif($rawExif);
+				$this->rawExifData = $rawExif;
+				$this->strExifData = $exif;
+				$this->setOrientation($rawExif);
 				$this->setOrientation($strExif);
 			}
 		}
@@ -877,7 +880,7 @@ class UploadManager
 		//save the exif
 		$sql=sprintf("insert into gridimage_exif (".
 			"gridimage_id,exif) values ".
-			"(%d,%s)",$gridimage_id,$this->db->Quote($exif));
+			"(%d,%s)",$gridimage_id,$this->db->Quote($this->strExifData));
 		$this->db->Query($sql);
 		
 		//copy image to correct area
@@ -949,9 +952,11 @@ class UploadManager
 	/**
 	* add a high res image
 	*/
-	function addOriginal($image)
+	function addOriginal($image, $altimg = false)
 	{
 		global $USER,$CONF,$memcache;
+
+		$suffix = $altimg ? '_altimg' : '';
 		
 		if($this->validUploadId($this->upload_id))
 		{
@@ -976,7 +981,7 @@ class UploadManager
 		}
 
 		//store the resized version - just for the moderator to use as a preview
-		if ($ok = $image->storeImage($src,false,'_preview')) {
+		if ($ok = $image->storeImage($src,false,'_preview'.$suffix)) {
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
@@ -995,17 +1000,18 @@ class UploadManager
 				}
 				
 				//store the new original file
-				$ok =$image->storeImage($orginalfile,false,'_pending');
+				$ok =$image->storeImage($orginalfile,false,'_pending'.$suffix);
 			}
 		}
 		
 		if ($ok) {
 			
 			$sql = sprintf("insert into gridimage_pending (gridimage_id,upload_id,user_id,suggested,type) ".
-				"values (%s,%s,%s,now(),'original')",
+				"values (%s,%s,%s,now(),'%s')",
 				$this->db->Quote($image->gridimage_id),
 				$this->db->Quote($this->upload_id),
-				$this->db->Quote($USER->user_id));
+				$this->db->Quote($USER->user_id),
+				$altimg?'altimg':'original');
 					
 			$this->db->Query($sql);
 			

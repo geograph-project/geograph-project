@@ -41,85 +41,90 @@ if (!$db) die('Database connection failed');
 $smarty = new GeographPage;
 
 //doing some moderating?
-if (isset($_GET['gridimage_id']))
+if (isset($_POST['gridimage_id']))
 {
-	//user may have an expired session, or playing silly buggers,
-	//either way, we want to check for admin status on the session
-	if ($USER->hasPerm('moderator') || isset($_GET['remoderate']))
-	{
-	
-		$gridimage_id=intval($_GET['gridimage_id']);
-		$status=$_GET['status'];
-
-		$image=new GridImage;
-		if ($image->loadFromId($gridimage_id))
+	if (isset($_POST['CSRF_token']) && $_POST['CSRF_token'] === $_SESSION['CSRF_token']) {
+		//user may have an expired session, or playing silly buggers,
+		//either way, we want to check for admin status on the session
+		if ($USER->hasPerm('moderator') || isset($_POST['remoderate']))
 		{
-			if (isset($_GET['remoderate'])) 
+		
+			$gridimage_id=intval($_POST['gridimage_id']);
+			$status=$_POST['status'];
+
+			$image=new GridImage;
+			if ($image->loadFromId($gridimage_id))
 			{
-				if ($USER->hasPerm('basic'))
+				if (isset($_POST['remoderate'])) 
 				{
-					$status = $db->Quote($status);
-					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now(),type = 'dummy'");
-					print "classification $status recorded";
-				}
+					if ($USER->hasPerm('basic'))
+					{
+						$status = $db->Quote($status);
+						$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now(),type = 'dummy'");
+						print "classification $status recorded";
+					}
+					else
+					{
+						echo "NOT LOGGED IN"; /* don't change, used in moderation.js */
+					}
+				} 
 				else
 				{
-					echo "NOT LOGGED IN";
+					//we really need this not be interupted
+					ignore_user_abort(TRUE);
+					set_time_limit(3600);
+					
+					$status2 = $db->Quote($status);
+					$db->Execute("INSERT INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status2, old_status='{$image->moderation_status}',created=now(),type = 'real'");
+					
+					$info=$image->setModerationStatus($status, $USER->user_id);
+					echo $info;
+
+					if ($status == 'rejected')
+					{
+						$ticket=new GridImageTroubleTicket();
+						$ticket->setSuggester($USER->user_id);
+						$ticket->setModerator($USER->user_id);
+						$ticket->setPublic('everyone');
+						$ticket->setImage($gridimage_id);
+						if (!empty($_POST['comment'])) {
+							/* encodeURIComponent uses utf8, utf8_decode does not convert some characters as &euro; (which does actually not exist in latin1) */
+							$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Rejecting this image because: ".stripslashes(iconv("UTF-8", "CP1252//TRANSLIT", $_POST['comment'])));
+						} else {
+							$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for rejecting this image.");
+						}
+						$status=$ticket->commit('open');
+						
+						echo " <a href=\"/editimage.php?id={$gridimage_id}\"><B>View Ticket</b></a>";
+						
+					}
+
+					//clear caches involving the image
+					$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
+					$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_1");
+					$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_0");
+					$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_1");
+
+					//clear the users profile cache
+					$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
+					$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
+					
+					$memcache->name_delete('us',$image->user_id);
 				}
-			} 
+			}
 			else
 			{
-				//we really need this not be interupted
-				ignore_user_abort(TRUE);
-				set_time_limit(3600);
-				
-				$status2 = $db->Quote($status);
-				$db->Execute("INSERT INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status2, old_status='{$image->moderation_status}',created=now(),type = 'real'");
-				
-				$info=$image->setModerationStatus($status, $USER->user_id);
-				echo $info;
-
-				if ($status == 'rejected')
-				{
-					$ticket=new GridImageTroubleTicket();
-					$ticket->setSuggester($USER->user_id);
-					$ticket->setModerator($USER->user_id);
-					$ticket->setPublic('everyone');
-					$ticket->setImage($gridimage_id);
-					if (!empty($_GET['comment'])) {
-						$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Rejecting this image because: ".stripslashes($_GET['comment']));
-					} else {
-						$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for rejecting this image.");
-					}
-					$status=$ticket->commit('open');
-					
-					echo " <a href=\"/editimage.php?id={$gridimage_id}\"><B>View Ticket</b></a>";
-					
-				}
-
-				//clear caches involving the image
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_1");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_0");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_1");
-
-				//clear the users profile cache
-				$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
-				$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
-				
-				$memcache->name_delete('us',$image->user_id);
+				echo "FAIL";
 			}
+		
+			
 		}
 		else
 		{
-			echo "FAIL";
+			echo "NOT LOGGED IN"; /* don't change, used in moderation.js */
 		}
-	
-		
-	}
-	else
-	{
-		echo "NOT LOGGED IN";
+	} else {
+		echo "CSRF check failed, please reload page"; /* must start with 'CSRF', used in moderation.js */
 	}
 	
 	

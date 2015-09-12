@@ -24,9 +24,15 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+if (isset($_GET['u'])) {
+	$c = substr($_GET['u'], 0, 1);
+} elseif (isset($_POST['u'])) {
+	$c = substr($_POST['u'], 0, 1);
+} else {
+	$c = '';
+}
 
-
-if ($USER->hasPerm("basic") && substr($_GET['u'],0,1)!='m' && substr($_GET['u'],0,1)!='p') {
+if ($USER->hasPerm("basic") && $c != 'm' && $c != 'p') {
 	header("Location: /login.php");
 	exit;
 }
@@ -36,39 +42,63 @@ $template='register.tpl';
 
 if (isset($_GET['confirm']))
 {
-	if (substr($_GET['u'],0,1)=='m')
-	{
+	/* put all the GET stuff into hidden parameters of a form and ask for password */
+	$c = substr($_GET['u'], 0, 1);
+	$confirmpass = $c === 'p';
+	$confirmmail = $c === 'm';
+	$confirmreg  = !$confirmpass && !$confirmmail;
+	$smarty->assign('query_confirm', stripslashes(trim($_GET['confirm'])));
+	$smarty->assign('query_u', stripslashes(trim($_GET['u'])));
+	$smarty->assign('confirmpass', $confirmpass);
+	$smarty->assign('confirmmail', $confirmmail);
+	$smarty->assign('confirmreg', $confirmreg);
+	$template='register_confirm.tpl';
+}
+elseif (isset($_POST['confirm']))
+{
+	$c = substr($_POST['u'], 0, 1);
+	$confirmpass = $c === 'p';
+	$confirmmail = $c === 'm';
+	$confirmreg  = !$confirmpass && !$confirmmail;
+	$pass = stripslashes(trim($_POST['password']));
+
+	if ($confirmmail) {
 		$template='profile_emailupdate.tpl';
-				
-		//we are confirming an email address change...
-		$confirmation_status = $USER->verifyEmailChange($_GET['u'], $_GET['confirm']);
-		if ($confirmation_status=="ok")
-			$smarty->assign("user", $GLOBALS['USER']);
-			
-		$smarty->assign('confirmation_status', $confirmation_status);
-		
-	}
-	elseif (substr($_GET['u'],0,1)=='p')
-	{
+	} elseif ($confirmpass) {
 		$template='profile_passwordupdate.tpl';
-				
-		//we are confirming an password change...
-		$confirmation_status = $USER->verifyPasswordChange($_GET['u'], $_GET['confirm']);
-		if ($confirmation_status=="ok")
-			$smarty->assign("user", $GLOBALS['USER']);
-			
-		$smarty->assign('confirmation_status', $confirmation_status);
-		
 	}
-	else
-	{
-		$confirmation_status = $USER->verifyRegistration($_GET['u'], $_GET['confirm']);
-		if ($confirmation_status=="ok")
+
+	if (!isset($_POST['CSRF_token']) || $_POST['CSRF_token'] !== $_SESSION['CSRF_token']) {
+		$confirmation_status='csrf';
+	} else {
+		if ($confirmmail) {
+			//we are confirming an email address change...
+			$confirmation_status = $USER->verifyEmailChange($_POST['u'], $_POST['confirm'], $pass);
+		} elseif ($confirmpass) {
+			//we are confirming an password change...
+			$confirmation_status = $USER->verifyPasswordChange($_POST['u'], $_POST['confirm'], $pass);
+		} else {
+			$confirmation_status = $USER->verifyRegistration($_POST['u'], $_POST['confirm'], $pass);
+		}
+		if ($confirmation_status === "ok") {
 			$smarty->assign("user", $GLOBALS['USER']);
-		
-		$smarty->assign('confirmation_status', $confirmation_status);
+			# FIXME caching okay? after successful password change, the "success" page does not show the admin menu
+		}
 	}
-	
+	if ($confirmation_status === 'auth' || $confirmation_status === 'csrf') {
+		/* give user a chance to try again */
+		$smarty->assign('query_confirm', stripslashes(trim($_POST['confirm'])));
+		$smarty->assign('query_u', stripslashes(trim($_POST['u'])));
+		$smarty->assign('query_pass', stripslashes(trim($_POST['password'])));
+		$smarty->assign('confirmpass', $confirmpass);
+		$smarty->assign('confirmmail', $confirmmail);
+		$smarty->assign('confirmreg', $confirmreg);
+		if ($confirmation_status === 'auth') {
+			$smarty->assign('lock_seconds', $USER->lock_seconds);
+		}
+		$template = 'register_confirm.tpl';
+	}
+	$smarty->assign('confirmation_status', $confirmation_status);
 }
 elseif (isset($_POST['name']))
 {

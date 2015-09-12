@@ -2,13 +2,17 @@
 {include file="_std_begin.tpl"}
 <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
 
-{literal}<script type="text/javascript">
-	setTimeout('window.location.href="/admin/";',1000*60*45);
-</script>{/literal}
-
 <h2>{if $is_admin || $is_mod}<a title="Admin home page" href="/admin/index.php">Admin</a> : {/if}Moderation</h2>
 
 {dynamic}
+<script type="text/javascript">
+//<![CDATA[
+	setTimeout('window.location.href="/admin/";',1000*60*45);
+	geograph_CSRF_token = '{$CSRF_token|escape:"javascript"}';
+	geograph_user_id = {$user->user_id};
+//]]>
+</script>
+
 {if $remoderate}{literal}
 <script type="text/javascript">
 	remoderate = true;

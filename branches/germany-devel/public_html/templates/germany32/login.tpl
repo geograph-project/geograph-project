@@ -2,14 +2,31 @@
 {include file="_std_begin.tpl"}
 {dynamic}
 
-
+{if $lock_seconds}
+<script type="text/javascript">
+//<![CDATA[
+	AttachEvent(window,'load',function() {ldelim}buttontimer('loginbutton', {$lock_seconds});{rdelim},false);
+//]]>
+</script>
+{/if}
 <form action="{$script_uri}" method="post">
+<input type="hidden" name="CSRF_token" value="{$CSRF_token}" />
 
 {if $inline}
    <h2>Login Required</h2>
-   <p>You must log in to access this page. 
 {else}
     <h2>Login</h2>
+{/if}
+
+{if $errors.csrf}
+<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px; font-size:0.9em">
+Your input could not be processed due to <a href="/help/csrf">security reasons</a>. Please verify the below form and try again.
+</div>
+{/if}
+
+{if $inline}
+   <p>You must log in to access this page. 
+{else}
     <p>Please log in with your email address and password. 
 {/if}
 
@@ -24,8 +41,8 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 
 <label for="password">Your password (case sensitive)</label><br/>
 <input size="12" type="password" id="password" name="password" value="{$password|escape:'html'}"/>
-<span class="formerror">{$errors.password}</span>
-<a title="email forgotten password" href="/forgotten.php?email={$email|escape:'url'}">Forgot your password?</a>
+<span class="formerror">{$errors.password}{if $lock_seconds} - Login blocked for {$lock_seconds|format_seconds:120}; you may also log in by <a href="/forgotten.php?email={$email|escape:'url'}">resetting your password</a>.{/if}</span>
+{if ! $lock_seconds}<a title="email forgotten password" href="/forgotten.php?email={$email|escape:'url'}">Forgot your password?</a>{/if}
 
 <br/><br/>
 
@@ -36,10 +53,10 @@ registered yet, <a title="register now" href="/register.php">go and register</a>
 <span class="formerror">{$errors.general}</span>
 <br/>
 
-<input type="submit" name="login" value="Login"/>
+<input type="submit" name="login" value="Login" id="loginbutton"/>
 
 {foreach from=$_post key=key item=value}
-	{if $key eq 'email' || $key eq 'password' || $key eq 'remember_me' || $key eq 'login'}
+	{if $key eq 'email' || $key eq 'password' || $key eq 'remember_me' || $key eq 'login' || $key eq 'CSRF_token'}
 	{elseif strpos($value,"\n") !== false}
 		<textarea name="{$key|escape:"html"}" style="display:none">{$value|escape:"html"}</textarea>
 	{else}

@@ -27,6 +27,7 @@
 	</ul></li>
 
 	<li><a href="/gallery/"><b>Galleries</b></a> - hand picked images on varies themes</li>
+	<li><a href="/geotrips/?max=-1"><b>Geotrips</b></a> - trip reports by our members</li>
 
 	<!--li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> <sup style="color:red">New!</sup></li-->
 
@@ -34,6 +35,7 @@
 	{if $hasregions}
 	<li><a href="/statistics/regions.php">Regional statistics</a>{if $regionlistlevel > -1} (<a href="/statistics/regions.php?level={$regionlistlevel}">large list</a>){/if}</li>
 	{/if}
+	<li>Positively rated images: <a href="/results/180491">popular images</a>, <a href="/results/180495">popular locations</a>, <a href="/results/180493">image quality</a>, <a href="/results/180494">geographical information</a></li>
 </ul>
 <h3>Breakdowns...</h3>
 <ul class="explore">

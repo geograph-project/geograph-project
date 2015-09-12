@@ -1,6 +1,12 @@
 # geograph robot exclusion file
 # Wildcards for: Google / Yahoo / Microsoft
 
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: SemrushBot-SA
+Disallow: /
+
 User-Agent: AhrefsBot
 Disallow: /
 #No, it's really too much!
@@ -14,11 +20,39 @@ Disallow: /
 User-agent: netEstate NE Crawler
 Disallow: /
 
+User-agent: publiclibraryarchive
+Disallow: /
+#ignores Disallow: /statistics/leaderboard.php?*region*
+
+User-agent: publiclibraryarchive.org
+Disallow: /
+
+User-agent: spbot
+Disallow: /
+
+User-agent: TurnitinBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
 User-agent: GSLFbot
 Disallow: /
 
 User-agent: Fasterfox
 Disallow: /
+
+User-agent: Ezooms
+Disallow: /
+
+User-agent: Spiderlytics
+Disallow: /
+
+#User-agent: Pixray-Seeker
+#Disallow: /
+
+#User-agent: Yandex
+#Disallow: /
 
 User-Agent: seokicks
 Disallow: /
@@ -32,11 +66,25 @@ User-agent: WBSearchBot
 Disallow: /
 #Does not respect Crawl-delay
 
+User-agent: BacklinkCrawler
+Disallow: /
+
+User-agent: magpie-crawler
+Disallow: /
+
+User-Agent: www.integromedb.org/Crawler
+Disallow: /
+
 #User-agent: Baiduspider
 #Disallow: /
 
 User-agent: Browsershots
 Disallow:
+
+# Same content for mobile devices
+User-agent: Googlebot-Mobile
+Disallow: /
+Allow: /$
 
 User-Agent: Googlebot
 Crawl-delay: 25
@@ -54,6 +102,7 @@ Disallow: /maplarge.php
 Disallow: /mapprint.php
 Allow: /admin/team.php
 Disallow: /admin/
+Disallow: /code/
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
@@ -72,6 +121,7 @@ Disallow: /statistics/regions.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
+Disallow: /more.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php?
@@ -87,6 +137,7 @@ Disallow: /tile.php
 Disallow: /tile/
 Disallow: /feed/userid/
 Disallow: /feed/results
+Disallow: /results/browse
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
@@ -112,6 +163,7 @@ Disallow: /maplarge.php
 Disallow: /mapprint.php
 Allow: /admin/team.php
 Disallow: /admin/
+Disallow: /code/
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
@@ -130,6 +182,7 @@ Disallow: /statistics/regions.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
+Disallow: /more.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php?
@@ -145,6 +198,7 @@ Disallow: /tile.php
 Disallow: /tile/
 Disallow: /feed/userid/
 Disallow: /feed/results
+Disallow: /results/browse
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
@@ -170,6 +224,7 @@ Disallow: /maplarge.php
 Disallow: /mapprint.php
 Allow: /admin/team.php
 Disallow: /admin/
+Disallow: /code/
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
@@ -188,6 +243,7 @@ Disallow: /statistics/regions.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
+Disallow: /more.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php?
@@ -203,6 +259,7 @@ Disallow: /tile.php
 Disallow: /tile/
 Disallow: /feed/userid/
 Disallow: /feed/results
+Disallow: /results/browse
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/
@@ -228,6 +285,7 @@ Disallow: /maplarge.php
 Disallow: /mapprint.php
 Allow: /admin/team.php
 Disallow: /admin/
+Disallow: /code/
 Disallow: /search.php
 Disallow: /full-text.php
 Disallow: /finder/
@@ -239,11 +297,12 @@ Disallow: /usermsg.php
 Disallow: /statistics/breakdown.php
 Disallow: /statistics/leaderboard.php?
 Disallow: /statistics/moversboard.php?
-Disallow: /statistics/*?*csv #FIXME?
+Disallow: /statistics/*?*csv
 Disallow: /statistics/regions.php?
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
+Disallow: /more.php
 Disallow: /discuss/
 Disallow: /mapsheet.php
 Disallow: /kml.php
@@ -259,6 +318,7 @@ Disallow: /tile.php
 Disallow: /tile/
 Disallow: /feed/userid/
 Disallow: /feed/results
+Disallow: /results/browse
 Disallow: /export.excel.xml.php
 Disallow: /export.csv.php
 Disallow: /_scripts/

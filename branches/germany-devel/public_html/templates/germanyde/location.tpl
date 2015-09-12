@@ -28,15 +28,15 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 <div class="interestBox" style="float: right; position:relative; padding:2px; margin-right:25px; margin-bottom:200px">
 	<table border="0" cellspacing="0" cellpadding="2">
-	<tr><td><a href="/location.php?p={math equation="900*(y+1)+900-(x-1)" x=$x y=$y}">NW</a></td>
-	<td align="center"><a href="/location.php?p={math equation="900*(y+1)+900-(x)" x=$x y=$y}">N</a></td>
-	<td><a href="/location.php?p={math equation="900*(y+1)+900-(x+1)" x=$x y=$y}">NE</a></td></tr>
-	<tr><td><a href="/location.php?p={math equation="900*(y)+900-(x-1)" x=$x y=$y}">W</a></td>
+	<tr><td><a href="/gridref/{$neighbours.0}/links">NW</a></td>
+	<td align="center"><a href="/gridref/{$neighbours.1}/links">N</a></td>
+	<td><a href="/gridref/{$neighbours.2}/links">NE</a></td></tr>
+	<tr><td><a href="/gridref/{$neighbours.3}/links">W</a></td>
 	<td><b>Go</b></td>
-	<td align="right"><a href="/location.php?p={math equation="900*(y)+900-(x+1)" x=$x y=$y}">E</a></td></tr>
-	<tr><td><a href="/location.php?p={math equation="900*(y-1)+900-(x-1)" x=$x y=$y}">SW</a></td>
-	<td align="center"><a href="/location.php?p={math equation="900*(y-1)+900-(x)" x=$x y=$y}">S</a></td>
-	<td align="right"><a href="/location.php?p={math equation="900*(y-1)+900-(x+1)" x=$x y=$y}">SE</a></td></tr>
+	<td align="right"><a href="/gridref/{$neighbours.5}/links">E</a></td></tr>
+	<tr><td><a href="/gridref/{$neighbours.6}/links">SW</a></td>
+	<td align="center"><a href="/gridref/{$neighbours.7}/links">S</a></td>
+	<td align="right"><a href="/gridref/{$neighbours.8}/links">SE</a></td></tr>
 	</table>
 </div>
 

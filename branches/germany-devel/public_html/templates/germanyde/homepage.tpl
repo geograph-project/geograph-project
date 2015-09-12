@@ -11,17 +11,7 @@
 Das Geograph-Projekt hat das Ziel, geographisch repräsentative Photos für jeden Quadratkilometer Deutschlands zu sammeln.
 Dabei werden für die Planquadrate  <a href="http://de.wikipedia.org/wiki/MGRS">MGRS-Koordinaten</a> für die UTM-Zonen 31, 32 und 33 verwendet.
 </p>
-<p>
-Das Projekt nutzt den Programmcode, der großzügigerweise von den Betreibern des <a href="http://www.geograph.org.uk">britischen Geograph-Projekts</a>
-zur Verfügung gestellt wird. Mehr Informationen hierzu sind im <a href="/howto/">HOWTO</a> und im <a href="/code/">Code-Bereich</a> zu finden. Da sich
-das Projekt noch in einem sehr frühen Stadium befindet, sind allerdings viele Unterseiten noch nicht übersetzt und andere Bereiche noch gar nicht verfügbar.
-</p>
-<p>
-Trotz der noch unvollständigen Umsetzung ist Teilnahme am Projekt sehr erwünscht; Rückmeldung ist über das <a href="/contact.php">Kontaktformular</a>
-oder per <a href="mailto:geo@hlipp.de">Mail</a> möglich.
-</p>
 </div>
-
 
 <div style="width:35%;float:left;position:relative;margin-right:10px">
 {if $overview2}
@@ -68,18 +58,22 @@ oder per <a href="mailto:geo@hlipp.de">Mail</a> möglich.
 
 </div>
 
-<div style="width:370px;float:left;padding-right:5px;position:relative;text-align:center;">
+<div style="width:{$potd_width}px;float:left;padding-right:5px;position:relative;text-align:center;">
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
+	{if $pictureoftheday.search||$searchpopular}
+	<div style="float:right"><small>[{if $pictureoftheday.search}<a href="/results/{$pictureoftheday.search}">mehr</a>{if $searchpopular}|{/if}{/if}{if $searchpopular}<a href="/results/{$searchpopular}">beliebt</a>{/if}]</small>
+	</div>
+	{/if}
 
-	<h3 style="margin-bottom:2px;margin-top:2px;">Bild des Tages{if $pictureoftheday.search} <small>[<a href="/results/{$pictureoftheday.search}">mehr...</a>]</small>{/if}</h3>
+	<h3 style="margin-bottom:2px;margin-top:2px;">Bild des Tages</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
 	title="zum Vergrößern anklicken">{$pictureoftheday.image->getFixedThumbnail($potd_width,$potd_height)}</a><br/>
 
 
 	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>
 
-	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
+	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="/img/80x15.png" /></a>
 	&nbsp;&nbsp;
 	von <a title="Profil" href="{$pictureoftheday.image->profile_link}">{$pictureoftheday.image->realname|escape:'html'}</a> für Planquadrat <a href="/gridref/{$pictureoftheday.image->grid_reference}">{$pictureoftheday.image->grid_reference}</a></div>
 
@@ -161,4 +155,16 @@ und <a href="http://www.geograph.org.uk/article/Ways-to-view-Geograph-Images">an
 &nbsp;
 
 </div>
+<div style="background-color:#eeeeee;padding:2px; text-align:justify">
+<p>
+Das Projekt nutzt den Programmcode, der großzügigerweise von den Betreibern des <a href="http://www.geograph.org.uk">britischen Geograph-Projekts</a>
+zur Verfügung gestellt wird. Mehr Informationen hierzu sind im <a href="/howto/">HOWTO</a> und im <a href="/code/">Code-Bereich</a> zu finden. Da sich
+das Projekt noch in einem sehr frühen Stadium befindet, sind allerdings viele Unterseiten noch nicht übersetzt und andere Bereiche noch gar nicht verfügbar.
+</p>
+<p>
+Trotz der noch unvollständigen Umsetzung ist Teilnahme am Projekt sehr erwünscht; Rückmeldung ist über das <a href="/contact.php">Kontaktformular</a>
+oder per <a href="mailto:geo@hlipp.de">Mail</a> möglich.
+</p>
+</div>
+
 {include file="_std_end.tpl"}

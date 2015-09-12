@@ -2,8 +2,14 @@
 {dynamic}
 
 <form class="simpleform" method="post" action="/profile.php">
+<input type="hidden" name="CSRF_token" value="{$CSRF_token}"/>
 <input type="hidden" name="edit" value="1"/>
 
+{if $errors.CSRF_token}
+<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px; font-size:0.9em">
+Your changes could not be processed due to <a href="/help/csrf">security reasons</a>. Please verify the below settings and only submit the form if you are sure you want to changes your profile settings accordingly.
+</div>
+{/if}
 {if $errors.general}
 <div class="formerror">{$errors.general}</div>
 {/if}

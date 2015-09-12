@@ -92,8 +92,8 @@
 			var gridref = grid.getGridRef(newdigits);
 
 			if (picon) {
-				lon2 = wgs84.longitude*Math.PI/180.;
-				lat2 = wgs84.latitude*Math.PI/180.;
+				lon2 = pp.lng()*Math.PI/180.;
+				lat2 = pp.lat()*Math.PI/180.;
 				eastings2 = grid.eastings;
 				northings2 = grid.northings;
 				document.theForm.photographer_gridref.value = gridref;
@@ -209,7 +209,7 @@ function createPMarker(ppoint) {
 
 function gmap2grid(point) {
 	//create a wgs84 coordinate
-	wgs84=new GT_WGS84();
+	var wgs84=new GT_WGS84();
 	wgs84.setDegrees(point.lat(), point.lng());
 
 	if (ri == -1||issubmit) {
@@ -246,7 +246,20 @@ function gmap2grid(point) {
 
 
 function checkFormSubmission(that_form,mapenabled) {
+
+	if (that_form.elements['jpeg'] && that_form.elements['jpeg'].value && that_form.elements['jpeg'].value.length > 0 && !that_form.elements['jpeg'].value.match(/.jpe?g$/i)) {
+		if (!confirm("The name of the file does not appear to have a .jpg extension. Note, we only accept JPEG images. If you beleive this file really is a JPEG image, and want to upload anyway, press OK. To select a different file click Cancel")) {
+			return false;
+		}
+	}
+	
 	if (checkGridReferences(that_form)) {
+		if (typeof distance != 'undefined' && distance > 10000) {
+			message = "The apparent distance between subject and photographer is "+distance+" metres, are you sure this is correct?";
+			if (!confirm(message)) {
+				return false;
+			}
+		}
 		message = '';
 		if (that_form.grid_reference.value == '' || that_form.grid_reference.value.length < 7) 
 			message = message + "* Subject Grid Reference\n";

@@ -114,7 +114,7 @@ function isSpam($msg)
 function getRemoteIP()
 {
 	//get IP address of user
-	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+	if (false && !empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 	{
 		$ips=explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
 		$ip=trim($ips[count($ips)-1]);

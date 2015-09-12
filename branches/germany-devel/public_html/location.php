@@ -57,7 +57,7 @@ if (isset($_GET['p']))
 	$grid_given=true;
 	//p=900y + (900-x);
 	$p = intval($_GET['p']);
-	$x = ($p % 900);
+	$x = ($p % 900); // only works if 0 =< x < 900
 	$y = ($p - $x) / 900;
 	$x = 900 - $x;
 	$grid_ok=$square->loadFromPosition($x, $y, true);
@@ -110,6 +110,7 @@ if ($grid_given)
 		$smarty->assign('northings', $square->northings);
 		$smarty->assign('x', $square->x);
 		$smarty->assign('y', $square->y);
+		$smarty->assign('neighbours', $square->nextNeighbours());
 		
 	
 
