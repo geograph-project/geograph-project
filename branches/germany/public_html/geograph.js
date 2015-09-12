@@ -547,6 +547,103 @@ function clearMarkedImages() {
 
 //	-	-	-	-	-	-	-	-
 
+function handleCSRFError(msg)
+{
+	if (typeof geograph_CSRF_token === 'undefined') {
+		return;
+	}
+	if (typeof msg === 'undefined') { msg = "An error occurred and was corrected. Please try again."; }
+	var url="/session.php";
+	var postdata="action=CSRF_token";
+
+	var req=getXMLRequestObject();
+	var reqTimer = setTimeout(function() {
+	       req.abort();
+	}, 30000);
+	req.onreadystatechange = function() {
+		if (req.readyState != 4) {
+			return;
+		}
+		clearTimeout(reqTimer);
+		req.onreadystatechange = function() {};
+		if (req.status != 200) {
+			alert("CSRF recovery: Cannot communicate with server, status " + req.status);
+			return;
+		}
+		var responseText = req.responseText;
+		//alert(responseText);// FIXME remove
+		if (/^-[1-9][0-9]*:[0-9]*:.*$/.test(responseText)) { /* error */
+			var parts = responseText.split(':');
+			var rcode = parseInt(parts[0]);
+			var rinfo = parseInt(parts[1]);
+			alert("CSRF recovery: Server returned error " + -rcode + " (" + parts[2] + ")");
+		} else if (/^0:.*$/.test(responseText)) { /* success */
+			geograph_CSRF_token = responseText.substring(2);
+			alert(msg);
+		} else {
+			alert("CSRF recovery: Unexpected response from server");
+		}
+	}
+	req.open("POST", url, true);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	//req.setRequestHeader("Connection", "close");
+	req.send(postdata);
+}
+
+function handleAuthError()
+{
+	if (typeof geograph_user_id === 'undefined' || typeof geograph_CSRF_token === 'undefined') {
+		return;
+	}
+	var pass = prompt("Authentication error! Please enter your password and try again.", "");
+	if (pass === null) {
+		return;
+	}
+	var url="/session.php";
+	var postdata="action=login&u="+geograph_user_id+"&CSRF_token="+encodeURIComponent(geograph_CSRF_token)+"&password="+encodeURIComponent(pass);
+
+	var req=getXMLRequestObject();
+	var reqTimer = setTimeout(function() {
+	       req.abort();
+	}, 30000);
+	req.onreadystatechange = function() {
+		if (req.readyState != 4) {
+			return;
+		}
+		clearTimeout(reqTimer);
+		req.onreadystatechange = function() {};
+		if (req.status != 200) {
+			alert("Cannot communicate with server, status " + req.status);
+			return;
+		}
+		var responseText = req.responseText;
+		//alert(responseText);// FIXME remove
+		if (/^-[1-9][0-9]*:[0-9]*:.*$/.test(responseText)) { /* error */
+			var parts = responseText.split(':');
+			var rcode = parseInt(parts[0]);
+			var rinfo = parseInt(parts[1]);
+			if (rcode == -5) {
+				handleCSRFError("Login denied for security reasons, please try again");
+			} else if (rcode == -4) {
+				var timestr = rinfo < 120 ? rinfo + ' seconds' : Math.ceil(rinfo/60) + ' minutes';
+				alert("Authentication error: Access blocked for " + timestr);
+			} else if (rcode == -3) {
+				alert("Invalid password");
+			} else {
+				alert("Error: Server returned error " + -rcode + " (" + parts[2] + ")");
+			}
+		} else if (/^0:.*$/.test(responseText)) {
+			/* success */
+		} else {
+			alert("Unexpected response from server");
+		}
+	}
+	req.open("POST", url, true);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	//req.setRequestHeader("Connection", "close");
+	req.send(postdata);
+}
+
 function timestr(t)
 {
 	var tseconds = t % 60;

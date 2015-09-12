@@ -44,14 +44,18 @@ function getXMLRequestObject()
 
 function moderateImage(gridimage_id, status)
 {
-	var url="/admin/moderation.php?gridimage_id="+gridimage_id+"&status="+status;
+	if (typeof geograph_user_id === 'undefined' || typeof geograph_CSRF_token === 'undefined') {
+		return;
+	}
+	var url="/admin/moderation.php";
+	var postdata="gridimage_id="+gridimage_id+"&status="+status+"&CSRF_token="+encodeURIComponent(geograph_CSRF_token);
 	if (remoderate)
-		url=url+"&remoderate=1";
+		postdata+="&remoderate=1";
 	
 	if (status == 'rejected') {
 		comment = prompt("Please leave a comment to explain the reason for rejecting this image.",'');
 		if (comment.length > 1) {
-			url=url+"&comment="+escape(comment);
+			postdata+="&comment="+encodeURIComponent(comment);
 		} else {
 			return false;
 		}
@@ -63,17 +67,22 @@ function moderateImage(gridimage_id, status)
 	//need to exploit function closure
 	req.onreadystatechange = function()
 	{
-		if (req.readyState==4) 
-		{
-			var divInfo=document.getElementById('modinfo'+gridimage_id);
-			divInfo.innerHTML=req.responseText;
-
-			//patch the memory leak
+		if (req.readyState==4) {
 			req.onreadystatechange = function() {};
+			if (req.responseText === "NOT LOGGED IN") {
+				handleAuthError();
+			} else if (req.responseText.substring(0, 4) === "CSRF") {
+				handleCSRFError();
+			} else {
+				var divInfo=document.getElementById('modinfo'+gridimage_id);
+				divInfo.innerHTML=req.responseText;
+			}
 		}
 	}
-	req.open("GET", url,true);
-	req.send(null)
+	req.open("POST", url, true);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	//req.setRequestHeader("Connection", "close");
+	req.send(postdata);
 
 
 }

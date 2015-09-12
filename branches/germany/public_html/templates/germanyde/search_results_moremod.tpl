@@ -1,4 +1,12 @@
 {include file="_search_begin.tpl"}
+{dynamic}
+<script type="text/javascript">
+//<![CDATA[
+	geograph_CSRF_token = '{$CSRF_token|escape:"javascript"}';
+	geograph_user_id = {$user->user_id};
+//]]>
+</script>
+{/dynamic}
 <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
 {if $engine->resultCount}
 

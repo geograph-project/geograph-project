@@ -82,6 +82,12 @@
 <br/>
   {if $isadmin && $is_mod}
 	  <form method="post">
+	  <script type="text/javascript">
+	  //<![CDATA[
+		geograph_CSRF_token = '{$CSRF_token|escape:"javascript"}';
+		geograph_user_id = {$user->user_id};
+	  //]]>
+	  </script>
 	  <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
 	  <h2 class="titlebar">Moderation</h2>
 	  <p><input class="accept" type="button" id="geograph" value="Geobild" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
