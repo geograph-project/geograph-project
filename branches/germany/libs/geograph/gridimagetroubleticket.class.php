@@ -439,15 +439,15 @@ class GridImageTroubleTicket
 		{
 			//new ticket
 			$sql=sprintf("insert into gridimage_ticket(gridimage_id, suggested, updated,user_id, moderator_id, status, type, public, notes) ".
-				"values(%d, '%s', '%s', %d, %d, '%s', '%s', '%s', %s)",
+				"values(%d, '%s', '%s', %d, %d, '%s', %s, %s, %s)",
 				$this->gridimage_id,
 				$this->suggested,
 				$this->updated,
 				$this->user_id,
 				$this->moderator_id,
 				"pending",
-				$this->type,
-				$this->public,
+				$db->Quote($this->type),
+				$db->Quote($this->public),
 				$db->Quote($this->notes));
 			$db->Execute($sql);
 			$this->gridimage_ticket_id=$db->Insert_ID();
