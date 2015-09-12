@@ -526,6 +526,27 @@ class GridImage
 	
 	function assignToSmarty($smarty, $sid=-1, $map_suffix='') {
 		global $CONF;
+
+		$thumb = $this->getMinThumbnail(200,200,2);
+		$imgurl = $thumb['server'].$thumb['url'];
+		$smarty->assign('ogimage', $thumb['server'].$thumb['url']);
+		$smarty->assign('ogimageheight', $this->last_height);
+		$smarty->assign('ogimagewidth', $this->last_width);
+		$smarty->assign('ogtype', 'place');
+		$smarty->assign('ogtitle', $this->title);
+		$smarty->assign('ogauthor', $this->realname);
+		$smarty->assign('ogdescription', $this->comment);
+		if (count($CONF['languages'])) {
+			$canonical_host = reset($CONF['languages']);
+		} else {
+			$canonical_host = $_SERVER['HTTP_HOST'];
+		}
+		$smarty->assign('ogurl', 'http://'.$canonical_host.'/photo/'.$this->gridimage_id); #FIXME https if https page? would lead to caching problem...
+		#	$cur_proto = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
+		#FIXME define global variables $cur_proto $canonical_proto $canonical_host in global.inc?
+
+		#og:image:type 'image/jpeg'
+#{assign var="ogimage" value=$image->getMinThumbnail(200,200,true)}
 		
 		$taken=$this->getFormattedTakenDate();
 
@@ -1435,7 +1456,9 @@ class GridImage
 	* attribname : attribute name of img tag which holds url (default 'src')
 	* bevel : give image a raised edge (default true)
 	* unsharp : do an unsharp mask on the image
-	* pano : do not crop, even if w:h > 2:1 (default false)
+	* pano : allow wider images than maxw for large w:h (default false)
+	* minsize: maxw,maxh actually contain the minimum width,height (default false)
+	* pano || minsize: do not crop, even if w:h > 2:1
 	* 
 	* returns an association array containing 'html' element, which contains
 	* a fragment to load the image, and 'path' containg relative url to image
@@ -1457,12 +1480,13 @@ class GridImage
 		$bevel=isset($params['bevel'])?$params['bevel']:true;
 		$unsharp=isset($params['unsharp'])?$params['unsharp']:true;
 		$pano=isset($params['pano'])?$params['pano']:false;
+		$minsize=isset($params['minsize'])?$params['minsize']:false;
 		$source=isset($params['source'])?$params['source']:'';
 		
 		
 		
 		
-		global $CONF;
+		global $CONF;#FIXME remove?
 		//establish whether we have a cached thumbnail
 		$ab=sprintf("%02d", floor(($this->gridimage_id%1000000)/10000));
 		$cd=sprintf("%02d", floor(($this->gridimage_id%10000)/100));
@@ -1477,6 +1501,7 @@ class GridImage
 			$yz=sprintf("%02d", floor($this->gridimage_id/1000000));
 			$thumbpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}_{$maxw}x{$maxh}.jpg";
 		}
+		#FIXME $thumbpath and $mkey should depend on $params
 
 		if (!empty($params['urlonly']) && $params['urlonly'] !== 2 && $params['urlonly'] !== 3 && file_exists($_SERVER['DOCUMENT_ROOT'].$thumbpath)) {
 			$return=array();
@@ -1537,11 +1562,22 @@ class GridImage
 				$maxh = $destdim;
 				$bestfit = true;
 			}
+			if ($minsize && $fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath)) {
+				list($owidth, $oheight, $otype, $oattr) = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
+				$oasp = $owidth/$oheight;
+				$minasp = $maxw/$maxh;
+				if ($oasp > $minasp) {
+					$maxw = round($maxh * $oasp);
+				} else {
+					$maxh = round($maxw / $oasp);
+				}
+				$bestfit = true;
+			}
 			if ($fullpath != '/photos/error.jpg' && file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			{
 				if (strlen($CONF['imagemagick_path'])) {
 					
-					if (($info = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath)) === FALSE) {
+					if (($info = getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath)) === FALSE) { # FIXME get size before and use in pano, minsize sections
 						//couldn't read image!
 						$thumbpath="/photos/error.jpg";
 					} else {
@@ -1557,7 +1593,7 @@ class GridImage
 							$aspect_src=$width/$height;
 							$aspect_dest=$maxw/$maxh;
 
-							if (!$pano && $bestfit && $aspect_src > 2 && $aspect_dest < 2) {
+							if (!$pano && !$minsize && $bestfit && $aspect_src > 2 && $aspect_dest < 2) {
 								$bestfit = false;
 								$maxh = round($maxw/2);
 								$aspect_dest= 2;
@@ -1761,7 +1797,33 @@ class GridImage
 		} else
 			return $resized['html']; // $urlonly === false || $urlonly === 0
 	}	
-	
+
+	/**
+	* returns HTML img tag to display a thumbnail that would not be smaller than the given dimensions
+	* If the required thumbnail doesn't exist, it is created. This method is really
+	* handy helper for Smarty templates, for instance, given an instance of this
+	* class, you can use this {$image->getMinThumbnail(150,150)} to show a thumbnail
+	*/
+	function getMinThumbnail($minw, $minh,$urlonly = false,$attribname = 'src')
+	{
+		$params['minsize'] = true;
+		$params['bevel']=false;
+		$params['unsharp']=false;
+		$params['maxw']=$minw;
+		$params['maxh']=$minh;
+		$params['attribname']=$attribname;
+		$params['urlonly']=$urlonly;
+		$resized=$this->_getResized($params);
+		
+		if (!empty($urlonly)) {
+			if ($urlonly === 2) 
+				return $resized; // $urlonly === 2
+			else 
+				return $resized['server'].$resized['url']; // $urlonly == true || $urlonly === 1 || $urlonly === 3
+		} else
+			return $resized['html']; // $urlonly === false || $urlonly === 0
+	}
+
 	/**
 	* returns HTML img tag to display a thumbnail that would EXACTLY fit the given dimensions
 	* If the required thumbnail doesn't exist, it is created. This method is really
