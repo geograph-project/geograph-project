@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]
+then
+	echo "Invalid number of arguments" 1>&2
+	exit 1
+fi
+
+case "$1" in
+	process)
+		exec /usr/bin/wget -q -O /dev/null 'http://geo.hlipp.de/_scripts/process_events.php?start=1&max_execution=290&max_load=0.7'
+		;;
+	day)
+		exec /usr/bin/wget -q -O /dev/null 'http://geo.hlipp.de/_scripts/fire_event.php?event=every_day&priority=80&param='
+		;;
+	week)
+		exec /usr/bin/wget -q -O /dev/null 'http://geo.hlipp.de/_scripts/fire_event.php?event=every_week&priority=85&param='
+		;;
+	hour)
+		exec /usr/bin/wget -q -O /dev/null 'http://geo.hlipp.de/_scripts/fire_event.php?event=every_hour&priority=75&param='
+		;;
+esac
+
+echo "Invalid argument" 1>&2
+exit 1
