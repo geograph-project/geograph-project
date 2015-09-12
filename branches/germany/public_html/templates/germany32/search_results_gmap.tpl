@@ -10,10 +10,100 @@
 	var map;
 	var infoWindow;
 
+	var maptypes;
+	var shorttypes;
+
+	function GetTileUrl_Mapnik(a, z) {
+	    return "http://tile.openstreetmap.org/" +
+			z + "/" + a.x + "/" + a.y + ".png";
+	}
+
+	function GetTileUrl_Top(a, z) {
+	    //return "http://topo.openstreetmap.de/topo/" +
+	    sd = inthash("" + a.x + a.y + z, 2) == 0 ? "topo" : "topo2" ; // currently available: topo, topo2, topo3, topo4
+	    return "http://" + sd + ".wanderreitkarte.de/topo/" +
+			z + "/" + a.x + "/" + a.y + ".png";
+	}
+
+	function GetTileUrl_GeoH(a, z) {
+	    return "http://geo.hlipp.de/tile/hills/" +
+			z + "/" + a.x + "/" + a.y + ".png";
+	}
+
+	function GetTileUrl_GeoS(a, z) {
+		return (z < 16 ? "http://geo.hlipp.de/tile/osm/" : "http://tile.openstreetmap.org/") +
+			z + "/" + a.x + "/" + a.y + ".png";
+	}
+
+	function GetTileUrl_Cycle(a, z) {
+		return "http://a.tile.opencyclemap.org/cycle/" +
+			z + "/" + a.x + "/" + a.y + ".png";
+	}
+
 	function onLoad() {
 		var point = null;
 		var zoom = null;
 		var mapType = google.maps.MapTypeId.HYBRID;
+
+		var mapnik_map_static = new google.maps.ImageMapType({
+			getTileUrl: GetTileUrl_GeoS,
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true,
+			maxZoom: 18,
+			minZoom: 0,
+			name: "OSM(s)",
+			alt: "OSM: Static Mapnik",
+		});
+		var mapnik_map = new google.maps.ImageMapType({
+			getTileUrl: GetTileUrl_Mapnik,
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true,
+			maxZoom: 18,
+			minZoom: 0,
+			name: "OSM",
+			alt: "OSM: Mapnik",
+		});
+
+		// tile overlays have become much worse with v3...
+		var relief_map = new google.maps.ImageMapType({
+			getTileUrl: GetTileUrl_GeoH,
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true,
+			maxZoom: 15,
+			minZoom: 4,
+			name: "Relief",
+			alt: "Relief",
+		});
+		var mapnik_map_rel = new google.maps.ImageMapType({
+			getTileUrl: GetTileUrl_Mapnik,
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true,
+			maxZoom: 18,
+			minZoom: 0,
+			name: "OSM+Relief",
+			alt: "OSM: Mapnik + Relief",
+		});
+		var topo_map = new google.maps.ImageMapType({
+			getTileUrl: GetTileUrl_Top,
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true,
+			maxZoom: 17,
+			minZoom: 0,
+			name: "Nop-RWK",
+			alt: "Nop: Reit- und Wanderkarte",
+		});
+		var cycle_map = new google.maps.ImageMapType({
+			getTileUrl: GetTileUrl_Cycle,
+			tileSize: new google.maps.Size(256, 256),
+			isPng: true,
+			maxZoom: 19,
+			minZoom: 0,
+			name: "Cycle Map",
+			alt: "OpenCycleMap",
+		});
+
+		maptypes = [ google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN, "mapniks", "mapnik", "mapnikh", "topo", "cycle" ];
+		shorttypes = [ 'm', 'k', 'h', 'p', "mapniks", "mapnik", "mapnikh", "topo", "cycle" ];
 
 		if (location.hash.length) {
 			// If there are any parameters at the end of the URL, they will be in location.search
@@ -37,17 +127,17 @@
 					zoom = parseInt(value);
 				}
 				if (argname == "t") {
-					if (value == "m") {
-						mapType = google.maps.MapTypeId.ROADMAP;
-					} else if (value == "k") {
-						mapType = google.maps.MapTypeId.SATELLITE;
-					} else if (value == "h") {
-						mapType = google.maps.MapTypeId.HYBRID;
-					} else if (value == "p") {
-						mapType = google.maps.MapTypeId.TERRAIN;
+					var index = shorttypes.indexOf(value);
+					if (index != -1) {
+						mapType = maptypes[index];
 					}
 					//if (value == "e") {mapType = G_SATELLITE_3D_MAP; map.addMapType(G_SATELLITE_3D_MAP);}
 				}
+			}
+		} else {
+			var mt = readCookie('GMapType');
+			if (mt !== false && maptypes.indexOf(mt) != -1) {
+				mapType = mt;
 			}
 		}
 
@@ -66,10 +156,55 @@
 			mapTypeId: mapType,
 			streetViewControl: false, //true,
 			mapTypeControlOptions: {
-				mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN],
+				mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN, "mapniks", "mapnik", "mapnikh", "topo", "cycle"],
 				style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
 			}
 		});
+
+		// copyright messages for custom tile layers have become much worse with v3...
+		var copyrightDiv = document.createElement("div");
+		copyrightDiv.id = "map-copyright";
+		copyrightDiv.style.fontSize = "11px";
+		copyrightDiv.style.fontFamily = "Arial, sans-serif";
+		copyrightDiv.style.margin = "0 2px 2px 0";
+		copyrightDiv.style.whiteSpace = "nowrap";
+		map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(copyrightDiv);
+		var copyrights = {};
+		function updateCopyright() {
+		    newMapType = map.getMapTypeId();
+		    copyrightDiv.innerHTML = newMapType in copyrights ? copyrights[newMapType] : "";
+		}
+
+		map.mapTypes.set("mapniks", mapnik_map_static);
+		copyrights["mapniks"] = "<a target=\"_blank\" href=\"http://www.openstreetmap.org/\">OSM</a> (<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)";
+		map.mapTypes.set("mapnik", mapnik_map);
+		copyrights["mapnik"] = "<a target=\"_blank\" href=\"http://www.openstreetmap.org/\">OSM</a> (<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)";
+		map.mapTypes.set("relief", relief_map);
+		map.mapTypes.set("mapnikh", mapnik_map_rel);
+		copyrights["mapnikh"] = "<a target=\"_blank\" href=\"http://www.openstreetmap.org/\">OSM</a> (<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>), DEM <a target=\"_blank\" href=\"http://srtm.csi.cgiar.org/\">CIAT</a>";
+		map.mapTypes.set("topo", topo_map);
+		copyrights["topo"] = "<a target=\"_blank\" href=\"http://www.wanderreitkarte.de/licence_de.php\">Nops RWK</a> DEM <a target=\"_blank\" href=\"http://srtm.csi.cgiar.org/\">CIAT</a>";
+		map.mapTypes.set("cycle", cycle_map);
+		copyrights["cycle"] = "<a target=\"_blank\" href=\"http://opencyclemap.org/\">OpenCycleMap</a> (<a target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC</a>)";
+
+		google.maps.event.addListener(map, "maptypeid_changed", function(e) {
+			if (map.mapTypeId === "mapnikh") {
+				if (map.overlayMapTypes.getLength() == 0) {
+					map.overlayMapTypes.insertAt(0, relief_map);
+				}
+			} else {
+				if (map.overlayMapTypes.getLength() > 0){
+					map.overlayMapTypes.removeAt(0);
+				}
+			}
+		});
+		google.maps.event.addListener(map, "maptypeid_changed", updateCopyright);
+		if (map.mapTypeId === "mapnikh") {
+				if (map.overlayMapTypes.getLength() == 0) {
+					map.overlayMapTypes.insertAt(0, relief_map);
+				}
+		}
+		updateCopyright();
 
 		if (fitbounds) {
 			var bounds = new google.maps.LatLngBounds();
@@ -116,6 +251,10 @@
 		google.maps.event.addListener(map, "dragend", makeHash);
 		google.maps.event.addListener(map, "zoom_changed", makeHash);
 		google.maps.event.addListener(map, "maptypeid_changed", makeHash);
+		google.maps.event.addListener(map, 'maptypeid_changed', function(e) {
+			var mt = map.getMapTypeId();
+			createCookie('GMapType',mt,365);
+		});
 		// FIXME tilt_changed?
 	}
 
@@ -123,17 +262,8 @@
 		var ll = map.getCenter().toUrlValue(6);
 		var z = map.getZoom();
 		var t = map.getMapTypeId();//CurrentMapType().getUrlArg();
-		if (t == google.maps.MapTypeId.ROADMAP) {
-			t = 'm';
-		} else if (t == google.maps.MapTypeId.SATELLITE) {
-			t = 'k';
-		} else if (t == google.maps.MapTypeId.HYBRID) {
-			t = 'h';
-		} else if (t == google.maps.MapTypeId.TERRAIN) {
-			t = 'p';
-		} else {
-			t = 'h';
-		}
+		var index = maptypes.indexOf(t);
+		t = index != -1 ? shorttypes[index] : 'h';
 		window.location.hash = '#ll='+ll+'&z='+z+'&t='+t;
 	}
 
