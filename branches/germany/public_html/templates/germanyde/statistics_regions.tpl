@@ -10,17 +10,17 @@
 <table class="report sortable" id="regionstat" style="font-size:8pt;">
 <thead>
 <tr>
-	<td sorted="asc">Gebiet</td>
-	<td>Bilder</td>
-	<td>(letzte<br />Woche)</td>
-	<td>Quadrate</td>
-	<td>mit<br />Bildern</td>
-	<td>(%)</td>
-	<td>Landquadrate</td>
-	<td>mit<br />Geobildern</td>
-	<td>(%)</td>
-	<td>Hectads<br />(10km&times;10km)</td>
-	<td>mit<br />Bildern</td>
+	<td{if $order=='shortname'} sorted="asc"{/if}>Gebiet</td>
+	<td{if $order=='images_total'} sorted="desc"{/if}>Bilder</td>
+	<td{if $order=='images_thisweek'} sorted="desc"{/if}>(letzte<br />Woche)</td>
+	<td{if $order=='squares_total'} sorted="desc"{/if}>Quadrate</td>
+	<td{if $order=='squares_submitted'} sorted="desc"{/if}>mit<br />Bildern</td>
+	<td{if $order=='percent'} sorted="desc"{/if}>(%)</td>
+	<td{if $order=='squares_geo'} sorted="desc"{/if}>Landquadrate</td>
+	<td{if $order=='geographs_submitted'} sorted="desc"{/if}>mit<br />Geobildern</td>
+	<td{if $order=='geopercent'} sorted="desc"{/if}>(%)</td>
+	<td{if $order=='tenk_total'} sorted="desc"{/if}>Hectads<br />(10km&times;10km)</td>
+	<td{if $order=='tenk_submitted'} sorted="desc"{/if}>mit<br />Bildern</td>
 	<td sorted="none">Links</td>
 {*<td>Myriads</td>
 <td>Area (km<sup>2</sup>, land)</td>
