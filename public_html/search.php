@@ -1045,15 +1045,16 @@ if (isset($_GET['fav']) && $i) {
 				list($lat,$long) = $conv->internal_to_wgs84($engine->criteria->x,$engine->criteria->y);
 				$markers[] = array('Center Point',$lat,$long);
 			}
-			if (preg_match_all('/\b([a-zA-Z]{1,3} ?\d{1,5}[ \.]?\d{1,5})\b/',$engine->criteria->searchdesc,$m)) {
-				$m = array_unique($m[1]);
-				foreach ($m as $gr) {
-					$sq = new GridSquare();
-					$sq->setByFullGridRef($gr,false,true);
-					list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
-					$markers[] = array($gr,$lat,$long);
-				}
-			}
+			#if (preg_match_all('/\b([a-zA-Z]{1,3} ?\d{1,5}[ \.]?\d{1,5})\b/',$engine->criteria->searchdesc,$m)) {
+			#	# FIXME this matches also some user names...
+			#	$m = array_unique($m[1]);
+			#	foreach ($m as $gr) {
+			#		$sq = new GridSquare();
+			#		$sq->setByFullGridRef($gr,false,true);
+			#		list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
+			#		$markers[] = array($gr,$lat,$long);
+			#	}
+			#}
 			$smarty->assign_by_ref('markers',$markers);
 			$smarty->assign('lat0',   $CONF['gmcentre'][0]);
 			$smarty->assign('lon0',   $CONF['gmcentre'][1]);
