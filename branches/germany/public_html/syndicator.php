@@ -106,7 +106,14 @@ if (isset($_GET['q']) || !empty($_GET['location'])) {
 
 } 
 
-$opt_expand = (!empty($_GET['expand']) && $format != 'KML')?1:0;
+if ($format == 'KML' || !isset($_GET['expand']) || !is_numeric($_GET['expand'])) {
+	$opt_expand = 0;
+} else {
+	$opt_expand = intval($_GET['expand']);
+	if ($opt_expand < 0 || $opt_expand > 2) {
+		$opt_expand = 0;
+	}
+}
 
 if (isset($cacheid)) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";
@@ -316,7 +323,12 @@ for ($i=0; $i<$cnt; $i++)
 		ob_start();
 		imagejpeg($images->images[$i]->getSquareThumb(16));
 		$item->thumbdata = ob_get_clean();
-	} elseif ($opt_expand) {
+	} elseif ($opt_expand == 2) {
+		$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
+		$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getMinThumbnail(200,200).'</a><br/>'. $item->description;
+		$item->description .= "<br/><br/>&copy; <i>".$images->images[$i]->realname."</i> and licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence (CC BY-SA)</a>";
+		$item->descriptionHtmlSyndicated = true;
+	} elseif ($opt_expand == 1) {
 		$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 		$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 		$item->descriptionHtmlSyndicated = true;
