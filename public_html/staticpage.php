@@ -46,6 +46,8 @@ $template='static_'.$page.'.tpl';
 $smarty = new GeographPage;
 if (!$smarty->templateExists($template))
 {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$template='static_404.tpl';
 }
 
