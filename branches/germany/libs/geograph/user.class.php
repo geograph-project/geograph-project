@@ -713,6 +713,13 @@ class GeographUser
 		$profile['password1']=stripslashes($profile['password1']);
 		$profile['password2']=stripslashes($profile['password2']);
 
+		// verify CSRF token
+
+		if (!isset($profile['CSRF_token']) || $profile['CSRF_token'] !== $_SESSION['CSRF_token']) {
+			$errors['CSRF_token'] = true;
+			$ok=false;
+		}
+
 		// valid homesquare?
 		$profile['grid_reference']=stripslashes($profile['grid_reference']);
 		$gridreference='';
