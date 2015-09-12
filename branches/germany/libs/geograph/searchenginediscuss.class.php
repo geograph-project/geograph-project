@@ -45,6 +45,7 @@ class SearchEngineDiscuss extends SearchEngineBuilder
 	
 	function Execute($pg) 
 	{
+		global $CONF;
 		$db=$this->_getDB();
 		
 		$this->criteria->getSQLParts();
