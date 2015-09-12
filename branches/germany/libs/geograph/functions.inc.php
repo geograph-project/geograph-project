@@ -829,6 +829,15 @@ function htmlentities2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
 {
     return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlentities($myHTML,$quotes,$char_set));
 } 
+
+function htmlentities_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+{
+	return htmlentities($myHTML,$quotes,$char_set);
+}
+function htmlspecialchars_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+{
+	return htmlspecialchars($myHTML,$quotes,$char_set);
+}
   
 function htmlnumericentities($myXML){
   return preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars($myXML));
