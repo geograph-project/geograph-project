@@ -135,14 +135,215 @@ class GeographUser
 			}
 		}
 	}
-	
+
+	/* Calculates random string consisting of the characters [./a-zA-Z0-9]. */
+	# TODO use better generator?
 	function randomSalt($len) {
 		$bytes = (int)(($len * 3 + 3) /4);
 		$bin = '';
 		for ($i = 0; $i < $bytes; $i++) {
-			$bin .= chr(rand(0, 255));
+			$bin .= chr(mt_rand(0, 255));
 		}
-		return substr(base64_encode($bin), 0, $len);
+		return str_replace('+', '.', substr(base64_encode($bin), 0, $len));
+	}
+
+	/* Try to estimate if the given password is easy to beak by a brute force attack.
+	 * Used for rejecting weak passwords, so a compromise between security and usability is implemented.
+	 */
+	function isPasswordWeak($pass) {
+		# TODO use something like john for finding standard passwords?
+		# TODO make configurable?
+		$charstat = array();
+		$numupper = 0;
+		$numlower = 0;
+		$numdigits = 0;
+		$numother = 0;
+		$hasupper = 0;
+		$haslower = 0;
+		$hasdigits = 0;
+		$hasother = 0;
+		$len = strlen($pass);
+		for ($i = 0; $i < $len; $i++) {
+			$c = $pass[$i];
+			#$charstat[ord($c)]++;
+			$charstat[ord($c)] = 1;
+			if ($c >= 'a' && $c <= 'z') { // warning: does not work for EBCDIC ;-)
+				$numlower++;
+				$haslower = 1;
+			} elseif ($c >= 'A' && $c <= 'Z') {
+				$numupper++;
+				$hasupper = 1;
+			} elseif ($c >= '0' && $c <= '9') {
+				$numdigits++;
+				$hasdigits = 1;
+			} else {
+				$numother++;
+				$hasother = 1;
+			}
+		}
+		$numchargroups = $haslower + $hasupper + $hasdigits + $hasother;
+		$numcharacters = count($charstat);
+
+		$minlen = max(10 - $numchargroups, 8); # TODO make configurable?
+		$minchars = 6;                         # TODO make configurable?
+		return $numcharacters < $minchars || $len < $minlen;
+	}
+
+	/* Calculates hash/salt pair for password.
+	 * Falls back to md5 on failure.
+	 * Currently, $hash is up to 60 characters long,
+	 *            $salt is up to 8 characters long
+	 * For non md5 hashes, $salt == '' and
+	 *                     $hash starts with '$' and contains the salt.
+	 */
+	function password_hash($pass, &$hash, &$salt) {
+		if (function_exists('password_hash')) {
+			$salt = '';
+			$hash = password_hash($pass, PASSWORD_BCRYPT); # 60 characters long
+			if ($hash !== FALSE)
+				return;
+			trigger_error("password_hash failed, falling back to crypt", E_USER_WARNING);
+		}
+		if (CRYPT_BLOWFISH) {
+			if (version_compare(PHP_VERSION, '5.3.7', '>=')) {
+				$hsalt = '$2y$10$';
+			} else {
+				$hsalt = '$2a$10$';
+			}
+			$hsalt .= $this->randomSalt(22);
+			$hash = crypt($pass, $hsalt); # 60 characters long
+			$salt = '';
+			if (strlen($hash) == 60)
+				return;
+		}
+		trigger_error("password_hash error, falling back to md5", E_USER_WARNING);
+		$salt = $this->randomSalt(8);
+		$hash = md5($salt.$pass);
+	}
+
+	/* Checks if the given password matches the given hash/salt combination.
+	 * Returns TRUE if the password matches, FALSE otherwise.
+	 * Rate limit class: 'login', 'register', 'mailchange', 'pwdchange', see rate_limit()
+	 */
+	function password_verify($pass, $hash, $salt, $rlimitclass = null, $uid = null) {
+		$pwdok = false;
+		if ($hash[0] === '$') {
+			if ($salt === '') {
+				if (function_exists('password_verify')) {
+					$pwdok = password_verify($pass, $hash);
+				} else {
+					$pwdok = crypt($pass, $hash) === $hash; /* this works because
+										 * $hash starts with the salt and crypt ignores any following characters
+										 * the return value in case of an error is guaranteed to be shorter */
+				}
+			}
+		} else {
+			$pwdok = $hash === md5($salt.$pass);
+		}
+		if (is_null($rlimitclass)) {
+			trigger_error("rlimitclass not given", E_USER_WARNING); // FIXME remove
+			$this->lock_seconds = 0;
+			return $pwdok;
+		} else {
+			return $this->rate_limit($rlimitclass, $pwdok, $uid);
+		}
+	}
+
+	/* Checks if the given hash/salt combination should be recalculated using password_hash. */
+	function hashNeedsUpdate($hash, $salt) {
+		#return false; #FIXME test
+		return $hash[0] !== '$';
+	}
+
+	/* rate limiting:
+	 * $authfailed == true:  save failed attempt in database
+	 * $calcdelta == true:   calculate (block time - time since last try), i.e. the number of seconds until the block time runs off
+	 * $calcdelta == false:  calculate block time
+	 */
+	function rlimit_calc_time($rlimitclass, $authfailed, $calcdelta, $uid = null) {
+		if (is_null($uid)) {
+			$uid = $this->user_id;
+		}
+		# TODO this is a very simple implementation which could probably be improved
+		$calccutoff = 60*60;
+		$mailcutoff = 60*60*4;
+		$maxlocktime = 60*60;
+
+		$db = $this->_getDB();
+
+		if ($authfailed) {
+			$db->Execute("delete from user_log where user_id=".$db->Quote($uid)." and created < TIMESTAMPADD(SECOND,".-max($mailcutoff,$calccutoff).",NOW()) and event='$rlimitclass'");
+		}
+
+		$authcount = $db->GetOne("select count(*) from user_log where user_id=".$db->Quote($uid)." and created >= TIMESTAMPADD(SECOND,-$calccutoff,NOW()) and event='$rlimitclass'");
+		if ($authcount === false) {
+			trigger_error("db error getting authcount", E_USER_WARNING);
+			$authcount = 0;
+		}
+
+		if ($authfailed) {
+			$authcount++;
+			$newmailsent = 0;
+			if ($authcount > 10) {
+				$mailsent = $db->GetOne("select exists(select 1 from user_log where user_id=".$db->Quote($uid)." and event='$rlimitclass' and mailsent=1)");
+				if ($mailsent !== false && $mailsent != 1) { # do nothing on db error [false] or if already sent [1]
+					global $CONF;
+					$geofrom = "From: Geograph <{$CONF['mail_from']}>";
+					$envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
+					$subject = "[Geograph Error]: authentication failed for user $uid";
+					$msg = "Authentication failed $authcount times for user $uid ($rlimitclass).";
+					mail($CONF['admin_email'], $subject, $msg, $geofrom, $envfrom); #FIXME test
+					$newmailsent = 1;
+					trigger_error($msg, E_USER_WARNING);
+				}
+			}
+			$db->Execute("insert into user_log (user_id, event, mailsent) values (".$db->Quote($uid).",'$rlimitclass',$newmailsent)");
+		}
+
+		if ($authcount == 0) {
+			$lock_seconds = 0;
+		} elseif ($authcount >= 6) {
+			$lock_seconds = $maxlocktime;
+		} else {
+			$lock_seconds = pow(4, $authcount);
+		}
+
+		if ($lock_seconds > $maxlocktime) {
+			$lock_seconds = $maxlocktime;
+		}
+
+		if ($calcdelta) { /* subtract time since last try */
+			$last_try = $db->GetOne("select TIMESTAMPDIFF(SECOND, created, NOW()) from user_log where user_id=".$db->Quote($uid)." and event='$rlimitclass' order by userlog_id desc");
+			//$last_try = $db->GetOne("select TIMESTAMPDIFF(SECOND, created, NOW()) from user_log where user_id=".$db->Quote($uid)." and event='$rlimitclass' order by userlog_id desc limit 1");
+			if ($last_try === false || is_null($last_try)) {
+				if ($db->ErrorNo()) {
+					trigger_error("db error getting last_try", E_USER_WARNING);
+				}
+				$last_try = $maxlocktime + 1;
+			}
+			$lock_seconds -= $last_try;
+		}
+
+		return $lock_seconds;
+	}
+
+	function rate_limit($rlimitclass, $pwdok, $uid = null) {
+		#$this->lock_seconds = 0; # FIXME test
+		#return $pwdok; # FIXME test
+		if (!in_array($rlimitclass, array('login', 'register', 'mailchange', 'pwdchange'))) { # FIXME remove after testing # FIXME add 'autologin'?
+			trigger_error("invalid rlimitclass '$rlimitclass'", E_USER_WARNING);
+			$this->lock_seconds = 0;
+			return $pwdok;
+		}
+		if ($pwdok) {
+			if ($this->rlimit_calc_time($rlimitclass, false, true, $uid) < 0) {
+				# should we clear previous failed tries from the db?
+				$this->lock_seconds = 0;
+				return true;
+			}
+		}
+		$this->lock_seconds = $this->rlimit_calc_time($rlimitclass, true, false, $uid);
+		return false;
 	}
 
 	function getForumSortOrder() {
@@ -272,6 +473,11 @@ class GeographUser
 		
 		$errors=array();
 		
+		if (!isset($form['CSRF_token']) || $form['CSRF_token'] !== $_SESSION['CSRF_token']) {
+			$errors['csrf'] = true;
+			$ok=false;
+		}
+
 		//check name
 		if (strlen($name)==0)
 		{
@@ -295,7 +501,7 @@ class GeographUser
 		}
 		
 		//check password
-		if (strlen($password1)==0)
+		if ($this->isPasswordWeak($password1))
 		{
 			$ok=false;
 			$errors['password1']=$MESSAGES['class_user']['password1'];
@@ -322,6 +528,10 @@ class GeographUser
 			}
 			else
 			{
+				$salt = '';
+				$hash = '';
+				$this->password_hash($password1, $hash, $salt);
+
 				//we know there is no confirmed user with email address, so if we have
 				//an unconfirmed one, we can overwrite it with the new details
 				$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' and rights is null limit 1');	
@@ -330,12 +540,11 @@ class GeographUser
 					//user already exists, but didn't respond to email - probably trying
 					//to send a fresh one so lets just refresh the existing record
 					$user_id=$arr['user_id'];
-					$salt = $this->randomSalt(8);
 					
 					$sql = sprintf("update user set realname=%s,email=%s,password=%s,salt=%s,signup_date=now(),http_host=%s where user_id=%s",
 						$db->Quote($name),
 						$db->Quote($email),
-						$db->Quote(md5($salt.$password1)),
+						$db->Quote($hash),
 						$db->Quote($salt),
 						$db->Quote($_SERVER['HTTP_HOST']),
 						$db->Quote($user_id));
@@ -350,12 +559,11 @@ class GeographUser
 				else
 				{
 					//ok, user doesn't exist, insert a new row
-					$salt = $this->randomSalt(8);
 					$sql = sprintf("insert into user (realname,email,password,salt,signup_date,http_host) ".
 						"values (%s,%s,%s,%s,now(),%s)",
 						$db->Quote($name),
 						$db->Quote($email),
-						$db->Quote(md5($salt.$password1)),
+						$db->Quote($hash),
 						$db->Quote($salt),
 						$db->Quote($_SERVER['HTTP_HOST']));
 					
@@ -410,8 +618,10 @@ class GeographUser
 	/**
 	* verify registration from given hash
 	* can only do this once, returns ok, fail or alreadycomplete
+	*
+	* checks whether $pass matches the password (if not null)
 	*/
-	function verifyRegistration($user_id, $hash)
+	function verifyRegistration($user_id, $hash, $pass = null)
 	{
 		global $CONF;
 		$ok=true;
@@ -428,42 +638,49 @@ class GeographUser
 			$db = $this->_getDB();
 			
 			
-			$arr = $db->GetRow('select * from user where user_id='.$db->Quote($user_id).' limit 1');	
-			if (strlen($arr['rights']))
-			{
+			$arr = $db->GetRow('select *,TIMESTAMPDIFF(SECOND, signup_date, NOW()) AS signupdiff from user where user_id='.$db->Quote($user_id).' limit 1');
+			if ($arr === FALSE || !count($arr)) {
+				$status="fail";
+			} elseif ($arr['signupdiff'] > 7*24*3600) {
+				$status="expired";
+			} elseif (strlen($arr['rights'])) {
 				$status="alreadycomplete";
 			
 			}
 			else
 			{
-			
-				//assign some basic rights to the user
-				$sql="update user set rights='basic' where user_id=".$db->Quote($user_id);
-				$db->Execute($sql);
-
-				$this->user_id=$user_id;
-				$this->registered=true;
-
-				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($user_id).' limit 1');	
-				foreach($arr as $name=>$value)
-				{
-					if (!is_numeric($name))
-						$this->$name=$value;
-
-				}
-
-				//temporary nickname fix for beta accounts
-				if (strlen($this->nickname)==0)
-					$this->nickname=str_replace(" ", "", $this->realname);
-
-
-				//setup forum user
-				$this->_forumUpdateProfile();
-
-				//log into forum too
-				$this->_forumLogin();
+				if (!is_null($pass) && !$this->password_verify($pass, $arr['password'], $arr['salt'], 'register', $arr['user_id'])) {
+					$status="auth";
+				} else {
 				
-				$status="ok";
+					//assign some basic rights to the user
+					$sql="update user set rights='basic' where user_id=".$db->Quote($user_id);
+					$db->Execute($sql);
+					$arr['rights'] = 'basic';
+
+					$this->user_id=$user_id;
+					$this->registered=true;
+
+					foreach($arr as $name=>$value)
+					{
+						if (!is_numeric($name))
+							$this->$name=$value;
+
+					}
+
+					//temporary nickname fix for beta accounts
+					if (strlen($this->nickname)==0)
+						$this->nickname=str_replace(" ", "", $this->realname);
+
+
+					//setup forum user
+					$this->_forumUpdateProfile();
+
+					//log into forum too
+					$this->_forumLogin();
+					
+					$status="ok";
+				}
 			}
 				
 		}
@@ -487,7 +704,7 @@ class GeographUser
 
 		if (!isValidEmailAddress($email)) {
 			$errors['email']=$MESSAGES['class_user']['reminder_email_invalid'];
-		} else if (strlen($password1)==0) {
+		} elseif ($this->isPasswordWeak($password1)) {
 			$errors['password1']=$MESSAGES['class_user']['password1'];
 		} elseif ($password1!=$password2) {
 			$errors['password2']=$MESSAGES['class_user']['password2'];
@@ -498,11 +715,13 @@ class GeographUser
 			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' limit 1');	
 			if (count($arr))
 			{
-				$salt = $this->randomSalt(8);
+				$salt = '';
+				$hash = '';
+				$this->password_hash($password1, $hash, $salt);
 				$db->Execute("insert into user_emailchange ".
 					"(user_id, oldemail,newemail,requested,status)".
 					"values(?,?,?,now(), 'pending')",
-					array($arr['user_id'], $arr['salt'].$arr['password'], $salt.md5($salt.$password1)));
+					array($arr['user_id'], $arr['salt'].'$'.$arr['password'], $salt.'$'.$hash));
 					
 				$id=$db->Insert_ID();
 
@@ -518,7 +737,7 @@ class GeographUser
 				@mail($email, mb_encode_mimeheader($CONF['mail_subjectprefix'].$sub, $CONF['mail_charset'], $CONF['mail_transferencoding']), $msg,
 					"From: Geograph <{$CONF['mail_from']}>\n".
 					"MIME-Version: 1.0\n".
-					"Content-Type: text/plain; {$CONF['mail_charset']}\n".
+					"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
 					"Content-Disposition: inline\n".
 					"Content-Transfer-Encoding: 8bit",
 					is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
@@ -536,8 +755,10 @@ class GeographUser
 	/**
 	* verify password from given hash
 	* can only do this once, returns ok, fail or alreadycomplete
+	*
+	* checks whether $pass matches the new password (if not null)
 	*/
-	function verifyPasswordChange($change_id, $hash)
+	function verifyPasswordChange($change_id, $hash, $pass = null)
 	{
 		global $CONF;
 		$ok=true;
@@ -555,54 +776,61 @@ class GeographUser
 			
 			$user_emailchange_id=substr($change_id,1);
 			
-			$arr = $db->GetRow('select * from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));	
-			if ($arr['status']=='completed')
-			{
+			$arr = $db->GetRow('select *,TIMESTAMPDIFF(SECOND, requested, NOW()) AS timediff from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));
+
+			if ($arr === FALSE || !count($arr)) {
+				$status="fail";
+			} elseif ($arr['timediff'] > 7*24*3600) {
+				$status="expired";
+			} elseif ($arr['status'] == 'completed') {
 				$status="alreadycomplete";
-			}
-			elseif(isset($arr['user_emailchange_id']))
-			{
-			
-				//change password
-				$salt = substr($arr['newemail'], 0, 8);
-				$md5pw = substr($arr['newemail'], 8);
-				$sql="update user set password=".$db->Quote($md5pw).",salt=".$db->Quote($salt)." where user_id=".$db->Quote($arr['user_id']);
-				$db->Execute($sql);
-
-				$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
-				$db->Execute($sql);
-
-
-				$this->user_id=$arr['user_id'];
-				$this->registered=true;
-
-				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');	
-				foreach($arr as $name=>$value)
-				{
-					if (!is_numeric($name))
-						$this->$name=$value;
-
+			} else {
+				$parts = explode('$', $arr['newemail'], 2);
+				if (count($parts) > 1) {
+					list($salt, $md5pw) = $parts;
+				} else { # old version, can be removed when the old requests are gone
+					$salt = substr($arr['newemail'], 0, 8);
+					$md5pw = substr($arr['newemail'], 8);
 				}
 
-				//temporary nickname fix for beta accounts
-				if (strlen($this->nickname)==0)
-					$this->nickname=str_replace(" ", "", $this->realname);
+				if (!is_null($pass) && !$this->password_verify($pass, $md5pw, $salt, 'pwdchange', $arr['user_id'])) {
+					$status="auth";
+				} else {
+					//change password
+					//#FIXME test with md5 and bcrypt
+
+					$sql="update user set password=".$db->Quote($md5pw).",salt=".$db->Quote($salt)." where user_id=".$db->Quote($arr['user_id']);
+					$db->Execute($sql);
+
+					$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
+					$db->Execute($sql);
 
 
-				//setup forum user
-				$this->_forumUpdateProfile();
+					$this->user_id=$arr['user_id'];
+					$this->registered=true;
 
-				//log into forum too
-				$this->_forumLogin();
-				
-				$status="ok";
+					$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');	
+					foreach($arr as $name=>$value)
+					{
+						if (!is_numeric($name))
+							$this->$name=$value;
+
+					}
+
+					//temporary nickname fix for beta accounts
+					if (strlen($this->nickname)==0)
+						$this->nickname=str_replace(" ", "", $this->realname);
+
+
+					//setup forum user
+					$this->_forumUpdateProfile();
+
+					//log into forum too
+					$this->_forumLogin();
+					
+					$status="ok";
+				}
 			}
-			else
-			{
-				//deleted change request?
-				$status="fail";
-			}
-				
 		}
 		else
 		{
@@ -616,8 +844,10 @@ class GeographUser
 	/**
 	* verify registration from given hash
 	* can only do this once, returns ok, fail or alreadycomplete
+	*
+	* checks whether $pass matches the password (if not null)
 	*/
-	function verifyEmailChange($change_id, $hash)
+	function verifyEmailChange($change_id, $hash, $pass = null)
 	{
 		global $CONF;
 		$ok=true;
@@ -635,52 +865,53 @@ class GeographUser
 			
 			$user_emailchange_id=substr($change_id,1);
 			
-			$arr = $db->GetRow('select * from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));	
-			if ($arr['status']=='completed')
-			{
-				$status="alreadycomplete";
-			}
-			elseif(isset($arr['user_emailchange_id']))
-			{
-			
-				//change email address
-				$sql="update user set email=".$db->Quote($arr['newemail'])." where user_id=".$db->Quote($arr['user_id']);
-				$db->Execute($sql);
+			$arr = $db->GetRow('select *,TIMESTAMPDIFF(SECOND, requested, NOW()) AS timediff from user_emailchange where user_emailchange_id='.$db->Quote($user_emailchange_id));
 
-				$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
-				$db->Execute($sql);
-
-
-				$this->user_id=$arr['user_id'];
-				$this->registered=true;
-
-				$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');	
-				foreach($arr as $name=>$value)
-				{
-					if (!is_numeric($name))
-						$this->$name=$value;
-
-				}
-
-				//temporary nickname fix for beta accounts
-				if (strlen($this->nickname)==0)
-					$this->nickname=str_replace(" ", "", $this->realname);
-
-
-				//setup forum user
-				$this->_forumUpdateProfile();
-
-				//log into forum too
-				$this->_forumLogin();
-				
-				$status="ok";
-			}
-			else
-			{
-				//deleted change request?
+			if ($arr === FALSE || !count($arr)) {
 				$status="fail";
-			}
+			} elseif ($arr['timediff'] > 7*24*3600) {#FIXME test
+				$status="expired";
+			} elseif ($arr['status'] == 'completed') {
+				$status="alreadycomplete";
+			} else {
+				$arr2 = $db->GetRow('select * from user where user_id='.$db->Quote($arr['user_id']).' limit 1');
+				if (!is_null($pass) && !$this->password_verify($pass, $arr2['password'], $arr2['salt'], 'mailchange', $arr['user_id'])) {
+					$status="auth";
+				} else {
 				
+					//change email address
+					$sql="update user set email=".$db->Quote($arr['newemail'])." where user_id=".$db->Quote($arr['user_id']);
+					$db->Execute($sql);
+					$arr2['email'] = $arr['newemail'];
+
+					$sql="update user_emailchange set completed=now(), status='completed' where user_emailchange_id=$user_emailchange_id";
+					$db->Execute($sql);
+
+
+					$this->user_id=$arr['user_id'];
+					$this->registered=true;
+
+					foreach($arr2 as $name=>$value)
+					{
+						if (!is_numeric($name))
+							$this->$name=$value;
+
+					}
+
+					//temporary nickname fix for beta accounts
+					if (strlen($this->nickname)==0)
+						$this->nickname=str_replace(" ", "", $this->realname);
+
+
+					//setup forum user
+					$this->_forumUpdateProfile();
+
+					//log into forum too
+					$this->_forumLogin();
+					
+					$status="ok";
+				}
+			}
 		}
 		else
 		{
@@ -789,15 +1020,16 @@ class GeographUser
 		}
 
 		if (strlen($profile['password1'])) {
-			if (md5($this->salt.$profile['oldpassword']) != $this->password) {
+			if (!$this->password_verify($profile['oldpassword'], $this->password, $this->salt)) {
 				$ok=false;
 				$errors['oldpassword']=$MESSAGES['class_user']['oldpassword'];
 			} elseif ($profile['password1'] != $profile['password2']) {
 				$ok=false;
 				$errors['password2']=$MESSAGES['class_user']['password2'];
 			} else {
-				$salt = $this->randomSalt(8);
-				$password = md5($salt.$profile['password1']);
+				$salt = '';
+				$password = '';
+				$this->password_hash($profile['password1'], $password, $salt);
 			}
 		} else {
 			$password = $this->password;
@@ -854,6 +1086,7 @@ class GeographUser
 			//about box is always public - col to be removed
 			$profile['public_about']=1;
 			$profile['use_age_group']=0;
+			$profile['age_group']=0;
 			
 			//age info is useless to others, nice for us, no need
 			//to give use a public option
@@ -1098,10 +1331,8 @@ class GeographUser
 				$arr = $db->GetRow($sql);	
 				if (count($arr))
 				{
-					$md5password=md5($arr['salt'].stripslashes(trim($_SERVER['PHP_AUTH_PW'])));
-
 					//passwords match?
-					if ($arr['password']==$md5password)
+					if ($this->password_verify(stripslashes(trim($_SERVER['PHP_AUTH_PW'])), $arr['password'], $arr['salt'], 'login', $arr['user_id']))
 					{
 						//final test = if they have no rights, they haven't confirmed
 						//their registration
@@ -1160,132 +1391,184 @@ class GeographUser
 	
 	/**
 	* force inline login if user isn't authenticated
-	* only return after successful login
+	* only return after successful login unless $always_return is true
+	* Determines user by user_id $uid if given, or $_POST['email'] otherwise.
+	* Returns boolean error status (true on success) if $return_error is false,
+	* or an array describing the errors (empty array on success) otherwise.
 	*/
-	function login($inline=true)
+	function login($inline=true, $uid=0, $always_return=false, $return_error=false)
 	{
 		global $MESSAGES;
 		
 		$logged_in=false;
+		$errors=array();
 		
 		if (!$this->registered)
 		{
-			$errors=array();
-				
 			//lets see if we are processing a login?
-			if (isset($_POST['email']))
-			{
+			if ($uid != 0) {
+				$email = '';
+				$password=stripslashes(trim($_POST['password'])); // FIXME stripslashes?
+				$remember_me=isset($_POST['remember_me'])?1:0;
+			} elseif (isset($_POST['email'])) {
 				$email=stripslashes(trim($_POST['email']));
 				$password=stripslashes(trim($_POST['password']));
 				$remember_me=isset($_POST['remember_me'])?1:0;
+			} else {
+				$email = '';
+				$password = '';
+				$remember_me = 0;
+			}
+			if ($uid != 0 || isset($_POST['email'])) {
+				if (!isset($_POST['CSRF_token']) || $_POST['CSRF_token'] !== $_SESSION['CSRF_token']) {
+					$errors['csrf'] = true;
+				} else {
+					unset($_POST['CSRF_token']); /* This has been replaced with the valid token of the login form,
+					                                which might not have been present in the original request.
+					                                Gives user the chance to verify. */
 				
-				
-				$db = $this->_getDB();
+					$db = $this->_getDB();
 
-				$sql="";
-				if (isValidEmailAddress($email))
-					$sql='select * from user where email='.$db->Quote($email).' limit 1';
-				elseif (isValidRealName($email))
-					$sql='select * from user where nickname='.$db->Quote($email).' limit 1';
-				
-				
-				if (strlen($sql))
-				{
-					//user registered?
-					$arr = $db->GetRow($sql);	
-					if (count($arr))
+					$sql="";
+					if ($uid != 0)
+						$sql='select * from user where user_id='.$db->Quote($uid).' limit 1';
+					if (isValidEmailAddress($email))
+						$sql='select * from user where email='.$db->Quote($email).' limit 1';
+					elseif (isValidRealName($email))
+						$sql='select * from user where nickname='.$db->Quote($email).' limit 1';
+					
+					
+					if (strlen($sql))
 					{
-						$md5password=md5($arr['salt'].$password);
-						//passwords match?
-						if ($arr['password']==$md5password)
+						//user registered?
+						$arr = $db->GetRow($sql);	
+						if (count($arr))
 						{
-							//final test = if they have no rights, they haven't confirmed
-							//their registration
-							if (strlen($arr['rights']))
+							//passwords match?
+							if ($this->password_verify($password, $arr['password'], $arr['salt'], 'login', $arr['user_id']))
 							{
-								//copy user fields into this object
-								foreach($arr as $name=>$value)
+								//final test = if they have no rights, they haven't confirmed
+								//their registration
+								if (strlen($arr['rights']))
 								{
-									if (!is_numeric($name))
-										$this->$name=$value;
-								}
-								
-								//temporary nickname fix for beta accounts
-								if (strlen($this->nickname)==0)
-									$this->nickname=str_replace(" ", "", $this->realname);
+									//copy user fields into this object
+									foreach($arr as $name=>$value)
+									{
+										if (!is_numeric($name))
+											$this->$name=$value;
+									}
+									
+									//temporary nickname fix for beta accounts
+									if (strlen($this->nickname)==0)
+										$this->nickname=str_replace(" ", "", $this->realname);
 
-								//give user a remember me cookie?
-								if ($remember_me)
+									// do we have a better hashing method?
+									if ($this->hashNeedsUpdate($arr['password'], $arr['salt'])) {
+										$newsalt = '';
+										$newhash = '';
+										$this->password_hash($password, $newhash, $newsalt);
+										if (    $this->password_verify($password, $newhash, $newsalt)
+										    &&! $this->hashNeedsUpdate($newhash,  $newsalt)) { # just to be sure there was no error
+											$sql =  'update user set password='.$db->Quote($newhash).
+												',salt='.$db->Quote($newsalt).
+												" where user_id={$this->user_id}";
+											if ($db->Execute($sql) !== FALSE) {
+												$this->password = $newhash;
+												$this->salt = $newsalt;
+												$sql = "update geobb_users set user_password=".$db->Quote($newhash).
+													" where user_id={$this->user_id}";
+												$db->Execute($sql);
+											} else {
+												trigger_error("Could not save new hash and salt.", E_USER_WARNING);
+											}
+										} else {
+											trigger_error("New hash and salt invalid!", E_USER_WARNING);
+										}
+									}
+
+									//give user a remember me cookie?
+									if ($remember_me)
+									{
+										$token = md5(uniqid(rand(),1)); 
+										$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
+										setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/');  
+									}
+									
+									//we're changing privilege state, so we should
+									//generate a new session id to avoid fixation attacks
+									session_regenerate_id(); 
+									
+									$this->registered=true;
+									$logged_in=true;
+									
+									//log into forum too
+									$this->_forumLogin();
+
+									if (isset($_SESSION['maptt'])) 
+										unset($_SESSION['maptt']);								
+								}
+								else
 								{
-									$token = md5(uniqid(rand(),1)); 
-									$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
-									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/');  
+									$errors['general']=sprintf($MESSAGES['class_user']['must_confirm'], $email);
 								}
-								
-								//we're changing privilege state, so we should
-								//generate a new session id to avoid fixation attacks
-								session_regenerate_id(); 
-								
-								$this->registered=true;
-								$logged_in=true;
-								
-								//log into forum too
-								$this->_forumLogin();
-
-								if (isset($_SESSION['maptt'])) 
-									unset($_SESSION['maptt']);								
 							}
 							else
 							{
-								$errors['general']=sprintf($MESSAGES['class_user']['must_confirm'], $email);
+								//speak friend and enter					
+								$errors['password']=$MESSAGES['class_user']['invalid_password'];
 							}
+
 						}
 						else
 						{
-							//speak friend and enter					
-							$errors['password']=$MESSAGES['class_user']['invalid_password'];
+							//sorry son, your name's not on the list
+							$errors['email']=$MESSAGES['class_user']['user_unknown'];
 						}
-
 					}
 					else
 					{
-						//sorry son, your name's not on the list
-						$errors['email']=$MESSAGES['class_user']['user_unknown'];
+						$errors['email']=$MESSAGES['class_user']['user_invalid'];
+						
 					}
 				}
-				else
-				{
-					$errors['email']=$MESSAGES['class_user']['user_invalid'];
-					
-				}
-				
 			}
-			
-			//failure to login means we never return - we show a login page
-			//instead...
-			if (!$logged_in)
-			{
-				$smarty = new GeoGraphPage;
-				
-				$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0);
-				$smarty->assign('inline', $inline);
-				$smarty->assign('email', $email);
-				$smarty->assign('password', $password);
-				$smarty->assign('errors', $errors);
-				$smarty->assign_by_ref('_post', $_POST);
-				$smarty->display('login.tpl');
-				exit;
-			}
-			
-		
 		}
 		else
 		{
 			$logged_in=true;
 		}
-		
-		//we're logged in
-		return $logged_in;
+		//failure to login means we never return - we show a login page
+		//instead...
+		if (!$logged_in && !$always_return)
+		{
+			$smarty = new GeoGraphPage;
+			
+			$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0); # FIXME why not $remember_me ?
+			$smarty->assign('inline', $inline);
+			$smarty->assign('email', $email);
+			$smarty->assign('password', $password);
+			$smarty->assign('errors', $errors);
+			if (isset($errors['password'])) {
+				$smarty->assign('lock_seconds', $this->lock_seconds);
+			}
+			$smarty->assign_by_ref('_post', $_POST);
+			$smarty->display('login.tpl');
+			exit;
+		}
+
+		if (!$return_error) {
+			return $logged_in;
+		}
+
+		if ($logged_in) {
+			return array();
+		}
+
+		if (!count($errors)) {
+			$errors['unknown'] = true;
+		}
+
+		return $errors;
 	}
 	
 	/**

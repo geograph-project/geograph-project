@@ -309,6 +309,7 @@ class GeographPage extends Smarty
 		$this->register_modifier("revision", "smarty_modifier_revision");
 		$this->register_modifier("geographlinks", "smarty_function_geographlinks");
 		$this->register_modifier("ordinal", "smarty_function_ordinal");
+		$this->register_modifier("format_seconds", "smarty_modifier_format_seconds");
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 

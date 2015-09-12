@@ -2,7 +2,7 @@
 {dynamic}
 {if $sent}
 
-<h2>Reminder sent to {$email}</h2>
+<h2>Reminder sent to {$email|escape:'html'}</h2>
 <p>You should receive your password reminder shortly. If you have
 any problems, please <a title="Contact Us" href="contact.php">contact us</a></p>
 
