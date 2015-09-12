@@ -410,7 +410,7 @@ function markImage(image) {
 	newtext = 'marked';
 	if (current) {
 		re = new RegExp("\\b"+image+"\\b");
-		if (current.search(re) > -1) {
+		if (current == image || current.search(re) > -1) {
 			newCookie = current.replace(re,',').commatrim();
 			newtext = 'Mark';
 		} else {
@@ -422,11 +422,28 @@ function markImage(image) {
 
 	createCookie('markedImages',newCookie,10);
 
+	if (document.getElementById('marked_number')) {
+		if (!newCookie) {//chrome needs this... 
+			document.getElementById('marked_number').innerHTML = '[0]';
+		} else {
+			splited = newCookie.commatrim().split(',');
+			document.getElementById('marked_number').innerHTML = '['+(splited.length+0)+']';
+		}
+	}
+
 	ele = document.getElementById('mark'+image);
 	if(ele.innerText != undefined) {
 		ele.innerText = newtext;
 	} else {
 		ele.textContent = newtext;
+	}
+}
+
+function markAllImages(str) {
+	for(var q=0;q<document.links.length;q++) {
+		if (document.links[q].text == str) {
+			markImage(document.links[q].id.substr(4));
+		}
 	}
 }
 
@@ -537,16 +554,17 @@ function createCookie(name,value,days) {
 		var expires = "; expires="+date.toGMTString();
 	}
 	else var expires = "";
-	document.cookie = name+"="+value+expires+"; path=/";
+	document.cookie = name+"="+encodeURIComponent(value)+expires+"; path=/";
 }
 
 function readCookie(name) {
 	var ca = document.cookie.split(';');
 	for(var i=0;i < ca.length;i++) {
-		var pair = ca[i].split('=');
-		var c = pair[0];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c == name) return pair[1];
+		var pos = ca[i].indexOf("=");
+		var argname = ca[i].substring(0,pos);
+
+		while (argname.charAt(0)==' ') argname = argname.substring(1,argname.length);
+		if (argname == name) return decodeURIComponent(ca[i].substring(pos+1));
 	}
 	return false;
 }
