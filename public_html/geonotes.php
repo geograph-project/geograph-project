@@ -307,7 +307,8 @@ if ($uid || $ticketid ) {
 	$USER->mustHavePerm("basic");
 }
 
-$readonly = $USER->hasPerm("basic") ? 0 : 1;
+$isloggedin = $USER->hasPerm("basic");
+$readonly = $isloggedin ? 0 : 1;
 
 $smarty = new GeographPage;
 
