@@ -792,3 +792,17 @@ ALTER TABLE `sessions` CHANGE `SESSKEY` `SESSKEY` varchar(64) NOT NULL DEFAULT '
 
 ALTER TABLE `sessions` CHANGE `ipaddr`  `ipaddr`  varchar(45) NOT NULL DEFAULT '';
 ALTER TABLE `geobb_posts` CHANGE `poster_ip` `poster_ip` varchar(45) NOT NULL DEFAULT '';
+ 
+ALTER TABLE `geobb_users` CHANGE `user_password` `user_password` varchar(60) NOT NULL DEFAULT '';
+
+DROP TABLE IF EXISTS `user_log`;
+CREATE TABLE `user_log` (
+  `userlog_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned NOT NULL,
+  `event` enum('login', 'pwdchange', 'mailchange', 'register') NOT NULL DEFAULT 'login',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `mailsent` TINYINT UNSIGNED NOT NULL DEFAULT  '0',
+  PRIMARY KEY (`userlog_id`),
+  KEY `user_id` (`user_id`),
+  KEY `created` (`created`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;

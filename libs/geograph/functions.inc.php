@@ -355,6 +355,25 @@ function smarty_function_place($params) {
 	return $t;
 }
 
+function smarty_modifier_format_seconds($val, $minutelim = 60)
+{
+	# TODO plural/singular, hours?
+	global $CONF;
+	if ($CONF['lang'] == 'de') {
+		if ($val >= $minutelim) {
+			return ceil($val / 60.0) . ' Minuten';
+		} else {
+			return ceil($val) . ' Sekunden';
+		}
+	} else {
+		if ($val >= $minutelim) {
+			return ceil($val / 60.0) . ' minutes';
+		} else {
+			return ceil($val) . ' seconds';
+		}
+	}
+}
+
 function _utf8_decode($string)
 {
   $tmp = $string;

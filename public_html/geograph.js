@@ -547,6 +547,50 @@ function clearMarkedImages() {
 
 //	-	-	-	-	-	-	-	-
 
+function timestr(t)
+{
+	var tseconds = t % 60;
+	t = Math.floor(t / 60);
+	var tminutes = t % 60;
+	t = Math.floor(t / 60);
+	var thours = t;
+	var s = ('0'+tseconds).slice(-2);
+	if (thours || tminutes) {
+		s = ('0'+tminutes).slice(-2) + ':' + s;
+	}
+	if (thours) {
+		s = thours + ':' + s;
+	}
+	return s;
+}
+
+function buttontimer(id, seconds)
+{
+	if (seconds <= 0) {
+		return;
+	}
+	var button = document.getElementById(id);
+	if (!button) {
+		return;
+	}
+	button.disabled = true;
+	var buttontext = button.value;
+	var secondsleft = seconds;
+	button.value = buttontext + ' (' + timestr(secondsleft) + ')';
+	var intv = setInterval(function () {
+		secondsleft--;
+		if (secondsleft <= 0) {
+			clearInterval(intv);
+			button.disabled = false;
+			button.value = buttontext;
+		} else {
+			button.value = buttontext + ' (' + timestr(secondsleft) + ')';
+		}
+	}, 1000);
+}
+
+//	-	-	-	-	-	-	-	-
+
 function createCookie(name,value,days) {
 	if (days) {
 		var date = new Date();

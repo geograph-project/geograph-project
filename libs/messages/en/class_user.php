@@ -4,7 +4,7 @@ $MESSAGES['class_user'] = array (
 	'name_missing'            => 'You must give your name',
 	'name_chars'              => 'Only letters A-Z, a-z, hyphens and apostrophes allowed',
 	'email_invalid'           => 'Please enter a valid email address',
-	'password1'               => 'You must specify a password',
+	'password1'               => 'You must specify a longer or more complex password',
 	'password2'               => 'Passwords didn\'t match, please try again',
 	'already_registered'      => 'Email address is already registered',
 	'error_dbupdate'          => 'error updating: ',
@@ -72,7 +72,7 @@ EOT
 	'mailsubject_mail_change' => 'Please confirm your email address change for %s',
 	'new_email_invalid'       => 'Invalid email address',
 	'must_confirm'            => 'You must confirm your registration by following the link in the email sent to %s',
-	'invalid_password'        => 'Wrong password - don\'t forget passwords are case-sensitive',
+	'invalid_password'        => 'Wrong password or blocked access',
 	'user_unknown'            => 'This email address or nickname is not registered',
 	'user_invalid'            => 'This is not a valid email address or nickname',
 );
