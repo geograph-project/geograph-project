@@ -21,9 +21,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by'])) {
-	header("Location:http://{$_SERVER['HTTP_HOST']}/statistics/breakdown.php?".$_SERVER['QUERY_STRING']);
-	exit;
+#if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by'])) {
+#	header("Location:http://{$_SERVER['HTTP_HOST']}/statistics/breakdown.php?".$_SERVER['QUERY_STRING']);
+#	exit;
+#}
+
+if (isset($_GET['order']) && in_array($_GET['order'], array('squares_total','squares_submitted','percent','squares_geo','geographs_submitted','geopercent','images_thisweek','images_total','tenk_total','tenk_submitted'))) {
+	$order = $_GET['order'];
+	$ordersgn = -1;
+} else {
+	$order = 'shortname';
+	$ordersgn = +1;
 }
 
 require_once('geograph/global.inc.php');
@@ -56,7 +64,7 @@ if (count($CONF['hier_statlevels'])) {
 	}
 }
 
-$cacheid="statistics|regionsi|$level|$cid";
+$cacheid="statistics|regionsi|$level|$cid|$order";
 
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
@@ -108,7 +116,6 @@ if (!$smarty->is_cached($template, $cacheid))
 		$hstats = array();
 	}
 
-
 	foreach ($hstats as &$row) {
 		$level=$row['level'];
 		$shortname = $row['name'];
@@ -132,15 +139,23 @@ if (!$smarty->is_cached($template, $cacheid))
 		$percentage = $sqgeo == 0 ? 0.0 : $row['geographs_submitted'] / $sqgeo * 100;
 		$row += array('geopercent' => $percentage);
 	}
+	unset($row);
 
-	function compare_shortname($a, $b)
+	#function compare_shortname($a, $b)
+	#{
+	#	return strnatcmp($a['shortname'], $b['shortname']);
+	#}
+	#usort($hstats, 'compare_shortname');
+	function compare_regions($a, $b)
 	{
-		return strnatcmp($a['shortname'], $b['shortname']);
+		global $order, $ordersgn;
+		return $ordersgn * strnatcmp($a[$order], $b[$order]);
 	}
-	usort($hstats, 'compare_shortname');
+	usort($hstats, 'compare_regions');
 	$smarty->assign("hstats", $hstats);
 	$smarty->assign("linkify", $linkify);
 	$smarty->assign("regionname", $regionname);
+	$smarty->assign("order", $order);
 } 
 
 
