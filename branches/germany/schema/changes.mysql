@@ -806,3 +806,9 @@ CREATE TABLE `user_log` (
   KEY `user_id` (`user_id`),
   KEY `created` (`created`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ALTER TABLE `queries` CHANGE `limit1` `limit1` varchar(7) NOT NULL DEFAULT '';
+ALTER TABLE `queries` CHANGE `limit5` `limit5` char(3) NOT NULL DEFAULT '';
+ALTER TABLE `queries_archive` CHANGE `limit1` `limit1` varchar(7) NOT NULL DEFAULT '';
+ALTER TABLE `queries_archive` CHANGE `limit5` `limit5` char(3) NOT NULL DEFAULT '';
+
