@@ -68,6 +68,7 @@
 		{/if}
 	</li>
 
+{if $profile->stats.images gt 0}
 	<li><b>Website</b>: 
 		{if $profile->website}
 			{external href=$profile->website}
@@ -75,11 +76,12 @@
 			<i>keine</i>
 		{/if}
 	</li>
+{/if}
  
  	{if $profile->hasPerm('dormant',true)}
  		<!--<li><i>We do not hold contact details for this user.</i></li>-->
  	{elseif $user->user_id ne $profile->user_id}
-		{if $profile->public_email eq 1}
+		{if $profile->public_email eq 1 && $profile->stats.images gt 0}
 			<li><b>E-Mail</b>: {mailto address=$profile->email encode="javascript"}</li>
 		{/if}
 		<li><a title="{$profile->realname|escape:'html'} kontaktieren" href="/usermsg.php?to={$profile->user_id}">Mitteilung an {$profile->realname|escape:'html'} senden</a></li>
@@ -103,7 +105,7 @@
 	{/if}
 </ul>
 
-{if $profile->about_yourself && $profile->public_about}
+{if $profile->about_yourself && $profile->public_about && $profile->stats.images gt 0}
 	<div class="caption" style="background-color:#dddddd; padding:10px;">
 	{if !$profile->deceased_date}
 	<h2 style="margin-top:0px;margin-bottom:0px">Mehr über mich</h2>
