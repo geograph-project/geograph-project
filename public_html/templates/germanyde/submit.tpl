@@ -101,7 +101,7 @@ beibehalten.</p>
 		<p><label for="jpeg_exif"><b>Bild, das Ortsinformationen enthält, hochladen</b></label> <br/>
 		
 		<input id="jpeg_exif" name="jpeg_exif" type="file" size="60"/>
-		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
+		<input type="hidden" name="MAX_FILE_SIZE" value="15728640" />
 		
 		<input type="submit" name="setpos" value="Weiter &gt;"/> <br/>
 		

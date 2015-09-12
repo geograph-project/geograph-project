@@ -68,6 +68,7 @@
 		{/if}
 	</li>
 
+{if $profile->stats.images gt 0}
 	<li><b>Website</b>: 
 		{if $profile->website}
 			{external href=$profile->website}
@@ -75,11 +76,12 @@
 			<i>n/a</i>
 		{/if}
 	</li>
+{/if}
  
  	{if $profile->hasPerm('dormant',true)}
  		<!--<li><i>We do not hold contact details for this user.</i></li>-->
  	{elseif $user->user_id ne $profile->user_id}
-		{if $profile->public_email eq 1}
+		{if $profile->public_email eq 1 && $profile->stats.images gt 0}
 			<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li>
 		{/if}
 		<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message to {$profile->realname|escape:'html'}</a></li>
@@ -103,7 +105,7 @@
 	{/if}
 </ul>
 
-{if $profile->about_yourself && $profile->public_about}
+{if $profile->about_yourself && $profile->public_about && $profile->stats.images gt 0}
 	<div class="caption" style="background-color:#dddddd; padding:10px;">
 	{if !$profile->deceased_date}
 	<h2 style="margin-top:0px;margin-bottom:0px">More about me</h2>
@@ -185,7 +187,7 @@
 {/if}
 
 {if $userimages}
-	<div style="float:right; position:relative; font-size:0.7em; padding:10px"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>)<br/>
+	<div style="float:right; position:relative; font-size:0.7em; padding:10px"><a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1">Find images by {$profile->realname|escape:'html'}</a> (<a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=thumbs">Thumbnail Only</a>, <a href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;displayclass=slide">Slide Show Mode</a>{if $profile->stats.selfrate_like gt 2}, <a href="/search.php?u={$profile->user_id}&amp;orderby=selfrate_like&amp;reverse_order_ind=1&amp;displayclass=full"><b>selected images</b></a>{/if})<br/>
 	<form action="/search.php" style="display:inline">
 	<label for="fq">Search</label>: <input type="text" name="q" id="fq" size="20"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
 	<input type="hidden" name="user_id" value="{$profile->user_id}"/>

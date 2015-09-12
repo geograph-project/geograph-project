@@ -9,6 +9,17 @@
 {else}<meta name="description" content="Geograph is a web based project to collect and reference geographically representative images of every square kilometre of the region."/>{/if}
 {if $lat && $long}<meta name="ICBM" content="{$lat}, {$long}"/>{/if}
 <meta name="DC.title" content="Geograph{if $page_title}:: {$page_title|escape:'html'}{/if}"/>
+{if $ogimage}<meta property="og:image" content="{$ogimage|escape:'html'}"/>{/if}
+{if $ogimage}<meta property="og:image:width" content="{$ogimagewidth|escape:'html'}"/>{/if}
+{if $ogimage}<meta property="og:image:height" content="{$ogimageheight|escape:'html'}"/>{/if}
+{if $ogtitle}<meta property="og:title" content="{$ogtitle|escape:'html'}"/>{/if}
+{if $ogurl}<meta property="og:url" content="{$ogurl|escape:'html'}"/>{/if}
+{if $ogtype}<meta property="og:type" content="{$ogtype|escape:'html'}"/>{/if}
+{if $ogtype == 'place' && $lat && $long}
+<meta property="place:location:latitude" content="{$lat|escape:'html'}"/>
+<meta property="place:location:longitude" content="{$long|escape:'html'}"/>
+{/if}
+{if $ogauthor}<meta property="og:description" content="&copy; {$ogauthor|escape:'html'} (CC BY-SA){if $ogdescription} &ndash; {$ogdescription|escape:'html'}{/if}"/>{/if}
 {$extra_meta}
 <link rel="stylesheet" type="text/css" title="Monitor" href="{"/templates/germany32/css/basic.css"|revision}" media="screen" />
 <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>

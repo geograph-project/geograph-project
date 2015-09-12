@@ -1,4 +1,4 @@
-{assign var="page_title" value="Add High-Res"}
+{assign var="page_title" value="Hochaufgelöstes Bild hochladen"}
 {include file="_std_begin.tpl"}
 
 {dynamic}
@@ -16,7 +16,7 @@
 	</div>
 {/if}
 
-<h2>Add higher resolution image to <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
+<h2>Hochaufgelöstes Bild für <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> hochladen</h2>
 
 
 {if $error}
@@ -48,9 +48,8 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 
 <h3>Step 2 : Confirm image size</h3>
 
-		{if $original_width}
-			
-			{assign var="hide640" value=1}
+		{if $original_width || $altimg}
+			{if !$altimg}{assign var="hide640" value=1}{/if}
 			{include file="_submit_sizes.tpl"}
 
 	{if $canclearexif}
@@ -58,13 +57,15 @@ please <a title="contact us" href="/contact.php">contact us</a></p>
 		<input type="checkbox" name="clearexif" id="clearexif" {if $wantclearexif}checked{/if} value="1"/> <label for="clearexif">Alle EXIF-Daten (z.B. Aufnahmezeitpunkt und Kameratyp) aus dem Bild entfernen.</label><!--br/-->
 	{/if}
 
+	<input type="hidden" name="altimg" value="{if $altimg}1{else}0{/if}" />
+
 <script type="text/javascript">{literal}
 
 function hideStep3() {
 	document.getElementById("step3").style.display = 'none';
 }
 {/literal}
-{if !$user->upload_size || $user->upload_size == 640}
+{if !$altimg && (!$user->upload_size || $user->upload_size == 640)}
  AttachEvent(window,'load',hideStep3,false);
 {/if}
 </script>
@@ -114,31 +115,31 @@ function hideStep3() {
 
 
 <ul>
-	<li>Use this form to add a higher resolution image to the above submission</li>
-	<li>This should only be used to add the same exact image - although for example better tweaking of contrast and brightness is fine</li>
-	<li>NOTE: This only adds a higher resolution version - it does NOT affect the photo shown on <a href="/photo/{$image->gridimage_id}">the photo page</a>
+	<li>Auf dieser Seite kann ein höchaufgelöstes Bild zu obigem Beitrag hochgeladen werden.</li>
+	<li>Es sollte eine größere Version <b>genau</b> des obigen Bildes hochgeladen werden. Nur kleine Veränderungen wie Verbesserungen des Kontrasts sind erlaubt.</li>
+	<li>Es wird nur eine zusätzliche größere Version bereitgestellt, das Bild auf der <a href="/photo/{$image->gridimage_id}">Foto-Seite</a> bleibt unverändert.</li>
 </ul>
 
 {if $exif}
-	<p>Data from EXIF that might help locate the original:</p>
+	<p>EXIF-Daten, die bei der Suche nach dem Original helfen könnten:</p>
 	<ul>
 		{if $exif.filename}
-			<li>Filename: <b>{$exif.filename|escape:'html'}</b></li>
+			<li>Dateiname: <b>{$exif.filename|escape:'html'}</b></li>
 		{/if}
 		{if $exif.datetime}
-			<li>Date: <b>{$exif.datetime|escape:'html'}</b></li>
+			<li>Datum: <b>{$exif.datetime|escape:'html'}</b></li>
 		{/if}
 		{if $exif.model}
-			<li>Camera Model: <b>{$exif.model|escape:'html'}</b></li>
+			<li>Kamera-Modell: <b>{$exif.model|escape:'html'}</b></li>
 		{/if}
 		{if $exif.width}
-			<li>Width: <b>{$exif.width|thousends} pixels</b></li>
+			<li>Breite: <b>{$exif.width|thousends} pixels</b></li>
 		{/if}
 		{if $exif.height}
-			<li>Height: <b>{$exif.height|thousends} pixels</b></li>
+			<li>Höhe: <b>{$exif.height|thousends} pixels</b></li>
 		{/if}
 		{if $exif.filesize}
-			<li>File size: <b>{$exif.filesize|thousends} bytes</b></li>
+			<li>Dateigröße: <b>{$exif.filesize|thousends} bytes</b></li>
 		{/if}
 	</ul>
 	
@@ -147,16 +148,17 @@ function hideStep3() {
 <br style="clear:both"/>
 <form enctype="multipart/form-data" action="{$script_name}?id={$image->gridimage_id}" method="post" name="theForm" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
-<h3>Step 1 : Select Image File</h3>
+<h3>Schritt 1 : Datei auswählen</h3>
 
 <input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
-<label for="jpeg"><b>JPEG Image File</b></label>
+<label for="jpeg"><b>JPEG-Datei</b></label>
 <input id="jpeg" name="jpeg" type="file" /><br/>
+<input type="checkbox" name="altimg" id="altimg" value="1"/> <label for="altimg">Dieses Bild ist ein Alternativbild, das Beschriftungen o.ä. enthält</label><br />
 
-<p>(There is no resolution limit, but the file must be under 8 Megabytes)</p>
+<p>(Die Auflösung ist nicht begrenzt, aber die Datei muss kleiner als 8 Megabytes sein.)</p>
 
 
-<input type="submit" name="next" value="Next &gt;" onclick="autoDisable(this);"/>
+<input type="submit" name="next" value="weiter &gt;" onclick="autoDisable(this);"/>
 
 </form>
 

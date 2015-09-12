@@ -31,6 +31,7 @@
 * @version $Revision$
 */
 
+$MESSAGES = array();
 
 //include domain specific configuration - if your install fails on
 //this line, copy and adapt one of the existing configuration
@@ -82,6 +83,10 @@ if (!empty($CONF['memcache']['app'])) {
 } else {
 	//need lightweight fake object that does nothing!
 	class fakeObject {
+		var $period_short = 3600; //hour
+		var $period_med = 86400; //24h;
+		var $period_long = 604800; //7day
+		var $compress = false; //|| MEMCACHE_COMPRESSED
 		function set($key, &$val, $flag = false, $expire = 0) {return false;}
 		function get($key) {return false;}
 		function delete($key, $timeout = 0) {return false;}
@@ -198,6 +203,7 @@ function init_session()
 		//fixation, we regenerate the session id
 		//not sure if wanted: if ($_REQUEST['PHPSESSID'])
 			session_regenerate_id();
+			unset($_SESSION['CSRF_token']);
 
 		//create new user object - initially anonymous
 		$_SESSION['user'] = new GeographUser;
@@ -211,6 +217,14 @@ function init_session()
 
 	//tell apache our ID, handy for logs
 	@apache_note('user_id', $GLOBALS['USER']->user_id);
+
+	if (!isset($_SESSION['CSRF_token'])) {
+		if (function_exists('openssl_random_pseudo_bytes')) {
+			$_SESSION['CSRF_token'] = base64_encode(openssl_random_pseudo_bytes(32));
+		} else {
+			$_SESSION['CSRF_token'] = hash("sha512", mt_rand());
+		}
+	}
 }
 
 
@@ -295,6 +309,7 @@ class GeographPage extends Smarty
 		$this->register_modifier("revision", "smarty_modifier_revision");
 		$this->register_modifier("geographlinks", "smarty_function_geographlinks");
 		$this->register_modifier("ordinal", "smarty_function_ordinal");
+		$this->register_modifier("format_seconds", "smarty_modifier_format_seconds");
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
@@ -309,6 +324,7 @@ class GeographPage extends Smarty
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);
 		$this->assign_by_ref('enable_forums', $CONF['forums']);
 		$this->assign('use_google_api', !empty($CONF['google_maps_api_key']));
+		$this->assign_by_ref('CSRF_token', $_SESSION['CSRF_token']);
 
 		$this->assign('forum_announce',         $CONF['forum_announce']);
 		$this->assign('forum_generaldiscussion',$CONF['forum_generaldiscussion']);

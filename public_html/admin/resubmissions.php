@@ -57,6 +57,8 @@ if (!$db) die('Database connection failed');
 
 $smarty = new GeographPage;
 
+$altimg = !empty($_POST['altimg']) || !empty($_GET['altimg']);
+
 //doing some moderating?
 if (isset($_POST['gridimage_id']))
 {
@@ -71,15 +73,19 @@ if (isset($_POST['gridimage_id']))
 		set_time_limit(3600);
 
 		$smarty->assign('message', 'Verification saved - thank you');
+		$wheretype =  " AND type ".($altimg ? '=' : '!=')." 'altimg'";
 
 		if (!empty($_POST['broken'])) {
 			
-			$row = $db->getRow("SELECT * FROM gridimage_pending WHERE gridimage_id = {$gridimage_id} ");
+			$row = $db->getRow("SELECT * FROM gridimage_pending WHERE gridimage_id = {$gridimage_id}".$wheretype);
 			
 			//email me if we lag, but once gets big no point continuing to notify!
 			ob_start();
 			print "\n\nHost: ".`hostname -f`."\n\n";
-			print "\n\nView: http://{$_SERVER['HTTP_HOST']}/admin/resubmissions.php?review=$gridimage_id\n\n";
+			if ($altimg)
+				print "\n\nView: http://{$_SERVER['HTTP_HOST']}/admin/resubmissions.php?altimg=1&review=$gridimage_id\n\n";
+			else
+				print "\n\nView: http://{$_SERVER['HTTP_HOST']}/admin/resubmissions.php?review=$gridimage_id\n\n";
 			print_r($row);
 			print_r($_SERVER);
 			$con = ob_get_clean();
@@ -88,13 +94,14 @@ if (isset($_POST['gridimage_id']))
 			mail($CONF['admin_email'], '[Geograph] Resubmission failure!', $con, $geofrom, $envfrom);
 			
 			//unclog the queue!
-			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id} ");
+			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id}".$wheretype);
 			
 		} elseif (!empty($_POST['confirm']) || !empty($_POST['similar'])) {
+			$suffix = $altimg ? '_altimg' : '';
 
-			$image->originalUrl = 	$image->_getOriginalpath(true,false,'_original');
-			$image->previewUrl = 	$image->_getOriginalpath(true,false,'_preview');
-			$image->pendingUrl = 	$image->_getOriginalpath(true,false,'_pending');
+			$image->originalUrl = 	$image->_getOriginalpath(true, false, $altimg ? '_altimg' : '_original');
+			$image->previewUrl = 	$image->_getOriginalpath(true, false, '_preview'.$suffix);
+			$image->pendingUrl = 	$image->_getOriginalpath(true, false, '_pending'.$suffix);
 
 			//we actually hav a file to move!
 			if ($image->pendingUrl != "/photos/error.jpg") {
@@ -105,7 +112,7 @@ if (isset($_POST['gridimage_id']))
 				}
 			
 				//save the pending as original
-				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl,true);
+				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl,true,$altimg);
 			
 				if (!empty($CONF['awsAccessKey'])) {
 					
@@ -125,7 +132,7 @@ if (isset($_POST['gridimage_id']))
 						unlink($_SERVER['DOCUMENT_ROOT'].$image->previewUrl);
 					} else {
 						//store the preview as an alterantive fullsize
-						$image->storeImage($_SERVER['DOCUMENT_ROOT'].$image->previewUrl,true,'_640x640');
+						$image->storeImage($_SERVER['DOCUMENT_ROOT'].$image->previewUrl,true,$suffix.'_640x640');# FIXME?
 					}
 				}
 
@@ -137,23 +144,27 @@ if (isset($_POST['gridimage_id']))
 				$mkey = "{$gridimage_id}:F";
 				$memcache->name_delete('is',$mkey);
 
-				$db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = $gridimage_id");
+				if (!$altimg) {
+					$db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = $gridimage_id"); #FIXME delete files?
+				}
+				#FIXME altimg: size -> database?
 
 				if (!empty($_POST['confirm'])) {
-					$db->Execute("UPDATE gridimage_pending gp SET status = 'confirmed' WHERE gridimage_id = {$gridimage_id} ");
+					$db->Execute("UPDATE gridimage_pending gp SET status = 'confirmed' WHERE gridimage_id = {$gridimage_id}".$wheretype);
 				} else {
-					$db->Execute("UPDATE gridimage_pending gp SET status = 'accepted' WHERE gridimage_id = {$gridimage_id} ");
+					$db->Execute("UPDATE gridimage_pending gp SET status = 'accepted' WHERE gridimage_id = {$gridimage_id}".$wheretype);
 				}
 			} else {
 				$smarty->assign('message', 'Verification failed - please let us know!');
 			}
 		} else {
-			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id} ");
+			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id}".$wheretype);
 
 		} 
 
 
 		$smarty->assign("last_id", $gridimage_id);
+		$smarty->assign("altimg", $altimg);
 	}
 	else
 	{
@@ -176,17 +187,18 @@ gridimage gi READ
 # define the images to moderate
 
 if (empty($_GET['review'])) {
-
-$sql = "SELECT gi.* 
+	$wheretype =  " AND type = ".($altimg ? "'altimg'" : "'original'");
+$sql = "SELECT gi.*
 FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
 WHERE (gp.status = 'new' OR (gp.status = 'open' AND updated < DATE_SUB(NOW(),INTERVAL 1 HOUR) ) )
-AND type = 'original' 
+$wheretype
 LIMIT 1"; 
 } else {
+	$wheretype =  " AND type ".($altimg ? '=' : '!=')." 'altimg'";
 	$id = intval($_GET['review']);
-$sql = "SELECT gi.* 
+$sql = "SELECT gi.*
 FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
-WHERE gridimage_id = $id
+WHERE gridimage_id = $id $wheretype
 LIMIT 1"; 
 }
 
@@ -197,7 +209,8 @@ LIMIT 1";
 $data = $db->getRow($sql);
 
 if ($data && empty($_GET['review'])) {
-	$db->Execute("UPDATE gridimage_pending gp SET status = 'open' WHERE gridimage_id = {$data['gridimage_id']} ");
+	$wheretype =  " AND type ".($altimg ? '=' : '!=')." 'altimg'";
+	$db->Execute("UPDATE gridimage_pending gp SET status = 'open' WHERE gridimage_id = {$data['gridimage_id']}".$wheretype);
 }
 
 #############################
@@ -207,15 +220,18 @@ $db->Execute("UNLOCK TABLES");
 #############################
 
 if ($data) {
-	$image = new GridImage;
-	$image->_initFromArray(&$data);
+	$suffix = $altimg ? '_altimg' : '';
 
-	$image->pendingUrl = $image->_getOriginalpath(true,false,'_pending');
-	$image->previewUrl = $image->_getOriginalpath(true,false,'_preview');
+	$image = new GridImage;
+	$image->_initFromArray($data);
+
+	$image->pendingUrl = $image->_getOriginalpath(true,false,'_pending'.$suffix);
+	$image->previewUrl = $image->_getOriginalpath(true,false,'_preview'.$suffix);
 
 	$image->pendingSize = filesize($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
 
 	$smarty->assign_by_ref('image', $image);
+	$smarty->assign('altimg', $altimg);
 }
 
 

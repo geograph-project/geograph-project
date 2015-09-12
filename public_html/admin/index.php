@@ -66,6 +66,7 @@ if ($USER->hasPerm("moderator")) {
 	$smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
 
 	$smarty->assign('originals_new', $db->getOne("select count(*) from gridimage_pending where status = 'new' and type = 'original'"));
+	$smarty->assign('altimgs_new', $db->getOne("select count(*) from gridimage_pending where status = 'new' and type = 'altimg'"));
 }
 
 if ($USER->hasPerm("admin") || $USER->hasPerm("moderator") || $USER->hasPerm("ticketmod")) {

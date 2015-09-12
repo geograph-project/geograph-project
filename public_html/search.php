@@ -44,7 +44,7 @@ $smarty->assign('noSphinx', empty($CONF['sphinx_host']));
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
 $imagestatuses = array('geograph' => 'geograph only','accepted' => 'supplemental only');
-$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance');
+$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance','rating_info'=>'Rating (geographical information)','rating_like'=>'Rating (popular image)','rating_qual'=>'Rating (image quality)','rating_site'=>'Rating (location)', 'selfrate_like'=>'Self-rating (like)');
 $breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted',);
 
 $displayclasses =  array(
@@ -61,6 +61,13 @@ $displayclasses =  array(
 			'spelling' => 'spelling utility'
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
+
+if (strpos($_SERVER["REQUEST_URI"],'/results/') !== FALSE) {
+	$results_pages = $CONF['results_pages'];
+} else {
+	$results_pages = 0;
+}
+$smarty->assign('resultspages', $results_pages);
 
 
 if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 ) {
@@ -893,6 +900,14 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('legacy', 1);
 	}
 
+	if ($USER->hasPerm('basic')) {
+		$cacheid .= "L";
+	}
+
+	if ($results_pages) {
+		$cacheid .= "r".$results_pages;
+	}
+
 	if (!empty($_GET['t'])) {
 		$token=new Token;
 		if ($token->parse($_GET['t']) && $token->getValue("i") == $i)
@@ -915,6 +930,22 @@ if (isset($_GET['fav']) && $i) {
 		}
 
 		$smarty->assign('querytime', $engine->Execute($pg));
+
+		if ($display == 'full' && count($engine->results)) {
+			$pgsize = $engine->criteria->resultsperpage;
+			if (!$pgsize) {
+				$pgsize = 15;
+			}
+			$_SESSION['cursearch_id'] = $i;
+			$_SESSION['cursearch_pgsize'] = $pgsize;
+			$_SESSION['cursearch_minidx'] = ($pg - 1) * $pgsize;
+			$_SESSION['cursearch_maxidx'] = $_SESSION['cursearch_minidx'] + count($engine->results);
+			$_SESSION['cursearch_imageids'] = array();
+			foreach ($engine->results as &$resimage) {
+				$_SESSION['cursearch_imageids'][] = $resimage->gridimage_id;
+			}
+			unset ($resimage);
+		}
 
 		$smarty->assign('i', $i);
 		$smarty->assign('currentPage', $pg);
@@ -1014,16 +1045,23 @@ if (isset($_GET['fav']) && $i) {
 				list($lat,$long) = $conv->internal_to_wgs84($engine->criteria->x,$engine->criteria->y);
 				$markers[] = array('Center Point',$lat,$long);
 			}
-			if (preg_match_all('/\b([a-zA-Z]{1,3} ?\d{1,5}[ \.]?\d{1,5})\b/',$engine->criteria->searchdesc,$m)) {
-				$m = array_unique($m[1]);
-				foreach ($m as $gr) {
-					$sq = new GridSquare();
-					$sq->setByFullGridRef($gr,false,true);
-					list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
-					$markers[] = array($gr,$lat,$long);
-				}
-			}
+			#if (preg_match_all('/\b([a-zA-Z]{1,3} ?\d{1,5}[ \.]?\d{1,5})\b/',$engine->criteria->searchdesc,$m)) {
+			#	# FIXME this matches also some user names...
+			#	$m = array_unique($m[1]);
+			#	foreach ($m as $gr) {
+			#		$sq = new GridSquare();
+			#		$sq->setByFullGridRef($gr,false,true);
+			#		list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
+			#		$markers[] = array($gr,$lat,$long);
+			#	}
+			#}
 			$smarty->assign_by_ref('markers',$markers);
+			$smarty->assign('lat0',   $CONF['gmcentre'][0]);
+			$smarty->assign('lon0',   $CONF['gmcentre'][1]);
+			$smarty->assign('latmin', $CONF['gmlatrange'][0][0]);
+			$smarty->assign('latmax', $CONF['gmlatrange'][0][1]);
+			$smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);
+			$smarty->assign('lonmax', $CONF['gmlonrange'][0][1]);
 		}
 	}
 

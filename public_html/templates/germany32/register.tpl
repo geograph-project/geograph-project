@@ -24,9 +24,14 @@
 
 	</p>
 
+{elseif $confirmation_status eq "expired"}
+	<p>Your previous registration has been expired for security reasons.
+	Please
+	<a title="Register here" href="/register.php">sign up</a> again.</p>
+
 {elseif $confirmation_status eq "alreadycomplete"}
 	<p>You have already completed the registration confirmation - please
-	<a title="Login in here" href="/login.php">log in</a> using your username and password</p>
+	<a title="Log in here" href="/login.php">log in</a> using your username and password</p>
 
 {elseif $confirmation_status eq "fail"}
 	<p>Sorry, there was a problem confirming your registration.
@@ -34,6 +39,13 @@
 {else}
 
 	<form action="register.php" method="post">
+	<input type="hidden" name="CSRF_token" value="{$CSRF_token}" />
+
+	{if $errors.csrf}
+	<div class="interestBox" style="background-color:yellow; color:black; border:2px solid orange; padding:5px; font-size:0.9em">
+	Your input could not be processed due to <a href="/help/csrf">security reasons</a>. Please verify the below form and try again.
+	</div>
+	{/if}
 
 	<p>You must register before you can upload photos, but it's quick
 	and painless and free. </p>

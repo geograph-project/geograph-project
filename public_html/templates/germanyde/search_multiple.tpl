@@ -5,7 +5,7 @@
 {dynamic}
 <p>In your search for images<i>{$searchdesc|escape:"html"}</i>.</p>
 
-<p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq|escape:"html"}': {if count($criteria->matches) > 0}<small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>, or click a grid reference to go directly to that square)</small>{/if}</p>
+<p>We have found the following possible match{if count($criteria->matches) > 1}es{/if} for '{$criteria->searchq|escape:"html"}': {*if count($criteria->matches) > 0}<small>(hover over a placename for the <a href="/faq.php#counties">historic county</a>, or click a grid reference to go directly to that square)</small>{/if*}</p>
 
 <form action="{$script_name}" method="post">
 
@@ -70,10 +70,10 @@
 	</ul></div>
 {/if}
 
-<div class="copyright">Great Britain locations based upon 1:50 000 Scale Gazetteer with the permission of Ordnance Survey on behalf of The Controller of Her Majesty's Stationery Office,<br/>
+{*<div class="copyright">Great Britain locations based upon 1:50 000 Scale Gazetteer with the permission of Ordnance Survey on behalf of The Controller of Her Majesty's Stationery Office,<br/>
 &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.<br/>
 <br/>
 and enhanced with the Gazetteer of British Place Names, &copy; Association of British Counties, used with permission.<br/><br/>
-Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}, Copyright MetaCarta 2006</div>
+Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}, Copyright MetaCarta 2006</div>*}
 
 {include file="_std_end.tpl"}

@@ -281,7 +281,7 @@ class GridImageNote
 		 *   5) ((immediate,approved)||$user), $ticket, newvalue   applyTickets($ticketowner, $ticketid)       getNotes($aStatus, $ticketowner, $ticketid)
 		 *
 		 *  => applyTickets($ticketowner=null, $ticketid=null, $oldvalues=false)
-		 *     getNotes($aStatus, $ticketowner=null, $ticketid=null, $oldvalues=false, $noteids = null, $exclude = null)
+		 *     getNotes($aStatus, $orderdesc = false, $ticketowner=null, $ticketid=null, $oldvalues=false, $noteids = null, $exclude = null, $aStatusTickets = null)
 		 */
 		if (is_null($ticketowner) && is_null($ticketid)) {
 			return;

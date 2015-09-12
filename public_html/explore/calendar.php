@@ -133,34 +133,60 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('blank', 1);
 		} else {
 			if (isset($_GET['both'])) {
-				$where = " AND submitted LIKE CONCAT(imagetaken,' %')";
+				$where1 = " AND submitted LIKE CONCAT(imagetaken,' %')";
 			} else {
-				$where = "";
+				$where1 = "";
 			}
+			$geosupp = false;
 			if (isset($_GET['geo'])) {
-				$where .= " AND moderation_status = 'geograph'";
+				$where2 = " AND moderation_status = 'geograph'";
 			} elseif (isset($_GET['supp'])) {
-                                $where .= " AND moderation_status = 'accept'";
+				$where2 = " AND moderation_status = 'accepted'";
+			} else {
+				$where2 = " AND moderation_status in ('geograph','accepted')";
+				$geosupp = true;
 			}
 			if ($uid) {
-				$where .= " AND user_id = $uid";
+				$where1 .= " AND user_id = $uid";
 			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-			$images=&$db->GetAssoc($sql= "SELECT 
-			imagetaken, 
-			gridimage_id, title, user_id, realname, grid_reference,
-			COUNT(*) AS images,
-			SUM(moderation_status = 'accepted') AS `supps`
-			FROM `gridimage_search`
-			WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where
-			GROUP BY imagetaken" );
-			if (!empty($_GET['debug'])) {
-				print "<pre>$sql</pre>";
+			#gridimage_id, title, user_id, realname, grid_reference,
+			$sql = "SELECT 
+				imagetaken,
+				MIN(gridimage_id) as gridimage_id,
+				COUNT(*) AS images,
+				SUM(moderation_status = 'accepted') AS `supps`
+				FROM `gridimage_search`
+				WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where1 $where2
+				GROUP BY imagetaken";
+			#trigger_error("---$sql", E_USER_WARNING);
+			#if (!empty($_GET['debug'])) {
+			#	print "<pre>$sql</pre>";
+			#}
+			$images=&$db->GetAssoc($sql);
+			if ($geosupp) {
+				$sql = "SELECT 
+					imagetaken,
+					MIN(gridimage_id) as gridimage_id
+					FROM `gridimage_search`
+					WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where1 AND moderation_status = 'geograph'
+					GROUP BY imagetaken";
+				#trigger_error("---$sql", E_USER_WARNING);
+				$geographs=&$db->GetAssoc($sql);
+				foreach ($geographs as $day=>$imageid) {
+					if (isset($images[$day])) {
+						$images[$day]['gridimage_id'] = $imageid;
+						#trigger_error("{$images[$day]['gridimage_id']} {$imageid} {$day}", E_USER_WARNING);
+					}
+				}
+				unset($arr);
 			}
-			foreach ($images as $day=>$arr) {
+			foreach ($images as $day=>&$arr) {
+				$arr += $db->GetRow("SELECT title, user_id, realname, grid_reference FROM `gridimage_search` WHERE gridimage_id='{$arr['gridimage_id']}'");
 				if ($maximages < $arr['images'])
 					$maximages = $arr['images'];
 			}
+			unset($arr);
 		}
 	
 		$timeStamp = mktime(0, 0, 0, $month, 1, $year);
@@ -255,7 +281,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					if ($dayNumber > 0) {
 						$day['number'] = $dayNumber;
 						$day['key'] = sprintf("%04d-%02d-%02d",$year,$month,$dayNumber);
-						if ($images[$day['key']]) {
+						if (isset($images[$day['key']])) {
 							$day['image']=new GridImage();
 							$day['image']->fastInit($images[$day['key']]);	
 							$day['image']->compact();

@@ -1,0 +1,94 @@
+/* Content boxes */
+.panel {
+ /* border:2px solid #992233; */
+  background-color:#eeeeee;
+}
+
+.mini { /* small floating box for overview pages */
+  margin-right:10px;
+  margin-bottom:10px;
+  float:left;
+}
+
+.mini h3,h4 {
+  margin:0px;
+  text-align:center;
+}
+
+.mini p {
+  width:400px;
+}
+
+.mini hr {
+  margin:1px;
+}
+
+.maxi { /* full width box */
+  margin-right:10px;
+  margin-bottom:10px;
+  max-width:800px;
+}
+
+.maxi p {
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.maxi table {
+  padding-left:7px;
+  padding-right:7px;
+}
+
+.maxi h3 {
+  text-align:center;
+}
+
+.maxi div ul li {    /* make sure bullets don't overlap with floating image box to the left */
+  list-style-position:inside;
+}
+
+/* small box inside a panel */
+.inner {
+  border:1px solid #992233;
+  margin:5px;
+  padding:2px;
+}
+
+.inner a {
+  white-space:nowrap;
+}
+
+/* floating images inside panels */
+.flt_r {
+  float:right;
+  margin-left:5px;
+}
+
+/* row within a panel */
+.row {
+  clear:both;
+}
+
+/* floating images inside panels */
+.flt_r {
+  float:right;
+  margin-left:5px;
+}
+
+.flt_l {
+  float:left;
+  margin-right:5px;
+}
+
+/* Highlighted box */
+.hlt {  /* Highlighted box */
+  background-color:#ffcc88;
+}
+
+/* Table with rules=all in old money */
+.ruled {
+  border-collapse:collapse;
+}
+.ruled td,th {
+  border:1px solid #992233;
+}

@@ -36,6 +36,7 @@
 * Needs the GeographMap class, so we pull that in here
 */
 require_once('geograph/map.class.php');
+include_messages('class_mapmosaic');
 
 /**
 * Geograph Bounding Box class
@@ -807,7 +808,7 @@ class GeographMapMosaic
 	*/
 	function getUpdateDateString()
 	{
-		global $CONF;
+		global $MESSAGES;
 		$root=&$_SERVER['DOCUMENT_ROOT'];
 		
 		if (empty($this->imagearray))
@@ -827,15 +828,12 @@ class GeographMapMosaic
 			}
 		if ($recent) {
 			if ( abs($recent-$oldest) < 1000) {
-				if ($CONF['lang'] == 'de')
-					return "Karten aktualisiert am ".strftime("%A, %d.%m. um %H:%M",$recent);
-				else
-					return "Maps last updated at: ".strftime("%A, %d %b at %H:%M",$recent);
+				$recent_formatted = strftime($MESSAGES['class_mapmosaic']['date_format'], $recent);
+				return sprintf($MESSAGES['class_mapmosaic']['updated_at'], $recent_formatted);
 			} else {
-				if ($CONF['lang'] == 'de')
-					return "Karten aktualisiert zwischen ".strftime("%A, %d.%m. um %H:%M",$oldest)." und ".strftime("%A, %d.%m. um %H:%M",$recent);
-				else
-					return "Maps updated between: ".strftime("%A, %d %b at %H:%M",$oldest)." and ".strftime("%A, %d %b at %H:%M",$recent);
+				$recent_formatted = strftime($MESSAGES['class_mapmosaic']['date_format'], $recent);
+				$oldest_formatted = strftime($MESSAGES['class_mapmosaic']['date_format'], $oldest);
+				return sprintf($MESSAGES['class_mapmosaic']['updated_between'], $oldest_formatted, $recent_formatted);
 			}
 		}
 	}
