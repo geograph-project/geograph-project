@@ -737,7 +737,7 @@ END;
 	 * note: it caches so can be called multiple times easily
 	 * @access public
 	 */
-	function pagesString($postfix = '',$extrahtml ='') {
+	function pagesString($postfix = '', $extrahtml = '', $resultspages = 0) {
 		static $r;
 		if (!empty($r))
 			return($r);
@@ -747,28 +747,62 @@ END;
 		if (!empty($_GET['legacy'])) { //todo - technically a bodge!
 			$postfix .= "&amp;legacy=true";
 		}
-		if ($this->currentPage > 1) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."$postfix\"$extrahtml>&lt; &lt; prev</a> ";
+		if ($this->currentPage > 1) {
+			if ($resultspages < $this->currentPage-1) {
+				$uri = "/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1);
+			} elseif ($this->currentPage == 2) {
+				$uri = "/results/{$this->query_id}";
+			} else {
+				$uri = "/results/{$this->query_id}/".($this->currentPage-1);
+			}
+			$r .= "<a href=\"$uri$postfix\"$extrahtml>&lt; &lt; prev</a> ";
+		}
 		$start = max(1,$this->currentPage-5);
 		$endr = min($this->numberOfPages+1,$this->currentPage+8);
 		
-		if ($start > 1)
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=1$postfix\"$extrahtml>1</a> ... ";
+		if ($start > 1) {
+			if ($resultspages < 1) {
+				$uri = "/{$this->page}?i={$this->query_id}&amp;page=1";
+			} else {
+				$uri = "/results/{$this->query_id}";
+			}
+			$r .= "<a href=\"$uri$postfix\"$extrahtml>1</a> ... ";
+		}
 
 		for($index = $start;$index<$endr;$index++) {
-			if ($index == $this->currentPage && !$this->countOnly) 
+			if ($index == $this->currentPage && !$this->countOnly)
 				$r .= "<b>$index</b> "; 
-			else
-				$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index$postfix\"$extrahtml>$index</a> ";
+			else {
+				if ($resultspages < $index) {
+					$uri = "/{$this->page}?i={$this->query_id}&amp;page=$index";
+				} elseif ($index == 1) {
+					$uri = "/results/{$this->query_id}";
+				} else {
+					$uri = "/results/{$this->query_id}/$index";
+				}
+				$r .= "<a href=\"$uri$postfix\"$extrahtml>$index</a> ";
+			}
 		}
 		if ($endr < $this->numberOfPages+1 || $this->pageOneOnly) 
 			$r .= "... ";
 			
-		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."$postfix\"$extrahtml>next &gt;&gt;</a> ";
+		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) {
+			if ($resultspages < $this->currentPage+1) {
+				$uri = "/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1);
+			} else {
+				$uri = "/results/{$this->query_id}/".($this->currentPage+1);
+			}
+			$r .= "<a href=\"$uri$postfix\"$extrahtml>next &gt;&gt;</a> ";
+		}
 	
-		if ( $this->fullText && empty($_GET['legacy']) && $this->currentPage < $this->numberOfPages && $this->resultCount <= $this->maxResults ) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->numberOfPages)."$postfix\"$extrahtml>last</a> ";
+		if ( $this->fullText && empty($_GET['legacy']) && $this->currentPage < $this->numberOfPages && $this->resultCount <= $this->maxResults ) {
+			if ($resultspages < $this->numberOfPages) {
+				$uri = "/{$this->page}?i={$this->query_id}&amp;page=".($this->numberOfPages);
+			} else {
+				$uri = "/results/{$this->query_id}/".($this->numberOfPages);
+			}
+			$r .= "<a href=\"$uri$postfix\"$extrahtml>last</a> ";
+		}
 		return $r;	
 	}
 	

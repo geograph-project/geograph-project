@@ -62,6 +62,13 @@ $displayclasses =  array(
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
+if (strpos($_SERVER["REQUEST_URI"],'/results/') !== FALSE) {
+	$results_pages = $CONF['results_pages'];
+} else {
+	$results_pages = 0;
+}
+$smarty->assign('resultspages', $results_pages);
+
 
 if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 ) {
         header("HTTP/1.1 503 Service Unavailable");
@@ -895,6 +902,10 @@ if (isset($_GET['fav']) && $i) {
 
 	if ($USER->hasPerm('basic')) {
 		$cacheid .= "L";
+	}
+
+	if ($results_pages) {
+		$cacheid .= "r".$results_pages;
 	}
 
 	if (!empty($_GET['t'])) {
