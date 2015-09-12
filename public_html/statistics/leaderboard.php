@@ -470,9 +470,9 @@ if (!$smarty->is_cached($template, $cacheid))
 			} else {
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
 				$points += $entry['points'];
-				if ($points && empty($entry['points'])) $topusers[$user_id]['points'] = '';
+				#if ($points && empty($entry['points'])) $topusers[$idx]['points'] = ''; // this would also be needed in the other branch
 				$images += $entry['images'];
-				if ($images && empty($entry['images'])) $topusers[$user_id]['images'] = '';
+				#if ($images && empty($entry['images'])) $topusers[$idx]['images'] = '';
 			}
 			$lastimgcount = $entry['imgcount'];
 			$lastrank = $i;
