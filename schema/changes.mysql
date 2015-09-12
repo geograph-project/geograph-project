@@ -787,3 +787,8 @@ ALTER TABLE `geotrips` ADD INDEX (`contfrom`);
 ALTER TABLE `geotrips` CHANGE `updated` `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
 
 ALTER TABLE `gridimage_pending` CHANGE `type` `type` enum('picnik','original','altimg') default 'picnik';
+
+ALTER TABLE `sessions` CHANGE `SESSKEY` `SESSKEY` varchar(64) NOT NULL DEFAULT '';
+
+ALTER TABLE `sessions` CHANGE `ipaddr`  `ipaddr`  varchar(45) NOT NULL DEFAULT '';
+ALTER TABLE `geobb_posts` CHANGE `poster_ip` `poster_ip` varchar(45) NOT NULL DEFAULT '';
