@@ -83,6 +83,10 @@ if (!empty($CONF['memcache']['app'])) {
 } else {
 	//need lightweight fake object that does nothing!
 	class fakeObject {
+		var $period_short = 3600; //hour
+		var $period_med = 86400; //24h;
+		var $period_long = 604800; //7day
+		var $compress = false; //|| MEMCACHE_COMPRESSED
 		function set($key, &$val, $flag = false, $expire = 0) {return false;}
 		function get($key) {return false;}
 		function delete($key, $timeout = 0) {return false;}
