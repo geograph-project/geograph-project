@@ -203,6 +203,7 @@ function init_session()
 		//fixation, we regenerate the session id
 		//not sure if wanted: if ($_REQUEST['PHPSESSID'])
 			session_regenerate_id();
+			unset($_SESSION['CSRF_token']);
 
 		//create new user object - initially anonymous
 		$_SESSION['user'] = new GeographUser;
@@ -216,6 +217,14 @@ function init_session()
 
 	//tell apache our ID, handy for logs
 	@apache_note('user_id', $GLOBALS['USER']->user_id);
+
+	if (!isset($_SESSION['CSRF_token'])) {
+		if (function_exists('openssl_random_pseudo_bytes')) {
+			$_SESSION['CSRF_token'] = base64_encode(openssl_random_pseudo_bytes(32));
+		} else {
+			$_SESSION['CSRF_token'] = hash("sha512", mt_rand());
+		}
+	}
 }
 
 
@@ -314,6 +323,7 @@ class GeographPage extends Smarty
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);
 		$this->assign_by_ref('enable_forums', $CONF['forums']);
 		$this->assign('use_google_api', !empty($CONF['google_maps_api_key']));
+		$this->assign_by_ref('CSRF_token', $_SESSION['CSRF_token']);
 
 		$this->assign('forum_announce',         $CONF['forum_announce']);
 		$this->assign('forum_generaldiscussion',$CONF['forum_generaldiscussion']);
