@@ -700,14 +700,15 @@ function setImgSize(large) {
 		ele = document.createElement('label');
 		//ele.for = 'note_z_' + noteid; // IE does not like this
 		ele.setAttribute('for', 'note_z_' + noteid);
-		ele.appendChild(document.createTextNode('z:'));
+		ele.appendChild(document.createTextNode('Layer:'));
 		formp.appendChild(ele);
 		ele = document.createElement('select');
 		ele.name = 'note_z_' + noteid;
 		ele.id = 'note_z_' + noteid;
 		AttachEvent(ele,"change",function(){updateNoteStatus(noteid);});
 		for (var i=-10; i<=10; ++i) {
-			ele.options[i+10] = new Option(i, i, false, i==0);
+			var zdesc = i == 1 || i == 10 ? ': Foreground' : (i == -1 || i == -10 ? ': Background' : '');
+			ele.options[i+10] = new Option(i+zdesc, i, false, i==0);
 		}
 		formp.appendChild(ele);
 		formp.appendChild(document.createTextNode(' | '));
@@ -1089,10 +1090,10 @@ ie7 = true;
 	<p><b>Annotation #{$note->note_id}</b><span id="statusline_{$note->note_id}" style="padding-left:2em;white-space:nowrap">{if $note->pendingchanges}There are unmoderated changes.{/if}</span></p>
 	<form action="javascript:void(0);" id="note_form_{$note->note_id}" class="{if $note->pendingchanges}noteformpending{else}noteform{/if}">
 	<p>
-		<label for="note_z_{$note->note_id}">z:</label>
+		<label for="note_z_{$note->note_id}">Layer:</label>
 		<select name="note_z_{$note->note_id}" id="note_z_{$note->note_id}" onchange="updateNoteZ({$note->note_id});">
 		{section name=zloop start=0 loop=21}{* no negative values... *}
-			<option value="{$smarty.section.zloop.index-10}"{if $smarty.section.zloop.index-10==$note->z} selected="selected"{/if}>{$smarty.section.zloop.index-10}</option>
+			<option value="{$smarty.section.zloop.index-10}"{if $smarty.section.zloop.index-10==$note->z} selected="selected"{/if}>{$smarty.section.zloop.index-10}{if $smarty.section.zloop.first||$smarty.section.zloop.index-10==-1}: Background{/if}{if $smarty.section.zloop.last||$smarty.section.zloop.index-10==1}: Foreground{/if}</option>
 		{/section}
 		</select> |
 		<label for="note_status_{$note->note_id}">status:</label>
