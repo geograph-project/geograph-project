@@ -42,7 +42,7 @@ if (empty($CONF['disable_discuss_thumbs']) && preg_match_all('/\[\[(\[?)([a-z]+:
 					if ($g_matches[1][$i]) {
 						$g_img = $g_image->getThumbnail(120,120,false,true);
 						#$g_img = preg_replace('/alt="(.*?)"/','alt="'.$g_image->grid_reference.' : \1 by '.$g_image->realname.'"',$g_img);
-						$g_title=$g_image->grid_reference.' : '.htmlentities($g_image->title).' by '.$g_image->realname;
+						$g_title=$g_image->grid_reference.' : '.htmlentities_latin($g_image->title).' by '.htmlentities_latin($g_image->realname);
 						$postText2 = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$postText2);
 					} else {
 						$postText2 = preg_replace("/(?<!\[)\[\[$prefix$g_id\]\]/","{<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\">{$g_image->grid_reference} : {$g_image->title}</a>}",$postText2);

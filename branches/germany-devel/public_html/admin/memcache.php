@@ -86,7 +86,7 @@ if (isset($_GET['getExtendedStats'])) {
 		$v = $memcache->name_get($namespace,intval($_GET['post_id']));
 		print "return value:";
 		print "<pre>";
-		print htmlentities(print_r($v,true));
+		print htmlentities_latin(print_r($v,true));
 		print "</pre>";
 	} elseif ($_GET['action'] == 'delete') {
 		$ok = $memcache->name_delete($namespace,intval($_GET['post_id']))?1:0;
@@ -101,7 +101,7 @@ if (isset($_GET['getExtendedStats'])) {
 	if ($_GET['action'] == 'view') {
 		$v = $memcache->name_get($namespace,intval($_GET['image_id']).':'.$size);
 		print "<pre>";
-		print htmlentities(print_r($v,true));
+		print htmlentities_latin(print_r($v,true));
 		print "</pre>";
 	} elseif ($_GET['action'] == 'delete') {
 		$ok = $memcache->name_delete($namespace,intval($_GET['image_id']).':'.$size);

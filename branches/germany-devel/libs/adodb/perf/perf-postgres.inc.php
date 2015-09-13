@@ -107,7 +107,7 @@ class perf_postgres extends adodb_perf{
 			}
 		}
 		$sql = str_replace('?',"''",$sql);
-		$s = '<p><b>Explain</b>: '.htmlspecialchars($sql).'</p>';
+		$s = '<p><b>Explain</b>: '.htmlspecialchars_latin($sql).'</p>';
 		$rs = $this->conn->Execute('EXPLAIN '.$sql);
 		$this->conn->LogSQL($save);
 		$s .= '<pre>';

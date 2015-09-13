@@ -246,15 +246,15 @@ class RestAPI
 					echo '<status state="ok"/>';
 
 					echo '<title>'.xmlentities($image->title).'</title>';
-					echo '<gridref>'.htmlentities($image->grid_reference).'</gridref>';
+					echo '<gridref>'.htmlentities_latin($image->grid_reference).'</gridref>';
 					echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".xmlentities($image->realname).'</user>';
 
 					echo preg_replace('/alt=".*?" /','',$image->getFull());
 
 					$details = $image->getThumbnail(120,120,2);
 					echo '<thumbnail>'.$details['server'].$details['url'].'</thumbnail>';
-					echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
-					echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
+					echo '<taken>'.htmlentities_latin($image->imagetaken).'</taken>';
+					echo '<submitted>'.htmlentities_latin($image->submitted).'</submitted>';
 					echo '<category>'.xmlentities($image->imageclass).'</category>';
 					echo '<comment><![CDATA['.xmlentities($image->comment).']]></comment>';
 					
@@ -467,8 +467,8 @@ class RestAPI
 						{
 							echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
 
-							echo ' <title>'.utf8_encode(htmlentities($image->title)).'</title>';
-							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".utf8_encode(htmlentities($image->realname)).'</user>';
+							echo ' <title>'.utf8_encode(htmlentities_latin($image->title)).'</title>';
+							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".utf8_encode(htmlentities_latin($image->realname)).'</user>';
 
 							echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
 							
@@ -570,7 +570,7 @@ class RestAPI
                                         echo '<status state="ok"/>'."\n";
 
 					foreach ($square as $key => $value) {
-						echo " <$key>".utf8_encode(htmlentities($value))."</$key>";
+						echo " <$key>".utf8_encode(htmlentities_latin($value))."</$key>";
 					}
                                 }
 
@@ -638,17 +638,17 @@ ini_set('memory_limit', '64M');
 						{
 							echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
 
-							echo ' <title>'.utf8_encode(htmlentities($image->title)).'</title>';
-							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".utf8_encode(htmlentities($image->realname)).'</user>';
+							echo ' <title>'.utf8_encode(htmlentities_latin($image->title)).'</title>';
+							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".utf8_encode(htmlentities_latin($image->realname)).'</user>';
 
 							echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
 
 							if ($more) {
-								echo '<taken>'.htmlentities($image->imagetaken).'</taken>';
-								echo '<submitted>'.htmlentities($image->submitted).'</submitted>';
+								echo '<taken>'.htmlentities_latin($image->imagetaken).'</taken>';
+								echo '<submitted>'.htmlentities_latin($image->submitted).'</submitted>';
 								echo '<category>'.utf8_encode(htmlentities2($image->imageclass)).'</category>';
 								echo '<comment><![CDATA['.utf8_encode(htmlentities2($image->comment)).']]></comment>';
-								echo '<view_direction>'.htmlentities($image->view_direction).'</view_direction>';
+								echo '<view_direction>'.htmlentities_latin($image->view_direction).'</view_direction>';
 							}
 
 							echo ' <location grid="'.($square->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
@@ -696,7 +696,7 @@ ini_set('memory_limit', '64M');
 					printf("	<event start=\"%s\" title=\"%s\">%s &lt;b&gt;%s&lt;/b&gt;&lt;br/&gt; %s</event>\n",
 						date('M d Y 00:00:00',$date).' GMT',
 						htmlentities2($image->title),
-						htmlentities("<a href=\"/photo/{$image->gridimage_id}\">".$image->getThumbnail(120,120)."</a>"),
+						htmlentities_latin("<a href=\"/photo/{$image->gridimage_id}\">".$image->getThumbnail(120,120)."</a>"),
 						$image->grid_reference,
 						htmlentities2(GeographLinks($image->comment))
 					);
@@ -757,7 +757,7 @@ ini_set('memory_limit', '64M');
 		} else {
 			echo '<status state="failed">';
 			echo '<error code="400">';
-			echo '<message>'.htmlentities($msg).'</message>';
+			echo '<message>'.htmlentities_latin($msg).'</message>';
 			echo '</error>';
 			echo '</status>';
 		}

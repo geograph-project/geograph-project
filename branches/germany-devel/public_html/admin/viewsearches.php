@@ -104,13 +104,13 @@ function dump_sql_table($sql,$title,$autoorderlimit = true) {
 	}
 	print "</TR><TR>";
 	foreach ($row as $key => $value) {
-		print "<TD>$value</TD>";
+		print "<TD>".htmlspecialchars_latin($value)."</TD>";
 	}
 	print "</TR>";
 	while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
 		print "<TR>";
 		foreach ($row as $key => $value) {
-			print "<TD>$value</TD>";
+			print "<TD>".htmlspecialchars_latin($value)."</TD>";
 		}
 		print "</TR>";
 	}
