@@ -35,7 +35,7 @@ if (!empty($_GET['ri'])) {
 		if (!empty($_GET['pid'])) {
 			$url = "/search.php?placename=".intval($_GET['pid'])."&do=1";
 			header("Location: $url");
-			print "<a href=\"".htmlentities($url)."\">Continue to Search</a>";
+			print "<a href=\"".htmlentities_latin($url)."\">Continue to Search</a>";
 			exit;
 			//should never return!
 		}

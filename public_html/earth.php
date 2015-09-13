@@ -111,7 +111,7 @@ if (count($images->results)) {
 
 		$item->thumb = $details['server'].$details['url']; 
 		$item->thumbTag = $details['html'];
-		$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($img->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
+		$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars_latin($img->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
 
 		$rss->addItem($item);
 	}

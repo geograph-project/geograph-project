@@ -149,16 +149,16 @@ function diff2table($old, $new){
 		} elseif(is_array($k)) {
 			if (!empty($k['d'])) {
 				foreach ($k['d'] as $l)
-					$ret[] = "<tr class=\"old\"><td>$nr1</td><td></td><td>-</td><td class=\"code\">".htmlentities($l)."</td></tr>";
+					$ret[] = "<tr class=\"old\"><td>$nr1</td><td></td><td>-</td><td class=\"code\">".htmlentities_latin($l)."</td></tr>";
 				$nr1+=count($k['d']);
 			}
 			if (!empty($k['i'])) {
 				foreach ($k['i'] as $l)
-					$ret[] = "<tr class=\"new\"><td></td><td>$nr2</td><td>+</td><td class=\"code\">".htmlentities($l)."</td></tr>";
+					$ret[] = "<tr class=\"new\"><td></td><td>$nr2</td><td>+</td><td class=\"code\">".htmlentities_latin($l)."</td></tr>";
 				$nr2+=count($k['i']);
 			}
 		} else {
-			$ret[] = "<tr><td>$nr1</td><td>$nr2</td><td></td><td class=\"code\">".htmlentities($k)."</td></tr>";
+			$ret[] = "<tr><td>$nr1</td><td>$nr2</td><td></td><td class=\"code\">".htmlentities_latin($k)."</td></tr>";
 			$nr1++;
 			$nr2++;
 		}

@@ -57,7 +57,7 @@ GLOBAL $gSQLMaxRows,$gSQLBlockRows,$ADODB_ROUND;
 		$field = $rs->FetchField($i);
 		if ($field) {
 			if ($zheaderarray) $fname = $zheaderarray[$i];
-			else $fname = htmlspecialchars($field->name);	
+			else $fname = htmlspecialchars_latin($field->name);	
 			$typearr[$i] = $rs->MetaType($field->type,$field->max_length);
  			//print " $field->name $field->type $typearr[$i] ";
 		} else {
@@ -124,7 +124,7 @@ GLOBAL $gSQLMaxRows,$gSQLBlockRows,$ADODB_ROUND;
 			*/
 
 			default:
-				if ($htmlspecialchars) $v = htmlspecialchars(trim($v));
+				if ($htmlspecialchars) $v = htmlspecialchars_latin(trim($v));
 				$v = trim($v);
 				if (strlen($v) == 0) $v = '&nbsp;';
 				$s .= "	<TD>". str_replace("\n",'<br>',stripslashes($v)) ."</TD>\n";

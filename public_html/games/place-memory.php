@@ -113,7 +113,7 @@ if (isset($_GET['check'])) {
 		$rastermap = new RasterMap($square,false,$square->natspecified);
 		
 		print $rastermap->getImageTag();
-		print '<br/>Map for <b>'.htmlspecialchars($_GET['grid_reference']).'</b>';
+		print '<br/>Map for <b>'.htmlspecialchars_latin($_GET['grid_reference']).'</b>';
 		exit;	
 	} else {
 		die('<span style="color:red">Please enter a Grid Reference</span>');

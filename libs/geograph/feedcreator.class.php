@@ -883,18 +883,18 @@ class RSSCreator10 extends FeedCreator {
 			$feed.= "    xmlns:georss=\"http://www.georss.org/georss\"\n";
 		$feed.= "    xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
 		$feed.= "    <channel rdf:about=\"".$this->syndicationURL."\">\n";
-		$feed.= "        <title>".htmlspecialchars($this->title)."</title>\n";
-		$feed.= "        <description>".htmlspecialchars($this->description)."</description>\n";
+		$feed.= "        <title>".htmlspecialchars_latin($this->title)."</title>\n";
+		$feed.= "        <description>".htmlspecialchars_latin($this->description)."</description>\n";
 		$feed.= "        <link>".$this->link."</link>\n";
 		if ($this->image!=null) {
 			$feed.= "        <image rdf:resource=\"".$this->image->url."\" />\n";
 		}
 		$now = new FeedDate();
-		$feed.= "       <dc:date>".htmlspecialchars($now->iso8601())."</dc:date>\n";
+		$feed.= "       <dc:date>".htmlspecialchars_latin($now->iso8601())."</dc:date>\n";
 		$feed.= "        <items>\n";
 		$feed.= "            <rdf:Seq>\n";
 		for ($i=0;$i<count($this->items);$i++) {
-			$feed.= "                <rdf:li rdf:resource=\"".htmlspecialchars($this->items[$i]->link)."\"/>\n";
+			$feed.= "                <rdf:li rdf:resource=\"".htmlspecialchars_latin($this->items[$i]->link)."\"/>\n";
 		}
 		$feed.= "            </rdf:Seq>\n";
 		$feed.= "        </items>\n";
@@ -909,28 +909,28 @@ class RSSCreator10 extends FeedCreator {
 		$feed.= $this->_createAdditionalElements($this->additionalElements, "    ");
 		
 		for ($i=0;$i<count($this->items);$i++) {
-			$feed.= "    <item rdf:about=\"".htmlspecialchars($this->items[$i]->link)."\">\n";
+			$feed.= "    <item rdf:about=\"".htmlspecialchars_latin($this->items[$i]->link)."\">\n";
 			//$feed.= "        <dc:type>Posting</dc:type>\n";
 			$feed.= "        <dc:format>text/html</dc:format>\n";
 			if ($this->items[$i]->date!=null) {
 				$itemDate = new FeedDate($this->items[$i]->date);
-				$feed.= "        <dc:date>".htmlspecialchars($itemDate->iso8601())."</dc:date>\n";
+				$feed.= "        <dc:date>".htmlspecialchars_latin($itemDate->iso8601())."</dc:date>\n";
 			}
 			if ($this->items[$i]->source!="") {
-				$feed.= "        <dc:source>".htmlspecialchars($this->items[$i]->source)."</dc:source>\n";
+				$feed.= "        <dc:source>".htmlspecialchars_latin($this->items[$i]->source)."</dc:source>\n";
 			}
 			if ($this->items[$i]->author!="") {
-				$feed.= "        <dc:creator>".htmlspecialchars($this->items[$i]->author)."</dc:creator>\n";
+				$feed.= "        <dc:creator>".htmlspecialchars_latin($this->items[$i]->author)."</dc:creator>\n";
 			}
 			if ($this->items[$i]->lat!="") {
 				$feed.= "        <georss:point>".$this->items[$i]->lat." ".$this->items[$i]->long."</georss:point>\n";
 			}
 			if ($this->items[$i]->thumb!="") {
-				$feed.= "        <photo:thumbnail>".htmlspecialchars($this->items[$i]->thumb)."</photo:thumbnail>\n";
+				$feed.= "        <photo:thumbnail>".htmlspecialchars_latin($this->items[$i]->thumb)."</photo:thumbnail>\n";
 			}
-			$feed.= "        <title>".htmlspecialchars(strip_tags(strtr($this->items[$i]->title,"\n\r","  ")))."</title>\n";
-			$feed.= "        <link>".htmlspecialchars($this->items[$i]->link)."</link>\n";
-			$feed.= "        <description>".htmlspecialchars($this->items[$i]->description)."</description>\n";
+			$feed.= "        <title>".htmlspecialchars_latin(strip_tags(strtr($this->items[$i]->title,"\n\r","  ")))."</title>\n";
+			$feed.= "        <link>".htmlspecialchars_latin($this->items[$i]->link)."</link>\n";
+			$feed.= "        <description>".htmlspecialchars_latin($this->items[$i]->description)."</description>\n";
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
 			$feed.= "    </item>\n";
 		}
@@ -994,7 +994,7 @@ class RSSCreator091 extends FeedCreator {
 		} else {
 			$feed.= "    <channel>\n";
 		}
-		$feed.= "        <title>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</title>\n";
+		$feed.= "        <title>".FeedCreator::iTrunc(htmlspecialchars_latin($this->title),100)."</title>\n";
 		$this->descriptionTruncSize = 500;
 		$feed.= "        <description>".$this->getDescription()."</description>\n";
 		$feed.= "        <link>".$this->link."</link>\n";
@@ -1011,13 +1011,13 @@ class RSSCreator091 extends FeedCreator {
 			$feed.= "        <atom:link href=\"".$this->nextURL."\" rel=\"next\" type=\"".$this->contentType."\" />\n";
 		}
 		$now = new FeedDate();
-		$feed.= "        <lastBuildDate>".htmlspecialchars($now->rfc822())."</lastBuildDate>\n";
+		$feed.= "        <lastBuildDate>".htmlspecialchars_latin($now->rfc822())."</lastBuildDate>\n";
 		$feed.= "        <generator>".FEEDCREATOR_VERSION."</generator>\n";
 
 		if ($this->image!=null) {
 			$feed.= "        <image>\n";
 			$feed.= "            <url>".$this->image->url."</url>\n"; 
-			$feed.= "            <title>".FeedCreator::iTrunc(htmlspecialchars($this->image->title),100)."</title>\n"; 
+			$feed.= "            <title>".FeedCreator::iTrunc(htmlspecialchars_latin($this->image->title),100)."</title>\n"; 
 			$feed.= "            <link>".$this->image->link."</link>\n";
 			if ($this->image->width!="") {
 				$feed.= "            <width>".$this->image->width."</width>\n";
@@ -1034,81 +1034,81 @@ class RSSCreator091 extends FeedCreator {
 			$feed.= "        <language>".$this->language."</language>\n";
 		}
 		if ($this->copyright!="") {
-			$feed.= "        <copyright>".FeedCreator::iTrunc(htmlspecialchars($this->copyright),100)."</copyright>\n";
+			$feed.= "        <copyright>".FeedCreator::iTrunc(htmlspecialchars_latin($this->copyright),100)."</copyright>\n";
 		}
 		if ($this->editor!="") {
-			$feed.= "        <managingEditor>".FeedCreator::iTrunc(htmlspecialchars($this->editor),100)."</managingEditor>\n";
+			$feed.= "        <managingEditor>".FeedCreator::iTrunc(htmlspecialchars_latin($this->editor),100)."</managingEditor>\n";
 		}
 		if ($this->webmaster!="") {
-			$feed.= "        <webMaster>".FeedCreator::iTrunc(htmlspecialchars($this->webmaster),100)."</webMaster>\n";
+			$feed.= "        <webMaster>".FeedCreator::iTrunc(htmlspecialchars_latin($this->webmaster),100)."</webMaster>\n";
 		}
 		if ($this->pubDate!="") {
 			$pubDate = new FeedDate($this->pubDate);
-			$feed.= "        <pubDate>".htmlspecialchars($pubDate->rfc822())."</pubDate>\n";
+			$feed.= "        <pubDate>".htmlspecialchars_latin($pubDate->rfc822())."</pubDate>\n";
 		}
 		if ($this->category!="") {
-			$feed.= "        <category>".htmlspecialchars($this->category)."</category>\n";
+			$feed.= "        <category>".htmlspecialchars_latin($this->category)."</category>\n";
 		}
 		if ($this->docs!="") {
-			$feed.= "        <docs>".FeedCreator::iTrunc(htmlspecialchars($this->docs),500)."</docs>\n";
+			$feed.= "        <docs>".FeedCreator::iTrunc(htmlspecialchars_latin($this->docs),500)."</docs>\n";
 		}
 		if ($this->ttl!="") {
-			$feed.= "        <ttl>".htmlspecialchars($this->ttl)."</ttl>\n";
+			$feed.= "        <ttl>".htmlspecialchars_latin($this->ttl)."</ttl>\n";
 		}
 		if ($this->rating!="") {
-			$feed.= "        <rating>".FeedCreator::iTrunc(htmlspecialchars($this->rating),500)."</rating>\n";
+			$feed.= "        <rating>".FeedCreator::iTrunc(htmlspecialchars_latin($this->rating),500)."</rating>\n";
 		}
 		if ($this->skipHours!="") {
-			$feed.= "        <skipHours>".htmlspecialchars($this->skipHours)."</skipHours>\n";
+			$feed.= "        <skipHours>".htmlspecialchars_latin($this->skipHours)."</skipHours>\n";
 		}
 		if ($this->skipDays!="") {
-			$feed.= "        <skipDays>".htmlspecialchars($this->skipDays)."</skipDays>\n";
+			$feed.= "        <skipDays>".htmlspecialchars_latin($this->skipDays)."</skipDays>\n";
 		}
 		$feed.= $this->_createAdditionalElements($this->additionalElements, "    ");
 
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "        <item>\n";
-			$feed.= "            <title>".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100)."</title>\n";
-			$feed.= "            <link>".htmlspecialchars($this->items[$i]->link)."</link>\n";
+			$feed.= "            <title>".FeedCreator::iTrunc(htmlspecialchars_latin(strip_tags($this->items[$i]->title)),100)."</title>\n";
+			$feed.= "            <link>".htmlspecialchars_latin($this->items[$i]->link)."</link>\n";
 			$feed.= "            <description>".$this->items[$i]->getDescription()."</description>\n";
 			
 			if ($this->items[$i]->author!="" && strpos($this->items[$i]->author,'@') === FALSE) {
-				$feed.= "            <dc:creator>".htmlspecialchars($this->items[$i]->author)."</dc:creator>\n";
+				$feed.= "            <dc:creator>".htmlspecialchars_latin($this->items[$i]->author)."</dc:creator>\n";
 			} elseif ($this->items[$i]->author!="") {
-				$feed.= "            <author>".htmlspecialchars($this->items[$i]->author)."</author>\n";
+				$feed.= "            <author>".htmlspecialchars_latin($this->items[$i]->author)."</author>\n";
 			}
 			/*
 			// on hold
 			if ($this->items[$i]->source!="") {
-					$feed.= "            <source>".htmlspecialchars($this->items[$i]->source)."</source>\n";
+					$feed.= "            <source>".htmlspecialchars_latin($this->items[$i]->source)."</source>\n";
 			}
 			*/
 			if ($this->items[$i]->category!="") {
-				$feed.= "            <category>".htmlspecialchars($this->items[$i]->category)."</category>\n";
+				$feed.= "            <category>".htmlspecialchars_latin($this->items[$i]->category)."</category>\n";
 			}
 			if ($this->items[$i]->comments!="") {
-				$feed.= "            <comments>".htmlspecialchars($this->items[$i]->comments)."</comments>\n";
+				$feed.= "            <comments>".htmlspecialchars_latin($this->items[$i]->comments)."</comments>\n";
 			}
 			if ($this->items[$i]->date!="") {
 			$itemDate = new FeedDate($this->items[$i]->date);
-				$feed.= "            <pubDate>".htmlspecialchars($itemDate->rfc822())."</pubDate>\n";
+				$feed.= "            <pubDate>".htmlspecialchars_latin($itemDate->rfc822())."</pubDate>\n";
 			}
 			if ($this->items[$i]->guid!="") {
-				$feed.= "            <guid>".htmlspecialchars($this->items[$i]->guid)."</guid>\n";
+				$feed.= "            <guid>".htmlspecialchars_latin($this->items[$i]->guid)."</guid>\n";
 			}
 			if ($this->items[$i]->content!="") {
 				if ($this->items[$i]->thumb!="") {
-					$feed.= "            <media:thumbnail url=\"".htmlspecialchars($this->items[$i]->thumb)."\"/>\n";
+					$feed.= "            <media:thumbnail url=\"".htmlspecialchars_latin($this->items[$i]->thumb)."\"/>\n";
 				}
-				$feed.= "            <media:content url=\"".htmlspecialchars($this->items[$i]->content)."\"/>\n";
+				$feed.= "            <media:content url=\"".htmlspecialchars_latin($this->items[$i]->content)."\"/>\n";
 			} elseif ($this->items[$i]->thumb!="") {
-				$feed.= "            <g:image_link>".htmlspecialchars($this->items[$i]->thumb)."</g:image_link>\n";
+				$feed.= "            <g:image_link>".htmlspecialchars_latin($this->items[$i]->thumb)."</g:image_link>\n";
 			}
 			if ($this->items[$i]->lat!="") {
 				$feed.= "            <georss:point>".$this->items[$i]->lat." ".$this->items[$i]->long."</georss:point>\n";
 			}
 			if ($this->items[$i]->licence!="") {
-				$feed.= "            <creativeCommons:license>".htmlspecialchars($this->items[$i]->licence)."</creativeCommons:license>\n";
+				$feed.= "            <creativeCommons:license>".htmlspecialchars_latin($this->items[$i]->licence)."</creativeCommons:license>\n";
 			}
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
 			$feed.= "        </item>\n";
@@ -1195,7 +1195,7 @@ class KMLCreator extends FeedCreator {
 			$style = "#defaultIcon";
 		}
 		if (!isset($_GET['BBOX'])) {
-			$feed.= "<Folder>\n  <name>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</name>
+			$feed.= "<Folder>\n  <name>".FeedCreator::iTrunc(htmlspecialchars_latin($this->title),100)."</name>
   <description>".$this->getDescription()."</description>
   <visibility>1</visibility>\n";
 		}
@@ -1206,16 +1206,16 @@ class KMLCreator extends FeedCreator {
 		
 			//added here beucase description gets auto surrounded by cdata
 			if ($this->items[$i]->thumbTag!="") {
-				$this->items[$i]->description = "<a href=\"".htmlspecialchars($this->items[$i]->link)."\">".$this->items[$i]->thumbTag."</a><br/>".$this->items[$i]->description;
+				$this->items[$i]->description = "<a href=\"".htmlspecialchars_latin($this->items[$i]->link)."\">".$this->items[$i]->thumbTag."</a><br/>".$this->items[$i]->description;
 			}
 			
 			$this->items[$i]->description = "<p align=\"center\"><b>".$this->items[$i]->description."</b><br/>
 			".$this->items[$i]->licence."
-				<br/><br/><a href=\"".htmlspecialchars($this->items[$i]->link)."\">View Online</a></b>";
+				<br/><br/><a href=\"".htmlspecialchars_latin($this->items[$i]->link)."\">View Online</a></b>";
 			
 			if ($this->items[$i]->guid != '') {
 				$feed.= "
-		<Placemark id=\"".htmlspecialchars($this->items[$i]->guid)."\">";
+		<Placemark id=\"".htmlspecialchars_latin($this->items[$i]->guid)."\">";
 			} else {
 			$feed.= "
 		<Placemark>";
@@ -1235,7 +1235,7 @@ class KMLCreator extends FeedCreator {
 			<Style>
 				<IconStyle>
 					<Icon>
-						<href>".htmlspecialchars($this->items[$i]->thumb)."</href>
+						<href>".htmlspecialchars_latin($this->items[$i]->thumb)."</href>
 					</Icon>
 				</IconStyle>
 			</Style>";
@@ -1288,10 +1288,10 @@ creator=\"".FEEDCREATOR_VERSION."\"
 xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\" xmlns=\"http://www.topografix.com/GPX/1/0\">\n"; 
 
 		$now = new FeedDate();
-		$feed.= "<desc>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</desc>
+		$feed.= "<desc>".FeedCreator::iTrunc(htmlspecialchars_latin($this->title),100)."</desc>
 <author>{$http_host}</author>
-<url>".htmlspecialchars($this->link)."</url>
-<time>".htmlspecialchars($now->iso8601())."</time>
+<url>".htmlspecialchars_latin($this->link)."</url>
+<time>".htmlspecialchars_latin($now->iso8601())."</time>
 \n";
 			
 		for ($i=0;$i<count($this->items);$i++) {
@@ -1302,8 +1302,8 @@ xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com
 			$feed.= "<wpt lat=\"".$this->items[$i]->lat."\" lon=\"".$this->items[$i]->long."\">
 				<name>".$name."</name>
 				<desc>".$title."</desc>
-				<src>".htmlspecialchars($this->items[$i]->author)."</src>
-				<url>".htmlspecialchars($this->items[$i]->link)."</url>
+				<src>".htmlspecialchars_latin($this->items[$i]->author)."</src>
+				<url>".htmlspecialchars_latin($this->items[$i]->link)."</url>
 			</wpt>\n";
 		}
 		$feed .= "</gpx>\n";
@@ -1329,7 +1329,7 @@ class PHPCreator extends FeedCreator {
 	function createFeed() {
 		$feed = "<?php\n";
 		$feed.= "if (!class_exists(\"FeedItem\")) { class FeedItem {} }\n";
-		$feed.= "  \$feedTitle='".addslashes(FeedCreator::iTrunc(htmlspecialchars($this->title),100))."';\n";
+		$feed.= "  \$feedTitle='".addslashes(FeedCreator::iTrunc(htmlspecialchars_latin($this->title),100))."';\n";
 		$this->truncSize = 500;
 		$feed.= "  \$feedDescription='".addslashes($this->getDescription())."';\n";
 		$feed.= "  \$feedLink='".$this->link."';\n";
@@ -1337,20 +1337,20 @@ class PHPCreator extends FeedCreator {
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "   \$feedItem[$i] = new FeedItem();\n";
 			if ($this->items[$i]->guid!="") {
-				$feed.= "    \$feedItem[$i]->id='".htmlspecialchars($this->items[$i]->guid)."';\n";
+				$feed.= "    \$feedItem[$i]->id='".htmlspecialchars_latin($this->items[$i]->guid)."';\n";
 			}
 			$feed.= "    \$feedItem[$i]->title='".addslashes(FeedCreator::iTrunc(utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title))),100))."';\n";
-			$feed.= "    \$feedItem[$i]->link='".htmlspecialchars($this->items[$i]->link)."';\n";
-			$feed.= "    \$feedItem[$i]->date=".htmlspecialchars($this->items[$i]->date).";\n";
+			$feed.= "    \$feedItem[$i]->link='".htmlspecialchars_latin($this->items[$i]->link)."';\n";
+			$feed.= "    \$feedItem[$i]->date=".htmlspecialchars_latin($this->items[$i]->date).";\n";
 			if ($this->items[$i]->author!="") {
-				$feed.= "    \$feedItem[$i]->author='".htmlspecialchars($this->items[$i]->author)."';\n";
+				$feed.= "    \$feedItem[$i]->author='".htmlspecialchars_latin($this->items[$i]->author)."';\n";
 				if ($this->items[$i]->authorEmail!="") {
 					$feed.= "    \$feedItem[$i]->authorEmail='".$this->items[$i]->authorEmail."';\n";
 				}
 			}
 			$feed.= "    \$feedItem[$i]->description='".addslashes(utf8_encode($this->items[$i]->getDescription()))."';\n";
 			if ($this->items[$i]->thumb!="") {
-				$feed.= "    \$feedItem[$i]->thumbURL='".htmlspecialchars($this->items[$i]->thumb)."';\n";
+				$feed.= "    \$feedItem[$i]->thumbURL='".htmlspecialchars_latin($this->items[$i]->thumb)."';\n";
 			}
 		}
 		$feed .= "?>\n";
@@ -1376,22 +1376,22 @@ class PIECreator01 extends FeedCreator {
 		$feed = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<feed version=\"0.1\" xmlns=\"http://example.com/newformat#\">\n"; 
-		$feed.= "    <title>".FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</title>\n";
+		$feed.= "    <title>".FeedCreator::iTrunc(htmlspecialchars_latin($this->title),100)."</title>\n";
 		$this->truncSize = 500;
 		$feed.= "    <subtitle>".$this->getDescription()."</subtitle>\n";
 		$feed.= "    <link>".$this->link."</link>\n";
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "    <entry>\n";
 			$feed.= "        <title>".FeedCreator::iTrunc(utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title))),100)."</title>\n";
-			$feed.= "        <link>".htmlspecialchars($this->items[$i]->link)."</link>\n";
+			$feed.= "        <link>".htmlspecialchars_latin($this->items[$i]->link)."</link>\n";
 			$itemDate = new FeedDate($this->items[$i]->date);
-			$feed.= "        <created>".htmlspecialchars($itemDate->iso8601())."</created>\n";
-			$feed.= "        <issued>".htmlspecialchars($itemDate->iso8601())."</issued>\n";
-			$feed.= "        <modified>".htmlspecialchars($itemDate->iso8601())."</modified>\n";
-			$feed.= "        <id>".htmlspecialchars($this->items[$i]->guid)."</id>\n";
+			$feed.= "        <created>".htmlspecialchars_latin($itemDate->iso8601())."</created>\n";
+			$feed.= "        <issued>".htmlspecialchars_latin($itemDate->iso8601())."</issued>\n";
+			$feed.= "        <modified>".htmlspecialchars_latin($itemDate->iso8601())."</modified>\n";
+			$feed.= "        <id>".htmlspecialchars_latin($this->items[$i]->guid)."</id>\n";
 			if ($this->items[$i]->author!="") {
 				$feed.= "        <author>\n";
-				$feed.= "            <name>".htmlspecialchars($this->items[$i]->author)."</name>\n";
+				$feed.= "            <name>".htmlspecialchars_latin($this->items[$i]->author)."</name>\n";
 				if ($this->items[$i]->authorEmail!="") {
 					$feed.= "            <email>".$this->items[$i]->authorEmail."</email>\n";
 				}
@@ -1434,16 +1434,16 @@ class AtomCreator10 extends FeedCreator {
 			$feed.= " xml:lang=\"".$this->language."\"";
 		}
 		$feed.= ">\n"; 
-		$feed.= "    <title>".htmlspecialchars($this->title)."</title>\n";
-		$feed.= "    <subtitle>".htmlspecialchars($this->description)."</subtitle>\n";
-		$feed.= "    <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->link)."\"/>\n";
+		$feed.= "    <title>".htmlspecialchars_latin($this->title)."</title>\n";
+		$feed.= "    <subtitle>".htmlspecialchars_latin($this->description)."</subtitle>\n";
+		$feed.= "    <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars_latin($this->link)."\"/>\n";
 		if ($this->syndicationURL != '') {
 			$feed.= "    <link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\"/>\n";
 		}
 		
-		$feed.= "    <id>".htmlspecialchars($this->link)."</id>\n";
+		$feed.= "    <id>".htmlspecialchars_latin($this->link)."</id>\n";
 		$now = new FeedDate();
-		$feed.= "    <updated>".htmlspecialchars($now->rfc3339())."</updated>\n";
+		$feed.= "    <updated>".htmlspecialchars_latin($now->rfc3339())."</updated>\n";
 		if ($this->editor!="") {
 			$feed.= "    <author>\n";
 			$feed.= "        <name>".$this->editor."</name>\n";
@@ -1457,14 +1457,14 @@ class AtomCreator10 extends FeedCreator {
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "    <entry>\n";
 			$feed.= "        <title>".utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)))."</title>\n";
-			$feed.= "        <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->items[$i]->link)."\"/>\n";
+			$feed.= "        <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars_latin($this->items[$i]->link)."\"/>\n";
 			if ($this->items[$i]->date=="") {
 				$this->items[$i]->date = time();
 			}
 			$itemDate = new FeedDate($this->items[$i]->date);
-			$feed.= "        <updated>".htmlspecialchars($itemDate->rfc3339())."</updated>\n";
-			$feed.= "        <published>".htmlspecialchars($itemDate->rfc3339())."</published>\n";
-			$feed.= "        <id>".htmlspecialchars($this->items[$i]->link)."</id>\n";
+			$feed.= "        <updated>".htmlspecialchars_latin($itemDate->rfc3339())."</updated>\n";
+			$feed.= "        <published>".htmlspecialchars_latin($itemDate->rfc3339())."</published>\n";
+			$feed.= "        <id>".htmlspecialchars_latin($this->items[$i]->link)."</id>\n";
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
 			if ($this->items[$i]->author!="") {
 				$feed.= "        <author>\n";
@@ -1522,12 +1522,12 @@ class AtomCreator03 extends FeedCreator {
 			$feed.= " xml:lang=\"".$this->language."\"";
 		}
 		$feed.= ">\n"; 
-		$feed.= "    <title>".htmlspecialchars($this->title)."</title>\n";
-		$feed.= "    <tagline>".htmlspecialchars($this->description)."</tagline>\n";
-		$feed.= "    <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->link)."\"/>\n";
-		$feed.= "    <id>".htmlspecialchars($this->link)."</id>\n";
+		$feed.= "    <title>".htmlspecialchars_latin($this->title)."</title>\n";
+		$feed.= "    <tagline>".htmlspecialchars_latin($this->description)."</tagline>\n";
+		$feed.= "    <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars_latin($this->link)."\"/>\n";
+		$feed.= "    <id>".htmlspecialchars_latin($this->link)."</id>\n";
 		$now = new FeedDate();
-		$feed.= "    <modified>".htmlspecialchars($now->iso8601())."</modified>\n";
+		$feed.= "    <modified>".htmlspecialchars_latin($now->iso8601())."</modified>\n";
 		if ($this->editor!="") {
 			$feed.= "    <author>\n";
 			$feed.= "        <name>".$this->editor."</name>\n";
@@ -1541,15 +1541,15 @@ class AtomCreator03 extends FeedCreator {
 		for ($i=0;$i<count($this->items);$i++) {
 			$feed.= "    <entry>\n";
 			$feed.= "        <title>".utf8_encode(htmlnumericentities(strip_tags($this->items[$i]->title)))."</title>\n";
-			$feed.= "        <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars($this->items[$i]->link)."\"/>\n";
+			$feed.= "        <link rel=\"alternate\" type=\"text/html\" href=\"".htmlspecialchars_latin($this->items[$i]->link)."\"/>\n";
 			if ($this->items[$i]->date=="") {
 				$this->items[$i]->date = time();
 			}
 			$itemDate = new FeedDate($this->items[$i]->date);
-			$feed.= "        <created>".htmlspecialchars($itemDate->iso8601())."</created>\n";
-			$feed.= "        <issued>".htmlspecialchars($itemDate->iso8601())."</issued>\n";
-			$feed.= "        <modified>".htmlspecialchars($itemDate->iso8601())."</modified>\n";
-			$feed.= "        <id>".htmlspecialchars($this->items[$i]->link)."</id>\n";
+			$feed.= "        <created>".htmlspecialchars_latin($itemDate->iso8601())."</created>\n";
+			$feed.= "        <issued>".htmlspecialchars_latin($itemDate->iso8601())."</issued>\n";
+			$feed.= "        <modified>".htmlspecialchars_latin($itemDate->iso8601())."</modified>\n";
+			$feed.= "        <id>".htmlspecialchars_latin($this->items[$i]->link)."</id>\n";
 			$feed.= $this->_createAdditionalElements($this->items[$i]->additionalElements, "        ");
 			if ($this->items[$i]->author!="") {
 				$feed.= "        <author>\n";
@@ -1678,7 +1678,7 @@ class OPMLCreator extends FeedCreator {
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<opml xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
 		$feed.= "    <head>\n";
-		$feed.= "        <title>".htmlspecialchars($this->title)."</title>\n";
+		$feed.= "        <title>".htmlspecialchars_latin($this->title)."</title>\n";
 		if ($this->pubDate!="") {
 			$date = new FeedDate($this->pubDate);
 			$feed.= "         <dateCreated>".$date->rfc822()."</dateCreated>\n";
@@ -1700,8 +1700,8 @@ class OPMLCreator extends FeedCreator {
 			$title = utf8_encode(htmlnumericentities(strip_tags(strtr($this->items[$i]->title,"\n\r","  "))));
 			$feed.= " title=\"".$title."\"";
 			$feed.= " text=\"".$title."\"";
-			//$feed.= " description=\"".htmlspecialchars($this->items[$i]->description)."\"";
-			$feed.= " url=\"".htmlspecialchars($this->items[$i]->link)."\"";
+			//$feed.= " description=\"".htmlspecialchars_latin($this->items[$i]->description)."\"";
+			$feed.= " url=\"".htmlspecialchars_latin($this->items[$i]->link)."\"";
 			$feed.= "/>\n";
 		}
 		$feed.= "    </body>\n";
@@ -1790,7 +1790,7 @@ class HTMLCreator extends FeedCreator {
 		if ($this->image!=null) {
 			$imageStr = "<a href='".$this->image->link."'".$targetInsert.">".
 							"<img src='".$this->image->url."' border='0' alt='".
-							FeedCreator::iTrunc(htmlspecialchars($this->image->title),100).
+							FeedCreator::iTrunc(htmlspecialchars_latin($this->image->title),100).
 							"' align='".$this->imageAlign."' ";
 			if ($this->image->width) {
 				$imageStr .=" width='".$this->image->width. "' ";
@@ -1804,7 +1804,7 @@ class HTMLCreator extends FeedCreator {
 		
 		if ($this->title) {
 			$feedArray[] = "<div class='".$this->stylePrefix."title'><a href='".$this->link."' ".$targetInsert." class='".$this->stylePrefix."title'>".
-				FeedCreator::iTrunc(htmlspecialchars($this->title),100)."</a></div>";
+				FeedCreator::iTrunc(htmlspecialchars_latin($this->title),100)."</a></div>";
 		}
 		if ($this->getDescription()) {
 			$feedArray[] = "<div class='".$this->stylePrefix."description'>".
@@ -1825,12 +1825,12 @@ class HTMLCreator extends FeedCreator {
 				if ($this->items[$i]->link) {
 					$feedArray[] = 
 						"<div class='".$this->stylePrefix."item_title'><a href='".$this->items[$i]->link."' class='".$this->stylePrefix.
-						"item_title'".$targetInsert.">".FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100).
+						"item_title'".$targetInsert.">".FeedCreator::iTrunc(htmlspecialchars_latin(strip_tags($this->items[$i]->title)),100).
 						"</a></div>";
 				} else {
 					$feedArray[] = 
 						"<div class='".$this->stylePrefix."item_title'>".
-						FeedCreator::iTrunc(htmlspecialchars(strip_tags($this->items[$i]->title)),100).
+						FeedCreator::iTrunc(htmlspecialchars_latin(strip_tags($this->items[$i]->title)),100).
 						"</div>";
 				}
 			}

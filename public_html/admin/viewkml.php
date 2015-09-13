@@ -53,7 +53,7 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 		print "<TR>";
 		$align = "left";
 		foreach ($row as $key => $value) {
-			print "<TD ALIGN=$align>".htmlentities($value)."</TD>";
+			print "<TD ALIGN=$align>".htmlentities_latin($value)."</TD>";
 			$align = "right";
 		}
 		print "</TR>";

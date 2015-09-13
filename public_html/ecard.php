@@ -87,7 +87,7 @@ if (isset($_REQUEST['image']))
 if (!$throttle && isset($_POST['msg']))
 {
 	$ok=true;
-	$msg=htmlentities(trim(stripslashes($_POST['msg'])));
+	$msg=htmlentities_latin(trim(stripslashes($_POST['msg'])));
 	
 	$errors=array();
 	if (!isValidEmailAddress($from_email))
@@ -143,7 +143,7 @@ if (!$throttle && isset($_POST['msg']))
 			print "<form method=\"post\">";
 			foreach ($_POST as $name => $value) {
 				if ($name != 'preview') {
-					print "<input type=\"hidden\" name=\"$name\" value=\"".htmlentities($value)."\">";
+					print "<input type=\"hidden\" name=\"$name\" value=\"".htmlentities_latin($value)."\">";
 				}
 			}
 			printf($MESSAGES['ecard']['preview_html'], $to_email, $subject);

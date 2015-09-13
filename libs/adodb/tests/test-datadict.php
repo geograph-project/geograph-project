@@ -112,7 +112,7 @@ function printsqla($dbType,$sqla)
 	print "<pre>";
 	//print_r($dict->MetaTables());
 	foreach($sqla as $s) {
-		$s = htmlspecialchars($s);
+		$s = htmlspecialchars_latin($s);
 		print "$s;\n";
 		if ($dbType == 'oci8') print "/\n";
 	}
@@ -242,7 +242,7 @@ ALTER TABLE KUTU.testtable  ALTER COLUMN weight           REAL NOT NULL;
 echo "<h1>Test XML Schema</h1>";
 $ff = file('xmlschema.xml');
 echo "<pre>";
-foreach($ff as $xml) echo htmlspecialchars($xml);
+foreach($ff as $xml) echo htmlspecialchars_latin($xml);
 echo "</pre>";
 include_once('test-xmlschema.php');
 ?>

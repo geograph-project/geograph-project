@@ -31,7 +31,7 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 
 	if ($row['wgs84_lat']) {
 		$title = combineTexts($row['title'], $row['title2']);
-		$title = htmlentities($title."::".$row['grid_reference']);
+		$title = htmlentities_latin($title."::".$row['grid_reference']);
 
 		print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
 		print "<title>$title</title>\n";

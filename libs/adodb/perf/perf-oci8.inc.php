@@ -259,7 +259,7 @@ CREATE TABLE PLAN_TABLE (
 			}
 		}
 		
-		$s = "<p><b>Explain</b>: ".htmlspecialchars($sql)."</p>";	
+		$s = "<p><b>Explain</b>: ".htmlspecialchars_latin($sql)."</p>";	
 		
 		$this->conn->BeginTrans();
 		$id = "ADODB ".microtime();

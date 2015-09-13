@@ -58,20 +58,20 @@ function smarty_modifier_debug_print_var($var, $depth = 0, $length = 40)
             } elseif (null === $var) {
                 $results = 'null';
             } else {
-                $results = htmlspecialchars((string) $var);
+                $results = htmlspecialchars_latin((string) $var);
             }
             $results = '<i>' . $results . '</i>';
             break;
         case 'integer' :
         case 'float' :
-            $results = htmlspecialchars((string) $var);
+            $results = htmlspecialchars_latin((string) $var);
             break;
         case 'string' :
             $results = strtr($var, $_replace);
             if (strlen($var) > $length ) {
                 $results = substr($var, 0, $length - 3) . '...';
             }
-            $results = htmlspecialchars('"' . $results . '"');
+            $results = htmlspecialchars_latin('"' . $results . '"');
             break;
         case 'unknown type' :
         default :
@@ -79,7 +79,7 @@ function smarty_modifier_debug_print_var($var, $depth = 0, $length = 40)
             if (strlen($results) > $length ) {
                 $results = substr($results, 0, $length - 3) . '...';
             }
-            $results = htmlspecialchars($results);
+            $results = htmlspecialchars_latin($results);
     }
 
     return $results;

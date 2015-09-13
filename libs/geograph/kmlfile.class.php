@@ -349,7 +349,7 @@ class kmlPlacemark extends kmlPrimative {
 		$Style = $this->addChild('Style');
 		$IconStyle = $Style->addChild('IconStyle');
 		$Icon = $IconStyle->addChild('Icon');
-		$Icon->setItem('href',htmlspecialchars($url));
+		$Icon->setItem('href',htmlspecialchars_latin($url));
 		return $this;
 	}
 
