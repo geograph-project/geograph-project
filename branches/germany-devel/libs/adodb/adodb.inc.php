@@ -4104,7 +4104,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 					$ok = $obj->NConnect($dsna['host'], $dsna['user'], $dsna['pass'], $dsna['path']);
 					
 				if (!$ok) return $false;
-			}
+			} else { $ok = false; }
 			if ($ok && isset($GLOBALS['ADODB_MEMCACHE_OBJECT']) && $GLOBALS['ADODB_MEMCACHE_OBJECT']->valid)
 			{
 				$obj->memCache = true; /// should we use memCache instead of caching in files
