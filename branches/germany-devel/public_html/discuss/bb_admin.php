@@ -44,7 +44,7 @@ if($useSessions) {
 	else { $indexphp.='PHPSESSID='.$PHPSESSID.'&'; $bb_admin.='PHPSESSID='.$PHPSESSID.'&';}
 }
 
-include ($pathToFiles."setup_$DB.php");
+include ($pathToFiles."setup_$DBdriver.php");
 include ($pathToFiles.'bb_cookie.php');
 include ($pathToFiles."bb_functions.php");
 include ($pathToFiles."lang/$lang.php");
