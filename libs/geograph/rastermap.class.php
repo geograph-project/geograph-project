@@ -996,7 +996,11 @@ EOF;
 							mapTypeControlOptions: {
 								mapTypeIds: [ $maptypes ],
 								style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+								position: google.maps.ControlPosition.RIGHT_TOP
 							},
+							zoomControlOptions: {
+								position: google.maps.ControlPosition.LEFT_TOP
+							}
 						});
 						map.setTilt(0);
 

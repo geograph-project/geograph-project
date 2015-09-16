@@ -20,7 +20,7 @@
 
 	function GetTileUrl_Top(a, z) {
 	    //return "http://topo.openstreetmap.de/topo/" +
-	    sd = inthash("" + a.x + a.y + z, 2) == 0 ? "topo" : "topo2" ; // currently available: topo, topo2, topo3, topo4
+	    sd = "topo"; //inthash("" + a.x + a.y + z, 2) == 0 ? "topo" : "topo2" ; // currently available: topo, topo2, topo3, topo4
 	    return "http://" + sd + ".wanderreitkarte.de/topo/" +
 			z + "/" + a.x + "/" + a.y + ".png";
 	}
@@ -157,7 +157,11 @@
 			streetViewControl: false, //true,
 			mapTypeControlOptions: {
 				mapTypeIds: [google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.HYBRID, google.maps.MapTypeId.TERRAIN, "mapniks", "mapnik", "mapnikh", "topo", "cycle"],
-				style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+				style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+				position: google.maps.ControlPosition.RIGHT_TOP
+			},
+			zoomControlOptions: {
+				position: google.maps.ControlPosition.LEFT_TOP
 			}
 		});
 
