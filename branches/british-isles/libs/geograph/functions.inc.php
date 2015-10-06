@@ -319,7 +319,7 @@ function smarty_function_gridimage($params)
 	
 		$html.='<a title="'.$title.' - click to view full size image" href="/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
-		$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+		$html.='</a><div class="caption"><a href="/gridref/'.$image->grid_reference.'">'.$image->grid_reference.'</a> : <a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
 		$html.=htmlentities2($image->title).'</a> by <a href="'.$image->profile_link.'">'.htmlentities2($image->realname).'</a></div>';
 	$html.='</div>';
 
@@ -920,8 +920,8 @@ function customNoCacheHeader($type = 'nocache',$disable_auto = false) {
 function customExpiresHeader($diff,$public = false,$overwrite = false) {
 	$private = ($public)?'':', private';
 	if ($diff > 0) {
-		if (strpos($_SERVER['HTTP_USER_AGENT'], 'bingbot')!==FALSE)
-			return;
+		//if (strpos($_SERVER['HTTP_USER_AGENT'], 'bingbot')!==FALSE)
+		//	return;
 		$expires=gmstrftime("%a, %d %b %Y %H:%M:%S GMT", time()+$diff);
 		header("Expires: $expires");
 		header("Cache-Control: max-age=$diff$private",$overwrite);
@@ -973,7 +973,7 @@ function customGZipHandlerStart() {
 
 function customGZipHandlerEnd() {
 	global $encoding;
-	
+
 	$contents =& ob_get_clean();
 
 	if (isset($encoding) && $encoding) {
@@ -990,25 +990,32 @@ function customGZipHandlerEnd() {
 	header('Content-Length: '.strlen($contents));
 	echo $contents;
 }
- 
+
 function htmlspecialchars2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
 {
     return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlspecialchars($myHTML,$quotes,$char_set));
-} 
- 
+}
+
 function htmlentities2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
 {
     return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlentities($myHTML,$quotes,$char_set));
-} 
-  
+}
+
 function htmlnumericentities($myXML){
   return str_replace('&#38;amp;','&#38;',preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars($myXML)));
 }
 
-function xmlentities($s) {
-	$trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
-	foreach ($trans as $k=>$v) $trans[$k]= "&#".ord($k).";"; // encoding?
-	return strtr($s, $trans);
+function xmlentities($string, $charset = 'UTF-8') {
+        return htmlspecialchars($string,ENT_QUOTES,$charset,false);
+}
+
+function latin1_to_utf8($input) {
+        //our database has charactors encoded as entities (outside ISO-8859-1) - so need to decode entities.
+        //and while we declare ISO-8859-1 as the html charset, we actully using windows-1252, as some browsers are sending us chars not valid in ISO-8859-1.
+        //todo detect iconv not installed, and use utf8_encode as a fallback??
+        return html_entity_decode(
+                iconv("windows-1252", "utf-8", $input),
+                ENT_COMPAT, 'UTF-8');
 }
 
 
@@ -1016,7 +1023,7 @@ function pagesString($currentPage,$numberOfPages,$prefix,$postfix = '',$extrahtm
 	static $r;
 	if (!empty($r))
 		return($r);
-	if ($currentPage > 1) 
+	if ($currentPage > 1)
 		$r .= "<a href=\"$prefix".($currentPage-1)."$postfix\"$extrahtml class=\"pageNav\" rel=\"prev\">&lt; &lt; prev</a> ";
 	$start = max(1,$currentPage-5);
 	$endr = min($numberOfPages+1,$currentPage+8);
@@ -1083,10 +1090,10 @@ function sqlBitsToCount(&$sql) {
 
 function sqlBitsToSelect($sql) {
 	$query = "SELECT {$sql['columns']}";
-	if (isset($sql['tables']) && count($sql['tables'])) {
+	if (!empty($sql['tables'])) {
 		$query .= " FROM ".join(' ',$sql['tables']);
 	}
-	if (isset($sql['wheres']) && count($sql['wheres'])) {
+	if (!empty($sql['wheres'])) {
 		$query .= " WHERE ".join(' AND ',$sql['wheres']);
 	}
 	if (isset($sql['group'])) {
@@ -1100,6 +1107,11 @@ function sqlBitsToSelect($sql) {
 	}
 	if (isset($sql['limit'])) {
 		$query .= " LIMIT {$sql['limit']}";
+	}
+	if (!empty($sql['option'])) {
+		if (is_array($sql['option']))
+			$sql['option'] = implode(', ',$sql['option']);
+		$query .= " OPTION {$sql['option']}";
 	}
 	return $query;
 }

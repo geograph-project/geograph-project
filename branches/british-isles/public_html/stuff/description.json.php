@@ -47,11 +47,12 @@ if (!empty($row)) {
 
         $row['comment'] = preg_replace('/\s*NOTE.? This image has a detailed.+?To read it click on the image.?/is','',$row['comment']);
 
-	$data = array('comment'=>GeographLinks(htmlentities($row['comment'])));
+	$data = array('comment'=>GeographLinks(htmlspecialchars(latin1_to_utf8($row['comment']),ENT_QUOTES,'UTF-8')));
 	if (!empty($image->snippets)) {
 		foreach ($image->snippets as $idx => $snippet) {
 			unset($image->snippets[$idx]['point_en']);
-			$image->snippets[$idx]['comment'] = GeographLinks(htmlentities($snippet['comment']));
+			$image->snippets[$idx]['title'] = htmlspecialchars(latin1_to_utf8($snippet['title']),ENT_QUOTES,'UTF-8');
+			$image->snippets[$idx]['comment'] = GeographLinks(htmlspecialchars(latin1_to_utf8($snippet['comment']),ENT_QUOTES,'UTF-8'));
 		}
 		$data['snippets'] = $image->snippets;
 	}
