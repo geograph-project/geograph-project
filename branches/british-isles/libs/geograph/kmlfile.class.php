@@ -50,14 +50,20 @@ class kmlPrimative {
 	public function setItem($name,$value,$raw = false) {
 		if ($raw) {
 			$this->items[$name] = $value;
+		} elseif (function_exists('latin1_to_utf8')) {
+			$this->items[$name] = latin1_to_utf8(htmlspecialchars($value));
 		} else {
-			$this->items[$name] = utf8_encode(htmlnumericentities($value));
+			$this->items[$name] = utf8_encode(htmlspecialchars($value));
 		}
 		return $this;
 	}
 
 	public function setItemCDATA($name,$value) {
-		$this->items[$name] = utf8_encode("<![CDATA[$value]]>");
+		if (function_exists('latin1_to_utf8')) {
+			$this->items[$name] = "<![CDATA[".latin1_to_utf8($value)."]]>";
+		} else {
+			$this->items[$name] = "<![CDATA[".utf8_encode($value)."]]>";
+		}
 		return $this;
 	}
 
