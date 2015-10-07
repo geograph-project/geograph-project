@@ -10,7 +10,7 @@
 			<div class="interestBox">Grid Reference: <b>{$gridref}</b></div>
 
 			<div class="rastermap">
-				<b>{$rastermap->getTitle($gridref)}</b><br/><br/>
+				<span id="coordoutput"></span><br/><br/>
 				{$rastermap->getImageTag($gridref)}{if $rastermap->getFootNote()}<br/>
 				<span style="color:gray"><small>{$rastermap->getFootNote()}</small></span>{/if}
 
@@ -28,10 +28,11 @@
 			{if $square->reference_index == 1}
 				{literal}
 				<style type="text/css"> 
-					#mapTitleOS50k {
-						font-family: verdana, arial, sans-serif;
+					#coordoutput {
+						font-family:verdana, arial, sans-serif;
+						font-weight:bold;
 					}
-					#mapTitleOS50k small {
+					#coordoutput small {
 						font-size:x-small;
 						margin-left:40px;
 						font-weight:normal;
@@ -66,9 +67,7 @@
 
 							curgr = gro.getGridRef(digits);
 
-							//hack alert
-							document.getElementById('mapTitleOS50k').style.display='';
-							document.getElementById('mapTitleOS50k').innerHTML = curgr+" <small>E: "+pt.lon+" N: "+pt.lat+"</small>";
+							document.getElementById('coordoutput').innerHTML = curgr+" <small>E: "+pt.lon+" N: "+pt.lat+"</small>";
 						}
 					});
 					map.events.register("click", map, function(e) {
@@ -78,16 +77,17 @@
 
 							var img = "http://"+static_host+"/img/icons/marker.png";
 
-							document.getElementById('mapTitleOS50k').innerHTML = "<img src=\""+img+"\" height=\"12\" width=\"12\"/> " + document.getElementById('mapTitleOS50k').innerHTML;
+							document.getElementById('coordoutput').innerHTML = "<img src=\""+img+"\" height=\"12\" width=\"12\"/> " + document.getElementById('coordoutput').innerHTML;
 
 						} else {
 							if (marker)
 								map.removeMarker(marker);
 							marker = null;
+							map.events.triggerEvent("mousemove",'');
 						}
 						enabled = !enabled;
 					});
-					document.getElementById('mapTitleOS50k').ondblclick = function() {
+					document.getElementById('coordoutput').ondblclick = function() {
 						digits = digits-1;
 						if (digits == 1)
 							digits = 5;
