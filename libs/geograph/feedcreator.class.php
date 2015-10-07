@@ -987,29 +987,33 @@ class JSONCreator extends FeedCreator {
 		for ($i=0;$i<count($this->items);$i++) {
 			unset($data->items[$i]->descriptionHtmlSyndicated);
 			unset($data->items[$i]->descriptionTruncSize);
+			//TODO geograph specific!
+			$data->items[$i]->guid = basename($data->items[$i]->guid);
+			if (function_exists('latin1_to_utf8')) {
+	                        $data->items[$i]->title = latin1_to_utf8($data->items[$i]->title);
+				$data->items[$i]->description = latin1_to_utf8($data->items[$i]->description);
+			}
 			foreach ($data->items[$i] as $key => $value) {
 				if (empty($value))
 					unset($data->items[$i]->$key);
 			}
-			//TODO geograph specific!
-			$data->items[$i]->guid = basename($data->items[$i]->guid);
 		}
-		
+
 		require_once '3rdparty/JSON.php';
 		$json = new Services_JSON();
-		
+
 		if (isset($_GET['callback'])) {
-			$this->callback=preg_replace('/[^\w$]+/','',$_GET['callback']);
+			$this->callback=preg_replace('/[^\w\.$]+/','',$_GET['callback']);
 			if (empty($this->callback)) {
 				$this->callback = "geograph_callback";
 			}
 		} elseif (isset($_GET['_callback'])) {
-			$this->callback=preg_replace('/[^\w$]+/','',$_GET['_callback']);
+			$this->callback=preg_replace('/[^\w\.$]+/','',$_GET['_callback']);
 		}
-		
+
 		if (!empty($this->callback)) {
-			return "{$this->callback}(".$json->encode($data).")";
-		} else 
+			return "/**/{$this->callback}(".$json->encode($data).")";
+		} else
 			return $json->encode($data);
 	}
 }
