@@ -1,0 +1,7 @@
+40 6,14 * * * /usr/bin/php /var/geogridfs/update-stat.php full
+30 * * * * /usr/bin/php /var/geogridfs/update-free.php
+
+#Update the duplicate table
+10 7 * * * /usr/bin/php /var/geogridfs/update-dup.php
+
+

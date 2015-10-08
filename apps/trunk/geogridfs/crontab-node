@@ -1,0 +1,11 @@
+##Replicate FROM other servers - processed tasks allocated by master
+
+*/10 * * * *   ionice -c3 python /var/geogridfs/replicator-task.py -a replicate
+
+#yes this is once a minute overnight
+* 2,3,4,5,6 * * *   python /var/geogridfs/replicator-task.py -a replicate -o rand
+
+
+##Drain extra files from this server
+*/5 2,4,6 * * *   python /var/geogridfs/drain-task.py -o "files desc"
+
