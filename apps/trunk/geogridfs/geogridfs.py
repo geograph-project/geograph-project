@@ -123,13 +123,14 @@ class GeoGridFS(Fuse):
         
         # this mostly replicates how files are distributed amongst servers currently, so reads should find them in their ideal location most of the time. 
         if 'photos/' in path:
-   	    if 'x' in path: #thumbnails!
+            if 'x' in path: #thumbnails!
                 scores['cakes1'] = 4
-	        scores['teas1'] = 3
+                scores['teas1'] = 3
             elif '_original' in path:
+                scores['teah2'] = 5
                 scores['cakeh1'] = 5
-		scores['cakeh2'] = 4
-	        scores['teah1'] = 3
+                scores['cakeh2'] = 4
+                scores['teah1'] = 3
             else:
                 scores['cakes2'] = (abs(hash(path))%4)+4
                 scores['cakeh2'] = (abs(hash(path+'~'))%4)+4
