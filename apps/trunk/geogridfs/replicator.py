@@ -33,7 +33,8 @@ import getopt
 import string
 import shutil
 import re
-
+import subprocess
+import time
 
 db=MySQLdb.connect(host=config.database['hostname'], user=config.database['username'], passwd=config.database['password'],db=config.database['database'])
 
@@ -63,19 +64,23 @@ def md5sum(path):
 
 #############################################################################
 
-def walk_and_notify(folder = '', track_progress = True):
-    mount = config.mounts[config.server['self']]
+def walk_and_notify(folder = '', replica = '', track_progress = True):
+    if replica == '':
+	replica = config.server['self']
+
+    mount = config.mounts[replica]
 
     print mount+folder
     for root, dirs, files in os.walk(mount+folder):
         
         if files:
+            print root
+
             if track_progress and os.path.exists(root+'/replicator.done'):
                 continue
             
-            print root
             #print dirs
-            print files
+            #print files
             
             folder_id = getFolderId(string.replace(root,mount,''), True)
             
@@ -91,10 +96,12 @@ def walk_and_notify(folder = '', track_progress = True):
                 if filename in files:
                     ##We have the file, lets check we noted in replicas
                     
-                    if config.server['self'] in row['replicas']: 
-                        print "great, metadata already knows we have "+row['filename']
+                    if replica in row['replicas']: 
+                        #print "great, metadata already knows we have "+row['filename']
+                        pass
                     else:
                         print "hey! we have "+row['filename']
+                        specifics = ''
                         
                         stat = os.stat(root + "/" + filename)
                         if (stat.st_size > 0 and stat.st_size < 52428800):
@@ -102,6 +109,12 @@ def walk_and_notify(folder = '', track_progress = True):
                         else:
                             md5su =''
                         
+                        if row['md5sum'] == '' and md5su != '': #we can repair this file
+                            row['md5sum'] = md5su
+                            row['size'] = stat.st_size
+                            specifics = "`size` = "+str(stat.st_size)+", " + \
+                                "`md5sum` = '"+md5su+"', "
+
                         if md5su != row['md5sum']:
                             print "BUT md5 checksum doesnt match '"+md5su+"' != '"+row['md5sum']+"'"
                         elif stat.st_size != row['size']:
@@ -112,14 +125,15 @@ def walk_and_notify(folder = '', track_progress = True):
                             print "OK SEND THE UPDATE"
                             
                             cex.execute("UPDATE "+config.database['file_table']+" SET " + \
-                                "replicas = CONCAT(replicas,',"+config.server['self']+"'), " + \
+                                "replicas = CONCAT(replicas,',"+replica+"'), " + \
+                                specifics + \
                                 "replica_count=replica_count+1 "+ \
                                 "WHERE file_id = "+str(row['file_id']))
                     
                     files.remove(filename) ## so that any left will be new files!
-                else:
-                    ##there is a file on the FS, that we don't have - ignore here (the replicate function may download it later)
-                    print "skipping " + row['filename']
+                #else:
+                #    ##there is a file on the FS, that we don't have - ignore here (the replicate function may download it later)
+                #    print "skipping " + row['filename']
             
             if files:
                 for filename in files:
@@ -152,17 +166,30 @@ def walk_and_notify(folder = '', track_progress = True):
                         "filename = '"+db.escape_string(path)+"', " + \
                         "folder_id = "+str(folder_id)+", " + \
                         specifics + targets + \
-                        "replicas = '"+config.server['self']+"', " + \
+                        "replicas = '"+replica+"', " + \
                         "replica_count=1")
             
             if track_progress:
-                open(root+'/replicator.done', 'w').close()
+                if os.path.getmtime(root) < time.time()-21600:
+                    open(root+'/replicator.done', 'w').close()
             print "-----------"
 
 #############################################################################
 
-def replicate_now(path = ''):
-    mount = config.mounts[config.server['self']]
+def replicate_now(path = '',target = ''):
+    if target == '':
+	target = config.server['self']
+
+    mount = config.mounts[target]
+
+    if 'statvfs' in dir(os):
+        s = os.statvfs(mount+'/geograph_live/')
+        bytes_free = (s.f_bavail * s.f_frsize) / 1024
+        gigabytes = bytes_free / (1024 * 1024)
+
+        if gigabytes < 10:
+            print "There is only " + str(bytes_free) + " bytes free, cowardly refusing to run"
+            sys.exit(2)
     
     c=db.cursor(MySQLdb.cursors.DictCursor)
     cex=db.cursor()
@@ -176,7 +203,7 @@ def replicate_now(path = ''):
             list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
             idx = 1
             for item in string.split(list, "','"):
-                if item == config.server['self']:
+                if item == target:
                     break
                 idx = idx*2
             
@@ -184,7 +211,7 @@ def replicate_now(path = ''):
     
     print "idx = "+str(idx)
     
-    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND replica_count < replica_target ORDER BY folder_id DESC LIMIT 100")
+    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND replica_count < replica_target ORDER BY folder_id DESC LIMIT 400")
 
     while True:
         row = c.fetchone()
@@ -194,6 +221,7 @@ def replicate_now(path = ''):
         
         #todo we could loop though them in case of failures, and should we tell anyone about failures?
         replica = random.choice(replicas)
+
         print "download " + row['filename'] + " from "+ replica
         
         filename = mount + row['filename']
@@ -226,9 +254,65 @@ def replicate_now(path = ''):
         #    print "BUT dates doesnt match '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
         else:
             cex.execute("UPDATE "+config.database['file_table']+" SET " + \
-                "replicas = CONCAT(replicas,',"+config.server['self']+"'), " + \
+                "replicas = CONCAT(replicas,',"+target+"'), " + \
                 "replica_count=replica_count+1 "+ \
                 "WHERE file_id = "+str(row['file_id']))
+
+#############################################################################
+
+def check_combined(path = '',replica = ''):
+    if replica == '':
+	replica = config.server['self']
+
+    c=db.cursor(MySQLdb.cursors.DictCursor)
+    
+    c.execute("DESCRIBE "+config.database['file_table']);
+    while True:
+        row = c.fetchone()
+        if not row: break
+        
+        if row['Field'] == 'replicas':
+            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
+            idx = 1
+            for item in string.split(list, "','"):
+                if item == replica:
+                    break
+                idx = idx*2
+            
+            break
+    
+    print "idx = "+str(idx)
+    
+    c.execute("SELECT file_id,filename,replicas,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM "+config.database['file_table']+" WHERE folder_id = 80027 ORDER BY file_id DESC LIMIT 1000")
+
+    while True:
+        row = c.fetchone()
+        if not row: break
+        
+        mount = '/mnt/combined'
+        
+        filename = mount + row['filename']
+        
+	print filename + " " + str(row['size'])
+
+        stat = os.stat(filename)
+        if (stat.st_size > 0):
+            #md5su = md5sum(filename)
+            p = subprocess.Popen(["md5sum", filename], stdout=subprocess.PIPE)
+            out, err = p.communicate()
+            md5su = re.split(r'\s',out)[0]
+        else:
+            md5su =''
+        
+        if md5su != row['md5sum']:
+            print filename+" ... md5 '"+md5su+"' != '"+row['md5sum']+"'"
+        elif stat.st_size != row['size']:
+            print filename+" ... size "+str(stat.st_size)+" != "+str(row['size'])
+        elif abs(stat.st_mtime-row['modified']) > 1:
+            print filename+" ... dates '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
+        else:
+            pass
+
 
 def fixup_classes():
     c=db.cursor(MySQLdb.cursors.DictCursor)
@@ -252,30 +336,6 @@ def fixup_classes():
                 "`backup_target` = "+str(final[3])+ " " + \
                 "WHERE file_id = "+str(row['file_id']))
 
-def update_stat():
-    c=db.cursor();
-    make_columns = "count(*) as files, sum(size) as total_bytes, count(distinct folder_id) as folders, min(file_modified) AS oldest,max(file_modified) AS newest, filename as example, NOW() as updated ";
-    print 'r'
-    c.execute("REPLACE INTO `stat` SELECT CONCAT('r:',replicas) AS id, replicas AS value, "+make_columns+\
-                "FROM file GROUP BY replicas+0 ORDER BY NULL")
-    print 't'
-    c.execute("REPLACE INTO `stat` SELECT CONCAT('t:',class,',',replica_target-replica_count) AS id, CONCAT(class,' ',replica_count,'/',replica_target) AS value, "+make_columns+\
-                "FROM file GROUP BY class,replica_target,replica_count ORDER BY NULL")
-    print 'b'
-    c.execute("REPLACE INTO `stat` SELECT CONCAT('b:',backups) AS id, backups AS value, "+make_columns+\
-                "FROM file WHERE backup_target > 0 GROUP BY backups+0 ORDER BY NULL")
-    print 'y'
-    c.execute("REPLACE INTO `stat` SELECT CONCAT('y:',class,',',backup_target,backup_count) AS id, CONCAT(class,' ',backup_count,'/',backup_target) AS value, "+make_columns+\
-                "FROM file WHERE backup_target > 0 GROUP BY class,backup_target,backup_count ORDER BY NULL")
-    print 'c'
-    c.execute("REPLACE INTO `stat` SELECT CONCAT('c:',class) AS id, class AS value, "+make_columns+\
-                "FROM file GROUP BY class ORDER BY NULL")
-    print 's'
-    c.execute("REPLACE INTO `stat` SELECT CONCAT('s:',substring_index(filename,'_',-1)) AS id, substring_index(filename,'_',-1) AS value, "+make_columns+\
-                "FROM file WHERE class in ('thumb.jpg','thumb.gd') GROUP BY substring_index(filename,'_',-1) ORDER BY NULL")
-    print 'done'
-
-
 def update_active():
     c=db.cursor()
     
@@ -298,34 +358,41 @@ def update_active():
 
 def main(argv):
     action = 'unknown'
+    replica = ''
     path = ''
     try:
-        opts, args = getopt.getopt(argv,"a:p:",["action=","path="])
+        opts, args = getopt.getopt(argv,"a:p:r:",["action=","path=","replica="])
     except getopt.GetoptError:
-        print 'replication.py -a (walk|replicate) [-p /geograph_live/rastermaps]'
+        print 'replicator.py -a (walk|replicate) [-p /geograph_live/rastermaps] [-r milk]'
         sys.exit(2)
     
     for opt, arg in opts:
         if opt in ("-a", "--action"):
             action = arg
+        elif opt in ("-r", "--replica"):
+            replica = arg
         elif opt in ("-p", "--path"):
             path = arg
     
     if action == 'unknown':
-        print 'replication.py -a (walk|replicate) [-p /geograph_live/rastermaps]'
+        print 'replicator.py -a (walk|replicate) [-p /geograph_live/rastermaps] [-r milk]'
         sys.exit(2)
     
     elif action == 'walk':
-        walk_and_notify(path)
+        if replica == 'all':
+		for (key,value) in config.mounts.iteritems():
+		        walk_and_notify(path, key)
+	else:
+		walk_and_notify(path, replica)
     
     elif action == 'replicate':
-        replicate_now(path)
+        replicate_now(path, replica)
 
     elif action == 'fixup':
         fixup_classes()
 
-    elif action == 'stat':
-        update_stat()
+    elif action == 'check':
+        check_combined(path, replica)
 
     elif action == 'active':
         update_active()

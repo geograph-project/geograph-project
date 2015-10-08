@@ -1,8 +1,16 @@
 #!/bin/sh
+
+cd /var/geogridfs/
+
 echo apache2ctl graceful-stop
 apache2ctl graceful-stop
 
-sleep 3
+sleep 1
+
+while ps aux | grep apache | grep -v grep; do
+        echo "apache still running, sleeping again"
+        sleep 2
+done
 
 echo ./off
 sudo -u www-data ./off
@@ -10,14 +18,21 @@ sudo -u www-data ./off
 echo ./on
 sudo -u www-data ./on
 
-echo /remount
+echo ./remount
 php remount
 
-echo ls -l /var/www/geograph_static/public_html/geophotos
-ls -l /var/www/geograph_static/public_html/geophotos
+echo ls -l /var/www/geograph_live/public_html/geophotos
+ls -l /var/www/geograph_live/public_html/geophotos
 
-echo "ps aux \| grep python"
+echo "ps aux | grep python"
 ps aux | grep python | grep -v grep
 
 echo 
-echo "apache2ctl start #(NOT run)"
+
+if [ $1 = "run" ]; then
+        echo "apache2ctl start";
+        apache2ctl start
+else
+        echo "apache2ctl start #(NOT run)"
+fi
+

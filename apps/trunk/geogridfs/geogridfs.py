@@ -82,8 +82,8 @@ class GeoGridFS(Fuse):
         Fuse.__init__(self, *args, **kw)
         
         #see https://code.google.com/p/mpycache/
-        self.row_cache = LRUCache(1000, 30000, 300)
-        self.folder_cache = LRUCache(1000, 30000, 300)
+        self.row_cache = LRUCache(100, 1000, 30)
+        self.folder_cache = LRUCache(100, 5000, 30)
         
         # do stuff to set up your filesystem here, if you want
         #import thread
@@ -123,25 +123,28 @@ class GeoGridFS(Fuse):
         
         # this mostly replicates how files are distributed amongst servers currently, so reads should find them in their ideal location most of the time. 
         if 'photos/' in path:
-            if '_original' in path:
-                scores['jam'] = 3
-                scores['cream'] = 2
-            elif 'photos/03/' in path:
-                scores['cream'] = 3
-                scores['jam'] = 2
-            elif (random.random() < 0.7):
-                #because we know it has a complete copy, might as well as let jam take some strain
-                scores['jam'] = 3
-                scores['cream'] = 2
+   	    if 'x' in path: #thumbnails!
+                scores['cakes1'] = 4
+	        scores['teas1'] = 3
+            elif '_original' in path:
+                scores['cakeh1'] = 5
+		scores['cakeh2'] = 4
+	        scores['teah1'] = 3
             else:
-                scores['cream'] = 3
-                scores['jam'] = 2
+                scores['cakes2'] = (abs(hash(path))%4)+4
+                scores['cakeh2'] = (abs(hash(path+'~'))%4)+4
+                scores['teas2'] = (abs(hash(path+'#'))%4)+4
+                scores['teah2'] = (abs(hash(path+'@'))%4)+4
+                scores['teas1'] = 3
+                scores['cakes1'] = 3
+            scores['jam'] = 2
             scores['milk'] = 1
         else:
-            scores['milk'] = 3
+            scores['milk'] = 5
+            scores['cakes1'] = 4
+            scores['teas1'] = 3
             scores['jam'] = 2
-            scores['cream'] = 1
-        
+
         #if have metadata record, use it to promote mounts with actual replicas
         try:
             if not self.row_cache.has_key(path):
@@ -154,15 +157,19 @@ class GeoGridFS(Fuse):
             if self.row_cache.has_key(path):
                 for replica in string.split(self.row_cache.get(path)['replicas'], ','):
                     scores[replica] = 100+scores.get(replica,1)
+                    if re.search(r's\d',replica): # boost SSD mounts regardless
+                         scores[replica] = scores[replica] + 10
             
         except MySQLdb.Error, e:
             if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                 print "Error %d: %s" % (e.args[0], e.args[1])
+                print query.conn.query
                 sys.exit(1)
         
         mounts = []
         for result in sorted(scores, key=scores.get, reverse=True):
             mounts.append(config.mounts[result])
+
         return mounts
 
     def getServerFromMount(self, mount):
@@ -193,6 +200,7 @@ class GeoGridFS(Fuse):
         except MySQLdb.Error, e:
             if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                 print "Error %d: %s" % (e.args[0], e.args[1])
+                print query.conn.query
                 #sys.exit(1)
             
             return 0
@@ -216,13 +224,14 @@ class GeoGridFS(Fuse):
             st = MyStat()
             cache = self.row_cache.get(path)
             
-            st.st_atime = int(cache['accessed'])
-            st.st_mtime = int(cache['modified'])
-            st.st_ctime = int(cache['created'])
-            st.st_mode = stat.S_IFREG | 0666
-            st.st_nlink = 1
-            st.st_size = int(cache['size'])
-            return st
+            if cache:
+                st.st_atime = int(cache['accessed'])
+                st.st_mtime = int(cache['modified'])
+                st.st_ctime = int(cache['created'])
+                st.st_mode = stat.S_IFREG | 0666
+                st.st_nlink = 1
+                st.st_size = int(cache['size'])
+                return st
         
         for mount in self.getOrderedMounts(path):
             try:
@@ -245,7 +254,9 @@ class GeoGridFS(Fuse):
         yield fuse.Direntry('.')   #os.listdir does NOT include these!
         yield fuse.Direntry('..')
         for mount in self.getOrderedMounts(path):
+            #print "checking "+mount+" "+path
             if os.path.exists(mount + path):
+                #print "listing "+mount+" "+path
                 for e in os.listdir(mount + path):
                     if e not in dedup:
                         dedup[e] = True
@@ -267,6 +278,7 @@ class GeoGridFS(Fuse):
                 except MySQLdb.Error, e:
                     if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                         print "Error %d: %s" % (e.args[0], e.args[1])
+                        print query.conn.query
                         #sys.exit(1)
                 
                 os.unlink(mount + path)
@@ -328,12 +340,15 @@ class GeoGridFS(Fuse):
                         "SET folder_id = "+str(new_folder_id)+", filename = '"+query.escape_string(path1)+"' "+ \
                         "WHERE filename = '"+query.escape_string(path)+"'")
                         
+		#todo - the files class or replicate_target might have changed!
+
                 if self.row_cache.has_key(path):
                     self.row_cache.erase(path)
 
         except MySQLdb.Error, e:
             if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                 print "Error %d: %s" % (e.args[0], e.args[1])
+                print query.conn.query
                 #sys.exit(1)
 
     def link(self, path, path1):
@@ -368,6 +383,7 @@ class GeoGridFS(Fuse):
         except MySQLdb.Error, e:
             if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                 print "Error %d: %s" % (e.args[0], e.args[1])
+                print query.conn.query
                 #sys.exit(1)
 
     def mknod(self, path, mode, dev):
@@ -459,11 +475,12 @@ class GeoGridFS(Fuse):
                     #if still not found, then just create it on the first mount
                     if not self.file: 
                         for mount in server.getOrderedMounts(path):
-                            if not os.path.exists(os.path.dirname(mount + path)):
-                                os.makedirs(os.path.dirname(mount + path)) # use makedirs so will also create parent dirs as required
-                            final_mount = mount
-                            self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
-                            break
+                            if os.path.exists(mount + '/geograph_live'): #cehck its a live mount!
+                                if not os.path.exists(os.path.dirname(mount + path)):
+                                    os.makedirs(os.path.dirname(mount + path)) # use makedirs so will also create parent dirs as required
+                                final_mount = mount
+                                self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
+                                break
 
                 if self.file is False:
                    return -EIO
@@ -566,6 +583,7 @@ class GeoGridFS(Fuse):
                     
                     if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
                         print "Error %d: %s" % (e.args[0], e.args[1])
+                        print query.conn.query
                         sys.exit(1)
             finally:
                 self.thread_lock.release()

@@ -1,2 +1,2 @@
 #!/bin/sh
-python geogridfs.py /var/mount/combined/
+python geogridfs.py /mnt/combined -o allow_other
