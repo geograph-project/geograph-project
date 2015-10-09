@@ -86,7 +86,7 @@ if (isset($_POST['gridimage_id']))
 			mail('geograph@barryhunter.co.uk','[Geograph] Resubmission failure!',$con);
 			
 			//unclog the queue!
-			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id} ");
+			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id} AND  status = 'new'"); //the status check, is to avoid chaning it already approved
 			
 		} elseif (!empty($_POST['confirm']) || !empty($_POST['similar'])) {
 
@@ -111,7 +111,7 @@ if (isset($_POST['gridimage_id']))
 					
 					require_once("3rdparty/S3.php");
 
-					$s3 = new S3($CONF['awsAccessKey'], $CONF['awsSecretKey']);
+					$s3 = new S3($CONF['awsAccessKey'], $CONF['awsSecretKey'], false);
 					
 					$ok = $s3->putObjectFile($_SERVER['DOCUMENT_ROOT'].$image->originalUrl, $CONF['awsS3Bucket'], preg_replace("/^\//",'',$image->originalUrl), S3::ACL_PRIVATE);
 				}
@@ -206,7 +206,7 @@ $db->Execute("UNLOCK TABLES");
 
 if ($data) {
 	$image = new GridImage;
-	$image->_initFromArray(&$data);
+	$image->_initFromArray($data);
 
 	$image->pendingUrl = $image->_getOriginalpath(true,false,'_pending');
 	$image->previewUrl = $image->_getOriginalpath(true,false,'_preview');
@@ -220,7 +220,6 @@ if ($data) {
 //what style should we use?
 $style = $USER->getStyle();
 $smarty->assign('maincontentclass', 'content_photo'.$style);
-		
+
 $smarty->display('admin_resubmissions.tpl',$style);
-	
-?>
+
