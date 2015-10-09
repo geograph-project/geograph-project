@@ -30,8 +30,8 @@ if(!isset($GLOBALS['indexphp'])) $indexphp='index.php?'; else $indexphp=$GLOBALS
 if($useSessions) {
 $oldBbAdmin=$bb_admin;
 //session_start();
-if(!isset($PHPSESSID)) { $sessstr='?'.SID; $indexphp.=SID.'&'; $bb_admin.=SID.'&'; }
-else { $indexphp.='PHPSESSID='.$PHPSESSID.'&'; $bb_admin.='PHPSESSID='.$PHPSESSID.'&';}
+if(!isset($PHPSESSID)) { $sessstr='?'.SID; $indexphp.=SID.'&amp;'; $bb_admin.=SID.'&amp;'; }
+else { $indexphp.='PHPSESSID='.$PHPSESSID.'&amp;'; $bb_admin.='PHPSESSID='.$PHPSESSID.'&amp;';}
 }
 
 include ($pathToFiles."setup_$DB.php");
@@ -107,7 +107,7 @@ if ($mode=='login') {
 if (isset($_POST['adminusr']) and $_POST['adminusr']==$admin_usr and isset($_POST['adminpwd']) and $_POST['adminpwd']==$admin_pwd) {
 
 $cook=$admin_usr.'|'.md5($admin_pwd).'|'.$cookieexptime;
-if($useSessions) { if(!session_is_registered('minimalistBBSession')) session_register('minimalistBBSession'); $_SESSION['minimalistBBSession']=$cook; } 
+if($useSessions) { $_SESSION['minimalistBBSession']=$cook; }
 deleteMyCookie();
 setMyCookie($admin_usr,$admin_pwd,$cookieexptime);
 if(isset($metaLocation)) { $meta_relocate="{$main_url}/{$bb_admin}"; echo ParseTpl(makeUp($metaLocation));
