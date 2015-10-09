@@ -25,8 +25,6 @@ if ($user_usr==$admin_usr)
 		$cook=$user_usr."|".md5($user_pwd)."|".$cookieexptime;
 		if($useSessions) 
 		{ 
-			if(!session_is_registered('minimalistBBSession')) 
-				session_register('minimalistBBSession'); 
 			$_SESSION['minimalistBBSession']=$cook;
 		}
 		deleteMyCookie();
@@ -67,8 +65,6 @@ else
 			$cook=$user_usr."|".md5($user_pwd)."|".$cookieexptime;
 			if($useSessions) 
 			{ 
-				if(!session_is_registered('minimalistBBSession')) 
-					session_register('minimalistBBSession'); 
 				$_SESSION['minimalistBBSession']=$cook;
 			}
 			deleteMyCookie();
@@ -118,8 +114,6 @@ else
 			$cook=$user_usr.'||'.$cookieexptime;
 			if($useSessions) 
 			{ 
-				if(!session_is_registered('minimalistBBSession')) 
-					session_register('minimalistBBSession'); 
 				$_SESSION['minimalistBBSession']=$cook;
 			}
 			
