@@ -305,7 +305,7 @@ if (!empty($_GET['q'])) {
 					print "<div style=\"float:right\"><a href=\"/near/$coord\"><img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=13&key=AIzaSyDrnpX8oponupk5rMqCg126cuVtiypmIH0&size=250x120&maptype=terrain\"></a> ";
 					print "<a href=\"/near/$coord\"><img src=\"https://maps.googleapis.com/maps/api/staticmap?markers=size:mid|$coord&zoom=7&key=AIzaSyDrnpX8oponupk5rMqCg126cuVtiypmIH0&size=250x120&maptype=terrain\"></a></div>";
 
-					print "Looks like you might of been entering an address? If you searching for '";
+					print "Looks like you might have been entering an address? If you searching for '";
 					print "<a href=\"/near/$coord\">".htmlentities($r->formatted_address)."</a>";
 					print "'. Click the map on the right to view images near that location.";
 					print "<hr style=\"clear:both\"/>";
