@@ -815,7 +815,7 @@ ini_set('memory_limit', '128M');
 		$profile=new GeographUser($uid);
 		if ($profile->realname)
 		{
-			header("Content-Type:text/xml");
+			header("Content-Type:text/xml;charset=UTF-8");
 					
 			echo "<data>\n";
 			$images=new ImageList;
@@ -859,7 +859,7 @@ ini_set('memory_limit', '128M');
 			}
 		} else {
 			customExpiresHeader(360,true,true);
-			header("Content-Type:text/xml");
+			header("Content-Type:text/xml;charset=UTF-8");
 			echo '<?xml version="1.0" encoding="UTF-8"?>';
 			if (empty($skip))
 				echo '<geograph>';
