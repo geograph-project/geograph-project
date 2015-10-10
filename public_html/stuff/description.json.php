@@ -47,12 +47,21 @@ if (!empty($row)) {
 
         $row['comment'] = preg_replace('/\s*NOTE.? This image has a detailed.+?To read it click on the image.?/is','',$row['comment']);
 
+	//Note that Geograph generally has ISO-8859-1 set as the default_charset - as it was in pre PHP5.4, so to use htmlspecialchars with utf, need to explicitly state the charset
+
 	$data = array('comment'=>GeographLinks(htmlspecialchars(latin1_to_utf8($row['comment']),ENT_QUOTES,'UTF-8')));
 	if (!empty($image->snippets)) {
 		foreach ($image->snippets as $idx => $snippet) {
-			unset($image->snippets[$idx]['point_en']);
+			unset($image->snippets[$idx]['point_en']); //we dont want this in the output, as it may contain non-utf8 compatible charactors (technically a binary string!)
+
 			$image->snippets[$idx]['title'] = htmlspecialchars(latin1_to_utf8($snippet['title']),ENT_QUOTES,'UTF-8');
 			$image->snippets[$idx]['comment'] = GeographLinks(htmlspecialchars(latin1_to_utf8($snippet['comment']),ENT_QUOTES,'UTF-8'));
+
+			//even though we set ADODB_FETCH_ASSOC, occasionallly loadSnippets may use a memcached responce from a different script that allowed numeric keys!
+                        foreach ($image->snippets[$idx] as $key => $value)
+                                if (is_numeric($key))
+                                        unset($image->snippets[$idx][$key]);
+
 		}
 		$data['snippets'] = $image->snippets;
 	}
