@@ -1,6 +1,4 @@
-NameVirtualHost *
-
-<VirtualHost *>
+<VirtualHost *:80>
     DocumentRoot /var/www/geograph_svn/public_html
     ServerName staging.geograph.org.uk
     ServerAlias staging.geograph.co.uk

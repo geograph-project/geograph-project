@@ -1,4 +1,4 @@
-<VirtualHost *>
+<VirtualHost *:80>
     DocumentRoot /var/www/geograph_static/public_html
     ServerName s0.www.geograph.org.uk
     ServerAlias s1.www.geograph.org.uk
@@ -33,6 +33,7 @@
         ExpiresByType image/jpeg "access plus 180 days"
         ExpiresByType text/css "access plus 180 days"
         ExpiresByType application/x-javascript "access plus 180 days"
+        ExpiresByType application/javascript "access plus 10 days"
     </Directory>
 
     RewriteEngine on

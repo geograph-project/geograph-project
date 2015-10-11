@@ -26,8 +26,16 @@ if (preg_match('/^\/photos\/(\d{2,3})\/(\d{2})\/\d{6,7}_(\w+)\.jpg$/',$p,$m)
 		header("Status: 404 Not Found");
 		print 'Not Found. <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
 		exit;
+	} else {
+		$grep = `mount | grep {$_SERVER['DOCUMENT_ROOT']}/photos`;
+		if (strlen($grep) > 4) {
+			header("HTTP/1.0 404 Not Found");
+			header("Status: 404 Not Found");
+			print 'Not Found. <a href="http://www.geograph.org.uk/">Visit our homepage</a>.';
+			exit;
+		}
 	}
-	
+
 	if (!empty($m[4])) {
 		$base=$_SERVER['DOCUMENT_ROOT'].'/geophotos';
 		if (!is_dir("$base/{$m[1]}"))
@@ -48,9 +56,9 @@ if (preg_match('/^\/photos\/(\d{2,3})\/(\d{2})\/\d{6,7}_(\w+)\.jpg$/',$p,$m)
 
 	#the -p is important to maintain the mod date
 	system("cp -p /var/www/geograph_live/public_html$p .$p");
-	
+
 	$size=filesize('.'.$p);
-	if (!$size) {	
+	if (!$size) {
 		header("HTTP/1.1 503 Service Unavailable");
 		print 'Not available, <a href="http://www.geograph.org.uk/">Visit our homepage</a>';
 		exit;
@@ -64,16 +72,16 @@ if (preg_match('/^\/photos\/(\d{2,3})\/(\d{2})\/\d{6,7}_(\w+)\.jpg$/',$p,$m)
 	header("HTTP/1.1 200 OK");
 	#header("Status: 200 OK");
 
-	$lastmod=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);	
+	$lastmod=strftime("%a, %d %b %Y %H:%M:%S GMT", $t);
 	header("Last-Modified: $lastmod");
 
 	#no etag cos we dont exactly know apaches system
-	#header ("Etag: \"$hash\""); 
+	#header ("Etag: \"$hash\"");
 
 	header("Content-Type: $type");
 	#header("Content-Size: $size");
 	header("Content-Length: $size");
-	
+
 	$expires=strftime("%a, %d %b %Y %H:%M:%S GMT", $e);
 	header("Expires: $expires");
 
