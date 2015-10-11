@@ -1,4 +1,4 @@
-<VirtualHost *>
+<VirtualHost *:80>
     DocumentRoot /var/www/geograph_redirect/public_html
     ServerName geograph.org.uk
     ServerAlias geograph.co.uk

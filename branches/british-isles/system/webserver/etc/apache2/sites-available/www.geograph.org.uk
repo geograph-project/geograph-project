@@ -1,4 +1,4 @@
-<VirtualHost *>
+<VirtualHost *:80>
     DocumentRoot /var/www/geograph_live/public_html
     ServerName www.geograph.org.uk
     ServerAlias kml.geograph.org.uk
@@ -9,9 +9,10 @@
     ServerAlias t0.geograph.org.uk
     ServerAlias archive.geograph.org.uk
     ServerAlias api.geograph.org.uk
-    ServerAlias api.mobile.geograph.org.uk
+    ServerAlias mobile.api.geograph.org.uk
     ServerAlias api.www.geograph.org.uk
     ServerAlias toast.www.geograph.org.uk
+    ServerAlias cluster2.geograph.org.uk
 
     ServerAlias www.geograph.ie
 
@@ -48,6 +49,7 @@
         ExpiresByType image/jpeg "access plus 180 days"
         ExpiresByType text/css "access plus 180 days"
         ExpiresByType application/x-javascript "access plus 180 days"
+        ExpiresByType application/javascript "access plus 10 days"
         ExpiresByType image/x-icon "access plus 180 days"
         ExpiresByType application/xml "access plus 7 days"
     </Directory>
@@ -80,11 +82,13 @@
     RewriteCond %{REQUEST_URI} !^/stuff/captcha.php
     RewriteCond %{REQUEST_URI} !^/maps/
     RewriteCond %{REQUEST_URI} !^/robots
+    RewriteCond %{REQUEST_URI} !^/stamp.php
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
 	#Special robots file for archiveable - served on ALL domains except archive which should see none
+    RewriteCond %{HTTP:X-Forwarded-For}   194.66.232 [NC,OR] #bl archive project
     RewriteCond %{HTTP:X-Forwarded-For}   128.86.236.164 [NC,OR]  #webarchive.org.uk's crawler
-    RewriteCond %{HTTP:X-Forwarded-For}   87.106.144.40 [NC,OR]
+    RewriteCond %{HTTP:X-Forwarded-For}   188.165.198.16 [NC,OR]
     RewriteCond %{HTTP:X-Forwarded-For}   194.66.232.85 [NC]  #webarchive.org.uk's crawler
     RewriteCond %{HTTP_HOST}   !^archive\.geograph\.org\.uk [NC]
     RewriteCond %{HTTP_HOST}   !^api\.geograph\.org\.uk [NC]
@@ -154,6 +158,8 @@
     RewriteRule ^/profile/(\d+)/?$ /profile.php?id=$1 [qsa]
 
     RewriteRule ^/tagged/(.*) /tags/index.php?tag=$1 [qsa]
+    RewriteRule ^/of/(.*) /finder/of.php?q=$1 [qsa]
+    RewriteRule ^/near/(.*) /finder/near.php?q=$1 [qsa]
     RewriteRule ^/map/(.*) /mapbrowse.php?t=$1 [qsa]
     RewriteRule ^/article/([\w-]+)/?([0-9]*)/?$ /article/article.php?url=$1&page=$2 [qsa]
     RewriteRule ^/gallery/([\w-]+)/?([0-9]*)/?$ /gallery/gallery.php?url=$1&page=$2 [qsa]
@@ -202,10 +208,13 @@
     RewriteRule ^/(.*)\.v[0-9]+\.(css|js)$ /$1.$2 [L]
 
     #short urls
-    RewriteRule /g/(.*) http://%{HTTP_HOST}/gridref/$1 [qsa,L,R=permanent]
-    RewriteRule /u/(.*) http://%{HTTP_HOST}/profile/$1 [qsa,L,R=permanent]
-    RewriteRule /p/(.*) http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
-    RewriteRule /r/(.*) http://%{HTTP_HOST}/results/$1 [qsa,L,R=permanent]
+    RewriteRule ^/g/(.*) http://%{HTTP_HOST}/gridref/$1 [qsa,L,R=permanent]
+    RewriteRule ^/u/(.*) http://%{HTTP_HOST}/profile/$1 [qsa,L,R=permanent]
+    RewriteRule ^/p/(.*) http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
+    RewriteRule ^/r/(.*) http://%{HTTP_HOST}/results/$1 [qsa,L,R=permanent]
+    RewriteRule ^/(\d+)$ http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
+    RewriteRule ^/m/photo/(\d+)$ http://m.geograph.org.uk/photo/$1 [qsa,L,R=permanent]
+    RewriteRule ^/mobile/photo/(\d+)$ http://m.geograph.org.uk/photo/$1 [qsa,L,R=permanent]
 
     ErrorDocument 404 /staticpage.php?page=404
 

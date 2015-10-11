@@ -1,4 +1,4 @@
-<VirtualHost *>
+<VirtualHost *:80>
     DocumentRoot /var/www/geograph_hotlink/public_html
     ServerName s9.www.geograph.org.uk
     ServerAlias s9.geograph.org.uk
