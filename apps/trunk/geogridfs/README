@@ -134,6 +134,12 @@ Common errors
 
 sudo apt-get install python-fuse
 
+------------
+> ImportError: No module named MySQLdb
+
+apt-get install python-mysqldb
+
+(on Ubuntu at least!)
 
 ------------
 > ImportError: No module named PySQLPool
