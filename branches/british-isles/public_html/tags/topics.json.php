@@ -78,7 +78,6 @@ if (false) {
         $url = "http://tagthe.net/api/?text=".urlencode($string)."&view=json";
 
         require_once '3rdparty/JSON.php';
-        $json = new Services_JSON();
 
 
         $mkey = md5($url);
@@ -87,7 +86,7 @@ if (false) {
         if (empty($value)) {
                 ini_set('user_agent', 'Geograph Britain and Ireland - Tagging Interface (+http://www.geograph.org.uk)');
 
-                $value = $json->decode(file_get_contents($url));
+                $value = json_decode(file_get_contents($url));
 
                 if ($value)
                         $memcache->name_set('rpc',$mkey,$value,$memcache->compress,$memcache->period_med);

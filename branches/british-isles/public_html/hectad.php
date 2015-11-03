@@ -106,10 +106,37 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign($row);
 
 	$smarty->assign('myriad',preg_replace('/\d+/','',$hectad));
+
+
+
+        $ctx = stream_context_create(array(
+            'http' => array(
+                'timeout' => 1
+                )
+            )
+        );
+
+	//calling our own API is ugly, but better than replicating all the code here?
+        $remote = file_get_contents("http://www.geograph.org.uk/finder/bytag.json.php?q=hectad:$hectad",0, $ctc);
+
+        if (!empty($remote) && strlen($remote) > 110) {
+		require_once '3rdparty/JSON.php';
+		$tags = json_decode($remote);
+
+		$str = $sep = '';
+		$idx = 0;
+		while ($idx < count($tags) && strlen($str) <180) {
+			$tag = $tags[$idx];
+			$str .= $sep . (($tag->prefix && $tag->prefix != 'top' && $tag->prefix != 'term' && $tag->prefix != 'bucket')?"{$tag->prefix}:":'').$tag->tag;
+			$sep = ', ';
+			$idx++;
+		}
+		$smarty->assign('meta_description', "Common Tags for $hectad: ".$str);
+
+		$smarty->assign_by_ref('tags', $tags);
+	}
 }
 
 
 $smarty->display($template, $cacheid);
 
-	
-?>

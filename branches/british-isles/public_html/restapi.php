@@ -89,7 +89,6 @@ class RestAPI
                                 if ($this->output=='json') {
 
                                         require_once '3rdparty/JSON.php';
-                                        $json = new Services_JSON();
                                         $obj = new EmptyClass;
 
                                         $obj->user_id = $profile->user_id;
@@ -101,7 +100,7 @@ class RestAPI
 							$obj->stats[$key] = $value;
 					}
 
-                                        print $json->_encode($obj);
+                                        print json_encode($obj);
                                 } else {
 					echo '<status state="ok"/>';
         	                        echo '<user_id>'.intval($profile->user_id).'</user_id>';
@@ -276,8 +275,7 @@ class RestAPI
 
                                 if ($this->output=='json') {
                                         require_once '3rdparty/JSON.php';
-                                        $json = new Services_JSON();
-                                        print $json->_encode($obj);
+                                        print json_encode($obj);
                                 } else {
                                         echo '<oembed>';
 					foreach ($obj as $key => $value) {
@@ -314,7 +312,6 @@ class RestAPI
 				if ($this->output=='json') {
 
 					require_once '3rdparty/JSON.php';
-					$json = new Services_JSON();
 					$obj = new EmptyClass;
 
 					$obj->title = latin1_to_utf8($image->title);
@@ -338,7 +335,7 @@ class RestAPI
                                                 $obj->comment = latin1_to_utf8($image->comment);
 					$obj->wgs84_lat = $image->wgs84_lat;
 					$obj->wgs84_long = $image->wgs84_long;
-					print $json->_encode($obj);
+					print json_encode($obj);
 				} else {
 					echo '<status state="ok"/>';
 
@@ -392,9 +389,8 @@ class RestAPI
 			if ($this->output=='json') {
 
 				require_once '3rdparty/JSON.php';
-				$json = new Services_JSON();
 
-				print $json->_encode($images);
+				print json_encode($images);
 			} else {
 				echo '<status state="ok"/>';
 
@@ -424,9 +420,8 @@ class RestAPI
 		if ($this->output=='json') {
 
 			require_once '3rdparty/JSON.php';
-			$json = new Services_JSON();
 
-			print $json->_encode($images);
+			print json_encode($images);
 		} else {
 			echo '<status state="ok"/>';
 
@@ -453,9 +448,8 @@ class RestAPI
 		if ($this->output=='json') {
 
 			require_once '3rdparty/JSON.php';
-			$json = new Services_JSON();
 
-			print $json->_encode($images);
+			print json_encode($images);
 		} else {
 			echo '<status state="ok"/>';
 
@@ -485,9 +479,8 @@ class RestAPI
 			if ($this->output=='json') {
 
 				require_once '3rdparty/JSON.php';
-				$json = new Services_JSON();
 
-				print $json->_encode($images);
+				print json_encode($images);
 			} else {
 				echo '<status state="ok"/>';
 
@@ -532,9 +525,8 @@ class RestAPI
 			if ($this->output=='json') {
 
 				require_once '3rdparty/JSON.php';
-				$json = new Services_JSON();
 
-				print $json->_encode($images);
+				print json_encode($images);
 			} else {
 				echo '<status state="ok"/>';
 
@@ -578,7 +570,7 @@ class RestAPI
 				
 				if ($this->output=='json') {
 					require_once '3rdparty/JSON.php';
-					$json = new Services_JSON();
+
 					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1,'wgs84_lat'=>1,'wgs84_long'=>1);
 					
 					foreach ($images as $i => $image) {
@@ -590,7 +582,7 @@ class RestAPI
 						$images[$i]->image = $image->_getFullpath(true,true);
 						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
 					}
-					print $json->_encode($images);
+					print json_encode($images);
 				} else {
 			
 					echo '<status state="ok" count="'.$count.'" total="'.$images->resultCount.'"/>';
@@ -656,9 +648,8 @@ header('Access-Control-Allow-Origin: *');
                 	        if ($this->output=='json') {
 
                         	        require_once '3rdparty/JSON.php';
-                                	$json = new Services_JSON();
 
-	                                print $json->_encode($images);
+	                                print json_encode($images);
         	                } else {
                 	                echo '<status state="ok"/>'."\n";
 
@@ -700,8 +691,8 @@ header('Access-Control-Allow-Origin: *');
 				if ($this->output=='json') {
 
                                         require_once '3rdparty/JSON.php';
-                                        $json = new Services_JSON();
-                                        print $json->_encode($square);
+
+                                        print json_encode($square);
                                 } else {
                                         echo '<status state="ok"/>'."\n";
 
@@ -750,7 +741,7 @@ ini_set('memory_limit', '128M');
 				
 				if ($this->output=='json') {
 					require_once '3rdparty/JSON.php';
-					$json = new Services_JSON();
+
 					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'tags'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1);
 					
 					foreach ($images as $i => $image) {
@@ -761,7 +752,7 @@ ini_set('memory_limit', '128M');
 						}
 						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
 					}
-					print $json->_encode($images);
+					print json_encode($images);
 				} else {
 			
 					echo '<status state="ok" count="'.$count.'"/>';

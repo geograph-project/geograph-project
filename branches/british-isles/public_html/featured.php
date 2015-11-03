@@ -225,22 +225,21 @@ function sendNotification($message,$subject = 'Message') {
 
 function getLinks($extra,$direct=true) {
 
-	$url = "http://www.geographs.org/links/api.php?function=featured&limit=10&experimental=N&internal=Y&site=www.geograph.org.uk&$extra"; //TODO hardcoded.
+	$url = "http://www.geograph.org/links/api.php?function=featured&limit=10&experimental=N&internal=Y&site=www.geograph.org.uk&$extra"; //TODO hardcoded.
 	
 	$str = file_get_contents($url);
 	
 	$rows = array();
 	if (strlen($str) > 5) {
 		require_once '3rdparty/JSON.php';
-		$json = new Services_JSON();
 
-		$data = $json->decode($str);
+		$data = json_decode($str);
 
 		if ($data != 'empty') {
 			foreach ($data as $item) {
 				$row = array();
 				$row['unique_id'] = $item->link_id; 
-				$row['url'] = $direct?$item->url:"http://www.geographs.org/links/link.php?id=".$item->link_id; 
+				$row['url'] = $direct?$item->url:"http://www.geograph.org/links/link.php?id=".$item->link_id; 
 				$row['title'] = $item->title; 
 				$rows[] = $row;
 			}
