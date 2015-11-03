@@ -26,13 +26,10 @@ require_once('geograph/global.inc.php');
 	$json = new Services_JSON();
 
 
-//todo, ideally read these from the filesyste, config.py file!
-$DSN = 'mysql://user:pass@localhost/filesystem';
-
 $file_table = 'file';
 $folder_table = 'folder';
 
-$db=NewADOConnection($DSN);
+$db=NewADOConnection($CONF['filesystem_dsn']);
 
  header('Content-type: application/json');
 
@@ -50,8 +47,9 @@ $row = $db->getRow("SELECT remote_id,secret FROM remote WHERE active = 1 AND ide
 if (empty($row)) {
 	die('{"error": "who are you again?"}');
 }
-
 $ident = $_GET['ident'];
+
+
 $copy = $_GET;
 unset($copy['sig']);
 $raw = str_replace('%2F','/',http_build_query($copy)); ##alas python urllib.quote doesnt encode slashes
@@ -72,34 +70,77 @@ if ($_GET['command'] == 'filelist') {
 	$data = array();
 
 	if (!empty($_GET['mode'])) {
-		if ($_GET['mode'] == 'full') {
+		$limit = 1000;
+		if ($_GET['mode'] == 'recent') {
+			//favour recent files
+			$filter = "backup_target > 0";
+
+			//recent, always runs on live file table, so need to filter to avoid scanning the whole table!
+			$count = $db->GetOne("SELECT MAX(file_id) FROM file");
+			$diff = ($ident == 'dwo')?12000:80000;
+			$filter .= " AND file_id > ".($count-$diff);
+
+			if (rand(1,2) > 1) {
+				$order = " ORDER BY backup_count ASC";
+			} else {
+				$order = " ORDER BY file_id DESC"; //recent, always runs on live file table, so can use file_id
+			}
+			$hour = intval(date('G'));
+                        if ($hour < 8) {
+				$limit = 250;
+			} else {
+				$limit = 100;
+			}
+
+		} elseif ($_GET['mode'] == 'full') {
 			//any files this identity doesnt have!
 			$filter = "backup_target > 0";
 			$order = " ORDER BY backup_count";
+
+		} elseif ($_GET['mode'] == 'backfill') {
+			$filter = "backup_count < backup_target";
+			if ($ident != 'dsp')
+				$filter .= " AND backups not like '%uka%' AND backups not like '%ovh%'";
+			$order = " ORDER BY shard DESC";
+
 		} elseif ($_GET['mode'] == 'partial') {
 			//get a share of as yet unreplicated files!
-			$filter = "backup_count < backup_target";
+			$filter = "backup_count < backup_target AND backups not like '%uka%' AND backups not like '%ovh%'";
+			$order = " ORDER BY shard DESC";
+
 		} else {
-			die("unknown");
+			die('{"error": "mode not supported"}');
 		}
-		$where = "WHERE backups NOT LIKE '%$ident%' AND $filter"; //todo - change this to use bitmatchign!
-		$limit = 1000;
+		$where = "WHERE backups NOT LIKE '%$ident%' AND $filter"; //todo - change this to use bitmatchign! - maybe even just FIND_IN_SET('$ident',backups)=0
 
-		if (true) {
+		if ($_GET['mode'] != 'recent') {
 			$mode = $db->Quote($_GET['mode']);
-			$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' LIMIT 1");
+			$hour = intval(date('G'));
+			if ($hour < 8) {
+				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' ORDER BY files DESC LIMIT 1");
+			} elseif ($hour > 12 && $hour < 18) {
+				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' AND files > 100 ORDER BY RAND() LIMIT 1");
+			} else {
+				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' ORDER BY task_id LIMIT 1");
+			}
 
-			if (empty($task)) {
+			if (false && empty($task)) {
 				//todo - need some sort of protection, rather than keep repeating this every time once there really no tasks!
 
-				$db->Execute($sql = "INSERT INTO backup_task SELECT null,min(file_id) start,max(file_id) end,count(*) files,$mode as mode,'$ident' as identity
-					FROM $file_table $where GROUP BY file_id DIV 1000 $order");
+				//this became ineffient, as it runs on the huge table, often with a full table scan
+				//$db->Execute($sql = "INSERT INTO backup_task SELECT null,min(file_id) start,max(file_id) end,count(*) files,$mode as mode,'$ident' as identity, now() as created
+				//	FROM $file_table $where GROUP BY file_id DIV 1000 $order");
 
-				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode `identity` = '$ident' LIMIT 1");
+				//more efficent to use the file_stat table, even if its slightly out of date!
+				$db->Execute($sql = "INSERT INTO backup_task select null,min(shard)*10000 as start,max(shard)*10000+9999 as end,sum(count) as files,$mode as mode,'$ident' as identity,now() as created
+					FROM file_stat $where GROUP BY shard ORDER BY NULL");
+
+				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' LIMIT 1");
 			}
 
 			if (empty($task)) {
 				$data['error'] = 'No tasks right now';
+				$where .= " AND 0";
                         } else {
 				$where .= " AND file_id BETWEEN {$task['start']} AND {$task['end']}";
 				$data['task_id'] = $task['task_id'];
@@ -113,7 +154,8 @@ if ($_GET['command'] == 'filelist') {
 		$data['sleep'] = 2;
 
 	} elseif (!empty($_GET['folder'])) {
-
+		$_GET['folder'] = preg_replace('/\/$/','',$_GET['folder']);
+		$_GET['folder'] = str_replace('\\','/',$_GET['folder']);
 		if ($folder_id = $db->getOne("SELECT folder_id FROM $folder_table WHERE folder = ".$db->Quote($_GET['folder']))) {
 			$where = "WHERE folder_id = ".$folder_id." AND backup_target > 0";
 			$limit = 20000;
@@ -125,10 +167,8 @@ if ($_GET['command'] == 'filelist') {
 	}
 
 	if (!empty($where)) {
-		//in theory should only offer such files for download, but just in case, could filter them out.
- 		//$where .= " AND filename LIKE '{$data['docroot']}%'";
-
 		$data['rows'] = $db->getAll("SELECT file_id,filename,backups,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM $file_table $where $order LIMIT $limit");
+		$ids = array_keys($data['rows']); //just so have something to log - we only need to be able to do count($ids)
 	}
 
 	customGZipHandlerStart();
