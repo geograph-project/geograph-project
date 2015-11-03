@@ -1000,7 +1000,6 @@ class JSONCreator extends FeedCreator {
 		}
 
 		require_once '3rdparty/JSON.php';
-		$json = new Services_JSON();
 
 		if (isset($_GET['callback'])) {
 			$this->callback=preg_replace('/[^\w\.$]+/','',$_GET['callback']);
@@ -1012,9 +1011,9 @@ class JSONCreator extends FeedCreator {
 		}
 
 		if (!empty($this->callback)) {
-			return "/**/{$this->callback}(".$json->encode($data).")";
+			return "/**/{$this->callback}(".json_encode($data).")";
 		} else
-			return $json->encode($data);
+			return json_encode($data);
 	}
 }
 

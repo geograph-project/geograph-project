@@ -1125,13 +1125,11 @@ function outputJSON(&$data) {
 		header("Content-Type:application/json");
 	}
 
-	if (function_exists('json_encode')) {
-		print json_encode($data);
-	} else {
+	if (!function_exists('json_encode')) {
 	        require_once '3rdparty/JSON.php';
-        	$json = new Services_JSON();
-	        print $json->encode($data);
 	}
+
+        print json_encode($data);
 
         if (!empty($_GET['callback'])) {
                 echo ");";
