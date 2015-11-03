@@ -1,4 +1,16 @@
 <?php
+
+if (!function_exists('json_encode')) {
+        function json_encode($data) {
+                $json = new Services_JSON();
+                return $json->_encode($data);
+        }
+        function json_decode($data) {
+                $json = new Services_JSON();
+                return $json->decode($data);
+        }
+}
+
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 /**
  * Converts to and from JSON format.
