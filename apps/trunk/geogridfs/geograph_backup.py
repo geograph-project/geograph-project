@@ -72,7 +72,7 @@ def json_write(inp):
 
 #############################################################################
 
-def walk_and_notify(folder = '', track_progress = True):
+def walk_and_notify(folder = '', track_progress = True, reverify = False):
     mount = config['folder']
 
     print mount+folder
@@ -114,7 +114,24 @@ def walk_and_notify(folder = '', track_progress = True):
                     ##We have the file, lets check we noted in replicas
                     
                     if config['identity'] in row['backups']: 
-                        print "Already Notified: "+row['filename']
+                        
+                        if reverify:
+                            print "Already Notified: "+row['filename']+', checking validity...'
+                            stat = os.stat(root + "/" + filename)
+                            if (stat.st_size > 0 and stat.st_size < 52428800):
+                                md5su = md5sum(root + "/" + filename)
+                            else:
+                                md5su =''
+                            
+                            if md5su != row['md5sum']:
+                                print " md5 checksum does not match '"+md5su+"' != '"+row['md5sum']+"'"
+                                failures.append("md5,"+md5su+","+row['md5sum']+","+filename)
+                            elif int(stat.st_size) != int(row['size']):
+                                print " size does not match '"+str(stat.st_size)+"' != '"+str(row['size'])+"'"
+                                failures.append("size,"+str(stat.st_size)+","+str(row['size'])+","+filename)
+                        else:
+                            print "Already Notified: "+row['filename']
+                        
                     else:
                         print "Validating: "+row['filename']
                         
@@ -143,9 +160,10 @@ def walk_and_notify(folder = '', track_progress = True):
             
             if files:
                 for filename in files:
-                    print "Unknown File: "+ filename
-                    failures.append("unknown,"+filename)
-                    
+                    if filename != 'backup.done':
+                        print "Unknown File: "+ filename
+                        failures.append("unknown,"+filename)
+            
             if notify:
                 query = "ident="+config['identity']+"&command=notify&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
                 
@@ -360,6 +378,9 @@ def main(argv):
     
     elif action == 'walk':
         walk_and_notify(path)
+    
+    elif action == 'rewalk':
+        walk_and_notify(path, False, True)
     
     elif action == 'replicate':
         replicate_now(path,mode)
