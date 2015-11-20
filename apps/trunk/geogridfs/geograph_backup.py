@@ -72,7 +72,7 @@ def json_write(inp):
 
 #############################################################################
 
-def walk_and_notify(folder = '', track_progress = True, reverify = False):
+def walk_and_notify(folder = '', track_progress = True, reverify = False, sleeper = 0):
     mount = config['folder']
     mode = 'walk'
     if reverify:
@@ -202,6 +202,10 @@ def walk_and_notify(folder = '', track_progress = True, reverify = False):
             if track_progress:
                 open(root+'/backup.done', 'w').close()
             print "-----------"
+            
+            if sleeper>0:
+                time.sleep(sleeper)
+            
 
 #############################################################################
 
@@ -360,9 +364,10 @@ def main(argv):
     action = 'unknown'
     path = ''
     mode = False
+    sleeper = 0
 
     try:
-        opts, args = getopt.getopt(argv,"a:p:m:",["action=","path=","mode="])
+        opts, args = getopt.getopt(argv,"a:p:m:s:",["action=","path=","mode=","sleep="])
     except getopt.GetoptError:
         print 'replication.py -a (walk|replicate) [-p /geograph_live/rastermaps]'
         sys.exit(2)
@@ -374,16 +379,18 @@ def main(argv):
             mode = arg
         elif opt in ("-p", "--path"):
             path = arg
+        elif opt in ("-s", "--sleep"):
+            sleeper = float(arg)
     
     if action == 'unknown':
         print 'replication.py -a (walk|replicate) [-p /geograph_live/rastermaps]'
         sys.exit(2)
     
     elif action == 'walk':
-        walk_and_notify(path)
+        walk_and_notify(path, True, False, sleeper)
     
     elif action == 'rewalk':
-        walk_and_notify(path, False, True)
+        walk_and_notify(path, False, True, sleeper)
     
     elif action == 'replicate':
         replicate_now(path,mode)
