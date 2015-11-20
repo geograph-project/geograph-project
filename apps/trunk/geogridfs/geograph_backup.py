@@ -74,6 +74,9 @@ def json_write(inp):
 
 def walk_and_notify(folder = '', track_progress = True, reverify = False):
     mount = config['folder']
+    mode = 'walk'
+    if reverify:
+        mode='rewalk'
 
     print mount+folder
     for root, dirs, files in os.walk(mount+folder):
@@ -85,7 +88,7 @@ def walk_and_notify(folder = '', track_progress = True, reverify = False):
             
             print "Processing: "+root
             
-            query = "ident="+config['identity']+"&command=filelist&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
+            query = "ident="+config['identity']+"&command=filelist&mode="+mode+"&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
             
             sig = hmac.new(config['secret'], query);
             url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
@@ -165,7 +168,7 @@ def walk_and_notify(folder = '', track_progress = True, reverify = False):
                         failures.append("unknown,"+filename)
             
             if notify:
-                query = "ident="+config['identity']+"&command=notify&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
+                query = "ident="+config['identity']+"&command=notify&mode="+mode+"&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
                 
                 sig = hmac.new(config['secret'], query);
                 url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
@@ -181,7 +184,7 @@ def walk_and_notify(folder = '', track_progress = True, reverify = False):
                 print response
             
             if failures:
-                query = "ident="+config['identity']+"&command=failures&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
+                query = "ident="+config['identity']+"&command=failures&mode="+mode+"&folder=" + urllib.quote(string.replace(root,mount,''))+"&r="+str(random.randint(1,100000))
                 
                 sig = hmac.new(config['secret'], query);
                 url = config['api_endpoint'] + "?" + query + "&sig="+sig.hexdigest()
