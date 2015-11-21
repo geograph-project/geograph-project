@@ -383,6 +383,8 @@ limit $limit";
 
 $images=new ImageList(); 
 
+$images->_setDB($db); # Deadlock otherwise in the following line when using mysqli driver:
+                      # We have locked tables for this connection and should therefore not use another connection at the same time.
 $c = $images->_getImagesBySql($sql);
 
 $realname = array();
