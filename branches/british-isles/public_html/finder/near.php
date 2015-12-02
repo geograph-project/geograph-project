@@ -74,9 +74,9 @@ if (!empty($_GET['q'])) {
 
 	$sphinxq = '';
 
-	$mkey = md5(trim($_GET['q']).$src);
+	$mkey = md5('v2'.trim($_GET['q']).$src);
 	if (!empty($_GET['filter'])) {
-		$sphinx = new sphinxwrapper(trim($_GET['filter']));
+		$sphinx = new sphinxwrapper(trim($_GET['filter']), true); //this is for sample8 index. 
 		$sphinxq = $sphinx->q;
 		$mkey = md5($sphinxq.'.'.$mkey);
 	}
@@ -273,12 +273,6 @@ print "<!-- ($lat,$lng) -->";
 
 
 		$where = implode(' and ',$where);
-
-                //convert gi_stemmed -> sample8 format.
-                $where = str_replace('@by','@realname',$where);
-                $where = preg_replace('/__TAG__/i','_SEP_',$where);
-                $where = str_replace('@tags \\"_SEP_ top ','@contexts \\"_SEP_ ',$where);
-                $where = preg_replace('/@tags \\\\"_SEP_ (bucket|subject|term|group|wiki|snippet) /','@$1s \\"_SEP_ ',$where);
 
 		$rows = array();
 

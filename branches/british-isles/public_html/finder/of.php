@@ -76,7 +76,7 @@ if (!empty($_GET['q'])) {
 	}
 
 
-        $sphinx = new sphinxwrapper(trim($_GET['q']));
+        $sphinx = new sphinxwrapper(trim($_GET['q']), true);
 
 	$qu = urlencode(trim($_GET['q']));
 	$qu2 = urlencode2(trim($_GET['q']));
@@ -251,16 +251,8 @@ if (!empty($_GET['q'])) {
 			print '<iframe src="http://t0.geograph.org.uk/tile-info.php?id='.$id.'" width="100%" height="250" frameborder=0></iframe>';
 
 		} else {
-			$sphinx->q = preg_replace('/@text\b/','@(title,comment,imageclass,tags)',$sphinx->q);
-
 	                $where = "match(".$sph->Quote($sphinx->q).")";
 		}
-
-                //convert gi_stemmed -> sample8 format.
-                $where = str_replace('@by','@realname',$where);
-                $where = preg_replace('/__TAG__/i','_SEP_',$where);
-                $where = str_replace('@tags \\"_SEP_ top ','@contexts \\"_SEP_ ',$where);
-                $where = preg_replace('/@tags \\\\"_SEP_ (bucket|subject|term|group|wiki|snippet) /','@$1s \\"_SEP_ ',$where);
 
 		$rows = array();
 
