@@ -40,13 +40,13 @@ class sphinxwrapper {
 
 	private $client = null;
 
-	public function __construct($q = '') {
+	public function __construct($q = '',$newformat = false) {
 		if (!empty($q)) {
-			return $this->prepareQuery($q);
+			return $this->prepareQuery($q,$newformat);
 		}
 	}
 
-	public function prepareQuery($q) {
+	public function prepareQuery($q,$newformat = false) {
 		$this->rawq = $q;
 
 			//change OR to the right syntax
@@ -59,7 +59,8 @@ class sphinxwrapper {
 		$q = str_replace('http://','http ',$q);
 
 			//remove any colons in tags - will mess up field: syntax
-		$q = preg_replace('/\[([^\]]+)[:-]([^\]]+)\]/','[$1 $2]',$q);
+		$q = preg_replace('/\[([^\]]+)[:-]([^\]]+)\]/','[$1~~~$2]',$q);
+		$q = preg_replace('/"([^"]+):([^"]+)"/','"$1~~~$2"',$q);
 
 			//setup field: syntax
 		$q = preg_replace('/(-?)\b([a-z_]+):/','@$2 $1',$q);
@@ -103,6 +104,7 @@ class sphinxwrapper {
 			//change it back to simple: syntax
 		$q2 = preg_replace('/(-?)[@]([a-z_]+) (-?)/','$1$3$2:',$q);
 		$q2 = str_replace('|',' OR ',$q2);
+		$q2 = str_replace('~~~',':',$q2);
 		$this->qclean = trim(str_replace('  ',' ',$q2));
 
 
@@ -126,17 +128,43 @@ class sphinxwrapper {
 			$q2 = '';
 			foreach ($m[2] as $idx => $value) {
 				$q = str_replace($m[0][$idx],'',$q);
-				$q2 .= " ".$m[1][$idx].'"__TAG__ '.strtr($value,':-','  ').' __TAG__"';
+				$value = strtr($value,':-','  ');
+				if (strpos($value,'~~~') > 0) {
+					$bits = explode('~~~',$value,2);
+					$q2 .= " ".$m[1][$idx].'"__TAG__ '.implode(' __TAG__ ',$bits).' __TAG__"';
+				} else
+					$q2 .= " ".$m[1][$idx].'"__TAG__ '.$value.' __TAG__"';
 			}
 			if (!empty($q2)) {
 				$q .= " @tags".$q2;
 			}
 		}
+
+		$q = preg_replace('/"([^"]+)~~~([^"]+)"/','"$1 __TAG__ $2"',$q);
+
 			//FIX  '@title  @source -themed @tags "__TAG__ footpath __TAG__"'
 		$q = preg_replace('/@(\w+)\s+@/','@',$q);
 
 			//transform 'near gridref' to the put the GR first (thats how processQuery expects it)
 		$q = preg_replace('/^(.*) *near +([a-zA-Z]{1,2} *\d{2,5} *\d{2,5}) *$/','$2 $1',$q);
+
+
+		if (!empty($newformat)) {
+        	        //convert gi_stemmed -> sample8 format.
+                	$q = str_replace('@by','@realname',$q);
+                        $q = preg_replace('/@text\b/','@(title,comment,imageclass,tags)',$q);
+
+	                $q = str_ireplace('__TAG__','_SEP_',$q);
+        	        $q = str_replace('@tags "_SEP_ top _SEP_ ','@contexts "_SEP_ ',$q);
+	                $q = preg_replace('/@tags "_SEP_ (bucket|subject|term|group|wiki|snippet) _SEP_ /','@$1s "_SEP_ ',$q);
+
+			if ($newformat === 2) {
+				$bits = explode(' near ',$_GET['q']);
+				if (count($bits) == 2) {
+					$q = str_replace(' near ',' @(Place,County,Country) ',$q);
+				}
+			}
+		}
 
 		$this->q = $q;
 	}
