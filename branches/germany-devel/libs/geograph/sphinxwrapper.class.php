@@ -66,10 +66,14 @@ class sphinxwrapper {
 	
 	
 			//make hyphenated words phrases
-		$q = preg_replace('/(\w+)(-[-\w]*\w)/e','"\\"".str_replace("-"," ","$1$2")."\\" | ".str_replace("-","","$1$2")',$q);
+		$q = preg_replace_callback('/(\w+)(-[-\w]*\w)/', function($m) {
+			return '"'.str_replace("-"," ",$m[1].$m[2]).'" | '.str_replace("-","",$m[1].$m[2]);
+		}, $q);
 		
 			//make aposphies work (as a phrase) 
-		$q = preg_replace('/(\w+)(\'\w*[\'\w]*\w)/e','"\"".str_replace("\\\'"," ","$1$2")."\" | ".str_replace("\\\'","","$1$2")',$q);
+		$q = preg_replace_callback('/(\w+)(\'\w*[\'\w]*\w)/', function($m) {
+			return '"'.str_replace("'"," ",$m[1].$m[2]).'" | '.str_replace("'","",$m[1].$m[2]);
+		}, $q);
 		
 			//change single quotes to double
 		$q = preg_replace('/(^|\s)\b\'([\w ]+)\'\b(\s|$)/','$1"$2"$3',$q);
