@@ -212,7 +212,7 @@ class EventProcessor
 						if ($entry[0]!=".")
 						{
 	
-							list($classname, $ext1, $ext2)=explode(".", $entry,3);
+							@list($classname, $ext1, $ext2)=explode(".", $entry,3);
 	
 							if ($ext1=="class" && $ext2=="php")
 							{

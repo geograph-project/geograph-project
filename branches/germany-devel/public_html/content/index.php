@@ -244,9 +244,9 @@ if (!empty($_GET['debug'])) {
 				//skip...
 			} elseif (preg_match('/^[A-Z]/',$w)) { // FIXME umlaut
 				//give promience to uppercased words
-				$a[strtolower($w)]+=2;
+				@$a[strtolower($w)]+=2;
 			} elseif (!ctype_digit($w)) {
-				$a[$w]++;
+				@$a[$w]++;
 			}
 		}
 	}

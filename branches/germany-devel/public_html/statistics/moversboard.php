@@ -220,7 +220,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		group by i.user_id 
 		having (geographs > 0 or pending > 0)
 		order by geographs desc $sql_orderby, pending desc ";
-		if ($_GET['debug'])
+		if (!empty($_GET['debug']))
 			print $sql;
 		$topusers=$db->GetAssoc($sql);
 	}		

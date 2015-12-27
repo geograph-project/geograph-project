@@ -305,12 +305,12 @@ function smarty_function_place($params) {
 	if ($CONF['lang'] == 'de') {
 		if ($place['distance'] > 3)
 			$t .= ($place['distance']-0.01)." km entfernt von ";
-		elseif (!$place['isin'])
+		elseif (empty($place['isin']))
 			$t .= "<span title=\"etwa ".($place['distance']-0.01)." km entfernt\">in der Nähe</span> von ";
 	} else {
 		if ($place['distance'] > 3)
 			$t .= ($place['distance']-0.01)." km from ";
-		elseif (!$place['isin'])
+		elseif (empty($place['isin']))
 			$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 	}
 
@@ -322,7 +322,7 @@ function smarty_function_place($params) {
 		$t .= "<b>{$place['full_name']}</b><small><i>";
 	}
 	$t = str_replace(' And ','</b> and <b>',$t);
-	if (count($place['hier'])) {
+	if (isset($place['hier']) && count($place['hier'])) {
 		$t .= ', '.get_hierstring_from_array($place['hier'], $place['full_name']);
 	} else {
 		if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
@@ -335,7 +335,7 @@ function smarty_function_place($params) {
 			} else {
 				$t .= ", {$place['adm1_name']}";
 			}
-		} elseif ($place['hist_county']) {
+		} elseif (!empty($place['hist_county'])) {
 			$t .= ", {$place['hist_county']}";
 		}
 		$t .= ", {$place['reference_name']}";
@@ -346,7 +346,7 @@ function smarty_function_place($params) {
 	$t2 = "<$tag";
 	if (!empty($params['h3']) && strlen($params['h3']) > 1)
 		$t2 .= $params['h3'];
-	if ($place['hist_county']) {
+	if (!empty($place['hist_county'])) {
 		$t2 .= " title=\"".substr($place['full_name'],0,12).": Historic County - {$place['hist_county']}";
 		if ($place['hist_county'] == $place['adm1_name'])
 			$t2 .= ", and modern Administrative Area of the same name";

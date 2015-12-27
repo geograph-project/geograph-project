@@ -111,7 +111,7 @@ $table[] = array("Parameter"=>'',"Value"=>'');
 
 $table[] = array("Parameter"=>'',"Value"=>'');
 	
-	if (strpos($_ENV["OS"],'Windows') === FALSE) {
+	if (!isset($_ENV["OS"]) || strpos($_ENV["OS"],'Windows') === FALSE) {
 		//check load average
 		$buffer = "0 0 0";
 		if (is_readable("/proc/loadavg")) {
