@@ -644,6 +644,54 @@ function handleAuthError()
 	req.send(postdata);
 }
 
+function setAdminMode(onoff, eleid, eleclass)
+{
+	if (typeof geograph_CSRF_token === 'undefined') {
+		return;
+	}
+	var url = "/session.php";
+	var postdata = 'action=adminmode&status=' + (onoff ? '1' : '0') + "&CSRF_token=" + encodeURIComponent(geograph_CSRF_token);
+
+	var req=geoGetXMLRequestObject();
+	var reqTimer = setTimeout(function() {
+	       req.abort();
+	}, 30000);
+	req.onreadystatechange = function() {
+		if (req.readyState != 4) {
+			return;
+		}
+		clearTimeout(reqTimer);
+		req.onreadystatechange = function() {};
+		if (req.status != 200) {
+			alert("admin mode: Cannot communicate with server, status " + req.status);
+			return;
+		}
+		var responseText = req.responseText;
+		//alert(responseText);// FIXME remove
+		if (/^-[1-9][0-9]*:[0-9]*:.*$/.test(responseText)) { /* error */
+			var parts = responseText.split(':');
+			var rcode = parseInt(parts[0]);
+			var rinfo = parseInt(parts[1]);
+			if (rcode == -5) {
+				handleCSRFError("Changing admin mode failed due to security reasons, please try again");
+			} else {
+				alert("admin mode: Server returned error " + -rcode + " (" + parts[2] + ")");
+			}
+		} else if (/^0:.*$/.test(responseText)) { /* success */
+			if (typeof eleid !== 'undefined') {
+				var ele = document.getElementById(eleid);
+				ele.className = eleclass;
+			}
+		} else {
+			alert("admin mode: Unexpected response from server");
+		}
+	}
+	req.open("POST", url, true);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	//req.setRequestHeader("Connection", "close");
+	req.send(postdata);
+}
+
 function timestr(t)
 {
 	var tseconds = t % 60;

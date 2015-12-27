@@ -344,10 +344,12 @@ class GeographPage extends Smarty
 
 
 		//show more links in template?
+		$checkadminmode = false;
 		if (isset($GLOBALS['USER']) && $GLOBALS['USER']->user_id > 0) {
-			if ($GLOBALS['USER']->hasPerm('admin'))
+			if ($GLOBALS['USER']->hasPerm('admin', false, false))
 			{
 				$this->assign('is_admin', true);
+				$checkadminmode = true;
 			}
 			if ($GLOBALS['USER']->hasPerm('moderator'))
 			{
@@ -357,14 +359,24 @@ class GeographPage extends Smarty
 			{
 				$this->assign('is_tickmod', true);
 			}
-			if ($GLOBALS['USER']->hasPerm('mapmod'))
+			if ($GLOBALS['USER']->hasPerm('forum', false, false))
+			{
+				$this->assign('is_forummod', true);
+				$checkadminmode = true;
+			}
+			if ($GLOBALS['USER']->hasPerm('mapmod', false, false))
 			{
 				$this->assign('is_mapmod', true);
+				$checkadminmode = true;
 			}
 			if ($GLOBALS['USER']->hasPerm('basic'))
 			{
 				$this->assign('is_logged_in', true);
 			}
+		}
+		if ($checkadminmode) {
+			$this->assign('admin_mode', $GLOBALS['USER']->getAdminMode());
+			$this->assign('allow_admin_mode', true);
 		}
 
 		if (count($CONF['languages'])) {

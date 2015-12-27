@@ -183,6 +183,10 @@ body>#right_block {width:168px;}
 	}
 body>#nav_block {width:128px;}
 
+div#nav_block.adminmode {
+	background-color: yellow;
+}
+
 .nav
 {
 	font-size:0.8em;

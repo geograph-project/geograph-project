@@ -1,6 +1,6 @@
 </div>
 </div>
-<div id="nav_block" class="no_print">
+<div id="nav_block" class="no_print{dynamic}{if $admin_mode} adminmode{/if}{/dynamic}">
  <div class="nav">
   <ul>
     <li style="font-size:1.42em"><a accesskey="1" title="Home Page" href="/">Home</a></li>
@@ -52,6 +52,20 @@
      {/if}
      {if $is_tickmod||$is_mod}
      	<li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
+     {/if}
+     {if $allow_admin_mode}
+<script type="text/javascript">
+//<![CDATA[
+	geograph_CSRF_token = '{$CSRF_token|escape:"javascript"}';
+	geograph_user_id = {$user->user_id};
+//]]>
+</script>
+	<li>Admin mode<sup><a href="/help/adminmode">?</a></sup>
+	<ul>
+	<li><input type="button" value="Enable"  onclick="setAdminMode(1, 'nav_block', 'no_print adminmode');" /></li>
+	<li><input type="button" value="Disable"  onclick="setAdminMode(0, 'nav_block', 'no_print');" /></li>
+	</ul>
+	</li>
      {/if}
     </ul></li>
   {/if}

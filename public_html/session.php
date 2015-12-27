@@ -89,6 +89,28 @@ if ($_POST['action'] === 'CSRF_token') {
 		exit;
 	}
 
+} elseif ($_POST['action'] === 'adminmode') {
+// status:
+//    -5: invalid csfr token
+//    -2: invalid parameter or unknown error
+//    -1: invalid request
+//     0: success
+	if (!isset($_POST['status']) || !preg_match('/^\s*[01]\s*$/', $_POST['status'])) {
+		print "-2:0:invalid status";
+		exit;
+	}
+	if (!isset($_POST['CSRF_token']) || $_POST['CSRF_token'] !== $_SESSION['CSRF_token']) {
+		print "-5:0:invalid CSRF token";
+		exit;
+	}
+	$ok = $USER->setAdminMode(intval($_POST['status']) != 0);
+	if ($ok) {
+		print "0:success";
+		exit;
+	} else {
+		print "-2:0:unknown error";
+		exit;
+	}
 } else {
 	trigger_error("invalid request '{$_POST['action']}'", E_USER_WARNING);
 	print "-1::invalid request";
