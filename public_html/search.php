@@ -1066,7 +1066,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 
 	if ($engine->criteria->user_id == $USER->user_id) {
-		if (!$db) {
+		if (!isset($db)) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (!$db) die('Database connection failed');
 		}

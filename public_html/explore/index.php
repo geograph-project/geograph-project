@@ -32,7 +32,7 @@ $smarty = new GeographPage;
 //regenerate?
 if (!$smarty->is_cached('explore.tpl'))
 {
-	if (!$db) {
+	if (!isset($db)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 	}
