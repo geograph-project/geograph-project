@@ -3,7 +3,7 @@
 This file is part of miniBB. miniBB is free discussion forums/message board software, without any warranty. See COPYING file for more details. Copyright (C) 2004 Paul Puzyrev, Sergei Larionov. www.minibb.net
 */
 
-$DBdriver='mysql'; #$CONF['db_driver'];
+$DBdriver='adodb'; #$CONF['db_driver'];
 
 $DBhost=$CONF['db_connect'];
 $DBname=$CONF['db_db'];

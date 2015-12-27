@@ -29,7 +29,7 @@ $_POST['passwd2']=$_POST['passwd'];
 
 require($pathToFiles.'bb_func_usrdat.php');
 
-if($DBdriver=='mysql' or $DBdriver=='pgsql') $case='lower'; elseif($DBdriver=='mssql') $case='lcase';
+if($DBdriver=='adodb' or $DBdriver=='mysql' or $DBdriver=='pgsql') $case='lower'; elseif($DBdriver=='mssql') $case='lcase';
 
 if (db_simpleSelect(0,$Tu,$dbUserId,$dbUserId,'=',1) and !db_simpleSelect(0,$Tu,$dbUserId,$case."({$dbUserSheme['username'][1]})",'=',strtolower(${$dbUserSheme['username'][1]})) and !db_simpleSelect(0,$Tu,$dbUserId,$dbUserSheme['user_email'][1],'=',${$dbUserSheme['user_email'][1]}) and ${$dbUserSheme['username'][1]}!=$admin_usr and ${$dbUserSheme['user_email'][1]}!=$admin_email) {
 
