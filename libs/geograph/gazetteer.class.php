@@ -52,7 +52,7 @@ class Gazetteer
 		
 		$mkey = "$reference_index,$e,$n,$radius,-".'.v3';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
-		$places =& $memcache->name_get('g',$mkey);
+		$places = $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
 		
@@ -161,7 +161,7 @@ class Gazetteer
 		
 		$mkey = "$reference_index,$e,$n,$radius,$f_codes,$gazetteer";
 		//fails quickly if not using memcached!
-		$places =& $memcache->name_get('g',$mkey);
+		$places = $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
 		
@@ -470,7 +470,7 @@ class Gazetteer
 		
 		$mkey = strtolower(trim($placename)).'.v5';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
-		$places =& $memcache->name_get('g',$mkey);
+		$places = $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
 		

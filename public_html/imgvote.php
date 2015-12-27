@@ -151,7 +151,7 @@ $sql = "SELECT gv.type, COUNT(*), SUM(gv.vote=1), SUM(gv.vote=2), SUM(gv.vote=3)
 	"FROM gridimage gi INNER JOIN gridimage_vote gv ON (gi.gridimage_id=gv.gridimage_id)".
 	"WHERE gv.user_id=$uid AND gi.user_id != gv.user_id GROUP BY gv.type;";
 
-$votestat =& $db->GetAssoc($sql);
+$votestat = $db->GetAssoc($sql);
 $smarty->assign_by_ref('votestat', $votestat);
 
 $where = "gv.user_id=$uid ";
