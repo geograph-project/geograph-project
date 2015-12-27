@@ -167,7 +167,7 @@ function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
 //use:	list($lat,$long) = gridsquare_to_wgs84(&$gridsquare);
 			//will contain nateastings/natnorthings  or can call getNationalEastings to get them
 
-function gridsquare_to_wgs84(&$gridsquare) {
+function gridsquare_to_wgs84($gridsquare) {
 	if (!$gridsquare->nateastings)
 		$gridsquare->getNatEastings();
 	return $this->national_to_wgs84($gridsquare->nateastings,$gridsquare->natnorthings,$gridsquare->reference_index);

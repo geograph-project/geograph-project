@@ -834,7 +834,7 @@ function customGZipHandlerStart() {
 function customGZipHandlerEnd() {
 	global $encoding;
 	
-	$contents =& ob_get_clean();
+	$contents = ob_get_clean();
 
 	if (isset($encoding) && $encoding) {
 		// Send compressed contents

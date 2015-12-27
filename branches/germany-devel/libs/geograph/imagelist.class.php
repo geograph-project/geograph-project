@@ -254,14 +254,14 @@ class ImageList
 	*/
 	function _getImagesBySql($sql,$cache = 0) {
 		$db=&$this->_getDB();
-		if ($_GET['debug'])
+		if (!empty($_GET['debug']))
 			print $sql;
 		$this->images=array();
 		$i=0;
 		if ($cache > 0) {
-			$recordSet = &$db->CacheExecute($cache,$sql);
+			$recordSet = $db->CacheExecute($cache,$sql);
 		} else {
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 		}
 		while (!$recordSet->EOF) 
 		{
@@ -443,7 +443,7 @@ class RecentImageList extends ImageList {
 		
 		$mkey = rand(1,10).'.'.$reference_index;
 		//fails quickly if not using memcached!
-		$this->images =& $memcache->name_get('ril',$mkey);
+		$this->images = $memcache->name_get('ril',$mkey);
 		if ($this->images) {
 			$this->assignSmarty($smarty, 'recent');
 			return;
@@ -456,7 +456,7 @@ class RecentImageList extends ImageList {
 		$imagesbyuser = array();
 		$images = array();
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-		$recordSet = &$db->Execute("select gridimage_id, user_id from gridimage_recent limit 100");
+		$recordSet = $db->Execute("select gridimage_id, user_id from gridimage_recent limit 100");
 		$ADODB_FETCH_MODE = $prev_fetch_mode;
 		while (!$recordSet->EOF) {
 			$uid = $recordSet->fields['user_id'];       #$recordSet->fields[1];
@@ -481,7 +481,7 @@ class RecentImageList extends ImageList {
 				reset($imagesbyuser);
 				$selectedusers = array(key($imagesbyuser));
 			} else {
-				$selectedusers =& array_rand($imagesbyuser, $users);
+				$selectedusers = array_rand($imagesbyuser, $users);
 			}
 			foreach ($selectedusers as $uid) {
 				$giid = $imagesbyuser[$uid][array_rand($imagesbyuser[$uid])];
@@ -503,7 +503,7 @@ class RecentImageList extends ImageList {
 		if (count($reslist)) {
 			$id_string = join(',',$reslist);
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-			$recordSet = &$db->Execute("select * from gridimage_search where gridimage_id in ($id_string) order by RAND()");
+			$recordSet = $db->Execute("select * from gridimage_search where gridimage_id in ($id_string) order by RAND()");
 			$ADODB_FETCH_MODE = $prev_fetch_mode;
 			while (!$recordSet->EOF) {
 				$this->images[$i] = new GridImage;

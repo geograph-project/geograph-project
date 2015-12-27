@@ -81,7 +81,7 @@ class GeographUser
 		{
 			$db = $this->_getDB();
 						
-			$arr =& $db->GetRow("select * from user where user_id=$uid limit 1");	
+			$arr = $db->GetRow("select * from user where user_id=$uid limit 1");	
 			if (count($arr))
 			{
 				$this->registered=strlen($arr['rights'])>0;
@@ -111,7 +111,7 @@ class GeographUser
 
 			$nickname = $db->Quote($nickname);
 			
-			$arr =& $db->GetRow("select * from user where nickname = $nickname limit 1");
+			$arr = $db->GetRow("select * from user where nickname = $nickname limit 1");
 			
 			
 			//todo check seperate table
@@ -349,7 +349,7 @@ class GeographUser
 	function getForumSortOrder() {
 		$db = $this->_getDB();
 	
-		$this->sortBy =& $db->getOne("select user_sorttopics from geobb_users where user_id='{$this->user_id}'");
+		$this->sortBy = $db->getOne("select user_sorttopics from geobb_users where user_id='{$this->user_id}'");
 		return $this->sortBy;
 	}
 	
@@ -1748,7 +1748,7 @@ class GeographUser
 			unset($this->db);
 		}
 		
-		$vars =& get_object_vars($this);
+		$vars = get_object_vars($this);
 		return array_keys($vars);
 	}
 }
