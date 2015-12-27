@@ -799,7 +799,6 @@ class UploadManager
 				$this->rawExifData = $rawExif;
 				$this->strExifData = $exif;
 				$this->setOrientation($rawExif);
-				$this->setOrientation($strExif);
 			}
 		}
 	}
