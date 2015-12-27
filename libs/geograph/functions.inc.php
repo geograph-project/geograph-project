@@ -404,7 +404,7 @@ function smarty_function_linktoself($params) {
 	} else {
 		$a[$params['name']] = $params['value'];
 	}
-	return htmlentities(count($a)?("?".http_build_query($a,'', '&')):'');
+	return htmlentities_latin(count($a)?("?".http_build_query($a,'', '&')):'');
 }
 
 /**
@@ -555,7 +555,7 @@ function GeographLinks(&$posterText, $thumbs = false, $short = false, $newwindow
 						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
 						if ($g_matches[1][$i]) {
 							if ($thumbs) {
-								$g_title.=' by '.htmlentities($g_image->realname);
+								$g_title.=' by '.htmlentities_latin($g_image->realname);
 								$g_img = $g_image->getThumbnail(120,120,false,true);
 
 								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
@@ -859,7 +859,7 @@ function htmlspecialchars_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8
 }
   
 function htmlnumericentities($myXML){
-  return preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars($myXML));
+  return preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars_latin($myXML));
 }
 
 function xmlentities($s) {

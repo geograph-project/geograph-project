@@ -337,7 +337,7 @@ for ($i=0; $i<$cnt; $i++)
 	//<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
 
 	if ($format == 'KML') {
-		$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($images->images[$i]->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
+		$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars_latin($images->images[$i]->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
 	} else {
 		$item->licence = "http://creativecommons.org/licenses/by-sa/2.0/";
 	}

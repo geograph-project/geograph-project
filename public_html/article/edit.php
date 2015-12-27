@@ -98,7 +98,7 @@ $cacheid = '';
 			
 			if (isset($_GET['lock'])) {
 				if ($lockedby) {
-					print "ERROR: Article already locked by ".htmlentities($lockedby).", please try later";
+					print "ERROR: Article already locked by ".htmlentities_latin($lockedby).", please try later";
 				} else {
 					$db->Execute("REPLACE INTO article_lock SET user_id = {$USER->user_id}, article_id = {$page['article_id']}");
 

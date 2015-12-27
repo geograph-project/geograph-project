@@ -107,7 +107,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		}
 		
 		$extra .= "&amp;q=".urlencode($sphinx->q);
-		$title = "Matching word search [ ".htmlentities($sphinx->q)." ]";
+		$title = "Matching word search [ ".htmlentities_latin($sphinx->q)." ]";
 		
 		#$sphinx->processQuery();
 		
@@ -218,7 +218,7 @@ if (!empty($_GET['debug'])) {
 	$smarty->assign('extra', $extra);
 	
 	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
-		$smarty->assign('extra_raw', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
+		$smarty->assign('extra_raw', "&amp;".htmlentities_latin($_SERVER['QUERY_STRING']));
 	}
 	
 } else if ($template == 'content.tpl' && !$smarty->is_cached($template, $cacheid)) {
@@ -275,7 +275,7 @@ if (!empty($_GET['debug'])) {
 			$title = "By ".($profile->realname);
 		} elseif (!empty($_GET['q']) && !empty($CONF['sphinx_host'])) {
 			$sphinx = new sphinxwrapper(trim($_GET['q']));
-			$title = "Matching [ ".htmlentities($sphinx->q)." ]";
+			$title = "Matching [ ".htmlentities_latin($sphinx->q)." ]";
 		} elseif (isset($_GET['docs'])) {
 			$title = "Geograph Documents";
 		} elseif (isset($_GET['loc'])) {
@@ -283,7 +283,7 @@ if (!empty($_GET['debug'])) {
 		}
 	
 		$smarty->assign('title', $title);
-		$smarty->assign('extra', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
+		$smarty->assign('extra', "&amp;".htmlentities_latin($_SERVER['QUERY_STRING']));
 	}
 }
 if ($template == 'content.tpl' && $USER->registered) {

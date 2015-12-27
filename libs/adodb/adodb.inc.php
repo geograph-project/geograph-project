@@ -858,9 +858,9 @@
 					}
 					if (isset($sqlarr[$i])) {
 						$sql .= $sqlarr[$i];
-						if ($i+1 != sizeof($sqlarr)) ADOConnection::outp( "Input Array does not match ?: ".htmlspecialchars($sql));
+						if ($i+1 != sizeof($sqlarr)) ADOConnection::outp( "Input Array does not match ?: ".htmlspecialchars_latin($sql));
 					} else if ($i != sizeof($sqlarr))	
-						ADOConnection::outp( "Input array does not match ?: ".htmlspecialchars($sql));
+						ADOConnection::outp( "Input array does not match ?: ".htmlspecialchars_latin($sql));
 		
 					$ret = $this->_Execute($sql);
 					if (!$ret) return $ret;
@@ -1790,7 +1790,7 @@
 				$inBrowser = isset($_SERVER['HTTP_USER_AGENT']);
 				$ttl = $rs->timeCreated + $secs2cache - time();
 				$s = is_array($sql) ? $sql[0] : $sql;
-				if ($inBrowser) $s = '<i>'.htmlspecialchars($s).'</i>';
+				if ($inBrowser) $s = '<i>'.htmlspecialchars_latin($s).'</i>';
 				
 				ADOConnection::outp( " $md5file reloaded, ttl=$ttl [ $s ]");
 			}
