@@ -64,7 +64,12 @@ class GeographUser
 	* their password for additional security in this event
 	*/
 	var $autologin=false;
-	
+
+	/**
+	* number of seconds until we allow next authentication
+	*/
+	var $adminmode=false;
+
 	/**
 	* stats gathered by getStats
 	*/
@@ -125,6 +130,7 @@ class GeographUser
 						$this->$name=$value;
 
 				}
+				$this->adminmode = false;
 
 				// get user homesquare
 				if (isset($this->home_gridsquare)) {
@@ -660,6 +666,7 @@ class GeographUser
 
 					$this->user_id=$user_id;
 					$this->registered=true;
+					$this->adminmode = false;
 
 					foreach($arr as $name=>$value)
 					{
@@ -808,6 +815,7 @@ class GeographUser
 
 					$this->user_id=$arr['user_id'];
 					$this->registered=true;
+					$this->adminmode = false;
 
 					$arr = $db->GetRow('select * from user where user_id='.$db->Quote($this->user_id).' limit 1');	
 					foreach($arr as $name=>$value)
@@ -890,6 +898,7 @@ class GeographUser
 
 					$this->user_id=$arr['user_id'];
 					$this->registered=true;
+					$this->adminmode = false;
 
 					foreach($arr2 as $name=>$value)
 					{
@@ -1244,6 +1253,7 @@ class GeographUser
 		$this->registered=false;
 		$this->user_id=0;
 		$this->realname="";
+		$this->adminmode = false;
 		
 		//we've changed state, won't hurt to use a new
 		//session id...
@@ -1273,11 +1283,75 @@ class GeographUser
 
 	}
 
+	function getAdminMode()
+	{
+		# return(!empty($_SESSION['admin_mode'])) # not good if session expires
+		# => use cookie similar to autologin
+		if (!$this->registered) {
+			$this->adminmode = false;
+			return false;
+		}
+		if ($this->adminmode) {
+			return true; // already verified
+		}
+		if (isset($_COOKIE['adminmode'])) {
+			// FIXME must we really check the cookie against the db?
+			// The cookie must guarantee that a CSRF token has been validated.
+			$db = $this->_getDB();
+			
+			$bits=explode('_', $_COOKIE['adminmode']);
+			if ((count($bits)==2) &&
+			    is_numeric($bits[0]) &&
+			    preg_match('/^[a-f0-9]{32}$/' , $bits[1]) &&
+			    intval($bits[0]) == $this->user_id
+			)
+			{
+				$clause="user_id='{$this->user_id}' and token='{$bits[1]}'";
+				$row = $db->GetRow("select * from adminmode where $clause limit 1");
+
+				if ($row !== false && count($row)) {
+					$db->Execute("delete from adminmode where $clause");
+
+					$token = md5(uniqid(rand(),1));
+					$db->Execute("insert into adminmode(user_id,token) values ('{$this->user_id}', '$token')");
+					setcookie('adminmode', $this->user_id.'_'.$token, time()+3600*24*365,'/');
+					$this->adminmode = true;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/* IMPORTANT: admin mode should only be activated if the CSRF token is valid! */
+	function setAdminMode($state)
+	{
+		if (!$this->registered) {
+			$this->adminmode = false;
+			return false;
+		}
+		#if ($this->adminmode === $state) {
+		#	return true;
+		#}
+		$db = $this->_getDB();
+		$db->Execute("delete from adminmode where user_id={$this->user_id}"); // FIXME only delete entry matching cookie
+		if ($state) {
+			$token = md5(uniqid(rand(),1));
+			$db->Execute("insert into adminmode(user_id,token) values ('{$this->user_id}', '$token')");
+			setcookie('adminmode', $this->user_id.'_'.$token, time()+3600*24*365,'/');
+			$this->adminmode = true;
+		} else {
+			setcookie('adminmode', '', time()-3600*24*365,'/');
+			setcookie('adminmode', '', time()-3600*24*365);
+			$this->adminmode = false;
+		}
+		return true;
+	}
 	
 	/**
 	* force inline login if user isn't authenticated
 	*/
-	function mustHavePerm($perm, $uid = 0)
+	function mustHavePerm($perm, $uid = 0, $verifyadmin = true)
 	{
 		//not logged in? do that first
 		if (!$this->registered)
@@ -1287,11 +1361,15 @@ class GeographUser
 		}
 		
 		//to reach here, user is logged in, lets check the perms
-		if (strpos($this->rights, $perm)===false || $uid != 0 && $uid != $this->user_id)
-		{
+		if (
+			   $verifyadmin && in_array($perm, array('admin', 'forum', 'mapmod')) && !$this->getAdminMode()
+			|| strpos($this->rights, $perm)===false
+			|| $uid != 0 && $uid != $this->user_id
+		) {
 			//user is logged in, but hasn't got sufficient rights
 			$smarty = new GeoGraphPage;
 			$smarty->assign('required', $perm);
+			$smarty->assign('adminmoderequired', in_array($perm, array('admin', 'forum', 'mapmod')));
 			$smarty->display('no_permission.tpl');
 			exit;
 		}
@@ -1305,8 +1383,11 @@ class GeographUser
 	/**
 	* got perm?
 	*/
-	function hasPerm($perm,$allowNonRef = false)
+	function hasPerm($perm,$allowNonRef = false,$verifyadmin=true)
 	{
+		if ($verifyadmin && in_array($perm, array('admin', 'forum', 'mapmod')) && !$this->getAdminMode()) {
+			return false;
+		}
 		return (($this->registered || $allowNonRef) && (strpos($this->rights, $perm)!==false));
 	}
 	
@@ -1346,6 +1427,7 @@ class GeographUser
 							}
 
 							$this->registered=true;
+							$this->adminmode = false;
 							$logged_in=true;
 						}
 						else
@@ -1497,8 +1579,10 @@ class GeographUser
 									//we're changing privilege state, so we should
 									//generate a new session id to avoid fixation attacks
 									session_regenerate_id(); 
+									# FIXME we should probably regenerate the CSRF token at any occurence of session_regenerate_id()
 									
 									$this->registered=true;
+									$this->adminmode = false;
 									$logged_in=true;
 									
 									//log into forum too
@@ -1621,6 +1705,7 @@ class GeographUser
 						session_regenerate_id(); 
 
 						$this->registered=true;
+						$this->adminmode = false;
 						$this->autologin=true;
 
 						//log into forum
