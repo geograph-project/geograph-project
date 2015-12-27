@@ -301,4 +301,26 @@ function db_topicPosts($topic,$Tt,$Tp){
 	return $topicPosts;
 }
 
+function db_lastviewed($topic, $user_id, $postID)
+{
+	global $db;
+	$db->Execute("insert into geobb_lastviewed set topic_id=$topic,user_id=$user_id,last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)") or die('<p>'.$db->ErrorMsg().'. Please, try another name or value.');
+}
+
+function db_gridreftopics($Tt, $forum, $gridref)
+{
+	global $db;
+	$result=$db->Execute("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = ".$db->Quote($gridref));
+	$currentgridreftopics = $result->RecordCount();
+		
+	if ($currentgridreftopics == 1) {
+		$action = "vthread";
+		$topic = $result->fields[0];
+	} else {
+		$action = "vtopic";
+		$topic=0;
+	}
+	return array($currentgridreftopics, $action, $topic);
+}
+
 ?>
