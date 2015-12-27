@@ -47,7 +47,7 @@ $static_url = "http://{$CONF['STATIC_HOST']}/discuss";
 
 if (count($CONF['languages'])) {
 	$cur_proto = !$_SERVER['HTTPS'] || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';
-	$cur_req = htmlspecialchars($_SERVER["REQUEST_URI"]); #FIXME remove session id?
+	$cur_req = htmlspecialchars_latin($_SERVER["REQUEST_URI"]); #FIXME remove session id?
 	$langsep = '';
 	$language_links = '&emsp;[';
 	foreach ($CONF['languages'] as $lang=>$host) {

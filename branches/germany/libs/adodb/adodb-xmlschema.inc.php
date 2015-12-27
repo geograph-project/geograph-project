@@ -1868,7 +1868,7 @@ class adoSchema {
 					   . '<table>' . "\n";
 		
 		foreach( $msg as $label => $details ) {
-			$error_details .= '<tr><td><b>' . $label . ': </b></td><td>' . htmlentities( $details ) . '</td></tr>' . "\n";
+			$error_details .= '<tr><td><b>' . $label . ': </b></td><td>' . htmlentities_latin( $details ) . '</td></tr>' . "\n";
 		}
 		
 		$error_details .= '</table>';
@@ -2010,7 +2010,7 @@ class adoSchema {
 						
 						while( $row = $rs->FetchRow() ) {
 							foreach( $row as $key => $val ) {
-								$row[$key] = htmlentities($val);
+								$row[$key] = htmlentities_latin($val);
 							}
 							
 							$schema .= '			<row><f>' . implode( '</f><f>', $row ) . '</f></row>' . "\n";
@@ -2178,7 +2178,7 @@ class adoSchema {
 			case 'text':
 				return !empty( $sqlArray ) ? implode( ";\n\n", $sqlArray ) . ';' : '';
 			case'html':
-				return !empty( $sqlArray ) ? nl2br( htmlentities( implode( ";\n\n", $sqlArray ) . ';' ) ) : '';
+				return !empty( $sqlArray ) ? nl2br( htmlentities_latin( implode( ";\n\n", $sqlArray ) . ';' ) ) : '';
 		}
 		
 		return $this->sqlArray;
@@ -2206,7 +2206,7 @@ function logMsg( $msg, $title = NULL, $force = FALSE ) {
 		echo '<pre>';
 		
 		if( isset( $title ) ) {
-			echo '<h3>' . htmlentities( $title ) . '</h3>';
+			echo '<h3>' . htmlentities_latin( $title ) . '</h3>';
 		}
 		
 		if( is_object( $this ) ) {

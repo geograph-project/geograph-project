@@ -1332,7 +1332,7 @@ END Adodb;
 	
 	$date = $db->SQLDate('d-m-M-Y-\QQ h:i:s A');
 	$sql = "SELECT $date from ADOXYZ";
-	print "<p>Test SQLDate: ".htmlspecialchars($sql)."</p>";
+	print "<p>Test SQLDate: ".htmlspecialchars_latin($sql)."</p>";
 	$rs = $db->SelectLimit($sql,1);
 	$d = date('d-m-M-Y-').'Q'.(ceil(date('m')/3.0)).date(' h:i:s A');
 	if (!$rs) Err("SQLDate query returned no recordset");
@@ -1340,7 +1340,7 @@ END Adodb;
 	
 	$date = $db->SQLDate('d-m-M-Y-\QQ h:i:s A',$db->DBDate("1974-02-25"));
 	$sql = "SELECT $date from ADOXYZ";
-	print "<p>Test SQLDate: ".htmlspecialchars($sql)."</p>";
+	print "<p>Test SQLDate: ".htmlspecialchars_latin($sql)."</p>";
 	$db->debug=1;
 	$rs = $db->SelectLimit($sql,1);
 	$ts = ADOConnection::UnixDate('1974-02-25');

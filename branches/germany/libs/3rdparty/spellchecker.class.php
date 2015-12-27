@@ -104,7 +104,7 @@ class SpellChecker
 		return false;
 	}
 
-    $post = '<spellrequest textalreadyclipped="0" ignoredups="1" ignoredigits="1" ignoreallcaps="0"><text>'.htmlspecialchars($query).'</text></spellrequest>'; 
+    $post = '<spellrequest textalreadyclipped="0" ignoredups="1" ignoredigits="1" ignoreallcaps="0"><text>'.htmlspecialchars_latin($query).'</text></spellrequest>'; 
 
     $server = "www.google.com"; 
     $path = "/tbproxy/spell?lang=$lang&hl=$hl"; 

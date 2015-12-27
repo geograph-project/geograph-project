@@ -579,7 +579,7 @@ class GridSquare
 			}
 		} else {
 			$ok=false;
-			$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities($gridreference)));
+			$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities_latin($gridreference)));
 
 		}
 				
@@ -667,7 +667,7 @@ class GridSquare
 			}
 			else
 			{
-				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities($gridref)));
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities_latin($gridref)));
 			}
 		}
 		

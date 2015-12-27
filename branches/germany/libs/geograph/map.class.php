@@ -3258,7 +3258,7 @@ class GeographMap
 
 					imagerectangle ($img, $imgx1, $imgy1, $imgx2, $imgy2, $colBorder);
 				
-					$lines[] = "<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$rec['gridimage_id']}\" title=\"".htmlentities("{$rec['grid_reference']} : {$rec['title']} by {$rec['realname']}")."\">"; 
+					$lines[] = "<area shape=\"rect\" coords=\"$imgx1,$imgy1,$imgx2,$imgy2\" href=\"/photo/{$rec['gridimage_id']}\" title=\"".htmlentities_latin("{$rec['grid_reference']} : {$rec['title']} by {$rec['realname']}")."\">"; 
 
 				}
 				$usercount[$rec['realname']]++;

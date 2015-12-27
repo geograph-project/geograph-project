@@ -265,7 +265,7 @@ out;
 	{
 		\$url=\$matches[1].\$matches[2].\$matches[3];
 		//no external images allowed
-		return "<a title=\"Externally hosted image - caution advised\" href=\"".htmlentities(\$url)."\">".htmlentities(\$url)."</a>";	
+		return "<a title=\"Externally hosted image - caution advised\" href=\"".htmlentities_latin(\$url)."\">".htmlentities_latin(\$url)."</a>";	
 	}
 FUNC;
 
