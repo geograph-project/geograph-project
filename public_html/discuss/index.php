@@ -183,8 +183,8 @@ if (isset($_POST['mode']) and $_POST['mode']=='login') require($pathToFiles.'bb_
 
 if ($loginError==0) {
 
-	if(isset($_GET['mode']) and $_GET['mode']=='logout') {
-		if($useSessions) { session_unregister('minimalistBBSession'); $indexphp=preg_replace("#".$sessname."=.+&#",'',$indexphp);}
+	if(isset($_GET['mode']) and $_GET['mode']=='logout') {#FIXME remove?
+		if($useSessions) { /*session_unregister('minimalistBBSession');*/ $indexphp=preg_replace("#".$sessname."=.+&#",'',$indexphp);}
 	deleteMyCookie();
 	if(isset($metaLocation)) { $meta_relocate="{$main_url}/{$indexphp}"; echo ParseTpl(makeUp($metaLocation)); exit; } else { header("Location: {$main_url}/{$indexphp}"); exit; }
 	}
@@ -220,7 +220,7 @@ if ($loginError==0) {
 		/* Protected forums stuff */
 		if(isset($_POST['allForums']) and $_POST['allForums']==$protectWholeForumPwd) {
 			$allForums=md5($protectWholeForumPwd);
-			if($useSessions and !session_is_registered('allForums')) { session_register('allForums'); $_SESSION['allForums']=$allForums; }
+			if($useSessions) { $_SESSION['allForums']=$allForums; }
 			setcookie($cookiename.'allForumsPwd','',(time() - 2592000),$cookiepath,$cookiedomain,$cookiesecure);
 			setcookie($cookiename.'allForumsPwd', $allForums);
 			if(isset($metaLocation)) { $meta_relocate="{$main_url}/{$indexphp}{$queryStr}"; echo ParseTpl(makeUp($metaLocation));
