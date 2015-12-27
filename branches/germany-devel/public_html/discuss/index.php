@@ -131,19 +131,7 @@ if(isset($_GET['gridref'])) {
 	$forum = $CONF['forum_gridsquare'];
 	
 
-	#$result=mysql_query("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = '".mysql_escape_string($gridref)."'",$GLOBALS['minibb_link']);
-	#$currentgridreftopics = mysql_num_rows($result);
-	$result=$db->Execute("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = ".$db->Quote($gridref));
-	$currentgridreftopics = $result->RecordCount();
-		
-	if ($currentgridreftopics == 1) {
-		$action = "vthread";
-		#$topic = mysql_result($result,0);		
-		$topic = $result->fields[0];
-	} else {
-		$action = "vtopic";
-	}
-	
+	list($currentgridreftopics, $action, $topic) = db_gridreftopics($Tt, $forum, $gridref);
 } else $gridref='';
 
 if(!isset($user_id)) $user_id=0;
