@@ -76,7 +76,7 @@ class Event
 	/**
 	* Static method for firing an event
 	*/
-	function fire($event_name, $event_param="", $priority=50)
+	static function fire($event_name, $event_param="", $priority=50)
 	{
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');  
