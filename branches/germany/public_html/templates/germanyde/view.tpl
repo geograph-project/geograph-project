@@ -340,9 +340,11 @@ Ostsüdost
 {if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
 
 <small><a title="In Google Earth öffnen" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small>, 
-{external title="In Google Maps öffnen" href="http://maps.google.de/maps?q=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Google Maps"}, 
+{external title="In Bing Maps öffnen" href="http://www.bing.com/maps/default.aspx?v=2&mapurl=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Bing Maps"}, 
 
 {/if}
+
+{external title="In OpenStreetmap öffnen" href="http://www.openstreetmap.org/?mlat=$lat&amp;mlon=$long&amp;zoom=14" text="OSM"},
 
 {if $rastermap->reference_index == 1}<a href="/mapper/?t={$map_token}&amp;gridref_from={$image->grid_reference}">OS Map Checksheet</a>, {/if}
 
