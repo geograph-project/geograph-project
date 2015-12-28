@@ -469,7 +469,7 @@ class GeographMap
 			$this->gridref = $row['grid_reference'];
 			$this->reference_index = $row['reference_index'];
 		} else {
-			if ($this->reference_index) {
+			if (!empty($this->reference_index)) {
 				//so it can be set from above (mapmosaic!)
 				
 				$order_by = "(reference_index = {$this->reference_index}) desc, landcount desc, reference_index";
@@ -2644,7 +2644,7 @@ class GeographMap
 			//if less than 1 pixel per km, use our aliasing scheme	
 			if ($this->pixels_per_km<1)
 			{
-				$rgb = imagecolorat($img, $imgx1, $imgy1);
+				$rgb = @imagecolorat($img, $imgx1, $imgy1);
 				if (isset($nextAlias[$rgb]))
 				{
 					imagesetpixel($img,$imgx1, $imgy1,$nextAlias[$rgb]);
@@ -3304,7 +3304,7 @@ class GeographMap
 		$conv = new Conversions;
 
 		if (empty($this->force_ri)) {
-			if (!$this->reference_index) {
+			if (empty($this->reference_index)) {
 				$this->getGridRef(-1,-1);
 				if (!$this->reference_index) {
 					$this->getGridRef(-1,-1);
@@ -3395,7 +3395,7 @@ END;
 			$n=$recordSet->fields['n'];
 			
 			$str = floor($e/$div) .' '. floor($n/$div*1.4);
-			if (!$squares[$str]) {// || $recordSet->fields['s'] ==1) {
+			if (!isset($squares[$str])) {// || $recordSet->fields['s'] ==1) {
 
 				list($x,$y) = $conv->national_to_internal($e,$n,$recordSet->fields['reference_index'] );
 				$imgx1=($x-$left) * $this->pixels_per_km;
@@ -3409,7 +3409,7 @@ END;
 					$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad']);
 					if (count($img1)) { # can draw name
 						#trigger_error("C", E_USER_NOTICE);
-						$squares[$str]++;
+						$squares[$str] = 1;
 						if ($dotsize) {
 							imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
 							imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
@@ -3622,7 +3622,7 @@ END;
 				$n=$recordSet->fields['n'];
 				
 				$str = floor($e/$div) .' '. floor($n/$div*1.4);
-				if (!$squares[$str]) {// || $recordSet->fields['s'] ==1) {
+				if (!isset($squares[$str])) {// || $recordSet->fields['s'] ==1) {
 				
 					$ll = $conv->national_to_wgs84($e, $n, $ri);
 					list($xM, $yM) = $conv->wgs84_to_sm($ll[0], $ll[1]);
@@ -3634,7 +3634,7 @@ END;
 						$font = ($recordSet->fields['s'] ==1)?$cityfont:2;
 						$img1 = $this->_posText( $imgx1, $imgy1, $font, $recordSet->fields['name'],$recordSet->fields['quad'], $bdry);
 						if (count($img1)) { # can draw name
-							$squares[$str]++;
+							$squares[$str] = 1;
 							if ($dotsize) {
 								imagefilledrectangle ($img, $imgx1-1, $imgy1-2, $imgx1+1, $imgy1+2, $black);
 								imagefilledrectangle ($img, $imgx1-2, $imgy1-1, $imgx1+2, $imgy1+1, $black);
@@ -4043,7 +4043,7 @@ END;
 				$gridcol2=imagecolorallocate ($img, 60,205,252);
 				//$gridcol2=imagecolorallocate ($img, 102,173,166);
 				
-				if (!$this->reference_index) {
+				if (empty($this->reference_index)) {
 					$this->getGridRef(-1,-1);
 				}
 				
@@ -4566,7 +4566,7 @@ function imageGlowString($img, $font, $xx, $yy, $text, $color) {
 
             for ($k = $x - 1; $k <= $x + 1; ++$k)
                 for ($l = $y - 1; $l <= $y + 1; ++$l) {
-                    $colour = imagecolorat($text_image, $k, $l);
+                    $colour = @imagecolorat($text_image, $k, $l);
                     
                     $newr += ($colour >> 16) & 0xFF;
                     $newg += ($colour >> 8) & 0xFF;

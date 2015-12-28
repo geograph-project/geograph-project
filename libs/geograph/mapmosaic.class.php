@@ -393,7 +393,7 @@ class GeographMapMosaic
 		$smarty->assign_by_ref($basename, $overviewimages);
 		$smarty->assign($basename.'_width', $this->image_w);
 		$smarty->assign($basename.'_height', $this->image_h);
-		$smarty->assign($basename.'_ri', $this->reference_index);
+		$smarty->assign($basename.'_ri', (!empty($this->reference_index) ? $this->reference_index : 0));
 		$smarty->assign($basename.'_token', $this->getToken());
 		$smarty->assign($basename.'_updated', $this->getUpdateDateString());
 		$smarty->assign($basename.'_clip', $this->tilesize?1:0);

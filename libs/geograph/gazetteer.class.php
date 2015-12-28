@@ -489,7 +489,7 @@ class Gazetteer
 				$places = $db->GetAll("select full_name,dsg,e,n,loc_placenames.reference_index,loc_adm1.name as adm1_name from loc_placenames left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country) where id=".$db->Quote($placename));
 			}
 		} elseif (!$ismore) {
-			list($placename,$county) = preg_split('/\s*,\s*/',$placename);
+			@list($placename,$county) = preg_split('/\s*,\s*/',$placename);
 			
 			if (!empty($county)) {
 				$qcount = $db->Quote($county);
