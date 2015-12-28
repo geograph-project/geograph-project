@@ -368,7 +368,7 @@ function addPopupMarker(ll, popupClass, popupContentHTML, closeBox, overflow, ic
 		else if (ri == 5)
 			var grid=wgs84.getGerman31(true, false);
 
-		if (map.zoom >= 19) {
+		if (map.zoom >= 18) {
 			var newdigits = 5;
 			var newprec = 1;
 		} else if (map.zoom >= 15) {
