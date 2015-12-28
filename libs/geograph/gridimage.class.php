@@ -439,9 +439,9 @@ class GridImage
 		if (preg_match('/^\d+$/', $gridimage_id))
 		{
 			if ($usesearch) {
-				$row = &$db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
+				$row = $db->GetRow("select * from gridimage_search where gridimage_id={$gridimage_id} limit 1");
 			} else {
-				$row = &$db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
+				$row = $db->GetRow("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname,user.realname as user_realname,user.nickname from gridimage gi inner join user using(user_id) where gridimage_id={$gridimage_id} limit 1");
 			}
 			if (is_array($row))
 			{
@@ -654,7 +654,7 @@ class GridImage
 	function& getVotes($uid)
 	{
 		$db =& $this->_getDB();
-		$retval =& $db->getAssoc("select type,vote from gridimage_vote where gridimage_id='{$this->gridimage_id}' and user_id='$uid'");
+		$retval = $db->getAssoc("select type,vote from gridimage_vote where gridimage_id='{$this->gridimage_id}' and user_id='$uid'");
 		return $retval;
 	}
 
@@ -688,7 +688,7 @@ class GridImage
 		if (!is_null($exclude)) {
 			$listwhere .= " and not note_id in ('" . implode("','", $exclude) . "')";
 		}
-		$recordSet = &$db->Execute("select * from gridimage_notes ".
+		$recordSet = $db->Execute("select * from gridimage_notes ".
 			"where gridimage_id={$this->gridimage_id}{$listwhere} and status in ($statuses) order by note_id ".
 			( $orderdesc ? "desc" : "asc"));
 		while (!$recordSet->EOF) {
@@ -732,7 +732,7 @@ class GridImage
 
 		$tickets=array();
 		
-		$recordSet = &$db->Execute("select t.*,u.realname as suggester_name,DATEDIFF(NOW(),t.updated) as days from gridimage_ticket as t ".
+		$recordSet = $db->Execute("select t.*,u.realname as suggester_name,DATEDIFF(NOW(),t.updated) as days from gridimage_ticket as t ".
 			"inner join user as u using(user_id) ".
 			"where t.gridimage_id={$this->gridimage_id} and t.status in ($statuses) order by t.updated desc");
 		while (!$recordSet->EOF) 
@@ -986,7 +986,7 @@ class GridImage
 			global $memcache;
 			$mkey = "{$this->gridimage_id}:F";
 			//fails quickly if not using memcached!
-			$size =& $memcache->name_get('is',$mkey);
+			$size = $memcache->name_get('is',$mkey);
 			if (!$size) {
 				$db=&$this->_getDB(true);
 
@@ -1471,7 +1471,7 @@ class GridImage
 		global $memcache, $CONF, $MESSAGES;
 		$mkey = "{$this->gridimage_id}:".md5(serialize($params));
 		//fails quickly if not using memcached!
-		$result =& $memcache->name_get('ir',$mkey);
+		$result = $memcache->name_get('ir',$mkey);
 		if ($result && $result['url'] !='/photos/error.jpg')
 			return $result;
 	
@@ -1519,7 +1519,7 @@ class GridImage
 
 		$mkey = "{$this->gridimage_id}:{$maxw}x{$maxh}";
 		//fails quickly if not using memcached!
-		$size =& $memcache->name_get('is',$mkey);
+		$size = $memcache->name_get('is',$mkey);
 		if ($size) {
 			$return=array();
 			$return['url']=$thumbpath;
@@ -2253,7 +2253,7 @@ class GridImage
 			WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
 
-			$row = &$db->GetRow("select recent_id from gridimage_recent where gridimage_id={$this->gridimage_id} limit 1");
+			$row = $db->GetRow("select recent_id from gridimage_recent where gridimage_id={$this->gridimage_id} limit 1");
 			if ($row !== false && count($row)) {
 				$recent_id=$row['recent_id'];
 				$sql="REPLACE INTO gridimage_recent

@@ -196,7 +196,7 @@ class GridSquare
 		
 		$mkey = $this->gridsquare_id;
 		//fails quickly if not using memcached!
-		$result =& $memcache->name_get('gsd',$mkey);
+		$result = $memcache->name_get('gsd',$mkey);
 		if ($result) {
 			$smarty->assign_by_ref('discuss', $result['topics']);
 			$smarty->assign('totalcomments', $result['totalcomments']);
@@ -257,7 +257,7 @@ class GridSquare
 		if (!isset($this->nateastings)) {
 			//fails quickly if not using memcached!
 			$mkey = $this->gridsquare;
-			$square =& $memcache->name_get('pr',$mkey);
+			$square = $memcache->name_get('pr',$mkey);
 			if (!$square) {
 				$db=&$this->_getDB();
 
@@ -371,11 +371,11 @@ class GridSquare
 			$levellist = array();
 			$db=&$this->_getDB();
 			if ($details)
-				$recordSet = &$db->Execute("select gp.level,gp.community_id,gp.percent,coalesce(lh.name,concat(gp.level,'_',gp.community_id)) as name from gridsquare_percentage gp left join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0");
+				$recordSet = $db->Execute("select gp.level,gp.community_id,gp.percent,coalesce(lh.name,concat(gp.level,'_',gp.community_id)) as name from gridsquare_percentage gp left join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0");
 			else
-				$recordSet = &$db->Execute("select gp.level,gp.community_id,gp.percent,lh.name from gridsquare_percentage gp inner join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0");
+				$recordSet = $db->Execute("select gp.level,gp.community_id,gp.percent,lh.name from gridsquare_percentage gp inner join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0");
 
-			#$recordSet = &$db->Execute("select gp.level,gp.community_id,gp.percent,lh.name from gridsquare_percentage gp inner join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0 order by gp.level desc,lh.name");
+			#$recordSet = $db->Execute("select gp.level,gp.community_id,gp.percent,lh.name from gridsquare_percentage gp inner join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0 order by gp.level desc,lh.name");
 			
 			while (!$recordSet->EOF) {
 				$level = $recordSet->fields['level'];
@@ -964,7 +964,7 @@ class GridSquare
 		
 		//fails quickly if not using memcached!
 		$mkey = "$x,$y,$radius,$occupied";
-		$nearest =& $memcache->name_get('gn',$mkey);
+		$nearest = $memcache->name_get('gn',$mkey);
 		if ($nearest) {
 			$this->nearest = $nearest;
 			return true;
@@ -1038,7 +1038,7 @@ class GridSquare
 		
 		//fails quickly if not using memcached!
 		$mkey = md5("{$this->gridsquare_id}:$inc_all_user,$custom_where_sql,$order_and_limit");
-		$images =& $memcache->name_get('gi',$mkey);
+		$images = $memcache->name_get('gi',$mkey);
 		if ($images) {
 			return $images;
 		}
@@ -1049,7 +1049,7 @@ class GridSquare
 			$inc_all_user = "=$inc_all_user";
 		}
 		$i=0;
-		$recordSet = &$db->Execute("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname ".
+		$recordSet = $db->Execute("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname ".
 			"from gridimage gi ".
 			"inner join user using(user_id) ".
 			"where gridsquare_id={$this->gridsquare_id} $custom_where_sql ".

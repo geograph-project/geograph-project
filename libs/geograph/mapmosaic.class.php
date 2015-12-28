@@ -1498,7 +1498,7 @@ class GeographMapMosaic
 		if ($memcache->valid) {
 			$sql="select * from mapcache where ($xycrit) $and_crit";
 			
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
 				$mkey = $this->getImageFilename($recordSet->fields);
@@ -1539,7 +1539,7 @@ class GeographMapMosaic
 		if ($expire_basemaps && !$memcache->valid) {
 			
 			$sql="select * from mapcache where ($xycrit)";
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 			while (!$recordSet->EOF) 
 			{
 				$file = $this->getBaseMapFilename($recordSet->fields);
@@ -1584,7 +1584,7 @@ class GeographMapMosaic
 
 		$sql="select * from mapcache where $crit";
 		$deleted = 0;
-		$recordSet = &$this->db->Execute($sql);
+		$recordSet = $this->db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$file = $this->getImageFilename($recordSet->fields);

@@ -1284,7 +1284,7 @@ class GeographMap
 
 			$sql="select x,y,gridsquare_id from gridsquare where $riwhere";
 
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 			while (!$recordSet->EOF) {
 				$geBL=($recordSet->fields[0] - $x0) * 1000;
 				$gnBL=($recordSet->fields[1] - $y0) * 1000;
@@ -1429,7 +1429,7 @@ class GeographMap
 		if ($remlimit >= 0)
 			$sqlrem .= " limit $remlimit";
 
-		$recordSet = &$db->Execute($sqlrem);
+		$recordSet = $db->Execute($sqlrem);
 		while (!$recordSet->EOF) {
 			$sql="DELETE FROM gridsquare_gmcache WHERE gridsquare_id = {$recordSet->fields[0]} LIMIT 1";
 			$dbsq->Execute($sql);//FIXME another db connection?
@@ -1444,7 +1444,7 @@ class GeographMap
 		}
 		$recordSet->Close();
 
-		$recordSet = &$db->Execute($sqladd);
+		$recordSet = $db->Execute($sqladd);
 		while (!$recordSet->EOF) {
 			$ri = $recordSet->fields[3];
 			$x0 = $CONF['origins'][$ri][0];
@@ -1690,7 +1690,7 @@ class GeographMap
 			$topM=$bottomM+$widthM;
 			$db=&$this->_getDB();
 			$sql="select percent_land,mappal,norm,cliparea,area,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) inner join gridsquare_mappal using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and level = $hierlevel";
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 			while (!$recordSet->EOF) {
 				$percent_land = $recordSet->fields[0];
 				$land_part = $percent_land < 0 ? 0. : $percent_land/100.;
@@ -1782,7 +1782,7 @@ class GeographMap
 #SELECT * FROM `gridsquare_gmcache`  INNER JOIN `gridsquare` USING (`gridsquare_id`) WHERE `gxlow` <=1010000 AND `gxhigh` >=1000000 AND `gylow` <=6510000 AND `gyhigh` >=6500000
 #Zeige Datensätze 0 - 29 (56 insgesamt, die Abfrage dauerte 0.1767 sek.)
 		$sql="select percent_land,cliparea,area,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			$percent_land = $recordSet->fields[0];
 			$zone_part = $recordSet->fields[1]/$recordSet->fields[2];
@@ -1881,7 +1881,7 @@ class GeographMap
 		$sql="select x,y,percent_land,reference_index from gridsquare where $riwhere
 			CONTAINS( GeomFromText($rectangle),	point_xy)";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
@@ -2165,7 +2165,7 @@ class GeographMap
 			$whereuser = '';
 			$sql="select gridsquare_id,imagecount,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and imagecount > $number";
 		}
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
 			if ($this->type_or_user < 0) {
 				$imgcount = $recordSet->fields[1];
@@ -2624,7 +2624,7 @@ class GeographMap
 				and imagecount>$number";
 		}
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
@@ -2917,7 +2917,7 @@ class GeographMap
 
 
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
@@ -3071,7 +3071,7 @@ class GeographMap
 		}
 
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields[0];
@@ -3220,7 +3220,7 @@ class GeographMap
 		}
 		
 		$usercount=array();
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		$lines = array();
 		while (!$recordSet->EOF) 
 		{
@@ -3388,7 +3388,7 @@ ORDER BY RAND()
 END;
 }
 		$squares=array();
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$e=$recordSet->fields['e'];
@@ -3616,7 +3616,7 @@ ORDER BY RAND()
 END;
 }
 			$squares=array();
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 			while (!$recordSet->EOF) {
 				$e=$recordSet->fields['e'];
 				$n=$recordSet->fields['n'];
@@ -3726,7 +3726,7 @@ END;
 					"$riwhere and CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
 					"and landcount>0";
 
-				$recordSet = &$db->Execute($sql);
+				$recordSet = $db->Execute($sql);
 				while (!$recordSet->EOF) {
 					$origin_x=$recordSet->fields['origin_x'];
 					$origin_y=$recordSet->fields['origin_y'];
@@ -3790,7 +3790,7 @@ END;
 			}
 		} elseif ($this->level >= 12) {
 			$sql="select polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM";
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 			while (!$recordSet->EOF) {
 				$points = $recordSet->fields[0];
 				$drawpoly = array();
@@ -3828,7 +3828,7 @@ END;
 				"$riwhere and CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
 				"and landcount>0";
 
-			$recordSet = &$db->Execute($sql);
+			$recordSet = $db->Execute($sql);
 			while (!$recordSet->EOF) {
 				$origin_x=$recordSet->fields['origin_x'];
 				$origin_y=$recordSet->fields['origin_y'];
@@ -3935,7 +3935,7 @@ END;
 				$x0 = $CONF['origins'][$ri][0];
 				$y0 = $CONF['origins'][$ri][1];
 				$sql="select x,y,scale,rotangle,cgx,cgy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and reference_index=$ri and (((x - $x0)%100 = 5 and (y - $y0)%10 = 0) or ((y - $y0)%100 = 5 and (x - $x0)%10 = 0)) and abs(cliparea/area-1) < 0.01";
-				$recordSet = &$db->Execute($sql);
+				$recordSet = $db->Execute($sql);
 				while (!$recordSet->EOF) {
 					$x = $recordSet->fields[0];
 					$y = $recordSet->fields[1];
@@ -3977,7 +3977,7 @@ END;
 				$x0 = $CONF['origins'][$ri][0];
 				$y0 = $CONF['origins'][$ri][1];
 				$sql="select x,y,scale,rotangle,cgx,cgy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and reference_index=$ri and ((x - $x0)%10 = 0 or (y - $y0)%10 = 0) and abs(cliparea/area-1) < 0.01";
-				$recordSet = &$db->Execute($sql);
+				$recordSet = $db->Execute($sql);
 				while (!$recordSet->EOF) {
 					$x = $recordSet->fields[0];
 					$y = $recordSet->fields[1];
@@ -4087,7 +4087,7 @@ END;
 			"$riwhere CONTAINS( GeomFromText($rectangle),	point_origin_xy) ".
 			"and landcount>0";
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$origin_x=$recordSet->fields['origin_x'];
@@ -4224,7 +4224,7 @@ END;
 
 			$mkey = $this->getImageFilename()."..{$this->cliptop}.{$this->clipbottom}.{$this->clipright}.{$this->clipleft}";
 			$mnamespace = 'mI';
-			$grid =& $memcache->name_get($mnamespace,$mkey);
+			$grid = $memcache->name_get($mnamespace,$mkey);
 			if ($grid) {
 				return $grid;
 			}
@@ -4348,7 +4348,7 @@ END;
 				and percent_land<>0 
 				group by gs.grid_reference order by y,x";
 		}
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
@@ -4428,7 +4428,7 @@ END;
 
 			$mkey = $this->getImageFilename();
 			$mnamespace = $isimgmap?'mi':'ms';
-			$grid =& $memcache->name_get($mnamespace,$mkey);
+			$grid = $memcache->name_get($mnamespace,$mkey);
 			if ($grid) {
 				return $grid;
 			}
@@ -4486,7 +4486,7 @@ END;
 				and percent_land<>0 
 				group by gs.gridsquare_id order by y,x";
 		}
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) 
 		{
 			$gridx=$recordSet->fields['x'];
