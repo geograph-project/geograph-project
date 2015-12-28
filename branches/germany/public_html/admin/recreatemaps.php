@@ -29,7 +29,7 @@ require_once('geograph/mapmosaic.class.php');
 require_once('geograph/image.inc.php');
 
 if ( ($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR']) &&
-     (strpos($_SERVER['HTTP_X_FORWARDED_FOR'],$CONF['server_ip']) !== 0) )  //begins with
+     (true || strpos($_SERVER['HTTP_X_FORWARDED_FOR'],$CONF['server_ip']) !== 0) )  //begins with
 {
 	init_session();
         $USER->hasPerm("mapmod") || $USER->mustHavePerm("admin");
