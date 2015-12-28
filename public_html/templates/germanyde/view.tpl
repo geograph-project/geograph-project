@@ -47,7 +47,7 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
 	{if $notes || $altimg neq ''}
 		Mauszeiger über Bild bewegen um <a href="/geonotes.php?id={$image->gridimage_id}&amp;size=original">Beschriftungen</a> zu zeigen
 	{elseif $user->registered}
-		<a href="/geonotes.php?id={$image->gridimage_id}">Bild beschriften</a>
+		<a href="/geonotes.php?id={$image->gridimage_id}">Bildteil beschriften</a>
 	{/if}
 	{if ($image->original_width || $user->user_id eq $image->user_id) && ($notes || $altimg neq '' || $user->registered)}|{/if}
 	{if $image->original_width}
