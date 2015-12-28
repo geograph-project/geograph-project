@@ -220,7 +220,13 @@ function smarty_function_external($params)
 */
 function smarty_function_gridimage($params)
 {
-	global $imageCredits;
+	global $imageCredits, $CONF;
+
+	if ($CONF['lang'] == 'de') {
+		$by = 'von';
+	} else {
+		$by = 'by';
+	}
 
 	$image=new GridImage;
 	$image->loadFromId($params['id']);
@@ -234,14 +240,31 @@ function smarty_function_gridimage($params)
 	$html='<div class="photoguide">';
 
 	$html.='<div style="float:left;width:213px">';
-		$html.='<a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+	
+		$title=$image->grid_reference.' : '.htmlentities2($image->title).' '.$by.' '.htmlentities2($image->realname);
+
+		$html.='<a title="'.$title.' - click to view full size image" href="/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
 		$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
-		$html.=htmlentities2($image->title).'</a></div>';
+		$html.=htmlentities2($image->title).'</a> '.$by.' <a href="'.$image->profile_link.'">'.htmlentities2($image->realname).'</a></div>';
 	$html.='</div>';
 
-	if (isset($params['extra']))
-		$html.='<div style="float:left;padding-left:20px; width:400px;">'.htmlentities2($params['extra']).'</div>';
+	if (isset($params['extra'])) {
+		if ($params['extra'] == '{description}') {
+			if (!empty($image->comment)) {
+				$desc = GeographLinks(preg_replace("/[\n\r]+/",'',nl2br(htmlentities2($image->comment)))).'<div style="text-align:right;font-size:0.8em">'.$by.' '.htmlentities2($image->realname).'</a></div>';
+				
+				$desc = preg_replace('/\b(more sizes)\b/i',"<a href=\"/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
+			} else {
+				$desc = '';
+			}
+		} else {
+			$desc = htmlentities2($params['extra']);
+		} 
+		if (!empty($desc)) {
+			$html.='<div style="float:left;padding-left:20px; width:400px;">'.$desc.'</div>';
+		}
+	}
 
 	$html.='<br style="clear:both"/></div>';
 
