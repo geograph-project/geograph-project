@@ -82,7 +82,8 @@ $correctErr="<a href=\"{$main_url}/{$indexphp}action=vthread&amp;forum=$forum&am
 	$memcache->name_delete('fp',$mkey);
 
 if ($user_id!=1 and $postRange!=0) {
-if($useSessions and !session_is_registered($cookiename.'Update')) { session_register($cookiename.'Update'); $_SESSION[$cookiename.'Update']=time()+$postRange;}
+#if($useSessions and !isset($_SESSION[$cookiename.'Update'])) { $_SESSION[$cookiename.'Update']=time()+$postRange;}
+if($useSessions) { $_SESSION[$cookiename.'Update']=time()+$postRange;}
 setcookie($cookiename.'Update','',(time() - 2592000),$cookiepath,$cookiedomain,$cookiesecure);
 setcookie($cookiename.'Update', 1, time()+$postRange, $cookiepath, $cookiedomain, $cookiesecure); 
 }
