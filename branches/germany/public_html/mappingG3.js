@@ -71,7 +71,7 @@
 			var grid=gmap2grid(pp);
 
 			var curzoom = map.getZoom();
-			if (curzoom >= 19) {
+			if (curzoom >= 18) {
 				var newdigits = 5;
 				var newprec = 1;
 			} else if (curzoom >= 15) {
