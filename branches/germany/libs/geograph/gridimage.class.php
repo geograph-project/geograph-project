@@ -231,9 +231,9 @@ class GridImage
 	function getPhotographerGridref($spaced = false)
 	{
 		//already calculated?
-		if (!$spaced && strlen($this->photographer_gridref))
+		if (!$spaced && isset($this->photographer_gridref) && strlen($this->photographer_gridref))
 			return $this->photographer_gridref;
-		if ($spaced && strlen($this->photographer_gridref_spaced))
+		if ($spaced && isset($this->photographer_gridref_spaced) && strlen($this->photographer_gridref_spaced))
 			return $this->photographer_gridref_spaced;
 
 		$posgr='';
@@ -266,9 +266,9 @@ class GridImage
 	function getSubjectGridref($spaced = false)
 	{
 		//already calculated?
-		if (!$spaced && strlen($this->subject_gridref))
+		if (!$spaced && isset($this->subject_gridref) && strlen($this->subject_gridref))
 			return $this->subject_gridref;
-		if ($spaced && strlen($this->subject_gridref_spaced))
+		if ($spaced && isset($this->subject_gridref_spaced) && strlen($this->subject_gridref_spaced))
 			return $this->subject_gridref_spaced;
 
 		require_once('geograph/conversions.class.php');
@@ -1014,14 +1014,17 @@ class GridImage
 						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]},original_width={$osize[0]}, original_height={$osize[1]}");
 					} else {
 						$db->Execute("replace into gridimage_size set gridimage_id = {$this->gridimage_id},width = {$size[0]},height = {$size[1]}");
+						$this->original_width = $size[4] = 0;
+						$this->original_height = $size[5] = 0;
 					}
 				}
 				//fails quickly if not using memcached!
 				$memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long);
+			} else {
+				$this->original_width = $size[4];
+				$this->original_height = $size[5];
 			}
 			$this->cached_size = $size;
-			$this->original_width = $size[4];
-			$this->original_height = $size[5];
 		} else {
 			$size = array();
 			$size[3] = '';

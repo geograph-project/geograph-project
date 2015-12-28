@@ -141,7 +141,7 @@ class SearchEngineBuilder extends SearchEngine
 		$q = trim(preg_replace('/\s+/',' ',$q));
 		
 			
-		list($q,$placename) = preg_split('/\s*near\s+/',$q);
+		@list($q,$placename) = preg_split('/\s*near\s+/',$q);
 
 		$criteria = new SearchCriteria_Placename();
 

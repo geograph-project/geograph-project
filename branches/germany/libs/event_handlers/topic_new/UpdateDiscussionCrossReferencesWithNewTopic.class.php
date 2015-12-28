@@ -41,12 +41,15 @@ class UpdateDiscussionCrossReferencesWithNewTopic extends EventHandler
 	function processEvent(&$event)
 	{
 		//perform actions
-		$topic_id = $event['event_param'];
+		$topic_id = intval($event['event_param']);
 		
 		$db=&$this->_getDB();
 		
 		require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');
 		$topic=$db->GetRow("select topic_title,forum_id,topic_time from geobb_topics where topic_id='$topic_id' and forum_id = {$CONF['forum_gridsquare']}");
+		if ($topic === false or count($topic) === 0) {
+			return true;
+		}
 		
 		//get title of topic
 		$title=strtoupper(trim($topic['topic_title']));
