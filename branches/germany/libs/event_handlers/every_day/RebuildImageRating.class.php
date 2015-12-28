@@ -95,7 +95,7 @@ class RebuildImageRating extends EventHandler
 		}
 
 		foreach($types as $type) {
-			$recordSet = &$db->Execute("SELECT user_id,votes,votes1,votes2,votes3,votes4,votes5,geosquares FROM user_vote_stat LEFT JOIN user_stat USING(user_id) WHERE type='$type'");
+			$recordSet = $db->Execute("SELECT user_id,votes,votes1,votes2,votes3,votes4,votes5,geosquares FROM user_vote_stat LEFT JOIN user_stat USING(user_id) WHERE type='$type'");
 			while (!$recordSet->EOF) {
 				$geosquares = $recordSet->fields[7];
 				if (is_null($geosquares)) {

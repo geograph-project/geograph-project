@@ -942,7 +942,7 @@ class GridImageTroubleTicket
 	function &getAffectedNotes()
 	{
 		$db=&$this->_getDB();
-		$cols =& $db->GetCol("SELECT DISTINCT(note_id) FROM gridimage_ticket_item WHERE gridimage_ticket_id='{$this->gridimage_ticket_id}' AND note_id!=0");
+		$cols = $db->GetCol("SELECT DISTINCT(note_id) FROM gridimage_ticket_item WHERE gridimage_ticket_id='{$this->gridimage_ticket_id}' AND note_id!=0");
 		return $cols;
 	}
 
@@ -1051,7 +1051,7 @@ class GridImageTroubleTicket
 	*/
 	function loadItems()
 	{
-		$db=&$this->_getDB();
+		$db=$this->_getDB();
 		if ($this->isValid())
 		{
 			$this->changes=$db->GetAll("select * from gridimage_ticket_item where gridimage_ticket_id={$this->gridimage_ticket_id}");
@@ -1082,7 +1082,7 @@ class GridImageTroubleTicket
 	*/
 	function loadComments()
 	{
-		$db=&$this->_getDB();
+		$db=$this->_getDB();
 		if ($this->isValid())
 		{
 			$this->comments=$db->GetAll("select c.*,u.realname , ".
@@ -1104,12 +1104,12 @@ class GridImageTroubleTicket
 	*/
 	function loadFromId($gridimage_ticket_id)
 	{
-		$db=&$this->_getDB();
+		$db=$this->_getDB();
 		
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_ticket_id))
 		{
-			$row = &$db->GetRow("select * from gridimage_ticket where gridimage_ticket_id={$gridimage_ticket_id} limit 1");
+			$row = $db->GetRow("select * from gridimage_ticket where gridimage_ticket_id={$gridimage_ticket_id} limit 1");
 			if (is_array($row))
 			{
 				$this->_initFromArray($row);
