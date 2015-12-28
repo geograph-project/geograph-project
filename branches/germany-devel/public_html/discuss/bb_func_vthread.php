@@ -279,8 +279,12 @@ FUNC;
 			$posterText);
 
 		if (empty($CONF['disable_discuss_thumbs'])) {
-			$posterText = preg_replace('/\[image id=(\d+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '{description}'))",$posterText,5);
-			$posterText = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$posterText,5);
+			$posterText = preg_replace_callback('/\[image id=(\d+)\]/', function($m) {
+				return smarty_function_gridimage(array('id' => $m[1], 'extra' => '{description}'));
+			}, $posterText,5);
+			$posterText = preg_replace_callback('/\[image id=(\d+) text=([^\]]+)\]/', function($m) {
+				return smarty_function_gridimage(array('id' => $m[1], 'extra' => $m[2]));
+			}, $posterText,5);
 		}
 
 		##$posterText = preg_replace('/\[([\w :-]+)\]([^>]*)(<(?!\/a>)|$)/e',"replace_tags('$1').'$2$3'",$posterText);
