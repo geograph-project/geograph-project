@@ -632,7 +632,7 @@ class GeographUser
 		$ok=$ok && preg_match('/[0-9a-f]+/', $hash);
 		
 		//validate hash
-		$ok=$ok && ($hash==substr(md5($user_id.$CONF['register_confirmation_secret']),0,16));
+		$ok=$ok && ($hash===substr(md5($user_id.$CONF['register_confirmation_secret']),0,16));
 		if ($ok)
 		{
 			$db = $this->_getDB();
@@ -769,7 +769,7 @@ class GeographUser
 		$ok=$ok && preg_match('/[0-9a-f]+/', $hash);
 		
 		//validate hash
-		$ok=$ok && ($hash==substr(md5($change_id.$CONF['register_confirmation_secret']),0,16));
+		$ok=$ok && ($hash===substr(md5($change_id.$CONF['register_confirmation_secret']),0,16));
 		if ($ok)
 		{
 			$db = $this->_getDB();
@@ -858,7 +858,7 @@ class GeographUser
 		$ok=$ok && preg_match('/[0-9a-f]+/', $hash);
 		
 		//validate hash
-		$ok=$ok && ($hash==substr(md5($change_id.$CONF['register_confirmation_secret']),0,16));
+		$ok=$ok && ($hash===substr(md5($change_id.$CONF['register_confirmation_secret']),0,16));
 		if ($ok)
 		{
 			$db = $this->_getDB();
