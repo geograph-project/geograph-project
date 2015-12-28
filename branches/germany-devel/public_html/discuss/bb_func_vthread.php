@@ -278,6 +278,12 @@ FUNC;
 				$fixExternalImages),
 			$posterText);
 
+		if (empty($CONF['disable_discuss_thumbs'])) {
+			$posterText = preg_replace('/\[image id=(\d+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '{description}'))",$posterText,5);
+			$posterText = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$posterText,5);
+		}
+
+		##$posterText = preg_replace('/\[([\w :-]+)\]([^>]*)(<(?!\/a>)|$)/e',"replace_tags('$1').'$2$3'",$posterText);
 
 		$listPosts.=ParseTpl($tpl);
 
