@@ -163,7 +163,7 @@ geographing (German)</a> first.</p>
 		<label for="jpeg_url"><b>JPEG Image URL</b></label>
 		<input id="jpeg_url" name="jpeg_url" type="text" size="40" value="{$jpeg_url|escape:"html"}"/>
 		{else}
-		<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
+		<input type="hidden" name="MAX_FILE_SIZE" value="15728640" />
 		<label for="jpeg"><b>JPEG Image File</b></label>
 		<input id="jpeg" name="jpeg" type="file" />
 		

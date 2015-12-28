@@ -150,12 +150,12 @@ function hideStep3() {
 
 <h3>Schritt 1 : Datei auswählen</h3>
 
-<input type="hidden" name="MAX_FILE_SIZE" value="8192000" />
+<input type="hidden" name="MAX_FILE_SIZE" value="15728640" />
 <label for="jpeg"><b>JPEG-Datei</b></label>
 <input id="jpeg" name="jpeg" type="file" /><br/>
 <input type="checkbox" name="altimg" id="altimg" value="1"/> <label for="altimg">Dieses Bild ist ein Alternativbild, das Beschriftungen o.ä. enthält</label><br />
 
-<p>(Die Auflösung ist nicht begrenzt, aber die Datei muss kleiner als 8 Megabytes sein.)</p>
+<p>(Die Auflösung ist nicht begrenzt, aber die Datei muss kleiner als 15 Megabytes sein.)</p>
 
 
 <input type="submit" name="next" value="weiter &gt;" onclick="autoDisable(this);"/>
