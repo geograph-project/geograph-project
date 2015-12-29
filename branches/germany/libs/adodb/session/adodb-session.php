@@ -422,7 +422,7 @@ class ADODB_Session {
 	/*!
 	*/
 	static function _conn($conn=null) {
-		return $GLOBALS['ADODB_SESS_CONN'];
+		return @$GLOBALS['ADODB_SESS_CONN'];
 	}
 
 	/*!
