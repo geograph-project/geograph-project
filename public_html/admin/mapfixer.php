@@ -53,7 +53,7 @@ if (isset($_GET['redo_basemap']) && preg_match('/^[\w]+$/',$_GET['redo_basemap']
 	$sql="select l.x,l.y from gridsquare l left join {$_GET['redo_basemap']}.gridsquare s using (gridsquare_id) where s.percent_land != l.percent_land";
 
 	$tiles = $count = 0;
-	$recordSet = &$db->Execute($sql);
+	$recordSet = $db->Execute($sql);
 	while (!$recordSet->EOF) 
 	{
 		$tiles += $mosaic->expirePosition($recordSet->fields['x'],$recordSet->fields['y'],0,true);
@@ -91,7 +91,7 @@ elseif (isset($_GET['gridref']))
 			$gridsquare_id = false;
 		}
 
-		$recordSet = &$db->Execute("SELECT name,level,community_id FROM loc_hier ORDER BY level,name");
+		$recordSet = $db->Execute("SELECT name,level,community_id FROM loc_hier ORDER BY level,name");
 		while (!$recordSet->EOF) {
 			$regionlist[$recordSet->fields[1]."_".$recordSet->fields[2]] = $recordSet->fields[0];
 			$recordSet->MoveNext();

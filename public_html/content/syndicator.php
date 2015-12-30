@@ -80,7 +80,7 @@ $sql="select content.content_id,content.user_id,url,title,extract,updated,create
 	order by updated desc
 	limit $limit";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();

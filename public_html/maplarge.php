@@ -131,7 +131,7 @@ ORDER BY count DESC,last_date DESC
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');  
 
-		$users=&$db->GetAll($sql);
+		$users=$db->GetAll($sql);
 		$smarty->assign_by_ref('users', $users);
 	}
 }
