@@ -31,8 +31,8 @@ $template='usermsg.tpl';
 
 //gather what we need
 $recipient=new GeographUser($_REQUEST['to']);
-$from_name=isset($_POST['from_name'])?stripslashes($_POST['from_name']):$USER->realname;
-$from_email=isset($_POST['from_email'])?stripslashes($_POST['from_email']):$USER->email;
+$from_name=isset($_POST['from_name'])?stripslashes($_POST['from_name']):(isset($USER->realname)?$USER->realname:'');
+$from_email=isset($_POST['from_email'])?stripslashes($_POST['from_email']):(isset($USER->email)?$USER->email:'');
 $sendcopy=isset($_POST['sendcopy'])?stripslashes($_POST['sendcopy']):false;
 
 $smarty->assign_by_ref('recipient', $recipient);

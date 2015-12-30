@@ -301,7 +301,7 @@ elseif (isset($_GET['gridref']))
 	
 }
 
-if ($_GET['save']=='quick')
+if (isset($_GET['save']) && $_GET['save'] === 'quick')
 {
 	//return nice simple result
 	$status=$smarty->get_template_vars('status');

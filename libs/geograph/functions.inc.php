@@ -204,7 +204,7 @@ function smarty_function_external($params)
 	if (isset($params['nofollow']))
 		$title .= "\" rel=\"nofollow"; 	
 
-  	if ($params['target'] == '_blank') {
+  	if (isset($params['target']) && $params['target'] === '_blank') {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
   			"<img class=\"externallink\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	} else {
@@ -242,7 +242,7 @@ function smarty_function_gridimage($params)
 	$html.='<div style="float:left;width:213px">';
 	
 		$title=$image->grid_reference.' : '.htmlentities2($image->title).' '.$by.' '.htmlentities2($image->realname);
-
+	
 		$html.='<a title="'.$title.' - click to view full size image" href="/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
 		$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';

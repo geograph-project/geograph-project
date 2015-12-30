@@ -87,7 +87,7 @@ class kmlPrimative {
 	}
 
 	public function getChild($ref) {
-		return $this->children[$ref];
+		return @$this->children[$ref];
 	}
 
 	public function unsetChild($ref) {
@@ -252,7 +252,7 @@ class kmlFile extends kmlPrimative {
 		$s = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 
 		if (!empty($this->atom)) {
-			$this->values['xmlns:atom'] .= "http://www.w3.org/2005/Atom";
+			@$this->values['xmlns:atom'] .= "http://www.w3.org/2005/Atom";
 			$this->version = 2.2;
 		}
 	
