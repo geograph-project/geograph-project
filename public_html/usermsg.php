@@ -46,7 +46,14 @@ if (empty($db)) die('Database connection failed');
 
 $ip=getRemoteIP();
 
-$user_id = "inet_aton('{$ip}')";
+#$user_id = "inet_aton('{$ip}')";
+#$user_id = "HEX(INET6_ATON('{$ip}'))";
+$bip = inet_pton($ip);
+if ($bip === false) {
+	$user_id = '0';
+} else {
+	$user_id = sprintf('%u', crc32($bip));
+}
 
 $throttlenumber = 5;
 if ($USER->hasPerm("ticketmod") || $USER->hasPerm("moderator")) {
