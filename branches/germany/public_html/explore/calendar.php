@@ -163,7 +163,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			#if (!empty($_GET['debug'])) {
 			#	print "<pre>$sql</pre>";
 			#}
-			$images=&$db->GetAssoc($sql);
+			$images=$db->GetAssoc($sql);
 			if ($geosupp) {
 				$sql = "SELECT 
 					imagetaken,
@@ -172,7 +172,7 @@ if (!$smarty->is_cached($template, $cacheid))
 					WHERE imagetaken LIKE '$like%' AND imagetaken not like '%-00%' $where1 AND moderation_status = 'geograph'
 					GROUP BY imagetaken";
 				#trigger_error("---$sql", E_USER_WARNING);
-				$geographs=&$db->GetAssoc($sql);
+				$geographs=$db->GetAssoc($sql);
 				foreach ($geographs as $day=>$imageid) {
 					if (isset($images[$day])) {
 						$images[$day]['gridimage_id'] = $imageid;
@@ -250,7 +250,7 @@ if (!$smarty->is_cached($template, $cacheid))
 				$where .= " AND user_id = $uid";
 			}
 			$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-			$images=&$db->GetAssoc("SELECT 
+			$images=$db->GetAssoc("SELECT 
 			imagetaken, 
 			COUNT(*) AS images,
 			SUM(moderation_status = 'accepted') AS `supps`

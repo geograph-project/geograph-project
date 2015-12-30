@@ -236,7 +236,7 @@ where
 	gi.user_id = {$USER->user_id}
 order by null";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF) 
 {
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$recordSet->fields['gridsquare_id']},lock_type = 'cantmod'");
