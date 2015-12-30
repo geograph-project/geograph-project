@@ -52,12 +52,12 @@ if (!empty($_GET['when2Year'])) {
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 $when2 = (isset($_GET['when2']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when2']))?$_GET['when2']:'';
-if ($_GET['when']  != '' && !isset($_GET['whenYear']))  list($_GET['whenYear'], $_GET['whenMonth'], $_GET['whenDay'])  = explode('-', $_GET['when']);
-if ($_GET['when2'] != '' && !isset($_GET['when2Year'])) list($_GET['when2Year'],$_GET['when2Month'],$_GET['when2Day']) = explode('-', $_GET['when2']);
+if (!empty($_GET['when']) && !isset($_GET['whenYear']))  list($_GET['whenYear'], $_GET['whenMonth'], $_GET['whenDay'])  = explode('-', $_GET['when']);
+if (!empty($_GET['when2']) && !isset($_GET['when2Year'])) list($_GET['when2Year'],$_GET['when2Month'],$_GET['when2Day']) = explode('-', $_GET['when2']);
 
 if ($timerel == 'during' || $timerel == 'dbefore') {
-	$_GET['when2Year'] = $_GET['whenYear'];
-	$_GET['when2Month'] = $_GET['whenMonth'];
+	$_GET['when2Year'] = isset($_GET['whenYear']) ? $_GET['whenYear'] : '';
+	$_GET['when2Month'] = isset($_GET['whenMonth']) ? $_GET['whenMonth'] : '';
 	$when2 = $when;
 }
 if ($timerel == 'dbefore') {
@@ -469,9 +469,11 @@ if (!$smarty->is_cached($template, $cacheid))
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
-				$points += $entry['points'];
+				if (isset($entry['points']))
+					$points += $entry['points'];
 				#if ($points && empty($entry['points'])) $topusers[$idx]['points'] = ''; // this would also be needed in the other branch
-				$images += $entry['images'];
+				if (isset($entry['images']))
+					$images += $entry['images'];
 				#if ($images && empty($entry['images'])) $topusers[$idx]['images'] = '';
 			}
 			$lastimgcount = $entry['imgcount'];

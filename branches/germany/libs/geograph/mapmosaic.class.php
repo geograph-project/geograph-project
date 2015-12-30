@@ -1205,7 +1205,7 @@ class GeographMapMosaic
 				$divx = 4;
 				$divy = 4;
 			} else {
-				if (!$this->reference_index) {
+				if (empty($this->reference_index)) {
 					//this sets the most likly reference_index for the center of the map
 					$this->getGridRef(-1,-1,$bestoriginx, $bestoriginy);
 				}

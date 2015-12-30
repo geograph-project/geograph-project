@@ -240,14 +240,15 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 		$i++;
 		#$geographs += $entry['geographs'];
-		$pending += $entry['pending'];
+		if (isset($entry['pending']))
+			$pending += $entry['pending'];
 		#$points += $entry['points'];
 		if (empty($entry['points'])) $topusers[$user_id]['points'] = '';
 	}
 	
 	
 	$geographs=$sum['geographs'];
-	$points=$sum['points'];
+	$points=isset($sum['points'])?$sum['points']:0;
 	$smarty->assign('geographs', $geographs);
 	$smarty->assign('pending', $pending);
 	$smarty->assign('points', $points);

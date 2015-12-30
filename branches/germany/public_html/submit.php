@@ -463,7 +463,7 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('title2', $title2);
 				$smarty->assign('comment2', trim(stripslashes($_POST['comment2'])));
 
-				$smarty->assign('user_status', stripslashes($_POST['user_status']));
+				$smarty->assign('user_status', isset($_POST['user_status'])?stripslashes($_POST['user_status']):'');
 
 				if ($ok) {
 					$step=4;
@@ -489,7 +489,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
 				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
-				$uploadmanager->setLargestSize($_POST['largestsize']);
+				$uploadmanager->setLargestSize(isset($_POST['largestsize'])?intval($_POST['largestsize']):0);
 				$uploadmanager->setClearExif($_POST['clearexif']);
 				
 				if ($_POST['pattrib'] == 'other') {
