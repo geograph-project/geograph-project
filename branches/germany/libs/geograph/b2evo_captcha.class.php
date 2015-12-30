@@ -391,7 +391,8 @@ class b2evo_captcha
 		function get_b2evo_captcha()
 		{
 			$this->make_captcha();
-			if($public=='') $public = $this->public_key;
+			#if($public=='') $public = $this->public_key;# FIXME??
+			$public = $this->public_key;
 			return str_replace($_SERVER['DOCUMENT_ROOT'],'',$this->tempfolder).$this->filename_prefix.$public.'.jpg';
 		}
 
@@ -630,7 +631,7 @@ class b2evo_captcha
 			$key = '';
 			$this->chars = mt_rand($this->minchars,$this->maxchars);
 			for($i=0; $i < $this->chars; $i++) {
-				$key .= $this->validchars{mt_rand(0,strlen($this->validchars))};
+				$key .= $this->validchars{mt_rand(0,strlen($this->validchars)-1)};
 			}
 			if($this->case_sensitive==0) $key = strtoupper($key);
 			$this->public_key = md5($key);
@@ -697,7 +698,7 @@ class b2evo_captcha
 				{
 					if(!is_file($this->tempfolder.$file)) continue;
 					// check for name-prefix, extension and filetime
-					if(substr($file,0,strlen($this->prefix)) == $this->prefix)
+					if(!isset($this->prefix) || substr($file,0,strlen($this->prefix)) === $this->prefix)
 					{
 						if(strrchr($file, '.') == '.jpg')
 						{
