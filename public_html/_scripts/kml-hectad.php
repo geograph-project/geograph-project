@@ -151,8 +151,8 @@ foreach($most as $id=>$entry)
 	$entry['hunk_square'] = preg_replace('/^(.+)5(\d)(\d)$/','$1$2$3E',$entry['hunk_square']);
 	$entry['hunk_square'] = preg_replace('/^(.+)0(\d)(\d)$/','$1$2$3W',$entry['hunk_square']);
 	//SH43(5)E  -> SH43(N)E 
-	$entry['hunk_square'] = preg_replace('/^(.+)5([EW])$/e','$1."N".$2',$entry['hunk_square']);
-	$entry['hunk_square'] = preg_replace('/^(.+)0([EW])$/e','$1."S".$2',$entry['hunk_square']);
+	$entry['hunk_square'] = preg_replace('/^(.+)5([EW])$/','$1N$2',$entry['hunk_square']);
+	$entry['hunk_square'] = preg_replace('/^(.+)0([EW])$/','$1S$2',$entry['hunk_square']);
 
 	$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 	$file = getKmlFilepath($kml->extension,5,$square,$entry['hunk_square']);
