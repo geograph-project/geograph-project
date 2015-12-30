@@ -565,7 +565,7 @@ class GridImage
 		$smarty->assign('page_title', $this->bigtitle.":: {$gridrefpref}{$this->grid_reference}");
 
 		$smarty->assign('image_taken', $taken);
-		$smarty->assign('ismoderator', $ismoderator);
+		#$smarty->assign('ismoderator', $ismoderator);
 		$smarty->assign_by_ref('image', $this);
 
 		//get a token to show a suroudding geograph map
