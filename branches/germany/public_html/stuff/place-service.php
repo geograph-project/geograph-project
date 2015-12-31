@@ -145,13 +145,15 @@ if (!@is_dir($CONF['sphinx_cache']."place/$q1")) {
 		$db=NewADOConnection(!empty($GLOBALS['DSN2'])?$GLOBALS['DSN2']:$GLOBALS['DSN']);
 		
 		
-		$result = mysql_query($sql) or die ("Couldn't select query : $sql " . mysql_error() . "\n");
+		$result = $db->Execute($sql) or die ("Couldn't select query : $sql " . $db->ErrorMsg() . "\n");
 		$r = '';
-		if (mysql_num_rows($result) > 0) {
+		if (!$result->EOF) {
 			$rows = array();
-			while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+			do {
+				$row = $result->GetRowAssoc(false);
 				$rows[$row['id']] = $row;
-			}
+				$result->MoveNext();
+			} while (!$result->EOF);
 			foreach ($ids as $id) {
 				$row = $rows[$id];
 				
