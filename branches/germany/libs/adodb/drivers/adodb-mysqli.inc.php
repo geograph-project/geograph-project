@@ -99,7 +99,7 @@ class ADODB_mysqli extends ADOConnection {
 
 		#if (!empty($this->port)) $argHostname .= ":".$this->port;
 		$ok = mysqli_real_connect($this->_connectionID,
- 				    $argHostname,
+ 				    $persist? 'p:'.$argHostname : $argHostname,
  				    $argUsername,
  				    $argPassword,
  				    $argDatabasename,
