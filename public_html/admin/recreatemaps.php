@@ -98,7 +98,7 @@ if (isset($_GET['coast_GB_40'])) {
 				"map_x between $minx and $maxx and ".
 				"map_y between $miny and $maxy and ".
 				"pixels_per_km >= 40");
-			$count = mysql_affected_rows();	
+			$count = $db->Affected_Rows();
 		} else {
 			$count=$db->GetOne("select count(*) from mapcache where ".
 				"map_x between $minx and $maxx and ".

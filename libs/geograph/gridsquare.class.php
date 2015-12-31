@@ -169,7 +169,7 @@ class GridSquare
 	{
 		if (!is_object($this->db))
 			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed: '.mysql_error());  
+		if (!$this->db) die('Database connection failed');
 		return $this->db;
 	}
 
