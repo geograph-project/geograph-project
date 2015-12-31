@@ -93,13 +93,20 @@ $db = GeographDatabaseConnection(true);
 	
 
 function dump_sql_table($sql,$title,$autoorderlimit = true) {
+	global $db;
 	
-	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
-	
-	$row = mysql_fetch_array($result,MYSQL_ASSOC);
+	$result = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
 	print "<H3>$title</H3>";
 	
+	if ($result->EOF) {
+		print "<i>empty</i>";
+		return;
+	}
+
+	$row = $result->GetRowAssoc(false);
+	$result->MoveNext();
+
 	print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
 	foreach ($row as $key => $value) {
 		print "<TH>$key</TH>";
@@ -109,7 +116,9 @@ function dump_sql_table($sql,$title,$autoorderlimit = true) {
 		print "<TD>$value</TD>";
 	}
 	print "</TR>";
-	while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+	while (!$result->EOF) {
+		$row = $result->GetRowAssoc(false);
+		$result->MoveNext();
 		print "<TR>";
 		foreach ($row as $key => $value) {
 			print "<TD>$value</TD>";

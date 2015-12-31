@@ -38,11 +38,19 @@ dump_sql_table("select substring(ts,1,10),count(*),count(distinct level),sum(ren
 
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
-	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+	global $db;
 
-	$row = mysql_fetch_array($result,MYSQL_ASSOC);
+	$result = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
 
 	print "<H3>$title</H3>";
+
+	if ($result->EOF) {
+		print "<i>empty</i>";
+		return;
+	}
+
+	$row = $result->GetRowAssoc(false);
+	$result->MoveNext();
 
 	print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
 	foreach ($row as $key => $value) {
@@ -57,8 +65,11 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 			$align = "right";
 		}
 		print "</TR>";
-	} while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
+		$row = $result->GetRowAssoc(false);
+		$result->MoveNext();
+	} while (!$result->EOF);
 	print "</TR></TABLE>";
 }
+<<<<<<< HEAD
 
 

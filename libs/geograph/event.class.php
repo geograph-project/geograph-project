@@ -94,7 +94,7 @@ class Event
 			$sql=sprintf("insert into event(event_name, event_param,posted,priority) ".
 				"values(%s, %s, now(), '%d')",
 				$db->Quote($event_name),
-				$db->Quote($event_param), 
+				$db->Quote($event_param),
 				$priority);
 				$db->Execute($sql);
 		}

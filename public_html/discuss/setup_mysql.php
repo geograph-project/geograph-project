@@ -243,4 +243,23 @@ mysql_query('update '.$Tt.' set posts_count='."'".$topicPosts."'".' where topic_
 return $topicPosts;
 }
 
-?>
+function db_lastviewed($topic, $user_id, $postID)
+{
+	mysql_query("insert into geobb_lastviewed set topic_id=$topic,user_id=$user_id,last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)",$GLOBALS['minibb_link']) or die('<p>'.mysql_error($GLOBALS['minibb_link']).'. Please, try another name or value.');
+}
+
+function db_gridreftopics($Tt, $forum, $gridref)
+{
+	$result=mysql_query("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = '".mysql_escape_string($gridref)."'",$GLOBALS['minibb_link']);
+	$currentgridreftopics = mysql_num_rows($result);
+
+	if ($currentgridreftopics == 1) {
+		$action = "vthread";
+		$topic = mysql_result($result,0);
+	} else {
+		$action = "vtopic";
+		$topic=0;
+	}
+	return array($currentgridreftopics, $action, $topic);
+}
+

@@ -127,6 +127,7 @@ class GridSquare
 		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
 			$this->db=GeographDatabaseConnection($allow_readonly);
 		}
+		if (!$this->db) die('Database connection failed');
 		return $this->db;
 	}
 
