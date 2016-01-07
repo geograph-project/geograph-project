@@ -1339,8 +1339,8 @@ class GeographMapMosaic
 	function getTileCentre($i, $j)
 	{
 		if ($this->tilesize) {
-			$x=round(($this->tilesize+(i==0?$this->dx :0)-(i==$this->mosaic_factor_x-1?$this->dx2:0))/2);
-			$y=round(($this->tilesize+(j==0?$this->dy2:0)-(j==$this->mosaic_factor_y-1?$this->dy :0))/2);
+			$x=round(($this->tilesize+($i==0?$this->dx :0)-($i==$this->mosaic_factor_x-1?$this->dx2:0))/2);
+			$y=round(($this->tilesize+($j==0?$this->dy2:0)-($j==$this->mosaic_factor_y-1?$this->dy :0))/2);
 		} else {
 			$x=round(($this->image_w/$this->mosaic_factor_x)/2);
 			$y=round(($this->image_h/$this->mosaic_factor_y)/2);
