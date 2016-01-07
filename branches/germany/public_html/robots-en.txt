@@ -104,6 +104,7 @@ Allow: /admin/team.php
 Disallow: /admin/
 Disallow: /code/
 Disallow: /search.php?
+Disallow: /latlong.php?
 Disallow: /full-text.php?
 Disallow: /finder/
 Disallow: /explore/wordnet.php
@@ -166,6 +167,7 @@ Allow: /admin/team.php
 Disallow: /admin/
 Disallow: /code/
 Disallow: /search.php?
+Disallow: /latlong.php?
 Disallow: /full-text.php?
 Disallow: /finder/
 Disallow: /explore/wordnet.php
@@ -228,6 +230,7 @@ Allow: /admin/team.php
 Disallow: /admin/
 Disallow: /code/
 Disallow: /search.php?
+Disallow: /latlong.php?
 Disallow: /full-text.php?
 Disallow: /finder/
 Disallow: /explore/wordnet.php
@@ -290,6 +293,7 @@ Allow: /admin/team.php
 Disallow: /admin/
 Disallow: /code/
 Disallow: /search.php
+Disallow: /latlong.php
 Disallow: /full-text.php
 Disallow: /finder/
 Disallow: /explore/wordnet.php
