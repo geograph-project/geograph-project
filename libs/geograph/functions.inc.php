@@ -667,7 +667,7 @@ function datetimeToTimestamp($datetime) {
 
 function getFormattedDate($input) {
 	global $CONF;
-	list($y,$m,$d)=explode('-', $input);
+	@list($y,$m,$d)=explode('-', $input);
 	$date="";
 	if ($d>0) {
 		if ($y>1970) {
@@ -832,7 +832,7 @@ function get_map_suffix()
 {
 	global $CONF;
 	$map_suffix = $CONF['map_suffix'];
-	if ($map_suffix !== '' && preg_match('#Dillo/#',$_SERVER['HTTP_USER_AGENT'])) {
+	if ($map_suffix !== '' && isset($_SERVER['HTTP_USER_AGENT']) && preg_match('#Dillo/#',$_SERVER['HTTP_USER_AGENT'])) {
 		$map_suffix = ''; # can't handle 'clip'
 	}
 	return $map_suffix;

@@ -46,7 +46,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-	$hectads= $db->getAll("select * from hectad_complete $wherewhere limit 10");
+	#$hectads= $db->getAll("select * from hectad_complete $wherewhere limit 10"); # FIXME $wherewhere?
+	$hectads= $db->getAll("select * from hectad_complete limit 10");
 	$smarty->assign_by_ref('hectads', $hectads);
 	
 	$stats= $db->GetRow("select * from user_stat where user_id = 0");

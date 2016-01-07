@@ -47,7 +47,7 @@ $cacheid=$when.'|'.$where;
 //regenerate?
 if (!$smarty->is_cached($template,$cacheid))
 {
-	if (!$db) {
+	if (!isset($db)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 	}
