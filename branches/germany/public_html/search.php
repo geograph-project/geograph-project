@@ -1332,7 +1332,7 @@ if (isset($_GET['fav']) && $i) {
 			$smarty->assign_by_ref('distances',$d);
 
 			$countylist = array();
-			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
+			$recordSet = $db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
 			while (!$recordSet->EOF)
 			{
 				$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
@@ -1343,7 +1343,7 @@ if (isset($_GET['fav']) && $i) {
 
 			$regionlist = array();
 			if (count($CONF['hier_searchlevels'])) {
-				$recordSet = &$db->Execute("SELECT name,level,community_id FROM loc_hier WHERE level in (".implode(",",$CONF['hier_searchlevels']).") ORDER BY level,name");
+				$recordSet = $db->Execute("SELECT name,level,community_id FROM loc_hier WHERE level in (".implode(",",$CONF['hier_searchlevels']).") ORDER BY level,name");
 				while (!$recordSet->EOF) {
 					$regionlist[$recordSet->fields[1]."_".$recordSet->fields[2]] = $recordSet->fields[0];
 					$recordSet->MoveNext();

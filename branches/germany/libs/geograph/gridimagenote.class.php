@@ -293,7 +293,7 @@ class GridImageNote
 			# apply all changes of the given ticket
 			$applied = array();
 			# FIXME test if ticketowner matches?
-			$recordSet = &$db->Execute("select ti.field,ti.newvalue,ti.oldvalue from gridimage_ticket_item ti ".
+			$recordSet = $db->Execute("select ti.field,ti.newvalue,ti.oldvalue from gridimage_ticket_item ti ".
 				"where ti.gridimage_ticket_id = '{$ticketid}' and ti.note_id={$this->note_id}");
 			while (!$recordSet->EOF) {
 				$field = $recordSet->fields['field'];
@@ -368,7 +368,7 @@ class GridImageNote
 		$this->_clear();
 		if (preg_match('/^\d+$/', $note_id))
 		{
-			$row = &$db->GetRow("select * from gridimage_notes where note_id={$note_id} limit 1");
+			$row = $db->GetRow("select * from gridimage_notes where note_id={$note_id} limit 1");
 			if (is_array($row))
 			{
 				$this->_initFromArray($row);
