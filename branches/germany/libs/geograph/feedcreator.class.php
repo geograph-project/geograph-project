@@ -207,7 +207,7 @@ class FeedItem extends HtmlDescribable {
 	/**
 	 * Optional attributes of an item.
 	 */
-	var $author, $authorEmail, $image, $category, $comments, $guid, $source, $creator, $thumb;
+	var $author, $authorEmail, $image, $category, $comments, $guid, $source, $creator, $thumb, $content, $lat, $long;
 	
 	/**
 	 * Publishing date of an item. May be in one of the following formats:
@@ -979,17 +979,17 @@ class RSSCreator091 extends FeedCreator {
 		$feed.= $this->_createGeneratorComment();
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<rss version=\"".$this->RSSVersion."\"";
-		if ($this->format == 'MEDIA') 
+		if (isset($this->format) && $this->format == 'MEDIA') 
 			$feed.= " xmlns:media=\"http://search.yahoo.com/mrss/\"";
-		if ($this->items[0]->licence!="" || $this->creativeCommons)
+		if (!empty($this->items[0]->licence) || $this->creativeCommons)
 			$feed.= " xmlns:creativeCommons=\"http://backend.userland.com/creativeCommonsRssModule\"";
-		if ($this->items[0]->lat!="" || $this->geo)
+		if (!empty($this->items[0]->lat) || !empty($this->geo))
 			$feed.= " xmlns:georss=\"http://www.georss.org/georss\"";
-		if ($this->syndicationURL != '')
+		if (!empty($this->syndicationURL))
 			$feed.= " xmlns:atom=\"http://www.w3.org/2005/Atom\"";
 		$feed.= " xmlns:dc=\"http://purl.org/dc/elements/1.1/\"";
 		$feed.= ">\n";
-		if ($this->format == 'BASE') {
+		if (isset($this->format) && $this->format == 'BASE') {
 			$feed.= "    <channel xmlns:g=\"http://base.google.com/ns/1.0\">\n";
 		} else {
 			$feed.= "    <channel>\n";
@@ -998,16 +998,16 @@ class RSSCreator091 extends FeedCreator {
 		$this->descriptionTruncSize = 500;
 		$feed.= "        <description>".$this->getDescription()."</description>\n";
 		$feed.= "        <link>".$this->link."</link>\n";
-		if ($this->syndicationURL != '') {
+		if (!empty($this->syndicationURL)) { # FIXME better isset($foo) && $foo !== ''? See also other instances
 			$feed.= "        <atom:link href=\"".$this->syndicationURL."\" rel=\"self\" type=\"".$this->contentType."\" />\n";
 		}
-		if ($this->icon != '') {
+		if (!empty($this->icon)) { # FIXME better isset($foo) && $foo !== ''?
 			$feed.= "        <atom:icon>".$this->icon."</atom:icon>\n";
 		}
-		if ($this->prevURL != '') {
+		if (!empty($this->prevURL)) { # FIXME better isset($foo) && $foo !== ''?
 			$feed.= "        <atom:link href=\"".$this->prevURL."\" rel=\"previous\" type=\"".$this->contentType."\" />\n";
 		}
-		if ($this->nextURL != '') {
+		if (!empty($this->nextURL)) { # FIXME better isset($foo) && $foo !== ''?
 			$feed.= "        <atom:link href=\"".$this->nextURL."\" rel=\"next\" type=\"".$this->contentType."\" />\n";
 		}
 		$now = new FeedDate();
@@ -1158,7 +1158,7 @@ class KMLCreator extends FeedCreator {
 		$feed.= $this->_createStylesheetReferences();
 		$feed.= "<kml xmlns=\"http://earth.google.com/kml/2.0\">\n"; 
 		$feed.= "<Document>\n";
-		if ($_GET['LinkControl'])
+		if (!empty($_GET['LinkControl']))
 			$feed.= "<NetworkLinkControl>\n<minRefreshPeriod>3600</minRefreshPeriod>\n</NetworkLinkControl>\n";
 		if (!empty($_GET['simple']) && count($this->items) > 0) {
 		$feed.= "<Style id=\"defaultIcon\">

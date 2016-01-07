@@ -37,6 +37,9 @@ if (!$db) die('Database connection failed');
 require_once('geograph/conversions.class.php');
 $conv = new Conversions;
 
+$gr=null; # FIXME?
+$square=null; # FIXME?
+
 $html = '';
 $kml = new kmlFile();
 $stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";

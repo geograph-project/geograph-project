@@ -109,7 +109,7 @@ class SearchEngineBuilder extends SearchEngine
 				$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
 				$searchx = $square->x;
 				$searchy = $square->y;	
-				$criteria->reference_index = $square->reference_index;
+				#$criteria->reference_index = $square->reference_index; # FIXME $criteria does not exist
 				$location = $gr[0];
 			} else {
 				$this->errormsg = $square->errormsg;
@@ -127,7 +127,7 @@ class SearchEngineBuilder extends SearchEngine
 				$searchdesc = ", $nearstring $latdm, $longdm";
 				$searchx = $x;
 				$searchy = $y;			
-				$criteria->reference_index = $square->reference_index;	
+				#$criteria->reference_index = $square->reference_index; # FIXME $criteria does not exist
 				$location = $ll[0];
 			} else {
 				$this->errormsg = "unable to parse lat/long";
@@ -143,7 +143,7 @@ class SearchEngineBuilder extends SearchEngine
 			
 		@list($q,$placename) = preg_split('/\s*near\s+/',$q);
 
-		$criteria = new SearchCriteria_Placename();
+		$criteria = new SearchCriteria_Placename(); # FIXME overrides $criteria set above?
 
 		if ($placename != '(anywhere)' && strpos($q,':') === FALSE) {
 			if (!empty($placename)) {
@@ -218,7 +218,7 @@ class SearchEngineBuilder extends SearchEngine
 			$q = $location;
 		}
 		
-		if ($criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
+		if (isset($criteria->reference_index) && $criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
 			$searchdesc = str_replace(" ".$CONF['default_search_distance']."km "," ".$CONF['default_search_distance_2']."km ",$searchdesc);
 			$distance = $CONF['default_search_distance_2'];
 		}

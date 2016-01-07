@@ -204,13 +204,13 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 		$prefix .= "/$i";
 		$base2 .= "/$i";
 	} 
-	if (!is_dir("$base/$s"))
+	if (!empty($s) && !is_dir("$base/$s"))
 		mkdir("$base/$s");
-	if (!is_dir("$base2/$s"))
+	if (!empty($s) && !is_dir("$base2/$s"))
 		mkdir("$base2/$s");
-	if ($n && !is_dir("$base/$s/$n"))
+	if (!empty($n) && !is_dir("$base/$s/$n")) # FIXME test fails for $n==='00'
 		mkdir("$base/$s/$n");
-	if ($n && !is_dir("$base2/$s/$n"))
+	if (!empty($n) && !is_dir("$base2/$s/$n"))
 		mkdir("$base2/$s/$n");
 	
 	if ($level == 3) {
@@ -220,9 +220,9 @@ function getKmlFilepath($extension,$level,$square = null,$gr='',$i = 0) {
 	} elseif ($level <= 1) {
 		return "$prefix/geograph.$extension";
 	} else {
-		if ($n && !is_dir("$base/$s/$n/$level"))
+		if (!empty($n) && !is_dir("$base/$s/$n/$level"))
 			mkdir("$base/$s/$n/$level");
-		if ($n && !is_dir("$base2/$s/$n/$level"))
+		if (!empty($n) && !is_dir("$base2/$s/$n/$level"))
 			mkdir("$base2/$s/$n/$level");
 		return "$prefix/$s/$n/$level/$gr.$extension";
 	}
