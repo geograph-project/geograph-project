@@ -625,7 +625,7 @@ class GeographMapMosaic
 	* Initialise class from a token
 	* @access public
 	*/
-	function setToken($tokenstr,$allowWithoutMosaic = false)
+	function setToken($tokenstr,$allowWithoutMosaic = false, $mtype_fallback = 0)
 	{
 		$ok=false;
 		
@@ -645,7 +645,7 @@ class GeographMapMosaic
 				$token->hasValue("s") &&
 				$token->hasValue("z") &&
 				$token->getValue("z");
-			$this->mosaictype = $token->hasValue("M") ? $token->getValue("M") : 0;
+			$this->mosaictype = $token->hasValue("M") ? $token->getValue("M") : $mtype_fallback;
 			$ok = $ok1||$ok2;
 			if ($ok2) {
 				$this->mercator = $token->hasValue("m") && $token->getValue("m");
