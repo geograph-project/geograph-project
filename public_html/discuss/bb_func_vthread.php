@@ -190,7 +190,7 @@ out;
 			global $memcache;
 			$mkey = $cols[6].((!empty($_GET['l']))?'y':'');
 			//fails quickly if not using memcached!
-			if ($memtext =& $memcache->name_get('fp',$mkey)) {
+			if ($memtext = $memcache->name_get('fp',$mkey)) {
 				$posterText = $memtext;
 			} else {
 				$thumb_count = 0;

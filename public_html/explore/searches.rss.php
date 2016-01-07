@@ -59,7 +59,7 @@ $sql = "select
 	order by 
 		created desc";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
