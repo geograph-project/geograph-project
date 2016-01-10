@@ -886,7 +886,7 @@ function htmlnumericentities($myXML){
 }
 
 function xmlentities($s) {
-	$trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+	$trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES, 'ISO-8859-1');#FIXME use charset only for php versions 5.4.0+
 	foreach ($trans as $k=>$v) $trans[$k]= "&#".ord($k).";"; // encoding?
 	return strtr($s, $trans);
 }
