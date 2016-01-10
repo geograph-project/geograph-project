@@ -117,10 +117,12 @@ if ($acc=='m') return $forb; else return $acc;
 
 //--------------->
 function getIP(){
-$ip1=getenv('REMOTE_ADDR');$ip2=getenv('HTTP_X_FORWARDED_FOR');
-if ($ip2!='' and ip2long($ip2)!=-1) $finalIP=$ip2; else $finalIP=$ip1;
-$finalIP=substr($finalIP,0,15);
-return $finalIP;
+# FIXME does not work with ipv6
+#$ip1=getenv('REMOTE_ADDR');$ip2=getenv('HTTP_X_FORWARDED_FOR');
+#if ($ip2!='' and ip2long($ip2)!=-1) $finalIP=$ip2; else $finalIP=$ip1;
+#$finalIP=substr($finalIP,0,15);
+#return $finalIP;
+return $_SERVER['REMOTE_ADDR'];
 }
 
 //--------------->
