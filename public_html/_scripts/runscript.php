@@ -8,11 +8,16 @@ if (empty($CONF['phpdir'])) {
 	exit(1);
 }
 $phpdir=$CONF['phpdir'];
+if (empty($CONF['phpbin'])) {
+	$phpbin='php';
+} else {
+	$phpbin=$CONF['phpbin'];
+}
 
 $scripts=array(
-	'maps'=> "{$phpdir}/php {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_maps.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
-	'kml' => "{$phpdir}/php {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_kml.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
-	'tmp' => "{$phpdir}/php {$_SERVER['DOCUMENT_ROOT']}/../scripts/cleanup_tmp.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}"
+	'maps'=> "{$phpdir}/{$phpbin} {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_maps.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
+	'kml' => "{$phpdir}/{$phpbin} {$_SERVER['DOCUMENT_ROOT']}/../scripts/recreate_kml.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}",
+	'tmp' => "{$phpdir}/{$phpbin} {$_SERVER['DOCUMENT_ROOT']}/../scripts/cleanup_tmp.php --load=1.5 --dir={$_SERVER['DOCUMENT_ROOT']}/../ --config={$_SERVER['HTTP_HOST']}"
 );
 
 $logfile=$_SERVER['DOCUMENT_ROOT']."/../log/runscript.log";
