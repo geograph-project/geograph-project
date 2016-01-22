@@ -96,7 +96,7 @@ where (approved = 1 and event_time > now())
 	or ($isadmin and approved != -1)
 order by event_time desc";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();

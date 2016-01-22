@@ -231,7 +231,7 @@ if (isset($_GET['coast_GB_40'])) {
 			}
 			$sql="select * from mapcache where ($xycrit) $and_crit";
 			
-			$recordSet = &$db->Execute("$sql");
+			$recordSet = $db->Execute("$sql");
 			while (!$recordSet->EOF) 
 			{
 				print implode(', ',array_values($recordSet->fields))."<br/>";
@@ -260,7 +260,7 @@ if (isset($_GET['coast_GB_40'])) {
 	flush();
 	
 	
-	$recordSet = &$db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $limit");
+	$recordSet = $db->Execute("select * from mapcache where age > 0 order by pixels_per_km desc, age desc limit $limit");
 	while (!$recordSet->EOF) 
 	{
 		$map=new GeographMap;
