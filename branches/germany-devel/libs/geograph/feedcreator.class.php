@@ -877,9 +877,9 @@ class RSSCreator10 extends FeedCreator {
 		$feed.= "    xmlns=\"http://purl.org/rss/1.0/\"\n";
 		$feed.= "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n"; 
 		$feed.= "    xmlns:slash=\"http://purl.org/rss/1.0/modules/slash/\"\n";
-		if ($this->items[0]->thumb!="")
+		if ($this->items[0]->thumb!="") # FIXME !="" is equivalent to empty() -- is that intended or should we use "!=="? See also following lines.
 			$feed.= "    xmlns:photo=\"http://www.pheed.com/pheed/\"\n";
-		if ($this->items[0]->lat!="" || $this->geo)
+		if (isset($this->items[0]->lat) && $this->items[0]->lat!="" || !empty($this->geo))
 			$feed.= "    xmlns:georss=\"http://www.georss.org/georss\"\n";
 		$feed.= "    xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
 		$feed.= "    <channel rdf:about=\"".$this->syndicationURL."\">\n";
@@ -916,13 +916,13 @@ class RSSCreator10 extends FeedCreator {
 				$itemDate = new FeedDate($this->items[$i]->date);
 				$feed.= "        <dc:date>".htmlspecialchars_latin($itemDate->iso8601())."</dc:date>\n";
 			}
-			if ($this->items[$i]->source!="") {
+			if ($this->items[$i]->source!="") { # FIXME !="" is equivalent to empty() -- is that intended or should we use "!=="? See also following lines.
 				$feed.= "        <dc:source>".htmlspecialchars_latin($this->items[$i]->source)."</dc:source>\n";
 			}
 			if ($this->items[$i]->author!="") {
 				$feed.= "        <dc:creator>".htmlspecialchars_latin($this->items[$i]->author)."</dc:creator>\n";
 			}
-			if ($this->items[$i]->lat!="") {
+			if (isset($this->items[$i]->lat) && $this->items[$i]->lat!="") {
 				$feed.= "        <georss:point>".$this->items[$i]->lat." ".$this->items[$i]->long."</georss:point>\n";
 			}
 			if ($this->items[$i]->thumb!="") {
@@ -1289,7 +1289,7 @@ xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com
 
 		$now = new FeedDate();
 		$feed.= "<desc>".FeedCreator::iTrunc(htmlspecialchars_latin($this->title),100)."</desc>
-<author>{$http_host}</author>
+<author>{$_SERVER['HTTP_HOST']}</author>
 <url>".htmlspecialchars_latin($this->link)."</url>
 <time>".htmlspecialchars_latin($now->iso8601())."</time>
 \n";
