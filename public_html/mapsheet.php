@@ -130,7 +130,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$smarty->assign('startn', $startn-1);
 	} else {
 		$mosaic = new GeographMapMosaic;
-		$mosaic->setToken($_GET['t'],true);	
+		$mosaic->setToken($_GET['t'],true,2);	
 		$smarty->assign('mosaic_token', $mosaic->getToken());
 		$smarty->assign('token_north', $map->getPanToken(0, 1));
 		$smarty->assign('token_south', $map->getPanToken(0, -1));
