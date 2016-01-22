@@ -105,7 +105,7 @@ $sql="select article_id, article.article_cat_id, category_name, article.user_id,
 	order by update_time desc
 	limit 50";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
