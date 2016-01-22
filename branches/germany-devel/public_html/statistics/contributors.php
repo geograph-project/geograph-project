@@ -67,15 +67,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	$count = array();
 	foreach ($hectads as $i => $row) {
 		if ($row['count'] == 0) {
-			$count[0]++;
+			@$count[0]++;
 		} elseif ($row['count'] < 50) {
-			$count[intval($row['count']/5)*5+5]++;
+			@$count[intval($row['count']/5)*5+5]++;
 		} elseif ($row['count'] < 200) {
-			$count[intval($row['count']/10)*10+10]++;
+			@$count[intval($row['count']/10)*10+10]++;
 		} elseif ($row['count'] < 1000) {
-			$count[intval($row['count']/50)*50+50]++;
+			@$count[intval($row['count']/50)*50+50]++;
 		} else {
-			$count[intval($row['count']/500)*500+500]++;
+			@$count[intval($row['count']/500)*500+500]++;
 		}
 	}
 	

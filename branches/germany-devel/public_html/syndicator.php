@@ -287,7 +287,7 @@ for ($i=0; $i<$cnt; $i++)
 	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title; 
 	$item->guid = $item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$images->images[$i]->gridimage_id}";
 	if (isset($images->images[$i]->dist_string) || isset($images->images[$i]->imagetakenString)) {
-		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
+		$item->description = $images->images[$i]->dist_string.(!empty($images->images[$i]->imagetakenString)?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
 		$item->descriptionHtmlSyndicated = true;
 	} else {
 		$item->description = $images->images[$i]->comment; 

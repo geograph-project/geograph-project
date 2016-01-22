@@ -232,7 +232,7 @@ if ($template=='profile.tpl')
 	$map_suffix = get_map_suffix();
 	$cacheid .= $map_suffix;
 	
-	if (!empty($_GET['expand']) || $USER->expand_about == 1) {
+	if (!empty($_GET['expand']) || isset($USER->expand_about) && $USER->expand_about == 1) {
 		$cacheid .= "E";
 	}
 	if (isset($_GET['reject']) && empty($_GET['reject'])) {

@@ -49,7 +49,7 @@ if (isset($_GET['id']))  {
 			exit;
 		}
 		$version42plus = false;
-		if ($_GET['new']) {
+		if (!empty($_GET['new'])) {
 			$version42plus = true;
 		} 
 		//if (check version) {
