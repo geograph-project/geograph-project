@@ -45,7 +45,7 @@
 {/if}
 {/if}
 
-{if $is_mapmod || $is_mod || $is_admin}
+{if $is_mapmod || $is_admin}
 <li{if $gridsquares_sea_test > 0} style="color:lightgrey">
 <b>Map-fixing in Progress</b> - please come back later.<br/>
 {else}>{/if}
@@ -63,7 +63,8 @@ corrected</small><br/>
 {if $gridsquares_sea.1 || $gridsquares_sea.2}<b>[GB:{$gridsquares_sea.1},I:{$gridsquares_sea.2} in queue]</b>{/if}
 </form>
 </li>
-
+{/if}
+{if $is_mapmod || $is_mod || $is_admin}
 <li><a title="Recreate Maps" href="/recreatemaps.php">Recreate Maps</a> - 
    request update for map tiles</li>
 
