@@ -841,6 +841,12 @@ class GeographMap
 	* @access private
 	*/
 	function& _renderMap() {
+		global $CONF;
+		if (!empty($CONF['mem_maptiles'])) {
+			$memlim = ini_set("memory_limit", $CONF['mem_maptiles']);
+			#trigger_error('recreate_maps ini_set("memory_limit", '.$CONF['mem_maptiles'].'): '.($memlim===FALSE?'<error>':$memlim), E_USER_WARNING);
+		}
+		#trigger_error('_renderMap memory_limit: '.ini_get('memory_limit'), E_USER_WARNING);
 		if ($this->mercator) {
 			$ok = $this->_renderImageM();
 			if ($ok && $this->type_or_user != -10) {
@@ -854,6 +860,9 @@ class GeographMap
 				$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,mercator=%u,overlay=%u,layers=%u,level=%d,tile_x=%d,tile_y=%d,max_x=%d,max_y=%d",$leftMC,$bottomMC,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri, $this->mercator?1:0, $this->overlay, $this->layers, $this->level, $this->tile_x, $this->tile_y,$rightMC,$topMC);
 
 				$db->Execute($sql);
+			}
+			if (!empty($CONF['mem_maptiles']) && $memlim !== FALSE) {
+				ini_set("memory_limit", $memlim);
 			}
 			return $ok;
 		}
@@ -909,6 +918,9 @@ class GeographMap
 			$sql=sprintf("replace into mapcache set map_x=%d,map_y=%d,image_w=%d,image_h=%d,pixels_per_km=%F,type_or_user=%d,force_ri=%d,max_x=%d,max_y=%d,level=%d,tile_x=%d,tile_y=%d",$this->map_x,$this->map_y,$this->image_w,$this->image_h,$this->pixels_per_km,$this->type_or_user,$this->force_ri,$this->map_x+ceil($this->image_w/$this->pixels_per_km)-1,$this->map_y+ceil($this->image_h/$this->pixels_per_km)-1,round($this->pixels_per_km*100),$this->map_x,$this->map_y);
 
 			$db->Execute($sql);
+		}
+		if (!empty($CONF['mem_maptiles']) && $memlim !== FALSE) {
+			ini_set("memory_limit", $memlim);
 		}
 		return $ok;
 	}
@@ -1690,7 +1702,11 @@ class GeographMap
 			$topM=$bottomM+$widthM;
 			$db=&$this->_getDB();
 			$sql="select percent_land,mappal,norm,cliparea,area,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) inner join gridsquare_mappal using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and level = $hierlevel";
+			if ($this->level <= 6) {
+				trigger_error('->start reg ex '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
+			}
 			$recordSet = $db->Execute($sql);
+			#trigger_error('->start reg lp '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 			while (!$recordSet->EOF) {
 				$percent_land = $recordSet->fields[0];
 				$land_part = $percent_land < 0 ? 0. : $percent_land/100.;
@@ -1719,6 +1735,9 @@ class GeographMap
 				imagefilledpolygon($img, $drawpoly, $points, $land[$pal]);
 
 				$recordSet->MoveNext();
+			}
+			if ($this->level <= 6) {
+				trigger_error('->end reg lp '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 			}
 			$recordSet->Close();
 		}
@@ -2068,7 +2087,7 @@ class GeographMap
 			$imgw = $this->image_w;
 			$img = imagecreatetruecolor($imgw, $imgw);
 			if (!$img) {
-				return img; #FIXME
+				return $img; #FIXME
 			}
 			imagealphablending($img, true);
 			imagesavealpha($img, true);
@@ -2083,7 +2102,7 @@ class GeographMap
 		$imgw = $this->base_width;
 		$img=imagecreatetruecolor($imgw+2*$bdry,$imgw+2*$bdry);
 		if (!$img) {
-			return img; #FIXME
+			return $img; #FIXME
 		}
 		#imagealphablending($img, true);
 		imagealphablending($img, false);
@@ -2351,7 +2370,9 @@ class GeographMap
 			else
 			{
 				//we need to generate a squaremap
+				#trigger_error('->start sq '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 				$squareimg=&$this->_createSquaremapM($root.$squaremap);
+				#trigger_error('->end sq '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 				#FIXME tilecache
 			}
 			
@@ -2377,7 +2398,9 @@ class GeographMap
 			else
 			{
 				//we need to generate a regionmap
+				#trigger_error('->start reg '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 				$regionimg=&$this->_createRegionmapM($root.$regionmap);
+				#trigger_error('->end reg '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 			}
 			
 			if (!$regionimg) {
@@ -2402,7 +2425,9 @@ class GeographMap
 			else
 			{
 				//we need to generate a labelmap
+				#trigger_error('->start lab '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 				$labelimg=&$this->_createLabelmapM($root.$labelmap);
+				#trigger_error('->end lab '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 			}
 			
 			if (!$labelimg) {
@@ -2430,7 +2455,9 @@ class GeographMap
 			else
 			{
 				//we need to generate a tlabelmap
+				#trigger_error('->start town '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 				$tlabelimg=&$this->_createTLabelmapM($root.$tlabelmap);
+				#trigger_error('->end town '.date('Y-m-d H:i:s').' '.memory_get_usage().' '.memory_get_peak_usage(), E_USER_WARNING);
 			}
 			
 			if (!$tlabelimg) {
@@ -2458,6 +2485,7 @@ class GeographMap
 		#foreach ($layers as &$layerimg) {
 		#	imagealphablending($layerimg, true);
 		#}
+		#trigger_error('->start cmb', E_USER_WARNING);
 		$destw = $this->image_w;
 		imagealphablending($layers[0], true);
 		for ($i = 1; $i < count($layers);++$i) {
@@ -2468,6 +2496,7 @@ class GeographMap
 			#	imagecopymerge($layers[0], $layers[$i],      0, 0, 0, 0, $destw, $destw, $layerpct[$i]); # this does handle alpha transparency incorrectly. I hate gd.
 			imagedestroy($layers[$i]);
 		}
+		#trigger_error('->end cmb', E_USER_WARNING);
 
 		$target=$this->getImageFilename();
 		
