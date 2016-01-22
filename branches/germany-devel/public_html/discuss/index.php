@@ -279,6 +279,7 @@ if ($loginError==0) {
 	/* End stuff */
 
 	/* Banned IPs/IDs stuff */
+	# FIXME does not work with ipv6; remove?
 	$thisIp=getIP();
 	$cen=explode('.', $thisIp);
 
