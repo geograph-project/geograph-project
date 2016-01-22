@@ -126,6 +126,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$mysql_fields = '';
 	$mysql_from = '';
+	$sql_from = '';
 	$regionparam = $has_region ? "region={$rlevel}_{$rcid}&amp;" : '';
 	$userparam = $u ? "u=$u&amp;" : '';
 	$urlparams = $regionparam.$userparam;
@@ -260,7 +261,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		}
 	}
 
-	$smarty->assign_by_ref('link', str_replace(' ','+',$link));
+	$smarty->assign('link', str_replace(' ','+',$link));
 	$smarty->assign_by_ref('h2title', $title);
 
 	if (strpos($order,'2') !== FALSE) {
@@ -287,7 +288,7 @@ where 1 $sql_where
  $sql_crit
 group by $sql_group 
 $mysql_order";
-	if ($_GET['debug'])
+	if (!empty($_GET['debug']))
 		print $sql;
 	$breakdown=$db->GetAll($sql);
 	$total = 0;

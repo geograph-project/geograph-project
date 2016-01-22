@@ -192,7 +192,11 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 	if (!$reference_index) {
 		return array("",0);
 	}
-	list($x,$y) = $this->national_to_internal($e,$n,$reference_index );
+	$xy = $this->national_to_internal($e, $n, $reference_index);
+	if (!count($xy)) {
+		return array("",0);
+	}
+	list($x,$y) = $xy;
 
 	$db = $this->_getDB();
 
@@ -241,6 +245,10 @@ function national_to_internal($e,$n,$reference_index,$doround=true) {
 	if ($doround) {
 		$x = intval($x); # FIXME floor?
 		$y = intval($y); # FIXME floor?
+	}
+
+	if (!isset($CONF['origins'][$reference_index])) {
+		return array();
 	}
 	
 	//add the internal origin

@@ -888,9 +888,9 @@ if ($grid_given)
 else
 {
 	//no square specifed - populate with remembered values
-	$smarty->assign('gridsquare', $_SESSION['gridsquare']);
-	$smarty->assign('eastings', $_SESSION['eastings']);
-	$smarty->assign('northings', $_SESSION['northings']);
+	@$smarty->assign('gridsquare', $_SESSION['gridsquare']);
+	@$smarty->assign('eastings', $_SESSION['eastings']);
+	@$smarty->assign('northings', $_SESSION['northings']);
 	
 }
 

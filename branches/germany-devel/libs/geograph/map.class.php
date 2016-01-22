@@ -3421,7 +3421,7 @@ END;
 			
 			$recordSet->MoveNext();
 		}
-		if ($_GET['d'])
+		if (!empty($_GET['d']))
 			exit;
 		$recordSet->Close(); 
 	}
@@ -4156,7 +4156,7 @@ END;
 				}
 				$thisrect = array($txtx,$txty,$txtx + $txtw,$txty + $txth);
 				array_push($this->gridlabels,$thisrect);
-				if ($_GET['d']) {
+				if (!empty($_GET['d'])) {
 					print "$text";var_dump($thisrect); print "<BR>";
 				}
 			}
@@ -4495,8 +4495,10 @@ END;
 			$posx=$gridx-$this->map_x;
 			$posy=($top-$bottom) - ($gridy-$bottom);
 			$recordSet->fields['geographs'] = $recordSet->fields['imagecount'] - $recordSet->fields['accepted'];
-			$recordSet->fields['title1'] = $recordSet->fields['title'];
-			$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
+			if (isset($recordSet->fields['title'])) {
+				$recordSet->fields['title1'] = $recordSet->fields['title'];
+				$recordSet->fields['title'] = combineTexts($recordSet->fields['title1'], $recordSet->fields['title2']);
+			}
 			$grid[$posx][$posy]=$recordSet->fields;
 			
 			$recordSet->MoveNext();

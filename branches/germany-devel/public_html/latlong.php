@@ -137,7 +137,8 @@ if (!empty($_GET['To'])) { //to lat/long
 	} else if ($_GET['datum'] == 'german31') {
 		$en = $conv->wgs84_to_utm($_GET['lat'],$_GET['long'], 31);
 	} else {
-		list($e,$n,$reference_index) = $conv->wgs84_to_national($_GET['lat'],$_GET['long'],$_GET['usehermert']);
+		$enr = $conv->wgs84_to_national($_GET['lat'],$_GET['long'],$_GET['usehermert']);
+		@list($e,$n,$reference_index) = $enr;
 		if ($reference_index == 1) {
 			$en = array($e,$n);
 			$_GET['datum'] = "osgb36";
@@ -188,12 +189,14 @@ if (!empty($_GET['To'])) { //to lat/long
 	} else {
 		$smarty->assign('errormgs', $MESSAGES['latlong']['outside_area']);
 	}
-	$smarty->assign('lat', $_GET['lat']);
-	$smarty->assign('long', $_GET['long']);
-	$conv->wgs84_to_friendly_smarty_parts($_GET['lat'],$_GET['long'],$smarty);
-	list ($gke, $gkn) = $conv->wgs84_to_gk($_GET['lat'],$_GET['long'],-1);
-	$smarty->assign('gke', $gke);
-	$smarty->assign('gkn', $gkn);
+	if (isset($_GET['lat']) && isset($_GET['long'])) {
+		$smarty->assign('lat', $_GET['lat']);
+		$smarty->assign('long', $_GET['long']);
+		$conv->wgs84_to_friendly_smarty_parts($_GET['lat'],$_GET['long'],$smarty);
+		list ($gke, $gkn) = $conv->wgs84_to_gk($_GET['lat'],$_GET['long'],-1);
+		$smarty->assign('gke', $gke);
+		$smarty->assign('gkn', $gkn);
+	}
 }
 $smarty->assign('datum', $_GET['datum']);
 $smarty->assign('usehermert', $_GET['usehermert']);

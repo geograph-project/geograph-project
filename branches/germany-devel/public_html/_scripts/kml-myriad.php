@@ -41,6 +41,7 @@ require_once('geograph/conversions.class.php');
 $conv = new Conversions;
 
 $gr = $_GET['gr'];
+$square=null; # FIXME?
 
 $html = '';
 $kml = new kmlFile();
