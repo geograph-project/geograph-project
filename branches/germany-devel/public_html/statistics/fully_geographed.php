@@ -56,7 +56,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$censquare = new GridSquare;
 	
 	function cmp($a,$b) {
-		if ($a['sort'] == $b['dateraw'])
+		if ($a['dateraw'] == $b['dateraw'])
 			return 0;
 		return ($a['dateraw'] > $b['dateraw'])?-1:1;
 	}
