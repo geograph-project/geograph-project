@@ -545,7 +545,7 @@ function smarty_function_geographlinks($input, $thumbs = false, $short = false, 
 
 
 //replace geograph links
-function GeographLinks(&$posterText, $thumbs = false, $short = false, $newwindow = false) {
+function GeographLinks($posterText, $thumbs = false, $short = false, $newwindow = false) {
 	global $imageCredits,$CONF,$global_thumb_count;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
 	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
