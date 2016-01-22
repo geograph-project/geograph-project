@@ -127,6 +127,7 @@ class GeographMapMosaic
 	var $shift_x=0;
 	var $shift_y=0;
 	
+	var $type_or_user=0;
 	/**
 	* enable caching?
 	*/

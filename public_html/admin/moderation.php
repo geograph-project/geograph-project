@@ -411,10 +411,10 @@ foreach ($images->images as $i => $image) {
 			|| intval($images->images[$i]->grid_square->natnorthings/1000) != intval($images->images[$i]->viewpoint_northings/1000))
 			$images->images[$i]->different_square_true = true;
 		
-		if ($images->images[$i]->different_square_true && $images->images[$i]->subject_gridref_precision==1000)
+		if (!empty($images->images[$i]->different_square_true) && $images->images[$i]->subject_gridref_precision==1000)
 			$images->images[$i]->distance -= 0.5;
 		
-		if ($images->images[$i]->different_square_true && $images->images[$i]->distance > 0.1)
+		if (!empty($images->images[$i]->different_square_true) && $images->images[$i]->distance > 0.1)
 			$images->images[$i]->different_square = true;
 	
 	}	

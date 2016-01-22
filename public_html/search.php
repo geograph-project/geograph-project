@@ -1153,7 +1153,7 @@ if (isset($_GET['fav']) && $i) {
 
 		$a = array();
 		foreach ($recentsearchs as $i => $row) {
-			if ($a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"]) {
+			if (isset($a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"])) {
 				unset($recentsearchs[$i]);
 			} else {
 				$a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"] = 1;
