@@ -23,7 +23,8 @@ if (isset($_GET['job'])) {
 	$job='';
 }
 
-if (($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR']) || !array_key_exists($job, $scripts)) {
+if (($_SERVER['REMOTE_ADDR'] != $_SERVER['SERVER_ADDR']) && $_SERVER['REMOTE_ADDR'] != $CONF['server_ip'] || !array_key_exists($job, $scripts)) {
+	trigger_error("rs error: '{$_SERVER['REMOTE_ADDR']}' != '{$_SERVER['SERVER_ADDR']}'", E_USER_WARNING);
 	header("HTTP/1.0 404 Not Found"); //FIXME
 	exit(1);
 }
