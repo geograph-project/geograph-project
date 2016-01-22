@@ -363,7 +363,7 @@ class GridImage
 				$this->grid_square->_setDB($this->db);
 			$this->grid_square->loadFromId($this->gridsquare_id);
 			$this->grid_reference=$this->grid_square->grid_reference;
-			if ($this->nateastings) {
+			if (!empty($this->nateastings)) {
 				$this->natspecified = 1;
 				$this->grid_square->natspecified = 1;
 				$this->grid_square->natgrlen=$this->natgrlen;

@@ -74,7 +74,8 @@ if (!empty($_GET['To'])) { //to lat/long
 	$reNdir = '(?P<Ndir>[NSns])';
 	if (!empty($_GET['multimap']) && preg_match_all("/\(([\+\-]*\d{1,3}\.\d+)\)/",$_GET['multimap'],$matchs) == 2) {
 		list ($_GET['lat'],$_GET['long']) = $matchs[1];
-	} else if (preg_match('/^\s*'.$reEdir.'\s*'.$reE.'\s*'.$reNdir.'\s*'.$reN.'\s*$/' , $_GET['multimap'], $matches) == 1
+	} else if (isset($_GET['multimap'])
+	        &&(preg_match('/^\s*'.$reEdir.'\s*'.$reE.'\s*'.$reNdir.'\s*'.$reN.'\s*$/' , $_GET['multimap'], $matches) == 1
 	         ||preg_match('/^\s*'.$reNdir.'\s*'.$reN.'\s*'.$reEdir.'\s*'.$reE.'\s*$/' , $_GET['multimap'], $matches) == 1
 	         ||preg_match('/^\s*'.$reE.'\s*'.$reEdir.'\s*'.$reN.'\s*'.$reNdir.'\s*$/' , $_GET['multimap'], $matches) == 1
 	         ||preg_match('/^\s*'.$reN.'\s*'.$reNdir.'\s*'.$reE.'\s*'.$reEdir.'\s*$/' , $_GET['multimap'], $matches) == 1
@@ -82,7 +83,7 @@ if (!empty($_GET['To'])) { //to lat/long
 	         ||preg_match('/^\s*'.$reNdir.'\s*'.$reNn.'\s*'.$reEdir.'\s*'.$reEn.'\s*$/' , $_GET['multimap'], $matches) == 1
 	         ||preg_match('/^\s*'.$reEn.'\s*'.$reEdir.'\s*'.$reNn.'\s*'.$reNdir.'\s*$/' , $_GET['multimap'], $matches) == 1
 	         ||preg_match('/^\s*'.$reNn.'\s*'.$reNdir.'\s*'.$reEn.'\s*'.$reEdir.'\s*$/' , $_GET['multimap'], $matches) == 1
-	) {
+	)) {
 	//if (preg_match('/^\s*'.$reEdir.'\s*'.$reE.'\s*'.$reNdir.'\s*'.$reN.'\s*$/' , $teststr, $matches) == 1) {
 		#echo "  E: {$matches['Edir']} {$matches['Edeg']} {$matches['Emin']} {$matches['Esec']}\n";
 		#echo "  N: {$matches['Ndir']} {$matches['Ndeg']} {$matches['Nmin']} {$matches['Nsec']}\n";
