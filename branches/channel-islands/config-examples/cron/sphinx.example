@@ -8,6 +8,8 @@
 #then every hour update the delta indexes (and content is small so may as well update...)
 05,20,35,50 * * * * /usr/local/bin/indexer --config /usr/local/etc/sphinx.conf gi_delta_stemmed post_delta_stemmed content_stemmed --rotate
 
+31 * * * * /usr/local/bin/indexer --config /usr/local/etc/sphinx.conf category --rotate
+
 
 #NON STEMMED (stemmed should be updated before the non)
 
