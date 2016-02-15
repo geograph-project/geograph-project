@@ -70,7 +70,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommon
 
 <ul class="checklist">
 
-<li>Under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited to <b>{$image->realname|escape:'html'}</b>, an example of good wording is shown in the above box.{if $image->credit_realname}<small><br/>(The contributor <tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>)</small>{/if}</li>
+<li>Under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited to <b>{$image->realname|escape:'html'}</b>, an example of good wording (including the hyperlinks) is shown in the above box.{if $image->credit_realname}<small><br/>(The contributor <tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>)</small>{/if}</li>
 
 <li>You should also mention that the photo is copyrighted but also licensed for further reuse.</li>
 
