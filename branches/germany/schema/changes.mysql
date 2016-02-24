@@ -792,7 +792,7 @@ ALTER TABLE `sessions` CHANGE `SESSKEY` `SESSKEY` varchar(64) NOT NULL DEFAULT '
 
 ALTER TABLE `sessions` CHANGE `ipaddr`  `ipaddr`  varchar(45) NOT NULL DEFAULT '';
 ALTER TABLE `geobb_posts` CHANGE `poster_ip` `poster_ip` varchar(45) NOT NULL DEFAULT '';
- 
+
 ALTER TABLE `geobb_users` CHANGE `user_password` `user_password` varchar(60) NOT NULL DEFAULT '';
 
 DROP TABLE IF EXISTS `user_log`;
@@ -812,3 +812,33 @@ ALTER TABLE `queries` CHANGE `limit5` `limit5` char(3) NOT NULL DEFAULT '';
 ALTER TABLE `queries_archive` CHANGE `limit1` `limit1` varchar(7) NOT NULL DEFAULT '';
 ALTER TABLE `queries_archive` CHANGE `limit5` `limit5` char(3) NOT NULL DEFAULT '';
 
+###
+
+CREATE TABLE `vision_results` (
+  `id` bigint(20) unsigned NOT NULL,
+  `file` varchar(128) NOT NULL,
+  `type` varchar(32) NOT NULL,
+  `mid` varchar(32) NOT NULL,
+  `description` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `boundingPoly` varchar(32) DEFAULT NULL,
+  `locations` varchar(32) DEFAULT NULL,
+  `locale` varchar(32) DEFAULT NULL,
+  `created` datetime NOT NULL,
+  `validated` tinyint(3) unsigned DEFAULT NULL,
+  `auto_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`auto_id`),
+  KEY `id` (`id`),
+  KEY `mid` (`mid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1 ;
+
+
+CREATE TABLE `vision_queue` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 ;
+
+
+INSERT INTO vision_queue SELECT gridimage_id FROM gridimage_search;
+
+###
