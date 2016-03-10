@@ -780,9 +780,9 @@ table.report thead tr td
 	font-weight:bold;
 }
 
-table.report thead tr td a
+table.report thead tr a
 {
-	color:white;
+	color:yellow;
 }
 
 table.report tbody tr td
