@@ -119,3 +119,86 @@ function print_rp($q) {
 }
 
 
+###################################
+# Create some replicate tasks. Note we dont need to specify a source, as the worker will automatically find source per file.
+
+function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$order = 'NULL') {
+	if ($avoidover) {
+		$clause .= " AND replica_count < replica_target";
+	}
+
+	if ($target == 'ssd|rand') {
+		$clause .= " AND replicas NOT RLIKE 's[[:digit:]]'";
+		$targetQ = "CONCAT(IF(RAND()>0.5,'tea','cake'),'s',IF(RAND()>0.5,'1','2'))";
+
+	} elseif ($target == 'hard|rand') {
+		$clause .= " AND replicas NOT RLIKE 'h[[:digit:]]'";
+		$targetQ = "CONCAT(IF(RAND()>0.5,'tea','cake'),'h',IF(RAND()>0.5,'1','2'))";
+
+	} elseif ($target == 'hard|empty') {
+		$target = getOne("select mount,(available*1024)-coalesce(sum(bytes),0) as av from mounts left join replica_task on (target=mount and executed < 1) where mount like '%h_' group by mount order by av desc limit 1");
+
+		$clause .= " AND replicas NOT LIKE ".dbQuote("%".preg_replace('/\d$/','',$target)."%");
+		$targetQ = dbQuote($target);
+
+	} else {
+		$clause .= " AND replicas NOT LIKE ".dbQuote("%$target%");
+		$targetQ = dbQuote($target);
+	}
+
+	$clauseQ = dbQuote($clause);
+
+	if ($avoiddup) {
+		$clause .= " AND shard NOT IN(select distinct shard from replica_task where clause = $clauseQ)";
+	}
+
+	queryExecute($sql = "INSERT INTO replica_task
+        SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,$clauseQ AS `clause`,$targetQ AS target,NOW() as created,0 AS `executed`
+        FROM file_stat
+        WHERE $clause AND replica_count > 0
+        GROUP BY shard ORDER BY $order");
+
+	if (!empty($_GET['debug'])) {
+		print "-------\n$sql;\n----------\n";
+		print "Affected Rows: ".mysql_affected_rows()."\n\n";
+	}
+}
+
+###################################
+# create some drain tasks
+
+function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'NULL') {
+	if (empty($where))
+		$where = $clause;
+
+	if ($target == 'ssd|rand') {
+		die("unimplemtned");
+	} elseif ($target == 'hard|rand') {
+		die("unimplemtned");
+	} elseif ($target == 'hard|empty') {
+		die("unimplemtned");
+
+	} else {
+		//$clause .= " AND replicas LIKE ".dbQuote("%$target%"); //DONT need this in the clause, because the worker will do it anyway.
+		$where .= " AND replicas LIKE ".dbQuote("%$target%"); //but have it on clause just to create the rules correctly
+		$targetQ = dbQuote($target);
+	}
+
+	$clauseQ = dbQuote($clause);
+
+	if ($avoiddup) {
+		$where .= " AND shard NOT IN(select distinct shard from replica_task where clause = $clauseQ)";
+	}
+
+	queryExecute($sql = "INSERT INTO replica_task
+        SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,$clauseQ AS `clause`,$targetQ AS target,NOW() as created,0 AS `executed`
+        FROM file_stat
+        WHERE $where AND replica_count > 0
+        GROUP BY shard ORDER BY $order");
+
+	if (!empty($_GET['debug'])) {
+		print "-------\n$sql;\n----------\n";
+		print "Affected Rows: ".mysql_affected_rows()."\n\n";
+	}
+}
+

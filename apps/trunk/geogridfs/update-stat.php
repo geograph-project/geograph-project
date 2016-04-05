@@ -4,6 +4,9 @@ chdir(__DIR__);
 
 include __DIR__."/database.inc.php";
 
+if (empty($argv[1])) {
+        die("Please specify mode\n");
+}
 
 $size = 10000; //if =10000 then does one at a time, multiples does more
 $check = false;
@@ -62,12 +65,11 @@ if ($argv[1] == 'full') {
         $final = $size-1;
 }
 
-
 $sleep = 1;
 
 
-
-###############
+#####################################
+# Main Update Loop
 
 for($start = $begin; $start < $final; $start+=$size) {
 ##foreach(range($begin,$final,$size) as $start) {
@@ -95,6 +97,9 @@ for($start = $begin; $start < $final; $start+=$size) {
 		sleep($sleep);
 
 }
+
+####################################
+# Update Stat table
 
 if ($argv[1] == 'full') {
 	print "delete from file_stat where updated < '$cutoff'";
@@ -124,37 +129,20 @@ if ($argv[1] == 'full') {
 		FROM thumb_md5 GROUP BY substring_index(filename,'_',-1) ORDER BY NULL");
 
 
-//new full that need copying to SSD
-    queryExecute("INSERT INTO replica_task
-	SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) AS bytes,'class = \'full.jpg\' AND replica_count < replica_target AND replicas NOT RLIKE \'s[[:digit:]]\'' AS `clause`,CONCAT(IF(RAND()>0.5,'tea','cake'),'s',IF(RAND()>0.5,'1','2')) AS target,NOW() as created,0 AS `executed`
-	FROM file_stat
-	WHERE class = 'full.jpg' AND replica_count < replica_target AND replicas NOT LIKE '%s1%' AND replicas NOT LIKE '%s2%' AND replica_count > 0
-	AND shard NOT IN(select distinct shard from replica_task where clause = 'class = \'full.jpg\' AND replica_count < replica_target AND replicas NOT RLIKE \'s[[:digit:]]\'')
-	GROUP BY shard ORDER BY NULL");
+###################################
+# Write Tasks
 
+//new full that need copying to SSD
+    write_replicate_task("ssd|rand","class = 'full.jpg'");
+
+    write_replicate_task("hard|rand","class = 'full.jpg'");
 
 //new thumb to copy to SSD
-    queryExecute("INSERT INTO replica_task
-	SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,'class = \'thumb.jpg\' AND replica_count < replica_target AND replicas NOT RLIKE \'s[[:digit:]]\'' AS `clause`,CONCAT(IF(RAND()>0.5,'tea','cake'),'s',IF(RAND()>0.5,'1','2')) AS target,NOW() as created,0 AS `executed`
-	FROM file_stat
-	WHERE class = 'thumb.jpg' AND replica_count < replica_target AND replicas NOT LIKE '%s1%' AND replicas NOT LIKE '%s2%' AND replica_count > 0
-	AND shard NOT IN(select distinct shard from replica_task where clause = 'class = \'thumb.jpg\' AND replica_count < replica_target AND replicas NOT RLIKE \'s[[:digit:]]\'')
-	GROUP BY shard ORDER BY NULL");
+    write_replicate_task("ssd|rand","class = 'thumb.jpg'");
 
-
-//files not stored on jam
-    queryExecute("INSERT INTO replica_task
-	SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,'replicas NOT LIKE \'%jam%\' AND replica_count < replica_target' AS `clause`,'jam' AS target,NOW() as created,0 AS `executed`
-	FROM file_stat
-	WHERE replicas NOT LIKE '%jam%' AND replicas NOT LIKE '%jam%' AND replica_count < replica_target AND replica_count > 0
-	AND shard NOT IN(select distinct shard from replica_task where clause = 'replicas NOT LIKE \'%jam%\' AND replica_count < replica_target')
-	GROUP BY shard ORDER BY NULL");
-
+//ANY files not stored on jam
+    write_replicate_task("jam","1");
 
 //copy originals to the replica with the most space
-    $target = getOne("select mount,(available*1024)-coalesce(sum(bytes),0) as av from mounts left join replica_task on (target=mount and executed < 1) where mount like '%h_' group by mount order by av desc limit 1");
-    queryExecute("INSERT INTO replica_task
-	SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,'class = \'original.jpg\' AND replica_count < replica_target' AS `clause`,'$target' AS target,NOW() as created,0 AS `executed`
-	FROM file_stat
-	WHERE class = 'original.jpg' AND replica_count < replica_target AND replica_count > 0 AND replicas NOT LIKE '%$target%'
-	GROUP BY shard ORDER BY RAND()");
+    write_replicate_task("hard|empty","class = 'original.jpg'");
+
