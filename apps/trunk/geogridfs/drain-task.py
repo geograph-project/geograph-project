@@ -4,14 +4,11 @@
 # $Id: replicator.py 7979 2013-08-20 13:18:46Z barry $
 __version__ = filter(str.isdigit, "$Revision: 7979 $")
 
-## Script to run on Geograph File System storage node servers. Performs two main functions:
+## Script to run on Geograph File System storage node servers.
 #
-#  Walk the local disk, and tells the metadata server about the files available
-#     This is used once to first provision a none-empty folder
+# Worker Client to process 'drain_task' from the database. Deleting files (!!) as long as they are valid files. Used to clear out a replica, or simply to redistribute files
+#  (The tasks themselves are generated elsewhere!)
 #
-#  A replication function, that asks the metadata server for a list of new files,
-#     Then copies them directly from other storage nodes
-#     This is used regually (eg once a minute) to replicate brand new files. 
 ##
 #    Copyright (C) 2013  Barry Hunter  <geo@barryhunter.co.uk>
 #
@@ -66,19 +63,19 @@ def md5sum(path):
 def drain_now(path = '',target='', order = ''):
     if target == '':
         target = config.server['self']
+        target = re.sub(r'[sh]\d$','',target)
 
     if order == '':
         order = "shard DESC,RAND()"
     if order == 'rand':
         order = "RAND()"
 
-    target_snub = re.sub(r'[sh]\d$','',target)
 
     c=db.cursor(MySQLdb.cursors.DictCursor)
     cex=db.cursor()
 
-    print "SELECT * FROM drain_task WHERE target LIKE '"+target_snub+"%' AND `executed` = '0000-00-00 00:00:00' ORDER BY "+order+" LIMIT 1"
-    c.execute("SELECT * FROM drain_task WHERE target LIKE '"+target_snub+"%' AND `executed` = '0000-00-00 00:00:00' ORDER BY "+order+" LIMIT 1")
+    print "SELECT * FROM drain_task WHERE target LIKE '"+target+"%' AND `executed` = '0000-00-00 00:00:00' ORDER BY "+order+" LIMIT 1"
+    c.execute("SELECT * FROM drain_task WHERE target LIKE '"+target+"%' AND `executed` = '0000-00-00 00:00:00' ORDER BY "+order+" LIMIT 1")
 
     row = c.fetchone()
     if not row:
@@ -156,6 +153,8 @@ def drain_now(path = '',target='', order = ''):
 
         else:
             print "we dont have " + row['filename']
+
+    print "\ndone"
 
 #############################################################################
 

@@ -9,7 +9,7 @@ __version__ = filter(str.isdigit, "$Revision$")
 #  Walk the local disk, and tells the metadata server about the files available
 #     This is used once to first provision a none-empty folder
 #
-#  A replication function, that asks the metadata server for a list of new files,
+#  A auto replication function, that asks the metadata server for a list of new files,
 #     Then copies them directly from other storage nodes
 #     This is used regually (eg once a minute) to replicate brand new files. 
 ##

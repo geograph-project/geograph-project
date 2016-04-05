@@ -4,16 +4,13 @@
 # $Id: replicator.py 7979 2013-08-20 13:18:46Z barry $
 __version__ = filter(str.isdigit, "$Revision: 7979 $")
 
-## Script to run on Geograph File System storage node servers. Performs two main functions:
+## Script to run on Geograph File System storage node servers.
 #
-#  Walk the local disk, and tells the metadata server about the files available
-#     This is used once to first provision a none-empty folder
+# Worker Client to process 'replica_task' from the database. Copies files from any node that has the file to a specific node
+#  (The tasks themselves are generated elsewhere!)
 #
-#  A replication function, that asks the metadata server for a list of new files,
-#     Then copies them directly from other storage nodes
-#     This is used regually (eg once a minute) to replicate brand new files. 
 ##
-#    Copyright (C) 2013  Barry Hunter  <geo@barryhunter.co.uk>
+#    Copyright (C) 2015  Barry Hunter  <geo@barryhunter.co.uk>
 #
 #    This program can be distributed under the terms of the GNU LGPL.
 #    See the file COPYING.

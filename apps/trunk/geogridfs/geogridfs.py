@@ -138,13 +138,18 @@ class GeoGridFS(Fuse):
                 scores['teah2'] = (abs(hash(path+'@'))%4)+4
                 scores['teas1'] = 3
                 scores['cakes1'] = 3
-            scores['jam'] = 2
             scores['milk'] = 1
+        elif 'backups/' in path:
+            for (key,value) in config.mounts.iteritems():
+                if key != 'milk' and key != 'cream':
+                    scores[key] = (abs(hash(path+value))%len(config.mounts))
         else:
             scores['milk'] = 5
             scores['cakes1'] = 4
             scores['teas1'] = 3
-            scores['jam'] = 2
+
+        scores['jam'] = 2
+        scores['cream'] = 1
 
         #if have metadata record, use it to promote mounts with actual replicas
         try:
@@ -155,7 +160,7 @@ class GeoGridFS(Fuse):
                     for row in query.record:
                         self.row_cache.put(path,row)
                     
-            if self.row_cache.has_key(path):
+            if self.row_cache.has_key(path) and self.row_cache.get(path)['replicas'] != '':
                 for replica in string.split(self.row_cache.get(path)['replicas'], ','):
                     scores[replica] = 100+scores.get(replica,1)
                     if re.search(r's\d',replica): # boost SSD mounts regardless
@@ -225,7 +230,7 @@ class GeoGridFS(Fuse):
             st = MyStat()
             cache = self.row_cache.get(path)
             
-            if cache:
+            if cache and cache['replicas'] != '':
                 st.st_atime = int(cache['accessed'])
                 st.st_mtime = int(cache['modified'])
                 st.st_ctime = int(cache['created'])
@@ -235,12 +240,13 @@ class GeoGridFS(Fuse):
                 return st
         
         for mount in self.getOrderedMounts(path):
-            try:
-                result = os.lstat(mount + path)
-                return result
-            except os.error, e:
-                print "Error %d: %s" % (e.args[0], e.args[1])
-                pass
+            if os.path.exists(mount + path):
+                try:
+                    result = os.lstat(mount + path)
+                    return result
+                except os.error, e:
+                    print "Error %d: %s" % (e.args[0], e.args[1])
+                    pass
         
         return os.lstat(mount + 'nonexistant')
         return -ENOENT
@@ -283,6 +289,9 @@ class GeoGridFS(Fuse):
                         #sys.exit(1)
                 
                 os.unlink(mount + path)
+
+        if self.row_cache.has_key(path):
+            self.row_cache.erase(path)
 
     def rmdir(self, path):
         for mount in self.getOrderedMounts(path):
@@ -386,6 +395,9 @@ class GeoGridFS(Fuse):
                 print "Error %d: %s" % (e.args[0], e.args[1])
                 print query.conn.query
                 #sys.exit(1)
+
+        if self.row_cache.has_key(path):
+            self.row_cache.erase(path)
 
     def mknod(self, path, mode, dev):
         for mount in self.getOrderedMounts(path):
