@@ -484,6 +484,11 @@ class GeoGridFS(Fuse):
                             final_mount = mount
                             self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
                             break
+                        elif re.search(r's\d',mount) and os.path.exists(mount + '/geograph_live'): # boost SSD mounts regardless
+                            os.makedirs(os.path.dirname(mount + path)) # use makedirs so will also create parent dirs as required
+                            final_mount = mount
+                            self.file = os.fdopen(os.open(mount + path, flags, *mode), flag2mode(flags))
+                            break
 
                     #if still not found, then just create it on the first mount
                     if not self.file: 
