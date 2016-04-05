@@ -372,7 +372,7 @@ def main(argv):
         elif opt in ("-r", "--replica"):
             replica = arg
         elif opt in ("-p", "--path"):
-            path = arg
+            path = arg.rstrip("/")
     
     if action == 'unknown':
         print 'replicator.py -a (walk|replicate) [-p /geograph_live/rastermaps] [-r milk]'

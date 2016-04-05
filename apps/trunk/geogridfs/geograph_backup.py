@@ -378,7 +378,7 @@ def main(argv):
         elif opt in ("-m", "--mode"):
             mode = arg
         elif opt in ("-p", "--path"):
-            path = arg
+            path = arg.rstrip("/")
         elif opt in ("-s", "--sleep"):
             sleeper = float(arg)
     

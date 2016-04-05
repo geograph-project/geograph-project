@@ -195,7 +195,7 @@ def main(argv):
         elif opt in ("-r", "--replica"):
             replica = arg
         elif opt in ("-p", "--path"):
-            path = arg
+            path = arg.rstrip("/")
         elif opt in ("-o", "--order"):
             order = arg
     
