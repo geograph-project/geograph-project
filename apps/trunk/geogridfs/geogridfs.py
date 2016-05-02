@@ -38,6 +38,7 @@ import hashlib
 import re
 import string
 import threading
+import time
 from mpycache import LRUCache;
 
 
@@ -127,7 +128,7 @@ class GeoGridFS(Fuse):
                 scores['cakes1'] = 4
                 scores['teas1'] = 3
             elif '_original' in path:
-                scores['teah2'] = 5
+                scores['teah2'] = 2 ## still give it a score for now, so it can be used for reading
                 scores['cakeh1'] = 5
                 scores['cakeh2'] = 4
                 scores['teah1'] = 3
@@ -135,13 +136,13 @@ class GeoGridFS(Fuse):
                 scores['cakes2'] = (abs(hash(path))%4)+4
                 scores['cakeh2'] = (abs(hash(path+'~'))%4)+4
                 scores['teas2'] = (abs(hash(path+'#'))%4)+4
-                scores['teah2'] = (abs(hash(path+'@'))%4)+4
+                scores['teah2'] = 2 ##(abs(hash(path+'@'))%4)+4
                 scores['teas1'] = 3
                 scores['cakes1'] = 3
             scores['milk'] = 1
         elif 'backups/' in path:
             for (key,value) in config.mounts.iteritems():
-                if key != 'milk' and key != 'cream':
+                if key != 'milk' and key != 'cream' and key != 'teah2':
                     scores[key] = (abs(hash(path+value))%len(config.mounts))
         else:
             scores['milk'] = 5
@@ -414,7 +415,29 @@ class GeoGridFS(Fuse):
     def utime(self, path, times):
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
-                return os.utime(mount + path, times)
+                os.utime(mount + path, times)
+
+        try:
+	    ##  If times is None, then the file.s access and modified times are set to the current time.
+            if not times:
+		times = (time.time(),time.time())
+            ###  of the form (atime, mtime) which is used to set the access and modified times
+            specifics = 
+                "`file_modified` = FROM_UNIXTIME("+str(times[1])+"), " + \
+                "`file_accessed` = FROM_UNIXTIME("+str(times[0])+")"
+
+            query = PySQLPool.getNewQuery(self.server.connection)
+            query.Query("UPDATE "+config.database['file_table']+" SET "+specifics+" WHERE filename = '"+query.escape_string(path)+"'")
+
+        except MySQLdb.Error, e:
+            if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
+                print "Error %d: %s" % (e.args[0], e.args[1])
+                print query.conn.query
+                #sys.exit(1)
+
+        if self.row_cache.has_key(path):
+            self.row_cache.erase(path)
+
 
 #    The following utimens method would do the same as the above utime method.
 #    We can't make it better though as the Python stdlib doesn't know of
