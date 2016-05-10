@@ -52,6 +52,10 @@ $db = GeographDatabaseConnection(false);
 
 $smarty = new GeographPage;
 
+if (!empty($CONF['moderation_message'])) {
+        $smarty->assign("status_message",$CONF['moderation_message']);
+}
+
 //doing some moderating?
 if (isset($_GET['gridimage_id']))
 {
@@ -158,9 +162,9 @@ if (!empty($_GET['abandon'])) {
 
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(100,intval($_GET['limit'])):15;
 if ($limit > 15) {
-	dieUnderHighLoad(0.3);
+	dieUnderHighLoad(0.5);
 } else {
-	dieUnderHighLoad(0.8);
+	dieUnderHighLoad(1.3);
 }
 
 
@@ -181,7 +185,7 @@ if (!empty($_GET['relinquish'])) {
 		
 		$db->Execute("UPDATE user SET rights = CONCAT(rights,',traineemod') WHERE user_id = {$USER->user_id}");
 		
-		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");
+		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0 OR FIND_IN_SET('admin',coordinator)>0");
 		
 		$url = 'http://'.$_SERVER['HTTP_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
 		
@@ -217,7 +221,7 @@ Regards,
 	$smarty->assign('apply', 1);
 	
 } elseif (isset($_GET['moderator'])) {
-	$USER->mustHavePerm('admin');
+	($USER->user_id == 10124) || $USER->mustHavePerm('admin');
 } else {
 	$USER->mustHavePerm('moderator');
 }
@@ -272,22 +276,6 @@ while (!$recordSet->EOF)
 	$recordSet->MoveNext();
 }
 $recordSet->Close(); 
-
-#############################
-#lock the table so nothing can happen in between! (leave others as READ so they dont get totally locked)
-
-$db->Execute("LOCK TABLES 
-gridsquare_moderation_lock WRITE, 
-gridsquare_moderation_lock l WRITE,
-moderation_log WRITE,
-gridsquare READ,
-gridsquare gs READ,
-gridimage gi READ LOCAL,
-user READ LOCAL,
-gridprefix READ,
-user v READ LOCAL,
-user m READ LOCAL,
-user_stat us READ LOCAL");
 
 #############################
 # define the images to moderate
@@ -380,8 +368,25 @@ if (isset($_GET['xmas'])) {
 	$sql_where .= " AND (lock_type = 'modding')";
 }
 
+#############################
+#lock the table so nothing can happen in between! (leave others as READ so they dont get totally locked)
 
-$sql = "select gi.*,grid_reference,user.realname,imagecount,coalesce(images,0) as images $sql_columns
+$db->Execute("LOCK TABLES 
+gridsquare_moderation_lock WRITE, 
+gridsquare_moderation_lock l WRITE,
+moderation_log WRITE,
+gridsquare READ,
+gridsquare gs READ,
+gridimage gi READ LOCAL,
+user READ LOCAL,
+gridprefix READ,
+user v READ LOCAL,
+user m READ LOCAL,
+user_stat us READ LOCAL,
+tag_public READ LOCAL");
+
+
+$sql = "select gi.*,group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags,grid_reference,user.realname,imagecount,coalesce(images,0) as images $sql_columns
 from 
 	gridimage as gi
 	inner join gridsquare as gs
@@ -393,9 +398,12 @@ from
 		on(gi.user_id=user.user_id)
 	left join user_stat us
 		on(gi.user_id=us.user_id)
+	left join tag_public t
+		on(t.gridimage_id = gi.gridimage_id)
 where
 	$sql_where
 	$sql_where2
+	and user.rights like '%basic%'
 	and submitted < date_sub(now(),interval 30 minute)
 group by gridimage_id
 order by
@@ -403,6 +411,10 @@ order by
 limit $limit";
 //implied: and user_id != {$USER->user_id}
 // -> because squares with users images are locked
+
+if (!empty($_GET['debug'])) {
+	print $sql;
+}
 
 
 #############################
@@ -457,6 +469,9 @@ foreach ($images->images as $i => $image) {
 	list($width, $height, $type, $attr)=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
 	if (max($width,$height) < 500)
 		$images->images[$i]->sizestr = $attr;
+
+	if (!empty($image->tags))
+		$images->images[$i]->tags = explode("?",$image->tags);
 }
 
 #############################
@@ -471,5 +486,26 @@ $images->assignSmarty($smarty, 'unmoderated');
 $style = $USER->getStyle();
 $smarty->assign('maincontentclass', 'content_photo'.$style);
 
+    $smarty->register_function("votestars", "smarty_function_votestars"); 
+
 $smarty->display('admin_moderation.tpl',$style);
+
+
+
+
+function smarty_function_votestars($params) { 
+    global $CONF; 
+    static $last; 
+     
+    $type = $params['type']; 
+    $id = $params['id']; 
+    $names = array('','Hmm','Below average','So So','Good','Excellent'); 
+    foreach (range(1,5) as $i) { 
+        print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"http://{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>"; 
+    } 
+    if ($last != $type) { 
+        print " (<a href=\"/help/voting\">about</a>)"; 
+    }  
+    $last = $type; 
+} 
 
