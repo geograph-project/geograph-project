@@ -84,7 +84,7 @@
 		{if $profile->public_email eq 1}
 			<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}</li>
 		{/if}
-		<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message to {$profile->realname|escape:'html'}</a></li>
+		<li><a title="Contact {$profile->realname|escape:'html'}" href="/usermsg.php?to={$profile->user_id}">Send message{if !$profile->deceased_date} to {$profile->realname|escape:'html'}{/if}</a></li>
 	{elseif $simplified}
 		<li><b>Email</b>: {mailto address=$profile->email encode="javascript"}
 		{if $profile->public_email ne 1} <em>(not displayed to other users)</em>{/if}
@@ -92,8 +92,8 @@
 	{/if}
 
 	{if $profile->deceased_date}
-		<li><b>Site Member</b>:  {$profile->signup_date|date_format:"%B %Y"} - {$profile->deceased_date|date_format:"%B %Y"}</li>
-	{else}
+		<li><b>Site Member</b>:  {$profile->signup_date|date_format:"%B %Y"} - {$profile->deceased_date|replace:'-00':'-01'|date_format:"%B %Y"}</li>
+	{elseif strlen($profile->rights) > 1}
 		{if $profile->grid_reference}
 			<li><b>Home grid reference</b>:
 			<a href="/gridref/{$profile->grid_reference|escape:'html'}">{$profile->grid_reference|escape:'html'}</a>
@@ -146,7 +146,9 @@
 		<h3 style="margin-top:0px;margin-bottom:0px">My Statistics <a href="/help/stats_faq" class="about" style="font-size:0.7em">About</a></h3>
 		{/if}
 	</div>
-	<div style="float:right;font-size:0.8em; color:gray;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
+	{if !$profile->deceased_date}
+		<div style="float:right;font-size:0.8em; color:gray;">Last updated: {$profile->stats.updated|date_format:"%H:%M"}</div>
+	{/if}
 	<div>
  		<ul>
 			{if $profile->stats.points}
@@ -238,7 +240,7 @@
 	<div style="float:left;position:relative;width:790px">
 {/if}
 
-	<table class="report sortable" id="photolist" style="font-size:8pt;clear:none">
+	<table class="report sortable" id="photolist" style="font-size:8pt;clear:none;background-color:white">
 	<thead><tr>
 		<td><img title="Any grid square discussions?" src="http://{$static_host}/templates/basic/img/discuss.gif" width="10" height="10"> ?</td>
 		<td>Grid Ref</td>
@@ -252,9 +254,9 @@
 		<tr>
 		<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View discussion - last updated {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" ><img src="http://{$static_host}/templates/basic/img/discuss.gif" width="10" height="10" alt="discussion indicator"></a>{/if}</td>
 		<td sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
-		<td sortvalue="{$image->title}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
+		<td sortvalue="{$image->title|escape:'html'}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
 		<td sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
-		<td class="nowrap">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if} {if $image->points eq 'tpoint'}(tpoint){/if}</td>
+		<td class="nowrap">{if $image->moderation_status eq "accepted"}{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if} {if $image->points eq 'tpoint'}(tpoint){/if}</td>
 		<td sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
 		</tr>
 	{/foreach}
@@ -274,7 +276,7 @@
 </div>
 
 {if $profile->tags}
-	<div style="float:left;width:200px;background-color:white;font-size:0.7em;line-height:1.4em; text-align:center;margin:10px;{if count($tags) > 100 && $results} height:150px;overflow:auto{/if}">
+	<div id="most_used_tags" style="float:left;width:200px;background-color:white;font-size:0.7em;line-height:1.4em; text-align:center;margin:10px;{if count($tags) > 100 && $results} height:150px;overflow:auto{/if}">
 	<b><a href="/finder/bytag.php?user_id={$profile->user_id}">Most Used Tags</a></b>:<br/><br/>
 	{foreach from=$profile->tags item=item}
 		<span class="tag"><a title="{$item.images} images" {if $item.images > 10} style="font-weight:bold"{/if} href="/search.php?searchtext=[{if $item.prefix}{$item.prefix|escape:'url'}:{/if}{$item.tag|escape:'url'}]&user_id={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" class="taglink">{$item.tag|capitalizetag|escape:'html'}</a></span> <br/>
@@ -290,15 +292,15 @@
 	{/if}
 	<ul>
 
-		<li><b>Maps</b>: {if $profile->stats.images gt 10}<a href="/profile/{$profile->user_id}/map" rel="nofollow">Personalised Geograph map</a> or {/if} recent photos on <a href="http://maps.google.co.uk/maps?q=http://{$http_host}/profile/{$profile->user_id}/feed/recent.kml&ie=UTF8&om=1">Google Maps</a></li>
-
-		<li><b>Recent Images</b>: <a title="View images by {$profile->realname} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml">as KML</a> or <a title="RSS Feed for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
+		<li><b>Maps</b>: {if $profile->stats.images gt 10}<a href="/profile/{$profile->user_id}/map" rel="nofollow">Personalised Geograph map</a> or {/if} photos on <a href="/mapper/quick.php?q=user{$profile->user_id}">Quick Interactive Map</a></li>
+		<li><b>Browser</b>: <a href="/browser/#!/q=user{$profile->user_id}/realname+%22{$profile->realname|escape:'url'}%22">View images in the Browser</a></li>
+		<li><b>Recent Images</b>: <a title="View images by {$profile->realname|escape:'html'} in Google Earth" href="/search.php?u={$profile->user_id}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;kml">as KML</a> or <a title="RSS Feed for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.rss" class="xml-rss">RSS</a> or <a title="GPX file for images by {$profile->realname|escape:'html'}" href="/profile/{$profile->user_id}/feed/recent.gpx" class="xml-gpx">GPX</a></li>
 		{if $profile->stats.images gt 10}
 			{dynamic}{if $user->registered}
 				<li><b>Download</b>:
-					<a title="Comma Seperated Values - file for images by {$profile->realname}" href="/export.csv.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1{/if}">CSV</a>
+					<a title="Comma Seperated Values - file for images by {$profile->realname|escape:'html'}" href="/export.csv.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1{/if}">CSV</a>
 					{if $user->user_id eq $profile->user_id},
-						<a title="Excel 2003 XML - file for images by {$profile->realname}" href="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1{/if}">XML<small> for Excel <b>2003</b></small></a>
+						<a title="Excel 2003 XML - file for images by {$profile->realname|escape:'html'}" href="/export.excel.xml.php?u={$profile->user_id}&amp;supp=1{if $user->user_id eq $profile->user_id}&amp;taken=1&amp;submitted=1&amp;hits=1&amp;tags=1{/if}">XML<small> for Excel <b>2003</b></small></a>
 					{/if} of all images</li>
 			{/if}{/dynamic}
 		{/if}
@@ -310,7 +312,7 @@
 				<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit my recent submissions</a></li>
 			{/if}
 			<li><b>Uses</b>: <a href="/myphotos.php">Use of my photos around the site</a></li>
-			<li><b>2013</b>: <a href="/stuff/your-2013.php">Your 2013 (in pictures)</a></li>
+			<li><b>2013</b>: <a href="/stuff/your-year.php?choose=1">Your Pictures by Year</a></li>
 		{/if}
 	</ul>
 	{if $user->user_id eq $profile->user_id}
