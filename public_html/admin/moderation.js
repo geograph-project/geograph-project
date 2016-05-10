@@ -86,6 +86,9 @@ function moderateImage(gridimage_id, status, callback)
 				f.elements['done'].value = Object.size(doneids);
 				if (f.elements['done'].value == f.elements['total'].value) {
 					f.style.backgroundColor = 'lightgreen';
+					if (document.getElementById("continueButton")) {
+						document.getElementById("continueButton").style.display='';	
+					}
 				}
 				f.style.display='';
 			}

@@ -8,11 +8,15 @@
 	setTimeout('window.location.href="/admin/";',1000*60*45);
 
 	function moderateWrapper(gridimage_id, status) {
+		//if the cross grid button submit tag (it may of been auto selected) 
 		if (document.getElementById('cross'+gridimage_id).className.indexOf(' on') > -1)
 			submitModTag(gridimage_id,"type:Cross Grid",2);
 
 		if (!status)
 			status = getStatus(gridimage_id);
+
+		//for now always submit this, to make sure the tag is created, or removed if change mind
+		submitModTag(gridimage_id,"type:Geograph",(status == 'geograph')?2:0);
 
 		moderateImage(gridimage_id, status, function(statusText) {
 			$('#block'+gridimage_id).next().removeClass('modDisabled');
@@ -56,9 +60,7 @@
 
 {dynamic}
 
-{if !$remoderate}
-<h2 style="color:red">NOTE: This page contains a experimental new moderation button layout, using 'Image Type' tags. You are welcome to try it on this page, but beware it is live moderation, so check the results carefully. </h2>
-{/if}
+<div class="interestBox">NOTE: This is the experimental new style moderation screen. For more info see the forum, and <a href="/article/Image-Type-Tags">Image Type Tags</a> Article</div>
 	
 
 {$status_message}
@@ -196,8 +198,11 @@
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a></div>
 	{/if}
 	<form name="counter" style="display:none">
+		<span style="width:400px">
 		Progress: <input type=text size=2 name="done" value="0" readonly />/
 		<input type=text size=2 name="total" value="{$unmoderatedcount}" readonly />
+		</span>
+		<input id="continueButton" style="display:none" type=button value="Continue &gt;" onclick="window.location.href='/admin/moderation.php'">
 	</form>
 {else}
 
