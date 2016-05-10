@@ -121,7 +121,47 @@ function deferTicket(gridimage_ticket_id, hours)
 	}
 	req.open("GET", url,true);
 	req.send(null)
-
-
 }
 
+
+
+	function toggleButton(that) {
+		if (that.className == 'toggle on') {
+			that.className = 'toggle';
+		} else {
+			that.className = 'toggle on';
+		}
+		var gridimage_id = parseInt(that.id.replace(/[a-z]+/,''),10);
+
+		document.getElementById('continue'+gridimage_id).value = (getStatus(gridimage_id) == 'geograph')?'Geograph':'Accept';
+
+		if (!remoderate) 
+			submitModTag(gridimage_id,"type:"+that.value,(that.className == 'toggle on')?2:0);
+	}
+
+	function getStatus(gridimage_id) {
+		var status = 'geograph';
+		if (document.getElementById('cross'+gridimage_id).className.indexOf(' on') > -1)
+			status = 'accepted';
+		if (document.getElementById('aerial'+gridimage_id).className.indexOf(' on') > -1)
+			status = 'accepted';
+		if (document.getElementById('inside'+gridimage_id).className.indexOf(' on') > -1)
+			status = 'accepted';
+		if (document.getElementById('detail'+gridimage_id).className.indexOf(' on') > -1)
+			status = 'accepted';
+		return status;
+	}
+
+
+	function submitModTag(gridimage_id,tag,status) {
+		var data = new Object;
+		data['gridimage_id'] = gridimage_id;
+		data['tag'] = tag;
+		data['status'] = status;
+		data['mod'] = 1;
+
+		$.ajax({
+			url: "/tags/tagger.json.php",
+			data: data
+		});
+	}
