@@ -7,33 +7,6 @@
 {literal}<script type="text/javascript">
 	setTimeout('window.location.href="/admin/";',1000*60*45);
 
-	function toggleButton(that) {
-		if (that.className == 'toggle on') {
-			that.className = 'toggle';
-		} else {
-			that.className = 'toggle on';
-		}
-		var gridimage_id = parseInt(that.id.replace(/[a-z]+/,''),10);
-
-		document.getElementById('continue'+gridimage_id).value = (getStatus(gridimage_id) == 'geograph')?'Geograph':'Accept';
-
-		if (!remoderate) 
-			submitModTag(gridimage_id,"type:"+that.value,(that.className == 'toggle on')?2:0);
-	}
-
-	function getStatus(gridimage_id) {
-		var status = 'geograph';
-		if (document.getElementById('cross'+gridimage_id).className.indexOf(' on') > -1)
-			status = 'accepted';
-		if (document.getElementById('aerial'+gridimage_id).className.indexOf(' on') > -1)
-			status = 'accepted';
-		if (document.getElementById('inside'+gridimage_id).className.indexOf(' on') > -1)
-			status = 'accepted';
-		if (document.getElementById('detail'+gridimage_id).className.indexOf(' on') > -1)
-			status = 'accepted';
-		return status;
-	}
-
 	function moderateWrapper(gridimage_id, status) {
 		if (document.getElementById('cross'+gridimage_id).className.indexOf(' on') > -1)
 			submitModTag(gridimage_id,"type:Cross Grid",2);
@@ -42,7 +15,7 @@
 			status = getStatus(gridimage_id);
 
 		moderateImage(gridimage_id, status, function(statusText) {
-			$('#block'+gridimage_id).next().removeClass('disabled');
+			$('#block'+gridimage_id).next().removeClass('modDisabled');
 		});
 	
 		if ($('#autoScroll').get(0).checked) {
@@ -50,7 +23,7 @@
 			var nxt = ele.next();
 			if (nxt.length && nxt.hasClass('photoguide')) {
 				//window.scrollBy(0,nxt.height()+22);
-				var diff = nxt.find('.buttons').offset().top - ele.find('.buttons').offset().top;
+				var diff = nxt.find('.modButtons').offset().top - ele.find('.modButtons').offset().top;
 				$('html, body').animate({
 				    scrollTop: '+='+(diff)
 				}, 500);
@@ -58,59 +31,18 @@
 		}
 	}
 
-	function submitModTag(gridimage_id,tag,status) {
-		var data = new Object;
-		data['gridimage_id'] = gridimage_id;
-		data['tag'] = tag;
-		data['status'] = status;
-		data['mod'] = 1;
+	$(function(){ 
+		if ($.localStorage('admin_autoscroll')) {
+			$('#autoScroll').get(0).checked = true;
+		}
+		$(".photoguide").first().removeClass('modDisabled');
+	});
 
-		$.ajax({
-			url: "/tags/tagger.json.php",
-			data: data
-		});
-	}
-
-$(function(){ 
-	if ($.localStorage('admin_autoscroll')) {
-		$('#autoScroll').get(0).checked = true;
-	}
-	$(".photoguide").first().removeClass('disabled');
-});
 	function autoScrollUpdate() {
 		$.localStorage('admin_autoscroll', $('#autoScroll').get(0).checked);
 	}
 
 </script>
-
-
-<style>
-.buttons input[type=button] {
-	width:80px;
-	font-size:1.05em;
-}
-.buttons .toggle {
-	font-size:0.7em;
-	background-color:silver;
-}
-.buttons .on {
-	background-color:#ddd;
-	border-style: inset;
-	font-weight:bold;
-}
-.disabled {
-	background-color:#eee;
-	color:gray;
-}
-.disabled a {
-	color:gray;
-}
-.disabled .buttons input {
-	color:gray;
-}
-</style>
-
-
 {/literal}
 
 
@@ -169,7 +101,7 @@ $(function(){
 	
 	{foreach from=$unmoderated item=image}
 
-	  <div class="photoguide disabled" id="block{$image->gridimage_id}" style="font-size:0.85em;text-align:left;width:inherit">
+	  <div class="photoguide modDisabled" id="block{$image->gridimage_id}" style="font-size:0.85em;text-align:left;width:inherit">
 
 	   {if $image->tags}
              <div style="float:right;font-size:0.7em">
@@ -215,7 +147,7 @@ $(function(){
 	  	<div style="float:right; background-color:red; color:white; border:1px solid pink; padding:6px;">{$image->sizestr}</div>
 	  {/if}
 
-	<div class="buttons">
+	<div class="modButtons">
           {assign var="button" value="Geograph"}
 	  <input class="toggle{if $image->different_square_true || in_array('type:Cross Grid',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" id="cross{$image->gridimage_id}" value="Cross Grid" onclick="toggleButton(this)"/>
 	  <input class="toggle{if in_array('type:Aerial',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Aerial" id="aerial{$image->gridimage_id}" onclick="toggleButton(this)"/>

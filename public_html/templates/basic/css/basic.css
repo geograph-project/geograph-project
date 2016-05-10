@@ -916,6 +916,31 @@ div.ticket div.ticketnotehdr
  * accept/reject buttons
  *---------------------------------------------------------------*/
 
+.modButtons input[type=button] {
+	width:80px;
+	font-size:1.05em;
+}
+.modButtons .toggle {
+	font-size:0.7em;
+	background-color:silver;
+}
+.modButtons .on {
+	background-color:#ddd;
+	border-style: inset;
+	font-weight:bold;
+}
+.modDisabled {
+	background-color:#eee;
+	color:gray;
+}
+.modDisabled a {
+	color:gray;
+}
+.modDisabled .modButtons input {
+	color:gray;
+}
+
+
 input.accept
 {
 	font-size:0.7em;
