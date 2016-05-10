@@ -80,21 +80,21 @@ $image=new GridImage;
 		$thumb=$_SESSION['thumb'];
 
 	}
-	$smarty->assign('thumb', $thumb);	
+	$smarty->assign('thumb', $thumb);
 
 if (isset($_REQUEST['id']))
 {
 	$image->loadFromId($_REQUEST['id']);
-	
+
 	if (!empty($CONF['use_insertionqueue']) && isset($image->unavailable)) {
-		
+
 		header("HTTP/1.1 503 Service Unavailable");
 		$smarty->display("image_notready.tpl");
 
 		exit;
 	}
-	
-	
+
+
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$isadmin=(!$isowner && $USER->hasPerm('ticketmod'))?1:0;
 
@@ -120,7 +120,7 @@ if (isset($_REQUEST['id']))
 		//get the grid references
 		$image->getSubjectGridref();
 		$image->getPhotographerGridref();
-		
+
 		//save these so can be used as title etc on the main image (when following link from search results, and redoing changes etc)
 		$vars=get_object_vars($image);
 		foreach($vars as $name=>$val)
@@ -220,7 +220,7 @@ if (isset($_REQUEST['id']))
 			ignore_user_abort(TRUE);
 			set_time_limit(3600);
 
-			
+
 			//ok, we're processing a ticket update, but lets
 			//exercise some healty paranoia..
 			$gridimage_ticket_id=intval($_POST['gridimage_ticket_id']);
@@ -233,16 +233,16 @@ if (isset($_REQUEST['id']))
 			//definitely for this image?
 			if ($ticket->gridimage_id != $image->gridimage_id)
 				die("suggestion/image mismatch");
-			
+
 			$issuggester=($ticket->user_id==$USER->user_id)?1:0;
-	
-			
+
+
 			if (!$issuggester) {
 				$ticket->setNotify((!empty($_POST['notify']))?preg_replace('/[^\w]+/','',$_POST['notify']):'');
 			}
-			
+
 			$thankyou = '';
-			
+
 			//now lets do our thing depending on your permission level..
 			$comment=stripslashes($_POST['comment']);
 			if ($isadmin)
@@ -250,14 +250,14 @@ if (isset($_REQUEST['id']))
 				if (isset($_POST['disown']))
 				{
 					$ticket->removeModerator();
-				} 
+				}
 				elseif (isset($_POST['addcomment']))
 				{
 					$ticket->addModeratorComment($USER->user_id, $comment, !empty($_POST['claim']));
 				}
 				elseif (isset($_POST['accept']))
 				{
-					$ticket->setModerator($USER->user_id); 
+					$ticket->setModerator($USER->user_id);
 					$ticket->closeTicket($USER->user_id,$comment, isset($_POST['accepted'])?$_POST['accepted']:null);
 
 					//reload the image
@@ -266,7 +266,7 @@ if (isset($_REQUEST['id']))
 				}
 				elseif (isset($_POST['close']))
 				{
-					$ticket->setModerator($USER->user_id); 
+					$ticket->setModerator($USER->user_id);
 					$ticket->closeTicket($USER->user_id,$comment);
 				}
 			}
@@ -294,12 +294,12 @@ if (isset($_REQUEST['id']))
 			{
 				die("naughty naughty. only moderators and image owners can update tickets.");
 			}
-			
+
 			if (isset($_SESSION['editpage_options']) && in_array('small_redirect',$_SESSION['editpage_options'])) {
 				header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=done&id={$_REQUEST['id']}");
 				exit;
 			}
-			
+
 			//refresh this page so you're less likely to repost
 			header("Location: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}".($thankyou?"&thankyou=$thankyou":''));
 			exit;
@@ -328,10 +328,10 @@ if (isset($_REQUEST['id']))
 				$ok=false;
 				$error['title']="Please specify an image title";
 			}
-			
+
 			$comment=trim(stripslashes($_POST['comment']));
 			$comment=strip_tags($comment);
-			
+
 			/////////////////////////////////////////////////////////////
 			// STEP 2 - change control
 
@@ -344,17 +344,17 @@ if (isset($_REQUEST['id']))
 				//create new change control object
 				$ticket=new GridImageTroubleTicket();
 				$ticket->setSuggester($USER->user_id,$USER->realname);
-			
+
 				$ticket->setImage($_REQUEST['id']);
 				$ticket->setPublic('everyone');
-				
-				
+
+
 				$ticket->setNotes("Automatic - recording changes applied directly");
 
 				//attach the various field changes
 				$ticket->updateField("title", $image->title, $title, $moderated["title"]);
 				$ticket->updateField("comment", $image->comment, $comment, $moderated["comment"]);
-				
+
 				if (!empty($ticket->changes) && count($ticket->changes)) {
 					$status=$ticket->commit();
 
@@ -372,13 +372,13 @@ if (isset($_REQUEST['id']))
 				}
 				exit;
 			}
-			
+
 			/////////////////////////////////////////////////////////////
 			// fall back...
-			
-			#NOTE: we used 'create' as the fallback - it handles submission of title and comment ONLY - if add other fields to apply, will need to make this cope. 
+
+			#NOTE: we used 'create' as the fallback - it handles submission of title and comment ONLY - if add other fields to apply, will need to make this cope.
 			$_POST['create'] = true;
-		} 
+		}
 		elseif (isset($_POST['title']) && !isset($_POST['create']))
 		{
 			$ok=true;
@@ -438,7 +438,7 @@ if (isset($_REQUEST['id']))
 				$ok=false;
 				$error['imageclass']="Please choose a geographical feature";
 			}
-						
+
 			//can't always specify this...
 			if (isset($_POST['imagetakenYear']))
 			{
@@ -515,10 +515,10 @@ if (isset($_REQUEST['id']))
 				if ($isadmin && !empty($_REQUEST['mod']))
 					$ticket->setModerator($USER->user_id);
 
-				if (!empty($_REQUEST['type'])) 
+				if (!empty($_REQUEST['type']))
 					$ticket->setType($_REQUEST['type']);
 				$ticket->setPublic(isset($_REQUEST['public'])?$_REQUEST['public']:'everyone');
-				
+
 				$ticket->setImage($_REQUEST['id']);
 				$ticket->setNotes($updatenote);
 
@@ -540,19 +540,19 @@ if (isset($_REQUEST['id']))
 					switch ($_REQUEST['mod']) {
 						//owner has choosen to notify a modeator
 						case 'pending': $status=$ticket->commit('pending'); break;
-						
+
 						//a modwerator wants to close the ticket
 						case 'apply': $status=$ticket->commit('closed'); break;
-						
+
 						//a modwerator wants to own the ticket
 						case 'assign': $status=$ticket->commit('open'); break;
-						
+
 						default: $status=$ticket->commit(); break;
 					}
 				} else {
 					$status=$ticket->commit();
 				}
-				
+
 				//clear any caches involving this photo
 				$ab=floor($image->gridimage_id/10000);
 				$smarty->clear_cache(null, "img$ab|{$image->gridimage_id}");
@@ -560,12 +560,12 @@ if (isset($_REQUEST['id']))
 				//clear user specific stuff like profile page
 				$ab=floor($image->user_id/10000);
 				$smarty->clear_cache(null, "user$ab|{$image->user_id}");
-				
+
 				if (isset($_SESSION['editpage_options']) && in_array('small_redirect',$_SESSION['editpage_options'])) {
 					header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
 					exit;
 				}
-				
+
 				//return to this edit screen with a thankyou
 				#if ($status=="pending")
 				#{
@@ -595,9 +595,9 @@ if (isset($_REQUEST['id']))
 				$smarty->assign_by_ref('updatenote', $updatenote);
 
 				$smarty->assign_by_ref('error', $error);
-				
+
 				$smarty->assign('imageclassother',$imageclassother);
-				
+
 			}
 
 
@@ -613,22 +613,22 @@ if (isset($_REQUEST['id']))
 				}
 				$_SESSION['editpage_options'][] = 'simple';
 			}
-		} 
+		}
 		if (isset($_GET['form'])) {
 			$smarty->assign('showfull', 0);
-			
+
 		} elseif (!isset($_SESSION['editpage_options']) || !in_array('simple',$_SESSION['editpage_options'])) {
-			
+
 			$smarty->assign('showfull', 1);
-			
+
 			if ($CONF['forums']) {
 				//let's find posts in the gridref discussion forum
 				$image->grid_square->assignDiscussionToSmarty($smarty);
 			}
 		}
-		
+
 		$smarty->assign('use_autocomplete', $USER->use_autocomplete);
-		
+
 		require_once('geograph/rastermap.class.php');
 
 		$rastermap = new RasterMap($image->grid_square,true);
@@ -689,9 +689,19 @@ if (isset($_REQUEST['id']))
 
 			$image->lookupModerator();
 			$image->loadSnippets();
+
+			if (!empty($image->tags)) {
+				foreach ($image->tags as $row) {
+					if (isset($row['tag']))
+						$image->tags[] = empty($row['prefix'])?$row['tag']:"{$row['prefix']}:{$row['tag']}";
+				}
+			} else {
+				$image->tags = array();
+			}
+
 		}
-		
-		
+
+
 		if (isset($_POST['title']) && isset($_POST['create']))
 		{
 			$title=trim(stripslashes($_POST['title']));
@@ -699,7 +709,7 @@ if (isset($_REQUEST['id']))
 
 			$comment=trim(stripslashes($_POST['comment']));
 			$comment=strip_tags($comment);
-			
+
 			$image->title=$title;
 			$image->comment=$comment;
 		}
@@ -728,19 +738,19 @@ else
 
 $smarty->display($template, $cacheid);
 
-function smarty_function_votestars($params) { 
-    global $CONF; 
-    static $last; 
-     
-    $type = $params['type']; 
-    $id = $params['id']; 
-    $names = array('','Hmm','Below average','So So','Good','Excellent'); 
-    foreach (range(1,5) as $i) { 
-        print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"http://{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>"; 
-    } 
-    if ($last != $type) { 
-        print " (<a href=\"/help/voting\">about</a>)"; 
-    }  
-    $last = $type; 
-} 
+function smarty_function_votestars($params) {
+    global $CONF;
+    static $last;
+
+    $type = $params['type'];
+    $id = $params['id'];
+    $names = array('','Hmm','Below average','So So','Good','Excellent');
+    foreach (range(1,5) as $i) {
+        print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"http://{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
+    }
+    if ($last != $type) {
+        print " (<a href=\"/help/voting\">about</a>)";
+    }
+    $last = $type;
+}
 
