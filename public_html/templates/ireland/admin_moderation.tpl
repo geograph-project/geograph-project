@@ -198,7 +198,7 @@
 		<div class="interestBox" style="padding-left:100px"><a href="/admin/moderation.php">Continue &gt;</a></div>
 	{/if}
 	<form name="counter" style="display:none">
-		<span style="width:400px">
+		<span style="width:584px; display:inline-block">
 		Progress: <input type=text size=2 name="done" value="0" readonly />/
 		<input type=text size=2 name="total" value="{$unmoderatedcount}" readonly />
 		</span>
