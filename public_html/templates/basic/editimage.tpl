@@ -587,7 +587,7 @@ AttachEvent(window,'load',onChangeImageclass,false);
 {if $image->imageclass}
 {if $use_autocomplete}
 
-<p><label for="imageclass"><b>Image Category</b> (Optional, if supply Tags at bottom of page)</label> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
+<p><label for="imageclass"><b>Image Category</b> (Optional, if supply Tags)</label> {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
 	{if $error.imageclass}
 	<span class="formerror">{$error.imageclass}</span><br/>
 	{/if}
@@ -616,7 +616,7 @@ AttachEvent(window,'load', function() {
 
 {else}
 
-	<p><label for="imageclass"><b>Image Category</b> (Optional, if supply Tags at bottom of page) {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
+	<p><label for="imageclass"><b>Image Category</b> (Optional, if supply Tags) {if $moderated.imageclass}<span class="moderatedlabel">(moderated)</span>{/if}</label><br />
 		{if $error.imageclass}
 		<span class="formerror">{$error.imageclass}</span><br/>
 		{/if}
@@ -749,21 +749,21 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 	<iframe src="about:blank" height="300" width="100%" id="tagframe">
 	</iframe>
 
-	<p><a href="/photo/{$image->gridimage_id}">return to image page</a> <small>- changes made inside the Tags box apply immediately</small></p>
+	<p>Once made all changes, can <a href="/photo/{$image->gridimage_id}">return to image page</a>, changes inside the Tags box are automatically saved. Or return to the 'Image Details' tab to make other changes.</p>
 </div>
 {if $isadmin || $isowner}
 <div id="div3" style="display:none">
         <iframe src="about:blank" height="400" width="100%" id="shareframe">
         </iframe>
 
-	<p><a href="/photo/{$image->gridimage_id}">return to image page</a> <small>- changes made inside the Shared Description box apply immediately</small></p>
+	<p>Once made all changes, can <a href="/photo/{$image->gridimage_id}">return to image page</a>, changes inside the Shared Description box are automatically saved. Or return to the 'Image Details' tab to make other changes.</p>
 </div>
 
 <div id="div4" style="display:none">
         <iframe src="about:blank" height="300" width="100%" id="nearframe">
         </iframe>
 
-	<p><a href="/photo/{$image->gridimage_id}">return to image page</a> <small>- changes made inside the Nearby box apply immediately</small></p>
+	<p>Once made all changes, can <a href="/photo/{$image->gridimage_id}">return to image page</a>, changes inside the Nearby box are automatically saved. Or return to the 'Image Details' tab to make other changes.</p>
 </div>
 
 {/if}
@@ -796,7 +796,30 @@ For a weblink just enter directly like: <span style="color:blue">http://www.exam
 		myImage.src = "/editimage.php?id={/literal}{$image->gridimage_id}{literal}&unlock";
 	}
 	AttachEvent(window,'unload',releaseLock,false);
+
+
+function unloadMess() {
+        return "**************************\n\nYou have unsaved changes in main Image Details tab.\n\n**************************\n";
+}
+function setupMess() {
+	//this is unreliable with AttachEvent
+	window.onbeforeunload=unloadMess;
+}
+
+function cancelMess() {
+        window.onbeforeunload=null;
+}
+function setupSubmitForm() {
+	var form = document.forms['theForm'];
+	for(q=0;q<form.elements.length;q++)
+		AttachEvent(form.elements[q],'change',setupMess,false);
+        AttachEvent(document.forms['theForm'],'submit',cancelMess,false);
+}
+AttachEvent(window,'load',setupSubmitForm,false);
+
+
 	</script>
+
 {/literal}
 {else}
 	<h2>Sorry, image not available</h2>

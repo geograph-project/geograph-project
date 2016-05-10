@@ -60,12 +60,12 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 	}
 
 	if (empty($tag_id)) {
-	
+
 		if (empty($_GET['status'])) {
 			//no need to delete a tag never created!
 			exit;
 		}
-	
+
 		//need to create it!
 
 		$u['user_id'] = $USER->user_id;
@@ -79,38 +79,45 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 
 	$u['tag_id'] = $tag_id;
 	$u['user_id'] = $USER->user_id;
-	
+
 	$ids = array($_GET['gridimage_id']);
-	
+
 	foreach ($ids as $gid) {
 		$u['gridimage_id'] = $gid;
-		
-		if ($_GET['status'] == 0) { 
+
+		if ($_GET['status'] == 0) {
 			unset($u['status']);
-			
+			if (isset($_GET['mod']) && $USER->hasPerm('moderator')) {
+				//mods can delete any public tag
+				unset($u['user_id']);
+				$u['status'] = 2;
+			}
+
 			$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
-		
-		} elseif ($_GET['status'] == -1) { 
+
+		} elseif ($_GET['status'] == -1) {
 			unset($u['status']);
-			
+
 			$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
-			
+
 			unset($u['user_id']);
 			$db->Execute('INSERT INTO tagornot_archive SELECT * FROM tagornot WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
 			$db->Execute('DELETE FROM tagornot WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
 			$db->Execute('INSERT tagornot SET created=NOW(),`'.implode('` = ? , `',array_keys($u)).'` = ?',array_values($u));
-			
+
 			$u['user_id'] = $USER->user_id;
 			$db->Execute('INSERT INTO tag_dispute_log SET created=NOW(),`'.implode('` = ? , `',array_keys($u)).'` = ?',array_values($u));
-	
+
 		} else {
 			$u['status'] = 1;
 			if ($_GET['status'] == 2 && ($gid > 4294967296 || $db->getOne("SELECT gridimage_id FROM gridimage WHERE gridimage_id = $gid AND user_id = {$USER->user_id}"))) {
 				$u['status'] = 2;
+			} elseif (isset($_GET['mod']) && $USER->hasPerm('moderator')) {
+				$u['status'] = 2;
 			}
-	
+
 			$db->Execute('REPLACE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-			
+
 			if ($u['status'] == 2 && $gid < 4294967296) {
 				$smarty = new GeographPage;
 
