@@ -138,8 +138,7 @@ function deferTicket(gridimage_ticket_id, hours)
 
 		document.getElementById('continue'+gridimage_id).value = (getStatus(gridimage_id) == 'geograph')?'Geograph':'Accept';
 
-		if (!remoderate) 
-			submitModTag(gridimage_id,"type:"+that.value,(that.className == 'toggle on')?2:0);
+		submitModTag(gridimage_id,"type:"+that.value,(that.className == 'toggle on')?2:0);
 	}
 
 	function getStatus(gridimage_id) {
@@ -157,6 +156,9 @@ function deferTicket(gridimage_ticket_id, hours)
 
 
 	function submitModTag(gridimage_id,tag,status) {
+		if (remoderate)
+			return; //dont really submit this!
+
 		var data = new Object;
 		data['gridimage_id'] = gridimage_id;
 		data['tag'] = tag;
