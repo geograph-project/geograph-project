@@ -87,8 +87,7 @@
 	</script>
 	{/literal}
   {/if}
-  <div class="statuscaption">classification:
-   {if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}
+  <div class="statuscaption">classification: {$image->moderation_status}
    {if $image->mod_realname}(moderator: <a href="/profile/{$image->moderator_id}" class="statuscaption">{$image->mod_realname}</a>){/if}</div>
 </div>
 {if $showfull}
@@ -104,23 +103,7 @@
   	  <form action="/moderation.php" method="post">
   	  <input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
  	  <h2 class="titlebar">Moderation Suggestion</h2>
-	  {if $image->user_status == 'accepted'}
-
-  	    <p>I suggest this image should become:
-  	    {if $image->user_status}
-  	      <input class="accept" type="submit" id="geograph" name="user_status" value="Geograph"/>
-  	    {/if}
-  	    {if $image->user_status != 'accepted'}
-  	      <input class="accept" type="submit" id="accept" name="user_status" value="Supplemental"/>
-  	    {/if}
-  	    {if $image->user_status != 'rejected'}
-  	      <input class="reject" type="submit" id="reject" name="user_status" value="Reject" onclick="this.form.elements['comment'].value = prompt('Please leave a comment to explain the reason for suggesting rejection of this image.','');"/>
-  	    {/if}
-  	    {if $image->user_status}
-	       <br/><small>[Current suggestion: {if $image->user_status eq "accepted"}Supplemental{else}{$image->user_status}{/if}</small>]
-	    {/if}</p>
-  	    <p style="font-size:0.8em">(Click one of these buttons to leave a hint to the moderator when they moderate your image)</p>
-          {elseif $image->user_status == 'rejected'}
+	  {if $image->user_status == 'rejected'}
             <input class="accept" type="submit" id="geograph" name="user_status" value="Cancel Rejection request"/>
 	  {else}
   	    <input class="reject" type="submit" id="reject" name="user_status" value="Request Rejection of this image" onclick="this.form.elements['comment'].value = prompt('Please leave a comment to explain the reason for suggesting rejection of this image.','');"/>
@@ -131,7 +114,7 @@
 
   	{elseif $isadmin and $image->user_status}
   	  <h2 class="titlebar">Moderation Suggestion</h2>
-  	   Suggestion: {if $image->user_status eq "accepted"}Supplemental{else}{$image->user_status}{/if}
+  	   Suggestion: {$image->user_status}
 	{/if}
 <br/>
 <br/>
@@ -139,17 +122,51 @@
 	  <form method="post">
 
 	  <script type="text/javascript" src="{"/admin/moderation.js"|revision}"></script>
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+
 	  <h2 class="titlebar">Moderation</h2>
 		<div style="position:relative;float:right">
 			<span id="votediv{$image->gridimage_id}">{votestars id=$image->gridimage_id type="mod"}</span>
 		</div>
-	  <p>{if $image->moderation_status eq 'pending'}
-	  	<small>(pending images should be moderated in sequence via the moderation page)</small>
+	  {if $image->moderation_status eq 'pending'}
+	  	<p>
+	  		<input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
+	  		<small>(pending images should generally be moderated in sequence via the moderation page)</small>
+	  	</p>
 	  {else}
-	  <input class="accept" type="button" id="geograph" value="Geograph!" onclick="moderateImage({$image->gridimage_id}, 'geograph')" {if $image->user_status} style="background-color:white;color:lightgrey"{/if}/>
-	  <input class="accept" type="button" id="accept" value="Supp" onclick="moderateImage({$image->gridimage_id}, 'accepted')" {if $image->user_status == 'rejected'} style="background-color:white;color:lightgrey"{/if}/>
+	  	<p>NOTE: This is the experimental new style moderation buttons. For more info see the forum, and <a href="/article/Image-Type-Tags">Image Type Tags</a> Article</p>
+	  
+	  	{literal}<script type="text/javascript">
+	  	
+		function moderateWrapper(gridimage_id, status) {
+
+			if (!status)
+				status = getStatus(gridimage_id);
+
+			//for now always submit this, to make sure the tag is created, or removed if change mind
+			submitModTag(gridimage_id,"type:Geograph",(status == 'geograph')?2:0);
+
+			moderateImage(gridimage_id, status, function(statusText) {
+				//modinfo div is automatically updated!
+			});
+		}
+	  	
+	  	</script>{/literal}
+	  	
+	  	<div class="modButtons">
+	          {assign var="button" value="Geograph"}
+	  	  <input class="toggle{if in_array('type:Cross Grid',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" id="cross{$image->gridimage_id}" value="Cross Grid" onclick="toggleButton(this)"/>
+	  	  <input class="toggle{if in_array('type:Aerial',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Aerial" id="aerial{$image->gridimage_id}" onclick="toggleButton(this)"/>
+	  	  <input class="toggle{if in_array('type:Inside',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Inside" id="inside{$image->gridimage_id}" onclick="toggleButton(this)"/>
+	  	  <input class="toggle{if in_array('type:Detail',$image->tags)} on{assign var="button" value="Accept"}{/if}" type="button" value="Detail" id="detail{$image->gridimage_id}" onclick="toggleButton(this)"/>
+	  
+	  	  <input class="accept" type="button" id="continue{$image->gridimage_id}" value="{$button}" onclick="moderateWrapper({$image->gridimage_id})"/>
+	  	  <input class="reject" type="button" id="reject{$image->gridimage_id}" value="Reject" onClick="moderateWrapper({$image->gridimage_id}, 'rejected')"/>
+	  
+	  
+        	</div>
 	  {/if}
-	  <input class="reject" type="button" id="reject" value="Reject" onclick="moderateImage({$image->gridimage_id}, 'rejected')"/>
+	  
 	  <span class="caption" id="modinfo{$image->gridimage_id}">Current Classification: {$image->moderation_status}{if $image->mod_realname}<abbr title="Approximate date of last moderation: {$image->moderated|date_format:"%a, %e %b %Y"}"><small><small>, by <a href="/usermsg.php?to={$image->moderator_id}&amp;image={$image->gridimage_id}">{$image->mod_realname}</a></small></small></abbr>{/if}</span></p>
 	  </form>
   {/if}
