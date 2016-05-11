@@ -100,7 +100,7 @@
     {/if}
   {/dynamic}
 
-  <div class="img-shadow" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull()|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
+  <div class="img-shadow" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull(true,true)|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
 
   <div class="caption640" style="font-weight:bold" property="dct:title" itemprop="name">{$image->title|escape:'html'}</div>
 
@@ -158,13 +158,13 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 <td colspan="6" align="center" style="padding:5px;border-bottom:1px solid gray;font-size:0.8em;">
 	&middot; <a href="/reuse.php?id={$image->gridimage_id}">Find out <b>How to reuse</b> this image</a> &middot;
 
-	Share: 
+	Share:
 	<a title="Share this photo via Twitter" href="https://twitter.com/intent/tweet?text={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&url=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Twitter" src="http://{$static_host}/img/twitter_16.png" width=16 height=16 style="vertical-align:middle"></a>
 	<a title="Share this photo via Facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Facebook" src="http://{$static_host}/img/facebook_16.png" width=16 height=16 style="vertical-align:middle"></a>
 	<a title="Share this photo via Google Plus" href="https://plus.google.com/share?url=http://{$http_host}/photo/{$image->gridimage_id}&t={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Google Plus" src="http://{$static_host}/img/googleplus_16.png" width=16 height=16 style="vertical-align:middle"></a>
 	<a title="Share this photo via Pinterest" href="http://www.pinterest.com/pin/create/button/?media={$imageurl}&url=http://{$http_host}/photo/{$image->gridimage_id}&description={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Pinterest" src="http://{$static_host}/img/pinterest_16.png" width=16 height=16 style="vertical-align:middle"></a>
 	<a title="Share this photo via Flipboard" href="https://share.flipboard.com/bookmarklet/popout?v=2&title={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&url=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Flipboard" src="http://{$static_host}/img/flipboard_16.png" width=16 height=16 style="vertical-align:middle"></a>
-	<a title="Send an electronic card" href="/ecard.php?image={$image->gridimage_id}"><img src="http://{$static_host}/img/email_16.png" width=16 height=16 style="vertical-align:middle"></a> &middot;
+	<a title="Send an this via email/e-card" href="/ecard.php?image={$image->gridimage_id}"><img src="http://{$static_host}/img/email_16.png" width=16 height=16 style="vertical-align:middle"></a> &middot;
 
 	<img src="http://{$static_host}/img/download_16.png" width=16 height=16 style="vertical-align:middle"> <b><a href="/{if $image->original_width}more{else}reuse{/if}.php?id={$image->gridimage_id}">Download Image</a></b> &middot;
 </td>
@@ -236,7 +236,8 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 
 <dt>Grid Square</dt>
- <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->subject_gridref|escape:'url'}" rel="nofollow">more nearby</a>)
+ <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->subject_gridref|escape:'url'}" rel="nofollow">more nearby</a>
+	<a href="/browser/#!/loc={$image->subject_gridref|replace:' ':''|escape:'url'}/dist=2000" title="view area in Browser"><img src="http://{$static_host}/img/links/20/search.png" width=14 height=14></a>)
 </dd>
 
 {if $image->credit_realname}
@@ -250,32 +251,61 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="author" rel="author">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
-<dt>Image classification<sup><a href="/faq.php#points" class="about" style="font-size:0.7em">?</a></sup></dt>
-<dd>{if $image->ftf eq 1}
-	Geograph (First for {$image->grid_reference})
-{elseif $image->ftf eq 2}
-	Geograph (Second Visitor for {$image->grid_reference})
-{elseif $image->ftf eq 3}
-	Geograph (Third Visitor for {$image->grid_reference})
-{elseif $image->ftf eq 4}
-	Geograph (Fourth Visitor for {$image->grid_reference})
-{else}
-	{if $image->moderation_status eq "rejected"}
-	Rejected
-	{/if}
-	{if $image->moderation_status eq "pending"}
-	Awaiting moderation
-	{/if}
-	{if $image->moderation_status eq "geograph"}
-	Geograph
-	{/if}
-	{if $image->moderation_status eq "accepted"}
-	Supplemental image
-	{/if}
-{/if}
-{if strpos($image->points,'tpoint') !== false}
-<br/>First in 5 Years (TPoint) <sup><a href="/faq3.php?q=tpoint#61" class="about" style="font-size:0.7em">?</a></sup>{/if}</dd>
+{if $image->tags && $image->tag_prefix_stat.type}
+	<dt>Image Type <sup><a href="/article/Image-Type-Tags" class="about" style="font-size:0.7em">?</a></sup></dt>
 
+	<dd>
+	{assign var="seperator" value=""}
+
+	{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'type'}
+		<span class="tag">
+		<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span>&nbsp;
+	{assign var="seperator" value=","}{/if}{/foreach}
+
+	{if !$seperator}
+		{if $image->moderation_status ne "accepted"}{$image->moderation_status|ucfirst}{/if}
+	{/if}
+
+	{if $image->ftf eq 1}
+		(First Geograph for {$image->grid_reference})
+	{elseif $image->ftf eq 2}
+		(Second Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 3}
+		(Third Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 4}
+		(Fourth Visitor for {$image->grid_reference})
+	{/if}
+	{if strpos($image->points,'tpoint') !== false}
+	<br/>First in 5 Years (TPoint) <sup><a href="/faq3.php?q=tpoint#61" class="about" style="font-size:0.7em">?</a></sup>{/if}
+	</dd>
+
+{else}
+	<dt>Image classification<sup><a href="/faq.php#points" class="about" style="font-size:0.7em">?</a></sup></dt>
+	<dd>{if $image->ftf eq 1}
+		Geograph (First for {$image->grid_reference})
+	{elseif $image->ftf eq 2}
+		Geograph (Second Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 3}
+		Geograph (Third Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 4}
+		Geograph (Fourth Visitor for {$image->grid_reference})
+	{else}
+		{if $image->moderation_status eq "rejected"}
+		Rejected
+		{/if}
+		{if $image->moderation_status eq "pending"}
+		Awaiting moderation
+		{/if}
+		{if $image->moderation_status eq "geograph"}
+		Geograph
+		{/if}
+		{if $image->moderation_status eq "accepted"}
+		Supplemental image
+		{/if}
+	{/if}
+	{if strpos($image->points,'tpoint') !== false}
+	<br/>First in 5 Years (TPoint) <sup><a href="/faq3.php?q=tpoint#61" class="about" style="font-size:0.7em">?</a></sup>{/if}</dd>
+{/if}
 
 {if $image_taken}
 	<dt>Date Taken</dt>
@@ -302,7 +332,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	{/if}
 
 	{foreach from=$image->tag_prefix_stat key=prefix item=count}
-		{if $prefix ne 'top' && $prefix ne '' && $prefix ne 'term' && $prefix ne 'cluster' && $prefix ne 'wiki'}
+		{if $prefix ne 'top' && $prefix ne '' && $prefix ne 'term' && $prefix ne 'cluster' && $prefix ne 'wiki' && $prefix ne 'type'}
 			{if $prefix == 'bucket'}
 				<dt>Image Buckets <sup><a href="/article/Image-Buckets" class="about" style="font-size:0.7em">?</a></sup></dt>
 			{elseif $prefix == 'subject'}
@@ -365,7 +395,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </div>
 
 {if $overview}
-  <div style="float:left; text-align:center; width:{$overview_width}px; position:relative">
+  <div style="float:left; width:{$overview_width}px; position:relative">
 	{include file="_overview.tpl"}
 	<div style="width:inherit;margin-left:20px;"><br/>
 
@@ -395,7 +425,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 {if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
 
 <small style="font-size:0.8em"><a title="Open in Google Earth" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small> &middot;
-{external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://`$http_host`/photo/`$image->gridimage_id`.kml&amp;z=13" text="Google Maps"} &middot;
+{external title="Open in Bing Maps" href="http://www.bing.com/maps/default.aspx?v=2&mapurl=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Bing Maps"} &middot;
 
 {/if}
 

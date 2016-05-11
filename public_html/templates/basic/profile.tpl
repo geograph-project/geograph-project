@@ -138,7 +138,7 @@
 {if $profile->stats.images gt 0}
  	<div class="interestBox" style="clear:both;border-radius: 10px;">
  		{if $profile->stats.images > 2}
-		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=status&u={$profile->user_id}" rel="nofollow">Classification</a>, <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a><sup><a href="/help/squares" title="What is a Myriad?" class="about" style="font-size:0.7em">?</a></sup>.</div>
+		<div style="float:right; position:relative; margin-top:0px; font-size:0.7em">View Breakdown by <a href="/statistics/breakdown.php?by=takenyear&u={$profile->user_id}" rel="nofollow">Date Taken</a> or <a href="/statistics/breakdown.php?by=gridsq&u={$profile->user_id}" rel="nofollow">Myriad</a><sup><a href="/help/squares" title="What is a Myriad?" class="about" style="font-size:0.7em">?</a></sup>.</div>
 		{/if}
 		{if $profile->deceased_date}
 		<h3 style="margin-top:0px;margin-bottom:0px">Statistics</h3>
@@ -191,7 +191,7 @@
 					{if $profile->stats.geographs}
 						<li><b>{$profile->stats.geographs}</b> Geograph{if $profile->stats.geographs ne 1}s{/if}
 						{if $profile->stats.geographs != $profile->stats.images}
-							and <b>{$profile->stats.images-$profile->stats.geographs}</b> Supplementals
+							and <b>{$profile->stats.images-$profile->stats.geographs}</b> others
 						{/if}
 						</li>
 					{/if}
@@ -246,7 +246,7 @@
 		<td>Grid Ref</td>
 		<td>Title</td>
 		<td sorted="desc">Submitted</td>
-		<td>Classification</td>
+		<td>Image Type</td>
 		<td>Taken</td>
 	</tr></thead>
 	<tbody>
@@ -256,7 +256,18 @@
 		<td sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
 		<td sortvalue="{$image->title|escape:'html'}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
 		<td sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>
-		<td class="nowrap">{if $image->moderation_status eq "accepted"}{else}{$image->moderation_status}{/if} {if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if} {if $image->points eq 'tpoint'}(tpoint){/if}</td>
+		<td class="nowrap">
+			{assign var="seperator" value=""}
+			{if $image->tags}
+				{foreach from=$image->tags item=tag}{if strpos($tag,'type:') === 0}{$seperator} {$tag|replace:'type:':''|escape:'html'}{assign var="seperator" value=","}{/if}{/foreach}
+			{/if}
+
+			{if !$seperator}
+				{if $image->moderation_status ne "accepted"}{$image->moderation_status|ucfirst}{/if}
+			{/if}
+			{if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if}
+			{if $image->points eq 'tpoint'}(tpoint){/if}
+		</td>
 		<td sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
 		</tr>
 	{/foreach}
@@ -305,7 +316,7 @@
 			{/if}{/dynamic}
 		{/if}
 		{if $user->user_id eq $profile->user_id}
-			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View words from image titles as a <i>Wordle</i>"} or 
+			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View words from image titles as a <i>Wordle</i>"} or
 				{external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`&amp;tags=1" text="View your tags"}</li>
 			<li><b>Change Requests</b>: <a href="/suggestions.php" rel="nofollow">View recent suggestions</a></li>
 			{if !$enable_forums}
