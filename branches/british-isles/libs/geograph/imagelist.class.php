@@ -144,6 +144,7 @@ split_timer('imagelist'); //starts the timer
 
 		if ($advanced || preg_match("/(pending|rejected)/",$statuslist)) {
 			$sql="select gi.*,grid_reference,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname, t.topic_id,t.forum_id,t.last_post ";
+			$sql.=" , group_concat(if(prefix='',tag,concat(prefix,':',tag)) separator '?') as tags ";
 #			if ($advanced == 2)
 #				$sql.=", (select count(*) from gridimage_ticket where gridimage_id=gi.gridimage_id and status<3) as open_tickets ";
 			$sql.="from gridimage as gi ".
@@ -151,8 +152,10 @@ split_timer('imagelist'); //starts the timer
 				"inner join user on(gi.user_id=user.user_id) ".
 				"left join gridsquare_topic as t on(gi.gridsquare_id=t.gridsquare_id and ".
 				"t.last_post=(select max(last_post) from gridsquare_topic where gridsquare_id=gi.gridsquare_id)) ".
+				"left join tag_public tp on(tp.gridimage_id = gi.gridimage_id) ".
 				"where $statuslist ".
 				"gi.user_id='$user_id' ".
+				"group by gi.gridimage_id ".
 				"$orderby $limit";
 		} else {
 			if (strpos($statuslist,'geograph') !== FALSE && strpos($statuslist,'accepted') !== FALSE)
@@ -245,8 +248,6 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 	*/
 	function _getImagesBySql($sql,$cache = 0) {
 		$db=&$this->_getDB(true);
-		if ($_GET['debug'])
-			print $sql;
 		$this->images=array();
 		$i=0;
 		if ($cache > 0) {
@@ -254,18 +255,20 @@ split_timer('imagelist','getImagesByIdList',"$q"); //logs the wall time
 		} else {
 			$recordSet = &$db->Execute($sql);
 		}
-		while (!$recordSet->EOF) 
+		while (!$recordSet->EOF)
 		{
 			$this->images[$i]=new GridImage;
 			$this->images[$i]->fastInit($recordSet->fields);
+			if (!empty($this->images[$i]->tags) && is_string($this->images[$i]->tags))
+		                $this->images[$i]->tags = explode("?",$this->images[$i]->tags);
+
 			$recordSet->MoveNext();
 			$i++;
 		}
-		$recordSet->Close(); 
+		$recordSet->Close();
 		return $i;
 	}
-	
-	
+
 	/**
 	* get image list or count for particular area...
 	* @access private
@@ -395,10 +398,10 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 	 */
 	function assignSmarty(&$smarty, $basename)
 	{
-		$smarty->assign_by_ref($basename, $this->images);		
+		$smarty->assign_by_ref($basename, $this->images);
 		$smarty->assign($basename.'count', count($this->images));
 	}
-	
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
@@ -420,14 +423,13 @@ split_timer('imagelist','getRecordSetByArea',"$left,$right,$top,$bottom,$referen
 	{
 		$this->db=$db;
 	}
-	
-	
+
 }
 
 
 /**
 * RecentImageList class
-* Provides basic (to be extended in future) functionality 
+* Provides basic (to be extended in future) functionality
 * for showing some recent images
 */
 class RecentImageList extends ImageList {
@@ -437,7 +439,7 @@ class RecentImageList extends ImageList {
 	*/
 	function RecentImageList(&$smarty,$reference_index = 0) {
 		global $memcache;
-		
+
 		$mkey = rand(1,10).'.'.$reference_index;
 		//fails quickly if not using memcached!
 		$this->images =& $memcache->name_get('ril',$mkey);
@@ -445,16 +447,15 @@ class RecentImageList extends ImageList {
 			$this->assignSmarty($smarty, 'recent');
 			return;
 		}
-		
+
 		$db=&$this->_getDB(true);
-		
+
 split_timer('imagelist'); //starts the timer
 
 		if (false) {
 			$recordSet = &$db->Execute("select * from gridimage_search order by gridimage_id desc limit 5");
 		} elseif ($reference_index == 2) {
-			$offset=rand(0,200);
-			$recordSet = &$db->Execute("select * from gridimage_search where reference_index=$reference_index order by gridimage_id desc limit $offset,5");
+			$recordSet = &$db->Execute("(select * from gridimage_search where reference_index=$reference_index order by gridimage_id desc limit 50) order by rand() limit 5");
 		} else {
 			$where = ($reference_index)?" and reference_index = $reference_index":'';
 
@@ -467,27 +468,27 @@ split_timer('imagelist'); //starts the timer
 			$id_string = join(',',array_slice($ids,0,5));
 			$recordSet = &$db->Execute("select * from gridimage_recent where recent_id in ($id_string) $where limit 5");
 		}
-		
+
 		//lets find some recent photos
 		$this->images=array();
 		$i=0;
 
-		while (!$recordSet->EOF) 
+		while (!$recordSet->EOF)
 		{
 			$this->images[$i]=new GridImage;
 			$this->images[$i]->fastInit($recordSet->fields);
 			$recordSet->MoveNext();
 			$i++;
 		}
-		$recordSet->Close(); 
+		$recordSet->Close();
 
 split_timer('imagelist','RecentImageList',$reference_index); //logs the wall time
 
 		$this->assignSmarty($smarty, 'recent');
-		
+
 		//fails quickly if not using memcached!
 		$memcache->name_set('ril',$mkey,$this->images,$memcache->compress,$memcache->period_short);
-		
+
 		return $i;
 	}
 
