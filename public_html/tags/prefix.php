@@ -82,11 +82,11 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('footnote', "Note: Currently this table is limited to display 1000 tags. There may be more");
 
 		switch($_GET['prefix']) {
-			case 'top': $message = '<tt>top</tt> is a special reserved prefix which we use for <a href="primary.php">Geographical Context</a>'; break;
-			case 'type': $message = '<tt>type</tt> is a special reserved prefix which we use for classifingin images as per <a href="/article/Image-Type-Tags">Image Type Tags</a>'; break;
-			case 'bucket': $message = '<tt>bucket</tt> prefix tags where an experiment in having specially defined and listed tags. Now mostly superceded by other taggins system, note in particular that only a small selection of images have had these tags assigned. <a href="/article/Image-Buckets">Read more about Bucket Tags</a>'; break;
-			case 'subject': $message = '<tt>subject</tt> is a special reserved prefix used to classify images by primary subject. The list of subject tags is fixed, and subject to moderation to add new ones'; break;
-			case 'category': $message = '<tt>category</tt> has been used to mark <i>some</i> tags transformed from legacy category field, for the most part the prefix has no special meaning to the actual tag use'; break;
+			case 'top': $message = '<tt>top</tt> is a special reserved prefix which we use for <a href="primary.php">Geographical Context</a>.'; break;
+			case 'type': $message = '<tt>type</tt> is a special reserved prefix which we use for classifying images as per <a href="/article/Image-Type-Tags">Image Type Tags</a>. NOTE: Type Tags have only recently been introduced, so only recent submitted images currently have type these prefixed tags.'; break;
+			case 'bucket': $message = '<tt>bucket</tt> prefix tags where an experiment in having specially defined and listed tags. Now mostly superceded by other taggins system, note in particular that only a small selection of images have had these tags assigned. <a href="/article/Image-Buckets">Read more about Bucket Tags</a>.'; break;
+			case 'subject': $message = '<tt>subject</tt> is a special reserved prefix used to classify images by primary subject. The list of subject tags is fixed, and subject to moderation to add new ones.'; break;
+			case 'category': $message = '<tt>category</tt> has been used to mark <i>some</i> tags transformed from legacy category field, for the most part the prefix has no special meaning to the actual tag use.'; break;
 
 			default: $message = '';
 		}
