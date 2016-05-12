@@ -12,11 +12,11 @@
 		if (document.getElementById('cross'+gridimage_id).className.indexOf(' on') > -1)
 			submitModTag(gridimage_id,"type:Cross Grid",2);
 
-		//for now always submit this, to make sure the tag is created, or removed if change mind
-		submitModTag(gridimage_id,"type:Geograph",(status == 'geograph')?2:0);
-
 		if (!status)
 			status = getStatus(gridimage_id);
+
+		//for now always submit this, to make sure the tag is created, or removed if change mind
+		submitModTag(gridimage_id,"type:Geograph",(status == 'geograph')?2:0);
 
 		moderateImage(gridimage_id, status, function(statusText) {
 			$('#block'+gridimage_id).next().removeClass('modDisabled');
