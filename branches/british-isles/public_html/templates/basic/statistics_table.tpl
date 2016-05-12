@@ -64,7 +64,7 @@
 	{foreach from=$table item=row}
 	<tr>
 		{foreach from=$row key=name item=value}
-			<td align="right">{$value}</td>
+			<td align="{if is_numeric($value)}right{/if}">{$value}</td>
 		{/foreach}
 	</tr>
 	{/foreach}

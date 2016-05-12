@@ -1,13 +1,16 @@
-{assign var="page_title" value="Primary Categories"}
+{assign var="page_title" value="Geographical Context"}
 {include file="_std_begin.tpl"}
 
         <div class="tabHolder">
-                <span class="tabSelected">Geographical Context</span>
-                <a href="/article/Image-Buckets" class="tab">Image Buckets</a>
                 <a href="/tags/" class="tab">Tags</a>
+                <span class="tabSelected">Geographical Context</span>
+		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
+		<a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
+                <a href="/tags/prefix.php?prefix=bucket" class="tab">Image Buckets</a>
+		<a href="/tags/prefix.php" class="tab">Other Prefixes</a>
         </div>
         <div style="position:relative;margin-bottom:10px" class="interestBox">
-		<h2 style="margin:0"><a name="top"></a>Geographical Context <small>(Primary Categories)</small></h2>
+		<h2 style="margin:0"><a name="top"></a>Geographical Context</h2>
 	</div>
 
 {assign var="lastcat" value=""}
@@ -44,7 +47,7 @@
 	<div class="interestBox">
 	<a name="{$item.tag|replace:' ':'_'|escape:'url'}"></a>
 	{if $item.resultCount > 3}
-		<div style="float:right"><a href="/stuff/tagmap.php?tag=top:{$item.tag|escape:'url'}">Coverage Map</a> | <a href="/tags/?tag=top:{$item.tag|escape:'url'}">View <b>{$item.resultCount|thousends}</b> images</a></div>
+		<div style="float:right"><a href="/stuff/tagmap.php?tag=top:{$item.tag|escape:'url'}">Coverage Map</a> | <a href="/tagged/top:{$item.tag|escape:'urlplus'}">View <b>{$item.resultCount|thousends}</b> images</a></div>
 	{/if}
 
 	<big><b>{$item.tag|escape:'html'}</b></big>

@@ -42,9 +42,10 @@
 
 {elseif $bucket}
         <div class="tabHolder">
-                <a href="/tags/primary.php" class="tab">Geographical Context</a>
-		<a href="/tags/?prefix=subject" class="tab">Subjects</a>
                 <a href="/tags/" class="tab">Tags</a>
+                <a href="/tags/prefix.php?prefix=top" class="tab">Geographical Context</a>
+		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
+                <a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
                 <span class="tabSelected">Image Buckets</span>
         </div>
         <div style="position:relative;" class="interestBox">
@@ -58,19 +59,11 @@
 		<a href="/article/Tags" class="about" style="font-size:0.7em">About tags on Geograph</a>
 	</div>
         <div class="tabHolder">
-                <a href="/tags/primary.php" class="tab">Geographical Context</a>
-		{if $theprefix == 'subject'} 
-		<a href="/tags/?prefix=subject" class="tabSelected">Subjects</a>
-		<a href="/tags/" class="tab">Tags</a>
-		{else}
-		<a href="/tags/?prefix=subject" class="tab">Subjects</a>
-		{if $thetag || $theprefix || $prefixes}
                 <a href="/tags/" class="tabSelected">Tags</a>
-		{else}
-                <span class="tabSelected">Tags</span>
-		{/if}
-		{/if}
-                <a href="/article/Image-Buckets" class="tab">Image Buckets</a>
+                <a href="/tags/prefix.php?prefix=top" class="tab">Geographical Context</a>
+		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
+                <a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
+                <a href="/tags/prefix.php?prefix=bucket" class="tab">Image Buckets</a>
         </div>
         <div style="position:relative;padding-bottom:3px" class="interestBox">
 		<h2 style="margin:0">Public Tags</h2>
@@ -167,7 +160,7 @@
 			{if $gridref}
 			<a href="/search.php?q=[{if $theprefix}{$theprefix|escape:'url'}+{/if}{$thetag|escape:'url'}]&amp;location={$gridref|escape:'url'}">Images using this tag near {$gridref}</a><br/>
 			{/if}
-			<b><a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View all tagged images</a> - <a href="/browser/#!/tags+%22{$thetag|escape:'url'}%22">In Browser</a></b>
+			<b><a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View all tagged images</a> - <a href="/browser/#!/{if $theprefix eq 'top'}contexts{elseif $theprefix eq 'bucket'}buckets{elseif $theprefix eq 'subject'}subjects{else}tags{/if}+%22{$thetag|escape:'url'}%22">In Browser</a></b>
 		</div>
 
 		{if $images > 15}
@@ -215,7 +208,7 @@
 
 	{if !$example && !$private}
 		<div style="text-align:right">
-			<a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View more in the Image Search</a> or <a href="/browser/#!/tags+%22{if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}%22">in Browser</a><br/>
+			<a href="/search.php?tag={if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">View more in the Image Search</a> or <a href="/browser/#!/{if $theprefix eq 'top'}contexts{elseif $theprefix eq 'bucket'}buckets{elseif $theprefix eq 'subject'}subjects{else}tags{/if}+%22{if $theprefix}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}%22">in Browser</a><br/>
 			<a href="/search.php?text=tags:{$thetag|escape:'url'}">View images matching '{$thetag|capitalizetag|escape:'html'}' anywhere <i>in</i> the tags</a>
 		</div>
 	{/if}

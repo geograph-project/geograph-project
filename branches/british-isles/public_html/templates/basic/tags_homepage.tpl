@@ -25,9 +25,12 @@
 </style>{/literal}
 
 <div class="tabHolder">
-		<a href="/tags/primary.php" class="tab">Geographical Context</a>
-		<a href="/article/Image-Buckets" class="tab">Image Buckets</a>
 		<span class="tabSelected">Tags</span>
+		<a href="/tags/prefix.php?prefix=top" class="tab">Geographical Context</a>
+		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
+                <a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
+                <a href="/tags/prefix.php?prefix=bucket" class="tab">Image Buckets</a>
+		<a href="/tags/prefix.php" class="tab">Other Prefixes</a>
 </div>
 <div style="position:relative;" class="interestBox">
 	<h2 style="margin:0">Tagged Images <sup><a href="/article/Tags" class="about" style="font-size:0.7em">About tags on Geograph</a></sup></h2>
@@ -42,14 +45,14 @@
 
 		<div style="position:relative;">
 			<div style="position:absolute;top:0px;left:0px;background-color:lightgrey;margin-left:86px;padding-right:20px" id="tagParent">
-				<ol id="taglist">
+				<ol id="taglist" style="margin-left:20px">
 				</ol>
 			</div>
 		</div>
 	</form>
 </div>
 <div style="text-align:right">
-	<a href="?prefixes">View list of tag prefixes</a>
+	<a href="/tags/prefix.php">View list of tag prefixes</a>
 </div>
 
 <br/>

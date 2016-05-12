@@ -82,6 +82,7 @@ if (!empty($_GET['q'])) {
 	}
 
 	$smarty->assign("page_title",'Photos near '.$_GET['q']);
+	$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://{$_SERVER['HTTP_HOST']}/near/$qu2\"/>");
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].$mkey);
 
 	if ($memcache->valid) {
@@ -498,6 +499,6 @@ function vote_log(action,param,value) {
 # functions!
 
 function urlencode2($input) {
-        return str_replace(array('%2F','%3A','%20'),array('/',':','+'),$input);
+        return str_replace(array('%2F','%3A','%20'),array('/',':','+'),urlencode($input));
 }
 
