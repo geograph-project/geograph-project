@@ -22,7 +22,6 @@
 
 require_once('geograph/global.inc.php');
 
-
 $redirect = array(
 'Lowland landscapes'=>'Lowlands',
 'Upland landscapes'=>'Uplands',
@@ -34,54 +33,54 @@ $redirect = array(
 'Telecommunications'=>'Communications');
 
 if (!empty($_GET['tag']) && $redirect[$_GET['tag']]) {
-        header("HTTP/1.0 301 Moved Permanently");
-        header("Status: 301 Moved Permanently");
-	header("Location: ".($url = smarty_function_linktoself(array('name'=>'tag','value'=>$redirect[$_GET['tag']]))) );
-	print "<a href=\"".htmlentities($url)."\">moved</a>";
-	exit;
+	$url = smarty_function_linktoself(array('name'=>'tag','value'=>$redirect[$_GET['tag']]));
+}
+
+if (isset($_GET['prefixes']) && count($_GET) == 1) {
+	$url = "/tags/prefix.php";
+}
+if (isset($_GET['prefix']) && count($_GET) == 1) {
+	 $url = "/tags/prefix.php?prefix=".urlencode($_GET['prefix']);
 }
 
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie' &&
                ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
                (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) ) {
-        header("HTTP/1.0 301 Moved Permanently");
-        header("Status: 301 Moved Permanently");
 	if (!empty($_GET['tag']) && count($_GET) == 1) {
-		$url = "http://www.geograph.org.uk/tagged/".str_replace('%2F','/',str_replace('%3A',':',urlencode($_GET['tag'])));
+		$url = "http://www.geograph.org.uk/tagged/".urlencode2($_GET['tag']);
 	} else {
 		$url = "http://www.geograph.org.uk/tags/?".$_SERVER['QUERY_STRING'];
 	}
-	header("Location: ".$url);
-	print "<a href=\"".htmlentities($url)."\">moved</a>";
-	exit;
 }
 
 if ((!empty($_GET['photo']) || !empty($_GET['exclude'])) && stripos($_SERVER['HTTP_USER_AGENT'], 'CCBot') === 0) {
-	$url = "http://www.geograph.org.uk/tagged/".str_replace('%2F','/',str_replace('%3A',':',urlencode($_GET['tag'])));
-// we dont add this for CCBot, as it will immidiately just follow the redirect - even if it done so already.
-//        header("Location: ".$url);
-	print "<html><head><link rel=\"canonical\" href=\"".htmlentities($url)."\"/></head>";
-        print "<body><a href=\"".htmlentities($url)."\">moved</a></body></html>";
-	exit;
+	$url = "http://www.geograph.org.uk/tagged/".urlencode($_GET['tag']);
 }
 
 if (strpos($_SERVER['REQUEST_URI'],'/tags/index.php') === 0
 	||
 	(strpos($_SERVER['REQUEST_URI'],'/tags/') === 0 && !empty($_GET['tag']) && count($_GET) == 1)
    ) {
-        header("HTTP/1.0 301 Moved Permanently");
-        header("Status: 301 Moved Permanently");
-
         if (!empty($_GET['tag']) && count($_GET) == 1) {
-                $url = "/tagged/".str_replace('%2F','/',str_replace('%3A',':',urlencode($_GET['tag'])));
+                $url = "/tagged/".urlencode2($_GET['tag']);
         } else {
                 $url = "/tags/?".$_SERVER['QUERY_STRING'];
         }
-        header("Location: ".$url);
-        print "<a href=\"".htmlentities($url)."\">moved</a>";
+}
 
+if (!empty($url)) {
+        header("HTTP/1.0 301 Moved Permanently");
+        header("Status: 301 Moved Permanently");
+
+	if (stripos($_SERVER['HTTP_USER_AGENT'], 'CCBot') !== 0)
+		// we dont add this for CCBot, as it will immidiately just follow the redirect - even if it done so already.
+	        header("Location: ".$url);
+
+	print "<html><head><link rel=\"canonical\" href=\"".htmlentities($url)."\"/></head>";
+        print "<body><a href=\"".htmlentities($url)."\">moved</a></body></html>";
 	exit;
 }
+
 
 if (!empty($_GET['tag']) && preg_match('/^\/tagged\/([^\?]+)/',$_SERVER['REQUEST_URI'],$m) && $_GET['tag'] != $m[1]) {
 	//fix for /at:Saxmundham+Sports+%26+Recreation+Ground    (the & is has already been urldcoded in QUERY_STRING)
@@ -127,9 +126,9 @@ if (!empty($_GET['tag'])) {
 
 		$andwhere = " AND prefix = ".$db->Quote($prefix);
 		$smarty->assign('theprefix', $prefix);
-		$sphinxq = "tags:\"__TAG__ $prefix {$_GET['tag']} __TAG__\"";
+		$sphinxq = "tags:\"__TAG__ $prefix __TAG__ {$_GET['tag']} __TAG__\"";
 	} elseif (isset($_GET['prefix'])) {
-		$sphinxq = "tags:\"__TAG__ {$_GET['prefix']} {$_GET['tag']} __TAG__\"";
+		$sphinxq = "tags:\"__TAG__ {$_GET['prefix']} __TAG__ {$_GET['tag']} __TAG__\"";
 	} else {
 		$sphinxq = "tags:\"__TAG__ {$_GET['tag']} __TAG__\"";
 	}
@@ -182,10 +181,9 @@ if (!$smarty->is_cached($template, $cacheid))
 		if (!empty($_GET['tag'])) {
 
 			$tags= $db->getAssoc("SELECT tag_id,prefix,tag,canonical,description FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag']).$andwhere);
-
 			if (!empty($tags)) {
 
-				$others = $db->getAssoc("SELECT tag_id,prefix,tag FROM tag WHERE status = 1 AND tag=".$db->Quote($_GET['tag'])." AND prefix != ".$db->Quote($tags['prefix']));
+				$others = $db->getAssoc("SELECT tag_id,prefix,tag FROM tag INNER JOIN tag_stat USING (tag_id) WHERE status = 1 AND tag=".$db->Quote($_GET['tag'])." AND prefix != ".$db->Quote($prefix));
 				$smarty->assign_by_ref('others', $others);
 
 				if (!isset($_GET['exact'])) {
@@ -202,11 +200,12 @@ if (!$smarty->is_cached($template, $cacheid))
 					if (!empty($bits)) {
 
 						$more = $db->getAll("SELECT tag_id,prefix,tag FROM tag WHERE status = 1 AND (".implode(" OR ",$bits).")");
+
 						if ($more) {
 							$sphinxq = array($sphinxq);
-							foreach($more as $tag_id => $row) {
-								$sphinxq[]= "tags:\"__TAG__ ".($row['prefix']?"{$row['prefix']} ":'').preg_replace('/[^\w]+/',' ',$row['tag'])." __TAG__\"";
-								$tags[$tag_id] = 1;
+							foreach($more as $row) {
+								$sphinxq[]= "tags:\"__TAG__ ".($row['prefix']?"{$row['prefix']} __TAG__ ":'').preg_replace('/[^\w]+/',' ',$row['tag'])." __TAG__\"";
+								$tags[$row['tag_id']] = 1;
 							}
 							if (count($sphinxq) > 1) {
 								$sphinxq = '('.implode(' ) | (',$sphinxq).' )';
@@ -303,7 +302,6 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 							order by created desc
 							limit 50";
 					}
-
 					$imagelist->_getImagesBySql($sql);
 				}
 
@@ -319,7 +317,7 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 
 					//TODO, gridimage_search now has tags row. But cant just blindly explode(',' as context have comma in too doh!
 					if ($idlist = implode(',',array_keys($ids))) {
-						$sql = "SELECT gridimage_id,tag,prefix FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 AND gridimage_id IN ($idlist) ORDER BY tag";			
+						$sql = "SELECT gridimage_id,tag,prefix FROM tag INNER JOIN gridimage_tag gt USING (tag_id) WHERE gt.status = 2 AND gridimage_id IN ($idlist) ORDER BY tag";
 
 						$tags = $db->getAll($sql);
 						if ($tags) {
@@ -334,6 +332,21 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 				}
 
 			} else {
+				if ($canon= $db->getOne("SELECT canonical FROM tag WHERE status = 0 AND (canonical is not null and canonical != 0 and canonical != tag_id) AND tag=".$db->Quote($_GET['tag']).$andwhere)) {
+					if ($row = $db->getRow("SELECT prefix,tag FROM tag WHERE tag_id = $canon")) {
+						$tag = $row['tag'];
+						if (!empty($row['prefix']))
+							$tag = "{$row['prefix']}:$tag";
+						header("HTTP/1.0 301 Moved Permanently");
+					        header("Status: 301 Moved Permanently");
+				                $url = "http://www.geograph.org.uk/tagged/".urlencode2($tag);
+					        header("Location: ".$url);
+					        print "<a href=\"".htmlentities($url)."\">moved</a>";
+					        exit;
+					}
+				}
+
+				header("HTTP/1.0 404 Not Found");
 				$smarty->assign('q', $_GET['tag']);
 				$smarty->assign('thetag', '');
 			}
@@ -393,3 +406,6 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 $smarty->display($template, $cacheid);
 
 
+function urlencode2($in) {
+	return str_replace(array('%2F','%3A','%20'),array('/',':','+'),urlencode($input));
+}
