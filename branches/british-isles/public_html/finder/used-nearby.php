@@ -62,6 +62,7 @@ ul {
 ul a.used {
 	font-weight:bold;
 	text-decoration:none;
+	color:black;
 }
 </style>
 <?
@@ -143,6 +144,9 @@ ul a.used {
 				$ids = explode(',',$row[$attribute.'_ids']);
 				$names = explode('_SEP_',$row[$attribute.'s']);array_shift($names); //the first is always blank!
 				$row['label'] = trim($names[array_search($row['group'],$ids)]);
+
+                                if ($attribute == 'tag' && strpos($row['label'],'type:') === 0)
+                                        continue;
 
 				$dist = round($row['dist']/1000);
 

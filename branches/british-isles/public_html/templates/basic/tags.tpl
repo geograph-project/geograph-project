@@ -47,6 +47,7 @@
 		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
                 <a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
                 <span class="tabSelected">Image Buckets</span>
+                <a href="/tags/prefix.php" class="tab">Other Prefixes</a>
         </div>
         <div style="position:relative;" class="interestBox">
 		<h2>Image Buckets</h2>
@@ -64,6 +65,7 @@
 		<a href="/tags/prefix.php?prefix=subject" class="tab">Subjects</a>
                 <a href="/tags/prefix.php?prefix=type" class="tab">Types</a>
                 <a href="/tags/prefix.php?prefix=bucket" class="tab">Image Buckets</a>
+                <a href="/tags/prefix.php" class="tab">Other Prefixes</a>
         </div>
         <div style="position:relative;padding-bottom:3px" class="interestBox">
 		<h2 style="margin:0">Public Tags</h2>
@@ -76,7 +78,7 @@
 		{if isset($theprefix) && $item.prefix eq $theprefix}
 			<span class="nowrap">&nbsp;<b>{$item.prefix|escape:'html'|lower|replace:' ':'&middot;'}</b> [<a href="{$script_name}">remove filter</a>] &nbsp;</span>
 		{else}
-			&nbsp;<a title="{$item.tags} tags" {if $item.tags > 10} style="font-weight:bold"{/if} href="{$script_name}?prefix={$item.prefix|escape:'url'}">{$item.prefix|escape:'html'|lower|replace:' ':'&middot;'|default:'<i>none</i>'}</a> &nbsp;
+			&nbsp;<a title="{$item.tags} tags" {if $item.tags > 10} style="font-weight:bold"{/if} href="/tags/prefix.php?prefix={$item.prefix|escape:'url'}">{$item.prefix|escape:'html'|lower|replace:' ':'&middot;'|default:'<i>none</i>'}</a> &nbsp;
 		{/if}
 	{/foreach}
 	</div>
@@ -110,7 +112,7 @@
 			<a href="/stuff/tagmap.php?tag={if isset($theprefix)}{$theprefix|escape:'url'}:{/if}{$thetag|escape:'url'}">Coverage Map</a></div>
 
 		{if $theprefix}
-			Prefix: <b>{$theprefix|escape:'html'|lower}</b> &nbsp;&nbsp;
+			Prefix: <b><a href="/tags/prefix.php?prefix={$theprefix|escape:'url'|lower}">{$theprefix|escape:'html'|lower}</a></b> &nbsp;&nbsp;
 		{/if}
 		Tag: <span class="nowrap">&nbsp;<b>{$thetag|capitalizetag|escape:'html'|replace:' ':'&middot;'}</b> &nbsp;</span>
 
