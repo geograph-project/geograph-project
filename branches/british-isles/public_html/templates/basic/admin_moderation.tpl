@@ -9,7 +9,7 @@
 
 	function moderateWrapper(gridimage_id, status) {
 		//if the cross grid button submit tag (it may of been auto selected) 
-		if (document.getElementById('cross'+gridimage_id).className.indexOf(' on') > -1)
+		if (document.getElementById('cross'+gridimage_id).className.indexOf('on') > -1)
 			submitModTag(gridimage_id,"type:Cross Grid",2);
 
 		if (!status)
@@ -214,5 +214,5 @@
 	
     
 {/dynamic}    
-<div style="height:250px;"></div>
+<div style="height:500px;"></div>
 {include file="_std_end.tpl"}

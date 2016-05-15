@@ -129,7 +129,7 @@ function deferTicket(gridimage_ticket_id, hours)
 
 
 	function toggleButton(that) {
-		if (that.className == 'toggle on') {
+		if (that.className.indexOf('on') > -1) {
 			that.className = 'toggle';
 		} else {
 			that.className = 'toggle on';
@@ -138,18 +138,18 @@ function deferTicket(gridimage_ticket_id, hours)
 
 		document.getElementById('continue'+gridimage_id).value = (getStatus(gridimage_id) == 'geograph')?'Geograph':'Accept';
 
-		submitModTag(gridimage_id,"type:"+that.value,(that.className == 'toggle on')?2:0);
+		submitModTag(gridimage_id,"type:"+that.value,(that.className.indexOf('on') > -1)?2:0);
 	}
 
 	function getStatus(gridimage_id) {
 		var status = 'geograph';
-		if (document.getElementById('cross'+gridimage_id).className.indexOf(' on') > -1)
+		if (document.getElementById('cross'+gridimage_id).className.indexOf('on') > -1)
 			status = 'accepted';
-		if (document.getElementById('aerial'+gridimage_id).className.indexOf(' on') > -1)
+		if (document.getElementById('aerial'+gridimage_id).className.indexOf('on') > -1)
 			status = 'accepted';
-		if (document.getElementById('inside'+gridimage_id).className.indexOf(' on') > -1)
+		if (document.getElementById('inside'+gridimage_id).className.indexOf('on') > -1)
 			status = 'accepted';
-		if (document.getElementById('detail'+gridimage_id).className.indexOf(' on') > -1)
+		if (document.getElementById('detail'+gridimage_id).className.indexOf('on') > -1)
 			status = 'accepted';
 		return status;
 	}
