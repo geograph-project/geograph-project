@@ -193,28 +193,37 @@ def replicate_now(path = '',target = ''):
     
     c=db.cursor(MySQLdb.cursors.DictCursor)
     cex=db.cursor()
+
+    target_snub = re.sub(r'[sh]\d$','',target)
     
-    c.execute("DESCRIBE "+config.database['file_table']);
-    while True:
-        row = c.fetchone()
-        if not row: break
-        
-        if row['Field'] == 'replicas':
-            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
-            idx = 1
-            for item in string.split(list, "','"):
-                if item == target:
-                    break
-                idx = idx*2
+    if target_snub == target:
+	    # in theory bit masks is a little more efficent than a LIKE match 
+            # for now only used for single mount servers
+
+	    c.execute("DESCRIBE "+config.database['file_table']);
+	    while True:
+	        row = c.fetchone()
+	        if not row: break
+	        
+	        if row['Field'] == 'replicas':
+	            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
+	            idx = 1
+	            for item in string.split(list, "','"):
+	                if item == target:
+	                    break
+	                idx = idx*2
             
-            break
+        	    break
     
-    print "idx = "+str(idx)
+	    crit = "NOT replicas & "+str(idx)
+    else:
+	    crit = "replicas NOT LIKE '%"+target_snub+"%'"
 
+    crit = crit + " AND replica_count > 0 AND replica_count < replica_target AND file_id > (select max(file_id) from file)-10000 "
 
-    crit = "replica_count < replica_target AND file_id > (select max(file_id) from file)-10000"
+    print crit
     
-    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND "+crit+" ORDER BY folder_id DESC LIMIT 400")
+    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE "+crit+" ORDER BY folder_id DESC LIMIT 400")
 
     while True:
         row = c.fetchone()
@@ -226,6 +235,10 @@ def replicate_now(path = '',target = ''):
         replica = random.choice(replicas)
 
         print "download " + row['filename'] + " from "+ replica
+
+        if not os.path.exists(config.mounts[replica] + row['filename']):
+            print "SKIPPING as file NOT found on "+config.mounts[replica]
+            continue
         
         filename = mount + row['filename']
         
