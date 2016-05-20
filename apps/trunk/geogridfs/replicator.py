@@ -210,8 +210,11 @@ def replicate_now(path = '',target = ''):
             break
     
     print "idx = "+str(idx)
+
+
+    crit = "replica_count < replica_target AND file_id > (select max(file_id) from file)-10000"
     
-    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND replica_count < replica_target ORDER BY folder_id DESC LIMIT 400")
+    c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND "+crit+" ORDER BY folder_id DESC LIMIT 400")
 
     while True:
         row = c.fetchone()
