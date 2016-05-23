@@ -82,7 +82,7 @@ def walk_and_notify(folder = '', track_progress = True, reverify = False, sleepe
     for root, dirs, files in os.walk(mount+folder):
         
         if files:
-            if track_progress and os.path.exists(root+'/backup.done'):
+            if track_progress and os.path.exists(root+'/backup.done') and os.path.getmtime(root) < time.time()-1814400:
                 print "done " + root
                 continue
             
