@@ -146,7 +146,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"p:r:d:",["path=","replica=","dest="])
     except getopt.GetoptError:
-        print 'replicator.py -p /geograph_live/geograph_live/public_html/geophotos/03/38/39 -r teas1 -d teas2'
+        print 'mover.py -p /geograph_live/geograph_live/public_html/geophotos/03/38/39 -r teas1 -d teas2'
         sys.exit(2)
     
     for opt, arg in opts:
@@ -158,7 +158,7 @@ def main(argv):
             replica = arg
     
     if path == '' or replica == '' or dest == '':
-        print 'replicator.py -p /geograph_live/geograph_live/public_html/geophotos/03/38/39 -r teas1 -d teas2'
+        print 'mover.py -p /geograph_live/geograph_live/public_html/geophotos/03/38/39 -r teas1 -d teas2'
         sys.exit(2)
 
     move_files(path,replica,dest)

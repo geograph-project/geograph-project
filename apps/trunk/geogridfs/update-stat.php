@@ -12,9 +12,16 @@ $size = 10000; //if =10000 then does one at a time, multiples does more
 $check = false;
 
 #this needs to be updated if you change the schema of the table!
-$grouper = 'select file_id div 10000 as shard,class,replicas,replica_count,replica_target,backups,backup_count,backup_target,filename as example,count(*) as count,sum(size) as bytes,now() as updated,0 as jam2milk,0 as jam2cream from file where $where group by shard,class,replicas,replica_count,replica_target,backups,backup_count,backup_target order by null';
+$grouper = 'select file_id div 10000 as shard,class,replicas,replica_count,replica_target,backups,backup_count,backup_target,filename as example,count(*) as count,sum(size) as bytes,now() as updated from file where $where group by shard,class,replicas,replica_count,replica_target,backups,backup_count,backup_target order by null';
 
 if ($argv[1] == 'full') {
+
+	//just a convenient place to put this. Auto degrade these. so they cna be drained at some point.
+	//queryExecute("create temporary table latest_backup select folder,folder_id,max(file_id) as last_file_id from folder inner join file using (folder_id) where folder like '/geograph_live/public_html/backups/by-table/%' group by folder_id having count(*) > 1");
+	queryExecute("create temporary table latest_backup select folder.folder_id,max(file_id) as last_file_id from folder STRAIGHT_JOIN  file on (folder.folder_id = file.folder_id) where folder like '/geograph_live/public_html/backups/by-table/%' group by folder_id having count(*) > 1");
+	queryExecute("update file inner join latest_backup on (file.folder_id = latest_backup.folder_id and file_id != last_file_id) set replica_target = 1");
+
+
 	$cutoff = getOne("SELECT NOW()");
 	sleep(2);
 
@@ -45,16 +52,6 @@ if ($argv[1] == 'full') {
 
         $begin = 0;
         $final = getOne("SELECT MAX(file_id) FROM file");
-
-} elseif ($argv[1] == 'jam2milk' || $argv[1] == 'jam2cream') {
-	$check = true;
-	$check_recent = false;
-	$skip = false;
-
-	$begin = getOne("SELECT shard FROM file_stat ORDER BY ".$argv[1]." DESC LIMIT 1")*10000;
-	$final = $begin+10000-1;
-
-	print "range($begin,$final,$size)\n";
 
 } else {
         $check = false; #true/false check exist
@@ -131,18 +128,30 @@ if ($argv[1] == 'full') {
 
 ###################################
 # Write Tasks
+//function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$order = 'NULL') {
+
+if ($argv[1] == 'full') {
 
 //new full that need copying to SSD
-    write_replicate_task("ssd|rand","class = 'full.jpg'");
+    write_replicate_task("ssd|rand",	"class = 'full.jpg'");
 
-    write_replicate_task("hard|rand","class = 'full.jpg'");
+    write_replicate_task("hard|rand",	"class = 'full.jpg'");
 
 //new thumb to copy to SSD
-    write_replicate_task("ssd|rand","class = 'thumb.jpg'");
-
-//ANY files not stored on jam
-    write_replicate_task("jam","1");
+    write_replicate_task("ssd|rand",	"class = 'thumb.jpg'");
 
 //copy originals to the replica with the most space
-    write_replicate_task("hard|empty","class = 'original.jpg'");
+    write_replicate_task("hard|empty",	"class = 'original.jpg'");
 
+//ANY files not stored on jam
+    write_replicate_task("jam",		"replicas NOT LIKE '%amz%'"); //replicas NOT LIKE '%jam%' is /automatic/
+
+//use cream to mop up under-replicated files
+    write_replicate_task("cream",	"replicas NOT LIKE '%amz%'");
+
+
+//send files to amazon
+//    write_replicate_task("amz",       "backup_target>0");
+
+
+}

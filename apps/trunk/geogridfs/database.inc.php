@@ -1,14 +1,41 @@
 <?
 
+#####
+// bring in the live mounts
+
 $mounts = '';
 foreach (file(__DIR__.'/config.py') as $line)
         if (preg_match("/\s(\w+) = '([\w\/-]+)'/",$line,$m))
                 $mounts[$m[1]] = $m[2];
 
+//this is odd, but the mounts array, also includes the database config!
 $db =mysql_connect($mounts['hostname'],$mounts['username'],$mounts['password']) or die(mysql_error());
 mysql_select_db($mounts['database'],$db) or die(mysql_error());
 
 #####
+// bring in the CONF array (needed for photohashing secret, and the live DB config
+
+include "/var/www/geograph_live/libs/conf/www.geograph.org.uk.conf.php";
+
+function liveQuery($sql) {
+        global $dblive,$CONF;
+
+        if (empty($dblive) || !mysql_ping($dblive)) {
+                if ($dblive)
+                         mysql_close($dblive);
+
+                @$dblive = mysql_connect($CONF['db_connect'],$CONF['db_user'],$CONF['db_pwd']) or die(mysql_error());
+                mysql_select_db($CONF['db_db'],$dblive);
+        }
+	if (!empty($sql)) { //smalll trick to allow just to be used to connect!
+	        $result = mysql_query($sql,$dblive) or die("mysql error\n$sql\n".mysql_error($dblive));
+	        return $result;
+	}
+}
+
+
+#####
+// general database function
 
 function dbQuote($in) {
         return "'".mysql_real_escape_string($in)."'";
@@ -22,7 +49,7 @@ function queryExecute($query,$debug=false) {
 	}
         $result = mysql_query($query, $db) or print('<br>Error queryExecute: '.mysql_error());
 	if ($debug) {
-		print "#Done ".date('r')." : ".mysql_affected_rows()." Rows\n---------\n";
+		print "#Done ".date('r')." : ".mysql_affected_rows($db)." Rows\n---------\n";
 
 	}
         return $result;
@@ -123,6 +150,7 @@ function print_rp($q) {
 # Create some replicate tasks. Note we dont need to specify a source, as the worker will automatically find source per file.
 
 function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$order = 'NULL') {
+	global $db;
 	if ($avoidover) {
 		$clause .= " AND replica_count < replica_target";
 	}
@@ -146,21 +174,24 @@ function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$or
 		$targetQ = dbQuote($target);
 	}
 
+	$where = $clause;
 	$clauseQ = dbQuote($clause);
 
 	if ($avoiddup) {
-		$clause .= " AND shard NOT IN(select distinct shard from replica_task where clause = $clauseQ)";
+		//if latest shard, always run!
+		$current = getOne("select max(file_id) div 10000 as shard from file");
+		$where .= " AND (shard=$current OR shard NOT IN(select distinct shard from replica_task where clause = $clauseQ))";
 	}
 
 	queryExecute($sql = "INSERT INTO replica_task
         SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,$clauseQ AS `clause`,$targetQ AS target,NOW() as created,0 AS `executed`
         FROM file_stat
-        WHERE $clause AND replica_count > 0
+        WHERE $where AND replica_count > 0
         GROUP BY shard ORDER BY $order");
 
 	if (!empty($_GET['debug'])) {
 		print "-------\n$sql;\n----------\n";
-		print "Affected Rows: ".mysql_affected_rows()."\n\n";
+		print "Affected Rows: ".mysql_affected_rows($db)."\n\n";
 	}
 }
 
@@ -168,6 +199,7 @@ function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$or
 # create some drain tasks
 
 function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'NULL') {
+	global $db;
 	if (empty($where))
 		$where = $clause;
 
@@ -187,10 +219,10 @@ function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'N
 	$clauseQ = dbQuote($clause);
 
 	if ($avoiddup) {
-		$where .= " AND shard NOT IN(select distinct shard from replica_task where clause = $clauseQ)";
+		$where .= " AND shard NOT IN(select distinct shard from drain_task where clause = $clauseQ)";
 	}
 
-	queryExecute($sql = "INSERT INTO replica_task
+	queryExecute($sql = "INSERT INTO drain_task
         SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,$clauseQ AS `clause`,$targetQ AS target,NOW() as created,0 AS `executed`
         FROM file_stat
         WHERE $where AND replica_count > 0
@@ -198,7 +230,71 @@ function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'N
 
 	if (!empty($_GET['debug'])) {
 		print "-------\n$sql;\n----------\n";
-		print "Affected Rows: ".mysql_affected_rows()."\n\n";
+		print "Affected Rows: ".mysql_affected_rows($db)."\n\n";
+	}
+}
+
+############
+
+function getGeographPath($gridimage_id,$hash,$size ='small') {
+
+       $yz=sprintf("%02d", floor($gridimage_id/1000000));
+       $ab=sprintf("%02d", floor(($gridimage_id%1000000)/10000));
+       $cd=sprintf("%02d", floor(($gridimage_id%10000)/100));
+       $abcdef=sprintf("%06d", $gridimage_id);
+
+        if ($yz == '00') {
+                $fullpath="photos/$ab/$cd/{$abcdef}_{$hash}";
+        } else {
+                $fullpath="geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}";
+        }
+
+       switch($size) {
+                case 'orig': return "{$fullpath}_original.jpg"; break;
+               case 'full': return "$fullpath.jpg"; break;
+               case 'med': return "{$fullpath}_213x160.jpg"; break;
+               case 'small':  return "{$fullpath}_120x120.jpg";
+               default: return "{$fullpath}_{$size}.jpg"; //this is a custom version for geogridfs
+       }
+}
+
+function getGeographUrl($gridimage_id,$hash,$size = 'small') {
+        $ab=sprintf("%02d", floor(($gridimage_id%1000000)/10000));
+      $cd=sprintf("%02d", floor(($gridimage_id%10000)/100));
+      $abcdef=sprintf("%06d", $gridimage_id);
+                if ($gridimage_id<1000000) {
+                        $fullpath="/photos/$ab/$cd/{$abcdef}_{$hash}";
+                } else {
+                        $yz=sprintf("%02d", floor($gridimage_id/1000000));
+                        $fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}";
+                }
+      $server =  "http://s".($gridimage_id%4).".geograph.org.uk";
+
+      switch($size) {
+              case 'full': return "http://www.geograph.org.uk$fullpath.jpg"; break;
+              case 'med': return "$server{$fullpath}_213x160.jpg"; break;
+              case 'small':
+              default: return "$server{$fullpath}_120x120.jpg";
+
+        }
+}
+
+function opt_and_inp($opt) {
+	global $options;
+	global $inputs;
+	global $argv;
+	$options = getopt($opt);
+	//http://php.net/manual/en/function.getopt.php#74190
+
+	$inputs = $argv; array_shift($inputs);
+	foreach( $options as $o => $a )
+	{
+	    while( ($k = array_search( "-" . $o, $inputs ) ) !== FALSE )
+	    {
+	      unset( $inputs[$k] );
+	      if( preg_match( "/".$o.":/i", $opt ) && $inputs[$k+1] == $a )
+	        unset( $inputs[$k+1] );
+	    }
 	}
 }
 

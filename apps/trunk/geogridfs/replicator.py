@@ -352,24 +352,6 @@ def fixup_classes():
                 "`backup_target` = "+str(final[3])+ " " + \
                 "WHERE file_id = "+str(row['file_id']))
 
-def update_active():
-    c=db.cursor()
-    
-    c.execute("UPDATE "+config.database['file_table']+" SET replica_active = 0 WHERE replica_active = 1 AND replica_count>=replica_target")
-    
-    c.execute("SELECT COUNT(*) FROM "+config.database['file_table']+" WHERE replica_active = 1")
-    row = c.fetchone()
-    if row[0] < 1000:
-        c.execute("UPDATE "+config.database['file_table']+" SET replica_active = 1 WHERE replica_count<replica_target LIMIT 200");
-    
-    
-    c.execute("UPDATE "+config.database['file_table']+" SET backup_active = 0 WHERE backup_active = 1 AND backup_count>=backup_target")
-    
-    c.execute("SELECT COUNT(*) FROM "+config.database['file_table']+" WHERE backup_active = 1")
-    row = c.fetchone()
-    if row[0] < 1000:
-        c.execute("UPDATE "+config.database['file_table']+" SET backup_active = 1 WHERE backup_count<backup_target LIMIT 200");
-
 #############################################################################
 
 def main(argv):
@@ -409,9 +391,6 @@ def main(argv):
 
     elif action == 'check':
         check_combined(path, replica)
-
-    elif action == 'active':
-        update_active()
 
 if __name__ == '__main__':
     main(sys.argv[1:])

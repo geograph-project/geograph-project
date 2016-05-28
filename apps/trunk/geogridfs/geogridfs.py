@@ -120,37 +120,8 @@ class GeoGridFS(Fuse):
         return config.mounts['milk']
 
     def getOrderedMounts(self, path='/'):
-        scores = dict()
-        
-        # this mostly replicates how files are distributed amongst servers currently, so reads should find them in their ideal location most of the time. 
-        if 'photos/' in path:
-            if 'x' in path: #thumbnails!
-                scores['cakes1'] = 4
-                scores['teas1'] = 3
-            elif '_original' in path:
-                scores['teah2'] = 2 ## still give it a score for now, so it can be used for reading
-                scores['cakeh1'] = 5
-                scores['cakeh2'] = 4
-                scores['teah1'] = 3
-            else:
-                scores['cakes2'] = (abs(hash(path))%4)+4
-                scores['cakeh2'] = (abs(hash(path+'~'))%4)+4
-                scores['teas2'] = (abs(hash(path+'#'))%4)+4
-                scores['teah2'] = 2 ##(abs(hash(path+'@'))%4)+4
-                scores['teas1'] = 3
-                scores['cakes1'] = 3
-            scores['milk'] = 1
-        elif 'backups/' in path:
-            for (key,value) in config.mounts.iteritems():
-                if key != 'milk' and key != 'cream' and key != 'teah2':
-                    scores[key] = (abs(hash(path+value))%len(config.mounts))
-        else:
-            scores['milk'] = 5
-            scores['cakes1'] = 4
-            scores['teas1'] = 3
 
-        scores['jam'] = 2
-        scores['cream'] = 1
+        scores= config.getRawScores(path)
 
         #if have metadata record, use it to promote mounts with actual replicas
         try:
@@ -415,18 +386,17 @@ class GeoGridFS(Fuse):
     def utime(self, path, times):
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
-                os.utime(mount + path, times)
+                ret = os.utime(mount + path, times)
 
         try:
 	    ##  If times is None, then the file.s access and modified times are set to the current time.
             if not times:
 		times = (time.time(),time.time())
             ###  of the form (atime, mtime) which is used to set the access and modified times
-            specifics = 
-                "`file_modified` = FROM_UNIXTIME("+str(times[1])+"), " + \
-                "`file_accessed` = FROM_UNIXTIME("+str(times[0])+")"
+            specifics = "`file_modified` = FROM_UNIXTIME("+str(times[1])+"), " + \
+                        "`file_accessed` = FROM_UNIXTIME("+str(times[0])+")"
 
-            query = PySQLPool.getNewQuery(self.server.connection)
+            query = PySQLPool.getNewQuery(self.connection)
             query.Query("UPDATE "+config.database['file_table']+" SET "+specifics+" WHERE filename = '"+query.escape_string(path)+"'")
 
         except MySQLdb.Error, e:
@@ -438,6 +408,7 @@ class GeoGridFS(Fuse):
         if self.row_cache.has_key(path):
             self.row_cache.erase(path)
 
+        return ret
 
 #    The following utimens method would do the same as the above utime method.
 #    We can't make it better though as the Python stdlib doesn't know of
@@ -516,7 +487,7 @@ class GeoGridFS(Fuse):
                     #if still not found, then just create it on the first mount
                     if not self.file: 
                         for mount in server.getOrderedMounts(path):
-                            if os.path.exists(mount + '/geograph_live'): #cehck its a live mount!
+                            if os.path.exists(mount + '/geograph_live/public_html/geophotos'): #cehck its a live mount!
                                 if not os.path.exists(os.path.dirname(mount + path)):
                                     os.makedirs(os.path.dirname(mount + path)) # use makedirs so will also create parent dirs as required
                                 final_mount = mount

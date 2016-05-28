@@ -57,7 +57,7 @@ if (true) {
 print "#Remove copied files from {$_GET['source']}\n";
 
 write_drain_task($_GET['source'], $_GET['clause']." AND replicas LIKE '%{$_GET['target']}%'", //the caluse for the rule
-				  $_GET['clause']." AND shard IN (".implode(",",$ids).")", //the actual where used to create rules (cant use target as files ARENT replicated yet...
+				  $_GET['clause']." AND shard IN (".implode(",",$ids).")", //the actual where used to create rules (cant use target as files ARENT replicated yet... - at least in file_stat)
 				TRUE,$_GET['order']);
 
 ##############################################

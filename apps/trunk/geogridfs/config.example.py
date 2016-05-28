@@ -44,3 +44,38 @@ patterns = [
 	('rss',           r'/rss/',                  1, 0),
 	('.others',       r'/.*/',                   2, 0),
 ]
+
+def getRawScores(path):
+        scores = dict()
+        
+        # this mostly replicates how files are distributed amongst servers currently, so reads should find them in their ideal location most of the time. 
+        if 'photos/' in path:
+            if 'x' in path: #thumbnails!
+                scores['cakes1'] = 4
+                scores['teas1'] = 3
+            elif '_original' in path:
+                scores['teah2'] = 2 ## still give it a score for now, so it can be used for reading
+                scores['cakeh1'] = 5
+                scores['cakeh2'] = 4
+                scores['teah1'] = 3
+            else:
+                scores['cakes2'] = (abs(hash(path))%4)+4
+                scores['cakeh2'] = (abs(hash(path+'~'))%4)+4
+                scores['teas2'] = (abs(hash(path+'#'))%4)+4
+                scores['teah2'] = (abs(hash(path+'@'))%4)+4
+                scores['teas1'] = 3
+                scores['cakes1'] = 3
+            scores['milk'] = 1
+        elif 'backups/' in path:
+            for (key,value) in mounts.iteritems():
+                if key != 'milk' and key != 'cream' and key != 'teah2':
+                    scores[key] = (abs(hash(path+value))%len(mounts))
+        else:
+            scores['milk'] = 5
+            scores['cakes1'] = 4
+            scores['teas1'] = 3
+
+        scores['cream'] = 2
+        scores['jam'] = 1
+
+        return scores
