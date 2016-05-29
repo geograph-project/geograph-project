@@ -25,7 +25,7 @@ foreach ($argv as $v) {
 
 
 foreach($mounts as $replica => $mount) {
-	if ((!$all && strpos($replica,$self) !== 0) || !is_dir("$mount$path") )
+	if ((!$all && strpos($replica,$self) !== 0) || !is_dir("$mount$path") || $replica == 'amz')
 		continue;
 
 	$list = explode("\n",trim(`ls -1t $mount$path | head -n$lines`));

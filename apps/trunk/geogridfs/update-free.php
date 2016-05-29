@@ -16,3 +16,17 @@ foreach(explode("\n",`df -P`) as $line) {
 		mysql_query($sql);
 	}
 }
+
+$total = intval(getOne("select sum(bytes)/1024 as used from file_stat"));
+$amz =  intval(getOne("select sum(bytes)/1024 as used from file_stat where replicas like '%amz%'"));
+$key = 'amz';
+
+                $sql = "REPLACE INTO mounts SET mount = '$key'";
+                $sql .= ", total =".$total;
+                $sql .= ", used =".$amz;
+                $sql .= ", available =".($total-$amz);
+                $sql .= ", capacity =".($amz/$total*100);
+                mysql_query($sql);
+
+
+

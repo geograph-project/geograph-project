@@ -37,6 +37,25 @@ db=MySQLdb.connect(host=config.database['hostname'], user=config.database['usern
 
 #############################################################################
 
+def getReplicaIndex(target):
+    c=db.cursor(MySQLdb.cursors.DictCursor)
+    c.execute("DESCRIBE "+config.database['file_table']+" replicas");
+    idx = False
+    while True:
+        row = c.fetchone()
+        if not row: break
+
+        if row['Field'] == 'replicas':
+            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
+            idx = 1
+            for item in string.split(list, "','"):
+                if item == target:
+                    break
+                idx = idx*2
+          
+       	    break
+    return idx
+
 def md5sum(path):
     file = open(path, 'rb')
     md5 = hashlib.md5()
@@ -99,22 +118,7 @@ def replicate_now(path = '', target = '', order = ''):
 
     cex.execute("UPDATE replica_task SET executed = NOW() WHERE task_id = "+str(row['task_id']))
     
-    c.execute("DESCRIBE "+config.database['file_table']);
-    while True:
-        row = c.fetchone()
-        if not row: break
-        
-        if row['Field'] == 'replicas':
-            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
-            idx = 1
-            for item in string.split(list, "','"):
-                if item == target:
-                    break
-                idx = idx*2
-            
-            break
-    
-    #print "idx = "+str(idx)
+    idx = getReplicaIndex(target)
 
     print "SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE NOT replicas & "+str(idx)+" AND "+crit
     
@@ -131,9 +135,6 @@ def replicate_now(path = '', target = '', order = ''):
         
         replicas = string.split(row['replicas'],',')
         
-        #todo we could loop though them in case of failures, and should we tell anyone about failures?
-        replica = random.choice(replicas)
-
         # look though configured mounts, to find a file. Stop on first as mounts are roughly in preference order
         for (key,value) in config.mounts.iteritems():
             if key in replicas and os.path.exists(value + row['filename']):

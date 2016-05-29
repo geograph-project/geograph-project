@@ -52,6 +52,25 @@ def getFolderId(path, create = False):
         folder_id = c.fetchone()[0]
     return str(folder_id)
 
+def getReplicaIndex(target):
+    c=db.cursor(MySQLdb.cursors.DictCursor)
+    c.execute("DESCRIBE "+config.database['file_table']+" replicas");
+    idx = False
+    while True:
+        row = c.fetchone()
+        if not row: break
+
+        if row['Field'] == 'replicas':
+            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
+            idx = 1
+            for item in string.split(list, "','"):
+                if item == target:
+                    break
+                idx = idx*2
+          
+       	    break
+    return idx
+
 def md5sum(path):
     file = open(path, 'rb')
     md5 = hashlib.md5()
@@ -202,22 +221,7 @@ def replicate_now(path = '',target = ''):
     if target_snub == target:
 	    # in theory bit masks is a little more efficent than a LIKE match 
             # for now only used for single mount servers
-
-	    c.execute("DESCRIBE "+config.database['file_table']);
-	    while True:
-	        row = c.fetchone()
-	        if not row: break
-	        
-	        if row['Field'] == 'replicas':
-	            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
-	            idx = 1
-	            for item in string.split(list, "','"):
-	                if item == target:
-	                    break
-	                idx = idx*2
-            
-        	    break
-    
+            idx = getReplicaIndex(target)
 	    crit = "NOT replicas & "+str(idx)
     else:
 	    crit = "replicas NOT LIKE '%"+target_snub+"%'"
@@ -237,9 +241,6 @@ def replicate_now(path = '',target = ''):
         
         replicas = string.split(row['replicas'],',')
         
-        #todo we could loop though them in case of failures, and should we tell anyone about failures?
-        replica = random.choice(replicas)
-
         # look though configured mounts, to find a file. Stop on first as mounts are roughly in preference order
         for (key,value) in config.mounts.iteritems():
             if key in replicas and os.path.exists(value + row['filename']):
@@ -294,21 +295,7 @@ def check_combined(path = '',replica = ''):
 
     c=db.cursor(MySQLdb.cursors.DictCursor)
     
-    c.execute("DESCRIBE "+config.database['file_table']);
-    while True:
-        row = c.fetchone()
-        if not row: break
-        
-        if row['Field'] == 'replicas':
-            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
-            idx = 1
-            for item in string.split(list, "','"):
-                if item == replica:
-                    break
-                idx = idx*2
-            
-            break
-    
+    idx = getReplicaIndex(target)
     print "idx = "+str(idx)
     
     c.execute("SELECT file_id,filename,replicas,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM "+config.database['file_table']+" WHERE folder_id = 80027 ORDER BY file_id DESC LIMIT 1000")

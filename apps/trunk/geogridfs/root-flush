@@ -2,6 +2,8 @@
 
 cd /var/geogridfs/
 
+GET http://localhost/apachestat > /tmp/apachestat
+
 echo apache2ctl graceful-stop
 apache2ctl graceful-stop
 

@@ -48,6 +48,25 @@ def getFolderId(path, create = False):
         folder_id = c.fetchone()[0]
     return str(folder_id)
 
+def getReplicaIndex(target):
+    c=db.cursor(MySQLdb.cursors.DictCursor)
+    c.execute("DESCRIBE "+config.database['file_table']+" replicas");
+    idx = False
+    while True:
+        row = c.fetchone()
+        if not row: break
+
+        if row['Field'] == 'replicas':
+            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
+            idx = 1
+            for item in string.split(list, "','"):
+                if item == target:
+                    break
+                idx = idx*2
+          
+       	    break
+    return idx
+
 def md5sum(path):
     file = open(path, 'rb')
     md5 = hashlib.md5()
@@ -98,22 +117,7 @@ def drain_now(path = '',target='', order = ''):
 
     cex.execute("UPDATE drain_task SET executed = NOW() WHERE task_id = "+str(row['task_id']))
     
-    c.execute("DESCRIBE "+config.database['file_table']);
-    while True:
-        row = c.fetchone()
-        if not row: break
-        
-        if row['Field'] == 'replicas':
-            list = string.replace(string.replace(row['Type'],"set('",''),"')",'');
-            idx = 1
-            for item in string.split(list, "','"):
-                if item == target:
-                    break
-                idx = idx*2
-            
-            break
-    
-    #print "idx = "+str(idx)
+    idx = getReplicaIndex(target)
     
     c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE replicas & "+str(idx)+" AND replica_count > 1 AND "+crit)
 
