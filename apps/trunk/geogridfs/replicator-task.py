@@ -80,9 +80,12 @@ def replicate_now(path = '', target = '', order = ''):
     crit = "file_id BETWEEN "+str(start)+" AND "+str(end)+" AND "+row['clause']+" AND replica_count > 0"
 	## AND replicas NOT LIKE '%"+target_snub+"%'"
 
+    if target == 'amz':
+        crit = crit + " AND class IN ('full.jpg','original.jpg')"
+
     mount = config.mounts[target]
 
-    if not os.path.exists(mount + '/geograph_live/'):
+    if not os.path.exists(mount + '/geograph_live/public_html/geophotos/'):
 	return mount + " does not appear to be active (no geograph_live folder)"
 
     if 'statvfs' in dir(os):
@@ -130,6 +133,12 @@ def replicate_now(path = '', target = '', order = ''):
         
         #todo we could loop though them in case of failures, and should we tell anyone about failures?
         replica = random.choice(replicas)
+
+        # look though configured mounts, to find a file. Stop on first as mounts are roughly in preference order
+        for (key,value) in config.mounts.iteritems():
+            if key in replicas and os.path.exists(value + row['filename']):
+                replica = key
+                break
 
         #print "download " + row['filename'] + " from "+ replica
         print(str(i)+"\r"),

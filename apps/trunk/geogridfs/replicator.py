@@ -182,8 +182,11 @@ def replicate_now(path = '',target = ''):
 
     mount = config.mounts[target]
 
+    if not os.path.exists(mount + '/geograph_live/public_html/geophotos/'):
+        return mount + " does not appear to be active (no geograph_live folder)"
+
     if 'statvfs' in dir(os):
-        s = os.statvfs(mount+'/geograph_live/')
+        s = os.statvfs(mount+'/geograph_live/') #for amazon this is ok, as its actully checking free space in cache!
         bytes_free = (s.f_bavail * s.f_frsize) / 1024
         gigabytes = bytes_free / (1024 * 1024)
 
@@ -221,6 +224,9 @@ def replicate_now(path = '',target = ''):
 
     crit = crit + " AND replica_count > 0 AND replica_count < replica_target AND file_id > (select max(file_id) from file)-10000 "
 
+    if target == 'amz':
+	crit = crit + " AND class IN ('full.jpg','original.jpg')"
+
     print crit
     
     c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE "+crit+" ORDER BY folder_id DESC LIMIT 400")
@@ -233,6 +239,12 @@ def replicate_now(path = '',target = ''):
         
         #todo we could loop though them in case of failures, and should we tell anyone about failures?
         replica = random.choice(replicas)
+
+        # look though configured mounts, to find a file. Stop on first as mounts are roughly in preference order
+        for (key,value) in config.mounts.iteritems():
+            if key in replicas and os.path.exists(value + row['filename']):
+                replica = key
+                break
 
         print "download " + row['filename'] + " from "+ replica
 
