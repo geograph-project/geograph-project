@@ -99,9 +99,6 @@ def replicate_now(path = '', target = '', order = ''):
     crit = "file_id BETWEEN "+str(start)+" AND "+str(end)+" AND "+row['clause']+" AND replica_count > 0"
 	## AND replicas NOT LIKE '%"+target_snub+"%'"
 
-    if target == 'amz':
-        crit = crit + " AND class IN ('full.jpg','original.jpg')"
-
     mount = config.mounts[target]
 
     if not os.path.exists(mount + '/geograph_live/public_html/geophotos/'):
@@ -134,12 +131,17 @@ def replicate_now(path = '', target = '', order = ''):
         if not row: break
         
         replicas = string.split(row['replicas'],',')
-        
-        # look though configured mounts, to find a file. Stop on first as mounts are roughly in preference order
-        for (key,value) in config.mounts.iteritems():
-            if key in replicas and os.path.exists(value + row['filename']):
+        replica = False
+
+        # loop though replicas to find a file. Stop on first as SET is roughly in preference order
+        for key in replicas:
+            if os.path.exists(config.mounts[key] + row['filename']):
                 replica = key
                 break
+
+        if not replica:
+            print "SKIPPING as file NOT found on any mount"
+            continue
 
         #print "download " + row['filename'] + " from "+ replica
         print(str(i)+"\r"),
@@ -150,7 +152,7 @@ def replicate_now(path = '', target = '', order = ''):
         
         if os.path.exists(filename):
             if os.path.getsize(filename) == 0:
-                unlink(filename)
+                os.unlink(filename)
                 
             #todo, later we should allow their newer file to overwrite our older file. (to allow for new versions of files) BUT not if class = full.jpg/thumbs.jpg etc
         else:
@@ -158,7 +160,11 @@ def replicate_now(path = '', target = '', order = ''):
                 os.makedirs(os.path.dirname(filename)) ##recursive
 
         if not os.path.exists(filename):
-            shutil.copy2(config.mounts[replica] + row['filename'], filename)
+            if target == 'amz':
+                ##copy2, perform copy then does copystat. s2fs implents chown/touch etc as COPY operations which cost!
+                shutil.copyfile(config.mounts[replica] + row['filename'], filename)
+            else:
+                shutil.copy2(config.mounts[replica] + row['filename'], filename)
         
         stat = os.stat(filename)
         if (stat.st_size > 0 and stat.st_size < 52428800):

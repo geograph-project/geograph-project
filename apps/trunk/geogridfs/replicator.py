@@ -240,24 +240,23 @@ def replicate_now(path = '',target = ''):
         if not row: break
         
         replicas = string.split(row['replicas'],',')
-        
-        # look though configured mounts, to find a file. Stop on first as mounts are roughly in preference order
-        for (key,value) in config.mounts.iteritems():
-            if key in replicas and os.path.exists(value + row['filename']):
+        replica = False
+
+        # loop though replicas to find a file. Stop on first as SET is roughly in preference order
+        for key in replicas:
+            if os.path.exists(config.mounts[key] + row['filename']):
                 replica = key
                 break
 
-        print "download " + row['filename'] + " from "+ replica
-
-        if not os.path.exists(config.mounts[replica] + row['filename']):
-            print "SKIPPING as file NOT found on "+config.mounts[replica]
+        if not replica:
+            print "SKIPPING as file NOT found on any mount"
             continue
-        
+                
         filename = mount + row['filename']
         
         if os.path.exists(filename):
             if os.path.getsize(filename) == 0:
-                unlink(filename)
+                os.unlink(filename)
                 
             #todo, later we should allow their newer file to overwrite our older file. (to allow for new versions of files) BUT not if class = full.jpg/thumbs.jpg etc
         else:
@@ -265,7 +264,11 @@ def replicate_now(path = '',target = ''):
                 os.makedirs(os.path.dirname(filename)) ##recursive
 
         if not os.path.exists(filename):
-            shutil.copy2(config.mounts[replica] + row['filename'], filename)
+            if target == 'amz':
+                ##copy2, perform copy then does copystat. s2fs implents chown/touch etc as COPY operations which cost! (note .copy() still does chown, hence copyfile)
+                shutil.copyfile(config.mounts[replica] + row['filename'], filename)
+            else:
+                shutil.copy2(config.mounts[replica] + row['filename'], filename)
         
         stat = os.stat(filename)
         if (stat.st_size > 0 and stat.st_size < 52428800):
