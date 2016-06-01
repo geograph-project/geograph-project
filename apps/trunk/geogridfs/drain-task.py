@@ -101,22 +101,35 @@ def drain_now(path = '',target='', order = ''):
         print "No tasks"
         return
 
+    #obtain a lock on the shard, so that two tasks targetting the same file on different replicas can't drain too much
+    #  (without a lock, first worker gets list, second worker gets same list, then begins drain. The file is on BOTH lists (neither update run yet), so could be completely deleted!) 
+    #  if the second worker, waits until lock closed, when its query runs, will already reflect drain result of first (so filters on replica_count etc, are honoured) 
+    lock_name = "drain-"+str(row['shard'])
+    print "waiting obtain lock "+lock_name+" ...";
+    cex.execute("SELECT get_lock('"+lock_name+"',100)")
+    lock_result = cex.fetchone()[0]
+    if lock_result != 1:
+        print "unable to obtain lock "+lock_name;
+        return
+
     #just in case it was only a partical target, change to the full target
     target = row['target']
+
+    mount = config.mounts[target]
+
+    if not os.path.exists(mount + '/geograph_live/public_html/geophotos'):
+        print mount + " does not appear to be active (no geograph_live folder)"
+        return
+
+    cex.execute("UPDATE drain_task SET executed = NOW() WHERE task_id = "+str(row['task_id']))
+
+    print row    
 
     start = row['shard']*10000
     end = start+9999
 
     crit = "file_id BETWEEN "+str(start)+" AND "+str(end)+" AND "+row['clause']
 
-    mount = config.mounts[target]
-
-    if not os.path.exists(mount + '/geograph_live/'):
-        return mount + " does not appear to be active (no geograph_live folder)"
-
-
-    cex.execute("UPDATE drain_task SET executed = NOW() WHERE task_id = "+str(row['task_id']))
-    
     idx = getReplicaIndex(target)
     
     c.execute("SELECT file_id,filename,replicas,size,md5sum FROM "+config.database['file_table']+" WHERE replicas & "+str(idx)+" AND replica_count > 1 AND "+crit)
@@ -134,6 +147,7 @@ def drain_now(path = '',target='', order = ''):
             print "we have " + row['filename'] + " - and about to delete from "+target+" ..."
         
             stat = os.stat(filename)
+            #todo, for amazon, we could either skip the md5 hashcheck or get it direct (doing a FS based md5sum, means downing the file first), wereas can get the hash from amazon without download
             if (stat.st_size > 0 and stat.st_size < 52428800):
                 md5su = md5sum(filename)
             else:
@@ -159,6 +173,9 @@ def drain_now(path = '',target='', order = ''):
             print "we dont have " + row['filename']
 
     print "\ndone"
+
+    cex.execute("SELECT release_lock('"+lock_name+"')")
+
 
 #############################################################################
 
