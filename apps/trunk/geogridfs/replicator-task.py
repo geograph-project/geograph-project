@@ -32,6 +32,7 @@ import shutil
 import re
 import subprocess
 import sys
+import tinys3
 
 db=MySQLdb.connect(host=config.database['hostname'], user=config.database['username'], passwd=config.database['password'],db=config.database['database'])
 
@@ -82,7 +83,7 @@ def replicate_now(path = '', target = '', order = ''):
     c=db.cursor(MySQLdb.cursors.DictCursor)
     cex=db.cursor()
 
-    print "SELECT * FROM replica_task WHERE target LIKE '"+target_snub+"%' AND `executed` = '0000-00-00 00:00:00' ORDER BY "+order+" LIMIT 1"    
+    #print "SELECT * FROM replica_task WHERE target LIKE '"+target_snub+"%' AND `executed` = '0000-00-00 00:00:00' ORDER BY "+order+" LIMIT 1"    
     c.execute("SELECT * FROM replica_task WHERE target LIKE '"+target_snub+"%' AND `executed` = '0000-00-00 00:00:00' ORDER BY "+order+" LIMIT 1")
     row = c.fetchone()
     if not row:
@@ -123,6 +124,8 @@ def replicate_now(path = '', target = '', order = ''):
     print("              / "+str(c.rowcount)+" rows\r"),
     sys.stdout.flush()
 
+    if target == 'amz' and config.amazon:
+        s3conn = tinys3.Connection(config.amazon['access'],config.amazon['secret'], tls=False, default_bucket=config.amazon['bucket'], endpoint=config.amazon['endpoint'])
    
     i=1
     done=0;
@@ -143,10 +146,11 @@ def replicate_now(path = '', target = '', order = ''):
             print "SKIPPING as file NOT found on any mount"
             continue
 
-        #print "download " + row['filename'] + " from "+ replica
+        if target == 'amz':
+            print "download " + row['filename'] + " from "+ replica
         print(str(i)+"\r"),
         if not i%13:
-           sys.stdout.flush()
+            sys.stdout.flush()
         
         filename = mount + row['filename']
         
@@ -159,23 +163,52 @@ def replicate_now(path = '', target = '', order = ''):
             if not os.path.exists(os.path.dirname(filename)):
                 os.makedirs(os.path.dirname(filename)) ##recursive
 
-        if not os.path.exists(filename):
-            if target == 'amz':
-                ##copy2, perform copy then does copystat. s2fs implents chown/touch etc as COPY operations which cost!
-                shutil.copyfile(config.mounts[replica] + row['filename'], filename)
+        if target == 'amz':
+            if config.amazon:
+                # if possible use a class, avoids some overhead. (s3fs does a double PUT) 
+
+                # the x-amz-meta-mtime is for compatiblity with s3fs
+	        mtime = int(os.path.getmtime(config.mounts[replica] + row['filename']))
+                f = open(config.mounts[replica] + row['filename'],'rb')
+                r = s3conn.upload(string.replace(row['filename'],config.amazon['prefix'],''), f, expires='max', public=True, \
+		         headers={'x-amz-storage-class': config.amazon['storage'], 'x-amz-meta-mtime': str(mtime)}, close=True )
+
+                if str(r) == '<Response [200]>':
+                    #todo, this is NOT ideal, we just pretend it worked. We could WAIT, as amazon is only eventual consistant!
+                    md5su = row['md5sum']
+                    size = row['size']
+                else:
+                    print "Got different status from Amazon: "+r
+                    md5su = '???'
+
             else:
-                shutil.copy2(config.mounts[replica] + row['filename'], filename)
-        
-        stat = os.stat(filename)
-        if (stat.st_size > 0 and stat.st_size < 52428800):
-            md5su = md5sum(filename)
+                #else copy it via FS, which is using s3fs etc
+
+                if not os.path.exists(filename):
+                    ##copy2, perform copy then does copystat. s2fs implents chown/touch etc as COPY operations which cost!
+                    shutil.copyfile(config.mounts[replica] + row['filename'], filename)
+
+                stat = os.stat(filename)
+                size = stat.st_size
+                if (stat.st_size > 0 and stat.st_size < 52428800):
+                    md5su = md5sum(filename)
+                else:
+                    md5su =''
+
         else:
-            md5su =''
+            shutil.copy2(config.mounts[replica] + row['filename'], filename)
+        
+            stat = os.stat(filename)
+            size = stat.st_size
+            if (stat.st_size > 0 and stat.st_size < 52428800):
+                md5su = md5sum(filename)
+            else:
+                md5su =''
         
         if md5su != row['md5sum']:
             print "md5 mismatch '"+md5su+"' != '"+row['md5sum']+"' : "+row['filename']
             #todo - report this somewhere!
-        elif stat.st_size != row['size']:
+        elif size != row['size']:
             print "size mismatch : "+row['filename']
             #todo - report this somewhere!
         #elif stat.st_mtime != row['modified']:
