@@ -18,7 +18,7 @@ if ($argv[1] == 'full') {
 
 	//just a convenient place to put this. Auto degrade these. so they cna be drained at some point. Run here, so BEFORE file_stat is updated.
 	//queryExecute("create temporary table latest_backup select folder,folder_id,max(file_id) as last_file_id from folder inner join file using (folder_id) where folder like '/geograph_live/public_html/backups/by-table/%' group by folder_id having count(*) > 1");
-	queryExecute("create temporary table latest_backup select folder.folder_id,max(file_id) as last_file_id from folder STRAIGHT_JOIN  file on (folder.folder_id = file.folder_id) where folder like '/geograph_live/public_html/backups/by-table/%' group by folder_id having count(*) > 1");
+	queryExecute("create temporary table latest_backup select folder.folder_id,max(file_id) as last_file_id from folder STRAIGHT_JOIN  file on (folder.folder_id = file.folder_id) where folder like '/geograph_live/public_html/backups/by-table/%' AND replica_count > 0 group by folder_id having count(*) > 1");
 	queryExecute("update file inner join latest_backup on (file.folder_id = latest_backup.folder_id and file_id != last_file_id) set replica_target = 1");
 
 
@@ -140,11 +140,16 @@ if ($argv[1] == 'full') {
 
 //new full that need copying to SSD
     write_replicate_task("ssd|rand",	"class = 'full.jpg'");
-
     write_replicate_task("hard|rand",	"class = 'full.jpg'");
+
+    write_replicate_task("cakes1",      "class = 'full.jpg' AND replica_count = 1 AND replicas NOT RLIKE 's[[:digit:]]' AND replicas NOT like '%cake%'");
+    write_replicate_task("teas1",       "class = 'full.jpg' AND replica_count = 1 AND replicas NOT RLIKE 's[[:digit:]]' AND replicas NOT like '%tea%'");
 
 //new thumb to copy to SSD
     write_replicate_task("ssd|rand",	"class = 'thumb.jpg'");
+    write_replicate_task("ssd|rand",	"class = 'thumb.jpg' AND replica_count = 1"); //give these a second chance
+
+
 
 //copy originals to the replica with the most space
     write_replicate_task("hard|empty",	"class = 'original.jpg'");
@@ -159,3 +164,4 @@ if ($argv[1] == 'full') {
 //    write_replicate_task("amz",       "backup_target>0 AND class in ('full.jpg','original.jpg')"); //need class filter to exclude backups
 
 }
+

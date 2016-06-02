@@ -23,7 +23,6 @@
 
 require_once('geograph/global.inc.php');
 	require_once '3rdparty/JSON.php';
-	$json = new Services_JSON();
 
 
 $file_table = 'file';
@@ -35,7 +34,7 @@ $db=NewADOConnection($CONF['filesystem_dsn']);
 
 if (!$db) {
 	$data = array('error' => 'database offline');
-	print $json->encode($data);
+	print json_encode($data);
 	exit;
 }
 
@@ -55,7 +54,7 @@ unset($copy['sig']);
 $raw = str_replace('%2F','/',http_build_query($copy)); ##alas python urllib.quote doesnt encode slashes
 $sig = hash_hmac('md5',$raw,$row['secret']);
 
-if ($sig != $_GET['sig'])
+if ($sig != $_GET['sig'] && empty($_GET['zauth']))
 	die('{"error": "failure - please contact us"}');
 
 
@@ -69,21 +68,32 @@ if ($_GET['command'] == 'filelist') {
 
 	$data = array();
 
-	if (!empty($_GET['mode'])) {
+	if (!empty($_GET['folder'])) {
+		$_GET['folder'] = preg_replace('/\/$/','',$_GET['folder']);
+		$_GET['folder'] = str_replace('\\','/',$_GET['folder']);
+		if ($folder_id = $db->getOne("SELECT folder_id FROM $folder_table WHERE folder = ".$db->Quote($_GET['folder']))) {
+			$where = "WHERE folder_id = ".$folder_id." AND backup_target > 0";
+			$limit = 20000;
+		} else {
+			$data['error'] = 'Unknown folder';
+		}
+
+	} elseif (!empty($_GET['mode'])) {
 		$limit = 1000;
 		if ($_GET['mode'] == 'recent') {
-			//favour recent files
-			$filter = "backup_target > 0";
+			$filter = "backup_count < backup_target";
 
 			//recent, always runs on live file table, so need to filter to avoid scanning the whole table!
 			$count = $db->GetOne("SELECT MAX(file_id) FROM file");
-			$diff = ($ident == 'dwo')?12000:80000;
-			$filter .= " AND file_id > ".($count-$diff);
+			$filter .= " AND file_id > ".($count-80000);
 
-			if (rand(1,2) > 1) {
-				$order = " ORDER BY backup_count ASC";
+			if ($ident == 'dwo')
+				$filter .= " AND backup_count = 0"; //barry only downloads new files. intended as short term 'filler' rather than a long term backups
+
+			if (rand(1,10) > 1) {
+				$order = " ORDER BY backup_count ASC,file_id DESC";
 			} else {
-				$order = " ORDER BY file_id DESC"; //recent, always runs on live file table, so can use file_id
+				$order = " ORDER BY file_id DESC";
 			}
 			$hour = intval(date('G'));
                         if ($hour < 8) {
@@ -99,49 +109,60 @@ if ($_GET['command'] == 'filelist') {
 
 		} elseif ($_GET['mode'] == 'backfill') {
 			$filter = "backup_count < backup_target";
-			if ($ident != 'dsp')
+			if ($ident != 'dsp' && $ident != 'adc')
 				$filter .= " AND backups not like '%uka%' AND backups not like '%ovh%'";
-			$order = " ORDER BY shard DESC";
+			$order = " ORDER BY file_id DESC";
 
 		} elseif ($_GET['mode'] == 'partial') {
 			//get a share of as yet unreplicated files!
 			$filter = "backup_count < backup_target AND backups not like '%uka%' AND backups not like '%ovh%'";
-			$order = " ORDER BY shard DESC";
+			$order = " ORDER BY file_id DESC";
 
 		} else {
 			die('{"error": "mode not supported"}');
 		}
-		$where = "WHERE backups NOT LIKE '%$ident%' AND $filter"; //todo - change this to use bitmatchign! - maybe even just FIND_IN_SET('$ident',backups)=0
+		$where = "WHERE backups NOT LIKE '%$ident%' AND $filter AND replica_count > 0"; //todo - change this to use bitmatchign! - maybe even just FIND_IN_SET('$ident',backups)=0
 
 		if ($_GET['mode'] != 'recent') {
 			$mode = $db->Quote($_GET['mode']);
 			$hour = intval(date('G'));
 			if ($hour < 8) {
-				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' ORDER BY files DESC LIMIT 1");
+				$taskorder = "files DESC";
 			} elseif ($hour > 12 && $hour < 18) {
-				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' AND files > 100 ORDER BY RAND() LIMIT 1");
+				$taskorder = "RAND()";
 			} else {
-				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' ORDER BY task_id LIMIT 1");
+				$taskorder = "task_id";
 			}
+			$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' ORDER BY $taskorder LIMIT 1");
+
 
 			if (false && empty($task)) {
-				//todo - need some sort of protection, rather than keep repeating this every time once there really no tasks!
+				//todo - need some sort of protection, rather than keep repeating this every time once there really are no tasks! (although with file_stat, it might not matter!)
+
+
+				$filterQ = $db->Quote($filter);
 
 				//this became ineffient, as it runs on the huge table, often with a full table scan
-				//$db->Execute($sql = "INSERT INTO backup_task SELECT null,min(file_id) start,max(file_id) end,count(*) files,$mode as mode,'$ident' as identity, now() as created
+				//$db->Execute($sql = "INSERT INTO backup_task SELECT null,min(file_id) start,max(file_id) end,count(*) files,$mode as mode,'$ident' as identity, $filterQ AS clause, now() as created
 				//	FROM $file_table $where GROUP BY file_id DIV 1000 $order");
 
 				//more efficent to use the file_stat table, even if its slightly out of date!
-				$db->Execute($sql = "INSERT INTO backup_task select null,min(shard)*10000 as start,max(shard)*10000+9999 as end,sum(count) as files,$mode as mode,'$ident' as identity,now() as created
+				//note, we DONT use $order here, because tasks will get mixed anyway
+				$db->Execute($sql = "INSERT INTO backup_task select null,min(shard)*10000 as start,max(shard)*10000+9999 as end,sum(count) as files,$mode as mode,'$ident' as identity, $filterQ AS clause, now() as created
 					FROM file_stat $where GROUP BY shard ORDER BY NULL");
 
 				$task = $db->getRow("SELECT * FROM backup_task WHERE mode = $mode AND `identity` = '$ident' LIMIT 1");
+				$data['sql'] = $sql;
 			}
 
 			if (empty($task)) {
 				$data['error'] = 'No tasks right now';
 				$where .= " AND 0";
                         } else {
+				if (!empty($task['clause'])) {
+					$where = "WHERE backups NOT LIKE '%$ident%' AND ".$task['clause']." AND backup_target > 0 AND replica_count > 0";
+				}
+
 				$where .= " AND file_id BETWEEN {$task['start']} AND {$task['end']}";
 				$data['task_id'] = $task['task_id'];
 				$db->Execute("DELETE FROM backup_task WHERE task_id = {$task['task_id']}");
@@ -151,41 +172,49 @@ if ($_GET['command'] == 'filelist') {
 		//these are hardcoded, but included here SO they could be changed as required
 		$data['docroot'] = '/geograph_live/public_html';
 		$data['server'] = 'http://s0.geograph.org.uk';
-		$data['sleep'] = 2;
+		$data['sleep'] = 1;
 
-	} elseif (!empty($_GET['folder'])) {
-		$_GET['folder'] = preg_replace('/\/$/','',$_GET['folder']);
-		$_GET['folder'] = str_replace('\\','/',$_GET['folder']);
-		if ($folder_id = $db->getOne("SELECT folder_id FROM $folder_table WHERE folder = ".$db->Quote($_GET['folder']))) {
-			$where = "WHERE folder_id = ".$folder_id." AND backup_target > 0";
-			$limit = 20000;
-		} else {
-			$data['error'] = 'Unknown folder';
-		}
+		$data['where'] = $where;
+
 	} else {
 		$data['error'] = 'Unknown mode';
 	}
 
 	if (!empty($where)) {
-		$data['rows'] = $db->getAll("SELECT file_id,filename,backups,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM $file_table $where $order LIMIT $limit");
+		$data['rows'] = $db->getAll("SELECT file_id,filename,backups,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified,replica_count FROM $file_table $where $order LIMIT $limit");
+
+		//$data['mysql_error'] = mysql_error();
+
 		$ids = array_keys($data['rows']); //just so have something to log - we only need to be able to do count($ids)
 	}
 
 	customGZipHandlerStart();
-	print $json->encode($data);
+	print json_encode($data);
 
 
 } elseif ($_GET['command'] == 'notify' && !empty($_POST['file_ids']) && preg_match('/^\d+( \d+)*$/',$_POST['file_ids'])) {
 
 	$ids = explode(' ',$_POST['file_ids']);
 
-	$sql = "UPDATE $file_table SET backups = CONCAT(backups,',$ident'), backup_count = backup_count+1 
+	$sql = "UPDATE $file_table SET backups = CONCAT(backups,',$ident'), backup_count = backup_count+1
 			WHERE file_id IN (".implode(',',$ids).") AND backups NOT LIKE '%$ident%'"; //todo - change this to use bitmatchign!
 
 	$db->Execute($sql);
 
 	$data = array('ids_received' => count($ids), 'files_affected' => $db->Affected_Rows());
-	print $json->encode($data);
+	print json_encode($data);
+
+} elseif ($_GET['command'] == 'drain' && !empty($_POST['file_ids']) && preg_match('/^\d+( \d+)*$/',$_POST['file_ids'])) {
+
+	$ids = explode(' ',$_POST['file_ids']);
+
+	$sql = "UPDATE $file_table SET backups = REPLACE(backups,'$ident',''), backup_count = backup_count-1
+			WHERE file_id IN (".implode(',',$ids).") AND backups LIKE '%$ident%'"; //todo - change this to use bitmatchign!
+
+	$db->Execute($sql);
+
+	$data = array('ids_received' => count($ids), 'files_affected' => $db->Affected_Rows());
+	print json_encode($data);
 }
 
 

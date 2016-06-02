@@ -149,7 +149,7 @@ function print_rp($q) {
 ###################################
 # Create some replicate tasks. Note we dont need to specify a source, as the worker will automatically find source per file.
 
-function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$order = 'NULL') {
+function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$order = 'NULL',$return_query=false) {
 	global $db;
 	if ($avoidover) {
 		$clause .= " AND replica_count < replica_target";
@@ -183,11 +183,16 @@ function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$or
 		$where .= " AND (shard=$current OR shard NOT IN(select distinct shard from replica_task where clause = $clauseQ))";
 	}
 
-	queryExecute($sql = "INSERT INTO replica_task
+	$sql = "
         SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,$clauseQ AS `clause`,$targetQ AS target,NOW() as created,0 AS `executed`
         FROM file_stat
         WHERE $where AND replica_count > 0
-        GROUP BY shard ORDER BY $order");
+        GROUP BY shard ORDER BY $order";
+
+	if ($return_query)
+		return $sql;
+
+	queryExecute($sql = "INSERT INTO replica_task $sql");
 
 	if (!empty($_GET['debug'])) {
 		print "-------\n$sql;\n----------\n";
@@ -198,11 +203,12 @@ function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$or
 ###################################
 # create some drain tasks
 
-function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'NULL') {
+function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'NULL',$return_query=false) {
 	global $db;
 	if (empty($where))
 		$where = $clause;
 
+	$join = ''; $group = 'shard';
 	if ($target == 'ssd|rand') {
 		die("unimplemtned");
 	} elseif ($target == 'hard|rand') {
@@ -210,6 +216,15 @@ function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'N
 	} elseif ($target == 'hard|empty') {
 		die("unimplemtned");
 
+	} elseif ($target == 'mount' || preg_match('/[%_]/',$target)) {
+		$join = "INNER JOIN mounts ON (replicas LIKE CONCAT('%',mount,'%'))";
+		//dont need to modify clause, because the join will make filter for target.
+	        if (preg_match('/[%_]/',$target)) {
+	                $where .= ' AND mount LIKE '.dbQuote($target);
+        	}
+		$targetQ = 'mount';
+		$group = "mount,shard"; //if the same file is on multiple mounts, will be included in multiple tasks,
+					// so to be careful, that the file doesnt get drained from each mount (eg replica_count > replica_target in caluse, would help avoid draining to much, first mount to exercute wins!)
 	} else {
 		//$clause .= " AND replicas LIKE ".dbQuote("%$target%"); //DONT need this in the clause, because the worker will do it anyway.
 		$where .= " AND replicas LIKE ".dbQuote("%$target%"); //but have it on clause just to create the rules correctly
@@ -222,11 +237,16 @@ function write_drain_task($target,$clause,$where=NULL,$avoiddup=true,$order = 'N
 		$where .= " AND shard NOT IN(select distinct shard from drain_task where clause = $clauseQ)";
 	}
 
-	queryExecute($sql = "INSERT INTO drain_task
+	$sql = "
         SELECT NULL,shard,SUM(`count`) AS files,SUM(`bytes`) as bytes,$clauseQ AS `clause`,$targetQ AS target,NOW() as created,0 AS `executed`
-        FROM file_stat
+        FROM file_stat $join
         WHERE $where AND replica_count > 0
-        GROUP BY shard ORDER BY $order");
+        GROUP BY $group ORDER BY $order";
+
+        if ($return_query)
+                return $sql;
+
+	queryExecute($sql = "INSERT INTO drain_task $sql");
 
 	if (!empty($_GET['debug'])) {
 		print "-------\n$sql;\n----------\n";
