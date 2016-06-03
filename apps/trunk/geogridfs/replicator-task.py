@@ -125,7 +125,7 @@ def replicate_now(path = '', target = '', order = ''):
     sys.stdout.flush()
 
     if target == 'amz' and config.amazon:
-        s3conn = tinys3.Connection(config.amazon['access'],config.amazon['secret'], tls=False, default_bucket=config.amazon['bucket'], endpoint=config.amazon['endpoint'])
+        s3conn = tinys3.Connection(config.amazon['access'],config.amazon['secret'], tls=False, endpoint=config.amazon['endpoint'])
    
     i=1
     done=0;
@@ -167,11 +167,23 @@ def replicate_now(path = '', target = '', order = ''):
             if config.amazon:
                 # if possible use a class, avoids some overhead. (s3fs does a double PUT) 
 
+                bucket = False
+                for pattern in config.buckets:
+                    if pattern[0] in row['filename']:
+                        bucket = pattern
+                        s3name = string.replace(row['filename'],bucket[0],bucket[1])
+                        break
+
+                if not bucket:
+		    print "Unknown Amazon Bucket for "+row['filename']
+                    sys.exit(2);
+
                 # the x-amz-meta-mtime is for compatiblity with s3fs
 	        mtime = int(os.path.getmtime(config.mounts[replica] + row['filename']))
+
                 f = open(config.mounts[replica] + row['filename'],'rb')
-                r = s3conn.upload(string.replace(row['filename'],config.amazon['prefix'],''), f, expires='max', public=True, \
-		         headers={'x-amz-storage-class': config.amazon['storage'], 'x-amz-meta-mtime': str(mtime)}, close=True )
+                r = s3conn.upload(s3name, f, bucket=bucket[2], expires='max', public=bucket[3], \
+		         headers={'x-amz-storage-class': bucket[4], 'x-amz-meta-mtime': str(mtime)}, close=True )
 
                 if str(r) == '<Response [200]>':
                     #todo, this is NOT ideal, we just pretend it worked. We could WAIT, as amazon is only eventual consistant!

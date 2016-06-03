@@ -45,6 +45,19 @@ patterns = [
 	('.others',       r'/.*/',                   2, 0),
 ]
 
+amazon = dict(
+	access = '--enter access key here--',
+	secret = '--enter secret key here--',
+        endpoint = 's3-eu-west-1.amazonaws.com' # need this, to avoid a 301 redirection, choose the amazon region containing the buckets
+)
+buckets = [
+        #path                          #prefix        #bucker                   #public #storage class
+        ('/geograph_live/public_html', '',            'photos.example.com',     True,   'STANDARD'),
+        ('/geograph_live/backups',     '/backups',    'data.example.com',       False,  'STANDARD_IA'),
+        ('/geograph_live/rastermaps',  '/rastermaps', 'data.example.com',       False,  'REDUCED_REDUNDANCY')
+]
+
+
 def getRawScores(path):
         scores = dict()
         
