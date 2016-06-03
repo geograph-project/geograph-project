@@ -255,11 +255,14 @@ def replicate_now(path = '',mode=False):
             continue
         
         #choose sever to download from
-        if isinstance(result['server'], basestring):
-            url = string.replace(row['filename'],result['docroot'],result['server'])
+        if result['backupserver'] and result['backupserver'] in row['filename']:
+            url = string.replace(row['filename'],result['backuproot'],result['backupserver'])
         else:
-            server = random.choice(result['server'])
-            url = string.replace(row['filename'],result['docroot'],server)
+            if isinstance(result['server'], basestring):
+                url = string.replace(row['filename'],result['docroot'],result['server'])
+            else:
+                server = random.choice(result['server'])
+                url = string.replace(row['filename'],result['docroot'],server)
         
         filename = mount + row['filename']
         
