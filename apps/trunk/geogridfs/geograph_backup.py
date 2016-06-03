@@ -251,11 +251,11 @@ def replicate_now(path = '',mode=False):
     
     c = 0;
     for row in result['rows']:
-        if '000000_' in row['filename']:
+        if '/000000_' in row['filename']:
             continue
         
         #choose sever to download from
-        if result['backupserver'] and result['backupserver'] in row['filename']:
+        if result['backupserver'] and result['backuproot'] in row['filename']:
             url = string.replace(row['filename'],result['backuproot'],result['backupserver'])
         else:
             if isinstance(result['server'], basestring):
