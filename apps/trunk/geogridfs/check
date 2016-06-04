@@ -1,0 +1,534 @@
+#!/usr/bin/php
+<?
+
+/* 
+
+Interactive file integrity checker AND fixer. Will assist with fixing most errors with files
+
+In particular can be used to recheck and fix issues found by file-test.php
+
+*/
+
+chdir(__DIR__);
+
+include "database.inc.php";
+
+error_reporting(E_ALL & ~E_DEPRECATED );
+
+if (empty($mounts))
+        die("unable to read config\n");
+
+$host = trim(`hostname`);
+
+	if (!class_exists('S3')) require_once '/var/s3/S3.php';
+
+	define('AUTOCONNECT',true);
+	require_once '/var/s3/S3-config.php';
+
+##################################################################################
+
+opt_and_inp('c:ya');
+
+//now $options is an associative array of options
+//and $inputs is a list of all the other arguements
+
+
+##################################################################################
+
+if (empty($inputs)) {
+	print "specify file!\n";
+	exit;
+	//todo
+
+} elseif (reset($inputs) == 'file_check') {
+	if (!empty($options['c'])) {
+		$where = "AND class = ".dbQuote($options['c']);
+	} else {
+		//$where = "AND errors RLIKE '[[:digit:]]{2,}, but expected [[:digit:]]{2,}'"; //mismatched sizes
+
+		//$where = "AND errors LIKE '%teas%' AND errors LIKE '%MISSING%'"; //put on wrong?
+
+		//$where .= " AND errors NOT LIKE '%cream%'"; //avoid these for now!
+
+		$where = " AND class NOT IN ('kml','sitemap.gz','sitemap.html','detail.jpg','detail.png','rss','base.gd')";
+	}
+
+//	$where .= " AND errors != CONCAT('/mnt/hd2',example,' MISSING\\n')";
+
+	$filenames = getCol("
+		SELECT filename
+		FROM file_check INNER JOIN file ON (example = filename)
+		WHERE file_check.errors != '' AND fixed < '1' $where
+		LIMIT 500
+	");
+
+} elseif (reset($inputs) == 'failedfroms3') {
+	foreach (file('checker/failedfroms3') as $line) {
+		$line = trim($line);
+		if (strlen(`grep $line checker/failedfroms3.done`) > 2) {
+			continue;
+		}
+
+		$filenames = array($line);
+		break;
+	}
+} elseif (reset($inputs) == 'repairable') {
+	foreach (file('checker/repairable') as $line) {
+		$line = trim($line);
+		if (strlen(`grep $line checker/repairable.done`) > 2) {
+			continue;
+		}
+
+		$filenames = array($line);
+		break;
+	}
+
+} elseif (reset($inputs) == 'backups') {
+	 $filenames = getCol("
+                SELECT example
+                FROM file_stat
+                WHERE backups not like '%dsp%' and backup_target > 0 and backup_count < 2 and example like '%photos%'
+                LIMIT 500
+        ");
+
+} else {
+	$filenames = $inputs;
+}
+
+if (empty($filenames))
+	die("no files!\n");
+
+$validsig = array();
+reset($filenames);
+while($filename = current($filenames)) { //we dont dont use a foreach, because might want to restart the process on current, or if all ok, move onto next!
+
+if (strpos($filename,'/geograph') !== 0)
+        $filename = preg_replace('/^.*?\b(geophotos|photos)\//','/geograph_live/public_html/$1/',$filename);
+
+
+####################################################################################################################################################################
+####################################################################################################################################################################
+## Start of main loop!
+####################################################################################################################################################################
+####################################################################################################################################################################
+
+
+if (empty($filename))
+	die("no file\n");
+
+print str_repeat("=",100)."\n";
+
+$row = getRow("SELECT * FROM file WHERE filename = '$filename'");
+
+if (empty($row)) {
+	//if file is not known on metadata, help walk it!
+
+	print "ERROR: file $filename NOT found on metadata\n\n";
+
+        print ($gfs = `gfs $filename`);
+        print "\n";
+
+        $dir = dirname($filename);
+        $cmds = array();
+        foreach (explode("\n", $gfs) as $line) {
+                if (preg_match('/ (\/mnt\/\w+)\//',$line,$m)) {
+                        if ($replica = array_search($m[1],$mounts)) {
+
+                                if (file_exists("{$m[1]}$dir/replicator.done"))
+                                        $cmds[] = "unlink {$m[1]}$dir/replicator.done";
+
+                                $cmds[] = "python replicator.py -a walk -p $dir -r $replica";
+                        } else {
+                                print "#no replica found for {$m[1]}\n";
+                        }
+                }
+        }
+	if (!empty($cmds)) {
+                foreach ($cmds as $cmd) {
+                        print "sudo -u www-data $cmd\n";
+			if (isset($options['y'])) {
+	                        print `sudo -u www-data $cmd`;
+			}
+		}
+	}
+
+	//todo, should also try webarchive etc? 
+
+	exit;
+}
+
+
+
+###############################################################
+//setup
+
+$cmds = array();
+$results = array();
+
+@$results['meta']['filename'] = "/mnt/combined".$filename;
+@$results['meta']['size'] = $row['size'];
+@$results['meta']['date'] = $row['file_modified'];
+@$results['meta']['md5sum'] = $row['md5sum'];
+
+##########################
+//check amazon
+
+$amazon = array();
+//todo, this should be updated to use 'buckets' config from config.py
+if (!empty($s3) && ($row['class'] == 'original.jpg' || $row['class'] == 'full.jpg') && !isset($options['a'])) {
+	$s3name = preg_replace('/^\/geograph_live\/public_html\//','',$filename); //bucket already has the slash!
+
+	$amazon = $s3->getObjectInfo($bucketName,$s3name);
+
+        if (empty($amazon)) {
+                print "Notice: NOT found on S3!\n";
+                //exit;
+        } else {
+		$server = 'amazon';
+
+		@$results[$server]['filename'] = 'photos.geograph.org.uk.s3.amazonaws.com/'.$s3name;
+		@$results[$server]['size'] = $amazon['size'];
+		@$results[$server]['date'] = date('Y-m-d H:i:s',$amazon['time']);
+		@$results[$server]['md5sum'] = $amazon['hash'];
+	}
+} elseif (!empty($s3) && ($row['class'] == 'backup' || strpos($row['filename'],"/geograph_live/rastermaps/") === 0) && !isset($options['a'])) {
+	$s3name = preg_replace('/^\/geograph_live\//','',$filename); //bucket already has the slash!
+
+	$amazon = $s3->getObjectInfo("attic.geograph.org.uk",$s3name);
+
+        if (empty($amazon)) {
+                print "Notice: NOT found on S3!\n";
+                //exit;
+        } else {
+		$server = 'amazon';
+
+		@$results[$server]['filename'] = 'attic.geograph.org.uk.s3.amazonaws.com/'.$s3name;
+		@$results[$server]['size'] = $amazon['size'];
+		@$results[$server]['date'] = date('Y-m-d H:i:s',$amazon['time']);
+		@$results[$server]['md5sum'] = $amazon['hash'];
+	}
+}
+
+##########################
+// check mounts
+
+foreach (explode(',',$row['replicas']) as $server) {
+	if (empty($server))
+		continue;
+	@$results[$server]['metadata'] = '*';
+	@$results[$server]['filename'] = '(missing)'; //if found on mount this is replaced!
+}
+
+$sizes = array();
+$mds= array();
+$dates= array();
+
+$found = array();
+foreach ($mounts as $server => $mount) {
+	if (strpos($mount,'/mnt/') === 0) {
+		if (file_exists($mount.$filename)) {
+			if (filesize($mount.$filename) == 0) {
+				@$results[$server]['filename'] = "WARNING: DELETE EMPTY FILE";
+                                $cmds[] = "sudo -u www-data unlink $mount$filename";
+                                continue;
+			}
+			if ($server != 'amz') {
+				if (!is_readable($mount.$filename)) {
+					print "sudo -u www-data chmod a+r $mount$filename ##already run!\n";
+					`sudo -u www-data chmod a+r $mount$filename`;
+				}
+
+				$hext = trim(`hexdump -n 8 $mount$filename | head -n1`);
+				if ($hext == "0000000 0000 0000 0000 0000") {
+					@$results[$server]['filename'] = "WARNING: DELETE AS CURRUPTED";
+					$cmds[] = "sudo -u www-data unlink $mount$filename";
+					continue;
+				}
+				if (true) { //only do this if suspect the file might be PARTY currupt?
+					$hext2 = explode("\n",trim(`hexdump $mount$filename | tail -n 3 | head -n2`));
+					if (preg_match("/^\d\d00000( 0000){8}$/",$hext2[0]) && $hext2[1] == '*') {
+						@$results[$server]['filename'] = "WARNING: DELETE AS **PARTLY** CURRUPTED";
+						$cmds[] = "sudo -u www-data unlink $mount$filename";
+						continue;
+					}
+				}
+			}
+			@$results[$server]['size'] = filesize($mount.$filename);
+			if ($server == 'amz' && !empty($amazon['hash'])) {
+				//sneaky, avoid a FS based hash, to avoid downloading from amazon directly
+				@$results[$server]['md5sum'] = $amazon['hash'];
+			} else {
+				@$results[$server]['md5sum'] = md5_file($mount.$filename);
+			}
+			@$results[$server]['date'] = date('Y-m-d H:i:s',filemtime($mount.$filename));
+		        @$results[$server]['filename'] = $mount.$filename;
+
+			@$mds[$results[$server]['md5sum']]++;
+			@$sizes[$results[$server]['size']]++;
+			@$dates[$results[$server]['date']]++;
+			@$found[$server]++;
+		} else {
+			//if (empty($results[$server]['filename']))
+			//	$results[$server]['filename'] = 'non existant';
+		}
+	}
+}
+####################################
+// print results
+
+foreach($results as $server => $data) {
+	@printf("%10s  %1s  %10d  %8s  %17s  %s\n",$server,$data['metadata'],$data['size'],substr($data['md5sum'],0,6).'..',$data['date'],$data['filename']);
+}
+
+printf("%10s  %d/%d  %s\n",'',$row['replica_count'],$row['replica_target'],$row['class']);
+
+####################################
+// if missing, try in case can fetch from webarchive
+
+if (empty($found) && ($row['class'] == 'full.jpg' || $row['class'] == 'original.jpg')) {
+	$id = intval(basename($filename));
+	print `php ./fetch-from-webarchive.php $filename`;
+	$result = liveQuery("SELECT gridimage_id,moderation_status,user_id,submitted FROM gridimage WHERE gridimage_id = $id");
+        if ($result && ($data = mysql_fetch_assoc($result))) {
+		print "LIVE: ".implode(', ',$data)."\n";
+	}
+}
+
+####################################
+// compile updates
+
+$one = array_keys($found); sort($one);
+$two = $row['replicas']?explode(',',$row['replicas']):array(); sort($two);
+$inter = array_intersect($one,$two);
+$errors = 0;
+
+$updates = array();
+if (count($one) != count($inter) || count($two) != count($inter)) {
+	print "NOTICE: Correcting replicas list!\n";
+	$updates[] = "replicas = '".implode(',',$one)."'";
+	$updates[] = "replica_count = ".count($one);
+} elseif (count($one) != $row['replica_count']) {
+	$updates[] = "replica_count = ".count($one);
+}
+
+
+$pending_matched = array();
+@$value = array_pop(array_keys($mds));
+if (count($mds) > 1 || $value != $row['md5sum'] || (!empty($amazon['hash']) && $amazon['hash'] != $value)) {
+	print "NOTICE: ********** hash values different! ************\n";
+	if (preg_match('/\d{2}\/\d{2}\/(\d{6,8})_\w{8}_original/',$filename,$m)) {
+		$id = $m[1];
+
+		$result = liveQuery("SELECT * FROM gridimage_pending WHERE gridimage_id = $id");
+		if ($result && ($data = mysql_fetch_assoc($result))) {
+			print "NOTICE: A re-upload happened at:     {$data['suggested']} !";
+			foreach ($results as $server => $data2) {
+				if ($data['suggested'] == $data2['date'])
+					$pending_matched[] = $server;
+			}
+			if (!empty($pending_matched)) {
+				print " ... which matches ".implode(',',$pending_matched);
+			} else {
+				print " ... doesnt match any file";
+			}
+			print "\n";
+		}
+	}
+	$errors++;
+}
+
+if (count($mds) > 1) {
+	$errors++;
+	print "WARNING: md5 hash varies - UNABLE to correct, as multiple\n";
+	if ($row['class'] == 'thumb.gd') {
+		$updates = array(); //no point issuing any commands, as we about to delete it anyway!
+		 $cmds[] = "sudo -u www-data unlink /mnt/combined$filename";
+	}
+} else {
+	@$value = array_pop(array_keys($mds));
+	if (count($mds) == 1 && $value != $row['md5sum']) {
+		print "NOTICE: Correcting the MD5 hash!\n";
+		$updates[] = "md5sum = '$value'";
+	}
+}
+if (count($sizes) > 1) {
+	$errors++;
+	print "WARNING: Size varies  - UNABLE to correct, as multiple\n";
+} else {
+	@$value = array_pop(array_keys($sizes));
+	if (count($sizes) == 1 && $value != $row['size']) {
+		print "NOTICE: Correcting the size value!\n";
+		$updates[] = "size = $value";
+	}
+}
+if (count($dates) > 1) {
+	//$errors++; //on its own dates vary, not enough to stop it being marked fixed. 
+	print "WARNING: dates varies  - UNABLE to correct, as multiple\n";
+} else {
+	@$value = array_pop(array_keys($dates));
+	if (count($dates) == 1 && $value != $row['file_modified']) {
+		print "NOTICE: Correcting the date!\n";
+		$updates[] = "file_modified = '$value'";
+	}
+}
+
+if (preg_match('/_original\.jpg$/',$filename) && $row['class'] != 'original.jpg') {
+	$updates[] = "class = 'original.jpg', replica_target=2, backup_target=4";
+}
+
+###################
+//run updates
+
+if (!empty($updates) || !empty($cmds)) {
+	$sig = $row['class'].",";
+	if (!empty($updates)) {
+		$sql = "UPDATE file SET ".implode(',',$updates)." WHERE file_id = {$row['file_id']}";
+		print "\n$sql;\n";
+		$sig .= implode(',',$updates);
+	}
+	if (!empty($cmds)) {
+		print implode("\n",$cmds)."\n";
+		$sig .= ",".implode(',',$cmds);
+	}
+	$sig = str_replace($row['filename'],'___',$sig);
+	$sig = preg_replace('/\d+/','x',$sig);
+	$sig = str_replace("sudo -u www-data ",'',$sig);
+
+
+	####################
+	// we have some cases we willing to automatically run
+
+        $auto = false;
+        if (count($mds) == 1 && count($dates) == 1 && ($row['class'] == 'thumb.jpg' || $row['class'] == 'thumb.gd') )
+                $auto = 1;
+        elseif (count($mds) == 0 && $row['replicas'] == '' && $row['class'] == 'thumb.gd' )
+		$auto = 1;
+        elseif (count($mds) == 0 && $row['class'] == 'thumb.jpg' && in_array('teas1',$two))
+		$auto = 1;
+	elseif (count($mds) == 1 && count($dates) == 1 && $row['class'] == 'original.jpg' && !empty($pending_matched) && implode(',',$pending_matched) == implode(',',$one))
+		$auto = 1;
+	elseif (count($mds) == 1 && count($dates) == 1 && count($one) > 0 && $row['class'] == 'original.jpg' && $amazon['hash'] == $row['md5sum'] && !in_array('teah2',$one) && in_array('teah2',$two))
+		$auto = 1;
+	elseif (count($mds) == 0 && ($row['class'] == 'preview.jpg' || $row['class'] == 'pending.jpg') )
+		$auto = 1;
+	elseif (count($dates) == 1 && count($updates) <= 2 && strpos($updates[0],'file_modified') === 0 && count($mds) == 1)
+		$auto = 1;
+	elseif (count($dates) == 1 && count($updates) == 1 && strpos($updates[0],'class') === 0 && count($mds) == 1)
+		$auto = 1;
+	elseif (count($mds) == 0 && $row['class'] == 'backup' && $row['replica_target']==1)
+		$auto = 1;
+	
+	$responce = '';
+	if ($auto) {
+		if (isset($options['y']))
+			$responce = 'Y';
+		else
+			print "PLAN TO AUTOMATICALLY APPROVE!\n";
+
+        } elseif (isset($options['a'])) {
+		//if in auto mode, skip any we cant do!
+		next($filenames); //we done, next move on!
+		continue;
+	} elseif (count($filenames) > 1) {
+		print "SIGNATURE: $sig\n";
+		if (count($one) > 1 && isset($validsig[$sig]))  {
+			//have said A to this sig!
+			$responce = 'Y';
+		}
+	}
+	
+	if (empty($responce)) {
+		print "\n";
+		$responce = readline('Run fixes now? ');
+	}
+
+	####################
+	// actually run them!
+
+	if ($responce[0] == 'y' || $responce[0] == 'Y') {
+		if (!empty($updates)) {
+			mysql_query($sql,$db);
+			print "Affected Rows: ".mysql_affected_rows($db)."\n";
+		}
+		if (!empty($cmds)) {
+			foreach ($cmds as $cmd)
+				passthru($cmd);
+		}
+
+		//in case of photos, we can offer some useful links, and create an entry in main database, to prompt users to reuplaod!
+
+		if (empty($validsig) && preg_match('/\d{2}\/\d{2}\/(\d{6,8})_\w{8}(\w*)/',$filename,$m)) {
+		        $id = $m[1];
+		        $size = ($m[2] && $m[2] != '_original')?str_replace('_','',$m[2]):'F';
+			if (!isset($options['y'])) {
+		        	print "http://www.geograph.org.uk/statistics/filesystem.php?tab=file&file=".urlencode($filename)."&fs=checked\n";
+		        	print "http://www.geograph.org.uk/admin/memcache.php?image_id=$id&size=$size&action=view\n";
+        			print "http://www.geograph.org.uk/admin/memcache.php?image_id=$id&size=$size&action=delete&cleardb=on\n";
+	        		if ($size == 'F')
+        	        		print "http://www.geograph.org.uk/photo/$id?refresh=2\n";
+			}
+
+			if (count($one) ==0 && $m[2] == '_original') {
+				$sql = "INSERT INTO reupload SET created = NOW(), gridimage_id = $id, filename = ".dbQuote($filename);
+
+			        print "$sql;\n";
+		                liveQuery($sql);
+        		        print "Affected Rows: ".mysql_affected_rows($dblive)."\n";
+
+			}
+		}
+		if (reset($inputs) == 'repairable') {
+			`echo $filename >> checker/repairable.done`;
+		}
+		if (reset($inputs) == 'failedfroms3') {
+			`echo $filename >> checker/failedfroms3.done`;
+		}
+
+	##############
+	// can delete files
+
+	} else if ($responce[0] == 'd' || $responce[0] == 'D') {
+		$bits = preg_split('/[^\w]+/',$responce); array_shift($bits);
+		if ($bits[0] == 'all')
+			$bits = $one; //all extant files
+		foreach ($bits as $server) {
+			if (($mount = $mounts[$server]) && file_exists($mount.$filename)) {
+				print "unlink $mount$filename\n";
+				print `sudo -u www-data unlink $mount$filename`;
+			}
+		}
+		continue; //restarts via the while leep
+
+	##############
+	// automatically approve similar fixes
+
+	} else if ($responce[0] == 'a' || $responce[0] == 'A') {
+		$validsig[$sig]=true;
+
+		continue; //restarts via the while leep
+
+	##############
+	// go again (use if you have fixed it in another window, so just runs tests again
+
+	} else if ($responce[0] == 'r' || $responce[0] == 'R') {
+		continue; //restarts via the while leep
+	}
+
+} elseif (!$errors) {
+
+	###############
+	//all appears ok, so can mark as fixed!
+
+	if (reset($inputs) == 'file_check') {
+		$sql = "UPDATE file_check SET fixed=NOW() WHERE example = '{$row['filename']}' AND fixed < '1'";
+                print "$sql;\n";
+		mysql_query($sql,$db);
+                print "Affected Rows: ".mysql_affected_rows($db)."\n";
+
+	}
+}
+
+next($filenames); //we done, next move on!
+###########################
+
+}

@@ -182,8 +182,10 @@ def replicate_now(path = '', target = '', order = ''):
 	        mtime = int(os.path.getmtime(config.mounts[replica] + row['filename']))
 
                 f = open(config.mounts[replica] + row['filename'],'rb')
-                r = s3conn.upload(s3name, f, bucket=bucket[2], expires='max', public=bucket[3], \
-		         headers={'x-amz-storage-class': bucket[4], 'x-amz-meta-mtime': str(mtime)}, close=True )
+                r = s3conn.upload(s3name, f, bucket=bucket[2], expires='max', public=bucket[3], close=True, \
+                         headers={'x-amz-storage-class': ('STANDARD' if row['size'] < 50000 and bucket[4] == 'STANDARD_IA' else bucket[4]), 'x-amz-meta-mtime': str(mtime)} )
+
+                #small files, store as STANDARD rather than STANDARD_IA, as there is a minumum of 120kb. 50k is used, because IA is still 40% cost of STD.
 
                 if str(r) == '<Response [200]>':
                     #todo, this is NOT ideal, we just pretend it worked. We could WAIT, as amazon is only eventual consistant!
