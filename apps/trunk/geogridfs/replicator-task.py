@@ -146,8 +146,8 @@ def replicate_now(path = '', target = '', order = ''):
             print "SKIPPING as file NOT found on any mount"
             continue
 
-        if target == 'amz':
-            print "download " + row['filename'] + " from "+ replica
+        #if target == 'amz':
+        #    print "download " + row['filename'] + " from "+ replica
         print(str(i)+"\r"),
         if not i%13:
             sys.stdout.flush()
@@ -192,7 +192,7 @@ def replicate_now(path = '', target = '', order = ''):
                     md5su = row['md5sum']
                     size = row['size']
                 else:
-                    print "Got different status from Amazon: "+r
+                    print "Got fail for "+row['filename']+": "+r
                     md5su = '???'
 
             else:
@@ -228,10 +228,11 @@ def replicate_now(path = '', target = '', order = ''):
         #elif stat.st_mtime != row['modified']:
         #    print "BUT dates doesnt match '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
         else:
+            #include the replica filter, on the small offchance another task sent the same file recently. avoids double counting in replica_count!
             cex.execute("UPDATE "+config.database['file_table']+" SET " + \
                 "replicas = CONCAT(replicas,',"+target+"'), " + \
                 "replica_count=replica_count+1 "+ \
-                "WHERE file_id = "+str(row['file_id']))
+                "WHERE NOT replicas & "+str(idx)+" AND file_id = "+str(row['file_id']))
             done=done+1
 
         i=i+1

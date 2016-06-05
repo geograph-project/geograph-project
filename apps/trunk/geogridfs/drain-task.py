@@ -164,10 +164,11 @@ def drain_now(path = '',target='', order = ''):
             else:
                 os.unlink(filename)
 
+                #inlucde the replica check again, on the offchance another taks deleted the file, avoids undercounting on replica_count
                 cex.execute("UPDATE "+config.database['file_table']+" SET " + \
                     "replicas = REPLACE(replicas,'"+target+"',''), " + \
                     "replica_count=replica_count-1 "+ \
-                    "WHERE file_id = "+str(row['file_id']))
+                    "WHERE replicas & "+str(idx)+" AND file_id = "+str(row['file_id']))
 
         else:
             print "we dont have " + row['filename']

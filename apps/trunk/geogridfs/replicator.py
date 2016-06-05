@@ -143,11 +143,12 @@ def walk_and_notify(folder = '', replica = '', track_progress = True):
                         else:
                             print "OK SEND THE UPDATE"
                             
+                            #include the replica filter, on the small offchance another task sent the same file recently. avoids double counting in replica_count!
                             cex.execute("UPDATE "+config.database['file_table']+" SET " + \
                                 "replicas = CONCAT(replicas,',"+replica+"'), " + \
                                 specifics + \
                                 "replica_count=replica_count+1 "+ \
-                                "WHERE file_id = "+str(row['file_id']))
+                                "WHERE replicas NOT like '%"+replica+"%' AND file_id = "+str(row['file_id']))
                     
                     files.remove(filename) ## so that any left will be new files!
                 #else:
@@ -285,74 +286,11 @@ def replicate_now(path = '',target = ''):
         #elif stat.st_mtime != row['modified']:
         #    print "BUT dates doesnt match '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
         else:
+            #include the replica filter, on the small offchance another task sent the same file recently. avoids double counting in replica_count!
             cex.execute("UPDATE "+config.database['file_table']+" SET " + \
                 "replicas = CONCAT(replicas,',"+target+"'), " + \
                 "replica_count=replica_count+1 "+ \
-                "WHERE file_id = "+str(row['file_id']))
-
-#############################################################################
-
-def check_combined(path = '',replica = ''):
-    if replica == '':
-	replica = config.server['self']
-
-    c=db.cursor(MySQLdb.cursors.DictCursor)
-    
-    idx = getReplicaIndex(target)
-    print "idx = "+str(idx)
-    
-    c.execute("SELECT file_id,filename,replicas,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM "+config.database['file_table']+" WHERE folder_id = 80027 ORDER BY file_id DESC LIMIT 1000")
-
-    while True:
-        row = c.fetchone()
-        if not row: break
-        
-        mount = '/mnt/combined'
-        
-        filename = mount + row['filename']
-        
-	print filename + " " + str(row['size'])
-
-        stat = os.stat(filename)
-        if (stat.st_size > 0):
-            #md5su = md5sum(filename)
-            p = subprocess.Popen(["md5sum", filename], stdout=subprocess.PIPE)
-            out, err = p.communicate()
-            md5su = re.split(r'\s',out)[0]
-        else:
-            md5su =''
-        
-        if md5su != row['md5sum']:
-            print filename+" ... md5 '"+md5su+"' != '"+row['md5sum']+"'"
-        elif stat.st_size != row['size']:
-            print filename+" ... size "+str(stat.st_size)+" != "+str(row['size'])
-        elif abs(stat.st_mtime-row['modified']) > 1:
-            print filename+" ... dates '"+str(stat.st_mtime)+"' != '"+str(row['modified'])+"'"
-        else:
-            pass
-
-
-def fixup_classes():
-    c=db.cursor(MySQLdb.cursors.DictCursor)
-    cex=db.cursor()
-    c.execute("SELECT file_id,filename FROM "+config.database['file_table']+" WHERE `class` = '' LIMIT 1000");
-    while True:
-        row = c.fetchone()
-        if not row: break
-        
-        print row['filename']
-        final = False
-        for pattern in config.patterns:
-            if re.search(pattern[1],row['filename']):
-                final = pattern
-                break
-                
-        if final:
-            cex.execute("UPDATE "+config.database['file_table']+" SET " + \
-                "`class` = '"+final[0]+ "', " + \
-                "`replica_target` = "+str(final[2])+ ", " + \
-                "`backup_target` = "+str(final[3])+ " " + \
-                "WHERE file_id = "+str(row['file_id']))
+                "WHERE replicas NOT LIKE '%"+target+"%' AND file_id = "+str(row['file_id']))
 
 #############################################################################
 
@@ -387,12 +325,6 @@ def main(argv):
     
     elif action == 'replicate':
         replicate_now(path, replica)
-
-    elif action == 'fixup':
-        fixup_classes()
-
-    elif action == 'check':
-        check_combined(path, replica)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
