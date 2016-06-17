@@ -32,7 +32,8 @@ import shutil
 import re
 import subprocess
 import sys
-import tinys3
+if 'amazon' in config.__dict__:
+    import tinys3
 
 db=MySQLdb.connect(host=config.database['hostname'], user=config.database['username'], passwd=config.database['password'],db=config.database['database'])
 
@@ -124,7 +125,7 @@ def replicate_now(path = '', target = '', order = ''):
     print("              / "+str(c.rowcount)+" rows\r"),
     sys.stdout.flush()
 
-    if target == 'amz' and config.amazon:
+    if target == 'amz' and 'amazon' in config.__dict__:
         s3conn = tinys3.Connection(config.amazon['access'],config.amazon['secret'], tls=False, endpoint=config.amazon['endpoint'])
    
     i=1
@@ -164,7 +165,7 @@ def replicate_now(path = '', target = '', order = ''):
                 os.makedirs(os.path.dirname(filename)) ##recursive
 
         if target == 'amz':
-            if config.amazon:
+            if 'amazon' in config.__dict__:
                 # if possible use a class, avoids some overhead. (s3fs does a double PUT) 
 
                 bucket = False
@@ -196,7 +197,7 @@ def replicate_now(path = '', target = '', order = ''):
                     md5su = '???'
 
             else:
-                #else copy it via FS, which is using s3fs etc
+                #else copy it via FS, which is using s3fs etc (still seperate to nonazom, as user copyfile rather than copy2
 
                 if not os.path.exists(filename):
                     ##copy2, perform copy then does copystat. s2fs implents chown/touch etc as COPY operations which cost!
