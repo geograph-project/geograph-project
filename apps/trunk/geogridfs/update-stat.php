@@ -12,7 +12,8 @@ $size = 10000; //if =10000 then does one at a time, multiples does more
 $check = false;
 
 #this needs to be updated if you change the schema of the table!
-$grouper = 'select file_id div 10000 as shard,class,replicas,replica_count,replica_target,backups,backup_count,backup_target,filename as example,count(*) as count,sum(size) as bytes,now() as updated from file where $where group by shard,class,replicas,replica_count,replica_target,backups,backup_count,backup_target order by null';
+$grouper = 'select file_id div 10000 as shard,class,replicas,replica_count,replica_target,backups,backup_count,backup_target,filename as example,count(*) as count,sum(size) as bytes,now() as updated, file_created'
+	.' from file where $where group by shard,class,replicas,replica_count,replica_target,backups,backup_count,backup_target order by null';
 
 if ($argv[1] == 'full') {
 
@@ -96,7 +97,7 @@ for($start = $begin; $start < $final; $start+=$size) {
 }
 
 if ($argv[1] == 'full') {
-	print "delete from file_stat where updated < '$cutoff'";
+	print "delete from file_stat where updated < '$cutoff'\n";
 	queryExecute("delete from file_stat where updated < '$cutoff'");
 }
 
@@ -132,36 +133,12 @@ if ($argv[1] == 'full') {
 
 if ($argv[1] == 'full') {
 
-	//function write_replicate_task($target,$clause,$avoidover=true,$avoiddup=true,$order = 'NULL') {
 
-	//NOTE: write_replicate_task automatically adds "replica_count < replica_target"
-	// and avoids creating the same task multiple times (unless told otherwise)
-	// and of course avoids creating where the file already exists on the replica, or were there are no replicas (because replicator-task.py will do that anyway)
+        # call these here, rather than a seperate cronjob, so the functions are only called AFTER file_stat has been updated!
 
-//new full that need copying to SSD
-    write_replicate_task("ssd|rand",	"class = 'full.jpg'");
-    write_replicate_task("hard|rand",	"class = 'full.jpg'");
+        include __DIR__."/auto-replicate.php";
 
-    write_replicate_task("cakes1",      "class = 'full.jpg' AND replica_count = 1 AND replicas NOT RLIKE 's[[:digit:]]' AND replicas NOT like '%cake%'");
-    write_replicate_task("teas1",       "class = 'full.jpg' AND replica_count = 1 AND replicas NOT RLIKE 's[[:digit:]]' AND replicas NOT like '%tea%'");
-
-//new thumb to copy to SSD
-    write_replicate_task("ssd|rand",	"class = 'thumb.jpg'");
-    write_replicate_task("ssd|rand",	"class = 'thumb.jpg' AND replica_count = 1"); //give these a second chance
-
-
-
-//copy originals to the replica with the most space
-    write_replicate_task("hard|empty",	"class = 'original.jpg'");
-
-//ANY files not stored on jam
-//    write_replicate_task("jam",		"replicas NOT LIKE '%amz%'"); //replicas NOT LIKE '%jam%' is /automatic/
-
-//use cream to mop up under-replicated files
-    write_replicate_task("cream",	"replicas NOT LIKE '%amz%'");
-
-//send files to amazon
-//    write_replicate_task("amz",       "backup_target>0 AND class in ('full.jpg','original.jpg')"); //need class filter to exclude backups
+        //include __DIR__."/auto-drain.php";
 
 }
 
