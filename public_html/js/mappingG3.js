@@ -247,7 +247,7 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 			updateViewDirection();
 		
 		if (eastings1 > 0 && eastings2 > 0 && pickupbox != null) {
-			setTimeout(" if (pickupbox != null) {map.removeOverlay(pickupbox);pickupbox = null;}",1000);
+			setTimeout(" if (pickupbox != null) {pickupbox.setMap(null);pickupbox = null;}",1000);
 		}
 		
 		if (typeof parentUpdateVariables != 'undefined') {
