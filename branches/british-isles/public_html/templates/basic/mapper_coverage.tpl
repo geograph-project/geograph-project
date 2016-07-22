@@ -3,6 +3,7 @@
 <div style="width:800px;position:relative;">
 	<div id="mapLink" style="float:right"></div>
 	<h2>Experimental Geograph Coverage Map</h2>
+	<p>Click the map to view nearby images.</p>
 </div>
 
 	<div id="map_message" style="width:800px; height:10px; position:relative;; left:0; margin-bottom:3px; padding:3px;"></div>
@@ -60,7 +61,7 @@ var m;
 var endpoint = "http://api.geograph.org.uk/api-facet.php";
 
 function loadMap() {
-	loadMapInner(); //this does most things, EXCEPT center the map, and doesnt add any interaction. 
+	loadMapInner('map',true); //this does most things, EXCEPT center the map, and doesnt add any interaction. 
 
 	if (!olmap.map.getCenter()) { //it might of been set via a permalink
 		var centre = new OpenLayers.LonLat(436000, 157000).transform("EPSG:27700", olmap.map.getProjection());
@@ -74,7 +75,15 @@ function loadMap() {
 	olmap.map.events.register('moveend',olmap.map, updateCoverage);
 	olmap.map.events.register('zoomend',olmap.map, updateCoverage);
 
-	updateCoverage();
+	if (location.search.length>2) {
+		if (location.search.indexOf('mine') > -1 && document.theForm.customised) {
+			document.theForm.customised[1].checked = true;
+		}			
+		if (location.search.indexOf('centi') > -1 && document.theForm.resolution) {
+			document.theForm.resolution[1].checked = true;
+		}			
+	}
+	checkboxUpdate(); //calls updateCoverage
 
 
 	olmap.map.events.register('moveend', olmap.map, mapEvent);
@@ -84,6 +93,8 @@ function loadMap() {
 
 	olmap.map.events.register('click', olmap.map, clickEvent);
 
+	//added at the end so all layers are there
+	olmap.map.addControl(new OpenLayers.Control.Permalink({anchor: true}));
 }
 
 
@@ -97,7 +108,7 @@ function clickEvent(e) {
 
     var data = {
       a: 1,
-      q: getTextQuery()+(myriads.length?' @myriad ('+myriads.join('|')+')':'')+(document.theForm.customised[1].checked?' @user user'+document.theForm.user_id.value:''),
+      q: getTextQuery()+(myriads.length?' @myriad ('+myriads.join('|')+')':'')+((document.theForm.customised && document.theForm.customised[1].checked)?' @user user'+document.theForm.user_id.value:''),
       limit: 10,
       select: "title,grid_reference,realname,hash"
     };
@@ -206,7 +217,7 @@ function updateCoverage(event) {
 			url = url + '&myriads='+myriads.join(',');
 		}
 		
-		if (document.theForm.customised[1].checked)
+		if (document.theForm.customised && document.theForm.customised[1].checked)
 			url = url + '&user_id='+document.theForm.user_id.value;
 
 
@@ -419,22 +430,23 @@ function checkboxUpdate() {
 	shownall = false; //just to force update
 	updateCoverage();
 
-	document.getElementById("tpointSpan").style.display = (document.theForm.customised[0].checked && document.theForm.resolution[0].checked)?'':'none';
+	document.getElementById("tpointSpan").style.display = ((!document.theForm.customised || document.theForm.customised[0].checked) && document.theForm.resolution[0].checked)?'':'none';
 	document.getElementById("keywordSpan").style.display = (document.theForm.resolution[1].checked)?'':'none';
 }
 
 //]]>
 {/literal}</script>
 
- {dynamic}{if $user->registered}
 	<hr/>
     <form name="theForm">
 	<b>Options</b>: 
+ {dynamic}{if $user->registered}
 	<input type=radio name="customised" value="global" onclick="checkboxUpdate()" checked>Everyone / 
 	<input type=radio name="customised" value="user" onclick="checkboxUpdate()">Personalized (only your images)
 	<input type=hidden name=user_id value="{$user->user_id}">
 
 	&nbsp;&middot;&nbsp;
+ {/if}{/dynamic}
 
 	<input type=radio name="resolution" value="square" onclick="checkboxUpdate()" checked>GridSquare / 
 	<input type=radio name="resolution" value="centisquare" onclick="checkboxUpdate()">CentiSquare
@@ -443,7 +455,6 @@ function checkboxUpdate() {
 		Keyword Filter: <input type="search" name="q" id="q"><input type=button value="update" onclick="checkboxUpdate()"> (uses the syntax from the Browser)
 	</span>
     </form>
- {/if}{/dynamic}
 
 	<hr/>	
 	<b>Key</b>: 
