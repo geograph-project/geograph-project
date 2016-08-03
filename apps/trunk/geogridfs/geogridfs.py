@@ -378,7 +378,8 @@ class GeoGridFS(Fuse):
 
     def mkdir(self, path, mode):
         for mount in self.getOrderedMounts(path):
-            os.makedirs(mount + path, mode) #so can make dirs recurivly
+            if os.path.exists(mount + '/geograph_live'): #checks is a live mount
+                os.makedirs(mount + path, mode) #so can make dirs recurivly
         
         #NOTE, we dont create the metadata.folder here, but COULD. 
         #Instead will be created as needed (with getFolderId) when a file is written there

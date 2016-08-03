@@ -1,0 +1,3 @@
+#!/bin/sh
+./off
+sudo -u www-data python geogridfs.py -d /mnt/combined -o allow_other
