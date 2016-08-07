@@ -190,6 +190,21 @@ CREATE TABLE `autologin` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `category_stat`
+--
+
+DROP TABLE IF EXISTS `category_stat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `category_stat` (
+  `imageclass` varchar(32) CHARACTER SET latin1 NOT NULL DEFAULT '',
+  `c` bigint(21) NOT NULL DEFAULT '0',
+  `gridimage_id` int(11) NOT NULL DEFAULT '0',
+  KEY `c` (`c`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `compare_done`
 --
 
@@ -1028,9 +1043,8 @@ CREATE TABLE `gridprefix` (
   `title` varchar(128) DEFAULT NULL,
   `boundary` varchar(128) DEFAULT NULL,
   `labelcentre` varchar(16) DEFAULT NULL,
-  `labelminwidth` mediumint(4) unsigned NOT NULL DEFAULT '0',
   `geometry_boundary` geometry NOT NULL DEFAULT '',
-  `point_origin_xy` point NOT NULL DEFAULT '',
+  `point_origin_xy` geometry NOT NULL DEFAULT '',
   PRIMARY KEY (`reference_index`,`prefix`),
   SPATIAL KEY `geometry_boundary` (`geometry_boundary`),
   SPATIAL KEY `point_origin_xy` (`point_origin_xy`),
@@ -1053,16 +1067,20 @@ CREATE TABLE `gridsquare` (
   `y` int(11) NOT NULL DEFAULT '0',
   `percent_land` tinyint(4) NOT NULL DEFAULT '100',
   `imagecount` int(11) NOT NULL DEFAULT '0',
-  `grid_reference` varchar(7) NOT NULL DEFAULT '',
+  `grid_reference` varchar(6) NOT NULL DEFAULT '',
   `reference_index` tinyint(4) DEFAULT '1',
   `has_geographs` tinyint(4) NOT NULL DEFAULT '0',
-  `point_xy` point NOT NULL DEFAULT '',
+  `point_xy` geometry NOT NULL DEFAULT '',
   `placename_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `has_recent` tinyint(4) NOT NULL DEFAULT '0',
+  `max_ftf` mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`gridsquare_id`),
   UNIQUE KEY `grid_reference` (`grid_reference`),
   KEY `x` (`x`),
   KEY `y` (`y`),
-  SPATIAL KEY `point_xy` (`point_xy`)
+  SPATIAL KEY `point_xy` (`point_xy`),
+  KEY `percent_land` (`percent_land`),
+  KEY `reference_index` (`reference_index`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1355,8 +1373,8 @@ CREATE TABLE `loc_towns` (
   `s` enum('1','2','3','') NOT NULL DEFAULT '1',
   `reference_index` tinyint(4) NOT NULL DEFAULT '0',
   `quad` tinyint(4) NOT NULL DEFAULT '0',
-  `point_en` point NOT NULL DEFAULT '',
-  `point_xy` point NOT NULL DEFAULT '',
+  `point_en` geometry NOT NULL DEFAULT '',
+  `point_xy` geometry NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `gis` (`e`,`n`,`reference_index`),
   SPATIAL KEY `point_en` (`point_en`),
@@ -1900,4 +1918,4 @@ CREATE TABLE `vote_stat` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-08-07 16:06:33
+-- Dump completed on 2016-08-07 17:54:47
