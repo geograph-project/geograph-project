@@ -169,7 +169,7 @@ $CONF['admin_email']='CHANGETHIS';
 # folder setup
 
 //path to temp folder for photo uploads - on cluster setups should be a shared folder.
-$CONF['photo_upload_dir'] = '/tmp';
+$CONF['photo_upload_dir'] = $_SERVER['DOCUMENT_ROOT'].'/../upload/';
 
 ###################################
 # secret tokens

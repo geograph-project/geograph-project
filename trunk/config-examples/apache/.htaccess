@@ -24,6 +24,9 @@
     #RewriteRule ^(.*)         http://www.example.com/$1 [L,R]
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
+	##remove this line when ready to open site
+        RewriteRule ^robots.txt$ robots-none.txt [L]
+
 
     RewriteRule ^photo/([0-9]+)\.xml /api/photo/$1 [qsa]
     RewriteRule ^api/.* /restapi.php [qsa]

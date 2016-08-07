@@ -1,0 +1,11 @@
+Use one OR other of these two files. not both. 
+
+
+geograph.conf goes in global Apache configuration, if you have that level of access to the server. 
+
+eg on ubuntu could put in /etc/apache2/sites-available/ and then put a symlink in etc/apache2/sites-enabled/
+on rhel based linux could put in /etc/httpd/conf.d/
+
+
+
+Otherwise if on shared hosing use .htaccess  and put it in the public_html folder. 

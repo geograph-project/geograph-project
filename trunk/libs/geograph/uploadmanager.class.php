@@ -821,9 +821,6 @@ class UploadManager
 		$mkey = $this->square->gridsquare_id;
 		$seq_no =& $memcache->name_get('sid',$mkey);
 		
-		if (empty($seq_no) && !empty($CONF['use_insertionqueue'])) {
-			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage_queue where gridsquare_id={$this->square->gridsquare_id}");
-		} 
 		if (empty($seq_no)) {
 			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage where gridsquare_id={$this->square->gridsquare_id}");
 		}
@@ -837,15 +834,9 @@ class UploadManager
 		//get the exif data and set orientation
 		$this->reReadExifFile();
 		
-		if (!empty($CONF['use_insertionqueue'])) {
-			$table = "gridimage_queue";
-		} else {
-			$table = "gridimage";
-		}
-		
 		//create record
 		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
-		$sql=sprintf("insert into $table (".
+		$sql=sprintf("insert into gridimage (".
 			"gridsquare_id, seq_no, user_id, ftf,".
 			"moderation_status,title,comment,title2,comment2,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
 			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname,reference_index,viewpoint_refindex) values ".
