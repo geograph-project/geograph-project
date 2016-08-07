@@ -316,11 +316,6 @@ if (!empty($CONF['sphinx_host'])) {
 		fail('$CONF[\'sphinx_cache\'] ('.$CONF['sphinx_cache'].') not writable - REQUIRED');
 }
 
-if (!empty($CONF['adodb_cache_dir'])) {
-	if (!is_writable($CONF['adodb_cache_dir']))
-		fail('$CONF[\'adodb_cache_dir\'] ('.$CONF['adodb_cache_dir'].') not writable - REQUIRED');
-}
-
 if ($CONF['log_script_timing']=='file') {
 	if (!is_writable($CONF['log_script_folder']))
 		fail('$CONF[\'log_script_folder\'] ('.$CONF['log_script_folder'].') not writable - REQUIRED or disable Script Timing Logging');

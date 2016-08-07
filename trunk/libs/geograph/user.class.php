@@ -442,6 +442,11 @@ class GeographUser
 				$sql="update user set rights='basic',confirmed=NOW() where user_id=".$db->Quote($user_id);
 				$db->Execute($sql);
 
+				if ($user_id == 1) {
+					$sql="update user set rights='basic,moderator,admin,ticketmod,mapmod,forum' where user_id=".$db->Quote($user_id);
+	                                $db->Execute($sql);
+				}
+
 				$this->user_id=$user_id;
 				$this->registered=true;
 

@@ -312,6 +312,18 @@ class GridSquare
 
 		if (!empty($prefix))
 		{
+                        $this->natgrlen = $natgrlen;
+                        $isfour = $natgrlen == 4;
+                        $this->natspecified = $natgrlen > 4 ? 1:0;
+
+                        if ($length <= 1)
+                                $suffix = '5'.str_repeat('0', 4 - $length);
+                        else
+                                $suffix = str_repeat('0', 5 - $length);
+
+                        $e .= $suffix;
+                        $n .= $suffix;
+
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
 
 			$ok = false;
