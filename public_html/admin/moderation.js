@@ -149,7 +149,11 @@ function deferTicket(gridimage_ticket_id, hours)
 			status = 'accepted';
 		if (document.getElementById('inside'+gridimage_id).className.indexOf('on') > -1)
 			status = 'accepted';
-		if (document.getElementById('detail'+gridimage_id).className.indexOf('on') > -1)
+		if (document.getElementById('detail'+gridimage_id) && document.getElementById('detail'+gridimage_id).className.indexOf('on') > -1)
+			status = 'accepted';
+		if (document.getElementById('close'+gridimage_id) && document.getElementById('close'+gridimage_id).className.indexOf('on') > -1)
+			status = 'accepted';
+		if (document.getElementById('other'+gridimage_id) && document.getElementById('other'+gridimage_id).className.indexOf('on') > -1)
 			status = 'accepted';
 		return status;
 	}
