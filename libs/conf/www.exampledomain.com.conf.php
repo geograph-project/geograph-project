@@ -124,8 +124,8 @@ $CONF['languages']=array();
 $CONF['mail_subjectprefix'] = '[geograph] ';
 $CONF['mail_transferencoding'] = 'Q';
 $CONF['mail_charset'] = 'iso-8859-1';
-$CONF['mail_envelopefrom'] = 'mail@example.invalid'; # or null
-$CONF['mail_from'] = 'mail@example.invalid';
+$CONF['mail_envelopefrom'] = 'CHANGETHIS'; # or null
+$CONF['mail_from'] = 'CHANGETHIS';
 
 ###################################
 # optional sphinx setup
@@ -161,9 +161,9 @@ $CONF['smarty_caching']=1;
 # admin details
 
 //email addresses to send site messages to
-$CONF['contact_email']='someone@somewhere.invalid,other@elsewhere.invalid';
-$CONF['abuse_email']='abuse@somewhere.invalid';
-$CONF['admin_email']='webmaster@somewhere.invalid';
+$CONF['contact_email']='CHANGETHIS';
+$CONF['abuse_email']='CHANGETHIS';
+$CONF['admin_email']='CHANGETHIS';
 
 ###################################
 # folder setup
@@ -203,7 +203,7 @@ $CONF['imagemagick_buggy'] = false;
 //settings are no longer used, but you can initialise them "just in case"
 $CONF['minibb_admin_user']='admin';
 $CONF['minibb_admin_pwd']='CHANGETHIS';
-$CONF['minibb_admin_email']='root@wherever';
+$CONF['minibb_admin_email']='CHANGETHIS';
 
 ###################################
 
@@ -288,8 +288,8 @@ $CONF['potd_listlen'] = 20;
 $CONF['pano_upper_limit'] = 0; # 0.5  : try to keep height constant for 2:1 and above
 $CONF['pano_lower_limit'] = 0; # 0.25 : keep height*width constant for 4:1 and above
 $CONF['img_max_size'] = 640;
-$CONF['img_sizes'] = array();
-$CONF['img_size_unlimited'] = false;
+$CONF['img_sizes'] = array(800,1024,1600);
+$CONF['img_size_unlimited'] = true;
 $CONF['prev_size'] = 250;
 $CONF['show_sizes'] = array(800, 1024);
 

@@ -28,8 +28,8 @@ see LICENCE.txt for details.
 B) Directory Structure
 -----------------------------------------------------------------------
 
-apache/
-  example apache vhost configuration for the geograph project
+config-examples/
+  example configuration for the geograph project
 
 libs/adodb/
   adodb database library (LGPL)
@@ -63,77 +63,12 @@ apache webservers using the php4 module. Y
 1. unpack the files into <basedir>
 
 2. configure apache with a virtual host for the geograph site using the 
-   file in apache/geograph.conf as a guide, e.g.
-
-   <VirtualHost *>
-    DocumentRoot <**basedir**>/public_html
-    ServerName <**yourdomain**>
-    php_value include_path .:<**basedir**>/libs/
-    php_value register_globals Off
-    
-    RewriteEngine on
-    RewriteRule /help/(.*) /staticpage.php?page=$1
-
-    ErrorDocument 404 /staticpage.php?page=404
-   </VirtualHost>
-   
-   
-   
-  <VirtualHost *>
-
-  DocumentRoot <**basedir**>/public_html
-    ServerName <**yourdomain**>
-    
-    #php config
-    php_value include_path .:<**basedir**>/libs/
-    php_value register_globals Off
-    php_value upload_max_filesize 8M
-    php_value arg_separator.output &amp;
-    php_value session.use_trans_sid  1
-    
-    #turn off indexes
-    <Directory <**basedir**>/public_html>      
-        Options -Indexes
-    </Directory>
-    
-    RewriteEngine on
-    
-    RewriteRule /help/([^/]*) /staticpage.php?page=$1 [qsa]
-    RewriteRule /gridref/(.*) /browse.php?gridref=$1 [qsa]
-    RewriteRule /api/.* /restapi.php [qsa]
-    RewriteRule /reg/([^/]+)/(.*) /register.php?u=$1&confirm=$2 [qsa]
-    RewriteRule /photo/([0-9]+) /view.php?id=$1 [qsa]
-    RewriteRule /list/([A-Z]{2}) /list.php?square=$1 [qsa]
-    RewriteRule /explore/places/([0-9]?)/?(\w*)/?$ /explore/places.php?ri=$1&adm1=$2 [qsa,r]
-    RewriteRule /map/(.*) /mapbrowse.php?t=$1 [qsa]
-
-    RewriteRule /user/([^\/]*)/all/? /profile.php?user=$1&all=1
-    RewriteRule /user/([^\/]*)/? /profile.php?user=$1
-
-    RewriteRule /feed/recent/?([^/]*) /syndicator.php?format=$1 [qsa]
-    RewriteRule /feed/results([0-9]*)/([0-9]+)/?([^/]*)/? /syndicator.php?page=$1&i=$2&format=$3 [qsa]
-
-    RewriteRule /discuss/topic([0-9]+) /discuss/?action=vthread&topic=$1 [qsa,r]
-    RewriteRule /discuss/forum([0-9]+) /discuss/?action=vtopic&forum=$1 [qsa,r]
-    RewriteRule /discuss/feed/recent/?([^/]*) /discuss/syndicator.php?format=$1 [qsa]
-    RewriteRule /discuss/feed/forum([0-9]+)/?([^/]*) /discuss/syndicator.php?forum=$1&format=$2 [qsa]    
-    
-    
-    #rewrite imagemap clicks as regular urls - must do this otherwise
-    #php's use_trans_sid will break the urls
-    RewriteCond %{QUERY_STRING} (.+)\?([0-9]+),([0-9]+)$
-    RewriteRule /mapbrowse.php /mapbrowse.php?x=%2&y=%3&%1 
-
-
-    ErrorDocument 404 /staticpage.php?page=404
-
-  </VirtualHost>
-
+   file in config-example/apache/geograph.conf as a guide.
 
 3. create a new mysql database and create a user with all privileges on it.
 
-4. initialise the database using schema/geograph.mysql 
-   (e.g. mysql geograph < geograph.mysql)
+4. initialise the database using schema/schema.mysql 
+   (e.g. mysql geograph < schema.mysql)
 
 5. Copy libs/conf/www.exampledomain.com.conf.php to 
    libs/conf/<**yourdomain**>.conf.php
@@ -152,17 +87,17 @@ apache webservers using the php4 module. Y
 D) Getting Started
 -----------------------------------------------------------------------
 
-Register as a user then use the mysql command line to grant that user 
-admin privileges, e.g.
-
-  update user set rights='basic,admin' 
-  where email='your.email@yourdomain.com';
+Register as a user via site to admin privileges. The very first user 
+(user_id=1) is automatically a admin.
 
 Now you can log in and access administrative functions of the site. 
+
 
 One of the first tasks is to initialise the gridsquare table with valid 
 gridsquares by using a 1km-per-pixel greyscale PNG. Run the 
 admin/gridbuilder.php script to perform this task.
+(or can use gridsquare.mysql.bz2 to get a empty Britain & Ireland map)
+
 
 Once that is done, the system is ready to accept photographs.
 
