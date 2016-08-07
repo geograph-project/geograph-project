@@ -1535,12 +1535,7 @@ class GeographMap
 			$cityfont = 3;
 		}
 
-		$intleft=$scanleft*1000;
-		$intright=$scanright*1000;
-		$intbottom=$scanbottom*1000;
-		$inttop=$scantop*1000;
 		$rectangle = "'POLYGON(($natleft $natbottom,$natright $natbottom,$natright $nattop,$natleft $nattop,$natleft $natbottom))'";
-		$rectanglexy = "'POLYGON(($intleft $intbottom,$intright $intbottom,$intright $inttop,$intleft $inttop,$intleft $intbottom))'";
 		
 
 if ($reference_index == 1 || ($reference_index == 2 && $this->pixels_per_km == 1 ) || $reference_index >= 3) {
@@ -1550,7 +1545,7 @@ SELECT name,e,n,s,quad,reference_index
 FROM loc_towns
 WHERE 
  $crit
-CONTAINS( GeomFromText($rectanglexy),	point_xy) 
+CONTAINS( GeomFromText($rectangle),	point_en) 
 ORDER BY s
 END;
 #GROUP BY FLOOR(e/$div),FLOOR(n/$div)
