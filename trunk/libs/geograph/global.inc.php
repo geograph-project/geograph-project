@@ -204,7 +204,8 @@ function init_session()
 	$GLOBALS['USER'] =& $_SESSION['user'];
 
 	//tell apache our ID, handy for logs
-	@apache_note('user_id', $GLOBALS['USER']->user_id);
+	if (function_exists('apache_note'))
+		@apache_note('user_id', $GLOBALS['USER']->user_id);
 }
 
 
