@@ -63,12 +63,6 @@ $displayclasses =  array(
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
 
-if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 ) {
-        header("HTTP/1.1 503 Service Unavailable");
-	dieUnderHighLoad(0.1);
-        die("server busy, please try later");
-}
-
 
 
 
@@ -620,26 +614,6 @@ if (isset($_GET['fav']) && $i) {
 		$q=trim($_GET['q']);
 	}
 	
-	if (!isset($_GET['location']) && !empty($CONF['metacarta_auth']) && strpos($q,'near ') === FALSE && substr_count($q,' ') >= 1 && !preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$q)) { ///FIXME?
-		$urlHandle = connectToURL('ondemand.metacarta.com',80,"/webservices/QueryParser/JSON/basic?version=1.0.0&bbox=-14.1707,48.9235,6.9506,61.7519&query=".rawurlencode($q),$CONF['metacarta_auth'],6);
-		if ($urlHandle) {
-			$r = '';
-			while ($urlHandle && !feof($urlHandle) && ($s = fgets($urlHandle)) !== false) {
-				$r .= $s;
-			}
-			fclose($urlHandle);
-			#$r = '{"Styles": {"loc": {"DefaultSymbol": {"URL": "http://developers.metacarta.com/img/symbols/LocationMarker.png", "Width": 30, "Height": 30}}}, "Warnings": [], "MinConfidence": 0.0, "Locations": [{"Confidence": 0.451807, "Name": "Skellingthorpe, United Kingdom", "Style": "loc", "Centroid": {"Latitude": 53.2333, "X": -0.616666, "Y": 53.2333, "Longitude": -0.616666}, "RemainingQuery": "mitchel close", "Path": ["Skellingthorpe", "United Kingdom"], "ViewBox": {"MaxX": -0.589905177287, "MaxY": 53.2600950873, "MaxLongitude": -0.589905177287, "MinY": 53.2065720927, "MinLatitude": 53.2065720927, "MinX": -0.643428171913, "MaxLatitude": 53.2600950873, "MinLongitude": -0.643428171913}}], "SRS": "epsg:4326", "SystemVersion": "MetaCarta GTS v3.7.0, JSON Query Parser API v1.0.0", "BBox": {"MaxX": 180.0, "MaxY": 90.0, "MaxLongitude": 180.0, "MinY": -90.0, "MinLongitude": -180.0, "MinX": -180.0, "MaxLatitude": 90.0, "MinLatitude": -90.0}, "Query": "mitchel close Skellingthorpe", "ResultsCreationTime": "Fri Mar 02 13:40:19 2007 UTC"}';
-
-			if (preg_match('/"RemainingQuery": "(.*?)"/',$r,$m)) {
-				$q = $m[1];
-			}
-			if (preg_match('/"Path": \["(.*?)"/',$r,$m)) {
-				$q .= ' near '.$m[1];
-			}
-		}
-		
-	}
-
 	//remember the query in the session
 	$_SESSION['searchq']=$q;
 

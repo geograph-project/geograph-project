@@ -442,10 +442,6 @@ class GeographMap
 		$token=$this->getToken();
 		$file="http://{$CONF['TILE_HOST']}/tile.php?map=$token";
 
-		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 2 && empty($GLOBALS['USER']->user_id)) {
-			$file = cachize_url($file);
-		}
-
 		if (isset($real)) 
 			 $this->type_or_user = $real;
 

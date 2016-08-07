@@ -12,7 +12,6 @@ Allow: /admin/team.php
 Disallow: /search.php
 Disallow: /full-text.php
 Disallow: /finder/
-Disallow: /explore/wordnet.php
 Disallow: /explore/calendar.php
 Disallow: /places.php
 Disallow: /explore/places.php
@@ -57,7 +56,6 @@ Allow: /admin/team.php
 Disallow: /search.php?
 Disallow: /full-text.php?
 Disallow: /finder/
-Disallow: /explore/wordnet.php
 Disallow: /explore/calendar.php?*Year*
 Disallow: /places.php
 Disallow: /explore/places.php

@@ -823,9 +823,7 @@ class GridImage
 
 		$title=htmlentities2($this->title);
 		
-		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
-			$fullpath = cachize_url("http://".$CONF['STATIC_HOST'].$fullpath);
-		} elseif ($returntotalpath)
+		if ($returntotalpath)
 			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
 		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
@@ -965,10 +963,6 @@ class GridImage
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-			
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
-				$thumbpath = cachize_url($thumbpath);
-			}
 			
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
@@ -1161,10 +1155,6 @@ class GridImage
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-			
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
-				$thumbpath = cachize_url($thumbpath);
-			}
 			
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
@@ -1359,10 +1349,6 @@ class GridImage
 				$return['server']= "http://".$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-			
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
-				$thumbpath = cachize_url($thumbpath);
-			}
 			
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 			
@@ -1787,10 +1773,6 @@ class GridImage
 			$sql="DELETE FROM gridimage_search WHERE gridimage_id = '{$this->gridimage_id}'";
 			$db->Execute($sql);
 			
-			$db->Execute("DELETE FROM wordnet1 WHERE gid = {$this->gridimage_id}");
-			$db->Execute("DELETE FROM wordnet2 WHERE gid = {$this->gridimage_id}");
-			$db->Execute("DELETE FROM wordnet3 WHERE gid = {$this->gridimage_id}");
-		
 		} elseif ($this->moderation_status) {
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;

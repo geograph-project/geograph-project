@@ -201,23 +201,6 @@ $register_globals=strtolower(ini_get('register_globals'));
 if($register_globals=='on' || $register_globals=='1')
 	fail('register_globals should be turned OFF - REQUIRED');
 
-//check for a recent browscap.ini
-$browscap=get_cfg_var("browscap");
-if (strlen($browscap) && @file_exists($browscap))
-{
-	$ageDays=(time() - filemtime($browscap))/86400;
-	if ($ageDays > 180)
-
-	{
-		warn("browscap.ini more than six months old - check for updates at http://www.garykeith.com/browsers/downloads.asp");
-	}
-}
-else
-{
-	fail('browscap file not configured in php.ini - REQUIRED');
-}
-
-
 //////////////////////////////////////////////////////////////////
 // include files
 status("checking php include files...");
@@ -226,8 +209,10 @@ $inc=realpath($_SERVER['DOCUMENT_ROOT'].'/../libs');
 if (check_include('geograph/global.inc.php'))
 {
 	//include path is ok - let see if it contains the other stuff we need
-	if (!check_include('conf/'.$_SERVER['HTTP_HOST'].'.conf.php'))
+	if (!check_include('conf/'.$_SERVER['HTTP_HOST'].'.conf.php')) {
 		fail('conf/'.$_SERVER['HTTP_HOST'].'.conf.php not found - copy and adapt the www.example.com.conf.php file');
+		die("<li>Testing Aborted. No point continuing without domain specific config file!</li>");
+	}
 	if (!check_include('adodb/adodb.inc.php'))
 		fail("ADOdb not found in $inc/adodb - download and install it there");
 	if (!check_include('smarty/libs/Smarty.class.php'))
@@ -443,18 +428,23 @@ if (empty($CONF['server_ip']) || strpos($_SERVER['SERVER_ADDR'],$CONF['server_ip
 /////////////////////////////////////////////////////////////
 // few sanity checks
 
-if (empty($CONF['register_confirmation_secret']) || $CONF['register_confirmation_secret']=='CHANGETHIS') {
+foreach ($CONF as $key => $value) {
+	if ($value === 'CHANGETHIS') {
+	        fail('$CONF[\''.$key.'\'] does not appear to have been configured. RECOMMEND CHANGING NOW');
+	}
+}
+
+if (empty($CONF['register_confirmation_secret'])) {
 	fail('$CONF[\'register_confirmation_secret\'] does not appear to have been configured. RECOMMEND CHANGING NOW');
 }
 
-if (empty($CONF['photo_hashing_secret']) || $CONF['photo_hashing_secret']=='CHANGETHISTOO') {
+if (empty($CONF['photo_hashing_secret'])) {
 	fail('$CONF[\'photo_hashing_secret\'] does not appear to have been configured. RECOMMEND CHANGING NOW');
 }
 
-if (empty($CONF['token_secret']) || $CONF['token_secret']=='CHANGETHIS') {
+if (empty($CONF['token_secret'])) {
 	fail('$CONF[\'token_secret\'] does not appear to have been configured. RECOMMEND CHANGING NOW');
 }
-
 
 if (empty($CONF['google_maps_api_key']) || $CONF['google_maps_api_key'] == 'XXXXXXX') {
 	fail('$CONF[\'google_maps_api_key\'] does not appear to have been configured. HIGHLY RECOMMENDED');
@@ -462,20 +452,6 @@ if (empty($CONF['google_maps_api_key']) || $CONF['google_maps_api_key'] == 'XXXX
 
 if (empty($CONF['OS_licence']) || $CONF['OS_licence'] == 'XXXXXXXX') {
 	warn('$CONF[\'OS_licence\'] does not appear to have been configured. Only a problem if Geograph British Isles');
-}
-
-if (empty($CONF['metacarta_auth']) || $CONF['metacarta_auth'] == '') {
-	warn('$CONF[\'metacarta_auth\'] does not appear to have been configured. OK, experimental anyway');
-}
-
-if (empty($CONF['GEOCUBES_API_KEY'])) {
-	warn('$CONF[\'GEOCUBES_API_KEY\'] does not appear to have been configured.');
-} elseif (empty($CONF['GEOCUBES_API_TOKEN'])) {
-	warn('$CONF[\'GEOCUBES_API_TOKEN\'] does not appear to have been configured. NEEDED IF HAVE GEOCUBES_API_KEY');
-}
-
-if (empty($CONF['flickr_api_key'])) {
-	warn('$CONF[\'flickr_api_key\'] does not appear to have been configured. OK, not really used anyway');
 }
 
 if (empty($CONF['picnik_api_key'])) {
@@ -517,10 +493,10 @@ status("completed");
 if (!$ok)
 {
 	echo "<br><br><br><br>";
-	phpinfo();
+	//phpinfo();
 }
 else
 {
 	echo "<li style=\"color:green;font-weight:bold;\">Server is correctly configured to run Geograph!</li>";
 }
-?>
+

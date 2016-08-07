@@ -5,7 +5,7 @@
 
     
     #php config
-    php_value include_path .:/home/www/geograph.elphin/libs/:/usr/share/pear
+    php_value include_path .:/var/www/geograph.site/libs/:/usr/share/pear
     php_value register_globals Off
     php_value upload_max_filesize 8M
     php_value arg_separator.output &amp;
@@ -19,9 +19,9 @@
 
     #redirect to canonical url
     #http://httpd.apache.org/docs/misc/rewriteguide.html
-    RewriteCond %{HTTP_HOST}   !^www\.example\.com [NC]
-    RewriteCond %{HTTP_HOST}   !^$
-    RewriteRule ^(.*)         http://www.example.com/$1 [L,R]
+    #RewriteCond %{HTTP_HOST}   !^www\.example\.com [NC]
+    #RewriteCond %{HTTP_HOST}   !^$
+    #RewriteRule ^(.*)         http://www.example.com/$1 [L,R]
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
 

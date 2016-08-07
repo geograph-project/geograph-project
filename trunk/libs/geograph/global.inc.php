@@ -73,13 +73,6 @@ if (!empty($CONF['memcache']['app'])) {
 
 	$memcache = new MultiServerMemcache($CONF['memcache']['app']);
 
-	if ($CONF['curtail_level'] > 0) {
-		$level = $memcache->get('curtail_level');
-		if ($level) {
-			$CONF['real_curtail_level'] = $CONF['curtail_level'];
-			$CONF['curtail_level'] = $level-1;
-		}
-	}
 } else {
 	//need lightweight fake object that does nothing!
 	class fakeObject {
@@ -391,10 +384,6 @@ class GeographPage extends Smarty
 
 		$isCached = parent::is_cached($template, $cache_id, $compile_id);
 		if (!$isCached) {
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 6 && strpos($_SERVER['PHP_SELF'],'statistics/') !== FALSE ) {
-				header("HTTP/1.1 503 Service Unavailable");
-				die("server busy, please try later");
-			}
 		
 			if (!empty($CONF['memcache']['smarty'])) {
 				$GLOBALS['memcached_res']->set($filename, $template, false, 60*5);
