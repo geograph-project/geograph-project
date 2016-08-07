@@ -1,23 +1,45 @@
--- MySQL dump 10.11
+-- MySQL dump 10.14  Distrib 5.5.44-MariaDB, for Linux (x86_64)
 --
--- Host: localhost    Database: geograph_live
+-- Host: localhost    Database: geograph
 -- ------------------------------------------------------
--- Server version	5.1.22-rc-log
+-- Server version	5.5.44-MariaDB-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `_tables`
+--
+
+DROP TABLE IF EXISTS `_tables`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `_tables` (
+  `table_name` varchar(64) NOT NULL,
+  `description` text NOT NULL,
+  `type` enum('primary','secondary','derivied','temp','static','primary_archive','old') NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`table_name`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `apikeys`
 --
 
 DROP TABLE IF EXISTS `apikeys`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `apikeys` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `apikey` varchar(32) NOT NULL DEFAULT '',
@@ -33,12 +55,15 @@ CREATE TABLE `apikeys` (
   `crt_timestamp` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `article`
 --
 
 DROP TABLE IF EXISTS `article`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `article` (
   `article_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `article_cat_id` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -59,47 +84,59 @@ CREATE TABLE `article` (
   UNIQUE KEY `url` (`url`),
   KEY `article_cat_id` (`article_cat_id`,`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `article_cat`
 --
 
 DROP TABLE IF EXISTS `article_cat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `article_cat` (
   `article_cat_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `category_name` varchar(64) NOT NULL DEFAULT '',
   `sort_order` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`article_cat_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `article_lock`
 --
 
 DROP TABLE IF EXISTS `article_lock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `article_lock` (
   `article_id` int(10) unsigned NOT NULL DEFAULT '0',
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `lock_obtained` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`article_id`,`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `article_log`
 --
 
 DROP TABLE IF EXISTS `article_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `article_log` (
   `month` varchar(7) NOT NULL,
   `article_url` varchar(255) NOT NULL,
   `views` mediumint(8) unsigned NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `article_revisions`
 --
 
 DROP TABLE IF EXISTS `article_revisions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `article_revisions` (
   `article_id` int(10) unsigned NOT NULL DEFAULT '0',
   `article_cat_id` smallint(5) unsigned NOT NULL DEFAULT '0',
@@ -119,12 +156,15 @@ CREATE TABLE `article_revisions` (
   `modifier` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`article_revision_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `article_stat`
 --
 
 DROP TABLE IF EXISTS `article_stat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `article_stat` (
   `article_id` int(10) unsigned NOT NULL,
   `views` mediumint(8) unsigned NOT NULL,
@@ -132,24 +172,30 @@ CREATE TABLE `article_stat` (
   `words` mediumint(8) unsigned NOT NULL,
   PRIMARY KEY (`article_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `autologin`
 --
 
 DROP TABLE IF EXISTS `autologin`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `autologin` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `token` char(32) NOT NULL DEFAULT '',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`,`token`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `compare_done`
 --
 
 DROP TABLE IF EXISTS `compare_done`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `compare_done` (
   `compare_pair_id` int(10) unsigned NOT NULL,
   `ipaddr` int(10) unsigned NOT NULL,
@@ -158,12 +204,15 @@ CREATE TABLE `compare_done` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`compare_pair_id`,`ipaddr`,`ua`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `compare_pair`
 --
 
 DROP TABLE IF EXISTS `compare_pair`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `compare_pair` (
   `compare_pair_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `gridimage_id1` int(10) unsigned NOT NULL,
@@ -176,12 +225,15 @@ CREATE TABLE `compare_pair` (
   `crccol` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`compare_pair_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `competition_code`
 --
 
 DROP TABLE IF EXISTS `competition_code`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `competition_code` (
   `competition_code_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL,
@@ -190,12 +242,15 @@ CREATE TABLE `competition_code` (
   `submitted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`competition_code_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `content`
 --
 
 DROP TABLE IF EXISTS `content`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `content` (
   `content_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `foreign_id` int(10) unsigned NOT NULL,
@@ -208,22 +263,42 @@ CREATE TABLE `content` (
   `titles` text NOT NULL,
   `tags` text NOT NULL,
   `words` text NOT NULL,
-  `type` enum('article','gallery','gsd','submittedarticle','help','other') NOT NULL,
-  `use` enum('info','document') NOT NULL DEFAULT 'info',
+  `source` enum('article','gallery','gsd','themed','help','other') NOT NULL,
+  `type` enum('info','document') NOT NULL DEFAULT 'info',
   `updated` datetime NOT NULL,
   `created` datetime NOT NULL,
   PRIMARY KEY (`content_id`),
-  UNIQUE KEY `foreign_id` (`foreign_id`,`type`),
+  UNIQUE KEY `foreign_id` (`foreign_id`,`source`),
   KEY `title` (`title`),
-  KEY `type` (`type`),
+  KEY `type` (`source`),
   KEY `updated` (`updated`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='consolidated index of geograph content';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `content_group`
+--
+
+DROP TABLE IF EXISTS `content_group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `content_group` (
+  `content_id` int(10) unsigned NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `source` varchar(10) NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `event`
 --
 
 DROP TABLE IF EXISTS `event`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `event` (
   `event_id` int(11) NOT NULL AUTO_INCREMENT,
   `event_name` varchar(64) DEFAULT NULL,
@@ -236,23 +311,29 @@ CREATE TABLE `event` (
   PRIMARY KEY (`event_id`),
   KEY `status` (`status`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `event_handled_by`
 --
 
 DROP TABLE IF EXISTS `event_handled_by`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `event_handled_by` (
   `event_id` int(11) NOT NULL DEFAULT '0',
   `class_name` varchar(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`event_id`,`class_name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `event_log`
 --
 
 DROP TABLE IF EXISTS `event_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `event_log` (
   `event_log_id` int(11) NOT NULL AUTO_INCREMENT,
   `event_id` int(11) NOT NULL DEFAULT '0',
@@ -262,12 +343,33 @@ CREATE TABLE `event_log` (
   PRIMARY KEY (`event_log_id`),
   KEY `event_id` (`event_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `feedback`
+--
+
+DROP TABLE IF EXISTS `feedback`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `feedback` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `category` varchar(32) NOT NULL,
+  `question` varchar(128) NOT NULL,
+  `enabled` tinyint(4) NOT NULL DEFAULT '1',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `game_image_rate`
 --
 
 DROP TABLE IF EXISTS `game_image_rate`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `game_image_rate` (
   `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
   `game_id` tinyint(4) NOT NULL DEFAULT '0',
@@ -275,12 +377,15 @@ CREATE TABLE `game_image_rate` (
   `ratings` bigint(21) NOT NULL DEFAULT '0',
   PRIMARY KEY (`gridimage_id`,`game_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `game_image_score`
 --
 
 DROP TABLE IF EXISTS `game_image_score`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `game_image_score` (
   `game_image_score_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `game_id` tinyint(4) NOT NULL DEFAULT '0',
@@ -292,12 +397,15 @@ CREATE TABLE `game_image_score` (
   PRIMARY KEY (`game_image_score_id`),
   KEY `game_id` (`game_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `game_rate`
 --
 
 DROP TABLE IF EXISTS `game_rate`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `game_rate` (
   `game_rate_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `game_id` tinyint(4) NOT NULL DEFAULT '0',
@@ -309,12 +417,15 @@ CREATE TABLE `game_rate` (
   PRIMARY KEY (`game_rate_id`),
   KEY `game_id` (`game_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `game_score`
 --
 
 DROP TABLE IF EXISTS `game_score`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `game_score` (
   `game_score_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `game_id` tinyint(4) NOT NULL DEFAULT '0',
@@ -331,23 +442,29 @@ CREATE TABLE `game_score` (
   PRIMARY KEY (`game_score_id`),
   KEY `game_id` (`game_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `geobb_banned`
 --
 
 DROP TABLE IF EXISTS `geobb_banned`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `geobb_banned` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `banip` varchar(15) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `geobb_forums`
 --
 
 DROP TABLE IF EXISTS `geobb_forums`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `geobb_forums` (
   `forum_id` int(10) NOT NULL AUTO_INCREMENT,
   `forum_name` varchar(150) NOT NULL DEFAULT '',
@@ -358,12 +475,15 @@ CREATE TABLE `geobb_forums` (
   `posts_count` int(10) NOT NULL DEFAULT '0',
   PRIMARY KEY (`forum_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `geobb_lastviewed`
 --
 
 DROP TABLE IF EXISTS `geobb_lastviewed`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `geobb_lastviewed` (
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `topic_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -371,12 +491,15 @@ CREATE TABLE `geobb_lastviewed` (
   `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`user_id`,`topic_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `geobb_posts`
 --
 
 DROP TABLE IF EXISTS `geobb_posts`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `geobb_posts` (
   `post_id` int(10) NOT NULL AUTO_INCREMENT,
   `forum_id` int(10) NOT NULL DEFAULT '1',
@@ -393,12 +516,15 @@ CREATE TABLE `geobb_posts` (
   KEY `topic_id` (`topic_id`),
   KEY `poster_id` (`poster_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `geobb_send_mails`
 --
 
 DROP TABLE IF EXISTS `geobb_send_mails`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `geobb_send_mails` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL DEFAULT '1',
@@ -407,12 +533,15 @@ CREATE TABLE `geobb_send_mails` (
   KEY `topic_id` (`topic_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `geobb_topics`
 --
 
 DROP TABLE IF EXISTS `geobb_topics`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `geobb_topics` (
   `topic_id` int(10) NOT NULL AUTO_INCREMENT,
   `topic_title` varchar(100) NOT NULL DEFAULT '',
@@ -431,12 +560,15 @@ CREATE TABLE `geobb_topics` (
   KEY `topic_last_post_id` (`topic_last_post_id`),
   KEY `sticky` (`sticky`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `geobb_users`
 --
 
 DROP TABLE IF EXISTS `geobb_users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `geobb_users` (
   `user_id` int(10) NOT NULL AUTO_INCREMENT,
   `username` varchar(40) NOT NULL DEFAULT '',
@@ -451,6 +583,7 @@ CREATE TABLE `geobb_users` (
   `user_viewemail` tinyint(1) NOT NULL DEFAULT '0',
   `user_sorttopics` tinyint(1) NOT NULL DEFAULT '1',
   `user_forums` tinyint(1) unsigned NOT NULL DEFAULT '1',
+  `user_show` varchar(64) NOT NULL DEFAULT '',
   `user_latest` enum('5','10','20','30','40') NOT NULL DEFAULT '30',
   `user_newpwdkey` varchar(32) NOT NULL DEFAULT '',
   `user_newpasswd` varchar(32) NOT NULL DEFAULT '',
@@ -462,12 +595,15 @@ CREATE TABLE `geobb_users` (
   PRIMARY KEY (`user_id`),
   KEY `username` (`username`,`user_password`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `geoevent`
 --
 
 DROP TABLE IF EXISTS `geoevent`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `geoevent` (
   `geoevent_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(128) CHARACTER SET utf8 NOT NULL,
@@ -482,12 +618,15 @@ CREATE TABLE `geoevent` (
   `approved` tinyint(3) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`geoevent_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `geoevent_attendee`
 --
 
 DROP TABLE IF EXISTS `geoevent_attendee`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `geoevent_attendee` (
   `geoevent_attendee_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `geoevent_id` int(10) unsigned NOT NULL,
@@ -498,12 +637,15 @@ CREATE TABLE `geoevent_attendee` (
   `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`geoevent_attendee_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `glossary`
 --
 
 DROP TABLE IF EXISTS `glossary`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `glossary` (
   `glossery_id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `source_lang` char(2) NOT NULL DEFAULT '',
@@ -517,12 +659,15 @@ CREATE TABLE `glossary` (
   `created_by` mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`glossery_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage`
 --
 
 DROP TABLE IF EXISTS `gridimage`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage` (
   `gridimage_id` int(11) NOT NULL AUTO_INCREMENT,
   `gridsquare_id` int(11) NOT NULL DEFAULT '0',
@@ -539,6 +684,7 @@ CREATE TABLE `gridimage` (
   `nateastings` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `natnorthings` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `natgrlen` enum('10','8','6','4','2') NOT NULL DEFAULT '4',
+  `reference_index` tinyint(1) NOT NULL DEFAULT '0',
   `imageclass` varchar(32) NOT NULL DEFAULT '',
   `imagetaken` date NOT NULL DEFAULT '0000-00-00',
   `moderator_id` int(11) NOT NULL DEFAULT '0',
@@ -548,9 +694,11 @@ CREATE TABLE `gridimage` (
   `viewpoint_eastings` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `viewpoint_northings` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `viewpoint_grlen` enum('10','8','6','4','2','0') NOT NULL DEFAULT '0',
+  `viewpoint_refindex` tinyint(1) NOT NULL DEFAULT '0',
   `view_direction` smallint(6) NOT NULL DEFAULT '-1',
   `use6fig` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `user_status` enum('','accepted','rejected') NOT NULL DEFAULT '',
+  `distance` mediumint(8) unsigned DEFAULT NULL,
   PRIMARY KEY (`gridimage_id`),
   UNIQUE KEY `gridsquare_id` (`gridsquare_id`,`seq_no`),
   KEY `user_id` (`user_id`),
@@ -559,36 +707,79 @@ CREATE TABLE `gridimage` (
   KEY `moderation_status` (`moderation_status`),
   KEY `submitted` (`submitted`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_daily`
 --
 
 DROP TABLE IF EXISTS `gridimage_daily`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_daily` (
   `gridimage_id` int(11) NOT NULL DEFAULT '0',
   `showday` date DEFAULT NULL,
+  `vote_baysian` float NOT NULL,
   PRIMARY KEY (`gridimage_id`),
   KEY `showday` (`showday`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_exif`
 --
 
 DROP TABLE IF EXISTS `gridimage_exif`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_exif` (
   `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
   `exif` text NOT NULL,
   PRIMARY KEY (`gridimage_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `gridimage_group`
+--
+
+DROP TABLE IF EXISTS `gridimage_group`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_group` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `source` varchar(10) NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `label` (`label`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_group_stat`
+--
+
+DROP TABLE IF EXISTS `gridimage_group_stat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_group_stat` (
+  `gridimage_group_stat_id` int(11) NOT NULL AUTO_INCREMENT,
+  `label` varchar(128) NOT NULL,
+  `images` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`gridimage_group_stat_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_moderation_lock`
 --
 
 DROP TABLE IF EXISTS `gridimage_moderation_lock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_moderation_lock` (
   `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -597,25 +788,34 @@ CREATE TABLE `gridimage_moderation_lock` (
   PRIMARY KEY (`gridimage_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_pending`
 --
 
 DROP TABLE IF EXISTS `gridimage_pending`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_pending` (
   `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
   `upload_id` varchar(32) NOT NULL DEFAULT '',
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `gridimage_ticket_id` int(10) unsigned NOT NULL DEFAULT '0',
-  `suggested` datetime NOT NULL DEFAULT '0000-00-00 00:00:00'
+  `suggested` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `type` enum('picnik','original') DEFAULT 'picnik',
+  `status` enum('new','open','accepted','confirmed','rejected') NOT NULL DEFAULT 'new',
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_post`
 --
 
 DROP TABLE IF EXISTS `gridimage_post`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_post` (
   `seq_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `post_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -626,12 +826,15 @@ CREATE TABLE `gridimage_post` (
   KEY `post_id` (`post_id`,`gridimage_id`),
   KEY `topic_id` (`topic_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_query`
 --
 
 DROP TABLE IF EXISTS `gridimage_query`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_query` (
   `seq_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `query_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -640,12 +843,15 @@ CREATE TABLE `gridimage_query` (
   PRIMARY KEY (`seq_id`),
   KEY `query_id` (`query_id`,`gridimage_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_recent`
 --
 
 DROP TABLE IF EXISTS `gridimage_recent`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_recent` (
   `gridimage_id` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
@@ -674,12 +880,15 @@ CREATE TABLE `gridimage_recent` (
   PRIMARY KEY (`recent_id`),
   UNIQUE KEY `gridimage_id` (`gridimage_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_search`
 --
 
 DROP TABLE IF EXISTS `gridimage_search`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_search` (
   `gridimage_id` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
@@ -711,19 +920,39 @@ CREATE TABLE `gridimage_search` (
   KEY `submitted` (`submitted`),
   KEY `x` (`x`,`y`),
   KEY `moderation_status` (`moderation_status`),
-  KEY `title` (`title`, `title2`),
+  KEY `title` (`title`,`title2`),
   KEY `wgs84_lat` (`wgs84_lat`,`wgs84_long`),
   KEY `grid_reference` (`grid_reference`),
   SPATIAL KEY `point_xy` (`point_xy`),
   SPATIAL KEY `point_ll` (`point_ll`),
-  KEY `title_2` (`title`, `title2`, `comment`(300), `comment2`(300), `imageclass`)
+  KEY `title_2` (`title`,`title2`,`comment`(300),`comment2`(300),`imageclass`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_size`
+--
+
+DROP TABLE IF EXISTS `gridimage_size`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_size` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `width` smallint(5) unsigned NOT NULL,
+  `height` smallint(5) unsigned NOT NULL,
+  `original_width` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `original_height` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_ticket`
 --
 
 DROP TABLE IF EXISTS `gridimage_ticket`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_ticket` (
   `gridimage_ticket_id` int(11) NOT NULL AUTO_INCREMENT,
   `gridimage_id` int(11) DEFAULT NULL,
@@ -738,14 +967,18 @@ CREATE TABLE `gridimage_ticket` (
   `deferred` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `public` enum('no','owner','everyone') NOT NULL DEFAULT 'everyone',
   PRIMARY KEY (`gridimage_ticket_id`),
-  KEY `gridimage_id` (`gridimage_id`)
+  KEY `gridimage_id` (`gridimage_id`),
+  KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_ticket_comment`
 --
 
 DROP TABLE IF EXISTS `gridimage_ticket_comment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_ticket_comment` (
   `gridimage_ticket_comment_id` int(11) NOT NULL AUTO_INCREMENT,
   `gridimage_ticket_id` int(11) NOT NULL DEFAULT '0',
@@ -755,12 +988,15 @@ CREATE TABLE `gridimage_ticket_comment` (
   PRIMARY KEY (`gridimage_ticket_comment_id`),
   KEY `gridimage_ticket_id` (`gridimage_ticket_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridimage_ticket_item`
 --
 
 DROP TABLE IF EXISTS `gridimage_ticket_item`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridimage_ticket_item` (
   `gridimage_ticket_item_id` int(11) NOT NULL AUTO_INCREMENT,
   `gridimage_ticket_id` int(11) NOT NULL DEFAULT '0',
@@ -772,12 +1008,15 @@ CREATE TABLE `gridimage_ticket_item` (
   PRIMARY KEY (`gridimage_ticket_item_id`),
   KEY `gridimage_ticket_id` (`gridimage_ticket_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridprefix`
 --
 
 DROP TABLE IF EXISTS `gridprefix`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridprefix` (
   `reference_index` int(11) NOT NULL DEFAULT '0',
   `prefix` varchar(4) NOT NULL DEFAULT '',
@@ -789,7 +1028,7 @@ CREATE TABLE `gridprefix` (
   `title` varchar(128) DEFAULT NULL,
   `boundary` varchar(128) DEFAULT NULL,
   `labelcentre` varchar(16) DEFAULT NULL,
-  `labelminwidth` MEDIUMINT(4) UNSIGNED NOT NULL DEFAULT '0',
+  `labelminwidth` mediumint(4) unsigned NOT NULL DEFAULT '0',
   `geometry_boundary` geometry NOT NULL DEFAULT '',
   `point_origin_xy` point NOT NULL DEFAULT '',
   PRIMARY KEY (`reference_index`,`prefix`),
@@ -799,12 +1038,15 @@ CREATE TABLE `gridprefix` (
   KEY `prefix` (`prefix`),
   KEY `origin_x_2` (`origin_x`,`origin_y`,`landcount`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridsquare`
 --
 
 DROP TABLE IF EXISTS `gridsquare`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridsquare` (
   `gridsquare_id` int(11) NOT NULL AUTO_INCREMENT,
   `x` int(11) NOT NULL DEFAULT '0',
@@ -822,12 +1064,15 @@ CREATE TABLE `gridsquare` (
   KEY `y` (`y`),
   SPATIAL KEY `point_xy` (`point_xy`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridsquare_moderation_lock`
 --
 
 DROP TABLE IF EXISTS `gridsquare_moderation_lock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridsquare_moderation_lock` (
   `gridsquare_id` int(10) unsigned NOT NULL DEFAULT '0',
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -836,12 +1081,15 @@ CREATE TABLE `gridsquare_moderation_lock` (
   PRIMARY KEY (`gridsquare_id`,`user_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `gridsquare_topic`
 --
 
 DROP TABLE IF EXISTS `gridsquare_topic`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `gridsquare_topic` (
   `gridsquare_id` int(11) NOT NULL DEFAULT '0',
   `topic_id` int(11) NOT NULL DEFAULT '0',
@@ -850,12 +1098,15 @@ CREATE TABLE `gridsquare_topic` (
   PRIMARY KEY (`gridsquare_id`,`topic_id`),
   KEY `topic_id` (`topic_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `hectad_assignment`
 --
 
 DROP TABLE IF EXISTS `hectad_assignment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `hectad_assignment` (
   `hectad_assignment_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL,
@@ -867,12 +1118,15 @@ CREATE TABLE `hectad_assignment` (
   PRIMARY KEY (`hectad_assignment_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `hectad_complete`
 --
 
 DROP TABLE IF EXISTS `hectad_complete`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `hectad_complete` (
   `hectad_ref` varchar(7) NOT NULL DEFAULT '',
   `completed` date NOT NULL DEFAULT '0000-00-00',
@@ -882,12 +1136,15 @@ CREATE TABLE `hectad_complete` (
   PRIMARY KEY (`hectad_ref`),
   KEY `completed` (`completed`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `kmlcache`
 --
 
 DROP TABLE IF EXISTS `kmlcache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `kmlcache` (
   `url` varchar(64) NOT NULL DEFAULT '',
   `filename` varchar(64) NOT NULL DEFAULT '',
@@ -898,12 +1155,15 @@ CREATE TABLE `kmlcache` (
   PRIMARY KEY (`url`),
   KEY `rendered` (`rendered`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_abgaz`
 --
 
 DROP TABLE IF EXISTS `loc_abgaz`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_abgaz` (
   `gaz_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `full_name` varchar(128) NOT NULL DEFAULT '',
@@ -921,12 +1181,15 @@ CREATE TABLE `loc_abgaz` (
   KEY `gridref` (`gridref`),
   SPATIAL KEY `point_en` (`point_en`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_adm1`
 --
 
 DROP TABLE IF EXISTS `loc_adm1`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_adm1` (
   `country` char(2) NOT NULL DEFAULT '',
   `adm1` char(2) NOT NULL DEFAULT '0',
@@ -934,12 +1197,15 @@ CREATE TABLE `loc_adm1` (
   `reference_index` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`adm1`,`country`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_counties`
 --
 
 DROP TABLE IF EXISTS `loc_counties`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_counties` (
   `county_id` smallint(6) NOT NULL AUTO_INCREMENT,
   `e` int(11) NOT NULL DEFAULT '0',
@@ -950,12 +1216,15 @@ CREATE TABLE `loc_counties` (
   PRIMARY KEY (`county_id`),
   SPATIAL KEY `point_en` (`point_en`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_counties_pre74`
 --
 
 DROP TABLE IF EXISTS `loc_counties_pre74`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_counties_pre74` (
   `county_id` smallint(6) NOT NULL AUTO_INCREMENT,
   `e` int(11) NOT NULL DEFAULT '0',
@@ -968,23 +1237,29 @@ CREATE TABLE `loc_counties_pre74` (
   PRIMARY KEY (`county_id`),
   SPATIAL KEY `point_en` (`point_en`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_country`
 --
 
 DROP TABLE IF EXISTS `loc_country`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_country` (
   `code` char(2) NOT NULL DEFAULT '',
   `name` varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_dsg`
 --
 
 DROP TABLE IF EXISTS `loc_dsg`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_dsg` (
   `code` enum('ADM1','ADM2','ADM3','ADMD','AGRF','AIRF','AIRQ','ANCH','ANS','ARCH','AREA','BAR','BAY','BCH','BDG','BLDG','BNK','BOG','BTL','CAPE','CARN','CAVE','CHN','CHNM','CHNN','CLF','CMP','CNL','COVE','CRNT','CSTL','CSWY','DCK','DCKB','DEPU','DPR','EST','ESTY','FLLS','FLTT','FRM','FRST','FT','GAP','GDN','GRGE','HBR','HDLD','HLL','HLLS','HSE','HSEC','HSTS','HTH','HTL','INLT','ISL','ISLS','ISLT','LCTY','LDGU','LGN','LK','LKS','LOCK','LTHSE','MDW','MNMT','MOOR','MRSH','MT','MTS','NRWS','NVB','OVF','PAL','PASS','PEN','PIER','PK','PKS','PLN','PND','POOL','PPL','PPLC','PPLL','PPLX','PRK','PROM','PRSH','PRT','PT','RCH','RD','RDA','RDGE','RDST','RECR','RESN','RF','RGN','RK','RKS','RR','RSTN','RSV','RUIN','SAND','SD','SHOL','SLCE','SLP','SPIT','ST','STM','STMC','STMM','STMX','STRT','TNL','TOWR','UPLD','VAL','WHRL') NOT NULL DEFAULT 'ADM1',
   `name` varchar(64) NOT NULL DEFAULT '',
@@ -992,12 +1267,15 @@ CREATE TABLE `loc_dsg` (
   `class` varchar(64) NOT NULL DEFAULT '',
   KEY `code` (`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_placenames`
 --
 
 DROP TABLE IF EXISTS `loc_placenames`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_placenames` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `dsg` enum('ADM1','ADMD','ANCH','ANS','AREA','BAR','BAY','BCH','BDG','BLDG','BNK','BOG','BRKS','BRKW','CAPE','CARN','CAVE','CH','CHN','CHNM','CLF','CMP','CNFL','CNL','COVE','CRKT','CSTL','DCK','DCKB','DCKY','DPR','EST','ESTY','FLD','FLLS','FLTT','FORD','FRM','FRST','FSR','FT','GAP','GASF','GRGE','GRVE','HBR','HDLD','HLL','HLLS','HMCK','HSE','HSEC','HSP','HTL','INDS','INLT','ISL','ISLS','ISLT','LCTY','LGN','LK','LKS','MDW','MN','MNMT','MOOR','MRSH','MSTY','MT','MTS','MUS','NRWS','OBPT','OILR','PASS','PCLI','PEN','PIER','PK','PLDR','PLN','PND','POOL','PPL','PPLA','PPLC','PPLL','PPLX','PRK','PRN','PRSH','PRT','PS','PT','QUAY','RD','RDGE','RDST','RF','RGN','RJCT','RK','RKS','RNGA','RPDS','RSTN','RSTP','RSV','RUIN','SAND','SCH','SCHC','SD','SEA','SHOL','SLP','SPIT','SPNG','SPUR','STM','STMA','STMM','STNE','STRT','TMB','TOWR','TRL','TRMO','VAL','WEIR','WLL','WTRW','ZZZZZ') NOT NULL DEFAULT 'ADM1',
@@ -1018,12 +1296,15 @@ CREATE TABLE `loc_placenames` (
   KEY `gns_ufi` (`gns_ufi`),
   KEY `dsg` (`dsg`,`reference_index`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_postcodes`
 --
 
 DROP TABLE IF EXISTS `loc_postcodes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_postcodes` (
   `e` int(11) NOT NULL DEFAULT '0',
   `n` int(11) NOT NULL DEFAULT '0',
@@ -1031,12 +1312,15 @@ CREATE TABLE `loc_postcodes` (
   `reference_index` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY (`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_ppl`
 --
 
 DROP TABLE IF EXISTS `loc_ppl`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_ppl` (
   `UFI` int(11) NOT NULL DEFAULT '0',
   `UNI` int(11) NOT NULL DEFAULT '0',
@@ -1052,12 +1336,15 @@ CREATE TABLE `loc_ppl` (
   PRIMARY KEY (`UNI`),
   KEY `e` (`e`,`n`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Cut-down database from 30-03-2006';
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_towns`
 --
 
 DROP TABLE IF EXISTS `loc_towns`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_towns` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL DEFAULT '',
@@ -1075,12 +1362,15 @@ CREATE TABLE `loc_towns` (
   SPATIAL KEY `point_en` (`point_en`),
   SPATIAL KEY `point_xy` (`point_xy`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `loc_wikipedia`
 --
 
 DROP TABLE IF EXISTS `loc_wikipedia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `loc_wikipedia` (
   `url` varchar(255) NOT NULL DEFAULT '',
   `exists` char(1) NOT NULL DEFAULT '',
@@ -1089,12 +1379,15 @@ CREATE TABLE `loc_wikipedia` (
   `iscity` varchar(255) NOT NULL DEFAULT '',
   `country` char(2) NOT NULL DEFAULT ''
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `mapcache`
 --
 
 DROP TABLE IF EXISTS `mapcache`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mapcache` (
   `map_x` smallint(6) NOT NULL DEFAULT '0',
   `map_y` smallint(6) NOT NULL DEFAULT '0',
@@ -1106,45 +1399,55 @@ CREATE TABLE `mapcache` (
   `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `mapfix_log`
 --
 
 DROP TABLE IF EXISTS `mapfix_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `mapfix_log` (
   `mapfix_log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `gridsquare_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `comment` varchar(128) NOT NULL,
   `new_percent_land` tinyint(4) DEFAULT NULL,
   `old_percent_land` tinyint(4) DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`mapfix_log_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `moderation_log`
 --
 
 DROP TABLE IF EXISTS `moderation_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `moderation_log` (
   `moderation_log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
   `new_status` enum('rejected','pending','accepted','geograph') NOT NULL DEFAULT 'rejected',
-  `old_status` enum('rejected','pending','accepted','geograph') NOT NULL DEFAULT 'rejected',
+  `old_status` enum('rejected','pending','accepted','geograph','') NOT NULL DEFAULT 'rejected',
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`moderation_log_id`),
-  UNIQUE KEY `user_id` (`user_id`,`gridimage_id`)
+  `type` enum('dummy','real') NOT NULL DEFAULT 'dummy',
+  PRIMARY KEY (`moderation_log_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `os_gaz`
 --
 
 DROP TABLE IF EXISTS `os_gaz`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `os_gaz` (
-  `seq` int(11) NOT NULL DEFAULT '0',
+  `seq` mediumint(6) unsigned NOT NULL,
   `km_ref` varchar(7) NOT NULL DEFAULT '',
   `def_nam` varchar(60) NOT NULL DEFAULT '',
   `tile_ref` varchar(4) NOT NULL DEFAULT '',
@@ -1152,21 +1455,21 @@ CREATE TABLE `os_gaz` (
   `lat_min` double(3,1) NOT NULL DEFAULT '0.0',
   `long_deg` tinyint(4) NOT NULL DEFAULT '0',
   `long_min` double(3,1) NOT NULL DEFAULT '0.0',
-  `north` mediumint(9) NOT NULL DEFAULT '0',
-  `east` mediumint(9) NOT NULL DEFAULT '0',
-  `gmt` char(1) NOT NULL DEFAULT '',
-  `co_code` char(2) NOT NULL DEFAULT '',
-  `county` varchar(20) NOT NULL DEFAULT '',
-  `full_county` varchar(60) NOT NULL DEFAULT '',
+  `north` mediumint(7) unsigned NOT NULL,
+  `east` mediumint(6) unsigned NOT NULL,
+  `gmt` enum('E','W') NOT NULL,
+  `co_code` enum('AB','AG','AN','AR','BA','BB','BC','BD','BE','BF','BG','BH','BI','BL','BM','BN','BO','BP','BR','BS','BT','BU','BX','BY','BZ','CA','CB','\nCD','CE','CF','CH','CL','CM','CN','CT','CU','CV','CW','CY','DB','DD','DE','DG','DL','DN','DR','DT','DU','DY','DZ','EA','EB','ED','EG','EL','EN','ER','ES','EX','EY','FA','FF','FL','GH','GL','GR','GW','GY','HA','HD','HE','HF','HG','HI','HL','HN','HP','HR','HS','HT','HV','IA','IL','IM','IN','IS','IW','KC','KG','KH','KL','KN','KT','LA','L\nB','LC','LD','LL','LN','LO','LP','LS','LT','MA','MB','ME','MI','MK','MM','MO','MR','MT','NA','NC','ND','NE','NG','NH','NI','NK','NL','NN','NP','NR','NS','NT','NW','NY','OH','OK','ON','PB','PE','PK','PL','PO','PW','PY','RB','RC','RD','RE','RG','RH','RL','RO','RT','SA','SB','SC','SD','SE','SF','SG','SH','SI','SJ','SK','SL','SM','SN','SO\n','SP','SQ','SR','SS','ST','SU','SV','SW','SX','SY','SZ','TB','TF','TH','TR','TS','TU','VG','WA','WB','WC','WD','WE','WF','WG','WH','WI','WJ','WK','WL','WM','WN','WO','\nWP','WR','WS','WT','WW','WX','XX','YK','YS','YT','YY') NOT NULL,
+  `county` enum('0','Aberd','Angus','Arg & Bt','Bark & Dag','Barnet','Barns','Bath & NE Somer','Beds','Bexley','Birm','Black w Dar','Blackp','Blae Gw','Bo\nlton','Bourne','Brackn','Brad','Brent','Brig','Brom','Bucks','Bury','C of Aber','C of Bri & Hov','C of Bris','C of Derb','C of Dun','C of Edin','C of Glas','C of K upon\n H','C of Leic','C of Lon','C of Nott','C of Peterb','C of Plym','C of Port','C of Soton','C of Stoke','C of West','C of Wolv','Caer','Cald','Cambs','Camden','Card','Ca\nrm','Cered','Ches','Clackm','Conwy','Corn','Cov','Croy','Cumbr','D & G','Darl','Denb','Derby','Devon','Donc','Dorset','Dudley','Durham','E Ayr','E Dunb','E Loth','E Ren\nf','E Susx','E Yorks','Ealing','Enf','Essex','Falk','Fife','Flint','Ghead','Glos','Gren','Gwyn','Hack','Halton','Ham & Ful','Hants','Hargy','Harrow','Hartpl','Hav','Her\nef','Herts','Highld','Hill','Houns','I of Angl','I of M','I of W','I Scilly','Inverc','Isling','Ken & Ch','Kent','King','Kirk','Know','Lam','Lancs','Leeds','Leic','Lew','Lincs','Liv','Luton','Man','Medway','Merth Tyd','Merton','Midd','Midlo','Mil Key','Monm','Moray','N Ayr','N Eil','N Lanak','N Lincs','N Som','N Tyne','N upon Ty','N Y\nks','NE Lincs','Newham','Newp','Norf','Northnts','Northum','Notts','Nth Pt Talb','Oldham','Orkney','Oxon','Pemb','Poole','Powys','Pth & Kin','Read','Red & Cl','Redbr','\nRenf','Rho Cyn Taf','Rich','Roch','Roth','Rut','S Ayr','S Glos','S Lanak','S Tyne','Salf','Sand','Scot Bord','Sefton','Sheff','Shetld','Shrops','Slough','Sol','Somer','\nSou-on-Sea','St Hel','Staffs','Sthwk','Stir','Stock','Stock on T','Suff','Sund','Surrey','Sutton','Swan','Swin','T Ham','Tames','Thurr','Torbay','Torf','Traf','V of Gla\nm','W Berks','W Dunb','W Loth','W Susx','Wakf','Wal F','Wals','Wan','Warr','Warw','Wigan','Wilts','Win & Maid','Wirral','Wok','Worcs','Wrekin','Wrex','York') NOT NULL,
+  `full_county` enum('Aberdeen City','Aberdeenshire','Angus','Argyll and Bute','Barking & Dagenham','Barnet','Barnsley','Bath and North East Somerset','Bedfordshire','Bexley','Birmingham','Blackburn with Darwen','Blackpool','Blaenau Gwent','Bolton','Bournemouth','Bracknell Forest','Bradford','Brent','Bridgend','Bromley','Buckinghamshire','Bury','Caerphilly','Calderdale','Cambridgeshire','Camden','Cardiff','Carmarthenshire','Ceredigion','Cheshire','City of Brighton and Hove','City of Bristol','City of Derby','City of Edinburgh','City of Kingston upon Hull','City of Leicester','City of London','City of Nottingham','City of Peterborough','City of Plymouth','City of Portsmouth','City of Southampton','City of Stoke-on-Trent','City of Westminster','City of Wolverhampton','Clackmannanshire','Conwy','Cornwall','Coventry','Croydon','Cumbria','Darlington','Denbighshire','Derbyshire','Devon','Doncaster','Dorset','Dudley','Dumfries and Galloway','Dundee City','Durham','Ealing','East Ayrshire','East Dunbartonshire','East Lothian','East Renfrewshire','East Riding of Yorkshire','East Sussex','Enfield','Essex','Falkirk','Fife','Flintshire','Gateshead','Glasgow City','Gloucestershire','Greenwich','Gwynedd','Hackney','Halton','Hammersmith &Fulham','Hampshire','Haringey','Harrow','Hartlepool','Havering','Herefordshire','Hertfordshire','Highland','Hillingdon','Hounslow','Inverclyde','Isle of Anglesey','Isle of Man','Isle of Wight','Isles of Scilly','Islington','Kent','Kingston upon Thames','Kirklees','Knowsley','Lambeth','Lancashire','Leeds','Leicestershire','Lewisham','Lincolnshire','Liverpool','Luton','Manchester','Medway','Merthyr Tydfil','Merton','Middlesbrough','Midlothian','Milton Keynes','Monmouthshire','Moray','Na h-Eileanan an Iar','Neath Port Talbot','Newcastle upon Tyne','Newham','Newport','Norfolk','North Ayrshire','North East Lincolnshire','North Lanarkshire','North Lincolnshire','North Somerset','North Tyneside','North Yorkshire','Northamptonshire','Northumberland','Nottinghamshire','Oldham','Orkney Islands','Oxfordshire','Pembrokeshire','Perth and Kinross','Poole','Powys','Reading','Redbridge','Redcar & Cleveland','Renfrewshire','Rhondda,Cynon,Taff','Richmond upon Thames','Rochdale','Rotherham','Royal Borough of Kensington & Chelsea','Rutland','Salford','Sandwell','Scottish Borders','Sefton','Sheffield','Shetland Islands','Shropshire','Slough','Solihull','Somerset','South Ayrshire','South Gloucestershire','South Lanarkshire','South Tyneside','Southend-on-Sea','Southwark','St Helens','Staffordshire','Stirling','Stockport','Stockton on Tees','Suffolk','Sunderland','Surrey','Sutton','Swansea','Swindon','Tameside','Telford and Wrekin','The Vale of Glamorgan','Thurrock','Torbay','Torfaen','Tower Hamlets','Trafford','Wakefield','Walsall','Waltham Forest','Wandsworth','Warrington','Warwickshire','West Berkshire','West Dunbartonshire','West Lothian','West Sussex','Wigan','Wiltshire','Windsor and Maidenhead','Wirral','Wokingham','Worcestershire','Wrexham','XXXXXXXX','York') NOT NULL,
   `f_code` enum('C','T','O','A','F','FM','H','R','W','X') NOT NULL DEFAULT 'C',
   `e_date` varchar(11) NOT NULL DEFAULT '',
-  `update_co` char(1) NOT NULL DEFAULT '',
+  `update_co` enum('I','U') NOT NULL,
   `sheet_1` smallint(6) NOT NULL DEFAULT '0',
   `sheet_2` smallint(6) NOT NULL DEFAULT '0',
   `sheet_3` smallint(6) NOT NULL DEFAULT '0',
   `def_nam_soundex` varchar(32) NOT NULL DEFAULT '',
   `point_en` point NOT NULL DEFAULT '',
-  `hcounty` varchar(64) DEFAULT NULL,
+  `hcounty` enum('','Aberdeenshire','Anglesey','Angus','Argyllshire','Ayrshire','Banffshire','Bedfordshire','Bedfordshire / Hertfordshire','Beds, pre-1844 part in det pt of Hunts','Berks, pre-1844 in det pt of Wilts','Berks, pre-1844 part in det pt of Wilts','Berkshire','Berwickshire','Brecknockshire','Brecknockshire / Monmouthshire','Brecknockshire / Radnorshire','Buckinghamshire','Bucks, pre-1844 in det pt of Herts','Bucks, pre-1844 in det pt of Oxon','Buteshire','Caernarfon (det), locally in Denbighs','Caernarfonshire','Caernarfonshire / Merioneth','Caithness','Cambridgeshire','Cambridgeshire / Hertfordshire','Cambridgeshire / Hunts','Cambridgeshire / Norfolk','Cambridgeshire / Suffolk','Cardiganshire','Carmarthenshire','Carmarthenshire / Brecknock','Cheshire','Cheshire / Flintshire','Clackmannanshire','Cornwall','Cornwall, pre-1884 in det pt of Devon','Cromartyshire','Cromartyshire / Ross-shire','Cumberland','Denbighshire','Denbighshire / Caernarfons','Denbighshire / Flintshire','Denbighshire / Montgomeryshire','Derbys (det), locally in Leics','Derbyshire','Derbyshire / Leicestershire','Derbyshire / Nottinghamshire','Devon','Devon / Dorset','Devon / Somerset','Devon, pre-1844 in det pt of Dorset','Dorset','Dorset / Hampshire','Dorset, pre-1844 in det pt of Devon','Dorset, pre-1844 in det pt of Som''set','Dumfriesshire','Dunbartonshire','Durham','East Lothian','Essex','Fife','Flints (det), locally in Denbighs','Flintshire','Flintshire / Denbighshire','Glamorgan','Glamorgan / Brecknockshire','Gloucestershire','Gloucestershire / Herefords','Gloucs, pre-1844 in det pt of Wilts','Gloucs, pre-1844 in det pt of Worcs','Hampshire','Hampshire / Berkshire','Hampshire / Sussex','Hampshire / Wiltshire','Herefds, pre-1844 in det pt of Gloucs','Herefordshire','Herefordshire / Gloucestershire','Hertfordshire','Hertfordshire / Bedfordshire','Hertfordshire / Buckinghams','Hertfordshire / Middlesex','Huntingdonshire','Hunts (det), locally in Beds','Inverness (det), locally in Moray','Inverness-shire','Isles of Scilly','Kent','Kent / Surrey','Kent / Sussex','Kincardineshire','Kinross-shire','Kirkcudbrightshire','Lanarkshire','Lancashire','Lancs / Ches / Yorks, W.R.','Leicestershire','Leicestershire / Derbyshire','Leicestershire / Lincolnshire','Leicestershire / Northants','Lincolnshire','Lincolnshire / Cambridgeshire','Lincolnshire / Yorks, West Riding','Merioneth','Merioneth / Montgomeryshire','Middlesex','Middlesex / Hertfordshire','Midlothian','Monmouthshire','Montgomeryshire','Moray (det), locally in Inverness','Morayshire','Morayshire / Inverness-shir','N''thumb, pre-1844 in det pt of Durham','Nairnshire','Norfolk','Norfolk / Cambridgeshire','Norfolk / Suffolk','Northamptonshire','Northumberland','Nottinghamshire','Orkney','Oxfordshire','Oxon, pre-1844 in det pt of Bucks','Peeblesshire','Pembrokeshire','Perthshire','Perthshire (det), locally in Fife','Radnorshire','Renfrewshire','Ross-shire','Roxburghshire','Rutland','Selkirk (det), locally in Roxburgh','Selkirkshire','Selkirkshire / Roxburghshire','Shetland','Shropshire','Shropshire / Montgomeryshire','Shropshire / Staffordshire','Somerset','Somerset / Devon','Somerset / Dorset','Staffordshire','Staffordshire / Cheshire','Staffordshire / Warwickshire','Staffordshire / Worcestershire','Stirling (det), locally in Clackman','Stirlingshire','Suffolk','Suffolk / Cambridgeshire','Suffolk / Essex','Suffolk / Norfolk','Surrey','Surrey / Kent','Surrey / Sussex','Sussex','Sussex / Hampshire','Sussex / Surrey','Sussex, pre-1844 in det pt of Hants','Sutherland','Warks, pre-1844 in det pt of Gloucs','Warwickshire','Warwickshire / Leicestershire','Warwickshire / Staffordshire','Warwickshire / Worcestershire','West Lothian','Westmorland','Wigtownshire','Wilts, pre-1844 in det pt of Gloucs','Wiltshire','Wiltshire / Berkshire','Wiltshire / Hampshire','Worcestershire','Worcestershire / Shropshire','Worcestershire / Warwickshire','Worcs (det), locally in Gloucs','Worcs (det), locally in Herefds','Worcs (det), locally in Staffs','Worcs (det), locally in Warks','Worcs, pre-1844 in det pt of Herefds','Worcs, pre-1844 in det pt of Shrops','Worcs, pre-1844 in det pt of Staffs','Worcs, pre-1844 in det pt of Warks','Yorkshire, East Riding','Yorkshire, North Riding','Yorkshire, W.R.','Yorkshire, West Riding','Yorkshire, West Riding / Li','Yorkshire, West Riding / Notts') NOT NULL,
   PRIMARY KEY (`seq`),
   KEY `east` (`east`,`north`,`f_code`),
   KEY `def_nam_soundex` (`def_nam_soundex`,`f_code`),
@@ -1175,38 +1478,70 @@ CREATE TABLE `os_gaz` (
   KEY `tile_ref` (`tile_ref`),
   KEY `def_nam` (`def_nam`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `os_gaz_250`
+--
+
+DROP TABLE IF EXISTS `os_gaz_250`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `os_gaz_250` (
+  `seq` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `def_name` varchar(250) NOT NULL,
+  `full_county` varchar(250) NOT NULL,
+  `east` mediumint(8) unsigned NOT NULL,
+  `north` mediumint(8) unsigned NOT NULL,
+  `def_nam_soundex` varchar(32) NOT NULL DEFAULT '',
+  `point_en` point NOT NULL DEFAULT '',
+  PRIMARY KEY (`seq`),
+  SPATIAL KEY `point_en` (`point_en`),
+  KEY `def_nam_soundex` (`def_nam_soundex`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `os_gaz_code`
 --
 
 DROP TABLE IF EXISTS `os_gaz_code`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `os_gaz_code` (
   `f_code` char(2) NOT NULL DEFAULT '',
   `code_name` varchar(64) NOT NULL DEFAULT '',
   PRIMARY KEY (`f_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `os_gaz_county`
 --
 
 DROP TABLE IF EXISTS `os_gaz_county`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `os_gaz_county` (
   `name` varchar(60) NOT NULL DEFAULT '',
+  `co_code` enum('AB','AG','AN','AR','BA','BB','BC','BD','BE','BF','BG','BH','BI','BL','BM','BN','BO','BP','BR','BS','BT','BU','BX','BY','BZ','CA','CB','CD','CE','CF','CH','CL','CM','CN','CT','CU','CV','CW','CY','DB','DD','DE','DG','DL','DN','DR','DT','DU','DY','DZ','EA','EB','ED','EG','EL','EN','ER','ES','EX','EY','FA','FF','FL','GH','GL','GR','GW','GY','HA','HD','HE','HF','HG','HI','HL','HN','HP','HR','HS','HT','HV','IA','IL','IM','IN','IS','IW','KC','KG','KH','KL','KN','KT','LA','LB','LC','LD','LL','LN','LO','LP','LS','LT','MA','MB','ME','MI','MK','MM','MO','MR','MT','NA','NC','ND','NE','NG','NH','NI','NK','NL','NN','NP','NR','NS','NT','NW','NY','OH','OK','ON','PB','PE','PK','PL','PO','PW','PY','RB','RC','RD','RE','RG','RH','RL','RO','RT','SA','SB','SC','SD','SE','SF','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SP','SQ','SR','SS','ST','SU','SV','SW','SX','SY','SZ','TB','TF','TH','TR','TS','TU','VG','WA','WB','WC','WD','WE','WF','WG','WH','WI','WJ','WK','WL','WM','WN','WO','WP','WR','WS','WT','WW','WX','XX','YK','YS','YT','YY') NOT NULL,
   `c` bigint(21) NOT NULL DEFAULT '0',
   `e` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `n` mediumint(8) unsigned NOT NULL DEFAULT '0',
   `reference_index` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `country` char(1) NOT NULL DEFAULT '',
-  PRIMARY KEY (`name`)
+  PRIMARY KEY (`name`),
+  KEY `co_code` (`co_code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `queries`
 --
 
 DROP TABLE IF EXISTS `queries`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `queries` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `searchdesc` varchar(255) NOT NULL DEFAULT '',
@@ -1223,26 +1558,29 @@ CREATE TABLE `queries` (
   `limit8` smallint(5) NOT NULL DEFAULT '0',
   `limit9` int(10) unsigned NOT NULL DEFAULT '0',
   `limit10` mediumint(8) unsigned NOT NULL DEFAULT '0',
-  `x` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `y` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens') NOT NULL DEFAULT 'full',
+  `x` smallint(5) NOT NULL DEFAULT '0',
+  `y` smallint(5) NOT NULL DEFAULT '0',
+  `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote') NOT NULL DEFAULT 'full',
   `resultsperpage` smallint(5) NOT NULL DEFAULT '15',
   `orderby` varchar(32) NOT NULL DEFAULT '',
   `breakby` varchar(32) NOT NULL DEFAULT '',
   `crt_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_id` int(11) NOT NULL DEFAULT '0',
-  `searchuse` enum('search','flickr','gazetteer','discuss') NOT NULL DEFAULT 'search',
+  `searchuse` enum('search','flickr','gazetteer','discuss','syndicator') NOT NULL DEFAULT 'search',
   `use_timestamp` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `favorite` enum('Y','N') NOT NULL DEFAULT 'N',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `queries_archive`
 --
 
 DROP TABLE IF EXISTS `queries_archive`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `queries_archive` (
   `id` int(10) unsigned NOT NULL,
   `searchdesc` varchar(255) NOT NULL DEFAULT '',
@@ -1259,50 +1597,77 @@ CREATE TABLE `queries_archive` (
   `limit8` smallint(5) NOT NULL DEFAULT '0',
   `limit9` int(10) unsigned NOT NULL DEFAULT '0',
   `limit10` mediumint(8) unsigned NOT NULL DEFAULT '0',
-  `x` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `y` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens') NOT NULL DEFAULT 'full',
+  `x` smallint(5) NOT NULL DEFAULT '0',
+  `y` smallint(5) NOT NULL DEFAULT '0',
+  `displayclass` enum('full','text','thumbs','slide','more','spelling','thumbsmore','search','searchtext','reveal','cluster','moremod','piclens','gmap','cluster2','vote') NOT NULL DEFAULT 'full',
   `resultsperpage` smallint(5) NOT NULL DEFAULT '15',
   `orderby` varchar(32) NOT NULL DEFAULT '',
   `breakby` varchar(32) NOT NULL DEFAULT '',
   `crt_timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `user_id` int(11) NOT NULL DEFAULT '0',
-  `searchuse` enum('search','flickr','gazetteer','discuss') NOT NULL DEFAULT 'search',
+  `searchuse` enum('search','flickr','gazetteer','discuss','syndicator') NOT NULL DEFAULT 'search',
   `use_timestamp` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `favorite` enum('Y','N') NOT NULL DEFAULT 'N',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `queries_count`
 --
 
 DROP TABLE IF EXISTS `queries_count`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `queries_count` (
   `id` int(10) unsigned NOT NULL DEFAULT '0',
   `count` int(10) unsigned NOT NULL DEFAULT '0',
   `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `queries_featured`
+--
+
+DROP TABLE IF EXISTS `queries_featured`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `queries_featured` (
+  `id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `comment` varchar(100) NOT NULL,
+  `approved` tinyint(4) NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `stickied` tinyint(4) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `recent_gridimage`
 --
 
 DROP TABLE IF EXISTS `recent_gridimage`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `recent_gridimage` (
   `gridimage_id` int(11) NOT NULL DEFAULT '0',
   `added` datetime DEFAULT NULL,
   PRIMARY KEY (`gridimage_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `sessions`
 --
 
 DROP TABLE IF EXISTS `sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sessions` (
   `SESSKEY` varchar(32) NOT NULL DEFAULT '',
   `EXPIRY` int(11) unsigned NOT NULL DEFAULT '0',
@@ -1312,43 +1677,68 @@ CREATE TABLE `sessions` (
   PRIMARY KEY (`SESSKEY`),
   KEY `SESSKEY` (`SESSKEY`,`EXPIRY`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `smarty_cache_page`
+--
+
+DROP TABLE IF EXISTS `smarty_cache_page`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `smarty_cache_page` (
+  `CacheID` varchar(255) NOT NULL,
+  `TemplateFile` varchar(255) NOT NULL,
+  `GroupCache` varchar(255) NOT NULL,
+  PRIMARY KEY (`CacheID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `sph_counter`
 --
 
 DROP TABLE IF EXISTS `sph_counter`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `sph_counter` (
   `counter_id` varchar(64) NOT NULL,
   `max_doc_id` int(11) NOT NULL,
   PRIMARY KEY (`counter_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `throttle`
 --
 
 DROP TABLE IF EXISTS `throttle`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `throttle` (
   `used` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `user_id` int(10) unsigned NOT NULL DEFAULT '0',
   `feature` enum('ecard','usermsg') NOT NULL DEFAULT 'ecard',
   KEY `user_id` (`user_id`,`feature`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `user`
 --
 
 DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `password` varchar(64) DEFAULT NULL,
+  `salt` varchar(8) NOT NULL,
   `realname` varchar(128) DEFAULT NULL,
   `credit_realname` varchar(128) NOT NULL,
   `email` varchar(128) DEFAULT NULL,
   `website` varchar(255) DEFAULT NULL,
-  `rights` set('basic','moderator','admin','ticketmod','traineemod','suspicious') DEFAULT NULL,
+  `rights` set('basic','moderator','admin','ticketmod','traineemod','suspicious','dormant','mapmod','forum') DEFAULT NULL,
   `signup_date` datetime DEFAULT NULL,
   `nickname` varchar(128) DEFAULT NULL,
   `public_email` int(11) DEFAULT '0',
@@ -1366,7 +1756,11 @@ CREATE TABLE `user` (
   `role` varchar(32) NOT NULL DEFAULT '',
   `message_sig` varchar(250) NOT NULL DEFAULT '',
   `ticket_public` enum('no','owner','everyone') NOT NULL DEFAULT 'everyone',
+  `calendar_public` enum('no','registered','everyone') NOT NULL DEFAULT 'no',
   `http_host` varchar(64) NOT NULL DEFAULT '',
+  `upload_size` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `clear_exif` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `confirmed` datetime NOT NULL,
   PRIMARY KEY (`user_id`),
   KEY `rights` (`rights`,`role`),
   KEY `realname` (`realname`),
@@ -1374,12 +1768,30 @@ CREATE TABLE `user` (
   KEY `email` (`email`),
   FULLTEXT KEY `realname_2` (`realname`,`nickname`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_change`
+--
+
+DROP TABLE IF EXISTS `user_change`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_change` (
+  `user_id` int(10) unsigned NOT NULL,
+  `field` enum('realname','nickname') NOT NULL,
+  `value` varchar(128) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `user_emailchange`
 --
 
 DROP TABLE IF EXISTS `user_emailchange`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_emailchange` (
   `user_emailchange_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
@@ -1391,23 +1803,29 @@ CREATE TABLE `user_emailchange` (
   PRIMARY KEY (`user_emailchange_id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `user_gridsquare`
 --
 
 DROP TABLE IF EXISTS `user_gridsquare`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_gridsquare` (
   `user_id` int(11) NOT NULL DEFAULT '0',
   `grid_reference` varchar(7) NOT NULL DEFAULT '',
   KEY `user_id` (`user_id`,`grid_reference`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Table structure for table `user_stat`
 --
 
 DROP TABLE IF EXISTS `user_stat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_stat` (
   `user_id` int(11) unsigned NOT NULL DEFAULT '0',
   `images` mediumint(5) unsigned NOT NULL DEFAULT '0',
@@ -1427,60 +1845,52 @@ CREATE TABLE `user_stat` (
   PRIMARY KEY (`user_id`),
   KEY `points` (`points`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `wordnet`
+-- Table structure for table `vote_log`
 --
 
-DROP TABLE IF EXISTS `wordnet`;
-CREATE TABLE `wordnet` (
-  `gid` int(11) NOT NULL DEFAULT '0',
-  `len` char(1) NOT NULL DEFAULT '',
-  `words` varchar(64) NOT NULL DEFAULT '',
-  `title` smallint(6) NOT NULL DEFAULT '0',
-  `comment` smallint(6) NOT NULL DEFAULT '0',
-  `total` smallint(6) NOT NULL DEFAULT '0',
-  KEY `len` (`len`,`words`),
-  KEY `gid` (`gid`),
-  KEY `gid_2` (`gid`,`words`),
-  KEY `gid_3` (`gid`,`title`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `vote_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `vote_log` (
+  `vote_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(20) NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `vote` tinyint(4) NOT NULL,
+  `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_id` int(10) unsigned NOT NULL,
+  `ipaddr` int(10) unsigned NOT NULL,
+  `final` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`vote_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `wordnet1`
+-- Table structure for table `vote_stat`
 --
 
-DROP TABLE IF EXISTS `wordnet1`;
-CREATE TABLE `wordnet1` (
-  `gid` int(11) NOT NULL DEFAULT '0',
-  `words` varchar(64) NOT NULL DEFAULT '',
-  `title` smallint(6) NOT NULL DEFAULT '0',
-  KEY `gid_2` (`gid`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `wordnet2`
---
-
-DROP TABLE IF EXISTS `wordnet2`;
-CREATE TABLE `wordnet2` (
-  `gid` int(11) NOT NULL DEFAULT '0',
-  `words` varchar(64) NOT NULL DEFAULT '',
-  `title` smallint(6) NOT NULL DEFAULT '0',
-  KEY `gid_2` (`gid`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Table structure for table `wordnet3`
---
-
-DROP TABLE IF EXISTS `wordnet3`;
-CREATE TABLE `wordnet3` (
-  `gid` int(11) NOT NULL DEFAULT '0',
-  `words` varchar(64) NOT NULL DEFAULT '',
-  `title` smallint(6) NOT NULL DEFAULT '0',
-  KEY `gid_2` (`gid`,`words`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+DROP TABLE IF EXISTS `vote_stat`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `vote_stat` (
+  `type` varchar(20) NOT NULL,
+  `id` int(10) unsigned NOT NULL,
+  `num` mediumint(8) unsigned NOT NULL,
+  `users` mediumint(8) unsigned NOT NULL,
+  `avg` float NOT NULL,
+  `std` float NOT NULL,
+  `baysian` float NOT NULL,
+  `v1` mediumint(8) unsigned NOT NULL,
+  `v2` mediumint(8) unsigned NOT NULL,
+  `v3` mediumint(8) unsigned NOT NULL,
+  `v4` mediumint(8) unsigned NOT NULL,
+  `v5` mediumint(8) unsigned NOT NULL,
+  PRIMARY KEY (`type`,`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
@@ -1490,3 +1900,4 @@ CREATE TABLE `wordnet3` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+-- Dump completed on 2016-08-07 16:06:33
