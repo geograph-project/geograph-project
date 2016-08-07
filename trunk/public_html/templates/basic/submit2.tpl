@@ -333,8 +333,6 @@ AttachEvent(window,'load',readHash,false);
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Preview Submission in a new window" onclick="return previewImage()"/> 
 	
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
 	</form>
 
 	<div style="position:fixed;left:10px;bottom:10px;display:none;background-color:silver;padding:2px;font-size:0.8em;width:148px" id="hidePreview">
