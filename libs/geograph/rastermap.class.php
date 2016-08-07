@@ -195,9 +195,7 @@ class RasterMap
 			}
 			
 			$mapurl = "http://{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 3 && empty($GLOBALS['USER']->user_id)) {
-				$mapurl = cachize_url($mapurl);
-			}
+
 			$gr= str_replace(' ','+',!empty($this->square->grid_reference_full)?$this->square->grid_reference_full:$this->square->grid_reference);
 			
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
@@ -259,9 +257,6 @@ class RasterMap
 				$mapurl = "http://{$CONF['fetch_on_demand']}/tile.php?r=".$this->getToken();
 			} else {
 				$mapurl = "http://{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
-			}
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 3 && empty($GLOBALS['USER']->user_id)) {
-				$mapurl = cachize_url($mapurl);
 			}
 			#$this->mapurl = $mapurl;
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";

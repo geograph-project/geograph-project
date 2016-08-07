@@ -13,11 +13,6 @@ if (empty($CONF['forums'])) {
         exit;	
 }
 
-if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 9 ) {
-	header("HTTP/1.1 503 Service Unavailable");
-	die("server busy, please try later");
-}
-
 if (!isset($_GET['forum']) || $_GET['forum'] != $CONF['forum_gallery'])
 	$USER->mustHavePerm("basic");
 

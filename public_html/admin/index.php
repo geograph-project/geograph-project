@@ -24,11 +24,6 @@
 require_once('geograph/global.inc.php');
 init_session();
 
-if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 ) {
-	header("HTTP/1.1 503 Service Unavailable");
-	die("server busy, please try later");
-}
-
 $USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->hasPerm("mapmod") || $USER->mustHavePerm("moderator");
 
 if (isset($_SESSION['editpage_options']))

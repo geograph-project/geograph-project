@@ -6,30 +6,19 @@ setlocale(LC_ALL,'C'); //to match online servers...
 $CONF=array();
 
 ###################################
-# optimization setup
-
-//see http://domain/admin/curtail.php - set to a positive number to enable - need to implement a cachize_url to convert a url to cache version
-$CONF['curtail_level']=0;
-
-function cachize_url($url) {
-        if (strpos($_SERVER['HTTP_USER_AGENT'], 'bot')>0) {
-                return $url;
-        }
-	return "http://mymirror/".str_replace('http://','',$url);
-}
-
-###################################
 # host setup
 
 //servers ip BEGIN with (the server that fires cron jobs etc)
 $CONF['server_ip'] = '127.0.0.';
 
 //set to X to enabling striping servering over a range of domains eg http://s[0,1,2,3].geograph.org.uk/photos/....
-$CONF['enable_cluster'] = 2;
-$CONF['STATIC_HOST'] = "s0.geograph.mobile";
+#$CONF['enable_cluster'] = 2;
+
+//hostname to use for static files (js etc), can be a different domain so cookieless. NOTE: if using enable_cluster must contain a '0' to be replaced by number.
+$CONF['STATIC_HOST'] = $_SERVER['HTTP_HOST'];
 
 //hostname to use for thumbnails if cluster is disabled (used to be used for full images, but now use $CONF['STATIC_HOST'])
-$CONF['CONTENT_HOST'] = "geograph.mobile";
+$CONF['CONTENT_HOST'] = $_SERVER['HTTP_HOST'];
 
 //this *can* be different to your main hostname if want dedicated host for cookieless tile.php requests
 $CONF['TILE_HOST'] = $_SERVER['HTTP_HOST'];
@@ -42,30 +31,18 @@ $CONF['KML_HOST'] = $_SERVER['HTTP_HOST'];
 
 $CONF['db_driver']='mysql';
 $CONF['db_connect']='localhost';
-$CONF['db_user']='geograph';
-$CONF['db_pwd']='banjo';
-$CONF['db_db']='geograph';
+$CONF['db_user']='CHANGETHIS';
+$CONF['db_pwd']='CHANGETHIS';
+$CONF['db_db']='CHANGETHIS';
 $CONF['db_persist']=''; #'?persist';
 
 //optional second database, used for sessions and gazetteer tables (need to contain a copy) 
 #$CONF['db_driver2']='mysql';
-#$CONF['db_connect2']='second.server';
-#$CONF['db_user2']='geograph';
-#$CONF['db_pwd2']='banjo';
-#$CONF['db_db2']='geograph';
+#$CONF['db_connect2']='CHANGETHIS';
+#$CONF['db_user2']='CHANGETHIS';
+#$CONF['db_pwd2']='CHANGETHIS';
+#$CONF['db_db2']='CHANGETHIS';
 #$CONF['db_persist2']=''; #'?persist';
-
-//optional slave database (with `db_db` as the master)
-#$CONF['db_read_driver']='mysql';
-#$CONF['db_read_connect']='slave.server';
-#$CONF['db_read_user']='geograph_read';
-#$CONF['db_read_pwd']='banjo';
-#$CONF['db_read_db']='geograph';
-#$CONF['db_read_persist']=''; #'?persist';
-
-//this is the database where temporally tables are created, normally left as main database, but in replication need a seperate database. 
-//the geograph AND geograph_read user should have full access to this database. whereas the geograph_read only needs SELECT priv on `geograph` db. 
-$CONF['db_tempdb']=$CONF['db_db'];
 
 //only enable debugging on development domains - this pulls in the
 //adodb-errorhandler.inc.php file which causes db errors to output using
@@ -114,7 +91,6 @@ $CONF['forum_teaching']          = -1; #8;
 $CONF['forum_devel']             = -1; #12;
 
 // topic ids
-$CONF['forum_topic_announce'] =  -1; #5808;
 $CONF['forum_topic_numsquare'] = -1; #1235;
 
 // forums which need custom templates
@@ -202,7 +178,7 @@ $CONF['photo_upload_dir'] = '/tmp';
 $CONF['register_confirmation_secret']='CHANGETHIS';
 
 //secret string used for hashing photo filenames
-$CONF['photo_hashing_secret']='CHANGETHISTOO';
+$CONF['photo_hashing_secret']='CHANGETHIS';
 
 //secret used for securing map tokens
 $CONF['token_secret']='CHANGETHIS';
@@ -265,21 +241,12 @@ $CONF['rastermap'] = array(
 			)	
 );
 
-//Username/Password for the metacarta webservices api
-//http://developers.metacarta.com/register/
-#$CONF['metacarta_auth'] = 'user@domain.com:password';
-$CONF['metacarta_auth'] = '';
-
 //does the map draw the more demanding placenames
 $CONF['enable_newmap'] = 1;
 
 //use the smaller towns database for the 'near...' lines rather than placenames
 $CONF['use_gazetteer'] = 'towns'; //OS250/OS/hist/towns/default
 //NOTE: for GB, OS, OS250 and hist are (c)'ed datasets and are not available under the GPL licence
-
-//optionally get a key for sending your data to geocubes. 
-$CONF['GEOCUBES_API_KEY'] = "";
-$CONF['GEOCUBES_API_TOKEN'] = "";
 
 ###################################
 # country info
@@ -355,10 +322,6 @@ $CONF['searchid_recent'] = 0;
 $CONF['searchid_potd'] = 0;
 
 ###################################
-
-//to use the flickr search will need to obtain a flicker api key
-//    http://flickr.com/services/api/misc.api_keys.html
-$CONF['flickr_api_key'] = '';
 
 //to use the picnik service for upload will need to obtain a api key
 //   http://www.picnik.com/keys/request
