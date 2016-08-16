@@ -42,6 +42,13 @@ require_once('geograph/searchengine.class.php');
 
 init_session();
 
+$src = 'data-src';
+if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
+        (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
+        $src = 'src';//revert back to standard non lazy loading
+}
+
+
 $smarty = new GeographPage;
 
 include('./geotrip_func.php');
@@ -110,6 +117,8 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
   var vdir,vdirFeature,vdirString;                                   // view directions
   var style_trk={strokeColor:"#000000",strokeOpacity:.7,strokeWidth:4.};
   var style_vdir={strokeColor:"#0000ff",strokeOpacity:1.,strokeWidth:2.};
+  var points = [];
+  var moveTimer = null;
   function initmap() {
     osMap=new OpenSpace.Map('map',{products: ["OV0", "OV1", "OV2", "MSR", "MS", "250KR", "250K", "50KR", "50K", "25KR", "25K", "VMLR", "VML"], controls:[],centreInfoWindow:false});
     osMap.addControl(new OpenSpace.Control.PoweredBy());             //  needed for T/C compliance
@@ -140,25 +149,14 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
       offset=new OpenLayers.Pixel(-4,-9);    // No idea why offset=-9 rather than -4 but otherwise the view line doesn't start at the centre
       infoWindowAnchor=new OpenLayers.Pixel(4,4);
       icon=new OpenSpace.Icon('walk.png',size,offset,null,infoWindowAnchor);
-//<![CDATA[
-      content='<p>';
-      content+='<a href=\"/photo/<?php print($geograph[$i]['gridimage_id']);?>\">';
-      content+='<img alt=\"<?php print(sanitise($geograph[$i]['title']));?>\" src=\"';
-      content+='<?php print($image->getThumbnail(213,160,true));?>';
-      content+='\"></a>';
-      content+='</p><p>';
-      content+='<strong><?php print(sanitise($geograph[$i]['title']));?></strong>';
-      content+='</p><p>';
-      content+='<?php print(sanitise($geograph[$i]['comment']));?>';
-      content+='</p><p>';
-      content+='View full image on ';
-      content+='<a href=\"/photo/<?php print($geograph[$i]['gridimage_id']);?>\">';
-      content+='Geograph Britain&amp;Ireland</a> ';
-      content+='<img alt=\"external link\" title=\"\" src=\"http://<?php echo $CONF['STATIC_HOST']; ?>/img/external.png\" />';
-      content+='</p>';
-//]]>
       popUpSize=new OpenLayers.Size(300,320);
-      osMap.createMarker(pos,icon,content,popUpSize);
+      var marker = osMap.createMarker(pos,icon,null,popUpSize);
+      marker.events.register('click', marker, function(evt) {
+          scrollIntoView(<?php echo $geograph[$i]['gridimage_id']; ?>);
+      });
+      points.push([<?php print("{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']},{$geograph[$i]['gridimage_id']}");?>]);
+
+
       // Define view direction
       vdir=new Array();
       vdir.push(new OpenLayers.Geometry.Point(<?php print("{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']}");?>));
@@ -181,41 +179,51 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 <?php
     }
 ?>
+
+    osMap.events.register('move', osMap, function(evt) {
+      if (moveTimer) {
+        clearTimeout(moveTimer);
+      }
+	if (!document.getElementById('enableScroll').checked)
+		return;
+      moveTimer = setTimeout(function() {
+      var point = osMap.getCenter();
+      var east = point.getEasting();
+      var north = point.getNorthing();
+      var distance;
+      var idx = -1;
+      for(i=0;i<points.length;i++) {
+        var d = Math.pow(east  - points[i][0],2) +
+                Math.pow(north - points[i][1],2); //no point bothering with sqrt, as just want shortest.
+        if (idx == -1 || d < distance) {
+          distance = d;
+          idx = i;
+        }
+      }
+      if (idx > 0) {
+        scrollIntoView(points[idx][2]);
+      }
+      },100);
+    });
+
+
   }
-  
+
   AttachEvent(window,'load',initmap,false);
 
 </script>
 
 <h2><a href="./">Geo-Trips</a> :: <? echo htmlentities($hdr2); ?></h2>
 
-<div class="panel maxi">
 <?php
   print('<h3>'.htmlentities($trk['location']).'</h3>');
   $date=date('D, j M Y',strtotime($trk['date']));
-  print('<h4>A '.whichtype($trk['type']).' from '.htmlentities($trk['start'])."</h4><h4>$date</h4><h4>by <a href=\"/profile/$trk[uid]\">".htmlentities($trk[user])."</a></h4><p style=\"text-align:center\">");
-  // row of random images
-  $selected=array();
-  for ($i=0;$i<3;$i++) {
-    $imgno=mt_rand(0,$len-1);
-    if (!in_array($imgno,$selected)) {
-      $image = new GridImage();
-      $image->fastInit($geograph[$imgno]);
-      $thumb=$image->getThumbnail(213,160,true);
-      print("<a href=\"/photo/{$geograph[$imgno]['gridimage_id']}\" title=\"".htmlentities($geograph[$imgno]['title'])."\">");
-      print("<img alt=\"".htmlentities($geograph[$imgno]['title'])."\" class=\"inner\" src=\"$thumb\" /></a>&nbsp;");
-      $selected[]=$imgno;
-    } else {
-      $i--;
-    }
-  }
-?>
-  </p>
-<?php
+  print('<h4 style=text-align:left>A '.whichtype($trk['type']).' from '.htmlentities($trk['start']).", $date by <a href=\"/profile/$trk[uid]\">".htmlentities($trk[user])."</a></h4>");
+
   $prec=$trk['contfrom'];
   $foll=$foll['id'];
   if ($prec||$foll) {
-    print('<table class="ruled" style="margin:auto"></tr>');
+    print('<table class="ruled mapwidth"></tr>');
     if ($prec) print("<td class=\"hlt\" style=\"width:120px;text-align:center\"><a href=\"/geotrips/$prec\">preceding leg</a></td>");
     else print('<td></td>');
     print('<td style="margin:20px;text-align:center"><b>This trip is part of a series.</b></td>');
@@ -224,30 +232,204 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
     print('</tr></table>');
   }
 ?>
-  <p>
-<?php print(str_replace("\n",'</p><p>',GeographLinks(htmlentities($trk['descr'])))); ?>
+  <p class="mapwidth">
+<?php print(str_replace("\n",'</p><p class="mapwidth">',GeographLinks(htmlentities($trk['descr'])))); ?>
   </p>
 <? if ($trk['uid'] == $USER->user_id) { ?>
-  <div class="inner flt_r">
+  <div class="mapwidth">
     [<a href="geotrip_edit.php?trip=<? echo $trk['id']; ?>">edit this trip</a>]
   </div>
 <? } ?>
-  <div> <p><small>
+  <div class="mapwidth"> <p><small>
 <?php if ($trk['track']) print('On the map below, the grey line is the GPS track from this trip. ');?>
 Click the blue circles to see a photograph
 taken from that spot and read further information about the location.  The blue lines indicate
 the direction of view.  There is also a
-<a href="/search.php?i=<?php print($trk['search']);?>&amp;displayclass=slidebig">slideshow</a> of this trip.
-  </small></p></div>
-  <div class="row"></div>
-  <div id="map" class="inner" style="width:798px;height:800px"></div>
-  <p style="font-size:.65em">
-All images &copy; <?php print("<a href=\"/profile/{$trk['uid']}\">".htmlentities($trk['user'])."</a>");?> and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">
-Creative Commons licence</a> <img alt="external link" title="" src="http://<?php echo $CONF['STATIC_HOST']; ?>/img/external.png" />.
-  </p>
+<a href="/search.php?i=<?php print($trk['search']);?>&amp;displayclass=slide">slideshow</a> of this trip.
+  </small>
+
+( <i> <input type=checkbox id="enableScroll" checked> <label for="enableScroll">Auto-sync scrolling and map dragging</label></i> )
+
+</p></div>
+
+<div style="width:1020px">
+  <div id="map" style="width:700px;height:800px;"></div>
+  <div id="scroller">
+	<div>
+	<p>&darr; Scroll down here &darr;</p>
+<?php
+
+                                if (!function_exists('smarty_modifier_truncate')) {
+                                        require_once("smarty/libs/plugins/modifier.truncate.php");
+                                }
+
+
+  $len=count($geograph);
+  for ($i=0;$i<$len;$i++) {
+      $image = new GridImage();
+      $image->fastInit($geograph[$i]);
+      print("<p data-id=\"{$geograph[$i]['gridimage_id']}\" data-position=\"{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']}");
+      if ($geograph[$i]['nateastings']!=$geograph[$i]['viewpoint_eastings']||$geograph[$i]['natnorthings']!=$geograph[$i]['viewpoint_northings']) {  // subject GR != camera GR
+		print ",{$geograph[$i]['nateastings']},{$geograph[$i]['natnorthings']}";
+      } else {
+        $ea=$geograph[$i]['nateastings']+round(100.*sin($geograph[$i]['view_direction']*M_PI/180.));
+        $no=$geograph[$i]['natnorthings']+round(100.*cos($geograph[$i]['view_direction']*M_PI/180.));
+		print ",$ea,$no";
+      }
+      print("\"><a href=\"/photo/{$geograph[$i]['gridimage_id']}\" title=\"".htmlentities($geograph[$i]['title'])."\" target=\"_blank\">");
+      print($image->getThumbnail(213,160,false,true,$src)."</a><br>");
+      print("<strong>".htmlentities2($geograph[$i]['title'])."</strong>");
+	if (!empty($geograph[$i]['comment'])) {
+		print("<br><small title=\"".htmlentities2($geograph[$i]['comment'])."\">".smarty_modifier_truncate(htmlentities2($geograph[$i]['comment']),90,"... <i><a href=\"/photo/{$geograph[$i]['gridimage_id']}\" target=_blank>more</a></i>")."</small>");
+	}
+      print("</p>");
+  }
+?>
+	</div>
+  </div>
 </div>
 
-<?php 
+  <p class="mapwidth"><small>
+All images &copy; <?php print("<a href=\"/profile/{$trk['uid']}\">".htmlentities($trk['user'])."</a>");?> and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">
+Creative Commons licence</a> <img alt="external link" title="" src="http://<?php echo $CONF['STATIC_HOST']; ?>/img/external.png" />. </small>
+  </p>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/jquery.scrollto/2.1.2/jquery.scrollTo.min.js"></script>
+
+<script>
+var performScroll = true;
+var highlightMarker = null;
+var highlightFeature = null;
+$('#scroller').scroll(function() {
+        if (!performScroll) { //hacky way to avoid code initialted event
+		performScroll = true; //do it next time!
+		return;
+	}
+
+	var elements = $(this).find('p');
+	var offset =  elements.first().offset().top;
+	var position = $(this).scrollTop();
+
+	var element = 1;
+	if (position > 20) //bodge, to make sure can always select the first image!
+	elements.each(function(index) {
+	     //for some unknown reason, .position() doesnt seem to work, so use .offset() instead,
+	     //but need remove the offset of the first element to get the actual position WITHIN the scrolling div
+
+	     if (($(this).offset().top - offset - position) < 250)
+                 element = index;
+	});
+
+	if (element > -1) {
+		element = $(elements.get(element));
+		if (!element.hasClass('selected')) {
+			elements.removeClass('selected');
+			element.addClass('selected');
+
+			var bits = element.data('position').split(/,/);
+			if (bits.length > 1) {
+				var pos = new OpenSpace.MapPoint(bits[0],bits[1]);
+				var zoom = (moveTimer)?null:10;
+				if (document.getElementById('enableScroll').checked)
+					osMap.setCenter(pos,zoom,false);
+				newHighlightMarker(bits);
+			}
+		}
+	}
+});
+
+function newHighlightMarker(bits) {
+	if (highlightMarker) {
+		osMap.removeMarker(highlightMarker);
+	        trkLayer.removeFeatures([highlightFeature]);
+	}
+
+      var pos = new OpenSpace.MapPoint(bits[0],bits[1]);
+      size=new OpenLayers.Size(35,35);
+      offset=new OpenLayers.Pixel(-17,-21);    // No idea why offset=-9 rather than -4 but otherwise the view line doesn't start at the centre
+      infoWindowAnchor=new OpenLayers.Pixel(17,17);
+      icon=new OpenSpace.Icon('walk_focus_big_dark.png',size,offset,null,infoWindowAnchor);
+      highlightMarker = osMap.createMarker(pos,icon);
+
+     if (bits.length==2)
+	return;
+
+      // Define view direction
+      var vdir=new Array();
+      vdir.push(new OpenLayers.Geometry.Point(bits[0],bits[1]));
+      vdir.push(new OpenLayers.Geometry.Point(bits[2],bits[3]));
+      var vdirString=new OpenLayers.Geometry.LineString(vdir);
+      var style_vdir={strokeColor:"#880088",strokeOpacity:1.,strokeWidth:2.};
+      var style_vdir={strokeColor:"#c37fc3",strokeOpacity:1.,strokeWidth:2.};
+      highlightFeature=new OpenLayers.Feature.Vector(vdirString,null,style_vdir);
+      trkLayer.addFeatures([highlightFeature]);
+
+}
+
+function scrollIntoView(gridimage_id) {
+
+	var elements = $('#scroller').find('p');
+
+	elements.each(function(index) {
+             if ($(this).data('id') == gridimage_id) {
+                        elements.removeClass('selected');
+                        $(this).addClass('selected');
+                    performScroll = false;
+                    //$('#scroller').scrollTop($(this).position().top-200);
+                    $('#scroller').scrollTo($(this),0,{offset:-200});
+
+			var bits = $(this).data('position').split(/,/);
+			if (bits.length > 1) {
+				pos = new OpenSpace.MapPoint(bits[0],bits[1]);
+				newHighlightMarker(bits);
+			}
+             }
+	});
+}
+</script>
+
+<style>
+.mapwidth {
+	width:800px;
+	clear:both;
+}
+#map {
+	width:700px;
+	height:800px;
+	float:left;
+}
+#scroller {
+	position:relative;
+	float:left;
+	height:800px;
+	width:300px;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
+
+#scroller div {
+	padding-bottom:500px;
+	text-align:center;
+}
+
+#scroller p {
+	border:1px solid white;
+}
+#scroller p.selected {
+	background-color:#eee;
+	border:1px solid DarkOrchid;
+}
+</style>
+
+
+<?php
+
+
+        if ($src == 'data-src')
+                print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazynew.v1.js" type="text/javascript"></script>';
+
 
 $smarty->display('_std_end.tpl');
 
