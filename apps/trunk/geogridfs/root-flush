@@ -4,15 +4,17 @@ cd /var/geogridfs/
 
 GET http://localhost/apachestat > /tmp/apachestat
 
-echo apache2ctl graceful-stop
-apache2ctl graceful-stop
-
-sleep 1
-
-while ps aux | grep apache | grep -v grep; do
-        echo "apache still running, sleeping again"
-        sleep 2
-done
+echo "Stopping Apache"
+## 28=WINCH, apprently start-stop-daemon doesn't like WINCH, see https://gist.github.com/mdesantis/4740439
+start-stop-daemon --stop --quiet --oknodo --retry=-28/300/TERM/30/KILL/5 \
+    --pidfile /run/apache2/apache2.pid --name apache2 \
+    --exec /usr/sbin/apache2; ret=$?
+if [ $ret -eq 0 ] || [ $ret -eq 1 ]; then
+    echo "Apache stopped"
+else
+    echo "Failed to stop Apache, aborting"
+    exit 1
+fi
 
 echo ./off
 sudo -u www-data ./off
@@ -23,8 +25,8 @@ sudo -u www-data ./on
 echo ./remount
 php remount
 
-echo ls -l /var/www/geograph_live/public_html/geophotos
-ls -l /var/www/geograph_live/public_html/geophotos
+echo ls -l /var/www/geograph_live/public_html/geophotos/
+ls -l /var/www/geograph_live/public_html/geophotos/
 
 echo "ps aux | grep python"
 ps aux | grep python | grep -v grep
@@ -32,9 +34,10 @@ ps aux | grep python | grep -v grep
 echo 
 
 if [ $1 = "run" ]; then
-        echo "apache2ctl start";
-        apache2ctl start
+        echo "Starting Apache";
+        service apache2 start
 else
-        echo "apache2ctl start #(NOT run)"
+        echo "service apache2 start #(NOT run)"
 fi
+
 
