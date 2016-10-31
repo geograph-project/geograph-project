@@ -155,6 +155,8 @@ function deferTicket(gridimage_ticket_id, hours)
 			status = 'accepted';
 		if (document.getElementById('other'+gridimage_id) && document.getElementById('other'+gridimage_id).className.indexOf('on') > -1)
 			status = 'accepted';
+		if (document.getElementById('extra'+gridimage_id) && document.getElementById('extra'+gridimage_id).className.indexOf('on') > -1)
+			status = 'accepted';
 		return status;
 	}
 
