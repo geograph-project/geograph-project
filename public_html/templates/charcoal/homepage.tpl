@@ -39,7 +39,7 @@ title="Click to see full size photo"
 >{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 
 <div style="float:left">
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/2.0/80x15.png" /></a>
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://{$static_host}/img/80x15.png" /></a>
 </div>
 <div class="potdtitle"><a href="/photo/{$pictureoftheday.gridimage_id}"
 title="Click to see full size photo"

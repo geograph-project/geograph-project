@@ -143,7 +143,7 @@ foreach ($data as $category => $count) {
 ?>
 </ol>
 
-<div style="text-align:center; border:1px solid green; background-color:lightgreen; width:750px;padding:10px"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" border="0" style="vertical-align: middle"></a> &copy; Copyright <a href="/credits/<? echo $date; ?>">Geograph Project Limited and its Contributors</a> <br/> and
+<div style="text-align:center; border:1px solid green; background-color:lightgreen; width:750px;padding:10px"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="http://<? echo $CONF['STATIC_HOST']; ?>/img/somerights20.gif" border="0" style="vertical-align: middle"></a> &copy; Copyright <a href="/credits/<? echo $date; ?>">Geograph Project Limited and its Contributors</a> <br/> and
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 
 <br/>
