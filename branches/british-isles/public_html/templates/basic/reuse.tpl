@@ -70,11 +70,13 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}
 
 <ul class="checklist">
 
-<li>Under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited to <b>{$image->realname|escape:'html'}</b>, an example of good wording (including the hyperlinks) is shown in the above box.{if $image->credit_realname}<small><br/>(The contributor <tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>)</small>{/if}</li>
+<li>Under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited to <b>{$image->realname|escape:'html'}</b>. An example of good wording for web use (including the hyperlinks) is shown in the above box. See below for print based wording.{if $image->credit_realname}<small><br/>(The contributor <tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>)</small>{/if}</li>
 
 <li>You should also mention that the photo is copyrighted but also licensed for further reuse.</li>
 
 <li>If you alter, transform, or build upon this work, you may distribute the resulting work only under a similar licence.</li>
+
+<li><b>CAUTION:</b> You may require further permissions to reuse images, especially those taken on private property, for instance the National Trust. <b>Do not assume</b> that the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a> is sufficient permission for your intended reuse, particularly if that reuse is commercial.</li>
 
 </ul>
 
@@ -83,7 +85,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}
 <ul class="checklist">
 
 {if $image->isLandscape()}{/if}
-<li><b>We do ask you be polite and not abuse the Geograph website resources.</b> <br/>
+<li><b>We do ask you to be polite and not abuse the Geograph website resources.</b> <br/>
 <small>&nbsp; <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="16" height="16"/>
 {external href="http://en.wikipedia.org/wiki/Inline_linking" text="Hotlinking"} the image directly off our servers will trigger automatic watermarks and may be blocked</small><br/><br/>
 
