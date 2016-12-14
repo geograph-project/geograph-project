@@ -9,6 +9,7 @@
      <li><a title="View map of all submissions" href="/mapbrowse.php">Maps</a></li>
      <li><a title="Interactive browser, search and map in one" href="/browser/#!start">Browser</a></li>
      <li><a title="Explore images by theme" href="/explore/">Explore</a></li>
+     <li><a title="Curated selection of images" href="/gallery.php">Gallery</a></li>
     </ul></li>
     <li><ul>
      <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li>
@@ -30,7 +31,7 @@
     </ul></li>
     <li>General<ul>
      <li><a title="Frequently Asked Questions" href="/faq3.php?l=0">FAQ</a></li>
-     <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Information</a></li>
+     <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Project Info</a></li>
      <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li>
      <li><a accesskey="9" title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
     </ul></li>
@@ -50,7 +51,7 @@
   {/dynamic}
   </ul>
 <div class="sponsor">sponsored by <br/> <br/>
-<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/oswebsite/education/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey"/></a></div>
+<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="http://{$static_host}/img/os-logo-p64.png" width="64" height="50" alt="Ordnance Survey"/></a></div>
 {if $image && $image->collections}
 	<h3 class="newstitle">This photo is linked from:</h3>
 	{assign var="lasttype" value="0"}
@@ -75,7 +76,7 @@
 		<h3 class="newstitle">{$newsitem.topic_title}</h3>
 		<div class="newsbody">{$newsitem.post_text}</div>
 		<div class="newsfooter">
-		Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
+		Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b %Y"}
 		<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
 		</div>
 	{/foreach}
@@ -85,7 +86,7 @@
 		<h3 class="newstitle">{$newsitem.topic_title}</h3>
 		<div class="newsbody">{$newsitem.post_text}</div>
 		<div class="newsfooter">
-		Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b"}
+		Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$newsitem.topic_time|date_format:"%a, %e %b %Y"}
 		<a href="/discuss/index.php?action=vthread&amp;topic={$newsitem.topic_id}">({$newsitem.comments} {if $newsitem.comments eq 1}comment{else}comments{/if})</a>
 		</div>
 	{/foreach}
@@ -141,8 +142,8 @@
        <span class="sep">|</span>
        <a href="/article/Get-Involved" title="contribute to geograph">Get Involved</a>
     </p>
-    <p style="color:#777788;">Hosting supported by
-    {external title="click to visit the CatN website - home of vCluster hosting" href="http://catn.com/" text="CatN"}
+    <p style="color:#777788;">Website supported by
+    {external title="click to visit the livetodot website" href="http://www.livetodot.com/hosting/" text="Hosting from Livetodot" nofollow="true"}
     </p>
   </div>
 </div>

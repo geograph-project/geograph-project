@@ -3,10 +3,10 @@
 <div id="footer">
 {box colour="333"}
 
-   <div id="footer_right" style="text-align:right">
-   Project sponsored by <a href="http://www.ordnancesurvey.co.uk/education-research/" title="Geograph Britain and Ireland sponsored by Ordnance Survey"><img src="http://{$static_host}/templates/charcoal/css/oslogo-small.gif" width="54" height="15" alt="Ordnance Survey Logo"/></a><br/>
-   <small>Hosting supported by 
-     {external title="click to visit the CatN website - home of vCluster hosting" href="http://catn.com/" text="CatN"}<br/></small>
+   <div id="footer_right">
+   Project sponsored by <a href="https://www.ordnancesurvey.co.uk/education/" title="Geograph Britain and Ireland sponsored by Ordnance Survey"><img src="http://{$static_host}/img/os-logo-pw64.png" width="64" height="50" alt="Ordnance Survey Logo" align="right" style="margin-left:7px"/></a><br/>
+   <small>Hosting with<br>
+     {external title="click for livetodot website" href="http://www.livetodot.com/" text="Livetodot" nofollow="true"}<br/></small>
 	</div>
 	
 	<div id="footer_left"><a href="/help/sitemap" title="Listing of site pages">Sitemap</a>

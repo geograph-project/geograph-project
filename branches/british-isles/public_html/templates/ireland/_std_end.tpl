@@ -24,7 +24,7 @@
      <li><a title="Content" href="/content/">Collections</a><ul>
       <li><a href="/article/">Articles</a></li>
       <li><a href="/gallery/">Galleries</a></li>
-      <li><a href="http://users.aber.ac.uk/ruw/misc/geotrip.php?osos">Geo-Trips</a></li>
+      <li><a href="http://www.geograph.org.uk/geotrips/">Geo-Trips</a></li>
      </ul></li>
      <li><a title="Activities" href="/activities/">Activities</a><ul>
       <li><a title="Play Games" href="/games/">Games</a> </li>
@@ -35,6 +35,8 @@
      <li><b><a title="Submit" href="/submit.php">Submit</a></b><ul>
       <li><a title="Submit Version 2" href="/submit2.php">Submit v2</a></li>
       <li><a title="Multi-Uploader Submission" href="/submit-multi.php">Multi-Submit</a></li>
+      <li><a title="Recent Submissions" href="/submissions.php">Recent Uploads</a></li>
+      <li><a title="Your Profile" href="/profile.php">Your Profile</a></li>
      </ul></li>
      <li><a title="Statistics" href="/numbers.php">Statistics</a><ul>
       <li><a title="More Stats" href="/statistics.php">More Stats</a></li>
@@ -87,7 +89,7 @@
   {/dynamic}
   </ul>
 <div class="sponsor">sponsored by <br/> <br/>
-<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/education-research/"><img src="http://{$static_host}/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey"/></a></div>
+<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="http://{$static_host}/img/os-logo-p64.png" width="64" height="50" alt="Ordnance Survey"/></a></div>
 {if $image && $image->collections}
 	<h3 class="newstitle">This photo is linked from:</h3>
 	{assign var="lasttype" value="0"}
@@ -176,8 +178,8 @@
        <span class="sep">|</span>
        <a href="/article/Get-Involved" title="contribute to geograph">Get Involved</a>
     </p>
-    <p style="color:#777788;">Hosting supported by
-    {external title="click to visit the CatN website - home of vCluster hosting" href="http://catn.com/" text="CatN"}
+    <p style="color:#777788;">Website supported by
+    {external title="click here to visit the Livetodot website" href="http://www.livetodot.com/hosting/" text="Hosting from Livetodot" nofollow="true"}
     </p>
   </div>
 </div>

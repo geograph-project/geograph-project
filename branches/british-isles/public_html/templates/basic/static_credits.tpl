@@ -94,9 +94,9 @@
 	<a name="hosting"></a>    
     <h3>Hosting</h3>
     <ul>
-     <li>{external href="http://www.ordnancesurvey.co.uk/education-research/" text="Ordnance Survey&reg;"} Great Britain have agreed to sponsor the project, allowing us to secure reliable hosting, as well as to develop the project into an educational context.</li>
+     <li>{external href="https://www.ordnancesurvey.co.uk/education/" text="Ordnance Survey&reg;"} Great Britain have agreed to sponsor the project, allowing us to secure reliable hosting, as well as to develop the project into an educational context.</li>
      
-     <li>{external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"}/{external title="Visit Fubra website" href="http://catn.com/" text="CatN"} provide superb co-location hosting and support, giving a home to {external href="http://blog.dixo.net/2006/07/28/geograph-servers-coming-to-life/" text="our collection of servers"}.</li> 
+     <li>{external title="Visit Fubra website" href="http://www.fubra.com/" text="Fubra"}/{external title="Visit Livetodot website" href="http://www.livetodot.com/hosting/" text="Livetodot"} provide superb co-location hosting and support, giving a home to {external href="http://blog.dixo.net/2006/07/28/geograph-servers-coming-to-life/" text="our collection of servers"}.</li> 
 
      <li>{external title="Visit World of Computers website" href="http://www.woc.co.uk/" text="World of Computers"} build all our servers. Reliable machines coupled with great technical support.</li>
 

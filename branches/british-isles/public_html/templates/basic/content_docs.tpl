@@ -1,12 +1,13 @@
-{assign var="page_title" value="Guides, Tutorials"}
-{assign var="meta_description" value="Geograph Information, Guides and Tutorials"}
+{assign var="page_title" value="Project Information, Guides, Tutorials"}
+{assign var="meta_description" value="Listings of various Geograph Information pages, Guides and Tutorials - look here to find out more about the project"}
 {include file="_std_begin.tpl"}
 
 <div class="tabHolder">
 	<span class="tabSelected">Information</span>
         <a href="/faq3.php?l=0" class="tab">FAQ</a>
-        <a href="/article/About-Geograph-page" class="tab">About Geograph</a>
-        <a href="/team.php" class="tab">The Geograph Team</a>
+        <a href="/news.php" class="tab">News</a>
+        <a href="/article/About-Geograph-page" class="tab" title="About Geograph">About Us</a>
+        <a href="/team.php" class="tab">The Team</a>
         <a href="/credits/" class="tab">Contributors</a>
         <a href="/help/credits" class="tab">Credits</a>
         <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
@@ -15,20 +16,12 @@
 </div>
 
 <div class="interestBox">
-<h2 style="margin:0">Information, Guides and Tutorials</h2>
+<h2 style="margin:0">Geograph Project Information, Guides and Tutorials</h2>
 </div>
-<div style="float:right;margin-right:20px"><a href="/content/?docs&amp;order=updated">View by last updated</a></div>
-
 
 {include file="_doc_search.tpl"}
 
 	<div id="searchresults"></div>
-
-{if $enable_forums}
-<ul>
-	<li>We have a new user-contributed <a href="/faq3.php">Knowledgebase</a>, please help us improve it!</li>
-</ul>
-{/if}
 
 
 {assign var="lastid" value="0"}
@@ -70,7 +63,7 @@
 
 	<div class="interestBox" style="font-size:1.3em;margin-bottom:20px">Can't find what you looking for? <a href="/ask.php">Ask us</a>!</div>
 
-	<p align="center">Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 26 Cloister Road, Acton, London W3 0DE. <a href="/article/About-Geograph-page">About Geograph Project</a>.</p>
+	<p align="center">Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967.<br> Registered office: 49 Station Road, Polegate, East Sussex, BN26 6EA. <a href="/article/About-Geograph-page">About Geograph Project</a>.</p>
 
 
 {include file="_std_end.tpl"}
