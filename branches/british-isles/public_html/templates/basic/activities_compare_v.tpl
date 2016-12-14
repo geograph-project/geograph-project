@@ -39,7 +39,7 @@ function reveal() {
 			<td>
 				<!-- Creative Commons Licence -->
 				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-				alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image1->profile_link}">{$image1->realname|escape:'html'}</a> and  
+				alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image1->profile_link}">{$image1->realname|escape:'html'}</a> and  
 				licensed for re-use under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 				<!-- /Creative Commons Licence -->
 				<hr/>
@@ -128,7 +128,7 @@ function reveal() {
 				<hr/>
 				<!-- Creative Commons Licence -->
 				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-				alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image2->profile_link}">{$image2->realname|escape:'html'}</a> and  
+				alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image2->profile_link}">{$image2->realname|escape:'html'}</a> and  
 				licensed for re-use under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 				<!-- /Creative Commons Licence -->
 			</td>
