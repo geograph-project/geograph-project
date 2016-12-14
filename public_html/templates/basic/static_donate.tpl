@@ -10,7 +10,8 @@
 <p>Please consider supporting us:</p>
 
 <ul>
-	<li style="background-color:#eeeeee;padding:5px;"><a href="https://mydonate.bt.com/charities/geograph"><b>BT MyDonate</b></a> - <small>Preferred</small> <a href="https://mydonate.bt.com/charities/geograph"><img src="https://mydonate.bt.com/images/Donate-Now-button.gif" height=24></a><br/><br/>
+	<li style="background-color:#eeeeee;padding:5px;"><a href="https://mydonate.bt.com/charities/geograph"><b>BT MyDonate</b></a> - <small>Preferred</small> 
+<a href="http://mydonate.bt.com/donation/donate.html?charity=geograph"><img src="https://mydonate.bt.com/images/Donate-Now-button.gif" height=24></a><br/><br/>
 
 				<form id="command" action="https://mydonate.bt.com/charity/charitySearch.html" method="post" style="float:left;width:200px;display:none;">
 					<input name="charityId" type="hidden" value="61687" />
@@ -91,7 +92,7 @@ Alternatively...
 
 </ul>
 
-<p>or, <a href="/contact.php">Contact Us</a> for out bank details to setup a Standing Order.</p>
+<p>or, {mailto address="treasurer@geograph.org.uk" text="Contact the Treasurer" encode="javascript"} if you wish to set up a standing order or donate via Charities Aid Foundation (CAF)</p>
 
 <p>Thank you!</p>
 
@@ -102,25 +103,25 @@ Alternatively...
 <table cellspacing=0 cellpadding=10 border=0> 
 	<tr>
 		<td align="center">
-			<a title="Geograph sponsored by Ordnance Survey" href="http://www.ordnancesurvey.co.uk/education-research/"><img src="http://s0.geograph.org.uk/templates/basic/img/sponsor_small.gif" width="125" height="31" alt="Ordnance Survey"/></a>
+			<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="http://{$static_host}/img/os-logo-p85.png" width="85" height="67" alt="Ordnance Survey"/></a>
 		</td>
 		<td>
-			<a href="http://www.ordnancesurvey.co.uk/education-research/"> Ordnance Survey</a><br/><br/>
+			<a href="https://www.ordnancesurvey.co.uk/education/"> Ordnance Survey</a><br/><br/>
 			- National Mapping Agency of Great Britain. OS Sponsor Geograph.
 		</td>
 	</td>
         <tr>
                 <td align="center">
-			<a href="http://catn.com/"><img src="http://s0.geograph.org.uk/img/catn-logo.png" style="background-color:#423f3f;padding:10px;" alt="catN Logo"/></a>
+			<a href="http://www.livetodot.com/hosting/"><img src="http://{$static_host}/img/livetodot-logo.png" style="padding:10px;" alt="Livetodot Logo"/></a>
 		</td>
 		<td>
-			<a href="http://catn.com/">catN Hosting</a><br/><br/>
-			- PHP cluster hosting experts. They do co-location too! Home of the Geograph servers.
+			<a href="http://www.livetodot.com/hosting/">Livetodot Hosting</a><br/><br/>
+			- Server Co-location services. Home of the Geograph servers.
                 </td>
         </td>
         <tr>
                 <td align="center">
-			<a href="http://www.woc.co.uk/"><img src="http://s0.geograph.org.uk/img/woc.jpg"/></a>
+			<a href="http://www.woc.co.uk/"><img src="http://{$static_host}/img/woc.jpg"/></a>
                 </td>
                 <td>
  			<a href="http://www.woc.co.uk/">World of Computers</a><br/><br/>
@@ -132,6 +133,6 @@ Alternatively...
 
 <hr/>
 
-<p align="center" style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. The registered office is <span class="nowrap">26 Cloister Road, Acton, London W3 0DE.</span> </p>
+<p align="center" style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. The registered office is <span class="nowrap">49 Station Road, Polegate, East Sussex, BN26 6EA.</span> </p>
 
 {include file="_std_end.tpl"}
