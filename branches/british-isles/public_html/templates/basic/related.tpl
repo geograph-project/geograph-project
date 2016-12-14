@@ -1,5 +1,6 @@
 {assign var="page_title" value="Images related to `$image->title`"}
 {include file="_std_begin.tpl"}
+{assign var="gridimage_id" value=$image->gridimage_id}
 
 <a name="top"></a>
 
@@ -42,8 +43,9 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}
 <div class="interestBox">
 <h2 style=margin:0>Related Images</h2>
 </div>
+{if count($results) > 1}
 <br/>
-
+{/if}
 
 <ol start="{$offset}">
 {foreach from=$results item=item}
@@ -68,6 +70,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}
 		<div style="float:left;width:160px;height:160px" class="photo33"><div style="height:{$thumbh}px;vertical-align:middle"><a title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname} {$image->dist_string} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail($thumbw,$thumbh,false,true)}</a></div>
 		<div class="caption"><div class="minheightprop" style="height:2.5em"></div><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a><div class="minheightclear"></div></div>
 		<div class="statuscaption">by <a href="{$image->profile_link}">{$image->realname}</a></div>
+		<a href="/related.php?id={$image->gridimage_id}&method={$method|escape:'url'}">more</a>
 		</div>
 	{foreachelse}
 		{if $item.skipped}
@@ -81,7 +84,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}
 {if count($results) > 1}
 	</li>
 {elseif $item.resultCount}
-	1..25 of about <a href="/related.php?id={$image->gridimage_id}">{$item.resultCount|thousends} images</a>.
+	1..25 of about <a href="/related.php?id={$gridimage_id}">{$item.resultCount|thousends} images</a>.
 {/if}
 {foreachelse}
 
@@ -91,28 +94,8 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}
 
 </ol>
 
-<script type="text/javascript">
-{literal}
-function show_portals() {
-	show_tree(101);
-	var ele = document.getElementById('iframe');
-	ele.src = ele.title;
-	return false;
-}
-if (Math.random() * 10 > 9) {
-	 AttachEvent(window,'load',function () { setTimeout('show_portals()',4000) },false);
-}
-{/literal}
-</script>
-
-<p id="hide101">&middot; <a href="javascript:void(show_portals())">Show portals for this image</a> <sup style=color:red>Experimental</sup></p>
-<div id="show101" style="display:none" class="interestBox">
-	<iframe src="about:blank" title="http://www.geographs.org/portals/tester.php?id={$image->gridimage_id}&amp;t={$image->title|escape:'url'}&amp;u={$image->user_id}&amp;g={$image->grid_reference}&amp;c={$image->comment|escape:'url'}&amp;i={$image->imageclass|escape:'url'}" width="100%" height="500" id="iframe"></iframe>
-</div>
-
-
 <br/><br/>
-<div class="top"><a href="#top">back to top</a> | <a href="/photo/{$image->gridimage_id}">Return to photo page</a></div>
+<div class="top"><a href="#top">back to top</a> | <a href="/photo/{$gridimage_id}">Return to photo page</a></div>
 
 
 
