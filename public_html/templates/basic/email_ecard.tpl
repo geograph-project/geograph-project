@@ -25,7 +25,7 @@ http://creativecommons.org/licenses/by-sa/2.0/
 --------------------------------
 
 This message was sent to you by site visitor to Geograph Britain and Ireland,
-forward abuse complaints to: rogersgm@gmail.com
+forward abuse complaints to: support@geograph.org.uk
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40
 Content-Type: text/html;
@@ -82,7 +82,7 @@ solid"=20
     <TD style=3D"BORDER-RIGHT: black 1px solid" align=3Dmiddle =
 bgColor=3D#ffffff>
       <DIV class=3Dcaption><FONT face=3DGeorgia size=3D-1><B>{$image->title|escape:'html'}</B></FONT></DIV>
-      <DIV class=3Dcaption><FONT face=3DGeorgia size=3D-1>{$image->comment|escape:'html'|geographlinks}</FONT>=
+      <DIV class=3Dcaption><FONT face=3DGeorgia size=3D-1>{$image->comment|escape:'html'|geographlinks|replace:'=':'=3D'}</FONT>=
 </DIV></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
@@ -116,7 +116,7 @@ href=3D"http://creativecommons.org/licenses/by-sa/2.0/"=20
 <P align=3Dcenter><FONT face=3DGeorgia size=3D-1>This message was sent =
 to you by site=20
 visitor to Geograph Britain and Ireland, <BR>forward abuse complaints to:=20
-rogersgm@gmail.com</FONT><!-- {$user->user_id} --></P></BODY></HTML>
+support@geograph.org.uk</FONT><!-- {$user->user_id} --></P></BODY></HTML>
 
 ------=_NextPart_000_00DF_01C5EB66.9313FF40--
 
