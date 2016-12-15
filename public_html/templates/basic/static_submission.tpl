@@ -156,7 +156,7 @@
  </tr>
  <tr><td colspan="7" style="background-color:gray;line-height:3px">.</td></tr>
  <tr>
-  <td>Subject/Photographer on 50k Map</td>
+  <td>Subject/Camera on 50k Map</td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td style="background-color:lightgreen" align="center">*</td>
   <td style="background-color:lightgreen" align="center">*</td>

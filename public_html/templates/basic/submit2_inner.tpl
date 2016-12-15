@@ -82,7 +82,7 @@
 		<br/>
 		<div><i>Optionally</i> upload an image with Locational information attached <a href="/article/Uploading-Tagged-Images" class="about" target="_blank">About</a><br/>
 		<ul>
-			<li>GPS-EXIF tags based on WGS84 Lat/Long (used for the Photographer Position)</li>
+			<li>GPS-EXIF tags based on WGS84 Lat/Long (used for the Camera Position)</li>
 			<li>Subject grid-reference from the name of the file (eg "<tt>photo-<b style="padding:1px">TQ435646</b>A.jpg</tt>")</li>
 			<li>Subject grid-reference in EXIF Comment tag</li>
 		</ul></div>

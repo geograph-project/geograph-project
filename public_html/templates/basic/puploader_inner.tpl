@@ -14,7 +14,7 @@
 	{/if}
 	<p>Begin by choosing the grid square you wish to submit.</p>
 
-	<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a photographer location in the next step.</p>
+	<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo, if you wish you can specify a camera location in the next step.</p>
 
 	<p><label for="grid_reference">Enter the grid reference
 	(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
@@ -50,7 +50,7 @@
 		<h4><b>Grid References:</b> (recommended)</h4>
 		<p><label for="grid_reference"><b style="color:#0018F8">Primary Photo Subject</b></label> <input id="grid_reference" type="text" name="grid_reference" value="{if $square->natspecified}{$grid_reference|escape:'html'}{/if}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service == 'OSOS'}<a href="javascript:void(nudgeMarker(document.theForm.grid_reference))"><img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/></a>{elseif $rastermap->service == 'Google'}<img src="http://www.google.com/intl/en_ALL/mapfiles/marker.png" alt="Marks the Subject" width="14" height="24" align="middle"/>{else}<img src="http://{$static_host}/img/icons/circle.png" alt="Marks the Subject" width="29" height="29" align="middle"/>{/if}</p>
 
-		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service == 'OSOS'}<a href="javascript:void(nudgeMarker(document.theForm.photographer_gridref))"><img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/></a>{elseif $rastermap->service == 'Google'}<img src="http://{$static_host}/img/icons/camicon-new.png" alt="Marks the Photographer" width="14" height="24" align="middle"/>{else}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{/if}
+		<p><label for="photographer_gridref"><b style="color:#002E73">Camera Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service == 'OSOS'}<a href="javascript:void(nudgeMarker(document.theForm.photographer_gridref))"><img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Camera" width="29" height="29" align="middle"/></a>{elseif $rastermap->service == 'Google'}<img src="http://{$static_host}/img/icons/camicon-new.png" alt="Marks the Camera" width="14" height="24" align="middle"/>{else}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Camera" width="29" height="29" align="middle"/>{/if}
 
 		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value = document.theForm.grid_reference.value);void(updateMapMarker(document.theForm.photographer_gridref,false));void(parentUpdateVariables());" style="font-size:0.8em">Copy from Subject</a> {if $rastermap->service == 'Google'}<a href="javascript:void(relocateMapToMarkers());" style="font-size:0.8em">Re-Centre Map</a>{/if} <span id="dist_message" style="padding-left:20px"></span></span>
 
@@ -59,7 +59,7 @@
 		{/if}
 		</p>
 
-		<p><label for="view_direction"><b>View Direction</b></label> <small>(photographer facing)</small><br/>
+		<p><label for="view_direction"><b>View Direction</b></label> <small>(camera facing)</small><br/>
 		<select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
 			{foreach from=$dirs key=key item=value}
 				<option value="{$key}"{if $key%45!=0} style="color:gray"{/if}{if $key==$view_direction} selected="selected"{/if}>{$value}</option>

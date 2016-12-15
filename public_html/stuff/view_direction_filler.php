@@ -77,7 +77,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		
 		$submore4 = ($image->grid_square->nateastings > 0);
 		
-		$line['Photographer'] = $image->getPhotographerGridref();
+		$line['Camera'] = $image->getPhotographerGridref();
 		$line['Subject'] = $image->getSubjectGridref();
 		
 		$promore4 = $image->photographer_gridref_precision < 1000;
@@ -126,7 +126,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$line['Direction'] = "<b>$s</b> <nobr>[$angle]</nobr>"; #"Detailed:".$angle."<br>".
 			$q = floor($q);
 		} else {
-			$line['Direction'] = "<small style=\"color:gray\">".(($submore4)?'Photographer':'Subject').' Location Not Accurate Enough</small>';
+			$line['Direction'] = "<small style=\"color:gray\">".(($submore4)?'Camera':'Subject').' Location Not Accurate Enough</small>';
 			$q = '-';
 		}
 		
@@ -137,7 +137,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	
 	$smarty->assign_by_ref('table', $table);
 
-	$smarty->assign("h2title",'Listing images with Photographer position specified (and different to Subject)');
+	$smarty->assign("h2title",'Listing images with Camera position specified (and different to Subject)');
 	$smarty->assign("total",count($table));
 
 

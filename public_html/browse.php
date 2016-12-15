@@ -350,7 +350,7 @@ if ($grid_given)
 			if ($_GET['viewpoint'] == '-') {
 				$custom_where .= " and viewpoint_eastings = 0";
 				
-				$filtered_title = "photographer position unspecified";
+				$filtered_title = "camera position unspecified";
 			} elseif ($viewpoint_square->setByFullGridRef($_GET['viewpoint'],true,true)) {
 			
 				$e = intval($viewpoint_square->nateastings /1000);
@@ -409,7 +409,7 @@ if ($grid_given)
 				
 				$smarty->assign('gridrefraw', stripslashes($_GET['viewcenti']));
 			}
-			$filtered_title .= " photographer in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
+			$filtered_title .= " camera in ".htmlentities2($_GET['viewcenti'])." Centisquare<a href=\"/help/squares\">?</a>";
 			$smarty->assign("bby",'viewcenti');
 		}
 		if ($custom_where) {
@@ -548,8 +548,8 @@ if ($grid_given)
 			$breakdowns[] = array('type'=>'taken','name'=>'Month Taken','count'=>$row['taken'].' Months');
 			$breakdowns[] = array('type'=>'takenyear','name'=>'Year Taken','count'=>$row['takenyear'].' Years');
 			$breakdowns[] = array('type'=>'direction','name'=>'View Direction','count'=>$row['direction'].' Directions');
-			$breakdowns[] = array('type'=>'viewpoint','name'=>'Photographer Location','count'=>$row['viewpoints'].' Gridsquares');
-			$breakdowns[] = array('type'=>'viewcenti','name'=>'Photographer Centisquare','count'=>'unknown');
+			$breakdowns[] = array('type'=>'viewpoint','name'=>'Camera Location','count'=>$row['viewpoints'].' Gridsquares');
+			$breakdowns[] = array('type'=>'viewcenti','name'=>'Camera Centisquare','count'=>'unknown');
 			$breakdowns[] = array('type'=>'status','name'=>'Classification','count'=>$row['status'].' Classifications');
 			$breakdowns[] = array('type'=>'submitted','name'=>'Month Submitted','count'=>$row['submitted'].' Months');
 			$breakdowns[] = array('type'=>'submittedyear','name'=>'Year Submitted','count'=>$row['submittedyear'].' Years');
@@ -784,7 +784,7 @@ if ($grid_given)
 					$i++;
 				}
 			} elseif ($_GET['by'] == 'viewpoint') {
-				$breakdown_title = "Photographer Gridsquare";
+				$breakdown_title = "Camera Gridsquare";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT viewpoint_eastings,COUNT(*) as COUNT,viewpoint_northings,
 				gridimage_id $columns
 				FROM gridimage gi $gridimage_join
@@ -807,7 +807,7 @@ if ($grid_given)
 							$breakdown[$i] = array('name'=>"taken in <b>$posgr</b>",'count'=>$row[1]);
 						}
 					} else {
-						$breakdown[$i] = array('name'=>"photographer position unspecified",'count'=>$row[1]);
+						$breakdown[$i] = array('name'=>"camera position unspecified",'count'=>$row[1]);
 						$posgr = '-';
 					}
 					if (empty($_GET['ht']) && $i >= $start && $i< $end) {
@@ -862,7 +862,7 @@ if ($grid_given)
 			} elseif ($_GET['by'] == 'viewcenti') {
 				$e = intval($square->getNatEastings()/1000);
 				$n = intval($square->getNatNorthings()/1000);
-				$breakdown_title = "Photographer Centisquare<a href=\"/help/squares\">?</a>";
+				$breakdown_title = "Camera Centisquare<a href=\"/help/squares\">?</a>";
 				$all = $db->cacheGetAll($cacheseconds,"SELECT (viewpoint_eastings = 0),COUNT(*) AS count,gridimage_id,viewpoint_eastings DIV 100, viewpoint_northings DIV 100
 				FROM gridimage gi $gridimage_join
 				WHERE gridsquare_id = '{$square->gridsquare_id}'

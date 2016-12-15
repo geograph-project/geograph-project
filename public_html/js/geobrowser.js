@@ -61,7 +61,7 @@ function updateGridReference(form) {
 				document.getElementById('info').innerHTML = data.length + " images in total";
 			
 				//todo - make this not hard coded!
-				var columns = new Array('Image','Title',"Contributor","Description","Category","Taken Day","View Direction","Centisquare","Subject","Photographer","Distance");
+				var columns = new Array('Image','Title',"Contributor","Description","Category","Taken Day","View Direction","Centisquare","Subject","Camera","Distance");
 			
 				var opt = form.elements['groupby'].options;
 				if (opt.length < 2) {
@@ -225,7 +225,7 @@ function updateGridReference(form) {
 								row.appendChild(cell);
 								break;
 						
-							case 'Photographer': 
+							case 'Camera': 
 								if (data[j].viewpoint_eastings && data[j].viewpoint_eastings > 0) {
 									var prec = data[j].viewpoint_grlen/2;
 									if (data[j].use6fig && prec > 3) {

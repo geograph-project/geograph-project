@@ -536,9 +536,9 @@
 
 
 <p>
-<label for="photographer_gridref"><b style="color:#002E73">Photographer Grid Reference</b> - Optional {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
+<label for="photographer_gridref"><b style="color:#002E73">Camera Grid Reference</b> - Optional {if $moderated.photographer_gridref}<span class="moderatedlabel">(moderated)</span>{/if}</label><br/>
 {if $error.photographer_gridref}<span class="formerror">{$error.photographer_gridref}</span><br/>{/if}
-<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon-new.png" alt="Marks the Photographer" width="14" height="24" align="middle"/>{/if}
+<input type="text" id="photographer_gridref" name="photographer_gridref" size="14" value="{$image->photographer_gridref|escape:'html'}" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Camera" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon-new.png" alt="Marks the Camera" width="14" height="24" align="middle"/>{/if}
 <br/>
 <span style="font-size:0.6em">
 | <a href="javascript:void(copyGridRef());">Copy from Subject</a> |
@@ -574,7 +574,7 @@
 
 
 <p><label for="view_direction"><b>View Direction</b>  {if $moderated.view_direction}<span class="moderatedlabel">(moderated)</span>{/if}
-</label> <small>(photographer facing)</small><br/>
+</label> <small>(camera facing)</small><br/>
 <select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
 	{foreach from=$dirs key=key item=value}
 		<option value="{$key}"{if $key%45!=0} style="color:gray"{/if}{if $key==$image->view_direction} selected="selected"{/if}>{$value}</option>

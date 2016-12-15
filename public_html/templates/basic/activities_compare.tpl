@@ -112,7 +112,7 @@ function reveal() {
 					</dd>
 
 					{if $image1->getPhotographerGridref(true)}
-					<dt>Photographer Location</dt>
+					<dt>Camera Location</dt>
 
 					<dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
 					{if $image1->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image1->photographer_gridref}">{$image1->photographer_gridref}</a></dd>
@@ -154,7 +154,7 @@ function reveal() {
 					</dd>
 
 					{if $image2->getPhotographerGridref(true)}
-					<dt>Photographer Location</dt>
+					<dt>Camera Location</dt>
 
 					<dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
 					{if $image2->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image2->photographer_gridref}">{$image2->photographer_gridref}</a></dd>

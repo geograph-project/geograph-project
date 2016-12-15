@@ -72,7 +72,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 	$table = array();
 	
-		$table['title'] = "Photographer Grid References";
+		$table['title'] = "Camera Grid References";
 
 		$table['table']=$db->GetAll("
 		select if(use6fig,if(viewpoint_grlen in ('6','8','10'),'6',viewpoint_grlen),viewpoint_grlen) as Figures ,count(*) as Number from gridimage where moderation_status in ('geograph','accepted') group by if(use6fig,if(viewpoint_grlen in ('6','8','10'),'6',viewpoint_grlen),viewpoint_grlen)");
