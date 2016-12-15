@@ -1530,8 +1530,8 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 			}
 			$checks = array(
 				'gr' => ' A. 4-figure Subject Grid Reference',
-				'pg' => ' B. No Photographer Grid Reference',
-				'p6' => ' C. 4-figure Photographer Grid Reference', #Photographer Grid Reference less than 6 figure (but because works with B it ca be a check for anything less)
+				'pg' => ' B. No Camera Grid Reference',
+				'p6' => ' C. 4-figure Camera Grid Reference', #Photographer Grid Reference less than 6 figure (but because works with B it ca be a check for anything less)
 				'dir' => ' D. No View Direction',
 				'dat' => ' E. Incomplete Taken Date',
 				'com' => ' F. No Description',

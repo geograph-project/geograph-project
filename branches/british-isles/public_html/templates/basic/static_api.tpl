@@ -638,7 +638,7 @@ Note:the distance should be 10km or below.
 		
 		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT" rowspan="2">&amp;ppos=1</th> 
-		  <td colspan="2">add this parameter to add the Eastings, Northings and Precision of the Photographer Position
+		  <td colspan="2">add this parameter to add the Eastings, Northings and Precision of the Camera Position
 			 </td> 
 		</tr> 
 		<tr> 
@@ -648,9 +648,9 @@ Note:the distance should be 10km or below.
 		<tr style="font-size:0.8em"> 
 		  <th rowspan="3">&nbsp;</th> 
 		  <th>Easting</th> 
-		  <td rowspan="3">Absolute position for the photographer in m from the Grid
+		  <td rowspan="3">Absolute position for the camera in m from the Grid
 			 False origin. Use the <i>Grid Ref</i> column to deduce with Grid the location
-			 refers to.<b> These columns will be 0 when the image doesn't include a Photographer Grid Reference</b></td> 
+			 refers to.<b> These columns will be 0 when the image doesn't include a Camera Grid Reference</b></td> 
 		  <td>545667</td> 
 		</tr> 
 		<tr style="font-size:0.8em"> 

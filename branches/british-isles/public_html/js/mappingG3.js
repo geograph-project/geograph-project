@@ -121,7 +121,7 @@ function checkFormSubmission(that_form,mapenabled) {
 	
 	if (checkGridReferences(that_form)) {
 		if (typeof distance != 'undefined' && distance > 10000) {
-			message = "The apparent distance between subject and photographer is "+distance+" metres, are you sure this is correct?";
+			message = "The apparent distance between subject and camera is "+distance+" metres, are you sure this is correct?";
 			if (!confirm(message)) {
 				return false;
 			}
@@ -130,7 +130,7 @@ function checkFormSubmission(that_form,mapenabled) {
 		if (that_form.grid_reference.value == '' || that_form.grid_reference.value.length < 7) 
 			message = message + "* Subject Grid Reference\n";
 		if (that_form.photographer_gridref.value == '') 
-			message = message + "* Photographer Grid Reference\n";
+			message = message + "* Camera Grid Reference\n";
 		if (that_form.view_direction.selectedIndex == 0) 
 			message = message + "* View Direction\n";
 		if (message.length > 0) {
@@ -175,7 +175,7 @@ function checkGridReference(that,showmessage) {
 		if (that.name == 'grid_reference') {
 			alert("please enter a valid subject grid reference");
 		} else {
-			alert("please enter a valid photographer grid reference");
+			alert("please enter a valid camera grid reference");
 		}
 		that.focus();
 	}

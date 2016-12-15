@@ -74,7 +74,7 @@ geographing</a> first.</p>
 	<div style="position:relative;{if $tab != 1}display:none{/if}" class="interestBox" id="div1">
 		<p>Begin by choosing the grid square for which you wish to submit.</p>
 
-		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; specify the photographer location in the next step.</p>
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; specify the camera location in the next step.</p>
 
 		<p><label for="grid_reference">Enter the grid reference
 		(<u title="e.g. TQ4364 or TQ 43 64">4</u>,
@@ -94,7 +94,7 @@ geographing</a> first.</p>
 	<div style="position:relative;{if $tab != 2}display:none{/if}" class="interestBox" id="div2">
 		<p>Begin by choosing the grid square for which you wish to submit.</p>
 
-		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; if you wish you can specify a photographer location in the next step.</p>
+		<p><b>Note:</b> this should be the location of the primary <i>subject</i> of the photo; if you wish you can specify a camera location in the next step.</p>
 
 		<p><label for="gridsquare">Select the 1km grid square below...</label><br/><br/>
 		<select id="gridsquare" name="gridsquare">
@@ -264,7 +264,7 @@ geographing</a> first.</p>
 
 
 
-		<p><label for="photographer_gridref"><b style="color:#002E73">Photographer Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Photographer" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon-new.png" alt="Marks the Photographer" width="14" height="24" align="middle"/>{/if}
+		<p><label for="photographer_gridref"><b style="color:#002E73">Camera Position</b></label> <input id="photographer_gridref" type="text" name="photographer_gridref" value="{$photographer_gridref|escape:'html'}" size="14" onkeyup="updateMapMarker(this,false)" onpaste="{literal}that=this;setTimeout(function(){updateMapMarker(that,false);},50){/literal}" onmouseup="updateMapMarker(this,false)" oninput="updateMapMarker(this,false)"/>{if $rastermap->service != 'Google'}<img src="http://{$static_host}/img/icons/viewc--1.png" alt="Marks the Camera" width="29" height="29" align="middle"/>{else}<img src="http://{$static_host}/img/icons/camicon-new.png" alt="Marks the Camera" width="14" height="24" align="middle"/>{/if}
 
 		<span style="font-size:0.8em"><br/><a href="javascript:void(document.theForm.photographer_gridref.value=(document.theForm.grid_reference.value.length>3)?document.theForm.grid_reference.value:document.theForm.photographer_gridref.value);void(updateMapMarker(document.theForm.photographer_gridref,false));" style="font-size:0.8em">Copy from Subject</a> <span id="dist_message" style="padding-left:20px"></span>
 		</span>
@@ -276,7 +276,7 @@ geographing</a> first.</p>
 
 		<hr/>
 
-		<p><label for="view_direction"><b>View Direction</b></label> <small>(photographer facing)</small><br/>
+		<p><label for="view_direction"><b>View Direction</b></label> <small>(camera facing)</small><br/>
 		<select id="view_direction" name="view_direction" style="font-family:monospace" onchange="updateCamIcon(this);">
 			{foreach from=$dirs key=key item=value}
 				<option value="{$key}"{if $key%45!=0} style="color:gray"{/if}{if $key==$view_direction} selected="selected"{/if}>{$value}</option>
@@ -374,7 +374,7 @@ you'll get a geograph point added to your profile and the warm glow that comes
 with it.</p>
 <p>So what makes an image a genuine geograph?</p>
 <ul>
-<li>The image subject and the photographer must both be within the grid square {$gridref}.</li>
+<li>The image subject and the camera must both be within the grid square {$gridref}.</li>
 <li>You must clearly show at close range one of the main geographical features within the square.</li>
 <li>You should include a short description relating the image to the map square.</li>
 <li>The image should be a natural image as a human would see it, please avoid digitally altering the image to add dates, texts etc, or creating montages, similarly turn off date stamping performed by a camera. A little tweaking of brightness/contrast and/or cropping is fine and encouraged. </li>

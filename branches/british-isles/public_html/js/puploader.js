@@ -160,7 +160,7 @@ function checkMultiFormSubmission() {
 		}
 		if (ele.name.indexOf('photographer_gridref') == 0)
 			if (ele.value == '') {
-				var name = "* Photographer Grid Reference";
+				var name = "* Camera Grid Reference";
 				warnings[name] = (warnings[name])?(warnings[name] + 1):1;
 				warnings_count = warnings_count + 1;
 			}

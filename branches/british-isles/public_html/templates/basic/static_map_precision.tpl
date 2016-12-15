@@ -9,7 +9,7 @@
 
 <p>However this would normally imply a much greater degree of accuracy for the recorded location than is in reality possible from direct referencing on the map, therefore grid references derived by using the map markers are "corrected" to 6 figures for display on the actual photo page. (This however is optional and can be turned off using the tickbox)</p>
 
-<p>Contributors wishing to use a high degree of precision in recording the positions of the photo's subject and the photographer's location should obtain those measurements from GPS or other, larger-scale, mapping sources. GPS users will be aware that the accuracy of measurements obtained by that method will vary according to the number of satellites visible at any one time and should adjust the precision of their recorded grid references accordingly.</p>
+<p>Contributors wishing to use a high degree of precision in recording the positions of the photo's subject and the camera's location should obtain those measurements from GPS or other, larger-scale, mapping sources. GPS users will be aware that the accuracy of measurements obtained by that method will vary according to the number of satellites visible at any one time and should adjust the precision of their recorded grid references accordingly.</p>
 
 <p>Geograph will accept grid references with as little precision as the grid square itself, i.e. 4 figures, or up to 10 figures, which would theoretically locate a feature on the ground with a precision of a 1 metre by 1 metre square. When obtaining a position from a map scaled at 1:50,000 or 1:25,000; it is appropriate to assume an accuracy of 100 metres, i.e. a 6-figure grid reference. A 6-figure grid reference, therefore, identifies a point anywhere in a square 100 metres by 100 metres.</p>
 

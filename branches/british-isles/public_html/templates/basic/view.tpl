@@ -373,7 +373,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
 
 {if $image->photographer_gridref}
-<dt>Photographer Location</dt>
+<dt>Camera Location</dt>
 
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
 {if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a></dd>

@@ -20,7 +20,7 @@ unsure of which square to submit to.</p>
 <p style="background:#dddddd; padding:5px;font-weight:bold;">Photos of buildings etc...</p>
 <ul>
 <li>Should be submitted for the subject location.</li>
-<li>If you can specify the photographer position then please do so (if
+<li>If you can specify the camera position then please do so (if
 it's different from the subject location to the precision that you are
 working), it doesn't matter if you were standing just over a gridline in
 the adjacent square.</li>
@@ -51,7 +51,7 @@ images.</li>
 <ul>
 <li>Should be submitted to the square of, and documented as, the primary
 subject of the picture.</li>
-<li>If at all possible specify the photographer position in the separate
+<li>If at all possible specify the camera position in the separate
 box.</li>
 <li>If the feature covers many grid-squares, an appropriate one should be
 chosen (e.g. the mountain peak) and that fact noted in the comments.</li>
@@ -61,12 +61,12 @@ images.</li>
 
 <p style="background:#dddddd; padding:5px;font-weight:bold;">Wide angle shots that don't have a prominent feature, including panoramas</p>
 <ul>
-<li>Should be submitted for the photographer location as 'the view from
+<li>Should be submitted for the camera location as 'the view from
 the square'.</li>
 <li>When taking these shots try to include foreground detail to give
 context, if there is no foreground, reconsider submitting the photograph at
 all - would you be able to use the picture to stand in the same spot?</li>
-<li>The location should be duplicated in the photographer position box to
+<li>The location should be duplicated in the camera position box to
 reinforce this known location.</li>
 </ul>
 
@@ -74,7 +74,7 @@ reinforce this known location.</li>
 <ul>
 <li>Should be submitted for the foreground detail square and that
 detailed as the subject (in the title etc.)</li>
-<li>The photographer grid ref should be specified as the same location.</li>
+<li>The camera grid ref should be specified as the same location.</li>
 <li>The comments can then mention the feature(s) visible in the
 background.</li>
 </ul>
@@ -83,7 +83,7 @@ background.</li>
 
 <p style="background:#dddddd; padding:5px;font-weight:bold;">Telephoto shots of a distant location</p>
 <ul>
-<li>These should definitely have the photographer location specified but
+<li>These should definitely have the camera location specified but
 submitted for the subject location.</li>
 <li>If the subject is not location specified then the image may be
 rejected, similarly subjects out at sea.</li>

@@ -33,7 +33,7 @@
 		
 		<div><span style="width:120px;display:block;float:left"><b>Subject</b>:</span><input type="text" name="grid_reference[{$key}]" value="" size="12" maxlength="12" onblur="checkGridref(this)"/><span style="color:red" id="msg-grid_reference[{$key}]"></span> (at least 4 figures required)</div>
 		
-		<div><span style="width:120px;display:block;float:left">Photographer:</span><input type="text" name="photographer_gridref[{$key}]" value="" size="12" maxlength="12" onblur="checkGridref(this)"/><span style="color:red" id="msg-photographer_gridref[{$key}]"></span></div>  
+		<div><span style="width:120px;display:block;float:left">Camera:</span><input type="text" name="photographer_gridref[{$key}]" value="" size="12" maxlength="12" onblur="checkGridref(this)"/><span style="color:red" id="msg-photographer_gridref[{$key}]"></span></div>  
 		
 		<div><span style="width:120px;display:block;float:left">Use 6 Fig:</span><input type="checkbox" name="use6fig[{$key}]" value="1"/> <label for="use6fig">Only display 6 figure grid reference ({newwin href="/help/map_precision" text="Explanation"})</label></div> 
 		

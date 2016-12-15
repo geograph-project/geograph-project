@@ -76,7 +76,7 @@
 	  	map: <b>{getamap gridref=$image->grid_reference title="(1000m precision)"}</b>
 	  {/if}
 	  {if $image->viewpoint_eastings}
-	  	| photographer: <b>{getamap gridref=$image->getPhotographerGridref(true) title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}
+	  	| camera: <b>{getamap gridref=$image->getPhotographerGridref(true) title="(`$image->photographer_gridref_precision`m precision)"}</b>{if $image->different_square_true}(diff){/if}
 	  	| <span{if $image->different_square} class="interestBox"{/if}>distance: <b><a>{$image->distance}</a></b>km</span>
 	  {/if}
 	  </span>

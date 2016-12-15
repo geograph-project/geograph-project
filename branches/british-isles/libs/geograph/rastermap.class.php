@@ -381,7 +381,7 @@ class RasterMap
 			if ($this->issubmit)
 				$str .= "<div style=\"position:absolute;top:".($width)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small style=\"color:#0018F8\">&lt;- Drag to mark subject position.</small></div>";
 			if ($this->issubmit === true)
-				$str .= "<div style=\"position:absolute;top:".($width+22)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small style=\"color:#002E73\">&lt;- Drag to mark photographer position.</small></div>";
+				$str .= "<div style=\"position:absolute;top:".($width+22)."px;left:0px; font-size:0.8em;\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <small style=\"color:#002E73\">&lt;- Drag to mark camera position.</small></div>";
 
 			$widthby2 = ($width/2);
 
@@ -868,17 +868,17 @@ class RasterMap
 	{
 		global $CONF;
 		if ($this->service == 'OSM-Static-Dev') {
-			return 'Subject Location: <img src="http://data.geograph.org.uk/symbols/27710.png" width="12" height="12"/>, Photographer Location: <img src="http://data.geograph.org.uk/symbols/8513.png" width="12" height="12"/><br/>
+			return 'Subject Location: <img src="http://data.geograph.org.uk/symbols/27710.png" width="12" height="12"/>, Camera Location: <img src="http://data.geograph.org.uk/symbols/8513.png" width="12" height="12"/><br/>
 			&copy; OpenStreetMap and contributors, <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="">CC-BY-SA</a>';
 		} elseif ($this->service == 'OSOS') {
 			if ($this->issubmit) {
-				return '<br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> <a href="javascript:void(enlargeMap());">Enlarge Map</a>';
+				return '<br/>Centre the blue circle on the subject and mark the camera position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> <a href="javascript:void(enlargeMap());">Enlarge Map</a>';
 			} else
 				return '';
 		} elseif ($this->service == 'Google') {
 			return '';
 		} elseif ($this->issubmit) {
-			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the photographer position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> The red arrow will then show view direction.</span>".
+			return "<span id=\"mapFootNoteOS50k\"".(($this->service == 'OS50k' && $this->issubmit)?'':' style="display:none"')."><br/>Centre the blue circle on the subject and mark the camera position with the black circle. <b style=\"color:red\">The circle centre marks the spot.</b> The red arrow will then show view direction.</span>".
 			"<span id=\"mapFootNoteNPE\"".($this->service == 'NPE'?'':' style="display:none"')."><br/>Historical Map provided by <a href=\"http://www.npemap.org.uk/tileLicence.html\">npemap.org.uk</a> and <a href=\"http://www.getmapping.com/\">getmapping.com</a></span>";
 		} elseif ($this->service == 'OS50k' && $CONF['template']!='archive') {
 			$str = '';
