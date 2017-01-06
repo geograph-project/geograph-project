@@ -207,7 +207,7 @@ $token=$mosaic->getToken();
 //regenerate html?
 $cacheid='mapbrowse|'.$token;
 
-$smarty->cache_lifetime = 3600*24; //24hr cache
+$smarty->cache_lifetime = 3600*6; //6hr cache
 
 if (isset($_GET['gridref_from']) && preg_match('/^[a-zA-Z]{1,2}\d{4}$/',$_GET['gridref_from'])) {
 	$smarty->assign('gridref_from', $_GET['gridref_from']);
@@ -283,9 +283,9 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign('token_south', $mosaic->getPanToken(0, -1));
 	$smarty->assign('token_west', $mosaic->getPanToken(-1, 0));
 	$smarty->assign('token_east', $mosaic->getPanToken(1, 0));
-	
-	
-			
+
+	$smarty->assign('coveragelink', $mosaic->getCoverageMapLink() );
+
 	//no big unless you are zoomed in
 	if ($mosaic->pixels_per_km >=4)
 	{
