@@ -22,7 +22,6 @@ table.navtable {
 </style>{/literal}
 
 
-
 {*begin containing div for main map*}
 <div style="position:relative;float:left;width:{$mosaic_width+20}px">
 {if $token_zoomout}
@@ -308,6 +307,11 @@ south_F2 = new Image(30,29); south_F2.src = "http://{$static_host}/templates/bas
 <small>TIP: The new Geograph Browser application, includes a <a href="/browser/#!{if $realname}/realname+%22{$realname|escape:'url'}%22{/if}/display=map">Interactive Map feature</a> - allows easy filtering of results shown<br/><br/></small>
 {/if}
 
+{if $coveragelink && !$realname}
+	<p><span style=color:red>New!</span> Open this area in new <a href="{$coveragelink}">Interactive Coverage Map</a></p> 
+{/if}
+
+
 {if $realname}
 	{assign var="tab" value="2"}
 {elseif $depth && $token_zoomin}
@@ -336,9 +340,16 @@ south_F2 = new Image(30,29); south_F2.src = "http://{$static_host}/templates/bas
 	<a class="tab{if $tab == 3}Selected{/if} nowrap" id="tab3" href="/map/{$mosaic_token}?depth=1" title="visualizes how many photos we have in each square">Depth</a>
 	<a class="tab{if $tab == 13}Selected{/if} nowrap" id="tab13" href="/map/{$mosaic_token}?userdepth=1" title="visualizes how many contributors we have in each square">User Depth</a>
 	{/if}
-	{if ($mapwidth == 100 || !$token_zoomin) && $mosaic_ri == 1}
-		<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="interactive coverage map overlaid over OS raster maps">Draggable OS
-		{if $mapwidth == 100}<sup style="color:red">New!</sup>{/if}</a>
+	{if $coveragelink}
+		 <a class="tab" href="{$coveragelink}">Interactive</a>
+	{/if}
+	{if $mapwidth == 100 || !$token_zoomin}
+		{if $mosaic_ri == 1}
+			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="interactive coverage map overlaid over OS raster maps">Draggable OS</a>
+		{/if}
+		{if $lat && $long}
+                	<a class="tab" href="/mapper/coverage.php?centi=1#zoom=7&lat={$lat}&amp;lon={$long}{if $square->reference_index == 2}&layers=FFT000000000B00FT{/if}">Draggable Map</a>
+		{/if}
 	{elseif $mosaic_ri == 1}
 		<a class="tab" id="tab4">Draggable OS <sup style="font-size:0.7em;color:blue">[Zoom first]</sup></a>
 	{/if}
@@ -357,7 +368,8 @@ south_F2 = new Image(30,29); south_F2.src = "http://{$static_host}/templates/bas
 <div class="interestBox">
 
 <h2 style="margin-bottom:0">{if $recent}Recent{else}Geograph{/if} {if $depth && $token_zoomin}Depth{else}Coverage{/if} Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>{/if}</h2>
-{if $recent}<div>&middot;&nbsp;{if $token_zoomin}'Recent' is{else}<b>Only includes{/if} images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"}</b></div>{/if}
+{if $recent}<div>&middot;&nbsp;{if $token_zoomin}'Recent' is{else}<b>Only includes{/if} images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"}</b>
+{if $token_zoomin}<br>&middot;&nbsp;Orange (and Green) squares can earn a <b>TPoint for a contemporally photo</b>.{/if}</div>{/if}
 </div>
 {if $mosaic_updated}
 	<p style="text-align:right; font-size:0.8em; margin-top:0">{$mosaic_updated}</p>
@@ -376,10 +388,15 @@ You can also use the keyboard shortcuts Alt+W, Alt+D, Alt+X and Alt+A to pan the
 <li>You can also pan the map by clicking the smaller overview map</li>
 <li>Use the tabs under the map to change map style</li>
 <li>The "Link to this Map" creates a nice accessible link to this map - which is tidier than many taken direct from the address bar.</li>
-<li>NOTE: "open in new window"/tab does NOT function well with this map</li>
-
 </ul>
 
+ <hr/>
+<b>Update 2015:</b><br>
+<div style="margin-left:40px">This map is starting to show its age, it was made over 10 years ago, with what is now old technology; which alas many modern browsers no longer fully support. 
+In particular the "open in new window"/tab does NOT function propelly, nor normal left-clicking on the map at thumbnail scale for some squares. And using other than 100% page zoom can cause issues.
+For best results use Internet Explorer 10 or below (yes really!), or Firefox still seems functional.</div>
+<br>
+We have started work on a new mapping interface: <a href="/mapper/coverage.php">Experimental Coverage Map</a>, which welcome to try, it still needs some work. 
 
  <hr/>
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project and

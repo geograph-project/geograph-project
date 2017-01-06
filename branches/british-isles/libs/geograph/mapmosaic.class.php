@@ -853,10 +853,36 @@ class GeographMapMosaic
 		return array($this->map_x + intval(($this->image_w / 2) / $this->pixels_per_km),
 					 $this->map_y + intval(($this->image_h / 2) / $this->pixels_per_km));
 	}
-		
-	
-		
-	
+
+	function getCoverageMapLink()
+	{
+		list ($x,$y) = $this->getCentre();
+
+                require_once('geograph/conversions.class.php');
+                $conv = new Conversions;
+
+		list($lat,$long) = $conv->internal_to_wgs84($x,$y,$this->reference_index);
+
+		switch ($this->pixels_per_km) {
+			case 0.13:
+				return "http://www.geograph.org.uk/mapper/coverage.php#zoom=5&lat=$lat&lon=$long&layers=FTT000000B00000FT";
+			case 1:
+				return "http://www.geograph.org.uk/mapper/coverage.php#zoom=6&lat=$lat&lon=$long&layers=FTT000000B00000FT";
+			case 4:
+				return "http://www.geograph.org.uk/mapper/coverage.php#zoom=9&lat=$lat&lon=$long&layers=FTT000000B00000FT";
+			case 40:
+			case 80:
+				if ($this->reference_index == 1) {
+					//OS maps for GB!
+					return "http://www.geograph.org.uk/mapper/coverage.php#zoom=12&lat=$lat&lon=$long&layers=FTF000000B00000FT";
+				} elseif ($this->reference_index == 2) {
+					return "http://www.geograph.org.uk/mapper/coverage.php#zoom=12&lat=$lat&lon=$long&layers=FFT000000B00000FT";
+				}
+		}
+
+
+	}
+
 	/**
 	* Given index of a mosaic image, and a pixel position on that image handle a zoom
 	* If the zoom level is 2, this needs to perform a redirect to the gridsquare page

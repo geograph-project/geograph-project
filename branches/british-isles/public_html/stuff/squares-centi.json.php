@@ -26,27 +26,29 @@ require_once('geograph/global.inc.php');
 header('Access-Control-Allow-Origin: *');
 customExpiresHeader(3600);
 
+ $conv = new Conversions;
+
 $sql = array();
 $sql['wheres'] = array();
-
+$sphinxq = empty($_GET['q'])?'':$_GET['q'];
 
 if (!empty($_GET['olbounds'])) {
         $b = explode(',',trim($_GET['olbounds']));
                 #### example: -10.559026590196122,46.59604915850878,7.514135843906623,54.84589681367314
 
         $span = max($b[2] - $b[0],$b[3] - $b[1]);
-	$maxspan = empty($_GET['user_id'])?0.35:0.7;
+	$maxspan = empty($_GET['user_id'])?0.2:0.35;
+	if (!empty($sphinxq))
+		$maxspan = 1;
 
         if ($span > $maxspan) {
                 $error = "Zoom in closer to the British Isles to see coverage details";
         } else {
-                $conv = new Conversions;
 
-                list($x1,$y1) = $conv->wgs84_to_internal(floatval($b[1]),floatval($b[0])); //bottom-left
-                list($x2,$y2) = $conv->wgs84_to_internal(floatval($b[3]),floatval($b[2])); //top-rigth
+		$sql['wheres'][] = "wgs84_lat BETWEEN ".deg2rad($b[1])." AND ".deg2rad($b[3]);
+		$sql['wheres'][] = "wgs84_long BETWEEN ".deg2rad($b[0])." AND ".deg2rad($b[2]);
 
-                $rectangle = "'POLYGON(($x1 $y1,$x2 $y1,$x2 $y2,$x1 $y2,$x1 $y1))'";
-                $sql['wheres'][] = "CONTAINS( GeomFromText($rectangle), point_xy)";
+		//todo, add myridas!
 	}
 
 } elseif (!empty($_GET['bounds'])) {
@@ -65,17 +67,9 @@ if (!empty($_GET['olbounds'])) {
 	if ($span > 0.28) {
 		$error = "Zoom in closer to the British Isles to see coverage details";
 	} else {
-		###                                         left         right                                     bottom     top
-		### $where = "(`$point_long_column` BETWEEN {$b[1]} AND {$b[3]}) and (`$point_lat_column` BETWEEN {$b[0]} AND {$b[2]})";
-		$conv = new Conversions;
 
-		list($x1,$y1) = $conv->wgs84_to_internal(floatval($b[0]),floatval($b[1])); //bottom-left
-		list($x2,$y2) = $conv->wgs84_to_internal(floatval($b[2]),floatval($b[3])); //top-rigth
-
-		#$rectangle = "'POLYGON(($scanleft $scanbottom,$scanright $scanbottom,$scanright $scantop,$scanleft $scantop,$scanleft $scanbottom))'";
-		$rectangle = "'POLYGON(($x1 $y1,$x2 $y1,$x2 $y2,$x1 $y2,$x1 $y1))'";
-
-		$sql['wheres'][] = "CONTAINS( GeomFromText($rectangle),	point_xy)";
+                $sql['wheres'][] = "wgs84_lat BETWEEN ".deg2rad($b[0])." AND ".deg2rad($b[2]);
+                $sql['wheres'][] = "wgs84_long BETWEEN ".deg2rad($b[1])." AND ".deg2rad($b[3]);
 	}
 
 } else {
@@ -90,38 +84,68 @@ if (!empty($_GET['olbounds'])) {
 
 if (empty($error)) {
 
-	$db = GeographDatabaseConnection(true);
+	$sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
 
 	$sql['tables'] = array();
+	$sql['tables']['8'] = 'sample8';
+	$sql['columns'] = 'scenti as s,count(*) as c';
+	$sql['group'] = 'scenti';
+	$sql['order'] = 'c desc';
+	$sql['option'] = 'ranker=none';
+	$sql['limit'] = 1000;
 
 	if (!empty($_GET['user_id'])) {
-                $sql['tables']['gi'] = 'gridimage_search';
-                $sql['group'] = 'grid_reference';
-                $sql['wheres'][] = "user_id = ".intval($_GET['user_id']);
-                $sql['columns'] = "count(*) as c,x,y,grid_reference as gr,SUM(imagetaken > DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))) as r";
-	} else {
-		$sql['tables']['gs'] = 'gridsquare';
-
-		$sql['columns'] = "imagecount as c,x,y,grid_reference as gr,has_recent as r";
-		$sql['wheres'][] = "imagecount > 0";
+                $sphinxq .= " @user user".intval($_GET['user_id']);
 	}
+	if (!empty($_GET['myriads']) && preg_match('/^\w+(,\w+)*$/',$_GET['myriads'])) {
+		$myriads = explode(',',$_GET['myriads']);
+                $sphinxq .= " @myriad (".implode('|',array_unique($myriads)).")";
+	}
+
+	if (!empty($sphinxq)) {
+		$sql['wheres'][] = "MATCH(".$sph->Quote($sphinxq).")";
+	}
+
+	if (true) {
+		$crit = new SearchCriteria;
+		$start = $crit->toDays("DATE(DATE_SUB(NOW(), INTERVAL 5 YEAR))");
+		$sql['columns'] .= ",SUM(IF(takendays>$start,1,0)) as r";
+	}
+
 
 	$query = sqlBitsToSelect($sql);
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-	$rows = $db->getAll($query);
+	$rows = $sph->getAll($query);
 
 	foreach ($rows as $idx => $row) {
 		$rows[$idx]['c'] = intval($row['c']);
-		$rows[$idx]['r'] = intval($row['r']);
-		list($lat,$lng) = $conv->internal_to_wgs84($row['x'],$row['y']);
+		if (true)
+			$rows[$idx]['r'] = intval($row['r']);
+
+#(gi.reference_index * 1000000000 + IF(g2.natgrlen+0 <= 3,(g2.nateastings DIV 100) * 100000 + (g2.natnorthings DIV 100),0)) AS scenti \
+#| 1277703751 |        1 |
+#  0123456789
+#  GEEEENNNNN
+
+		$ri = substr($row['s'],0,1);
+		$e = (substr($row['s'],1,4)*100)+50;
+		$n = (substr($row['s'],5,5)*100)+50;
+
+		list($lat,$lng) = $conv->national_to_wgs84($e,$n,$ri);
 		$rows[$idx]['lat'] = round($lat,6);
 		$rows[$idx]['lng'] = round($lng,6);
-		unset($rows[$idx]['x']);
-		unset($rows[$idx]['y']);
+
+		$rows[$idx]['gr'] = $rows[$idx]['s']; //todo/tofix temp
+		unset($rows[$idx]['s']);
 	}
 	$data = array('markers'=>$rows);
+
+	$info = $sph->getAssoc("SHOW META");
+        if (!empty($info['total_found'])) {
+		$data['count'] = $info['total_found'];
+	}
 
 } else {
 	$data = array('error'=>$error);
