@@ -29,8 +29,11 @@
 	{/if}
     {/if}
     {/dynamic}
+	[<label><input type=checkbox name=missing {$missing_checked}> only where unable to find archive version]
     <input type="submit" value="Go"/></p></form>
 </form>
+
+{if $table}
 
 <p>Click a column header to reorder</p>
 
@@ -91,5 +94,9 @@ If you have checked some links and believe them to be ok despite the result of o
 (Note: even after submitting this form it may take some time for your rescheduled checks to be processed and disappear from this page)</p>
 
 </form>
+
+{else}
+	<i>No Matching data to show</i>
+{/if}
     
 {include file="_std_end.tpl"}

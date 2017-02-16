@@ -69,7 +69,7 @@ SELECT
 FROM
         gridimage_link l
 WHERE
-        next_check < now()
+        next_check < now() AND parent_link_id = 0
         AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%'
 ORDER BY RAND()
 LIMIT {$offset}{$param['number']}";
@@ -124,6 +124,7 @@ while (!$recordSet->EOF)
 				$i++;
 				$heads[$i] = array();
 				$heads[$i]['HTTP_Status'] = $m[1];
+				$updates['HTTP_Status_final'] = $m[1]; //also save the last one in the 'chain'
 			} elseif(preg_match('/^Location:(.*)/i',$header,$m)) {
 				if (strpos(trim($m[1]),'http') ===0) {
 					$heads[$i]['HTTP_Location'] = trim($m[1]);

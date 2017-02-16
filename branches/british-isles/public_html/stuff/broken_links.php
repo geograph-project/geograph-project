@@ -32,14 +32,17 @@ $template='stuff_broken_links.tpl';
 
 if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	$_GET['u'] = $USER->user_id;
+	$_GET['missing'] = 'on';
 }
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']) && $_GET['u'] == $USER->user_id)?intval($_GET['u']):0;
 
 $l = (isset($_GET['l']) && is_numeric($_GET['l']))?intval($_GET['l']):3;
 
+$m = (isset($_GET['missing']))?1:0;
 
-$cacheid=$u.'.'.$l;
+
+$cacheid=$u.'.'.$l.'.'.$m;
 
 if (!empty($_POST) && !empty($_POST['retry'])) {
 
@@ -85,6 +88,10 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($u) {
 		$andwhere .= " AND user_id = $u";
 		$tables = " inner join gridimage using (gridimage_id) ";
+	}
+	if (isset($_GET['missing'])) {
+		$andwhere .= " AND archive_url = '' AND archive_checked NOT LIKE '000%'";
+		$smarty->assign('missing_checked', ' checked');
 	}
 
 	$sql = "SELECT
