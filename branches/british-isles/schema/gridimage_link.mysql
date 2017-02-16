@@ -1,0 +1,61 @@
+-- MySQL dump 10.13  Distrib 5.6.35-80.0, for debian-linux-gnu (x86_64)
+--
+-- Host: db-read-pvt    Database: geograph_live
+-- ------------------------------------------------------
+-- Server version	5.5.50-38.0-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `gridimage_link`
+--
+
+DROP TABLE IF EXISTS `gridimage_link`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_link` (
+  `gridimage_link_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `url` varchar(255) NOT NULL,
+  `HTTP_Status` smallint(5) unsigned NOT NULL,
+  `HTTP_Last_Modified` varchar(64) NOT NULL,
+  `HTTP_Location` varchar(255) NOT NULL,
+  `match_score` smallint(6) NOT NULL,
+  `page_title` varchar(255) NOT NULL,
+  `first_used` datetime NOT NULL,
+  `last_checked` datetime NOT NULL,
+  `next_check` datetime NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `parent_link_id` int(10) unsigned NOT NULL,
+  `failure_count` smallint(6) NOT NULL,
+  `last_found` datetime NOT NULL,
+  `archive_url` varchar(1024) NOT NULL,
+  `archive_date` datetime NOT NULL,
+  `archive_checked` datetime NOT NULL,
+  `archive_requested` datetime NOT NULL,
+  PRIMARY KEY (`gridimage_link_id`),
+  UNIQUE KEY `gridimage_id_2` (`gridimage_id`,`url`),
+  KEY `url` (`url`)
+) ENGINE=MyISAM AUTO_INCREMENT=378659 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2017-02-16 13:08:14
