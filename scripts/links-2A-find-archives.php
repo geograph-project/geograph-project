@@ -24,11 +24,11 @@
 //these are the arguments we expect
 $param=array(
         'number'=>10,   //number to do each time
-        'sleep'=>0,    //sleep time in seconds
+        'sleep'=>4,    //sleep time in seconds
 );
 
 $HELP = <<<ENDHELP
-    --sleep=<seconds>   : seconds to sleep between calls (0)
+    --sleep=<seconds>   : seconds to sleep between calls (4)
     --number=<number>   : number of items to process in each batch (10)
 ENDHELP;
 
@@ -107,15 +107,18 @@ while (!$recordSet->EOF) {
 */
 		if ($row['first_used'] < '2000')
 			$row['first_used'] = '2010'; //just to have somehting?
+
+
 		$url = "http://timetravel.mementoweb.org/api/json/".preg_replace("/[^\d]/",'',$row['first_used'])."/".($row['url']); //the URL SHOULDNT be urlencoded!
+		do {
+			print str_repeat("#",80)."\n$url\n";
 
-	if (true) {
-		print str_repeat("#",80)."\n";
-		print "$url\n";
-	}
+        	        $data = file_get_contents($url);
+	                $decode = json_decode($data,true);
 
-                $data = file_get_contents($url);
-                $decode = json_decode($data,true);
+		//this is tricky, if doesnt end in punct, break; if found a link, break; final clause is just to only conditionally run it
+		} while(preg_match('/[^\w]$/', $url) && empty($decode['mementos']['closest']) && ($url = preg_replace('/[^\w]$/', '', $url)) && (sleep(2) == 0) );
+
 
 		if (!empty($decode['mementos']) && !empty($decode['mementos']['closest'])) {
 			$updates['archive_url'] = array_shift($decode['mementos']['closest']['uri']);

@@ -42,6 +42,7 @@ $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 
+#####################################################
 if ($param['mode'] == 'new') {
 $sql = "
 SELECT
@@ -59,6 +60,8 @@ GROUP BY
 ORDER BY
 	NULL
 LIMIT {$param['number']}";
+
+#####################################################
 } elseif ($param['mode'] == 'update') {
 $db->Execute("SET SESSION group_concat_max_len = 1000000");
 
@@ -71,7 +74,7 @@ INNER JOIN
 	gridimage_link l ON (gi.gridimage_id = l.gridimage_id)
 WHERE
 	(comment LIKE '%http%' OR comment LIKE '%www.%')
-	AND next_check < '2013'
+	AND next_check < '2022' AND parent_link_id = 0
 GROUP BY
 	gi.gridimage_id
 HAVING
@@ -79,6 +82,28 @@ HAVING
 ORDER BY
 	NULL
 LIMIT {$param['number']}";
+
+#####################################################
+} elseif ($param['mode'] == 'gone') {
+$db->Execute("SET SESSION group_concat_max_len = 1000000");
+
+$sql = "
+SELECT
+	gi.gridimage_id,comment,group_concat(url separator ' ') as urls
+FROM
+	gridimage_search gi
+INNER JOIN
+	gridimage_link l ON (gi.gridimage_id = l.gridimage_id)
+WHERE
+	NOT(comment LIKE '%http%' OR comment LIKE '%www.%')
+	AND next_check < '2022' AND parent_link_id = 0
+GROUP BY
+	gi.gridimage_id
+ORDER BY
+	NULL
+LIMIT {$param['number']}";
+
+
 }
 
 if (empty($sql))
@@ -103,6 +128,9 @@ while (!$recordSet->EOF)
 	#print "<hr><pre>";
 	#print_r($m1);
 	#print_r($m2);
+	#print_r($recordSet->fields['urls']);
+	#exit;
+
 
 	$all = array_unique(array_merge($m1[1],$m2[1]));
 
@@ -124,7 +152,7 @@ while (!$recordSet->EOF)
 			$found_on_image = 0;
 			foreach ($rows as $row) {
 				if ($row['gridimage_id'] == $recordSet->fields['gridimage_id']) {
-					$found_on_image=$recordSet->fields;
+					$found_on_image=$row;
 				}
 			}
 			if (!empty($found_on_image)) {
@@ -139,7 +167,7 @@ while (!$recordSet->EOF)
 				unset($row['gridimage_link_id']);
 				$row['gridimage_id'] = $recordSet->fields['gridimage_id'];
 				$row['created'] = $bindts;
-				$row['first_used'] = $bindts; //record this as now, because right now the redirect was in place
+				$row['first_used'] = $bindts; //todo, this should only be set if running this script regulally, if not should be blank so fix-first can pupulate it
 				$row['last_found'] = $bindts;
 
 				$db->Execute('INSERT INTO gridimage_link SET `'.implode('` = ?,`',array_keys($row)).'` = ?',array_values($row));
