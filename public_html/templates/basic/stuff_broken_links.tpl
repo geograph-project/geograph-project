@@ -67,6 +67,10 @@
 			{/if}
 			</small>
 		{/if}
+		{if $item.archive_url}
+			<br><small>... Found {external href=$item.archive_url text="archived version online"}
+			</small>
+		{/if}
 		
 		</td>
 		<td>{$item.HTTP_Status}</td>
