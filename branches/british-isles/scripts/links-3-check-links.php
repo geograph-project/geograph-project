@@ -23,11 +23,13 @@
 
 //these are the arguments we expect
 $param=array(
+	'mode'=>'external',
         'number'=>10,   //number to do each time
         'sleep'=>0,    //sleep time in seconds
 );
 
 $HELP = <<<ENDHELP
+    --mode=exteral|geograph
     --sleep=<seconds>   : seconds to sleep between calls (0)
     --number=<number>   : number of items to process in each batch (10)
 ENDHELP;
@@ -44,48 +46,43 @@ set_time_limit(3600*24);
 
 #####################
 
-$offset = isset($param['number'])?intval($param['offset']).",":'';
+/* we can run this, as we KNOW nither Google Maps nor Bing support KML URLs any more!
+update gridimage_link SET HTTP_Status_final = 404,HTTP_Status=IF(HTTP_Status>0,HTTP_Status,404),last_checked=NOW(),next_check = '2018-01-01'
+where parent_link_id = 0   AND  url like '%maps%.kml%' AND next_check < '2022';
+*/
 
-if (!empty($param['full'])) {
+$offset = isset($param['offset'])?intval($param['offset']).",":'';
+
+$where = "AND url NOT like 'http://www.geograph.org.uk/%' AND url NOT like 'http://www.geograph.ie/%'";
+
+if ($param['mode'] == 'geograph') {
+	//we dont normally do geograph links,as links-3B-check-geograph.php is more efficient, but we CAN do them to catch stragglers
+	$where = "AND (url like 'http://www.geograph.org.uk/%' OR url like 'http://www.geograph.ie/%')";
+}
+
 $sql = "
 SELECT
-	gridimage_link_id,gridimage_id,url,HTTP_Last_Modified,count(*) as uses
-FROM
-	gridimage_link l
-WHERE
-	next_check < now()
-	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%'
-GROUP BY
-	url
-ORDER BY
-	PASSWORD(url)
-LIMIT {$offset}{$param['number']}";
-} else {
-	//quick nibble version!
-	## NOte uses=2 is just to make sure will process duplicates ok
-$sql = "
-SELECT
-        gridimage_link_id,gridimage_id,url,HTTP_Last_Modified,2 as uses
+        gridimage_link_id,gridimage_id,url,HTTP_Last_Modified
 FROM
         gridimage_link l
 WHERE
         next_check < now() AND parent_link_id = 0
-        AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%'
+        $where
 ORDER BY RAND()
 LIMIT {$offset}{$param['number']}";
-}
 
 $done = 0;
 $recordSet = &$db->Execute("$sql");
 
 $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)';
 ini_set('user_agent',$ua);
-$bindts = $db->BindTimeStamp(time());
-$bindts10 = $db->BindTimeStamp(time()+3600*24*10);
-$bindts90 = $db->BindTimeStamp(time()+3600*24*90);
 $done_urls = array();
 while (!$recordSet->EOF)
 {
+	$bindts = $db->BindTimeStamp(time());
+	$bindts10 = $db->BindTimeStamp(time()+3600*24*10);
+	$bindts90 = $db->BindTimeStamp(time()+3600*24*90);
+
 	$rs = $recordSet->fields;
 	$url = $rs['url'];
 	if (isset($done_urls[$url])) {
@@ -117,7 +114,7 @@ while (!$recordSet->EOF)
 	print_r($http_response_header);
 
 	if ($http_response_header) {
-		$updates['HTTP_Status'] = 601;
+		$updates['HTTP_Status'] = $updates['HTTP_Status_final'] = 601;
 		$heads = array(); $i=-1;
 		foreach ($http_response_header as $c => $header) {
 			if (preg_match('/^HTTP\/\d+.\d+ +(\d+)/i',$header,$m)) {
@@ -171,16 +168,11 @@ while (!$recordSet->EOF)
 			$updates['page_title'] = $m[1];
 		}
 	} else {
-		$updates['HTTP_Status'] = 600;
+		$updates['HTTP_Status'] = $updates['HTTP_Status_final'] = 600;
 	}
 
-	if ($rs['uses'] == 1) {
-		$where = "gridimage_link_id = ?";
-		$where_value = $rs['gridimage_link_id'];
-	} else {
-		$where = "url = ?";
-		$where_value = $url;
-	}
+	$where = "url = ?";
+	$where_value = $url;
 
 	if ($rs['HTTP_Last_Modified'] && $updates['HTTP_Status'] == 304) {
 		$db->Execute($sql = "UPDATE gridimage_link SET last_checked = NOW(),next_check=date_add(NOW(),interval 90 day) WHERE $where",array($where_value));

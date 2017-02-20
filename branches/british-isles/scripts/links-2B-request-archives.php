@@ -23,11 +23,13 @@
 
 //these are the arguments we expect
 $param=array(
+	'mode'=>'new',
         'number'=>10,   //number to do each time
         'sleep'=>0,    //sleep time in seconds
 );
 
 $HELP = <<<ENDHELP
+    --mode=new|retry    : retry ones been requested (new)
     --sleep=<seconds>   : seconds to sleep between calls (0)
     --number=<number>   : number of items to process in each batch (10)
 ENDHELP;
@@ -50,11 +52,11 @@ $sql = "SELECT gridimage_link_id,url,first_used,archive_url FROM gridimage_link
 	GROUP BY url ORDER BY archive_requested ASC,RAND() LIMIT {$param['number']}";
 //for now only try archiving 200 OK. Might be ok archiving 301/302 too?
 
-$bindts = $db->BindTimeStamp(time());
 
 
 $recordSet = &$db->Execute($sql);
 while (!$recordSet->EOF) {
+	$bindts = $db->BindTimeStamp(time());
 	$row = $recordSet->fields;
 	$updates = array();
 
@@ -70,8 +72,6 @@ while (!$recordSet->EOF) {
         print "\n";
         print_r($http_response_header);
         print "\n";
-
-                print_r($content);
 
 		$updates['archive_requested'] = $bindts;
 	}

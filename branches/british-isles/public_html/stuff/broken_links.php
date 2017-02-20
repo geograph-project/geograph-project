@@ -30,6 +30,8 @@ $smarty = new GeographPage;
 
 $template='stuff_broken_links.tpl';
 
+$_GET['hide'] = 'on';
+
 if (isset($_GET['mine']) && $USER->hasPerm("basic")) {
 	$_GET['u'] = $USER->user_id;
 	$_GET['missing'] = 'on';
@@ -39,10 +41,7 @@ $u = (isset($_GET['u']) && is_numeric($_GET['u']) && $_GET['u'] == $USER->user_i
 
 $l = (isset($_GET['l']) && is_numeric($_GET['l']))?intval($_GET['l']):3;
 
-$m = (isset($_GET['missing']))?1:0;
-
-
-$cacheid=$u.'.'.$l.'.'.$m;
+$cacheid=md5(serialize($_GET));
 
 if (!empty($_POST) && !empty($_POST['retry'])) {
 
@@ -74,15 +73,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	$tables = $andwhere = "";
 	switch ($l) {
 		case '1': //all ok
-			$andwhere = ' AND HTTP_Status = 200'; break;
-		case '2': //only critical
-			$andwhere = ' AND (HTTP_Status IN (600,601,602) OR (HTTP_Status BETWEEN 400 and 499 AND HTTP_Status != 404))'; break;
+			$andwhere = ' AND HTTP_Status IN (200,304)'; break;
+		case '2': //any content/server error
+			$andwhere = ' AND (HTTP_Status BETWEEN 400 and 699)'; break;
 		case '3': //some iffy
-			$andwhere = ' AND (HTTP_Status IN (600,601,602) OR (HTTP_Status BETWEEN 400 and 599))'; break;
+			$andwhere = ' AND (HTTP_Status IN (600,601,602) OR (HTTP_Status BETWEEN 400 and 499))'; break;
 		case '4': //more questionable
-			$andwhere = ' AND (HTTP_Status IN (600,601,602) OR (HTTP_Status BETWEEN 300 and 599))'; break;
+			$andwhere = ' AND (HTTP_Status BETWEEN 300 and 699 AND HTTP_Status != 304))'; break;
 		case '5': //ANY error
-			$andwhere = ' AND HTTP_Status != 200'; break;
+			$andwhere = ' AND HTTP_Status NOT IN (200,304)'; break;
 	}
 
 	if ($u) {
@@ -93,6 +92,11 @@ if (!$smarty->is_cached($template, $cacheid))
 		$andwhere .= " AND archive_url = '' AND archive_checked NOT LIKE '000%'";
 		$smarty->assign('missing_checked', ' checked');
 	}
+        if (isset($_GET['hide'])) {
+                $andwhere .= " AND last_found > upd_timestamp";
+                $tables = " inner join gridimage using (gridimage_id) ";
+                $smarty->assign('hide_checked', ' checked');
+        }
 
 	$sql = "SELECT
 	l.*
