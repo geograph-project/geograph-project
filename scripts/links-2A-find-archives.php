@@ -23,11 +23,13 @@
 
 //these are the arguments we expect
 $param=array(
+	'mode'=>'new',
         'number'=>10,   //number to do each time
         'sleep'=>4,    //sleep time in seconds
 );
 
 $HELP = <<<ENDHELP
+    --mode=new|retry    : mode=retry, to specically try ones requested
     --sleep=<seconds>   : seconds to sleep between calls (4)
     --number=<number>   : number of items to process in each batch (10)
 ENDHELP;
@@ -43,19 +45,33 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)';
 ini_set('user_agent',$ua);
 
-
-$sql = "SELECT gridimage_link_id,url,first_used,archive_url FROM gridimage_link
-	WHERE archive_checked LIKE '0000%' AND next_check < '2022'
-	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%' AND parent_link_id = 0
-	GROUP BY url ORDER BY HTTP_Status DESC,RAND() LIMIT {$param['number']}";
-
+if (!empty($param['mode']) && $param['mode'] == 'retry') {
 //todo, change to (archive_checked LIKE '0000%') OR (archive_url = '' AND archive_requested NOT LIKE '0000%')
 
-$bindts = $db->BindTimeStamp(time());
+	$sql = "SELECT gridimage_link_id,url,first_used FROM gridimage_link
+        WHERE archive_url = '' AND archive_requested NOT LIKE '0000%' AND next_check < '2022'
+        GROUP BY url ORDER BY HTTP_Status ASC,RAND() LIMIT {$param['number']}";
+
+} else {
+
+	$sql = "SELECT gridimage_link_id,url,first_used FROM gridimage_link
+	WHERE archive_checked LIKE '0000%' AND next_check < '2022'
+	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%' AND parent_link_id = 0
+	GROUP BY url ORDER BY RAND() LIMIT {$param['number']}";
+}
+
+$timetravelurl = "http://timetravel.mementoweb.org/api/json/";
+
+
+$timetravelurl = "http://tea-pvt:1208/api/json/";
+//we now have a local installation of https://github.com/oduwsdl/memgator
+//test with: GET http://tea-pvt:1208/api/json/20160801/http://www.devizesheritage.org.uk/railway_devizes.html
+
 
 
 $recordSet = &$db->Execute($sql);
 while (!$recordSet->EOF) {
+	$bindts = $db->BindTimeStamp(time());
 	$row = $recordSet->fields;
 	$updates = array();
 
@@ -109,11 +125,38 @@ while (!$recordSet->EOF) {
 			$row['first_used'] = '2010'; //just to have somehting?
 
 
-		$url = "http://timetravel.mementoweb.org/api/json/".preg_replace("/[^\d]/",'',$row['first_used'])."/".($row['url']); //the URL SHOULDNT be urlencoded!
+		$url = $timetravelurl.preg_replace("/[^\d]/",'',$row['first_used'])."/".($row['url']); //the URL SHOULDNT be urlencoded!
 		do {
 			print str_repeat("#",80)."\n$url\n";
 
-        	        $data = file_get_contents($url);
+			$sleep = 4;
+			do {
+				if ($sleep > 4) { //skip the sleep on the very first try.
+					if ($sleep > 500)
+						die("still failing, lets give up for now!\n");
+					print "$status -> sleep($sleep) and try one more time\n";
+					sleep($sleep);
+				}
+
+				$status = null;
+				$location = null;
+	        	        $data = file_get_contents($url);
+				print_r($http_response_header);
+				foreach ($http_response_header as $c => $header) {
+                        		if (preg_match('/^HTTP\/\d+.\d+ +(\d+)/i',$header,$m)) {
+						$status = $m[1];
+					} elseif(preg_match('/^Location:(.*)/i',$header,$m)) {
+						$location = $m[1];
+						//sometimes get a errorent redirect!
+						//   [6] => Location: http://timetravel.mementoweb.org/list/20121008105819/http://www.castlexplorer.co.uk/england/carisbrooke/carisbrooke.php
+					}
+				}
+				$sleep*=2;
+
+			} while ($status == '429' || ($location && $status != '404'));  //over query limit OR the odd redirect
+					//(we do also sometimes get 404 too, but lets not retry them, assume it means non available!)
+
+
 	                $decode = json_decode($data,true);
 
 		//this is tricky, if doesnt end in punct, break; if found a link, break; final clause is just to only conditionally run it
@@ -121,7 +164,13 @@ while (!$recordSet->EOF) {
 
 
 		if (!empty($decode['mementos']) && !empty($decode['mementos']['closest'])) {
-			$updates['archive_url'] = array_shift($decode['mementos']['closest']['uri']);
+
+			//todo, sometimes the reported cloested can be a 404, so check others
+			// example on  http://timetravel.mementoweb.org/api/json/20160801/http://www.devizesheritage.org.uk/railway_devizes.html
+			// in this example prev is ok, so could check each in turn to see if better one than closest. 
+
+			$a = $decode['mementos']['closest']['uri'];
+			$updates['archive_url'] = is_array($a)?array_shift($a):$a; //memgator returns string, whereas mementoweb.org returns array!
 			$updates['archive_date'] = $db->BindTimeStamp(strtotime($decode['mementos']['closest']['datetime']));
 			$updates['archive_checked'] = $bindts;
 		} else { //elseif(!empty($decode) && empty($row['archive_url'])) {
