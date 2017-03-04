@@ -41,9 +41,12 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+$db->Execute("SET SESSION group_concat_max_len = 1000000");
 
 #####################################################
 if ($param['mode'] == 'new') {
+//all images that appear to have a link in comment, but no entry in gridimage_link
+// ... ie links added to imaegs that never had links (including new submissions!)
 $sql = "
 SELECT
 	gi.gridimage_id,comment
@@ -63,11 +66,12 @@ LIMIT {$param['number']}";
 
 #####################################################
 } elseif ($param['mode'] == 'update') {
-$db->Execute("SET SESSION group_concat_max_len = 1000000");
+//all images that have a comment that contain links, updated SINCE gridimage_link.last_found
+// ... ie where links added/modified
 
 $sql = "
 SELECT
-	gi.gridimage_id,comment,gi.upd_timestamp, max(last_found) as last_link,group_concat(url separator ' ') as urls
+	gi.gridimage_id,comment,gi.upd_timestamp, min(last_found) as last_link,group_concat(url separator ' ') as urls
 FROM
 	gridimage_search gi
 INNER JOIN
@@ -84,8 +88,35 @@ ORDER BY
 LIMIT {$param['number']}";
 
 #####################################################
+} elseif ($param['mode'] == 'special') {
+//special mode to recheck images that match certain conditions.
+// careful does NOT filter by last_found, to so may process a LOT of images
+// this example is looking for images with extracted links, but may be partical.
+// May also want to run this query, as last_found wont be set correctly on the incorrectly extracted links!
+// update gridimage_link one inner join gridimage_link two using (gridimage_id) set one.first_used = two.first_used where two.url = substring_index( one.url,'@',1) and two.next_check > '2022' and one.next_check < '2022'
+// update gridimage_link one inner join gridimage_link two using (gridimage_id) set one.first_used = two.first_used where two.url = substring_index( one.url,'!',1) and two.next_check > '2022' and one.next_check < '2022'
+
+$sql = "
+SELECT
+	gi.gridimage_id,comment,group_concat(url separator ' ') as urls
+FROM
+	gridimage_search gi
+INNER JOIN
+	gridimage_link l ON (gi.gridimage_id = l.gridimage_id)
+WHERE
+	(comment LIKE '%http%' OR comment LIKE '%www.%')
+	AND (comment LIKE '%@%' OR comment LIKE '%!%')
+	AND next_check < '2022' AND parent_link_id = 0
+GROUP BY
+	gi.gridimage_id
+ORDER BY
+	NULL
+LIMIT {$param['number']}";
+
+#####################################################
 } elseif ($param['mode'] == 'gone') {
-$db->Execute("SET SESSION group_concat_max_len = 1000000");
+//all images that have a comment that contain DOESNT links, but has entry in gridimage_link
+// ... ie where all links been removed
 
 $sql = "
 SELECT
@@ -103,8 +134,8 @@ ORDER BY
 	NULL
 LIMIT {$param['number']}";
 
-
 }
+#####################################################
 
 if (empty($sql))
 	die("unknown mode\n");
@@ -120,9 +151,9 @@ while (!$recordSet->EOF)
 	$recordSet->fields['comment'] = preg_replace('/ >http/',' > http',$recordSet->fields['comment']);
 
 
-	preg_match_all('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/',$recordSet->fields['comment'],$m1);
+	preg_match_all('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/',$recordSet->fields['comment'],$m1);
 
-	preg_match_all('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/',$recordSet->fields['comment'],$m2);
+	preg_match_all('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/',$recordSet->fields['comment'],$m2);
 
 	#print $recordSet->fields['comment'];
 	#print "<hr><pre>";
