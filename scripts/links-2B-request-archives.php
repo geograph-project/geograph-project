@@ -48,7 +48,8 @@ ini_set('user_agent',$ua);
 
 $sql = "SELECT gridimage_link_id,url,first_used,archive_url FROM gridimage_link
 	WHERE archive_url = '' AND archive_checked NOT LIKE '0000%'
-	AND HTTP_Status = 200
+	AND HTTP_Status_final IN (200,304)
+	AND archive_requested < date_sub(NOW(), INTERVAL 90 DAY)
 	GROUP BY url ORDER BY archive_requested ASC,RAND() LIMIT {$param['number']}";
 //for now only try archiving 200 OK. Might be ok archiving 301/302 too?
 

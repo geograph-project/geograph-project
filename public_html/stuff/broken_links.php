@@ -71,17 +71,47 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$tables = $andwhere = "";
+
+
+	$smarty->assign('levels', array(
+	'2' => 'Critical',
+	'3' => 'Major',
+	'9' => '404/410 Not Found',
+	'10' => 'Soft-404 (suspect broken)',
+	'4' => 'Possible Errors',
+	'7' => 'Redirect Loop',
+	'8' => 'Redirect to Error',
+	'5' => 'Any Error',
+	'' => '----------',
+	'1' => 'Only OKs' ,
+	'6' => 'Redirect but OK',
+	 ));
+
 	switch ($l) {
 		case '1': //all ok
 			$andwhere = ' AND HTTP_Status IN (200,304)'; break;
 		case '2': //any content/server error
 			$andwhere = ' AND (HTTP_Status BETWEEN 400 and 699)'; break;
 		case '3': //some iffy
-			$andwhere = ' AND (HTTP_Status IN (600,601,602) OR (HTTP_Status BETWEEN 400 and 499))'; break;
+			$andwhere = ' AND (HTTP_Status IN (600,601,602) OR HTTP_Status BETWEEN 400 and 499)'; break;
 		case '4': //more questionable
-			$andwhere = ' AND (HTTP_Status BETWEEN 300 and 699 AND HTTP_Status != 304))'; break;
+			$andwhere = ' AND HTTP_Status BETWEEN 300 and 699 AND HTTP_Status != 304'; break;
 		case '5': //ANY error
-			$andwhere = ' AND HTTP_Status NOT IN (200,304)'; break;
+			$andwhere = ' AND HTTP_Status NOT IN (200,304) AND HTTP_Status_final != 200'; break;
+		case '6': //Redirect OK
+			$andwhere = ' AND HTTP_Status IN (301,302,307) AND HTTP_Status_final = 200'; break;
+		case '7': //Redirect Loop
+			$andwhere = ' AND HTTP_Status IN (301,302,307) AND HTTP_Status_final IN (301,302,307)'; break;
+		case '8': //Redirect to Error
+			$andwhere = ' AND HTTP_Status IN (301,302,307) AND HTTP_Status_final >=400'; break;
+		case '9': //just 404s (even via redirect)
+			$andwhere = ' AND HTTP_Status_final IN (404,410)'; break;
+		case '10': //suspect Urls
+			/* $andwhere = " AND (HTTP_Status=200 AND page_title = SUBSTRING_INDEX(SUBSTRING_INDEX(url,'/',3),'/',-1)) OR
+					(HTTP_Status=200 AND page_title = REPLACE('www.','',SUBSTRING_INDEX(SUBSTRING_INDEX(url,'/',3),'/',-1))) OR
+                                        (HTTP_Status=200 AND page_title like '%Not Found%') OR
+					(HTTP_Status in (301,302) AND HTTP_Location RLIKE '[[:<:]](404|error)[[:>:]]' AND HTTP_Status_final = 200)"; */
+			$andwhere = "soft_ratio>0.8"; break;
 	}
 
 	if ($u) {
@@ -110,12 +140,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign_by_ref('table', $table);
 	$smarty->assign("total",count($table));
 
-	$smarty->assign('levels', array(
-	'1' => 'Only OKs' ,
-	'2' => 'Critical',
-	'3' => 'Major',
-	'4' => 'Possible Errors',
-	'5' => 'Any Error' ));
 	$smarty->assign("l",$l);
 	$smarty->assign("u",$u);
 

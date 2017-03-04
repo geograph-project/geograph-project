@@ -46,18 +46,19 @@ $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)
 ini_set('user_agent',$ua);
 
 if (!empty($param['mode']) && $param['mode'] == 'retry') {
-//todo, change to (archive_checked LIKE '0000%') OR (archive_url = '' AND archive_requested NOT LIKE '0000%')
 
 	$sql = "SELECT gridimage_link_id,url,first_used FROM gridimage_link
         WHERE archive_url = '' AND archive_requested NOT LIKE '0000%' AND next_check < '2022'
-        GROUP BY url ORDER BY HTTP_Status ASC,RAND() LIMIT {$param['number']}";
+		AND updated < DATE_SUB(NOW(),interval 2 hour)
+		AND archive_checked < DATE_SUB(NOW(),interval 7 day)
+        GROUP BY url ORDER BY updated LIMIT {$param['number']}";
 
 } else {
 
 	$sql = "SELECT gridimage_link_id,url,first_used FROM gridimage_link
 	WHERE archive_checked LIKE '0000%' AND next_check < '2022'
 	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%' AND parent_link_id = 0
-	GROUP BY url ORDER BY RAND() LIMIT {$param['number']}";
+	GROUP BY url ORDER BY first_used LIMIT {$param['number']}";
 }
 
 $timetravelurl = "http://timetravel.mementoweb.org/api/json/";
@@ -75,7 +76,7 @@ while (!$recordSet->EOF) {
 	$row = $recordSet->fields;
 	$updates = array();
 
-	if (true) {
+	if (!empty($timetravelurl)) {
 /*
 {
 	"timegate_uri": "http://timetravel.mementoweb.org/timegate/http://cnn.com",
@@ -217,12 +218,22 @@ while (!$recordSet->EOF) {
 		}
 	}
 
+	if (empty($updates['archive_url']) && $param['mode'] == 'retry') {
+		//retry mode uses updated to avoid rechecking the same url!
+		$updates['updated'] = $bindts;
+	}
+
 	if (!empty($updates)) {
 
 		//$where = "gridimage_link_id = {$row['gridimage_link_id']}";
 
-		$where = "url = ? AND first_used LIKE ".$db->Quote(substr($row['first_used'],0,7).'%'); //add first_used filter, in case it links added at differnt times (and hence have different snapshots, but may as well do the same day...;
+		$where = "url = ?";
 		$where_value = $row['url']; //need to split this out, if the value contains ? then complains: Input Array does not match ?
+
+		if ($row['first_used'] != '2010')
+			$where .= " AND first_used LIKE ".$db->Quote(substr($row['first_used'],0,7).'%'); //add first_used filter, in case it links added at differnt times (and hence have different snapshots, but may as well do the same month...;
+                else
+                        $where .= " AND archive_url = ''"; //but lets no overwrite specific ones
 
 		$db->Execute($sql = 'UPDATE gridimage_link SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE $where",
 			array_merge(array_values($updates),array($where_value)) );

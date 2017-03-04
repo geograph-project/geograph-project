@@ -48,18 +48,18 @@ $ua = 'Mozilla/5.0 (Geograph LinkCheck Bot +http://www.geograph.org.uk/help/bot)
 ini_set('user_agent',$ua);
 
 if ($param['mode'] == 'archive') {
-$sql = "SELECT gridimage_link_id,gridimage_id,url,first_used,archive_url FROM gridimage_link
+$sql = "SELECT gridimage_link_id,gridimage_id,url,first_used,archive_url,soft_ratio FROM gridimage_link
 	WHERE archive_url != '' AND HTTP_Status > 200 AND url not rlike '[[:alpha:][:digit:]/&#]$'
 	AND url NOT like '%geograph.org.uk/%' AND url NOT like '%geograph.ie/%' AND parent_link_id = 0
-	AND next_check < '2022' AND updated < DATE_SUB(NOW(),interval 24 hour)
+	AND next_check < '2022' AND fix_attempted LIKE '0000%'
 	GROUP BY url ORDER BY HTTP_Status DESC,updated ASC LIMIT {$param['number']}";
 
 } elseif ($param['mode'] == 'geograph') {
-$sql = "SELECT gridimage_link_id,gridimage_id,url,first_used,archive_url FROM gridimage_link
+$sql = "SELECT gridimage_link_id,gridimage_id,url,first_used,archive_url,soft_ratio FROM gridimage_link
 	WHERE url not rlike '[[:alpha:][:digit:]/&#]$'
-	AND url NOT like '%/of/%'
+	AND url NOT like '%/of/%' AND url NOT like '%/tagged/%'
 	AND (url like 'http://www.geograph.org.uk/%' OR url like 'http://www.geograph.ie/%') AND parent_link_id = 0
-	AND next_check < '2022' AND updated < DATE_SUB(NOW(),interval 24 hour)
+	AND next_check < '2022' AND fix_attempted LIKE '0000%'
 	GROUP BY url ORDER BY HTTP_Status DESC,updated ASC LIMIT {$param['number']}";
 }
 
@@ -70,17 +70,37 @@ while (!$recordSet->EOF) {
 	$bindts = $db->BindTimeStamp(time());
 	$row = $recordSet->fields;
 	$updates = array();
+	$content = '';
 
 	$url=$row['url'];
 
 	print str_repeat("#",80)."\n";
 	print_r($row);
 
-	do {
-	  	print "$url\n";
-		$content = file_get_contents($url);
+	if ($param['mode'] == 'geograph') {
+		//for geograph, we know links generally work even with ,) etc on end (so checking for !=200 doesnt work), but actully will not be part of URL
+		$url = preg_replace('/[^\w]$/', '', $url);
+	} else {
+		$hostname = parse_url($url,PHP_URL_HOST);
+		$hostname = preg_replace('/[^\w]$/', '', $hostname); //parse_url doesnt strip from urls like http://www.communic8.com, !
+		print "H:$hostname;\n";
+		$ip = gethostbyname($hostname);
+		print "I:$ip;\n";
+		if (empty($ip) || $hostname == $ip) {
+			//lets skip ones that fail DNS. otherwise will keep trying the same domain many times!
+		} else {
+			/* TODO, in case of a known soft-404, we could just perhaps just skip the inital check, as know it will fail
+				... the problem is we also know they dont support proper 404, so the new link will test ok, even if STILL broken!, need soft 404 detection HERE too!
+			if ($row['soft_ratio'] > 0.8) {
+				$url = preg_replace('/[^\w]$/', '', $url);
+			} */
+			do {
+			  	print "$url\n";
+				$content = file_get_contents($url);
 
-        } while(preg_match('/[^\w]$/', $url) && empty($content) && ($url = preg_replace('/[^\w]$/', '', $url)) && (sleep(2) == 0) );
+		        } while(preg_match('/[^\w]$/', $url) && empty($content) && ($url = preg_replace('/[^\w]$/', '', $url)) && (sleep(2) == 0) );
+		}
+	}
 
 	$sqls = array();
 	if (strlen($content) && $row['url'] != $url) { //small chance that the link WAS broken, now ok!
@@ -119,19 +139,28 @@ while (!$recordSet->EOF) {
 		$sqls[] = "UPDATE gridimage_search SET comment = $replace WHERE gridimage_id = {$row['gridimage_id']}";
 
 		foreach ($sqls as $sql) {
-			print preg_replace("/\s+/",' ',$sql).";\n";
+			//print preg_replace("/\s+/",' ',$sql).";\n";
 			$db->Execute($sql);
-			print "Rows = ".mysql_affected_rows()."\n";
+			print "Rows = ".mysql_affected_rows().", ";
 		}
+		print "\n";
 		$updates['next_check'] = '2023-01-01'; //mark the link as deleted!
+		$updates['fix_attempted'] = $bindts;
+
+		//only update the very specific link, because its the only image we've modifided!
+		$where = "gridimage_link_id = ?";
+		$where_value = $row['gridimage_link_id'];
+
 	} else {
-		$updates['updated'] = $bindts; //we order by updated to prevent direct repeats. ideally would have our own column in table??
+		$updates['fix_attempted'] = $bindts;
+
+		//in this case may as well update All the report for this URL.
+		$where = "url = ?";
+		$where_value = $row['url'];
 	}
 
 	if (!empty($updates)) {
 
-		$where = "gridimage_link_id = ?";
-		$where_value = $row['gridimage_link_id'];
 
 		$db->Execute($sql = 'UPDATE gridimage_link SET `'.implode('` = ?,`',array_keys($updates))."` = ? WHERE $where",
 			array_merge(array_values($updates),array($where_value)) );
