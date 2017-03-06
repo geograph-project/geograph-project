@@ -358,16 +358,16 @@ body>#nav_block {width:128px;}
 	margin-top:0;
 	padding-left:10px;
 	font-weight:normal;
-	color:silver;
+	color:#aaa;
 }
 
 .content_photogray .lighter {
-        color:silver;
+        color:#aaa;
 }
 
 .content_photogray .searchresults a
 {
-	color:silver;
+	color:#aaa;
 }
 
 .content_photogray .searchresults a:visited
