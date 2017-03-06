@@ -278,6 +278,10 @@ body>#nav_block {width:128px;}
 	color:silver;
 }
 
+.content_photoblack .lighter {
+        color:silver;
+}
+
 .content_photoblack .keywords {
 	color:#666666;
 	font-size: 0.8em;
@@ -355,6 +359,10 @@ body>#nav_block {width:128px;}
 	padding-left:10px;
 	font-weight:normal;
 	color:silver;
+}
+
+.content_photogray .lighter {
+        color:silver;
 }
 
 .content_photogray .searchresults a
@@ -447,8 +455,11 @@ body>#nav_block {width:128px;}
 	margin-top:0;
 	padding-left:10px;
 	font-weight:normal;
-	color:silver;
+	color:#999;
+}
 
+.content_photowhite .lighter {
+	color:#999;
 }
 
 .content_photowhite .keywords {
