@@ -531,6 +531,10 @@ margin:10px;
 	color:silver;
 }
 
+.content_photoblack .lighter {
+        color:silver;
+}
+
 .content_photoblack .keywords {
 	color:#666666;
 	font-size: 0.8em;
@@ -598,7 +602,11 @@ margin:10px;
 	margin-top:0;
 	padding-left:10px;
 	font-weight:normal;
-	color:silver;
+	color:#aaa;
+}
+
+.content_photogray .lighter {
+        color:#aaa;
 }
 
 .content_photogray .searchresults a
@@ -680,8 +688,11 @@ margin:10px;
 	margin-top:0;
 	padding-left:10px;
 	font-weight:normal;
-	color:silver;
+	color:#999;
+}
 
+.content_photowhite .lighter {
+        color:#999;
 }
 
 .content_photowhite .keywords {
@@ -1483,3 +1494,4 @@ a.about {
 	color:gray;
 	border-bottom:1px solid silver
 }
+
