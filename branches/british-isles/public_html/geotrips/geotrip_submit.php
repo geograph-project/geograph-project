@@ -60,13 +60,16 @@ print "<h2><a href=\"./\">Geo-Trips</a> :: Submission Form</h2>";
           <hr style="color:#992233">
           <p>
             <b>Location</b> <span class="hlt">(required)</span><br />
-            <input type="text" name="loc" size="72" /><br />
+            <input type="text" name="loc" size="72" maxlength="123"/><br />
             (e.g. <em>Cadair Idris</em>)
           </p>
+          <ul>
+            <li>A general geographical label to represent the <i>whole trip</i>. Maybe a summit, or town, or something wider area like a national park, but can also be a list of names</li>
+          </ul>
           <hr style="color:#992233">
           <p>
             <b>Starting point</b> <span class="hlt">(required)</span><br />
-            <input type="text" name="start" size="72" /><br />
+            <input type="text" name="start" size="72" maxlength="123"/><br />
             (e.g. <em>Dolgellau</em>)
           </p>
           <hr style="color:#992233">
@@ -126,7 +129,7 @@ until they go live on Geograph.
           <hr style="color:#992233">
           <p>
             <b>Title</b> (optional)<br />
-            <input type="text" name="title" size="72" /><br />
+            <input type="text" name="title" size="72" maxlength="123"/><br />
             (e.g. <em>The Foxes' Path up Cadair Idris</em>)
           </p>
           <ul>
@@ -222,13 +225,26 @@ URL here.  This will create links in both directions.
       // sanity check
       if ($_POST['loc']&&$_POST['start']&&$_POST['type']&&$_POST['search']&&$_POST['search']!=$_POST['img']) {
         // fetch Geograph data
-        $search=explode('=',$_POST['search']);
-        $search=intval($search[sizeof($search)-1]);
 
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
+
+	$bits = explode(' ',trim(preg_replace('/[^\d]+/',' ',$_POST['search'])));
+	if (count($bits) == 1) {
+		$search = $bits[0];
+
+	} elseif (!empty($bits)) {
+                $engine = new SearchEngineBuilder('#');
+                $engine->db = $db;
+                $search = $engine->buildMarkedList($bits, "List via GeoTrips at ".strftime("%A, %e %B, %Y. %H:%M"), $USER->user_id, false);
+        }
+
+        $engine = new SearchEngine();
+        $engine->db = $db;
+        $engine->SearchEngine($search);
+
 	$geograph = array();
-	$engine = new SearchEngine($search);
+
 	$engine->criteria->resultsperpage = 250; // FIXME really?
 	$recordSet = $engine->ReturnRecordset(0, true);
 	while (!$recordSet->EOF) {
@@ -375,7 +391,7 @@ information you've submitted to Geo-trips, so you can tweak the blog post before
           $pub=explode('-',date('d-m-Y-H-i-s'));
           $descr=$_POST['descr'].'  You can see this trip plotted on a map on the Geo-trips page http://www.geograph.org.uk/geotrips/'.$newid.' .';
           $imgid=explode('/',$_POST['img']);
-          $imgid=intval($img[sizeof($img)-1]);
+          $imgid=intval($imgid[sizeof($imgid)-1]);
 ?>
           <form name="blog" method="post" action="http://www.geograph.org.uk/blog/edit.php">
             <input type="hidden" name="id" value="new" />

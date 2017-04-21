@@ -2,7 +2,7 @@
 /**
  * $Project: GeoGraph $
  * $Id: searchengine.class.php 2338 2006-07-22 12:21:30Z barryhunter $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
  *
@@ -10,12 +10,12 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -35,7 +35,7 @@
 /**
 * SearchEngine
 *
-* 
+*
 * @package Geograph
 */
 class SearchEngineBuilder extends SearchEngine
@@ -43,7 +43,7 @@ class SearchEngineBuilder extends SearchEngine
 	function getNearString($distance) {
 		if ($distance == 1) {
 			$nearstring = 'in';
-		} elseif ($distance > 0 && $distance < 1) {
+		} elseif (intval($distance) != $distance) {
 			$nearstring = sprintf("within %.1fkm of",$distance);
 		} elseif ($distance > 1) {
 			$nearstring = sprintf("within %dkm of",$distance);
@@ -55,37 +55,91 @@ class SearchEngineBuilder extends SearchEngine
 		return $nearstring;
 	}
 
+	function redirectOrReturn($i,$autoredirect='auto',$extra='') {
+		 if ($autoredirect != false) {
+
+		        if (isset($_GET['rss'])) {
+                        	$this->page = "syndicator.php";
+                	} elseif (isset($_GET['kml'])) {
+        	                $this->page = "kml.php";
+	                }
+
+
+                        if (isset($_GET['page']))
+                                $extra = "&page=".intval($_GET['page']);
+                        if (!empty($_GET['BBOX']))
+                                $extra .= "&BBOX=".$_GET['BBOX'];
+			if (!empty($_GET['format']))
+                                $extra .= "&format=".$_GET['format'];
+                        header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra");
+                        $extra = str_replace('&','&amp;',$extra);
+                        print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";
+                        exit;
+                 } else {
+                        return $i;
+                 }
+	}
+
+	function buildMarkedList($ids,$data = array(),$autoredirect='auto') {
+		global $USER;
+
+		$db=$this->_GetDB(false);
+
+                $data = array();
+		if (empty($data['orderby']))
+	                $data['orderby'] = 'seq_id';
+		if (empty($data['description']))
+	                $data['description'] = (($USER->registered && empty($data['user_id']))?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y. %H:%M");
+                $data['searchq'] = "1"; //temporally
+		if (empty($data['user_id']))
+	                $data['user_id'] = $USER->user_id;
+                $data['adminoverride'] = 1;
+
+                if ($i = $this->buildAdvancedQuery($data,false)) {
+
+                        foreach ($ids as $id) {
+                                $db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($id));
+                        }
+                        $data['searchq'] = "inner join gridimage_query using (gridimage_id) where query_id = $i";
+
+                        $db->Execute("UPDATE queries SET searchq = '{$data['searchq']}' WHERE id = $i");
+
+			return $this->redirectOrReturn($i,$autoredirect);
+		}
+
+	}
+
 	/**
 	* create a simple search object
 	*/
-	
+
 	function buildSimpleQuery($q = '',$distance = 10,$autoredirect='auto',$userlimit = 0)
 	{
 		global $USER,$CONF;
-		
+
 split_timer('search'); //starts the timer
 
 		$nearstring = $this->getNearString($distance);
-		
+
 		$has_location = preg_match('/(?<![":\[])\bnear\b/',$q);
-		
+
 		$searchclass = '';
 		$limit1 = '';
 		$location = '';
 		$q = trim(strip_tags($q));
-		
+
 		if ($has_location) {
 			$bits = preg_split('/(?<![":\[])\s*near\s+/',$q);
 			$qlocation = @$bits[1];
 		} else {
 			$qlocation = $q;
 		}
-		
+
 		if (preg_match("/^([a-zA-Z]{1,2})\s*(\d{2,5})$/",$q,$gr)) {
 			$db=$this->_GetDB(false);
-			
+
 			$hectad = strtoupper($gr[1].$gr[2]);
-			
+
 			if ($db->getOne("SELECT hectad FROM hectat_stat WHERE hectad = '$hectad'")) {
 				if ( $autoredirect == 'simple') {
 					header("Location: /gridref/$hectad");
@@ -96,12 +150,12 @@ split_timer('search'); //starts the timer
 					$qlocation = '';
 				}
 			}
-		} 
-		
-		if (preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$qlocation,$pc) 
+		}
+
+		if (preg_match("/^[^:]*\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$qlocation,$pc)
 		&& !in_array(strtoupper($pc[1]),array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 			//these prefixs are not postcodes but are valid gridsquares
-			
+
 			if ($pc[1] != 'BT' && $pc[4]) { //GB can do full postcodes now!
 				$searchq = strtoupper($pc[1].$pc[2]." ".$pc[3].$pc[4]);
 			} else {
@@ -133,7 +187,7 @@ split_timer('search'); //starts the timer
 				}
 				$searchclass = 'GridRef';
 				if ($nearstring == 'in') {
-					//distance=1 is a special case. 
+					//distance=1 is a special case.
 					$square->precision = 1000;
 				}
 				switch ($square->precision) {
@@ -143,7 +197,7 @@ split_timer('search'); //starts the timer
 						$p2 = floor($square->precision/2);
 						$conv = new Conversions;
 						list($x,$y) = $conv->national_to_internal($square->nateastings+$p2,$square->natnorthings+$p2,$square->reference_index,true);
-						
+
 						$searchdesc = ", $nearstring grid reference ".$gr[0];
 						$searchx = $x;
 						$searchy = $y;
@@ -154,8 +208,8 @@ split_timer('search'); //starts the timer
 						$searchx = $square->x;
 						$searchy = $square->y;
 				}
-				
-				$criteria->reference_index = $square->reference_index;
+				if (!empty($criteria))
+					$criteria->reference_index = $square->reference_index;
 				$location = $gr[0];
 			} else {
 				$this->errormsg = $square->errormsg;
@@ -172,21 +226,21 @@ split_timer('search'); //starts the timer
 				list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
 				$searchdesc = ", $nearstring $latdm, $longdm";
 				$searchx = $x;
-				$searchy = $y;			
-				$criteria->reference_index = $square->reference_index;	
+				$searchy = $y;
+				if (!empty($criteria))
+					$criteria->reference_index = $square->reference_index;
 				$location = $ll[0];
 			} else {
 				$this->errormsg = "unable to parse lat/long";
 			}
-		} 
+		}
 		//todo else { parse placenames (and EWSI etc) off the end!)}
-	
+
 		if ($location)
 			$q = str_replace($location,'',$q);
 		$q = preg_replace('/(?<![":\[])\s*near\s*$/','',$q);
 		$q = trim(preg_replace('/\s+/',' ',$q));
-		
-			
+
 		list($q,$placename) = preg_split('/(?<![":\[])\s*near\s+/',$q);
 
 		$criteria = new SearchCriteria_Placename();
@@ -210,8 +264,8 @@ split_timer('search'); //starts the timer
 			$searchdesc = ", $nearstring ".$criteria->placename;
 			$searchx = $criteria->x;
 			$searchy = $criteria->y;
-			$location = $criteria->searchq; 
-		} 
+			$location = $criteria->searchq;
+		}
 		if (($q) && ((!$criteria->is_multiple && empty($criteria->placename) ) || $placename) ) {
 			if (preg_match('/[~\+\^\$:@ -]+/',$q)) {
 				$searchtext = $q;
@@ -220,8 +274,8 @@ split_timer('search'); //starts the timer
 				$searchtext = $q;
 				$searchdesc = ", matching \"".$q."\" ".$searchdesc;
 			} elseif (isset($GLOBALS['smarty'])) {
-		
-				//check if this is a user 
+
+				//check if this is a user
 				$criteria2 = new SearchCriteria_All();
 				$criteria2->setByUsername($q);
 				if (!empty($criteria2->realname) && empty($userlimit)) {
@@ -266,20 +320,20 @@ split_timer('search'); //starts the timer
 			$q = $searchtext = $placename;
 			$searchdesc = ", matching '".$searchtext."' ".$searchdesc;
 		}
-		
+
 		if (($searchtext || $limit1) && !$searchclass) {
 			$searchclass = 'All';
 		}
-			
+
 		if ($searchclass != 'All' && $location) {
 			$q = $location;
 		}
-		
+
 		if ($criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
 			$searchdesc = str_replace(" ".$CONF['default_search_distance']."km "," ".$CONF['default_search_distance_2']."km ",$searchdesc);
 			$distance = $CONF['default_search_distance_2'];
 		}
-		
+
 		if ($userlimit) {
 			$limit1 = $userlimit;
 			$profile=new GeographUser($userlimit);
@@ -313,7 +367,7 @@ split_timer('search'); //starts the timer
 			if (isset($USER) && $USER->registered) {
 				$sql .= ",user_id = {$USER->user_id}";
 				if (!empty($USER->search_results))
-					$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);				
+					$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);
 			} elseif (!empty($_GET['perpage'])) {
 				 $sql .= ",resultsperpage = ".min(100,intval($_GET['perpage']));
 			}
@@ -322,26 +376,15 @@ split_timer('search'); //starts the timer
 
 			$db->Execute($sql);
 			$i = $db->Insert_ID();
-			
+
 split_timer('search','create1',$searchdesc); //logs the wall time
 
-			if ($autoredirect != false) {
-				$extra = '';
-				if (isset($_GET['page']))
-					$extra = "&page=".intval($_GET['page']);
-				if (!empty($_GET['BBOX']))
-					$extra .= "&BBOX=".$_GET['BBOX'];
-				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra");
-				$extra = str_replace('&','&amp;',$extra);
-				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";
-				exit;		
-			} else {
-				return $i;
-			}
-		} 
-		
+
+			return $this->redirectOrReturn($i,$autoredirect);
+		}
+
 split_timer('search','mulitple1',$searchdesc); //logs the wall time
-		
+
 		$this->searchdesc = $searchdesc;
 	}
 
@@ -349,19 +392,19 @@ split_timer('search','mulitple1',$searchdesc); //logs the wall time
 	/**
 	* create a more complex search object
 	*/
-	
+
 	function buildAdvancedQuery(&$dataarray,$autoredirect='auto')
 	{
 		global $CONF,$imagestatuses,$breakdowns,$groupbys,$sortorders,$USER;
 		$dataarray = array_map("strip_tags", $dataarray);
 
 split_timer('search'); //starts the timer
-		
+
 		if (empty($dataarray['distance'])) {
 			$dataarray['distance'] = $CONF['default_search_distance'];
 		}
 		$nearstring = $this->getNearString($dataarray['distance']);
-		
+
 		$searchdesc = '';
 		if (!empty($dataarray['placename']) && ($dataarray['placename'] != '(anywhere)')) {
 			//check if we actully want to perform a textsearch (it comes through in the placename beucase of the way the multiple mathc page works)
@@ -376,7 +419,7 @@ split_timer('search'); //starts the timer
 				unset($dataarray['placename']);
 				if ($dataarray['old-placename'] == $dataarray['q']) {
 					unset($dataarray['q']);
-				} 
+				}
 			}
 		}
 
@@ -385,7 +428,6 @@ split_timer('search'); //starts the timer
 			$dataarray['placename'] = $dataarray['location'];
 		}
 
-		
 		if (!empty($dataarray['q'])) {
 			//we coming from multiple - which means there might be a text search stored in a q
 			list($q,$placename) = preg_split('/(?<![":\[])\s+near\s+/',$dataarray['q']);
@@ -397,13 +439,13 @@ split_timer('search'); //starts the timer
 			} elseif ($placename && (empty($dataarray['searchtext']) || $dataarray['searchtext'] == $q)) {
 				$dataarray['searchtext'] = $q;
 				if (empty($dataarray['placename'])) {
-					$dataarray['placename'] = $placename;				
+					$dataarray['placename'] = $placename;
 				}
-			} 
+			}
 		}
-		
+
 		if (!empty($dataarray['placename'])) {
-			if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$dataarray['placename'],$pc) 
+			if (preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$dataarray['placename'],$pc)
 					&& !in_array($pc[1],array('SV','SX','SZ','TV','SU','TL','TM','SH','SJ','TG','SC','SD','NX','NY','NZ','OV','NS','NT','NU','NL','NM','NO','NF','NH','NJ','NK','NA','NB','NC','ND','HW','HY','HZ','HT','Q','D','C','J','H','F','O','T','R','X','V')) ) {
 				$dataarray['postcode'] = strtoupper($dataarray['placename']);
 				unset($dataarray['placename']);
@@ -414,7 +456,7 @@ split_timer('search'); //starts the timer
 				unset($dataarray['placename']);
 			}
 		}
-		
+
 		if (!empty($dataarray['latlong'])) {
 			if (preg_match("/^\s*(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\s*$/",$dataarray['latlong'],$ll)) {
 				require_once('geograph/conversions.class.php');
@@ -428,8 +470,9 @@ split_timer('search'); //starts the timer
 					list($latdm,$longdm) = $conv->wgs84_to_friendly($ll[1],$ll[2]);
 					$searchdesc = ", $nearstring $latdm, $longdm";
 					$searchx = $x;
-					$searchy = $y;			
-					$criteria->reference_index = $square->reference_index;	
+					$searchy = $y;
+					if (!empty($criteria))
+						$criteria->reference_index = $square->reference_index;
 				} else {
 					$this->errormsg = "unable to parse lat/long";
 				}
@@ -450,7 +493,7 @@ split_timer('search'); //starts the timer
 					$searchclass = 'Postcode';
 					$searchdesc = ", $nearstring postcode ".$searchq;
 					$searchx = $criteria->x;
-					$searchy = $criteria->y;	
+					$searchy = $criteria->y;
 				} else {
 					$this->errormsg = "Invalid Postcode or a newer Postcode not in our database, please try a different search method";
 					if ($pc[3]) {
@@ -469,7 +512,7 @@ split_timer('search'); //starts the timer
 					$searchclass = 'GridRef';
 					$searchq = $dataarray['gridref'];
 					if ($nearstring == 'in') {
-						//distance=1 is a special case. 
+						//distance=1 is a special case.
 						$square->precision = 1000;
 					}
 					switch ($square->precision) {
@@ -522,7 +565,7 @@ split_timer('search'); //starts the timer
 				$searchq = $dataarray['county_id'];
 				$searchdesc = ", $nearstring center of ".$criteria->county_name;
 				$searchx = $criteria->x;
-				$searchy = $criteria->y;	
+				$searchy = $criteria->y;
 			} else {
 				$this->errormsg =  "Invalid County????";
 			}
@@ -536,7 +579,7 @@ split_timer('search'); //starts the timer
 				$searchq = $criteria->placename;
 				$searchdesc = ", $nearstring ".$criteria->placename;
 				$searchx = $criteria->x;
-				$searchy = $criteria->y;	
+				$searchy = $criteria->y;
 			} else if ($criteria->is_multiple) {
 				$searchdesc = ", $nearstring '".$dataarray['placename']."'";
 
@@ -555,7 +598,7 @@ split_timer('search'); //starts the timer
 			$searchq = $dataarray['searchq'];
 			if (preg_match("/;|update |delete |drop |replace |alter |password|email/i",$searchq))
 				die("Server Error");
-			$searchdesc = ", ".$dataarray['description'];	
+			$searchdesc = ", ".$dataarray['description'];
 			if (!empty($dataarray['x']) && !empty($dataarray['y'])) {
 				$searchx = $dataarray['x'];
 				$searchy = $dataarray['y'];
@@ -566,7 +609,7 @@ split_timer('search'); //starts the timer
 		} else {
 			$searchclass = 'All';
 			$searchq = '';
-		} 
+		}
 
 		if (!empty($dataarray['searchtext'])) {
 			$dataarray['searchtext'] = trim($dataarray['searchtext']);
@@ -583,13 +626,13 @@ split_timer('search'); //starts the timer
 			} elseif (preg_match('/^\^/',$dataarray['searchtext'])) {
 				$searchdesc = ", matching whole word [".str_replace('^','',$dataarray['searchtext'])."] ".$searchdesc;
 			} else {
-				$searchdesc = ", containing [".$dataarray['searchtext']."] ".$searchdesc;	
+				$searchdesc = ", containing [".$dataarray['searchtext']."] ".$searchdesc;
 			}
-		} 
-		
+		}
+
 		if (isset($searchclass)) {
 			$db=$this->_GetDB(false);
-			
+
 			$sql = "INSERT INTO queries SET searchclass = '$searchclass',".
 				"searchuse = ".$db->Quote($this->searchuse).",".
 				"searchq = ".$db->Quote($searchq);
@@ -605,7 +648,7 @@ split_timer('search'); //starts the timer
 			if (isset($dataarray['resultsperpage'])) {
 				$sql .= ",resultsperpage = ".$db->Quote(min(100,$dataarray['resultsperpage']));
 			} elseif (isset($USER) && !empty($USER->search_results)) {
-				$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);				
+				$sql .= ",resultsperpage = ".$db->Quote($USER->search_results);
 			}
 			if (isset($searchx) && !empty($searchx) && !empty($searchy))
 				$sql .= ",x = $searchx,y = $searchy";
@@ -621,7 +664,7 @@ split_timer('search'); //starts the timer
 					$dataarray['user_id'] = $usercriteria->user_id;
 				}
 			} elseif (!empty($dataarray['user_id'])) {
-				$sql .= ",limit1 = ".$db->Quote((!empty($dataarray['user_invert_ind'])?'!':'').$dataarray['user_id']);
+				$sql .= ",limit1 = ".$db->Quote((!empty($dataarray['user_invert_ind'])?'!':'').intval($dataarray['user_id']));
 				$profile=new GeographUser($dataarray['user_id']);
 				$searchdesc .= ",".(!empty($dataarray['user_invert_ind'])?' not':'')." by ".($profile->realname);
 			}
@@ -650,11 +693,11 @@ split_timer('search'); //starts the timer
 				$sql .= ",limit5 = ".$db->Quote($dataarray['gridsquare']);
 				$searchdesc .= ", in ".$dataarray['gridsquare'];
 			}
-			
+
 			$this->builddate($dataarray,"submitted_start");
 			$this->builddate($dataarray,"submitted_end");
 			if (!empty($dataarray['submitted_start']) || !empty($dataarray['submitted_end'])) {
-				
+
 				if (!empty($dataarray['submitted_start'])) {
 					if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dataarray['submitted_start']) > 0) {
 						//month only
@@ -670,7 +713,7 @@ split_timer('search'); //starts the timer
 							$searchdesc .= ", submitted ".(is_numeric($dataarray['submitted_startString'])?'in ':'').$dataarray['submitted_startString'];
 						} else {
 							//between
-								
+
 								//if the start date is later than the end then lets swap them!
 								$startdate = vsprintf("%04d%02%02",explode('-',$dataarray['submitted_start']));
 								$enddate = vsprintf("%04d%02%02",explode('-',$dataarray['submitted_end']));
@@ -682,7 +725,7 @@ split_timer('search'); //starts the timer
 									$dataarray['submitted_start'] = $dataarray['submitted_end'];
 									$dataarray['submitted_end'] = $temp;
 								}
-							
+
 							$searchdesc .= ", submitted between ".$dataarray['submitted_startString']." and ".$dataarray['submitted_endString']." ";
 						}
 					} else {
@@ -693,14 +736,14 @@ split_timer('search'); //starts the timer
 					//to
 					$searchdesc .= ", submitted before ".$dataarray['submitted_endString'];
 				}
-			
+
 				$sql .= ",limit6 = '{$dataarray['submitted_start']}^{$dataarray['submitted_end']}'";
 			}
-			
+
 			$this->builddate($dataarray,"taken_start");
 			$this->builddate($dataarray,"taken_end");
 			if (!empty($dataarray['taken_start']) || !empty($dataarray['taken_end'])) {
-				
+
 				if (!empty($dataarray['taken_start'])) {
 					if (preg_match("/0{4}-([01]?[1-9]+|10)-/",$dataarray['taken_start']) > 0) {
 						//month only
@@ -716,7 +759,7 @@ split_timer('search'); //starts the timer
 							$searchdesc .= ", taken ".(is_numeric($dataarray['taken_startString'])?'in ':'').$dataarray['taken_startString'];
 						} else {
 							//between
-							
+
 								//if the start date is later than the end then lets swap them!
 								$startdate = vsprintf("%04d%02%02",explode('-',$dataarray['taken_start']));
 								$enddate = vsprintf("%04d%02%02",explode('-',$dataarray['taken_end']));
@@ -728,7 +771,7 @@ split_timer('search'); //starts the timer
 									$dataarray['taken_start'] = $dataarray['taken_end'];
 									$dataarray['taken_end'] = $temp;
 								}
-							
+
 							$searchdesc .= ", taken between ".$dataarray['taken_startString']." and ".$dataarray['taken_endString']." ";
 						}
 					} else {
@@ -739,7 +782,7 @@ split_timer('search'); //starts the timer
 					//to
 					$searchdesc .= ", taken before ".$dataarray['taken_endString'];
 				}
-			
+
 				$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
 			} else {
 				$this->builddate($dataarray,"taken");
@@ -747,13 +790,13 @@ split_timer('search'); //starts the timer
 					$dataarray['taken_start'] = $dataarray['taken'];
 					$dataarray['taken_end'] = $dataarray['taken'];
 					$searchdesc .= ", taken ".(is_numeric($dataarray['takenString'])?'in ':'').$dataarray['takenString'];
-						
+
 					$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
-					
+
 					unset($dataarray['taken']);
 				}
 			}
-			
+
 			if (!empty($dataarray['distance']) && isset($searchx) && $searchx > 0 && $searchy > 0) {
 				$sql .= sprintf(",limit8 = %f",$dataarray['distance']);
 			}
@@ -771,7 +814,7 @@ split_timer('search'); //starts the timer
 				$topic_name=$db->getOne("SELECT name FROM route WHERE route_id = ".$dataarray['route_id']);
 				$searchdesc .= ", on route ".$topic_name;
 			}
-			
+
 			if (!isset($dataarray['orderby']))
 				$dataarray['orderby'] = '';
 			switch ($dataarray['orderby']) {
@@ -801,7 +844,7 @@ split_timer('search'); //starts the timer
 					}
 					$sql .= ",orderby = ".$db->Quote($orderby);
 			}
-			
+
 			if (!empty($dataarray['breakby']) && trim($dataarray['breakby'])) {
 				$sql .= ",breakby = ".$db->Quote($dataarray['breakby']);
 				if (!empty($breakdowns[$dataarray['breakby']])) {
@@ -823,26 +866,14 @@ split_timer('search'); //starts the timer
 
 			$db->Execute($sql);
 			$i = $db->Insert_ID();
-			
+
 split_timer('search','create2',$searchdesc); //logs the wall time
 
-			if ($autoredirect != false) {
-				$extra = '';
-				if (isset($_GET['page']))
-					$extra = "&page=".intval($_GET['page']);
-				if ($dataarray['submit'] == 'Count')
-					$extra .= '&count=1';
-				if (!empty($_GET['BBOX']))
-					$extra .= "&BBOX=".$_GET['BBOX'];
-				if (!empty($_GET['format']))
-					$extra .= "&format=".$_GET['format'];
-				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra");
-				$extra = str_replace('&','&amp;',$extra);
-				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";
-				exit;
-			} else {
-				return $i;
-			}
+			$extra = '';
+			if ($dataarray['submit'] == 'Count')
+                                $extra .= '&count=1';
+			return $this->redirectOrReturn($i,$autoredirect,$extra);
+
 		} else if (isset($criteria) && isset($criteria->is_multiple)) {
 			if (!empty($dataarray['user_id'])) {
 				$profile=new GeographUser($dataarray['user_id']);
@@ -856,12 +887,12 @@ split_timer('search','create2',$searchdesc); //logs the wall time
 				$searchdesc .= ", in canonical category ".$dataarray['canonical'];
 			if (!empty($dataarray['reference_index']))
 				$searchdesc .= ", in ".$CONF['references'][$dataarray['reference_index']];
-			if (!empty($dataarray['gridsquare'])) 
+			if (!empty($dataarray['gridsquare']))
 				$searchdesc .= ", in ".$dataarray['gridsquare'];
-			
+
 			if (!empty($dataarray['breakby']))
 				$searchdesc .= ", group by ".($breakdowns[$dataarray['breakby']]);
-	
+
 			if (!empty($dataarray['orderby'])) {
 				switch ($dataarray['orderby']) {
 					case "":
@@ -875,31 +906,28 @@ split_timer('search','create2',$searchdesc); //logs the wall time
 						$searchdesc .= ", in ".($dataarray['reverse_order_ind']?'reverse ':'').($sortorders[$dataarray['orderby']])." order";
 				}
 			}
-	
+
 			$this->searchdesc = $searchdesc;
 			$this->criteria = $criteria;
-	
 		}
-		
+
 split_timer('search','mulitple2',$searchdesc); //logs the wall time
 
 	}
-	
+
 	function builddate(&$dataarray,$which) {
 		if (isset($dataarray[$which.'Year'])) {
 			$dataarray[$which] = sprintf("%04d-%02d-%02d",$dataarray[$which.'Year'],$dataarray[$which.'Month'],$dataarray[$which.'Day']);
 			if ($dataarray[$which] == '0000-00-00') {
-				$dataarray[$which] = ''; 
+				$dataarray[$which] = '';
 			}
 		}
 		if (!empty($dataarray[$which])) {
 			$dataarray[$which.'String'] = getFormattedDate($dataarray[$which]);
 		}
-	}	
+	}
 
-	
 }
 
 
 
-?>
