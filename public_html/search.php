@@ -81,8 +81,7 @@ $displayclasses =  array(
 			'cooliris' => 'cooliris 3d wall',
 			'mooflow' => 'cover flow',
 			'text' => 'text list only',
-			'spelling' => 'multi editor',
-			'bytag' => 'tags (experimental)'
+			'spelling' => 'multi editor'
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
@@ -203,11 +202,6 @@ if (isset($_GET['fav']) && $i) {
 		$data['adminoverride'] = 1;
 
 		$engine = new SearchEngineBuilder('#');
-		if (isset($_GET['rss'])) {
-			$engine->page = "syndicator.php";
-		} elseif (isset($_GET['kml'])) {
-			$engine->page = "kml.php";
-		}
 		$engine->buildAdvancedQuery($data);
 
 		//should never fail?? - but display form 'in case'
@@ -232,53 +226,19 @@ if (isset($_GET['fav']) && $i) {
 	$data = $_GET;
 	$error = false;
 
-	$db=GeographDatabaseConnection(false);
-
-	if (empty($data['orderby'])) {
-		$data['orderby'] = 'seq_id';
-	}
-
-	if (!empty($_GET['markedImages'])) {
-		$data['description'] = "Imported list at ".strftime("%A, %e %B, %Y. %H:%M");;
-	} else {
-		$data['description'] = (($USER->registered)?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y. %H:%M");
-	}
-	$data['searchq'] = "1"; //temporally
-
 	if (!$error) {
 		if (!empty($_GET['u']))
 			$data['user_id'] = $_GET['u'];
 
-		$data['adminoverride'] = 1;
+		if (!empty($_GET['markedImages'])) {
+			$data['description'] = "Imported list at ".strftime("%A, %e %B, %Y. %H:%M");
+			$ids = explode(',',$_GET['markedImages']);
+		} else {
+			$ids = explode(',',$_COOKIE['markedImages']);
+		}
 
 		$engine = new SearchEngineBuilder('#');
-		if (isset($_GET['rss'])) {
-			$engine->page = "syndicator.php";
-		} elseif (isset($_GET['kml'])) {
-			$engine->page = "kml.php";
-		}
-		
-		
-		
-		if ($i = $engine->buildAdvancedQuery($data,false)) {
-
-			if (!empty($_GET['markedImages'])) {
-				$_COOKIE['markedImages'] = $_GET['markedImages'];
-			}
-			if (!empty($_COOKIE['markedImages'])) {
-				foreach (explode(',',$_COOKIE['markedImages']) as $id) {
-					$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($id));
-				}
-				$data['searchq'] = "inner join gridimage_query using (gridimage_id) where query_id = $i";
-
-				$db->Execute("UPDATE queries SET searchq = '{$data['searchq']}' WHERE id = $i");
-
-			}
-
-			header("Location:http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&count=1':''));
-			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
-			exit;
-		}
+		$engine->buildMarkedList($ids,$data,'auto');
 
 		//should never fail?? - but display form 'in case'
 
@@ -310,7 +270,7 @@ if (isset($_GET['fav']) && $i) {
 		$page = $db->getRow("
 		select concat('in Article: ',title) as title,content
 		from article
-		where ( (licence != 'none' and approved > 0) 
+		where ( (licence != 'none' and approved > 0)
 			or article.user_id = {$USER->user_id}
 			or $isadmin )
 			and article_id = ".$db->Quote($_GET['article_id']).'
@@ -325,38 +285,19 @@ if (isset($_GET['fav']) && $i) {
 
 	if (count($page) && !$error) {
 		$data['description'] = $page['title'];
-		$data['searchq'] = "1"; //temporally
 
-		if (!empty($_GET['u']))
-			$data['user_id'] = $_GET['u'];
-
-		$data['adminoverride'] = 1;
+		$ids = array();
+		if (preg_match_all("/\[\[\[?(\d+)\]?\]\]|\[image id=(\d+)/",$page['content'],$g_matches)) {
+                         foreach ($g_matches[1] as $idx => $g_id) {
+                                if (!empty($g_id))
+					$ids[] = $g_id;
+                                if (!empty($g_matches[2][$idx]))
+					$ids[] = $g_matches[2][$idx];
+                        }
+		}
 
 		$engine = new SearchEngineBuilder('#');
-		if (isset($_GET['rss'])) {
-			$engine->page = "syndicator.php";
-		} elseif (isset($_GET['kml'])) {
-			$engine->page = "kml.php";
-		}
-		if ($i = $engine->buildAdvancedQuery($data,false)) {
-
-			if (preg_match_all("/\[\[\[?(\d+)\]?\]\]|\[image id=(\d+)/",$page['content'],$g_matches)) {
-				foreach ($g_matches[1] as $idx => $g_id) {
-					if (!empty($g_id))
-						$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($g_id));
-					if (!empty($g_matches[2][$idx]))
-						$db->Execute("INSERT INTO gridimage_query SET query_id = $i, gridimage_id = ".$db->Quote($g_matches[2][$idx]));
-				}
-				$data['searchq'] = "inner join gridimage_query using (gridimage_id) where query_id = $i";
-
-				$db->Execute("UPDATE queries SET searchq = '{$data['searchq']}' WHERE id = $i");
-
-			}
-
-			header("Location:http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&count=1':''));
-			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$engine->page}?i={$i}$extra".(($dataarray['submit'] == 'Count')?'&amp;count=1':'')."\">Your Search Results</a>";
-			exit;
-		}
+		$engine->buildMarkedList($ids,$data,'auto');
 
 		//should never fail?? - but display form 'in case'
 
@@ -370,17 +311,17 @@ if (isset($_GET['fav']) && $i) {
 
 } elseif (is_int($i) && !empty($_GET['redo'])) {
 	// -------------------------------
-	//  special handler to 'refine' a query by setting a new 'text' string. 
+	//  special handler to 'refine' a query by setting a new 'text' string.
 	// -------------------------------
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
-	
+
 	$engine = new SearchEngineBuilder($i);
-	
+
 	if (is_int($i)) {
-		
+
 		$data = array();
-		
+
 		if (empty($engine->criteria)) {
 			dieUnderHighLoad(0,'search_unavailable.tpl');
 			die("Invalid Search Parameter");
@@ -388,7 +329,7 @@ if (isset($_GET['fav']) && $i) {
 
 		$query = $engine->criteria;
 		$data['searchclass'] = $query->searchclass;
-		
+
 		if (!empty($_GET['gridref'])) {
 			if (preg_match("/\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$_GET['gridref'],$gr)) {
 				$data['gridref'] = $gr[0];
@@ -601,7 +542,7 @@ if (isset($_GET['fav']) && $i) {
 			if ($_GET['distance'] === '1') {//TODO check really is a 4fig GR!
 				$bits[] = "grid_reference+%22".urlencode($_GET['location'])."%22";
 			} else {
-				http://www.geograph.org.uk/browser/#!/loc=TQ5050/dist=2000
+				#http://www.geograph.org.uk/browser/#!/loc=TQ5050/dist=2000
 				$bits[] = "loc=".urlencode($_GET['location']);
 				if (!empty($_GET['distance']))
 					$bits[] = "dist=".($_GET['distance']*1000);
@@ -614,11 +555,6 @@ if (isset($_GET['fav']) && $i) {
 
 
 	$engine = new SearchEngineBuilder('#');
-	if (isset($_GET['rss'])) {
-		$engine->page = "syndicator.php";
-	} elseif (isset($_GET['kml'])) {
-		$engine->page = "kml.php";
-	}
  	$engine->buildAdvancedQuery($_GET);
 
 	//should never fail?? - but display form 'in case'
@@ -657,11 +593,6 @@ if (isset($_GET['fav']) && $i) {
 	
 		$_POST['adminoverride'] = 0; //prevent overriding it
 		$engine = new SearchEngineBuilder('#');
-		if (isset($_GET['rss'])) {
-			$engine->page = "syndicator.php";
-		} elseif (isset($_GET['kml'])) {
-			$engine->page = "kml.php";
-		}
 		$engine->buildAdvancedQuery($_POST);
 
 		//if we get this far then theres a problem...
@@ -687,12 +618,12 @@ if (isset($_GET['fav']) && $i) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 
 	// -------------------------------
-	//  Build a query from simple text 
+	//  Build a query from simple text
 	// -------------------------------
 	foreach ($_GET as $key => $value) {
 		$_GET[$key] = preg_replace('/\{\w+:\w+\?\}/','',$value);
 	}
-	
+
 	if (!empty($_GET['q']) && is_array($_GET['q'])) {
 		$_GET['q'] = implode(' ',$_GET['q']);
 	}
@@ -701,7 +632,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 	if (!empty($_GET['lat']) && !empty($_GET['lon'])) {
 		$_GET['location'] = $_GET['lat'].','.$_GET['lon'];
-	} 
+	}
 	if (!empty($_GET['text'])) {
 		if (is_array($_GET['text'])) {
 			$_GET['text'] = implode(' ',$_GET['text']);
@@ -720,7 +651,7 @@ if (isset($_GET['fav']) && $i) {
 	}
 
 	$q = preg_replace('/\b(\w{1,2}\s?\d{2,5}\s?\d{2,5}) E: \d{2,7}\.?\d* N: \d{2,7}\.?\d*\b/','$1',$q);
-	
+
 	if (!isset($_GET['location']) && !empty($CONF['metacarta_auth']) && strpos($q,'near ') === FALSE && substr_count($q,' ') >= 1 && !preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$q)) {
 		$urlHandle = connectToURL('ondemand.metacarta.com',80,"/webservices/QueryParser/JSON/basic?version=1.0.0&bbox=-14.1707,48.9235,6.9506,61.7519&query=".rawurlencode($q),$CONF['metacarta_auth'],6);
 		if ($urlHandle) {
@@ -738,7 +669,6 @@ if (isset($_GET['fav']) && $i) {
 				$q .= ' near '.$m[1];
 			}
 		}
-		
 	}
 
 	//remember the query in the session
@@ -749,12 +679,27 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchenginebuilder.class.php');
 
  	$engine = new SearchEngineBuilder('#');
- 	if (isset($_GET['rss'])) {
-		$engine->page = "syndicator.php";
-	} elseif (isset($_GET['kml'])) {
-		$engine->page = "kml.php";
-	}
- 	
+        if (!empty($_GET['submit']) && $_GET['submit'] == 'Browser') {
+                $bits = array('');
+                if (!empty($_GET['q'])) {
+                        $bits[] = "q=".urlencode($_GET['q']);
+                }
+                if (!empty($_GET['location'])) {
+                        if ($_GET['distance'] === '1') {//TODO check really is a 4fig GR!
+                                $bits[] = "grid_reference+%22".urlencode($_GET['location'])."%22";
+                        } else {
+                                ##http://www.geograph.org.uk/browser/#!/loc=TQ5050/dist=2000
+                                $bits[] = "loc=".urlencode($_GET['location']);
+                                if (!empty($_GET['distance']))
+                                        $bits[] = "dist=".($_GET['distance']*1000);
+                        }
+                }
+                $url = "/browser/#!".implode('/',$bits);
+                header("Location: $url");
+                exit;
+        }
+
+
  	if ((isset($_GET['form']) && $_GET['form'] == 'simple') || (isset($_GET['BBOX']) && empty($_GET['BBOX'])) ) {
  		$autoredirect = 'simple';
 
@@ -810,17 +755,16 @@ if (isset($_GET['fav']) && $i) {
  	}
 
  	$i = $engine->buildSimpleQuery($q,$CONF['default_search_distance'],$autoredirect,(!empty($_GET['user_id']))?intval($_GET['user_id']):0);
- 	
+
  	if ($_SERVER['SCRIPT_NAME'] == '/results/' && !empty($i)) {
  		unset($_GET['form']);
- 		
+
  		$i = intval($i);
- 		
+
  		//falls though to display search results below...
- 		
+
  	} else {
- 	
- 	
+
 		//query failed!
 		if (isset($engine->criteria) && $engine->criteria->is_multiple) {
 			if (empty($_GET['distance']))
@@ -1083,7 +1027,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	//what style should we use?
 	$style = $USER->getStyle();
 	$smarty->assign('maincontentclass', 'content_photo'.$style);
-	
+
 	if (!empty($_GET['legacy'])) {
 		$cacheid.="X";
 		$smarty->assign('legacy', 1);
@@ -1094,20 +1038,26 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		if ($token->parse($_GET['t']) && $token->getValue("i") == $i)
 			$smarty->clear_cache($template, $cacheid);
 	}
-	
+
 	$smarty->register_function("votestars", "smarty_function_votestars");
 	if (!$smarty->is_cached($template, $cacheid)) {
 		dieUnderHighLoad(3,'search_unavailable.tpl');
-		
+
 		$smarty->assign_by_ref('google_maps_api_key', $CONF['google_maps_api_key']);
-		
+
 		$smarty->register_function("searchbreak", "smarty_function_searchbreak");
-		
-		
-		if ($display == 'reveal') {
+
+		if ($display == 'reveal' || $display == 'story') {
 			$engine->noCache = true;
 			$engine->criteria->limit4 = 1; //only works in GB
 		}
+
+		$src = 'data-src';
+		if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
+		        (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
+		        $src = 'src';//revert back to standard non lazy loading
+		}
+		$smarty->assign('src', $src);
 
 		$smarty->assign('querytime', $engine->Execute($pg));
 
@@ -1371,6 +1321,9 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	if (!empty($_GET['new']) || !empty($_SESSION['new_search'])) {
 		$template = 'search-new.tpl';
 	}
+	if (!empty($_GET['preview'])) {
+		$template = 'search2.tpl';
+	}
 
 	if (is_int($i)) {
 		require_once('geograph/searchcriteria.class.php');
@@ -1413,7 +1366,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		}
 		if (isset($_GET['all'])) {
 			$flimit = "";
-			$nlimit = "";
+			$nlimit = "limit 10000";
 			$smarty->assign('all',1);
 		} elseif (isset($_GET['more'])) {
 			$flimit = "";
@@ -1455,7 +1408,7 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 	require_once('geograph/imagelist.class.php');
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/gridsquare.class.php');
-	if ($template == 'search.tpl') {
+	if ($template == 'search.tpl' || $template == 'search2.tpl') {
 		//lets find some recent photos
 		new RecentImageList($smarty);
 	}
@@ -1589,8 +1542,10 @@ if (isset($_GET['form']) && ($_GET['form'] == 'advanced' || $_GET['form'] == 'te
 		} else {
 			$smarty->caching = 0; // NO caching
 		}
-
-		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
+		$sizes = array(5,10,15,20,30,50);
+		if (!empty($_GET['i']))
+			$sizes[] = 75;
+		$smarty->assign('pagesizes', $sizes);
 
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
 			function addkm($a) {

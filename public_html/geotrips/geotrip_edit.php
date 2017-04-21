@@ -116,12 +116,15 @@ box above.
 <?php
             require_once('geograph/gridimage.class.php');
             $image = new GridImage($trip['img']);
-            if (!$image->isValid()) {
-              //FIXME
-            }
+      if ($image->isValid() && $image->moderation_status!='rejected') {
+        $thumb=$image->getThumbnail(213,160,true);
+      } else {
+        $thumb='/photos/error120.jpg';
+      }
+
 ?>
             <div class="inner flt_r">
-              <img alt="" title="Currently selected featured image." src="<?php print($image->getThumbnail(213,160,true)); ?>" />
+              <img alt="" title="Currently selected featured image." src="<?php print $thumb; ?>" />
             </div>
             <p>
               <b>Geograph image id</b> (optional)<br />
@@ -169,12 +172,27 @@ is still included, or choose a new one.
           $db->Execute("update geotrips set descr='".mysql_real_escape_string(strip_tags($_POST['descr']))."' where id={$trip['id']}");
         $db->Execute("update geotrips set updated='".date('U')."' where id={$trip['id']}");
         if ($_POST['search']&&$_POST['search']!=$trip['search']) {
-          $search=explode('=',$_POST['search']);
-          $search=intval($search[sizeof($search)-1]);
 		require_once('geograph/searchcriteria.class.php');
 		require_once('geograph/searchengine.class.php');
+
+		$search = null;
+		$bits = explode(' ',trim(preg_replace('/[^\d]+/',' ',$_POST['search'])));
+		if (count($bits) == 1) {
+			$search = $bits[0];
+
+		} elseif (!empty($bits)) {
+			$engine = new SearchEngineBuilder('#');
+			$engine->db = $db;
+			$search = $engine->buildMarkedList($bits, "List via GeoTrips at ".strftime("%A, %e %B, %Y. %H:%M"), $trip['uid'], false);
+		}
+		if ($search) {
+			$engine = new SearchEngine();
+			$engine->db = $db;
+			$engine->SearchEngine($search);
+		}
+
 		$geograph = array();
-		$engine = new SearchEngine($search);
+
 		$engine->criteria->resultsperpage = 250; // FIXME really?
 		$recordSet = $engine->ReturnRecordset(0, true);
 		while (!$recordSet->EOF) {
@@ -182,7 +200,7 @@ is still included, or choose a new one.
 			if (    $image['nateastings']
 			    &&  $image['viewpoint_eastings']
 			    #&&  $image['realname'] == $USER->realname
-			    &&  $image['user_id'] == $USER->user_id
+			    &&  $image['user_id'] == $trip['uid']
 			    &&  $image['viewpoint_grlen'] > 4
 			    &&  $image['natgrlen'] > 4
 			    && (   $image['view_direction'] != -1 
@@ -274,7 +292,7 @@ Thanks for updating your trip.
           <p>
 If all has gone well, the changes should be visible on the
 <a href="/geotrips/<?php print(intval($_GET['trip'])); ?>">trip page</a> now.  Please
-<a href="/contact_us.php">let us know</a> if anything doesn't
+<a href="/contact.php">let us know</a> if anything doesn't
 work as expected.
           </p>
         </div>
@@ -294,10 +312,11 @@ You can only edit your own trips.  Choose one from the list below:
           if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
           require_once('geograph/gridimage.class.php');
           $image = new GridImage($trips[$i]['img']);
-          if (!$image->isValid()) {
-            //FIXME
+          if ($image->isValid() && $image->moderation_status!='rejected') {
+            $thumb=$image->getThumbnail(213,160,true);
+          } else {
+            $thumb='/photos/error120.jpg';
           }
-          $thumb=$image->getThumbnail(213,160,true);
           $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trips[$i]['uid']}\">".htmlentities($trips[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
           print('<div class="inner">');
           print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
