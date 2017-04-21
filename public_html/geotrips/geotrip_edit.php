@@ -183,7 +183,11 @@ is still included, or choose a new one.
 		} elseif (!empty($bits)) {
 			$engine = new SearchEngineBuilder('#');
 			$engine->db = $db;
-			$search = $engine->buildMarkedList($bits, "List via GeoTrips at ".strftime("%A, %e %B, %Y. %H:%M"), $trip['uid'], false);
+
+			$data = array();
+			$data['description'] = "List via GeoTrips at ".strftime("%A, %e %B, %Y. %H:%M");
+			$data['user_id'] = $trip['uid'];
+	                $search = $engine->buildMarkedList($bits, $data, false);
 		}
 		if ($search) {
 			$engine = new SearchEngine();
@@ -203,7 +207,7 @@ is still included, or choose a new one.
 			    &&  $image['user_id'] == $trip['uid']
 			    &&  $image['viewpoint_grlen'] > 4
 			    &&  $image['natgrlen'] > 4
-			    && (   $image['view_direction'] != -1 
+			    && (   $image['view_direction'] != -1
 			        || $image['viewpoint_eastings'] != $image['nateastings']
 			        || $image['viewpoint_northings'] != $image['natnorthings'])
 			    &&  $image['imagetaken'] === $trip['date'] //FIXME allow update of date but require all dates to be identical?

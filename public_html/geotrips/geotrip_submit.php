@@ -236,7 +236,10 @@ URL here.  This will create links in both directions.
 	} elseif (!empty($bits)) {
                 $engine = new SearchEngineBuilder('#');
                 $engine->db = $db;
-                $search = $engine->buildMarkedList($bits, "List via GeoTrips at ".strftime("%A, %e %B, %Y. %H:%M"), $USER->user_id, false);
+		$data = array();
+		$data['description'] = "List via GeoTrips at ".strftime("%A, %e %B, %Y. %H:%M");
+		$data['user_id'] = $USER->user_id;
+                $search = $engine->buildMarkedList($bits, $data, false);
         }
 
         $engine = new SearchEngine();
