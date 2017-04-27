@@ -494,31 +494,31 @@ class RasterMap
 				} else {
 					$gridfile .= ".png";
 				}
-				$str .= "<div style=\"position:absolute;top:1px;left:1px;\" id=\"grid\"><img src=\"http://{$CONF['STATIC_HOST']}/img/$gridfile\" alt=\"\" width=\"$width\" height=\"$width\" name=\"grid\"/></div>";
+				$str .= "<div style=\"position:absolute;top:1px;left:1px;\" id=\"grid\"><img src=\"//{$CONF['STATIC_HOST']}/img/$gridfile\" alt=\"\" width=\"$width\" height=\"$width\" name=\"grid\"/></div>";
 			#	$gxy0 = 1;
 			#	$gx1 = $width/4 + 1;
 			#	$gx2 = $width-$width/4 + 1;
 			#	$gy1 = $width/4 - 9;        # FIXME?
 			#	$gy2 = $width-$width/4 - 9; # FIXME?
-			#	$str .= "<div style=\"position:absolute;top:".$gxy0."px;left:".$gx1."px;\" id=\"gridw\"><img src=\"http://{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"1\" height=\"$width\" name=\"gridw\"/></div>";
-			#	$str .= "<div style=\"position:absolute;top:".$gxy0."px;left:".$gx2."px;\" id=\"gride\"><img src=\"http://{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"1\" height=\"$width\" name=\"gride\"/></div>";
-			#	$str .= "<div style=\"position:absolute;top:".$gy1."px;left:".$gxy0."px;\" id=\"gridn\"><img src=\"http://{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"$width\" height=\"1\" name=\"gridn\"/></div>";
-			#	$str .= "<div style=\"position:absolute;top:".$gy2."px;left:".$gxy0."px;\" id=\"grids\"><img src=\"http://{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"$width\" height=\"1\" name=\"grids\"/></div>";
+			#	$str .= "<div style=\"position:absolute;top:".$gxy0."px;left:".$gx1."px;\" id=\"gridw\"><img src=\"//{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"1\" height=\"$width\" name=\"gridw\"/></div>";
+			#	$str .= "<div style=\"position:absolute;top:".$gxy0."px;left:".$gx2."px;\" id=\"gride\"><img src=\"//{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"1\" height=\"$width\" name=\"gride\"/></div>";
+			#	$str .= "<div style=\"position:absolute;top:".$gy1."px;left:".$gxy0."px;\" id=\"gridn\"><img src=\"//{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"$width\" height=\"1\" name=\"gridn\"/></div>";
+			#	$str .= "<div style=\"position:absolute;top:".$gy2."px;left:".$gxy0."px;\" id=\"grids\"><img src=\"//{$CONF['STATIC_HOST']}/img/bluetransp.png\" alt=\"\" width=\"$width\" height=\"1\" name=\"grids\"/></div>";
 			}
 
 	//subject icon
-			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"http://{$CONF['STATIC_HOST']}/img/icons/$subfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"subicon\"/></div>";
+			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"//{$CONF['STATIC_HOST']}/img/icons/$subfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"subicon\"/></div>";
 
 	//photographer icon
 			if ($this->issubmit) {
-				$str .= "<div style=\"position:absolute;top:".($vtop-14)."px;left:".($vleft-14)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"http://{$CONF['STATIC_HOST']}/img/icons/$iconfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"camicon\"/></div>";
+				$str .= "<div style=\"position:absolute;top:".($vtop-14)."px;left:".($vleft-14)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"//{$CONF['STATIC_HOST']}/img/icons/$iconfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"camicon\"/></div>";
 			} else {
-				$str .= "<div style=\"position:absolute;top:".($vtop-20)."px;left:".($vleft-9)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"http://{$CONF['STATIC_HOST']}/img/icons/$iconfile\" alt=\"+\" width=\"20\" height=\"31\" name=\"camicon\"/></div>";
+				$str .= "<div style=\"position:absolute;top:".($vtop-20)."px;left:".($vleft-9)."px;".( $this->displayMarker2 ?'':'display:none')."\" id=\"marker2\"><img src=\"//{$CONF['STATIC_HOST']}/img/icons/$iconfile\" alt=\"+\" width=\"20\" height=\"31\" name=\"camicon\"/></div>";
 			}
 
 	//overlay (for dragging)
 			$str .= "<div style=\"position:absolute;top:0px;left:0px;z-index:3\">";
-			$imagestr = "<img src=\"http://{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/>";
+			$imagestr = "<img src=\"//{$CONF['STATIC_HOST']}/img/blank.gif\" class=\"mapmask\" style=\"width:{$width}px;height:".($width+$extra)."px\" border=\"1\" alt=\"$title\" title=\"$title\" name=\"map\" galleryimg=\"no\"/>";
 			if ($this->maplink&&!empty($gridref)) {
 				$this->clickable = true;
 				$str .= smarty_function_getamap(array('text'=>$imagestr,'gridref'=>$gridref,'title'=>$title,'icon'=>'no'));
@@ -571,10 +571,10 @@ class RasterMap
 		//defer the tag to the last minute, to help prevent the page pausing mid load
 		if ((!empty($this->inline) || !empty($this->issubmit))) {
 			if ($this->service == 'Google') {
-				return "<script src=\"http://maps.googleapis.com/maps/api/js?sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+				return "<script src=\"//maps.googleapis.com/maps/api/js?sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
 			} elseif ($this->service == 'OLayers') {
 				if ($CONF['google_maps_api_key'])
-					$ft = "<script src=\"http://maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
+					$ft = "<script src=\"//maps.google.com/maps/api/js?v=3.5&amp;sensor=false&amp;key={$CONF['google_maps_api_key']}\" type=\"text/javascript\"></script>";
 				else
 					$ft = '';
 #				$ft .= <<<EOF

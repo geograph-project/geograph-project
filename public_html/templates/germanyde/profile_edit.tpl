@@ -107,7 +107,7 @@ Aus <a href="/help/csrf">Sicherheitsgründen</a> konnten die Änderungen nicht ges
 <div class="field">
 
 	<label for="gravatar">Gravatar:</label>
-	<img src="http://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" align="left" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>
+	<img src="{$curproto}www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d={$curproto}www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" align="left" alt="{$profile->realname|escape:'html'}'s Gravatar" style="padding-right:10px"/>
 	
 	<div class="fieldnotes">Um ein Avatar einzurichten oder zu ändern, bitte {external href="http://www.gravatar.com" text="gravatar.com" target="_blank"} besuchen und dabei die oben angegebene E-Mail-Adresse verwenden.</div>
 	

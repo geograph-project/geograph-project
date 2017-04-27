@@ -35,7 +35,7 @@ h2 { padding: 5px; margin-top:0px; background-color: black; color:white}
 	<li>
 	<div style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
 		{if $item.image}
-		<a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}" target="_top">{$item.image->getSquareThumbnail(60,60)}</a>
+		<a title="{$item.image->title|escape:'html'} by {$item.image->realname} - click to view full size image" href="/photo/{$item.image->gridimage_id}" target="_top">{$item.image->getSquareThumbnail(60,60,3)}</a>
 		{/if}
 	</div>
 	<b><a href="{$item.url}" target="_top">{$item.title}</a></b><br/>

@@ -44,7 +44,7 @@
 	  <div class="photoguide" style="{if $image->user_status && $image->moderation_status != 'pending'}background-color:#eeeeee;{/if}font-size:0.8em;text-align:left;width:inherit">
 	  
 	  <div style="float:left;width:213px">
-	  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a>
+	  <a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160,false,false,'src',3)}</a>
 	  </div>
 	  
 	  <div style="margin-left:233px"> 

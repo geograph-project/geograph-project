@@ -17,7 +17,7 @@
 {/foreach}
 {dynamic}
 {if $marker}
-<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;">{if $map_token}<a href="/mapbrowse.php?t={$map_token}">{/if}<img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/>{if $map_token}</a>{/if}</div>
+<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;">{if $map_token}<a href="/mapbrowse.php?t={$map_token}">{/if}<img src="//{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/>{if $map_token}</a>{/if}</div>
 {/if}
 {/dynamic}
 </div>
@@ -35,7 +35,7 @@
   	{foreach from=$recent item=image}
   
   	  <div style="text-align:center;padding-bottom:1em;">
-  	  <a title="{$image->title|escape:'html'} - Zum Vergrößern anklicken" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+  	  <a title="{$image->title|escape:'html'} - Zum Vergrößern anklicken" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,false,'src',3)}</a>
   	  
   	  <div>
   	  <a title="Vollbild" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>

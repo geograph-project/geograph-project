@@ -46,8 +46,9 @@
 {/if}
 
 
-
-<h2><a name="top"></a><img src="http://www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d=http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" alt="{$profile->realname|escape:'html'}s Gravatar" style="vertical-align:middle;padding-right:10px"/>Profil für {$profile->realname|escape:'html'}</h2>
+{dynamic}
+<h2><a name="top"></a><img src="{$curproto}www.gravatar.com/avatar/{$profile->md5_email}?r=G&amp;d={$curproto}www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=30&amp;s=50" alt="{$profile->realname|escape:'html'}s Gravatar" style="vertical-align:middle;padding-right:10px"/>Profil für {$profile->realname|escape:'html'}</h2>
+{/dynamic}
 
 {if $profile->role && $profile->role ne 'Member'}
 	<div style="margin-top:0px;border-top:1px solid red; border-bottom:1px solid red; color:purple; padding: 4px;"><b>Funktion bei Geograph</b>: {$profile->role}</div>

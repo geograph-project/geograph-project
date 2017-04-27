@@ -94,7 +94,7 @@
 
 {foreach from=$references_real item=ref key=ri}
 {if $marker[$ri]}
-<div style="position:absolute;top:{$marker[$ri]->top-8}px;left:{$marker[$ri]->left-8}px;"><img src="http://{$static_host}/img/crosshairs.gif" alt="Centre for {$place[$ri].reference_name}" width="16" height="16"/></div>
+<div style="position:absolute;top:{$marker[$ri]->top-8}px;left:{$marker[$ri]->left-8}px;"><img src="//{$static_host}/img/crosshairs.gif" alt="Centre for {$place[$ri].reference_name}" width="16" height="16"/></div>
 {/if}
 {/foreach}
 </div>

@@ -9,7 +9,7 @@
 	 <div style="border-top: 2px solid lightgrey; padding-top:3px;">
 	  <form action="/editimage.php?id={$image->gridimage_id}&amp;thumb=1" method="post" name="form{$image->gridimage_id}" target="editor" style="display:inline">
 	  <div style="float:left; position:relative; width:130px; text-align:center">
-		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a><br/>
+		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,false,'src',3)}</a><br/>
 		<div class="caption">{if $image->moderation_status eq "accepted"}supplemental{else}{$image->moderation_status}{/if}</div>
 		<br/><div style="font-size:0.6em;">[[[{$image->gridimage_id}]]]</div>
 	  </div>

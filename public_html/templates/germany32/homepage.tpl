@@ -37,7 +37,7 @@ We use <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system">MGR
 	{/foreach}
 
 	{if $marker}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="//{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
 	{/if}
 
 	</div>
@@ -59,7 +59,7 @@ We use <a href="http://en.wikipedia.org/wiki/Military_grid_reference_system">MGR
 
 	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
-	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail($potd_width,$potd_height)}</a><br/>
+	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail($potd_width,$potd_height,3)}</a><br/>
 
 
 	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>

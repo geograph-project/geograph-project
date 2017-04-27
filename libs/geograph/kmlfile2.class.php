@@ -269,6 +269,7 @@ function kmlPageFooter(&$kml,&$square,$gr,$self,$level,$html = '',$list = '') {
 			$file1 = str_replace("kmz",'html',$file1);
 			
 			$html = str_replace("http://{$_SERVER['HTTP_HOST']}/",'/',$html);
+			$html = str_replace("https://{$_SERVER['HTTP_HOST']}/",'/',$html);
 			
 			$html = "<html><head><title>{$s}</title></head>\n".
 			"<body>".

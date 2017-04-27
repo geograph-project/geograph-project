@@ -43,7 +43,7 @@ $isModAdmin=$isModerator||$isTicketMod||$isMapMod||$isAdmin;
 $useGoogleApi=!empty($CONF['google_maps_api_key']);
 
 $static_host = $CONF['STATIC_HOST'];
-$static_url = "http://{$CONF['STATIC_HOST']}/discuss";
+$static_url = "//{$CONF['STATIC_HOST']}/discuss";
 
 if (count($CONF['languages'])) {
 	$cur_proto = empty($_SERVER['HTTPS']) || $_SERVER['HTTPS']=='off' ? 'http://' : 'https://';

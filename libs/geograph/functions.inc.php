@@ -95,7 +95,15 @@ function smarty_block_dynamic($param, $content, &$smarty)
 function smarty_function_getamap($params)
 {
 	global $CONF;
-	$icon=empty($params['icon'])?"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>":'';
+
+	if (isset($params['protoselect']))
+		$protoselect=$params['protoselect'];
+	else
+		$protoselect=3;
+
+	$proto = get_protocol($protoselect);
+	
+	$icon=empty($params['icon'])?"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"{$proto}{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>":'';
 
 	//get params
 	$matches=array();
@@ -167,6 +175,13 @@ function smarty_function_newwin($params)
 	else
 		$title=$text;
 	
+  	if (isset($params['protoselect']))
+		$protoselect=$params['protoselect'];
+	else
+		$protoselect=3;
+
+	$proto = get_protocol($protoselect);
+	
 	if (isset($params['nofollow']))
 		$title .= "\" rel=\"nofollow"; 	
 	
@@ -174,7 +189,7 @@ function smarty_function_newwin($params)
 		$title .= "\" onclick=\"".$params['onclick']; 	
 	
 	return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
+		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"{$proto}{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
 }
 
 /**
@@ -201,15 +216,22 @@ function smarty_function_external($params)
 	else
 		$title=$text;
 	
+  	if (isset($params['protoselect']))
+		$protoselect=$params['protoselect'];
+	else
+		$protoselect=3;
+
+	$proto = get_protocol($protoselect);
+	
 	if (isset($params['nofollow']))
 		$title .= "\" rel=\"nofollow"; 	
 
   	if (isset($params['target']) && $params['target'] === '_blank') {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-  			"<img class=\"externallink\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img class=\"externallink\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"{$proto}{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	} else {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
-  			"<img class=\"externallink\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img class=\"externallink\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"{$proto}{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	}
 }
 
@@ -462,7 +484,8 @@ function smarty_function_ordinal($i) {
 function smarty_modifier_revision($filename) {
 	global $REVISIONS,$CONF;
 	if (isset($REVISIONS[$filename])) {
-		$url = "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+		#$url = "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+		$url = "//{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 		
 		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 && strpos($filename,'css') === FALSE && empty($GLOBALS['USER']->user_id)) {
 			$url = cachize_url($url);
@@ -836,6 +859,21 @@ function get_map_suffix()
 		$map_suffix = ''; # can't handle 'clip'
 	}
 	return $map_suffix;
+}
+
+function get_current_protocol()
+{
+	return empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off' ? 'http://' : 'https://';
+}
+
+function get_protocol($selection = 0)
+{
+	if ($selection === 2) {
+		return get_current_protocol();
+	} elseif ($selection === 3) {
+		return '//';
+	}
+	return 'http://';
 }
 
 function customGZipHandlerStart() {

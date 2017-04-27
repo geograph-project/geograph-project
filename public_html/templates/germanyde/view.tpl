@@ -13,7 +13,7 @@
 
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 
-<h3 style="color:black"><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Abgelehnt</h3>
+<h3 style="color:black"><img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Abgelehnt</h3>
 
 <p>Dieses Bild wurde von den Moderatoren abgelehnt und ist für andere nicht sichtbar.</p>
 
@@ -60,7 +60,7 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
   <div class="img-shadow" id="mainphoto"><!-- comment out whitespace
   {if $notes}
     --><div class="notecontainer" id="notecontainer">
-    {$image->getFull(true,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}<!--
+    {$image->getFull(3,"class=\"geonotes\" usemap=\"#notesmap\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}<!--
     {if $altimg neq ''}--><img src="{$altimg}" height="{$std_height}px" width="{$std_width}px" id="gridimagealt" alt="" style="position:absolute;top:0px;left:0px;z-index:2;" /><!--{/if}-->
     <map name="notesmap" id="notesmap">
     {foreach item=note from=$notes}
@@ -77,12 +77,13 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
     </div><!--
   {elseif $altimg neq ''}
     --><div class="notecontainer" id="notecontainer">
-    {$image->getFull(true,"class=\"geonotes\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}
+    {* FIXME test panos and annotations! *}
+    {$image->getFull(3,"class=\"geonotes\" id=\"gridimage\" style=\"position:relative;top:0px;left:0px;z-index:3;\"")}
     <img src="{$altimg}" height="{$std_height}px" width="{$std_width}px" id="gridimagealt" alt="" style="position:absolute;top:0px;left:0px;z-index:2;" />
     <script type="text/javascript" src="{"/js/geonotes.js"|revision}"></script>
     </div><!--
   {else}
-  -->{$image->getFull(true,"id=\"gridimage\"")}<!--
+  -->{$image->getFull(3,"id=\"gridimage\"")}<!--
   {/if}
   --></div>
 
@@ -122,7 +123,7 @@ Fragen der Moderatoren beantwortet oder Rückfragen gestellt werden können. Allge
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="Profil betrachten" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> und  
+alt="Creative Commons Licence [Some Rights Reserved]" src="//{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="Profil betrachten" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> und  
 lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">dieser Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
@@ -144,7 +145,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 </tr>
 <tr>
 {if $enable_forums}
-<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="http://{$static_host}/templates/basic/img/icon_discuss.gif" alt="Forum" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="//{$static_host}/templates/basic/img/icon_discuss.gif" alt="Forum" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 {if $discuss}
 	Es gibt {if $totalcomments == 1}einen Beitrag{else}{$totalcomments} Beiträge{/if}
@@ -155,7 +156,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 </td>
 {/if}
 
-<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Ändern" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/editimage.php?id={$image->gridimage_id}"><img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Ändern" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 	{if $user->user_id eq $image->user_id}
 		<big><a href="/editimage.php?id={$image->gridimage_id}"><b>Bildinformationen ändern</b></a></big><br/>
@@ -165,7 +166,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 	{/if}
 </td>
 {if $user->user_id ne $image->user_id}
-<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
+<td style="width:50px"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="//{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="50" height="44"/></a></td>
 <td style="font-size:0.7em;vertical-align:middle">
 	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Einreicher kontaktieren</a>
 </td>
@@ -260,7 +261,7 @@ lizenziert unter <a rel="license" href="http://creativecommons.org/licenses/by-s
 
 <dt>Koordinaten des Motivs</dt>
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{elseif $image->grid_square->reference_index eq 2}Irish{elseif $image->grid_square->reference_index eq 3}MGRS 32{elseif $image->grid_square->reference_index eq 4}MGRS 33{elseif $image->grid_square->reference_index eq 5}MGRS 31{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref_spaced}</a> [{$image->subject_gridref_precision}m Genauigkeit]<br/>
+{if $image->grid_square->reference_index eq 1}OSGB36{elseif $image->grid_square->reference_index eq 2}Irish{elseif $image->grid_square->reference_index eq 3}MGRS 32{elseif $image->grid_square->reference_index eq 4}MGRS 33{elseif $image->grid_square->reference_index eq 5}MGRS 31{/if}: <img src="//{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref_spaced}</a> [{$image->subject_gridref_precision}m Genauigkeit]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude" 
 title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
@@ -269,7 +270,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <dt>Koordinaten des Fotografen</dt>
 
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{elseif $image->grid_square->reference_index eq 2}Irish{elseif $image->grid_square->reference_index eq 3}MGRS 32{elseif $image->grid_square->reference_index eq 4}MGRS 33{elseif $image->grid_square->reference_index eq 5}MGRS 31{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref_spaced}</a></dd>
+{if $image->grid_square->reference_index eq 1}OSGB36{elseif $image->grid_square->reference_index eq 2}Irish{elseif $image->grid_square->reference_index eq 3}MGRS 32{elseif $image->grid_square->reference_index eq 4}MGRS 33{elseif $image->grid_square->reference_index eq 5}MGRS 31{/if}: <img src="//{$static_host}/img/geotag_16.png" width="10" height="10" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref_spaced}</a></dd>
 {/if}
 
 {if $view_direction && $image->view_direction != -1}
@@ -355,7 +356,7 @@ Ostsüdost
 	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}
 {/if}
 
-<span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&amp;id={$image->gridimage_id}"><b>Mehr Links zum Bild</b></a></span>
+<span class="nowrap"><img src="//{$static_host}/img/geotag_16.png" width="16" height="16" alt="geotagged!" style="vertical-align:middle;" /> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&amp;id={$image->gridimage_id}"><b>Mehr Links zum Bild</b></a></span>
 </div>
 
 
@@ -446,7 +447,7 @@ AttachEvent(window,"load",gn.init);
 </script>
 
 	<div class="interestBox thumbbox"><span id="hideside"></span>
-		<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side','block')"/>
+		<img src="//{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side','block')"/>
 	</div>
 		
 	<div class="thumbwincontainer"><div class="thumbwindow" id="showside" onmouseout="hide_tree('side')">
