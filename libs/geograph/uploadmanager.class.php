@@ -554,6 +554,44 @@ class UploadManager
 		//save the exif data for the loaded image
 		$exif = @exif_read_data($pendingfile,0,true); 
 		
+		# Work around php's makernote bug and make use of xmp coordinates
+		if ($CONF['exiftooldir'] !== '' && $exif !== false) {
+			if (!isset($exif['EXIF']['MakerNote']) && preg_match('/MAKERNOTE$/', $exif['FILE']['SectionsFound'])) {
+				//if MAKERNOTE is listed as a section, but its not present, then probably exif_read_data failed due to PHP bug
+				// https://bugs.php.net/bug.php?id=72682
+				// http://git.php.net/?p=php-src.git;a=commit;h=aabcb5481d9e717df77192dab2894468b9fc63b4
+				// http://geo.hlipp.de/discuss/index.php?&action=vthread&forum=4&topic=226
+				// http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=4&topic=29257
+				// http://cake.geograph.org.uk/
+
+				$tempfile = $pendingfile . '.tmp';
+				copy($pendingfile, $tempfile);
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -m -makernotes= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $tempfile);
+				passthru ($cmd);
+				$exif2 = @exif_read_data($tempfile, 0, true);
+				unlink($tempfile);
+
+				if ($exif2 !== false) {
+					$exif = $exif2;
+				}
+			}
+			if (!isset($exif['GPS'])) {
+				# Try positions from XMP
+
+				$tempfile = $pendingfile . '.tmp';
+				copy($pendingfile, $tempfile);
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -m -makernotes= '-gps:all<xmp-exif:all' '-gps:all<composite:all' '-gpsdatestamp<gpsdatetime' '-gpstimestamp<gpsdatetime' \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $tempfile);
+				passthru ($cmd);
+				$exif2 = @exif_read_data($tempfile, 0, true);
+				unlink($tempfile);
+
+				if ($exif2 !== false && isset($exif2['GPS'])) {
+					#$exif = $exif2;
+					$exif['GPS'] = $exif2['GPS'];
+				}
+			}
+		}
+
 		if ($exif!==false)
 		{
 			$this->trySetDateFromExif($exif);
