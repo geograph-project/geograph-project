@@ -339,11 +339,11 @@ it was taken or other interesting geographical information. It is not required t
 <p><label for="title"><b>German Title</b></label> {if $error.title}
 	<br/><span class="formerror">{$error.title}</span>
 	{/if}<br/>
-<input size="50" maxlength="128" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
+<input size="70" maxlength="128" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Possible style issue. See Guide above. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
 <p><label for="title2"><b>English Title</b></label> {if $error.title2}
 	<br/><span class="formerror">{$error.title2}</span>
 	{/if}<br/>
-<input size="50" maxlength="128" id="title2" name="title2" value="{$title2|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title2',true);" onkeyup="checkstyle(this,'title2',false);"/> <span class="formerror" style="display:none" id="title2style">Possible style issue. See Guide above. <span id="title2stylet" style="font-size:0.9em"></span></span></p>
+<input size="70" maxlength="128" id="title2" name="title2" value="{$title2|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title2',true);" onkeyup="checkstyle(this,'title2',false);"/> <span class="formerror" style="display:none" id="title2style">Possible style issue. See Guide above. <span id="title2stylet" style="font-size:0.9em"></span></span></p>
  {if $place.distance}
  <p style="font-size:0.7em">Gazetteer info as will appear:<br/> <span style="color:silver;">{place place=$place}</span></p>
  {/if}
