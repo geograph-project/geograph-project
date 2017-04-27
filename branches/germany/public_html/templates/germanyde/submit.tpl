@@ -337,11 +337,11 @@ angegeben werden. Die Angaben sind nur in einer Sprache erforderlich; englische 
 <p><label for="title"><b>Titel</b></label> {if $error.title}
 	<br/><span class="formerror">{$error.title}</span>
 	{/if}<br/>
-<input size="50" maxlength="128" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Mögliches Stilproblem. Siehe Style Guide. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
+<input size="70" maxlength="128" id="title" name="title" value="{$title|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title',true);" onkeyup="checkstyle(this,'title',false);"/> <span class="formerror" style="display:none" id="titlestyle">Mögliches Stilproblem. Siehe Style Guide. <span id="titlestylet" style="font-size:0.9em"></span></span></p>
 <p><label for="title2"><b>Englischer Titel</b> (optional)</label> {if $error.title2}
 	<br/><span class="formerror">{$error.title2}</span>
 	{/if}<br/>
-<input size="50" maxlength="128" id="title2" name="title2" value="{$title2|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title2',true);" onkeyup="checkstyle(this,'title2',false);"/> <span class="formerror" style="display:none" id="title2style">Mögliches Stilproblem. Siehe Style Guide. <span id="title2stylet" style="font-size:0.9em"></span></span></p>
+<input size="70" maxlength="128" id="title2" name="title2" value="{$title2|escape:'html'}" spellcheck="true" onblur="checkstyle(this,'title2',true);" onkeyup="checkstyle(this,'title2',false);"/> <span class="formerror" style="display:none" id="title2style">Mögliches Stilproblem. Siehe Style Guide. <span id="title2stylet" style="font-size:0.9em"></span></span></p>
  {if $place.distance}
  <p style="font-size:0.7em">Folgende Ortsinformation wird erscheinen:<br/> <span style="color:silver;">{place place=$place}</span></p>
  {/if}
