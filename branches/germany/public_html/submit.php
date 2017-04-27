@@ -62,6 +62,11 @@ if (isset($_SESSION['tab'])) {
 
 $step=isset($_POST['step'])?intval($_POST['step']):1;
 
+# Try to guess if upload size > post_max_size or upload_max_filesize
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST) && empty($_FILES) && $_SERVER['CONTENT_LENGTH'] > 0) {
+	$smarty->assign('errormsg', 'You seem to have uploaded a large file. Please note that we have an maximum upload size of 15Mb - please resize the image and try again');
+}
+
 if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_NO_FILE)
 {
 	//Submit Step 1a..
