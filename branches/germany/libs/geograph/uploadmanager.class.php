@@ -80,6 +80,15 @@ class UploadManager
 	/**
 	* return full path to temporary image file
 	*/
+	function _commitJPEG($id)
+	{
+		global $USER;
+		return $this->tmppath.'/newpic_u'.$USER->user_id.'_'.$id.'.commit.jpeg';
+	}
+
+	/**
+	* return full path to temporary image file
+	*/
 	function _pendingJPEG($id)
 	{
 		global $USER;
@@ -306,6 +315,7 @@ class UploadManager
 	function error($msg)
 	{
 		$this->errormsg=$msg;
+		return $msg;
 	}
 	
 	/**
@@ -838,23 +848,20 @@ class UploadManager
 	{
 		global $USER,$CONF,$memcache;
 		
-		if($this->validUploadId($this->upload_id))
-		{
-			$uploadfile = $this->_pendingJPEG($this->upload_id);
-			if (!file_exists($uploadfile))
-			{
-				return "Upload image not found";
-			}
+		if(!is_object($this->square)) {
+			return("Must assign square");
 		}
-		else
-		{
+		
+		if(!$this->validUploadId($this->upload_id)) {
 			return ("Must assign upload id");
 		}
 		
-		
-		if(!is_object($this->square))
-		{
-			return("Must assign square");
+		$uploadfile = $this->_pendingJPEG($this->upload_id);
+		$srcfile = $this->_commitJPEG($this->upload_id);
+
+		# TODO allow user to rename back if this instance dies before the db update?
+		if (!rename($uploadfile, $srcfile)) {
+			return $this->error("Image file not found; possible duplicate submission");
 		}
 		
 		
@@ -909,7 +916,12 @@ class UploadManager
 			$this->use6fig,$this->db->Quote($this->user_status),$this->db->Quote($this->realname),
 			$this->square->reference_index,$viewpoint->reference_index);
 		
-		$this->db->Query($sql);
+		$rs = $this->db->Query($sql);
+
+		if ($rs === false) {
+			rename($srcfile, $uploadfile);
+			return "Database update failed";
+		}
 		
 		//get the id
 		$gridimage_id=$this->db->Insert_ID();
@@ -921,18 +933,16 @@ class UploadManager
 		$this->db->Query($sql);
 		
 		//copy image to correct area
-		$src=$this->_pendingJPEG($this->upload_id);
-		
 		$image=new GridImage;
 		$image->gridimage_id = $gridimage_id;
 		$image->user_id = $USER->user_id;
 		
 		if ($this->clearexif && $CONF['exiftooldir'] !== '') {
-			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
+			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $srcfile);
 			passthru ($cmd);
 		}
 		$storedoriginal = false;
-		if ($ok = $image->storeImage($src)) {
+		if ($ok = $image->storeImage($srcfile)) {
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			
@@ -1067,6 +1077,7 @@ class UploadManager
 		#@unlink($this->_pendingJPEG($this->upload_id).'_original');
 		#@unlink($this->_originalJPEG($this->upload_id).'_original');
 		@unlink($this->_pendingJPEG($this->upload_id));
+		@unlink($this->_commitJPEG($this->upload_id));
 		@unlink($this->_pendingEXIF($this->upload_id));
 		@unlink($this->_originalJPEG($this->upload_id));
 	}
