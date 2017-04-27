@@ -440,8 +440,11 @@ AttachEvent(window,'load',onChangeImageclass,false);
 <p>
 <input type="hidden" name="upload_id" value="{$upload_id}"/>
 <input type="hidden" name="savedata" value="1"/>
-<input type="submit" name="goback" value="&lt; Back"/>
-<input type="submit" name="next" value="Next &gt;"/></p>
+<div style="display:inline-block">
+<input type="submit" name="next" value="Next &gt;" style="float:right;" />
+<input type="submit" name="goback" value="&lt; Back" style="float:right;" />
+</div>
+</p>
 
 <script type="text/javascript" src="/categories.js.php"></script>
 <script type="text/javascript" src="/categories.js.php?full=1&amp;u={$user->user_id}"></script>
