@@ -18,6 +18,10 @@
 	
 	{if $sent}
 		<p>Danke, die Nachricht wurde verschickt.</p>
+		<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+		<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
+		Bitte beachten Sie, dass der Empfänger die Nachricht unter Umständen <b>nicht</b> annimmt, falls Sie als Absender eine <b>Yahoo- oder AOL-</b>Adresse angeben,
+		weil Yahoo und AOL eine diesbezüglich ungünstige Mail-Konfiguration einsetzen.</div>
 	{elseif $verification}
 		<form method="post" action="/usermsg.php">
 		
@@ -81,6 +85,11 @@
 			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
 			Wenn sich die Nachricht auf ein Bild bezieht, bitten wir darum, dieses Bild klar zu benennen:
 			Der Teilnehmer kann an vielen Orten Bilder aufgenommen haben und daher nicht wissen um welches Bild es geht!</div>
+			<br />
+			<div style="padding:10px; border:2px solid yellow; font-size:0.7em">
+			<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Achtung" width="30" height="24" align="left" style="margin-right:10px"/>
+			Bitte beachten Sie, dass der Empfänger die Nachricht unter Umständen <b>nicht</b> annimmt, falls Sie als Absender eine <b>Yahoo- oder AOL-</b>Adresse angeben,
+			weil Yahoo und AOL eine diesbezüglich ungünstige Mail-Konfiguration einsetzen.</div>
 			<br/>
 		</div>
 		
