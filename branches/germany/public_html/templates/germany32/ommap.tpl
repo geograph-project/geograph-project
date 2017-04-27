@@ -7,7 +7,7 @@
 {include file="_std_begin.tpl"}
 {/if}
 {if $google_maps_api_key}
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.6&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
+<script type="text/javascript" src="//maps.google.com/maps/api/js?v=3.6&amp;sensor=false&amp;key={$google_maps_api_key}"></script>
 {/if}
 <script type="text/javascript" src="/ol/OpenLayers.js"></script>
 <script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
@@ -711,7 +711,7 @@ ommap.tpl, rastermap.class.php:
 
 {if $ext}
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
-<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px\"/>
+<img src="//{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px\"/>
 <p>
 This feature is still in development. Please use with care and try to avoid high server load.
 </p>

@@ -193,13 +193,15 @@ function inthash(s, n) {
 
 function createPMarker(ppoint) {
 	var picon = new google.maps.MarkerImage(
-		"http://"+static_host+"/img/icons/camicon.png",
+		"//"+static_host+"/img/icons/camicon.png",
+		//"http://"+static_host+"/img/icons/camicon.png",
 		new google.maps.Size(20, 34),
 		new google.maps.Point(0,0),
 		new google.maps.Point(10, 34)
 	);
 	var pshadow = new google.maps.MarkerImage(
-		"http://"+static_host+"/img/icons/cam-s.png",
+		"//"+static_host+"/img/icons/cam-s.png",
+		//"http://"+static_host+"/img/icons/cam-s.png",
 		new google.maps.Size(37, 34),
 		new google.maps.Point(0,0),
 		new google.maps.Point(10, 34)

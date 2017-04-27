@@ -1408,13 +1408,13 @@ class GeographMapMosaic
 				//if the image count is 1, we'll go straight to the image
 				if (count($images)==1)
 				{
-					$url="http://".$_SERVER['HTTP_HOST'].'/photo/'.
+					$url="//".$_SERVER['HTTP_HOST'].'/photo/'.
 						$images[0]->gridimage_id;
 				}
 				else
 				{
 					//lets go to the grid reference
-					$url="http://".$_SERVER['HTTP_HOST'].'/gridref/'.$square->grid_reference;
+					$url="//".$_SERVER['HTTP_HOST'].'/gridref/'.$square->grid_reference;
 				}
 				
 			}
@@ -1424,7 +1424,7 @@ class GeographMapMosaic
 				$conv = new Conversions;
 		
 				list($gr,$len) = $conv->internal_to_gridref($clickx,$clicky,0);
-				$url="http://".$_SERVER['HTTP_HOST'].'/gridref/'.$gr;
+				$url="//".$_SERVER['HTTP_HOST'].'/gridref/'.$gr;
 			}
 			header("Location:$url");
 			exit;

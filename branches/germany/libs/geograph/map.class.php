@@ -775,7 +775,7 @@ class GeographMap
 		//always given dynamic url, that way cached HTML can 
 		//always get an image
 		$token=$this->getToken();
-		$file="http://{$CONF['TILE_HOST']}/tile.php?map=$token";
+		$file="//{$CONF['TILE_HOST']}/tile.php?map=$token";
 
 		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 2 && empty($GLOBALS['USER']->user_id)) {
 			$file = cachize_url($file);

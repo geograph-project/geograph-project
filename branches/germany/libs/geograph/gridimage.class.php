@@ -969,8 +969,9 @@ class GridImage
 		if (!$ok)
 			$fullpath="/photos/error.jpg";
 
-		if ($returntotalpath)
-			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+		if ($returntotalpath) {
+			$fullpath=get_protocol($returntotalpath).$CONF['STATIC_HOST'].$fullpath;
+		}
 
 		return $fullpath;
 	}
@@ -978,7 +979,7 @@ class GridImage
 	/**
 	* returns the size of the image in getimagesize format. loads from cache if possible - fetching the image from remote if needbe.
 	*/
-	function _getFullSize()
+	function _getFullSize($protoselect = true)
 	{
 		if (isset($this->cached_size)) {
 			$size = $this->cached_size;
@@ -998,7 +999,7 @@ class GridImage
 					$this->original_width = $size[4];
 					$this->original_height = $size[5];
 				} else {
-					$fullpath = $this->_getFullpath(true); //will fetch the file if needbe
+					$fullpath = $this->_getFullpath($protoselect); //will fetch the file if needbe
 					
 					$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$fullpath);
 					
@@ -1052,7 +1053,7 @@ class GridImage
 		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->user_id) && isset($GLOBALS['smarty'])) {
 			$fullpath = cachize_url("http://".$CONF['STATIC_HOST'].$fullpath);
 		} elseif ($returntotalpath)
-			$fullpath="http://".$CONF['STATIC_HOST'].$fullpath;
+			$fullpath=get_protocol($returntotalpath).$CONF['STATIC_HOST'].$fullpath;
 		
 		if ($attrs !== '')
 			$attrs .= ' ';
@@ -1083,7 +1084,7 @@ class GridImage
 	* handy helper for Smarty templates, for instance, given an instance of this
 	* class, you can use this {$image->getSquareThumbnail(100,100)} to show a thumbnail
 	*/
-	function getSquareThumbnail($maxw, $maxh)
+	function getSquareThumbnail($maxw, $maxh, $protoselect = 0)
 	{
 		
 		global $CONF;
@@ -1191,7 +1192,7 @@ class GridImage
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
-				$return['server']= "http://".$CONF['CONTENT_HOST'];
+				$return['server']= get_protocol($protoselect).$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
 			
@@ -1485,6 +1486,7 @@ class GridImage
 		$pano=isset($params['pano'])?$params['pano']:false;
 		$minsize=isset($params['minsize'])?$params['minsize']:false;
 		$source=isset($params['source'])?$params['source']:'';
+		$protoselect=isset($params['protoselect'])?$params['protoselect']:0;
 		
 		
 		
@@ -1512,7 +1514,7 @@ class GridImage
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
-				$return['server']= "http://".$CONF['CONTENT_HOST'];
+				$return['server']= get_protocol($protoselect).$CONF['CONTENT_HOST'];
 			}
 			return $return;
 		}
@@ -1529,7 +1531,7 @@ class GridImage
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
-				$return['server']= "http://".$CONF['CONTENT_HOST'];
+				$return['server']= get_protocol($protoselect).$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
 			
@@ -1744,7 +1746,7 @@ class GridImage
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('0',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
-				$return['server']= "http://".$CONF['CONTENT_HOST'];
+				$return['server']= get_protocol($protoselect).$CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
 			
@@ -1773,7 +1775,7 @@ class GridImage
 	* handy helper for Smarty templates, for instance, given an instance of this
 	* class, you can use this {$image->getThumbnail(213,160)} to show a thumbnail
 	*/
-	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false,$attribname = 'src')
+	function getThumbnail($maxw, $maxh,$urlonly = false,$fullalttag = false,$attribname = 'src',$protoselect = 0)
 	{
 		global $MESSAGES;
 		if ($this->ext) {
@@ -1790,6 +1792,7 @@ class GridImage
 		$params['maxh']=$maxh;
 		$params['attribname']=$attribname;
 		$params['urlonly']=$urlonly;
+		$params['protoselect']=$protoselect;
 		$resized=$this->_getResized($params);
 		
 		if (!empty($urlonly)) {
@@ -1807,7 +1810,7 @@ class GridImage
 	* handy helper for Smarty templates, for instance, given an instance of this
 	* class, you can use this {$image->getMinThumbnail(150,150)} to show a thumbnail
 	*/
-	function getMinThumbnail($minw, $minh,$urlonly = false,$attribname = 'src')
+	function getMinThumbnail($minw, $minh,$urlonly = false,$attribname = 'src',$protoselect = 0)
 	{
 		$params['minsize'] = true;
 		$params['bevel']=false;
@@ -1816,6 +1819,7 @@ class GridImage
 		$params['maxh']=$minh;
 		$params['attribname']=$attribname;
 		$params['urlonly']=$urlonly;
+		$params['protoselect']=$protoselect;
 		$resized=$this->_getResized($params);
 		
 		if (!empty($urlonly)) {
@@ -1835,13 +1839,14 @@ class GridImage
 	* 
 	* Compare with getThumbnail, which is for getting a "best fit"
 	*/
-	function getFixedThumbnail($maxw, $maxh)
+	function getFixedThumbnail($maxw, $maxh, $protoselect = 0)
 	{
 		$params['maxw']=$maxw;
 		$params['maxh']=$maxh;
 		$params['bestfit']=false;
 		$params['bevel']=false;
 		$params['unsharp']=false;
+		$params['protoselect']=$protoselect;
 		$resized=$this->_getResized($params);
 		
 		return $resized['html'];
@@ -1850,7 +1855,7 @@ class GridImage
 	/**
 	* 
 	*/
-	function getImageFromOriginal($maxw, $maxh, $pano = false)
+	function getImageFromOriginal($maxw, $maxh, $pano = false,$protoselect = 0)
 	{
 		$params['maxw']=$maxw;
 		$params['maxh']=$maxh;
@@ -1858,6 +1863,7 @@ class GridImage
 		$params['unsharp']=false;
 		$params['pano']=$pano;
 		$params['source']='original';
+		$params['protoselect']=$protoselect;
 		$resized=$this->_getResized($params);
 		
 		return $resized['url'];

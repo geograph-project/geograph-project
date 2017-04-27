@@ -37,7 +37,7 @@ Dabei werden für die Planquadrate  <a href="http://de.wikipedia.org/wiki/MGRS">M
 	{/foreach}
 
 	{if $marker}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Bild des Tages von hier"><img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Bild des Tages von hier"><img src="//{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
 	{/if}
 
 	</div>
@@ -68,7 +68,7 @@ Dabei werden für die Planquadrate  <a href="http://de.wikipedia.org/wiki/MGRS">M
 
 	<h3 style="margin-bottom:2px;margin-top:2px;">Bild des Tages</h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
-	title="zum Vergrößern anklicken">{$pictureoftheday.image->getFixedThumbnail($potd_width,$potd_height)}</a><br/>
+	title="zum Vergrößern anklicken">{$pictureoftheday.image->getFixedThumbnail($potd_width,$potd_height,3)}</a><br/>
 
 
 	<a href="/photo/{$pictureoftheday.gridimage_id}"><b>{$pictureoftheday.image->title|escape:'html'}</b></a>

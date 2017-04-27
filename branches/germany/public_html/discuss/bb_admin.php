@@ -19,7 +19,7 @@ $isModAdmin=$isMod||$isTicketMod||$isMapMod||$isAdmin;
 $useGoogleApi=!empty($CONF['google_maps_api_key']);
 
 $static_host = $CONF['STATIC_HOST']; 
-$static_url = "http://{$CONF['STATIC_HOST']}/discuss";
+$static_url = "//{$CONF['STATIC_HOST']}/discuss";
 
 function get_microtime() {
 	$mtime=explode(' ',microtime());

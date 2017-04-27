@@ -8,7 +8,7 @@
 	{foreach from=$results item=image}
 	 <div>
 	  <div style="float:left; position:relative; width:130px; text-align:center">
-		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120)}</a>
+		<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(120,120,false,false,'src',3)}</a>
 	  </div>
 	  <div style="float:left; position:relative">
 	  	<b>{$image->county}</b><br/>

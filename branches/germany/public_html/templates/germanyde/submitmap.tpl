@@ -119,7 +119,7 @@
 </div>
 </form>
 
-<script src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+<script src="//maps.googleapis.com/maps/api/js?sensor=false&amp;key={$google_maps_api_key}" type="text/javascript"></script>
 {if $inner}
 </body>
 </html>

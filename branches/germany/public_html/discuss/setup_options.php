@@ -32,7 +32,7 @@ $bb_admin='bb_admin.php?';
 
 $lang=$CONF['forum_lang'];
 $skin='default';
-$main_url='http://'.$_SERVER['HTTP_HOST'].'/discuss';
+$main_url='//'.$_SERVER['HTTP_HOST'].'/discuss';
 $sitename=$CONF['forum_title'];
 $emailadmin=0;
 $emailusers=1;
