@@ -1,33 +1,32 @@
-{assign var="extra_meta" value='<link href="https://plus.google.com/b/104248293367205883120/" rel="publisher"/>'}
+{assign var="imageurl" value=$pictureoftheday.image->_getFullpath(false,true)}
+{assign var="extra_meta" value="<link href=\"https://plus.google.com/b/104248293367205883120/\" rel=\"publisher\"/><meta property=\"og:image\" content=\"`$imageurl`\"/>"}
 {assign var="maincontentclass" value="content2"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
-
-<h2 style="text-align:center">Welcome to Geograph Britain and Ireland</h2>
 
 <div style="position:relative;background-color:white;">
 
 <div style="position:relative;margin-left:auto;margin-right:auto;width:750px">
 
-<div  class="interestBox" style="padding:2px; text-align:center;border-radius: 6px;">
-The Geograph<sup style="font-size:0.6em">&reg;</sup> Britain and Ireland project aims to collect geographically
+<div class="interestBox" style="padding:2px;text-align:center;border-radius:6px;">
+The <b>Geograph<sup style="font-size:0.4em">&reg;</sup> Britain and Ireland</b> project aims to collect geographically
 representative photographs and information for every square kilometre of <a href="/explore/places/1/">Great Britain</a> and
 <a href="/explore/places/2/">Ireland</a>, and you can be part of it.</div>
 
-<div style="text-align:center; padding:10px"><b class="nowrap">{$stats.users|thousends} contributors</b> have submitted <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total</span></div>
+<div style="text-align:center; padding:10px">Since 2005, <b class="nowrap">{$stats.users|thousends} contributors</b> have submitted <b class="nowrap">{$stats.images|thousends} images</b> <span  class="nowrap">covering <b class="nowrap">{$stats.squares|thousends} grid squares</b>, or <b class="nowrap">{$stats.percentage}%</b> of the total squares</span></div>
 
 
 	<div class="interestBox" style="height:370px;background-color:#333333; width:550px;color:white; float:left;padding:10px;overflow:hidden;border-radius: 10px;">
 		<div style="position:relative;float:left; width:400px">
 			<div style="position:relative;float:right;margin-right:10px">
-				<a href="/results/2087426" style="color:white;font-size:0.9em;text-decoration:none;border-bottom:1px solid gray">view previous &gt;</a>
+				<a href="/stuff/daily.php" style="color:white;font-size:0.9em;text-decoration:none;border-bottom:1px solid gray" title="Previous Photos of the Day">view previous &gt;</a>
 			</div>
 			<h3 style="margin-top:0;margin-bottom:8px">{$ptitles.$ptitle}</h3>
 
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 		</div>
 		<div style="position:relative;float:left; width:150px">
-			<p style="margin-top:30px;text-align:center">Click the map to start browsing photos of the <span class="nowrap">British Isles</span></p>
+			<p style="margin-top:30px;text-align:center">Click the map to start browsing photos</p>
 
 			<div class="map" style="height:{$overview_height}px;width:{$overview_width}px">
 				<div class="inner" style="position:relative;top:0px;left:0px;width:{$overview_width}px;height:{$overview_height}px;">
@@ -53,7 +52,7 @@ representative photographs and information for every square kilometre of <a href
 			<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://{$static_host}/img/80x15.png" /></a>
 		</div>
 		<div style="font-size:0.9em;margin-top:8px">
-			&nbsp; <a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->title}</a> 
+			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->title}</a> 
 			<span class="nowrap">by <a title="Profile" href="{$pictureoftheday.image->profile_link}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->realname}</a></span> 
 			<span class="nowrap">for square <a href="/gridref/{$pictureoftheday.image->grid_reference}" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->grid_reference}</a></span>, 
 			<span class="nowrap">taken <a href="/search.php?gridref={$pictureoftheday.image->grid_reference}&amp;orderby=submitted&amp;taken_start={$pictureoftheday.image->imagetaken}&amp;taken_end={$pictureoftheday.image->imagetaken}&amp;do=1" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->getFormattedTakenDate()}</a></span>
@@ -83,8 +82,7 @@ representative photographs and information for every square kilometre of <a href
 		<div class="interestBox" style="border-radius: 6px;margin-bottom:8px">
 			<div style="position:relative;float:right">
 				<a href="/explore/searches.php" title="Featured Selections">other selections &gt;</a>&nbsp;&nbsp;
-				<a href="/thumbed-weekly.php" title="Popular images">popular images &gt;</a> &nbsp;&nbsp;&nbsp;
-				<a href="/search.php?i=1522" title="Show the most recent submissions"><b>see more</b> &gt;</a>
+				<a href="/finder/recent.php" title="Show the most recent submissions"><b>see more</b> &gt;</a>
 			</div>
 			<h3 style="margin:0">Recent Photos</h3>
 		</div>
@@ -107,28 +105,84 @@ representative photographs and information for every square kilometre of <a href
 	</div>
 {/if}
 
+<div class="interestBox" style="padding:6px;border-radius:4px;background-color:#FFFDD0;text-align:left;margin-left:auto;margin-right:auto;width:750px;margin-top:3px">
+<b>Thank you 3,765 times</b><br>
+A big <i>thank you</i> to the 3,765 people who completed our user survey in February 2017. You have given us lots of solid evidence about why you value Geograph. Here's a summary of the results: <br><br>
+<span style="font-size:0.9em">
+Four out of five of you are from the UK. Most of you are using Geograph to explore where you live or places you might visit, rather than for study or work. Most of you are not uploading photos onto Geograph. Over half of you are interested in heritage and in buildings, and almost half in the natural environment, maps and geography. Almost all of you would recommend Geograph to other people.</span>
+</div>
+
+
 <div style="text-align:center;clear:both;padding:10px;">
 	<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, <a href="/submit.php">add yours now</a>!
 </div>
 
-<div class="interestBox" style="text-align:center; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;"><b>Looking for more?</b> Try the <a href="/map/">Maps</a>, <a href="/explore/">Explore</a>, <a href="/numbers.php">Statistics</a>, <a href="/content/">Collections</a> or even <a href="/help/more_pages">more pages</a>.</div>
 
-<p align="center">
-	<b>New: {external href="http://www.geograph.org/gallery.php" text="Showcase Gallery"} - Curated selection of Geograph images</b>
-</p>
+{foreach from=$collections item=item}
+	{assign var="source" value=$item.source}
 
-<div class="interestBox" style="text-align:center;margin-bottom:30px; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;">
-	{external href="http://twitter.com/geograph_bi" text="Geograph on twitter"} and <a href="/news.php">More News</a>.
+	<div class="interestBox" style="text-align:left; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;background-color:#{$colours.$source}">
+
+	<div style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
+		{if $item.image}
+		<a title="{$item.image->title|escape:'html'} by {$item.image->realname|escape:'html'} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
+		{/if}
+	</div>
+	{if $item.images > 2 && ($item.source == 'themed' || $item.source == 'gallery' || $item.source == 'snippet' || $item.source == 'article')}
+		<div style="position:relative;float:right;margin-right:10px">
+			<a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="http://s1.geograph.org.uk/templates/basic/img/cameraicon.gif" border="0" alt="view images in this collection"/></a>
+		</div>
+	{elseif $item.source == 'user' && $item.images > 2}
+		<div style="position:relative;float:right;margin-right:10px">
+			<a href="/browser/#/realname+%22{$item.title|escape:'url'}%22" title="View Images"><img src="http://s1.geograph.org.uk/templates/basic/img/cameraicon.gif" border="0"/></a>
+		</div>
+	{/if}
+
+	<b><a href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>
+	<small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
+	{if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</small></small>
+	{if $item.extract}
+		<div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
+	{/if}
+	<div style="clear:left"></div>
+	<div style="text-align:right"><a href="/content/featured.php" style="color:white;text-decoration:none">view previous featured collections &gt;</a></div>
+</div>
+{/foreach}
+
+<div style="text-align:center;clear:both;padding:10px;">
+	&middot; Geograph on <b>{external href="http://twitter.com/geograph_bi" text="Twitter"},
+	{external href="http://www.facebook.com/geograph.org.uk" text="Facebook"}</b> 
+	&middot; <b><a href="/news.php">Project News</a></b><br/>
+</div>
+{if $job}
+<div class="interestBox" style="padding:3px;text-align:center;border-radius:6px;background-color:#FCDB8D;margin-bottom:5px">
+	&middot; <a href="/blog/{$job.blog_id}">{$job.title|escape:'html'}</a> &middot; (<a href="/blog/?tag=job%20posting">more...</a>) &middot;
+</div>
+{/if}
+
+<div style="position:relative; text-align:left; margin-left:auto;margin-right:auto;width:750px;">
+	<div style="position:relative;float:left;width:200px;text-align:center">
+		<p><a href="/help/donate"><img src="http://{$static_host}/img/donate-now-button.gif" style="vertical-align: middle;" width="190" height="48" alt="donate now" style="border-radius:14px"/></a>
+		Please <a href="/help/donate">support</a><br/> the project</p>
+	</div>
+	<div style="position:relative;float:left;width:550px;text-align:center">
+		<p>This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948">UK Web Archive</a> project.</p>
+
+		<p style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. <br> The registered office is 49 Station Road, Polegate, East Sussex, BN26 6EA.</p>
+	</div>
+	<br style="clear:both"/>
 </div>
 
 </div>
 
-<p align="center">This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948/source/geograph">UK Web Archive</a> project.</p>
+<br style="clear:both"/>
 
-<p align="center" style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>.</p>
 
-<script>
+
+
 {literal}
+<script type="text/javascript">
+//<![CDATA[
 
 //sillyness for IE6!
 var locked = false;
@@ -206,8 +260,25 @@ bindReady(thiswindowresize);
 
 AttachEvent(window,'resize',thiswindowresize,false);
 
-{/literal}
+//]]>
 </script>
+
+<script type="application/ld+json">
+{
+   "@context": "http://schema.org",
+   "@type": "WebSite",
+   "url": "http://www.geograph.org.uk/",
+   "name": "Geograph",
+   "alternateName": "Geograph Britain and Ireland",
+   "potentialAction": {
+     "@type": "SearchAction",
+     "target": "http://www.geograph.org.uk/of/{search_term}",
+     "query-input": "required name=search_term"
+   }
+}
+</script>
+
+{/literal}
 
 
 {include file="_std_end.tpl"}
