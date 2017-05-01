@@ -372,13 +372,11 @@ AttachEvent(window,'load',initmap,false);
 {/if}
 
 	<p>{$trip.descr|escape:"html"|nl2br|geographlinks}</p>
-{dynamic}
 {if $trip.uid == $user->user_id}
 	<div class="inner flt_r">[<a href="/geotrips/geotrip_edit.php?trip={$trip.id}">edit this trip</a>]</div>
 {else}
 	<div class="inner flt_r">[<a href="/geotrips/">overview map</a>]</div>
 {/if}
-{/dynamic}
 	<div><p><small>
 {if $trip.track}
 		On the map below, the grey line is the GPS track from this trip.
