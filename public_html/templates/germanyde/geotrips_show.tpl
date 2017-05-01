@@ -372,13 +372,11 @@ AttachEvent(window,'load',initmap,false);
 {/if}
 
 	<p>{$trip.descr|escape:"html"|nl2br|geographlinks}</p>
-{dynamic}
 {if $trip.uid == $user->user_id}
 	<div class="inner flt_r">[<a href="/geotrips/geotrip_edit.php?trip={$trip.id}">Editieren</a>]</div>
 {else}
 	<div class="inner flt_r">[<a href="/geotrips/">Übersichtskarte</a>]</div>
 {/if}
-{/dynamic}
 	<div><p><small>
 {if $trip.track}
 		Die graue Linie auf der Karte ist der GPS-Track dieser Tour.

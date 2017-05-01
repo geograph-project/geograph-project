@@ -37,6 +37,16 @@ if ($smarty->caching) {
 	$smarty->cache_lifetime = 3600*24; //24 hour cache
 }
 
+$db=NewADOConnection($GLOBALS['DSN']);
+if (!$db) die('Database connection failed');
+if ($USER->user_id) {
+	$uid=$db->getOne("select uid from geotrips where id=$trip_id");
+	if ($uid !== null && $uid !== false || $uid == $USER->user_id) {
+		$cacheid .= '-owner';
+	}
+}
+#trigger_error($cacheid, E_USER_WARNING);
+
 if (!$smarty->is_cached($template, $cacheid)) {
 
 	require_once('geograph/searchcriteria.class.php');
@@ -44,9 +54,6 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	require_once('geograph/gridimage.class.php');
 	require_once('geograph/conversionslatlong.class.php');
 	include('./geotrip_func.php');
-
-	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');
 
 	// get track from database
 	$trk=$db->getRow("select * from geotrips where id=$trip_id");
