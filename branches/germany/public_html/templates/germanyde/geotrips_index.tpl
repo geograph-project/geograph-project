@@ -231,8 +231,8 @@ AttachEvent(window,'load',initmap,false);
 	{/if}
 	<div class="inner">
 		<div class="inner flt_r" style="max-width:213px">
-			<img src="{$trip.gridimage->getThumbnail(213,160,true)}" alt="" title="{$triptitle|escape:"html"}" />
-			<br />
+			<img src="{$trip.gridimage->getThumbnail(213,160,true)}" alt="" title="{$triptitle|escape:"html"}" style="display: block;margin-left: auto;margin-right: auto;" />
+			<!--br /-->
 			<span style="font-size:0.6em">Bild &copy;
 				<a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}{*FIXME realname*}</a>
 				und lizenziert unter einer <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative-Commons-Lizenz</a><img alt="external link" title="" src="/img/external.png" />

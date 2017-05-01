@@ -10,6 +10,7 @@
 	<a href="/article/" class="tab">Articles</a>
 	<span class="tabSelected">Article List</span>
 	<a href="/gallery/" class="tab">Galleries</a>
+	<a href="/geotrips/?max=-1" class="tab">Geotrips</a>
 	{if $enable_forums}
 		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_submittedarticles}" class="tab">Themed Topics</a>
 		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_gridsquare}" class="tab">Grid Square Discussions</a>
