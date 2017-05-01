@@ -254,6 +254,8 @@ If you've made changes to any other fields, these will have been updated.
         }
         $smarty->clear_cache(null, "trip|{$trip['id']}");
         $smarty->clear_cache(null, "trip|overview");
+	require_once('geograph/event.class.php');
+	new Event("trip_updated", $trip['id']);
 ?>
         <div class="panel maxi">
           <p>

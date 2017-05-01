@@ -12,6 +12,7 @@ ul.explore li {	padding:3px; }
 	<a href="/article/" class="tab">Articles</a>
 	<a href="/article/?table" class="tab">Article List</a>
 	<span class="tabSelected">Galleries</span>
+	<a href="/geotrips/?max=-1" class="tab">Geotrips</a>
 	{if $enable_forums}
 		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_submittedarticles}" class="tab">Themed Topics</a>
 		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_gridsquare}" class="tab">Grid Square Discussions</a>

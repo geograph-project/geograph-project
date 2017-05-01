@@ -23,6 +23,7 @@
 	<a href="/article/" class="tab">Articles</a>
 	<a href="/article/?table" class="tab">Article List</a>
 	<a href="/gallery/" class="tab">Galleries</a>
+	<a href="/geotrips/?max=-1" class="tab">Geotrips</a>
 	{if $enable_forums}
 		<a href="/discuss/index.php?action=vtopic&amp;forum={$forum_submittedarticles}" class="tab">Themed Topics</a>
 		<a href="http://www.geograph.org.uk/article/Content-on-Geograph" class="tab">Contribute...</a>
@@ -81,6 +82,7 @@ Common Themes: (<a href="/content/themes.php">more...</a>)<br/>
  <ul>
   <li><a href="/article/">Articles</a></li>
   <li><a href="/gallery/">Galleries</a></li>
+  <li><a href="/geotrips/?max=-1">Geotrips</a></li>
 {dynamic}
   {if $enable_forums && $user->registered}
 	  <li><a href="/discuss/?action=vtopic&amp;forum={$forum_submittedarticles}">Themed Topics</a></li>

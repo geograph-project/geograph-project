@@ -842,3 +842,6 @@ CREATE TABLE `vision_queue` (
 INSERT INTO vision_queue SELECT gridimage_id FROM gridimage_search;
 
 ###
+ALTER TABLE `content` CHANGE `source` `source`   ENUM( 'article', 'gallery', 'gsd', 'themed', 'help', 'other', 'trip' ) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+ALTER TABLE `geotrips` ADD  `created` timestamp NOT NULL AFTER `updated`; # <- !!BACKUP BEFORE!! and SET created=updated and restore updated (order matters;-))
+###

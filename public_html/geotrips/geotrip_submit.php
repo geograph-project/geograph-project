@@ -338,6 +338,7 @@ and there need to be at least three images matching these criteria in your searc
         $query=$query.$img.",";
         $query=$query."'".mysql_real_escape_string($_POST['descr'])."',";
         $query=$query."CURRENT_TIMESTAMP(),";
+        $query=$query."CURRENT_TIMESTAMP(),";
         $query=$query.$contfrom.')';
         
         $db->Execute($query);
@@ -349,6 +350,9 @@ and there need to be at least three images matching these criteria in your searc
             $smarty->clear_cache(null, "trip|{$contfrom}");
         }
         $smarty->clear_cache(null, "trip|overview");
+	require_once('geograph/event.class.php');
+	new Event("trip_updated", $newid);
+
 ?>
         <div class="panel maxi">
           <h3>Thanks for adding your trip.</h3>
