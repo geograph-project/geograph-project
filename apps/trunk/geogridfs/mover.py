@@ -133,7 +133,7 @@ def move_files(folder = '', replica = '', dest = '', classinc =[],classexc=[]):
 				        print 'SIZE CHECK FAILED'
 				        sys.exit(2)
 
-    			        print "REPLACE(replicas,'"+replica+"','"+dest+"')"
+    			        #print "REPLACE(replicas,'"+replica+"','"+dest+"')"
                             
                                 cex.execute("UPDATE "+config.database['file_table']+" SET " + \
                                     "replicas = REPLACE(replicas,'"+replica+"','"+dest+"') " + \
