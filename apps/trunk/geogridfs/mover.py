@@ -61,7 +61,7 @@ def md5sum(path):
 
 #############################################################################
 
-def move_files(folder = '', replica = '', dest = ''):
+def move_files(folder = '', replica = '', dest = '', classinc =[],classexc=[]):
     if replica == '':
 	replica = config.server['self']
 
@@ -77,9 +77,16 @@ def move_files(folder = '', replica = '', dest = ''):
 
             folder_id = getFolderId(string.replace(root,mount,''), True)
             
+            where = "folder_id = "+folder_id
+	    where = where + " AND FIND_IN_SET('"+replica+"',replicas)"
+	    if classinc:
+                where = where + " AND `class` IN('"+("','".join(classinc))+"')"
+	    if classexc:
+                where = where + " AND `class` NOT IN('"+("','".join(classexc))+"')"
+
             c=db.cursor(MySQLdb.cursors.DictCursor)
             cex=db.cursor()
-            c.execute("SELECT file_id,filename,replicas,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM "+config.database['file_table']+" WHERE folder_id = "+folder_id)
+            c.execute("SELECT file_id,filename,replicas,size,md5sum,UNIX_TIMESTAMP(file_modified) AS modified FROM "+config.database['file_table']+" WHERE "+where)
             
             while True:
                 row = c.fetchone()
@@ -113,7 +120,9 @@ def move_files(folder = '', replica = '', dest = ''):
 		            if not os.path.exists(os.path.dirname(dmount+row['filename'])):
                                 os.makedirs(os.path.dirname(dmount+row['filename'])) ##recursive
 
-			    print "move "+root+'/'+filename+" to "+dmount+row['filename']
+			    #print "move "+root+'/'+filename
+	                    #print "  to "+dmount+row['filename']
+
 			    ##os.rename(root+'/'+filename,dmount+row['filename']) ##doesnt work accorss filesystems!
 			    shutil.move(root+'/'+filename,dmount+row['filename'])
 
@@ -143,8 +152,10 @@ def main(argv):
     replica = ''
     dest = ''
     path = ''
+    classinc = []
+    classexc = []
     try:
-        opts, args = getopt.getopt(argv,"p:r:d:",["path=","replica=","dest="])
+        opts, args = getopt.getopt(argv,"p:r:d:i:e:",["path=","replica=","dest=","include=","exclude="])
     except getopt.GetoptError:
         print 'mover.py -p /geograph_live/geograph_live/public_html/geophotos/03/38/39 -r teas1 -d teas2'
         sys.exit(2)
@@ -156,12 +167,16 @@ def main(argv):
             path = arg.rstrip("/")
         elif opt in ("-r", "--replica"):
             replica = arg
+        elif opt in ("-i", "--include"):
+            classinc.append(arg)
+        elif opt in ("-e", "--exclude"):
+            classexc.append(arg)
     
     if path == '' or replica == '' or dest == '':
-        print 'mover.py -p /geograph_live/geograph_live/public_html/geophotos/03/38/39 -r teas1 -d teas2'
+        print 'mover.py -p /geograph_live/public_html/geophotos/03/38/39 -r teas1 -d teas2'
         sys.exit(2)
 
-    move_files(path,replica,dest)
+    move_files(path,replica,dest,classinc,classexc)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
