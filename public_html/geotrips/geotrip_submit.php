@@ -350,6 +350,7 @@ and there need to be at least three images matching these criteria in your searc
             $smarty->clear_cache(null, "trip|{$contfrom}");
         }
         $smarty->clear_cache(null, "trip|overview");
+        $smarty->clear_cache(null, "trip|overview_full");
 	require_once('geograph/event.class.php');
 	new Event("trip_updated", $newid);
 
