@@ -235,7 +235,7 @@ AttachEvent(window,'load',initmap,false);
 	{/if}
 	<div class="inner">
 		<div class="inner flt_r" style="max-width:213px">
-			<img src="{$trip.gridimage->getThumbnail(213,160,true)}" alt="" title="{$triptitle|escape:"html"}" style="display: block;margin-left: auto;margin-right: auto;" />
+			<a href="geotrip_show.php?trip={$trip.id}"><img src="{$trip.gridimage->getThumbnail(213,160,true)}" alt="" title="{$triptitle|escape:"html"}" style="display: block;margin-left: auto;margin-right: auto;" /></a>
 			<!--br /-->
 			<span style="font-size:0.6em">Image &copy;
 				<a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}{*FIXME realname*}</a>
