@@ -247,6 +247,11 @@
 		map.hillBase = mtHasHills;
 		hills.setOpacity(0.75);//FIXME
 		map.setBaseLayer(mt);
+		if (!mtHasHills) {
+			hills.setVisibility(true);
+		} else {
+			hills.savedVisibility = true;
+		}
 		map.setCenter(point.transform(epsg4326, map.getProjectionObject())/*, iniz*/);
 		map.zoomToExtent(tripbounds);
 
