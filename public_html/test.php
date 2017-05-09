@@ -201,23 +201,6 @@ $register_globals=strtolower(ini_get('register_globals'));
 if($register_globals=='on' || $register_globals=='1')
 	fail('register_globals should be turned OFF - REQUIRED');
 
-//check for a recent browscap.ini
-$browscap=get_cfg_var("browscap");
-if (strlen($browscap) && @file_exists($browscap))
-{
-	$ageDays=(time() - filemtime($browscap))/86400;
-	if ($ageDays > 180)
-
-	{
-		warn("browscap.ini more than six months old - check for updates at http://www.garykeith.com/browsers/downloads.asp");
-	}
-}
-else
-{
-	fail('browscap file not configured in php.ini - REQUIRED');
-}
-
-
 //////////////////////////////////////////////////////////////////
 // include files
 status("checking php include files...");
@@ -422,15 +405,15 @@ if (!empty($CONF['STATIC_HOST'])) {
 	if (!check_http('/img/adodb.gif', '/.+/',$httperr,$CONF['STATIC_HOST'],200))
 		fail('$CONF[\'STATIC_HOST\'] ('.$CONF['STATIC_HOST'].") - does not seem to work ($httperr) - REQUIRED");
 	if ($CONF['enable_cluster']) {
-		if (strpos($CONF['STATIC_HOST'],'0') !== FALSE) {
+		if (strpos($CONF['STATIC_HOST'],'1') !== FALSE) {
 			for($q = 0; $q < $CONF['enable_cluster']; $q++ ) {
-				$host = str_replace('0',($q%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
+				$host = str_replace('1',($q%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 				status("checking ".$host);
 				if (!check_http('/img/adodb.gif', '/.+/',$httperr,$host,200))
 					fail("$host - does not seem to work ($httperr) - REQUIRED (or disable \$CONF['enable_cluster'])");
 			}
 		} else {
-			fail('$CONF[\'STATIC_HOST\'] doesn\'t contain "0" - REQUIRED');
+			fail('$CONF[\'STATIC_HOST\'] doesn\'t contain "1" - REQUIRED');
 		}
 	}
 } else {
