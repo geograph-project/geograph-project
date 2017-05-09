@@ -376,7 +376,7 @@ AttachEvent(window,'load',initmap,false);
 	</tr></table>
 {/if}
 
-	<p>{$trip.descr|escape:"html"|nl2br|geographlinks}</p>
+	<p>{$trip.descr|escape:"html"|nl2br|geographlinks:true}</p>
 {if $trip.uid == $user->user_id}
 	<div class="inner flt_r">[<a href="/geotrips/geotrip_edit.php?trip={$trip.id}">edit this trip</a>]</div>
 {else}
