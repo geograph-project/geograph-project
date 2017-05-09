@@ -83,10 +83,13 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$trk['track'] = trim($trk['track']);
 	$trk['track'] = $trk['track'] !== "" ? array_chunk(explode(' ',trim($trk['track'])), 2) : array();
 
+	$userlist = $trk['userlist'] === '' ? array() : array_map('intval', explode(',', $trk['userlist']));
+
 	// fetch Geograph data
 	$conv = new ConversionsLatLong;
 	$geograph = array();
 	$realnames = array();
+	$uids = array();
 	$cells = array(); # $cells("$x_$y") = array($x, $y, array(images taken from cell: index in geograph array))
 	$groupdist = 5; # group images below that distance (metres)
 	$scale_lat_y = 40000000/360.0;
@@ -100,13 +103,13 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$image = $recordSet->fields;
 		if (    $image['nateastings']
 		    &&  $image['viewpoint_eastings']
-		    &&  $image['user_id'] == $trk['uid']
+		    &&  ($image['user_id'] == $trk['uid'] || in_array(intval($image['user_id']), $userlist, true))
 		    &&  $image['viewpoint_grlen'] > 4
 		    &&  $image['natgrlen'] > 4
-		    && (   $image['view_direction'] != -1
+		    /*&& (   $image['view_direction'] != -1
 		        || $image['viewpoint_eastings']  != $image['nateastings']
 		        || $image['viewpoint_northings'] != $image['natnorthings']
-		        || $image['viewpoint_refindex']  != $image['reference_index'])
+		        || $image['viewpoint_refindex']  != $image['reference_index'])*/
 		    &&  $image['imagetaken'] === $trk['date']
 		) {
 			$gridimage = new GridImage($image['gridimage_id']); //FIXME fast init?
@@ -133,9 +136,17 @@ if (!$smarty->is_cached($template, $cacheid)) {
 			$latlon = $conv->national_to_wgs84($ea, $no, $image['reference_index'], true);
 			$image['subject'] = $latlon;
 
-			if ($image['credit_realname']) {
-				$realnames[$image['realname']] = $image['realname'];
+			/* we want to generate a list of links to the contributors; unfortunately, there's no $image['user_realname']/$image['credit_realname'] pair...*/
+			if (!isset($uids[$image['user_id']])) {
+				$uids[$image['user_id']] = '';
+				$realnames[$image['user_id']] = array();
 			}
+			if ($image['credit_realname']) {
+				$realnames[$image['user_id']][$image['realname']] = $image['realname'];
+			} else {
+				$uids[$image['user_id']] = $image['realname'];
+			}
+
 			$image['nice_view_direction'] = $image['view_direction'] < 0 ? '' : heading_string($image['view_direction']);
 			$image['group'] = -1;
 
@@ -270,6 +281,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	$smarty->assign_by_ref('groups', $groups);
 	$smarty->assign_by_ref('selectedimages', $selected);
 	$smarty->assign_by_ref('realnames', $realnames);
+	$smarty->assign_by_ref('uids', $uids);
 	$smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);
 	$smarty->assign('lonmax', $CONF['gmlonrange'][0][1]);
 	$smarty->assign('latmin', $CONF['gmlatrange'][0][0]);

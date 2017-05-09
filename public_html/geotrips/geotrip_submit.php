@@ -205,6 +205,16 @@ If this trip is a continuation of one you've uploaded earlier, specify its Geo-T
 URL here.  This will create links in both directions.
             </li>
           </ul>
+          <hr style="color:#992233">
+          <p>
+            <b>Additional user ids</b> (optional)<br />
+            <input type="text" name="userlist" size="72" /><br />
+          </p>
+          <ul>
+            <li>
+If this trip contains images submitted by other contributors, specify their user ids as a comma separated list of numbers.
+            </li>
+          </ul>
           <div style="text-align:center;background-color:green">
             <input type="submit" name="submit2" value="Ok" style="margin:10px" />
           </div>
@@ -215,6 +225,16 @@ URL here.  This will create links in both directions.
       // FIXME more checks
       // sanity check
       if ($_POST['loc']&&$_POST['start']&&$_POST['type']&&$_POST['search']/*&&$_POST['search']!=$_POST['img']*/) {
+	$userlist = array();
+	$userliststr = '';
+	if (isset($_POST['userlist'])) {
+		$_POST['userlist'] = trim($_POST['userlist']);
+		if (preg_match('#^\d+(\s*,\s*\d+)*$#', $_POST['userlist'])) {
+			$userlist = array_unique(array_map('intval', explode(',', $_POST['userlist'])), SORT_REGULAR);
+			$userliststr = implode(',', $userlist);
+		}
+	}
+
         // fetch Geograph data
         $search=explode('=',$_POST['search']);
         $search=intval($search[sizeof($search)-1]);
@@ -230,13 +250,13 @@ URL here.  This will create links in both directions.
 		if (    $image['nateastings']
 		    &&  $image['viewpoint_eastings']
 		    #&&  $image['realname'] == $USER->realname
-		    &&  $image['user_id'] == $USER->user_id
+		    &&  ($image['user_id'] == $USER->user_id || in_array($image['user_id'], $userlist, true))
 		    &&  $image['viewpoint_grlen'] > 4
 		    &&  $image['natgrlen'] > 4
-		    && (   $image['view_direction'] != -1
+		    /*&& (   $image['view_direction'] != -1
 		        || $image['viewpoint_eastings']  != $image['nateastings']
 		        || $image['viewpoint_northings'] != $image['natnorthings']
-		        || $image['viewpoint_refindex']  != $image['reference_index'])
+		        || $image['viewpoint_refindex']  != $image['reference_index'])*/
 		) {
 			$geograph[] = $image;
 			if ($geograph[0]['imagetaken'] != $image['imagetaken']) { // taken on the same day
@@ -339,7 +359,8 @@ and there need to be at least three images matching these criteria in your searc
         $query=$query."'".mysql_real_escape_string($_POST['descr'])."',";
         $query=$query."CURRENT_TIMESTAMP(),";
         $query=$query."CURRENT_TIMESTAMP(),";
-        $query=$query.$contfrom.')';
+        $query=$query.$contfrom.",";
+        $query=$query."'".$userliststr."')";
         
         $db->Execute($query);
         $newid=$db->Insert_ID();

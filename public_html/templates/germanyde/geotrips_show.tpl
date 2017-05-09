@@ -395,10 +395,10 @@ AttachEvent(window,'load',initmap,false);
 	<div id="map" class="inner" style="width:798px;height:650px"></div>
 	<p style="font-size:.65em">
 		Alle Bilder &copy;
-		<a href="/profile/{$trip.uid}">{$trip.user|escape:"html"}</a
-		>{foreach item=realname from=$realnames},
-		<a href="/profile/{$trip.uid}?a={$realname|escape:"url"}">{$realname|escape:"html"}</a>
-		{/foreach}
+		{foreach key=curuid item=curname from=$uids name=uidlp}
+		{if $curname}<a href="/profile/{$curuid}">{$curname|escape:"html"}</a>{/if}{if $realnames.$curuid}{if $curname}, {/if}
+		{foreach item=realname from=$realnames.$curuid name=rnloop}
+		<a href="/profile/{$trip.uid}?a={$realname|escape:"url"}">{$realname|escape:"html"}</a>{if !$smarty.foreach.rnloop.last}, {/if}{/foreach}{/if}{if !$smarty.foreach.uidlp.last}; {/if}{/foreach}
 		und lizenziert unter einer <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative-Commons-Lizenz</a>
 		<img alt="Externer Link" title="" src="http://geo.hlipp.de/img/external.png" />.
 	</p>

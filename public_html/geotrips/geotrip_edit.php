@@ -141,6 +141,11 @@ is still included, or choose a new one.
               <b>Continuation</b> (optional)<br />
               <input type="text" name="contfrom" size="72" value="<?php if ($trip['contfrom']) print($trip['contfrom']); ?>" /><br />
             </p>
+            <hr style="color:#992233">
+            <p>
+              <b>Additional user ids</b> as comma separated list of numbers (optional)<br />
+              <input type="text" name="userlist" size="72" value="<?php print($trip['userlist']); ?>" /><br />
+            </p>
             <div style="text-align:center;background-color:green">
               <input type="submit" name="submit2" value="Ok" style="margin:10px" />
             </div>
@@ -157,6 +162,23 @@ is still included, or choose a new one.
           $db->Execute("update geotrips set start='".mysql_real_escape_string($_POST['start'])."' where id={$trip['id']}");
         if ($_POST['title']!=$trip['title'])
           $db->Execute("update geotrips set title='".mysql_real_escape_string($_POST['title'])."' where id={$trip['id']}");
+	$userlist = $trip['userlist'] === '' ? array() : array_map('intval', explode(',', $trip['userlist']));
+	$userliststr = $trip['userlist'];
+	if (isset($_POST['userlist'])) {
+		$_POST['userlist'] = trim($_POST['userlist']);
+		if ($_POST['userlist'] === '' || preg_match('#^\d+(\s*,\s*\d+)*$#', $_POST['userlist'])) {
+			if ($_POST['userlist'] !== '') {
+				$userlist = array_unique(array_map('intval', explode(',', $_POST['userlist'])), SORT_REGULAR);
+				$userliststr = implode(',', $userlist);
+			} else {
+				$userlist = array();
+				$userliststr = '';
+			}
+			if ($userliststr !== $trip['userlist']) {
+				$db->Execute("update geotrips set userlist='".$userliststr."' where id={$trip['id']}");
+			}
+		}
+	}
         if ($_POST['img']&&$_POST['img']!=$trip['img']) {
           $img=explode('/',$_POST['img']);
           $img=intval($img[sizeof($img)-1]);
@@ -179,13 +201,13 @@ is still included, or choose a new one.
 			if (    $image['nateastings']
 			    &&  $image['viewpoint_eastings']
 			    #&&  $image['realname'] == $USER->realname
-			    &&  $image['user_id'] == $USER->user_id
+			    &&  ($image['user_id'] == $USER->user_id || in_array($image['user_id'], $userlist, true))
 			    &&  $image['viewpoint_grlen'] > 4
 			    &&  $image['natgrlen'] > 4
-			    && (   $image['view_direction'] != -1 
+			    /*&& (   $image['view_direction'] != -1 
 			        || $image['viewpoint_eastings'] != $image['nateastings']
 			        || $image['viewpoint_northings'] != $image['natnorthings']
-			        || $image['viewpoint_refindex']  != $image['reference_index'])
+			        || $image['viewpoint_refindex']  != $image['reference_index'])*/
 			    &&  $image['imagetaken'] === $trip['date'] //FIXME allow update of date but require all dates to be identical?
 			) {
 				$geograph[] = $image;
