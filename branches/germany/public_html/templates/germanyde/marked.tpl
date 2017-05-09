@@ -11,7 +11,9 @@
 	--><div id="dummy" class="dragitem markeddummy" style="width:213px;height:160px;"></div><!--
 --></div>
 <div><p><input type="button" value="Speichern" onclick="storeMarked();" /> |
-     <input type="button" value="Speichern & Suche" onclick="storeMarked(); window.open('/search.php?marked=1&amp;displayclass=-','_blank');" /></p></div>
+{literal}
+     <input type="button" value="Speichern & Suche" onclick="if (storeMarked()) {window.open('/search.php?marked=1&amp;displayclass=-','_blank');}" /></p></div>
+{/literal}
 <!-- FIXME better use floats instead of display:inline-block to make IE7 happy? -->
 <h2>Ablage</h2>
 <div id="clipboard" class="clipboard"><!--
@@ -60,6 +62,7 @@ var divmarkedele, divclipele;
 			idlist.push(ele.imageid);
 		}
 		createCookie('markedImages',idlist.join(),10); // FIXME -> geograph.js; markList(idlist)?
+		return idlist.length;
 	}
 	function initDrag(e, dragdata) {
 		dragmpos = gn.getMousePosition(e);

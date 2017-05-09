@@ -11,7 +11,9 @@
 	--><div id="dummy" class="dragitem markeddummy" style="width:213px;height:160px;"></div><div style="clear:both"></div><!--
 --></div>
 <div><p><input type="button" value="Save changes" onclick="storeMarked();" /> |
-     <input type="button" value="Save and search" onclick="storeMarked(); window.open('/search.php?marked=1&amp;displayclass=-','_blank');" /></p></div>
+{literal}
+     <input type="button" value="Save and search" onclick="if (storeMarked()) {window.open('/search.php?marked=1&amp;displayclass=-','_blank');}" /></p></div>
+{/literal}
 <h2>Clipboard</h2>
 <div id="clipboard" class="clipboard"><!--
 	--><div id="gapclip" class="dragitem clipboardgap" style="width:213px;height:160px;"></div><!--
@@ -59,6 +61,7 @@ var divmarkedele, divclipele;
 			idlist.push(ele.imageid);
 		}
 		createCookie('markedImages',idlist.join(),10); // FIXME -> geograph.js; markList(idlist)?
+		return idlist.length;
 	}
 	function initDrag(e, dragdata) {
 		dragmpos = gn.getMousePosition(e);
