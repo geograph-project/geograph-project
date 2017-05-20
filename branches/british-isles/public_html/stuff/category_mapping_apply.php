@@ -209,18 +209,16 @@ if (!empty($tags) && !empty($_POST['confirm'])) {
 	$sqls = array();
 	$sqlfrom = "FROM gridimage_search gi LEFT JOIN category_mapping_done USING (gridimage_id) WHERE category_mapping_done_id IS NULL AND gi.imageclass LIKE $category_quote AND gi.user_id = {$USER->user_id}";
 
-	//todo, left join category_mapping_done to exclude done images!;
-
 	$tagobj = new Tags;
 	$tagobj->_setDB($db);
 
 	$taglist = implode(';',$tags);
 	foreach ($tags as $tag) {
 		$tag_id = $tagobj->getTagId($tag);
-if (empty($tag_id)) {
-	die("Unable to find tag_id for ".htmlentities($tag));
-}
-		$sqls[] = "INSERT INTO gridimage_tag SELECT gridimage_id,$tag_id as tag_id,gi.user_id,NOW() as created, 2 as status ".$sqlfrom;
+		if (empty($tag_id)) {
+			die("Unable to find tag_id for ".htmlentities($tag));
+		}
+		$sqls[] = "INSERT INTO gridimage_tag SELECT gridimage_id,$tag_id as tag_id,gi.user_id,NOW() as created, 2 as status,NOW() as updated ".$sqlfrom." ON DUPLICATE KEY UPDATE status = 2";
 	}
 
 	$sqls[] = "INSERT INTO category_mapping_done SELECT NULL AS category_mapping_done_id, $category_quote AS imageclass, {$USER->user_id} AS user_id, gridimage_id, NOW() as created, ".$db->quote($taglist)." AS taglist ".$sqlfrom;
