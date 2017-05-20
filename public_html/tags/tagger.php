@@ -36,6 +36,8 @@ if ($usenew) {
 	$template='tags_tagger.tpl';
 }
 
+//if ($USER->user_id == 3)
+	$smarty->assign('vision',1);
 
 $gid = 0;
 
@@ -202,9 +204,10 @@ if (!empty($_POST['save']) && !empty($ids)) {
 				if (in_array("id:$tid",$_POST['tag_id'])) {
 					$found++;
 				} else {
-					$sql = "DELETE FROM gridimage_tag WHERE gridimage_id = $gid AND tag_id = $tid AND user_id = {$USER->user_id}";
+					//$sql = "DELETE FROM gridimage_tag WHERE gridimage_id = $gid AND tag_id = $tid AND user_id = {$USER->user_id}";
+					$sql = "UPDATE gridimage_tag SET status = 0 WHERE gridimage_id = $gid AND tag_id = $tid AND user_id = {$USER->user_id}";
 					$db->Execute($sql);
-					
+
 					if ($u['status'] == 2 && $gid < 4294967296 && empty($cleared)) {
 						//clear any caches involving this photo
 						$ab=floor($gid/10000);
@@ -278,12 +281,14 @@ if (!empty($_POST['save']) && !empty($ids)) {
 	
 	$criteria = array();
 	$criteria['gridimage_id'] = $gid;
-	
+	//todo add user_id filter!?
+
 	foreach ($_POST['remove'] as $id => $text) {
-		
+
 		$criteria['tag_id'] = $id;
-		
-		$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($criteria)).'` = ?',array_values($criteria));
+
+		//$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($criteria)).'` = ?',array_values($criteria));
+		$db->Execute('UPDATE gridimage_tag SET status = 0 WHERE `'.implode('` = ? AND `',array_keys($criteria)).'` = ?',array_values($criteria));
 	}
 
 	if ($gid < 4294967296) {

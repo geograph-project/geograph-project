@@ -93,12 +93,14 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 				$u['status'] = 2;
 			}
 
-			$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
+			//$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
+			$db->Execute('UPDATE gridimage_tag SET status = 0 WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
 
 		} elseif ($_GET['status'] == -1) {
 			unset($u['status']);
 
-			$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
+			//$db->Execute('DELETE FROM gridimage_tag WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
+			$db->Execute('UPDATE gridimage_tag SET status = 0 WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
 
 			unset($u['user_id']);
 			$db->Execute('INSERT INTO tagornot_archive SELECT * FROM tagornot WHERE `'.implode('` = ? AND `',array_keys($u)).'` = ?',array_values($u));
