@@ -1,0 +1,362 @@
+-- MySQL dump 10.13  Distrib 5.6.35-81.0, for debian-linux-gnu (x86_64)
+--
+-- Host: 192.168.77.50    Database: geograph_live
+-- ------------------------------------------------------
+-- Server version	5.5.54-38.7-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!50112 SELECT COUNT(*) INTO @is_rocksdb_supported FROM INFORMATION_SCHEMA.SESSION_VARIABLES WHERE VARIABLE_NAME='rocksdb_bulk_load' */;
+/*!50112 SET @save_old_rocksdb_bulk_load = IF (@is_rocksdb_supported, 'SET @old_rocksdb_bulk_load = @@rocksdb_bulk_load', 'SET @dummy_old_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @save_old_rocksdb_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 SET @enable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = 1', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @enable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+
+--
+-- Table structure for table `article_lock`
+--
+
+DROP TABLE IF EXISTS `article_lock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `article_lock` (
+  `article_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `lock_obtained` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`article_id`,`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `autologin_archive`
+--
+
+DROP TABLE IF EXISTS `autologin_archive`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `autologin_archive` (
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `token` char(32) NOT NULL DEFAULT '',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `request_time` int(10) unsigned NOT NULL,
+  `remote_port` int(10) unsigned NOT NULL,
+  `forwarded_for` varchar(128) NOT NULL,
+  PRIMARY KEY (`user_id`,`token`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `event`
+--
+
+DROP TABLE IF EXISTS `event`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event` (
+  `event_id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_name` varchar(64) DEFAULT NULL,
+  `event_param` text,
+  `posted` datetime DEFAULT NULL,
+  `processed` datetime DEFAULT NULL,
+  `instances` int(11) DEFAULT '1',
+  `priority` int(11) DEFAULT NULL,
+  `status` enum('pending','in_progress','completed') DEFAULT 'pending',
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`event_id`),
+  KEY `status` (`status`)
+) ENGINE=MyISAM AUTO_INCREMENT=10740079 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `event_handled_by`
+--
+
+DROP TABLE IF EXISTS `event_handled_by`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_handled_by` (
+  `event_id` int(11) NOT NULL DEFAULT '0',
+  `class_name` varchar(64) NOT NULL DEFAULT '',
+  PRIMARY KEY (`event_id`,`class_name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `event_log`
+--
+
+DROP TABLE IF EXISTS `event_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `event_log` (
+  `event_log_id` int(11) NOT NULL AUTO_INCREMENT,
+  `event_id` int(11) NOT NULL DEFAULT '0',
+  `logtime` datetime DEFAULT NULL,
+  `verbosity` enum('error','warning','trace','verbose') DEFAULT NULL,
+  `log` text,
+  PRIMARY KEY (`event_log_id`),
+  KEY `event_id` (`event_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=58179380 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `failed_nearby`
+--
+
+DROP TABLE IF EXISTS `failed_nearby`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `failed_nearby` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `failed_webarchive`
+--
+
+DROP TABLE IF EXISTS `failed_webarchive`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `failed_webarchive` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_diversity`
+--
+
+DROP TABLE IF EXISTS `gridimage_diversity`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_diversity` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `type` varchar(10) NOT NULL,
+  `ratio` float NOT NULL,
+  PRIMARY KEY (`gridimage_id`,`type`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_export`
+--
+
+DROP TABLE IF EXISTS `gridimage_export`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_export` (
+  `gridimage_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `moderation_status` enum('rejected','pending','accepted','geograph') DEFAULT NULL,
+  `submitted` datetime DEFAULT NULL,
+  `imageclass` varchar(32) NOT NULL DEFAULT '',
+  `imagetaken` date NOT NULL DEFAULT '0000-00-00',
+  `upd_timestamp` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `x` smallint(3) NOT NULL DEFAULT '0',
+  `y` smallint(4) NOT NULL DEFAULT '0',
+  `grid_reference` varchar(6) NOT NULL DEFAULT '',
+  `credit_realname` tinyint(4) NOT NULL DEFAULT '0',
+  `realname` varchar(128) NOT NULL DEFAULT '',
+  `reference_index` tinyint(1) NOT NULL DEFAULT '0',
+  `wgs84_lat` decimal(10,6) NOT NULL DEFAULT '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL DEFAULT '0.000000',
+  `ftf` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `seq_no` smallint(5) unsigned NOT NULL DEFAULT '0'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_export10`
+--
+
+DROP TABLE IF EXISTS `gridimage_export10`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_export10` (
+  `x` smallint(3) NOT NULL DEFAULT '0',
+  `y` smallint(4) NOT NULL DEFAULT '0',
+  `gridimage_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) NOT NULL DEFAULT '0',
+  `realname` varchar(128) NOT NULL DEFAULT '',
+  `title` char(0) NOT NULL DEFAULT '',
+  `grid_reference` varchar(6) NOT NULL DEFAULT '',
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_group_old`
+--
+
+DROP TABLE IF EXISTS `gridimage_group_old`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_group_old` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `source` varchar(10) NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `label` (`label`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_link_host`
+--
+
+DROP TABLE IF EXISTS `gridimage_link_host`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_link_host` (
+  `gridimage_link_host_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `host` varchar(255) NOT NULL,
+  `familyshield` varchar(1024) NOT NULL,
+  `publicdns` varchar(1024) NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created` datetime NOT NULL,
+  `nameserver` varchar(1024) NOT NULL,
+  PRIMARY KEY (`gridimage_link_host_id`),
+  UNIQUE KEY `host` (`host`)
+) ENGINE=MyISAM AUTO_INCREMENT=38657 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_log_2010_03_18`
+--
+
+DROP TABLE IF EXISTS `gridimage_log_2010_03_18`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_log_2010_03_18` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `hits` mediumint(8) unsigned NOT NULL,
+  `hits_archive` int(10) unsigned NOT NULL,
+  `last_hit` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_map`
+--
+
+DROP TABLE IF EXISTS `gridimage_map`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_map` (
+  `gridimage_id` int(11) NOT NULL DEFAULT '0',
+  `gridsquare_id` int(11) NOT NULL DEFAULT '0',
+  `moderation_status` enum('rejected','pending','accepted','geograph') DEFAULT NULL,
+  `seq_no` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`gridsquare_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_moderation_lock`
+--
+
+DROP TABLE IF EXISTS `gridimage_moderation_lock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_moderation_lock` (
+  `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `lock_obtained` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `lock_type` enum('modding','cantmod') NOT NULL DEFAULT 'modding',
+  PRIMARY KEY (`gridimage_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_size`
+--
+
+DROP TABLE IF EXISTS `gridimage_size`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_size` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `width` smallint(5) unsigned NOT NULL,
+  `height` smallint(5) unsigned NOT NULL,
+  `original_width` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `original_height` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `original_diff` enum('unknown','no','yes') DEFAULT 'unknown',
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridsquare_moderation_lock`
+--
+
+DROP TABLE IF EXISTS `gridsquare_moderation_lock`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridsquare_moderation_lock` (
+  `gridsquare_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `lock_obtained` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `lock_type` enum('modding','cantmod') NOT NULL DEFAULT 'modding',
+  PRIMARY KEY (`gridsquare_id`,`user_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `_tables2`
+--
+
+DROP TABLE IF EXISTS `_tables2`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `_tables2` (
+  `table_name` varchar(64) NOT NULL,
+  `title` varchar(64) NOT NULL DEFAULT '',
+  `description` text NOT NULL,
+  `type` enum('primary','secondary','derivied','temp','static','primary_archive','old','unknown') NOT NULL,
+  `backup` enum('','Y','N') NOT NULL DEFAULT '',
+  `sensitive` enum('','Y','N') NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `backedup` datetime NOT NULL,
+  `shard` int(10) unsigned NOT NULL,
+  `backedup_key` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`table_name`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50112 SET @disable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = @old_rocksdb_bulk_load', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @disable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2017-05-20 14:06:32

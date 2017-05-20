@@ -1,0 +1,380 @@
+-- MySQL dump 10.13  Distrib 5.6.35-81.0, for debian-linux-gnu (x86_64)
+--
+-- Host: 192.168.77.50    Database: geograph_live
+-- ------------------------------------------------------
+-- Server version	5.5.54-38.7-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!50112 SELECT COUNT(*) INTO @is_rocksdb_supported FROM INFORMATION_SCHEMA.SESSION_VARIABLES WHERE VARIABLE_NAME='rocksdb_bulk_load' */;
+/*!50112 SET @save_old_rocksdb_bulk_load = IF (@is_rocksdb_supported, 'SET @old_rocksdb_bulk_load = @@rocksdb_bulk_load', 'SET @dummy_old_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @save_old_rocksdb_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 SET @enable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = 1', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @enable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+
+--
+-- Table structure for table `article_revisions`
+--
+
+DROP TABLE IF EXISTS `article_revisions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `article_revisions` (
+  `article_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `article_cat_id` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `url` varchar(64) NOT NULL DEFAULT '',
+  `title` varchar(64) NOT NULL DEFAULT '',
+  `content` longtext NOT NULL,
+  `gridsquare_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `extract` varchar(255) NOT NULL DEFAULT '',
+  `licence` enum('none','pd','cc-by-sa/2.0','copyright','geograph') NOT NULL DEFAULT 'none',
+  `parent_url` varchar(128) NOT NULL DEFAULT '',
+  `publish_date` date NOT NULL DEFAULT '0000-00-00',
+  `approved` tinyint(4) NOT NULL DEFAULT '1',
+  `update_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `create_time` datetime DEFAULT '0000-00-00 00:00:00',
+  `article_sort_order` tinyint(4) NOT NULL DEFAULT '0',
+  `complete` tinyint(4) DEFAULT NULL,
+  `edit_prompt` varchar(160) NOT NULL DEFAULT '',
+  `article_revision_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `modifier` int(10) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`article_revision_id`),
+  KEY `article_id` (`article_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=36453 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `at_home_result`
+--
+
+DROP TABLE IF EXISTS `at_home_result`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `at_home_result` (
+  `at_home_result_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `at_home_job_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `result` varchar(255) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`at_home_result_id`),
+  KEY `gridimage_id` (`gridimage_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=7127617 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `category_primary_old`
+--
+
+DROP TABLE IF EXISTS `category_primary_old`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `category_primary_old` (
+  `grouping` varchar(32) NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `top` varchar(64) NOT NULL,
+  `description` text NOT NULL,
+  `ids` varchar(255) NOT NULL DEFAULT '',
+  KEY `grouping` (`grouping`,`sort_order`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `dating`
+--
+
+DROP TABLE IF EXISTS `dating`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `dating` (
+  `dating_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL,
+  `gender` enum('boy','girl','other') NOT NULL,
+  `lookingfor` enum('boy','girl','other') NOT NULL,
+  `profile_name` varchar(32) NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `bio` text NOT NULL,
+  `interests` text NOT NULL,
+  `featuresyou` text NOT NULL,
+  `featuresfor` text NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `status` enum('active','deleted') NOT NULL DEFAULT 'active',
+  PRIMARY KEY (`dating_id`),
+  UNIQUE KEY `user_id` (`user_id`),
+  FULLTEXT KEY `bio` (`bio`,`interests`,`featuresyou`,`featuresfor`)
+) ENGINE=MyISAM AUTO_INCREMENT=208 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_exif`
+--
+
+DROP TABLE IF EXISTS `gridimage_exif`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_exif` (
+  `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `exif` text NOT NULL,
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mapfix_log`
+--
+
+DROP TABLE IF EXISTS `mapfix_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mapfix_log` (
+  `mapfix_log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `gridsquare_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `comment` varchar(128) NOT NULL,
+  `new_percent_land` tinyint(4) DEFAULT NULL,
+  `old_percent_land` tinyint(4) DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`mapfix_log_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=32471 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `moderation_log`
+--
+
+DROP TABLE IF EXISTS `moderation_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `moderation_log` (
+  `moderation_log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `new_status` enum('rejected','pending','accepted','geograph') NOT NULL DEFAULT 'rejected',
+  `old_status` enum('rejected','pending','accepted','geograph','') NOT NULL DEFAULT 'rejected',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `type` enum('dummy','real') NOT NULL DEFAULT 'dummy',
+  PRIMARY KEY (`moderation_log_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=5481518 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `moderation_log_archive`
+--
+
+DROP TABLE IF EXISTS `moderation_log_archive`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `moderation_log_archive` (
+  `moderation_log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `gridimage_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `new_status` enum('rejected','pending','accepted','geograph') NOT NULL DEFAULT 'rejected',
+  `old_status` enum('rejected','pending','accepted','geograph','') NOT NULL DEFAULT 'rejected',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `type` enum('dummy','real') NOT NULL DEFAULT 'dummy',
+  PRIMARY KEY (`moderation_log_id`),
+  KEY `user_id` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=927800 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `repair_table`
+--
+
+DROP TABLE IF EXISTS `repair_table`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `repair_table` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `maxsize` int(10) unsigned NOT NULL,
+  `finalsize` int(10) unsigned DEFAULT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `systemtask_log`
+--
+
+DROP TABLE IF EXISTS `systemtask_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `systemtask_log` (
+  `systemtask_log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `systemtask_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `event` varchar(32) NOT NULL,
+  `when` varchar(32) NOT NULL,
+  PRIMARY KEY (`systemtask_log_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=62255 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tagornot_archive`
+--
+
+DROP TABLE IF EXISTS `tagornot_archive`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tagornot_archive` (
+  `tagornot_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `tag_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `user_ids` varchar(100) NOT NULL,
+  `done` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`tagornot_id`),
+  KEY `tag_id` (`tag_id`,`done`)
+) ENGINE=MyISAM AUTO_INCREMENT=45187 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tag_description_log`
+--
+
+DROP TABLE IF EXISTS `tag_description_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tag_description_log` (
+  `log_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `tag_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `description` text NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`log_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=363 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tag_dispute_log`
+--
+
+DROP TABLE IF EXISTS `tag_dispute_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tag_dispute_log` (
+  `user_id` int(10) unsigned NOT NULL,
+  `tag_id` int(10) unsigned NOT NULL,
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tag_report_skip`
+--
+
+DROP TABLE IF EXISTS `tag_report_skip`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tag_report_skip` (
+  `report_id` int(10) unsigned NOT NULL,
+  `user_id` int(10) unsigned NOT NULL,
+  `created` datetime NOT NULL,
+  PRIMARY KEY (`report_id`,`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_archive`
+--
+
+DROP TABLE IF EXISTS `user_archive`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_archive` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `password` varchar(64) DEFAULT NULL,
+  `salt` varchar(8) NOT NULL DEFAULT '',
+  `realname` varchar(128) DEFAULT NULL,
+  `credit_realname` varchar(128) NOT NULL,
+  `email` varchar(128) DEFAULT NULL,
+  `website` varchar(255) DEFAULT NULL,
+  `rights` set('basic','moderator','admin','ticketmod','traineemod','suspicious','dormant','founder','director','member','poty','forum','complaints','support','developer','docs','coordinator','tagsmod') DEFAULT NULL,
+  `signup_date` datetime DEFAULT NULL,
+  `nickname` varchar(128) DEFAULT NULL,
+  `public_email` int(11) DEFAULT '0',
+  `rank` int(10) unsigned NOT NULL DEFAULT '0',
+  `to_rise_rank` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `slideshow_delay` tinyint(3) unsigned NOT NULL DEFAULT '5',
+  `search_results` tinyint(3) unsigned NOT NULL DEFAULT '15',
+  `about_yourself` text NOT NULL,
+  `public_about` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `age_group` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `use_age_group` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `home_gridsquare` mediumint(8) unsigned DEFAULT NULL,
+  `ticket_option` enum('all','major','digest','none') NOT NULL DEFAULT 'all',
+  `default_style` enum('white','black','gray') NOT NULL DEFAULT 'white',
+  `role` varchar(32) NOT NULL DEFAULT '',
+  `message_sig` varchar(250) NOT NULL DEFAULT '',
+  `ticket_public` enum('no','owner','everyone') NOT NULL DEFAULT 'everyone',
+  `http_host` varchar(64) NOT NULL DEFAULT '',
+  `expand_about` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `use_autocomplete` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `deceased_date` date DEFAULT NULL,
+  `upload_size` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `submission_method` enum('submit','submit2','multi','submit2tabs') DEFAULT 'submit',
+  `submission_new` tinyint(3) unsigned NOT NULL DEFAULT '1',
+  `confirmed` datetime NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `google_profile` varchar(129) NOT NULL,
+  `allow_pinterest` tinyint(3) unsigned DEFAULT '0',
+  `gravatar` enum('unknown','found','none') NOT NULL DEFAULT 'unknown',
+  `block_search` tinyint(3) unsigned DEFAULT '0',
+  PRIMARY KEY (`user_id`),
+  KEY `rights` (`rights`,`role`),
+  KEY `realname` (`realname`),
+  KEY `nickname` (`nickname`),
+  KEY `email` (`email`),
+  FULLTEXT KEY `realname_2` (`realname`,`nickname`)
+) ENGINE=MyISAM AUTO_INCREMENT=77486 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_change`
+--
+
+DROP TABLE IF EXISTS `user_change`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_change` (
+  `user_id` int(10) unsigned NOT NULL,
+  `field` enum('realname','nickname') NOT NULL,
+  `value` varchar(128) NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `user_change_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`user_change_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=192721 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50112 SET @disable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = @old_rocksdb_bulk_load', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @disable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2017-05-20 14:06:35
