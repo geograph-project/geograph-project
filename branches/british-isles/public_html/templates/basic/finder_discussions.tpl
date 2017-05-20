@@ -41,15 +41,21 @@ AttachEvent(window,'load',focusBox,false);
 	<b>Image Results</b>
 	<iframe src="/finder/search-service.php?q={$q|escape:'url'}&amp;mode=1" width=150 height=600></iframe>
 	</div>
+	<div style="padding-right:160px">
 {/if}
 
-<h2><a href="/finder/">Finder</a> :: Discussions</h2>
+<h2><a href="/finder/">Finder</a> :: <a href="/discuss/">Discussions</a></h2>
 
 <form action="{$script_name}" method="get" onsubmit="focusBox()">
 	<p>
-		<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/>
+		<label for="fq">Keywords</label>: <input type="text" name="q" id="fq" size="40"{if $q} value="{$q|escape:'html'}"{/if}/>
 		<input type="submit" value="Search"/><br/>
-		<label for="grouped">One result per Thread?</label> <input type="checkbox" name="t" id="grouped" {if $grouped}checked{/if}/>
+		{if $forums}
+		<label for="forum">Forum</label>: <select name="forum" id="forum">{html_options options=$forums selected=$forum}</select><br/>
+		{/if}
+		<label for="order">Order</label>: <select name="order" id="order">{html_options options=$orders selected=$order}</select><br/>
+		<label for="grouped">One result per Thread?</label> <input type="checkbox" name="t" id="grouped" {if $grouped}checked{/if} onclick="if (!this.checked) this.form.titleonly.checked = false"/> &nbsp; &nbsp;
+		<label for="titleonly">Search only the title?</label> <input type="checkbox" name="titleonly" id="titleonly" {if $titleonly}checked{/if} onclick="if (this.checked) this.form.t.checked = true"/><br>
 	</p>
 </form>
 
@@ -71,9 +77,9 @@ AttachEvent(window,'load',focusBox,false);
 {foreach from=$results item=item key=key}
 	{if $item.era != $last}
 		{if $item.era}
-			<div class="interestBox" style="margin-left:-30px;text-align:right;margin-right:160px"><b>Within the last {$item.era}</b></div>
+			<div class="interestBox" style="margin-left:-30px;text-align:right;"><b>Within the last {$item.era}</b></div>
 		{else}
-			<div class="interestBox" style="margin-left:-30px;text-align:right;margin-right:160px"><b>More than three months ago</b></div>
+			<div class="interestBox" style="margin-left:-30px;text-align:right;"><b>More than three months ago</b></div>
 		{/if}
 	{/if}
 	<li>
@@ -111,6 +117,9 @@ AttachEvent(window,'load',focusBox,false);
 	<p>{$query_info}</p>
 {/if}
 
+{if $results && !$grouped}
+	</div>
+{/if}
 
 <div class="interestBox" style="margin-top:60px;clear:both">
 	<big><a name="cheatsheet"></a>Cheatsheet</big>:
@@ -123,6 +132,9 @@ AttachEvent(window,'load',focusBox,false);
 		<li>prefix a keyword with = to match <b>exactly</b>; otherwise we match similar words at the same time (stemming)</li>
 		<li>can use OR (case sensitive) to match <b>either/or</b> keywords; example: <tt>train OR railway</tt></li>
 		<li>Grid Square Discussions by location: <tt>hectad:TQ74</tt> or <tt>railway myriad:NT</tt> (<a href="/discuss/search.php">see also</a>)</li>
+		<li>Search in specific forum: <tt>forum:2</tt> (best as the last keyword)<br/>
+		2 = General Discussions, visible in the URL for the discussions listing<br/>
+		1 = Announcements. 3 = Suggestions, 4 = Bugs etc, etc...</li>
 	</ul>
 </div>
 
