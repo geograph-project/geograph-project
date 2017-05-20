@@ -65,18 +65,79 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
        {/if}
 
 	<p>Click a thumbnail to download the JPEG file...</p>
+
+	<p>&middot; The 'Stamped' version which includes the Create Commons reference and Contributor attribution, written onto the image. Making it easy to comply with the creative commons licence. <a href="/stamp.php?id={$image->gridimage_id}">More Stamping options...</a></p>
+
 {else}
 	{assign var="ratio" value=1}
 {/if}
 
 			<table style="font-weight:bold;text-align:center" cellspacing="0" border="1" bordercolor="#cccccc" cellpadding="0">
+
+				<tr>
+				
+					<td valign="top"><div class="interestBox">{$preview_width} x {$preview_height}</div><br/>
+					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1">Stamped</a>
+					</td>
+				
+				{if $image->altUrl != "/photos/error.jpg"}
+					{if $original_width>$original_height}
+						{assign var="resized_width" value=640}
+						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
+					{else}
+						{assign var="resized_height" value=640}
+						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
+					{/if}
+					
+					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
+					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=640&download=1">Stamped</a><br><br>
+					</td>
+				{/if}
+				
+				{if $original_width > 800 || $original_height > 800}
+
+					{if $original_width>$original_height}
+						{assign var="resized_width" value=800}
+						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
+					{else}
+						{assign var="resized_height" value=800}
+						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
+					{/if}
+
+					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
+					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=800&download=1">Stamped</a><br><br>
+					</td>
+				{/if}
+				
+				{if $original_width > 1024 || $original_height > 1024}
+
+					{if $original_width>$original_height}
+						{assign var="resized_width" value=1024}
+						{math assign="resized_height" equation="round(dw*sh/sw)" dw=$resized_width sh=$original_height sw=$original_width}
+					{else}
+						{assign var="resized_height" value=1024}
+						{math assign="resized_width" equation="round(dh*sw/sh)" dh=$resized_height sh=$original_height sw=$original_width}
+					{/if}
+
+					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
+					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=1024&pointsize=18&download=1">Stamped</a><br><br>
+					</td>
+				{/if}
+				
+
+
+					<td valign="top"><div class="interestBox">{$original_width} x {$original_height}</div><br/>
+					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=1&pointsize=24&download=1">Stamped Version</a><br><br>
+					</td>
+
+				</tr>
+
+
 				<tr>
 				
 					<td valign="top"><div class="interestBox">{$preview_width} x {$preview_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$preview_url}" width="{$preview_width/$ratio}" height="{$preview_height/$ratio}"/></a><br/><br/>
 					<small>as shown on<br/> photo page</small>
-					{assign var="last_width" value=$preview_width} 
-					{assign var="last_height" value=$preview_height} 
 					</td>
 				
 				{if $image->altUrl != "/photos/error.jpg"}
@@ -92,8 +153,6 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					
 					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=640"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
-					{assign var="last_width" value=$resized_width}
-					{assign var="last_height" value=$resized_height}
 					</td>
 				{/if}
 				
@@ -109,8 +168,6 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					
 					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=800"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
-					{assign var="last_width" value=$resized_width}
-					{assign var="last_height" value=$resized_height}
 					</td>
 				{/if}
 				
@@ -126,12 +183,9 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					
 					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=1024"><img src="{$preview_url}" width="{$resized_width/$ratio}" height="{$resized_height/$ratio}"/></a>
-					{assign var="last_width" value=$resized_width}
-					{assign var="last_height" value=$resized_height}
 					</td>
 				{/if}
 				
-				{if $original_width > $last_width || $original_height > $last_height}
 
 					<td valign="top"><div class="interestBox">{$original_width} x {$original_height}</div><br/>
 					<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original"><img src="{$preview_url}" width="{$original_width/$ratio}" height="{$original_height/$ratio}"/></a>
@@ -140,11 +194,11 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 						<br/><br/><div class="interestBox">Filesize: {$image->originalSize|thousends} bytes</div>
 					{/if}
 					</td>
-				{/if}
+
 				</tr>
+
 			</table>
-			<p>Preview{if $last_width > 640 || $last_height > 640}s{/if} shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size{if $ratio ne 1} - NOT representative of the final quality{/if}.</p>		
-			
+			<p>Preview{if $original_width > 640 || $original_height > 640}s{/if} shown at <b>{math equation="round(100/r)" r=$ratio}</b>% of actual size{if $ratio ne 1} - NOT representative of the final quality{/if}.</p>		
 
 
 <br/><br/><hr/><br/>

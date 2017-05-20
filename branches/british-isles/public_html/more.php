@@ -26,10 +26,7 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$template='more.tpl';	
-
-$USER->mustHavePerm("basic");
-
+$template='more.tpl';
 
 
 if (isset($_REQUEST['id']))
@@ -40,7 +37,7 @@ if (isset($_REQUEST['id']))
 
 	$image=new GridImage();
 	$ok = $image->loadFromId($_REQUEST['id']);
-	
+
 	if (!$ok || $image->moderation_status=='rejected') {
 		//clear the image
 		$image=new GridImage;
@@ -48,12 +45,11 @@ if (isset($_REQUEST['id']))
 		header("Status: 410 Gone");
 		$template = "static_404.tpl";
 	} else {
-		
 		$image->altUrl = $image->_getOriginalpath(true,false,'_640x640');
-		
+
 		$image->originalUrl = $image->_getOriginalpath(true,false);
 		$image->originalSize = filesize($_SERVER['DOCUMENT_ROOT'].$image->originalUrl);
-		
+
 		$style = $USER->getStyle();
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 	}
@@ -67,4 +63,3 @@ if (isset($_REQUEST['id']))
 
 $smarty->display($template);
 
-?>
