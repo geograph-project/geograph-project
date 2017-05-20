@@ -1,0 +1,239 @@
+-- MySQL dump 10.13  Distrib 5.6.35-81.0, for debian-linux-gnu (x86_64)
+--
+-- Host: 192.168.77.50    Database: geograph_live
+-- ------------------------------------------------------
+-- Server version	5.5.54-38.7-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!50112 SELECT COUNT(*) INTO @is_rocksdb_supported FROM INFORMATION_SCHEMA.SESSION_VARIABLES WHERE VARIABLE_NAME='rocksdb_bulk_load' */;
+/*!50112 SET @save_old_rocksdb_bulk_load = IF (@is_rocksdb_supported, 'SET @old_rocksdb_bulk_load = @@rocksdb_bulk_load', 'SET @dummy_old_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @save_old_rocksdb_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 SET @enable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = 1', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @enable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+
+--
+-- Table structure for table `geognew`
+--
+
+DROP TABLE IF EXISTS `geognew`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `geognew` (
+  `title` varchar(128) NOT NULL,
+  `link` varchar(44) NOT NULL DEFAULT '',
+  `author` varchar(128) NOT NULL DEFAULT '',
+  `latitude` decimal(10,6) NOT NULL DEFAULT '0.000000',
+  `longitude` decimal(10,6) NOT NULL DEFAULT '0.000000'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `geotrips_old`
+--
+
+DROP TABLE IF EXISTS `geotrips_old`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `geotrips_old` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(10) unsigned NOT NULL,
+  `user` varchar(64) NOT NULL,
+  `type` varchar(16) NOT NULL,
+  `location` varchar(128) NOT NULL,
+  `start` varchar(128) NOT NULL,
+  `title` varchar(128) NOT NULL,
+  `date` date NOT NULL,
+  `bbox` varchar(64) NOT NULL,
+  `track` longtext NOT NULL,
+  `search` int(10) unsigned NOT NULL,
+  `img` int(10) unsigned NOT NULL,
+  `descr` text NOT NULL,
+  `updated` int(10) unsigned NOT NULL,
+  `contfrom` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=473 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `geotrips_one`
+--
+
+DROP TABLE IF EXISTS `geotrips_one`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `geotrips_one` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(10) unsigned NOT NULL,
+  `user` varchar(64) NOT NULL,
+  `type` varchar(16) NOT NULL,
+  `location` varchar(128) NOT NULL,
+  `start` varchar(128) NOT NULL,
+  `title` varchar(128) NOT NULL,
+  `date` date NOT NULL,
+  `bbox` varchar(64) NOT NULL,
+  `track` longtext NOT NULL,
+  `search` int(10) unsigned NOT NULL,
+  `img` int(10) unsigned NOT NULL,
+  `descr` text NOT NULL,
+  `updated` int(10) unsigned NOT NULL,
+  `contfrom` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `updated` (`updated`)
+) ENGINE=MyISAM AUTO_INCREMENT=478 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mapcachejan2011`
+--
+
+DROP TABLE IF EXISTS `mapcachejan2011`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mapcachejan2011` (
+  `map_x` smallint(6) NOT NULL DEFAULT '0',
+  `map_y` smallint(6) NOT NULL DEFAULT '0',
+  `image_w` smallint(6) unsigned NOT NULL DEFAULT '0',
+  `image_h` smallint(6) unsigned NOT NULL DEFAULT '0',
+  `pixels_per_km` float NOT NULL DEFAULT '0',
+  `type_or_user` int(11) NOT NULL DEFAULT '0',
+  `age` mediumint(9) NOT NULL DEFAULT '0',
+  `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `palette` smallint(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`,`palette`),
+  KEY `age` (`age`,`type_or_user`),
+  KEY `map_x` (`map_x`,`map_y`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `mapcache_old`
+--
+
+DROP TABLE IF EXISTS `mapcache_old`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `mapcache_old` (
+  `map_x` smallint(6) NOT NULL DEFAULT '0',
+  `map_y` smallint(6) NOT NULL DEFAULT '0',
+  `image_w` smallint(6) unsigned NOT NULL DEFAULT '0',
+  `image_h` smallint(6) unsigned NOT NULL DEFAULT '0',
+  `pixels_per_km` float NOT NULL DEFAULT '0',
+  `type_or_user` int(11) NOT NULL DEFAULT '0',
+  `age` mediumint(9) NOT NULL DEFAULT '0',
+  `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `palette` smallint(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`map_x`,`map_y`,`image_w`,`image_h`,`pixels_per_km`,`type_or_user`,`palette`),
+  KEY `age` (`age`,`type_or_user`),
+  KEY `map_x` (`map_x`,`map_y`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `os_open_names2`
+--
+
+DROP TABLE IF EXISTS `os_open_names2`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `os_open_names2` (
+  `seq` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id` varchar(255) NOT NULL,
+  `name1` varchar(255) NOT NULL,
+  `name1_lang` enum('','cym','eng','gla') NOT NULL,
+  `name2` varchar(255) NOT NULL,
+  `name2_lang` enum('','cym','eng','gla') NOT NULL,
+  `type` enum('populatedPlace','transportNetwork','other') NOT NULL,
+  `local_type` enum('City','Town','Village','Hamlet','Suburban Area','Other Settlement','Named Road','Numbered Road','Postcode','Section Of Named Road','Section Of Numbered Road') NOT NULL,
+  `e` mediumint(9) NOT NULL,
+  `n` mediumint(9) NOT NULL,
+  `most_detail_view_res` mediumint(9) NOT NULL,
+  `postcode_district` varchar(255) NOT NULL,
+  `populated_place` varchar(255) NOT NULL,
+  `district_borough` enum('','Adur','Allerdale','Amber Valley','Arun','Ashfield','Ashford','Aylesbury Vale','Babergh','Barking and Dagenham','Barnet','Barnsley','Barrow-in-Furness','Basildon','Basingstoke and Deane','Bassetlaw','Bexley','Birmingham','Blaby','Bolsover','Bolton','Boston','Bradford','Braintree','Breckland','Brent','Brentwood','Broadland','Bromley','Bromsgrove','Broxbourne','Broxtowe','Burnley','Bury','Calderdale','Cambridge','Camden','Cannock Chase','Canterbury','Carlisle','Castle Point','Charnwood','Chelmsford','Cheltenham','Cherwell','Chesterfield','Chichester','Chiltern','Chorley','Christchurch','City and County of the City of London','City of Westminster','City of Wolverhampton','Colchester','Copeland','Corby','Cotswold','Coventry','Craven','Crawley','Croydon','Dacorum','Dartford','Daventry','Derbyshire Dales','Doncaster','Dover','Dudley','Ealing','East Cambridgeshire','East Devon','East Dorset','East Hampshire','East Hertfordshire','East Lindsey','East Northamptonshire','East Staffordshire','Eastbourne','Eastleigh','Eden','Elmbridge','Enfield','Epping Forest','Epsom and Ewell','Erewash','Exeter','Fareham','Fenland','Forest Heath','Forest of Dean','Fylde','Gateshead','Gedling','Gloucester','Gosport','Gravesham','Great Yarmouth','Greenwich','Guildford','Hackney','Hambleton','Hammersmith and Fulham','Harborough','Haringey','Harlow','Harrogate','Harrow','Hart','Hastings','Havant','Havering','Hertsmere','High Peak','Hillingdon','Hinckley and Bosworth','Horsham','Hounslow','Huntingdonshire','Hyndburn','Ipswich','Islington','Kensington and Chelsea','Kettering','King''s Lynn and West Norfolk','Kingston upon Thames','Kirklees','Knowsley','Lambeth','Lancaster','Leeds','Lewes','Lewisham','Lichfield','Lincoln','Liverpool','Maidstone','Maldon','Malvern Hills','Manchester','Mansfield','Melton','Mendip','Merton','Mid Devon','Mid Suffolk','Mid Sussex','Mole Valley','New Forest','Newark and Sherwood','Newcastle upon Tyne','Newcastle-under-Lyme','Newham','North Devon','North Dorset','North East Derbyshire','North Hertfordshire','North Kesteven','North Norfolk','North Tyneside','North Warwickshire','North West Leicestershire','Northampton','Norwich','Nuneaton and Bedworth','Oadby and Wigston','Oldham','Oxford','Pendle','Preston','Purbeck','Redbridge','Redditch','Reigate and Banstead','Ribble Valley','Richmond upon Thames','Richmondshire','Rochdale','Rochford','Rossendale','Rother','Rotherham','Rugby','Runnymede','Rushcliffe','Rushmoor','Ryedale','Salford','Sandwell','Scarborough','Sedgemoor','Sefton','Selby','Sevenoaks','Sheffield','Shepway','Solihull','South Bucks','South Cambridgeshire','South Derbyshire','South Hams','South Holland','South Kesteven','South Lakeland','South Norfolk','South Northamptonshire','South Oxfordshire','South Ribble','South Somerset','South Staffordshire','South Tyneside','Southwark','Spelthorne','St. Albans','St. Edmundsbury','St. Helens','Stafford','Staffordshire Moorlands','Stevenage','Stockport','Stratford-on-Avon','Stroud','Suffolk Coastal','Sunderland','Surrey Heath','Sutton','Swale','Tameside','Tamworth','Tandridge','Taunton Deane','Teignbridge','Tendring','Test Valley','Tewkesbury','Thanet','Three Rivers','Tonbridge and Malling','Torridge','Tower Hamlets','Trafford','Tunbridge Wells','Uttlesford','Vale of White Horse','Wakefield','Walsall','Waltham Forest','Wandsworth','Warwick','Watford','Waveney','Waverley','Wealden','Wellingborough','Welwyn Hatfield','West Devon','West Dorset','West Lancashire','West Lindsey','West Oxfordshire','West Somerset','Weymouth and Portland','Wigan','Winchester','Wirral','Woking','Worcester','Worthing','Wychavon','Wycombe','Wyre','Wyre Forest') NOT NULL,
+  `county_unitary` enum('','Aberdeen City','Aberdeenshire','Abertawe - Swansea','Angus','Argyll and Bute','Bath and North East Somerset','Bedford','Blackburn with Darwen','Blackpool','Blaenau Gwent - Blaenau Gwent','Bournemouth','Bracknell Forest','Bro Morgannwg - the Vale of Glamorgan','Buckinghamshire','Caerdydd - Cardiff','Caerffili - Caerphilly','Cambridgeshire','Casnewydd - Newport','Castell-nedd Port Talbot - Neath Port Talbot','Central Bedfordshire','Cheshire East','Cheshire West and Chester','City of Bristol','City of Derby','City of Edinburgh','City of Kingston upon Hull','City of Leicester','City of Nottingham','City of Peterborough','City of Plymouth','City of Portsmouth','City of Southampton','City of Stoke-on-Trent','Clackmannanshire','Conwy - Conwy','Cornwall','County Durham','County of Herefordshire','Cumbria','Darlington','Derbyshire','Devon','Dorset','Dumfries and Galloway','Dundee City','East Ayrshire','East Dunbartonshire','East Lothian','East Renfrewshire','East Riding of Yorkshire','East Sussex','Essex','Falkirk','Fife','Glasgow City','Gloucestershire','Greater London','Gwynedd - Gwynedd','Halton','Hampshire','Hartlepool','Hertfordshire','Highland','Inverclyde','Isle of Wight','Isles of Scilly','Kent','Lancashire','Leicestershire','Lincolnshire','Luton','Medway','Merthyr Tudful - Merthyr Tydfil','Middlesbrough','Midlothian','Milton Keynes','Moray','Na h-Eileanan an Iar','Norfolk','North Ayrshire','North East Lincolnshire','North Lanarkshire','North Lincolnshire','North Somerset','North Yorkshire','Northamptonshire','Northumberland','Nottinghamshire','Orkney Islands','Oxfordshire','Pen-y-bont ar Ogwr - Bridgend','Perth and Kinross','Poole','Powys - Powys','Reading','Redcar and Cleveland','Renfrewshire','Rhondda Cynon Taf - Rhondda Cynon Taf','Rutland','Scottish Borders','Shetland Islands','Shropshire','Sir Benfro - Pembrokeshire','Sir Ceredigion - Ceredigion','Sir Ddinbych - Denbighshire','Sir Fynwy - Monmouthshire','Sir Gaerfyrddin - Carmarthenshire','Sir y Fflint - Flintshire','Sir Ynys Mon - Isle of Anglesey','Slough','Somerset','South Ayrshire','South Gloucestershire','South Lanarkshire','Southend-on-Sea','Staffordshire','Stirling','Stockton-on-Tees','Suffolk','Surrey','Swindon','Telford and Wrekin','The City of Brighton and Hove','Thurrock','Tor-faen - Torfaen','Torbay','Warrington','Warwickshire','West Berkshire','West Dunbartonshire','West Lothian','West Sussex','Wiltshire','Windsor and Maidenhead','Wokingham','Worcestershire','Wrecsam - Wrexham','York') NOT NULL,
+  `region` enum('East Midlands','Eastern','London','North East','North West','Scotland','South East','South West','Wales','West Midlands','Yorkshire and the Humber') NOT NULL,
+  `country` enum('England','Scotland','Wales') NOT NULL,
+  `point_en` geometry NOT NULL DEFAULT '',
+  PRIMARY KEY (`seq`),
+  SPATIAL KEY `point_en` (`point_en`),
+  KEY `n` (`n`,`e`)
+) ENGINE=MyISAM AUTO_INCREMENT=2585974 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `smarty_cache_page2`
+--
+
+DROP TABLE IF EXISTS `smarty_cache_page2`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `smarty_cache_page2` (
+  `Folder` enum('basic','charcoal','ireland','archive') NOT NULL DEFAULT 'basic',
+  `CacheID` varchar(255) NOT NULL,
+  `TemplateFile` varchar(255) NOT NULL,
+  `GroupCache` varchar(255) NOT NULL,
+  `TimeStamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Expire` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`Folder`,`CacheID`),
+  KEY `GroupCache` (`GroupCache`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tpoints_backup`
+--
+
+DROP TABLE IF EXISTS `tpoints_backup`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tpoints_backup` (
+  `gridimage_id` int(11) NOT NULL DEFAULT '0',
+  `points` set('','tpoint') NOT NULL,
+  `upd_timestamp` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `_gridimage_ticket_comment`
+--
+
+DROP TABLE IF EXISTS `_gridimage_ticket_comment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `_gridimage_ticket_comment` (
+  `gridimage_ticket_comment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `gridimage_ticket_id` int(11) NOT NULL DEFAULT '0',
+  `user_id` int(11) DEFAULT NULL,
+  `comment` text,
+  `added` datetime DEFAULT NULL,
+  PRIMARY KEY (`gridimage_ticket_comment_id`),
+  KEY `gridimage_ticket_id` (`gridimage_ticket_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=26217 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50112 SET @disable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = @old_rocksdb_bulk_load', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @disable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2017-05-20 14:06:35

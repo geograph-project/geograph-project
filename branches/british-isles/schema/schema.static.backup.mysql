@@ -1,0 +1,512 @@
+-- MySQL dump 10.13  Distrib 5.6.35-81.0, for debian-linux-gnu (x86_64)
+--
+-- Host: 192.168.77.50    Database: geograph_live
+-- ------------------------------------------------------
+-- Server version	5.5.54-38.7-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!50112 SELECT COUNT(*) INTO @is_rocksdb_supported FROM INFORMATION_SCHEMA.SESSION_VARIABLES WHERE VARIABLE_NAME='rocksdb_bulk_load' */;
+/*!50112 SET @save_old_rocksdb_bulk_load = IF (@is_rocksdb_supported, 'SET @old_rocksdb_bulk_load = @@rocksdb_bulk_load', 'SET @dummy_old_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @save_old_rocksdb_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 SET @enable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = 1', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @enable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+
+--
+-- Table structure for table `explorermaps`
+--
+
+DROP TABLE IF EXISTS `explorermaps`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `explorermaps` (
+  `number` varchar(4) NOT NULL DEFAULT '',
+  `name` varchar(128) NOT NULL DEFAULT '',
+  PRIMARY KEY (`number`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `exploreroutlines1`
+--
+
+DROP TABLE IF EXISTS `exploreroutlines1`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `exploreroutlines1` (
+  `Map` varchar(7) NOT NULL DEFAULT '',
+  `addon` enum('','a','b','c') NOT NULL DEFAULT '',
+  `left` smallint(6) NOT NULL DEFAULT '0',
+  `bottom` smallint(6) NOT NULL DEFAULT '0',
+  `right` smallint(6) NOT NULL DEFAULT '0',
+  `top` smallint(6) NOT NULL DEFAULT '0',
+  `numberic` smallint(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`Map`,`addon`),
+  KEY `bottom` (`left`,`bottom`,`right`,`top`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT=' v0.5 - Ian Richardson (ian@elsworth.demon.co.uk) 2004-09-28';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `landrangermaps`
+--
+
+DROP TABLE IF EXISTS `landrangermaps`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `landrangermaps` (
+  `number` varchar(4) NOT NULL DEFAULT '',
+  `name` varchar(128) NOT NULL DEFAULT '',
+  PRIMARY KEY (`number`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `landrangeroutlines1`
+--
+
+DROP TABLE IF EXISTS `landrangeroutlines1`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `landrangeroutlines1` (
+  `map` char(3) NOT NULL DEFAULT '',
+  `left` smallint(6) NOT NULL DEFAULT '0',
+  `bottom` smallint(6) NOT NULL DEFAULT '0',
+  `right` smallint(6) NOT NULL DEFAULT '0',
+  `top` smallint(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`map`),
+  KEY `bottom` (`left`,`bottom`,`right`,`top`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_abgaz`
+--
+
+DROP TABLE IF EXISTS `loc_abgaz`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_abgaz` (
+  `gaz_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(128) NOT NULL DEFAULT '',
+  `gridref` varchar(6) NOT NULL DEFAULT '',
+  `hcounty` varchar(64) NOT NULL DEFAULT '',
+  `acounty` varchar(64) NOT NULL DEFAULT '',
+  `district` varchar(64) NOT NULL DEFAULT '',
+  `ua` varchar(64) NOT NULL DEFAULT '',
+  `police` varchar(64) NOT NULL DEFAULT '',
+  `region` varchar(64) NOT NULL DEFAULT '',
+  `e` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `n` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `point_en` point NOT NULL DEFAULT '',
+  PRIMARY KEY (`gaz_id`),
+  KEY `gridref` (`gridref`),
+  SPATIAL KEY `point_en` (`point_en`)
+) ENGINE=MyISAM AUTO_INCREMENT=51594 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_adm1`
+--
+
+DROP TABLE IF EXISTS `loc_adm1`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_adm1` (
+  `country` char(2) NOT NULL DEFAULT '',
+  `adm1` char(2) NOT NULL DEFAULT '0',
+  `name` varchar(32) NOT NULL DEFAULT '',
+  `reference_index` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`adm1`,`country`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_counties`
+--
+
+DROP TABLE IF EXISTS `loc_counties`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_counties` (
+  `county_id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `e` int(11) NOT NULL DEFAULT '0',
+  `n` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(64) NOT NULL DEFAULT '',
+  `reference_index` tinyint(4) NOT NULL DEFAULT '0',
+  `point_en` point NOT NULL DEFAULT '',
+  PRIMARY KEY (`county_id`),
+  SPATIAL KEY `point_en` (`point_en`)
+) ENGINE=MyISAM AUTO_INCREMENT=97 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_counties_pre74`
+--
+
+DROP TABLE IF EXISTS `loc_counties_pre74`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_counties_pre74` (
+  `county_id` smallint(6) NOT NULL AUTO_INCREMENT,
+  `e` int(11) NOT NULL DEFAULT '0',
+  `n` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(64) NOT NULL DEFAULT '',
+  `reference_index` tinyint(4) NOT NULL DEFAULT '0',
+  `wgs84_lat` decimal(10,6) NOT NULL DEFAULT '0.000000',
+  `wgs84_long` decimal(10,6) NOT NULL DEFAULT '0.000000',
+  `point_en` point NOT NULL DEFAULT '',
+  PRIMARY KEY (`county_id`),
+  SPATIAL KEY `point_en` (`point_en`)
+) ENGINE=MyISAM AUTO_INCREMENT=111 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_country`
+--
+
+DROP TABLE IF EXISTS `loc_country`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_country` (
+  `code` char(2) NOT NULL DEFAULT '',
+  `name` varchar(30) NOT NULL DEFAULT '',
+  PRIMARY KEY (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_dsg`
+--
+
+DROP TABLE IF EXISTS `loc_dsg`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_dsg` (
+  `code` enum('ADM1','ADM2','ADM3','ADMD','AGRF','AIRF','AIRQ','ANCH','ANS','ARCH','AREA','BAR','BAY','BCH','BDG','BLDG','BNK','BOG','BTL','CAPE','CARN','CAVE','CHN','CHNM','CHNN','CLF','CMP','CNL','COVE','CRNT','CSTL','CSWY','DCK','DCKB','DEPU','DPR','EST','ESTY','FLLS','FLTT','FRM','FRST','FT','GAP','GDN','GRGE','HBR','HDLD','HLL','HLLS','HSE','HSEC','HSTS','HTH','HTL','INLT','ISL','ISLS','ISLT','LCTY','LDGU','LGN','LK','LKS','LOCK','LTHSE','MDW','MNMT','MOOR','MRSH','MT','MTS','NRWS','NVB','OVF','PAL','PASS','PEN','PIER','PK','PKS','PLN','PND','POOL','PPL','PPLC','PPLL','PPLX','PRK','PROM','PRSH','PRT','PT','RCH','RD','RDA','RDGE','RDST','RECR','RESN','RF','RGN','RK','RKS','RR','RSTN','RSV','RUIN','SAND','SD','SHOL','SLCE','SLP','SPIT','ST','STM','STMC','STMM','STMX','STRT','TNL','TOWR','UPLD','VAL','WHRL') NOT NULL DEFAULT 'ADM1',
+  `name` varchar(64) NOT NULL DEFAULT '',
+  `text` varchar(64) NOT NULL DEFAULT '',
+  `class` varchar(64) NOT NULL DEFAULT '',
+  KEY `code` (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_placenames`
+--
+
+DROP TABLE IF EXISTS `loc_placenames`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_placenames` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `dsg` enum('ADM1','ADMD','ANCH','ANS','AREA','BAR','BAY','BCH','BDG','BLDG','BNK','BOG','BRKS','BRKW','CAPE','CARN','CAVE','CH','CHN','CHNM','CLF','CMP','CNFL','CNL','COVE','CRKT','CSTL','DCK','DCKB','DCKY','DPR','EST','ESTY','FLD','FLLS','FLTT','FORD','FRM','FRST','FSR','FT','GAP','GASF','GRGE','GRVE','HBR','HDLD','HLL','HLLS','HMCK','HSE','HSEC','HSP','HTL','INDS','INLT','ISL','ISLS','ISLT','LCTY','LGN','LK','LKS','MDW','MN','MNMT','MOOR','MRSH','MSTY','MT','MTS','MUS','NRWS','OBPT','OILR','PASS','PCLI','PEN','PIER','PK','PLDR','PLN','PND','POOL','PPL','PPLA','PPLC','PPLL','PPLX','PRK','PRN','PRSH','PRT','PS','PT','QUAY','RD','RDGE','RDST','RF','RGN','RJCT','RK','RKS','RNGA','RPDS','RSTN','RSTP','RSV','RUIN','SAND','SCH','SCHC','SD','SEA','SHOL','SLP','SPIT','SPNG','SPUR','STM','STMA','STMM','STNE','STRT','TMB','TOWR','TRL','TRMO','VAL','WEIR','WLL','WTRW','ZZZZZ') NOT NULL DEFAULT 'ADM1',
+  `adm1` char(2) NOT NULL DEFAULT '',
+  `full_name` varchar(64) NOT NULL DEFAULT '',
+  `full_name_soundex` varchar(32) NOT NULL DEFAULT '',
+  `gns_ufi` int(11) NOT NULL,
+  `gns_uni` int(11) NOT NULL,
+  `nametype` char(1) NOT NULL,
+  `e` int(11) NOT NULL DEFAULT '0',
+  `n` int(11) NOT NULL DEFAULT '0',
+  `reference_index` tinyint(4) NOT NULL DEFAULT '1',
+  `country` enum('uk','ie') NOT NULL,
+  `point_en` point NOT NULL DEFAULT '',
+  `has_dup` tinyint(3) unsigned DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `full_name` (`full_name`),
+  SPATIAL KEY `point_en` (`point_en`),
+  KEY `gns_ufi` (`gns_ufi`),
+  KEY `dsg` (`dsg`,`reference_index`)
+) ENGINE=MyISAM AUTO_INCREMENT=56428 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_postcodes`
+--
+
+DROP TABLE IF EXISTS `loc_postcodes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_postcodes` (
+  `e` int(11) NOT NULL DEFAULT '0',
+  `n` int(11) NOT NULL DEFAULT '0',
+  `code` varchar(7) NOT NULL DEFAULT '',
+  `reference_index` tinyint(4) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_ppl`
+--
+
+DROP TABLE IF EXISTS `loc_ppl`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_ppl` (
+  `UFI` int(11) NOT NULL DEFAULT '0',
+  `UNI` int(11) NOT NULL DEFAULT '0',
+  `LAT` decimal(8,7) NOT NULL DEFAULT '0.0000000',
+  `LONG` decimal(8,7) NOT NULL DEFAULT '0.0000000',
+  `DSG` varchar(5) NOT NULL DEFAULT '',
+  `NT` char(1) NOT NULL DEFAULT '',
+  `FULL_NAME_ND` varchar(200) NOT NULL DEFAULT '',
+  `full_name_soundex` varchar(32) NOT NULL DEFAULT '',
+  `e` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `n` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `county` enum('','Avon','Bedfordshire','Berkshire','Buckinghamshire','Cambridgeshire','Central','Cheshire','Cleveland','Clwyd','Cornwall','Cumbria','Derbyshire','Devon','Dorset','Dumfries and Galloway','Durham','Dyfed','East Sussex','Essex','Fife','Gloucestershire','Grampian','Greater London','Greater Manchester','Gwent','Gwynedd','Hampshire','Hereford and Worcester','Hertfordshire','Highland','Humberside','Isle of Wight','Kent','Lancashire','Leicestershire','Lincolnshire','Lothian','Louth','Merseyside','Mid Glamorgan','Monaghan','Norfolk','North Yorkshire','Northamptonshire','Northern Ireland','Northumberland','Nottinghamshire','Orkney Islands','Oxfordshire','Powys','Scottish Borders','Shetland','Shropshire','Somerset','South Glamorgan','South Yorkshire','Staffordshire','Strathclyde','Suffolk','Surrey','Tayside','Tyne and Wear','Warwickshire','West Glamorgan','West Midlands','West Sussex','West Yorkshire','Western Isles','Wiltshire') NOT NULL DEFAULT '',
+  PRIMARY KEY (`UNI`),
+  KEY `e` (`e`,`n`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COMMENT='Cut-down database from 30-03-2006';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_towns`
+--
+
+DROP TABLE IF EXISTS `loc_towns`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_towns` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `e` mediumint(6) unsigned NOT NULL DEFAULT '0',
+  `n` mediumint(7) unsigned NOT NULL DEFAULT '0',
+  `s` enum('1','2','3','') NOT NULL DEFAULT '1',
+  `reference_index` tinyint(4) NOT NULL DEFAULT '0',
+  `quad` tinyint(4) NOT NULL DEFAULT '0',
+  `point_en` point NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `gis` (`e`,`n`,`reference_index`),
+  SPATIAL KEY `point_en` (`point_en`)
+) ENGINE=MyISAM AUTO_INCREMENT=1144 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `loc_wikipedia`
+--
+
+DROP TABLE IF EXISTS `loc_wikipedia`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `loc_wikipedia` (
+  `url` varchar(255) NOT NULL DEFAULT '',
+  `exists` char(1) NOT NULL DEFAULT '',
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `text` varchar(255) NOT NULL DEFAULT '',
+  `iscity` varchar(255) NOT NULL DEFAULT '',
+  `country` char(2) NOT NULL DEFAULT ''
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `myletters`
+--
+
+DROP TABLE IF EXISTS `myletters`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `myletters` (
+  `l` char(1) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `origin`
+--
+
+DROP TABLE IF EXISTS `origin`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `origin` (
+  `reference_index` tinyint(3) unsigned DEFAULT NULL,
+  `xd` tinyint(3) unsigned DEFAULT NULL,
+  `yd` tinyint(3) unsigned DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `os_gaz`
+--
+
+DROP TABLE IF EXISTS `os_gaz`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `os_gaz` (
+  `seq` mediumint(6) unsigned NOT NULL,
+  `km_ref` varchar(6) NOT NULL DEFAULT '',
+  `def_nam` varchar(60) NOT NULL DEFAULT '',
+  `tile_ref` varchar(4) NOT NULL DEFAULT '',
+  `lat_deg` tinyint(4) NOT NULL DEFAULT '0',
+  `lat_min` double(3,1) NOT NULL DEFAULT '0.0',
+  `long_deg` tinyint(4) NOT NULL DEFAULT '0',
+  `long_min` double(3,1) NOT NULL DEFAULT '0.0',
+  `north` mediumint(7) unsigned NOT NULL,
+  `east` mediumint(6) unsigned NOT NULL,
+  `gmt` enum('E','W') NOT NULL,
+  `co_code` enum('AB','AG','AN','AR','BA','BB','BC','BD','BE','BF','BG','BH','BI','BL','BM','BN','BO','BP','BR','BS','BT','BU','BX','BY','BZ','CA','CB','CD','CE','CF','CH','CL','CM','CN','CT','CU','CV','CW','CY','DB','DD','DE','DG','DL','DN','DR','DT','DU','DY','DZ','EA','EB','ED','EG','EL','EN','ER','ES','EX','EY','FA','FF','FL','GH','GL','GR','GW','GY','HA','HD','HE','HF','HG','HI','HL','HN','HP','HR','HS','HT','HV','IA','IL','IM','IN','IS','IW','KC','KG','KH','KL','KN','KT','LA','LB','LC','LD','LL','LN','LO','LP','LS','LT','MA','MB','ME','MI','MK','MM','MO','MR','MT','NA','NC','ND','NE','NG','NH','NI','NK','NL','NN','NP','NR','NS','NT','NW','NY','OH','OK','ON','PB','PE','PK','PL','PO','PW','PY','RB','RC','RD','RE','RG','RH','RL','RO','RT','SA','SB','SC','SD','SE','SF','SG','SH','SI','SJ','SK','SL','SM','SN','SO','SP','SQ','SR','SS','ST','SU','SV','SW','SX','SY','SZ','TB','TF','TH','TR','TS','TU','VG','WA','WB','WC','WD','WE','WF','WG','WH','WI','WJ','WK','WL','WM','WN','WO','WP','WR','WS','WT','WW','WX','XX','YK','YS','YT','YY') NOT NULL,
+  `county` enum('0','Aberd','Angus','Arg & Bt','Bark & Dag','Barnet','Barns','Bath & NE Somer','Beds','Bexley','Birm','Black w Dar','Blackp','Blae Gw','Bolton','Bourne','Brackn','Brad','Brent','Brig','Brom','Bucks','Bury','C of Aber','C of Bri & Hov','C of Bris','C of Derb','C of Dun','C of Edin','C of Glas','C of K upon H','C of Leic','C of Lon','C of Nott','C of Peterb','C of Plym','C of Port','C of Soton','C of Stoke','C of West','C of Wolv','Caer','Cald','Cambs','Camden','Card','Carm','Cered','Ches','Clackm','Conwy','Corn','Cov','Croy','Cumbr','D & G','Darl','Denb','Derby','Devon','Donc','Dorset','Dudley','Durham','E Ayr','E Dunb','E Loth','E Renf','E Susx','E Yorks','Ealing','Enf','Essex','Falk','Fife','Flint','Ghead','Glos','Gren','Gwyn','Hack','Halton','Ham & Ful','Hants','Hargy','Harrow','Hartpl','Hav','Heref','Herts','Highld','Hill','Houns','I of Angl','I of M','I of W','I Scilly','Inverc','Isling','Ken & Ch','Kent','King','Kirk','Know','Lam','Lancs','Leeds','Leic','Lew','Lincs','Liv','Luton','Man','Medway','Merth Tyd','Merton','Midd','Midlo','Mil Key','Monm','Moray','N Ayr','N Eil','N Lanak','N Lincs','N Som','N Tyne','N upon Ty','N Yks','NE Lincs','Newham','Newp','Norf','Northnts','Northum','Notts','Nth Pt Talb','Oldham','Orkney','Oxon','Pemb','Poole','Powys','Pth & Kin','Read','Red & Cl','Redbr','Renf','Rho Cyn Taf','Rich','Roch','Roth','Rut','S Ayr','S Glos','S Lanak','S Tyne','Salf','Sand','Scot Bord','Sefton','Sheff','Shetld','Shrops','Slough','Sol','Somer','Sou-on-Sea','St Hel','Staffs','Sthwk','Stir','Stock','Stock on T','Suff','Sund','Surrey','Sutton','Swan','Swin','T Ham','Tames','Thurr','Torbay','Torf','Traf','V of Glam','W Berks','W Dunb','W Loth','W Susx','Wakf','Wal F','Wals','Wan','Warr','Warw','Wigan','Wilts','Win & Maid','Wirral','Wok','Worcs','Wrekin','Wrex','York') NOT NULL,
+  `full_county` enum('Aberdeen City','Aberdeenshire','Angus','Argyll and Bute','Barking & Dagenham','Barnet','Barnsley','Bath and North East Somerset','Bedfordshire','Bexley','Birmingham','Blackburn with Darwen','Blackpool','Blaenau Gwent','Bolton','Bournemouth','Bracknell Forest','Bradford','Brent','Bridgend','Bromley','Buckinghamshire','Bury','Caerphilly','Calderdale','Cambridgeshire','Camden','Cardiff','Carmarthenshire','Ceredigion','Cheshire','City of Brighton and Hove','City of Bristol','City of Derby','City of Edinburgh','City of Kingston upon Hull','City of Leicester','City of London','City of Nottingham','City of Peterborough','City of Plymouth','City of Portsmouth','City of Southampton','City of Stoke-on-Trent','City of Westminster','City of Wolverhampton','Clackmannanshire','Conwy','Cornwall','Coventry','Croydon','Cumbria','Darlington','Denbighshire','Derbyshire','Devon','Doncaster','Dorset','Dudley','Dumfries and Galloway','Dundee City','Durham','Ealing','East Ayrshire','East Dunbartonshire','East Lothian','East Renfrewshire','East Riding of Yorkshire','East Sussex','Enfield','Essex','Falkirk','Fife','Flintshire','Gateshead','Glasgow City','Gloucestershire','Greenwich','Gwynedd','Hackney','Halton','Hammersmith &Fulham','Hampshire','Haringey','Harrow','Hartlepool','Havering','Herefordshire','Hertfordshire','Highland','Hillingdon','Hounslow','Inverclyde','Isle of Anglesey','Isle of Man','Isle of Wight','Isles of Scilly','Islington','Kent','Kingston upon Thames','Kirklees','Knowsley','Lambeth','Lancashire','Leeds','Leicestershire','Lewisham','Lincolnshire','Liverpool','Luton','Manchester','Medway','Merthyr Tydfil','Merton','Middlesbrough','Midlothian','Milton Keynes','Monmouthshire','Moray','Na h-Eileanan an Iar','Neath Port Talbot','Newcastle upon Tyne','Newham','Newport','Norfolk','North Ayrshire','North East Lincolnshire','North Lanarkshire','North Lincolnshire','North Somerset','North Tyneside','North Yorkshire','Northamptonshire','Northumberland','Nottinghamshire','Oldham','Orkney Islands','Oxfordshire','Pembrokeshire','Perth and Kinross','Poole','Powys','Reading','Redbridge','Redcar & Cleveland','Renfrewshire','Rhondda,Cynon,Taff','Richmond upon Thames','Rochdale','Rotherham','Royal Borough of Kensington & Chelsea','Rutland','Salford','Sandwell','Scottish Borders','Sefton','Sheffield','Shetland Islands','Shropshire','Slough','Solihull','Somerset','South Ayrshire','South Gloucestershire','South Lanarkshire','South Tyneside','Southend-on-Sea','Southwark','St Helens','Staffordshire','Stirling','Stockport','Stockton on Tees','Suffolk','Sunderland','Surrey','Sutton','Swansea','Swindon','Tameside','Telford and Wrekin','The Vale of Glamorgan','Thurrock','Torbay','Torfaen','Tower Hamlets','Trafford','Wakefield','Walsall','Waltham Forest','Wandsworth','Warrington','Warwickshire','West Berkshire','West Dunbartonshire','West Lothian','West Sussex','Wigan','Wiltshire','Windsor and Maidenhead','Wirral','Wokingham','Worcestershire','Wrexham','XXXXXXXX','York') NOT NULL,
+  `f_code` enum('C','T','O','A','F','FM','H','R','W','X') NOT NULL DEFAULT 'C',
+  `e_date` varchar(11) NOT NULL DEFAULT '',
+  `update_co` enum('I','U') NOT NULL,
+  `sheet_1` smallint(6) NOT NULL DEFAULT '0',
+  `sheet_2` smallint(6) NOT NULL DEFAULT '0',
+  `sheet_3` smallint(6) NOT NULL DEFAULT '0',
+  `def_nam_soundex` varchar(32) NOT NULL DEFAULT '',
+  `point_en` point NOT NULL DEFAULT '',
+  `hcounty` enum('','Aberdeenshire','Anglesey','Angus','Argyllshire','Ayrshire','Banffshire','Bedfordshire','Bedfordshire / Hertfordshire','Beds, pre-1844 part in det pt of Hunts','Berks, pre-1844 in det pt of Wilts','Berks, pre-1844 part in det pt of Wilts','Berkshire','Berwickshire','Brecknockshire','Brecknockshire / Monmouthshire','Brecknockshire / Radnorshire','Buckinghamshire','Bucks, pre-1844 in det pt of Herts','Bucks, pre-1844 in det pt of Oxon','Buteshire','Caernarfon (det), locally in Denbighs','Caernarfonshire','Caernarfonshire / Merioneth','Caithness','Cambridgeshire','Cambridgeshire / Hertfordshire','Cambridgeshire / Hunts','Cambridgeshire / Norfolk','Cambridgeshire / Suffolk','Cardiganshire','Carmarthenshire','Carmarthenshire / Brecknock','Cheshire','Cheshire / Flintshire','Clackmannanshire','Cornwall','Cornwall, pre-1884 in det pt of Devon','Cromartyshire','Cromartyshire / Ross-shire','Cumberland','Denbighshire','Denbighshire / Caernarfons','Denbighshire / Flintshire','Denbighshire / Montgomeryshire','Derbys (det), locally in Leics','Derbyshire','Derbyshire / Leicestershire','Derbyshire / Nottinghamshire','Devon','Devon / Dorset','Devon / Somerset','Devon, pre-1844 in det pt of Dorset','Dorset','Dorset / Hampshire','Dorset, pre-1844 in det pt of Devon','Dorset, pre-1844 in det pt of Som''set','Dumfriesshire','Dunbartonshire','Durham','East Lothian','Essex','Fife','Flints (det), locally in Denbighs','Flintshire','Flintshire / Denbighshire','Glamorgan','Glamorgan / Brecknockshire','Gloucestershire','Gloucestershire / Herefords','Gloucs, pre-1844 in det pt of Wilts','Gloucs, pre-1844 in det pt of Worcs','Hampshire','Hampshire / Berkshire','Hampshire / Sussex','Hampshire / Wiltshire','Herefds, pre-1844 in det pt of Gloucs','Herefordshire','Herefordshire / Gloucestershire','Hertfordshire','Hertfordshire / Bedfordshire','Hertfordshire / Buckinghams','Hertfordshire / Middlesex','Huntingdonshire','Hunts (det), locally in Beds','Inverness (det), locally in Moray','Inverness-shire','Isles of Scilly','Kent','Kent / Surrey','Kent / Sussex','Kincardineshire','Kinross-shire','Kirkcudbrightshire','Lanarkshire','Lancashire','Lancs / Ches / Yorks, W.R.','Leicestershire','Leicestershire / Derbyshire','Leicestershire / Lincolnshire','Leicestershire / Northants','Lincolnshire','Lincolnshire / Cambridgeshire','Lincolnshire / Yorks, West Riding','Merioneth','Merioneth / Montgomeryshire','Middlesex','Middlesex / Hertfordshire','Midlothian','Monmouthshire','Montgomeryshire','Moray (det), locally in Inverness','Morayshire','Morayshire / Inverness-shir','N''thumb, pre-1844 in det pt of Durham','Nairnshire','Norfolk','Norfolk / Cambridgeshire','Norfolk / Suffolk','Northamptonshire','Northumberland','Nottinghamshire','Orkney','Oxfordshire','Oxon, pre-1844 in det pt of Bucks','Peeblesshire','Pembrokeshire','Perthshire','Perthshire (det), locally in Fife','Radnorshire','Renfrewshire','Ross-shire','Roxburghshire','Rutland','Selkirk (det), locally in Roxburgh','Selkirkshire','Selkirkshire / Roxburghshire','Shetland','Shropshire','Shropshire / Montgomeryshire','Shropshire / Staffordshire','Somerset','Somerset / Devon','Somerset / Dorset','Staffordshire','Staffordshire / Cheshire','Staffordshire / Warwickshire','Staffordshire / Worcestershire','Stirling (det), locally in Clackman','Stirlingshire','Suffolk','Suffolk / Cambridgeshire','Suffolk / Essex','Suffolk / Norfolk','Surrey','Surrey / Kent','Surrey / Sussex','Sussex','Sussex / Hampshire','Sussex / Surrey','Sussex, pre-1844 in det pt of Hants','Sutherland','Warks, pre-1844 in det pt of Gloucs','Warwickshire','Warwickshire / Leicestershire','Warwickshire / Staffordshire','Warwickshire / Worcestershire','West Lothian','Westmorland','Wigtownshire','Wilts, pre-1844 in det pt of Gloucs','Wiltshire','Wiltshire / Berkshire','Wiltshire / Hampshire','Worcestershire','Worcestershire / Shropshire','Worcestershire / Warwickshire','Worcs (det), locally in Gloucs','Worcs (det), locally in Herefds','Worcs (det), locally in Staffs','Worcs (det), locally in Warks','Worcs, pre-1844 in det pt of Herefds','Worcs, pre-1844 in det pt of Shrops','Worcs, pre-1844 in det pt of Staffs','Worcs, pre-1844 in det pt of Warks','Yorkshire, East Riding','Yorkshire, North Riding','Yorkshire, W.R.','Yorkshire, West Riding','Yorkshire, West Riding / Li','Yorkshire, West Riding / Notts') NOT NULL,
+  `has_dup` tinyint(3) unsigned DEFAULT '0',
+  PRIMARY KEY (`seq`),
+  KEY `east` (`east`,`north`,`f_code`),
+  KEY `co_code` (`co_code`),
+  KEY `tile_ref` (`tile_ref`),
+  KEY `def_nam` (`def_nam`),
+  SPATIAL KEY `point_en` (`point_en`),
+  KEY `def_nam_soundex` (`def_nam_soundex`),
+  KEY `km_ref` (`km_ref`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `os_gaz_250`
+--
+
+DROP TABLE IF EXISTS `os_gaz_250`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `os_gaz_250` (
+  `seq` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `def_nam` varchar(250) NOT NULL,
+  `full_county` varchar(250) NOT NULL,
+  `east` mediumint(8) unsigned NOT NULL,
+  `north` mediumint(8) unsigned NOT NULL,
+  `def_nam_soundex` varchar(32) NOT NULL DEFAULT '',
+  `point_en` point NOT NULL DEFAULT '',
+  PRIMARY KEY (`seq`),
+  SPATIAL KEY `point_en` (`point_en`),
+  KEY `def_nam_soundex` (`def_nam_soundex`)
+) ENGINE=MyISAM AUTO_INCREMENT=25547 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `os_gaz_code`
+--
+
+DROP TABLE IF EXISTS `os_gaz_code`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `os_gaz_code` (
+  `f_code` char(2) NOT NULL DEFAULT '',
+  `code_name` varchar(64) NOT NULL DEFAULT '',
+  PRIMARY KEY (`f_code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `os_gaz_old`
+--
+
+DROP TABLE IF EXISTS `os_gaz_old`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `os_gaz_old` (
+  `seq` int(11) NOT NULL DEFAULT '0',
+  `km_ref` varchar(6) NOT NULL DEFAULT '',
+  `def_nam` varchar(60) NOT NULL DEFAULT '',
+  `tile_ref` varchar(4) NOT NULL DEFAULT '',
+  `lat_deg` tinyint(4) NOT NULL DEFAULT '0',
+  `lat_min` double(3,1) NOT NULL DEFAULT '0.0',
+  `long_deg` tinyint(4) NOT NULL DEFAULT '0',
+  `long_min` double(3,1) NOT NULL DEFAULT '0.0',
+  `north` mediumint(9) NOT NULL DEFAULT '0',
+  `east` mediumint(9) NOT NULL DEFAULT '0',
+  `gmt` char(1) NOT NULL DEFAULT '',
+  `co_code` char(2) NOT NULL DEFAULT '',
+  `county` varchar(20) NOT NULL DEFAULT '',
+  `full_county` varchar(60) NOT NULL DEFAULT '',
+  `f_code` enum('C','T','O','A','F','FM','H','R','W','X') NOT NULL DEFAULT 'C',
+  `e_date` varchar(11) NOT NULL DEFAULT '',
+  `update_co` char(1) NOT NULL DEFAULT '',
+  `sheet_1` smallint(6) NOT NULL DEFAULT '0',
+  `sheet_2` smallint(6) NOT NULL DEFAULT '0',
+  `sheet_3` smallint(6) NOT NULL DEFAULT '0',
+  `def_nam_soundex` varchar(32) NOT NULL DEFAULT '',
+  `point_en` point NOT NULL DEFAULT '',
+  `hcounty` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`seq`),
+  KEY `east` (`east`,`north`,`f_code`),
+  KEY `def_nam_soundex` (`def_nam_soundex`,`f_code`),
+  SPATIAL KEY `point_en` (`point_en`),
+  KEY `co_code` (`co_code`),
+  KEY `tile_ref` (`tile_ref`),
+  KEY `def_nam` (`def_nam`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `postcode_codeopen`
+--
+
+DROP TABLE IF EXISTS `postcode_codeopen`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `postcode_codeopen` (
+  `code` varchar(8) NOT NULL DEFAULT '',
+  `Quality` tinyint(3) unsigned NOT NULL,
+  `e` mediumint(7) unsigned NOT NULL DEFAULT '0',
+  `n` mediumint(7) unsigned NOT NULL DEFAULT '0',
+  `seq_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`seq_id`),
+  UNIQUE KEY `code` (`code`),
+  KEY `e` (`e`)
+) ENGINE=MyISAM AUTO_INCREMENT=1748366 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `VisitorAttraction`
+--
+
+DROP TABLE IF EXISTS `VisitorAttraction`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `VisitorAttraction` (
+  `WKT` geometrycollection NOT NULL,
+  `OBJECTID` int(10) unsigned NOT NULL,
+  `REGIONAL_F` varchar(255) NOT NULL,
+  `PC_NAME` varchar(255) NOT NULL,
+  `PROPERTY_N` varchar(255) NOT NULL,
+  `REGION_NAM` varchar(255) NOT NULL,
+  `PRIMARY_US` varchar(255) NOT NULL,
+  `SHAPE_AREA` float NOT NULL,
+  `SHAPE_LEN` float NOT NULL,
+  PRIMARY KEY (`OBJECTID`),
+  SPATIAL KEY `WKT` (`WKT`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50112 SET @disable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = @old_rocksdb_bulk_load', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @disable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2017-05-20 14:06:34

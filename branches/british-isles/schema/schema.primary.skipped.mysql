@@ -1,0 +1,170 @@
+-- MySQL dump 10.13  Distrib 5.6.35-81.0, for debian-linux-gnu (x86_64)
+--
+-- Host: 192.168.77.50    Database: geograph_live
+-- ------------------------------------------------------
+-- Server version	5.5.54-38.7-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*!50112 SELECT COUNT(*) INTO @is_rocksdb_supported FROM INFORMATION_SCHEMA.SESSION_VARIABLES WHERE VARIABLE_NAME='rocksdb_bulk_load' */;
+/*!50112 SET @save_old_rocksdb_bulk_load = IF (@is_rocksdb_supported, 'SET @old_rocksdb_bulk_load = @@rocksdb_bulk_load', 'SET @dummy_old_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @save_old_rocksdb_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 SET @enable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = 1', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @enable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+
+--
+-- Table structure for table `gridimage_counter`
+--
+
+DROP TABLE IF EXISTS `gridimage_counter`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_counter` (
+  `gridimage_id` int(11) DEFAULT NULL,
+  `count` bigint(21) NOT NULL DEFAULT '0',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_group3`
+--
+
+DROP TABLE IF EXISTS `gridimage_group3`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_group3` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `label` varchar(128) NOT NULL,
+  `score` float NOT NULL,
+  `sort_order` tinyint(3) unsigned NOT NULL,
+  `source` varchar(10) NOT NULL,
+  `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `label` (`label`),
+  KEY `gridimage_id` (`gridimage_id`,`score`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_log2013`
+--
+
+DROP TABLE IF EXISTS `gridimage_log2013`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_log2013` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `hits` mediumint(8) unsigned NOT NULL,
+  `hits_archive` int(10) unsigned NOT NULL,
+  `hits_gallery` int(10) unsigned NOT NULL,
+  `last_hit` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_log2014`
+--
+
+DROP TABLE IF EXISTS `gridimage_log2014`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_log2014` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `hits` mediumint(8) unsigned NOT NULL,
+  `hits_archive` int(10) unsigned NOT NULL,
+  `hits_gallery` int(10) unsigned NOT NULL,
+  `last_hit` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gridimage_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `gridimage_thumbsize`
+--
+
+DROP TABLE IF EXISTS `gridimage_thumbsize`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `gridimage_thumbsize` (
+  `gridimage_id` int(10) unsigned NOT NULL,
+  `maxw` smallint(5) unsigned NOT NULL,
+  `maxh` smallint(5) unsigned NOT NULL,
+  `width` smallint(5) unsigned NOT NULL,
+  `height` smallint(5) unsigned NOT NULL,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`gridimage_id`,`maxw`,`maxh`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `os_open_names`
+--
+
+DROP TABLE IF EXISTS `os_open_names`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `os_open_names` (
+  `id` varchar(255) NOT NULL,
+  `names_uri` varchar(255) NOT NULL,
+  `name1` varchar(255) NOT NULL,
+  `name1_lang` varchar(255) NOT NULL,
+  `name2` varchar(255) NOT NULL,
+  `name2_lang` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `local_type` varchar(255) NOT NULL,
+  `geometry_x` varchar(255) NOT NULL,
+  `geometry_y` varchar(255) NOT NULL,
+  `most_detail_view_res` varchar(255) NOT NULL,
+  `least_detail_view_res` varchar(255) NOT NULL,
+  `mbr_xmin` varchar(255) NOT NULL,
+  `mbr_ymin` varchar(255) NOT NULL,
+  `mbr_xmax` varchar(255) NOT NULL,
+  `mbr_ymax` varchar(255) NOT NULL,
+  `postcode_district` varchar(255) NOT NULL,
+  `postcode_district_uri` varchar(255) NOT NULL,
+  `populated_place` varchar(255) NOT NULL,
+  `populated_place_uri` varchar(255) NOT NULL,
+  `populated_place_type` varchar(255) NOT NULL,
+  `district_borough` varchar(255) NOT NULL,
+  `district_borough_uri` varchar(255) NOT NULL,
+  `district_borough_type` varchar(255) NOT NULL,
+  `county_unitary` varchar(255) NOT NULL,
+  `county_unitary_uri` varchar(255) NOT NULL,
+  `county_unitary_type` varchar(255) NOT NULL,
+  `region` varchar(255) NOT NULL,
+  `region_uri` varchar(255) NOT NULL,
+  `country` varchar(255) NOT NULL,
+  `country_uri` varchar(255) NOT NULL,
+  `related_spatial_object` varchar(255) NOT NULL,
+  `same_as_dbpedia` varchar(255) NOT NULL,
+  `same_as_geonames` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!50112 SET @disable_bulk_load = IF (@is_rocksdb_supported, 'SET SESSION rocksdb_bulk_load = @old_rocksdb_bulk_load', 'SET @dummy_rocksdb_bulk_load = 0') */;
+/*!50112 PREPARE s FROM @disable_bulk_load */;
+/*!50112 EXECUTE s */;
+/*!50112 DEALLOCATE PREPARE s */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2017-05-20 14:06:31
