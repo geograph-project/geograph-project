@@ -36,7 +36,17 @@ if (!empty($_GET['q'])) {
 
 	$q=trim($_GET['q']);
 	$q = preg_replace('/(-?)\b(by):/','@name $1',$q);
+	$q = str_replace("'",' ',$q);
 	$sphinx = new sphinxwrapper($q);
+
+$orders = array(
+	1=>'Keyword Match - Grouped by Age',
+	2=>'Keyword Match Only',
+	3=>'Most Recent Post First',
+	4=>'Oldest Post First',
+	5=>'Most Recent Topic First',
+	6=>'Oldest Topic First'
+);
 
 	$grouped = !empty($_GET['t']);
 	if ($titleonly = !empty($_GET['titleonly'])) {
@@ -45,9 +55,13 @@ if (!empty($_GET['q'])) {
 
 	$forum = (!empty($_GET['forum']))?intval($_GET['forum']):0;
 	$expand = (!empty($_GET['expand']))?intval($_GET['expand']):0;
+	$order = (!empty($_GET['order']) && isset($orders[$_GET['order']]))?intval($_GET['order']):1;
+	if (!empty($_GET['relevance'])) { $order = 2; }
+
+	$extra = "q=".urlencode($q).($titleonly?"&amp;titleonly=on":'').($grouped?"&amp;t=on":'').($order?"&amp;order=$order":'').($forum?"&amp;forum=$forum":'').($expand?"&amp;expand=on":'');
 
 	//gets a cleaned up verion of the query (suitable for filename etc)
-	$cacheid = implode('.',array($sphinx->q,$grouped,$titleonly,$forum,$expand));
+	$cacheid = implode('.',array($sphinx->q,$grouped,$titleonly,$forum,$expand,0,$order));
 
 
 	$sphinx->pageSize = $pgsize = 15;
@@ -74,14 +88,41 @@ if (!empty($_GET['q'])) {
 			}
 			if (!empty($forum))
 				$sphinx->q .= " @forum $forum";
+			else
+				$sphinx->q .= " @forum -11";
+
+			$cl = $sphinx->_getClient();
+			$cl->SetFieldWeights(array('title'=>2));
 
 			if ($grouped) {
-				require_once ( "3rdparty/sphinxapi.php" ); //toload the sphinx constants
+				//require_once ( "3rdparty/sphinxapi.php" ); //toload the sphinx constants
 
-				//sorts by relevence within the groups (sphinxclient default) - timesegment sorting doesn't work
-				//...then the groups are orded in date descending
+                                switch ($order) {
+                                        case 1:
+						//from http://sphinxsearch.com/blog/2010/06/27/doing-time-segments-geodistance-searches-and-overrides-in-sphinxql/
+						$col = "INTERVAL(post_time, NOW()-90*86400, NOW()-30*86400, NOW()-7*86400, NOW()-86400, NOW()-3600) AS time_seg";
+						$cl->setSelect("*, $col");
+						$sphinx->sort = 'time_seg DESC, @weight DESC'; break;
+                                        case 2: $sphinx->sort = '@weight DESC'; break;
+                                        case 3: $sphinx->sort = '@id DESC'; break;
+                                        case 4: $sphinx->sort = '@id ASC'; break;
+                                        case 5: $sphinx->sort = 'topic_id DESC'; break;
+                                        case 6: $sphinx->sort = 'topic_id ASC'; break;
+                                }
 
-				$sphinx->setGroupBy('topic_id',SPH_GROUPBY_ATTR,"@id DESC");
+				$sphinx->setGroupBy('topic_id',SPH_GROUPBY_ATTR, $sphinx->sort); //use for both INNER and OUTER sort
+
+				$ids = $sphinx->returnIds($pg,'_posts');
+
+			} elseif ($order > 1) { //1 falls back to timesegments!
+
+				switch ($order) {
+					case 2: break; //sphinx default is relevence!
+					case 3: $sphinx->sort = 'post_time DESC'; break;
+					case 4: $sphinx->sort = 'post_time ASC'; break;
+                                        case 5: $sphinx->sort = 'topic_id DESC'; break;
+                                        case 6: $sphinx->sort = 'topic_id ASC'; break;
+				}
 
 				$ids = $sphinx->returnIds($pg,'_posts');
 			} else {
@@ -152,25 +193,27 @@ if (!empty($_GET['q'])) {
 				$smarty->assign("query_info",$sphinx->query_info);
 
 				if ($sphinx->numberOfPages > 1) {
-					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?q=".urlencode($q).($titleonly?"&amp;titleonly=on":'').($grouped?"&amp;t=on":'')."&amp;page=",'','',$sphinx->resultCount <= $sphinx->maxResults) );
+					$smarty->assign('pagesString', pagesString($pg,$sphinx->numberOfPages,$_SERVER['PHP_SELF']."?".$extra."&amp;page=",'','',$sphinx->resultCount <= $sphinx->maxResults) );
 					$smarty->assign("offset",$offset);
 				}
 				$ADODB_FETCH_MODE = $prev_fetch_mode;
 			}
 		} else {
 			$smarty->assign("query_info","Search will only return 1000 results - please refine your search");
-			$smarty->assign('pagesString', pagesString($pg,1,$_SERVER['PHP_SELF']."?q=".urlencode($q).($titleonly?"&amp;titleonly=on":'').($grouped?"&amp;t=on":'')."&amp;page=") );
+			$smarty->assign('pagesString', pagesString($pg,1,$_SERVER['PHP_SELF']."?".$extra."&amp;page=") );
 
 		}
 		$forums = $db->getAssoc("SELECT forum_id,forum_name FROM geobb_forums");
 		$forums = array(0=>'Any/All Discussion Forums')+$forums;
 		$smarty->assign_by_ref("forums",$forums);
-		$smarty->assign("forum",$forum);
 	}
 
 	$smarty->assign("q",$sphinx->qclean);
 	$smarty->assign("grouped",$grouped);
 	$smarty->assign("titleonly",$titleonly);
+	$smarty->assign("forum",$forum);
+	$smarty->assign("order",$order);
+	$smarty->assign("orders",$orders);
 }
 
 $smarty->display($template,$cacheid);
