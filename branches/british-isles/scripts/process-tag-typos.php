@@ -174,7 +174,8 @@ while (!$recordSet->EOF)
 			$sqls[] = "UPDATE IGNORE gridimage_tag SET tag_id = {$r['tag2_id']} WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # {$r['tag']} > {$r['tag2']}";
 			//this is trickly. Any of the above that failed (due to duplicate key), means the 'new' tag is already on the image, and so the old one can be zapped.
 		}
-		$final['d:'.$r['tag_id'].':'.$r['gridimage_id']] = "DELETE FROM gridimage_tag WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # old={$r['tag']}";
+		//$final['d:'.$r['tag_id'].':'.$r['gridimage_id']] = "DELETE FROM gridimage_tag WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # old={$r['tag']}";
+		$final['d:'.$r['tag_id'].':'.$r['gridimage_id']] = "UPDATE gridimage_tag SET status = 0 WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # old={$r['tag']}";
 
 		//store these up, because they need to be applied in strict order, so the LAST_INSERT_ID function works
                 $tickets[$r['gridimage_id']] = "INSERT INTO gridimage_ticket SET
@@ -188,8 +189,10 @@ while (!$recordSet->EOF)
                                                                 notify='',
                                                                 public='everyone'";
 
+		$items[$r['gridimage_id']][0] = "SET @ticket_id := LAST_INSERT_ID()";
+
                 $items[$r['gridimage_id']][$r['tag_id']] = "INSERT INTO gridimage_ticket_item SET
-                                                                gridimage_ticket_id = LAST_INSERT_ID(),
+                                                                gridimage_ticket_id = @ticket_id,
                                                                 approver_id = {$r['approver_id']},
                                                                 field = 'tag',
                                                                 oldvalue = ".$db->Quote($r['tag']).",
