@@ -110,7 +110,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	
 	$recordSet = &$db_write->Execute($sql);
 		
-	$whitelist = array(1645334,1600213,1645311,1644583,1644615,1645412,1645435,1645464,1667443,1668904,1673833,1676644,1676825,1688061,1688069,1688071,1688083,1692032,1692214,1694778,1694783,1706850,1707141,1715590,1736324,1742377,1753916,1753924,1880283,1956232,2106418,2106453,2113347,2281428,2281435);	
+	$whitelist = array(2323095,2323085,2323070,1635751,373343,1645334,1600213,1645311,1644583,1644615,1645412,1645435,1645464,1667443,1668904,1673833,1676644,1676825,1688061,1688069,1688071,1688083,1692032,1692214,1694778,1694783,1706850,1707141,1715590,1736324,1742377,1753916,1753924,1880283,1956232,2106418,2106453,2113347,2281428,2281435,1311648,1313684,1313700);	
 		
 		
 	while (!$recordSet->EOF) 
@@ -119,7 +119,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 		
 		$row['comment'] = str_ireplace("'Keywords:'",'Keywords:',$row['comment']);
 		
-		if (preg_match('/(^|[\r\n]+|\.\s*|]])\s*keywords:\s*([\r\n]+[\w ]+)+/i',$row['comment'],$m)) {
+		if (preg_match('/(^|[\r\n]+)\s*keywords:\s*([\r\n]+[\w ]+)+/i',$row['comment'],$m)) {
 			$new = trim(preg_replace('/[\r\n]+/',',',$m[0]),',');
 			$row['comment'] = str_replace($m[0],"\n".$new,$row['comment']);
 		}
@@ -132,6 +132,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			$m[2] = preg_replace('/St, (Paul|Chad)\'?(s?),? Church/','St $1$2 Church',$m[2]);
 			$m[2] = str_replace('Vestry, Door','Vestry Door',$m[2]);
 			$m[2] = str_replace('St, Chad\'s, Road','St Chads Road',$m[2]);
+			$m[2] = str_replace('Pembrokeshire Coast national park','Pembrokeshire Coast, national park',$m[2]);
 			if ($row['user_id'] == 40457)
 				$m[2] = str_replace('.',',',$m[2]);
 	
@@ -147,7 +148,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 			}
 			print_r($keywords);
 			foreach ($keywords as $keyword) {
-				if (str_word_count($keyword) > 3 && $keyword != 'National Cycle Network route 73' && $keyword != 'Cobb Gate Fish Bar' && $keyword != 'TNT Hash House Harriers' && $keyword != 'Edinburgh Hash House Harriers' && $keyword != 'Stob Coire nam Beith' && $keyword != 'building of civic importance' && $keyword != 'double pole power line' && $keyword != 'unsuitable for heavy goods vehicles' && $keyword != 'Tong Isle of Lewis' && $keyword != 'proposed Cliffe airport site') {
+				if (str_word_count($keyword) > 3 && $keyword != 'National Cycle Network route 73' && $keyword != 'Cobb Gate Fish Bar' && $keyword != 'TNT Hash House Harriers' && $keyword != 'Edinburgh Hash House Harriers' && $keyword != 'Stob Coire nam Beith' && $keyword != 'building of civic importance' && $keyword != 'double pole power line' && $keyword != 'unsuitable for heavy goods vehicles' && $keyword != 'Tong Isle of Lewis' && $keyword != 'proposed Cliffe airport site' && $keyword != 'Grand Union canal walk' && $keyword != 'tile hanging roof lights'&& $keyword != 'Battle of Roundway Down' && $keyword != 'Gauge and Tool site' && $keyword !=  'On Sale Here sign' && $keyword != 'Ornamental or specimen tree' && $keyword != 'South West Coast Path') {
 					die("SINGLE[$keyword] long FAILED\n\n{$row['comment']}\n\non {$row['gridimage_id']} (done $count)\n");
 				}
 				if (strlen(trim($keyword)) < 3 && $keyword != 'a5' && $keyword != 'oj' && $keyword != 'H3') {
@@ -217,6 +218,8 @@ function add_public_tag($db,$gridimage_id,$user_id,$tag) {
 	if (count($bits) > 1) {
 		$u['prefix'] = trim($bits[0]);
 		$u['tag'] = $bits[1];
+	} else {
+		$u['prefix'] = '';
 	}
 	$u['tag'] = trim(preg_replace('/[ _]+/',' ',$u['tag']));
 
@@ -246,9 +249,8 @@ if (empty($tag_id)) {
 	$u['user_id'] = $user_id;
 	$u['gridimage_id'] = $gridimage_id;
 	$u['status'] = 2;
-	
-	$db->Execute($sql = 'REPLACE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-	if (mysql_affected_rows() != 1 && mysql_affected_rows() != 2) print_r($u).die("SQL FAIL\n $sql\n\n");
 
-}	
+	$db->Execute($sql = 'INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ? ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
+	if (mysql_affected_rows() != 1 && mysql_affected_rows() != 2) print_r($u).die("SQL FAIL\n $sql\n\n");
+}
 

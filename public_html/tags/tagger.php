@@ -144,7 +144,7 @@ if (!empty($_POST['save']) && !empty($ids)) {
 					$stats['public']++;
 				}
 
-				$db->Execute('INSERT IGNORE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+				$db->Execute('INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ? ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
 				$stats['total']++;
 			}
 			$gid = 0;
@@ -263,7 +263,7 @@ if (!empty($_POST['save']) && !empty($ids)) {
 					$u['status'] = 2;
 				}
 				
-				$db->Execute('INSERT IGNORE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+				$db->Execute('INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ? ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
 				
 				if ($u['status'] == 2 && $gid < 4294967296 && empty($cleared)) {
 					//clear any caches involving this photo
@@ -299,18 +299,18 @@ if (!empty($_POST['save']) && !empty($ids)) {
 	}
 
 } elseif ($gid && !empty($_POST['add'])) {
-	
+
 	$updates = array();
 	$updates['gridimage_id'] = $gid;
 	$updates['user_id'] = $USER->user_id;
-	
+	$updates['status'] = 1;
+
 	foreach ($_POST['add'] as $id => $text) {
-		
 		$updates['tag_id'] = $id;
-		
-		$db->Execute('INSERT IGNORE INTO gridimage_tag SET `'.implode('` = ?, `',array_keys($updates)).'` = ?',array_values($updates));
+
+		$db->Execute('INSERT INTO gridimage_tag SET `'.implode('` = ?, `',array_keys($updates)).'` = ? ON DUPLICATE KEY UPDATE status = '.$updates['status'],array_values($updates));
 	}
-	
+
 	if ($gid < 4294967296) {
 		//clear any caches involving this photo
 		$ab=floor($gid/10000);

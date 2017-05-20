@@ -45,7 +45,7 @@ if (!empty($_GET['tag_id'])) {
 			
 			$u['status'] = 1;
 
-			$db->Execute('REPLACE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+			$db->Execute('INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ? ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
 		}
 		
 		$w = array();

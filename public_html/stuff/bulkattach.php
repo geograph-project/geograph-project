@@ -107,10 +107,10 @@ if (!empty($_POST)) {
 		case 'add_tag':
 			if (empty($tag)) die("Invalid tag");
 			if (!empty($_POST['public']))
-				$sqls[] = "INSERT IGNORE INTO gridimage_tag SELECT gridimage_id,{$tag['tag_id']} AS tag_id,$uid AS user_id,NOW(),2 AS status FROM gridimage_search WHERE user_id = $uid AND gridimage_id IN ($idstr)";
+				$sqls[] = "INSERT INTO gridimage_tag SELECT gridimage_id,{$tag['tag_id']} AS tag_id,$uid AS user_id,NOW(),2 AS status,NOW() FROM gridimage_search WHERE user_id = $uid AND gridimage_id IN ($idstr) ON DUPLICATE KEY UPDATE status = 2";
 
 			if (empty($_POST['public']) || empty($_POST['mine']))
-				$sqls[] = "INSERT IGNORE INTO gridimage_tag SELECT gridimage_id,{$tag['tag_id']} AS tag_id,$uid AS user_id,NOW(),1 AS status FROM gridimage_search WHERE gridimage_id IN ($idstr)".(!empty($_POST['mine'])?" AND user_id = $uid":'');
+				$sqls[] = "INSERT INTO gridimage_tag SELECT gridimage_id,{$tag['tag_id']} AS tag_id,$uid AS user_id,NOW(),1 AS status,NOW() FROM gridimage_search WHERE gridimage_id IN ($idstr)".(!empty($_POST['mine'])?" AND user_id = $uid":'')." ON DUPLICATE KEY UPDATE status = 1";
 			break;
 
 		case 'remove_tag':

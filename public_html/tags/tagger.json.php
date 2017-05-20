@@ -118,7 +118,7 @@ if (!empty($USER->registered) && !empty($_GET['tag']) && !empty($_GET['gridimage
 				$u['status'] = 2;
 			}
 
-			$db->Execute('REPLACE INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
+			$db->Execute('INSERT INTO gridimage_tag SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ? ON DUPLICATE KEY UPDATE status = '.$u['status'],array_values($u));
 
 			if ($u['status'] == 2 && $gid < 4294967296) {
 				$smarty = new GeographPage;
