@@ -5,7 +5,7 @@
 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
 Like many things, this project evolves, and as such this page has been replaced by: <br/>
 <a href="/article/Which-Square">Which Square Article</a><br/>
-the text below is maintained only as a historical record. <br/>
+the text below is maintained only as a historical record. <b>This document may not represent current practice.</b> <br/>
 </div>
 <br/>
 
