@@ -28,7 +28,7 @@ if (empty($_GET['gravity']))
 	$_GET['gravity'] = 'South';
 
 
-if (!empty($_GET['id']) && ctype_digit($_GET['id']) && $_SERVER['HTTP_HOST'] == 't0.www.geograph.org.uk') {
+if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOST'],'t0.') === 0) {
 	customExpiresHeader(3600*24*180,true,true);
 
 		$image=new GridImage();
@@ -42,6 +42,9 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && $_SERVER['HTTP_HOST'] == 
 			//bit late doing it now, but at least if smarty doesnt have it cached we might be able to prevent generating the whole page
 			customCacheControl(strtotime($image->upd_timestamp),$cacheid);
 
+
+			if ($image->reference_index == 2)
+				$_GET['ie'] = true;
 		}
 } else {
 	init_session();
@@ -53,6 +56,18 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && $_SERVER['HTTP_HOST'] == 
 
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF']);
 
+	if (!empty($_GET['id']) && ctype_digit($_GET['id'])) {
+
+                $image=new GridImage();
+                $ok = $image->loadFromId(intval($_GET['id']));
+
+                if (!$ok || $image->moderation_status=='rejected') {
+			$image = null;
+		} else {
+			$image->_getFullSize(); //just because it sets original_width!
+		}
+	}
+
 	?>
 		<h2>Get CC-Stamped image</h2>
 		<p>This tool produces a .jpg file for any Geograph image, which includes the Create Commons reference and attribution required - to make it easy to comply with the CC reuse requirements. You can download and use the resultant image in your project, knowing that suitable attribution is preserved.</p>
@@ -63,6 +78,17 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && $_SERVER['HTTP_HOST'] == 
 		</noscript>
 
 			Image ID: <input type=text name=id value="<? echo @htmlentities($_GET['id']); ?>"/> &nbsp;
+			<? if (!empty($image) && $image->original_width>640) {
+				print "Size: <select name=large>";
+				print "<option value=0>Normal size</option>";
+				foreach (array(800,1024,1600) as $size) {
+					if ($image->original_width>$size || $image->original_height>$size) {
+						printf('<option value="%s"%s>%s</option>',$size,($_GET['large'] == $size)?' selected':'',"$size Nominal");
+					}
+				}
+				printf('<option value="%s"%s>%s</option>',1,($_GET['large'] == '1')?' selected':'',"{$image->original_width} x {$image->original_height} px");
+				print "</select> &nbsp; ";
+			} ?>
 			Options:
 			<input type=checkbox name=title id=title/><label for=title>Include image title</label>,
 			<input type=checkbox name=link id=link value=0 /><label for=link>Hide geograph link</label>,
@@ -103,19 +129,32 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && $_SERVER['HTTP_HOST'] == 
 		<hr/>
 		<input type="submit" value="Get Stamped Image &gt;&gt;"/>
 		</form>
-		<div style="display:none" id="show">
+		<div <? if (empty($_GET['id']) || empty($_GET['title'])) { ?>style="display:none"<? } ?> id="show">
 		Right click the image and select "Save image as" (exact wording varies by browser)<br/><br/>
-		<iframe src="about:blank" width=650 height=650 name="targetbox" frameborder=0></iframe>
+		<iframe src="<? echo (empty($_GET['id']) || empty($_GET['title']))?"about:blank":("http://t0.geograph.org.uk/stamp.php?".htmlentities($_SERVER['QUERY_STRING'])); ?>" width=650 height=650 name="targetbox" frameborder=0></iframe>
 		</div>
 	<?
-	$smarty->display("_std_end.tpl");
+	$smarty->display("_std_end.tpl",'test');
 
 	exit;
 }
 
 
-
-$file = ".".$image->_getFullpath();
+if (!empty($_GET['large'])) {
+	switch($_GET['large']) {
+                case 640:
+                case 800:
+                case 1024:
+                case 1600:
+                        $file = ".".$image->getImageFromOriginal(intval($_GET['large']),intval($_GET['large']));
+                        break;
+		default:
+			$file = ".".$image->_getOriginalpath();
+			break;
+	}
+} else {
+	$file = ".".$image->_getFullpath();
+}
 $id = intval($image->gridimage_id);
 $title = "by {$image->realname}";
 
@@ -152,6 +191,9 @@ if (strpos($options,'-gravity left') !== FALSE) {
 	$options = " -rotate 90 ".str_replace('-gravity right','-gravity south',$options)." -rotate -90";
 }
 
+if (($ar = getimagesize($file)) !== FALSE && isset($ar['channels']) && $ar['channels'] == 1) {
+     $options .= ' -colorspace Gray'; // hack avoids problem in ImageMagick 6.7.7 with grayscale
+}
 
 $command = "convert $file $options jpg:-";
 
@@ -159,6 +201,16 @@ if (!empty($_GET['cmd'])) {
 	print $command;
 	exit;
 }
+
+                        $filename = "geograph {$id} by {$image->realname}.jpg";
+                        $filename = preg_replace('/ /','-',trim($filename));
+                        $filename = preg_replace('/[^\w\.-]+/','',$filename);
+
+		if (!empty($_GET['download'])) {
+			header("Content-Disposition: attachment; filename=\"$filename\"");
+		} else {
+                        header("Content-Disposition: inline; filename=\"$filename\"");
+		}
 
 header("Content-Type: image/jpeg");
 passthru($command);

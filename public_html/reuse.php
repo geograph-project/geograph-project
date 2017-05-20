@@ -33,8 +33,11 @@ session_cache_limiter('none');
 init_session();
 
 $smarty = new GeographPage;
-$template='reuse.tpl';	
+$template='reuse.tpl';
 
+if (!empty($_GET['preview'])) {
+	$template='reuse2.tpl';
+}
 
 
 if (isset($_REQUEST['id']))
@@ -45,7 +48,7 @@ if (isset($_REQUEST['id']))
 
 	$image=new GridImage();
 	$ok = $image->loadFromId($_REQUEST['id']);
-	
+
 	if (!$ok || $image->moderation_status=='rejected') {
 		//clear the image
 		$image=new GridImage;
@@ -53,8 +56,16 @@ if (isset($_REQUEST['id']))
 		header("Status: 410 Gone");
 		$template = "static_404.tpl";
 	} else {
+		//deal with brain damage at zoom.it, that sends us urlencoded urls! ?!?!
+		if (!empty($_REQUEST['amp;download']) && empty($_REQUEST['download'])) {
+			$_REQUEST['download'] = $_REQUEST['amp;download'];
+		}
+		if (!empty($_REQUEST['amp;size']) && empty($_REQUEST['size'])) {
+			$_REQUEST['size'] = $_REQUEST['amp;size'];
+		}
+
 		if (isset($_REQUEST['download']) && $_REQUEST['download'] == $image->_getAntiLeechHash()) {
-			
+
 			if (stripos($_SERVER['HTTP_REFERER'], 'seadragon.com')!==FALSE || stripos($_SERVER['HTTP_REFERER'], 'zoom.it')!==FALSE) {
 				header("HTTP/1.0 307 Temporary Redirect");
 				header("Status: 307 Temporary Redirect");
@@ -62,49 +73,52 @@ if (isset($_REQUEST['id']))
 				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_REQUEST['id'])."\">View image page</a>";
 				exit;
 			}
-			
+
 			switch($_REQUEST['size']) {
 				case 640:
 				case 800:
-				case 1024: 
+				case 1024:
 				case 1600:
 					$filepath = $image->getImageFromOriginal(intval($_REQUEST['size']),intval($_REQUEST['size']));
 					break;
-				case 'original': 
+				case 'largest':
+					$filepath = $image->_getOriginalpath();
+					if ($filepath=="/photos/error.jpg") {
+						$filepath = $image->_getFullpath();
+					}
+					break;
+				case 3000:
+				case 'original':
 					$filepath = $image->_getOriginalpath();
 					break;
 				default: $filepath = $image->_getFullpath();
-			} 
+			}
 
 			$filename = basename($filepath);
 			$filename = "geograph-".preg_replace('/_\w+(\.jpg)/'," by {$image->realname}\$1",$filename);
 			$filename = preg_replace('/ /','-',trim($filename));
 			$filename = preg_replace('/[^\w-\.,]+/','',$filename);
-			$lastmod = filemtime($_SERVER['DOCUMENT_ROOT'].$filepath);
-	
+
 			header("Content-Type: image/jpeg");
 			header("Content-Disposition: attachment; filename=\"$filename\"");
 
 			if (function_exists('apache_get_modules') && ($m = apache_get_modules()) && in_array('mod_xsendfile',$m)) {
 				$filepath = preg_replace('/^\//','',$filepath);
 				header("X-Sendfile: $filepath");
-				
 			} elseif (1) {
-			
+				$lastmod = filemtime($_SERVER['DOCUMENT_ROOT'].$filepath);
+
 				customExpiresHeader(86400*180,true);
 				customCacheControl($lastmod,$image->gridimage_id);
-				
+
 				header("Content-Length: ".filesize($_SERVER['DOCUMENT_ROOT'].$filepath));
-				
+
 				readfile($_SERVER['DOCUMENT_ROOT'].$filepath);
-
 			} else {
-
 				customNoCacheHeader();
                                 header("HTTP/1.0 307 Temporary Redirect");
                                 header("Status: 307 Temporary Redirect");
                                 header("Location: $filepath");
-
 			}
 			exit;
 		}
