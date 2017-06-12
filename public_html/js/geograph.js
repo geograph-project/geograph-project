@@ -441,6 +441,9 @@ function showMarkedImages() {
 		if (document.getElementById('marked_number')) {
 			document.getElementById('marked_number').innerHTML = '['+(splited.length+0)+']';
 		}
+		if (splited.length > 0 && document.getElementById('markedLink')) {
+			document.getElementById('markedLink').style.display='';
+		}
 	} 
 }
 
