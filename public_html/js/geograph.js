@@ -350,6 +350,9 @@ function markImage(image) {
 			document.getElementById('marked_number').innerHTML = '['+(splited.length+0)+']';
 		}
 	}
+        if (newCookie && document.getElementById('markedLink')) {
+                document.getElementById('markedLink').style.display='';
+        }
 
 	ele = document.getElementById('mark'+image);
 	if(ele.innerText != undefined) {
