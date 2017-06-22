@@ -39,7 +39,7 @@ import re
 import string
 import threading
 import time
-from mpycache import LRUCache;
+from lru import LRUCacheDict;
 
 
 if not hasattr(fuse, '__version__'):
@@ -82,9 +82,10 @@ class GeoGridFS(Fuse):
         
         Fuse.__init__(self, *args, **kw)
         
-        #see https://code.google.com/p/mpycache/
-        self.row_cache = LRUCache(100, 1000, 30)
-        self.folder_cache = LRUCache(100, 5000, 30)
+        #see https://github.com/stucchio/Python-LRU-cache
+        self.row_cache = LRUCacheDict(max_size=300, expiration=2)
+        self.folder_cache = LRUCacheDict(max_size=300, expiration=10)
+
         
         # do stuff to set up your filesystem here, if you want
         #import thread
@@ -130,10 +131,10 @@ class GeoGridFS(Fuse):
                 query.Query("SELECT file_id,size,UNIX_TIMESTAMP(file_created) as created,UNIX_TIMESTAMP(file_modified) as modified,UNIX_TIMESTAMP(file_accessed) as accessed,replicas FROM "+config.database['file_table']+" WHERE filename = '"+query.escape_string(path)+"' LIMIT 1")
                 if query.rowcount == 1:
                     for row in query.record:
-                        self.row_cache.put(path,row)
+			self.row_cache[path] = row
                     
-            if self.row_cache.has_key(path) and self.row_cache.get(path)['replicas'] != '':
-                for replica in string.split(self.row_cache.get(path)['replicas'], ','):
+            if self.row_cache.has_key(path) and self.row_cache[path]['replicas'] != '':
+                for replica in string.split(self.row_cache[path]['replicas'], ','):
                     scores[replica] = 100+scores.get(replica,1)
                     if re.search(r's\d',replica): # boost SSD mounts regardless
                          scores[replica] = scores[replica] + 10
@@ -158,7 +159,7 @@ class GeoGridFS(Fuse):
     def getFolderId(self, path, create = True):
         
         if self.folder_cache.has_key(path):
-            return self.folder_cache.get(path)
+            return self.folder_cache[path]
         
         try:
             query = PySQLPool.getNewQuery(self.connection)
@@ -172,7 +173,7 @@ class GeoGridFS(Fuse):
                 for row in query.record:
                     folder_id = row['folder_id']
             
-            self.folder_cache.put(path,folder_id)
+	    self.folder_cache[path] = folder_id
             return folder_id
         
         except MySQLdb.Error, e:
@@ -200,7 +201,7 @@ class GeoGridFS(Fuse):
         # use metedata server if can
         if self.row_cache.has_key(path):
             st = MyStat()
-            cache = self.row_cache.get(path)
+            cache = self.row_cache[path]
             
             if cache and cache['replicas'] != '':
                 st.st_atime = int(cache['accessed'])
@@ -263,7 +264,7 @@ class GeoGridFS(Fuse):
                 os.unlink(mount + path)
 
         if self.row_cache.has_key(path):
-            self.row_cache.erase(path)
+            del self.row_cache[path]
 
     def rmdir(self, path):
         for mount in self.getOrderedMounts(path):
@@ -307,7 +308,7 @@ class GeoGridFS(Fuse):
 
                     #clear getFolderId's cache for old_folder_id!
                     if self.folder_cache.has_key(path):
-                        self.folder_cache.erase(path)
+                        del self.folder_cache[path]
 
                 #todo, should ALSO check [[ FROM file WHERE filename LIKE '"+query.escape_string(path)+"/%' ]] 
                 # NOT easy to do, as needs to also set folder_id, 
@@ -325,7 +326,7 @@ class GeoGridFS(Fuse):
 		#todo - the files class or replicate_target might have changed!
 
                 if self.row_cache.has_key(path):
-                    self.row_cache.erase(path)
+                    del self.row_cache[path]
 
         except MySQLdb.Error, e:
             if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
@@ -369,7 +370,7 @@ class GeoGridFS(Fuse):
                 #sys.exit(1)
 
         if self.row_cache.has_key(path):
-            self.row_cache.erase(path)
+            del self.row_cache[path]
 
     def mknod(self, path, mode, dev):
         for mount in self.getOrderedMounts(path):
@@ -407,7 +408,7 @@ class GeoGridFS(Fuse):
                 #sys.exit(1)
 
         if self.row_cache.has_key(path):
-            self.row_cache.erase(path)
+            del self.row_cache[path]
 
         return ret
 
@@ -533,7 +534,7 @@ class GeoGridFS(Fuse):
                     return
 
                 if self.server.row_cache.has_key(self.path):
-                    self.server.row_cache.erase(self.path)
+                    del self.server.row_cache[self.path]
 
                 try:
                     stat = os.stat(self.mount + self.path)
