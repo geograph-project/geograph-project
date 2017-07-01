@@ -83,15 +83,10 @@ class GeoGridFS(Fuse):
         Fuse.__init__(self, *args, **kw)
         
         #see https://github.com/stucchio/Python-LRU-cache
-        self.row_cache = LRUCacheDict(max_size=300, expiration=2)
-        self.folder_cache = LRUCacheDict(max_size=300, expiration=10)
+        self.row_cache = LRUCacheDict(max_size=300, expiration=2, concurrent=True)
+        self.folder_cache = LRUCacheDict(max_size=300, expiration=10, concurrent=True)
 
-        
-        # do stuff to set up your filesystem here, if you want
-        #import thread
-        #thread.start_new_thread(self.mythread, ())
-
-
+    
     def fsinit(self):
         """
         Will be called after the command line arguments are successfully
@@ -125,26 +120,30 @@ class GeoGridFS(Fuse):
         scores= config.getRawScores(path)
 
         #if have metadata record, use it to promote mounts with actual replicas
+        cache = False
         try:
-            if not self.row_cache.has_key(path):
+            cache = self.row_cache[path]
+
+        except KeyError, e:
+            try:
                 query = PySQLPool.getNewQuery(self.connection)
                 query.Query("SELECT file_id,size,UNIX_TIMESTAMP(file_created) as created,UNIX_TIMESTAMP(file_modified) as modified,UNIX_TIMESTAMP(file_accessed) as accessed,replicas FROM "+config.database['file_table']+" WHERE filename = '"+query.escape_string(path)+"' LIMIT 1")
                 if query.rowcount == 1:
                     for row in query.record:
-			self.row_cache[path] = row
-                    
-            if self.row_cache.has_key(path) and self.row_cache[path]['replicas'] != '':
-                for replica in string.split(self.row_cache[path]['replicas'], ','):
-                    scores[replica] = 100+scores.get(replica,1)
-                    if re.search(r's\d',replica): # boost SSD mounts regardless
-                         scores[replica] = scores[replica] + 10
-            
-        except MySQLdb.Error, e:
-            if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
-                print "Error %d: %s" % (e.args[0], e.args[1])
-                print query.conn.query
-                sys.exit(1)
+			cache = row
+
+            except MySQLdb.Error, e:
+                if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
+                    print "Error %d: %s" % (e.args[0], e.args[1])
+                    print query.conn.query
+                    sys.exit(1)
         
+        if cache and cache['replicas'] != '':
+            for replica in string.split(cache['replicas'], ','):
+                scores[replica] = 100+scores.get(replica,1)
+                if re.search(r's\d',replica): # boost SSD mounts regardless
+                    scores[replica] = scores[replica] + 10
+                    
         mounts = []
         for result in sorted(scores, key=scores.get, reverse=True):
             mounts.append(config.mounts[result])
@@ -158,9 +157,12 @@ class GeoGridFS(Fuse):
 
     def getFolderId(self, path, create = True):
         
-        if self.folder_cache.has_key(path):
-            return self.folder_cache[path]
-        
+        try:
+	    return self.folder_cache[path]
+
+        except KeyError, e:
+            pass
+
         try:
             query = PySQLPool.getNewQuery(self.connection)
             query.Query("SELECT folder_id FROM "+config.database['folder_table']+" WHERE folder = '"+query.escape_string(path)+"' LIMIT 1")
@@ -173,7 +175,7 @@ class GeoGridFS(Fuse):
                 for row in query.record:
                     folder_id = row['folder_id']
             
-	    self.folder_cache[path] = folder_id
+            self.folder_cache[path] = folder_id
             return folder_id
         
         except MySQLdb.Error, e:
@@ -181,8 +183,8 @@ class GeoGridFS(Fuse):
                 print "Error %d: %s" % (e.args[0], e.args[1])
                 print query.conn.query
                 #sys.exit(1)
-            
-            return 0
+        
+        return 0
 
     #http://code.activestate.com/recipes/576583-md5sum/
     def md5sum(self, path):
@@ -199,11 +201,11 @@ class GeoGridFS(Fuse):
 
     def getattr(self, path):
         # use metedata server if can
-        if self.row_cache.has_key(path):
-            st = MyStat()
+        try:
             cache = self.row_cache[path]
             
             if cache and cache['replicas'] != '':
+                st = MyStat()
                 st.st_atime = int(cache['accessed'])
                 st.st_mtime = int(cache['modified'])
                 st.st_ctime = int(cache['created'])
@@ -211,7 +213,10 @@ class GeoGridFS(Fuse):
                 st.st_nlink = 1
                 st.st_size = int(cache['size'])
                 return st
-        
+
+        except KeyError, e:
+            pass
+
         for mount in self.getOrderedMounts(path):
             if os.path.exists(mount + path):
                 try:
@@ -263,8 +268,7 @@ class GeoGridFS(Fuse):
                 
                 os.unlink(mount + path)
 
-        if self.row_cache.has_key(path):
-            del self.row_cache[path]
+        del self.row_cache[path]
 
     def rmdir(self, path):
         for mount in self.getOrderedMounts(path):
@@ -307,8 +311,7 @@ class GeoGridFS(Fuse):
                     #todo - need to invalidate any relevent rows in row_cache!
 
                     #clear getFolderId's cache for old_folder_id!
-                    if self.folder_cache.has_key(path):
-                        del self.folder_cache[path]
+                    del self.folder_cache[path]
 
                 #todo, should ALSO check [[ FROM file WHERE filename LIKE '"+query.escape_string(path)+"/%' ]] 
                 # NOT easy to do, as needs to also set folder_id, 
@@ -325,8 +328,7 @@ class GeoGridFS(Fuse):
                         
 		#todo - the files class or replicate_target might have changed!
 
-                if self.row_cache.has_key(path):
-                    del self.row_cache[path]
+                del self.row_cache[path]
 
         except MySQLdb.Error, e:
             if e.args[0] != 2002: # ignore connection arrors. Not the end of the universe if the file isnt in metadata
@@ -369,8 +371,7 @@ class GeoGridFS(Fuse):
                 print query.conn.query
                 #sys.exit(1)
 
-        if self.row_cache.has_key(path):
-            del self.row_cache[path]
+        del self.row_cache[path]
 
     def mknod(self, path, mode, dev):
         for mount in self.getOrderedMounts(path):
@@ -407,8 +408,7 @@ class GeoGridFS(Fuse):
                 print query.conn.query
                 #sys.exit(1)
 
-        if self.row_cache.has_key(path):
-            del self.row_cache[path]
+        del self.row_cache[path]
 
         return ret
 
@@ -533,8 +533,7 @@ class GeoGridFS(Fuse):
                     #todo, if this file isnt in metadata, and we can (now) connect, should add it anyway. 
                     return
 
-                if self.server.row_cache.has_key(self.path):
-                    del self.server.row_cache[self.path]
+                del self.server.row_cache[self.path]
 
                 try:
                     stat = os.stat(self.mount + self.path)
