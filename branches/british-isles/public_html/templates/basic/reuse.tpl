@@ -4,30 +4,42 @@
 <style type="text/css">
 {literal}
 textarea {
-	width:100%; 
-	font-size:0.9em;
-	background-color:#eeeeee
+        width:90%;
+	padding:5px;
+        font-size:0.9em;
+        background-color:#eeeeee
 }
 ul.checklist {
-	width:750px;
+        width:750px;
 }
 ul.checklist li {
-	padding:10px;
+        padding:10px;
 }
 h3 {
-	padding:10px;
-	margin-top:30px;
-	border-top: 1px solid lightgrey;
-	background-color:#f9f9f9;
+        padding:10px;
+        border-top: 1px solid lightgrey;
+        background-color:#f9f9f9;
 }
 
-div:target { 
-	border:2px solid orange;
-	padding:20px; 
-	background-color: lightgrey;
+div:target {
+        border:2px solid orange;
+        padding:20px;
+        background-color: lightgrey;
 }
 .top { text-align:right;font-size:0.7em; }
 .top A { text-decoration:none; }
+
+.sized b {
+	font-family:times;
+}
+
+.previewHover > div {
+	display:inline-block;
+	position:relative;width:580px;height:22px;overflow:hidden;
+	background-position:right bottom;
+	background-repeat:no-repeat;
+	box-shadow: inset 0px 5px 3px 0px rgba(255,255,255,1);
+}
 
 {/literal}
 </style>
@@ -37,31 +49,103 @@ div:target {
 	Geograph ID:<br/> [[[{$image->gridimage_id}]]]
 </div>
 
-<div style="float:left; position:relative; padding-right:10px;"><h2><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" align="top" /></a> <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>
+<div style="float:left; position:relative; padding-right:10px;"><h2><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>
 
 <h2 style="margin-bottom:0px"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
 <div>by <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 
 <br style="clear:both;"/>
 
-<div class="photoguide" style="margin-left:auto;margin-right:auto;" about="{$image->getThumbnail(213,160,true)}" xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#">
-	<div style="float:left;width:213px">
-		<a title="view full size image" href="/photo/{$image->gridimage_id}">
-		{$image->getThumbnail(213,160)}
-		</a><div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}" property="dct:title">{$image->title|escape:'html'}</a> for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
+	<div class="interestBox" style="width:750px;margin-left:auto;margin-right:auto;text-align:center">
+	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img
+	alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" align="left" /></a>
+	<b>&copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a></b> and  
+	licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.<br style=clear:both>
 	</div>
-	<div style="float:left;padding-left:20px; width:400px;">
-		<span style="font-size:0.7em">{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}</span><br/>
-		<br/>
-		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and  
-		licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a></b></small>
-	</div>
-	
-	<br style="clear:both"/>
-</div>
+<br>
 
-<div class="interestBox" style="background-color:#eee"><b>Thank you for your interest in this photo</b>, you are more than welcome to use it as long as you <b>follow a few basic requirements:</b></div>
+{if $image->isLandscape()}{/if}
+
+<table width=750 align=center>
+	<tr>
+		<td valign=top><h3>Stamped Image</h3>
+			<p>Image file with credit added (to comply with Creative Commons licence). As long as don't crop this off, can just use this image without needing to add any further text etc. </p>
+			<p>Don't like size/placement of text? Can <a href="/stamp.php?id={$image->gridimage_id}">customize the text &gt;</a></p>
+		</td>
+
+		<td>
+			<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1"><img 
+                            src="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}" width=250></a>
+		</td>
+	</tr>
+
+{if $image->cached_size.0 > 300}
+	<tr>
+		<td colspan=2 align=right class="previewHover">
+			Actual size:
+			<div style='background-image:url("http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}")'>
+			</div>
+		</td>
+	</tr>
+{/if}
+
+	<tr>
+		<td valign=top><h3>Standard Image</h3>
+			<p>You can download the image without the credit, but <b>will need to make sure you credit the image manually</b>. 
+
+			<small>Using this image requires you comply with the Licence requirements, unless have <b>explicit</b> permission from the copyright holder. <br><br>
+
+			<i>Here is a sample credit, can directly copy/paste, with or without the links:</i></small>
+
+			<p style="border:2px solid lightgreen;padding:5px"><b>{$image->title|escape:'html'}</b><br>
+			<a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a> - 
+			&copy; <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> - <a href="http://{$http_host}/photo/{$image->gridimage_id}">geograph.org.uk/p/{$image->gridimage_id}</a></p>
+
+			<small><i>or more minimalistic version:</i></small>
+			<p style="border:2px solid lightgreen;padding:5px;text-align:right">
+				Photo &copy; <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>
+				(<a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a>)
+			</p>
+			(scroll down the page, for more detailed instructions)
+		</td>
+
+		<td valign=top align=center>
+			<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><img src="{$image->_getFullpath(true,true)}" width=250></a><br>
+			<small class="sized">(<b>{$image->cached_size.0}</b>x<b>{$image->cached_size.1}</b>px jpeg)</small>
+
+	                <p style="color:red">
+				<b>Right click the Image and<br> select 'Save Image as'<br> (or similar)</b>
+	                </o>
+
+		</td>
+	</tr>
+{if $image->original_width}
+        <tr>
+                <td valign=top><h3>High-Resolution</h3>
+                        <p>Versions <a href="/more.php?id={$image->gridimage_id}" class="sized">upto <b>{$image->original_width}</b>x<b>{$image->original_height}</b>px are available &gt;</a>
+                </td>
+
+                <td align=center>
+			or quick download of a<br>
+			 <a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=1{if $image->original_width > 800}&pointsize=24{/if}&download=1" class="sized"><b>stamped</b> <b>{$image->original_width}</b>x<b>{$image->original_height}</b> image</a><br>
+			(<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original">unstamped</a>)
+                </td>
+        </tr>
+{/if}
+</table>
+
+	<div class="interestBox" style="width:750px;margin-left:auto;margin-right:auto;text-align:center">
+	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img
+	alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" align="left" /></a>
+	<b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and  
+	licensed for reuse under <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">creativecommons.org/licenses/by-sa/2.0</a></b>
+	</div>
+
+
+<br><br>
+
+<div  style="width:750px;margin-left:auto;margin-right:auto;">
+	You are more than welcome to use it as long as you <b>follow a few basic requirements:</b>
 
    <div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
    	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed" style="padding-left:20px"/></a><br/>
@@ -70,7 +154,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}
 
 <ul class="checklist">
 
-<li>Under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited to <b>{$image->realname|escape:'html'}</b>. An example of good wording for web use (including the hyperlinks) is shown in the above box. See below for print based wording.{if $image->credit_realname}<small><br/>(The contributor <tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>)</small>{/if}</li>
+<li>Under the <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>, the image <b>must</b> be credited to <b>{$image->realname|escape:'html'}</b>. An example of good wording for web use (including the hyperlinks) is shown in the above box. {if $image->credit_realname}<small><br/>(The contributor <tt>{$image->user_realname|escape:'html'}</tt> has specifed the image is credited to <tt>{$image->realname|escape:'html'}</tt>)</small>{/if}</li>
 
 <li>You should also mention that the photo is copyrighted but also licensed for further reuse.</li>
 
@@ -84,111 +168,83 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}
 
 <ul class="checklist">
 
-{if $image->isLandscape()}{/if}
 <li><b>We do ask you to be polite and not abuse the Geograph website resources.</b> <br/>
 <small>&nbsp; <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="16" height="16"/>
 {external href="http://en.wikipedia.org/wiki/Inline_linking" text="Hotlinking"} the image directly off our servers will trigger automatic watermarks and may be blocked</small><br/><br/>
-
-Instead please <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}"><b>Download</b> {if !$image->original_width}fullsize{/if} image <small>({$image->cached_size.0}x{$image->cached_size.1}px jpeg)</small></a>, and upload it to your own webspace. {if $image->original_width} <a href="/more.php?id={$image->gridimage_id}">Bigger sizes also available</a>{/if}
 </li>
 
-<li><span style="color:red">New!</span> We provide a <a href="/stamp.php?id={$image->gridimage_id}">self service tool, available here</a>, to download a image file with a creative commons complicant credit included as text overlay. Or get an <a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}">image with the default settings</a>.</li>
+<li>ideally include a link to our photo page, at <a href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</a>, where the latest information will be available.</li>
 
-<li>Remember to link back to the main photo page, at <a href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</a>, where the latest information will be available.</li>
-
-</ul>
-
-<p><b>For offline reproduction, wording similar to the following is recommended:</i></b>
-
-<ul class="checklist">
-	<li>Image Copyright {$image->realname|escape:'html'}. This work is licensed under the Creative Commons Attribution-Share Alike 2.0 Generic Licence. To view a copy of this licence, visit http://creativecommons.org/licenses/by-sa/2.0/ or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.</li>
 </ul>
 
 <br/><br/>
+</div>
 
 <div style="text-align:center;">Thank you for your attention in this matter.</div>
 <br/><br/>
 
 
-<div class="interestBox" style="background-color:lightgreen;text-align:center">
+<div class="interestBox" style="background-color:#FFFDD0;text-align:center">
 	Found Geograph Images useful? Please consider <a href="/help/donate">donating</a> to support the Geograph Project!
 </div>
+
 <br/><br/>
-
-
-<p>We have created some snippets of code to make using the photo easy on various websites or similar:</p>
-<br/>
-<div class="interestBox">Jump snippets for: <a href="#html">HTML</a>, <a href="#bbcode">Forums</a> or <a href="#wikipedia">Wikipedia</a>. Or get <a href="#meta">CC-metadata</a> (RDF) or <a href="#kml">KML File</a>.</div>
-<br/>
-
-
+<br/><br/>
+<br/><br/>
 
 <div id="html">
 <a name="html"></a>
-<h3>HTML text link for this Image</H3>
+<h3>Example HTML snippet, for use on a website</h3>
 
-<div class="ccmessage" style="border:2px solid yellow;padding:10px;"><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
+<form><textarea rows="7"><div style="display:inline-block; font-size:0.9em">
+	<img src="geograph-{$image->gridimage_id}-by-{$image->realname|escape:'html'|replace:' ':'-'}.jpg" alt="{$image->title|escape:'html'}, by {$image->realname|escape:'html'}" width="{$image->cached_size.0}" height="{$image->cached_size.1}"><br>
+	<div style="float:right;">Photo &amp;copy; <a href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
+	<a href="http://{$http_host}/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetakenString}, {$image->imagetakenString}{/if}
 
-<form><textarea rows="3"><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" /></a> &amp;nbsp; &amp;copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</textarea></form>
-
-
-<h3>HTML for reusing image on a webpage</H3>
-
-<div style="border:2px solid yellow;padding:10px;width:230px; text-align:center; float:left; position:relative">
-<a title="{$image->title|escape:'html'} - click to view full size image" href="/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a><br/>
-<a href="/photo/{$image->gridimage_id}"><b>{$image->title|escape:'html'}</b></a><br/>
-&nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
-
-<form><textarea rows="3"><div style="width:210px; text-align:center" about="{$image->getThumbnail(213,160,true)}" xmlns:dct="http://purl.org/dc/terms/" xmlns:cc="http://creativecommons.org/ns#">
-<a title="{$image->title|escape:'html'} - click to view full size image" href="http://{$http_host}/photo/{$image->gridimage_id}">{$image->getThumbnail(213,160)}</a><br/>
-<a href="http://{$http_host}/photo/{$image->gridimage_id}"><b property="dct:title">{$image->title|escape:'html'}</b></a><br/>
-&amp;nbsp; &amp;copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons Licence</a>.</div></textarea></form>
+	<div style="text-align:right; font-size:0.9em">Available for reuse under this <a href="https://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a></div>
+</div></textarea></form>
+(please remember to <a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download</a> and host your own copy of the image, rather than hotlinking it from Geograph servers)
 </div>
-Alternativly to embed an iframe:
-<form><textarea rows="1"><iframe src="http://{$http_host}/frame.php?id={$image->gridimage_id}" width="550" height="280" frameborder="0"></iframe></textarea></form>
-
 <div class="top"><a href="#top">back to top</a></div>
+<br><br>
 
 
 <div id="bbcode">
 <a name="bbcode"></a>
-<h3>BBCode for reusing image on a forum (non Geograph)</H3>
+<h3>BBCode for reusing image on a non-Geograph forum</H3>
 
-<form><textarea rows="3">[b][url=http://{$http_host}/photo/{$image->gridimage_id}]{$image->title|escape:'html'}
+<form><textarea rows="4">[b][url=http://{$http_host}/photo/{$image->gridimage_id}]{$image->title|escape:'html'}
 [img]{$image->getThumbnail(213,160,true)}[/img][/url][/b]
 &copy; Copyright [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/url] and  
 licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0/]Creative Commons Licence[/url].</textarea></form>
 
-<h3>BBCode for reusing image on a forum (with shorter message)</H3>
+<h3>BBCode with shorter creative commons message</H3>
 
 <form><textarea rows="3">[url=http://{$http_host}/photo/{$image->gridimage_id}][b]{$image->title|escape:'html'}[/b]
 [img]{$image->getThumbnail(120,120,true)}[/img][/url]
 &copy; [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/a], [url=http://creativecommons.org/licenses/by-sa/2.0/]cc-by-sa[/url].</textarea></form>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
+<br><br>
+
+
 
 
 <div id="wikipedia">
 <a name="wikipedia"></a>
 <h3>Wikipedia Template for image page.</h3>
 
-<div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
+<div class="interestBox" style="padding:10px">
 <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so please make sure the image hasn't already been uploaded. 
-<b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=geograph+_`$image->gridimage_id`.jpg&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</div>
+<b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=insource%3A%22geograph+`$image->gridimage_id`%22&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</div>
 <br/>
 
-The following is the recommended template for using on the photo page. You should <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}">download the image</a>, and upload to {external href="http://commons.wikimedia.org/wiki/Main_Page" text="wikimedia commons"}.<br/><br/>
+The following is the recommended template for using on the photo page. You should <a href="{$script_name}?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}{if $image->original_width}&amp;size=original{/if}">download the image</a>, and upload to {external href="http://commons.wikimedia.org/wiki/Main_Page" text="wikimedia commons"}.<br/><br/>
 
-You can also use the {external href="http://tools.wmflabs.org/geograph2commons/?server=www.geograph.org.uk&amp;photo_id=`$image->gridimage_id`" text="geograph2commons"} to crossload the image (clicking that link should prefill the image-id for you!)<br/><br/>
+&middot; You can also use the {external href="http://tools.wmflabs.org/geograph2commons/?server=www.geograph.org.uk&amp;photo_id=`$image->gridimage_id`" text="geograph2commons"} to crossload the image (clicking that link should prefill the image-id for you!)<br/><br/>
 
-<form><textarea rows="7" style="font-size:0.8em" id="wikitext">== {literal}{{int:filedesc}}{/literal} ==
+<form><textarea rows="13" id="wikitext">== {literal}{{int:filedesc}}{/literal} ==
 {literal}{{{/literal}Information
 |Description={literal}{{{/literal}en|1={$image->title|escape:'html'}{literal}}}{/literal}
 |Source=From [http://{$http_host}/photo/{$image->gridimage_id} geograph.org.uk]
@@ -206,42 +262,39 @@ You can also use the {external href="http://tools.wmflabs.org/geograph2commons/?
 {literal}{{{/literal}Location dec|{$lat|string_format:"%.5f"}|{$long|string_format:"%.5f"}{if $image->view_direction > -1}|heading:{$image->view_direction}{/if}{literal}}}{/literal}
 {/if}
 
-== {literal}{{int:license}}{/literal} ==
+== {literal}{{int:license-header}}{/literal} ==
 {literal}{{{/literal}geograph|{$image->gridimage_id}|{$image->realname|escape:'html'}{literal}}}{/literal}</textarea><br/>
 <small>This template includes the {external href="http://commons.wikimedia.org/wiki/Template:Information" text="information box"} with the relevent data (title, links and licence), {external href="http://commons.wikimedia.org/wiki/Template:Location" text="geotags the image"}, as well as the specific {external href="http://commons.wikimedia.org/wiki/Template:Geograph" text="Geograph Template"}</small></form>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
 
-<div id="meta">
-<a name="meta"></a>
-<h3>Creative Commons Metadata for this image</h3>
-<form><textarea rows="20" style="width:100%; font-size:0.8em"><!-- Creative Commons Licence -->
-<div class="ccmessage"><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" /></a> &amp;nbsp; &amp;copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
-licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
-<!-- /Creative Commons Licence -->
-
-<!--
-
-{include file="_rdf.tpl"}
-
---></textarea></form>
-<div style="text-align:right"><i>this metadata is also embedded in all photo pages</i></div>
-</div>
-<div class="top"><a href="#top">back to top</a></div>
-
-
-<div id="kml">
-<a name="kml"></a>
-<h3>{external href="http://en.wikipedia.org/wiki/Keyhole_Markup_Language" text="KML"} - geographic exchange format</h3>
-<p>The automatic
-<a title="Open in Google Earth" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> file we produce for the image, is another great way of sharing the image.</p>
-</div>
-<div class="top"><a href="#top">back to top</a></div>
 
 <br/><br/>
 <a href="/photo/{$image->gridimage_id}">Return to photo page</a>
 
 {/dynamic}
+
+<p>We've recently revamped this page. If you have any feedback on this, please let us know below!
+
+		<div id="showfeed2" class="interestBox"><form method="post" action="/stuff/feedback.php">
+		<label for="feedback_comments"><b>Your Feedback</b>:</label><br/>
+		<input type="text" name="comments" size="80" id="feedback_comments"/><input type="submit" name="submit" value="send"/>
+		{dynamic}{if $user->registered}<br/>
+		<small>(<input type="checkbox" name="nonanon" checked/> <i>Tick here to include your name with this comment, so we can then reply</i>)</small>
+		{else}<br/>
+		<i><small>If you want a reply please use the <a href="/contact.php">Contact Us</a> page. We are <b>unable</b> to reply to comments left here.</small></i>
+		{/if}{/dynamic}
+		<input type="hidden" name="template" value="{$smarty_template}"/>
+		<input type="hidden" name="referring_page" value="{$smarty.server.HTTP_REFERER}"/>
+		    <div style="display:none">
+		    <br /><br />
+		    <label for="name">Leave Blank!</label><br/>   
+			<input size="40" id="name" name="name" value=""/>
+		    </div>
+		</form></div>
+		<br/>
+
+
+
 {include file="_std_end.tpl"}

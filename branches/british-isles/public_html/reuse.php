@@ -35,11 +35,6 @@ init_session();
 $smarty = new GeographPage;
 $template='reuse.tpl';
 
-if (!empty($_GET['preview'])) {
-	$template='reuse2.tpl';
-}
-
-
 if (isset($_REQUEST['id']))
 {
 	//initialise message
@@ -136,12 +131,14 @@ if (isset($_REQUEST['id']))
 		list($latdm,$longdm) = $conv->wgs84_to_friendly($lat,$long);
 		$smarty->assign('latdm', $latdm);
 		$smarty->assign('longdm', $longdm);
-		
+
 		if (!empty($image->viewpoint_northings)) {
 			list($lat,$long) = $conv->national_to_wgs84($image->viewpoint_eastings,$image->viewpoint_northings,$image->grid_square->reference_index);
 			$smarty->assign('photographer_lat', $lat);
 			$smarty->assign('photographer_long', $long);
 		}
+
+                $image->imagetakenString = getFormattedDate($image->imagetaken);
 	}
 	$smarty->assign_by_ref('image', $image);
 } else {
