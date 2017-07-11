@@ -21,10 +21,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+//these are the arguments we expect
+$param=array(
+	'debug' => false,
+	'interval' => "72 hour",
+);
 
 chdir(__DIR__);
 require "./_scripts.inc.php";
 
+//--------------------------------------------
 
 $db_write = GeographDatabaseConnection(false);
 $db_read = GeographDatabaseConnection(true);
@@ -34,9 +40,15 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $a = array();
 
 
+	$grs = $db_read->getCol("select grid_reference from gridimage_search where submitted >
+		date_sub(now(),interval {$param['interval']}) group by grid_reference order by null");
 
 	$sql = "SELECT gridimage_id,grid_reference,TO_DAYS(REPLACE(imagetaken,'-00','-01')) AS days
-		FROM gridimage_search WHERE imagetaken NOT LIKE '0000%' AND moderation_status = 'geograph' ORDER BY grid_reference,seq_no";
+			,(submitted > date_sub(now(),interval {$param['interval']}) )  as doit, points
+		FROM gridimage_search WHERE imagetaken NOT LIKE '0000%'
+			and grid_reference in ('".implode("','",$grs)."')
+			AND moderation_status = 'geograph' ORDER BY grid_reference,seq_no";
+
 	print "$sql\n";
 
 	$buckets = array();
@@ -73,9 +85,13 @@ $a = array();
 		}
 		$buckets[] = $days;
 
-		if ($point) {
-			$db_write->Execute("UPDATE gridimage SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
-			$db_write->Execute("UPDATE gridimage_search SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
+		if ($point && $recordSet->fields['doit'] && $recordSet->fields['points'] != 'tpoint') {
+			if ($param['debug']) {
+                                print "Setting TPoint on {$recordSet->fields['gridimage_id']}, was '{$recordSet->fields['points']}'\n";
+                        } else {
+				$db_write->Execute("UPDATE gridimage SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
+				$db_write->Execute("UPDATE gridimage_search SET points = 'tpoint',upd_timestamp=upd_timestamp WHERE gridimage_id = ".$recordSet->fields['gridimage_id']);
+			}
 			print ". ";
 			$count++;
 		}
@@ -84,8 +100,6 @@ $a = array();
 	}
 
 	$recordSet->Close();
-
-	$db_write->Execute("alter table user_stat comment='rebuild'"); //mark the table for complete rebuild!
 
 	print "done [$count]\n";
 	exit;#!
