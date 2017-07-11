@@ -48,6 +48,7 @@ ENDHELP;
 if (!empty($HELP))
 	print $HELP;
 echo <<<ENDHELP
+
     --help              : show this message
 ---------------------------------------------------------------------
 
@@ -59,7 +60,8 @@ exit;
 ini_set('include_path', $param['dir'].'/libs/');
 $_SERVER['DOCUMENT_ROOT'] = $param['dir'].'/public_html/';
 $_SERVER['HTTP_HOST'] = $param['config'];
-
+$_SERVER['REMOTE_ADDR'] = null;
+$_SERVER['HTTP_USER_AGENT'] = 'Geograph Script';
 
 //main include
 require_once('geograph/global.inc.php');
