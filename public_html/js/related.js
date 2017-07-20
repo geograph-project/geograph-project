@@ -206,6 +206,7 @@ function processImage(row) {
 				$('#related .thumbs').append('<div class="thumb"><a href="/photo/'+value.id+'" title="'+value.grid_reference+' : '+value.title+' by '+value.realname+' /'+space_date(value.takenday)+'\n'+caption.join(', ')+'" class="i"><img '+attrib+'="'+value.thumbnail+'"/></a></div>');
 				attrib = 'data-src';
 			});
+			$('#related .thumbs').append('<br style=clear:both>');
 
 			$('#related .thumbs').append('<p><a href="/related.php?id='+encodeURIComponent(gridimage_id)+'&method=quick">More related images</a>');
 			
