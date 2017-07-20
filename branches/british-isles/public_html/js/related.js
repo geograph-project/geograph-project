@@ -34,7 +34,7 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 			$('#related').css('backgroundColor',$('#maincontent_block').css('backgroundColor'));
 			
 			
-		$("<style type='text/css'> #related a { color: "+$('#maincontent_block a').css('color')+"} </style>").appendTo("head");
+		$("<style type='text/css'> #related a { color: "+$('#maincontent_block a').css('color')+"} #related .thumb { float:left; } </style>").appendTo("head");
 
 		if (as_sidebar) //dynamiclly hide the sidebar, when make window small. todo, maybe could change its class and make it a bottom one.
 			$( window ).resize(function() {
