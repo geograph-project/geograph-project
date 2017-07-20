@@ -1,10 +1,13 @@
 var gridimage_id = null;
 
-if (window.innerWidth > 1024 && window.location.pathname.match(/^\/photo\/(\d+)/) ) {
-	
-	//we can do this before even jquery loads...
-	document.getElementById('maincontent_block').style.marginRight = "150px";
+var as_sidebar = (window.innerWidth >= 1024);
 
+if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
+
+	if (as_sidebar) {	
+		//we can do this before even jquery loads...
+		document.getElementById('maincontent_block').style.marginRight = "150px";
+	}
 
 	//we have to be extra careful checking if a real jquery, as jQl creates a fake jQuery object. 
 	if (typeof jQuery === "undefined" || jQuery === null || typeof jQuery.fn === "undefined" || typeof jQuery.fn.load === "undefined") {
@@ -20,8 +23,12 @@ if (window.innerWidth > 1024 && window.location.pathname.match(/^\/photo\/(\d+)/
 			return;
 		}
 
-		$('#maincontent_block').css('margin-right','150px');
-		$('body').append('<div id="related" style="width:149px;background-color:white;border-left:1px solid silver;padding-top:4px;position:absolute;top:74px;right:0;text-align:center;min-height:900px"></div>');
+		if (as_sidebar) {
+			$('#maincontent_block').css('margin-right','150px');
+			$('body').append('<div id="related" style="width:149px;background-color:white;border-left:1px solid silver;padding-top:4px;position:absolute;top:74px;right:0;text-align:center;min-height:900px"></div>');
+		} else {
+			$('body').append('<div id="related" style="background-color:white;border-top:1px solid silver;padding:10px;text-align:center;max-width:680px;margin-left:auto;margin-right:auto; margin-bottom:100px"></div>');
+		}
 		
 		if ($('#maincontent_block').length)
 			$('#related').css('backgroundColor',$('#maincontent_block').css('backgroundColor'));
@@ -29,15 +36,16 @@ if (window.innerWidth > 1024 && window.location.pathname.match(/^\/photo\/(\d+)/
 			
 		$("<style type='text/css'> #related a { color: "+$('#maincontent_block a').css('color')+"} </style>").appendTo("head");
 
-		$( window ).resize(function() {
-			if (window.innerWidth > 1024) {
-				$('#maincontent_block').css('margin-right','150px');
-				$('#related').show();
-			} else {
-				$('#maincontent_block').css('margin-right','0');
-				$('#related').hide();
-			}
-		});
+		if (as_sidebar) //dynamiclly hide the sidebar, when make window small. todo, maybe could change its class and make it a bottom one.
+			$( window ).resize(function() {
+				if (window.innerWidth > 1024) {
+					$('#maincontent_block').css('margin-right','150px');
+					$('#related').show();
+				} else {
+					$('#maincontent_block').css('margin-right','0');
+					$('#related').hide();
+				}
+			});
 
 		$.ajaxSetup({
 			cache: true
