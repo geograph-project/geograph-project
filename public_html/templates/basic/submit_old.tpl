@@ -20,7 +20,7 @@
 
 {if $step eq 1}
 	<div class="interestBox">
-		- Have a photo to upload but unsure of the location? We have a new {external href="http://www.nearby.org.uk/geograph/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
+		- Have a photo to upload but unsure of the location? We have a new {external href="http://media.geograph.org.uk/speculative/" text="Speculative Upload"} area. Upload photos, and enlist the help of others to locate the photo before transferring it for real to Geograph.
 	</div>
 
 

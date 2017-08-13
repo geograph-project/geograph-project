@@ -88,7 +88,10 @@
 
 
 				function nudgeMarker(that) {
-
+					if (markersLayer) {
+						dragControl.deactivate();
+						markersLayer.setDragMode(false);
+					}		
 					if (that.name == 'photographer_gridref') {
 						if (eastings2 < 10) 
 							return;
@@ -109,6 +112,9 @@
 						map.removeMarker(currentelement);
 						currentelement = createMarker(point,that.name == 'photographer_gridref'?picon:null);
 					}
+					dragControl.activate();
+					markersLayer.setDragMode(true);					
+
 				}
 			</script>
 			{/literal}
