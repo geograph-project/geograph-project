@@ -70,7 +70,7 @@
 		<fieldset>
 			<legend>Hamster Tokens Available <input type="text" name="points" value="{$game->points}" size="1" readonly="readonly"/></legend>
 			{section loop=$game->points name="point"}
-				<img src="http://{$static_host}/templates/basic/img/hamster-icon.gif" name="pointimg{$smarty.section.point.index}"/>
+				<img src="{$static_host}/templates/basic/img/hamster-icon.gif" name="pointimg{$smarty.section.point.index}"/>
 			{/section}
 		</fieldset>
 		
@@ -115,7 +115,7 @@
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" /></a> &nbsp; Image used on this page, &copy; copyright <a title="View profile" href="{$game->image->profile_link}">{$game->image->realname|escape:'html'}</a> and  
+alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" /></a> &nbsp; Image used on this page, &copy; copyright <a title="View profile" href="{$game->image->profile_link}">{$game->image->realname|escape:'html'}</a> and  
 licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 

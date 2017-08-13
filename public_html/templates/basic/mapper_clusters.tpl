@@ -158,16 +158,16 @@
 
 			if (cl.count >= 10000) {
 				div.style.fontSize = "14px";
-				cl.setImage('http://{/literal}{$static_host}{literal}/img/bubble_4.png');
+				cl.setImage('{/literal}{$static_host}{literal}/img/bubble_4.png');
 			} else if (cl.count >= 1000) {
 				div.style.fontSize = "13px";
-				cl.setImage('http://{/literal}{$static_host}{literal}/img/bubble_3.png');
+				cl.setImage('{/literal}{$static_host}{literal}/img/bubble_3.png');
 			} else if (cl.count >= 100) {
 				div.style.fontSize = "12px";
-				cl.setImage('http://{/literal}{$static_host}{literal}/img/bubble_2.png');
+				cl.setImage('{/literal}{$static_host}{literal}/img/bubble_2.png');
 			} else if (cl.count >= 0) {
 				div.style.fontSize = "11px";
-				cl.setImage('http://{/literal}{$static_host}{literal}/img/bubble_1.png');
+				cl.setImage('{/literal}{$static_host}{literal}/img/bubble_1.png');
 			}
 		});
 
@@ -424,7 +424,7 @@
 	
 	function onPhotoOver(id) {
 		if (typeof photoList[id] != 'undefined')
-			photoList[id].marker.setImage('http://{/literal}{$static_host}{literal}/img/highlight_gc_point.png');
+			photoList[id].marker.setImage('{/literal}{$static_host}{literal}/img/highlight_gc_point.png');
 	}
 	function onPhotoOut(id) {
 		if (typeof photoList[id] != 'undefined')

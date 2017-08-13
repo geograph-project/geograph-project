@@ -95,7 +95,7 @@
  	} else {
 		var size = new OpenLayers.Size(29, 29);
 		var offset = new OpenLayers.Pixel(-14, -15);
-		var icon = new OpenSpace.Icon("http://"+static_host+"/img/icons/circle.png", size, offset);
+		var icon = new OpenSpace.Icon(static_host+"/img/icons/circle.png", size, offset);
 	
 		marker1 = map.createMarker(point,icon);
 		var marker = marker1;
@@ -108,7 +108,7 @@ function createPMarker(ppoint) {
 	
 	var size = new OpenLayers.Size(29, 29);
 	var offset = new OpenLayers.Pixel(-14, -15);
-	picon = new OpenSpace.Icon("http://"+static_host+"/img/icons/viewc--1.png", size, offset);
+	picon = new OpenSpace.Icon(static_host+"/img/icons/viewc--1.png", size, offset);
 
 	return createMarker(ppoint,picon)
 }
@@ -301,11 +301,11 @@ function updateViewDirection() {
 				if (ele.options[q].value == newangle)
 					ele.selectedIndex = q;
 
-			replaceIcon('camicon',"http://"+static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png");
+			replaceIcon('camicon',static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png");
 			if (document.theForm.photographer_gridref.value == '')
-				replaceIcon('subicon',"http://"+static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png");
+				replaceIcon('subicon',static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png");
 			else 
-				replaceIcon('subicon',"http://"+static_host+"/img/icons/circle.png");
+				replaceIcon('subicon',static_host+"/img/icons/circle.png");
 				
 			if (distance < 100) {
 				distance = Math.round(distance);
@@ -345,18 +345,18 @@ function updateCamIcon() {
 	ele = document.theForm.view_direction;
 	realangle = ele.options[ele.selectedIndex].value;
 	if (realangle == -1) {
-		replaceIcon('camicon',"http://"+static_host+"/img/icons/viewc--1.png");
-		replaceIcon('subicon',"http://"+static_host+"/img/icons/subc--1.png");
+		replaceIcon('camicon',static_host+"/img/icons/viewc--1.png");
+		replaceIcon('subicon',static_host+"/img/icons/subc--1.png");
 	} else {
 		jump = 360.0/16.0;
 		newangle = Math.floor(Math.round(realangle/jump)*jump);
 		if (newangle == 360)
 			newangle = 0;
-		replaceIcon('camicon',"http://"+static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png");
+		replaceIcon('camicon',static_host+"/img/icons/viewc-"+parseInt(newangle,10)+".png");
 		if (document.theForm.photographer_gridref.value == '')
-			replaceIcon('subicon',"http://"+static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png");
+			replaceIcon('subicon',static_host+"/img/icons/subc-"+parseInt(newangle,10)+".png");
 		else 
-			replaceIcon('subicon',"http://"+static_host+"/img/icons/circle.png");
+			replaceIcon('subicon',static_host+"/img/icons/circle.png");
 	}
 }
 

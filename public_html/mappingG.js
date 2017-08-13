@@ -95,8 +95,8 @@
 
 function createPMarker(ppoint) {
 	var picon = new GIcon();
-	picon.image = "http://"+static_host+"/img/icons/camicon.png";
-	picon.shadow = "http://"+static_host+"/img/icons/cam-s.png";
+	picon.image = static_host+"/img/icons/camicon.png";
+	picon.shadow = static_host+"/img/icons/cam-s.png";
 	picon.iconSize = new GSize(12, 20);
 	picon.shadowSize = new GSize(22, 20);
 	picon.iconAnchor = new GPoint(6, 20);

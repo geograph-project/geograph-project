@@ -65,10 +65,10 @@
 {cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 <tr bgcolor="{$bgcolor}" {if !$ticket.available} style="color:red"{/if}>
 {if $col_moderator}<td>{$ticket.moderator}</td>{/if}
-<td{if !$ticket.ownimage && (($ticket.submitter_ticket_option == 'none') || ($ticket.submitter_ticket_option == 'major' && $ticket.type == 'minor') || $ticket.submitter_dormant)} style="text-decoration:line-through"{/if}>{$ticket.submitter}{if $ticket.submitter_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
+<td{if !$ticket.ownimage && (($ticket.submitter_ticket_option == 'none') || ($ticket.submitter_ticket_option == 'major' && $ticket.type == 'minor') || $ticket.submitter_dormant)} style="text-decoration:line-through"{/if}>{$ticket.submitter}{if $ticket.submitter_comment}<img src="{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.submitter_comment}"/>{/if}</td>
 <td><a href="/editimage.php?id={$ticket.gridimage_id}">{$ticket.title|default:'Untitled'}</a></td>
 <td>{if $ticket.type == 'minor'}(minor) {/if}{$ticket.notes|escape:'html'|geographlinks}</td>
-<td>{$ticket.suggester}{if $ticket.suggester_comment}<img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.suggester_comment}"/>{/if}</td>
+<td>{$ticket.suggester}{if $ticket.suggester_comment}<img src="{$static_host}/img/star-light.png" width="14" height="14" title="Comment: {$ticket.suggester_comment}"/>{/if}</td>
 <td>{$ticket.suggested}</td>
 <td sortvalue="{$ticket.days}"><input class="accept" type="button" id="defer" value="D" style="width:10px;" onclick="deferTicket({$ticket.gridimage_ticket_id},24)"/><span class="caption" id="modinfo{$ticket.gridimage_ticket_id}"></span><br/>{$ticket.days}</td>
 </tr>
@@ -80,7 +80,7 @@
 		or <a href="/admin/moderation.php?abandon=1">Finish</a> the current moderation session</div>
 
 
-<p><small>KEY: |<span style="text-decoration:line-through">User opted out of receiving initial notification</span> | <img src="http://{$static_host}/img/star-light.png" width="14" height="14" title="Comment"/> User has left comment on this suggestion | <input class="accept" type="button" value="D" style="width:10px;"> - Defer the suggestion for 24 hours - the number after the defer button is days since last update | <span style="color:red">suggestion is locked</span>|</small> </p>
+<p><small>KEY: |<span style="text-decoration:line-through">User opted out of receiving initial notification</span> | <img src="{$static_host}/img/star-light.png" width="14" height="14" title="Comment"/> User has left comment on this suggestion | <input class="accept" type="button" value="D" style="width:10px;"> - Defer the suggestion for 24 hours - the number after the defer button is days since last update | <span style="color:red">suggestion is locked</span>|</small> </p>
 
 
 

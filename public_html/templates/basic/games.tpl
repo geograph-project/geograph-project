@@ -44,11 +44,11 @@ Help us locate new <br/>images for the games.<br/>
 {/if}
 {/dynamic}
 
-<div style="float:left; padding-right:20px"><img src="http://{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" alt="Perdita the Geograph hamster"/></div>
+<div style="float:left; padding-right:20px"><img src="{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" alt="Perdita the Geograph hamster"/></div>
 
 
 
-<div style="float:left; margin-top:60px; width:300px;height:85px; background-image:url('http://{$static_host}/templates/basic/img/callout2.gif');padding-left:90px;padding-top:15px; padding-right:10px; text-align:center;color:#0000FF">
+<div style="float:left; margin-top:60px; width:300px;height:85px; background-image:url('{$static_host}/templates/basic/img/callout2.gif');padding-left:90px;padding-top:15px; padding-right:10px; text-align:center;color:#0000FF">
 Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>games section</h2></div>
 
 <br style="clear:both"/>
@@ -56,7 +56,7 @@ Hi, my name is Perdita the Geograph hamster. Welcome to our <h2>games section</h
 
 
 <div  class="interestBox" style="width:45%; float:left; height:350px; margin-right:20px">
-<img src="http://{$static_host}/games/markit.gif" align="right" width="115" height="125"/>
+<img src="{$static_host}/games/markit.gif" align="right" width="115" height="125"/>
 <h3 style="background-color:black;color:white;margin-top:0px; padding:10px;">Mark It</h3>
 
 <p>Earn hamster tokens by locating photos on the map! A single round consists of playing 10 images.</p>

@@ -4,7 +4,7 @@
 {box colour="333"}
 
    <div id="footer_right">
-   Project sponsored by <a href="https://www.ordnancesurvey.co.uk/education/" title="Geograph Britain and Ireland sponsored by Ordnance Survey"><img src="http://{$static_host}/img/os-logo-pw64.png" width="64" height="50" alt="Ordnance Survey Logo" align="right" style="margin-left:7px"/></a><br/>
+   Project sponsored by <a href="https://www.ordnancesurvey.co.uk/education/" title="Geograph Britain and Ireland sponsored by Ordnance Survey"><img src="{$static_host}/img/os-logo-pw64.png" width="64" height="50" alt="Ordnance Survey Logo" align="right" style="margin-left:7px"/></a><br/>
    <small>Hosting with<br>
      {external title="click for livetodot website" href="http://www.livetodot.com/" text="Livetodot" nofollow="true"}<br/></small>
 	</div>

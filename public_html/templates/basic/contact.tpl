@@ -73,7 +73,7 @@
     <br />
 {if !$user->registered}
     <label for="subject">Anti-Spam</label><br/>
-    	<img src="http://{$static_host}/templates/basic/img/logo.gif" align="right">
+    	<img src="{$static_host}/templates/basic/img/logo.gif" align="right">
 	<input size="40" id="spam" name="spam" value="{$spam|escape:'html'}"/><br/>
         Please type the <b>biggest word</b> from our project website logo (duplicated on the right) <br /><br />
 {/if}

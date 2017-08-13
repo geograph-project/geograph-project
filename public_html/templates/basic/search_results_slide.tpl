@@ -18,13 +18,13 @@
 		</div>
 
 	<div class="interestBox" style="float:right;position:relative;width:20px"><span  id="hideside{$image->gridimage_id}"></span>
-		<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side{$image->gridimage_id}');refreshMainList({$image->gridimage_id});"/>
+		<img src="{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side{$image->gridimage_id}');refreshMainList({$image->gridimage_id});"/>
 	</div>
 
 	<div style="float:right;position:relative">
 	<div style="position:absolute;left:-210px;top:-20px;width:220px;padding:10px;display:none;text-align:left;z-index:1000" id="showside{$image->gridimage_id}" onmouseout="hide_tree('side{$image->gridimage_id}')">
 		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
-			<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" style="float:left;padding:4px"/>
+			<img src="{$static_host}/img/thumbs.png" width="20" height="20" style="float:left;padding:4px"/>
 			<div id="votediv{$image->gridimage_id}img"><a href="javascript:void(record_vote('img',{$image->gridimage_id},5,'img'));" title="I like this image! - click to agree">I like this image!</a></div>
 			{if $image->comment}
 				<div id="votediv{$image->gridimage_id}desc"><a href="javascript:void(record_vote('desc',{$image->gridimage_id},5,'desc'));" title="I like this description! - click to agree">I like this description!</a></div>

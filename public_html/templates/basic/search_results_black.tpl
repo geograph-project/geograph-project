@@ -70,8 +70,8 @@ jQuery(document).ready( function() {
 </script>
 {/literal}
 
-<script src="http://{$static_host}/js/lazy.v4.js" type="text/javascript"></script>
-<div id="mapdiv"><img src="http://{$static_host}/img/blank.gif" name="map"/></div>
+<script src="{$static_host}/js/lazy.v4.js" type="text/javascript"></script>
+<div id="mapdiv"><img src="{$static_host}/img/blank.gif" name="map"/></div>
 
 <table border="0" cellspacing="0" cellpadding="5">
         {foreach from=$engine->results item=image}

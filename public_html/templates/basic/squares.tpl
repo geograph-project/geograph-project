@@ -37,7 +37,7 @@
 <tbody>
 
 {foreach from=$data item=row name=loop}
-	<tr><td sortvalue="{$smarty.foreach.loop.iteration}"><a href="/gridref/{$row.grid_reference}/links"><img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/></a></td>
+	<tr><td sortvalue="{$smarty.foreach.loop.iteration}"><a href="/gridref/{$row.grid_reference}/links"><img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/></a></td>
 	<td><a href="/gridref/{$row.grid_reference}">{$row.grid_reference}</a></td>
 	<td align="right">{$row.imagecount}</td>
 	<td align="right">{math equation="sqrt(d)" d=$row.dist_sqd assign="d"}{$d|thousends}</td>

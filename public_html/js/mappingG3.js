@@ -91,7 +91,7 @@
 }
 
 function createPMarker(ppoint) {
-	return createMarker(ppoint,"http://"+static_host+"/img/icons/camicon-new.png")
+	return createMarker(ppoint,static_host+"/img/icons/camicon-new.png")
 }
 
 function gmap2grid(point) {

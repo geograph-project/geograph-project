@@ -101,7 +101,7 @@ href=3D"http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/ph
     <TD vAlign=3Dtop align=3Dmiddle bgColor=3D#dddddd colSpan=3D2><A=20
       href=3D"http://creativecommons.org/licenses/by-sa/2.0/"><IMG =
 height=3D31=20
-      src=3D"http://{$static_host}/img/somerights20.gif" width=3D88 =
+      src=3D"{$static_host}/img/somerights20.gif" width=3D88 =
 align=3Dright=20
       border=3D0></A> <FONT face=3DGeorgia>Image =A9 Copyright <A =
 title=3D"View profile"=20

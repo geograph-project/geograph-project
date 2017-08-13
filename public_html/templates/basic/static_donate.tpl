@@ -103,7 +103,7 @@ Alternatively...
 <table cellspacing=0 cellpadding=10 border=0> 
 	<tr>
 		<td align="center">
-			<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="http://{$static_host}/img/os-logo-p85.png" width="85" height="67" alt="Ordnance Survey"/></a>
+			<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="{$static_host}/img/os-logo-p85.png" width="85" height="67" alt="Ordnance Survey"/></a>
 		</td>
 		<td>
 			<a href="https://www.ordnancesurvey.co.uk/education/"> Ordnance Survey</a><br/><br/>
@@ -112,7 +112,7 @@ Alternatively...
 	</td>
         <tr>
                 <td align="center">
-			<a href="http://www.livetodot.com/hosting/"><img src="http://{$static_host}/img/livetodot-logo.png" style="padding:10px;" alt="Livetodot Logo"/></a>
+			<a href="http://www.livetodot.com/hosting/"><img src="{$static_host}/img/livetodot-logo.png" style="padding:10px;" alt="Livetodot Logo"/></a>
 		</td>
 		<td>
 			<a href="http://www.livetodot.com/hosting/">Livetodot Hosting</a><br/><br/>
@@ -121,7 +121,7 @@ Alternatively...
         </td>
         <tr>
                 <td align="center">
-			<a href="http://www.woc.co.uk/"><img src="http://{$static_host}/img/woc.jpg"/></a>
+			<a href="http://www.woc.co.uk/"><img src="{$static_host}/img/woc.jpg"/></a>
                 </td>
                 <td>
  			<a href="http://www.woc.co.uk/">World of Computers</a><br/><br/>

@@ -93,7 +93,7 @@
 	<p align="center" style="font-size:0.8em">{$mosaic_updated}</p>
 {/if}
 
-<p align="center">{if $hectad}<img src="http://{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b>More links for <a href="/gridref/{$hectad}">{$hectad}</a></b> {/if} {if $mosaic_token}| <a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a> | <a href="/mapsheet.php?t={$mosaic_token}">Printable Checksheet for this square</a>{/if}</p>
+<p align="center">{if $hectad}<img src="{$static_host}/img/geotag_32.png" width="20" height="20" align="absmiddle" alt="geotagged!"/> <b>More links for <a href="/gridref/{$hectad}">{$hectad}</a></b> {/if} {if $mosaic_token}| <a href="/mapprint.php?t={$mosaic_token}">Printable version of this map</a> | <a href="/mapsheet.php?t={$mosaic_token}">Printable Checksheet for this square</a>{/if}</p>
 
 <br style="clear:both"/>
 <div class="copyright">Maps on this page, &copy; Copyright Geograph Project Ltd and

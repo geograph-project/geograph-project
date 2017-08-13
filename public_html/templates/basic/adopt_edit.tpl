@@ -103,7 +103,7 @@ function useimage(id) {
 {/literal}
 
 {if $square->reference_index == 1}
-<div style="float:right">Maps: <img src="http://{$static_host}/img/links/20/mapper.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}"><b>Draggable</b></a>, <img src="http://{$static_host}/img/links/20/dragcenti.png" width="20" height="20" alt="dragable centi icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1"><b>Centisquares</b></a></div>
+<div style="float:right">Maps: <img src="{$static_host}/img/links/20/mapper.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}"><b>Draggable</b></a>, <img src="{$static_host}/img/links/20/dragcenti.png" width="20" height="20" alt="dragable centi icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1"><b>Centisquares</b></a></div>
 {/if}
 
 

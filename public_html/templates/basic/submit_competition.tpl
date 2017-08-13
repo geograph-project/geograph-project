@@ -64,7 +64,7 @@
 
 
 <div class="interestBox" style="border:2px solid black">
-	<img src="http://{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" align="right"/>
+	<img src="{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" align="right"/>
 	<h2><span style="color:#000066">‘Bag the Most Grid Squares’ <br/>
 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &amp; ‘Best Photograph’</span></h2>
 	

@@ -48,7 +48,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
     </ul></li>
 </ul>
 <div style="text-align:center; padding-top:15px; border-top: 2px solid black; margin-top: 15px;">sponsored by <br/> <br/>
-<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="http://{$static_host}/img/os-logo-p64.png" width="64" height="50" alt="Ordnance Survey"/></a></div>
+<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="{$static_host}/img/os-logo-p64.png" width="64" height="50" alt="Ordnance Survey"/></a></div>
   </div>
 </div>
 <div id="search_block">
@@ -56,7 +56,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
     <div id="searchform">
     <form method="get" action="/finder/discussions.php">
 	<div id="searchfield">
-	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10" onfocus="search_focus(this)" onblur="search_blur(this)" style="background-image: url('http://{$static_host}/templates/basic/img/searchbox-discuss.gif');"/>
+	<input id="searchterm" type="text" name="q" value="{$searchFor}" size="10" onfocus="search_focus(this)" onblur="search_blur(this)" style="background-image: url('{$static_host}/templates/basic/img/searchbox-discuss.gif');"/>
 	<input id="searchbutton" type="submit" value="Find"/></div>
 	</form>
     </div>
@@ -75,7 +75,7 @@ Powered by <a target="_blank" title="Go miniBB website (in new window)" href="ht
        <span class="sep">|</span>
        <a href="http://validator.w3.org/check/referer" title="check our xhtml standards compliance">XHTML</a>
        <span class="sep">|</span>
-       <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://{$static_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
+       <a href="http://jigsaw.w3.org/css-validator/validator?uri={$static_host}/templates/basic/css/basic.css" title="check our css standards compliance">CSS</a>
     </p>
   </div>
 </div>

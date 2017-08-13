@@ -16,7 +16,7 @@
 
 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 
-<h3 style="color:black"><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Rejected</h3>
+<h3 style="color:black"><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/> Rejected</h3>
 
 <p>This photograph has been rejected by the site moderators, and is only viewable by you.</p>
 
@@ -72,7 +72,7 @@
     {if $user->registered || !$is_bot}
 
 	<div class="interestBox" style="float:right;position:relative;width:20px"><span  id="hideside"></span>
-		<img src="http://{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side'); if (!loadedBuckets || loadedBuckets.length == 0) jQl.loadjQ('http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js', function() {literal}{{/literal} refreshMainList({$image->gridimage_id}); {literal}});{/literal}"/>
+		<img src="{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side'); if (!loadedBuckets || loadedBuckets.length == 0) jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js', function() {literal}{{/literal} refreshMainList({$image->gridimage_id}); {literal}});{/literal}"/>
 	</div>
 
 	<div style="float:right;position:relative">
@@ -135,7 +135,7 @@
 
 <!-- Creative Commons Licence -->
 <div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img
-alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and
+alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image->profile_link}" xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and
 licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="{$imageurl}" title="Creative Commons Attribution-Share Alike 2.0 Licence">Creative Commons Licence</a>.</div>
 <!-- /Creative Commons Licence -->
 
@@ -159,20 +159,20 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	&middot; <a href="/reuse.php?id={$image->gridimage_id}">Find out <b>How to reuse</b> this image</a> &middot;
 
 	Share:
-	<a title="Share this photo via Twitter" href="https://twitter.com/intent/tweet?text={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&url=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Twitter" src="http://{$static_host}/img/twitter_16.png" width=16 height=16 style="vertical-align:middle"></a>
-	<a title="Share this photo via Facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Facebook" src="http://{$static_host}/img/facebook_16.png" width=16 height=16 style="vertical-align:middle"></a>
-	<a title="Share this photo via Google Plus" href="https://plus.google.com/share?url=http://{$http_host}/photo/{$image->gridimage_id}&t={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Google Plus" src="http://{$static_host}/img/googleplus_16.png" width=16 height=16 style="vertical-align:middle"></a>
-	<a title="Share this photo via Pinterest" href="http://www.pinterest.com/pin/create/button/?media={$imageurl}&url=http://{$http_host}/photo/{$image->gridimage_id}&description={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Pinterest" src="http://{$static_host}/img/pinterest_16.png" width=16 height=16 style="vertical-align:middle"></a>
-	<a title="Share this photo via Flipboard" href="https://share.flipboard.com/bookmarklet/popout?v=2&title={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&url=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Flipboard" src="http://{$static_host}/img/flipboard_16.png" width=16 height=16 style="vertical-align:middle"></a>
-	<a title="Send an this via email/e-card" href="/ecard.php?image={$image->gridimage_id}"><img src="http://{$static_host}/img/email_16.png" width=16 height=16 style="vertical-align:middle"></a> &middot;
+	<a title="Share this photo via Twitter" href="https://twitter.com/intent/tweet?text={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&url=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Twitter" src="{$static_host}/img/twitter_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Share this photo via Facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Facebook" src="{$static_host}/img/facebook_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Share this photo via Google Plus" href="https://plus.google.com/share?url=http://{$http_host}/photo/{$image->gridimage_id}&t={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Google Plus" src="{$static_host}/img/googleplus_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Share this photo via Pinterest" href="http://www.pinterest.com/pin/create/button/?media={$imageurl}&url=http://{$http_host}/photo/{$image->gridimage_id}&description={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Pinterest" src="{$static_host}/img/pinterest_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Share this photo via Flipboard" href="https://share.flipboard.com/bookmarklet/popout?v=2&title={$image->title|escape:'urlplus'}+by+{$image->realname|escape:'urlplus'}&url=http://{$http_host}/photo/{$image->gridimage_id}" onclick="window.open(this.href,'share','width=500;height=400'); return false;"><img alt="Flipboard" src="{$static_host}/img/flipboard_16.png" width=16 height=16 style="vertical-align:middle"></a>
+	<a title="Send an this via email/e-card" href="/ecard.php?image={$image->gridimage_id}"><img src="{$static_host}/img/email_16.png" width=16 height=16 style="vertical-align:middle"></a> &middot;
 
-	<img src="http://{$static_host}/img/download_16.png" width=16 height=16 style="vertical-align:middle"> <b><a href="/{if $image->original_width}more{else}reuse{/if}.php?id={$image->gridimage_id}">Download Image</a></b> &middot;
+	<img src="{$static_host}/img/download_16.png" width=16 height=16 style="vertical-align:middle"> <b><a href="/{if $image->original_width}more{else}reuse{/if}.php?id={$image->gridimage_id}">Download Image</a></b> &middot;
 </td>
 {/if}
 </tr>
 <tr>
 {if $enable_forums}
-<td width="11%" align="right"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="http://{$static_host}/templates/basic/img/icon_discuss.gif" alt="Discuss" width="40" height="34" style="vertical-align:middle"/></a></td>
+<td width="11%" align="right"><a href="/discuss/index.php?gridref={$image->grid_reference}"><img src="{$static_host}/templates/basic/img/icon_discuss.gif" alt="Discuss" width="40" height="34" style="vertical-align:middle"/></a></td>
 <td style="font-size:0.8em;vertical-align:middle" align="left" width="22%">
 {if $discuss}
 	There {if $totalcomments == 1}is 1 post{else}are {$totalcomments} posts{/if} in a
@@ -183,7 +183,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 </td>
 {/if}
 
-<td width="11%" align="right"><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="40" height="34" style="vertical-align:middle"/></a></td>
+<td width="11%" align="right"><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Modify" width="40" height="34" style="vertical-align:middle"/></a></td>
 <td style="font-size:0.8em;vertical-align:middle" align="left" width="22%">
 	{if $user->user_id eq $image->user_id}
 		<big><a {if $image->gridimage_id}href="/editimage.php?id={$image->gridimage_id}"{/if}><b>Change Image Details</b></a></big><br/>
@@ -193,7 +193,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	{/if}
 </td>
 {if $user->user_id ne $image->user_id}
-<td width="11%" align="right"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="http://{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="40" height="34" style="vertical-align:middle"/></a></td>
+<td width="11%" align="right"><a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}"><img  src="{$static_host}/templates/basic/img/icon_email.gif" alt="Email" width="40" height="34" style="vertical-align:middle"/></a></td>
 <td style="font-size:0.8em;vertical-align:middle" align="left" width="22%">
 	<a href="/usermsg.php?to={$image->user_id}&amp;image={$image->gridimage_id}">Contact the contributor</a>
 </td>
@@ -237,7 +237,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 <dt>Grid Square</dt>
  <dd><a title="Grid Reference {$image->grid_reference}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a>{if $square_count gt 1}, {$square_count} images{/if} &nbsp; (<a title="More pictures near {$image->grid_reference}" href="/search.php?q={$image->subject_gridref|escape:'url'}" rel="nofollow">more nearby</a>
-	<a href="/browser/#!/loc={$image->subject_gridref|replace:' ':''|escape:'url'}/dist=2000" title="view area in Browser"><img src="http://{$static_host}/img/links/20/search.png" width=14 height=14></a>)
+	<a href="/browser/#!/loc={$image->subject_gridref|replace:' ':''|escape:'url'}/dist=2000" title="view area in Browser"><img src="{$static_host}/img/links/20/search.png" width=14 height=14></a>)
 </dd>
 
 {if $image->credit_realname}
@@ -361,7 +361,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 <dt>Subject Location</dt>
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links">{$image->subject_gridref}</a> [{$image->subject_gridref_precision}m precision]<br/>
 WGS84: <span class="geo"><abbr class="latitude" title="{$lat|string_format:"%.5f"}">{$latdm}</abbr> <abbr class="longitude"
 title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
   <div itemprop="contentLocation">
@@ -376,7 +376,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 <dt>Camera Location</dt>
 
 <dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a></dd>
+{if $image->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->photographer_gridref}/links">{$image->photographer_gridref}</a></dd>
 {/if}
 
 {if $view_direction && $image->view_direction != -1}
@@ -437,7 +437,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 	{assign var="imagetakenurl" value=$image_taken|date_format:"&amp;taken=%Y-%m-%d"}
 {/if}
 
-<span class="nowrap"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&amp;id={$image->gridimage_id}"><b>More Links for this image</b></a></span>
+<span class="nowrap"><img src="{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$image->subject_gridref}/links?{$imagetakenurl}&amp;title={$image->title|escape:'url'}&amp;id={$image->gridimage_id}"><b>More Links for this image</b></a></span>
 </div>
 
 </div>
