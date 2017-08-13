@@ -291,7 +291,7 @@ the direction of view.  There is also a
 
   <p class="mapwidth"><small>
 All images &copy; <?php print("<a href=\"/profile/{$trk['uid']}\">".htmlentities($trk['user'])."</a>");?> and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">
-Creative Commons licence</a> <img alt="external link" title="" src="http://<?php echo $CONF['STATIC_HOST']; ?>/img/external.png" />. </small>
+Creative Commons licence</a> <img alt="external link" title="" src="<?php echo $CONF['STATIC_HOST']; ?>/img/external.png" />. </small>
   </p>
 
 
@@ -428,7 +428,7 @@ function scrollIntoView(gridimage_id) {
 
 
         if ($src == 'data-src')
-                print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazynew.v1.js" type="text/javascript"></script>';
+                print '<script src="'.$CONF['STATIC_HOST'].'/js/lazynew.v1.js" type="text/javascript"></script>';
 
 
 $smarty->display('_std_end.tpl');
