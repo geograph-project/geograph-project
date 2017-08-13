@@ -35,7 +35,19 @@ include('./geotrip_func.php');
 $db = GeographDatabaseConnection(false);
 // can now use mysql_query($sql); directly, or mysql_query($sql,$db->_connectionID);
 
-$updated = $db->GetOne("SELECT MAX(updated) FROM geotrips")+1;
+
+  // get tracks from database
+  if (isset($_GET['debug'])) $where = "location='debug'";
+  else $where = "location!='debug'";
+  if (!empty($_GET['u']))
+    $where .= " and uid = ".intval($_GET['u']);
+  if (!empty($_GET['type']) && ctype_alpha($_GET['type']))
+    $where .= " and type = ".$db->Quote($_GET['type']);
+  if (!empty($_GET['track']))
+    $where .= " and track != ''";
+
+
+$updated = $db->GetOne("SELECT MAX(updated) FROM geotrips WHERE $where")+1;
 
 customCacheControl($updated,$updated);
 
@@ -47,7 +59,11 @@ $smarty->display('_std_begin.tpl','trip_home');
 print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 
-$str =& $memcache->name_get('geotrip_home',$USER->registered.".".$updated);
+$mkey = $USER->registered.".".$updated.md5($where);
+
+
+if (empty($_GET['refresh']))
+	$str =& $memcache->name_get('geotrip_home',$mkey);
 
 if (!empty($str)) {
   print $str;
@@ -55,15 +71,12 @@ if (!empty($str)) {
 } else {
   ob_start();
 
-  // get tracks from database
-  if (isset($_GET['debug'])) $trks=$db->getAll("select * from geotrips where location='debug' order by id desc");
-  else $trks=$db->getAll("select * from geotrips where location!='debug' order by id desc");
-
+  $trks=$db->getAll("select * from geotrips where $where order by id desc");
 
 ?>
 
   <!--RSS feed via Geograph-->
-  <link rel="alternate" type="application/rss+xml" title="Geo-Trips RSS" href="http://www.geograph.org.uk/content/syndicator.php?scope[]=trip" />
+  <link rel="alternate" type="application/rss+xml" title="Geo-Trips RSS" href="/content/syndicator.php?scope[]=trip" />
 
 <script src="http://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3" type="text/javascript"></script>
 
@@ -87,11 +100,12 @@ if (!empty($str)) {
       $cen[1]=(int)(($bbox[1]+$bbox[3])/2);
       $date=date('D, j M Y',strtotime($track['date']));
       // fetch Geograph thumbnail
-      $image = new GridImage($track['img']);
-		if (!	$image->isValid()) {
-			//FIXME error handling
-		}
-      $thumb=$image->getThumbnail(213,160,true);
+      $image = new GridImage($track['img'],true);
+      if ($image->isValid() && $image->moderation_status!='rejected') {
+        $thumb=$image->getThumbnail(213,160,true);
+      } else {
+        $thumb='/photos/error120.jpg';
+      }
       if ($track['title']) $title=$track['title'];
       else $title=$track['location'].' from '.$track['start'];
       $loc=$track['location'];
@@ -110,7 +124,7 @@ if (!empty($str)) {
       content+='</a>';
       content+='</p><p>';
       content+='<strong><?php print(addslashes(htmlentities($title)));?></strong><br />';
-      content+='<?php print("by <a href=\"http://www.geograph.org.uk/profile/{$track['uid']}\">".addslashes(htmlentities($track['user']))."</a> - $date<br />");?>';
+      content+='<?php print("by <a href=\"/profile/{$track['uid']}\">".addslashes(htmlentities($track['user']))."</a> - $date<br />");?>';
       content+='<small>Click image to see details of this trip.</small>';
       content+='</p>';
 //]]>
@@ -118,8 +132,7 @@ if (!empty($str)) {
       osMap.createMarker(pos,icon,content,popUpSize);
 <?php
       // Link multi-day trips
-      if ($track['contfrom']) {
-        $prevbbox=$db->getRow("select bbox from geotrips where id={$track['contfrom']}");
+      if ($track['contfrom'] && ($prevbbox=$db->getRow("select bbox from geotrips where id={$track['contfrom']}"))) {
         $prevbbox=explode(' ',$prevbbox['bbox']);
         $pcen[0]=(int)(($prevbbox[0]+$prevbbox[2])/2);
         $pcen[1]=(int)(($prevbbox[1]+$prevbbox[3])/2);
@@ -141,10 +154,10 @@ if (!empty($str)) {
 
 <h2>Geo-Trips overview map</h2>
 
-<div class="panel maxi" style="max-width:800px">
+<div class="maxi" style="max-width:800px">
   <p>
-The map below shows Geo-Trips submitted by members of the <a href="http://www.geograph.org.uk">Geograph</a>
-project.  Each point on the map represents a day trip by one Geograph-er to cover a number of
+The map below shows Geo-Trips submitted by Geograph members.
+Each point on the map represents a day trip by one Geograph-er to cover a number of
 grid squares of the British National Grid as shown on Ordnance Survey maps.  The Geograph project aims
 to collect photographs and information for each grid square.
   </p>
@@ -168,14 +181,20 @@ You can also <a href="geotrip_edit.php">edit your existing Geo-Trips</a>.
 Please note that Geo-Trips currently only work in England, Scotland, Wales and the Isle of Man as the
 map is based on the <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a>'s OpenSpace mapping.
   </p>
+
+<form method=get action="/content/" class="panel" style="padding:10px;margin:10px">
+<b>Search Geotrips</b> - Keywords:<input type=text name=q value=""/> <input type=submit value="Search"/>
+<input type=hidden name="scope[]" value="trip"/>
+</form>
+
   <table class="ruled"><tr>
     <td><b>Legend:</b></td>
-    <td><img src="walk.png" alt="" title="Fig.: Walk symbol"> Walk</td><td></td>
-    <td><img src="bike.png" alt="" title="Fig.: Bike symbol"> Cycle ride</td><td></td>
-    <td><img src="boat.png" alt="" title="Fig.: Boat symbol"> Boat trip</td><td></td>
-    <td><img src="rail.png" alt="" title="Fig.: Rail symbol"> Train ride</td><td></td>
-    <td><img src="road.png" alt="" title="Fig.: Road symbol"> Drive</td><td></td>
-    <td><img src="bus.png"  alt="" title="Fig.: Bus symbol">  Scheduled public transport</td>
+    <td><a href="?type=walk"><img src="walk.png" alt="" title="Fig.: Walk symbol"></a> Walk</td><td></td>
+    <td><a href="?type=bike"><img src="bike.png" alt="" title="Fig.: Bike symbol"></a> Cycle ride</td><td></td>
+    <td><a href="?type=boat"><img src="boat.png" alt="" title="Fig.: Boat symbol"></a> Boat trip</td><td></td>
+    <td><a href="?type=rail"><img src="rail.png" alt="" title="Fig.: Rail symbol"></a> Train ride</td><td></td>
+    <td><a href="?type=road"><img src="road.png" alt="" title="Fig.: Road symbol"></a> Drive</td><td></td>
+    <td><a href="?type=bus"><img src="bus.png"  alt="" title="Fig.: Bus symbol"></a>  Scheduled public transport</td>
   </td></tr></table>
   <div id="map" class="inner" style="width:798px;height:1300px"></div>
   <table class="ruled"><tr>
@@ -189,7 +208,7 @@ map is based on the <a href="http://www.ordnancesurvey.co.uk">Ordnance Survey</a
   </td></tr></table>
   <p>
 In the spirit if not the scope of Geo-Trips, here's <b>Thomas Nugent</b>'s
-<a href="http://www.geograph.org.uk/article/Luton-to-Glasgow-in-50-minutes">flight from Luton to Glasgow</a>,
+<a href="/article/Luton-to-Glasgow-in-50-minutes">flight from Luton to Glasgow</a>,
 plotted on a Google Map, with tips for other flying Geograph-ers.
   </p>
 </div>
@@ -197,10 +216,10 @@ plotted on a Google Map, with tips for other flying Geograph-ers.
 <div class="panel maxi">
   <h3>Recently uploaded Geo-Trips</h3>
   <p>
-There is a <a href="http://www.geograph.org.uk/content/?scope[]=trip">full list of Geo-Trips</a> (updated once daily
+There is a <a href="/content/?scope[]=trip">full list of Geo-Trips</a> (updated once daily
 in the early morning) in the Collections area of Geograph, which can be filtered by keyword or author.  You can also
 subscribe to an
-<a href="http://www.geograph.org.uk/content/syndicator.php?scope[]=trip">RSS feed</a> with new Geo-Trips as they
+<a href="/content/syndicator.php?scope[]=trip">RSS feed</a> with new Geo-Trips as they
 come in.  The list below includes all trips uploaded in the last 24 hours.
   </p>
 <?php
@@ -214,18 +233,19 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
     if (strlen($descr)>500) $descr=substr($descr,0,500).'...';
     $gr=bbox2gr($trks[$i]['bbox']);
     // fetch Geograph thumbnail
-    $image = new GridImage($trks[$i]['img']);
-		if (!	$image->isValid()) {
-			//FIXME error handling
-		}
-    $thumb=$image->getThumbnail(213,160,true);
+    $image = new GridImage($trks[$i]['img'],true);
+      if ($image->isValid() && $image->moderation_status!='rejected') {
+        $thumb=$image->getThumbnail(213,160,true);
+      } else {
+        $thumb='/photos/error120.jpg';
+      }
     $mmmyy=explode('-',$trks[$i]['date']);
-    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"http://www.geograph.org.uk/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://s1.geograph.org.uk/img/external.png\" /></span>";
+    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://s1.geograph.org.uk/img/external.png\" /></span>";
     print('<div class="inner">');
     print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
     print("<b>$title</b><br />");
     print("<em>".htmlentities($trks[$i]['location'])."</em> -- A ".whichtype($trks[$i]['type'])." from ".htmlentities($trks[$i]['start'])."<br />");
-    print("by <a href=\"http://www.geograph.org.uk/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a>");
+    print("by <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a>");
     print("<div class=\"inner flt_r\">$gr</div>");
     print("<p>$descr&nbsp;[<a href=\"/geotrips/{$trks[$i]['id']}\">more</a>]</p>");
     print('<div class="row"></div>');
@@ -238,7 +258,7 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
 <?php
 	$str = ob_get_flush();
 
-	$memcache->name_set('geotrip_home',$USER->registered.".".$updated,$str,$memcache->compress,$memcache->period_long);
+	$memcache->name_set('geotrip_home',$mkey,$str,$memcache->compress,$memcache->period_long);
 
 }
 
