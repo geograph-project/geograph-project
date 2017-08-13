@@ -68,7 +68,7 @@ if ($mtime) {
 }
 
 
-$smarty->assign("api_host",preg_replace("/^\w+/",'api',$CONF['CONTENT_HOST']));
+$smarty->assign("api_host",preg_replace("/^(https?:\/\/|)\w+/",'api',$CONF['CONTENT_HOST']));
 
 if ($template == 'static_sitemap.tpl' && !$smarty->is_cached($template)) {
 

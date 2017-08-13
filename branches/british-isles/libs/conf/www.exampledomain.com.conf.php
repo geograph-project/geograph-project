@@ -24,18 +24,22 @@ function cachize_url($url) {
 //servers ip BEGIN with (the server that fires cron jobs etc)
 $CONF['server_ip'] = '127.0.0.';
 
+$CONF['PROTOCOL'] = "http://";
+if (!empty($_SERVER['HTTPS']) || ( !empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'))
+	$CONF['PROTOCOL'] = "https://";
+
 //set to X to enabling striping servering over a range of domains eg http://s[0,1,2,3].geograph.org.uk/photos/....
 $CONF['enable_cluster'] = 2;
-$CONF['STATIC_HOST'] = "s0.geograph.mobile";
+$CONF['STATIC_HOST'] = $CONF['PROTOCOL']."s0.geograph.mobile";
 
 //hostname to use for thumbnails if cluster is disabled (used to be used for full images, but now use $CONF['STATIC_HOST'])
-$CONF['CONTENT_HOST'] = "geograph.mobile";
+$CONF['CONTENT_HOST'] = $CONF['PROTOCOL']."geograph.mobile";
 
 //this *can* be different to your main hostname if want dedicated host for cookieless tile.php requests
-$CONF['TILE_HOST'] = $_SERVER['HTTP_HOST'];
+$CONF['TILE_HOST'] = $CONF['PROTOCOL'].$_SERVER['HTTP_HOST'];
 
 //this can be different to your main hostname if want to seperate out the hosting of the Google Earth Superlayer. 
-$CONF['KML_HOST'] = $_SERVER['HTTP_HOST'];
+$CONF['KML_HOST'] = $CONF['PROTOCOL'].$_SERVER['HTTP_HOST'];
 
 ###################################
 # database configuration

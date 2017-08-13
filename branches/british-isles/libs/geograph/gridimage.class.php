@@ -1173,7 +1173,7 @@ split_timer('gridimage'); //starts the timer
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
-				$return['server']= "http://".$CONF['CONTENT_HOST'];
+				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
 			
@@ -1356,7 +1356,7 @@ split_timer('gridimage'); //starts the timer
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
-				$return['server']= "http://".$CONF['CONTENT_HOST'];
+				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			return $return;
 		}
@@ -1385,7 +1385,7 @@ split_timer('gridimage'); //starts the timer
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
-				$return['server']= "http://".$CONF['CONTENT_HOST'];
+				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
 
@@ -1574,7 +1574,7 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
 			} else {
-				$return['server']= "http://".$CONF['CONTENT_HOST'];
+				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
 

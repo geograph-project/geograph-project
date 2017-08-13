@@ -190,7 +190,7 @@ if ($CONF['template'] == 'ireland') {
 	$rss->title = 'Geograph Britain and Ireland'; 
 }
 if ($CONF['template'] == 'api') {
-	$rss->link = "http://{$CONF['CONTENT_HOST']}/";
+	$rss->link = "{$CONF['CONTENT_HOST']}/";
 } else {
 	$rss->link = "http://{$_SERVER['HTTP_HOST']}/";
 }
