@@ -49,7 +49,7 @@ representative photographs and information for every square kilometre of <a href
 		</div>
 		<br style="clear:both"/>
 		<div style="float:right">
-			<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
+			<a rel="license" href="https://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
 		</div>
 		<div style="font-size:0.9em;margin-top:8px">
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->title}</a> 
@@ -105,13 +105,6 @@ representative photographs and information for every square kilometre of <a href
 	</div>
 {/if}
 
-<div class="interestBox" style="padding:6px;border-radius:4px;background-color:#FFFDD0;text-align:left;margin-left:auto;margin-right:auto;width:750px;margin-top:3px">
-<b>Thank you 3,765 times</b><br>
-A big <i>thank you</i> to the 3,765 people who completed our user survey in February 2017. You have given us lots of solid evidence about why you value Geograph. Here's a summary of the results: <br><br>
-<span style="font-size:0.9em">
-Four out of five of you are from the UK. Most of you are using Geograph to explore where you live or places you might visit, rather than for study or work. Most of you are not uploading photos onto Geograph. Over half of you are interested in heritage and in buildings, and almost half in the natural environment, maps and geography. Almost all of you would recommend Geograph to other people.</span>
-</div>
-
 
 <div style="text-align:center;clear:both;padding:10px;">
 	<b class="nowrap">{$stats.fewphotos|thousends} photographed squares</b> with <b class="nowrap">fewer than 4 photos</b>, <a href="/submit.php">add yours now</a>!
@@ -121,37 +114,42 @@ Four out of five of you are from the UK. Most of you are using Geograph to explo
 {foreach from=$collections item=item}
 	{assign var="source" value=$item.source}
 
-	<div class="interestBox" style="text-align:left; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px;background-color:#{$colours.$source}">
+	<div class="interestBox" style="text-align:left; margin-left:auto;margin-right:auto;width:750px;border-radius: 10px; border:2px solid #{$colours.$source}; background-color:white; padding:0;">
 
-	<div style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
-		{if $item.image}
-		<a title="{$item.image->title|escape:'html'} by {$item.image->realname|escape:'html'} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
-		{/if}
+		<div style="background-color: #{$colours.$source}; padding:2px;">
+			<div style="float:right"> <a href="/content/featured.php">view previous &gt;</a> &nbsp; <a href="/content/">all collections &gt;</a></div>
+			<b>Featured Collection</b></div>
+
+		<div style="padding:7px">
+			<div style="float:left; width:60px; height:60px; padding-right:10px; position:relative">
+				{if $item.image}
+				<a title="{$item.image->title|escape:'html'} by {$item.image->realname|escape:'html'} - click to view full size image" href="/photo/{$item.image->gridimage_id}">{$item.image->getSquareThumbnail(60,60)}</a>
+				{/if}
+			</div>
+			{if $item.images > 2 && ($item.source == 'themed' || $item.source == 'gallery' || $item.source == 'snippet' || $item.source == 'article')}
+				<div style="position:relative;float:right;margin-right:10px">
+					<a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0" alt="view images in this collection"/></a>
+				</div>
+			{elseif $item.source == 'user' && $item.images > 2}
+				<div style="position:relative;float:right;margin-right:10px">
+					<a href="/browser/#/realname+%22{$item.title|escape:'url'}%22" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0"/></a>
+				</div>
+			{/if}
+
+			<b><a href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>
+			<small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
+			{if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</small></small>
+			{if $item.extract}
+				<div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
+			{/if}
+			<div style="clear:left"></div>
+		</div>
 	</div>
-	{if $item.images > 2 && ($item.source == 'themed' || $item.source == 'gallery' || $item.source == 'snippet' || $item.source == 'article')}
-		<div style="position:relative;float:right;margin-right:10px">
-			<a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="http://s1.geograph.org.uk/templates/basic/img/cameraicon.gif" border="0" alt="view images in this collection"/></a>
-		</div>
-	{elseif $item.source == 'user' && $item.images > 2}
-		<div style="position:relative;float:right;margin-right:10px">
-			<a href="/browser/#/realname+%22{$item.title|escape:'url'}%22" title="View Images"><img src="http://s1.geograph.org.uk/templates/basic/img/cameraicon.gif" border="0"/></a>
-		</div>
-	{/if}
-
-	<b><a href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>
-	<small><small style="background-color:#{$colours.$source}">{$sources.$source}</small><small style="color:gray">{if $item.user_id}{if $item.source == 'themed' || $item.source == 'gallery'} started{/if} by <a href="/profile/{$item.user_id}" title="View Geograph Profile for {$item.realname|escape:'html'}" style="color:#6699CC">{$item.realname|escape:'html'}</a>{/if}{if $item.posts_count}, with {$item.posts_count} posts{/if}{if $item.words|thousends}, with {$item.words} words{/if}{if $item.images}, {$item.images|thousends} images{/if}{if $item.views} and viewed {$item.views|thousends} times{/if}.
-	{if $item.updated}Updated {$item.updated}.{/if}{if $item.created}Created {$item.created}.{/if}</small></small>
-	{if $item.extract}
-		<div title="{$item.extract|escape:'html'}" style="font-size:0.7em;">{$item.extract|escape:'html'|truncate:90:"... (<u>more</u>)"}</div>
-	{/if}
-	<div style="clear:left"></div>
-	<div style="text-align:right"><a href="/content/featured.php" style="color:white;text-decoration:none">view previous featured collections &gt;</a></div>
-</div>
 {/foreach}
 
 <div style="text-align:center;clear:both;padding:10px;">
-	&middot; Geograph on <b>{external href="http://twitter.com/geograph_bi" text="Twitter"},
-	{external href="http://www.facebook.com/geograph.org.uk" text="Facebook"}</b> 
+	&middot; Geograph on <b>{external href="https://twitter.com/geograph_bi" text="Twitter"},
+	{external href="https://www.facebook.com/geograph.org.uk" text="Facebook"}</b> 
 	&middot; <b><a href="/news.php">Project News</a></b><br/>
 </div>
 {if $job}
@@ -166,7 +164,7 @@ Four out of five of you are from the UK. Most of you are using Geograph to explo
 		Please <a href="/help/donate">support</a><br/> the project</p>
 	</div>
 	<div style="position:relative;float:left;width:550px;text-align:center">
-		<p>This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948">UK Web Archive</a> project.</p>
+		<p>This site is archived for preservation by the <a href="https://www.webarchive.org.uk/ukwa/target/31653948">UK Web Archive</a> project.</p>
 
 		<p style="font-size:0.9em;"><span class="nowrap"><i>Geograph<sup>&reg;</sup> Britain and Ireland</i> is a project by <a href="/article/About-Geograph-page">Geograph Project Limited</a></span>, <span class="nowrap">a Charity Registered in England and Wales, no 1145621</span>. <span class="nowrap">Company no 7473967</span>. <br> The registered office is 49 Station Road, Polegate, East Sussex, BN26 6EA.</p>
 	</div>
