@@ -71,7 +71,7 @@ if (isset($_GET['id']))  {
 		
 		$kml = new kmlFile();
 		$kml->atom = true;
-		$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
+		$stylefile = "{$CONF['KML_HOST']}/kml/style.kmz";
 
 		$kml->filename = "Geograph".$image->gridimage_id.".kml";
 

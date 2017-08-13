@@ -53,15 +53,15 @@ $LabelStyle->setItem('color','ff0000ff');
 
 
 $folder->addHoverStyle('def');
-$folder->addHoverStyle('p1',1,1.1,'cam1.png;cam1h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p1d',1,1.1,'cam1d.png;cam1dh.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p1r',1,1.1,'cam1r.png;cam1rh.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p1dr',1,1.1,'cam1dr.png;cam1drh.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p2',1,1.1,'cam2.png;cam2h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p3',1,1.1,'cam3.png;cam3h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p4',1,1.1,'cam4.png;cam4h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p10',1,1.1,'cam10.png;cam10h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
-$folder->addHoverStyle('p20',1,1.1,'cam20.png;cam20h.png',"http://".$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p1',1,1.1,'cam1.png;cam1h.png',$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p1d',1,1.1,'cam1d.png;cam1dh.png',$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p1r',1,1.1,'cam1r.png;cam1rh.png',$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p1dr',1,1.1,'cam1dr.png;cam1drh.png',$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p2',1,1.1,'cam2.png;cam2h.png',$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p3',1,1.1,'cam3.png;cam3h.png',$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p4',1,1.1,'cam4.png;cam4h.png',$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p10',1,1.1,'cam10.png;cam10h.png',$CONF['KML_HOST'].'/kml/images/');
+$folder->addHoverStyle('p20',1,1.1,'cam20.png;cam20h.png',$CONF['KML_HOST'].'/kml/images/');
 $folder->setItem('name',"Styles :: Geograph SuperLayer");
 
 

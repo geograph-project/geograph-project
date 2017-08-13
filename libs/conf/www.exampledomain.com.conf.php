@@ -39,7 +39,7 @@ $CONF['CONTENT_HOST'] = $CONF['PROTOCOL']."geograph.mobile";
 $CONF['TILE_HOST'] = $CONF['PROTOCOL'].$_SERVER['HTTP_HOST'];
 
 //this can be different to your main hostname if want to seperate out the hosting of the Google Earth Superlayer. 
-$CONF['KML_HOST'] = $CONF['PROTOCOL'].$_SERVER['HTTP_HOST'];
+$CONF['KML_HOST'] = "http://".$_SERVER['HTTP_HOST'];
 
 ###################################
 # database configuration

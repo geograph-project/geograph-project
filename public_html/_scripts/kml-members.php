@@ -37,7 +37,7 @@ $db = GeographDatabaseConnection(true);
 
 $kml = new kmlFile();
 $kml->atom = true;
-$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
+$stylefile = "{$CONF['KML_HOST']}/kml/style.kmz";
 
 if (isset($_GET['year'])) {
 	$kml->filename = "Geograph-Members-LastYear.kml";
