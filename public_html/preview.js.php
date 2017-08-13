@@ -39,11 +39,19 @@ customExpiresHeader(3600,true,true);
 
 header("Content-type: text/javascript");
 
-customGZipHandlerStart();
-
 switch($option) {
-	case 'preview': readfile('js/preview.js',false); break;
-	case 'preview2': readfile('js/preview2.js',false); break;
+	case 'preview': output_file('js/preview.js'); break;
+	case 'preview2': output_file('js/preview2.js'); break;
 }
 
 //output nothing - a nice noop!
+
+
+function output_file($filename) {
+	global $CONF;
+	customGZipHandlerStart();
+
+	//readfile($filename,false);
+	$contents = file_get_contents($filename);
+	print str_replace("'/js/","'{$CONF['STATIC_HOST']}/js/",$contents);
+}

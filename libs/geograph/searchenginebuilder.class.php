@@ -86,14 +86,11 @@ class SearchEngineBuilder extends SearchEngine
 
 		$db=$this->_GetDB(false);
 
-                $data = array();
 		if (empty($data['orderby']))
 	                $data['orderby'] = 'seq_id';
 		if (empty($data['description']))
 	                $data['description'] = (($USER->registered && empty($data['user_id']))?"on {$USER->realname}'s ":'on ')."Marked List at ".strftime("%A, %e %B, %Y. %H:%M");
                 $data['searchq'] = "1"; //temporally
-		if (empty($data['user_id']))
-	                $data['user_id'] = $USER->user_id;
                 $data['adminoverride'] = 1;
 
                 if ($i = $this->buildAdvancedQuery($data,false)) {

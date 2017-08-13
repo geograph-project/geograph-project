@@ -17,7 +17,7 @@ body {overflow:hidden;}
   </div>
 {/if}
 
-			<div><b>{$image->grid_reference|escape:'html'}</b> | <b>{$image_taken}</b> | <b>{$image->realname|escape:'html'}</b></div>
+			<div><b>{$image->grid_reference|escape:'html'}</b> {if $image_taken}| taken {$takenago}, <b class="nowrap">{$image_taken}</b> |{/if} by <b class="nowrap">{$image->realname|escape:'html'}</b></div>
 
 			{if 0 && $image->subject_gridref}<div>Location: {$image->subject_gridref}</div>{/if}
 
@@ -50,4 +50,4 @@ body {overflow:hidden;}
         {$rastermap->getFooterTag()}
 {/if}
 
-{include file="_basic_end.tpl"}
+</body></html>

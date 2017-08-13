@@ -247,7 +247,7 @@ window.onbeforeunload=unloadMess;
 {dynamic}{$status_message}{/dynamic}
 
 	<noscript>
-	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
+	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php?redir=false">Submission Process</a> should be functional without it.</div>
 	</noscript>
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).

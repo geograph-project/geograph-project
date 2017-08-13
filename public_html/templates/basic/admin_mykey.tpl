@@ -31,7 +31,7 @@
 	
 	<blockquote>
 		<hr/>
-		<p>PHP Code Snippet in Login Page: (already has your credentials embedded)</p>
+		<p>PHP Code Snippet in Login Page (eg <tt>login.php</tt>): (already has your credentials embedded)</p>
 
 		<pre>{highlight}
 <?php
@@ -43,7 +43,7 @@ $login_url = '{$self_host}/auth.php?a={$access}';
 $token=new Token;
 $token->magic = '{$shared}';
 $token->setValue("action", 'authenticate');
-$token->setValue("callback", "http://domain.com/callback.php");
+$token->setValue("callback", "http://domain.com/callback.php"); //full-path to callback.php on your server
 $login_url .= '&amp;t='.$token->getToken();
 
 print "<a href=\"$login_url\">Login via Geograph</a>";
@@ -52,7 +52,7 @@ print "<a href=\"$login_url\">Login via Geograph</a>";
 		{/highlight}</pre>
 		<hr/>
 
-		<p>PHP Code for Callback Page:</p>
+		<p>Complete PHP Code for your Callback Page (<tt>callback.php</tt>):</p>
 
 		<pre>{highlight}
 <?php
@@ -70,8 +70,12 @@ $token->magic = '{$shared}';
 		$realname=$token->getValue('realname');
 		$nickname=$token->getValue('nickname');
 		
-		//you should perhaps store these in a session to continue to have access to them in further pages
-		
+		//store these in a session to continue to have access to them in further pages
+
+		session_start();
+		$_SESSION['user_id'] = $user_id;
+		$_SESSION['realname'] = $realname;
+
 		header("Location: /app/"); #the main page of your app
 		
 	} else {
@@ -84,6 +88,24 @@ $token->magic = '{$shared}';
 ?>
 		{/highlight}</pre>
 		<hr/>
+                <p>PHP Code Snippet for general pages (where the user needs to be logged in)</p>
+
+                <pre>{highlight}{literal}
+<?php
+
+session_start();
+
+if (empty($_SESSION['user_id'])) {
+	header("Location: ./login.php"); //the page that contains the above code to login via geograph.
+	exit;
+}
+
+print "<h3>Hello ".htmlentities($_SESSION['realname']).", welcome to our new application</h3>";
+
+?>
+                {/literal}{/highlight}</pre>
+
+
 
 	</blockquote>
 	<hr style="color:red"/>
@@ -95,6 +117,9 @@ $token->magic = '{$shared}';
   		<input type="text" name="apikey"/>
   		<input type="Submit" value="Go"/>
   	</form>
+
+
+	<p>If you dont yet have a API key, apply for <a href='/contact.php'>here</a>. we will send you one as soon as possible (we soon hope to have a self-service method!)</p>
 {/if}
 
 

@@ -113,6 +113,12 @@ span.tag, a.tag {
 {if $tags || $archive}
 	<div style="clear:both" class="interestBox wordnet listing-sidebar">
 
+<form action="/content/" method="get">
+        Keyword Search:  <input type="submit" value="Find"/> <br/>
+        <input type="text" name="q" id="qs" size="20" {if $q} value="{$q|escape:'html'}"{/if}/><br/>
+	<input type=hidden name="scope[]" value="blog"/>
+</form>
+
 	{if $archive}
 		<b>Post Archive</b>:
 		<table border="0" cellspacing="1" cellpadding="1">

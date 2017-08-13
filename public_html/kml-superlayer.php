@@ -32,11 +32,11 @@ $kml->filename = "Geograph-Layer.kml";
 
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
-if (empty($_SERVER['HTTP_USER_AGENT']) 
-			|| $_SERVER['HTTP_USER_AGENT'] == 'ArcGIS Client Using WinInet' 
+if (empty($_SERVER['HTTP_USER_AGENT'])
+			|| $_SERVER['HTTP_USER_AGENT'] == 'ArcGIS Client Using WinInet'
 			|| $_SERVER['HTTP_USER_AGENT'] == '-' //Google Maps (Mapplet)
-			|| strpos($_SERVER['HTTP_USER_AGENT'],"BROKEN-Kml-Google;") === 0 ) { //Google Maps NEW 
-	
+			|| strpos($_SERVER['HTTP_USER_AGENT'],"BROKEN-Kml-Google;") === 0 ) { //Google Maps NEW
+
 	$NetworkLink = $kml->addChild('NetworkLink');
 	$NetworkLink->setItem('name','Geograph NetworkLink');
 $NetworkLink->setItemCDATA('description',<<<END_HTML
@@ -79,29 +79,30 @@ END_HTML
 	$UrlTag->setItem('viewRefreshTime',4);
 	$UrlTag->setItem('viewFormat','BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth]&amp;LOOKAT=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading],[horizFov],[vertFov]');
 
-} elseif ($m[2] == 4 || isset($_GET['download'])) { 
-	
+} elseif ($m[2] == 4 || isset($_GET['download'])) {
+
 	if ($i) {
 		$cache_file = "kml/$i/geograph.kmz";
 	} else {
 		$cache_file = "kml/geograph.kmz";
-	} 
-	
+	}
+
 	$mtime = filemtime($cache_file);
 
 
 	//use the filename as a hash
-	customCacheControl($mtime,$cache_file);	
+	customCacheControl($mtime,$cache_file);
 
+	header('Access-Control-Allow-Origin: *');
 	Header("Content-Type: application/vnd.google-earth.kmz+xml; charset=utf-8; filename=geograph.kmz");
 	Header("Content-Disposition: attachment; filename=\"geograph$i.kmz\"");
-	
+
 	header('Content-length: '.filesize($cache_file));
 
 	readfile($cache_file);
 	exit;
 
-} else { 
+} else {
 	$networklink = new kmlNetworkLink(null,'Geograph SuperLayer');
 
 $desc = <<<END_HTML
@@ -147,7 +148,7 @@ $LookAt->setItem('tilt',0);
 	$UrlTag->setItem('refreshMode','onInterval');
 	$UrlTag->setItem('refreshInterval',60*60*24);
 	$kml->addChild($networklink);
-} 
+}
 
 if (isset($_GET['debug'])) {
 	print "<a href=?download>Open in Google Earth</a><br/>";
@@ -160,4 +161,3 @@ if (isset($_GET['debug'])) {
 exit;
 
 
-?>

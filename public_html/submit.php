@@ -23,6 +23,8 @@
 
 require_once('geograph/global.inc.php');
 
+dieIfReadOnly();
+
 if (isset($_GET['preview'])) {
 	session_cache_limiter('none');
 } else {
@@ -37,7 +39,7 @@ init_session();
 $uploadmanager=new UploadManager;
 
 //display preview image?
-if (isset($_GET['preview']))
+if (isset($_GET['preview']) && $uploadmanager->validUploadId($_GET['preview']))
 {
         header("Content-Type: image/jpeg");
 	$uploadmanager->outputPreviewImage($_GET['preview']);

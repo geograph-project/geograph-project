@@ -24,5 +24,6 @@
     
 {/box}
 </div>
+{dynamic}{pagefooter}{/dynamic}
 </body>
 </html>

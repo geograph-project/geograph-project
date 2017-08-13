@@ -31,7 +31,9 @@ $template = 'discuss_report.tpl';
 $USER->mustHavePerm("basic");
 
 if (!empty($_POST)) {
-	
+	if (!empty($_POST['message'])) {
+		die();
+	}
 	$db = GeographDatabaseConnection(false);
 
 	$u = array();
@@ -39,31 +41,29 @@ if (!empty($_POST)) {
 	foreach (array('post_id','topic_id','type','comment') as $key) {
 		if (!empty($_POST[$key])) {
 			$u[$key] = trim($_POST[$key]);
-			$data .= "$key: $value\n";
+			$data .= "$key: ".trim($_POST[$key])."\n";
 		}
 	}
+	$data .= "name: ".$USER->nickname."\n";
 
 	if (!empty($u)) {
-		
 		$u['user_id'] = $USER->user_id;
 
 		$db->Execute('INSERT INTO discuss_report SET created=NOW(),`'.implode('` = ?, `',array_keys($u)).'` = ?',array_values($u));
-		
+
 		$smarty->assign("message",'Report saved at '.date('r').', thank you!');
-		
-		
+
 		$topic = intval($_POST['topic_id']);
 		$mods=$db->GetCol("select email from user where FIND_IN_SET('forum',rights)>0;");
-			
+
 		$subject = "[Geograph Forum Report] for thread #$topic";
 		$body = "{$CONF['SELF_HOST']}/admin/discuss_reports.php?topic_id=$topic\n\n";
 		$body .= "Time: ".date('r')."\n\n";
 		$body .= $data;
-		
-		foreach ($mods as $email) 
+
+		foreach ($mods as $email)
 			mail($email,$subject,$body);
 	}
-
 }
 
 

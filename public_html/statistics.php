@@ -28,7 +28,12 @@ if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by'])) {
 
 if (empty($smarty)) {
 	require_once('geograph/global.inc.php');
-	init_session();
+
+	if (!isset($_GET['save'])) {
+	        init_session_or_cache(3600, 360); //cache publically, and privately
+	} else {
+		init_session();
+	}
 
 	$smarty = new GeographPage;
 }

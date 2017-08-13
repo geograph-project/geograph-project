@@ -627,7 +627,8 @@ if (isset($_REQUEST['id']))
 			}
 		}
 
-		$smarty->assign('use_autocomplete', $USER->use_autocomplete);
+		//disable this becase mod buttons, use JQuery, which conflicts with Mootools as used by the auto-completer. 
+		//$smarty->assign('use_autocomplete', $USER->use_autocomplete);
 
 		require_once('geograph/rastermap.class.php');
 

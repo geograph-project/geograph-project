@@ -16,19 +16,41 @@
 
 	<li><a href="/statistics/fully_geographed.php">List <b>Fully-Geographed hectads</b></a> <small>(10 x 10 km squares)</small> - links to large image Mosaics</li>
 
-	<li>{external href="http://www.nearby.org.uk/geograph/mosaic/" text="Mosaics of <b>completed myriads</b>"} <small>(100 x 100 km squares)</small> - using a Flash-based viewer</li>
+	<li>{external href="http://www.geograph.org/mosaic/" text="Mosaics of <b>completed myriads</b>"} <small>(100 x 100 km squares)</small> - using a Flash-based viewer</li>
 
-        <li>{external href="http://www.nearby.org.uk/geograph/coverage/" text="<b>Historic coverage maps</b>"} <sup style="color:red">NEW!</sup> - includes build-up animations!</li>
+        <li>{external href="http://www.geograph.org/coverage/" text="<b>Historic coverage maps</b>"} - includes build-up animations!</li>
 
 </ul>
 <h3>Selections...</h3>
 <ul class="explore">
 
+	<li><b>{external href="http://www.geograph.org/gallery.php" text="Showcase Gallery"}</b> - Hand selected selection of Geograph Images</li>
+
+	<li><form action="/tags/" method="get" style="display:inline"> <a href="/tags/"><b>Tagged Images</b></a> 
+                <input type="text" name="tag" size="30" maxlength="60" onkeyup="{literal}if (this.value.length > 2) {loadTagSuggestions(this,event);} {/literal}" autocomplete="off"/ placeholder="Tag Search">
+                <input type="submit" value="View"/> - Explore Geograph images by tag/label!<br/>
+                <div style="position:relative;">
+                        <div style="position:absolute;top:0px;left:0px;background-color:lightgrey;margin-left:86px;padding-right:20px" id="tagParent">
+                                <ul id="taglist">
+                                </ul>
+                        </div>
+                </div>
+	</form></li>
+
+        <li><a href="/tags/primary.php"><b>Geographical Context</b></a> - high level categorization of Geograph Images<br>
+		Can also view the <a href="/tags/prefix.php?prefix=subject&output=alpha">Subjects</a> by <a href="/tags/prefix.php?prefix=subject&output=context">Context</a></li>
+
+	<li><a href="/stuff/thisday.php"><b>This day in past years</b></a> - selections of images taken on this day in previous years</li>
+
 	<li><a href="/thumbed-weekly.php"><b>This week's popular images</b></a> - view images being <a href="/faq.php#thumbsup">thumbed</a></li>
 
 	<li><a href="/explore/searches.php"><b>Featured searches</b></a> - hand-picked example searches</li>
 
-	<li><a href="/explore/routes.php">Follow <b>national routes</b></a>.</li>
+	<!--li>{external href="http://ww2.scenic-tours.co.uk/serve.php?t=WolNuJvoMhXMJL5405olNblMbhZjaMtNXNh#station=achnasheen%3ANH1658" text="Geograph Stations Viewer"}<sup style="color:red">new!</sup> - experimental interative station viewer</li-->
+
+	<li><a href="/explore/rivers.php">Prime <b>Rivers</b> of Great Britain</a> - sample of images for all major rivers</li>
+
+	<li><a href="/explore/routes.php">Follow <b>national routes</b></a> - national trails etc.</li>
 
 	<li><a name="counties"></a>View photographs at <b>centre points</b>: <ul>
 		<li><a href="/explore/counties.php?type=modern">Modern administrative counties</a>,
@@ -41,7 +63,7 @@
 
 	<li><a href="/explore/places/" title="Explore by Place">Explore the <b>placename gazetteer</b></a> (or try a <a href="/finder/places.php">search</a>)</li>
 
-	<li>{external href="http://www.geographs.org/portals/portals.php" text="Geograph Portals"} <small>Experimental collections of Geograph images</small></li>
+	<!--li>{external href="http://www.geographs.org/portals/portals.php" text="Geograph Portals"} <small>Experimental collections of Geograph images</small></li-->
 
 </ul>
 <h3>Breakdowns...</h3>
@@ -56,6 +78,10 @@
 </ul>
 <h3>Go anywhere...</h3>
 <ul class="explore">
+
+	<li><a href="/browser/#!start">Geograph Browser</a><sup style="color:red">NEW!</sup> - Interactive browser to quickly search and browse images</li>
+
+	<li>SuperLayer: for <a href="/kml.php">Google Earth</a> - dragable/zoomable interactive maps - shows all images</li>
 
 	<li><form method="get" action="/browse.php" style="display:inline">
 	<label for="gridref">Browse</label> by <b>grid reference</b>: 
@@ -72,6 +98,7 @@
 	<li><a href="/hectadmap.php">View a <b>Hectad coverage</b> map</a></li>
 
 	<li><form method="get" action="/search.php" style="display:inline">
+	<input type="hidden" name="form" value="explore"/>
 	<label for="searchterm"><b>Search</b> by keyword, place, postcode or contributor</label>: <br/>
 	<input id="searchq" type="text" name="q" value="{$searchq|escape:'html'}" size="30"/>
 	<input id="searchgo" type="submit" name="go" value="Find"/> [<a href="/help/search">help</a>, <a href="/search.php?form=advanced">advanced search</a>]
@@ -98,6 +125,54 @@
 {/if}
 
 </ul>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <script src="/js/chosen/chosen.jquery.min.js" type="text/javascript"></script>
+  <link rel="stylesheet" href="/js/chosen/chosen.css" />
+<script type="text/javascript">{literal}
+$(function() {
+	$("#topic_id, #county_id").chosen();
+});
+
+
+        function loadTagSuggestions(that,event) {
+
+                var unicode=event.keyCode? event.keyCode : event.charCode;
+                if (unicode == 13) {
+                        //useTags(that);
+                        return;
+                }
+
+                param = 'q='+encodeURIComponent(that.value);
+
+                $.getJSON("/tags/tags.json.php?"+param+"&callback=?",
+
+                // on search completion, process the results
+                function (data) {
+                        var div = $('#taglist').empty();
+                        $('#tagParent').show();
+
+                        if (data && data.length > 0) {
+
+                                for(var tag_id in data) {
+                                        var text = data[tag_id].tag;
+                                        if (data[tag_id].prefix && data[tag_id].prefix!='term' && data[tag_id].prefix!='category' && data[tag_id].prefix!='cluster' && data[tag_id].prefix!='wiki') {
+                                                text = data[tag_id].prefix+':'+text;
+                                        }
+                                        text = text.replace(/<[^>]*>/ig, "");
+                                        text = text.replace(/['"]+/ig, " ");
+
+                                        div.append("<li><a href=\"/tagged/"+text+"\">"+text+"</a></li>");
+                                }
+
+                        } else {
+                                div.append("<li><a href=\"/tagged/"+that.value+"\">"+that.value+"</a></li>");
+                        }
+                });
+        }
+
+{/literal}</script>
+
+
 
 <p style="background-color:#cccccc;padding:10px;">Explore using <a href="/help/sitemap#software">external <b>software</b></a>.</p>
 

@@ -8,7 +8,6 @@
         <a href="/choose-search.php" class="tab">Site Search Engine</a>
         <a href="/choose-preview.php" class="tab">Preview Method</a>
         <a href="/switch_tagger.php" class="tab">Tagging Box</a>
-        <a href="/switch.php" class="tab">Submission Method</a>
 </div>
 <div style="position:relative;" class="interestBox">
 	<h2 style="margin:0">Your Profile Settings</h2>
@@ -390,12 +389,6 @@
 </fieldset>
 
 
-<p><b>Other Options</b>: <a href="/choose-search.php" target="_blank">Choose Site Search Engine</a>,
-	<a href="/profile.php?notifications=1" target="_blank">Email Notifications for your photos</a>,
-	<a href="/switch_tagger.php" target="_blank">Enable Experimental Tag Box</a>,
-	<a href="/switch.php" target="_blank">Old submission method</a>,
-	and <a href="/help/submit" target="_blank">Choose Prefered mapping provider for submission</a> - these options are setable on their own page, which open in new window.</p>
-
  	<input type="submit" name="savechanges" value="Save Changes"/>
  	<input type="submit" name="cancel" value="Cancel"/>
 
@@ -406,7 +399,7 @@
         <div class="field">
 		<label class="nowrap">Apply</label>
 
-		<a href="{$company_link|escape:'html'}">Follow this link to be taken to the company mini-site</a>
+		<a href="{$company_link|escape:'html'}" target="_blank">Follow this link to be taken to the company mini-site</a>
 
 		<div class="fieldnotes">You already qualify for membership - from there can apply for Company Membership.</div>
         </div>

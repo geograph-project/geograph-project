@@ -31,7 +31,7 @@ if (!empty($_GET['q']) && empty($_GET['scope']) && empty($_GET['auth'])) {
 require_once('geograph/global.inc.php');
 require_once('geograph/feedcreator.class.php');
 
-$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP');
+$valid_formats=array('RSS0.91','RSS1.0','RSS2.0','MBOX','OPML','ATOM','ATOM0.3','HTML','JS','PHP','JSON');
 
 	$valid_formats=array_merge($valid_formats,array('KML','GeoRSS','GPX'));
 

@@ -79,33 +79,50 @@
 	</tr></thead>
 	<tbody>
 	{dynamic}
-	{if $user->registered}
-	<tr>
-		<td style="font-size:0.9em">{$attendee.updated|date_format:"%a, %e %b %Y"|default:"-"}</td>
-		<td>{$user->realname|escape:"html"}<input type="hidden" name="id" value="{$geoevent_id}"/><input type="hidden" name="attendee" value="{$attendee.geoevent_attendee_id}"/></td>
-		<td><input type="text" name="message" value="{$attendee.message|escape:"html"}" size="64" maxlength="160"/></td>
-		<td><select name="type">
-		{html_options options=$types selected=$attendee.type}
-		</select> </td>
-		<td><input type="submit" value="save"/></td>
-	</tr>
-	{/if}
 
 	{if $list}
 	{foreach from=$list item=item}
-		{if $item.geoevent_attendee_id != $attendee.geoevent_attendee_id}
+		{if $item.geoevent_attendee_id == $attendee.geoevent_attendee_id && $edit}
+			<tr>
+				<td style="font-size:0.9em"><b>{$attendee.updated|date_format:"%a, %e %b %Y"|default:"-"}</b></td>
+				<td>{$user->realname|escape:"html"}<input type="hidden" name="id" value="{$geoevent_id}"/><input type="hidden" name="attendee" value="{$attendee.geoevent_attendee_id}"/></td>
+				<td><input type="text" name="message" value="{$attendee.message|escape:"html"}" size="64" maxlength="160" onkeyup="{literal}if (this.value != this.defaultValue) {this.form.saveBtn.style.display=''; }{/literal}"/></td>
+				<td><select name="type" onchange="this.form.saveBtn.style.display='';">
+				<option value="">select...</option>
+				{html_options options=$types selected=$attendee.type}
+				</select> </td>
+				<td><input type="submit" value="save" name="saveBtn" style="display:none"/></td>
+			</tr>
+		{else}
 			{cycle values="#f0f0f0,#e9e9e9" assign="bgcolor"}
 			<tr bgcolor="{$bgcolor}"{if $item.type == 'unable to attend'} class="unable"{/if}>
 				<td sortvalue="{$item.updated}" class="nowrap" style="font-size:0.9em"><b>{$item.updated|date_format:"%a, %e %b %Y"}</b></td>
 				<td sortvalue="{$item.realname|escape:"html"}"><a href="/profile/{$item.user_id}">{$item.realname|escape:"html"}</a></td>
 				<td>{$item.message|escape:"html"|default:'--None--'}</td>
 				<td>{$item.type}</td>
+				{if $item.geoevent_attendee_id == $attendee.geoevent_attendee_id}
+					<td><a href="{$script_name}?id={$geoevent_id}&amp;edit=1">Edit</a></td>
+				{/if}
 			</tr>
 		{/if}
 	{/foreach}
 	{else}
 		<tr><td colspan="2">- there are no registered attendees -</td></tr>
 	{/if}
+
+	{if $user->registered && !$attendee.geoevent_attendee_id}
+	<tr>
+		<td style="font-size:0.9em">Register Here</td>
+		<td>{$user->realname|escape:"html"}<input type="hidden" name="id" value="{$geoevent_id}"/></td>
+		<td><input type="text" name="message" value="{$attendee.message|escape:"html"}" size="64" maxlength="160"/></td>
+		<td><select name="type">
+		<option value="">select...</option>
+		{html_options options=$types selected=$attendee.type}
+		</select> </td>
+		<td><input type="submit" value="save" name="saveBtn"/></td>
+	</tr>
+	{/if}
+
 	{/dynamic}
 	</tbody>
 	<tfoot>

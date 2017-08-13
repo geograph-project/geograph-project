@@ -3,7 +3,8 @@
 <div style="width:800px;position:relative;">
 	<div id="mapLink" style="float:right"></div>
 	<h2>Experimental Geograph Coverage Map</h2>
-	<p>Click the map to view nearby images.</p>
+	<p>Click the map to view nearby images (appear below the map). Also open the layer switcher 
+	(via the <img src="http://s1.geograph.org.uk/ol/img/layer-switcher-maximize.png" style="opacity:0.5;height:10px;width:10px"> icon) to try other layers.</p>
 </div>
 
 	<div id="map_message" style="width:800px; height:10px; position:relative;; left:0; margin-bottom:3px; padding:3px;"></div>
@@ -24,7 +25,7 @@
         <script src="{$static_host}/ol/km-graticule.js"></script>
         <script src="{$static_host}/ol/osgb-layer.v7.js"></script>
         <script src="{$static_host}/ol/nls-api.v2.js"></script>
-        <script src="{$static_host}/ol/geograph-openlayers.v31.js"></script>
+        <script src="{$static_host}/ol/geograph-openlayers.v33.js"></script>
 	
         <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
 
@@ -346,7 +347,7 @@ function roundNumber(num, dec) {
 
 //stolen from the browser!
 function getTextQuery() {
-    var raw = $('#q').attr('value');
+    var raw = $('#qinp').attr('value');
 
     if (raw.length == 0) {
        return '';
@@ -452,7 +453,7 @@ function checkboxUpdate() {
 	<input type=radio name="resolution" value="centisquare" onclick="checkboxUpdate()">CentiSquare
 	<br/>
 	<span id="keywordSpan" style="display:none">
-		Keyword Filter: <input type="search" name="q" id="q"><input type=button value="update" onclick="checkboxUpdate()"> (uses the syntax from the Browser)
+		Keyword Filter: <input type="search" name="q" id="qinp"><input type=button value="update" onclick="checkboxUpdate()"> (uses the syntax from the Browser)
 	</span>
     </form>
 

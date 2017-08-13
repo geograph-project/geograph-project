@@ -68,7 +68,7 @@
 <div class="interestBox" style="margin-top:10px"><a href="/project/register.php?id={$project_id}">{if $current_register}Modify{else}Register{/if} your interest in this project</a></div>
 
 <hr/>
-<div style="text-align:right;color:gray">{$published|date_format:"%a, %e %b %Y at %H:%M"}</div>
+<div style="color:silver;text-align:right;font-size:0.8em">Created: {$published|date_format:"%a, %e %b %Y"}, Updated: {$updated|date_format:"%a, %e %b %Y"}</div>
 
 
 {if $user->user_id == $user_id || $isadmin}

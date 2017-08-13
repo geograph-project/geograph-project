@@ -233,8 +233,11 @@ function clearSubmission() {
 {dynamic}{$status_message}{/dynamic}
 
 	<noscript>
-	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php">Submission Process</a> should be functional with it.</div>
+	<div style="background-color:pink; color:black; border:2px solid red; padding:10px;"> This process requires Javascript! The original <a href="/submit.php?redir=false">Submission Process</a> should be functional without it.</div>
 	</noscript>
+
+
+	<p>New! If you want, can <a href="?picnik=1">submit image via PicMonkey</a>. PicMonkey allows you to perform basic image manipulation and tweaking of the image prior to automatically transferring it to Geograph. (when done tweaking clicke the 'Save' button top left)</p>
 
 	<p>Complete the following steps in any order (and continue on to the following steps while the photo is still uploading!).
 	 A overview map is provided to help locate a square, but is optional. You can directly enter a grid reference in step 2 if you wish.
@@ -256,7 +259,7 @@ function clearSubmission() {
 	<a id="sh1" href="#" class="sh sn" onclick="return clicker(1,null,event.shiftKey)"><span id="se1">-</span> Step 1 - Upload Photo</a>
 
 	<div id="sd1" class="sd" style="display:block">
-		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{/dynamic}&amp;container=iframe1#sort=Uploaded%A0%A0%u2193" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
+		<iframe src="/submit2.php?inner&amp;step={dynamic}{if $multi}0{else}1{/if}{if $transfer_id}&amp;transfer_id={$transfer_id|escape:'url'}{/if}{/dynamic}&amp;container=iframe1#sort=Uploaded%A0%A0%u2193" id="iframe1" width="100%" height="220px" style="border:0"></iframe>
 	</div>
 <!-- # -->
 	<a id="sh9" href="#" class="sh sn" onclick="return clicker(9,null,event.shiftKey)" style="font-size:0.9em"><span id="se9">+</span> Find Square on Map (optional tool)</a>

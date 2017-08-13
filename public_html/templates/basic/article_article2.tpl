@@ -12,7 +12,8 @@
 #maincontent tt { padding: 1px; background-color: #f9f9f9}
 
 #maincontent h1.pageheading { margin-bottom:0}
-#maincontent h2.pageheading { margin-top:0; background-color:gray; font-size:0.8em; color:white}
+#maincontent h2.pageheading { margin-top:0; margin-bottom:0; background-color:gray; font-size:0.8em; color:white}
+#maincontent div.published { margin-left:30px; margin-bottom:10px; color:gray}
 
 #contents_table {  border: 1px solid lightgrey; background-color: #eeeeee; padding: 10px }
 #contents_table .title { font-weight:bolder;  padding:3px; border-bottom:1px solid black; margin-bottom:5px; }
@@ -60,8 +61,10 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
         {/if}
         <h2 class="pageheading">{$title|escape:'html'}</h2>
 {else}
-        <h1>{$title|escape:'html'}</h1>
+        <h1 class="pageheading">{$title|escape:'html'}</h1>
 {/if}
+<div class="published">Published: {$publish_date|date_format:"%e %B %Y"}</div>
+
 {if $pagesString}
 	<div style="margin-top:0px;font-size:0.8em;">
 		( Page {$pagesString})
@@ -150,7 +153,7 @@ ul.content li {	padding:3px; border-top: 1px solid gray}
 
 {if $imageCredits}
 	{if $url != 'Geograph-reaches-Three-Million-Pictures'}
-	<div style="float:right;position:relative"><a title="View these images in Google Earth" href="/search.php?article_id={$article_id}&amp;orderby=seq_id&amp;kml" class="xml-kml">KML</a></div>
+	<div style="float:right;position:relative"><a title="View these images in Google Earth" href="/search.php?article_id={$article_id}&amp;orderby=seq_id&amp;kml" class="xml-kml no_print">KML</a></div>
 	{/if}
 	<div class="ccmessage copyright"><a rel="license" name="imlicence" href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 		alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" /></a> &nbsp; <b><a href="/search.php?article_id={$article_id}&amp;orderby=seq_id">Images used on this page</a></b>, &copy; Copyright {$imageCredits};

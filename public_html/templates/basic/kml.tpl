@@ -1,4 +1,4 @@
-{assign var="page_title" value="Google Earth or Google Maps :: KML Export"}
+{assign var="page_title" value="Google Earth :: KML Export"}
 {include file="_std_begin.tpl"}
 {dynamic}
 	<div style="padding:5px;background:#dddddd;position:relative; float:right; font-size:0.8em; z-index:100; border:1px solid blue">
@@ -6,25 +6,24 @@
 	<span style="display:none" id="show1"><a href="javascript:void(hide_tree(1));">Hide</a><br/><br/>
 	<b>All Geograph Images</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/kml-superlayer.php" title="Geograph Superlayer" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (<b>GE Version 4+</b>)<br/>
-	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/ig/directory?synd=mpl&pid=mpl&features=sharedmap%2Cgeofeed&backlink=http%3A%2F%2Fmaps.google.co.uk%2Fmaps%2Fmm%3Fmapprev%3D1%26ie%3DUTF8%26z%3D5%26om%3D1&num=24&url=http://www.geograph.org.uk/stuff/gmapplet0.xml" text="Google Maps Mapplet"}<br/>
 	<br/>
 	<b>Recent Images</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/feed/recent.kml" title="recent Geograph Submissions" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a>
-	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=$self_host/feed/recent.kml" text="Google Maps"}<br/>
+	&nbsp;&nbsp;&nbsp;{external href="http://www.bing.com/maps/default.aspx?v=2&mapurl=http://$http_host/feed/recent.kml" text="Bing Maps"}<br/>
 	<br/>
 	<b>Recent Articles</b>: <br/>
 	&nbsp;&nbsp;&nbsp;<a href="/article/feed/recent.kml" title="recent Geograph Articles" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a>
-	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=$self_host/article/feed/recent.kml" text="Google Maps"}<br/>
+	&nbsp;&nbsp;&nbsp;{external href="http://www.bing.com/maps/default.aspx?v=2&mapurl=http://$http_host/article/feed/recent.kml" text="Bing Maps"}<br/>
 	{if $user->registered && $enable_forums}<br/>
 	<b>Recent Discussions</b>:<br/>
 	&nbsp;&nbsp;&nbsp;<a href="/discuss/feed/forum5.kml" title="recent Geograph Discussions" Google Earth class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a>
-	&nbsp;&nbsp;&nbsp;{external href="http://maps.google.co.uk/maps?q=$self_host/discuss/feed/forum5.kml" text="Google Maps"}<br/>
+	&nbsp;&nbsp;&nbsp;{external href="http://www.bing.com/maps/default.aspx?v=2&mapurl=http://$http_host/discuss/feed/forum5.kml" text="Bing Maps"}<br/>
 	{/if}
 	<br/>
 	<b>Hectad<sup><a href="/help/squares" class="about" style="font-size:0.7em">?</a></sup> 3D Coverage Graph</b>:<br/>
 	&nbsp;&nbsp;&nbsp;<a href="/kml/hectads-points.kmz" title="Geograph 3D Coverage Graph" class="xml-kml" type="application/vnd.google-earth.kmz+xml">KMZ</a> (about 200 kilobytes)<br/>
 	{if $user->registered}
-	&nbsp;&nbsp;&nbsp;<a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=4415"><i>More <small>including time animation</small></i></a><br/>
+	&nbsp;&nbsp;&nbsp;<a href="/discuss/index.php?&action=vthread&forum=2&topic=4415"><i>More <small>including time animation</small></i></a><br/>
 	{/if}
 	<small><small><i>Last updated: {$coverage_updated}</i></small></small><br/>
 	<br/>
@@ -41,8 +40,9 @@
 
 	{if !$i}
 	 <div class="interestBox" style="width:550px;background-color:yellow;padding:10px;margin-left: 15px; border:1px solid orange">
-	 <img src="/kml/images/cam1-small.gif" width="24" height="24" style="vertical-align: middle"/> <a href="/kml-superlayer.php"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
+	 <img src="/kml/images/cam1-small.gif" width="24" height="24" style="vertical-align: middle"/> <a href="/superlayer.kml"><b>Geograph SuperLayer</b></a> (Google Earth Version 4+ REQUIRED)
 	{if $i}<br/><i><b>- displays all images - not the selection as per requested search</b></i>{/if}
+	<br/>
 	<small><br/><br/>This SuperLayer allows full access to the thousands of images contributed to Geograph, the view starts depicting a coarse overview of the current coverage, zooming in reveals more detail until pictures themselves become visible (broadband recommended).
 	 <br/><small><i>Last updated: {$superlayer_updated}</i></small>
 	 <a href="/help/superlayer">View Icon Key</a></small>
@@ -53,11 +53,6 @@
 
 	{/if}
 
-
-	 <p>&middot;
-	 {external href="http://maps.google.co.uk/" text="Google Maps"}
-		provides zoomable street-maps and satellite imagery in an online interface.
-	 </p>
 
 	<form method="post" action="{$script_name}" style="background-color:#f0f0f0;padding:5px;margin-top:0px; border:1px solid #d0d0d0;">
 
@@ -105,7 +100,7 @@
 			 <td><b><label for="type_live"><big><acronym title="Open on maps.live.com">maps.live.com</acronym></big></label></b><br/>
 			 Open search results on the <b>maps.live.com</b> website (will automatically update).</td>
 		  </tr>
-		  <tr>
+		  <tr style="display:none">
 			 <td><input type="radio" name="type" value="maps" id="type_maps"/></td>
 			 <td><b><label for="type_maps"><big><acronym title="Open in Google Maps">Google Maps</acronym></big></label></b><br/>
 			 Open search results in the <b>Google Maps UK</b> website (will automatically update).</td>
@@ -141,7 +136,7 @@
 			 <td><b><label for="type_view"><big><acronym title="View-Based Refresh Network Link">Wide area</acronym></big></label></b><br/>Browse these results in <b>Google Earth</b></td>
 
 		  </tr>
-		  <tr>
+		  <tr style="display:none">
 
 			 <td><input type="radio" name="type" value="mapsview" id="type_mapsview"/></td>
 			 <td colspan="2"><b><label for="type_mapsview"><big><acronym title="View-Based Refresh Network Link on Maps">Wide area Maps</acronym></big></label></b><br/>Browse these results on <b>Google Maps</b></b>

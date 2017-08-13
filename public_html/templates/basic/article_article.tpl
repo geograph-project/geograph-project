@@ -1,6 +1,11 @@
 {assign var="content_articletext" value=$content|articletext}
 {if $pagetitle}{assign var="page_title" value="$pagetitle :: $title"}{else}{assign var="page_title" value=$title}{/if}
+{if $inner}
+{include file="_basic_begin.tpl"}
+<div id="maincontent">
+{else}
 {include file="_std_begin.tpl"}
+{/if}
 {if $include_sorttable}
 <script src="{"/sorttable.js"|revision}"></script>
 {/if}<a name="top"></a>
@@ -45,6 +50,7 @@ div.breadcrumb a {
 }
 </style>{/literal}
 {dynamic}
+	{if !$inner}
 	{if $user->registered && $approved == 2 && $edit_prompt}
 		<div class="no_print" style="padding-bottom:20px">
 			<div style="position:relative;float:right">[[<a href="/article/edit.php?page={$url|escape:'url'}">edit this article</a>]] [[<a href="/article/history.php?page={$url|escape:'url'}">article history</a>]]</div>
@@ -55,6 +61,7 @@ div.breadcrumb a {
 		{if $user_warning}
                         <p style="text-align:center;color:red;padding:7px;border:2px solid red" class="no_print">{$user_warning}</p>
 		{/if}
+	{/if}
 	{/if}
 {/dynamic}
 {if $parent_url && $parent_title}
@@ -156,7 +163,7 @@ div.breadcrumb a {
 
 </div>
 
-{if $grid_reference}
+{if $grid_reference && !$inner}
 	<div class="no_print" style="float:left; font-size:0.8em">
 	<img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$grid_reference}/links">Links for {$grid_reference}</a>&nbsp;
 	</div>
@@ -180,7 +187,9 @@ div.breadcrumb a {
 
 {if $imageCredits}
 	<hr/>
-	<div style="float:right;position:relative"><a title="View these images in Google Earth" href="/search.php?article_id={$article_id}&amp;orderby=seq_id&amp;kml" class="xml-kml">KML</a></div>
+	{if !$inner}
+	<div style="float:right;position:relative"><a title="View these images in Google Earth" href="/search.php?article_id={$article_id}&amp;orderby=seq_id&amp;kml" class="xml-kml no_print">KML</a></div>
+	{/if}
 	<div class="ccmessage copyright"><a rel="license" name="imlicence" href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 		alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" /></a> &nbsp; <b><a href="/search.php?article_id={$article_id}&amp;orderby=seq_id">Images used on this page</a></b>, &copy; Copyright {$imageCredits};
 		licensed for re-use under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>. <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">http://creativecommons.org/licenses/by-sa/2.0/</a><br/><br/></div>
@@ -188,7 +197,7 @@ div.breadcrumb a {
 
 {if $copyright}{$copyright}{/if}
 
-{if $grid_reference}
+{if $grid_reference && !$inner}
 	<div class="no_print">
 	<img src="{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/> <a href="/gridref/{$grid_reference}/links">Further links for {$grid_reference}</a>
 	</div>
@@ -197,4 +206,10 @@ div.breadcrumb a {
 {if $pagesString}
 	<hr/>	( Page {$pagesString})
 {/if}
+{if $inner}
+</div>
+</body>
+</html>
+{else}
 {include file="_std_end.tpl"}
+{/if}
