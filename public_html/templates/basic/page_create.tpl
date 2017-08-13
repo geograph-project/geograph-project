@@ -25,10 +25,10 @@ What is this page to be about about?<br/>
 
 <ul class="examples">
 	<li>The URL of an article, eg <br/>
-		<tt>http://{$http_host}/article/Dumbarton-Cemetery</tt></li>
+		<tt>{$self_host}/article/Dumbarton-Cemetery</tt></li>
 
 	<li>The URL of a Shared Description, eg <br/>
-		<tt>http://{$http_host}/snippet/6253</tt></li>
+		<tt>{$self_host}/snippet/6253</tt></li>
 
 	<li>Myriad, Hectad or Gridsquare reference, eg <br/>
                 <tt>NT4534</tt> or <tt>TQ74</tt></li>

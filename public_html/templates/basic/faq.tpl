@@ -295,27 +295,27 @@ The <b>Geograph website</b>:
 
 	<div style="background-color:#eeeeee; padding:10px; float:right">The feeds are also available in
 	<ul>
-	<li><a title="Geograph RSS 0.91 feed" href="http://{$http_host}/syndicator.php?format=RSS0.91">RSS0.91</a></li>
-	<li><a title="Geograph RSS 1.0 feed" href="http://{$http_host}/syndicator.php?format=RSS1.0"><b>RSS1.0</b></a></li>
-	<li><a title="Geograph RSS 2.0 feed" href="http://{$http_host}/syndicator.php?format=RSS2.0">RSS2.0</a></li>
-	<li><a title="Geograph OPML feed" href="http://{$http_host}/feed/recent.opml">OPML</a></li>
-	<li><a title="Geograph HTML feed" href="http://{$http_host}/feed/recent.html">HTML</a></li>
-	<li><a title="Geograph JavaScript feed" href="http://{$http_host}/feed/recent.js">JavaScript</a></li>
-	<li><a class="xml-kml" title="Geograph KML (Google Earth) feed" href="http://{$http_host}/feed/recent.kml">KML</a></li>
-	<li>simple <a class="xml-geo" title="Geograph GeoRSS feed" href="http://{$http_host}/feed/recent.rss">GeoRSS</a></li>
-	<li><a title="Geograph GeoRSS and PhotoRSS feed" href="http://{$http_host}/feed/recent.geophotorss">GeoPhotoRSS</a></li>
-	<li>and <a title="Geograph GPX feed" href="http://{$http_host}/feed/recent.gpx">GPX1.0</a></li>
+	<li><a title="Geograph RSS 0.91 feed" href="{$self_host}/syndicator.php?format=RSS0.91">RSS0.91</a></li>
+	<li><a title="Geograph RSS 1.0 feed" href="{$self_host}/syndicator.php?format=RSS1.0"><b>RSS1.0</b></a></li>
+	<li><a title="Geograph RSS 2.0 feed" href="{$self_host}/syndicator.php?format=RSS2.0">RSS2.0</a></li>
+	<li><a title="Geograph OPML feed" href="{$self_host}/feed/recent.opml">OPML</a></li>
+	<li><a title="Geograph HTML feed" href="{$self_host}/feed/recent.html">HTML</a></li>
+	<li><a title="Geograph JavaScript feed" href="{$self_host}/feed/recent.js">JavaScript</a></li>
+	<li><a class="xml-kml" title="Geograph KML (Google Earth) feed" href="{$self_host}/feed/recent.kml">KML</a></li>
+	<li>simple <a class="xml-geo" title="Geograph GeoRSS feed" href="{$self_host}/feed/recent.rss">GeoRSS</a></li>
+	<li><a title="Geograph GeoRSS and PhotoRSS feed" href="{$self_host}/feed/recent.geophotorss">GeoPhotoRSS</a></li>
+	<li>and <a title="Geograph GPX feed" href="{$self_host}/feed/recent.gpx">GPX1.0</a></li>
 	formats.</ul></div>
 
 	<p>We provide an GeoRSS (RSS1.0) feed at
-	<a title="Geograph RSS feed" href="http://{$http_host}/feed/recent.rss">http://{$http_host}/feed/recent.rss</a>
+	<a title="Geograph RSS feed" href="{$self_host}/feed/recent.rss">{$self_host}/feed/recent.rss</a>
 	which contains links to the latest 20 moderated images. </p>
 
 	<div>We have recently added RSS feeds to other parts of the site:
 		<ul>
 			<li>You will find an <a class="xml-rss">RSS</a> button at the bottom of <a href="/search.php" title="photograph search">search results</a>, useful to keep updated on local images.</li>
 			{if $enable_forums}<li>Registered users can access an RSS feed of the latest topics in the Discussion Forum, and even subscribe to an individual topic, just look for the <a class="xml-rss">RSS</a> button!</li>
-			<li>the Grid Square Discussions even supports <a class="xml-geo" title="Geograph Grid Square Discussions" href="http://{$http_host}/discuss/syndicator.php?forum=5&amp;format=GeoRSS">GeoRSS</a>.</li>{/if}
+			<li>the Grid Square Discussions even supports <a class="xml-geo" title="Geograph Grid Square Discussions" href="{$self_host}/discuss/syndicator.php?forum=5&amp;format=GeoRSS">GeoRSS</a>.</li>{/if}
 			<li>Get an <a class="xml-rss" href="/article/feed/recent.rss">RSS</a> feed of recently updated <a href="/article/">Articles</a>.</li>
 			<li>The newer <a href="/content/">Content</a> section has an <a class="xml-rss" href="/content/feed/recent.rss">RSS</a> feed.</li>
 			<li>Find out about <a href="/events/">organized meets</a> by following the <a class="xml-rss" href="/events/feed.rss">RSS</a> feed.</li>

@@ -42,13 +42,13 @@
         <h2 style="margin:0">Geograph Sitemap</h2>
 </div>
 
- <p>Powered by the {external href="http://www.geographs.org/links/" text="Geograph Links Directory"} - wiki-style editable database of all Geograph-related links.</p>   
+ <p>Powered by the {external href="http://www.geograph.org/links/" text="Geograph Links Directory"} - wiki-style editable database of all Geograph-related links.</p>   
 
 	<div class="rightbox"> 
 		<ul> 
-			<li><a href="http://www.geographs.org/links/"><b>Links Directory</b></a></li> 
+			<li><a href="http://www.geograph.org/links/"><b>Links Directory</b></a></li> 
 		</ul> {literal}
-		<form action="http://www.geographs.org/links/search.php" method="get"> 
+		<form action="http://www.geograph.org/links/search.php" method="get"> 
 			<input type="hidden" name="inner" value=""/> 
 			<input type="text" name="q" value="search keywords..." size="15" onfocus="if (this.value=='search keywords...') {this.value='';}"/><input type="submit" value="Search"/> 
 		</form> {/literal}
@@ -56,7 +56,7 @@
 
 <div class="links">{$content}</div>
 
-<p>&middot; If a link is missing or incorrect, then help us improve by editing the {external href="http://www.geographs.org/links/" text="directory"}. {external href="http://www.geographs.org/links/edit.php?sites[]=`$http_host`" text="Add a Link"}.</p>
+<p>&middot; If a link is missing or incorrect, then help us improve by editing the {external href="http://www.geograph.org/links/" text="directory"}. {external href="http://www.geograph.org/links/edit.php?sites[]=`$http_host`" text="Add a Link"}.</p>
     
 {include file="_std_end.tpl"}
 

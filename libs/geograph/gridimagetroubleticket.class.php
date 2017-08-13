@@ -629,6 +629,7 @@ class GridImageTroubleTicket
 	function & _buildEmail($comment,$realname = '')
 	{
 		$msg=array();
+		global $CONF;
 		
 		$image=& $this->_getImage();
 		
@@ -636,7 +637,7 @@ class GridImageTroubleTicket
 		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 		
 		$msg['body']="To respond to this message, please visit\n";
-                $msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
+                $msg['body'].="{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}\n";
        	        $msg['body'].="Please, do NOT reply by email\n";
 		$msg['body'].="---------------------------------------\n\n";
 
@@ -653,7 +654,7 @@ class GridImageTroubleTicket
 		$msg['body'].="---------------------------------------\n\n";
 		
 		$msg['body'].="To respond to this message, please visit\n";
-		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
+		$msg['body'].="{$CONF['SELF_HOST']}/editimage.php?id={$this->gridimage_id}\n";
 		$msg['body'].="Please, do NOT reply by email";
 		
 		

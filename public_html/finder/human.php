@@ -5,5 +5,5 @@ $link = "/finder/collaborative.php";
 if ($_SERVER['QUERY_STRING'])
 	$link .= "?".$_SERVER['QUERY_STRING'];
 
-header("Location: http://{$_SERVER['HTTP_HOST']}$link");
+header("Location: {$CONF['SELF_HOST']}$link");
 

@@ -11,7 +11,7 @@
 	<div style="float:left;padding-left:20px; width:200px;">
 		<span style="font-size:0.7em">{$image->comment|escape:'html'|nl2br|geographlinks}</span><br/>
 		<br/>
-		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" target="_blank">{$image->realname|escape:'html'}</a> and  
+		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}" target="_blank">{$image->realname|escape:'html'}</a> and  
 		licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" target="_blank">Creative Commons Licence</a></b></small>
 	</div>
 	
@@ -19,7 +19,7 @@
 </div>
 {if $external}
 	<div style="font-size:0.7em;width:470px;text-align:right;margin-left:auto;margin-right:auto;color:silver;margin-top:-4px">
-		Image provided by <a href="http://{$http_host}" target="_blank" style="color:gray;">{$http_host}</a>
+		Image provided by <a href="{$self_host}" target="_blank" style="color:gray;">{$http_host}</a>
 	</div>
 {/if}
 

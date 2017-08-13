@@ -10,7 +10,7 @@
 	color:silver;
 }
 {/literal}</style>
-<div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a> {external href="http://maps.google.co.uk/maps?q=http://`$http_host`/article/feed/recent.rss" text="Map"}</div>
+<div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></div>
 
 <div class="tabHolder">
 	<a href="/content/" class="tab">Collections</a>

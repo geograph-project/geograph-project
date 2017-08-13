@@ -41,17 +41,17 @@ if (empty($_SERVER['HTTP_USER_AGENT'])
 	$NetworkLink->setItem('name','Geograph NetworkLink');
 $NetworkLink->setItemCDATA('description',<<<END_HTML
 <table bgcolor="#000066" border="0"><tr bgcolor="#000066"><td bgcolor="#000066">
-<a href="http://{$_SERVER['HTTP_HOST']}/"><img src="http://{$_SERVER['HTTP_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
+<a href="{$CONF['SELF_HOST']}/"><img src="{$CONF['SELF_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
 </td></tr></table>
 
 <p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
 
-<p><b>Join us now at: <a href="http://{$_SERVER['HTTP_HOST']}/">{$_SERVER['HTTP_HOST']}</a></b>, and read more about the <a href="http://{$_SERVER['HTTP_HOST']}/kml.php">Google intergration</a>.</p>
+<p><b>Join us now at: <a href="{$CONF['SELF_HOST']}/">{$_SERVER['HTTP_HOST']}</a></b>, and read more about the <a href="{$CONF['SELF_HOST']}/kml.php">Google intergration</a>.</p>
 END_HTML
 );
 	$NetworkLink->setItem('open',0);
 
-	$UrlTag = $NetworkLink->useUrl("http://{$_SERVER['HTTP_HOST']}/earth.php?simple=1".($i?"&i=$i":''));
+	$UrlTag = $NetworkLink->useUrl("{$CONF['SELF_HOST']}/earth.php?simple=1".($i?"&i=$i":''));
 	$NetworkLink->setItem('visibility',0);
 
 	$UrlTag->setItem('viewRefreshMode','onStop');
@@ -72,7 +72,7 @@ END_HTML
 	$NetworkLink->setItemCDATA('description',"Please upgrade to Google Earth Version 4 to take advantage latest Superlayer");
 	$NetworkLink->setItem('open',0);
 
-	$UrlTag = $NetworkLink->useUrl("http://{$_SERVER['HTTP_HOST']}/earth.php?simple=1".($i?"&i=$i":''));
+	$UrlTag = $NetworkLink->useUrl("{$CONF['SELF_HOST']}/earth.php?simple=1".($i?"&i=$i":''));
 	$NetworkLink->setItem('visibility',0);
 
 	$UrlTag->setItem('viewRefreshMode','onStop');
@@ -106,7 +106,7 @@ END_HTML
 
 $desc = <<<END_HTML
 <table bgcolor="#000066" border="0"><tr bgcolor="#000066"><td bgcolor="#000066">
-<a href="http://{$_SERVER['HTTP_HOST']}/"><img src="http://{$_SERVER['HTTP_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
+<a href="{$CONF['SELF_HOST']}/"><img src="{$CONF['SELF_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
 </td></tr></table>
 
 <p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
@@ -128,7 +128,7 @@ END_HTML;
 }
 
 $desc .= <<<END_HTML
-<p><b>Join us now at: <a href="http://{$_SERVER['HTTP_HOST']}/">{$_SERVER['HTTP_HOST']}</a></b></p>
+<p><b>Join us now at: <a href="{$CONF['SELF_HOST']}/">{$_SERVER['HTTP_HOST']}</a></b></p>
 END_HTML;
 
 $networklink->setItemCDATA('description',$desc);
@@ -143,7 +143,7 @@ $LookAt->setItem('range',1253729);
 $LookAt->setItem('heading',0);
 $LookAt->setItem('tilt',0);
 
-	$UrlTag = $networklink->useUrl("http://{$_SERVER['HTTP_HOST']}/kml-superlayer.php?download".($i?"&i=$i":''));
+	$UrlTag = $networklink->useUrl("{$CONF['SELF_HOST']}/kml-superlayer.php?download".($i?"&i=$i":''));
 	$UrlTag->setItem('refreshMode','onInterval');
 	$UrlTag->setItem('refreshInterval',60*60*24);
 	$kml->addChild($networklink);

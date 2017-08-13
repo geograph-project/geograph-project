@@ -38,7 +38,7 @@
 
 	If you are not using categories anyway, <a href="/switch.php"><b>please switch it off</b></a>; this will hide this message. 
 
-	<br/><br/>We plan to get on with turning off categories completely, a provisional timetable <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=21&topic=26275&page=0">here</a>, please give feedback via that forum thread.
+	<br/><br/>We plan to get on with turning off categories completely, a provisional timetable <a href="/discuss/index.php?&action=vthread&forum=21&topic=26275&page=0">here</a>, please give feedback via that forum thread.
 </div>
 
 

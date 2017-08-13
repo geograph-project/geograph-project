@@ -95,7 +95,6 @@ function makefile($prefix='TQ') {
 	}
 
 	//OK, file must be too old, or not exist, let's make a shiny new one
-	
 
 	if(file_exists($csvfilename))
 		if(!@unlink($csvfilename))
@@ -108,11 +107,11 @@ function makefile($prefix='TQ') {
 	$images=new ImageList;
 
 	$recordSet=& $images->getRecordSetbyPrefix($prefix);
-	
+
 	//Memory Map header, define geograph.bmp as icon #800
 	fwrite($csvfile, "IC01,800,\"geograph.bmp\"\n");
 
-	while (!$recordSet->EOF) 
+	while (!$recordSet->EOF)
 	{
 		$image = $recordSet->fields;
 
@@ -126,13 +125,12 @@ function makefile($prefix='TQ') {
 		}
 
 		//WP04,Lat,Lon,Symbol,Name,Comment,File,Radius,Display,Unique,Visible,Locked,Category,Circle
-		fwrite($csvfile, "WP04,$lat,$long,800,$image[title],,http://{$_SERVER['HTTP_HOST']}/photo/$image[gridimage_id],0,1,$image[grid_reference],1,1,Geographs,0\r\n");
+		fwrite($csvfile, "WP04,$lat,$long,800,$image[title],,{$CONF['SELF_HOST']}/photo/$image[gridimage_id],0,1,$image[grid_reference],1,1,Geographs,0\r\n");
 		$recordSet->MoveNext();
 	}
-	$recordSet->Close(); 
+	$recordSet->Close();
 	fclose($csvfile);
 	return '';
 }
 
 
-?>

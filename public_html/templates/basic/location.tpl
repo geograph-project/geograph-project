@@ -159,7 +159,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 		<li>{external href="http://www.old-maps.co.uk/maps.html?txtXCoord=`$square->nateastings`&amp;txtYCoord=`$square->natnorthings`" text="old-maps.co.uk"}</li>
 		<li>{external href="http://maps.nls.uk/geo/find/#zoom=13&lat=$lat&lon=$long&layers=38" text="maps.nls.uk"}</li>
 		<li>{external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&amp;xygridref=`$square->nateastings`,`$square->natnorthings`&amp;startscale=10000" text="magic.defra.gov.uk"}{if $gridref6} ({external href="http://www.nearby.org.uk/magic-opener.php?startTopic=maggb&xygridref=`$square->nateastings`,`$square->natnorthings`&startscale=5000" text="closer"}){/if}</li> 
-		<li>{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=http://$http_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}</li> 
+		<li>{external href="http://www.streetmap.co.uk/newmap.srf?x=`$square->nateastings`&amp;y=`$square->natnorthings`&amp;z=3&amp;sv=`$square->nateastings`,`$square->natnorthings`&amp;st=OSGrid&amp;lu=N&amp;tl=[$urltitle]+from+geograph.org.uk&amp;ar=y&amp;bi=background=$self_host/templates/basic/img/background.gif&amp;mapp=newmap.srf&amp;searchp=newsearch.srf" text="streetmap.co.uk"}</li> 
 		
 		<li>{external href="http://wtp2.appspot.com/wheresthepath.htm?lat=$lat&amp;lon=$long" text="Where's the path?"}</li>
 		
@@ -168,9 +168,9 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 
 	{if $id}
-		<li><a title="Open in Google Earth" href="http://{$http_host}/photo/{$id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</li>
-		<li>{external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=http://`$http_host`/photo/`$id`.kml" text="Google Maps"} ({external href="https://www.google.co.uk/maps/place/$lat,$long" text="New Maps"})</li>
-		<li>{external href="http://maps.live.com/default.aspx?v=2&amp;mkt=en-us&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1&amp;mapurl=http://`$http_host`/photo/`$id`.kml" text="Bing Maps" title="detailed aerial photography from maps.live.com"}</li>
+		<li><a title="Open in Google Earth" href="{$self_host}/photo/{$id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</li>
+		<li>{external title="Open in Google Maps" href="http://maps.google.co.uk/maps?q=`$self_host`/photo/`$id`.kml" text="Google Maps"} ({external href="https://www.google.co.uk/maps/place/$lat,$long" text="New Maps"})</li>
+		<li>{external href="http://maps.live.com/default.aspx?v=2&amp;mkt=en-us&amp;cp=`$lat`~`$long`&amp;style=h&amp;lvl=14&amp;tilt=-90&amp;dir=0&amp;alt=-1000&amp;encType=1&amp;mapurl=`$self_host`/photo/`$id`.kml" text="Bing Maps" title="detailed aerial photography from maps.live.com"}</li>
 	{else}
 		<li><a title="Open in Google Earth" href="http://www.nearby.org.uk/googleEarth.kml.php?lat={$lat}&amp;long={$long}&amp;p={$gridrefraw}" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</li>
 		<li>{external title="Open in Google Maps" href="http://www.google.co.uk/maps/place/`$lat`,`$long`/`$lat`,`$long`,11z/" text="Google Maps"}</li>

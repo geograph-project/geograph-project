@@ -6,7 +6,7 @@
 
 {foreach from=$images item=image}
 Re: image for {$image.grid_reference} ({$image.title})
-   http://{$http_host}/photo/{$image.gridimage_id}
+  {$self_host}/photo/{$image.gridimage_id}
 
 {/foreach}
 {/if}

@@ -45,7 +45,7 @@ if (isset($_GET['id']))  {
 			header("HTTP/1.0 301 Moved Permanently");
 			header("Status: 301 Moved Permanently");
 			header("Location: /photo/".intval($_GET['id']).".kml");
-			print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_GET['id']).".kml\">View file</a>";
+			print "<a href=\"{$CONF['SELF_HOST']}/photo/".intval($_GET['id']).".kml\">View file</a>";
 			exit;
 		}
 		$version42plus = false;
@@ -79,15 +79,15 @@ if (isset($_GET['id']))  {
 
 		$placemark = $kml->addChild(new kmlPlacemark_Photo('id'.$image->gridimage_id,$image->grid_reference." : ".$image->title,$point));
 		$placemark->useHoverStyle();
-		$placemark->useCredit($image->realname,"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id);
+		$placemark->useCredit($image->realname,"{$CONF['SELF_HOST']}/photo/".$image->gridimage_id);
 
-		$linkTag = "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".$image->gridimage_id."\">";
+		$linkTag = "<a href=\"{$CONF['SELF_HOST']}/photo/".$image->gridimage_id."\">";
 		$details = $image->getThumbnail(120,120,2);
 
 		$thumb = $details['server'].$details['url']; 
 		$thumbTag = $details['html'];
 
-		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks(htmlnumericentities($image->comment))." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"http://".$_SERVER['HTTP_HOST'].$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
+		$description = $linkTag.$thumbTag."</a><br/>".GeographLinks(htmlnumericentities($image->comment))." (".$linkTag."view full size</a>)"."<br/><br/> &copy; Copyright <a title=\"view user profile\" href=\"".$CONF['SELF_HOST'].$image->profile_link."\">".$image->realname."</a> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a><br/><br/>";
 
 		$placemark->setItemCDATA('description',$description);
 
@@ -162,12 +162,12 @@ $cacheid = '';
 		if (isset($_REQUEST['submit'])) {
 			$simple = $_REQUEST['simple'];
 			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'view') {
-				$url = "http://{$_SERVER['HTTP_HOST']}/earth.php?i=$i&simple=$simple";
+				$url = "{$CONF['SELF_HOST']}/earth.php?i=$i&simple=$simple";
 			} elseif (isset($_REQUEST['type']) && $_REQUEST['type'] == 'mapsview') {
-				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results/$i.nl";
+				$url = "{$CONF['SELF_HOST']}/feed/results/$i.nl";
 				$_REQUEST['type'] = 'maps';
 			} else {
-				$url = "http://{$_SERVER['HTTP_HOST']}/feed/results/$i/$pg.kml";
+				$url = "{$CONF['SELF_HOST']}/feed/results/$i/$pg.kml";
 			}
 			if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'static') {
 				header("Status:302 Found");
@@ -250,5 +250,4 @@ $smarty->assign('adv', $_GET['adv']);
 
 $smarty->display($template, $cacheid);
 
-	
-?>
+

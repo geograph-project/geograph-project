@@ -47,7 +47,7 @@ $date = date(DATE_RFC850);
 
 $folder->setItemCDATA('description',<<<END_HTML
 <table bgcolor="#000066" border="0"><tr bgcolor="#000066"><td bgcolor="#000066">
-<a href="http://{$_SERVER['HTTP_HOST']}/"><img src="http://{$_SERVER['HTTP_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
+<a href="{$CONF['SELF_HOST']}/"><img src="{$CONF['SELF_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
 </td></tr></table>
 
 <p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
@@ -56,7 +56,7 @@ $folder->setItemCDATA('description',<<<END_HTML
 
 <p>Click on the Camera Icon or Thumbnails to view a bigger image, and follow the link to view the full resolution image on the geograph website.</p>
 
-<p><b>Join us now at: <a href="http://{$_SERVER['HTTP_HOST']}/">{$_SERVER['HTTP_HOST']}</a></b></p>
+<p><b>Join us now at: <a href="{$CONF['SELF_HOST']}/">{$_SERVER['HTTP_HOST']}</a></b></p>
 
 <p>This SuperLayer will automatically update, but by design is not realtime, so can take a number of weeks for new pictures to become available in the SuperLayer.</p>
 

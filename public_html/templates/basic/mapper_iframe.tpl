@@ -11,7 +11,7 @@
 
 var lon = {$e};
 var lat = {$n};
-var tileurl = "http://{$http_host}/tile.php";
+var tileurl = "{$self_host}/tile.php";
 var ttileurl = "{$tile_host}/tile.php";
 
 var zoom = 0;

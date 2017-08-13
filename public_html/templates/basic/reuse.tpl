@@ -52,14 +52,14 @@ div:target {
 <div style="float:left; position:relative; padding-right:10px;"><h2><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>
 
 <h2 style="margin-bottom:0px"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
-<div>by <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
+<div>by <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 
 <br style="clear:both;"/>
 
 	<div class="interestBox" style="width:750px;margin-left:auto;margin-right:auto;text-align:center">
 	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 	alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" align="left" /></a>
-	<b>&copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a></b> and  
+	<b>&copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a></b> and  
 	licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.<br style=clear:both>
 	</div>
 <br>
@@ -99,11 +99,11 @@ div:target {
 
 			<p style="border:2px solid lightgreen;padding:5px"><b>{$image->title|escape:'html'}</b><br>
 			<a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a> - 
-			&copy; <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> - <a href="http://{$http_host}/photo/{$image->gridimage_id}">geograph.org.uk/p/{$image->gridimage_id}</a></p>
+			&copy; <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> - <a href="{$self_host}/photo/{$image->gridimage_id}">geograph.org.uk/p/{$image->gridimage_id}</a></p>
 
 			<small><i>or more minimalistic version:</i></small>
 			<p style="border:2px solid lightgreen;padding:5px;text-align:right">
-				Photo &copy; <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>
+				Photo &copy; <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>
 				(<a href="http://creativecommons.org/licenses/by-sa/2.0/">cc-by-sa/2.0</a>)
 			</p>
 			(scroll down the page, for more detailed instructions)
@@ -137,7 +137,7 @@ div:target {
 	<div class="interestBox" style="width:750px;margin-left:auto;margin-right:auto;text-align:center">
 	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img
 	alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" align="left" /></a>
-	<b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and  
+	<b>&nbsp; &copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and  
 	licensed for reuse under <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">creativecommons.org/licenses/by-sa/2.0</a></b>
 	</div>
 
@@ -173,7 +173,7 @@ div:target {
 {external href="http://en.wikipedia.org/wiki/Inline_linking" text="Hotlinking"} the image directly off our servers will trigger automatic watermarks and may be blocked</small><br/><br/>
 </li>
 
-<li>ideally include a link to our photo page, at <a href="http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</a>, where the latest information will be available.</li>
+<li>ideally include a link to our photo page, at <a href="{$self_host}/photo/{$image->gridimage_id}">{$self_host}/photo/{$image->gridimage_id}</a>, where the latest information will be available.</li>
 
 </ul>
 
@@ -198,8 +198,8 @@ div:target {
 
 <form><textarea rows="7"><div style="display:inline-block; font-size:0.9em">
 	<img src="geograph-{$image->gridimage_id}-by-{$image->realname|escape:'html'|replace:' ':'-'}.jpg" alt="{$image->title|escape:'html'}, by {$image->realname|escape:'html'}" width="{$image->cached_size.0}" height="{$image->cached_size.1}"><br>
-	<div style="float:right;">Photo &amp;copy; <a href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
-	<a href="http://{$http_host}/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetakenString}, {$image->imagetakenString}{/if}
+	<div style="float:right;">Photo &amp;copy; <a href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
+	<a href="{$self_host}/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetakenString}, {$image->imagetakenString}{/if}
 
 	<div style="text-align:right; font-size:0.9em">Available for reuse under this <a href="https://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a></div>
 </div></textarea></form>
@@ -213,16 +213,16 @@ div:target {
 <a name="bbcode"></a>
 <h3>BBCode for reusing image on a non-Geograph forum</H3>
 
-<form><textarea rows="4">[b][url=http://{$http_host}/photo/{$image->gridimage_id}]{$image->title|escape:'html'}
+<form><textarea rows="4">[b][url={$self_host}/photo/{$image->gridimage_id}]{$image->title|escape:'html'}
 [img]{$image->getThumbnail(213,160,true)}[/img][/url][/b]
-&copy; Copyright [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/url] and  
+&copy; Copyright [url={$self_host}{$image->profile_link}]{$image->realname|escape:'html'}[/url] and  
 licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0/]Creative Commons Licence[/url].</textarea></form>
 
 <h3>BBCode with shorter creative commons message</H3>
 
-<form><textarea rows="3">[url=http://{$http_host}/photo/{$image->gridimage_id}][b]{$image->title|escape:'html'}[/b]
+<form><textarea rows="3">[url={$self_host}/photo/{$image->gridimage_id}][b]{$image->title|escape:'html'}[/b]
 [img]{$image->getThumbnail(120,120,true)}[/img][/url]
-&copy; [url=http://{$http_host}{$image->profile_link}]{$image->realname|escape:'html'}[/a], [url=http://creativecommons.org/licenses/by-sa/2.0/]cc-by-sa[/url].</textarea></form>
+&copy; [url={$self_host}{$image->profile_link}]{$image->realname|escape:'html'}[/a], [url=http://creativecommons.org/licenses/by-sa/2.0/]cc-by-sa[/url].</textarea></form>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 <br><br>
@@ -247,13 +247,13 @@ The following is the recommended template for using on the photo page. You shoul
 <form><textarea rows="13" id="wikitext">== {literal}{{int:filedesc}}{/literal} ==
 {literal}{{{/literal}Information
 |Description={literal}{{{/literal}en|1={$image->title|escape:'html'}{literal}}}{/literal}
-|Source=From [http://{$http_host}/photo/{$image->gridimage_id} geograph.org.uk]
+|Source=From [{$self_host}/photo/{$image->gridimage_id} geograph.org.uk]
 {if $image->imagetaken && strpos($image->imagetaken,'0000') !== 0}
 |Date={$image->imagetaken|replace:'-00':''}
 {else}
 |Date={$image->submitted|date_format:'%Y-%m-%dT%H:%M:%S+00:00'}
 {/if}
-|Author=[http://{$http_host}{$image->profile_link} {$image->realname|escape:'html'}]
+|Author=[{$self_host}{$image->profile_link} {$image->realname|escape:'html'}]
 |Permission=Creative Commons Attribution Share-alike license 2.0
 {literal}}}{/literal}
 {if $photographer_lat}

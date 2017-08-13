@@ -192,7 +192,7 @@ if ($CONF['template'] == 'ireland') {
 if ($CONF['template'] == 'api') {
 	$rss->link = "{$CONF['CONTENT_HOST']}/";
 } else {
-	$rss->link = "http://{$_SERVER['HTTP_HOST']}/";
+	$rss->link = "{$CONF['SELF_HOST']}/";
 }
 $baselink = $rss->link;
 

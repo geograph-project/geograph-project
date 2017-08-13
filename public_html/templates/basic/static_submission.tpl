@@ -27,12 +27,12 @@
  <p style="font-size:0.7em;margin-left:20px"><a href="/juppy.php">JUppy</a> is coded in cross-platform Java, and is a solution to upload many images, allowing you to prepare the images without an internet connection. <b><a href="/juppy.php">Read More, and Get it Now!</a></b></p>
 
 
- <h3><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Picasa Plugin</a></h3>
+ <h3><a href="picasa://importbutton/?url={$self_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Picasa Plugin</a></h3>
 
  <p style="margin-left:20px">Plugin for the popular {external href="http://picasa.google.com/" text="Picasa"} image mananagement program.</p>
 
  <p style="font-size:0.7em;margin-left:20px">With this button installed can use the selection tools in Picasa to upload photos in bulk, the submission process matches the online upload allowing selection with maps etc. Picasa automatically resizes the photo to Geograph specifications before upload, EXIF data is preserved, however it's only provided to Geograph at the end so it can't be used to find geolocation or dates embedded in the file. <br/>
- <b><a href="picasa://importbutton/?url=http://{$http_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>.<br/> (You will be asked to confirm this action, <b>only works if have Picasa installed!)</b></p>
+ <b><a href="picasa://importbutton/?url={$self_host}/stuff/geograph-for-picasa.pbz.php/geograph-for-picasa.pbz">Install the Geograph Uploader, Picasa Button</a></b>.<br/> (You will be asked to confirm this action, <b>only works if have Picasa installed!)</b></p>
  <p style="font-size:0.7em;margin-left:20px">Note while JUppy is an Offline Application, with which you can prepare the upload in advance of connecting; the Picasa button requires a Internet Connection to work as it integrates the interactive maps and other aids from the Geograph website.</p>
 
 <hr/>

@@ -36,8 +36,8 @@ $point = new kmlPoint(rand(5900,6000)/100,rand(100,200)/100);
 $placemark = $document->addChild(new kmlPlacemark_Photo(null,'test',$point));
 
 $placemark->setTimeStamp(date('Y-m-d'));
-	
-$placemark->useImageAsIcon("http://".$_SERVER['HTTP_HOST']."/templates/basic/img/guide1.jpg");
+
+$placemark->useImageAsIcon($CONF['STATIC_HOST']."/templates/basic/img/guide1.jpg");
 
 $point2 = new kmlPoint(rand(5900,6000)/100,rand(100,200)/100);
 
@@ -48,7 +48,7 @@ $placemark->addPhotographerPoint($point2);
 if (isset($_GET['download'])) {
 	$kml->outputKML();
 	exit;
-} 
+}
 
 print "<a href=?download>Open in Google Earth</a><br/>";
 print "<textarea rows=35 style=width:100%>";
@@ -60,4 +60,4 @@ exit;
 
 print "<pre>";
 print_r($kml);
-?>
+

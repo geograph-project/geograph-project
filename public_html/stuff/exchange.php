@@ -123,14 +123,14 @@ if (!empty($_POST)) {
 						$body = "Dear {$profile->realname}, \n\n";
 
 						$body .= "This is a message to let you know that {$USER->realname}\n";
-						$body .= "http://{$_SERVER['HTTP_HOST']}/profile/{$USER->user_id}\n";
+						$body .= "{$CONF['SELF_HOST']}/profile/{$USER->user_id}\n";
 						$body .= "has replied to your exchange request!\n\n";
 
 						$body .= "They provided the following photo in response to your '{$_POST['topic']}' request\n\n";
 
 						$body .= "{$reply->grid_reference} :: {$reply->title}\n";
 						$body .= " by {$reply->realname}\n";
-						$body .= "http://{$_SERVER['HTTP_HOST']}/photo/{$reply->gridimage_id}\n\n";
+						$body .= "{$CONF['SELF_HOST']}/photo/{$reply->gridimage_id}\n\n";
 						
 						$body .= "Thanks, \n the Geograph Website\n\n";
 						

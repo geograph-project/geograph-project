@@ -50,13 +50,13 @@ foreach (range(2005,date('Y')) as $year) {
 			$when  = sprintf("%04d-%02d",$year,$month);
 	
 			if (isset($_GET['build'])) {
-				$url = "http://".$_SERVER['HTTP_HOST']."/_scripts/kml-hectad_coverage.php?type=$type&when=$when".($thismonth?'&over=1':'');
+				$url = "".$CONF['SELF_HOST']."/_scripts/kml-hectad_coverage.php?type=$type&when=$when".($thismonth?'&over=1':'');
 				$files[] = $url; 
 				if (!isset($_GET['d'])) {
 					file_get_contents($url);
 				}
 			}
-			$url = "http://".$_SERVER['HTTP_HOST']."/kml/hectads-$type-$when.kmz";
+			$url = "".$CONF['SELF_HOST']."/kml/hectads-$type-$when.kmz";
 		
 		
 ?>

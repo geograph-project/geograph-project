@@ -13,12 +13,12 @@ Content-Transfer-Encoding: quoted-printable
 
 --------------------------------
 
-http://{$http_host}/photo/{$image->gridimage_id}
+{$self_host}/photo/{$image->gridimage_id}
 
 {$image->title|escape:'html'}
 {$image->comment|escape:'html'}
 
-View Online at http://{$http_host}/photo/{$image->gridimage_id}
+View Online at {$self_host}/photo/{$image->gridimage_id}
 --------------------------------
 Image =A9 Copyright {$image->realname} and licensed for reuse under this Creative Commons Licence. 
 http://creativecommons.org/licenses/by-sa/2.0/
@@ -36,7 +36,7 @@ Content-Transfer-Encoding: quoted-printable
 <HTML><HEAD><TITLE></TITLE>
 <META http-equiv=3DContent-Type content=3D"text/html; =
 charset=3Dwindows-1252"><BASE=20
-href=3D"http://{$http_host}/"\>
+href=3D"{$self_host}/"\>
 <META content=3D"Geograph User: {$user->user_id}" name=3DGENERATOR>
 </HEAD>
 <BODY bgColor=3D#eeeeff leftMargin=3D0 topMargin=3D0 MARGINHEIGHT=3D"0" =
@@ -47,12 +47,12 @@ MARGINWIDTH=3D"0">
   <TBODY>
   <TR>
     <TD bgColor=3D#000066>&nbsp;</TD>
-    <TD bgColor=3D#000066><A href=3D"http://{$http_host}/"><IMG =
+    <TD bgColor=3D#000066><A href=3D"{$self_host}/"><IMG =
 height=3D74=20
-      src=3D"http://{$http_host}/templates/basic/img/logo.gif" width=3D257 =
+      src=3D"{$self_host}/templates/basic/img/logo.gif" width=3D257 =
 border=3D0></A></TD>
     <TD vAlign=3Dtop align=3Dcenter bgColor=3D#000066><A=20
-      href=3D"http://{$http_host}/"><FONT face=3DGeorgia =
+      href=3D"{$self_host}/"><FONT face=3DGeorgia =
 color=3D#ffffff=20
       size=3D+2>{$http_host}</FONT></A><BR><FONT face=3DGeorgia =
 color=3D#ffffff><I>The Geograph Britain and Ireland project aims to collect geographically representative<BR> photographs of every square kilometre of the British Isles and you can be part of it.</I></FONT></TD>
@@ -73,7 +73,7 @@ solid"=20
     <TD style=3D"BORDER-RIGHT: black 1px solid; BORDER-TOP: black 1px =
 solid"=20
     align=3Dmiddle bgColor=3D#ffffff><BR><A=20
-      href=3D"http://{$http_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|replace:'=':'=3D'|replace:'alt=':'border=3D0 alt='}</A></TD>
+      href=3D"{$self_host}/photo/{$image->gridimage_id}">{$image->getFull(true)|replace:'=':'=3D'|replace:'alt=':'border=3D0 alt='}</A></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
@@ -94,7 +94,7 @@ solid; BORDER-BOTTOM: black 1px solid"=20
 face=3DGeorgia>View=20
       Online at <A=20
       =
-href=3D"http://{$http_host}/photo/{$image->gridimage_id}">http://{$http_host}/photo/{$image->gridimage_id}</A></FONT></TD>
+href=3D"{$self_host}/photo/{$image->gridimage_id}">{$self_host}/photo/{$image->gridimage_id}</A></FONT></TD>
     <TD>&nbsp;</TD></TR>
   <TR>
     <TD>&nbsp;</TD>
@@ -105,7 +105,7 @@ height=3D31=20
 align=3Dright=20
       border=3D0></A> <FONT face=3DGeorgia>Image =A9 Copyright <A =
 title=3D"View profile"=20
-      href=3D"http://{$http_host}{$image->profile_link|replace:'=':'=3D'}">{$image->realname}</A> and licensed for =
+      href=3D"{$self_host}{$image->profile_link|replace:'=':'=3D'}">{$image->realname}</A> and licensed for =
 reuse under this=20
       <A class=3Dnowrap =
 href=3D"http://creativecommons.org/licenses/by-sa/2.0/"=20

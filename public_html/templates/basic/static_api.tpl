@@ -64,7 +64,7 @@
 
 	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
 	 <img src="/templates/basic/img/icon_alert.gif" alt="Modify" width="50" height="44" align="left" style="margin-right:10px"/>
-	 <b>All exports include the photographer credit/name, which under the CC licence MUST be displayed alongside any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="http://{$http_host}/photo/[id]" rel="nofollow">http://{$http_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
+	 <b>All exports include the photographer credit/name, which under the CC licence MUST be displayed alongside any use of the image. Also the fact the image is CC licenced needs to be mentioned.</b><br/><br/>Ideally also you could link back to the main photo page, either with the link supplied or with <a href="{$self_host}/photo/[id]" rel="nofollow">{$self_host}/photo/[id]</a>.<br/><br/> <i>Thank you for your attention in this matter.</i>
 	 </div>
 
 	 <h3 style="border:1px solid #cccccc;background-color:lightgreen; padding:10px; clear:both;margin-top:30px;"><a name="dumps"></a>Database Dumps - Bulk Data download</h3> 
@@ -320,8 +320,8 @@
   &lt;status state="ok" /&gt; 
   &lt;title&gt;Bascote&lt;/title&gt; 
   &lt;gridref&gt;SP4063&lt;/gridref&gt; 
-  &lt;user profile="http://{$http_host}/profile/120"&gt;David Stowell&lt;/user&gt; 
-  &lt;img src="http://{$http_host}/photos/00/34/003456_e10e23bc.jpg"
+  &lt;user profile="{$self_host}/profile/120"&gt;David Stowell&lt;/user&gt; 
+  &lt;img src="{$self_host}/photos/00/34/003456_e10e23bc.jpg"
      width="640" height="480" /&gt; 
 &lt;/geograph&gt;</pre>
   </td> 
@@ -337,10 +337,10 @@
 &lt;?xml version="1.0" encoding="UTF-8" ?&gt; 
 &lt;geograph&gt;
   &lt;status state="ok" count="1" /&gt; 
-  &lt;image url="http://{$http_host}/photo/64854"&gt;
+  &lt;image url="{$self_host}/photo/64854"&gt;
     &lt;title&gt;Afon Cynfal&lt;/title&gt; 
-    &lt;user profile="http://{$http_host}/profile/3"&gt;Barry Hunter&lt;/user&gt; 
-    &lt;img src="http://{$http_host}/photos/06/48/064854_d68e7342_120x120.jpg" width="90" height="120" /&gt; 
+    &lt;user profile="{$self_host}/profile/3"&gt;Barry Hunter&lt;/user&gt; 
+    &lt;img src="{$self_host}/photos/06/48/064854_d68e7342_120x120.jpg" width="90" height="120" /&gt; 
     &lt;location grid="1" eastings="270500" northings="341100" /&gt; 
   &lt;/image&gt;
 &lt;/geograph&gt;</pre>
@@ -366,10 +366,10 @@ Returns an XML infoset of surrounding images, currently returns:
 &lt;?xml version="1.0" encoding="UTF-8" ?&gt; 
 &lt;geograph&gt;
   &lt;status state="ok" count="1" total="1034"/&gt; 
-  &lt;image url="http://{$http_host}/photo/1575413"&gt; 
+  &lt;image url="{$self_host}/photo/1575413"&gt; 
     &lt;title&gt;St Nicholas Hall&lt;/title&gt;
-    &lt;user profile="http://{$http_host}/profile/17441"&gt;David Lally&lt;/user&gt; 
-    &lt;img src="http://{$http_host}/geophotos/01/57/54/1575413_be18cb70_120x120.jpg" width="120" height="90" /&gt;
+    &lt;user profile="{$self_host}/profile/17441"&gt;David Lally&lt;/user&gt; 
+    &lt;img src="{$self_host}/geophotos/01/57/54/1575413_be18cb70_120x120.jpg" width="120" height="90" /&gt;
     &lt;location grid="1" lat="50.642106" long="-1.950011"/&gt; 
   &lt;/image&gt;
 &lt;/geograph&gt;</pre>
@@ -378,11 +378,11 @@ Note:the distance should be 10km or below.
 		</tr> 
 		<tr> 
 		  <th colspan="2"><a title="Example RDF Request"
-			 href="http://{$http_host}/photo/1234.rdf" rel="nofollow">http://{$http_host}/photo/[photo-id].rdf</a></th> 
+			 href="{$self_host}/photo/1234.rdf" rel="nofollow">{$self_host}/photo/[photo-id].rdf</a></th> 
 		</tr> 
 		<tr> 
 		  <th colspan="2"><a title="Example KML File"
-			 href="http://{$http_host}/photo/1234.kml" rel="nofollow">http://{$http_host}/photo/[photo-id].kml</a></th> 
+			 href="{$self_host}/photo/1234.kml" rel="nofollow">{$self_host}/photo/[photo-id].kml</a></th> 
 		</tr> 
 	 </table>
 
@@ -535,7 +535,7 @@ Note:the distance should be 10km or below.
 		  <th>Id</th> 
 		  <td><i>Unique</i> Numeric ID for the Picture, <br/>to be used to
 			 construct the URL to link back to the image<br/><a 
-			 href="http://{$http_host}/photo/2345" rel="nofollow">http://{$http_host}/photo/2345</a></td> 
+			 href="{$self_host}/photo/2345" rel="nofollow">{$self_host}/photo/2345</a></td> 
 		  <td>2345</td> 
 		</tr> 
 		<tr> 
@@ -621,7 +621,7 @@ Note:the distance should be 10km or below.
 		  <th>&nbsp;</th> 
 		  <th>Thumb URL</th> 
 		  <td colspan="2"> Example:<br/><a
-			 href="http://{$http_host}/photos/01/76/017622_ed5d17d5_120x120.jpg" rel="nofollow">http://{$http_host}/photos/01/76/017622_ed5d17d5_120x120.jpg</a>
+			 href="{$self_host}/photos/01/76/017622_ed5d17d5_120x120.jpg" rel="nofollow">{$self_host}/photos/01/76/017622_ed5d17d5_120x120.jpg</a>
 			 </td> 
 		</tr> 
 		
@@ -729,17 +729,17 @@ Note:the distance should be 10km or below.
 		  <td>Simply pass to search.php and the response from the server will
 			 include a brand new i number ready for use. <br/><br/>For example
 			 <a 
-			 href="http://{$http_host}/search.php?q=SH3467" rel="nofollow">http://{$http_host}/search.php?q=SH3467</a>
+			 href="{$self_host}/search.php?q=SH3467" rel="nofollow">{$self_host}/search.php?q=SH3467</a>
 			 would return a <br/><TT style="border: 1px solid gray;">Location:
-			 http://{$http_host}/search.php?i=12345</TT><br/>header, just parse out that i
+			 {$self_host}/search.php?i=12345</TT><br/>header, just parse out that i
 			 number and pass it to the XML/CSV page.<br/><br/>
 			 
 			 UK(inc NI)
 			 Postcodes, e.g.<br/><a 
-			 href="http://{$http_host}/search.php?q=TN32+3DZ" rel="nofollow">http://{$http_host}/search.php?q=TN32+3DZ</a><br/><br/>
+			 href="{$self_host}/search.php?q=TN32+3DZ" rel="nofollow">{$self_host}/search.php?q=TN32+3DZ</a><br/><br/>
 			 
 			 Lat/Long (Decimal Degrees only), example <a 
-			 href="http://{$http_host}/search.php?q=52.332,-2.2345">http://{$http_host}/search.php?q=52.332,-2.2345</a><br/><br/>
+			 href="{$self_host}/search.php?q=52.332,-2.2345">{$self_host}/search.php?q=52.332,-2.2345</a><br/><br/>
 			 
 			 Technically
 			 this can also accept place-names or free text search, however due to there
@@ -766,17 +766,17 @@ Note:the distance should be 10km or below.
 		<tr> 
 		  <td>Results Webpage</td> 
 		  <td><a
-			 href="http://{$http_host}/search.php?i=12345" rel="nofollow">http://{$http_host}/search.php?i=12345</a></td>
+			 href="{$self_host}/search.php?i=12345" rel="nofollow">{$self_host}/search.php?i=12345</a></td>
 		</tr> 
 		<tr> 
 		  <td>Google Earth Webpage</td> 
 		  <td><a title="Geograph KML/Google Earth feed"
-			 href="http://{$http_host}/kml.php?i=12345" rel="nofollow">http://{$http_host}/kml.php?i=12345</a> </td>
+			 href="{$self_host}/kml.php?i=12345" rel="nofollow">{$self_host}/kml.php?i=12345</a> </td>
 		</tr> 
 		<tr> 
 		  <td>Statistics Webpage</td> 
 		  <td><a title="Statistical Breakdown"
-			 href="http://{$http_host}/statistics/breakdown.php?i=12345" rel="nofollow">http://{$http_host}/statistics/breakdown.php?i=12345</a> </td>
+			 href="{$self_host}/statistics/breakdown.php?i=12345" rel="nofollow">{$self_host}/statistics/breakdown.php?i=12345</a> </td>
 		</tr> 
 		<tr> 
 		  <td>XML/HTML etc feed</td> 
@@ -791,7 +791,7 @@ Note:the distance should be 10km or below.
 		<tr> 
 		  <td>MemoryMap feed</td> 
 		  <td><a title="Geograph MemoryMap feed"
-			 style="text-decoration: line-through" rel="nofollow">http://{$http_host}/memorymap.php?key=[apikey]&amp;i=12345</a> (Coming soon)</td>
+			 style="text-decoration: line-through" rel="nofollow">{$self_host}/memorymap.php?key=[apikey]&amp;i=12345</a> (Coming soon)</td>
 		</tr> 
 		<tr> 
 		  <td>GPX Export</td> 
@@ -803,7 +803,7 @@ Note:the distance should be 10km or below.
 	 <ul>
 		<li><a href="/memorymap.php">MemoryMap Exports</a></li>
 		<li><a href="/gpx.php">GPX Exports</a></li>
-		<li>100x100km CheckSheets (<a href="http://{$http_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX" rel="nofollow">example</a>) <small>- nice easy parsable listing, could be used for creating coverage maps</small></li>
+		<li>100x100km CheckSheets (<a href="{$self_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX" rel="nofollow">example</a>) <small>- nice easy parsable listing, could be used for creating coverage maps</small></li>
 		<li>sitemap.xml - see {external href="http://www.sitemaps.org"}</li>
 		<li><a href="http://www.geourl.org/" style="text-decoration: line-through">geourl.org</a> (Coming soon)</li>
 		<li>We can also create coverage CSVs on demand, (listing squares currently with images)</li>

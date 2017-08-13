@@ -61,17 +61,17 @@ if (empty($_GET['refresh']))
 	$rss->useCached($format,$rssfile);
 
 $rss->title = 'Geograph Content'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/content/";
+$rss->link = "{$CONF['SELF_HOST']}/content/";
  
 	
 $rss->description = "Recently updated content on Geograph British Isles"; 
 
 if ($format == 'KML') {
-	$rss->description .= ". <a href=\"{$rss->link}\">View Collections Homepage</a> or <a href=\"http://{$_SERVER['HTTP_HOST']}/\">Geograph Homepage</a>";
+	$rss->description .= ". <a href=\"{$rss->link}\">View Collections Homepage</a> or <a href=\"{$CONF['SELF_HOST']}/\">Geograph Homepage</a>";
 }
 
 
-$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/content/feed/recent.$format_extension";
+$rss->syndicationURL = "{$CONF['SELF_HOST']}/content/feed/recent.$format_extension";
 
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
@@ -195,7 +195,7 @@ while (!$recordSet->EOF)
 
 	//htmlspecialchars is called on link so dont use &amp;
 	if (strpos($recordSet->fields['url'],'/')===0) {
-		$item->link = "http://{$_SERVER['HTTP_HOST']}{$recordSet->fields['url']}";
+		$item->link = "{$CONF['SELF_HOST']}{$recordSet->fields['url']}";
 	} else {
 		$item->link = $recordSet->fields['url'];
 	}

@@ -38,7 +38,7 @@
 #obtain from http://svn.geograph.org.uk/svn/trunk/libs/geograph/token.class.php
 require_once('token.class.php');
 
-$login_url = 'http://{$http_host}/auth.php?a={$access}';
+$login_url = '{$self_host}/auth.php?a={$access}';
 
 $token=new Token;
 $token->magic = '{$shared}';

@@ -296,12 +296,12 @@ if (isset($_REQUEST['id']))
 			}
 
 			if (isset($_SESSION['editpage_options']) && in_array('small_redirect',$_SESSION['editpage_options'])) {
-				header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=done&id={$_REQUEST['id']}");
+				header("Location: {$CONF['SELF_HOST']}/thankyou.php#thankyou=done&id={$_REQUEST['id']}");
 				exit;
 			}
 
 			//refresh this page so you're less likely to repost
-			header("Location: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}".($thankyou?"&thankyou=$thankyou":''));
+			header("Location: {$CONF['SELF_HOST']}/editimage.php?id={$image->gridimage_id}".($thankyou?"&thankyou=$thankyou":''));
 			exit;
 		}
 
@@ -366,9 +366,9 @@ if (isset($_REQUEST['id']))
 					$ab=floor($image->user_id/10000);
 					$smarty->clear_cache(null, "user$ab|{$image->user_id}");
 
-					header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
+					header("Location: {$CONF['SELF_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
 				} else {
-					header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#nochanges&id={$_REQUEST['id']}");
+					header("Location: {$CONF['SELF_HOST']}/thankyou.php#nochanges&id={$_REQUEST['id']}");
 				}
 				exit;
 			}
@@ -562,7 +562,7 @@ if (isset($_REQUEST['id']))
 				$smarty->clear_cache(null, "user$ab|{$image->user_id}");
 
 				if (isset($_SESSION['editpage_options']) && in_array('small_redirect',$_SESSION['editpage_options'])) {
-					header("Location: http://{$_SERVER['HTTP_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
+					header("Location: {$CONF['SELF_HOST']}/thankyou.php#thankyou=$status&id={$_REQUEST['id']}");
 					exit;
 				}
 
@@ -570,12 +570,12 @@ if (isset($_REQUEST['id']))
 				#if ($status=="pending")
 				#{
 				#	//since we can't process the changes, show the user the edit page with a thankyou
-					header("Location: http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}&thankyou=$status");
+					header("Location: {$CONF['SELF_HOST']}/editimage.php?id={$image->gridimage_id}&thankyou=$status");
 				#}
 				#else
 				#{
 				#	//all edits are complete, so lets show the user the result of their handiwork
-				#	header("Location: http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}");
+				#	header("Location: {$CONF['SELF_HOST']}/photo/{$image->gridimage_id}");
 				#}
 				exit;
 			}

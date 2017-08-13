@@ -36,7 +36,7 @@ if ((!preg_match('/\/blog\/\d+/',$_SERVER["REQUEST_URI"]) && isset($_GET['id']))
         header("HTTP/1.0 301 Moved Permanently");
         header("Status: 301 Moved Permanently");
         header("Location: /blog/".intval($_GET['id']));
-        print "<a href=\"http://{$_SERVER['HTTP_HOST']}/blog/".intval($_GET['id'])."\">View blog entry</a>";
+        print "<a href=\"{$CONF['SELF_HOST']}/blog/".intval($_GET['id'])."\">View blog entry</a>";
         exit;
 }
 

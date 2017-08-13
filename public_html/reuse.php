@@ -65,7 +65,7 @@ if (isset($_REQUEST['id']))
 				header("HTTP/1.0 307 Temporary Redirect");
 				header("Status: 307 Temporary Redirect");
 				header("Location: /photo/".intval($_REQUEST['id']));
-				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_REQUEST['id'])."\">View image page</a>";
+				print "<a href=\"{$CONF['SELF_HOST']}/photo/".intval($_REQUEST['id'])."\">View image page</a>";
 				exit;
 			}
 

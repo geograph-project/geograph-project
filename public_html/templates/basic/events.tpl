@@ -125,7 +125,7 @@
 		var center = bounds.getCenter();
 		map.setCenter(center, newZoom,G_PHYSICAL_MAP);
 		
-		var xml = new GGeoXml("http://{$http_host}/events/feed.kml");
+		var xml = new GGeoXml("{$self_host}/events/feed.kml");
 		{literal}
 		map.addOverlay(xml);
 	}

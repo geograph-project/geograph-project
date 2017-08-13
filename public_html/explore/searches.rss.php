@@ -32,7 +32,7 @@ $rss = new UniversalFeedCreator();
 
 
 $rss->title = 'Geograph Featured Searches'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/explore/searches.php";
+$rss->link = "{$CONF['SELF_HOST']}/explore/searches.php";
 
 
 $db = GeographDatabaseConnection(true);
@@ -63,11 +63,11 @@ $recordSet = &$db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
-	
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/results/".$recordSet->fields['id'];
-	
+
+	$item->link = "{$CONF['SELF_HOST']}/results/".$recordSet->fields['id'];
+
 	$item->title = "images".$recordSet->fields['searchdesc'];
-	
+
 	$item->date = strtotime($recordSet->fields['created']);
 
 	$rss->addItem($item);
@@ -78,4 +78,4 @@ while (!$recordSet->EOF)
 
 print $rss->createFeed($format);
 
-?>
+

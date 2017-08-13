@@ -84,13 +84,13 @@ $db=NewADOConnection($GLOBALS['DSN']);
 
 if (!empty($_GET['topic']) && is_numeric($_GET['topic'])) {
 
-	#$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/topic{$_GET['topic']}";
-	$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}";
+	#$rss->link = "{$CONF['SELF_HOST']}/discuss/topic{$_GET['topic']}";
+	$rss->link = "{$CONF['SELF_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}";
 
 		list($title,$forrom) = $db->GetRow("select topic_title,forum_id from `geobb_topics` where `topic_id` = {$_GET['topic']}");
 
 	$rss->title = "Geograph.org.uk Forum :: $title :: Latest Posts";
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;topic=".$_GET['topic'];
+	$rss->syndicationURL = "{$CONF['SELF_HOST']}/discuss/syndicator.php?format=$format&amp;topic=".$_GET['topic'];
 
 	$posts = $db->getOne("SELECT COUNT(*) FROM `geobb_posts` WHERE `topic_id` = {$_GET['topic']}");
 
@@ -115,7 +115,7 @@ if (!$opt_noLimit) {
 
 		//htmlspecialchars is called on link so dont use &amp;
 		//we cant get the #12 as we dont know how many posts in total (or which page is on)
-		$item->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&topic={$_GET['topic']}&page=$page#$hash";
+		$item->link = "{$CONF['SELF_HOST']}/discuss/?action=vthread&topic={$_GET['topic']}&page=$page#$hash";
 
 		//create a nice short snippet for title
 		$title = preg_replace('/^<i>[^<]+<\/i>([\n\r]*<br>)?([\n\r]*<br>)?([\n\r]*<br>)?/','',$recordSet->fields['post_text']);
@@ -133,7 +133,7 @@ if (!$opt_noLimit) {
 			$item->description = GeographLinks($recordSet->fields['post_text'],$opt_expand);
 
 		$item->date = strtotime($recordSet->fields['post_time']);
-		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}";
+		//$item->source = "{$CONF['SELF_HOST']}/discuss/?action=vthread&amp;topic={$_GET['topic']}";
 		$item->author = $recordSet->fields['poster_name'];
 
 		$rss->addItem($item);
@@ -153,7 +153,7 @@ if (!$opt_noLimit) {
 		//no need to login for RSS
 		//$USER->basicAuthLogin();
 
-		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vtopic&amp;forum={$_GET['forum']}";
+		$rss->link = "{$CONF['SELF_HOST']}/discuss/?action=vtopic&amp;forum={$_GET['forum']}";
 		$synd = "&amp;forum={$_GET['forum']}";
 		$title = ' :: '.$db->GetOne("select forum_name from `geobb_forums` where `forum_id` = {$_GET['forum']}");
 
@@ -167,7 +167,7 @@ if (!$opt_noLimit) {
 	} else {
 		$title = '';
 		$synd = '';
-		$rss->link = "http://{$_SERVER['HTTP_HOST']}/discuss/";
+		$rss->link = "{$CONF['SELF_HOST']}/discuss/";
 		$sql_where = 'WHERE geobb_topics.forum_id NOT IN (5,11)'; //we exclude Grid Ref discussions and Gallery...
 	}
 	$sql_where .= $opt_when?" AND post_time > '$opt_when'":'';
@@ -175,20 +175,20 @@ if (!$opt_noLimit) {
 	if ($opt_first) {
 		$rss->title = "Geograph.org.uk Forum $title :: New Topics";
 		$rss->desciption = 'New Geograph Topics';
-		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;first=1".$synd;
+		$rss->syndicationURL = "{$CONF['SELF_HOST']}/discuss/syndicator.php?format=$format&amp;first=1".$synd;
 		$sql_order= 'geobb_topics.topic_id DESC';
 		$sql_where .= " GROUP BY geobb_topics.topic_id";
 		$sql_join = "geobb_topics.topic_id=geobb_posts.topic_id";
 	} elseif ($opt_sortBy) {
 		$rss->title = "Geograph.org.uk Forum $title :: Latest Topics";
 		$rss->description = 'Latest Geograph Topics';
-		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format&amp;sortBy=1".$synd;
+		$rss->syndicationURL = "{$CONF['SELF_HOST']}/discuss/syndicator.php?format=$format&amp;sortBy=1".$synd;
 		$sql_order= 'geobb_topics.topic_id DESC';
 		$sql_join = "topic_last_post_id=geobb_posts.post_id";
 	} else {
 		$rss->title = "Geograph.org.uk Forum $title :: Latest Discussions";
 		$rss->description = 'Latest Geograph Discussions';
-		$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/discuss/syndicator.php?format=$format".$synd;
+		$rss->syndicationURL = "{$CONF['SELF_HOST']}/discuss/syndicator.php?format=$format".$synd;
 		$sql_order= '`topic_last_post_id` DESC';
 		$sql_join = "topic_last_post_id=geobb_posts.post_id";
 	}
@@ -240,13 +240,13 @@ LIMIT 30";
 		$item->title = $recordSet->fields['topic_title'];
 		
 		//htmlspecialchars is called on link so dont use &amp;
-		$item->link = "http://{$_SERVER['HTTP_HOST']}/discuss/?action=vthread&topic={$recordSet->fields['topic_id']}";
+		$item->link = "{$CONF['SELF_HOST']}/discuss/?action=vthread&topic={$recordSet->fields['topic_id']}";
 		$description = preg_replace('/^<i>[^<]+<\/i>([\n\r]*<br>)?([\n\r]*<br>)?([\n\r]*<br>)?/','',$recordSet->fields['post_text']);
 		if (strlen($description) > 160)
 			$description = substr($description,0,157)."...";
 		$item->description = GeographLinks($description);
 		$item->date = strtotime($recordSet->fields['post_time']);
-		//$item->source = "http://{$_SERVER['HTTP_HOST']}/discuss/";
+		//$item->source = "{$CONF['SELF_HOST']}/discuss/";
 		$item->author = $recordSet->fields['poster_name'];
 
 		if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {

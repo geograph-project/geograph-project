@@ -2,11 +2,11 @@
 <style>{literal}
 body {overflow:hidden;}
 {/literal}</style>
-<table cellspacing=0 cellpadding=0 border=0 width="100%" onclick="window.parent.location.href='http://www.geograph.org.uk/photo/{$image->gridimage_id}';" style="cursor:pointer">
+<table cellspacing=0 cellpadding=0 border=0 width="100%" onclick="window.parent.location.href='/photo/{$image->gridimage_id}';" style="cursor:pointer">
 	<tr>
 		<td valign="top" align="center" width=240 style="padding:3px">
 	                {$image->getThumbnail(213,160)}<br><br>
-<small><b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" target="_blank">{$image->realname|escape:'html'}</a></small>
+<small><b>&nbsp; &copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}" target="_blank">{$image->realname|escape:'html'}</a></small>
 		</td>
 		<td valign="top" width="75%" style="padding:4px;">
   			<div style="{if $image->title|strlen < 40}font-size:2.3em{else}font-weight:bold;font-size:1.5em{/if};margin-bottom:3px;background-color:#eee;padding:1px;">{$image->title|escape:'html'}</div>

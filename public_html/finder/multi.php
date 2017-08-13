@@ -71,8 +71,8 @@ if (!empty($_GET['q'])) {
 			$others['discuss'] = array('title'=>'Discussions','url'=>"/finder/discussions.php?q=$u2");
 		}
 
-		$others['google'] = array('title'=>'Google Search','url'=>"http://www.google.co.uk/search?q=$u2&sitesearch=".$_SERVER['HTTP_HOST']);
-		$others['gimages'] = array('title'=>'Google Images','url'=>"http://images.google.com/images?q=$u2+site:".$_SERVER['HTTP_HOST']);
+		$others['google'] = array('title'=>'Google Search','url'=>"https://www.google.co.uk/search?q=$u2&sitesearch=".$_SERVER['HTTP_HOST']);
+		$others['gimages'] = array('title'=>'Google Images','url'=>"http:s//images.google.com/images?q=$u2+site:".$_SERVER['HTTP_HOST']);
 
 		$try_words = true;
 

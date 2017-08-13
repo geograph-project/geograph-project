@@ -9,7 +9,7 @@ Here a map is shown, the class can be asked to imagine what the landscape looks 
 
 <h3>Example</h3>
 
-<p>We have created this <a href="http://www.geograph.org.uk/search.php?i=1796032&displayclass=reveal">quick example</a> for you to use, but you can create your own set of images:</p>
+<p>We have created this <a href="/search.php?i=1796032&displayclass=reveal">quick example</a> for you to use, but you can create your own set of images:</p>
 
 
 Either

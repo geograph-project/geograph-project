@@ -16,7 +16,7 @@
 
 <p>We have recently introduced tags (along with Geographical Context) as a complete replacement for the old category system.</p>
 
-<p>Can read more about it in this article: <a href="http://www.geograph.org.uk/article/Transitioning-Categories-to-Tags">Transitioning Categories to Tags</a></p>
+<p>Can read more about it in this article: <a href="/article/Transitioning-Categories-to-Tags">Transitioning Categories to Tags</a></p>
 
 
 {dynamic}

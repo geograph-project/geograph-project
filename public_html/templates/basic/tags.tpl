@@ -4,7 +4,7 @@
 {if $gridref}{assign var="page_title" value="`$title` tagged with '`$thetag`' near `$gridref`"|escape:'html'}
 {else}{assign var="page_title" value="`$title` tagged with '`$thetag`'"|escape:'html'}{/if}
 {if $theprefix}{assign var="tag2" value="$theprefix:$thetag"|escape:'urlplus'}{else}{assign var="tag2" value=$thetag|escape:'urlplus'}{/if}
-{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://`$http_host`/tagged/`$tag2`\" />"}
+{assign var="extra_meta" value="<link rel=\"canonical\" href=\"`$self_host`/tagged/`$tag2`\" />"}
 {else}
 {assign var="page_title" value="Tags"}
 {/if}

@@ -4,8 +4,8 @@
   <TBODY>
   <TR>
     <TD>&nbsp;</TD>
-    <TD><A href="http://{$http_host}/"><IMG height=74 src="http://{$http_host}/templates/basic/img/logo.gif" width=257 border=0></A></TD>
-    <TD vAlign=top align=center><A href="http://{$http_host}/"><font color=#ffffff size=+2>{$http_host}</FONT></A><BR>
+    <TD><A href="{$self_host}/"><IMG height=74 src="{$self_host}/templates/basic/img/logo.gif" width=257 border=0></A></TD>
+    <TD vAlign=top align=center><A href="{$self_host}/"><font color=#ffffff size=+2>{$http_host}</FONT></A><BR>
        <FONT face=Georgia color=#ffffff><I>The Geograph Britain and Ireland project aims to collect a geographically representative<BR> photograph for every square kilometre of the British Isles and you can be part of it.</I></FONT></TD>
     <TD>&nbsp;</TD></TR></TBODY>
 </TABLE>  

@@ -75,7 +75,7 @@ if (!empty($_POST['submit'])) {
 			$msg.="Page: {$_SERVER['HTTP_REFERER']}\n";
 		}
 		if (!empty($_POST['nonanon']) && $_SESSION['user']->user_id) {
-			$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
+			$msg.="User profile: {$CONF['SELF_HOST']}/profile/{$_SESSION['user']->user_id}\n";
 			$from = $_SESSION['user']->email;
 		} else {
 			$from = "anon@geograph.org.uk";

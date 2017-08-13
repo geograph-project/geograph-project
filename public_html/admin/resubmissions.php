@@ -79,7 +79,7 @@ if (isset($_POST['gridimage_id']))
 			//email me if we lag, but once gets big no point continuing to notify!
 			ob_start();
 			print "\n\nHost: ".`hostname`."\n\n";
-			print "\n\nView: http://{$_SERVER['HTTP_HOST']}/admin/resubmissions.php?review=$gridimage_id\n\n";
+			print "\n\nView: {$CONF['SELF_HOST']}/admin/resubmissions.php?review=$gridimage_id\n\n";
 			print_r($row);
 			print_r($_SERVER);
 			$con = ob_get_clean();

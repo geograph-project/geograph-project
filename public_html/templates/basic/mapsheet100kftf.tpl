@@ -41,7 +41,7 @@ pre
 
 
 <div style="position:absolute;padding:5px;left:0.2em;top:0.1em;width:10em;height:0.8em;font-size:4em;border:1px solid black;background:white;">
-<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet <b>centered on {$gridref}{if $realname}, for {$realname}{/if}</b> and take it out with you to mark off the squares that you do. Squares with Geographs shown by the number of visitors, squares with 10+ are marked with an '+'. Squares with only Supplemental are marked with an 's'.<br/><div style="float:left; font-size:0.9em">From: <a href="http://{$http_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$generated|default:$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
+<div style="font-size:8pt;font-family:Georgia;Arial;">Print this sheet <b>centered on {$gridref}{if $realname}, for {$realname}{/if}</b> and take it out with you to mark off the squares that you do. Squares with Geographs shown by the number of visitors, squares with 10+ are marked with an '+'. Squares with only Supplemental are marked with an 's'.<br/><div style="float:left; font-size:0.9em">From: <a href="{$self_host}/">{$http_host}</a></div><div style="text-align:right; font-size:0.9em">Generated {$generated|default:$smarty.now|date_format:"%A, %B %e, %Y at %H:%M"}</div></div>
 </div>
 
 <pre style="position:absolute;left:2em;top:8em;">  {section loop=100 name=x start=0}

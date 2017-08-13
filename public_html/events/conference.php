@@ -117,7 +117,7 @@ if (!empty($_GET['action'])) {
 				$token->setValue("eid", intval($row['entry_id']));
 				$token = $token->getToken();
 	
-				$body .= "http://{$_SERVER['HTTP_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
+				$body .= "{$CONF['SELF_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
 							
 				$body2.="Kind Regards,\n\n";
 				$body2.="Barry\non behalf of the Geograph Team\n\n";
@@ -185,7 +185,7 @@ if (!empty($_GET['action'])) {
 				$token->setValue("eid", intval($row['entry_id']));
 				$token = $token->getToken();
 	
-				$body .= "http://{$_SERVER['HTTP_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
+				$body .= "{$CONF['SELF_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
 							
 				$body2.="Look forward to seeing you there!\n\n";
 				$body2.="Kind Regards,\n\n";
@@ -318,7 +318,7 @@ if (!empty($_GET['action'])) {
 				$token->setValue("eid", intval($row['entry_id']));
 				$token = $token->getToken();
 	
-				$body .= "http://{$_SERVER['HTTP_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
+				$body .= "{$CONF['SELF_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
 							
 				$body2 = "Even if unable to attend, please click the above link and \nclick the 'Please CANCEL my registration' button.\n\n";		
 							
@@ -373,7 +373,7 @@ if (!empty($_GET['action'])) {
 					$token->setValue("eid", intval($data['duplicates']));
 					$token = $token->getToken();
 
-					$url = "http://{$_SERVER['HTTP_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
+					$url = "{$CONF['SELF_HOST']}/events/conference.php?action=confirm&ident=$token\n\n";
 					header("Location: $url");
 					exit;
 				}

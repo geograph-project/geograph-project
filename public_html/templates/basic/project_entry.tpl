@@ -85,7 +85,7 @@
 
     // The following are highly recommended additional parameters. Remove the slashes in front to use.{/literal}
     var disqus_identifier = 'project{$project_id}';
-    var disqus_url = 'http://{$http_host}/project/entry.php?id={$project_id}';
+    var disqus_url = '{$self_host}/project/entry.php?id={$project_id}';
 
 {literal}
     /* * * DON'T EDIT BELOW THIS LINE * * */

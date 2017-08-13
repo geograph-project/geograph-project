@@ -39,7 +39,7 @@
 
 		{include file="static_competition_terms.tpl"}
 	 </div>
-	 <div style="text-align:right">{external href="http://`$http_host`/help/competition_terms" text="open in new window" target="_blank"}</div>
+	 <div style="text-align:right">{external href="`$self_host`/help/competition_terms" text="open in new window" target="_blank"}</div>
 	 <br/>
 	</li>
 
@@ -75,7 +75,7 @@
 	</p>
 	<hr/>
 	<small>Opening Dates: <i>between 1 April 2008 and 30 September 2008</i>, <br/>
-	Note: <i>Entry is only open to UK permanent residents aged 18 and under in full time education</i> ({external href="http://`$http_host`/help/competition_terms" text="full terms" target="_blank"}).</small>
+	Note: <i>Entry is only open to UK permanent residents aged 18 and under in full time education</i> ({external href="`$self_host`/help/competition_terms" text="full terms" target="_blank"}).</small>
 </div>
 </form>
 

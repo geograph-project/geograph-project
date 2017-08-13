@@ -56,6 +56,7 @@ class SearchEngineBuilder extends SearchEngine
 	}
 
 	function redirectOrReturn($i,$autoredirect='auto',$extra='') {
+		global $CONF;
 		 if ($autoredirect != false) {
 
 		        if (isset($_GET['rss'])) {
@@ -71,9 +72,9 @@ class SearchEngineBuilder extends SearchEngine
                                 $extra .= "&BBOX=".$_GET['BBOX'];
 			if (!empty($_GET['format']))
                                 $extra .= "&format=".$_GET['format'];
-                        header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra");
+                        header("Location:{$CONF['SELF_HOST']}/{$this->page}?i={$i}$extra");
                         $extra = str_replace('&','&amp;',$extra);
-                        print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";
+                        print "<a href=\"{$CONF['SELF_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";
                         exit;
                  } else {
                         return $i;
@@ -181,8 +182,8 @@ split_timer('search'); //starts the timer
 			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],true,true);
 			if ($grid_ok || $square->x && $square->y) {
 				if ($square->imagecount && $autoredirect == 'simple' && strlen($q)-strlen($gr[0]) < 2) {
-					header("Location:http://{$_SERVER['HTTP_HOST']}/gridref/{$q}");
-					print "<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/{$q}\">View Pictures</a>";
+					header("Location:{$CONF['SELF_HOST']}/gridref/{$q}");
+					print "<a href=\"{$CONF['SELF_HOST']}/gridref/{$q}\">View Pictures</a>";
 					exit;
 				}
 				$searchclass = 'GridRef';

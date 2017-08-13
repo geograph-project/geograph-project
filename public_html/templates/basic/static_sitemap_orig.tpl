@@ -187,7 +187,7 @@ Refine:
 	<li><a href="/statistics/monthlyleader.php">By Month</b> Leaderboard</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=1"><b>Great Britain Contributor</b> List</a></li>
 	<li><a href="/statistics.php?by=user&amp;ri=2"><b>Ireland Contributor</b> List</a></li>
-	<li><a href="/statistics/first2square.php"><b>Numerical Squares</b> Leaderboard</a> (see <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=2&topic=1235&page=0#19">forum</a>)</li>
+	<li><a href="/statistics/first2square.php"><b>Numerical Squares</b> Leaderboard</a> (see <a href="/discuss/index.php?&action=vthread&forum=2&topic=1235&page=0#19">forum</a>)</li>
 	<li><a href="/statistics/busyday.php?users=1">Most <b>Taken in a Day</b> Leaderboard</a></li>
 	<li><a href="/statistics/leaderhectad.php"><b>Hectad</b> Leaderboard for <b>First Geographs</b></a></li>
 	<li><a href="/statistics/leaderallhectad.php"><b>Hectad</b> Leaderboard all Images</a></li>

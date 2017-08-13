@@ -82,7 +82,7 @@
 
     // The following are highly recommended additional parameters. Remove the slashes in front to use.{/literal}
     var disqus_identifier = '{$blog_id}';
-    var disqus_url = 'http://{$http_host}/blog/entry.php?id={$blog_id}';
+    var disqus_url = '{$self_host}/blog/entry.php?id={$blog_id}';
 
 {literal}
     /* * * DON'T EDIT BELOW THIS LINE * * */
