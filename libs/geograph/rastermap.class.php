@@ -2,7 +2,7 @@
 /**
  * $Project: GeoGraph $
  * $Id$
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005  Barry Hunter (geo@barryhunter.co.uk)
  *
@@ -10,12 +10,12 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -35,36 +35,35 @@
 /**
 * RasterMap
 *
-* 
 * @package Geograph
 */
 class RasterMap
 {
 	var $db=null;
-	
+
 	/**
 	* national easting/northing (ie not internal)
 	*/
 	var $nateastings;
   	var $natnorthings;
-	
+
 	/**
 	* the mapping service used to display maps
 	*/
 	var $service;
-	
+
 	/**
 	* the version of mapping to display
 	*/
 	var $epoch = 'latest';
-	
+
 	/**
 	* is this class in use (ie is a valid service specified)
-	*/	
+	*/
 	var $enabled = false;
-	
+
 	var $caching = true;
-	
+
 	var $folders = array(
 			'OS50k-source'=>'pngs-1k-200/',
 			'OS50k'=>'pngs-2k-250/',
@@ -99,7 +98,7 @@ class RasterMap
 			'OS250k-m10k'=>10000,
 			'OS250k-m40k'=>10000
 		);
-	
+
 	/**
 	* setup the values
 	*/
@@ -109,15 +108,15 @@ class RasterMap
 		$this->enabled = false;
 		if (!empty($square) && isset($square->grid_reference)) {
 			$this->square =& $square;
-			
+
 			$this->exactPosition = $useExact && !empty($square->natspecified);
-			
+
 			//just in case we passed an exact location
 			$this->nateastings = $square->getNatEastings();
 			$this->natnorthings = $square->getNatNorthings();
 			$this->natgrlen = $square->natgrlen;
 			$this->reference_index = $square->reference_index;
-			
+
 			$this->issubmit = $issubmit;
 			$services = explode(',',$CONF['raster_service']);
 
@@ -125,25 +124,25 @@ class RasterMap
 				if ($this->issubmit === true && in_array('OSOS',$services) && $square->x > 0) {
 					$this->enabled = true;
 					$this->service = 'OSOS';
-					
+
 				} elseif (in_array('OS50k',$services)) {
 					$this->enabled = true;
 					$this->service = 'OS50k';
-					
+
 					if (($this->issubmit === true || $includeSecondService) && in_array('NPE',$services)) {
 						$this->service2 = 'NPE';
 					}
 				} elseif($this->issubmit && in_array('NPE',$services)) {
 					$this->enabled = true;
 					$this->service = 'NPE';
-				} 
+				}
 			} elseif($CONF['template'] == 'archive') {
 				$this->service = 'OSM-Static-Dev';
 			} elseif(($this->exactPosition || in_array('Grid',$services)) && in_array('Google',$services)) {
 				//$this->enabled = true;
 				$this->service = 'Google';
-				$this->inline = 1; //no need for none inline anymore... 
-			} 
+				$this->inline = 1; //no need for none inline anymore...
+			}
 			if (isset($this->tilewidth[$this->service])) {
 				$this->width = $this->tilewidth[$this->service];
 			}
@@ -151,8 +150,8 @@ class RasterMap
 				$this->epoch = $epoch;
 			}
 		}
-	} 
-	
+	}
+
 	function setService($service) {
 		global $CONF;
 		$services = explode(',',$CONF['raster_service']);
@@ -166,16 +165,16 @@ class RasterMap
 			$this->service = 'OSOS';
 		} elseif($service == 'Google' && in_array('Google',$services)) {
 			$this->service = 'Google';
-			$this->inline = 1; //no need for none inline anymore... 
+			$this->inline = 1; //no need for none inline anymore...
 			if ($this->issubmit) {
 				$this->tilewidth[$this->service] = 350;
 			}
-		} 
+		}
 		if (isset($this->tilewidth[$this->service])) {
 			$this->width = $this->tilewidth[$this->service];
 		}
 	}
-	
+
 	function addLatLong($lat,$long) {
 		if ($this->service == 'Google' || $this->service == 'OSM-Static-Dev') {
 			$this->enabled = true;
@@ -183,7 +182,7 @@ class RasterMap
 		$this->lat = floatval($lat);
 		$this->long = floatval($long);
 	}
-	
+
 	function addViewpoint($viewpoint_eastings,$viewpoint_northings,$viewpoint_grlen,$view_direction = -1) {
 		$this->viewpoint_eastings = $viewpoint_eastings;
 		$this->viewpoint_northings = $viewpoint_northings;
@@ -193,8 +192,8 @@ class RasterMap
 	function addViewDirection($view_direction = -1) {
 		$this->view_direction = $view_direction;
 	}
-	
-	function getImageTag($gridref = '') 
+
+	function getImageTag($gridref = '')
 	{
 		global $CONF;
 		$east = floor($this->nateastings/1000) * 1000;
@@ -206,22 +205,22 @@ class RasterMap
 			//params mirror http://old-dev.openstreetmap.org/~ojw/StaticMap/?mode=API&
 			//we use a proxy url primarlly because old-dev disallows robots.
 			$mapurl = "{$CONF['TILE_HOST']}/tile-static.php?source=OSM-cycle&lat={$this->lat}&lon={$this->long}&z=13&w={$width}&h={$width}";
-			
+
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
-			
+
 			$e = floor($this->nateastings/1000) * 1000;
 			$n = floor($this->natnorthings/1000) * 1000;
-			
+
 			$mapurl .= $this->getStaticLineParam($conv,0,$e-1000,$n,$e+2000,$n);
 			$mapurl .= $this->getStaticLineParam($conv,1,$e-1000,$n+1000,$e+2000,$n+1000);
 			$mapurl .= $this->getStaticLineParam($conv,2,$e,$n-1000,$e,$n+2000);
 			$mapurl .= $this->getStaticLineParam($conv,3,$e+1000,$n-1000,$e+1000,$n+2000);
-			
+
 			if ($this->exactPosition) {
 				$mapurl .= "&mlat0={$this->lat}&mlon0={$this->long}&mico0=27710";
 			}
-			
+
 			if (!empty($this->viewpoint_northings)) {
 				$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
 					|| intval($this->natnorthings/1000) != intval($this->viewpoint_northings/1000));
@@ -239,16 +238,15 @@ class RasterMap
 						}
 					}
 					list($lat,$long) = $conv->national_to_wgs84($ve,$vn,$this->reference_index,true,true);
-					
+
 					$mapurl .= "&mlat1=$lat&mlon1=$long&mico1=8513";
 				}
 			}
-			
+
 			$title = "Map data (c) openstreetmap.org  CC-BY-SA 2.0";
-			
+
 			return "<div style=\"top:0px;left:0px;width:{$width}px;height:{$width}px\"><img name=\"tile\" src=\"$mapurl\" style=\"width:{$width}px;height:{$width}px\" border=\"1\" alt=\"$title\" nopin=\"true\"/></div>";
 
-			
 		} elseif ($this->service == 'OSOS') {
 			if ($this->nateastings < 0) {
 				return "Unable to display a map for this location";
@@ -260,32 +258,32 @@ class RasterMap
 				return "<div id=\"map\" style=\"width:{$width}px; height:{$width}px\">Loading map... (JavaScript required)</div>";
 			} else {
 				$token=new Token;
-				
+
 				foreach ($this as $key => $value) {
 					if (is_scalar($value)) {
 						$token->setValue($key, $value);
 					}
 				}
 				$token = $token->getToken();
-				
+
 				return "<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map... (JavaScript required)</iframe>";
 			}
 		} elseif ($this->service == 'OS50k-small') {
 			static $idcounter = 1;
-			
+
 			if ($this->natgrlen == 4) {
 				$this->nateastings = $east + 500;
 				$this->natnorthings = $nort + 500;
 			}
-			
+
 			$mapurl = "{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
 
 			$gr= str_replace(' ','+',!empty($this->square->grid_reference_full)?$this->square->grid_reference_full:$this->square->grid_reference);
-			
+
 			$title = "1:50,000 Modern Day Landranger(TM) Map &copy; Crown Copyright";
-			
+
 			$this->displayMarker1 = $this->exactPosition;
-			
+
 			if ($this->displayMarker1 && !($this->natgrlen > 6) ) {
 				//nice central marker
 
@@ -331,11 +329,10 @@ class RasterMap
 
 				$str .= "<a href=\"/gridref/$gr\" title=\"$title\"><img src=\"{$CONF['STATIC_HOST']}/img/blank.gif\" style=\"width:{$width}px;height:{$width}px;background-image:url($mapurl);\" border=\"1\" alt=\"$title\" galleryimg=\"no\" nopin=\"true\" id=\"marker$idcounter\"/></a>";
 			}
-		
+
 			$idcounter++;
-			
 			return $str;
-		
+
 		} elseif ($this->service == 'OS50k') {
 			if (!empty($CONF['fetch_on_demand'])) {
 				$mapurl = "http://{$CONF['fetch_on_demand']}/tile.php?r=".$this->getToken();
@@ -403,7 +400,7 @@ class RasterMap
 
 			$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
 						|| intval($this->natnorthings/1000) != intval($this->viewpoint_northings/1000));
-	
+
 			$show_viewpoint = (intval($this->viewpoint_grlen) > 4) || ($different_square_true && ($this->viewpoint_grlen == '4'));
 
 	//calculate photographer position
@@ -444,10 +441,10 @@ class RasterMap
 				$vleft = 13;
 				$vtop = $width+32;
 			}
-			
+
 			$this->displayMarker1 = ($this->issubmit || $this->exactPosition)?1:0;
 			$this->displayMarker2 = ($this->issubmit === true || ( $show_viewpoint && (($vleft != $left) || ($vtop != $top)) ) )?1:0;
-			
+
 			if ((!$this->displayMarker2 || $iconfile == "camera.png") && !$this->issubmit) {
 				$prefix = 'subc';
 				if (isset($this->view_direction) && strlen($this->view_direction) && $this->view_direction != -1)
@@ -457,7 +454,7 @@ class RasterMap
 			} else {
 				$subfile = 'circle.png';
 			}
-			
+
 	//subject icon
 			$str .= "<div style=\"position:absolute;top:".($top-14)."px;left:".($left-14)."px;".( $this->displayMarker1 ?'':'display:none')."\" id=\"marker1\"><img src=\"{$CONF['STATIC_HOST']}/img/icons/$subfile\" alt=\"+\" width=\"29\" height=\"29\" name=\"subicon\"/></div>";
 
@@ -478,7 +475,7 @@ class RasterMap
 				$str .= $imagestr;
 			}
 			$str .= "</div>";
-			
+
 			$str .= "</div>";
 
 	//map switcher
@@ -490,15 +487,15 @@ class RasterMap
 				function switchTo(too) {
 					showOS50k = (too == 1)?'':'none';
 					showNPE = (too == 2)?'':'none';
-					
+
 					document.getElementById('mapSwitcherOS50k').style.display = showOS50k;
 					document.getElementById('mapTitleOS50k').style.display = showOS50k;
 					document.getElementById('mapFootNoteOS50k').style.display = showOS50k;
-					
+
 					document.getElementById('mapSwitcherNPE').style.display = showNPE;
 					document.getElementById('mapTitleNPE').style.display = showNPE;
 					document.getElementById('mapFootNoteNPE').style.display = showNPE;
-					
+
 					if (too == 1) {
 						document.images['tile'].src = '$mapurl';
 						document.images['map'].title = '$title';
@@ -541,7 +538,7 @@ class RasterMap
 	function getPolyLineBlock(&$conv,$e1,$n1,$e2,$n2,$op=1) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
-		
+
 		return "
 			var polyline = new google.maps.Polyline({
 			path: [
@@ -553,7 +550,7 @@ class RasterMap
 			strokeOpacity: $op,
 			map: map});\n";
 	}
-	
+
 	function getPolySquareBlock(&$conv,$e1,$n1,$e2,$n2) {
 		list($lat1,$long1) = $conv->national_to_wgs84($e1,$n1,$this->reference_index);
 		list($lat2,$long2) = $conv->national_to_wgs84($e2,$n2,$this->reference_index);
@@ -574,95 +571,98 @@ class RasterMap
 			clickable: false,
 			map: map});\n";
 	}
-	
+
 	function getPolySquareBlockOS($e1,$n1,$e2,$n2) {
 		return "var points = [];
-			points.push(new OpenLayers.Geometry.Point($e1, $n1)); 
-			points.push(new OpenLayers.Geometry.Point($e1, $n2)); 
-			points.push(new OpenLayers.Geometry.Point($e2, $n2)); 
-			points.push(new OpenLayers.Geometry.Point($e2, $n1)); 
-			points.push(new OpenLayers.Geometry.Point($e1, $n1)); 
+			points.push(new OpenLayers.Geometry.Point($e1, $n1));
+			points.push(new OpenLayers.Geometry.Point($e1, $n2));
+			points.push(new OpenLayers.Geometry.Point($e2, $n2));
+			points.push(new OpenLayers.Geometry.Point($e2, $n1));
+			points.push(new OpenLayers.Geometry.Point($e1, $n1));
 
-		pickupbox = new OpenLayers.Layer.Vector(\"Vector Layer\"); 
-		var style_green = {strokeColor: \"#00FF00\", strokeOpacity: 1, strokeWidth: 6}; 
+		pickupbox = new OpenLayers.Layer.Vector(\"Vector Layer\");
+		var style_green = {strokeColor: \"#00FF00\", strokeOpacity: 1, strokeWidth: 6};
 
-		var lineString = new OpenLayers.Geometry.LineString(points); 
-		var lineFeature = new OpenLayers.Feature.Vector(lineString, null, style_green); 
-		pickupbox.addFeatures([lineFeature]); 
-		//add it to the map 
+		var lineString = new OpenLayers.Geometry.LineString(points);
+		var lineFeature = new OpenLayers.Feature.Vector(lineString, null, style_green);
+		pickupbox.addFeatures([lineFeature]);
+		//add it to the map
 		map.addLayer(pickupbox);
 		";
 	}
-	
+
 	function getScriptTag()
 	{
 		global $CONF;
 		if ($this->service == 'OSM-Static-Dev') {
-		
+
 		} elseif ($this->service == 'OSOS') {
 			$block = $p1 = '';
 			$e = floor($this->nateastings/1000) * 1000;
 			$n = floor($this->natnorthings/1000) * 1000;
-			
-			
+
 			if ($this->issubmit) {
 				$p1 = "<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapper/geotools2.js")."\"></script>";
 			}
-			
+
 			if ($this->exactPosition) {
 				if (!empty($this->natgrlen) && $this->natgrlen == '6') {
 					$this->nateastings +=50;
 					$this->natnorthings += 50;
+				} else {
+					$this->nateastings = intval($this->nateastings);
+					$this->natnorthings = intval($this->natnorthings); // to avoid 011260 being seen as octal to javascript
 				}
 				$block.= "map.addOverlay(createMarker(new OpenSpace.MapPoint({$this->nateastings}, {$this->natnorthings})));";
 			} elseif ($this->issubmit) {
 				$block .= "map.addOverlay(createMarker(new OpenSpace.MapPoint($e-50, $n+150)));\n";
 			}
-			
+
 			if (empty($lat) && $this->issubmit) {
 				$block .= "map.addOverlay(createPMarker(new OpenSpace.MapPoint($e-50, $n+50)));\n";
 			}
-			
+
 			if ($this->issubmit) {
 				$block .= $this->getPolySquareBlockOS($e-100,$n+200,$e,$n);
-				
 			}
-			
+
 			$e+=375;
 			$n+=450;
-			
+
 			return "
 			$p1
 			<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/js/mappingOS.js")."\"></script>
-			<script type=\"text/javascript\"> 
-			
+			<script type=\"text/javascript\">
+
 			var issubmit = {$this->issubmit}+0;
 			var map;
 			var static_host = '{$CONF['STATIC_HOST']}';
-			
+
 			function loadmap() {
 				var options = {controls: [], products: [\"OV0\", \"OV1\", \"OV2\", \"MSR\", \"MS\", \"250KR\", \"250K\", \"50KR\", \"50K\", \"25KR\", \"25K\", \"VMLR\", \"VML\"]};
-				map = new OpenSpace.Map('map',options);  
+				//sometimes, VML layers are currupted, can uncomment this line to get roughtly equivlient layers
+				//var options = {controls: [], products: [\"OV0\", \"OV1\", \"OV2\", \"MSR\", \"MS\", \"250KR\", \"250K\", \"50KR\", \"50K\", \"25KR\", \"25K\", \"CS09\", \"CS10\"]};
+				map = new OpenSpace.Map('map',options);
 
 				map.addControl(new OpenSpace.Control.PoweredBy());
 				map.addControl(new OpenSpace.Control.CopyrightCollection());
-				map.addControl(new OpenLayers.Control.Navigation()); // not keyboard 
-				map.addControl(new OpenSpace.Control.LargeMapControl()); 
+				map.addControl(new OpenLayers.Control.Navigation()); // not keyboard
+				map.addControl(new OpenSpace.Control.LargeMapControl());
 
 				map.setCenter(new OpenSpace.MapPoint($e, $n), 9);
-				
+
 				$block
-				
+
 				if (typeof updateMapMarkers == 'function') {
 					updateMapMarkers();
 				}
 			}
-			
+
 			AttachEvent(window,'load',loadmap,false);
-			
-			</script> 
+
+			</script>
 			";
-			
+
 		} elseif ($this->service == 'Google') {
 			if (empty($this->inline) && empty($this->issubmit)) {
 				//its now handled by the 'childmap'
@@ -670,17 +670,17 @@ class RasterMap
 			}
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
-				
+
 			$e = floor($this->nateastings/1000) * 1000;
 			$n = floor($this->natnorthings/1000) * 1000;
-				
+
 			if (strpos($CONF['raster_service'],'Grid') !== FALSE) {
-				
+
 				$block = $this->getPolyLineBlock($conv,$e-1000,$n,$e+2000,$n);
 				$block .= $this->getPolyLineBlock($conv,$e-1000,$n+1000,$e+2000,$n+1000);
 				$block .= $this->getPolyLineBlock($conv,$e,$n-1000,$e,$n+2000);
 				$block .= $this->getPolyLineBlock($conv,$e+1000,$n-1000,$e+1000,$n+2000);
-				
+
 				if (!empty($this->viewpoint_northings)) {
 					$different_square_true = (intval($this->nateastings/1000) != intval($this->viewpoint_eastings/1000)
 						|| intval($this->natnorthings/1000) != intval($this->viewpoint_northings/1000));
@@ -822,7 +822,7 @@ class RasterMap
 				var mapb = 1;
 				var static_host = '{$CONF['STATIC_HOST']}';
 			</script>";
-			
+
 			if ($this->issubmit) {
 				return "$str
 			<script type=\"text/javascript\" src=\"".smarty_modifier_revision("/mapping.js")."\"></script>
@@ -831,7 +831,7 @@ class RasterMap
 				document.images['map'].onmouseout = overlayMouseOut;
 				document.images['map'].onmouseup = overlayMouseUp;
 				document.images['map'].onmousedown = overlayMouseDown;
-				
+
 				function loadmap() {
 					if (typeof updateMapMarkers == 'function') {
 						updateMapMarkers();
@@ -850,16 +850,16 @@ class RasterMap
 		}
 	}
 
-	function getTitle($gridref) 
+	function getTitle($gridref)
 	{
 		if ($this->service == 'Google' || $this->service == 'OSM-Static-Dev') {
 			return '';
-		} 
+		}
 		return "<span id=\"mapTitleOS50k\"".($this->service == 'OS50k'?'':' style="display:none"').">1:50,000 Modern Day Landranger&trade; Map</span>".
 		"<span id=\"mapTitleNPE\"".($this->service == 'NPE'?'':' style="display:none"').">1940s OS New Popular Edition".(($this->issubmit)?"<span style=\"font-size:0.8em;color:red\"><br/><b>Please confirm positions on the modern map, as accuracy may be limited.</b></span>":'')."</span>";
 	}
 
-	function getFootNote() 
+	function getFootNote()
 	{
 		global $CONF;
 		if ($this->service == 'OSM-Static-Dev') {
@@ -887,13 +887,13 @@ class RasterMap
 				}
 				$token->setValue("service",'Google');
 				$token = $token->getToken();
-				
+
 				$width = $this->width;
 				$iframe = rawurlencode("<iframe src=\"/map_frame.php?t=$token\" id=\"map\" width=\"{$width}\" height=\"{$width}\" scrolling=\"no\">Loading map...</iframe>");
 
 				$str = "<br><a href=\"#\" onclick=\"document.getElementById('rastermap').innerHTML = rawurldecode('$iframe'); if (document.getElementById('mapFootNoteOS50k')) { document.getElementById('mapFootNoteOS50k').style.display = 'none';} return false;\">Change to interactive Map &gt;</a>";
 			}
-		
+
 			if (!empty($this->clickable)) {
 				return "<span id=\"mapFootNoteOS50k\">TIP: Click the map for Large scale mapping$str</span><span id=\"mapFootNoteNPE\"></span>";
 			} else {
@@ -906,9 +906,9 @@ class RasterMap
 
 	function createTile($service,$path = null) {
 		$ret = false;
-		
-		//no start split_timer becase getMapPath will have called it. 
-		
+
+		//no start split_timer becase getMapPath will have called it.
+
 		if ($service == 'OS50k') {
 			$ret = $this->combineTiles($this->square,$path);
 		} elseif (preg_match('/OS50k-mapper\d?/',$service)) {
@@ -916,21 +916,21 @@ class RasterMap
 		} elseif ($service == 'OS50k-small') {
 			if ($sourcepath = $this->getMapPath('OS50k',true)) {
 				$ret = $this->createSmallExtract($sourcepath,$path);
-			} 
+			}
 		} elseif ($service == 'OS250k-m40k') {
 			$ret = $this->combineTilesMapper($this->square,$path);
-		} 
-		
+		}
+
 		split_timer('rastermap','created',$path); //logs the wall time
-		
+
 		return $ret;
 	}
-	
-	function getMapPath($service,$create = true) {	
+
+	function getMapPath($service,$create = true) {
 		$path = $this->getOSGBStorePath($service);
-		
+
 		split_timer('rastermap','foundpath',$path); //logs the wall time
-		
+
 		if (($this->caching && file_exists($path)) || ($create && $this->createTile($service,$path)) ) {
 			return $path;
 		} else {
@@ -952,18 +952,17 @@ class RasterMap
 		}
 
 		$ll = $square->gridsquare;
-		
-		
+
 		if($this->service == 'OS250k-m40k') {
 			$service = 'OS250k-m10k';
 		} else {
 			$service = 'OS50k-source';
 		}
 		$div = $this->divisor[$service];
-		
+
 		$tilewidth = $this->tilewidth[$service];
 		list($source,$dummy) = explode('-',$service);
-		
+
 		//this isn't STRICTLY needed as getOSGBStorePath does the same floor, but do so in case we do exact calculations
 		$east = floor($this->nateastings/$div) * $div;
 		$nort = floor($this->natnorthings/$div) * $div;
@@ -971,7 +970,7 @@ class RasterMap
 		preg_match('/-(\d)0?k-/',$this->folders[$this->service],$m);
 		$numtiles = $m[1];
 		$stepdist = ($m[1]-1)*$div;
-		
+
 		if (strlen($CONF['imagemagick_path'])) {
 			$tilelist = array();
 			$c = 0;
@@ -983,7 +982,7 @@ class RasterMap
 								$east+$stepdist ,
 								$div ) as $e) {
 					$newpath = $this->getOSGBStorePath($service,$e,$n);
-					
+
 					if (file_exists($newpath)) {
 						$tilelist[] = $newpath;
 						$found = 1;
@@ -995,14 +994,14 @@ class RasterMap
 					$c++;
 				}
 			}
-			
+
 			if (!$found) {
 				if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 					print "No content tiles found<br/>\n";
 				return false;
 			}
-			
-			if (!$path) 
+
+			if (!$path)
 				$path = $this->getOSGBStorePath($service,$east,$nort,true);
 
 			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile %dx%d png:- | "%sconvert" - -thumbnail %ldx%ld -colors 128 -depth 8 -type Palette png:%s &1>1 &2>1', 
@@ -1011,17 +1010,17 @@ class RasterMap
 				implode(' ',$tilelist),
 				$numtiles,$numtiles,
 				$CONF['imagemagick_path'],
-				$this->width, $this->width, 
+				$this->width, $this->width,
 				$path);
 
-			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
+			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)
 				$cmd = str_replace('/','\\',$cmd);
-			
+
 			print exec ($cmd);
-			
+
 			if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 				print "<pre>$cmd</pre>";
-			
+
 			if (file_exists($path)) {
 				return true;
 			} else {
@@ -1047,14 +1046,13 @@ class RasterMap
 		}
 
 		$ll = $square->gridsquare;
-		
-		
+
 		$service = 'OS50k-source';
 		$tilewidth = $this->tilewidth[$service];
 		list($source,$dummy) = explode('-',$service);
-		
+
 		$outputwidth = $this->tilewidth['OS50k'];
-		
+
 		//this isn't STRICTLY needed as getOSGBStorePath does the same floor, but do so in case we do exact calculations
 		$east = floor($this->nateastings/1000) * 1000;
 		$nort = floor($this->natnorthings/1000) * 1000;
@@ -1070,7 +1068,7 @@ class RasterMap
 								$east+1000 ,
 								1000 ) as $e) {
 					$newpath = $this->getOSGBStorePath($service,$e,$n);
-					
+
 					if (file_exists($newpath)) {
 						$tilelist[] = $newpath;
 						$found = 1;
@@ -1082,14 +1080,14 @@ class RasterMap
 					$c++;
 				}
 			}
-			
+
 			if (!$found) {
 				if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 					print "No content tiles found<br/>\n";
 				return false;
 			}
-			
-			if (!$path) 
+
+			if (!$path)
 				$path = $this->getOSGBStorePath('OS50k',$east,$nort,true);
 
 			$cmd = sprintf('%s"%smontage" -geometry +0+0 %s -tile 3x3 png:- | "%sconvert" - -crop %ldx%ld+%ld+%ld +repage -thumbnail %ldx%ld -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 6,230 160,243 3,3" -fill "#000066" -pointsize 10 -draw "text 10,240 \'(c) Crown Copyright %s\'" -colors 128 -depth 8 -type Palette png:%s', 
@@ -1097,20 +1095,20 @@ class RasterMap
 				$CONF['imagemagick_path'],
 				implode(' ',$tilelist),
 				$CONF['imagemagick_path'],
-				$tilewidth*2, $tilewidth*2, 
+				$tilewidth*2, $tilewidth*2,
 				$tilewidth/2, $tilewidth/2,
-				$outputwidth, $outputwidth, 
+				$outputwidth, $outputwidth,
 				$CONF['imagemagick_font'],
 				$CONF['OS_licence'],
 				$path);
 
-			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
+			if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)
 				$cmd = str_replace('/','\\',$cmd);
 
 			exec ($cmd);
 			if (!empty($_GET['debug']) && $USER->hasPerm('admin'))
 				print "<pre>$cmd</pre>";
-			
+
 			if (file_exists($path)) {
 				return true;
 			} else {
@@ -1124,25 +1122,25 @@ class RasterMap
 
 	function createSmallExtract($input,$output) {
 		global $CONF,$USER;
-		
+
 		$east = floor($this->nateastings/100)%10/10;
 		$nort = floor($this->natnorthings/100)%10/10;
-		
+
 		$by20 = $this->width/20; //to center on the centisquare
-				
+
 		$cmd = sprintf('%s"%sconvert" png:%s -gravity SouthWest -crop %ldx%ld+%ld+%ld +repage -crop %ldx%ld +repage -thumbnail %ldx%ld +repage -colors 128 -font "%s" -fill "#eeeeff" -draw "roundRectangle 13,114 118,130 3,3" -fill "#000066" -pointsize 10 -draw "text 14,123 \'(c) OSGB %s\'" -colors 128 -depth 8 -type Palette png:%s', 
 			isset($_GET['nice'])?'nice ':'',
 			$CONF['imagemagick_path'],
 			$input,
-			$this->width, $this->width, 
-			($this->width*$east)+$by20, ($this->width*$nort)+$by20, 
-			$this->width, $this->width, 
-			$this->width, $this->width, 
+			$this->width, $this->width,
+			($this->width*$east)+$by20, ($this->width*$nort)+$by20,
+			$this->width, $this->width,
+			$this->width, $this->width,
 			$CONF['imagemagick_font'],
 			$CONF['OS_licence'],
 			$output);
-		
-		if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE) 
+
+		if (isset($_ENV["OS"]) && strpos($_ENV["OS"],'Windows') !== FALSE)
 			$cmd = str_replace('/','\\',$cmd);
 
 		exec ($cmd);
@@ -1183,9 +1181,9 @@ class RasterMap
 		#customCacheControl($t,$mappath,true);
 
 		customExpiresHeader(15552000,true);
-		
+
 		header("Content-Type: image/png");
-		
+
 		$size=filesize($mappath);
 		header("Content-Length: $size");
 
@@ -1193,7 +1191,7 @@ class RasterMap
 
 		readfile($mappath);
 	}
-	
+
 	/**
 	* Return an opaque, url-safe token representing this map
 	* @access public
@@ -1229,7 +1227,7 @@ class RasterMap
 				$this->nateastings = $token->getValue("e") * $this->divisor[$this->service];
 				$this->natnorthings = $token->getValue("n") * $this->divisor[$this->service];
 				$this->width = $this->tilewidth[$this->service];
-				
+
 				if ($token->hasValue("r")) {
 					$this->epoch = $token->getValue("r");
 				}
@@ -1240,7 +1238,7 @@ class RasterMap
 
 	function getOSGBStorePath($service,$e = 0,$n = 0,$create = true) {
 		global $CONF;
-		
+
 		$folder = $this->folders[$service];
 		$div = $this->divisor[$service];
 		$div2 = max(10000,$div*10);
@@ -1257,7 +1255,7 @@ class RasterMap
 		}
 
 		list($source,$dummy) = explode('-',$service);
-		
+
 		$dir=$CONF['rastermap'][$source]['path'].$this->epoch.'/'.$folder;
 		$dir2='/mnt/secondry/rastermaps-OS-50k-'.$this->epoch.'-'.str_replace('/','-',$folder);
 		$dir.=$e2.'/';
@@ -1288,13 +1286,13 @@ if ($_GET['debug'])
 	{
 		echo "$msg<br/>";
 		flush();
-	}	
+	}
+
 	function _err($msg)
 	{
 		echo "<p><b>Error:</b> $msg</p>";
 		flush();
 	}
-	
 }
 
-?>
+

@@ -17,6 +17,7 @@ $CONF['curtail_level']=0;
 //servers ip BEGIN with (the server that fires cron jobs etc)
 $CONF['server_ip'] = '127.0.0.';
 
+//the protocol to use for resource urls. if you use SSL, change this https://
 $CONF['PROTOCOL'] = "http://";
 if (!empty($_SERVER['HTTPS']) || ( !empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https'))
 	$CONF['PROTOCOL'] = "https://";
@@ -46,7 +47,7 @@ $CONF['db_pwd']='banjo';
 $CONF['db_db']='geograph';
 $CONF['db_persist']=''; #'?persist';
 
-//optional second database, used for sessions and gazetteer tables (need to contain a copy) 
+//optional second database, used for sessions and gazetteer tables (need to contain a copy)
 #$CONF['db_driver2']='mysql';
 #$CONF['db_connect2']='second.server';
 #$CONF['db_user2']='geograph';
