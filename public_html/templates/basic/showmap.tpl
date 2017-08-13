@@ -67,7 +67,7 @@
 
 							curgr = gro.getGridRef(digits);
 
-							document.getElementById('coordoutput').innerHTML = curgr+" <small>E: "+pt.lon+" N: "+pt.lat+"</small>";
+							document.getElementById('coordoutput').innerHTML = curgr+" <small>E: "+gro.eastings+" N: "+gro.northings+"</small>";
 						}
 					});
 					map.events.register("click", map, function(e) {
