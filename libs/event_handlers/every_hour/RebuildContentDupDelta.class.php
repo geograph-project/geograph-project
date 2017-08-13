@@ -111,8 +111,6 @@ ORDER BY NULL
 #####################################
 # GEO-TRIPS
 
-
-if (true) {
                 $db->Execute("
 INSERT INTO `content_tmp`
 SELECT
@@ -137,7 +135,6 @@ SELECT
 FROM geotrips t left join queries_count c on (c.id = t.search)
 WHERE t.updated > UNIX_TIMESTAMP(DATE_SUB(NOW(),INTERVAL 2 HOUR))
                 ");
-}
 
 #####################################
 
@@ -161,6 +158,7 @@ ON DUPLICATE KEY UPDATE
 	created = ct.created
 		");
 
+		$db->Execute("delete content.* from content left join geobb_topics on (foreign_id = topic_id) where topic_id is null and source in ('themed','gallery')");
 
 		$db->Execute("DROP TABLE `content_tmp`");
 
@@ -169,3 +167,4 @@ ON DUPLICATE KEY UPDATE
 		return true;
 	}
 }
+

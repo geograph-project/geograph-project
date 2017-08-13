@@ -145,8 +145,8 @@ function wgs84_to_national($lat,$long,$usehermert = true) {
 		//reference_index is optional as we can duduce this (but if known then can pass it in to save having to recaluate)
 			//will probably just call national_to_wgs84 once converted
 
-function internal_to_wgs84($x,$y,$reference_index = 0) {
-	list ($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index);
+function internal_to_wgs84($x,$y,$reference_index = 0,$fudge = 500) {
+	list ($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index,$fudge);
 	return $this->national_to_wgs84($e,$n,$reference_index);
 }
 
@@ -186,8 +186,8 @@ function gridsquare_to_wgs84(&$gridsquare) {
 //use:    $gr = internal_to_gridref($x,$y,$gr_length,$reference_index = 0);
          //reference_index is optional as we can duduce this
 
-function internal_to_gridref($x,$y,$gr_length,$reference_index = 0) {
-	list($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index);
+function internal_to_gridref($x,$y,$gr_length,$reference_index = 0,$fudge = 500) {
+	list($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index,$fudge);
 
 	return $this->national_to_gridref($e-500,$n-500,$gr_length,$reference_index);
 }
