@@ -258,6 +258,7 @@ if (isset($_GET['fav']) && $i) {
 	require_once('geograph/searchcriteria.class.php');
 	require_once('geograph/searchengine.class.php');
 	require_once('geograph/searchenginebuilder.class.php');
+ customNoCacheHeader();
 
 	$data = $_GET;
 	$error = false;
@@ -754,7 +755,11 @@ if (isset($_GET['fav']) && $i) {
  		$autoredirect = 'auto';
  	}
 
- 	$i = $engine->buildSimpleQuery($q,$CONF['default_search_distance'],$autoredirect,(!empty($_GET['user_id']))?intval($_GET['user_id']):0);
+        $distance = $CONF['default_search_distance'];
+        if (!empty($_GET['distance']) && $_GET['distance'] < $CONF['default_search_distance'])
+                $distance = floatval($_GET['distance']);
+
+ 	$i = $engine->buildSimpleQuery($q,$distance,$autoredirect,(!empty($_GET['user_id']))?intval($_GET['user_id']):0);
 
  	if ($_SERVER['SCRIPT_NAME'] == '/results/' && !empty($i)) {
  		unset($_GET['form']);
