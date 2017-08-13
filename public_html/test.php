@@ -70,7 +70,9 @@ function check_http($page, $pattern, &$errstr, $host = '', $status_expected = 20
 	$errstr='';
 	if (empty($host)) {
 		$host=$_SERVER['HTTP_HOST'];
-	} 
+	} else {
+		$host = preg_replace('/^https?:\/\/','',$host); //remove the http/s prefix that may be supplied.
+	}
 
 	$fp = fsockopen($host, 80, $errno, $errstr, 30);
 	if (!$fp) 

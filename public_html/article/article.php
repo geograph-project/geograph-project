@@ -664,7 +664,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$smarty->assign('meta_description', "User contributed article about, ".$page['extract']);
 		}
 		if ($page['url'] != $_GET['url']) {
-			$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://{$CONF['CONTENT_HOST']}/article/{$page['url']}".(empty($_GET['page'])?'':"/".intval($_GET['page']))."\"/>");
+			$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['CONTENT_HOST']}/article/{$page['url']}".(empty($_GET['page'])?'':"/".intval($_GET['page']))."\"/>");
 		}
 
 
