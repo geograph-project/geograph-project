@@ -62,7 +62,7 @@ $grid_ok=$square->setByFullGridRef($gr2);
 $html = '';
 $kml = new kmlFile();
 $kml->atom = true;
-$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
+$stylefile = "{$CONF['KML_HOST']}/kml/style.kmz";
 
 $folder = $kml->addChild('Document');
 $folder->setItem('name',"$gr :: Geograph SuperLayer");

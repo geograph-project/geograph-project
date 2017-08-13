@@ -48,7 +48,7 @@ $grid_ok=$square->setByFullGridRef($gr);
 $html = '';
 $kml = new kmlFile();
 $kml->atom = true;
-$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
+$stylefile = "{$CONF['KML_HOST']}/kml/style.kmz";
 
 $folder = $kml->addChild('Document');
 $folder->setItem('name',"$gr :: Geograph SuperLayer");
@@ -142,7 +142,7 @@ foreach($most as $id=>$entry)
 
 	$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 	$file = getKmlFilepath($kml->extension,4,$square,$entry['hunk_square']);
-	$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
+	$UrlTag = $networklink->useUrl($CONF['KML_HOST'].$file);
 	$html .= getHtmlLink($file,$entry['hunk_square'],'in Hectad'," (at least {$entry['images']} images)");
 	if (!isset($_GET['debug'])) {
 		if (isset($_GET['newonly'])) {

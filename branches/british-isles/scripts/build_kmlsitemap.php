@@ -129,7 +129,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 			"<changefreq>monthly</changefreq>".
 			"<geo:geo><geo:format>kmz</geo:format></geo:geo>".
 			"</url>\n",
-			"http://".$CONF['KML_HOST'].$recordSet->fields['filename'],
+			$CONF['KML_HOST'].$recordSet->fields['filename'],
 			$date
 			);
 			
@@ -175,7 +175,7 @@ for ($s=1; $s<=$sitemaps; $s++)
 	$mtime=filemtime($param['dir']."/public_html/kml/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);
 	
-	fprintf($fh, "<loc>http://{$CONF['KML_HOST']}/kml/%s</loc>", $fname);
+	fprintf($fh, "<loc>{$CONF['KML_HOST']}/kml/%s</loc>", $fname);
 	fprintf($fh, "<lastmod>$mtimestr</lastmod>", $fname);
 	fprintf($fh, "</sitemap>\n");
 }

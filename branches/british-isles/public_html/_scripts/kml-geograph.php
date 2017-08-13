@@ -38,7 +38,7 @@ $conv = new Conversions;
 
 $html = '';
 $kml = new kmlFile();
-$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
+$stylefile = "{$CONF['KML_HOST']}/kml/style.kmz";
 
 $folder = $kml->addChild('Document');
 $folder->setItem('name','Geograph SuperLayer');
@@ -146,7 +146,7 @@ foreach (array(1,2) as $ri) {
 
 		$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 		$file = getKmlFilepath($kml->extension,2,$square,$entry['hunk_square']);
-		$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
+		$UrlTag = $networklink->useUrl($CONF['KML_HOST'].$file);
 		$html .= getHtmlLink($file,$entry['hunk_square'],'in Myriad'," (".$names[$entry['hunk_square']].")");
 		if (!isset($_GET['debug'])) {
 			if (isset($_GET['newonly'])) {

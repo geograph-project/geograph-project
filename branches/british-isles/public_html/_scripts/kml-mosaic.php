@@ -63,7 +63,7 @@ $grid_ok=$square->setByFullGridRef($gr2);
 $html = '';
 $kml = new kmlFile();
 $kml->atom = true;
-$stylefile = "http://{$CONF['KML_HOST']}/kml/style.kmz";
+$stylefile = "{$CONF['KML_HOST']}/kml/style.kmz";
 
 $folder = $kml->addChild('Document');
 $folder->setItem('name',"$gr :: Geograph SuperLayer");
@@ -146,7 +146,7 @@ foreach($photos as $id=>$entry)
 
 		$networklink = new kmlNetworkLink(null,$entry['grid_reference']);
 		$file = getKmlFilepath($kml->extension,6,$square,$entry['grid_reference']);
-		$UrlTag = $networklink->useUrl("http://".$CONF['KML_HOST'].$file);
+		$UrlTag = $networklink->useUrl($CONF['KML_HOST'].$file);
 		$html .= getHtmlLink($file,$entry['grid_reference']);
 		if (!isset($_GET['debug'])) {
 			if (isset($_GET['newonly'])) {
