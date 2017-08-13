@@ -38,12 +38,12 @@ $folder->addChild('Style')->addChild('ListStyle')->setItem('listItemType','radio
 
 $folder->setItemCDATA('description',<<<END_HTML
 <table bgcolor="#000066" border="0"><tr bgcolor="#000066"><td bgcolor="#000066">
-<a href="http://{$_SERVER['HTTP_HOST']}/"><img src="http://{$_SERVER['HTTP_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
+<a href="{$CONF['SELF_HOST']}/"><img src="{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif" height="74" width="257"/></a>
 </td></tr></table>
 
 <p><i>The Geograph British Isles project aims to collect geographically representative photographs and information for every square kilometre of the UK and the Republic of Ireland, and you can be part of it.</i></p>
 
-<p><b>Join us now at: <a href="http://www.geograph.org.uk/">www.geograph.org.uk</a></b>, and read more about the <a href="http://www.geograph.org.uk/kml.php">Google Earth intergration</a>.</p>
+<p><b>Join us now at: <a href="{$CONF['SELF_HOST']}">{$_SERVER['HTTP_HOST']}</a></b>, and read more about the <a href="{$CONF['SELF_HOST']}/kml.php">Google Earth intergration</a>.</p>
 END_HTML
 );
 $folder->setItem('Snippet','Explore Geograph Content...');

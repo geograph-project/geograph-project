@@ -36,12 +36,12 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 		print "<title>$title</title>\n";
 		print "<meta name=\"ICBM\" content=\"{$row['wgs84_lat']}, {$row['wgs84_long']}\"/>\n";
 		print "<meta name=\"DC.title\" content=\"Geograph::$title\"/>\n";
-		print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/{$row['gridimage_id']}\">View image page</a>";
+		print "<a href=\"{$CONF['SELF_HOST']}/photo/{$row['gridimage_id']}\">View image page</a>";
 	} elseif ($row['gridimage_id']) {
 		header("HTTP/1.0 500 Server Error");
 		header("Status: 500 Server Error");
 		print "<title>Lat/Long not available, try again later</title>";
-		print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/{$row['gridimage_id']}\">View image page</a>";
+		print "<a href=\"{$CONF['SELF_HOST']}/photo/{$row['gridimage_id']}\">View image page</a>";
 	} else {
 		header("HTTP/1.0 404 Not Found");
 		header("Status: 404 Not Found");
@@ -53,7 +53,7 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 	header("HTTP/1.0 301 Moved Permanently");
 	header("Status: 301 Moved Permanently");
 	header("Location: /photo/".intval($_GET['id']));
-	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_GET['id'])."\">View image page</a>";
+	print "<a href=\"{$CONF['SELF_HOST']}/photo/".intval($_GET['id'])."\">View image page</a>";
 	exit;
 }
 
@@ -151,13 +151,13 @@ if (isset($_GET['id']))
 //do we have a valid image?
 if ($image->isValid())
 {
-	if ($image->grid_square->reference_index == 1 
-		&& $_SERVER['HTTP_HOST'] == 'www.geograph.ie' &&  
+	if ($image->grid_square->reference_index == 1
+		&& $_SERVER['HTTP_HOST'] == 'www.geograph.ie' &&
 			((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
 			(stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) ) {
 		header("HTTP/1.0 301 Moved Permanently");
 		header("Status: 301 Moved Permanently");
-		header("Location: http://www.geograph.org.uk/photo/".intval($_GET['id']));
+		header("Location: {$CONF['PROTOCOL']}www.geograph.org.uk/photo/".intval($_GET['id']));
 		exit;
 	} elseif ($image->grid_square->reference_index == 2 && $_SERVER['HTTP_HOST'] != 'www.geograph.ie' && $CONF['template']!='archive') {
 		$smarty->assign("ireland_prompt",1);
@@ -165,7 +165,7 @@ if ($image->isValid())
 
 	//what style should we use?
 	$style = $USER->getStyle();
-	
+
 	//when this image was modified
 	$mtime = strtotime($image->upd_timestamp);
 

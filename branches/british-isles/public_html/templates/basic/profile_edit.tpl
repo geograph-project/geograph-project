@@ -286,7 +286,7 @@
 	 
 	<div class="fieldnotes">Automatically include this text in messages sent though the site. <br/>
 	(250 chars max) 
-	<input type="button" value="Use Suggested Text" onclick="this.form.message_sig.value='-- '+this.form.realname.value+' http://{$http_host}/profile/{$user->user_id}'"/></div>
+	<input type="button" value="Use Suggested Text" onclick="this.form.message_sig.value='-- '+this.form.realname.value+' {$self_host}/profile/{$user->user_id}'"/></div>
 </div>
 
 

@@ -71,7 +71,7 @@ foreach ($users as $user_id => $user) {
 	$point = new kmlPoint($wgs84_lat,$wgs84_long);
 
 	$placemark = new kmlPlacemark($user_id,$user['realname'].($user['images']?' :: '.$user['images']:''),$point);
-	$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/profile/$user_id");
+	$placemark->useCredit($entry['realname'],"{$CONF['SELF_HOST']}/profile/$user_id");
 	if (empty($user['nickname'])) {
 		$placemark->setItemCDATA('description',$placemark->link);
 	} else {

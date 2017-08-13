@@ -449,8 +449,8 @@ class GeographUser
 					$this->user_id=$user_id;
 					
 					//build an authentication url
-					$register_authentication_url="http://".
-						$_SERVER['HTTP_HOST'].'/reg/'.$user_id.
+					$register_authentication_url=
+						$CONF['SELF_HOST'].'/reg/'.$user_id.
 						'/'.substr(md5($user_id.$CONF['register_confirmation_secret']),0,16);
 					
 					$msg="Thank you for registering at http://".$_SERVER['HTTP_HOST']."\n\n";
@@ -469,10 +469,10 @@ class GeographUser
 					$msg.="The Geograph.org.uk Team\n\n";
 
 					$msg.="P.S. This may also be of interest:\n";
-					$msg.="http://www.geograph.org.uk/article/Geograph-Introductory-letter\n\n";
+					$msg.="{$CONF['SELF_HOST']}/article/Geograph-Introductory-letter\n\n";
 
 					$msg.="P.P.S. If you have any question, please:\n";
-					$msg.="http://www.geograph.org.uk/ask.php\n";
+					$msg.="{$CONF['SELF_HOST']}/ask.php\n";
 					
 					
 					@mail($email, '[geograph] Confirm registration', $msg,
@@ -572,7 +572,7 @@ class GeographUser
 			$db = $this->_getDB();
 
 			//user registered?
-			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' limit 1');	
+			$arr = $db->GetRow('select * from user where email='.$db->Quote($email).' limit 1');
 			if (count($arr))
 			{
 				$salt = $this->randomSalt(8);
@@ -580,13 +580,12 @@ class GeographUser
 					"(user_id, oldemail,newemail,requested,status)".
 					"values(?,?,?,now(), 'pending')",
 					array($arr['user_id'], $arr['salt'].$arr['password'], $salt.md5($salt.$password1)));
-					
+
 				$id=$db->Insert_ID();
 
-				$url="http://".
-					$_SERVER['HTTP_HOST'].'/reg/p'.$id.
+				$url=	$CONF['SELF_HOST'].'/reg/p'.$id.
 					'/'.substr(md5('p'.$id.$CONF['register_confirmation_secret']),0,16);
-						
+
 				$msg="You recently requested the password ".
 				"for your account at ".$_SERVER['HTTP_HOST']." be changed.\n\n".
 
@@ -888,11 +887,10 @@ class GeographUser
 					array($this->user_id, $this->email, $profile['email']));
 					
 				$id=$db->Insert_ID();
-				
-				$url="http://".
-					$_SERVER['HTTP_HOST'].'/reg/m'.$id.
+
+				$url=	$CONF['SELF_HOST'].'/reg/m'.$id.
 					'/'.substr(md5('m'.$id.$CONF['register_confirmation_secret']),0,16);
-						
+
 				$msg="You recently requested the email address ".
 				"for your account at ".$_SERVER['HTTP_HOST']." be changed to {$profile['email']}.\n\n".
 				

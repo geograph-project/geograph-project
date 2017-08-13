@@ -36,7 +36,7 @@ $NetworkLink->setItem('name','Geograph Events');
 $NetworkLink->setItemCDATA('description',"Upcoming Geograph Events");
 $NetworkLink->setItem('open',1);
 
-$UrlTag = $NetworkLink->useUrl("http://{$_SERVER['HTTP_HOST']}/events/feed.kml");
+$UrlTag = $NetworkLink->useUrl("{$CONF['SELF_HOST']}/events/feed.kml");
 $NetworkLink->setItem('visibility',1);
 $UrlTag->setItem('refreshMode','onInterval');
 $UrlTag->setItem('refreshInterval',3600);

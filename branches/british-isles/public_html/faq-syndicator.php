@@ -75,13 +75,13 @@ ORDER BY created DESC");
             if (empty($_GET['refresh']))
                 $rss->useCached($format,$cachepath,$rss_timeout); 
             $rss->title = 'Geograph Knowledgebase'; 
-            $rss->link = "http://{$_SERVER['HTTP_HOST']}/faq3.php";
+            $rss->link = "{$CONF['SELF_HOST']}/faq3.php";
         
             $rss->description = "Recent Activity";
 
             $rss->descriptionHtmlSyndicated = false;
  
-            $rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/faq-syndicator.php?format=$format";
+            $rss->syndicationURL = "{$CONF['SELF_HOST']}/faq-syndicator.php?format=$format";
             
             $geoformat = ($format == 'KML' || $format == 'GeoRSS' || $format == 'GeoPhotoRSS' || $format == 'GPX');
             $photoformat = ($format == 'KML' || $format == 'GeoPhotoRSS' || $format == 'BASE' || $format == 'MEDIA');
@@ -94,12 +94,12 @@ ORDER BY created DESC");
 
                 if ($row['answer_id']) {
                     $item->title = "Answer: ".($row['title']?$row['title']:$row['question']);
-                    $item->link = "http://{$_SERVER['HTTP_HOST']}/faq3.php#{$row['answer_id']}";
+                    $item->link = "{$CONF['SELF_HOST']}/faq3.php#{$row['answer_id']}";
                 
 
                 } else {
                     $item->title = "Question: ".$row['question'];
-                    $item->link = "http://{$_SERVER['HTTP_HOST']}/faq-answer.php?id={$row['question_id']}";
+                    $item->link = "{$CONF['SELF_HOST']}/faq-answer.php?id={$row['question_id']}";
 
                 }
                 $item->description = $row['content']; 
@@ -107,7 +107,7 @@ ORDER BY created DESC");
 
                 $item->date = strtotime($row['created']); 
                 if (empty($row['anon'])) {
-                    $item->source = "http://{$_SERVER['HTTP_HOST']}/profile/".$row['user_id']; 
+                    $item->source = "{$CONF['SELF_HOST']}/profile/".$row['user_id']; 
                     $item->author = $row['realname']; 
                 }
                 

@@ -26,7 +26,7 @@ if ((strpos($_SERVER["REQUEST_URI"],'/snippet/') === FALSE && isset($_GET['id'])
 	header("HTTP/1.0 301 Moved Permanently");
 	header("Status: 301 Moved Permanently");
 	header("Location: /snippet/".intval($_GET['id']));
-	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/snippet/".intval($_GET['id'])."\">View shared description page</a>";
+	print "<a href=\"/snippet/".intval($_GET['id'])."\">View shared description page</a>";
 	exit;
 }
 
@@ -36,7 +36,7 @@ require_once('geograph/global.inc.php');
 init_session();
 
 $smarty = new GeographPage;
-$template='snippet.tpl';	
+$template='snippet.tpl';
 
 $snippet_id = intval($_REQUEST['id']);
 
@@ -44,7 +44,7 @@ $cacheid = $snippet_id;
 
 //what style should we use?
 $style = $USER->getStyle();
-	
+
 $smarty->assign('maincontentclass', 'content_photo'.$style.'" style="padding:10px');
 
 

@@ -65,7 +65,7 @@ $format = 'KML';
 
 $rss = new UniversalFeedCreator(); 
 $rss->title = 'Geograph British Isles'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}";
+$rss->link = "{$CONF['SELF_HOST']}";
 
 
 require_once('geograph/searchcriteria.class.php');
@@ -78,7 +78,7 @@ $images = new SearchEngine($_GET['i']);
 $images->criteria->resultsperpage = min(100,$images->criteria->resultsperpage);
 
 $rss->description = "Images".$images->criteria->searchdesc; 
-$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/syndicator.php?format=$format&amp;i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
+$rss->syndicationURL = "{$CONF['SELF_HOST']}/syndicator.php?format=$format&amp;i=".$_GET['i'].(($pg>1)?"&amp;page=$pg":'');
 
 $images->Execute($pg);
 
@@ -90,7 +90,7 @@ if (count($images->results)) {
 		$item = new FeedItem();
 		$item->guid = $img->gridimage_id;
 		$item->title = $img->grid_reference." : ".$img->title;
-		$item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$img->gridimage_id}";
+		$item->link = "{$CONF['SELF_HOST']}/photo/{$img->gridimage_id}";
 		if (!empty($img->dist_string) || !empty($img->imagetakenString)) {
 			$item->description = $img->dist_string.((!empty($img->imagetakenString))?' Taken: '.$img->imagetakenString:'')."<br/>".$img->comment; 
 			$item->descriptionHtmlSyndicated = true;
@@ -102,14 +102,14 @@ if (count($images->results)) {
 		}
 
 		$item->date = strtotime($img->submitted);
-		$item->source = "http://{$_SERVER['HTTP_HOST']}/";
+		$item->source = "{$CONF['SELF_HOST']}/";
 		$item->author = $img->realname;
 
 		$item->lat = $img->wgs84_lat;
 		$item->long = $img->wgs84_long;
 		$details = $img->getThumbnail(120,120,2);
 
-		$item->thumb = $details['server'].$details['url']; 
+		$item->thumb = $details['server'].$details['url'];
 		$item->thumbTag = $details['html'];
 		$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($img->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
 
@@ -122,7 +122,6 @@ header("Content-type: application/vnd.google-earth.kml+xml");
 header("Content-Disposition: attachment; filename=\"geograph.kml\"");
 
 //we store in var so can be by reference
-$feed =& $rss->createFeed($format); 
+$feed =& $rss->createFeed($format);
 echo $feed;
 
-?>

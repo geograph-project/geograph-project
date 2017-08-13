@@ -61,17 +61,17 @@ if (empty($_GET['refresh']))
 	$rss->useCached($format,$rssfile);
 
 $rss->title = 'Geograph Blog'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/blog/";
+$rss->link = "{$CONF['SELF_HOST']}/blog/";
  
 	
 $rss->description = "Recently updated Blog Entries on Geograph British Isles"; 
 
 if ($format == 'KML') {
-	$rss->description .= ". <a href=\"{$rss->link}\">View Blog Homepage</a> or <a href=\"http://{$_SERVER['HTTP_HOST']}/\">Geograph Homepage</a>";
+	$rss->description .= ". <a href=\"{$rss->link}\">View Blog Homepage</a> or <a href=\"{$CONF['SELF_HOST']}/\">Geograph Homepage</a>";
 }
 
 
-$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/blog/feed.$format_extension";
+$rss->syndicationURL = "{$CONF['SELF_HOST']}/blog/feed.$format_extension";
 
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
@@ -114,7 +114,7 @@ while (!$recordSet->EOF)
 	$item->title = $recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/blog/".$recordSet->fields['blog_id'];
+	$item->link = "{$CONF['SELF_HOST']}/blog/".$recordSet->fields['blog_id'];
 	
 	$item->description = GeographLinks(nl2br($recordSet->fields['content']),1);
 	$item->descriptionHtmlSyndicated = true;

@@ -331,8 +331,8 @@ function smarty_function_articletext($input) {
 	
 	$output = preg_replace('/(^|\n)(-{7,})\n(.*?)\n(-{7,})/es',"article_make_table('\$3')",str_replace("\r",'',$input));
 
-	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
-		$output = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$output);
+	if ($CONF['CONTENT_HOST'] != $CONF['SELF_HOST']) {
+		$output = str_replace($CONF['CONTENT_HOST'],$CONF['SELF_HOST'],$output);
 	}
 
 	$output = preg_replace('/\!(\[+)/e','str_repeat("¬",strlen("$1"))',$output);
@@ -413,7 +413,7 @@ function smarty_function_articletext($input) {
 
 
 	$pattern[]='/(?<!["\'\[\/\!\w])([STNH]?[A-Z]{1}\d{4,10})(?!["\'\]\/\!\w])/';
-	$replacement[]="<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
+	$replacement[]="<a href=\"{$CONF['SELF_HOST']}/gridref/\\1\" target=\"_blank\">\\1</a>";
 
 	$pattern[]='/\[image id=(\d+) text=([^\]"]+)\]/e';
 	$replacement[]="smarty_function_gridimage(array(id => '\$1',extra => '\$2'))";

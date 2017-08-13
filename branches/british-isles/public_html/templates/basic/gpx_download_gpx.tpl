@@ -5,7 +5,7 @@ xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/
 <desc>{$searchdesc|escape:"html"}</desc>
 <author>{$http_host}</author>
 <email>support@{$http_host}</email>
-<url>http://{$http_host}/</url>
+<url>{$self_host}/</url>
 <urlname>Geograph British Isles</urlname>
 <time>{$smarty.now|date_format:'%Y-%m-%dT%H:%M:%S'}</time>
 <keywords>geograph, photo, photograph</keywords>
@@ -14,7 +14,7 @@ xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/
 	<wpt lat="{$row.lat}" lon="{$row.long}">
 		<name>{$row.grid_reference}</name>
 		<desc>{$row.grid_reference} :: {$row.imagecount} Images</desc>
-		<url>http://{$http_host}/gridref/{$row.grid_reference}</url>
+		<url>{$self_host}/gridref/{$row.grid_reference}</url>
 		<urlname>{$row.grid_reference}</urlname>
 		<sym>Geograph</sym>
 	</wpt>

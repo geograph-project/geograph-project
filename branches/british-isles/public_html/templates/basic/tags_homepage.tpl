@@ -144,7 +144,7 @@
 					cache: true,
 					success: function (data) {
 						$.each(data.items, function(i,item){
-							element.append('<a href="http://www.geograph.org.uk/photo/'+item.guid+'" title="'+item.title+' by '+item.author+'" class="i">'+item.thumbTag+'</a>');
+							element.append('<a href="/photo/'+item.guid+'" title="'+item.title+' by '+item.author+'" class="i">'+item.thumbTag+'</a>');
 						});
 					}
 				});

@@ -364,7 +364,7 @@ elseif($action=='mute') {
 	} else {
 		print "<b>No new Posts</b> - nothing posted for a while, given up checking. <a href=\"{$main_url}/{$indexphp}action=wait&amp;countdown=100\">Start checking again</a>";
 	}
-	
+
 	print "<br/><br/><br/><a href=\"/\">homepage</a> | <a href=\"{$main_url}/\">discuss</a>";
 	exit;
 } elseif($action=='deltopic') require($pathToFiles.'bb_func_deltopic.php');
@@ -384,10 +384,9 @@ elseif($action=='movetopic2') {$step=1;require($pathToFiles.'bb_func_movetpc.php
 elseif($action=='userinfo')
 {
 	//require($pathToFiles.'bb_func_usernfo.php');
-	$url="http://".$_SERVER['HTTP_HOST']."/profile/".$_GET['user'];
+	$url=$CONF['SELF_HOST']."/profile/".$_GET['user'];
 	header("Location: $url");
 	exit;
-	
 }
 
 elseif($action=='sendpass') {$step=0;require($pathToFiles.'bb_func_sendpwd.php');}

@@ -15,11 +15,11 @@
 
 	{if $quiz.public}
 		<!--This is a public quiz. Send this link to others so they can try this quiz:<br/>
-		<tt>http://{$http_host}/games/quiz.php?go={$quiz.quiz_id}</tt>-->
+		<tt>{$self_host}/games/quiz.php?go={$quiz.quiz_id}</tt>-->
 	{elseif $user_id == $quiz.user_id}
 		<div class="interestBox" style="width:480px; background-color:yellow; margin-left:auto; margin-right:auto">
 			This is a private quiz and only visible to you. For others to play the quiz, you need to send them this link:<br/>
-		<	tt>http://{$http_host}/games/quiz.php?go={$quiz.quiz_id}&amp;auth={$quiz.auth}</tt>
+		<tt>{$self_host}/games/quiz.php?go={$quiz.quiz_id}&amp;auth={$quiz.auth}</tt>
 		</div>
 	{/if}
 <br/>

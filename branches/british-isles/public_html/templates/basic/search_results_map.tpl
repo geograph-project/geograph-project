@@ -108,7 +108,7 @@ function createMarker(uniqueId, markerPoint, markerIcon, title, realname) {
                 marker.popup = new OpenLayers.Popup.FramedCloud('pop'+uniqueId,
                    markerPoint,
                    new OpenLayers.Size(300,200),
-                   '<center><b>'+title+'</b> <br/>by <b>'+realname+'</b><br/><a href="http://www.geograph.org.uk/photo/'+uniqueId+'" target="_blank"><img src="'+markerIcon.url+'"/></a></center>',
+                   '<center><b>'+title+'</b> <br/>by <b>'+realname+'</b><br/><a href="/photo/'+uniqueId+'" target="_blank"><img src="'+markerIcon.url+'"/></a></center>',
 		   markerIcon,
                    true);
                 olmap.map.addPopup(marker.popup);

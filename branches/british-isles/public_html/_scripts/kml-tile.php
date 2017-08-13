@@ -84,7 +84,7 @@ foreach($photos as $id=>$entry)
 
 	if ($entry['imagecount']==1) {
 		$placemark = new kmlPlacemark($entry['gridimage_id'],$entry['grid_reference'].' :: '.$entry['title'],$point);
-		$placemark->useCredit($entry['realname'],"http://{$_SERVER['HTTP_HOST']}/photo/{$entry['gridimage_id']}");
+		$placemark->useCredit($entry['realname'],"{$CONF['SELF_HOST']}/photo/{$entry['gridimage_id']}");
 		$html .= getHtmlLinkP($placemark->link,$entry['grid_reference'].' :: '.$entry['title'].' by '.$entry['realname']);
 		$placemark->setItem('description',$placemark->link);
 
@@ -99,7 +99,7 @@ foreach($photos as $id=>$entry)
 		}
 	} else {
 		$placemark = new kmlPlacemark($entry['grid_reference'],$entry['grid_reference'].' :: '.$entry['imagecount'].' images e.g. '.$entry['title'],$point);
-		$placemark->setItem('description',"http://{$_SERVER['HTTP_HOST']}/gridref/{$entry['grid_reference']}");
+		$placemark->setItem('description',"{$CONF['SELF_HOST']}/gridref/{$entry['grid_reference']}");
 		$c = ($entry['imagecount']>20)?20:(($entry['imagecount']>4)?10:$entry['imagecount']);
 		$placemark->useHoverStyle('p'.$c);
 	}

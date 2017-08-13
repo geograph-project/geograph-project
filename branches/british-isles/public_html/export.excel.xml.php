@@ -68,7 +68,7 @@ while (!$recordSet->EOF)
 	print "<Row>\n";
 	$image = $recordSet->fields;
 
-	print "<Cell ss:StyleID=\"sHy\" ss:HRef=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image['gridimage_id']}\"><Data ss:Type=\"Number\">{$image['gridimage_id']}</Data></Cell>\n";
+	print "<Cell ss:StyleID=\"sHy\" ss:HRef=\"{$CONF['SELF_HOST']}/photo/{$image['gridimage_id']}\"><Data ss:Type=\"Number\">{$image['gridimage_id']}</Data></Cell>\n";
 	print "<Cell><Data ss:Type=\"String\">{$image['title']}</Data></Cell>";
 	print "<Cell><Data ss:Type=\"String\">{$image['grid_reference']}</Data></Cell>";
 	print "<Cell><Data ss:Type=\"String\">{$image['realname']}</Data></Cell>";

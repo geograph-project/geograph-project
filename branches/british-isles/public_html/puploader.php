@@ -155,7 +155,7 @@ if (isset($_GET['success'])) {
 
 	$t = $token->getToken($expiry);
 
-	print "http://{$_SERVER['HTTP_HOST']}/puploader.php?success&t=$t";
+	print "{$CONF['SELF_HOST']}/puploader.php?success&t=$t";
 	exit;
 } elseif (isset($_REQUEST['inner'])) {
 	$template = 'puploader_inner.tpl';

@@ -83,22 +83,22 @@ class game {
 	}
 	
 	public function saveScore($where = 'user',$username = '') {
-		global $USER;
+		global $USER,$CONF;
 		
 		$db = $this->_getDB();
 		
 		$updates = array();
 		
-		$app = 1; 
+		$app = 1;
 		if (!empty($USER->registered)) {
 			$updates['user_id'] = $USER->user_id;
 		} elseif (!$db->getOne('SELECT game_score_id FROM game_score WHERE approved = 1 and username = '.$db->Quote($username))) {
 			$updates['approved'] = '0';
-			$app = 0; 
-			
-			#$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");			
-			
-			#mail(implode(',',$mods), "[Geograph] Scoreboard approval required","Click the following link to review current list\n\nhttp://{$_SERVER['HTTP_HOST']}/games/approve.php","From: Geograph <noreply@geograph.org.uk>");
+			$app = 0;
+
+			#$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0;");
+
+			#mail(implode(',',$mods), "[Geograph] Scoreboard approval required","Click the following link to review current list\n\n{$CONF['SELF_HOST']}/games/approve.php","From: Geograph <noreply@geograph.org.uk>");
 		}
 		if (!empty($username)) {
 			$updates['username'] = $username;

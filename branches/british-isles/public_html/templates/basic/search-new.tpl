@@ -4,7 +4,7 @@
 {dynamic}
 {if $user->registered}
 <div class="interestBox" style="margin:3px;background-color:pink">
-	Please give us feedback on this new experimental interface on the <a href="http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=12&topic=14232">Discussion forum</a>. thank you!
+	Please give us feedback on this new experimental interface on the <a href="/discuss/index.php?&action=vthread&forum=12&topic=14232">Discussion forum</a>. thank you!
 </div>
 {/if}
 

@@ -6,7 +6,7 @@
         <a href="/team.php" class="tab">The Geograph Team</a>
         <a href="/credits/" class="tab">Contributors</a>
         <a href="/help/credits" class="tab">Credits</a>
-        <a href="http://hub.geograph.org.uk/downloads.html" class="tab">Downloads</a>
+        <a href="http://www.geograph.org/downloads.html" class="tab">Downloads</a>
         <span class="tabSelected">Contact Us</span>
         <a href="/article/Get-Involved">Get Involved...</a>
 </div>
@@ -39,7 +39,7 @@
 		<br style="clear:both"/><br/>
 	{/if}
 
-	<iframe src="http://www.geograph.org.uk/support/open.php?ref={$referring_page|escape:'url'}{if $user->registered}&amp;user_id={$user->user_id}&amp;t={$t}{/if}" width="100%" height="800" frameborder="0" name="content"></iframe>
+	<iframe src="https://company.geograph.org.uk/support/open.php?ref={$referring_page|escape:'url'}{if $user->registered}&amp;user_id={$user->user_id}&amp;t={$t}{/if}" width="100%" height="800" frameborder="0" name="content"></iframe>
 
 {/dynamic} 
 

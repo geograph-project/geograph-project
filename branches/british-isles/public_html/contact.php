@@ -72,12 +72,12 @@ if (isset($_POST['msg']))
 			$msg.="\n\n-------------------------------\n";
 			$msg.="Referring page: ".$_POST['referring_page']."\n";
 			if ($_SESSION['user']->user_id)
-				$msg.="User profile: http://{$_SERVER['HTTP_HOST']}/profile/{$_SESSION['user']->user_id}\n";
+				$msg.="User profile: {$CONF['SELF_HOST']}/profile/{$_SESSION['user']->user_id}\n";
 			$msg.="Browser: ".$_SERVER['HTTP_USER_AGENT']."\n";
 			
 			$token=new Token;
 			$token->setValue("id", intval($db->Insert_ID()));
-			$msg.="Admin: http://{$_SERVER['HTTP_HOST']}/admin/contact.php?t=".$token->getToken()."\n";
+			$msg.="Admin: {$CONF['SELF_HOST']}/admin/contact.php?t=".$token->getToken()."\n";
 
 			mail($CONF['contact_email'], 
 				'[Geograph] '.$subject,

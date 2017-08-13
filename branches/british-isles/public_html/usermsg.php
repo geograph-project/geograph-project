@@ -297,9 +297,9 @@ elseif (isset($_GET['image']))
 	$image->loadFromId($_GET['image']);
 	
 	if (strpos($recipient->rights,'mod') !== FALSE) {
-		$msg="Re: image for {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/editimage.php?id={$image->gridimage_id}\r\n";
+		$msg="Re: image for {$image->grid_reference} ({$image->title})\r\n{$CONF['SELF_HOST']}/editimage.php?id={$image->gridimage_id}\r\n";
 	} else {
-		$msg="Re: image for {$image->grid_reference} ({$image->title})\r\nhttp://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\r\n";
+		$msg="Re: image for {$image->grid_reference} ({$image->title})\r\n{$CONF['SELF_HOST']}/photo/{$image->gridimage_id}\r\n";
 	}
 	$smarty->assign_by_ref('msg', $msg);
 	

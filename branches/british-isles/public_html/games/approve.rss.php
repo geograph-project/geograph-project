@@ -31,12 +31,12 @@ $format="RSS0.91";
 $rss = new UniversalFeedCreator();
 
 
-$rss->title = 'Game Scoreboard Approvals'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/games/approve.php";
+$rss->title = 'Game Scoreboard Approvals';
+$rss->link = "{$CONF['SELF_HOST']}/games/approve.php";
 
 
 $db=NewADOConnection($GLOBALS['DSN']);
-	
+
 
 $sql="select created,username from game_score where approved = 0 group by username order by created";
 
@@ -44,9 +44,9 @@ $recordSet = &$db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
-	
+
 	$item->title = $recordSet->fields['username'];
-	
+
 	$item->date = strtotime($recordSet->fields['created']);
 
 	$rss->addItem($item);
@@ -57,4 +57,4 @@ while (!$recordSet->EOF)
 
 print $rss->createFeed($format);
 
-?>
+

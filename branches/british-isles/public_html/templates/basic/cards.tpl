@@ -23,7 +23,7 @@
 			</div>
 			{else}
 			<div style="background-color:#000066; text-align:center;">
-				<img src="http://{$http_host}/templates/basic/img/logo.gif">
+				<img src="{$static_host}/templates/basic/img/logo.gif">
 			</div>
 			{/if}
 			

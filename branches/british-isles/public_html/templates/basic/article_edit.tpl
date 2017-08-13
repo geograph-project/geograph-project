@@ -132,7 +132,7 @@ function makeUneditable() {
 	{if $errors.url}<div class="formerror"><p class="error">{$errors.url}</p>{/if}
 
 	<label for="url">URL:</label>
-	<span class="nowrap"><small><tt>http://{$http_host}/article/</tt></small><input type="text" name="url" value="{$url|escape:"html"}" maxlength="64" size="40"/></span>
+	<span class="nowrap"><small><tt>{$self_host}/article/</tt></small><input type="text" name="url" value="{$url|escape:"html"}" maxlength="64" size="40"/></span>
 
 	<div class="fieldnotes">Shouldn't be changed once article published.</div>
 

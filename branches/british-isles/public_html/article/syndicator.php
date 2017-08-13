@@ -55,7 +55,7 @@ if (empty($_GET['refresh']))
 	$rss->useCached($format,$rssfile);
 
 $rss->title = 'Geograph Articles'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/article/";
+$rss->link = "{$CONF['SELF_HOST']}/article/";
  
 	
 $rss->description = "Recently updated articles on Geograph British Isles"; 
@@ -64,22 +64,22 @@ if (!empty($_GET['admin'])) {
 	header("X-Robots-Tag: noindex, nofollow");
 	$sql_where = "(licence = 'none' or approved = 0)";
 	$rss->title = 'Geograph Pending Articles'; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;admin=1";
+	$rss->syndicationURL = "{$CONF['SELF_HOST']}/article/syndicator.php?format=$format&amp;admin=1";
 
 } elseif (!empty($_GET['revdocs'])) {
 	$sql_where = "approved > 0 and category_name regexp '[[:<:]]Geograph[[:>:]]'"; 
 	$rss->title = 'Geograph Document Revisions'; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;revdocs=1";
+	$rss->syndicationURL = "{$CONF['SELF_HOST']}/article/syndicator.php?format=$format&amp;revdocs=1";
 
 } elseif (!empty($_GET['revisions'])) {
         header("X-Robots-Tag: noindex, nofollow");
 	$sql_where = "approved > -1";
 	$rss->title = 'Geograph Article Revisions'; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/syndicator.php?format=$format&amp;revisions=1";
+	$rss->syndicationURL = "{$CONF['SELF_HOST']}/article/syndicator.php?format=$format&amp;revisions=1";
 
 } else {
 	$sql_where = "licence != 'none' and approved > 0";
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/article/feed/recent.$format_extension";
+	$rss->syndicationURL = "{$CONF['SELF_HOST']}/article/feed/recent.$format_extension";
 
 }
 
@@ -139,7 +139,7 @@ while (!$recordSet->EOF)
 	}
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->guid = $item->link = "http://{$_SERVER['HTTP_HOST']}/article/{$recordSet->fields['url']}";
+	$item->guid = $item->link = "{$CONF['SELF_HOST']}/article/{$recordSet->fields['url']}";
 	
 	
 	$description = $recordSet->fields['extract'];

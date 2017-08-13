@@ -28,8 +28,8 @@ Display:
 	<div class="interestBox">
 	<p>This page is no longer able to display a map - please use a different display method.</p>
 	<p>However you may be able to display a map on {if $engine->currentPage > 1}
-{external href="http://maps.google.com/?q=http://`$http_host`/feed/results/`$i`/`$engine->currentPage`.kml" text="Google Maps"}.{else}
-{external href="http://maps.google.com/?q=http://`$http_host`/feed/results/`$i`.kml" text="Google Maps"}.{/if}</p>
+{external href="http://maps.google.com/?q=`$self_host`/feed/results/`$i`/`$engine->currentPage`.kml" text="Google Maps"}.{else}
+{external href="http://maps.google.com/?q=`$self_host`/feed/results/`$i`.kml" text="Google Maps"}.{/if}</p>
 	</div>
 
 {elseif $engine->resultCount}
@@ -90,7 +90,7 @@ Display:
 
 
 		{/literal}
-		var xml = new GGeoXml("http://{$http_host}/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.kml");
+		var xml = new GGeoXml("{$self_host}/feed/results/{$i}{if $engine->currentPage > 1}/{$engine->currentPage}{/if}.kml");
 		map.addOverlay(xml);
 
 		{if $markers} 
@@ -135,7 +135,7 @@ Display:
 		<div >
 			<a title="view full size image" href="/photo/{$image->gridimage_id}">
 			{$image->getFull()|regex_replace:'/"(\d+)"/e':'"\"".($1/2)."\""'}
-			</a><div class="caption"><b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> <span class="nowrap">for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> by <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></span></div>
+			</a><div class="caption"><b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> <span class="nowrap">for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> by <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></span></div>
 		</div>
 		{if $image->excerpt}
 			<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->excerpt}</div>
@@ -212,7 +212,7 @@ Display:
 		  <div style="position:relative">
 		  	<div class="interestBox" style="position:absolute;top:0;left:-120px;display:none;z-index:10000;padding:4px;width:260px" id="image{$image->gridimage_id}_info">
 		  		{$image->dist_string}{if $image->count} - {$image->count|thousends} images in group<br/>{/if}
-				<div class="caption"><b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> <span class="nowrap">for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> by <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></span></div>
+				<div class="caption"><b><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></b> <span class="nowrap">for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> by <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></span></div>
 				
 				{if $image->excerpt}
 					<div class="caption" title="{$image->comment|escape:'html'}" style="font-size:0.7em;">{$image->excerpt}</div>

@@ -28,7 +28,7 @@ tt { color:green; border: 1px solid lightgrey; padding:3px; background-color:whi
 
 <h4>Linking</h4>
 
-<blockquote class="tip">Tip: Get the image ID for use in building these links from the URL of the page (visible in the address bar of your browser), for example, to insert a link to the picture at <a href="/photo/5463">http://{$http_host}/photo/<b>5463</b></a> use <tt class="bbcode" style="line-height:3em">[[5463]]</tt></blockquote>
+<blockquote class="tip">Tip: Get the image ID for use in building these links from the URL of the page (visible in the address bar of your browser), for example, to insert a link to the picture at <a href="/photo/5463">{$self_host}/photo/<b>5463</b></a> use <tt class="bbcode" style="line-height:3em">[[5463]]</tt></blockquote>
 
 <ul>
 <li><b class="title">Link by ID direct to an image</b><br/>

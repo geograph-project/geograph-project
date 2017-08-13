@@ -1,5 +1,5 @@
 {if $userimages && $profile->user_id != 1695}
-{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://`$http_host`/profile/`$profile->user_id`\" />"}
+{assign var="extra_meta" value="<link rel=\"canonical\" href=\"`$self_host`/profile/`$profile->user_id`\" />"}
 {else}
 {assign var="extra_meta" value="<meta name=\"robots\" content=\"noindex, nofollow\" />"}
 {/if}
@@ -316,8 +316,8 @@
 			{/if}{/dynamic}
 		{/if}
 		{if $user->user_id eq $profile->user_id}
-			<li><b>Wordle</b>: {external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View words from image titles as a <i>Wordle</i>"} or
-				{external href="http://`$http_host`/stuff/make-wordle.php?u=`$profile->user_id`&amp;tags=1" text="View your tags"}</li>
+			<li><b>Wordle</b>: {external href="`$self_host`/stuff/make-wordle.php?u=`$profile->user_id`" text="View words from image titles as a <i>Wordle</i>"} or
+				{external href="`$self_host`/stuff/make-wordle.php?u=`$profile->user_id`&amp;tags=1" text="View your tags"}</li>
 			<li><b>Change Requests</b>: <a href="/suggestions.php" rel="nofollow">View recent suggestions</a></li>
 			{if !$enable_forums}
 				<li><b>Submissions</b>: <a href="/submissions.php" rel="nofollow">Edit my recent submissions</a></li>

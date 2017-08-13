@@ -87,7 +87,7 @@ if (isset($_POST) && isset($_POST['submit'])) {
 				$gs->reference_index,false);
 
 			$c .= "[map {$gr}]\n";
-			$c .= "[url=http://{$_SERVER['HTTP_HOST']}/gridref/$gr/links]More Links for {$gs->grid_reference}[/url]\n\n";
+			$c .= "[url={$CONF['SELF_HOST']}/gridref/$gr/links]More Links for {$gs->grid_reference}[/url]\n\n";
 		}
 
 		foreach (range(1,2) as $i) {
@@ -131,7 +131,7 @@ if (isset($_POST) && isset($_POST['submit'])) {
 		if (!empty($_POST['q'])) {
 			$gr2 = preg_replace('/([A-Z])/e', '"%".bin2hex(\'\\1\')', $gs->grid_reference);
 
-			$link = "http://{$_SERVER['HTTP_HOST']}/search.php?gridref={$gr2}&searchtext=".urlencode($_POST['q'])."&distance=2&do=1";
+			$link = "{$CONF['SELF_HOST']}/search.php?gridref={$gr2}&searchtext=".urlencode($_POST['q'])."&distance=2&do=1";
 			$name = "Auto-updating Search for related images";
 			$links[] = "* [url=$link]{$name}[/url]";
 		}
@@ -201,7 +201,7 @@ if (isset($_POST) && isset($_POST['submit'])) {
 		
 		print "<p>Title: ".$_POST['title']."</p>";
 		
-		$url = "http://{$_SERVER['HTTP_HOST']}/article/{$_POST['url']}";
+		$url = "{$CONF['SELF_HOST']}/article/{$_POST['url']}";
 		
 		print "<p>Link: <a href=\"$url\">$url</a></p>";
 		

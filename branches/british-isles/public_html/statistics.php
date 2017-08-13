@@ -22,7 +22,7 @@
  */
 
 if (isset($_GET['by']) && preg_match('/^\w+$/' , $_GET['by'])) {
-	header("Location:http://{$_SERVER['HTTP_HOST']}/statistics/breakdown.php?".$_SERVER['QUERY_STRING']);
+	header("Location: /statistics/breakdown.php?".$_SERVER['QUERY_STRING']);
 	exit;
 }
 

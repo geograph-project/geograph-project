@@ -56,7 +56,7 @@ if (!empty($_POST)) {
 		$mods=$db->GetCol("select email from user where FIND_IN_SET('forum',rights)>0;");
 			
 		$subject = "[Geograph Forum Report] for thread #$topic";
-		$body = "http://{$_SERVER['HTTP_HOST']}/admin/discuss_reports.php?topic_id=$topic\n\n";
+		$body = "{$CONF['SELF_HOST']}/admin/discuss_reports.php?topic_id=$topic\n\n";
 		$body .= "Time: ".date('r')."\n\n";
 		$body .= $data;
 		

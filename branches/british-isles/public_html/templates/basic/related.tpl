@@ -8,7 +8,7 @@
 alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" align="top" /></a> <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>
 
 <h2 style="margin-bottom:0px" class="nowrap"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
-<div>by <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>, taken: {$image->image_taken}</div>
+<div>by <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>, taken: {$image->image_taken}</div>
 
 <br style="clear:both;"/>
 
@@ -21,7 +21,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/so
 	<div style="float:left;padding-left:20px; width:400px;">
 		<span style="font-size:0.7em">{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}</span><br/>
 		<br/>
-		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and
+		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and
 		licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a></b></small>
 	</div>
 {if $image_taken && $image->imagetaken > 1}

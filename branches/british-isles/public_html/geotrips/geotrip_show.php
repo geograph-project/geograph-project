@@ -27,7 +27,7 @@ if ((!preg_match('/\/geotrips\/\d+/',$_SERVER["REQUEST_URI"]) && isset($_GET['tr
         header("HTTP/1.0 301 Moved Permanently");
         header("Status: 301 Moved Permanently");
         header("Location: /geotrips/".intval($_GET['trip']));
-        print "<a href=\"http://{$_SERVER['HTTP_HOST']}/geotrips/".intval($_GET['trip'])."\">Continue to view this trip</a>";
+        print "<a href=\"{$CONF['SELF_HOST']}/geotrips/".intval($_GET['trip'])."\">Continue to view this trip</a>";
         exit;
 }
 

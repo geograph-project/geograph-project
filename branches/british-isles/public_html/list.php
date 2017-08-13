@@ -26,16 +26,14 @@ if (!empty($_GET['square'])) {
 	header("HTTP/1.0 301 Moved Permanently");
 	header("Status: 301 Moved Permanently");
 	header("Location: /sitemap/{$_GET['square']}.html");
-	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/sitemap/{$_GET['square']}.html\">View page</a>";
+	print "<a href=\"{$CONF['SELF_HOST']}/sitemap/{$_GET['square']}.html\">View page</a>";
 	exit;
 } else {
 	header("HTTP/1.0 301 Moved Permanently");
 	header("Status: 301 Moved Permanently");
 	header("Location: /sitemap/geograph.html");
-	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/sitemap/geograph.html\">View page</a>";
+	print "<a href=\"{$CONF['SELF_HOST']}/sitemap/geograph.html\">View page</a>";
 	exit;
 }
 
 
-	
-?>

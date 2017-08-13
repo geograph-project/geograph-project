@@ -2,9 +2,9 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:georss="http://www.georss.org/georss/">
-<Work rdf:about="http://{$http_host}/photo/{$image->gridimage_id}">
+<Work rdf:about="{$self_host}/photo/{$image->gridimage_id}">
      <dc:title>{$image->grid_reference} : {$image->title|escape:'html'}</dc:title>
-     <dc:identifier>http://{$http_host}/photo/{$image->gridimage_id}</dc:identifier>
+     <dc:identifier>{$self_host}/photo/{$image->gridimage_id}</dc:identifier>
 {if $image->credit_realname}
      <dc:creator><Agent>
         <dc:title>{$image->realname|escape:'html'}</dc:title>

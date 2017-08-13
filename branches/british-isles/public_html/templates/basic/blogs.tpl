@@ -265,7 +265,7 @@ span.tag, a.tag {
 		var center = bounds.getCenter();
 		map.setCenter(center, newZoom,G_PHYSICAL_MAP);
 
-		var xml = new GGeoXml("http://{$http_host}/blog/feed.kml");
+		var xml = new GGeoXml("{$self_host}/blog/feed.kml");
 		{literal}
 		map.addOverlay(xml);
 	}

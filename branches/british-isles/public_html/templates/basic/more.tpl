@@ -11,7 +11,7 @@
 alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" align="top" /></a> <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : </h2></div>
 
 <h2 style="margin-bottom:0px" class="nowrap"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a></h2>
-<div>by <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
+<div>by <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a></div>
 
 <br style="clear:both;"/>
 
@@ -25,7 +25,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/so
 		<div class="caption"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a> for <a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></div>
 		<span style="font-size:0.7em">{$image->comment|escape:'html'|nl2br|geographlinks|default:"<tt>no description for this image</tt>"}</span><br/>
 		<br/>
-		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
+		<small><b>&nbsp; &copy; Copyright <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a> and  
 		licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a></b></small>
 	</div>
 	
@@ -40,7 +40,7 @@ alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/so
         <img src="/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/>
 
 
-Note: all sizes are <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licensed</a>, and any reuse needs to credit <a title="View profile" href="http://{$http_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>.
+Note: all sizes are <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licensed</a>, and any reuse needs to credit <a title="View profile" href="{$self_host}{$image->profile_link}">{$image->realname|escape:'html'}</a>.
 
 Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell you more about how to credit images.
 </div>

@@ -69,7 +69,7 @@
     	<br /><span class="formerror">{$msg_error}</span> 
     <br />
         <small style="font-size:0.9em">If you are writing in relation to a particular image or images, please don't forget to mention which!<br/> Ideally copy &amp; paste the page address (URL) of the photo page. <br/>
-        Example: <tt>http://{$http_host}/photo/{if $image}{$image->gridimage_id}{else}1234{/if}</tt></small><br /><br />
+        Example: <tt>{$self_host}/photo/{if $image}{$image->gridimage_id}{else}1234{/if}</tt></small><br /><br />
     <br />
 {if !$user->registered}
     <label for="subject">Anti-Spam</label><br/>

@@ -677,8 +677,8 @@ function GeographLinks(&$posterText,$thumbs = false) {
 
 	
 	}
-	if ($CONF['CONTENT_HOST'] != $CONF['PROTOCOL'].$_SERVER['HTTP_HOST']) {
-		$posterText = str_replace($CONF['CONTENT_HOST'],$CONF['PROTOCOL'].$_SERVER['HTTP_HOST'],$posterText);
+	if ($CONF['CONTENT_HOST'] != $CONF['SELF_HOST']) {
+		$posterText = str_replace($CONF['CONTENT_HOST'],$CONF['SELF_HOST'],$posterText);
 	}
 	
 	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:\@\!]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>'\$1','text'=>'Link','nofollow'=>1,'title'=>'\$1'))",$posterText);

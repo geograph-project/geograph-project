@@ -35,7 +35,7 @@ if ((!preg_match('/\/project\/\d+/',$_SERVER["REQUEST_URI"]) && isset($_GET['id'
         header("HTTP/1.0 301 Moved Permanently");
         header("Status: 301 Moved Permanently");
         header("Location: /project/".intval($_GET['id']));
-        print "<a href=\"http://{$_SERVER['HTTP_HOST']}/project/".intval($_GET['id'])."\">View project entry</a>";
+        print "<a href=\"{$CONF['SELF_HOST']}/project/".intval($_GET['id'])."\">View project entry</a>";
         exit;
 }
 */

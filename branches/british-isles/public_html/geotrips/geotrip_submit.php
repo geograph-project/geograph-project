@@ -92,7 +92,7 @@ print "<h2><a href=\"./\">Geo-Trips</a> :: Submission Form</h2>";
           <p>
             <b>Geograph search id</b> <span class="hlt">(required)</span><br />
             <input type="text" name="search" size="72" /><br />
-            (e.g. <em>12345678</em> or <em>http://<? echo $_SERVER['HTTP_HOST']; ?>/search.php?i=12345678</em>)
+            (e.g. <em>12345678</em> or <em><? echo $CONF['SELF_HOST']; ?>/search.php?i=12345678</em>)
           </p>
           <ul>
             <li>
@@ -175,7 +175,7 @@ to your computer.
           <p>
             <b>Geograph image id</b> (optional)<br />
             <input type="text" name="img" size="72" /><br />
-            (e.g. <em>1234567</em> or <em>http://<? echo $_SERVER['HTTP_HOST']; ?>/photo/1234567</em>)
+            (e.g. <em>1234567</em> or <em><? echo $CONF['SELF_HOST']; ?>/photo/1234567</em>)
           </p>
           <ul>
             <li>
@@ -207,7 +207,7 @@ no need to repeat them here.
           <p>
             <b>Continuation from previous trip</b> (optional)<br />
             <input type="text" name="contfrom" size="72" /><br />
-            (e.g. <em>123</em> or <em>http://<? echo $_SERVER['HTTP_HOST']; ?>/geotrips/geotrip_show.php?trip=123</em> or <em>http://<? echo $_SERVER['HTTP_HOST']; ?>/geotrips/123</em>)
+            (e.g. <em>123</em> or <em><? echo $CONF['SELF_HOST']; ?>/geotrips/geotrip_show.php?trip=123</em> or <em><? echo $CONF['SELF_HOST']; ?>/geotrips/123</em>)
           </p>
           <ul>
             <li>

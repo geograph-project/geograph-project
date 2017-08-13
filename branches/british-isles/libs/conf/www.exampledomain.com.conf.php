@@ -33,13 +33,15 @@ $CONF['enable_cluster'] = 2;
 $CONF['STATIC_HOST'] = $CONF['PROTOCOL']."s0.geograph.mobile";
 
 //hostname to use for thumbnails if cluster is disabled (used to be used for full images, but now use $CONF['STATIC_HOST'])
-$CONF['CONTENT_HOST'] = $CONF['PROTOCOL']."geograph.mobile";
+$CONF['CONTENT_HOST'] = $CONF['PROTOCOL'].$_SERVER['HTTP_HOST'];
 
 //this *can* be different to your main hostname if want dedicated host for cookieless tile.php requests
 $CONF['TILE_HOST'] = $CONF['PROTOCOL'].$_SERVER['HTTP_HOST'];
 
-//this can be different to your main hostname if want to seperate out the hosting of the Google Earth Superlayer. 
+//this can be different to your main hostname if want to seperate out the hosting of the Google Earth Superlayer.
 $CONF['KML_HOST'] = "http://".$_SERVER['HTTP_HOST'];
+
+$CONF['SELF_HOST'] = $CONF['PROTOCOL'].$_SERVER['HTTP_HOST']; //general replacement for HTTP_HOST so can include the protocol
 
 ###################################
 # database configuration

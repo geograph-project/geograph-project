@@ -63,19 +63,19 @@ if (empty($_GET['refresh']))
 	$rss->useCached($format,$rssfile);
 
 $rss->title = 'Geograph Events'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/events/";
+$rss->link = "{$CONF['SELF_HOST']}/events/";
  
 	
 $rss->description = "Upcoming Geograph British Isles Events"; 
 
 if (empty($_GET['admin'])) {
 	$isadmin= 0;
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/events/feed.$format_extension";
+	$rss->syndicationURL = "{$CONF['SELF_HOST']}/events/feed.$format_extension";
 
 } else {
 	$isadmin= 1;
 	$rss->title = 'Geograph Pending Events'; 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/events/syndicator.php?format=$format&amp;admin=1";
+	$rss->syndicationURL = "{$CONF['SELF_HOST']}/events/syndicator.php?format=$format&amp;admin=1";
 }
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
@@ -108,7 +108,7 @@ while (!$recordSet->EOF)
 	$item->title = date('d/m/Y: ',strtotime($recordSet->fields['event_time'])).$recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/events/event.php?id={$recordSet->fields['geoevent_id']}";
+	$item->link = "{$CONF['SELF_HOST']}/events/event.php?id={$recordSet->fields['geoevent_id']}";
 	
 	$item->guid = $item->link;
 

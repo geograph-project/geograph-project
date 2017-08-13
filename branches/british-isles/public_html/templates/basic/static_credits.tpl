@@ -150,7 +150,7 @@
     
     <p>We also strive to adhere to the following standards:</p>
     <div>{external title="Check our XHTML Compliance" href="http://validator.w3.org/check/referer" text='<img src="/img/valid-xhtml10.png" width="88" height="31" alt="XHTML"/>'}
-    {external title="Check our CSS Compliance" href="http://jigsaw.w3.org/css-validator/validator?uri=http://`$http_host`/templates/basic/css/basic.css" text='<img src="/img/css1.png" width="88" height="31" alt="CSS"/>'}
+    {external title="Check our CSS Compliance" href="http://jigsaw.w3.org/css-validator/validator?uri=`$self_host`/templates/basic/css/basic.css" text='<img src="/img/css1.png" width="88" height="31" alt="CSS"/>'}
     {external href="http://bobby.watchfire.com/" title="Bobby's Home Page" text='<img src="/img/approved_508.gif" alt="Bobby WorldWide Approved 508" width="88" height="31"/>'}</div>
 
     

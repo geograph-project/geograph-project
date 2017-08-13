@@ -856,6 +856,7 @@ class GeographMapMosaic
 
 	function getCoverageMapLink()
 	{
+		global $CONF;
 		list ($x,$y) = $this->getCentre();
 
                 require_once('geograph/conversions.class.php');
@@ -865,18 +866,18 @@ class GeographMapMosaic
 
 		switch ($this->pixels_per_km) {
 			case 0.13:
-				return "http://www.geograph.org.uk/mapper/coverage.php#zoom=5&lat=$lat&lon=$long&layers=FTT000000B00000FT";
+				return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=5&lat=$lat&lon=$long&layers=FTT000000B00000FT";
 			case 1:
-				return "http://www.geograph.org.uk/mapper/coverage.php#zoom=6&lat=$lat&lon=$long&layers=FTT000000B00000FT";
+				return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=6&lat=$lat&lon=$long&layers=FTT000000B00000FT";
 			case 4:
-				return "http://www.geograph.org.uk/mapper/coverage.php#zoom=9&lat=$lat&lon=$long&layers=FTT000000B00000FT";
+				return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=9&lat=$lat&lon=$long&layers=FTT000000B00000FT";
 			case 40:
 			case 80:
 				if ($this->reference_index == 1) {
 					//OS maps for GB!
-					return "http://www.geograph.org.uk/mapper/coverage.php#zoom=12&lat=$lat&lon=$long&layers=FTF000000B00000FT";
+					return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=12&lat=$lat&lon=$long&layers=FTF000000B00000FT";
 				} elseif ($this->reference_index == 2) {
-					return "http://www.geograph.org.uk/mapper/coverage.php#zoom=12&lat=$lat&lon=$long&layers=FFT000000B00000FT";
+					return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=12&lat=$lat&lon=$long&layers=FFT000000B00000FT";
 				}
 		}
 
@@ -891,6 +892,7 @@ class GeographMapMosaic
 	*/
 	function zoomIn($i, $j, $x, $y)
 	{
+		global $CONF;
 		//so where did we click?
 		list($clickx, $clicky)=$this->getClickCoordinates($i, $j, $x, $y);
 		
@@ -910,15 +912,13 @@ class GeographMapMosaic
 				//if the image count is 1, we'll go straight to the image
 				if (count($images)==1)
 				{
-					$url="http://".$_SERVER['HTTP_HOST'].'/photo/'.
-						$images[0]->gridimage_id;
+					$url=$CONF['SELF_HOST'].'/photo/'.$images[0]->gridimage_id;
 				}
 				else
 				{
 					//lets go to the grid reference
-					$url="http://".$_SERVER['HTTP_HOST'].'/gridref/'.$square->grid_reference;
+					$url=$CONF['SELF_HOST'].'/gridref/'.$square->grid_reference;
 				}
-				
 			}
 			else
 			{
@@ -926,7 +926,7 @@ class GeographMapMosaic
 				$conv = new Conversions;
 		
 				list($gr,$len) = $conv->internal_to_gridref($clickx,$clicky,0);
-				$url="http://".$_SERVER['HTTP_HOST'].'/gridref/'.$gr;
+				$url=$CONF['SELF_HOST'].'/gridref/'.$gr;
 			}
 			header("Location:$url");
 			exit;

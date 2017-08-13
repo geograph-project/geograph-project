@@ -180,53 +180,52 @@ if (!empty($_GET['relinquish'])) {
 
 } elseif (!empty($_GET['apply'])) {
 	$USER->mustHavePerm('basic');
-	
+
 	if ($_GET['apply'] == 2) {
-		
+
 		$db->Execute("UPDATE user SET rights = CONCAT(rights,',traineemod') WHERE user_id = {$USER->user_id}");
-		
+
 		$mods=$db->GetCol("select email from user where FIND_IN_SET('admin',rights)>0 OR FIND_IN_SET('admin',coordinator)>0");
-		
-		$url = 'http://'.$_SERVER['HTTP_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
-		
-		mail(implode(',',$mods), "[Geograph] Moderator Application ({$USER->user_id})", 
-"Dear Admin, 
+
+		$url = $CONF['SELF_HOST'].'/admin/moderator_admin.php?stats='.$USER->user_id;
+
+		mail(implode(',',$mods), "[Geograph] Moderator Application ({$USER->user_id})",
+"Dear Admin,
 
 I have just completed verification.
 
-Comments: 
+Comments:
 {$_POST['comments']}
 
 Click the following link to review the application:
 
 $url
 
-Regards, 
+Regards,
 
 {$USER->realname}".($USER->nickname?" (aka {$USER->nickname})":''),
 				"From: {$USER->realname} <{$USER->email}>");
-				
+
 		header("Location: /profile.php");
 		exit;
-	} 
-	
+	}
+
 	$count = $db->getRow("select count(*) as total,sum(created > date_sub(now(),interval 60 day)) as recent from moderation_log WHERE user_id = {$USER->user_id} AND type = 'dummy'");
 	if ($count['total'] > 0) {
 		$limit = 10;
 	}
-	
+
 	//make sure they only do verifications
 	$_GET['remoderate'] = 1;
-	
+
 	$smarty->assign('apply', 1);
-	
+
 } elseif (isset($_GET['moderator'])) {
 	($USER->user_id == 10124) || $USER->mustHavePerm('admin');
 } else {
 	$USER->mustHavePerm('moderator');
 }
 
-	
 #############################
 # check if needs to remoderate
 

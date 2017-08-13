@@ -66,12 +66,12 @@ if (empty($_GET['refresh']))
 	$rss->useCached($format,$rssfile);
 
 $rss->title = 'Shared Descriptions'; 
-$rss->link = "http://{$_SERVER['HTTP_HOST']}/snippets.php";
+$rss->link = "{$CONF['SELF_HOST']}/snippets.php";
  
 	
 $rss->description = "Recent Shared descriptions"; 
 
-	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/snippet-syndicator.php?format=$format";
+	$rss->syndicationURL = "{$CONF['SELF_HOST']}/snippet-syndicator.php?format=$format";
 
 
 
@@ -101,7 +101,7 @@ while (!$recordSet->EOF)
 	$item->title = $recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
-	$item->link = "http://{$_SERVER['HTTP_HOST']}/snippet/{$recordSet->fields['snippet_id']}";
+	$item->link = "{$CONF['SELF_HOST']}/snippet/{$recordSet->fields['snippet_id']}";
 	
 	$item->guid = $item->link;
 

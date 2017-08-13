@@ -45,7 +45,7 @@ if (isset($_GET['deleteInvalidateAll']) && $USER->hasPerm('admin'))
 	
 	//redirect to prevent page refreshes of this url
 
-	header("Location:http://{$_SERVER['HTTP_HOST']}/admin/recreatemaps.php");
+	header("Location:{$CONF['SELF_HOST']}/admin/recreatemaps.php");
 	exit;
 }
 
@@ -57,7 +57,7 @@ if (isset($_GET['invalidateAll']) && $USER->hasPerm('admin'))
 	
 	//redirect to prevent page refreshes of this url
 
-	header("Location:http://{$_SERVER['HTTP_HOST']}/admin/recreatemaps.php");
+	header("Location:{$CONF['SELF_HOST']}/admin/recreatemaps.php");
 	exit;
 }
 
@@ -71,7 +71,7 @@ if (isset($_GET['expireAll']) && $USER->hasPerm('admin'))
 
 	//redirect to prevent page refreshes of this url
 
-	header("Location:http://{$_SERVER['HTTP_HOST']}/admin/recreatemaps.php");
+	header("Location:{$CONF['SELF_HOST']}/admin/recreatemaps.php");
 	exit;
 }
 

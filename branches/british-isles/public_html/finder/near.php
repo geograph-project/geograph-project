@@ -82,7 +82,7 @@ if (!empty($_GET['q'])) {
 	}
 
 	$smarty->assign("page_title",'Photos near '.$_GET['q']);
-	$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://{$_SERVER['HTTP_HOST']}/near/$qu2\"/>");
+	$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/near/$qu2\"/>");
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].$mkey);
 
 	if ($memcache->valid) {
