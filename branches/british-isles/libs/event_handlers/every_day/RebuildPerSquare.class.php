@@ -38,35 +38,34 @@ class RebuildPerSquare extends EventHandler
 	function processEvent(&$event)
 	{
 		global $CONF;
-		
+
 		//perform actions
-		
+
 		$db=&$this->_getDB();
-		
+
 		$db->Execute("DROP TABLE IF EXISTS gridimage_persquare_tmp");
-		
-		$db->Execute("CREATE TABLE gridimage_persquare_tmp 
+
+		$db->Execute("CREATE TABLE gridimage_persquare_tmp ENGINE=MyISAM
 			SELECT gridimage_id,grid_reference,moderation_status,seq_no,user_id,x,y,point_xy FROM gridimage_search
 			WHERE ftf <= 1
 			ORDER BY moderation_status+0 DESC,seq_no");
 
 
-		##ftf <= 1 includes ftf and supplemental :) 
+		##ftf <= 1 includes ftf and supplemental :)
 
-		sleep(5);
-		
+		sleep(1);
+
 		$db->Execute("ALTER IGNORE TABLE gridimage_persquare_tmp ADD PRIMARY KEY (x,y),ADD UNIQUE (gridimage_id),ADD SPATIAL KEY(point_xy)");
-		
-		sleep(5);
-		
-		
+
+		sleep(1);
+
+
 		$db->Execute("DROP TABLE IF EXISTS gridimage_persquare");
-		
+
 		$db->Execute("RENAME TABLE gridimage_persquare_tmp TO gridimage_persquare");
-		
+
 		//return true to signal completed processing
 		//return false to have another attempt later
 		return true;
 	}
-	
 }
