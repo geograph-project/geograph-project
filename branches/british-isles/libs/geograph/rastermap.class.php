@@ -205,7 +205,7 @@ class RasterMap
 		if ($this->service == 'OSM-Static-Dev') {
 			//params mirror http://old-dev.openstreetmap.org/~ojw/StaticMap/?mode=API&
 			//we use a proxy url primarlly because old-dev disallows robots.
-			$mapurl = "http://{$CONF['TILE_HOST']}/tile-static.php?source=OSM-cycle&lat={$this->lat}&lon={$this->long}&z=13&w={$width}&h={$width}";
+			$mapurl = "{$CONF['TILE_HOST']}/tile-static.php?source=OSM-cycle&lat={$this->lat}&lon={$this->long}&z=13&w={$width}&h={$width}";
 			
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
@@ -278,7 +278,7 @@ class RasterMap
 				$this->natnorthings = $nort + 500;
 			}
 			
-			$mapurl = "http://{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
+			$mapurl = "{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
 			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 3 && empty($GLOBALS['USER']->registered)) {
 				$mapurl = cachize_url($mapurl);
 			}
@@ -342,7 +342,7 @@ class RasterMap
 			if (!empty($CONF['fetch_on_demand'])) {
 				$mapurl = "http://{$CONF['fetch_on_demand']}/tile.php?r=".$this->getToken();
 			} else {
-				$mapurl = "http://{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
+				$mapurl = "{$CONF['TILE_HOST']}/tile.php?r=".$this->getToken();
 			}
 			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 3 && empty($GLOBALS['USER']->registered)) {
 				$mapurl = cachize_url($mapurl);
