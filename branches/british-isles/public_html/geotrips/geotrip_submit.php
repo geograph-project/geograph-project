@@ -374,7 +374,7 @@ and there need to be at least three images matching these criteria in your searc
           <p>
 If all has gone well, your <a href="/geotrips/<?php print($newid); ?>">new trip</a>
 should show on the <a href="./">map</a> now.  Please
-<a href="http://www.geograph.org.uk/usermsg.php?to=2520">let me know</a> if anything doesn't
+<a href="/usermsg.php?to=2520">let me know</a> if anything doesn't
 work as expected.
           </p>
         </div>
@@ -382,7 +382,7 @@ work as expected.
           <h3>Add a blog post for your Geo-trip</h3>
           <p>
 Two for the price of one!  If you'd like to add a post to the
-<a href="http://www.geograph.org.uk/blog/">Geograph blog</a> to highlight your trip, please
+<a href="/blog/">Geograph blog</a> to highlight your trip, please
 press the submit button below.  This will take you to the blog edit page prefilled with the
 information you've submitted to Geo-trips, so you can tweak the blog post before it goes live.
           </p>
@@ -392,11 +392,11 @@ information you've submitted to Geo-trips, so you can tweak the blog post before
           $gr=bbox2gr($bbox);
           $tags='Geo-trip, '.whichtype($_POST['type']);
           $pub=explode('-',date('d-m-Y-H-i-s'));
-          $descr=$_POST['descr'].'  You can see this trip plotted on a map on the Geo-trips page http://www.geograph.org.uk/geotrips/'.$newid.' .';
+          $descr=$_POST['descr'].'  You can see this trip plotted on a map on the Geo-trips page '.$CONF['SELF_HOST'].'/geotrips/'.$newid.' .';
           $imgid=explode('/',$_POST['img']);
           $imgid=intval($imgid[sizeof($imgid)-1]);
 ?>
-          <form name="blog" method="post" action="http://www.geograph.org.uk/blog/edit.php">
+          <form name="blog" method="post" action="/blog/edit.php">
             <input type="hidden" name="id" value="new" />
             <input type="hidden" name="initial" value="true" />
             <input type="hidden" name="title" value="<?php print(htmlentities($title)); ?>" />

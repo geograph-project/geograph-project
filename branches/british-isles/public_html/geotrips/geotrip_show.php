@@ -146,7 +146,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
       // Define camera marker
       pos=new OpenSpace.MapPoint(<?php print("{$geograph[$i]['viewpoint_eastings']},{$geograph[$i]['viewpoint_northings']}");?>);
       size=new OpenLayers.Size(9,9);
-      offset=new OpenLayers.Pixel(-4,-9);    // No idea why offset=-9 rather than -4 but otherwise the view line doesn't start at the centre
+      offset=new OpenLayers.Pixel(-4,-4);
       infoWindowAnchor=new OpenLayers.Pixel(4,4);
       icon=new OpenSpace.Icon('walk.png',size,offset,null,infoWindowAnchor);
       popUpSize=new OpenLayers.Size(300,320);
@@ -347,10 +347,10 @@ function newHighlightMarker(bits) {
 	}
 
       var pos = new OpenSpace.MapPoint(bits[0],bits[1]);
-      size=new OpenLayers.Size(35,35);
-      offset=new OpenLayers.Pixel(-17,-21);    // No idea why offset=-9 rather than -4 but otherwise the view line doesn't start at the centre
-      infoWindowAnchor=new OpenLayers.Pixel(17,17);
-      icon=new OpenSpace.Icon('walk_focus_big_dark.png',size,offset,null,infoWindowAnchor);
+      var size=new OpenLayers.Size(35,35);
+      var offset=new OpenLayers.Pixel(-17,-17);
+      var infoWindowAnchor=new OpenLayers.Pixel(17,17);
+      var icon=new OpenSpace.Icon('walk_focus_big_dark.png',size,offset,null,infoWindowAnchor);
       highlightMarker = osMap.createMarker(pos,icon);
 
      if (bits.length==2)
@@ -361,8 +361,7 @@ function newHighlightMarker(bits) {
       vdir.push(new OpenLayers.Geometry.Point(bits[0],bits[1]));
       vdir.push(new OpenLayers.Geometry.Point(bits[2],bits[3]));
       var vdirString=new OpenLayers.Geometry.LineString(vdir);
-      var style_vdir={strokeColor:"#880088",strokeOpacity:1.,strokeWidth:2.};
-      var style_vdir={strokeColor:"#c37fc3",strokeOpacity:1.,strokeWidth:2.};
+      var style_vdir={strokeColor:"#880088",strokeOpacity:0.3,strokeWidth:9.};
       highlightFeature=new OpenLayers.Feature.Vector(vdirString,null,style_vdir);
       trkLayer.addFeatures([highlightFeature]);
 
