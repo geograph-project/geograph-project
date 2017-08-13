@@ -101,7 +101,7 @@ if (!empty($check)) {
 
 $sql = "select report_id,r.status,r.type,r.tag_id,r.tag,tag2,tag2_id,r.user_id,r.approver_id,gridimage_id
 from tag_report r inner join gridimage_tag gt using (tag_id) inner join gridimage_search using (gridimage_id)
-where r.status in ('approved','moved') and type != 'canonical' and r.updated < date_sub(now(),interval 4 day) order by gridimage_id,tag_id";
+where r.status in ('approved','moved') and type != 'canonical' and gt.status > 0 and r.updated < date_sub(now(),interval 4 day) order by gridimage_id,tag_id";
 
 $recordSet = &$db->Execute($sql);
 
@@ -169,7 +169,7 @@ while (!$recordSet->EOF)
 		$sqls['r:'.$r['report_id']] = "UPDATE tag_report SET status = 'moved',tag2_id = {$r['tag2_id']} WHERE report_id = {$r['report_id']} # {$r['tag']} > {$r['tag2']}";
 
 		if ($r['type']=='split') {
-			$sqls[] = "INSERT IGNORE INTO gridimage_tag SELECT gridimage_id,{$r['tag2_id']} as tag_id,user_id,created,status FROM gridimage_tag WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # {$r['tag']} > {$r['tag2']}";
+			$sqls[] = "INSERT IGNORE INTO gridimage_tag SELECT gridimage_id,{$r['tag2_id']} as tag_id,user_id,created,status,NOW as updated FROM gridimage_tag WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # {$r['tag']} > {$r['tag2']}";
 		} else {
 			$sqls[] = "UPDATE IGNORE gridimage_tag SET tag_id = {$r['tag2_id']} WHERE tag_id = {$r['tag_id']} AND gridimage_id = {$r['gridimage_id']} # {$r['tag']} > {$r['tag2']}";
 			//this is trickly. Any of the above that failed (due to duplicate key), means the 'new' tag is already on the image, and so the old one can be zapped.
