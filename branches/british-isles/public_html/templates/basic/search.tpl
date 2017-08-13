@@ -1,5 +1,5 @@
 {assign var="page_title" value="Search"}
-{assign var="meta_description" value="Search and browser Geograph images, by keyword, location and more"}
+{assign var="meta_description" value="Search and browse Geograph images, by keyword, location and more"}
 {assign var="right_block" value="_block_recent.tpl"}
 {include file="_std_begin.tpl"}
 {dynamic}
@@ -83,6 +83,15 @@
 	<br/>
 	<script>
 		AttachEvent(window,'load',showMarkedImages,false);
+		{literal}
+		function showMarkedDiv() {
+			current = readCookie('markedImages');
+			if (current && current != '') {
+				show_tree('marked');
+			}
+		}
+		{/literal}
+		AttachEvent(window,'load',showMarkedDiv,false);
 	</script>
 {else}
 	<li><i><a href="/login.php">Login</a> to see your recent and favorite searches.</i><br/></li>
