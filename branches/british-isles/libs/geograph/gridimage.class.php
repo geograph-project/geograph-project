@@ -1017,7 +1017,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 
 		return $size;
 	}
-	
+
 	/**
 	* returns HTML img tag to display this image at full size
 	*/
@@ -1030,17 +1030,15 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 		$fullpath=$this->_getFullpath(false); //we can set $check_exists=false because _getFullSize will have called _getFullSize(true) if the size was not loaded from cache (if in cache dont need to check for file existance)
 
 		$title=htmlentities2($this->title);
-		
-		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->registered) && isset($GLOBALS['smarty'])) {
-			$fullpath = cachize_url(str_replace('1','0',$CONF['STATIC_HOST']).$fullpath);
-		} elseif ($returntotalpath)
+
+		if ($returntotalpath)
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
-		
+
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
-		
+
 		return $html;
 	}
-	
+
 	/**
 	* returns true if picture is wider than it is tall
 	*/
@@ -1156,11 +1154,9 @@ split_timer('gridimage'); //starts the timer
 			{
 				//no original image! - return link to error image
 				$thumbpath="/photos/error.jpg";
-		
 			}
 		}
-		
-		
+
 		if ($thumbpath=='/photos/error.jpg')
 		{
 			$html="<img src=\"$thumbpath\" width=\"$maxw\" height=\"$maxh\"/>";
@@ -1168,7 +1164,7 @@ split_timer('gridimage'); //starts the timer
 		else
 		{
 			$title=htmlentities2($this->title);
-			
+
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
 				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
@@ -1176,20 +1172,15 @@ split_timer('gridimage'); //starts the timer
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-			
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->registered) && isset($GLOBALS['smarty'])) {
-				$thumbpath = cachize_url($thumbpath);
-			}
-			
+
 			$html="<img alt=\"$title\" src=\"$thumbpath\" {$size[3]}/>";
 		}
-		
+
 split_timer('gridimage','getSquareThumbnail'.(isset($srcw)?'-create':''),$thumbpath); //logs the wall time
-		
+
 		return $html;
 	}
 
-	
 	/**
 	* returns a GD image instance for a square thumbnail of the image
 	*/
@@ -1389,10 +1380,6 @@ split_timer('gridimage'); //starts the timer
 			}
 			$thumbpath = $return['server'].$thumbpath;
 
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->registered) && isset($GLOBALS['smarty'])) {
-				$thumbpath = cachize_url($thumbpath);
-			}
-
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 
 			$return['html']=$html;
@@ -1577,10 +1564,6 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
 			$thumbpath = $return['server'].$thumbpath;
-
-			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 1 && empty($GLOBALS['USER']->registered) && isset($GLOBALS['smarty'])) {
-				$thumbpath = cachize_url($thumbpath);
-			}
 
 			$html="<img alt=\"$title\" $attribname=\"$thumbpath\" {$size[3]} />";
 
