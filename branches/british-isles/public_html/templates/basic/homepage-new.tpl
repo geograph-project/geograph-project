@@ -39,7 +39,7 @@ representative photographs and information for every square kilometre of <a href
 						{/foreach}
 
 						{if $marker}
-						<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+						<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
 						{/if}
 
 						</div>
@@ -49,7 +49,7 @@ representative photographs and information for every square kilometre of <a href
 		</div>
 		<br style="clear:both"/>
 		<div style="float:right">
-			<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://{$static_host}/img/80x15.png" /></a>
+			<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
 		</div>
 		<div style="font-size:0.9em;margin-top:8px">
 			<a href="/photo/{$pictureoftheday.gridimage_id}" title="Click to see full size photo" style="color:white;text-decoration:none;border-bottom:1px solid gray">{$pictureoftheday.image->title}</a> 
@@ -162,7 +162,7 @@ Four out of five of you are from the UK. Most of you are using Geograph to explo
 
 <div style="position:relative; text-align:left; margin-left:auto;margin-right:auto;width:750px;">
 	<div style="position:relative;float:left;width:200px;text-align:center">
-		<p><a href="/help/donate"><img src="http://{$static_host}/img/donate-now-button.gif" style="vertical-align: middle;" width="190" height="48" alt="donate now" style="border-radius:14px"/></a>
+		<p><a href="/help/donate"><img src="{$static_host}/img/donate-now-button.gif" style="vertical-align: middle;" width="190" height="48" alt="donate now" style="border-radius:14px"/></a>
 		Please <a href="/help/donate">support</a><br/> the project</p>
 	</div>
 	<div style="position:relative;float:left;width:550px;text-align:center">

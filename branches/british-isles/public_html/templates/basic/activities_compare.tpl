@@ -106,7 +106,7 @@ function reveal() {
 
 					<dt>Subject Location</dt>
 					<dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-					{if $image1->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image1->getSubjectGridref(true)}">{$image1->subject_gridref}</a> [{$image1->subject_gridref_precision}m precision]<br/>
+					{if $image1->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image1->getSubjectGridref(true)}">{$image1->subject_gridref}</a> [{$image1->subject_gridref_precision}m precision]<br/>
 					WGS84: <span class="geo"><abbr class="latitude" title="{$lat1|string_format:"%.5f"}">{$latdm1}</abbr> <abbr class="longitude" 
 					title="{$long1|string_format:"%.5f"}">{$longdm1}</abbr></span>
 					</dd>
@@ -115,7 +115,7 @@ function reveal() {
 					<dt>Camera Location</dt>
 
 					<dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-					{if $image1->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image1->photographer_gridref}">{$image1->photographer_gridref}</a></dd>
+					{if $image1->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image1->photographer_gridref}">{$image1->photographer_gridref}</a></dd>
 					{/if}
 
 					{if $view_direction1 && $image1->view_direction != -1}
@@ -148,7 +148,7 @@ function reveal() {
 
 					<dt>Subject Location</dt>
 					<dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-					{if $image2->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image2->getSubjectGridref(true)}">{$image2->subject_gridref}</a> [{$image2->subject_gridref_precision}m precision]<br/>
+					{if $image2->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image2->getSubjectGridref(true)}">{$image2->subject_gridref}</a> [{$image2->subject_gridref_precision}m precision]<br/>
 					WGS84: <span class="geo"><abbr class="latitude" title="{$lat1|string_format:"%.5f"}">{$latdm1}</abbr> <abbr class="longitude" 
 					title="{$long1|string_format:"%.5f"}">{$longdm1}</abbr></span>
 					</dd>
@@ -157,7 +157,7 @@ function reveal() {
 					<dt>Camera Location</dt>
 
 					<dd style="font-family:verdana, arial, sans serif; font-size:0.8em">
-					{if $image2->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="http://{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image2->photographer_gridref}">{$image2->photographer_gridref}</a></dd>
+					{if $image2->grid_square->reference_index eq 1}OSGB36{else}Irish{/if}: <img src="{$static_host}/img/geotag_16.png" width="10" height="10" align="absmiddle" alt="geotagged!"/> <a href="/location.php?gridref={$image2->photographer_gridref}">{$image2->photographer_gridref}</a></dd>
 					{/if}
 
 					{if $view_direction1 && $image2->view_direction != -1}
@@ -196,7 +196,7 @@ function reveal() {
 				<hr/>
 				<!-- Creative Commons Licence -->
 				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-				alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image1->profile_link}">{$image1->realname|escape:'html'}</a> and  
+				alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image1->profile_link}">{$image1->realname|escape:'html'}</a> and  
 				licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 				<!-- /Creative Commons Licence -->
 			</td>
@@ -204,7 +204,7 @@ function reveal() {
 				<hr/>
 				<!-- Creative Commons Licence -->
 				<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img 
-				alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image2->profile_link}">{$image2->realname|escape:'html'}</a> and  
+				alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" /></a> &nbsp; &copy; Copyright <a title="View profile" href="{$image2->profile_link}">{$image2->realname|escape:'html'}</a> and  
 				licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 				<!-- /Creative Commons Licence -->
 			</td>

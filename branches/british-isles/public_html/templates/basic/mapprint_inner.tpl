@@ -33,7 +33,7 @@
 		<img src="/img/depthkey.png" width="{$mosaic_width}" height="20" style="padding-left:10px;"/>
 	{/if}
 	
-	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://{$static_host}/img/80x15.png" /></a>
+	<div class="ccmessage"><a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
 	&nbsp;&nbsp;&copy; Copyright Geograph Project Ltd</div>
 {*end containing div for main map*}
 </div>
@@ -58,7 +58,7 @@
 	<div style="position:absolute;top:{$marker->top+1}px;left:{$marker->left+1}px;width:{$marker->width}px;height:{$marker->height}px; border:1px solid white; font-size:1px;"></div>
 	<div style="position:absolute;top:{$marker->top}px;left:{$marker->left}px;width:{$marker->width}px;height:{$marker->height}px; border:1px solid black; font-size:1px;"></div>
 	{else}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></div>
+	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></div>
 	{/if}
 {else}
 	{foreach from=$overview key=y item=maprow}

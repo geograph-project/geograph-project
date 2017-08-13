@@ -16,7 +16,7 @@
 	{/foreach}
 
 	{if $marker}
-	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="http://{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
+	<div style="position:absolute;top:{$marker->top-8}px;left:{$marker->left-8}px;"><a href="/photo/{$pictureoftheday.gridimage_id}" title="Location of the Photo of the Day"><img src="{$static_host}/img/crosshairs.gif" alt="+" width="16" height="16"/></a></div>
 	{/if}
 
 	</div>
@@ -26,7 +26,7 @@
 
 
 <div id="sponsor">sponsored by</div>
-<span id="sponsorlink"><a href="http://www.ordnancesurvey.co.uk/education-research/" title="Geograph British Isles sponsored by Ordnance Survey"><img src="http://{$static_host}/templates/charcoal/css/oslogo.gif" width="127" height="35" alt="Ordnance Survey Logo"/></a></span>
+<span id="sponsorlink"><a href="http://www.ordnancesurvey.co.uk/education-research/" title="Geograph British Isles sponsored by Ordnance Survey"><img src="{$static_host}/templates/charcoal/css/oslogo.gif" width="127" height="35" alt="Ordnance Survey Logo"/></a></span>
 </div>
 {/box}
 
@@ -39,7 +39,7 @@ title="Click to see full size photo"
 >{$pictureoftheday.image->getFixedThumbnail(393,300)}</a>
 
 <div style="float:left">
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="http://{$static_host}/img/80x15.png" /></a>
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons License" style="border-width:0" src="{$static_host}/img/80x15.png" /></a>
 </div>
 <div class="potdtitle"><a href="/photo/{$pictureoftheday.gridimage_id}"
 title="Click to see full size photo"
@@ -55,7 +55,7 @@ title="Click to see full size photo"
 geographically representative photograph for every square 
 kilometre of the British Isles and you can be part of it.</p>
 
-<p><a href="/help/more_pages"><img src="http://{$static_host}/templates/charcoal/css/find_out_more.gif"/></a></p>
+<p><a href="/help/more_pages"><img src="{$static_host}/templates/charcoal/css/find_out_more.gif"/></a></p>
 
 <div id="photocount">{$stats.images|thousends}</div>
 <div id="photocount_title">photographs</div>

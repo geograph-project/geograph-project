@@ -17,7 +17,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 </dd>
 </dl>
 
-<h2><img src="http://{$static_host}/img/geotag_32.png" width="32" height="32" align="absmiddle">{$gridrefraw}</h2>
+<h2><img src="{$static_host}/img/geotag_32.png" width="32" height="32" align="absmiddle">{$gridrefraw}</h2>
 
 <div class="interestBox" style="float: right; position:relative; padding:2px; margin-right:25px; margin-bottom:200px">
 	<table border="0" cellspacing="0" cellpadding="2">

@@ -12,20 +12,20 @@
 {/literal}</style>
 	<div id="map" style="width:800px; height:600px; position:relative;"></div>
 	{if $engine->results}
-        <link rel="stylesheet" href="http://{$static_host}/ol/theme/default/style.css" type="text/css">
-        <link rel="stylesheet" href="http://{$static_host}/ol/theme/default/google.css" type="text/css">
-        <link rel="stylesheet" href="http://{$static_host}/ol/style.v4.css" type="text/css">        
+        <link rel="stylesheet" href="{$static_host}/ol/theme/default/style.css" type="text/css">
+        <link rel="stylesheet" href="{$static_host}/ol/theme/default/google.css" type="text/css">
+        <link rel="stylesheet" href="{$static_host}/ol/style.v4.css" type="text/css">        
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
-	<script src="http://{$static_host}/ol/grid-projections.js"></script>
-        <script src="http://{$static_host}/ol/OpenLayers.js"></script>
-	<script src="http://{$static_host}/ol/OlEpsg27700Projection.js"></script>
-	<script src="http://{$static_host}/ol/OlEpsg29902Projection.js"></script>
-        <script src="http://{$static_host}/ol/km-graticule.js"></script>
-        <script src="http://{$static_host}/ol/osgb-layer.v7.js"></script>
-        <script src="http://{$static_host}/ol/nls-api.v1.js"></script>
-        <script src="http://{$static_host}/ol/geograph-openlayers.v17.js"></script>
+	<script src="{$static_host}/ol/grid-projections.js"></script>
+        <script src="{$static_host}/ol/OpenLayers.js"></script>
+	<script src="{$static_host}/ol/OlEpsg27700Projection.js"></script>
+	<script src="{$static_host}/ol/OlEpsg29902Projection.js"></script>
+        <script src="{$static_host}/ol/km-graticule.js"></script>
+        <script src="{$static_host}/ol/osgb-layer.v7.js"></script>
+        <script src="{$static_host}/ol/nls-api.v1.js"></script>
+        <script src="{$static_host}/ol/geograph-openlayers.v17.js"></script>
 	
         <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
 

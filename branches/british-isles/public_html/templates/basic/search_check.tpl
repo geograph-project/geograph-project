@@ -76,7 +76,7 @@
 			 	title="enter the nickname of a contributor, the full name should work too. if you know it you can enter the users ID followed by a colon"
 				readonly="readonly"/>
 				<div style="color:red">
-				<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="15" height="15" align="left" style="margin-right:10px"/>
+				<img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="15" height="15" align="left" style="margin-right:10px"/>
 				You can only search your images with this tool. </div>
 
 		  </tr> 

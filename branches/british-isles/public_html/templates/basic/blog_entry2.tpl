@@ -48,7 +48,7 @@
 
 {if $gridsquare_id}
 <dt>Grid Square</dt>
- <dd><a href="/location.php?gridref={$grid_reference}"><img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/></a> <a title="Grid Reference {$grid_reference}" href="/gridref/{$grid_reference}">{$grid_reference}</a></dd>
+ <dd><a href="/location.php?gridref={$grid_reference}"><img src="{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged!"/></a> <a title="Grid Reference {$grid_reference}" href="/gridref/{$grid_reference}">{$grid_reference}</a></dd>
 {/if}
 
 

@@ -9,7 +9,7 @@
 <p>Welcome to Geograph's new Activities section, there's not much here at the moment, we hope to add more as we can. However please do <a href="/contact.php">let us know</a> of any ideas you have for new activities that we could enable.</p>
 
 
-<div style="float:right; padding-right:20px"><img src="http://{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" alt="Perdita the Geograph hamster"/></div>
+<div style="float:right; padding-right:20px"><img src="{$static_host}/templates/basic/img/hamster.gif" width="161" height="174" alt="Perdita the Geograph hamster"/></div>
 	
 <ul>
 	<li><a href="/help/imagine">Imagine slideshow</a> - imagine the landscape behind the map<br/><br/></li>

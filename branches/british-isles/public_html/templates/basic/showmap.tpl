@@ -50,7 +50,7 @@
 
 					var size = new OpenLayers.Size(29, 29);
 					var offset = new OpenLayers.Pixel(-14, -15);
-					nicon = new OpenSpace.Icon("http://"+static_host+"/img/icons/marker.png", size, offset);
+					nicon = new OpenSpace.Icon(static_host+"/img/icons/marker.png", size, offset);
 
 					return createMarker(npoint,nicon);
 				}
@@ -75,7 +75,7 @@
 							var pt = map.getLonLatFromViewPortPx(e.xy);
 							marker = createNMarker(pt);
 
-							var img = "http://"+static_host+"/img/icons/marker.png";
+							var img = static_host+"/img/icons/marker.png";
 
 							document.getElementById('coordoutput').innerHTML = "<img src=\""+img+"\" height=\"12\" width=\"12\"/> " + document.getElementById('coordoutput').innerHTML;
 

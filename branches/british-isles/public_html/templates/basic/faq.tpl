@@ -75,7 +75,7 @@ div:target { background-color:orange;padding-bottom:10px; }
 <b>Browsing</b> the site:
  <ul>
  <li><a href="#use">I would be interested in <b>re-using</b> Geograph content, is that possible?</a></li>
- <li><a href="#thumbsup">I've seen little thumbs-up symbols <img src="http://{$static_host}/img/thumbs.png" width="20" height="20" /> around the site, what are they?</a></li>
+ <li><a href="#thumbsup">I've seen little thumbs-up symbols <img src="{$static_host}/img/thumbs.png" width="20" height="20" /> around the site, what are they?</a></li>
  <li><a href="#change">I <b>disagree</b> with the location or title of an image - what can I do?</a></li>
  <li><a href="#concern">I'm <b>concerned</b> about a photo or comment I have seen on the site.</a></li>
  <li><a href="#counties"><b>Counties</b>, I'm confused, which do you display?</a></li>
@@ -185,7 +185,7 @@ The <b>Geograph website</b>:
 
 	<p>We have also recently introduced a new map, &quot;<a href="/mapbrowse.php?recent=1">Recent Only</a>&quot; this shows recent photos. Help us keep the coverage current by photographing squares without any recent photos (orange or green).</p>
 
-	<p>Also look out for <img src="http://{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged icon"/> icons around the site, click them to take you to the links page for the location. From that page you can access textual lists of squares in need of photos (as well as direct links to <a href="/article/Mapping-on-Geograph">many of the maps on the site).</a>)</p>
+	<p>Also look out for <img src="{$static_host}/img/geotag_16.png" width="16" height="16" align="absmiddle" alt="geotagged icon"/> icons around the site, click them to take you to the links page for the location. From that page you can access textual lists of squares in need of photos (as well as direct links to <a href="/article/Mapping-on-Geograph">many of the maps on the site).</a>)</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 
@@ -330,7 +330,7 @@ The <b>Geograph website</b>:
 
 <div id="thumbsup">
 <a name="#thumbsup"></a>
-<h3>I've seen little thumbs-up symbols <img src="http://{$static_host}/img/thumbs.png" width="20" height="20" /> around the site, what are they?</h3>
+<h3>I've seen little thumbs-up symbols <img src="{$static_host}/img/thumbs.png" width="20" height="20" /> around the site, what are they?</h3>
 <p>Simply click them if you like the image and/or description (separate icon for each). </p>
 
 <p>We don't know what use we will make of the data, but note that there are number of things we won't do. We won't disclose who is voting (all anonymous),
@@ -344,7 +344,7 @@ The <b>Geograph website</b>:
 <div id="use">
 <a name="use"></a>
 <h3>I would be interested in using Geograph content, is that possible?</h3>
-	<div style="float:right"><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a></div>
+	<div style="float:right"><a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed"/></a></div>
 
 	<p><b>All images are licensed for re-use under a <a href="#opensource">Creative Commons Licence</a></b>, see
 	licence details by viewing a full size image. Also look for the &quot;<i>Find out how to re-use this image?</i>&quot; link under each image on the main photo page, which outlines easy ways to re-use the image.</p>

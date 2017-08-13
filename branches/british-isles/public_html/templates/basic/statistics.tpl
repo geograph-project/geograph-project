@@ -85,10 +85,10 @@
 	</div>
 {/foreach}
 {if $marker_1}
-<div style="position:absolute;top:{$marker_1->top-8}px;left:{$marker_1->left-8}px;"><img src="http://{$static_host}/img/crosshairs.gif" alt="Centre for {$place_1.reference_name}" width="16" height="16"/></div>
+<div style="position:absolute;top:{$marker_1->top-8}px;left:{$marker_1->left-8}px;"><img src="{$static_host}/img/crosshairs.gif" alt="Centre for {$place_1.reference_name}" width="16" height="16"/></div>
 {/if}
 {if $marker_2}
-<div style="position:absolute;top:{$marker_2->top-8}px;left:{$marker_2->left-8}px;"><img src="http://{$static_host}/img/crosshairs.gif" alt="Centre for {$place_2.reference_name}" width="16" height="16"/></div>
+<div style="position:absolute;top:{$marker_2->top-8}px;left:{$marker_2->left-8}px;"><img src="{$static_host}/img/crosshairs.gif" alt="Centre for {$place_2.reference_name}" width="16" height="16"/></div>
 {/if}
 </div>
 </div>

@@ -106,7 +106,7 @@
 </ul>
 
 {if $simplified}
-	<p><img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/> This is a simplified view of your own profile, you can also view your <a href="/profile/{$user->user_id}">full public profile</a>.</p>
+	<p><img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="18" height="16" align="left" style="margin-right:10px"/> This is a simplified view of your own profile, you can also view your <a href="/profile/{$user->user_id}">full public profile</a>.</p>
 {else}
 
 {if $profile->blog.blog_id}
@@ -242,7 +242,7 @@
 
 	<table class="report sortable" id="photolist" style="font-size:8pt;clear:none;background-color:white">
 	<thead><tr>
-		<td><img title="Any grid square discussions?" src="http://{$static_host}/templates/basic/img/discuss.gif" width="10" height="10"> ?</td>
+		<td><img title="Any grid square discussions?" src="{$static_host}/templates/basic/img/discuss.gif" width="10" height="10"> ?</td>
 		<td>Grid Ref</td>
 		<td>Title</td>
 		<td sorted="desc">Submitted</td>
@@ -252,7 +252,7 @@
 	<tbody>
 	{foreach from=$userimages item=image}
 		<tr>
-		<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View discussion - last updated {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" ><img src="http://{$static_host}/templates/basic/img/discuss.gif" width="10" height="10" alt="discussion indicator"></a>{/if}</td>
+		<td sortvalue="{$image->last_post}">{if $image->topic_id}<a title="View discussion - last updated {$image->last_post|date_format:"%a, %e %b %Y at %H:%M"}" href="/discuss/index.php?action=vthread&amp;forum={$image->forum_id}&amp;topic={$image->topic_id}" ><img src="{$static_host}/templates/basic/img/discuss.gif" width="10" height="10" alt="discussion indicator"></a>{/if}</td>
 		<td sortvalue="{$image->grid_reference}"><a href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a></td>
 		<td sortvalue="{$image->title|escape:'html'}"><a title="view full size image" href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'|default:'untitled'}</a></td>
 		<td sortvalue="{$image->gridimage_id}" class="nowrap" align="right">{$image->submitted|date_format:"%a, %e %b %Y"}</td>

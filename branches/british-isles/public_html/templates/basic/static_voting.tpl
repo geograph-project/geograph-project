@@ -16,7 +16,7 @@
     <li>The aim is not to highlight the lower end of the scale.<br/><br/></li>
  </ul>
 
-<p>And in particular in regard to 1-5 'stars' <img src="http://{$static_host}/img/star-light.png" width="14" height="14" />:</p>
+<p>And in particular in regard to 1-5 'stars' <img src="{$static_host}/img/star-light.png" width="14" height="14" />:</p>
 <ul>
     <li>Click a star for the item in question, on a scale of 1 to 5 stars.</li>
     <li>You should approach voting with the aim to <b>promote the good stuff</b>, rather than root out and penalize the lower end of the scale.<br/><br/></li>
@@ -24,7 +24,7 @@
     <li>The 'average' is 3 - which is effectively the same as no vote at all.<br/><br/></li>
  </ul>
 
-<p>In regard to 'thumbs up' <img src="http://{$static_host}/img/thumbs.png" width="20" height="20" />  icons:</p>
+<p>In regard to 'thumbs up' <img src="{$static_host}/img/thumbs.png" width="20" height="20" />  icons:</p>
 <ul>
 	<li>Click these if you particularly like the image or text description, using the separate icons for each.<br/><br/></li>
 </ul>

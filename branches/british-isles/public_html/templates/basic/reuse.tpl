@@ -58,7 +58,7 @@ div:target {
 
 	<div class="interestBox" style="width:750px;margin-left:auto;margin-right:auto;text-align:center">
 	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img
-	alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" align="left" /></a>
+	alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" align="left" /></a>
 	<b>&copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a></b> and  
 	licensed for reuse under this <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.<br style=clear:both>
 	</div>
@@ -136,7 +136,7 @@ div:target {
 
 	<div class="interestBox" style="width:750px;margin-left:auto;margin-right:auto;text-align:center">
 	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img
-	alt="Creative Commons Licence [Some Rights Reserved]" src="http://{$static_host}/img/somerights20.gif" align="left" /></a>
+	alt="Creative Commons Licence [Some Rights Reserved]" src="{$static_host}/img/somerights20.gif" align="left" /></a>
 	<b>&nbsp; &copy; Copyright <a title="View profile" href="http://{$http_host}{$image->profile_link}" property="cc:attributionName" rel="cc:attributionURL dct:creator">{$image->realname|escape:'html'}</a> and  
 	licensed for reuse under <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">creativecommons.org/licenses/by-sa/2.0</a></b>
 	</div>
@@ -148,7 +148,7 @@ div:target {
 	You are more than welcome to use it as long as you <b>follow a few basic requirements:</b>
 
    <div style="width:230px;float:right;position:relative;text-align:center;font-size:0.7em">
-   	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="http://{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed" style="padding-left:20px"/></a><br/>
+   	<a href="http://creativecommons.org/licenses/by-sa/2.0/"><img src="{$static_host}/img/cc_deed.jpg" width="226" height="226" alt="Creative Commons Licence Deed" style="padding-left:20px"/></a><br/>
    	[ Click to see full Licence Deed ]
    </div>
 
@@ -169,7 +169,7 @@ div:target {
 <ul class="checklist">
 
 <li><b>We do ask you to be polite and not abuse the Geograph website resources.</b> <br/>
-<small>&nbsp; <img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="16" height="16"/>
+<small>&nbsp; <img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="16" height="16"/>
 {external href="http://en.wikipedia.org/wiki/Inline_linking" text="Hotlinking"} the image directly off our servers will trigger automatic watermarks and may be blocked</small><br/><br/>
 </li>
 
@@ -235,7 +235,7 @@ licensed for reuse under this [url=http://creativecommons.org/licenses/by-sa/2.0
 <h3>Wikipedia Template for image page.</h3>
 
 <div class="interestBox" style="padding:10px">
-<img src="http://{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
+<img src="{$static_host}/templates/basic/img/icon_alert.gif" alt="Alert" width="50" height="44" align="left" style="margin-right:10px"/>
 Wikimedia Commons has recently undertaken to upload Geograph images in bulk, so please make sure the image hasn't already been uploaded. 
 <b>{external href="http://commons.wikimedia.org/w/index.php?title=Special:Search&search=insource%3A%22geograph+`$image->gridimage_id`%22&amp;fulltext=Search&amp;ns6=1" text="This search should find it if it has been"}</b>.</div>
 <br/>

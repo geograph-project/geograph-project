@@ -89,7 +89,7 @@
   {/dynamic}
   </ul>
 <div class="sponsor">sponsored by <br/> <br/>
-<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="http://{$static_host}/img/os-logo-p64.png" width="64" height="50" alt="Ordnance Survey"/></a></div>
+<a title="Geograph sponsored by Ordnance Survey" href="https://www.ordnancesurvey.co.uk/education/"><img src="{$static_host}/img/os-logo-p64.png" width="64" height="50" alt="Ordnance Survey"/></a></div>
 {if $image && $image->collections}
 	<h3 class="newstitle">This photo is linked from:</h3>
 	{assign var="lasttype" value="0"}
