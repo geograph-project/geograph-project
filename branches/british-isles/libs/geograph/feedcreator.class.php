@@ -678,27 +678,27 @@ class FeedCreator extends HtmlDescribable {
 		$fileInfo = pathinfo($_SERVER["PHP_SELF"]);
 		return substr($fileInfo["basename"],0,-(strlen($fileInfo["extension"])+1)).".xml";
 	}
-	
-	
+
 	/**
 	 * @since 1.4
 	 * @access private
 	 */
 	function _redirect($filename) {
-	
-		//uses Geograph specific functions, get them seperatly or just comment out. 
+
+		//uses Geograph specific functions, get them seperatly or just comment out.
+		header('Access-Control-Allow-Origin: *');
 		$mtime = filemtime($filename);
-		customCacheControl($mtime,$mtime);		
+		customCacheControl($mtime,$mtime);
 		$timeout = 3600;
 		if (!empty($GLOBALS['rss_timeout']))
 			$timeout = $GLOBALS['rss_timeout'];
 		customExpiresHeader($timeout-(time()-$mtime),true);
 		//end;
-		
+
 		if ($filesize = filesize($filename)) {
 			header('Content-Length: '.$filesize);
-		} 
-		
+		}
+
 		Header("Content-Type: ".$this->contentType."; charset=".$this->encoding);
 		if (preg_match("/\.(kml|gpx)$/",$filename)) {
 			Header("Content-Disposition: attachment; filename=".basename($filename));
@@ -708,7 +708,7 @@ class FeedCreator extends HtmlDescribable {
 		readfile($filename, "r");
 		die();
 	}
-    
+
 	/**
 	 * Turns on caching and checks if there is a recent version of this feed in the cache.
 	 * If there is, an HTTP redirect header is sent.
@@ -724,7 +724,7 @@ class FeedCreator extends HtmlDescribable {
 		if ($filename=="") {
 			$filename = $this->_generateFilename();
 		}
-		//uses Geograph specific functions, get them seperatly or just comment out. 
+		//uses Geograph specific functions, get them seperatly or just comment out.
 		if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid) {
 			$contents =& $GLOBALS['memcache']->name_get('rss',$filename);
 			if (!empty($contents) && preg_match('/^symlink:(.*)/',$contents,$m)) {
@@ -733,7 +733,8 @@ class FeedCreator extends HtmlDescribable {
 			if (!empty($contents)) {
 				$mtime = $GLOBALS['memcache']->name_get('rsst',empty($m[1])?$filename:$m[1]);
 
-				customCacheControl($mtime,$mtime);		
+				header('Access-Control-Allow-Origin: *');
+				customCacheControl($mtime,$mtime);
 				$timeout = 3600;
 				if (!empty($GLOBALS['rss_timeout']))
 					$timeout = $GLOBALS['rss_timeout'];
@@ -749,7 +750,7 @@ class FeedCreator extends HtmlDescribable {
 					}
 
 					//else ... we could still send Vary: but because a browser that doesnt will accept non gzip in all cases, doesnt matter if the cache caches the non compressed version (the otherway doesnt hold true, hence the Vary: above)
-				} 
+				}
 
 				header('Content-Length: '.strlen($contents));
 				Header("Content-Type: ".$this->contentType."; charset=".$this->encoding);
@@ -764,7 +765,7 @@ class FeedCreator extends HtmlDescribable {
 			return;
 		}
 		//end;
-		
+
 		if (file_exists($filename) AND (time()-filemtime($filename) < $timeout)) {
 			$this->_redirect($filename);
 		}
@@ -783,24 +784,25 @@ class FeedCreator extends HtmlDescribable {
 		if ($filename=="") {
 			$filename = $this->_generateFilename();
 		}
-		
-		//uses Geograph specific functions, get them seperatly or just comment out. 
+
+		//uses Geograph specific functions, get them seperatly or just comment out.
 		if (!empty($GLOBALS['memcache']) && $GLOBALS['memcache']->valid) {
 			$contents =& $this->createFeed();
-			
+
 			$mtime = time();
-				
+
 			$timeout = 3600;
 			if (!empty($GLOBALS['rss_timeout']))
 				$timeout = $GLOBALS['rss_timeout'];
-				
+
 			$GLOBALS['memcache']->name_set('rss',$filename,$contents,$GLOBALS['memcache']->compress,$timeout);
 			$GLOBALS['memcache']->name_set('rsst',$filename,$mtime,$GLOBALS['memcache']->compress,$timeout);
-			
+
 			if ($displayContents) {
-				customCacheControl($mtime,$mtime);		
+				header('Access-Control-Allow-Origin: *');
+				customCacheControl($mtime,$mtime);
 				customExpiresHeader($timeout-(time()-$mtime),true);
-				
+
 				if ($encoding = getEncoding()) {
 					$contents = gzencode($contents, 9,  ($encoding == 'gzip') ? FORCE_GZIP : FORCE_DEFLATE);
 					header ('Content-Encoding: '.$encoding);
@@ -811,8 +813,8 @@ class FeedCreator extends HtmlDescribable {
 					}
 
 					//else ... we could still send Vary: but because a browser that doesnt will accept non gzip in all cases, doesnt matter if the cache caches the non compressed version (the otherway doesnt hold true, hence the Vary: above)
-				} 
-				
+				}
+
 				header('Content-Length: '.strlen($contents));
 		                Header("Content-Type: ".$this->contentType."; charset=".$this->encoding);
 		                if (preg_match("/\.(kml|gpx)$/",$filename)) {
@@ -822,11 +824,11 @@ class FeedCreator extends HtmlDescribable {
 		                }
 				print $contents;
 			}
-			
+
 			return;
-		} 
+		}
 		//end;
-		
+
 		$feedFile = fopen($filename, "w+");
 		if ($feedFile) {
 			fputs($feedFile,$this->createFeed());
@@ -1011,9 +1013,9 @@ class JSONCreator extends FeedCreator {
 		}
 
 		if (!empty($this->callback)) {
-			return "/**/{$this->callback}(".json_encode($data).")";
+			return "/**/{$this->callback}(".json_encode($data,JSON_PARTIAL_OUTPUT_ON_ERROR  ).")";
 		} else
-			return json_encode($data);
+			return json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR  );
 	}
 }
 
