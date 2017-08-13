@@ -63,11 +63,10 @@ To stop <i>text looking like a grid reference</i> being converted, either use lo
 <div class="example"><tt class="bbcode">[email=address@example.com]contact me[/email]</tt> shows as <span class="preview"><a href="mailto:address@example.com">contact me</a></span></div><br/></li>
 </ul>
 
-<!--
 <h4>External Images</h4>
 
 <ul>
-<li><tt class="bbcode">[img]http://www.domain.com/image.gif[/img]</tt> shows as <img src="/photos/error.jpg" width="40" height="40"/></li>
+<li><tt class="bbcode">[img]http://www.domain.com/image.gif[/img]</tt> shows as <img src="/templates/basic/img/hamster.gif"/></li>
 </ul>
 <p>Advanced:</p>
 <ul>
@@ -75,7 +74,6 @@ To stop <i>text looking like a grid reference</i> being converted, either use lo
 
 <li><tt class="bbcode">[imgright]http://www.domain.com/image.gif[/img]</tt> will right align the image in the flow of text.</li>
 </ul>
--->
 
 
 

@@ -79,7 +79,7 @@ jQuery(document).ready( function() {
     <tr>
         <td valign="middle" align="center"><a href="/photo/{$image->gridimage_id}" title="{$image->grid_reference} : {$image->title|escape:'html'} by {$image->realname|escape:'html'} {$image->dist_string}{if $image->count} - {$image->count|thousends} images in group{/if}" onmouseover="showMap('{$image->wgs84_lat} {$image->wgs84_long}')" onmouseout="hideMap()">{$image->getFull()|replace:'src=':'src="/img/blank.gif" data-src='}</a></td>
         <td valign="middle" align="center">
-            <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetaken > 1 && $image->imagetaken < 2015}<span class="year" title="year taken" style="color:gray;font-size:1.5em">, {$image->imagetaken|truncate:4:''}</span>{/if}<br/>
+            <a href="/photo/{$image->gridimage_id}">{$image->title|escape:'html'}</a>{if $image->imagetaken > 1 && $image->imagetaken < 2017}<span class="year" title="year taken" style="color:gray;font-size:1.5em">, {$image->imagetaken|truncate:4:''}</span>{/if}<br/>
             {if $image->comment}
                 <br/><small>{$image->comment|escape:'html'|nl2br|geographlinks}</small>
             {/if}

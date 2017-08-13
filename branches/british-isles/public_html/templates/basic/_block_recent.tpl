@@ -26,7 +26,7 @@
 
  {if $recentcount}
 
-  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Recent Photos <small>[<a href="/search.php?i=1522" title="Show the most recent submissions">more...</a>]</small></h3>
+  	<h3 {if $overview} style="padding-top:15px; border-top: 2px solid black; margin-top: 15px;"{/if}>Recent Photos <small>[<a href="/finder/recent.php" title="Show the most recent submissions">more...</a>]</small></h3>
 
   	{foreach from=$recent item=image}
 
@@ -47,9 +47,9 @@
         <br/>
         <hr/>
         <br/>
-        &middot; <a href="/search.php?i=1522" title="Show the most recent submissions"><b>More recent images</b> &gt;</a><br/>
+        &middot; <a href="/finder/recent.php" title="Show the most recent submissions"><b>More recent images</b> &gt;</a><br/>
         &middot; <a href="/explore/searches.php" title="Featured Selections">Other selections &gt;</a><br/>
-        &middot; <a href="/thumbed-weekly.php" title="Popular images">Popular images &gt;</a><br/>
+        &middot; <a href="/gallery.php" title="More images of British Isles">Gallery &gt;</a><br/>
         <br/>
 
   {/if}

@@ -1,6 +1,8 @@
 {assign var="page_title" value="`$hectad` :: Hectad"}
 {include file="_std_begin.tpl"}
 
+<div style="float:right;width:300px">"Hectad" is our name for a 10km x 10km grid square on the map. <a href="/help/squares">more...</a></div>
+
 <h2><a href="/gridref/{$myriad}">{$myriad}</a> :: {$hectad} :: Hectad</h2>
  
 
@@ -55,7 +57,23 @@ Nearby hectads:
 {/foreach} <a href="/statistics/fully_geographed.php?myriad={$myriad}">More</a>
 {/if}
 
+{if $tags}
+	<div style="float:right;width:200px;background-color:white;font-size:0.7em;line-height:1.4em; text-align:center;margin:10px;{if count($tags) > 100 && $results} height:150px;overflow:auto{/if}">
+	<b><a href="/finder/bytag.php?q=hectad:{$hectad}">Most Used Tags</a></b>:<br/><br/>
+	{foreach from=$tags item=item}
+		<span class="tag"><a title="{$item->count} images" {if $item->count > 10} style="font-weight:bold"{/if} href="/search.php?searchtext=[{if $item->prefix}{$item->prefix|escape:'url'}:{/if}{$item->tag|escape:'url'}]+hectad:{$hectad}&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1" class="taglink">{$item->tag|escape:'html'}</a></span> <br/>
+	{/foreach}
+	</div>
+
+<ul class="explore" style="margin-right:220px">
+{else}
 <ul class="explore">
+{/if}
+
+
+
+        <li><b><a href="/statistics/groupby.php?groupby=auser_id&amp;filter%5Bahectad%5D={$hectad}&amp;distinct=agridsquare">Contributor List</a></b> | 
+	    <a href="/statistics/groupby.php?groupby=takendays_year&amp;filter%5Bahectad%5D={$hectad}&amp;distinct=agridsquare">Year Breakdown</a> (more available from those pages)</li>			
 	
 	{if $largemap_token}
 	<li style="list-style-image: url('{$static_host}/img/links/20/mosaic.png');"><a title="View Mosaic for {$hectad}" href="/maplarge.php?t={$largemap_token}">Have a look at a <b>Large Photo Mosaic</b>/map</a> (includes First Geograph statistics)</li>
@@ -63,9 +81,12 @@ Nearby hectads:
 	
 	<li style="list-style-image: url('{$static_host}/img/links/20/map.png');"><a title="View map for {$hectad}" href="/mapbrowse.php?t={$map_token}">View Geograph <b>Coverage Map</b></a> or <img src="{$static_host}/img/links/20/checksheet.png" width="20" height="20" alt="browse icon" align="absmiddle"/> <a title="show a print friendly page you can use&#13;&#10;to check off the squares you photograph&#13;&#10;while in the field" href="/mapsheet.php?t={$map_token}">View a <b>printable check sheet</b></a></li>
 	
-	{if $reference_index == 1}<li style="list-style-image: url('{$static_host}/img/links/20/mapper.png');"><a href="/mapper/?t={$map_token}">Open <b>OS Grid Squares Map</b></a></b> {/if}
+	{if $reference_index == 1}<li style="list-style-image: url('{$static_host}/img/links/20/mapper.png');"><a href="/mapper/?t={$map_token}">Open <b>OS Grid Squares Map</b></a></b> {/if} </li>
+
+	<li style="list-style-image: url('{$static_host}/img/links/20/search.png');"><a title="open geograph browser - search/browse and map in one" href="/browser/#!/hectad+%22{$hectad}%22">Open {$hectad} in <b>Geograph Browser</b></a></li>
 	
 	<li style="list-style-image: url('{$static_host}/img/links/20/search.png');"><form method="get" action="/search.php">
+		<input type="hidden" name="form" value="hectad"/>
 		<b>Search within images in this square</b>:<br/> 
 		<div class="interestBox" style="width:400px">
 		<label for="fq">Keywords</label>: <input type="text" name="searchtext[]" id="fq" size="30"{dynamic}{if $q} value="{$q|escape:'html'}"{/if}{/dynamic}/><input type="hidden" name="searchtext[]" value="{$hectad}"/>
@@ -76,10 +97,12 @@ Nearby hectads:
 		<input type="hidden" name="do" value="1"/>
 		</div>
 	</form></li>
-			
+
+	<li><a href="/finder/bytag.php?q=hectad:{$hectad}">View <b>Tag Breakdown</b> for images in {$hectad}</a></li>
+
 	<li><a href="/search.php?text=hectad:{$hectad}">View <b>images in {$hectad}</b></a> (<a href="/search.php?text=hectad:{$hectad}+ftf:1">First Geographs only</a>)</li>
 	
-	<li style="list-style-image: url('{$static_host}/img/geotag_16.png');"><a href="/gridref/{$hectad}/links"><b>Location links for {$hectad}</b></a></a>
+	<li style="list-style-image: url('{$static_host}/img/geotag_16.png');"><a href="/gridref/{$hectad}/links"><b>Location links for {$hectad}</b></a></li>
 
 	<li style="list-style-image: url('{$static_host}/img/links/20/place.png');"><a href="/finder/places.php?q={$myriad}+{$hectad}">Find <b>places in {$hectad}</b></a> (can then find images of that place)</li>
 
@@ -99,10 +122,7 @@ Nearby hectads:
 
 
 
-
-<hr/>
-
-<p><small>Note: this page is very basic - we will probably add more later.</small></p>
-
+<br style="clear:both"/>
+<br/>
 
 {include file="_std_end.tpl"}
