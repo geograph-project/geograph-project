@@ -165,7 +165,7 @@ function smarty_block_dynamic($param, $content, &$smarty)
 function smarty_function_getamap($params)
 {
 	global $CONF;
-	$icon=empty($params['icon'])?"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>":'';
+	$icon=empty($params['icon'])?"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>":'';
 
 	//get params
 	$matches=array();
@@ -250,7 +250,7 @@ function smarty_function_newwin($params)
 		$title .= "\" onclick=\"".$params['onclick']; 	
 	
 	return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
+		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
 }
 
 /**
@@ -282,10 +282,10 @@ function smarty_function_external($params)
 
   	if (isset($params['target']) && $params['target'] == '_blank') {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>";
   	} else {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	}
 }
 
@@ -503,15 +503,9 @@ function smarty_function_capitalizetag($i) {
 function smarty_modifier_revision($filename) {
 	global $REVISIONS,$CONF;
 	if (isset($REVISIONS[$filename])) {
-		#$url = "http://".str_replace('s1','s1cdn',$CONF['STATIC_HOST']).preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
-		$url = "http://".$CONF['STATIC_HOST'].preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
-		
-		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 && strpos($filename,'css') === FALSE && empty($GLOBALS['USER']->registered)) {
-			$url = cachize_url($url);
-		}
-		return $url;
+		return $CONF['STATIC_HOST'].preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 	} else {
-#return "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v".time().".$1",$filename);
+		#return $CONF['STATIC_HOST'].preg_replace('/\.(js|css)$/',".v".time().".$1",$filename); //should use filemtime(), rather tham time()
         	return $filename;
 	}
 }

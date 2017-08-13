@@ -838,7 +838,7 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 			$fullpath="/photos/error.jpg";
 
 		if ($returntotalpath)
-			$fullpath="http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
+			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
 		return $fullpath;
 	}
@@ -878,7 +878,7 @@ split_timer('gridimage'); //starts the timer
 		
 		if (empty($check_exists)) {
 			if ($returntotalpath)
-				$fullpath="http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
+				$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
 			return $fullpath;
 		}
@@ -938,7 +938,7 @@ split_timer('gridimage'); //starts the timer
 			$fullpath="/photos/error.jpg";
 
 		if ($returntotalpath)
-			$fullpath="http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
+			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 			
 split_timer('gridimage','_getFullpath',$this->gridimage_id); //logs the wall time
 
@@ -1032,9 +1032,9 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 		$title=htmlentities2($this->title);
 		
 		if (!empty($CONF['curtail_level']) && empty($GLOBALS['USER']->registered) && isset($GLOBALS['smarty'])) {
-			$fullpath = cachize_url("http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath);
+			$fullpath = cachize_url(str_replace('1','0',$CONF['STATIC_HOST']).$fullpath);
 		} elseif ($returntotalpath)
-			$fullpath="http://".str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
+			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 		
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
 		
@@ -1171,7 +1171,7 @@ split_timer('gridimage'); //starts the timer
 			
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
@@ -1354,7 +1354,7 @@ split_timer('gridimage'); //starts the timer
 			$return=array();
 			$return['url']=$thumbpath;
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
@@ -1383,7 +1383,7 @@ split_timer('gridimage'); //starts the timer
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.htmlentities2($this->realname);
 
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}
@@ -1572,7 +1572,7 @@ split_timer('gridimage','_getResized-cache',$thumbpath); //logs the wall time
 			$title=$this->grid_reference.' : '.htmlentities2($this->title).' by '.$this->realname;
 			$size=getimagesize($_SERVER['DOCUMENT_ROOT'].$thumbpath);
 			if (!empty($CONF['enable_cluster'])) {
-				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),"http://{$CONF['STATIC_HOST']}");
+				$return['server']= str_replace('1',($this->gridimage_id%$CONF['enable_cluster']),$CONF['STATIC_HOST']);
 			} else {
 				$return['server']= $CONF['CONTENT_HOST'];
 			}

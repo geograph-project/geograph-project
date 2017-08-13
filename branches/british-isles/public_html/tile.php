@@ -203,7 +203,7 @@ if (isset($_GET['map']))
 				customNoCacheHeader();
 				header("HTTP/1.0 302 Found");
 				header("Status: 302 Found");
-				header("Location: http://{$CONF['STATIC_HOST']}/img/blank.gif");
+				header("Location: {$CONF['STATIC_HOST']}/img/blank.gif");
 				exit;
 			}
 

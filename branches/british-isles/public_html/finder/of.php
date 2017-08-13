@@ -429,7 +429,7 @@ if (!empty($_GET['d'])) {
 
 		print "<br style=clear:both></div>";
 		if ($src == 'data-src')
-			print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazy.v4.js" type="text/javascript"></script>';
+			print '<script src="'.$CONF['STATIC_HOST'].'/js/lazy.v4.js" type="text/javascript"></script>';
 		print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
 
 #########################################
@@ -599,7 +599,7 @@ if ($src == 'data-src') { //because we need jQuery!
 	$qstr = "'".urlencode($_GET['q'])."'";
 	$names = array('','Hmm','Below average','So So','Good','Excellent');
 	foreach (range(1,5) as $i) {
-		print "<a href=\"javascript:void(vote_log('of',$qstr,$i));\" title=\"{$names[$i]}\"><img src=\"http://{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
+		print "<a href=\"javascript:void(vote_log('of',$qstr,$i));\" title=\"{$names[$i]}\"><img src=\"{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
 	}
 
 	print " (1 no much, 5 very much, <a href=\"/help/voting\">more</a>)</p>";
@@ -678,7 +678,7 @@ function vote_log(action,param,value) {
 	}
 
 	if ($src == 'data-src')
-		print '<script src="http://'.$CONF['STATIC_HOST'].'/js/lazy.v4.js" type="text/javascript"></script>';
+		print '<script src="'.$CONF['STATIC_HOST'].'/js/lazy.v4.js" type="text/javascript"></script>';
 	print '<script src="/preview.js.php" type="text/javascript"></script>';
 
 	$smarty->display('_std_end.tpl');

@@ -40,7 +40,7 @@ function smarty_block_box($params, $content, &$smarty, &$repeat)
             $colour=isset($params['colour'])?$params['colour']:"333";
    
    			global $CONF;
-   			$imgdir="http://{$CONF['STATIC_HOST']}/templates/{$CONF['template']}/css/";
+   			$imgdir="{$CONF['STATIC_HOST']}/templates/{$CONF['template']}/css/";
           
             $out="<div class=\"round{$colour}\"{$style}>";
             $out.='<div class="roundtop">';

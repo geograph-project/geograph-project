@@ -251,7 +251,7 @@ if (isset($sphinx)) {
 			$next = $pg + 1;
 			$rss->nextURL = $baselink."syndicator.php?q=".urlencode($sphinx->q).(($next>1)?"&amp;page=$next":'')."&amp;format=".($format).((isset($_GET['source']))?"&amp;source={$_GET['source']}":'');
 		}
-		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
+		$rss->icon = "{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
 	}
 
 	//lets find some photos
@@ -311,7 +311,7 @@ if (isset($sphinx)) {
 			$next = $pg + 1;
 			$rss->nextURL = $baselink."feed/results/".$_GET['i'].(($next>1)?"/$next":'').".$format_extension";
 		}
-		$rss->icon = "http://{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
+		$rss->icon = "{$CONF['STATIC_HOST']}/templates/basic/img/logo.gif";
 	} 
 	
 	$images->images = &$images->results;
