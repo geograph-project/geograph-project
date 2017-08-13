@@ -24,7 +24,7 @@
 	<script src="{$static_host}/ol/OlEpsg29902Projection.js"></script>
         <script src="{$static_host}/ol/km-graticule.js"></script>
         <script src="{$static_host}/ol/osgb-layer.v7.js"></script>
-        <script src="{$static_host}/ol/nls-api.v1.js"></script>
+        <script src="{$static_host}/ol/nls-api.v2.js"></script>
         <script src="{$static_host}/ol/geograph-openlayers.v17.js"></script>
 	
         <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
@@ -129,7 +129,7 @@ AttachEvent(window,'load',loadMap,false);
 	<p style="font-size:0.8em">[We have no images for {$engine->criteria->searchq|escape:"html"}, <a href="/submit.php?gridreference={$engine->criteria->searchq|escape:"url"}">Submit Yours Now</a>!]</p>
 	{/if}
 	{if $singlesquares}
-	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*(y-1)+900-(x+1)" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
+	<p style="font-size:0.8em">[<a href="/squares.php?p={math equation="900*floor(y)+900-floor(x)" x=$engine->criteria->x y=$engine->criteria->y}&amp;distance={$singlesquare_radius}">{$singlesquares} squares within {$singlesquare_radius}km have no or only one photo</a> - can you <a href="/submit.php">add more</a>?]</p>
 	{/if}
 
 

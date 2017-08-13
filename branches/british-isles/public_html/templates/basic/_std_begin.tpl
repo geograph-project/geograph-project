@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"{if $rastermap->service == 'Google'} xmlns:v="urn:schemas-microsoft-com:vml"{/if} xml:lang="en" id="geograph">
 <head>
 	{pageheader}
-	{if $page_title}<title>{$page_title|escape:'html'} :: Geograph Britain and Ireland - photograph every grid square!</title>
+	{if $page_title}<title>{$page_title|escape:'html'} :: Geograph Britain and Ireland</title>
 	{else}<title>Geograph Britain and Ireland - photograph every grid square!</title>{/if}
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	{if $meta_description}<meta name="description" content="{$meta_description|escape:'html'|truncate:240:"... more"}" />
@@ -16,6 +16,7 @@
 	{if $rss_url}
 		<link rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}"/>
 	{elseif $image && $image->gridimage_id && $image->moderation_status ne 'rejected'}
+                <link rel="alternate" type="application/json+oembed" href="http://api.geograph.org.uk/api/oembed?url=http%3A%2F%2Fwww.geograph.org.uk%2Fphoto%2F{$image->gridimage_id}&amp;format=json"/>
 		<link rel="alternate" type="application/vnd.google-earth.kml+xml" href="/photo/{$image->gridimage_id}.kml"/>
 	{elseif $profile && $profile->user_id}
 		<link rel="alternate" type="application/rss+xml" title="Geograph RSS for {$profile->realname}" href="/feed/userid/{$profile->user_id}.rss"/>

@@ -10,6 +10,7 @@
 	color:silver;
 }
 {/literal}</style>
+
 <div style="float:right"><a title="geoRSS Feed for Geograph Articles" href="/article/feed/recent.rss" class="xml-rss">RSS</a></div>
 
 <div class="tabHolder">
@@ -47,7 +48,7 @@
 {/if}
 
 <form action="/content/" method="get">
-<div class="interestBox" style="margin-top:2px;width:420px">
+<div class="interestBox" style="margin-top:2px;width:420px;float:left">
 <lable for="qs">Search:</label>
 <input type="text" name="q" id="qs" size="22" {if $q} value="{$q|escape:'html'}"{/if}/>
 Scope: <select name="scope" style="width:80px">
@@ -65,6 +66,17 @@ Scope: <select name="scope" style="width:80px">
 <input type="submit" value="Find"/>
 </div>
 </form>
+
+<form action="/article/" method="get">
+	<div class="interestBox" style="margin-top:2px;margin-left:10px;width:420px;float:left">
+		or
+	        <select name="cat_word" onchange="this.form.submit()">
+		<option>Browse by Category...</option>
+        	{html_options options=$article_cat selected=$cat_word}
+	        </select>
+	</div>
+</form>
+<br style="clear:both">
 
 {if $linktofull}
 <div class="interestBox" style="text-align:center;background-color:yellow">

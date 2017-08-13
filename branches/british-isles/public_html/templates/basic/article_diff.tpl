@@ -18,7 +18,7 @@
 	font-size:0.9em;
 }
 
-#output td.code {
+#output .code {
 	text-align:left;
 	font-family:monospace;
 	color:black;
@@ -66,9 +66,11 @@
 <h2>Difference View</h2>
 
 {if $output}
-	<table cellspacing="0" cellpadding="1" id="output">
+	<div id="output">
+	<table cellspacing="0" cellpadding="1">
 		{$output}
 	</table>
+	</div>
 {else}
 	<p>please select two revisions to review</p>
 {/if}

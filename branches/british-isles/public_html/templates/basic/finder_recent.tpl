@@ -20,7 +20,7 @@
 	Tags are still a work in progress on the site, and many images still don't have tags, so the results here are <b>only approximate</b>.
 	</div>
 	<br/><br/>
-	&middot; <a href="/browser/">Browse images more fully</a> &middot;
+	&middot; <a href="/browser/#!/days=3/display=plus/sort=spread">Browse images more fully</a> &middot;
 </div>
 
 <div style="margin-right:220px;">

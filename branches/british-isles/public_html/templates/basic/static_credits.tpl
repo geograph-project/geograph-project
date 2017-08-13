@@ -89,6 +89,10 @@
     <li>Maps for Ireland and also during the search using the {external href="http://www.google.com/apis/maps/" text="Google Maps API"}.</li>
     <li>Selected map extracts are from the {external href="http://www.openstreetmap.org/" text="OpenStreetMap project"}, via the {external href="http://www.gravitystorm.co.uk/shine/cycle-info/" text="Cycle Map"} rendering.</li>
     <li>UK Unit Postcodes, from OS OpenData : <i>Contains Royal Mail data &copy Royal mail copyright and database right 2010.</i></li>
+    <li>{external href="https://www.ceh.ac.uk/services/land-cover-map-2015" text="Landcover Classification"}: <i>LCM2015 &copy; and database right NERC (CEH) 2017. All rights reserved. Contains Ordnance Survey data &copy; Crown copyright and database right 2007.</i></li>
+
+
+
     </ul>
     
 	<a name="hosting"></a>    
@@ -109,7 +113,6 @@
     <p>The following support Geograph in various functions:</p>
     
     <ul>
-     <li>Natural Language Query Parsing by {external href="http://developers.metacarta.com/" text="MetaCarta Web Services"}</li>
      <li>Online image manipulation by {external href="http://picmonkey.com/" text="picmonkey.com"}</li>
      <li>Interactive 3D image viewer by {external href="http://cooliris.com/" text="cooliris.com"}</li>
      <li>{external href="http://www.easyalgo.com/eaflashupload.aspx" title="Upload multiple files with" text="EAFlashUpload flash file uploader"}</li>
@@ -127,6 +130,8 @@
     {external title="Sphinx Full Text Search" href="http://www.sphinxsearch.com/" text='<img src="/img/sphinx_silver.gif" width="88" height="31" alt="powered by Sphinx"/>'}
      </div>
    
+	<p>We also run geograph images though various algorithms, including {external href="http://project.carrot2.org/" text="Carrot2 Clustering Engine"}, and {external href="https://cloud.google.com/vision/" text="Cloud Vision API"}.</p>
+
     <p>In addition www.geograph.org.uk uses:<br/> 
 	&nbsp;&nbsp; Linux ({external href="http://www.ubuntu.com/" text="Ubuntu"}), {external href="http://httpd.apache.org/Apache"}, {external href="http://www.danga.com/memcached/" text="memcached"}, {external href="http://redis.io/" text="redis"}, {external href="http://munin-monitoring.org/" text="munin"}, {external href="http://nfs.sourceforge.net/" text="nfs"}, {external href="http://haproxy.1wt.eu/" text="haproxy"}, {external href="https://www.varnish-cache.org/" text="varnish"}, and {external href="http://mmonit.com/" text="m/monit"}.<br/>
 	 to deliver a high performance website - but are not <b>required</b> to run the Geograph codebase.</p/>
