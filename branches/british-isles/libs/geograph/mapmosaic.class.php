@@ -866,9 +866,10 @@ class GeographMapMosaic
 
 		switch ($this->pixels_per_km) {
 			case 0.13:
+			case 0.3:
 				return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=5&lat=$lat&lon=$long&layers=FTT000000B00000FT";
 			case 1:
-				return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=6&lat=$lat&lon=$long&layers=FTT000000B00000FT";
+				return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=7&lat=$lat&lon=$long&layers=FTT000000B00000FT";
 			case 4:
 				return $CONF['SELF_HOST']."/mapper/coverage.php#zoom=9&lat=$lat&lon=$long&layers=FTT000000B00000FT";
 			case 40:

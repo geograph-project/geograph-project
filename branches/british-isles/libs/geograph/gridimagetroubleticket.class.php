@@ -660,18 +660,20 @@ class GridImageTroubleTicket
 		
 		return $msg;
 	}
-	
+
 	/**
 	* Companion to _buildEmail - sends a message with appropriate headers + return address
 	* @access private
 	*/
 	function _sendMail($to, &$msg)
 	{
+		if (empty($to)) {
+			return;
+		}
 		mail($to, $msg['subject'], $msg['body'],
 				"From: Geograph - Reply Using Link <noreply@geograph.org.uk>");
-		
 	}
-	
+
 	/**
 	* Sends a message to handling moderator, or all moderators if not yet handled
 	* @access private
