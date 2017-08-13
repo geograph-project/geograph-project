@@ -6,6 +6,7 @@
     <li style="font-size:1.42em"><a accesskey="1" title="Return to the Home Page" href="/">Home</a></li>
     <li>View<ul>
      <li><a title="Find and locate images" href="/search.php">Search</a></li>
+     <li id="markedLink" style="display:none"><a title="View your current Marked Images" href="/finder/marked.php">Marked Images</a></li>
      <li><a title="View map of all submissions" href="/mapbrowse.php">Maps</a></li>
      <li><a title="Interactive browser, search and map in one" href="/browser/#!start">Browser</a></li>
      <li><a title="Explore images by theme" href="/explore/">Explore</a></li>
@@ -33,7 +34,8 @@
      <li><a title="Frequently Asked Questions" href="/faq3.php?l=0">FAQ</a></li>
      <li><a title="Info, Guides and Tutorials" href="/content/documentation.php">Project Info</a></li>
      <li><a title="View a list of all pages" href="/help/sitemap">Sitemap</a></li>
-     <li><a accesskey="9" title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
+     <li><a title="Contact the Geograph Team" href="/contact.php">Contact Us</a></li>
+     <li><a title="Donate to Geograph Project" href="/help/donate">Support</a></li>
     </ul></li>
   {dynamic}
   {if $is_mod || $is_admin || $is_tickmod}
@@ -148,5 +150,14 @@
   </div>
 </div>
 {dynamic}{pagefooter}{/dynamic}
+<script>{literal}
+                function showMarkedLink() {
+                        current = readCookie('markedImages');
+                        if (current && current != '') {
+                                document.getElementById('markedLink').style.display='';
+                        }
+                }
+                AttachEvent(window,window.addEventListener?'DOMContentLoaded':'load',showMarkedLink,false);
+{/literal}</script>
 </body>
 </html>
