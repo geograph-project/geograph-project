@@ -134,7 +134,7 @@ function runQuery2(perpage,query,location,normalized) {
 		$("#results").html("<p>Preview of search results:</p>");
 		var imagecount = 0;
 		$.each(data.items, function(i,item){
-			$("#results").append('<div class="inner"><a href="http://www.geograph.org.uk/photo/'+item.guid+'" title="'+item.title+' by '+item.author+'" class="i">'+item.thumbTag+'</a></div>');
+			$("#results").append('<div class="inner"><a href="/photo/'+item.guid+'" title="'+item.title+' by '+item.author+'" class="i">'+item.thumbTag+'</a></div>');
 			imagecount = imagecount + 1;
 		});
 

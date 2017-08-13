@@ -9,6 +9,9 @@
 
 <script type="text/javascript">
 
+OpenLayers.ImgPath = "{$static_host}/mapper/img/";
+
+
 var lon = {$e};
 var lat = {$n};
 var tileurl = "{$self_host}/tile.php";
@@ -20,7 +23,7 @@ var map, osposition, ml;
 var maxOpacity = 0.9;
 var minOpacity = 0.1;
 
-var oslayer,glayer,rlayer,player,slayer;
+var oslayer,glayer,ulayer,rlayer,player,slayer;
 
 {literal}
 
@@ -32,6 +35,11 @@ function changeOpacity(byOpacity) {
 		var newOpacity = (parseFloat(rlayer.opacity) + byOpacity).toFixed(1);
 		newOpacity = Math.min(maxOpacity, Math.max(minOpacity, newOpacity));
 		rlayer.setOpacity(newOpacity);
+	}
+	if (ulayer) {
+		var newOpacity = (parseFloat(ulayer.opacity) + byOpacity).toFixed(1);
+		newOpacity = Math.min(maxOpacity, Math.max(minOpacity, newOpacity));
+		ulayer.setOpacity(newOpacity);
 	}
 	if (player) {
 		var newOpacity = (parseFloat(player.opacity) + byOpacity).toFixed(1);
@@ -62,9 +70,13 @@ function loadMap() {
 	oslayer.getURL = geographURL;
 
 	//Photographs and coverages are available under a seperate Creative Commons Licence, but NO spidering - see Terms.
-	glayer = new OpenLayers.Layer.WMS("Gridsquare Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [40000/250,10000/250,4000/250,2000/250], buffer:0{/literal}{if $centi || $scenic || $recent}, visibility:false, opacity: 1{else}, opacity: 0.3{/if}{literal}});
+	glayer = new OpenLayers.Layer.WMS("Gridsquare Coverage", ttileurl+"?l=g", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [40000/250,10000/250,4000/250,2000/250], buffer:0{/literal}{if $centi || $scenic || $recent || $contrib}, visibility:false, opacity: 1{else}, opacity: 0.3{/if}{literal}});
 	glayer.tileSize = new OpenLayers.Size(250,250);
 	glayer.getURL = geographURL;
+
+	ulayer = new OpenLayers.Layer.WMS("Contributor Depth", ttileurl+"?&l=u", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [40000/250,10000/250,4000/250,2000/250], buffer:0{/literal}{if $contrib}, opacity: 1{else}, visibility:false, opacity: 0.9{/if}{literal}});
+	ulayer.tileSize = new OpenLayers.Size(250,250);
+	ulayer.getURL = geographURL;
 
 	rlayer = new OpenLayers.Layer.WMS("TPoint Availability", ttileurl+"?l=r", {transparent: 'true'}, {projection: "EPSG:27700", isBaseLayer:false, resolutions: [40000/250,10000/250,4000/250,2000/250], buffer:0{/literal}{if $recent}, opacity: 1{else}, visibility:false, opacity: 0.9{/if}{literal}});
 	rlayer.tileSize = new OpenLayers.Size(250,250);
@@ -78,7 +90,7 @@ function loadMap() {
 	slayer.tileSize = new OpenLayers.Size(250,250);
 	slayer.getURL = geographURL;
 
-	map.addLayers([oslayer,glayer,rlayer,player,slayer]);
+	map.addLayers([oslayer,glayer,ulayer,rlayer,player,slayer]);
 
 	ll = new OpenLayers.LonLat(lon, lat);
 	map.setCenter(ll, {/literal}{$z}{literal});
@@ -111,9 +123,6 @@ AttachEvent(window,'load',loadMap,false);
 
 </script>{/literal}
 
-{dynamic}{if $user->registered}
-<div style="float:left; font-size:0.9em; color:gray;">Getting 'Quota Exceeded'? <a href="/mapper/captcha.php?token={$token}" style="color:gray;" target="_top">refresh your quota</a></div>{/if}{/dynamic}
-
 <div style="text-align:right; width:660px; font-size:0.7em;margin-bottom:3px" class="nowrap">Change Overlay Opacity: [<a title="increase opacity" href="javascript: changeOpacity(0.1);">+</a>] [<a title="decrease opacity" href="javascript: changeOpacity(-0.1);">-</a>], [<a href="javascript: fadeBackground();">Toggle background</a>]</div>
 
 <div id="mapcontainer">
@@ -142,7 +151,7 @@ AttachEvent(window,'load',loadMap,false);
 
 <div class="copyright">&middot; Great Britain 1:50 000 Scale Colour Raster Mapping &copy; Crown copyright Ordnance Survey.<br/> All Rights Reserved. Educational licence 100045616 &middot;<br/>
 &middot; Photographs and coverages are available under a separate <a href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a> &middot;<br/>
-&middot; {external href="http://scenic.mysociety.org/faq" text="ScenicOrNot"} dataset &copy; mySociety and licenced for reuse under this <a href="http://creativecommons.org/licenses/by-nc/3.0/" class="nowrap">Creative Commons Licence</a> &middot;<br/><br/>
+&middot; {external href="http://scenic.mysociety.org/faq" text="ScenicOrNot"} dataset &copy; mySociety and licensed for reuse under this <a href="http://creativecommons.org/licenses/by-nc/3.0/" class="nowrap">Creative Commons Licence</a> &middot;<br/><br/>
 For the purposes of the Creative Commons Licence this page should be considered a "Collective Work", and as such is not available in its entirety for reuse.
 </div>
 

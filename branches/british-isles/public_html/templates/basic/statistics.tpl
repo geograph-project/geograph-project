@@ -118,6 +118,7 @@ Refine:
         <option value="fourth">Fourths</option>
         <option value="personal">Personal Points</option>
 	<option value="tpoints">TPoints</option>
+	<option value="tnf">TPoints (no Firsts)</option>
 </optgroup>
 <optgroup label="Images">
         <option value="images">Images</option>
@@ -158,6 +159,7 @@ Refine:
         <option value="fourth">Fourths</option>
         <option value="personal">Personal Points</option>
 	<option value="tpoints">TPoints</option>
+	<option value="tnf">TPoints (no Firsts)</option>
 </optgroup>
 <optgroup label="Images">
         <option value="images">Images</option>
@@ -167,7 +169,7 @@ Refine:
 </optgroup>
 <optgroup label="Squares">
         <option value="squares">Squares</option>
-        <option value="geosquares">GeoSquares (Personal Points)</option>
+        <option value="geosquares">GeoSquares</option>
 </optgroup>
 <optgroup label="Geographical">
         <option value="myriads">Myriads</option>
@@ -204,7 +206,7 @@ Refine:
 	<b>Past activity</b>
 </div>
 
-   Graphs: <a href="/statistics/moversboard.php#rate_graph">Weekly Submissions</a>, <a href="/statistics/leaderboard.php#submission_graph">Overall Submissions</a>, <a href="/statistics/contributors.php">Contributor Graphs</a>.<br/><br/>
+   Graphs: <a href="/statistics/contributors.php">Images Submitted by Number of Contributors</a>.<br/><br/>
    Monthly breakdown: <a href="/statistics/overtime.php" title="Monthly Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/overtime.php?date=taken" title="Monthly Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/overtime_users.php" title="Monthly Breakdown new User Signups">User Signups</a>, <a href="/statistics/overtime_forum.php" title="Monthly Breakdown for Forum Posts">Forum Posts</a> and <a href="/statistics/overtime_tickets.php">Change Suggestions</a>.<br/><br/>
    Hourly and weekday breakdown: <a href="/statistics/date_graphs.php" title="Hourly and Weekday Breakdown of Images Submitted">Submissions</a>, <a href="/statistics/date_graphs.php?date=taken" title="Hourly and Weekday Breakdown of Images Taken">Date Taken</a>, <a href="/statistics/date_users_graphs.php" title="Hourly and Weekday Breakdown of User Signups">User Signups</a> and <a href="/statistics/date_forum_graphs.php" title="Hourly and Weekday Breakdown for Forum Posts">Forum Posts</a>.<br/><br/>
    Most in a day: <a href="/statistics/busyday.php?date=submitted">Submissions</a>, <a href="/statistics/busyday.php">Images Taken</a>, <a href="/statistics/busyday_users.php">Users</a> and <a href="/statistics/busyday_forum.php">Forum Posts</a> (<a href="/statistics/busyday_forum.php?users=1" title="Most in a day by user">Users</a>,<a href="/statistics/busyday_forum.php?threads=1" title="Most in a day by topic">Topics</a>).<br/><br/>

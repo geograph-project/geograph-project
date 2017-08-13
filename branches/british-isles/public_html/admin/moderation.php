@@ -112,10 +112,10 @@ if (isset($_GET['gridimage_id']))
 					} else {
 						$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for rejecting this image.");
 					}
-					$status=$ticket->commit('open');
-					
+
+					$status=$ticket->commit(isset($_GET['autoclose'])?'closed':'open');
+
 					echo " <a href=\"/editimage.php?id={$gridimage_id}\"><B>View Ticket</b></a>";
-					
 				}
 
 				//clear caches involving the image
@@ -345,7 +345,7 @@ if (isset($_GET['review'])) {
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } elseif (isset($_GET['image'])) {
-	$sql_where = "gridimage_id = ".intval($_GET['image']);
+	$sql_where = "gi.gridimage_id = ".intval($_GET['image']);
 	$sql_order = "gridimage_id desc";
 	$smarty->assign('remoderate', 1);
 } elseif (isset($_GET['remoderate'])) {
@@ -469,8 +469,8 @@ foreach ($images->images as $i => $image) {
 	if (max($width,$height) < 500)
 		$images->images[$i]->sizestr = $attr;
 
-	if (!empty($image->tags))
-		$images->images[$i]->tags = explode("?",$image->tags);
+	//if (!empty($image->tags))
+	//	$images->images[$i]->tags = explode("?",$image->tags);
 }
 
 #############################

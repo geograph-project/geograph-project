@@ -57,22 +57,18 @@ $rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$CONF['template']}/blog-{$format}-".md
 
 
 $rss = new UniversalFeedCreator();
-if (empty($_GET['refresh'])) 
+if (empty($_GET['refresh']))
 	$rss->useCached($format,$rssfile);
 
-$rss->title = 'Geograph Blog'; 
+$rss->title = 'Geograph Blog';
 $rss->link = "{$CONF['SELF_HOST']}/blog/";
- 
-	
-$rss->description = "Recently updated Blog Entries on Geograph British Isles"; 
+$rss->description = "Recently updated Blog Entries on Geograph British Isles";
 
 if ($format == 'KML') {
 	$rss->description .= ". <a href=\"{$rss->link}\">View Blog Homepage</a> or <a href=\"{$CONF['SELF_HOST']}/\">Geograph Homepage</a>";
 }
 
-
 $rss->syndicationURL = "{$CONF['SELF_HOST']}/blog/feed.$format_extension";
-
 
 if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 	require_once('geograph/conversions.class.php');
@@ -83,12 +79,12 @@ if ($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') {
 }
 
 $db = GeographDatabaseConnection(true);
-	
+
 $limit = (isset($_GET['nolimit']))?1000:50;
 
 
 // --------------
-		
+
 	if ($format == 'KML') {
 		$where = "gridsquare_id > 0";
 	} else {
@@ -97,8 +93,7 @@ $limit = (isset($_GET['nolimit']))?1000:50;
 	if (!empty($_GET['u'])) {
 		$where .= " and blog.user_id = ".intval($_GET['u']);
 	}
-	
-	
+
 $sql="select blog_id,blog.user_id,title,content,blog.updated,blog.created,realname,gridsquare_id
 	from blog
 		left join user using (user_id)
@@ -110,12 +105,12 @@ $recordSet = &$db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
-	
+
 	$item->title = $recordSet->fields['title'];
 
 	//htmlspecialchars is called on link so dont use &amp;
 	$item->link = "{$CONF['SELF_HOST']}/blog/".$recordSet->fields['blog_id'];
-	
+
 	$item->description = GeographLinks(nl2br($recordSet->fields['content']),1);
 	$item->descriptionHtmlSyndicated = true;
 
@@ -123,14 +118,13 @@ while (!$recordSet->EOF)
 	$item->author = $recordSet->fields['realname'];
 	if ($format == 'KML') {
 		$item->description .= " by ".$recordSet->fields['realname'];
-	}	
+	}
 	if (!empty($rss->geo) && $recordSet->fields['gridsquare_id']) {
 		$gridsquare = new GridSquare;
 		$grid_ok=$gridsquare->loadFromId($recordSet->fields['gridsquare_id']);
 
 		if ($grid_ok)
 			list($item->lat,$item->long) = $conv->gridsquare_to_wgs84($gridsquare);
-	
 	}
 
 	$rss->addItem($item);

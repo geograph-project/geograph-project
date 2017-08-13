@@ -1,6 +1,22 @@
 {assign var="page_title" value="FAQ"}
 {include file="_std_begin.tpl"}
-{literal}<style type="text/css">
+{literal}
+
+<script>
+
+window.onload = function () {
+	if (!window.location.hash || window.location.hash.length < 1) {
+		location.replace('/faq3.php?l=0');
+	}
+}
+
+</script>
+
+<div class="interestBox" style="background-color:pink">
+	We have a new <a href="/faq3.php?l=0">New FAQ/Knowledgebase</a> available, please check it out!
+</div>
+
+<style type="text/css">
 .helpbox { float:right;padding:5px;background:#dddddd;position:relative;font-size:0.8em;margin-left:20px;z-index:10; }
 .helpbox UL { margin-top:2px;margin-bottom:0;padding:0 0 0 1em; }
 .contents A { text-decoration:none; }
@@ -179,7 +195,7 @@ The <b>Geograph website</b>:
 <div id="findsquares">
 <a name="findsquares"></a>
 <h3>How do I find which squares need photographing?</h3>
-	<p>If you are looking for squares to obtain a point, try the <a href="/mapbrowse.php">coverage maps</a>, and look for green squares; also accessible from that page are various printable checksheets for easy reference in print form. More technical users might enjoy <a href="/gpx.php">GPX</a>, or <a href="/memorymap.php">Memory Map</a> downloads. </p>
+	<p>If you are looking for squares to obtain a point, try the <a href="/mapbrowse.php">coverage maps</a>, and look for green squares; also accessible from that page are various printable checksheets for easy reference in print form. More technical users might enjoy <a href="/gpx.php">GPX</a> downloads. </p>
 
 	<p>Many of the squares have been captured but only have a few photos; check out the <a href="/mapbrowse.php?depth=1">depth map</a>, from which you can find under-represented squares. In the same vein we have a number of maps to show the distribution of photos within a square, usually on a centisquare grid, which divides a grid square into 100 squares, each 100m by 100m.</p>
 

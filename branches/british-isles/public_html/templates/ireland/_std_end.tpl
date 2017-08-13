@@ -62,10 +62,10 @@
     <li>Further Info<ul rel="open">
      <li><a title="Recent Geograph Announcements" href="/news.php">Latest News</a></li>
      <li><a title="FAQ" href="/faq3.php?l=0">FAQ</a><ul>
-      <li><a title="Geograph Documents" href="/content/documentation.php">Documents</a></li>
+      <li><a title="Geograph Documents" href="/content/documentation.php">Project Info</a></li>
      </ul></li>
-     <li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>
-      <li><a title="View All Pages" href="/help/sitemap">Sitemap</a></li>
+     <li><a title="View All Pages" href="/help/sitemap">Sitemap</a><ul>
+      <li><a title="View More Pages" href="/help/more_pages">More Pages</a><ul>
      </ul></li>
 
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a><ul>

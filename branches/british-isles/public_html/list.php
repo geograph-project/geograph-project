@@ -22,7 +22,7 @@
  */
 
 
-if (!empty($_GET['square'])) {
+if (!empty($_GET['square']) && preg_match('/^\w+$/',$_GET['square'])) {
 	header("HTTP/1.0 301 Moved Permanently");
 	header("Status: 301 Moved Permanently");
 	header("Location: /sitemap/{$_GET['square']}.html");

@@ -140,6 +140,20 @@ As well as choosing a photo that is represetative of the square, the photo shoul
 <ul>
 	<li><a href="/mapadopt.php?id={$hectad_assignment_id}&amp;hectad={$hectad}" onclick="return confirm('Warning: Once you view this mosaic, it will be cached, and you wont be able to see any updates for 6-12 hours. Click OK to continue, or Cancel');">View as Mosaic</a> (Experimental!)</li>
 </ul>
+
+<div class="interestBox">
+	<form method="post" action="{$script_name}?hectad={$hectad}">
+		Approximate completeness: <select name="complete">
+		{foreach from=$completes item=c}
+			<option value="{$c}" {if $complete == $c} selected{/if}>{$c}%</option>
+		{/foreach}
+		</select>
+		<input type="submit" value="Update/Save"/><br/>
+		<small>Mainly for your own reference, to keep track of how far you think you got.
+		Although the curated mosaic will only be shown publically once you mark the square 80% or above complete.</small>
+	</form>
+</div>
+
 {/if}
 
 {if $stats}

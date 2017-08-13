@@ -49,7 +49,7 @@ representative photographs and information for every square kilometre of <a href
 
 	<div style="padding:2px;margin-top:8px;position:relative; text-align:center">
 
-	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day <small>[<a href="/results/2087426">more...</a>]</small></h3>
+	<h3 style="margin-bottom:2px;margin-top:2px;">Photograph of the day <small>[<a href="/results/2087426" title="View the Picture of the Day Archive">more...</a>]</small></h3>
 	<a href="/photo/{$pictureoftheday.gridimage_id}" 
 	title="Click to see full size photo">{$pictureoftheday.image->getFixedThumbnail(360,263)}</a><br/>
 
@@ -140,10 +140,10 @@ and <a href="/article/Ways-to-view-Geograph-Images">even more ways to view image
 <br style="clear:both"/>
 
 <p align="center">
-	This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948/source/geograph">UK Web Archive</a> project.
+	This site is archived for preservation by the <a href="http://www.webarchive.org.uk/ukwa/target/31653948">UK Web Archive</a> project.
 </div>
 
-<p align="center"><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 26 Cloister Road, Acton, London W3 0DE.</i></small></p>
+<p align="center"><small><i>Geograph Project Limited is a company limited by guarantee. Registered in England and Wales, number 7473967. Registered office: 49 Station Road, Polegate, East Sussex, BN26 6EA.</i></small></p>
 
 &nbsp;
 

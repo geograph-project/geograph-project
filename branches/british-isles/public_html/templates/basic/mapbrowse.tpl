@@ -369,7 +369,7 @@ south_F2 = new Image(30,29); south_F2.src = "{$static_host}/templates/basic/mapn
 
 <h2 style="margin-bottom:0">{if $recent}Recent{else}Geograph{/if} {if $depth && $token_zoomin}Depth{else}Coverage{/if} Map{if $realname}, for <a title="view user profile" href="/profile/{$user_id}">{$realname}</a>{/if}</h2>
 {if $recent}<div>&middot;&nbsp;{if $token_zoomin}'Recent' is{else}<b>Only includes{/if} images <u>taken</u> since {$recent|date_format:"%A, %B %e, %Y"}</b>
-{if $token_zoomin}<br>&middot;&nbsp;Orange (and Green) squares can earn a <b>TPoint for a contemporally photo</b>.{/if}</div>{/if}
+{if $token_zoomin}<br>&middot;&nbsp;Orange (and Green) squares can earn a <b>TPoint for a contemporary photo</b>.{/if}</div>{/if}
 </div>
 {if $mosaic_updated}
 	<p style="text-align:right; font-size:0.8em; margin-top:0">{$mosaic_updated}</p>

@@ -262,11 +262,13 @@
 				{foreach from=$image->tags item=tag}{if strpos($tag,'type:') === 0}{$seperator} {$tag|replace:'type:':''|escape:'html'}{assign var="seperator" value=","}{/if}{/foreach}
 			{/if}
 
-			{if !$seperator}
-				{if $image->moderation_status ne "accepted"}{$image->moderation_status|ucfirst}{/if}
+			{if !$seperator || $image->moderation_status eq "rejected"}
+				{$seperator} {if $image->moderation_status eq "accepted"}<i>unknown</i>{else}{$image->moderation_status|ucfirst}{/if}
 			{/if}
-			{if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if}
-			{if $image->points eq 'tpoint'}(tpoint){/if}
+			{if  $image->moderation_status ne "rejected"}
+				{if $image->ftf eq 1}(first){elseif $image->ftf eq 2} (second){elseif $image->ftf eq 3} (third){elseif $image->ftf eq 4} (fourth){/if}
+				{if $image->points eq 'tpoint'}(tpoint){/if}
+			{/if}
 		</td>
 		<td sortvalue="{$image->imagetaken}" class="nowrap" align="right">{if strpos($image->imagetaken,'-00') eq 4}{$image->imagetaken|replace:'-00':''}{elseif strpos($image->imagetaken,'-00') eq 7}{$image->imagetaken|replace:'-00':''|cat:'-01'|date_format:"%b %Y"}{else}{$image->imagetaken|date_format:"%a, %e %b %Y"}{/if}</td>
 		</tr>
