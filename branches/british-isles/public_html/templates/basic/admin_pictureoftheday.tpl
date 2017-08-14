@@ -83,7 +83,7 @@
 
 <p><i>Note: the exact date a pool image will be used is subject to change. If the pool runs dry lower rated images may be used.</i></p>     
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 
 {literal}
 <style>

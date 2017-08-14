@@ -182,7 +182,7 @@ h4.title {
 
 	<p>Search directly for tags using the form above</p>
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
 
 {literal}
 <script>

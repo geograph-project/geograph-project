@@ -141,6 +141,7 @@ if (isset($_REQUEST['id']))
                 $image->imagetakenString = getFormattedDate($image->imagetaken);
 	}
 	$smarty->assign_by_ref('image', $image);
+	$smarty->assign('tile_host', $CONF['tile_host']);
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");

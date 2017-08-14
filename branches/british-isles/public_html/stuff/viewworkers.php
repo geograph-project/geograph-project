@@ -25,10 +25,13 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+$smarty = new GeographPage;
+
 $USER->mustHavePerm("basic");
 
-print "<script src=\"/geograph.js\"></script>";
-print "<script src=\"/sorttable.js\"></script>";
+$smarty->display('_std_begin.tpl');
+
+print "<script src=\"".smarty_modifier_revision("/sorttable.js")."\"></script>";
 
 $db = GeographDatabaseConnection(true);
 
@@ -57,15 +60,15 @@ print "</p>";
 if (isset($_GET['tab']) && $_GET['tab'] == 'all') {
 
 dump_sql_table("
-select team,sum(terms) as terms,sum(images) as images,count(*) as jobs 
-from at_home_job inner join at_home_worker using(at_home_worker_id) 
+select team,sum(terms) as terms,sum(images) as images,count(*) as jobs
+from at_home_job inner join at_home_worker using(at_home_worker_id)
 where task = '$task'
 group by team with rollup",'All Time');
 
 } elseif (isset($_GET['tab']) && $_GET['tab'] == '24') {
 
 dump_sql_table("select * from (
-select at_home_worker_id as worker,team,max(last_contact) as last_contact,count(*) as jobs,sum(terms) as terms,sum(images) as images 
+select at_home_worker_id as worker,team,max(last_contact) as last_contact,count(*) as jobs,sum(terms) as terms,sum(images) as images
 from at_home_job inner join at_home_worker using(at_home_worker_id)
 where last_contact > date_sub(now(),interval 24 hour) and task = '$task'
 group by at_home_worker_id) as i
@@ -93,9 +96,9 @@ dump_sql_table("
 select if(sent='0000-00-00 00:00:00','Outstanding',if(completed='0000-00-00 00:00:00','In Progress','Finished')) as 'Status',
 count(*) as Jobs,count(distinct if(at_home_worker_id=0,null,at_home_worker_id)) as Workers,
 sum(end_gridimage_id-start_gridimage_id+1) as Images,
-sum(terms) as 'Terms Found', 
-sum(images) as 'Processed Images' 
-from at_home_job 
+sum(terms) as 'Terms Found',
+sum(images) as 'Processed Images'
+from at_home_job
 where task = '$task'
 group by (sent='0000-00-00 00:00:00'),(completed='0000-00-00 00:00:00')",'Job Breakdown');
 
@@ -106,22 +109,24 @@ group by (sent='0000-00-00 00:00:00'),(completed='0000-00-00 00:00:00')",'Job Br
 dump_sql_table("
 select if(sent='0000-00-00 00:00:00','Outstanding',if(completed='0000-00-00 00:00:00','In Progress','Finished')) as 'Status',
 count(*) as 'Jobs/Squares',count(distinct if(at_home_worker_id=0,null,at_home_worker_id)) as Workers,
-sum(terms) as 'Clusters Found', 
-sum(images) as 'Processed Images' 
-from at_home_job 
+sum(terms) as 'Clusters Found',
+sum(images) as 'Processed Images'
+from at_home_job
 where task = '$task' and created > date_sub(now(),interval 90 day)
 group by (sent='0000-00-00 00:00:00'),(completed='0000-00-00 00:00:00')",'Job Breakdown - jobs created in last 90 days');
-		
+
 	}
 }
 
+$smarty->display('_std_end.tpl');
+
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
-	
+
 	$row = mysql_fetch_array($result,MYSQL_ASSOC);
 
 	print "<H3>$title</H3>";
-	
+
 	print "<TABLE border='1' cellspacing='0' cellpadding='2' class=\"report sortable\" id=\"photolist\"><THEAD><TR>";
 	foreach ($row as $key => $value) {
 		print "<TH>$key</TH>";
@@ -144,5 +149,3 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 	print "</TR></TBODY></TABLE>";
 }
 
-	
-?>

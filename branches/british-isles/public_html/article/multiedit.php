@@ -85,7 +85,7 @@ if (!empty($_GET['cat'])) {
 }
 
 ?>
-<script src="/sorttable.js"></script>
+<script src="<? echo smarty_modifier_revision("/sorttable.js"); ?>"></script>
 
 <h2>Article Multi-Editor</h2>
 

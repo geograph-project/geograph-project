@@ -334,7 +334,7 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
 
         if (preg_match('/(youtube\.com\/watch\?v=|youtu\.be\/)(\w+)/',$row['content'],$m)) {
                 $row['content'] .= "<div style=\"width:490px;margin-left:auto;margin-right:auto;\">".
-                '<object width="480" height="385"><param name="movie" value="http://www.youtube-nocookie.com/v/'.$m[2].'&hl=en_US&fs=1&rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube-nocookie.com/v/'.$m[2].'&hl=en_US&fs=1&rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object>'.
+                '<object width="480" height="385"><param name="movie" value="http://www.youtube-nocookie.com/v/'.$m[2].'&hl=en_US&fs=1&rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="https://www.youtube-nocookie.com/v/'.$m[2].'&hl=en_US&fs=1&rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object>'.
                 "</div>";
         }
 
@@ -395,7 +395,7 @@ if (isset($_GET['l']) && empty($_GET['l'])) {
 <? } ?>
 
 <hr/>
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="http://creativecommons.org/images/public/somerights20.gif" border="0" style="vertical-align: middle"></a>
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/"><img alt="Creative Commons Licence [Some Rights Reserved]" src="https://creativecommons.org/images/public/somerights20.gif" border="0" style="vertical-align: middle"></a>
 the content of this page is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap">Creative Commons Licence</a>.</div>
 
 <br/><br/>

@@ -58,7 +58,7 @@
 
 	{foreach from=$team item=userrow}
 		{if $userrow.role ne 'Member' || $userrow.rights ne ''}
-			<a href="/profile/{$userrow.user_id}" class="name" title="Nickname: {$userrow.nickname|escape:'html'|default:'none'}, Role(s): {$userrow.rights}"><img src="http://www.gravatar.com/avatar/{$userrow.md5_email}?r=G&amp;d=http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=25&amp;s=25" align="absmiddle" alt="{$userrow.realname|escape:'html'}'s Gravatar"/> {$userrow.realname|escape:'html'}</a>
+			<a href="/profile/{$userrow.user_id}" class="name" title="Nickname: {$userrow.nickname|escape:'html'|default:'none'}, Role(s): {$userrow.rights}"><img src="https://www.gravatar.com/avatar/{$userrow.md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=25&amp;s=25" align="absmiddle" alt="{$userrow.realname|escape:'html'}'s Gravatar"/> {$userrow.realname|escape:'html'}</a>
 		{/if}
 		{if $userrow.role eq 'Member'}
 			{assign var="hist" value="1"}
@@ -77,7 +77,7 @@
 	<div class="names" style="font-size:0.9em">
 	{foreach from=$team item=userrow}
 		{if $userrow.role eq 'Member'}
-			<a href="/profile/{$userrow.user_id}" class="name"{if $userrow.rights} title="Current Role(s): {$userrow.rights}"{/if}><img src="http://www.gravatar.com/avatar/{$userrow.md5_email}?r=G&amp;d=http://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=25&amp;s=25" align="absmiddle" alt="{$userrow.realname|escape:'html'}'s Gravatar"/> {$userrow.realname|escape:'html'}</a>
+			<a href="/profile/{$userrow.user_id}" class="name"{if $userrow.rights} title="Current Role(s): {$userrow.rights}"{/if}><img src="https://www.gravatar.com/avatar/{$userrow.md5_email}?r=G&amp;d=https://www.gravatar.com/avatar/ad516503a11cd5ca435acc9bb6523536%3Fs=25&amp;s=25" align="absmiddle" alt="{$userrow.realname|escape:'html'}'s Gravatar"/> {$userrow.realname|escape:'html'}</a>
 		{/if}
 	{/foreach}
 	</div>

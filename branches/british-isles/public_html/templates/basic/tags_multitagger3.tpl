@@ -138,7 +138,7 @@
 
 
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 	<script src="{"/js/ui/jquery.ui.core.js"|revision}"></script>
 	<script src="{"/js/ui/jquery.ui.widget.js"|revision}"></script>
 	<script src="{"/js/ui/jquery.ui.mouse.js"|revision}"></script>

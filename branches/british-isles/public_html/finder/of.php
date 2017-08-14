@@ -248,7 +248,7 @@ if (!empty($_GET['q'])) {
 			$words = str_replace('_SEP_','',$words);
 			$words = trim(preg_replace('/[^\w]+/',' ',$words));
 			$where = "match(".$sph->Quote('"'.$words.'"/0.5').")";
-			print '<iframe src="http://t0.geograph.org.uk/tile-info.php?id='.$id.'" width="100%" height="250" frameborder=0></iframe>';
+			print '<iframe src="'.$CONF['TILE_HOST'].'/tile-info.php?id='.$id.'" width="100%" height="250" frameborder=0></iframe>';
 
 		} else {
 	                $where = "match(".$sph->Quote($sphinx->q).")";
@@ -437,7 +437,7 @@ if (!empty($_GET['d'])) {
 
 	} elseif (count($final)) {
 		foreach ($final as $idx => $row) {
-			print '<iframe src="http://t0.geograph.org.uk/tile-info.php?id='.$row['id'].'" width="100%" height="250" frameborder=0></iframe>';
+			print '<iframe src="'.$CONF['TILE_HOST'].'/tile-info.php?id='.$row['id'].'" width="100%" height="250" frameborder=0></iframe>';
 			print "<hr/><br/>";
 		}
 	}

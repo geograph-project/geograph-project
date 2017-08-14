@@ -279,8 +279,7 @@ update tag_suggest set score=score+1 where tag != '';
 
 ?>
 
-<script type="text/javascript" src="http://s1.geograph.org.uk/js/geograph.v7635.js"></script>
-<script src="http://s1.geograph.org.uk/sorttable.v7274.js"></script>
+<script src="<? echo smarty_modifier_revision("/sorttable.js"); ?>"></script>
 <p>Click a column header to resort the table</p>
 <TABLE class="report sortable" id="photolist" cellspacing=0 cellpadding=3 border=1>
 <?

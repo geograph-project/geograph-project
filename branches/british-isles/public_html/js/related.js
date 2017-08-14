@@ -11,7 +11,7 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 
 	//we have to be extra careful checking if a real jquery, as jQl creates a fake jQuery object. 
 	if (typeof jQuery === "undefined" || jQuery === null || typeof jQuery.fn === "undefined" || typeof jQuery.fn.load === "undefined") {
-		jQl.loadjQ('http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
+		jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js');
 	}
 
 	
@@ -50,7 +50,7 @@ if (window.location.pathname.match(/^\/photo\/(\d+)/) ) {
 		$.ajaxSetup({
 			cache: true
 		});
-		$.getScript('http://s1.geograph.org.uk/js/lazy.v4.js',function() {
+		$.getScript('//s1.geograph.org.uk/js/lazy.v4.js',function() {
 			//initLazy();
 			
 			$('#related').append('<form><select onchange="renderRelatedImage()">'+

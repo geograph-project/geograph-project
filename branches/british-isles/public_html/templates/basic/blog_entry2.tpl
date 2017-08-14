@@ -28,7 +28,7 @@
 <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
 <a class="addthis_counter addthis_pill_style"></a>
 </div>
-<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=geograph"></script>
+<script type="text/javascript" src="https://s7.addthis.com/js/300/addthis_widget.js#pubid=geograph"></script>
 <!-- AddThis Button END -->
 {/literal}
 
@@ -126,7 +126,7 @@
 {/literal}{/if}
 
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 <script src="/js/jquery.jqzoom.js"></script>
 {literal}
 	<script>
