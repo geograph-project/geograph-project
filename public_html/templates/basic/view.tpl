@@ -105,7 +105,7 @@
   <div class="caption640" style="font-weight:bold" property="dct:title" itemprop="name">{$image->title|escape:'html'}</div>
 
   {if $image->comment}
-  <div class="caption640" itemprop="description">{$image->comment|escape:'html'|nl2br|geographlinks:$expand|hidekeywords}</div>
+  <div class="caption640" itemprop="description">{$image->comment|escape:'html'|nl2br|geographlinks:$expand}</div>
   {/if}
   {if $image->snippet_count}
 	{if !$image->comment && $image->snippet_count == 1}
@@ -123,7 +123,7 @@
 			{else}
 				<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
 				{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small>{/if}
-				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks|hidekeywords}</blockquote>
+				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks}</blockquote>
 				</div>
 			{/if}
 		{/foreach}
@@ -313,13 +313,6 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 {/if}
 <dt>Submitted</dt>
 	<dd itemprop="uploadDate" datetime="{$image->submitted|replace:' ':'T'}Z">{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
-
-{if $image->keywords}
-	<dt>Keywords</dt>
-	{foreach from=$image->keywords item=item}
-		<dd style="width:200px;font-size:0.9em;line-height:0.8em" itemprop="keywords">{$item|escape:'html'}</dd>
-	{/foreach}
-{/if}
 
 {if $image->tags}
 	{if $image->tag_prefix_stat.top}

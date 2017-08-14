@@ -198,29 +198,16 @@ if (!empty($_POST['spelling'])) {
 	$style = $USER->getStyle();
 
 	$smarty->assign('maincontentclass', 'content_photo'.$style);
-	
+
 	#if (!$smarty->is_cached($template, $cacheid))
 	#{
-		function smarty_function_hidekeywords($input) {
-			if (preg_match('/(^|[\n\r\s]+)Keywords?[\s:]([^\n\r>]+)$/',$input,$m)) {
-				if (empty($GLOBALS['image']->keywords)) {
-					$GLOBALS['image']->keywords = array();
-				}
-				$GLOBALS['image']->keywords[] = $m[2];
-				return preg_replace('/(^|[\n\r\s]+)Keywords?[\s:][^\n\r>]+$/','',$input);
-			} else {
-				return $input;
-			}
-		}
-		$smarty->register_modifier("hidekeywords", "smarty_function_hidekeywords");
-
 		$image->assignToSmarty($smarty);
-		
+
 		if (!empty($_POST['upload_id'])) {
 			$gid = crc32($_POST['upload_id'])+4294967296;
 			$gid += $USER->user_id * 4294967296;
 			$gid = sprintf('%0.0f',$gid);
-			
+
 			$image->loadSnippets($gid);
 		} else {
 			$image->loadSnippets();
@@ -237,4 +224,3 @@ if (!empty($_POST['spelling'])) {
 $smarty->display($template, $cacheid);
 
 
-?>
