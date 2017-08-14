@@ -300,19 +300,6 @@ if ($image->isValid())
 	header("Status: 404 Not Found");
 }
 
-function smarty_function_hidekeywords($input) {
-	if (preg_match('/(^|[\n\r\s]+)Keywords?[\s:]([^\n\r>]+)$/i',$input,$m)) {
-		if (empty($GLOBALS['image']->keywords)) {
-			$GLOBALS['image']->keywords = array();
-		}
-		$GLOBALS['image']->keywords[] = $m[2];
-		return preg_replace('/([\r\n]*<br \/>)+$/','',preg_replace('/(^|[\n\r\s]+)Keywords?[\s:][^\n\r>]+$/i','',$input));
-	} else {
-		return $input;
-	}
-}
-$smarty->register_modifier("hidekeywords", "smarty_function_hidekeywords");
-
 $smarty->display($template, $cacheid);
 
 

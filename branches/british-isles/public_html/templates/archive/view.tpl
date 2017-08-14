@@ -48,7 +48,7 @@
 			{else}
 				<div class="snippet640 searchresults" id="snippet{$smarty.foreach.used.iteration}">
 				{if $image->snippets_as_ref}{$smarty.foreach.used.iteration}. {/if}<b><a href="/snippet/{$item.snippet_id}" title="See other images in {$item.title|escape:'html'|default:'shared description'}{if $item.realname ne $image->realname}, by {$item.realname}{/if}">{$item.title|escape:'html'|default:'untitled'}</a></b> {if $item.grid_reference && $item.grid_reference != $image->grid_reference}<small> :: <a href="/gridref/{$item.grid_reference}">{$item.grid_reference}</a></small>{/if}
-				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks|hidekeywords}</blockquote>
+				<blockquote>{$item.comment|escape:'html'|nl2br|geographlinks}</blockquote>
 				</div>
 			{/if}
 		{/foreach}
