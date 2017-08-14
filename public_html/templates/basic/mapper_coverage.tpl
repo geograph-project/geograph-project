@@ -4,7 +4,7 @@
 	<div id="mapLink" style="float:right"></div>
 	<h2>Experimental Geograph Coverage Map</h2>
 	<p>Click the map to view nearby images (appear below the map). Also open the layer switcher 
-	(via the <img src="http://s1.geograph.org.uk/ol/img/layer-switcher-maximize.png" style="opacity:0.5;height:10px;width:10px"> icon) to try other layers.</p>
+	(via the <img src="{$static_host}/ol/img/layer-switcher-maximize.png" style="opacity:0.5;height:10px;width:10px"> icon) to try other layers.</p>
 </div>
 
 	<div id="map_message" style="width:800px; height:10px; position:relative;; left:0; margin-bottom:3px; padding:3px;"></div>
@@ -142,7 +142,7 @@ function clickEvent(e) {
             
             value.attrs.thumbnail = getGeographUrl(value.id, value.attrs.hash, 'small');
             
-    value.html = '<div class="thumb">Dist: '+roundNumber(value.attrs['@geodist']/1000,1)+'km<br><a href="http://www.geograph.org.uk/photo/'+value.id+'" title="'+value.attrs.grid_reference+' : '+value.attrs.title+' by '+value.attrs.realname+'"><img src="'+value.attrs.thumbnail+'"/></a></div>';
+    value.html = '<div class="thumb">Dist: '+roundNumber(value.attrs['@geodist']/1000,1)+'km<br><a href="/photo/'+value.id+'" title="'+value.attrs.grid_reference+' : '+value.attrs.title+' by '+value.attrs.realname+'"><img src="'+value.attrs.thumbnail+'"/></a></div>';
             
             $('#thumbs').append(value.html);            
           });
@@ -194,14 +194,14 @@ function updateCoverage(event) {
 
 		sentBounds = bounds.toString();
 		if (document.theForm.resolution[1].checked) {
-			url = "http://www.geograph.org.uk/stuff/squares-centi.json.php?olbounds="+sentBounds;
+			url = "/stuff/squares-centi.json.php?olbounds="+sentBounds;
 			var labelSize = 8;
 
 			if (txt = getTextQuery()) {
 				url = url + '&q='+encodeURIComponent(txt);
 			}
 		} else {
-			url = "http://www.geograph.org.uk/stuff/squares.json.php?olbounds="+sentBounds;
+			url = "/stuff/squares.json.php?olbounds="+sentBounds;
 			var labelSize = 12;
 		}
 

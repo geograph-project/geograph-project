@@ -10,7 +10,7 @@
     a { border:1px solid gray; background-color:#eeeeee; padding:2px; color:black; text-decoration:none}
   </style>
 
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
   <script type="text/javascript" src="/js/jquery.smart_autocomplete.js"></script>
   
   <script type="text/javascript">

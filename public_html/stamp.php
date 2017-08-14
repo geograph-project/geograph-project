@@ -72,9 +72,9 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 		<h2>Get CC-Stamped image</h2>
 		<p>This tool produces a .jpg file for any Geograph image, which includes the Create Commons reference and attribution required - to make it easy to comply with the CC reuse requirements. You can download and use the resultant image in your project, knowing that suitable attribution is preserved.</p>
 
-		<form action="http://t0.geograph.org.uk/stamp.php" method="get" target="targetbox" onsubmit="document.getElementById('show').style.display='';">
+		<form action="<? echo $CONF['TILE_HOST']; ?>/stamp.php" method="get" target="targetbox" onsubmit="document.getElementById('show').style.display='';">
 		<noscript>
-			<form action="http://t0.geograph.org.uk/stamp.php" method="get">
+			<form action="<? echo $CONF['TILE_HOST']; ?>/stamp.php" method="get">
 		</noscript>
 
 			Image ID: <input type=text name=id value="<? echo @htmlentities($_GET['id']); ?>"/> &nbsp;
@@ -131,7 +131,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 		</form>
 		<div <? if (empty($_GET['id']) || empty($_GET['title'])) { ?>style="display:none"<? } ?> id="show">
 		Right click the image and select "Save image as" (exact wording varies by browser)<br/><br/>
-		<iframe src="<? echo (empty($_GET['id']) || empty($_GET['title']))?"about:blank":("http://t0.geograph.org.uk/stamp.php?".htmlentities($_SERVER['QUERY_STRING'])); ?>" width=650 height=650 name="targetbox" frameborder=0></iframe>
+		<iframe src="<? echo (empty($_GET['id']) || empty($_GET['title']))?"about:blank":($CONF['TILE_HOST']."/stamp.php?".htmlentities($_SERVER['QUERY_STRING'])); ?>" width=650 height=650 name="targetbox" frameborder=0></iframe>
 		</div>
 	<?
 	$smarty->display("_std_end.tpl",'test');

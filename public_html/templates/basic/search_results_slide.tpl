@@ -91,7 +91,7 @@ if (window.location.hash == '#autonext') {
 }
 {/literal}
  //]]></script>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
 
  		<div style="text-align:center;padding-top:40px"><a href="/search.php?i={$i}{if $engine->currentPage > 1}&amp;page={$engine->currentPage}{/if}&amp;displayclass=slidebig">Full Page Slide-Show</a></div>
  	<br style="clear:both"/>

@@ -74,8 +74,8 @@ div:target {
 		</td>
 
 		<td>
-			<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1"><img 
-                            src="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}" width=250></a>
+			<a href="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1"><img 
+                            src="{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}" width=250></a>
 		</td>
 	</tr>
 
@@ -83,7 +83,7 @@ div:target {
 	<tr>
 		<td colspan=2 align=right class="previewHover">
 			Actual size:
-			<div style='background-image:url("http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}")'>
+			<div style='background-image:url("{$tile_host}/stamp.php?id={$image->gridimage_id}{if $image->cached_size.0 > 500}&title=on{/if}&gravity=SouthEast&hash={$image->_getAntiLeechHash()}")'>
 			</div>
 		</td>
 	</tr>
@@ -127,7 +127,7 @@ div:target {
 
                 <td align=center>
 			or quick download of a<br>
-			 <a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=1{if $image->original_width > 800}&pointsize=24{/if}&download=1" class="sized"><b>stamped</b> <b>{$image->original_width}</b>x<b>{$image->original_height}</b> image</a><br>
+			 <a href="{$tile_host}/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=1{if $image->original_width > 800}&pointsize=24{/if}&download=1" class="sized"><b>stamped</b> <b>{$image->original_width}</b>x<b>{$image->original_height}</b> image</a><br>
 			(<a href="/reuse.php?id={$image->gridimage_id}&amp;download={$image->_getAntiLeechHash()}&amp;size=original">unstamped</a>)
                 </td>
         </tr>

@@ -31,7 +31,7 @@ td.caption { font-size:0.7em}
         }
 
 </style>{/literal}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
 <!--script src="/js/jquery.min.js" type="text/javascript"></script-->
 <script src="{"/mapper/geotools2.js"|revision}" type="text/javascript"></script>
 <script src="{"/js/geobrowser.js"|revision}" type="text/javascript"></script>

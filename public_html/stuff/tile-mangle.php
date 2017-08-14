@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: staticpage.php 5779 2009-09-12 09:31:23Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -29,9 +29,9 @@ if (!empty($_GET['r'])) {
 
 
 	print "<p>Copy/Paste all this into a forum thread..</p>";
-	print "<p><input size=110 value=\"[img]http://www.geograph.org.uk/stuff/tile-mangle.php?t=".$token->getToken()."&amp;/.jpg[/img]\"></p>";
+	print "<p><input size=110 value=\"[img]{$CONF['CONTENT_HOST']}/stuff/tile-mangle.php?t=".$token->getToken()."&amp;/.jpg[/img]\"></p>";
 	exit;
-	
+
 } elseif (!empty($_GET['t'])) {
 	$token=new Token;
 
@@ -46,15 +46,13 @@ if (!empty($_GET['r'])) {
 }
 
 
-$mapurl = 'http://t0.geograph.org.uk/tile.php?r='.$r;
-
+$mapurl = $CONF['TILE_HOST'].'/tile.php?r='.$r;
 
 
 customCacheControl(filemtime(__FILE__),$_SERVER['QUERY_STRING']);
 customExpiresHeader(86400*3,true);
 
 header("Content-Type: image/png");
-	
 
 $str =& $memcache->name_get('tile',$mapurl);
 
@@ -79,16 +77,12 @@ if (empty($str)) {
 		ob_start();
 		imagepng($im3);
 		$str = ob_get_clean();
-		
+
 		$memcache->name_set('tile',$mapurl,$str,$memcache->compress,$memcache->period_long);
-
-
 	}
 }
 
 print $str;
-
-
 
 
 

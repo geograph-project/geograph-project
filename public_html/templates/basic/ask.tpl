@@ -58,6 +58,6 @@
     </tr>
 </table>
 </form>
-     <div style="text-align:right"><a id="powered_by" target="_blank" href="http://osticket.com"><img src="http://s0.geograph.org.uk/support/images/poweredby.jpg" width="126" height="23" alt="Powered by osTicket"></a></div>
+     <div style="text-align:right"><a id="powered_by" target="_blank" href="http://osticket.com"><img src="https://company.geograph.org.uk/support/assets/default/images/poweredby.png" width="126" height="23" alt="Powered by osTicket"></a></div>
 
 {include file="_std_end.tpl"}

@@ -373,12 +373,12 @@ $smarty->display($template,$cacheid);
 					$token=new Token;
 					$token->setValue("id", intval($g_id));
 					$token->setValue("large",1);
-					$full = "http://t0.geograph.org.uk/stuff/captcha.php?token=".$token->getToken()."&amp;html=1";
+					$full = $CONF['TILE_HOST']."/stuff/captcha.php?token=".$token->getToken()."&amp;html=1";
 
 					$token=new Token;
 					$token->setValue("id", intval($g_id));
 					$token->setValue("small",1);
-					$small = "http://t0.geograph.org.uk/stuff/captcha.php?token=".$token->getToken()."&amp;/small.jpg";
+					$small = $CONF['TILE_HOST']."/stuff/captcha.php?token=".$token->getToken()."&amp;/small.jpg";
 
 					$input = str_replace("[[[$g_id]]]","<a href=\"$full\"><img src=\"$small\"/></a>",$input);
 				}

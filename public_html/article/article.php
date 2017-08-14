@@ -447,7 +447,7 @@ function smarty_function_articletext($input) {
 	$replacement[]='<iframe src="/stuff/fade.php?1=\1&amp;2=\2" width="670" height="700"></iframe>';
 
 	$pattern[]='/\[youtube=([\w-]+)\]/';
-	$replacement[]='<object width="480" height="385"><param name="movie" value="http://www.youtube-nocookie.com/v/\1&hl=en_US&fs=1&rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube-nocookie.com/v/\1&hl=en_US&fs=1&rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object>';
+	$replacement[]='<object width="480" height="385"><param name="movie" value="https://www.youtube-nocookie.com/v/\1&hl=en_US&fs=1&rel=0"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="https://www.youtube-nocookie.com/v/\1&hl=en_US&fs=1&rel=0" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object>';
 
 	$pattern[]='/\[zoomit=(\w+)\]/';
 	$replacement[]='<script src="http://zoom.it/\1.js?width=auto&height=400px"></script>';

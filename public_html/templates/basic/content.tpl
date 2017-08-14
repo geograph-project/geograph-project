@@ -103,11 +103,11 @@ ul.content b {
 	</div>
 	{if $item.images > 2 && ($item.source == 'themed' || $item.source == 'gallery' || $item.source == 'snippet' || $item.source == 'article')}
 		<div style="position:relative;float:right;margin-right:10px">
-			<a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="http://s1.geograph.org.uk/templates/basic/img/cameraicon.gif" border="0"/></a>
+			<a href="/browser/#/content_title={$item.title|escape:'url'}/content_id={$item.content_id}" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0"/></a>
 		</div>
 	{elseif $item.source == 'user' && $item.images > 2}
 		<div style="position:relative;float:right;margin-right:10px">
-			<a href="/browser/#/realname+%22{$item.title|escape:'url'}%22" title="View Images"><img src="http://s1.geograph.org.uk/templates/basic/img/cameraicon.gif" border="0"/></a>
+			<a href="/browser/#/realname+%22{$item.title|escape:'url'}%22" title="View Images"><img src="{$static_host}/templates/basic/img/cameraicon.gif" border="0"/></a>
 		</div>
 	{/if}
 	<b><a href="{$item.url}">{$item.title|escape:'html'}</a></b><br/>

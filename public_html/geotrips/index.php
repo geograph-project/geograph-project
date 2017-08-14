@@ -240,7 +240,7 @@ come in.  The list below includes all trips uploaded in the last 24 hours.
         $thumb='/photos/error120.jpg';
       }
     $mmmyy=explode('-',$trks[$i]['date']);
-    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"http://s1.geograph.org.uk/img/external.png\" /></span>";
+    $cred="<span style=\"font-size:0.6em\">Image &copy; <a href=\"/profile/{$trks[$i]['uid']}\">".htmlentities($trks[$i]['user'])."</a> and available under a <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons licence</a><img alt=\"external link\" title=\"\" src=\"{$CONF['STATIC_HOST']}/img/external.png\" /></span>";
     print('<div class="inner">');
     print("<div class=\"inner flt_r\" style=\"max-width:213px\"><img src=\"$thumb\" alt=\"\" title=\"$title\" /><br />$cred</div>");
     print("<b>$title</b><br />");

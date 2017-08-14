@@ -51,7 +51,7 @@
 {/if}
 
 
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 {if $src == 'data-src'}
 	<script src="{$static_host}/js/lazy.v4.js" type="text/javascript"></script>
 {/if}

@@ -52,7 +52,7 @@
 Tip: Drag either of the dark gray boxes, to get a confortable layout.
 
 {literal}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 	<script src="/js/ui/jquery.ui.core.js"></script>
 	<script src="/js/ui/jquery.ui.widget.js"></script>
 	<script src="/js/ui/jquery.ui.mouse.js"></script>
