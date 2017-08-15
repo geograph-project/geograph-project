@@ -863,7 +863,7 @@ class RasterMap
 	{
 		global $CONF;
 		if ($this->service == 'OSM-Static-Dev') {
-			return 'Subject Location: <img src="http://data.geograph.org.uk/symbols/27710.png" width="12" height="12"/>, Camera Location: <img src="http://data.geograph.org.uk/symbols/8513.png" width="12" height="12"/><br/>
+			return 'Subject Location: <img src="https://data.geograph.org.uk/symbols/27710.png" width="12" height="12"/>, Camera Location: <img src="https://data.geograph.org.uk/symbols/8513.png" width="12" height="12"/><br/>
 			&copy; OpenStreetMap and contributors, <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.0/" class="nowrap" about="">CC-BY-SA</a>';
 		} elseif ($this->service == 'OSOS') {
 			if ($this->issubmit) {

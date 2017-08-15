@@ -151,7 +151,7 @@
 
 
 <script type="text/javascript"
-    src="http://maps.googleapis.com/maps/api/js?sensor=false">
+    src="https://maps.googleapis.com/maps/api/js?sensor=false">
 </script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>

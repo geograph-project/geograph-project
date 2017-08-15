@@ -7,8 +7,8 @@
                 author_affiliation="Developer"
                 author_email="geograph@barryhunter.co.uk"
                 author_link="http://www.nearby.org.uk/blog/"
-                screenshot="http://www.geograph.org.uk/img/gmapplet0.png"
-                thumbnail="http://www.geograph.org.uk/img/gmapplet0-thumb.png"
+                screenshot="https://s1.geograph.org.uk/img/gmapplet0.png"
+                thumbnail="https://s1.geograph.org.uk/img/gmapplet0-thumb.png"
                 height="150">
   <Require feature="sharedmap"/>
   <Require feature="analytics"/>
@@ -16,7 +16,7 @@
 <Content type="html"><![CDATA[
 
 <table bgcolor="#000066" border="0" width="100%"><tr bgcolor="#000066"><td bgcolor="#000066">
-<a href="http://www.geograph.org.uk/"><img src="http://www.geograph.org.uk/templates/basic/img/logo.gif" height="74" width="257" border="0"/></a>
+<a href="http://www.geograph.org.uk/"><img src="https://s1.geograph.org.uk/templates/basic/img/logo.gif" height="74" width="257" border="0"/></a>
 </td></tr></table>
 
 <div style="font-size:0.8em">
