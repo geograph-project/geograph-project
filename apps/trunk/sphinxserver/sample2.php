@@ -287,14 +287,14 @@ if (!empty($_GET['bounds'])) {
 
 
 	if (isset($_GET['callback'])) {
-		$callback=preg_replace('/[^\w$]+/','',$_GET['callback']);
+		$callback=preg_replace('/[^\w\.$]+/','',$_GET['callback']);
 		if (empty($callback)) {
 			$callback = "geograph_callback";
 		}
 
 		header('Content-type: application/x-javascript');
 
-		print "{$callback}(";
+		print "/**/{$callback}(";
 	} else {
 		header('Access-Control-Allow-Origin: *');
 		header('Content-type: application/json');

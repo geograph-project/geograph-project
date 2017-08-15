@@ -65,7 +65,7 @@ summarize($sql);
 
 print "Drain from Any-HD where on multiple and over-replicated\n";
 $sql = write_drain_task('%h_',"replicas RLIKE 'h[[:digit:]].*h[[:digit:]]' AND replica_count > replica_target",
-        null,true,'shard'debug);
+        null,true,'shard',$debug);
 summarize($sql);
 
 print "Drain from Any-SSD where on multiple and over-replicated\n";
