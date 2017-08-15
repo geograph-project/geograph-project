@@ -19,7 +19,7 @@
 		<td width="340" height="210" valign="top">
 			{if $l eq 2}
 			<div style="float:left;width:59px;height:210px">
-				<img src="http://data.geograph.org.uk/cards/.rotated_redrawn_geograph_logo.jpg" width="59" height="210">
+				<img src="https://data.geograph.org.uk/cards/.rotated_redrawn_geograph_logo.jpg" width="59" height="210">
 			</div>
 			{else}
 			<div style="background-color:#000066; text-align:center;">

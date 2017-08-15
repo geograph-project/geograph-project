@@ -86,7 +86,7 @@
     </ul>
     </li>
     <li>Great Britain 1:50 000 Scale Colour Raster Mapping (Same as paper based Landranger&trade; product). &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616. Provided as part of Sponsorship deal.</li>
-    <li>Maps for Ireland and also during the search using the {external href="http://www.google.com/apis/maps/" text="Google Maps API"}.</li>
+    <li>Maps for Ireland and also during the search using the {external href="https://developers.google.com/maps/web/" text="Google Maps API"}.</li>
     <li>Selected map extracts are from the {external href="http://www.openstreetmap.org/" text="OpenStreetMap project"}, via the {external href="http://www.gravitystorm.co.uk/shine/cycle-info/" text="Cycle Map"} rendering.</li>
     <li>UK Unit Postcodes, from OS OpenData : <i>Contains Royal Mail data &copy Royal mail copyright and database right 2010.</i></li>
     <li>{external href="https://www.ceh.ac.uk/services/land-cover-map-2015" text="Landcover Classification"}: <i>LCM2015 &copy; and database right NERC (CEH) 2017. All rights reserved. Contains Ordnance Survey data &copy; Crown copyright and database right 2007.</i></li>

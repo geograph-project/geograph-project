@@ -258,7 +258,7 @@ h4.title {
 				<input type="submit" name="sa" value="Google Custom Search" />
 				<input type="hidden" name="cof" value="FORID:0" />
 			</form>
-			<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=searchbox_012385187440385394957%3Abpr_ubkvuy4"></script>
+			<script type="text/javascript" src="https://www.google.com/coop/cse/brand?form=searchbox_012385187440385394957%3Abpr_ubkvuy4"></script>
 		<!-- Google CSE Search Box Ends -->
 
 		<h4 class="title">Yahoo search</sup></h4>
