@@ -44,7 +44,7 @@ if (empty($_GET['multi']) && isset($_SERVER['HTTP_X_PSS_LOOP']) && $_SERVER['HTT
 //you must be logged in to submit images
 $USER->mustHavePerm("basic");
 
-$smarty->assign('extra_meta','<link rel="dns-prefetch" href="http://osopenspacepro.ordnancesurvey.co.uk/">');
+$smarty->assign('extra_meta','<link rel="dns-prefetch" href="https://osopenspacepro.ordnancesurvey.co.uk/">');
 
 $template = 'submit2.tpl';
 

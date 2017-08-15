@@ -522,7 +522,7 @@ class RasterMap
 			return "<script src=\"//maps.googleapis.com/maps/api/js?sensor=false\" type=\"text/javascript\"></script>";
 		} elseif ($this->service == 'OSOS') {
 			if (strpos($CONF['raster_service'],'OSOSPro') !== FALSE) {
-				return "<script src=\"http://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
+				return "<script src=\"https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
 			} else {
 				return "<script src=\"http://openspace.ordnancesurvey.co.uk/osmapapi/openspace.js?key={$CONF['OS_OpenSpace_Licence']}\" type=\"text/javascript\"></script>";
 			}

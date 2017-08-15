@@ -79,7 +79,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 ?>
 
-<script src="http://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3&debug=true" type="text/javascript"></script>
+<script src="https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3&debug=true" type="text/javascript"></script>
 
 <?php
   $bbox=explode(' ',$trk['bbox']);

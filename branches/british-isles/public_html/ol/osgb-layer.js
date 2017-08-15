@@ -87,10 +87,10 @@ OpenLayers.Control.OsLogo = OpenLayers.Class(OpenLayers.Control, {
 
 OpenLayers.Layer.OsOpenSpaceLayer = OpenLayers.Class(OpenLayers.Layer.WMS, {
 
-    OSWmsServer: "http://osopenspacepro.ordnancesurvey.co.uk/osmapapi/ts", // base WMS URL of OS OpenSpace Pro tile server
+    OSWmsServer: "https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/ts", // base WMS URL of OS OpenSpace Pro tile server
 
     // logoUrl, to comply with the OpenSpace TOU, an OpenLayers.Control.OsLogo should be added to the map (or the logo be otherwise displayed)
-    OSLogoUrl: "http://osopenspacepro.ordnancesurvey.co.uk/osmapapi/img_versions/img_1.3/OS/poweredby.png",  // the logo is styled with the class olControlOsLogo 
+    OSLogoUrl: "https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/img_versions/img_1.3/OS/poweredby.png",  // the logo is styled with the class olControlOsLogo 
 
     initialize: function (options) {
         OpenLayers.Layer.WMS.prototype.initialize.apply(
