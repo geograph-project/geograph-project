@@ -90,7 +90,7 @@ foreach ($locations as $lon => $row) {
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<link rel="stylesheet" href="./css/style.css" type="text/css" />
 	<script type="text/JavaScript" src="/rounded_corners_lite.inc.js"></script>
-    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAw3BrxANqPQrDF3i-BIABYxTrrtw2mV-obTJq2QiTqv3c8Yk79xThFjUo4a_G8K3n-lgp5AihIg3I7g"
+    <script src="https://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAw3BrxANqPQrDF3i-BIABYxTrrtw2mV-obTJq2QiTqv3c8Yk79xThFjUo4a_G8K3n-lgp5AihIg3I7g"
       type="text/javascript"></script>
     <script type="text/javascript">
     //<![CDATA[
@@ -139,7 +139,7 @@ echo implode("\n",$markers);
 			marker.myImage = 'http://www.nearby.org.uk/images/mapIcons/marker'+count+'.png';
 		} else {
 			var marker = new GMarker(point, {clickable: Clickable});
-			marker.myImage = 'http://maps.google.com/intl/en_ALL/mapfiles/ms/micons/red.png';
+			marker.myImage = 'https://maps.google.com/intl/en_ALL/mapfiles/ms/micons/red.png';
 		}
 
 		if (html.length > 0) {
@@ -211,7 +211,7 @@ if (file_exists("rss/rss.xml"))
   </div>
   
   <div id="logo">
-  <a title="View Geograph British Isles website" href="http://www.geograph.org.uk"><img align="right" src="http://s0.geograph.org.uk/templates/basic/img/logo.gif" width="257" height="74" border="0"></a>
+  <a title="View Geograph British Isles website" href="http://www.geograph.org.uk"><img align="right" src="https://s1.geograph.org.uk/templates/basic/img/logo.gif" width="257" height="74" border="0"></a>
   </div>
   
 <br style="clear:both"/>

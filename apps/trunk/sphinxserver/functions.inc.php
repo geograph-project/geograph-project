@@ -9,10 +9,10 @@ function getGeographUrl($gridimage_id,$hash,$size = 'small') {
 			$yz=sprintf("%02d", floor($gridimage_id/1000000));
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}";
 		}
-      $server =  "http://s".($gridimage_id%4).".geograph.org.uk";
+      $server =  "https://s".($gridimage_id%4).".geograph.org.uk";
 
       switch($size) {
-	      case 'full': return "http://www.geograph.org.uk$fullpath.jpg"; break;
+	      case 'full': return "https://s0.geograph.org.uk$fullpath.jpg"; break;
 	      case 'med': return "$server{$fullpath}_213x160.jpg"; break;
 	      case 'small':
 	      default: return "$server{$fullpath}_120x120.jpg";

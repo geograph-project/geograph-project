@@ -118,7 +118,7 @@ if (file_exists("rss/rss.xml"))
   </div>
   
   <div id="logo">
-  <a title="View Geograph British Isles website" href="http://www.geograph.org.uk"><img align="right" src="http://s0.geograph.org.uk/templates/basic/img/logo.gif" width="257" height="74" border="0"></a>
+  <a title="View Geograph British Isles website" href="http://www.geograph.org.uk"><img align="right" src="https://s1.geograph.org.uk/templates/basic/img/logo.gif" width="257" height="74" border="0"></a>
   </div>
   
 <br style="clear:both"/>
@@ -162,7 +162,7 @@ huge bandwidth bills.</p>
 
 <div style="width:90%">
 <div class="please">
-	<img src="http://s0.geograph.org.uk/templates/basic/img/icon_alert.gif" style="float:left">
+	<img src="https://s1.geograph.org.uk/templates/basic/img/icon_alert.gif" style="float:left">
 <b>Please continue to seed these torrents for as long as possible even after you have<br/>
  finished downloading</b> - <i>even a small amount of bandwidth can help</i>.<br/><br/>
 If nobody is willing to help with long term seeding, <br/>then offering this service is unsustainable. <a href="http://www.nearby.org.uk/blog/2009/02/06/how-to-promote-long-term-seeding/">read why</a>.
