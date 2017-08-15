@@ -42,7 +42,7 @@ function initHover() {
 
 function displayHover(link,event) {
 	if ($(window).height() > 540 && $(window).width() > 540 && (m = link.match(/photo\/(\d+)/))) {
-		url = "http://t0.geograph.org.uk/tile-info.php?id="+m[1];
+		url = "https://t0.geograph.org.uk/tile-info.php?id="+m[1];
 	} else {
 		return false;
 	}
@@ -53,7 +53,7 @@ function displayHover(link,event) {
 		$('#hovercard').load(function() { $(this).show(); } );
 
 	} else {
-		//http://www.ozzu.com/programming-forum/ignoring-iframes-with-javascript-history-t67189.html
+		//https://www.ozzu.com/programming-forum/ignoring-iframes-with-javascript-history-t67189.html
 		var w = $('#hovercard').get(0);
 		if (w.contentWindow && w.contentWindow.location && w.contentWindow.location.replace) {
 			w.contentWindow.location.replace(url);
