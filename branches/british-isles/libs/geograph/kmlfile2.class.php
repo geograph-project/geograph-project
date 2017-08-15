@@ -88,7 +88,7 @@ class kmlPlacemark_Photo extends kmlPlacemark {
 		$IconStyle = $Style->addChild('IconStyle');
 		$IconStyle->setItem('scale',0.7);
 		$Icon = $IconStyle->addChild('Icon');
-		$Icon->setItem('href',"http://maps.google.com/mapfiles/kml/pal4/icon46.png");
+		$Icon->setItem('href',"https://maps.google.com/mapfiles/kml/pal4/icon46.png");
 		$LabelStyle = $Style->addChild('LabelStyle');
 		$LabelStyle->setItem('scale',0);
 

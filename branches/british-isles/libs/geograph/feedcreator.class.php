@@ -1356,7 +1356,7 @@ class KMLCreator extends FeedCreator {
 		$feed.= "<Style id=\"defaultIcon\">
 	<IconStyle>
 		<Icon>
-			<href>http://maps.google.com/mapfiles/kml/icon46.png</href>
+			<href>https://maps.google.com/mapfiles/kml/icon46.png</href>
 		</Icon>
 	</IconStyle>
 </Style>";
