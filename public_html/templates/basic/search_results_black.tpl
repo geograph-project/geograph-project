@@ -51,7 +51,7 @@
 <script type="text/javascript">
         function showMap(geo) {
                 bits = geo.split(/ /);
-                url = "http://maps.google.com/maps/api/staticmap?markers=size:med|"+bits[0]+","+bits[1]+"&zoom=7&size=200x200&sensor=false&style=feature:administrative.country%7Celement:labels%7Cvisibility:off";
+                url = "https://maps.google.com/maps/api/staticmap?markers=size:med|"+bits[0]+","+bits[1]+"&zoom=7&size=200x200&sensor=false&style=feature:administrative.country%7Celement:labels%7Cvisibility:off";
 
                 document.images['map'].src= url;
                 document.getElementById("mapdiv").style.display = '';
