@@ -124,7 +124,7 @@ div.thumbs a:hover {
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js" type="text/javascript"></script>
 {if $src == 'data-src'}
-	<script src="{$static_host}/js/lazy.v7.js" type="text/javascript"></script>
+	<script src="{"/js/lazy.js"|revision}" type="text/javascript"></script>
 {/if}
 <script src="/preview.js.php?d=preview" type="text/javascript"></script>
 

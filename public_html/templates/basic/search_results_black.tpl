@@ -70,7 +70,8 @@ jQuery(document).ready( function() {
 </script>
 {/literal}
 
-<script src="{$static_host}/js/lazy.v7.js" type="text/javascript"></script>
+
+<script src="{"/js/lazy.js"|revision}" type="text/javascript"></script>
 <div id="mapdiv"><img src="{$static_host}/img/blank.gif" name="map"/></div>
 
 <table border="0" cellspacing="0" cellpadding="5">
