@@ -429,7 +429,7 @@ if (!empty($_GET['d'])) {
 
 		print "<br style=clear:both></div>";
 		if ($src == 'data-src')
-			print '<script src="'.$CONF['STATIC_HOST'].'/js/lazy.v4.js" type="text/javascript"></script>';
+			print '<script src="'.$CONF['STATIC_HOST'].'/js/lazy.v5.js" type="text/javascript"></script>';
 		print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
 
 #########################################
@@ -678,7 +678,7 @@ function vote_log(action,param,value) {
 	}
 
 	if ($src == 'data-src')
-		print '<script src="'.$CONF['STATIC_HOST'].'/js/lazy.v4.js" type="text/javascript"></script>';
+		print '<script src="'.$CONF['STATIC_HOST'].'/js/lazy.v5.js" type="text/javascript"></script>';
 	print '<script src="/preview.js.php" type="text/javascript"></script>';
 
 	$smarty->display('_std_end.tpl');
