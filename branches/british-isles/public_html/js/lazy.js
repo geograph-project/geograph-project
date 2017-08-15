@@ -23,7 +23,7 @@ $(function() {
 
 
 function initLazy() {
-        jQuery( 'img[data-src]' ).bind( 'scrollin', function() {
+        $( 'img[data-src]' ).bind( 'scrollin', function() {
                 var img = this, $img = jQuery(img);
 
                 $img.hide();
