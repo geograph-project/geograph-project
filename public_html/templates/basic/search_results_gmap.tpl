@@ -4,8 +4,8 @@
 	<div class="interestBox">
 	<p>This page is no longer able to display a map - please use a different display method.</p>
 	<p>However you may be able to display a map on {if $engine->currentPage > 1}
-{external href="http://maps.google.com/?q=`$self_host`/feed/results/`$i`/`$engine->currentPage`.kml" text="Google Maps"}.{else}
-{external href="http://maps.google.com/?q=`$self_host`/feed/results/`$i`.kml" text="Google Maps"}.{/if}</p>
+{external href="https://maps.google.com/?q=`$self_host`/feed/results/`$i`/`$engine->currentPage`.kml" text="Google Maps"}.{else}
+{external href="https://maps.google.com/?q=`$self_host`/feed/results/`$i`.kml" text="Google Maps"}.{/if}</p>
 	</div>
 
 {elseif $engine->resultCount}
@@ -115,7 +115,7 @@
 	{if $engine->results}
 	<p style="clear:both">Search took {$querytime|string_format:"%.2f"} secs, ( Page {$engine->pagesString()})
 	
-	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+	<script src="https://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
 	{/if}
 {else}
 	{include file="_search_noresults.tpl"}

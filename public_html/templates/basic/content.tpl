@@ -8,7 +8,7 @@
 {assign var="rss_url" value="/content/feed/recent.rss"}
 {include file="_std_begin.tpl"}
 
-<div style="float:right"><a href="./recent.php">Recent</a> <a href="./themes.php?v=1">Common Words</a> {external href="http://maps.google.co.uk/maps?q=http:%2F%2Fwww.geograph.org.uk%2Fcontent%2Ffeed%2Frecent.kml&amp;t=p" text="Map"} <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
+<div style="float:right"><a href="./recent.php">Recent</a> <a href="./themes.php?v=1">Common Words</a> <a title="RSS Feed for Geograph Content" href="/content/feed/recent.rss" class="xml-rss">RSS</a></div>
 
 
         {if $gridref}

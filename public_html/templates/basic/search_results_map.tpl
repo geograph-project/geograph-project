@@ -27,7 +27,7 @@
         <script src="{$static_host}/ol/nls-api.v2.js"></script>
         <script src="{$static_host}/ol/geograph-openlayers.v17.js"></script>
 	
-        <script src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
+        <script src="https://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
 
 {literal}
 <script type="text/javascript">

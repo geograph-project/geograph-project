@@ -92,7 +92,7 @@
 
 
 {if $future && $google_maps_api_key}
-	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
+	<script src="https://maps.google.com/maps?file=api&amp;v=2&amp;key={$google_maps_api_key}" type="text/javascript"></script>
 	
 	{literal}
 	<script type="text/javascript">
