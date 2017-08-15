@@ -264,10 +264,10 @@ function getGeographUrl(gridimage_id, hash, size) {
 	}
 	
 	switch(size) { 
-		case 'full': return "http://s0.geograph.org.uk"+fullpath+".jpg"; break; 
-		case 'med': return "http://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_213x160.jpg"; break; 
+		case 'full': return "https://s0.geograph.org.uk"+fullpath+".jpg"; break; 
+		case 'med': return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_213x160.jpg"; break; 
 		case 'small': 
-		default: return "http://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_120x120.jpg"; 
+		default: return "https://s"+(gridimage_id%4)+".geograph.org.uk"+fullpath+"_120x120.jpg"; 
 	}
 }
 function zeroFill(number, width) {
