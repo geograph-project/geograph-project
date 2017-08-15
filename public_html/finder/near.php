@@ -387,7 +387,7 @@ if (!empty($_GET['d']) && !empty($final)) {
 
 		print "<br style=clear:both></div>";
 		if ($src == 'data-src')
-			print '<script src="'.$CONF['STATIC_HOST'].'/js/lazy.v5.js" type="text/javascript"></script>';
+			print '<script src="'.$CONF['STATIC_HOST'].'/js/lazy.v7.js" type="text/javascript"></script>';
 		print '<script src="/preview.js.php?d=preview" type="text/javascript"></script>';
 
 
