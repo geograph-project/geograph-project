@@ -15,8 +15,8 @@ class GeographPage {
 			print  "<html>
 				<head>
 				<title>{$this->vars['page_title']}</title>
-				<script type=\"text/javascript\" src=\"http://s0.geograph.org.uk/js/geograph.v7217.js\"></script> 
-				<link rel=\"stylesheet\" type=\"text/css\" title=\"Monitor\" href=\"http://s0.geograph.org.uk/templates/basic/css/basic.v7290.css\" media=\"screen\" />
+				<script type=\"text/javascript\" src=\"https://s1.geograph.org.uk/js/geograph.js\"></script>
+				<link rel=\"stylesheet\" type=\"text/css\" title=\"Monitor\" href=\"https://s1.geograph.org.uk/templates/basic/css/basic.css\" media=\"screen\" />
 				</head>
 				<body>
 				<div class=\"content2\" id=\"maincontent_block\"><div id=\"maincontent\">
@@ -82,3 +82,4 @@ function GeographDatabaseConnection($allow_readonly = false) {
 	$class->readonly = false;
 	return $class;
 }
+
