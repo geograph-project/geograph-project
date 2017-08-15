@@ -427,7 +427,7 @@ function scrollIntoView(gridimage_id) {
 
 
         if ($src == 'data-src')
-                print '<script src="'.$CONF['STATIC_HOST'].'/js/lazynew.v1.js" type="text/javascript"></script>';
+                print '<script src="'.$CONF['STATIC_HOST'].'/js/lazynew.v6.js" type="text/javascript"></script>';
 
 
 $smarty->display('_std_end.tpl');
