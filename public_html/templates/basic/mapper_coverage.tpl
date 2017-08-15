@@ -59,7 +59,7 @@ var sentBounds = '';
 var myriads = new Array();
 var m;
 
-var endpoint = "http://api.geograph.org.uk/api-facet.php";
+var endpoint = "https://api.geograph.org.uk/api-facet.php";
 
 function loadMap() {
 	loadMapInner('map',true); //this does most things, EXCEPT center the map, and doesnt add any interaction. 
