@@ -78,7 +78,7 @@ if (!empty($str)) {
   <!--RSS feed via Geograph-->
   <link rel="alternate" type="application/rss+xml" title="Geo-Trips RSS" href="/content/syndicator.php?scope[]=trip" />
 
-<script src="http://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3" type="text/javascript"></script>
+<script src="https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3" type="text/javascript"></script>
 
 <script type="text/javascript">
   var osMap;
