@@ -30,7 +30,10 @@ var olmap = {
 };
 var tabletOrPhone = false;
 
-function loadMapInner() { //NOTE: does not center the map, the parent function will have to take care of that!
+function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, the parent function will have to take care of that!
+    if (typeof mapdiv === "undefined") {
+        mapdiv = 'map';
+    }
 
     if ((navigator.userAgent.indexOf('Android') != -1) ||
         (navigator.userAgent.indexOf('Opera Mobi') != -1) ||
@@ -77,7 +80,7 @@ function loadMapInner() { //NOTE: does not center the map, the parent function w
         { type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22 }
     );
 
-    olmap.layers['osm'] = new OpenLayers.Layer.OSM("OSM (OpenStreetMap)", null, {attribution:'<a href="http://www.openstreetmap.org/copyright">&copy OpenStreetMap contributors</a>'});
+    olmap.layers['osm'] = new OpenLayers.Layer.OSM("OSM (OpenStreetMap)", null, {attribution:'&copy; <a target="_parent" href="http://www.openstreetmap.org">OpenStreetMap</a> and contributors, under an <a target="_parent" href="http://www.openstreetmap.org/copyright">open license</a>'});
 
     olmap.layers['osm_cycle'] = new OpenLayers.Layer.OSM("OSM OpenCycleMap", ['http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png',
                                                       'http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png',
@@ -97,16 +100,16 @@ function loadMapInner() { //NOTE: does not center the map, the parent function w
     olmap.layers['bing'] = new OpenLayers.Layer.Bing({
         name: "Bing Road",
         type: "Road",
-        key: "AhwwUjiHWfAqm-dQiAhV1tJO82v-v5mU6osoxU3t1XKx-AlPyKzfBhKpTY81MKtJ"
+        key: "AkiS3CMQ80jmvWHvwbgtiNL-aiGij7xQsMrBvOIfv7BL43a4RKm7rKDvDhoL2SHe"
     });
 
     olmap.layers['bing_aerial'] = new OpenLayers.Layer.Bing({
         name: "Bing Aerial",
         type: "Aerial",
-        key: "AhwwUjiHWfAqm-dQiAhV1tJO82v-v5mU6osoxU3t1XKx-AlPyKzfBhKpTY81MKtJ"
+        key: "AkiS3CMQ80jmvWHvwbgtiNL-aiGij7xQsMrBvOIfv7BL43a4RKm7rKDvDhoL2SHe"
     });
 
-    olmap.map = new OpenLayers.Map('map', {
+    olmap.map = new OpenLayers.Map(mapdiv, {
         displayProjection: "EPSG:4326", //wgs84 - used for permalinks etc... 
         controls: [
 	    new OpenLayers.Control.KeyboardDefaults(),
@@ -117,10 +120,12 @@ function loadMapInner() { //NOTE: does not center the map, the parent function w
 	    new OpenLayers.Control.LayerSwitcher(),
             new OpenLayers.Control.Graticule({ visible: false, layerName: 'Lat/Long Grid' }), 
             new OpenLayers.Control.UKOSGraticule(),
-            new OpenLayers.Control.IrishGraticule(),
-	    new OpenLayers.Control.Permalink({anchor: true})
+            new OpenLayers.Control.IrishGraticule()
 	]
     });
+    if (!skippermalink) {
+        olmap.map.addControl(new OpenLayers.Control.Permalink({anchor: true}));
+    }
 
     if (!tabletOrPhone) {
         // UK/Irish Grid Ref + WGS84 Lat/Lon pointer pos if we have a mouse
@@ -130,7 +135,7 @@ function loadMapInner() { //NOTE: does not center the map, the parent function w
 
     // Even if you specify EPSG:4326 for these layers, if you add features / markers with code, you must transfrom them using olmap.map.getProjection() 
     // so probably best not to bother
-    olmap.layers['markers'] = new OpenLayers.Layer.Markers('Markers');
+    olmap.layers['markers'] = new OpenLayers.Layer.Markers('Photos');
 
     for(i in olmap.layers)
 	olmap.map.addLayer(olmap.layers[i]);
@@ -144,24 +149,44 @@ function loadMapInner() { //NOTE: does not center the map, the parent function w
 //
 ///////////////////////////////////////////////////////////////
 
+var qs = (function(a) {
+    if (a == "") return {};
+    var b = {};
+    for (var i = 0; i < a.length; ++i)
+    {
+        var p=a[i].split('=');
+        if (p.length != 2) continue;
+        b[decodeURIComponent(p[0])] = decodeURIComponent(p[1].replace(/\+/g, " "));
+    }
+    return b;
+})(window.location.search.substr(1).split('&'));
+
+
 function mapEvent(event) {
- if (!olmap.layers['markers'].getVisibility()) {
+  if (!olmap.layers['markers'].getVisibility()) {
     return;
- }
+  }
 
- var endpoint = "http://wac.3c13.edgecastcdn.net/803C13/jam/sample8.php";
-
+  var endpoint = "https://api.geograph.org.uk/api-facet.php";
 
   var data = {
      a: 1,
-     q: '',
-     limit: 40,
+     limit: (qs['dots'])?500:40,
      select: "title,realname,user_id,hash,grid_reference,takenday,wgs84_long,wgs84_lat"
   };
+
+  if (qs['q'])
+     data['q'] = qs['q'];
+
+  if (qs['filter[content_ids]'])
+     data['filter[content_ids]'] = qs['filter[content_ids]'];
 
   data.sort="sequence ASC"; data.rank=2;
 
   data.olbounds = olmap.map.getExtent().transform(olmap.map.getProjection(),"EPSG:4326").toString();
+
+  var baseIcon = new OpenLayers.Icon('https://s1.geograph.org.uk/img/dot_black.gif', new OpenLayers.Size(10, 10), new OpenLayers.Pixel(-5, -5), null);
+
 
   _call_cors_api(
     endpoint,
@@ -183,13 +208,17 @@ function mapEvent(event) {
           } else {
             value.attrs.thumbnail = getGeographUrl(value.id, value.attrs.hash, 'small');
 
-        var iconSize = new OpenLayers.Size(36, 36);
-        var iconOffset = new OpenLayers.Pixel(-19, -19);
-        var markerIcon = new OpenLayers.Icon(value.attrs.thumbnail, iconSize, iconOffset, null);
-
         var markerPoint = new OpenLayers.LonLat(rad2deg(parseFloat(value.attrs.wgs84_long)), rad2deg(parseFloat(value.attrs.wgs84_lat))).transform("EPSG:4326", olmap.map.getProjection());
 
-	olmap.images[value.id] = new OpenLayers.Marker(markerPoint, markerIcon);
+	if (qs['dots']) {
+		olmap.images[value.id] = new OpenLayers.Marker(markerPoint, baseIcon.clone());
+	} else {
+	        var iconSize = new OpenLayers.Size(36, 36);
+        	var iconOffset = new OpenLayers.Pixel(-19, -19);
+	        var markerIcon = new OpenLayers.Icon(value.attrs.thumbnail, iconSize, iconOffset, null);
+		olmap.images[value.id] = new OpenLayers.Marker(markerPoint, markerIcon);
+	}
+
 
         olmap.images[value.id].events.register('mousedown', olmap.images[value.id], function(evt) { 
 		//alert(this.icon.url); 
