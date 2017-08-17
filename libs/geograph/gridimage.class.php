@@ -462,7 +462,10 @@ class GridImage
 	function _getAntiLeechHash()
 	{
 		global $CONF;
-		return substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8);
+		static $cache = array();
+		if (!empty($cache[$this->gridimage_id]))
+			return $cache[$this->gridimage_id];
+		return($cache[$this->gridimage_id] = substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8));
 	}
 
 	function assignToSmarty($smarty) {
@@ -709,21 +712,21 @@ split_timer('gridimage'); //starts the timer
 					}
 				}
 			}
-			
+
 			$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,"
-				SELECT CONCAT('/stuff/post.php?id=',post_id) AS url,topic_title AS title,'Grouping' AS `type` 
+				SELECT CONCAT('/stuff/post.php?id=',post_id) AS url,topic_title AS title,'Grouping' AS `type`
 				FROM gridimage_post gp
-					INNER JOIN gridimage_post_highlight h USING (post_id) 
+					INNER JOIN gridimage_post_highlight h USING (post_id)
 					INNER JOIN geobb_topics USING (topic_id)
-				WHERE gp.gridimage_id = {$this->gridimage_id} 
+				WHERE gp.gridimage_id = {$this->gridimage_id}
 				ORDER BY post_id DESC"));
-			
-		
+
 			//todo -experimental - might be removed...
 			if ($this->collections += $db->CacheGetAll(3600*30,"
-				SELECT '' AS url,label AS title,'Automatic Cluster' AS `type` 
-				FROM gridimage_group 
-				WHERE gridimage_id = {$this->gridimage_id} 
+				SELECT '' AS url,label AS title,'Automatic Cluster' AS `type`
+				FROM gridimage_group
+				WHERE gridimage_id = {$this->gridimage_id}
+				AND label != 'Other Topics'
 				ORDER BY score DESC")) {
 				foreach ($this->collections as $i => $row) {
 					if (empty($row['url']) && !empty($row['title'])) {
@@ -734,23 +737,22 @@ split_timer('gridimage'); //starts the timer
 
 			//TODO - need a 'update' mechanism for this table.
 			$this->collections = array_merge($this->collections,$db->CacheGetAll(3600*6,$sql = "
-				SELECT CONCAT('/photo/',from_gridimage_id) AS url, title, 'Other Photo' AS `type` 
+				SELECT CONCAT('/photo/',from_gridimage_id) AS url, title, 'Other Photo' AS `type`
 				FROM gridimage_backlink ba
-					INNER JOIN gridimage_search gi ON (from_gridimage_id = gi.gridimage_id) 
+					INNER JOIN gridimage_search gi ON (from_gridimage_id = gi.gridimage_id)
 				WHERE ba.gridimage_id = {$this->gridimage_id}"));
 
-			$this->collections_count = count($this->collections);
-			
 			if (!empty($this->imageclass))
 				$this->canonical = $db->getOne("SELECT canonical FROM category_canonical WHERE imageclass=".$db->Quote($this->imageclass));
-			
+		}
+
+		$this->collections_count = count($this->collections);
+
 split_timer('gridimage','loadCollections',$this->gridimage_id); //logs the wall time
 
-		}
-	}	
-	
-	
-	
+	}
+
+
 	/**
 	* get a list of tickers for this image
 	*/
@@ -867,10 +869,6 @@ split_timer('gridimage','storeImage',$this->gridimage_id.$suffix); //logs the wa
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}{$suffix}.jpg";
 		}
 
-		if (!$returntotalpath && !file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath) && file_exists($_SERVER['DOCUMENT_ROOT'].'/internal-jam'.$fullpath)) {
-			$fullpath='/internal-jam'.$fullpath;
-		}
-
 		if ($check_exists && !file_exists($_SERVER['DOCUMENT_ROOT'].$fullpath))
 			$fullpath="/photos/error.jpg";
 
@@ -913,7 +911,7 @@ split_timer('gridimage'); //starts the timer
 			$fullpath="/geophotos/$yz/$ab/$cd/{$abcdef}_{$hash}.jpg";
 		}
 		
-		if (empty($check_exists)) {
+		if ($CONF['template'] == 'archive' || empty($check_exists)) {
 			if ($returntotalpath)
 				$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
@@ -1058,7 +1056,7 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 	/**
 	* returns HTML img tag to display this image at full size
 	*/
-	function getFull($returntotalpath = true)
+	function getFull($returntotalpath = true, $linkoriginal = false)
 	{
 		global $CONF;
 
@@ -1072,6 +1070,10 @@ split_timer('gridimage','_getFullSize-'.$src,$this->gridimage_id); //logs the wa
 			$fullpath=str_replace('1','0',$CONF['STATIC_HOST']).$fullpath;
 
 		$html="<img alt=\"$title\" src=\"$fullpath\" {$size[3]}/>";
+
+		if (!empty($this->original_width) && $linkoriginal && $this->user_id == 3) {
+			$html = "<a href=\"{$this->_getOriginalpath(false,true)}\">$html</a>";
+		}
 
 		return $html;
 	}
@@ -1400,8 +1402,12 @@ split_timer('gridimage'); //starts the timer
                         $size = $db->getRow("select width,height from gridimage_thumbsize where gridimage_id = {$this->gridimage_id} and maxw = $maxw and maxh = $maxh");
                         $db->SetFetchMode($prev_fetch_mode);
 
-			if (!empty($size[1]))
+			if (!empty($size[1])) {
 				$size[3] = "width=\"{$size[0]}\" height=\"{$size[1]}\"";
+
+	                        //fails quickly if not using memcached!
+	                        $memcache->name_set('is',$mkey,$size,$memcache->compress,$memcache->period_long*4);
+			}
 		}
 
 		if ($size) {
