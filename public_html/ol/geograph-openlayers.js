@@ -112,15 +112,15 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
     if (typeof NLSTileUrlOSi === "function") { 
         // Define the XYZ-based layer for NLS Map
         OpenLayers.Layer.NLSi = OpenLayers.Class(OpenLayers.Layer.XYZ, {
-                name: "NLS Maps API",
+                name: "NLS Maps API Ireland",
                 attribution: 'Historical maps from <a href="http://geo.nls.uk/maps/api/" target="_blank">NLS Maps API<\/a>',
                 getURL: NLSTileUrlOSi,
                 sphericalMercator: true,
                 transitionEffect: 'resize',
-                CLASS_NAME: "OpenLayers.Layer.NLS"
+                CLASS_NAME: "OpenLayers.Layer.NLSi"
         });
 
-	olmap.layers['nlsi'] = new OpenLayers.Layer.NLS( "OS Historical Ireland");
+	olmap.layers['nlsi'] = new OpenLayers.Layer.NLSi( "OS Historical Ireland");
     }
 
     olmap.map = new OpenLayers.Map(mapdiv, {
