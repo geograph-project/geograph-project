@@ -257,6 +257,7 @@ if ($image->isValid())
 	}
 
 	$smarty->assign('maincontentclass', 'content_photo'.$style);
+	$smarty->assign('tile_host', $CONF['TILE_HOST']);
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{

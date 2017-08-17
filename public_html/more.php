@@ -54,6 +54,8 @@ if (isset($_REQUEST['id']))
 		$smarty->assign('maincontentclass', 'content_photo'.$style);
 	}
 	$smarty->assign_by_ref('image', $image);
+	$smarty->assign('tile_host', $CONF['TILE_HOST']);
+
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");

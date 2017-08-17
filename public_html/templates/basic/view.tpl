@@ -1,5 +1,5 @@
 {assign var="imageurl" value=$image->_getFullpath(false,true)}
-{assign var="extra_meta" value="`$extra_meta`<meta property=\"og:image\" content=\"http://t0.geograph.org.uk/stamp.php?id=`$image->gridimage_id`\"/><meta name=\"twitter:card\" content=\"photo\"><meta name=\"twitter:site\" content=\"@geograph_bi\"><meta name=\"twitter:title\" content=\"`$page_title`\"><meta name=\"twitter:image\" content=\"`$imageurl`\">"}
+{assign var="extra_meta" value="`$extra_meta`<meta property=\"og:image\" content=\"`$tile_host`/stamp.php?id=`$image->gridimage_id`\"/><meta name=\"twitter:card\" content=\"photo\"><meta name=\"twitter:site\" content=\"@geograph_bi\"><meta name=\"twitter:title\" content=\"`$page_title`\"><meta name=\"twitter:image\" content=\"`$imageurl`\">"}
 {if $ireland_prompt}{assign var="extra_meta" value="`$extra_meta`<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/`$image->gridimage_id`\" />"}{/if}
 {include file="_std_begin.tpl"}
 

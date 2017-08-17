@@ -77,7 +77,7 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 				<tr>
 				
 					<td valign="top"><div class="interestBox">{$preview_width} x {$preview_height}</div><br/>
-					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1">Stamped</a>
+					<a href="{$tile_host}/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&download=1">Stamped</a>
 					</td>
 				
 				{if $image->altUrl != "/photos/error.jpg"}
@@ -90,7 +90,7 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					{/if}
 					
 					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
-					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=640&download=1">Stamped</a><br><br>
+					<a href="{$tile_host}/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=640&download=1">Stamped</a><br><br>
 					</td>
 				{/if}
 				
@@ -105,7 +105,7 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					{/if}
 
 					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
-					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=800&download=1">Stamped</a><br><br>
+					<a href="{$tile_host}/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=800&download=1">Stamped</a><br><br>
 					</td>
 				{/if}
 				
@@ -120,14 +120,14 @@ Also our <a href="/reuse.php?id={$image->gridimage_id}">Reuse</a> page will tell
 					{/if}
 
 					<td valign="top"><div class="interestBox">{$resized_width} x {$resized_height}</div><br/>
-					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=1024&pointsize=18&download=1">Stamped</a><br><br>
+					<a href="{$tile_host}/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=1024&pointsize=18&download=1">Stamped</a><br><br>
 					</td>
 				{/if}
 				
 
 
 					<td valign="top"><div class="interestBox">{$original_width} x {$original_height}</div><br/>
-					<a href="http://t0.geograph.org.uk/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=1&pointsize=24&download=1">Stamped Version</a><br><br>
+					<a href="{$tile_host}/stamp.php?id={$image->gridimage_id}&title=on&gravity=SouthEast&hash={$image->_getAntiLeechHash()}&large=1&pointsize=24&download=1">Stamped Version</a><br><br>
 					</td>
 
 				</tr>
