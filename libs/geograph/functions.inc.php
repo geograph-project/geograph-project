@@ -718,6 +718,31 @@ function replace_tags($text) {
 }
 
 
+function pageMustBeHTTPS() {
+	global $CONF;
+
+	//only do GETs for now
+	if ($_SERVER['REQUEST_METHOD'] != 'GET')
+		return;
+
+	//TODO/TOFIX this doesnt work, because right now $CONF['PROTOCOL'] matches current accesss.
+	// ... dont have a way to disable this function right now
+	//if (empty($CONF['PROTOCOL']) || $CONF['PROTOCOL'] != 'https://')
+	//	return; //site is NOT enabled for https anyway
+
+	if (!empty($_SERVER['HTTPS']))
+		return; //page is already HTTPS!
+
+	if (!empty($CONF['server_ip']) && strpos($_SERVER['REMOTE_ADDR'],$CONF['server_ip']) === 0 //checks that we the request is from local proxy
+		&& !empty($_SERVER['HTTP_X_FORWARDED_FOR']) //checks its a forwarded request!
+		&& !empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') //checks it really is a https request
+		return; //page is already HTTPS via proxy!
+
+	//TODO/TOFIX, should perhaps be using SELF_HOST but that might not be https yet.
+	header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}", true, 301);
+	exit;
+}
+
 
 //available as a function, as doesn't come into effect if just re-using a smarty cache
 function dieUnderHighLoad($threshold = 2,$template = 'function_unavailable.tpl') {

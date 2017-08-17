@@ -24,6 +24,7 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+pageMustBeHTTPS();
 
 
 if ($USER->hasPerm("basic") && substr($_GET['u'],0,1)!='m' && substr($_GET['u'],0,1)!='p') {
@@ -39,42 +40,40 @@ if (isset($_GET['confirm']))
 	if (substr($_GET['u'],0,1)=='m')
 	{
 		$template='profile_emailupdate.tpl';
-				
+
 		//we are confirming an email address change...
 		$confirmation_status = $USER->verifyEmailChange($_GET['u'], $_GET['confirm']);
 		if ($confirmation_status=="ok")
 			$smarty->assign("user", $GLOBALS['USER']);
-			
+
 		$smarty->assign('confirmation_status', $confirmation_status);
-		
 	}
 	elseif (substr($_GET['u'],0,1)=='p')
 	{
 		$template='profile_passwordupdate.tpl';
-				
+
 		//we are confirming an password change...
 		$confirmation_status = $USER->verifyPasswordChange($_GET['u'], $_GET['confirm']);
 		if ($confirmation_status=="ok")
 			$smarty->assign("user", $GLOBALS['USER']);
-			
+
 		$smarty->assign('confirmation_status', $confirmation_status);
-		
 	}
 	else
 	{
 		$confirmation_status = $USER->verifyRegistration($_GET['u'], $_GET['confirm']);
 		if ($confirmation_status=="ok")
 			$smarty->assign("user", $GLOBALS['USER']);
-		
+
 		$smarty->assign('confirmation_status', $confirmation_status);
 	}
-	
+
 }
 elseif (isset($_POST['name']))
 {
 	$errors=array();
 	$ok=$USER->register($_POST, $errors);
-	
+
 	//store registration errors and error errors
 	$smarty->assign('registration_ok', $ok);
 	if (!$ok)

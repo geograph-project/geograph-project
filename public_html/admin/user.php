@@ -28,7 +28,11 @@ $USER->mustHavePerm("admin");
 
 $smarty = new GeographPage;
 
-$db = NewADOConnection($GLOBALS['DSN']);
+//must be https if possible
+pageMustBeHTTPS();
+
+
+$db=GeographDatabaseConnection(false);
 
 
 if (isset($_POST['submit'])) {
@@ -46,7 +50,7 @@ if (isset($_POST['submit'])) {
 		$db->Execute('INSERT INTO user SET `'.implode('` = ?,`',array_keys($updates)).'` = ?',array_values($updates));
 		$i = $db->Insert_ID();
 		if (!empty($updates['realname'])) {
-			$db->Execute(sprintf("insert into user_change set 
+			$db->Execute(sprintf("insert into user_change set
 				user_id = %d,
 				field = 'realname',
 				value = %s
@@ -54,10 +58,9 @@ if (isset($_POST['submit'])) {
 				$this->user_id,
 				$db->Quote($updates['realname'])
 				));
-						
 		}
 		if (!empty($updates['nickname'])) {
-			$db->Execute(sprintf("insert into user_change set 
+			$db->Execute(sprintf("insert into user_change set
 				user_id = %d,
 				field = 'nickname',
 				value = %s
@@ -66,16 +69,15 @@ if (isset($_POST['submit'])) {
 				$db->Quote($updates['nickname'])
 				));
 		}
-		
 	} else {
+
 		$i = intval($updates['user_id']);
 		unset($updates['user_id']);
-		
+
 		$old = $db->getRow("SELECT user_id,realname,nickname,email FROM user WHERE user_id = $i");
-		
+
 		$db->Execute('UPDATE user SET `'.implode('` = ?,`',array_keys($updates)).'` = ? WHERE user_id='.$i,array_values($updates));
-		
-		
+
 		if ($old['email'] != $updates['email']) {
 
 			$db->Execute("insert into user_emailchange ".
@@ -84,52 +86,49 @@ if (isset($_POST['submit'])) {
 			array($i, $old['email'], $updates['email']));
 		}
 		if ($old['realname'] != $updates['realname']) {
-			$db->Execute(sprintf("insert into user_change set 
+			$db->Execute(sprintf("insert into user_change set
 				user_id = %d,
 				field = 'realname',
 				value = %s",
 				$i,
 				$db->Quote($updates['realname'])
 				));
-				
-			$db->Execute(sprintf("update gridimage_search set 
+
+			$db->Execute(sprintf("update gridimage_search set
 				realname = %s
 				where user_id = %d
 				and credit_realname = 0 ", //ensures specifically credited ones arent changed
 				$db->Quote($updates['realname']),
 				$i
-				));	
-			
+				));
 		}
 		if ($old['nickname'] != $updates['nickname']) {
-			$db->Execute(sprintf("insert into user_change set 
+			$db->Execute(sprintf("insert into user_change set
 				user_id = %d,
 				field = 'nickname',
 				value = %s",
 				$i,
 				$db->Quote($updates['nickname'])
 				));
-		}		
-	}	
-	
+		}
+	}
+
 	$profile=new GeographUser($i);
 	$profile->_forumUpdateProfile();
-	
+
 	//todo, expire smarty caches...
-	
-	
+
 	$smarty->assign_by_ref("i",$i);
-	
 } else {
+
 	$i = intval($_GET['id']);
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$row = $db->getRow("SELECT * FROM user WHERE user_id = $i");
 	$smarty->assign_by_ref("row",$row);
 	$smarty->assign_by_ref("id",$i);
-	
+
 	$desc = $db->getAssoc("DESCRIBE user");
-	
-	
+
 	foreach ($desc as $col => $data) {
 		if (preg_match('/(set|enum)\(\'(.*)\'\)/',$data['Type'],$m)) {
 			$desc[$col]['values'] = array_combine(explode("','",$m[2]),explode("','",$m[2]));
@@ -145,14 +144,13 @@ if (isset($_POST['submit'])) {
 	}
 
 	$smarty->assign_by_ref("desc",$desc);
-	
+
 	$map = array();
-	$smarty->assign_by_ref("map",$map);	
-	
+	$smarty->assign_by_ref("map",$map);
 }
 
 
 
 $smarty->display('admin_user.tpl');
-exit;
-?>
+
+

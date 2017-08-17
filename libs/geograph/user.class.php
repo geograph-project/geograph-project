@@ -1239,19 +1239,18 @@ class GeographUser
 	function login($inline=true)
 	{
 		$logged_in=false;
-		
+
 		if (!$this->registered)
 		{
 			$errors=array();
-				
+
 			//lets see if we are processing a login?
 			if (isset($_POST['email']))
 			{
 				$email=stripslashes(trim($_POST['email']));
 				$password=stripslashes(trim($_POST['password']));
 				$remember_me=isset($_POST['remember_me'])?1:0;
-				
-				
+
 				$db = $this->_getDB();
 
 				$sql="";
@@ -1259,12 +1258,11 @@ class GeographUser
 					$sql='select * from user where email='.$db->Quote($email).' limit 1';
 				elseif (isValidRealName($email))
 					$sql='select * from user where nickname='.$db->Quote($email).' limit 1';
-				
-				
+
 				if (strlen($sql))
 				{
 					//user registered?
-					$arr = $db->GetRow($sql);	
+					$arr = $db->GetRow($sql);
 					if (count($arr))
 					{
 						$md5password=md5($arr['salt'].$password);
@@ -1281,7 +1279,7 @@ class GeographUser
 									if (!is_numeric($name))
 										$this->$name=$value;
 								}
-								
+
 								//temporary nickname fix for beta accounts
 								if (strlen($this->nickname)==0)
 									$this->nickname=str_replace(" ", "", $this->realname);
@@ -1289,23 +1287,23 @@ class GeographUser
 								//give user a remember me cookie?
 								if ($remember_me)
 								{
-									$token = md5(uniqid(rand(),1)); 
+									$token = md5(uniqid(rand(),1));
 									$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
-									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/');  
+									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/');
 								}
-								
+
 								//we're changing privilege state, so we should
 								//generate a new session id to avoid fixation attacks
-								session_regenerate_id(); 
-								
+								session_regenerate_id();
+
 								$this->registered=true;
 								$logged_in=true;
-								
+
 								//log into forum too
 								$this->_forumLogin();
 
-								if (isset($_SESSION['maptt'])) 
-									unset($_SESSION['maptt']);								
+								if (isset($_SESSION['maptt']))
+									unset($_SESSION['maptt']);
 							}
 							else
 							{
@@ -1314,7 +1312,7 @@ class GeographUser
 						}
 						else
 						{
-							//speak friend and enter					
+							//speak friend and enter
 							$errors['password']='Wrong password - don\'t forget passwords are case-sensitive';
 						}
 
@@ -1328,25 +1326,25 @@ class GeographUser
 				else
 				{
 					$errors['email']='This is not a valid email address or nickname';
-					
 				}
-				
 			}
-			
+
 			//failure to login means we never return - we show a login page
 			//instead...
 			if (!$logged_in)
 			{
 				$smarty = new GeoGraphPage;
-				
-				//HACK for CDN - people trying to login should be redirected to the real domain. 
+
+				pageMustBeHTTPS();
+
+				//HACK for CDN - people trying to login should be redirected to the real domain.
 				if ($_SERVER['HTTP_HOST'] == 'real.www.geograph.org.uk') {
 					$smarty->assign('script_uri', "http://www.geograph.org.uk".$_SERVER['REQUEST_URI']);
 				}
                                 if (!empty($_GET['email']) && empty($email)) {
                                         $email = $_GET['email'];
                                 }
-				
+
 				$smarty->assign('remember_me', isset($_COOKIE['autologin'])?1:0);
 				$smarty->assign('inline', $inline);
 				$smarty->assign('email', $email);
@@ -1356,18 +1354,16 @@ class GeographUser
 				$smarty->display('login.tpl');
 				exit;
 			}
-			
-		
 		}
 		else
 		{
 			$logged_in=true;
 		}
-		
+
 		//we're logged in
 		return $logged_in;
 	}
-	
+
 	/**
 	* attempt to authenticate user from persistent cookie
 	*/

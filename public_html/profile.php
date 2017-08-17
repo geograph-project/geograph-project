@@ -38,11 +38,14 @@ $profile = array();
 
 if (isset($_REQUEST['edit']))
 {
+	//must be https if possible
+	pageMustBeHTTPS();
+
 	//must be logged in to proceed with an edit
 	$USER->login();
-	
+
 	$template='profile_edit.tpl';
-	
+
 	//save changes?
 	if (isset($_POST['savechanges']))
 	{
