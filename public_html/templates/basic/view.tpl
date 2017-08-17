@@ -68,6 +68,7 @@
   {dynamic}
     {if $user->registered || !$is_bot}
 
+        <div style="float:left;position:relative;width:30px;height:20px"></div>
 	<div class="interestBox" style="float:right;position:relative;width:20px"><span  id="hideside"></span>
 		<img src="{$static_host}/img/thumbs.png" width="20" height="20" onmouseover="show_tree('side'); if (!loadedBuckets || loadedBuckets.length == 0) jQl.loadjQ('https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js', function() {literal}{{/literal} refreshMainList({$image->gridimage_id}); {literal}});{/literal}"/>
 	</div>
@@ -99,7 +100,7 @@
 
   <div class="img-shadow" id="mainphoto" itemscope itemtype="http://schema.org/ImageObject">{$image->getFull(true,true)|replace:'/>':' itemprop="contentURL"/>'}<meta itemprop="representativeOfPage" content="true"/></div>
 
-  <div class="caption640" style="font-weight:bold" property="dct:title" itemprop="name">{$image->title|escape:'html'}</div>
+  <div class="caption640"><strong property="dct:title" itemprop="name">{$image->title|escape:'html'}</strong></div>
 
   {if $image->comment}
   <div class="caption640" itemprop="description">{$image->comment|escape:'html'|nl2br|geographlinks:$expand}</div>
