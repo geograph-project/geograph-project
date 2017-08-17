@@ -241,14 +241,14 @@ function smarty_function_newwin($params)
   	if (isset($params['title']))
 		$title=$params['title'];
 	else
-		$title=$text;
-	
+		$title=strip_tags($text);
+
 	if (isset($params['nofollow']))
-		$title .= "\" rel=\"nofollow"; 	
-	
+		$title .= "\" rel=\"nofollow";
+
 	if (isset($params['onclick']))
-		$title .= "\" onclick=\"".$params['onclick']; 	
-	
+		$title .= "\" onclick=\"".$params['onclick'];
+
 	return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
 		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
 }
@@ -374,6 +374,8 @@ function smarty_function_place($params) {
 
 	$place = $params['place'];
 	$t = '';
+	if (!empty($params['takenago']))
+		$t .= "<span title=\"{$params['taken']}\">taken <b>{$params['takenago']}</b></span>, ";
 	if ($place['distance'] > 3)
 		$t .= ($place['distance']-0.01)." km from ";
 	elseif (!$place['isin'])
