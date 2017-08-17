@@ -245,62 +245,6 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 	 <dd><a title="View profile" href="{$image->profile_link}" property="dc:creator" itemprop="author" rel="author">{$image->realname|escape:'html'}</a> &nbsp; (<a title="pictures near {$image->grid_reference} by {$image->realname|escape:'html'}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;u={$image->user_id}" class="nowrap" rel="nofollow">find more nearby</a>)</dd>
 {/if}
 
-{if $image->tags && $image->tag_prefix_stat.type}
-	<dt>Image Type <sup><a href="/article/Image-Type-Tags" class="about" style="font-size:0.7em">?</a></sup></dt>
-
-	<dd>
-	{assign var="seperator" value=""}
-
-	{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'type'}
-		<span class="tag">
-		<a href="/tagged/{if $item.prefix}{$item.prefix|escape:'urlplus'}:{/if}{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" class="taglink" title="{$item.description|escape:'html'}">{$item.tag|escape:'html'}</a></span>&nbsp;
-	{assign var="seperator" value=","}{/if}{/foreach}
-
-	{if !$seperator}
-		{if $image->moderation_status ne "accepted"}{$image->moderation_status|ucfirst}{/if}
-	{/if}
-
-	{if $image->ftf eq 1}
-		(First Geograph for {$image->grid_reference})
-	{elseif $image->ftf eq 2}
-		(Second Visitor for {$image->grid_reference})
-	{elseif $image->ftf eq 3}
-		(Third Visitor for {$image->grid_reference})
-	{elseif $image->ftf eq 4}
-		(Fourth Visitor for {$image->grid_reference})
-	{/if}
-	{if strpos($image->points,'tpoint') !== false}
-	<br/>First in 5 Years (TPoint) <sup><a href="/faq3.php?q=tpoint#61" class="about" style="font-size:0.7em">?</a></sup>{/if}
-	</dd>
-
-{else}
-	<dt>Image classification<sup><a href="/faq.php#points" class="about" style="font-size:0.7em">?</a></sup></dt>
-	<dd>{if $image->ftf eq 1}
-		Geograph (First for {$image->grid_reference})
-	{elseif $image->ftf eq 2}
-		Geograph (Second Visitor for {$image->grid_reference})
-	{elseif $image->ftf eq 3}
-		Geograph (Third Visitor for {$image->grid_reference})
-	{elseif $image->ftf eq 4}
-		Geograph (Fourth Visitor for {$image->grid_reference})
-	{else}
-		{if $image->moderation_status eq "rejected"}
-		Rejected
-		{/if}
-		{if $image->moderation_status eq "pending"}
-		Awaiting moderation
-		{/if}
-		{if $image->moderation_status eq "geograph"}
-		Geograph
-		{/if}
-		{if $image->moderation_status eq "accepted"}
-		Supplemental image
-		{/if}
-	{/if}
-	{if strpos($image->points,'tpoint') !== false}
-	<br/>First in 5 Years (TPoint) <sup><a href="/faq3.php?q=tpoint#61" class="about" style="font-size:0.7em">?</a></sup>{/if}</dd>
-{/if}
-
 {if $image_taken}
 	<dt>Date Taken</dt>
 	<dd title="{$takenago}"><span itemprop="exifData">{$image_taken}</span> &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
@@ -404,6 +348,65 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 
 </div>
 <br style="clear:both"/>
+
+<div style="float:left;font-size: 0.8em;margin-bottom:2px;margin-left:5px">
+
+{if $image->tags && $image->tag_prefix_stat.type}
+	Image Type <a href="/article/Image-Type-Tags-update">(about)</a>:
+
+	{assign var="seperator" value=""}
+
+	{foreach from=$image->tags item=item name=used}{if $item.prefix eq 'type'}
+		<a href="/tagged/type:{$item.tag|escape:'urlplus'}#photo={$image->gridimage_id}" title="{$item.description|escape:'html'}">{$item.tag|lower|escape:'html'}</a>&nbsp;
+	{assign var="seperator" value=","}{/if}{/foreach}
+
+	{if !$seperator}
+		{if $image->moderation_status ne "accepted"}{$image->moderation_status|ucfirst}{/if}
+	{/if}
+
+	{if $image->ftf eq 1}
+		(First Geograph for {$image->grid_reference})
+	{elseif $image->ftf eq 2}
+		(Second Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 3}
+		(Third Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 4}
+		(Fourth Visitor for {$image->grid_reference})
+	{/if}
+
+{else}
+	Image classification<a href="/faq.php#points">(about)</a>:
+	{if $image->ftf eq 1}
+		Geograph (First for {$image->grid_reference})
+	{elseif $image->ftf eq 2}
+		Geograph (Second Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 3}
+		Geograph (Third Visitor for {$image->grid_reference})
+	{elseif $image->ftf eq 4}
+		Geograph (Fourth Visitor for {$image->grid_reference})
+	{else}
+		{if $image->moderation_status eq "rejected"}
+		Rejected
+		{/if}
+		{if $image->moderation_status eq "pending"}
+		Awaiting moderation
+		{/if}
+		{if $image->moderation_status eq "geograph"}
+		Geograph
+		{/if}
+		{if $image->moderation_status eq "accepted"}
+		Supplemental image
+		{/if}
+	{/if}
+{/if}
+
+	{if strpos($image->points,'tpoint') !== false}
+	&middot; First in 5 Years (TPoint) <a href="/faq3.php?q=tpoint#61">(about)</a>{/if}
+
+</div>
+
+
+
 {if $image->hits}
 	<div class="hits">This page has been <a href="/help/hit_counter">viewed</a> about <b>{$image->hits}</b> times.</div>
 {/if}

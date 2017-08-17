@@ -464,13 +464,26 @@ class GridImage
 		global $CONF;
 		return substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8);
 	}
-	
+
 	function assignToSmarty($smarty) {
 		global $CONF;
-	
+
 split_timer('gridimage'); //starts the timer
 
-		$taken=$this->getFormattedTakenDate();
+                if (!empty($this->imagetaken) && strpos($this->imagetaken,'0000') === FALSE) {
+			$smarty->assign('image_taken', $this->getFormattedTakenDate());
+
+                        $diff = time() - strtotime(str_replace('-00','-01',$this->imagetaken)." 12:00");
+                        if ($diff > (3600*24*365)) {
+                                $takenago = sprintf("%d year%s ago",$int = round($diff/(3600*24*365)),($int!=1)?'s':'');
+                        } elseif ($diff > (3600*24*31)) {
+                                $takenago = sprintf("%d month%s ago",$int = round($diff/(3600*24*31)),($int!=1)?'s':'');
+                        } elseif ($diff > (3600*24)) {
+                                $takenago = sprintf("%d day%s ago",$int = round($diff/(3600*24)),($int!=1)?'s':'');
+                        }
+                        if (!empty($takenago))
+                                $smarty->assign('takenago', $takenago);
+                }
 
 		//get the grid references
 		$this->getSubjectGridref(true);
@@ -499,7 +512,6 @@ split_timer('gridimage'); //starts the timer
 #} else {
 #		$smarty->assign('page_title', $page_title = $this->bigtitle.":: OS grid {$this->grid_reference}");
 #}
-		$smarty->assign('image_taken', $taken);
 		//$smarty->assign('ismoderator', $ismoderator);
 		$smarty->assign_by_ref('image', $this);
 
