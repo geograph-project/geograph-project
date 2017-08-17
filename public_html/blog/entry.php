@@ -69,6 +69,9 @@ $isadmin=$USER->hasPerm('moderator')?1:0;
 $template = 'blog_entry.tpl';
 $cacheid = $blog_id;
 
+        if (!function_exists('smarty_modifier_truncate')) {
+                require_once("smarty/libs/plugins/modifier.truncate.php");
+        }
 
 
 $sql_where = " blog_id = ".$db->Quote($blog_id);
@@ -76,14 +79,14 @@ $sql_where = " blog_id = ".$db->Quote($blog_id);
 $page = $db->getRow("
 select blog.*,
 realname,gs.gridsquare_id,gs.grid_reference
-from blog 
+from blog
 	left join user using (user_id)
 	left join gridsquare gs on (blog.gridsquare_id = gs.gridsquare_id)
 where $sql_where
 limit 1");
 
 if (count($page)) {
-	
+
 	if ($page['approved'] == -1 && !$USER->hasPerm('moderator')) {
 		header("HTTP/1.0 410 Gone");
 		header("Status: 410 Gone");
@@ -93,10 +96,10 @@ if (count($page)) {
 	if ($page['user_id'] == $USER->user_id) {
 		$cacheid .= '|'.$USER->user_id;
 	}
-	
+
 	//when this page was modified
 	$mtime = strtotime($page['updated']);
-		
+
 	//can't use IF_MODIFIED_SINCE for logged in users as has no concept as uniqueness
 	customCacheControl($mtime,$cacheid,($USER->user_id == 0));
 
@@ -120,7 +123,7 @@ if (count($page)) {
 			$template = 'blog_entry4.tpl';
 		} elseif ($_GET['t'] == 1) {
 			$template = 'blog_entry.tpl';
-		} 
+		}
 	}
 }
 
@@ -128,35 +131,49 @@ if (!$smarty->is_cached($template, $cacheid))
 {
 	if (count($page)) {
 		$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
-		
+		$extra_meta = array();
+		$extra_meta[] = "<link rel=\"canonical\" href=\"{$CONF['CONTENT_HOST']}/blog/{$page['blog_id']}\" />";
+                $extra_meta[] = "<meta name=\"twitter:card\" content=\"photo\">"; //or summary_large_image
+                $extra_meta[] = "<meta name=\"twitter:site\" content=\"@geograph_bi\">";
+                $extra_meta[] = "<meta name=\"og:title\" content=\"".htmlentities($page['title'])."\">";
+
+
 		$smarty->assign($page);
-		if (!empty($page['extract'])) {
-			$smarty->assign('meta_description', $page['description']);
+		if (!empty($page['content'])) {
+			$extract = smarty_modifier_truncate($page['content'],140,"...");
+
+			$smarty->assign('meta_description', $extract);
+			$extra_meta[] = "<meta name=\"og:description\" content=\"".htmlentities($extract)."\">"; //shame doesnt fall back and actully use metadescruption
 		}
-		
+
 		if (!empty($page['gridsquare_id'])) {
 			$square=new GridSquare;
 			$square->loadFromId($page['gridsquare_id']);
 			$smarty->assign('grid_reference', $square->grid_reference);
-			
+
 			require_once('geograph/conversions.class.php');
 			$conv = new Conversions;
-		
+
 			list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 			$smarty->assign('lat', $lat);
 			$smarty->assign('long', $long);
 		}
 		if (!empty($page['gridimage_id'])) {
-			
+
 			$image=new GridImage();
 			$image->loadFromId($page['gridimage_id']);
 
 			if ($image->moderation_status=='rejected' || $image->moderation_status=='pending') {
 				//clear the image
 				$image= false;
-			} 
-			$smarty->assign_by_ref('image', $image);
+			} else {
+				$smarty->assign_by_ref('image', $image);
+				$imageurl = $image->_getFullpath(false,true);
+
+		                $extra_meta[] = "<meta name=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamped/".basename($imageurl)."\">";
+			}
 		}
+		$smarty->assign('extra_meta', implode("\n",$extra_meta));
 	} else {
 		$template = 'static_404.tpl';
 		header("HTTP/1.0 404 Not Found");

@@ -480,7 +480,7 @@ split_timer('gridimage'); //starts the timer
 
 		//remove grid reference from title
 		$this->bigtitle=trim(preg_replace("/^{$this->grid_reference}/", '', $this->title));
-		$this->bigtitle=preg_replace('/(?<![\.])\.$/', '', $this->bigtitle);
+		$this->bigtitle=preg_replace('/(?<!\.[A-Z])(?<!\.)\.$/', '', $this->bigtitle);
 
 #if ($this->gridimage_id == 2847145) {
 		$adv = ($this->user_id == 3 || $this->user_id == 1533 || $this->user_id == 2520 || strpos($_SERVER['HTTP_USER_AGENT'], 'Google')!==FALSE || strpos($_SERVER['HTTP_USER_AGENT'], 'bing'));
@@ -495,9 +495,9 @@ split_timer('gridimage'); //starts the timer
 				$bits[] = "cc-by-sa/2.0";
 		}
 
-		$smarty->assign('page_title', implode(' ',$bits));
+		$smarty->assign('page_title', $page_title = implode(' ',$bits));
 #} else {
-#		$smarty->assign('page_title', $this->bigtitle.":: OS grid {$this->grid_reference}");
+#		$smarty->assign('page_title', $page_title = $this->bigtitle.":: OS grid {$this->grid_reference}");
 #}
 		$smarty->assign('image_taken', $taken);
 		//$smarty->assign('ismoderator', $ismoderator);
@@ -514,16 +514,41 @@ split_timer('gridimage'); //starts the timer
 		$place = $this->grid_square->findNearestPlace(75000);
 		$smarty->assign_by_ref('place', $place);
 
-		if (empty($this->comment)) {
-			$smarty->assign('meta_description', "{$this->grid_reference} :: {$this->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place)))." by ".$this->realname );
-		} else {
-			$smarty->assign('meta_description', $this->comment);
-		}
+		$smarty->assign('imageurl', $imageurl = $this->_getFullpath(false,true));
 
 		if (!empty($CONF['forums'])) {
 			//let's find posts in the gridref discussion forum
 			$this->grid_square->assignDiscussionToSmarty($smarty);
+		} else {
+			if (!empty($this->comment) && preg_match('/geograph\.(org\.uk|uk|ie)\/discuss\//',$this->comment)) {
+				//todo, heavy handled, but editing the description could be tricky!
+				$this->comment = '';
+			}
 		}
+
+		$extra_meta = array();
+		if ($this->grid_square->reference_index == 2)
+			$extra_meta[] = "<link rel=\"canonical\" href=\"http://www.geograph.ie/photo/{$this->gridimage_id}\" />";
+		else
+			$extra_meta[] = "<link rel=\"canonical\" href=\"http://www.geograph.org.uk/photo/{$this->gridimage_id}\" />";
+
+		$extra_meta[] = "<meta name=\"twitter:card\" content=\"photo\">"; //or summary_large_image
+		$extra_meta[] = "<meta name=\"twitter:site\" content=\"@geograph_bi\">";
+		//$extra_meta[] = "<meta name=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamp.php?id={$this->gridimage_id}\"/>";
+		$extra_meta[] = "<meta name=\"og:image\" content=\"{$CONF['TILE_HOST']}/stamped/".basename($imageurl)."\">";
+		$extra_meta[] = "<meta name=\"og:title\" content=\"".htmlentities($page_title)."\">";
+		//$extra_meta[] = "<meta name=\"twitter:image\" content=\"{$imageurl}\">"; //lets fallback and use non stamped?
+
+
+		if (empty($this->comment)) {
+			$smarty->assign('meta_description', "{$this->grid_reference} :: {$this->bigtitle}, ".strip_tags(smarty_function_place(array('place'=>$place)))." by ".$this->realname );
+		} else {
+			$smarty->assign('meta_description', $this->comment);
+			$extra_meta[] = "<meta name=\"og:description\" content=\"".htmlentities($this->comment)."\">"; //shame doesnt fall back and actully use metadescruption
+		}
+
+		$smarty->assign('extra_meta', implode("\n",$extra_meta));
+
 
 		//count the number of photos in this square
 		$smarty->assign('square_count', $this->grid_square->imagecount);

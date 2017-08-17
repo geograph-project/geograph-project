@@ -1,7 +1,5 @@
 {assign var="page_title" value="Blog :: $title"}
-{assign var="meta_description" value=$content|truncate:200}
 {assign var="rss_url" value="/blog/feed.rss"}
-{assign var="extra_meta" value="<link rel=\"canonical\" href=\"http://www.geograph.org.uk/blog/`$blog_id`\" />"}
 {include file="_std_begin.tpl"}
 {literal}<style type="text/css">
 .unable,.unable A  {
