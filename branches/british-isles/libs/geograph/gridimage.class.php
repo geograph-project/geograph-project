@@ -459,11 +459,11 @@ class GridImage
 	/**
 	* calculate a hash to prevent easy downloading of every image in sequence
 	*/
-	function _getAntiLeechHash()
+	function _getAntiLeechHash($use_cache=true)
 	{
 		global $CONF;
 		static $cache = array();
-		if (!empty($cache[$this->gridimage_id]))
+		if (!empty($cache[$this->gridimage_id]) && $use_cache)
 			return $cache[$this->gridimage_id];
 		return($cache[$this->gridimage_id] = substr(md5($this->gridimage_id.$this->user_id.$CONF['photo_hashing_secret']), 0, 8));
 	}
