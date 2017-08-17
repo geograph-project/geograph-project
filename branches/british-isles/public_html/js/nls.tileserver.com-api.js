@@ -93,6 +93,25 @@ function NLSTileUrlOS( x, y, z ) {
 ///////////////////////////////
 // created by geograph 
 
+
+//- only do this with permission from nls!
+function NLSTileUrlOSi( x, y, z ) {
+
+	if (x['left'] != undefined) {
+		var bounds = x;
+		var res = this['map']['getResolution']();
+		x = Math.round((bounds['left'] - this['maxExtent']['left']) / (res * this['tileSize']['w']));
+		y = Math.round((this['maxExtent']['top'] - bounds['top']) / (res * this['tileSize']['h']));
+		z = this['map']['getZoom']();
+	}
+
+        var y2 = (1 << z) - y - 1;
+        return 'http://geo.nls.uk/maps/ireland/gsgs4136/'+z+'/'+x+'/'+y2+'.png';
+
+}
+
+
+
 	function setupNLSTiles(map) {
                                         // TODO: Automatic load balancing & server availability test:
                                         // add <img src="testtile" onLoad="win()"> and decide which from available servers is fastest for the client

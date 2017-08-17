@@ -109,6 +109,20 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
         key: "AkiS3CMQ80jmvWHvwbgtiNL-aiGij7xQsMrBvOIfv7BL43a4RKm7rKDvDhoL2SHe"
     });
 
+    if (typeof NLSTileUrlOSi === "function") { 
+        // Define the XYZ-based layer for NLS Map
+        OpenLayers.Layer.NLSi = OpenLayers.Class(OpenLayers.Layer.XYZ, {
+                name: "NLS Maps API",
+                attribution: 'Historical maps from <a href="http://geo.nls.uk/maps/api/" target="_blank">NLS Maps API<\/a>',
+                getURL: NLSTileUrlOSi,
+                sphericalMercator: true,
+                transitionEffect: 'resize',
+                CLASS_NAME: "OpenLayers.Layer.NLS"
+        });
+
+	olmap.layers['nlsi'] = new OpenLayers.Layer.NLS( "OS Historical Ireland");
+    }
+
     olmap.map = new OpenLayers.Map(mapdiv, {
         displayProjection: "EPSG:4326", //wgs84 - used for permalinks etc... 
         controls: [
