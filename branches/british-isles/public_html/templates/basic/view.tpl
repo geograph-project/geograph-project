@@ -418,7 +418,8 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 {if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
 
 <small style="font-size:0.8em"><a title="Open in Google Earth" href="{$self_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small> &middot;
-{external title="Open in Bing Maps" href="http://www.bing.com/maps/default.aspx?v=2&mapurl=`$self_host`/photo/`$image->gridimage_id`.kml" text="Bing Maps"} &middot;
+{external title="Open in Google Maps" href="http://www.google.co.uk/maps?q=`$lat`,`$long`&t=h&z=14" text="Google Maps"} &middot;
+{external title="Open in Bing Maps" href="http://www.bing.com/maps?where1=`$lat`,`$long`&style=h&lvl=14" text="Bing Maps"} &middot;
 
 {/if}
 
