@@ -24,6 +24,9 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+//this is called by $USER->login() automatically
+//pageMustBeHTTPS();
+
 //force a login - if we get past this page, we are already logged in
 //we pass false to indicate to template this isn't an inline login,
 //but a 'voluntary' one from the user - this allows the template to
@@ -35,8 +38,8 @@ $smarty = new GeographPage;
 if (!$smarty->is_cached($template, $cacheid)) {
 
         if ($CONF['forums']) {
-	        $db=NewADOConnection($GLOBALS['DSN']);
-        
+	        $db=GeographDatabaseConnection(false);
+
 	        //let's find recent posts in the announcements forum made by
                 //administrators
                 $sql="select u.user_id,u.realname,t.topic_title,p.post_text,t.topic_id,t.topic_time, posts_count - 1 as comments
@@ -65,4 +68,4 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 $smarty->display('login_success.tpl');
 
-	
+

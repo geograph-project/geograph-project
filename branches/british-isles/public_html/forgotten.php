@@ -26,12 +26,13 @@ init_session();
 
 $smarty = new GeographPage;
 
+//must be https if possible
+pageMustBeHTTPS();
+
+
 //pick up email from url? login form can send this to us...
 if (isset($_GET['email']))
 {
-
-	
-
 	$smarty->assign('email', stripslashes(trim($_GET['email'])));
 }
 
@@ -41,7 +42,7 @@ if (isset($_POST['reminder']))
 	$smarty->assign('email', stripslashes(trim($_POST['reminder'])));
 	$smarty->assign('password1', stripslashes(trim($_POST['password1'])));
 	$smarty->assign('password2', stripslashes(trim($_POST['password2'])));
-	
+
 	$errors=array();
 	$ok=$USER->sendReminder($_POST['reminder'], $_POST['password1'], $_POST['password2'], $errors);
 	if ($ok)
@@ -52,10 +53,8 @@ if (isset($_POST['reminder']))
 	{
 		$smarty->assign('errors', $errors);
 	}
-	
 }
-	
+
 $smarty->display('forgotten.tpl');
 
-	
-?>
+
