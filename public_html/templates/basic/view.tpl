@@ -6,7 +6,7 @@
 <div itemscope itemtype="schema.org/Photograph"><meta itemprop="isFamilyFriendly" content="true"/>
 <h2><a title="Grid Reference {$image->grid_reference}{if $square_count gt 1} :: {$square_count} images{/if}" href="/gridref/{$image->grid_reference}">{$image->grid_reference}</a> : {$image->bigtitle|escape:'html'}</h2>
 {if $place.distance}
- {place place=$place h3=true}
+ {place place=$place h3=true takenago=$takenago}
 {/if}
 
 {if $image->moderation_status eq 'rejected'}
@@ -142,10 +142,6 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 -->
 </div>
-
-{if $image_taken && $image->imagetaken > 1}
-<div class="keywords yeardisplay" title="year photo was taken">year taken <div class="year">{$image->imagetaken|truncate:4:''}</div></div>
-{/if}
 
 <div class="buttonbar">
 
@@ -306,7 +302,7 @@ licensed for <a href="/reuse.php?id={$image->gridimage_id}">reuse</a> under this
 
 {if $image_taken}
 	<dt>Date Taken</dt>
-	<dd><span itemprop="exifData">{$image_taken}</span> &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
+	<dd title="{$takenago}"><span itemprop="exifData">{$image_taken}</span> &nbsp; (<a title="pictures near {$image->grid_reference} taken on {$image_taken}" href="/search.php?gridref={$image->subject_gridref|escape:'url'}&amp;orderby=submitted&amp;taken_start={$image->imagetaken}&amp;taken_end={$image->imagetaken}&amp;do=1" class="nowrap" rel="nofollow">more nearby</a>)</dd>
 {/if}
 <dt>Submitted</dt>
 	<dd itemprop="uploadDate" datetime="{$image->submitted|replace:' ':'T'}Z">{$image->submitted|date_format:"%A, %e %B, %Y"}</dd>
