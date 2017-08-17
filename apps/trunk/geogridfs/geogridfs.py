@@ -147,7 +147,12 @@ class GeoGridFS(Fuse):
         mounts = []
         for result in sorted(scores, key=scores.get, reverse=True):
             mounts.append(config.mounts[result])
-
+        
+	#add any missing
+        for (key,value) in config.mounts.iteritems():
+            if key not in scores:
+                mounts.append(value)
+        
         return mounts
 
     def getServerFromMount(self, mount):
