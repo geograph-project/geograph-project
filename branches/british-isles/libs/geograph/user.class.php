@@ -1293,7 +1293,7 @@ class GeographUser
 									//bool setcookie ( $name, $value = "", $expire = 0, $path = "" , $domain = "", bool $secure = false , bool $httponly = false );
 
 									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/',
-										"", ($CONF['PROTOCOL'] == 'https://') ); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
+										"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://') ); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
 								}
 
 								//we're changing privilege state, so we should
@@ -1432,7 +1432,7 @@ class GeographUser
 						$token = md5(uniqid(rand(),1)); 
 						$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
 						setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/',
-							"", ($CONF['PROTOCOL'] == 'https://') ); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
+							"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://') ); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
 
 					}
 				}

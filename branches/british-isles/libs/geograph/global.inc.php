@@ -431,7 +431,6 @@ function init_session_or_cache($public_seconds = 3600,$private_seconds = 0) {
 //global page initialisation
 function init_session()
 {
-
 //	split_timer('app'); //starts the timer
 
 	session_start();
@@ -439,6 +438,11 @@ function init_session()
 	//do we have a user object?
 	if (!isset($_SESSION['user']))
 	{
+		if (!empty($_COOKIE['securetest'])) {
+			//the remember me cookie only works over https
+			pageMustBeHTTPS();
+		}
+
 		//this is a new session - as a safeguard against session
 		//fixation, we regenerate the session id
 		if (!empty($_REQUEST['PHPSESSID']))
@@ -446,7 +450,7 @@ function init_session()
 
 		//create new user object - initially anonymous
 		$_SESSION['user'] =& new GeographUser;
-	
+
 		//give object a chance to auto-login via cookie
 		$_SESSION['user']->autoLogin();
 	}
@@ -458,11 +462,11 @@ function init_session()
 
 	//tell apache our ID, handy for logs
 	@apache_note('user_id', $GLOBALS['USER']->user_id);
-	
-	//HACK for CDN - under heavy traffic this could be uncommented (or enabled via curtail_level) to shift of non logged in traffic to cdn. 
+
+	//HACK for CDN - under heavy traffic this could be uncommented (or enabled via curtail_level) to shift of non logged in traffic to cdn.
 	// could for example only enable for a % of traffic, or based on IP etc etc
 	/*
-	if (	empty($GLOBALS['USER']->registered) 
+	if (	empty($GLOBALS['USER']->registered)
 		&& empty($_COOKIE[session_name()])
 		&& $_SERVER['HTTP_HOST'] == 'www.geograph.virtual'
 		&& empty($_POST['password'])
@@ -476,9 +480,8 @@ function init_session()
 		exit;
 	}
 	*/
-	
-//	split_timer('app','init_session',$GLOBALS['USER']->user_id); //logs the wall time
 
+//	split_timer('app','init_session',$GLOBALS['USER']->user_id); //logs the wall time
 }
 
 #################################################
