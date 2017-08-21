@@ -143,7 +143,10 @@ class GeoGridFS(Fuse):
                 scores[replica] = 100+scores.get(replica,1)
                 if re.search(r's\d',replica): # boost SSD mounts regardless
                     scores[replica] = scores[replica] + 10
-                    
+        
+        if 'amz' in scores and scores['amz'] > 100:
+                scores['amz'] = 50
+        
         mounts = []
         for result in sorted(scores, key=scores.get, reverse=True):
             mounts.append(config.mounts[result])
