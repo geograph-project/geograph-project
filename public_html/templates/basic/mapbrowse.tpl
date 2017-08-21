@@ -348,7 +348,7 @@ south_F2 = new Image(30,29); south_F2.src = "{$static_host}/templates/basic/mapn
 			<a class="tab{if $tab == 4}Selected{/if} nowrap" id="tab4" href="/mapper/?t={$mosaic_token}{dynamic}{if $gridref_from}&amp;gridref_from={$gridref_from}{/if}{/dynamic}" title="interactive coverage map overlaid over OS raster maps">Draggable OS</a>
 		{/if}
 		{if $lat && $long}
-                	<a class="tab" href="/mapper/coverage.php?centi=1#zoom=7&lat={$lat}&amp;lon={$long}{if $square->reference_index == 2}&layers=FFT000000000B00FT{/if}">Draggable Map</a>
+                	<a class="tab" href="/mapper/coverage.php?centi=1#lat={$lat}&amp;lon={$long}&amp;zoom={$intergrated_zoom_centi}&amp;layers={$intergrated_layers}">Draggable Map</a>
 		{/if}
 	{elseif $mosaic_ri == 1}
 		<a class="tab" id="tab4">Draggable OS <sup style="font-size:0.7em;color:blue">[Zoom first]</sup></a>

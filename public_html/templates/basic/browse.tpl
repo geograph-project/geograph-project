@@ -118,7 +118,10 @@
 		</li>
 
 		{if $by ne 'centi' && $by ne 'viewcenti' && $mode eq 'normal'}
-		<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a></li>
+			<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a></li>
+			{if $lat}
+				<li style="margin-top:4px">View on <a href="/mapper/coverage.php?centi=1#lat={$lat}&amp;lon={$long}&amp;zoom={$intergrated_zoom_centi}&amp;layers={$intergrated_layers}">Experimental <b>Coverage Map</b></a></li>
+			{/if}
 		{/if}
 
 		<li style="margin-top:4px">View all images: <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap"><b>slideshow</b></a>, <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1" title="View just thumbnails" class="nowrap"><b>thumbnails</b></a></li>
@@ -352,7 +355,7 @@
 
 		{if $by eq 'centi' || $by eq 'viewcenti' }
 			{if $lat}
-				<p>View on <a href="/mapper/coverage.php?centi=1#lat={$lat}&amp;lon={$long}{if $square->reference_index == 2}&zoom=13&layers=FFT000000000B00FT{else}&zoom=7{/if}">Experimental <b>Coverage Map</b></a></p>
+				<p>View on <a href="/mapper/coverage.php?centi=1#lat={$lat}&amp;lon={$long}&amp;zoom={$intergrated_zoom_centi}&amp;layers={$intergrated_layers}">Experimental <b>Coverage Map</b></a></p>
 			{/if}
 			<p><small>The 100 centisquares of {$gridref} are laid out on the grid below, of which {$allcount} have photos, hover over the square to see the 6 figure grid reference.</small></p>
 

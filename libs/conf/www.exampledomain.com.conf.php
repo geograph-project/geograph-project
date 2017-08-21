@@ -235,6 +235,11 @@ $CONF['references_all'] = array(0=>'British Isles')+$CONF['references'];
 //false origins for the internal grid
 $CONF['origins'] = array(1 => array(206,0),2 => array(10,149));
 
+//match what intergrated mapping uses!
+$CONF['intergrated_layers'] = array(0 => 'FTT000000000B000FT', 1 => 'FTFB000000000000FT', 2 => 'FFT000000000000BFT');
+$CONF['intergrated_zoom'] = array(0 => 13, 1 => 6, 2 => 13);
+$CONF['intergrated_zoom_centi'] = array(0 => 15, 1 => 8, 2 => 15);
+
 ###################################
 # search setup
 
