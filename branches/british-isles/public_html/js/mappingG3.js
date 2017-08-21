@@ -356,7 +356,7 @@ map.mapTypes.set("cm", new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
                 var subdomains = ['a','b','c'];
                 var index = Math.abs(coord.x + coord.x) % subdomains.length;
-                return "http://"+subdomains[index]+".tile.opencyclemap.org/cycle/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                return "https://"+subdomains[index]+".tile.thunderforest.com/cycle/" + zoom + "/" + coord.x + "/" + coord.y + ".png?apikey=42a8aaad46fa4fd784104f2870221993";
         },
         tileSize: new google.maps.Size(256, 256),
         name: "Cycle Map",
@@ -369,7 +369,7 @@ map.mapTypes.set("phy", new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
                 var subdomains = ['a','b','c'];
                 var index = Math.abs(coord.x + coord.x) % subdomains.length;
-                return "http://"+subdomains[index]+".tile3.opencyclemap.org/landscape/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                return "https://"+subdomains[index]+".tile.thunderforest.com/landscape/" + zoom + "/" + coord.x + "/" + coord.y + ".png?apikey=42a8aaad46fa4fd784104f2870221993";
         },
         tileSize: new google.maps.Size(256, 256),
         name: "Physical",

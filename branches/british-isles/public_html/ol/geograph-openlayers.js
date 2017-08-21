@@ -82,19 +82,22 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
 
     olmap.layers['osm'] = new OpenLayers.Layer.OSM("OSM (OpenStreetMap)", null, {attribution:'&copy; <a target="_parent" href="http://www.openstreetmap.org">OpenStreetMap</a> and contributors, under an <a target="_parent" href="http://www.openstreetmap.org/copyright">open license</a>'});
 
-    olmap.layers['osm_cycle'] = new OpenLayers.Layer.OSM("OSM OpenCycleMap", ['http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png',
-                                                      'http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png',
-                                                      'http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png'],
+    olmap.layers['osm_cycle'] = new OpenLayers.Layer.OSM("OSM OpenCycleMap", [
+						      'https://a.tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993',
+                                                      'https://b.tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993',
+                                                      'https://a.tile.thunderforest.com/cycle/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993'],
 							 {attribution:'Tiles &copy; OpenCycleMap, Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'});
 
-    olmap.layers['osm_tran'] = new OpenLayers.Layer.OSM("OSM Public Transport", ['http://a.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png',
-                                                      'http://b.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png',
-                                                      'http://c.tile2.opencyclemap.org/transport/${z}/${x}/${y}.png'],
+    olmap.layers['osm_tran'] = new OpenLayers.Layer.OSM("OSM Public Transport", [
+           					      'https://a.tile.thunderforest.com/transport/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993',
+                                                      'https://b.tile.thunderforest.com/transport/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993',
+                                                      'https://c.tile.thunderforest.com/transport/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993'],
 							 {attribution:'Tiles &copy; Gravitystorm, Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'});
 
-    olmap.layers['osm_phys'] = new OpenLayers.Layer.OSM("OSM Landscape", ['http://a.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png',
-                                                      'http://b.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png',
-                                                      'http://c.tile3.opencyclemap.org/landscape/${z}/${x}/${y}.png'],
+    olmap.layers['osm_phys'] = new OpenLayers.Layer.OSM("OSM Landscape", [
+						      'https://a.tile.thunderforest.com/landscape/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993',
+                                                      'https://b.tile.thunderforest.com/landscape/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993',
+                                                      'https://c.tile.thunderforest.com/landscape/${z}/${x}/${y}.png?apikey=42a8aaad46fa4fd784104f2870221993'],
                                                          {attribution:'Tiles &copy; Gravitystorm, Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'});
 
     olmap.layers['bing'] = new OpenLayers.Layer.Bing({
