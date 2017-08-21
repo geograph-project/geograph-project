@@ -982,37 +982,40 @@ if ($grid_given)
 			$smarty->assign('thumbh',120);
 		}
 	}
-	
+
 	if ($grid_ok) {
-		//geotag the page	
+		//geotag the page
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 		list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 		$smarty->assign('lat', $lat);
 		$smarty->assign('long', $long);
 		$smarty->assign_by_ref('square', $square);
-		
+		$smarty->assign('intergrated_layers',     $CONF['intergrated_zoom_layers'][$square->reference_index]);
+		$smarty->assign('intergrated_zoom',       $CONF['intergrated_zoom'][$square->reference_index]);
+		$smarty->assign('intergrated_zoom_centi', $CONF['intergrated_zoom_centi'][$square->reference_index]);
+
 		//get a token to show a suroudding geograph map
 		$mosaic=new GeographMapMosaic;
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
-	
+
 		if ($CONF['forums']) {
 			$square->assignDiscussionToSmarty($smarty);
 		}
-		if ($db) 
+		if ($db)
 			$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' AND largemap_token != '' LIMIT 1"));
-				
+
 		//look for images from here...
 		$sphinx = new sphinxwrapper();
 		if (!isset($viewpoint_count) && $viewpoint_count = $sphinx->countImagesViewpoint($square->nateastings,$square->natnorthings,$square->reference_index,$square->grid_reference)) {
 			$smarty->assign('viewpoint_count', $viewpoint_count);
 			#$smarty->assign('viewpoint_query', $sphinx->q);
 		}
-		
+
 		if (!isset($mention_count) && $mention_count = $sphinx->countQuery("{$square->grid_reference} -grid_reference:{$square->grid_reference}","_images")) {
 			$smarty->assign('mention_count', $mention_count);
-		} 
-		
+		}
+
 		if ($square->natspecified && $square->natgrlen >= 6) {
 			$conv = new Conversions('');
 			list($gr6,$len) = $conv->national_to_gridref(
@@ -1025,14 +1028,14 @@ if ($grid_given)
 	}
 	else
 	{
-		$smarty->assign('errormsg', $square->errormsg);	
-		
+		$smarty->assign('errormsg', $square->errormsg);
+
 		//includes a closest match?
 		if (is_object($square->nearest))
 		{
 			$smarty->assign('nearest_distance', $square->nearest->distance);
 			$smarty->assign('nearest_gridref', $square->nearest->grid_reference);
-		
+
 			if (!empty($square->x) && !empty($square->y) && $square->nearest->distance < 15) {
 				//we where still able to work out the location, so
 				//get a token to show a suroudding geograph map

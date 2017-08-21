@@ -116,41 +116,42 @@ if ($grid_given)
 		$smarty->assign('northings', $square->northings);
 		$smarty->assign('x', $square->x);
 		$smarty->assign('y', $square->y);
-		
-	
 
-		//geotag the page	
+		//geotag the page
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
 		list($lat,$long) = $conv->gridsquare_to_wgs84($square);
 		$smarty->assign('lat', $lat);
 		$smarty->assign('long', $long);
 		$smarty->assign_by_ref('square', $square);
-		
+		$smarty->assign('intergrated_layers',     $CONF['intergrated_zoom_layers'][$square->reference_index]);
+		$smarty->assign('intergrated_zoom',       $CONF['intergrated_zoom'][$square->reference_index]);
+		$smarty->assign('intergrated_zoom_centi', $CONF['intergrated_zoom_centi'][$square->reference_index]);
+
 		list($latdm,$longdm) = $conv->wgs84_to_friendly($lat,$long);
 		$smarty->assign('latdm', $latdm);
 		$smarty->assign('longdm', $longdm);
-		
+
 		$smarty->assign('el', ($long > 0)?'E':'W');
 		$smarty->assign('nl', ($lat > 0)?'N':'S');
 		$smarty->assign('lat_abs', abs($lat));
 		$smarty->assign('long_abs', abs($long));
-		
+
 		//get a token to show a suroudding geograph map
 		$mosaic=new GeographMapMosaic;
 		$smarty->assign('map_token', $mosaic->getGridSquareToken($square));
-	
+
 		if (!empty($CONF['forums'])) {
 			$square->assignDiscussionToSmarty($smarty);
 		}
-		
+
 		//look for images from here...
 		$sphinx = new sphinxwrapper();
 		if ($viewpoint_count = $sphinx->countImagesViewpoint($square->getNatEastings(),$square->getNatNorthings(),$square->reference_index,$square->grid_reference)) {
 			$smarty->assign('viewpoint_count', $viewpoint_count);
 			$smarty->assign('viewpoint_query', $sphinx->q);
 		}
-		
+
 		if ($square->natspecified && $square->natgrlen >= 6) {
 			$conv = new Conversions('');
 			list($gr6,$len) = $conv->national_to_gridref(
@@ -173,7 +174,7 @@ if ($grid_given)
 			$dblock = sprintf("NI-%d-%d",intval($square->getNatEastings()/4000)*4000,intval($square->getNatNorthings()/3000)*3000);
 			$smarty->assign('dblock', $dblock);
 		}
-		
+
 		//lets add an overview map too
 		$overview=new GeographMapMosaic('largeoverview');
 		$overview->setCentre($square->x,$square->y); //does call setAlignedOrigin
@@ -185,11 +186,11 @@ if ($grid_given)
 		$smarty->assign_by_ref('rastermap', $rastermap);
 
 		$overview->assignToSmarty($smarty, 'overview');
-		
+
 		$smarty->assign('hectad', $hectad = $square->gridsquare.intval($square->eastings/10).intval($square->northings/10));
 		$db = GeographDatabaseConnection(true);
 		$smarty->assign_by_ref('hectad_row',$db->getRow("SELECT * FROM hectad_stat WHERE geosquares >= landsquares AND hectad = '$hectad' AND largemap_token != '' LIMIT 1"));
-		
+
 		if (!empty($_GET['taken'])) {
 			$smarty->assign('image_taken',$_GET['taken']);
 		}
@@ -199,13 +200,10 @@ if ($grid_given)
 		if (!empty($_GET['id'])) {
 			$smarty->assign('id',$_GET['id']);
 		}
-		
 	}
 	else
 	{
-		$smarty->assign('errormsg', $square->errormsg);	
-		
-
+		$smarty->assign('errormsg', $square->errormsg);
 	}
 }
 else
@@ -214,12 +212,9 @@ else
 	$smarty->assign('gridsquare', $_SESSION['gridsquare']);
 	$smarty->assign('eastings', $_SESSION['eastings']);
 	$smarty->assign('northings', $_SESSION['northings']);
-	
 }
 
 
 
 $smarty->display($template,$cacheid);
 
-	
-?>

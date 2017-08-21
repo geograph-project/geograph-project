@@ -99,7 +99,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 			<img src="{$static_host}/img/links/20/mapper.png" width="20" height="20" alt="draggable icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}"><b>Grid Squares</b></a>, <img src="{$static_host}/img/links/20/dragcenti.png" width="20" height="20" alt="dragable centi icon" align="absmiddle"/> <a href="/mapper/?t={$map_token}&amp;gridref_from={$gridref}&amp;centi=1"><b>Centisquares</b></a>
 			<a href="http://m.nearby.org.uk/gmap.php?dots=1#ll={$lat},{$long}&z=14&t=m">Mobile Coverage</a>
 		{/if} 
-		<a href="/mapper/coverage.php#lat={$lat}&amp;lon={$long}{if $square->reference_index == 2}&zoom=12&layers=FFT000000000B00FT{else}&zoom=7{/if}">Experimental <b>Coverage Map</b></a><sup style="color:red">New!</sup>
+		<a href="/mapper/coverage.php#lat={$lat}&amp;lon={$long}&amp;zoom={$intergrated_zoom}&amp;layers={$intergrated_layers}">Experimental <b>Coverage Map</b></a><sup style="color:red">New!</sup>
 	</li>
 	
 	<li style="list-style-type:none">Interactive Map: <img src="{$static_host}/img/links/20/clusters.png" width="20" height="20" alt="clusters icon" align="absmiddle"/> <a href="/browser/#!/grid_reference+%22{$gridref}%22/display=map_dots/pagesize=100"><b>Browser Map</b></a>, <a href="/mapper/quick.php?q={$hectad}">Quick Hectad Map</a><br/><br/></li>
