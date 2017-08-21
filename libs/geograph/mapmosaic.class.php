@@ -871,7 +871,7 @@ class GeographMapMosaic
 			case 4: $zoom = 9; break;
 			case 40:
 			case 80:
-				$zoom = $CONF['intergrated_zoom_centi'][$this->reference_index];
+				$zoom = $CONF['intergrated_zoom'][$this->reference_index];
 		}
 
 		$layers = !empty($CONF['intergrated_layers'][$this->reference_index])?$CONF['intergrated_layers'][$this->reference_index]:'';

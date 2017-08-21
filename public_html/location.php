@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id: browse.php 4205 2008-03-05 22:28:36Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -49,17 +49,17 @@ if (isset($_GET['getamap'])) {
 	$smarty->assign('getamap', 1);
 }
 
-//we can be passed a gridreference as gridsquare/northings/eastings 
+//we can be passed a gridreference as gridsquare/northings/eastings
 //or just gridref. So lets initialise our grid square
 $grid_given=false;
 $grid_ok=false;
 
 $smarty->assign('prefixes', $square->getGridPrefixes());
 $smarty->assign('kmlist', $square->getKMList());
-	
+
 //set by grid components?
 if (isset($_GET['p']))
-{	
+{
 	$grid_given=true;
 	//p=900y + (900-x);
 	$p = intval($_GET['p']);
@@ -73,7 +73,7 @@ if (isset($_GET['p']))
 
 //set by grid components?
 elseif (isset($_GET['setpos']))
-{	
+{
 	$grid_given=true;
 	$grid_ok=$square->setGridPos($_GET['gridsquare'], $_GET['eastings'], $_GET['northings']);
 	$smarty->assign('gridrefraw', $square->grid_reference);
@@ -84,8 +84,8 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 {
 	$grid_given=true;
 	$grid_ok=$square->setByFullGridRef($_GET['gridref']);
-		
-	//preserve inputs in smarty	
+
+	//preserve inputs in smarty
 	if ($grid_ok)
 	{
 		$smarty->assign('gridrefraw', stripslashes($_GET['gridref']));
@@ -94,7 +94,7 @@ elseif (isset($_GET['gridref']) && strlen($_GET['gridref']))
 	{
 		//preserve the input at least
 		$smarty->assign('gridref', stripslashes($_GET['gridref']));
-	}	
+	}
 }
 
 $cacheid='';
@@ -124,7 +124,7 @@ if ($grid_given)
 		$smarty->assign('lat', $lat);
 		$smarty->assign('long', $long);
 		$smarty->assign_by_ref('square', $square);
-		$smarty->assign('intergrated_layers',     $CONF['intergrated_zoom_layers'][$square->reference_index]);
+		$smarty->assign('intergrated_layers',     $CONF['intergrated_layers'][$square->reference_index]);
 		$smarty->assign('intergrated_zoom',       $CONF['intergrated_zoom'][$square->reference_index]);
 		$smarty->assign('intergrated_zoom_centi', $CONF['intergrated_zoom_centi'][$square->reference_index]);
 
