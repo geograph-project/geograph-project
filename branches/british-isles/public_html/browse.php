@@ -991,7 +991,7 @@ if ($grid_given)
 		$smarty->assign('lat', $lat);
 		$smarty->assign('long', $long);
 		$smarty->assign_by_ref('square', $square);
-		$smarty->assign('intergrated_layers',     $CONF['intergrated_zoom_layers'][$square->reference_index]);
+		$smarty->assign('intergrated_layers',     $CONF['intergrated_layers'][$square->reference_index]);
 		$smarty->assign('intergrated_zoom',       $CONF['intergrated_zoom'][$square->reference_index]);
 		$smarty->assign('intergrated_zoom_centi', $CONF['intergrated_zoom_centi'][$square->reference_index]);
 
@@ -1051,7 +1051,6 @@ else
 	$smarty->assign('gridsquare', $_SESSION['gridsquare']);
 	$smarty->assign('eastings', $_SESSION['eastings']);
 	$smarty->assign('northings', $_SESSION['northings']);
-	
 }
 
 if (!isset($_GET['inner'])) {
@@ -1074,7 +1073,7 @@ if (!isset($_GET['inner'])) {
 		$smarty->assign_by_ref('rastermap', $rastermap);
 
 	} else {
-		$overview=new GeographMapMosaic('overview');	
+		$overview=new GeographMapMosaic('overview');
 	}
 	$overview->assignToSmarty($smarty, 'overview');
 }
@@ -1083,5 +1082,3 @@ if (!isset($_GET['inner'])) {
 
 $smarty->display($template,$cacheid);
 
-	
-?>
