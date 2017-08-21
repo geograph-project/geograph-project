@@ -116,7 +116,7 @@ function loadMapInner(mapdiv,skippermalink) { //NOTE: does not center the map, t
         // Define the XYZ-based layer for NLS Map
         OpenLayers.Layer.NLSi = OpenLayers.Class(OpenLayers.Layer.XYZ, {
                 name: "NLS Maps API Ireland",
-                attribution: 'Historical maps from <a href="http://geo.nls.uk/maps/api/" target="_blank">NLS Maps API<\/a>',
+                attribution: 'Historical maps from <a href=" http://maps.nls.uk" target="_blank">National Library of Scotland<\/a>',
                 getURL: NLSTileUrlOSi,
                 sphericalMercator: true,
                 transitionEffect: 'resize',
