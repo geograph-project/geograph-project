@@ -19,9 +19,7 @@
 
 // Global variable with the tileserver
 var tileserver = "";
-//var tileserver_default = "uk.tileserver.com/_os1/r0/";
-var tileserver_default = "cz.tileserver.com/nls/";
-//var _gaq = _gaq || [];
+var tileserver_default = "nls.tileserver.com/nls/";
 
 // THE PUBLIC FUNCTIONS:
 // =====================
@@ -79,10 +77,12 @@ function NLSTileUrlOS( x, y, z ) {
   var no = (x+y) % 4;
   return "http://nls-"+no+".tileserver.com/nls/"+z+'/'+x+'/'+y+'.jpg';
 
-	// with numbers let's return directly the url to the tile on the server
-	var no = (x+y) % 5;
-	if (tileserver == "") return "http://t"+no+"."+tileserver_default+z+'/'+x+'/'+y+'.jpg';
-	else return "http://t"+no+"."+tileserver+z+'/'+x+'/'+y+'.jpg';
+  // with numbers let's return directly the url to the tile on the server
+  var no = (x + y) % 5;
+  if (tileserver == "")
+    return protocol+"t" + no + "." + tileserver_default + z + '/' + x + '/' + y + '.jpg';
+  else
+    return protocol+"t" + no + "." + tileserver + z + '/' + x + '/' + y + '.jpg';
 }
 
 
