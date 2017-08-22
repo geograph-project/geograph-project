@@ -213,8 +213,8 @@
     RewriteRule ^/p/(.*) http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
     RewriteRule ^/r/(.*) http://%{HTTP_HOST}/results/$1 [qsa,L,R=permanent]
     RewriteRule ^/(\d+)$ http://%{HTTP_HOST}/photo/$1 [qsa,L,R=permanent]
-    RewriteRule ^/m/photo/(\d+)$ http://m.geograph.org.uk/photo/$1 [qsa,L,R=permanent]
-    RewriteRule ^/mobile/photo/(\d+)$ http://m.geograph.org.uk/photo/$1 [qsa,L,R=permanent]
+    RewriteRule ^/m/photo/(\d+)$ https://m.geograph.org.uk/photo/$1 [qsa,L,R=permanent]
+    RewriteRule ^/mobile/photo/(\d+)$ https://m.geograph.org.uk/photo/$1 [qsa,L,R=permanent]
 
     ErrorDocument 404 /staticpage.php?page=404
 
