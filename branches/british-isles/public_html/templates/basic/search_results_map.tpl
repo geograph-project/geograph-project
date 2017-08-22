@@ -24,7 +24,7 @@
 	<script src="{$static_host}/ol/OlEpsg29902Projection.js"></script>
         <script src="{$static_host}/ol/km-graticule.js"></script>
         <script src="{"/ol/osgb-layer.js"|revision}"></script>
-        <script src="{"/ol/nls-api.js"|revision}"></script>
+        <script src="{"/js/nls.tileserver.com-api.js"|revision}"></script>
         <script src="{"/ol/geograph-openlayers.js"|revision}"></script>
 	
         <script src="https://maps.google.com/maps/api/js?v=3"></script>
