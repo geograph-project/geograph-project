@@ -311,7 +311,8 @@ function openMap(userclick) {
 	var myOptions = {
 		zoom: 5,
 		center: latlng,
-		mapTypeId: google.maps.MapTypeId.ROADMAP
+		mapTypeId: google.maps.MapTypeId.ROADMAP,
+		gestureHandling: 'greedy'
 	};
 	markers = new Array();
 	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
