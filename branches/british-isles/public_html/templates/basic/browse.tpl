@@ -118,10 +118,13 @@
 		</li>
 
 		{if $by ne 'centi' && $by ne 'viewcenti' && $mode eq 'normal'}
-			<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a></li>
+			<li style="margin-top:4px"><a href="{linktoself name="by" value="centi"}">See <b>geographical distribution</b> of pictures</a>
 			{if $lat}
+				<ul>
 				<li style="margin-top:4px">View on <a href="/mapper/coverage.php?centi=1#lat={$lat}&amp;lon={$long}&amp;zoom={$intergrated_zoom_centi}&amp;layers={$intergrated_layers}">Experimental <b>Coverage Map</b></a></li>
+				</ul>
 			{/if}
+			</li>
 		{/if}
 
 		<li style="margin-top:4px">View all images: <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=slide&amp;orderby=submitted&amp;do=1" title="View images in a Slide Show" class="nowrap"><b>slideshow</b></a>, <a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;do=1" title="View just thumbnails" class="nowrap"><b>thumbnails</b></a></li>
