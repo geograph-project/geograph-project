@@ -42,7 +42,7 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
 }
 
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
-        $mobile_url = "http://m.geograph.org.uk/near/".urlencode2($_GET['q']);
+        $mobile_url = "https://m.geograph.org.uk/near/".urlencode2($_GET['q']);
 }
 
 
