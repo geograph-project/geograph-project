@@ -17,7 +17,7 @@
 	{if $rss_url}
 	<link rel="alternate" type="application/rss+xml" title="RSS Feed" href="{$rss_url}"/>
 	{elseif $image && $image->gridimage_id && $image->moderation_status ne 'rejected'}
-        <link rel="alternate" type="application/json+oembed" href="http://api.geograph.org.uk/api/oembed?url=http%3A%2F%2Fwww.geograph.ie%2Fphoto%2F{$image->gridimage_id}&amp;format=json"/>
+        <link rel="alternate" type="application/json+oembed" href="https://api.geograph.org.uk/api/oembed?url=http%3A%2F%2Fwww.geograph.ie%2Fphoto%2F{$image->gridimage_id}&amp;format=json"/>
 	<link rel="alternate" type="application/vnd.google-earth.kml+xml" href="/photo/{$image->gridimage_id}.kml"/>
 	{elseif $profile && $profile->user_id}
 	<link rel="alternate" type="application/rss+xml" title="Geograph RSS for {$profile->realname}" href="/feed/userid/{$profile->user_id}.rss"/>
