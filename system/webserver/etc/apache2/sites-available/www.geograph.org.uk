@@ -18,7 +18,7 @@
 
 
     #create logformat like combined but with our user id and script timing
-    LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%{host}i\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n" geograph
+    LogFormat "%{X-Forwarded-For}i %l %{user_id}n %t \"%r\" \"%{host}i\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\" %{php_timing}n %{X-Forwarded-Proto}i" geograph
 
     #don't log heartbeat requests
     SetEnvIf Request_Method "OPTIONS" dontlog
@@ -82,7 +82,7 @@
     RewriteCond %{REQUEST_URI} !^/stuff/captcha.php
     RewriteCond %{REQUEST_URI} !^/maps/
     RewriteCond %{REQUEST_URI} !^/robots
-    RewriteCond %{REQUEST_URI} !^/stamp.php
+    RewriteCond %{REQUEST_URI} !^/stamp
     RewriteRule ^/(.*)         http://www.geograph.org.uk/$1 [L,R=permanent]
 
 	#Special robots file for archiveable - served on ALL domains except archive which should see none
@@ -122,7 +122,7 @@
 	#canonical for feeds (georss is now the default for .rss)
     RewriteRule ^/(feed|profile)/(.*)\.georss$   /$1/$2.rss [L,R=permanent]
 
-
+    RewriteRule ^/geotrip/(.*)   /geotrips/$1 [L,R=permanent]
 
     #the following includes a fix as some useragents auto add a / to what it thinks is a folder
 
@@ -193,6 +193,8 @@
     RewriteRule ^/discuss/feed/forum([0-9]+)\.([\w]+) /discuss/syndicator.php?forum=$1&extension=$2 [qsa]
     RewriteRule ^/discuss/feed/forum([0-9]+)/?([^/]*) /discuss/syndicator.php?forum=$1&format=$2 [qsa]
 
+    RewriteRule ^/stamped/(\d+) /stamp.php?id=$1 [qsa]
+
     RewriteRule ^/get-juppy.jnlp /get-juppy.php [qsa]
     RewriteRule ^/superlayer.kml /kml-superlayer.php [qsa]
 
@@ -219,25 +221,25 @@
     ErrorDocument 404 /staticpage.php?page=404
 
     #list of known sites that 'hotlink'
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?myspace\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?facebook\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?twitter\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?friendfeed\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?topsy\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?blogspot\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?livejournal\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?keyhole\.com/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?hbwalkersaction\.org\.uk/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?phlap\.net/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?valendale\.myby\.co\.uk/ [NC,OR]
-    RewriteCond %{HTTP_REFERER} ^http://(.+\.)?youtube\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?myspace\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?facebook\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?twitter\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?friendfeed\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?topsy\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?blogspot\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?livejournal\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?28dayslater\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?keyhole\.com/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?hbwalkersaction\.org\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?secretscotland\.org\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?phlap\.net/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?valendale\.myby\.co\.uk/ [NC,OR]
+    RewriteCond %{HTTP_REFERER} ^https?://(.+\.)?youtube\.com/ [NC,OR]
     RewriteCond %{HTTP_REFERER} 100393082791296590616.00044b9ad76c86038d52e [NC,OR]
     RewriteCond %{HTTP_REFERER} (thread|topic|forum|blog) [NC]    
-    RewriteRule /(geo|)photos/\d.*\.jpg$ http://s9.geograph.org.uk$0 [R=307,L]
+    RewriteRule /(geo|)photos/\d.*\.jpg$ https://s9.geograph.org.uk$0 [R=307,L]
 
-    RewriteRule ^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$ http://s0.geograph.org.uk$0 [R=permanent,L]
+    RewriteRule ^/(geo|)photos/\d.*/\d{6,8}_\w{8}.jpg$ https://s0.geograph.org.uk$0 [R=permanent,L]
 
 <Location /sitemap/>
     DirectoryIndex index.html
@@ -255,6 +257,13 @@ RewriteRule ^/rss/(.*\.kmz)         http://kml.geograph.org.uk/kml/$1 [L,R=perma
 </Files>
 <Files sendfile.php>
         XSendFile on
+</Files>
+
+<Files *.kml>
+	Header set Access-Control-Allow-Origin "*"
+</Files>
+<Files *.kmz>
+	Header set Access-Control-Allow-Origin "*"
 </Files>
 
 

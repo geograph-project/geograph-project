@@ -184,6 +184,12 @@ if ($grid_given)
 	if ($grid_ok)
 	{
 		$smarty->assign('gridref', $square->grid_reference);
+		if ($square->reference_index == 2) {
+	                $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://www.geograph.ie/gridref/{$square->grid_reference}\"/>");
+		} else {
+	                $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://www.geograph.org.uk/gridref/{$square->grid_reference}\"/>");
+		}
+
 		$smarty->assign('gridsquare', $square->gridsquare);
 		$smarty->assign('eastings', $square->eastings);
 		$smarty->assign('northings', $square->northings);
@@ -478,7 +484,7 @@ if ($grid_given)
 				        $bits = array();
                         	        $bits[] = "uniqueserial(atakenyear)";
                 	                $bits[] = "uniqueserial(takendays)";
-        	                        $bits[] = "uniqueserial(classcrc)";
+        	                        //$bits[] = "uniqueserial(classcrc)";
 	                                $bits[] = "uniqueserial(scenti)";
                         	        if (!preg_match('/user_id/',$q)) {
                 	                        $bits[] = "uniqueserial(auser_id)";
@@ -487,7 +493,7 @@ if ($grid_given)
 
                                         if (method_exists($client,'SetOuterSelect')) {
                                                 $client->SetOuterSelect("myint ASC,sequence ASC",0,$limit); //sets the final results
-                                                $sphinx->sort = "id DESC"; //this is the INNER sort, applies BEFORE the UDF
+                                                $sphinx->sort = "@random"; //this is the INNER sort, applies BEFORE the UDF
                                                 $sphinx->pageSize = 1000; //this means sample works from the last 1000 submissions.
                                         } else {
                                                 $sphinx->sort = "myint ASC,sequence ASC";
@@ -516,7 +522,7 @@ if ($grid_given)
 							SET gridsquare_id = {$square->gridsquare_id},method = '$method',$updates,created=NOW()
 							ON DUPLICATE KEY UPDATE uses=uses+1,$updates");
 
-					$memcache->name_set('bx',$mkey,$imagelist->images,$memcache->compress,$memcache->period_long);
+					$memcache->name_set('bx',$mkey,$imagelist->images,$memcache->compress,$memcache->period_med);
 				}
 
 				$smarty->assign_by_ref('images', $imagelist->images);
@@ -830,13 +836,13 @@ if ($grid_given)
 				WHERE gridsquare_id = '{$square->gridsquare_id}'
 				AND $user_crit $custom_where
 				GROUP BY nateastings DIV 100, natnorthings DIV 100,(nateastings = 0)");
-				
+
 				$maximages = 0;
 				$hasnone = 0;
 				foreach ($all as $row) {
 					if ($row[0]) {
 						$centi = "unspecified";
-						$x = $y = 50; 
+						$x = $y = 50;
 						$hasnone = 1;
 					} else {
 						$x = ($row[3]%10);
@@ -946,13 +952,18 @@ if ($grid_given)
 			$square->loadCollections();
 		
 			//todo ideally here we only want to forward teh user_id IF they have images in the square, or a mod, for greater cachablity, but the chicken and the egg thingy....
-			$images=$square->getImages($inc_all_user,$custom_where,'order by if(ftf between 1 and 4,ftf,5),gridimage_id');
+			$images=$square->getImages($inc_all_user,$custom_where,'order by if(ftf between 1 and 4,ftf,5),gridimage_id limit 100');
 			$square->totalimagecount = count($images);
 		
 			//otherwise, lets gether the info we need to display some thumbs
 			if ($square->totalimagecount)
 			{
-			
+				if (count($_GET) == 2 && $square->totalimagecount == 100 && !empty($_GET['centi'])) {
+
+					header("Location: /search.php?searchtext=centi(".urlencode($_GET['centi']).")&orderby=submitted&do=1");
+					exit;
+
+				}
 				if ($_GET['displayclass'] == 'tiles2') {
 					$images2 = array();
 					$images1 = array();
