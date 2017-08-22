@@ -91,6 +91,7 @@
 				center: point,
 				zoom: zoom,
 				mapTypeId: mapTypeId,
+				gestureHandling: 'greedy',
 				streetViewControl: true,
 				mapTypeControlOptions: {
 					mapTypeIds: mapTypeIds,

@@ -343,7 +343,7 @@ var mapTypeIds;
 //Define OSM map type pointing at the OpenStreetMap tile server
 map.mapTypes.set("osm", new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
-                return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                return "https://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
         },
         tileSize: new google.maps.Size(256, 256),
         name: "OSM",

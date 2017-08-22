@@ -781,6 +781,7 @@ class RasterMap
 							center: point,
 							zoom: 13,
 							mapTypeId: mapTypeId,
+							gestureHandling: 'greedy',
 							streetViewControl: issubmit?true:false,
 							mapTypeControlOptions: {
 								mapTypeIds: mapTypeIds,
