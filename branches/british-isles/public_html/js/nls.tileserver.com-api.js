@@ -21,6 +21,8 @@
 var tileserver = "";
 var tileserver_default = "nls.tileserver.com/nls/";
 
+var protocol = ('https:' == document.location.protocol ? 'https://' : 'http://');
+
 // THE PUBLIC FUNCTIONS:
 // =====================
 
@@ -75,7 +77,7 @@ function NLSTileUrlOS( x, y, z ) {
 
   // HACK - ALWAYS USE THE NEW CDN ADDRESS
   var no = (x+y) % 4;
-  return "http://nls-"+no+".tileserver.com/nls/"+z+'/'+x+'/'+y+'.jpg';
+  return protocol+"nls-"+no+".tileserver.com/nls/"+z+'/'+x+'/'+y+'.jpg';
 
   // with numbers let's return directly the url to the tile on the server
   var no = (x + y) % 5;
@@ -106,8 +108,7 @@ function NLSTileUrlOSi( x, y, z ) {
 	}
 
         var y2 = (1 << z) - y - 1;
-        return 'http://geo.nls.uk/maps/ireland/gsgs4136/'+z+'/'+x+'/'+y2+'.png';
-
+        return protocol+'geo.nls.uk/maps/ireland/gsgs4136/'+z+'/'+x+'/'+y2+'.png';
 }
 
 
