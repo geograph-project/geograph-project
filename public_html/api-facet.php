@@ -1,7 +1,9 @@
 <?
 
+$ABORT_GLOBAL_EARLY = true;
+
+require_once('geograph/global.inc.php');
 include('3rdparty/facet-functions.php');
-require_once('geograph/functions.inc.php');
 
 
 if (!defined('SPHINX_INDEX')) {
