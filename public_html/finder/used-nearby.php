@@ -118,10 +118,10 @@ ul a.used {
 			$smarty->assign('gridref',$sphinx->qclean);
 		}
 
+		$sph = GeographSphinxConnection('sphinxql',true);
+
 		$prev_fetch_mode = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
-		$sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
 
 		$where = "match(".$sph->Quote($sphinx->q).")";
 

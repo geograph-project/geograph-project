@@ -84,7 +84,7 @@ if (!empty($_GET['olbounds'])) {
 
 if (empty($error)) {
 
-	$sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
+	$sph = GeographSphinxConnection('sphinxql',true);
 
 	$sql['tables'] = array();
 	$sql['tables']['8'] = 'sample8';

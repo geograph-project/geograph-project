@@ -171,6 +171,7 @@ function processImage(row) {
 		match = match + " ("+optional.join("|")+")";
 
 	var data = {
+		mode: mode,
 		select: 'id,title,myriad,hectad,grid_reference,takenyear,takenmonth,takenday,hash,realname,user_id,place,county,country,hash,scenti',
 		match: match,
 		where: 'id!='+gridimage_id,

@@ -257,11 +257,10 @@ if (!empty($_GET['q'])) {
 
 print "<!-- ($lat,$lng) -->";
 
+		$sph = GeographSphinxConnection('sphinxql',true);
+
                 $prev_fetch_mode = $ADODB_FETCH_MODE;
                 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
-                $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
-
 
 		$where = array();
                 if (!empty($sphinxq))
@@ -396,7 +395,7 @@ if (!empty($_GET['d']) && !empty($final)) {
 
 	} else {
 		if (empty($sph)) {
-	                $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
+			$sph = GeographSphinxConnection('sphinxql',true);
 		}
 		print "<p>No Results found. Try a <a href=\"/of/$qu\" rel=\"nofollow\">keyword search for <b>$qh</b></a> ";
 		$sph->query("SELECT id FROM sample8 WHERE MATCH(".$sph->quote($_GET['q']).") LIMIT 0");

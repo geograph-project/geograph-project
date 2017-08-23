@@ -38,6 +38,7 @@ class sphinxwrapper {
 
 	public $filters = array();
 
+	private $db = null;
 	private $client = null;
 
 	public function __construct($q = '',$newformat = false) {
@@ -828,7 +829,7 @@ split_timer('sphinx'); //starts the timer
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
 
-			$db=GeographDatabaseConnection(true);
+			$db=$this->_getDB(true);
 
 			$ids = array_keys($res["matches"]);
 
@@ -879,7 +880,7 @@ split_timer('sphinx'); //starts the timer
 	function setSort($sort) {
 		$this->sort = $sort;
 	}
-	
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
@@ -889,28 +890,16 @@ split_timer('sphinx'); //starts the timer
 		//check we have a db object or if we need to 'upgrade' it
 		if (!is_object($this->db) || ($this->db->readonly && !$allow_readonly) ) {
 			$this->db=GeographDatabaseConnection($allow_readonly);
-		} 
+		}
 		return $this->db;
 	}
-	
-	function &_getClient()
+
+	function &_getClient($new=false)
 	{
-		if (is_object($this->client))
-			return $this->client;
-		
-		global $CONF;
-		
-		split_timer('sphinx'); //starts the timer
-		
-		require_once ( "3rdparty/sphinxapi.php" );
-		
-		$this->client = new SphinxClient ();
-		$this->client->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
-		
-		split_timer('sphinx','connect'); //logs the wall time
-		
+		if (!is_object($this->client))
+			$this->client = GeographSphinxConnection('client',$new);
+
 		return $this->client;
 	}
-	
 }
 

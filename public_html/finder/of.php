@@ -229,10 +229,10 @@ if (!empty($_GET['q'])) {
 
 	$limit = 50;
 
+		$sph = GeographSphinxConnection('sphinxql',true);
+
                 $prev_fetch_mode = $ADODB_FETCH_MODE;
                 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
-                $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
 
 #########################################
 # experient to find related images

@@ -207,7 +207,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 
 		if (preg_match('/@grid_reference \(/',$sphinx->q) && preg_match('/^\w{1,2}\d{4}$/',$sphinx->qclean)) {
 
-			$sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
+			$sph = GeographSphinxConnection('sphinxql',true);
 
 				//paging is still done in mysql, because we CANT filter by type :(
 			$rows = $sph->getAll($sql = "SELECT GROUPBY() AS cid, COUNT(*) cnt FROM sample8 WHERE MATCH(".$sph->Quote($sphinx->q).") GROUP BY content_ids ORDER BY cnt DESC LIMIT 200");

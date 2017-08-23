@@ -222,6 +222,36 @@ function GeographDatabaseConnection($allow_readonly = false) {
 
 #################################################
 
+//this is legacy. Some scripts still use this! (should use GeographSphinxConnection instead!)
+if (empty($CONF['sphinxql_dsn']) && !empty($CONF['sphinx_hostnew']))
+	$CONF['sphinxql_dsn'] = "mysql://{$CONF['sphinx_hostnew']}:{$CONF['sphinx_portql']}/";
+
+function GeographSphinxConnection($type='sphinxql',$new = false) {
+	global $CONF;
+	$host = ($new && !empty($CONF['sphinx_hostnew']))?$CONF['sphinx_hostnew']:$CONF['sphinx_host'];
+	//todo, this could be inteligent, and if sphinx_host unavailable, switch to new host transparently
+
+	if ($type=='sphinxql' || $type=='mysql') {
+
+		$sph = NewADOConnection("mysql://{$host}:{$CONF['sphinx_portql']}/") or die("unable to connect to sphinx. ".mysql_error());
+		if ($type=='mysql') {
+			return $sph->_connectionID;
+		}
+		return $sph;
+
+        } elseif ($type=='client') {
+
+                require_once ( "3rdparty/sphinxapi.php" );
+
+                $client = new SphinxClient ();
+                $client->SetServer ( $host, $CONF['sphinx_port'] );
+
+		return $client;
+        }
+}
+
+#################################################
+
 if (!empty($CONF['memcache']['app'])) {
 	
 	if (!function_exists('memcache_pconnect')) {
