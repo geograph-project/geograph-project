@@ -1,7 +1,9 @@
 <?
 
+$ABORT_GLOBAL_EARLY = true;
+
+require_once('geograph/global.inc.php');
 include('3rdparty/facet-functions.php');
-require_once('geograph/functions.inc.php');
 
 if (!defined('SPHINX_INDEX')) {
         define('SPHINX_INDEX',empty($_GET['recent'])?"sample8":"sample8E,sample8D");
@@ -258,6 +260,11 @@ if (!empty($_GET['debug']))
                                              $res['data'] = mysql_fetch_array($result,MYSQL_ASSOC);
                                         }
                                 }
+
+if (function_exists("call_with_results")) {
+        call_with_results($res);
+}
+
 if (empty($res['meta'])) {
 	$res['meta'] = array('error'=>'Unable to obtain results');
 }

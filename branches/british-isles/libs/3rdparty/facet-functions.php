@@ -1,7 +1,7 @@
 <?
 
 function sphinx_client() {
-	return GeographSphinxConnection('client',false);
+	return GeographSphinxConnection('client',true);
 }
 function mysql_sphinx() {
 	return GeographSphinxConnection('mysql',true);
