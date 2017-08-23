@@ -1,21 +1,21 @@
-<?php 
+<?php
 /**
  * $Project: GeoGraph $
  * $Id: conversion.php 2960 2007-01-15 14:33:27Z barry $
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2007 Barry Hunter (geo@barryhunter.co.uk)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -64,14 +64,14 @@ if (empty($q)) {
 }
 
 $searchmode = (isset($_GET['mode']) && preg_match('/^\w+$/' , $_GET['mode']))?$_GET['mode']:'';
-		
+
 $template = "search_service.tpl";
 $cacheid = md5($q.'|'.$searchmode).(isset($_GET['inner'])+1).(isset($_GET['feedback'])+1);
 
 if (!empty($_GET['before']) && preg_match('/^\d{4}(-\d{2})*$/',$_GET['before'])) {
-	$cacheid .= "b".$_GET['before'];	
+	$cacheid .= "b".$_GET['before'];
 } elseif (!empty($_GET['after']) && preg_match('/^\d{4}(-\d{2})*$/',$_GET['after'])) {
-	$cacheid .= "a".$_GET['after'];	
+	$cacheid .= "a".$_GET['after'];
 }
 if (!empty($_GET['function']) && preg_match('/^\w+$/',$_GET['function'])) {
         $cacheid .= "ff".$_GET['function'];
@@ -100,12 +100,12 @@ if (!$smarty->is_cached($template, $cacheid))
 			$r = "\t--invalid Grid Ref--";
 			$nocache = 1;
 		}
-		
+
 	} else if (preg_match('/^([a-zA-Z]{1,2})(\d{2,10})\b/',$q,$matches) && $matches[1] != 'tp') {
-	
+
 		$square=new GridSquare;
 		$grid_ok=$square->setByFullGridRef($matches[0],true);
-					
+
 		if ($grid_ok) {
 			$gr = $square->grid_reference;
 			$e = $square->nateastings;
@@ -115,7 +115,7 @@ if (!$smarty->is_cached($template, $cacheid))
 			$r = "\t--invalid Grid Ref--";
 			$nocache = 1;
 		}
-	} 
+	}
 
 	if (preg_match('/\bp(age|)(\d+)\s*$/',$q,$m)) {
 		$offset = min(max((intval($m[2])-1)*25,0),984);
@@ -127,16 +127,16 @@ if (!$smarty->is_cached($template, $cacheid))
 	$qo = $q;
 	if (strlen($qo) > 64) {
 		$qo = '--complex query--';
-	} 
+	}
 	if ($r) {
 		//Handle Error
-		
+
 	} elseif (!empty($e)) {
 		//Location search
-		
+
 		require_once('geograph/conversions.class.php');
 		$conv = new Conversions;
-		
+
 		$e = floor($e/1000);
 		$n = floor($n/1000);
 		$grs = array();
@@ -144,7 +144,6 @@ if (!$smarty->is_cached($template, $cacheid))
 			for($y=$n-2;$y<=$n+2;$y++) {
 				list($gr2,$len) = $conv->national_to_gridref($x*1000,$y*1000,4,$square->reference_index,false);
 				$grs[] = $gr2;
-				
 			}
 		}
 		if (strpos($q,'~') === 0) {
@@ -154,15 +153,14 @@ if (!$smarty->is_cached($template, $cacheid))
 			$q .= " (".join(" | ",$grs).")";
 		}
 		$qo .= " near $gr";
-	} 
-	
+	}
+
 	if (1) {
 		//text query
-	
-		
+
 		// --------------
-		require ( "3rdparty/sphinxapi.php" );
-		
+		$cl = GeographSphinxConnection('client', !empty($_GET['new']));
+
 		$mode = SPH_MATCH_ALL;
 		if (strpos($q,'~') === 0) {
 			$q = preg_replace('/^\~/','',$q);
@@ -170,19 +168,13 @@ if (!$smarty->is_cached($template, $cacheid))
 				$mode = SPH_MATCH_ANY;
 		} elseif (preg_match('/[~\|\(\)@"\/-]/',$q)) {
 			$mode = SPH_MATCH_EXTENDED;
-		} 
+		}
 		$index = "gi_stemmed,gi_stemmed_delta";
-
-if (!empty($_GET['new'])) 
-	$CONF['sphinx_host'] = '192.168.77.45';
 
 //if (preg_match('/crossgrid/i',$q) && (!preg_match('/supplemental/i',$q) || preg_match('/geograph|-supplemental/',$q)) ) {
 //	die("unable to execute query");
 //}
 
-		
-		$cl = new SphinxClient ();
-		$cl->SetServer ( $CONF['sphinx_host'], $CONF['sphinx_port'] );
 		if ($searchmode) {
 			switch ($searchmode) {
 				case '1': //default ranking mode
@@ -200,10 +192,10 @@ if (!empty($_GET['new']))
 					$words = preg_split('/\s+/',$q);
 					$quorum = max(1,count($words) - 2);
 					$ordered = implode(' << ',$words);
-					
+
 					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
 					$q = "\"^$q\$\" | \"^$q\" | \"$q\" | ($ordered) | ($q) | \"$q\"/$quorum";
-				
+
 					if ($searchmode == 5) {
 						$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
 					}
@@ -226,7 +218,7 @@ if (!empty($_GET['new']))
 				case '12': //just latest
 					$cl->SetSortMode ( SPH_SORT_EXTENDED, "@id DESC" );
 					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
-					$cl->SetRankingMode(SPH_RANK_NONE); //we dont need any ranking... 
+					$cl->SetRankingMode(SPH_RANK_NONE); //we dont need any ranking...
 					break;
 				case '13': 
 					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
@@ -235,28 +227,28 @@ if (!empty($_GET['new']))
 				case '4': //try some field weights
 					$cl->SetIndexWeights(array('title'=>100,'comment'=>30));
 					break;
-				case '3'://find some popular squares... 
+				case '3'://find some popular squares...
 					$sphinx = new sphinxwrapper($q);
 					$sphinx->pageSize = 40;
 					$sphinx->processQuery();
-					
+
 					$ids = $sphinx->returnIds(1,'sqim');
-					
+
 					if (empty($ids)) {
 						die("unable to identify images");
 					}
 					$id_str = implode(',',$ids);
-					
+
 					$db = GeographDatabaseConnection(true);
 					$grs = $db->GetCol("select grid_reference from gridsquare where gridsquare_id in ($id_str)");
-					
+
 					$gr_str = implode('|',$grs);
-					
+
 					$words = preg_split('/\s+/',$q);
 					$quorum = max(1,count($words) - 1);
-					
+
 					$q = "\"$q\"/$quorum @grid_reference ($gr_str)";
-					
+
 					$cl->SetMatchMode(SPH_MATCH_EXTENDED);
 					$cl->SetRankingMode(SPH_RANK_WORDCOUNT);
 					break;
@@ -305,9 +297,9 @@ if (!empty($_GET['function'])) {
 			}
 			$crit = new SearchCriteria();
 			$days = $crit->toDays($_GET['before']);
-			
+
 			$cl->SetFilterRange('takendays',1,$days);
-			
+
 		} elseif (!empty($_GET['after']) && preg_match('/^\d{4}(-\d{2})*/',$_GET['after'])) {
 			while (strlen($_GET['after'])<10) {
 				$_GET['after'] .= "-01";
@@ -315,7 +307,7 @@ if (!empty($_GET['function'])) {
 			$crit = new SearchCriteria();
 			$days = $crit->toDays($_GET['after']);
 			$now = $crit->toDays('NOW()');
-					
+
 			$cl->SetFilterRange('takendays',$days,$now);
 		}
 
@@ -332,7 +324,7 @@ if (!empty($_GET['debug'])) {
 	print_r($CONF['sphinx_prefix'].$index);
 	print_r($res);
 }
-		
+
 		if (strlen($q) < 64 && $mode != SPH_MATCH_EXTENDED && !isset($_GET['inner']) && !isset($_GET['feedback']))
 			$smarty->assign("suggestions",didYouMean($q,$cl));
 		if (isset($_GET['inner'])) {
@@ -343,7 +335,7 @@ if (!empty($_GET['debug'])) {
 			 $smarty->assign("q",$qo);
 		}
 		// --------------
-		
+
 		if ( $res===false )
 		{
 			print "\tQuery failed: -- please try again later.\n".$cl->getLastError();
@@ -352,22 +344,21 @@ if (!empty($_GET['debug'])) {
 		{
 			if ( $cl->GetLastWarning() )
 				print "\nWARNING: " . $cl->GetLastWarning() . "\n\n";
-		
+
 			$query_info = "Query '$qo' retrieved ".count($res['matches'])." of $res[total_found] matches in $res[time] sec.\n";
 		}
-		
+
 		if (is_array($res["matches"]) ) {
-		
+
 			$ids = array_keys($res["matches"]);
-			
+
 			if (!empty($_GET['id'])) {
 				header("Location: http://www.geograph.org.uk/search.php?marked=1&markedImages=".join(",",$ids));
 				exit;
 			}
-			
-			
+
 			$where = "gridimage_id IN(".join(",",$ids).")";
-		
+
 			$sql = "SELECT gridimage_id,grid_reference,title,realname,user_id
 			FROM gridimage_search
 			WHERE $where
@@ -375,11 +366,9 @@ if (!empty($_GET['debug'])) {
 		} else {
 			$r = "\t--none--";
 		}
-			
 	}
-	
+
 	if ($sql) {
-		
 		if ($searchmode) {
 			$db = GeographDatabaseConnection(false);
 			$ins = "INSERT INTO search_ranking_results SET
@@ -391,13 +380,12 @@ if (!empty($_GET['debug'])) {
 		} else {
 			$db = GeographDatabaseConnection(true);
 		}
-		
+
 		$result = mysql_query($sql) or die ("Couldn't select query : $sql " . mysql_error() . "\n");
 
 		if (mysql_num_rows($result) > 0) {
 			require_once('geograph/gridimage.class.php');
-			
-		
+
 			$rows = array();
 			while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
 				$rows[$row['gridimage_id']] = $row;
@@ -470,7 +458,4 @@ function didYouMean($q,$cl) {
 	}
 	return $arr;
 }
-	
-exit;
 
-?>

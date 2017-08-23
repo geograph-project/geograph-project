@@ -49,12 +49,10 @@ if (!empty($_GET['query']) && !empty($_GET['skip'])) {
 		$results = array();
 		$row = array('id' => intval($_GET['skip']));
 
+		$sph = GeographSphinxConnection('sphinxql',true);
 
                 $prev_fetch_mode = $ADODB_FETCH_MODE;
                 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
-                $sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
-
 
                                                 $where = "match(".$sph->Quote($query).")";
                                                 $rows2 = $sph->getAll($sql = "
@@ -166,10 +164,10 @@ if (true) { //actully we can run the code, even in the case of an empty query...
 			$smarty->assign('gridref',$sphinx->qclean);
 		}
 
+		$sph = GeographSphinxConnection('sphinxql',true);
+
 		$prev_fetch_mode = $ADODB_FETCH_MODE;
 		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
-
-		$sph = NewADOConnection($CONF['sphinxql_dsn']) or die("unable to connect to sphinx. ".mysql_error());
 
 		$where = "match(".$sph->Quote($sphinx->q).")";
 
