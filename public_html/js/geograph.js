@@ -475,6 +475,16 @@ function clearMarkedImages() {
 	} 
 }
 
+function showMarkedLink() {
+	if (document.getElementById('markedLink')) {
+	        current = readCookie('markedImages');
+        	if (current && current != '') {
+	                document.getElementById('markedLink').style.display='';
+		}
+        }
+}
+AttachEvent(window,window.addEventListener?'DOMContentLoaded':'load',showMarkedLink,false);
+
 //	-	-	-	-	-	-	-	-
 
 function createCookie(name,value,days) {
