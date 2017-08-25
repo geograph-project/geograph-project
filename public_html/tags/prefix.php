@@ -36,13 +36,21 @@ if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	# let the browser know what's coming
 	header("Content-type: application/octet-stream");
 	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".csv\"");
+} elseif (isset($_GET['output']) && $_GET['output'] == 'alpha') {
+	$template='tags_prefix.tpl';
+} elseif (isset($_GET['output']) && $_GET['output'] == 'context') {
+	$template='tags_prefix_subject.tpl';
 } else {
 	$template='statistics_table.tpl';
 }
 
+
 $cacheid='tags/prefix';
 if (!empty($_GET['prefix'])) {
 	$cacheid .= "|".md5($_GET['prefix']);
+}
+if (!empty($_GET['all'])) {
+	$cacheid .= "|all";
 }
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -54,43 +62,80 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
+        $extra = array();
 
 	if (empty($_GET['prefix'])) {
-		$title = "Tags by Prefix";
-		$sql = "select substring_index(tagtext,':',1) as prefix,count(*) as tags,sum(count) as images from tag_stat where tagtext like '%:%' group by 1 having avg(users) > 1.1 and tags > 3";
+		$sql = "select substring_index(tagtext,':',1) as prefix,count(*) as tags,sum(count) as images from tag_stat where tagtext like '%:%' group by 1";
+
+		if (!empty($_GET['all'])) {
+			$title = "All Tag Prefixes";
+			$link = " | Switch to <a href=?>Popular Prefixes</a>";
+		} else {
+			$title = "Popular Tag Prefixes";
+			$sql .= " having avg(users) > 1.1 and tags > 3";
+			$link = " | Switch to <a href=?all=1>All Prefixes</a>";
+		}
 
 		$table = $db->GetAll($sql);
 
-		foreach($table as $idx => $row)
-			$table[$idx]['prefix'] = '<a href="?prefix='.urlencode($row['prefix']).'">'.htmlentities($row['prefix'])."</a>";
+		if (empty($_GET['output']))
+			foreach($table as $idx => $row)
+				$table[$idx]['prefix'] = '<a href="?prefix='.urlencode($row['prefix']).'">'.htmlentities($row['prefix'])."</a>";
 
-		$smarty->assign('headnote', '<a href="/tags/">Back to Tags Homepage</a><hr>');
+		$smarty->assign('headnote', '<a href="/tags/">Back to Tags Homepage</a> '.$link.'<hr>');
 		$smarty->assign('footnote', "Note: the images column is the total number of tags on all images, if an image has multiple prefix tags will be counted multiple times");
 	} else {
 		$q = $db->Quote($_GET['prefix']);
 		$title = "[".htmlentities($_GET['prefix'])."] Prefixed Tags";
 
-		$sql = "SELECT tag,count as images,description FROM tag_stat INNER JOIN tag USING (tag_id) WHERE prefix = $q AND status = 1 AND count > 1 ORDER BY tag LIMIT 1000";
-
+		$limit = 1500;
+		if ($template=='tags_prefix_subject.tpl') {
+			$sql = "SELECT tag,count as images,grouping,maincontext
+			FROM tag_stat INNER JOIN tag USING (tag_id) INNER JOIN subjects ON (subject=tag) left join category_primary on (top = maincontext)
+			WHERE prefix = $q AND status = 1 ORDER BY sort_order,subject";
+		} else {
+			$sql = "SELECT tag,count as images,description FROM tag_stat INNER JOIN tag USING (tag_id)
+			WHERE prefix = $q AND status = 1 ORDER BY tag LIMIT $limit";
+		}
 		$table = $db->GetAll($sql);
 
 		$p = urlencode2($_GET['prefix']).":";
-		foreach($table as $idx => $row)
-			$table[$idx]['tag'] = '<a href="/tagged/'.$p.urlencode2($row['tag']).'">'.htmlentities($row['tag'])."</a>";
+		if ($template=='statistics_table.tpl')
+			foreach($table as $idx => $row)
+				$table[$idx]['tag'] = '<a href="/tagged/'.$p.urlencode2($row['tag']).'">'.htmlentities($row['tag'])."</a>";
 
-		if (count($table) == 1000)
-			$smarty->assign('footnote', "Note: Currently this table is limited to display 1000 tags. There may be more");
+		if (count($table) == $limit)
+			$smarty->assign('footnote', "Note: Currently this table is limited to display $limit tags. There may be more");
 
+		$views = (count($table) > 40)?array(''=>'In a Table','alpha'=>'Grouped by letter'):array();
 		switch($_GET['prefix']) {
 			case 'top': $message = '<tt>top</tt> is a special reserved prefix which we use for <a href="primary.php">Geographical Context</a>.'; break;
-			case 'type': $message = '<tt>type</tt> is a special reserved prefix which we use for classifying images as per <a href="/article/Image-Type-Tags">Image Type Tags</a>. NOTE: Type Tags have only recently been introduced, so only recent submitted images currently have type these prefixed tags.'; break;
+			case 'type': $message = '<tt>type</tt> is a special reserved prefix which we use for classifying images as per <a href="/article/Image-Type-Tags-update">Image Type Tags</a>. NOTE: Type Tags have only recently been introduced, so only recent submitted images currently have type these prefixed tags.'; break;
 			case 'bucket': $message = '<tt>bucket</tt> prefix tags where an experiment in having specially defined and listed tags. Now mostly superceded by other taggins system, note in particular that only a small selection of images have had these tags assigned. <a href="/article/Image-Buckets">Read more about Bucket Tags</a>.'; break;
-			case 'subject': $message = '<tt>subject</tt> is a special reserved prefix used to classify images by primary subject. The list of subject tags is fixed, and subject to moderation to add new ones.'; break;
+			case 'subject': $message = '<tt>subject</tt> is a special reserved prefix used to classify images by primary subject. The list of subject tags is fixed, and subject to moderation to add new ones.'; 
+				$views['context'] = 'Grouped by Context'; break;
 			case 'category': $message = '<tt>category</tt> has been used to mark <i>some</i> tags transformed from legacy category field, for the most part the prefix has no special meaning to the actual tag use.'; break;
 
 			default: $message = '';
 		}
+
+		if (!empty($views)) {
+			$message .= '<hr>View as'; $sep = " : ";
+			foreach ($views as $key => $value) {
+				if ($_GET['output'] == $key) {
+					$message .= "$sep<b>$value</b>";
+				} else {
+					 $message .= "$sep<a href=\"?prefix=".urlencode($_GET['prefix'])."&output=$key\">$value</a>";
+				}
+				$sep = " / ";
+			}
+		}
+
 		$smarty->assign('headnote', '<a href="/tags/">Back to Tags Homepage</a> &middot; <a href="/tags/prefix.php">Back to Prefix Listing</a><hr>'.$message);
+		$smarty->assign('p',$p);
+
+                $extra['prefix'] = $_GET['prefix'];
+
 	}
 
 
@@ -100,6 +145,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$smarty->assign("h2title",$title);
 	$smarty->assign("total",count($table));
 
+        $smarty->assign_by_ref('extra',$extra);
 
 }
 

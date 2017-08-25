@@ -401,7 +401,7 @@ if ($template=='tags_tagger.tpl' && $USER->registered) {
 	if (empty($db2))
                 $db2 = GeographDatabaseConnection(true);
 
-	$recent = $db2->getAll("SELECT tag,prefix,MAX(gt.created) AS last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 20");
+	$recent = $db2->getAll("SELECT tag,prefix,MAX(gt.created) AS last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' AND prefix != 'type' GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 20");
 	if (count($used) && count($recent)) {
 		$list = array();
 		foreach ($used as $row) $list[$row['tag']]=1;
@@ -412,9 +412,10 @@ if ($template=='tags_tagger.tpl' && $USER->registered) {
 		}
 	}
 	$smarty->assign_by_ref('recent',$recent);
+
 } elseif ($template=='tags_tagger2.tpl' && !empty($_REQUEST['gr'])) {
 	$square=new GridSquare;
-	
+
 	$grid_given=false;
 	if ($grid_ok=$square->setByFullGridRef($_REQUEST['gr'],true)) {
 		$grid_given = true;

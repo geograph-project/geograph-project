@@ -32,7 +32,7 @@ init_session();
 
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 if ($USER->registered) {
-	$data = $db->getAll("SELECT tag,prefix,MAX(gt.created) AS last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 30");
+	$data = $db->getAll("SELECT tag,prefix,MAX(gt.created) AS last_used FROM gridimage_tag gt INNER JOIN tag t USING (tag_id) WHERE gt.user_id = {$USER->user_id} AND prefix != 'top' AND prefix != 'type' GROUP BY gt.tag_id ORDER BY last_used DESC LIMIT 30");
 } else {
 	$data = array();
 }

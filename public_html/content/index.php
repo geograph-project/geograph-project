@@ -89,7 +89,7 @@ switch ($order) {
 }
 $orders = array('views'=>'Most Viewed','created'=>'Recently Created','title'=>'Alphabetical','updated'=>'Last Updated','images'=>'Most Images','rand'=>'Random Order');
 
-$sources = array('portal'=>'Portal', 'article'=>'Article', 'blog'=>'Blog Entry', 'trip'=>'Geo-trip', 'gallery'=>'Gallery', 'themed'=>'Themed Topic', 'help'=>'Help Article', 'gsd'=>'Grid Square Discussion', 'snippet'=>'Shared Description', 'user'=>'User Profile', 'category'=>'Category', 'context'=>'Geographical Context', 'other'=>'Other', 'faq'=>'FAQ Answer');
+$sources = $CONF['content_sources'];
 
 if ((isset($CONF['forums']) && empty($CONF['forums'])) || !$USER->registered ) {
 	unset($sources['themed']);
@@ -165,13 +165,25 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 
 	}
-	
+
 	if (!empty($_GET['user_id']) && preg_match('/^\d+$/',$_GET['user_id'])) {
 		$where[] = "content.user_id = {$_GET['user_id']}";
 		$extra['user_id'] = $_GET['user_id'];
 		$profile=new GeographUser($_GET['user_id']);
 		$title = "By ".($profile->realname);
-		
+
+	} elseif (!empty($_GET['ids']) && preg_match('/^\d+[\d,]+\d$/',$_GET['ids'])) {
+		$ids = explode(',',$_GET['ids']);
+		$where[] = "content_id IN(".join(",",$ids).")";
+		$title = "Specific List";
+		$pageSize = min(count($ids),200);
+
+	 } elseif (!empty($_GET['featured'])) {
+
+                $where[] = "content_id IN(SELECT content_id FROM content_featured WHERE showday IS NOT NULL AND showday < NOW())";
+                $title = "Featured Content";
+                $pageSize = 200;
+
 	} elseif (!empty($_GET['q'])) {
 
                 $_GET['q'] = preg_replace('/\b(not)?(gridref):/','\1grid_reference:',$_GET['q']);
@@ -187,11 +199,13 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		}
 
 		if (!empty($_GET['in']) && $_GET['in'] == 'title') {
+			$extra['in'] = $_GET['in'];
 			if (!preg_match('/^\w+:/',$sphinx->q)) {
 				$sphinx->q = "@title ".$sphinx->q;
 			}
 			$smarty->assign('in_title', 1);
 		} elseif (!empty($_GET['in']) && $_GET['in'] == 'nottitle') {
+			$extra['in'] = $_GET['in'];
                         if (!preg_match('/^\w+:/',$sphinx->q)) {
                                 $sphinx->q = "@!(title) ".$sphinx->q;
                         }
@@ -200,6 +214,11 @@ if (!$smarty->is_cached($template, $cacheid)) {
 		$smarty->assign_by_ref('q', $sphinx->qclean);
 		$extra['q'] = $sphinx->qclean;
 		$title = "Matching word search [ ".htmlentities($sphinx->qclean)." ]";
+
+		if (!empty($filters['source']) && count($s) == 1 && $sources[$s[0]]) {
+                        $title = $sources[$s[0]]."s ".$title;
+                        $title = str_replace('ys ','ies ',$title);
+                }
 
 		$sphinx->processQuery();
 		$sphinx->qoutput = $sphinx->q;
@@ -382,6 +401,7 @@ if (!$smarty->is_cached($template, $cacheid)) {
 	unset($extra['q']);
 	unset($extra['order']);
 	unset($extra['scope']);
+	unset($extra['in']);
 	$smarty->assign_by_ref("extra",$extra);
 } 
 
