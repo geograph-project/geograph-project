@@ -106,10 +106,3 @@ if (!$smarty->is_cached($template, $cacheid))
 $smarty->display($template, $cacheid);
 
 
-#########################################
-# functions!
-
-function urlencode2($input) {
-        return str_replace(array('%2F','%3A','%20'),array('/',':','+'),urlencode($input));
-}
-

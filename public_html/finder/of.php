@@ -687,10 +687,6 @@ function vote_log(action,param,value) {
 #########################################
 # functions!
 
-function urlencode2($input) {
-        return str_replace(array('%2F','%3A','%20'),array('/',':','+'),urlencode($input));
-}
-
 //qudos:  http://wezfurlong.org/blog/2005/may/guru-multiplexing/
 function parallel_get_contents($urls, $timeout = 3) {
 
