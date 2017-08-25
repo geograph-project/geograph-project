@@ -150,7 +150,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		);
 		$taglist[] = array(
 			'title' => 'Popular Tags',
-			'tags' => $db->CacheGetAll(3600*rand(10,30),"SELECT prefix,tag,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' ORDER BY count DESC LIMIT 50")
+			'tags' => $db->CacheGetAll(3600*rand(10,30),"SELECT prefix,tag,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' AND prefix != 'type' ORDER BY count DESC LIMIT 50")
 		);
 		if (rand(1,10)>5) {
 		$taglist[] = array(
@@ -160,7 +160,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		} else {
 		$taglist[] = array(
 			'title' => 'Recent Tags',
-			'tags' => $db->CacheGetAll(3600*rand(1,5),"SELECT prefix,tag,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' ORDER BY last_used DESC LIMIT 50")
+			'tags' => $db->CacheGetAll(3600*rand(1,5),"SELECT prefix,tag,description,`count` FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix != 'top' AND prefix != 'type' ORDER BY last_used DESC LIMIT 50")
 		);
 		}
 		$taglist[] = array(
@@ -360,7 +360,8 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 			$smarty->assign_by_ref('prefixes', $prefixes);
 
 		} elseif (empty($_GET['tag'])) {
-			$tags = $db->cacheGetAll(3600,"SELECT LOWER(tag) AS tag,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING(tag_id) WHERE gt.status = 2 $andwhere GROUP BY tag ORDER BY tag LIMIT 1000");
+			//$tags = $db->cacheGetAll(3600,"SELECT LOWER(tag) AS tag,COUNT(*) AS images FROM tag INNER JOIN gridimage_tag gt USING(tag_id) WHERE gt.status = 2 $andwhere GROUP BY tag ORDER BY tag LIMIT 1000");
+			$tags = $db->cacheGetAll(3600,"SELECT LOWER(tag) AS tag,`count` AS images FROM tag INNER JOIN tag_stat USING (tag_id) WHERE prefix='' $andwhere ORDER BY tag LIMIT 1000");
 			$smarty->assign_by_ref('tags', $tags);
 		}
 	}
