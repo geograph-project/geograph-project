@@ -492,12 +492,6 @@ function vote_log(action,param,value) {
 #########################################
 
 	$smarty->display('_std_end.tpl');
-	exit;
 
-#########################################
-# functions!
 
-function urlencode2($input) {
-        return str_replace(array('%2F','%3A','%20'),array('/',':','+'),urlencode($input));
-}
 

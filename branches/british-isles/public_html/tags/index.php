@@ -406,6 +406,3 @@ $sphinxq = str_replace('-',' ',$sphinxq);
 $smarty->display($template, $cacheid);
 
 
-function urlencode2($in) {
-	return str_replace(array('%2F','%3A','%20'),array('/',':','+'),urlencode($input));
-}
