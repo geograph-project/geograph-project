@@ -1039,7 +1039,7 @@ function latin1_to_utf8($input) {
                 ENT_COMPAT, 'UTF-8');
 }
 
-function urlencode2($in) {
+function urlencode2($input) {
 	return str_replace(array('%2F','%3A','%20'),array('/',':','+'),urlencode($input));
 }
 
