@@ -34,6 +34,9 @@ require_once('geograph/imagelist.class.php');
 
 init_session();
 
+dieIfReadOnly();
+
+
 $USER->mustHavePerm("moderator");
 
 
@@ -53,15 +56,15 @@ if (!empty($_GET['style'])) {
 customGZipHandlerStart();
 
 $db = NewADOConnection($GLOBALS['DSN']);
-if (!$db) die('Database connection failed');   
+if (!$db) die('Database connection failed');
 
 $smarty = new GeographPage;
 
 //doing some moderating?
 if (isset($_POST['gridimage_id']))
 {
-	
 	$gridimage_id=intval($_POST['gridimage_id']);
+	$pending_id=intval($_POST['pending_id']);
 
 	$image=new GridImage;
 	if ($image->loadFromId($gridimage_id))
@@ -73,9 +76,9 @@ if (isset($_POST['gridimage_id']))
 		$smarty->assign('message', 'Verification saved - thank you');
 
 		if (!empty($_POST['broken'])) {
-			
+
 			$row = $db->getRow("SELECT * FROM gridimage_pending WHERE gridimage_id = {$gridimage_id} ");
-			
+
 			//email me if we lag, but once gets big no point continuing to notify!
 			ob_start();
 			print "\n\nHost: ".`hostname`."\n\n";
@@ -84,10 +87,10 @@ if (isset($_POST['gridimage_id']))
 			print_r($_SERVER);
 			$con = ob_get_clean();
 			mail('geograph@barryhunter.co.uk','[Geograph] Resubmission failure!',$con);
-			
+
 			//unclog the queue!
-			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id} AND  status = 'new'"); //the status check, is to avoid chaning it already approved
-			
+			$status = 'rejected';
+
 		} elseif (!empty($_POST['confirm']) || !empty($_POST['similar'])) {
 
 			$image->originalUrl = 	$image->_getOriginalpath(true,false,'_original');
@@ -96,27 +99,33 @@ if (isset($_POST['gridimage_id']))
 
 			//we actually hav a file to move!
 			if ($image->pendingUrl != "/photos/error.jpg") {
-			
+
 				//delete the current original file if any
 				if ($image->originalUrl != "/photos/error.jpg") {
 					unlink($_SERVER['DOCUMENT_ROOT'].$image->originalUrl);
 				}
-			
+
+				//delete the _640x640 too! (incase its no longer relevent) - if needbe, will be recrated from previewUrl below
+				foreach (array(640,800,1024,1600) as $size) {
+					$thumbnail = $image->_getOriginalpath(true,false,"_{$size}x{$size}");
+					if (basename($thumbnail) != "error.jpg") {
+						unlink($_SERVER['DOCUMENT_ROOT'].$thumbnail);
+					}
+				}
+
 				//save the pending as original
 				$image->storeOriginal($_SERVER['DOCUMENT_ROOT'].$image->pendingUrl);
-			
+
 				if (!empty($CONF['awsAccessKey'])) {
-					
+
 					$image->originalUrl = 	$image->_getOriginalpath(true,false,'_original');
-					
+
 					require_once("3rdparty/S3.php");
 
 					$s3 = new S3($CONF['awsAccessKey'], $CONF['awsSecretKey'], false);
-					
 					$ok = $s3->putObjectFile($_SERVER['DOCUMENT_ROOT'].$image->originalUrl, $CONF['awsS3Bucket'], preg_replace("/^\//",'',$image->originalUrl), S3::ACL_PRIVATE);
 				}
-			
-				
+
 				if ($image->previewUrl != "/photos/error.jpg") {
 					if (!empty($_POST['confirm'])) {
 						//delete the preview - we dont need it
@@ -127,7 +136,6 @@ if (isset($_POST['gridimage_id']))
 					}
 				}
 
-
 				//clear caches involving the image
 				$ab=floor($gridimage_id/10000);
 				$smarty->clear_cache('', "img$ab|{$gridimage_id}|");
@@ -135,21 +143,19 @@ if (isset($_POST['gridimage_id']))
 				$mkey = "{$gridimage_id}:F";
 				$memcache->name_delete('is',$mkey);
 
-				$db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = $gridimage_id");
+				$db->Execute("DELETE FROM gridimage_size WHERE gridimage_id = $gridimage_id"); // could populate this now, but easier to delete, and let it autorecreate
 
-				if (!empty($_POST['confirm'])) {
-					$db->Execute("UPDATE gridimage_pending gp SET status = 'confirmed' WHERE gridimage_id = {$gridimage_id} ");
-				} else {
-					$db->Execute("UPDATE gridimage_pending gp SET status = 'accepted' WHERE gridimage_id = {$gridimage_id} ");
-				}
+				$status = empty($_POST['confirm'])?'accepted':'confirmed';
+
 			} else {
 				$smarty->assign('message', 'Verification failed - please let us know!');
 			}
 		} else {
-			$db->Execute("UPDATE gridimage_pending gp SET status = 'rejected' WHERE gridimage_id = {$gridimage_id} ");
+			$status = 'rejected';
 
-		} 
-
+		}
+		if (!empty($status))
+			$db->Execute("UPDATE gridimage_pending gp SET status = '$status' WHERE gridimage_id = {$gridimage_id} AND (pending_id = {$pending_id} OR status IN ('new','open'))");
 
 		$smarty->assign("last_id", $gridimage_id);
 	}
@@ -158,16 +164,15 @@ if (isset($_POST['gridimage_id']))
 		echo "FAIL";
 		exit;
 	}
-	
 
 }
 
 #############################
 
 //lock the table so nothing can happen in between! (leave others as READ so they dont get totally locked)
-$db->Execute("LOCK TABLES 
-gridimage_pending gp WRITE,
-gridimage gi READ
+$db->Execute("LOCK TABLES
+	gridimage_pending gp WRITE,
+	gridimage gi READ
 ");
 
 #############################
@@ -175,17 +180,17 @@ gridimage gi READ
 
 if (empty($_GET['review'])) {
 
-$sql = "SELECT gi.* 
-FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
-WHERE (gp.status = 'new' OR (gp.status = 'open' AND updated < DATE_SUB(NOW(),INTERVAL 1 HOUR) ) )
-AND type = 'original' 
-LIMIT 1"; 
+	$sql = "SELECT gi.*, pending_id
+		FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
+		WHERE (gp.status = 'new' OR (gp.status = 'open' AND updated < DATE_SUB(NOW(),INTERVAL 1 HOUR) ) )
+		AND type = 'original'
+		LIMIT 1";
 } else {
 	$id = intval($_GET['review']);
-$sql = "SELECT gi.* 
-FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
-WHERE gridimage_id = $id
-LIMIT 1"; 
+	$sql = "SELECT gi.*, pending_id
+		FROM gridimage_pending gp INNER JOIN gridimage gi USING (gridimage_id)
+		WHERE gridimage_id = $id
+		LIMIT 1";
 }
 
 
@@ -195,7 +200,7 @@ LIMIT 1";
 $data = $db->getRow($sql);
 
 if ($data && empty($_GET['review'])) {
-	$db->Execute("UPDATE gridimage_pending gp SET status = 'open' WHERE gridimage_id = {$data['gridimage_id']} ");
+	$db->Execute("UPDATE gridimage_pending gp SET status = 'open' WHERE gridimage_id = {$data['gridimage_id']} AND status = 'new'"); //dont affect historic reports!
 }
 
 #############################
