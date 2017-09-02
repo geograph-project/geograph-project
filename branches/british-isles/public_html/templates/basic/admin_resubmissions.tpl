@@ -12,6 +12,7 @@
 {if $image}
 <form method="post" action="{$script_name}">
 	<input type="hidden" name="gridimage_id" value="{$image->gridimage_id}"/>
+	<input type="hidden" name="pending_id" value="{$image->pending_id}"/>
 	<br/>
 
 	<table border="1" cellpadding="4" cellspacing="0">
@@ -37,7 +38,8 @@
 				New Image (<a href="{$image->pendingUrl}" target="_preview">View full size</a> - {$image->pendingSize|thousends} bytes!)
 			</th>
 			<th>
-				Current Image</small>
+				Current Image
+<small>If the image fails to load, try <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'_213x160.jpg'))">213 x 160</a>, or <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'_120x120.jpg'))">120 x 120</a>       thumbnail,<br/> or back to <a href="javascript:void(document.images['old'].src=document.images['old'].src.replace(/(_\d+x\d+)?\.jpg/,'.jpg'))">original</a>.</small>
 			</th>
 		</tr>
 	</table>
@@ -52,7 +54,6 @@
 	<input style="background-color:pink; width:200px" type="submit" name="diff" value="Different - don't allow!"/>
 
 
-
 	<input style="background-color:lightgreen; width:200px" type="submit" name="confirm" value="Identical" onclick="autoDisable(this);" id="identbutton"/>
 
 	<input style="background-color:lightgrey; color:green; width:200px" type="submit" name="similar" value="Close enough" onclick="autoDisable(this);" id="closebutton"/>
@@ -61,14 +62,14 @@
 	<li>Minor tweaking of contrast, brightness etc is fine - even for "Identical"</li>
 	<li>Major tweaking is permissible (such as removing border, overlaid text etc) - but should be marked "Close enough"</li>
 	<li>Minor cropping changes is permissible, but must be marked "Close enough"</li>
-	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close enough"<ul>
+	<li>Major cropping changes, provided the 'subject focal area' is unchanged, should also be marked "Close Enough"<ul>
 		<li>(exception is panoramas that don't have a focal area, but the current image needs to be a crop of the larger panorama - still marked "Close enough")</li>
 		</ul></li>
 	<li>Anything else, or when they are not the same image shouldn't be allowed</li>
 	</ul>
 	{/if}
 
-	In a nutshell, if the two images above are the same size and look exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close enough".
+	In a nutshell, if the two images above are the same size and look exactly the same, then choose "Identical", otherwise if still confident represent the same image then "Close Enough".
 </form>
 
 <script type="text/javascript">
@@ -101,7 +102,6 @@ function checkImageSizes() {
  AttachEvent(window,'load',checkImageSizes,false);
 
 
-
 {/literal}
 
 </script>
@@ -109,7 +109,6 @@ function checkImageSizes() {
 {else}
 	<p>Nothing available currently - please come back later</p>
 {/if}
-
 
 
 {if $last_id}
