@@ -5,8 +5,8 @@
 
 </style>{/literal}
 {dynamic}
-<h2>Image Upload <sub>at {$smarty.now|date_format:"%Y-%m-%d %H:%M:%S"}</sub></h2>
-<p>Here is the results of the latest upload:</p>
+<h2>Image Upload <small>at {$smarty.now|date_format:"%Y-%m-%d %H:%M:%S"}</small></h2>
+<p>Here is the result of the latest upload:</p>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 
@@ -49,7 +49,7 @@ $(function(){
 	{if $display == 'tabs'}
 	<p><a href="/submit2.php?display=tabs{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Submit another image (Tabs)</a>
 
-	(<a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">None Tabs based</a>) 
+	(<a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Non-tabs based</a>) 
 	{else}
 	<p><a href="/submit2.php{if $grid_reference}#gridref={$grid_reference|escape:"url"}{/if}">Submit another image</a>
 
