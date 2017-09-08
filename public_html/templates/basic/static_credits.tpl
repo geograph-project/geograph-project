@@ -143,7 +143,6 @@
     <ul>
      <li>{external href="http://www.kryogenix.org/code/browser/sorttable/" text="Sorttable"} - javascript table reordering</li>
      <li>{external href="http://www.bitfolge.de" text="FeedCreator"} - Generate a wide range of RSS feeds in PHP - extended for GEO</li>
-     <li>{external href="http://openrico.org/" text="Rico"} - Javascript for Rich Internet Applications</li>
      <li>{external href="http://prototype.conio.net/" text="Prototype"} - Javascript Framework</li>
      <li>{external href="http://openlayers.org/" text="OpenLayers"} - DHTML and Javascript Draggable Map Interface<br/>
      	<small>&nbsp;&nbsp;&nbsp;&nbsp;Also reuses parts of Rico and Prototype separately</small></li>
