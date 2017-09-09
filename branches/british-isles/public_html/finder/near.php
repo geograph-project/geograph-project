@@ -191,7 +191,7 @@ if (!empty($_GET['q'])) {
 # the top of page form
 
 ?>
-<form onsubmit="location.href = '/near/'+encodeURI(this.q.value).(this.form.elements['filter']?"?filter="+encodeURI(this.form.elements['filter'].value):''); return false;">
+<form onsubmit="location.href = '/near/'+encodeURI(this.elements['q'].value)+(this.elements['filter']?'?filter='+encodeURI(this.elements['filter'].value):''); return false;">
 <div class="interestBox">
 	<? if (!empty($_GET['q'])) { ?>
 	<div style="float:right">
@@ -257,11 +257,49 @@ if (!empty($_GET['q'])) {
 
 if (!empty($_GET['q'])) {
 
+	$sph = GeographSphinxConnection('sphinxql',true);
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+
+	if (!empty($decode) && $decode->total_found == 1) {
+		$db = GeographDatabaseConnection(true);
+	        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+		$suggestions = array();
+		$name = $db->Quote($plain = preg_replace('/\/.+$/','',$_GET['q']));
+
+		if ($tag = $db->getRow("SELECT * FROM tag WHERE status = 1 AND tag = $name ORDER BY prefix='place' DESC,prefix='near' DESC")) {
+			$t = $tag['tag']; //we need to use the actual tag, rather than the query, because it might be a prefixed tag!
+                        if (!empty($tag['prefix']))
+                                $t = $tag['prefix'].':'.$t;
+       	                $suggestions[] = '<a href="/of/['.urlencode($t).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities($t).']</a>';
+		}
+		$name2= $db->Quote("$plain/{$square->grid_reference}");
+		if ($place = $db->getRow("SELECT * FROM sphinx_placenames WHERE Place = $name OR Place = $name2")) {
+			$suggestions[] = '<a href="/of/place:'.urlencode(exact_sphinx_match($place['Place'])).'" rel="nofollow">Images <i>nearest</i> '.htmlentities($place['Place']).', '.htmlentities($place['County']).'</a>';
+		}
+
+		if ($grid_ok && !empty($square->nateastings) && $square->natgrlen == 4 && $square->reference_index == 1) {
+			$sql = sprintf("SELECT geometry_x,geometry_y,dist FROM opennames WHERE MATCH(%s)  AND geometry_x BETWEEN %d AND %d  AND geometry_y BETWEEN %d AND %d",
+				$db->Quote("@(name1,name2) $plain"), $square->nateastings-4000, $square->nateastings+4000, $square->natnorthings-4000, $square->natnorthings+4000);
+			if ($row = $sph->getRow($sql)) {
+				list($gr,$len) = $conv->national_to_gridref($row['geometry_x'],$row['geometry_y'],8,$square->reference_index,false);
+				$row['dist'] = round($row['dist'],-2);
+				$suggestions[] = 'Badly centered? Try centering on <a href="/near/'.urlencode2($plain).'/'.$gr.'?dist='.$row['dist'].'">'.$gr.'</a>';
+			}
+		}
+
+		if (!empty($suggestions)) {
+			print "<div style=\"font-size:0.9em;padding:4px;border-bottom:1px solid gray\">Showing nearby results, alternatively: ";
+			print implode(" &middot; ",$suggestions);
+			print "</div>";
+		}
+	}
+
+
 #########################################
 
 	$limit = 50;
-
-
 
         if ($grid_ok) {
 
@@ -272,10 +310,6 @@ if (!empty($_GET['q'])) {
 
 print "<!-- ($lat,$lng) -->";
 
-		$sph = GeographSphinxConnection('sphinxql',true);
-
-                $prev_fetch_mode = $ADODB_FETCH_MODE;
-                $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 		$where = array();
                 if (!empty($sphinxq))
@@ -437,16 +471,18 @@ if (!empty($_GET['d']) && !empty($final)) {
 if (!empty($final)) {
 
 	if (!empty($data['total_found']) && (count($final) <  $data['total_found']))
-		print "<p>only first ".count($final)." images shown. Use links below to explore more</p>";
+		print "<p><small>only first ".count($final)." images shown. Use links below to explore more</small></p>";
 
-	print "<form action=\"/browser/redirect.php\"><br><div class=interestBox>";
+
+	print "<form action=\"/browser/redirect.php\"><br><div class=interestBox style=color:white;background-color:gray;font-size:1.05em>";
 	if (!empty($data['total_found']) && $data['total_found'] > 10)
-		print "About ".number_format($data['total_found'])." photos within ".($distance/1000)."km. ";
+		print "About <b>".number_format($data['total_found'])." photos within ".($distance/1000)."km</b>. ";
 ?>
-	<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>">Explore these images more in the Browser</a>
-	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=100">On Map</a>) or
-	<a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>">in the standard search</a>.<br/><br/>
+	Explore these images more: <b><a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>" style=color:yellow>in the Browser</a>
+	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=100" style=color:yellow>On Map</a>)
+	or <a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>" style=color:yellow>in the standard search</a>.</b></div>
 
+	<div class=interestBox>
 	Too many photos in a small area? Try a <a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=3000/pagesize=30/sort=spread">sample selection of the general area</a>.<br><br>
 
 	Search <i>within</i> these images, keywords: <input type="search" name="q"><input type=submit value="Browser">
@@ -540,3 +576,12 @@ function vote_log(action,param,value) {
 
 
 
+		function exact_sphinx_match($in) {
+			$in = str_replace('/',' ',$in);
+			if (strpos($in,' ') !== FALSE) {
+				$in = preg_replace('/\b(\w+)/','=$1',$in);
+				return '"^'.$in.'$"';
+			} else {
+				return '^='.$in.'$';
+			}
+		}
