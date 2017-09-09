@@ -22,6 +22,11 @@
  */
 
 #########################################
+# general page startup
+
+require_once('geograph/global.inc.php');
+
+#########################################
 # redirect for non JS clients
 
 if (strpos($_SERVER['REQUEST_URI'],'/finder/of.php') === 0) {
@@ -39,14 +44,11 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/of.php') === 0) {
         exit;
 }
 
+#########################################
+
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
         $mobile_url = "https://m.geograph.org.uk/of/".urlencode2($_GET['q']);
 }
-
-#########################################
-# general page startup
-
-require_once('geograph/global.inc.php');
 
 init_session();
 
@@ -87,7 +89,8 @@ if (!empty($_GET['q'])) {
 		exit;
 	}
 
-	$smarty->assign("page_title",'Photos of '.$_GET['q']);
+	$smarty->assign("page_title",'Photos of '.preg_replace('/^title:/','',$_GET['q']));
+	$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/of/$qu2\"/>");
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
 
 	if ($memcache->valid) {
@@ -109,9 +112,9 @@ if (!empty($_GET['q'])) {
 		print "<div class=interestBox>This page only shows images from Ireland - Great Britain is automatically excluded.</div>";
 
 	$remotes = parallel_get_contents(array(
-		"http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1",
-		"http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=$qu+$domains&userip=".getRemoteIP(),
-		"http://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q=$qu"
+		0=>"http://www.geograph.org.uk/finder/places.json.php?q=$qu&new=1",
+		//1=>"http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=$qu+$domains&userip=".getRemoteIP(),
+		2=>"http://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q=$qu"
 	));
 //if many words? "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20contentanalysis.analyze%20where%20text%3D'london+bridge'%3B&diagnostics=true&format=json"
 
@@ -138,7 +141,7 @@ if (!empty($_GET['q'])) {
 	<? if (!empty($_GET['q'])) { ?>
 	<div style="float:right">
 		More:
-		<a href="/browser/#!/q==<? echo $qu; ?>/display=group/group=decade/n=4/gorder=alpha%20desc">Over Time</a> &middot;
+		<a href="/browser/#!/q=<? echo $qu; ?>/display=group/group=decade/n=4/gorder=alpha%20desc">Over Time</a> &middot;
 		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=segment">Recent</a> &middot;
 		<?
 		$db = GeographDatabaseConnection(true);
@@ -216,13 +219,14 @@ if (!empty($_GET['q'])) {
 		$sphinx->q = str_replace(' near ',' @(Place,County,Country) ',$sphinx->q);
 
 	} elseif (!empty($prefixMatch) && $prefixMatch > 1) {
-		print "<div style=\"font-size:0.8em;\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities($_GET['q'])."'</a>, below are combined results. To search a specific one, select from the dropdown above.</div>";
+		print "<div style=\"font-size:0.8em;\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities($_GET['q'])."'</a>, below are combined results.";
+		print " To search a specific one, select from the dropdown above. Or <a href=\"/browser/#!/q=$qu/display=group/group=place/n=4/gorder=images%20desc\">View images grouped by nearby Place</a></div>";
 
 	} elseif (!empty($db)) {
 		//todo - rewrite this to use a full-text index.
-		$usercnt = $db->getOne("SELECT COUNT(*) FROM user WHERE realname = ".$db->Quote(trim($_GET['q'])));
+		$usercnt = $db->getOne("SELECT COUNT(*) FROM user INNER JOIN user_stat USING (user_id) WHERE realname = ".$db->Quote(trim($_GET['q'])));
 		if ($usercnt > 0) {
-			print "<div style=\"font-size:0.8em;\">There are a number of users with this name, below are combined results. Can also <a href=\"/browser/#!/q=$qu/display=group/group=user_id/n=4/gorder=images%20desc\">view images by contributor</a>.</div>";
+			print "<div style=\"font-size:0.8em;\">There ".($usercnt>1?'are a number of contributors':'is a contributor')." with this name, below are combined results. Can also <a href=\"/browser/#!/q=$qu/display=group/group=user_id/n=4/gorder=images%20desc\">view images by contributor</a>.</div>";
 		}
 	}
 
@@ -253,6 +257,44 @@ if (!empty($_GET['q'])) {
 		} else {
 	                $where = "match(".$sph->Quote($sphinx->q).")";
 		}
+
+#########################################
+# list some content?
+
+		if (!preg_match('/@|_SEP/',$sphinx->q)) {
+			$ids2 = $sph->getCol("SELECT id FROM content_stemmed WHERE match(".$sph->Quote("@title ".$sphinx->q." @source -themed").") LIMIT 5");
+
+			if (!empty($ids2)) {
+				$data2 = $sph->getAssoc("SHOW META");
+
+			        if (empty($db))
+		        	        $db = GeographDatabaseConnection(true);
+		                	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+				$id_list = implode(',',$ids2);
+	                        $related = $db->getAll("
+        	                         SELECT c.url,c.title,`source`,realname,user_id,images
+                	                 FROM content c
+                        	         LEFT JOIN user u USING (user_id)
+                                	 WHERE c.content_id IN($id_list)
+	                                 ORDER BY FIELD(c.content_id,$id_list)");
+
+				print "<div style=\"margin-left:20px;background-color:#DDEA8E;padding:3px\"><p>Potential Collection matches: (<a href=\"/content/?q=$qu&scope=all&in=title\">View all</a>)<ul>";
+        	                foreach ($related as $idx => $row) {
+					print "<li><a href=\"{$row['url']}\">".htmlentities($row['title'])."</a> ";
+					print $CONF['content_sources'][$row['source']].($row['images']?" with {$row['images']} images":'');
+					if ($idx == 3 && $data2['total_found'] > 3) {
+						print " &nbsp; &nbsp;&nbsp;<i>... plus at least ".($data2['total_found']-3)." <a href=\"/content/?q=$qu&scope=all&in=title\">more results</a></i></li>";
+						break;
+					}
+					print "</li>";
+                                }
+				print "</ul></div>";
+			}
+
+		}
+
+#########################################
 
 		$rows = array();
 
@@ -392,12 +434,20 @@ if (!empty($_GET['d']))
 			}
 		}
 
+#########################################
+
         print "<br style=clear:both>";
 
 if (!empty($_GET['d'])) {
 	print "<p><a href=\"/search.php?displayclass=map&marked=1&markedImages=".implode(',',array_keys($final))."\">View on Map</a></p>";
 }
 
+if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
+	$ext = '';
+	if (!empty($data['total_found']) && $data['total_found'] > count($final))
+		$ext = " (of ".number_format($data['total_found'],0)." total)";
+	print "<h2>".count($final)."$ext Photos of ".htmlentities($m[1])."</h2>";
+}
 
 
 #########################################
@@ -502,8 +552,11 @@ if (strlen($_GET['q']) > 10 && preg_match('/\b(19|20|21)(\d{2})\b/',$_GET['q'],$
 
 if (!empty($final) && empty($words) && count($final) != count($rows['google']) && count($final) != count($rows['single'])) {
 	print "<br/><div class=interestBox>";
-	if (!empty($data['total_found']) && $data['total_found'] > 10)
-		print "About ".number_format($data['total_found'])." results. ";
+	if (!empty($data['total_found']) && $data['total_found'] > 10) {
+		if (count($final) < $data['total_found'])
+			print "showing ".count($final)." of ";
+		print "About <b>".number_format($data['total_found'])."</b> results. ";
+	}
 	print '<a href="/browser/#!/q='.$qu.'"><b>Explore these images more</b> in the Browser</a> or ';
 	print '<a href="/search.php?do=1&searchtext='.(empty($words)?'':'~').$qu.'">in the standard search</a> (may return slightly different results).';
 	$suggestions = array();
@@ -520,7 +573,7 @@ if (!empty($final) && empty($words) && count($final) != count($rows['google']) &
 			$suggestions[] = "<a href=\"/of/text:$qu2\" rel=\"nofollow\">Pure Keyword Match for '$qh'</a>";
 	}
 	if (!empty($suggestions)) {
-		print "<br/>&middot; To many imprecise results? Try ".implode(' or ',$suggestions);
+		print "<br/><br/>&middot; To many imprecise results? Try ".implode(' or ',$suggestions);
 	}
 	print "</div>";
 
@@ -578,13 +631,13 @@ if ($memcache->valid && $mkey) {
 # special footer just for registered users - who have had their default changed
 
 if (!empty($USER->registered)) {
-	print "<p>If you prefer the traditional search, you can <a href=\"/choose-search.php\">choose your default search engine to use</a>.</p>";
+	print "<hr><p>If you looking for different results page, you can <a href=\"/choose-search.php\">choose which search engine to use</a>.</p>";
 	if (false && $CONF['forums']) {
 		print "<p>Having trouble with this page? <a href=\"/discuss/index.php?&action=vthread&forum=12&topic=26439\">Please let us know on the discussion forum</a>,
 		or fill out <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>Feedback Form</a>, thank you!</p>";
 	}
 } elseif (false) {
-	print "<p>Have feedback on this search? <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>please let us know</a>!</p>";
+	print "<hr><p>Have feedback on this search? <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>please let us know</a>!</p>";
 }
 
 
@@ -637,9 +690,10 @@ function vote_log(action,param,value) {
 #########################################
 # do something instead of an empty page when no query...
 
-	$db = GeographDatabaseConnection(true);
+	if (empty($db))
+		$db = GeographDatabaseConnection(true);
+		$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 	$list = $db->getAll("SELECT * FROM geograph_tmp.random_images where moderation_status = 'geograph'");
 
 	if (count($list)) {
@@ -740,7 +794,15 @@ function parallel_get_contents($urls, $timeout = 3) {
                                         ob_start();
                                         print "\n\nHost: ".`hostname`."\n\n";
 					print "GET {$paths[$id]} HTTP/1.0\r\nHost: {$hosts[$id]}\r\nConnection: close\r\n\r\n";
+
 					print_r($status);
+                                        print_r($sockets);
+                                        print_r($read);
+                                        print_r($write);
+                                        print_r($strs);
+                                        print_r($paths);
+                                        print_r($hosts);
+
                                         $con = ob_get_clean();
                                         mail('geograph@barryhunter.co.uk','[Geograph OF] failed '.$hosts[$id],$con);
 		}

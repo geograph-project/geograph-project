@@ -22,18 +22,25 @@
  */
 
 #########################################
+# general page startup
+
+require_once('geograph/global.inc.php');
+
+#########################################
 # redirect for non JS clients
 
 if (strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
         header("HTTP/1.0 301 Moved Permanently");
         header("Status: 301 Moved Permanently");
 
-        $url = "/near/".urlencode2($_GET['q']);
+        $url = "/near/".urlencode2($_GET['q']); $sep = '?';
 	//todo add sorting?
-	if (!empty($_GET['filter']))
-		$url .= "?filter=".urlencode($_GET['filter']);
-	if (!empty($_GET['sort']))
-		$url .= "?sort=".urlencode($_GET['sort']);
+	if (!empty($_GET['filter'])) {
+		$url .= $sep."filter=".urlencode($_GET['filter']); $sep = '&'; }
+	if (!empty($_GET['dist'])) {
+		$url .= $sep."dist=".intval($_GET['dist']); $sep = '&'; }
+	if (!empty($_GET['sort'])) {
+		$url .= $sep."sort=".urlencode($_GET['sort']); $sep = '&'; }
 
         header("Location: ".$url);
         print "<a href=\"".htmlentities($url)."\">moved</a>";
@@ -41,15 +48,11 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/near.php') === 0) {
         exit;
 }
 
+#########################################
+
 if ($_SERVER['HTTP_HOST'] == 'www.geograph.org.uk') {
         $mobile_url = "https://m.geograph.org.uk/near/".urlencode2($_GET['q']);
 }
-
-
-#########################################
-# general page startup
-
-require_once('geograph/global.inc.php');
 
 init_session();
 
@@ -66,7 +69,14 @@ if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
 #########################################
 # quick query parsing, to possibly redirect to the nearby page.
 
-$qh = $qu = '';
+$distance = 10000; //meters!
+if (!empty($_GET['dist']))
+	$distance = intval($_GET['dist']);
+if ($distance < 1) $distance = 1;
+if ($distance > 20000) $distance = 20000;
+
+
+$qh = $qu = ''; $qfiltbrow = ''; $qfiltmain = '';
 if (!empty($_GET['q'])) {
 	$qu = urlencode(trim($_GET['q']));
 	$qu2 = urlencode2(trim($_GET['q']));
@@ -74,11 +84,13 @@ if (!empty($_GET['q'])) {
 
 	$sphinxq = '';
 
-	$mkey = md5('v2'.trim($_GET['q']).$src);
+	$mkey = md5('v2'.trim($_GET['q']).$src.$distance);
 	if (!empty($_GET['filter'])) {
-		$sphinx = new sphinxwrapper(trim($_GET['filter']), true); //this is for sample8 index. 
+		$sphinx = new sphinxwrapper(trim($_GET['filter']), true); //this is for sample8 index.
 		$sphinxq = $sphinx->q;
 		$mkey = md5($sphinxq.'.'.$mkey);
+		$qfiltbrow = "/q=".urlencode($sphinxq);
+		$qfiltmain = "&searchtext=".urlencode($sphinxq);
 	}
 
 	$smarty->assign("page_title",'Photos near '.$_GET['q']);
@@ -126,11 +138,11 @@ if (!empty($_GET['q'])) {
 	if (preg_match_all('/\b([a-zA-Z]{1,2}) ?(\d{2,5})(\.\d*|) ?(\d{2,5})(\.*\d*|)\b/',$_GET['q'],$matches)) {
 		$gr = array_pop($matches[0]); //take the last, so that '/near/Grid%20Reference%20in%20C1931/C198310' works!
 	        $grid_ok=$square->setByFullGridRef($gr,true,true);
-		$gru = urlencode($gr);
+		$gru = urlencode(str_replace(' ','',$gr));
 	} elseif (!empty($decode) && !empty($decode->total_found)) {
 		$gr = $decode->items[0]->gr;
 		$grid_ok=$square->setByFullGridRef($gr,true,true);
-		$gru = urlencode($gr);
+		$gru = urlencode(str_replace(' ','',$gr));
 	}
 
 	//for some unexplainable reason, setByFullGridRef SOMETIMES returns false, and fails to set nateastings - even though allow-zero-percent is set. Fix that...
@@ -152,7 +164,10 @@ if (!empty($_GET['q'])) {
                 $n = floor($square->natnorthings/1000);
 
 		//todo - make the radius dynamic (maybeing checking square->imagecount as a proxy for now popular the area is
-		$d = 10; //units is km!
+		// - also should be redone with geoTiles from facet-functions
+		$d = 10; //units is km! but need in 10km hectad resoilution for now
+		$d = ceil($distance/10000)*10;
+
 			$grs = array();
                         for($x=$e-$d;$x<=$e+$d;$x+=10) {
                                 for($y=$n-$d;$y<=$n+$d;$y+=10) {
@@ -185,12 +200,12 @@ if (!empty($_GET['q'])) {
 		<a href="/finder/groups.php?q=<? echo $qu; ?>&group=decade">Over Time</a> &middot;
                 <a href="/gridref/<? echo strtoupper($gru); ?>">Browse Page</a> &middot;
 		<? if (!empty($square->reference_index) && $square->reference_index == 1) { ?>
-		        <a href="/search.php?do=1&gridref=<? echo $gru; ?>&amp;displayclass=map">OS Map</a> &middot;
+		        <a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>&amp;displayclass=map">OS Map</a> &middot;
 		        <a href="/finder/dblock.php?gridref=<? echo $gru; ?>">D-block</a> &middot;
 		<? } else { ?>
-			<a href="/browser/#!/loc=<? echo $gru; ?>/dist=10000/display=map_dots/pagesize=50"><b>Map</b></a> &middot;
+			<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=50"><b>Map</b></a> &middot;
 		<? } ?>
-		<a href="/browser/#!/loc=<? echo $gru; ?>/pagesize=50">Browser</a> &middot;
+		<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/pagesize=50">Browser</a> &middot;
 	</div>
 	<? } ?>
 	Images near: <input type=search name=q value="<? echo $qh; ?>" size=40><input type=submit value=go><br/>
@@ -268,7 +283,7 @@ print "<!-- ($lat,$lng) -->";
 		$lat = deg2rad($lat);
 		$lng = deg2rad($lng);
 		$columns = ", GEODIST($lat, $lng, wgs84_lat, wgs84_long) as distance";
-		$where[] = "distance < 10000";
+		$where[] = "distance < $distance";
 
 
 
@@ -281,7 +296,7 @@ print "<!-- ($lat,$lng) -->";
 
 		if (!empty($_GET['score'])) {
 			$rows['score'] = $sph->getAll($sql = "
-        	                select id,realname,user_id,title,grid_reference $columns
+        	                select id,realname,user_id,title,grid_reference,contexts $columns
                 	        from sample8
                         	where $where
 	                        order by score desc
@@ -301,7 +316,7 @@ $columns = preg_replace('/GEODIST\((.+?)\)/',"atan2($lat-wgs84_lat,$lng-wgs84_lo
 print "<hr>$columns<hr>";
 
                 $rows['ordered'] = $sph->getAll($sql = "
-                        select id,realname,user_id,title,grid_reference $columns
+                        select id,realname,user_id,title,grid_reference,contexts $columns
                         from sample8
                         where $where
                         order by disti asc, atan asc, sequence asc
@@ -312,7 +327,7 @@ print "<hr>$columns<hr>";
 } else {
 
                 $rows['ordered'] = $sph->getAll($sql = "
-                        select id,realname,user_id,title,grid_reference $columns
+                        select id,realname,user_id,title,grid_reference,contexts $columns
                         from sample8
                         where $where
                         order by distance asc, sequence asc
@@ -343,7 +358,7 @@ if (!empty($_GET['d']))
         print "<br style=clear:both>";
 
 if (!empty($_GET['d']) && !empty($final)) {
-	print "<p><a href=\"/search.php?displayclass=map&marked=1&markedImages=".implode(',',array_keys($final))."\">View on Map</a></p>";
+	print "<p><a href=\"/search.php?displayclass=map&marked=1&markedImages=".implode(',',array_keys($final))."$qfiltmain\">View on Map</a></p>";
 }
 
 
@@ -357,15 +372,18 @@ if (!empty($_GET['d']) && !empty($final)) {
 		print "<div id=thumbs>";
 
 	        if (!empty($data['total_found']) && $data['total_found'] > 10)
-			print '<div style="position:relative;float:right">About '.number_format($data['total_found'])." photos within 10km.</div>";
+			print '<div style="position:relative;float:right">About '.number_format($data['total_found'])." photos within ".($distance/1000)."km.</div>";
 
 		$last = 0;
+		$contexts = array();
                 foreach ($final as $idx => $row) {
 			$row['gridimage_id'] = $row['id'];
                         $image = new GridImage();
                         $image->fastInit($row);
 			if ($image->distance < 800 && $square->precision < 1000) {
-				if ($image->distance < 100) {
+				if ($image->distance < 10 && $square->precision <= 100) {
+					$d2 = 0.01;
+				} elseif ($image->distance < 100) {
 					$d2 = 0.1;
 				} else
 					$d2 = sprintf("%0.1f",(intval($image->distance/300)/3)+0.3);
@@ -381,6 +399,14 @@ if (!empty($_GET['d']) && !empty($final)) {
           <a title="<? printf("%.1f km, ",$image->distance/1000); echo $image->grid_reference; ?> : <? echo htmlentities($image->title) ?> by <? echo htmlentities($image->realname); ?> - click to view full size image" href="/photo/<? echo $image->gridimage_id; ?>"><? echo $image->getThumbnail($thumbw,$thumbh,false,true,$src); ?></a></div>
           </div>
 <?
+
+                        if (!empty($row['contexts'])) {
+                                foreach (explode('_SEP_',$row['contexts']) as $context) {
+                                        if (strlen($context = trim($context)) > 1) {
+                                                @$contexts[$context]++;
+                                        }
+                                }
+                        }
 
 		}
 
@@ -409,12 +435,19 @@ if (!empty($_GET['d']) && !empty($final)) {
 # footer links
 
 if (!empty($final)) {
+
+	if (!empty($data['total_found']) && (count($final) <  $data['total_found']))
+		print "<p>only first ".count($final)." images shown. Use links below to explore more</p>";
+
 	print "<form action=\"/browser/redirect.php\"><br><div class=interestBox>";
 	if (!empty($data['total_found']) && $data['total_found'] > 10)
-		print "About ".number_format($data['total_found'])." photos within 10km. ";
+		print "About ".number_format($data['total_found'])." photos within ".($distance/1000)."km. ";
 ?>
-	<a href="/browser/#!/loc=<? echo $gru; ?>/dist=10000">Explore these images more in the Browser</a> or
-	<a href="/search.php?do=1&gridref=<? echo $gru; ?>">in the standard search</a>.<br/><br/>
+	<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>">Explore these images more in the Browser</a>
+	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=100">On Map</a>) or
+	<a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>">in the standard search</a>.<br/><br/>
+
+	Too many photos in a small area? Try a <a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=3000/pagesize=30/sort=spread">sample selection of the general area</a>.<br><br>
 
 	Search <i>within</i> these images, keywords: <input type="search" name="q"><input type=submit value="Browser">
 	<input type="hidden" name="loc" value="<? echo $gr; ?>"/>
@@ -422,6 +455,18 @@ if (!empty($final)) {
 	</form>
 <?
 }
+
+#########################################
+
+if (!empty($contexts)) {
+        print "<p>Geographical Contexts for these images (click to view more images): ";
+        foreach ($contexts as $context => $count) {
+                print "&middot; <a href=\"/browser/#!/contexts+%22".urlencode($context)."%22/loc=$gru/dist=1000/\">".htmlentities($context)."</a>[$count] ";
+        }
+        print "</p>";
+}
+
+#########################################
 
 if (false) {
 ?>
@@ -449,12 +494,12 @@ if ($memcache->valid && $mkey) {
 # special footer just for registered users - who have had their default changed
 
 if (!empty($USER->registered)) {
-	print "<p>If you prefer the traditional search, you can <a href=\"/choose-search.php\">choose your default search engine to use</a>.</p>";
+	print "<hr><p>If you prefer the traditional search, you can <a href=\"/choose-search.php\">choose your default search engine to use</a>.</p>";
 	if (false && $CONF['forums']) {
 		print "<p>Having trouble with this page? No matter how small, <a href=\"/discuss/index.php?&action=vthread&forum=12&topic=26439\">please let us know</a>, thank you!</p>";
 	}
 } elseif (false) {
-	print "<p>Have feedback on this search? <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>please let us know</a>!</p>";
+	print "<hr><p>Have feedback on this search? <a href='https://docs.google.com/forms/d/1EghtKiKGkLbLUJ1gBAMiENNgMChQotBwI3n7XSyw1z0/viewform' target=_blank>please let us know</a>!</p>";
 }
 
 #########################################
