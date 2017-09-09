@@ -219,7 +219,7 @@ if (!empty($_GET['q'])) {
 		$sphinx->q = str_replace(' near ',' @(Place,County,Country) ',$sphinx->q);
 
 	} elseif (!empty($prefixMatch) && $prefixMatch > 1) {
-		print "<div style=\"font-size:0.8em;\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities($_GET['q'])."'</a>, below are combined results.";
+		print "<div style=\"font-size:0.9em;padding:4px;border-bottom:1px solid gray\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities($_GET['q'])."'</a>, below are combined results.";
 		print " To search a specific one, select from the dropdown above. Or <a href=\"/browser/#!/q=$qu/display=group/group=place/n=4/gorder=images%20desc\">View images grouped by nearby Place</a></div>";
 
 	} elseif (!empty($db)) {
@@ -551,14 +551,18 @@ if (strlen($_GET['q']) > 10 && preg_match('/\b(19|20|21)(\d{2})\b/',$_GET['q'],$
 # footer links
 
 if (!empty($final) && empty($words) && count($final) != count($rows['google']) && count($final) != count($rows['single'])) {
-	print "<br/><div class=interestBox>";
+
+	print "<br><div class=interestBox style=color:white;background-color:gray;font-size:1.05em>";
 	if (!empty($data['total_found']) && $data['total_found'] > 10) {
 		if (count($final) < $data['total_found'])
 			print "showing ".count($final)." of ";
 		print "About <b>".number_format($data['total_found'])."</b> results. ";
 	}
-	print '<a href="/browser/#!/q='.$qu.'"><b>Explore these images more</b> in the Browser</a> or ';
-	print '<a href="/search.php?do=1&searchtext='.(empty($words)?'':'~').$qu.'">in the standard search</a> (may return slightly different results).';
+
+	print 'Explore these images more: <b><a href="/browser/#!/q='.$qu.'" style=color:yellow>in the Browser</a> or ';
+	print '<a href="/search.php?do=1&searchtext='.(empty($words)?'':'~').$qu.'" style=color:yellow>in the standard search</a></b> (may return slightly different results).';
+	print "</div>";
+
 	$suggestions = array();
 	if ($data['total_found'] > 60) {
 		if (!empty($tag) && strpos($_GET['q'],'[') !== 0) {
@@ -573,9 +577,8 @@ if (!empty($final) && empty($words) && count($final) != count($rows['google']) &
 			$suggestions[] = "<a href=\"/of/text:$qu2\" rel=\"nofollow\">Pure Keyword Match for '$qh'</a>";
 	}
 	if (!empty($suggestions)) {
-		print "<br/><br/>&middot; To many imprecise results? Try ".implode(' or ',$suggestions);
+		print "<div class=interestBox>&middot; To many imprecise results? Try ".implode(' or ',$suggestions)."</div>";
 	}
-	print "</div>";
 
 } elseif (!empty($final) && count($final) == count($rows['google'])) {
 	print "<br/><div class=interestBox>";
