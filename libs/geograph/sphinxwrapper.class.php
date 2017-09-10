@@ -159,6 +159,8 @@ class sphinxwrapper {
         	        $q = str_replace('@tags "_SEP_ top _SEP_ ','@contexts "_SEP_ ',$q);
 	                $q = preg_replace('/@tags "_SEP_ (bucket|subject|term|group|wiki|snippet) _SEP_ /','@$1s "_SEP_ ',$q);
 
+			$q = preg_replace('/@tags "_SEP_ (.+?) _SEP_/','@tags "_SEP_ $1 ',$q); //new index does NOT have sep between prefix and tag!
+
 			if ($newformat === 2) {
 				$bits = explode(' near ',$_GET['q']);
 				if (count($bits) == 2) {

@@ -38,7 +38,7 @@ require "./_scripts.inc.php";
 $db = GeographDatabaseConnection(false);
 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
-if (!empty($param['daily'])) {
+if (!empty($param['daily']) || !empty($param['rebuild'])) {
         $sqls = array();
 
         fwrite(STDERR,date('H:i:s ')."Dropping tables\n");
@@ -49,25 +49,18 @@ if (!empty($param['daily'])) {
                 fwrite(STDERR,date('H:i:s ')." $sql\n\n");
                 $db->Execute($sql);
         }
+}
+
+if (!empty($param['daily'])) {
 
 	//from jam
        // sql_query_range         = SELECT FLOOR(max_doc_id*0.9)+1,(SELECT MAX(gridimage_id) FROM gridimage_search) FROM sph_counter WHERE counter_id='sample8' and server_id=4;
 
+	//note, this is deliberately using the slave! As sphinx connects to slave, the sph_counter table is only updated on SLAVE (and if updated on master, slave would uptodate too!)
 	$db2 = GeographDatabaseConnection(true);
 	$row = $db2->getRow("SELECT FLOOR(max_doc_id*0.9)+1 AS `start`,(SELECT MAX(gridimage_id) FROM gridimage_search) as `end` FROM sph_counter WHERE counter_id='sample8' and server_id=4");
 	$between = "gridimage_id BETWEEN {$row['start']} AND {$row['end']}";
 
-} elseif (!empty($param['rebuild'])) {
-        $sqls = array();
-
-        fwrite(STDERR,date('H:i:s ')."Dropping tables\n");
-        $sqls[] = "DROP TABLE IF EXISTS sphinx_tags";
-        $sqls[] = "DROP TABLE IF EXISTS sphinx_terms";
-
-        foreach ($sqls as $sql) {
-                fwrite(STDERR,date('H:i:s ')." $sql\n\n");
-                $db->Execute($sql);
-        }
 }
 
 
@@ -199,6 +192,8 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_placenames'")) {
 		$db->Execute($sql);
 	}
 
+	############
+
 	fwrite(STDERR,date('H:i:s ')."Adding Grid References...\n");
 
 	$sql = "SELECT placename_id,has_dup,km_ref,reference_index FROM sphinx_placenames WHERE km_ref LIKE ',%'";
@@ -231,6 +226,22 @@ if (!$db->getOne("SHOW TABLES LIKE 'sphinx_placenames'")) {
 	}
 
 	$recordSet->Close();
+
+	#############
+
+	$sqls = array();
+
+	$sqls[] = "create temporary table sphinx_placename_stat ".
+			"select placename_id,count(distinct gridsquare_id) as squares,sum(imagecount) as images from gridsquare group by placename_id order by null";
+	$sqls[] = "alter table sphinx_placename_stat add primary key(placename_id)";
+	$sqls[] = "alter table sphinx_placenames add squares mediumint unsigned default null, add images int unsigned default null, add index(Place)";
+	$sqls[] = "update sphinx_placenames p inner join sphinx_placename_stat s using (placename_id) set p.squares = s.squares, p.images = s.images";
+
+        foreach ($sqls as $sql) {
+                fwrite(STDERR,date('H:i:s ')." $sql\n\n");
+                $db->Execute($sql);
+        }
+	#############
 }
 
 #####################################################
