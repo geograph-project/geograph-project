@@ -41,7 +41,7 @@ $smarty->display('_std_begin.tpl');
 
 if (isset($_POST['crit']))
 	$crit = $_POST['crit'];
-else 
+else
 	$crit = "placename_id = 0";
 
 ?>
@@ -59,16 +59,16 @@ select * from <select name="table"><option>gridimage</option>
 if (isset($_POST['go']))
 {
 	$table = $_POST['table'];
-	
+
 	echo "<h3> Rebuilding $table.placename_id...</h3>";
 	flush();
 	set_time_limit(3600*24);
-	
-	
+
+
 	$tim = time();
-		 
+
 	$count=0;
-	
+
 	$limit  = '';
 	if (!empty($_POST['start']))
 		$limit = " LIMIT {$_POST['start']},99999999";
@@ -80,14 +80,14 @@ if (isset($_POST['go']))
 		$join .= " inner join gridimage gi using (gridsquare_id)";
 	if (preg_match('/\bu\b/',$_POST['crit']))
 		$join .= " inner join user u using (user_id)";
-	
+
 
 	$recordSet = &$db->Execute("select * from $table $join where {$_POST['crit']} $limit");
-	if (!empty($_POST['file'])) {	
+	if (!empty($_POST['file'])) {
 		$handle = fopen($_SERVER['DOCUMENT_ROOT']."/rss/placename_updates.sql",'a') or die("unable to open file");
 	}
-	
-	while (!$recordSet->EOF) 
+
+	while (!$recordSet->EOF)
 	{
 		if ($table == 'gridimage') {
 			$image=new GridImage;
@@ -96,7 +96,7 @@ if (isset($_POST['go']))
 
 			$square = $image->grid_square;
 			$extra = ",upd_timestamp = '{$recordSet->fields['upd_timestamp']}'";
-		
+
 			if (!isset($square->nateastings))
 				$square->getNatEastings();
 
@@ -104,11 +104,13 @@ if (isset($_POST['go']))
 			//the required point
 			$radius = 30000;
 
-			$places = $square->findNearestPlace($radius);
-			$pid = $places['pid'];		
+			$places = $square->findNearestPlace($radius,'OS'); //we need explicitly OS gaz, as that what placename_id is based on!
+			$pid = $places['pid'];
 		} else {
 			$gid = $recordSet->fields['gridsquare_id'];
-			#$from_stratch = 1;
+
+			$from_stratch = 1; //for now want to do it long way always
+
 			if ($from_stratch || $recordSet->fields['reference_index'] == 2) {
 				$square=new GridSquare;
 				#$square->_initFromArray($recordSet->fields);
@@ -119,7 +121,7 @@ if (isset($_POST['go']))
 				}
 				$square->_storeGridRef($square->grid_reference);
 				$extra = "";
-			
+
 				if (!isset($square->nateastings))
 					$square->getNatEastings();
 
@@ -127,14 +129,13 @@ if (isset($_POST['go']))
 				//the required point
 				$radius = 100000;
 
-				$places = $square->findNearestPlace($radius);
-				$pid = $places['pid'];		
+				$places = $square->findNearestPlace($radius,'OS'); //we need explicitly OS gaz, as that what placename_id is based on!
+				$pid = $places['pid'];
 			} else {
 				//to optimise the query, we scan a square centred on the
 				//the required point
 				$radius = 100000;
-				
-				
+
 				$left=$recordSet->fields['x']-$radius;
 				$right=$recordSet->fields['x']+$radius;
 				$top=$recordSet->fields['y']-$radius;
@@ -147,7 +148,7 @@ if (isset($_POST['go']))
 				$sql="select placename_id,
 					power(x-{$recordSet->fields['x']},2)+power(y-{$recordSet->fields['y']},2) as distance
 					from gridsquare where
-					CONTAINS( 	
+					CONTAINS(
 						GeomFromText($rectangle),
 						point_xy)
 					$ofilter
@@ -159,35 +160,29 @@ if (isset($_POST['go']))
 				{
 					$pid = $square['placename_id'];
 				}
-			} 
-			
+			}
 		}
 
 		if ($pid) {
-			if (empty($_POST['file'])) {	
-				$db->Execute("update LOW_PRIORITY gridimage set placename_id = $pid,upd_timestamp = '{$recordSet->fields['upd_timestamp']}' where gridimage_id = $gid");
+			if (empty($_POST['file'])) {
+				$db->Execute("update LOW_PRIORITY $table set placename_id = $pid$extra where {$table}_id = $gid");
 			} else {
 				fwrite($handle,"update $table set placename_id = $pid$extra where {$table}_id = $gid;\n");
 			}
 		}
-				
+
 		if (++$count%500==0) {
 			printf("done %d at <b>%d</b> seconds<BR>",$count,time()-$tim);
 			flush();
 			sleep(2);
 		}
-		
+
 		$recordSet->MoveNext();
 	}
-	$recordSet->Close(); 
+	$recordSet->Close();
 	if ($handle)
 		fclose($handle);
 }
 
 $smarty->display('_std_end.tpl');
-exit;
-	
 
-
-	
-?>
