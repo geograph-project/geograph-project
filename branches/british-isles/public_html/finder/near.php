@@ -275,8 +275,8 @@ if (!empty($_GET['q'])) {
        	                $suggestions[] = '<a href="/of/['.urlencode($t).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities($t).']</a>';
 		}
 		$name2= $db->Quote("$plain/{$square->grid_reference}");
-		if ($place = $db->getRow("SELECT * FROM sphinx_placenames WHERE Place = $name OR Place = $name2")) {
-			$suggestions[] = '<a href="/of/place:'.urlencode(exact_sphinx_match($place['Place'])).'" rel="nofollow">Images <i>nearest</i> '.htmlentities($place['Place']).', '.htmlentities($place['County']).'</a>';
+		if ($place = $db->getRow("SELECT * FROM sphinx_placenames WHERE (Place = $name OR Place = $name2) AND images > 0")) {
+			$suggestions[] = '<a href="/of/place:'.urlencode(exact_sphinx_match($place['Place'])).'" rel="nofollow">'.$place['images'].' Images <i>nearest</i> '.htmlentities($place['Place']).', '.htmlentities($place['County']).'</a>';
 		}
 
 		if ($grid_ok && !empty($square->nateastings) && $square->natgrlen == 4 && $square->reference_index == 1) {
