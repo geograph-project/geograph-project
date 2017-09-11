@@ -84,7 +84,7 @@ if (!empty($_GET['q'])) {
 
 	$sphinxq = '';
 
-	$mkey = md5('v2'.trim($_GET['q']).$src.$distance);
+	$mkey = md5('#'.trim($_GET['q']).$src.$distance);
 	if (!empty($_GET['filter'])) {
 		$sphinx = new sphinxwrapper(trim($_GET['filter']), true); //this is for sample8 index.
 		$sphinxq = $sphinx->q;
@@ -406,7 +406,7 @@ if (!empty($_GET['d']) && !empty($final)) {
 		print "<div id=thumbs>";
 
 	        if (!empty($data['total_found']) && $data['total_found'] > 10)
-			print '<div style="position:relative;float:right">About '.number_format($data['total_found'])." photos within ".($distance/1000)."km.</div>";
+			print '<div style="position:relative;float:right">About '.number_format($data['total_found'])." photos within ".($distance/1000)."km of $gru</div>";
 
 		$last = 0;
 		$contexts = array();
@@ -483,10 +483,13 @@ if (!empty($final)) {
 	or <a href="/search.php?do=1&gridref=<? echo $gru.$qfiltmain; ?>" style=color:yellow>in the standard search</a>.</b></div>
 
 	<div class=interestBox>
-	Too many photos in a small area? Try a <a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=3000/pagesize=30/sort=spread">sample selection of the general area</a>.<br><br>
+	Too many photos in a small area? Try a <a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo ($distance == 10000)?3000:$distance; ?>/pagesize=30/sort=spread">sample selection of the general area</a>.
+	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo ($distance == 10000)?3000:$distance; ?>/display=map/pagesize=50/sort=spread">On a map</a>)
+	<br><br>
 
-	Search <i>within</i> these images, keywords: <input type="search" name="q"><input type=submit value="Browser">
+	Search <i>within</i> these images, keywords: <input type="search" name="q" value="<? echo @htmlentities($_GET['filter']); ?>"><input type=submit value="Browser">
 	<input type="hidden" name="loc" value="<? echo $gr; ?>"/>
+	<input type="hidden" name="dist" value="<? echo $distance; ?>"/>
 	</div>
 	</form>
 <?

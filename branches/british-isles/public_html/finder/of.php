@@ -94,7 +94,7 @@ if (!empty($_GET['q'])) {
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
 
 	if ($memcache->valid) {
-		$mkey = md5(trim($_GET['q']).$_SERVER['HTTP_HOST']).isset($_GET['redir']).$src;
+		$mkey = md5("#".trim($_GET['q']).$_SERVER['HTTP_HOST']).isset($_GET['redir']).$src;
 		$str =& $memcache->name_get('of',$mkey);
 		if (!empty($str)) {
 			print $str;
@@ -146,8 +146,8 @@ if (!empty($_GET['q'])) {
 		<?
 		$db = GeographDatabaseConnection(true);
 		//todo memcache!
-		if ($tag = $db->getRow("SELECT * FROM tag WHERE status = 1 AND tag = ".$db->Quote($_GET['q']))) { ?>
-			<a href="/tagged/<? echo $qu2; ?>">Tagged</a> &middot;
+		if ($tag = $db->getRow("SELECT * FROM tag_stat WHERE tagtext = ".$db->Quote(preg_replace('/[\[\]]+/','',$_GET['q'])))) { ?>
+			<a href="/tagged/<? echo urlencode2($tag['tagtext']); ?>">Tagged</a> &middot;
 		<? } ?>
 		<? if (preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$_GET['q'])) { ?>
 		        <a href="/gridref/<? echo strtoupper($qu2); ?>">Browse Page</a> &middot;
@@ -219,8 +219,8 @@ if (!empty($_GET['q'])) {
 		$sphinx->q = str_replace(' near ',' @(Place,County,Country) ',$sphinx->q);
 
 	} elseif (!empty($prefixMatch) && $prefixMatch > 1) {
-		print "<div style=\"font-size:0.9em;padding:4px;border-bottom:1px solid gray\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities($_GET['q'])."'</a>, below are combined results.";
-		print " To search a specific one, select from the dropdown above. Or <a href=\"/browser/#!/q=$qu/display=group/group=place/n=4/gorder=images%20desc\">View images grouped by nearby Place</a></div>";
+		print "<div style=\"font-size:0.9em;padding:4px;border-bottom:1px solid gray\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities($_GET['q'])."'</a>, below are <b>combined</b> keyword results.";
+		print " To search near specific place, select from the dropdown above. Or <a href=\"/browser/#!/q=$qu/display=group/group=place/n=4/gorder=images%20desc\">View images grouped by nearby Place</a></div>";
 
 	} elseif (!empty($db)) {
 		//todo - rewrite this to use a full-text index.
@@ -566,18 +566,15 @@ if (!empty($final) && empty($words) && count($final) != count($rows['google']) &
 	$suggestions = array();
 	if ($data['total_found'] > 60) {
 		if (!empty($tag) && strpos($_GET['q'],'[') !== 0) {
-			$t = $tag['tag']; //we need to use the actual tag, rather than the query, because it might be a prefixed tag!
-			if (!empty($tag['prefix']))
-                                $t = $tag['prefix'].':'.$t;
-			$suggestions[] = '<a href="/of/['.urlencode($t).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities($t).']</a>';
+			$suggestions[] = '<a href="/of/['.urlencode2($tag['tagtext']).']" rel="nofollow">Images <i>tagged</i> with ['.htmlentities($tag['tagtext']).']</a>';
 		}
-		if (strpos($_GET['q'],'"') !== 0 && strpos($_GET['q'],' ') > 3)
+		if (strpos($_GET['q'],'"') === FALSE && strpos($_GET['q'],' ') > 3)
 			$suggestions[] = "<a href=\"/of/%22$qu2%22\" rel=\"nofollow\">Images with <i>phrase</i> &quot;$qh&quot</a>";
-		if (strpos($_GET['q'],':') !== 0 && !empty($decode[0]) && $decode[0]->total_found > 0)
+		if (strpos($_GET['q'],':') === FALSE && !empty($decode[0]) && $decode[0]->total_found > 0)
 			$suggestions[] = "<a href=\"/of/text:$qu2\" rel=\"nofollow\">Pure Keyword Match for '$qh'</a>";
 	}
 	if (!empty($suggestions)) {
-		print "<div class=interestBox>&middot; To many imprecise results? Try ".implode(' or ',$suggestions)."</div>";
+		print "<div class=interestBox>&middot; Too many imprecise results? Try ".implode(' or ',$suggestions)."</div>";
 	}
 
 } elseif (!empty($final) && count($final) == count($rows['google'])) {
