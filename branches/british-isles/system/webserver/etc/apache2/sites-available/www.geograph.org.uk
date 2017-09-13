@@ -159,6 +159,7 @@
 
     RewriteRule ^/tagged/(.*) /tags/index.php?tag=$1 [qsa]
     RewriteRule ^/of/(.*) /finder/of.php?q=$1 [qsa]
+    RewriteRule ^/place/(.*) /finder/of.php?q=$1&place=1 [qsa]
     RewriteRule ^/near/(.*) /finder/near.php?q=$1 [qsa]
     RewriteRule ^/map/(.*) /mapbrowse.php?t=$1 [qsa]
     RewriteRule ^/article/([\w-]+)/?([0-9]*)/?$ /article/article.php?url=$1&page=$2 [qsa]

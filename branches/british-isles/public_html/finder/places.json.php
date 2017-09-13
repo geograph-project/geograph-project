@@ -51,30 +51,37 @@ if (!empty($_GET['q'])) {
 
 	//full unit postcode
 		} elseif ($pc[1] != 'BT' && preg_match("/([0-9])([A-Z]{2})$/i",strtoupper($code)) ) { //GB can do full postcodes now!
+			//codepoint open encodes it as a 7char string. rather than being always with/without a space.
 			if (strlen($code) == 8) {
-				//codepoint open encodes it as a 7char string. rather than being always with/without a space.
 				$code = str_replace(' ','',$code);
+                        } elseif (strlen($code) == 6) {
+                                $code = str_replace(' ','  ',$code);
 			}
 			$postcodes = $db->GetAll('select code,e,n,1 as reference_index from postcode_codeopen where code='.$db->Quote($code).' limit 1');
 
 	//1 digit missing
 		} elseif ($pc[1] != 'BT' && preg_match("/([0-9])([A-Z]{1})$/i",strtoupper($code)) ) {
+                        //codepoint open encodes it as a 7char string. rather than being always with/without a space.
 			if (strlen($code) == 7) {
-                                //codepoint open encodes it as a 7char string. rather than being always with/without a space.
                                 $code = str_replace(' ','',$code);
-                        }
+                        } elseif (strlen($code) == 5) {
+                                $code = str_replace(' ','  ',$code);
+			}
                         $postcodes = $db->GetAll('select code,e,n,1 as reference_index from postcode_codeopen where code like '.$db->Quote($code."_").' limit 40');
 	//sector
 		} else {
-			if ($pc[1] != 'BT') {
-				if (strlen($code) == 6) {
-					//codepoint open encodes it as a 7char string. rather than being always with/without a space.
-					$code = str_replace(' ','',$code);
-				}
-				$postcodes = $db->GetAll('select code,e,n,1 as reference_index from postcode_codeopen where code like '.$db->Quote($code."__").' limit 40');
+			$postcodes = $db->GetAll('select code,e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');
 
-			} else {
-				$postcodes = $db->GetAll('select code,e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');
+			if ($pc[1] != 'BT') {
+				//codepoint open encodes it as a 7char string. rather than being always with/without a space.
+				if (strlen($code) == 6) {
+					$code = str_replace(' ','',$code);
+	                        } elseif (strlen($code) == 4) {
+        	                        $code = str_replace(' ','  ',$code);
+				}
+				if ($postcodes2 = $db->GetAll('select code,e,n,1 as reference_index from postcode_codeopen where code like '.$db->Quote($code."__").' limit 40')) {
+					$postcodes = array_merge($postcodes,$postcodes2);
+				}
 			}
 		}
 
@@ -88,7 +95,7 @@ if (!empty($_GET['q'])) {
 				}
 				list($gr,$len) = $conv->national_to_gridref($row['e'],$row['n'],8,$row['reference_index']);
 				$output = array(
-					'name' => $row['code'],
+					'name' => "Postcode ".$row['code'],
 					'gr' => $gr,
 					'localities'=>''
 				);
@@ -99,21 +106,39 @@ if (!empty($_GET['q'])) {
 			$results['query_info'] = '';
 			$results['copyright'] = "Contains Ordnance Survey data (c) Crown copyright and database right 2012";
 		}
-	} elseif (preg_match("/^[^:]*\b([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\b/",$q,$gr)) {
+	} elseif (preg_match("/^\s*([a-zA-Z]{1,2}) ?(\d{1,5})[ \.]?(\d{1,5})\s*$/",$q,$gr)) {
                 require_once('geograph/gridsquare.class.php');
                 $square=new GridSquare;
                 $grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
                 if ($grid_ok || $square->x && $square->y) {
 			$results['items'] = array();
 			$output = array(
-                                'name' => "Grid Reference in ".$square->grid_reference,
+                                'name' => "Grid Reference",
                                 'gr' => strtoupper($gr[1].$gr[2].$gr[3]),
-                                'localities'=>''
+                                'localities'=>$gr[1]
                         );
 			$results['items'][] = $output;
 			$results['total_found'] = count($results['items']);
         	        $results['query_info'] = '';
 		}
+	} elseif (!empty($_GET['legacy'])) {
+		 $gaz = new Gazetteer();
+
+		$prev_fetch_mode = $ADODB_FETCH_MODE;
+                $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+                $places = $gaz->findPlacename($_GET['q']);
+
+		if (!empty($places))
+			$places= array_values($places); //just to reset keys to prevent json writing an object, because keys not consectuative
+		else
+			$places= array();
+
+		$results['items'] = $places;
+		$results['query_info'] = '';
+		$results['copyright'] = "Great Britain results (c) Crown copyright Ordnance Survey. All Rights Reserved. 100045616";
+
+		$ADODB_FETCH_MODE = $prev_fetch_mode;
 	}
 
 	if (empty($results)) {
@@ -140,7 +165,13 @@ if (!empty($_GET['q'])) {
 				$sphinx->_getClient()->SetIndexWeights(array('gaz'=>10,'gaz_meta'=>1));
 				$ids = $sphinx->returnIds($pg,'gaz,gaz_meta');
 			} elseif (!empty($_GET['new'])) {
-				$sphinx->sort = "@relevance DESC, @id DESC";
+				$sphinx->sort = "@relevance DESC, @id ASC";
+				$client = $sphinx->_getClient();
+				if (preg_match('/^[\w ]+$/',$sphinx->q)) {
+					$client->SetRankingMode(SPH_RANK_WORDCOUNT);
+					$sphinx->q = "({$sphinx->q}) | \"{$sphinx->q}\" | @Place \"^{$sphinx->q}\$\" | @Place (^{$sphinx->q})";
+				} else
+					$client->SetRankingMode(SPH_RANK_SPH04);
 				$ids = $sphinx->returnIds($pg,'gaznew');
 			} else {
 				$ids = $sphinx->returnIds($pg,'gaz');
@@ -183,17 +214,4 @@ if (!empty($_GET['q'])) {
 
 
 
-if (!empty($_GET['callback'])) {
-        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
-        echo "{$callback}(";
-}
-
-require_once '3rdparty/JSON.php';
-$json = new Services_JSON();
-print $json->encode($results);
-
-if (!empty($_GET['callback'])) {
-        echo ");";
-}
-
-
+outputJSON($results);

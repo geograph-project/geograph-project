@@ -883,6 +883,18 @@ split_timer('sphinx'); //starts the timer
 		$this->sort = $sort;
 	}
 
+        function exact_field_match($in,$field = '') {
+		if (!empty($field)) $field = "@$field ";
+                $in = str_replace('/',' ',$in);
+                if (strpos($in,' ') !== FALSE) {
+                        $in = preg_replace('/\b(\w+)/','=$1',$in);
+                        return $field.'"^'.$in.'$"';
+                } else {
+                        return $field.'^='.$in.'$';
+                }
+        }
+
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
