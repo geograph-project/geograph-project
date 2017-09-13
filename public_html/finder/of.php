@@ -33,7 +33,10 @@ if (strpos($_SERVER['REQUEST_URI'],'/finder/of.php') === 0) {
         header("HTTP/1.0 301 Moved Permanently");
         header("Status: 301 Moved Permanently");
 
-        $url = "/of/".urlencode2($_GET['q']);
+	if (!empty($_GET['place']))
+        	$url = "/place/".urlencode2($_GET['q']);
+	else
+	        $url = "/of/".urlencode2($_GET['q']);
 	//todo add sorting?
 	if (!empty($_GET['sort']))
 		$url .= "?sort=".urlencode($_GET['sort']);
@@ -80,6 +83,11 @@ if (!empty($_GET['q'])) {
 
         $sphinx = new sphinxwrapper(trim($_GET['q']), true);
 
+	if (!empty($_GET['place'])) {
+		$sphinx->q = $sphinx->exact_field_match($sphinx->q,'place');
+	}
+
+
 	$qu = urlencode(trim($_GET['q']));
 	$qu2 = urlencode2(trim($_GET['q']));
 	$qh = htmlentities(trim($_GET['q']));
@@ -90,11 +98,14 @@ if (!empty($_GET['q'])) {
 	}
 
 	$smarty->assign("page_title",'Photos of '.preg_replace('/^title:/','',$_GET['q']));
-	$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/of/$qu2\"/>");
+	if (!empty($_GET['place']))
+		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/place/$qu2\"/>");
+	else
+		$smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"{$CONF['SELF_HOST']}/of/$qu2\"/>");
 	$smarty->display("_std_begin.tpl",$_SERVER['PHP_SELF'].md5($_GET['q']));
 
 	if ($memcache->valid) {
-		$mkey = md5("#".trim($_GET['q']).$_SERVER['HTTP_HOST']).isset($_GET['redir']).$src;
+		$mkey = md5("#".trim($sphinx->q).$_SERVER['HTTP_HOST']).isset($_GET['redir']).$src;
 		$str =& $memcache->name_get('of',$mkey);
 		if (!empty($str)) {
 			print $str;
@@ -218,7 +229,7 @@ if (!empty($_GET['q'])) {
 		print "<div>Looking for keywords '".htmlentities($bits[0])."' <i>near</i> place '".htmlentities($bits[1])."'? If so <a href=\"/search.php?q=$qu\">click here</a>.</div>";
 		$sphinx->q = str_replace(' near ',' @(Place,County,Country) ',$sphinx->q);
 
-	} elseif (!empty($prefixMatch) && $prefixMatch > 1) {
+	} elseif (!empty($prefixMatch) && $prefixMatch > 1 && empty($_GET['place'])) {
 		print "<div style=\"font-size:0.9em;padding:4px;border-bottom:1px solid gray\">There are a <a href=\"/finder/groups.php?q=place:$qu&group=place\">number of places matching '".htmlentities($_GET['q'])."'</a>, below are <b>combined</b> keyword results.";
 		print " To search near specific place, select from the dropdown above. Or <a href=\"/browser/#!/q=$qu/display=group/group=place/n=4/gorder=images%20desc\">View images grouped by nearby Place</a></div>";
 
@@ -495,7 +506,27 @@ if (count($final) > 1 && preg_match('/^title:\s*(\w.*)/',$_GET['q'],$m)) {
 #########################################
 # handler for no results
 
-	if (empty($final) || count($final) == count($rows['single'])) {
+	if (empty($final) && !empty($_GET['place']) && !empty($decode[0]) && $decode[0]->total_found > 0) {
+		print "<p>No exact place found. ";
+
+			print "Can try viewing images <i>near</i>: <ul>";
+			foreach ($decode[0]->items as $object) {
+				if (strpos($object->name,$object->gr) === false)
+                                	$object->name .= "/{$object->gr}";
+                                printf('<li><a href="/%s/%s">%s</a> %s</li>',
+					(!empty($object->localities) && strpos($object->name,'Postcode') === FALSE && strpos($object->name,'Grid Refe') === FALSE)?'place':'near',
+					urlencode2($object->name),
+                                        str_replace('/',' &middot; ',$object->name),$object->localities);
+			}
+
+			if (!empty($decode[0]->query_info))
+				printf('<li><i>%s</i></li>', $decode[0]->query_info);
+			if (!empty($decode[0]->copyright))
+				printf('<li>%s</li>', $decode[0]->copyright);
+			print "</ul> ({$decode[0]->total_found})";
+
+
+	} elseif (empty($final) || count($final) == count($rows['single'])) {
 		print "<p>No keywords Results found. ";
 
         	if (!empty($decode[0]) && $decode[0]->total_found > 0) {
@@ -823,3 +854,5 @@ function parallel_get_contents($urls, $timeout = 3) {
   }
   return $strs;
 }
+
+

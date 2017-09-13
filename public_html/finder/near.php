@@ -139,10 +139,16 @@ if (!empty($_GET['q'])) {
 		$gr = array_pop($matches[0]); //take the last, so that '/near/Grid%20Reference%20in%20C1931/C198310' works!
 	        $grid_ok=$square->setByFullGridRef($gr,true,true);
 		$gru = urlencode(str_replace(' ','',$gr));
+		$location = "grid reference";
 	} elseif (!empty($decode) && !empty($decode->total_found)) {
 		$gr = $decode->items[0]->gr;
 		$grid_ok=$square->setByFullGridRef($gr,true,true);
 		$gru = urlencode(str_replace(' ','',$gr));
+		$location = "location";
+		if (strpos($decode->items[0]->name,'Grid') !== FALSE)
+			$location = "grid reference";
+		elseif (strpos($decode->items[0]->name,'Postcode') !== FALSE)
+			$location = "postcode";
 	}
 
 	//for some unexplainable reason, setByFullGridRef SOMETIMES returns false, and fails to set nateastings - even though allow-zero-percent is set. Fix that...
@@ -276,7 +282,7 @@ if (!empty($_GET['q'])) {
 		}
 		$name2= $db->Quote("$plain/{$square->grid_reference}");
 		if ($place = $db->getRow("SELECT * FROM sphinx_placenames WHERE (Place = $name OR Place = $name2) AND images > 0")) {
-			$suggestions[] = '<a href="/of/place:'.urlencode(exact_sphinx_match($place['Place'])).'" rel="nofollow">'.$place['images'].' Images <i>nearest</i> '.htmlentities($place['Place']).', '.htmlentities($place['County']).'</a>';
+			$suggestions[] = '<a href="/place/'.urlencode2($place['Place']).'" rel="nofollow">'.$place['images'].' Images <i>nearest</i> '.htmlentities($place['Place']).', '.htmlentities($place['County']).'</a>';
 		}
 
 		if ($grid_ok && !empty($square->nateastings) && $square->natgrlen == 4 && $square->reference_index == 1) {
@@ -469,14 +475,14 @@ if (!empty($_GET['d']) && !empty($final)) {
 # footer links
 
 if (!empty($final)) {
-
+	print "<p><small>";
 	if (!empty($data['total_found']) && (count($final) <  $data['total_found']))
-		print "<p><small>only first ".count($final)." images shown. Use links below to explore more</small></p>";
-
+		print "only first ".count($final)." images shown. Use the links below to explore more. ";
+	print "This is a selection of photos centred on the geographical midpoint of the $location you have entered. Our coverage of different areas will vary</small></p>";
 
 	print "<form action=\"/browser/redirect.php\"><br><div class=interestBox style=color:white;background-color:gray;font-size:1.05em>";
 	if (!empty($data['total_found']) && $data['total_found'] > 10)
-		print "About <b>".number_format($data['total_found'])." photos within ".($distance/1000)."km</b>. ";
+		print "About <b style='font-family:verdana'>".number_format($data['total_found'])."</tt> photos within ".($distance/1000)."km</b>. ";
 ?>
 	Explore these images more: <b><a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>" style=color:yellow>in the Browser</a>
 	(<a href="/browser/#!<? echo $qfiltbrow; ?>/loc=<? echo $gru; ?>/dist=<? echo $distance; ?>/display=map_dots/pagesize=100" style=color:yellow>On Map</a>)
@@ -577,14 +583,3 @@ function vote_log(action,param,value) {
 
 	$smarty->display('_std_end.tpl');
 
-
-
-		function exact_sphinx_match($in) {
-			$in = str_replace('/',' ',$in);
-			if (strpos($in,' ') !== FALSE) {
-				$in = preg_replace('/\b(\w+)/','=$1',$in);
-				return '"^'.$in.'$"';
-			} else {
-				return '^='.$in.'$';
-			}
-		}
