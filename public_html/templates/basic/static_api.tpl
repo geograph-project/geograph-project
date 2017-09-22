@@ -1,7 +1,19 @@
 {assign var="page_title" value="API"}
 {include file="_std_begin.tpl"}
 
-	 <h2>Geograph API <sub>(last updated 1st May 2012)</sub></h2> 
+<div class="interestBox" style="background-color:yellow; color:black; border:2px solid red; padding:10px;margin:20px">
+
+<b>Please Note: This page is not complete.</b> We have many other APIs available, that we havn't got round to documenting.<br><br>
+
+For a general overview, please see: <a href="/article/Geograph-Image-APIs">Geograph Images APIs</a> Article, suggest new visitors start there. <br><br>
+
+If you are looking for a API for specific purpose, please <a href="/contact.php">contact us</a>. We probably have one! If not can build it. 
+We would much perfer to work with you to find a suitable API, than forcing you to scrape, or spider the website. Spidering sucks.
+</div>
+
+
+	 <h2>Geograph API Documentation <sub>(last updated 1st May 2012)</sub></h2> 
+
 	 <div
 	  style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;"><b>Contents</b><br/>
 		<ul style="margin-top:0;margin-left:0;padding:0 0 0 1em;"> 
@@ -27,6 +39,7 @@
 		  <li><a href="#others">Other Places to get information</a> 
 		  <li><a href="#finally">and finally...</a></li> 
 		</ul></div> 
+
 	 <p>Geograph's <b>Application Programming Interface</b> (API) allows third
 		party developers to create applications using data sourced from Geograph,
 		in a friendly and polite way.</p> 
@@ -37,29 +50,8 @@
 		the developers needed, or felt would be useful, if you have any special requests then
 		don't be shy, just <a href="/contact.php">let us know</a>.</p>
 
-	<form action="http://groups-beta.google.com/group/geograph-api-users/boxsubscribe">
-		<table border=0 style="background-color: #fff; border:1px solid green; padding: 5px;" cellspacing=2>
-			<tr>
-				<td rowspan="2">
-					<img src="http://groups-beta.google.com/groups/img/3/groups_bar.gif" height="26" width="132" alt="Google Groups Beta"/>
-				</td>
-				<td style="padding-left: 5px">
-					<b>Subscribe to <a href="http://groups-beta.google.com/group/geograph-api-users">Geograph-API-Users</a></b>
-				</td>
-			</tr>
-			<tr>
-				<td style="padding-left: 5px;"> Email: <input type=text name=email>
-					<input type=submit name="sub" value="Subscribe">
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<i>Recommended; API updates will be posted here.<small><br/> Low traffic membership list is not disclosed.</small></i>
-				</td>
-			</tr>
-			
-		</table>
-	</form>
+	<p>&middot; Looking for Inspiration? The <a href="http://www.geograph.org/links/?tag=uses:geograph-api">Links Directory has a listing of API powered websites</a>.</p>
+
 <br/><br/>
 
 	 <div class="interestBox" style="background-color:pink; color:black; border:2px solid red; padding:10px;">
@@ -77,8 +69,8 @@
 
 	 <h3 style="border:1px solid #cccccc;background-color:pink; padding:10px; clear:both;margin-top:30px;"><a name="api"></a>API-key</h3> 
 	 <p>If you haven't got one you will need to obtain a unique API-key, which
-		gives you access to the feeds below, simply <a href="/contact.php">contact
-		us</a>, with a brief outline of your project, please include the URL so we can
+		gives you access to the feeds below, simply <a href="/admin/apikey.php">request a key</a>,
+		 with a brief outline of your project, please include the URL so we can
 		take a look.</p> 
 	 <p>Once you have a API-key simply replace [apikey] in the examples below to
 		obtain your feed.</p> 
@@ -198,6 +190,11 @@
 		  <td>
 			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;text=bridge" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;text=bridge</a></td>
 		</tr> 
+	 </table> 
+	 
+	 <h4><a name="rss_options"></a>Options</h4> 
+	 
+	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
 		  <th rowspan="2">callback=[function]</th> 
 		  <td>wraps the output in a function call. <b>Only works with <tt>format=JSON</tt></b>, to allow use in client-side Javascript web-apps</td> 
@@ -206,11 +203,6 @@
 		  <td>
 			 <a href="http://{$api_host}/syndicator.php?key=[apikey]&amp;format=JSON&amp;callback=function" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;format=JSON&amp;callback=function</a></td>
 		</tr> 
-	 </table> 
-	 
-	 <h4><a name="rss_options"></a>Options</h4> 
-	 
-	 <table cellpadding="3" cellspacing="0" border="1"> 
 		<tr> 
 		  <th rowspan="2">expand=1</th> 
 		  <td>If present includes the thumbnail of the image in the description as html (not applicable to KML format). </td> 
@@ -560,7 +552,7 @@ Note:the distance should be 10km or below.
 		</tr> 
 	 </table> 
 	 <h4><a name="extra"></a>Returning Extra Columns</h4> 
-	 <p style="color:#990000;">NOTE: You can only supply EITHER en OR ll, not both</p>
+	 <p style="color:#990000;">NOTE: The "en" and/or "ppos" options can't be used at same time as "ll" and/or "tags"</p>
 	 <table border="1" cellpadding="3" cellspacing="0"> 
 		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT">&amp;taken=1</th> 
@@ -678,6 +670,10 @@ Note:the distance should be 10km or below.
 		  <td colspan="2">1=First Geograph,2=Second Geograph Contributor Point, etc.</td> 
 		</tr> 
 		<tr style="background-color:#eeeeee"> 
+		  <th colspan="2" ALIGN="LEFT">&amp;points=1</th> 
+		  <td colspan="2">points awared (1/2/3/4/personal/tpoint) space seperated</td> 
+		</tr> 
+		<tr style="background-color:#eeeeee"> 
 		  <th colspan="2" ALIGN="LEFT">&amp;tags=1</th> 
 		  <td colspan="2">Include the tags as a question mark separated list. Note: <b>can't</b> be used in conjunction with en/ppos options.</td> 
 		</tr> 
@@ -789,11 +785,6 @@ Note:the distance should be 10km or below.
 			 href="http://{$api_host}/export.csv.php?key=[apikey]&i=12345" rel="nofollow">http://{$api_host}/export.csv.php?key=[apikey]&amp;i=12345</a></td>
 		</tr> 
 		<tr> 
-		  <td>MemoryMap feed</td> 
-		  <td><a title="Geograph MemoryMap feed"
-			 style="text-decoration: line-through" rel="nofollow">{$self_host}/memorymap.php?key=[apikey]&amp;i=12345</a> (Coming soon)</td>
-		</tr> 
-		<tr> 
 		  <td>GPX Export</td> 
 		  <td><a title="Geograph GPX Downloads"
 		  	href="http://{$api_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345" rel="nofollow">http://{$api_host}/syndicator.php?key=[apikey]&amp;format=GPX&amp;i=12345</a></td>
@@ -801,7 +792,6 @@ Note:the distance should be 10km or below.
 	 </table> 
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="others"></a>Other Ways to download information</h3> 
 	 <ul>
-		<li><a href="/memorymap.php">MemoryMap Exports</a></li>
 		<li><a href="/gpx.php">GPX Exports</a></li>
 		<li>100x100km CheckSheets (<a href="{$self_host}/mapsheet.php?t=tolJ5oOXXJ0oOJFoOXXJfoMXbJqoOXXJL5405o4VZMlXwZblw4MMuX" rel="nofollow">example</a>) <small>- nice easy parsable listing, could be used for creating coverage maps</small></li>
 		<li>sitemap.xml - see {external href="http://www.sitemaps.org"}</li>
@@ -812,7 +802,7 @@ Note:the distance should be 10km or below.
 	 </ul>
 	 <h3 style="border:1px solid #cccccc;background-color:#dddddd; padding:10px;"><a name="finally"></a>Finally</h3> 
 	 <p>We wish you luck in you project and look forward to seeing the results! If you have any 
-		problems using the API, then please do get in <a href="/contact.php">contact</a>. Please consider joining the <a href="http://groups-beta.google.com/group/geograph-api-users">Geograph-API-Users</a> Google Discussion Group, which is primarily used for announcements.</p>
+		problems using the API, then please do get in <a href="/contact.php">contact</a>.</p>
 
 
 <br/><hr/>
