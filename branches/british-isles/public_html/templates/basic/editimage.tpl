@@ -306,8 +306,11 @@
 				{/if}
 			{/if}
 			<label for="accept{$item.gridimage_ticket_item_id}">
+			{if $item.field eq "photographer_gridref"}
+			Change camera_gridref from
+			{else}
 			Change {$item.field} from
-
+			{/if}
 			{if $item.field eq "grid_reference"}
 				{assign var="field" value="current_subject_gridref"}
 			{else}
