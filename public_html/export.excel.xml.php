@@ -129,6 +129,8 @@ while (!$recordSet->EOF)
 		print "<Cell><Data ss:Type=\"String\">{$image['moderation_status']}</Data></Cell>\n";
 	if (!empty($_GET['level']))
 		print "<Cell><Data ss:Type=\"Number\">{$image['ftf']}</Data></Cell>\n";
+	if (!empty($_GET['points']))
+		print "<Cell><Data ss:Type=\"String\">{$image['points']}</Data></Cell>\n";
 
 	echo "</Row>\n";
 	$recordSet->MoveNext();
