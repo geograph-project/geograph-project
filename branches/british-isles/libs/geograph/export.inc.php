@@ -127,6 +127,11 @@ if (!empty($_GET['level'])) {
 	$sql_from .= ",ftf";
 }
 
+if (!empty($_GET['points'])) {
+	$csvhead .= ",Points";
+	$sql_from .= ",CONCAT_WS(' ', IF(ftf BETWEEN 1 and 4,ftf,NULL), IF(ftf>0,'personal',NULL), points) as points";
+}
+
 
 #	#	#	#	#	#	#	#	#	#	#	#	#	#	#
 

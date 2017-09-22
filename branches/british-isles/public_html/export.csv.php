@@ -122,6 +122,8 @@ while (!$recordSet->EOF)
 		echo ",{$image['moderation_status']}";
 	if (!empty($_GET['level']))
 		echo ",{$image['ftf']}";
+	if (!empty($_GET['points']))
+		echo ",{$image['points']}";
 
 	echo "\n";
 	$recordSet->MoveNext();
