@@ -16,20 +16,20 @@ $replacement[]="<a href=\"\\1\" target=\"_blank\">\\3</a>";
 $pattern[]="/\[email=([^<>(): \n]+?)\](.+?)\[\/email\]/i";
 $replacement[]="<a href=\"mailto:\\1\">\\2</a>";
 
-$pattern[]="/\[img(left|right)?\]http:\/\/{$_SERVER['HTTP_HOST']}\/photo\/(\d+)\[\/img\]/i";
-$replacement[]='[[[\\2]]]';
-
-$pattern[]="/\[img(left|right)?\]http:\/\/{$_SERVER['HTTP_HOST']}\/(geophotos\/\w+|photos)\/\w+\/\w+\/(\d+)_([\w_]+)\.jpg\[\/img\]/i";
+$pattern[]="/\[img(left|right)?\]https?:\/\/\w+\.geograph(\.ie|\.org|\.uk)+\/photo\/(\d+)\[\/img\]/i";
 $replacement[]='[[[\\3]]]';
 
-$pattern[]="/\[img(left|right)?\]http:\/\/geo(-en|)\.hlipp\.de\/photo\/(\d+)\[\/img\]/i";
+$pattern[]="/\[img(left|right)?\]https?:\/\/\w+\.geograph(\.ie|\.org|\.uk)+\/(geophotos\/\d+|photos)\/\d+\/\d+\/(\d{6,})_([\w_]+)\.jpg\[\/img\]/i";
+$replacement[]='[[[\\4]]]';
+
+$pattern[]="/\[img(left|right)?\]https?:\/\/geo(-en|)\.hlipp\.de\/photo\/(\d+)\[\/img\]/i";
 $replacement[]='[[[de:\\3]]]';
 
-$pattern[]="/\[img(left|right)?\]http:\/\/geo(-en|)\.hlipp\.de\/photos\/\w+\/\w+\/(\d+)_([\w_]+)\.jpg\[\/img\]/i";
+$pattern[]="/\[img(left|right)?\]https?:\/\/geo(-en|)\.hlipp\.de\/photos\/\w+\/\w+\/(\d+)_([\w_]+)\.jpg\[\/img\]/i";
 $replacement[]='[[[de:\\3]]]';
 
 
-$pattern[]="/\[img(left|right)?\](http:\/\/([^<> \n]+?)\.(gif|jpg|jpeg|png))\[\/img\]/i";
+$pattern[]="/\[img(left|right)?\](https?:\/\/([^<> \n]+?)\.(gif|jpg|jpeg|png))\[\/img\]/i";
 $replacement[]='<img src="\\2" border="0" align="\\1" alt="">';
 
 $pattern[]="/\[blockquote\](.+?)\[\/blockquote\]/is";
