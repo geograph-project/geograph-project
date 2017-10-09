@@ -9,9 +9,9 @@
       <li><a title="Advanced image search" href="/search.php?form=text">Advanced</a></li>
       <li><a title="Advanced image search" href="/finder/">More</a></li>
      </ul></li>
-     <li><a title="View map of all submissions" href="/mapbrowse.php">Map</a><ul>
+     <li><a title="View map of all submissions" href="/mapper/coverage.php#zoom=7&lat=53.52506&lon=-8.092&layers=FFT000000000000BFT">Maps</a><ul>
       <li><a title="Depth Map" href="/mapbrowse.php?depth=1">Depth</a></li>
-      <li><a title="Draggable Map" href="/mapper/">Draggable</a></li>
+      <li><a title="Other Map" href="/help/maps">...more</a></li>
      </ul></li>
      <li><a title="Interactive browser, search and map in one" href="/browser/#!/country+(%22Northern+Ireland%22+%7C+%22Republic+of+Ireland%22)">Browser</a></li>
      <li><a title="Explore Images by Theme" href="/explore/">Explore</a><ul>
@@ -20,6 +20,7 @@
       <li><a href="/explore/places/2/">Places</a></li>
       <li><a href="/explore/calendar.php">Calendar</a></li>
       <li><a href="/explore/searches.php">Featured</a></li>
+      <li><a href="/gallery.php">Showcase</a></li>
      </ul></li>
      <li><a title="Content" href="/content/">Collections</a><ul>
       <li><a href="/article/">Articles</a></li>
