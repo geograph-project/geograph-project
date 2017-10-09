@@ -7,10 +7,10 @@
     <li>View<ul>
      <li><a title="Find and locate images" href="/search.php">Search</a></li>
      <li id="markedLink" style="display:none"><a title="View your current Marked Images" href="/finder/marked.php">Marked Images</a></li>
-     <li><a title="View map of all submissions" href="/mapbrowse.php">Maps</a></li>
+     <li><a title="View map of all submissions" href="/mapper/coverage.php">Maps</a></li>
      <li><a title="Interactive browser, search and map in one" href="/browser/#!start">Browser</a></li>
      <li><a title="Explore images by theme" href="/explore/">Explore</a></li>
-     <li><a title="Curated selection of images" href="/gallery.php">Gallery</a></li>
+     <li><a title="Curated selection of images" href="/gallery.php">Showcase</a></li>
     </ul></li>
     <li><ul>
      <li><a title="Submitted Pages, Galleries and Articles" href="/content/">Collections</a></li>
