@@ -298,13 +298,13 @@
 			{assign var="editable" value=0}
 			{if ($ticket->status eq "closed") or ($item.status eq 'immediate')}
 				<input disabled="disabled" type="checkbox" {if ($item.status eq 'immediate') or ($item.status eq 'approved')}checked="checked"{/if}/>
-
-			{else}
-				{if $isadmin}
+			{elseif $isadmin}
 				<input type="checkbox" value="1" id="accept{$item.gridimage_ticket_item_id}" name="accepted[{$item.gridimage_ticket_item_id}]"/>
 				{assign var="editable" value=1}
-				{/if}
+			{elseif $item.status eq 'pending'}
+				[pending approval]
 			{/if}
+			
 			<label for="accept{$item.gridimage_ticket_item_id}">
 			{if $item.field eq "photographer_gridref"}
 			Change camera_gridref from
