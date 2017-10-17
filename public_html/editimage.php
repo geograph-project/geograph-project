@@ -509,6 +509,15 @@ if (isset($_REQUEST['id']))
 				}
 			}
 
+			// if a location remains moderated, we need to make sure other related fields moderated too,
+                        //      so they don't apply immediately, and held open for moderator approval (with the GR change).
+			if ( $moderated["grid_reference"] || $moderated["photographer_gridref"] ) {
+                                $moderated["grid_reference"]=true;
+                                $moderated["photographer_gridref"]=true;
+                                $moderated["view_direction"]=true;
+                                $moderated["use6fig"]=true;
+                        }
+
 			$view_direction=intval(trim(stripslashes($_POST['view_direction'])));
 			$use6fig=intval(trim(stripslashes($_POST['use6fig'])));
 
