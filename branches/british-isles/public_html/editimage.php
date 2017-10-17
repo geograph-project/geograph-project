@@ -56,6 +56,9 @@ $smarty = new GeographPage;
 //you must be logged in to request changes
 $USER->mustHavePerm("basic");
 
+//temp as page doesnt work on https (mainly maps!)
+pageMustBeHTTP();
+
 
 $template='editimage.tpl';
 $cacheid='';
@@ -186,10 +189,11 @@ if (isset($_REQUEST['id']))
 			$moderated["imageclass"]=false;
 			$moderated["imagetaken"]=false;
 
-			if ($image->moderation_status == "pending")
+			if ($image->moderation_status == "pending") {
 				$moderated["grid_reference"]=false;
+				$moderated["photographer_gridref"]=false;
+			}
 
-			$moderated["photographer_gridref"]=false;
 			$moderated["view_direction"]=false;
 			$moderated["use6fig"]=false;
 		}
@@ -488,6 +492,15 @@ if (isset($_REQUEST['id']))
 					if (strlen($sq->grid_reference) > strlen($photographer_gridref))
 						$photographer_gridref=$sq->grid_reference;
 
+					//if already has a viewpoint, and is the same square allow the change anyway for the contributor
+					if ($image->viewpoint_northings) {
+	                                        $oldsq = new GridSquare;
+        	                                $oldsq->setByFullGridRef($image->photographer_gridref,false,true);
+
+	                                        if ($isowner && $sq->gridsquare_id == $oldsq->gridsquare_id) {
+        	                                        $moderated["photographer_gridref"]=false;
+                	                        }
+					}
 				}
 				else
 				{
