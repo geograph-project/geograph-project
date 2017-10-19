@@ -26,10 +26,10 @@
         .results_preview { margin-left:240px; margin-top:-35px; }
         .results_full {}
 </style>
-
+{/literal}
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-<script type="text/javascript" src="/js/jquery.smart_autocomplete.js"></script>
-
+<script type="text/javascript" src="{"/js/jquery.smart_autocomplete.js"|revision}"></script>
+{literal}
 <script type="text/javascript">
         $(function(){
 
@@ -51,6 +51,25 @@
 
         var loadedquery = null;
 
+	$(function() {
+		if (location.search.length) {
+                        // skip the first character, we are not interested in the "?"
+                        var query = location.search.substring(1);
+
+                        var pairs = query.split("&");
+                        for (var i=0; i<pairs.length; i++) {
+                                var pos = pairs[i].indexOf("=");
+                                var argname = pairs[i].substring(0,pos).toLowerCase();
+                                if (argname == 'q') {
+                                        var value = decodeURIComponent(pairs[i].substring(pos+1)).replace(/\+/g,' ');
+					$("#type_ahead_autocomplete_field").val(value);
+					loadSearchResults(value,true);
+                                }
+                        }
+                }
+
+	});
+
         function loadSearchResults(value,highlight) {
 
                 param = 'q='+encodeURIComponent(value);
@@ -62,7 +81,7 @@
                         return;
                 }
 
-                $('#searchresults').html('Loading Results for <b>'+value+'</b>...');
+                $('#searchresults').html('Loading Results for <b></b>...').find('b').text(value);
 
                 $.getJSON("/content/docs.json.php?"+param+"&callback=?",
 
@@ -72,7 +91,7 @@
                                 loadedquery = param;
 
                                 $('#searchresults').attr('class',highlight?'results_full':'results_preview');
-                                $('#searchresults').html('Results for <b>'+value+'</b>.<br/>');
+                                $('#searchresults').html('Results for <b></b>.<br/>').find('b').text(value);
 
                                 str = '';
                                 for(var idx in data) {
