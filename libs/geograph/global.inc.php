@@ -36,6 +36,13 @@ if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'T
 	exit;
 }
 
+//some security headers!
+if (!defined('ALLOW_FRAMED'))
+       header("X-Frame-Options: SAMEORIGIN");
+header("X-XSS-Protection: 1; mode=block");
+header("X-Content-Type-Options: nosniff");
+
+
 //global routines
 require_once('geograph/functions.inc.php');
 

@@ -29,6 +29,8 @@
        }
 
 
+//TODO, this might be better ONLY allowing certain domains. At the moment, this page is used m.geograph.org.uk etc
+define('ALLOW_FRAMED',1); //HAVE to be CAREFUL to taint all input!
 
 
 require_once('geograph/global.inc.php');
