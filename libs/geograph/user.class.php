@@ -461,8 +461,7 @@ class GeographUser
 					
 					$msg.="Once you have confirmed your registration, you will be able to ".
 						"log in with the email address and password you provided:\n";
-					$msg.="    email: $email\n";
-					$msg.="    password: $password1\n\n";
+					$msg.="    email: $email\n\n";
 					
 					$msg.="We hope you enjoy using and contributing to the site\n\n";
 					$msg.="Kind Regards,\n\n";
@@ -962,7 +961,6 @@ class GeographUser
 				ticket_public=%s,
 				ticket_option=%s,
 				use_autocomplete=%s,
-				allow_pinterest=%s,
 				message_sig=%s,
 				expand_about=%d,
 				upload_size=%d,
@@ -986,7 +984,6 @@ class GeographUser
 				$db->Quote($profile['ticket_public']),
 				$db->Quote($profile['ticket_option']),
 				empty($profile['use_autocomplete'])?0:1,
-				empty($profile['allow_pinterest'])?0:1,
 				$db->Quote(stripslashes($profile['message_sig'])),
 				intval($profile['expand_about']),
 				intval($profile['upload_size']),
@@ -1032,7 +1029,6 @@ class GeographUser
 				$this->ticket_public=stripslashes($profile['ticket_public']);
 				$this->ticket_option=stripslashes($profile['ticket_option']);
 				$this->use_autocomplete=stripslashes($profile['use_autocomplete']);
-				$this->allow_pinterest=stripslashes($profile['allow_pinterest']);
 				$this->message_sig=stripslashes($profile['message_sig']);
 				$this->expand_about=intval($profile['expand_about']);
 				$this->upload_size=intval($profile['upload_size']);
@@ -1293,7 +1289,7 @@ class GeographUser
 									//bool setcookie ( $name, $value = "", $expire = 0, $path = "" , $domain = "", bool $secure = false , bool $httponly = false );
 
 									setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/',
-										"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://') ); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
+										"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://'), true); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
 								}
 
 								//we're changing privilege state, so we should
@@ -1432,7 +1428,7 @@ class GeographUser
 						$token = md5(uniqid(rand(),1)); 
 						$db->query("insert into autologin(user_id,token) values ('{$this->user_id}', '$token')");
 						setcookie('autologin', $this->user_id.'_'.$token, time()+3600*24*365,'/',
-							"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://') ); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
+							"", !empty($_COOKIE['securetest']) && ($CONF['PROTOCOL'] == 'https://'), true); //now we have SSL, the cookie should be httpsOnly, note use CONF, not _SERVER['HTTPS'], because might not work via proxie etc, CONF['protocol' has application specific stuff to deal!
 
 					}
 				}
