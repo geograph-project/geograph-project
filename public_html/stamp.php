@@ -20,6 +20,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOST'],'t0.') === 0)
+	define('ALLOW_FRAMED',1); //HAVE to be CAREFUL to taint all input!
+
 require_once('geograph/global.inc.php');
 
 $attribs = array('font','style','weight','gravity','pointsize');
@@ -41,7 +44,7 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 		} else {
 			//bit late doing it now, but at least if smarty doesnt have it cached we might be able to prevent generating the whole page
 			customCacheControl(strtotime($image->upd_timestamp),$cacheid);
-
+			header('Access-Control-Allow-Origin: *');
 
 			if ($image->reference_index == 2)
 				$_GET['ie'] = true;
@@ -71,6 +74,10 @@ if (!empty($_GET['id']) && ctype_digit($_GET['id']) && strpos($_SERVER['HTTP_HOS
 	?>
 		<h2>Get CC-Stamped image</h2>
 		<p>This tool produces a .jpg file for any Geograph image, which includes the Create Commons reference and attribution required - to make it easy to comply with the CC reuse requirements. You can download and use the resultant image in your project, knowing that suitable attribution is preserved.</p>
+
+		<? if (!empty($_GET['id'])) { ?>
+			<p>&middot; <i>More details about the Creative Commons Licence, and complying with the requirements, are available via our <a href="/reuse.php?id=<? echo @htmlentities($_GET['id']); ?>">Image Reuse Page</a>.</i></p>
+		<? } ?>
 
 		<form action="<? echo $CONF['TILE_HOST']; ?>/stamp.php" method="get" target="targetbox" onsubmit="document.getElementById('show').style.display='';">
 		<noscript>
