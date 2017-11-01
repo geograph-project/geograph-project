@@ -22,9 +22,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-if ( $_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter") {
+if ( $_SERVER['HTTP_USER_AGENT'] == "PlingsImageGetter" || $_GET['q'] == ',') {
 	header('HTTP/1.0 403 Forbidden');
+	header('Cache-Control: max-age=2592000');
+	header("Status: 403 Forbidden");
 	exit;
+} elseif(isset($_GET['key']) && $_GET['key'] == '[apikey]' && strpos($_SERVER['HTTP_USER_AGENT'],'LWP') === 0) {
+        header('HTTP/1.0 403 Forbidden');
+	header('Cache-Control: max-age=2592000');
+	header("Status: 403 Forbidden");
+        exit;
 }
 
 require_once('geograph/global.inc.php');
@@ -178,7 +185,7 @@ if (isset($cacheid)) {
 
 if (isset($_GET['callback'])) {
 	$callback=preg_replace('/[^\w$]+/','',$_GET['callback']);
-	$rssfile=preg_replace('/\.(\w+)/',".$callback.\1",$rssfile);
+	$rssfile=preg_replace('/\.(\w+)/',".$callback.\\1",$rssfile);
 }
 
 $rss = new UniversalFeedCreator(); 
@@ -388,7 +395,7 @@ for ($i=0; $i<$cnt; $i++)
 		
 		if ($format == 'MEDIA') {
 			$item->title .= " by ".$images->images[$i]->realname;
-			$item->content = str_replace('s0.','s0cdn.',$images->images[$i]->_getFullpath(true,true)); 
+			//$item->content = str_replace('s0.','s0cdn.',$images->images[$i]->_getFullpath(true,true)); 
 			if ($opt_expand) {
 				$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 				$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
