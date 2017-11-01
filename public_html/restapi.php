@@ -2,20 +2,20 @@
 /**
  * $Project: GeoGraph $
  * $Id$
- * 
+ *
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2006 Paul Dixon (lordelph@gmail.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -33,10 +33,6 @@ require_once('geograph/global.inc.php');
 require_once('geograph/gridimage.class.php');
 require_once('geograph/imagelist.class.php');
 require_once('geograph/gridsquare.class.php');
-
-if ($_SERVER['HTTP_HOST'] == 'api.www.geograph.org.uk') {
-	$_SERVER['HTTP_HOST'] = 'www.geograph.org.uk';
-}
 
 
 /*
@@ -85,7 +81,7 @@ class RestAPI
 			if (isset($profile->stats) && count($profile->stats))
 			{
 				$this->beginResponse();
-		
+
                                 if ($this->output=='json') {
 
                                         require_once '3rdparty/JSON.php';
@@ -106,7 +102,7 @@ class RestAPI
         	                        echo '<user_id>'.intval($profile->user_id).'</user_id>';
 					echo '<realname>'.xmlentities($profile->realname).'</realname>';
 					echo '<nickname>'.xmlentities($profile->nickname).'</nickname>';
-				
+
 					echo "<stats";
 					foreach ($profile->stats as $key => $value) {
 						if (!is_numeric($key))
@@ -118,18 +114,19 @@ class RestAPI
 			}
 			else
 			{
-				$this->error("User $user_id unavailable (or they have not contributed anything)");	
+				$this->error("User $user_id unavailable (or they have not contributed anything)");
 			}
 		}
 		else
 		{
-			$this->error("Invalid user id $user_id");	
+			$this->error("Invalid user id $user_id");
 		}
 	}
 
 
         function handleoembed()
         {
+		global $CONF;
 
 		if (!empty($this->params[0])) {
 	                $gridimage_id=intval($this->params[0]);
@@ -175,11 +172,11 @@ class RestAPI
                         $obj->title = "Coverage Map";
 
                                         $obj->author_name = "Geograph Project";
-                                        $obj->author_url = "http://{$_SERVER['HTTP_HOST']}/help/credits";
-                                        $obj->web_page = "http://{$_SERVER['HTTP_HOST']}/map/";
+                                        $obj->author_url = "{$CONF['CONTENT_HOST']}/help/credits";
+                                        $obj->web_page = "{$CONF['CONTENT_HOST']}/map/";
 
 
-				//TODO decode the URL and link propelly to the container page, etc. 
+				//TODO decode the URL and link propelly to the container page, etc.
 					$obj->url = $_GET['url'];
 
                                         $obj->license = "Attribution-ShareAlike License";
@@ -188,7 +185,7 @@ class RestAPI
                                         $obj->version = "1.0";
                                         $obj->cache_age = 86400;
                                         $obj->provider_name = "Geograph";
-                                        $obj->provider_url = "http://{$_SERVER['HTTP_HOST']}/";
+                                        $obj->provider_url = "{$CONF['CONTENT_HOST']}/";
 
                 } elseif (!empty($_GET['url']) && preg_match('/tile.php/',$_GET['url'],$m)) {
 			if ($this->output=='json') {
@@ -219,8 +216,8 @@ class RestAPI
 						$obj->description = latin1_to_utf8($image->comment);
 
                                         $obj->author_name = latin1_to_utf8($image->realname);
-                                        $obj->author_url = "http://{$_SERVER['HTTP_HOST']}{$image->profile_link}";
-					$obj->web_page = "http://{$_SERVER['HTTP_HOST']}/photo/$gridimage_id";
+                                        $obj->author_url = "{$CONF['CONTENT_HOST']}{$image->profile_link}";
+					$obj->web_page = "{$CONF['CONTENT_HOST']}/photo/$gridimage_id";
 
 					if (strpos($_GET['url'],'_213x160') !== FALSE) {
 						$html = $image->getThumbnail(213,160);
@@ -243,7 +240,7 @@ class RestAPI
 					$obj->version = "1.0";
 					$obj->cache_age = 86400;
 					$obj->provider_name = "Geograph";
-					$obj->provider_url = "http://{$_SERVER['HTTP_HOST']}/";
+					$obj->provider_url = "{$CONF['CONTENT_HOST']}/";
 
 
 					if (!empty($_GET['expand'])) {
@@ -255,7 +252,7 @@ class RestAPI
 							$obj->taken = $image->imagetaken;
 						if (!empty($image->credit_realname)) {
 							$obj->contributor_name = latin1_to_utf8($image->db->getOne("SELECT realname FROM user WHERE user_id = {$image->user_id}"));
-		                                        $obj->contributor_url = "http://{$_SERVER['HTTP_HOST']}/profile/{$image->user_id}";
+		                                        $obj->contributor_url = "{$CONF['CONTENT_HOST']}/profile/{$image->user_id}";
 						}
 					}
 					$obj->geo = array('lat'=>$image->wgs84_lat,'long'=>$image->wgs84_long,'square'=>$image->grid_reference);
@@ -292,13 +289,14 @@ class RestAPI
 
                                 $this->endResponse(true);
 		}
-
         }
 
 
 
 	function handlePhoto()
 	{
+		global $CONF;
+
 		$gridimage_id=intval($this->params[0]);
 		$_GET['key'] = $this->params[1];
 
@@ -341,7 +339,7 @@ class RestAPI
 
 					echo '<title>'.xmlentities(latin1_to_utf8($image->title)).'</title>';
 					echo '<gridref>'.xmlentities($image->grid_reference).'</gridref>';
-					echo "<user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".xmlentities(latin1_to_utf8($image->realname)).'</user>';
+					echo "<user profile=\"{$CONF['CONTENT_HOST']}{$image->profile_link}\">".xmlentities(latin1_to_utf8($image->realname)).'</user>';
 
 					echo preg_replace('/alt=".*?" /','',$image->getFull());
 
@@ -413,7 +411,7 @@ class RestAPI
 
 		$db = GeographDatabaseConnection(true);
 
-		$images = $db->getAssoc("SELECT gridimage_id,showday FROM gridimage_daily WHERE showday < DATE(NOW()) and showday IS NOT NULL"); 
+		$images = $db->getAssoc("SELECT gridimage_id,showday FROM gridimage_daily WHERE showday < DATE(NOW()) and showday IS NOT NULL");
 
 		$this->beginResponse();
 
@@ -432,7 +430,7 @@ class RestAPI
 
 		$this->endResponse();
 	}
-	
+
 	function handleLast()
 	{
 		$_GET['key'] = $this->params[0];
@@ -441,8 +439,8 @@ class RestAPI
 
 		$id = $db->getOne("SELECT MAX(gridimage_id) FROM gridimage");
 
-		$images = $db->getCol("SELECT gridimage_id FROM gridimage WHERE moderated > DATE_SUB(NOW(),INTERVAL 24 HOUR) AND gridimage_id > ($id-5000) AND moderation_status IN ('geograph','accepted')"); 
-			
+		$images = $db->getCol("SELECT gridimage_id FROM gridimage WHERE moderated > DATE_SUB(NOW(),INTERVAL 24 HOUR) AND gridimage_id > ($id-5000) AND moderation_status IN ('geograph','accepted')");
+
 		$this->beginResponse();
 
 		if ($this->output=='json') {
@@ -460,7 +458,7 @@ class RestAPI
 
 		$this->endResponse();
 	}
-	
+
 	function handlePost()
 	{
 		$ids = $this->params[0];
@@ -471,9 +469,9 @@ class RestAPI
 			$db = GeographDatabaseConnection(true);
 
 			//the param has already been validated to be save by the regexp
-			
-			$images = $db->getAssoc("SELECT gridimage_id,COUNT(*) AS count FROM gridimage_post WHERE topic_id IN ($ids) GROUP BY gridimage_id"); 
-			
+
+			$images = $db->getAssoc("SELECT gridimage_id,COUNT(*) AS count FROM gridimage_post WHERE topic_id IN ($ids) GROUP BY gridimage_id");
+
 			$this->beginResponse();
 
 			if ($this->output=='json') {
@@ -495,14 +493,13 @@ class RestAPI
 		{
 			$this->error("Invalid Request");
 		}
-		
 	}
-	
+
 	function handleArticle()
 	{
 		$ident = $this->params[0];
 		$_GET['key'] = $this->params[1];
-		
+
 		if (preg_match('/^[\w-]+$/',$ident))
 		{
 			$db = GeographDatabaseConnection(true);
@@ -512,14 +509,14 @@ class RestAPI
 			} else {
 				$id = $db->getOne("SELECT content_id FROM content WHERE url LIKE ".$db->Quote("%/".$ident)." AND `source` = 'article'");
 			}
-			
+
 			if (empty($id)) {
 				$this->error("Article Not Found");
 				return;
 			}
 
-			$images = $db->getCol("SELECT gridimage_id FROM gridimage_content WHERE content_id =$id"); 
-			
+			$images = $db->getCol("SELECT gridimage_id FROM gridimage_content WHERE content_id =$id");
+
 			$this->beginResponse();
 
 			if ($this->output=='json') {
@@ -541,38 +538,39 @@ class RestAPI
 		{
 			$this->error("Invalid Request");
 		}
-		
 	}
-	
+
 	function handleLatLong()
 	{
+		global $CONF;
+
 		$_GET['key'] = $this->params[2];
-		
+
 		if (preg_match("/\b(-?\d+\.?\d*)[, ]+(-?\d+\.?\d*)\b/",$this->params[1],$ll)) {
 			$this->beginResponse();
-			
+
 			//todo - we could do this directly rather than via the search engine
 			require_once('geograph/searchcriteria.class.php');
 			require_once('geograph/searchengine.class.php');
-	
-			$engine = new SearchEngineBuilder('#'); 
+
+			$engine = new SearchEngineBuilder('#');
 			$engine->searchuse = "syndicator";
 			$_GET['i'] = $engine->buildSimpleQuery($this->params[1],floatval($this->params[0]),false,isset($_GET['u'])?$_GET['u']:0);
-			
+
 			$images = new SearchEngine($_GET['i']);
-				
+
 			$images->Execute($pg);
-			
+
 			if (!empty($images->results))
 			{
 				$images =& $images->results;
 				$count = count($images);
-				
+
 				if ($this->output=='json') {
 					require_once '3rdparty/JSON.php';
 
 					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1,'wgs84_lat'=>1,'wgs84_long'=>1);
-					
+
 					foreach ($images as $i => $image) {
 						foreach ($image as $k => $v) {
 							if (empty($v) || empty($whitelist[$k])) {
@@ -584,30 +582,29 @@ class RestAPI
 					}
 					print json_encode($images);
 				} else {
-			
 					echo '<status state="ok" count="'.$count.'" total="'.$images->resultCount.'"/>';
 
 					foreach ($images as $i => $image) {
 						if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
 						{
-							echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
+							echo " <image url=\"{$CONF['CONTENT_HOST']}/photo/{$image->gridimage_id}\">";
 
 							echo ' <title>'.xmlentities(latin1_to_utf8($image->title)).'</title>';
-							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".xmlentities(latin1_to_utf8($image->realname)).'</user>';
+							echo " <user profile=\"{$CONF['CONTENT_HOST']}{$image->profile_link}\">".xmlentities(latin1_to_utf8($image->realname)).'</user>';
 
 							echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
-							
+
 							if (!empty($image->nateastings))
 								echo ' <location grid="'.($image->reference_index).'" eastings="'.($image->nateastings).'" northings="'.($image->natnorthings).'" figures="'.($image->natgrlen).'"/>';
 							if (!empty($image->wgs84_lat))
 								echo ' <location grid="'.($image->reference_index).'" lat="'.($image->wgs84_lat).'" long="'.($image->wgs84_long).'"/>';
-								
+
 							echo '</image>';
 						}
 					}
 				}
-			} 
-			else 
+			}
+			else
 			{
 				if ($this->output=='json') {
 					print "{error: '0 results'}";
@@ -621,18 +618,14 @@ class RestAPI
 		{
 			$this->error("Invalid grid reference ".$this->params[0]);
 		}
-		
 	}
-	
+
 	function handleCentisquares()
 	{
 	        $square=new GridSquare;
                 $grid_given=true;
                 $grid_ok=$square->setByFullGridRef($this->params[0]);
 		$_GET['key'] = $this->params[1];
-
-header('Access-Control-Allow-Origin: *');
-
 
                 $image=new GridImage;
                 if ($grid_ok)
@@ -644,7 +637,7 @@ header('Access-Control-Allow-Origin: *');
 	                        $db = GeographDatabaseConnection(true);
 				 $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
         	                $images = $db->getAll("SELECT (nateastings MOD 1000) DIV 100 AS e,(natnorthings MOD 1000) DIV 100 AS n,COUNT(*) AS c FROM gridimage WHERE gridsquare_id = {$square->gridsquare_id} AND nateastings > 0 AND moderation_status IN ('geograph','accepted') GROUP BY nateastings DIV 100,natnorthings DIV 100 ORDER BY NULL");
-				
+
                 	        if ($this->output=='json') {
 
                         	        require_once '3rdparty/JSON.php';
@@ -665,12 +658,14 @@ header('Access-Control-Allow-Origin: *');
                                         echo '<status state="ok" count="0"/>';
                                 }
 			}
-                        $this->endResponse();				
+                        $this->endResponse();
 		}
 	}
 
         function handleGridrefStats()
         {
+		global $CONF;
+
                 $square=new GridSquare;
                 $grid_given=true;
                 $grid_ok=$square->setByFullGridRef($this->params[0]);
@@ -706,22 +701,22 @@ header('Access-Control-Allow-Origin: *');
                 }
         }
 
-
-
 	function handleGridrefMore()
 	{
 		return $this->handleGridref(true);
 	}
-	
+
 	function handleGridref($more = false)
 	{
+		global $CONF;
+
 		$square=new GridSquare;
 		$grid_given=true;
 		$grid_ok=$square->setByFullGridRef($this->params[0]);
 		$_GET['key'] = $this->params[1];
 
-ini_set('memory_limit', '128M');
-		
+		ini_set('memory_limit', '128M');
+
 		$image=new GridImage;
 		if ($grid_ok)
 		{
@@ -738,12 +733,13 @@ ini_set('memory_limit', '128M');
 				}
 				$images=$square->getImages(false,'',$order);
 				$count = count($images);
-				
-				if ($this->output=='json') {
-					require_once '3rdparty/JSON.php';
 
-					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'tags'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1);
-					
+				if ($this->output=='json') {
+					if (!function_exists('json_encode'))
+						require_once '3rdparty/JSON.php';
+
+					$whitelist = array('gridimage_id'=>1, 'seq_no'=>1, 'user_id'=>1, 'ftf'=>1, 'moderation_status'=>1, 'title'=>1, 'comment'=>1, 'submitted'=>1, 'realname'=>1, 'tags'=>1, 'nateastings'=>1, 'natnorthings'=>1, 'natgrlen'=>1, 'imageclass'=>1, 'imagetaken'=>1, 'upd_timestamp'=>1, 'viewpoint_eastings'=>1, 'viewpoint_northings'=>1, 'viewpoint_grlen'=>1, 'view_direction'=>1, 'use6fig'=>1, 'credit_realname'=>1, 'profile_link'=>1,'reference_index'=>1,'grid_reference'=>1);
+
 					foreach ($images as $i => $image) {
 						foreach ($image as $k => $v) {
 							if (empty($v) || empty($whitelist[$k])) {
@@ -752,18 +748,26 @@ ini_set('memory_limit', '128M');
 						}
 						$images[$i]->thumbnail = $image->getThumbnail(120,120,true);
 					}
-					print json_encode($images);
+
+					if (count($images) > 1) {
+						print "[";
+						foreach ($images as $idx => $image) {
+							if ($idx>0) print ",";
+							 print json_encode($image);
+						}
+						print "]";
+					} else
+						print json_encode($images);
 				} else {
-			
 					echo '<status state="ok" count="'.$count.'"/>';
 
 					foreach ($images as $i => $image) {
 						if ($image->moderation_status=='geograph' || $image->moderation_status=='accepted')
 						{
-							echo " <image url=\"http://{$_SERVER['HTTP_HOST']}/photo/{$image->gridimage_id}\">";
+							echo " <image url=\"{$CONF['CONTENT_HOST']}/photo/{$image->gridimage_id}\">";
 
 							echo ' <title>'.xmlentities(latin1_to_utf8($image->title)).'</title>';
-							echo " <user profile=\"http://{$_SERVER['HTTP_HOST']}{$image->profile_link}\">".xmlentities(latin1_to_utf8($image->realname)).'</user>';
+							echo " <user profile=\"{$CONF['CONTENT_HOST']}{$image->profile_link}\">".xmlentities(latin1_to_utf8($image->realname)).'</user>';
 
 							echo ' '.preg_replace('/alt=".*?" /','',$image->getThumbnail(120,120));
 
@@ -780,8 +784,8 @@ ini_set('memory_limit', '128M');
 						}
 					}
 				}
-			} 
-			else 
+			}
+			else
 			{
 				if ($this->output=='json') {
 					print "{error: '0 results'}";
@@ -795,9 +799,8 @@ ini_set('memory_limit', '128M');
 		{
 			$this->error("Invalid grid reference ".$this->params[0]);
 		}
-		
 	}
-	
+
 	function handleUserTimeline()
 	{
 		$uid=intval($this->params[0]);
@@ -807,12 +810,12 @@ ini_set('memory_limit', '128M');
 		if ($profile->realname)
 		{
 			header("Content-Type:text/xml;charset=UTF-8");
-					
+
 			echo "<data>\n";
 			$images=new ImageList;
-					
+
 			$images->getImagesByUser($uid, array('accepted', 'geograph'),'RAND()',200);
-		
+
 			foreach ($images->images as $i => $image) {
 				if (!preg_match('/00(-|$)/',$image->imagetaken)) {
 					$bits = explode('-',$image->imagetaken);
@@ -826,18 +829,17 @@ ini_set('memory_limit', '128M');
 					);
 				}
 			}
-			
+
 			echo "</data>\n";
 		}
 		else
 		{
-			$this->error("Invalid User id $uid");	
+			$this->error("Invalid User id $uid");
 		}
 	}
-	
+
 	function beginResponse($skip = null)
 	{
-		
 		customGZipHandlerStart();
 		if ($this->output=='json') {
 			if (!empty($this->callback)) {
@@ -845,6 +847,7 @@ ini_set('memory_limit', '128M');
 				customExpiresHeader(3600*24,true,true);
 				echo "/**/{$this->callback}(";
 			} else {
+				header('Access-Control-Allow-Origin: *');
 				header("Content-Type:application/json");
 				customExpiresHeader(360,true,true);
 			}
@@ -856,7 +859,7 @@ ini_set('memory_limit', '128M');
 				echo '<geograph>';
 		}
 	}
-	
+
 	function endResponse($skip = null)
 	{
 		if ($this->output=='json') {
@@ -867,7 +870,7 @@ ini_set('memory_limit', '128M');
 			echo '</geograph>';
 		}
 	}
-	
+
 	/**
 	* display appropriate error
 	*/
@@ -877,7 +880,7 @@ ini_set('memory_limit', '128M');
 			header("HTTP/1.0 $http");
 
 		$this->beginResponse();
-		
+
 		if ($this->output=='json') {
 			print("{error: '".addslashes($msg)."'}");
 		} else {
@@ -889,16 +892,15 @@ ini_set('memory_limit', '128M');
 		}
 
 		$this->endResponse();
-		
 	}
-	
+
 	/**
 	* dispatch request to appropriate handler
 	*/
 	function dispatch()
 	{
 		if (
-			(isset($_GET['output']) && $_GET['output']=='json') || 
+			(isset($_GET['output']) && $_GET['output']=='json') ||
 			(isset($_GET['format']) && $_GET['format']=='json')
 			) {
 			$this->output='json';
@@ -911,7 +913,7 @@ ini_set('memory_limit', '128M');
 				$this->callback=preg_replace('/[^\w$]+/','',$_GET['_callback']);
 			}
 		}
-	
+
 		if ($_SERVER["PATH_INFO"]) {
 			$this->params=explode('/', $_SERVER["PATH_INFO"]);
 		} else {
@@ -921,21 +923,21 @@ ini_set('memory_limit', '128M');
 		if (strlen($this->params[0])==0)
 			array_shift($this->params);
 		array_shift($this->params);
-		
+
 		$method=array_shift($this->params);
 		$method=preg_replace('/[^a-z_]/i', '', $method);
-		
+
 		$handler="handle".ucfirst($method);
-		
+
 		if (method_exists($this,$handler))
 		{
-			$this->$handler();	
+			$this->$handler();
 		}
 		else
 		{
-			$this->error("Unknown method $method");	
+			$this->error("Unknown method $method");
 		}
-	}	
+	}
 }
 
 $api=new RestAPI();
