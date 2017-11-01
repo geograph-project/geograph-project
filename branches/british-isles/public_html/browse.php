@@ -185,9 +185,9 @@ if ($grid_given)
 	{
 		$smarty->assign('gridref', $square->grid_reference);
 		if ($square->reference_index == 2) {
-	                $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://www.geograph.ie/gridref/{$square->grid_reference}\"/>");
+	                $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"https://www.geograph.ie/gridref/{$square->grid_reference}\"/>");
 		} else {
-	                $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"http://www.geograph.org.uk/gridref/{$square->grid_reference}\"/>");
+	                $smarty->assign('extra_meta', "<link rel=\"canonical\" href=\"https://www.geograph.org.uk/gridref/{$square->grid_reference}\"/>");
 		}
 
 		$smarty->assign('gridsquare', $square->gridsquare);

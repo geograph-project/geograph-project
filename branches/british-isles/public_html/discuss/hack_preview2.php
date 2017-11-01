@@ -83,7 +83,7 @@ if (empty($CONF['disable_discuss_thumbs'])) {
 	$postText2 = preg_replace('/\[image id=(\d+) text=([^\]]+)\]/e',"smarty_function_gridimage(array(id => '\$1',extra => '\$2'))",$postText2,5);
 }
 
-$postText2 = preg_replace('/\[([\w :-]+)\]/e',"replace_tags('$1')",$postText2);
+##$postText2 = preg_replace('/\[([\w :-]+)\]([^>]*)(<(?!\/a>)|$)/e',"replace_tags('$1').'$2$3'",$postText2);
 
 
 

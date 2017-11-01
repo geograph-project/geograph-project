@@ -42,6 +42,10 @@ require_once('geograph/searchengine.class.php');
 
 init_session();
 
+//temp as page doesnt work on https (mainly maps!)
+pageMustBeHTTP();
+
+
 $src = 'data-src';
 if ((stripos($_SERVER['HTTP_USER_AGENT'], 'http')!==FALSE) ||
         (stripos($_SERVER['HTTP_USER_AGENT'], 'bot')!==FALSE)) {
@@ -79,7 +83,7 @@ print '<link rel="stylesheet" type="text/css" href="/geotrips/geotrips.css" />';
 
 ?>
 
-<script src="https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3&debug=true" type="text/javascript"></script>
+<script src="https://osopenspacepro.ordnancesurvey.co.uk/osmapapi/openspace.js?key=A493C3EB96133019E0405F0ACA6056E3" type="text/javascript"></script>
 
 <?php
   $bbox=explode(' ',$trk['bbox']);

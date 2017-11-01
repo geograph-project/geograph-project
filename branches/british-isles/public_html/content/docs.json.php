@@ -23,13 +23,6 @@
 
 require_once('geograph/global.inc.php');
 
-
-if (!empty($_GET['callback'])) {
-	header('Content-type: text/javascript');
-} else {
-	header('Content-type: application/json');
-}
-
 $db = GeographDatabaseConnection(true);
 
 $sql = array();
@@ -87,8 +80,6 @@ if (!empty($_GET['q'])) {
 
 } else {
 	die("todo");
-	
-       
 }
 
 $query = sqlBitsToSelect($sql);
@@ -97,15 +88,16 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 $data = $db->getAll($query);
 
 if (!empty($_GET['h']) && !empty($data) && !empty($sphinx)) {
-	$docs = array(); 
-        foreach ($data as $c => $row) { 
-                $docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['words'])); 
-        } 
-        $reply = $sphinx->BuildExcerpts($docs, 'document_stemmed', $sphinx->q); 
+	$docs = array();
+        foreach ($data as $c => $row) {
+                $docs[$c] = strip_tags(preg_replace('/<i>.*?<\/i>/',' ',$row['words']));
+        }
+
+        $reply = $sphinx->BuildExcerpts($docs, 'document_stemmed', $sphinx->q);
 
 	if (!empty($reply)) {
 		foreach ($reply as $c => $text) {
-			$data[$c]['words'] = $text;
+			$data[$c]['words'] = utf8_encode($text);
 		}
 	}
 }
@@ -114,18 +106,5 @@ if (!empty($query_info)) {
 	$data[] = array('query_info'=>$query_info);
 }
 
-if (!empty($_GET['callback'])) {
-        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
-        echo "{$callback}(";
-}
-
-require_once '3rdparty/JSON.php';
-$json = new Services_JSON();
-print $json->encode($data);
-
-if (!empty($_GET['callback'])) {
-        echo ");";
-}
-
-
+outputJSON($data);
 

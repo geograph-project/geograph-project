@@ -718,7 +718,7 @@ function replace_tags($text) {
 }
 
 
-function pageMustBeHTTPS() {
+function pageMustBeHTTPS($status = 301) {
 	global $CONF;
 
 	//only do GETs for now
@@ -739,7 +739,23 @@ function pageMustBeHTTPS() {
 		return; //page is already HTTPS via proxy!
 
 	//TODO/TOFIX, should perhaps be using SELF_HOST but that might not be https yet.
-	header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}", true, 301);
+	header("Location: https://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}", true, $status);
+	exit;
+}
+
+//temp function as some pages DONT work on https :(
+function pageMustBeHTTP($status = 302) {
+	global $CONF;
+
+	//only do GETs for now
+	if ($_SERVER['REQUEST_METHOD'] != 'GET' && empty($_POST['login'])) //actully allow a redirect if a 'login' POST. (got this far, means now logged in!)
+		return;
+
+	//take shortcut and use $CONF['PROTOCOL'], which right now is automatically set..
+	if ($CONF['PROTOCOL'] == "http://")
+		return;
+
+	header("Location: http://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}", true, $status);
 	exit;
 }
 
@@ -1153,7 +1169,7 @@ function outputJSON(&$data) {
 	        require_once '3rdparty/JSON.php';
 	}
 
-        print json_encode($data);
+        print json_encode($data, JSON_PARTIAL_OUTPUT_ON_ERROR );
 
         if (!empty($_GET['callback'])) {
                 echo ");";

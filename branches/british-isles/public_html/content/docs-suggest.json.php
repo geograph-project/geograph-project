@@ -23,13 +23,6 @@
 
 require_once('geograph/global.inc.php');
 
-
-if (!empty($_GET['callback'])) {
-	header('Content-type: text/javascript');
-} else {
-	header('Content-type: application/json');
-}
-
 $db = GeographDatabaseConnection(true);
 
 $sql = array();
@@ -44,49 +37,47 @@ $sql['order'] = "uses DESC";
 if (!empty($_GET['q']) || !empty($_GET['term'])) {
 	if (!empty($_GET['term'])) {
 		$bits = explode(' ',$_GET['term']);
-		
+
 		if (count($bits) > 1) {
-			
+
 			$_REQUEST['q'] = array_pop($bits);
-			
+
 			$sql['columns'] = "CONCAT(".$db->Quote(implode(' ',$bits).' ').",word) AS word";
 		} else {
 			$_REQUEST['q'] = $_GET['term'];
-		}	
+		}
 	}
 	customExpiresHeader(3600);
 
 	if (!empty($CONF['sphinx_host'])) {
-				
+
                 $q = trim(preg_replace('/[^\w]+/',' ',str_replace("'",'',$_REQUEST['q'])));
-		
+
 		$sphinx = new sphinxwrapper($q);
-		
-		$sphinx->pageSize = $pgsize = 60; 
-		
+
+		$sphinx->pageSize = $pgsize = 60;
+
 		$pg = (!empty($_REQUEST['page']))?intval(str_replace('/','',$_REQUEST['page'])):0;
 		if (empty($pg) || $pg < 1) {$pg = 1;}
-		
+
 		$offset = (($pg -1)* $sphinx->pageSize)+1;
-	
-		if ($offset < (1000-$pgsize) ) { 
+
+		if ($offset < (1000-$pgsize) ) {
 			$client = $sphinx->_getClient();
 
                         $client->SetRankingMode(SPH_RANK_NONE);
 
-			
 			$sphinx->sort = "uses DESC"; //within group order
 			$client->SetGroupBy('stemcrc',SPH_GROUPBY_ATTR,"uses DESC, @id DESC"); //overall sort order
 
-				
 			$ids = $sphinx->returnIds($pg,'document_words');
-			
+
 			if (!empty($ids) && count($ids)) {
 				$idstr = join(",",$ids);
 				$where = "id IN(".join(",",$ids).")";
-	
+
 				$sql['wheres'] = array("`id` IN ($idstr)");
-				
+
 				$sql['limit'] = count($ids);
 			} else {
 				$sql['wheres'] = array(0);
@@ -102,8 +93,6 @@ if (!empty($_GET['q']) || !empty($_GET['term'])) {
 
 } else {
 	die("todo");
-	
-       
 }
 
 $query = sqlBitsToSelect($sql);
@@ -115,18 +104,4 @@ if (!empty($_GET['term'])) {
 	$data = $db->getAll($query);
 }
 
-if (!empty($_GET['callback'])) {
-        $callback = preg_replace('/[^\w\.-]+/','',$_GET['callback']);
-        echo "{$callback}(";
-}
-
-require_once '3rdparty/JSON.php';
-$json = new Services_JSON();
-print $json->encode($data);
-
-if (!empty($_GET['callback'])) {
-        echo ");";
-}
-
-
-
+outputJSON($data);

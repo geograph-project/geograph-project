@@ -291,6 +291,12 @@ if ($topic == 14539) {
 }
 
 
+//todo /tofix - not the best place this, should perhaps be done during editing (and a replace in database as well?
+//$posterText= str_replace("http://media.geograph.org.uk/","https://media.geograph.org.uk/", $posterText);
+//$posterText= str_replace("http://m.geograph.org.uk/","https://m.geograph.org.uk/", $posterText);
+$posterText= preg_replace('/"http:\/\/(s\d|t0|m|media)\.geograph\.org\.uk/','"https://\1.geograph.org.uk',$posterText);
+
+
 $listPosts.=ParseTpl($tpl);
 
 $i=-$i;
