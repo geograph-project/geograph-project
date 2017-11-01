@@ -62,13 +62,17 @@ if ($_GET['url'] == 'preview') {
 	} else {
 		$_GET['epoch'] = '';
 	}
+	if (!empty($_GET['inner'])) {
+		$cacheid .= "inner";
+		$smarty->assign('inner',1);
+	}
 }
 
 
 function article_make_table($input) {
 	static $idcounter=1;
 	$rows = explode("\n",stripslashes($input));
-	
+
 	if (strpos($rows[0],'*') === 0) {
 		$GLOBALS['smarty']->assign("include_sorttable",1);
 		$output = '<table class="report sortable" id="table'.($idcounter++).'" border="1" bordercolor="#dddddd" cellspacing="0" cellpadding="5">';
@@ -526,24 +530,28 @@ function smarty_function_articletext($input) {
 		$imageCreditsStr = preg_replace('/, ([^,]+)$/',' and $1',$imageCreditsStr);
 
 		$smarty->assign("imageCredits", $imageCreditsStr);
-		
+
 		$pattern[]="/\[imageCredits\]/i";
 		$replacement[]=$imageCreditsStr;
 	}
-	
+
+	if ($CONF['PROTOCOL'] == 'https://') {
+		$pattern[]='/"http:\/\/(s\d|t0|m|media)\.geograph\.org\.uk/';
+		$replacement[]='"https://\1.geograph.org.uk';
+	}
+
 	$output=preg_replace($pattern, $replacement, $output);
-	
+
 	$output=str_replace('¬','[',$output);
 
 if ($GLOBALS['page']['url'] == "About-Geograph-page") {
         $output=preg_replace('/\bGeograph\b(?![^<]*>)/','Geograph<sup style="font-size:8pt;text-decoration:none">&reg;</sup>',$output,4);
 }
 
-	
 	if (count($m[0])) {
 		$smarty->assign("copyright", '<div class="copyright">Great Britain 1:50 000 Scale Colour Raster Mapping Extracts &copy; Crown copyright Ordnance Survey. All Rights Reserved. Educational licence 100045616.</div>');
 	}
-	
+
 	if (count($pages) > 1) {
 		$smarty->assign('pagesString', pagesString($thispage,$numberOfPages,"/article/{$GLOBALS['page']['url']}/"));
 		if ($numberOfPages > $thispage) {

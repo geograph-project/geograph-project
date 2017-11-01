@@ -9,7 +9,8 @@ require_once('geograph/global.inc.php');
 init_session();
 $USER->mustHavePerm("admin");
 
-$static_host = $CONF['STATIC_HOST']; 
+$static_host = $CONF['STATIC_HOST'];
+$self_host = $CONF['SELF_HOST'];
 
 function get_microtime() {
 $mtime=explode(' ',microtime());

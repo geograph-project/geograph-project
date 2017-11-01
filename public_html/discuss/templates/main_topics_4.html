@@ -92,7 +92,7 @@ return false;
 function checkHasLink(form) {
 	var text = form.elements['postText'].value;
 
-	if (text.match(/http:\/\//)) {
+	if (text.match(/https?:\/\//)) {
 		return true;
 	} else {
 		return !confirm("Your post doesn't appear to contain a link. Experience has shown that a vast majority of bug reports could be improved with the addition of url of the page showing the error. Please consider providing one, if seeing the issue on many pages, one or two examples is fine. Click OK to return the form, and copy/paste the link. Or Cancel to continue anyway");

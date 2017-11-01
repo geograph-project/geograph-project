@@ -24,6 +24,8 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+		//temp as page doesnt work on https (mainly maps!)
+		pageMustBeHTTP();
 
 $smarty = new GeographPage;
 if (!empty($_GET['mobile'])) {

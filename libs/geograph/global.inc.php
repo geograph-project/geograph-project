@@ -259,6 +259,11 @@ function GeographSphinxConnection($type='sphinxql',$new = false) {
 
 #################################################
 
+if (!empty($ABORT_GLOBAL_EARLY))
+	return;
+
+#################################################
+
 if (!empty($CONF['memcache']['app'])) {
 	
 	if (!function_exists('memcache_pconnect')) {
@@ -477,7 +482,7 @@ function init_session()
 	{
 		if (!empty($_COOKIE['securetest'])) {
 			//the remember me cookie only works over https
-			pageMustBeHTTPS();
+			pageMustBeHTTPS(307);
 		}
 
 		//this is a new session - as a safeguard against session
@@ -694,7 +699,11 @@ class GeographPage extends Smarty
 	function is_cached($template, $cache_id = null, $compile_id = null)
 	{
 		global $USER,$CONF;
-		
+
+		if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+			$cache_id = empty($cache_id)?'https':($cache_id."-https");
+		}
+
 //	split_timer('smarty'); //starts the timer
 
 		if (!empty($this->disable_caching)) {
@@ -702,6 +711,7 @@ class GeographPage extends Smarty
 		}
 		$filename = str_replace("|","___","{$this->cache_dir}/lock_$template-$cache_id.tmp");
 		if (isset($_GET['refresh']) && $USER->hasPerm('admin')) {
+			$this->compile_check = true;
 			$this->clear_cache($template, $cache_id, $compile_id);
 		} elseif (!empty($CONF['memcache']['smarty'])) {
 			if ($GLOBALS['memcached_res']->get($filename)) {
@@ -748,9 +758,13 @@ class GeographPage extends Smarty
 	function display($template, $cache_id = null, $compile_id = null)
 	{
 		global $CONF;
-		
+
+		if (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+			$cache_id = empty($cache_id)?'https':($cache_id."-https");
+		}
+
 //	split_timer('smarty'); //starts the timer
-	
+
 		if (!empty($this->disable_caching)) {
 			$this->caching = 0;
 		}
