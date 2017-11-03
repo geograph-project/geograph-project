@@ -92,12 +92,14 @@ $map->type_or_user = -12;
 
 
 
+$target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
+
 if (!empty($_GET['refresh']) && $USER->hasPerm("admin")) {
-	$target=$_SERVER['DOCUMENT_ROOT'].$map->getImageFilename();
 	unlink($target);
 	$map->_renderMap();
+} elseif (!file_exists($target)) {
+	$map->_renderMap();
 }
-
 
 $overlayurl=$map->getImageUrl();
 
@@ -106,8 +108,14 @@ $smarty->display('_std_begin.tpl');
 
 print "<h2>Coverage map for Tag";
 if (!empty($tag))
-	print " <small><a href=\"/tags/?tag=".urlencode($tag)."\">".htmlentities($tag)."</a></small>";
+	print " <small><a href=\"/tagged/".urlencode2($tag)."\">".htmlentities($tag)."</a></small>";
 print "</h2>";
+
+if (!empty($target))
+	print "<p>Map rendered: ".date('M, jS \a\t H:m',filemtime($target))."</p>";
+
+print "<p>Grid-Squares with photo(s) using the above tag, are shown in red. This includes all matching images, no paging.</p>";
+
 
 ?>
 <div style="position:relative; height:1300px;width:900px">
