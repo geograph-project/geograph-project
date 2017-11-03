@@ -133,19 +133,19 @@ a.rem {
 		<td class="tags">
 			{if $row.context1 && $row.context1!='-bad-' && $row.context1!='forum alerted'}
 				<span class=tag>
-				<a href="/tagged/top:{$row.context1|escape:'url'}" class="taglink">{$row.context1|escape:'html'}</a>
+				<a href="/tagged/top:{$row.context1|escape:'urlplus'}" class="taglink">{$row.context1|escape:'html'}</a>
 				<a href="?imageclass={$imageclass|escape:'url'}&amp;field=context&action=remove&amp;value={$row.context1|escape:'url'}{$extra}" class="rem">X</a>
 				</span>
 			{/if}
 			{if $row.context2 && $row.context2!='-bad-' && $row.context2!='forum alerted'}
 				<span class=tag>
-				<a href="/tagged/top:{$row.context2|escape:'url'}" class="taglink">{$row.context2|escape:'html'}</a>
+				<a href="/tagged/top:{$row.context2|escape:'urlplus'}" class="taglink">{$row.context2|escape:'html'}</a>
 				<a href="?imageclass={$imageclass|escape:'url'}&amp;field=context&action=remove&amp;value={$row.context2|escape:'url'}{$extra}" class="rem">X</a>
 				</span>
 			{/if}
 			{if $row.context3 && $row.context3!='-bad-' && $row.context3!='forum alerted'}
 				<span class=tag>
-				<a href="/tagged/top:{$row.context3|escape:'url'}" class="taglink">{$row.context3|escape:'html'}</a>
+				<a href="/tagged/top:{$row.context3|escape:'urlplus'}" class="taglink">{$row.context3|escape:'html'}</a>
 				<a href="?imageclass={$imageclass|escape:'url'}&amp;field=context&action=remove&amp;value={$row.context3|escape:'url'}{$extra}" class="rem">X</a>
 				</span>
 			{/if}
@@ -154,7 +154,7 @@ a.rem {
 		<td class="tags">
 			{if $row.subject}
 				<span class=tag>
-				<a href="/tagged/subject:{$row.subject|escape:'url'}" class="taglink">{$row.subject|escape:'html'}</a>
+				<a href="/tagged/subject:{$row.subject|escape:'urlplus'}" class="taglink">{$row.subject|escape:'html'}</a>
 				<a href="?imageclass={$imageclass|escape:'url'}&amp;field=subject&action=remove&amp;value={$row.subject|escape:'url'}{$extra}" class="rem">X</a>
 				</span>
 			{else}
@@ -166,7 +166,7 @@ a.rem {
 				{foreach from=$row.tags item=tag}
 					{if $tag ne '-bad-' && $tag|lower ne $row.subject|lower && $tag|lower ne $row.canonical|lower}
 	        	                        <span class=tag>
-               			                <a href="/tagged/{$tag|escape:'url'}" class="taglink">{$tag|escape:'html'}</a>
+               			                <a href="/tagged/{$tag|escape:'urlplus'}" class="taglink">{$tag|escape:'html'}</a>
 						<a href="?imageclass={$imageclass|escape:'url'}&amp;field=tag&action=remove&amp;value={$tag|escape:'url'}{$extra}" class="rem">X</a>
 	                        	        </span>
 					{/if}
@@ -174,7 +174,7 @@ a.rem {
 
 			{elseif !$row.subject}
 				<span class=tag>
-				<a href="/tagged/category:{$imageclass|escape:'url'}" class="taglink">{$imageclass|lower|escape:'html'}</a>
+				<a href="/tagged/category:{$imageclass|escape:'urlplus'}" class="taglink">{$imageclass|lower|escape:'html'}</a>
 				</span>
 			{/if}
 
