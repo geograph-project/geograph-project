@@ -54,7 +54,7 @@ if ($_SERVER['HTTP_HOST'] == 'www.geograph.ie' &&
 }
 
 if ((!empty($_GET['photo']) || !empty($_GET['exclude'])) && stripos($_SERVER['HTTP_USER_AGENT'], 'CCBot') === 0) {
-	$url = "http://www.geograph.org.uk/tagged/".urlencode($_GET['tag']);
+	$url = "http://www.geograph.org.uk/tagged/".urlencode2($_GET['tag']);
 }
 
 if (strpos($_SERVER['REQUEST_URI'],'/tags/index.php') === 0
