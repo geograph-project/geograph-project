@@ -193,9 +193,9 @@ if (empty($results)) {
 					print "<ul class=$attribute>";
 					foreach ($group[$attribute] as $row) {
 						switch($attribute) {
-							case 'tag': $url = "/tagged/".urlencode($row['label']); break;
-							case 'context': $url = "/tagged/top:".urlencode($row['label']); break;
-							case 'subject': $url = "/tagged/subject:".urlencode($row['label']); break;
+							case 'tag': $url = "/tagged/".urlencode2($row['label']); break;
+							case 'context': $url = "/tagged/top:".urlencode2($row['label']); break;
+							case 'subject': $url = "/tagged/subject:".urlencode2($row['label']); break;
 							case 'snippet': $url = "/snippet/{$row['group']}"; break;
 						}
 						if ($attribute == 'snippet')
