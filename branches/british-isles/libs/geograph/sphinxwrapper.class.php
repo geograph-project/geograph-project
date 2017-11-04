@@ -888,9 +888,9 @@ split_timer('sphinx'); //starts the timer
                 $in = str_replace('/',' ',$in);
                 if (strpos($in,' ') !== FALSE) {
                         $in = preg_replace('/\b(\w+)/','=$1',$in);
-                        return $field.'"^'.$in.'$"';
+                        return $field.str_replace('^=','=^','"^'.$in.'$"');
                 } else {
-                        return $field.'^='.$in.'$';
+                        return $field.'=^'.$in.'$';
                 }
         }
 
