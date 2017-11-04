@@ -80,6 +80,10 @@ if (!empty($_GET['q'])) {
                 exit;
 	}
 
+	if (!empty($_GET['place'])) {
+		//bodge, but the hyphen(s) messes up the placename searching :(
+		$_GET['q'] = str_replace(array('-',"'"),' ', $_GET['q']);
+	}
 
         $sphinx = new sphinxwrapper(trim($_GET['q']), true);
 
@@ -391,8 +395,7 @@ if (!empty($_GET['q'])) {
 		//$option = ", ranker=expr('sum(lcs*lccs*user_weight)*1000+bm25')";
 		$option = "";
 
-
-		if (preg_match('/^\w+\s+\w+[\w\s]*$/',$_GET['q']) || $_SERVER['HTTP_HOST'] == 'www.geograph.ie') {
+		if (empty($_GET['place']) && (preg_match('/^\w+\s+\w+[\w\s]*$/',$_GET['q']) || $_SERVER['HTTP_HOST'] == 'www.geograph.ie')) {
 			//todo - restructure this to use MAYBE!
 			$bits = array();
 			//todo, if a great many (over 30?) then switch to high quorum?
