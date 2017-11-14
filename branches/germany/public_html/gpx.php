@@ -29,13 +29,14 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/gridimage.class.php');
 
 
-$smarty = new GeographPage;
+#$smarty = new GeographPage;
 
 $template='gpx.tpl';
 $cacheid = '';
 
 if (isset($_GET['id']))  {
 	init_session();
+	$smarty = new GeographPage;
 
 	$image=new GridImage;
 	
@@ -52,7 +53,7 @@ if (isset($_GET['id']))  {
 			$searchdesc = "squares within {$d}km of {$square->grid_reference} ".(($_REQUEST['type'] == 'with')?'with':'without')." photographs";
 
 
-			$sql = "SELECT grid_reference,x,y,imagecount $sql_fields
+			$sql = "SELECT grid_reference,x,y,imagecount as imgcount $sql_fields
 			FROM gridsquare gs
 			WHERE $sql_where
 			ORDER BY $sql_order";
@@ -93,10 +94,28 @@ if (isset($_GET['id']))  {
 		$d=(!empty($_REQUEST['distance']))?min(100,intval(stripslashes($_REQUEST['distance']))):5;
 				
 		$type=(isset($_REQUEST['type']))?stripslashes($_REQUEST['type']):'few';
-		switch($type) {
-			case 'with': $typename = 'with'; $crit = 'imagecount>0'; break;
-			case 'few': $typename = 'with few'; $crit = 'imagecount<2 and (percent_land > 0 || imagecount>1)'; break;
-			default: $type = $typename = 'without'; $crit = 'imagecount=0 and percent_land > 0'; break;
+		$uid = isset($_REQUEST['user']) ? intval($_REQUEST['user']) : 0;
+		if ($uid) {
+			switch($type) {
+				case 'with': $typename = 'with'; $having = 'imgcount>0'; $crit = '1'; break;
+				case 'few': $typename = 'with few'; $having = 'imgcount<2'; $crit = '(gs.percent_land > 0 || gs.imagecount > 1)'; break;
+				default: $type = $typename = 'without'; $having = 'imgcount=0'; $crit = 'gs.percent_land > 0'; break;
+			}
+			$imgcount = "sum(IFNULL(moderation_status,'') in ('accepted','geograph')) as imgcount";
+			$join = "left join gridimage_search gi on (gi.gridsquare_id=gs.gridsquare_id and gi.user_id='$uid')";
+			$group = "group by gs.gridsquare_id";
+			$having = 'HAVING '.$having;
+		} else {
+			switch($type) {
+				case 'with': $typename = 'with'; $crit = 'gs.imagecount>0'; break;
+				case 'few': $typename = 'with few'; $crit = 'gs.imagecount<2 and (percent_land > 0 || gs.imagecount>1)'; break;
+				default: $type = $typename = 'without'; $crit = 'gs.imagecount=0 and percent_land > 0'; break;
+			}
+			$imgcount = "gs.imagecount as imgcount";
+			$join = "";
+			$group = "";
+			$having = "";
+			#$uidwhere = "";
 		}
 	
 		$square=new GridSquare;
@@ -110,14 +129,21 @@ if (isset($_GET['id']))  {
 		
 		if ($grid_ok)
 		{
+			$smarty = new GeographPage;
 				
 			$template='gpx_download_gpx.tpl';
-			$cacheid = $square->grid_reference.'-'.($type).'-'.($d);
+			$cacheid = $square->grid_reference.'-'.($type).'-'.($d).'-'.($uid);
 		
 			//regenerate?
-			if (!$smarty->is_cached($template, $cacheid))
+			if (/*true ||*/ !$smarty->is_cached($template, $cacheid))
 			{
 				$searchdesc = "squares within {$d}km of {$square->grid_reference} $typename photographs";
+				if ($uid) {
+					$profile = new GeographUser($uid);
+					$searchdesc .= " by user {$profile->realname} [#$uid]";
+				}
+				/*$smarty->caching = 0;*/
+				trigger_error(" $cacheid $searchdesc ", E_USER_WARNING);
 				
 				$x = $square->x;
 				$y = $square->y;
@@ -131,19 +157,21 @@ if (isset($_GET['id']))  {
 
 				$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
 
-				$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
+				$sql_where .= "CONTAINS(GeomFromText($rectangle),gs.point_xy)";
 				
 				//shame cant use dist_sqd in the next line!
-				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d);
+				$sql_where .= " and ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) < ".($d*$d); // HAVING?
 
 				$sql_fields .= ", ((gs.x - $x) * (gs.x - $x) + (gs.y - $y) * (gs.y - $y)) as dist_sqd";
 				$sql_order = ' dist_sqd ';
 
 				
-				$sql = "SELECT grid_reference,x,y,imagecount $sql_fields
-				FROM gridsquare gs
+				$sql = "SELECT gs.grid_reference,gs.x,gs.y,$imgcount $sql_fields
+				FROM gridsquare gs $join
 				WHERE $sql_where
+				$group $having
 				ORDER BY $sql_order";
+				trigger_error(" $sql ", E_USER_WARNING);
 				
 				$db=NewADOConnection($GLOBALS['DSN']);
 				if (!$db) die('Database connection failed');  
@@ -171,6 +199,7 @@ if (isset($_GET['id']))  {
 		else
 		{
 			init_session();
+			$smarty = new GeographPage;
 
 			//preserve the input at least
 			$smarty->assign('gridref', stripslashes($_REQUEST['gridref']));
@@ -178,6 +207,7 @@ if (isset($_GET['id']))  {
 			$smarty->assign('type', $type);
 		
 			$smarty->assign('errormsg', $square->errormsg);	
+			$smarty->assign('uid', $uid);
 		}
 		
 				
@@ -185,6 +215,7 @@ if (isset($_GET['id']))  {
 		
 	} else {
 		init_session();
+		$smarty = new GeographPage;
 
 		$smarty->assign('distance', 5);
 		$smarty->assign('type', 'without');
