@@ -195,16 +195,18 @@ if (!$smarty->is_cached($template, $cacheid))
 		$db=NewADOConnection($GLOBALS['DSN']);
 		
 		
-		$result = mysql_query($sql) or die ("Couldn't select query : $sql " . mysql_error() . "\n");
+		$result = $db->Execute($sql) or die ("Couldn't select query : $sql " . $db->ErrorMsg() . "\n");
 
-		if (mysql_num_rows($result) > 0) {
+		if (!$result->EOF) {
 			require_once('geograph/gridimage.class.php');
 			
 		
 			$rows = array();
-			while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+			do {
+				$row = $result->GetRowAssoc(false);
 				$rows[$row['gridimage_id']] = $row;
-			}
+				$result->MoveNext();
+			} while (!$result->EOF);
 			$images = array();
 			foreach ($ids as $c => $id) {
 				if ($row = $rows[$id]) {
@@ -255,10 +257,11 @@ function didYouMean($q,$cl) {
 		WHERE $where
 		LIMIT 60";
 
-		$result = mysql_query($sql) or die ("Couldn't select query : $sql " . mysql_error() . "\n");
+		$result = $db->Execute($sql) or die ("Couldn't select query : $sql " . $db->ErrorMsg() . "\n");
 		$r = '';
-		if (mysql_num_rows($result) > 0) {
-			while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+		while (!$result->EOF) {
+				$row = $result->GetRowAssoc(false);
+				$result->MoveNext();
 				foreach (preg_split('/[\/,\|]+/',trim(strtolower($row['name']))) as $word) {
 					$word = preg_replace('/[^\w ]+/','',$word);
 					if (strpos($q,$word) !== FALSE) {
@@ -267,7 +270,6 @@ function didYouMean($q,$cl) {
 					}
 
 				}
-			}
 		}
 	}
 	return $arr;

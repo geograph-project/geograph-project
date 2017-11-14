@@ -92,7 +92,7 @@ return $ret;
 
 //--------------->
 function textFilter($text,$size,$wrap,$urls,$bbcodes,$eofs,$admin){
-$text=trim(chop(htmlspecialchars($text,ENT_QUOTES)));
+$text=trim(chop(htmlspecialchars_latin($text,ENT_QUOTES)));
 $text=str_replace('\&#039;', '&#039;', $text);
 $text=str_replace('\&quot;', '&quot;', $text);
 $text=str_replace(chr(92).chr(92).chr(92).chr(92), '&#92;&#92;', $text);

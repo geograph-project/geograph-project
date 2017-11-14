@@ -129,7 +129,7 @@ class EventProcessor
 		
 		//add to db
 		$this->logdb->Execute("insert into event_log(event_id, logtime,verbosity, log) values ".
-			"({$this->current_event_id}, now(), $level, '".mysql_escape_string($text)."')");
+			"({$this->current_event_id}, now(), $level, ".$this->logdb->Quote($text).")");
 		
 		
 	}
@@ -212,7 +212,7 @@ class EventProcessor
 						if ($entry[0]!=".")
 						{
 	
-							list($classname, $ext1, $ext2)=explode(".", $entry,3);
+							@list($classname, $ext1, $ext2)=explode(".", $entry,3);
 	
 							if ($ext1=="class" && $ext2=="php")
 							{

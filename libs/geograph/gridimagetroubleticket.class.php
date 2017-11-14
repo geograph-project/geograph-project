@@ -170,8 +170,11 @@ class GridImageTroubleTicket
 	* array of gridimage_ticket_item records yet to be written
 	*/
 	var $changes=array();
-	
-	
+
+	/**
+	* array of gridimage_notes
+	*/
+	var $imgnotes=array();
 
 	/**
 	* array of comment records, including realname
@@ -311,13 +314,13 @@ class GridImageTroubleTicket
 	* to commit(), which persist the ticket and any unmoderated changes
 	* @access public
 	*/
-	function updateField($fieldname, $oldvalue, $newvalue, $moderated)
+	function updateField($fieldname, $oldvalue, $newvalue, $moderated, $note_id = 0, $force = false)
 	{
 		$ok=true;
 		
 		
 		//no change?
-		if ($oldvalue==$newvalue)
+		if ($oldvalue==$newvalue && !$force)
 			return $ok;
 	
 		if (!$moderated)
@@ -325,8 +328,13 @@ class GridImageTroubleTicket
 			//make the changes right away...
 			$img=&$this->_getImage();
 			
-			if ($fieldname=="grid_reference")
-			{
+			if ($note_id) {
+				$imgnote=&$this->_getNote($note_id);
+				$imgnote->$fieldname=$newvalue;
+				
+				//we'll do this commit later
+				$this->commit_count++;
+			} elseif ($fieldname=="grid_reference") {
 				$err="";
 				$ok=$img->reassignGridsquare($newvalue, $err);
 				if ($ok)
@@ -342,7 +350,7 @@ class GridImageTroubleTicket
 			{
 				//need to parse value for nat coords
 				$sq=new GridSquare;
-				if ($sq->setByFullGridRef($newvalue,true,true,true))
+				if ($sq->setByFullGridRef($newvalue,true,true,false,true))
 				{
 					$img->viewpoint_eastings=$sq->nateastings;
 					$img->viewpoint_northings=$sq->natnorthings;
@@ -383,7 +391,7 @@ class GridImageTroubleTicket
 		$found=false;
 		foreach($this->changes as $c)
 		{
-			if ($c['field']==$fieldname)
+			if ($c['field']==$fieldname && $c['note_id']==$note_id )
 				$found=true;
 		}
 		
@@ -392,6 +400,7 @@ class GridImageTroubleTicket
 			//create a change record
 			$change=array(
 				"field"=>$fieldname,
+				"note_id"=>$note_id,
 				"oldvalue"=>$oldvalue,
 				"newvalue"=>$newvalue,
 				"status"=>$status,
@@ -414,6 +423,9 @@ class GridImageTroubleTicket
 		if ($this->commit_count)
 		{
 			$img=&$this->_getImage();
+			foreach ($this->imgnotes as $imgnote) {
+				$imgnote->commitChanges();
+			}
 			$img->commitChanges();
 			$this->commit_count=0;
 			
@@ -427,15 +439,15 @@ class GridImageTroubleTicket
 		{
 			//new ticket
 			$sql=sprintf("insert into gridimage_ticket(gridimage_id, suggested, updated,user_id, moderator_id, status, type, public, notes) ".
-				"values(%d, '%s', '%s', %d, %d, '%s', '%s', '%s', %s)",
+				"values(%d, '%s', '%s', %d, %d, '%s', %s, %s, %s)",
 				$this->gridimage_id,
 				$this->suggested,
 				$this->updated,
 				$this->user_id,
 				$this->moderator_id,
 				"pending",
-				$this->type,
-				$this->public,
+				$db->Quote($this->type),
+				$db->Quote($this->public),
 				$db->Quote($this->notes));
 			$db->Execute($sql);
 			$this->gridimage_ticket_id=$db->Insert_ID();
@@ -464,12 +476,13 @@ class GridImageTroubleTicket
 				}
 				else
 				{
-					$sql=sprintf("insert into gridimage_ticket_item(gridimage_ticket_id, field, oldvalue, newvalue, status, approver_id) ".
-						"values(%d, '%s', '%s', '%s', '%s', '%d')",
+					$sql=sprintf("insert into gridimage_ticket_item(gridimage_ticket_id, field, note_id, oldvalue, newvalue, status, approver_id) ".
+						"values(%d, '%s', %d, %s, %s, '%s', '%d')",
 						$this->gridimage_ticket_id,
 						$change["field"],
-						mysql_escape_string($change["oldvalue"]),
-						mysql_escape_string($change["newvalue"]),
+						$change["note_id"],
+						$db->Quote($change["oldvalue"]),
+						$db->Quote($change["newvalue"]),
 						$change["status"],
 						$change["approver_id"]);
 				}
@@ -508,6 +521,8 @@ class GridImageTroubleTicket
 			{
 				if ($item['oldvalue']!=$item['newvalue'])
 				{
+					if ($item['note_id'])
+						$changes .= " Note {$item['note_id']}:";
 					$changes.=" {$item['field']} changed from \"{$item['oldvalue']}\" to \"{$item['newvalue']}\"\n";
 				}
 			}
@@ -633,9 +648,10 @@ class GridImageTroubleTicket
 		
 		$image=& $this->_getImage();
 		
-		$ttype = ($this->type == 'minor')?' Minor':'';
-		$msg['subject']="[Geograph]$ttype Suggestion for {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
+		$ttype = ($this->type == 'minor')?'Kleiner Änderungsvorschlag für / Minor suggestion for':'Änderungsvorschlag für / Suggestion for';
+		$msg['subject']="$ttype {$image->grid_reference} {$image->title} [#{$this->gridimage_ticket_id}]";
 		
+		#FIXME translate body
 		$msg['body']="Re: {$image->grid_reference} {$image->title}\n";
 		$msg['body'].="http://{$_SERVER['HTTP_HOST']}/editimage.php?id={$this->gridimage_id}\n";
 		$msg['body'].="---------------------------------------\n";
@@ -857,10 +873,12 @@ class GridImageTroubleTicket
 				$this->changes[$idx]['approver_id']=$user_id;
 
 				//updateField does the hard work
-				$this->updateField($item['field'], $item['oldvalue'], $item['newvalue'], false);
+				$this->updateField($item['field'], $item['oldvalue'], $item['newvalue'], false, $item['note_id']);
 
 				if ($item['oldvalue']!=$item['newvalue'])
 				{
+					if ($item['note_id'])
+						$changes .= "Note {$item['note_id']}: ";
 					$changes.="{$item['field']} changed from \"{$item['oldvalue']}\" to \"{$item['newvalue']}\"\n";
 				}
 			}
@@ -917,6 +935,18 @@ class GridImageTroubleTicket
 	}
 
 	/**
+	 * get an array containing the affected note ids != 0
+	 * returns false on error
+	 * @access public
+	 */
+	function &getAffectedNotes()
+	{
+		$db=&$this->_getDB();
+		$cols = $db->GetCol("SELECT DISTINCT(note_id) FROM gridimage_ticket_item WHERE gridimage_ticket_id='{$this->gridimage_ticket_id}' AND note_id!=0");
+		return $cols;
+	}
+
+	/**
 	 * get stored gridimage object, creating if necessary
 	 * @access private
 	 */
@@ -929,7 +959,19 @@ class GridImageTroubleTicket
 		}	
 		return $this->gridimage;
 	}
-	
+
+	/**
+	 * get stored imagenote object, creating if necessary
+	 * @access private
+	 */
+	function &_getNote($note_id)
+	{
+		if (!array_key_exists($note_id, $this->imgnotes)) {
+			$this->imgnotes[$note_id] = new GridImageNote($note_id);
+		}	
+		return $this->imgnotes[$note_id];
+	}
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
@@ -966,6 +1008,7 @@ class GridImageTroubleTicket
 		}
 		$this->commit_count=0;
 		$this->changes=array();
+		$this->imgnotes=array();
 	}
 	
 	/**
@@ -1008,7 +1051,7 @@ class GridImageTroubleTicket
 	*/
 	function loadItems()
 	{
-		$db=&$this->_getDB();
+		$db=$this->_getDB();
 		if ($this->isValid())
 		{
 			$this->changes=$db->GetAll("select * from gridimage_ticket_item where gridimage_ticket_id={$this->gridimage_ticket_id}");
@@ -1039,7 +1082,7 @@ class GridImageTroubleTicket
 	*/
 	function loadComments()
 	{
-		$db=&$this->_getDB();
+		$db=$this->_getDB();
 		if ($this->isValid())
 		{
 			$this->comments=$db->GetAll("select c.*,u.realname , ".
@@ -1061,12 +1104,12 @@ class GridImageTroubleTicket
 	*/
 	function loadFromId($gridimage_ticket_id)
 	{
-		$db=&$this->_getDB();
+		$db=$this->_getDB();
 		
 		$this->_clear();
 		if (preg_match('/^\d+$/', $gridimage_ticket_id))
 		{
-			$row = &$db->GetRow("select * from gridimage_ticket where gridimage_ticket_id={$gridimage_ticket_id} limit 1");
+			$row = $db->GetRow("select * from gridimage_ticket where gridimage_ticket_id={$gridimage_ticket_id} limit 1");
 			if (is_array($row))
 			{
 				$this->_initFromArray($row);

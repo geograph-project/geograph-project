@@ -100,6 +100,12 @@ class GridSquare
 	var $natspecified = false;
 	
 	/**
+	* latitude/longitude (wgs84)
+	*/
+	var $lat = null;
+	var $lon = null;
+
+	/**
 	* GridSquare instance of nearest square to this one with an image
 	*/
 	var $nearest=null;
@@ -110,15 +116,51 @@ class GridSquare
 	*/
 	var $distance=0;
 	
+	/**
+	 * map services
+	 */
+	var $services = array();
 	
+	/**
+	 * internal coordinates, square does not exist
+	 */
+	var $internal_only = false;
 	
 	/**
 	* Constructor
 	*/
 	function GridSquare()
 	{
+		$this->setServices('');
 	}
-	
+
+	/**
+	 * initialize $this->services from configuration and comma separated list of service ids
+	 * @access private
+	 */
+	function setServices($list)
+	{
+		global $CONF;
+		if (strlen($list)) {
+			$tmpservices = explode(',', $list);
+		} else {
+			$tmpservices = array();
+		}
+		$services = explode(',',$CONF['raster_service']);
+		if (in_array('Google',$services) || in_array('OLayers',$services)) {
+			//$tmpservices = $tmpservices + array(0);
+			$tmpservices = array_merge($tmpservices, array(0));
+		}
+		$this->services = array ();
+		foreach ($tmpservices as $service) {
+			$sid = intval($service);
+			$this->services = $this->services + array($sid => $CONF['mapservices'][$sid]['menuname']); # FIXME database?
+		}
+		if (count($this->services) == 0) {
+			$this->services = array( -1 => '' );
+		}
+	}
+
 	/**
 	 * get stored db object, creating if necessary
 	 * @access private
@@ -127,7 +169,7 @@ class GridSquare
 	{
 		if (!is_object($this->db))
 			$this->db=NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed: '.mysql_error());  
+		if (!$this->db) die('Database connection failed');
 		return $this->db;
 	}
 
@@ -154,7 +196,7 @@ class GridSquare
 		
 		$mkey = $this->gridsquare_id;
 		//fails quickly if not using memcached!
-		$result =& $memcache->name_get('gsd',$mkey);
+		$result = $memcache->name_get('gsd',$mkey);
 		if ($result) {
 			$smarty->assign_by_ref('discuss', $result['topics']);
 			$smarty->assign('totalcomments', $result['totalcomments']);
@@ -175,6 +217,7 @@ class GridSquare
 		{
 			$news=array();
 
+			$totalcomments = 0;
 			foreach($topics as $idx=>$topic)
 			{
 				$firstpost=$db->GetRow("select post_text,poster_name,post_time,poster_id from geobb_posts where topic_id={$topic['topic_id']} order by post_time limit 1");
@@ -215,7 +258,7 @@ class GridSquare
 		if (!isset($this->nateastings)) {
 			//fails quickly if not using memcached!
 			$mkey = $this->gridsquare;
-			$square =& $memcache->name_get('pr',$mkey);
+			$square = $memcache->name_get('pr',$mkey);
 			if (!$square) {
 				$db=&$this->_getDB();
 
@@ -251,6 +294,59 @@ class GridSquare
 	}
 	
 	/**
+	* Convenience function to get latitude/longitude (wgs84)
+	*/
+	function getLatLon()
+	{
+		if (!isset($this->lat) || is_null($this->lat)) {
+			$e = $this->getNatEastings();
+			$n = $this->getNatNorthings();
+			require_once('geograph/conversions.class.php');
+			$conv = new Conversions;
+			$latlon = $conv->national_to_wgs84($e, $n, $this->reference_index);
+			if (!count($latlon))
+				return array();
+			$this->lat = $latlon[0];
+			$this->lon = $latlon[1];
+		}
+		return array($this->lat, $this->lon);
+	}
+
+	/**
+	 * Calculate approximate distance from given point (assuming spherical coordinates, R=6378137)
+	 */
+	function calcDistanceFromLL($latD, $lonD)
+	{
+		list($lat2D, $lon2D) = $this->getLatLon();
+		if (is_null($lat2D))
+			return -1; # FIXME?
+		$lat1 = deg2rad($latD);
+		$lon1 = deg2rad($lonD);
+		$lat2 = deg2rad($lat2D);
+		$lon2 = deg2rad($lon2D);
+		
+		$R = 6378137.0;
+		$dlat = $lat1-$lat2;
+		$dlon = $lon1-$lon2;
+		$slat = sin(0.5*$dlat);
+		$slon = sin(0.5*$dlon);
+		$sinsq = $slat*$slat + cos($lat1)*cos($lat2)*$slon*$slon;
+		$arc = 2 * atan2(sqrt($sinsq), sqrt(1-$sinsq));
+		return $R * $arc;
+	}
+
+	/**
+	 * Calculate approximate distance from given point (assuming spherical coordinates, R=6378137)
+	 */
+	function calcDistanceFromSquare(&$square)
+	{
+		list($latD, $lonD) = $square->getLatLon();
+		if (is_null($latD))
+			return -1;
+		return $this->calcDistanceFromLL($latD, $lonD);
+	}
+
+	/**
 	* Get an array of valid grid prefixes
 	*/
 	function getGridPrefixes($ri = 0)
@@ -263,6 +359,90 @@ class GridSquare
 
 	}
 	
+	/**
+	* Get an array of regions
+	*/
+
+	function getRegionList($details = false)
+	{
+		global $CONF;
+		$reglist = array();
+		if ($this->gridsquare_id && count($CONF['hier_levels'])) {
+			$hierlevels = implode(',', $CONF['hier_levels']);
+			$levellist = array();
+			$db=&$this->_getDB();
+			if ($details)
+				$recordSet = $db->Execute("select gp.level,gp.community_id,gp.percent,coalesce(lh.name,concat(gp.level,'_',gp.community_id)) as name from gridsquare_percentage gp left join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0");
+			else
+				$recordSet = $db->Execute("select gp.level,gp.community_id,gp.percent,lh.name from gridsquare_percentage gp inner join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0");
+
+			#$recordSet = $db->Execute("select gp.level,gp.community_id,gp.percent,lh.name from gridsquare_percentage gp inner join loc_hier lh on (gp.level = lh.level and gp.community_id = lh.community_id) where gp.gridsquare_id={$this->gridsquare_id} and gp.level in ($hierlevels) and gp.percent>0 order by gp.level desc,lh.name");
+			
+			while (!$recordSet->EOF) {
+				$level = $recordSet->fields['level'];
+				$cid = $recordSet->fields['community_id'];
+				if (!isset($levellist[$level]))
+					$levellist[$level] = array();
+				if ($details)
+					$percent = $recordSet->fields['percent'];
+				else
+					$percent = 0;
+				$levellist[$level][$cid] = array('name' => $recordSet->fields['name'], 'percent' => $percent, 'done' => false);
+				#trigger_error("------$level,$cid,$percent,{$levellist[$level][$cid]['name']}---", E_USER_NOTICE);
+				$recordSet->MoveNext();
+			}
+			$recordSet->Close();
+			foreach($CONF['hier_levels'] as $level) {
+				if (isset($levellist[$level])) foreach($levellist[$level] as $cid => &$row) {
+					$hier = $db->GetAssoc("select level,name,community_id from loc_hier where {$cid} between contains_cid_min and contains_cid_max and level < {$level} order by level");
+					$showhier = array();
+					if (count($hier)) {
+						$showlevels = $CONF['hier_levels'];
+						$prefixes   = $CONF['hier_prefix'];
+						$shortname = $row['name'];
+						if (isset($prefixes[$level])) {
+							$curpref = $prefixes[$level].' ';
+							$preflen = strlen($curpref);
+							if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+								$shortname = substr($shortname, $preflen);
+						}
+						$prev = $shortname;
+						foreach($showlevels as $level2) {
+							if (!isset($hier[$level2]))
+								continue;
+							$cid2 = $hier[$level2]['community_id'];
+							if (isset($levellist[$level2]) && isset($levellist[$level2][$cid2]))
+								$levellist[$level2][$cid2]['done'] = true;
+							$shortname = $hier[$level2]['name'];
+							if (isset($prefixes[$level2])) {
+								$curpref = $prefixes[$level2].' ';
+								$preflen = strlen($curpref);
+								if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+									$shortname = substr($shortname, $preflen);
+							}
+							if ($prev == $shortname)
+								continue;
+							$prev = $shortname;
+							$showhier[] = $hier[$level2]['name'];
+						}
+					}
+					$levellist[$level][$cid]['hier'] = implode(', ', $showhier);
+					$levellist[$level][$cid]['hide'] = !$details && $levellist[$level][$cid]['done'];
+					#trigger_error("------$level,$cid,$percent,{$levellist[$level][$cid]['name']}:{$levellist[$level][$cid]['hier']}---", E_USER_NOTICE);
+					$reglist[] = array(
+						'level'  =>$level,
+						'cid'    =>$cid,
+						'name'   =>$row['name'],
+						'hier'   =>$row['hier'],
+						'hide'   =>$row['hide'],
+						'percent'=>$row['percent']
+					);
+				}
+			}
+		}
+		return $reglist;
+	}
+
 	/**
 	* Get an array of valid kilometer indexes
 	*/
@@ -294,17 +474,17 @@ class GridSquare
 	/**
 	*
 	*/
-	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false,$recalc = false)
+	function setByFullGridRef($gridreference,$setnatfor4fig = false,$allowzeropercent = false,$allowinternal = false,$recalc = false)
 	{
 		global $CONF, $MESSAGES;
 		$matches=array();
 		$isfour=false;
-		
-		if (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{1,5})[ \.](\d{1,5})\b/",$gridreference,$matches) and (strlen($matches[2]) == strlen($matches[3]))) {
+
+		if (preg_match("/\b([!a-zA-Z]{1,3}) ?(\d{1,5})[ \.](\d{1,5})\b/",$gridreference,$matches) and (strlen($matches[2]) == strlen($matches[3]))) {
 			list ($prefix,$e,$n) = array($matches[1],$matches[2],$matches[3]);
 			$length = strlen($matches[2]);
 			$natgrlen = $length * 2;
-		} elseif (preg_match("/\b([a-zA-Z]{1,3}) ?(\d{0,10})\b/",$gridreference,$matches) and ((strlen($matches[2]) % 2) == 0)) {
+		} elseif (preg_match("/\b([!a-zA-Z]{1,3}) ?(\d{0,10})\b/",$gridreference,$matches) and ((strlen($matches[2]) % 2) == 0)) {
 			$natgrlen = strlen($matches[2]);
 			$length = $natgrlen / 2;
 			list ($prefix,$e,$n) = array($matches[1], substr($matches[2], 0, $length), substr($matches[2], -$length));
@@ -312,18 +492,17 @@ class GridSquare
 
 		if (!empty($prefix))
 		{
-                        $this->natgrlen = $natgrlen;
-                        $isfour = $natgrlen == 4;
-                        $this->natspecified = $natgrlen > 4 ? 1:0;
+			$this->natgrlen = $natgrlen;
+			$isfour = $natgrlen == 4;
+			$this->natspecified = $natgrlen > 4 ? 1:0;
 
-                        if ($length <= 1)
-                                $suffix = '5'.str_repeat('0', 4 - $length);
-                        else
-                                $suffix = str_repeat('0', 5 - $length);
+			if ($length <= 1)
+				$suffix = '5'.str_repeat('0', 4 - $length);
+			else
+				$suffix = str_repeat('0', 5 - $length);
 
-                        $e .= $suffix;
-                        $n .= $suffix;
-
+			$e .= $suffix;
+			$n .= $suffix;
 			$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
 
 			$ok = false;
@@ -336,15 +515,19 @@ class GridSquare
 					require_once('geograph/conversions.class.php');
 					$conv = new Conversions;
 					$ri = $row['reference_index'];
+					#$latlong = $conv->national_to_wgs84(intval($e),intval($n),$ri);
 					$fe = intval($e) + ($row['origin_x']-$CONF['origins'][$ri][0]) * 1000;
 					$fn = intval($n) + ($row['origin_y']-$CONF['origins'][$ri][1]) * 1000;
 					$latlong = $conv->national_to_wgs84($fe,$fn,$ri);
-					if (count($latlong)) {
+					if (count($latlong)) { # FIXME error handling
+						$this->lat = $latlong[0];
+						$this->lon = $latlong[1];
 						$enr = $conv->wgs84_to_national($latlong[0],$latlong[1]);
-						if (count($enr)) {
+						if (count($enr)) { # FIXME error handling
 							$ri2 = $enr[2];
 							$fe2=$enr[0];$fn2=$enr[1];
 							if ($ri2 != $ri) { // we got a new ri
+								trigger_error("----c2--$fe2,$fn2,$ri2---", E_USER_NOTICE);
 								if ($length == 1)
 									$shift = 5000;
 								elseif ($length == 0)
@@ -355,12 +538,18 @@ class GridSquare
 								$n2 = round($enr[1],$length-5) + $shift;
 								$x = floor($e2/1000) + $CONF['origins'][$ri2][0];
 								$y = floor($n2/1000) + $CONF['origins'][$ri2][1];
-								$ok = $this->loadFromPosition($x, $y);
+								trigger_error("----x--$e2-$n2-$x-$y--", E_USER_NOTICE);
+								$ok = $this->loadFromPosition($x, $y);#FIXME: false,$allowinternal,$allowzeropercent);
 								if ($ok) {
 									$prefix = $this->gridsquare;
 									$e = sprintf("%05d", $e2%100000);
 									$n = sprintf("%05d", $n2%100000);
+									#$gridref=sprintf("%s%02d%02d", strtoupper($prefix), intval($e/1000), intval($n/1000));
 									$gridref = $this->grid_reference;
+									#$this->natgrlen = $natgrlen;
+									#$isfour = $natgrlen == 4;
+									#$this->natspecified = $natgrlen > 4 ? 1:0;
+									trigger_error("----s--$prefix--", E_USER_NOTICE);
 								}
 							}
 						}
@@ -369,7 +558,7 @@ class GridSquare
 			}
 
 			if (!$ok)
-				$ok=$this->_setGridRef($gridref,$allowzeropercent);
+				$ok=$this->_setGridRef($gridref,$allowzeropercent,$allowinternal);
 			if ($ok && (!$isfour || $setnatfor4fig))
 			{
 				//we could be reassigning the square!
@@ -385,13 +574,13 @@ class GridSquare
 				$this->nateastings = $emajor.sprintf("%05d",$e);
 				$this->natnorthings = $nmajor.sprintf("%05d",$n);
 				$this->natgrlen = $natgrlen;
-				$this->precision=pow(10,6-($natgrlen/2))/10;
+				$this->precision=pow(10,5-$length);
 			} else {
 				$this->precision=1000;
 			}
 		} else {
 			$ok=false;
-			$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities($gridreference)));
+			$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities_latin($gridreference)));
 
 		}
 				
@@ -404,7 +593,7 @@ class GridSquare
 	function _storeGridRef($gridref)
 	{
 		$this->grid_reference=$gridref;
-		if (preg_match('/^([A-Z]{1,3})(\d\d)(\d\d)$/',$this->grid_reference, $matches))
+		if (preg_match('/^([!A-Z]{1,3})(\d\d)(\d\d)$/',$this->grid_reference, $matches))
 		{
 			$this->gridsquare=$matches[1];
 			$this->eastings=$matches[2];
@@ -422,7 +611,7 @@ class GridSquare
 	function validGridPos($gridsquare, $eastings, $northings)
 	{
 		$ok=true;
-		$ok=$ok && preg_match('/^[A-Z]{1,3}$/',$gridsquare);
+		$ok=$ok && preg_match('/^[!A-Z]{1,3}$/',$gridsquare);
 		$ok=$ok && preg_match('/^[0-9]{1,2}$/',$eastings);
 		$ok=$ok && preg_match('/^[0-9]{1,2}$/',$northings);
 		return $ok;
@@ -431,14 +620,14 @@ class GridSquare
 	/**
 	* set up and validate grid square selection using seperate reference components
 	*/
-	function setGridPos($gridsquare, $eastings, $northings,$allowzeropercent = false)
+	function setGridPos($gridsquare, $eastings, $northings,$allowzeropercent = false,$allowinternal = false)
 	{
 		//assume the inputs are tainted..
 		$ok=$this->validGridPos($gridsquare, $eastings, $northings);
 		if ($ok)
 		{
 			$gridref=sprintf("%s%02d%02d", $gridsquare, $eastings, $northings);
-			$ok=$this->_setGridRef($gridref,$allowzeropercent);
+			$ok=$this->_setGridRef($gridref,$allowzeropercent,$allowinternal);
 		}
 		
 		return $ok;
@@ -451,14 +640,14 @@ class GridSquare
 	*/
 	function validGridRef($gridref, $figures=4)
 	{
-		return preg_match('/^[A-Z]{1,3}[0-9]{'.$figures.'}$/',$gridref);
+		return preg_match('/^[!A-Z]{1,3}[0-9]{'.$figures.'}$/',$gridref);
 	}
 
 
 	/**
 	* set up and validate grid square selection using grid reference
 	*/
-	function setGridRef($gridref)
+	function setGridRef($gridref, $allowzeropercent = false, $allowinternal = false)
 	{
 		global $MESSAGES;
 		$gridref = preg_replace('/[^\w]+/','',strtoupper($gridref)); #assume the worse and remove everything, also not everyone uses the shift key
@@ -466,20 +655,20 @@ class GridSquare
 		$ok=$this->validGridRef($gridref);
 		if ($ok)
 		{
-			$ok=$this->_setGridRef($gridref);
+			$ok=$this->_setGridRef($gridref, $allowzeropercent, $allowinternal);
 		}
 		else
 		{
 			//six figures?
 			$matches=array();
-			if (preg_match('/^([A-Z]{1,3})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
+			if (preg_match('/^([!A-Z]{1,3})(\d\d)\d(\d\d)\d$/',$gridref,$matches))
 			{
 				$fixed=$matches[1].$matches[2].$matches[3];
 				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_4fig'], $fixed, $gridref));
 			}
 			else
 			{
-				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities($gridref)));
+				$this->_error(sprintf($MESSAGES['class_gridsquare']['gridref_invalid'], htmlentities_latin($gridref)));
 			}
 		}
 		
@@ -502,6 +691,7 @@ class GridSquare
 					$this->$name=$value;
 								
 			}
+			$this->setServices($this->mapservices);
 			
 			//ensure we get exploded reference members too
 			$this->_storeGridRef($this->grid_reference);
@@ -510,19 +700,101 @@ class GridSquare
 		}
 		return false;
 	}
+
+	/**
+	 * get array of grid references of neighbouring squares in order
+	 *   NW N NE W Center E SW S SE
+	 */
+	function &nextNeighbours($findnearest = false)
+	{
+		$square = new GridSquare();
+		$result = array();
+		for ($dy = +1; $dy >= -1; --$dy) {
+			for ($dx = -1; $dx <= +1; ++$dx) {
+				if ($dx == 0 && $dy == 0) {
+					$result[] = $this->grid_reference;
+					continue;
+				}
+				$grid_ok = $square->loadFromPosition($this->x, $this->y, $findnearest, false, $dx, $dy);
+				$result[] = $grid_ok ? $square->grid_reference : '';
+			}
+		}
+		return $result;
+	}
 	
 	/**
 	* load square from internal coordinates
 	*/
-	function loadFromPosition($internalx, $internaly, $findnearest = false)
+	function loadFromPosition($internalx, $internaly, $findnearest = false, $allowinternal = false, $dx = 0, $dy = 0)
 	{
 		global $CONF, $MESSAGES;
 		$ok=false;
 		$db=&$this->_getDB();
+		#trigger_error("===>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+		if ($dx || $dy) {
+			if ($dx)
+				$dx = $dx > 0 ? 1: -1;
+			if ($dy)
+				$dy = $dy > 0 ? 1: -1;
+			#trigger_error("--->$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+			$pland = 'percent_land != 0';
+			/* try to go there directly */
+			$row = $db->GetRow("select 1 from gridsquare where $pland and x = $internalx+$dx and y = $internaly+$dy limit 1");
+			if (count($row)) {
+				$internalx += $dx;
+				$internaly += $dy;
+				$dx = 0;
+				$dy = 0;
+				#trigger_error(" 1=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+			} else {
+				/* try a single step */
+				if ($dx && $dy) {
+					$row = $db->GetRow("select 1 from gridsquare where $pland and x = $internalx+$dx and y = $internaly limit 1");
+					if (count($row)) {
+						$internalx += $dx;
+						$dx = 0;
+						#trigger_error(" a=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+					} else {
+						$row = $db->GetRow("select 1 from gridsquare where $pland and x = $internalx and y = $internaly+$dy limit 1");
+						if (count($row)) {
+							$internaly += $dy;
+							$dy = 0;
+							#trigger_error(" b=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+						}
+					}
+				}
+				/* jump over gap (zone boundary/sea) */
+				if (!$dx && $dy) {
+					if ($dy < 0)
+						$row = $db->GetRow("select y from gridsquare where $pland and x = $internalx and y < $internaly order by y desc limit 1");
+					else
+						$row = $db->GetRow("select y from gridsquare where $pland and x = $internalx and y > $internaly order by y limit 1");
+					if (count($row)) {
+						$dy = 0;
+						$internaly = $row['y'];
+						#trigger_error(" A=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+					}
+				} elseif (!$dy && $dx) {
+					if ($dx < 0)
+						$row = $db->GetRow("select x from gridsquare where $pland and y = $internaly and x < $internalx order by x desc limit 1");
+					else
+						$row = $db->GetRow("select x from gridsquare where $pland and y = $internaly and x > $internalx order by x limit 1");
+					if (count($row)) {
+						$dx = 0;
+						$internalx = $row['x'];
+						#trigger_error(" B=>$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
+					}
+				}
+			}
+		}
+		$internalx += $dx;
+		$internaly += $dy;
+		#trigger_error("  ->$dx,$dy ($internalx, $internaly)", E_USER_NOTICE);
 		$square = $db->GetRow("select * from gridsquare where CONTAINS( GeomFromText('POINT($internalx $internaly)'),point_xy ) order by percent_land desc limit 1");
 		if (count($square))
 		{		
 			$ok=true;
+			$this->internal_only = false;
 			
 			//store cols as members
 			foreach($square as $name=>$value)
@@ -530,6 +802,7 @@ class GridSquare
 				if (!is_numeric($name))
 					$this->$name=$value;
 			}
+			$this->setServices($this->mapservices);
 			
 			//ensure we get exploded reference members too
 			$this->_storeGridRef($this->grid_reference);
@@ -540,6 +813,23 @@ class GridSquare
 				//find nearest square for 100km
 				$this->findNearby($square['x'], $square['y'], 100);
 			}
+		} elseif ($allowinternal && $internalx >= $CONF['minx'] && $internaly >= $CONF['miny'] && $internalx <=  $CONF['maxx'] && $internaly <=  $CONF['maxy']) {
+			$this->gridsquare_id = null;
+			$this->x = $internalx;
+			$this->y = $internaly;
+			$this->percent_land = 0;
+			$this->imagecount = 0;
+
+			$xofs = $internalx-$CONF['minx'];
+			$yofs = $internaly-$CONF['miny'];
+			$this->grid_reference = '!'.$CONF['xnames'][floor($xofs/100)].$CONF['ynames'][floor($yofs/100)].sprintf('%02d%02d',$xofs%100,$yofs%100);
+
+			$this->has_geographs = 0;
+			$this->reference_index = null;
+			$this->placename_id = 0;
+			$this->services = array(); #array( -1 => '' );
+			$this->internal_only = true;
+			$ok=true;
 		} else {
 			$this->_error($MESSAGES['class_gridsquare']['outside_area']);
 		}
@@ -549,7 +839,7 @@ class GridSquare
 	/**
 	* set up and validate grid square selection
 	*/
-	function _setGridRef($gridref,$allowzeropercent = false)
+	function _setGridRef($gridref,$allowzeropercent = false,$allowinternal = false)
 	{
 		global $CONF, $MESSAGES;
 		$ok=true;
@@ -571,6 +861,7 @@ class GridSquare
 					$this->$name=$value;
 						
 			}
+			$this->setServices($this->mapservices);
 			
 			if ($this->percent_land==0 && !$allowzeropercent && $this->imagecount==0)
 			{
@@ -585,7 +876,23 @@ class GridSquare
 				//find nearest square for 100km
 				$this->findNearby($square['x'], $square['y'], 100);
 			}
-
+			$this->internal_only = false;
+		} elseif ($allowinternal && strlen($this->gridsquare) == 3 && $this->gridsquare[0] == '!'
+			  && ($xpos = strpos($CONF['xnames'], $this->gridsquare[1])) !== false
+			  && ($ypos = strpos($CONF['ynames'], $this->gridsquare[2])) !== false) {
+			$x = $xpos * 100 + $this->eastings  + $CONF['minx'];
+			$y = $ypos * 100 + $this->northings + $CONF['miny'];
+			$this->gridsquare_id = null;
+			$this->x = $x;
+			$this->y = $y;
+			$this->percent_land = 0;
+			$this->imagecount = 0;
+			$this->has_geographs = 0;
+			$this->reference_index = null;
+			$this->placename_id = 0;
+			$this->services = array(); #array( -1 => '' );
+			$this->internal_only = true;
+			$ok=true;
 		}
 		else
 		{
@@ -618,10 +925,11 @@ class GridSquare
 					//need to create the square - we give it a land_percent of -1
 					//to indicate it needs review, and also to prevent it being
 					//used in further findNearby calls
-					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy) 
-						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)') )";
+					$sql="insert into gridsquare(x,y,percent_land,grid_reference,reference_index,point_xy,permit_photographs,permit_geographs) 
+						values($x,$y,-1,'$gridref',{$prefix['reference_index']},GeomFromText('POINT($x $y)'),0,0)";
 					$db->Execute($sql);
 					$gridimage_id=$db->Insert_ID();
+					$this->setServices('');
 					
 					//ensure we initialise ourselves properly
 					$this->loadFromId($gridimage_id);
@@ -657,7 +965,7 @@ class GridSquare
 		
 		//fails quickly if not using memcached!
 		$mkey = "$x,$y,$radius,$occupied";
-		$nearest =& $memcache->name_get('gn',$mkey);
+		$nearest = $memcache->name_get('gn',$mkey);
 		if ($nearest) {
 			$this->nearest = $nearest;
 			return true;
@@ -731,7 +1039,7 @@ class GridSquare
 		
 		//fails quickly if not using memcached!
 		$mkey = md5("{$this->gridsquare_id}:$inc_all_user,$custom_where_sql,$order_and_limit");
-		$images =& $memcache->name_get('gi',$mkey);
+		$images = $memcache->name_get('gi',$mkey);
 		if ($images) {
 			return $images;
 		}
@@ -742,7 +1050,7 @@ class GridSquare
 			$inc_all_user = "=$inc_all_user";
 		}
 		$i=0;
-		$recordSet = &$db->Execute("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname ".
+		$recordSet = $db->Execute("select gi.*,gi.realname as credit_realname,if(gi.realname!='',gi.realname,user.realname) as realname ".
 			"from gridimage gi ".
 			"inner join user using(user_id) ".
 			"where gridsquare_id={$this->gridsquare_id} $custom_where_sql ".

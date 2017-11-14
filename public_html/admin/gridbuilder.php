@@ -37,8 +37,11 @@ if (!empty($_FILES['uploadpng'])) {
 	if (isset($_POST['upload']) && $_FILES['uploadpng']['error'] === 0 && filesize($_FILES['uploadpng']['tmp_name'])) {
 		$name = basename($_FILES['uploadpng']['name']);
 		$name = preg_replace('/[^-_A-Za-z0-9.]/', '', $name);
+		#$name = preg_replace('/\.[pP][nN][gG]$/', '.png', $name);
 		$name = preg_replace('/\.[pP][nN][gG]$/', '', $name);
-		$name .= '.png';
+		#if (!preg_match('/\.[pP][nN][gG]$/', $name)) {
+			$name .= '.png';
+		#}
 		$prefix = 'u'.$USER->user_id.strftime('_%Y-%m-%d_%H.%M.%S_');
 		$ok = false;
 		for ($i = 0; $i < 10; $i++) {
@@ -61,6 +64,7 @@ $shader_image='';
 if (isset($_POST['shader_image']) && preg_match('/^[-_A-Za-z0-9][-_A-Za-z0-9.]*\.[pP][nN][gG]$/', $_POST['shader_image'])) {
 	$shader_image=$_POST['shader_image'];
 }
+#$shader_image=isset($_POST['shader_image'])?$_POST['shader_image']:'admin/gb.png'; #FIXME default? # FIXME new upload interface # FIXME must match [-_A-Za-z0-9][-_A-Za-z0-9.]*\.[pP][nN][gG]
 $shader_x=isset($_POST['shader_x'])?$_POST['shader_x']:(54 + 206);                 #FIXME default?
 $shader_y=isset($_POST['shader_y'])?$_POST['shader_y']:7;                          #FIXME default?
 $reference_index=isset($_POST['reference_index'])?$_POST['reference_index']:1;     #FIXME default?
@@ -75,6 +79,22 @@ $minx=isset($_POST['minx'])?intval($_POST['minx']):0;
 $maxx=isset($_POST['maxx'])?intval($_POST['maxx']):100000;
 $miny=isset($_POST['miny'])?intval($_POST['miny']):0;
 $maxy=isset($_POST['maxy'])?intval($_POST['maxy']):100000;
+
+if (isset($_POST['level']) && isset($_POST['cid']) && trim($_POST['level']) !== '' && trim($_POST['cid']) !== '') {
+	$level = intval($_POST['level']);
+	$cid = intval($_POST['cid']);
+	$limpland = !empty($_POST['limpland']);
+	$createsquares = !empty($_POST['createsquares']);
+	$calcpercland = !empty($_POST['calcpercland']) && $level == -1 && $cid >= 1 && $cid <= 4;
+	$setpercland = false;
+} else {
+	$setpercland = true;
+	$cid = '';
+	$limpland = '';
+	$createsquares = '';
+	$calcpercland = '';
+	$level = '';
+}
 
 /*
 ireland image is 
@@ -101,6 +121,12 @@ $smarty->assign('redrawmaps', $redrawmaps);
 $smarty->assign('ignore100', $ignore100);
 $smarty->assign('reference_index', $reference_index);
 $smarty->assign('dryrun', $dryrun);
+$smarty->assign('setpercland', $setpercland);
+$smarty->assign('level', $level);
+$smarty->assign('cid', $cid);
+$smarty->assign('limpland', $limpland);
+$smarty->assign('createsquares', $createsquares);
+$smarty->assign('calcpercland', $calcpercland);
 $smarty->assign('minx', $minx);
 $smarty->assign('maxx', $maxx);
 $smarty->assign('miny', $miny);
@@ -137,7 +163,7 @@ if (isset($_POST['shader']))
 	if ($dryrun)
 		$smarty->display('gridbuilder_back.tpl');
 
-	$shader->process($imgfile, $shader_x, $shader_y, $reference_index, $clearexisting, !$skipupdategridprefix,$redrawmaps,$ignore100,$dryrun,$minx,$maxx,$miny,$maxy);
+	$shader->process($imgfile, $shader_x, $shader_y, $reference_index, $clearexisting, !$skipupdategridprefix,$redrawmaps,$ignore100,$dryrun,$minx,$maxx,$miny,$maxy,$setpercland,$level,$cid,$limpland,$createsquares,$calcpercland);
 	
 	//close output and exit (we don't want to output a page twice)
 	if (!$dryrun)

@@ -292,7 +292,7 @@ class Smarty_Compiler extends Smarty {
                         $text_blocks[$curr_tb] = str_replace('%%%SMARTYSP'.$curr_sp.'%%%', '<?php echo \''.str_replace("'", "\'", $sp_match[1][$curr_sp]).'\'; ?>'."\n", $text_blocks[$curr_tb]);
                     } else if ($this->php_handling == SMARTY_PHP_QUOTE) {
                         /* quote php tags */
-                        $text_blocks[$curr_tb] = str_replace('%%%SMARTYSP'.$curr_sp.'%%%', htmlspecialchars($sp_match[1][$curr_sp]), $text_blocks[$curr_tb]);
+                        $text_blocks[$curr_tb] = str_replace('%%%SMARTYSP'.$curr_sp.'%%%', htmlspecialchars_latin($sp_match[1][$curr_sp]), $text_blocks[$curr_tb]);
                     } else if ($this->php_handling == SMARTY_PHP_REMOVE) {
                         /* remove php tags */
                         $text_blocks[$curr_tb] = str_replace('%%%SMARTYSP'.$curr_sp.'%%%', '', $text_blocks[$curr_tb]);

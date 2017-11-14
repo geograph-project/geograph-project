@@ -53,9 +53,11 @@ if (isset($_GET['t'])) {
 	die("Missing Token");
 }
 
+#trigger_error("XX {$mosaic->pixels_per_km} {$mosaic->mosaic_factor}/{$mosaic->mosaic_factor_x} ", E_USER_NOTICE);
 if ($mosaic->pixels_per_km == 80) {
 	$smarty->cache_lifetime = 3600*24*7; //7 day cache
-} elseif ($mosaic->mosaic_factor == 4) {
+//} elseif ($mosaic->mosaic_factor == 4) {
+} elseif ($mosaic->mosaic_factor_x == 4) { // FIXME?
 
 } else {
 	die("Invalid Parameter");
@@ -129,7 +131,7 @@ ORDER BY count DESC,last_date DESC
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');  
 
-		$users=&$db->GetAll($sql);
+		$users=$db->GetAll($sql);
 		$smarty->assign_by_ref('users', $users);
 	}
 }

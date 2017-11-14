@@ -4,7 +4,7 @@ $MESSAGES['class_user'] = array (
 	'name_missing'            => 'Es wurde kein Name angegeben!',
 	'name_chars'              => 'Der Name enthält ungültige Zeichen!',
 	'email_invalid'           => 'Bitte gültige E-Mail-Adresse eingeben!',
-	'password1'               => 'Es wurde kein Passwort angegeben!',
+	'password1'               => 'Das Passwort ist zu einfach oder zu kurz!',
 	'password2'               => 'Passwörter stimmen nicht überein!',
 	'already_registered'      => 'E-Mail-Adresse schon registriert!',
 	'error_dbupdate'          => 'Datenbank-Update fehlgeschlagen: ',
@@ -23,7 +23,7 @@ Wir wünschen viel Freude an der Teilnahme am Projekt!
 
 Mit freundlichen Grüßen
 
-Das Geograph-Team
+Das Geograph-Deutschland-Team
 EOT
 ,
 	'mailsubject_register'    => 'Registrierungsbestätigung',
@@ -40,7 +40,7 @@ Wenn das Passwort nicht geändert werden soll, kann diese Mail einfach ignoriert 
 
 Mit freundlichen Grüßen
 
-Das Geograph-Team
+Das Geograph-Deutschland-Team
 EOT
 ,
 	'mailsubject_reminder'    => 'Neues Passwort für %s',
@@ -66,13 +66,13 @@ Wenn die Adresse nicht geändert werden soll, kann diese Mail einfach ignoriert w
 
 Mit freundlichen Grüßen
 
-Das Geograph-Team
+Das Geograph-Deutschland-Team
 EOT
 ,
 	'mailsubject_mail_change' => 'Bestätigung der neuen E-Mail-Adresse für %s',
 	'new_email_invalid'       => 'Ungültige E-Mail-Adresse!',
 	'must_confirm'            => 'Vor dem ersten Einloggen muss der Link aus der Bestätigungsmail an %s aufgerufen werden!',
-	'invalid_password'        => 'Falsches Passwort! Bitte Groß-/Kleinschreibung beachten!',
+	'invalid_password'        => 'Falsches Passwort oder Zugangssperre',
 	'user_unknown'            => 'E-Mail-Adresse bzw. Benutzername ist nicht registriert',
 	'user_invalid'            => 'E-Mail-Adresse bzw. Benutzername ungültig',
 );

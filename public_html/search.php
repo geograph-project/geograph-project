@@ -44,7 +44,7 @@ $smarty->assign('noSphinx', empty($CONF['sphinx_host']));
 $i=(!empty($_GET['i']))?intval($_GET['i']):'';
 
 $imagestatuses = array('geograph' => 'geograph only','accepted' => 'supplemental only');
-$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance');
+$sortorders = array(''=>'','dist_sqd'=>'Distance','gridimage_id'=>'Date Submitted','imagetaken'=>'Date Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','title'=>'Image Title','x'=>'West-&gt;East','y'=>'South-&gt;North','relevance'=>'Word Relevance','rating_info'=>'Rating (geographical information)','rating_like'=>'Rating (popular image)','rating_qual'=>'Rating (image quality)','rating_site'=>'Rating (location)', 'selfrate_like'=>'Self-rating (like)');
 $breakdowns = array(''=>'','imagetaken'=>'Day Taken','imagetaken_month'=>'Month Taken','imagetaken_year'=>'Year Taken','imagetaken_decade'=>'Decade Taken','imageclass'=>'Image Category','realname'=>'Contributor Name','grid_reference'=>'Grid Reference','submitted'=>'Day Submitted','submitted_month'=>'Month Submitted','submitted_year'=>'Year Submitted',);
 
 $displayclasses =  array(
@@ -62,6 +62,19 @@ $displayclasses =  array(
 			);
 $smarty->assign_by_ref('displayclasses',$displayclasses);
 
+if (strpos($_SERVER["REQUEST_URI"],'/results/') !== FALSE) {
+	$results_pages = $CONF['results_pages'];
+} else {
+	$results_pages = 0;
+}
+$smarty->assign('resultspages', $results_pages);
+
+
+if (isset($_GET['legacy']) && isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 ) {
+        header("HTTP/1.1 503 Service Unavailable");
+	dieUnderHighLoad(0.1);
+        die("server busy, please try later");
+}
 
 
 
@@ -425,6 +438,7 @@ if (isset($_GET['fav']) && $i) {
 		
 
 		$data['topic_id'] = $query->limit9;
+		$data['region'] = $query->limit11;
 
 		$query->orderby = preg_replace('/^submitted/','gridimage_id',$query->orderby);
 
@@ -514,7 +528,7 @@ if (isset($_GET['fav']) && $i) {
 
 	fallBackForm($_GET);
 		
-} else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare'])) {
+} else if (!empty($_GET['do']) || !empty($_GET['imageclass']) || !empty($_GET['u']) || !empty($_GET['gridsquare']) || !empty($_GET['region'])) {
 	dieUnderHighLoad(2,'search_unavailable.tpl');
 	// -------------------------------
 	//  special handler to build a advanced query from the link in stats or profile.
@@ -614,6 +628,26 @@ if (isset($_GET['fav']) && $i) {
 		$q=trim($_GET['q']);
 	}
 	
+	if (!isset($_GET['location']) && !empty($CONF['metacarta_auth']) && strpos($q,'near ') === FALSE && substr_count($q,' ') >= 1 && !preg_match("/\b([A-Z]{1,2})([0-9]{1,2}[A-Z]?) *([0-9]?)([A-Z]{0,2})\b/i",$q)) { ///FIXME?
+		$urlHandle = connectToURL('ondemand.metacarta.com',80,"/webservices/QueryParser/JSON/basic?version=1.0.0&bbox=-14.1707,48.9235,6.9506,61.7519&query=".rawurlencode($q),$CONF['metacarta_auth'],6);
+		if ($urlHandle) {
+			$r = '';
+			while ($urlHandle && !feof($urlHandle) && ($s = fgets($urlHandle)) !== false) {
+				$r .= $s;
+			}
+			fclose($urlHandle);
+			#$r = '{"Styles": {"loc": {"DefaultSymbol": {"URL": "http://developers.metacarta.com/img/symbols/LocationMarker.png", "Width": 30, "Height": 30}}}, "Warnings": [], "MinConfidence": 0.0, "Locations": [{"Confidence": 0.451807, "Name": "Skellingthorpe, United Kingdom", "Style": "loc", "Centroid": {"Latitude": 53.2333, "X": -0.616666, "Y": 53.2333, "Longitude": -0.616666}, "RemainingQuery": "mitchel close", "Path": ["Skellingthorpe", "United Kingdom"], "ViewBox": {"MaxX": -0.589905177287, "MaxY": 53.2600950873, "MaxLongitude": -0.589905177287, "MinY": 53.2065720927, "MinLatitude": 53.2065720927, "MinX": -0.643428171913, "MaxLatitude": 53.2600950873, "MinLongitude": -0.643428171913}}], "SRS": "epsg:4326", "SystemVersion": "MetaCarta GTS v3.7.0, JSON Query Parser API v1.0.0", "BBox": {"MaxX": 180.0, "MaxY": 90.0, "MaxLongitude": 180.0, "MinY": -90.0, "MinLongitude": -180.0, "MinX": -180.0, "MaxLatitude": 90.0, "MinLatitude": -90.0}, "Query": "mitchel close Skellingthorpe", "ResultsCreationTime": "Fri Mar 02 13:40:19 2007 UTC"}';
+
+			if (preg_match('/"RemainingQuery": "(.*?)"/',$r,$m)) {
+				$q = $m[1];
+			}
+			if (preg_match('/"Path": \["(.*?)"/',$r,$m)) {
+				$q .= ' near '.$m[1];
+			}
+		}
+		
+	}
+
 	//remember the query in the session
 	$_SESSION['searchq']=$q;
 
@@ -788,6 +822,7 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('distance', $query->limit8);
 
 		$smarty->assign('topic_id', $query->limit9);
+		$smarty->assign('region', $query->limit11);
 
 		$query->orderby = preg_replace('/^submitted/','gridimage_id',$query->orderby);
 
@@ -865,6 +900,14 @@ if (isset($_GET['fav']) && $i) {
 		$smarty->assign('legacy', 1);
 	}
 
+	if ($USER->hasPerm('basic')) {
+		$cacheid .= "L";
+	}
+
+	if ($results_pages) {
+		$cacheid .= "r".$results_pages;
+	}
+
 	if (!empty($_GET['t'])) {
 		$token=new Token;
 		if ($token->parse($_GET['t']) && $token->getValue("i") == $i)
@@ -887,6 +930,22 @@ if (isset($_GET['fav']) && $i) {
 		}
 
 		$smarty->assign('querytime', $engine->Execute($pg));
+
+		if ($display == 'full' && count($engine->results)) {
+			$pgsize = $engine->criteria->resultsperpage;
+			if (!$pgsize) {
+				$pgsize = 15;
+			}
+			$_SESSION['cursearch_id'] = $i;
+			$_SESSION['cursearch_pgsize'] = $pgsize;
+			$_SESSION['cursearch_minidx'] = ($pg - 1) * $pgsize;
+			$_SESSION['cursearch_maxidx'] = $_SESSION['cursearch_minidx'] + count($engine->results);
+			$_SESSION['cursearch_imageids'] = array();
+			foreach ($engine->results as &$resimage) {
+				$_SESSION['cursearch_imageids'][] = $resimage->gridimage_id;
+			}
+			unset ($resimage);
+		}
 
 		$smarty->assign('i', $i);
 		$smarty->assign('currentPage', $pg);
@@ -986,21 +1045,28 @@ if (isset($_GET['fav']) && $i) {
 				list($lat,$long) = $conv->internal_to_wgs84($engine->criteria->x,$engine->criteria->y);
 				$markers[] = array('Center Point',$lat,$long);
 			}
-			if (preg_match_all('/\b([a-zA-Z]{1,3} ?\d{1,5}[ \.]?\d{1,5})\b/',$engine->criteria->searchdesc,$m)) {
-				$m = array_unique($m[1]);
-				foreach ($m as $gr) {
-					$sq = new GridSquare();
-					$sq->setByFullGridRef($gr,false,true);
-					list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
-					$markers[] = array($gr,$lat,$long);
-				}
-			}
+			#if (preg_match_all('/\b([a-zA-Z]{1,3} ?\d{1,5}[ \.]?\d{1,5})\b/',$engine->criteria->searchdesc,$m)) {
+			#	# FIXME this matches also some user names...
+			#	$m = array_unique($m[1]);
+			#	foreach ($m as $gr) {
+			#		$sq = new GridSquare();
+			#		$sq->setByFullGridRef($gr,false,true);
+			#		list($lat,$long) = $conv->gridsquare_to_wgs84($sq);
+			#		$markers[] = array($gr,$lat,$long);
+			#	}
+			#}
 			$smarty->assign_by_ref('markers',$markers);
+			$smarty->assign('lat0',   $CONF['gmcentre'][0]);
+			$smarty->assign('lon0',   $CONF['gmcentre'][1]);
+			$smarty->assign('latmin', $CONF['gmlatrange'][0][0]);
+			$smarty->assign('latmax', $CONF['gmlatrange'][0][1]);
+			$smarty->assign('lonmin', $CONF['gmlonrange'][0][0]);
+			$smarty->assign('lonmax', $CONF['gmlonrange'][0][1]);
 		}
 	}
 
 	if ($engine->criteria->user_id == $USER->user_id) {
-		if (!$db) {
+		if (!isset($db)) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (!$db) die('Database connection failed');
 		}
@@ -1087,7 +1153,7 @@ if (isset($_GET['fav']) && $i) {
 
 		$a = array();
 		foreach ($recentsearchs as $i => $row) {
-			if ($a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"]) {
+			if (isset($a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"])) {
 				unset($recentsearchs[$i]);
 			} else {
 				$a["{$row['searchdesc']},{$row['searchq']},{$row['displayclass']},{$row['resultsperpage']}"] = 1;
@@ -1224,7 +1290,7 @@ if (isset($_GET['fav']) && $i) {
 			$smarty->caching = 0; // NO caching
 		}
 
-		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
+		$smarty->assign('pagesizes', array(5,10,15,20,30,50,75));
 
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
 			function addkm($a) {
@@ -1266,7 +1332,7 @@ if (isset($_GET['fav']) && $i) {
 			$smarty->assign_by_ref('distances',$d);
 
 			$countylist = array();
-			$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
+			$recordSet = $db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0");
 			while (!$recordSet->EOF)
 			{
 				$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
@@ -1274,6 +1340,17 @@ if (isset($_GET['fav']) && $i) {
 			}
 			$recordSet->Close();
 			$smarty->assign_by_ref('countylist', $countylist);
+
+			$regionlist = array();
+			if (count($CONF['hier_searchlevels'])) {
+				$recordSet = $db->Execute("SELECT name,level,community_id FROM loc_hier WHERE level in (".implode(",",$CONF['hier_searchlevels']).") ORDER BY level,name");
+				while (!$recordSet->EOF) {
+					$regionlist[$recordSet->fields[1]."_".$recordSet->fields[2]] = $recordSet->fields[0];
+					$recordSet->MoveNext();
+				}
+				$recordSet->Close();
+			}
+			$smarty->assign_by_ref('regionlist', $regionlist);
 
 			require_once('geograph/gridsquare.class.php');
 			$square=new GridSquare;
@@ -1296,7 +1373,7 @@ function smarty_function_votestars($params) {
 	$id = $params['id'];
 	$names = array('','Hmm','Below average','So So','Reasonable','Excellent');
 	foreach (range(1,5) as $i) {
-		print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"http://{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
+		print "<a href=\"javascript:void(record_vote('$type',$id,$i));\" title=\"{$names[$i]}\"><img src=\"//{$CONF['STATIC_HOST']}/img/star-light.png\" width=\"14\" height=\"14\" alt=\"$i\" onmouseover=\"star_hover($id,$i,5)\" onmouseout=\"star_out($id,5)\" name=\"star$i$id\"/></a>";
 	}
 	if ($last != $type) {
 		print " (<a href=\"/help/voting\">about</a>)";

@@ -106,7 +106,14 @@ if (isset($_GET['q']) || !empty($_GET['location'])) {
 
 } 
 
-$opt_expand = (!empty($_GET['expand']) && $format != 'KML')?1:0;
+if ($format == 'KML' || !isset($_GET['expand']) || !is_numeric($_GET['expand'])) {
+	$opt_expand = 0;
+} else {
+	$opt_expand = intval($_GET['expand']);
+	if ($opt_expand < 0 || $opt_expand > 2) {
+		$opt_expand = 0;
+	}
+}
 
 if (isset($cacheid)) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/$cacheid-{$pg}-{$format}{$opt_expand}.$extension";
@@ -114,6 +121,9 @@ if (isset($cacheid)) {
 } elseif (isset($_GET['i']) && is_numeric($_GET['i'])) {
 	$pg = (!empty($_GET['page']))?intval(str_replace('/','',$_GET['page'])):1;
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/{$_GET['i']}-{$pg}-{$format}{$opt_expand}.$extension";
+	$rss_timeout = 3600;
+} elseif (isset($_GET['potd'])) {
+	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/potd-{$format}{$opt_expand}.$extension";
 	$rss_timeout = 3600;
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
 	$rssfile=$_SERVER['DOCUMENT_ROOT']."/rss/u{$_GET['u']}-{$format}{$opt_expand}.$extension";
@@ -125,7 +135,7 @@ if (isset($cacheid)) {
 
 $rss = new UniversalFeedCreator(); 
 $rss->useCached($format,$rssfile,$rss_timeout); 
-$rss->title = 'Geograph British Isles'; 
+$rss->title = 'Geograph Germany'; 
 $rss->link = "http://{$_SERVER['HTTP_HOST']}/";
 
 
@@ -155,6 +165,7 @@ if (isset($q)) {
 	}
 }
 
+$date_column = 'submitted';
 
 /**
  * A full-text query
@@ -226,6 +237,19 @@ if (isset($sphinx)) {
 	$images->images = &$images->results;
 
 /**
+ * Feed for pictures of the day
+ */
+} elseif (isset($_GET['potd'])) {
+	$rss->description = 'Picture of the day';
+	$rss->syndicationURL = "http://{$_SERVER['HTTP_HOST']}/feed/potd.".strtolower($format);
+
+
+	//lets find some recent photos
+	$images=new ImageList();
+	$images->getPOTD('showday desc', 15, false);
+	$date_column = 'showday';
+	
+/**
  * A user specific feed
  */
 } elseif (isset($_GET['u']) && is_numeric($_GET['u'])) {
@@ -263,7 +287,7 @@ for ($i=0; $i<$cnt; $i++)
 	$item->title = $images->images[$i]->grid_reference." : ".$images->images[$i]->title; 
 	$item->guid = $item->link = "http://{$_SERVER['HTTP_HOST']}/photo/{$images->images[$i]->gridimage_id}";
 	if (isset($images->images[$i]->dist_string) || isset($images->images[$i]->imagetakenString)) {
-		$item->description = $images->images[$i]->dist_string.($images->images[$i]->imagetakenString?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
+		$item->description = $images->images[$i]->dist_string.(!empty($images->images[$i]->imagetakenString)?' Taken: '.$images->images[$i]->imagetakenString:'')."<br/>".$images->images[$i]->comment; 
 		$item->descriptionHtmlSyndicated = true;
 	} else {
 		$item->description = $images->images[$i]->comment; 
@@ -272,7 +296,7 @@ for ($i=0; $i<$cnt; $i++)
 		$item->imageTaken = $images->images[$i]->imagetaken;
 	}
 
-	$item->date = strtotime($images->images[$i]->submitted);
+	$item->date = strtotime($images->images[$i]->$date_column);
 	$item->source = "http://".$_SERVER['HTTP_HOST'].$images->images[$i]->profile_link;
 	$item->author = $images->images[$i]->realname;
 
@@ -299,7 +323,12 @@ for ($i=0; $i<$cnt; $i++)
 		ob_start();
 		imagejpeg($images->images[$i]->getSquareThumb(16));
 		$item->thumbdata = ob_get_clean();
-	} elseif ($opt_expand) {
+	} elseif ($opt_expand == 2) {
+		$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
+		$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getMinThumbnail(200,200).'</a><br/>'. $item->description;
+		$item->description .= "<br/><br/>&copy; <i>".$images->images[$i]->realname."</i> and licensed under a <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence (CC BY-SA)</a>";
+		$item->descriptionHtmlSyndicated = true;
+	} elseif ($opt_expand == 1) {
 		$title=$images->images[$i]->grid_reference.' : '.htmlentities2($images->images[$i]->title).' by '.htmlentities2($images->images[$i]->realname);
 		$item->description = '<a href="'.$item->link.'" title="'.$title.'">'.$images->images[$i]->getThumbnail(120,120).'</a><br/>'. $item->description;
 		$item->descriptionHtmlSyndicated = true;
@@ -308,7 +337,7 @@ for ($i=0; $i<$cnt; $i++)
 	//<license rdf:resource="http://creativecommons.org/licenses/by-sa/2.0/" />
 
 	if ($format == 'KML') {
-		$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars($images->images[$i]->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
+		$item->licence = "&copy; Copyright <i class=\"attribution\">".htmlspecialchars_latin($images->images[$i]->realname)."</i> and licensed for reuse under this <a rel=\"license\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">Creative Commons Licence</a>";
 	} else {
 		$item->licence = "http://creativecommons.org/licenses/by-sa/2.0/";
 	}

@@ -29,9 +29,6 @@
 {else}
 <link rel="alternate" type="application/rss+xml" title="Geograph RSS" href="/feed/recent.rss"/>
 {/if}
-{if $extra_css}
-    <link rel="stylesheet" href="{$extra_css}" type="text/css" />
-{/if}
 {if $rastermap->service == 'Google'}
 <!-- RasterMap.getScriptTag() -->
 {literal}<style type="text/css">
@@ -39,16 +36,6 @@ v\:* {
 	behavior:url(#default#VML);
 }
 </style>{/literal}
-{/if}
-{if $canonicalhost}
-<!-- uncomment if you want to specify a canonical host
-<link rel="canonical" href="http://{$canonicalhost}{$canonicalreq|escape:'html'}" />
--->
-{/if}
-{if $languages}
-  {foreach from=$languages key=lang item=langhost}
-<link rel="alternate" hreflang="{$lang}" href="http://{$langhost}{$canonicalreq|escape:'html'}" />
-  {/foreach}
 {/if}
 <link rel="search" type="application/opensearchdescription+xml" 
 title="Geograph British Isles search" href="/stuff/osd.xml" />

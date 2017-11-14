@@ -31,8 +31,8 @@ $template='usermsg.tpl';
 
 //gather what we need
 $recipient=new GeographUser($_REQUEST['to']);
-$from_name=isset($_POST['from_name'])?stripslashes($_POST['from_name']):$USER->realname;
-$from_email=isset($_POST['from_email'])?stripslashes($_POST['from_email']):$USER->email;
+$from_name=isset($_POST['from_name'])?stripslashes($_POST['from_name']):(isset($USER->realname)?$USER->realname:'');
+$from_email=isset($_POST['from_email'])?stripslashes($_POST['from_email']):(isset($USER->email)?$USER->email:'');
 $sendcopy=isset($_POST['sendcopy'])?stripslashes($_POST['sendcopy']):false;
 
 $smarty->assign_by_ref('recipient', $recipient);
@@ -46,7 +46,14 @@ if (empty($db)) die('Database connection failed');
 
 $ip=getRemoteIP();
 
-$user_id = "inet_aton('{$ip}')";
+#$user_id = "inet_aton('{$ip}')";
+#$user_id = "HEX(INET6_ATON('{$ip}'))";
+$bip = inet_pton($ip);
+if ($bip === false) {
+	$user_id = '0';
+} else {
+	$user_id = sprintf('%u', crc32($bip));
+}
 
 $throttlenumber = 5;
 if ($USER->hasPerm("ticketmod") || $USER->hasPerm("moderator")) {

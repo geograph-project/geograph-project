@@ -32,7 +32,8 @@
  var lon1 = 0;
  var lat2 = 0;
  var lon2 = 0;
- 
+ var fracGold = 0.5*Math.sqrt(5.0) - 0.5;
+
  var pickupbox = null;
  var squarebox = null;
  var sboxeast = null;
@@ -41,7 +42,8 @@
  
  function createMarker(point,picon) {
  	if (picon) {
- 		marker2 = new GMarker(point,{draggable: true, icon:picon});
+ 		marker2 = new GMarker(point,{draggable: !iscmap, icon:picon});
+ 		//marker2 = new GMarker(point,{draggable: true, icon:picon});
  		var marker = marker2;
 	} else {
 		marker1 = new GMarker(point, {draggable: true});
@@ -57,7 +59,6 @@
 			//create a wgs84 coordinate
 			wgs84=new GT_WGS84();
 			wgs84.setDegrees(pp.lat(), pp.lng());
-			
 			if (ri == -1||issubmit) {
 			if (wgs84.isIreland()) {
 				//convert to Irish
@@ -65,12 +66,27 @@
 			} else if (wgs84.isGreatBritain()) {
 				//convert to OSGB
 				var grid=wgs84.getOSGB();
+			} else if (wgs84.isGermany32()) {
+				//convert to German
+				var grid=wgs84.getGerman32();
+			} else if (wgs84.isGermany33()) {
+				//convert to German
+				var grid=wgs84.getGerman33();
+			} else if (wgs84.isGermany31()) {
+				//convert to German
+				var grid=wgs84.getGerman31();
 			}
 			}
 			else if (ri == 1)
 				var grid=wgs84.getOSGB();
 			else if (ri == 2)
-				var grid=wgs84.getIrish(true);
+				var grid=wgs84.getIrish();
+			else if (ri == 3)
+				var grid=wgs84.getGerman32(true, false);
+			else if (ri == 4)
+				var grid=wgs84.getGerman33(true, false);
+			else if (ri == 5)
+				var grid=wgs84.getGerman31(true, false);
 
 			var curzoom = map.getZoom();
 			if (curzoom >= 19) {
@@ -150,7 +166,9 @@
 				pickupbox = null;
 			}
 			
-			updateViewDirection();
+			if (!iscmap) {
+				updateViewDirection();
+			}
 			
 			if (typeof parentUpdateVariables != 'undefined') {
 				parentUpdateVariables();
@@ -163,6 +181,12 @@
 			}
 			GEvent.trigger(map,'markerdragend');
 		});
+		/*GEvent.addListener(map, "zoomend", function() {
+			if (squarebox !== null && map.getZoom() < 17) {
+				map.removeOverlay(squarebox);
+				squarebox = null;
+			}
+		});*/
 	} else {
 		GEvent.addListener(marker, "dragend", function() {
 			marker.setPoint(point);
@@ -171,13 +195,27 @@
 	return marker;
 }
 
+function floathash(s) { /* string must not be empty! */
+	var res = 1.0;
+	var len = s.length;
+	for (var i = 0; i < len; ++i) {
+		res *= s.charCodeAt(i)*fracGold;
+		res -= Math.floor(res);
+	}
+	return res;
+}
+
+function inthash(s, n) {
+	return Math.floor(floathash(s)*n);
+}
+
 function createPMarker(ppoint) {
 	var picon = new GIcon();
 	picon.image = "http://"+static_host+"/img/icons/camicon.png";
 	picon.shadow = "http://"+static_host+"/img/icons/cam-s.png";
-	picon.iconSize = new GSize(12, 20);
-	picon.shadowSize = new GSize(22, 20);
-	picon.iconAnchor = new GPoint(6, 20);
+	picon.iconSize = new GSize(20, 34);
+	picon.shadowSize = new GSize(37, 34);
+	picon.iconAnchor = new GPoint(10, 34);
 	return createMarker(ppoint,picon)
 }
 
@@ -246,6 +284,21 @@ String.prototype.trim = function () {
 	return this.replace(/^\s+|\s+$/g,"");
 }
 
+/*function getMapCenter() {
+	latlon = map.getCenter();
+}*/
+function mapMarkerToCenter(that) {
+	latlon = map.getCenter();
+	if (that.name == 'photographer_gridref') {
+		currentelement = marker2;
+	} else {
+		currentelement = marker1;
+	}
+	currentelement.setPoint(latlon);
+	GEvent.trigger(currentelement,'drag');
+}
+
+
 function updateMapMarker(that,showmessage,dontcalcdirection) {
 	if (!checkGridReference(that,showmessage)) {
 		return false;
@@ -262,27 +315,47 @@ function updateMapMarker(that,showmessage,dontcalcdirection) {
 	}
 	
 	gridref = that.value.trim().toUpperCase();
-	
 	var grid;
 	var ok = false;
-
+	
 	if (ri == -1 || issubmit) {
-
+	
 	grid=new GT_OSGB();
 	if (grid.parseGridRef(gridref)) {
 		ok = true;
 	} else {
 		grid=new GT_Irish();
-		ok = grid.parseGridRef(gridref)
+		if (grid.parseGridRef(gridref)) {
+			ok = true;
+		} else {
+			grid=new GT_German32();
+			if (grid.parseGridRef(gridref)) {
+				ok = true;
+			} else {
+				grid=new GT_German33();
+				if (grid.parseGridRef(gridref)) {
+					ok = true;
+				} else {
+					grid=new GT_German31();
+					ok = grid.parseGridRef(gridref)
+				}
+			}
+		}
 	}
 	}
 	else if (ri == 1)
 		grid=new GT_OSGB();
 	else if (ri == 2)
 		grid=new GT_Irish();
+	else if (ri == 3)
+		grid=new GT_German32();
+	else if (ri == 4)
+		grid=new GT_German33();
+	else if (ri == 5)
+		grid=new GT_German31();
 	else
 		return;
-	ok = grid.parseGridRef(gridref);
+	ok = grid.parseGridRef(gridref); // FIXME needed?
 	
 	if (ok) {
 		//convert to a wgs84 coordinate
@@ -365,4 +438,9 @@ function updateViewDirection() {
 
 function updateCamIcon() {
 
+}
+
+function moveToLatLon(lat, lon) {
+	var point = new GLatLng(lat,lon);
+	map.setCenter(point);
 }

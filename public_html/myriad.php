@@ -61,20 +61,6 @@ if (!$smarty->is_cached($template, $cacheid))
 	$mosaic->type_or_user = -1;
 	$smarty->assign('token',$mosaic->getToken());
 	
-	$left=$prefix['origin_x'];
-	$right=$prefix['origin_x']+$prefix['width']-1;
-	$top=$prefix['origin_y']+$prefix['height']-1;
-	$bottom=$prefix['origin_y'];
-
-	$rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$left $bottom))'";
-
-	$sql_where .= "CONTAINS(GeomFromText($rectangle),point_xy)";
-
-	$sql_where .= ' and gs.reference_index = '.$prefix['reference_index'].' ';
-			
-	$gridsquare = $db->getRow("select * from gridsquare gs where $sql_where and imagecount > 3 and imagecount < 20 order by rand() limit 1");
-	
-	$smarty->assign_by_ref('gridsquare',$gridsquare);
 	
 	$smarty->assign('myriad',$myriad);
 }

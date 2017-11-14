@@ -125,9 +125,9 @@ In {$ref} <a href="/gridref/{$centergr[$ri]}" title="view square {$centergr[$ri]
     <form method="get" action="/statistics/breakdown.php">
     <p>View breakdown of images by 
     <select name="by">
-    	{html_options options=$bys}
+    	{html_options options=$bys selected=$by}
     </select> in <select name="ri">
-    	{html_options options=$references}
+    	{html_options options=$references selected=$ri}
     </select> 
     
     {dynamic}

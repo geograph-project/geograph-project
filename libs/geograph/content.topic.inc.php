@@ -41,6 +41,7 @@ function add_image_to_list($id,$text ='') {
 	
 function add_topic_to_content($topic_id,& $db) {
 	global $gridimage_ids;
+	require('conf/'.$_SERVER['HTTP_HOST'].'.conf.php');//FIXME
 	
 	$topic=$db->GetRow("select topic_title,forum_id,topic_time,topic_poster from geobb_topics where topic_id='$topic_id'");
 	

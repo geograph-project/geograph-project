@@ -70,6 +70,7 @@ $rectangle = "'POLYGON(($left $bottom,$right $bottom,$right $top,$left $top,$lef
 
 $sql_where = "CONTAINS(GeomFromText($rectangle),point_xy)";
 
+$ri = $prefix['reference_index'];
 
 $photos = $db->GetAll("select 
 gridimage_id,grid_reference,title,title2,imagecount,view_direction,natgrlen,realname,
@@ -145,6 +146,13 @@ foreach($most as $id=>$entry)
 	list($south,$west) = $conv->internal_to_wgs84($x,$y,$ri);
 	list($north,$east) = $conv->internal_to_wgs84($x+10,$y+10,$ri);
 
+	//convert normal to subhectad/mosaic reference, eg SH4035  -> SH43NW 
+	//SH4(0)35  -> SH435(W) 
+	$entry['hunk_square'] = preg_replace('/^(.+)5(\d)(\d)$/','$1$2$3E',$entry['hunk_square']);
+	$entry['hunk_square'] = preg_replace('/^(.+)0(\d)(\d)$/','$1$2$3W',$entry['hunk_square']);
+	//SH43(5)E  -> SH43(N)E 
+	$entry['hunk_square'] = preg_replace('/^(.+)5([EW])$/','$1N$2',$entry['hunk_square']);
+	$entry['hunk_square'] = preg_replace('/^(.+)0([EW])$/','$1S$2',$entry['hunk_square']);
 
 	$networklink = new kmlNetworkLink(null,$entry['hunk_square']);
 	$file = getKmlFilepath($kml->extension,5,$square,$entry['hunk_square']);

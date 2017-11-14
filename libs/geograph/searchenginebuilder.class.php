@@ -101,15 +101,15 @@ class SearchEngineBuilder extends SearchEngine
 			$grid_ok=$square->setByFullGridRef($gr[1].$gr[2].$gr[3],false,true);
 			if ($grid_ok || $square->x && $square->y) {
 				if ($square->imagecount && $autoredirect == 'simple' && strlen($q)-strlen($gr[0]) < 2) {
-					header("Location:http://{$_SERVER['HTTP_HOST']}/gridref/{$q}");
-					print "<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/{$q}\">View Pictures</a>";
+					header("Location:http://{$_SERVER['HTTP_HOST']}/gridref/".urlencode($q)); # FIXME better use $qlocation ?
+					print "<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/".urlencode($q)."\">View Pictures</a>"; # FIXME better use $qlocation ?
 					exit;		
 				}
 				$searchclass = 'GridRef';
 				$searchdesc = ", $nearstring grid reference ".$square->grid_reference;
 				$searchx = $square->x;
 				$searchy = $square->y;	
-				$criteria->reference_index = $square->reference_index;
+				#$criteria->reference_index = $square->reference_index; # FIXME $criteria does not exist
 				$location = $gr[0];
 			} else {
 				$this->errormsg = $square->errormsg;
@@ -127,7 +127,7 @@ class SearchEngineBuilder extends SearchEngine
 				$searchdesc = ", $nearstring $latdm, $longdm";
 				$searchx = $x;
 				$searchy = $y;			
-				$criteria->reference_index = $square->reference_index;	
+				#$criteria->reference_index = $square->reference_index; # FIXME $criteria does not exist
 				$location = $ll[0];
 			} else {
 				$this->errormsg = "unable to parse lat/long";
@@ -141,9 +141,9 @@ class SearchEngineBuilder extends SearchEngine
 		$q = trim(preg_replace('/\s+/',' ',$q));
 		
 			
-		list($q,$placename) = preg_split('/\s*near\s+/',$q);
+		@list($q,$placename) = preg_split('/\s*near\s+/',$q);
 
-		$criteria = new SearchCriteria_Placename();
+		$criteria = new SearchCriteria_Placename(); # FIXME overrides $criteria set above?
 
 		if ($placename != '(anywhere)' && strpos($q,':') === FALSE) {
 			if (!empty($placename)) {
@@ -218,7 +218,7 @@ class SearchEngineBuilder extends SearchEngine
 			$q = $location;
 		}
 		
-		if ($criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
+		if (isset($criteria->reference_index) && $criteria->reference_index == 2 && $CONF['default_search_distance_2'] && $distance == $CONF['default_search_distance']) {
 			$searchdesc = str_replace(" ".$CONF['default_search_distance']."km "," ".$CONF['default_search_distance_2']."km ",$searchdesc);
 			$distance = $CONF['default_search_distance_2'];
 		}
@@ -254,7 +254,8 @@ class SearchEngineBuilder extends SearchEngine
 				if (isset($_GET['page']))
 					$extra = "&page=".intval($_GET['page']);
 				if (!empty($_GET['BBOX']))
-					$extra .= "&BBOX=".$_GET['BBOX'];
+					$extra .= "&BBOX=".urlencode($_GET['BBOX']);
+				# FIXME $_GET['LOOKAT'] ?
 				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra");
 				$extra = str_replace('&','&amp;',$extra);
 				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";
@@ -452,6 +453,39 @@ class SearchEngineBuilder extends SearchEngine
 			$dataarray['searchtext'] = "=".$dataarray['searchtext'];
 		}
 
+		foreach(array('breakby', 'orderby', 'submitted_start', 'submitted_end', 'taken_start', 'taken_end') as $key) {
+			if (!isset($dataarray[$key]))
+				$dataarray[$key] = '';
+		}
+		if (!preg_match('/^[-+A-Za-z0-9()_ ,.]*$/', $dataarray['orderby'])) { #FIXME verify regex
+			trigger_error("orderby '{$dataarray['orderby']}' blocked", E_USER_WARNING);
+			$dataarray['orderby'] = '';
+		}
+		if (!preg_match('/^[-+A-Za-z0-9()_ ,.]*$/', $dataarray['breakby'])) { #FIXME verify regex
+			trigger_error("breakby '{$dataarray['breakby']}' blocked", E_USER_WARNING);
+			$dataarray['breakby'] = '';
+		}
+		foreach(array('submitted_start', 'submitted_end', 'taken_start', 'taken_end') as $key) {
+			$this->builddate($dataarray, $key);
+			if (
+				   !preg_match('/^\s*([0-9]{4}-[0-9]{2}-[0-9]{2})?\s*$/', $dataarray[$key])
+				&& !preg_match('/^\s*0000-00-[0-9]*[1-9][0-9]*\s*$/', $dataarray[$key])
+			) {
+				trigger_error("$key '{$dataarray[$key]}' blocked", E_USER_WARNING);
+				$dataarray[$key] = '';
+			}
+		}
+		foreach(array('user_id','reference_index','distance','topic_id','route_id') as $key) {
+			if (isset($dataarray[$key]) && !preg_match('/^\s*[-+0-9]*\s*$/', $dataarray[$key])) {
+				trigger_error("$key '{$dataarray[$key]}' blocked", E_USER_WARNING);
+				$dataarray[$key] = '';
+			}
+		}
+		if (isset($dataarray['region']) && !preg_match('/^\s*(\d+_\d+)?\s*$/',$dataarray['region'])) {
+			trigger_error("region '{$dataarray['region']}' blocked", E_USER_WARNING);
+			$dataarray['region'] = '';
+		}
+
 		if (isset($searchclass)) {
 			$db=NewADOConnection($GLOBALS['DSN']);
 			if (empty($db)) die('Database connection failed'); 
@@ -484,7 +518,7 @@ class SearchEngineBuilder extends SearchEngine
 					$dataarray['user_id'] = $usercriteria->user_id;
 				}
 			} elseif (!empty($dataarray['user_id'])) {
-				$sql .= ",limit1 = ".$db->Quote((!empty($dataarray['user_invert_ind'])?'!':'').$dataarray['user_id']);
+				$sql .= ",limit1 = ".$db->Quote((!empty($dataarray['user_invert_ind'])?'!':'').intval($dataarray['user_id']));
 				$profile=new GeographUser($dataarray['user_id']);
 				$searchdesc .= ",".(!empty($dataarray['user_invert_ind'])?' not':'')." by ".($profile->realname);
 			}
@@ -510,8 +544,6 @@ class SearchEngineBuilder extends SearchEngine
 				$searchdesc .= ", in ".$dataarray['gridsquare'];
 			}
 			
-			$this->builddate($dataarray,"submitted_start");
-			$this->builddate($dataarray,"submitted_end");
 			if (!empty($dataarray['submitted_start']) || !empty($dataarray['submitted_end'])) {
 				
 				if (!empty($dataarray['submitted_start'])) {
@@ -519,7 +551,7 @@ class SearchEngineBuilder extends SearchEngine
 						//month only
 						$searchdesc .= ", submitted during ".$dataarray['submitted_startString'];
 						$dataarray['submitted_end'] = "";
-					} elseif (preg_match("/0{4}-0{2}-([0-3]?[1-9]+|10|20|30)/",$dataarray['submitted_start']) > 0) {
+					} elseif (preg_match("/^0000-00-[0-9]*[1-9][0-9]*$/",$dataarray['submitted_start']) > 0) {
 						//day only
 						$searchdesc .= ", submitted in the last ".$dataarray['submitted_startDay']." days";
 						$dataarray['submitted_end'] = "";
@@ -553,11 +585,9 @@ class SearchEngineBuilder extends SearchEngine
 					$searchdesc .= ", submitted before ".$dataarray['submitted_endString'];
 				}
 			
-				$sql .= ",limit6 = '{$dataarray['submitted_start']}^{$dataarray['submitted_end']}'";
+				$sql .= ",limit6 = ".$db->Quote("{$dataarray['submitted_start']}^{$dataarray['submitted_end']}");
 			}
 			
-			$this->builddate($dataarray,"taken_start");
-			$this->builddate($dataarray,"taken_end");
 			if (!empty($dataarray['taken_start']) || !empty($dataarray['taken_end'])) {
 				
 				if (!empty($dataarray['taken_start'])) {
@@ -565,10 +595,10 @@ class SearchEngineBuilder extends SearchEngine
 						//month only
 						$searchdesc .= ", taken during ".$dataarray['taken_startString'];
 						$dataarray['taken_end'] = "";
-					} elseif (preg_match("/0{4}-0{2}-([0-3]?[1-9]+|10|20|30)/",$dataarray['taken_start']) > 0) {
+					} elseif (preg_match("/^0000-00-[0-9]*[1-9][0-9]*$/",$dataarray['taken_start']) > 0) {
 						//day only
 						$searchdesc .= ", taken in the last ".$dataarray['taken_startDay']." days";
-						$dataarray['submitted_end'] = "";
+						$dataarray['taken_end'] = ""; # FIXME okay?
 					} elseif (!empty($dataarray['taken_end'])) {
 						if ($dataarray['taken_end'] == $dataarray['taken_start']) {
 							//both the same
@@ -599,7 +629,7 @@ class SearchEngineBuilder extends SearchEngine
 					$searchdesc .= ", taken before ".$dataarray['taken_endString'];
 				}
 			
-				$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
+				$sql .= ",limit7 = ".$db->Quote("{$dataarray['taken_start']}^{$dataarray['taken_end']}");
 			} else {
 				$this->builddate($dataarray,"taken");
 				if (!empty($dataarray['taken'])) {
@@ -607,7 +637,7 @@ class SearchEngineBuilder extends SearchEngine
 					$dataarray['taken_end'] = $dataarray['taken'];
 					$searchdesc .= ", taken ".(is_numeric($dataarray['takenString'])?'in ':'').$dataarray['takenString'];
 						
-					$sql .= ",limit7 = '{$dataarray['taken_start']}^{$dataarray['taken_end']}'";
+					$sql .= ",limit7 = ".$db->Quote("{$dataarray['taken_start']}^{$dataarray['taken_end']}");
 					
 					unset($dataarray['taken']);
 				}
@@ -617,6 +647,7 @@ class SearchEngineBuilder extends SearchEngine
 				$sql .= sprintf(",limit8 = %d",$dataarray['distance']);
 			}
 			if (!empty($dataarray['topic_id'])) {
+				$dataarray['topic_id'] = intval($dataarray['topic_id']);
 				$sql .= ",limit9 = ".$dataarray['topic_id'];
 				if ($dataarray['topic_id'] > 1) {
 					$topic_name=$db->getOne("SELECT topic_title FROM geobb_topics WHERE topic_id = ".$dataarray['topic_id']);
@@ -626,13 +657,20 @@ class SearchEngineBuilder extends SearchEngine
 				}
 			}
 			if (!empty($dataarray['route_id'])) {
+				$dataarray['route_id'] = intval($dataarray['route_id']);
 				$sql .= ",limit10 = ".$dataarray['route_id'];
 				$topic_name=$db->getOne("SELECT name FROM route WHERE route_id = ".$dataarray['route_id']);
 				$searchdesc .= ", on route ".$topic_name;
 			}
+			if (!empty($dataarray['region'])) {
+				$sql .= ",limit11 = '{$dataarray['region']}'";
+				list($level,$cid) = explode('_',$dataarray['region']);
+				$level = intval($level);
+				$cid = intval($cid);
+				$region_name=$db->getOne("SELECT name FROM loc_hier WHERE level=$level AND community_id=$cid");
+				$searchdesc .= ", in region ".$region_name;
+			}
 			
-			if (!isset($dataarray['orderby']))
-				$dataarray['orderby'] = '';
 			switch ($dataarray['orderby']) {
 				case "":
 					if ($searchclass == 'All') {
@@ -680,7 +718,8 @@ class SearchEngineBuilder extends SearchEngine
 				if ($dataarray['submit'] == 'Count')
 					$extra .= '&count=1';
 				if (!empty($_GET['BBOX']))
-					$extra .= "&BBOX=".$_GET['BBOX'];
+					$extra .= "&BBOX=".urlencode($_GET['BBOX']);
+				# FIXME $_GET['LOOKAT'] ?
 				header("Location:http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra");
 				$extra = str_replace('&','&amp;',$extra);
 				print "<a href=\"http://{$_SERVER['HTTP_HOST']}/{$this->page}?i={$i}$extra\">Your Search Results</a>";

@@ -1,0 +1,8 @@
+replace into loc_towns(name, e, n, s, reference_index, quad, point_en) values
+('Friedrichshafen',        536020, 5277570, 3, 3, 0, GeomFromText('POINT(536020 5277570)')),
+('Sigmaringen',            516140, 5326000, 3, 3, 0, GeomFromText('POINT(516140 5326000)')),
+('Ravensburg',             545960, 5292240, 3, 3, 0, GeomFromText('POINT(545960 5292240)')),
+('Biberach',               558700, 5327530, 3, 3, 0, GeomFromText('POINT(558700 5327530)')),
+('Balingen',               488940, 5346670, 3, 3, 0, GeomFromText('POINT(488940 5346670)')),
+('Tuttlingen',             486470, 5314590, 3, 3, 0, GeomFromText('POINT(486470 5314590)')),
+('Konstanz',               513020, 5278620, 3, 3, 0, GeomFromText('POINT(513020 5278620)'));

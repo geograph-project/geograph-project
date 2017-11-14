@@ -107,7 +107,7 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		}
 		
 		$extra .= "&amp;q=".urlencode($sphinx->q);
-		$title = "Matching word search [ ".htmlentities($sphinx->q)." ]";
+		$title = "Matching word search [ ".htmlentities_latin($sphinx->q)." ]";
 		
 		#$sphinx->processQuery();
 		
@@ -140,7 +140,8 @@ if ($template == 'content_iframe.tpl' && !$smarty->is_cached($template, $cacheid
 		$title = "Location Specific Content";
 		$extra .= "&amp;loc=1";
 	} else {
-		$where = "content.`type` = 'info'";
+		$where = "content.`type` IN ( 'info', 'document' )";
+		//$where = "content.`type` = 'info'";
 	}
 	
 	if ((isset($CONF['forums']) && empty($CONF['forums'])) || $USER->user_id == 0 ) {
@@ -217,7 +218,7 @@ if (!empty($_GET['debug'])) {
 	$smarty->assign('extra', $extra);
 	
 	if (!empty($_SERVER['QUERY_STRING']) && preg_match("/^[\w&;=+ %]/",$_SERVER['QUERY_STRING'])) {
-		$smarty->assign('extra_raw', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
+		$smarty->assign('extra_raw', "&amp;".htmlentities_latin($_SERVER['QUERY_STRING']));
 	}
 	
 } else if ($template == 'content.tpl' && !$smarty->is_cached($template, $cacheid)) {
@@ -243,9 +244,9 @@ if (!empty($_GET['debug'])) {
 				//skip...
 			} elseif (preg_match('/^[A-Z]/',$w)) { // FIXME umlaut
 				//give promience to uppercased words
-				$a[strtolower($w)]+=2;
+				@$a[strtolower($w)]+=2;
 			} elseif (!ctype_digit($w)) {
-				$a[$w]++;
+				@$a[$w]++;
 			}
 		}
 	}
@@ -274,7 +275,7 @@ if (!empty($_GET['debug'])) {
 			$title = "By ".($profile->realname);
 		} elseif (!empty($_GET['q']) && !empty($CONF['sphinx_host'])) {
 			$sphinx = new sphinxwrapper(trim($_GET['q']));
-			$title = "Matching [ ".htmlentities($sphinx->q)." ]";
+			$title = "Matching [ ".htmlentities_latin($sphinx->q)." ]";
 		} elseif (isset($_GET['docs'])) {
 			$title = "Geograph Documents";
 		} elseif (isset($_GET['loc'])) {
@@ -282,7 +283,7 @@ if (!empty($_GET['debug'])) {
 		}
 	
 		$smarty->assign('title', $title);
-		$smarty->assign('extra', "&amp;".htmlentities($_SERVER['QUERY_STRING']));
+		$smarty->assign('extra', "&amp;".htmlentities_latin($_SERVER['QUERY_STRING']));
 	}
 }
 if ($template == 'content.tpl' && $USER->registered) {

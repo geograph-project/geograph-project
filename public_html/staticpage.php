@@ -46,9 +46,28 @@ $template='static_'.$page.'.tpl';
 $smarty = new GeographPage;
 if (!$smarty->templateExists($template))
 {
+	header("HTTP/1.0 404 Not Found");
+	header("Status: 404 Not Found");
 	$template='static_404.tpl';
 }
 
+if ($page == "sitemap" && !$smarty->is_cached($template)) { #FIXME?
+	$db=NewADOConnection($GLOBALS['DSN']);
+	if (!$db) die('Database connection failed');
+
+	if (count($CONF['hier_statlevels'])) {
+		$smarty->assign('hasregions',true);
+		$smarty->assign('regionlistlevel',$CONF['hier_listlevel']);
+		$sql = "select name,level,community_id from loc_hier where level in (".implode(",",$CONF['hier_statlevels']).") order by level,name";
+		$regions = $db->GetAll($sql);
+		if ($regions === false)
+			$regions = array();
+	} else {
+		$regions = array();
+	}
+	$smarty->assign("regions", $regions);
+	$smarty->assign('google_maps_api_key',$CONF['google_maps_api_key']);
+}
 
 
 $smarty->display($template);

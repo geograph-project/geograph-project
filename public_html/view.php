@@ -31,7 +31,7 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 
 	if ($row['wgs84_lat']) {
 		$title = combineTexts($row['title'], $row['title2']);
-		$title = htmlentities($title."::".$row['grid_reference']);
+		$title = htmlentities_latin($title."::".$row['grid_reference']);
 
 		print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\"/>\n";
 		print "<title>$title</title>\n";
@@ -49,12 +49,18 @@ if (isset($_GET['id']) && (strpos($_SERVER['HTTP_USER_AGENT'], 'http://geourl.or
 		print "<title>Image no longer available</title>";
 	}
 	exit;
-} elseif ((strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE && isset($_GET['id'])) || strlen($_GET['id']) !== strlen(intval($_GET['id']))) {
+} elseif (isset($_GET['id']) && (strpos($_SERVER["REQUEST_URI"],'/photo/') === FALSE || strlen($_GET['id']) !== strlen(intval($_GET['id'])))) {
 	//keep urls nice and clean - esp. for search engines!
 	header("HTTP/1.0 301 Moved Permanently");
 	header("Status: 301 Moved Permanently");
 	header("Location: /photo/".intval($_GET['id']));
 	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/".intval($_GET['id'])."\">View image page</a>";
+	exit;
+} elseif (!isset($_GET['id']) && isset($_GET['searchid']) && (strpos($_SERVER["REQUEST_URI"],'/browse/') === FALSE || strlen($_GET['searchid']) !== strlen(intval($_GET['searchid'])) || strlen($_GET['searchidx']) !== strlen(intval($_GET['searchidx'])) )) {
+	header("HTTP/1.0 301 Moved Permanently");
+	header("Status: 301 Moved Permanently");
+	header("Location: /results/browse/".intval($_GET['searchid'])."/".intval($_GET['searchidx']));
+	print "<a href=\"http://{$_SERVER['HTTP_HOST']}/results/browse/".intval($_GET['searchid'])."/".intval($_GET['searchidx'])."\">View image page</a>";
 	exit;
 }
 
@@ -91,6 +97,77 @@ if ($smarty->caching) {
 	$smarty->cache_lifetime = 3600*3; //3hour cache
 }
 
+if (isset($_GET['searchid']) && preg_match('/^\s*[1-9][0-9]*\s*$/', $_GET['searchid'])) {
+	$searchid = intval($_GET['searchid']);
+	if (isset($_GET['searchidx']) && preg_match('/^\s*[0-9]+\s*$/', $_GET['searchidx'])) {
+		$searchidx = intval($_GET['searchidx']);
+	} else {
+		$searchidx = 0;
+	}
+} else {
+	$searchid = 0;
+	$searchidx = 0;
+}
+if ($searchid) {
+	$haveimgid = isset($_GET['id']) && $_GET['id'] !== '0';
+	if ($_SESSION['cursearch_id'] == $searchid && ($haveimgid || $_SESSION['cursearch_minidx'] <= $searchidx && $searchidx < $_SESSION['cursearch_maxidx'])) { // FIXME expire result?
+		if (!$haveimgid) {
+			$_GET['id'] = $_SESSION['cursearch_imageids'][$searchidx - $_SESSION['cursearch_minidx']];
+		}
+		$pgsize = $_SESSION['cursearch_pgsize'];
+		$pg = floor($searchidx / $pgsize) + 1;
+	} else {
+		require_once('geograph/searchcriteria.class.php');
+		require_once('geograph/searchengine.class.php');
+		$engine = new SearchEngine($searchid);
+		if (empty($engine->criteria)) {
+			$searchid = 0;
+			$searchidx = 0;
+		} else {
+			$pgsize = $engine->criteria->resultsperpage;
+			if (!$pgsize) {
+				$pgsize = 15;
+			}
+			$pg = floor($searchidx / $pgsize) + 1;
+			if (!$haveimgid) {
+				$residx = $searchidx % $pgsize;
+				$engine->Execute($pg);
+				if (count($engine->results) <= $residx) {  /* not found => go to first image */
+					$searchidx = 0;
+					$residx = 0;
+					$pg = 1;
+					$engine = new SearchEngine($searchid);
+					$engine->Execute(1);
+				}
+				if (count($engine->results) > $residx) {
+					$_GET['id'] = $engine->results[$residx]->gridimage_id;
+					$_SESSION['cursearch_id'] = $searchid;
+					$_SESSION['cursearch_pgsize'] = $pgsize;
+					$_SESSION['cursearch_minidx'] = ($pg - 1) * $pgsize;
+					$_SESSION['cursearch_maxidx'] = $_SESSION['cursearch_minidx'] + count($engine->results);
+					$_SESSION['cursearch_imageids'] = array();
+					foreach ($engine->results as &$resimage) {
+						$_SESSION['cursearch_imageids'][] = $resimage->gridimage_id;
+					}
+					unset ($resimage);
+				}
+			}
+		}
+	}
+	/*if (isset($_GET['id'])) {
+		header("HTTP/1.0 301 Moved Permanently");
+		header("Status: 301 Moved Permanently");
+		header("Location: /photo/".intval($_GET['id'])."?searchid=$searchid&searchidx=$searchidx");
+		exit;
+	} else {
+		header("Location: /");
+		exit;
+	}*/
+	if (isset($_GET['id'])) {
+		$smarty->assign('canonicalreq', '/photo/'.$_GET['id']);
+	}
+}
+
 $image=new GridImage;
 
 if (isset($_GET['id']))
@@ -98,24 +175,24 @@ if (isset($_GET['id']))
 	$image->loadFromId(intval($_GET['id']));
 	$isowner=($image->user_id==$USER->user_id)?1:0;
 	$ismoderator=$USER->hasPerm('moderator')?1:0;
+	$isregistered=$USER->registered?1:0;
 
 	$ab=floor($_GET['id']/10000);
 
-	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}";
+	$cacheid="img$ab|{$_GET['id']}|{$isowner}_{$ismoderator}_{$isregistered}";
 
-	//is the image rejected? - only the owner and administrator should see it
-	if ($image->moderation_status=='rejected')
-	{
-		if ($isowner||$ismoderator)
-		{
-			//ok, we'll let it lie...
-		}
-		else
-		{
+	//is the image accepted? - otherwise, only the owner and administrator should see it
+	if (!$isowner&&!$ismoderator) {
+		if ($image->moderation_status=='rejected') {
 			//clear the image
 			$image=new GridImage;
 			$cacheid=0;
 			$rejected = true;
+		} elseif ($image->moderation_status=='pending') {
+			//clear the image
+			$image=new GridImage;
+			$cacheid=0;
+			$pending = true;
 		}
 	}
 }
@@ -127,9 +204,33 @@ if ($image->isValid())
 	$style = $USER->getStyle();
 	$cacheid.=$style;
 
+	$smarty->assign("searchid", $searchid);
+	$smarty->assign("searchidx", $searchidx);
+	if ($searchid) {
+		$smarty->assign("searchpg", $pg);
+	}
 
 	//when this image was modified
 	$mtime = strtotime($image->upd_timestamp);
+	#$image->loadFromId(intval($_GET['id']));
+	#$isowner=($image->user_id==$USER->user_id)?1:0;
+	#trigger_error("sids: " . implode(', ', array_keys($image->grid_square->services)), E_USER_NOTICE);
+	
+	if (isset($_GET['sid']) && isset($image->grid_square->services[intval($_GET['sid'])])) {
+		$sid = intval($_GET['sid']);
+		#trigger_error("sid: g: " . $sid, E_USER_NOTICE);
+	} elseif (count($image->grid_square->services) != 0) {
+		$sids = array_keys($image->grid_square->services);
+		$sid = $sids[0];
+		#trigger_error("sid: s: " . $sid, E_USER_NOTICE);
+	} else {
+		$sid = -1;
+		#trigger_error("sid: x: " . $sid, E_USER_NOTICE);
+	}
+	$cacheid.="_s:$sid";
+
+	$map_suffix = get_map_suffix();
+	$cacheid .= $map_suffix;
 
 	//page is unqiue per user (the profile and links)
 	$hash = $cacheid.'.'.$USER->user_id;
@@ -171,16 +272,33 @@ if ($image->isValid())
 			
 		}
 	}
+	if ($USER->registered) {
+		$smarty->assign_by_ref('vote', $image->getVotes($USER->user_id));
+		$smarty->assign('imageid', $image->gridimage_id);
+	}
 
 	if (!$smarty->is_cached($template, $cacheid))
 	{
-		$smarty->assign('maincontentclass', 'content_photo'.$style);
+		$notes =& $image->getNotes(array('visible'));
 
-		$image->assignToSmarty($smarty);
+		$smarty->assign('maincontentclass', 'content_photo'.$style);
+		$smarty->assign("sid",$sid);
+		$smarty->assign_by_ref("notes",$notes);
+
+		$imagesize = $image->_getFullSize();
+		$altimg = $image->getAltImage($imagesize[0], $imagesize[1]);
+		$smarty->assign("altimg", $altimg);
+		$smarty->assign('std_width', $imagesize[0]);
+		$smarty->assign('std_height', $imagesize[1]);
+
+		$image->assignToSmarty($smarty, $sid, $map_suffix);
 	}
 } elseif (!empty($rejected)) {
 	header("HTTP/1.0 410 Gone");
 	header("Status: 410 Gone");
+} elseif (!empty($pending)) {
+	header("HTTP/1.0 403 Forbidden");
+	header("Status: 403 Forbidden");
 } else {
 	header("HTTP/1.0 404 Not Found");
 	header("Status: 404 Not Found");

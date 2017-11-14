@@ -51,7 +51,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	if ($type == 'cities') {
 		$smarty->assign("page_title", "Notable Selection of Towns/Cities");
 		$smarty->assign("extra_info", "* These are just the main towns/cities Geograph knows about for map plotting purposes, it may not be a complete list! The square choosen is probably only an arbitary centre point.");
-		$counties = $db->GetAll("SELECT * FROM `loc_towns` WHERE `s` = '1' ORDER BY n");
+		$counties = $db->GetAll("SELECT * FROM `loc_towns` WHERE `s` = '1' OR `s` = '2' ORDER BY n");
 		
 		foreach ($counties as $i => $row) {
 			list($x,$y) = $conv->national_to_internal($row['e'],$row['n'],$row['reference_index']);

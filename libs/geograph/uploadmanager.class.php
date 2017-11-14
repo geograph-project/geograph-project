@@ -48,10 +48,12 @@ class UploadManager
 	var $tmppath="";
 	var $clearexif = false;
 	
+	#var $orientation = 0;
 	var $autoorient = false;
 	var $switchxy = false;
 
 	var $rawExifData = false;
+	var $strExifData = false;
 
 	/**
 	* Constructor
@@ -60,7 +62,7 @@ class UploadManager
 	{
 		global $CONF;
 		$this->db = NewADOConnection($GLOBALS['DSN']);
-		if (!$this->db) die('Database connection failed: '.mysql_error());   
+		if (!$this->db) die('Database connection failed');
 		
 		$this->tmppath=isset($CONF['photo_upload_dir'])?$CONF['photo_upload_dir']:'/tmp';
 		 
@@ -75,6 +77,15 @@ class UploadManager
 		$this->square=&$square;
 	}
 	
+	/**
+	* return full path to temporary image file
+	*/
+	function _commitJPEG($id)
+	{
+		global $USER;
+		return $this->tmppath.'/newpic_u'.$USER->user_id.'_'.$id.'.commit.jpeg';
+	}
+
 	/**
 	* return full path to temporary image file
 	*/
@@ -304,6 +315,7 @@ class UploadManager
 	function error($msg)
 	{
 		$this->errormsg=$msg;
+		return $msg;
 	}
 	
 	/**
@@ -511,6 +523,8 @@ class UploadManager
 		if ($orientation < 0 || $orientation > 8) {
 			$orientation = 0;
 		}
+		#trigger_error("O: $orientation", E_USER_WARNING);
+		#$this->orientation = $orientation;
 		$this->autoorient = $orientation > 1;
 		$this->switchxy = $orientation > 4;
 		if ($this->autoorient) {
@@ -550,17 +564,55 @@ class UploadManager
 		//save the exif data for the loaded image
 		$exif = @exif_read_data($pendingfile,0,true); 
 		
+		# Work around php's makernote bug and make use of xmp coordinates
+		if ($CONF['exiftooldir'] !== '' && $exif !== false) {
+			if (!isset($exif['EXIF']['MakerNote']) && preg_match('/MAKERNOTE$/', $exif['FILE']['SectionsFound'])) {
+				//if MAKERNOTE is listed as a section, but its not present, then probably exif_read_data failed due to PHP bug
+				// https://bugs.php.net/bug.php?id=72682
+				// http://git.php.net/?p=php-src.git;a=commit;h=aabcb5481d9e717df77192dab2894468b9fc63b4
+				// http://geo.hlipp.de/discuss/index.php?&action=vthread&forum=4&topic=226
+				// http://www.geograph.org.uk/discuss/index.php?&action=vthread&forum=4&topic=29257
+				// http://cake.geograph.org.uk/
+
+				$tempfile = $pendingfile . '.tmp';
+				copy($pendingfile, $tempfile);
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -m -makernotes= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $tempfile);
+				passthru ($cmd);
+				$exif2 = @exif_read_data($tempfile, 0, true);
+				unlink($tempfile);
+
+				if ($exif2 !== false) {
+					$exif = $exif2;
+				}
+			}
+			if (!isset($exif['GPS'])) {
+				# Try positions from XMP
+
+				$tempfile = $pendingfile . '.tmp';
+				copy($pendingfile, $tempfile);
+				$cmd = sprintf ("\"%sexiftool\" -overwrite_original -m -makernotes= '-gps:all<xmp-exif:all' '-gps:all<composite:all' '-gpsdatestamp<gpsdatetime' '-gpstimestamp<gpsdatetime' \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $tempfile);
+				passthru ($cmd);
+				$exif2 = @exif_read_data($tempfile, 0, true);
+				unlink($tempfile);
+
+				if ($exif2 !== false && isset($exif2['GPS'])) {
+					#$exif = $exif2;
+					$exif['GPS'] = $exif2['GPS'];
+				}
+			}
+		}
+
 		if ($exif!==false)
 		{
 			$this->trySetDateFromExif($exif);
 			$this->rawExifData = $exif;
 			$this->setOrientation($exif);
-			$strExif=serialize($exif);
+			$this->strExifData = serialize($exif);
 			$exif =  $this->_pendingEXIF($upload_id);
 			$f=fopen($exif, 'w');
 			if ($f)
 			{
-				fwrite($f, $strExif);
+				fwrite($f, $this->strExifData);
 				fclose($f);
 			}
 		}
@@ -634,11 +686,13 @@ class UploadManager
 			return false;
 		}
 
+		#$options = ' -auto-orient';
 		$options = ' ' . $this->im_autoorient;
 		if ($CONF['exiftooldir'] === '') {
 			$options .= ' -strip';
 		}
 		$cmd = sprintf ("\"%smogrify\"%s jpg:%s", $CONF['imagemagick_path'], $options, $filename);
+		#trigger_error("-> $cmd", E_USER_WARNING);
 
 		passthru ($cmd);
 
@@ -647,7 +701,7 @@ class UploadManager
 			passthru ($cmd);
 		}
 
-		return true;
+		return true; // error handling?
 	}
 
 	function _downsizeFile($filename,$max_dimension) {
@@ -668,13 +722,16 @@ class UploadManager
 				$options .= ' -strip';
 			}
 			if ($this->autoorient) {
+				#$options .= ' -auto-orient';
 				$options .= ' ' . $this->im_autoorient;
 			}
 			if ($width > $max_dimension || $height > $max_dimension) {
+				#$options .= sprintf(' -resize "%ldx%ld>" -quality 87', $max_dimension, $max_dimension);
 				$options .= sprintf(' -resize %ldx%ld -quality 87', $max_dimension, $max_dimension);
 			}
 			if ($options !== '') {
 				$cmd = sprintf ("\"%smogrify\"%s jpg:%s", $CONF['imagemagick_path'], $options, $filename);
+				#trigger_error("-> $cmd", E_USER_WARNING);
 
 				passthru ($cmd);
 
@@ -773,12 +830,13 @@ class UploadManager
 		{
 			$exif = fread ($f, filesize($exiffile)); 
 			fclose($f);
-			$strExif=unserialize($exif);
-			if ($strExif!==false)
+			$rawExif=unserialize($exif);
+			if ($rawExif!==false)
 			{
-				$this->trySetDateFromExif($strExif);
-				$this->rawExifData = $strExif;
-				$this->setOrientation($strExif);
+				$this->trySetDateFromExif($rawExif);
+				$this->rawExifData = $rawExif;
+				$this->strExifData = $exif;
+				$this->setOrientation($rawExif);
 			}
 		}
 	}
@@ -790,37 +848,37 @@ class UploadManager
 	{
 		global $USER,$CONF,$memcache;
 		
-		if($this->validUploadId($this->upload_id))
-		{
-			$uploadfile = $this->_pendingJPEG($this->upload_id);
-			if (!file_exists($uploadfile))
-			{
-				return "Upload image not found";
-			}
+		if(!is_object($this->square)) {
+			return("Must assign square");
 		}
-		else
-		{
+		
+		if(!$this->validUploadId($this->upload_id)) {
 			return ("Must assign upload id");
 		}
 		
-		
-		if(!is_object($this->square))
-		{
-			return("Must assign square");
+		$uploadfile = $this->_pendingJPEG($this->upload_id);
+		$srcfile = $this->_commitJPEG($this->upload_id);
+
+		# TODO allow user to rename back if this instance dies before the db update?
+		if (!rename($uploadfile, $srcfile)) {
+			return $this->error("Image file not found; possible duplicate submission");
 		}
 		
 		
 		$viewpoint = new GridSquare;
 		if ($this->viewpoint_gridreference) {
-			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference, true, true, true);
+			$ok= $viewpoint->setByFullGridRef($this->viewpoint_gridreference, true, true, false, true);
 		}
 		
 		
 		//get sequence number
 		
 		$mkey = $this->square->gridsquare_id;
-		$seq_no =& $memcache->name_get('sid',$mkey);
+		$seq_no = $memcache->name_get('sid',$mkey);
 		
+		if (empty($seq_no) && !empty($CONF['use_insertionqueue'])) {
+			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage_queue where gridsquare_id={$this->square->gridsquare_id}");
+		} 
 		if (empty($seq_no)) {
 			$seq_no = $this->db->GetOne("select max(seq_no) from gridimage where gridsquare_id={$this->square->gridsquare_id}");
 		}
@@ -834,9 +892,15 @@ class UploadManager
 		//get the exif data and set orientation
 		$this->reReadExifFile();
 		
+		if (!empty($CONF['use_insertionqueue'])) {
+			$table = "gridimage_queue";
+		} else {
+			$table = "gridimage";
+		}
+		
 		//create record
 		// nateasting/natnorthings will only have values if getNatEastings has been called (in this case because setByFullGridRef has been called IF an exact location is specifed)
-		$sql=sprintf("insert into gridimage (".
+		$sql=sprintf("insert into $table (".
 			"gridsquare_id, seq_no, user_id, ftf,".
 			"moderation_status,title,comment,title2,comment2,nateastings,natnorthings,natgrlen,imageclass,imagetaken,".
 			"submitted,viewpoint_eastings,viewpoint_northings,viewpoint_grlen,view_direction,use6fig,user_status,realname,reference_index,viewpoint_refindex) values ".
@@ -852,7 +916,12 @@ class UploadManager
 			$this->use6fig,$this->db->Quote($this->user_status),$this->db->Quote($this->realname),
 			$this->square->reference_index,$viewpoint->reference_index);
 		
-		$this->db->Query($sql);
+		$rs = $this->db->Query($sql);
+
+		if ($rs === false) {
+			rename($srcfile, $uploadfile);
+			return "Database update failed";
+		}
 		
 		//get the id
 		$gridimage_id=$this->db->Insert_ID();
@@ -860,22 +929,20 @@ class UploadManager
 		//save the exif
 		$sql=sprintf("insert into gridimage_exif (".
 			"gridimage_id,exif) values ".
-			"(%d,%s)",$gridimage_id,$this->db->Quote($exif));
+			"(%d,%s)",$gridimage_id,$this->db->Quote($this->strExifData));
 		$this->db->Query($sql);
 		
 		//copy image to correct area
-		$src=$this->_pendingJPEG($this->upload_id);
-		
 		$image=new GridImage;
 		$image->gridimage_id = $gridimage_id;
 		$image->user_id = $USER->user_id;
 		
 		if ($this->clearexif && $CONF['exiftooldir'] !== '') {
-			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $src);
+			$cmd = sprintf ("\"%sexiftool\" -overwrite_original -all= \"%s\" > /dev/null 2>&1", $CONF['exiftooldir'], $srcfile);
 			passthru ($cmd);
 		}
 		$storedoriginal = false;
-		if ($ok = $image->storeImage($src)) {
+		if ($ok = $image->storeImage($srcfile)) {
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 			
@@ -932,9 +999,11 @@ class UploadManager
 	/**
 	* add a high res image
 	*/
-	function addOriginal($image)
+	function addOriginal($image, $altimg = false)
 	{
 		global $USER,$CONF,$memcache;
+
+		$suffix = $altimg ? '_altimg' : '';
 		
 		if($this->validUploadId($this->upload_id))
 		{
@@ -959,7 +1028,7 @@ class UploadManager
 		}
 
 		//store the resized version - just for the moderator to use as a preview
-		if ($ok = $image->storeImage($src,false,'_preview')) {
+		if ($ok = $image->storeImage($src,false,'_preview'.$suffix)) {
 		
 			$orginalfile = $this->_originalJPEG($this->upload_id);
 
@@ -978,17 +1047,18 @@ class UploadManager
 				}
 				
 				//store the new original file
-				$ok =$image->storeImage($orginalfile,false,'_pending');
+				$ok =$image->storeImage($orginalfile,false,'_pending'.$suffix);
 			}
 		}
 		
 		if ($ok) {
 			
 			$sql = sprintf("insert into gridimage_pending (gridimage_id,upload_id,user_id,suggested,type) ".
-				"values (%s,%s,%s,now(),'original')",
+				"values (%s,%s,%s,now(),'%s')",
 				$this->db->Quote($image->gridimage_id),
 				$this->db->Quote($this->upload_id),
-				$this->db->Quote($USER->user_id));
+				$this->db->Quote($USER->user_id),
+				$altimg?'altimg':'original');
 					
 			$this->db->Query($sql);
 			
@@ -1004,7 +1074,10 @@ class UploadManager
 	*/
 	function cleanUp()
 	{
+		#@unlink($this->_pendingJPEG($this->upload_id).'_original');
+		#@unlink($this->_originalJPEG($this->upload_id).'_original');
 		@unlink($this->_pendingJPEG($this->upload_id));
+		@unlink($this->_commitJPEG($this->upload_id));
 		@unlink($this->_pendingEXIF($this->upload_id));
 		@unlink($this->_originalJPEG($this->upload_id));
 	}

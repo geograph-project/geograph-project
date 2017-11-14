@@ -90,8 +90,11 @@ function isSpam($msg)
 	preg_match_all("{http}", $msg, $matches);
 	$count=count($matches[0]);
 
-	preg_match_all("{http://www.geograph.org.uk}", $msg, $matches);
+	# FIXME configurable? use $_SERVER['HTTP_HOST'] ?
+	preg_match_all("{http://geo.hlipp.de}", $msg, $matches);
 	$legit=count($matches[0]);
+	preg_match_all("{http://geo-en.hlipp.de}", $msg, $matches);
+	$legit+=count($matches[0]);
 	
 	//we'll let you off for using geograph links...
 	$count-=$legit;
@@ -111,7 +114,7 @@ function isSpam($msg)
 function getRemoteIP()
 {
 	//get IP address of user
-	if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']))
+	if (false && !empty($_SERVER['HTTP_X_FORWARDED_FOR']))
 	{
 		$ips=explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
 		$ip=trim($ips[count($ips)-1]);

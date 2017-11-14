@@ -69,6 +69,96 @@ function autoDisable(that) {
 
 //	-	-	-	-	-	-	-	-
 
+/* FIXME remove other instances of this */
+function geoGetXMLRequestObject() // stolen from admin/moderation.js
+{
+	var xmlhttp=false;
+		
+	/*@cc_on @*/
+	/*@if (@_jscript_version >= 5)
+	// JScript gives us Conditional compilation, we can cope with old IE versions.
+	// and security blocked creation of the objects.
+	 try {
+	  xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
+	 } catch (e) {
+	  try {
+	   xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	  } catch (E) {
+	   xmlhttp = false;
+	  }
+	 }
+	@end @*/
+	if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
+	  xmlhttp = new XMLHttpRequest();
+	}
+
+	return xmlhttp;
+}
+
+function imgvote(imageid, type, vote) {
+	var classbase = [ '', 'voteneg', 'voteneg', 'voteneu', 'votepos', 'votepos' ];
+	var postdata = 'imageid=' + imageid;
+	if (vote) {
+		postdata += '&type=' + type;
+		postdata += '&vote=' + vote;
+	}
+	var url="/imgvote.php";
+	var req=geoGetXMLRequestObject();
+	var reqTimer = setTimeout(function() {
+	       req.abort();
+	}, 30000);
+	req.onreadystatechange = function() {
+		if (req.readyState != 4) {
+			return;
+		}
+		clearTimeout(reqTimer);
+		req.onreadystatechange = function() {};
+		commiterrors = true;
+
+		if (req.status != 200) {
+			if (vote) {
+				alert("Cannot communicate with server, status " + req.status);
+			}
+		} else {
+			var responseText = req.responseText;
+			//alert(responseText);// FIXME remove
+			if (/^-[1-9][0-9]*:[^:]+$/.test(responseText)) { /* general error */
+				var parts = responseText.split(':');
+				var rcode = parseInt(parts[0]);
+				if (vote) {
+					alert("Error: Server returned error " + -rcode + " (" + parts[1] + ")");
+				}
+			} else if (! /^0(:[^:]+:[0-5])*$/.test(responseText)) {
+				if (vote) {
+					alert("Unexpected response from server: "+responseText);
+				}
+			} else {
+				var parts = responseText.split(':');
+				for (var i = 1; i < parts.length; i+=2) {
+					var curtype = parts[i];
+					var curvote = parts[i+1];
+					for (var j = 1; j <= 5; ++j) {
+						var ele = document.getElementById('vote'+imageid+curtype+j);
+						if (ele) {
+							if (j != curvote) {
+								ele.className = classbase[j];
+							} else {
+								ele.className = classbase[j] + 'active';
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	req.open("POST", url, true);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	//req.setRequestHeader("Connection", "close");
+	req.send(postdata);
+}
+
+//	-	-	-	-	-	-	-	-
+
 function record_vote(type,id,vote) {
 	var i=new Image();
 	i.src= "/stuff/record_vote.php?t="+type+"&id="+id+"&v="+vote;
@@ -320,7 +410,7 @@ function markImage(image) {
 	newtext = 'marked';
 	if (current) {
 		re = new RegExp("\\b"+image+"\\b");
-		if (current.search(re) > -1) {
+		if (current == image || current.search(re) > -1) {
 			newCookie = current.replace(re,',').commatrim();
 			newtext = 'Mark';
 		} else {
@@ -332,11 +422,28 @@ function markImage(image) {
 
 	createCookie('markedImages',newCookie,10);
 
+	if (document.getElementById('marked_number')) {
+		if (!newCookie) {//chrome needs this... 
+			document.getElementById('marked_number').innerHTML = '[0]';
+		} else {
+			splited = newCookie.commatrim().split(',');
+			document.getElementById('marked_number').innerHTML = '['+(splited.length+0)+']';
+		}
+	}
+
 	ele = document.getElementById('mark'+image);
 	if(ele.innerText != undefined) {
 		ele.innerText = newtext;
 	} else {
 		ele.textContent = newtext;
+	}
+}
+
+function markAllImages(str) {
+	for(var q=0;q<document.links.length;q++) {
+		if (document.links[q].text == str) {
+			markImage(document.links[q].id.substr(4));
+		}
 	}
 }
 
@@ -440,6 +547,147 @@ function clearMarkedImages() {
 
 //	-	-	-	-	-	-	-	-
 
+function handleCSRFError(msg)
+{
+	if (typeof geograph_CSRF_token === 'undefined') {
+		return;
+	}
+	if (typeof msg === 'undefined') { msg = "An error occurred and was corrected. Please try again."; }
+	var url="/session.php";
+	var postdata="action=CSRF_token";
+
+	var req=getXMLRequestObject();
+	var reqTimer = setTimeout(function() {
+	       req.abort();
+	}, 30000);
+	req.onreadystatechange = function() {
+		if (req.readyState != 4) {
+			return;
+		}
+		clearTimeout(reqTimer);
+		req.onreadystatechange = function() {};
+		if (req.status != 200) {
+			alert("CSRF recovery: Cannot communicate with server, status " + req.status);
+			return;
+		}
+		var responseText = req.responseText;
+		//alert(responseText);// FIXME remove
+		if (/^-[1-9][0-9]*:[0-9]*:.*$/.test(responseText)) { /* error */
+			var parts = responseText.split(':');
+			var rcode = parseInt(parts[0]);
+			var rinfo = parseInt(parts[1]);
+			alert("CSRF recovery: Server returned error " + -rcode + " (" + parts[2] + ")");
+		} else if (/^0:.*$/.test(responseText)) { /* success */
+			geograph_CSRF_token = responseText.substring(2);
+			alert(msg);
+		} else {
+			alert("CSRF recovery: Unexpected response from server");
+		}
+	}
+	req.open("POST", url, true);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	//req.setRequestHeader("Connection", "close");
+	req.send(postdata);
+}
+
+function handleAuthError()
+{
+	if (typeof geograph_user_id === 'undefined' || typeof geograph_CSRF_token === 'undefined') {
+		return;
+	}
+	var pass = prompt("Authentication error! Please enter your password and try again.", "");
+	if (pass === null) {
+		return;
+	}
+	var url="/session.php";
+	var postdata="action=login&u="+geograph_user_id+"&CSRF_token="+encodeURIComponent(geograph_CSRF_token)+"&password="+encodeURIComponent(pass);
+
+	var req=getXMLRequestObject();
+	var reqTimer = setTimeout(function() {
+	       req.abort();
+	}, 30000);
+	req.onreadystatechange = function() {
+		if (req.readyState != 4) {
+			return;
+		}
+		clearTimeout(reqTimer);
+		req.onreadystatechange = function() {};
+		if (req.status != 200) {
+			alert("Cannot communicate with server, status " + req.status);
+			return;
+		}
+		var responseText = req.responseText;
+		//alert(responseText);// FIXME remove
+		if (/^-[1-9][0-9]*:[0-9]*:.*$/.test(responseText)) { /* error */
+			var parts = responseText.split(':');
+			var rcode = parseInt(parts[0]);
+			var rinfo = parseInt(parts[1]);
+			if (rcode == -5) {
+				handleCSRFError("Login denied for security reasons, please try again");
+			} else if (rcode == -4) {
+				var timestr = rinfo < 120 ? rinfo + ' seconds' : Math.ceil(rinfo/60) + ' minutes';
+				alert("Authentication error: Access blocked for " + timestr);
+			} else if (rcode == -3) {
+				alert("Invalid password");
+			} else {
+				alert("Error: Server returned error " + -rcode + " (" + parts[2] + ")");
+			}
+		} else if (/^0:.*$/.test(responseText)) {
+			/* success */
+		} else {
+			alert("Unexpected response from server");
+		}
+	}
+	req.open("POST", url, true);
+	req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	//req.setRequestHeader("Connection", "close");
+	req.send(postdata);
+}
+
+function timestr(t)
+{
+	var tseconds = t % 60;
+	t = Math.floor(t / 60);
+	var tminutes = t % 60;
+	t = Math.floor(t / 60);
+	var thours = t;
+	var s = ('0'+tseconds).slice(-2);
+	if (thours || tminutes) {
+		s = ('0'+tminutes).slice(-2) + ':' + s;
+	}
+	if (thours) {
+		s = thours + ':' + s;
+	}
+	return s;
+}
+
+function buttontimer(id, seconds)
+{
+	if (seconds <= 0) {
+		return;
+	}
+	var button = document.getElementById(id);
+	if (!button) {
+		return;
+	}
+	button.disabled = true;
+	var buttontext = button.value;
+	var secondsleft = seconds;
+	button.value = buttontext + ' (' + timestr(secondsleft) + ')';
+	var intv = setInterval(function () {
+		secondsleft--;
+		if (secondsleft <= 0) {
+			clearInterval(intv);
+			button.disabled = false;
+			button.value = buttontext;
+		} else {
+			button.value = buttontext + ' (' + timestr(secondsleft) + ')';
+		}
+	}, 1000);
+}
+
+//	-	-	-	-	-	-	-	-
+
 function createCookie(name,value,days) {
 	if (days) {
 		var date = new Date();
@@ -447,16 +695,17 @@ function createCookie(name,value,days) {
 		var expires = "; expires="+date.toGMTString();
 	}
 	else var expires = "";
-	document.cookie = name+"="+value+expires+"; path=/";
+	document.cookie = name+"="+encodeURIComponent(value)+expires+"; path=/";
 }
 
 function readCookie(name) {
 	var ca = document.cookie.split(';');
 	for(var i=0;i < ca.length;i++) {
-		var pair = ca[i].split('=');
-		var c = pair[0];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c == name) return pair[1];
+		var pos = ca[i].indexOf("=");
+		var argname = ca[i].substring(0,pos);
+
+		while (argname.charAt(0)==' ') argname = argname.substring(1,argname.length);
+		if (argname == name) return decodeURIComponent(ca[i].substring(pos+1));
 	}
 	return false;
 }
@@ -468,13 +717,22 @@ function eraseCookie(name) {
 
 //	-	-	-	-	-	-	-	-
 
-	function show_tree(id) {
-		document.getElementById("show"+id).style.display='';
+	function show_tree(id, display) {
+		if (typeof display === "undefined") {
+			var display = '';
+		}
+		document.getElementById("show"+id).style.display=display;
 		document.getElementById("hide"+id).style.display='none';
+		if (typeof resizeContainer != 'undefined') {
+			setTimeout(resizeContainer,100);
+		}
 	}
 	function hide_tree(id) {
 		document.getElementById("show"+id).style.display='none';
 		document.getElementById("hide"+id).style.display='';
+		if (typeof resizeContainer != 'undefined') {
+			setTimeout(resizeContainer,100);
+		}
 	}
 
 //	-	-	-	-	-	-	-	-
@@ -486,7 +744,7 @@ var marker2left = 14;
 var marker2top = 14;
 
 function overlayHideMarkers(e) {
-	if (IE) {
+	if (IE || e.layerX == null) {
 		tempX = event.offsetX;
 		tempY = event.offsetY;
 	} else {

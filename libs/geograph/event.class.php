@@ -76,15 +76,15 @@ class Event
 	/**
 	* Static method for firing an event
 	*/
-	function fire($event_name, $event_param="", $priority=50)
+	static function fire($event_name, $event_param="", $priority=50)
 	{
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');  
 		
 		//is a similar event pending? if so, increase its counter
 		$sql=sprintf("select event_id from event where status in ('pending', 'in_progress') and ".
-			"event_name='%s' and event_param='%s'",
-			mysql_escape_string($event_name),mysql_escape_string($event_param));
+			"event_name=%s and event_param=%s",
+			$db->Quote($event_name),$db->Quote($event_param));
 			
 		$event_id=$db->GetOne($sql);
 		if ($event_id===false)
@@ -92,9 +92,9 @@ class Event
 			//add new event
 			$priority=intval($priority);
 			$sql=sprintf("insert into event(event_name, event_param,posted,priority) ".
-				"values('%s', '%s', now(), '%d')",
-				mysql_escape_string($event_name),
-				mysql_escape_string($event_param), 
+				"values(%s, %s, now(), '%d')",
+				$db->Quote($event_name),
+				$db->Quote($event_param),
 				$priority);
 				$db->Execute($sql);
 		}

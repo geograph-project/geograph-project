@@ -28,6 +28,11 @@ require_once('geograph/imagelist.class.php');
 
 init_session();
 
+if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 && strpos($_SERVER['HTTP_REFERER'],'editimage') === FALSE) {
+	header("HTTP/1.1 503 Service Unavailable");
+	die("the servers are currently very busy - moderation is disabled to allow things to catch up, will be automatically re-enabled when load returns to normal");
+}
+
 customGZipHandlerStart();
 
 $db = NewADOConnection($GLOBALS['DSN']);
@@ -36,85 +41,90 @@ if (!$db) die('Database connection failed');
 $smarty = new GeographPage;
 
 //doing some moderating?
-if (isset($_GET['gridimage_id']))
+if (isset($_POST['gridimage_id']))
 {
-	//user may have an expired session, or playing silly buggers,
-	//either way, we want to check for admin status on the session
-	if ($USER->hasPerm('moderator') || isset($_GET['remoderate']))
-	{
-	
-		$gridimage_id=intval($_GET['gridimage_id']);
-		$status=$_GET['status'];
-
-		$image=new GridImage;
-		if ($image->loadFromId($gridimage_id))
+	if (isset($_POST['CSRF_token']) && $_POST['CSRF_token'] === $_SESSION['CSRF_token']) {
+		//user may have an expired session, or playing silly buggers,
+		//either way, we want to check for admin status on the session
+		if ($USER->hasPerm('moderator') || isset($_POST['remoderate']))
 		{
-			if (isset($_GET['remoderate'])) 
+		
+			$gridimage_id=intval($_POST['gridimage_id']);
+			$status=$_POST['status'];
+
+			$image=new GridImage;
+			if ($image->loadFromId($gridimage_id))
 			{
-				if ($USER->hasPerm('basic'))
+				if (isset($_POST['remoderate'])) 
 				{
-					$status = $db->Quote($status);
-					$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now(),type = 'dummy'");
-					print "classification $status recorded";
-				}
+					if ($USER->hasPerm('basic'))
+					{
+						$status = $db->Quote($status);
+						$db->Execute("REPLACE INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status, old_status='{$image->moderation_status}',created=now(),type = 'dummy'");
+						print "classification $status recorded";
+					}
+					else
+					{
+						echo "NOT LOGGED IN"; /* don't change, used in moderation.js */
+					}
+				} 
 				else
 				{
-					echo "NOT LOGGED IN";
+					//we really need this not be interupted
+					ignore_user_abort(TRUE);
+					set_time_limit(3600);
+					
+					$status2 = $db->Quote($status);
+					$db->Execute("INSERT INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status2, old_status='{$image->moderation_status}',created=now(),type = 'real'");
+					
+					$info=$image->setModerationStatus($status, $USER->user_id);
+					echo $info;
+
+					if ($status == 'rejected')
+					{
+						$ticket=new GridImageTroubleTicket();
+						$ticket->setSuggester($USER->user_id);
+						$ticket->setModerator($USER->user_id);
+						$ticket->setPublic('everyone');
+						$ticket->setImage($gridimage_id);
+						if (!empty($_POST['comment'])) {
+							/* encodeURIComponent uses utf8, utf8_decode does not convert some characters as &euro; (which does actually not exist in latin1) */
+							$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Rejecting this image because: ".stripslashes(iconv("UTF-8", "CP1252//TRANSLIT", $_POST['comment'])));
+						} else {
+							$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for rejecting this image.");
+						}
+						$status=$ticket->commit('open');
+						
+						echo " <a href=\"/editimage.php?id={$gridimage_id}\"><B>View Ticket</b></a>";
+						
+					}
+
+					//clear caches involving the image
+					$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
+					$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_1");
+					$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_0");
+					$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_1");
+
+					//clear the users profile cache
+					$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
+					$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
+					
+					$memcache->name_delete('us',$image->user_id);
 				}
-			} 
+			}
 			else
 			{
-				//we really need this not be interupted
-				ignore_user_abort(TRUE);
-				set_time_limit(3600);
-				
-				$status2 = $db->Quote($status);
-				$db->Execute("INSERT INTO moderation_log SET user_id = {$USER->user_id}, gridimage_id = $gridimage_id, new_status=$status2, old_status='{$image->moderation_status}',created=now(),type = 'real'");
-				
-				$info=$image->setModerationStatus($status, $USER->user_id);
-				echo $info;
-
-				if ($status == 'rejected')
-				{
-					$ticket=new GridImageTroubleTicket();
-					$ticket->setSuggester($USER->user_id);
-					$ticket->setModerator($USER->user_id);
-					$ticket->setPublic('everyone');
-					$ticket->setImage($gridimage_id);
-					if (!empty($_GET['comment'])) {
-						$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Rejecting this image because: ".stripslashes($_GET['comment']));
-					} else {
-						$ticket->setNotes("Auto-generated ticket, as a result of Moderation. Please leave a comment to explain the reason for rejecting this image.");
-					}
-					$status=$ticket->commit('open');
-					
-					echo " <a href=\"/editimage.php?id={$gridimage_id}\"><B>View Ticket</b></a>";
-					
-				}
-
-				//clear caches involving the image
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_0");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_0_1");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_0");
-				$smarty->clear_cache('view.tpl', "{$gridimage_id}_1_1");
-
-				//clear the users profile cache
-				$smarty->clear_cache('profile.tpl', "{$image->user_id}_0");
-				$smarty->clear_cache('profile.tpl', "{$image->user_id}_1");
-				
-				$memcache->name_delete('us',$image->user_id);
+				echo "FAIL";
 			}
+		
+			
 		}
 		else
 		{
-			echo "FAIL";
+			echo "NOT LOGGED IN"; /* don't change, used in moderation.js */
 		}
-	
-		
-	}
-	else
-	{
-		echo "NOT LOGGED IN";
+	} else {
+		echo "CSRF check failed, please reload page"; /* must start with 'CSRF', used in moderation.js */
 	}
 	
 	
@@ -226,7 +236,7 @@ where
 	gi.user_id = {$USER->user_id}
 order by null";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF) 
 {
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$recordSet->fields['gridsquare_id']},lock_type = 'cantmod'");
@@ -366,12 +376,15 @@ limit $limit";
 //implied: and user_id != {$USER->user_id}
 // -> because squares with users images are locked
 
+#trigger_error("sql: ".$sql, E_USER_NOTICE);
 
 #############################
 # fetch the list of images...
 
 $images=new ImageList(); 
 
+$images->_setDB($db); # Deadlock otherwise in the following line when using mysqli driver:
+                      # We have locked tables for this connection and should therefore not use another connection at the same time.
 $c = $images->_getImagesBySql($sql);
 
 $realname = array();
@@ -383,24 +396,26 @@ foreach ($images->images as $i => $image) {
 		$images->images[$i]->use6fig = 0;
 	}
 	$token->setValue("g", $images->images[$i]->getSubjectGridref(true));
+	#trigger_error("<-image->", E_USER_NOTICE);
 	if ($image->viewpoint_eastings) {
 		//note $image DOESNT work non php4, must use $images->images[$i]
+		$token->setValue("p", $images->images[$i]->getPhotographerGridref(true));
 		//move the photographer into the center to match the same done for the subject
 		$correction = ($images->images[$i]->viewpoint_grlen > 4)?0:500;
 		$images->images[$i]->distance = sprintf("%0.2f",
 			sqrt(pow($images->images[$i]->grid_square->nateastings-$images->images[$i]->viewpoint_eastings-$correction,2)+pow($images->images[$i]->grid_square->natnorthings-$images->images[$i]->viewpoint_northings-$correction,2))/1000);
+		#viewpoint square not yet in stable branch..
+		#$images->images[$i]->distance = sprintf("%0.2f", ($images->images[$i]->grid_square->calcDistanceFromSquare($images->images[$i]->viewpoint_square))/1000); #FIXME $correction?
 		
 		if (intval($images->images[$i]->grid_square->nateastings/1000) != intval($images->images[$i]->viewpoint_eastings/1000)
 			|| intval($images->images[$i]->grid_square->natnorthings/1000) != intval($images->images[$i]->viewpoint_northings/1000))
 			$images->images[$i]->different_square_true = true;
 		
-		if ($images->images[$i]->different_square_true && $images->images[$i]->subject_gridref_precision==1000)
+		if (!empty($images->images[$i]->different_square_true) && $images->images[$i]->subject_gridref_precision==1000)
 			$images->images[$i]->distance -= 0.5;
 		
-		if ($images->images[$i]->different_square_true && $images->images[$i]->distance > 0.1)
+		if (!empty($images->images[$i]->different_square_true) && $images->images[$i]->distance > 0.1)
 			$images->images[$i]->different_square = true;
-	
-		$token->setValue("p", $images->images[$i]->getPhotographerGridref(true));
 	}	
 	if (isset($image->view_direction) && strlen($image->view_direction) && $image->view_direction != -1) {
 		$token->setValue("v", $image->view_direction);
@@ -411,6 +426,9 @@ foreach ($images->images as $i => $image) {
 		$images->images[$i]->photographer_gridref = '';
 		$images->images[$i]->use6fig = 1;
 	}
+	$image->percentages = $image->grid_square->percent_land < 0 || !$image->grid_square->permit_geographs || !$image->grid_square->permit_photographs;
+	$image->no_photographs = !$image->grid_square->permit_photographs;
+	$image->no_geographs = !$image->grid_square->permit_geographs;
 	
 	$db->Execute("REPLACE INTO gridsquare_moderation_lock SET user_id = {$USER->user_id}, gridsquare_id = {$image->gridsquare_id}");
 

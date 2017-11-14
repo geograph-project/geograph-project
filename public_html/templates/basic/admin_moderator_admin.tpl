@@ -37,8 +37,6 @@
 	{/if}
 	<td>Moderator Actions (see below)</td>
 	<td>Ticket Actions (see below)</td>
-	<td>Map Actions (see below)</td>
-	<td>Forum Actions (see below)</td>
 </tr></thead>
 <tbody>
 
@@ -76,20 +74,6 @@
 			<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}&amp;right=ticketmod">Revoke</a>
 		{else}
 			<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=ticketmod">Grant</a>
-		{/if}
-	</td>
-	<td>
-		{if strpos($userrow.rights,'mapmod') > 0}
-			<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}&amp;right=mapmod">Revoke</a>
-		{else}
-			<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=mapmod">Grant</a>
-		{/if}
-	</td>
-	<td>
-		{if strpos($userrow.rights,'forum') > 0}
-			<a href="/admin/moderator_admin.php?revoke={$userrow.user_id}&amp;right=forum">Revoke</a>
-		{else}
-			<a href="/admin/moderator_admin.php?grant={$userrow.user_id}&amp;right=forum">Grant</a>
 		{/if}
 	</td>
 </tr>

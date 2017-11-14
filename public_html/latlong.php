@@ -30,6 +30,7 @@ include_messages('latlong');
 
 init_session();
 
+## TODO -> german
 
 $conv = new ConversionsLatLong;
 
@@ -48,6 +49,12 @@ if (!empty($_GET['To'])) { //to lat/long
 		$latlong = $conv->osgb36_to_wgs84($_GET['e'],$_GET['n']);
 	} else if ($_GET['datum'] == 'irish') {
 		$latlong = $conv->irish_to_wgs84($_GET['e'],$_GET['n'],$_GET['usehermert']);
+	} else if ($_GET['datum'] == 'german32') {
+		$latlong = $conv->utm_to_wgs84($_GET['e'],$_GET['n']);
+	} else if ($_GET['datum'] == 'german33') {
+		$latlong = $conv->utm_to_wgs84($_GET['e'],$_GET['n'],33);
+	} else if ($_GET['datum'] == 'german31') {
+		$latlong = $conv->utm_to_wgs84($_GET['e'],$_GET['n'],31);
 	} else {
 		//todo: make an educated guess - basically if could be irish then use that otherwise gb ?!? - probably not...
 	}
@@ -59,8 +66,48 @@ if (!empty($_GET['To'])) { //to lat/long
 		$smarty->assign('n', $_GET['n']);
 	} 
 } elseif (!empty($_GET['From'])) { //from lat/long
+	$reE = '(?P<Edeg>[0-9]+([.,][0-9]*)?)\s*°(\s*(?P<Emin>[0-9]+([.,][0-9]*)?)\s*\')?(\s*(?P<Esec>[0-9]+([.,][0-9]*)?)\s*")?';
+	$reN = '(?P<Ndeg>[0-9]+([.,][0-9]*)?)\s*°(\s*(?P<Nmin>[0-9]+([.,][0-9]*)?)\s*\')?(\s*(?P<Nsec>[0-9]+([.,][0-9]*)?)\s*")?';
+	$reEn = '(?P<Edeg>[0-9]+([.,][0-9]*)?)(\s*°\s*(?P<Emin>[0-9]+([.,][0-9]*)?)(\s*\'\s*(?P<Esec>[0-9]+([.,][0-9]*)?))?)?';
+	$reNn = '(?P<Ndeg>[0-9]+([.,][0-9]*)?)(\s*°\s*(?P<Nmin>[0-9]+([.,][0-9]*)?)(\s*\'\s*(?P<Nsec>[0-9]+([.,][0-9]*)?))?)?';
+	$reEdir = '(?P<Edir>[WOEwoe])';
+	$reNdir = '(?P<Ndir>[NSns])';
 	if (!empty($_GET['multimap']) && preg_match_all("/\(([\+\-]*\d{1,3}\.\d+)\)/",$_GET['multimap'],$matchs) == 2) {
 		list ($_GET['lat'],$_GET['long']) = $matchs[1];
+	} else if (isset($_GET['multimap'])
+	        &&(preg_match('/^\s*'.$reEdir.'\s*'.$reE.'\s*'.$reNdir.'\s*'.$reN.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reNdir.'\s*'.$reN.'\s*'.$reEdir.'\s*'.$reE.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reE.'\s*'.$reEdir.'\s*'.$reN.'\s*'.$reNdir.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reN.'\s*'.$reNdir.'\s*'.$reE.'\s*'.$reEdir.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reEdir.'\s*'.$reEn.'\s*'.$reNdir.'\s*'.$reNn.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reNdir.'\s*'.$reNn.'\s*'.$reEdir.'\s*'.$reEn.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reEn.'\s*'.$reEdir.'\s*'.$reNn.'\s*'.$reNdir.'\s*$/' , $_GET['multimap'], $matches) == 1
+	         ||preg_match('/^\s*'.$reNn.'\s*'.$reNdir.'\s*'.$reEn.'\s*'.$reEdir.'\s*$/' , $_GET['multimap'], $matches) == 1
+	)) {
+	//if (preg_match('/^\s*'.$reEdir.'\s*'.$reE.'\s*'.$reNdir.'\s*'.$reN.'\s*$/' , $teststr, $matches) == 1) {
+		#echo "  E: {$matches['Edir']} {$matches['Edeg']} {$matches['Emin']} {$matches['Esec']}\n";
+		#echo "  N: {$matches['Ndir']} {$matches['Ndeg']} {$matches['Nmin']} {$matches['Nsec']}\n";
+		$_GET['lat']   = str_replace(',','.',$matches['Ndeg']);
+		$_GET['latm']  = str_replace(',','.',$matches['Nmin']);
+		$_GET['lats']  = str_replace(',','.',$matches['Nsec']);
+		$_GET['ns']    = (strtoupper($matches['Ndir']) == 'S') ? 'S' : 'N';
+		$_GET['long']  = str_replace(',','.',$matches['Edeg']);
+		$_GET['longm'] = str_replace(',','.',$matches['Emin']);
+		$_GET['longs'] = str_replace(',','.',$matches['Esec']);
+		$_GET['ew']    = (strtoupper($matches['Edir']) == 'W') ? 'W' : 'E';
+	} else if (!empty($_GET['gke']) && !empty($_GET['gkn'])) {
+		#FIXME better checking?
+		$gke = floatval($_GET['gke']);
+		$gkn = floatval($_GET['gkn']);
+		$ll = $conv->gk_to_wgs84($gke, $gkn);
+		$_GET['lat']   = $ll[0];
+		$_GET['long']  = $ll[1];
+		$_GET['latm']  = 0;
+		$_GET['longm'] = 0;
+		$_GET['lats']  = 0;
+		$_GET['longs'] = 0;
+		$_GET['ew']    = 'E';
+		$_GET['ns']    = 'N';
 	}
 	
 		if (!empty($_GET['latm']))
@@ -83,14 +130,30 @@ if (!empty($_GET['To'])) { //to lat/long
 	} else if ($_GET['datum'] == 'irish') {
 		$en = $conv->wgs84_to_irish($_GET['lat'],$_GET['long'],$_GET['usehermert']);
         
+	} else if ($_GET['datum'] == 'german32') {
+		$en = $conv->wgs84_to_utm($_GET['lat'],$_GET['long']);
+	} else if ($_GET['datum'] == 'german33') {
+		$en = $conv->wgs84_to_utm($_GET['lat'],$_GET['long'], 33);
+	} else if ($_GET['datum'] == 'german31') {
+		$en = $conv->wgs84_to_utm($_GET['lat'],$_GET['long'], 31);
 	} else {
-		list($e,$n,$reference_index) = $conv->wgs84_to_national($_GET['lat'],$_GET['long'],$_GET['usehermert']);
+		$enr = $conv->wgs84_to_national($_GET['lat'],$_GET['long'],$_GET['usehermert']);
+		@list($e,$n,$reference_index) = $enr;
 		if ($reference_index == 1) {
 			$en = array($e,$n);
 			$_GET['datum'] = "osgb36";
 		} else if ($reference_index == 2) {
 			$en = array($e,$n);
 			$_GET['datum'] = "irish";
+		} else if ($reference_index == 3) {
+			$en = array($e,$n);
+			$_GET['datum'] = "german32";
+		} else if ($reference_index == 4) {
+			$en = array($e,$n);
+			$_GET['datum'] = "german33";
+		} else if ($reference_index == 5) {
+			$en = array($e,$n);
+			$_GET['datum'] = "german31";
 		}
 	}
 	if (isset($en) && count($en)) {
@@ -126,9 +189,14 @@ if (!empty($_GET['To'])) { //to lat/long
 	} else {
 		$smarty->assign('errormgs', $MESSAGES['latlong']['outside_area']);
 	}
-	$smarty->assign('lat', $_GET['lat']);
-	$smarty->assign('long', $_GET['long']);
-	$conv->wgs84_to_friendly_smarty_parts($_GET['lat'],$_GET['long'],$smarty);
+	if (isset($_GET['lat']) && isset($_GET['long'])) {
+		$smarty->assign('lat', $_GET['lat']);
+		$smarty->assign('long', $_GET['long']);
+		$conv->wgs84_to_friendly_smarty_parts($_GET['lat'],$_GET['long'],$smarty);
+		list ($gke, $gkn) = $conv->wgs84_to_gk($_GET['lat'],$_GET['long'],-1);
+		$smarty->assign('gke', $gke);
+		$smarty->assign('gkn', $gkn);
+	}
 }
 $smarty->assign('datum', $_GET['datum']);
 $smarty->assign('usehermert', $_GET['usehermert']);

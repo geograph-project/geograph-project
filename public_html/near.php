@@ -129,7 +129,7 @@ if ($grid_given)
 		$smarty->assign('nl', ($lat > 0)?'N':'S');
 		
 		$places = array();
-		if ($square->reference_index == 1) {
+		if ($square->reference_index == 1) { // FIXME schould be configurable
 			$places[] = $square->findNearestPlace(75000,'OS');
 			$places[] = $square->findNearestPlace(75000,'OS250');
 			$places[] = $square->findNearestPlace(75000,'hist');

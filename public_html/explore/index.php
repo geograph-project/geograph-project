@@ -32,13 +32,13 @@ $smarty = new GeographPage;
 //regenerate?
 if (!$smarty->is_cached('explore.tpl'))
 {
-	if (!$db) {
+	if (!isset($db)) {
 		$db=NewADOConnection($GLOBALS['DSN']);
 		if (!$db) die('Database connection failed');
 	}
 
 	$countylist = array();
-	$recordSet = &$db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
+	$recordSet = $db->Execute("SELECT reference_index,county_id,name FROM loc_counties WHERE n > 0"); 
 	while (!$recordSet->EOF) 
 	{
 		$countylist[$CONF['references'][$recordSet->fields[0]]][$recordSet->fields[1]] = $recordSet->fields[2];
@@ -58,7 +58,7 @@ if (!$smarty->is_cached('explore.tpl'))
 	
 	$options = array();
 	foreach ($topicsraw as $topic_id => $row) {
-		if ($last != $row['forum_name'] && $last) {
+		if (!empty($last) && $last != $row['forum_name']) {
 			$topics[$last] = $options;
 			$options = array();
 		}
@@ -69,6 +69,12 @@ if (!$smarty->is_cached('explore.tpl'))
 	$topics[$last] = $options;
 	
 	$smarty->assign_by_ref('topiclist',$topics);	
+
+	$smarty->assign('histsearch',$CONF['searchid_historical']);
+	if (count($CONF['hier_statlevels'])) {
+		$smarty->assign('hasregions',true);
+		$smarty->assign('regionlistlevel',$CONF['hier_listlevel']);
+	}
 }
 
 

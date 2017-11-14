@@ -97,7 +97,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	//prepare output file and query
 	printf("Preparing sitemap %d of %d, %d%% complete...\r", $sitemap, $sitemaps,$percent);
 		
-	$filename=sprintf('%s/public_html/kml/sitemap%04d.xml', $param['dir'], $sitemap); 
+	$filename=sprintf('%s/public_html/kml/sitemap%04d%s.xml', $param['dir'], $sitemap, $CONF['sitesuffix']);
 	$fh=fopen($filename, "w");
 	
 	fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -107,7 +107,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$maxdate="";
 	
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = &$db->Execute(
+	$recordSet = $db->Execute(
 		"select filename,date(ts) as ts_date ".
 		"from kmlcache ".
 		"where rendered = 1 and filename != '' and level in (1,5,6,7) ".
@@ -160,7 +160,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 }
 
 //now we write an index file pointing to our generated ones above
-$filename=sprintf('%s/public_html/kml/sitemap.xml', $param['dir']); 
+$filename=sprintf('%s/public_html/kml/sitemap%s.xml', $param['dir'], $CONF['sitesuffix']);
 $fh=fopen($filename, "w");
 
 fprintf($fh, '<?xml version="1.0" encoding="UTF-8"?>'."\n");
@@ -170,7 +170,7 @@ for ($s=1; $s<=$sitemaps; $s++)
 {
 	fprintf($fh, "<sitemap>");
 	
-	$fname=sprintf("sitemap%04d.xml.gz", $s);
+	$fname=sprintf("sitemap%04d%s.xml.gz", $s, $CONF['sitesuffix']);
 	
 	$mtime=filemtime($param['dir']."/public_html/kml/".$fname);
 	$mtimestr=strftime("%Y-%m-%dT%H:%M:%S+00:00", $mtime);

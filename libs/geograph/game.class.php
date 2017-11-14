@@ -28,6 +28,11 @@
 *
 ******/
 
+if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 8 ) {
+	header("HTTP/1.1 503 Service Unavailable");
+	die("server busy, please try later");
+}
+
 class game {
 
 	public $rastermap = '';
@@ -101,7 +106,7 @@ class game {
 				"Content-Type: text/plain; charset={$CONF['mail_charset']}\n".
 				"Content-Disposition: inline\n".
 				"Content-Transfer-Encoding: 8bit",
-				is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}"
+				is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}");
 			);
 		}
 		if (!empty($username)) {
@@ -505,3 +510,4 @@ class game {
 }
 
 
+?>

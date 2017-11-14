@@ -99,7 +99,7 @@ function adodb_log_sql(&$connx,$sql,$inputarr)
 			$errM = $connx->ErrorMsg();
 			$errN = $connx->ErrorNo();
 			$conn->lastInsID = 0;
-			$tracer = substr('ERROR: '.htmlspecialchars($errM),0,250);
+			$tracer = substr('ERROR: '.htmlspecialchars_latin($errM),0,250);
 		} else {
 			$tracer = '';
 			$errM = '';
@@ -471,7 +471,7 @@ Committed_AS:   348732 kB
 					$suffix = ' ... <i>String too long for GET parameter: '.strlen($prefix).'</i>';
 					$prefix = '';
 				}
-				$s .= "<tr><td>".adodb_round($rs->fields[0],6)."<td align=right>".$rs->fields[2]."<td><font size=-1>".$prefix.htmlspecialchars($sql).$suffix."</font>".
+				$s .= "<tr><td>".adodb_round($rs->fields[0],6)."<td align=right>".$rs->fields[2]."<td><font size=-1>".$prefix.htmlspecialchars_latin($sql).$suffix."</font>".
 					"<td>".$rs->fields[3]."<td>".$rs->fields[4]."</tr>";
 				$rs->MoveNext();
 			}
@@ -550,7 +550,7 @@ Committed_AS:   348732 kB
 					$prefix = '';
 					$suffix = '';
 				}
-				$s .= "<tr><td>".adodb_round($rs->fields[0],6)."<td align=right>".$rs->fields[2]."<td><font size=-1>".$prefix.htmlspecialchars($sql).$suffix."</font>".
+				$s .= "<tr><td>".adodb_round($rs->fields[0],6)."<td align=right>".$rs->fields[2]."<td><font size=-1>".$prefix.htmlspecialchars_latin($sql).$suffix."</font>".
 					"<td>".$rs->fields[3]."<td>".$rs->fields[4]."</tr>";
 				$rs->MoveNext();
 			}
@@ -834,7 +834,7 @@ Committed_AS:   348732 kB
 						$val /= 1024;
 						$val .= 'K';
 					}
-					//$val = htmlspecialchars($val);
+					//$val = htmlspecialchars_latin($val);
 				}
 			}
 			if ($category != $oldc) {
@@ -911,7 +911,7 @@ Committed_AS:   348732 kB
 <input type="submit" value=" Run SQL Below " name="RUN"><input type=hidden name=do value=dosql>
 </td></tr>
   <tr>
-  <td colspan=2><textarea rows=<?php print $rows; ?> name="sql" cols="80"><?php print htmlspecialchars($sql) ?></textarea>
+  <td colspan=2><textarea rows=<?php print $rows; ?> name="sql" cols="80"><?php print htmlspecialchars_latin($sql) ?></textarea>
   </td>
   </tr>
  </table>
@@ -933,7 +933,7 @@ Committed_AS:   348732 kB
 			if (!$sqls) continue;
 			
 			if ($print) {
-				print "<p>".htmlspecialchars($sqls)."</p>";
+				print "<p>".htmlspecialchars_latin($sqls)."</p>";
 				flush();
 			}
 			$savelog = $this->conn->LogSQL(false);

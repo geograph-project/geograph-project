@@ -191,7 +191,7 @@
 </div>
 
 
-<div class="field">
+<!--div class="field">
 
 
 	<label for="age_group">Age Group:</label>
@@ -209,7 +209,7 @@
 	<div class="fieldnotes">This information is not made publicly visible, but
 	it provides useful demographic information to help us plan future features.</div>
 	
-</div> 
+</div--> 
 
 
 </fieldset>
@@ -223,12 +223,12 @@
 	<label for="upload_size" class="nowrap">Default Upload Size</label>
 	
 	<select name="upload_size" id="upload_size"> 
-		<option value="{$stdsize}" {if $profile->upload_size == $stdsize} selected="selected"{/if}>{$stdsize} x {$stdsize} (the original size)</option>
+		<option value="{$stdsize}" {if $profile->upload_size == $stdsize} selected="selected"{/if}>{$stdsize} x {$stdsize} (the original size)</a>
 		{foreach item=cursize from=$sizes}
-		<option value="{$cursize}" {if $profile->upload_size == $cursize} selected="selected"{/if}>{$cursize} x {$cursize}</option>
+		<option value="{$cursize}" {if $profile->upload_size == $cursize} selected="selected"{/if}>{$cursize} x {$cursize}</a>
 		{/foreach}
 		{if $showorig}
-		<option value="65536" {if $profile->upload_size > 65530} selected="selected"{/if}>As uploaded</option>
+		<option value="65536" {if $profile->upload_size > 65530} selected="selected"{/if}>As uploaded</a>
 		{/if}
 	</select>
 
@@ -257,19 +257,6 @@
 	<div class="fieldnotes">Automatically include this text in messages sent through the site. <br/>
 	(250 chars max) 
 	<input type="button" value="Use Suggested Text" onclick="this.form.message_sig.value='-- '+this.form.realname.value+' http://{$http_host}/profile/{$user->user_id}'"/></div>
-</div>
-
-
-<div class="field"> 
-	<label for="calendar_public" class="nowrap">Personal calendar</label>
-	
-	<select name="calendar_public" id="calendar_public">
-		<option value="no">My personal calendar is private</option>
-		<option value="registered" {if $profile->calendar_public eq 'registered'} selected{/if}>Show my calendar to registered users</option>
-		<option value="everyone" {if $profile->calendar_public eq 'everyone'} selected{/if}>My calendar is public</option>
-	</select>
-	 
-	<div class="fieldnotes">Your personal calendar shows when you took your images. You can make it public or private using this box.</div>
 </div>
 
 

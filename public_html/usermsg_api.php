@@ -134,7 +134,7 @@ $geofrom = "From: Geograph <{$CONF['mail_from']}>\n";
 $envfrom = is_null($CONF['mail_envelopefrom'])?null:"-f {$CONF['mail_envelopefrom']}";
 
 
-if (preg_match('/(DORMANT|geograph\.org\.uk|geograph\.co\.uk|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) {
+if (preg_match('/(DORMANT|geo\.hlipp\.de|dev\.null|deleted|localhost|127\.0\.0\.1)/',$recipient->email)) { # FIXME hard coded domain
 
 	$email = $CONF['contact_email'];
 
@@ -157,7 +157,7 @@ else
 		"Original To: {$recipient->email}\n".
 		"Original From: $from_name <$from_email>\n".
 		"Original Subject:\n\n$body",
-		$geofrom.$mime, $envfrom);
+		$geofrom.$mime, $envfrom); #FIXME conf var
 
 	die("ERROR: fatal error, Please let us know");
 }

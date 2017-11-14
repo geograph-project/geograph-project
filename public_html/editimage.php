@@ -118,6 +118,15 @@ if (isset($_REQUEST['id']))
 			if ($name!="db")
 				$image->{"current_$name"} = $image->$name;
 		}
+		$geonotes = $image->getNotes(array('visible','pending','deleted'));
+		foreach($geonotes as &$geonote) {
+			$vars=get_object_vars($geonote);
+			foreach($vars as $name=>$val)
+			{
+				if ($name!="db")
+					$image->{"current_{$geonote->note_id}_$name"} = $geonote->$name;
+			}
+		}
 
 		//do our thing!
 		$smarty->assign('page_title', $image->grid_reference);

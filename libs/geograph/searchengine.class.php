@@ -270,7 +270,7 @@ END;
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
 				
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 		
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
@@ -355,12 +355,12 @@ END;
 						($image->moderation_status!='rejected' && $image->moderation_status!='pending')
 						|| $image->user_id == $GLOBALS['USER']->user_id
 					) ) {
-						$suggestions += array(array('link'=>"/photo/{$image->gridimage_id}",'gr'=>'(anywhere)','localities'=>"Image by ".htmlentities($image->realname).", ID: {$image->gridimage_id}",'query'=>htmlentities2($image->title)));
+						$suggestions += array(array('link'=>"/photo/{$image->gridimage_id}",'gr'=>'(anywhere)','localities'=>"Image by ".htmlentities_latin($image->realname).", ID: {$image->gridimage_id}",'query'=>htmlentities2($image->title)));
 					}
 				} else {
 					require_once("3rdparty/spellchecker.class.php");
 
-					$correction = SpellChecker::Correct($this->criteria->searchtext);
+					$correction = SpellChecker::Correct($this->criteria->searchtext, 'de', 'de'); // FIXME language => conf var
 
 					if ($correction != $this->criteria->searchtext && levenshtein($correction,$this->criteria->searchtext) < 0.25*strlen($correction)) {
 
@@ -442,7 +442,7 @@ END;
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
 
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
@@ -582,7 +582,7 @@ END;
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_before = ((float)$usec + (float)$sec);
 				
-		$recordSet = &$db->Execute($sql);
+		$recordSet = $db->Execute($sql);
 				
 		list($usec, $sec) = explode(' ',microtime());
 		$querytime_after = ((float)$usec + (float)$sec);
@@ -622,9 +622,9 @@ END;
 	function ReturnRecordset($pg,$nocache = false) {
 		if ($nocache || $this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\.(grid_reference|)/',$this->criteria->searchq,$m)) && !$m[2]) {
 			//a Special Search needs full access to GridImage/GridSquare/User
-			$recordSet =& $this->ExecuteReturnRecordset($pg);
+			$recordSet = $this->ExecuteReturnRecordset($pg);
 		} else {
-			$recordSet =& $this->ExecuteCachedReturnRecordset($pg); 
+			$recordSet = $this->ExecuteCachedReturnRecordset($pg); 
 		}
 		return $recordSet;
 	}
@@ -637,9 +637,9 @@ END;
 	{
 		if ($this->noCache || ($this->criteria->searchclass == 'Special' && preg_match('/(gs|gi|user)\.(grid_reference|)/',$this->criteria->searchq,$m)) && !$m[2]) {
 			//a Special Search needs full access to GridImage/GridSquare/User
-			$recordSet =& $this->ExecuteReturnRecordset($pg);
+			$recordSet = $this->ExecuteReturnRecordset($pg);
 		} else {
-			$recordSet =& $this->ExecuteCachedReturnRecordset($pg); 
+			$recordSet = $this->ExecuteCachedReturnRecordset($pg); 
 		}
 		//we dont actully want to process anything
 		if ($this->countOnly)
@@ -737,7 +737,7 @@ END;
 	 * note: it caches so can be called multiple times easily
 	 * @access public
 	 */
-	function pagesString($postfix = '',$extrahtml ='') {
+	function pagesString($postfix = '', $extrahtml = '', $resultspages = 0) {
 		static $r;
 		if (!empty($r))
 			return($r);
@@ -747,28 +747,62 @@ END;
 		if (!empty($_GET['legacy'])) { //todo - technically a bodge!
 			$postfix .= "&amp;legacy=true";
 		}
-		if ($this->currentPage > 1) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1)."$postfix\"$extrahtml>&lt; &lt; prev</a> ";
+		if ($this->currentPage > 1) {
+			if ($resultspages < $this->currentPage-1) {
+				$uri = "/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage-1);
+			} elseif ($this->currentPage == 2) {
+				$uri = "/results/{$this->query_id}";
+			} else {
+				$uri = "/results/{$this->query_id}/".($this->currentPage-1);
+			}
+			$r .= "<a href=\"$uri$postfix\"$extrahtml>&lt; &lt; prev</a> ";
+		}
 		$start = max(1,$this->currentPage-5);
 		$endr = min($this->numberOfPages+1,$this->currentPage+8);
 		
-		if ($start > 1)
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=1$postfix\"$extrahtml>1</a> ... ";
+		if ($start > 1) {
+			if ($resultspages < 1) {
+				$uri = "/{$this->page}?i={$this->query_id}&amp;page=1";
+			} else {
+				$uri = "/results/{$this->query_id}";
+			}
+			$r .= "<a href=\"$uri$postfix\"$extrahtml>1</a> ... ";
+		}
 
 		for($index = $start;$index<$endr;$index++) {
-			if ($index == $this->currentPage && !$this->countOnly) 
+			if ($index == $this->currentPage && !$this->countOnly)
 				$r .= "<b>$index</b> "; 
-			else
-				$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=$index$postfix\"$extrahtml>$index</a> ";
+			else {
+				if ($resultspages < $index) {
+					$uri = "/{$this->page}?i={$this->query_id}&amp;page=$index";
+				} elseif ($index == 1) {
+					$uri = "/results/{$this->query_id}";
+				} else {
+					$uri = "/results/{$this->query_id}/$index";
+				}
+				$r .= "<a href=\"$uri$postfix\"$extrahtml>$index</a> ";
+			}
 		}
 		if ($endr < $this->numberOfPages+1 || $this->pageOneOnly) 
 			$r .= "... ";
 			
-		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1)."$postfix\"$extrahtml>next &gt;&gt;</a> ";
+		if ( ($this->numberOfPages > $this->currentPage || $this->pageOneOnly ) && !$this->countOnly) {
+			if ($resultspages < $this->currentPage+1) {
+				$uri = "/{$this->page}?i={$this->query_id}&amp;page=".($this->currentPage+1);
+			} else {
+				$uri = "/results/{$this->query_id}/".($this->currentPage+1);
+			}
+			$r .= "<a href=\"$uri$postfix\"$extrahtml>next &gt;&gt;</a> ";
+		}
 	
-		if ( $this->fullText && empty($_GET['legacy']) && $this->currentPage < $this->numberOfPages && $this->resultCount <= $this->maxResults ) 
-			$r .= "<a href=\"/{$this->page}?i={$this->query_id}&amp;page=".($this->numberOfPages)."$postfix\"$extrahtml>last</a> ";
+		if ( $this->fullText && empty($_GET['legacy']) && $this->currentPage < $this->numberOfPages && $this->resultCount <= $this->maxResults ) {
+			if ($resultspages < $this->numberOfPages) {
+				$uri = "/{$this->page}?i={$this->query_id}&amp;page=".($this->numberOfPages);
+			} else {
+				$uri = "/results/{$this->query_id}/".($this->numberOfPages);
+			}
+			$r .= "<a href=\"$uri$postfix\"$extrahtml>last</a> ";
+		}
 		return $r;	
 	}
 	

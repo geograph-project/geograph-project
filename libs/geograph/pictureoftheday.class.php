@@ -39,10 +39,10 @@ class PictureOfTheDay
 	 * today's image, as selected by initToday
 	 */
 	var $gridimage_id;
-	var $width=381;
+	var $width=381; #FIXME width/height not used?
 	var $height=255;
 	
-	function PictureOfTheDay($w=381,$h=255)
+	function PictureOfTheDay($w=381,$h=255) #FIXME width/height not used?
 	{
 		$this->width=$w;
 		$this->height=$h;
@@ -72,8 +72,8 @@ class PictureOfTheDay
 			{
 				//ok, there is still no image for today, and we have a
 				//lock on the table - assign the first available image
-				//ordered by number - giving preference to geograph
-				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,(abs(datediff(now(),imagetaken)) mod 365 div 14) asc,crc32(gridimage_id)");
+				//ordered by number - giving preference to geograph and highly voted images 
+				$gridimage_id=$db->GetOne("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,(abs(datediff(now(),imagetaken)) mod 365 div 14) asc,(vote_baysian > 3) desc,crc32(gridimage_id)");
 
 				if (!empty($gridimage_id)) {
 					$db->Execute("update gridimage_daily set showday='$now' where gridimage_id = $gridimage_id");

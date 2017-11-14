@@ -65,9 +65,9 @@ class Conversions
 //use:	list($x,$y,$reference_index) = wgs84_to_internal($lat,$long);
 		//with reference_index deduced from the location and the approraite conversion used
 
-function wgs84_to_internal($lat,$long) {
+function wgs84_to_internal($lat,$long,$doround=true) {
 	list($e,$n,$reference_index) = $this->wgs84_to_national($lat,$long);
-	return $this->national_to_internal($e,$n,$reference_index);
+	return $this->national_to_internal($e,$n,$reference_index,$doround);
 }
 
 
@@ -100,6 +100,9 @@ function wgs84_to_national($lat,$long,$usehermert = true,$ri=-1) {
 	$conv = new ConversionsLatLong;
 	$ire = ($ri == 2 || $ri == -1 && $lat > 51.2 && $lat < 55.73 && $long > -12.2 && $long < -4.8);
 	$uk = ($ri == 1 || $ri == -1 && $lat > 49 && $lat < 62 && $long > -9.5 && $long < 2.3);
+	$ger32 = ($ri == 3 || $ri == -1 && $lat > 47 && $lat < 56 && $long >= 6 && $long <= 12); #FIXME
+	$ger33 = ($ri == 4 || $ri == -1 && $lat > 47 && $lat < 56 && $long > 12 && $long < 16); #FIXME
+	$ger31 = ($ri == 5 || $ri == -1 && $lat > 47 && $lat < 56 && $long > 4 && $long < 6); #FIXME
 	
 	if ($uk && $ire) {
 		//rough border for ireland
@@ -119,6 +122,12 @@ function wgs84_to_national($lat,$long,$usehermert = true,$ri=-1) {
 		return array_merge($conv->wgs84_to_irish($lat,$long,$usehermert),array(2));
 	} else if ($uk) {
 		return array_merge($conv->wgs84_to_osgb36($lat,$long),array(1));
+	} else if($ger32) {
+		return array_merge($conv->wgs84_to_utm($lat,$long,32),array(3));
+	} else if($ger33) {
+		return array_merge($conv->wgs84_to_utm($lat,$long,33),array(4));
+	} else if($ger31) {
+		return array_merge($conv->wgs84_to_utm($lat,$long,31),array(5));
 	}
 	return array();
 }
@@ -128,8 +137,8 @@ function wgs84_to_national($lat,$long,$usehermert = true,$ri=-1) {
 		//reference_index is optional as we can duduce this (but if known then can pass it in to save having to recaluate)
 			//will probably just call national_to_wgs84 once converted
 
-function internal_to_wgs84($x,$y,$reference_index = 0) {
-	list ($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index);
+function internal_to_wgs84($x,$y,$reference_index = 0,$doshift = true) {
+	list ($e,$n,$reference_index) = $this->internal_to_national($x,$y,$reference_index,$doshift);
 	return $this->national_to_wgs84($e,$n,$reference_index);
 }
 
@@ -144,6 +153,12 @@ function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
 		$latlong = $conv->osgb36_to_wgs84($e,$n);
 	} else if ($reference_index == 2) {
 		$latlong = $conv->irish_to_wgs84($e,$n,$usehermert);
+	} else if ($reference_index == 3) {
+		$latlong = $conv->utm_to_wgs84($e,$n,32);
+	} else if ($reference_index == 4) {
+		$latlong = $conv->utm_to_wgs84($e,$n,33);
+	} else if ($reference_index == 5) {
+		$latlong = $conv->utm_to_wgs84($e,$n,31);
 	}
 	return $latlong;
 }
@@ -152,7 +167,7 @@ function national_to_wgs84($e,$n,$reference_index,$usehermert = true) {
 //use:	list($lat,$long) = gridsquare_to_wgs84(&$gridsquare);
 			//will contain nateastings/natnorthings  or can call getNationalEastings to get them
 
-function gridsquare_to_wgs84(&$gridsquare) {
+function gridsquare_to_wgs84($gridsquare) {
 	if (!$gridsquare->nateastings)
 		$gridsquare->getNatEastings();
 	return $this->national_to_wgs84($gridsquare->nateastings,$gridsquare->natnorthings,$gridsquare->reference_index);
@@ -177,7 +192,11 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 	if (!$reference_index) {
 		return array("",0);
 	}
-	list($x,$y) = $this->national_to_internal($e,$n,$reference_index );
+	$xy = $this->national_to_internal($e, $n, $reference_index);
+	if (!count($xy)) {
+		return array("",0);
+	}
+	list($x,$y) = $xy;
 
 	$db = $this->_getDB();
 
@@ -217,10 +236,20 @@ function national_to_gridref($e,$n,$gr_length,$reference_index,$spaced = false) 
 
 //use:    list($x,$y) = national_to_internal($e,$n,$reference_index );
 
-function national_to_internal($e,$n,$reference_index ) {
+function national_to_internal($e,$n,$reference_index,$doround=true) {
 	global $CONF;
-	$x = intval($e / 1000);
-	$y = intval($n / 1000);
+
+	$x = $e / 1000;
+	$y = $n / 1000;
+
+	if ($doround) {
+		$x = intval($x); # FIXME floor?
+		$y = intval($y); # FIXME floor?
+	}
+
+	if (!isset($CONF['origins'][$reference_index])) {
+		return array();
+	}
 	
 	//add the internal origin
 	$x += $CONF['origins'][$reference_index][0];
@@ -231,7 +260,7 @@ function national_to_internal($e,$n,$reference_index ) {
 
 //use:    list($e,$n,$reference_index) = internal_to_national($x,$y,$reference_index = 0);
 // note gridsquare has its own version that takes into account the userspecified easting/northing
-function internal_to_national($x,$y,$reference_index = 0) {
+function internal_to_national($x,$y,$reference_index = 0,$doshift = true) {
 	global $CONF;
 	if (!$reference_index) {
 		$db = $this->_getDB();
@@ -262,9 +291,13 @@ function internal_to_national($x,$y,$reference_index = 0) {
 		$x -= $CONF['origins'][$reference_index][0];
 		$y -= $CONF['origins'][$reference_index][1];
 
-		//lets position the national coords in the center of the square!
-		$e = intval($x * 1000 + 500);
-		$n = intval($y * 1000 + 500);
+		$e = intval($x * 1000);
+		$n = intval($y * 1000);
+		if ($doshift) {
+			//lets position the national coords in the center of the square!
+			$e += 500;
+			$n += 500;
+		}
 		return array($e,$n,$reference_index);
 	} else {
 		return array();

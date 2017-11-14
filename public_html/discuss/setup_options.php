@@ -3,7 +3,7 @@
 This file is part of miniBB. miniBB is free discussion forums/message board software, without any warranty. See COPYING file for more details. Copyright (C) 2004 Paul Puzyrev, Sergei Larionov. www.minibb.net
 */
 
-$DB=$CONF['db_driver'];
+$DBdriver='mysql'; #$CONF['db_driver'];
 
 $DBhost=$CONF['db_connect'];
 $DBname=$CONF['db_db'];
@@ -32,7 +32,8 @@ $bb_admin='bb_admin.php?';
 
 $lang=$CONF['forum_lang'];
 $skin='default';
-$main_url='http://'.$_SERVER['HTTP_HOST'].'/discuss';
+$main_url='//'.$_SERVER['HTTP_HOST'].'/discuss';
+$main_url_full='http://'.$_SERVER['HTTP_HOST'].'/discuss';
 $sitename=$CONF['forum_title'];
 $emailadmin=0;
 $emailusers=1;

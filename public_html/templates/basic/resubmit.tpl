@@ -80,8 +80,7 @@ function hideStep3() {
 	<p>With a Creative Commons licence, the photographer <b>keeps the copyright</b> but allows 
 	people to copy and distribute the work provided they <b>give credit</b>.</p>
 	
-	<p>Since we want to ensure we can use your work to fund the running costs of
-	this site, and allow us to create montages of grid images, we ask that you
+	<p>Since we want to ensure we can use your work to allow us to create montages of grid images, we ask that you
 	allow the following</p>
 	
 	<ul>

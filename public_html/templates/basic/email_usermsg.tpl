@@ -5,7 +5,7 @@
 
 
 ------------------------------------------------------------
-Forward abuse complaints to: {$contactmail}
+Forward abuse complaints to: geo@hlipp.de
 {/dynamic}
  	
 

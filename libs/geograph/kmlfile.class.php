@@ -87,7 +87,7 @@ class kmlPrimative {
 	}
 
 	public function getChild($ref) {
-		return $this->children[$ref];
+		return @$this->children[$ref];
 	}
 
 	public function unsetChild($ref) {
@@ -201,7 +201,7 @@ class kmlFile extends kmlPrimative {
 		if (empty($this->filename)) {
 			$this->filename = uniqid().".kml";
 		}
-		$content =& $this->returnKML();
+		$content = $this->returnKML();
 		if ($sendheaders && !headers_sent()) {
 			Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($this->filename));
 			Header("Content-Disposition: attachment; filename=".basename($this->filename));
@@ -231,7 +231,7 @@ class kmlFile extends kmlPrimative {
 		// add the binary data stored in the string 'content' 
 		$zipfile -> addFile($content, "doc.kml");   
 		
-		$content =& $zipfile->file();
+		$content = $zipfile->file();
 		
 		if ($sendheaders && !headers_sent()) {
 			Header("Content-Type: ".$this->contentType."; charset=".$this->encoding."; filename=".basename($this->filename));
@@ -252,7 +252,7 @@ class kmlFile extends kmlPrimative {
 		$s = "<?xml version=\"1.0\" encoding=\"".$this->encoding."\"?>\n";
 
 		if (!empty($this->atom)) {
-			$this->values['xmlns:atom'] .= "http://www.w3.org/2005/Atom";
+			@$this->values['xmlns:atom'] .= "http://www.w3.org/2005/Atom";
 			$this->version = 2.2;
 		}
 	
@@ -349,7 +349,7 @@ class kmlPlacemark extends kmlPrimative {
 		$Style = $this->addChild('Style');
 		$IconStyle = $Style->addChild('IconStyle');
 		$Icon = $IconStyle->addChild('Icon');
-		$Icon->setItem('href',htmlspecialchars($url));
+		$Icon->setItem('href',htmlspecialchars_latin($url));
 		return $this;
 	}
 

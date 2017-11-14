@@ -4,7 +4,7 @@
 
  <h2>Geograph Sitemap</h2>
  
- <p>Quick links to nearly all Geograph Webpages</p>
+ <p>Quick links to nealy all Geograph Webpages</p>
  
  <div style="float:right;padding:5px;background:#dddddd;position:relative; font-size:0.8em;margin-left:20px;top:-30px">
  <h3>Help and Info...</h3>
@@ -101,6 +101,14 @@ Refine:
 <option value="centi">Centisquares</option>
 <option value="clen">Description Length</option>
 </select>
+{if $regions}
+<select name="region">
+<option value=""></option>
+{foreach from=$regions item=region}
+<option value="{$region.level}_{$region.community_id}">in {$region.name|escape:'html'}</option>
+{/foreach}
+</select>
+{/if}
  <input type="submit" value="Go"/>
 </form></li></ul></li>
 
@@ -126,6 +134,15 @@ Refine:
 <option value="centi">Centisquares</option>
 <option value="clen">Description Length</option>
 </select>
+
+{if $regions}
+<select name="region">
+<option value=""></option>
+{foreach from=$regions item=region}
+<option value="{$region.level}_{$region.community_id}">in {$region.name|escape:'html'}</option>
+{/foreach}
+</select>
+{/if}
 
 <select name="date">
 <option value="submitted">Submitted</option> 

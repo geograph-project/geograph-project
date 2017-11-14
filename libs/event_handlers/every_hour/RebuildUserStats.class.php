@@ -61,6 +61,10 @@ class RebuildUserStats extends EventHandler
 					`hectads` smallint(3) unsigned NOT NULL default '0',
 					`last` int(11) unsigned NOT NULL default '0',
 					`content` mediumint(5) unsigned NOT NULL default '0',
+					`selfrate_like` mediumint(5) unsigned NOT NULL DEFAULT '0',
+					`selfrate_site` mediumint(5) unsigned NOT NULL DEFAULT '0',
+					`selfrate_qual` mediumint(5) unsigned NOT NULL DEFAULT '0',
+					`selfrate_info` mediumint(5) unsigned NOT NULL DEFAULT '0',
 					PRIMARY KEY  (`user_id`),
 					KEY `points` (`points`)
 				) ENGINE=MyISAM
@@ -79,7 +83,11 @@ class RebuildUserStats extends EventHandler
 					count(distinct substring(grid_reference,1,length(grid_reference)-4)) as myriads,
 					count(distinct concat(substring(grid_reference,1,length(grid_reference)-3),substring(grid_reference,length(grid_reference)-1,1)) ) as hectads,
 					max(gridimage_id) as last,
-					0 as `content`
+					0 as `content`,
+					0 as `selfrate_like`,
+					0 as `selfrate_site`,
+					0 as `selfrate_qual`,
+					0 as `selfrate_info`
 				FROM gridimage_search
 				GROUP BY user_id
 				ORDER BY user_id");
@@ -94,6 +102,19 @@ class RebuildUserStats extends EventHandler
 		where percent_land > 0");
 		$db->Execute('INSERT INTO user_stat_tmp SET `'.implode('` = ?,`',array_keys($overall)).'` = ?',array_values($overall));
 
+
+		$topusers=$db->GetAssoc("SELECT gv.user_id,sum(gv.type='like') as srlike,sum(gv.type='site') as srsite,sum(gv.type='qual') as srqual,sum(gv.type='info') as srinfo ".
+			"FROM gridimage gi INNER JOIN gridimage_vote gv ON (gi.gridimage_id=gv.gridimage_id and gi.user_id=gv.user_id and gv.vote >= 3) ".
+			"GROUP BY gv.user_id");
+		foreach ($topusers as $user_id=>&$row) {
+			$db->query("UPDATE user_stat_tmp 
+			SET selfrate_like = {$row['srlike']},
+			selfrate_site = {$row['srsite']},
+			selfrate_qual = {$row['srqual']},
+			selfrate_info = {$row['srinfo']}
+			WHERE user_id = $user_id");
+		}
+		unset($row);
 
 		$topusers=$db->GetAll("SELECT user_id,sum(ftf=1) as points,count(distinct grid_reference) as geosquares
 		FROM gridimage_search 

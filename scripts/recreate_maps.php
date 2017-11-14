@@ -136,6 +136,17 @@ require_once('geograph/gridsquare.class.php');
 require_once('geograph/map.class.php');
 require_once('geograph/image.inc.php');
 
+#if (!empty($CONF['mem_maptiles'])) {
+#	$r=ini_set("memory_limit",$CONF['mem_maptiles']);
+#	trigger_error('recreate_maps ini_set("memory_limit", '.$CONF['mem_maptiles'].'): '.($r===FALSE?'<error>':$r), E_USER_WARNING);
+#}
+
+#if (!empty($CONF['time_maptiles'])) {
+#	set_time_limit($CONF['time_maptiles']);
+#}
+#trigger_error('recreate_maps max_execution_time: '.ini_get('max_execution_time'), E_USER_WARNING);
+#trigger_error('recreate_maps memory_limit: '.ini_get('memory_limit'), E_USER_WARNING);
+
 $db = NewADOConnection($GLOBALS['DSN']);
 
 $start_time = time();
@@ -150,7 +161,7 @@ while (1) {
 
 	if ($invalid_maps) {
 		//done as many small select statements to allow new maps to be processed 
-		$recordSet = &$db->Execute("select * from mapcache where age > 0 and type_or_user >= -1
+		$recordSet = $db->Execute("select * from mapcache where age > 0 and type_or_user >= -1
 			order by pixels_per_km desc, age desc limit 50");
 		while (!$recordSet->EOF) 
 		{
@@ -167,12 +178,20 @@ while (1) {
 			}
 
 			$map=new GeographMap;
-			
+			## FIXME introduce $map->from_row($row);
 			foreach($recordSet->fields as $name=>$value)
 			{
 				if (!is_numeric($name))
 					$map->$name=$value;
 			}
+			$map->mercator = !empty($map->mercator);
+			if ($map->mercator) {
+				$map->setScale($map->level);
+			}
+			$map->enableCaching(true, false); # FIXME better solution: build layers=2 at the beginning?
+
+			#echo ('start: '.$map->getImageFilename()."\n");
+			#flush();
 
 			$ok = $map->_renderMap();
 				

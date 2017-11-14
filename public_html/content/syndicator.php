@@ -80,7 +80,7 @@ $sql="select content.content_id,content.user_id,url,title,extract,updated,create
 	order by updated desc
 	limit $limit";
 
-$recordSet = &$db->Execute($sql);
+$recordSet = $db->Execute($sql);
 while (!$recordSet->EOF)
 {
 	$item = new FeedItem();
@@ -97,7 +97,7 @@ while (!$recordSet->EOF)
 	$item->date = strtotime($recordSet->fields['created']);
 	$item->author = $recordSet->fields['realname'];
 	
-	if (($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') && $recordSet->fields['gridsquare_id']) {
+	if (($format == 'KML' || $format == 'GeoRSS' || $format == 'GPX') && !empty($recordSet->fields['gridsquare_id'])) {
 		$gridsquare = new GridSquare;
 		$grid_ok=$gridsquare->loadFromId($recordSet->fields['gridsquare_id']);
 

@@ -52,7 +52,7 @@ class Gazetteer
 		
 		$mkey = "$reference_index,$e,$n,$radius,-".'.v3';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
-		$places =& $memcache->name_get('g',$mkey);
+		$places = $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
 		
@@ -99,7 +99,8 @@ class Gazetteer
 					(id + 10000000) as pid,
 					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
 					'towns' as gaz,
-					e,n
+					e,n,
+					community_id
 				from 
 					loc_towns
 				where
@@ -113,6 +114,10 @@ class Gazetteer
 			$conv = new Conversions;
 
 			foreach ($places as &$place) {
+				if (!empty($place['community_id'])) {
+					$place['hier'] = $this->_get_hier_from_cid($place['community_id']);
+					$place['adm1_name'] = get_hierstring_from_array($place['hier'], $place['full_name']);
+				}
 				list($place['grid_reference'],) = $conv->national_to_gridref($place['e'],$place['n'],4,$reference_index);
 			}
 			unset($place);
@@ -135,8 +140,6 @@ class Gazetteer
 					loc_placenames.reference_index = {$reference_index}
 				group by gns_ufi
 				order by distance asc");
-
-
 		}
 	        if ($places && count($places))
 			foreach ($places as $i => $place) {
@@ -158,7 +161,7 @@ class Gazetteer
 		
 		$mkey = "$reference_index,$e,$n,$radius,$f_codes,$gazetteer";
 		//fails quickly if not using memcached!
-		$places =& $memcache->name_get('g',$mkey);
+		$places = $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
 		
@@ -368,8 +371,8 @@ class Gazetteer
 						point_en)
 				order by distance asc limit 1");
 		} else if ($gazetteer == 'towns' /*&& $reference_index == 1*/) {
+					#power((e-{$e})/1000.,2)+power((n-{$n})/1000.,2) as distance,
 			#FIXME exponent for odistance configurable?
-
 			#circles around towns: radius r = D K / (K*K-1)
 			#where D is distance between respective towns, K is "penalty factor" on distance for smaller town,
 			#here we use K = pow(alpha,abs(s1-s2))
@@ -382,7 +385,8 @@ class Gazetteer
 					(id + 10000000) as pid,
 					power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2) as distance,
 					(power(cast(e as signed)-{$e},2)+power(cast(n as signed)-{$n},2))*power(2.5,s) as odistance,
-					'towns' as gaz
+					'towns' as gaz,
+					community_id
 				from 
 					loc_towns
 				where
@@ -391,8 +395,13 @@ class Gazetteer
 						point_en) AND
 					reference_index = {$reference_index}
 				order by odistance asc limit 1");
+			if (!empty($places['community_id'])) {
+				$places['hier'] = $this->_get_hier_from_cid($places['community_id']);
+				$places['adm1_name'] = get_hierstring_from_array($places['hier'], $places['full_name']);
+			}
 		} else {
 	//lookup a nearby settlement
+					#power((e-{$e})/1000.,2)+power((n-{$n})/1000.,2) as distance,
 			$places = $db->GetRow("select
 					full_name,
 					dsg,
@@ -413,8 +422,11 @@ class Gazetteer
 				order by distance asc limit 1");
 
 	//if found very close then lookup mutliple
+			#$d = 2.5*2.5;
 			$d = 2500*2500;	
 			if (isset($places['distance']) && $places['distance'] < $d) {
+					#power((e-{$e})/1000.,2)+power((n-{$n})/1000.,2) as distance,
+					#power((e-{$e})/1000.,2)+power((n-{$n})/1000.,2) < $d
 				$nearest = $db->GetAll("select
 					distinct full_name,
 					loc_placenames.id as pid,
@@ -458,7 +470,7 @@ class Gazetteer
 		
 		$mkey = strtolower(trim($placename)).'.v5';//need to invalidate the whole cache. 
 		//fails quickly if not using memcached!
-		$places =& $memcache->name_get('g',$mkey);
+		$places = $memcache->name_get('g',$mkey);
 		if ($places)
 			return $places;
 		
@@ -477,7 +489,7 @@ class Gazetteer
 				$places = $db->GetAll("select full_name,dsg,e,n,loc_placenames.reference_index,loc_adm1.name as adm1_name from loc_placenames left join loc_adm1 on (loc_placenames.adm1 = loc_adm1.adm1 and  loc_adm1.country = loc_placenames.country) where id=".$db->Quote($placename));
 			}
 		} elseif (!$ismore) {
-			list($placename,$county) = preg_split('/\s*,\s*/',$placename);
+			@list($placename,$county) = preg_split('/\s*,\s*/',$placename);
 			
 			if (!empty($county)) {
 				$qcount = $db->Quote($county);
@@ -694,7 +706,8 @@ class Gazetteer
 					reference_index,
 					'' as adm1_name,
 					'' as hist_county,
-					'' as gridref
+					'' as gridref,
+					community_id
 				from 
 					loc_towns
 				where
@@ -732,6 +745,34 @@ class Gazetteer
 					if (empty($row['gridref'])) {
 						list($places[$id]['gridref'],) = $conv->national_to_gridref($row['e'],$row['n'],4,$row['reference_index']);
 					}
+					if (empty($row['adm1_name']) && !empty($row['community_id'])){
+#						$hier = $db->GetAssoc("select level,name from loc_hier where {$row['community_id']} between contains_cid_min and contains_cid_max order by level");
+#						$showhier = array();
+#						if (count($hier)) {
+#							$showlevels = $CONF['hier_levels']; #array(7, 6, 5, 4); # configurable?
+#							$prefixes   = $CONF['hier_prefix']; #array(5=>"Regierungsbezirk", 6=>"Region", 7=>"Kreis");
+#							$prev = $row['full_name'];
+#							foreach($showlevels as $level) {
+#								if (!isset($hier[$level]))
+#									continue;
+#								$shortname = $hier[$level];
+#								if (isset($prefixes[$level])) {
+#									$curpref = $prefixes[$level].' ';
+#									$preflen = strlen($curpref);
+#									if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+#										$shortname = substr($shortname, $preflen);
+#								}
+#								if ($prev == $shortname)
+#									continue;
+#								$prev = $shortname;
+#								$showhier[] = $hier[$level];
+#							}
+#						}
+#						$places[$id]['adm1_name'] = implode(', ', $showhier);
+						$places[$id]['hier'] =      $this->_get_hier_from_cid($row['community_id']);
+						#$places[$id]['adm1_name'] = $this->_get_hierstring_from_array($places[$id]['hier'], $row['full_name']);
+						$places[$id]['adm1_name'] = get_hierstring_from_array($places[$id]['hier'], $row['full_name']);
+					}
 			                $places[$id]['full_name'] = _utf8_decode($row['full_name']);
 				}
 				if ($c > 14) {
@@ -752,6 +793,17 @@ class Gazetteer
 		return $places;
 	}
 
+	/**
+	 * get row from loc_hier
+	 * @access private
+	 */
+	function _get_hier_from_cid($cid)
+	{
+		$db=&$this->_getDB();
+		if (empty($cid))
+			return array();
+		return $db->GetAssoc("select level,name from loc_hier where {$cid} between contains_cid_min and contains_cid_max order by level");
+	}
 
 	/**
 	 * get stored db object, creating if necessary

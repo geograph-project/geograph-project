@@ -3,6 +3,7 @@
 This file is part of miniBB. miniBB is free discussion forums/message board software, without any warranty. See COPYING file for more details. Copyright (C) 2004 Paul Puzyrev, Sergei Larionov. www.minibb.net
 */
 $minibb_link = @mysql_connect($DBhost, $DBusr, $DBpwd) or die ('<b>Database/configuration error.</b>');
+mysql_query("SET names 'latin1'",$minibb_link);#FIXME error handling
 @mysql_select_db($DBname,$minibb_link) or die ('<b>Database/configuration error (DB is missing).</b>');
 
 function makeLim($page,$numRows,$viewMax){
@@ -121,20 +122,25 @@ minibb code blows up - this function is for detecting
 when strings haven't been escaped and adding appropriate
 escapes
 
-input:		noslash		no'escape	with\'escape
-escaped:	noslash		no\'scape	with\\\'escape
-unescaped:	noslash		no'escape	with'escape
+input:		noslash		no'escape	with\'escape	with\evil'slash		with\strangeslash
+escaped:	noslash		no\'scape	with\\\'escape	with\\evil\'slash	with\\strangeslash
+unescaped:	noslash		no'escape	with'escape	withevil'slash		withstrangeslash
+reescaped:	noslash		no\'escape	with\'escape	withevil\'slash		withstrangeslash
 
-returns:	noslash		no\'scape	with\'escape
+returns old:	noslash		no\'scape	with\'escape	with\evil'slash		with\strangeslash
+returns new:	noslash		no\'scape	with\'escape	with\\evil\'slash	with\\strangeslash
+
 */
 function _smartQuote($input)
 {
-	$escaped=mysql_escape_string($input);
-	$unescaped=stripslashes($input);
-	if ($input==$unescaped)
+	$escaped = mysql_escape_string($input);
+	$unescaped = stripslashes($input);
+	$reescaped = mysql_escape_string($unescaped);
+	if ($input === $unescaped || $input !== $reescaped) {
 		return $escaped;
-	else
-		return $input;
+	} else {
+		return $reescaped;
+	}
 }
 
 
@@ -143,7 +149,7 @@ $into=''; $values='';
 foreach($insertArray as $ia) {
 $iia=$GLOBALS[$ia];
 $into.=$ia.',';
-$values.=($iia=='now()'?$iia.',':"'"._smartQuote($iia)."',");
+$values.=($iia==='now()'?$iia.',':"'"._smartQuote($iia)."',");
 }
 $into=substr($into,0,strlen($into)-1);
 $values=substr($values,0,strlen($values)-1);
@@ -156,7 +162,7 @@ function updateArray($updateArray,$tabh,$uniq,$uniqVal){
 $into='';
 foreach($updateArray as $ia) {
 $iia=$GLOBALS[$ia];
-$into.=($iia=='now()'?$ia.'='.$iia.',':$ia."='"._smartQuote($iia)."',");
+$into.=($iia==='now()'?$ia.'='.$iia.',':$ia."='"._smartQuote($iia)."',");
 }
 $into=substr($into,0,strlen($into)-1);
 $unupdate=($uniq!=''?' where '.$uniq.'='."'".$uniqVal."'":'');
@@ -241,6 +247,26 @@ $topicPosts=0;
 $topicPosts=mysql_result(mysql_query('select count(*) from '.$Tp.' where topic_id='.$topic,$GLOBALS['minibb_link']),0);
 mysql_query('update '.$Tt.' set posts_count='."'".$topicPosts."'".' where topic_id='.$topic,$GLOBALS['minibb_link']);
 return $topicPosts;
+}
+
+function db_lastviewed($topic, $user_id, $postID)
+{
+	mysql_query("insert into geobb_lastviewed set topic_id=$topic,user_id=$user_id,last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)",$GLOBALS['minibb_link']) or die('<p>'.mysql_error($GLOBALS['minibb_link']).'. Please, try another name or value.');
+}
+
+function db_gridreftopics($Tt, $forum, $gridref)
+{
+	$result=mysql_query("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = '".mysql_escape_string($gridref)."'",$GLOBALS['minibb_link']);
+	$currentgridreftopics = mysql_num_rows($result);
+		
+	if ($currentgridreftopics == 1) {
+		$action = "vthread";
+		$topic = mysql_result($result,0);
+	} else {
+		$action = "vtopic";
+		$topic=0;
+	}
+	return array($currentgridreftopics, $action, $topic);
 }
 
 ?>

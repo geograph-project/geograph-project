@@ -62,6 +62,11 @@ if (isset($_SESSION['tab'])) {
 
 $step=isset($_POST['step'])?intval($_POST['step']):1;
 
+# Try to guess if upload size > post_max_size or upload_max_filesize
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && empty($_POST) && empty($_FILES) && $_SERVER['CONTENT_LENGTH'] > 0) {
+	$smarty->assign('errormsg', 'You seem to have uploaded a large file. Please note that we have an maximum upload size of 15Mb - please resize the image and try again');
+}
+
 if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_NO_FILE)
 {
 	//Submit Step 1a..
@@ -184,7 +189,7 @@ if (!empty($_FILES['jpeg_exif']) && $_FILES['jpeg_exif']['error'] != UPLOAD_ERR_
 			break;
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
-			$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
+			$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 15Mb - please resize the image and try again');
 			break;
 		case UPLOAD_ERR_PARTIAL:
 			$smarty->assign('error', 'Your file was only partially uploaded - please try again');
@@ -227,8 +232,8 @@ if (isset($_POST['gridsquare']))
 	//ensure the submitted reference is valid
 	if (!empty($_POST['grid_reference']) && empty($_POST['setpos2'])) 
 	{
-		#$ok= $square->setByFullGridRef($_POST['grid_reference'], false, false, true);
-		$ok= $square->setByFullGridRef($_POST['grid_reference'], false, false, empty($_POST['setpos2'])&&empty($_POST['setpos']));
+		#$ok= $square->setByFullGridRef($_POST['grid_reference'], false, false, false, true);
+		$ok= $square->setByFullGridRef($_POST['grid_reference'], false, false, false, empty($_POST['setpos2'])&&empty($_POST['setpos']));
 		
 		//preserve inputs in smarty
 		$smarty->assign('grid_reference', $grid_reference = $_POST['grid_reference']);
@@ -329,7 +334,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->reReadExifFile();
 				
 				//we ok to continue
-				if (isset($_POST['photographer_gridref'])) {
+				if (isset($_POST['photographer_gridref']) && !isset($_POST['newmap'])) {
 					$step=3;
 				} else {
 					$step=2;
@@ -348,7 +353,7 @@ if (isset($_POST['gridsquare']))
 			{
 				$smarty->assign('upload_id', $uploadmanager->upload_id);
 				//we ok to continue
-				$step=3;
+				if (!isset($_POST['newmap'])) $step=3;
 			} else {
 				$smarty->assign('error', $uploadmanager->errormsg);
 				$uploadmanager->errormsg = '';
@@ -365,13 +370,14 @@ if (isset($_POST['gridsquare']))
 				case 0:
 					if (!filesize($_FILES['jpeg']['tmp_name'])) 
 					{
+						//if (!isset($_POST['newmap'])) 
 						$smarty->assign('error', 'Sorry, no file was received - please try again');
 					} 
 					elseif ($uploadmanager->processUpload($_FILES['jpeg']['tmp_name']))
 					{
 						$smarty->assign('upload_id', $uploadmanager->upload_id);
 						//we ok to continue
-						$step=3;
+						if (!isset($_POST['newmap'])) $step=3;
 					} else {
 						$smarty->assign('error', $uploadmanager->errormsg);
 						$uploadmanager->errormsg = '';
@@ -382,13 +388,13 @@ if (isset($_POST['gridsquare']))
 					break;
 				case UPLOAD_ERR_INI_SIZE:
 				case UPLOAD_ERR_FORM_SIZE:
-					$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 8Mb - please resize the image and try again');
+					$smarty->assign('error', 'Sorry, that file exceeds our maximum upload size of 15Mb - please resize the image and try again');
 					break;
 				case UPLOAD_ERR_PARTIAL:
 					$smarty->assign('error', 'Your file was only partially uploaded - please try again');
 					break;
 				case UPLOAD_ERR_NO_FILE:
-					$smarty->assign('error', 'No file was uploaded - please try again');
+					if (!isset($_POST['newmap']))  $smarty->assign('error', 'No file was uploaded - please try again');
 					break;
 				case UPLOAD_ERR_NO_TMP_DIR:
 					$smarty->assign('error', 'System Error: Folder missing - please let us know');
@@ -462,7 +468,7 @@ if (isset($_POST['gridsquare']))
 				$smarty->assign('title2', $title2);
 				$smarty->assign('comment2', trim(stripslashes($_POST['comment2'])));
 
-				$smarty->assign('user_status', stripslashes($_POST['user_status']));
+				$smarty->assign('user_status', isset($_POST['user_status'])?stripslashes($_POST['user_status']):'');
 
 				if ($ok) {
 					$step=4;
@@ -488,7 +494,7 @@ if (isset($_POST['gridsquare']))
 				$uploadmanager->setDirection(stripslashes($_POST['view_direction']));
 				$uploadmanager->setUse6fig(stripslashes($_POST['use6fig']));
 				$uploadmanager->setUserStatus(stripslashes($_POST['user_status']));
-				$uploadmanager->setLargestSize($_POST['largestsize']);
+				$uploadmanager->setLargestSize(isset($_POST['largestsize'])?intval($_POST['largestsize']):0);
 				$uploadmanager->setClearExif($_POST['clearexif']);
 				
 				if ($_POST['pattrib'] == 'other') {
@@ -655,11 +661,27 @@ if (isset($_POST['gridsquare']))
 		} elseif ($step == 2) {
 			require_once('geograph/rastermap.class.php');
 
-			$rastermap = new RasterMap($square,true);
+			#if ($square->grid_reference == "UNV1930") { //FIXME
+			#	$rastermap = new RasterMap($square, true, false, false, 'latest', 21);
+			#} elseif ($square->grid_reference == "TPT2870") { //FIXME
+			#	$rastermap = new RasterMap($square, true, false, false, 'latest', 23);
+			#} else {
+			#	$rastermap = new RasterMap($square,true);
+			#}
+			if (isset($_POST['sid']) && isset($square->services[intval($_POST['sid'])])) {
+				$sid = intval($_POST['sid']);
+			} elseif (count($square->services) != 0) {
+				$sids = array_keys($square->services);
+				$sid = $sids[0];
+			} else {
+				$sid = -1;
+			}
+			$rastermap = new RasterMap($square, true, false, false, 'latest', $sid);
+			$smarty->assign('sid', $sid);
 			
 			if (isset($_POST['photographer_gridref'])) {
 				$square2=new GridSquare;
-				$ok= $square2->setByFullGridRef($_POST['photographer_gridref'], false, true, true);
+				$ok= $square2->setByFullGridRef($_POST['photographer_gridref'], false, true, false, true);
 				$rastermap->addViewpoint($square2->reference_index,$square2->nateastings,$square2->natnorthings,$square2->natgrlen,$_POST['view_direction']);
 			} elseif (isset($_POST['view_direction']) && strlen($_POST['view_direction']) && $_POST['view_direction'] != -1) {
 				$rastermap->addViewDirection($_POST['view_direction']);
@@ -789,6 +811,12 @@ $_SESSION['tab'] = $selectedtab;
 
 //which step to display?
 $smarty->assign('step', $step);
+
+# does not work (caching)...
+#if ($step != 1) {
+#	# disable language links to prevent users from losing their input
+#	$smarty->assign('languages', array());
+#}
 
 $smarty->display('submit.tpl');
 

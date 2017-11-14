@@ -48,15 +48,15 @@ if (!$smarty->is_cached($template, $cacheid))
 	$mosaic->setScale(40);
 	$mosaic->setMosaicFactor(2);
 
-	$largemosaic=new GeographMapMosaic;
-	$largemosaic->setScale(80);
-	$largemosaic->setMosaicFactor(2);
-	$largemosaic->setMosaicSize(800,800);
+	$largemosaic=new GeographMapMosaic('largemap');
+	#$largemosaic->setScale(80);
+	#$largemosaic->setMosaicFactor(2);
+	#$largemosaic->setMosaicSize(800,800);
 	
 	$censquare = new GridSquare;
 	
 	function cmp($a,$b) {
-		if ($a['sort'] == $b['dateraw'])
+		if ($a['dateraw'] == $b['dateraw'])
 			return 0;
 		return ($a['dateraw'] > $b['dateraw'])?-1:1;
 	}
@@ -74,8 +74,8 @@ if (!$smarty->is_cached($template, $cacheid))
 		grid_reference,x,y,
 		concat(substring(grid_reference,1,".($letterlength+1)."),substring(grid_reference,".($letterlength+3).",1)) as tenk_square,
 		sum(has_geographs) as geograph_count,
-		sum(percent_land >0) as land_count,
-		(sum(has_geographs) * 100 / sum(percent_land >0)) as percentage
+		sum(permit_geographs >0) as land_count,
+		(sum(has_geographs) * 100 / sum(permit_geographs >0)) as percentage
 		from gridsquare 
 		where reference_index = $ri 
 		group by tenk_square 

@@ -73,9 +73,20 @@ if (!empty($CONF['memcache']['app'])) {
 
 	$memcache = new MultiServerMemcache($CONF['memcache']['app']);
 
+	if ($CONF['curtail_level'] > 0) {
+		$level = $memcache->get('curtail_level');
+		if ($level) {
+			$CONF['real_curtail_level'] = $CONF['curtail_level'];
+			$CONF['curtail_level'] = $level-1;
+		}
+	}
 } else {
 	//need lightweight fake object that does nothing!
 	class fakeObject {
+		var $period_short = 3600; //hour
+		var $period_med = 86400; //24h;
+		var $period_long = 604800; //7day
+		var $compress = false; //|| MEMCACHE_COMPRESSED
 		function set($key, &$val, $flag = false, $expire = 0) {return false;}
 		function get($key) {return false;}
 		function delete($key, $timeout = 0) {return false;}
@@ -137,7 +148,16 @@ if (!empty($CONF['memcache']['sessions'])) {
 		adodb_sess_open(false,false,false);
 }
 
-
+function GeographDatabaseConnection($allow_readonly = false)
+{
+	$db = NewADOConnection($GLOBALS['DSN']);
+	if (!$db) {
+		die('Database connection failed');
+	}
+	$db->readonly = false;
+	# TODO charset etc
+	return $db;
+}
 
 //global routines
 require_once('geograph/functions.inc.php');
@@ -192,6 +212,7 @@ function init_session()
 		//fixation, we regenerate the session id
 		//not sure if wanted: if ($_REQUEST['PHPSESSID'])
 			session_regenerate_id();
+			unset($_SESSION['CSRF_token']);
 
 		//create new user object - initially anonymous
 		$_SESSION['user'] = new GeographUser;
@@ -204,8 +225,15 @@ function init_session()
 	$GLOBALS['USER'] =& $_SESSION['user'];
 
 	//tell apache our ID, handy for logs
-	if (function_exists('apache_note'))
-		@apache_note('user_id', $GLOBALS['USER']->user_id);
+	@apache_note('user_id', $GLOBALS['USER']->user_id);
+
+	if (!isset($_SESSION['CSRF_token'])) {
+		if (function_exists('openssl_random_pseudo_bytes')) {
+			$_SESSION['CSRF_token'] = base64_encode(openssl_random_pseudo_bytes(32));
+		} else {
+			$_SESSION['CSRF_token'] = hash("sha512", mt_rand());
+		}
+	}
 }
 
 
@@ -290,6 +318,7 @@ class GeographPage extends Smarty
 		$this->register_modifier("revision", "smarty_modifier_revision");
 		$this->register_modifier("geographlinks", "smarty_function_geographlinks");
 		$this->register_modifier("ordinal", "smarty_function_ordinal");
+		$this->register_modifier("format_seconds", "smarty_modifier_format_seconds");
 
 		$this->register_modifier("thousends", "smarty_function_thousends");
 
@@ -303,6 +332,8 @@ class GeographPage extends Smarty
 		$this->assign_by_ref('script_uri', $_SERVER['REQUEST_URI']);
 		$this->assign_by_ref('searchq', $_SESSION['searchq']);
 		$this->assign_by_ref('enable_forums', $CONF['forums']);
+		$this->assign('use_google_api', !empty($CONF['google_maps_api_key']));
+		$this->assign_by_ref('CSRF_token', $_SESSION['CSRF_token']);
 
 		$this->assign('forum_announce',         $CONF['forum_announce']);
 		$this->assign('forum_generaldiscussion',$CONF['forum_generaldiscussion']);
@@ -385,6 +416,10 @@ class GeographPage extends Smarty
 
 		$isCached = parent::is_cached($template, $cache_id, $compile_id);
 		if (!$isCached) {
+			if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 6 && strpos($_SERVER['PHP_SELF'],'statistics/') !== FALSE ) {
+				header("HTTP/1.1 503 Service Unavailable");
+				die("server busy, please try later");
+			}
 		
 			if (!empty($CONF['memcache']['smarty'])) {
 				$GLOBALS['memcached_res']->set($filename, $template, false, 60*5);

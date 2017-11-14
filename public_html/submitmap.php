@@ -22,10 +22,21 @@
  */
 
 require_once('geograph/global.inc.php');
+
+if (empty($CONF['google_maps_api_key'])) {
+	$qs = $_SERVER['QUERY_STRING'];
+	if (!isset($_REQUEST['picasa']) && !isset($_REQUEST['submit2'])) {
+		if ($qs !== "")
+			$qs .= "&";
+		$qs .= "submit=1";
+	}
+	if ($qs !== "")
+		$qs = "?".$qs;
+	header("Location: http://{$_SERVER['HTTP_HOST']}/ommap.php{$qs}");
+	exit;
+}
+
 init_session();
-
-
-
 
 $smarty = new GeographPage;
 

@@ -52,12 +52,12 @@ if (!empty($_GET['when2Year'])) {
 
 $when = (isset($_GET['when']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when']))?$_GET['when']:'';
 $when2 = (isset($_GET['when2']) && preg_match('/^\d{4}(-\d{2}|)(-\d{2}|)$/',$_GET['when2']))?$_GET['when2']:'';
-if ($_GET['when']  != '' && !isset($_GET['whenYear']))  list($_GET['whenYear'], $_GET['whenMonth'], $_GET['whenDay'])  = explode('-', $_GET['when']);
-if ($_GET['when2'] != '' && !isset($_GET['when2Year'])) list($_GET['when2Year'],$_GET['when2Month'],$_GET['when2Day']) = explode('-', $_GET['when2']);
+if (!empty($_GET['when']) && !isset($_GET['whenYear']))  @list($_GET['whenYear'], $_GET['whenMonth'], $_GET['whenDay'])  = explode('-', $_GET['when']);
+if (!empty($_GET['when2']) && !isset($_GET['when2Year'])) @list($_GET['when2Year'],$_GET['when2Month'],$_GET['when2Day']) = explode('-', $_GET['when2']);
 
 if ($timerel == 'during' || $timerel == 'dbefore') {
-	$_GET['when2Year'] = $_GET['whenYear'];
-	$_GET['when2Month'] = $_GET['whenMonth'];
+	$_GET['when2Year'] = isset($_GET['whenYear']) ? $_GET['whenYear'] : '';
+	$_GET['when2Month'] = isset($_GET['whenMonth']) ? $_GET['whenMonth'] : '';
 	$when2 = $when;
 }
 if ($timerel == 'dbefore') {
@@ -134,6 +134,15 @@ if ($timesqlrel !== '') {
 	}
 }
 
+if (isset($_GET['region']) &&  preg_match('/^\d+_\d+$/',$_GET['region'])) {
+	list($level,$cid) = explode('_',$_GET['region']);
+	$level = intval($level);
+	$cid = intval($cid);
+	$has_region = in_array($level, $CONF['hier_statlevels']);
+} else {
+	$has_region = false;
+}
+
 $limit = (isset($_GET['limit']) && is_numeric($_GET['limit']))?min(250,intval($_GET['limit'])):150;
 
 $myriad = (isset($_GET['myriad']) && ctype_upper($_GET['myriad']))?$_GET['myriad']:'';
@@ -157,8 +166,9 @@ if (isset($_GET['inner'])) {
 } else {
 	$template='statistics_leaderboard.tpl';
 }
-$cacheid=$minimum.'-'.$maximum.$type.$date.$when.':'.$when2.$timerel.$limit.'.'.$ri.'.'.$u.$myriad;
+$cacheid=$minimum.'-'.$maximum.$type.$date.$when.':'.$when2.$timerel.$limit.'.'.$ri.'.'.$u.$myriad.':'.($has_region?($level.'_'.$cid):'').':';
 
+#$smarty->caching = 0;
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
 	$smarty->cache_lifetime = 3600*3; //3hour cache
@@ -170,12 +180,18 @@ if (!$smarty->is_cached($template, $cacheid))
 	require_once('geograph/gridsquare.class.php');
 	require_once('geograph/imagelist.class.php');
 
-	$filtered = ($when || $when2 || $ri || $myriad);
+	$filtered = ($when || $when2 || $ri || $myriad || $has_region);
 	
 	$db=NewADOConnection($GLOBALS['DSN']);
-	if (!$db) die('Database connection failed');  
-	$sql_table = "gridimage_search i";
-	$sql_where = "1";
+	if (!$db) die('Database connection failed');
+	if ($has_region) {
+		$region_name = $db->GetOne("select name from loc_hier where level=$level and community_id=$cid");
+		$sql_table = "gridimage_search i inner join gridsquare_percentage using (gridsquare_id)";
+		$sql_where = "level=$level and community_id=$cid and percent>0";
+	} else {
+		$sql_table = "gridimage_search i";
+		$sql_where = "1";
+	}
 	$sql_orderby = '';
 	$sql_column = "count(*)";
 	$sql_having_having = '';
@@ -390,7 +406,7 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	if (isset($sql_qtable[$type]['column'])) $sql_column = $sql_qtable[$type]['column'];
 	if (isset($sql_qtable[$type]['having_having'])) $sql_having_having = $sql_qtable[$type]['having_having'];
-	if (isset($sql_qtable[$type]['where'])) $sql_where = $sql_qtable[$type]['where'];
+	if (isset($sql_qtable[$type]['where'])) $sql_where .= ' and '. $sql_qtable[$type]['where'];
 	if (isset($sql_qtable[$type]['table'])) $sql_table = $sql_qtable[$type]['table'];
 	if (isset($sql_qtable[$type]['orderby'])) $sql_orderby = $sql_qtable[$type]['orderby'];
 
@@ -399,6 +415,9 @@ if (!$smarty->is_cached($template, $cacheid))
 
 	$sql_where .= $timesql;
 	$desc .= $timedesc;
+	if ($has_region) {
+		$desc .= sprintf($MESSAGES['leaderboard']['in_region'], $region_name);
+	}
 	if ($myriad) {
 		$sql_where .= " and grid_reference LIKE '{$myriad}____'";
 		$desc .= sprintf($MESSAGES['leaderboard']['in_myriad'], $myriad);
@@ -424,6 +443,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	group by user_id 
 	$sql_having_having
 	order by imgcount desc $sql_orderby,last asc limit $limit2";
+	#trigger_error("-----$sql", E_USER_NOTICE);
 	$topusers=$db->GetAll($sql);
 	$lastimgcount = 0;
 	$toriserank = 0;
@@ -449,10 +469,12 @@ if (!$smarty->is_cached($template, $cacheid))
 				unset($topusers[$idx]);
 			} else {
 				$topusers[$idx]['ordinal'] = smarty_function_ordinal($i);
-				$points += $entry['points'];
-				if ($points && empty($entry['points'])) $topusers[$user_id]['points'] = '';
-				$images += $entry['images'];
-				if ($images && empty($entry['images'])) $topusers[$user_id]['images'] = '';
+				if (isset($entry['points']))
+					$points += $entry['points'];
+				#if ($points && empty($entry['points'])) $topusers[$idx]['points'] = ''; // this would also be needed in the other branch
+				if (isset($entry['images']))
+					$images += $entry['images'];
+				#if ($images && empty($entry['images'])) $topusers[$idx]['images'] = '';
 			}
 			$lastimgcount = $entry['imgcount'];
 			$lastrank = $i;
@@ -472,7 +494,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$extra = array();
 	$extralink = '';
 	
-	foreach (array('when','when2','timerel','date','ri','myriad') as $key) {
+	foreach (array('when','when2','timerel','date','ri','myriad','region') as $key) {
 		if (isset($_GET[$key])) {
 			$extra[$key] = $_GET[$key];
 			$extralink .= "&amp;$key={$_GET[$key]}";

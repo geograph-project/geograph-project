@@ -49,12 +49,12 @@ if (isset($_POST['submit']) && count($_POST['a'])) {
 	}
 	if (count($y)) {
 		$names = $db->GetCol("select username from game_score where game_score_id in (".implode(',',$y).")");
-		$db->Execute("update game_score set approved = 1 where username in ('".implode("','",array_map("mysql_real_escape_string", $names))."')");
+		$db->Execute("update game_score set approved = 1 where username in (".implode(",",array_map(array($db, 'Quote'), $names)).")");
 	} 
 
 	if (count($n)) {
 		$names = $db->GetCol("select username from game_score where game_score_id in (".implode(',',$n).")");
-		$db->Execute("update game_score set approved = -1 where username in ('".implode("','",array_map("mysql_real_escape_string", $names))."')");
+		$db->Execute("update game_score set approved = -1 where username in (".implode(",",array_map(array($db, 'Quote'), $names)).")");
 	}
 }
 

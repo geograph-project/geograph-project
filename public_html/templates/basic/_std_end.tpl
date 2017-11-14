@@ -28,7 +28,7 @@
      <li><a accesskey="9" title="Contact Us" href="/contact.php">Contact Us</a></li>
     </ul></li>
   {dynamic}
-  {if $is_mod || $is_admin || $is_tickmod || $is_mapmod}
+  {if $is_mod || $is_admin || $is_tickmod}
     <li>Admin<ul>
      <li><a title="Admin Tools" href="/admin/">Admin Index</a></li>
      {if $is_mod}
@@ -37,9 +37,7 @@
      {if $is_tickmod}
      	<li><a title="Trouble Tickets" href="/admin/tickets.php">Tickets</a> (<a href="/admin/tickets.php?sidebar=1" target="_search" title="Open in Sidebar, IE and Firefox Only">S</a>)</li>
      {/if}
-     {if $is_tickmod||$is_mod}
-     	<li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
-     {/if}
+     <li><a title="Finish Moderation for this session" href="/admin/moderation.php?abandon=1">Finish</a></li>
     </ul></li>
   {/if}
   {/dynamic}
@@ -97,12 +95,6 @@ Posted by <a href="/profile/{$newsitem.user_id}">{$newsitem.realname}</a> on {$n
 	  <a title="Register to upload photos" href="/register.php">register</a>
   {/if}
   {/dynamic}
-{if $languages}{dynamic}
-&emsp;[{foreach from=$languages key=lang item=langhost name=langloop}
-{if ! $smarty.foreach.langloop.first}|{/if}
-{if $lang == $language}{$lang}{else}<a href="{$curproto}{$langhost}{$canonicalreq|escape:'html'}">{$lang}</a>{/if}
-{/foreach}]
-{/dynamic}{/if}
   </div>
 </div>
 {if $right_block}

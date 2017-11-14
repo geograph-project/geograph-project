@@ -24,6 +24,11 @@
 require_once('geograph/global.inc.php');
 init_session();
 
+if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 5 ) {
+	header("HTTP/1.1 503 Service Unavailable");
+	die("server busy, please try later");
+}
+
 $USER->hasPerm("admin") || $USER->hasPerm("ticketmod") || $USER->hasPerm("mapmod") || $USER->mustHavePerm("moderator");
 
 if (isset($_SESSION['editpage_options']))
@@ -61,6 +66,7 @@ if ($USER->hasPerm("moderator")) {
 	$smarty->assign('articles_ready', $db->getOne("select count(*) from article where licence != 'none' and approved = 0"));
 
 	$smarty->assign('originals_new', $db->getOne("select count(*) from gridimage_pending where status = 'new' and type = 'original'"));
+	$smarty->assign('altimgs_new', $db->getOne("select count(*) from gridimage_pending where status = 'new' and type = 'altimg'"));
 }
 
 if ($USER->hasPerm("admin") || $USER->hasPerm("moderator") || $USER->hasPerm("ticketmod")) {

@@ -95,7 +95,15 @@ function smarty_block_dynamic($param, $content, &$smarty)
 function smarty_function_getamap($params)
 {
 	global $CONF;
-	$icon=empty($params['icon'])?"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>":'';
+
+	if (isset($params['protoselect']))
+		$protoselect=$params['protoselect'];
+	else
+		$protoselect=3;
+
+	$proto = get_protocol($protoselect);
+	
+	$icon=empty($params['icon'])?"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in popup window\" src=\"{$proto}{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/>":'';
 
 	//get params
 	$matches=array();
@@ -167,6 +175,13 @@ function smarty_function_newwin($params)
 	else
 		$title=$text;
 	
+  	if (isset($params['protoselect']))
+		$protoselect=$params['protoselect'];
+	else
+		$protoselect=3;
+
+	$proto = get_protocol($protoselect);
+	
 	if (isset($params['nofollow']))
 		$title .= "\" rel=\"nofollow"; 	
 	
@@ -174,7 +189,7 @@ function smarty_function_newwin($params)
 		$title .= "\" onclick=\"".$params['onclick']; 	
 	
 	return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
+		"<img style=\"padding-left:2px;\" alt=\"New Window\" title=\"opens in a new window\" src=\"{$proto}{$CONF['STATIC_HOST']}/img/newwin.png\" width=\"10\" height=\"10\"/></span>"; 
 }
 
 /**
@@ -188,7 +203,7 @@ function smarty_function_external($params)
 	global $CONF;
   	//get params and use intelligent defaults...
   	$href=str_replace(' ','+',$params['href']);
-  	if (strpos($href,'http://') !== 0)
+  	if (strpos($href,'http://') !== 0 && strpos($href,'https://') !== 0)
   		$href ="http://$href";
 
   	if (isset($params['text']))
@@ -201,15 +216,22 @@ function smarty_function_external($params)
 	else
 		$title=$text;
 	
+  	if (isset($params['protoselect']))
+		$protoselect=$params['protoselect'];
+	else
+		$protoselect=3;
+
+	$proto = get_protocol($protoselect);
+	
 	if (isset($params['nofollow']))
 		$title .= "\" rel=\"nofollow"; 	
 
-  	if ($params['target'] == '_blank') {
+  	if (isset($params['target']) && $params['target'] === '_blank') {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\" target=\"_blank\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img class=\"externallink\" alt=\"External link\" title=\"External link - opens in a new window\" src=\"{$proto}{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	} else {
   		return "<span class=\"nowrap\"><a title=\"$title\" href=\"$href\">$text</a>".
-  			"<img style=\"padding-left:2px;\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"http://{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
+  			"<img class=\"externallink\" alt=\"External link\" title=\"External link - shift click to open in new window\" src=\"{$proto}{$CONF['STATIC_HOST']}/img/external.png\" width=\"10\" height=\"10\"/></span>";
   	}
 }
 
@@ -220,7 +242,13 @@ function smarty_function_external($params)
 */
 function smarty_function_gridimage($params)
 {
-	global $imageCredits;
+	global $imageCredits, $CONF;
+
+	if ($CONF['lang'] == 'de') {
+		$by = 'von';
+	} else {
+		$by = 'by';
+	}
 
 	$image=new GridImage;
 	$image->loadFromId($params['id']);
@@ -234,14 +262,31 @@ function smarty_function_gridimage($params)
 	$html='<div class="photoguide">';
 
 	$html.='<div style="float:left;width:213px">';
-		$html.='<a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
+	
+		$title=$image->grid_reference.' : '.htmlentities2($image->title).' '.$by.' '.htmlentities2($image->realname);
+	
+		$html.='<a title="'.$title.' - click to view full size image" href="/photo/'.$image->gridimage_id.'">';
 		$html.=$image->getThumbnail(213,160);
 		$html.='</a><div class="caption"><a title="view full size image" href="/photo/'.$image->gridimage_id.'">';
-		$html.=htmlentities2($image->title).'</a></div>';
+		$html.=htmlentities2($image->title).'</a> '.$by.' <a href="'.$image->profile_link.'">'.htmlentities2($image->realname).'</a></div>';
 	$html.='</div>';
 
-	if (isset($params['extra']))
-		$html.='<div style="float:left;padding-left:20px; width:400px;">'.htmlentities2($params['extra']).'</div>';
+	if (isset($params['extra'])) {
+		if ($params['extra'] == '{description}') {
+			if (!empty($image->comment)) {
+				$desc = GeographLinks(preg_replace("/[\n\r]+/",'',nl2br(htmlentities2($image->comment)))).'<div style="text-align:right;font-size:0.8em">'.$by.' '.htmlentities2($image->realname).'</a></div>';
+				
+				$desc = preg_replace('/\b(more sizes)\b/i',"<a href=\"/more.php?id=".$image->gridimage_id."\">\$1</a>",$desc);
+			} else {
+				$desc = '';
+			}
+		} else {
+			$desc = htmlentities2($params['extra']);
+		} 
+		if (!empty($desc)) {
+			$html.='<div style="float:left;padding-left:20px; width:400px;">'.$desc.'</div>';
+		}
+	}
 
 	$html.='<br style="clear:both"/></div>';
 
@@ -260,6 +305,40 @@ function recaps($in) {
 	return stripslashes(preg_replace('/(^|\/)([^ \/-])/e','"$1".mb_strtoupper("$2")',$out));
 }
 
+/**
+ * get comma separated list from loc_hier row
+ */
+function get_hierstring_from_array($hier, $full_name)
+{
+	global $CONF;
+	#$db=&$this->_getDB();
+	#if (empty($cid))
+	#	return '';
+	#$hier = $db->GetAssoc("select level,name from loc_hier where {$cid} between contains_cid_min and contains_cid_max order by level");
+	$showhier = array();
+	if (count($hier)) {
+		$showlevels = $CONF['hier_levels'];
+		$prefixes   = $CONF['hier_prefix'];
+		$prev = $full_name;
+		foreach($showlevels as $level) {
+			if (!isset($hier[$level]))
+				continue;
+			$shortname = $hier[$level];
+			if (isset($prefixes[$level])) {
+				$curpref = $prefixes[$level].' ';
+				$preflen = strlen($curpref);
+				if (strlen($shortname) >= $preflen && substr($shortname, 0, $preflen) == $curpref)
+					$shortname = substr($shortname, $preflen);
+			}
+			if ($prev == $shortname)
+				continue;
+			$prev = $shortname;
+			$showhier[] = $hier[$level];
+		}
+	}
+	return implode(', ', $showhier);
+}
+
 function smarty_function_place($params) {
 	global $CONF;
 	$place = $params['place'];
@@ -267,42 +346,48 @@ function smarty_function_place($params) {
 	if ($CONF['lang'] == 'de') {
 		if ($place['distance'] > 3)
 			$t .= ($place['distance']-0.01)." km entfernt von ";
-		elseif (!$place['isin'])
+		elseif (empty($place['isin']))
 			$t .= "<span title=\"etwa ".($place['distance']-0.01)." km entfernt\">in der Nähe</span> von ";
 	} else {
 		if ($place['distance'] > 3)
 			$t .= ($place['distance']-0.01)." km from ";
-		elseif (!$place['isin'])
+		elseif (empty($place['isin']))
 			$t .= "<span title=\"about ".($place['distance']-0.01)." km from\">near</span> to ";
 	}
 
 	$place['full_name'] = _utf8_decode($place['full_name']);
 
-	if (!ctype_lower($place['full_name'])) {
+	if ($CONF['place_recaps'] && !ctype_lower($place['full_name'])) {
 		$t .= "<b>".recaps($place['full_name'])."</b><small><i>";
 	} else {
 		$t .= "<b>{$place['full_name']}</b><small><i>";
 	}
 	$t = str_replace(' And ','</b> and <b>',$t);
-	if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
-		$parts = explode('/',$place['adm1_name']);
-		if (!ctype_lower($parts[0])) {
-			if (isset($parts[1]) && $parts[0] == $parts[1]) {
-				unset($parts[1]);
+	if (isset($place['hier']) && count($place['hier'])) {
+		$t .= ', '.get_hierstring_from_array($place['hier'], $place['full_name']);
+	} else {
+		if ($place['adm1_name'] && $place['adm1_name'] != $place['reference_name'] && $place['adm1_name'] != $place['full_name'] && !preg_match('/\(general\)$/',$place['adm1_name'])) {
+			$parts = explode('/',$place['adm1_name']);
+			if ($CONF['place_recaps'] && !ctype_lower($parts[0])) {
+				if (isset($parts[1]) && $parts[0] == $parts[1]) {
+					unset($parts[1]);
+				}
+				$t .= ", ".recaps(implode('/',$parts));
+			} else {
+				$t .= ", {$place['adm1_name']}";
 			}
-			$t .= ", ".recaps(implode('/',$parts));
-		} else {
-			$t .= ", {$place['adm1_name']}";
+		} elseif (!empty($place['hist_county'])) {
+			$t .= ", {$place['hist_county']}";
 		}
-	} elseif ($place['hist_county'])
-		$t .= ", {$place['hist_county']}";
-	$t .= ", {$place['reference_name']}</i></small>";
+		$t .= ", {$place['reference_name']}";
+	}
+	$t .= "</i></small>";
 	
 	$tag = (isset($params['h3']))?'h3':'span';
 	$t2 = "<$tag";
 	if (!empty($params['h3']) && strlen($params['h3']) > 1)
 		$t2 .= $params['h3'];
-	if ($place['hist_county']) {
+	if (!empty($place['hist_county'])) {
 		$t2 .= " title=\"".substr($place['full_name'],0,12).": Historic County - {$place['hist_county']}";
 		if ($place['hist_county'] == $place['adm1_name'])
 			$t2 .= ", and modern Administrative Area of the same name";
@@ -313,6 +398,25 @@ function smarty_function_place($params) {
 	$t = $t2.">".$t."</$tag>";
 
 	return $t;
+}
+
+function smarty_modifier_format_seconds($val, $minutelim = 60)
+{
+	# TODO plural/singular, hours?
+	global $CONF;
+	if ($CONF['lang'] == 'de') {
+		if ($val >= $minutelim) {
+			return ceil($val / 60.0) . ' Minuten';
+		} else {
+			return ceil($val) . ' Sekunden';
+		}
+	} else {
+		if ($val >= $minutelim) {
+			return ceil($val / 60.0) . ' minutes';
+		} else {
+			return ceil($val) . ' seconds';
+		}
+	}
 }
 
 function _utf8_decode($string)
@@ -345,7 +449,7 @@ function smarty_function_linktoself($params) {
 	} else {
 		$a[$params['name']] = $params['value'];
 	}
-	return htmlentities(count($a)?("?".http_build_query($a,'', '&')):'');
+	return htmlentities_latin(count($a)?("?".http_build_query($a,'', '&')):'');
 }
 
 /**
@@ -380,8 +484,12 @@ function smarty_function_ordinal($i) {
 function smarty_modifier_revision($filename) {
 	global $REVISIONS,$CONF;
 	if (isset($REVISIONS[$filename])) {
-		$url = "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+		#$url = "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
+		$url = "//{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v{$REVISIONS[$filename]}.$1",$filename);
 		
+		if (isset($CONF['curtail_level']) && $CONF['curtail_level'] > 4 && strpos($filename,'css') === FALSE && empty($GLOBALS['USER']->user_id)) {
+			$url = cachize_url($url);
+		}
 		return $url;
 	} else {
 #return "http://{$CONF['STATIC_HOST']}".preg_replace('/\.(js|css)$/',".v".time().".$1",$filename);
@@ -401,7 +509,7 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 			$gr = $square->grid_reference;
 		}
 	} elseif (!empty($gr)) {
-		preg_match('/^([A-Z]{1,3})([\d_]*)$/',strtoupper($gr),$m);
+		preg_match('/^([A-Z]{1,3})([\d_]*)([NS]*)([EW]*)$/',strtoupper($gr),$m);
 		$s = $m[1];
 		if ($level > 2) {
 			$numbers = $m[2];
@@ -411,7 +519,22 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 			$n = sprintf("%d%d",intval($numbers{0}/2)*2,intval($numbers{$c}/2)*2);
 		}
 	}
-	
+
+	if ($level == 5) {
+		//if level 5 quantize to subhectad/mosaic (and define gr to be in SH43NW format) 
+		
+		//SH4(0)35  -> SH435(W) 
+		$gr = preg_replace('/^(.+)[5-9](\d)(\d)$/','$1$2$3E',$gr);
+		$gr = preg_replace('/^(.+)[0-4](\d)(\d)$/','$1$2$3W',$gr);
+		//SH43(5)E  -> SH43(N)E 
+		$gr = preg_replace('/^(.+)[5-9]([EW])$/','$1N$2',$gr);
+		$gr = preg_replace('/^(.+)[0-4]([EW])$/','$1S$2',$gr);
+	} elseif ($level == 4) {
+		$gr = preg_replace('/[NS][EW]$/','',$gr);
+	} elseif ($level == 6) {
+		$gr = preg_replace('/^(.+)(\d\d)\d(\d\d)\d$/','$1$2$3',$gr);
+	}
+
 	$extension = 'html';
 	$prefix = "/sitemap";
 	
@@ -435,37 +558,53 @@ function getSitemapFilepath($level,$square = null,$gr='',$i = 0) {
 /**
 * smarty wrapper to GeographLinks
 */
-function smarty_function_geographlinks($input,$thumbs = false) {
-	return GeographLinks($input,$thumbs);
+function smarty_function_geographlinks($input, $thumbs = false, $short = false, $newwindow = false) {
+	return GeographLinks($input,$thumbs,$short,$newwindow);
 }
 
 
 //replace geograph links
-function GeographLinks(&$posterText,$thumbs = false) {
+function GeographLinks($posterText, $thumbs = false, $short = false, $newwindow = false) {
 	global $imageCredits,$CONF,$global_thumb_count;
 	//look for [[gridref_or_photoid]] and [[[gridref_or_photoid]]]
-	if (preg_match_all('/\[\[(\[?)(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
+	if (preg_match_all('/\[\[(\[?)([a-z]+:)?(\w{0,3} ?\d+ ?\d*)(\]?)\]\]/',$posterText,$g_matches)) {
 		$thumb_count = 0;
-		foreach ($g_matches[2] as $i => $g_id) {
+		foreach ($g_matches[3] as $i => $g_id) {
+			$server = $_SERVER['HTTP_HOST'];
+			$ext = false;
+			$prefix = '';
+			if ($g_matches[2][$i] == 'bi:') {
+				$server = 'www.geograph.org.uk';
+				$ext = true;
+				$prefix = 'bi:';
+			} elseif ($g_matches[2][$i] == 'ci:') {
+				$server = 'channel-islands.geographs.org';
+				$ext = true;
+				$prefix = 'ci:';
+			}
 			//photo id?
 			if (is_numeric($g_id)) {
-				if ($global_thumb_count > $CONF['global_thumb_limit'] || $thumb_count > $CONF['post_thumb_limit']) {
-					$posterText = preg_replace("/\[?\[\[$g_id\]\]\]?/","[[<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_id</a>]]",$posterText);
+				if ($short || $global_thumb_count > $CONF['global_thumb_limit'] || $thumb_count > $CONF['post_thumb_limit']) {
+					$posterText = preg_replace("/\[?\[\[$prefix$g_id\]\]\]?/","[[<a href=\"http://{$server}/photo/$g_id\">$prefix$g_id</a>]]",$posterText);
 				} else {
 					if (!isset($g_image)) {
 						$g_image=new GridImage;
 					}
-					$ok = $g_image->loadFromId($g_id);
+					if ($ext) {
+						$ok = $g_image->loadFromServer($server, $g_id);
+					} else {
+						$ok = $g_image->loadFromId($g_id);
+					}
 					if ($g_image->moderation_status == 'rejected') {
-						$posterText = str_replace("[[[$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
+						$posterText = str_replace("[[[$prefix$g_id]]]",'<img src="/photos/error120.jpg" width="120" height="90" alt="image no longer available"/>',$posterText);
 					} elseif ($ok) {
 						$g_title=$g_image->grid_reference.' : '.htmlentities2($g_image->title);
 						if ($g_matches[1][$i]) {
 							if ($thumbs) {
-								$g_title.=' by '.htmlentities($g_image->realname);
+								$g_title.=' by '.htmlentities_latin($g_image->realname);
 								$g_img = $g_image->getThumbnail(120,120,false,true);
 
-								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
+								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\" target=\"_blank\" title=\"$g_title\">$g_img</a>",$posterText);
 								if (isset($imageCredits[$g_image->realname])) {
 									$imageCredits[$g_image->realname]++;
 								} else {
@@ -473,10 +612,10 @@ function GeographLinks(&$posterText,$thumbs = false) {
 								}
 							} else {
 								//we don't place thumbnails in non forum links
-								$posterText = str_replace("[[[$g_id]]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+								$posterText = str_replace("[[[$prefix$g_id]]]","<a href=\"http://{$server}/photo/$g_id\">$g_title</a>",$posterText);
 							}
 						} else {
-							$posterText = preg_replace("/(?<!\[)\[\[$g_id\]\]/","<a href=\"http://{$_SERVER['HTTP_HOST']}/photo/$g_id\">$g_title</a>",$posterText);
+							$posterText = preg_replace("/(?<!\[)\[\[$prefix$g_id\]\]/","<a href=\"http://{$server}/photo/$g_id\">$g_title</a>",$posterText);
 						}
 					}
 					$global_thumb_count++;
@@ -484,17 +623,21 @@ function GeographLinks(&$posterText,$thumbs = false) {
 				$thumb_count++;
 			} else {
 				//link to grid ref
-				$posterText = str_replace("[[$g_id]]","<a href=\"http://{$_SERVER['HTTP_HOST']}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
+				$posterText = str_replace("[[$prefix$g_id]]","<a href=\"http://{$server}/gridref/$g_id\">".str_replace(' ','+',$g_id)."</a>",$posterText);
 			}
 		}
 	}
 	if ($CONF['CONTENT_HOST'] != $_SERVER['HTTP_HOST']) {
 		$posterText = str_replace($CONF['CONTENT_HOST'],$_SERVER['HTTP_HOST'],$posterText);
 	}
-	
-	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);
 
-	$posterText = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"))",$posterText);
+	$targetstr = $newwindow ? ", 'target'=>'_blank'" : "";
+
+	# TODO we probably should introduce something like [[:url:href|text]] and [[:url:href]] which would become <a href="href">text</a> or <a href="href">Link</a>
+	#      would make parsing easier, no assumptions about probable urls needed... could easily introduce [[:whatever:...]] using the same code...
+	$posterText = preg_replace('/(?<!["\'>F=])(https?:\/\/[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"$targetstr))",$posterText);
+
+	$posterText = preg_replace('/(?<![\/F\.])(www\.[\w\.-]+\.\w{2,}\/?[\w\~\-\.\?\,=\'\/\\\+&%\$#\(\)\;\:]*)(?<!\.)(?!["\'])/e',"smarty_function_external(array('href'=>\"http://\$1\",'text'=>'Link','nofollow'=>1,'title'=>\"\$1\"$targetstr))",$posterText);
 
 	return $posterText;
 }
@@ -547,7 +690,7 @@ function datetimeToTimestamp($datetime) {
 
 function getFormattedDate($input) {
 	global $CONF;
-	list($y,$m,$d)=explode('-', $input);
+	@list($y,$m,$d)=explode('-', $input);
 	$date="";
 	if ($d>0) {
 		if ($y>1970) {
@@ -585,7 +728,7 @@ function connectToURL($addr, $port, $path, $userpass="", $timeout="30") {
 	if ($urlHandle)	{
 		socket_set_timeout($urlHandle, $timeout);
 		if ($path) {
-			$urlString = "GET $path HTTP/1.1\r\nHost: $addr\r\nConnection: keep-alive\r\nUser-Agent: www.geograph.org.uk\r\n";
+			$urlString = "GET $path HTTP/1.1\r\nHost: $addr\r\nConnection: keep-alive\r\nUser-Agent: geo.hlipp.de\r\n";
 			if ($userpass)
 				$urlString .= "Authorization: Basic ".base64_encode("$userpass")."\r\n";
 			$urlString .= "\r\n";
@@ -708,6 +851,31 @@ function getEncoding() {
 	return $encoding;
 }
 
+function get_map_suffix()
+{
+	global $CONF;
+	$map_suffix = $CONF['map_suffix'];
+	if ($map_suffix !== '' && isset($_SERVER['HTTP_USER_AGENT']) && preg_match('#Dillo/#',$_SERVER['HTTP_USER_AGENT'])) {
+		$map_suffix = ''; # can't handle 'clip'
+	}
+	return $map_suffix;
+}
+
+function get_current_protocol()
+{
+	return empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off' ? 'http://' : 'https://';
+}
+
+function get_protocol($selection = 0)
+{
+	if ($selection === 2) {
+		return get_current_protocol();
+	} elseif ($selection === 3) {
+		return '//';
+	}
+	return 'http://';
+}
+
 function customGZipHandlerStart() {
 	global $encoding;
 	if ($encoding = getEncoding()) {
@@ -719,7 +887,7 @@ function customGZipHandlerStart() {
 function customGZipHandlerEnd() {
 	global $encoding;
 	
-	$contents =& ob_get_clean();
+	$contents = ob_get_clean();
 
 	if (isset($encoding) && $encoding) {
 		// Send compressed contents
@@ -741,13 +909,22 @@ function htmlentities2( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
 {
     return preg_replace( "/&amp;([A-Za-z]{0,4}\w{2,3};|#[0-9]{2,4};|#x[0-9a-fA-F]{2,4};)/", '&$1' ,htmlentities($myHTML,$quotes,$char_set));
 } 
+
+function htmlentities_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+{
+	return htmlentities($myHTML,$quotes,$char_set);
+}
+function htmlspecialchars_latin( $myHTML,$quotes = ENT_COMPAT,$char_set = 'ISO-8859-1')
+{
+	return htmlspecialchars($myHTML,$quotes,$char_set);
+}
   
 function htmlnumericentities($myXML){
-  return preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars($myXML));
+  return preg_replace('/[^!-%\x27-;=?-~ ]/e', '"&#".ord("$0").chr(59)', htmlspecialchars_latin($myXML));
 }
 
 function xmlentities($s) {
-	$trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES);
+	$trans = get_html_translation_table(HTML_ENTITIES, ENT_QUOTES, 'ISO-8859-1');#FIXME use charset only for php versions 5.4.0+
 	foreach ($trans as $k=>$v) $trans[$k]= "&#".ord($k).";"; // encoding?
 	return strtr($s, $trans);
 }

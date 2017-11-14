@@ -1,7 +1,7 @@
 <?php
 /**
  * $Project: GeoGraph $
- * $Id$
+ * $Id: index.php 3147 2007-03-08 00:18:25Z barry $
  * 
  * GeoGraph geographic photo archive project
  * This file copyright (C) 2005 Paul Dixon (paul@elphin.com)
@@ -170,7 +170,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	$image_list=$db->GetAssoc("select showday,gridimage_id,1 as assigned from gridimage_daily where to_days(showday)-to_days(now()) between $lower and $days");
 	
 	//get ordered list of pool images
-	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,(abs(datediff(now(),imagetaken)) mod 365 div 14) asc,crc32(gridimage_id) limit $listlen");
+	$pool=$db->GetCol("select gridimage_id from gridimage_daily inner join gridimage_search using (gridimage_id) where showday is null order by moderation_status desc,(abs(datediff(now(),imagetaken)) mod 365 div 14) asc,(vote_baysian > 3) desc,crc32(gridimage_id) limit $listlen");
 	$coming_up=array();
 	
 	
@@ -207,7 +207,7 @@ if (!$smarty->is_cached($template, $cacheid))
 	ksort($coming_up);
 	$smarty->assign_by_ref("coming_up", $coming_up);
 	$smarty->assign_by_ref("pending", $pending);
-	$smarty->assign_by_ref("pendingcount", count($pending));
+	$smarty->assign("pendingcount", count($pending));
 }
 
 $smarty->display($template,$cacheid);

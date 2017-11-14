@@ -33,12 +33,20 @@ $db = NewADOConnection($GLOBALS['DSN']);
 dump_sql_table('SHOW '.(empty($_GET['full'])?'':'FULL ').'PROCESSLIST','Current mySQL Process List');
 
 function dump_sql_table($sql,$title,$autoorderlimit = false) {
-	$result = mysql_query($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . mysql_error() . "\n");
+	global $db;
 	
-	$row = mysql_fetch_array($result,MYSQL_ASSOC);
-
+	$result = $db->Execute($sql.(($autoorderlimit)?" order by count desc limit 25":'')) or die ("Couldn't select photos : $sql " . $db->ErrorMsg() . "\n");
+	
 	print "<H3>$title</H3>";
 	
+	if ($result->EOF) {
+		print "<i>empty</i>";
+		return;
+	}
+
+	$row = $result->GetRowAssoc(false);
+	$result->MoveNext();
+
 	print "<TABLE border='1' cellspacing='0' cellpadding='2'><TR>";
 	foreach ($row as $key => $value) {
 		print "<TH>$key</TH>";
@@ -48,13 +56,14 @@ function dump_sql_table($sql,$title,$autoorderlimit = false) {
 		print "<TR>";
 		$align = "left";
 		foreach ($row as $key => $value) {
-			print "<TD ALIGN=$align>".htmlentities($value)."</TD>";
+			print "<TD ALIGN=$align>".htmlentities_latin($value)."</TD>";
 			$align = "right";
 		}
 		print "</TR>";
-	} while ($row = mysql_fetch_array($result,MYSQL_ASSOC));
+		$row = $result->GetRowAssoc(false);
+		$result->MoveNext();
+	} while (!$result->EOF);
 	print "</TR></TABLE>";
 }
-
 	
 ?>

@@ -99,7 +99,7 @@ class ADODB_mysqli extends ADOConnection {
 
 		#if (!empty($this->port)) $argHostname .= ":".$this->port;
 		$ok = mysqli_real_connect($this->_connectionID,
- 				    $argHostname,
+ 				    $persist? 'p:'.$argHostname : $argHostname,
  				    $argUsername,
  				    $argPassword,
  				    $argDatabasename,
@@ -108,6 +108,7 @@ class ADODB_mysqli extends ADOConnection {
 					$this->clientFlags);
  	     
 		if ($ok) {
+			mysqli_query($this->_connectionID, "SET names 'latin1'");#FIXME error handling
 	 		if ($argDatabasename)  return $this->SelectDB($argDatabasename);
  			return true;
  	   } else {
@@ -213,7 +214,7 @@ class ADODB_mysqli extends ADOConnection {
 	function qstr($s, $magic_quotes = false)
 	{
 		if (!$magic_quotes) {
-	    	if (PHP_VERSION >= 5)
+	    	if (PHP_VERSION >= 5 && $this->_connectionID) # https://github.com/ADOdb/ADOdb/commit/4c1d4e29a6e7ff2ff8a68d3940241e42ae83152e
 	      		return "'" . mysqli_real_escape_string($this->_connectionID, $s) . "'";   
 	    
 		if ($this->replaceQuote[0] == '\\')

@@ -57,6 +57,7 @@ class SearchCriteria
 	var $displayclass;
 	
 	var $is_multiple = false;
+	var $validated = false;
 	
 	var $sphinx = array(
 		'query' => '',
@@ -94,6 +95,16 @@ class SearchCriteria
 	{
 		global $CONF;
 
+		if (!$this->isValid()) {
+			die("invalid search");
+		}
+		if (isset($_GET['BBOX']) && !preg_match('/^(\s*[-+0-9.eE]+\s*,){3}\s*[-+0-9.eE]+\s*$/', str_replace('e ','e+',$_GET['BBOX']))) { #FIXME test
+			die("invalid BBOX");
+		}
+		if (isset($_GET['LOOKAT']) && !preg_match('/^[-+0-9.eE]+[\s,][-+0-9.eE]+$/', str_replace('e ','e+',$_GET['LOOKAT']))) { #FIXME test
+			die("invalid LOOKAT");
+		}
+
 		extract($this->sql,EXTR_PREFIX_ALL^EXTR_REFS,'sql');
 
 		if (!empty($_GET['BBOX'])) {
@@ -101,7 +112,7 @@ class SearchCriteria
 			//we need to turn this off as it will break the caching of number of results!
 			$CONF['search_count_first_page'] = 0;
 			
-			list($west,$south,$east,$north) = explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])));
+			list($west,$south,$east,$north) = array_map('floatval', explode(',',trim(str_replace('e ','e+',$_GET['BBOX'])))); # FIXME needs testing
 		
 			if (!empty($_GET['LOOKAT'])) {
 			
@@ -110,7 +121,7 @@ class SearchCriteria
 				$clong = (($east - $west)/2) + $west;
 				$clat = (($north - $south)/2) + $south;
 			
-				list($long,$lat) = preg_split('/,|\s/', str_replace('e ','e+',$_GET['LOOKAT']));
+				list($long,$lat) = array_map('floatval', preg_split('/,|\s/', str_replace('e ','e+',$_GET['LOOKAT']))); # FIXME needs testing
 							
 				
 				$uplat = ($clat + $north) / 2.0;
@@ -213,7 +224,32 @@ class SearchCriteria
 			}
 		} 
 		if ((($x == 0 && $y == 0 ) || $this->limit8) && $this->orderby) {
-			switch ($this->orderby) {
+			if (preg_match('/^rating_[a-z_]/', $this->orderby)) {
+				$type = preg_replace('/^rating_([a-z_]+).*$/', '$1', $this->orderby);
+				$sql_order = preg_replace('/^rating_[a-z_]+(.*)$/', '$1', $this->orderby);
+				$sql_order = 'gr.rating'.preg_replace('/[^\w,\(\)]+/',' ',$sql_order);
+				$sql_from .= " inner join gridimage_rating gr on (gi.gridimage_id=gr.gridimage_id and gr.type='$type') ";
+				$this->sphinx['impossible']++;
+				if ($sql_where) {
+					$sql_where .= ' and ';
+				}
+				$sql_where .= "gr.rating > 0.25";
+			} elseif (preg_match('/^selfrate_[a-z_]/', $this->orderby) /*&& !empty($this->limit1) && strpos($this->limit1,'!') !== 0*/) {
+				$type = preg_replace('/^selfrate_([a-z_]+).*$/', '$1', $this->orderby);
+				$sql_order = preg_replace('/^selfrate_[a-z_]+(.*)$/', '$1', $this->orderby);
+				$sql_order = 'gv.vote'.preg_replace('/[^\w,\(\)]+/',' ',$sql_order);
+				$sql_from .= " inner join gridimage_vote gv on (gi.gridimage_id=gv.gridimage_id and gi.user_id=gv.user_id and gv.type='$type') ";
+				$this->sphinx['impossible']++;
+				if ($sql_where) {
+					$sql_where .= ' and ';
+				}
+				if (empty($this->limit1) || strpos($this->limit1,'!') === 0) {
+					// only for searches on a specific user. use impossible condition to get an empty result.
+					$sql_where .= "gv.vote >= 1000";
+				} else {
+					$sql_where .= "gv.vote >= 3";
+				}
+			} else switch ($this->orderby) {
 				case 'random':
 					$sql_order = ' crc32(concat("'.($this->crt_timestamp_ts).'",gi.gridimage_id)) ';
 					$this->sphinx['compatible_order'] = 0;
@@ -333,14 +369,14 @@ class SearchCriteria
 		$this->getSQLPartsFromText($this->searchtext);
 		
 		
-		if (!empty($this->limit1)) {
+		if (!empty($this->limit1)) { # FIXME better use integer column (!uid becomes -uid)?
 			if ($sql_where) {
 				$sql_where .= ' and ';
 			}
 			if (strpos($this->limit1,'!') === 0) {
-				$sql_where .= 'gi.user_id != '.preg_replace('/^!/','',$this->limit1);
+				$sql_where .= 'gi.user_id != '.intval(preg_replace('/^!/','',$this->limit1));
 			} else {
-				$sql_where .= 'gi.user_id = '.($this->limit1);
+				$sql_where .= 'gi.user_id = '.intval($this->limit1);
 			}
 			$this->sphinx['filters']['user_id'] = $this->limit1;
 		} 
@@ -360,7 +396,8 @@ class SearchCriteria
 			if ($sql_where) {
 				$sql_where .= ' and ';
 			}
-			$sql_where .= "imageclass = '".addslashes(($this->limit3 == '-')?'':$this->limit3)."' ";
+			$db = $this->_getDB();
+			$sql_where .= "imageclass = ".$db->Quote(($this->limit3 == '-')?'':$this->limit3)." ";
 			//todo tags tags tags
 			
 			if ($this->limit3 == '-') {
@@ -375,6 +412,7 @@ class SearchCriteria
 			if ($sql_where) {
 				$sql_where .= ' and ';
 			}
+			$this->limit4 = intval($this->limit4); # FIXME why no integer column?
 			$sql_where .= 'gs.reference_index = '.($this->limit4).' ';
 			
 			if (empty($this->sphinx['d'])) {//no point adding this filter if querying on location!
@@ -431,7 +469,7 @@ class SearchCriteria
 					$sql_where .= "MONTH(submitted) = $m ";
 					
 					$this->sphinx['impossible']++;
-				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
+				} elseif (preg_match("/0000-00-[0-9]*[1-9][0-9]*$/",$dates[0]) > 0) {
 					//day only ;)
 					list($y,$m,$d) = explode('-',$dates[0]);
 					$sql_where .= "submitted > DATE_SUB(NOW(),INTERVAL $d DAY)";
@@ -488,7 +526,7 @@ class SearchCriteria
 					//month only
 					$sql_where .= "MONTH(imagetaken) = $m ";
 					$this->sphinx['impossible']++;
-				} elseif (preg_match("/0{4}-0{2}-([01]?[1-9]+|10)/",$dates[0]) > 0) {
+				} elseif (preg_match("/0000-00-[0-9]*[1-9][0-9]*$/",$dates[0]) > 0) {
 					//day only ;)
 					$sql_where .= "imagetaken > DATE_SUB(NOW(),INTERVAL $d DAY)";
 					$start = $this->toDays("DATE_SUB(NOW(),INTERVAL $d DAY)");
@@ -545,6 +583,16 @@ class SearchCriteria
 			$sql_from .= " INNER JOIN route_item r ON(grid_reference=r.gridref) ";
 			$this->sphinx['impossible']++;
 		} 
+		if (!empty($this->limit11)) {
+			list($level,$cid) = explode('_',$this->limit11);
+			$level = intval($level);
+			$cid = intval($cid);
+			if ($sql_where)
+				$sql_where .= ' and ';
+			$sql_where .= "gpc.percent>0 and gpc.level=$level and gpc.community_id=$cid ";
+			$sql_from .= " inner join gridsquare_percentage gpc on (gi.gridsquare_id=gpc.gridsquare_id) ";
+			$this->sphinx['impossible']++;
+		} 
 		
 		if ($sql_where_start != $sql_where) {
 			$this->issubsetlimited = true;
@@ -595,7 +643,8 @@ class SearchCriteria
 								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words.')';
 								#$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.')';
 							} elseif (preg_match('/\+$/',$terms)) {								
-								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words .' OR gi.imageclass '.$words.')';
+								#$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words .' OR gi.imageclass '.$words.')';
+								$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.title2 '.$words.' OR gi.comment2 '.$words .' OR gi.imageclass '.$words.' OR gi.notes '.$words .')'; # todo sphinx <-> notes
 								#$sql_where .= " $prefix (gi.title ".$words.' OR gi.comment '.$words.' OR gi.imageclass '.$words.')';
 							} else {
 								$sql_where .= " $prefix (gi.title ".$words.' OR gi.title2 '.$words.')';
@@ -630,7 +679,7 @@ class SearchCriteria
 			} else {
 				$this->sphinx['query'] .= " ".preg_replace('/[\+^]+/','',str_replace("NOT ",' -',str_replace(" AND ",' ',$q)));
 			}
-			
+		# FIXME is unquoted words okay in $this->sphinx['query'] in quite a lot of places?
 		} elseif (strpos($q,'^') === 0) {
 			$words = str_replace('^','',$q);
 			#$sql_where .= ' title REGEXP '.$db->Quote('[[:<:]]'.preg_replace('/\+$/','',$words).'[[:>:]]');
@@ -641,9 +690,10 @@ class SearchCriteria
 			$words = $db->Quote('%'.preg_replace("/\+$/",'',$q).'%');
 			#$sql_where .= ' (gi.title LIKE '.$words.' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.')';
 			$sql_where .= ' (gi.title LIKE '.$words. ' OR gi.comment LIKE '.$words.' OR gi.imageclass LIKE '.$words.
-			            ' OR gi.title2 LIKE '.$words.' OR gi.comment2 LIKE '.$words.')';
+			            ' OR gi.title2 LIKE '.$words.' OR gi.comment2 LIKE '.$words.' OR gi.notes LIKE '.$words.')';
 			$this->sphinx['query'] .= " ".preg_replace("/\+$/",'',$q);
 			$this->isallsearch = 1;
+			//$this->sphinx['impossible']++; // todo sphinx <-> notes? how to prevent noCache!=0
 		} elseif (preg_match('/[:@]/',$q)) {
 			#$sql_where .= ' gi.title LIKE '.$db->Quote('%'.$q.'%');//todo, maybe better handle this - jsut for legacy searches...
 			$sql_where .= ' (gi.title LIKE '.$db->Quote('%'.$q.'%'). //todo, maybe better handle this - jsut for legacy searches...
@@ -698,7 +748,70 @@ class SearchCriteria
 	*/
 	function isValid()
 	{
-		return isset($this->searchq);
+		if (!isset($this->searchq))
+			return false;
+		if ($this->validated)
+			return true;
+		# check all varchar columns using regexes (add description of these columns above?)
+		# limit1:  !uid uid # FIXME why not an integer column (using negative values for the "!"-case)?
+		# limit2:  none: not varchar (moderation status)
+		# limit3:  none: image class must be quoted later
+		# limit4:  reference index # FIXME why not an integer column?
+		# limit5:  myriad
+		# limit6:  date submitted
+		# limit7:  date taken
+		# limit8:  none: not varchar (distance)
+		# limit9:  none: not varchar (topic id)
+		# limit10: none: not varchar (route id)
+		# limit11: region
+		# orderby
+		# breakby
+		# FIXME what about searchdesc,searchq,searchtext?
+		if ($this->limit1 !== '' && !preg_match('/^!?[0-9]+$/', $this->limit1)) {
+			trigger_error("invalid limit1({$this->id}): '{$this->limit1}'", E_USER_WARNING);
+			return false;
+		}
+		if (!preg_match('/^[0-9]?$/', $this->limit4)) {
+			trigger_error("invalid limit4({$this->id}): '{$this->limit4}'", E_USER_WARNING);
+			return false;
+		}
+		if (!preg_match('/^[A-Za-z]{0,3}$/', $this->limit5)) {
+			trigger_error("invalid limit5({$this->id}): '{$this->limit5}'", E_USER_WARNING);
+			return false;
+		}
+		# SELECT distinct(limit6) FROM `queries` WHERE not limit6 regexp '^([0-9]{4}-[0-9]{2}-[0-9]{2})?\\\^([0-9]{4}-[0-9]{2}-[0-9]{2})?$'
+		if (
+			$this->limit6 !== ''
+			&& !preg_match('/^([0-9]{4}-[0-9]{2}-[0-9]{2})?\\^([0-9]{4}-[0-9]{2}-[0-9]{2})?$/', $this->limit6)
+			&& !preg_match('/^0000-00-[0-9]*[1-9][0-9]*\\^$/', $this->limit6)
+		) {
+			trigger_error("invalid limit6({$this->id}): '{$this->limit6}'", E_USER_WARNING);
+			return false;
+		}
+		if (
+			$this->limit7 !=='' 
+			&& !preg_match('/^([0-9]{4}-[0-9]{2}-[0-9]{2})?\\^([0-9]{4}-[0-9]{2}-[0-9]{2})?$/', $this->limit7)
+			&& !preg_match('/^0000-00-[0-9]*[1-9][0-9]*\\^$/', $this->limit7)
+		) {
+			trigger_error("invalid limit7({$this->id}): '{$this->limit7}'", E_USER_WARNING);
+			return false;
+		}
+		if ($this->limit11 !== '' && !preg_match('/^[0-9]+_[0-9]+$/', $this->limit11)) {
+			trigger_error("invalid limit11({$this->id}): '{$this->limit11}'", E_USER_WARNING);
+			return false;
+		}
+		# FIXME some "documentation" about orderby and breakby needed, this is a guess
+		# SELECT id,orderby FROM `queries_archive` WHERE NOT orderby REGEXP "^[...]*$"
+		if (!preg_match('/^[-+A-Za-z0-9()_ ,.]*$/', $this->orderby)) {
+			trigger_error("invalid orderby({$this->id}): '{$this->orderby}'", E_USER_WARNING);
+			return false;
+		}
+		if (!preg_match('/^[-+A-Za-z0-9()_ ,.]*$/', $this->breakby)) {
+			trigger_error("invalid orderby({$this->id}): '{$this->breakby}'", E_USER_WARNING);
+			return false;
+		}
+		$this->validated = true;
+		return true;
 	}
 
 	/**
@@ -723,6 +836,7 @@ class SearchCriteria
 			if ($name!='db')
 				unset($this->$name);
 		}
+		$this->validated = false;
 	}
 	
 	/**
@@ -735,6 +849,7 @@ class SearchCriteria
 			if (!is_numeric($name))
 				$this->$name=$value;
 		}
+		$this->validated = false;
 	}
 	
 	/**
@@ -860,6 +975,11 @@ class SearchCriteria_Placename extends SearchCriteria
 		$places = $gaz->findPlacename($placename);
 		
 		if (count($places) == 1) {
+			#$db = $this->_getDB();
+			#$origin = $db->CacheGetRow(100*24*3600,"select origin_x,origin_y from gridprefix where reference_index=".$places[0]['reference_index']." and origin_x > 0 order by origin_x,origin_y limit 1");	
+
+			#$this->x = intval($places[0]['e']/1000) + $origin['origin_x'];
+			#$this->y = intval($places[0]['n']/1000) + $origin['origin_y'];
 			$this->x = intval($places[0]['e']/1000) + $CONF['origins'][$places[0]['reference_index']][0];
 			$this->y = intval($places[0]['n']/1000) + $CONF['origins'][$places[0]['reference_index']][1];
 			$this->placename = $places[0]['full_name'].($places[0]['adm1_name']?", {$places[0]['adm1_name']}":'');
@@ -887,6 +1007,7 @@ class SearchCriteria_Postcode extends SearchCriteria
 			$postcode = $db->GetRow('select e,n,reference_index from loc_postcodes where code='.$db->Quote($code).' limit 1');	
 		}
 		if ($postcode['reference_index']) {
+			#$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$postcode['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
 			$this->x = intval($postcode['e']/1000) + $CONF['origins'][$postcode['reference_index']][0];
 			$this->y = intval($postcode['n']/1000) + $CONF['origins'][$postcode['reference_index']][1];
@@ -914,6 +1035,8 @@ class SearchCriteria_County extends SearchCriteria
 		//get the first gridprefix with the required reference_index
 		//after ordering by x,y - you'll get the bottom
 		//left gridprefix, and hence the origin
+
+		#$origin = $db->CacheGetRow(100*24*3600,'select origin_x,origin_y from gridprefix where reference_index='.$county['reference_index'].' and origin_x > 0 order by origin_x,origin_y limit 1');	
 
 		$this->x = intval($county['e']/1000) + $CONF['origins'][$county['reference_index']][0];
 		$this->y = intval($county['n']/1000) + $CONF['origins'][$county['reference_index']][1];
