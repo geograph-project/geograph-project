@@ -2280,8 +2280,9 @@ for (var i=div.children.length-1; i>=0; --i) {
 		termsOfUse.className = "olLayerGoogleCopyright olLayerGoogleV3";
 		termsOfUse.style.display = "";
 		cache.termsOfUse = termsOfUse;
-	}
-	if (div.children[i].style.zIndex == 1000000) {
+	//}
+	//if (div.children[i].style.zIndex == 1000000) {
+	} else if (div.children[i].style.zIndex == 1000000) {
 		var poweredBy = div.children[i];
 		container.appendChild(poweredBy);
 		poweredBy.style.zIndex = "1100";
@@ -2289,8 +2290,9 @@ for (var i=div.children.length-1; i>=0; --i) {
 		poweredBy.className = "olLayerGooglePoweredBy olLayerGoogleV3 gmnoprint";
 		poweredBy.style.display = "";
 		cache.poweredBy = poweredBy;
-	}
-	if (div.children[i].style.zIndex == 10000002) {
+	//}
+	//if (div.children[i].style.zIndex == 10000002) {
+	} else if (div.children[i].style.zIndex == 10000002) {
 		container.appendChild(div.children[i]);
 	}
 }
