@@ -1,9 +1,0 @@
-ALTER TABLE `loc_towns` ADD `x` int(11) NOT NULL DEFAULT '0' AFTER `n`;
-ALTER TABLE `loc_towns` ADD `y` int(11) NOT NULL DEFAULT '0' AFTER `x`;
-ALTER TABLE `loc_towns` ADD `point_xy` point NOT NULL DEFAULT '' AFTER `point_en`;
-UPDATE `loc_towns` SET `x`=`e`-200000,`y`=`n`-5200000 WHERE `reference_index`=3;
-UPDATE `loc_towns` SET `x`=`e`+300000,`y`=`n`-5200000 WHERE `reference_index`=4;
-UPDATE `loc_towns` SET `point_xy`=GeomFromText(CONCAT('POINT(',CAST(`x` AS CHAR),' ',CAST(`y` AS CHAR),')'));
-
-ALTER TABLE `loc_towns` ADD SPATIAL KEY `point_xy` (`point_xy`);
-
