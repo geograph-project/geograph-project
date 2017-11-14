@@ -342,9 +342,9 @@ function wgs84_to_irish($lat,$long,$uselevel2 = true) {
 		$y1 = $this->Lat_Long_H_to_Y($lat,$long,$height,6378137.00,6356752.313);
 		$z1 = $this->Lat_H_to_Z     ($lat,      $height,6378137.00,6356752.313);
 
-		$x2 = $this->Helmert_X($x1,$y1,$z1,-482.53 ,-0.214,-0.631,-8.15);
-		$y2 = $this->Helmert_Y($x1,$y1,$z1, 130.596,-1.042,-0.631,-8.15);
-		$z2 = $this->Helmert_Z($x1,$y1,$z1,-564.557,-1.042,-0.214,-8.15);
+		$x2 = $this->Helmert_X($x1,$y1,$z1,-482.53 ,+0.214,+0.631,-8.15);
+		$y2 = $this->Helmert_Y($x1,$y1,$z1, 130.596,+1.042,+0.631,-8.15);
+		$z2 = $this->Helmert_Z($x1,$y1,$z1,-564.557,+1.042,+0.214,-8.15);
 
 		$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6377340.189,6356034.447);
 		$long = $this->XYZ_to_Long($x2,$y2);
@@ -384,9 +384,9 @@ function irish_to_wgs84($e,$n,$uselevel2 = true) {
 		$y1 = $this->Lat_Long_H_to_Y($lat,$lon,$height,6377340.189,6356034.447);
 		$z1 = $this->Lat_H_to_Z     ($lat,     $height,6377340.189,6356034.447);
 
-		$x2 = $this->Helmert_X($x1,$y1,$z1, 482.53 ,0.214,0.631,8.15);
-		$y2 = $this->Helmert_Y($x1,$y1,$z1,-130.596,1.042,0.631,8.15);
-		$z2 = $this->Helmert_Z($x1,$y1,$z1, 564.557,1.042,0.214,8.15);
+		$x2 = $this->Helmert_X($x1,$y1,$z1, 482.53 ,-0.214,-0.631,8.15);
+		$y2 = $this->Helmert_Y($x1,$y1,$z1,-130.596,-1.042,-0.631,8.15);
+		$z2 = $this->Helmert_Z($x1,$y1,$z1, 564.557,-1.042,-0.214,8.15);
 
 		$lat  = $this->XYZ_to_Lat ($x2,$y2,$z2,6378137.000,6356752.313);
 		$lon  = $this->XYZ_to_Long($x2,$y2);
