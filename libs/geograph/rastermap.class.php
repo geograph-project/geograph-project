@@ -992,6 +992,8 @@ EOF;
 							mapTypeId: mt,
 							//streetViewControl: issubmit?true:false
 							streetViewControl: false,
+							fullscreenControl: false,
+							gestureHandling: 'greedy',
 							//XX p2
 							mapTypeControlOptions: {
 								mapTypeIds: [ $maptypes ],
