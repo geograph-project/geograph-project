@@ -28,7 +28,9 @@
 			<input id="type_with" type="radio" name="type" value="with"{if $type == 'with'} checked="checked"{/if}/><label for="type_with">with</label> 
 			/<input id="type_without" type="radio" name="type" value="without" size="8"{if $type == 'without'} checked="checked"{/if}/><label for="type_without">without</label>
 			/<input id="type_few" type="radio" name="type" value="few"{if $type == 'few'} checked="checked"{/if}/><label for="type_few">with few</label> 
-			Photographs</p>
+			Photographs
+			{if $user->user_id}
+			<input type="checkbox" name="user" value="{$user->user_id}"{if $uid == $user->user_id} checked="checked"{/if}/><label for="user"> by myself</label>{/if}</p>
 		</div>
 		
 		<p><input type="submit" name="submit" value="Download GPX file..."/></p>
