@@ -341,7 +341,7 @@ Ostsüdost
 {if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
 
 <small><a title="In Google Earth öffnen" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small>, 
-{external title="In Bing Maps öffnen" href="http://www.bing.com/maps/default.aspx?v=2&mapurl=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Bing Maps"}, 
+{external title="In Bing Maps öffnen" href="http://www.bing.com/maps/default.aspx?v=2&amp;mapurl=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Bing Maps"}, 
 
 {/if}
 
@@ -454,7 +454,7 @@ AttachEvent(window,"load",gn.init);
 		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
 			<h4 style="margin-top:0px">Bild-Bewertung</h4>
 			<p>
-			Bitte im Vorfeld <a href="/discuss/index.php?&action=vthread&forum=2&topic=126">diesen Foren-Thread</a> lesen um
+			Bitte im Vorfeld <a href="/discuss/index.php?&amp;action=vthread&amp;forum=2&amp;topic=126">diesen Foren-Thread</a> lesen um
 			näheres zu dieser Funktion zu erfahren. Das ist auch deshalb wichtig, weil es zu Anfang Missverständnisse bezüglich
 			der Bewertung des Informationsgehalts gab, die sowohl die Bildbeschreibung als auch die Wahl eines interessanten Motivs
 			berücksichtigen sollte.

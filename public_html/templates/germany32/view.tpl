@@ -304,7 +304,7 @@ title="{$long|string_format:"%.5f"}">{$longdm}</abbr></span>
 {if $image->moderation_status eq "geograph" || $image->moderation_status eq "accepted"}
 
 <small><a title="Open in Google Earth" href="http://{$http_host}/photo/{$image->gridimage_id}.kml" class="xml-kml" type="application/vnd.google-earth.kml+xml">KML</a> (Google Earth)</small>, 
-{external title="Open in Bing Maps" href="http://www.bing.com/maps/default.aspx?v=2&mapurl=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Bing Maps"}, 
+{external title="Open in Bing Maps" href="http://www.bing.com/maps/default.aspx?v=2&amp;mapurl=http://`$http_host`/photo/`$image->gridimage_id`.kml" text="Bing Maps"}, 
 
 {/if}
 
@@ -417,7 +417,7 @@ AttachEvent(window,"load",gn.init);
 		<div class="interestBox" onmousemove="event.cancelBubble = true" onmouseout="event.cancelBubble = true">
 			<h4 style="margin-top:0px">Image rating</h4>
 			<p>
-			Please read <a href="/discuss/index.php?&action=vthread&forum=2&topic=126">this forum thread</a> to learn what this is about.
+			Please read <a href="/discuss/index.php?&amp;action=vthread&amp;forum=2&amp;topic=126">this forum thread</a> to learn what this is about.
 			This is especially important as there were some misconceptions regarding the "Geographical information" rating which
 			should take into account both the description and the subject of the image.
 			</p>
