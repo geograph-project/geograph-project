@@ -1,0 +1,1 @@
+Smarty compile dir - should be writable by webserver

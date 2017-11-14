@@ -1,0 +1,50 @@
+<script type="text/javascript">
+function paste_strinL(strinL){
+var input=document.postMsg.elements["postText"];
+input.value=input.value+strinL;
+return false;
+}
+</script>
+
+<div align=center>
+<form name=postMsg action="{$main_url}/{$indexphp}" method=post class=formStyle>
+<table class=forums>
+<INPUT TYPE=HIDDEN NAME=action VALUE=editmsg2>
+<INPUT TYPE=HIDDEN NAME=forum VALUE="{$forum}">
+<INPUT TYPE=HIDDEN NAME=topic VALUE="{$topic}">
+<INPUT TYPE=HIDDEN NAME=post VALUE="{$post}">
+<INPUT TYPE=HIDDEN NAME=page VALUE="{$page}">
+<INPUT TYPE=HIDDEN NAME=anchor VALUE="{$anchor}">
+
+{$mainPostForm}
+
+<tr><td class=caption5>
+<INPUT TYPE=SUBMIT VALUE="{$l_edit}" class=inputButton>
+<input type=button value="Preview" class=inputButton onClick="prevThis();">
+</td>
+</tr>
+</table>
+</form>
+</div>
+
+<script language="JavaScript">
+function prevThis(){
+var pT,tT,cT;
+pT=document.forms['postMsg'].elements['postText'].value;
+if(document.forms['postMsg'].elements['topicTitle']) tT=document.forms['postMsg'].elements['topicTitle'].value;
+else if(document.forms['postMsg'].elements['postTopic']) tT=document.forms['postMsg'].elements['postTopic'].value;
+else tT='';
+if(document.forms['postMsg'].elements['disbbcode'].checked) cT=1; else cT=0;
+window.open('', 'cWin2', 'resizable=yes, scrollbars=yes, width=750, height=300, top=0, left=100');
+document.forms['postMsgPrev'].elements['topicTitle'].value=tT;
+document.forms['postMsgPrev'].elements['postText'].value=pT;
+document.forms['postMsgPrev'].elements['disbbcode'].value=cT;
+document.forms['postMsgPrev'].submit();
+}
+</script>
+<form action="{$indexphp}" name=postMsgPrev method=post target="cWin2">
+<input type=hidden name=postText>
+<input type=hidden name=topicTitle>
+<input type=hidden name=disbbcode>
+<input type=hidden name=prevForm value=1>
+</form>

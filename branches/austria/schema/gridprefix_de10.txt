@@ -1,0 +1,3 @@
+update gridprefix set title=concat('Deutschland (Zone 33) Quadrat ', prefix) where reference_index=4 and title is null;
+update gridprefix set title=concat('Deutschland (Zone 32) Quadrat ', prefix) where reference_index=3 and title is null;
+update gridprefix set title=concat('Deutschland (Zone 31) Quadrat ', prefix) where reference_index=5 and title is null;

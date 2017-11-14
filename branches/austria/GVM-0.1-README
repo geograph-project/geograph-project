@@ -1,0 +1,215 @@
+
+GEOGRAPH VIRTUAL APPLIANCE
+-------- ------- ---------
+
+v0.1 ALPHA
+
+produced by geo@barryhunter.co.uk
+
+Find the latest version of this file at:
+http://svn.geograph.org.uk/svn/trunk/GVM-0.1-README
+
+Offical discussion thread for the very latest information
+http://www.geograph.org.uk/discuss/?action=vthread&forum=12&topic=9237
+
+ * $Id$
+
+==========================================================
+==========================================================
+
+Enclosed is a 7z compressed VMware image for running a Geograph Development enviroment
+
+Key Features
+--- --------
+
+* Built with VMware Workstation 6.5 - should just need VMplayer to use
+
+* Build on CentOS Linux Distribution
+
+* Almost Ready to run out of the Box
+
+* Connected as a SVN working copy - for easy contribution to core project
+
+* NOT setup a for production serving - not battle harnened
+
+* Has many of the applications needed for Geograph to run (configured to auto run on startup) 
+
+  * Apache - Webserver
+
+  * mySQL - Database
+
+  * PHP - Application Run-time
+
+    * phpMyAdmin - for quick easy Database administration
+
+    * gd - graphics manipulation library 
+
+  * imagemagick - more graphics manipulation - great for jpg
+
+  * Memcache, inc PECL memcache PHP extension - Memory based caching
+
+  * SphinxSearch - full-text search engine
+
+  * Application code comes bundled with 
+
+    * Smarty - Caching Templates
+
+    * ADODB - database abstraction
+
+    * SphinxAPI - access the sphinxsearch deamon
+
+  * Subversion - code version control
+
+* Database preseeded with stucture and bare minimum to run
+  (will need to manually add admin user) 
+  
+* Based on a minimalist 'server' CentOS image 
+  - no desktoping system installed, either install one, or use a IDE on the host machine etc
+
+==========================================================
+
+We can supply a 'Dev-Dump' to populate the database with real data from the live site;
+This allows the most realistic development work, please contact us 
+
+==========================================================
+==========================================================
+
+Applications NOT installed
+------------ --- ---------
+
+* rdd (for rate graphs)
+
+* any firewall (iptables erc)
+
+* apc (required for the IRC GeographBot to report chatters online)
+
+* rotatelogs (dev only so shouldn't grow too large)
+
+* samba/nfs (so can edit files from a remote IDE - choice left to user) 
+
+==========================================================
+==========================================================
+
+Installation
+------------
+
+* Extract the 7z file (you probably already done that!) 
+
+* Start VMware workstation or VMware player
+
+* Point it at Geograph-Dev0.1.vmx
+
+* Boot the machine!
+
+* It should startup and report its IP address
+
+* On the host machine add: 
+
+----------8<--------------
+
+192.168.119.133 www.geograph.virtual
+192.168.119.133 s0.geograph.virtual
+192.168.119.133 s1.geograph.virtual
+192.168.119.133 s2.geograph.virtual
+192.168.119.133 s3.geograph.virtual
+192.168.119.133 t0.geograph.virtual
+192.168.119.133 geograph.virtual
+192.168.119.133 kml.geograph.virtual
+
+---------->8---------------
+
+to the hosts file
+(eg C:\WINDOWS\system32\drivers\etc\hosts )
+
+* Then goto http://www.geograph.virtual/test.php 
+
+* You can of course login to the machine to get a terminal, 
+   or connect via SSH to the reported IP, credientials below
+
+* Will need to setup a admin user (user_id 1 MUST be the admin user for the forum) 
+  see http://svn.geograph.org.uk/svn/trunk/README
+
+==========================================================
+==========================================================
+
+Known Issues
+----- ------
+
+* Rate Graphs don't update (rdd not installed) 
+
+* Non-trivial to get first few images going 
+  - code doesnt account for empty gridimage table, 
+    so cant moderate first few images,
+    contact barry (geo@barryhunter.co.uk) for workaround 
+
+* Not particully well tested (it is alpha after all) 
+
+* NOT suitable for production - I just want to reiterate that!
+
+==========================================================
+==========================================================
+
+Quick Reference
+----- ---------
+
+* Linux Root User:
+   username: root
+   password: geograph
+
+* Mysql Root User: 
+   mysql -uroot -pgeograph
+   Also works at http://www.geograph.virtual/Pma/
+
+* Mysql Application User:
+   mysql -ugeograph -pmango geograph
+
+* DocumentRoot
+   /var/www/public_html
+
+* DevelopmentRoot
+   /var/www/
+   
+* SVN repository 
+   https://svn.geograph.org.uk/svn/trunk/
+
+* Config file locations
+
+   Apache
+	/etc/httpd/conf.d/geograph.conf  (based on /var/www/apache/geograph.conf)
+
+   Memcache
+	/etc/memcached.conf
+
+   mySQL
+	/etc/my.cnf
+
+   PHP
+	/etc/php.ini
+
+   SphinxSearch
+	/usr/local/etc/sphinx.conf   (based on  /var/www/system/sphinxserver/usr/local/etc/sphinx.conf)
+
+Crontab(s)
+	sudo -u apache crontab -l    (based on /var/www/cron/geograph.example)
+	sudo -u sphinx crontab -l    (based on /var/www/cron/sphinx.example)
+
+* Services
+   /etc/init.d/httpd restart    (also `apachectl graceful`)
+   /etc/init.d/mysqld restart
+   /etc/init.d/memcached restart
+   /etc/init.d/sphinx restart
+
+* Log Files
+   /var/log/httpd/access_log
+   /var/log/httpd/error_log
+   /var/log/mysqld.log
+   /var/sphinx/log/query.log
+   /var/sphinx/log/seearchd.log
+
+* Data Folders 
+   /var/sphinx/*
+   /var/lib/mysql/*
+   /var/www/public_html/*
+
+==========================================================
+==========================================================
