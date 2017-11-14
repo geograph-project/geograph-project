@@ -1,0 +1,55 @@
+div.dragitem {
+	position: relative;
+	z-index: 0;
+	border-width: 1px;
+	border-style: solid;
+	margin: 5px;
+	padding: 1px;
+	/*display: inline-block;*/
+	float: left;
+}
+div.dragitem > img {
+	display:block;
+}
+
+div.marked {
+	position:relative;
+	background-color:#666;
+}
+div.dragitem.markeditem {
+	background-color:#fff;
+	border-color:#ccc;
+}
+div.dragitem.markedgap {
+	background-color:#888;
+	border-color:#ccc;
+}
+div.dragitem.markedgapactive {
+	background-color:#ccc;
+	border-color:#fff;
+}
+div.dragitem.markeddummy {
+	background-color:#666;
+	border-color:#666;
+}
+
+div.clipboard {
+	position:relative;
+	background-color:#999;
+}
+div.dragitem.clipboarditem {
+	background-color:#fff;
+	border-color:#ccc;
+}
+div.dragitem.clipboardgap {
+	background-color:#aaa;
+	border-color:#fff;
+}
+div.dragitem.clipboardgapactive {
+	background-color:#ddd;
+	border-color:#fff;
+}
+div.dragitem.clipboarddummy {
+	background-color:#999;
+	border-color:#999;
+}

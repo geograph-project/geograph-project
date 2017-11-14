@@ -1,0 +1,41 @@
+<script type="text/javascript">
+function paste_strinL(strinL){ 
+var input=document.forms["forumform"].elements["forumicon"];
+input.value='';
+input.value=strinL;
+return false;
+}
+</script>
+
+<div align=center>
+<form name=forumform action="{$bb_admin}" method=post class=formStyle>
+<table class=tbTransparent>
+<tr>
+<td width="50%" valign=top class=tbTransparent>
+<div align=center class=warning><b>{$warning}</b></div>
+<p><b>{$l_addforum}</b></p>
+{$l_forumname}:
+<br>
+<input type=text name=forumname value="{$forumname}" size=25 maxlength=255 class=textForm style="width:250px;">
+<br>
+{$l_forumdesc}:
+<br>
+<textarea name=forumdesc cols=25 rows=10 class=textForm style="width:250px;">{$forumdesc}</textarea>
+<br>
+{$l_forumIcon}:
+<br>
+<span class=txtSm>({$l_forumIconDesc})</span>
+<br>
+<input type=text size=25 maxlength=255 name=forumicon value="{$forumicon}" class=textForm style="width:250px;">
+<input type=hidden name=action value=addforum2>
+<br><br>
+<input type=submit value="{$l_addforum}" class=inputButton>
+</td>
+<td width="50%" valign=top class=tbTransparent>
+<p><b>{$l_forumIcon}</b></p>
+{$iconList}
+</td>
+</tr>
+</table>
+</form>
+</div>
