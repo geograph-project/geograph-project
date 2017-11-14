@@ -5,8 +5,8 @@ This file is part of miniBB. miniBB is free discussion forums/message board soft
 
 if (!defined('INCLUDED776')) die ('Fatal error.');
 
-$db = GeographDatabaseConnection();
-#$db->Execute("SET names 'latin1'"); # FIXME move to GeographDatabaseConnection()
+$bbdb = GeographDatabaseConnection();
+#$bbdb->Execute("SET names 'latin1'"); # FIXME move to GeographDatabaseConnection()
 ##$minibb_link = @mysql_connect($DBhost, $DBusr, $DBpwd) or die ('<b>Database/configuration error.</b>');
 ##mysql_query("SET names 'latin1'",$minibb_link);#FIXME error handling
 ##@mysql_select_db($DBname,$minibb_link) or die ('<b>Database/configuration error (DB is missing).</b>');
@@ -40,7 +40,7 @@ function getClForums($closedForums,$more,$prefix,$field,$syntax,$condition){
 }
 
 function db_simpleSelect($sus,$table='',$fields='',$uniF='',$uniC='',$uniV='',$orderby='',$limit='',$uniF2='',$uniC2='',$uniV2='',$and2=true,$groupBy=''){
-	global $db;
+	global $bbdb;
 	if(!$sus){
 		$where='';
 		if($uniF!='') $where=' where '.$uniF.$uniC."'".$uniV."'";
@@ -57,7 +57,7 @@ function db_simpleSelect($sus,$table='',$fields='',$uniF='',$uniC='',$uniV='',$o
 		$sql='SELECT '.$fields.' FROM '.$table.$where.' '.$xtr.' '.$groupBy.' '.$orderby.' '.$limit;
 
 		#$result=mysql_query($sql,$GLOBALS['minibb_link']);
-		$result=$db->Execute($sql);
+		$result=$bbdb->Execute($sql);
 		if($result) {
 			$GLOBALS['countRes']=$result->RecordCount();
 			#$GLOBALS['countRes']=mysql_num_rows($result);
@@ -71,7 +71,7 @@ function db_simpleSelect($sus,$table='',$fields='',$uniF='',$uniC='',$uniV='',$o
 		$w=(strlen($uniF)||strlen($uniF2)?'WHERE':'');
 		$xtr=(isset($GLOBALS['xtr'])?$GLOBALS['xtr']:'');
 		#return mysql_result(mysql_query('SELECT '.$fields.' FROM '.$table.' '.$w.' '.$uniF.$uniC.$uniV.' '.$a.' '.$uniF2.$uniC2.$uniV2.' '.$xtr,$GLOBALS['minibb_link']),0);
-		return $db->GetOne('SELECT '.$fields.' FROM '.$table.' '.$w.' '.$uniF.$uniC.$uniV.' '.$a.' '.$uniF2.$uniC2.$uniV2.' '.$xtr);
+		return $bbdb->GetOne('SELECT '.$fields.' FROM '.$table.' '.$w.' '.$uniF.$uniC.$uniV.' '.$a.' '.$uniF2.$uniC2.$uniV2.' '.$xtr);
 	}
 	else return FALSE;
 }
@@ -141,9 +141,9 @@ returns:	noslash		no\'scape	with\'escape
  */
 function _smartQuote($input)
 {
-	global $db;
+	global $bbdb;
 	#$escaped=mysql_escape_string($input);
-	$escaped=$db->qstr($input);
+	$escaped=$bbdb->qstr($input);
 	$unescaped=stripslashes($input);
 	if ($input==$unescaped)
 		return $escaped;
@@ -156,7 +156,7 @@ function _smartQuote($input)
 
 
 function insertArray($insertArray,$tabh){
-	global $db;
+	global $bbdb;
 	$into='';
 	$values='';
 	foreach($insertArray as $ia) {
@@ -170,16 +170,16 @@ function insertArray($insertArray,$tabh){
 	#$res=mysql_query('insert into '.$tabh.' ('.$into.') values ('.$values.')',$GLOBALS['minibb_link']) or die('<p>'.mysql_error($GLOBALS['minibb_link']).'. Please, try another name or value.');
 	#$GLOBALS['insres']=mysql_insert_id($GLOBALS['minibb_link']);
 	#return mysql_errno($GLOBALS['minibb_link']);
-	$res=$db->Execute('insert into '.$tabh.' ('.$into.') values ('.$values.')') or die('<p>'.$db->ErrorMsg().'. Please, try another name or value.');
+	$res=$bbdb->Execute('insert into '.$tabh.' ('.$into.') values ('.$values.')') or die('<p>'.$bbdb->ErrorMsg().'. Please, try another name or value.');
 	trigger_error('insert into '.$tabh.' ('.$into.') values ('.$values.')', E_USER_WARNING);
-	$GLOBALS['insres']=$db->Insert_ID();
+	$GLOBALS['insres']=$bbdb->Insert_ID();
 	trigger_error(">{$GLOBALS['insres']}<", E_USER_WARNING);
-	return $db->ErrorNo(); # FIXME how could that be != 0? why assigning $res?
+	return $bbdb->ErrorNo(); # FIXME how could that be != 0? why assigning $res?
 	
 }
 
 function updateArray($updateArray,$tabh,$uniq,$uniqVal){
-	global $db;
+	global $bbdb;
 	$into='';
 	foreach($updateArray as $ia) {
 		$iia=$GLOBALS[$ia];
@@ -190,12 +190,12 @@ function updateArray($updateArray,$tabh,$uniq,$uniqVal){
 	$unupdate=($uniq!=''?' where '.$uniq.'='."'".$uniqVal."'":'');
 	#$res=mysql_query('update '.$tabh.' set '.$into.' '.$unupdate,$GLOBALS['minibb_link']) or die('<p>'.mysql_error($GLOBALS['minibb_link']).'. Please, try another name or value.');
 	#return mysql_affected_rows($GLOBALS['minibb_link']);
-	$res=$db->Execute('update '.$tabh.' set '.$into.' '.$unupdate) or die('<p>'.$db->ErrorMsg().'. Please, try another name or value.');
-	return $db->Affected_Rows();
+	$res=$bbdb->Execute('update '.$tabh.' set '.$into.' '.$unupdate) or die('<p>'.$bbdb->ErrorMsg().'. Please, try another name or value.');
+	return $bbdb->Affected_Rows();
 }
 
 function db_delete($table,$uniF='',$uniC='',$uniV='',$uniF2='',$uniC2='',$uniV2=''){
-	global $db;
+	global $bbdb;
 	$where=($uniF!=''?'where '.$uniF.$uniC.$uniV:'');
 	if($uniF2!='') {
 		$where.=' AND '.$uniF2.$uniC2.$uniV2;
@@ -203,18 +203,18 @@ function db_delete($table,$uniF='',$uniC='',$uniV='',$uniF2='',$uniC2='',$uniV2=
 	$sql='DELETE FROM '.$table.' '.$where;
 	#$result=mysql_query($sql,$GLOBALS['minibb_link']);
 	#if($result) return mysql_affected_rows($GLOBALS['minibb_link']);
-	$result=$db->Execute($sql);
-	if ($result) return $db->Affected_Rows();
+	$result=$bbdb->Execute($sql);
+	if ($result) return $bbdb->Affected_Rows();
 	else return FALSE;
 }
 
 function db_ipCheck($thisIp,$thisIpMask,$user_id){
-	global $db;
+	global $bbdb;
 	#$res=mysql_query('select id from '.$GLOBALS['Tb'].' where 
 	#	banip='."'".$thisIp."'".' or banip='."'".$thisIpMask[0]."'".' or 
 	#	banip='."'".$thisIpMask[1]."'".' or banip='."'".$user_id."'",$GLOBALS['minibb_link']);
 	#if($res and mysql_num_rows($res)>0) return TRUE; else return FALSE;
-	$res=$db->Execute('select id from '.$GLOBALS['Tb'].' where 
+	$res=$bbdb->Execute('select id from '.$GLOBALS['Tb'].' where 
 		banip='."'".$thisIp."'".' or banip='."'".$thisIpMask[0]."'".' or 
 		banip='."'".$thisIpMask[1]."'".' or banip='."'".$user_id."'");
 	if($res and $res->RecordCount()>0) return TRUE; else return FALSE;
@@ -222,10 +222,10 @@ function db_ipCheck($thisIp,$thisIpMask,$user_id){
 
 function db_sendMails($sus,$Tu,$Ts){
 	/*User mass emailing*/
-	global $db;
+	global $bbdb;
 	if (!$sus) {
 		#$result=mysql_query('SELECT '.$Tu.'.'.$GLOBALS['dbUserSheme']['user_email'][1].' FROM '.$Tu.','.$Ts.' where '.$Ts.'.topic_id='.$GLOBALS['topic'].' and '.$Ts.'.user_id='.$Tu.'.'.$GLOBALS['dbUserId'].' and '.$Ts.'.user_id!='.$GLOBALS['user_id'],$GLOBALS['minibb_link']);
-		$result=$db->Execute('SELECT '.$Tu.'.'.$GLOBALS['dbUserSheme']['user_email'][1].' FROM '.$Tu.','.$Ts.' where '.$Ts.'.topic_id='.$GLOBALS['topic'].' and '.$Ts.'.user_id='.$Tu.'.'.$GLOBALS['dbUserId'].' and '.$Ts.'.user_id!='.$GLOBALS['user_id']);
+		$result=$bbdb->Execute('SELECT '.$Tu.'.'.$GLOBALS['dbUserSheme']['user_email'][1].' FROM '.$Tu.','.$Ts.' where '.$Ts.'.topic_id='.$GLOBALS['topic'].' and '.$Ts.'.user_id='.$Tu.'.'.$GLOBALS['dbUserId'].' and '.$Ts.'.user_id!='.$GLOBALS['user_id']);
 		if ($result) { $GLOBALS['result']=$result; }
 	}
 	#if($GLOBALS['result']) return $row=mysql_fetch_row($GLOBALS['result']); else return FALSE;
@@ -234,11 +234,11 @@ function db_sendMails($sus,$Tu,$Ts){
 
 function db_inactiveUsers($sus,$what=''){
 	/*Admin - users that didnt any post */
-	global $db;
+	global $bbdb;
 	if(!$sus) {
 		if($GLOBALS['makeLim']>0) $GLOBALS['makeLim']='LIMIT '.$GLOBALS['makeLim'];
 		#$result=mysql_query('select '.$what.' from '.$GLOBALS['Tu'].' LEFT JOIN '.$GLOBALS['Tp'].' ON '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].'='.$GLOBALS['Tp'].'.poster_id where '.$GLOBALS['Tp'].'.poster_id IS NULL order by '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].' '.$GLOBALS['makeLim'],$GLOBALS['minibb_link']);
-		$result=$db->Execute('select '.$what.' from '.$GLOBALS['Tu'].' LEFT JOIN '.$GLOBALS['Tp'].' ON '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].'='.$GLOBALS['Tp'].'.poster_id where '.$GLOBALS['Tp'].'.poster_id IS NULL order by '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].' '.$GLOBALS['makeLim']);
+		$result=$bbdb->Execute('select '.$what.' from '.$GLOBALS['Tu'].' LEFT JOIN '.$GLOBALS['Tp'].' ON '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].'='.$GLOBALS['Tp'].'.poster_id where '.$GLOBALS['Tp'].'.poster_id IS NULL order by '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].' '.$GLOBALS['makeLim']);
 		if($result) {
 			#$GLOBALS['countRes']=mysql_num_rows($result);
 			$GLOBALS['countRes']=$result->RecordCount();
@@ -252,11 +252,11 @@ function db_inactiveUsers($sus,$what=''){
 
 function db_deadUsers($sus,$less){
 	/*Admin-dead users*/
-	global $db;
+	global $bbdb;
 	if(!$sus){
 		$GLOBALS['makeLim']=(isset($GLOBALS['makeLim'])&&$GLOBALS['makeLim']>0?'LIMIT '.$GLOBALS['makeLim']:'');
 		#$result=mysql_query('select '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserSheme']['username'][1].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserDate'].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserSheme']['user_password'][1].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserSheme']['user_email'][1].',max('.$GLOBALS['Tp'].'.post_time) as m from '.$GLOBALS['Tu'].','.$GLOBALS['Tp'].' where '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].'='.$GLOBALS['Tp'].'.poster_id group by '.$GLOBALS['Tp'].'.poster_id having m<'."'".$less."' ".$GLOBALS['makeLim'],$GLOBALS['minibb_link']);
-		$result=$db->Execute('select '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserSheme']['username'][1].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserDate'].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserSheme']['user_password'][1].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserSheme']['user_email'][1].',max('.$GLOBALS['Tp'].'.post_time) as m from '.$GLOBALS['Tu'].','.$GLOBALS['Tp'].' where '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].'='.$GLOBALS['Tp'].'.poster_id group by '.$GLOBALS['Tp'].'.poster_id having m<'."'".$less."' ".$GLOBALS['makeLim']);
+		$result=$bbdb->Execute('select '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserSheme']['username'][1].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserDate'].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserSheme']['user_password'][1].','.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserSheme']['user_email'][1].',max('.$GLOBALS['Tp'].'.post_time) as m from '.$GLOBALS['Tu'].','.$GLOBALS['Tp'].' where '.$GLOBALS['Tu'].'.'.$GLOBALS['dbUserId'].'='.$GLOBALS['Tp'].'.poster_id group by '.$GLOBALS['Tp'].'.poster_id having m<'."'".$less."' ".$GLOBALS['makeLim']);
 		if($result){
 			#$GLOBALS['countRes']=mysql_num_rows($result);
 			$GLOBALS['countRes']=$result->RecordCount();
@@ -270,47 +270,47 @@ function db_deadUsers($sus,$less){
 
 function db_forumReplies($forum,$Tp,$Tf){
 	/* Function to calculate and get forum replies after posting, deleting threads */
-	global $db;
+	global $bbdb;
 	$forumReplies=0;#FIXME ?
 	#$forumReplies=mysql_result(mysql_query('select count(*) from '.$Tp.' where forum_id='.$forum,$GLOBALS['minibb_link']),0);
-	$forumReplies=$db->GetOne('select count(*) from '.$Tp.' where forum_id='.$forum);
+	$forumReplies=$bbdb->GetOne('select count(*) from '.$Tp.' where forum_id='.$forum);
 	#mysql_query('update '.$Tf.' set posts_count='."'".$forumReplies."'".' where forum_id='.$forum,$GLOBALS['minibb_link']);
-	$db->Execute('update '.$Tf.' set posts_count='."'".$forumReplies."'".' where forum_id='.$forum);
+	$bbdb->Execute('update '.$Tf.' set posts_count='."'".$forumReplies."'".' where forum_id='.$forum);
 	return $forumReplies;
 }
 
 function db_forumTopics($forum,$Tt,$Tf){
 	/* Function to calculate and get forum topics after posting, deleting topics */
-	global $db;
+	global $bbdb;
 	$forumTopics=0;
 	#$forumTopics=mysql_result(mysql_query('select count(*) from '.$Tt.' where forum_id='.$forum,$GLOBALS['minibb_link']),0);
-	$forumTopics=$db->GetOne('select count(*) from '.$Tt.' where forum_id='.$forum);
+	$forumTopics=$bbdb->GetOne('select count(*) from '.$Tt.' where forum_id='.$forum);
 	#mysql_query('update '.$Tf.' set topics_count='."'".$forumTopics."'".' where forum_id='.$forum,$GLOBALS['minibb_link']);
-	$db->Execute('update '.$Tf.' set topics_count='."'".$forumTopics."'".' where forum_id='.$forum);
+	$bbdb->Execute('update '.$Tf.' set topics_count='."'".$forumTopics."'".' where forum_id='.$forum);
 	return $forumTopics;
 }
 
 function db_topicPosts($topic,$Tt,$Tp){
 	/* Function to calculate and get forum topics after posting, deleting topics */
-	global $db;
+	global $bbdb;
 	$topicPosts=0;
 	#$topicPosts=mysql_result(mysql_query('select count(*) from '.$Tp.' where topic_id='.$topic,$GLOBALS['minibb_link']),0);
-	$topicPosts=$db->GetOne('select count(*) from '.$Tp.' where topic_id='.$topic);
+	$topicPosts=$bbdb->GetOne('select count(*) from '.$Tp.' where topic_id='.$topic);
 	#mysql_query('update '.$Tt.' set posts_count='."'".$topicPosts."'".' where topic_id='.$topic,$GLOBALS['minibb_link']);
-	$db->Execute('update '.$Tt.' set posts_count='."'".$topicPosts."'".' where topic_id='.$topic);
+	$bbdb->Execute('update '.$Tt.' set posts_count='."'".$topicPosts."'".' where topic_id='.$topic);
 	return $topicPosts;
 }
 
 function db_lastviewed($topic, $user_id, $postID)
 {
-	global $db;
-	$db->Execute("insert into geobb_lastviewed set topic_id=$topic,user_id=$user_id,last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)") or die('<p>'.$db->ErrorMsg().'. Please, try another name or value.');
+	global $bbdb;
+	$bbdb->Execute("insert into geobb_lastviewed set topic_id=$topic,user_id=$user_id,last_post_id = $postID on duplicate key update last_post_id = if(last_post_id < $postID,$postID,last_post_id)") or die('<p>'.$bbdb->ErrorMsg().'. Please, try another name or value.');
 }
 
 function db_gridreftopics($Tt, $forum, $gridref)
 {
-	global $db;
-	$result=$db->Execute("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = ".$db->Quote($gridref));
+	global $bbdb;
+	$result=$bbdb->Execute("SELECT topic_id FROM $Tt WHERE forum_id = $forum AND topic_title = ".$bbdb->Quote($gridref));
 	$currentgridreftopics = $result->RecordCount();
 		
 	if ($currentgridreftopics == 1) {
