@@ -21,9 +21,10 @@ In this case, <b>you should not submit the form</b>!</li></ul>
 who visited the page containing the form. Simplified, we create a "password" for every user in every session.
 This "password" is sent to the server when the form is submitted. As an attacker does not know the
 "password", he can't submit data on the user's behalf.</p>
-<p>Sessions expire after a while when no activity is seen. When submitting a form with an expired session,
+<p>Sessions expire after a while when <b>no activity</b> is seen. When submitting a form with an expired session,
 the "password" sent with the form data does not match the new "password" of the new session.
 In this case, we have to presume a cross-site request forgery attack might have happened.</p>
+<p>Another possible reason for an invalid session can be an <b>incorrectly set session cookie</b>.</p>
 <p>See Wikipedia for more information about <a href="http://en.wikipedia.org/wiki/Cross-site_request_forgery">CSRF attacks</a> and <a href="http://en.wikipedia.org/wiki/Session_ID">sessions</a>.</p>
 
 {include file="_std_end.tpl"}

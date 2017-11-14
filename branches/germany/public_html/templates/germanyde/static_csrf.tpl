@@ -26,9 +26,10 @@ In diesem Fall sollte das Formular also <b>nicht erneut bestätigt</b> werden!
 Formular aufgerufen hat. Vereinfacht wird dazu jedem Benutzer in jeder Session eine Art "Passwort"
 zugeordnet, das nach Bestätigen des Formulars wieder an unseren Server geschickt wird. Da ein Angreifer
 dieses "Passwort" nicht kennen kann, kann er anderen Benutzern keine Formulardaten unterschieben.</p>
-<p>Allerdings verfallen diese Sessions nach einiger Zeit der Inaktivität. Wird dann das
+<p>Allerdings verfallen diese Sessions nach einiger Zeit der <b>Inaktivität</b>. Wird dann das
 Formular abgeschickt, so stimmt das "Passwort" aus dem Formular nicht mit dem der neuen "Session" überein.
 Aus Sicherheitsgründen müssen wir dann von einem Cross-Site-Request-Forgery-Angriff ausgehen.</p>
+<p>Ein weiterer Grund für die ungültige Session kann ein <b>nicht korrekt gesetztes Session-Cookie sein</b>.</p>
 <p>Die Wikipedia beschreibt <a href="http://de.wikipedia.org/wiki/Cross-Site-Request-Forgery">CSRF-Angriffe</a> und <a href="http://de.wikipedia.org/wiki/Sitzungsbezeichner">Sessions</a> etwas detaillierter.</p>
 
 {include file="_std_end.tpl"}
