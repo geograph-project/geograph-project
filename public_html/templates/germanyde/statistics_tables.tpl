@@ -31,6 +31,13 @@
 	</select>
 	{/if}
     {/if}
+    {if $timelist}
+	<select name="time">
+    {foreach from=$timelist key=name item=value}
+	<option value="{$name}" {if $name === $timeparam} selected{/if}>{$value}</option>
+    {/foreach}
+	</select>
+    {/if}
     {/if}
     {/dynamic}
     {/if}
@@ -88,7 +95,7 @@
 		{/if}
 		
 		<div class="interestBox">&middot;
-		<a href="{$script_name}?{foreach from=$extra key=name item=value}{$name}={$value}&amp;{/foreach}{if $ri}ri={$ri}&amp;{/if}{if $i}i={$i}&amp;{/if}{dynamic}{if $u}u={$u}&amp;{/if}{/dynamic}table={$tableindex}&amp;output=csv">Download this table as a CSV File</a></div>
+		<a href="{$script_name}?{foreach from=$extra key=name item=value}{$name}={$value}&amp;{/foreach}{if $ri}ri={$ri}&amp;{/if}{if $i}i={$i}&amp;{/if}{dynamic}{if $u}u={$u}&amp;{/if}{if $timeparam}time={$timeparam}&amp;{/if}{/dynamic}table={$tableindex}&amp;output=csv">Download this table as a CSV File</a></div>
 		
 	{else}
 		<p><i>No Results to Display</i></p>

@@ -30,9 +30,63 @@ init_session();
 $smarty = new GeographPage;
 
 $u = (isset($_GET['u']) && is_numeric($_GET['u']))?intval($_GET['u']):0;
+$bymonth = isset($_GET['time']) && $_GET['time'] === 'month' ? 1 : 0;
+$byweek = isset($_GET['time']) && $_GET['time'] === 'week' ? 1 : 0;
+$byyear = isset($_GET['time']) && $_GET['time'] === 'year' ? 1 : 0;
+$showall = isset($_GET['showall']) && $_GET['showall'] === '1' && $USER->hasPerm("admin") ? 1 : 0;
+
+$timelist = array('' => 'by day', 'week' => 'by week', 'month' => 'by month', 'year' => 'by year');
 
 $smarty->caching = 2; // lifetime is per cache
 $smarty->cache_lifetime = 3600*24; //24hr cache
+
+if ($byyear) {
+	$timestr = 'year';
+	$timeparam = 'year';
+	$smarty->cache_lifetime = 3600*24*7; //7 day cache
+	$imgwhere = '1';
+	$tickwhere = '1';
+	$imgdate = 'year(submitted)';
+	$tickdate = 'year(updated)';
+} elseif ($bymonth) {
+	$timestr = 'month';
+	$timeparam = 'month';
+	$smarty->cache_lifetime = 3600*24*2; //2 day cache
+	$imgwhere = 'submitted > date_sub(date(now()),interval 730 day)';
+	$tickwhere = 'updated > date_sub(date(now()),interval 730 day)';
+	#$imgdate = "CONCAT_WS('-',year(submitted),month(submitted))";
+	#$tickdate = "CONCAT_WS('-',year(updated),month(updated))";
+	$imgdate = "DATE_FORMAT(submitted, '%Y-%m')";
+	$tickdate = "DATE_FORMAT(updated, '%Y-%m')";
+} elseif ($byweek) {
+	$timestr = 'week';
+	$timeparam = 'week';
+	$imgwhere = 'submitted > date_sub(date(now()),interval 140 day)';
+	$tickwhere = 'updated > date_sub(date(now()),interval 140 day)';
+	#$imgdate = "CONCAT_WS('/',year(submitted),week(submitted))";
+	#$tickdate = "CONCAT_WS('/',year(updated),week(updated))";
+	$imgdate = "DATE_FORMAT(submitted, '%Y/%v')";
+	$tickdate = "DATE_FORMAT(updated, '%Y/%v')";
+} else {
+	$timestr = 'day';
+	$timeparam = '';
+	$imgwhere = 'submitted > date_sub(date(now()),interval 24 day)';
+	$tickwhere = 'updated > date_sub(date(now()),interval 24 day)';
+	$imgdate = 'date(submitted)';
+	$tickdate = 'date(updated)';
+}
+
+$cidparam = $timestr;
+
+if ($showall) {
+	if ($byyear || $bymonth || $byweek) {
+		$imgwhere = '1';
+		$tickwhere = '1';
+	}
+	$cidparam .= 'all';
+	$extra = array('showall' => '1');
+	$smarty->assign_by_ref('extra',$extra);
+}
 
 if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	$table = (isset($_GET['table']) && is_numeric($_GET['table']))?intval($_GET['table']):0;
@@ -40,14 +94,18 @@ if (isset($_GET['output']) && $_GET['output'] == 'csv') {
 	
 	$template='statistics_tables_csv.tpl';
 	# let the browser know what's coming
+	$paramstr = $timestr;
+	if ($u) {
+		$paramstr .= '.' . $u;
+	}
 	header("Content-type: application/octet-stream");
-	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".$table.csv\"");
+	header("Content-Disposition: attachment; filename=\"".basename($_SERVER['SCRIPT_NAME'],'.php').".$table.$paramstr.csv\"");
 
-	$cacheid='statistics|admin_turnaround.'.$table.'|'.$u;
+	$cacheid='statistics|admin_turnaround|'.$cidparam.'.'.$table.'|'.$u;
 } else {
 	$template='statistics_tables.tpl';
 	
-	$cacheid='statistics|admin_turnaround|'.$u;
+	$cacheid='statistics|admin_turnaround|'.$cidparam.'|'.$u;
 }
 
 if (!$smarty->is_cached($template, $cacheid))
@@ -80,7 +138,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$table['headnote'] = "We actully only have data for the time between submisison and <i>last</i> moderation, so remoderation at a later date will cause artificially long times.";
 		
 		$table['table']=$db->GetAll("
-		select date(submitted) as `Date Submitted`,count(*) as Images,count(distinct moderator_id) as `Moderators`,min(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Shortest,avg(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as `Average Hours`,(avg(unix_timestamp(moderated)-unix_timestamp(submitted))+stddev(unix_timestamp(moderated)-unix_timestamp(submitted))*2)/3600 as `at least 75% within`,max(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Longest from gridimage where submitted > date_sub(date(now()),interval 24 day) and moderated > 0 $crit1 group by date(submitted)
+		select $imgdate as `Date Submitted`,count(*) as Images,count(distinct moderator_id) as `Moderators`,min(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Shortest,avg(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as `Average Hours`,(avg(unix_timestamp(moderated)-unix_timestamp(submitted))+stddev(unix_timestamp(moderated)-unix_timestamp(submitted))*2)/3600 as `at least 75% within`,max(unix_timestamp(moderated)-unix_timestamp(submitted))/3600 as Longest from gridimage where $imgwhere and moderated > 0 $crit1 group by $imgdate
 		" );
 
 		$table['total'] = count($table);
@@ -97,7 +155,7 @@ if (!$smarty->is_cached($template, $cacheid))
 		$table['headnote'] = "Excludes deferred and 'self closed' tickets";
 
 		$table['table']=$db->GetAll("
-		select date(updated) as `Date Closed`,count(*) as `Tickets`,count(distinct moderator_id) as `Moderators`, min(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Shortest,avg(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as `Average Hours`,(avg(unix_timestamp(updated)-unix_timestamp(suggested))+stddev(unix_timestamp(updated)-unix_timestamp(suggested))*2)/3600 as `at least 75% within`,max(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Longest from gridimage_ticket where updated > date_sub(date(now()),interval 24 day) and status = 'closed' and moderator_id > 0 and user_id != moderator_id and deferred = 0 $crit2 group by date(updated)
+		select $tickdate as `Date Closed`,count(*) as `Tickets`,count(distinct moderator_id) as `Moderators`, min(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Shortest,avg(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as `Average Hours`,(avg(unix_timestamp(updated)-unix_timestamp(suggested))+stddev(unix_timestamp(updated)-unix_timestamp(suggested))*2)/3600 as `at least 75% within`,max(unix_timestamp(updated)-unix_timestamp(suggested))/3600 as Longest from gridimage_ticket where $tickwhere and status = 'closed' and moderator_id > 0 and user_id != moderator_id and deferred = 0 $crit2 group by $tickdate
 		" );
 
 		$table['total'] = count($table);
@@ -124,6 +182,8 @@ if (!$smarty->is_cached($template, $cacheid))
 
 $smarty->assign("filter",2);
 $smarty->assign("nosort",1);
+$smarty->assign('timeparam', $timeparam);
+$smarty->assign_by_ref('timelist', $timelist);
 $smarty->display($template, $cacheid);
 
 	
