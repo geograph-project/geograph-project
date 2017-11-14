@@ -1,6 +1,10 @@
 # geograph robot exclusion file
 # Wildcards for: Google / Yahoo / Microsoft
 
+User-agent: OpenStreetMap
+Allow: /photo/
+Allow: /photos/
+
 User-agent: SemrushBot
 Disallow: /
 
@@ -16,6 +20,10 @@ User-Agent: MJ12bot
 Disallow: /
 #Does not respect Crawl-delay, although mentioned on their info page
 #Crawl-delay: 50
+
+User-agent: vebidoobot
+Disallow: /
+#Does not respect Crawl-delay
 
 User-agent: netEstate NE Crawler
 Disallow: /
@@ -53,6 +61,9 @@ Disallow: /
 
 #User-agent: Yandex
 #Disallow: /
+
+User-Agent: seoscanners
+Disallow: /
 
 User-Agent: seokicks
 Disallow: /
@@ -120,6 +131,7 @@ Disallow: /statistics/leaderboard.php?*region*
 Disallow: /statistics/moversboard.php?*region*
 Disallow: /statistics/*?*csv
 Disallow: /statistics/regions.php?*region*
+Disallow: /statistics/region_squares.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
@@ -183,6 +195,7 @@ Disallow: /statistics/leaderboard.php?*region*
 Disallow: /statistics/moversboard.php?*region*
 Disallow: /statistics/*?*csv
 Disallow: /statistics/regions.php?*region*
+Disallow: /statistics/region_squares.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
@@ -246,6 +259,7 @@ Disallow: /statistics/leaderboard.php?*region*
 Disallow: /statistics/moversboard.php?*region*
 Disallow: /statistics/*?*csv
 Disallow: /statistics/regions.php?*region*
+Disallow: /statistics/region_squares.php?*region*
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
@@ -307,6 +321,7 @@ Disallow: /statistics/leaderboard.php?
 Disallow: /statistics/moversboard.php?
 Disallow: /statistics/*?*csv
 Disallow: /statistics/regions.php?
+Disallow: /statistics/region_squares.php?
 Disallow: /submit.php
 Disallow: /submit_popup.php
 Disallow: /map_frame.php
