@@ -1290,7 +1290,7 @@ if (isset($_GET['fav']) && $i) {
 			$smarty->caching = 0; // NO caching
 		}
 
-		$smarty->assign('pagesizes', array(5,10,15,20,30,50));
+		$smarty->assign('pagesizes', array(5,10,15,20,30,50,75));
 
 		if (!$is_cachable || !$smarty->is_cached($template, $is_cachable)) {
 			function addkm($a) {

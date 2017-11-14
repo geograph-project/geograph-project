@@ -325,7 +325,7 @@
 				<input type="hidden" name="location" value="{$gridref}"/>
 				<input type="radio" name="distance" value="1" checked id="d1"/><label for="d1">Nur in {$gridref}</label> /
 				<input type="radio" name="distance" value="3" id="d3"/><label for="d1">Einschließlich der umgebenden Quadrate</label><br/>
-				<input type="checkbox" name="displayclass" value="thumbs" id="dc"/><label for="dc">Nur Thumbnails zeigen</label> <small>(<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;do=1">Direktlink</a>)</small>
+				<input type="checkbox" name="displayclass" value="thumbs" id="dc"/><label for="dc">Nur Thumbnails zeigen</label> <small>(<a href="/search.php?gridref={$gridref}&amp;distance=1&amp;displayclass=thumbs&amp;orderby=submitted&amp;reverse_order_ind=1&amp;resultsperpage=50&amp;do=1">Direktlink</a>)</small>
 				<input type="hidden" name="do" value="1"/>
 				</div>
 				<small>(um alle Bilder aufzulisten, keine Suchbegriffe angeben)</small><br/>

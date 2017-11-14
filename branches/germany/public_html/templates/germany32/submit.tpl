@@ -592,8 +592,8 @@ have problems
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Preview Submission in a new window" onclick="previewImage()"/> 
 	
-	<input type="checkbox" name="spelling"/>Check Spelling
-	<sup style="color:red">Experimental!</sup>
+	{*<input type="checkbox" name="spelling"/>Check Spelling
+	<sup style="color:red">Experimental!</sup>*}
 	</form>
 {/if}
 
@@ -622,6 +622,6 @@ function showPreview(url,width,height,filename) {
 {if $step ne 1}{* disable language links to prevent users from losing their input *}
 {assign var="languages" value=""}
 {/if}
-{include file="_std_end.tpl"}
-
 {/dynamic}
+
+{include file="_std_end.tpl"}

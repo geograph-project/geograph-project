@@ -73,9 +73,9 @@ $template = 'geotrips_index.tpl';
 if ($smarty->caching) {
 	$smarty->caching = 2; // lifetime is per cache
 	if ($max < 0) {
-		$smarty->cache_lifetime = 3600*2; //2 hour cache
+		$smarty->cache_lifetime = 3600*24; //24 hour cache
 	} else {
-		$smarty->cache_lifetime = 3600*1; //1 hour cache
+		$smarty->cache_lifetime = 3600*12; //12 hour cache
 	}
 }
 

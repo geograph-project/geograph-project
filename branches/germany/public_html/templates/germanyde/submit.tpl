@@ -589,8 +589,8 @@ fortbestehen.
 	<input type="hidden" name="upload_id"/>
 	<input type="submit" value="Vorschau in neuem Fenster" onclick="previewImage()"/> 
 	
-	<input type="checkbox" name="spelling"/>Rechtschreibprüfung
-	<sup style="color:red">Experimentell!</sup>
+	{*<input type="checkbox" name="spelling"/>Rechtschreibprüfung
+	<sup style="color:red">Experimentell!</sup>*}
 	</form>
 {/if}
 
@@ -619,6 +619,6 @@ function showPreview(url,width,height,filename) {
 {if $step ne 1}{* disable language links to prevent users from losing their input *}
 {assign var="languages" value=""}
 {/if}
-{include file="_std_end.tpl"}
-
 {/dynamic}
+
+{include file="_std_end.tpl"}

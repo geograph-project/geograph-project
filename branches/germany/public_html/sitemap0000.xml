@@ -83,10 +83,6 @@
       <priority>0.8</priority>
    </url>
    <url>
-      <loc>http://geo.hlipp.de/help/press_release_001</loc>
-      <priority>0.7</priority>
-   </url>
-   <url>
       <loc>http://geo.hlipp.de/help/search</loc>
       <priority>0.7</priority>
    </url>
