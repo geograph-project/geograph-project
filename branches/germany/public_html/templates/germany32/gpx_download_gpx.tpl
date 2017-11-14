@@ -13,7 +13,7 @@ xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/
 {foreach from=$data item=row}
 	<wpt lat="{$row.lat}" lon="{$row.long}">
 		<name>{$row.grid_reference}</name>
-		<desc>{$row.grid_reference} :: {$row.imagecount} Images</desc>
+		<desc>{$row.grid_reference} :: {$row.imgcount} Images</desc>
 		<url>http://{$http_host}/gridref/{$row.grid_reference}</url>
 		<urlname>{$row.grid_reference}</urlname>
 		<sym>Geograph</sym>
