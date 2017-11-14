@@ -12,4 +12,4 @@ If you forgot your password, please click on a password link near login form on 
 
 Peace,
 Forum Administrator
-{$main_url}
+{$main_url_full}
