@@ -197,7 +197,7 @@ class MapMaker
 		{
 			$gridx=$recordSet->fields[0];
 			$gridy=$recordSet->fields[1];
-			$pland=min(100,max(0,$recordSet->fields[2]));
+			$pland=$recordSet->fields[2];
 			$imag =$recordSet->fields[3];
 			$ri =  $recordSet->fields[4];
 			
