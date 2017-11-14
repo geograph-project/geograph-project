@@ -56,7 +56,7 @@ class GridShader
 			"$y between origin_y and (origin_y+height-1) and ".
 			"reference_index=$reference_index";
 		
-		$recordSet = &$this->db->Execute($sql);
+		$recordSet = $this->db->Execute($sql);
 		if (!$recordSet->EOF) 
 		{
 			$gridref=sprintf("%s%02d%02d", 
