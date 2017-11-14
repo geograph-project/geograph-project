@@ -33,7 +33,7 @@
 
 	{if $histsearch}<li>Search for <a href="/results/{$histsearch}"><b>historical images</b></a> (<a href="/statistics/leaderboard.php?type=images&amp;when=1989&amp;timerel=dbefore&amp;date=taken"><b>Leaderboard</b></a> for historical images)</li>{/if}
 	{if $hasregions}
-	<li><a href="/statistics/regions.php">Regional statistics</a>{if $regionlistlevel > -1} (<a href="/statistics/regions.php?level={$regionlistlevel}">large list</a>){/if}</li>
+	<li><a href="/statistics/regions.php">Regional statistics</a>{if $regionlistlevel > -1} (<a href="/statistics/regions.php?level={$regionlistlevel}">large list</a>, <a href="/statistics/region_squares.php">missing squares</a>){/if}</li>
 	{/if}
 	<li>Positively rated images: <a href="/results/180491">popular images</a>, <a href="/results/180495">popular locations</a>, <a href="/results/180493">image quality</a>, <a href="/results/180494">geographical information</a></li>
 </ul>
