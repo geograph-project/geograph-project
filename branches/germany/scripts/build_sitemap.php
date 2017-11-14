@@ -108,7 +108,7 @@ for ($sitemap=1; $sitemap<=$sitemaps; $sitemap++)
 	$maxdate="";
 	
 	$offset=($sitemap-1)*$urls_per_sitemap;
-	$recordSet = &$db->Execute(
+	$recordSet = $db->Execute(
 		"select i.gridimage_id,date(upd_timestamp) as moddate ".
 		"from gridimage as i ".
 		"where i.moderation_status in ('accepted', 'geograph') ".
@@ -191,7 +191,7 @@ for ($sitemap=$sitemaps+1; $sitemap<=$sitemaps+$sitemaps2; $sitemap++)
 	$maxdate="";
 	
 	$offset=($sitemap-1-$sitemaps)*$urls_per_sitemap;
-	$recordSet = &$db->Execute(
+	$recordSet = $db->Execute(
 		"select u.user_id,nickname,date(max(upd_timestamp)) as moddate ".
 		"from user u ".
 		"inner join gridimage_search gi using(user_id) ".
