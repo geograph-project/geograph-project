@@ -616,6 +616,44 @@ ommap.tpl, rastermap.class.php:
 					window.history.replaceState(null, '', '/ommap.php'+url);
 				}
 			}
+			map.findGeoLocation = function() {
+				if (!navigator || !navigator.geolocation) {
+					alert('Not supported!');
+					return false;
+				}
+				navigator.geolocation.getCurrentPosition(
+					function(p) {
+						var ll = new OpenLayers.LonLat(p.coords.longitude, p.coords.latitude);
+						var point = ll.clone().transform(epsg4326, map.getProjectionObject());
+						if (currentelement) {
+							currentelement.move(point);
+						} else {
+							currentelement = createMarker(ll, 0);
+						}
+						map.setCenter(point, 14);
+						markerDrag(currentelement, null);
+					},
+					function(e) {
+						switch(e.code) {
+						case e.TIMEOUT:
+							alert('Timeout!');
+							break;
+						case e.PERMISSION_DENIED:
+							alert('Permission denied!');
+							break;
+						case e.POSITION_UNAVAILABLE:
+							alert('Position not available!');
+							break;
+						case e.UNKNOWN_ERROR:
+						default:
+							alert('Unknown Error!');
+							break;
+						}
+					},
+					{ enableHighAccuracy:true }
+				);
+				return true;
+			}
 
 
 			/* first layer: map type for overview map */
@@ -765,6 +803,7 @@ Abdeckung
 | Relief
 <input type="text" size="5" name="oprelief" value="{if $inior >= 0}{$inior*100}{else}100{/if}" />
 <input type="button" value="set"   onclick="map.trySetOpacity(map.hills, document.theForm.oprelief.value);"/>
+| <input type="button" value="GPS" onclick="map.findGeoLocation();"/>
 </small>
 {/dynamic}
 </div>
