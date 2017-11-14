@@ -849,7 +849,7 @@ class GeographMap
 		#trigger_error('_renderMap memory_limit: '.ini_get('memory_limit'), E_USER_WARNING);
 		if ($this->mercator) {
 			$ok = $this->_renderImageM();
-			if ($ok && $this->type_or_user != -10) {
+			if ($ok && $this->type_or_user != -10 && empty($this->mapDateCrit)) {
 				$db=&$this->_getDB();
 				$widthMC  = pow(2, 19-$this->level);
 				$leftMC   = +$widthMC*$this->tile_x - 262144;
@@ -2167,7 +2167,12 @@ class GeographMap
 			#	and imagecount>$number";
 			#FIXME remove reference_index,x,y
 			$whereuser = '';
-			$sql="select gridsquare_id,has_geographs,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and imagecount > $number";
+			if (!empty($this->mapDateCrit)) {
+				# TODO sum(moderation_status='geograph') as has_geographs, sum(moderation_status IN ('accepted','geograph')) as imagecount"
+				$sql="select gridsquare_id,sum(moderation_status='geograph') as has_geographs,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) inner join gridimage gi using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and submitted < '{$this->mapDateStart}' and moderation_status IN ('accepted','geograph') group by gi.gridsquare_id";
+			} else {
+				$sql="select gridsquare_id,has_geographs,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and imagecount > $number";
+			}
 		} else if ($this->type_or_user > 0) {
 			# personal map
 			#$sql="select x,y,grid_reference,sum(moderation_status = 'geograph') as has_geographs from gridimage_search where $riwhere
@@ -2182,7 +2187,11 @@ class GeographMap
 			#	CONTAINS( GeomFromText($rectangle),	point_xy)
 			#	and imagecount>$number"; #and percent_land = 100  #can uncomment this if using the standard green base
 			$whereuser = '';
-			$sql="select gridsquare_id,imagecount,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and imagecount > $number";
+			if (!empty($this->mapDateCrit)) {
+				$sql="select gridsquare_id,count(*) as imagecount,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) inner join gridimage gi using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and submitted < '{$this->mapDateStart}' and moderation_status IN ('accepted','geograph') group by gi.gridsquare_id";
+			} else {
+				$sql="select gridsquare_id,imagecount,scale,rotangle,cgx,cgy,polycount,poly1gx,poly1gy,poly2gx,poly2gy,poly3gx,poly3gy,poly4gx,poly4gy,poly5gx,poly5gy,poly6gx,poly6gy,poly7gx,poly7gy,poly8gx,poly8gy from gridsquare_gmcache inner join gridsquare using(gridsquare_id) where gxlow <= $rightM and gxhigh >= $leftM and gylow <= $topM and gyhigh >= $bottomM and imagecount > $number";
+			}
 		}
 		$recordSet = $db->Execute($sql);
 		while (!$recordSet->EOF) {
