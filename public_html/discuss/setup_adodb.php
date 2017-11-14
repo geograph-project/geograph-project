@@ -133,24 +133,27 @@ minibb code blows up - this function is for detecting
 when strings haven't been escaped and adding appropriate
 escapes
 
-input:		noslash		no'escape	with\'escape
-escaped:	noslash		no\'scape	with\\\'escape
-unescaped:	noslash		no'escape	with'escape
+input:		noslash		no'escape	with\'escape	with\evil'slash		with\strangeslash
+escaped:	noslash		no\'scape	with\\\'escape	with\\evil\'slash	with\\strangeslash
+unescaped:	noslash		no'escape	with'escape	withevil'slash		withstrangeslash
+reescaped:	noslash		no\'escape	with\'escape	withevil\'slash		withstrangeslash
 
-returns:	noslash		no\'scape	with\'escape
- */
+returns old:	noslash		no\'scape	with\'escape	with\evil'slash		with\strangeslash
+returns new:	noslash		no\'scape	with\'escape	with\\evil\'slash	with\\strangeslash
+
+*/
 function _smartQuote($input)
 {
 	global $bbdb;
-	#$escaped=mysql_escape_string($input);
-	$escaped=$bbdb->qstr($input);
-	$unescaped=stripslashes($input);
-	if ($input==$unescaped)
+	#$escaped = mysql_escape_string($input);
+	$escaped = substr($bbdb->qstr($input), 1, -1);
+	$unescaped = stripslashes($input);
+	#$reescaped = mysql_escape_string($unescaped);
+	$reescaped = substr($bbdb->qstr($unescaped), 1, -1);
+	if ($input === $unescaped || $input !== $reescaped) {
 		return $escaped;
-	else {
-		trigger_error("smartQuote <$input>", E_USER_WARNING);
-		#return $input; # FIXME is this safe?
-		return "'".$input."'"; # FIXME is this safe?
+	} else {
+		return $reescaped;
 	}
 }
 
@@ -162,8 +165,8 @@ function insertArray($insertArray,$tabh){
 	foreach($insertArray as $ia) {
 		$iia=$GLOBALS[$ia];
 		$into.=$ia.',';
-		#$values.=($iia=='now()'?$iia.',':"'"._smartQuote($iia)."',");
-		$values.=($iia=='now()'?$iia.',':_smartQuote($iia).",");
+		$values.=($iia==='now()'?$iia.',':"'"._smartQuote($iia)."',");
+		#X$values.=($iia=='now()'?$iia.',':_smartQuote($iia).",");
 	}
 	$into=substr($into,0,strlen($into)-1);
 	$values=substr($values,0,strlen($values)-1);
@@ -183,8 +186,8 @@ function updateArray($updateArray,$tabh,$uniq,$uniqVal){
 	$into='';
 	foreach($updateArray as $ia) {
 		$iia=$GLOBALS[$ia];
-		#$into.=($iia=='now()'?$ia.'='.$iia.',':$ia."='"._smartQuote($iia)."',");
-		$into.=($iia=='now()'?$ia.'='.$iia.',':$ia."="._smartQuote($iia).",");
+		$into.=($iia==='now()'?$ia.'='.$iia.',':$ia."='"._smartQuote($iia)."',");
+		#$into.=($iia=='now()'?$ia.'='.$iia.',':$ia."="._smartQuote($iia).",");
 	}
 	$into=substr($into,0,strlen($into)-1);
 	$unupdate=($uniq!=''?' where '.$uniq.'='."'".$uniqVal."'":'');
