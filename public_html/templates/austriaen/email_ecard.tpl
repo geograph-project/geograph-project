@@ -46,7 +46,7 @@ href="http://{$http_host}/"\>
   <TR>
     <TD bgColor=#000066>&nbsp;</TD>
     <TD bgColor=#000066><A href="http://{$http_host}/"><IMG height=74 
-      src="http://{$http_host}/templates/germany32/img/logode3.gif" width=350 border=0></A></TD>
+      src="http://{$http_host}/templates/austriaen/img/logode3.gif" width=350 border=0></A></TD>
     <TD vAlign=top align=center bgColor=#000066><A 
       href="http://{$http_host}/"><FONT face=Georgia color=#ffffff 
       size=+2>{$http_host}</FONT></A><BR><FONT face=Georgia color=#ffffff><I>The Geograph Deutschland project aims to collect a geographically representative<BR> photograph for every square kilometre of Germany and you can be part of it.</I></FONT></TD>

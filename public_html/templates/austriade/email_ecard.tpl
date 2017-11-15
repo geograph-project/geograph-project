@@ -46,7 +46,7 @@ href="http://{$http_host}/"\>
   <TR>
     <TD bgColor=#000066>&nbsp;</TD>
     <TD bgColor=#000066><A href="http://{$http_host}/"><IMG height=74 
-      src="http://{$http_host}/templates/germanyde/img/logode3.gif" width=350 border=0></A></TD>
+      src="http://{$http_host}/templates/austriade/img/logode3.gif" width=350 border=0></A></TD>
     <TD vAlign=top align=center bgColor=#000066><A 
       href="http://{$http_host}/"><FONT face=Georgia color=#ffffff 
       size=+2>{$http_host}</FONT></A><BR><FONT face=Georgia color=#ffffff><I>Geograph Deutschland hat das Ziel, geographisch repräsentative Photos für<BR>jeden Quadratkilometer Deutschlands zu sammeln.</I></FONT></TD>
