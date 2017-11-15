@@ -51,7 +51,7 @@ a.hidelink {
 /* header content placement*/
 #header_block
 {
-	background:#000066;
+	background:#990000;
 	margin:0px;
 }
 
@@ -64,7 +64,7 @@ a.hidelink {
 #header h1
 {
 	margin:0px;
-	background-image: url('/templates/germany32/img/logode3.gif');
+	background-image: url('/templates/austriaen/img/logoat3.gif');
 	height:74px;
 	/*width:257px;*/
 	width:350px;
@@ -86,7 +86,7 @@ a.hidelink {
 	top:4px;
 	right:0.4em;
 	width:29em;
-	background:#000066;
+	background:#990000;
 	text-align:right;
 	font-size: 0.9em;
 }
