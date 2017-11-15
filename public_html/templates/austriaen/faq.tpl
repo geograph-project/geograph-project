@@ -7,8 +7,8 @@
  <h3>Useful Links</h3>
  <b>Contributing</b> photos:
  <ul>
- <li><a href="/article/Anleitung">Guide (German)</a></li>
- <li><a href="/article/Geograph-or-supplemental">Geograph or Supplemental?</a></li>
+ <li><a href="http://geo-en.hlipp.de/article/Anleitung">Guide (German)</a></li>
+ <li><a href="http://geo-en.hlipp.de/article/Geograph-or-supplemental">Geograph or Supplemental?</a></li>
  <li><a href="/help/guide">Geograph Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Which-Square">Locating your Image</a></li>
@@ -301,7 +301,7 @@ the English version, too: we'll put it at the end of the title or description, e
 <h3>Why is Germany divided, again? What coordinates do you use?</h3>
 	<p>We basically use <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF coordinates</a>
 	which means that Germany is divided into the three UTM zones 31, 32, 33. More details about this topic can be
-	found in the German <a href="/article/Koordinaten">article about coordinates</a>.</p>
+	found in the German <a href="http://geo-en.hlipp.de/article/Koordinaten">article about coordinates</a>.</p>
 </div>
 <div class="top"><a href="#top">back to top</a></div>
 

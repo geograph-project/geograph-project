@@ -37,7 +37,7 @@ photograph.</p>
 <p>When you press Next, we'll find out if there are any existing photographs 
 for that square</p>
 
-<p>If you're new, you may like to check our <a href="/article/Anleitung">guide to 
+<p>If you're new, you may like to check our <a href="http://geo-en.hlipp.de/article/Anleitung">guide to 
 geographing (German)</a> first.</p>
 
 </div>
@@ -121,7 +121,7 @@ geographing (German)</a> first.</p>
 	
 </div>
 	<br/><br/><br/>
-	<p>If you are unsure of the photo location reading the <a href="article/Anleitung">guide</a> (currently only available in German) might help.</p>
+	<p>If you are unsure of the photo location reading the <a href="http://geo-en.hlipp.de/article/Anleitung">guide</a> (currently only available in German) might help.</p>
 
 	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
 	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>

@@ -7,8 +7,8 @@
  <h3>N&uuml;tzliche Links</h3>
  <b>Einreichen</b> von Fotos:
  <ul>
- <li><a href="/article/Anleitung">Anleitung</a></li>
- <li><a href="/article/GeobildExtrabild">Geobild oder Extrabild?</a></li>
+ <li><a href="http://geo.hlipp.de/article/Anleitung">Anleitung</a></li>
+ <li><a href="http://geo.hlipp.de/article/GeobildExtrabild">Geobild oder Extrabild?</a></li>
  <li><a href="/help/guide">Geograph Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Geograph-or-supplemental">Moderation Guide</a></li>
  <li><a href="http://www.geograph.org.uk/article/Which-Square">Locating your Image</a></li>
@@ -308,7 +308,7 @@ Dabei versuchen wir, auch den englischen Text zu behalten; in der Regel eingekla
 <h3>Warum ist Deutschland wieder geteilt? Welche Koordinaten werden benutzt?</h3>
 	<p>Wir verwenden im Wesentlichen <a href="http://de.wikipedia.org/wiki/MGRS">MGRS/UTMREF-Koordinaten</a>,
 	was zur Folge hat, dass Deutschland in die UTM-Zonen 31, 32 und 33 aufgeteilt ist. Näheres dazu
-	kann im <a href="/article/Koordinaten">Artikel über Koordinaten</a> nachgelesen werden.</p>
+	kann im <a href="http://geo.hlipp.de/article/Koordinaten">Artikel über Koordinaten</a> nachgelesen werden.</p>
 </div>
 <div class="top"><a href="#top">nach oben</a></div>
 

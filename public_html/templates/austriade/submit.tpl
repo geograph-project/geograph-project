@@ -35,7 +35,7 @@ beibehalten.</p>
 
 <p>Nach Betätigen des "Weiter"-Buttons wird geprüft, ob bereits Fotos für dieses Quadrat eingereicht wurden.</p>
 
-<p>Für Neulinge kann sich ein Blick in die <a href="/article/Anleitung">Anleitung</a> lohnen.</p>
+<p>Für Neulinge kann sich ein Blick in die <a href="http://geo.hlipp.de/article/Anleitung">Anleitung</a> lohnen.</p>
 
 </div>
 {/if} 
@@ -118,7 +118,7 @@ beibehalten.</p>
 	
 </div>
 	<br/><br/><br/>
-	<p>Bei Unsicherheit über die Koordinaten ist vielleicht die <a href="article/Anleitung">Anleitung</a> hilfreich.</p>
+	<p>Bei Unsicherheit über die Koordinaten ist vielleicht die <a href="http://geo.hlipp.de/article/Anleitung">Anleitung</a> hilfreich.</p>
 
 	<script type="text/javascript" src="{"/mapping1.js"|revision}"></script>
 	<script type="text/javascript" src="{"/mapper/geotools2.js"|revision}"></script>
