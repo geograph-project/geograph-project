@@ -10,6 +10,8 @@
 <label for="checkname">Skip town if a town with same "short name" exists</label><br />
 <label for="mincid">minimal cid:</label> <input size="12" type="text" id="mincid" name="mincid" value="{$mincid}"/><br />
 <label for="maxcid">maximal cid:</label> <input size="12" type="text" id="maxcid" name="maxcid" value="{$maxcid}"/><br />
+<label for="cidremove">remove digits:</label> <input size="12" type="text" id="cidremove" name="cidremove" value="{$cidremove}"/><br />
+<label for="cidzero">add zeroes:</label> <input size="12" type="text" id="cidzero" name="cidzero" value="{$cidzero}"/><br />
 <input type="submit" name="submit" value="Ok">
 </form>
 
