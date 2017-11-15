@@ -232,6 +232,14 @@ class Coords:
 		sphi = RadPHI + self.RadPHI0
 		dphi = RadPHI - self.RadPHI0
 		return self.bf0 * (((1 + self.el2.n + 5./4 * (self.el2.n2 + self.el2.n3)) * dphi) - ((3 * (self.el2.n + self.el2.n2) + 21./8 * self.el2.n3) * sin(dphi)*cos(sphi)) + (15./8  * (self.el2.n2 + self.el2.n3)) * sin(2*dphi)*cos(2 * sphi) - (35./24 * self.el2.n3 * sin(3*dphi)*cos(3*sphi)))
+	def _insidePoly(self, poly, x, y):
+		prev = poly[-1]
+		res = False
+		for cur in poly:
+			if  ((cur[1] > y) != (prev[1] > y)) and (x < (prev[0] - cur[0]) * (y - cur[1]) / (prev[1] - cur[1]) + cur[0]):
+				res = not res
+			prev = cur
+		return res
 
 class CoordsOSGB36(Coords):
 	def in_range(self, lat, long):
@@ -240,7 +248,8 @@ class CoordsOSGB36(Coords):
 		if not uk:
 			return False
 		if ire:
-			pass #FIXME
+			if self._insidePoly(self.ireland, long, lat):
+				return False
 		return True
 	def __init__(self):
 		Coords.__init__(self)
@@ -305,6 +314,15 @@ class CoordsOSGB36(Coords):
 			(0, 4, 11): 'HU',
 			(0, 4, 12): 'HP',
 		}
+		self.ireland = [
+			(-12.19,50.38),
+			( -6.39,50.94),
+			( -5.07,53.71),
+			( -5.25,54.71),
+			( -6.13,55.42),
+			(-10.65,56.15)
+			#(-12.19,50.38) # should not be necessary FIXME: test!
+		]
 class CoordsIrish(Coords):
 	def in_range(self, lat, long):
 		uk = lat > 49 and lat < 62 and long > -9.5 and long < 2.3
@@ -312,13 +330,51 @@ class CoordsIrish(Coords):
 		if not ire:
 			return False
 		if uk:
-			pass #FIXME
+			if not self._insidePoly(self.ireland, long, lat):
+				return False
 		return True
 	def __init__(self):
 		Coords.__init__(self)
 		self.init_el_size(6377340.189,6356034.447)
-		self.init_el_trans(-482.538, 130.596, -564.557, -1.042,  -0.214,  -0.631,  -8.15)
+		#self.init_el_trans(-482.538, 130.596, -564.557, -1.042,  -0.214,  -0.631,  -8.15)
+		self.init_el_trans( -482.53 , 130.596, -564.557, +1.042,  +0.214,  +0.631,  -8.15)
 		self.init_proj(200000,250000,0,1.000035,53.50000,-8.00000)
+		self.squares = {
+			(0, 0,  0): 'V',
+			(0, 1,  0): 'W',
+			(0, 2,  0): 'X',
+			(0, 3,  0): 'Y',
+			(0, 4,  0): 'Z',
+			(0, 0,  1): 'Q',
+			(0, 1,  1): 'R',
+			(0, 2,  1): 'S',
+			(0, 3,  1): 'T',
+			(0, 4,  1): 'U',
+			(0, 0,  2): 'L',
+			(0, 1,  2): 'M',
+			(0, 2,  2): 'N',
+			(0, 3,  2): 'O',
+			(0, 4,  2): 'P',
+			(0, 0,  3): 'F',
+			(0, 1,  3): 'G',
+			(0, 2,  3): 'H',
+			(0, 3,  3): 'J',
+			(0, 4,  3): 'K',
+			(0, 0,  4): 'A',
+			(0, 1,  4): 'B',
+			(0, 2,  4): 'C',
+			(0, 3,  4): 'D',
+			(0, 4,  4): 'E',
+		}
+		self.ireland = [
+			(-12.19,50.38),
+			( -6.39,50.94),
+			( -5.07,53.71),
+			( -5.25,54.71),
+			( -6.13,55.42),
+			(-10.65,56.15)
+			#(-12.19,50.38) # should not be necessary FIXME: test!
+		]
 class CoordsGK(Coords):
 	def __init__(self):
 		Coords.__init__(self)
@@ -329,6 +385,59 @@ class CoordsUTM(Coords):
 	def __init__(self):
 		Coords.__init__(self)
 		self.init_proj(500000,     0, 10000000,0.9996,  0,       0,          6, -186, 0, None, 8, -80)
+class CoordsGeographA(CoordsUTM):
+	def in_range(self, lat, long):
+		aut = lat > 46.3 and lat < 49.1 and long > 9.5 and long < 17.2
+		return aut
+	def __init__(self):
+		CoordsUTM.__init__(self)
+		self.squares = {
+			(32, 4, 55): 'MA',
+			(32, 4, 54): 'MV',
+			(32, 4, 53): 'MU',
+			(32, 4, 52): 'MT',
+			(32, 4, 51): 'MS',
+			(32, 5, 55): 'NA',
+			(32, 5, 54): 'NV',
+			(32, 5, 53): 'NU',
+			(32, 5, 52): 'NT',
+			(32, 5, 51): 'NS',
+			(32, 6, 55): 'PA',
+			(32, 6, 54): 'PV',
+			(32, 6, 53): 'PU',
+			(32, 6, 52): 'PT',
+			(32, 6, 51): 'PS',
+			(32, 7, 55): 'QA',
+			(32, 7, 54): 'QV',
+			(32, 7, 53): 'QU',
+			(32, 7, 52): 'QT',
+			(32, 7, 51): 'QS',
+			(33, 2, 55): 'TR',
+			(33, 2, 54): 'TQ',
+			(33, 2, 53): 'TP',
+			(33, 2, 52): 'TN',
+			(33, 2, 51): 'TM',
+			(33, 3, 55): 'UR',
+			(33, 3, 54): 'UQ',
+			(33, 3, 53): 'UP',
+			(33, 3, 52): 'UN',
+			(33, 3, 51): 'UM',
+			(33, 4, 55): 'VR',
+			(33, 4, 54): 'VQ',
+			(33, 4, 53): 'VP',
+			(33, 4, 52): 'VN',
+			(33, 4, 51): 'VM',
+			(33, 5, 55): 'WR',
+			(33, 5, 54): 'WQ',
+			(33, 5, 53): 'WP',
+			(33, 5, 52): 'WN',
+			(33, 5, 51): 'WM',
+			(33, 5, 55): 'XR',
+			(33, 5, 54): 'XQ',
+			(33, 5, 53): 'XP',
+			(33, 5, 52): 'XN',
+			(33, 5, 51): 'XM',
+		}
 class CoordsGeographD(CoordsUTM):
 	def in_range(self, lat, long):
 		ger = lat > 47 and lat < 56 and long > 4 and long < 16
