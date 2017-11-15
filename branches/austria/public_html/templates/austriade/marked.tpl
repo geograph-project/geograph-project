@@ -1,5 +1,5 @@
 {assign var="page_title" value="Markierte Bilder"}
-{assign var="extra_css" value="/templates/germanyde/css/marked.css"}
+{assign var="extra_css" value="/templates/austriade/css/marked.css"}
 {include file="_std_begin.tpl"}
 {dynamic}
 <h2>Markierte Bilder</h2>
