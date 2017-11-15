@@ -91,6 +91,12 @@ function isSpam($msg)
 	$count=count($matches[0]);
 
 	# FIXME configurable? use $_SERVER['HTTP_HOST'] ?
+	preg_match_all("{http://www.geograph.org.uk}", $msg, $matches);
+	$legit=count($matches[0]);
+	preg_match_all("{http://atgeo.hlipp.de}", $msg, $matches);
+	$legit=count($matches[0]);
+	preg_match_all("{http://atgeo-en.hlipp.de}", $msg, $matches);
+	$legit+=count($matches[0]);
 	preg_match_all("{http://geo.hlipp.de}", $msg, $matches);
 	$legit=count($matches[0]);
 	preg_match_all("{http://geo-en.hlipp.de}", $msg, $matches);

@@ -26,12 +26,12 @@
 	}
 
 	function GetTileUrl_GeoH(a, z) {
-	    return "http://geo.hlipp.de/tile/hills/" +
+	    return "http://atgeo.hlipp.de/tile/hills/" +
 			z + "/" + a.x + "/" + a.y + ".png";
 	}
 
 	function GetTileUrl_GeoS(a, z) {
-		return (z < 16 ? "http://geo.hlipp.de/tile/osm/" : "http://tile.openstreetmap.org/") +
+		return (z < 16 ? "http://atgeo.hlipp.de/tile/osm/" : "http://tile.openstreetmap.org/") +
 			z + "/" + a.x + "/" + a.y + ".png";
 	}
 

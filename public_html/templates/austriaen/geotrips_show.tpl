@@ -401,7 +401,7 @@ AttachEvent(window,'load',initmap,false);
 		{foreach item=realname from=$realnames.$curuid name=rnloop}
 		<a href="/profile/{$trip.uid}?a={$realname|escape:"url"}">{$realname|escape:"html"}</a>{if !$smarty.foreach.rnloop.last}, {/if}{/foreach}{/if}{if !$smarty.foreach.uidlp.last}; {/if}{/foreach}
 		and available under a <a href="http://creativecommons.org/licenses/by-sa/2.0/">Creative Commons licence</a>
-		<img alt="external link" title="" src="http://geo.hlipp.de/img/external.png" />.
+		<img alt="external link" title="" src="http://atgeo-en.hlipp.de/img/external.png" />.
 	</p>
 </div>
 

@@ -30,7 +30,7 @@ function sanitise($str) {
   $str=preg_replace('%\r\n%',' <br/>',$str);
   $str=preg_replace('%http://[^\s]*%','[<a href="$0">link</a> <img alt="external link" title="" src="http://users.aber.ac.uk/ruw/templates/external.png" />]',$str);
   $str=preg_replace('% <br/>%','<br />',$str);
-  $str=preg_replace('%\[\[([0-9]*)\]\]%','<a href="http://geo.hlipp.de/photo/\1">Link</a>',$str);
+  $str=preg_replace('%\[\[([0-9]*)\]\]%','<a href="http://atgeo.hlipp.de/photo/\1">Link</a>',$str);
   $str=preg_replace('%\[[1-9]\]%','',$str);  // temporary fix to remove numerical references to shared descriptions
   return addslashes($str);
 }

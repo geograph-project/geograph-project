@@ -202,6 +202,10 @@ out;
 						$server = 'www.geograph.org.uk';
 						$ext = true;
 						$prefix = 'bi:';
+					} elseif ($g_matches[2][$g_i] == 'de:') {
+						$server = 'geo.hlipp.de';
+						$ext = true;
+						$prefix = 'de:';
 					} elseif ($g_matches[2][$g_i] == 'ci:') {
 						$server = 'channel-islands.geographs.org';
 						$ext = true;
@@ -255,7 +259,7 @@ out;
 		//no external images
 		// the callback function
 		$fixExternalImages= <<<FUNC
-	if ((\$matches[2] == 'geo.hlipp.de') || (\$matches[2] == 'www.geograph.org.uk') || (\$matches[2] == 'www.geograph.co.uk') || (\$matches[2] == 'chart.apis.google.com') || 
+	if ((\$matches[2] == 'geo.hlipp.de') || (\$matches[2] == 'atgeo.hlipp.de') || (\$matches[2] == 'www.geograph.org.uk') || (\$matches[2] == 'www.geograph.co.uk') || (\$matches[2] == 'chart.apis.google.com') || 
 	 (\$matches[2] == 'geodatastore2.appspot.com')  || (\$matches[2] == 'wordle.net') )
 	{
 		//this is fine
